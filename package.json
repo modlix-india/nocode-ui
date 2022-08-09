@@ -40,7 +40,8 @@
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
     "parcel": "^2.7.0",
-    "prettier": "^2.7.1"
+    "prettier": "^2.7.1",
+    "process": "^0.11.10"
   },
   "dependencies": {
     "react": "^18.2.0",
