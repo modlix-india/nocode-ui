@@ -1,0 +1,49 @@
+{
+  "name": "nocode-ui",
+  "version": "1.0.0",
+  "description": "UI Engine for NoCode SaaS Platform",
+  "source": "src/index.html",
+  "browserslist": "> 0.5%, last 2 versions, not dead",
+  "scripts": {
+    "start": "parcel",
+    "build": "parcel build"
+  },
+  "keywords": [
+    "nocode",
+    "lowcode"
+  ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,jsx}": [
+      "prettier --write",
+      "eslint --fix",
+      "git add"
+    ],
+    "*.{html,css,less,ejs}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "author": "Raja Avinash Alli",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/react": "^18.0.17",
+    "@types/react-dom": "^18.0.6",
+    "@typescript-eslint/eslint-plugin": "^5.33.0",
+    "@typescript-eslint/parser": "^5.33.0",
+    "eslint": "^8.21.0",
+    "eslint-plugin-react": "^7.30.1",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3",
+    "parcel": "^2.7.0",
+    "prettier": "^2.7.1"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
