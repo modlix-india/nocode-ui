@@ -6,7 +6,7 @@
   "browserslist": "> 0.5%, last 2 versions, not dead",
   "scripts": {
     "start": "parcel",
-    "build": "parcel build"
+    "build": "parcel build src/index.html"
   },
   "keywords": [
     "nocode",
@@ -31,6 +31,8 @@
   "author": "Raja Avinash Alli",
   "license": "ISC",
   "devDependencies": {
+    "@babel/core": "^7.12.0",
+    "@babel/preset-typescript": "^7.18.6",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
     "@typescript-eslint/eslint-plugin": "^5.33.0",
