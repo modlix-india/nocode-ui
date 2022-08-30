@@ -1,5 +1,6 @@
-import axios from "axios";
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import axios from 'axios';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { STORE_PREFIX } from '../constants';
 
 export interface Application {
     title: string;
@@ -11,93 +12,51 @@ export interface Application {
     loadingPage: any //later to be changed when page def type is finalised
 }
 
-interface ApplicationContextData {
-    application?: Application;
-    loginPage: any;
-    applicationLoading: boolean;
-    isApplicationLoadFailed: boolean;
-    getLoginPage: () => void;
-    getApplication: () => void;
-}
+export const useApplicationData = (getData: (path: string) => any, addListener: (path: string, callback: ({path: string, value: any}) => void) => () => void) => {
+	const [application, setApplication] = useState<Application | undefined>(getData(`${STORE_PREFIX}.application`));
+	const [applicationLoading, setApplicationLoading] = useState(getData(`${STORE_PREFIX}.applicationLoading`) || false);
+	const [isApplicationLoadFailed, setIsApplicationLoadFailed] = useState(getData(`${STORE_PREFIX}.applicationLoadingFailed`) ||  false);
 
-const defaultApplication: Application = {
-    title: '',
-    name: '',
-    loginPageName: '',
-    shellPage: {},
-    errorPageName: '',
-    manifest: {},
-    loadingPage: {},
-}
+	useEffect(() => {
+		const applicationUnsub = addListener(`${STORE_PREFIX}.application`, ({value}) => {
+			setApplication(value);
+		});
+		const applicationLoadingUnsub = addListener(`${STORE_PREFIX}.application`, ({value}) => {
+			setApplicationLoading(value);
+		});
+		const applicationLoadingFailedUnsub = addListener(`${STORE_PREFIX}.application`, ({value}) => {
+			setIsApplicationLoadFailed(value);
+		});
+		return () => {
+			applicationUnsub();
+			applicationLoadingUnsub();
+			applicationLoadingFailedUnsub();
+		};
+	}, [setApplication, setApplicationLoading, setIsApplicationLoadFailed]);
 
-const defaultApplicationData: ApplicationContextData = {
-    application: defaultApplication,
-    loginPage: {},
-    applicationLoading: false,
-    isApplicationLoadFailed: false,
-    getLoginPage: () => null,
-    getApplication: () => null,
-}
+	const getApplication = useCallback((setData: <T>(path: string, value: T) => void) => {
+		(async () => {
+			try {
+				setData(`${STORE_PREFIX}.applicationLoading`, true);
+				const resp = await axios.get<Application>('/application');
+				setData(`${STORE_PREFIX}.application`, resp.data);
+				setData(`${STORE_PREFIX}.applicationLoading`, false);
+			} catch (error) {
+				setData(`${STORE_PREFIX}.applicationLoading`, false);
+				setData(`${STORE_PREFIX}.applicationLoadingFailed`, true);
+			}
+		})();
+	}, []);
 
-export const ApplicationContext = createContext<ApplicationContextData | undefined>(undefined);
-
-export const useApplicationContextData = () => {
-    const [application, setApplication] = useState<Application | undefined>(undefined);
-    const [loginPage, setLoginPage] = useState<any>({});
-    const [applicationLoading, setApplicationLoading] = useState(false);
-    const [isApplicationLoadFailed, setIsApplicationLoadFailed] = useState(false);
-
-    const getApplication = useCallback(() => {
-        (async () => {
-            try {
-                setApplicationLoading(true);
-                const resp = await axios.get<Application>('/application');
-                setApplication(resp.data);
-                setApplicationLoading(false);
-            } catch (error) {
-                setApplicationLoading(false);
-                setIsApplicationLoadFailed(true);
-                console.log('Failed to load Application', error)
-                //Code to load error page when application fails
-            }
-        })()
-    }, [setApplication]);
-
-    const getLoginPage = useCallback(() => {
-        (async () => {
-            try {
-                const resp = await axios.get('/loginPageDefinition')
-                setLoginPage(resp.data);
-            } catch (error) {
-                console.log('Failed to load Login Page', error)
-                // Write fallback for not being able to load login page
-            }
-        })()
-    }, [setLoginPage]);
-
-    return useMemo(() => ({
-        application,
-        loginPage,
-        applicationLoading,
-        isApplicationLoadFailed,
-        getApplication,
-        getLoginPage
-    }), [
-        application,
-        loginPage,
-        applicationLoading,
-        isApplicationLoadFailed,
-        getApplication,
-        getLoginPage
-    ])
-}
-
-export function useApplicationContext() {
-    const appContext = useContext(ApplicationContext)
-
-    if (!appContext) {
-        throw new Error('usePostsContext must be used within the PostsContext.Provider');
-    }
-
-    return appContext;
-}
+	return useMemo(() => ({
+		application,
+		applicationLoading,
+		isApplicationLoadFailed,
+		getApplication,
+	}), [
+		application,
+		applicationLoading,
+		isApplicationLoadFailed,
+		getApplication,
+	]);
+};
