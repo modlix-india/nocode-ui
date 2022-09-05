@@ -33,7 +33,8 @@ const map = new Map([
 				new AdditionalPropertiesType().setSchemaValue(
 					Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`),
 				),
-			),
+			)
+			.setDefaultValue({}),
 	],
 	[
 		'FetchError',

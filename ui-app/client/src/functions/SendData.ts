@@ -13,7 +13,7 @@ import { NAMESPACE_UI_ENGINE } from '../constants';
 import { getData } from '../context/StoreContext';
 import { pathFromParams, queryParamsSerializer } from './utils';
 
-const SIGNATURE = new FunctionSignature('FetchData')
+const SIGNATURE = new FunctionSignature('SendData')
 	.setNamespace(NAMESPACE_UI_ENGINE)
 	.setParameters(
 		new Map([
@@ -22,11 +22,19 @@ const SIGNATURE = new FunctionSignature('FetchData')
 				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`),
 			),
 			Parameter.ofEntry(
+				'method',
+				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`),
+			),
+			Parameter.ofEntry(
 				'queryParams',
 				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.UrlParameters`),
 			),
 			Parameter.ofEntry(
 				'pathParams',
+				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.UrlParameters`),
+			),
+			Parameter.ofEntry(
+				'payload',
 				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.UrlParameters`),
 			),
 			Parameter.ofEntry(
@@ -59,23 +67,26 @@ const SIGNATURE = new FunctionSignature('FetchData')
 		]),
 	);
 
-export class FetchData extends AbstractFunction {
+export class SendData extends AbstractFunction {
 	protected async internalExecute(
 		context: FunctionExecutionParameters,
 	): Promise<FunctionOutput> {
 		const url: string = getData(context.getArguments()?.get('url'));
+		const method: string = getData(context.getArguments()?.get('method'));
 		const headers = getData(context.getArguments()?.get('headers'));
 		const pathParams = getData(context.getArguments()?.get('pathParams'));
 		const queryParams = getData(context.getArguments()?.get('queryParams'));
+		const payload = getData(context.getArguments()?.get('payload'));
 
 		try {
 			const response = await axios({
 				url: pathFromParams(url, pathParams),
-				method: 'get',
+				method,
 				params: queryParams,
 				paramsSerializer: params =>
 					queryParamsSerializer(params)?.[1] ?? '',
 				headers,
+				data: payload,
 			});
 
 			return new FunctionOutput([

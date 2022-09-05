@@ -13,7 +13,7 @@ import { NAMESPACE_UI_ENGINE } from '../constants';
 import { getData } from '../context/StoreContext';
 import { pathFromParams, queryParamsSerializer } from './utils';
 
-const SIGNATURE = new FunctionSignature('FetchData')
+const SIGNATURE = new FunctionSignature('DeleteData')
 	.setNamespace(NAMESPACE_UI_ENGINE)
 	.setParameters(
 		new Map([
@@ -59,7 +59,7 @@ const SIGNATURE = new FunctionSignature('FetchData')
 		]),
 	);
 
-export class FetchData extends AbstractFunction {
+export class DeleteData extends AbstractFunction {
 	protected async internalExecute(
 		context: FunctionExecutionParameters,
 	): Promise<FunctionOutput> {
@@ -71,7 +71,7 @@ export class FetchData extends AbstractFunction {
 		try {
 			const response = await axios({
 				url: pathFromParams(url, pathParams),
-				method: 'get',
+				method: 'DELETE',
 				params: queryParams,
 				paramsSerializer: params =>
 					queryParamsSerializer(params)?.[1] ?? '',

@@ -8,15 +8,13 @@ import {
 import { NAMESPACE_UI_ENGINE } from '../constants';
 import * as map from './all';
 
-type FunctionsModule = typeof map;
+const functionMap = new Map<string, AbstractFunction>();
+Object.entries(map).forEach(([k, v]) => functionMap.set(k, new v()));
 
 class _UIFunctionepository implements Repository<Function> {
-	find<K extends keyof FunctionsModule>(
-		namespace: string,
-		name: K,
-	): Function | undefined {
+	find(namespace: string, name: string): Function | undefined {
 		if (namespace !== NAMESPACE_UI_ENGINE) return undefined;
-		return new map[name]();
+		return functionMap.get(name);
 	}
 }
 
