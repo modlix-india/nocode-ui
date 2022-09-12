@@ -1,15 +1,13 @@
 import express from 'express';
+import { auth } from '../middleware/auth.js';
 
 const router = express.Router()
 
 // middleware that is specific to this router
-router.use((req, res, next) => {
-  console.log(new Date().toTimeString())
-  next()
-})
+router.use(auth)
 // define the home page route
 router.get('/', (req, res) => {
-  res.send({name: 'Hello World'})
+  res.send({isAuthenticated: true})
 })
 
 export default router;

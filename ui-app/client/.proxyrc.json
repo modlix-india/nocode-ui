@@ -1,5 +1,17 @@
 {
     "/api": {
-      "target": "http://localhost:3000/"
+        "target": "http://localhost:3000/"
+    },
+    "/login": {
+        "target": "http://localhost:3000/"
+    },
+    "/application": {
+        "target": "http://localhost:3000/"
+    },
+    "/verifyLogin": {
+        "target": "http://localhost:3000/"
+    },
+    "/loginPageDefinition": {
+        "target": "http://localhost:3000/"
     }
-  }
+}

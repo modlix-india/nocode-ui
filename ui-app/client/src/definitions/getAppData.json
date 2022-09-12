@@ -1,0 +1,57 @@
+{
+	"name": "getAppData",
+	"namespace": "UIApp",
+	"parameters": {},
+	"events": {
+		"output": {
+			"name": "output",
+			"parameters": { "genData": { "name": "genData", "type": "Object" } }
+		},
+		"error": {
+			"name": "error",
+			"parameters": {}
+		}
+	},
+	"steps": {
+		"verifyToken": {
+			"statementName": "verifyToken",
+			"namespace": "UIEngine",
+			"name": "FetchData",
+			"parameterMap": {
+				"url": [
+					{ "type": "VALUE", "value": { "value": "/verifyLogin" } }
+				]
+			}
+		},
+		"applicationData": {
+			"statementName": "applicationData",
+			"namespace": "UIEngine",
+			"name": "FetchData",
+			"parameterMap": {
+				"url": [
+					{ "type": "VALUE", "value": { "value": "/application" } }
+				]
+			}
+		},
+		"genOutput": {
+			"statementName": "genOutput",
+			"namespace": "System",
+			"name": "GenerateEvent",
+			"parameterMap": {
+				"eventName": [{ "type": "VALUE", "value": "output" }],
+				"results": [
+					{
+						"type": "VALUE",
+						"value": {
+							"name": "genData",
+							"value": {
+								"isExpression": true,
+								"value": "Steps.applicationData.output.data"
+							}
+						}
+					}
+				]
+			}
+		}
+	}
+}
