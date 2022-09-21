@@ -1,5 +1,7 @@
 export interface ButtonProps {}
 
+export interface GridProps {}
+
 export interface VerifyLoginResponse {
 	isAuthenticated: boolean;
 }

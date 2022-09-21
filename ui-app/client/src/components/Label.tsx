@@ -1,9 +1,9 @@
 import React from 'react';
 import { getData } from '../context/StoreContext';
-export interface ButtonProps extends React.ComponentPropsWithoutRef<'button'> {
+export interface LabelProps extends React.ComponentPropsWithoutRef<'p'> {
 	definition: {
 		properties: {
-			label: {
+			text: {
 				value: string;
 				location: {
 					type: 'EXPRESSION' | 'VALUE';
@@ -14,13 +14,13 @@ export interface ButtonProps extends React.ComponentPropsWithoutRef<'button'> {
 		};
 	};
 }
-export function Button(props: ButtonProps) {
+export function Label(props: LabelProps) {
 	const {
 		definition: {
-			properties: { label },
+			properties: { text },
 		},
 		...rest
 	} = props;
-	const buttonLabel = getData(label);
-	return <button {...rest}>{buttonLabel}</button>;
+	const labelText = getData(text);
+	return <p {...rest}>{labelText}</p>;
 }

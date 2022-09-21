@@ -17,10 +17,7 @@ const SIGNATURE = new FunctionSignature('FetchData')
 	.setNamespace(NAMESPACE_UI_ENGINE)
 	.setParameters(
 		new Map([
-			Parameter.ofEntry(
-				'url',
-				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`),
-			),
+			Parameter.ofEntry('url', Schema.ofString('url')),
 			Parameter.ofEntry(
 				'queryParams',
 				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.UrlParameters`),
@@ -63,11 +60,10 @@ export class FetchData extends AbstractFunction {
 	protected async internalExecute(
 		context: FunctionExecutionParameters,
 	): Promise<FunctionOutput> {
-		const url: string = getData(context.getArguments()?.get('url'));
+		const url: string = context.getArguments()?.get('url');
 		const headers = getData(context.getArguments()?.get('headers'));
 		const pathParams = getData(context.getArguments()?.get('pathParams'));
 		const queryParams = getData(context.getArguments()?.get('queryParams'));
-
 		try {
 			const response = await axios({
 				url: pathFromParams(url, pathParams),
@@ -81,9 +77,15 @@ export class FetchData extends AbstractFunction {
 			return new FunctionOutput([
 				EventResult.outputOf(new Map([['data', response.data]])),
 			]);
-		} catch (err) {
+		} catch (err: any) {
+			const errOutput = {
+				headers: err.response?.headers,
+				data: err.response?.data,
+				status: err.response?.status,
+			};
 			return new FunctionOutput([
-				EventResult.of(Event.ERROR, new Map([['responseCode', 500]])),
+				EventResult.of(Event.ERROR, new Map([['error', errOutput]])),
+				EventResult.outputOf(new Map([['data', null]])),
 			]);
 		}
 	}

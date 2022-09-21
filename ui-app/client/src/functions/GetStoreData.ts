@@ -30,7 +30,7 @@ const SIGNATURE = new FunctionSignature('GetStoreData')
 		]),
 	);
 
-export class SetStore extends AbstractFunction {
+export class GetStoreData extends AbstractFunction {
 	protected async internalExecute(
 		context: FunctionExecutionParameters,
 	): Promise<FunctionOutput> {
