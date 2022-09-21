@@ -2,6 +2,7 @@ import {
 	AbstractFunction,
 	Event,
 	EventResult,
+	ExpressionEvaluator,
 	FunctionExecutionParameters,
 	FunctionOutput,
 	FunctionSignature,
@@ -15,14 +16,8 @@ const SIGNATURE = new FunctionSignature('SetStore')
 	.setNamespace(NAMESPACE_UI_ENGINE)
 	.setParameters(
 		new Map([
-			Parameter.ofEntry(
-				'path',
-				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`),
-			),
-			Parameter.ofEntry(
-				'value',
-				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.UrlParameters`),
-			),
+			Parameter.ofEntry('path', Schema.ofString('path')),
+			Parameter.ofEntry('value', Schema.ofAny('value')),
 		]),
 	)
 	.setEvents(new Map([Event.eventMapEntry(Event.OUTPUT, new Map())]));
@@ -31,8 +26,9 @@ export class SetStore extends AbstractFunction {
 	protected async internalExecute(
 		context: FunctionExecutionParameters,
 	): Promise<FunctionOutput> {
-		const path: string = getData(context.getArguments()?.get('path'));
-		const value = getData(context.getArguments()?.get('value'));
+		const path: string = context.getArguments()?.get('path');
+		const value = context.getArguments()?.get('value');
+
 		setData(path, value);
 		return new FunctionOutput([EventResult.outputOf(new Map())]);
 	}

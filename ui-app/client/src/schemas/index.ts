@@ -16,9 +16,18 @@ const map = new Map([
 				new Map<string, Schema>([
 					[
 						'location',
-						Schema.ofArray(
-							'location',
-							Schema.ofString('eachLocation'),
+						Schema.ofObject('expression').setProperties(
+							new Map([
+								['value', Schema.ofString('value')],
+								['expression', Schema.ofString('expression')],
+								[
+									'type',
+									Schema.ofString('type').setEnums([
+										'EXPRESSION',
+										'VALUE',
+									]),
+								],
+							]),
 						),
 					],
 					['value', Schema.ofAny('value')],
@@ -41,7 +50,20 @@ const map = new Map([
 		Schema.ofObject('FetchError')
 			.setNamespace(NAMESPACE_UI_ENGINE)
 			.setProperties(
-				new Map([['responseCode', Schema.ofNumber('responseCode')]]),
+				new Map([
+					[
+						'error',
+						Schema.ofObject('error')
+							.setNamespace(NAMESPACE_UI_ENGINE)
+							.setProperties(
+								new Map<string, Schema>([
+									['status', Schema.ofNumber('status')],
+									['data', Schema.ofNumber('data')],
+									['headers', Schema.ofNumber('headers')],
+								]),
+							),
+					],
+				]),
 			),
 	],
 ]);

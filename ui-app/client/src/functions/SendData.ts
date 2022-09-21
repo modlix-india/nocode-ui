@@ -93,8 +93,13 @@ export class SendData extends AbstractFunction {
 				EventResult.outputOf(new Map([['data', response.data]])),
 			]);
 		} catch (err) {
+			const errOutput = {
+				headers: err.response.headers,
+				data: err.response.data,
+				status: err.response.status,
+			};
 			return new FunctionOutput([
-				EventResult.of(Event.ERROR, new Map([['responseCode', 500]])),
+				EventResult.of(Event.ERROR, new Map([['error', errOutput]])),
 			]);
 		}
 	}

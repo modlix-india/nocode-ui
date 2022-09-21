@@ -16,6 +16,7 @@ class LocalStoreExtractor extends TokenValueExtractor {
 	}
 	protected getValueInternal(token: string) {
 		let parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
+		// Add isSlave_ as prefix for preview mode
 		let localStorageValue = this.store.getItem(parts[1]);
 		try {
 			localStorageValue = JSON.parse(localStorageValue);
@@ -28,22 +29,38 @@ class LocalStoreExtractor extends TokenValueExtractor {
 		return this.prefix;
 	}
 }
+export class StoreExtractor extends TokenValueExtractor {
+	private store: any;
+	private prefix: string;
+	constructor(store: any, prefix: string) {
+		super();
+		this.store = store;
+		this.prefix = prefix;
+	}
+	protected getValueInternal(token: string) {
+		let parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
+		return this.retrieveElementFrom(token, parts, 1, this.store);
+	}
+	getPrefix(): string {
+		return this.prefix;
+	}
+}
 let localStore: any = {};
 if (typeof window !== 'undefined') {
 	localStore = window.localStorage;
 }
-
-const localStoreExtractor = new LocalStoreExtractor(
+export const localStoreExtractor = new LocalStoreExtractor(
 	localStore,
-	LOCAL_STORE_PREFIX,
+	`${LOCAL_STORE_PREFIX}.`,
 );
-
 const {
 	getData: _getData,
 	setData: _setData,
 	addListener: _addListener,
-	store,
+	store: _store,
 } = useStore({}, STORE_PREFIX, localStoreExtractor);
+
+export const storeExtractor = new StoreExtractor(_store, `${STORE_PREFIX}.`);
 
 export function getData(loc: any) {
 	const typeOfLoc = typeof loc;
@@ -54,10 +71,9 @@ export function getData(loc: any) {
 
 	if (!loc.location) return loc.value;
 
-	for (const eachLocation of loc.location) {
-		if (eachLocation.startsWith(LOCAL_STORE_PREFIX)) {
-		}
-		const v = _getData(eachLocation);
+	if (loc.location?.type === 'VALUE') return loc.location?.value;
+	if (loc.location?.type === 'EXPRESSION') {
+		const v = _getData(loc.location?.expression);
 		if (!isNullValue(v)) return v;
 	}
 	return undefined;
@@ -66,11 +82,11 @@ export function getData(loc: any) {
 export function setData(path: string, value: any) {
 	if (path.startsWith(LOCAL_STORE_PREFIX)) {
 		let parts = path.split(TokenValueExtractor.REGEX_DOT);
+		// Add isSlave_ as prefix for preview mode
 		let key = parts[1];
 		parts = parts.slice(2);
 		let store;
 		store = localStore.getItem(key);
-		console.log(key, parts, store);
 
 		if (!store && !parts.length) {
 			localStore.setItem(key, value);
@@ -97,3 +113,5 @@ export function setData(path: string, value: any) {
 	} else _setData(path, value);
 }
 export const addListener = _addListener;
+
+export const store = _store;
