@@ -1,6 +1,8 @@
+import { Schema } from '@fincity/kirun-js';
 import React from 'react';
+import { NAMESPACE_UI_ENGINE } from '../constants';
 import { getData } from '../context/StoreContext';
-export interface LabelProps extends React.ComponentPropsWithoutRef<'p'> {
+export interface LabelProps extends React.ComponentPropsWithoutRef<'span'> {
 	definition: {
 		properties: {
 			text: {
@@ -13,14 +15,24 @@ export interface LabelProps extends React.ComponentPropsWithoutRef<'p'> {
 			};
 		};
 	};
+	pageDefinition: any;
 }
-export function Label(props: LabelProps) {
+export function LabelComponent(props: LabelProps) {
 	const {
+		pageDefinition,
 		definition: {
 			properties: { text },
 		},
 		...rest
 	} = props;
 	const labelText = getData(text);
-	return <p {...rest}>{labelText}</p>;
+	return <span {...rest}>{labelText}</span>;
 }
+
+LabelComponent.propertiesSchema = Schema.ofObject('Button')
+	.setNamespace(NAMESPACE_UI_ENGINE)
+	.setProperties(
+		new Map([['text', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)]]),
+	);
+
+export const Label = LabelComponent;

@@ -70,7 +70,7 @@ export function getData(loc: any) {
 	if (typeOfLoc !== 'object') return undefined;
 
 	if (!loc.location) return loc.value;
-
+	console.log(loc.location);
 	if (loc.location?.type === 'VALUE') return loc.location?.value;
 	if (loc.location?.type === 'EXPRESSION') {
 		const v = _getData(loc.location?.expression);
@@ -80,6 +80,7 @@ export function getData(loc: any) {
 }
 
 export function setData(path: string, value: any) {
+	console.log(_store);
 	if (path.startsWith(LOCAL_STORE_PREFIX)) {
 		let parts = path.split(TokenValueExtractor.REGEX_DOT);
 		// Add isSlave_ as prefix for preview mode
