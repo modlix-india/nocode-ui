@@ -17,14 +17,8 @@ const SIGNATURE = new FunctionSignature('SendData')
 	.setNamespace(NAMESPACE_UI_ENGINE)
 	.setParameters(
 		new Map([
-			Parameter.ofEntry(
-				'url',
-				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`),
-			),
-			Parameter.ofEntry(
-				'method',
-				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`),
-			),
+			Parameter.ofEntry('url', Schema.ofString('url')),
+			Parameter.ofEntry('method', Schema.ofString('method')),
 			Parameter.ofEntry(
 				'queryParams',
 				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.UrlParameters`),
@@ -35,7 +29,7 @@ const SIGNATURE = new FunctionSignature('SendData')
 			),
 			Parameter.ofEntry(
 				'payload',
-				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.UrlParameters`),
+				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`),
 			),
 			Parameter.ofEntry(
 				'headers',
@@ -43,7 +37,10 @@ const SIGNATURE = new FunctionSignature('SendData')
 					`${NAMESPACE_UI_ENGINE}.UrlParameters`,
 				).setDefaultValue({
 					Authorization: {
-						location: ['LocalStore.AuthToken'],
+						location: {
+							expression: 'LocalStore.AuthToken',
+							type: 'EXPRESSION',
+						},
 					},
 				}),
 			),
@@ -71,13 +68,31 @@ export class SendData extends AbstractFunction {
 	protected async internalExecute(
 		context: FunctionExecutionParameters,
 	): Promise<FunctionOutput> {
-		const url: string = getData(context.getArguments()?.get('url'));
-		const method: string = getData(context.getArguments()?.get('method'));
-		const headers = getData(context.getArguments()?.get('headers'));
-		const pathParams = getData(context.getArguments()?.get('pathParams'));
-		const queryParams = getData(context.getArguments()?.get('queryParams'));
+		const url: string = context.getArguments()?.get('url');
+		const method: string = context.getArguments()?.get('method');
+		let headers = getData(context.getArguments()?.get('headers'));
+		let pathParams = context.getArguments()?.get('pathParams');
+		let queryParams = context.getArguments()?.get('queryParams');
 		const payload = getData(context.getArguments()?.get('payload'));
 
+		pathParams = Object.entries(pathParams)
+			.map(([k, v]) => [k, getData(v)])
+			.reduce((a, [k, v]) => {
+				a[k] = v;
+				return a;
+			}, {});
+		queryParams = Object.entries(queryParams)
+			.map(([k, v]) => [k, getData(v)])
+			.reduce((a, [k, v]) => {
+				a[k] = v;
+				return a;
+			}, {});
+		headers = Object.entries(headers)
+			.map(([k, v]) => [k, getData(v)])
+			.reduce((a, [k, v]) => {
+				a[k] = v;
+				return a;
+			}, {});
 		try {
 			const response = await axios({
 				url: pathFromParams(url, pathParams),
@@ -92,7 +107,7 @@ export class SendData extends AbstractFunction {
 			return new FunctionOutput([
 				EventResult.outputOf(new Map([['data', response.data]])),
 			]);
-		} catch (err) {
+		} catch (err: any) {
 			const errOutput = {
 				headers: err.response.headers,
 				data: err.response.data,

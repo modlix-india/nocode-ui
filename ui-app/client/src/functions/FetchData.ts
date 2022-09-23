@@ -32,7 +32,10 @@ const SIGNATURE = new FunctionSignature('FetchData')
 					`${NAMESPACE_UI_ENGINE}.UrlParameters`,
 				).setDefaultValue({
 					Authorization: {
-						location: ['LocalStore.AuthToken'],
+						location: {
+							expression: 'LocalStore.AuthToken',
+							type: 'EXPRESSION',
+						},
 					},
 				}),
 			),
@@ -61,9 +64,30 @@ export class FetchData extends AbstractFunction {
 		context: FunctionExecutionParameters,
 	): Promise<FunctionOutput> {
 		const url: string = context.getArguments()?.get('url');
-		const headers = getData(context.getArguments()?.get('headers'));
-		const pathParams = getData(context.getArguments()?.get('pathParams'));
-		const queryParams = getData(context.getArguments()?.get('queryParams'));
+		let headers = context.getArguments()?.get('headers');
+		let pathParams = context.getArguments()?.get('pathParams');
+		let queryParams = context.getArguments()?.get('queryParams');
+
+		pathParams = Object.entries(pathParams)
+			.map(([k, v]) => [k, getData(v)])
+			.reduce((a, [k, v]) => {
+				a[k] = v;
+				return a;
+			}, {});
+		queryParams = Object.entries(queryParams)
+			.map(([k, v]) => [k, getData(v)])
+			.reduce((a, [k, v]) => {
+				a[k] = v;
+				return a;
+			}, {});
+
+		headers = Object.entries(headers)
+			.map(([k, v]) => [k, getData(v)])
+			.reduce((a, [k, v]) => {
+				a[k] = v;
+				return a;
+			}, {});
+		console.log('headers', headers, context.getArguments()?.get('headers'));
 		try {
 			const response = await axios({
 				url: pathFromParams(url, pathParams),

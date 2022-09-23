@@ -1,28 +1,11 @@
-import {
-	FunctionDefinition,
-	FunctionExecutionParameters,
-	KIRuntime,
-	TokenValueExtractor,
-} from '@fincity/kirun-js';
-
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { STORE_PREFIX } from '../constants';
-import {
-	addListener,
-	getData,
-	localStoreExtractor,
-	setData,
-	store,
-	storeExtractor,
-} from '../context/StoreContext';
+import { addListener, getData, setData } from '../context/StoreContext';
 import { pathBreaker } from '../util';
 import { Engine } from './Engine';
 import * as getAppData from './../definitions/getAppData.json';
-import { UIFunctionRepository } from '../functions';
-import { UISchemaRepository } from '../schemas';
-
-const def: FunctionDefinition = FunctionDefinition.from(getAppData);
+import { runEvent } from '../components/util/runEvent';
 
 export const RenderEngineContainer = () => {
 	const [appLoading, setAppLoading] = useState(false);
@@ -50,27 +33,10 @@ export const RenderEngineContainer = () => {
 	useEffect(() => {
 		(async () => {
 			setAppLoading(true);
-			const executionPlan = await new KIRuntime(def).getExecutionPlan(
-				new FunctionExecutionParameters(
-					UIFunctionRepository,
-					UISchemaRepository,
-				).setValuesMap(
-					new Map<string, TokenValueExtractor>([
-						[storeExtractor.getPrefix(), storeExtractor],
-						[localStoreExtractor.getPrefix(), localStoreExtractor],
-					]),
-				),
-			);
-			const appData = await new KIRuntime(def).execute(
-				new FunctionExecutionParameters(
-					UIFunctionRepository,
-					UISchemaRepository,
-				).setValuesMap(
-					new Map<string, TokenValueExtractor>([
-						[storeExtractor.getPrefix(), storeExtractor],
-						[localStoreExtractor.getPrefix(), localStoreExtractor],
-					]),
-				),
+			const appData = await runEvent(getAppData, 'initialLoadFunction');
+			setData(
+				`Store.functionExecutions.initialLoadFunction.isRunning`,
+				false,
 			);
 			setAppLoading(false);
 		})();

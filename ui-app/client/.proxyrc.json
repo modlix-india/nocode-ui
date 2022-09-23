@@ -1,5 +1,5 @@
 {
-	"/api": {
+	"/api/ui": {
 		"target": "http://localhost:3000/"
 	},
 	"/login": {
@@ -15,6 +15,9 @@
 		"target": "http://localhost:3000/"
 	},
 	"/api/security/verifyToken": {
+		"target": "http://localhost:9000/"
+	},
+	"/api/security/authenticate": {
 		"target": "http://localhost:9000/"
 	}
 }
