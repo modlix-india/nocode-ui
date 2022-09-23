@@ -70,7 +70,7 @@ export class SendData extends AbstractFunction {
 	): Promise<FunctionOutput> {
 		const url: string = context.getArguments()?.get('url');
 		const method: string = context.getArguments()?.get('method');
-		let headers = getData(context.getArguments()?.get('headers'));
+		let headers = context.getArguments()?.get('headers');
 		let pathParams = context.getArguments()?.get('pathParams');
 		let queryParams = context.getArguments()?.get('queryParams');
 		const payload = getData(context.getArguments()?.get('payload'));
