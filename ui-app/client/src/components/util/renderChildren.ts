@@ -11,8 +11,8 @@ export const renderChildren = (pageDefinition: any, children: any) => {
 		.filter(e => !!e)
 		.sort(
 			(a: any, b: any) =>
-				(a.properties.displayOrder || 0) -
-				(b.properties.displayOrder || 0),
+				(a?.properties?.displayOrder || 0) -
+				(b?.properties?.displayOrder || 0),
 		)
 		.map(e => {
 			return React.createElement(componentMap.get(e.type)!, {

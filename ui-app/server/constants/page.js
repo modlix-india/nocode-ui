@@ -127,7 +127,7 @@ export const page = {
               setLoginFailureDataValue: {
                 key: "setLoginFailureDataValue",
                 type: "EXPRESSION",
-                expression: "null != Steps.authenticate.output.data.user.id",
+                expression: "null != Steps.authenticate.output.data",
               },
             },
           },
@@ -178,7 +178,47 @@ export const page = {
       type: "Grid",
       children: {
         loginlabel: true,
+        primarybuttongrid: true,
+        outlinedbuttongrid: true,
+        textbuttongrid: true,
+        checkBoxGrid: true,
+      },
+    },
+    primarybuttongrid: {
+      name: "primarybuttongrid",
+      key: "primarybuttongrid",
+      type: "Grid",
+      children: {
         loginButton: true,
+        loginButtonDisabled: true,
+        fabTestButton: true,
+        fabTestMiniButton: true,
+      },
+    },
+    outlinedbuttongrid: {
+      name: "outlinedbuttongrid",
+      key: "outlinedbuttongrid",
+      type: "Grid",
+      children: {
+        outlinedButton: true,
+        outlinedButtondisabled: true,
+      },
+    },
+    textbuttongrid: {
+      name: "textbuttongrid",
+      key: "textbuttongrid",
+      type: "Grid",
+      children: {
+        textButton: true,
+        textButtonDisabled: true,
+      },
+    },
+    checkBoxGrid: {
+      name: "checkBoxGrid",
+      key: "checkBoxGrid",
+      type: "Grid",
+      children: {
+        checkboxone: true,
       },
     },
     loginlabel: {
@@ -200,8 +240,153 @@ export const page = {
         label: {
           value: "Login",
         },
+        type: {
+          value: "primary",
+        },
         onClick: {
           value: "login",
+        },
+        leftIcon: {
+          icon: {
+            value: "fa-user",
+          },
+          iconStyle: "SOLID",
+        },
+        displayOrder: 3,
+      },
+    },
+    checkboxone: {
+      name: "checkboxone",
+      key: "checkboxone",
+      type: "CheckBox",
+      properties: {
+        label: {
+          value: "Login",
+        },
+        onClick: {
+          value: "login",
+        },
+        displayOrder: 3,
+      },
+    },
+    fabTestButton: {
+      name: "fabTestButton",
+      key: "fabTestButton",
+      type: "Button",
+      properties: {
+        type: {
+          value: "fabButton",
+        },
+        onClick: {
+          value: "login",
+        },
+        fabIcon: {
+          icon: {
+            value: "fa-user",
+          },
+          iconStyle: "SOLID",
+        },
+        displayOrder: 3,
+      },
+    },
+    fabTestMiniButton: {
+      name: "fabTestMiniButton",
+      key: "fabTestMiniButton",
+      type: "Button",
+      properties: {
+        type: {
+          value: "fabButtonMini",
+        },
+        onClick: {
+          value: "login",
+        },
+        fabIcon: {
+          icon: {
+            value: "fa-user",
+          },
+          iconStyle: "SOLID",
+        },
+        displayOrder: 3,
+      },
+    },
+    outlinedButton: {
+      name: "outlinedButton",
+      key: "outlinedButton",
+      type: "Button",
+      properties: {
+        label: {
+          value: "Oultined",
+        },
+        type: {
+          value: "outlined",
+        },
+        displayOrder: 3,
+      },
+    },
+    textButton: {
+      name: "textButton",
+      key: "textButton",
+      type: "Button",
+      properties: {
+        label: {
+          value: "Text Button",
+        },
+        type: {
+          value: "text",
+        },
+        displayOrder: 3,
+      },
+    },
+    loginButtonDisabled: {
+      name: "loginButtonDisabled",
+      key: "loginButtonDisabled",
+      type: "Button",
+      properties: {
+        label: {
+          value: "Login",
+        },
+        isDisabled: {
+          value: true,
+        },
+        type: {
+          value: "primary",
+        },
+        onClick: {
+          value: "login",
+        },
+        displayOrder: 3,
+      },
+    },
+    outlinedButtondisabled: {
+      name: "outlinedButtondisabled",
+      key: "outlinedButtondisabled",
+      type: "Button",
+      properties: {
+        label: {
+          value: "Oultined",
+        },
+        isDisabled: {
+          value: true,
+        },
+        type: {
+          value: "outlined",
+        },
+        displayOrder: 3,
+      },
+    },
+    textButtonDisabled: {
+      name: "textButtonDisabled",
+      key: "textButtonDisabled",
+      type: "Button",
+      properties: {
+        label: {
+          value: "Text Button",
+        },
+        isDisabled: {
+          value: true,
+        },
+        type: {
+          value: "text",
         },
         displayOrder: 3,
       },

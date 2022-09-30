@@ -1,0 +1,182 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif:wght@700&display=swap');
+
+:root {
+	--primary-color: #1f3c3d;
+	--primary-yellow: #e5b122;
+	--secondary-white-color: #f9f9fb;
+	--primary-button-disabled: #e0e1e3;
+	--secondary-disbaled-text: #6e6e6e;
+	--secondary-disabled-border: #bcbcbc;
+	--text-button-color-disabled: #888585;
+	--pure-white: #ffffff;
+	--black: #000000;
+	--black-rgb: 0, 0, 0;
+}
+
+* {
+	font-family: 'Open Sans', sans-serif;
+}
+
+h1 {
+	font: normal normal bold 38px/58px Noto Serif;
+	letter-spacing: 0px;
+}
+
+h2 {
+	font: normal normal bold 28px/58px Noto Serif;
+	letter-spacing: 0px;
+}
+
+.hide {
+	opacity: 0;
+}
+
+.compButton.fabButton {
+	width: 56px;
+	height: 56px;
+	border-radius: 28px;
+	border: 0px;
+	background-color: var(--primary-color);
+	color: var(--pure-white);
+	cursor: pointer;
+}
+
+.compButton.fabButtonMini {
+	width: 40px;
+	height: 40px;
+	border-radius: 28px;
+	border: 0px;
+	background-color: var(--primary-color);
+	color: var(--pure-white);
+	cursor: pointer;
+}
+
+.compButton.button .buttonInternalContainer {
+	display: flex;
+	align-items: center;
+}
+
+.compButton.button .leftButtonIcon {
+	margin-right: 8px;
+}
+
+.compButton.button .rightButtonIcon {
+	margin-left: 8px;
+}
+
+.compButton.button {
+	padding: 0 32px;
+	height: 41px;
+	border: none;
+	border-radius: 5px;
+	background: var(--primary-color);
+	color: var(--secondary-white-color);
+	opacity: 1;
+	margin: 10px;
+	cursor: pointer;
+}
+
+.compButton.button:disabled {
+	background: var(--primary-button-disabled);
+	color: var(--primary-color);
+}
+
+.compButton.button:hover {
+	opacity: 69%;
+}
+
+.compButton.button.outlined {
+	border: 1px solid var(--primary-color);
+	background: transparent;
+	color: var(--primary-color);
+}
+
+.compButton.button.outlined:disabled {
+	color: var(--secondary-disbaled-text);
+	border-color: var(--secondary-disabled-border);
+}
+
+.compButton.button.outlined:hover {
+	background-color: rgba(31, 60, 61, 0.109);
+	border-color: var(--primary-color);
+	color: var(--secondary-disbaled-text);
+}
+
+.compButton.button.outlined:focus {
+	background-color: rgba(31, 60, 61, 0.27);
+	border-color: var(--primary-color);
+	color: var(--secondary-disbaled-text);
+}
+
+.compButton.button.text {
+	padding: 0 12px;
+	border: 0;
+	background: transparent;
+	color: var(--primary-color);
+}
+
+.compButton.button.text:disabled {
+	color: var(--text-button-color-disabled);
+}
+
+.compButton.button.text:hover {
+	background-color: rgba(31, 60, 61, 0.078);
+}
+
+.compGrid.grid {
+	margin: 10px;
+}
+
+input[type='checkbox'] {
+	/* Add if not using autoprefixer */
+	-webkit-appearance: none;
+	appearance: none;
+	/* For iOS < 15 to remove gradient background */
+	background-color: var(--pure-white);
+	/* Not removed via appearance */
+	margin: 0;
+	font: inherit;
+	color: rgba(var(--black-rgb), 0.38);
+	width: 1.15em;
+	height: 1.15em;
+	border: 0.15em solid rgba(var(--black-rgb), 0.38);
+	border-radius: 0.15em;
+	transform: translateY(-0.075em);
+	display: grid;
+	place-content: center;
+}
+
+input[type='checkbox']::before {
+	content: '';
+	width: 0.65em;
+	height: 0.65em;
+	transform: scale(0);
+	transition: 500ms transform ease-in-out;
+	box-shadow: inset 1em 1em var(--pure-white);
+	transform-origin: bottom left;
+	clip-path: polygon(13% 58%, 4% 68%, 35% 94%, 100% 15%, 90% 5%, 34% 77%);
+	/* Windows High Contrast Mode */
+	background-color: CanvasText;
+}
+
+input[type='checkbox']:checked {
+	background-color: var(--primary-yellow);
+	border: 0px;
+}
+
+input[type='checkbox']:checked::before {
+	transform: scale(1);
+}
+
+.compCheckBox.checkbox {
+	font-family: 'Open Sans', sans-serif;
+	font-size: 1.1rem;
+	line-height: 1.1;
+	display: grid;
+	grid-template-rows: 1em auto;
+	gap: 0.5em;
+	width: 53px;
+	justify-items: center;
+	color: rgba(var(--black-rgb), 0.6);
+}
