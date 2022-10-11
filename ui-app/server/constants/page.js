@@ -219,6 +219,9 @@ export const page = {
       type: "Grid",
       children: {
         checkboxone: true,
+        checkboxtwo: true,
+        radiobuttonOne: true,
+        toggleButtonOne: true,
       },
     },
     loginlabel: {
@@ -255,6 +258,46 @@ export const page = {
         displayOrder: 3,
       },
     },
+    toggleButtonOne: {
+      name: "toggleButtonOne",
+      key: "toggleButtonOne",
+      type: "ToggleButton",
+      properties: {
+        label: {
+          value: "Toggle Button",
+        },
+        isDisabled: {
+          value: false,
+        },
+        bindingPath: {
+          location: {
+            type: "VALUE",
+            value: "Store.form1.toggle1",
+          },
+        },
+        displayOrder: 3,
+      },
+    },
+    radiobuttonOne: {
+      name: "radiobuttonOne",
+      key: "radiobuttonOne",
+      type: "RadioButton",
+      properties: {
+        label: {
+          value: "Radio",
+        },
+        isDisabled: {
+          value: false,
+        },
+        bindingPath: {
+          location: {
+            type: "VALUE",
+            value: "Store.form1.radio1",
+          },
+        },
+        displayOrder: 3,
+      },
+    },
     checkboxone: {
       name: "checkboxone",
       key: "checkboxone",
@@ -265,6 +308,111 @@ export const page = {
         },
         onClick: {
           value: "login",
+        },
+        isDisabled: {
+          value: false,
+        },
+        bindingPath: {
+          location: {
+            type: "VALUE",
+            value: "Store.form1.checkbox1",
+          },
+        },
+        displayOrder: 3,
+      },
+    },
+    checkboxtwo: {
+      name: "checkboxtwo",
+      key: "checkboxtwo",
+      type: "CheckBox",
+      properties: {
+        label: {
+          value: "Disabled Login",
+        },
+        onClick: {
+          value: "login",
+        },
+        isDisabled: {
+          value: true,
+        },
+        bindingPath: {
+          location: {
+            type: "VALUE",
+            value: "Store.form1.checkbox2",
+          },
+        },
+        displayOrder: 3,
+      },
+    },
+    checkboxoneone: {
+      name: "checkboxoneone",
+      key: "checkboxoneone",
+      type: "CheckBox",
+      properties: {
+        label: {
+          value: "1.1 Check",
+        },
+        onClick: {
+          value: "login",
+        },
+        isDisabled: {
+          value: false,
+        },
+        displayOrder: 3,
+      },
+    },
+
+    checkboxonetwo: {
+      name: "checkboxonetwo",
+      key: "checkboxonetwo",
+      type: "CheckBox",
+      properties: {
+        label: {
+          value: "1.2 Check",
+        },
+        onClick: {
+          value: "login",
+        },
+        isDisabled: {
+          value: false,
+        },
+        displayOrder: 3,
+      },
+    },
+    checkboxonethree: {
+      name: "checkboxonethree",
+      key: "checkboxonethree",
+      type: "CheckBox",
+      children: {
+        checkboxonethreeone: true,
+      },
+      properties: {
+        label: {
+          value: "1.3 Check",
+        },
+        onClick: {
+          value: "login",
+        },
+        isDisabled: {
+          value: false,
+        },
+        displayOrder: 3,
+      },
+    },
+    checkboxonethreeone: {
+      name: "checkboxonethreeone",
+      key: "checkboxonethreeone",
+      type: "CheckBox",
+
+      properties: {
+        label: {
+          value: "1.3.1 Check",
+        },
+        onClick: {
+          value: "login",
+        },
+        isDisabled: {
+          value: false,
         },
         displayOrder: 3,
       },

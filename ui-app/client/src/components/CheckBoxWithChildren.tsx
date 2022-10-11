@@ -35,14 +35,6 @@ export interface CheckBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 					expression?: string;
 				};
 			};
-			bindingPath: {
-				value: string;
-				location: {
-					type: 'EXPRESSION' | 'VALUE';
-					value?: string;
-					expression?: string;
-				};
-			};
 		};
 	};
 	pageDefinition: {
@@ -51,39 +43,69 @@ export interface CheckBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 		};
 	};
 }
-
-function CheckBoxComponent(props: CheckBoxProps) {
+const findChidrenCheckBoxes = (
+	pagedef: any,
+	children: any,
+	currentPath = '',
+	bindingPaths: Array<String> = [],
+) => {
+	if (!pagedef || !children) return;
+	const checkBoxes = getChildrenByType(pagedef, children, 'CheckBox') || [];
+	checkBoxes.forEach(e => {
+		const formId = getData(e?.properties?.form);
+		const bindingPath = currentPath
+			? `${currentPath}.${e.name}`
+			: formId
+			? `Store.${formId}.${e.name}`
+			: `Store.${e.name}`;
+		if (!e.children) {
+			bindingPaths.push(bindingPath);
+		}
+		if (e.children) {
+			findChidrenCheckBoxes(
+				pagedef,
+				e.children,
+				bindingPath,
+				bindingPaths,
+			);
+		}
+		console.log(bindingPaths);
+	});
+	return bindingPaths;
+};
+function CheckBoxComponentWithChildren(props: CheckBoxProps) {
 	const {
 		pageDefinition: { eventFunctions },
 		definition: {
 			key,
 			name,
 			children,
-			properties: {
-				label,
-				isDisabled,
-				form,
-				bindingPath: bindingPathLocation,
-			},
+			properties: { label, isDisabled, form },
 		},
 		...rest
 	} = props;
-	if (!bindingPathLocation) return <>Binding Path Required</>;
-	const [checkBoxdata, setCheckBoxData] = useState(
-		getData(getData(bindingPathLocation)) || false,
-	);
 	const formId = getData(form);
-	const bindingPath = getData(bindingPathLocation);
+	const bindingPath = formId ? `Store.${formId}.${name}` : `Store.${name}`;
+	const childrenCheckBoxPaths = findChidrenCheckBoxes(
+		props.pageDefinition,
+		children,
+		bindingPath,
+	);
+	console.log(childrenCheckBoxPaths);
 	const checkBoxLabel = getData(label);
 	const isDisabledCheckbox = getData(isDisabled);
 
+	const [checkBoxdata, setCheckBoxData] = useState(
+		getData(bindingPath) || 'UNCHECKED',
+	);
 	useEffect(() => {
 		addListener(bindingPath, (_, value) => {
 			setCheckBoxData(value);
 		});
 	}, [bindingPath, setCheckBoxData]);
 	const handleChange = (event: any) => {
-		setData(bindingPath, event.target.checked);
+		console.log(event.target.checked);
+		setData(bindingPath, event.target.checked ? 'CHECKED' : 'UNCHECKED');
 	};
 	return (
 		<>
@@ -94,15 +116,16 @@ function CheckBoxComponent(props: CheckBoxProps) {
 					id={key}
 					name={name}
 					onChange={handleChange}
-					checked={checkBoxdata}
+					checked={checkBoxdata === 'CHECKED'}
 				/>
 				{checkBoxLabel}
 			</label>
+			{children && renderChildren(props.pageDefinition, children)}
 		</>
 	);
 }
 
-CheckBoxComponent.propertiesSchema = Schema.ofObject('CheckBox')
+CheckBoxComponentWithChildren.propertiesSchema = Schema.ofObject('CheckBox')
 	.setNamespace(NAMESPACE_UI_ENGINE)
 	.setProperties(
 		new Map([
@@ -112,4 +135,4 @@ CheckBoxComponent.propertiesSchema = Schema.ofObject('CheckBox')
 		]),
 	);
 
-export const CheckBox = CheckBoxComponent;
+export const CheckBoxWithChildren = CheckBoxComponentWithChildren;

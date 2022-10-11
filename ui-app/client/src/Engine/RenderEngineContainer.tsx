@@ -26,7 +26,6 @@ export const RenderEngineContainer = () => {
 				setIsApplicationFailed(value);
 			},
 		);
-
 		return () => unsubscribe();
 	}, []);
 
