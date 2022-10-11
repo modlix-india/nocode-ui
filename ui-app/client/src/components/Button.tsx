@@ -3,6 +3,7 @@ import { Schema } from '@fincity/kirun-js';
 import { FUNCTION_EXECUTION_PATH, NAMESPACE_UI_ENGINE } from '../constants';
 import { addListener, getData, setData } from '../context/StoreContext';
 import { runEvent } from './util/runEvent';
+import { HelperComponent } from './HelperComponent';
 export interface ButtonProps extends React.ComponentPropsWithoutRef<'button'> {
 	definition: {
 		key: string;
@@ -134,30 +135,38 @@ function ButtonComponent(props: ButtonProps) {
 	};
 	if (buttonType === 'fabButton' || buttonType === 'fabButtonMini')
 		return (
-			<button
-				className={`compButton ${
-					buttonType === 'fabButton' ? 'fabButton' : 'fabButtonMini'
-				}`}
-				disabled={isLoading || isDisabledButton}
-				onClick={handleClick}
-				{...rest}
-			>
-				<i
-					className={`fabButtonIcon ${
-						fabIconStyle === 'SOLID' ? 'fa-solid' : 'fa-regular'
-					} fa-fw ${
-						buttonFabIcon
-							? !isLoading
-								? buttonFabIcon
-								: 'fa-circle-notch fa-spin'
-							: 'fa-circle-notch hide'
+			<div className="comp compButton">
+				<HelperComponent />
+				<button
+					className={`${
+						buttonType === 'fabButton'
+							? 'fabButton'
+							: 'fabButtonMini'
 					}`}
-				/>
-			</button>
+					disabled={isLoading || isDisabledButton}
+					onClick={handleClick}
+					{...rest}
+				>
+					<i
+						className={`fabButtonIcon ${
+							fabIconStyle === 'SOLID' ? 'fa-solid' : 'fa-regular'
+						} fa-fw ${
+							buttonFabIcon
+								? !isLoading
+									? buttonFabIcon
+									: 'fa-circle-notch fa-spin'
+								: 'fa-circle-notch hide'
+						}`}
+					/>
+				</button>
+			</div>
 		);
 	return (
+		<div  className='comp compButton'>
+			<HelperComponent/>
+			
 		<button
-			className={`compButton button ${buttonType}`}
+			className={` button ${buttonType}`}
 			disabled={isLoading || isDisabledButton}
 			onClick={handleClick}
 			{...rest}
@@ -186,6 +195,7 @@ function ButtonComponent(props: ButtonProps) {
 				/>
 			</div>
 		</button>
+		</div>
 	);
 }
 
