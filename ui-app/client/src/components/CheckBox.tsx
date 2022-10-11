@@ -5,6 +5,7 @@ import { addListener, getData, setData } from '../context/StoreContext';
 import { runEvent } from './util/runEvent';
 import { getChildrenByType } from './util/getChildrenByType';
 import { renderChildren } from './util/renderChildren';
+import { HelperComponent } from './HelperComponent';
 export interface CheckBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 	definition: {
 		key: string;
@@ -86,8 +87,9 @@ function CheckBoxComponent(props: CheckBoxProps) {
 		setData(bindingPath, event.target.checked);
 	};
 	return (
-		<>
-			<label className="compCheckBox checkbox" htmlFor={key}>
+		<div className='comp compCheckBox'>
+			<HelperComponent/>
+			<label className="checkbox" htmlFor={key}>
 				<input
 					disabled={isDisabledCheckbox}
 					type="checkbox"
@@ -98,7 +100,8 @@ function CheckBoxComponent(props: CheckBoxProps) {
 				/>
 				{checkBoxLabel}
 			</label>
-		</>
+			</div>
+		
 	);
 }
 

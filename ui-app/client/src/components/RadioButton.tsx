@@ -2,6 +2,7 @@ import { Schema } from '@fincity/kirun-js';
 import React from 'react';
 import { NAMESPACE_UI_ENGINE } from '../constants';
 import { getData } from '../context/StoreContext';
+import { HelperComponent } from './HelperComponent';
 
 export interface RadioButtonProps
 	extends React.ComponentPropsWithoutRef<'input'> {
@@ -60,12 +61,15 @@ function RadioButtonComponent(props: RadioButtonProps) {
 	} = props;
 	const labelValue = getData(label);
 	return (
-		<>
-			<label className="compRadioButton radiobutton">
+		<div  className='comp compRadioButton'>
+			<HelperComponent/>
+			<label className=" radiobutton">
 				<input type="radio" name={name} />
 				{labelValue}
 			</label>
-		</>
+		</div>
+		
+		
 	);
 }
 

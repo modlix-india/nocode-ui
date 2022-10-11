@@ -2,6 +2,7 @@ import { Schema } from '@fincity/kirun-js';
 import React from 'react';
 import { NAMESPACE_UI_ENGINE } from '../constants';
 import { getData } from '../context/StoreContext';
+import { HelperComponent } from './HelperComponent';
 export interface LabelProps extends React.ComponentPropsWithoutRef<'span'> {
 	definition: {
 		properties: {
@@ -26,7 +27,10 @@ export function LabelComponent(props: LabelProps) {
 		...rest
 	} = props;
 	const labelText = getData(text);
-	return <span {...rest}>{labelText}</span>;
+	return <div className='comp compLabel'>
+		<HelperComponent/>
+		<span {...rest}>{labelText}</span>
+		</div>
 }
 
 LabelComponent.propertiesSchema = Schema.ofObject('Button')

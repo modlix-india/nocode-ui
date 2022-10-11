@@ -41,7 +41,7 @@ h2 {
 	opacity: 0;
 }
 
-.compButton.fabButton {
+.compButton .fabButton {
 	width: 56px;
 	height: 56px;
 	border-radius: 28px;
@@ -51,7 +51,7 @@ h2 {
 	cursor: pointer;
 }
 
-.compButton.fabButtonMini {
+.compButton .fabButtonMini {
 	width: 40px;
 	height: 40px;
 	border-radius: 28px;
@@ -61,20 +61,20 @@ h2 {
 	cursor: pointer;
 }
 
-.compButton.button .buttonInternalContainer {
+.compButton .button .buttonInternalContainer {
 	display: flex;
 	align-items: center;
 }
 
-.compButton.button .leftButtonIcon {
+.compButton .button .leftButtonIcon {
 	margin-right: 8px;
 }
 
-.compButton.button .rightButtonIcon {
+.compButton .button .rightButtonIcon {
 	margin-left: 8px;
 }
 
-.compButton.button {
+.compButton .button {
 	padding: 0 32px;
 	height: 41px;
 	border: none;
@@ -86,50 +86,50 @@ h2 {
 	cursor: pointer;
 }
 
-.compButton.button:disabled {
+.compButton .button:disabled {
 	background: var(--primary-button-disabled);
 	color: var(--primary-color);
 }
 
-.compButton.button:hover {
+.compButton  .button:hover {
 	opacity: 69%;
 }
 
-.compButton.button.outlined {
+.compButton .button.outlined {
 	border: 1px solid var(--primary-color);
 	background: transparent;
 	color: var(--primary-color);
 }
 
-.compButton.button.outlined:disabled {
+.compButton .button.outlined:disabled {
 	color: var(--secondary-disbaled-text);
 	border-color: var(--secondary-disabled-border);
 }
 
-.compButton.button.outlined:hover {
+.compButton .button.outlined:hover {
 	background-color: rgba(31, 60, 61, 0.109);
 	border-color: var(--primary-color);
 	color: var(--secondary-disbaled-text);
 }
 
-.compButton.button.outlined:focus {
+.compButton .button.outlined:focus {
 	background-color: rgba(31, 60, 61, 0.27);
 	border-color: var(--primary-color);
 	color: var(--secondary-disbaled-text);
 }
 
-.compButton.button.text {
+.compButton .button.text {
 	padding: 0 12px;
 	border: 0;
 	background: transparent;
 	color: var(--primary-color);
 }
 
-.compButton.button.text:disabled {
+.compButton .button.text:disabled {
 	color: var(--text-button-color-disabled);
 }
 
-.compButton.button.text:hover {
+.compButton .button.text:hover {
 	background-color: rgba(31, 60, 61, 0.078);
 }
 
@@ -137,7 +137,7 @@ h2 {
 	margin: 10px;
 }
 
-.compCheckBox.checkbox input[type='checkbox'] {
+.compCheckBox .checkbox input[type='checkbox'] {
 	/* Add if not using autoprefixer */
 	-webkit-appearance: none;
 	appearance: none;
@@ -156,11 +156,11 @@ h2 {
 	cursor: pointer;
 }
 
-.compCheckBox.checkbox input[type='checkbox']:disabled {
+.compCheckBox .checkbox input[type='checkbox']:disabled {
 	border: 0.15em solid var(--checkbox-grey);
 }
 
-.compCheckBox.checkbox input[type='checkbox']::before {
+.compCheckBox .checkbox input[type='checkbox']::before {
 	content: '';
 	width: 0.65em;
 	height: 0.65em;
@@ -173,7 +173,7 @@ h2 {
 	background-color: CanvasText;
 }
 
-.compCheckBox.checkbox.partial input[type='checkbox']::before {
+.compCheckBox .checkbox.partial input[type='checkbox']::before {
 	content: '';
 	width: 0.65em;
 	height: 0.65em;
@@ -185,46 +185,46 @@ h2 {
 	background-color: CanvasText;
 }
 
-.compCheckBox.checkbox input[type='checkbox']:checked {
+.compCheckBox .checkbox input[type='checkbox']:checked {
 	background-color: var(--primary-yellow);
 	border: 0px;
 }
 
-.compCheckBox.checkbox input[type='checkbox']:checked:hover {
+.compCheckBox .checkbox input[type='checkbox']:checked:hover {
 	box-shadow: 0 0 0 5px rgba(var(--primary-yellow-rgb), 0.13),
 		0 0 0 10px rgba(var(--primary-yellow-rgb), 0.13);
 }
 
-.compCheckBox.checkbox input[type='checkbox']:checked:active {
+.compCheckBox .checkbox input[type='checkbox']:checked:active {
 	box-shadow: 0 0 0 5px rgba(var(--primary-yellow-rgb), 0.13),
 		0 0 0 10px rgba(var(--primary-yellow-rgb), 0.13);
 }
 
-.compCheckBox.checkbox input[type='checkbox']:checked:focus {
+.compCheckBox .checkbox input[type='checkbox']:checked:focus {
 	box-shadow: 0 0 0 5px rgba(var(--primary-yellow-rgb), 0.13),
 		0 0 0 10px rgba(var(--primary-yellow-rgb), 0.13);
 }
 
-.compCheckBox.checkbox input[type='checkbox']:hover {
+.compCheckBox .checkbox input[type='checkbox']:hover {
 	box-shadow: 0 0 0 5px rgba(var(--black-rgb), 0.12),
 		0 0 0 10px rgba(var(--black-rgb), 0.12);
 }
 
-.compCheckBox.checkbox input[type='checkbox']:active {
+.compCheckBox .checkbox input[type='checkbox']:active {
 	box-shadow: 0 0 0 5px rgba(var(--black-rgb), 0.12),
 		0 0 0 10px rgba(var(--black-rgb), 0.12);
 }
 
-.compCheckBox.checkbox input[type='checkbox']:focus {
+.compCheckBox .checkbox input[type='checkbox']:focus {
 	box-shadow: 0 0 0 5px rgba(var(--black-rgb), 0.12),
 		0 0 0 10px rgba(var(--black-rgb), 0.12);
 }
 
-.compCheckBox.checkbox input[type='checkbox']:checked::before {
+.compCheckBox .checkbox input[type='checkbox']:checked::before {
 	transform: scale(1);
 }
 
-.compCheckBox.checkbox {
+.compCheckBox .checkbox {
 	font-family: 'Open Sans', sans-serif;
 	font-size: 1.1rem;
 	line-height: 1.1;
@@ -237,7 +237,7 @@ h2 {
 	display: inline-grid;
 }
 
-.compRadioButton.radiobutton {
+.compRadioButton .radiobutton {
 	font-family: 'Open Sans', sans-serif;
 	font-size: 1.1rem;
 	line-height: 1.1;
@@ -248,7 +248,7 @@ h2 {
 	/* justify-items: center; */
 }
 
-.compRadioButton.radiobutton input[type='radio'] {
+.compRadioButton .radiobutton input[type='radio'] {
 	-webkit-appearance: none;
 	appearance: none;
 	background-color: var(--pure-white);
@@ -263,7 +263,7 @@ h2 {
 	transform: translateX(0.75em);
 }
 
-.compRadioButton.radiobutton input[type='radio']::before {
+.compRadioButton .radiobutton input[type='radio']::before {
 	content: '';
 	width: 0.65em;
 	height: 0.65em;
@@ -274,45 +274,45 @@ h2 {
 	background-color: CanvasText;
 }
 
-.compRadioButton.radiobutton input[type='radio']:checked::before {
+.compRadioButton .radiobutton input[type='radio']:checked::before {
 	transform: scale(1);
 }
 
-.compRadioButton.radiobutton input[type='radio']:checked {
+.compRadioButton .radiobutton input[type='radio']:checked {
 	border: 0.15em solid var(--primary-yellow);
 }
 
-.compRadioButton.radiobutton input[type='radio']:checked:focus {
+.compRadioButton .radiobutton input[type='radio']:checked:focus {
 	box-shadow: 0 0 0 5px rgba(var(--primary-yellow-rgb), 0.13),
 		0 0 0 10px rgba(var(--primary-yellow-rgb), 0.13);
 }
 
-.compRadioButton.radiobutton input[type='radio']:checked:active {
+.compRadioButton .radiobutton input[type='radio']:checked:active {
 	box-shadow: 0 0 0 5px rgba(var(--primary-yellow-rgb), 0.13),
 		0 0 0 10px rgba(var(--primary-yellow-rgb), 0.13);
 }
 
-.compRadioButton.radiobutton input[type='radio']:checked:hover {
+.compRadioButton .radiobutton input[type='radio']:checked:hover {
 	box-shadow: 0 0 0 5px rgba(var(--primary-yellow-rgb), 0.13),
 		0 0 0 10px rgba(var(--primary-yellow-rgb), 0.13);
 }
 
-.compRadioButton.radiobutton input[type='radio']:active {
+.compRadioButton .radiobutton input[type='radio']:active {
 	box-shadow: 0 0 0 5px rgba(var(--black-rgb), 0.12),
 		0 0 0 10px rgba(var(--black-rgb), 0.12);
 }
 
-.compRadioButton.radiobutton input[type='radio']:hover {
+.compRadioButton .radiobutton input[type='radio']:hover {
 	box-shadow: 0 0 0 5px rgba(var(--black-rgb), 0.12),
 		0 0 0 10px rgba(var(--black-rgb), 0.12);
 }
 
-.compRadioButton.radiobutton input[type='radio']:focus {
+.compRadioButton .radiobutton input[type='radio']:focus {
 	box-shadow: 0 0 0 5px rgba(var(--black-rgb), 0.12),
 		0 0 0 10px rgba(var(--black-rgb), 0.12);
 }
 
-.compToggleButton.toggleButton input[type='checkbox'] {
+.compToggleButton .toggleButton input[type='checkbox'] {
 	-webkit-appearance: none;
 	appearance: none;
 	background-color: var(--secondary-grey);
@@ -328,7 +328,7 @@ h2 {
 	cursor: pointer;
 }
 
-.compToggleButton.toggleButton input[type='checkbox']::before {
+.compToggleButton .toggleButton input[type='checkbox']::before {
 	content: '';
 	width: 1em;
 	height: 1em;
@@ -340,25 +340,25 @@ h2 {
 	background-color: rgba(var(--black-rgb), 0.75);
 }
 
-.compToggleButton.toggleButton input[type='checkbox']:checked::before {
+.compToggleButton .toggleButton input[type='checkbox']:checked::before {
 	transform: translateX(1.5em);
 	box-shadow: inset 3em 3em var(--pure-white);
 	/* justify-self: end; */
 	/* margin-right: 0.2em; */
 }
 
-.compToggleButton.toggleButton input[type='checkbox']:checked {
+.compToggleButton .toggleButton input[type='checkbox']:checked {
 	background-color: var(--primary-yellow);
 	border: none;
 	/* justify-self: end; */
 	/* margin-right: 0.2em; */
 }
 
-.compToggleButton.toggleButton input[type='checkbox']::before:hover {
+.compToggleButton .toggleButton input[type='checkbox']::before:hover {
 	box-shadow: 0 0 0 0.5em rgba(var(--toggle-hover-rgb), 0.75);
 }
 
-.compToggleButton.toggleButton {
+.compToggleButton .toggleButton {
 	font-family: 'Open Sans', sans-serif;
 	font-size: 1.1rem;
 	line-height: 1.1;

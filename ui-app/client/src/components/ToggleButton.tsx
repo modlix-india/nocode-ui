@@ -2,6 +2,7 @@ import { Schema } from '@fincity/kirun-js';
 import React from 'react';
 import { NAMESPACE_UI_ENGINE } from '../constants';
 import { getData } from '../context/StoreContext';
+import { HelperComponent } from './HelperComponent';
 
 export interface ToggelButtonProps
 	extends React.ComponentPropsWithoutRef<'input'> {
@@ -61,12 +62,13 @@ function ToggelButtonComponent(props: ToggelButtonProps) {
 	} = props;
 	const labelValue = getData(label);
 	return (
-		<>
-			<label className="compToggleButton toggleButton">
+		<div className='comp compToggleButton'>
+			<HelperComponent/>
+			<label className="toggleButton">
 				<input type="checkbox" name={name} id={key} />
 				{labelValue}
 			</label>
-		</>
+		</div>
 	);
 }
 
