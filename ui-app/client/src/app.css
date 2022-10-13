@@ -333,7 +333,6 @@ h2 {
 	width: 1em;
 	height: 1em;
 	border-radius: 50%;
-	/* transform: scale(0); */
 	transition: 120ms transform ease-in-out;
 	transform-origin: left;
 	margin-left: 0.2em;
@@ -342,20 +341,16 @@ h2 {
 
 .compToggleButton .toggleButton input[type='checkbox']:checked::before {
 	transform: translateX(1.5em);
-	box-shadow: inset 3em 3em var(--pure-white);
-	/* justify-self: end; */
-	/* margin-right: 0.2em; */
+	background-color: var(--pure-white);
 }
 
 .compToggleButton .toggleButton input[type='checkbox']:checked {
 	background-color: var(--primary-yellow);
 	border: none;
-	/* justify-self: end; */
-	/* margin-right: 0.2em; */
-}
+} 
 
-.compToggleButton .toggleButton input[type='checkbox']::before:hover {
-	box-shadow: 0 0 0 0.5em rgba(var(--toggle-hover-rgb), 0.75);
+.compToggleButton .toggleButton input[type='checkbox']:hover::before {
+	box-shadow: 0 0 0 0.3em rgba(var(--toggle-hover-rgb), 0.75);
 }
 
 .compToggleButton .toggleButton {

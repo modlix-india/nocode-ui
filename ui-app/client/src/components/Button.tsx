@@ -4,6 +4,7 @@ import { FUNCTION_EXECUTION_PATH, NAMESPACE_UI_ENGINE } from '../constants';
 import { addListener, getData, setData } from '../context/StoreContext';
 import { runEvent } from './util/runEvent';
 import { HelperComponent } from './HelperComponent';
+import { getTranslations } from './util/getTranslations';
 export interface ButtonProps extends React.ComponentPropsWithoutRef<'button'> {
 	definition: {
 		key: string;
@@ -79,11 +80,12 @@ export interface ButtonProps extends React.ComponentPropsWithoutRef<'button'> {
 		eventFunctions: {
 			[key: string]: any;
 		};
+		translations: { [key: string]: { [key: string]: string } }
 	};
 }
 function ButtonComponent(props: ButtonProps) {
 	const {
-		pageDefinition: { eventFunctions },
+		pageDefinition: { eventFunctions, translations },
 		definition: {
 			key,
 			properties: {
@@ -183,7 +185,7 @@ function ButtonComponent(props: ButtonProps) {
 							: 'fa-circle-notch hide'
 					}`}
 				/>
-				{buttonLabel}
+				{getTranslations(buttonLabel, translations)}
 				<i
 					className={`rightButtonIcon ${
 						rightIconStyle === 'SOLID' ? 'fa-solid' : 'fa-regular'

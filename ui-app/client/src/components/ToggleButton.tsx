@@ -3,6 +3,7 @@ import React from 'react';
 import { NAMESPACE_UI_ENGINE } from '../constants';
 import { getData } from '../context/StoreContext';
 import { HelperComponent } from './HelperComponent';
+import { getTranslations } from './util/getTranslations';
 
 export interface ToggelButtonProps
 	extends React.ComponentPropsWithoutRef<'input'> {
@@ -49,6 +50,11 @@ export interface ToggelButtonProps
 		eventFunctions: {
 			[key: string]: any;
 		};
+		translations: {
+			[key: string]: {
+				[key: string]: string;
+			};
+		};
 	};
 }
 
@@ -59,14 +65,15 @@ function ToggelButtonComponent(props: ToggelButtonProps) {
 			name,
 			properties: { label },
 		},
+		pageDefinition: { translations },
 	} = props;
 	const labelValue = getData(label);
 	return (
-		<div className='comp compToggleButton'>
-			<HelperComponent/>
+		<div className="comp compToggleButton">
+			<HelperComponent />
 			<label className="toggleButton">
 				<input type="checkbox" name={name} id={key} />
-				{labelValue}
+				{getTranslations(labelValue, translations)}
 			</label>
 		</div>
 	);
