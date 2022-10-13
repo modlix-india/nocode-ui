@@ -6,6 +6,7 @@ import { runEvent } from './util/runEvent';
 import { getChildrenByType } from './util/getChildrenByType';
 import { renderChildren } from './util/renderChildren';
 import { HelperComponent } from './HelperComponent';
+import { getTranslations } from './util/getTranslations';
 export interface CheckBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 	definition: {
 		key: string;
@@ -50,12 +51,15 @@ export interface CheckBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 		eventFunctions: {
 			[key: string]: any;
 		};
+		translations:{
+			[key:string] : {[key:string]: string}
+		}
 	};
 }
 
 function CheckBoxComponent(props: CheckBoxProps) {
 	const {
-		pageDefinition: { eventFunctions },
+		pageDefinition: { eventFunctions, translations },
 		definition: {
 			key,
 			name,
@@ -98,7 +102,7 @@ function CheckBoxComponent(props: CheckBoxProps) {
 					onChange={handleChange}
 					checked={checkBoxdata}
 				/>
-				{checkBoxLabel}
+				{getTranslations(checkBoxLabel,translations)}
 			</label>
 			</div>
 		

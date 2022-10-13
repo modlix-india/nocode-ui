@@ -6,6 +6,7 @@ import { runEvent } from './util/runEvent';
 import { getChildrenByType } from './util/getChildrenByType';
 import { renderChildren } from './util/renderChildren';
 import { HelperComponent } from './HelperComponent';
+import { getTranslations } from './util/getTranslations';
 export interface CheckBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 	definition: {
 		key: string;
@@ -42,6 +43,9 @@ export interface CheckBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 		eventFunctions: {
 			[key: string]: any;
 		};
+		translations: {
+			[key: string]: { [key: string]: string };
+		};
 	};
 }
 const findChidrenCheckBoxes = (
@@ -76,7 +80,7 @@ const findChidrenCheckBoxes = (
 };
 function CheckBoxComponentWithChildren(props: CheckBoxProps) {
 	const {
-		pageDefinition: { eventFunctions },
+		pageDefinition: { eventFunctions, translations },
 		definition: {
 			key,
 			name,
@@ -109,8 +113,8 @@ function CheckBoxComponentWithChildren(props: CheckBoxProps) {
 		setData(bindingPath, event.target.checked ? 'CHECKED' : 'UNCHECKED');
 	};
 	return (
-		<div className='comp compCheckBox'>
-			<HelperComponent/>
+		<div className="comp compCheckBox">
+			<HelperComponent />
 			<label className=" checkbox" htmlFor={key}>
 				<input
 					disabled={isDisabledCheckbox}
@@ -120,11 +124,10 @@ function CheckBoxComponentWithChildren(props: CheckBoxProps) {
 					onChange={handleChange}
 					checked={checkBoxdata === 'CHECKED'}
 				/>
-				{checkBoxLabel}
+				{getTranslations(checkBoxLabel, translations)}
 			</label>
 			{children && renderChildren(props.pageDefinition, children)}
 		</div>
-		
 	);
 }
 

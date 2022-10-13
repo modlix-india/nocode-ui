@@ -3,6 +3,7 @@ import React from 'react';
 import { NAMESPACE_UI_ENGINE } from '../constants';
 import { getData } from '../context/StoreContext';
 import { HelperComponent } from './HelperComponent';
+import { getTranslations } from './util/getTranslations';
 
 export interface RadioButtonProps
 	extends React.ComponentPropsWithoutRef<'input'> {
@@ -49,6 +50,11 @@ export interface RadioButtonProps
 		eventFunctions: {
 			[key: string]: any;
 		};
+		translations: {
+			[key: string]: {
+				[key: string]: string;
+			};
+		};
 	};
 }
 
@@ -58,18 +64,17 @@ function RadioButtonComponent(props: RadioButtonProps) {
 			name,
 			properties: { label },
 		},
+		pageDefinition: { translations },
 	} = props;
 	const labelValue = getData(label);
 	return (
-		<div  className='comp compRadioButton'>
-			<HelperComponent/>
+		<div className="comp compRadioButton">
+			<HelperComponent />
 			<label className=" radiobutton">
 				<input type="radio" name={name} />
-				{labelValue}
+				{getTranslations(labelValue, translations)}
 			</label>
 		</div>
-		
-		
 	);
 }
 
