@@ -109,6 +109,28 @@
 			},
 			"dependentStatements": { "Steps.applicationData.output": true }
 		},
+		"setLanguage": {
+			"statementName": "setLanguage",
+			"namespace": "UIEngine",
+			"name": "SetStore",
+			"parameterMap": {
+				"path": {
+					"setLanguagePath": {
+						"key": "setLanguagePath",
+						"type": "VALUE",
+						"value": "Store.currentLanguage"
+					}
+				},
+				"value": {
+					"setLanguageValue": {
+						"key": "setLanguageValue",
+						"type": "EXPRESSION",
+						"expression": "Store.auth.localeCode ?? Store.application.defaultLanguage"
+					}
+				}
+			}
+
+		},
 		"setApplicationFailureData": {
 			"statementName": "setApplicationFailureData",
 			"namespace": "UIEngine",
