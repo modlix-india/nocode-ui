@@ -18,10 +18,10 @@ jobs:
         with:
           node-version: 18.11.0
       - name: Install Dependencies
-        working-directory: ./client
+        working-directory: ./ui-app/client
         run: npm ci
       - name: Building to JS
-        working-directory: ./client
+        working-directory: ./ui-app/client
         run: npm run aws
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -30,4 +30,4 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
       - name: Deploy
-        run: aws s3 sync ./client/dist s3://nclc-dev
+        run: aws s3 sync ./ui-app/client/dist s3://nclc-dev
