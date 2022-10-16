@@ -1,6 +1,7 @@
 name: AWS S3 - Dev
 
 on:
+  #To trigger manually
   workflow_dispatch:
   push:
     branches: [development]
@@ -13,7 +14,7 @@ jobs:
         with:
           ref: development
       - name: Setting up node
-      - uses: actions/setup-node@v3
+        uses: actions/setup-node@v3
         with:
           node-version: 18.11.0
       - name: Install Dependencies
