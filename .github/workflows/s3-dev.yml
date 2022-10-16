@@ -19,7 +19,7 @@ jobs:
           node-version: 18.11.0
       - name: Install Dependencies
         working-directory: ./ui-app/client
-        run: npm ci
+        run: npm i
       - name: Building to JS
         working-directory: ./ui-app/client
         run: npm run aws

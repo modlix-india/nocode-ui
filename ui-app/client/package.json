@@ -54,9 +54,9 @@
 		"ts-jest": "^28.0.5"
 	},
 	"dependencies": {
-		"@fincity/kirun-js": "^1.3.1",
+		"@fincity/kirun-js": "^1.4.1",
 		"@tsconfig/recommended": "^1.0.1",
-		"@fincity/path-reactive-state-management": "^1.4.0",
+		"@fincity/path-reactive-state-management": "^1.4.1",
 		"axios": "^0.27.2",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
