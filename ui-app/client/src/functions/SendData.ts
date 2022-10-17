@@ -78,21 +78,22 @@ export class SendData extends AbstractFunction {
 		pathParams = Object.entries(pathParams)
 			.map(([k, v]) => [k, getData(v)])
 			.reduce((a, [k, v]) => {
-				a[k] = v;
+				if (v) a[k] = v;
 				return a;
 			}, {});
 		queryParams = Object.entries(queryParams)
 			.map(([k, v]) => [k, getData(v)])
 			.reduce((a, [k, v]) => {
-				a[k] = v;
+				if (v) a[k] = v;
 				return a;
 			}, {});
 		headers = Object.entries(headers)
 			.map(([k, v]) => [k, getData(v)])
 			.reduce((a, [k, v]) => {
-				a[k] = v;
+				if (v) a[k] = v;
 				return a;
 			}, {});
+
 		try {
 			const response = await axios({
 				url: pathFromParams(url, pathParams),
@@ -115,6 +116,7 @@ export class SendData extends AbstractFunction {
 			};
 			return new FunctionOutput([
 				EventResult.of(Event.ERROR, new Map([['error', errOutput]])),
+				EventResult.outputOf(new Map([['data', null]])),
 			]);
 		}
 	}

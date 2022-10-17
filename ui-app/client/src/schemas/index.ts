@@ -71,7 +71,6 @@ const map = new Map([
 class _UISchemaRepository implements Repository<Schema> {
 	find(namespace: string, name: string): Schema | undefined {
 		if (namespace !== NAMESPACE_UI_ENGINE) return undefined;
-		console.log(name, map.get(name));
 		return map.get(name);
 	}
 }

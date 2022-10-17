@@ -8,7 +8,7 @@ export interface GridProps extends React.ComponentPropsWithoutRef<'div'> {
 export function Grid(props: GridProps) {
 	const { definition, pageDefinition, ...rest } = props;
 	return (
-		<div {...rest}>
+		<div className="compGrid grid" {...rest}>
 			{renderChildren(pageDefinition, definition.children)}
 		</div>
 	);
