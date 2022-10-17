@@ -18,7 +18,7 @@ export const RenderEngineContainer = () => {
 	const { pathname } = useLocation();
 	const clientDetails = pathBreaker(pathname);
 	setData(`${STORE_PREFIX}.clientDetails`, clientDetails);
-	const { appname, clientcode, pagename, pathParams } = clientDetails;
+	const { appname, clientcode, pagename } = clientDetails;
 	useEffect(() => {
 		const unsubscribe = addListener(
 			`${STORE_PREFIX}.isApplicationLoadFailed`,
