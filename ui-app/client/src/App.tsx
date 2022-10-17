@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { RenderEngineContainer } from './engine/RenderEngineContainer';
+import { RenderEngineContainer } from './Engine/RenderEngineContainer';
 import * as getAppData from './definitions/getAppData.json';
 
 import { FunctionDefinition } from '@fincity/kirun-js';
