@@ -177,11 +177,34 @@ export const page = {
       key: "secondGrid",
       type: "Grid",
       children: {
+        textboxgrid: true,
         loginlabel: true,
         primarybuttongrid: true,
         outlinedbuttongrid: true,
         textbuttongrid: true,
         checkBoxGrid: true,
+      },
+    },
+    textboxgrid: {
+      name: "textboxgrid",
+      key: "textboxgrid",
+      type: "Grid",
+      children: {
+        textboxcompcomp: true,
+      },
+    },
+    textboxcompcomp: {
+      name: "textboxcompcomp",
+      key: "textboxcompcomp",
+      type: "TextBox",
+      properties: {
+        label: {
+          value: "Login",
+        },
+        bindingPath: {
+          value: "Store.texboxbindingpath",
+        },
+        displayOrder: -1,
       },
     },
     primarybuttongrid: {
