@@ -187,10 +187,16 @@
 					}
 				},
 				"headers": {
-					"Accept-Language": {
-						"location": {
-							"expression": "LocalStore.currentLanguage??'en'",
-							"type": "EXPRESSION"
+					"hparam": {
+						"key": "hparam",
+						"type": "VALUE",
+						"value": {
+							"Accept-Language": {
+								"location": {
+									"expression": "Store.auth.localeCode??Store.application.defaultLanguage??'en'",
+									"type": "EXPRESSION"
+								}
+							}
 						}
 					}
 				}
