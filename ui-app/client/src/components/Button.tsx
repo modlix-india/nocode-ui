@@ -80,7 +80,7 @@ export interface ButtonProps extends React.ComponentPropsWithoutRef<'button'> {
 		eventFunctions: {
 			[key: string]: any;
 		};
-		translations: { [key: string]: { [key: string]: string } }
+		translations: { [key: string]: { [key: string]: string } };
 	};
 }
 function ButtonComponent(props: ButtonProps) {
@@ -164,39 +164,43 @@ function ButtonComponent(props: ButtonProps) {
 			</div>
 		);
 	return (
-		<div  className='comp compButton'>
-			<HelperComponent/>
-			
-		<button
-			className={` button ${buttonType}`}
-			disabled={isLoading || isDisabledButton}
-			onClick={handleClick}
-			{...rest}
-		>
-			<div className="buttonInternalContainer">
-				<i
-					className={`leftButtonIcon ${
-						leftIconStyle === 'SOLID' ? 'fa-solid' : 'fa-regular'
-					} fa-fw ${
-						buttonLeftIcon
-							? !isLoading
-								? buttonLeftIcon
-								: 'fa-circle-notch fa-spin'
-							: 'fa-circle-notch hide'
-					}`}
-				/>
-				{getTranslations(buttonLabel, translations)}
-				<i
-					className={`rightButtonIcon ${
-						rightIconStyle === 'SOLID' ? 'fa-solid' : 'fa-regular'
-					} fa-fw ${
-						buttonRightIcon
-							? buttonRightIcon
-							: `${buttonRightIcon} hide`
-					}`}
-				/>
-			</div>
-		</button>
+		<div className="comp compButton">
+			<HelperComponent />
+
+			<button
+				className={` button ${buttonType}`}
+				disabled={isLoading || isDisabledButton}
+				onClick={handleClick}
+				{...rest}
+			>
+				<div className="buttonInternalContainer">
+					<i
+						className={`leftButtonIcon ${
+							leftIconStyle === 'SOLID'
+								? 'fa-solid'
+								: 'fa-regular'
+						} fa-fw ${
+							buttonLeftIcon
+								? !isLoading
+									? buttonLeftIcon
+									: 'fa-circle-notch fa-spin'
+								: 'fa-circle-notch hide'
+						}`}
+					/>
+					{getTranslations(buttonLabel, translations)}
+					<i
+						className={`rightButtonIcon ${
+							rightIconStyle === 'SOLID'
+								? 'fa-solid'
+								: 'fa-regular'
+						} fa-fw ${
+							buttonRightIcon
+								? buttonRightIcon
+								: `${buttonRightIcon} hide`
+						}`}
+					/>
+				</div>
+			</button>
 		</div>
 	);
 }

@@ -7,6 +7,7 @@
 	"scripts": {
 		"start": "parcel",
 		"build": "parcel build src/index.html",
+		"aws": "parcel build src/index.tsx",
 		"test": "jest --watchAll",
 		"coverage": "jest --coverage",
 		"pretty": "prettier --write ./src || prettier --write ./__tests__"
