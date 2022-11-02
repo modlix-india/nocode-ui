@@ -192,7 +192,7 @@ h2 {
 	transition: top 100ms, transform 100ms ease-in;
 }
 
-.link {
+.comp.compLinks .link {
 	text-align: left;
 	text-decoration: underline;
 	font: normal normal normal 16px/26px Open Sans;
@@ -200,7 +200,7 @@ h2 {
 	color: #397ef5;
 	opacity: 1;
 }
-.secondLink {
+.comp.compLinks .secondLink {
 	padding-left: 5px;
 	color: black;
 }
@@ -446,19 +446,4 @@ h2 {
 	gap: 0.5em;
 	color: rgba(var(--black-rgb), 0.6);
 	justify-items: center;
-}
-
-.rangeSlider {
-	width: 357px;
-	height: 4px;
-	background: #1f3c3d24 0% 0% no-repeat padding-box;
-	border-radius: 10px;
-	opacity: 1;
-}
-
-.rangeSliderValueSpan {
-	background: #1f3c3d 0% 0% no-repeat padding-box;
-	opacity: 1;
-	margin-right: 10px;
-	display: block;
 }

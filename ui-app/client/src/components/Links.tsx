@@ -78,19 +78,20 @@ export function LinkComponent(props: LinkProps) {
 	const targetValue = getData(target);
 	const externalButtonTargetVal = getData(externalButtonTarget);
 	const showButtonVal = getData(showButton);
+	const targetDataValue = targetValue ? targetValue : '_self';
 
-	console.log(targetValue);
-	const tValue = targetValue ? targetValue : '_self';
-	const navigate = useNavigate();
-	console.log(externalButtonTargetVal);
 	return (
-		<div className="comp compTextBox ">
+		<div className="comp compLinks ">
 			<HelperComponent />
 			<div className="linkDiv">
-				<Link className="link" to={`${linkPathValue}`} target={tValue}>
+				<Link
+					className="link"
+					to={`${linkPathValue}`}
+					target={targetDataValue}
+				>
 					{labelValue}
 				</Link>
-				{showButton ? (
+				{showButtonVal ? (
 					<Link
 						to={`${linkPathValue}`}
 						target={externalButtonTargetVal}
@@ -110,6 +111,12 @@ LinkComponent.propertiesSchema = Schema.ofObject('Link')
 		new Map([
 			['label', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
 			['linkPath', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
+			['target', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
+			['showButton', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
+			[
+				'externalButtonTarget',
+				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`),
+			],
 		]),
 	);
 
