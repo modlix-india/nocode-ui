@@ -200,6 +200,10 @@ h2 {
 	color: #397ef5;
 	opacity: 1;
 }
+.secondLink {
+	padding-left: 5px;
+	color: black;
+}
 .textBoxLabel.float {
 	top: 0;
 	transform: translateY(-55%);
@@ -442,4 +446,19 @@ h2 {
 	gap: 0.5em;
 	color: rgba(var(--black-rgb), 0.6);
 	justify-items: center;
+}
+
+.rangeSlider {
+	width: 357px;
+	height: 4px;
+	background: #1f3c3d24 0% 0% no-repeat padding-box;
+	border-radius: 10px;
+	opacity: 1;
+}
+
+.rangeSliderValueSpan {
+	background: #1f3c3d 0% 0% no-repeat padding-box;
+	opacity: 1;
+	margin-right: 10px;
+	display: block;
 }

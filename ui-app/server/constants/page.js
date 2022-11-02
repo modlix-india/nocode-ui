@@ -184,6 +184,38 @@ export const page = {
         textbuttongrid: true,
         checkBoxGrid: true,
         linkGrid: true,
+        rangeSliderGrid: true,
+      },
+    },
+    rangeSliderGrid: {
+      name: "rangeSlidergrid",
+      key: "rangeSlidergrid",
+      type: "Grid",
+      children: {
+        rangeSliderComp: true,
+      },
+    },
+    rangeSliderComp: {
+      name: "rangeSliderComp",
+      key: "rangeSliderComp",
+      type: "RangeSliderComponent",
+      properties: {
+        initialValue: {
+          value: 20,
+        },
+        max: {
+          value: 100,
+        },
+        step: {
+          value: 20,
+        },
+        min: {
+          value: 0,
+        },
+        bindingPath: {
+          value: "Store.rangeslide",
+        },
+        displayOrder: -1,
       },
     },
     linkGrid: {
@@ -203,7 +235,16 @@ export const page = {
           value: "google",
         },
         linkPath: {
-          value: "Store.linkpath",
+          value: "page/pagename2",
+        },
+        target: {
+          value: "_self",
+        },
+        externalButtonTarget: {
+          value: "_blank",
+        },
+        showButton: {
+          value: true,
         },
 
         displayOrder: -1,
