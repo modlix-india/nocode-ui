@@ -76,10 +76,9 @@ export function LinkComponent(props: LinkProps) {
 	} = props;
 	const labelValue = getData(label);
 	const linkPathValue = getData(linkPath);
-	const targetValue = getData(target);
-	const externalButtonTargetVal = getData(externalButtonTarget);
+	const targetValue = getData(target) || '_self';
+	const externalButtonTargetVal = getData(externalButtonTarget) || '_blank';
 	const showButtonVal = getData(showButton);
-	const targetDataValue = targetValue ? targetValue : '_self';
 
 	return (
 		<div className="comp compLinks ">
@@ -88,7 +87,7 @@ export function LinkComponent(props: LinkProps) {
 				<Link
 					className="link"
 					to={`${linkPathValue}`}
-					target={targetDataValue}
+					target={targetValue}
 				>
 					{getTranslations(labelValue, translations)}
 				</Link>
