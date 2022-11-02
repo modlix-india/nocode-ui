@@ -16,6 +16,15 @@ export interface TextBoxProps extends React.ComponentPropsWithoutRef<'span'> {
 					expression?: string;
 				};
 			};
+
+			mandatory?: {
+				value: string;
+				location: {
+					type: 'EXPRESSION' | 'VALUE';
+					value?: string;
+					expression?: string;
+				};
+			};
 			label: {
 				value: string;
 				location: {
@@ -46,6 +55,14 @@ export interface TextBoxProps extends React.ComponentPropsWithoutRef<'span'> {
 				};
 				iconStyle?: 'REGULAR' | 'SOLID';
 			};
+			readonly?: {
+				value: string;
+				location: {
+					type: 'EXPRESSION' | 'VALUE';
+					value?: string;
+					expression?: string;
+				};
+			};
 		};
 	};
 	pageDefinition: {
@@ -60,7 +77,14 @@ export interface TextBoxProps extends React.ComponentPropsWithoutRef<'span'> {
 export function TextBoxComponent(props: TextBoxProps) {
 	const {
 		definition: {
-			properties: { label, bindingPath, leftIcon, rightIcon },
+			properties: {
+				label,
+				bindingPath,
+				leftIcon,
+				rightIcon,
+				mandatory,
+				readonly,
+			},
 		},
 		pageDefinition: { translations },
 		...rest
@@ -69,7 +93,10 @@ export function TextBoxComponent(props: TextBoxProps) {
 	const [hasText, setHasText] = React.useState(false);
 	const textBoxLabel = getData(label);
 	const textBoxBindingPath = getData(bindingPath);
-
+	const textBoxMandatory = getData(mandatory);
+	const textBoxMandatoryJSX = textBoxMandatory?.length ? (
+		<i className="fa-regular fa-circle-exclamation fa-fw textBoxIcon" />
+	) : null;
 	React.useEffect(() => {
 		const unsubscribe = addListener(textBoxBindingPath, (_, value) => {
 			setvalue(value);
@@ -90,7 +117,13 @@ export function TextBoxComponent(props: TextBoxProps) {
 	return (
 		<div className="comp compTextBox">
 			<HelperComponent />
-			<div className="textBoxDiv ">
+			<div
+				className={
+					textBoxMandatory && !value.length
+						? 'textBoxDivSupport'
+						: 'textBoxDiv'
+				}
+			>
 				<i
 					className={'fa-solid fa-magnifying-glass textBoxIcon fa-fw'}
 				/>
@@ -101,7 +134,7 @@ export function TextBoxComponent(props: TextBoxProps) {
 					onChange={handleChange}
 					placeholder={getTranslations(textBoxLabel, translations)}
 				/>
-				<label className={`textBoxLabel`}>
+				<label className={'textBoxLabel'}>
 					{getTranslations(textBoxLabel, translations)}
 				</label>
 				{value.length ? (
@@ -112,10 +145,14 @@ export function TextBoxComponent(props: TextBoxProps) {
 						onClick={handleClickClose}
 					/>
 				) : (
-					''
+					textBoxMandatoryJSX
 				)}
 			</div>
-			{/* {<label className="textboxSupportText">error</label>} */}
+			{textBoxMandatory && !value.length ? (
+				<label className="textboxSupportText">{textBoxMandatory}</label>
+			) : (
+				''
+			)}
 		</div>
 	);
 }
