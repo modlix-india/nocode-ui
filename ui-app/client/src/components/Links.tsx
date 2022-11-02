@@ -72,7 +72,6 @@ export function LinkComponent(props: LinkProps) {
 			},
 		},
 		pageDefinition: { translations },
-		...rest
 	} = props;
 	const labelValue = getData(label);
 	const linkPathValue = getData(linkPath);
