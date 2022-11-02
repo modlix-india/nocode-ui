@@ -3,7 +3,8 @@ import { getData } from '../context/StoreContext';
 import { HelperComponent } from './HelperComponent';
 import { Schema } from '@fincity/kirun-js';
 import { NAMESPACE_UI_ENGINE } from '../constants';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { getTranslations } from './util/getTranslations';
 
 export interface LinkProps extends React.ComponentPropsWithoutRef<'span'> {
 	definition: {
@@ -89,7 +90,7 @@ export function LinkComponent(props: LinkProps) {
 					to={`${linkPathValue}`}
 					target={targetDataValue}
 				>
-					{labelValue}
+					{getTranslations(labelValue, translations)}
 				</Link>
 				{showButtonVal ? (
 					<Link
