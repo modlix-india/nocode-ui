@@ -70,13 +70,15 @@ export function getData(loc: any) {
 
 	if (typeOfLoc !== 'object') return undefined;
 
-	if (!loc.location) return loc.value;
-	if (loc.location?.type === 'VALUE') return loc.location?.value;
+	let data: any = undefined;
+	if (loc.location?.type === 'VALUE') data = _getData(loc.location?.value);
 	if (loc.location?.type === 'EXPRESSION') {
 		const v = _getData(loc.location?.expression);
-		if (!isNullValue(v)) return v;
+		if (!isNullValue(v)) data = v;
 	}
-	return undefined;
+	if (!isNullValue(loc.value)) data = loc.value;
+
+	return data;
 }
 
 export function setData(path: string, value: any) {

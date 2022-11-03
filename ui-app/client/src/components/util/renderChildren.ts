@@ -15,10 +15,11 @@ export const renderChildren = (pageDefinition: any, children: any) => {
 				(b?.properties?.displayOrder || 0),
 		)
 		.map(e => {
-			return React.createElement(componentMap.get(e.type)!, {
-				definition: e,
-				key: e.key,
-				pageDefinition: pageDefinition,
-			});
+			if (componentMap.get(e.type))
+				return React.createElement(componentMap.get(e.type)!, {
+					definition: e,
+					key: e.key,
+					pageDefinition: pageDefinition,
+				});
 		});
 };

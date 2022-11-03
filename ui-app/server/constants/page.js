@@ -224,6 +224,9 @@ export const page = {
       type: "Grid",
       children: {
         textboxcompcomp: true,
+        textboxcompcompWithICon: true,
+        textboxcompcompdisabled: true,
+        textboxcompcompWithIConDisabled: true,
       },
     },
     textboxcompcomp: {
@@ -237,8 +240,77 @@ export const page = {
         bindingPath: {
           value: "Store.texboxbindingpath",
         },
-        mandatory: {
-          value: "enter login details",
+        supportingText: {
+          value: "Supporting Text",
+        },
+        isMandatory: {
+          value: true,
+        },
+        displayOrder: -1,
+      },
+    },
+    textboxcompcompWithICon: {
+      name: "textboxcompcompWithICon",
+      key: "textboxcompcompWithICon",
+      type: "TextBox",
+      properties: {
+        label: {
+          value: "Something else",
+        },
+        bindingPath: {
+          value: "Store.texboxbindingpath1",
+        },
+        leftIcon: {
+          icon: {
+            value: "fa-magnifying-glass",
+          },
+          iconStyle: "SOLID",
+        },
+        displayOrder: -1,
+      },
+    },
+    textboxcompcompWithIConDisabled: {
+      name: "textboxcompcompWithIConDisabled",
+      key: "textboxcompcompWithIConDisabled",
+      type: "TextBox",
+      properties: {
+        label: {
+          value: "Something else",
+        },
+        bindingPath: {
+          value: "Store.texboxbindingpath1",
+        },
+        leftIcon: {
+          icon: {
+            value: "fa-magnifying-glass",
+          },
+          iconStyle: "SOLID",
+        },
+        isDisabled: {
+          value: true,
+        },
+        defaultValue: {
+          value: "Text is here",
+        },
+        supportingText: {
+          value: "Supporting Text",
+        },
+        displayOrder: -1,
+      },
+    },
+    textboxcompcompdisabled: {
+      name: "textboxcompcompdisabled",
+      key: "textboxcompcompdisabled",
+      type: "TextBox",
+      properties: {
+        label: {
+          value: "Login",
+        },
+        bindingPath: {
+          value: "Store.texboxbindingpath",
+        },
+        isDisabled: {
+          value: true,
         },
         displayOrder: -1,
       },

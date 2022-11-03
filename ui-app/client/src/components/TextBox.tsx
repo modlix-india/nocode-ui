@@ -1,12 +1,14 @@
 import { Schema } from '@fincity/kirun-js';
 import React from 'react';
-import { NAMESPACE_UI_ENGINE } from '../constants';
+import { FUNCTION_EXECUTION_PATH, NAMESPACE_UI_ENGINE } from '../constants';
 import { addListener, getData, setData } from '../context/StoreContext';
 import { HelperComponent } from './HelperComponent';
 import { getTranslations } from './util/getTranslations';
+import { runEvent } from './util/runEvent';
 
 export interface TextBoxProps extends React.ComponentPropsWithoutRef<'span'> {
 	definition: {
+		key: string;
 		properties: {
 			bindingPath: {
 				value: string;
@@ -33,7 +35,7 @@ export interface TextBoxProps extends React.ComponentPropsWithoutRef<'span'> {
 					expression?: string;
 				};
 			};
-			leftIcon?: {
+			leftIcon: {
 				icon?: {
 					value: string;
 					location: {
@@ -44,16 +46,37 @@ export interface TextBoxProps extends React.ComponentPropsWithoutRef<'span'> {
 				};
 				iconStyle?: 'REGULAR' | 'SOLID';
 			};
-			rightIcon?: {
-				icon?: {
-					value: string;
-					location: {
-						type: 'EXPRESSION' | 'VALUE';
-						value?: string;
-						expression?: string;
-					};
+			isDisabled: {
+				value: string;
+				location: {
+					type: 'EXPRESSION' | 'VALUE';
+					value?: string;
+					expression?: string;
 				};
-				iconStyle?: 'REGULAR' | 'SOLID';
+			};
+			defaultValue: {
+				value: string;
+				location: {
+					type: 'EXPRESSION' | 'VALUE';
+					value?: string;
+					expression?: string;
+				};
+			};
+			supportingText: {
+				value: string;
+				location: {
+					type: 'EXPRESSION' | 'VALUE';
+					value?: string;
+					expression?: string;
+				};
+			};
+			validators: {
+				value: string;
+				location: {
+					type: 'EXPRESSION' | 'VALUE';
+					value?: string;
+					expression?: string;
+				};
 			};
 			readonly?: {
 				value: string;
@@ -66,6 +89,9 @@ export interface TextBoxProps extends React.ComponentPropsWithoutRef<'span'> {
 		};
 	};
 	pageDefinition: {
+		eventFunctions: {
+			[key: string]: any;
+		};
 		translations: {
 			[key: string]: {
 				[key: string]: string;
@@ -77,26 +103,37 @@ export interface TextBoxProps extends React.ComponentPropsWithoutRef<'span'> {
 export function TextBoxComponent(props: TextBoxProps) {
 	const {
 		definition: {
+			key,
 			properties: {
 				label,
 				bindingPath,
-				leftIcon,
-				rightIcon,
-				mandatory,
-				readonly,
+				leftIcon = {},
+				isDisabled,
+				defaultValue,
+				supportingText,
+				validators,
 			},
 		},
-		pageDefinition: { translations },
+		pageDefinition: { eventFunctions, translations },
 		...rest
 	} = props;
-	const [value, setvalue] = React.useState('');
+	const { iconStyle: leftIconStyle = 'SOLID', icon: leftIconLocation = {} } =
+		leftIcon;
+	const functionExecutionStorePath = `${FUNCTION_EXECUTION_PATH}.${key}.isRunning`;
+	const textBoxLeftIcon = getData(leftIconLocation);
+	const textBoxValidators = eventFunctions[getData(validators)];
+	const isDisabledTextBox = getData(isDisabled);
+	const textBoxBindingPath = getData(bindingPath);
+	const textBoxDefaultValue = getData(defaultValue);
+	const textBoxSupportingText = getData(supportingText);
+	const [isDirty, setIsDirty] = React.useState(false);
+	const [errorMessage, setErrorMessage] = React.useState('');
+	const [value, setvalue] = React.useState(
+		getData(textBoxBindingPath) || textBoxDefaultValue || '',
+	);
+	const [isFocussed, setIsFocussed] = React.useState(false);
 	const [hasText, setHasText] = React.useState(false);
 	const textBoxLabel = getData(label);
-	const textBoxBindingPath = getData(bindingPath);
-	const textBoxMandatory = getData(mandatory);
-	const textBoxMandatoryJSX = textBoxMandatory?.length ? (
-		<i className="fa-regular fa-circle-exclamation fa-fw textBoxIcon" />
-	) : null;
 	React.useEffect(() => {
 		const unsubscribe = addListener(textBoxBindingPath, (_, value) => {
 			setvalue(value);
@@ -105,12 +142,26 @@ export function TextBoxComponent(props: TextBoxProps) {
 			unsubscribe();
 		};
 	}, []);
-
+	const handleFocus = () => {
+		setIsFocussed(true);
+	};
+	const handleBlur = async () => {
+		setIsFocussed(false);
+		if (textBoxValidators) {
+			const validatorResult: any = await runEvent(textBoxValidators, key);
+			if (validatorResult?.error) {
+				setErrorMessage(validatorResult.error);
+			}
+			setData(functionExecutionStorePath, false);
+		}
+	};
 	const handleChange = (event: any) => {
-		console.log(event?.target.value);
+		if (!isDirty) {
+			setIsDirty(true);
+		}
 		setData(textBoxBindingPath, event?.target.value);
 	};
-	const handleClickClose = (event: any) => {
+	const handleClickClose = () => {
 		setvalue('');
 	};
 
@@ -118,41 +169,64 @@ export function TextBoxComponent(props: TextBoxProps) {
 		<div className="comp compTextBox">
 			<HelperComponent />
 			<div
-				className={
-					textBoxMandatory && !value.length
-						? 'textBoxDivSupport'
-						: 'textBoxDiv'
-				}
+				className={`textBoxDiv ${errorMessage ? 'error' : ''} ${
+					isFocussed && !value.length ? 'focussed' : ''
+				} ${value.length && !isDisabledTextBox ? 'hasText' : ''} ${
+					isDisabledTextBox ? 'textBoxDisabled' : ''
+				} ${
+					textBoxLeftIcon
+						? 'textBoxwithIconContainer'
+						: 'textBoxContainer'
+				}`}
 			>
-				<i
-					className={'fa-solid fa-magnifying-glass textBoxIcon fa-fw'}
-				/>
-				<input
-					className="textbox"
-					type={'text'}
-					value={value}
-					onChange={handleChange}
-					placeholder={getTranslations(textBoxLabel, translations)}
-				/>
-				<label className={'textBoxLabel'}>
-					{getTranslations(textBoxLabel, translations)}
-				</label>
+				{textBoxLeftIcon && (
+					<i
+						className={`leftIcon ${
+							leftIconStyle === 'SOLID'
+								? 'fa-solid'
+								: 'fa-regular'
+						} ${textBoxLeftIcon} fa-fw`}
+					/>
+				)}
+				<div className="inputContainer">
+					<input
+						className="textbox"
+						type={'text'}
+						value={value}
+						onChange={handleChange}
+						placeholder={getTranslations(
+							textBoxLabel,
+							translations,
+						)}
+						onFocus={handleFocus}
+						onBlur={handleBlur}
+						name={key}
+						id={key}
+						disabled={isDisabledTextBox}
+					/>
+					<label
+						htmlFor={key}
+						className={`textBoxLabel ${
+							errorMessage ? 'error' : ''
+						} ${isDisabledTextBox ? 'disabled' : ''}`}
+					>
+						{getTranslations(textBoxLabel, translations)}
+					</label>
+				</div>
 				{value.length ? (
 					<i
-						className={
-							'fa-regular fa-circle-xmark textBoxIcon fa-fw'
-						}
 						onClick={handleClickClose}
+						className="clearText fa-solid fa-circle-xmark fa-fw"
 					/>
-				) : (
-					textBoxMandatoryJSX
-				)}
+				) : null}
 			</div>
-			{textBoxMandatory && !value.length ? (
-				<label className="textboxSupportText">{textBoxMandatory}</label>
-			) : (
-				''
-			)}
+			<label
+				className={`supportText ${
+					isDisabledTextBox ? 'disabled' : ''
+				} ${errorMessage ? 'error' : ''}`}
+			>
+				{errorMessage ? errorMessage : textBoxSupportingText}
+			</label>
 		</div>
 	);
 }

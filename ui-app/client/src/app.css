@@ -137,49 +137,132 @@ h2 {
 	margin: 10px;
 }
 
-.textBoxDiv {
+.comp.compTextBox .supportText {
+	font-size: 12px;
+	letter-spacing: 0px;
+	text-overflow: ellipsis;
+}
+
+.comp.compTextBox .supportText.disabled {
+	color: #d5d5d5;
+}
+
+.comp.compTextBox .supportText.error {
+	color: #ed6a5e;
+}
+
+.comp.compTextBox .textBoxDiv {
 	width: 230px;
 	height: 56px;
-	border: 1px solid #397ef5;
-	border-radius: 5px;
-	opacity: 1;
-	position: relative;
-	display: grid;
-	grid-template-columns: 27px 164px 30px;
-	align-items: center;
+	border: 1px solid #ebeaee;
+	border-radius: 4px;
 }
 
-.textBoxIcon {
-	padding-left: 10px;
-	cursor: pointer;
-	font-size: 13px;
+.comp.compTextBox .textBoxDiv.error {
+	border: 1px solid #ed6a5e;
 }
-.textbox {
-	border: none;
+
+.comp.compTextBox .textBoxDiv.focussed {
+	border: 1px solid #397ef5;
+}
+
+.comp.compTextBox .textBoxDiv.hasText {
+	border: 1px solid #393a3c;
+}
+.comp.compTextBox .textBoxDiv.textBoxDisabled {
+	border: 1px solid #d5d5d5;
+	color: #d5d5d5;
+}
+.comp.compTextBox .textBoxDiv .inputContainer {
+	position: relative;
 	height: 100%;
-	border-radius: 5px;
+}
+
+.comp.compTextBox .textBoxDiv .inputContainer .textbox {
+	border: none;
+	width: 100%;
+	height: 100%;
+	border-radius: 4px;
 	outline: none;
 }
-.textbox::placeholder {
+
+.comp.compTextBox .textBoxDiv .inputContainer .textbox::placeholder {
 	opacity: 0;
 }
-.textbox:focus + .textBoxLabel,
-.textbox:not(:placeholder-shown) + .textBoxLabel {
-	top: 0;
-	left: 18px;
-	transform: translateY(-55%);
-	background-color: #fff;
-}
 
-.textBoxLabel {
+.comp.compTextBox .textBoxDiv .inputContainer .textBoxLabel {
 	position: absolute;
-	margin-left: 8px;
 	letter-spacing: 0px;
 	color: #393a3c;
-	left: 24px;
+	left: 0px;
 	top: 50%;
 	transform: translateY(-50%);
 	transition: top 100ms, transform 100ms ease-in;
+	cursor: text;
+	padding-left: 5px;
+}
+
+.comp.compTextBox .textBoxDiv .inputContainer .textBoxLabel.disabled {
+	color: #d5d5d5;
+}
+
+.comp.compTextBox .textBoxDiv .inputContainer .textBoxLabel.error {
+	color: #ed6a5e;
+}
+
+.comp.compTextBox .textBoxDiv.textBoxContainer {
+	display: grid;
+	grid-template-columns: auto 30px;
+	align-items: center;
+}
+
+.comp.compTextBox .textBoxDiv.textBoxwithIconContainer {
+	display: grid;
+	grid-template-columns: 30px auto 30px;
+	align-items: center;
+}
+
+.comp.compTextBox .textBoxDiv .inputContainer .textbox:focus + .textBoxLabel,
+.comp.compTextBox
+	.textBoxDiv
+	.inputContainer
+	.textbox:not(:placeholder-shown)
+	+ .textBoxLabel {
+	top: 0;
+	left: 5px;
+	transform: translateY(-55%);
+	background-color: #fff;
+	padding-left: 0;
+}
+
+.comp.compTextBox .textBoxDiv .inputContainer .textbox:disabled {
+	background-color: transparent;
+	color: #d5d5d5;
+}
+
+.comp.compTextBox
+	.textBoxDiv.textBoxwithIconContainer
+	.inputContainer
+	.textbox:focus
+	+ .textBoxLabel,
+.comp.compTextBox
+	.textBoxDiv.textBoxwithIconContainer
+	.inputContainer
+	.textbox:not(:placeholder-shown)
+	+ .textBoxLabel {
+	top: 0;
+	left: -25px;
+	transform: translateY(-55%);
+	background-color: #fff;
+	padding-left: 0;
+}
+
+.comp.compTextBox .textBoxDiv .leftIcon {
+	justify-self: center;
+}
+
+.comp.compTextBox .textBoxDiv .clearText {
+	cursor: pointer;
 }
 
 .comp.compLinks .link {
@@ -190,22 +273,6 @@ h2 {
 .comp.compLinks .secondLink {
 	padding-left: 5px;
 	color: black;
-}
-.textBoxLabel.float {
-	top: 0;
-	transform: translateY(-55%);
-	background-color: #fff;
-}
-.textBoxLeftGrid {
-	display: flex;
-	flex-direction: row;
-}
-.textboxSupportText {
-	text-align: left;
-	font: normal 12px/26px Open Sans;
-	letter-spacing: 0px;
-	color: #ed6a5e;
-	opacity: 1;
 }
 
 .compCheckBox .checkbox input[type='checkbox'] {
@@ -316,7 +383,6 @@ h2 {
 	grid-template-rows: 1em auto;
 	gap: 0.5em;
 	color: rgba(var(--black-rgb), 0.6);
-	/* justify-items: center; */
 }
 
 .compRadioButton .radiobutton input[type='radio'] {
