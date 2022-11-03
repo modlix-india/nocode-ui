@@ -177,11 +177,142 @@ export const page = {
       key: "secondGrid",
       type: "Grid",
       children: {
+        textboxgrid: true,
         loginlabel: true,
         primarybuttongrid: true,
         outlinedbuttongrid: true,
         textbuttongrid: true,
         checkBoxGrid: true,
+        linkGrid: true,
+      },
+    },
+    linkGrid: {
+      name: "linkgrid",
+      key: "linkgrid",
+      type: "Grid",
+      children: {
+        linkcomp: true,
+      },
+    },
+    linkcomp: {
+      name: "linkcomp",
+      key: "linkcomp",
+      type: "LinkComponent",
+      properties: {
+        label: {
+          value: "google",
+        },
+        linkPath: {
+          value: "page/pagename2",
+        },
+        target: {
+          value: "_self",
+        },
+        externalButtonTarget: {
+          value: "_blank",
+        },
+        showButton: {
+          value: true,
+        },
+
+        displayOrder: -1,
+      },
+    },
+    textboxgrid: {
+      name: "textboxgrid",
+      key: "textboxgrid",
+      type: "Grid",
+      children: {
+        textboxcompcomp: true,
+        textboxcompcompWithICon: true,
+        textboxcompcompdisabled: true,
+        textboxcompcompWithIConDisabled: true,
+      },
+    },
+    textboxcompcomp: {
+      name: "textboxcompcomp",
+      key: "textboxcompcomp",
+      type: "TextBox",
+      properties: {
+        label: {
+          value: "Login",
+        },
+        bindingPath: {
+          value: "Store.texboxbindingpath",
+        },
+        supportingText: {
+          value: "Supporting Text",
+        },
+        isMandatory: {
+          value: true,
+        },
+        displayOrder: -1,
+      },
+    },
+    textboxcompcompWithICon: {
+      name: "textboxcompcompWithICon",
+      key: "textboxcompcompWithICon",
+      type: "TextBox",
+      properties: {
+        label: {
+          value: "Something else",
+        },
+        bindingPath: {
+          value: "Store.texboxbindingpath1",
+        },
+        leftIcon: {
+          icon: {
+            value: "fa-magnifying-glass",
+          },
+          iconStyle: "SOLID",
+        },
+        displayOrder: -1,
+      },
+    },
+    textboxcompcompWithIConDisabled: {
+      name: "textboxcompcompWithIConDisabled",
+      key: "textboxcompcompWithIConDisabled",
+      type: "TextBox",
+      properties: {
+        label: {
+          value: "Something else",
+        },
+        bindingPath: {
+          value: "Store.texboxbindingpath1",
+        },
+        leftIcon: {
+          icon: {
+            value: "fa-magnifying-glass",
+          },
+          iconStyle: "SOLID",
+        },
+        isDisabled: {
+          value: true,
+        },
+        defaultValue: {
+          value: "Text is here",
+        },
+        supportingText: {
+          value: "Supporting Text",
+        },
+        displayOrder: -1,
+      },
+    },
+    textboxcompcompdisabled: {
+      name: "textboxcompcompdisabled",
+      key: "textboxcompcompdisabled",
+      type: "TextBox",
+      properties: {
+        label: {
+          value: "Login",
+        },
+        bindingPath: {
+          value: "Store.texboxbindingpath",
+        },
+        isDisabled: {
+          value: true,
+        },
+        displayOrder: -1,
       },
     },
     primarybuttongrid: {

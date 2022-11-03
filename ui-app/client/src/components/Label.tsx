@@ -42,7 +42,7 @@ export function LabelComponent(props: LabelProps) {
 	);
 }
 
-LabelComponent.propertiesSchema = Schema.ofObject('Button')
+LabelComponent.propertiesSchema = Schema.ofObject('Label')
 	.setNamespace(NAMESPACE_UI_ENGINE)
 	.setProperties(
 		new Map([['text', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)]]),
