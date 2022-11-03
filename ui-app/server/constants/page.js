@@ -183,6 +183,39 @@ export const page = {
         outlinedbuttongrid: true,
         textbuttongrid: true,
         checkBoxGrid: true,
+        linkGrid: true,
+      },
+    },
+    linkGrid: {
+      name: "linkgrid",
+      key: "linkgrid",
+      type: "Grid",
+      children: {
+        linkcomp: true,
+      },
+    },
+    linkcomp: {
+      name: "linkcomp",
+      key: "linkcomp",
+      type: "LinkComponent",
+      properties: {
+        label: {
+          value: "google",
+        },
+        linkPath: {
+          value: "page/pagename2",
+        },
+        target: {
+          value: "_self",
+        },
+        externalButtonTarget: {
+          value: "_blank",
+        },
+        showButton: {
+          value: true,
+        },
+
+        displayOrder: -1,
       },
     },
     textboxgrid: {
@@ -203,6 +236,9 @@ export const page = {
         },
         bindingPath: {
           value: "Store.texboxbindingpath",
+        },
+        mandatory: {
+          value: "enter login details",
         },
         displayOrder: -1,
       },
