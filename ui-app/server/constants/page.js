@@ -184,8 +184,59 @@ export const page = {
         textbuttongrid: true,
         checkBoxGrid: true,
         linkGrid: true,
+        imageGrid: true,
       },
     },
+    imageGrid: {
+      name: "imagegrid",
+      key: "imagegrid",
+      type: "Grid",
+      children: {
+        imagecomp: true,
+        imageCompSec: true,
+      },
+    },
+    imagecomp: {
+      name: "imgcomp",
+      key: "imgcomp",
+      type: "ImageComponent",
+      properties: {
+        width: {
+          value: "500px",
+        },
+        height: {
+          value: "500px",
+        },
+        src: {
+          value:
+            "https://cdn.pixabay.com/photo/2018/10/19/05/12/naruto-3757871_1280.jpg",
+        },
+        alt: {
+          value: "naruto",
+        },
+      },
+    },
+    imageCompSec: {
+      name: "imgCompSec",
+      key: "imgCompSec",
+      type: "ImageComponent",
+      properties: {
+        width: {
+          value: "200px",
+        },
+        height: {
+          value: "200px",
+        },
+        src: {
+          value:
+            "https://akibamarket.com/wp-content/uploads/2022/10/116718-spy-x-family-hombres-se-vistieron-de-anya-forger-y-limpiaron-calles.jpg",
+        },
+        alt: {
+          value: "anya",
+        },
+      },
+    },
+
     linkGrid: {
       name: "linkgrid",
       key: "linkgrid",
