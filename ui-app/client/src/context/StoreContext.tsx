@@ -1,8 +1,4 @@
-import { createContext, useContext, useMemo, useState } from 'react';
-import {
-	useStore,
-	setStoreData,
-} from '@fincity/path-reactive-state-management';
+import { useStore, setStoreData } from '@fincity/path-reactive-state-management';
 import { LOCAL_STORE_PREFIX, STORE_PREFIX } from '../constants';
 import { isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
 
@@ -15,7 +11,7 @@ class LocalStoreExtractor extends TokenValueExtractor {
 		this.prefix = prefix;
 	}
 	protected getValueInternal(token: string) {
-		let parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
+		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
 		// Add isSlave_ as prefix for preview mode
 		let localStorageValue = this.store.getItem(parts[1]);
 		if (!localStorageValue) return localStorageValue;
@@ -39,7 +35,7 @@ export class StoreExtractor extends TokenValueExtractor {
 		this.prefix = prefix;
 	}
 	protected getValueInternal(token: string) {
-		let parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
+		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
 		return this.retrieveElementFrom(token, parts, 1, this.store);
 	}
 	getPrefix(): string {
@@ -50,10 +46,7 @@ let localStore: any = {};
 if (typeof window !== 'undefined') {
 	localStore = window.localStorage;
 }
-export const localStoreExtractor = new LocalStoreExtractor(
-	localStore,
-	`${LOCAL_STORE_PREFIX}.`,
-);
+export const localStoreExtractor = new LocalStoreExtractor(localStore, `${LOCAL_STORE_PREFIX}.`);
 const {
 	getData: _getData,
 	setData: _setData,
@@ -86,7 +79,7 @@ export function setData(path: string, value: any) {
 		if (!value) return;
 		let parts = path.split(TokenValueExtractor.REGEX_DOT);
 		// Add isSlave_ as prefix for preview mode
-		let key = parts[1];
+		const key = parts[1];
 		parts = parts.slice(2);
 		let store;
 		store = localStore.getItem(key);
@@ -114,6 +107,8 @@ export function setData(path: string, value: any) {
 			}
 		}
 	} else _setData(path, value);
+
+	console.log(path, store);
 }
 export const addListener = _addListener;
 

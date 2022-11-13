@@ -3,10 +3,10 @@ import { getData } from '../context/StoreContext';
 import { HelperComponent } from './HelperComponent';
 import { Schema } from '@fincity/kirun-js';
 import { NAMESPACE_UI_ENGINE } from '../constants';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { getTranslations } from './util/getTranslations';
 
-export interface LinkProps extends React.ComponentPropsWithoutRef<'span'> {
+interface LinkProps extends React.ComponentPropsWithoutRef<'span'> {
 	definition: {
 		properties: {
 			linkPath: {
@@ -60,18 +60,13 @@ export interface LinkProps extends React.ComponentPropsWithoutRef<'span'> {
 	};
 }
 
-export function LinkComponent(props: LinkProps) {
+function Link(props: LinkProps) {
 	const {
 		definition: {
-			properties: {
-				linkPath,
-				label,
-				target,
-				showButton,
-				externalButtonTarget,
-			},
+			properties: { linkPath, label, target, showButton, externalButtonTarget },
 		},
 		pageDefinition: { translations },
+		definition,
 	} = props;
 	const labelValue = getData(label);
 	const linkPathValue = getData(linkPath);
@@ -81,30 +76,22 @@ export function LinkComponent(props: LinkProps) {
 
 	return (
 		<div className="comp compLinks ">
-			<HelperComponent />
+			<HelperComponent definition={definition} />
 			<div className="linkDiv">
-				<Link
-					className="link"
-					to={`${linkPathValue}`}
-					target={targetValue}
-				>
+				<RouterLink className="link" to={`${linkPathValue}`} target={targetValue}>
 					{getTranslations(labelValue, translations)}
-				</Link>
+				</RouterLink>
 				{showButtonVal ? (
-					<Link
-						to={`${linkPathValue}`}
-						target={externalButtonTargetVal}
-						className="secondLink"
-					>
+					<RouterLink to={`${linkPathValue}`} target={externalButtonTargetVal} className="secondLink">
 						<i className="fa-solid fa-up-right-from-square"></i>
-					</Link>
+					</RouterLink>
 				) : null}
 			</div>
 		</div>
 	);
 }
 
-LinkComponent.propertiesSchema = Schema.ofObject('Link')
+Link.propertiesSchema = Schema.ofObject('Link')
 	.setNamespace(NAMESPACE_UI_ENGINE)
 	.setProperties(
 		new Map([
@@ -112,11 +99,8 @@ LinkComponent.propertiesSchema = Schema.ofObject('Link')
 			['linkPath', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
 			['target', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
 			['showButton', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
-			[
-				'externalButtonTarget',
-				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`),
-			],
+			['externalButtonTarget', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
 		]),
 	);
 
-export const link = LinkComponent;
+export default Link;

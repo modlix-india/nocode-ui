@@ -1,25 +1,23 @@
-import React, { ReactNode } from 'react';
-import * as D from '../index';
+import React from 'react';
+import Components from '..';
+import Nothing from '../Nothing';
 
-const componentMap = new Map<string, React.ElementType>();
-Object.entries(D).forEach(([k, v]) => componentMap.set(k, v));
-
-export const renderChildren = (pageDefinition: any, children: any) => {
+export const renderChildren = (pageDefinition: any, children: any, context: string) => {
 	return Object.entries(children)
-		.filter(([_, v]) => !!v)
-		.map(([k]) => pageDefinition.children[k])
+		.filter(([, v]) => !!v)
+		.map(([k]) => pageDefinition.componentDefinition[k])
 		.filter(e => !!e)
-		.sort(
-			(a: any, b: any) =>
-				(a?.properties?.displayOrder || 0) -
-				(b?.properties?.displayOrder || 0),
-		)
+		.sort((a: any, b: any) => (a?.properties?.displayOrder || 0) - (b?.properties?.displayOrder || 0))
 		.map(e => {
-			if (componentMap.get(e.type))
-				return React.createElement(componentMap.get(e.type)!, {
-					definition: e,
-					key: e.key,
-					pageDefinition: pageDefinition,
-				});
-		});
+			let comp = Components.get(e.type);
+			if (!comp) comp = Nothing;
+			if (!comp) return undefined;
+			return React.createElement(comp, {
+				definition: e,
+				key: e.key,
+				pageDefinition: pageDefinition,
+				context,
+			});
+		})
+		.filter(e => !!e);
 };

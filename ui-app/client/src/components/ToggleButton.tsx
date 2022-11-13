@@ -5,8 +5,7 @@ import { getData } from '../context/StoreContext';
 import { HelperComponent } from './HelperComponent';
 import { getTranslations } from './util/getTranslations';
 
-export interface ToggelButtonProps
-	extends React.ComponentPropsWithoutRef<'input'> {
+interface ToggelButtonProps extends React.ComponentPropsWithoutRef<'input'> {
 	definition: {
 		key: string;
 		name: string;
@@ -58,7 +57,7 @@ export interface ToggelButtonProps
 	};
 }
 
-function ToggelButtonComponent(props: ToggelButtonProps) {
+function ToggleButton(props: ToggelButtonProps) {
 	const {
 		definition: {
 			key,
@@ -66,11 +65,12 @@ function ToggelButtonComponent(props: ToggelButtonProps) {
 			properties: { label },
 		},
 		pageDefinition: { translations },
+		definition,
 	} = props;
 	const labelValue = getData(label);
 	return (
 		<div className="comp compToggleButton">
-			<HelperComponent />
+			<HelperComponent definition={definition} />
 			<label className="toggleButton">
 				<input type="checkbox" name={name} id={key} />
 				{getTranslations(labelValue, translations)}
@@ -79,7 +79,7 @@ function ToggelButtonComponent(props: ToggelButtonProps) {
 	);
 }
 
-ToggelButtonComponent.propertiesSchema = Schema.ofObject('ToggleButton')
+ToggleButton.propertiesSchema = Schema.ofObject('ToggleButton')
 	.setNamespace(NAMESPACE_UI_ENGINE)
 	.setProperties(
 		new Map([
@@ -89,4 +89,4 @@ ToggelButtonComponent.propertiesSchema = Schema.ofObject('ToggleButton')
 		]),
 	);
 
-export const ToggleButton = ToggelButtonComponent;
+export default ToggleButton;

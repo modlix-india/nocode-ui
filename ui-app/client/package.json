@@ -54,7 +54,7 @@
 		"ts-jest": "^28.0.5"
 	},
 	"dependencies": {
-		"@fincity/kirun-js": "^1.4.1",
+		"@fincity/kirun-js": "^1.4.2",
 		"@fincity/path-reactive-state-management": "^1.4.1",
 		"@fortawesome/fontawesome-free": "^6.2.0",
 		"@tsconfig/recommended": "^1.0.1",

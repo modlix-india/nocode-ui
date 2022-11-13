@@ -7,7 +7,8 @@ import { getChildrenByType } from './util/getChildrenByType';
 import { renderChildren } from './util/renderChildren';
 import { HelperComponent } from './HelperComponent';
 import { getTranslations } from './util/getTranslations';
-export interface CheckBoxProps extends React.ComponentPropsWithoutRef<'input'> {
+
+interface CheckBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 	definition: {
 		key: string;
 		name: string;
@@ -51,32 +52,25 @@ export interface CheckBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 		eventFunctions: {
 			[key: string]: any;
 		};
-		translations:{
-			[key:string] : {[key:string]: string}
-		}
+		translations: {
+			[key: string]: { [key: string]: string };
+		};
 	};
 }
 
-function CheckBoxComponent(props: CheckBoxProps) {
+function CheckBox(props: CheckBoxProps) {
 	const {
 		pageDefinition: { eventFunctions, translations },
 		definition: {
 			key,
 			name,
 			children,
-			properties: {
-				label,
-				isDisabled,
-				form,
-				bindingPath: bindingPathLocation,
-			},
+			properties: { label, isDisabled, form, bindingPath: bindingPathLocation },
 		},
-		...rest
+		definition,
 	} = props;
 	if (!bindingPathLocation) return <>Binding Path Required</>;
-	const [checkBoxdata, setCheckBoxData] = useState(
-		getData(getData(bindingPathLocation)) || false,
-	);
+	const [checkBoxdata, setCheckBoxData] = useState(getData(getData(bindingPathLocation)) || false);
 	const formId = getData(form);
 	const bindingPath = getData(bindingPathLocation);
 	const checkBoxLabel = getData(label);
@@ -91,8 +85,8 @@ function CheckBoxComponent(props: CheckBoxProps) {
 		setData(bindingPath, event.target.checked);
 	};
 	return (
-		<div className='comp compCheckBox'>
-			<HelperComponent/>
+		<div className="comp compCheckBox">
+			<HelperComponent definition={definition} />
 			<label className="checkbox" htmlFor={key}>
 				<input
 					disabled={isDisabledCheckbox}
@@ -102,14 +96,13 @@ function CheckBoxComponent(props: CheckBoxProps) {
 					onChange={handleChange}
 					checked={checkBoxdata}
 				/>
-				{getTranslations(checkBoxLabel,translations)}
+				{getTranslations(checkBoxLabel, translations)}
 			</label>
-			</div>
-		
+		</div>
 	);
 }
 
-CheckBoxComponent.propertiesSchema = Schema.ofObject('CheckBox')
+CheckBox.propertiesSchema = Schema.ofObject('CheckBox')
 	.setNamespace(NAMESPACE_UI_ENGINE)
 	.setProperties(
 		new Map([
@@ -119,4 +112,4 @@ CheckBoxComponent.propertiesSchema = Schema.ofObject('CheckBox')
 		]),
 	);
 
-export const CheckBox = CheckBoxComponent;
+export default CheckBox;

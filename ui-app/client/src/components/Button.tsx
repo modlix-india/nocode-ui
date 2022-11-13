@@ -5,7 +5,8 @@ import { addListener, getData, setData } from '../context/StoreContext';
 import { runEvent } from './util/runEvent';
 import { HelperComponent } from './HelperComponent';
 import { getTranslations } from './util/getTranslations';
-export interface ButtonProps extends React.ComponentPropsWithoutRef<'button'> {
+
+interface ButtonProps extends React.ComponentPropsWithoutRef<'button'> {
 	definition: {
 		key: string;
 		properties: {
@@ -77,6 +78,7 @@ export interface ButtonProps extends React.ComponentPropsWithoutRef<'button'> {
 		};
 	};
 	pageDefinition: {
+		name: string;
 		eventFunctions: {
 			[key: string]: any;
 		};
@@ -85,43 +87,29 @@ export interface ButtonProps extends React.ComponentPropsWithoutRef<'button'> {
 }
 function ButtonComponent(props: ButtonProps) {
 	const {
-		pageDefinition: { eventFunctions, translations },
+		pageDefinition: { name: pageName, eventFunctions, translations },
 		definition: {
 			key,
-			properties: {
-				label,
-				onClick,
-				type,
-				isDisabled,
-				leftIcon = {},
-				rightIcon = {},
-				fabIcon = {},
-			},
+			properties: { label, onClick, type, isDisabled, leftIcon = {}, rightIcon = {}, fabIcon = {} },
 		},
-		...rest
+		definition,
 	} = props;
 	const buttonType = getData(type);
 	const isDisabledButton = getData(isDisabled);
-	const clickEvent = eventFunctions[getData(onClick)];
+	const clickEventKey = getData(onClick);
+	const clickEvent = eventFunctions[clickEventKey];
 
-	const { iconStyle: fabIconStyle = 'SOLID', icon: fabIconLocation = {} } =
-		fabIcon;
+	const { iconStyle: fabIconStyle = 'SOLID', icon: fabIconLocation = {} } = fabIcon;
 	const buttonFabIcon = getData(fabIconLocation);
 
 	const buttonLabel = getData(label);
-	const { iconStyle: leftIconStyle = 'SOLID', icon: leftIconLocation = {} } =
-		leftIcon;
-	const {
-		iconStyle: rightIconStyle = 'SOLID',
-		icon: rightIconLocation = {},
-	} = rightIcon;
+	const { iconStyle: leftIconStyle = 'SOLID', icon: leftIconLocation = {} } = leftIcon;
+	const { iconStyle: rightIconStyle = 'SOLID', icon: rightIconLocation = {} } = rightIcon;
 	const buttonLeftIcon = getData(leftIconLocation);
 	const buttonRightIcon = getData(rightIconLocation);
 
-	const functionExecutionStorePath = `${FUNCTION_EXECUTION_PATH}.${key}.isRunning`;
-	const [isLoading, setIsLoading] = useState(
-		getData(functionExecutionStorePath) || false,
-	);
+	const functionExecutionStorePath = `${FUNCTION_EXECUTION_PATH}.${pageName}.${key}.isRunning`;
+	const [isLoading, setIsLoading] = useState(getData(functionExecutionStorePath) || false);
 
 	useEffect(() => {
 		addListener(functionExecutionStorePath, (_, value) => {
@@ -131,28 +119,20 @@ function ButtonComponent(props: ButtonProps) {
 
 	const handleClick = async () => {
 		if (clickEvent && !isLoading) {
-			await runEvent(clickEvent, key);
-			setData(functionExecutionStorePath, false);
+			await runEvent(clickEvent, clickEventKey, pageName);
 		}
 	};
 	if (buttonType === 'fabButton' || buttonType === 'fabButtonMini')
 		return (
 			<div className="comp compButton">
-				<HelperComponent />
+				<HelperComponent definition={definition} />
 				<button
-					className={`${
-						buttonType === 'fabButton'
-							? 'fabButton'
-							: 'fabButtonMini'
-					}`}
+					className={`${buttonType === 'fabButton' ? 'fabButton' : 'fabButtonMini'}`}
 					disabled={isLoading || isDisabledButton}
 					onClick={handleClick}
-					{...rest}
 				>
 					<i
-						className={`fabButtonIcon ${
-							fabIconStyle === 'SOLID' ? 'fa-solid' : 'fa-regular'
-						} fa-fw ${
+						className={`fabButtonIcon ${fabIconStyle === 'SOLID' ? 'fa-solid' : 'fa-regular'} fa-fw ${
 							buttonFabIcon
 								? !isLoading
 									? buttonFabIcon
@@ -165,21 +145,11 @@ function ButtonComponent(props: ButtonProps) {
 		);
 	return (
 		<div className="comp compButton">
-			<HelperComponent />
-
-			<button
-				className={` button ${buttonType}`}
-				disabled={isLoading || isDisabledButton}
-				onClick={handleClick}
-				{...rest}
-			>
+			<HelperComponent definition={definition} />
+			<button className={` button ${buttonType}`} disabled={isLoading || isDisabledButton} onClick={handleClick}>
 				<div className="buttonInternalContainer">
 					<i
-						className={`leftButtonIcon ${
-							leftIconStyle === 'SOLID'
-								? 'fa-solid'
-								: 'fa-regular'
-						} fa-fw ${
+						className={`leftButtonIcon ${leftIconStyle === 'SOLID' ? 'fa-solid' : 'fa-regular'} fa-fw ${
 							buttonLeftIcon
 								? !isLoading
 									? buttonLeftIcon
@@ -189,14 +159,8 @@ function ButtonComponent(props: ButtonProps) {
 					/>
 					{getTranslations(buttonLabel, translations)}
 					<i
-						className={`rightButtonIcon ${
-							rightIconStyle === 'SOLID'
-								? 'fa-solid'
-								: 'fa-regular'
-						} fa-fw ${
-							buttonRightIcon
-								? buttonRightIcon
-								: `${buttonRightIcon} hide`
+						className={`rightButtonIcon ${rightIconStyle === 'SOLID' ? 'fa-solid' : 'fa-regular'} fa-fw ${
+							buttonRightIcon ? buttonRightIcon : `${buttonRightIcon} hide`
 						}`}
 					/>
 				</div>
@@ -214,4 +178,4 @@ ButtonComponent.propertiesSchema = Schema.ofObject('Button')
 		]),
 	);
 
-export const Button = ButtonComponent;
+export default ButtonComponent;

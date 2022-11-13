@@ -1,9 +1,21 @@
-export * from './Button';
-export * from './Grid';
-export * from './Page';
-export * from './Label';
-export * from './CheckBox';
-export * from './RadioButton';
-export * from './ToggleButton';
-export * from './TextBox';
-export * from './Links';
+import Button from './Button';
+import CheckBox from './CheckBox';
+import Grid from './Grid';
+import Label from './Label';
+import Link from './Link';
+import Page from './Page';
+import RadioButton from './RadioButton';
+import TextBox from './TextBox';
+import ToggleButton from './ToggleButton';
+
+export default new Map<string, React.ElementType>([
+	['Button', Button],
+	['Grid', Grid],
+	['Page', Page],
+	['Label', Label],
+	['CheckBox', CheckBox],
+	['RadioButton', RadioButton],
+	['ToggleButton', ToggleButton],
+	['TextBox', TextBox],
+	['Link', Link],
+]);

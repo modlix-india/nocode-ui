@@ -1,18 +1,40 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { RenderEngineContainer } from './Engine/RenderEngineContainer';
-import * as getAppData from './definitions/getAppData.json';
-
-import { FunctionDefinition } from '@fincity/kirun-js';
-
-const def: FunctionDefinition = FunctionDefinition.from(getAppData);
+import * as getAppDefinition from './definitions/getAppDefinition.json';
+import { runEvent } from './components/util/runEvent';
+import { addListener } from './context/StoreContext';
+import { STORE_PREFIX } from './constants';
 
 export function App() {
-	return (
-		<BrowserRouter>
-			<Routes>
-				<Route path="/*" element={<RenderEngineContainer />} />
-			</Routes>
-		</BrowserRouter>
-	);
+	const [isApplicationLoadFailed, setIsApplicationFailed] = useState(false);
+	const [applicationLoaded, setApplicationLoaded] = useState(false);
+
+	useEffect(() => {
+		(async () => {
+			await runEvent(getAppDefinition, 'initialLoadFunction');
+			setApplicationLoaded(true);
+		})();
+	}, []);
+
+	useEffect(() => {
+		const unsubscribe = addListener(`${STORE_PREFIX}.isApplicationLoadFailed`, (_, value) => {
+			setIsApplicationFailed(value);
+		});
+		return () => unsubscribe();
+	}, []);
+
+	if (applicationLoaded) {
+		if (isApplicationLoadFailed) return <>Application Load failed, Please contact your administrator</>;
+		else
+			return (
+				<BrowserRouter>
+					<Routes>
+						<Route path="/*" element={<RenderEngineContainer />} />
+					</Routes>
+				</BrowserRouter>
+			);
+	} else {
+		return <>Loading...</>;
+	}
 }

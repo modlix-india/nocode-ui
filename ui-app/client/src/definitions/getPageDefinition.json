@@ -1,0 +1,48 @@
+{
+	"name": "getPageDefinition",
+	"namespace": "UIApp",
+	"steps": {
+		"pageDefinition": {
+			"statementName": "pageDefinition",
+			"namespace": "UIEngine",
+			"name": "FetchData",
+			"parameterMap": {
+				"url": {
+					"pageDefinitionURL": {
+						"key": "pageDefinitionURL",
+						"type": "EXPRESSION",
+						"expression": "'api/ui/page/' + (Store.urlDetails.pagename ?? Store.application.properties.defaultPage)"
+					}
+				}
+			}
+		},
+		"setPageDefinition": {
+			"statementName": "setPageDefinition",
+			"namespace": "UIEngine",
+			"name": "SetStore",
+			"parameterMap": {
+				"path": {
+					"setPageDefinitionPath": {
+						"key": "setPageDefinitionPath",
+						"type": "EXPRESSION",
+						"expression": "'Store.pageDefinition.{{Store.urlDetails.pagename ?? Store.application.properties.defaultPage}}'"
+					}
+				},
+				"value": {
+					"setPageDefinitionValue": {
+						"key": "setPageDefinitionValue",
+						"type": "EXPRESSION",
+						"expression": "Steps.pageDefinition.output.data"
+					}
+				}
+			},
+			"dependentStatements": { "Steps.pageDefinition.output": true }
+		},
+		"genOutput": {
+			"statementName": "genOutput",
+			"namespace": "System",
+			"name": "GenerateEvent",
+			"dependentStatements": { "Steps.setPageDefinition.output": true }
+		}
+	}
+}

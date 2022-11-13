@@ -4,7 +4,8 @@ import { NAMESPACE_UI_ENGINE } from '../constants';
 import { getData } from '../context/StoreContext';
 import { HelperComponent } from './HelperComponent';
 import { getTranslations } from './util/getTranslations';
-export interface LabelProps extends React.ComponentPropsWithoutRef<'span'> {
+
+interface LabelProps extends React.ComponentPropsWithoutRef<'span'> {
 	definition: {
 		properties: {
 			text: {
@@ -25,27 +26,26 @@ export interface LabelProps extends React.ComponentPropsWithoutRef<'span'> {
 		};
 	};
 }
-export function LabelComponent(props: LabelProps) {
+
+function Label(props: LabelProps) {
 	const {
 		pageDefinition: { translations },
 		definition: {
 			properties: { text },
 		},
-		...rest
+		definition,
 	} = props;
 	const labelText = getData(text);
 	return (
 		<div className="comp compLabel">
-			<HelperComponent />
-			<span {...rest}>{getTranslations(labelText, translations)}</span>
+			<HelperComponent definition={definition} />
+			<span>{getTranslations(labelText, translations)}</span>
 		</div>
 	);
 }
 
-LabelComponent.propertiesSchema = Schema.ofObject('Label')
+Label.propertiesSchema = Schema.ofObject('Label')
 	.setNamespace(NAMESPACE_UI_ENGINE)
-	.setProperties(
-		new Map([['text', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)]]),
-	);
+	.setProperties(new Map([['text', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)]]));
 
-export const Label = LabelComponent;
+export default Label;

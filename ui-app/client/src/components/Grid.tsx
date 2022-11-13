@@ -1,15 +1,15 @@
 import React from 'react';
 import { renderChildren } from './util/renderChildren';
 
-export interface GridProps extends React.ComponentPropsWithoutRef<'div'> {
+interface GridProps extends React.ComponentPropsWithoutRef<'div'> {
 	definition: any;
 	pageDefinition: any;
+	context: string;
 }
-export function Grid(props: GridProps) {
-	const { definition, pageDefinition, ...rest } = props;
-	return (
-		<div className="compGrid grid" {...rest}>
-			{renderChildren(pageDefinition, definition.children)}
-		</div>
-	);
+
+function Grid(props: GridProps) {
+	const { definition, pageDefinition, context } = props;
+	return <div className="comp compGrid grid">{renderChildren(pageDefinition, definition.children, context)}</div>;
 }
+
+export default Grid;
