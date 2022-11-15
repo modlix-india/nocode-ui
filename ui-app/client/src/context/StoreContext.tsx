@@ -1,5 +1,5 @@
 import { useStore, setStoreData } from '@fincity/path-reactive-state-management';
-import { LOCAL_STORE_PREFIX, STORE_PREFIX } from '../constants';
+import { LOCAL_STORE_PREFIX, STORE_PREFIX, PAGE_STORE_PREFIX } from '../constants';
 import { isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
 
 class LocalStoreExtractor extends TokenValueExtractor {
@@ -56,17 +56,17 @@ const {
 
 export const storeExtractor = new StoreExtractor(_store, `${STORE_PREFIX}.`);
 
-export function getData(loc: any) {
+export function getData(loc: any, ...tve: TokenValueExtractor[]) {
 	const typeOfLoc = typeof loc;
 
-	if (typeOfLoc === 'string') return _getData(loc);
+	if (typeOfLoc === 'string') return _getData(loc, tve);
 
 	if (typeOfLoc !== 'object') return undefined;
 
 	let data: any = undefined;
-	if (loc.location?.type === 'VALUE') data = _getData(loc.location?.value);
+	if (loc.location?.type === 'VALUE') data = _getData(loc.location?.value, tve);
 	if (loc.location?.type === 'EXPRESSION') {
-		const v = _getData(loc.location?.expression);
+		const v = _getData(loc.location?.expression, tve);
 		if (!isNullValue(v)) data = v;
 	}
 	if (!isNullValue(loc.value)) data = loc.value;
@@ -74,7 +74,7 @@ export function getData(loc: any) {
 	return data;
 }
 
-export function setData(path: string, value: any) {
+export function setData(path: string, value: any, context?: string) {
 	if (path.startsWith(LOCAL_STORE_PREFIX)) {
 		if (!value) return;
 		let parts = path.split(TokenValueExtractor.REGEX_DOT);
@@ -106,10 +106,49 @@ export function setData(path: string, value: any) {
 				localStore.setItem(key, value);
 			}
 		}
+	} else if (path.startsWith(PAGE_STORE_PREFIX)) {
+		_setData(
+			`Store.pageData.${context}.${path.substring(PAGE_STORE_PREFIX.length + 1)}`,
+			value,
+		);
 	} else _setData(path, value);
 
 	console.log(path, store);
 }
+
+export class PageStoreExtractor extends TokenValueExtractor {
+	private context: string;
+
+	static readonly extractorMap: Map<string, PageStoreExtractor> = new Map();
+
+	constructor(context: string) {
+		super();
+		this.context = context;
+	}
+
+	protected getValueInternal(token: string) {
+		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
+		return this.retrieveElementFrom(
+			token,
+			['pageData', this.context, ...parts.slice(1)],
+			0,
+			_store,
+		);
+	}
+
+	getPrefix(): string {
+		return 'Page.';
+	}
+
+	public static getForContext(context: string): PageStoreExtractor {
+		if (this.extractorMap.has(context)) return this.extractorMap.get(context)!;
+
+		this.extractorMap.set(context, new PageStoreExtractor(context));
+
+		return this.extractorMap.get(context)!;
+	}
+}
+
 export const addListener = _addListener;
 
 export const store = _store;

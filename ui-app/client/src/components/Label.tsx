@@ -1,30 +1,21 @@
 import { Schema } from '@fincity/kirun-js';
 import React from 'react';
 import { NAMESPACE_UI_ENGINE } from '../constants';
-import { getData } from '../context/StoreContext';
+import { getData, PageStoreExtractor } from '../context/StoreContext';
 import { HelperComponent } from './HelperComponent';
+import { ComponentProperty, Translations } from './Types';
 import { getTranslations } from './util/getTranslations';
 
 interface LabelProps extends React.ComponentPropsWithoutRef<'span'> {
 	definition: {
 		properties: {
-			text: {
-				value: string;
-				location: {
-					type: 'EXPRESSION' | 'VALUE';
-					value?: string;
-					expression?: string;
-				};
-			};
+			text: ComponentProperty<string>;
 		};
 	};
 	pageDefinition: {
-		translations: {
-			[key: string]: {
-				[key: string]: string;
-			};
-		};
+		translations: Translations;
 	};
+	context: string;
 }
 
 function Label(props: LabelProps) {
@@ -34,8 +25,9 @@ function Label(props: LabelProps) {
 			properties: { text },
 		},
 		definition,
+		context,
 	} = props;
-	const labelText = getData(text);
+	const labelText = getData(text, PageStoreExtractor.getForContext(context));
 	return (
 		<div className="comp compLabel">
 			<HelperComponent definition={definition} />

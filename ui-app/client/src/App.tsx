@@ -17,24 +17,25 @@ export function App() {
 		})();
 	}, []);
 
-	useEffect(() => {
-		const unsubscribe = addListener(`${STORE_PREFIX}.isApplicationLoadFailed`, (_, value) => {
-			setIsApplicationFailed(value);
-		});
-		return () => unsubscribe();
-	}, []);
+	useEffect(
+		() =>
+			addListener(`${STORE_PREFIX}.isApplicationLoadFailed`, (_, value) =>
+				setIsApplicationFailed(value),
+			),
+		[],
+	);
 
-	if (applicationLoaded) {
-		if (isApplicationLoadFailed) return <>Application Load failed, Please contact your administrator</>;
-		else
-			return (
-				<BrowserRouter>
-					<Routes>
-						<Route path="/*" element={<RenderEngineContainer />} />
-					</Routes>
-				</BrowserRouter>
-			);
-	} else {
-		return <>Loading...</>;
-	}
+	if (isApplicationLoadFailed)
+		return <>Application Load failed, Please contact your administrator</>;
+
+	if (applicationLoaded)
+		return (
+			<BrowserRouter>
+				<Routes>
+					<Route path="/*" element={<RenderEngineContainer />} />
+				</Routes>
+			</BrowserRouter>
+		);
+
+	return <>Loading...</>;
 }

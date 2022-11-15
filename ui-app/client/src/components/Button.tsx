@@ -90,7 +90,15 @@ function ButtonComponent(props: ButtonProps) {
 		pageDefinition: { name: pageName, eventFunctions, translations },
 		definition: {
 			key,
-			properties: { label, onClick, type, isDisabled, leftIcon = {}, rightIcon = {}, fabIcon = {} },
+			properties: {
+				label,
+				onClick,
+				type,
+				isDisabled,
+				leftIcon = {},
+				rightIcon = {},
+				fabIcon = {},
+			},
 		},
 		definition,
 	} = props;
@@ -132,7 +140,9 @@ function ButtonComponent(props: ButtonProps) {
 					onClick={handleClick}
 				>
 					<i
-						className={`fabButtonIcon ${fabIconStyle === 'SOLID' ? 'fa-solid' : 'fa-regular'} fa-fw ${
+						className={`fabButtonIcon ${
+							fabIconStyle === 'SOLID' ? 'fa-solid' : 'fa-regular'
+						} fa-fw ${
 							buttonFabIcon
 								? !isLoading
 									? buttonFabIcon
@@ -146,10 +156,16 @@ function ButtonComponent(props: ButtonProps) {
 	return (
 		<div className="comp compButton">
 			<HelperComponent definition={definition} />
-			<button className={` button ${buttonType}`} disabled={isLoading || isDisabledButton} onClick={handleClick}>
+			<button
+				className={` button ${buttonType}`}
+				disabled={isLoading || isDisabledButton}
+				onClick={handleClick}
+			>
 				<div className="buttonInternalContainer">
 					<i
-						className={`leftButtonIcon ${leftIconStyle === 'SOLID' ? 'fa-solid' : 'fa-regular'} fa-fw ${
+						className={`leftButtonIcon ${
+							leftIconStyle === 'SOLID' ? 'fa-solid' : 'fa-regular'
+						} fa-fw ${
 							buttonLeftIcon
 								? !isLoading
 									? buttonLeftIcon
@@ -159,9 +175,9 @@ function ButtonComponent(props: ButtonProps) {
 					/>
 					{getTranslations(buttonLabel, translations)}
 					<i
-						className={`rightButtonIcon ${rightIconStyle === 'SOLID' ? 'fa-solid' : 'fa-regular'} fa-fw ${
-							buttonRightIcon ? buttonRightIcon : `${buttonRightIcon} hide`
-						}`}
+						className={`rightButtonIcon ${
+							rightIconStyle === 'SOLID' ? 'fa-solid' : 'fa-regular'
+						} fa-fw ${buttonRightIcon ? buttonRightIcon : `${buttonRightIcon} hide`}`}
 					/>
 				</div>
 			</button>
