@@ -512,12 +512,22 @@ h2 {
 	display: flex;
 	flex-direction: column;
 }
-.compTabs .tabButtonsActive {
+.compTabs .tabsButtonActive {
+	background-color: #fff;
+	border: none;
+	text-align: left;
+	font: normal normal normal 15px/24px Open Sans;
+	letter-spacing: 0px;
+	color: #393a3c;
+	opacity: 1;
+	display: flex;
+	flex-direction: column;
+}
+.compTabs .tabButtonBorderActive {
 	border-bottom: 6px solid #1f3c3d;
 	width: 63px;
 	align-self: center;
 }
-
 .comp .tabButtonDiv {
 	width: 97%;
 	justify-content: space-between;
