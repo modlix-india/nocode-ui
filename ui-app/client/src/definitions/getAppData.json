@@ -247,6 +247,50 @@
 			},
 			"dependentStatements": { "Steps.pageDefinition.output": true }
 		},
+		"setLocationForRepeatorTesting": {
+			"statementName": "setLocationForRepeatorTesting",
+			"namespace": "UIEngine",
+			"name": "SetStore",
+			"parameterMap": {
+				"path": {
+					"setLocationForRepeatorTestingPath": {
+						"key": "setLocationForRepeatorTestingPath",
+						"type": "VALUE",
+						"value": "Store.repeatorTesting"
+					}
+				},
+				"value": {
+					"setLocationForRepeatorTestingValue": {
+						"key": "setLocationForRepeatorTestingValue",
+						"type": "VALUE",
+						"value": [
+							{
+								"name": "Raja",
+								"buttons": [
+									{ "label": "Testing" },
+									{ "label": "Repeator" }
+								]
+							},
+							{
+								"name": "Avinash",
+								"buttons": [
+									{ "label": "Testing" },
+									{ "label": "Repeator" }
+								]
+							},
+							{
+								"name": "Alli",
+								"buttons": [
+									{ "label": "Testing" },
+									{ "label": "Repeator" }
+								]
+							}
+						]
+					}
+				}
+			},
+			"dependentStatements": { "Steps.pageDefinition.output": true }
+		},
 		"genOutput": {
 			"statementName": "genOutput",
 			"namespace": "System",

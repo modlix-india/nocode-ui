@@ -10,10 +10,10 @@ import { runEvent } from '../components/util/runEvent';
 export const RenderEngineContainer = () => {
 	const [appLoading, setAppLoading] = useState(false);
 	const [isApplicationLoadFailed, setIsApplicationFailed] = useState(
-		getData(`${STORE_PREFIX}.isApplicationLoadFailed`),
+		getData(`${STORE_PREFIX}.isApplicationLoadFailed`, []),
 	);
 	const [applicationData, setApplicationData] = useState(
-		getData(`${STORE_PREFIX}.application`),
+		getData(`${STORE_PREFIX}.application`, []),
 	);
 	const { pathname } = useLocation();
 	const clientDetails = pathBreaker(pathname);

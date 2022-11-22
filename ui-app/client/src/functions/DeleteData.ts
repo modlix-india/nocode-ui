@@ -63,10 +63,16 @@ export class DeleteData extends AbstractFunction {
 	protected async internalExecute(
 		context: FunctionExecutionParameters,
 	): Promise<FunctionOutput> {
-		const url: string = getData(context.getArguments()?.get('url'));
-		const headers = getData(context.getArguments()?.get('headers'));
-		const pathParams = getData(context.getArguments()?.get('pathParams'));
-		const queryParams = getData(context.getArguments()?.get('queryParams'));
+		const url: string = getData(context.getArguments()?.get('url'), []);
+		const headers = getData(context.getArguments()?.get('headers'), []);
+		const pathParams = getData(
+			context.getArguments()?.get('pathParams'),
+			[],
+		);
+		const queryParams = getData(
+			context.getArguments()?.get('queryParams'),
+			[],
+		);
 
 		try {
 			const response = await axios({
@@ -81,7 +87,7 @@ export class DeleteData extends AbstractFunction {
 			return new FunctionOutput([
 				EventResult.outputOf(new Map([['data', response.data]])),
 			]);
-		} catch (err) {
+		} catch (err: any) {
 			const errOutput = {
 				headers: err.response.headers,
 				data: err.response.data,

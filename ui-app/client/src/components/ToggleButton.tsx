@@ -3,6 +3,7 @@ import React from 'react';
 import { NAMESPACE_UI_ENGINE } from '../constants';
 import { getData } from '../context/StoreContext';
 import { HelperComponent } from './HelperComponent';
+import { Location } from './types';
 import { getTranslations } from './util/getTranslations';
 
 export interface ToggelButtonProps
@@ -56,6 +57,7 @@ export interface ToggelButtonProps
 			};
 		};
 	};
+	locationHistory: Array<Location | string>;
 }
 
 function ToggelButtonComponent(props: ToggelButtonProps) {
@@ -66,8 +68,9 @@ function ToggelButtonComponent(props: ToggelButtonProps) {
 			properties: { label },
 		},
 		pageDefinition: { translations },
+		locationHistory,
 	} = props;
-	const labelValue = getData(label);
+	const labelValue = getData(label, locationHistory);
 	return (
 		<div className="comp compToggleButton">
 			<HelperComponent />

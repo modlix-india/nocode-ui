@@ -184,6 +184,44 @@ export const page = {
         textbuttongrid: true,
         checkBoxGrid: true,
         linkGrid: true,
+        arrayRepeatorcomp: true,
+      },
+    },
+    arrayRepeatorcomp: {
+      name: "arrayRepeatorcomp",
+      key: "arrayRepeatorcomp",
+      type: "ArrayRepeator",
+      properties: {
+        bindingPath: {
+          type: "VALUE",
+          value: "Store.repeatorTesting",
+        },
+      },
+      children: {
+        arrayRepeatorcompgrid: true,
+      },
+    },
+    arrayRepeatorcompInsideRepeator: {
+      name: "arrayRepeatorcompInsideRepeator",
+      key: "arrayRepeatorcompInsideRepeator",
+      type: "ArrayRepeator",
+      properties: {
+        bindingPath: {
+          type: "VALUE",
+          value: ".buttons",
+        },
+      },
+      children: {
+        textboxcompcomparrayInsideArray: true,
+      },
+    },
+    arrayRepeatorcompgrid: {
+      name: "arrayRepeatorcompgrid",
+      key: "arrayRepeatorcompgrid",
+      type: "Grid",
+      children: {
+        textboxcompcomparray: true,
+        arrayRepeatorcompInsideRepeator: true,
       },
     },
     linkGrid: {
@@ -236,6 +274,53 @@ export const page = {
       properties: {
         label: {
           value: "Login",
+        },
+        bindingPath: {
+          value: "Store.texboxbindingpath",
+        },
+        supportingText: {
+          value: "Supporting Text",
+        },
+        isMandatory: {
+          value: true,
+        },
+        displayOrder: -1,
+      },
+    },
+
+    textboxcompcomparray: {
+      name: "textboxcompcomparray",
+      key: "textboxcompcomparray",
+      type: "TextBox",
+      properties: {
+        label: {
+          location: {
+            type: "VALUE",
+            value: ".name",
+          },
+        },
+        bindingPath: {
+          value: "Store.texboxbindingpath",
+        },
+        supportingText: {
+          value: "Supporting Text",
+        },
+        isMandatory: {
+          value: true,
+        },
+        displayOrder: -1,
+      },
+    },
+    textboxcompcomparrayInsideArray: {
+      name: "textboxcompcomparrayInsideArray",
+      key: "textboxcompcomparrayInsideArray",
+      type: "TextBox",
+      properties: {
+        label: {
+          location: {
+            type: "VALUE",
+            value: ".label",
+          },
         },
         bindingPath: {
           value: "Store.texboxbindingpath",

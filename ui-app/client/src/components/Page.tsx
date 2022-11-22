@@ -8,12 +8,16 @@ export function Page({ definition }: { definition: any }) {
 	const {
 		properties: { definitionLocation },
 	} = definition;
-	const pageDefinition = getData(definitionLocation);
+	const pageDefinition = getData(definitionLocation, []);
 	if (!pageDefinition) return <>No Definition Found</>;
 	if (!pageDefinition.children) return <></>;
 
-	const comps = renderChildren(pageDefinition, {
-		[pageDefinition.rootComponent]: true,
-	});
+	const comps = renderChildren(
+		pageDefinition,
+		{
+			[pageDefinition.rootComponent]: true,
+		},
+		[],
+	);
 	return <>{comps}</>;
 }

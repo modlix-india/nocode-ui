@@ -73,22 +73,22 @@ export class SendData extends AbstractFunction {
 		let headers = context.getArguments()?.get('headers');
 		let pathParams = context.getArguments()?.get('pathParams');
 		let queryParams = context.getArguments()?.get('queryParams');
-		const payload = getData(context.getArguments()?.get('payload'));
+		const payload = getData(context.getArguments()?.get('payload'), []);
 
 		pathParams = Object.entries(pathParams)
-			.map(([k, v]) => [k, getData(v)])
+			.map(([k, v]) => [k, getData(v, [])])
 			.reduce((a, [k, v]) => {
 				if (v) a[k] = v;
 				return a;
 			}, {});
 		queryParams = Object.entries(queryParams)
-			.map(([k, v]) => [k, getData(v)])
+			.map(([k, v]) => [k, getData(v, [])])
 			.reduce((a, [k, v]) => {
 				if (v) a[k] = v;
 				return a;
 			}, {});
 		headers = Object.entries(headers)
-			.map(([k, v]) => [k, getData(v)])
+			.map(([k, v]) => [k, getData(v, [])])
 			.reduce((a, [k, v]) => {
 				if (v) a[k] = v;
 				return a;
