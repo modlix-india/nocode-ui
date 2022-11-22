@@ -40,7 +40,11 @@ export interface Image extends React.ComponentPropsWithoutRef<'span'> {
 				};
 			};
 		};
-		pageDefinition: {};
+		pageDefinition: {
+			translations: {
+				[key: string]: { [key: string]: string };
+			};
+		};
 	};
 }
 export function ImageComponent(props: Image) {
