@@ -67,11 +67,18 @@ export function TabsComponent(props: Tabs) {
 			setActiveTab(value);
 		});
 	}, []);
-	const toggleActiveStyle = function (childKey: any) {
+	const toggleActiveBorderStyle = function (childKey: any) {
 		if (activeTab === childKey || defaultActive === childKey) {
-			return 'tabButtonsActive';
+			return 'tabButtonBorderActive';
 		} else {
 			return '';
+		}
+	};
+	const toggleActiveStyle = function (childKey: any) {
+		if (activeTab === childKey || defaultActive === childKey) {
+			return 'tabsButtonActive';
+		} else {
+			return 'tabsButtons';
 		}
 	};
 	return (
@@ -81,13 +88,13 @@ export function TabsComponent(props: Tabs) {
 				<div className="tabButtonDiv">
 					{tabsData.map((e: any) => (
 						<button
-							className="tabsButtons"
+							className={toggleActiveStyle(e.childKey)}
 							key={e.childKey}
 							onClick={() => handleClick(e.childKey)}
 						>
 							{e.tabName}
 							<div
-								className={toggleActiveStyle(e.childKey)}
+								className={toggleActiveBorderStyle(e.childKey)}
 							></div>
 						</button>
 					))}
