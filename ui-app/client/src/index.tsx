@@ -2,6 +2,10 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
 
+declare global {
+	var nodeDev: boolean;
+}
+
 const app = document.getElementById('app');
 if (!app) {
 	const span = document.createElement('SPAN');
