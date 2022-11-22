@@ -1,4 +1,6 @@
+import { Schema } from '@fincity/kirun-js';
 import React, { useEffect } from 'react';
+import { NAMESPACE_UI_ENGINE } from '../constants';
 import { addListener, getData, setData } from '../context/StoreContext';
 import { HelperComponent } from './HelperComponent';
 import { renderChildren } from './util/renderChildren';
@@ -104,4 +106,13 @@ export function TabsComponent(props: Tabs) {
 	);
 }
 
+TabsComponent.propertiesSchema = Schema.ofObject('Tabs')
+	.setNamespace(NAMESPACE_UI_ENGINE)
+	.setProperties(
+		new Map([
+			['tabs', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
+			['defaultActive', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
+			['bindingPath', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
+		]),
+	);
 export const tabs = TabsComponent;
