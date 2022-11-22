@@ -70,11 +70,13 @@ export const dotPathBuilder = (path: string, locationHistory: Array<DataLocation
 	let finalPath = '';
 	if (typeof pickedlocationHistory === 'string')
 		finalPath = `${pickedlocationHistory}.${path.substring(dotsLength)}`;
-	if (pickedlocationHistory?.type === 'VALUE') {
-		finalPath = `${pickedlocationHistory.value}.${path.substring(dotsLength)}`;
-	}
-	if (pickedlocationHistory?.type === 'EXPRESSION') {
-		finalPath = `${pickedlocationHistory.expression}.${path.substring(dotsLength)}`;
+	else {
+		if (pickedlocationHistory?.type === 'VALUE') {
+			finalPath = `${pickedlocationHistory.value}.${path.substring(dotsLength)}`;
+		}
+		if (pickedlocationHistory?.type === 'EXPRESSION') {
+			finalPath = `${pickedlocationHistory.expression}.${path.substring(dotsLength)}`;
+		}
 	}
 	return finalPath;
 };
@@ -86,16 +88,19 @@ export function getData(
 ) {
 	const typeOfLoc = typeof loc;
 
-	if (typeOfLoc === 'string') return _getData(loc as string, tve!);
+	if (typeOfLoc === 'string') return _getData(loc as string, ...tve);
 
 	if (typeOfLoc !== 'object') return undefined;
 
 	let data: any = undefined;
 	if (loc.location?.type === 'VALUE') {
-		data = _getData(dotPathBuilder(loc.location?.value, locationHistory) || '', tve!);
+		data = _getData(dotPathBuilder(loc.location?.value, locationHistory) || '', ...tve);
 	}
 	if (loc.location?.type === 'EXPRESSION') {
-		const v = _getData(dotPathBuilder(loc.location?.expression!, locationHistory) || '', tve!);
+		const v = _getData(
+			dotPathBuilder(loc.location?.expression!, locationHistory) || '',
+			...tve,
+		);
 		if (!isNullValue(v)) data = v;
 	}
 	if (!isNullValue(loc.value)) data = loc.value;
@@ -146,20 +151,20 @@ export function setData(path: string, value: any, context?: string) {
 }
 
 export class PageStoreExtractor extends TokenValueExtractor {
-	private context: string;
+	private pageName: string;
 
 	static readonly extractorMap: Map<string, PageStoreExtractor> = new Map();
 
-	constructor(context: string) {
+	constructor(pageName: string) {
 		super();
-		this.context = context;
+		this.pageName = pageName;
 	}
 
 	protected getValueInternal(token: string) {
 		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
 		return this.retrieveElementFrom(
 			token,
-			['pageData', this.context, ...parts.slice(1)],
+			['pageData', this.pageName, ...parts.slice(1)],
 			0,
 			_store,
 		);
@@ -169,12 +174,12 @@ export class PageStoreExtractor extends TokenValueExtractor {
 		return 'Page.';
 	}
 
-	public static getForContext(context: string): PageStoreExtractor {
-		if (this.extractorMap.has(context)) return this.extractorMap.get(context)!;
+	public static getForContext(pageName: string): PageStoreExtractor {
+		if (this.extractorMap.has(pageName)) return this.extractorMap.get(pageName)!;
 
-		this.extractorMap.set(context, new PageStoreExtractor(context));
+		this.extractorMap.set(pageName, new PageStoreExtractor(pageName));
 
-		return this.extractorMap.get(context)!;
+		return this.extractorMap.get(pageName)!;
 	}
 }
 
