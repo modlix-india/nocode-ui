@@ -501,7 +501,7 @@ h2 {
 	justify-items: center;
 }
 
-.compTabs .tabsButtonsInactive {
+.compTabs .tabsButtons {
 	background-color: #fff;
 	border: none;
 	text-align: left;
@@ -509,16 +509,13 @@ h2 {
 	letter-spacing: 0px;
 	color: #6c7586;
 	opacity: 1;
+	display: flex;
+	flex-direction: column;
 }
 .compTabs .tabButtonsActive {
-	border: none;
 	border-bottom: 6px solid #1f3c3d;
-	background-color: #fff;
-	text-align: left;
-	font: normal normal normal 15px/24px Open Sans;
-	letter-spacing: 0px;
-	color: #6c7586;
-	opacity: 1;
+	width: 63px;
+	align-self: center;
 }
 
 .comp .tabButtonDiv {

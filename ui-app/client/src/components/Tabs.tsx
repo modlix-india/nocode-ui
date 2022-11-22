@@ -69,7 +69,7 @@ export function TabsComponent(props: Tabs) {
 		if (activeTab === childKey || defaultActive === childKey) {
 			return 'tabButtonsActive';
 		} else {
-			return 'tabsButtonsInactive';
+			return '';
 		}
 	};
 	return (
@@ -79,11 +79,14 @@ export function TabsComponent(props: Tabs) {
 				<div className="tabButtonDiv">
 					{tabsData.map((e: any) => (
 						<button
-							className={toggleActiveStyle(e.childKey)}
+							className="tabsButtons"
 							key={e.childKey}
 							onClick={() => handleClick(e.childKey)}
 						>
 							{e.tabName}
+							<div
+								className={toggleActiveStyle(e.childKey)}
+							></div>
 						</button>
 					))}
 				</div>
