@@ -185,8 +185,104 @@ export const page = {
         checkBoxGrid: true,
         linkGrid: true,
         imageGrid: true,
+        tabsGrid: true,
       },
     },
+
+    tabsGrid: {
+      name: "tabsgrid",
+      key: "tabsGrid",
+      type: "Grid",
+      children: {
+        tabscomp: true,
+      },
+    },
+    tabscomp: {
+      name: "tabscomp",
+      key: "tabscomp",
+      type: "TabsComponent",
+      properties: {
+        tabs: {
+          value: [
+            { tabName: "Description", childKey: "tabsgrid1", displayOrder: 1 },
+            {
+              tabName: "Specification",
+              childKey: "tabsgrid2",
+              displayOrder: 2,
+            },
+            { tabName: "Features", childKey: "tabsgrid3", displayOrder: 3 },
+          ],
+        },
+        defaultActive: {
+          value: "tabsgrid3",
+        },
+
+        bindingPath: {
+          type: "VALUE",
+          value: "Store.tabsBindingPath",
+        },
+      },
+      children: {
+        tabsgrid1: true,
+        tabsgrid2: true,
+        tabsgrid3: true,
+      },
+    },
+    tabsgrid1: {
+      name: "tabsGrid1",
+      key: 1,
+      type: "Grid",
+      children: {
+        firstTabData: true,
+      },
+    },
+    firstTabData: {
+      name: "tabdata",
+      key: "tabdata",
+      type: "Label",
+      properties: {
+        text: {
+          value: "Description grid value",
+        },
+      },
+    },
+    tabsgrid2: {
+      name: "tabsGrid2",
+      key: 2,
+      type: "Grid",
+      children: {
+        secondTabdata: true,
+      },
+    },
+    secondTabdata: {
+      name: "tabdata",
+      key: "tabdata",
+      type: "Label",
+      properties: {
+        text: {
+          value: "specification grid value",
+        },
+      },
+    },
+    tabsgrid3: {
+      name: "tabsGrid3",
+      key: 3,
+      type: "Grid",
+      children: {
+        thirdTabData: true,
+      },
+    },
+    thirdTabData: {
+      name: "tabdata",
+      key: "tabdata",
+      type: "Label",
+      properties: {
+        text: {
+          value: "features grid value",
+        },
+      },
+    },
+
     imageGrid: {
       name: "imagegrid",
       key: "imagegrid",
