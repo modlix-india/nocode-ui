@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Schema } from '@fincity/kirun-js';
-import { FUNCTION_EXECUTION_PATH, NAMESPACE_UI_ENGINE } from '../constants';
+import { NAMESPACE_UI_ENGINE } from '../constants';
 import { addListener, getData, setData } from '../context/StoreContext';
-import { runEvent } from './util/runEvent';
-import { getChildrenByType } from './util/getChildrenByType';
-import { renderChildren } from './util/renderChildren';
 import { HelperComponent } from './HelperComponent';
 import { getTranslations } from './util/getTranslations';
+import { Location } from './types';
 export interface CheckBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 	definition: {
 		key: string;
@@ -15,45 +13,30 @@ export interface CheckBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 		properties: {
 			label: {
 				value: string;
-				location: {
-					type: 'EXPRESSION' | 'VALUE';
-					value?: string;
-					expression?: string;
-				};
+				location: Location;
 			};
 			form: {
 				value: string;
-				location: {
-					type: 'EXPRESSION' | 'VALUE';
-					value?: string;
-					expression?: string;
-				};
+				location: Location;
 			};
 			isDisabled: {
 				value: string;
-				location: {
-					type: 'EXPRESSION' | 'VALUE';
-					value?: string;
-					expression?: string;
-				};
+				location: Location;
 			};
 			bindingPath: {
 				value: string;
-				location: {
-					type: 'EXPRESSION' | 'VALUE';
-					value?: string;
-					expression?: string;
-				};
+				location: Location;
 			};
 		};
 	};
+	locationHistory: Array<string | Location>;
 	pageDefinition: {
 		eventFunctions: {
 			[key: string]: any;
 		};
-		translations:{
-			[key:string] : {[key:string]: string}
-		}
+		translations: {
+			[key: string]: { [key: string]: string };
+		};
 	};
 }
 
@@ -71,16 +54,20 @@ function CheckBoxComponent(props: CheckBoxProps) {
 				bindingPath: bindingPathLocation,
 			},
 		},
+		locationHistory,
 		...rest
 	} = props;
 	if (!bindingPathLocation) return <>Binding Path Required</>;
 	const [checkBoxdata, setCheckBoxData] = useState(
-		getData(getData(bindingPathLocation)) || false,
+		getData(
+			getData(bindingPathLocation, locationHistory),
+			locationHistory,
+		) || false,
 	);
-	const formId = getData(form);
-	const bindingPath = getData(bindingPathLocation);
-	const checkBoxLabel = getData(label);
-	const isDisabledCheckbox = getData(isDisabled);
+	const formId = getData(form, locationHistory);
+	const bindingPath = getData(bindingPathLocation, locationHistory);
+	const checkBoxLabel = getData(label, locationHistory);
+	const isDisabledCheckbox = getData(isDisabled, locationHistory);
 
 	useEffect(() => {
 		addListener(bindingPath, (_, value) => {
@@ -91,8 +78,8 @@ function CheckBoxComponent(props: CheckBoxProps) {
 		setData(bindingPath, event.target.checked);
 	};
 	return (
-		<div className='comp compCheckBox'>
-			<HelperComponent/>
+		<div className="comp compCheckBox">
+			<HelperComponent />
 			<label className="checkbox" htmlFor={key}>
 				<input
 					disabled={isDisabledCheckbox}
@@ -102,10 +89,9 @@ function CheckBoxComponent(props: CheckBoxProps) {
 					onChange={handleChange}
 					checked={checkBoxdata}
 				/>
-				{getTranslations(checkBoxLabel,translations)}
+				{getTranslations(checkBoxLabel, translations)}
 			</label>
-			</div>
-		
+		</div>
 	);
 }
 

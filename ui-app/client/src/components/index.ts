@@ -7,3 +7,4 @@ export * from './RadioButton';
 export * from './ToggleButton';
 export * from './TextBox';
 export * from './Links';
+export * from './ArrayRepeator';

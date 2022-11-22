@@ -34,8 +34,8 @@ export class GetStoreData extends AbstractFunction {
 	protected async internalExecute(
 		context: FunctionExecutionParameters,
 	): Promise<FunctionOutput> {
-		const path: string = getData(context.getArguments()?.get('path'));
-		const data = getData(path);
+		const path: string = getData(context.getArguments()?.get('path'), []);
+		const data = getData(path, []);
 		return new FunctionOutput([
 			EventResult.outputOf(new Map([['data', data]])),
 		]);

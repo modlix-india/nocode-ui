@@ -3,6 +3,7 @@ import React from 'react';
 import { NAMESPACE_UI_ENGINE } from '../constants';
 import { getData } from '../context/StoreContext';
 import { HelperComponent } from './HelperComponent';
+import { Location } from './types';
 import { getTranslations } from './util/getTranslations';
 export interface LabelProps extends React.ComponentPropsWithoutRef<'span'> {
 	definition: {
@@ -24,6 +25,7 @@ export interface LabelProps extends React.ComponentPropsWithoutRef<'span'> {
 			};
 		};
 	};
+	locationHistory: Array<Location | string>;
 }
 export function LabelComponent(props: LabelProps) {
 	const {
@@ -31,9 +33,10 @@ export function LabelComponent(props: LabelProps) {
 		definition: {
 			properties: { text },
 		},
+		locationHistory,
 		...rest
 	} = props;
-	const labelText = getData(text);
+	const labelText = getData(text, locationHistory);
 	return (
 		<div className="comp compLabel">
 			<HelperComponent />

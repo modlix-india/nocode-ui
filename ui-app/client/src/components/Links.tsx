@@ -5,8 +5,9 @@ import { Schema } from '@fincity/kirun-js';
 import { NAMESPACE_UI_ENGINE } from '../constants';
 import { Link } from 'react-router-dom';
 import { getTranslations } from './util/getTranslations';
+import { Location } from './types';
 
-export interface LinkProps extends React.ComponentPropsWithoutRef<'span'> {
+export interface LinkProps extends React.ComponentPropsWithoutRef<'a'> {
 	definition: {
 		properties: {
 			linkPath: {
@@ -58,6 +59,7 @@ export interface LinkProps extends React.ComponentPropsWithoutRef<'span'> {
 			};
 		};
 	};
+	locationHistory: Array<Location | string>;
 }
 
 export function LinkComponent(props: LinkProps) {
@@ -72,12 +74,14 @@ export function LinkComponent(props: LinkProps) {
 			},
 		},
 		pageDefinition: { translations },
+		locationHistory,
 	} = props;
-	const labelValue = getData(label);
-	const linkPathValue = getData(linkPath);
-	const targetValue = getData(target) || '_self';
-	const externalButtonTargetVal = getData(externalButtonTarget) || '_blank';
-	const showButtonVal = getData(showButton);
+	const labelValue = getData(label, locationHistory);
+	const linkPathValue = getData(linkPath, locationHistory);
+	const targetValue = getData(target, locationHistory) || '_self';
+	const externalButtonTargetVal =
+		getData(externalButtonTarget, locationHistory) || '_blank';
+	const showButtonVal = getData(showButton, locationHistory);
 
 	return (
 		<div className="comp compLinks ">

@@ -3,10 +3,11 @@ import React from 'react';
 import { FUNCTION_EXECUTION_PATH, NAMESPACE_UI_ENGINE } from '../constants';
 import { addListener, getData, setData } from '../context/StoreContext';
 import { HelperComponent } from './HelperComponent';
+import { Location } from './types';
 import { getTranslations } from './util/getTranslations';
 import { runEvent } from './util/runEvent';
 
-export interface TextBoxProps extends React.ComponentPropsWithoutRef<'span'> {
+export interface TextBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 	definition: {
 		key: string;
 		properties: {
@@ -98,9 +99,10 @@ export interface TextBoxProps extends React.ComponentPropsWithoutRef<'span'> {
 			};
 		};
 	};
+	locationHistory: Array<Location | string>;
 }
 
-export function TextBoxComponent(props: TextBoxProps) {
+function TextBoxComponent(props: TextBoxProps) {
 	const {
 		definition: {
 			key,
@@ -115,25 +117,31 @@ export function TextBoxComponent(props: TextBoxProps) {
 			},
 		},
 		pageDefinition: { eventFunctions, translations },
+		locationHistory,
 		...rest
 	} = props;
-	const { iconStyle: leftIconStyle = 'SOLID', icon: leftIconLocation = {} } =
+	const { iconStyle: leftIconStyle = 'SOLID', icon: leftIconLocation } =
 		leftIcon;
 	const functionExecutionStorePath = `${FUNCTION_EXECUTION_PATH}.${key}.isRunning`;
-	const textBoxLeftIcon = getData(leftIconLocation);
-	const textBoxValidators = eventFunctions[getData(validators)];
-	const isDisabledTextBox = getData(isDisabled);
-	const textBoxBindingPath = getData(bindingPath);
-	const textBoxDefaultValue = getData(defaultValue);
-	const textBoxSupportingText = getData(supportingText);
+	const textBoxLeftIcon = leftIconLocation
+		? getData(leftIconLocation, locationHistory)
+		: undefined;
+	const textBoxValidators =
+		eventFunctions[getData(validators, locationHistory)];
+	const isDisabledTextBox = getData(isDisabled, locationHistory);
+	const textBoxBindingPath = getData(bindingPath, locationHistory);
+	const textBoxDefaultValue = getData(defaultValue, locationHistory);
+	const textBoxSupportingText = getData(supportingText, locationHistory);
 	const [isDirty, setIsDirty] = React.useState(false);
 	const [errorMessage, setErrorMessage] = React.useState('');
 	const [value, setvalue] = React.useState(
-		getData(textBoxBindingPath) || textBoxDefaultValue || '',
+		getData(textBoxBindingPath, locationHistory) ||
+			textBoxDefaultValue ||
+			'',
 	);
 	const [isFocussed, setIsFocussed] = React.useState(false);
 	const [hasText, setHasText] = React.useState(false);
-	const textBoxLabel = getData(label);
+	const textBoxLabel = getData(label, locationHistory);
 	React.useEffect(() => {
 		const unsubscribe = addListener(textBoxBindingPath, (_, value) => {
 			setvalue(value);

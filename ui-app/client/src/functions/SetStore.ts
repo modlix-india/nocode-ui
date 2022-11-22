@@ -2,7 +2,6 @@ import {
 	AbstractFunction,
 	Event,
 	EventResult,
-	ExpressionEvaluator,
 	FunctionExecutionParameters,
 	FunctionOutput,
 	FunctionSignature,

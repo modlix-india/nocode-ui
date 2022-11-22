@@ -5,72 +5,45 @@ import { addListener, getData, setData } from '../context/StoreContext';
 import { runEvent } from './util/runEvent';
 import { HelperComponent } from './HelperComponent';
 import { getTranslations } from './util/getTranslations';
+import { Location } from './types';
 export interface ButtonProps extends React.ComponentPropsWithoutRef<'button'> {
 	definition: {
 		key: string;
 		properties: {
 			label: {
 				value: string;
-				location: {
-					type: 'EXPRESSION' | 'VALUE';
-					value?: string;
-					expression?: string;
-				};
+				location: Location;
 			};
 			type: {
 				value: string;
-				location: {
-					type: 'EXPRESSION' | 'VALUE';
-					value?: string;
-					expression?: string;
-				};
+				location: Location;
 			};
 			onClick: {
 				value: string;
-				location: {
-					type: 'EXPRESSION' | 'VALUE';
-					value?: string;
-					expression?: string;
-				};
+				location: Location;
 			};
 			isDisabled: {
 				value: string;
-				location: {
-					type: 'EXPRESSION' | 'VALUE';
-					value?: string;
-					expression?: string;
-				};
+				location: Location;
 			};
 			leftIcon?: {
 				icon?: {
 					value: string;
-					location: {
-						type: 'EXPRESSION' | 'VALUE';
-						value?: string;
-						expression?: string;
-					};
+					location: Location;
 				};
 				iconStyle?: 'REGULAR' | 'SOLID';
 			};
 			rightIcon?: {
 				icon?: {
 					value: string;
-					location: {
-						type: 'EXPRESSION' | 'VALUE';
-						value?: string;
-						expression?: string;
-					};
+					location: Location;
 				};
 				iconStyle?: 'REGULAR' | 'SOLID';
 			};
 			fabIcon?: {
 				icon?: {
 					value: string;
-					location: {
-						type: 'EXPRESSION' | 'VALUE';
-						value?: string;
-						expression?: string;
-					};
+					location: Location;
 				};
 				iconStyle?: 'REGULAR' | 'SOLID';
 			};
@@ -82,6 +55,7 @@ export interface ButtonProps extends React.ComponentPropsWithoutRef<'button'> {
 		};
 		translations: { [key: string]: { [key: string]: string } };
 	};
+	locationHistory: Array<Location | string>;
 }
 function ButtonComponent(props: ButtonProps) {
 	const {
@@ -98,29 +72,30 @@ function ButtonComponent(props: ButtonProps) {
 				fabIcon = {},
 			},
 		},
+		locationHistory,
 		...rest
 	} = props;
-	const buttonType = getData(type);
-	const isDisabledButton = getData(isDisabled);
-	const clickEvent = eventFunctions[getData(onClick)];
+	const buttonType = getData(type, locationHistory);
+	const isDisabledButton = getData(isDisabled, locationHistory);
+	const clickEvent = eventFunctions[getData(onClick, locationHistory)];
 
 	const { iconStyle: fabIconStyle = 'SOLID', icon: fabIconLocation = {} } =
 		fabIcon;
-	const buttonFabIcon = getData(fabIconLocation);
+	const buttonFabIcon = getData(fabIconLocation, locationHistory);
 
-	const buttonLabel = getData(label);
+	const buttonLabel = getData(label, locationHistory);
 	const { iconStyle: leftIconStyle = 'SOLID', icon: leftIconLocation = {} } =
 		leftIcon;
 	const {
 		iconStyle: rightIconStyle = 'SOLID',
 		icon: rightIconLocation = {},
 	} = rightIcon;
-	const buttonLeftIcon = getData(leftIconLocation);
-	const buttonRightIcon = getData(rightIconLocation);
+	const buttonLeftIcon = getData(leftIconLocation, locationHistory);
+	const buttonRightIcon = getData(rightIconLocation, locationHistory);
 
 	const functionExecutionStorePath = `${FUNCTION_EXECUTION_PATH}.${key}.isRunning`;
 	const [isLoading, setIsLoading] = useState(
-		getData(functionExecutionStorePath) || false,
+		getData(functionExecutionStorePath, locationHistory) || false,
 	);
 
 	useEffect(() => {

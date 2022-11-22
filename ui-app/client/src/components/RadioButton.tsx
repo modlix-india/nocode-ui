@@ -3,6 +3,7 @@ import React from 'react';
 import { NAMESPACE_UI_ENGINE } from '../constants';
 import { getData } from '../context/StoreContext';
 import { HelperComponent } from './HelperComponent';
+import { Location } from './types';
 import { getTranslations } from './util/getTranslations';
 
 export interface RadioButtonProps
@@ -56,6 +57,7 @@ export interface RadioButtonProps
 			};
 		};
 	};
+	locationHistory: Array<Location | string>;
 }
 
 function RadioButtonComponent(props: RadioButtonProps) {
@@ -65,8 +67,9 @@ function RadioButtonComponent(props: RadioButtonProps) {
 			properties: { label },
 		},
 		pageDefinition: { translations },
+		locationHistory,
 	} = props;
-	const labelValue = getData(label);
+	const labelValue = getData(label, locationHistory);
 	return (
 		<div className="comp compRadioButton">
 			<HelperComponent />

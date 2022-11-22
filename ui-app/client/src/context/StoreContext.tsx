@@ -5,6 +5,7 @@ import {
 } from '@fincity/path-reactive-state-management';
 import { LOCAL_STORE_PREFIX, STORE_PREFIX } from '../constants';
 import { isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
+import { Location } from '../components/types';
 
 class LocalStoreExtractor extends TokenValueExtractor {
 	private store: any;
@@ -63,17 +64,57 @@ const {
 
 export const storeExtractor = new StoreExtractor(_store, `${STORE_PREFIX}.`);
 
-export function getData(loc: any) {
+export const dotPathBuilder = (
+	path: string,
+	locationHistory: Array<Location | string>,
+) => {
+	if (!path.startsWith('.')) return path;
+
+	let dotsLength = 0;
+	for (let i = 0; i < path.length && path[i] === '.'; i++) {
+		dotsLength++;
+	}
+	const pickedlocationHistory =
+		locationHistory[locationHistory.length - dotsLength];
+
+	if (!pickedlocationHistory) return path;
+	let finalPath = '';
+	if (typeof pickedlocationHistory === 'string')
+		finalPath = `${pickedlocationHistory}.${path.substring(dotsLength)}`;
+	if (pickedlocationHistory?.type === 'VALUE') {
+		finalPath = `${pickedlocationHistory.value}.${path.substring(
+			dotsLength,
+		)}`;
+	}
+	if (pickedlocationHistory?.type === 'EXPRESSION') {
+		finalPath = `${pickedlocationHistory.expression}.${path.substring(
+			dotsLength,
+		)}`;
+	}
+	return finalPath;
+};
+
+export function getData(
+	loc: any,
+	locationHistory: Array<Location | string>,
+	...tve: Array<TokenValueExtractor>
+) {
 	const typeOfLoc = typeof loc;
 
-	if (typeOfLoc === 'string') return _getData(loc);
+	if (typeOfLoc === 'string') return _getData(loc as unknown as string);
 
 	if (typeOfLoc !== 'object') return undefined;
 
 	let data: any = undefined;
-	if (loc.location?.type === 'VALUE') data = _getData(loc.location?.value);
+	if (loc.location?.type === 'VALUE') {
+		data = _getData(
+			dotPathBuilder(loc.location?.value!, locationHistory) || '',
+		);
+	}
 	if (loc.location?.type === 'EXPRESSION') {
-		const v = _getData(loc.location?.expression);
+		const v = _getData(
+			dotPathBuilder(loc.location?.expression!, locationHistory) || '',
+		);
 		if (!isNullValue(v)) data = v;
 	}
 	if (!isNullValue(loc.value)) data = loc.value;

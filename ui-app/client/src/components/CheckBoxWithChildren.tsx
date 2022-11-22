@@ -7,6 +7,7 @@ import { getChildrenByType } from './util/getChildrenByType';
 import { renderChildren } from './util/renderChildren';
 import { HelperComponent } from './HelperComponent';
 import { getTranslations } from './util/getTranslations';
+import { Location } from './types';
 export interface CheckBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 	definition: {
 		key: string;
@@ -15,27 +16,15 @@ export interface CheckBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 		properties: {
 			label: {
 				value: string;
-				location: {
-					type: 'EXPRESSION' | 'VALUE';
-					value?: string;
-					expression?: string;
-				};
+				location: Location;
 			};
 			form: {
 				value: string;
-				location: {
-					type: 'EXPRESSION' | 'VALUE';
-					value?: string;
-					expression?: string;
-				};
+				location: Location;
 			};
 			isDisabled: {
 				value: string;
-				location: {
-					type: 'EXPRESSION' | 'VALUE';
-					value?: string;
-					expression?: string;
-				};
+				location: Location;
 			};
 		};
 	};
@@ -47,17 +36,19 @@ export interface CheckBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 			[key: string]: { [key: string]: string };
 		};
 	};
+	locationHistory: Array<Location | string>;
 }
 const findChidrenCheckBoxes = (
 	pagedef: any,
 	children: any,
 	currentPath = '',
 	bindingPaths: Array<String> = [],
+	locationHistory: Array<string | Location>,
 ) => {
 	if (!pagedef || !children) return;
 	const checkBoxes = getChildrenByType(pagedef, children, 'CheckBox') || [];
 	checkBoxes.forEach(e => {
-		const formId = getData(e?.properties?.form);
+		const formId = getData(e?.properties?.form, locationHistory);
 		const bindingPath = currentPath
 			? `${currentPath}.${e.name}`
 			: formId
@@ -72,6 +63,7 @@ const findChidrenCheckBoxes = (
 				e.children,
 				bindingPath,
 				bindingPaths,
+				locationHistory,
 			);
 		}
 		console.log(bindingPaths);
@@ -87,21 +79,24 @@ function CheckBoxComponentWithChildren(props: CheckBoxProps) {
 			children,
 			properties: { label, isDisabled, form },
 		},
+		locationHistory,
 		...rest
 	} = props;
-	const formId = getData(form);
+	const formId = getData(form, locationHistory);
 	const bindingPath = formId ? `Store.${formId}.${name}` : `Store.${name}`;
 	const childrenCheckBoxPaths = findChidrenCheckBoxes(
 		props.pageDefinition,
 		children,
 		bindingPath,
+		'',
+		locationHistory,
 	);
 	console.log(childrenCheckBoxPaths);
-	const checkBoxLabel = getData(label);
-	const isDisabledCheckbox = getData(isDisabled);
+	const checkBoxLabel = getData(label, locationHistory);
+	const isDisabledCheckbox = getData(isDisabled, locationHistory);
 
 	const [checkBoxdata, setCheckBoxData] = useState(
-		getData(bindingPath) || 'UNCHECKED',
+		getData(bindingPath, locationHistory) || 'UNCHECKED',
 	);
 	useEffect(() => {
 		addListener(bindingPath, (_, value) => {
@@ -126,7 +121,7 @@ function CheckBoxComponentWithChildren(props: CheckBoxProps) {
 				/>
 				{getTranslations(checkBoxLabel, translations)}
 			</label>
-			{children && renderChildren(props.pageDefinition, children)}
+			{/* {children && renderChildren(props.pageDefinition, children)} */}
 		</div>
 	);
 }

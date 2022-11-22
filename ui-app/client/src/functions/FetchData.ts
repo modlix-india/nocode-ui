@@ -69,20 +69,20 @@ export class FetchData extends AbstractFunction {
 		let queryParams = context.getArguments()?.get('queryParams');
 
 		pathParams = Object.entries(pathParams)
-			.map(([k, v]) => [k, getData(v)])
+			.map(([k, v]) => [k, getData(v, [])])
 			.reduce((a: { [key: string]: any }, [k, v]) => {
 				if (v) a[k] = v;
 				return a;
 			}, {});
 		queryParams = Object.entries(queryParams)
-			.map(([k, v]) => [k, getData(v)])
+			.map(([k, v]) => [k, getData(v, [])])
 			.reduce((a: { [key: string]: any }, [k, v]) => {
 				if (v) a[k] = v;
 				return a;
 			}, {});
 
 		headers = Object.entries(headers)
-			.map(([k, v]) => [k, getData(v)])
+			.map(([k, v]) => [k, getData(v, [])])
 			.reduce((a: { [key: string]: any }, [k, v]) => {
 				if (v) a[k] = v;
 				return a;
