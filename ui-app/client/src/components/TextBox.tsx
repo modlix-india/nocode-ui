@@ -3,11 +3,11 @@ import React from 'react';
 import { FUNCTION_EXECUTION_PATH, NAMESPACE_UI_ENGINE } from '../constants';
 import { addListener, getData, setData } from '../context/StoreContext';
 import { HelperComponent } from './HelperComponent';
-import { Location } from './types';
+import { DataLocation } from './types';
 import { getTranslations } from './util/getTranslations';
 import { runEvent } from './util/runEvent';
 
-export interface TextBoxProps extends React.ComponentPropsWithoutRef<'input'> {
+interface TextBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 	definition: {
 		key: string;
 		properties: {
@@ -90,6 +90,7 @@ export interface TextBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 		};
 	};
 	pageDefinition: {
+		name: string;
 		eventFunctions: {
 			[key: string]: any;
 		};
@@ -99,10 +100,10 @@ export interface TextBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 			};
 		};
 	};
-	locationHistory: Array<Location | string>;
+	locationHistory: Array<DataLocation | string>;
 }
 
-function TextBoxComponent(props: TextBoxProps) {
+function TextBox(props: TextBoxProps) {
 	const {
 		definition: {
 			key,
@@ -116,18 +117,16 @@ function TextBoxComponent(props: TextBoxProps) {
 				validators,
 			},
 		},
-		pageDefinition: { eventFunctions, translations },
+		definition,
+		pageDefinition: { name: pageName, eventFunctions, translations },
 		locationHistory,
 		...rest
 	} = props;
-	const { iconStyle: leftIconStyle = 'SOLID', icon: leftIconLocation } =
-		leftIcon;
-	const functionExecutionStorePath = `${FUNCTION_EXECUTION_PATH}.${key}.isRunning`;
+	const { iconStyle: leftIconStyle = 'SOLID', icon: leftIconLocation } = leftIcon;
 	const textBoxLeftIcon = leftIconLocation
 		? getData(leftIconLocation, locationHistory)
 		: undefined;
-	const textBoxValidators =
-		eventFunctions[getData(validators, locationHistory)];
+	const textBoxValidators = eventFunctions[getData(validators, locationHistory)];
 	const isDisabledTextBox = getData(isDisabled, locationHistory);
 	const textBoxBindingPath = getData(bindingPath, locationHistory);
 	const textBoxDefaultValue = getData(defaultValue, locationHistory);
@@ -135,9 +134,7 @@ function TextBoxComponent(props: TextBoxProps) {
 	const [isDirty, setIsDirty] = React.useState(false);
 	const [errorMessage, setErrorMessage] = React.useState('');
 	const [value, setvalue] = React.useState(
-		getData(textBoxBindingPath, locationHistory) ||
-			textBoxDefaultValue ||
-			'',
+		getData(textBoxBindingPath, locationHistory) || textBoxDefaultValue || '',
 	);
 	const [isFocussed, setIsFocussed] = React.useState(false);
 	const [hasText, setHasText] = React.useState(false);
@@ -155,13 +152,6 @@ function TextBoxComponent(props: TextBoxProps) {
 	};
 	const handleBlur = async () => {
 		setIsFocussed(false);
-		if (textBoxValidators) {
-			const validatorResult: any = await runEvent(textBoxValidators, key);
-			if (validatorResult?.error) {
-				setErrorMessage(validatorResult.error);
-			}
-			setData(functionExecutionStorePath, false);
-		}
 	};
 	const handleChange = (event: any) => {
 		if (!isDirty) {
@@ -175,24 +165,18 @@ function TextBoxComponent(props: TextBoxProps) {
 
 	return (
 		<div className="comp compTextBox">
-			<HelperComponent />
+			<HelperComponent definition={definition} />
 			<div
 				className={`textBoxDiv ${errorMessage ? 'error' : ''} ${
 					isFocussed && !value.length ? 'focussed' : ''
 				} ${value.length && !isDisabledTextBox ? 'hasText' : ''} ${
 					isDisabledTextBox ? 'textBoxDisabled' : ''
-				} ${
-					textBoxLeftIcon
-						? 'textBoxwithIconContainer'
-						: 'textBoxContainer'
-				}`}
+				} ${textBoxLeftIcon ? 'textBoxwithIconContainer' : 'textBoxContainer'}`}
 			>
 				{textBoxLeftIcon && (
 					<i
 						className={`leftIcon ${
-							leftIconStyle === 'SOLID'
-								? 'fa-solid'
-								: 'fa-regular'
+							leftIconStyle === 'SOLID' ? 'fa-solid' : 'fa-regular'
 						} ${textBoxLeftIcon} fa-fw`}
 					/>
 				)}
@@ -202,10 +186,7 @@ function TextBoxComponent(props: TextBoxProps) {
 						type={'text'}
 						value={value}
 						onChange={handleChange}
-						placeholder={getTranslations(
-							textBoxLabel,
-							translations,
-						)}
+						placeholder={getTranslations(textBoxLabel, translations)}
 						onFocus={handleFocus}
 						onBlur={handleBlur}
 						name={key}
@@ -214,9 +195,9 @@ function TextBoxComponent(props: TextBoxProps) {
 					/>
 					<label
 						htmlFor={key}
-						className={`textBoxLabel ${
-							errorMessage ? 'error' : ''
-						} ${isDisabledTextBox ? 'disabled' : ''}`}
+						className={`textBoxLabel ${errorMessage ? 'error' : ''} ${
+							isDisabledTextBox ? 'disabled' : ''
+						}`}
 					>
 						{getTranslations(textBoxLabel, translations)}
 					</label>
@@ -229,9 +210,9 @@ function TextBoxComponent(props: TextBoxProps) {
 				) : null}
 			</div>
 			<label
-				className={`supportText ${
-					isDisabledTextBox ? 'disabled' : ''
-				} ${errorMessage ? 'error' : ''}`}
+				className={`supportText ${isDisabledTextBox ? 'disabled' : ''} ${
+					errorMessage ? 'error' : ''
+				}`}
 			>
 				{errorMessage ? errorMessage : textBoxSupportingText}
 			</label>
@@ -239,7 +220,7 @@ function TextBoxComponent(props: TextBoxProps) {
 	);
 }
 
-TextBoxComponent.propertiesSchema = Schema.ofObject('TextBox')
+TextBox.propertiesSchema = Schema.ofObject('TextBox')
 	.setNamespace(NAMESPACE_UI_ENGINE)
 	.setProperties(
 		new Map([
@@ -248,4 +229,4 @@ TextBoxComponent.propertiesSchema = Schema.ofObject('TextBox')
 		]),
 	);
 
-export const TextBox = TextBoxComponent;
+export default TextBox;

@@ -1,4 +1,4 @@
-export interface DataLocation {
+export interface Location {
 	type: 'EXPRESSION' | 'VALUE';
 	value?: string;
 	expression?: string;
@@ -6,7 +6,7 @@ export interface DataLocation {
 
 export interface ComponentProperty<T> {
 	value?: T;
-	location?: DataLocation;
+	location?: Location;
 }
 
 export interface Translations {

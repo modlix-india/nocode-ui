@@ -223,11 +223,7 @@ h2 {
 }
 
 .comp.compTextBox .textBoxDiv .inputContainer .textbox:focus + .textBoxLabel,
-.comp.compTextBox
-	.textBoxDiv
-	.inputContainer
-	.textbox:not(:placeholder-shown)
-	+ .textBoxLabel {
+.comp.compTextBox .textBoxDiv .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel {
 	top: 0;
 	left: 5px;
 	transform: translateY(-55%);
@@ -344,18 +340,15 @@ h2 {
 }
 
 .compCheckBox .checkbox input[type='checkbox']:hover {
-	box-shadow: 0 0 0 5px rgba(var(--black-rgb), 0.12),
-		0 0 0 10px rgba(var(--black-rgb), 0.12);
+	box-shadow: 0 0 0 5px rgba(var(--black-rgb), 0.12), 0 0 0 10px rgba(var(--black-rgb), 0.12);
 }
 
 .compCheckBox .checkbox input[type='checkbox']:active {
-	box-shadow: 0 0 0 5px rgba(var(--black-rgb), 0.12),
-		0 0 0 10px rgba(var(--black-rgb), 0.12);
+	box-shadow: 0 0 0 5px rgba(var(--black-rgb), 0.12), 0 0 0 10px rgba(var(--black-rgb), 0.12);
 }
 
 .compCheckBox .checkbox input[type='checkbox']:focus {
-	box-shadow: 0 0 0 5px rgba(var(--black-rgb), 0.12),
-		0 0 0 10px rgba(var(--black-rgb), 0.12);
+	box-shadow: 0 0 0 5px rgba(var(--black-rgb), 0.12), 0 0 0 10px rgba(var(--black-rgb), 0.12);
 }
 
 .compCheckBox .checkbox input[type='checkbox']:checked::before {
@@ -435,18 +428,15 @@ h2 {
 }
 
 .compRadioButton .radiobutton input[type='radio']:active {
-	box-shadow: 0 0 0 5px rgba(var(--black-rgb), 0.12),
-		0 0 0 10px rgba(var(--black-rgb), 0.12);
+	box-shadow: 0 0 0 5px rgba(var(--black-rgb), 0.12), 0 0 0 10px rgba(var(--black-rgb), 0.12);
 }
 
 .compRadioButton .radiobutton input[type='radio']:hover {
-	box-shadow: 0 0 0 5px rgba(var(--black-rgb), 0.12),
-		0 0 0 10px rgba(var(--black-rgb), 0.12);
+	box-shadow: 0 0 0 5px rgba(var(--black-rgb), 0.12), 0 0 0 10px rgba(var(--black-rgb), 0.12);
 }
 
 .compRadioButton .radiobutton input[type='radio']:focus {
-	box-shadow: 0 0 0 5px rgba(var(--black-rgb), 0.12),
-		0 0 0 10px rgba(var(--black-rgb), 0.12);
+	box-shadow: 0 0 0 5px rgba(var(--black-rgb), 0.12), 0 0 0 10px rgba(var(--black-rgb), 0.12);
 }
 
 .compToggleButton .toggleButton input[type='checkbox'] {

@@ -1,0 +1,128 @@
+{
+	"name": "getAppDefinition",
+	"namespace": "UIApp",
+	"steps": {
+		"verifyToken": {
+			"statementName": "verifyToken",
+			"namespace": "UIEngine",
+			"name": "FetchData",
+			"parameterMap": {
+				"url": {
+					"verifyTokenUrl": {
+						"key": "verifyTokenUrl",
+						"type": "VALUE",
+						"value": "api/security/verifyToken"
+					}
+				}
+			}
+		},
+		"setLoginData": {
+			"statementName": "setLoginData",
+			"namespace": "UIEngine",
+			"name": "SetStore",
+			"parameterMap": {
+				"path": {
+					"setLoginDataPath": {
+						"key": "setLoginDataPath",
+						"type": "VALUE",
+						"value": "Store.auth"
+					}
+				},
+				"value": {
+					"setLoginDataValue": {
+						"key": "setLoginDataValue",
+						"type": "EXPRESSION",
+						"expression": "Steps.verifyToken.output.data"
+					}
+				}
+			},
+			"dependentStatements": { "Steps.verifyToken.output": true }
+		},
+		"applicationData": {
+			"statementName": "applicationData",
+			"namespace": "UIEngine",
+			"name": "FetchData",
+			"parameterMap": {
+				"url": {
+					"applicationDataUrl": {
+						"key": "applicationDataUrl",
+						"type": "VALUE",
+						"value": "api/ui/application"
+					}
+				}
+			},
+			"dependentStatements": { "Steps.setLoginData.output": true }
+		},
+		"setAppData": {
+			"statementName": "setAppData",
+			"namespace": "UIEngine",
+			"name": "SetStore",
+			"parameterMap": {
+				"path": {
+					"setAppDataPath": {
+						"key": "setAppDataPath",
+						"type": "VALUE",
+						"value": "Store.application"
+					}
+				},
+				"value": {
+					"setAppDataValue": {
+						"key": "setAppDataValue",
+						"type": "EXPRESSION",
+						"expression": "Steps.applicationData.output.data"
+					}
+				}
+			},
+			"dependentStatements": { "Steps.applicationData.output": true }
+		},
+		"setLanguage": {
+			"statementName": "setLanguage",
+			"namespace": "UIEngine",
+			"name": "SetStore",
+			"parameterMap": {
+				"path": {
+					"setLanguagePath": {
+						"key": "setLanguagePath",
+						"type": "VALUE",
+						"value": "Store.currentLanguage"
+					}
+				},
+				"value": {
+					"setLanguageValue": {
+						"key": "setLanguageValue",
+						"type": "EXPRESSION",
+						"expression": "Store.auth.localeCode??Store.application.defaultLanguage"
+					}
+				}
+			}
+		},
+		"setApplicationFailureData": {
+			"statementName": "setApplicationFailureData",
+			"namespace": "UIEngine",
+			"name": "SetStore",
+			"parameterMap": {
+				"path": {
+					"setApplicationFailureDataPath": {
+						"key": "setApplicationFailureDataPath",
+						"type": "VALUE",
+						"value": "Store.isApplicationLoadFailed"
+					}
+				},
+				"value": {
+					"setApplicationFailureDataValue": {
+						"key": "setApplicationFailureDataValue",
+						"type": "EXPRESSION",
+						"expression": "null = Steps.applicationData.output.data.name"
+					}
+				}
+			},
+			"dependentStatements": { "Steps.applicationData.output": true }
+		},
+		"genOutput": {
+			"statementName": "genOutput",
+			"namespace": "System",
+			"name": "GenerateEvent",
+			"dependentStatements": { "Steps.setAppData.output": true, "Steps.setApplicationFailureData.output": true }
+		}
+	}
+}

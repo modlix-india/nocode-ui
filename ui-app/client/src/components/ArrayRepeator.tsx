@@ -3,16 +3,16 @@ import React from 'react';
 import { NAMESPACE_UI_ENGINE } from '../constants';
 import { getData } from '../context/StoreContext';
 import { HelperComponent } from './HelperComponent';
-import { Location } from './types';
+import { DataLocation } from './types';
 import { renderChildren } from './util/renderChildren';
 import { updateLocationForChild } from './util/updateLoactionForChild';
 
-export interface ArrayRepeatorProps {
+interface ArrayRepeatorProps {
 	definition: {
 		key: string;
 		children: any;
 		properties: {
-			bindingPath: Location;
+			bindingPath: DataLocation;
 		};
 	};
 	pageDefinition: {
@@ -25,7 +25,8 @@ export interface ArrayRepeatorProps {
 			};
 		};
 	};
-	locationHistory?: Array<Location | string>;
+	locationHistory: Array<DataLocation | string>;
+	context: string;
 }
 
 function ArrayRepeatorComponent(props: ArrayRepeatorProps) {
@@ -36,6 +37,8 @@ function ArrayRepeatorComponent(props: ArrayRepeatorProps) {
 		},
 		pageDefinition,
 		locationHistory = [],
+		context,
+		definition,
 	} = props;
 	const bindingPathData = getData({ location: bindingPath }, locationHistory);
 	if (!Array.isArray(bindingPathData)) return <></>;
@@ -44,9 +47,9 @@ function ArrayRepeatorComponent(props: ArrayRepeatorProps) {
 	};
 	return (
 		<div className="comp compArrayRepeator">
-			<HelperComponent />
+			<HelperComponent definition={definition} />
 			{bindingPathData.map((_, index) =>
-				renderChildren(pageDefinition, firstchild, [
+				renderChildren(pageDefinition, firstchild, context, [
 					...locationHistory,
 					updateLocationForChild(bindingPath, index, locationHistory),
 				]),
@@ -57,10 +60,6 @@ function ArrayRepeatorComponent(props: ArrayRepeatorProps) {
 
 ArrayRepeatorComponent.propertiesSchema = Schema.ofObject('ArrayRepeator')
 	.setNamespace(NAMESPACE_UI_ENGINE)
-	.setProperties(
-		new Map([
-			['bindingPath', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
-		]),
-	);
+	.setProperties(new Map([['bindingPath', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)]]));
 
-export const ArrayRepeator = ArrayRepeatorComponent;
+export default ArrayRepeatorComponent;

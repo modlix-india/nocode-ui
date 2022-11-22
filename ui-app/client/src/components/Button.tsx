@@ -5,61 +5,63 @@ import { addListener, getData, setData } from '../context/StoreContext';
 import { runEvent } from './util/runEvent';
 import { HelperComponent } from './HelperComponent';
 import { getTranslations } from './util/getTranslations';
-import { Location } from './types';
-export interface ButtonProps extends React.ComponentPropsWithoutRef<'button'> {
+import { DataLocation } from './types';
+
+interface ButtonProps extends React.ComponentPropsWithoutRef<'button'> {
 	definition: {
 		key: string;
 		properties: {
 			label: {
 				value: string;
-				location: Location;
+				location: DataLocation;
 			};
 			type: {
 				value: string;
-				location: Location;
+				location: DataLocation;
 			};
 			onClick: {
 				value: string;
-				location: Location;
+				location: DataLocation;
 			};
 			isDisabled: {
 				value: string;
-				location: Location;
+				location: DataLocation;
 			};
 			leftIcon?: {
 				icon?: {
 					value: string;
-					location: Location;
+					location: DataLocation;
 				};
 				iconStyle?: 'REGULAR' | 'SOLID';
 			};
 			rightIcon?: {
 				icon?: {
 					value: string;
-					location: Location;
+					location: DataLocation;
 				};
 				iconStyle?: 'REGULAR' | 'SOLID';
 			};
 			fabIcon?: {
 				icon?: {
 					value: string;
-					location: Location;
+					location: DataLocation;
 				};
 				iconStyle?: 'REGULAR' | 'SOLID';
 			};
 		};
 	};
 	pageDefinition: {
+		name: string;
 		eventFunctions: {
 			[key: string]: any;
 		};
 		translations: { [key: string]: { [key: string]: string } };
 	};
-	locationHistory: Array<Location | string>;
+	locationHistory: Array<DataLocation | string>;
 }
 function ButtonComponent(props: ButtonProps) {
 	const {
-		pageDefinition: { eventFunctions, translations },
+		pageDefinition: { name: pageName, eventFunctions, translations },
 		definition: {
 			key,
 			properties: {
@@ -73,27 +75,23 @@ function ButtonComponent(props: ButtonProps) {
 			},
 		},
 		locationHistory,
-		...rest
+		definition,
 	} = props;
 	const buttonType = getData(type, locationHistory);
 	const isDisabledButton = getData(isDisabled, locationHistory);
-	const clickEvent = eventFunctions[getData(onClick, locationHistory)];
+	const clickEventKey = getData(onClick, locationHistory);
+	const clickEvent = eventFunctions[clickEventKey];
 
-	const { iconStyle: fabIconStyle = 'SOLID', icon: fabIconLocation = {} } =
-		fabIcon;
+	const { iconStyle: fabIconStyle = 'SOLID', icon: fabIconLocation = {} } = fabIcon;
 	const buttonFabIcon = getData(fabIconLocation, locationHistory);
 
 	const buttonLabel = getData(label, locationHistory);
-	const { iconStyle: leftIconStyle = 'SOLID', icon: leftIconLocation = {} } =
-		leftIcon;
-	const {
-		iconStyle: rightIconStyle = 'SOLID',
-		icon: rightIconLocation = {},
-	} = rightIcon;
+	const { iconStyle: leftIconStyle = 'SOLID', icon: leftIconLocation = {} } = leftIcon;
+	const { iconStyle: rightIconStyle = 'SOLID', icon: rightIconLocation = {} } = rightIcon;
 	const buttonLeftIcon = getData(leftIconLocation, locationHistory);
 	const buttonRightIcon = getData(rightIconLocation, locationHistory);
 
-	const functionExecutionStorePath = `${FUNCTION_EXECUTION_PATH}.${key}.isRunning`;
+	const functionExecutionStorePath = `${FUNCTION_EXECUTION_PATH}.${pageName}.${key}.isRunning`;
 	const [isLoading, setIsLoading] = useState(
 		getData(functionExecutionStorePath, locationHistory) || false,
 	);
@@ -106,23 +104,17 @@ function ButtonComponent(props: ButtonProps) {
 
 	const handleClick = async () => {
 		if (clickEvent && !isLoading) {
-			await runEvent(clickEvent, key);
-			setData(functionExecutionStorePath, false);
+			await runEvent(clickEvent, clickEventKey, pageName);
 		}
 	};
 	if (buttonType === 'fabButton' || buttonType === 'fabButtonMini')
 		return (
 			<div className="comp compButton">
-				<HelperComponent />
+				<HelperComponent definition={definition} />
 				<button
-					className={`${
-						buttonType === 'fabButton'
-							? 'fabButton'
-							: 'fabButtonMini'
-					}`}
+					className={`${buttonType === 'fabButton' ? 'fabButton' : 'fabButtonMini'}`}
 					disabled={isLoading || isDisabledButton}
 					onClick={handleClick}
-					{...rest}
 				>
 					<i
 						className={`fabButtonIcon ${
@@ -140,20 +132,16 @@ function ButtonComponent(props: ButtonProps) {
 		);
 	return (
 		<div className="comp compButton">
-			<HelperComponent />
-
+			<HelperComponent definition={definition} />
 			<button
 				className={` button ${buttonType}`}
 				disabled={isLoading || isDisabledButton}
 				onClick={handleClick}
-				{...rest}
 			>
 				<div className="buttonInternalContainer">
 					<i
 						className={`leftButtonIcon ${
-							leftIconStyle === 'SOLID'
-								? 'fa-solid'
-								: 'fa-regular'
+							leftIconStyle === 'SOLID' ? 'fa-solid' : 'fa-regular'
 						} fa-fw ${
 							buttonLeftIcon
 								? !isLoading
@@ -165,14 +153,8 @@ function ButtonComponent(props: ButtonProps) {
 					{getTranslations(buttonLabel, translations)}
 					<i
 						className={`rightButtonIcon ${
-							rightIconStyle === 'SOLID'
-								? 'fa-solid'
-								: 'fa-regular'
-						} fa-fw ${
-							buttonRightIcon
-								? buttonRightIcon
-								: `${buttonRightIcon} hide`
-						}`}
+							rightIconStyle === 'SOLID' ? 'fa-solid' : 'fa-regular'
+						} fa-fw ${buttonRightIcon ? buttonRightIcon : `${buttonRightIcon} hide`}`}
 					/>
 				</div>
 			</button>
@@ -189,4 +171,4 @@ ButtonComponent.propertiesSchema = Schema.ofObject('Button')
 		]),
 	);
 
-export const Button = ButtonComponent;
+export default ButtonComponent;

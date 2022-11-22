@@ -4,8 +4,9 @@ import { NAMESPACE_UI_ENGINE } from '../constants';
 import { addListener, getData, setData } from '../context/StoreContext';
 import { HelperComponent } from './HelperComponent';
 import { getTranslations } from './util/getTranslations';
-import { Location } from './types';
-export interface CheckBoxProps extends React.ComponentPropsWithoutRef<'input'> {
+import { DataLocation } from './types';
+
+interface CheckBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 	definition: {
 		key: string;
 		name: string;
@@ -13,23 +14,23 @@ export interface CheckBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 		properties: {
 			label: {
 				value: string;
-				location: Location;
+				location: DataLocation;
 			};
 			form: {
 				value: string;
-				location: Location;
+				location: DataLocation;
 			};
 			isDisabled: {
 				value: string;
-				location: Location;
+				location: DataLocation;
 			};
 			bindingPath: {
 				value: string;
-				location: Location;
+				location: DataLocation;
 			};
 		};
 	};
-	locationHistory: Array<string | Location>;
+	locationHistory: Array<string | DataLocation>;
 	pageDefinition: {
 		eventFunctions: {
 			[key: string]: any;
@@ -40,29 +41,21 @@ export interface CheckBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 	};
 }
 
-function CheckBoxComponent(props: CheckBoxProps) {
+function CheckBox(props: CheckBoxProps) {
 	const {
 		pageDefinition: { eventFunctions, translations },
 		definition: {
 			key,
 			name,
 			children,
-			properties: {
-				label,
-				isDisabled,
-				form,
-				bindingPath: bindingPathLocation,
-			},
+			properties: { label, isDisabled, form, bindingPath: bindingPathLocation },
 		},
 		locationHistory,
-		...rest
+		definition,
 	} = props;
 	if (!bindingPathLocation) return <>Binding Path Required</>;
 	const [checkBoxdata, setCheckBoxData] = useState(
-		getData(
-			getData(bindingPathLocation, locationHistory),
-			locationHistory,
-		) || false,
+		getData(getData(bindingPathLocation, locationHistory), locationHistory) || false,
 	);
 	const formId = getData(form, locationHistory);
 	const bindingPath = getData(bindingPathLocation, locationHistory);
@@ -79,7 +72,7 @@ function CheckBoxComponent(props: CheckBoxProps) {
 	};
 	return (
 		<div className="comp compCheckBox">
-			<HelperComponent />
+			<HelperComponent definition={definition} />
 			<label className="checkbox" htmlFor={key}>
 				<input
 					disabled={isDisabledCheckbox}
@@ -95,7 +88,7 @@ function CheckBoxComponent(props: CheckBoxProps) {
 	);
 }
 
-CheckBoxComponent.propertiesSchema = Schema.ofObject('CheckBox')
+CheckBox.propertiesSchema = Schema.ofObject('CheckBox')
 	.setNamespace(NAMESPACE_UI_ENGINE)
 	.setProperties(
 		new Map([
@@ -105,4 +98,4 @@ CheckBoxComponent.propertiesSchema = Schema.ofObject('CheckBox')
 		]),
 	);
 
-export const CheckBox = CheckBoxComponent;
+export default CheckBox;

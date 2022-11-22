@@ -1,34 +1,23 @@
 import { dotPathBuilder } from '../../context/StoreContext';
-
-interface Location {
-	type: 'EXPRESSION' | 'VALUE';
-	value?: string;
-	expression?: string;
-}
+import { DataLocation } from '../types';
 
 export const updateLocationForChild = (
-	location: Location | string,
+	location: DataLocation | string,
 	index: number,
-	locationHistory: Array<Location | string>,
-) => {
+	locationHistory: Array<DataLocation | string>,
+): DataLocation | string => {
 	let finalPath;
 	const typeOfLoc = typeof location;
 	if (typeOfLoc === 'string') {
-		finalPath = dotPathBuilder(
-			location as unknown as string,
-			locationHistory,
-		);
+		finalPath = dotPathBuilder(location as unknown as string, locationHistory);
 		return `(${finalPath ? finalPath : location})[${index}]`;
 	}
-	if (typeOfLoc !== 'object') return undefined;
-	let childLocation = { ...(location as Location) };
+	let childLocation = { ...(location as DataLocation) };
 	if (childLocation?.type === 'VALUE')
 		finalPath = locationHistory.length
 			? dotPathBuilder(childLocation.value!, locationHistory)
 			: '';
-	childLocation.value = `(${
-		finalPath ? finalPath : childLocation?.value
-	})[${index}]`;
+	childLocation.value = `(${finalPath ? finalPath : childLocation?.value})[${index}]`;
 	if (childLocation?.type === 'EXPRESSION') {
 		finalPath = locationHistory.length
 			? dotPathBuilder(childLocation.value!, locationHistory)

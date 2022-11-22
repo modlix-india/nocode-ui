@@ -8,6 +8,7 @@ export interface VerifyLoginResponse {
 
 export const STORE_PREFIX = 'Store';
 export const LOCAL_STORE_PREFIX = 'LocalStore';
+export const PAGE_STORE_PREFIX = 'Page';
 
 export const NAMESPACE_UI_ENGINE = 'UIEngine';
 

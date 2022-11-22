@@ -3,11 +3,10 @@ import React from 'react';
 import { NAMESPACE_UI_ENGINE } from '../constants';
 import { getData } from '../context/StoreContext';
 import { HelperComponent } from './HelperComponent';
-import { Location } from './types';
+import { DataLocation } from './types';
 import { getTranslations } from './util/getTranslations';
 
-export interface RadioButtonProps
-	extends React.ComponentPropsWithoutRef<'input'> {
+interface RadioButtonProps extends React.ComponentPropsWithoutRef<'input'> {
 	definition: {
 		key: string;
 		name: string;
@@ -57,22 +56,23 @@ export interface RadioButtonProps
 			};
 		};
 	};
-	locationHistory: Array<Location | string>;
+	locationHistory: Array<DataLocation | string>;
 }
 
-function RadioButtonComponent(props: RadioButtonProps) {
+function RadioButton(props: RadioButtonProps) {
 	const {
 		definition: {
 			name,
 			properties: { label },
 		},
+		definition,
 		pageDefinition: { translations },
 		locationHistory,
 	} = props;
 	const labelValue = getData(label, locationHistory);
 	return (
 		<div className="comp compRadioButton">
-			<HelperComponent />
+			<HelperComponent definition={definition} />
 			<label className=" radiobutton">
 				<input type="radio" name={name} />
 				{getTranslations(labelValue, translations)}
@@ -81,7 +81,7 @@ function RadioButtonComponent(props: RadioButtonProps) {
 	);
 }
 
-RadioButtonComponent.propertiesSchema = Schema.ofObject('RadioButton')
+RadioButton.propertiesSchema = Schema.ofObject('RadioButton')
 	.setNamespace(NAMESPACE_UI_ENGINE)
 	.setProperties(
 		new Map([
@@ -91,4 +91,4 @@ RadioButtonComponent.propertiesSchema = Schema.ofObject('RadioButton')
 		]),
 	);
 
-export const RadioButton = RadioButtonComponent;
+export default RadioButton;

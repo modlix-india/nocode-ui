@@ -1,21 +1,21 @@
 import React from 'react';
-import { Location } from './types';
+import { DataLocation } from './types';
 import { renderChildren } from './util/renderChildren';
 
-export interface GridProps extends React.ComponentPropsWithoutRef<'div'> {
+interface GridProps extends React.ComponentPropsWithoutRef<'div'> {
 	definition: any;
 	pageDefinition: any;
-	locationHistory: Array<Location | string>;
+	context: string;
+	locationHistory: Array<DataLocation | string>;
 }
-export function Grid(props: GridProps) {
-	const { definition, pageDefinition, locationHistory, ...rest } = props;
+
+function Grid(props: GridProps) {
+	const { definition, pageDefinition, locationHistory, context } = props;
 	return (
-		<div className="compGrid grid" {...rest}>
-			{renderChildren(
-				pageDefinition,
-				definition.children,
-				locationHistory,
-			)}
+		<div className="comp compGrid grid">
+			{renderChildren(pageDefinition, definition.children, context, locationHistory)}
 		</div>
 	);
 }
+
+export default Grid;
