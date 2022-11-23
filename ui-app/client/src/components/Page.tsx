@@ -1,6 +1,6 @@
 import React from 'react';
 import { HelperComponent } from './HelperComponent';
-import { DataLocation } from './types';
+import { DataLocation, RenderContext } from './types';
 import { renderChildren } from './util/renderChildren';
 
 function Page({
@@ -9,7 +9,7 @@ function Page({
 	locationHistory,
 }: {
 	definition: any;
-	context: string;
+	context: RenderContext;
 	locationHistory: Array<DataLocation | string>;
 }) {
 	if (!definition) return <>Loading...</>;

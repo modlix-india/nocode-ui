@@ -2,12 +2,12 @@ import React from 'react';
 import Components from '..';
 import { getData } from '../../context/StoreContext';
 import Nothing from '../Nothing';
-import { DataLocation } from '../types';
+import { DataLocation, RenderContext } from '../types';
 
 export const renderChildren = (
 	pageDefinition: any,
 	children: any,
-	context: string,
+	context: RenderContext,
 	locationHistory: Array<DataLocation | string>,
 ) => {
 	return Object.entries(children)

@@ -1,9 +1,9 @@
 import { Schema } from '@fincity/kirun-js';
 import React from 'react';
 import { NAMESPACE_UI_ENGINE } from '../constants';
-import { getData } from '../context/StoreContext';
+import { getData, getDataFromLocation, PageStoreExtractor } from '../context/StoreContext';
 import { HelperComponent } from './HelperComponent';
-import { DataLocation } from './types';
+import { DataLocation, RenderContext } from './types';
 import { renderChildren } from './util/renderChildren';
 import { updateLocationForChild } from './util/updateLoactionForChild';
 
@@ -26,7 +26,7 @@ interface ArrayRepeatorProps {
 		};
 	};
 	locationHistory: Array<DataLocation | string>;
-	context: string;
+	context: RenderContext;
 }
 
 function ArrayRepeatorComponent(props: ArrayRepeatorProps) {
@@ -40,7 +40,8 @@ function ArrayRepeatorComponent(props: ArrayRepeatorProps) {
 		context,
 		definition,
 	} = props;
-	const bindingPathData = getData({ location: bindingPath }, locationHistory);
+	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const bindingPathData = getDataFromLocation(bindingPath, locationHistory, pageExtractor);
 	if (!Array.isArray(bindingPathData)) return <></>;
 	const firstchild = {
 		[Object.entries(children)[0][0]]: Object.entries(children)[0][1],
