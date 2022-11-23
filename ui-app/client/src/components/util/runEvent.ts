@@ -1,5 +1,15 @@
-import { FunctionDefinition, FunctionExecutionParameters, KIRuntime, TokenValueExtractor } from '@fincity/kirun-js';
-import { localStoreExtractor, setData, storeExtractor } from '../../context/StoreContext';
+import {
+	FunctionDefinition,
+	FunctionExecutionParameters,
+	KIRuntime,
+	TokenValueExtractor,
+} from '@fincity/kirun-js';
+import {
+	localStoreExtractor,
+	PageStoreExtractor,
+	setData,
+	storeExtractor,
+} from '../../context/StoreContext';
 import { UIFunctionRepository } from '../../functions';
 import { UISchemaRepository } from '../../schemas';
 import UUID from './uuid';
@@ -9,10 +19,16 @@ export const runEvent = async (functionDefinition: any, key: string = UUID(), pa
 	try {
 		const def: FunctionDefinition = FunctionDefinition.from(functionDefinition);
 		const runtime = new KIRuntime(def);
-		const fep = new FunctionExecutionParameters(UIFunctionRepository, UISchemaRepository, key).setValuesMap(
+		const pageExtractor = PageStoreExtractor.getForContext(page);
+		const fep = new FunctionExecutionParameters(
+			UIFunctionRepository,
+			UISchemaRepository,
+			key,
+		).setValuesMap(
 			new Map<string, TokenValueExtractor>([
 				[storeExtractor.getPrefix(), storeExtractor],
 				[localStoreExtractor.getPrefix(), localStoreExtractor],
+				[pageExtractor.getPrefix(), pageExtractor],
 			]),
 		);
 		const x = await runtime.execute(fep);

@@ -1,9 +1,15 @@
 import { Schema } from '@fincity/kirun-js';
 import React from 'react';
 import { FUNCTION_EXECUTION_PATH, NAMESPACE_UI_ENGINE } from '../constants';
-import { addListener, getData, setData } from '../context/StoreContext';
+import {
+	addListener,
+	getData,
+	getDataFromLocation,
+	PageStoreExtractor,
+	setData,
+} from '../context/StoreContext';
 import { HelperComponent } from './HelperComponent';
-import { DataLocation } from './types';
+import { ComponentProperty, DataLocation, RenderContext } from './types';
 import { getTranslations } from './util/getTranslations';
 import { runEvent } from './util/runEvent';
 
@@ -11,82 +17,13 @@ interface TextBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 	definition: {
 		key: string;
 		properties: {
-			bindingPath: {
-				value: string;
-				location: {
-					type: 'EXPRESSION' | 'VALUE';
-					value?: string;
-					expression?: string;
-				};
-			};
-
-			mandatory?: {
-				value: string;
-				location: {
-					type: 'EXPRESSION' | 'VALUE';
-					value?: string;
-					expression?: string;
-				};
-			};
-			label: {
-				value: string;
-				location: {
-					type: 'EXPRESSION' | 'VALUE';
-					value?: string;
-					expression?: string;
-				};
-			};
-			leftIcon: {
-				icon?: {
-					value: string;
-					location: {
-						type: 'EXPRESSION' | 'VALUE';
-						value?: string;
-						expression?: string;
-					};
-				};
-				iconStyle?: 'REGULAR' | 'SOLID';
-			};
-			isDisabled: {
-				value: string;
-				location: {
-					type: 'EXPRESSION' | 'VALUE';
-					value?: string;
-					expression?: string;
-				};
-			};
-			defaultValue: {
-				value: string;
-				location: {
-					type: 'EXPRESSION' | 'VALUE';
-					value?: string;
-					expression?: string;
-				};
-			};
-			supportingText: {
-				value: string;
-				location: {
-					type: 'EXPRESSION' | 'VALUE';
-					value?: string;
-					expression?: string;
-				};
-			};
-			validators: {
-				value: string;
-				location: {
-					type: 'EXPRESSION' | 'VALUE';
-					value?: string;
-					expression?: string;
-				};
-			};
-			readonly?: {
-				value: string;
-				location: {
-					type: 'EXPRESSION' | 'VALUE';
-					value?: string;
-					expression?: string;
-				};
-			};
+			bindingPath: DataLocation;
+			mandatory?: ComponentProperty<boolean>;
+			label: ComponentProperty<string>;
+			leftIcon: ComponentProperty<string>;
+			readOnly?: ComponentProperty<boolean>;
+			defaultValue: ComponentProperty<string>;
+			supportingText: ComponentProperty<string>;
 		};
 	};
 	pageDefinition: {
@@ -101,6 +38,7 @@ interface TextBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 		};
 	};
 	locationHistory: Array<DataLocation | string>;
+	context: RenderContext;
 }
 
 function TextBox(props: TextBoxProps) {
@@ -111,34 +49,32 @@ function TextBox(props: TextBoxProps) {
 				label,
 				bindingPath,
 				leftIcon = {},
-				isDisabled,
+				readOnly,
 				defaultValue,
 				supportingText,
-				validators,
 			},
 		},
 		definition,
 		pageDefinition: { name: pageName, eventFunctions, translations },
 		locationHistory,
-		...rest
+		context,
 	} = props;
-	const { iconStyle: leftIconStyle = 'SOLID', icon: leftIconLocation } = leftIcon;
-	const textBoxLeftIcon = leftIconLocation
-		? getData(leftIconLocation, locationHistory)
+	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const textBoxLeftIcon = leftIcon
+		? getData(leftIcon, locationHistory, pageExtractor)
 		: undefined;
-	const textBoxValidators = eventFunctions[getData(validators, locationHistory)];
-	const isDisabledTextBox = getData(isDisabled, locationHistory);
-	const textBoxBindingPath = getData(bindingPath, locationHistory);
-	const textBoxDefaultValue = getData(defaultValue, locationHistory);
-	const textBoxSupportingText = getData(supportingText, locationHistory);
+	const isDisabledTextBox = getData(readOnly, locationHistory, pageExtractor);
+	const textBoxBindingPath = getDataFromLocation(bindingPath, locationHistory, pageExtractor);
+	const textBoxDefaultValue = getData(defaultValue, locationHistory, pageExtractor);
+	const textBoxSupportingText = getData(supportingText, locationHistory, pageExtractor);
 	const [isDirty, setIsDirty] = React.useState(false);
 	const [errorMessage, setErrorMessage] = React.useState('');
 	const [value, setvalue] = React.useState(
-		getData(textBoxBindingPath, locationHistory) || textBoxDefaultValue || '',
+		getData(textBoxBindingPath, locationHistory, pageExtractor) || textBoxDefaultValue || '',
 	);
 	const [isFocussed, setIsFocussed] = React.useState(false);
 	const [hasText, setHasText] = React.useState(false);
-	const textBoxLabel = getData(label, locationHistory);
+	const textBoxLabel = getData(label, locationHistory, pageExtractor);
 	React.useEffect(() => {
 		const unsubscribe = addListener(textBoxBindingPath, (_, value) => {
 			setvalue(value);
@@ -157,7 +93,7 @@ function TextBox(props: TextBoxProps) {
 		if (!isDirty) {
 			setIsDirty(true);
 		}
-		setData(textBoxBindingPath, event?.target.value);
+		setData(textBoxBindingPath, event?.target.value, context?.pageName);
 	};
 	const handleClickClose = () => {
 		setvalue('');
@@ -173,13 +109,7 @@ function TextBox(props: TextBoxProps) {
 					isDisabledTextBox ? 'textBoxDisabled' : ''
 				} ${textBoxLeftIcon ? 'textBoxwithIconContainer' : 'textBoxContainer'}`}
 			>
-				{textBoxLeftIcon && (
-					<i
-						className={`leftIcon ${
-							leftIconStyle === 'SOLID' ? 'fa-solid' : 'fa-regular'
-						} ${textBoxLeftIcon} fa-fw`}
-					/>
-				)}
+				{textBoxLeftIcon && <i className={`leftIcon ${textBoxLeftIcon}`} />}
 				<div className="inputContainer">
 					<input
 						className="textbox"

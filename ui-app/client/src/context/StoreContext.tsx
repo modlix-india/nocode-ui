@@ -1,7 +1,7 @@
 import { useStore, setStoreData } from '@fincity/path-reactive-state-management';
 import { LOCAL_STORE_PREFIX, STORE_PREFIX, PAGE_STORE_PREFIX } from '../constants';
 import { isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
-import { DataLocation } from '../components/types';
+import { ComponentProperty, DataLocation, RenderContext } from '../components/types';
 
 class LocalStoreExtractor extends TokenValueExtractor {
 	private store: any;
@@ -81,31 +81,38 @@ export const dotPathBuilder = (path: string, locationHistory: Array<DataLocation
 	return finalPath;
 };
 
-export function getData(
-	loc: any,
+export function getData<T>(
+	prop: ComponentProperty<T> | undefined,
 	locationHistory: Array<DataLocation | string>,
 	...tve: Array<TokenValueExtractor>
-) {
-	const typeOfLoc = typeof loc;
-
-	if (typeOfLoc === 'string') return _getData(loc as string, ...tve);
-
-	if (typeOfLoc !== 'object') return undefined;
-
-	let data: any = undefined;
-	if (loc.location?.type === 'VALUE') {
-		data = _getData(dotPathBuilder(loc.location?.value, locationHistory) || '', ...tve);
+): T | undefined {
+	if (!prop) return undefined;
+	if (globalThis.isDesignMode && !isNullValue(prop.overrideValue)) {
+		return prop.overrideValue!;
 	}
-	if (loc.location?.type === 'EXPRESSION') {
-		const v = _getData(
-			dotPathBuilder(loc.location?.expression!, locationHistory) || '',
-			...tve,
-		);
-		if (!isNullValue(v)) data = v;
+	let value: T | undefined;
+	if (prop.location) {
+		value = getDataFromLocation(prop.location, locationHistory, ...tve);
 	}
-	if (!isNullValue(loc.value)) data = loc.value;
+	if (!isNullValue(value)) return value;
+	return prop.value;
+}
 
-	return data;
+export function getDataFromLocation(
+	loc: DataLocation,
+	locationHistory: Array<DataLocation | string>,
+	...tve: Array<TokenValueExtractor>
+): any {
+	if (loc?.type === 'VALUE' && loc.value) {
+		return _getData(dotPathBuilder(loc.value, locationHistory) || '', ...tve);
+	} else if (loc?.type === 'EXPRESSION' && loc.expression) {
+		return _getData(dotPathBuilder(loc?.expression!, locationHistory) || '', ...tve);
+	}
+}
+
+export function getDataFromPath(path: string | undefined) {
+	if (!path) return undefined;
+	return _getData(path);
 }
 
 export function setData(path: string, value: any, context?: string) {
@@ -140,7 +147,7 @@ export function setData(path: string, value: any, context?: string) {
 				localStore.setItem(key, value);
 			}
 		}
-	} else if (path.startsWith(PAGE_STORE_PREFIX)) {
+	} else if (path.startsWith(PAGE_STORE_PREFIX) && context) {
 		_setData(
 			`Store.pageData.${context}.${path.substring(PAGE_STORE_PREFIX.length + 1)}`,
 			value,

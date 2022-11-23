@@ -4,6 +4,8 @@ import { App } from './App';
 
 declare global {
 	var nodeDev: boolean;
+	var isDesignMode: boolean;
+	var designMode: string;
 }
 
 const app = document.getElementById('app');

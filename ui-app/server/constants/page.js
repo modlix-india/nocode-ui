@@ -163,7 +163,7 @@ export const page = {
       },
     },
   },
-  children: {
+  componentDefinition: {
     loginGrid: {
       name: "loginGrid",
       key: "loginGrid",
