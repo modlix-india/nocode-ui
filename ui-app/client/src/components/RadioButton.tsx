@@ -1,9 +1,9 @@
 import { Schema } from '@fincity/kirun-js';
 import React from 'react';
 import { NAMESPACE_UI_ENGINE } from '../constants';
-import { getData } from '../context/StoreContext';
+import { getData, PageStoreExtractor } from '../context/StoreContext';
 import { HelperComponent } from './HelperComponent';
-import { DataLocation } from './types';
+import { DataLocation, ComponentProperty, RenderContext } from './types';
 import { getTranslations } from './util/getTranslations';
 
 interface RadioButtonProps extends React.ComponentPropsWithoutRef<'input'> {
@@ -12,38 +12,7 @@ interface RadioButtonProps extends React.ComponentPropsWithoutRef<'input'> {
 		name: string;
 		children: any;
 		properties: {
-			label: {
-				value: string;
-				location: {
-					type: 'EXPRESSION' | 'VALUE';
-					value?: string;
-					expression?: string;
-				};
-			};
-			form: {
-				value: string;
-				location: {
-					type: 'EXPRESSION' | 'VALUE';
-					value?: string;
-					expression?: string;
-				};
-			};
-			isDisabled: {
-				value: string;
-				location: {
-					type: 'EXPRESSION' | 'VALUE';
-					value?: string;
-					expression?: string;
-				};
-			};
-			bindingPath: {
-				value: string;
-				location: {
-					type: 'EXPRESSION' | 'VALUE';
-					value?: string;
-					expression?: string;
-				};
-			};
+			label: ComponentProperty<string>;
 		};
 	};
 	pageDefinition: {
@@ -57,6 +26,7 @@ interface RadioButtonProps extends React.ComponentPropsWithoutRef<'input'> {
 		};
 	};
 	locationHistory: Array<DataLocation | string>;
+	context: RenderContext;
 }
 
 function RadioButton(props: RadioButtonProps) {
@@ -68,8 +38,10 @@ function RadioButton(props: RadioButtonProps) {
 		definition,
 		pageDefinition: { translations },
 		locationHistory,
+		context,
 	} = props;
-	const labelValue = getData(label, locationHistory);
+	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const labelValue = getData(label, locationHistory, pageExtractor);
 	return (
 		<div className="comp compRadioButton">
 			<HelperComponent definition={definition} />

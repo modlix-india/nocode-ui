@@ -1,55 +1,20 @@
 import React from 'react';
-import { getData } from '../context/StoreContext';
+import { getData, PageStoreExtractor } from '../context/StoreContext';
 import { HelperComponent } from './HelperComponent';
 import { Schema } from '@fincity/kirun-js';
 import { NAMESPACE_UI_ENGINE } from '../constants';
 import { Link as RouterLink } from 'react-router-dom';
 import { getTranslations } from './util/getTranslations';
-import { DataLocation } from './types';
+import { DataLocation, ComponentProperty, RenderContext } from './types';
 
 interface LinkProps extends React.ComponentPropsWithoutRef<'a'> {
 	definition: {
 		properties: {
-			linkPath: {
-				value: string;
-				location: {
-					type: 'EXPRESSION' | 'VALUE';
-					value?: string;
-					expression?: string;
-				};
-			};
-			label: {
-				value: string;
-				location: {
-					type: 'EXPRESSION' | 'VALUE';
-					value?: string;
-					expression?: string;
-				};
-			};
-			target: {
-				value: string;
-				location: {
-					type: 'EXPRESSION' | 'VALUE';
-					value?: string;
-					expression?: string;
-				};
-			};
-			showButton: {
-				value: string;
-				location: {
-					type: 'EXPRESSION' | 'VALUE';
-					value?: string;
-					expression?: string;
-				};
-			};
-			externalButtonTarget: {
-				value: string;
-				location: {
-					type: 'EXPRESSION' | 'VALUE';
-					value?: string;
-					expression?: string;
-				};
-			};
+			linkPath: ComponentProperty<string>;
+			label: ComponentProperty<string>;
+			target: ComponentProperty<string>;
+			showButton: ComponentProperty<string>;
+			externalButtonTarget: ComponentProperty<string>;
 		};
 	};
 	pageDefinition: {
@@ -60,6 +25,7 @@ interface LinkProps extends React.ComponentPropsWithoutRef<'a'> {
 		};
 	};
 	locationHistory: Array<DataLocation | string>;
+	context: RenderContext;
 }
 
 function Link(props: LinkProps) {
@@ -70,12 +36,15 @@ function Link(props: LinkProps) {
 		pageDefinition: { translations },
 		definition,
 		locationHistory,
+		context,
 	} = props;
-	const labelValue = getData(label, locationHistory);
-	const linkPathValue = getData(linkPath, locationHistory);
-	const targetValue = getData(target, locationHistory) || '_self';
-	const externalButtonTargetVal = getData(externalButtonTarget, locationHistory) || '_blank';
-	const showButtonVal = getData(showButton, locationHistory);
+	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const labelValue = getData(label, locationHistory, pageExtractor);
+	const linkPathValue = getData(linkPath, locationHistory, pageExtractor);
+	const targetValue = getData(target, locationHistory, pageExtractor) || '_self';
+	const externalButtonTargetVal =
+		getData(externalButtonTarget, locationHistory, pageExtractor) || '_blank';
+	const showButtonVal = getData(showButton, locationHistory, pageExtractor);
 
 	return (
 		<div className="comp compLinks ">

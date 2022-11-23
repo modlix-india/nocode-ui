@@ -1,53 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import { Schema } from '@fincity/kirun-js';
 import { FUNCTION_EXECUTION_PATH, NAMESPACE_UI_ENGINE } from '../constants';
-import { addListener, getData, setData } from '../context/StoreContext';
+import {
+	addListener,
+	getData,
+	getDataFromPath,
+	PageStoreExtractor,
+	setData,
+} from '../context/StoreContext';
 import { runEvent } from './util/runEvent';
 import { HelperComponent } from './HelperComponent';
 import { getTranslations } from './util/getTranslations';
-import { DataLocation } from './types';
+import { ComponentProperty, DataLocation, RenderContext } from './types';
 
 interface ButtonProps extends React.ComponentPropsWithoutRef<'button'> {
 	definition: {
 		key: string;
 		properties: {
-			label: {
-				value: string;
-				location: DataLocation;
-			};
-			type: {
-				value: string;
-				location: DataLocation;
-			};
-			onClick: {
-				value: string;
-				location: DataLocation;
-			};
-			isDisabled: {
-				value: string;
-				location: DataLocation;
-			};
-			leftIcon?: {
-				icon?: {
-					value: string;
-					location: DataLocation;
-				};
-				iconStyle?: 'REGULAR' | 'SOLID';
-			};
-			rightIcon?: {
-				icon?: {
-					value: string;
-					location: DataLocation;
-				};
-				iconStyle?: 'REGULAR' | 'SOLID';
-			};
-			fabIcon?: {
-				icon?: {
-					value: string;
-					location: DataLocation;
-				};
-				iconStyle?: 'REGULAR' | 'SOLID';
-			};
+			label: ComponentProperty<string>;
+			type: ComponentProperty<string>;
+			onClick: ComponentProperty<string>;
+			isDisabled: ComponentProperty<string>;
+			leftIcon?: ComponentProperty<string>;
+			rightIcon?: ComponentProperty<string>;
+			fabIcon?: ComponentProperty<string>;
 		};
 	};
 	pageDefinition: {
@@ -58,6 +34,7 @@ interface ButtonProps extends React.ComponentPropsWithoutRef<'button'> {
 		translations: { [key: string]: { [key: string]: string } };
 	};
 	locationHistory: Array<DataLocation | string>;
+	context: RenderContext;
 }
 function ButtonComponent(props: ButtonProps) {
 	const {
@@ -76,24 +53,24 @@ function ButtonComponent(props: ButtonProps) {
 		},
 		locationHistory,
 		definition,
+		context,
 	} = props;
-	const buttonType = getData(type, locationHistory);
-	const isDisabledButton = getData(isDisabled, locationHistory);
-	const clickEventKey = getData(onClick, locationHistory);
+	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const buttonType = getData(type, locationHistory, pageExtractor);
+	const isDisabledButton = getData(isDisabled, locationHistory, pageExtractor);
+	const clickEventKey = getData(onClick, locationHistory, pageExtractor) || '';
 	const clickEvent = eventFunctions[clickEventKey];
 
-	const { iconStyle: fabIconStyle = 'SOLID', icon: fabIconLocation = {} } = fabIcon;
-	const buttonFabIcon = getData(fabIconLocation, locationHistory);
+	const buttonFabIcon = getData(fabIcon, locationHistory, pageExtractor);
 
 	const buttonLabel = getData(label, locationHistory);
-	const { iconStyle: leftIconStyle = 'SOLID', icon: leftIconLocation = {} } = leftIcon;
-	const { iconStyle: rightIconStyle = 'SOLID', icon: rightIconLocation = {} } = rightIcon;
-	const buttonLeftIcon = getData(leftIconLocation, locationHistory);
-	const buttonRightIcon = getData(rightIconLocation, locationHistory);
+
+	const buttonLeftIcon = getData(leftIcon, locationHistory, pageExtractor);
+	const buttonRightIcon = getData(rightIcon, locationHistory, pageExtractor);
 
 	const functionExecutionStorePath = `${FUNCTION_EXECUTION_PATH}.${pageName}.${key}.isRunning`;
 	const [isLoading, setIsLoading] = useState(
-		getData(functionExecutionStorePath, locationHistory) || false,
+		getDataFromPath(functionExecutionStorePath) || false,
 	);
 
 	useEffect(() => {
@@ -118,8 +95,6 @@ function ButtonComponent(props: ButtonProps) {
 				>
 					<i
 						className={`fabButtonIcon ${
-							fabIconStyle === 'SOLID' ? 'fa-solid' : 'fa-regular'
-						} fa-fw ${
 							buttonFabIcon
 								? !isLoading
 									? buttonFabIcon
@@ -141,8 +116,6 @@ function ButtonComponent(props: ButtonProps) {
 				<div className="buttonInternalContainer">
 					<i
 						className={`leftButtonIcon ${
-							leftIconStyle === 'SOLID' ? 'fa-solid' : 'fa-regular'
-						} fa-fw ${
 							buttonLeftIcon
 								? !isLoading
 									? buttonLeftIcon
@@ -153,8 +126,8 @@ function ButtonComponent(props: ButtonProps) {
 					{getTranslations(buttonLabel, translations)}
 					<i
 						className={`rightButtonIcon ${
-							rightIconStyle === 'SOLID' ? 'fa-solid' : 'fa-regular'
-						} fa-fw ${buttonRightIcon ? buttonRightIcon : `${buttonRightIcon} hide`}`}
+							buttonRightIcon ? buttonRightIcon : `${buttonRightIcon} hide`
+						}`}
 					/>
 				</div>
 			</button>

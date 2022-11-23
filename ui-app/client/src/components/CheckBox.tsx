@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { Schema } from '@fincity/kirun-js';
 import { NAMESPACE_UI_ENGINE } from '../constants';
-import { addListener, getData, setData } from '../context/StoreContext';
+import {
+	addListener,
+	getData,
+	getDataFromLocation,
+	getPathFromLocation,
+	PageStoreExtractor,
+	setData,
+} from '../context/StoreContext';
 import { HelperComponent } from './HelperComponent';
 import { getTranslations } from './util/getTranslations';
-import { DataLocation } from './types';
+import { DataLocation, ComponentProperty, RenderContext } from './types';
 
 interface CheckBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 	definition: {
@@ -12,25 +19,13 @@ interface CheckBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 		name: string;
 		children: any;
 		properties: {
-			label: {
-				value: string;
-				location: DataLocation;
-			};
-			form: {
-				value: string;
-				location: DataLocation;
-			};
-			isDisabled: {
-				value: string;
-				location: DataLocation;
-			};
-			bindingPath: {
-				value: string;
-				location: DataLocation;
-			};
+			label: ComponentProperty<string>;
+			isDisabled: ComponentProperty<string>;
+			bindingPath: DataLocation;
 		};
 	};
 	locationHistory: Array<string | DataLocation>;
+	context: RenderContext;
 	pageDefinition: {
 		eventFunctions: {
 			[key: string]: any;
@@ -48,27 +43,27 @@ function CheckBox(props: CheckBoxProps) {
 			key,
 			name,
 			children,
-			properties: { label, isDisabled, form, bindingPath: bindingPathLocation },
+			properties: { label, isDisabled, bindingPath },
 		},
 		locationHistory,
 		definition,
+		context,
 	} = props;
-	if (!bindingPathLocation) return <>Binding Path Required</>;
+	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	if (!bindingPath) return <>Binding Path Required</>;
 	const [checkBoxdata, setCheckBoxData] = useState(
-		getData(getData(bindingPathLocation, locationHistory), locationHistory) || false,
+		getDataFromLocation(bindingPath, locationHistory, pageExtractor) || false,
 	);
-	const formId = getData(form, locationHistory);
-	const bindingPath = getData(bindingPathLocation, locationHistory);
-	const checkBoxLabel = getData(label, locationHistory);
-	const isDisabledCheckbox = getData(isDisabled, locationHistory);
+	const checkBoxLabel = getData(label, locationHistory, pageExtractor);
+	const isDisabledCheckbox = !!getData(isDisabled, locationHistory, pageExtractor);
 
 	useEffect(() => {
-		addListener(bindingPath, (_, value) => {
+		addListener(getPathFromLocation(bindingPath, locationHistory), (_, value) => {
 			setCheckBoxData(value);
 		});
 	}, [bindingPath, setCheckBoxData]);
 	const handleChange = (event: any) => {
-		setData(bindingPath, event.target.checked);
+		setData(getPathFromLocation(bindingPath, locationHistory), event.target.checked);
 	};
 	return (
 		<div className="comp compCheckBox">
