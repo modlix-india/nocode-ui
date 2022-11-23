@@ -113,13 +113,13 @@ export function getDataFromLocation(
 export function getPathFromLocation(
 	loc: DataLocation,
 	locationHistory: Array<DataLocation | string>,
-	...tve: Array<TokenValueExtractor>
-): any {
+): string {
 	if (loc?.type === 'VALUE' && loc.value) {
 		return dotPathBuilder(loc.value, locationHistory) || '';
 	} else if (loc?.type === 'EXPRESSION' && loc.expression) {
 		return dotPathBuilder(loc?.expression!, locationHistory) || '';
 	}
+	return '';
 }
 
 export function getDataFromPath(path: string | undefined) {
