@@ -122,9 +122,12 @@ export function getPathFromLocation(
 	return '';
 }
 
-export function getDataFromPath(path: string | undefined) {
+export function getDataFromPath(
+	path: string | undefined,
+	locationHistory: Array<DataLocation | string>,
+) {
 	if (!path) return undefined;
-	return _getData(path);
+	return _getData(dotPathBuilder(path, locationHistory));
 }
 
 export function setData(path: string, value: any, context?: string) {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, Location } from 'react-router-dom';
 import { STORE_PREFIX } from '../constants';
-import { addListener, getData, setData } from '../context/StoreContext';
+import { addListener, getData, getDataFromPath, setData } from '../context/StoreContext';
 import * as getPageDefinition from './../definitions/getPageDefinition.json';
 import { runEvent } from '../components/util/runEvent';
 import Page from '../components/Page';
@@ -14,12 +14,13 @@ export const RenderEngineContainer = () => {
 
 	useEffect(() => {
 		let { pageName } = processLocation(location);
-		if (!pageName) pageName = getData(`${STORE_PREFIX}.application.properties.defaultPage`, []);
-		let pDef = getData(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
+		if (!pageName)
+			pageName = getDataFromPath(`${STORE_PREFIX}.application.properties.defaultPage`, []);
+		let pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
 		if (!pDef) {
 			(async () => {
 				await runEvent(getPageDefinition, 'pageDefinition');
-				pDef = getData(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
+				pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
 				setPageDefinition(pDef);
 				setCurrentPageName(pageName);
 			})();
@@ -43,15 +44,33 @@ export const RenderEngineContainer = () => {
 		} = pageDefinition;
 
 		if (wrapShell && shellPageDefinition)
-			return <Page locationHistory={[]} definition={shellPageDefinition} context="global" />;
+			return (
+				<Page
+					locationHistory={[]}
+					definition={shellPageDefinition}
+					context={{ pageName: 'global' }}
+				/>
+			);
 
-		return <Page locationHistory={[]} definition={pageDefinition} context={currentPageName} />;
+		return (
+			<Page
+				locationHistory={[]}
+				definition={pageDefinition}
+				context={{ pageName: currentPageName }}
+			/>
+		);
 	} else {
-		const definitions = getData(`${STORE_PREFIX}.pageDefinition`, []) ?? {};
+		const definitions = getDataFromPath(`${STORE_PREFIX}.pageDefinition`, []) ?? {};
 		const hasDefinitions = !!Object.keys(definitions).length;
 		if (!hasDefinitions) return <>Loading...</>;
 
-		return <Page locationHistory={[]} definition={shellPageDefinition} context="global" />;
+		return (
+			<Page
+				locationHistory={[]}
+				definition={shellPageDefinition}
+				context={{ pageName: 'global' }}
+			/>
+		);
 	}
 };
 

@@ -1,5 +1,6 @@
 import { ExpressionEvaluator, TokenValueExtractor } from '@fincity/kirun-js';
-import { getData } from '../../context/StoreContext';
+import { getData, getDataFromLocation } from '../../context/StoreContext';
+import { DataLocation } from '../types';
 
 export class ObjectExtractor extends TokenValueExtractor {
 	private store: any;
@@ -19,9 +20,7 @@ export class ObjectExtractor extends TokenValueExtractor {
 }
 
 const getExtractionMap = (data: any) =>
-	new Map<string, TokenValueExtractor>([
-		[`Data.`, new ObjectExtractor(data, `Data.`)],
-	]);
+	new Map<string, TokenValueExtractor>([[`Data.`, new ObjectExtractor(data, `Data.`)]]);
 
 const getSelection = (
 	selectionType: 'KEY' | 'INDEX' | 'OBJECT' | undefined,
@@ -30,9 +29,7 @@ const getSelection = (
 	index: number | string,
 ) => {
 	if (selectionType === 'KEY') {
-		let ev: ExpressionEvaluator = new ExpressionEvaluator(
-			`Data.${selectionKey}`,
-		);
+		let ev: ExpressionEvaluator = new ExpressionEvaluator(`Data.${selectionKey}`);
 		return ev.evaluate(getExtractionMap(object));
 	}
 	if (selectionType === 'INDEX') {
@@ -44,7 +41,7 @@ const getSelection = (
 };
 
 export const getRenderData = (
-	dataLocation: any,
+	dataLocation: DataLocation,
 	dataType:
 		| 'LIST_OF_STRINGS'
 		| 'LIST_OF_OBJECTS'
@@ -52,6 +49,8 @@ export const getRenderData = (
 		| 'OBJECT_OF_PRIMITIVES'
 		| 'OBJECT_OF_OBJECTS'
 		| 'OBJECT_OF_LISTS',
+	locationHistory: Array<DataLocation | string>,
+	pageExtractor: TokenValueExtractor,
 	uniqueKeyType: 'KEY' | 'INDEX' | 'OBJECT',
 	uniqueKey: string,
 	selectionType: 'KEY' | 'INDEX' | 'OBJECT',
@@ -59,10 +58,8 @@ export const getRenderData = (
 	labelKeyType?: 'KEY' | 'INDEX' | 'OBJECT',
 	labelKey?: string,
 ) => {
-	const data = getData(dataLocation) || [];
-	let ev: ExpressionEvaluator = new ExpressionEvaluator(
-		`Data.${selectionKey}`,
-	);
+	const data = getDataFromLocation(dataLocation, locationHistory, pageExtractor) || [];
+	let ev: ExpressionEvaluator = new ExpressionEvaluator(`Data.${selectionKey}`);
 	if (dataType === 'LIST_OF_STRINGS') {
 		const res = data.map((e: any, index: number) => {
 			if (typeof e === 'string') {

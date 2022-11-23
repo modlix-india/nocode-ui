@@ -6,7 +6,7 @@ export function getTranslations(
 ) {
 	if (!key) return key;
 	if (!languageObject) return key;
-	const lang = getDataFromPath('Store.currentLanguage') ?? 'en';
+	const lang = getDataFromPath('Store.currentLanguage', []) ?? 'en';
 	if (!languageObject[lang]) return key;
 	return languageObject[lang][key] ?? key;
 }

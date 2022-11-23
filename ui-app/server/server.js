@@ -19,7 +19,7 @@ app.post("/login", (req, res) => {
   });
 });
 
-app.use("/application", (req, res) => {
+app.use("/api/ui/application", (req, res) => {
   res.json(application);
 });
 

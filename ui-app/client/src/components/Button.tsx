@@ -70,7 +70,7 @@ function ButtonComponent(props: ButtonProps) {
 
 	const functionExecutionStorePath = `${FUNCTION_EXECUTION_PATH}.${pageName}.${key}.isRunning`;
 	const [isLoading, setIsLoading] = useState(
-		getDataFromPath(functionExecutionStorePath) || false,
+		getDataFromPath(functionExecutionStorePath, locationHistory) || false,
 	);
 
 	useEffect(() => {

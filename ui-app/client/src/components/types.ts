@@ -18,6 +18,6 @@ export interface Translations {
 
 export interface RenderContext {
 	pageName: string;
-	isReadonly: boolean;
-	formKey: Array<string>;
+	isReadonly?: boolean;
+	formKey?: Array<string>;
 }
