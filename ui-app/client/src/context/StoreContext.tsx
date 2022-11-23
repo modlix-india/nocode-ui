@@ -110,6 +110,18 @@ export function getDataFromLocation(
 	}
 }
 
+export function getPathFromLocation(
+	loc: DataLocation,
+	locationHistory: Array<DataLocation | string>,
+	...tve: Array<TokenValueExtractor>
+): any {
+	if (loc?.type === 'VALUE' && loc.value) {
+		return dotPathBuilder(loc.value, locationHistory) || '';
+	} else if (loc?.type === 'EXPRESSION' && loc.expression) {
+		return dotPathBuilder(loc?.expression!, locationHistory) || '';
+	}
+}
+
 export function getDataFromPath(path: string | undefined) {
 	if (!path) return undefined;
 	return _getData(path);
