@@ -55,9 +55,9 @@ function ToggleButton(props: ToggelButtonProps) {
 	const labelValue = getData(label, locationHistory, pageExtractor);
 	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory);
 	React.useEffect(() => {
-		addListener(bindingPathPath, (_, value) => {
+		addListener((_, value) => {
 			setIsToggled(value);
-		});
+		}, bindingPathPath);
 	}, []);
 	const handleChange = (event: any) => {
 		setData(bindingPathPath, event.target.checked);

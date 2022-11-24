@@ -5,6 +5,7 @@ import {
 	addListener,
 	getData,
 	getDataFromLocation,
+	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
 } from '../context/StoreContext';
@@ -64,21 +65,19 @@ function TextBox(props: TextBoxProps) {
 		? getData(leftIcon, locationHistory, pageExtractor)
 		: undefined;
 	const isDisabledTextBox = getData(readOnly, locationHistory, pageExtractor);
-	const textBoxBindingPath = getDataFromLocation(bindingPath, locationHistory, pageExtractor);
+	const textBoxBindingPath = getPathFromLocation(bindingPath, locationHistory);
 	const textBoxDefaultValue = getData(defaultValue, locationHistory, pageExtractor);
 	const textBoxSupportingText = getData(supportingText, locationHistory, pageExtractor);
 	const [isDirty, setIsDirty] = React.useState(false);
 	const [errorMessage, setErrorMessage] = React.useState('');
-	const [value, setvalue] = React.useState(
-		getData(textBoxBindingPath, locationHistory, pageExtractor) || textBoxDefaultValue || '',
-	);
+	const [value, setvalue] = React.useState('');
 	const [isFocussed, setIsFocussed] = React.useState(false);
 	const [hasText, setHasText] = React.useState(false);
 	const textBoxLabel = getData(label, locationHistory, pageExtractor);
 	React.useEffect(() => {
-		const unsubscribe = addListener(textBoxBindingPath, (_, value) => {
-			setvalue(value);
-		});
+		const unsubscribe = addListener((_, value) => {
+			setvalue(value ?? textBoxDefaultValue);
+		}, textBoxBindingPath);
 		return () => {
 			unsubscribe();
 		};

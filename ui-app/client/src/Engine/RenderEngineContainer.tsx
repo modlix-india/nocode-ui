@@ -32,8 +32,9 @@ export const RenderEngineContainer = () => {
 
 	useEffect(
 		() =>
-			addListener(`${STORE_PREFIX}.application.properties.shellPageDefinition`, (_, value) =>
-				setShellPageDefinition(value),
+			addListener(
+				(_, value) => setShellPageDefinition(value),
+				`${STORE_PREFIX}.application.properties.shellPageDefinition`,
 			),
 		[],
 	);

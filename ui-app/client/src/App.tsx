@@ -33,18 +33,19 @@ export function App() {
 
 		if (!globalThis.nodeDev) return;
 
-		return addListener(`${STORE_PREFIX}.application`, (_, { properties } = {}) => {
+		return addListener((_, { properties } = {}) => {
 			if (!properties) return;
 			processTagType(properties.links, 'LINK');
 			processTagType(properties.scripts, 'SCRIPT');
 			processTagType(properties.metas, 'META');
-		});
+		}, `${STORE_PREFIX}.application`);
 	}, []);
 
 	useEffect(
 		() =>
-			addListener(`${STORE_PREFIX}.isApplicationLoadFailed`, (_, value) =>
-				setIsApplicationFailed(value),
+			addListener(
+				(_, value) => setIsApplicationFailed(value),
+				`${STORE_PREFIX}.isApplicationLoadFailed`,
 			),
 		[],
 	);

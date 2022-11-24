@@ -58,9 +58,9 @@ function CheckBox(props: CheckBoxProps) {
 	const isDisabledCheckbox = !!getData(isDisabled, locationHistory, pageExtractor);
 
 	useEffect(() => {
-		addListener(getPathFromLocation(bindingPath, locationHistory), (_, value) => {
+		return addListener((_, value) => {
 			setCheckBoxData(value);
-		});
+		}, getPathFromLocation(bindingPath, locationHistory));
 	}, [bindingPath, setCheckBoxData]);
 	const handleChange = (event: any) => {
 		setData(getPathFromLocation(bindingPath, locationHistory), event.target.checked);

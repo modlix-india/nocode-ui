@@ -13,12 +13,12 @@ export const updateLocationForChild = (
 		return `(${finalPath ? finalPath : location})[${index}]`;
 	}
 	let childLocation = { ...(location as DataLocation) };
-	if (childLocation?.type === 'VALUE')
+	if (childLocation?.type === 'VALUE') {
 		finalPath = locationHistory.length
 			? dotPathBuilder(childLocation.value!, locationHistory)
 			: '';
-	childLocation.value = `(${finalPath ? finalPath : childLocation?.value})[${index}]`;
-	if (childLocation?.type === 'EXPRESSION') {
+		childLocation.value = `${finalPath ? finalPath : childLocation?.value}[${index}]`;
+	} else if (childLocation?.type === 'EXPRESSION') {
 		finalPath = locationHistory.length
 			? dotPathBuilder(childLocation.value!, locationHistory)
 			: '';

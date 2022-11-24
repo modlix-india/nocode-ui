@@ -74,9 +74,9 @@ function ButtonComponent(props: ButtonProps) {
 	);
 
 	useEffect(() => {
-		addListener(functionExecutionStorePath, (_, value) => {
+		addListener((_, value) => {
 			setIsLoading(value);
-		});
+		}, functionExecutionStorePath);
 	}, []);
 
 	const handleClick = async () => {
