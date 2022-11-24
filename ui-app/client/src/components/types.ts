@@ -26,7 +26,6 @@ export enum ValidationType {
 	EVENT_FUNCTION,
 	MANDATORY,
 	REGEX,
-	JSON,
 	UNIQUE,
 	STRING_MAX_LENGTH,
 	STRING_MIN_LENGTH,
@@ -40,6 +39,6 @@ export enum ValidationType {
 
 export interface Validation {
 	type: ValidationType;
-	condition: DataLocation;
+	condition: ComponentProperty<boolean>;
 	message: ComponentProperty<string>;
 }
