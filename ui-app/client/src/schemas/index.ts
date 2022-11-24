@@ -9,28 +9,58 @@ import { NAMESPACE_UI_ENGINE } from '../constants';
 
 const map = new Map([
 	[
-		'Location',
-		Schema.ofObject('Location')
+		'DataLocation',
+		Schema.ofObject('DataLocation')
+			.setNamespace(NAMESPACE_UI_ENGINE)
+			.setProperties(
+				new Map([
+					['value', Schema.ofString('value')],
+					['expression', Schema.ofString('expression')],
+					['type', Schema.ofString('type').setEnums(['EXPRESSION', 'VALUE'])],
+				]),
+			),
+	],
+	[
+		'StringComponentProperty',
+		Schema.ofObject('StringComponentProperty')
 			.setNamespace(NAMESPACE_UI_ENGINE)
 			.setProperties(
 				new Map<string, Schema>([
-					[
-						'location',
-						Schema.ofObject('expression').setProperties(
-							new Map([
-								['value', Schema.ofString('value')],
-								['expression', Schema.ofString('expression')],
-								[
-									'type',
-									Schema.ofString('type').setEnums([
-										'EXPRESSION',
-										'VALUE',
-									]),
-								],
-							]),
-						),
-					],
+					['location', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.DataLocation`)],
+					['value', Schema.ofString('value')],
+				]),
+			),
+	],
+	[
+		'BooleanComponentProperty',
+		Schema.ofObject('BooleanComponentProperty')
+			.setNamespace(NAMESPACE_UI_ENGINE)
+			.setProperties(
+				new Map<string, Schema>([
+					['location', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.DataLocation`)],
+					['value', Schema.ofBoolean('value')],
+				]),
+			),
+	],
+	[
+		'AnyComponentProperty',
+		Schema.ofObject('AnyComponentProperty')
+			.setNamespace(NAMESPACE_UI_ENGINE)
+			.setProperties(
+				new Map<string, Schema>([
+					['location', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.DataLocation`)],
 					['value', Schema.ofAny('value')],
+				]),
+			),
+	],
+	[
+		'NumberComponentProperty',
+		Schema.ofObject('NumberComponentProperty')
+			.setNamespace(NAMESPACE_UI_ENGINE)
+			.setProperties(
+				new Map<string, Schema>([
+					['location', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.DataLocation`)],
+					['value', Schema.ofNumber('value')],
 				]),
 			),
 	],

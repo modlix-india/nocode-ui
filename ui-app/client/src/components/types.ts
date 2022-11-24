@@ -21,3 +21,25 @@ export interface RenderContext {
 	isReadonly?: boolean;
 	formKey?: Array<string>;
 }
+
+export enum ValidationType {
+	EVENT_FUNCTION,
+	MANDATORY,
+	REGEX,
+	JSON,
+	UNIQUE,
+	STRING_MAX_LENGTH,
+	STRING_MIN_LENGTH,
+	BOOLEAN_EXPRESSION,
+	SCHEMA_TYPE,
+	EMAIL,
+	NUMBER_MIN_VALUE,
+	NUMBER_MAX_VALUE,
+	FORMAT,
+}
+
+export interface Validation {
+	type: ValidationType;
+	condition: DataLocation;
+	message: ComponentProperty<string>;
+}
