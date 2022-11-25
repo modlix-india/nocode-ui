@@ -1,6 +1,6 @@
 import { Schema } from '@fincity/kirun-js';
 import React from 'react';
-import { FUNCTION_EXECUTION_PATH, NAMESPACE_UI_ENGINE } from '../constants';
+import { FUNCTION_EXECUTION_PATH, NAMESPACE_UI_COMPONENT, NAMESPACE_UI_ENGINE } from '../constants';
 import {
 	addListener,
 	getData,
@@ -13,6 +13,7 @@ import { HelperComponent } from './HelperComponent';
 import { ComponentProperty, DataLocation, RenderContext } from '../types/common';
 import { getTranslations } from './util/getTranslations';
 import { runEvent } from './util/runEvent';
+import { Validation } from '../types/validation';
 
 interface TextBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 	definition: {
@@ -25,6 +26,7 @@ interface TextBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 			readOnly?: ComponentProperty<boolean>;
 			defaultValue: ComponentProperty<string>;
 			supportingText: ComponentProperty<string>;
+			validations: Array<Validation>;
 		};
 	};
 	pageDefinition: {
@@ -42,7 +44,7 @@ interface TextBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 	context: RenderContext;
 }
 
-function TextBox(props: TextBoxProps) {
+export function TextBox(props: TextBoxProps) {
 	const {
 		definition: {
 			key,
@@ -149,13 +151,11 @@ function TextBox(props: TextBoxProps) {
 	);
 }
 
-TextBox.propertiesSchema = Schema.ofObject('TextBox')
-	.setNamespace(NAMESPACE_UI_ENGINE)
+export const PROPERTIES_SCHEMA = Schema.ofObject('TextBox')
+	.setNamespace(NAMESPACE_UI_COMPONENT)
 	.setProperties(
 		new Map([
 			['label', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
 			['bindingPath', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
 		]),
 	);
-
-export default TextBox;
