@@ -20,3 +20,4 @@ export const SCHEMA_REF_VALIDATION_TYPE = `${NAMESPACE_UI_ENGINE}.ValidationType
 export const SCHEMA_REF_BOOL_COMP_PROP = `${NAMESPACE_UI_ENGINE}.BooleanComponentProperty`;
 export const SCHEMA_REF_STRING_COMP_PROP = `${NAMESPACE_UI_ENGINE}.StringComponentProperty`;
 export const SCHEMA_REF_NUM_COMP_PROP = `${NAMESPACE_UI_ENGINE}.NumberComponentProperty`;
+export const SCHEMA_REF_ANY_COMP_PROP = `${NAMESPACE_UI_ENGINE}.AnyComponentProperty`;
