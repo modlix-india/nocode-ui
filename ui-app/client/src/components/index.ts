@@ -8,6 +8,8 @@ import RadioButton from './RadioButton';
 import TextBox from './TextBox';
 import ToggleButton from './ToggleButton';
 import ArrayRepeator from './ArrayRepeator';
+import Tabs from './Tabs';
+import  Image from './Image';
 
 export default new Map<string, React.ElementType>([
 	['Button', Button],
@@ -20,4 +22,6 @@ export default new Map<string, React.ElementType>([
 	['TextBox', TextBox],
 	['Link', Link],
 	['ArrayRepeator', ArrayRepeator],
+	['Tabs', Tabs],
+	['Image', Image]
 ]);
