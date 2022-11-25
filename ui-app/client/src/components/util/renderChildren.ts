@@ -2,7 +2,7 @@ import React from 'react';
 import Components from '..';
 import { getData } from '../../context/StoreContext';
 import Nothing from '../Nothing';
-import { DataLocation, RenderContext } from '../types';
+import { DataLocation, RenderContext } from '../../types/common';
 
 export const renderChildren = (
 	pageDefinition: any,

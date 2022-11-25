@@ -10,7 +10,7 @@ import {
 	setData,
 } from '../context/StoreContext';
 import { HelperComponent } from './HelperComponent';
-import { ComponentProperty, DataLocation, RenderContext } from './types';
+import { ComponentProperty, DataLocation, RenderContext } from '../types/common';
 import { getTranslations } from './util/getTranslations';
 import { runEvent } from './util/runEvent';
 

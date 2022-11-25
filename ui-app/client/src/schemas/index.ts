@@ -70,7 +70,7 @@ const map = new Map([
 			.setNamespace(NAMESPACE_UI_ENGINE)
 			.setAdditionalProperties(
 				new AdditionalPropertiesType().setSchemaValue(
-					Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`),
+					Schema.ofRef(`${NAMESPACE_UI_ENGINE}.DataLocation`),
 				),
 			)
 			.setDefaultValue({}),
@@ -94,6 +94,20 @@ const map = new Map([
 							),
 					],
 				]),
+			),
+	],
+	[
+		'Translations',
+		Schema.ofObject('Translations')
+			.setNamespace(NAMESPACE_UI_ENGINE)
+			.setAdditionalProperties(
+				new AdditionalPropertiesType().setSchemaValue(
+					Schema.ofObject('Language').setAdditionalProperties(
+						new AdditionalPropertiesType().setSchemaValue(
+							Schema.ofString('translation'),
+						),
+					),
+				),
 			),
 	],
 ]);

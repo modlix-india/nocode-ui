@@ -1,6 +1,6 @@
 import React from 'react';
 import { HelperComponent } from './HelperComponent';
-import { DataLocation, RenderContext } from './types';
+import { DataLocation, RenderContext } from '../types/common';
 import { renderChildren } from './util/renderChildren';
 
 function Page({

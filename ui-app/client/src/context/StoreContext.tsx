@@ -1,7 +1,7 @@
 import { useStore, setStoreData } from '@fincity/path-reactive-state-management';
 import { LOCAL_STORE_PREFIX, STORE_PREFIX, PAGE_STORE_PREFIX } from '../constants';
 import { isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
-import { ComponentProperty, DataLocation, RenderContext } from '../components/types';
+import { ComponentProperty, DataLocation, RenderContext } from '../types/common';
 
 class LocalStoreExtractor extends TokenValueExtractor {
 	private store: any;

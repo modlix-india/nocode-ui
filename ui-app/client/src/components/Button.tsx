@@ -11,7 +11,7 @@ import {
 import { runEvent } from './util/runEvent';
 import { HelperComponent } from './HelperComponent';
 import { getTranslations } from './util/getTranslations';
-import { ComponentProperty, DataLocation, RenderContext } from './types';
+import { ComponentProperty, DataLocation, RenderContext } from '../types/common';
 
 interface ButtonProps extends React.ComponentPropsWithoutRef<'button'> {
 	definition: {

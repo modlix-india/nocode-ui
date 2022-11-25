@@ -11,7 +11,7 @@ import {
 } from '../context/StoreContext';
 import { HelperComponent } from './HelperComponent';
 import { getTranslations } from './util/getTranslations';
-import { DataLocation, ComponentProperty, RenderContext } from './types';
+import { DataLocation, ComponentProperty, RenderContext } from '../types/common';
 
 interface CheckBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 	definition: {

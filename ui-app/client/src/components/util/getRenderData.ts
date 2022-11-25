@@ -1,6 +1,6 @@
 import { ExpressionEvaluator, TokenValueExtractor } from '@fincity/kirun-js';
 import { getData, getDataFromLocation } from '../../context/StoreContext';
-import { DataLocation } from '../types';
+import { DataLocation } from '../../types/common';
 
 export class ObjectExtractor extends TokenValueExtractor {
 	private store: any;

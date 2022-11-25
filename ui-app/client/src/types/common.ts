@@ -22,23 +22,11 @@ export interface RenderContext {
 	formKey?: Array<string>;
 }
 
-export enum ValidationType {
-	EVENT_FUNCTION,
-	MANDATORY,
-	REGEX,
-	UNIQUE,
-	STRING_MAX_LENGTH,
-	STRING_MIN_LENGTH,
-	BOOLEAN_EXPRESSION,
-	SCHEMA_TYPE,
-	EMAIL,
-	NUMBER_MIN_VALUE,
-	NUMBER_MAX_VALUE,
-	FORMAT,
-}
-
-export interface Validation {
-	type: ValidationType;
-	condition: ComponentProperty<boolean>;
-	message: ComponentProperty<string>;
+export enum ComponentPropertyDataPathType {
+	ARRAY_OF_PRIMITIVES,
+	ARRAY_OF_OBJECTS,
+	ARRAY_OF_ARRAYS,
+	OBJECT_OF_PRMITIVES,
+	OBJECT_OF_OBJECTS,
+	OBJECT_OF_ARRAYS,
 }

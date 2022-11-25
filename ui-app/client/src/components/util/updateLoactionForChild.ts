@@ -1,5 +1,5 @@
 import { dotPathBuilder } from '../../context/StoreContext';
-import { DataLocation } from '../types';
+import { DataLocation } from '../../types/common';
 
 export const updateLocationForChild = (
 	location: DataLocation | string,

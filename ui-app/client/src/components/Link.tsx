@@ -5,7 +5,7 @@ import { Schema } from '@fincity/kirun-js';
 import { NAMESPACE_UI_ENGINE } from '../constants';
 import { Link as RouterLink } from 'react-router-dom';
 import { getTranslations } from './util/getTranslations';
-import { DataLocation, ComponentProperty, RenderContext } from './types';
+import { DataLocation, ComponentProperty, RenderContext } from '../types/common';
 
 interface LinkProps extends React.ComponentPropsWithoutRef<'a'> {
 	definition: {

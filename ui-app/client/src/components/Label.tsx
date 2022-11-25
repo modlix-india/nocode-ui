@@ -3,7 +3,7 @@ import React from 'react';
 import { NAMESPACE_UI_ENGINE } from '../constants';
 import { getData, PageStoreExtractor } from '../context/StoreContext';
 import { HelperComponent } from './HelperComponent';
-import { ComponentProperty, DataLocation, RenderContext, Translations } from './types';
+import { ComponentProperty, DataLocation, RenderContext, Translations } from '../types/common';
 import { getTranslations } from './util/getTranslations';
 
 interface LabelProps extends React.ComponentPropsWithoutRef<'span'> {

@@ -1,5 +1,5 @@
 import { ExpressionEvaluator, isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
-import { ComponentProperty, DataLocation } from '../components/types';
+import { ComponentProperty, DataLocation } from '../types/common';
 
 class PathExtractor extends TokenValueExtractor {
 	private prefix: string;

@@ -3,7 +3,7 @@ import React from 'react';
 import { NAMESPACE_UI_ENGINE } from '../constants';
 import { getData, PageStoreExtractor } from '../context/StoreContext';
 import { HelperComponent } from './HelperComponent';
-import { DataLocation, ComponentProperty, RenderContext } from './types';
+import { DataLocation, ComponentProperty, RenderContext } from '../types/common';
 import { getTranslations } from './util/getTranslations';
 
 interface RadioButtonProps extends React.ComponentPropsWithoutRef<'input'> {

@@ -3,7 +3,7 @@ import React from 'react';
 import { NAMESPACE_UI_ENGINE } from '../constants';
 import { getData, getDataFromLocation, PageStoreExtractor } from '../context/StoreContext';
 import { HelperComponent } from './HelperComponent';
-import { DataLocation, RenderContext } from './types';
+import { DataLocation, RenderContext } from '../types/common';
 import { renderChildren } from './util/renderChildren';
 import { updateLocationForChild } from './util/updateLoactionForChild';
 
