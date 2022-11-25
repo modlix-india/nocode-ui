@@ -94,6 +94,8 @@ const map = new Map([
 			)
 			.setDefaultValue({}),
 	],
+	['Url', Schema.ofString('Url').setNamespace(NAMESPACE_UI_ENGINE)],
+	['SimpleDataLocation', Schema.ofString('SimpleDataLocation').setNamespace(NAMESPACE_UI_ENGINE)],
 	[
 		'FetchError',
 		Schema.ofObject('FetchError')
