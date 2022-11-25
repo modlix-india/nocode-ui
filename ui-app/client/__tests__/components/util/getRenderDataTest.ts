@@ -1,22 +1,25 @@
+import { ComponentProperty, DataLocation } from '../../../src/components/types';
 import { getRenderData } from '../../../src/components/util/getRenderData';
+import { PageStoreExtractor } from '../../../src/context/StoreContext';
 
 describe('Testing data with different structures for iteration', () => {
 	test('List of Strings', () => {
-		const testList = {
-			value: [
-				'Raja',
-				'Avinash',
-				'Alli',
-				'Akhilesh',
-				'Surendhar',
-				'Kiran',
-			],
+		const testList: ComponentProperty<any> = {
+			value: ['Raja', 'Avinash', 'Alli', 'Akhilesh', 'Surendhar', 'Kiran'],
 		};
 		const dataType = 'LIST_OF_STRINGS';
 		const uniqueKeyType = 'OBJECT';
 		const selectionType = 'OBJECT';
 		expect(
-			getRenderData(testList, dataType, uniqueKeyType, '', selectionType),
+			getRenderData(
+				testList,
+				dataType,
+				[],
+				PageStoreExtractor.getForContext('global'),
+				uniqueKeyType,
+				'',
+				selectionType,
+			),
 		).toStrictEqual([
 			{ key: 'Raja', label: 'Raja', value: 'Raja' },
 			{ key: 'Avinash', label: 'Avinash', value: 'Avinash' },
@@ -29,20 +32,21 @@ describe('Testing data with different structures for iteration', () => {
 
 	test('List of Strings with selection as index', () => {
 		const testList = {
-			value: [
-				'Raja',
-				'Avinash',
-				'Alli',
-				'Akhilesh',
-				'Surendhar',
-				'Kiran',
-			],
+			value: ['Raja', 'Avinash', 'Alli', 'Akhilesh', 'Surendhar', 'Kiran'],
 		};
 		const dataType = 'LIST_OF_STRINGS';
 		const uniqueKeyType = 'OBJECT';
 		const selectionType = 'INDEX';
 		expect(
-			getRenderData(testList, dataType, uniqueKeyType, '', selectionType),
+			getRenderData(
+				testList,
+				dataType,
+				[],
+				PageStoreExtractor.getForContext('global'),
+				uniqueKeyType,
+				'',
+				selectionType,
+			),
 		).toStrictEqual([
 			{ key: 'Raja', label: 'Raja', value: 0 },
 			{ key: 'Avinash', label: 'Avinash', value: 1 },
@@ -55,20 +59,21 @@ describe('Testing data with different structures for iteration', () => {
 
 	test('List of Strings with uniquekey as index', () => {
 		const testList = {
-			value: [
-				'Raja',
-				'Avinash',
-				'Alli',
-				'Akhilesh',
-				'Surendhar',
-				'Kiran',
-			],
+			value: ['Raja', 'Avinash', 'Alli', 'Akhilesh', 'Surendhar', 'Kiran'],
 		};
 		const dataType = 'LIST_OF_STRINGS';
 		const uniqueKeyType = 'INDEX';
 		const selectionType = 'INDEX';
 		expect(
-			getRenderData(testList, dataType, uniqueKeyType, '', selectionType),
+			getRenderData(
+				testList,
+				dataType,
+				[],
+				PageStoreExtractor.getForContext('global'),
+				uniqueKeyType,
+				'',
+				selectionType,
+			),
 		).toStrictEqual([
 			{ key: 0, label: 'Raja', value: 0 },
 			{ key: 1, label: 'Avinash', value: 1 },
@@ -100,6 +105,8 @@ describe('Testing data with different structures for iteration', () => {
 			getRenderData(
 				testList,
 				dataType,
+				[],
+				PageStoreExtractor.getForContext('global'),
 				uniqueKeyType,
 				uniqueKey,
 				selectionType,
@@ -138,6 +145,8 @@ describe('Testing data with different structures for iteration', () => {
 			getRenderData(
 				testList,
 				dataType,
+				[],
+				PageStoreExtractor.getForContext('global'),
 				uniqueKeyType,
 				uniqueKey,
 				selectionType,
@@ -230,6 +239,8 @@ describe('Testing data with different structures for iteration', () => {
 			getRenderData(
 				testList,
 				dataType,
+				[],
+				PageStoreExtractor.getForContext('global'),
 				uniqueKeyType,
 				uniqueKey,
 				selectionType,
@@ -298,6 +309,8 @@ describe('Testing data with different structures for iteration', () => {
 			getRenderData(
 				testList,
 				dataType,
+				[],
+				PageStoreExtractor.getForContext('global'),
 				uniqueKeyType,
 				uniqueKey,
 				selectionType,
@@ -378,6 +391,8 @@ describe('Testing data with different structures for iteration', () => {
 			getRenderData(
 				testList,
 				dataType,
+				[],
+				PageStoreExtractor.getForContext('global'),
 				uniqueKeyType,
 				uniqueKey,
 				selectionType,
@@ -413,6 +428,8 @@ describe('Testing data with different structures for iteration', () => {
 			getRenderData(
 				testList,
 				dataType,
+				[],
+				PageStoreExtractor.getForContext('global'),
 				uniqueKeyType,
 				'',
 				selectionType,
@@ -445,6 +462,8 @@ describe('Testing data with different structures for iteration', () => {
 			getRenderData(
 				testList,
 				dataType,
+				[],
+				PageStoreExtractor.getForContext('global'),
 				uniqueKeyType,
 				'',
 				selectionType,
@@ -477,6 +496,8 @@ describe('Testing data with different structures for iteration', () => {
 			getRenderData(
 				testList,
 				dataType,
+				[],
+				PageStoreExtractor.getForContext('global'),
 				uniqueKeyType,
 				'',
 				selectionType,
@@ -510,6 +531,8 @@ describe('Testing data with different structures for iteration', () => {
 			getRenderData(
 				testList,
 				dataType,
+				[],
+				PageStoreExtractor.getForContext('global'),
 				uniqueKeyType,
 				uniqueKey,
 				selectionType,
@@ -543,6 +566,8 @@ describe('Testing data with different structures for iteration', () => {
 			getRenderData(
 				testList,
 				dataType,
+				[],
+				PageStoreExtractor.getForContext('global'),
 				uniqueKeyType,
 				uniqueKey,
 				selectionType,
@@ -575,6 +600,8 @@ describe('Testing data with different structures for iteration', () => {
 			getRenderData(
 				testList,
 				dataType,
+				[],
+				PageStoreExtractor.getForContext('global'),
 				uniqueKeyType,
 				'',
 				selectionType,
@@ -609,6 +636,8 @@ describe('Testing data with different structures for iteration', () => {
 			getRenderData(
 				testList,
 				dataType,
+				[],
+				PageStoreExtractor.getForContext('global'),
 				uniqueKeyType,
 				uniqueKey,
 				selectionType,
@@ -642,6 +671,8 @@ describe('Testing data with different structures for iteration', () => {
 			getRenderData(
 				testList,
 				dataType,
+				[],
+				PageStoreExtractor.getForContext('global'),
 				uniqueKeyType,
 				uniqueKey,
 				selectionType,

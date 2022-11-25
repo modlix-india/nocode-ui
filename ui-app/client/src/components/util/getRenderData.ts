@@ -1,6 +1,6 @@
 import { ExpressionEvaluator, TokenValueExtractor } from '@fincity/kirun-js';
 import { getData, getDataFromLocation } from '../../context/StoreContext';
-import { DataLocation } from '../../types/common';
+import { ComponentProperty, DataLocation } from '../types';
 
 export class ObjectExtractor extends TokenValueExtractor {
 	private store: any;
@@ -40,8 +40,8 @@ const getSelection = (
 	}
 };
 
-export const getRenderData = (
-	dataLocation: DataLocation,
+export function getRenderData<T>(
+	componentProperty: ComponentProperty<T>,
 	dataType:
 		| 'LIST_OF_STRINGS'
 		| 'LIST_OF_OBJECTS'
@@ -57,46 +57,54 @@ export const getRenderData = (
 	selectionKey?: string,
 	labelKeyType?: 'KEY' | 'INDEX' | 'OBJECT',
 	labelKey?: string,
-) => {
-	const data = getDataFromLocation(dataLocation, locationHistory, pageExtractor) || [];
+) {
+	const data =
+		getData(componentProperty, locationHistory, pageExtractor) ??
+		(dataType.startsWith('LIST') ? [] : {});
 	let ev: ExpressionEvaluator = new ExpressionEvaluator(`Data.${selectionKey}`);
 	if (dataType === 'LIST_OF_STRINGS') {
-		const res = data.map((e: any, index: number) => {
-			if (typeof e === 'string') {
-				return {
-					label: e,
-					value: selectionType === 'INDEX' ? index : e,
-					key: uniqueKeyType === 'INDEX' ? index : e,
-				};
-			}
-		});
-		return res;
+		if (Array.isArray(data)) {
+			const res = data.map((e: any, index: number) => {
+				if (typeof e === 'string') {
+					return {
+						label: e,
+						value: selectionType === 'INDEX' ? index : e,
+						key: uniqueKeyType === 'INDEX' ? index : e,
+					};
+				}
+			});
+			return res;
+		}
 	}
 
 	if (dataType === 'LIST_OF_OBJECTS') {
-		const res = data.map((e: any, index: number) => {
-			if (typeof e === 'object') {
-				return {
-					label: getSelection('KEY', labelKey, e, 0),
-					value: getSelection(selectionType, selectionKey, e, index),
-					key: getSelection(uniqueKeyType, uniqueKey, e, index),
-				};
-			}
-		});
-		return res;
+		if (Array.isArray(data)) {
+			const res = data.map((e: any, index: number) => {
+				if (typeof e === 'object') {
+					return {
+						label: getSelection('KEY', labelKey, e, 0),
+						value: getSelection(selectionType, selectionKey, e, index),
+						key: getSelection(uniqueKeyType, uniqueKey, e, index),
+					};
+				}
+			});
+			return res;
+		}
 	}
 
 	if (dataType === 'LIST_OF_LISTS') {
-		const res = data.map((e: any, index: number) => {
-			if (Array.isArray(e)) {
-				return {
-					label: getSelection('KEY', labelKey, e, 0),
-					value: getSelection(selectionType, selectionKey, e, index),
-					key: getSelection(uniqueKeyType, uniqueKey, e, index),
-				};
-			}
-		});
-		return res;
+		if (Array.isArray(data)) {
+			const res = data.map((e: any, index: number) => {
+				if (Array.isArray(e)) {
+					return {
+						label: getSelection('KEY', labelKey, e, 0),
+						value: getSelection(selectionType, selectionKey, e, index),
+						key: getSelection(uniqueKeyType, uniqueKey, e, index),
+					};
+				}
+			});
+			return res;
+		}
 	}
 
 	if (dataType === 'OBJECT_OF_PRIMITIVES') {
@@ -137,4 +145,4 @@ export const getRenderData = (
 		});
 		return res;
 	}
-};
+}
