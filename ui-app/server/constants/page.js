@@ -235,7 +235,7 @@ export const page = {
     linkcomp: {
       name: "linkcomp",
       key: "linkcomp",
-      type: "LinkComponent",
+      type: "Link",
       properties: {
         label: {
           value: "google",
@@ -346,10 +346,7 @@ export const page = {
           value: "Store.texboxbindingpath1",
         },
         leftIcon: {
-          icon: {
-            value: "fa-magnifying-glass",
-          },
-          iconStyle: "SOLID",
+          value: "fa fa-magnifying-glass fa-fw",
         },
         displayOrder: -1,
       },
@@ -366,10 +363,7 @@ export const page = {
           value: "Store.texboxbindingpath1",
         },
         leftIcon: {
-          icon: {
-            value: "fa-magnifying-glass",
-          },
-          iconStyle: "SOLID",
+          value: "fa fa-magnifying-glass fa-fw",
         },
         isDisabled: {
           value: true,
@@ -466,10 +460,7 @@ export const page = {
           value: "login",
         },
         leftIcon: {
-          icon: {
-            value: "fa-user",
-          },
-          iconStyle: "SOLID",
+          value: "fa fa-user fa-fw",
         },
         displayOrder: 3,
       },
@@ -645,10 +636,7 @@ export const page = {
           value: "login",
         },
         fabIcon: {
-          icon: {
-            value: "fa-user",
-          },
-          iconStyle: "SOLID",
+          value: "fa fa-user fa-fw",
         },
         displayOrder: 3,
       },
@@ -665,10 +653,7 @@ export const page = {
           value: "login",
         },
         fabIcon: {
-          icon: {
-            value: "fa-user",
-          },
-          iconStyle: "SOLID",
+          value: "fa fa-user fa-fw",
         },
         displayOrder: 3,
       },

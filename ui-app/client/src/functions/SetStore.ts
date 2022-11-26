@@ -22,13 +22,11 @@ const SIGNATURE = new FunctionSignature('SetStore')
 	.setEvents(new Map([Event.eventMapEntry(Event.OUTPUT, new Map())]));
 
 export class SetStore extends AbstractFunction {
-	protected async internalExecute(
-		context: FunctionExecutionParameters,
-	): Promise<FunctionOutput> {
+	protected async internalExecute(context: FunctionExecutionParameters): Promise<FunctionOutput> {
 		const path: string = context.getArguments()?.get('path');
 		const value = context.getArguments()?.get('value');
-
-		setData(path, value);
+		console.log(`${path} -->`, value);
+		if (path.length) setData(path, value);
 		return new FunctionOutput([EventResult.outputOf(new Map())]);
 	}
 

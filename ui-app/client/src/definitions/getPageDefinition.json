@@ -11,7 +11,7 @@
 					"pageDefinitionURL": {
 						"key": "pageDefinitionURL",
 						"type": "EXPRESSION",
-						"expression": "'api/ui/page/' + (Store.urlDetails.pagename ?? Store.application.properties.defaultPage)"
+						"expression": "'api/ui/page/' + (Store.urlDetails.pageName ?? Store.application.properties.defaultPage)"
 					}
 				}
 			}
@@ -25,7 +25,7 @@
 					"setPageDefinitionPath": {
 						"key": "setPageDefinitionPath",
 						"type": "EXPRESSION",
-						"expression": "'Store.pageDefinition.{{Store.urlDetails.pagename ?? Store.application.properties.defaultPage}}'"
+						"expression": "'Store.pageDefinition.{{Store.urlDetails.pageName ?? Store.application.properties.defaultPage}}'"
 					}
 				},
 				"value": {

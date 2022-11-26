@@ -35,7 +35,7 @@ export const runEvent = async (functionDefinition: any, key: string = UUID(), pa
 		setData(`Store.functionExecutions.${page}.${key}.isRunning`, false);
 		return new Promise(resolve => resolve(x));
 	} catch (error) {
-		setData(`Store.functionExecutions.${key}.isRunning`, false);
+		setData(`Store.functionExecutions.${page}.${key}.isRunning`, false);
 		return new Promise((_, rej) => rej(error));
 	}
 };

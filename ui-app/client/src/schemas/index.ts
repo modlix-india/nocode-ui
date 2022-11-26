@@ -8,6 +8,7 @@ import {
 } from '@fincity/kirun-js';
 import {
 	NAMESPACE_UI_ENGINE,
+	SCHEMA_REF_ANY_COMP_PROP,
 	SCHEMA_REF_BOOL_COMP_PROP,
 	SCHEMA_REF_DATA_LOCATION,
 	SCHEMA_REF_NUM_COMP_PROP,
@@ -89,7 +90,7 @@ const map = new Map([
 			.setNamespace(NAMESPACE_UI_ENGINE)
 			.setAdditionalProperties(
 				new AdditionalPropertiesType().setSchemaValue(
-					Schema.ofRef(SCHEMA_REF_DATA_LOCATION),
+					Schema.ofRef(SCHEMA_REF_ANY_COMP_PROP),
 				),
 			)
 			.setDefaultValue({}),

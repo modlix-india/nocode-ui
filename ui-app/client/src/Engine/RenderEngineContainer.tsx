@@ -14,6 +14,7 @@ export const RenderEngineContainer = () => {
 
 	useEffect(() => {
 		let { pageName } = processLocation(location);
+		console.log(`Page name is ${pageName}`);
 		if (!pageName)
 			pageName = getDataFromPath(`${STORE_PREFIX}.application.properties.defaultPage`, []);
 		let pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
@@ -40,9 +41,7 @@ export const RenderEngineContainer = () => {
 	);
 
 	if (currentPageName && pageDefinition) {
-		const {
-			properties: { wrapShell = true },
-		} = pageDefinition;
+		const { properties: { wrapShell = true } = {} } = pageDefinition;
 
 		if (wrapShell && shellPageDefinition)
 			return (

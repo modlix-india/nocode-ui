@@ -9,9 +9,9 @@ import {
 	Schema,
 } from '@fincity/kirun-js';
 import axios from 'axios';
-import { DataLocation } from '../components/types';
 import { NAMESPACE_UI_ENGINE } from '../constants';
 import { getData, getDataFromLocation } from '../context/StoreContext';
+import { ComponentProperty } from '../types/common';
 import { pathFromParams, queryParamsSerializer } from './utils';
 
 const SIGNATURE = new FunctionSignature('FetchData')
@@ -26,8 +26,8 @@ const SIGNATURE = new FunctionSignature('FetchData')
 				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.UrlParameters`).setDefaultValue({
 					Authorization: {
 						location: {
-							expression: 'LocalStore.AuthToken',
-							type: 'EXPRESSION',
+							value: 'LocalStore.AuthToken',
+							type: 'VALUE',
 						},
 					},
 				}),
@@ -54,20 +54,20 @@ export class FetchData extends AbstractFunction {
 		const evmap = [...context.getValuesMap().values()];
 
 		pathParams = Object.entries(pathParams)
-			.map(([k, v]) => [k, getDataFromLocation(v as DataLocation, [], ...evmap)])
+			.map(([k, v]) => [k, getData(v as ComponentProperty<any>, [], ...evmap)])
 			.reduce((a: { [key: string]: any }, [k, v]) => {
 				if (v) a[k] = v;
 				return a;
 			}, {});
 		queryParams = Object.entries(queryParams)
-			.map(([k, v]) => [k, getData(v, [])])
+			.map(([k, v]) => [k, getData(v as ComponentProperty<any>, [], ...evmap)])
 			.reduce((a: { [key: string]: any }, [k, v]) => {
 				if (v) a[k] = v;
 				return a;
 			}, {});
 
 		headers = Object.entries(headers)
-			.map(([k, v]) => [k, getData(v, [])])
+			.map(([k, v]) => [k, getData(v as ComponentProperty<any>, [], ...evmap)])
 			.reduce((a: { [key: string]: any }, [k, v]) => {
 				if (v) a[k] = v;
 				return a;

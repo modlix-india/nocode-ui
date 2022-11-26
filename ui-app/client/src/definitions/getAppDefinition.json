@@ -13,6 +13,17 @@
 						"type": "VALUE",
 						"value": "api/security/verifyToken"
 					}
+				},
+				"queryParams": {
+					"param1": {
+						"key": "param1",
+						"type": "VALUE",
+						"value": {
+							"name": {
+								"value": "raja"
+							}
+						}
+					}
 				}
 			}
 		},
@@ -122,7 +133,10 @@
 			"statementName": "genOutput",
 			"namespace": "System",
 			"name": "GenerateEvent",
-			"dependentStatements": { "Steps.setAppData.output": true, "Steps.setApplicationFailureData.output": true }
+			"dependentStatements": {
+				"Steps.setAppData.output": true,
+				"Steps.setApplicationFailureData.output": true
+			}
 		}
 	}
 }

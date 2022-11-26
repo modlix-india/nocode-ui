@@ -98,8 +98,8 @@ function ButtonComponent(props: ButtonProps) {
 							buttonFabIcon
 								? !isLoading
 									? buttonFabIcon
-									: 'fa-circle-notch fa-spin'
-								: 'fa-circle-notch hide'
+									: 'fa fa-circle-notch fa-spin'
+								: 'fa fa-circle-notch hide'
 						}`}
 					/>
 				</button>
@@ -119,8 +119,8 @@ function ButtonComponent(props: ButtonProps) {
 							buttonLeftIcon
 								? !isLoading
 									? buttonLeftIcon
-									: 'fa-circle-notch fa-spin'
-								: 'fa-circle-notch hide'
+									: 'fa fa-circle-notch fa-spin'
+								: 'fa fa-circle-notch hide'
 						}`}
 					/>
 					{getTranslations(buttonLabel, translations)}
