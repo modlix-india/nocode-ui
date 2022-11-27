@@ -1,6 +1,4 @@
-import { Schema } from '@fincity/kirun-js';
 import React from 'react';
-import { FUNCTION_EXECUTION_PATH, NAMESPACE_UI_COMPONENT, NAMESPACE_UI_ENGINE } from '../constants';
 import {
 	addListener,
 	getData,
@@ -8,26 +6,30 @@ import {
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
-} from '../context/StoreContext';
-import { HelperComponent } from './HelperComponent';
-import { ComponentProperty, DataLocation, RenderContext } from '../types/common';
-import { getTranslations } from './util/getTranslations';
-import { runEvent } from './util/runEvent';
-import { Validation } from '../types/validation';
+} from '../../context/StoreContext';
+import { HelperComponent } from '../HelperComponent';
+import { ComponentProperty, DataLocation, RenderContext } from '../../types/common';
+import { getTranslations } from '../util/getTranslations';
+import { runEvent } from '../util/runEvent';
+import { Validation } from '../../types/validation';
+import { Component } from '../../types/component';
+import properties from './textBoxProperties';
 
-interface TextBoxProps extends React.ComponentPropsWithoutRef<'input'> {
+interface TextBoxProperties {
+	bindingPath: DataLocation;
+	mandatory?: ComponentProperty<boolean>;
+	label: ComponentProperty<string>;
+	leftIcon: ComponentProperty<string>;
+	readOnly?: ComponentProperty<boolean>;
+	defaultValue: ComponentProperty<any>;
+	supportingText: ComponentProperty<string>;
+	validations: Array<Validation>;
+}
+
+interface TextBoxComponentProps extends React.ComponentPropsWithoutRef<'input'> {
 	definition: {
 		key: string;
-		properties: {
-			bindingPath: DataLocation;
-			mandatory?: ComponentProperty<boolean>;
-			label: ComponentProperty<string>;
-			leftIcon: ComponentProperty<string>;
-			readOnly?: ComponentProperty<boolean>;
-			defaultValue: ComponentProperty<string>;
-			supportingText: ComponentProperty<string>;
-			validations: Array<Validation>;
-		};
+		properties: TextBoxProperties;
 	};
 	pageDefinition: {
 		name: string;
@@ -44,7 +46,7 @@ interface TextBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 	context: RenderContext;
 }
 
-export function TextBox(props: TextBoxProps) {
+function TextBox(props: TextBoxComponentProps) {
 	const {
 		definition: {
 			key,
@@ -76,14 +78,13 @@ export function TextBox(props: TextBoxProps) {
 	const [isFocussed, setIsFocussed] = React.useState(false);
 	const [hasText, setHasText] = React.useState(false);
 	const textBoxLabel = getData(label, locationHistory, pageExtractor);
-	React.useEffect(() => {
-		const unsubscribe = addListener((_, value) => {
-			setvalue(value ?? textBoxDefaultValue);
-		}, textBoxBindingPath);
-		return () => {
-			unsubscribe();
-		};
-	}, []);
+	React.useEffect(
+		() =>
+			addListener((_, value) => {
+				setvalue(value ?? textBoxDefaultValue);
+			}, textBoxBindingPath),
+		[],
+	);
 	const handleFocus = () => {
 		setIsFocussed(true);
 	};
@@ -136,7 +137,7 @@ export function TextBox(props: TextBoxProps) {
 				{value.length ? (
 					<i
 						onClick={handleClickClose}
-						className="clearText fa-solid fa-circle-xmark fa-fw"
+						className="clearText fa fa-solid fa-circle-xmark fa-fw"
 					/>
 				) : null}
 			</div>
@@ -151,11 +152,13 @@ export function TextBox(props: TextBoxProps) {
 	);
 }
 
-export const PROPERTIES_SCHEMA = Schema.ofObject('TextBox')
-	.setNamespace(NAMESPACE_UI_COMPONENT)
-	.setProperties(
-		new Map([
-			['label', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
-			['bindingPath', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
-		]),
-	);
+const component: Component = {
+	name: 'TextBox',
+	displayName: 'TextBox',
+	description: 'TextBox component',
+	component: TextBox,
+	propertyValidation: (props: TextBoxProperties): Array<string> => [],
+	properties,
+};
+
+export default component;
