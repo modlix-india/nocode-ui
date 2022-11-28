@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Schema } from '@fincity/kirun-js';
-import { NAMESPACE_UI_ENGINE } from '../constants';
+import { NAMESPACE_UI_ENGINE } from '../../constants';
 import {
 	addListener,
 	getData,
@@ -8,10 +8,12 @@ import {
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
-} from '../context/StoreContext';
-import { HelperComponent } from './HelperComponent';
-import { getTranslations } from './util/getTranslations';
-import { DataLocation, ComponentProperty, RenderContext } from '../types/common';
+} from '../../context/StoreContext';
+import { HelperComponent } from '../HelperComponent';
+import { getTranslations } from '../util/getTranslations';
+import { DataLocation, ComponentProperty, RenderContext } from '../../types/common';
+import { Component } from '../../types/component';
+import properties from './checkBoxProperties';
 
 interface CheckBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 	definition: {
@@ -20,7 +22,7 @@ interface CheckBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 		children: any;
 		properties: {
 			label: ComponentProperty<string>;
-			isDisabled: ComponentProperty<string>;
+			readOnly: ComponentProperty<boolean>;
 			bindingPath: DataLocation;
 		};
 	};
@@ -43,7 +45,7 @@ function CheckBox(props: CheckBoxProps) {
 			key,
 			name,
 			children,
-			properties: { label, isDisabled, bindingPath },
+			properties: { label, readOnly, bindingPath },
 		},
 		locationHistory,
 		definition,
@@ -55,7 +57,7 @@ function CheckBox(props: CheckBoxProps) {
 		getDataFromLocation(bindingPath, locationHistory, pageExtractor) || false,
 	);
 	const checkBoxLabel = getData(label, locationHistory, pageExtractor);
-	const isDisabledCheckbox = !!getData(isDisabled, locationHistory, pageExtractor);
+	const readOnlyCheckbox = !!getData(readOnly, locationHistory, pageExtractor);
 
 	useEffect(() => {
 		return addListener((_, value) => {
@@ -70,7 +72,7 @@ function CheckBox(props: CheckBoxProps) {
 			<HelperComponent definition={definition} />
 			<label className="checkbox" htmlFor={key}>
 				<input
-					disabled={isDisabledCheckbox}
+					disabled={readOnlyCheckbox}
 					type="checkbox"
 					id={key}
 					name={name}
@@ -83,14 +85,13 @@ function CheckBox(props: CheckBoxProps) {
 	);
 }
 
-CheckBox.propertiesSchema = Schema.ofObject('CheckBox')
-	.setNamespace(NAMESPACE_UI_ENGINE)
-	.setProperties(
-		new Map([
-			['label', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
-			['form', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
-			['isDisabled', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
-		]),
-	);
+const component: Component = {
+	name: 'CheckBox',
+	displayName: 'CheckBox',
+	description: 'CheckBox component',
+	component: CheckBox,
+	propertyValidation: (props: CheckBoxProps): Array<string> => [],
+	properties,
+};
 
-export default CheckBox;
+export default component;

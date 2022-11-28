@@ -1,16 +1,18 @@
 import { Schema } from '@fincity/kirun-js';
 import React from 'react';
-import { NAMESPACE_UI_ENGINE } from '../constants';
+import { NAMESPACE_UI_ENGINE } from '../../constants';
 import {
 	addListener,
 	getData,
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
-} from '../context/StoreContext';
-import { HelperComponent } from './HelperComponent';
-import { ComponentProperty, DataLocation, RenderContext } from '../types/common';
-import { getTranslations } from './util/getTranslations';
+} from '../../context/StoreContext';
+import { HelperComponent } from '../HelperComponent';
+import { ComponentProperty, DataLocation, RenderContext } from '../../types/common';
+import { getTranslations } from '../util/getTranslations';
+import { Component } from '../../types/component';
+import properties from './toggleButtonProperties';
 
 interface ToggelButtonProps extends React.ComponentPropsWithoutRef<'input'> {
 	definition: {
@@ -19,8 +21,6 @@ interface ToggelButtonProps extends React.ComponentPropsWithoutRef<'input'> {
 		children: any;
 		properties: {
 			label: ComponentProperty<string>;
-			form: ComponentProperty<string>;
-			readonly: ComponentProperty<boolean>;
 			bindingPath: DataLocation;
 		};
 	};
@@ -79,14 +79,13 @@ function ToggleButton(props: ToggelButtonProps) {
 	);
 }
 
-ToggleButton.propertiesSchema = Schema.ofObject('ToggleButton')
-	.setNamespace(NAMESPACE_UI_ENGINE)
-	.setProperties(
-		new Map([
-			['label', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
-			['form', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
-			['isDisabled', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
-		]),
-	);
+const component: Component = {
+	name: 'ToggleButton',
+	displayName: 'ToggleButton',
+	description: 'ToggleButton component',
+	component: ToggleButton,
+	propertyValidation: (props: ToggelButtonProps): Array<string> => [],
+	properties,
+};
 
-export default ToggleButton;
+export default component;

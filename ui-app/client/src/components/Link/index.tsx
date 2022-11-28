@@ -1,11 +1,13 @@
 import React from 'react';
-import { getData, PageStoreExtractor } from '../context/StoreContext';
-import { HelperComponent } from './HelperComponent';
+import { getData, PageStoreExtractor } from '../../context/StoreContext';
+import { HelperComponent } from '../HelperComponent';
 import { Schema } from '@fincity/kirun-js';
-import { NAMESPACE_UI_ENGINE } from '../constants';
+import { NAMESPACE_UI_ENGINE } from '../../constants';
 import { Link as RouterLink } from 'react-router-dom';
-import { getTranslations } from './util/getTranslations';
-import { DataLocation, ComponentProperty, RenderContext } from '../types/common';
+import { getTranslations } from '../util/getTranslations';
+import { DataLocation, ComponentProperty, RenderContext } from '../../types/common';
+import { Component } from '../../types/component';
+import properties from './linkProperties';
 
 interface LinkProps extends React.ComponentPropsWithoutRef<'a'> {
 	definition: {
@@ -13,7 +15,7 @@ interface LinkProps extends React.ComponentPropsWithoutRef<'a'> {
 			linkPath: ComponentProperty<string>;
 			label: ComponentProperty<string>;
 			target: ComponentProperty<string>;
-			showButton: ComponentProperty<string>;
+			showButton: ComponentProperty<boolean>;
 			externalButtonTarget: ComponentProperty<string>;
 		};
 	};
@@ -67,16 +69,13 @@ function Link(props: LinkProps) {
 	);
 }
 
-Link.propertiesSchema = Schema.ofObject('Link')
-	.setNamespace(NAMESPACE_UI_ENGINE)
-	.setProperties(
-		new Map([
-			['label', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
-			['linkPath', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
-			['target', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
-			['showButton', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
-			['externalButtonTarget', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
-		]),
-	);
+const component: Component = {
+	name: 'Link',
+	displayName: 'Link',
+	description: 'Link component',
+	component: Link,
+	propertyValidation: (props: LinkProps): Array<string> => [],
+	properties,
+};
 
-export default Link;
+export default component;

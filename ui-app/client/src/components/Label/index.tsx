@@ -1,10 +1,12 @@
 import { Schema } from '@fincity/kirun-js';
 import React from 'react';
-import { NAMESPACE_UI_ENGINE } from '../constants';
-import { getData, PageStoreExtractor } from '../context/StoreContext';
-import { HelperComponent } from './HelperComponent';
-import { ComponentProperty, DataLocation, RenderContext, Translations } from '../types/common';
-import { getTranslations } from './util/getTranslations';
+import { NAMESPACE_UI_ENGINE } from '../../constants';
+import { getData, PageStoreExtractor } from '../../context/StoreContext';
+import { HelperComponent } from '../HelperComponent';
+import { ComponentProperty, DataLocation, RenderContext, Translations } from '../../types/common';
+import { getTranslations } from '../util/getTranslations';
+import properties from './labelProperties';
+import { Component } from '../../types/component';
 
 interface LabelProps extends React.ComponentPropsWithoutRef<'span'> {
 	definition: {
@@ -39,8 +41,13 @@ function Label(props: LabelProps) {
 	);
 }
 
-Label.propertiesSchema = Schema.ofObject('Label')
-	.setNamespace(NAMESPACE_UI_ENGINE)
-	.setProperties(new Map([['text', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)]]));
+const component: Component = {
+	name: 'Label',
+	displayName: 'Label',
+	description: 'Label component',
+	component: Label,
+	propertyValidation: (props: LabelProps): Array<string> => [],
+	properties,
+};
 
-export default Label;
+export default component;
