@@ -6,6 +6,9 @@ export enum ComponentPropertyEditor {
 	ICON,
 	VALIDATION,
 	ENUM,
+	PAGE_SELECTOR,
+	STYLE_SELECTOR,
+	THEME_SELECTOR,
 }
 
 export enum ComponentPropertyGroup {

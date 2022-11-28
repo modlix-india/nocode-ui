@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { RenderEngineContainer } from './Engine/RenderEngineContainer';
-import * as getAppDefinition from './definitions/getAppDefinition.json';
-import { runEvent } from './components/util/runEvent';
-import { addListener } from './context/StoreContext';
-import { STORE_PREFIX } from './constants';
+import { RenderEngineContainer } from '../Engine/RenderEngineContainer';
+import * as getAppDefinition from '../definitions/getAppDefinition.json';
+import { runEvent } from '../components/util/runEvent';
+import { addListener } from '../context/StoreContext';
+import { STORE_PREFIX } from '../constants';
 
 function processTagType(headTags: any, tag: string) {
 	if (!headTags) return;
@@ -53,14 +53,12 @@ export function App() {
 	if (isApplicationLoadFailed)
 		return <>Application Load failed, Please contact your administrator</>;
 
-	if (applicationLoaded)
-		return (
-			<BrowserRouter>
-				<Routes>
-					<Route path="/*" element={<RenderEngineContainer />} />
-				</Routes>
-			</BrowserRouter>
-		);
-
-	return <>Loading...</>;
+	if (!applicationLoaded) return <>Loading...</>;
+	return (
+		<BrowserRouter>
+			<Routes>
+				<Route path="/*" element={<RenderEngineContainer />} />
+			</Routes>
+		</BrowserRouter>
+	);
 }
