@@ -184,27 +184,27 @@ export const page = {
         textbuttongrid: true,
         checkBoxGrid: true,
         linkGrid: true,
-        arrayRepeatorcomp: true,
+        arrayRepeatercomp: true,
       },
     },
-    arrayRepeatorcomp: {
-      name: "arrayRepeatorcomp",
-      key: "arrayRepeatorcomp",
-      type: "ArrayRepeator",
+    arrayRepeatercomp: {
+      name: "arrayRepeatercomp",
+      key: "arrayRepeatercomp",
+      type: "ArrayRepeater",
       properties: {
         bindingPath: {
           type: "VALUE",
-          value: "Store.repeatorTesting",
+          value: "Store.RepeaterTesting",
         },
       },
       children: {
-        arrayRepeatorcompgrid: true,
+        arrayRepeatercompgrid: true,
       },
     },
-    arrayRepeatorcompInsideRepeator: {
-      name: "arrayRepeatorcompInsideRepeator",
-      key: "arrayRepeatorcompInsideRepeator",
-      type: "ArrayRepeator",
+    arrayRepeatercompInsideRepeater: {
+      name: "arrayRepeatercompInsideRepeater",
+      key: "arrayRepeatercompInsideRepeater",
+      type: "ArrayRepeater",
       properties: {
         bindingPath: {
           type: "VALUE",
@@ -215,13 +215,13 @@ export const page = {
         textboxcompcomparrayInsideArray: true,
       },
     },
-    arrayRepeatorcompgrid: {
-      name: "arrayRepeatorcompgrid",
-      key: "arrayRepeatorcompgrid",
+    arrayRepeatercompgrid: {
+      name: "arrayRepeatercompgrid",
+      key: "arrayRepeatercompgrid",
       type: "Grid",
       children: {
         textboxcompcomparray: true,
-        arrayRepeatorcompInsideRepeator: true,
+        arrayRepeatercompInsideRepeater: true,
       },
     },
     linkGrid: {

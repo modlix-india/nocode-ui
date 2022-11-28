@@ -1,13 +1,15 @@
 import { Schema } from '@fincity/kirun-js';
 import React from 'react';
-import { NAMESPACE_UI_ENGINE } from '../constants';
-import { getData, getDataFromLocation, PageStoreExtractor } from '../context/StoreContext';
-import { HelperComponent } from './HelperComponent';
-import { DataLocation, RenderContext } from '../types/common';
-import { renderChildren } from './util/renderChildren';
-import { updateLocationForChild } from './util/updateLoactionForChild';
+import { NAMESPACE_UI_ENGINE } from '../../constants';
+import { getData, getDataFromLocation, PageStoreExtractor } from '../../context/StoreContext';
+import { HelperComponent } from '../HelperComponent';
+import { DataLocation, RenderContext } from '../../types/common';
+import { renderChildren } from '../util/renderChildren';
+import { updateLocationForChild } from '../util/updateLoactionForChild';
+import { Component } from '../../types/component';
+import properties from './ArrayRepeaterProperties';
 
-interface ArrayRepeatorProps {
+interface ArrayRepeaterProps {
 	definition: {
 		key: string;
 		children: any;
@@ -29,7 +31,7 @@ interface ArrayRepeatorProps {
 	context: RenderContext;
 }
 
-function ArrayRepeatorComponent(props: ArrayRepeatorProps) {
+function ArrayRepeaterComponent(props: ArrayRepeaterProps) {
 	const {
 		definition: {
 			children,
@@ -47,7 +49,7 @@ function ArrayRepeatorComponent(props: ArrayRepeatorProps) {
 		[Object.entries(children)[0][0]]: Object.entries(children)[0][1],
 	};
 	return (
-		<div className="comp compArrayRepeator">
+		<div className="comp compArrayRepeater">
 			<HelperComponent definition={definition} />
 			{bindingPathData.map((_, index) =>
 				renderChildren(pageDefinition, firstchild, context, [
@@ -59,8 +61,13 @@ function ArrayRepeatorComponent(props: ArrayRepeatorProps) {
 	);
 }
 
-ArrayRepeatorComponent.propertiesSchema = Schema.ofObject('ArrayRepeator')
-	.setNamespace(NAMESPACE_UI_ENGINE)
-	.setProperties(new Map([['bindingPath', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)]]));
+const component: Component = {
+	name: 'ArrayRepeater',
+	displayName: 'Array Repeater',
+	description: 'Array Repeater component',
+	component: ArrayRepeaterComponent,
+	propertyValidation: (props: ArrayRepeaterProps): Array<string> => [],
+	properties,
+};
 
-export default ArrayRepeatorComponent;
+export default component;

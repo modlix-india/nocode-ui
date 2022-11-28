@@ -7,17 +7,17 @@ import Page from './Page';
 import RadioButton from './RadioButton';
 import TextBox from './TextBox';
 import ToggleButton from './ToggleButton';
-import ArrayRepeator from './ArrayRepeator';
+import ArrayRepeater from './ArrayRepeater';
 
 export default new Map<string, React.ElementType>([
-	['Button', Button],
-	['Grid', Grid],
+	['Button', Button.component],
+	['Grid', Grid.component],
 	['Page', Page],
-	['Label', Label],
-	['CheckBox', CheckBox],
-	['RadioButton', RadioButton],
-	['ToggleButton', ToggleButton],
+	['Label', Label.component],
+	['CheckBox', CheckBox.component],
+	['RadioButton', RadioButton.component],
+	['ToggleButton', ToggleButton.component],
 	['TextBox', TextBox.component],
-	['Link', Link],
-	['ArrayRepeator', ArrayRepeator],
+	['Link', Link.component],
+	['ArrayRepeater', ArrayRepeater.component],
 ]);

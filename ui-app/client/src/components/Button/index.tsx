@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { Schema } from '@fincity/kirun-js';
-import { FUNCTION_EXECUTION_PATH, NAMESPACE_UI_ENGINE } from '../constants';
+import { FUNCTION_EXECUTION_PATH, NAMESPACE_UI_ENGINE } from '../../constants';
 import {
 	addListener,
 	getData,
 	getDataFromPath,
 	PageStoreExtractor,
 	setData,
-} from '../context/StoreContext';
-import { runEvent } from './util/runEvent';
-import { HelperComponent } from './HelperComponent';
-import { getTranslations } from './util/getTranslations';
-import { ComponentProperty, DataLocation, RenderContext } from '../types/common';
+} from '../../context/StoreContext';
+import { runEvent } from '../util/runEvent';
+import { HelperComponent } from '../HelperComponent';
+import { getTranslations } from '../util/getTranslations';
+import { ComponentProperty, DataLocation, RenderContext } from '../../types/common';
+import { Component } from '../../types/component';
+import properties from './ButtonProperties';
 
 interface ButtonProps extends React.ComponentPropsWithoutRef<'button'> {
 	definition: {
@@ -20,7 +22,7 @@ interface ButtonProps extends React.ComponentPropsWithoutRef<'button'> {
 			label: ComponentProperty<string>;
 			type: ComponentProperty<string>;
 			onClick: ComponentProperty<string>;
-			isDisabled: ComponentProperty<string>;
+			readOnly: ComponentProperty<boolean>;
 			leftIcon?: ComponentProperty<string>;
 			rightIcon?: ComponentProperty<string>;
 			fabIcon?: ComponentProperty<string>;
@@ -45,7 +47,7 @@ function ButtonComponent(props: ButtonProps) {
 				label,
 				onClick,
 				type,
-				isDisabled,
+				readOnly,
 				leftIcon = {},
 				rightIcon = {},
 				fabIcon = {},
@@ -57,7 +59,7 @@ function ButtonComponent(props: ButtonProps) {
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const buttonType = getData(type, locationHistory, pageExtractor);
-	const isDisabledButton = getData(isDisabled, locationHistory, pageExtractor);
+	const isDisabledButton = getData(readOnly, locationHistory, pageExtractor);
 	const clickEventKey = getData(onClick, locationHistory, pageExtractor) || '';
 	const clickEvent = eventFunctions[clickEventKey];
 
@@ -135,13 +137,13 @@ function ButtonComponent(props: ButtonProps) {
 	);
 }
 
-ButtonComponent.propertiesSchema = Schema.ofObject('Button')
-	.setNamespace(NAMESPACE_UI_ENGINE)
-	.setProperties(
-		new Map([
-			['label', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
-			['onClick', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
-		]),
-	);
+const component: Component = {
+	name: 'Button',
+	displayName: 'Button',
+	description: 'Button component',
+	component: ButtonComponent,
+	propertyValidation: (props: ButtonProps): Array<string> => [],
+	properties,
+};
 
-export default ButtonComponent;
+export default component;

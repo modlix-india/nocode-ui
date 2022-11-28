@@ -1,10 +1,12 @@
 import { Schema } from '@fincity/kirun-js';
 import React from 'react';
-import { NAMESPACE_UI_ENGINE } from '../constants';
-import { getData, PageStoreExtractor } from '../context/StoreContext';
-import { HelperComponent } from './HelperComponent';
-import { DataLocation, ComponentProperty, RenderContext } from '../types/common';
-import { getTranslations } from './util/getTranslations';
+import { NAMESPACE_UI_ENGINE } from '../../constants';
+import { getData, PageStoreExtractor } from '../../context/StoreContext';
+import { HelperComponent } from '../HelperComponent';
+import { DataLocation, ComponentProperty, RenderContext } from '../../types/common';
+import { getTranslations } from '../util/getTranslations';
+import properties from './radioButtonProperties';
+import { Component } from '../../types/component';
 
 interface RadioButtonProps extends React.ComponentPropsWithoutRef<'input'> {
 	definition: {
@@ -53,14 +55,13 @@ function RadioButton(props: RadioButtonProps) {
 	);
 }
 
-RadioButton.propertiesSchema = Schema.ofObject('RadioButton')
-	.setNamespace(NAMESPACE_UI_ENGINE)
-	.setProperties(
-		new Map([
-			['label', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
-			['form', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
-			['isDisabled', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`)],
-		]),
-	);
+const component: Component = {
+	name: 'RadioButton',
+	displayName: 'RadioButton',
+	description: 'RadioButton component',
+	component: RadioButton,
+	propertyValidation: (props: RadioButtonProps): Array<string> => [],
+	properties,
+};
 
-export default RadioButton;
+export default component;
