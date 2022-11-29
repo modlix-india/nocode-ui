@@ -22,7 +22,7 @@ function Grid(props: GridProps) {
 		pageDefinition,
 		locationHistory,
 		context,
-		properties: { readonly },
+		properties: { readonly } = {},
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const isReadOnly = getData(readonly, locationHistory, pageExtractor);
