@@ -170,5 +170,6 @@ export default [
 		displayName: 'Update Immediately',
 		description: 'Update the store Immediately after typing or on blur by default.',
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		notImplemented: true,
 	},
 ];

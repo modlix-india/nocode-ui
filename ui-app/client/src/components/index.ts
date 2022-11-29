@@ -5,7 +5,7 @@ import Label from './Label';
 import Link from './Link';
 import Page from './Page';
 import RadioButton from './RadioButton';
-import TextBox from './TextBox';
+import TextBox from './TextBox/TextBox';
 import ToggleButton from './ToggleButton';
 import ArrayRepeater from './ArrayRepeater';
 

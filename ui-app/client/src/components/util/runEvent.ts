@@ -11,7 +11,7 @@ import {
 	storeExtractor,
 } from '../../context/StoreContext';
 import { UIFunctionRepository } from '../../functions';
-import { UISchemaRepository } from '../../schemas';
+import { UISchemaRepository } from '../../schemas/common';
 import UUID from './uuid';
 
 export const runEvent = async (functionDefinition: any, key: string = UUID(), page = 'global') => {

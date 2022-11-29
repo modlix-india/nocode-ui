@@ -136,6 +136,22 @@ export const application = {
         rel: "stylesheet",
         href: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css",
       },
+      "1ddbcbf1-6c91-4bb8-988e-a91984f4efbb": {
+        rel: "preconnect",
+        href: "https://fonts.googleapis.com",
+      },
+      "37e7758d-62ec-4d24-b661-dd385eb4af4b": {
+        rel: "preconnect",
+        href: "https://fonts.gstatic.com",
+      },
+      "26e3defe-3675-4901-81b4-07f285af73e5": {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;700&display=swap",
+      },
+      "2c3392c1-f44d-4d7d-922c-8be6ad69f192": {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&display=swap",
+      },
     },
     title: "Under Construction",
   },
