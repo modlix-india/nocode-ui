@@ -14,6 +14,7 @@ import { runEvent } from '../util/runEvent';
 import { Validation } from '../../types/validation';
 import { Component } from '../../types/component';
 import properties from './textBoxProperties';
+import TextBoxStyle from './TextBoxStyle';
 
 interface TextBoxProperties {
 	bindingPath: DataLocation;
@@ -157,6 +158,7 @@ const component: Component = {
 	displayName: 'TextBox',
 	description: 'TextBox component',
 	component: TextBox,
+	styleComponent: TextBoxStyle,
 	propertyValidation: (props: TextBoxProperties): Array<string> => [],
 	properties,
 };

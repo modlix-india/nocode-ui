@@ -15,14 +15,6 @@
 	--toggle-button-slider-point: #969696;
 	--secondary-grey: #e3e3e3;
 }
-* {
-	font-family: 'Open Sans', sans-serif;
-}
-*,
-*:before,
-*:after {
-	box-sizing: border-box;
-}
 
 h1 {
 	font: normal normal bold 38px/58px Noto Serif;

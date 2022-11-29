@@ -1,4 +1,5 @@
 import { Schema } from '@fincity/kirun-js';
+import React from 'react';
 
 export enum ComponentPropertyEditor {
 	DATA_LOCATION,
@@ -9,6 +10,7 @@ export enum ComponentPropertyEditor {
 	PAGE_SELECTOR,
 	STYLE_SELECTOR,
 	THEME_SELECTOR,
+	COMPONENT_SELECTOR,
 }
 
 export enum ComponentPropertyGroup {
@@ -42,6 +44,7 @@ export interface Component {
 	displayName: string;
 	description: string;
 	component: React.ElementType;
+	styleComponent?: React.ElementType;
 	propertyValidation: (props: any) => Array<string>;
 	properties: Array<ComponentPropertyDefinition>;
 }

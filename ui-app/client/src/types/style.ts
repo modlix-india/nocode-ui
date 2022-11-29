@@ -1,11 +1,11 @@
 export enum StyleResolution {
+	OTHER = '',
 	WIDE_SCREEN = '1281px-',
 	DESKTOP_SCREEN = '1025px-',
 	TABLET_LANDSCAPE_SCREEN = '961px-',
 	TABLET_POTRAIT_SCREEN = '641px-',
 	MOBILE_LANDSCAPE_SCREEN = '481px-',
 	MOBILE_SCREEN = '320px-',
-	OTHER = '',
 	DESKTOP_SCREEN_ONLY = '1025px-1280px',
 	TABLET_LANDSCAPE_SCREEN_ONLY = '961px-1024px',
 	TABLET_POTRAIT_SCREEN_ONLY = '641px-960px',
@@ -16,8 +16,12 @@ export enum StyleResolution {
 export interface StylePropertyDefinition {
 	name: string;
 	displayName: string;
-	groupName: string;
+	groupName?: string;
 	description: string;
+	defaultValue?: string;
+	cssProperty?: string;
+	selector?: string;
+	addPrefix?: boolean;
 }
 
 export interface StyleGroupDefinition {

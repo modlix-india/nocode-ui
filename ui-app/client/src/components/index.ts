@@ -1,23 +1,36 @@
-import Button from './Button';
-import CheckBox from './CheckBox';
-import Grid from './Grid';
-import Label from './Label';
-import Link from './Link';
+import Button from './Button/Button';
+import CheckBox from './CheckBox/CheckBox';
+import Grid from './Grid/Grid';
+import Label from './Label/Label';
+import Link from './Link/Link';
 import Page from './Page';
-import RadioButton from './RadioButton';
+import RadioButton from './RadioButton/RadioButton';
 import TextBox from './TextBox/TextBox';
-import ToggleButton from './ToggleButton';
-import ArrayRepeater from './ArrayRepeater';
+import ToggleButton from './ToggleButton/ToggleButton';
+import ArrayRepeater from './ArrayRepeater/ArrayRepeater';
+import { Component } from '../types/component';
 
-export default new Map<string, React.ElementType>([
-	['Button', Button.component],
-	['Grid', Grid.component],
+export const Components = new Map<string, React.ElementType>([
+	[Button.name, Button.component],
+	[Grid.name, Grid.component],
 	['Page', Page],
-	['Label', Label.component],
-	['CheckBox', CheckBox.component],
-	['RadioButton', RadioButton.component],
-	['ToggleButton', ToggleButton.component],
-	['TextBox', TextBox.component],
-	['Link', Link.component],
-	['ArrayRepeater', ArrayRepeater.component],
+	[Label.name, Label.component],
+	[CheckBox.name, CheckBox.component],
+	[RadioButton.name, RadioButton.component],
+	[ToggleButton.name, ToggleButton.component],
+	[TextBox.name, TextBox.component],
+	[Link.name, Link.component],
+	[ArrayRepeater.name, ArrayRepeater.component],
 ]);
+
+export const ComponentDefinitions = [
+	Button,
+	Grid,
+	Label,
+	CheckBox,
+	RadioButton,
+	ToggleButton,
+	TextBox,
+	Link,
+	ArrayRepeater,
+];

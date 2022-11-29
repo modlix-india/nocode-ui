@@ -1,6 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App/App';
+import AppStyle from './App/AppStyle';
 
 declare global {
 	var nodeDev: boolean;
@@ -15,5 +16,10 @@ if (!app) {
 	document.body.appendChild(span);
 } else {
 	const root = createRoot(app);
-	root.render(<App />);
+	root.render(
+		<>
+			<AppStyle />
+			<App />
+		</>,
+	);
 }

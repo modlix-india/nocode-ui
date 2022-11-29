@@ -7,7 +7,7 @@ import { DataLocation, RenderContext } from '../../types/common';
 import { renderChildren } from '../util/renderChildren';
 import { updateLocationForChild } from '../util/updateLoactionForChild';
 import { Component } from '../../types/component';
-import properties from './ArrayRepeaterProperties';
+import properties from './arrayRepeaterProperties';
 
 interface ArrayRepeaterProps {
 	definition: {

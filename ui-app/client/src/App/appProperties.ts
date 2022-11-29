@@ -81,6 +81,14 @@ const props: Array<ComponentPropertyDefinition> = [
 		editor: ComponentPropertyEditor.THEME_SELECTOR,
 		multiValued: true,
 	},
+	{
+		name: 'components',
+		displayName: 'Components',
+		description: 'Components required for the App.',
+		schema: Schema.ofString('component'),
+		editor: ComponentPropertyEditor.COMPONENT_SELECTOR,
+		multiValued: true,
+	},
 ];
 
 export default props;

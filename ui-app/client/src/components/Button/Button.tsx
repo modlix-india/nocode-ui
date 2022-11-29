@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Schema } from '@fincity/kirun-js';
-import { FUNCTION_EXECUTION_PATH, NAMESPACE_UI_ENGINE } from '../../constants';
+import { STORE_PATH_FUNCTION_EXECUTION, NAMESPACE_UI_ENGINE } from '../../constants';
 import {
 	addListener,
 	getData,
@@ -13,7 +13,7 @@ import { HelperComponent } from '../HelperComponent';
 import { getTranslations } from '../util/getTranslations';
 import { ComponentProperty, DataLocation, RenderContext } from '../../types/common';
 import { Component } from '../../types/component';
-import properties from './ButtonProperties';
+import properties from './buttonProperties';
 
 interface ButtonProps extends React.ComponentPropsWithoutRef<'button'> {
 	definition: {
@@ -70,7 +70,7 @@ function ButtonComponent(props: ButtonProps) {
 	const buttonLeftIcon = getData(leftIcon, locationHistory, pageExtractor);
 	const buttonRightIcon = getData(rightIcon, locationHistory, pageExtractor);
 
-	const functionExecutionStorePath = `${FUNCTION_EXECUTION_PATH}.${pageName}.${key}.isRunning`;
+	const functionExecutionStorePath = `${STORE_PATH_FUNCTION_EXECUTION}.${pageName}.${key}.isRunning`;
 	const [isLoading, setIsLoading] = useState(
 		getDataFromPath(functionExecutionStorePath, locationHistory) || false,
 	);
