@@ -3,11 +3,12 @@ import { ComponentDefinitions } from '../components';
 import { STORE_PATH_APP, STORE_PATH_STYLE_PATH, STORE_PATH_THEME_PATH } from '../constants';
 import { addListener } from '../context/StoreContext';
 import { Component } from '../types/component';
+import { StyleResolution } from '../types/style';
 import { processStyleDefinition, processStyleValue } from '../util/styleProcessor';
 import { styleDefaults, styleProperties } from './appStyleProperties';
 
 export default function AppStyle() {
-	const [theme, setTheme] = useState<Map<string, string>>(styleDefaults);
+	const [theme, setTheme] = useState<Map<string, Map<string, string>>>();
 	const [style, setStyle] = useState('');
 	const [compList, setCompList] = useState(new Set<string>());
 
@@ -16,8 +17,18 @@ export default function AppStyle() {
 			addListener(
 				(path, value) => {
 					if (path == STORE_PATH_THEME_PATH) {
-						if (value)
-							setTheme(new Map([...styleDefaults, ...Object.entries<string>(value)]));
+						if (!value) {
+							setTheme(new Map([[StyleResolution.ALL, styleDefaults]]));
+						} else {
+							const thm: Map<string, Map<string, string>> = new Map(
+								Object.entries<any>(value).map(([k, v]) => [
+									k,
+									new Map<string, string>(Object.entries<string>(v)),
+								]),
+							);
+
+							setTheme(thm);
+						}
 					} else if (path == STORE_PATH_STYLE_PATH) setStyle(value ?? '');
 					else if (path == STORE_PATH_APP)
 						setCompList(value.components ?? new Set<string>());
@@ -34,7 +45,13 @@ export default function AppStyle() {
 	*:before,
 	*:after {
 		box-sizing: border-box;
-	}` + processStyleDefinition('', styleProperties, theme);
+	}
+	
+	.hide{
+		opacity:0;
+	}
+
+	` + processStyleDefinition('', styleProperties, styleDefaults, theme);
 
 	const styleComps = new Array();
 
@@ -49,9 +66,9 @@ export default function AppStyle() {
 
 	return (
 		<>
-			<style id="APPCss">{css}</style>
+			<style id="AppCss">{css}</style>
 			{styleComps}
-			<style id="APPStyle">{style}</style>
+			<style id="AppStyle">{style}</style>
 		</>
 	);
 }

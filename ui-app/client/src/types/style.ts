@@ -1,16 +1,16 @@
 export enum StyleResolution {
-	OTHER = '',
-	WIDE_SCREEN = '1281px-',
-	DESKTOP_SCREEN = '1025px-',
-	TABLET_LANDSCAPE_SCREEN = '961px-',
-	TABLET_POTRAIT_SCREEN = '641px-',
-	MOBILE_LANDSCAPE_SCREEN = '481px-',
-	MOBILE_SCREEN = '320px-',
-	DESKTOP_SCREEN_ONLY = '1025px-1280px',
-	TABLET_LANDSCAPE_SCREEN_ONLY = '961px-1024px',
-	TABLET_POTRAIT_SCREEN_ONLY = '641px-960px',
-	MOBILE_LANDSCAPE_SCREEN_ONLY = '481px-640px',
-	MOBILE_SCREEN_ONLY = '320px-480px',
+	ALL = 'ALL',
+	WIDE_SCREEN = 'WIDE_SCREEN',
+	DESKTOP_SCREEN = 'DESKTOP_SCREEN',
+	TABLET_LANDSCAPE_SCREEN = 'TABLET_LANDSCAPE_SCREEN',
+	TABLET_POTRAIT_SCREEN = 'TABLET_POTRAIT_SCREEN',
+	MOBILE_LANDSCAPE_SCREEN = 'MOBILE_LANDSCAPE_SCREEN',
+	MOBILE_POTRAIT_SCREEN = 'MOBILE_POTRAIT_SCREEN',
+	DESKTOP_SCREEN_ONLY = 'DESKTOP_SCREEN_ONLY',
+	TABLET_LANDSCAPE_SCREEN_ONLY = 'TABLET_LANDSCAPE_SCREEN_ONLY',
+	TABLET_POTRAIT_SCREEN_ONLY = 'TABLET_POTRAIT_SCREEN_ONLY',
+	MOBILE_LANDSCAPE_SCREEN_ONLY = 'MOBILE_LANDSCAPE_SCREEN_ONLY',
+	MOBILE_POTRAIT_SCREEN_ONLY = 'MOBILE_POTRAIT_SCREEN_ONLY',
 }
 
 export interface StylePropertyDefinition {
@@ -21,10 +21,18 @@ export interface StylePropertyDefinition {
 	defaultValue?: string;
 	cssProperty?: string;
 	selector?: string;
-	addPrefix?: boolean;
+	noPrefix?: boolean;
 }
 
 export interface StyleGroupDefinition {
+	name: string;
+	displayName: string;
+	description: string;
+}
+
+export interface StyleResolutionProperties {
+	minWidth?: number;
+	maxWidth?: number;
 	name: string;
 	displayName: string;
 	description: string;

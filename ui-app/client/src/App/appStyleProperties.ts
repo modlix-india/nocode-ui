@@ -8,12 +8,14 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Application/Site Font Family',
 		description: 'This font is used throughout application.',
 		defaultValue: "'Open Sans', 'Microsoft Sans Serif', sans-serif",
+		noPrefix: true,
 	},
 	{
 		name: 'main-font-weight',
 		displayName: 'Application/Site Font Weight',
 		description: 'This font is used throughout application.',
 		selector: 'body',
+		noPrefix: true,
 	},
 	{
 		name: 'main-font-color',
@@ -22,6 +24,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Application/Site Color',
 		description: 'This color is used throughout application.',
 		defaultValue: '#1f3c3d',
+		noPrefix: true,
 	},
 ];
 

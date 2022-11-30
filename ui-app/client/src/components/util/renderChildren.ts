@@ -1,5 +1,5 @@
 import React from 'react';
-import Components from '..';
+import { Components } from '..';
 import { getData } from '../../context/StoreContext';
 import Nothing from '../Nothing';
 import { DataLocation, RenderContext } from '../../types/common';
