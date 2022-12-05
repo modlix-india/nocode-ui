@@ -206,5 +206,22 @@ export function processStyleValue(
 
 // Enhance this function to support various css functions.
 export function processFunction(value: string, theme: Map<string, string>): string {
-	return value;
+	let finValue = '';
+	for (let i = 0; i < value.length; i++) {
+		if (value[i] !== '<') {
+			finValue += value[i];
+			continue;
+		}
+
+		let variable = '';
+		while (value[++i] != '>' && i < value.length) {
+			variable += value[i];
+		}
+
+		if (!variable) continue;
+
+		finValue += theme.get(variable) ?? '';
+	}
+
+	return finValue;
 }

@@ -16,6 +16,14 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.supportText',
 		defaultValue: '12px',
 	},
+	{
+		name: 'supportTextDisabledColor',
+		cssProperty: 'color',
+		displayName: 'Application/Site Disabled font color',
+		description: "This color is used for disabled textbox's support text.",
+		defaultValue: '<main-disabled-color>',
+		selector: '.supportText.disabled',
+	},
 ];
 
 export const styleDefaults = new Map<string, string>(

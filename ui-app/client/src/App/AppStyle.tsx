@@ -8,7 +8,9 @@ import { processStyleDefinition, processStyleValue } from '../util/styleProcesso
 import { styleDefaults, styleProperties } from './appStyleProperties';
 
 export default function AppStyle() {
-	const [theme, setTheme] = useState<Map<string, Map<string, string>>>();
+	const [theme, setTheme] = useState<Map<string, Map<string, string>>>(
+		new Map([[StyleResolution.ALL, styleDefaults]]),
+	);
 	const [style, setStyle] = useState('');
 	const [compList, setCompList] = useState(new Set<string>());
 

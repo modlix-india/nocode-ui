@@ -26,6 +26,13 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '#1f3c3d',
 		noPrefix: true,
 	},
+	{
+		name: 'main-disabled-color',
+		displayName: 'Application/Site Disabled font color',
+		description: 'This color is used throughout application.',
+		defaultValue: '#d5d5d5',
+		noPrefix: true,
+	},
 ];
 
 export const styleDefaults = new Map<string, string>(
