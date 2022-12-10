@@ -38,6 +38,13 @@ const props: Array<ComponentPropertyDefinition> = [
 		editor: ComponentPropertyEditor.PAGE_SELECTOR,
 	},
 	{
+		name: 'loginPage',
+		displayName: 'Login Page',
+		description: 'Name of the page to be loaded when the user is not logged in.',
+		schema: Schema.ofString('loginPage'),
+		editor: ComponentPropertyEditor.PAGE_SELECTOR,
+	},
+	{
 		name: 'shellPage',
 		displayName: 'Shell Page',
 		description: 'Name of the page to be loaded as a shell for the application.',
