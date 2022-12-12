@@ -8,6 +8,7 @@ import { getTranslations } from '../util/getTranslations';
 import { DataLocation, ComponentProperty, RenderContext } from '../../types/common';
 import { Component } from '../../types/component';
 import properties from './linkProperties';
+import LinkStyle from './LinkStyle';
 
 interface LinkProps extends React.ComponentPropsWithoutRef<'a'> {
 	definition: {
@@ -76,6 +77,7 @@ const component: Component = {
 	component: Link,
 	propertyValidation: (props: LinkProps): Array<string> => [],
 	properties,
+	styleComponent: LinkStyle,
 };
 
 export default component;

@@ -5,6 +5,7 @@ import { renderChildren } from '../util/renderChildren';
 import { getData, PageStoreExtractor } from '../../context/StoreContext';
 import { Component } from '../../types/component';
 import properties from './gridProperties';
+import GridStyle from './GridStyle';
 
 interface GridProps extends React.Component {
 	definition: any;
@@ -42,6 +43,7 @@ const component: Component = {
 	component: Grid,
 	propertyValidation: (props: GridProps): Array<string> => [],
 	properties,
+	styleComponent: GridStyle,
 };
 
 export default component;

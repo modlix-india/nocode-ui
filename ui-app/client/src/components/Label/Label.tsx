@@ -7,6 +7,7 @@ import { ComponentProperty, DataLocation, RenderContext, Translations } from '..
 import { getTranslations } from '../util/getTranslations';
 import properties from './labelProperties';
 import { Component } from '../../types/component';
+import LabelStyle from './LabelStyle';
 
 interface LabelProps extends React.ComponentPropsWithoutRef<'span'> {
 	definition: {
@@ -48,6 +49,7 @@ const component: Component = {
 	component: Label,
 	propertyValidation: (props: LabelProps): Array<string> => [],
 	properties,
+	styleComponent: LabelStyle,
 };
 
 export default component;

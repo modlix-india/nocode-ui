@@ -53,38 +53,12 @@ export default function ButtonStyle({ theme }: { theme: Map<string, Map<string, 
 			background: transparent;
 		}
 		
-		${PREFIX} .button.outlined:disabled {
-			color: var(--secondary-disbaled-text);
-			border-color: var(--secondary-disabled-border);
-		}
-		
-		${PREFIX} .button.outlined:hover {
-			background-color: rgba(31, 60, 61, 0.109);
-			border-color: var(--primary-color);
-			color: var(--secondary-disbaled-text);
-		}
-		
-		${PREFIX} .button.outlined:focus {
-			background-color: rgba(31, 60, 61, 0.27);
-			border-color: var(--primary-color);
-			color: var(--secondary-disbaled-text);
-		}
-		
 		${PREFIX} .button.text {
 			padding: 0 12px;
 			border: 0;
 			background: transparent;
-			color: var(--primary-color);
-		}
-		
-		${PREFIX} .button.text:disabled {
-			color: var(--text-button-color-disabled);
-		}
-		
-		${PREFIX} .button.text:hover {
-			background-color: rgba(31, 60, 61, 0.078);
 		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
-	return <style id="TextBoxCss">{css}</style>;
+	return <style id="ButtonCss">{css}</style>;
 }

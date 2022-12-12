@@ -7,7 +7,8 @@ import { DataLocation, RenderContext } from '../../types/common';
 import { renderChildren } from '../util/renderChildren';
 import { updateLocationForChild } from '../util/updateLoactionForChild';
 import { Component } from '../../types/component';
-import properties from './arrayRepeaterProperties';
+import properties from './ArrayRepeaterProperties';
+import ArrayRepeaterStyle from './ArrayRepeaterStyle';
 
 interface ArrayRepeaterProps {
 	definition: {
@@ -68,6 +69,7 @@ const component: Component = {
 	component: ArrayRepeaterComponent,
 	propertyValidation: (props: ArrayRepeaterProps): Array<string> => [],
 	properties,
+	styleComponent: ArrayRepeaterStyle,
 };
 
 export default component;

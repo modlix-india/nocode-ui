@@ -477,10 +477,8 @@ export const page = {
           value: false,
         },
         bindingPath: {
-          location: {
-            type: "VALUE",
-            value: "Store.form1.toggle1",
-          },
+          type: "VALUE",
+          value: "Store.form1.toggle1",
         },
         displayOrder: 3,
       },
@@ -497,10 +495,8 @@ export const page = {
           value: false,
         },
         bindingPath: {
-          location: {
-            type: "VALUE",
-            value: "Store.form1.radio1",
-          },
+          type: "VALUE",
+          value: "Store.form1.radio1",
         },
         displayOrder: 3,
       },
@@ -520,10 +516,8 @@ export const page = {
           value: false,
         },
         bindingPath: {
-          location: {
-            type: "VALUE",
-            value: "Store.form1.checkbox1",
-          },
+          type: "VALUE",
+          value: "Store.form1.checkbox1",
         },
         displayOrder: 3,
       },
@@ -543,10 +537,8 @@ export const page = {
           value: true,
         },
         bindingPath: {
-          location: {
-            type: "VALUE",
-            value: "Store.form1.checkbox2",
-          },
+          type: "VALUE",
+          value: "Store.form1.checkbox2",
         },
         displayOrder: 3,
       },

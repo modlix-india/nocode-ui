@@ -13,6 +13,7 @@ import { ComponentProperty, DataLocation, RenderContext } from '../../types/comm
 import { getTranslations } from '../util/getTranslations';
 import { Component } from '../../types/component';
 import properties from './toggleButtonProperties';
+import ToggleButtonStyle from './ToggleButtonStyle';
 
 interface ToggelButtonProps extends React.ComponentPropsWithoutRef<'input'> {
 	definition: {
@@ -86,6 +87,7 @@ const component: Component = {
 	component: ToggleButton,
 	propertyValidation: (props: ToggelButtonProps): Array<string> => [],
 	properties,
+	styleComponent: ToggleButtonStyle,
 };
 
 export default component;
