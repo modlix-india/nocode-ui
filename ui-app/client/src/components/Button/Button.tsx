@@ -14,6 +14,7 @@ import { getTranslations } from '../util/getTranslations';
 import { ComponentProperty, DataLocation, RenderContext } from '../../types/common';
 import { Component } from '../../types/component';
 import properties from './buttonProperties';
+import ButtonStyle from './ButtonStyle';
 
 interface ButtonProps extends React.ComponentPropsWithoutRef<'button'> {
 	definition: {
@@ -142,6 +143,7 @@ const component: Component = {
 	displayName: 'Button',
 	description: 'Button component',
 	component: ButtonComponent,
+	styleComponent: ButtonStyle,
 	propertyValidation: (props: ButtonProps): Array<string> => [],
 	properties,
 };
