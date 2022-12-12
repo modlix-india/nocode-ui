@@ -14,6 +14,7 @@ import { getTranslations } from '../util/getTranslations';
 import { DataLocation, ComponentProperty, RenderContext } from '../../types/common';
 import { Component } from '../../types/component';
 import properties from './checkBoxProperties';
+import CheckBoxStyle from './CheckBoxStyle';
 
 interface CheckBoxProps extends React.ComponentPropsWithoutRef<'input'> {
 	definition: {
@@ -89,6 +90,7 @@ const component: Component = {
 	name: 'CheckBox',
 	displayName: 'CheckBox',
 	description: 'CheckBox component',
+	styleComponent: CheckBoxStyle,
 	component: CheckBox,
 	propertyValidation: (props: CheckBoxProps): Array<string> => [],
 	properties,
