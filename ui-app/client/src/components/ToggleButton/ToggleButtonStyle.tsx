@@ -30,7 +30,6 @@ export default function ToggleButtonStyle({ theme }: { theme: Map<string, Map<st
         transition: 120ms transform ease-in-out;
         transform-origin: left;
         margin-left: 0.2em;
-        background-color: rgba(0 ,0 ,0 , 0.75);
     }
     
     ${PREFIX} .toggleButton input[type='checkbox']:checked::before {
