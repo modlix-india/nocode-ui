@@ -3,13 +3,14 @@ import { getData, PageStoreExtractor } from '../../context/StoreContext';
 import { ComponentProperty, RenderContext, DataLocation } from '../../types/common';
 import { Component } from '../../types/component';
 import properties from './popupProperties';
+import PopupStyles from './PopupStyles';
 
 interface PopupProps extends React.ComponentPropsWithoutRef<'a'> {
 	definition: {
 		properties: {
 			buttonLable: ComponentProperty<string>;
 			modalHeading: ComponentProperty<string>;
-			modalcontent: ComponentProperty<string>;
+			modalContent: ComponentProperty<string>;
 		};
 	};
 	pageDefinition: {
@@ -27,7 +28,7 @@ interface PopupProps extends React.ComponentPropsWithoutRef<'a'> {
 function Popup(props: PopupProps) {
 	const {
 		definition: {
-			properties: { buttonLable, modalHeading, modalcontent },
+			properties: { buttonLable, modalHeading, modalContent },
 		},
 		pageDefinition: { translations },
 		definition,
@@ -37,7 +38,7 @@ function Popup(props: PopupProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const buttonLableValue = getData(buttonLable, locationHistory, pageExtractor);
 	const modalHeadingvalue = getData(modalHeading, locationHistory, pageExtractor);
-	const modalContentvalue = getData(modalcontent, locationHistory, pageExtractor);
+	const modalContentvalue = getData(modalContent, locationHistory, pageExtractor);
 	const [modal, setModal] = useState(false);
 	const toggleModal = () => {
 		setModal(!modal);
@@ -45,7 +46,7 @@ function Popup(props: PopupProps) {
 
 	return (
 		<div>
-			<button onClick={toggleModal} className="btnModal">
+			<button onClick={toggleModal} className="buttonModal">
 				{buttonLableValue}
 			</button>
 			{modal && (

@@ -17,9 +17,9 @@ export default [
 		translatable: true,
 	},
 	{
-		name: 'modalcontent',
+		name: 'modalContent',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-		displayName: 'modalcontent',
+		displayName: 'modal content',
 		description: `modal's display content.`,
 		translatable: true,
 	},
