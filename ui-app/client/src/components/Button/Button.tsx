@@ -15,6 +15,7 @@ import { ComponentProperty, DataLocation, RenderContext } from '../../types/comm
 import { Component } from '../../types/component';
 import properties from './buttonProperties';
 import ButtonStyle from './ButtonStyle';
+import { ComponentStyle } from '../../types/style';
 
 interface ButtonProps extends React.ComponentPropsWithoutRef<'button'> {
 	definition: {
@@ -28,6 +29,7 @@ interface ButtonProps extends React.ComponentPropsWithoutRef<'button'> {
 			rightIcon?: ComponentProperty<string>;
 			fabIcon?: ComponentProperty<string>;
 		};
+		styleProperties: ComponentStyle;
 	};
 	pageDefinition: {
 		name: string;

@@ -1,5 +1,6 @@
 import { ExpressionEvaluator, isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
 import { ComponentProperty, DataLocation } from '../types/common';
+import { ComponentStyle, StyleResolution } from '../types/style';
 
 class PathExtractor extends TokenValueExtractor {
 	private prefix: string;
@@ -30,23 +31,25 @@ class PathExtractor extends TokenValueExtractor {
 export function getPathsFrom<T>(
 	anything: string | DataLocation | ComponentProperty<T>,
 	evaluatorMaps: Map<string, TokenValueExtractor>,
-): Array<string> {
+): Set<string> {
 	let expression: string | undefined = undefined;
 
 	if (typeof anything === 'string') expression = anything;
 	else if ('type' in anything) {
 		const dl = anything as DataLocation;
-		if (dl.type === 'VALUE') return isNullValue(dl.value) ? [] : [dl.value!];
+		if (dl.type === 'VALUE')
+			return isNullValue(dl.value) ? new Set() : new Set<string>([dl.value!]);
 		expression = dl.expression;
 	} else {
 		const cp = anything as ComponentProperty<T>;
-		if (isNullValue(cp.location)) return [];
+		if (isNullValue(cp.location)) return new Set();
 		const loc = cp.location!;
-		if (loc.type === 'VALUE') return isNullValue(loc.value) ? [] : [loc.value!];
+		if (loc.type === 'VALUE')
+			return isNullValue(loc.value) ? new Set() : new Set<string>([loc.value!]);
 		expression = loc.expression;
 	}
 
-	if (isNullValue(expression)) return [];
+	if (isNullValue(expression)) return new Set();
 
 	const ee = new ExpressionEvaluator(expression!);
 	const map: Map<string, TokenValueExtractor> = new Map();
@@ -60,5 +63,37 @@ export function getPathsFrom<T>(
 	try {
 		ee.evaluate(map);
 	} catch (err) {}
-	return Array.from(retSet);
+	return retSet;
+}
+
+export function getPathsFromComponentDefinition(
+	properties: { [key: string]: ComponentProperty<any> } | undefined,
+	styleProperties: ComponentStyle | undefined,
+	evaluatorMaps: Map<string, TokenValueExtractor>,
+): Array<string> {
+	const paths: Set<string> = new Set();
+
+	if (properties) {
+		for (const prop of Object.values(properties)) {
+			for (const path of getPathsFrom(prop, evaluatorMaps)) paths.add(path);
+		}
+	}
+
+	if (styleProperties) {
+		for (const condStyle of Object.values(styleProperties)) {
+			if (condStyle.condition) {
+				for (const path of getPathsFrom(condStyle.condition, evaluatorMaps))
+					paths.add(path);
+			}
+			if (condStyle.resolutions) {
+				for (const res of Object.values(condStyle.resolutions)) {
+					for (const prop of Object.values(res)) {
+						for (const path of getPathsFrom(prop, evaluatorMaps)) paths.add(path);
+					}
+				}
+			}
+		}
+	}
+
+	return Array.from(paths);
 }

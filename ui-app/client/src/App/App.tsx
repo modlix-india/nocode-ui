@@ -3,8 +3,10 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { RenderEngineContainer } from '../Engine/RenderEngineContainer';
 import * as getAppDefinition from '../definitions/getAppDefinition.json';
 import { runEvent } from '../components/util/runEvent';
-import { addListener } from '../context/StoreContext';
+import { addListener, setData, store } from '../context/StoreContext';
 import { STORE_PREFIX } from '../constants';
+import { StyleResolution } from '../types/style';
+import { StyleResolutionDefinition } from '../util/styleProcessor';
 
 function processTagType(headTags: any, tag: string) {
 	if (!headTags) return;
@@ -62,3 +64,64 @@ export function App() {
 		</BrowserRouter>
 	);
 }
+
+let currentDevices = '';
+function setDeviceType() {
+	const size = document.body.offsetWidth;
+	const newDevices: { [key: string]: boolean } = {};
+
+	if (size >= (StyleResolutionDefinition.get(StyleResolution.WIDE_SCREEN)?.minWidth ?? 1281)) {
+		newDevices[StyleResolution.WIDE_SCREEN] = true;
+	} else if (
+		size >= (StyleResolutionDefinition.get(StyleResolution.DESKTOP_SCREEN)?.minWidth ?? 1025)
+	) {
+		newDevices[StyleResolution.DESKTOP_SCREEN_ONLY] = true;
+		newDevices[StyleResolution.DESKTOP_SCREEN] = true;
+		newDevices[StyleResolution.WIDE_SCREEN] = true;
+	} else if (
+		size >=
+		(StyleResolutionDefinition.get(StyleResolution.TABLET_LANDSCAPE_SCREEN)?.minWidth ?? 961)
+	) {
+		newDevices[StyleResolution.TABLET_LANDSCAPE_SCREEN_ONLY] = true;
+		newDevices[StyleResolution.TABLET_LANDSCAPE_SCREEN] = true;
+		newDevices[StyleResolution.DESKTOP_SCREEN] = true;
+		newDevices[StyleResolution.WIDE_SCREEN] = true;
+	} else if (
+		size >=
+		(StyleResolutionDefinition.get(StyleResolution.TABLET_POTRAIT_SCREEN)?.minWidth ?? 641)
+	) {
+		newDevices[StyleResolution.TABLET_POTRAIT_SCREEN_ONLY] = true;
+		newDevices[StyleResolution.TABLET_POTRAIT_SCREEN] = true;
+		newDevices[StyleResolution.TABLET_LANDSCAPE_SCREEN] = true;
+		newDevices[StyleResolution.DESKTOP_SCREEN] = true;
+		newDevices[StyleResolution.WIDE_SCREEN] = true;
+	} else if (
+		size >=
+		(StyleResolutionDefinition.get(StyleResolution.MOBILE_LANDSCAPE_SCREEN)?.minWidth ?? 481)
+	) {
+		newDevices[StyleResolution.MOBILE_LANDSCAPE_SCREEN_ONLY] = true;
+		newDevices[StyleResolution.MOBILE_LANDSCAPE_SCREEN] = true;
+		newDevices[StyleResolution.TABLET_POTRAIT_SCREEN] = true;
+		newDevices[StyleResolution.TABLET_LANDSCAPE_SCREEN] = true;
+		newDevices[StyleResolution.DESKTOP_SCREEN] = true;
+		newDevices[StyleResolution.WIDE_SCREEN] = true;
+	} else {
+		newDevices[StyleResolution.MOBILE_POTRAIT_SCREEN_ONLY] = true;
+		newDevices[StyleResolution.MOBILE_POTRAIT_SCREEN] = true;
+		newDevices[StyleResolution.MOBILE_LANDSCAPE_SCREEN] = true;
+		newDevices[StyleResolution.TABLET_POTRAIT_SCREEN] = true;
+		newDevices[StyleResolution.TABLET_LANDSCAPE_SCREEN] = true;
+		newDevices[StyleResolution.DESKTOP_SCREEN] = true;
+		newDevices[StyleResolution.WIDE_SCREEN] = true;
+	}
+
+	let devicesString = JSON.stringify(newDevices);
+
+	if (currentDevices === devicesString) return;
+	currentDevices = devicesString;
+	console.log(Date.now());
+	setData('Store.devices', newDevices);
+}
+
+window.addEventListener('load', setDeviceType);
+window.addEventListener('resize', setDeviceType);

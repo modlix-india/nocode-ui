@@ -1,3 +1,5 @@
+import { ComponentProperty } from './common';
+
 export enum StyleResolution {
 	ALL = 'ALL',
 	WIDE_SCREEN = 'WIDE_SCREEN',
@@ -36,4 +38,30 @@ export interface StyleResolutionProperties {
 	name: string;
 	displayName: string;
 	description: string;
+}
+
+export interface EachComponentResolutionStyle {
+	[key: string]: ComponentProperty<string>;
+}
+
+export interface EachComponentStyle {
+	condition?: ComponentProperty<boolean>;
+	resolutions?: {
+		[StyleResolution.ALL]?: EachComponentResolutionStyle;
+		[StyleResolution.WIDE_SCREEN]?: EachComponentResolutionStyle;
+		[StyleResolution.DESKTOP_SCREEN]?: EachComponentResolutionStyle;
+		[StyleResolution.TABLET_LANDSCAPE_SCREEN]?: EachComponentResolutionStyle;
+		[StyleResolution.TABLET_POTRAIT_SCREEN]?: EachComponentResolutionStyle;
+		[StyleResolution.MOBILE_LANDSCAPE_SCREEN]?: EachComponentResolutionStyle;
+		[StyleResolution.MOBILE_POTRAIT_SCREEN]?: EachComponentResolutionStyle;
+		[StyleResolution.DESKTOP_SCREEN_ONLY]?: EachComponentResolutionStyle;
+		[StyleResolution.TABLET_LANDSCAPE_SCREEN_ONLY]?: EachComponentResolutionStyle;
+		[StyleResolution.TABLET_POTRAIT_SCREEN_ONLY]?: EachComponentResolutionStyle;
+		[StyleResolution.MOBILE_LANDSCAPE_SCREEN_ONLY]?: EachComponentResolutionStyle;
+		[StyleResolution.MOBILE_POTRAIT_SCREEN_ONLY]?: EachComponentResolutionStyle;
+	};
+}
+
+export interface ComponentStyle {
+	[key: string]: EachComponentStyle;
 }
