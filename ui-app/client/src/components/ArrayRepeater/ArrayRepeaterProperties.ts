@@ -1,6 +1,6 @@
 import { Schema } from '@fincity/kirun-js';
 import { SCHEMA_REF_BOOL_COMP_PROP, SCHEMA_REF_DATA_LOCATION } from '../../constants';
-import { ComponentPropertyGroup } from '../../types/component';
+import { ComponentPropertyGroup } from '../../types/common';
 
 export default [
 	{

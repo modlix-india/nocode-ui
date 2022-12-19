@@ -6,7 +6,7 @@ import { HelperComponent } from '../HelperComponent';
 import { ComponentProperty, DataLocation, RenderContext, Translations } from '../../types/common';
 import { getTranslations } from '../util/getTranslations';
 import properties from './labelProperties';
-import { Component } from '../../types/component';
+import { Component } from '../../types/common';
 import LabelStyle from './LabelStyle';
 
 interface LabelProps extends React.ComponentPropsWithoutRef<'span'> {

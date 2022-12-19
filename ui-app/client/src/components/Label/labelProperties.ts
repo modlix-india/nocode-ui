@@ -4,7 +4,7 @@ import {
 	SCHEMA_REF_DATA_LOCATION,
 	SCHEMA_REF_STRING_COMP_PROP,
 } from '../../constants';
-import { ComponentPropertyEditor, ComponentPropertyGroup } from '../../types/component';
+import { ComponentPropertyEditor, ComponentPropertyGroup } from '../../types/common';
 
 export default [
 	{

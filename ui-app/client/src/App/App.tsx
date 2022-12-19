@@ -5,7 +5,7 @@ import * as getAppDefinition from '../definitions/getAppDefinition.json';
 import { runEvent } from '../components/util/runEvent';
 import { addListener, setData, store } from '../context/StoreContext';
 import { STORE_PREFIX } from '../constants';
-import { StyleResolution } from '../types/style';
+import { StyleResolution } from '../types/common';
 import { StyleResolutionDefinition } from '../util/styleProcessor';
 
 function processTagType(headTags: any, tag: string) {
@@ -119,7 +119,6 @@ function setDeviceType() {
 
 	if (currentDevices === devicesString) return;
 	currentDevices = devicesString;
-	console.log(Date.now());
 	setData('Store.devices', newDevices);
 }
 

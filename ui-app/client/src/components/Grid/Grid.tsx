@@ -3,7 +3,7 @@ import { HelperComponent } from '../HelperComponent';
 import { ComponentProperty, DataLocation, RenderContext } from '../../types/common';
 import { renderChildren } from '../util/renderChildren';
 import { getData, PageStoreExtractor } from '../../context/StoreContext';
-import { Component } from '../../types/component';
+import { Component } from '../../types/common';
 import properties from './gridProperties';
 import GridStyle from './GridStyle';
 

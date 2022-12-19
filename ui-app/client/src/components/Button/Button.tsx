@@ -1,139 +1,69 @@
 import React, { useEffect, useState } from 'react';
-import { Schema } from '@fincity/kirun-js';
 import { STORE_PATH_FUNCTION_EXECUTION, NAMESPACE_UI_ENGINE } from '../../constants';
 import {
 	addListener,
 	getData,
 	getDataFromPath,
 	PageStoreExtractor,
-	setData,
 } from '../../context/StoreContext';
 import { runEvent } from '../util/runEvent';
 import { HelperComponent } from '../HelperComponent';
 import { getTranslations } from '../util/getTranslations';
-import { ComponentProperty, DataLocation, RenderContext } from '../../types/common';
-import { Component } from '../../types/component';
+import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import properties from './buttonProperties';
 import ButtonStyle from './ButtonStyle';
-import { ComponentStyle } from '../../types/style';
+import useDefinition from '../util/useDefinition';
 
-interface ButtonProps extends React.ComponentPropsWithoutRef<'button'> {
-	definition: {
-		key: string;
-		properties: {
-			label: ComponentProperty<string>;
-			type: ComponentProperty<string>;
-			onClick: ComponentProperty<string>;
-			readOnly: ComponentProperty<boolean>;
-			leftIcon?: ComponentProperty<string>;
-			rightIcon?: ComponentProperty<string>;
-			fabIcon?: ComponentProperty<string>;
-		};
-		styleProperties: ComponentStyle;
-	};
-	pageDefinition: {
-		name: string;
-		eventFunctions: {
-			[key: string]: any;
-		};
-		translations: { [key: string]: { [key: string]: string } };
-	};
-	locationHistory: Array<DataLocation | string>;
-	context: RenderContext;
-}
-function ButtonComponent(props: ButtonProps) {
-	const {
-		pageDefinition: { name: pageName, eventFunctions, translations },
-		definition: {
-			key,
-			properties: {
-				label,
-				onClick,
-				type,
-				readOnly,
-				leftIcon = {},
-				rightIcon = {},
-				fabIcon = {},
-			},
-		},
-		locationHistory,
-		definition,
-		context,
-	} = props;
-	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
-	const buttonType = getData(type, locationHistory, pageExtractor);
-	const isDisabledButton = getData(readOnly, locationHistory, pageExtractor);
-	const clickEventKey = getData(onClick, locationHistory, pageExtractor) || '';
-	const clickEvent = eventFunctions[clickEventKey];
+function ButtonComponent(props: ComponentProps) {
+	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 
-	const buttonFabIcon = getData(fabIcon, locationHistory, pageExtractor);
+	let {
+		key,
+		properties: { label, onClick, type, readOnly, leftIcon, rightIcon } = {},
+		styleProperties,
+	} = useDefinition(props.definition, properties, props.locationHistory, pageExtractor);
+	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
 
-	const buttonLabel = getData(label, locationHistory);
-
-	const buttonLeftIcon = getData(leftIcon, locationHistory, pageExtractor);
-	const buttonRightIcon = getData(rightIcon, locationHistory, pageExtractor);
-
-	const functionExecutionStorePath = `${STORE_PATH_FUNCTION_EXECUTION}.${pageName}.${key}.isRunning`;
+	const spinnerPath = `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${key}.isRunning`;
 	const [isLoading, setIsLoading] = useState(
-		getDataFromPath(functionExecutionStorePath, locationHistory) || false,
+		getDataFromPath(spinnerPath, props.locationHistory) || false,
 	);
 
-	useEffect(() => {
-		addListener((_, value) => {
-			setIsLoading(value);
-		}, functionExecutionStorePath);
-	}, []);
+	useEffect(() => addListener((_, value) => setIsLoading(value), spinnerPath), []);
 
-	const handleClick = async () => {
-		if (clickEvent && !isLoading) {
-			await runEvent(clickEvent, clickEventKey, pageName);
-		}
-	};
-	if (buttonType === 'fabButton' || buttonType === 'fabButtonMini')
-		return (
-			<div className="comp compButton">
-				<HelperComponent definition={definition} />
-				<button
-					className={`${buttonType === 'fabButton' ? 'fabButton' : 'fabButtonMini'}`}
-					disabled={isLoading || isDisabledButton}
-					onClick={handleClick}
-				>
-					<i
-						className={`fabButtonIcon ${
-							buttonFabIcon
-								? !isLoading
-									? buttonFabIcon
-									: 'fa fa-circle-notch fa-spin'
-								: 'fa fa-circle-notch hide'
-						}`}
-					/>
-				</button>
-			</div>
-		);
+	const handleClick = async () =>
+		clickEvent && !isLoading && (await runEvent(clickEvent, onClick, props.context.pageName));
+
+	const rightIconTag =
+		!type?.startsWith('fabButton') && !leftIcon ? (
+			<i className={`rightButtonIcon ${rightIcon ?? 'fa fa-circle-notch hide'}`} />
+		) : undefined;
+
+	const leftIconTag = (
+		<i
+			className={`leftButtonIcon ${
+				leftIcon
+					? !isLoading
+						? leftIcon
+						: 'fa fa-circle-notch fa-spin'
+					: 'fa fa-circle-notch hide'
+			}`}
+		/>
+	);
+
 	return (
 		<div className="comp compButton">
-			<HelperComponent definition={definition} />
+			<HelperComponent definition={props.definition} />
 			<button
-				className={` button ${buttonType}`}
-				disabled={isLoading || isDisabledButton}
+				className={`button ${type}`}
+				disabled={isLoading || readOnly}
 				onClick={handleClick}
 			>
 				<div className="buttonInternalContainer">
-					<i
-						className={`leftButtonIcon ${
-							buttonLeftIcon
-								? !isLoading
-									? buttonLeftIcon
-									: 'fa fa-circle-notch fa-spin'
-								: 'fa fa-circle-notch hide'
-						}`}
-					/>
-					{getTranslations(buttonLabel, translations)}
-					<i
-						className={`rightButtonIcon ${
-							buttonRightIcon ? buttonRightIcon : `${buttonRightIcon} hide`
-						}`}
-					/>
+					{leftIconTag}
+					{!type?.startsWith('fabButton') &&
+						getTranslations(label, props.pageDefinition.translations)}
+					{rightIconTag}
 				</div>
 			</button>
 		</div>
@@ -146,7 +76,7 @@ const component: Component = {
 	description: 'Button component',
 	component: ButtonComponent,
 	styleComponent: ButtonStyle,
-	propertyValidation: (props: ButtonProps): Array<string> => [],
+	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties,
 };
 

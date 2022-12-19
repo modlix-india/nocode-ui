@@ -5,7 +5,7 @@ import {
 	ContextElement,
 } from '@fincity/kirun-js';
 import { StoreExtractor } from '../../../src/context/StoreContext';
-import { getPathsFrom } from '../../../src/context/util';
+import { getPathsFrom } from '../../../src/components/util/getPaths';
 
 test('Testing path extractions', () => {
 	const se: StoreExtractor = new StoreExtractor({}, 'Store.');

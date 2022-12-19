@@ -11,7 +11,7 @@ import {
 import { HelperComponent } from '../HelperComponent';
 import { ComponentProperty, DataLocation, RenderContext } from '../../types/common';
 import { getTranslations } from '../util/getTranslations';
-import { Component } from '../../types/component';
+import { Component } from '../../types/common';
 import properties from './toggleButtonProperties';
 import ToggleButtonStyle from './ToggleButtonStyle';
 

@@ -1,4 +1,4 @@
-import { StyleGroupDefinition, StylePropertyDefinition } from '../../types/style';
+import { StyleGroupDefinition, StylePropertyDefinition } from '../../types/common';
 
 export const styleProperties: Array<StylePropertyDefinition> = [
 	{

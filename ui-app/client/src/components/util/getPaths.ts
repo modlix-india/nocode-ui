@@ -1,6 +1,6 @@
 import { ExpressionEvaluator, isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
-import { ComponentProperty, DataLocation } from '../types/common';
-import { ComponentStyle, StyleResolution } from '../types/style';
+import { ComponentProperty, DataLocation } from '../../types/common';
+import { ComponentStyle, StyleResolution } from '../../types/common';
 
 class PathExtractor extends TokenValueExtractor {
 	private prefix: string;
@@ -75,25 +75,36 @@ export function getPathsFromComponentDefinition(
 
 	if (properties) {
 		for (const prop of Object.values(properties)) {
-			for (const path of getPathsFrom(prop, evaluatorMaps)) paths.add(path);
+			const set = getPathsFrom(prop, evaluatorMaps).values();
+			let path: IteratorResult<string, any>;
+			while ((path = set.next()) !== undefined && !path.done) paths.add(path.value);
 		}
 	}
 
+	let hasOtherResolutions = false;
 	if (styleProperties) {
 		for (const condStyle of Object.values(styleProperties)) {
 			if (condStyle.condition) {
-				for (const path of getPathsFrom(condStyle.condition, evaluatorMaps))
-					paths.add(path);
+				const set = getPathsFrom(condStyle.condition, evaluatorMaps).values();
+				let path: IteratorResult<string, any>;
+				while ((path = set.next()) !== undefined && !path.done) paths.add(path.value);
 			}
 			if (condStyle.resolutions) {
-				for (const res of Object.values(condStyle.resolutions)) {
-					for (const prop of Object.values(res)) {
-						for (const path of getPathsFrom(prop, evaluatorMaps)) paths.add(path);
+				for (const resEntry of Object.entries(condStyle.resolutions)) {
+					hasOtherResolutions =
+						hasOtherResolutions || resEntry[0] !== StyleResolution.ALL;
+					for (const prop of Object.values(resEntry[1])) {
+						const set = getPathsFrom(prop, evaluatorMaps).values();
+						let path: IteratorResult<string, any>;
+						while ((path = set.next()) !== undefined && !path.done)
+							paths.add(path.value);
 					}
 				}
 			}
 		}
 	}
+
+	if (hasOtherResolutions) paths.add('Store.devices');
 
 	return Array.from(paths);
 }

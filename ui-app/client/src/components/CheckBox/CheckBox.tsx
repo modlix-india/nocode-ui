@@ -12,7 +12,7 @@ import {
 import { HelperComponent } from '../HelperComponent';
 import { getTranslations } from '../util/getTranslations';
 import { DataLocation, ComponentProperty, RenderContext } from '../../types/common';
-import { Component } from '../../types/component';
+import { Component } from '../../types/common';
 import properties from './checkBoxProperties';
 import CheckBoxStyle from './CheckBoxStyle';
 

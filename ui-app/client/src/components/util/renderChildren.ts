@@ -18,10 +18,7 @@ export const renderChildren = (
 			return !!getData(e?.properties?.visibility, locationHistory) ? e : undefined;
 		})
 		.filter(e => !!e)
-		.sort(
-			(a: any, b: any) =>
-				(a?.properties?.displayOrder || 0) - (b?.properties?.displayOrder || 0),
-		)
+		.sort((a: any, b: any) => (a?.displayOrder || 0) - (b?.displayOrder || 0))
 		.map(e => {
 			let comp = Components.get(e.type);
 			if (!comp) comp = Nothing;

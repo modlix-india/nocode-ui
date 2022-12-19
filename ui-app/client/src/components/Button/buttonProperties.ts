@@ -4,9 +4,13 @@ import {
 	SCHEMA_REF_DATA_LOCATION,
 	SCHEMA_REF_STRING_COMP_PROP,
 } from '../../constants';
-import { ComponentPropertyEditor, ComponentPropertyGroup } from '../../types/component';
+import {
+	ComponentPropertyEditor,
+	ComponentPropertyGroup,
+	ComponentPropertyDefinition,
+} from '../../types/common';
 
-export default [
+const properties: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'label',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
@@ -20,7 +24,7 @@ export default [
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: 'Button label',
 		description: `Button's display label.`,
-		defaultValue: '',
+		defaultValue: 'default',
 		editor: ComponentPropertyEditor.ENUM,
 		enumValues: [
 			{ name: 'default', displayName: 'Default Button', description: 'Default Button type' },
@@ -59,14 +63,6 @@ export default [
 	},
 
 	{
-		name: 'fabIcon',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-		displayName: 'Fab Icon',
-		description: `Icon display for Fab Button`,
-		editor: ComponentPropertyEditor.ICON,
-	},
-
-	{
 		name: 'readOnly',
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
 		displayName: 'Read Only',
@@ -82,3 +78,5 @@ export default [
 		group: ComponentPropertyGroup.COMMON,
 	},
 ];
+
+export default properties;

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { getData, PageStoreExtractor } from '../../context/StoreContext';
 import { ComponentProperty, RenderContext, DataLocation } from '../../types/common';
-import { Component } from '../../types/component';
+import { Component } from '../../types/common';
 import properties from './popupProperties';
 import PopupStyles from './PopupStyles';
 

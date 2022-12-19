@@ -6,7 +6,7 @@ import { HelperComponent } from '../HelperComponent';
 import { DataLocation, RenderContext } from '../../types/common';
 import { renderChildren } from '../util/renderChildren';
 import { updateLocationForChild } from '../util/updateLoactionForChild';
-import { Component } from '../../types/component';
+import { Component } from '../../types/common';
 import properties from './ArrayRepeaterProperties';
 import ArrayRepeaterStyle from './ArrayRepeaterStyle';
 

@@ -6,7 +6,7 @@ import { HelperComponent } from '../HelperComponent';
 import { DataLocation, ComponentProperty, RenderContext } from '../../types/common';
 import { getTranslations } from '../util/getTranslations';
 import properties from './radioButtonProperties';
-import { Component } from '../../types/component';
+import { Component } from '../../types/common';
 
 interface RadioButtonProps extends React.ComponentPropsWithoutRef<'input'> {
 	definition: {

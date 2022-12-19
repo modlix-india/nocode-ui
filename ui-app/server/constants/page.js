@@ -278,9 +278,8 @@ export const page = {
         showButton: {
           value: true,
         },
-
-        displayOrder: -1,
       },
+      displayOrder: -1,
     },
     textboxgrid: {
       name: "textboxgrid",
@@ -310,8 +309,8 @@ export const page = {
         isMandatory: {
           value: true,
         },
-        displayOrder: -1,
       },
+      displayOrder: -1,
     },
 
     textboxcompcomparray: {
@@ -334,8 +333,8 @@ export const page = {
         isMandatory: {
           value: true,
         },
-        displayOrder: -1,
       },
+      displayOrder: -1,
     },
     textboxcompcomparrayInsideArray: {
       name: "textboxcompcomparrayInsideArray",
@@ -357,8 +356,8 @@ export const page = {
         isMandatory: {
           value: true,
         },
-        displayOrder: -1,
       },
+      displayOrder: -1,
     },
     textboxcompcompWithICon: {
       name: "textboxcompcompWithICon",
@@ -374,8 +373,8 @@ export const page = {
         leftIcon: {
           value: "fa fa-magnifying-glass fa-fw",
         },
-        displayOrder: -1,
       },
+      displayOrder: -1,
     },
     textboxcompcompWithIConDisabled: {
       name: "textboxcompcompWithIConDisabled",
@@ -400,8 +399,8 @@ export const page = {
         supportingText: {
           value: "Supporting Text",
         },
-        displayOrder: -1,
       },
+      displayOrder: -1,
     },
     textboxcompcompdisabled: {
       name: "textboxcompcompdisabled",
@@ -417,8 +416,8 @@ export const page = {
         isDisabled: {
           value: true,
         },
-        displayOrder: -1,
       },
+      displayOrder: -1,
     },
     primarybuttongrid: {
       name: "primarybuttongrid",
@@ -468,8 +467,8 @@ export const page = {
         text: {
           value: "Login",
         },
-        displayOrder: 1,
       },
+      displayOrder: 1,
     },
     loginButton: {
       name: "loginButton",
@@ -477,7 +476,7 @@ export const page = {
       type: "Button",
       properties: {
         label: {
-          value: "Login",
+          value: "First Login",
         },
         type: {
           value: "primary",
@@ -488,8 +487,17 @@ export const page = {
         leftIcon: {
           value: "fa fa-user fa-fw",
         },
-        displayOrder: 3,
       },
+      styleProperties: {
+        ALL: {
+          backgroundColor: { value: "#631222" },
+          margin: { value: "5px" },
+          color: { value: "#226318" },
+          "backgroundColor:hover": { value: "#444444" },
+          iconColor: { value: "#994433" },
+        },
+      },
+      displayOrder: 3,
     },
     toggleButtonOne: {
       name: "toggleButtonOne",
@@ -506,8 +514,8 @@ export const page = {
           type: "VALUE",
           value: "Store.form1.toggle1",
         },
-        displayOrder: 3,
       },
+      displayOrder: 3,
     },
     radiobuttonOne: {
       name: "radiobuttonOne",
@@ -524,8 +532,8 @@ export const page = {
           type: "VALUE",
           value: "Store.form1.radio1",
         },
-        displayOrder: 3,
       },
+      displayOrder: 3,
     },
     checkboxone: {
       name: "checkboxone",
@@ -545,8 +553,8 @@ export const page = {
           type: "VALUE",
           value: "Store.form1.checkbox1",
         },
-        displayOrder: 3,
       },
+      displayOrder: 3,
     },
     checkboxtwo: {
       name: "checkboxtwo",
@@ -566,8 +574,8 @@ export const page = {
           type: "VALUE",
           value: "Store.form1.checkbox2",
         },
-        displayOrder: 3,
       },
+      displayOrder: 3,
     },
     checkboxoneone: {
       name: "checkboxoneone",
@@ -583,8 +591,8 @@ export const page = {
         isDisabled: {
           value: false,
         },
-        displayOrder: 3,
       },
+      displayOrder: 3,
     },
 
     checkboxonetwo: {
@@ -601,8 +609,8 @@ export const page = {
         isDisabled: {
           value: false,
         },
-        displayOrder: 3,
       },
+      displayOrder: 3,
     },
     checkboxonethree: {
       name: "checkboxonethree",
@@ -621,8 +629,8 @@ export const page = {
         isDisabled: {
           value: false,
         },
-        displayOrder: 3,
       },
+      displayOrder: 3,
     },
     checkboxonethreeone: {
       name: "checkboxonethreeone",
@@ -639,8 +647,8 @@ export const page = {
         isDisabled: {
           value: false,
         },
-        displayOrder: 3,
       },
+      displayOrder: 3,
     },
     fabTestButton: {
       name: "fabTestButton",
@@ -653,11 +661,11 @@ export const page = {
         onClick: {
           value: "login",
         },
-        fabIcon: {
+        leftIcon: {
           value: "fa fa-user fa-fw",
         },
-        displayOrder: 3,
       },
+      displayOrder: 3,
     },
     fabTestMiniButton: {
       name: "fabTestMiniButton",
@@ -670,11 +678,11 @@ export const page = {
         onClick: {
           value: "login",
         },
-        fabIcon: {
+        leftIcon: {
           value: "fa fa-user fa-fw",
         },
-        displayOrder: 3,
       },
+      displayOrder: 3,
     },
     outlinedButton: {
       name: "outlinedButton",
@@ -687,8 +695,8 @@ export const page = {
         type: {
           value: "outlined",
         },
-        displayOrder: 3,
       },
+      displayOrder: 3,
     },
     textButton: {
       name: "textButton",
@@ -701,8 +709,8 @@ export const page = {
         type: {
           value: "text",
         },
-        displayOrder: 3,
       },
+      displayOrder: 3,
     },
     loginButtonDisabled: {
       name: "loginButtonDisabled",
@@ -721,8 +729,8 @@ export const page = {
         onClick: {
           value: "login",
         },
-        displayOrder: 3,
       },
+      displayOrder: 3,
     },
     outlinedButtondisabled: {
       name: "outlinedButtondisabled",
@@ -738,8 +746,8 @@ export const page = {
         type: {
           value: "outlined",
         },
-        displayOrder: 3,
       },
+      displayOrder: 3,
     },
     textButtonDisabled: {
       name: "textButtonDisabled",
@@ -755,8 +763,8 @@ export const page = {
         type: {
           value: "text",
         },
-        displayOrder: 3,
       },
+      displayOrder: 3,
     },
   },
 };

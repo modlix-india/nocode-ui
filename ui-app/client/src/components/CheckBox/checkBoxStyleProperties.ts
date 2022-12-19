@@ -1,4 +1,4 @@
-import { StylePropertyDefinition } from '../../types/style';
+import { StylePropertyDefinition } from '../../types/common';
 
 export const styleProperties: Array<StylePropertyDefinition> = [
 	{
@@ -23,7 +23,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'background-color',
 		displayName: "checkbox's checked animation Color",
 		description: 'The checked animation color of the Checkbox.',
-		defaultValue: '<app-yellow>',
+		defaultValue: '<contrast-bright-color>',
 		selector: ".checkbox input[type='checkbox']:checked",
 	},
 	{

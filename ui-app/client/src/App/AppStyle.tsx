@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ComponentDefinitions } from '../components';
 import { STORE_PATH_APP, STORE_PATH_STYLE_PATH, STORE_PATH_THEME_PATH } from '../constants';
 import { addListener } from '../context/StoreContext';
-import { Component } from '../types/component';
-import { StyleResolution } from '../types/style';
+import { Component, StyleResolution } from '../types/common';
 import { processStyleDefinition, processStyleValue } from '../util/styleProcessor';
 import { styleDefaults, styleProperties } from './appStyleProperties';
 

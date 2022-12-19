@@ -3,7 +3,7 @@ import {
 	StylePropertyDefinition,
 	StyleResolution,
 	StyleResolutionProperties,
-} from '../types/style';
+} from '../types/common';
 
 export const StyleResolutionDefinition = new Map<string, StyleResolutionProperties>([
 	[

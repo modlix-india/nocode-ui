@@ -6,7 +6,7 @@ import { NAMESPACE_UI_ENGINE } from '../../constants';
 import { Link as RouterLink } from 'react-router-dom';
 import { getTranslations } from '../util/getTranslations';
 import { DataLocation, ComponentProperty, RenderContext } from '../../types/common';
-import { Component } from '../../types/component';
+import { Component } from '../../types/common';
 import properties from './linkProperties';
 import LinkStyle from './LinkStyle';
 

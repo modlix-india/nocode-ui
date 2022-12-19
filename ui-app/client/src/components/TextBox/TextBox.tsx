@@ -12,7 +12,7 @@ import { ComponentProperty, DataLocation, RenderContext } from '../../types/comm
 import { getTranslations } from '../util/getTranslations';
 import { runEvent } from '../util/runEvent';
 import { Validation } from '../../types/validation';
-import { Component } from '../../types/component';
+import { Component } from '../../types/common';
 import properties from './textBoxProperties';
 import TextBoxStyle from './TextBoxStyle';
 

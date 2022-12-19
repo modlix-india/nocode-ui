@@ -1,4 +1,4 @@
-import { StyleGroupDefinition, StylePropertyDefinition } from '../../types/style';
+import { StyleGroupDefinition, StylePropertyDefinition } from '../../types/common';
 
 export const styleProperties: Array<StylePropertyDefinition> = [
 	{
@@ -22,7 +22,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'background-color',
 		displayName: 'toggleButton background after checked',
 		description: 'The Backgroundcolor to be filled after checked`',
-		defaultValue: '<app-yellow>',
+		defaultValue: '<contrast-bright-color>',
 		selector: ".toggleButton input[type='checkbox']:checked ",
 	},
 
@@ -31,8 +31,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'background-color',
 		displayName: 'toggleButton color after checked',
 		description: 'The toggleButton color after checked`',
-		defaultValue: '<white>',
-		selector: ".toggleButton input[type='checkbox']:checked::before {",
+		defaultValue: '#ffffff',
+		selector: ".toggleButton input[type='checkbox']:checked::before",
 	},
 ];
 
