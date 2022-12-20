@@ -12,6 +12,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
 		displayName: 'Show Close Button',
 		description: `Show Close button on Modal.`,
+		defaultValue: true,
 		translatable: false,
 	},
 	{
@@ -32,6 +33,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Close Modal on ESC',
 		description: `Close Modal when escape key is pressed.`,
 		translatable: false,
+		defaultValue: true,
 	},
 	{
 		name: 'closeOnOutsideClick',
@@ -39,6 +41,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Close Modal on clicking outside the modal',
 		description: `Close Modal when clicked outside the modal.`,
 		translatable: false,
+		defaultValue: true,
 	},
 	{
 		name: 'eventOnOpen',

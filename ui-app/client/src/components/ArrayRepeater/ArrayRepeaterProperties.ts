@@ -1,8 +1,16 @@
 import { Schema } from '@fincity/kirun-js';
-import { SCHEMA_REF_BOOL_COMP_PROP, SCHEMA_REF_DATA_LOCATION } from '../../constants';
-import { ComponentPropertyGroup } from '../../types/common';
+import {
+	SCHEMA_REF_BOOL_COMP_PROP,
+	SCHEMA_REF_DATA_LOCATION,
+	SCHEMA_REF_STRING_COMP_PROP,
+} from '../../constants';
+import {
+	ComponentPropertyEditor,
+	ComponentPropertyGroup,
+	ComponentPropertyDefinition,
+} from '../../types/common';
 
-export default [
+const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'bindingPath',
 		schema: Schema.ofRef(SCHEMA_REF_DATA_LOCATION),
@@ -10,51 +18,41 @@ export default [
 		description: `Path in the store to which this Repeater is bound to. This path contains
 			 the array the repeater uses to iterate on.`,
 	},
-
 	{
 		name: 'showAdd',
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
-		displayName: 'Show add button',
+		displayName: 'Add button',
 		description: 'When this option is set to true, User will be able to add items to repeater',
+		defaultValue: false,
 		notImplemented: true,
 	},
-
 	{
 		name: 'showDelete',
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
-		displayName: 'Show delete button',
+		displayName: 'Delete button',
 		description:
 			'When this option is set to true, User will be able to delete items from repeater',
+		defaultValue: false,
 		notImplemented: true,
 	},
-
 	{
-		name: 'showMoveUp',
+		name: 'showMove',
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
-		displayName: 'Show move up button',
+		displayName: 'Move buttons',
 		description:
-			'When this option is set to true, User will be able to move items up the index in the repeater',
+			'When this option is set to true, User will be able to move items up/down the index in the repeater',
+		defaultValue: false,
 		notImplemented: true,
 	},
-
-	{
-		name: 'showMoveDown',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
-		displayName: 'Show move down button',
-		description:
-			'When this option is set to true, User will be able to move items down the index in the repeater',
-		notImplemented: true,
-	},
-
 	{
 		name: 'isItemDraggable',
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
-		displayName: 'Are items draggable ?',
+		displayName: 'Draggable Items',
 		description:
 			'When this option is set to true, User will be able to drag items up the index in the repeater',
+		defaultValue: false,
 		notImplemented: true,
 	},
-
 	{
 		name: 'readOnly',
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
@@ -63,7 +61,6 @@ export default [
 		group: ComponentPropertyGroup.COMMON,
 		notImplemented: true,
 	},
-
 	{
 		name: 'visibility',
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
@@ -72,3 +69,7 @@ export default [
 		group: ComponentPropertyGroup.COMMON,
 	},
 ];
+
+const stylePropertiesDefinition = {};
+
+export { propertiesDefinition, stylePropertiesDefinition };
