@@ -21,6 +21,25 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: `Close Modal when escape key is pressed.`,
 		translatable: false,
 	},
+	{
+		name: 'closeOnOutsideClick',
+		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		displayName: 'Close Modal on clicking outside the modal',
+		description: `Close Modal when clicked outside the modal.`,
+		translatable: false,
+	},
+	{
+		name: 'eventOnOpen',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'event to be run on Modal Open',
+		description: `Event that is triggered when Modal is open.`,
+	},
+	{
+		name: 'eventOnClose',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'event to be run on Modal close',
+		description: `Event that is triggered when Modal is closed.`,
+	},
 ];
 
 const stylePropertiesDefinition = {};
