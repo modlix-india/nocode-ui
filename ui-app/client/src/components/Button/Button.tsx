@@ -77,7 +77,7 @@ const component: Component = {
 	component: ButtonComponent,
 	styleComponent: ButtonStyle,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
-	properties,
+	properties: propertiesDefinition,
 };
 
 export default component;
