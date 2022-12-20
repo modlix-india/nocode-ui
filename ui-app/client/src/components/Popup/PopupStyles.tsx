@@ -30,6 +30,17 @@ export default function PopupStyles({ theme }: { theme: Map<string, Map<string, 
       background-color: white;
       border-radius: 2px;
     }
+    ${PREFIX} .closeButtonPositionRight{
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 10px
+    }
+    ${PREFIX} .closeButtonPositionLeft{
+      display: flex;
+      justify-content: flex-start;
+      margin-bottom: 10px
+    }
+    
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="PopupCss">{css}</style>;

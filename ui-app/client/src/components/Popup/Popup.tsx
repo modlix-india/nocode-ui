@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { KeyboardEvent, useState } from 'react';
 import {
 	addListener,
 	getData,
 	getPathFromLocation,
 	PageStoreExtractor,
+	setData,
 } from '../../context/StoreContext';
 import {
 	ComponentProperty,
@@ -34,9 +35,42 @@ function Popup(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	let {
 		key,
-		properties: { showClose = true, closeOnEscape = true } = {},
+		properties: {
+			showClose,
+			closeOnEscape,
+			closeOnOutsideClick,
+			eventOnOpen,
+			eventOnClose,
+			closeButtonPosition,
+		} = {},
+
 		styleProperties,
 	} = useDefinition(props.definition, propertiesDefinition, props.locationHistory, pageExtractor);
+
+	const handleClose = React.useCallback(() => {
+		setData(
+			getPathFromLocation(bindingPath!, props.locationHistory),
+			false,
+			props.context?.pageName,
+		);
+	}, []);
+	const handleBubbling = (e: any) => {
+		e.stopPropagation();
+	};
+
+	React.useEffect(() => {
+		const escapeHandler = (event: any) => {
+			if (event.key === 'Escape') {
+				handleClose();
+			}
+		};
+		if (isActive && closeOnEscape) {
+			document.body.addEventListener('keyup', escapeHandler);
+		}
+		return () => {
+			document.body.removeEventListener('keyup', escapeHandler);
+		};
+	}, [isActive, handleClose]);
 
 	if (!isActive) return null;
 
@@ -44,8 +78,19 @@ function Popup(props: ComponentProps) {
 		<Portal>
 			<div className="comp compPopup">
 				<HelperComponent definition={props.definition} />
-				<div className="backdrop">
-					<div className="modal">
+				<div className="backdrop" onClick={handleClose}>
+					<div className="modal" onClick={handleBubbling}>
+						<div
+							className={`${
+								closeButtonPosition === 'RIGHT'
+									? 'closeButtonPositionRight'
+									: 'closeButtonPositionLeft'
+							}`}
+						>
+							{showClose && (
+								<i className="fa-solid fa-xmark" onClick={handleClose}></i>
+							)}
+						</div>
 						{renderChildren(
 							props.pageDefinition,
 							props.definition.children,
