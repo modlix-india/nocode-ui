@@ -15,6 +15,18 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		translatable: false,
 	},
 	{
+		name: 'closeButtonPosition',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'Show Close on desired side',
+		description: `Show Close on desired side either left or right.`,
+		defaultValue: 'RIGHT',
+		editor: ComponentPropertyEditor.ENUM,
+		enumValues: [
+			{ name: 'LEFT', displayName: 'Left', description: 'Show close on left' },
+			{ name: 'RIGHT', displayName: 'Right', description: 'Show close on right' },
+		],
+	},
+	{
 		name: 'closeOnEscape',
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
 		displayName: 'Close Modal on ESC',
