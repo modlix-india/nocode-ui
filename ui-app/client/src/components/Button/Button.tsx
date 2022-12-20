@@ -10,7 +10,7 @@ import { runEvent } from '../util/runEvent';
 import { HelperComponent } from '../HelperComponent';
 import { getTranslations } from '../util/getTranslations';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
-import properties from './buttonProperties';
+import { propertiesDefinition, stylePropertiesDefinition } from './buttonProperties';
 import ButtonStyle from './ButtonStyle';
 import useDefinition from '../util/useDefinition';
 
@@ -21,7 +21,7 @@ function ButtonComponent(props: ComponentProps) {
 		key,
 		properties: { label, onClick, type, readOnly, leftIcon, rightIcon } = {},
 		styleProperties,
-	} = useDefinition(props.definition, properties, props.locationHistory, pageExtractor);
+	} = useDefinition(props.definition, propertiesDefinition, props.locationHistory, pageExtractor);
 	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
 
 	const spinnerPath = `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${key}.isRunning`;

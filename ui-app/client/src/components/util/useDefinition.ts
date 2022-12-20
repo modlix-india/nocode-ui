@@ -22,15 +22,14 @@ function createNewState(
 ) {
 	const def: ComponentDefinitionValues = { key: definition.key };
 	def.properties = properties
-		.map(e => [
-			e.name,
-			!definition.properties[e.name]
-				? e.defaultValue
-				: getData(definition.properties[e.name], locationHistory, pageExtractor) ??
-				  e.defaultValue,
-		])
+		.map(e => {
+			let value = e.defaultValue;
+			if (!definition.properties) return [e.name, value];
+			value = getData(definition.properties[e.name], locationHistory, pageExtractor) ?? value;
+			return [e.name, value];
+		})
 		.filter(e => !!e[1])
-		.reduce((a, [k, v]) => {
+		.reduce((a: any, [k, v]) => {
 			a[k] = v;
 			return a;
 		}, {});

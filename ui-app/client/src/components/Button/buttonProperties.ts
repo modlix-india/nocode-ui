@@ -10,7 +10,7 @@ import {
 	ComponentPropertyDefinition,
 } from '../../types/common';
 
-const properties: Array<ComponentPropertyDefinition> = [
+const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'label',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
@@ -79,4 +79,6 @@ const properties: Array<ComponentPropertyDefinition> = [
 	},
 ];
 
-export default properties;
+const stylePropertiesDefinition = {};
+
+export { propertiesDefinition, stylePropertiesDefinition };
