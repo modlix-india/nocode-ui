@@ -162,6 +162,67 @@ export const page = {
         },
       },
     },
+    toggleModal: {
+      name: "toggleModalDefinition",
+      namespace: "UIApp",
+      parameters: {},
+      events: {
+        output: {
+          name: "output",
+          parameters: {},
+        },
+      },
+      steps: {
+        toggleModal: {
+          statementName: "toggleModalData",
+          namespace: "UIEngine",
+          name: "SetStore",
+          parameterMap: {
+            path: {
+              settoggleModalData: {
+                key: "settoggleModalData",
+                type: "VALUE",
+                value: "Store.testModal",
+              },
+            },
+            value: {
+              settoggleModalDataValue: {
+                key: "settoggleModalData",
+                type: "EXPRESSION",
+                expression: "Store.testModal ? false : true",
+              },
+            },
+          },
+        },
+        genOutput: {
+          statementName: "genOutput",
+          namespace: "System",
+          name: "GenerateEvent",
+          parameterMap: {
+            eventName: {
+              genOutputEventName: {
+                key: "genOutputEventName",
+                type: "VALUE",
+                value: "output",
+              },
+            },
+            results: {
+              genOutputResults: {
+                key: "genOutputResults",
+                type: "VALUE",
+                value: {
+                  name: "togglemodal",
+                  value: {
+                    isExpression: true,
+                    value: "Store.testModal",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
   componentDefinition: {
     loginGrid: {
@@ -200,17 +261,13 @@ export const page = {
       name: "popupcomp",
       key: "popupcomp",
       type: "Popup",
-      properties: {
-        buttonLable: {
-          value: "Click me",
-        },
-        modalHeading: {
-          value: "Naruto",
-        },
-        modalContent: {
-          value:
-            "is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum",
-        },
+      properties: {},
+      bindingPath: {
+        type: "VALUE",
+        value: "Store.testModal",
+      },
+      children: {
+        primarybuttongrid: true,
       },
     },
     arrayRepeatercomp: {
@@ -474,6 +531,7 @@ export const page = {
       name: "loginButton",
       key: "loginButton",
       type: "Button",
+
       properties: {
         label: {
           value: "First Login",
@@ -482,7 +540,7 @@ export const page = {
           value: "primary",
         },
         onClick: {
-          value: "login",
+          value: "toggleModal",
         },
         leftIcon: {
           value: "fa fa-user fa-fw",

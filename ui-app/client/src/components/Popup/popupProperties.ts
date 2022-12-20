@@ -1,26 +1,28 @@
 import { Schema } from '@fincity/kirun-js';
-import { SCHEMA_REF_STRING_COMP_PROP } from '../../constants';
+import { SCHEMA_REF_BOOL_COMP_PROP, SCHEMA_REF_STRING_COMP_PROP } from '../../constants';
+import {
+	ComponentPropertyEditor,
+	ComponentPropertyGroup,
+	ComponentPropertyDefinition,
+} from '../../types/common';
 
-export default [
+const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
-		name: 'buttonLable',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-		displayName: 'Button label',
-		description: `Button's display label.`,
-		translatable: true,
+		name: 'showClose',
+		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		displayName: 'Show Close Button',
+		description: `Show Close button on Modal.`,
+		translatable: false,
 	},
 	{
-		name: 'modalHeading',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-		displayName: 'Modal heading',
-		description: `Modal's display heading.`,
-		translatable: true,
-	},
-	{
-		name: 'modalContent',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-		displayName: 'modal content',
-		description: `modal's display content.`,
-		translatable: true,
+		name: 'closeOnEscape',
+		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		displayName: 'Close Modal on ESC',
+		description: `Close Modal when escape key is pressed.`,
+		translatable: false,
 	},
 ];
+
+const stylePropertiesDefinition = {};
+
+export { propertiesDefinition, stylePropertiesDefinition };

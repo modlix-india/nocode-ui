@@ -157,6 +157,7 @@ export interface ComponentDefinition {
 	styleProperties?: ComponentStyle;
 	validations?: Array<Validation>;
 	displayOrder?: number;
+	children: { [key: string]: boolean };
 }
 
 export interface ComponentDefinitionValues {

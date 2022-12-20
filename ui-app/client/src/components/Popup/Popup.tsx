@@ -1,67 +1,61 @@
 import React, { useState } from 'react';
-import { getData, PageStoreExtractor } from '../../context/StoreContext';
-import { ComponentProperty, RenderContext, DataLocation } from '../../types/common';
+import {
+	addListener,
+	getData,
+	getPathFromLocation,
+	PageStoreExtractor,
+} from '../../context/StoreContext';
+import {
+	ComponentProperty,
+	RenderContext,
+	DataLocation,
+	ComponentProps,
+	ComponentPropertyDefinition,
+} from '../../types/common';
 import { Component } from '../../types/common';
-import properties from './popupProperties';
+import useDefinition from '../util/useDefinition';
 import PopupStyles from './PopupStyles';
+import { propertiesDefinition, stylePropertiesDefinition } from './popupProperties';
+import Portal from '../Portal';
+import { HelperComponent } from '../HelperComponent';
+import { renderChildren } from '../util/renderChildren';
 
-interface PopupProps extends React.ComponentPropsWithoutRef<'a'> {
-	definition: {
-		properties: {
-			buttonLable: ComponentProperty<string>;
-			modalHeading: ComponentProperty<string>;
-			modalContent: ComponentProperty<string>;
-		};
-	};
-	pageDefinition: {
-		translations: {
-			[key: string]: {
-				[key: string]: string;
-			};
-		};
-	};
-
-	locationHistory: Array<DataLocation | string>;
-	context: RenderContext;
-}
-
-function Popup(props: PopupProps) {
+function Popup(props: ComponentProps) {
+	const [isActive, setIsActive] = React.useState(false);
 	const {
-		definition: {
-			properties: { buttonLable, modalHeading, modalContent },
-		},
-		pageDefinition: { translations },
-		definition,
-		locationHistory,
-		context,
+		definition: { bindingPath },
 	} = props;
-	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
-	const buttonLableValue = getData(buttonLable, locationHistory, pageExtractor);
-	const modalHeadingvalue = getData(modalHeading, locationHistory, pageExtractor);
-	const modalContentvalue = getData(modalContent, locationHistory, pageExtractor);
-	const [modal, setModal] = useState(false);
-	const toggleModal = () => {
-		setModal(!modal);
-	};
+	React.useEffect(() => {
+		if (bindingPath)
+			addListener((_, value) => {
+				setIsActive(!!value);
+			}, getPathFromLocation(bindingPath, props.locationHistory));
+	}, []);
+	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
+	let {
+		key,
+		properties: { showClose = true, closeOnEscape = true } = {},
+		styleProperties,
+	} = useDefinition(props.definition, propertiesDefinition, props.locationHistory, pageExtractor);
+
+	if (!isActive) return null;
 
 	return (
-		<div>
-			<button onClick={toggleModal} className="buttonModal">
-				{buttonLableValue}
-			</button>
-			{modal && (
-				<div className="modal">
-					<div className="overlay"></div>
-					<div className="modalContent">
-						<h2>{modalHeadingvalue}</h2>
-						<p>{modalContentvalue}</p>
-						<button className="closeModal" onClick={toggleModal}>
-							CLOSE
-						</button>
+		<Portal>
+			<div className="comp compPopup">
+				<HelperComponent definition={props.definition} />
+				<div className="backdrop">
+					<div className="modal">
+						{renderChildren(
+							props.pageDefinition,
+							props.definition.children,
+							props.context,
+							props.locationHistory,
+						)}
 					</div>
 				</div>
-			)}
-		</div>
+			</div>
+		</Portal>
 	);
 }
 
@@ -70,8 +64,8 @@ const component: Component = {
 	displayName: 'Popup',
 	description: 'Popup component',
 	component: Popup,
-	propertyValidation: (props: PopupProps): Array<string> => [],
-	properties,
+	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
+	properties: propertiesDefinition,
 	styleComponent: PopupStyles,
 };
 
