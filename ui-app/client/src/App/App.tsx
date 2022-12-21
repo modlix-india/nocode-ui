@@ -35,18 +35,23 @@ export function App() {
 
 		if (!globalThis.nodeDev) return;
 
-		return addListener((_, { properties } = {}) => {
-			if (!properties) return;
-			processTagType(properties.links, 'LINK');
-			processTagType(properties.scripts, 'SCRIPT');
-			processTagType(properties.metas, 'META');
-		}, `${STORE_PREFIX}.application`);
+		return addListener(
+			(_, { properties } = {}) => {
+				if (!properties) return;
+				processTagType(properties.links, 'LINK');
+				processTagType(properties.scripts, 'SCRIPT');
+				processTagType(properties.metas, 'META');
+			},
+			undefined,
+			`${STORE_PREFIX}.application`,
+		);
 	}, []);
 
 	useEffect(
 		() =>
 			addListener(
 				(_, value) => setIsApplicationFailed(value),
+				undefined,
 				`${STORE_PREFIX}.isApplicationLoadFailed`,
 			),
 		[],
