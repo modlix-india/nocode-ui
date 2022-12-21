@@ -113,11 +113,14 @@ export function getDataFromLocation(
 export function getPathFromLocation(
 	loc: DataLocation,
 	locationHistory: Array<DataLocation | string>,
+	...tve: Array<TokenValueExtractor>
 ): string {
 	if (loc?.type === 'VALUE' && loc.value) {
 		return dotPathBuilder(loc.value, locationHistory) || '';
 	} else if (loc?.type === 'EXPRESSION' && loc.expression) {
-		return dotPathBuilder(loc?.expression!, locationHistory) || '';
+		return (
+			dotPathBuilder(getDataFromLocation(loc, locationHistory, ...tve), locationHistory) || ''
+		);
 	}
 	return '';
 }
@@ -203,8 +206,24 @@ export class PageStoreExtractor extends TokenValueExtractor {
 
 		return this.extractorMap.get(pageName)!;
 	}
+
+	public getPageName(): string {
+		return this.pageName;
+	}
 }
 
-export const addListener = _addListener;
+export const addListener = (
+	callback: (path: string, value: any) => void,
+	pageExtractor?: PageStoreExtractor,
+	...path: Array<string>
+): (() => void) => {
+	if (!pageExtractor) return _addListener(callback, ...path);
+	const nPaths = path.map(e => {
+		if (!e.startsWith(pageExtractor.getPrefix())) return e;
+		return 'Store.pageData.' + pageExtractor.getPageName() + e.substring(4);
+	});
+
+	return _addListener(callback, ...nPaths);
+};
 
 export const store = _store;

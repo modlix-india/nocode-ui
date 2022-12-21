@@ -34,6 +34,7 @@ export default function AppStyle() {
 					else if (path == STORE_PATH_APP)
 						setCompList(value.components ?? new Set<string>());
 				},
+				undefined,
 				STORE_PATH_STYLE_PATH,
 				STORE_PATH_THEME_PATH,
 				STORE_PATH_APP,

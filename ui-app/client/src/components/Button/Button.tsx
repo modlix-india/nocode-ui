@@ -29,7 +29,7 @@ function ButtonComponent(props: ComponentProps) {
 		getDataFromPath(spinnerPath, props.locationHistory) || false,
 	);
 
-	useEffect(() => addListener((_, value) => setIsLoading(value), spinnerPath), []);
+	useEffect(() => addListener((_, value) => setIsLoading(value), pageExtractor, spinnerPath), []);
 
 	const handleClick = async () =>
 		clickEvent && !isLoading && (await runEvent(clickEvent, onClick, props.context.pageName));

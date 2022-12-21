@@ -213,6 +213,7 @@ export const page = {
                 value: [
                   {
                     name: "Raja",
+                    index: 0,
                     level: [
                       { name: "Raja" },
                       { name: "Shagil" },
@@ -224,6 +225,7 @@ export const page = {
                   },
                   {
                     name: "Shagil",
+                    index: 1,
                     level: [
                       { name: "Raja" },
                       { name: "Shagil" },
@@ -235,6 +237,7 @@ export const page = {
                   },
                   {
                     name: "Tarun",
+                    index: 2,
                     level: [
                       { name: "Raja" },
                       { name: "Shagil" },
@@ -246,6 +249,7 @@ export const page = {
                   },
                   {
                     name: "Surendhar",
+                    index: 3,
                     level: [
                       { name: "Raja" },
                       { name: "Shagil" },
@@ -257,6 +261,7 @@ export const page = {
                   },
                   {
                     name: "Akhilesh",
+                    index: 4,
                     level: [
                       { name: "Raja" },
                       { name: "Shagil" },
@@ -266,8 +271,32 @@ export const page = {
                       { name: "Vishwas" },
                     ],
                   },
-                  { name: "Vishwas" },
+                  { name: "Vishwas", index: 5 },
                 ],
+              },
+            },
+          },
+        },
+        setTestingData: {
+          statementName: "setTestingData",
+          namespace: "UIEngine",
+          name: "SetStore",
+          parameterMap: {
+            path: {
+              setTestingDataPath: {
+                key: "setTestingDataPath",
+                type: "VALUE",
+                value: "Store.x",
+              },
+            },
+            value: {
+              setTestingDataValue: {
+                key: "setTestingDataValue",
+                type: "VALUE",
+                value: {
+                  a: 20,
+                  var: "a",
+                },
               },
             },
           },
@@ -319,6 +348,7 @@ export const page = {
         // textboxgrid: true,
         // loginlabel: true,
         primarybuttongrid: true,
+        textboxgrid: true,
         // outlinedbuttongrid: true,
         // textbuttongrid: true,
         // checkBoxGrid: true,
@@ -384,7 +414,8 @@ export const page = {
       type: "Grid",
       children: {
         textboxcompcomparray: true,
-        arrayRepeatercompInsideRepeater: true,
+
+        // arrayRepeatercompInsideRepeater: true,
       },
     },
     linkGrid: {
@@ -424,9 +455,9 @@ export const page = {
       type: "Grid",
       children: {
         textboxcompcomp: true,
-        textboxcompcompWithICon: true,
-        textboxcompcompdisabled: true,
-        textboxcompcompWithIConDisabled: true,
+        // textboxcompcompWithICon: true,
+        // textboxcompcompdisabled: true,
+        // textboxcompcompWithIConDisabled: true,
       },
     },
     textboxcompcomp: {
@@ -437,15 +468,17 @@ export const page = {
         label: {
           value: "Login",
         },
-        bindingPath: {
-          value: "Store.texboxbindingpath",
-        },
         supportingText: {
           value: "Supporting Text",
         },
         isMandatory: {
           value: true,
         },
+      },
+      bindingPath: {
+        type: "VALUE",
+        expression: "'Store.x.{{Store.x.var}}'",
+        value: "Store.x.a",
       },
       displayOrder: -1,
     },
@@ -470,7 +503,8 @@ export const page = {
       },
       bindingPath: {
         type: "VALUE",
-        value: "Store.texboxbindingpath",
+        value: ".texboxbindingpath",
+        // expression: "'Store.RepeaterTesting[.index].level[.index]'",
       },
       displayOrder: -1,
     },

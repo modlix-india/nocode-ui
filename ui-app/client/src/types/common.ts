@@ -151,6 +151,7 @@ export interface ComponentStyle {
 export interface ComponentDefinition {
 	key: string;
 	bindingPath?: DataLocation;
+	type: string;
 	properties?: {
 		[key: string]: ComponentProperty<any>;
 	};
@@ -162,7 +163,6 @@ export interface ComponentDefinition {
 
 export interface ComponentDefinitionValues {
 	key: string;
-	bindingPath?: string;
 	properties?: any;
 	styleProperties?: any;
 }

@@ -6,18 +6,13 @@ import {
 	SCHEMA_REF_DATA_LOCATION,
 	SCHEMA_REF_STRING_COMP_PROP,
 } from '../../constants';
-import { ComponentPropertyEditor, ComponentPropertyGroup } from '../../types/common';
+import {
+	ComponentPropertyDefinition,
+	ComponentPropertyEditor,
+	ComponentPropertyGroup,
+} from '../../types/common';
 
-export default [
-	{
-		name: 'bindingPath',
-		schema: Schema.ofRef(SCHEMA_REF_DATA_LOCATION),
-		displayName: 'Binding Path',
-		description:
-			'Path in the store to which this text box is bound to. Any changes in the text box' +
-			' results in the change of value in the aforementioned path.',
-	},
-
+const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'label',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
@@ -173,3 +168,7 @@ export default [
 		notImplemented: true,
 	},
 ];
+
+const stylePropertiesDefinition = {};
+
+export { propertiesDefinition, stylePropertiesDefinition };

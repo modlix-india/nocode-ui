@@ -1,90 +1,77 @@
 import React from 'react';
 import {
 	addListener,
-	getData,
 	getDataFromLocation,
+	getDataFromPath,
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
 import { HelperComponent } from '../HelperComponent';
-import { ComponentProperty, DataLocation, RenderContext } from '../../types/common';
+import {
+	ComponentProperty,
+	ComponentPropertyDefinition,
+	ComponentProps,
+	DataLocation,
+	RenderContext,
+} from '../../types/common';
 import { getTranslations } from '../util/getTranslations';
-import { runEvent } from '../util/runEvent';
 import { Validation } from '../../types/validation';
 import { Component } from '../../types/common';
-import properties from './textBoxProperties';
+import { propertiesDefinition } from './textBoxProperties';
 import TextBoxStyle from './TextBoxStyle';
+import useDefinition from '../util/useDefinition';
 
-interface TextBoxProperties {
-	bindingPath: DataLocation;
-	mandatory?: ComponentProperty<boolean>;
-	label: ComponentProperty<string>;
-	leftIcon: ComponentProperty<string>;
-	readOnly?: ComponentProperty<boolean>;
-	defaultValue: ComponentProperty<any>;
-	supportingText: ComponentProperty<string>;
-	validations: Array<Validation>;
-}
-
-interface TextBoxComponentProps extends React.ComponentPropsWithoutRef<'input'> {
-	definition: {
-		key: string;
-		properties: TextBoxProperties;
-	};
-	pageDefinition: {
-		name: string;
-		eventFunctions: {
-			[key: string]: any;
-		};
-		translations: {
-			[key: string]: {
-				[key: string]: string;
-			};
-		};
-	};
-	locationHistory: Array<DataLocation | string>;
-	context: RenderContext;
-}
-
-function TextBox(props: TextBoxComponentProps) {
-	const {
-		definition: {
-			key,
-			properties: {
-				label,
-				bindingPath,
-				leftIcon = {},
-				readOnly,
-				defaultValue,
-				supportingText,
-			},
-		},
-		definition,
-		pageDefinition: { name: pageName, eventFunctions, translations },
-		locationHistory,
-		context,
-	} = props;
-	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
-	const textBoxLeftIcon = leftIcon
-		? getData(leftIcon, locationHistory, pageExtractor)
-		: undefined;
-	const isDisabledTextBox = getData(readOnly, locationHistory, pageExtractor);
-	const textBoxBindingPath = getPathFromLocation(bindingPath, locationHistory);
-	const textBoxDefaultValue = getData(defaultValue, locationHistory, pageExtractor);
-	const textBoxSupportingText = getData(supportingText, locationHistory, pageExtractor);
+function TextBox(props: ComponentProps) {
 	const [isDirty, setIsDirty] = React.useState(false);
 	const [errorMessage, setErrorMessage] = React.useState('');
 	const [value, setvalue] = React.useState('');
 	const [isFocussed, setIsFocussed] = React.useState(false);
 	const [hasText, setHasText] = React.useState(false);
-	const textBoxLabel = getData(label, locationHistory, pageExtractor);
+	const {
+		definition: { bindingPath },
+		definition,
+		pageDefinition: { translations },
+		locationHistory,
+		context,
+	} = props;
+	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const {
+		properties: {
+			updateStoreImmediately,
+			removeKeyWhenEmpty,
+			maxValue,
+			minValue,
+			valueType,
+			emptyValue,
+			validation,
+			supportingText,
+			visibility,
+			readOnly,
+			defaultValue,
+			rightIcon,
+			leftIcon,
+			label,
+		} = {},
+		styleProperties,
+		key,
+	} = useDefinition(definition, propertiesDefinition, locationHistory, pageExtractor);
+	if (!bindingPath) throw new Error('Definition requires bindingpath');
+	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
+	console.log('BP ', bindingPathPath);
+	const textBoxValue = getDataFromLocation(bindingPath, locationHistory, pageExtractor);
+	console.log('TVB ' + textBoxValue);
 	React.useEffect(
 		() =>
-			addListener((_, value) => {
-				setvalue(value ?? textBoxDefaultValue);
-			}, textBoxBindingPath),
-		[],
+			addListener(
+				(_, value) => {
+					console.log('picard', value);
+					setvalue(value ?? defaultValue);
+				},
+				pageExtractor,
+				bindingPathPath,
+			),
+		[bindingPathPath],
 	);
 	const handleFocus = () => {
 		setIsFocussed(true);
@@ -96,43 +83,43 @@ function TextBox(props: TextBoxComponentProps) {
 		if (!isDirty) {
 			setIsDirty(true);
 		}
-		setData(textBoxBindingPath, event?.target.value, context?.pageName);
+		setData(bindingPathPath, event?.target.value, context?.pageName);
 	};
 	const handleClickClose = () => {
 		setvalue('');
 	};
-
+	console.log(label, 'label');
 	return (
 		<div className="comp compTextBox">
 			<HelperComponent definition={definition} />
 			<div
 				className={`textBoxDiv ${errorMessage ? 'error' : ''} ${
 					isFocussed && !value.length ? 'focussed' : ''
-				} ${value.length && !isDisabledTextBox ? 'hasText' : ''} ${
-					isDisabledTextBox ? 'textBoxDisabled' : ''
-				} ${textBoxLeftIcon ? 'textBoxwithIconContainer' : 'textBoxContainer'}`}
+				} ${value.length && !readOnly ? 'hasText' : ''} ${
+					readOnly ? 'textBoxDisabled' : ''
+				} ${leftIcon ? 'textBoxwithIconContainer' : 'textBoxContainer'}`}
 			>
-				{textBoxLeftIcon && <i className={`leftIcon ${textBoxLeftIcon}`} />}
+				{leftIcon && <i className={`leftIcon ${leftIcon}`} />}
 				<div className="inputContainer">
 					<input
 						className="textbox"
 						type={'text'}
 						value={value}
 						onChange={handleChange}
-						placeholder={getTranslations(textBoxLabel, translations)}
+						placeholder={getTranslations(label, translations)}
 						onFocus={handleFocus}
 						onBlur={handleBlur}
 						name={key}
 						id={key}
-						disabled={isDisabledTextBox}
+						disabled={readOnly}
 					/>
 					<label
 						htmlFor={key}
 						className={`textBoxLabel ${errorMessage ? 'error' : ''} ${
-							isDisabledTextBox ? 'disabled' : ''
+							readOnly ? 'disabled' : ''
 						}`}
 					>
-						{getTranslations(textBoxLabel, translations)}
+						{getTranslations(label, translations)}
 					</label>
 				</div>
 				{value.length ? (
@@ -143,11 +130,11 @@ function TextBox(props: TextBoxComponentProps) {
 				) : null}
 			</div>
 			<label
-				className={`supportText ${isDisabledTextBox ? 'disabled' : ''} ${
+				className={`supportText ${readOnly ? 'disabled' : ''} ${
 					errorMessage ? 'error' : ''
 				}`}
 			>
-				{errorMessage ? errorMessage : textBoxSupportingText}
+				{errorMessage ? errorMessage : supportingText}
 			</label>
 		</div>
 	);
@@ -159,8 +146,8 @@ const component: Component = {
 	description: 'TextBox component',
 	component: TextBox,
 	styleComponent: TextBoxStyle,
-	propertyValidation: (props: TextBoxProperties): Array<string> => [],
-	properties,
+	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
+	properties: propertiesDefinition,
 };
 
 export default component;

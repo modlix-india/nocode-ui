@@ -4,6 +4,7 @@ import {
 	addListener,
 	getData,
 	localStoreExtractor,
+	PageStoreExtractor,
 	storeExtractor,
 } from '../../context/StoreContext';
 import {
@@ -43,7 +44,7 @@ export default function useDefinition(
 	definition: ComponentDefinition,
 	properties: Array<ComponentPropertyDefinition>,
 	locationHistory: Array<DataLocation | string>,
-	pageExtractor: TokenValueExtractor,
+	pageExtractor: PageStoreExtractor,
 ): ComponentDefinitionValues {
 	const [compState, setCompState] = useState<ComponentDefinitionValues>({ key: definition.key });
 	const evaluatorMaps = new Map<string, TokenValueExtractor>([
@@ -64,16 +65,22 @@ export default function useDefinition(
 			if (p) p.forEach(e => paths.push(e));
 		}
 
+		setCompState(createNewState(definition, properties, locationHistory, pageExtractor));
+		console.log(paths);
 		if (!paths || !paths.length) {
-			setCompState(createNewState(definition, properties, locationHistory, pageExtractor));
 			return;
 		}
 
+		console.log('Adding Listener to : ', paths);
 		return addListener(
-			() =>
+			(path, value) => {
+				console.log('Listening to ' + path);
+				console.log('Listened value', value);
 				setCompState(
 					createNewState(definition, properties, locationHistory, pageExtractor),
-				),
+				);
+			},
+			pageExtractor,
 			...paths,
 		);
 	}, []);
