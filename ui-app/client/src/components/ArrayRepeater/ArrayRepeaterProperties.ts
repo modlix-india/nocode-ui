@@ -12,13 +12,6 @@ import {
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
-		name: 'bindingPath',
-		schema: Schema.ofRef(SCHEMA_REF_DATA_LOCATION),
-		displayName: 'Binding Path',
-		description: `Path in the store to which this Repeater is bound to. This path contains
-			 the array the repeater uses to iterate on.`,
-	},
-	{
 		name: 'showAdd',
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
 		displayName: 'Add button',
