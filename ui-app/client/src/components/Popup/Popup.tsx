@@ -1,4 +1,4 @@
-import React, { KeyboardEvent, useState } from 'react';
+import React, { KeyboardEvent, useRef, useState } from 'react';
 import {
 	addListener,
 	getData,
@@ -20,12 +20,14 @@ import { propertiesDefinition, stylePropertiesDefinition } from './popupProperti
 import Portal from '../Portal';
 import { HelperComponent } from '../HelperComponent';
 import { renderChildren } from '../util/renderChildren';
+import { runEvent } from '../util/runEvent';
 
 function Popup(props: ComponentProps) {
 	const [isActive, setIsActive] = React.useState(false);
 	const {
 		definition: { bindingPath },
 	} = props;
+
 	React.useEffect(() => {
 		if (bindingPath)
 			addListener((_, value) => {
@@ -46,6 +48,20 @@ function Popup(props: ComponentProps) {
 
 		styleProperties,
 	} = useDefinition(props.definition, propertiesDefinition, props.locationHistory, pageExtractor);
+	const openEvent = eventOnOpen ? props.pageDefinition.eventFunctions[eventOnOpen] : undefined;
+	const closeEvent = eventOnClose ? props.pageDefinition.eventFunctions[eventOnClose] : undefined;
+
+	const refObj = useRef({ first: true });
+
+	React.useEffect(() => {
+		if (openEvent && isActive) {
+			async () => await runEvent(openEvent, eventOnOpen, props.context.pageName);
+		}
+		if (!isActive && closeEvent && !refObj.current.first) {
+			async () => await runEvent(closeEvent, eventOnClose, props.context.pageName);
+		}
+		refObj.current.first = true;
+	}, [isActive]);
 
 	const handleClose = React.useCallback(() => {
 		setData(
