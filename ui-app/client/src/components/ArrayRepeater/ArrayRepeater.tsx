@@ -3,48 +3,34 @@ import React from 'react';
 import { NAMESPACE_UI_ENGINE } from '../../constants';
 import { getData, getDataFromLocation, PageStoreExtractor } from '../../context/StoreContext';
 import { HelperComponent } from '../HelperComponent';
-import { DataLocation, RenderContext } from '../../types/common';
+import {
+	ComponentPropertyDefinition,
+	ComponentProps,
+	DataLocation,
+	RenderContext,
+} from '../../types/common';
 import { renderChildren } from '../util/renderChildren';
 import { updateLocationForChild } from '../util/updateLoactionForChild';
 import { Component } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './ArrayRepeaterProperties';
 import ArrayRepeaterStyle from './ArrayRepeaterStyle';
+import useDefinition from '../util/useDefinition';
 
-interface ArrayRepeaterProps {
-	definition: {
-		key: string;
-		children: any;
-		properties: {
-			bindingPath: DataLocation;
-		};
-	};
-	pageDefinition: {
-		eventFunctions: {
-			[key: string]: any;
-		};
-		translations: {
-			[key: string]: {
-				[key: string]: string;
-			};
-		};
-	};
-	locationHistory: Array<DataLocation | string>;
-	context: RenderContext;
-}
-
-function ArrayRepeaterComponent(props: ArrayRepeaterProps) {
+function ArrayRepeaterComponent(props: ComponentProps) {
 	const {
-		definition: {
-			children,
-			properties: { bindingPath },
-		},
+		definition: { children, bindingPath },
 		pageDefinition,
 		locationHistory = [],
 		context,
 		definition,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
-	const bindingPathData = getDataFromLocation(bindingPath, locationHistory, pageExtractor);
+	const {
+		properties: { isItemDraggable, showMove, showDelete, showAdd } = {},
+		styleProperties,
+		key,
+	} = useDefinition(definition, propertiesDefinition, locationHistory, pageExtractor);
+	const bindingPathData = getDataFromLocation(bindingPath!, locationHistory, pageExtractor);
 	if (!Array.isArray(bindingPathData)) return <></>;
 	const firstchild = {
 		[Object.entries(children)[0][0]]: Object.entries(children)[0][1],
@@ -55,7 +41,7 @@ function ArrayRepeaterComponent(props: ArrayRepeaterProps) {
 			{bindingPathData.map((_, index) =>
 				renderChildren(pageDefinition, firstchild, context, [
 					...locationHistory,
-					updateLocationForChild(bindingPath, index, locationHistory),
+					updateLocationForChild(bindingPath!, index, locationHistory),
 				]),
 			)}
 		</div>
@@ -67,7 +53,7 @@ const component: Component = {
 	displayName: 'Array Repeater',
 	description: 'Array Repeater component',
 	component: ArrayRepeaterComponent,
-	propertyValidation: (props: ArrayRepeaterProps): Array<string> => [],
+	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: ArrayRepeaterStyle,
 };

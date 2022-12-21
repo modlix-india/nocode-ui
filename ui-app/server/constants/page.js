@@ -173,23 +173,101 @@ export const page = {
         },
       },
       steps: {
-        toggleModal: {
-          statementName: "toggleModalData",
+        // toggleModal: {
+        //   statementName: "toggleModalData",
+        //   namespace: "UIEngine",
+        //   name: "SetStore",
+        //   parameterMap: {
+        //     path: {
+        //       settoggleModalData: {
+        //         key: "settoggleModalData",
+        //         type: "VALUE",
+        //         value: "Store.testModal",
+        //       },
+        //     },
+        //     value: {
+        //       settoggleModalDataValue: {
+        //         key: "settoggleModalData",
+        //         type: "EXPRESSION",
+        //         expression: "Store.testModal ? false : true",
+        //       },
+        //     },
+        //   },
+        // },
+        setRepeaterTestingData: {
+          statementName: "setRepeaterTestingData",
           namespace: "UIEngine",
           name: "SetStore",
           parameterMap: {
             path: {
-              settoggleModalData: {
-                key: "settoggleModalData",
+              setRepeaterTestingDataPath: {
+                key: "setRepeaterTestingDataPath",
                 type: "VALUE",
-                value: "Store.testModal",
+                value: "Store.RepeaterTesting",
               },
             },
             value: {
-              settoggleModalDataValue: {
-                key: "settoggleModalData",
-                type: "EXPRESSION",
-                expression: "Store.testModal ? false : true",
+              setRepeaterTestingDataValue: {
+                key: "setRepeaterTestingDataValue",
+                type: "VALUE",
+                value: [
+                  {
+                    name: "Raja",
+                    level: [
+                      { name: "Raja" },
+                      { name: "Shagil" },
+                      { name: "Tarun" },
+                      { name: "Surendhar" },
+                      { name: "Akhilesh" },
+                      { name: "Vishwas" },
+                    ],
+                  },
+                  {
+                    name: "Shagil",
+                    level: [
+                      { name: "Raja" },
+                      { name: "Shagil" },
+                      { name: "Tarun" },
+                      { name: "Surendhar" },
+                      { name: "Akhilesh" },
+                      { name: "Vishwas" },
+                    ],
+                  },
+                  {
+                    name: "Tarun",
+                    level: [
+                      { name: "Raja" },
+                      { name: "Shagil" },
+                      { name: "Tarun" },
+                      { name: "Surendhar" },
+                      { name: "Akhilesh" },
+                      { name: "Vishwas" },
+                    ],
+                  },
+                  {
+                    name: "Surendhar",
+                    level: [
+                      { name: "Raja" },
+                      { name: "Shagil" },
+                      { name: "Tarun" },
+                      { name: "Surendhar" },
+                      { name: "Akhilesh" },
+                      { name: "Vishwas" },
+                    ],
+                  },
+                  {
+                    name: "Akhilesh",
+                    level: [
+                      { name: "Raja" },
+                      { name: "Shagil" },
+                      { name: "Tarun" },
+                      { name: "Surendhar" },
+                      { name: "Akhilesh" },
+                      { name: "Vishwas" },
+                    ],
+                  },
+                  { name: "Vishwas" },
+                ],
               },
             },
           },
@@ -238,15 +316,15 @@ export const page = {
       key: "secondGrid",
       type: "Grid",
       children: {
-        textboxgrid: true,
-        loginlabel: true,
+        // textboxgrid: true,
+        // loginlabel: true,
         primarybuttongrid: true,
-        outlinedbuttongrid: true,
-        textbuttongrid: true,
-        checkBoxGrid: true,
-        linkGrid: true,
+        // outlinedbuttongrid: true,
+        // textbuttongrid: true,
+        // checkBoxGrid: true,
+        // linkGrid: true,
         arrayRepeatercomp: true,
-        popupGrid: true,
+        // popupGrid: true,
       },
     },
     popupGrid: {
@@ -275,10 +353,13 @@ export const page = {
       key: "arrayRepeatercomp",
       type: "ArrayRepeater",
       properties: {
-        bindingPath: {
-          type: "VALUE",
-          value: "Store.RepeaterTesting",
+        showAdd: {
+          value: true,
         },
+      },
+      bindingPath: {
+        type: "VALUE",
+        value: "Store.RepeaterTesting",
       },
       children: {
         arrayRepeatercompgrid: true,
@@ -288,11 +369,10 @@ export const page = {
       name: "arrayRepeatercompInsideRepeater",
       key: "arrayRepeatercompInsideRepeater",
       type: "ArrayRepeater",
-      properties: {
-        bindingPath: {
-          type: "VALUE",
-          value: ".buttons",
-        },
+      properties: {},
+      bindingPath: {
+        type: "VALUE",
+        value: ".level",
       },
       children: {
         textboxcompcomparrayInsideArray: true,
@@ -381,15 +461,16 @@ export const page = {
             value: ".name",
           },
         },
-        bindingPath: {
-          value: "Store.texboxbindingpath",
-        },
         supportingText: {
           value: "Supporting Text",
         },
         isMandatory: {
           value: true,
         },
+      },
+      bindingPath: {
+        type: "VALUE",
+        value: "Store.texboxbindingpath",
       },
       displayOrder: -1,
     },
@@ -401,7 +482,7 @@ export const page = {
         label: {
           location: {
             type: "VALUE",
-            value: ".label",
+            value: ".name",
           },
         },
         bindingPath: {
