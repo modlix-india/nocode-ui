@@ -8,8 +8,9 @@ import RadioButton from './RadioButton/RadioButton';
 import TextBox from './TextBox/TextBox';
 import ToggleButton from './ToggleButton/ToggleButton';
 import ArrayRepeater from './ArrayRepeater/ArrayRepeater';
-import { Component } from '../types/component';
 import Popup from './Popup/Popup';
+import Dropdown from './Dropdown/Dropdown';
+
 export const Components = new Map<string, React.ElementType>([
 	[Button.name, Button.component],
 	[Grid.name, Grid.component],
@@ -22,6 +23,7 @@ export const Components = new Map<string, React.ElementType>([
 	[Link.name, Link.component],
 	[ArrayRepeater.name, ArrayRepeater.component],
 	[Popup.name, Popup.component],
+	[Dropdown.name, Dropdown.component],
 ]);
 
 export const ComponentDefinitions = [
@@ -35,4 +37,5 @@ export const ComponentDefinitions = [
 	Link,
 	ArrayRepeater,
 	Popup,
+	Dropdown,
 ];

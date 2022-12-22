@@ -86,6 +86,28 @@
 			},
 			"dependentStatements": { "Steps.applicationData.output": true }
 		},
+		"himashudropdowndata": {
+			"statementName": "setDropdownData",
+			"namespace": "UIEngine",
+			"name": "SetStore",
+			"parameterMap": {
+				"path": {
+					"himashudropdowndataPath": {
+						"key": "himashudropdowndataPath",
+						"type": "VALUE",
+						"value": "Store.dropdownData"
+					}
+				},
+				"value": {
+					"dropdownDataValue": {
+						"key": "dropdownDataValue",
+						"type": "VALUE",
+						"value": ["Himashu", "Tarun", "Shagil", "Akhilesh", "Raja"]
+					}
+				}
+			},
+			"dependentStatements": { "Steps.applicationData.output": true }
+		},
 		"setLanguage": {
 			"statementName": "setLanguage",
 			"namespace": "UIEngine",

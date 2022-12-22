@@ -1,6 +1,6 @@
 import { ExpressionEvaluator, TokenValueExtractor } from '@fincity/kirun-js';
 import { getData, getDataFromLocation } from '../../context/StoreContext';
-import { ComponentProperty, DataLocation } from '../types';
+import { ComponentProperty, DataLocation } from '../../types/common';
 
 export class ObjectExtractor extends TokenValueExtractor {
 	private store: any;
@@ -41,7 +41,7 @@ const getSelection = (
 };
 
 export function getRenderData<T>(
-	componentProperty: ComponentProperty<T>,
+	data: any,
 	dataType:
 		| 'LIST_OF_STRINGS'
 		| 'LIST_OF_OBJECTS'
@@ -49,8 +49,6 @@ export function getRenderData<T>(
 		| 'OBJECT_OF_PRIMITIVES'
 		| 'OBJECT_OF_OBJECTS'
 		| 'OBJECT_OF_LISTS',
-	locationHistory: Array<DataLocation | string>,
-	pageExtractor: TokenValueExtractor,
 	uniqueKeyType: 'KEY' | 'INDEX' | 'OBJECT',
 	uniqueKey: string,
 	selectionType: 'KEY' | 'INDEX' | 'OBJECT',
@@ -58,10 +56,6 @@ export function getRenderData<T>(
 	labelKeyType?: 'KEY' | 'INDEX' | 'OBJECT',
 	labelKey?: string,
 ) {
-	const data =
-		getData(componentProperty, locationHistory, pageExtractor) ??
-		(dataType.startsWith('LIST') ? [] : {});
-	let ev: ExpressionEvaluator = new ExpressionEvaluator(`Data.${selectionKey}`);
 	if (dataType === 'LIST_OF_STRINGS') {
 		if (Array.isArray(data)) {
 			const res = data.map((e: any, index: number) => {

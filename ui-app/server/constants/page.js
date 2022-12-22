@@ -347,13 +347,14 @@ export const page = {
       children: {
         // textboxgrid: true,
         // loginlabel: true,
-        primarybuttongrid: true,
-        textboxgrid: true,
+        // primarybuttongrid: true,
+        // textboxgrid: true,
         // outlinedbuttongrid: true,
         // textbuttongrid: true,
         // checkBoxGrid: true,
         // linkGrid: true,
-        arrayRepeatercomp: true,
+        // arrayRepeatercomp: true,
+        himanshuDropdown: true,
         // popupGrid: true,
       },
     },
@@ -458,6 +459,32 @@ export const page = {
         // textboxcompcompWithICon: true,
         // textboxcompcompdisabled: true,
         // textboxcompcompWithIConDisabled: true,
+      },
+    },
+    himanshuDropdown: {
+      name: "himanshuDropdown",
+      key: "himanshuDropdown",
+      type: "Dropdown",
+      properties: {
+        dataBinding: {
+          location: {
+            type: "VALUE",
+            value: "Store.dropdownData",
+          },
+        },
+        datatype: {
+          value: "LIST_OF_STRINGS",
+        },
+        selectionType: {
+          value: "OBJECT",
+        },
+        uniqueKeyType: {
+          value: "OBJECT",
+        },
+      },
+      bindingPath: {
+        type: "VALUE",
+        value: "Store.savedDropdowndata",
       },
     },
     textboxcompcomp: {

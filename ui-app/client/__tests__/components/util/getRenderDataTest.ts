@@ -1,6 +1,6 @@
-import { ComponentProperty, DataLocation } from '../../../src/components/types';
 import { getRenderData } from '../../../src/components/util/getRenderData';
 import { PageStoreExtractor } from '../../../src/context/StoreContext';
+import { ComponentProperty } from '../../../src/types/common';
 
 describe('Testing data with different structures for iteration', () => {
 	test('List of Strings', () => {
