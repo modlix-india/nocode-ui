@@ -30,9 +30,13 @@ function Popup(props: ComponentProps) {
 
 	React.useEffect(() => {
 		if (bindingPath)
-			addListener((_, value) => {
-				setIsActive(!!value);
-			}, getPathFromLocation(bindingPath, props.locationHistory));
+			addListener(
+				(_, value) => {
+					setIsActive(!!value);
+				},
+				pageExtractor,
+				getPathFromLocation(bindingPath, props.locationHistory),
+			);
 	}, []);
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	let {
@@ -62,6 +66,11 @@ function Popup(props: ComponentProps) {
 		}
 		refObj.current.first = true;
 	}, [isActive]);
+	const handleCloseOnOutsideClick = () => {
+		if (closeOnOutsideClick) {
+			handleClose();
+		}
+	};
 
 	const handleClose = React.useCallback(() => {
 		setData(
@@ -94,7 +103,7 @@ function Popup(props: ComponentProps) {
 		<Portal>
 			<div className="comp compPopup">
 				<HelperComponent definition={props.definition} />
-				<div className="backdrop" onClick={handleClose}>
+				<div className="backdrop" onClick={handleCloseOnOutsideClick}>
 					<div className="modal" onClick={handleBubbling}>
 						<div
 							className={`${

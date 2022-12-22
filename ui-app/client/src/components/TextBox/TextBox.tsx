@@ -66,7 +66,7 @@ function TextBox(props: ComponentProps) {
 			addListener(
 				(_, value) => {
 					console.log('picard', value);
-					setvalue(value ?? defaultValue);
+					setvalue(value ?? defaultValue ?? '');
 				},
 				pageExtractor,
 				bindingPathPath,
