@@ -204,7 +204,27 @@ export function processStyleValue(
 	return cssStyleProp + ': ' + processFunction(v, theme) + '; ';
 }
 
-// Enhance this function to support various css functions.
+export function processComponentStylePseudoClasses(
+	pseudoStates: { [key: string]: boolean },
+	styleProperties: any | undefined,
+): any {
+	if (!styleProperties) return {};
+
+	let style = { ...styleProperties[''] } ?? {};
+
+	for (let [state, status] of Object.entries(pseudoStates)) {
+		if (!status || !styleProperties[state]) continue;
+
+		for (let [target, styleObj] of Object.entries(styleProperties[state])) {
+			if (style[target]) style[target] = { ...style[target], ...(styleObj as any) };
+			else style[target] = styleObj;
+		}
+	}
+
+	return style;
+}
+
+// Enhance this function to support various css functions and nested expressions too.
 export function processFunction(value: string, theme: Map<string, string>): string {
 	let finValue = '';
 	for (let i = 0; i < value.length; i++) {

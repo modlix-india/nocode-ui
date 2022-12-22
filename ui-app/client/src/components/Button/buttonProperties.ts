@@ -1,24 +1,15 @@
 import { Schema } from '@fincity/kirun-js';
-import {
-	SCHEMA_REF_BOOL_COMP_PROP,
-	SCHEMA_REF_DATA_LOCATION,
-	SCHEMA_REF_STRING_COMP_PROP,
-} from '../../constants';
+import { SCHEMA_REF_STRING_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyEditor,
-	ComponentPropertyGroup,
 	ComponentPropertyDefinition,
+	ComponentStylePropertyGroupDefinition,
+	ComponentStylePropertyDefinition,
 } from '../../types/common';
+import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
-	{
-		name: 'label',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-		displayName: 'Button label',
-		description: `Button's display label.`,
-		translatable: true,
-	},
-
+	COMMON_COMPONENT_PROPERTIES.label,
 	{
 		name: 'type',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
@@ -38,14 +29,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 		],
 	},
-
-	{
-		name: 'onClick',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-		displayName: 'Button event on click',
-		description: `Button's event to trigger on click.`,
-	},
-
+	COMMON_COMPONENT_PROPERTIES.onClick,
 	{
 		name: 'leftIcon',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
@@ -53,7 +37,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: `Button's icon to be displayed on left of label.`,
 		editor: ComponentPropertyEditor.ICON,
 	},
-
 	{
 		name: 'rightIcon',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
@@ -61,24 +44,75 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: `Button's icon to be displayed on right of label.`,
 		editor: ComponentPropertyEditor.ICON,
 	},
-
-	{
-		name: 'readOnly',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
-		displayName: 'Read Only',
-		description: 'Textbox will be rendered un editable when this property is true.',
-		group: ComponentPropertyGroup.COMMON,
-	},
-
-	{
-		name: 'visibility',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
-		displayName: 'Visibility',
-		description: 'This component will be hidden when this property is true.',
-		group: ComponentPropertyGroup.COMMON,
-	},
+	COMMON_COMPONENT_PROPERTIES.readOnly,
+	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
-const stylePropertiesDefinition = {};
+const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
+	'': {
+		[COMPONENT_STYLE_GROUP_PROPERTIES.backdropFilter.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.backdropFilter,
+			target: ['button'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.background.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.background,
+			target: ['button'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.border,
+			target: ['button'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow,
+			target: ['button'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
+			target: ['button'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.container.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.container,
+			target: ['container'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.flex.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.flex,
+			target: ['container'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.font,
+			target: ['button'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: COMPONENT_STYLE_GROUP_PROPERTIES.margin,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.opacity.type]: COMPONENT_STYLE_GROUP_PROPERTIES.opacity,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.outline.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.outline,
+			target: ['button'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.padding,
+			target: ['button'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.position.type]: COMPONENT_STYLE_GROUP_PROPERTIES.position,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.rotate.type]: COMPONENT_STYLE_GROUP_PROPERTIES.rotate,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.size,
+			target: ['button'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.transform.type]:
+			COMPONENT_STYLE_GROUP_PROPERTIES.transform,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.zIndex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.zIndex,
+	},
+
+	icon: {
+		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
+			name: 'iconColor',
+			displayName: 'Icon Color',
+			description: 'Icon Color',
+			prefix: 'icon',
+			target: ['icon'],
+		},
+	},
+};
 
 export { propertiesDefinition, stylePropertiesDefinition };

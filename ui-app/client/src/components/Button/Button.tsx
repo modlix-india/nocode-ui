@@ -13,34 +13,52 @@ import { Component, ComponentPropertyDefinition, ComponentProps } from '../../ty
 import { propertiesDefinition, stylePropertiesDefinition } from './buttonProperties';
 import ButtonStyle from './ButtonStyle';
 import useDefinition from '../util/useDefinition';
+import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 
 function ButtonComponent(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
-
+	const [focus, setFocus] = useState(false);
+	const [hover, setHover] = useState(false);
 	let {
 		key,
 		properties: { label, onClick, type, readOnly, leftIcon, rightIcon } = {},
-		styleProperties,
-	} = useDefinition(props.definition, propertiesDefinition, props.locationHistory, pageExtractor);
-	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
+		stylePropertiesWithPseudoStates,
+	} = useDefinition(
+		props.definition,
+		propertiesDefinition,
+		stylePropertiesDefinition,
+		props.locationHistory,
+		pageExtractor,
+	);
 
+	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
 	const spinnerPath = `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${key}.isRunning`;
+
 	const [isLoading, setIsLoading] = useState(
 		getDataFromPath(spinnerPath, props.locationHistory) || false,
 	);
 
 	useEffect(() => addListener((_, value) => setIsLoading(value), pageExtractor, spinnerPath), []);
 
+	const styleProperties = processComponentStylePseudoClasses(
+		{ focus, hover, disabled: isLoading || readOnly },
+		stylePropertiesWithPseudoStates,
+	);
+
 	const handleClick = async () =>
 		clickEvent && !isLoading && (await runEvent(clickEvent, onClick, props.context.pageName));
 
 	const rightIconTag =
 		!type?.startsWith('fabButton') && !leftIcon ? (
-			<i className={`rightButtonIcon ${rightIcon ?? 'fa fa-circle-notch hide'}`} />
+			<i
+				style={styleProperties.icon ?? {}}
+				className={`rightButtonIcon ${rightIcon ?? 'fa fa-circle-notch hide'}`}
+			/>
 		) : undefined;
 
 	const leftIconTag = (
 		<i
+			style={styleProperties.icon ?? {}}
 			className={`leftButtonIcon ${
 				leftIcon
 					? !isLoading
@@ -50,16 +68,24 @@ function ButtonComponent(props: ComponentProps) {
 			}`}
 		/>
 	);
-
 	return (
-		<div className="comp compButton">
+		<div className="comp compButton" style={styleProperties.comp ?? {}}>
 			<HelperComponent definition={props.definition} />
 			<button
 				className={`button ${type}`}
 				disabled={isLoading || readOnly}
 				onClick={handleClick}
+				style={styleProperties.button ?? {}}
+				onMouseEnter={
+					stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
+				}
+				onMouseLeave={
+					stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
+				}
+				onFocus={stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined}
+				onBlur={stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined}
 			>
-				<div className="buttonInternalContainer">
+				<div className="buttonInternalContainer" style={styleProperties.container ?? {}}>
 					{leftIconTag}
 					{!type?.startsWith('fabButton') &&
 						getTranslations(label, props.pageDefinition.translations)}
@@ -78,6 +104,8 @@ const component: Component = {
 	styleComponent: ButtonStyle,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
+	styleProperties: stylePropertiesDefinition,
+	stylePseudoStates: ['focus', 'hover', 'disabled'],
 };
 
 export default component;

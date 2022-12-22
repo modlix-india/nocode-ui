@@ -689,12 +689,39 @@ export const page = {
         },
       },
       styleProperties: {
-        ALL: {
-          backgroundColor: { value: "#631222" },
-          margin: { value: "5px" },
-          color: { value: "#226318" },
-          "backgroundColor:hover": { value: "#444444" },
-          iconColor: { value: "#994433" },
+        "d9652d73-2292-4d8f-9112-7ac448eb6951": {
+          resolutions: {
+            ALL: {
+              backgroundColor: { value: "#631222" },
+              marginTop: { value: "5px" },
+              marginBottom: { value: "6px" },
+              marginLeft: { value: "7px" },
+              marginRight: { value: "8px" },
+              color: { value: "#226318" },
+              "icon-color": { value: "#994433" },
+            },
+          },
+        },
+        "1eebf96e-b7a5-4f41-a830-e944071f1ca5": {
+          condition: {
+            location: {
+              type: "EXPRESSION",
+              expression: "Store.x.a = 20",
+            },
+          },
+          resolutions: {
+            TABLET_LANDSCAPE_SCREEN_ONLY: {
+              backgroundColor: { value: "#222136" },
+            },
+          },
+        },
+        "5c7560cd-99ff-4813-b2d1-f821f5dba02b": {
+          pseudoState: "hover",
+          resolutions: {
+            MOBILE_LANDSCAPE_SCREEN_ONLY: {
+              color: { value: "#8790aa" },
+            },
+          },
         },
       },
       displayOrder: 3,

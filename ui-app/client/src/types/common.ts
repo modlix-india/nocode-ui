@@ -41,9 +41,8 @@ export enum ComponentPropertyEditor {
 	VALIDATION,
 	ENUM,
 	PAGE_SELECTOR,
-	STYLE_SELECTOR,
-	THEME_SELECTOR,
 	COMPONENT_SELECTOR,
+	EVENT_SELECTOR,
 }
 
 export enum ComponentPropertyGroup {
@@ -70,6 +69,21 @@ export interface ComponentPropertyDefinition {
 	enumValues?: Array<ComponentENUM>;
 	notImplemented?: boolean;
 	defaultValue?: any;
+	displayOrder?: number;
+}
+
+export interface ComponentStylePropertyGroupDefinition {
+	name: string;
+	type: string;
+	displayName: string;
+	description: string;
+	target: Array<string>;
+	prefix?: string;
+	displayOrder?: number;
+}
+
+export interface ComponentStylePropertyDefinition {
+	[key: string]: { [key: string]: ComponentStylePropertyGroupDefinition };
 }
 
 export interface Component {
@@ -80,6 +94,8 @@ export interface Component {
 	styleComponent?: React.ElementType;
 	propertyValidation: (props: any) => Array<string>;
 	properties: Array<ComponentPropertyDefinition>;
+	styleProperties?: ComponentStylePropertyDefinition;
+	stylePseudoStates?: Array<String>;
 }
 
 export enum StyleResolution {
@@ -126,22 +142,25 @@ export interface EachComponentResolutionStyle {
 	[key: string]: ComponentProperty<string>;
 }
 
+export interface ComponentResoltuions {
+	[StyleResolution.ALL]?: EachComponentResolutionStyle;
+	[StyleResolution.WIDE_SCREEN]?: EachComponentResolutionStyle;
+	[StyleResolution.DESKTOP_SCREEN]?: EachComponentResolutionStyle;
+	[StyleResolution.TABLET_LANDSCAPE_SCREEN]?: EachComponentResolutionStyle;
+	[StyleResolution.TABLET_POTRAIT_SCREEN]?: EachComponentResolutionStyle;
+	[StyleResolution.MOBILE_LANDSCAPE_SCREEN]?: EachComponentResolutionStyle;
+	[StyleResolution.MOBILE_POTRAIT_SCREEN]?: EachComponentResolutionStyle;
+	[StyleResolution.DESKTOP_SCREEN_ONLY]?: EachComponentResolutionStyle;
+	[StyleResolution.TABLET_LANDSCAPE_SCREEN_ONLY]?: EachComponentResolutionStyle;
+	[StyleResolution.TABLET_POTRAIT_SCREEN_ONLY]?: EachComponentResolutionStyle;
+	[StyleResolution.MOBILE_LANDSCAPE_SCREEN_ONLY]?: EachComponentResolutionStyle;
+	[StyleResolution.MOBILE_POTRAIT_SCREEN_ONLY]?: EachComponentResolutionStyle;
+}
+
 export interface EachComponentStyle {
 	condition?: ComponentProperty<boolean>;
-	resolutions?: {
-		[StyleResolution.ALL]?: EachComponentResolutionStyle;
-		[StyleResolution.WIDE_SCREEN]?: EachComponentResolutionStyle;
-		[StyleResolution.DESKTOP_SCREEN]?: EachComponentResolutionStyle;
-		[StyleResolution.TABLET_LANDSCAPE_SCREEN]?: EachComponentResolutionStyle;
-		[StyleResolution.TABLET_POTRAIT_SCREEN]?: EachComponentResolutionStyle;
-		[StyleResolution.MOBILE_LANDSCAPE_SCREEN]?: EachComponentResolutionStyle;
-		[StyleResolution.MOBILE_POTRAIT_SCREEN]?: EachComponentResolutionStyle;
-		[StyleResolution.DESKTOP_SCREEN_ONLY]?: EachComponentResolutionStyle;
-		[StyleResolution.TABLET_LANDSCAPE_SCREEN_ONLY]?: EachComponentResolutionStyle;
-		[StyleResolution.TABLET_POTRAIT_SCREEN_ONLY]?: EachComponentResolutionStyle;
-		[StyleResolution.MOBILE_LANDSCAPE_SCREEN_ONLY]?: EachComponentResolutionStyle;
-		[StyleResolution.MOBILE_POTRAIT_SCREEN_ONLY]?: EachComponentResolutionStyle;
-	};
+	pseudoState?: string;
+	resolutions?: ComponentResoltuions;
 }
 
 export interface ComponentStyle {
@@ -164,7 +183,7 @@ export interface ComponentDefinition {
 export interface ComponentDefinitionValues {
 	key: string;
 	properties?: any;
-	styleProperties?: any;
+	stylePropertiesWithPseudoStates?: any;
 }
 
 export interface PageDefinition {
