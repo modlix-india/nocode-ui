@@ -4,23 +4,11 @@ import { ComponentProperty } from '../../../src/types/common';
 
 describe('Testing data with different structures for iteration', () => {
 	test('List of Strings', () => {
-		const testList: ComponentProperty<any> = {
-			value: ['Raja', 'Avinash', 'Alli', 'Akhilesh', 'Surendhar', 'Kiran'],
-		};
+		const data = ['Raja', 'Avinash', 'Alli', 'Akhilesh', 'Surendhar', 'Kiran'];
 		const dataType = 'LIST_OF_STRINGS';
 		const uniqueKeyType = 'OBJECT';
 		const selectionType = 'OBJECT';
-		expect(
-			getRenderData(
-				testList,
-				dataType,
-				[],
-				PageStoreExtractor.getForContext('global'),
-				uniqueKeyType,
-				'',
-				selectionType,
-			),
-		).toStrictEqual([
+		expect(getRenderData(data, dataType, uniqueKeyType, '', selectionType)).toStrictEqual([
 			{ key: 'Raja', label: 'Raja', value: 'Raja' },
 			{ key: 'Avinash', label: 'Avinash', value: 'Avinash' },
 			{ key: 'Alli', label: 'Alli', value: 'Alli' },
@@ -31,23 +19,11 @@ describe('Testing data with different structures for iteration', () => {
 	});
 
 	test('List of Strings with selection as index', () => {
-		const testList = {
-			value: ['Raja', 'Avinash', 'Alli', 'Akhilesh', 'Surendhar', 'Kiran'],
-		};
+		const testList = ['Raja', 'Avinash', 'Alli', 'Akhilesh', 'Surendhar', 'Kiran'];
 		const dataType = 'LIST_OF_STRINGS';
 		const uniqueKeyType = 'OBJECT';
 		const selectionType = 'INDEX';
-		expect(
-			getRenderData(
-				testList,
-				dataType,
-				[],
-				PageStoreExtractor.getForContext('global'),
-				uniqueKeyType,
-				'',
-				selectionType,
-			),
-		).toStrictEqual([
+		expect(getRenderData(testList, dataType, uniqueKeyType, '', selectionType)).toStrictEqual([
 			{ key: 'Raja', label: 'Raja', value: 0 },
 			{ key: 'Avinash', label: 'Avinash', value: 1 },
 			{ key: 'Alli', label: 'Alli', value: 2 },
@@ -58,23 +34,11 @@ describe('Testing data with different structures for iteration', () => {
 	});
 
 	test('List of Strings with uniquekey as index', () => {
-		const testList = {
-			value: ['Raja', 'Avinash', 'Alli', 'Akhilesh', 'Surendhar', 'Kiran'],
-		};
+		const testList = ['Raja', 'Avinash', 'Alli', 'Akhilesh', 'Surendhar', 'Kiran'];
 		const dataType = 'LIST_OF_STRINGS';
 		const uniqueKeyType = 'INDEX';
 		const selectionType = 'INDEX';
-		expect(
-			getRenderData(
-				testList,
-				dataType,
-				[],
-				PageStoreExtractor.getForContext('global'),
-				uniqueKeyType,
-				'',
-				selectionType,
-			),
-		).toStrictEqual([
+		expect(getRenderData(testList, dataType, uniqueKeyType, '', selectionType)).toStrictEqual([
 			{ key: 0, label: 'Raja', value: 0 },
 			{ key: 1, label: 'Avinash', value: 1 },
 			{ key: 2, label: 'Alli', value: 2 },
@@ -85,16 +49,14 @@ describe('Testing data with different structures for iteration', () => {
 	});
 
 	test('List of Objects', () => {
-		const testList = {
-			value: [
-				{ name: 'Raja', id: 1, department: 'IT' },
-				{ name: 'Avinash', id: 2, department: 'CS' },
-				{ name: 'Alli', id: 3, department: 'EE' },
-				{ name: 'Akhilesh', id: 4, department: 'EC' },
-				{ name: 'Surendhar', id: 5, department: 'IT' },
-				{ name: 'Kiran', id: 6, department: 'IT' },
-			],
-		};
+		const testList = [
+			{ name: 'Raja', id: 1, department: 'IT' },
+			{ name: 'Avinash', id: 2, department: 'CS' },
+			{ name: 'Alli', id: 3, department: 'EE' },
+			{ name: 'Akhilesh', id: 4, department: 'EC' },
+			{ name: 'Surendhar', id: 5, department: 'IT' },
+			{ name: 'Kiran', id: 6, department: 'IT' },
+		];
 		const dataType = 'LIST_OF_OBJECTS';
 		const uniqueKeyType = 'KEY';
 		const uniqueKey = 'id';
@@ -105,8 +67,6 @@ describe('Testing data with different structures for iteration', () => {
 			getRenderData(
 				testList,
 				dataType,
-				[],
-				PageStoreExtractor.getForContext('global'),
 				uniqueKeyType,
 				uniqueKey,
 				selectionType,
@@ -125,16 +85,14 @@ describe('Testing data with different structures for iteration', () => {
 	});
 
 	test('List of Objects with selection type as object', () => {
-		const testList = {
-			value: [
-				{ name: 'Raja', id: 1, department: 'IT' },
-				{ name: 'Avinash', id: 2, department: 'CS' },
-				{ name: 'Alli', id: 3, department: 'EE' },
-				{ name: 'Akhilesh', id: 4, department: 'EC' },
-				{ name: 'Surendhar', id: 5, department: 'IT' },
-				{ name: 'Kiran', id: 6, department: 'IT' },
-			],
-		};
+		const testList = [
+			{ name: 'Raja', id: 1, department: 'IT' },
+			{ name: 'Avinash', id: 2, department: 'CS' },
+			{ name: 'Alli', id: 3, department: 'EE' },
+			{ name: 'Akhilesh', id: 4, department: 'EC' },
+			{ name: 'Surendhar', id: 5, department: 'IT' },
+			{ name: 'Kiran', id: 6, department: 'IT' },
+		];
 		const dataType = 'LIST_OF_OBJECTS';
 		const uniqueKeyType = 'KEY';
 		const uniqueKey = 'id';
@@ -145,8 +103,6 @@ describe('Testing data with different structures for iteration', () => {
 			getRenderData(
 				testList,
 				dataType,
-				[],
-				PageStoreExtractor.getForContext('global'),
 				uniqueKeyType,
 				uniqueKey,
 				selectionType,
@@ -189,46 +145,44 @@ describe('Testing data with different structures for iteration', () => {
 	});
 
 	test('List of Objects with selection key as path', () => {
-		const testList = {
-			value: [
-				{
-					name: 'Raja',
-					id: 1,
-					department: 'IT',
-					links: { a: { b: 'c' } },
-				},
-				{
-					name: 'Avinash',
-					id: 2,
-					department: 'CS',
-					links: { a: { b: 'c' } },
-				},
-				{
-					name: 'Alli',
-					id: 3,
-					department: 'EE',
-					links: { a: { b: 'c' } },
-				},
-				{
-					name: 'Akhilesh',
-					id: 4,
-					department: 'EC',
-					links: { a: { b: 'c' } },
-				},
-				{
-					name: 'Surendhar',
-					id: 5,
-					department: 'IT',
-					links: { a: { b: 'c' } },
-				},
-				{
-					name: 'Kiran',
-					id: 6,
-					department: 'IT',
-					links: { a: { b: 'c' } },
-				},
-			],
-		};
+		const testList = [
+			{
+				name: 'Raja',
+				id: 1,
+				department: 'IT',
+				links: { a: { b: 'c' } },
+			},
+			{
+				name: 'Avinash',
+				id: 2,
+				department: 'CS',
+				links: { a: { b: 'c' } },
+			},
+			{
+				name: 'Alli',
+				id: 3,
+				department: 'EE',
+				links: { a: { b: 'c' } },
+			},
+			{
+				name: 'Akhilesh',
+				id: 4,
+				department: 'EC',
+				links: { a: { b: 'c' } },
+			},
+			{
+				name: 'Surendhar',
+				id: 5,
+				department: 'IT',
+				links: { a: { b: 'c' } },
+			},
+			{
+				name: 'Kiran',
+				id: 6,
+				department: 'IT',
+				links: { a: { b: 'c' } },
+			},
+		];
 		const dataType = 'LIST_OF_OBJECTS';
 		const uniqueKeyType = 'KEY';
 		const uniqueKey = 'id';
@@ -239,8 +193,6 @@ describe('Testing data with different structures for iteration', () => {
 			getRenderData(
 				testList,
 				dataType,
-				[],
-				PageStoreExtractor.getForContext('global'),
 				uniqueKeyType,
 				uniqueKey,
 				selectionType,
@@ -259,46 +211,44 @@ describe('Testing data with different structures for iteration', () => {
 	});
 
 	test('List of Objects with uniquekey as path', () => {
-		const testList = {
-			value: [
-				{
-					name: 'Raja',
-					id: 1,
-					department: 'IT',
-					links: { a: { b: 'c' } },
-				},
-				{
-					name: 'Avinash',
-					id: 2,
-					department: 'CS',
-					links: { a: { b: 'c' } },
-				},
-				{
-					name: 'Alli',
-					id: 3,
-					department: 'EE',
-					links: { a: { b: 'c' } },
-				},
-				{
-					name: 'Akhilesh',
-					id: 4,
-					department: 'EC',
-					links: { a: { b: 'c' } },
-				},
-				{
-					name: 'Surendhar',
-					id: 5,
-					department: 'IT',
-					links: { a: { b: 'c' } },
-				},
-				{
-					name: 'Kiran',
-					id: 6,
-					department: 'IT',
-					links: { a: { b: 'c' } },
-				},
-			],
-		};
+		const testList = [
+			{
+				name: 'Raja',
+				id: 1,
+				department: 'IT',
+				links: { a: { b: 'c' } },
+			},
+			{
+				name: 'Avinash',
+				id: 2,
+				department: 'CS',
+				links: { a: { b: 'c' } },
+			},
+			{
+				name: 'Alli',
+				id: 3,
+				department: 'EE',
+				links: { a: { b: 'c' } },
+			},
+			{
+				name: 'Akhilesh',
+				id: 4,
+				department: 'EC',
+				links: { a: { b: 'c' } },
+			},
+			{
+				name: 'Surendhar',
+				id: 5,
+				department: 'IT',
+				links: { a: { b: 'c' } },
+			},
+			{
+				name: 'Kiran',
+				id: 6,
+				department: 'IT',
+				links: { a: { b: 'c' } },
+			},
+		];
 		const dataType = 'LIST_OF_OBJECTS';
 		const uniqueKeyType = 'KEY';
 		const uniqueKey = 'links.a.b';
@@ -309,8 +259,6 @@ describe('Testing data with different structures for iteration', () => {
 			getRenderData(
 				testList,
 				dataType,
-				[],
-				PageStoreExtractor.getForContext('global'),
 				uniqueKeyType,
 				uniqueKey,
 				selectionType,
@@ -329,58 +277,56 @@ describe('Testing data with different structures for iteration', () => {
 	});
 
 	test('List of Lists with uniquekey and selection as keys', () => {
-		const testList = {
-			value: [
-				[
-					{
-						name: 'Raja',
-						id: 1,
-						department: 'IT',
-						links: { a: { b: 'c' } },
-					},
-				],
-				[
-					{
-						name: 'Avinash',
-						id: 2,
-						department: 'CS',
-						links: { a: { b: 'c' } },
-					},
-				],
-				[
-					{
-						name: 'Alli',
-						id: 3,
-						department: 'EE',
-						links: { a: { b: 'c' } },
-					},
-				],
-				[
-					{
-						name: 'Akhilesh',
-						id: 4,
-						department: 'EC',
-						links: { a: { b: 'c' } },
-					},
-				],
-				[
-					{
-						name: 'Surendhar',
-						id: 5,
-						department: 'IT',
-						links: { a: { b: 'c' } },
-					},
-				],
-				[
-					{
-						name: 'Kiran',
-						id: 6,
-						department: 'IT',
-						links: { a: { b: 'c' } },
-					},
-				],
+		const testList = [
+			[
+				{
+					name: 'Raja',
+					id: 1,
+					department: 'IT',
+					links: { a: { b: 'c' } },
+				},
 			],
-		};
+			[
+				{
+					name: 'Avinash',
+					id: 2,
+					department: 'CS',
+					links: { a: { b: 'c' } },
+				},
+			],
+			[
+				{
+					name: 'Alli',
+					id: 3,
+					department: 'EE',
+					links: { a: { b: 'c' } },
+				},
+			],
+			[
+				{
+					name: 'Akhilesh',
+					id: 4,
+					department: 'EC',
+					links: { a: { b: 'c' } },
+				},
+			],
+			[
+				{
+					name: 'Surendhar',
+					id: 5,
+					department: 'IT',
+					links: { a: { b: 'c' } },
+				},
+			],
+			[
+				{
+					name: 'Kiran',
+					id: 6,
+					department: 'IT',
+					links: { a: { b: 'c' } },
+				},
+			],
+		];
 		const dataType = 'LIST_OF_LISTS';
 		const uniqueKeyType = 'KEY';
 		const uniqueKey = '0.id';
@@ -391,8 +337,6 @@ describe('Testing data with different structures for iteration', () => {
 			getRenderData(
 				testList,
 				dataType,
-				[],
-				PageStoreExtractor.getForContext('global'),
 				uniqueKeyType,
 				uniqueKey,
 				selectionType,
@@ -412,12 +356,10 @@ describe('Testing data with different structures for iteration', () => {
 
 	test('Object with primitives with object selection', () => {
 		const testList = {
-			value: {
-				a: 'b',
-				c: true,
-				e: 'f',
-				g: 'h',
-			},
+			a: 'b',
+			c: true,
+			e: 'f',
+			g: 'h',
 		};
 		const dataType = 'OBJECT_OF_PRIMITIVES';
 		const uniqueKeyType = 'OBJECT';
@@ -425,17 +367,7 @@ describe('Testing data with different structures for iteration', () => {
 		const labelKeyType = 'OBJECT';
 
 		expect(
-			getRenderData(
-				testList,
-				dataType,
-				[],
-				PageStoreExtractor.getForContext('global'),
-				uniqueKeyType,
-				'',
-				selectionType,
-				'',
-				labelKeyType,
-			),
+			getRenderData(testList, dataType, uniqueKeyType, '', selectionType, '', labelKeyType),
 		).toStrictEqual([
 			{ key: 'b', label: 'b', value: 'b' },
 			{ key: true, label: true, value: true },
@@ -446,12 +378,10 @@ describe('Testing data with different structures for iteration', () => {
 
 	test('Object with primitives with index selection', () => {
 		const testList = {
-			value: {
-				a: 'b',
-				c: true,
-				e: 'f',
-				g: 'h',
-			},
+			a: 'b',
+			c: true,
+			e: 'f',
+			g: 'h',
 		};
 		const dataType = 'OBJECT_OF_PRIMITIVES';
 		const uniqueKeyType = 'INDEX';
@@ -459,17 +389,7 @@ describe('Testing data with different structures for iteration', () => {
 		const labelKeyType = 'INDEX';
 
 		expect(
-			getRenderData(
-				testList,
-				dataType,
-				[],
-				PageStoreExtractor.getForContext('global'),
-				uniqueKeyType,
-				'',
-				selectionType,
-				'',
-				labelKeyType,
-			),
+			getRenderData(testList, dataType, uniqueKeyType, '', selectionType, '', labelKeyType),
 		).toStrictEqual([
 			{ key: 0, label: 0, value: 0 },
 			{ key: 1, label: 1, value: 1 },
@@ -480,12 +400,10 @@ describe('Testing data with different structures for iteration', () => {
 
 	test('Object of Objects with index selection', () => {
 		const testList = {
-			value: {
-				a: { a: 'b' },
-				c: { c: true },
-				e: { e: 'f' },
-				g: { g: 'h' },
-			},
+			a: { a: 'b' },
+			c: { c: true },
+			e: { e: 'f' },
+			g: { g: 'h' },
 		};
 		const dataType = 'OBJECT_OF_OBJECTS';
 		const uniqueKeyType = 'INDEX';
@@ -493,17 +411,7 @@ describe('Testing data with different structures for iteration', () => {
 		const labelKeyType = 'INDEX';
 
 		expect(
-			getRenderData(
-				testList,
-				dataType,
-				[],
-				PageStoreExtractor.getForContext('global'),
-				uniqueKeyType,
-				'',
-				selectionType,
-				'',
-				labelKeyType,
-			),
+			getRenderData(testList, dataType, uniqueKeyType, '', selectionType, '', labelKeyType),
 		).toStrictEqual([
 			{ key: 'a', label: 'a', value: 'a' },
 			{ key: 'c', label: 'c', value: 'c' },
@@ -514,12 +422,10 @@ describe('Testing data with different structures for iteration', () => {
 
 	test('Object of Objects with key selection', () => {
 		const testList = {
-			value: {
-				a: { test: { test: 'b' } },
-				c: { test: { test: true } },
-				e: { test: { test: 'f' } },
-				g: { test: { test: 'h' } },
-			},
+			a: { test: { test: 'b' } },
+			c: { test: { test: true } },
+			e: { test: { test: 'f' } },
+			g: { test: { test: 'h' } },
 		};
 		const dataType = 'OBJECT_OF_OBJECTS';
 		const uniqueKeyType = 'KEY';
@@ -531,8 +437,6 @@ describe('Testing data with different structures for iteration', () => {
 			getRenderData(
 				testList,
 				dataType,
-				[],
-				PageStoreExtractor.getForContext('global'),
 				uniqueKeyType,
 				uniqueKey,
 				selectionType,
@@ -549,12 +453,10 @@ describe('Testing data with different structures for iteration', () => {
 
 	test('Object of Objects with Object selection', () => {
 		const testList = {
-			value: {
-				a: { test: { test: 'b' } },
-				c: { test: { test: true } },
-				e: { test: { test: 'f' } },
-				g: { test: { test: 'h' } },
-			},
+			a: { test: { test: 'b' } },
+			c: { test: { test: true } },
+			e: { test: { test: 'f' } },
+			g: { test: { test: 'h' } },
 		};
 		const dataType = 'OBJECT_OF_OBJECTS';
 		const uniqueKeyType = 'KEY';
@@ -566,8 +468,6 @@ describe('Testing data with different structures for iteration', () => {
 			getRenderData(
 				testList,
 				dataType,
-				[],
-				PageStoreExtractor.getForContext('global'),
 				uniqueKeyType,
 				uniqueKey,
 				selectionType,
@@ -584,12 +484,10 @@ describe('Testing data with different structures for iteration', () => {
 
 	test('Object of Lists with index selection', () => {
 		const testList = {
-			value: {
-				a: [{ a: 'b' }, 'hello'],
-				c: [{ a: 'c' }, 'world'],
-				e: [{ a: 'd' }, 'earth'],
-				g: [{ a: 'e' }, 'mars'],
-			},
+			a: [{ a: 'b' }, 'hello'],
+			c: [{ a: 'c' }, 'world'],
+			e: [{ a: 'd' }, 'earth'],
+			g: [{ a: 'e' }, 'mars'],
 		};
 		const dataType = 'OBJECT_OF_LISTS';
 		const uniqueKeyType = 'INDEX';
@@ -597,17 +495,7 @@ describe('Testing data with different structures for iteration', () => {
 		const labelKeyType = 'INDEX';
 
 		expect(
-			getRenderData(
-				testList,
-				dataType,
-				[],
-				PageStoreExtractor.getForContext('global'),
-				uniqueKeyType,
-				'',
-				selectionType,
-				'',
-				labelKeyType,
-			),
+			getRenderData(testList, dataType, uniqueKeyType, '', selectionType, '', labelKeyType),
 		).toStrictEqual([
 			{ key: 'a', label: 'a', value: [{ a: 'b' }, 'hello'] },
 			{ key: 'c', label: 'c', value: [{ a: 'c' }, 'world'] },
@@ -618,12 +506,10 @@ describe('Testing data with different structures for iteration', () => {
 
 	test('Object of Lists with key selection', () => {
 		const testList = {
-			value: {
-				a: [{ a: 'b' }, 'hello'],
-				c: [{ a: 'c' }, 'world'],
-				e: [{ a: 'd' }, 'earth'],
-				g: [{ a: 'e' }, 'mars'],
-			},
+			a: [{ a: 'b' }, 'hello'],
+			c: [{ a: 'c' }, 'world'],
+			e: [{ a: 'd' }, 'earth'],
+			g: [{ a: 'e' }, 'mars'],
 		};
 		const dataType = 'OBJECT_OF_LISTS';
 		const uniqueKeyType = 'KEY';
@@ -636,8 +522,6 @@ describe('Testing data with different structures for iteration', () => {
 			getRenderData(
 				testList,
 				dataType,
-				[],
-				PageStoreExtractor.getForContext('global'),
 				uniqueKeyType,
 				uniqueKey,
 				selectionType,
@@ -654,12 +538,10 @@ describe('Testing data with different structures for iteration', () => {
 
 	test('Object of Lists with Object selection', () => {
 		const testList = {
-			value: {
-				a: [{ a: 'b' }, 'hello'],
-				c: [{ a: 'c' }, 'world'],
-				e: [{ a: 'd' }, 'earth'],
-				g: [{ a: 'e' }, 'mars'],
-			},
+			a: [{ a: 'b' }, 'hello'],
+			c: [{ a: 'c' }, 'world'],
+			e: [{ a: 'd' }, 'earth'],
+			g: [{ a: 'e' }, 'mars'],
 		};
 		const dataType = 'OBJECT_OF_LISTS';
 		const uniqueKeyType = 'KEY';
@@ -671,8 +553,6 @@ describe('Testing data with different structures for iteration', () => {
 			getRenderData(
 				testList,
 				dataType,
-				[],
-				PageStoreExtractor.getForContext('global'),
 				uniqueKeyType,
 				uniqueKey,
 				selectionType,
