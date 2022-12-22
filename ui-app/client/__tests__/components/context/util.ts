@@ -24,16 +24,16 @@ test('Testing path extractions', () => {
 	]);
 
 	let paths = getPathsFrom('Store.this ?? Store.that', ev);
-	expect(paths).toStrictEqual(['Store.that', 'Store.this']);
+	expect(paths).toStrictEqual(new Set(['Store.that', 'Store.this']));
 
 	paths = getPathsFrom(
 		'Context.a[Steps.loop.iteration.index][Steps.loop.iteration.index + 1]',
 		ev,
 	);
-	expect(paths).toStrictEqual(['Steps.loop.iteration.index', 'Context.a[3][4]']);
+	expect(paths).toStrictEqual(new Set(['Steps.loop.iteration.index', 'Context.a[3][4]']));
 
 	paths = getPathsFrom('Context.e = null ? Context.c.a : 3 ', ev);
-	expect(paths).toStrictEqual(['Context.e', 'Context.c.a']);
+	expect(paths).toStrictEqual(new Set(['Context.e', 'Context.c.a']));
 
 	paths = getPathsFrom('Context.{{Context.d}}.a + {{Context.{{Context.d}}.c.x}}', ev);
 	console.log(paths);

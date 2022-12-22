@@ -94,7 +94,10 @@ export function getPathsFromComponentDefinition(
 					hasOtherResolutions =
 						hasOtherResolutions || resEntry[0] !== StyleResolution.ALL;
 					for (const prop of Object.values(resEntry[1])) {
-						const set = getPathsFrom(prop, evaluatorMaps).values();
+						const set = getPathsFrom(
+							prop as ComponentProperty<any>,
+							evaluatorMaps,
+						).values();
 						let path: IteratorResult<string, any>;
 						while ((path = set.next()) !== undefined && !path.done)
 							paths.add(path.value);
