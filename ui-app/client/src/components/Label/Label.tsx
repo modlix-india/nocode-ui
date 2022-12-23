@@ -36,7 +36,6 @@ function Label(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	const labelText = getData(text, locationHistory, pageExtractor);
 	return (
 		<div className="comp compLabel">
 			<HelperComponent definition={definition} />
