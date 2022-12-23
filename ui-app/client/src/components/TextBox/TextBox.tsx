@@ -18,7 +18,7 @@ import {
 import { getTranslations } from '../util/getTranslations';
 import { Validation } from '../../types/validation';
 import { Component } from '../../types/common';
-import { propertiesDefinition } from './textBoxProperties';
+import { propertiesDefinition, stylePropertiesDefinition } from './textBoxProperties';
 import TextBoxStyle from './TextBoxStyle';
 import useDefinition from '../util/useDefinition';
 
@@ -53,9 +53,15 @@ function TextBox(props: ComponentProps) {
 			leftIcon,
 			label,
 		} = {},
-		styleProperties,
+		stylePropertiesWithPseudoStates,
 		key,
-	} = useDefinition(definition, propertiesDefinition, locationHistory, pageExtractor);
+	} = useDefinition(
+		definition,
+		propertiesDefinition,
+		stylePropertiesDefinition,
+		locationHistory,
+		pageExtractor,
+	);
 	if (!bindingPath) throw new Error('Definition requires bindingpath');
 	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
 	console.log('BP ', bindingPathPath);
@@ -88,7 +94,6 @@ function TextBox(props: ComponentProps) {
 	const handleClickClose = () => {
 		setvalue('');
 	};
-	console.log(label, 'label');
 	return (
 		<div className="comp compTextBox">
 			<HelperComponent definition={definition} />
