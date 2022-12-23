@@ -173,27 +173,27 @@ export const page = {
         },
       },
       steps: {
-        // toggleModal: {
-        //   statementName: "toggleModalData",
-        //   namespace: "UIEngine",
-        //   name: "SetStore",
-        //   parameterMap: {
-        //     path: {
-        //       settoggleModalData: {
-        //         key: "settoggleModalData",
-        //         type: "VALUE",
-        //         value: "Store.testModal",
-        //       },
-        //     },
-        //     value: {
-        //       settoggleModalDataValue: {
-        //         key: "settoggleModalData",
-        //         type: "EXPRESSION",
-        //         expression: "Store.testModal ? false : true",
-        //       },
-        //     },
-        //   },
-        // },
+        toggleModal: {
+          statementName: "toggleModalData",
+          namespace: "UIEngine",
+          name: "SetStore",
+          parameterMap: {
+            path: {
+              settoggleModalData: {
+                key: "settoggleModalData",
+                type: "VALUE",
+                value: "Store.testModal",
+              },
+            },
+            value: {
+              settoggleModalDataValue: {
+                key: "settoggleModalData",
+                type: "EXPRESSION",
+                expression: "Store.testModal ? false : true",
+              },
+            },
+          },
+        },
         setRepeaterTestingData: {
           statementName: "setRepeaterTestingData",
           namespace: "UIEngine",
@@ -347,7 +347,7 @@ export const page = {
       children: {
         // textboxgrid: true,
         // loginlabel: true,
-        // primarybuttongrid: true,
+        primarybuttongrid: true,
         // textboxgrid: true,
         // outlinedbuttongrid: true,
         // textbuttongrid: true,
@@ -355,7 +355,7 @@ export const page = {
         // linkGrid: true,
         // arrayRepeatercomp: true,
         himanshuDropdown: true,
-        // popupGrid: true,
+        popupGrid: true,
       },
     },
     popupGrid: {
@@ -370,7 +370,14 @@ export const page = {
       name: "popupcomp",
       key: "popupcomp",
       type: "Popup",
-      properties: {},
+      properties: {
+        closeButtonPosition: {
+          value: "RIGHT",
+        },
+        modelTitle: {
+          value: "Tesla",
+        },
+      },
       bindingPath: {
         type: "VALUE",
         value: "Store.testModal",

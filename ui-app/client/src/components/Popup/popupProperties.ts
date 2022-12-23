@@ -55,6 +55,12 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'event to be run on Modal close',
 		description: `Event that is triggered when Modal is closed.`,
 	},
+	{
+		name: 'modelTitle',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'Title of the modal',
+		description: 'Title of the modal',
+	},
 ];
 
 const stylePropertiesDefinition = {};

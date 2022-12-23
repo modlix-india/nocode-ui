@@ -48,10 +48,17 @@ function Popup(props: ComponentProps) {
 			eventOnOpen,
 			eventOnClose,
 			closeButtonPosition,
+			modelTitle,
 		} = {},
 
-		styleProperties,
-	} = useDefinition(props.definition, propertiesDefinition, props.locationHistory, pageExtractor);
+		stylePropertiesWithPseudoStates,
+	} = useDefinition(
+		props.definition,
+		propertiesDefinition,
+		stylePropertiesDefinition,
+		props.locationHistory,
+		pageExtractor,
+	);
 	const openEvent = eventOnOpen ? props.pageDefinition.eventFunctions[eventOnOpen] : undefined;
 	const closeEvent = eventOnClose ? props.pageDefinition.eventFunctions[eventOnClose] : undefined;
 
@@ -96,6 +103,7 @@ function Popup(props: ComponentProps) {
 			document.body.removeEventListener('keyup', escapeHandler);
 		};
 	}, [isActive, handleClose]);
+	const closeIcon = <i className="fa-solid fa-xmark iconClass" onClick={handleClose}></i>;
 
 	if (!isActive) return null;
 
@@ -105,17 +113,16 @@ function Popup(props: ComponentProps) {
 				<HelperComponent definition={props.definition} />
 				<div className="backdrop" onClick={handleCloseOnOutsideClick}>
 					<div className="modal" onClick={handleBubbling}>
-						<div
-							className={`${
-								closeButtonPosition === 'RIGHT'
-									? 'closeButtonPositionRight'
-									: 'closeButtonPositionLeft'
-							}`}
-						>
-							{showClose && (
-								<i className="fa-solid fa-xmark" onClick={handleClose}></i>
-							)}
+						<div className="TitleIconGrid">
+							<div className="closeButtonPosition">
+								{showClose && closeButtonPosition === 'LEFT' ? closeIcon : ''}
+							</div>
+							<div className="modelTitleStyle">{modelTitle && modelTitle}</div>
+							<div className="closeButtonPosition">
+								{showClose && closeButtonPosition === 'RIGHT' ? closeIcon : ''}
+							</div>
 						</div>
+
 						{renderChildren(
 							props.pageDefinition,
 							props.definition.children,

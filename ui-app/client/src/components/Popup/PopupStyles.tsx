@@ -1,4 +1,5 @@
 import React from 'react';
+import { StyleResolution } from '../../types/common';
 import { processStyleDefinition } from '../../util/styleProcessor';
 import { styleProperties, styleDefaults } from '../Popup/popupStyleProperties';
 
@@ -12,33 +13,33 @@ export default function PopupStyles({ theme }: { theme: Map<string, Map<string, 
       right: 0;
       bottom: 0;
       left: 0;
-      background-color: rgba(51, 51, 51, 0.3);
-      backdrop-filter: blur(1px);
       display: flex;
       align-items: center;
-      justify-content: center;    
+      justify-content: center;   
+      backdrop-filter: blur(${
+			theme.get(StyleResolution.ALL)?.get('backdropFilter') ??
+			styleDefaults.get('backdropFilter')
+		}) 
     }
 
     ${PREFIX} .modal{
       position: relative;
-      padding: 20px;
-      min-height: 50px;
-      min-width: 100px;
-      max-height: 80%;
-      max-width: 80%;
-      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-      background-color: white;
-      border-radius: 2px;
+      padding: 5px 20px 20px 20px ;
+      
     }
-    ${PREFIX} .closeButtonPositionRight{
-      display: flex;
-      justify-content: flex-end;
+    ${PREFIX} .closeButtonPosition{
       margin-bottom: 10px
     }
-    ${PREFIX} .closeButtonPositionLeft{
+    ${PREFIX} .TitleIconGrid{
       display: flex;
-      justify-content: flex-start;
-      margin-bottom: 10px
+      flex-direction: row;
+     justify-content: space-between;
+    }
+    ${PREFIX} .iconClass{
+      cursor: pointer
+    }
+    ${PREFIX} .modelTitleStyle{
+      font-family : Roboto;
     }
     
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
