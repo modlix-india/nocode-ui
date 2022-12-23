@@ -4,9 +4,14 @@ import {
 	SCHEMA_REF_DATA_LOCATION,
 	SCHEMA_REF_STRING_COMP_PROP,
 } from '../../constants';
-import { ComponentPropertyEditor, ComponentPropertyGroup } from '../../types/common';
+import {
+	ComponentPropertyDefinition,
+	ComponentPropertyEditor,
+	ComponentPropertyGroup,
+	ComponentStylePropertyDefinition,
+} from '../../types/common';
 
-export default [
+const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'label',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
@@ -39,3 +44,7 @@ export default [
 		group: ComponentPropertyGroup.COMMON,
 	},
 ];
+
+const stylePropertiesDefinition: ComponentStylePropertyDefinition = {};
+
+export { propertiesDefinition, stylePropertiesDefinition };

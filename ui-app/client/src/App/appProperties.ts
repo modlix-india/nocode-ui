@@ -1,6 +1,6 @@
 import { Schema } from '@fincity/kirun-js';
 import { NAMESPACE_UI_ENGINE } from '../constants';
-import { ComponentPropertyDefinition, ComponentPropertyEditor } from '../types/component';
+import { ComponentPropertyDefinition, ComponentPropertyEditor } from '../types/common';
 
 const props: Array<ComponentPropertyDefinition> = [
 	{

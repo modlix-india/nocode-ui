@@ -1,12 +1,12 @@
 import { Schema } from '@fincity/kirun-js';
+import { SCHEMA_REF_BOOL_COMP_PROP, SCHEMA_REF_STRING_COMP_PROP } from '../../constants';
 import {
-	SCHEMA_REF_BOOL_COMP_PROP,
-	SCHEMA_REF_DATA_LOCATION,
-	SCHEMA_REF_STRING_COMP_PROP,
-} from '../../constants';
-import { ComponentPropertyEditor, ComponentPropertyGroup } from '../../types/common';
+	ComponentPropertyDefinition,
+	ComponentPropertyGroup,
+	ComponentStylePropertyDefinition,
+} from '../../types/common';
 
-export default [
+const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'text',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
@@ -23,3 +23,7 @@ export default [
 		group: ComponentPropertyGroup.COMMON,
 	},
 ];
+
+const stylePropertiesDefinition: ComponentStylePropertyDefinition = {};
+
+export { propertiesDefinition, stylePropertiesDefinition };

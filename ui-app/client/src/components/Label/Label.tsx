@@ -3,41 +3,44 @@ import React from 'react';
 import { NAMESPACE_UI_ENGINE } from '../../constants';
 import { getData, PageStoreExtractor } from '../../context/StoreContext';
 import { HelperComponent } from '../HelperComponent';
-import { ComponentProperty, DataLocation, RenderContext, Translations } from '../../types/common';
+import {
+	ComponentProperty,
+	ComponentPropertyDefinition,
+	ComponentProps,
+	DataLocation,
+	RenderContext,
+	Translations,
+} from '../../types/common';
 import { getTranslations } from '../util/getTranslations';
-import properties from './labelProperties';
+import { propertiesDefinition, stylePropertiesDefinition } from './labelProperties';
 import { Component } from '../../types/common';
 import LabelStyle from './LabelStyle';
+import useDefinition from '../util/useDefinition';
 
-interface LabelProps extends React.ComponentPropsWithoutRef<'span'> {
-	definition: {
-		properties: {
-			text: ComponentProperty<string>;
-		};
-	};
-	pageDefinition: {
-		translations: Translations;
-	};
-	context: RenderContext;
-	locationHistory: Array<DataLocation | string>;
-}
-
-function Label(props: LabelProps) {
+function Label(props: ComponentProps) {
 	const {
 		pageDefinition: { translations },
-		definition: {
-			properties: { text },
-		},
 		definition,
 		locationHistory,
 		context,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const {
+		key,
+		properties: { text } = {},
+		stylePropertiesWithPseudoStates,
+	} = useDefinition(
+		definition,
+		propertiesDefinition,
+		stylePropertiesDefinition,
+		locationHistory,
+		pageExtractor,
+	);
 	const labelText = getData(text, locationHistory, pageExtractor);
 	return (
 		<div className="comp compLabel">
 			<HelperComponent definition={definition} />
-			<span>{getTranslations(labelText, translations)}</span>
+			<span>{getTranslations(text, translations)}</span>
 		</div>
 	);
 }
@@ -47,8 +50,8 @@ const component: Component = {
 	displayName: 'Label',
 	description: 'Label component',
 	component: Label,
-	propertyValidation: (props: LabelProps): Array<string> => [],
-	properties,
+	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
+	properties: propertiesDefinition,
 	styleComponent: LabelStyle,
 };
 

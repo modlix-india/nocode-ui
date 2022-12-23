@@ -11,59 +11,53 @@ import {
 } from '../../context/StoreContext';
 import { HelperComponent } from '../HelperComponent';
 import { getTranslations } from '../util/getTranslations';
-import { DataLocation, ComponentProperty, RenderContext } from '../../types/common';
+import {
+	DataLocation,
+	ComponentProperty,
+	RenderContext,
+	ComponentProps,
+	ComponentPropertyDefinition,
+} from '../../types/common';
 import { Component } from '../../types/common';
-import properties from './checkBoxProperties';
+import { propertiesDefinition, stylePropertiesDefinition } from './checkBoxProperties';
 import CheckBoxStyle from './CheckBoxStyle';
+import useDefinition from '../util/useDefinition';
 
-interface CheckBoxProps extends React.ComponentPropsWithoutRef<'input'> {
-	definition: {
-		key: string;
-		name: string;
-		children: any;
-		properties: {
-			label: ComponentProperty<string>;
-			readOnly: ComponentProperty<boolean>;
-			bindingPath: DataLocation;
-		};
-	};
-	locationHistory: Array<string | DataLocation>;
-	context: RenderContext;
-	pageDefinition: {
-		eventFunctions: {
-			[key: string]: any;
-		};
-		translations: {
-			[key: string]: { [key: string]: string };
-		};
-	};
-}
-
-function CheckBox(props: CheckBoxProps) {
+function CheckBox(props: ComponentProps) {
 	const {
 		pageDefinition: { eventFunctions, translations },
-		definition: {
-			key,
-			name,
-			children,
-			properties: { label, readOnly, bindingPath },
-		},
+		definition: { bindingPath },
 		locationHistory,
 		definition,
 		context,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const {
+		key,
+		properties: { label, readOnly } = {},
+		stylePropertiesWithPseudoStates,
+	} = useDefinition(
+		definition,
+		propertiesDefinition,
+		stylePropertiesDefinition,
+		locationHistory,
+		pageExtractor,
+	);
 	if (!bindingPath) return <>Binding Path Required</>;
 	const [checkBoxdata, setCheckBoxData] = useState(
 		getDataFromLocation(bindingPath, locationHistory, pageExtractor) || false,
 	);
 	const checkBoxLabel = getData(label, locationHistory, pageExtractor);
 	const readOnlyCheckbox = !!getData(readOnly, locationHistory, pageExtractor);
-
+	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
 	useEffect(() => {
-		return addListener((_, value) => {
-			setCheckBoxData(value);
-		}, getPathFromLocation(bindingPath, locationHistory));
+		return addListener(
+			(_, value) => {
+				setCheckBoxData(value);
+			},
+			pageExtractor,
+			bindingPathPath,
+		);
 	}, [bindingPath, setCheckBoxData]);
 	const handleChange = (event: any) => {
 		setData(getPathFromLocation(bindingPath, locationHistory), event.target.checked);
@@ -76,11 +70,10 @@ function CheckBox(props: CheckBoxProps) {
 					disabled={readOnlyCheckbox}
 					type="checkbox"
 					id={key}
-					name={name}
 					onChange={handleChange}
 					checked={checkBoxdata}
 				/>
-				{getTranslations(checkBoxLabel, translations)}
+				{getTranslations(label, translations)}
 			</label>
 		</div>
 	);
@@ -92,8 +85,8 @@ const component: Component = {
 	description: 'CheckBox component',
 	styleComponent: CheckBoxStyle,
 	component: CheckBox,
-	propertyValidation: (props: CheckBoxProps): Array<string> => [],
-	properties,
+	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
+	properties: propertiesDefinition,
 };
 
 export default component;

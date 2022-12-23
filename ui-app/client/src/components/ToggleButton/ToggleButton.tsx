@@ -1,6 +1,4 @@
-import { Schema } from '@fincity/kirun-js';
 import React from 'react';
-import { NAMESPACE_UI_ENGINE } from '../../constants';
 import {
 	addListener,
 	getData,
@@ -9,43 +7,16 @@ import {
 	setData,
 } from '../../context/StoreContext';
 import { HelperComponent } from '../HelperComponent';
-import { ComponentProperty, DataLocation, RenderContext } from '../../types/common';
+import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { getTranslations } from '../util/getTranslations';
 import { Component } from '../../types/common';
-import properties from './toggleButtonProperties';
+import { propertiesDefinition, stylePropertiesDefinition } from './toggleButtonProperties';
 import ToggleButtonStyle from './ToggleButtonStyle';
+import useDefinition from '../util/useDefinition';
 
-interface ToggelButtonProps extends React.ComponentPropsWithoutRef<'input'> {
-	definition: {
-		key: string;
-		name: string;
-		children: any;
-		properties: {
-			label: ComponentProperty<string>;
-			bindingPath: DataLocation;
-		};
-	};
-	pageDefinition: {
-		eventFunctions: {
-			[key: string]: any;
-		};
-		translations: {
-			[key: string]: {
-				[key: string]: string;
-			};
-		};
-	};
-	locationHistory: Array<DataLocation | string>;
-	context: RenderContext;
-}
-
-function ToggleButton(props: ToggelButtonProps) {
+function ToggleButton(props: ComponentProps) {
 	const {
-		definition: {
-			key,
-			name,
-			properties: { label, bindingPath },
-		},
+		definition: { bindingPath },
 		pageDefinition: { translations },
 		definition,
 		locationHistory,
@@ -53,12 +24,26 @@ function ToggleButton(props: ToggelButtonProps) {
 	} = props;
 	const [isToggled, setIsToggled] = React.useState(false);
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
-	const labelValue = getData(label, locationHistory, pageExtractor);
-	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory);
+	const {
+		key,
+		properties: { label } = {},
+		stylePropertiesWithPseudoStates,
+	} = useDefinition(
+		definition,
+		propertiesDefinition,
+		stylePropertiesDefinition,
+		locationHistory,
+		pageExtractor,
+	);
+	const bindingPathPath = getPathFromLocation(bindingPath!, locationHistory, pageExtractor);
 	React.useEffect(() => {
-		addListener((_, value) => {
-			setIsToggled(value);
-		}, bindingPathPath);
+		addListener(
+			(_, value) => {
+				setIsToggled(value);
+			},
+			pageExtractor,
+			bindingPathPath,
+		);
 	}, []);
 	const handleChange = (event: any) => {
 		setData(bindingPathPath, event.target.checked);
@@ -67,14 +52,8 @@ function ToggleButton(props: ToggelButtonProps) {
 		<div className="comp compToggleButton">
 			<HelperComponent definition={definition} />
 			<label className="toggleButton">
-				<input
-					type="checkbox"
-					name={name}
-					id={key}
-					onChange={handleChange}
-					checked={isToggled}
-				/>
-				{getTranslations(labelValue, translations)}
+				<input type="checkbox" id={key} onChange={handleChange} checked={isToggled} />
+				{getTranslations(label, translations)}
 			</label>
 		</div>
 	);
@@ -85,8 +64,8 @@ const component: Component = {
 	displayName: 'ToggleButton',
 	description: 'ToggleButton component',
 	component: ToggleButton,
-	propertyValidation: (props: ToggelButtonProps): Array<string> => [],
-	properties,
+	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
+	properties: propertiesDefinition,
 	styleComponent: ToggleButtonStyle,
 };
 

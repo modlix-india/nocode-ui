@@ -4,22 +4,20 @@ import {
 	SCHEMA_REF_DATA_LOCATION,
 	SCHEMA_REF_STRING_COMP_PROP,
 } from '../../constants';
-import { ComponentPropertyEditor, ComponentPropertyGroup } from '../../types/common';
+import {
+	ComponentPropertyDefinition,
+	ComponentPropertyEditor,
+	ComponentPropertyGroup,
+	ComponentStylePropertyDefinition,
+} from '../../types/common';
 
-export default [
+const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'label',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: 'CheckBox label',
 		description: `CheckBox's display label.`,
 		translatable: true,
-	},
-
-	{
-		name: 'bindingPath',
-		schema: Schema.ofRef(SCHEMA_REF_DATA_LOCATION),
-		displayName: 'Binding Path',
-		description: `Path in the store to which this CheckBox is bound to.`,
 	},
 
 	{
@@ -38,3 +36,7 @@ export default [
 		group: ComponentPropertyGroup.COMMON,
 	},
 ];
+
+const stylePropertiesDefinition: ComponentStylePropertyDefinition = {};
+
+export { propertiesDefinition, stylePropertiesDefinition };

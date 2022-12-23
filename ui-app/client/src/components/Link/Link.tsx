@@ -5,61 +5,55 @@ import { Schema } from '@fincity/kirun-js';
 import { NAMESPACE_UI_ENGINE } from '../../constants';
 import { Link as RouterLink } from 'react-router-dom';
 import { getTranslations } from '../util/getTranslations';
-import { DataLocation, ComponentProperty, RenderContext } from '../../types/common';
+import {
+	DataLocation,
+	ComponentProperty,
+	RenderContext,
+	ComponentPropertyDefinition,
+	ComponentProps,
+} from '../../types/common';
 import { Component } from '../../types/common';
-import properties from './linkProperties';
+import { propertiesDefinition, stylePropertiesDefinition } from './linkProperties';
 import LinkStyle from './LinkStyle';
+import useDefinition from '../util/useDefinition';
 
-interface LinkProps extends React.ComponentPropsWithoutRef<'a'> {
-	definition: {
-		properties: {
-			linkPath: ComponentProperty<string>;
-			label: ComponentProperty<string>;
-			target: ComponentProperty<string>;
-			showButton: ComponentProperty<boolean>;
-			externalButtonTarget: ComponentProperty<string>;
-		};
-	};
-	pageDefinition: {
-		translations: {
-			[key: string]: {
-				[key: string]: string;
-			};
-		};
-	};
-	locationHistory: Array<DataLocation | string>;
-	context: RenderContext;
-}
-
-function Link(props: LinkProps) {
+function Link(props: ComponentProps) {
 	const {
-		definition: {
-			properties: { linkPath, label, target, showButton, externalButtonTarget },
-		},
 		pageDefinition: { translations },
 		definition,
 		locationHistory,
 		context,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
-	const labelValue = getData(label, locationHistory, pageExtractor);
-	const linkPathValue = getData(linkPath, locationHistory, pageExtractor);
-	const targetValue = getData(target, locationHistory, pageExtractor) || '_self';
-	const externalButtonTargetVal =
-		getData(externalButtonTarget, locationHistory, pageExtractor) || '_blank';
-	const showButtonVal = getData(showButton, locationHistory, pageExtractor);
+	const {
+		key,
+		properties: {
+			linkPath,
+			label,
+			target = '_self',
+			showButton,
+			externalButtonTarget = '_blank',
+		} = {},
+		stylePropertiesWithPseudoStates,
+	} = useDefinition(
+		definition,
+		propertiesDefinition,
+		stylePropertiesDefinition,
+		locationHistory,
+		pageExtractor,
+	);
 
 	return (
 		<div className="comp compLinks ">
 			<HelperComponent definition={definition} />
 			<div className="linkDiv">
-				<RouterLink className="link" to={`${linkPathValue}`} target={targetValue}>
-					{getTranslations(labelValue, translations)}
+				<RouterLink className="link" to={`${linkPath}`} target={target}>
+					{getTranslations(label, translations)}
 				</RouterLink>
-				{showButtonVal ? (
+				{showButton ? (
 					<RouterLink
-						to={`${linkPathValue}`}
-						target={externalButtonTargetVal}
+						to={`${linkPath}`}
+						target={externalButtonTarget}
 						className="secondLink"
 					>
 						<i className="fa-solid fa-up-right-from-square"></i>
@@ -75,8 +69,8 @@ const component: Component = {
 	displayName: 'Link',
 	description: 'Link component',
 	component: Link,
-	propertyValidation: (props: LinkProps): Array<string> => [],
-	properties,
+	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
+	properties: propertiesDefinition,
 	styleComponent: LinkStyle,
 };
 
