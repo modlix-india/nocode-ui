@@ -27,11 +27,20 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: ".checkbox input[type='checkbox']:checked",
 	},
 	{
-		name: 'checkBoxLableColor',
+		name: 'checkBoxLabelColor',
 		cssProperty: 'color',
-		displayName: "checkbox's Lable Color",
-		description: 'The Lable color of the Checkbox.',
+		displayName: "checkbox's Label Color",
+		description: 'The Label color of the Checkbox.',
 		defaultValue: 'rgba(0,0,0, 0.6)',
+		selector: '.checkbox',
+	},
+
+	{
+		name: 'checkBoxWidth',
+		cssProperty: 'width',
+		displayName: "checkbox's Width",
+		description: 'The width of the Checkbox.',
+		defaultValue: 'auto',
 		selector: '.checkbox',
 	},
 ];

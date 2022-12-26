@@ -11,21 +11,16 @@ import {
 } from '../../context/StoreContext';
 import { HelperComponent } from '../HelperComponent';
 import { getTranslations } from '../util/getTranslations';
-import {
-	DataLocation,
-	ComponentProperty,
-	RenderContext,
-	ComponentProps,
-	ComponentPropertyDefinition,
-} from '../../types/common';
+import { ComponentProps, ComponentPropertyDefinition } from '../../types/common';
 import { Component } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './checkBoxProperties';
 import CheckBoxStyle from './CheckBoxStyle';
 import useDefinition from '../util/useDefinition';
 
 function CheckBox(props: ComponentProps) {
+	const [checkBoxdata, setCheckBoxData] = useState(false);
 	const {
-		pageDefinition: { eventFunctions, translations },
+		pageDefinition: { translations },
 		definition: { bindingPath },
 		locationHistory,
 		definition,
@@ -34,7 +29,7 @@ function CheckBox(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
 		key,
-		properties: { label, readOnly } = {},
+		properties: { label, readOnly, orientation } = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
 		definition,
@@ -44,11 +39,6 @@ function CheckBox(props: ComponentProps) {
 		pageExtractor,
 	);
 	if (!bindingPath) return <>Binding Path Required</>;
-	const [checkBoxdata, setCheckBoxData] = useState(
-		getDataFromLocation(bindingPath, locationHistory, pageExtractor) || false,
-	);
-	const checkBoxLabel = getData(label, locationHistory, pageExtractor);
-	const readOnlyCheckbox = !!getData(readOnly, locationHistory, pageExtractor);
 	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
 	useEffect(() => {
 		return addListener(
@@ -58,16 +48,19 @@ function CheckBox(props: ComponentProps) {
 			pageExtractor,
 			bindingPathPath,
 		);
-	}, [bindingPath, setCheckBoxData]);
+	}, [bindingPath]);
 	const handleChange = (event: any) => {
-		setData(getPathFromLocation(bindingPath, locationHistory), event.target.checked);
+		setData(bindingPathPath, event.target.checked);
 	};
 	return (
 		<div className="comp compCheckBox">
 			<HelperComponent definition={definition} />
-			<label className="checkbox" htmlFor={key}>
+			<label
+				className={`checkbox ${orientation === 'VERTICAL' ? 'vertical' : 'horizontal'}`}
+				htmlFor={key}
+			>
 				<input
-					disabled={readOnlyCheckbox}
+					disabled={readOnly}
 					type="checkbox"
 					id={key}
 					onChange={handleChange}
