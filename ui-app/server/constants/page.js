@@ -426,6 +426,65 @@ export const page = {
         // arrayRepeatercompInsideRepeater: true,
       },
     },
+    menuGrid: {
+      name: "menugrid",
+      key: "menugrid",
+      type: "Grid",
+      children: {
+        menucomp: true,
+      },
+    },
+    menucomp: {
+      name: "menucomp",
+      key: "menucomp",
+      type: "Menu",
+      properties: {
+        label: {
+          value: "google",
+        },
+        dataBinding: {
+          location: {
+            type: "VALUE",
+            defaultValue: [
+              { id: 0, name: "qqq", child: false, isMenuOpen: false },
+              { id: 0, name: "wwww", child: false, isMenuOpen: false },
+              { id: 0, name: "eeee", child: false, isMenuOpen: false },
+              { id: 0, name: "rrrr", child: false, isMenuOpen: false },
+            ],
+          },
+        },
+        datatype: {
+          value: "LIST_OF_OBJECTS",
+        },
+        selectionType: {
+          value: "OBJECT",
+        },
+        uniqueKeyType: {
+          value: "OBJECT",
+        },
+      },
+      bindingPath: {
+        type: "VALUE",
+        value: "Store.savedDropdowndata",
+
+        // onClick: {
+        //   value: "menuClick",
+        // },
+        // linkPath: {
+        //   value: "page/pagename2",
+        // },
+        // target: {
+        //   value: "_self",
+        // },
+        // externalButtonTarget: {
+        //   value: "_blank",
+        // },
+        // showButton: {
+        //   value: true,
+        // },
+      },
+      displayOrder: -1,
+    },
     linkGrid: {
       name: "linkgrid",
       key: "linkgrid",

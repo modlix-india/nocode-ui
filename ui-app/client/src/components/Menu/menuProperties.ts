@@ -1,5 +1,6 @@
 import { Schema } from '@fincity/kirun-js';
 import {
+	SCHEMA_REF_ANY_COMP_PROP,
 	SCHEMA_REF_BOOL_COMP_PROP,
 	SCHEMA_REF_DATA_LOCATION,
 	SCHEMA_REF_STRING_COMP_PROP,
@@ -11,6 +12,12 @@ import {
 } from '../../types/common';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
+	{
+		name: 'dataBinding',
+		schema: Schema.ofRef(SCHEMA_REF_ANY_COMP_PROP),
+		displayName: 'Menu data',
+		description: `Data that is used to render menu.`,
+	},
 	{
 		name: 'label',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
@@ -30,6 +37,12 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: "Menu's icon",
 		description: `Menu's icon to be displayed on left of label.`,
 		editor: ComponentPropertyEditor.ICON,
+	},
+	{
+		name: 'isMenuOpen',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: "Menu open or not",
+		description: `Menu open or not after click event.`,
 	},
 	{
 		name: 'linkPath',
