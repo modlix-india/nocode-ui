@@ -26,7 +26,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.modal',
 	},
 	{
-		name: 'Modal background Color',
+		name: 'Modal border radius',
 		cssProperty: 'border-radius',
 		displayName: "Modal's border radius",
 		description: 'The border-radius of the Modal.',
@@ -34,17 +34,17 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.modal',
 	},
 	{
-		name: 'Modal width',
+		name: 'Modal min-width',
 		cssProperty: 'min-width',
-		displayName: 'Modal width',
+		displayName: "Modal's min width",
 		description: 'The min-width of the Modal.',
 		defaultValue: '50px',
 		selector: '.modal',
 	},
 	{
-		name: 'Modal min-width',
+		name: 'Modal max-width',
 		cssProperty: 'max-width',
-		displayName: 'Modal min-width',
+		displayName: "Modal's max-width",
 		description: 'The max-width of the Modal.',
 		defaultValue: '80%',
 		selector: '.modal',
@@ -52,7 +52,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		name: 'Modal min-height',
 		cssProperty: 'min-height',
-		displayName: 'Modal min-height',
+		displayName: "Modal's min-height",
 		description: 'The min-height of the Modal.',
 		defaultValue: '50px',
 		selector: '.modal',
@@ -60,12 +60,11 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		name: 'modalMaxHeight',
 		cssProperty: 'max-height',
-		displayName: 'Modal max-height',
+		displayName: "Modal's max-height",
 		description: 'The max-height of the Modal.',
 		defaultValue: '80%',
 		selector: '.modal',
 	},
-
 	{
 		name: 'backdropFilter',
 		displayName: 'backdrop filter',
