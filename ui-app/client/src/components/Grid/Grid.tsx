@@ -1,6 +1,12 @@
 import React from 'react';
 import { HelperComponent } from '../HelperComponent';
-import { ComponentProperty, DataLocation, RenderContext } from '../../types/common';
+import {
+	ComponentProperty,
+	ComponentPropertyDefinition,
+	ComponentProps,
+	DataLocation,
+	RenderContext,
+} from '../../types/common';
 import { renderChildren } from '../util/renderChildren';
 import { getData, PageStoreExtractor } from '../../context/StoreContext';
 import { Component } from '../../types/common';
@@ -10,33 +16,15 @@ import useDefinition from '../util/useDefinition';
 import { Link } from 'react-router-dom';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 
-interface GridProps extends React.Component {
-	definition: any;
-	pageDefinition: any;
-	context: RenderContext;
-	locationHistory: Array<DataLocation | string>;
-	properties: {
-		readonly: ComponentProperty<boolean>;
-	};
-}
-
-function Grid(props: GridProps) {
+function Grid(props: ComponentProps) {
 	const [hover, setHover] = React.useState(false);
 	const [focus, setFocus] = React.useState(false);
-	const {
-		definition,
-		pageDefinition,
-		locationHistory,
-		context,
-		properties: { readonly } = {},
-	} = props;
+	const { definition, pageDefinition, locationHistory, context } = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
-	// const isReadOnly = getData(readonly, locationHistory, pageExtractor);
-	// context.isReadonly = isReadOnly;
 	const {
 		key,
 		stylePropertiesWithPseudoStates,
-		properties: { readOnly: isReadonly = false, linkPath, target },
+		properties: { readOnly: isReadonly = false, linkPath, target } = {},
 	} = useDefinition(
 		definition,
 		propertiesDefinition,
@@ -96,7 +84,7 @@ const component: Component = {
 	displayName: 'Grid',
 	description: 'Grid component',
 	component: Grid,
-	propertyValidation: (props: GridProps): Array<string> => [],
+	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: GridStyle,
 };
