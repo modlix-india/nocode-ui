@@ -87,6 +87,38 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23)',
 		selector: '.modal',
 	},
+	{
+		name: 'modalPaddingTop',
+		cssProperty: 'padding-top',
+		displayName: 'Padding top',
+		description: 'The padding top of the modal.',
+		defaultValue: '5px',
+		selector: '.modal',
+	},
+	{
+		name: 'modalPaddingRight',
+		cssProperty: 'padding-right',
+		displayName: 'Padding right',
+		description: 'The padding right of the modal.',
+		defaultValue: '20px',
+		selector: '.modal',
+	},
+	{
+		name: 'modalPaddingBottom',
+		cssProperty: 'padding-bottom',
+		displayName: 'Padding bottom',
+		description: 'The padding bottom of the modal.',
+		defaultValue: '20px',
+		selector: '.modal',
+	},
+	{
+		name: 'modalPaddingLeft',
+		cssProperty: 'padding-left',
+		displayName: 'Padding left',
+		description: 'The padding left of the modal.',
+		defaultValue: '20px',
+		selector: '.modal',
+	},
 ];
 
 export const styleDefaults = new Map<string, string>(

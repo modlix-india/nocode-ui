@@ -24,7 +24,7 @@ export default function PopupStyles({ theme }: { theme: Map<string, Map<string, 
 
     ${PREFIX} .modal{
       position: relative;
-      padding: 5px 20px 20px 20px ;
+     
       
     }
     ${PREFIX} .closeButtonPosition{
