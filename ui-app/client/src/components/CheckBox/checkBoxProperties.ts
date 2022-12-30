@@ -21,6 +21,27 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
+		name: 'orientation',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'CheckBox orientation',
+		description: `CheckBox's display orientation.`,
+		defaultValue: 'HORIZONATAL',
+		editor: ComponentPropertyEditor.ENUM,
+		enumValues: [
+			{
+				name: 'HORIZONATAL',
+				displayName: 'Horizonatal Orientation',
+				description: "CheckBox's display orientation.",
+			},
+			{
+				name: 'VERTICAL',
+				displayName: 'Vertical Orientation',
+				description: "CheckBox's display orientation.",
+			},
+		],
+	},
+
+	{
 		name: 'readOnly',
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
 		displayName: 'Read Only',

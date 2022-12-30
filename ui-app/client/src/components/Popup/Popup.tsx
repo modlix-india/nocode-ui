@@ -1,18 +1,11 @@
-import React, { KeyboardEvent, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import {
 	addListener,
-	getData,
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
-import {
-	ComponentProperty,
-	RenderContext,
-	DataLocation,
-	ComponentProps,
-	ComponentPropertyDefinition,
-} from '../../types/common';
+import { ComponentProps, ComponentPropertyDefinition } from '../../types/common';
 import { Component } from '../../types/common';
 import useDefinition from '../util/useDefinition';
 import PopupStyles from './PopupStyles';
@@ -21,13 +14,14 @@ import Portal from '../Portal';
 import { HelperComponent } from '../HelperComponent';
 import { renderChildren } from '../util/renderChildren';
 import { runEvent } from '../util/runEvent';
+import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 
 function Popup(props: ComponentProps) {
 	const [isActive, setIsActive] = React.useState(false);
 	const {
 		definition: { bindingPath },
 	} = props;
-
+	if (!bindingPath) throw new Error('Definition needs binding path');
 	React.useEffect(() => {
 		if (bindingPath)
 			addListener(
@@ -50,7 +44,6 @@ function Popup(props: ComponentProps) {
 			closeButtonPosition,
 			modelTitle,
 		} = {},
-
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
 		props.definition,
@@ -59,19 +52,24 @@ function Popup(props: ComponentProps) {
 		props.locationHistory,
 		pageExtractor,
 	);
+	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
 	const openEvent = eventOnOpen ? props.pageDefinition.eventFunctions[eventOnOpen] : undefined;
 	const closeEvent = eventOnClose ? props.pageDefinition.eventFunctions[eventOnClose] : undefined;
 
 	const refObj = useRef({ first: true });
 
 	React.useEffect(() => {
+		console.log('events are', openEvent, closeEvent, eventOnClose, eventOnOpen);
+
 		if (openEvent && isActive) {
-			async () => await runEvent(openEvent, eventOnOpen, props.context.pageName);
+			console.log('event on open', openEvent);
+			(async () => await runEvent(openEvent, key, props.context.pageName))();
 		}
 		if (!isActive && closeEvent && !refObj.current.first) {
-			async () => await runEvent(closeEvent, eventOnClose, props.context.pageName);
+			console.log('event on close', closeEvent);
+			(async () => await runEvent(closeEvent, key, props.context.pageName))();
 		}
-		refObj.current.first = true;
+		refObj.current.first = false;
 	}, [isActive]);
 	const handleCloseOnOutsideClick = () => {
 		if (closeOnOutsideClick) {
@@ -81,11 +79,12 @@ function Popup(props: ComponentProps) {
 
 	const handleClose = React.useCallback(() => {
 		setData(
-			getPathFromLocation(bindingPath!, props.locationHistory),
+			getPathFromLocation(bindingPath, props.locationHistory),
 			false,
 			props.context?.pageName,
 		);
 	}, []);
+
 	const handleBubbling = (e: any) => {
 		e.stopPropagation();
 	};
@@ -103,7 +102,14 @@ function Popup(props: ComponentProps) {
 			document.body.removeEventListener('keyup', escapeHandler);
 		};
 	}, [isActive, handleClose]);
-	const closeIcon = <i className="fa-solid fa-xmark iconClass" onClick={handleClose}></i>;
+
+	const closeIcon = (
+		<i
+			style={resolvedStyles.icon ?? {}}
+			className="fa-solid fa-xmark iconClass"
+			onClick={handleClose}
+		></i>
+	);
 
 	if (!isActive) return null;
 
@@ -111,9 +117,30 @@ function Popup(props: ComponentProps) {
 		<Portal>
 			<div className="comp compPopup">
 				<HelperComponent definition={props.definition} />
-				<div className="backdrop" onClick={handleCloseOnOutsideClick}>
-					<div className="modal" onClick={handleBubbling}>
-						<div className="TitleIconGrid">
+				<div
+					className="backdrop"
+					onClick={handleCloseOnOutsideClick}
+					style={resolvedStyles.backdrop ?? {}}
+				>
+					<div
+						className="modal"
+						style={
+							{
+								...(resolvedStyles?.modal || {}),
+								...(resolvedStyles?.modalbg || {}),
+							} ?? {}
+						}
+						onClick={handleBubbling}
+					>
+						<div
+							className="TitleIconGrid"
+							style={
+								{
+									...(resolvedStyles?.titleGrid || {}),
+									...(resolvedStyles?.titleGridExtra || {}),
+								} ?? {}
+							}
+						>
 							<div className="closeButtonPosition">
 								{showClose && closeButtonPosition === 'LEFT' ? closeIcon : ''}
 							</div>

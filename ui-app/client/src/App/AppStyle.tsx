@@ -53,6 +53,10 @@ export default function AppStyle() {
 		opacity:0;
 	}
 
+	.comp {
+		position: relative;
+	}
+
 	` + processStyleDefinition('', styleProperties, styleDefaults, theme);
 
 	const styleComps = new Array();

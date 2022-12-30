@@ -88,14 +88,19 @@ export default function CheckBoxStyle({ theme }: { theme: Map<string, Map<string
     
     ${PREFIX} .checkbox {
         font-family: 'Open Sans', sans-serif;
-        font-size: 1.1rem;
         line-height: 1.1;
         grid-template-rows: 1em auto;
         gap: 0.5em;
-        width: 53px;
         justify-items: center;
         text-align: center;
         display: inline-grid;
+    }
+    ${PREFIX} .checkbox.horizontal {
+        grid-template-columns: 1em auto;
+    }
+
+    ${PREFIX} .checkbox.vertical {
+        grid-template-rows: 1em auto;
     }
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
