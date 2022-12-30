@@ -40,4 +40,5 @@ export const ComponentDefinitions = [
 	ArrayRepeater,
 	Popup,
 	Dropdown,
+	Menu
 ];

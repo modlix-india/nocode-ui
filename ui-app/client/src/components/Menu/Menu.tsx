@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import {
 	addListener,
 	getData,
@@ -21,23 +21,38 @@ import { HelperComponent } from '../HelperComponent';
 import { renderChildren } from '../util/renderChildren';
 import { getTranslations } from '../util/getTranslations';
 import MenuStyle from './MenuStyle';
+import { runEvent } from '../util/runEvent';
+import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 
 function Menu(props: ComponentProps) {
-	const [value, setValue] = React.useState([]);
-
-	// let {
-	// 	key,
-	// 	properties: { label, onClick, icon } = {},
-	// 	stylePropertiesWithPseudoStates,
-	// } = useDefinition(props.definition, propertiesDefinition, stylePropertiesDefinition, props.locationHistory, pageExtractor);
+	const [isMenuActive, setIsMenuActive] = React.useState(false);
+	const [hover, setHover] = React.useState(false);
+	const { pathname } = useLocation();
 
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
-	const {definition:{bindingPath}} = props;
 
 	const {
-		
+		definition: { children = {} },
+		locationHistory,
+		context,
+		pageDefinition,
+	} = props;
+
+	const hasChildren = !!Object.keys(children).length;
+
+	const {
 		key,
-		properties: { label, onClick, icon, isMenuOpen, linkPath, target } = {},
+		properties: {
+			label,
+			onClick,
+			icon,
+			isMenuOpen,
+			linkPath,
+			target,
+			readOnly,
+			pathsActiveFor = [],
+		} = {},
+		stylePropertiesWithPseudoStates,
 	} = useDefinition(
 		props.definition,
 		propertiesDefinition,
@@ -45,69 +60,85 @@ function Menu(props: ComponentProps) {
 		props.locationHistory,
 		pageExtractor,
 	);
-
-	// const {
-	// 	definition: {
-	// 		bindingPath,
-	// 		properties: {
-	// 			dataBinding,
-	// 			linkPath,
-	// 			label,
-	// 			target,
-	// 			isMenuOpen,
-	// 			showButton,
-	// 			externalButtonTarget,
-	// 		},
-	// 	},
-	// 	pageDefinition: { translations },
-	// 	// definition:{ bindingPath },
-	// 	locationHistory,
-	// 	context,
-	// } = props;
-
-	//  const bindingPathPath = getPathFromLocation(bindingPath, props.locationHistory);
-
+	const [isMenuOpenState, setIsMenuOpenState] = React.useState(isMenuOpen ?? false);
 	React.useEffect(() => {
-		setData();
 		addListener(
-			(_, value) => {
-				setValue(value ?? 'Abc');
+			() => {
+				const paths = pathsActiveFor.split(',');
+				if (!paths.length) return;
+				const hasPath = !!paths.find((e: string) => pathname.indexOf(e));
+				setIsMenuActive(hasPath);
 			},
 			pageExtractor,
-			getPathFromLocation(bindingPath, props.locationHistory);
+			'Store.urlDetails.pageName',
 		);
-		console.log('menu data ', dataBinding, value);
 	}, []);
 
+	const resolvedStyles = processComponentStylePseudoClasses(
+		{ hover, disabled: readOnly },
+		stylePropertiesWithPseudoStates,
+	);
+
+	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
+
+	const handleClick = async () => {
+		setIsMenuOpenState(!isMenuOpenState);
+		clickEvent && (await runEvent(clickEvent, key, context.pageName));
+	};
+
+	const menuDetails = (
+		<>
+			{icon ? <i style={resolvedStyles.icon ?? {}} className={icon}></i> : null}
+			<span className="menuText">
+				{getTranslations(label, props.pageDefinition.translations)}
+			</span>
+		</>
+	);
+
 	return (
-		<div className="comp compMenu">
+		<div className="comp compMenu ">
 			<HelperComponent definition={props.definition} />
-			<div className="menuContainer">
-				<img src="https://fincity-public.s3.ap-south-1.amazonaws.com/logo/Fincity_logo_svg.svg" />
-				{/* {value.map((_, index) =>
-				renderChildren(pageDefinition, firstchild, context, [
-					...locationHistory,
-					updateLocationForChild(bindingPath!, index, locationHistory),
-				]),
-			)} */}
-				{value.map((each, index) => {
-					console.log('each ', each);
-					return <div>{each.name}</div>;
-				})}
-				{/* <div className="menuDiv">
-					<RouterLink className="link" to={`${linkPathValue}`} target={targetValue}>
-						{getTranslations(labelValue, translations)}
-					</RouterLink>
-					{showButtonVal ? (
-						<RouterLink
-							to={`${linkPathValue}`}
-							target={externalButtonTargetVal}
-							className="secondLink"
-						>
-							<i className="fa-solid fa-up-right-from-square"></i>
-						</RouterLink>
-					) : null}
-				</div> */}
+			<div className="menuContainer" style={resolvedStyles.menuContainer ?? {}}>
+				<div
+					onClick={!readOnly ? handleClick : undefined}
+					className={`menu ${isMenuActive ? 'isActive' : ''}`}
+					onMouseEnter={() => setHover(true)}
+					onMouseLeave={() => setHover(false)}
+					style={resolvedStyles.menu ?? {}}
+				>
+					<div className="menuLink">
+						{linkPath ? (
+							<Link
+								style={resolvedStyles.link ?? {}}
+								className="link"
+								target={target}
+								to={linkPath}
+							>
+								{menuDetails}
+							</Link>
+						) : (
+							menuDetails
+						)}
+					</div>
+					<div className="menuCaretIcon">
+						{hasChildren ? (
+							!isMenuOpenState ? (
+								<i
+									style={resolvedStyles.caretIcon ?? {}}
+									className="fa fa-solid fa-angle-down"
+								></i>
+							) : (
+								<i
+									style={resolvedStyles.caretIcon ?? {}}
+									className="fa fa-solid fa-angle-up"
+								></i>
+							)
+						) : null}
+					</div>
+				</div>
+				{hasChildren && isMenuOpenState
+					? renderChildren(pageDefinition, children, context, locationHistory)
+					: null}
 			</div>
 		</div>
 	);
@@ -118,9 +149,11 @@ const component: Component = {
 	displayName: 'Menu',
 	description: 'Menu component',
 	component: Menu,
+	styleComponent: MenuStyle,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
-	styleComponent: MenuStyle,
+	styleProperties: stylePropertiesDefinition,
+	stylePseudoStates: ['focus', 'hover', 'disabled'],
 };
 
 export default component;

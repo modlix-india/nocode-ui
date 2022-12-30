@@ -348,7 +348,8 @@ export const page = {
         // textboxgrid: true,
         // loginlabel: true,
         primarybuttongrid: true,
-        // textboxgrid: true,
+        fabTestButton: true,
+        textboxgrid: true,
         // outlinedbuttongrid: true,
         // textbuttongrid: true,
         // checkBoxGrid: true,
@@ -356,6 +357,7 @@ export const page = {
         // arrayRepeatercomp: true,
         himanshuDropdown: true,
         popupGrid: true,
+        menuGrid: true,
       },
     },
     popupGrid: {
@@ -370,14 +372,7 @@ export const page = {
       name: "popupcomp",
       key: "popupcomp",
       type: "Popup",
-      properties: {
-        closeButtonPosition: {
-          value: "RIGHT",
-        },
-        modelTitle: {
-          value: "Tesla",
-        },
-      },
+      properties: {},
       bindingPath: {
         type: "VALUE",
         value: "Store.testModal",
@@ -442,48 +437,71 @@ export const page = {
         label: {
           value: "google",
         },
-        dataBinding: {
-          location: {
-            type: "VALUE",
-            defaultValue: [
-              { id: 0, name: "qqq", child: false, isMenuOpen: false },
-              { id: 0, name: "wwww", child: false, isMenuOpen: false },
-              { id: 0, name: "eeee", child: false, isMenuOpen: false },
-              { id: 0, name: "rrrr", child: false, isMenuOpen: false },
-            ],
-          },
-        },
-        datatype: {
-          value: "LIST_OF_OBJECTS",
-        },
-        selectionType: {
-          value: "OBJECT",
-        },
-        uniqueKeyType: {
-          value: "OBJECT",
+        icon: {
+          value: "fa-brands fa-facebook",
         },
       },
-      bindingPath: {
-        type: "VALUE",
-        value: "Store.savedDropdowndata",
-
-        // onClick: {
-        //   value: "menuClick",
-        // },
-        // linkPath: {
-        //   value: "page/pagename2",
-        // },
-        // target: {
-        //   value: "_self",
-        // },
-        // externalButtonTarget: {
-        //   value: "_blank",
-        // },
-        // showButton: {
-        //   value: true,
-        // },
+      children: {
+        menucomp2: true,
+        menucomp1: true,
       },
       displayOrder: -1,
+    },
+
+    menucomp1: {
+      name: "menucomp1",
+      key: "menucomp1",
+      type: "Menu",
+      properties: {
+        label: {
+          value: "google1",
+        },
+        icon: {
+          // value: "fa-brands fa-twitter",
+        },
+        linkPath: {
+          value: "page/tarun",
+        },
+      },
+      children: {
+        menucomp11: true,
+      },
+      displayOrder: 2,
+    },
+    menucomp11: {
+      name: "menucomp11",
+      key: "menucomp11",
+      type: "Menu",
+      properties: {
+        label: {
+          value: "google11",
+        },
+        icon: {
+          value: "fa-brands fa-twitter",
+        },
+        linkPath: {
+          value: "page/tarun1",
+        },
+      },
+      displayOrder: 1,
+    },
+
+    menucomp2: {
+      name: "menucomp2",
+      key: "menucomp2",
+      type: "Menu",
+      properties: {
+        label: {
+          value: "google2",
+        },
+        icon: {
+          value: "fa-brands fa-github",
+        },
+        onClick: {
+          value: "login",
+        },
+      },
+      displayOrder: 1,
     },
     linkGrid: {
       name: "linkgrid",

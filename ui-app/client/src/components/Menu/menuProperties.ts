@@ -10,6 +10,7 @@ import {
 	ComponentPropertyGroup,
 	ComponentPropertyDefinition,
 } from '../../types/common';
+import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
@@ -17,6 +18,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: Schema.ofRef(SCHEMA_REF_ANY_COMP_PROP),
 		displayName: 'Menu data',
 		description: `Data that is used to render menu.`,
+	},
+	{
+		name: 'pathsActiveFor',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: "Path's menu is active",
+		description: `A list of comma separated paths for which the menu is shown in active.`,
+		defaultValue: '',
 	},
 	{
 		name: 'label',
@@ -40,9 +48,10 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'isMenuOpen',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-		displayName: "Menu open or not",
+		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		displayName: 'Menu open or not',
 		description: `Menu open or not after click event.`,
+		defaultValue: true,
 	},
 	{
 		name: 'linkPath',
@@ -56,6 +65,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: 'Link target',
 		description: `Link's target.`,
+		defaultValue: '_self',
 	},
 	{
 		name: 'readOnly',
@@ -73,6 +83,69 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 ];
 
-const stylePropertiesDefinition = {};
+const stylePropertiesDefinition = {
+	'': {
+		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.size,
+			target: ['menuContainer'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.background.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.background,
+			target: ['menuContainer'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.padding,
+			target: ['menuContainer'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.margin,
+			target: ['menuContainer'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.border,
+			target: ['menuContainer'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow,
+			target: ['menuContainer'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.container.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.container,
+			target: ['menuContainer'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.outline.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.outline,
+			target: ['menuContainer'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
+			target: ['link'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.font,
+			target: ['menu'],
+		},
+	},
+	icon: {
+		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
+			name: 'iconColor',
+			displayName: 'Menu Icon Color',
+			description: 'Menu Icon Color',
+			prefix: 'icon',
+			target: ['icon'],
+		},
+	},
+	caretIcon: {
+		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
+			name: 'caretIconColor',
+			displayName: 'Menu Icon Color',
+			description: 'Menu Icon Color',
+			prefix: 'caretIcon',
+			target: ['caretIcon'],
+		},
+	},
+};
 
 export { propertiesDefinition, stylePropertiesDefinition };
