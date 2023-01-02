@@ -345,7 +345,7 @@ export const page = {
       key: "secondGrid",
       type: "Grid",
       children: {
-        // textboxgrid: true,
+        textboxgrid: true,
         // loginlabel: true,
         primarybuttongrid: true,
         // textboxgrid: true,
@@ -372,7 +372,16 @@ export const page = {
       type: "Popup",
       properties: {
         closeButtonPosition: {
-          value: "RIGHT",
+          value: "LEFT",
+        },
+        closeOnEscape: {
+          value: false,
+        },
+        eventOnOpen: {
+          value: "login",
+        },
+        eventOnClose: {
+          value: "login",
         },
         modelTitle: {
           value: "Tesla",
@@ -511,7 +520,7 @@ export const page = {
       },
       bindingPath: {
         type: "VALUE",
-        expression: "'Store.x.{{Store.x.var}}'",
+        // expression: "'Store.x.{{Store.x.var}}'",
         value: "Store.x.a",
       },
       displayOrder: -1,
@@ -634,6 +643,7 @@ export const page = {
         loginButtonDisabled: true,
         fabTestButton: true,
         fabTestMiniButton: true,
+        tagtagatag: true,
       },
     },
     outlinedbuttongrid: {
@@ -675,6 +685,50 @@ export const page = {
         },
       },
       displayOrder: 1,
+    },
+    tagtagatag: {
+      name: "tagtagatag",
+      key: "tagtagatag",
+      type: "Tags",
+      bindingPath: {},
+      styleProperties: {
+        "d9652d73-2292-4d8f-9112-7ac448eb6951": {
+          resolutions: {
+            ALL: {
+              backgroundColor: { value: "#631222" },
+              marginTop: { value: "5px" },
+              marginBottom: { value: "6px" },
+              marginLeft: { value: "7px" },
+              marginRight: { value: "8px" },
+              color: { value: "#226318" },
+              "tagIcon-paddingTop": { value: "3px" },
+              "tagText-paddingBottom": { value: "3px" },
+            },
+          },
+        },
+        "5c7560cd-99ff-4813-b2d1-f821f5dba02b": {
+          pseudoState: "hover",
+          resolutions: {
+            ALL: {
+              color: { value: "#8790aa" },
+            },
+          },
+        },
+      },
+      properties: {
+        label: {
+          value: "akhilesh",
+        },
+        closeEvent: {
+          value: "login",
+        },
+        icon: {
+          value: "fa fa-brands fa-whatsapp",
+        },
+        onClick: {
+          value: "login",
+        },
+      },
     },
     loginButton: {
       name: "loginButton",
