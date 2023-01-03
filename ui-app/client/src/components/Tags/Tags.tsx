@@ -22,7 +22,7 @@ function Tags(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 
 	const {
-		properties: { icon, label, closeButton, closeEvent, onClick, readOnly, readOnlyonly } = {},
+		properties: { icon, label, closeButton, closeEvent, onClick, readOnly } = {},
 		key,
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -32,28 +32,25 @@ function Tags(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	console.log(onClick + 'akhil');
-	console.log(readOnlyonly + 'alli');
 	const resolvedStyles = processComponentStylePseudoClasses(
-		{ hover, disabled: readOnly },
+		{ hover, disabled: !!readOnly },
 		stylePropertiesWithPseudoStates,
 	);
-	const onCLickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
+	const onClickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
 
-	const closeEventEvent = closeEvent
-		? props.pageDefinition.eventFunctions[closeEvent]
-		: undefined;
+	const onCloseEvent = closeEvent ? props.pageDefinition.eventFunctions[closeEvent] : undefined;
 
 	const bindingPathPath = getPathFromLocation(bindingPath!, locationHistory, pageExtractor);
+
 	const handleClick = () => {
 		if (!readOnly) {
-			(async () => await runEvent(onCLickEvent, key, props.context.pageName))();
+			(async () => await runEvent(onClickEvent, key, props.context.pageName))();
 		}
 	};
 	const handleClose = (e: any) => {
 		e.stopPropagation();
 		if (!readOnly) {
-			(async () => await runEvent(closeEventEvent, key, props.context.pageName))();
+			(async () => await runEvent(onCloseEvent, key, props.context.pageName))();
 		}
 	};
 	React.useEffect(() => {
@@ -93,7 +90,7 @@ function Tags(props: ComponentProps) {
 				{closeButton ? (
 					<i
 						style={resolvedStyles.tagCloseIcon ?? {}}
-						className="fa-solid fa-xmark closeButton"
+						className="fa fa-solid fa-xmark closeButton"
 						onClick={handleClose}
 					></i>
 				) : (

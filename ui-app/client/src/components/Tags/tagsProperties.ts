@@ -100,8 +100,8 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.padding,
 			name: 'tagIconPadding',
-			description: "Tag's Icon Padding",
-			displayName: 'Tag Icon padding',
+			description: "Tags Icon's Padding",
+			displayName: "Tag Icon's padding",
 			prefix: 'tagIcon',
 			target: ['tagIcon'],
 		},
@@ -110,8 +110,8 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
 			name: 'tagTextColor',
-			description: "Tag's Text Color",
-			displayName: 'Tag Text Color',
+			description: "Tags Text's Color",
+			displayName: "Tag Text's Color",
 			prefix: 'tagText',
 			target: ['tagText'],
 		},
@@ -136,7 +136,7 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
 			name: 'tagCloseIconColor',
-			description: "Tag's Close icon Color",
+			description: "Tag's close icon Color",
 			displayName: 'Tag close icon Color',
 			prefix: 'tagCloseIcon',
 			target: ['tagCloseIcon'],
