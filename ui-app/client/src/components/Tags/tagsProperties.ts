@@ -1,7 +1,12 @@
 import { Schema } from '@fincity/kirun-js';
-import { SCHEMA_REF_BOOL_COMP_PROP, SCHEMA_REF_STRING_COMP_PROP } from '../../constants';
+import {
+	SCHEMA_REF_ANY_COMP_PROP,
+	SCHEMA_REF_BOOL_COMP_PROP,
+	SCHEMA_REF_STRING_COMP_PROP,
+} from '../../constants';
 import {
 	ComponentPropertyDefinition,
+	ComponentPropertyEditor,
 	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
@@ -15,14 +20,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'icon that should be associated with the tag.',
 	},
 	{
-		name: 'label',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-		displayName: 'Label',
-		description: 'Label that should be associated with the tag.',
-	},
-	{
 		name: 'closeButton',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
 		displayName: 'closeButton',
 		description: 'closeButton that should be associated with the tag.',
 		defaultValue: true,
@@ -34,12 +33,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'closeEvent that should be associated with the tag.',
 	},
 	{
-		name: 'onClick',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-		displayName: 'onClick',
-		description: 'onClick that should be associated with the tag.',
-	},
-	{
 		name: 'readOnly',
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
 		displayName: 'readOnly',
@@ -47,10 +40,127 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.COMMON,
 		defaultValue: false,
 	},
+	{
+		name: 'datatype',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'Dropdown data type',
+		description: `Dropdown's data format.`,
+		defaultValue: 'LIST_OF_STRINGS',
+		editor: ComponentPropertyEditor.ENUM,
+		enumValues: [
+			{
+				name: 'LIST_OF_STRINGS',
+				displayName: 'List of strings',
+				description: 'data has an array of strings',
+			},
+			{
+				name: 'LIST_OF_OBJECTS',
+				displayName: 'List of objects',
+				description: 'data has an array of objects',
+			},
+			{
+				name: 'LIST_OF_LISTS',
+				displayName: 'List of lists',
+				description: 'data has an array of arrays',
+			},
+			{
+				name: 'OBJECT_OF_PRIMITIVES',
+				displayName: 'Object of primitives',
+				description: 'Object with key value pairs where values are primitives',
+			},
+			{
+				name: 'OBJECT_OF_OBJECTS',
+				displayName: 'Object of objects',
+				description: 'Object with key value pairs where values are objects',
+			},
+			{
+				name: 'OBJECT_OF_LISTS',
+				displayName: 'Object of lists',
+				description: 'Object with key value pairs where values are lists',
+			},
+		],
+	},
+	{
+		name: 'uniqueKeyType',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: "Unique key's type",
+		description: `Type for sleection unique key`,
+		defaultValue: 'LIST_OF_STRINGS',
+		editor: ComponentPropertyEditor.ENUM,
+		enumValues: [
+			{
+				name: 'KEY',
+				displayName: 'Key',
+				description: "Select key as unique key's value",
+			},
+			{
+				name: 'INDEX',
+				displayName: 'Index',
+				description: "Select index as unique key's value",
+			},
+			{
+				name: 'OBJECT',
+				displayName: 'Object',
+				description: "Select object as unique key's value",
+			},
+		],
+	},
+
+	{
+		name: 'labelKeyType',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: "Label's key type",
+		description: `type of value that needs to be selected for dispaly label`,
+		defaultValue: 'LIST_OF_STRINGS',
+		editor: ComponentPropertyEditor.ENUM,
+		enumValues: [
+			{
+				name: 'KEY',
+				displayName: 'Key',
+				description: "Select key as label key's value",
+			},
+			{
+				name: 'INDEX',
+				displayName: 'Index',
+				description: "Select index as label key's value",
+			},
+			{
+				name: 'OBJECT',
+				displayName: 'Object',
+				description: "Select object as label key's value",
+			},
+		],
+	},
+
+	{
+		name: 'uniqueKey',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: "Unique key's value ",
+		description: `Key value that is used to generate unique key value.`,
+		translatable: true,
+	},
+
+	{
+		name: 'labelKey',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: "Labels key's value ",
+		description: `Key value that is used to generate label value.`,
+		translatable: true,
+	},
+	{
+		name: 'dataBinding',
+		schema: Schema.ofRef(SCHEMA_REF_ANY_COMP_PROP),
+		displayName: 'Dropdown data',
+		description: `Data that is used to render dropdown.`,
+	},
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 	'': {
+		[COMPONENT_STYLE_GROUP_PROPERTIES.flex.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.flex,
+			target: ['tagContainer'],
+		},
 		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.size,
 			target: ['container'],
