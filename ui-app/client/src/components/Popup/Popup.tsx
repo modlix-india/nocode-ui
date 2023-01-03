@@ -59,23 +59,14 @@ function Popup(props: ComponentProps) {
 	const refObj = useRef({ first: true });
 
 	React.useEffect(() => {
-		console.log('events are', openEvent, closeEvent, eventOnClose, eventOnOpen);
-
 		if (openEvent && isActive) {
-			console.log('event on open', openEvent);
 			(async () => await runEvent(openEvent, key, props.context.pageName))();
 		}
 		if (!isActive && closeEvent && !refObj.current.first) {
-			console.log('event on close', closeEvent);
 			(async () => await runEvent(closeEvent, key, props.context.pageName))();
 		}
 		refObj.current.first = false;
 	}, [isActive]);
-	const handleCloseOnOutsideClick = () => {
-		if (closeOnOutsideClick) {
-			handleClose();
-		}
-	};
 
 	const handleClose = React.useCallback(() => {
 		setData(
@@ -84,6 +75,8 @@ function Popup(props: ComponentProps) {
 			props.context?.pageName,
 		);
 	}, []);
+
+	const handleCloseOnOutsideClick = closeOnOutsideClick ? handleClose : undefined;
 
 	const handleBubbling = (e: any) => {
 		e.stopPropagation();
