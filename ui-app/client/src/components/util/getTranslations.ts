@@ -1,12 +1,12 @@
-import React from 'react';
-import { getData } from '../../context/StoreContext';
+import { getDataFromPath } from '../../context/StoreContext';
 
 export function getTranslations(
-	key: string,
+	key: string | undefined,
 	languageObject: { [key: string]: { [key: string]: string } },
 ) {
+	if (!key) return key;
 	if (!languageObject) return key;
-	const lang = getData('Store.currentLanguage') ?? 'en';
+	const lang = getDataFromPath('Store.currentLanguage', []) ?? 'en';
 	if (!languageObject[lang]) return key;
 	return languageObject[lang][key] ?? key;
 }

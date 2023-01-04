@@ -1,5 +1,6 @@
 import { ExpressionEvaluator, TokenValueExtractor } from '@fincity/kirun-js';
-import { getData } from '../../context/StoreContext';
+import { getData, getDataFromLocation } from '../../context/StoreContext';
+import { ComponentProperty, DataLocation } from '../../types/common';
 
 export class ObjectExtractor extends TokenValueExtractor {
 	private store: any;
@@ -19,9 +20,7 @@ export class ObjectExtractor extends TokenValueExtractor {
 }
 
 const getExtractionMap = (data: any) =>
-	new Map<string, TokenValueExtractor>([
-		[`Data.`, new ObjectExtractor(data, `Data.`)],
-	]);
+	new Map<string, TokenValueExtractor>([[`Data.`, new ObjectExtractor(data, `Data.`)]]);
 
 const getSelection = (
 	selectionType: 'KEY' | 'INDEX' | 'OBJECT' | undefined,
@@ -30,9 +29,7 @@ const getSelection = (
 	index: number | string,
 ) => {
 	if (selectionType === 'KEY') {
-		let ev: ExpressionEvaluator = new ExpressionEvaluator(
-			`Data.${selectionKey}`,
-		);
+		let ev: ExpressionEvaluator = new ExpressionEvaluator(`Data.${selectionKey}`);
 		return ev.evaluate(getExtractionMap(object));
 	}
 	if (selectionType === 'INDEX') {
@@ -43,8 +40,8 @@ const getSelection = (
 	}
 };
 
-export const getRenderData = (
-	dataLocation: any,
+export function getRenderData<T>(
+	data: any,
 	dataType:
 		| 'LIST_OF_STRINGS'
 		| 'LIST_OF_OBJECTS'
@@ -58,48 +55,53 @@ export const getRenderData = (
 	selectionKey?: string,
 	labelKeyType?: 'KEY' | 'INDEX' | 'OBJECT',
 	labelKey?: string,
-) => {
-	const data = getData(dataLocation) || [];
-	let ev: ExpressionEvaluator = new ExpressionEvaluator(
-		`Data.${selectionKey}`,
-	);
+) {
 	if (dataType === 'LIST_OF_STRINGS') {
-		const res = data.map((e: any, index: number) => {
-			if (typeof e === 'string') {
-				return {
-					label: e,
-					value: selectionType === 'INDEX' ? index : e,
-					key: uniqueKeyType === 'INDEX' ? index : e,
-				};
-			}
-		});
-		return res;
+		if (Array.isArray(data)) {
+			const res = data.map((e: any, index: number) => {
+				if (typeof e === 'string') {
+					return {
+						label: e,
+						value: selectionType === 'INDEX' ? index : e,
+						key: uniqueKeyType === 'INDEX' ? index : e,
+						originalObjectKey: index,
+					};
+				}
+			});
+			return res;
+		}
 	}
 
 	if (dataType === 'LIST_OF_OBJECTS') {
-		const res = data.map((e: any, index: number) => {
-			if (typeof e === 'object') {
-				return {
-					label: getSelection('KEY', labelKey, e, 0),
-					value: getSelection(selectionType, selectionKey, e, index),
-					key: getSelection(uniqueKeyType, uniqueKey, e, index),
-				};
-			}
-		});
-		return res;
+		if (Array.isArray(data)) {
+			const res = data.map((e: any, index: number) => {
+				if (typeof e === 'object') {
+					return {
+						label: getSelection('KEY', labelKey, e, 0),
+						value: getSelection(selectionType, selectionKey, e, index),
+						key: getSelection(uniqueKeyType, uniqueKey, e, index),
+						originalObjectKey: index,
+					};
+				}
+			});
+			return res;
+		}
 	}
 
 	if (dataType === 'LIST_OF_LISTS') {
-		const res = data.map((e: any, index: number) => {
-			if (Array.isArray(e)) {
-				return {
-					label: getSelection('KEY', labelKey, e, 0),
-					value: getSelection(selectionType, selectionKey, e, index),
-					key: getSelection(uniqueKeyType, uniqueKey, e, index),
-				};
-			}
-		});
-		return res;
+		if (Array.isArray(data)) {
+			const res = data.map((e: any, index: number) => {
+				if (Array.isArray(e)) {
+					return {
+						label: getSelection('KEY', labelKey, e, 0),
+						value: getSelection(selectionType, selectionKey, e, index),
+						key: getSelection(uniqueKeyType, uniqueKey, e, index),
+						originalObjectKey: index,
+					};
+				}
+			});
+			return res;
+		}
 	}
 
 	if (dataType === 'OBJECT_OF_PRIMITIVES') {
@@ -109,6 +111,7 @@ export const getRenderData = (
 					label: getSelection(labelKeyType, '', v, index),
 					value: getSelection(selectionType, '', v, index),
 					key: getSelection(uniqueKeyType, '', v, index),
+					originalObjectKey: k,
 				};
 			}
 		});
@@ -122,6 +125,7 @@ export const getRenderData = (
 					label: getSelection(labelKeyType, labelKey, v, k),
 					value: getSelection(selectionType, selectionKey, v, k),
 					key: getSelection(uniqueKeyType, uniqueKey, v, k),
+					originalObjectKey: k,
 				};
 			}
 		});
@@ -135,9 +139,10 @@ export const getRenderData = (
 					label: getSelection(labelKeyType, labelKey, v, k),
 					value: getSelection(selectionType, selectionKey, v, k),
 					key: getSelection(uniqueKeyType, uniqueKey, v, k),
+					originalObjectKey: k,
 				};
 			}
 		});
 		return res;
 	}
-};
+}

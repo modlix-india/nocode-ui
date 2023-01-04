@@ -1,11 +1,7 @@
-import { createContext, useContext, useMemo, useState } from 'react';
-import {
-	useStore,
-	setStoreData,
-} from '@fincity/path-reactive-state-management';
-import { LOCAL_STORE_PREFIX, STORE_PREFIX } from '../constants';
+import { useStore, setStoreData } from '@fincity/path-reactive-state-management';
+import { LOCAL_STORE_PREFIX, STORE_PREFIX, PAGE_STORE_PREFIX } from '../constants';
 import { isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
-import { Location } from '../components/types';
+import { ComponentProperty, DataLocation, RenderContext } from '../types/common';
 
 class LocalStoreExtractor extends TokenValueExtractor {
 	private store: any;
@@ -16,7 +12,7 @@ class LocalStoreExtractor extends TokenValueExtractor {
 		this.prefix = prefix;
 	}
 	protected getValueInternal(token: string) {
-		let parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
+		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
 		// Add isSlave_ as prefix for preview mode
 		let localStorageValue = this.store.getItem(parts[1]);
 		if (!localStorageValue) return localStorageValue;
@@ -40,7 +36,7 @@ export class StoreExtractor extends TokenValueExtractor {
 		this.prefix = prefix;
 	}
 	protected getValueInternal(token: string) {
-		let parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
+		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
 		return this.retrieveElementFrom(token, parts, 1, this.store);
 	}
 	getPrefix(): string {
@@ -51,83 +47,99 @@ let localStore: any = {};
 if (typeof window !== 'undefined') {
 	localStore = window.localStorage;
 }
-export const localStoreExtractor = new LocalStoreExtractor(
-	localStore,
-	`${LOCAL_STORE_PREFIX}.`,
-);
+export const localStoreExtractor = new LocalStoreExtractor(localStore, `${LOCAL_STORE_PREFIX}.`);
 const {
 	getData: _getData,
 	setData: _setData,
 	addListener: _addListener,
 	store: _store,
+	addListenerAndCallImmediately: _addListenerAndCallImmediately,
 } = useStore({}, STORE_PREFIX, localStoreExtractor);
 
 export const storeExtractor = new StoreExtractor(_store, `${STORE_PREFIX}.`);
 
-export const dotPathBuilder = (
-	path: string,
-	locationHistory: Array<Location | string>,
-) => {
+export const dotPathBuilder = (path: string, locationHistory: Array<DataLocation | string>) => {
 	if (!path.startsWith('.')) return path;
 
 	let dotsLength = 0;
 	for (let i = 0; i < path.length && path[i] === '.'; i++) {
 		dotsLength++;
 	}
-	const pickedlocationHistory =
-		locationHistory[locationHistory.length - dotsLength];
+	const pickedlocationHistory = locationHistory[locationHistory.length - dotsLength];
 
 	if (!pickedlocationHistory) return path;
 	let finalPath = '';
 	if (typeof pickedlocationHistory === 'string')
 		finalPath = `${pickedlocationHistory}.${path.substring(dotsLength)}`;
-	if (pickedlocationHistory?.type === 'VALUE') {
-		finalPath = `${pickedlocationHistory.value}.${path.substring(
-			dotsLength,
-		)}`;
-	}
-	if (pickedlocationHistory?.type === 'EXPRESSION') {
-		finalPath = `${pickedlocationHistory.expression}.${path.substring(
-			dotsLength,
-		)}`;
+	else {
+		if (pickedlocationHistory?.type === 'VALUE') {
+			finalPath = `${pickedlocationHistory.value}.${path.substring(dotsLength)}`;
+		}
+		if (pickedlocationHistory?.type === 'EXPRESSION') {
+			finalPath = `${pickedlocationHistory.expression}.${path.substring(dotsLength)}`;
+		}
 	}
 	return finalPath;
 };
 
-export function getData(
-	loc: any,
-	locationHistory: Array<Location | string>,
+export function getData<T>(
+	prop: ComponentProperty<T> | undefined,
+	locationHistory: Array<DataLocation | string>,
 	...tve: Array<TokenValueExtractor>
-) {
-	const typeOfLoc = typeof loc;
-
-	if (typeOfLoc === 'string') return _getData(loc as unknown as string);
-
-	if (typeOfLoc !== 'object') return undefined;
-
-	let data: any = undefined;
-	if (loc.location?.type === 'VALUE') {
-		data = _getData(
-			dotPathBuilder(loc.location?.value!, locationHistory) || '',
-		);
+): T | undefined {
+	if (!prop) return undefined;
+	if (globalThis.isDesignMode && !isNullValue(prop.overrideValue)) {
+		return prop.overrideValue!;
 	}
-	if (loc.location?.type === 'EXPRESSION') {
-		const v = _getData(
-			dotPathBuilder(loc.location?.expression!, locationHistory) || '',
-		);
-		if (!isNullValue(v)) data = v;
+	let value: T | undefined;
+	if (prop.location) {
+		value = getDataFromLocation(prop.location, locationHistory, ...tve);
 	}
-	if (!isNullValue(loc.value)) data = loc.value;
-
-	return data;
+	if (!isNullValue(value)) return value;
+	return prop.value;
 }
 
-export function setData(path: string, value: any) {
+export function getDataFromLocation(
+	loc: DataLocation,
+	locationHistory: Array<DataLocation | string>,
+	...tve: Array<TokenValueExtractor>
+): any {
+	if (loc?.type === 'VALUE' && loc.value) {
+		return _getData(dotPathBuilder(loc.value, locationHistory) || '', ...tve);
+	} else if (loc?.type === 'EXPRESSION' && loc.expression) {
+		return _getData(dotPathBuilder(loc?.expression!, locationHistory) || '', ...tve);
+	}
+}
+
+export function getPathFromLocation(
+	loc: DataLocation,
+	locationHistory: Array<DataLocation | string>,
+	...tve: Array<TokenValueExtractor>
+): string {
+	if (loc?.type === 'VALUE' && loc.value) {
+		return dotPathBuilder(loc.value, locationHistory) || '';
+	} else if (loc?.type === 'EXPRESSION' && loc.expression) {
+		return (
+			dotPathBuilder(getDataFromLocation(loc, locationHistory, ...tve), locationHistory) || ''
+		);
+	}
+	return '';
+}
+
+export function getDataFromPath(
+	path: string | undefined,
+	locationHistory: Array<DataLocation | string>,
+) {
+	if (!path) return undefined;
+	return _getData(dotPathBuilder(path, locationHistory));
+}
+
+export function setData(path: string, value: any, context?: string) {
 	if (path.startsWith(LOCAL_STORE_PREFIX)) {
 		if (!value) return;
 		let parts = path.split(TokenValueExtractor.REGEX_DOT);
 		// Add isSlave_ as prefix for preview mode
-		let key = parts[1];
+		const key = parts[1];
 		parts = parts.slice(2);
 		let store;
 		store = localStore.getItem(key);
@@ -154,8 +166,77 @@ export function setData(path: string, value: any) {
 				localStore.setItem(key, value);
 			}
 		}
+	} else if (path.startsWith(PAGE_STORE_PREFIX) && context) {
+		_setData(
+			`Store.pageData.${context}.${path.substring(PAGE_STORE_PREFIX.length + 1)}`,
+			value,
+		);
 	} else _setData(path, value);
 }
-export const addListener = _addListener;
+
+export class PageStoreExtractor extends TokenValueExtractor {
+	private pageName: string;
+
+	static readonly extractorMap: Map<string, PageStoreExtractor> = new Map();
+
+	constructor(pageName: string) {
+		super();
+		this.pageName = pageName;
+	}
+
+	protected getValueInternal(token: string) {
+		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
+		return this.retrieveElementFrom(
+			token,
+			['pageData', this.pageName, ...parts.slice(1)],
+			0,
+			_store,
+		);
+	}
+
+	getPrefix(): string {
+		return 'Page.';
+	}
+
+	public static getForContext(pageName: string): PageStoreExtractor {
+		if (this.extractorMap.has(pageName)) return this.extractorMap.get(pageName)!;
+
+		this.extractorMap.set(pageName, new PageStoreExtractor(pageName));
+
+		return this.extractorMap.get(pageName)!;
+	}
+
+	public getPageName(): string {
+		return this.pageName;
+	}
+}
+
+export const addListener = (
+	callback: (path: string, value: any) => void,
+	pageExtractor?: PageStoreExtractor,
+	...path: Array<string>
+): (() => void) => {
+	if (!pageExtractor) return _addListener(callback, ...path);
+	const nPaths = path.map(e => {
+		if (!e.startsWith(pageExtractor.getPrefix())) return e;
+		return 'Store.pageData.' + pageExtractor.getPageName() + e.substring(4);
+	});
+
+	return _addListener(callback, ...nPaths);
+};
+
+export const addListenerAndCallImmediately = (
+	callback: (path: string, value: any) => void,
+	pageExtractor?: PageStoreExtractor,
+	...path: Array<string>
+): (() => void) => {
+	if (!pageExtractor) return _addListenerAndCallImmediately(true, callback, ...path);
+	const nPaths = path.map(e => {
+		if (!e.startsWith(pageExtractor.getPrefix())) return e;
+		return 'Store.pageData.' + pageExtractor.getPageName() + e.substring(4);
+	});
+
+	return _addListenerAndCallImmediately(true, callback, ...nPaths);
+};
 
 export const store = _store;
