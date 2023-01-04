@@ -692,19 +692,42 @@ export const page = {
       name: "tagtagatag",
       key: "tagtagatag",
       type: "Tags",
-      bindingPath: {},
+      bindingPath: {
+        type: "VALUE",
+        value: "Store.dropdownData",
+      },
+      properties: {
+        datatype: {
+          value: "LIST_OF_STRINGS",
+        },
+        selectionType: {
+          value: "OBJECT",
+        },
+        uniqueKeyType: {
+          value: "OBJECT",
+        },
+        closeEvent: {
+          value: "login",
+        },
+        icon: {
+          value: "fa fa-brands fa-whatsapp",
+        },
+      },
       styleProperties: {
         "d9652d73-2292-4d8f-9112-7ac448eb6951": {
           resolutions: {
             ALL: {
-              backgroundColor: { value: "#631222" },
-              marginTop: { value: "5px" },
-              marginBottom: { value: "6px" },
-              marginLeft: { value: "7px" },
-              marginRight: { value: "8px" },
-              color: { value: "#226318" },
-              "tagIcon-paddingTop": { value: "3px" },
-              "tagText-paddingBottom": { value: "3px" },
+              // backgroundColor: { value: "#631222" },
+              // marginTop: { value: "5px" },
+              // marginBottom: { value: "6px" },
+              // marginLeft: { value: "7px" },
+              // marginRight: { value: "8px" },
+              // color: { value: "#226318" },
+              // "tagIcon-paddingTop": { value: "3px" },
+              // "tagText-paddingBottom": { value: "3px" },
+              display: { value: "flex" },
+              flexDirection: { value: "row" },
+              gap: { value: "5px" },
             },
           },
         },
@@ -717,18 +740,30 @@ export const page = {
           },
         },
       },
+    },
+    tagtagatag2: {
+      name: "tagtagatag2",
+      key: "tagtagatag2",
+      type: "Tags",
+      bindingPath: {
+        type: "VALUE",
+        value: "Store.dropdownData",
+      },
       properties: {
-        label: {
-          value: "akhilesh",
+        datatype: {
+          value: "LIST_OF_STRINGS",
+        },
+        selectionType: {
+          value: "OBJECT",
+        },
+        uniqueKeyType: {
+          value: "OBJECT",
         },
         closeEvent: {
           value: "login",
         },
         icon: {
           value: "fa fa-brands fa-whatsapp",
-        },
-        onClick: {
-          value: "login",
         },
       },
     },

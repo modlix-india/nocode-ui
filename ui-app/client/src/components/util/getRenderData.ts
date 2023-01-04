@@ -64,6 +64,7 @@ export function getRenderData<T>(
 						label: e,
 						value: selectionType === 'INDEX' ? index : e,
 						key: uniqueKeyType === 'INDEX' ? index : e,
+						originalObjectKey: index,
 					};
 				}
 			});
@@ -79,6 +80,7 @@ export function getRenderData<T>(
 						label: getSelection('KEY', labelKey, e, 0),
 						value: getSelection(selectionType, selectionKey, e, index),
 						key: getSelection(uniqueKeyType, uniqueKey, e, index),
+						originalObjectKey: index,
 					};
 				}
 			});
@@ -94,6 +96,7 @@ export function getRenderData<T>(
 						label: getSelection('KEY', labelKey, e, 0),
 						value: getSelection(selectionType, selectionKey, e, index),
 						key: getSelection(uniqueKeyType, uniqueKey, e, index),
+						originalObjectKey: index,
 					};
 				}
 			});
@@ -108,6 +111,7 @@ export function getRenderData<T>(
 					label: getSelection(labelKeyType, '', v, index),
 					value: getSelection(selectionType, '', v, index),
 					key: getSelection(uniqueKeyType, '', v, index),
+					originalObjectKey: k,
 				};
 			}
 		});
@@ -121,6 +125,7 @@ export function getRenderData<T>(
 					label: getSelection(labelKeyType, labelKey, v, k),
 					value: getSelection(selectionType, selectionKey, v, k),
 					key: getSelection(uniqueKeyType, uniqueKey, v, k),
+					originalObjectKey: k,
 				};
 			}
 		});
@@ -134,6 +139,7 @@ export function getRenderData<T>(
 					label: getSelection(labelKeyType, labelKey, v, k),
 					value: getSelection(selectionType, selectionKey, v, k),
 					key: getSelection(uniqueKeyType, uniqueKey, v, k),
+					originalObjectKey: k,
 				};
 			}
 		});

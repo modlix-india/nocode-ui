@@ -6,6 +6,9 @@ const PREFIX = '.comp.compTags';
 export default function TagsStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
 	const css =
 		`
+		${PREFIX} .tagContainer {
+			display: flex;
+		}
     	${PREFIX} .container{
 			display: flex;
 			flex-direction: row;
