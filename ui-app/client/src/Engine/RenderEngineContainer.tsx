@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, Location } from 'react-router-dom';
 import { STORE_PREFIX } from '../constants';
-import { addListener, getData, getDataFromPath, setData } from '../context/StoreContext';
+import {
+	addListener,
+	addListenerAndCallImmediately,
+	getData,
+	getDataFromPath,
+	setData,
+} from '../context/StoreContext';
 import * as getPageDefinition from './../definitions/getPageDefinition.json';
 import { runEvent } from '../components/util/runEvent';
 import Page from '../components/Page';
@@ -14,7 +20,6 @@ export const RenderEngineContainer = () => {
 
 	useEffect(() => {
 		let { pageName } = processLocation(location);
-		console.log(`Page name is ${pageName}`);
 		if (!pageName)
 			pageName = getDataFromPath(`${STORE_PREFIX}.application.properties.defaultPage`, []);
 		let pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
@@ -33,13 +38,16 @@ export const RenderEngineContainer = () => {
 
 	useEffect(
 		() =>
-			addListener(
-				(_, value) => setShellPageDefinition(value),
+			addListenerAndCallImmediately(
+				(_, value) => {
+					console.log('hello world', value);
+					setShellPageDefinition(value);
+				},
+				undefined,
 				`${STORE_PREFIX}.application.properties.shellPageDefinition`,
 			),
 		[],
 	);
-
 	if (currentPageName && pageDefinition) {
 		const { properties: { wrapShell = true } = {} } = pageDefinition;
 
@@ -74,7 +82,7 @@ export const RenderEngineContainer = () => {
 	}
 };
 
-function processLocation(location: Location) {
+export function processLocation(location: Location) {
 	const details: any = { queryParameters: {} };
 
 	if (location.search) {

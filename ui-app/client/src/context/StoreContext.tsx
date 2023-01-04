@@ -53,6 +53,7 @@ const {
 	setData: _setData,
 	addListener: _addListener,
 	store: _store,
+	addListenerAndCallImmediately: _addListenerAndCallImmediately,
 } = useStore({}, STORE_PREFIX, localStoreExtractor);
 
 export const storeExtractor = new StoreExtractor(_store, `${STORE_PREFIX}.`);
@@ -224,6 +225,20 @@ export const addListener = (
 	});
 
 	return _addListener(callback, ...nPaths);
+};
+
+export const addListenerAndCallImmediately = (
+	callback: (path: string, value: any) => void,
+	pageExtractor?: PageStoreExtractor,
+	...path: Array<string>
+): (() => void) => {
+	if (!pageExtractor) return _addListenerAndCallImmediately(true, callback, ...path);
+	const nPaths = path.map(e => {
+		if (!e.startsWith(pageExtractor.getPrefix())) return e;
+		return 'Store.pageData.' + pageExtractor.getPageName() + e.substring(4);
+	});
+
+	return _addListenerAndCallImmediately(true, callback, ...nPaths);
 };
 
 export const store = _store;

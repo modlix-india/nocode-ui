@@ -75,7 +75,7 @@ export const application = {
   appCode: "nothing",
   version: 5,
   properties: {
-    defaultPage: "underConstruction",
+    defaultPage: "pagename",
     shellPageDefinition: {
       name: "shellDefinition",
       key: "shellDefinition",
@@ -86,32 +86,28 @@ export const application = {
           name: "grid",
           key: "grid",
           type: "Grid",
+          styleProperties: {
+            hdsbs7y7gcwg476ctrh623q: {
+              resolutions: {
+                ALL: {
+                  flexDirection: "column",
+                },
+              },
+            },
+          },
           children: {
             header: true,
-            footer: true,
+            // footer: true,
             body: true,
           },
         },
         header: {
           name: "header",
           key: "header",
-          type: "Label",
-          properties: {
-            text: {
-              value: "Header Text",
-            },
-            displayOrder: 1,
-          },
-        },
-        footer: {
-          name: "footer",
-          key: "footer",
-          type: "Label",
-          properties: {
-            text: {
-              value: "footer Text",
-            },
-            displayOrder: 3,
+          type: "Grid",
+
+          children: {
+            fincityBrandLabel: true,
           },
         },
         body: {
@@ -127,6 +123,16 @@ export const application = {
               },
             },
             displayOrder: 2,
+          },
+        },
+        fincityBrandLabel: {
+          name: "fincityBrandLabel",
+          key: "fincityBrandLabel",
+          type: "Label",
+          properties: {
+            text: {
+              value: "Fincity",
+            },
           },
         },
       },
