@@ -36,5 +36,4 @@ test('Testing path extractions', () => {
 	expect(paths).toStrictEqual(new Set(['Context.e', 'Context.c.a']));
 
 	paths = getPathsFrom('Context.{{Context.d}}.a + {{Context.{{Context.d}}.c.x}}', ev);
-	console.log(paths);
 });

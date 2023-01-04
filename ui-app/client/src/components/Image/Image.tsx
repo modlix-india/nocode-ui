@@ -34,7 +34,6 @@ function ImageComponent(props: ComponentProps) {
 		e.currentTarget.src =
 			'https://i.pinimg.com/736x/04/cf/66/04cf66fdf76be842dd82059c2486a394.jpg';
 	};
-	console.log(src);
 	return (
 		<div className="comp compImage">
 			<HelperComponent definition={definition} />
@@ -48,11 +47,10 @@ function ImageComponent(props: ComponentProps) {
 					onMouseEnter={e => {
 						const elem = e.currentTarget;
 						//to turn on magnifier
-						setShowMagnifier(true);
+						// setShowMagnifier(true);
 						//update width and height of the image  in pixels
 						const { width, height } = elem.getBoundingClientRect();
 						setSize([width, height]);
-						console.log(`width ${width} height ${height}`);
 					}}
 					onMouseMove={e => {
 						const elem = e.currentTarget;
@@ -62,7 +60,6 @@ function ImageComponent(props: ComponentProps) {
 						const x = e.pageX - left - window.pageXOffset;
 						const y = e.pageY - top - window.pageYOffset;
 						setXY([x, y]);
-						console.log(x, y);
 					}}
 					onMouseLeave={() => {
 						setShowMagnifier(false);

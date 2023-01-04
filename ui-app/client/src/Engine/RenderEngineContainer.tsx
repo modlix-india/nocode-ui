@@ -40,7 +40,6 @@ export const RenderEngineContainer = () => {
 		() =>
 			addListenerAndCallImmediately(
 				(_, value) => {
-					console.log('hello world', value);
 					setShellPageDefinition(value);
 				},
 				undefined,

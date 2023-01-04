@@ -64,9 +64,7 @@ function TextBox(props: ComponentProps) {
 	);
 	if (!bindingPath) throw new Error('Definition requires bindingpath');
 	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
-	console.log('BP ', bindingPathPath);
 	const textBoxValue = getDataFromLocation(bindingPath, locationHistory, pageExtractor);
-	console.log('TVB ' + textBoxValue);
 	React.useEffect(
 		() =>
 			addListener(
