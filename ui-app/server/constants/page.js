@@ -644,6 +644,8 @@ export const page = {
         fabTestButton: true,
         fabTestMiniButton: true,
         tagtagatag: true,
+        tagTag: true,
+        image: true,
       },
     },
     outlinedbuttongrid: {
@@ -726,6 +728,46 @@ export const page = {
           value: "fa fa-brands fa-whatsapp",
         },
         onClick: {
+          value: "login",
+        },
+      },
+    },
+    tagTag: {
+      name: "tagtagatag",
+      key: "tagtagatag",
+      type: "Tags",
+      bindingPath: {},
+      properties: {
+        closeEvent: {
+          value: "login",
+        },
+        icon: {
+          value: "fa fa-brands fa-whatsapp",
+        },
+        onClick: {
+          value: "login",
+        },
+      },
+    },
+    image: {
+      name: "image",
+      key: "image",
+      type: "Image",
+      properties: {
+        src: {
+          value:
+            "https://c4.wallpaperflare.com/wallpaper/575/681/304/naruto-shippuuden-uchiha-itachi-sharingan-anime-wallpaper-preview.jpg00",
+        },
+        alt: {
+          value: "Itachi Uchiha",
+        },
+        width: {
+          value: "500px",
+        },
+        height: {
+          value: "500px",
+        },
+        onClickEvent: {
           value: "login",
         },
       },

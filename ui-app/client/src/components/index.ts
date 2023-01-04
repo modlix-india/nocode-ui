@@ -11,6 +11,7 @@ import ArrayRepeater from './ArrayRepeater/ArrayRepeater';
 import Popup from './Popup/Popup';
 import Dropdown from './Dropdown/Dropdown';
 import Tags from './Tags/Tags';
+import Image from './Image/Image';
 
 export const Components = new Map<string, React.ElementType>([
 	[Button.name, Button.component],
@@ -26,6 +27,7 @@ export const Components = new Map<string, React.ElementType>([
 	[Popup.name, Popup.component],
 	[Dropdown.name, Dropdown.component],
 	[Tags.name, Tags.component],
+	[Image.name, Image.component],
 ]);
 
 export const ComponentDefinitions = [
@@ -41,4 +43,5 @@ export const ComponentDefinitions = [
 	Popup,
 	Dropdown,
 	Tags,
+	Image,
 ];
