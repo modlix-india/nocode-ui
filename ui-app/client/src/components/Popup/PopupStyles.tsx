@@ -24,8 +24,6 @@ export default function PopupStyles({ theme }: { theme: Map<string, Map<string, 
 
     ${PREFIX} .modal{
       position: relative;
-     
-      
     }
     ${PREFIX} .closeButtonPosition{
       margin-bottom: 10px
@@ -37,9 +35,6 @@ export default function PopupStyles({ theme }: { theme: Map<string, Map<string, 
     }
     ${PREFIX} .iconClass{
       cursor: pointer
-    }
-    ${PREFIX} .modelTitleStyle{
-      font-family : Roboto;
     }
     
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);

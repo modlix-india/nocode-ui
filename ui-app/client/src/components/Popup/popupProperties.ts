@@ -113,7 +113,7 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		},
 		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.margin,
-			target: ['modal'],
+			target: ['titleGrid'],
 		},
 	},
 	modalbg: {

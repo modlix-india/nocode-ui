@@ -10,7 +10,8 @@ import ToggleButton from './ToggleButton/ToggleButton';
 import ArrayRepeater from './ArrayRepeater/ArrayRepeater';
 import Popup from './Popup/Popup';
 import Dropdown from './Dropdown/Dropdown';
-import Menu from './Menu/Menu'
+import Menu from './Menu/Menu';
+import Tags from './Tags/Tags';
 
 export const Components = new Map<string, React.ElementType>([
 	[Button.name, Button.component],
@@ -26,6 +27,7 @@ export const Components = new Map<string, React.ElementType>([
 	[Popup.name, Popup.component],
 	[Dropdown.name, Dropdown.component],
 	[Menu.name, Menu.component],
+	[Tags.name, Tags.component],
 ]);
 
 export const ComponentDefinitions = [
@@ -40,5 +42,6 @@ export const ComponentDefinitions = [
 	ArrayRepeater,
 	Popup,
 	Dropdown,
-	Menu
+	Menu,
+	Tags,
 ];

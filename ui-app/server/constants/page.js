@@ -345,7 +345,7 @@ export const page = {
       key: "secondGrid",
       type: "Grid",
       children: {
-        // textboxgrid: true,
+        textboxgrid: true,
         // loginlabel: true,
         primarybuttongrid: true,
         fabTestButton: true,
@@ -372,7 +372,23 @@ export const page = {
       name: "popupcomp",
       key: "popupcomp",
       type: "Popup",
-      properties: {},
+      properties: {
+        closeButtonPosition: {
+          value: "LEFT",
+        },
+        closeOnEscape: {
+          value: false,
+        },
+        eventOnOpen: {
+          value: "login",
+        },
+        eventOnClose: {
+          value: "login",
+        },
+        modelTitle: {
+          value: "Tesla",
+        },
+      },
       bindingPath: {
         type: "VALUE",
         value: "Store.testModal",
@@ -588,7 +604,7 @@ export const page = {
       },
       bindingPath: {
         type: "VALUE",
-        expression: "'Store.x.{{Store.x.var}}'",
+        // expression: "'Store.x.{{Store.x.var}}'",
         value: "Store.x.a",
       },
       displayOrder: -1,
@@ -711,6 +727,8 @@ export const page = {
         loginButtonDisabled: true,
         fabTestButton: true,
         fabTestMiniButton: true,
+        tagtagatag: true,
+        tagtagatag2: true,
       },
     },
     outlinedbuttongrid: {
@@ -752,6 +770,85 @@ export const page = {
         },
       },
       displayOrder: 1,
+    },
+    tagtagatag: {
+      name: "tagtagatag",
+      key: "tagtagatag",
+      type: "Tags",
+      bindingPath: {
+        type: "VALUE",
+        value: "Store.dropdownData",
+      },
+      properties: {
+        datatype: {
+          value: "LIST_OF_STRINGS",
+        },
+        selectionType: {
+          value: "OBJECT",
+        },
+        uniqueKeyType: {
+          value: "OBJECT",
+        },
+        closeEvent: {
+          value: "login",
+        },
+        icon: {
+          value: "fa fa-brands fa-whatsapp",
+        },
+      },
+      styleProperties: {
+        "d9652d73-2292-4d8f-9112-7ac448eb6951": {
+          resolutions: {
+            ALL: {
+              // backgroundColor: { value: "#631222" },
+              // marginTop: { value: "5px" },
+              // marginBottom: { value: "6px" },
+              // marginLeft: { value: "7px" },
+              // marginRight: { value: "8px" },
+              // color: { value: "#226318" },
+              // "tagIcon-paddingTop": { value: "3px" },
+              // "tagText-paddingBottom": { value: "3px" },
+              display: { value: "flex" },
+              flexDirection: { value: "row" },
+              gap: { value: "5px" },
+            },
+          },
+        },
+        "5c7560cd-99ff-4813-b2d1-f821f5dba02b": {
+          pseudoState: "hover",
+          resolutions: {
+            ALL: {
+              color: { value: "#8790aa" },
+            },
+          },
+        },
+      },
+    },
+    tagtagatag2: {
+      name: "tagtagatag2",
+      key: "tagtagatag2",
+      type: "Tags",
+      bindingPath: {
+        type: "VALUE",
+        value: "Store.dropdownData",
+      },
+      properties: {
+        datatype: {
+          value: "LIST_OF_STRINGS",
+        },
+        selectionType: {
+          value: "OBJECT",
+        },
+        uniqueKeyType: {
+          value: "OBJECT",
+        },
+        closeEvent: {
+          value: "login",
+        },
+        icon: {
+          value: "fa fa-brands fa-whatsapp",
+        },
+      },
     },
     loginButton: {
       name: "loginButton",
