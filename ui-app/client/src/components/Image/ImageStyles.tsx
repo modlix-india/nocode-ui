@@ -8,8 +8,8 @@ export default function ImageStyle({ theme }: { theme: Map<string, Map<string, s
 	const css = `${PREFIX} .image {
         cursor: pointer;
         background-repeat: repeat-y;
-        width:700px;
-        height:700px;
+        width:500px;
+        height:500px;
     }`;
 	+processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
