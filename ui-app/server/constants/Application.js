@@ -86,29 +86,28 @@ export const application = {
           name: "grid",
           key: "grid",
           type: "Grid",
-
-          children: {
-            navigation: true,
-            body: true,
-          },
-        },
-        navigation: {
-          name: "navigation",
-          key: "navigation",
-          type: "Grid",
           styleProperties: {
-            ghsdh65dr6763727t6d23v67v67: {
+            hdsbs7y7gcwg476ctrh623q: {
               resolutions: {
                 ALL: {
-                  flexDirection: {
-                    value: "column",
-                  },
-                  backgroundColor: {
-                    value: "#212B35",
-                  },
+                  flexDirection: "column",
                 },
               },
             },
+          },
+          children: {
+            header: true,
+            // footer: true,
+            body: true,
+          },
+        },
+        header: {
+          name: "header",
+          key: "header",
+          type: "Grid",
+
+          children: {
+            fincityBrandLabel: true,
           },
           children: {},
         },
@@ -125,6 +124,16 @@ export const application = {
               },
             },
             displayOrder: 2,
+          },
+        },
+        fincityBrandLabel: {
+          name: "fincityBrandLabel",
+          key: "fincityBrandLabel",
+          type: "Label",
+          properties: {
+            text: {
+              value: "Fincity",
+            },
           },
         },
       },

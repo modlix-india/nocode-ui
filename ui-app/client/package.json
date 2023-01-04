@@ -55,7 +55,7 @@
 	},
 	"dependencies": {
 		"@fincity/kirun-js": "^1.4.4",
-		"@fincity/path-reactive-state-management": "^1.4.6",
+		"@fincity/path-reactive-state-management": "^1.4.7",
 		"@tsconfig/recommended": "^1.0.1",
 		"axios": "^0.27.2",
 		"react": "^18.2.0",
