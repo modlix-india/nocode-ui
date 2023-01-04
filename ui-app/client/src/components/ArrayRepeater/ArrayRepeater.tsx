@@ -7,6 +7,7 @@ import {
 	getDataFromLocation,
 	getPathFromLocation,
 	PageStoreExtractor,
+	setData,
 } from '../../context/StoreContext';
 import { HelperComponent } from '../HelperComponent';
 import {
@@ -21,6 +22,7 @@ import { Component } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './ArrayRepeaterProperties';
 import ArrayRepeaterStyle from './ArrayRepeaterStyle';
 import useDefinition from '../util/useDefinition';
+import UUID from '../util/uuid';
 
 function ArrayRepeaterComponent(props: ComponentProps) {
 	const [value, setValue] = React.useState([]);
@@ -33,12 +35,12 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
-		properties: { isItemDraggable, showMove, showDelete, showAdd } = {},
-		styleProperties,
+		properties: { isItemDraggable, showMove, showDelete, showAdd, readOnly } = {},
 		key,
-	} = useDefinition(definition, propertiesDefinition, locationHistory, pageExtractor);
+	} = useDefinition(definition, propertiesDefinition, stylePropertiesDefinition, locationHistory, pageExtractor);
 	if (!bindingPath) throw new Error('Definition requires bindingpath');
 	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
+
 	React.useEffect(() => {
 		addListener(
 			(_, value) => {
@@ -48,20 +50,83 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 			bindingPathPath,
 		);
 	}, [bindingPathPath]);
+
 	if (!Array.isArray(value)) return <></>;
 	const firstchild = {
 		[Object.entries(children)[0][0]]: Object.entries(children)[0][1],
 	};
+
+	const handleAdd = (index: any) => {
+		const newData = value.slice();
+		newData.splice(index + 1, 0, newData[index]);
+		setData(bindingPathPath, newData, context?.pageName)
+	};
+
+	const handleDelete = (index: any) =>  {
+		const newData = value.slice();
+		newData.splice(index, 1);
+		setData(bindingPathPath, newData, context?.pageName)
+	};
+
+	const handleMove = (from: number, to: number) => {
+		console.log(from, "from", to, "to");
+		const newData = value.slice();
+		if(from >= newData?.length || from < 0 || to >= newData.length || to < 0)
+			return;
+		const temp = newData[from];
+		newData[from] = newData[to];
+		newData[to] =  temp;
+		setData(bindingPathPath, newData, context?.pageName);
+	};
+
+	const handleDragStart = async(e: any, index: any) => {
+		e.dataTransfer.setData('application/my-app', index);
+	}
+
+	const handleDragOver = (e: any) => {
+		e.preventDefault();
+	}
+
+	const handleDragEnter = async(e: any) => {
+		e.preventDefault();
+		e.target.classList.add('dragging');
+		
+	}
+
+	const handleDragLeave = (e: any) => {
+		e.preventDefault();
+		e.target.classList.remove('dragging');
+	}
+
+	const handleDrop = (e: any, to: any) => {
+		e.preventDefault();
+		const from = parseInt(e.dataTransfer.getData('application/my-app'));
+		const newData = value.slice();
+		const temp = newData[from];
+		to === newData.length-1 ? newData.push(temp) : newData.splice(to, 0, temp);
+		newData.splice(from > to ? from + 1 : from, 1);
+		setData(bindingPathPath, newData, context?.pageName);
+		e.target.classList.remove('dragging');
+	}
+
 	return (
 		<div className="comp compArrayRepeater">
 			<HelperComponent definition={definition} />
-			{value.map((_, index) =>
-				renderChildren(pageDefinition, firstchild, context, [
+			{value.map((e: any, index) => {
+				const comp = renderChildren(pageDefinition, firstchild, context, [
 					...locationHistory,
 					updateLocationForChild(bindingPath!, index, locationHistory),
-				]),
+				]);
+				return <div key={`${e.name}_${index}`} className={`repeaterProperties ${readOnly ? "disabled" : ""}`} onDragStart={e => handleDragStart(e, index)} onDragOver={handleDragOver} onDrop={e => handleDrop(e, index)} onDragEnter={handleDragEnter} onDragLeave={handleDragLeave} draggable={isItemDraggable && !readOnly}>
+					{comp}
+					{showAdd && <i className="addOne fa fa-circle-plus fa-solid"  onClick={showAdd ? () => handleAdd(index) : undefined} />}
+					{showDelete && <i className="reduceOne fa fa-circle-minus fa-solid" onClick={showDelete ? () => handleDelete(index) : undefined} />}
+					{showMove && <i className={`moveOne ${index == value?.length - 1 ? "fa fa-circle-arrow-up fa-solid" : "fa fa-circle-arrow-down fa-solid"}`} onClick={showMove ? () => handleMove(index, index == value?.length - 1 ? index-1 : index+1) : undefined} />}
+					{showMove && <i className={`moveOne ${index == 0 || index == value?.length - 1 ? "" : "fa fa-circle-arrow-up fa-solid"}`} onClick={showMove ? () => handleMove(index, index-1) : undefined}/>}
+				</div>
+			}
 			)}
-		</div>
+			</div>
 	);
 }
 
