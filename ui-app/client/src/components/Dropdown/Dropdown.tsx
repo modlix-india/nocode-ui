@@ -75,12 +75,6 @@ function DropdownComponent(props: ComponentProps) {
 	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
 	const selectedDataKey = getSelectedKeys(dropdownData, selected);
 
-	console.log('renderdata', dropdownData);
-	console.log('selecteddata', selected);
-	console.log('selectedDataKey', selectedDataKey);
-	console.log('readOnly', readOnly);
-	console.log('headerText', headerText);
-	console.log('closeOnMouseLeave', closeOnMouseLeave);
 
 	const handleClick = async (each: { key: any; label: any; value: any }) => {
 		setData(bindingPathPath, each.value, context?.pageName);
