@@ -1,19 +1,31 @@
-import React, { useMemo } from 'react';
-import { getData } from '../context/StoreContext';
+import React from 'react';
+import { HelperComponent } from './HelperComponent';
+import { DataLocation, RenderContext } from '../types/common';
 import { renderChildren } from './util/renderChildren';
 
-export function Page({ definition }: { definition: any }) {
-	useMemo(() => {}, [definition]);
+function Page({
+	definition,
+	context,
+	locationHistory,
+}: {
+	definition: any;
+	context: RenderContext;
+	locationHistory: Array<DataLocation | string>;
+}) {
 	if (!definition) return <>Loading...</>;
-	const {
-		properties: { definitionLocation },
-	} = definition;
-	const pageDefinition = getData(definitionLocation);
-	if (!pageDefinition) return <>No Definition Found</>;
-	if (!pageDefinition.children) return <></>;
-
-	const comps = renderChildren(pageDefinition, {
-		[pageDefinition.rootComponent]: true,
-	});
-	return <>{comps}</>;
+	return (
+		<div className="comp compPage">
+			<HelperComponent definition={definition} />
+			{renderChildren(
+				definition,
+				{
+					[definition.rootComponent]: true,
+				},
+				context,
+				locationHistory,
+			)}
+		</div>
+	);
 }
+
+export default Page;

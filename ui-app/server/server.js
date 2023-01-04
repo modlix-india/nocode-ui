@@ -19,14 +19,14 @@ app.post("/login", (req, res) => {
   });
 });
 
-app.use("/application", (req, res) => {
+app.use("**/api/ui/application", (req, res) => {
   res.json(application);
 });
 
 app.use("/loginPageDefinition", (req, res) => {
   res.json(login);
 });
-app.use("/api", router);
+app.use("**/api", router);
 
 app.listen(port, () => {
   console.log(`Your app listening on port ${port}`);

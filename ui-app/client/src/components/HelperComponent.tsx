@@ -1,5 +1,5 @@
-import  React from 'react'
+import React from 'react';
 
-export function HelperComponent (){
-    return <> </>
+export function HelperComponent({ definition }: { definition: any }) {
+	return <> </>;
 }

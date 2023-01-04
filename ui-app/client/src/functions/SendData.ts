@@ -11,6 +11,7 @@ import {
 import axios from 'axios';
 import { NAMESPACE_UI_ENGINE } from '../constants';
 import { getData } from '../context/StoreContext';
+import { ComponentProperty } from '../types/common';
 import { pathFromParams, queryParamsSerializer } from './utils';
 
 const SIGNATURE = new FunctionSignature('SendData')
@@ -19,23 +20,12 @@ const SIGNATURE = new FunctionSignature('SendData')
 		new Map([
 			Parameter.ofEntry('url', Schema.ofString('url')),
 			Parameter.ofEntry('method', Schema.ofString('method')),
-			Parameter.ofEntry(
-				'queryParams',
-				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.UrlParameters`),
-			),
-			Parameter.ofEntry(
-				'pathParams',
-				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.UrlParameters`),
-			),
-			Parameter.ofEntry(
-				'payload',
-				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Location`),
-			),
+			Parameter.ofEntry('queryParams', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.UrlParameters`)),
+			Parameter.ofEntry('pathParams', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.UrlParameters`)),
+			Parameter.ofEntry('payload', Schema.ofAny('payload')),
 			Parameter.ofEntry(
 				'headers',
-				Schema.ofRef(
-					`${NAMESPACE_UI_ENGINE}.UrlParameters`,
-				).setDefaultValue({
+				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.UrlParameters`).setDefaultValue({
 					Authorization: {
 						location: {
 							expression: 'LocalStore.AuthToken',
@@ -48,48 +38,39 @@ const SIGNATURE = new FunctionSignature('SendData')
 	)
 	.setEvents(
 		new Map([
-			Event.eventMapEntry(
-				Event.OUTPUT,
-				new Map([['data', Schema.ofAny('data')]]),
-			),
+			Event.eventMapEntry(Event.OUTPUT, new Map([['data', Schema.ofAny('data')]])),
 			Event.eventMapEntry(
 				Event.ERROR,
-				new Map([
-					[
-						'error',
-						Schema.ofRef(`${NAMESPACE_UI_ENGINE}.FetchError`),
-					],
-				]),
+				new Map([['error', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.FetchError`)]]),
 			),
 		]),
 	);
 
 export class SendData extends AbstractFunction {
-	protected async internalExecute(
-		context: FunctionExecutionParameters,
-	): Promise<FunctionOutput> {
+	protected async internalExecute(context: FunctionExecutionParameters): Promise<FunctionOutput> {
+		const evmap = [...context.getValuesMap().values()];
 		const url: string = context.getArguments()?.get('url');
 		const method: string = context.getArguments()?.get('method');
 		let headers = context.getArguments()?.get('headers');
 		let pathParams = context.getArguments()?.get('pathParams');
 		let queryParams = context.getArguments()?.get('queryParams');
-		const payload = getData(context.getArguments()?.get('payload'));
+		const payload = context.getArguments()?.get('payload');
 
 		pathParams = Object.entries(pathParams)
-			.map(([k, v]) => [k, getData(v)])
-			.reduce((a, [k, v]) => {
+			.map(([k, v]) => [k, getData(v as ComponentProperty<any>, [], ...evmap)])
+			.reduce((a: { [key: string]: any }, [k, v]) => {
 				if (v) a[k] = v;
 				return a;
 			}, {});
 		queryParams = Object.entries(queryParams)
-			.map(([k, v]) => [k, getData(v)])
-			.reduce((a, [k, v]) => {
+			.map(([k, v]) => [k, getData(v as ComponentProperty<any>, [], ...evmap)])
+			.reduce((a: { [key: string]: any }, [k, v]) => {
 				if (v) a[k] = v;
 				return a;
 			}, {});
 		headers = Object.entries(headers)
-			.map(([k, v]) => [k, getData(v)])
-			.reduce((a, [k, v]) => {
+			.map(([k, v]) => [k, getData(v as ComponentProperty<any>, [], ...evmap)])
+			.reduce((a: { [key: string]: any }, [k, v]) => {
 				if (v) a[k] = v;
 				return a;
 			}, {});
@@ -99,15 +80,12 @@ export class SendData extends AbstractFunction {
 				url: pathFromParams(url, pathParams),
 				method,
 				params: queryParams,
-				paramsSerializer: params =>
-					queryParamsSerializer(params)?.[1] ?? '',
+				paramsSerializer: params => queryParamsSerializer(params)?.[1] ?? '',
 				headers,
 				data: payload,
 			});
 
-			return new FunctionOutput([
-				EventResult.outputOf(new Map([['data', response.data]])),
-			]);
+			return new FunctionOutput([EventResult.outputOf(new Map([['data', response.data]]))]);
 		} catch (err: any) {
 			const errOutput = {
 				headers: err.response.headers,

@@ -162,8 +162,176 @@ export const page = {
         },
       },
     },
+    toggleModal: {
+      name: "toggleModalDefinition",
+      namespace: "UIApp",
+      parameters: {},
+      events: {
+        output: {
+          name: "output",
+          parameters: {},
+        },
+      },
+      steps: {
+        toggleModal: {
+          statementName: "toggleModalData",
+          namespace: "UIEngine",
+          name: "SetStore",
+          parameterMap: {
+            path: {
+              settoggleModalData: {
+                key: "settoggleModalData",
+                type: "VALUE",
+                value: "Store.testModal",
+              },
+            },
+            value: {
+              settoggleModalDataValue: {
+                key: "settoggleModalData",
+                type: "EXPRESSION",
+                expression: "Store.testModal ? false : true",
+              },
+            },
+          },
+        },
+        setRepeaterTestingData: {
+          statementName: "setRepeaterTestingData",
+          namespace: "UIEngine",
+          name: "SetStore",
+          parameterMap: {
+            path: {
+              setRepeaterTestingDataPath: {
+                key: "setRepeaterTestingDataPath",
+                type: "VALUE",
+                value: "Store.RepeaterTesting",
+              },
+            },
+            value: {
+              setRepeaterTestingDataValue: {
+                key: "setRepeaterTestingDataValue",
+                type: "VALUE",
+                value: [
+                  {
+                    name: "Raja",
+                    index: 0,
+                    level: [
+                      { name: "Raja" },
+                      { name: "Shagil" },
+                      { name: "Tarun" },
+                      { name: "Surendhar" },
+                      { name: "Akhilesh" },
+                      { name: "Vishwas" },
+                    ],
+                  },
+                  {
+                    name: "Shagil",
+                    index: 1,
+                    level: [
+                      { name: "Raja" },
+                      { name: "Shagil" },
+                      { name: "Tarun" },
+                      { name: "Surendhar" },
+                      { name: "Akhilesh" },
+                      { name: "Vishwas" },
+                    ],
+                  },
+                  {
+                    name: "Tarun",
+                    index: 2,
+                    level: [
+                      { name: "Raja" },
+                      { name: "Shagil" },
+                      { name: "Tarun" },
+                      { name: "Surendhar" },
+                      { name: "Akhilesh" },
+                      { name: "Vishwas" },
+                    ],
+                  },
+                  {
+                    name: "Surendhar",
+                    index: 3,
+                    level: [
+                      { name: "Raja" },
+                      { name: "Shagil" },
+                      { name: "Tarun" },
+                      { name: "Surendhar" },
+                      { name: "Akhilesh" },
+                      { name: "Vishwas" },
+                    ],
+                  },
+                  {
+                    name: "Akhilesh",
+                    index: 4,
+                    level: [
+                      { name: "Raja" },
+                      { name: "Shagil" },
+                      { name: "Tarun" },
+                      { name: "Surendhar" },
+                      { name: "Akhilesh" },
+                      { name: "Vishwas" },
+                    ],
+                  },
+                  { name: "Vishwas", index: 5 },
+                ],
+              },
+            },
+          },
+        },
+        setTestingData: {
+          statementName: "setTestingData",
+          namespace: "UIEngine",
+          name: "SetStore",
+          parameterMap: {
+            path: {
+              setTestingDataPath: {
+                key: "setTestingDataPath",
+                type: "VALUE",
+                value: "Store.x",
+              },
+            },
+            value: {
+              setTestingDataValue: {
+                key: "setTestingDataValue",
+                type: "VALUE",
+                value: {
+                  a: 20,
+                  var: "a",
+                },
+              },
+            },
+          },
+        },
+        genOutput: {
+          statementName: "genOutput",
+          namespace: "System",
+          name: "GenerateEvent",
+          parameterMap: {
+            eventName: {
+              genOutputEventName: {
+                key: "genOutputEventName",
+                type: "VALUE",
+                value: "output",
+              },
+            },
+            results: {
+              genOutputResults: {
+                key: "genOutputResults",
+                type: "VALUE",
+                value: {
+                  name: "togglemodal",
+                  value: {
+                    isExpression: true,
+                    value: "Store.testModal",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
-  children: {
+  componentDefinition: {
     loginGrid: {
       name: "loginGrid",
       key: "loginGrid",
@@ -176,13 +344,412 @@ export const page = {
       name: "secondGrid",
       key: "secondGrid",
       type: "Grid",
-      children: {
-        loginlabel: true,
-        primarybuttongrid: true,
-        outlinedbuttongrid: true,
-        textbuttongrid: true,
-        checkBoxGrid: true,
+      styleProperties: {
+        "d9652d73-2292-4d8f-9112-7ac448eb6951": {
+          resolutions: {
+            ALL: {
+              flexDirection: { value: "column" },
+            },
+          },
+        },
       },
+      children: {
+        textboxgrid: true,
+        // loginlabel: true,
+        primarybuttongrid: true,
+        fabTestButton: true,
+        textboxgrid: true,
+        // outlinedbuttongrid: true,
+        // textbuttongrid: true,
+        // checkBoxGrid: true,
+        // linkGrid: true,
+        // arrayRepeatercomp: true,
+        himanshuDropdown: true,
+        popupGrid: true,
+        menuGrid: true,
+      },
+    },
+    popupGrid: {
+      name: "popupCompGrid",
+      key: "popupCompGrid",
+      type: "Grid",
+      children: {
+        popupcomp: true,
+      },
+    },
+    popupcomp: {
+      name: "popupcomp",
+      key: "popupcomp",
+      type: "Popup",
+      properties: {
+        closeButtonPosition: {
+          value: "LEFT",
+        },
+        closeOnEscape: {
+          value: false,
+        },
+        eventOnOpen: {
+          value: "login",
+        },
+        eventOnClose: {
+          value: "login",
+        },
+        modelTitle: {
+          value: "Tesla",
+        },
+      },
+      bindingPath: {
+        type: "VALUE",
+        value: "Store.testModal",
+      },
+      children: {
+        primarybuttongrid: true,
+      },
+    },
+    arrayRepeatercomp: {
+      name: "arrayRepeatercomp",
+      key: "arrayRepeatercomp",
+      type: "ArrayRepeater",
+      properties: {
+        showAdd: {
+          value: true,
+        },
+      },
+      bindingPath: {
+        type: "VALUE",
+        value: "Store.RepeaterTesting",
+      },
+      children: {
+        arrayRepeatercompgrid: true,
+      },
+    },
+    arrayRepeatercompInsideRepeater: {
+      name: "arrayRepeatercompInsideRepeater",
+      key: "arrayRepeatercompInsideRepeater",
+      type: "ArrayRepeater",
+      properties: {},
+      bindingPath: {
+        type: "VALUE",
+        value: ".level",
+      },
+      children: {
+        textboxcompcomparrayInsideArray: true,
+      },
+    },
+    arrayRepeatercompgrid: {
+      name: "arrayRepeatercompgrid",
+      key: "arrayRepeatercompgrid",
+      type: "Grid",
+      children: {
+        textboxcompcomparray: true,
+
+        // arrayRepeatercompInsideRepeater: true,
+      },
+    },
+    menuGrid: {
+      name: "menugrid",
+      key: "menugrid",
+      type: "Grid",
+      children: {
+        menucomp: true,
+      },
+    },
+    menucomp: {
+      name: "menucomp",
+      key: "menucomp",
+      type: "Menu",
+      properties: {
+        label: {
+          value: "google",
+        },
+        icon: {
+          value: "fa-brands fa-facebook",
+        },
+      },
+      children: {
+        menucomp2: true,
+        menucomp1: true,
+      },
+      displayOrder: -1,
+    },
+
+    menucomp1: {
+      name: "menucomp1",
+      key: "menucomp1",
+      type: "Menu",
+      properties: {
+        label: {
+          value: "google1",
+        },
+        icon: {
+          // value: "fa-brands fa-twitter",
+        },
+        linkPath: {
+          value: "page/tarun",
+        },
+      },
+      children: {
+        menucomp11: true,
+      },
+      displayOrder: 2,
+    },
+    menucomp11: {
+      name: "menucomp11",
+      key: "menucomp11",
+      type: "Menu",
+      properties: {
+        label: {
+          value: "google11",
+        },
+        icon: {
+          value: "fa-brands fa-twitter",
+        },
+        linkPath: {
+          value: "page/tarun1",
+        },
+      },
+      displayOrder: 1,
+    },
+
+    menucomp2: {
+      name: "menucomp2",
+      key: "menucomp2",
+      type: "Menu",
+      properties: {
+        label: {
+          value: "google2",
+        },
+        icon: {
+          value: "fa-brands fa-github",
+        },
+        onClick: {
+          value: "login",
+        },
+      },
+      displayOrder: 1,
+    },
+    linkGrid: {
+      name: "linkgrid",
+      key: "linkgrid",
+      type: "Grid",
+      children: {
+        linkcomp: true,
+      },
+    },
+    linkcomp: {
+      name: "linkcomp",
+      key: "linkcomp",
+      type: "Link",
+      properties: {
+        label: {
+          value: "google",
+        },
+        linkPath: {
+          value: "page/pagename2",
+        },
+        target: {
+          value: "_self",
+        },
+        externalButtonTarget: {
+          value: "_blank",
+        },
+        showButton: {
+          value: true,
+        },
+      },
+      displayOrder: -1,
+    },
+    textboxgrid: {
+      name: "textboxgrid",
+      key: "textboxgrid",
+      type: "Grid",
+      children: {
+        textboxcompcomp: true,
+        // textboxcompcompWithICon: true,
+        // textboxcompcompdisabled: true,
+        // textboxcompcompWithIConDisabled: true,
+      },
+    },
+    himanshuDropdown: {
+      name: "himanshuDropdown",
+      key: "himanshuDropdown",
+      type: "Dropdown",
+      properties: {
+        dataBinding: {
+          location: {
+            type: "VALUE",
+            value: "Store.dropdownData",
+          },
+        },
+        datatype: {
+          value: "LIST_OF_OBJECTS",
+        },
+        selectionType: {
+          value: "OBJECT",
+        },
+        uniqueKeyType: {
+          value: "KEY",
+        },
+        labelKeyType: {
+          value: "KEY",
+        },
+        uniqueKey: {
+          value: "id",
+        },
+        labelKey: {
+          value: "name",
+        },
+        // selectionKey: {
+        //   value: "name",
+        // },
+        placeholder: {
+          value: "Select User",
+        },
+        headerText: {
+          value: "User",
+        },
+        readOnly: {
+          value: false,
+        },
+        closeOnMouseLeave: {
+          value: true,
+        },
+      },
+      bindingPath: {
+        type: "VALUE",
+        value: "Store.savedDropdowndata",
+      },
+    },
+    textboxcompcomp: {
+      name: "textboxcompcomp",
+      key: "textboxcompcomp",
+      type: "TextBox",
+      properties: {
+        label: {
+          value: "Login",
+        },
+        supportingText: {
+          value: "Supporting Text",
+        },
+        isMandatory: {
+          value: true,
+        },
+      },
+      bindingPath: {
+        type: "VALUE",
+        // expression: "'Store.x.{{Store.x.var}}'",
+        value: "Store.x.a",
+      },
+      displayOrder: -1,
+    },
+
+    textboxcompcomparray: {
+      name: "textboxcompcomparray",
+      key: "textboxcompcomparray",
+      type: "TextBox",
+      properties: {
+        label: {
+          location: {
+            type: "VALUE",
+            value: ".name",
+          },
+        },
+        supportingText: {
+          value: "Supporting Text",
+        },
+        isMandatory: {
+          value: true,
+        },
+      },
+      bindingPath: {
+        type: "VALUE",
+        value: ".texboxbindingpath",
+        // expression: "'Store.RepeaterTesting[.index].level[.index]'",
+      },
+      displayOrder: -1,
+    },
+    textboxcompcomparrayInsideArray: {
+      name: "textboxcompcomparrayInsideArray",
+      key: "textboxcompcomparrayInsideArray",
+      type: "TextBox",
+      properties: {
+        label: {
+          location: {
+            type: "VALUE",
+            value: ".name",
+          },
+        },
+        bindingPath: {
+          value: "Store.texboxbindingpath",
+        },
+        supportingText: {
+          value: "Supporting Text",
+        },
+        isMandatory: {
+          value: true,
+        },
+      },
+      displayOrder: -1,
+    },
+    textboxcompcompWithICon: {
+      name: "textboxcompcompWithICon",
+      key: "textboxcompcompWithICon",
+      type: "TextBox",
+      properties: {
+        label: {
+          value: "Something else",
+        },
+        bindingPath: {
+          value: "Store.texboxbindingpath1",
+        },
+        leftIcon: {
+          value: "fa fa-magnifying-glass fa-fw",
+        },
+      },
+      displayOrder: -1,
+    },
+    textboxcompcompWithIConDisabled: {
+      name: "textboxcompcompWithIConDisabled",
+      key: "textboxcompcompWithIConDisabled",
+      type: "TextBox",
+      properties: {
+        label: {
+          value: "Something else",
+        },
+        bindingPath: {
+          value: "Store.texboxbindingpath1",
+        },
+        leftIcon: {
+          value: "fa fa-magnifying-glass fa-fw",
+        },
+        isDisabled: {
+          value: true,
+        },
+        defaultValue: {
+          value: "Text is here",
+        },
+        supportingText: {
+          value: "Supporting Text",
+        },
+      },
+      displayOrder: -1,
+    },
+    textboxcompcompdisabled: {
+      name: "textboxcompcompdisabled",
+      key: "textboxcompcompdisabled",
+      type: "TextBox",
+      properties: {
+        label: {
+          value: "Login",
+        },
+        bindingPath: {
+          value: "Store.texboxbindingpath",
+        },
+        isDisabled: {
+          value: true,
+        },
+      },
+      displayOrder: -1,
     },
     primarybuttongrid: {
       name: "primarybuttongrid",
@@ -193,6 +760,9 @@ export const page = {
         loginButtonDisabled: true,
         fabTestButton: true,
         fabTestMiniButton: true,
+        tagtagatag: true,
+        tagTag: true,
+        image: true,
       },
     },
     outlinedbuttongrid: {
@@ -232,31 +802,184 @@ export const page = {
         text: {
           value: "Login",
         },
-        displayOrder: 1,
+      },
+      displayOrder: 1,
+    },
+    tagtagatag: {
+      name: "tagtagatag",
+      key: "tagtagatag",
+      type: "Tags",
+      bindingPath: {
+        type: "VALUE",
+        value: "Store.dropdownData",
+      },
+      properties: {
+        datatype: {
+          value: "LIST_OF_STRINGS",
+        },
+        selectionType: {
+          value: "OBJECT",
+        },
+        uniqueKeyType: {
+          value: "OBJECT",
+        },
+        closeEvent: {
+          value: "login",
+        },
+        icon: {
+          value: "fa fa-brands fa-whatsapp",
+        },
+      },
+      styleProperties: {
+        "d9652d73-2292-4d8f-9112-7ac448eb6951": {
+          resolutions: {
+            ALL: {
+              // backgroundColor: { value: "#631222" },
+              // marginTop: { value: "5px" },
+              // marginBottom: { value: "6px" },
+              // marginLeft: { value: "7px" },
+              // marginRight: { value: "8px" },
+              // color: { value: "#226318" },
+              // "tagIcon-paddingTop": { value: "3px" },
+              // "tagText-paddingBottom": { value: "3px" },
+              display: { value: "flex" },
+              flexDirection: { value: "row" },
+              gap: { value: "5px" },
+            },
+          },
+        },
+        "5c7560cd-99ff-4813-b2d1-f821f5dba02b": {
+          pseudoState: "hover",
+          resolutions: {
+            ALL: {
+              color: { value: "#8790aa" },
+            },
+          },
+        },
+      },
+    },
+    tagtagatag2: {
+      name: "tagtagatag2",
+      key: "tagtagatag2",
+      type: "Tags",
+      bindingPath: {
+        type: "VALUE",
+        value: "Store.dropdownData",
+      },
+      properties: {
+        datatype: {
+          value: "LIST_OF_STRINGS",
+        },
+        selectionType: {
+          value: "OBJECT",
+        },
+        uniqueKeyType: {
+          value: "OBJECT",
+        },
+        closeEvent: {
+          value: "login",
+        },
+        icon: {
+          value: "fa fa-brands fa-whatsapp",
+        },
+      },
+    },
+    tagTag: {
+      name: "tagtagatag",
+      key: "tagtagatag",
+      type: "Tags",
+      bindingPath: {},
+      properties: {
+        closeEvent: {
+          value: "login",
+        },
+        icon: {
+          value: "fa fa-brands fa-whatsapp",
+        },
+        onClick: {
+          value: "login",
+        },
+      },
+    },
+    image: {
+      name: "image",
+      key: "image",
+      type: "Image",
+      properties: {
+        src: {
+          value:
+            "https://c4.wallpaperflare.com/wallpaper/575/681/304/naruto-shippuuden-uchiha-itachi-sharingan-anime-wallpaper-preview.jpg00",
+        },
+        alt: {
+          value: "Itachi Uchiha",
+        },
+        width: {
+          value: "500px",
+        },
+        height: {
+          value: "500px",
+        },
+        onClickEvent: {
+          value: "login",
+        },
       },
     },
     loginButton: {
       name: "loginButton",
       key: "loginButton",
       type: "Button",
+
       properties: {
         label: {
-          value: "Login",
+          value: "First Login",
         },
         type: {
           value: "primary",
         },
         onClick: {
-          value: "login",
+          value: "toggleModal",
         },
         leftIcon: {
-          icon: {
-            value: "fa-user",
-          },
-          iconStyle: "SOLID",
+          value: "fa fa-user fa-fw",
         },
-        displayOrder: 3,
       },
+      styleProperties: {
+        "d9652d73-2292-4d8f-9112-7ac448eb6951": {
+          resolutions: {
+            ALL: {
+              backgroundColor: { value: "#631222" },
+              marginTop: { value: "5px" },
+              marginBottom: { value: "6px" },
+              marginLeft: { value: "7px" },
+              marginRight: { value: "8px" },
+              color: { value: "#226318" },
+              "icon-color": { value: "#994433" },
+            },
+          },
+        },
+        "1eebf96e-b7a5-4f41-a830-e944071f1ca5": {
+          condition: {
+            location: {
+              type: "EXPRESSION",
+              expression: "Store.x.a = 20",
+            },
+          },
+          resolutions: {
+            TABLET_LANDSCAPE_SCREEN_ONLY: {
+              backgroundColor: { value: "#222136" },
+            },
+          },
+        },
+        "5c7560cd-99ff-4813-b2d1-f821f5dba02b": {
+          pseudoState: "hover",
+          resolutions: {
+            MOBILE_LANDSCAPE_SCREEN_ONLY: {
+              color: { value: "#8790aa" },
+            },
+          },
+        },
+      },
+      displayOrder: 3,
     },
     toggleButtonOne: {
       name: "toggleButtonOne",
@@ -270,13 +993,11 @@ export const page = {
           value: false,
         },
         bindingPath: {
-          location: {
-            type: "VALUE",
-            value: "Store.form1.toggle1",
-          },
+          type: "VALUE",
+          value: "Store.form1.toggle1",
         },
-        displayOrder: 3,
       },
+      displayOrder: 3,
     },
     radiobuttonOne: {
       name: "radiobuttonOne",
@@ -290,13 +1011,11 @@ export const page = {
           value: false,
         },
         bindingPath: {
-          location: {
-            type: "VALUE",
-            value: "Store.form1.radio1",
-          },
+          type: "VALUE",
+          value: "Store.form1.radio1",
         },
-        displayOrder: 3,
       },
+      displayOrder: 3,
     },
     checkboxone: {
       name: "checkboxone",
@@ -313,13 +1032,11 @@ export const page = {
           value: false,
         },
         bindingPath: {
-          location: {
-            type: "VALUE",
-            value: "Store.form1.checkbox1",
-          },
+          type: "VALUE",
+          value: "Store.form1.checkbox1",
         },
-        displayOrder: 3,
       },
+      displayOrder: 3,
     },
     checkboxtwo: {
       name: "checkboxtwo",
@@ -336,13 +1053,11 @@ export const page = {
           value: true,
         },
         bindingPath: {
-          location: {
-            type: "VALUE",
-            value: "Store.form1.checkbox2",
-          },
+          type: "VALUE",
+          value: "Store.form1.checkbox2",
         },
-        displayOrder: 3,
       },
+      displayOrder: 3,
     },
     checkboxoneone: {
       name: "checkboxoneone",
@@ -358,8 +1073,8 @@ export const page = {
         isDisabled: {
           value: false,
         },
-        displayOrder: 3,
       },
+      displayOrder: 3,
     },
 
     checkboxonetwo: {
@@ -376,8 +1091,8 @@ export const page = {
         isDisabled: {
           value: false,
         },
-        displayOrder: 3,
       },
+      displayOrder: 3,
     },
     checkboxonethree: {
       name: "checkboxonethree",
@@ -396,8 +1111,8 @@ export const page = {
         isDisabled: {
           value: false,
         },
-        displayOrder: 3,
       },
+      displayOrder: 3,
     },
     checkboxonethreeone: {
       name: "checkboxonethreeone",
@@ -414,8 +1129,8 @@ export const page = {
         isDisabled: {
           value: false,
         },
-        displayOrder: 3,
       },
+      displayOrder: 3,
     },
     fabTestButton: {
       name: "fabTestButton",
@@ -428,14 +1143,11 @@ export const page = {
         onClick: {
           value: "login",
         },
-        fabIcon: {
-          icon: {
-            value: "fa-user",
-          },
-          iconStyle: "SOLID",
+        leftIcon: {
+          value: "fa fa-user fa-fw",
         },
-        displayOrder: 3,
       },
+      displayOrder: 3,
     },
     fabTestMiniButton: {
       name: "fabTestMiniButton",
@@ -448,14 +1160,11 @@ export const page = {
         onClick: {
           value: "login",
         },
-        fabIcon: {
-          icon: {
-            value: "fa-user",
-          },
-          iconStyle: "SOLID",
+        leftIcon: {
+          value: "fa fa-user fa-fw",
         },
-        displayOrder: 3,
       },
+      displayOrder: 3,
     },
     outlinedButton: {
       name: "outlinedButton",
@@ -468,8 +1177,8 @@ export const page = {
         type: {
           value: "outlined",
         },
-        displayOrder: 3,
       },
+      displayOrder: 3,
     },
     textButton: {
       name: "textButton",
@@ -482,8 +1191,8 @@ export const page = {
         type: {
           value: "text",
         },
-        displayOrder: 3,
       },
+      displayOrder: 3,
     },
     loginButtonDisabled: {
       name: "loginButtonDisabled",
@@ -502,8 +1211,8 @@ export const page = {
         onClick: {
           value: "login",
         },
-        displayOrder: 3,
       },
+      displayOrder: 3,
     },
     outlinedButtondisabled: {
       name: "outlinedButtondisabled",
@@ -519,8 +1228,8 @@ export const page = {
         type: {
           value: "outlined",
         },
-        displayOrder: 3,
       },
+      displayOrder: 3,
     },
     textButtonDisabled: {
       name: "textButtonDisabled",
@@ -536,8 +1245,8 @@ export const page = {
         type: {
           value: "text",
         },
-        displayOrder: 3,
       },
+      displayOrder: 3,
     },
   },
 };
