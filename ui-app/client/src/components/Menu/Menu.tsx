@@ -50,7 +50,7 @@ function Menu(props: ComponentProps) {
 			linkPath,
 			target,
 			readOnly,
-			pathsActiveFor = [],
+			pathsActiveFor = '',
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(

@@ -34,6 +34,14 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.menu',
 	},
 	{
+		name: 'menuBgColorHover',
+		cssProperty: 'background-color',
+		displayName: "Menu's background color",
+		description: "Menu's background color.",
+		defaultValue: '#8790aa',
+		selector: '.menu:hover',
+	},
+	{
 		name: 'menuTextColor',
 		cssProperty: 'color',
 		displayName: "Menu's text color",
