@@ -75,7 +75,7 @@ export const application = {
   appCode: "nothing",
   version: 5,
   properties: {
-    defaultPage: "underConstruction",
+    defaultPage: "pagename",
     shellPageDefinition: {
       name: "shellDefinition",
       key: "shellDefinition",
@@ -86,33 +86,31 @@ export const application = {
           name: "grid",
           key: "grid",
           type: "Grid",
+
           children: {
-            header: true,
-            footer: true,
+            navigation: true,
             body: true,
           },
         },
-        header: {
-          name: "header",
-          key: "header",
-          type: "Label",
-          properties: {
-            text: {
-              value: "Header Text",
+        navigation: {
+          name: "navigation",
+          key: "navigation",
+          type: "Grid",
+          styleProperties: {
+            ghsdh65dr6763727t6d23v67v67: {
+              resolutions: {
+                ALL: {
+                  flexDirection: {
+                    value: "column",
+                  },
+                  backgroundColor: {
+                    value: "#212B35",
+                  },
+                },
+              },
             },
-            displayOrder: 1,
           },
-        },
-        footer: {
-          name: "footer",
-          key: "footer",
-          type: "Label",
-          properties: {
-            text: {
-              value: "footer Text",
-            },
-            displayOrder: 3,
-          },
+          children: {},
         },
         body: {
           name: "body",
