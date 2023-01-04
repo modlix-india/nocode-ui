@@ -12,12 +12,29 @@ import {
 } from '../../types/common';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
+	
+	{
+		name: 'placeholder',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'Dropdown placeholder',
+		description: `Placeholder that\'s shown when no item is selected in dropdown.`,
+		defaultValue: 'Select ...'
+	},
+
+	{
+		name: 'headerText',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'Dropdown header text',
+		description: `Header text that\'s shown on top of dropdown.`,
+	},
+
 	{
 		name: 'dataBinding',
 		schema: Schema.ofRef(SCHEMA_REF_ANY_COMP_PROP),
 		displayName: 'Dropdown data',
 		description: `Data that is used to render dropdown.`,
 	},
+	
 	{
 		name: 'datatype',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
@@ -64,13 +81,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: 'Event trigger on click',
 		description: `The event that is triggered on click of dropdown option`,
-	},
-
-	{
-		name: 'onChange',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-		displayName: 'Event trigger on change',
-		description: `The event that is triggered on selection of dropdown option`,
 	},
 
 	{
@@ -173,6 +183,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: "Labels key's value ",
 		description: `Key value that is used to generate label value.`,
 		translatable: true,
+	},
+
+	{
+		name: 'closeOnMouseLeave',
+		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		displayName: 'Close dropdown',
+		description: 'Dropdown will be closed on mouse cursor leaving dropdown container when this property is true.',
+		group: ComponentPropertyGroup.COMMON,
 	},
 
 	{

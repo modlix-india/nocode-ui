@@ -12,6 +12,7 @@ import Popup from './Popup/Popup';
 import Dropdown from './Dropdown/Dropdown';
 import Menu from './Menu/Menu';
 import Tags from './Tags/Tags';
+import Image from './Image/Image';
 
 export const Components = new Map<string, React.ElementType>([
 	[Button.name, Button.component],
@@ -28,6 +29,7 @@ export const Components = new Map<string, React.ElementType>([
 	[Dropdown.name, Dropdown.component],
 	[Menu.name, Menu.component],
 	[Tags.name, Tags.component],
+	[Image.name, Image.component],
 ]);
 
 export const ComponentDefinitions = [
@@ -44,4 +46,5 @@ export const ComponentDefinitions = [
 	Dropdown,
 	Menu,
 	Tags,
+	Image,
 ];

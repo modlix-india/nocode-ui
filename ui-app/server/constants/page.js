@@ -344,6 +344,15 @@ export const page = {
       name: "secondGrid",
       key: "secondGrid",
       type: "Grid",
+      styleProperties: {
+        "d9652d73-2292-4d8f-9112-7ac448eb6951": {
+          resolutions: {
+            ALL: {
+              flexDirection: { value: "column" },
+            },
+          },
+        },
+      },
       children: {
         textboxgrid: true,
         // loginlabel: true,
@@ -573,13 +582,37 @@ export const page = {
           },
         },
         datatype: {
-          value: "LIST_OF_STRINGS",
+          value: "LIST_OF_OBJECTS",
         },
         selectionType: {
           value: "OBJECT",
         },
         uniqueKeyType: {
-          value: "OBJECT",
+          value: "KEY",
+        },
+        labelKeyType: {
+          value: "KEY",
+        },
+        uniqueKey: {
+          value: "id",
+        },
+        labelKey: {
+          value: "name",
+        },
+        // selectionKey: {
+        //   value: "name",
+        // },
+        placeholder: {
+          value: "Select User",
+        },
+        headerText: {
+          value: "User",
+        },
+        readOnly: {
+          value: false,
+        },
+        closeOnMouseLeave: {
+          value: true,
         },
       },
       bindingPath: {
@@ -728,7 +761,8 @@ export const page = {
         fabTestButton: true,
         fabTestMiniButton: true,
         tagtagatag: true,
-        tagtagatag2: true,
+        tagTag: true,
+        image: true,
       },
     },
     outlinedbuttongrid: {
@@ -847,6 +881,46 @@ export const page = {
         },
         icon: {
           value: "fa fa-brands fa-whatsapp",
+        },
+      },
+    },
+    tagTag: {
+      name: "tagtagatag",
+      key: "tagtagatag",
+      type: "Tags",
+      bindingPath: {},
+      properties: {
+        closeEvent: {
+          value: "login",
+        },
+        icon: {
+          value: "fa fa-brands fa-whatsapp",
+        },
+        onClick: {
+          value: "login",
+        },
+      },
+    },
+    image: {
+      name: "image",
+      key: "image",
+      type: "Image",
+      properties: {
+        src: {
+          value:
+            "https://c4.wallpaperflare.com/wallpaper/575/681/304/naruto-shippuuden-uchiha-itachi-sharingan-anime-wallpaper-preview.jpg00",
+        },
+        alt: {
+          value: "Itachi Uchiha",
+        },
+        width: {
+          value: "500px",
+        },
+        height: {
+          value: "500px",
+        },
+        onClickEvent: {
+          value: "login",
         },
       },
     },
