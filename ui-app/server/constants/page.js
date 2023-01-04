@@ -357,7 +357,8 @@ export const page = {
         textboxgrid: true,
         // loginlabel: true,
         primarybuttongrid: true,
-        // textboxgrid: true,
+        fabTestButton: true,
+        textboxgrid: true,
         // outlinedbuttongrid: true,
         // textbuttongrid: true,
         // checkBoxGrid: true,
@@ -365,6 +366,7 @@ export const page = {
         // arrayRepeatercomp: true,
         himanshuDropdown: true,
         popupGrid: true,
+        menuGrid: true,
       },
     },
     popupGrid: {
@@ -443,6 +445,88 @@ export const page = {
 
         // arrayRepeatercompInsideRepeater: true,
       },
+    },
+    menuGrid: {
+      name: "menugrid",
+      key: "menugrid",
+      type: "Grid",
+      children: {
+        menucomp: true,
+      },
+    },
+    menucomp: {
+      name: "menucomp",
+      key: "menucomp",
+      type: "Menu",
+      properties: {
+        label: {
+          value: "google",
+        },
+        icon: {
+          value: "fa-brands fa-facebook",
+        },
+      },
+      children: {
+        menucomp2: true,
+        menucomp1: true,
+      },
+      displayOrder: -1,
+    },
+
+    menucomp1: {
+      name: "menucomp1",
+      key: "menucomp1",
+      type: "Menu",
+      properties: {
+        label: {
+          value: "google1",
+        },
+        icon: {
+          // value: "fa-brands fa-twitter",
+        },
+        linkPath: {
+          value: "page/tarun",
+        },
+      },
+      children: {
+        menucomp11: true,
+      },
+      displayOrder: 2,
+    },
+    menucomp11: {
+      name: "menucomp11",
+      key: "menucomp11",
+      type: "Menu",
+      properties: {
+        label: {
+          value: "google11",
+        },
+        icon: {
+          value: "fa-brands fa-twitter",
+        },
+        linkPath: {
+          value: "page/tarun1",
+        },
+      },
+      displayOrder: 1,
+    },
+
+    menucomp2: {
+      name: "menucomp2",
+      key: "menucomp2",
+      type: "Menu",
+      properties: {
+        label: {
+          value: "google2",
+        },
+        icon: {
+          value: "fa-brands fa-github",
+        },
+        onClick: {
+          value: "login",
+        },
+      },
+      displayOrder: 1,
     },
     linkGrid: {
       name: "linkgrid",

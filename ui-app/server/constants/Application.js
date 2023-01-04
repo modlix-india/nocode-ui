@@ -109,6 +109,7 @@ export const application = {
           children: {
             fincityBrandLabel: true,
           },
+          children: {},
         },
         body: {
           name: "body",
