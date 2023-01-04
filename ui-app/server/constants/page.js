@@ -344,6 +344,15 @@ export const page = {
       name: "secondGrid",
       key: "secondGrid",
       type: "Grid",
+      styleProperties: {
+        "d9652d73-2292-4d8f-9112-7ac448eb6951": {
+          resolutions: {
+            ALL: {
+              flexDirection: { value: "column" },
+            },
+          },
+        },
+      },
       children: {
         textboxgrid: true,
         // loginlabel: true,
@@ -489,13 +498,37 @@ export const page = {
           },
         },
         datatype: {
-          value: "LIST_OF_STRINGS",
+          value: "LIST_OF_OBJECTS",
         },
         selectionType: {
           value: "OBJECT",
         },
         uniqueKeyType: {
-          value: "OBJECT",
+          value: "KEY",
+        },
+        labelKeyType: {
+          value: "KEY",
+        },
+        uniqueKey: {
+          value: "id",
+        },
+        labelKey: {
+          value: "name",
+        },
+        // selectionKey: {
+        //   value: "name",
+        // },
+        placeholder: {
+          value: "Select User",
+        },
+        headerText: {
+          value: "User",
+        },
+        readOnly: {
+          value: false,
+        },
+        closeOnMouseLeave: {
+          value: true,
         },
       },
       bindingPath: {

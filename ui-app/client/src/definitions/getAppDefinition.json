@@ -102,7 +102,20 @@
 					"dropdownDataValue": {
 						"key": "dropdownDataValue",
 						"type": "VALUE",
-						"value": ["Himashu", "Tarun", "Shagil", "Akhilesh", "Raja"]
+						"value": [
+							{
+								"name": "Himanshu",
+								"id": "1"
+							},
+							{
+								"name": "Tarun",
+								"id": "2"
+							},
+							{
+								"name": "Shagil",
+								"id": "3"
+							}
+						]
 					}
 				}
 			},
