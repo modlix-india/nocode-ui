@@ -30,12 +30,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Toggle zoom',
 		description: 'Magnification functionality switch',
 		defaultValue: false,
+		notImplemented: true,
 	},
 	{
 		name: 'zoomedImg',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: 'Zoom Image',
 		description: 'High quality image for zoom functionality.',
+		notImplemented: true,
 	},
 	{
 		name: 'fallBackImg',
