@@ -113,22 +113,23 @@ function DropdownComponent(props: ComponentProps) {
 				} `}
 			>
 				<div
-					className={`labelcontainer ${readOnly ? 'disabled' : ''}`}
+					className={`labelContainer`}
 					onClick={() => !readOnly && setShowDropdown(!showDropdown)}
 				>
-					<label className={`label ${readOnly ? 'disabled' : ''}`}>
+					<label className={`label ${selected ? 'selected' : 'notSelected'}`}>
 						{getTranslations(
 							selected === undefined
 								? placeholder
-								: dropdownData?.find(e => e?.key === selectedDataKey)?.label,
+								: dropdownData?.find((each: any) => each?.key === selectedDataKey)
+										?.label,
 							translations,
 						)}
 					</label>
-					<i className="fa-solid fa-angle-down"></i>
+					<i className="fa-solid fa-angle-down labelIcon"></i>
 				</div>
 				{showDropdown && (
 					<div
-						className="dropdowncontainer"
+						className="dropdownContainer"
 						onMouseLeave={() => closeOnMouseLeave && handleClose()}
 					>
 						{dropdownData?.map(each => (
@@ -137,7 +138,10 @@ function DropdownComponent(props: ComponentProps) {
 								className="dropdownItem"
 								key={each?.key}
 							>
-								{each?.label}
+								<label className="dropdownItemLabel">{each?.label}</label>
+								{each?.key === selectedDataKey && (
+									<i className="fa fa-solid fa-check checkedIcon"></i>
+								)}
 							</div>
 						))}
 					</div>
