@@ -107,51 +107,45 @@ function Menu(props: ComponentProps) {
 			<div className="menuContainer" style={resolvedStyles.menuContainer ?? {}}>
 				<div className={`menuItemsContainer ${isMenuActive ? 'isActive' : ''}`}>
 					<div className="highLight"></div>
-					<div
-						onClick={!readOnly ? handleClick : undefined}
-						className={`menu`}
-						onMouseEnter={
-							stylePropertiesWithPseudoStates?.hover
-								? () => setHover(true)
-								: undefined
-						}
-						onMouseLeave={
-							stylePropertiesWithPseudoStates?.hover
-								? () => setHover(false)
-								: undefined
-						}
-						style={resolvedStyles.menu ?? {}}
+					<Link
+						style={resolvedStyles.link ?? {}}
+						className="link"
+						target={target}
+						to={linkPath}
 					>
-						<div className="menuLink">
-							{linkPath ? (
-								<Link
-									style={resolvedStyles.link ?? {}}
-									className="link"
-									target={target}
-									to={linkPath}
-								>
-									{menuDetails}
-								</Link>
-							) : (
-								menuDetails
-							)}
+						<div
+							onClick={!readOnly ? handleClick : undefined}
+							className={`menu`}
+							onMouseEnter={
+								stylePropertiesWithPseudoStates?.hover
+									? () => setHover(true)
+									: undefined
+							}
+							onMouseLeave={
+								stylePropertiesWithPseudoStates?.hover
+									? () => setHover(false)
+									: undefined
+							}
+							style={resolvedStyles.menu ?? {}}
+						>
+							<div className="menuLink">{menuDetails}</div>
+							<div className="menuCaretIcon">
+								{hasChildren ? (
+									!isMenuOpenState ? (
+										<i
+											style={resolvedStyles.caretIcon ?? {}}
+											className="fa fa-solid fa-angle-down"
+										></i>
+									) : (
+										<i
+											style={resolvedStyles.caretIcon ?? {}}
+											className="fa fa-solid fa-angle-up"
+										></i>
+									)
+								) : null}
+							</div>
 						</div>
-						<div className="menuCaretIcon">
-							{hasChildren ? (
-								!isMenuOpenState ? (
-									<i
-										style={resolvedStyles.caretIcon ?? {}}
-										className="fa fa-solid fa-angle-down"
-									></i>
-								) : (
-									<i
-										style={resolvedStyles.caretIcon ?? {}}
-										className="fa fa-solid fa-angle-up"
-									></i>
-								)
-							) : null}
-						</div>
-					</div>
+					</Link>
 				</div>
 				{hasChildren && isMenuOpenState
 					? renderChildren(pageDefinition, children, context, locationHistory)

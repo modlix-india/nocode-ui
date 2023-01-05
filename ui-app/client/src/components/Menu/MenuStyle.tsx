@@ -30,9 +30,9 @@ export default function MenuStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 		}
 		
-		${PREFIX} .menuLink .link{
+		${PREFIX} .link{
 			text-decoration: none;
-			display: flex;
+			flex: 1
 		}
 		${PREFIX} .highLight {
 			width: 7px;
