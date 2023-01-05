@@ -75,7 +75,7 @@ export const application = {
   appCode: "nothing",
   version: 5,
   properties: {
-    defaultPage: "pagename",
+    defaultPage: "dashboard",
     shellPageDefinition: {
       name: "shellDefinition",
       key: "shellDefinition",
@@ -90,7 +90,9 @@ export const application = {
             hdsbs7y7gcwg476ctrh623q: {
               resolutions: {
                 ALL: {
-                  flexDirection: "column",
+                  width: {
+                    value: "100%",
+                  },
                 },
               },
             },
@@ -105,12 +107,24 @@ export const application = {
           name: "header",
           key: "header",
           type: "Grid",
-
-          children: {
-            fincityBrandLabel: true,
+          styleProperties: {
+            hdsbs7y7gc48723r4r6h5bwg476ctrh623q: {
+              resolutions: {
+                ALL: {
+                  backgroundColor: {
+                    value: "#212B35",
+                  },
+                  height: { value: "100vh" },
+                  width: { value: "260px" },
+                  borderRadius: { value: "0px 24px 24px 0px" },
+                  flexDirection: { value: "column" },
+                },
+              },
+            },
           },
           children: {
-            fincityBrandLabel: true,
+            fincityBrandGrid: true,
+            fincityMenuGrid: true,
           },
         },
         body: {
@@ -128,15 +142,213 @@ export const application = {
             displayOrder: 2,
           },
         },
+        fincityBrandGrid: {
+          name: "fincityBrandGrid",
+          key: "fincityBrandGrid",
+          type: "Grid",
+          displayOrder: 1,
+          styleProperties: {
+            "6dwg67qt367xd827uywg3rt72g6377": {
+              resolutions: {
+                ALL: {
+                  height: { value: "96px" },
+                  justifyContent: { value: "center" },
+                  alignItems: { value: "center" },
+                },
+              },
+            },
+          },
+          children: {
+            fincityBrandLabel: true,
+          },
+        },
         fincityBrandLabel: {
           name: "fincityBrandLabel",
           key: "fincityBrandLabel",
           type: "Label",
+          styleProperties: {
+            "6dwg67qt367xd827uywg3rt72g6377": {
+              resolutions: {
+                ALL: {
+                  color: { value: "white" },
+                },
+              },
+            },
+          },
           properties: {
             text: {
               value: "Fincity",
             },
           },
+        },
+        fincityMenuGrid: {
+          name: "fincityMenuGrid",
+          key: "fincityMenuGrid",
+          type: "Grid",
+          displayOrder: 2,
+          styleProperties: {
+            "6dwg67qt367xd827uywg3rt72g6377": {
+              resolutions: {
+                ALL: {
+                  flexDirection: {
+                    value: "column",
+                  },
+                  width: { value: "260px" },
+                },
+              },
+            },
+          },
+          children: {
+            dashboardMenu: true,
+            userMenu: true,
+            channelMenu: true,
+          },
+        },
+        dashboardMenu: {
+          name: "dashboardMenu",
+          key: "dashboardMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "Dashboard",
+            },
+            icon: {
+              value: "fa-regular fa-clipboard",
+            },
+            linkPath: {
+              value: "/page/dashboard",
+            },
+            pathsActiveFor: {
+              value: "/,dashboard",
+            },
+          },
+
+          displayOrder: 1,
+        },
+        userMenu: {
+          name: "userMenu",
+          key: "userMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "User",
+            },
+            icon: {
+              value: "fa-regular fa-user",
+            },
+            pathsActiveFor: {
+              value: "usersegments,workflows,campaigns,user",
+            },
+          },
+          children: {
+            userSegmentMenu: true,
+            workflowsMenu: true,
+            campaignsMenu: true,
+          },
+          displayOrder: 2,
+        },
+        channelMenu: {
+          name: "channelMenu",
+          key: "channelMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "Channels",
+            },
+            pathsActiveFor: {
+              value: "upload,webpersonalisation,channels",
+            },
+          },
+          children: {
+            uploadMenu: true,
+            webPersonalisationMenu: true,
+          },
+          displayOrder: 2,
+        },
+        campaignsMenu: {
+          name: "campaignsMenu",
+          key: "campaignsMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "Campaigns",
+            },
+            linkPath: {
+              value: "/page/campaigns",
+            },
+            pathsActiveFor: {
+              value: "campaigns",
+            },
+          },
+          displayOrder: 1,
+        },
+        workflowsMenu: {
+          name: "workflowsMenu",
+          key: "workflowsMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "Workflows",
+            },
+            linkPath: {
+              value: "/page/workflows",
+            },
+            pathsActiveFor: {
+              value: "workflows",
+            },
+          },
+          displayOrder: 2,
+        },
+        userSegmentMenu: {
+          name: "userSegmentMenu",
+          key: "userSegmentMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "User Segment",
+            },
+            linkPath: {
+              value: "/page/usersegments",
+            },
+            pathsActiveFor: {
+              value: "usersegments",
+            },
+          },
+          displayOrder: 3,
+        },
+        uploadMenu: {
+          name: "uploadMenu",
+          key: "uploadMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "Upload",
+            },
+            linkPath: {
+              value: "/page/upload",
+            },
+            pathsActiveFor: {
+              value: "upload",
+            },
+          },
+          displayOrder: 1,
+        },
+        webPersonalisationMenu: {
+          name: "webPersonalisationMenu",
+          key: "webPersonalisationMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "Web Personalisation",
+            },
+            linkPath: {
+              value: "/page/webpersonalisation",
+            },
+            pathsActiveFor: {
+              value: "webpersonalisation",
+            },
+          },
+          displayOrder: 2,
         },
       },
     },

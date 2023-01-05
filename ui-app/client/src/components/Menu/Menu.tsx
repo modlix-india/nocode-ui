@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
 	addListener,
+	addListenerAndCallImmediately,
 	getData,
 	getPathFromLocation,
 	PageStoreExtractor,
@@ -60,19 +61,20 @@ function Menu(props: ComponentProps) {
 		props.locationHistory,
 		pageExtractor,
 	);
-	const [isMenuOpenState, setIsMenuOpenState] = React.useState(isMenuOpen ?? false);
 	React.useEffect(() => {
-		addListener(
-			() => {
-				const paths = pathsActiveFor.split(',');
-				if (!paths.length) return;
-				const hasPath = !!paths.find((e: string) => pathname.indexOf(e));
-				setIsMenuActive(hasPath);
-			},
-			pageExtractor,
-			'Store.urlDetails.pageName',
-		);
-	}, []);
+		if (!pathsActiveFor?.length) return;
+		const paths = pathsActiveFor.split(',');
+		let hasPath = false;
+		if (pathname === '/') {
+			hasPath = !!paths.find((e: string) => pathname === e);
+		} else {
+			hasPath = !!paths
+				.filter((e: string) => e !== '/')
+				.find((e: string) => pathname.indexOf(e) >= 0);
+		}
+		setIsMenuActive(hasPath);
+	}, [pathname, pathsActiveFor]);
+	const [isMenuOpenState, setIsMenuOpenState] = React.useState(isMenuOpen ?? false);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
 		{ hover, disabled: readOnly },
@@ -88,7 +90,11 @@ function Menu(props: ComponentProps) {
 
 	const menuDetails = (
 		<>
-			{icon ? <i style={resolvedStyles.icon ?? {}} className={icon}></i> : null}
+			{icon ? (
+				<i style={resolvedStyles.icon ?? {}} className={`${icon} icon`}></i>
+			) : (
+				<i className="icon fa-solid fa-user icon hide"></i>
+			)}
 			<span className="menuText">
 				{getTranslations(label, props.pageDefinition.translations)}
 			</span>
@@ -99,41 +105,52 @@ function Menu(props: ComponentProps) {
 		<div className="comp compMenu ">
 			<HelperComponent definition={props.definition} />
 			<div className="menuContainer" style={resolvedStyles.menuContainer ?? {}}>
-				<div
-					onClick={!readOnly ? handleClick : undefined}
-					className={`menu ${isMenuActive ? 'isActive' : ''}`}
-					onMouseEnter={() => setHover(true)}
-					onMouseLeave={() => setHover(false)}
-					style={resolvedStyles.menu ?? {}}
-				>
-					<div className="menuLink">
-						{linkPath ? (
-							<Link
-								style={resolvedStyles.link ?? {}}
-								className="link"
-								target={target}
-								to={linkPath}
-							>
-								{menuDetails}
-							</Link>
-						) : (
-							menuDetails
-						)}
-					</div>
-					<div className="menuCaretIcon">
-						{hasChildren ? (
-							!isMenuOpenState ? (
-								<i
-									style={resolvedStyles.caretIcon ?? {}}
-									className="fa fa-solid fa-angle-down"
-								></i>
+				<div className={`menuItemsContainer ${isMenuActive ? 'isActive' : ''}`}>
+					<div className="highLight"></div>
+					<div
+						onClick={!readOnly ? handleClick : undefined}
+						className={`menu`}
+						onMouseEnter={
+							stylePropertiesWithPseudoStates?.hover
+								? () => setHover(true)
+								: undefined
+						}
+						onMouseLeave={
+							stylePropertiesWithPseudoStates?.hover
+								? () => setHover(false)
+								: undefined
+						}
+						style={resolvedStyles.menu ?? {}}
+					>
+						<div className="menuLink">
+							{linkPath ? (
+								<Link
+									style={resolvedStyles.link ?? {}}
+									className="link"
+									target={target}
+									to={linkPath}
+								>
+									{menuDetails}
+								</Link>
 							) : (
-								<i
-									style={resolvedStyles.caretIcon ?? {}}
-									className="fa fa-solid fa-angle-up"
-								></i>
-							)
-						) : null}
+								menuDetails
+							)}
+						</div>
+						<div className="menuCaretIcon">
+							{hasChildren ? (
+								!isMenuOpenState ? (
+									<i
+										style={resolvedStyles.caretIcon ?? {}}
+										className="fa fa-solid fa-angle-down"
+									></i>
+								) : (
+									<i
+										style={resolvedStyles.caretIcon ?? {}}
+										className="fa fa-solid fa-angle-up"
+									></i>
+								)
+							) : null}
+						</div>
 					</div>
 				</div>
 				{hasChildren && isMenuOpenState

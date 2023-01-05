@@ -5,6 +5,7 @@ import {
 	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
+import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
@@ -24,6 +25,53 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 ];
 
-const stylePropertiesDefinition: ComponentStylePropertyDefinition = {};
+const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
+	'': {
+		[COMPONENT_STYLE_GROUP_PROPERTIES.backdropFilter.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.backdropFilter,
+			target: ['label'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.background.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.background,
+			target: ['label'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.border,
+			target: ['label'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow,
+			target: ['label'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
+			target: ['label'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.font,
+			target: ['label'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.margin,
+			target: ['label'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.opacity.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.opacity,
+			target: ['label'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.outline.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.outline,
+			target: ['label'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.padding,
+			target: ['label'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.size,
+			target: ['label'],
+		},
+	},
+};
 
 export { propertiesDefinition, stylePropertiesDefinition };
