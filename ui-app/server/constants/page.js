@@ -905,13 +905,24 @@ export const page = {
       name: "image",
       key: "image",
       type: "Image",
+      styleProperties: {
+        "4exr563qt36t36t378hxy899": {
+          resolutions: {
+            ALL: {
+              backgroundColor: {
+                value: "#212B35",
+              },
+            },
+          },
+        },
+      },
       properties: {
         src: {
           value:
-            "https://c4.wallpaperflare.com/wallpaper/575/681/304/naruto-shippuuden-uchiha-itachi-sharingan-anime-wallpaper-preview.jpg00",
+            "https://fincity-dev-public.s3.ap-south-1.amazonaws.com/website/ai/images/logo.png",
         },
         alt: {
-          value: "Itachi Uchiha",
+          value: "Fincity",
         },
         width: {
           value: "500px",
