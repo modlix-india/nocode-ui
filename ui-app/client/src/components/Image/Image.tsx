@@ -10,6 +10,7 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 
 function ImageComponent(props: ComponentProps) {
 	const { definition, locationHistory, context } = props;
+	const [hover, setHover] = useState(false);
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
 		properties: { alt, src, onClickEvent, fallBackImg } = {},
@@ -25,7 +26,7 @@ function ImageComponent(props: ComponentProps) {
 	const clickEvent = onClickEvent ? props.pageDefinition.eventFunctions[onClickEvent] : undefined;
 
 	const handleClick = () => {
-		(async () => await runEvent(onClickEvent, key, props.context.pageName))();
+		(async () => await runEvent(clickEvent, key, props.context.pageName))();
 	};
 	const handleError = (e: any) => {
 		if (fallBackImg) {
@@ -33,24 +34,28 @@ function ImageComponent(props: ComponentProps) {
 		}
 	};
 
-	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
+	const resolvedStyles = processComponentStylePseudoClasses(
+		{ hover },
+		stylePropertiesWithPseudoStates,
+	);
 
 	return (
 		<div className="comp compImage">
 			<HelperComponent definition={definition} />
-			<div
+			<img
+				onMouseEnter={
+					stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
+				}
+				onMouseLeave={
+					stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
+				}
 				onClick={onClickEvent ? handleClick : undefined}
-				style={resolvedStyles.container ?? {}}
-				className={`container ${onClickEvent ? 'onClickTrue' : ''}`}
-			>
-				<img
-					className="image"
-					style={resolvedStyles.image ?? {}}
-					src={src}
-					alt={alt}
-					onError={fallBackImg ? handleError : undefined}
-				/>
-			</div>
+				className={onClickEvent ? '_onclicktrue' : ''}
+				style={resolvedStyles.image ?? {}}
+				src={src}
+				alt={alt}
+				onError={fallBackImg ? handleError : undefined}
+			/>
 		</div>
 	);
 }
@@ -64,6 +69,7 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleComponent: ImageStyle,
 	styleProperties: stylePropertiesDefinition,
+	stylePseudoStates: ['hover'],
 };
 
 export default component;

@@ -7,7 +7,7 @@ const PREFIX = '.comp.compImage';
 export default function ImageStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
 	const css =
 		`
-        ${PREFIX} .onClickTrue {
+        ${PREFIX} ._onClickTrue {
             cursor: pointer;
         }
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);

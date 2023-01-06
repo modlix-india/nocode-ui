@@ -50,33 +50,24 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 	'': {
 		[COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.border,
-			target: ['container'],
+			target: ['image'],
 		},
 		[COMPONENT_STYLE_GROUP_PROPERTIES.outline.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.outline,
-			target: ['container'],
+			target: ['image'],
 		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.padding,
-			target: ['container'],
+		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: COMPONENT_STYLE_GROUP_PROPERTIES.padding,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: COMPONENT_STYLE_GROUP_PROPERTIES.margin,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.background.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.background,
+			target: ['image'],
 		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.margin,
-			target: ['container'],
+		[COMPONENT_STYLE_GROUP_PROPERTIES.image.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.image,
+			target: ['image'],
 		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow,
-			target: ['container'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.container.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.container,
-			target: ['container'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.flex.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.flex,
-			target: ['container'],
-		},
-
+		[COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow.type]:
+			COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.size,
 			target: ['image'],
@@ -85,6 +76,19 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.opacity,
 			target: ['image'],
 		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.backdropFilter.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.backdropFilter,
+			target: ['image'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.transform.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.transform,
+			target: ['image'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.rotate.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.rotate,
+			target: ['image'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.zIndex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.zIndex,
 	},
 };
 
