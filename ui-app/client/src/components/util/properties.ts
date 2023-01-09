@@ -42,6 +42,13 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 const COMPONENT_STYLE_GROUPS: { [key: string]: Array<string> } = {
 	accentColor: ['accentColor'],
 	backdropFilter: ['backdropFilter'],
+	image: [
+		'image-orientation',
+		'image-rendering',
+		'image-resolution',
+		'object-fit',
+		'object-position',
+	],
 	background: [
 		'backgroundBlendMode',
 		'backgroundClip',
@@ -150,12 +157,19 @@ const COMPONENT_STYLE_GROUPS: { [key: string]: Array<string> } = {
 
 const CSS_STYLE_PROPERTY_GROUP_REF: { [key: string]: string } = Object.entries(
 	COMPONENT_STYLE_GROUPS,
-).reduce((a, [grp, mems]) => {
+).reduce((a: any, [grp, mems]) => {
 	for (const x of mems) a[x] = grp;
 	return a;
 }, {});
 
 const COMPONENT_STYLE_GROUP_PROPERTIES: { [key: string]: ComponentStylePropertyGroupDefinition } = {
+	image: {
+		name: 'image',
+		type: 'image',
+		displayName: 'Image Properties',
+		description: 'Image Properties',
+		target: ['comp'],
+	},
 	accentColor: {
 		name: 'accentColor',
 		type: 'accentColor',
