@@ -55,16 +55,16 @@ export default function DropdownStyle({ theme }: { theme: Map<string, Map<string
         cursor: not-allowed;
     }
 
-    ${PREFIX} .label {
+    ${PREFIX} .placeholder {
         font-size: 16px;
         cursor: pointer;
     }
 
-    ${PREFIX} .label.notSelected {
+    ${PREFIX} .placeholder.notSelected {
         color: #6C7586;
     }
 
-    ${PREFIX} .label.selected {
+    ${PREFIX} .placeholder.selected {
         color: #1F3C3D;
     }
 
@@ -72,18 +72,18 @@ export default function DropdownStyle({ theme }: { theme: Map<string, Map<string
         cursor: not-allowed;
     }
 
-    ${PREFIX} .container.disabled .label.notSelected {
+    ${PREFIX} .container.disabled .placeholder.notSelected {
         color: #A7ACB6;
     }
 
-    ${PREFIX} .container.disabled .label.selected {
+    ${PREFIX} .container.disabled .placeholder.selected {
         color: #798A8B;
     }
 
-    ${PREFIX} .labelIcon {
+    ${PREFIX} .placeholderIcon {
         color:  #1F3C3D;
     }
-    ${PREFIX} .container.disabled .labelIcon {
+    ${PREFIX} .container.disabled .placeholderIcon {
         color:  #798A8B;
     }
 

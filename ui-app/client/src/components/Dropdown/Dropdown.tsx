@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
 	addListener,
+	addListenerAndCallImmediately,
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
@@ -40,7 +41,7 @@ function DropdownComponent(props: ComponentProps) {
 			dataBinding,
 			placeholder,
 			readOnly,
-			headerText,
+			label,
 			closeOnMouseLeave,
 		} = {},
 	} = useDefinition(
@@ -53,7 +54,7 @@ function DropdownComponent(props: ComponentProps) {
 	if (!bindingPath) throw new Error('Definition requires binding path');
 	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
 	useEffect(() => {
-		addListener(
+		addListenerAndCallImmediately(
 			(_, value) => {
 				setSelected(value);
 			},
@@ -62,22 +63,38 @@ function DropdownComponent(props: ComponentProps) {
 		);
 	}, []);
 
-	const dropdownData = getRenderData(
-		dataBinding,
-		datatype,
-		uniqueKeyType,
-		uniqueKey,
-		selectionType,
-		selectionKey,
-		labelKeyType,
-		labelKey,
+	const dropdownData = React.useMemo(
+		() =>
+			getRenderData(
+				dataBinding,
+				datatype,
+				uniqueKeyType,
+				uniqueKey,
+				selectionType,
+				selectionKey,
+				labelKeyType,
+				labelKey,
+			),
+		[
+			dataBinding,
+			datatype,
+			uniqueKeyType,
+			uniqueKey,
+			selectionType,
+			selectionKey,
+			labelKeyType,
+			labelKey,
+		],
 	);
 	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
-	const selectedDataKey = getSelectedKeys(dropdownData, selected);
 
+	const selectedDataKey = React.useMemo(
+		() => getSelectedKeys(dropdownData, selected),
+		[selected],
+	);
 
-	const handleClick = async (each: { key: any; label: any; value: any }) => {
-		setData(bindingPathPath, each.value, context?.pageName);
+	const handleClick = async (each: { key: any; label: any; value: any } | undefined) => {
+		if (each) setData(bindingPathPath, each.value, context?.pageName);
 		handleClose();
 		if (clickEvent) {
 			await runEvent(clickEvent, key, context.pageName);
@@ -102,11 +119,11 @@ function DropdownComponent(props: ComponentProps) {
 	return (
 		<div className="comp compDropdown" onClick={handleBubbling}>
 			<HelperComponent definition={props.definition} />
-			{headerText !== undefined && (
-				<label className={`headerText ${readOnly ? 'disabled' : ''}`}>
-					{getTranslations(headerText, translations)}
+			{label ? (
+				<label className={`label ${readOnly ? 'disabled' : ''}`}>
+					{getTranslations(label, translations)}
 				</label>
-			)}
+			) : null}
 			<div
 				className={`container ${showDropdown && !readOnly ? 'focus' : ''} ${
 					readOnly ? 'disabled' : ''
@@ -116,7 +133,7 @@ function DropdownComponent(props: ComponentProps) {
 					className={`labelContainer`}
 					onClick={() => !readOnly && setShowDropdown(!showDropdown)}
 				>
-					<label className={`label ${selected ? 'selected' : 'notSelected'}`}>
+					<label className={`placeholder ${selected ? 'selected' : 'notSelected'}`}>
 						{getTranslations(
 							selected === undefined
 								? placeholder
@@ -125,7 +142,7 @@ function DropdownComponent(props: ComponentProps) {
 							translations,
 						)}
 					</label>
-					<i className="fa-solid fa-angle-down labelIcon"></i>
+					<i className="fa-solid fa-angle-down placeholderIcon"></i>
 				</div>
 				{showDropdown && (
 					<div
@@ -159,6 +176,7 @@ const component: Component = {
 	styleComponent: DropdownStyle,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
+	stylePseudoStates: ['hover', 'focus', 'disabled'],
 };
 
 export default component;

@@ -12,17 +12,16 @@ import {
 } from '../../types/common';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
-	
 	{
 		name: 'placeholder',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: 'Dropdown placeholder',
 		description: `Placeholder that\'s shown when no item is selected in dropdown.`,
-		defaultValue: 'Select ...'
+		defaultValue: 'Select ...',
 	},
 
 	{
-		name: 'headerText',
+		name: 'label',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: 'Dropdown header text',
 		description: `Header text that\'s shown on top of dropdown.`,
@@ -34,7 +33,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Dropdown data',
 		description: `Data that is used to render dropdown.`,
 	},
-	
+
 	{
 		name: 'datatype',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
@@ -189,7 +188,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'closeOnMouseLeave',
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
 		displayName: 'Close dropdown',
-		description: 'Dropdown will be closed on mouse cursor leaving dropdown container when this property is true.',
+		description:
+			'Dropdown will be closed on mouse cursor leaving dropdown container when this property is true.',
 		group: ComponentPropertyGroup.COMMON,
 	},
 

@@ -107,64 +107,74 @@ function Tags(props: ComponentProps) {
 		<div className="comp compTags">
 			<HelperComponent definition={props.definition} />
 			<div className="tagContainer" style={resolvedStyles.tagContainer ?? {}}>
-				{renderData?.map(e => (
-					<div
-						onMouseEnter={
-							stylePropertiesWithPseudoStates?.hover
-								? () => setHover(e?.key)
-								: undefined
-						}
-						onMouseLeave={
-							stylePropertiesWithPseudoStates?.hover ? () => setHover('') : undefined
-						}
-						className="container"
-						style={
-							(hover === e?.key ? resolvedStylesWithPseudo : resolvedStyles)
-								.container ?? {}
-						}
-						key={e?.key}
-					>
-						{icon && (
-							<i
-								className={`${icon} iconCss`}
-								style={
-									{
-										...((hover === e?.key
-											? resolvedStylesWithPseudo
-											: resolvedStyles
-										).tagIcon ?? {}),
-										...((hover === e?.key
-											? resolvedStylesWithPseudo
-											: resolvedStyles
-										).icon ?? {}),
-									} ?? {}
+				{renderData
+					?.map(e =>
+						e ? (
+							<div
+								onMouseEnter={
+									stylePropertiesWithPseudoStates?.hover
+										? () => setHover(e?.key)
+										: undefined
 								}
-							></i>
-						)}
-						<div
-							style={
-								(hover === e?.key ? resolvedStylesWithPseudo : resolvedStyles)
-									.tagText ?? {}
-							}
-							className="text"
-						>
-							{e?.label}
-						</div>
-						{closeButton ? (
-							<i
-								tabIndex={0}
+								onMouseLeave={
+									stylePropertiesWithPseudoStates?.hover
+										? () => setHover('')
+										: undefined
+								}
+								className="container"
 								style={
 									(hover === e?.key ? resolvedStylesWithPseudo : resolvedStyles)
-										.tagCloseIcon ?? {}
+										.container ?? {}
 								}
-								className="fa fa-solid fa-xmark closeButton"
-								onClick={() => handleClose(e?.originalObjectKey!)}
-							></i>
-						) : (
-							''
-						)}
-					</div>
-				))}
+								key={e?.key}
+							>
+								{icon && (
+									<i
+										className={`${icon} iconCss`}
+										style={
+											{
+												...((hover === e?.key
+													? resolvedStylesWithPseudo
+													: resolvedStyles
+												).tagIcon ?? {}),
+												...((hover === e?.key
+													? resolvedStylesWithPseudo
+													: resolvedStyles
+												).icon ?? {}),
+											} ?? {}
+										}
+									></i>
+								)}
+								<div
+									style={
+										(hover === e?.key
+											? resolvedStylesWithPseudo
+											: resolvedStyles
+										).tagText ?? {}
+									}
+									className="text"
+								>
+									{e?.label}
+								</div>
+								{closeButton ? (
+									<i
+										tabIndex={0}
+										style={
+											(hover === e?.key
+												? resolvedStylesWithPseudo
+												: resolvedStyles
+											).tagCloseIcon ?? {}
+										}
+										className="fa fa-solid fa-xmark closeButton"
+										onClick={() => handleClose(e?.originalObjectKey!)}
+									></i>
+								) : (
+									''
+								)}
+							</div>
+						) : null,
+					)
+					.filter(e => !!e)}
 			</div>
 		</div>
 	);
