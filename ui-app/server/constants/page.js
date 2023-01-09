@@ -761,7 +761,7 @@ export const page = {
         fabTestButton: true,
         fabTestMiniButton: true,
         tagtagatag: true,
-        tagTag: true,
+
         image: true,
       },
     },
@@ -815,13 +815,22 @@ export const page = {
       },
       properties: {
         datatype: {
-          value: "LIST_OF_STRINGS",
+          value: "LIST_OF_OBJECTS",
         },
         selectionType: {
           value: "OBJECT",
         },
         uniqueKeyType: {
-          value: "OBJECT",
+          value: "KEY",
+        },
+        uniqueKey: {
+          value: "id",
+        },
+        labelKeyType: {
+          value: "KEY",
+        },
+        labelKey: {
+          value: "name",
         },
         closeEvent: {
           value: "login",
@@ -855,49 +864,6 @@ export const page = {
               color: { value: "#8790aa" },
             },
           },
-        },
-      },
-    },
-    tagtagatag2: {
-      name: "tagtagatag2",
-      key: "tagtagatag2",
-      type: "Tags",
-      bindingPath: {
-        type: "VALUE",
-        value: "Store.dropdownData",
-      },
-      properties: {
-        datatype: {
-          value: "LIST_OF_STRINGS",
-        },
-        selectionType: {
-          value: "OBJECT",
-        },
-        uniqueKeyType: {
-          value: "OBJECT",
-        },
-        closeEvent: {
-          value: "login",
-        },
-        icon: {
-          value: "fa fa-brands fa-whatsapp",
-        },
-      },
-    },
-    tagTag: {
-      name: "tagtagatag",
-      key: "tagtagatag",
-      type: "Tags",
-      bindingPath: {},
-      properties: {
-        closeEvent: {
-          value: "login",
-        },
-        icon: {
-          value: "fa fa-brands fa-whatsapp",
-        },
-        onClick: {
-          value: "login",
         },
       },
     },
