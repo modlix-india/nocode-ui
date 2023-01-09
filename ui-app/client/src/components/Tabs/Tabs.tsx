@@ -1,5 +1,10 @@
-import React from 'react';
-import { PageStoreExtractor, setData } from '../../context/StoreContext';
+import React, { useEffect } from 'react';
+import {
+	addListener,
+	getPathFromLocation,
+	PageStoreExtractor,
+	setData,
+} from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { HelperComponent } from '../HelperComponent';
 import { renderChildren } from '../util/renderChildren';
@@ -24,6 +29,17 @@ function TabsComponent(props: ComponentProps) {
 		pageExtractor,
 	);
 	const [activeTab, setActiveTab] = React.useState(defaultActive || '');
+	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory);
+
+	useEffect(() => {
+		return addListener(
+			(_, value) => {
+				setActiveTab(value ?? defaultActive ?? tabs[0].childKey);
+			},
+			pageExtractor,
+			bindingPathPath,
+		);
+	}, []);
 
 	const toggleActiveBorderStyle = function (childKey: any) {
 		if (activeTab === childKey || defaultActive === childKey) {
@@ -64,7 +80,7 @@ function TabsComponent(props: ComponentProps) {
 						{renderChildren(
 							pageDefinition,
 							{
-								[activeTab || defaultActive || Object.keys(children)[0]]: true,
+								[activeTab]: true,
 							},
 							context,
 							locationHistory,
