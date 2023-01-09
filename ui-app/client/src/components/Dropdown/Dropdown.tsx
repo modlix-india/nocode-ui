@@ -108,7 +108,7 @@ function DropdownComponent(props: ComponentProps) {
 				</label>
 			)}
 			<div
-				className={`container ${showDropdown && !readOnly ? 'onFocus' : ''} ${
+				className={`container ${showDropdown && !readOnly ? 'focus' : ''} ${
 					readOnly ? 'disabled' : ''
 				} `}
 			>

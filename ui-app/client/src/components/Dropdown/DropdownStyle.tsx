@@ -34,7 +34,7 @@ export default function DropdownStyle({ theme }: { theme: Map<string, Map<string
         border: 1px solid #2680EB;
     }
 
-    ${PREFIX} .container.onFocus {
+    ${PREFIX} .container.focus {
         border: 1px solid #2680EB;
     }
 
