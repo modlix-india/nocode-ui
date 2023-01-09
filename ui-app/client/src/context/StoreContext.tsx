@@ -172,6 +172,7 @@ export function setData(path: string, value: any, context?: string) {
 			value,
 		);
 	} else _setData(path, value);
+	console.log(path, _store, context);
 }
 
 export class PageStoreExtractor extends TokenValueExtractor {
