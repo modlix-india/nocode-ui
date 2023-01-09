@@ -33,8 +33,7 @@ ${PREFIX} .tabsButtonActive {
 	display: flex;
 	flex-direction: column;
 }
-$
-{PREFIX} .tabButtonDiv {
+${PREFIX} .tabButtonDiv {
 	width: 97%;
 	justify-content: space-between;
 	display: flex;

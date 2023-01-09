@@ -23,6 +23,7 @@ function TabsComponent(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
+	const [activeTab, setActiveTab] = React.useState(defaultActive || '');
 
 	const toggleActiveBorderStyle = function (childKey: any) {
 		if (activeTab === childKey || defaultActive === childKey) {
@@ -43,7 +44,6 @@ function TabsComponent(props: ComponentProps) {
 	const handleClick = function (key: string) {
 		setData(bindingPath, key);
 	};
-	const [activeTab, setActiveTab] = React.useState(defaultActive || '');
 
 	return (
 		<div className="comp compTabs">
