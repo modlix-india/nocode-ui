@@ -46,12 +46,12 @@ function TextBox(props: ComponentProps) {
 			emptyValue,
 			validation,
 			supportingText,
-			visibility,
 			readOnly,
 			defaultValue,
 			rightIcon,
 			leftIcon,
 			label,
+			noFloat,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -94,6 +94,16 @@ function TextBox(props: ComponentProps) {
 	return (
 		<div className="comp compTextBox">
 			<HelperComponent definition={definition} />
+			{noFloat && (
+				<label
+					htmlFor={key}
+					className={`textBoxLabel ${errorMessage ? 'error' : ''} ${
+						readOnly ? 'disabled' : ''
+					}`}
+				>
+					{getTranslations(label, translations)}
+				</label>
+			)}
 			<div
 				className={`textBoxDiv ${errorMessage ? 'error' : ''} ${
 					isFocussed && !value.length ? 'focussed' : ''
@@ -115,14 +125,16 @@ function TextBox(props: ComponentProps) {
 						id={key}
 						disabled={readOnly}
 					/>
-					<label
-						htmlFor={key}
-						className={`textBoxLabel ${errorMessage ? 'error' : ''} ${
-							readOnly ? 'disabled' : ''
-						}`}
-					>
-						{getTranslations(label, translations)}
-					</label>
+					{!noFloat && (
+						<label
+							htmlFor={key}
+							className={`textBoxLabel ${errorMessage ? 'error' : ''} ${
+								readOnly ? 'disabled' : ''
+							}`}
+						>
+							{getTranslations(label, translations)}
+						</label>
+					)}
 				</div>
 				{value.length ? (
 					<i

@@ -22,6 +22,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
+		name: 'noFloat',
+		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		displayName: 'No Float Label',
+		description: 'Textbox without floating label.',
+		translatable: true,
+		defaultValue: false,
+	},
+
+	{
 		name: 'leftIcon',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: 'Left Icon',
