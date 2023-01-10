@@ -49,10 +49,10 @@ function createNewState(
 
 	if (definition.styleProperties) {
 		const devices = getDataFromPath(`${STORE_PREFIX}.devices`, locationHistory);
-		const pseudoStates = { '': { defaultOne: {}, conditioned: [] } };
+		const pseudoStates: any = { '': { defaultOne: {}, conditioned: [] } };
 		for (const ecs of Object.values(definition.styleProperties)) {
 			if (ecs.condition) {
-				let value = false;
+				let value;
 				if (pageExtractor) value = getData(ecs.condition, locationHistory, pageExtractor);
 				else value = getData(ecs.condition, locationHistory);
 
@@ -60,7 +60,7 @@ function createNewState(
 			}
 
 			const pTargets = processTargets(
-				ecs.resolutions,
+				ecs.resolutions || {},
 				devices,
 				stylePropertiesDefinition,
 				locationHistory,
@@ -75,8 +75,8 @@ function createNewState(
 			else pseudoStates[state].defaultOne = pTargets;
 		}
 
-		const consolidateStates = {};
-		for (const [state, object] of Object.entries(pseudoStates)) {
+		const consolidateStates: any = {};
+		for (const [state, object] of Object.entries<any>(pseudoStates)) {
 			let targetStyles = object.defaultOne;
 			for (const eachConditionTargets of object.conditioned) {
 				for (const [target, styleObj] of Object.entries(eachConditionTargets)) {
@@ -121,7 +121,7 @@ function processTargets(
 			if (devices[res]) style = { ...style, ...resolutions[res] };
 	}
 
-	const finStyle = {};
+	const finStyle: any = {};
 
 	for (let [prop, value] of Object.entries(style)) {
 		const v = pageExtractor
