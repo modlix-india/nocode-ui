@@ -19,12 +19,12 @@ import { Component } from '../../types/common';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './menuProperties';
 import { HelperComponent } from '../HelperComponent';
-import { renderChildren } from '../util/renderChildren';
 import { getTranslations } from '../util/getTranslations';
 import MenuStyle from './MenuStyle';
 import { runEvent } from '../util/runEvent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { getHref } from '../util/getHref';
+import Children from '../Children';
 
 function Menu(props: ComponentProps) {
 	const [isMenuActive, setIsMenuActive] = React.useState(false);
@@ -181,9 +181,14 @@ function Menu(props: ComponentProps) {
 						</div>
 					</Link>
 				</div>
-				{hasChildren && isMenuOpenState
-					? renderChildren(pageDefinition, children, context, locationHistory)
-					: null}
+				{hasChildren && isMenuOpenState ? (
+					<Children
+						pageDefinition={pageDefinition}
+						children={children}
+						context={context}
+						locationHistory={locationHistory}
+					/>
+				) : null}
 			</div>
 		</div>
 	);
