@@ -1,3 +1,4 @@
+import { deepEqual } from '@fincity/kirun-js';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
 	addListener,
@@ -18,7 +19,7 @@ import DropdownStyle from './DropdownStyle';
 
 function DropdownComponent(props: ComponentProps) {
 	const [showDropdown, setShowDropdown] = useState(false);
-	const [selected, setSelected] = useState();
+	const [selected, setSelected] = useState<any>();
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const {
 		definition: { bindingPath },
@@ -43,6 +44,7 @@ function DropdownComponent(props: ComponentProps) {
 			readOnly,
 			label,
 			closeOnMouseLeave,
+			isMultiSelect,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -88,25 +90,65 @@ function DropdownComponent(props: ComponentProps) {
 	);
 	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
 
-	const selectedDataKey = React.useMemo(
-		() => getSelectedKeys(dropdownData, selected),
+	const selectedDataKey: Array<any> | string | undefined = React.useMemo(
+		() => getSelectedKeys(dropdownData, selected, isMultiSelect),
 		[selected],
 	);
 
+	const getIsSelected = (key: any) => {
+		if (!isMultiSelect) return deepEqual(selectedDataKey, key);
+		if (Array.isArray(selectedDataKey))
+			return !!selectedDataKey.find((e: any) => deepEqual(e, key));
+		return false;
+	};
+
 	const handleClick = async (each: { key: any; label: any; value: any } | undefined) => {
-		if (each) setData(bindingPathPath, each.value, context?.pageName);
+		let newSelection;
+		if (each) {
+			if (isMultiSelect && Array.isArray(selected)) {
+				newSelection = selected.find((e: any) => deepEqual(e, each.value));
+				if (newSelection) {
+					setData(
+						bindingPathPath,
+						selected.filter(e => !deepEqual(e, each.value)),
+						context.pageName,
+					);
+					return;
+				}
+			}
+			setData(
+				bindingPathPath,
+				isMultiSelect ? (selected ? [...selected, each.value] : [each.value]) : each.value,
+				context?.pageName,
+			);
+		}
+
 		handleClose();
 		if (clickEvent) {
 			await runEvent(clickEvent, key, context.pageName);
 		}
 	};
 
-	const handleClose = (event?: any) => {
+	const handleClose = () => {
 		setShowDropdown(false);
 	};
 
 	const handleBubbling = (event: any) => {
 		event.stopPropagation();
+	};
+
+	const getLabel = () => {
+		const label =
+			!selected ||
+			!selectedDataKey ||
+			(Array.isArray(selectedDataKey) && !selectedDataKey.length)
+				? placeholder
+				: !Array.isArray(selectedDataKey)
+				? dropdownData?.find((each: any) => each?.key === selectedDataKey)?.label
+				: `${selectedDataKey.length} item${
+						selectedDataKey.length > 1 ? 's' : ''
+				  }  selected`;
+		return label;
 	};
 
 	useEffect(() => {
@@ -125,6 +167,7 @@ function DropdownComponent(props: ComponentProps) {
 				</label>
 			) : null}
 			<div
+				onMouseLeave={() => closeOnMouseLeave && handleClose()}
 				className={`container ${showDropdown && !readOnly ? 'focus' : ''} ${
 					readOnly ? 'disabled' : ''
 				} `}
@@ -133,22 +176,22 @@ function DropdownComponent(props: ComponentProps) {
 					className={`labelContainer`}
 					onClick={() => !readOnly && setShowDropdown(!showDropdown)}
 				>
-					<label className={`placeholder ${selected ? 'selected' : 'notSelected'}`}>
-						{getTranslations(
-							selected === undefined
-								? placeholder
-								: dropdownData?.find((each: any) => each?.key === selectedDataKey)
-										?.label,
-							translations,
-						)}
+					<input
+						className="inputbox"
+						type="text"
+						value={getTranslations(getLabel(), translations)}
+						key={key}
+					/>
+					<label
+						htmlFor="key"
+						className={`placeholder ${selected ? 'selected' : 'notSelected'}`}
+					>
+						{getTranslations(getLabel(), translations)}
 					</label>
 					<i className="fa-solid fa-angle-down placeholderIcon"></i>
 				</div>
 				{showDropdown && (
-					<div
-						className="dropdownContainer"
-						onMouseLeave={() => closeOnMouseLeave && handleClose()}
-					>
+					<div className="dropdownContainer">
 						{dropdownData?.map(each => (
 							<div
 								onClick={() => handleClick(each!)}
@@ -156,7 +199,7 @@ function DropdownComponent(props: ComponentProps) {
 								key={each?.key}
 							>
 								<label className="dropdownItemLabel">{each?.label}</label>
-								{each?.key === selectedDataKey && (
+								{getIsSelected(each?.key) && (
 									<i className="fa fa-solid fa-check checkedIcon"></i>
 								)}
 							</div>

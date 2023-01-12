@@ -10,7 +10,7 @@ export default function DropdownStyle({ theme }: { theme: Map<string, Map<string
     ${PREFIX} {
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        
      }
 
     ${PREFIX} .container {
@@ -90,7 +90,7 @@ export default function DropdownStyle({ theme }: { theme: Map<string, Map<string
     ${PREFIX} .dropdownContainer {
         position: absolute;
         left: 0;
-        top: 56px;
+        top: 100%;
         width: 100%;
         min-width: 200px;
         max-height: 150px;
@@ -98,6 +98,7 @@ export default function DropdownStyle({ theme }: { theme: Map<string, Map<string
         overflow-y: auto;
         background-color: #FFFFFF;
         box-shadow: 0 4px 6px 1px #E6E6E6;
+        margin-top: 1px;
     }
 
     ${PREFIX} .dropdownItem {

@@ -587,6 +587,9 @@ export const page = {
         selectionType: {
           value: "OBJECT",
         },
+        label: {
+          value: "Select Users",
+        },
         uniqueKeyType: {
           value: "KEY",
         },

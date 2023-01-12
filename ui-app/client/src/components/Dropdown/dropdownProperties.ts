@@ -21,6 +21,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
+		name: 'isMultiSelect',
+		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		displayName: 'Is MultiSelect',
+		description: `Allows the users to select multiple options.`,
+		defaultValue: true,
+	},
+
+	{
 		name: 'label',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: 'Dropdown header text',
@@ -191,6 +199,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description:
 			'Dropdown will be closed on mouse cursor leaving dropdown container when this property is true.',
 		group: ComponentPropertyGroup.COMMON,
+		defaultValue: true,
 	},
 
 	{
