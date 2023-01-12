@@ -4,6 +4,7 @@ import {
 	KIRuntime,
 	TokenValueExtractor,
 } from '@fincity/kirun-js';
+import { GOBAL_CONTEXT_NAME } from '../../constants';
 import {
 	localStoreExtractor,
 	PageStoreExtractor,
@@ -14,7 +15,11 @@ import { UIFunctionRepository } from '../../functions';
 import { UISchemaRepository } from '../../schemas/common';
 import UUID from './uuid';
 
-export const runEvent = async (functionDefinition: any, key: string = UUID(), page = 'global') => {
+export const runEvent = async (
+	functionDefinition: any,
+	key: string = UUID(),
+	page = GOBAL_CONTEXT_NAME,
+) => {
 	setData(`Store.functionExecutions.${page}.${key}.isRunning`, true);
 	try {
 		const def: FunctionDefinition = FunctionDefinition.from(functionDefinition);
