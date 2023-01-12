@@ -18,6 +18,20 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		noPrefix: true,
 	},
 	{
+		name: 'main-focus-color',
+		displayName: 'Application/Site text box Focus Color',
+		description: 'This color is used for focus on text box',
+		defaultValue: '#397ef5',
+		noPrefix: true,
+	},
+	{
+		name: 'main-error-icon-color',
+		displayName: 'Application/Site text box error icon color',
+		description: 'This color is used for error icon when error occurs during validation',
+		defaultValue: '#EC6A5F',
+		noPrefix: true,
+	},
+	{
 		name: 'main-font-color',
 		cssProperty: 'color',
 		selector: 'body',

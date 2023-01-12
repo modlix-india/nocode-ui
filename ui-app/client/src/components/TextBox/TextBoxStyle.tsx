@@ -105,6 +105,19 @@ export default function TextBoxStyle({ theme }: { theme: Map<string, Map<string,
 		${PREFIX} .textBoxDiv .clearText {
 			cursor: pointer;
 		}
+
+		${PREFIX} .textbox .remove-spin-button::-webkit-outer-spin-button, .remove-spin-button::-webkit-inner-spin-button {
+			-webkit-appearance: none;
+			-moz-appearance: none;
+			appearance: none;
+			margin: 0; 
+		}
+
+		${PREFIX} .textBoxLabel.disabled {
+			background-color: transparent;
+			color: #d5d5d5;
+		}
+
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="TextBoxCss">{css}</style>;

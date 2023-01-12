@@ -53,7 +53,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'border-color',
 		displayName: "textbox's border color on focus",
 		description: "This color is used for textbox's focus border color.",
-		defaultValue: '#397ef5',
+		defaultValue: '<main-focus-color>',
 		selector: '.textBoxDiv.focussed',
 	},
 	{
@@ -103,6 +103,22 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description: "This color is used for textbox's label color when it has error.",
 		defaultValue: '<main-error-color>',
 		selector: '.textBoxDiv .inputContainer .textBoxLabel.error',
+	},
+	{
+		name: 'textBoxIconColorWhenError',
+		cssProperty: 'color',
+		displayName: "textbox's Error Icon color when error",
+		description: "This color is used for textbox's error icon color when it has error",
+		defaultValue: '<main-error-icon-color',
+		selector: '.textBoxDiv .errorIcon',
+	},
+	{
+		name: 'textBoxIconColorWhenTextPresent',
+		cssProperty: 'color',
+		displayName: "textbox's Error Icon Color",
+		description: "This color is used for textbox's icon color when we input new data in textbox after error",
+		defaultValue: '#393A3C',
+		selector: '.textBoxDiv .errorIcon.hasText',
 	},
 ];
 
