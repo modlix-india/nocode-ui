@@ -41,6 +41,13 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		noPrefix: true,
 	},
 	{
+		name: 'main-font-size',
+		displayName: 'Application/Site font size',
+		description: 'This error color is used throughout application.',
+		defaultValue: '12px',
+		noPrefix: true,
+	},
+	{
 		name: 'light-font-color',
 		displayName: 'Application/Site Light font color',
 		description: 'This font color is used throughout application where light color is needed.',
