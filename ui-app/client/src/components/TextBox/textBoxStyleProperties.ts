@@ -2,26 +2,11 @@ import { StyleGroupDefinition, StylePropertyDefinition } from '../../types/commo
 
 export const styleProperties: Array<StylePropertyDefinition> = [
 	{
-		name: 'supportTextFontFamily',
-		cssProperty: 'font-family',
-		displayName: 'Support Text Font Family',
-		description: 'The font of the support text.',
-		selector: '.supportText',
-	},
-	{
-		name: 'supportTextFontSize',
-		cssProperty: 'font-size',
-		displayName: 'Support Text Font Size',
-		description: 'The font size of the support text.',
-		selector: '.supportText',
-		defaultValue: '12px',
-	},
-	{
 		name: 'supportTextDisabledColor',
 		cssProperty: 'color',
 		displayName: 'Application/Site Disabled font color',
 		description: "This color is used for disabled textbox's support text.",
-		defaultValue: '<main-disabled-color>',
+		defaultValue: '<form-input-text-color-when-disabled>',
 		selector: '.supportText.disabled',
 	},
 	{
@@ -116,7 +101,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'textBoxIconColorWhenTextPresent',
 		cssProperty: 'color',
 		displayName: "textbox's Error Icon Color",
-		description: "This color is used for textbox's icon color when we input new data in textbox after error",
+		description:
+			"This color is used for textbox's icon color when we input new data in textbox after error",
 		defaultValue: '#393A3C',
 		selector: '.textBoxDiv .errorIcon.hasText',
 	},

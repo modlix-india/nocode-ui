@@ -358,7 +358,7 @@ export const page = {
         // loginlabel: true,
         primarybuttongrid: true,
         fabTestButton: true,
-        textboxgrid: true,
+
         // outlinedbuttongrid: true,
         // textbuttongrid: true,
         // checkBoxGrid: true,
@@ -563,8 +563,26 @@ export const page = {
       name: "textboxgrid",
       key: "textboxgrid",
       type: "Grid",
+      styleProperties: {
+        gfasdcftyfw6637qtb45r37g235r4: {
+          resolutions: {
+            ALL: {
+              flexDirection: {
+                value: "column",
+              },
+            },
+          },
+        },
+      },
       children: {
         textboxcompcomp: true,
+        textboxcompcompreadOnly: true,
+        textboxcompcompdefaultValue: true,
+        textboxcompcompdefaultValuereadOnly: true,
+        textboxcompcompnofloat: true,
+        textboxcompcompnofloatreadOnly: true,
+        textboxcompcompnofloatdefaultValue: true,
+        textboxcompcompnofloatdefaultValuereadOnly: true,
         // textboxcompcompWithICon: true,
         // textboxcompcompdisabled: true,
         // textboxcompcompWithIConDisabled: true,
@@ -639,6 +657,204 @@ export const page = {
         type: "VALUE",
         // expression: "'Store.x.{{Store.x.var}}'",
         value: "Store.x.a",
+      },
+      displayOrder: -1,
+    },
+
+    textboxcompcompreadOnly: {
+      name: "textboxcompcompreadOnly",
+      key: "textboxcompcompreadOnly",
+      type: "TextBox",
+      properties: {
+        label: {
+          value: "Login",
+        },
+        supportingText: {
+          value: "Supporting Text",
+        },
+        readOnly: {
+          value: true,
+        },
+        isMandatory: {
+          value: true,
+        },
+      },
+      bindingPath: {
+        type: "VALUE",
+        // expression: "'Store.x.{{Store.x.var}}'",
+        value: "Store.x.b",
+      },
+      displayOrder: -1,
+    },
+
+    textboxcompcompdefaultValue: {
+      name: "textboxcompcompdefaultValue",
+      key: "textboxcompcompdefaultValue",
+      type: "TextBox",
+      properties: {
+        label: {
+          value: "Login",
+        },
+        supportingText: {
+          value: "Supporting Text",
+        },
+        defaultValue: {
+          value: "Hello World",
+        },
+        isMandatory: {
+          value: true,
+        },
+      },
+      bindingPath: {
+        type: "VALUE",
+        // expression: "'Store.x.{{Store.x.var}}'",
+        value: "Store.x.c",
+      },
+      displayOrder: -1,
+    },
+
+    textboxcompcompdefaultValuereadOnly: {
+      name: "textboxcompcompdefaultValuereadOnly",
+      key: "textboxcompcompdefaultValuereadOnly",
+      type: "TextBox",
+      properties: {
+        label: {
+          value: "Login",
+        },
+        supportingText: {
+          value: "Supporting Text",
+        },
+        readOnly: {
+          value: true,
+        },
+        defaultValue: {
+          value: "Hello World",
+        },
+        isMandatory: {
+          value: true,
+        },
+      },
+      bindingPath: {
+        type: "VALUE",
+        // expression: "'Store.x.{{Store.x.var}}'",
+        value: "Store.x.d",
+      },
+      displayOrder: -1,
+    },
+
+    textboxcompcompnofloat: {
+      name: "textboxcompcompnofloat",
+      key: "textboxcompcompnofloat",
+      type: "TextBox",
+      properties: {
+        label: {
+          value: "Login",
+        },
+        noFloat: {
+          value: true,
+        },
+
+        supportingText: {
+          value: "Supporting Text",
+        },
+        isMandatory: {
+          value: true,
+        },
+      },
+      bindingPath: {
+        type: "VALUE",
+        // expression: "'Store.x.{{Store.x.var}}'",
+        value: "Store.x.e",
+      },
+      displayOrder: -1,
+    },
+
+    textboxcompcompnofloatreadOnly: {
+      name: "textboxcompcompnofloatreadOnly",
+      key: "textboxcompcompnofloatreadOnly",
+      type: "TextBox",
+      properties: {
+        label: {
+          value: "Login",
+        },
+        noFloat: {
+          value: true,
+        },
+        readOnly: {
+          value: true,
+        },
+        supportingText: {
+          value: "Supporting Text",
+        },
+        isMandatory: {
+          value: true,
+        },
+      },
+      bindingPath: {
+        type: "VALUE",
+        // expression: "'Store.x.{{Store.x.var}}'",
+        value: "Store.x.f",
+      },
+      displayOrder: -1,
+    },
+
+    textboxcompcompnofloatdefaultValue: {
+      name: "textboxcompcompnofloatdefaultValue",
+      key: "textboxcompcompnofloatdefaultValue",
+      type: "TextBox",
+      properties: {
+        label: {
+          value: "Login",
+        },
+        noFloat: {
+          value: true,
+        },
+        defaultValue: {
+          value: "Hello World",
+        },
+        supportingText: {
+          value: "Supporting Text",
+        },
+        isMandatory: {
+          value: true,
+        },
+      },
+      bindingPath: {
+        type: "VALUE",
+        // expression: "'Store.x.{{Store.x.var}}'",
+        value: "Store.x.g",
+      },
+      displayOrder: -1,
+    },
+
+    textboxcompcompnofloatdefaultValuereadOnly: {
+      name: "textboxcompcompnofloatdefaultValuereadOnly",
+      key: "textboxcompcompnofloatdefaultValuereadOnly",
+      type: "TextBox",
+      properties: {
+        label: {
+          value: "Login",
+        },
+        noFloat: {
+          value: true,
+        },
+        readOnly: {
+          value: true,
+        },
+        defaultValue: {
+          value: "Hello World",
+        },
+        supportingText: {
+          value: "Supporting Text",
+        },
+        isMandatory: {
+          value: true,
+        },
+      },
+      bindingPath: {
+        type: "VALUE",
+        // expression: "'Store.x.{{Store.x.var}}'",
+        value: "Store.x.h",
       },
       displayOrder: -1,
     },

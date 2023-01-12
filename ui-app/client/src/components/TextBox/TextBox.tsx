@@ -1,6 +1,7 @@
 import React from 'react';
 import {
 	addListener,
+	addListenerAndCallImmediately,
 	getDataFromLocation,
 	getDataFromPath,
 	getPathFromLocation,
@@ -23,7 +24,7 @@ import TextBoxStyle from './TextBoxStyle';
 import useDefinition from '../util/useDefinition';
 
 interface mapType {
-	[key: string]:  any
+	[key: string]: any;
 }
 
 function TextBox(props: ComponentProps) {
@@ -33,11 +34,11 @@ function TextBox(props: ComponentProps) {
 	const [isFocussed, setIsFocussed] = React.useState(false);
 	const [hasText, setHasText] = React.useState(false);
 	const mapValue: mapType = {
-		"UNDEFINED": undefined,
-		"NULL": null,
-		"ENMPTYSTRING": '',
-		"ZERO": 0,
-	}
+		UNDEFINED: undefined,
+		NULL: null,
+		ENMPTYSTRING: '',
+		ZERO: 0,
+	};
 	const {
 		definition: { bindingPath },
 		definition,
@@ -72,26 +73,28 @@ function TextBox(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
+	console.log('defaultValue', defaultValue);
 	if (!bindingPath) throw new Error('Definition requires bindingpath');
 	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
 	const textBoxValue = getDataFromLocation(bindingPath, locationHistory, pageExtractor);
 	React.useEffect(
 		() =>
-			addListener(
+			addListenerAndCallImmediately(
 				(_, value) => {
+					console.log('the value is', value, defaultValue);
 					setvalue(value ?? defaultValue ?? '');
 				},
 				pageExtractor,
 				bindingPathPath,
 			),
-		[bindingPathPath],
+		[],
 	);
 	const handleFocus = () => {
 		setIsFocussed(true);
 	};
 	const handleBlur = async (event: any) => {
-		if(!updateStoreImmediately) {
-			if(event?.target.value === '' && removeKeyWhenEmpty) {
+		if (!updateStoreImmediately) {
+			if (event?.target.value === '' && removeKeyWhenEmpty) {
 				setData(bindingPathPath, undefined, context?.pageName, true);
 			} else {
 				setData(bindingPathPath, value, context?.pageName);
@@ -100,27 +103,27 @@ function TextBox(props: ComponentProps) {
 		setIsFocussed(false);
 	};
 	const handleChange = (event: any) => {
-		let temp = event?.target.value === '' && emptyValue ? mapValue[emptyValue] : event?.target.value;
+		let temp =
+			event?.target.value === '' && emptyValue ? mapValue[emptyValue] : event?.target.value;
 		if (!isDirty) {
 			setIsDirty(true);
 		}
-		if(valueType === 'number' && (temp > maxValue || temp < minValue)) {
+		if (valueType === 'number' && (temp > maxValue || temp < minValue)) {
 			temp = event?.target.value > maxValue ? maxValue?.toString() : minValue?.toString();
 		}
-		if(updateStoreImmediately) {
-			if(removeKeyWhenEmpty && temp === '') {
+		if (updateStoreImmediately) {
+			if (removeKeyWhenEmpty && temp === '') {
 				setData(bindingPathPath, undefined, context?.pageName, true);
 			} else {
 				setData(bindingPathPath, temp, context?.pageName);
-			}	
-		}
-		else {
+			}
+		} else {
 			setvalue(temp);
 		}
 	};
 	const handleClickClose = () => {
 		let temp = emptyValue ? mapValue[emptyValue] : value;
-		if(removeKeyWhenEmpty) {
+		if (removeKeyWhenEmpty) {
 			setData(bindingPathPath, undefined, context?.pageName, true);
 		} else {
 			setData(bindingPathPath, temp, context?.pageName);
@@ -150,7 +153,7 @@ function TextBox(props: ComponentProps) {
 				{rightIcon && <i className={`rightIcon ${rightIcon}`} />}
 				<div className="inputContainer">
 					<input
-						className={`textbox ${valueType === "number" ? "remove-spin-button" : ""}`}
+						className={`textbox ${valueType === 'number' ? 'remove-spin-button' : ''}`}
 						type={valueType}
 						value={value}
 						onChange={handleChange}
@@ -172,9 +175,13 @@ function TextBox(props: ComponentProps) {
 						</label>
 					)}
 				</div>
-				{errorMessage ? 
-				<i className={`errorIcon ${value?.length ? `hasText` : ``} fa fa-solid fa-circle-exclamation`}/>
-				: value?.length ? (
+				{errorMessage ? (
+					<i
+						className={`errorIcon ${
+							value?.length ? `hasText` : ``
+						} fa fa-solid fa-circle-exclamation`}
+					/>
+				) : value?.length ? (
 					<i
 						onClick={handleClickClose}
 						className="clearText fa fa-regular fa-circle-xmark fa-fw"
@@ -200,7 +207,7 @@ const component: Component = {
 	styleComponent: TextBoxStyle,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
-	stylePseudoStates: ['focus', 'disabled']
+	stylePseudoStates: ['focus', 'disabled'],
 };
 
 export default component;
