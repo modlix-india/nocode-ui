@@ -40,6 +40,24 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: `Menu's event to trigger on click.`,
 	},
 	{
+		name: 'onMenuOpenClick',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'Menu open click event',
+		description: `Menu's event to trigger on menu open click.`,
+	},
+	{
+		name: 'onMenuCloseClick',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'Menu close click event',
+		description: `Menu's event to trigger on menu close click.`,
+	},
+	{
+		name: 'onlyIconMenu',
+		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		displayName: 'Only Icon Menu',
+		description: `Menu have only icons.`,
+	},
+	{
 		name: 'icon',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: "Menu's icon",
@@ -126,12 +144,30 @@ const stylePropertiesDefinition = {
 			target: ['menu'],
 		},
 	},
+	menu: {
+		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.padding,
+			name: 'menuPadding',
+			displayName: 'Menu Padding',
+			description: 'Menu Padding',
+			prefix: 'menu',
+			target: ['menu'],
+		},
+	},
 	icon: {
 		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
 			name: 'iconColor',
 			displayName: 'Menu Icon Color',
 			description: 'Menu Icon Color',
+			prefix: 'icon',
+			target: ['icon'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.margin,
+			name: 'iconMargin',
+			displayName: 'Menu Icon margin',
+			description: 'Menu Icon margin',
 			prefix: 'icon',
 			target: ['icon'],
 		},

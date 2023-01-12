@@ -6,7 +6,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'min-width',
 		displayName: "Menu's minimum width",
 		description: "Menu's minimum width.",
-		defaultValue: '200px',
 		selector: '.menu',
 	},
 	{

@@ -30,7 +30,7 @@ export function getHref(linkPath: string, location: Location) {
 			location.pathname.indexOf('/page/') + length,
 			location.pathname.length,
 		);
-		if (midfix !== '') {
+		if (midfix !== '' && !midfix.endsWith('/')) {
 			midfix += '/';
 		}
 

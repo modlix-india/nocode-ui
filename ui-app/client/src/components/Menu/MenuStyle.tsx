@@ -12,7 +12,6 @@ export default function MenuStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 		${PREFIX} .menuContainer {
 			cursor: pointer;
-			
 		}
 		${PREFIX} .menuItemsContainer {
 			display: flex;
@@ -24,7 +23,12 @@ export default function MenuStyle({ theme }: { theme: Map<string, Map<string, st
 			align-items: center;
 			padding: 0 36px;
 			justify-content: space-between;
-		
+		}
+		${PREFIX} .menu{
+			border-left: 7px solid transparent;
+		}
+		${PREFIX} .menu.onlyIconMenu{
+			padding: 0 20px;
 		}
 		${PREFIX} .menuLink {
 			display: flex;
@@ -34,15 +38,9 @@ export default function MenuStyle({ theme }: { theme: Map<string, Map<string, st
 			text-decoration: none;
 			flex: 1
 		}
-		${PREFIX} .highLight {
-			width: 7px;
-			height: ${theme.get(StyleResolution.ALL)?.get('menuHeight') ?? styleDefaults.get('menuHeight')};
-		}
-		${PREFIX} .menuItemsContainer.isActive .highLight {
-			background-color: #E4B022;
-		}
 		${PREFIX} .menuItemsContainer.isActive .menu {
 			background-color: #363A33;
+			border-left: 7px solid #E4B022;
 		}
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
