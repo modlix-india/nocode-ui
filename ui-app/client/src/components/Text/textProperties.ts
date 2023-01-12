@@ -10,22 +10,93 @@ import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
-		name: 'icon',
+		name: 'text',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-		displayName: 'Icon',
-		description: 'Icon',
+		displayName: 'Text',
+		description: 'Text to display',
 		translatable: true,
-		editor: ComponentPropertyEditor.ICON,
 	},
 
 	{
-		name: 'iconPack',
+		name: 'textType',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-		displayName: 'Icon Pack',
-		description: 'Icon Pack',
-		translatable: true,
-		editor: ComponentPropertyEditor.ICON_PACK,
-		defaultValue: 'Font Awesome',
+		displayName: 'Text Type',
+		description: 'Text type',
+		editor: ComponentPropertyEditor.ENUM,
+		defaultValue: 'TEXT',
+		enumValues: [
+			{
+				name: 'TEXT',
+				displayName: 'Plain Text',
+				description: 'Plain Text',
+			},
+			{
+				name: 'MD',
+				displayName: 'Markdown',
+				description: 'Markdown Format',
+			},
+		],
+	},
+
+	{
+		name: 'textContainer',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'Text Container Type (SEO)',
+		description: 'Text container type for seo optimization',
+		editor: ComponentPropertyEditor.ENUM,
+		defaultValue: 'SPAN',
+		enumValues: [
+			{
+				name: 'SPAN',
+				displayName: 'SPAN',
+				description: 'Span tag',
+			},
+			{
+				name: 'H1',
+				displayName: 'H1',
+				description: 'H1 tag',
+			},
+			{
+				name: 'H2',
+				displayName: 'H2',
+				description: 'H2 tag',
+			},
+			{
+				name: 'H3',
+				displayName: 'H3',
+				description: 'H3 tag',
+			},
+			{
+				name: 'H4',
+				displayName: 'H4',
+				description: 'H4 tag',
+			},
+			{
+				name: 'H5',
+				displayName: 'H5',
+				description: 'H5 tag',
+			},
+			{
+				name: 'H6',
+				displayName: 'H6',
+				description: 'H6 tag',
+			},
+			{
+				name: 'I',
+				displayName: 'I',
+				description: 'I tag',
+			},
+			{
+				name: 'P',
+				displayName: 'P',
+				description: 'P tag',
+			},
+			{
+				name: 'PRE',
+				displayName: 'PRE',
+				description: 'Pre tag',
+			},
+		],
 	},
 
 	{
@@ -48,7 +119,11 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 			COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
-			target: ['icon'],
+			target: ['text'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.font,
+			target: ['text'],
 		},
 		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: COMPONENT_STYLE_GROUP_PROPERTIES.margin,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.opacity.type]: COMPONENT_STYLE_GROUP_PROPERTIES.opacity,
