@@ -2,6 +2,7 @@ import { Schema } from '@fincity/kirun-js';
 import { SCHEMA_REF_BOOL_COMP_PROP, SCHEMA_REF_STRING_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyDefinition,
+	ComponentPropertyEditor,
 	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
@@ -9,11 +10,22 @@ import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
-		name: 'text',
+		name: 'icon',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-		displayName: 'Label text',
-		description: `Label's display text.`,
+		displayName: 'Icon',
+		description: 'Icon',
 		translatable: true,
+		editor: ComponentPropertyEditor.ICON,
+	},
+
+	{
+		name: 'iconPack',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'Icon Pack',
+		description: 'Icon Pack',
+		translatable: true,
+		editor: ComponentPropertyEditor.ICON_PACK,
+		defaultValue: 'Font Awesome',
 	},
 
 	{
@@ -36,14 +48,7 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 			COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
-			target: ['text'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.container.type]:
-			COMPONENT_STYLE_GROUP_PROPERTIES.container,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.flex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.flex,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.font,
-			target: ['text'],
+			target: ['icon'],
 		},
 		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: COMPONENT_STYLE_GROUP_PROPERTIES.margin,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.opacity.type]: COMPONENT_STYLE_GROUP_PROPERTIES.opacity,

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, Location } from 'react-router-dom';
-import { STORE_PREFIX } from '../constants';
+import { GOBAL_CONTEXT_NAME, STORE_PREFIX } from '../constants';
 import {
 	addListener,
 	addListenerAndCallImmediately,
@@ -47,6 +47,19 @@ export const RenderEngineContainer = () => {
 			),
 		[],
 	);
+
+	// This is to execute the shell page on load event function so this acts as a application on load event.
+	// This has to execute even the shell page is not loaded.
+	useEffect(() => {
+		if (
+			!shellPageDefinition?.properties?.onLoadFunction ||
+			!shellPageDefinition?.eventFunctions?.[shellPageDefinition?.properties?.onLoadFunction]
+		)
+			return;
+
+		runEvent(shellPageDefinition.eventFunctions[shellPageDefinition.properties.onLoadFunction]);
+	}, [shellPageDefinition?.properties?.onLoadFunction]);
+
 	if (currentPageName && pageDefinition) {
 		const { properties: { wrapShell = true } = {} } = pageDefinition;
 
@@ -55,7 +68,7 @@ export const RenderEngineContainer = () => {
 				<Page
 					locationHistory={[]}
 					definition={shellPageDefinition}
-					context={{ pageName: 'global' }}
+					context={{ pageName: GOBAL_CONTEXT_NAME }}
 				/>
 			);
 
@@ -75,7 +88,7 @@ export const RenderEngineContainer = () => {
 			<Page
 				locationHistory={[]}
 				definition={shellPageDefinition}
-				context={{ pageName: 'global' }}
+				context={{ pageName: GOBAL_CONTEXT_NAME }}
 			/>
 		);
 	}
