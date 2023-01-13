@@ -75,12 +75,75 @@ export const application = {
   appCode: "nothing",
   version: 5,
   properties: {
-    defaultPage: "pagename",
+    defaultPage: "dashboard",
     shellPageDefinition: {
       name: "shellDefinition",
       key: "shellDefinition",
       type: "Page",
       rootComponent: "grid",
+      eventFunctions: {
+        toggleMenu: {
+          name: "toggleMenuDefinition",
+          namespace: "UIApp",
+          parameters: {},
+          events: {
+            output: {
+              name: "output",
+              parameters: {},
+            },
+          },
+          steps: {
+            toggleMenu: {
+              statementName: "toggleMenuData",
+              namespace: "UIEngine",
+              name: "SetStore",
+              parameterMap: {
+                path: {
+                  settoggleMenuData: {
+                    key: "settoggleMenuData",
+                    type: "VALUE",
+                    value: "Store.isMenuClosed",
+                  },
+                },
+                value: {
+                  settoggleMenuDataValue: {
+                    key: "settoggleMenuDataValue",
+                    type: "EXPRESSION",
+                    expression: "Store.isMenuClosed ? false : true",
+                  },
+                },
+              },
+            },
+            genOutput: {
+              statementName: "genOutput",
+              namespace: "System",
+              name: "GenerateEvent",
+              parameterMap: {
+                eventName: {
+                  genOutputEventName: {
+                    key: "genOutputEventName",
+                    type: "VALUE",
+                    value: "output",
+                  },
+                },
+                results: {
+                  genOutputResults: {
+                    key: "genOutputResults",
+                    type: "VALUE",
+                    value: {
+                      name: "toggleMenu",
+                      value: {
+                        isExpression: true,
+                        value: "Store.isMenuClosed",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
       componentDefinition: {
         grid: {
           name: "grid",
@@ -90,7 +153,9 @@ export const application = {
             hdsbs7y7gcwg476ctrh623q: {
               resolutions: {
                 ALL: {
-                  flexDirection: "column",
+                  width: {
+                    value: "100%",
+                  },
                 },
               },
             },
@@ -105,12 +170,25 @@ export const application = {
           name: "header",
           key: "header",
           type: "Grid",
-
-          children: {
-            fincityBrandLabel: true,
+          styleProperties: {
+            hdsbs7y7gc48723r4r6h5bwg476ctrh623q: {
+              resolutions: {
+                ALL: {
+                  backgroundColor: {
+                    value: "#212B35",
+                  },
+                  height: { value: "100vh" },
+                  // width: { value: "260px" },
+                  borderRadius: { value: "0px 24px 24px 0px" },
+                  flexDirection: { value: "column" },
+                },
+              },
+            },
           },
           children: {
-            fincityBrandLabel: true,
+            fincityBrandGrid: true,
+            fincityMenuGrid: true,
+            fincityClosedMenuGrid: false,
           },
         },
         body: {
@@ -128,15 +206,772 @@ export const application = {
             displayOrder: 2,
           },
         },
+        fincityBrandGrid: {
+          name: "fincityBrandGrid",
+          key: "fincityBrandGrid",
+          type: "Grid",
+          displayOrder: 1,
+          styleProperties: {
+            "6dwg67qt367xd827uywg3rt72g6377": {
+              resolutions: {
+                ALL: {
+                  height: { value: "96px" },
+                  minHeight: { value: "96px" },
+                  justifyContent: { value: "center" },
+                  alignItems: { value: "center" },
+                },
+              },
+            },
+          },
+          children: {
+            fincityBrandLabel: true,
+            closeAndOpenButton: true,
+          },
+        },
         fincityBrandLabel: {
           name: "fincityBrandLabel",
           key: "fincityBrandLabel",
           type: "Label",
+          styleProperties: {
+            "6dwg67qt367xd827uywg3rt72g6377": {
+              resolutions: {
+                ALL: {
+                  color: { value: "white" },
+                },
+              },
+            },
+          },
           properties: {
             text: {
               value: "Fincity",
             },
           },
+        },
+        closeAndOpenButton: {
+          name: "closeAndOpenButton",
+          type: "Button",
+          key: "closeAndOpenButton",
+          properties: {
+            type: {
+              value: "fabButtonMini",
+            },
+            leftIcon: {
+              value: "fa-solid fa-bars",
+            },
+            onClick: {
+              value: "toggleMenu",
+            },
+          },
+        },
+        fincityMenuGrid: {
+          name: "fincityMenuGrid",
+          key: "fincityMenuGrid",
+          type: "Grid",
+          displayOrder: 2,
+          properties: {},
+          styleProperties: {
+            "6dwg67qt367xd827uywg3rt72g6377": {
+              resolutions: {
+                ALL: {
+                  flexDirection: {
+                    value: "column",
+                  },
+                  width: { value: "260px" },
+                  overflow: { value: "auto" },
+                },
+              },
+            },
+          },
+          children: {
+            dashboardMenu: true,
+            userMenu: true,
+            campaignsMenu: true,
+            workflowsMenu: true,
+            userSegmentMenu: true,
+            channelMenu: true,
+            webPersonalisationMenu: true,
+          },
+        },
+        fincityClosedMenuGrid: {
+          name: "fincityClosedMenuGrid",
+          key: "fincityClosedMenuGrid",
+          type: "Grid",
+          displayOrder: 2,
+          properties: {
+            visibility: {
+              location: {
+                type: "VALUE",
+                value: "Store.isMenuClosed",
+              },
+            },
+          },
+          styleProperties: {
+            "6dwg67qt367xd827uywg3rt72g6377": {
+              resolutions: {
+                ALL: {
+                  flexDirection: {
+                    value: "column",
+                  },
+                  width: { value: "80px" },
+                  overflow: { value: "auto" },
+                },
+              },
+            },
+          },
+          children: {
+            dashboardClosedMenu: true,
+            userClosedMenu: true,
+            campaignsClosedMenu: true,
+            workflowsClosedMenu: true,
+            userSegmentClosedMenu: true,
+            channelClosedMenu: true,
+            webPersonalisationClosedMenu: true,
+          },
+        },
+        dashboardClosedMenu: {
+          name: "dashboardClosedMenu",
+          key: "dashboardClosedMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "Dashboard",
+            },
+            onlyIconMenu: {
+              value: true,
+            },
+            icon: {
+              value: "fa-regular fa-clipboard",
+            },
+            linkPath: {
+              value: "/dashboard",
+            },
+            pathsActiveFor: {
+              value: "/,dashboard",
+            },
+          },
+          displayOrder: 0,
+        },
+        userClosedMenu: {
+          name: "userClosedMenu",
+          key: "userClosedMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "User",
+            },
+            onlyIconMenu: {
+              value: true,
+            },
+            icon: {
+              value: "fa-regular fa-user",
+            },
+            pathsActiveFor: {
+              value: "user_analytics,user,list_of_users",
+            },
+          },
+          children: {
+            listOfUsersClosedMenu: true,
+            userAnalyticsClosedMenu: true,
+          },
+          displayOrder: 1,
+        },
+        campaignsClosedMenu: {
+          name: "campaignsClosedMenu",
+          key: "campaignsClosedMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "Campaigns",
+            },
+            onlyIconMenu: {
+              value: true,
+            },
+            icon: {
+              value: "fa-solid fa-bullhorn",
+            },
+            linkPath: {
+              value: "/campaigns",
+            },
+            pathsActiveFor: {
+              value: "campaigns",
+            },
+          },
+          displayOrder: 2,
+        },
+        workflowsClosedMenu: {
+          name: "workflowsClosedMenu",
+          key: "workflowsClosedMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "Workflows",
+            },
+            onlyIconMenu: {
+              value: true,
+            },
+            icon: {
+              value: "fa-solid fa-sitemap",
+            },
+            linkPath: {
+              value: "/workflows",
+            },
+            pathsActiveFor: {
+              value: "workflows",
+            },
+          },
+          displayOrder: 3,
+        },
+        userSegmentClosedMenu: {
+          name: "userSegmentClosedMenu",
+          key: "userSegmentClosedMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "User Segment",
+            },
+            onlyIconMenu: {
+              value: true,
+            },
+            icon: {
+              value: "fa-solid fa-users-viewfinder",
+            },
+            linkPath: {
+              value: "/usersegments",
+            },
+            pathsActiveFor: {
+              value: "usersegments",
+            },
+          },
+          displayOrder: 4,
+        },
+        channelClosedMenu: {
+          name: "channelClosedMenu",
+          key: "channelClosedMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "Channels",
+            },
+            onlyIconMenu: {
+              value: true,
+            },
+            icon: {
+              value: "fa-brands fa-facebook-f",
+            },
+            pathsActiveFor: {
+              value: "upload,channels,sms,whatsapp,email",
+            },
+          },
+          children: {
+            uploadClosedMenu: true,
+            emailClosedMenu: true,
+            whatsappClosedMenu: true,
+            smsClosedMenu: true,
+          },
+          displayOrder: 5,
+        },
+        webPersonalisationClosedMenu: {
+          name: "webPersonalisationClosedMenu",
+          key: "webPersonalisationClosedMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "Web Personalisation",
+            },
+            onlyIconMenu: {
+              value: true,
+            },
+            icon: {
+              value: "fa-solid fa-laptop",
+            },
+            linkPath: {
+              value: "/webpersonalisation",
+            },
+            pathsActiveFor: {
+              value: "webpersonalisation",
+            },
+          },
+          displayOrder: 6,
+        },
+        listOfUsersClosedMenu: {
+          name: "listOfUsersClosedMenu",
+          key: "listOfUsersClosedMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "List Of Users",
+            },
+            onlyIconMenu: {
+              value: true,
+            },
+            linkPath: {
+              value: "/list_of_users",
+            },
+            icon: {
+              value: "fa-solid fa-users",
+            },
+            pathsActiveFor: {
+              value: "list_of_users",
+            },
+          },
+          displayOrder: 0,
+        },
+        userAnalyticsClosedMenu: {
+          name: "userAnalyticsClosedMenu",
+          key: "userAnalyticsClosedMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "User Analytics",
+            },
+            onlyIconMenu: {
+              value: true,
+            },
+            linkPath: {
+              value: "/user_analytics",
+            },
+            icon: {
+              value: "fa-solid fa-magnifying-glass-chart",
+            },
+            pathsActiveFor: {
+              value: "user_analytics",
+            },
+          },
+          displayOrder: 1,
+        },
+        uploadClosedMenu: {
+          name: "uploadClosedMenu",
+          key: "uploadClosedMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "Upload",
+            },
+            icon: {
+              value: "fa-solid fa-upload",
+            },
+            onlyIconMenu: {
+              value: true,
+            },
+            linkPath: {
+              value: "/upload",
+            },
+            pathsActiveFor: {
+              value: "upload",
+            },
+          },
+          displayOrder: 3,
+        },
+        emailClosedMenu: {
+          name: "emailClosedMenu",
+          key: "emailClosedMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "Email",
+            },
+            icon: {
+              value: "fa-solid fa-envelope",
+            },
+            onlyIconMenu: {
+              value: true,
+            },
+            linkPath: {
+              value: "/email",
+            },
+            pathsActiveFor: {
+              value: "email",
+            },
+          },
+          displayOrder: 0,
+        },
+        whatsappClosedMenu: {
+          name: "whatsappClosedMenu",
+          key: "whatsappClosedMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "Whatsapp",
+            },
+            icon: {
+              value: "fa-brands fa-whatsapp",
+            },
+            onlyIconMenu: {
+              value: true,
+            },
+            linkPath: {
+              value: "/whatsapp",
+            },
+            pathsActiveFor: {
+              value: "whatsapp",
+            },
+          },
+          displayOrder: 1,
+        },
+        smsClosedMenu: {
+          name: "smsClosedMenu",
+          key: "smsClosedMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "SMS",
+            },
+            icon: {
+              value: "fa-solid fa-message",
+            },
+            onlyIconMenu: {
+              value: true,
+            },
+            linkPath: {
+              value: "/sms",
+            },
+            pathsActiveFor: {
+              value: "sms",
+            },
+          },
+          displayOrder: 2,
+        },
+        dashboardMenu: {
+          name: "dashboardMenu",
+          key: "dashboardMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "Dashboard",
+            },
+            icon: {
+              value: "fa-regular fa-clipboard",
+            },
+            linkPath: {
+              value: "/dashboard",
+            },
+            onlyIconMenu: {
+              location: {
+                type: "VALUE",
+                value: "Store.isMenuClosed",
+              },
+            },
+            pathsActiveFor: {
+              value: "/,dashboard",
+            },
+          },
+          displayOrder: 0,
+        },
+        userMenu: {
+          name: "userMenu",
+          key: "userMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "User",
+            },
+            icon: {
+              value: "fa-regular fa-user",
+            },
+            onlyIconMenu: {
+              location: {
+                type: "VALUE",
+                value: "Store.isMenuClosed",
+              },
+            },
+            pathsActiveFor: {
+              value: "user_analytics,user,list_of_users",
+            },
+          },
+          children: {
+            listOfUsersMenu: true,
+            userAnalyticsMenu: true,
+          },
+          displayOrder: 1,
+        },
+        campaignsMenu: {
+          name: "campaignsMenu",
+          key: "campaignsMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "Campaigns",
+            },
+            icon: {
+              value: "fa-solid fa-bullhorn",
+            },
+            onlyIconMenu: {
+              location: {
+                type: "VALUE",
+                value: "Store.isMenuClosed",
+              },
+            },
+            linkPath: {
+              value: "/campaigns",
+            },
+            pathsActiveFor: {
+              value: "campaigns",
+            },
+          },
+          displayOrder: 2,
+        },
+        workflowsMenu: {
+          name: "workflowsMenu",
+          key: "workflowsMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "Workflows",
+            },
+            onlyIconMenu: {
+              location: {
+                type: "VALUE",
+                value: "Store.isMenuClosed",
+              },
+            },
+            icon: {
+              value: "fa-solid fa-sitemap",
+            },
+            linkPath: {
+              value: "/workflows",
+            },
+            pathsActiveFor: {
+              value: "workflows",
+            },
+          },
+          displayOrder: 3,
+        },
+        userSegmentMenu: {
+          name: "userSegmentMenu",
+          key: "userSegmentMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "User Segment",
+            },
+            onlyIconMenu: {
+              location: {
+                type: "VALUE",
+                value: "Store.isMenuClosed",
+              },
+            },
+            icon: {
+              value: "fa-solid fa-users-viewfinder",
+            },
+            linkPath: {
+              value: "/usersegments",
+            },
+            pathsActiveFor: {
+              value: "usersegments",
+            },
+          },
+          displayOrder: 4,
+        },
+        channelMenu: {
+          name: "channelMenu",
+          key: "channelMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "Channels",
+            },
+            onlyIconMenu: {
+              location: {
+                type: "VALUE",
+                value: "Store.isMenuClosed",
+              },
+            },
+            icon: {
+              value: "fa-brands fa-facebook-f",
+            },
+            pathsActiveFor: {
+              value: "upload,channels,sms,whatsapp,email",
+            },
+          },
+          children: {
+            uploadMenu: true,
+            smsMenu: true,
+            whatsappMenu: true,
+            emailMenu: true,
+          },
+          displayOrder: 5,
+        },
+        webPersonalisationMenu: {
+          name: "webPersonalisationMenu",
+          key: "webPersonalisationMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "Web Personalisation",
+            },
+            onlyIconMenu: {
+              location: {
+                type: "VALUE",
+                value: "Store.isMenuClosed",
+              },
+            },
+            icon: {
+              value: "fa-solid fa-laptop",
+            },
+            linkPath: {
+              value: "/webpersonalisation",
+            },
+            pathsActiveFor: {
+              value: "webpersonalisation",
+            },
+          },
+          displayOrder: 6,
+        },
+        listOfUsersMenu: {
+          name: "listOfUsersMenu",
+          key: "listOfUsersMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "List Of Users",
+            },
+            onlyIconMenu: {
+              location: {
+                type: "VALUE",
+                value: "Store.isMenuClosed",
+              },
+            },
+            linkPath: {
+              value: "/list_of_users",
+            },
+            icon: {
+              value: "fa-solid fa-users",
+            },
+            pathsActiveFor: {
+              value: "list_of_users",
+            },
+          },
+          displayOrder: 0,
+        },
+        userAnalyticsMenu: {
+          name: "userAnalyticsMenu",
+          key: "userAnalyticsMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "User Analytics",
+            },
+            onlyIconMenu: {
+              location: {
+                type: "VALUE",
+                value: "Store.isMenuClosed",
+              },
+            },
+            linkPath: {
+              value: "/user_analytics",
+            },
+            icon: {
+              value: "fa-solid fa-magnifying-glass-chart",
+            },
+            pathsActiveFor: {
+              value: "user_analytics",
+            },
+          },
+          displayOrder: 1,
+        },
+        uploadMenu: {
+          name: "uploadMenu",
+          key: "uploadMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "Upload",
+            },
+            onlyIconMenu: {
+              location: {
+                type: "VALUE",
+                value: "Store.isMenuClosed",
+              },
+            },
+            icon: {
+              value: "fa-solid fa-upload",
+            },
+            linkPath: {
+              value: "/upload",
+            },
+            pathsActiveFor: {
+              value: "upload",
+            },
+          },
+          displayOrder: 3,
+        },
+        emailMenu: {
+          name: "emailMenu",
+          key: "emailMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "Email",
+            },
+            onlyIconMenu: {
+              location: {
+                type: "VALUE",
+                value: "Store.isMenuClosed",
+              },
+            },
+            icon: {
+              value: "fa-solid fa-envelope",
+            },
+            linkPath: {
+              value: "/email",
+            },
+            pathsActiveFor: {
+              value: "email",
+            },
+          },
+          displayOrder: 0,
+        },
+        whatsappMenu: {
+          name: "whatsappMenu",
+          key: "whatsappMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "Whatsapp",
+            },
+            onlyIconMenu: {
+              location: {
+                type: "VALUE",
+                value: "Store.isMenuClosed",
+              },
+            },
+            icon: {
+              value: "fa-brands fa-whatsapp",
+            },
+            linkPath: {
+              value: "/whatsapp",
+            },
+            pathsActiveFor: {
+              value: "whatsapp",
+            },
+          },
+          displayOrder: 1,
+        },
+        smsMenu: {
+          name: "smsMenu",
+          key: "smsMenu",
+          type: "Menu",
+          properties: {
+            label: {
+              value: "SMS",
+            },
+            onlyIconMenu: {
+              location: {
+                type: "VALUE",
+                value: "Store.isMenuClosed",
+              },
+            },
+            icon: {
+              value: "fa-solid fa-message",
+            },
+            linkPath: {
+              value: "/sms",
+            },
+            pathsActiveFor: {
+              value: "sms",
+            },
+          },
+          displayOrder: 2,
         },
       },
     },

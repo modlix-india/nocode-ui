@@ -7,13 +7,13 @@ import {
 	DataLocation,
 	RenderContext,
 } from '../../types/common';
-import { renderChildren } from '../util/renderChildren';
 import { getData, PageStoreExtractor } from '../../context/StoreContext';
 import { Component } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './gridProperties';
 import GridStyle from './GridStyle';
 import useDefinition from '../util/useDefinition';
 import { Link } from 'react-router-dom';
+import Children from '../Children';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 
 function Grid(props: ComponentProps) {
@@ -32,11 +32,13 @@ function Grid(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	const childs = renderChildren(
-		pageDefinition,
-		definition.children,
-		{ ...context, isReadonly },
-		locationHistory,
+	const childs = (
+		<Children
+			pageDefinition={pageDefinition}
+			children={definition.children}
+			context={{ ...context, isReadonly }}
+			locationHistory={locationHistory}
+		/>
 	);
 	const resolvedStyles = processComponentStylePseudoClasses(
 		{ focus, hover, disabled: isReadonly },
