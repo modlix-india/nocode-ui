@@ -86,7 +86,14 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'form-input-text-color-when-disabled',
 		displayName: 'Form input text color when disabled',
 		description: 'This text color is used throughout form input controls when disabled.',
-		defaultValue: '#6C7586',
+		defaultValue: '#C7C8D6',
+		noPrefix: true,
+	},
+	{
+		name: 'form-input-mouse-event-when-disabled',
+		displayName: 'Form input mouse event when disabled',
+		description: 'This mouse event is used throughout form input controls when disbaled',
+		defaultValue: 'not-allowed',
 		noPrefix: true,
 	},
 	{
@@ -94,6 +101,27 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Form input text color when error',
 		description: 'This text color is used throughout form input controls when error.',
 		defaultValue: '#ED6A5E',
+		noPrefix: true,
+	},
+	{
+		name: 'form-input-icon-disabled-color',
+		displayName: 'Application/Site Disabled font color',
+		description: 'This disabled color is used throughout application.',
+		defaultValue: '#d5d5d5',
+		noPrefix: true,
+	},
+	{
+		name: 'form-input-error-color',
+		displayName: 'Application/Site Error color',
+		description: 'This error color is used throughout application.',
+		defaultValue: '#ed6a5e',
+		noPrefix: true,
+	},
+	{
+		name: 'from-input-error-icon-hastext-color',
+		displayName: 'Form Input Text Box Error Icon Color When Text',
+		description: 'This error icon color is used when we input in textbox after any error',
+		defaultValue: '#393A3C',
 		noPrefix: true,
 	},
 	{

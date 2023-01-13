@@ -78,7 +78,6 @@ export default function TextBoxStyle({ theme }: { theme: Map<string, Map<string,
 		
 		${PREFIX} .textBoxDiv .inputContainer .textbox:disabled {
 			background-color: transparent;
-			color: #d5d5d5;
 		}
 		
 		${PREFIX} 
@@ -115,7 +114,6 @@ export default function TextBoxStyle({ theme }: { theme: Map<string, Map<string,
 
 		${PREFIX} .textBoxLabel.disabled {
 			background-color: transparent;
-			color: #d5d5d5;
 		}
 
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);

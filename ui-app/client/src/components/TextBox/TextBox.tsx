@@ -81,7 +81,6 @@ function TextBox(props: ComponentProps) {
 		() =>
 			addListenerAndCallImmediately(
 				(_, value) => {
-					console.log('the value is', value, defaultValue);
 					setvalue(value ?? defaultValue ?? '');
 				},
 				pageExtractor,
@@ -135,8 +134,10 @@ function TextBox(props: ComponentProps) {
 			{noFloat && (
 				<label
 					htmlFor={key}
-					className={`textBoxLabel ${errorMessage ? 'error' : ''} ${
+					className={`noFloatTextBoxLabel ${
 						readOnly ? 'disabled' : ''
+					}${
+						value?.length ? `hasText` : ``
 					}`}
 				>
 					{getTranslations(label, translations)}
@@ -146,12 +147,12 @@ function TextBox(props: ComponentProps) {
 				className={`textBoxDiv ${errorMessage ? 'error' : ''} ${
 					isFocussed && !value?.length ? 'focussed' : ''
 				} ${value?.length && !readOnly ? 'hasText' : ''} ${
-					readOnly ? 'textBoxDisabled' : ''
+					readOnly && !errorMessage ? 'disabled' : ''
 				} ${leftIcon || rightIcon ? 'textBoxwithIconContainer' : 'textBoxContainer'}`}
 			>
 				{leftIcon && <i className={`leftIcon ${leftIcon}`} />}
 				{rightIcon && <i className={`rightIcon ${rightIcon}`} />}
-				<div className="inputContainer">
+				<div className={`inputContainer`}>
 					<input
 						className={`textbox ${valueType === 'number' ? 'remove-spin-button' : ''}`}
 						type={valueType}
@@ -167,8 +168,10 @@ function TextBox(props: ComponentProps) {
 					{!noFloat && (
 						<label
 							htmlFor={key}
-							className={`textBoxLabel ${errorMessage ? 'error' : ''} ${
+							className={`textBoxLabel ${
 								readOnly ? 'disabled' : ''
+							}${
+								value?.length ? `hasText` : ``
 							}`}
 						>
 							{getTranslations(label, translations)}
