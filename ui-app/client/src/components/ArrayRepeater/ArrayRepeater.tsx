@@ -73,7 +73,6 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 	};
 
 	const handleMove = (from: number, to: number) => {
-		console.log(from, 'from', to, 'to');
 		const newData = value.slice();
 		if (from >= newData?.length || from < 0 || to >= newData.length || to < 0) return;
 		const temp = newData[from];
