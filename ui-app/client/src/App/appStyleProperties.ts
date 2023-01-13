@@ -11,6 +11,15 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		noPrefix: true,
 	},
 	{
+		name: 'main-body-margin',
+		cssProperty: 'margin',
+		selector: 'body',
+		displayName: 'Application/Site Body margin',
+		description: 'This margin is applied to the body.',
+		defaultValue: '0px',
+		noPrefix: true,
+	},
+	{
 		name: 'main-font-weight',
 		displayName: 'Application/Site Font Weight',
 		description: 'This font is used throughout application.',

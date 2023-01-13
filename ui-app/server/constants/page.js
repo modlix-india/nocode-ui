@@ -760,9 +760,9 @@ export const page = {
         loginButtonDisabled: true,
         fabTestButton: true,
         fabTestMiniButton: true,
-        tagtagatag: true,
-        tagTag: true,
-        image: true,
+        tagtagatag: false,
+        tagTag: false,
+        image: false,
       },
     },
     outlinedbuttongrid: {

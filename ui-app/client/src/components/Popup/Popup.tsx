@@ -12,9 +12,9 @@ import PopupStyles from './PopupStyles';
 import { propertiesDefinition, stylePropertiesDefinition } from './popupProperties';
 import Portal from '../Portal';
 import { HelperComponent } from '../HelperComponent';
-import { renderChildren } from '../util/renderChildren';
 import { runEvent } from '../util/runEvent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import Children from '../Children';
 
 function Popup(props: ComponentProps) {
 	const [isActive, setIsActive] = React.useState(false);
@@ -142,13 +142,12 @@ function Popup(props: ComponentProps) {
 								{showClose && closeButtonPosition === 'RIGHT' ? closeIcon : ''}
 							</div>
 						</div>
-
-						{renderChildren(
-							props.pageDefinition,
-							props.definition.children,
-							props.context,
-							props.locationHistory,
-						)}
+						<Children
+							pageDefinition={props.pageDefinition}
+							children={props.definition.children}
+							context={props.context}
+							locationHistory={props.locationHistory}
+						/>
 					</div>
 				</div>
 			</div>

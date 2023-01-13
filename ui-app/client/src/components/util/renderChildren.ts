@@ -39,12 +39,13 @@ export const renderChildren = (
 			let comp = Components.get(e.type);
 			if (!comp && e.type === 'Page') {
 				const pageDef = getPageDefinition();
-				return React.createElement(Page, {
-					definition: pageDef,
-					key: pageDef.key,
-					context: { pageName: pageDef.name },
-					locationHistory: [],
-				});
+				if (pageDef)
+					return React.createElement(Page, {
+						definition: pageDef,
+						key: pageDef.key,
+						context: { pageName: pageDef.name },
+						locationHistory: [],
+					});
 			}
 			if (!comp) comp = Nothing;
 			if (!comp) return undefined;

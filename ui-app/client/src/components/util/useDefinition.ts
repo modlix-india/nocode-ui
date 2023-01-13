@@ -59,7 +59,7 @@ function createNewState(
 			}
 
 			const pTargets = processTargets(
-				ecs.resolutions,
+				ecs.resolutions || {},
 				devices,
 				stylePropertiesDefinition,
 				locationHistory,
