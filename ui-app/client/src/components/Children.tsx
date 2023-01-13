@@ -36,7 +36,7 @@ function Children({
 	context: RenderContext;
 	locationHistory: Array<DataLocation | string>;
 }) {
-	const [visibilityPaths, setVisibilityPaths] = React.useState<Array<string>>([]);
+	const [visibilityPaths, setVisibilityPaths] = React.useState(Date.now());
 	const location = useLocation();
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const evaluatorMaps = new Map<string, TokenValueExtractor>([
@@ -46,24 +46,18 @@ function Children({
 	]);
 
 	React.useEffect(() => {
-		let set = new Set<string>();
-		Object.entries(children)
+		let set = Object.entries(children)
 			.filter(([, v]) => !!v)
 			.map(([k]) => pageDefinition.componentDefinition[k])
-			.forEach(e => {
-				if (e?.properties?.visibility) {
-					const pathSet = getPathsFrom(e?.properties?.visibility, evaluatorMaps);
-					pathSet.forEach(e => set.add(e));
-				}
-			});
-		const newPaths = Array.from(set);
-		addListener(
-			() => {
-				setVisibilityPaths([...visibilityPaths, ...newPaths]);
-			},
-			pageExtractor,
-			...newPaths,
-		);
+			.filter(e => !!e?.properties?.visibility)
+			.map(e => getPathsFrom(e.properties.visibility, evaluatorMaps))
+			.reduce((a, c) => {
+				for (let str of c) a.add(str);
+				return a;
+			}, new Set<string>());
+
+		if (set.size == 0) return undefined;
+		return addListener(() => setVisibilityPaths(Date.now()), pageExtractor, ...set);
 	}, []);
 
 	return (

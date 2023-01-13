@@ -188,7 +188,7 @@ export const application = {
           children: {
             fincityBrandGrid: true,
             fincityMenuGrid: true,
-            fincityClosedMenuGrid: true,
+            fincityClosedMenuGrid: false,
           },
         },
         body: {
@@ -268,15 +268,7 @@ export const application = {
           key: "fincityMenuGrid",
           type: "Grid",
           displayOrder: 2,
-          properties: {
-            visibility: {
-              location: {
-                type: "EXPRESSION",
-                expression:
-                  "Store.isMenuClosed = false or Store.isMenuClosed = null",
-              },
-            },
-          },
+          properties: {},
           styleProperties: {
             "6dwg67qt367xd827uywg3rt72g6377": {
               resolutions: {
@@ -653,6 +645,12 @@ export const application = {
             linkPath: {
               value: "/dashboard",
             },
+            onlyIconMenu: {
+              location: {
+                type: "VALUE",
+                value: "Store.isMenuClosed",
+              },
+            },
             pathsActiveFor: {
               value: "/,dashboard",
             },
@@ -669,6 +667,12 @@ export const application = {
             },
             icon: {
               value: "fa-regular fa-user",
+            },
+            onlyIconMenu: {
+              location: {
+                type: "VALUE",
+                value: "Store.isMenuClosed",
+              },
             },
             pathsActiveFor: {
               value: "user_analytics,user,list_of_users",
@@ -691,6 +695,12 @@ export const application = {
             icon: {
               value: "fa-solid fa-bullhorn",
             },
+            onlyIconMenu: {
+              location: {
+                type: "VALUE",
+                value: "Store.isMenuClosed",
+              },
+            },
             linkPath: {
               value: "/campaigns",
             },
@@ -707,6 +717,12 @@ export const application = {
           properties: {
             label: {
               value: "Workflows",
+            },
+            onlyIconMenu: {
+              location: {
+                type: "VALUE",
+                value: "Store.isMenuClosed",
+              },
             },
             icon: {
               value: "fa-solid fa-sitemap",
@@ -728,6 +744,12 @@ export const application = {
             label: {
               value: "User Segment",
             },
+            onlyIconMenu: {
+              location: {
+                type: "VALUE",
+                value: "Store.isMenuClosed",
+              },
+            },
             icon: {
               value: "fa-solid fa-users-viewfinder",
             },
@@ -747,6 +769,12 @@ export const application = {
           properties: {
             label: {
               value: "Channels",
+            },
+            onlyIconMenu: {
+              location: {
+                type: "VALUE",
+                value: "Store.isMenuClosed",
+              },
             },
             icon: {
               value: "fa-brands fa-facebook-f",
@@ -771,6 +799,12 @@ export const application = {
             label: {
               value: "Web Personalisation",
             },
+            onlyIconMenu: {
+              location: {
+                type: "VALUE",
+                value: "Store.isMenuClosed",
+              },
+            },
             icon: {
               value: "fa-solid fa-laptop",
             },
@@ -790,6 +824,12 @@ export const application = {
           properties: {
             label: {
               value: "List Of Users",
+            },
+            onlyIconMenu: {
+              location: {
+                type: "VALUE",
+                value: "Store.isMenuClosed",
+              },
             },
             linkPath: {
               value: "/list_of_users",
@@ -811,6 +851,12 @@ export const application = {
             label: {
               value: "User Analytics",
             },
+            onlyIconMenu: {
+              location: {
+                type: "VALUE",
+                value: "Store.isMenuClosed",
+              },
+            },
             linkPath: {
               value: "/user_analytics",
             },
@@ -830,6 +876,12 @@ export const application = {
           properties: {
             label: {
               value: "Upload",
+            },
+            onlyIconMenu: {
+              location: {
+                type: "VALUE",
+                value: "Store.isMenuClosed",
+              },
             },
             icon: {
               value: "fa-solid fa-upload",
@@ -851,6 +903,12 @@ export const application = {
             label: {
               value: "Email",
             },
+            onlyIconMenu: {
+              location: {
+                type: "VALUE",
+                value: "Store.isMenuClosed",
+              },
+            },
             icon: {
               value: "fa-solid fa-envelope",
             },
@@ -871,6 +929,12 @@ export const application = {
             label: {
               value: "Whatsapp",
             },
+            onlyIconMenu: {
+              location: {
+                type: "VALUE",
+                value: "Store.isMenuClosed",
+              },
+            },
             icon: {
               value: "fa-brands fa-whatsapp",
             },
@@ -890,6 +954,12 @@ export const application = {
           properties: {
             label: {
               value: "SMS",
+            },
+            onlyIconMenu: {
+              location: {
+                type: "VALUE",
+                value: "Store.isMenuClosed",
+              },
             },
             icon: {
               value: "fa-solid fa-message",
