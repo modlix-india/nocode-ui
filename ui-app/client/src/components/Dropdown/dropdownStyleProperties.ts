@@ -1,30 +1,22 @@
 import { StyleGroupDefinition, StylePropertyDefinition } from '../../types/common';
 
 export const styleProperties: Array<StylePropertyDefinition> = [
-	//header text style
+	//label text style
 	{
-		name: 'headerTextFontSize',
-		cssProperty: 'font-size',
-		displayName: 'Font size for Header Text',
-		description: 'Font size for Header Text.',
-		defaultValue: '14px',
-		selector: '.headerText',
-	},
-	{
-		name: 'headerTextFontColor',
+		name: 'labelTextFontColor',
 		cssProperty: 'color',
 		displayName: 'Font color for Header Text',
 		description: 'Font color for Header Text.',
 		defaultValue: '#1F3C3D',
-		selector: '.headerText',
+		selector: '.label',
 	},
 	{
-		name: 'headerTextFontColorDisabled',
+		name: 'labelTextFontColorDisabled',
 		cssProperty: 'color',
 		displayName: 'Font color when Header Text is disable',
 		description: 'Font color for Header Text when it is disable.',
 		defaultValue: '#798A8B',
-		selector: '.headerText.disabled',
+		selector: '.label.disabled',
 	},
 	{
 		name: 'containerWidth',

@@ -29,6 +29,23 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
+		name: 'isSearchable',
+		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		displayName: 'Is Searchable',
+		description: `Allows the users search options.`,
+		defaultValue: true,
+	},
+
+	{
+		name: 'noFloat',
+		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		displayName: 'No Float Label',
+		description: 'Dropdown without floating label.',
+		translatable: true,
+		defaultValue: false,
+	},
+
+	{
 		name: 'label',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: 'Dropdown header text',
@@ -36,7 +53,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
-		name: 'dataBinding',
+		name: 'data',
 		schema: Schema.ofRef(SCHEMA_REF_ANY_COMP_PROP),
 		displayName: 'Dropdown data',
 		description: `Data that is used to render dropdown.`,
@@ -94,7 +111,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'uniqueKeyType',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: "Unique key's type",
-		description: `Type for sleection unique key`,
+		description: `Type for selection unique key`,
 		defaultValue: 'LIST_OF_STRINGS',
 		editor: ComponentPropertyEditor.ENUM,
 		enumValues: [
@@ -189,6 +206,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: "Labels key's value ",
 		description: `Key value that is used to generate label value.`,
+		translatable: true,
+	},
+	{
+		name: 'searchKey',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: "Search key's value ",
+		description: `Key value that is used to search dropdown data.`,
 		translatable: true,
 	},
 

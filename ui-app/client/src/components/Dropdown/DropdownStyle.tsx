@@ -10,7 +10,11 @@ export default function DropdownStyle({ theme }: { theme: Map<string, Map<string
     ${PREFIX} {
         display: flex;
         flex-direction: column;
-        
+        gap: 4px;
+        margin-top:1rem;
+     }
+     ${PREFIX} .label {
+        cursor: text;
      }
 
     ${PREFIX} .container {
@@ -43,7 +47,7 @@ export default function DropdownStyle({ theme }: { theme: Map<string, Map<string
         cursor: not-allowed;
     }
     
-    ${PREFIX} .labelContainer {
+    ${PREFIX} .placeholderContainer {
         width: 100%;
         height: 100%;
         display: flex;
@@ -51,28 +55,59 @@ export default function DropdownStyle({ theme }: { theme: Map<string, Map<string
         align-items: center
     }
 
-    ${PREFIX} .container.disabled .labelContainer {
+    ${PREFIX} .container.disabled .placeholderContainer {
         cursor: not-allowed;
     }
 
-    ${PREFIX} .placeholder {
-        font-size: 16px;
-        cursor: pointer;
+    ${PREFIX} .searchContainer {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center
     }
 
-    ${PREFIX} .placeholder.notSelected {
+    ${PREFIX} .searchBox {
+        border: none;
+        width: 100%;
+        height: 100%;
+        border-radius: 4px;
+        outline: none;
+    }
+
+    ${PREFIX} .labelFloat { 
+        position: absolute;
+        letter-spacing: 0px;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        transition: top 100ms, transform 100ms ease-in;
+        cursor: text;
         color: #6C7586;
+    }
+    ${PREFIX} .labelFloat.float { 
+        top: 0;
+        left: 16px;
+        transform: translateY(-55%);
+        background-color: #fff;
+    }
+
+    ${PREFIX} .container.disabled .labelFloat {
+        cursor: not-allowed;
+        color: #A7ACB6;
+    }
+
+    ${PREFIX} .placeholder {
+        color: #6C7586;
+        cursor: pointer;
     }
 
     ${PREFIX} .placeholder.selected {
         color: #1F3C3D;
     }
 
-    ${PREFIX} .container.disabled .label {
+    ${PREFIX} .container.disabled .placeholder {
         cursor: not-allowed;
-    }
-
-    ${PREFIX} .container.disabled .placeholder.notSelected {
         color: #A7ACB6;
     }
 
@@ -114,7 +149,6 @@ export default function DropdownStyle({ theme }: { theme: Map<string, Map<string
     }
 
     ${PREFIX} .dropdownItemLabel {
-        font-size: 16px;
         color: #1F3C3D;
     }
 

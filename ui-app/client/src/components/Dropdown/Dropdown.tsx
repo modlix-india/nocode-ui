@@ -20,6 +20,7 @@ import DropdownStyle from './DropdownStyle';
 function DropdownComponent(props: ComponentProps) {
 	const [showDropdown, setShowDropdown] = useState(false);
 	const [selected, setSelected] = useState<any>();
+	const [searchText, setSearchText] = useState('');
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const {
 		definition: { bindingPath },
@@ -39,12 +40,14 @@ function DropdownComponent(props: ComponentProps) {
 			uniqueKeyType,
 			onClick,
 			datatype,
-			dataBinding,
+			data,
 			placeholder,
 			readOnly,
 			label,
 			closeOnMouseLeave,
 			isMultiSelect,
+			isSearchable,
+			noFloat,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -68,7 +71,7 @@ function DropdownComponent(props: ComponentProps) {
 	const dropdownData = React.useMemo(
 		() =>
 			getRenderData(
-				dataBinding,
+				data,
 				datatype,
 				uniqueKeyType,
 				uniqueKey,
@@ -78,7 +81,7 @@ function DropdownComponent(props: ComponentProps) {
 				labelKey,
 			),
 		[
-			dataBinding,
+			data,
 			datatype,
 			uniqueKeyType,
 			uniqueKey,
@@ -110,7 +113,9 @@ function DropdownComponent(props: ComponentProps) {
 				if (newSelection) {
 					setData(
 						bindingPathPath,
-						selected.filter(e => !deepEqual(e, each.value)),
+						selected.filter(e => !deepEqual(e, each.value)).length > 0
+							? selected.filter(e => !deepEqual(e, each.value))
+							: undefined,
 						context.pageName,
 					);
 					return;
@@ -124,6 +129,7 @@ function DropdownComponent(props: ComponentProps) {
 		}
 
 		handleClose();
+
 		if (clickEvent) {
 			await runEvent(clickEvent, key, context.pageName);
 		}
@@ -131,6 +137,7 @@ function DropdownComponent(props: ComponentProps) {
 
 	const handleClose = () => {
 		setShowDropdown(false);
+		setSearchText('');
 	};
 
 	const handleBubbling = (event: any) => {
@@ -142,10 +149,12 @@ function DropdownComponent(props: ComponentProps) {
 			!selected ||
 			!selectedDataKey ||
 			(Array.isArray(selectedDataKey) && !selectedDataKey.length)
-				? placeholder
+				? noFloat
+					? placeholder
+					: ''
 				: !Array.isArray(selectedDataKey)
 				? dropdownData?.find((each: any) => each?.key === selectedDataKey)?.label
-				: `${selectedDataKey.length} item${
+				: `${selectedDataKey.length} Item${
 						selectedDataKey.length > 1 ? 's' : ''
 				  }  selected`;
 		return label;
@@ -161,9 +170,9 @@ function DropdownComponent(props: ComponentProps) {
 	return (
 		<div className="comp compDropdown" onClick={handleBubbling}>
 			<HelperComponent definition={props.definition} />
-			{label ? (
-				<label className={`label ${readOnly ? 'disabled' : ''}`}>
-					{getTranslations(label, translations)}
+			{noFloat ? (
+				<label htmlFor="key" className={`label ${readOnly ? 'disabled' : ''}`}>
+					{getTranslations(label || placeholder, translations)}
 				</label>
 			) : null}
 			<div
@@ -172,24 +181,63 @@ function DropdownComponent(props: ComponentProps) {
 					readOnly ? 'disabled' : ''
 				} `}
 			>
-				<div
-					className={`labelContainer`}
-					onClick={() => !readOnly && setShowDropdown(!showDropdown)}
-				>
-					<input
-						className="inputbox"
-						type="text"
-						value={getTranslations(getLabel(), translations)}
-						key={key}
-					/>
+				{isSearchable ? (
+					showDropdown ? (
+						<div className={`searchContainer`}>
+							<input
+								className="searchBox"
+								type={'text'}
+								value={searchText}
+								key={key}
+								onChange={(event: any) => {
+									setSearchText(event.target.value);
+								}}
+								autoFocus
+							/>
+							<i
+								className="fa-solid fa-angle-down placeholderIcon"
+								onClick={() => !readOnly && setShowDropdown(!showDropdown)}
+							></i>
+						</div>
+					) : (
+						<div
+							className={`placeholderContainer`}
+							onClick={() => !readOnly && setShowDropdown(!showDropdown)}
+						>
+							<label
+								htmlFor="key"
+								className={`placeholder ${!selected ? 'selected' : ''}`}
+							>
+								{getTranslations(getLabel(), translations)}
+							</label>
+							<i className="fa-solid fa-angle-down placeholderIcon"></i>
+						</div>
+					)
+				) : (
+					<div
+						className={`placeholderContainer`}
+						onClick={() => !readOnly && setShowDropdown(!showDropdown)}
+					>
+						<label
+							htmlFor="key"
+							className={`placeholder ${!selected ? 'selected' : ''}`}
+						>
+							{getTranslations(getLabel(), translations)}
+						</label>
+						<i className="fa-solid fa-angle-down placeholderIcon"></i>
+					</div>
+				)}
+				{!noFloat && (
 					<label
 						htmlFor="key"
-						className={`placeholder ${selected ? 'selected' : 'notSelected'}`}
+						className={`labelFloat ${showDropdown && !selected ? 'float' : ''} ${
+							selected ? 'float' : ''
+						}  `}
+						onClick={() => !readOnly && !selected && setShowDropdown(true)}
 					>
-						{getTranslations(getLabel(), translations)}
+						{getTranslations(placeholder, translations)}
 					</label>
-					<i className="fa-solid fa-angle-down placeholderIcon"></i>
-				</div>
+				)}
 				{showDropdown && (
 					<div className="dropdownContainer">
 						{dropdownData?.map(each => (
