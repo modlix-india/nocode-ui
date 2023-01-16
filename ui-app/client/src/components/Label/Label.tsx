@@ -16,6 +16,7 @@ import { propertiesDefinition, stylePropertiesDefinition } from './labelProperti
 import { Component } from '../../types/common';
 import LabelStyle from './LabelStyle';
 import useDefinition from '../util/useDefinition';
+import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 
 function Label(props: ComponentProps) {
 	const {
@@ -36,10 +37,11 @@ function Label(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
+	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
 	return (
 		<div className="comp compLabel">
 			<HelperComponent definition={definition} />
-			<span>{getTranslations(text, translations)}</span>
+			<span style={resolvedStyles.label ?? {}}>{getTranslations(text, translations)}</span>
 		</div>
 	);
 }

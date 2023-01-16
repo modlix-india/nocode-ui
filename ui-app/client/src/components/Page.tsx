@@ -1,7 +1,7 @@
 import React from 'react';
 import { HelperComponent } from './HelperComponent';
 import { DataLocation, RenderContext } from '../types/common';
-import { renderChildren } from './util/renderChildren';
+import Children from './Children';
 
 function Page({
 	definition,
@@ -16,14 +16,14 @@ function Page({
 	return (
 		<div className="comp compPage">
 			<HelperComponent definition={definition} />
-			{renderChildren(
-				definition,
-				{
+			<Children
+				pageDefinition={definition}
+				children={{
 					[definition.rootComponent]: true,
-				},
-				context,
-				locationHistory,
-			)}
+				}}
+				context={context}
+				locationHistory={locationHistory}
+			/>
 		</div>
 	);
 }
