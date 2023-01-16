@@ -73,7 +73,6 @@ function TextBox(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	console.log('defaultValue', defaultValue);
 	if (!bindingPath) throw new Error('Definition requires bindingpath');
 	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
 	const textBoxValue = getDataFromLocation(bindingPath, locationHistory, pageExtractor);
@@ -148,10 +147,9 @@ function TextBox(props: ComponentProps) {
 					isFocussed && !value?.length ? 'focussed' : ''
 				} ${value?.length && !readOnly ? 'hasText' : ''} ${
 					readOnly && !errorMessage ? 'disabled' : ''
-				} ${leftIcon || rightIcon ? 'textBoxwithIconContainer' : 'textBoxContainer'}`}
+				} ${leftIcon || rightIcon ? rightIcon ? 'textBoxwithRightIconContainer' : 'textBoxwithIconContainer' : 'textBoxContainer'}`}
 			>
 				{leftIcon && <i className={`leftIcon ${leftIcon}`} />}
-				{rightIcon && <i className={`rightIcon ${rightIcon}`} />}
 				<div className={`inputContainer`}>
 					<input
 						className={`textbox ${valueType === 'number' ? 'remove-spin-button' : ''}`}
@@ -178,13 +176,14 @@ function TextBox(props: ComponentProps) {
 						</label>
 					)}
 				</div>
+				{rightIcon && <i className={`rightIcon ${rightIcon}`} />}
 				{errorMessage ? (
 					<i
 						className={`errorIcon ${
 							value?.length ? `hasText` : ``
 						} fa fa-solid fa-circle-exclamation`}
 					/>
-				) : value?.length ? (
+				) : value?.length  && !rightIcon ? (
 					<i
 						onClick={handleClickClose}
 						className="clearText fa fa-regular fa-circle-xmark fa-fw"
@@ -192,6 +191,7 @@ function TextBox(props: ComponentProps) {
 				) : null}
 			</div>
 			<label
+				title={errorMessage ? errorMessage : supportingText}
 				className={`supportText ${readOnly ? 'disabled' : ''} ${
 					errorMessage ? 'error' : ''
 				}`}

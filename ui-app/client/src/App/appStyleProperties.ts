@@ -111,7 +111,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		noPrefix: true,
 	},
 	{
-		name: 'form-input-error-color',
+		name: 'form-input-border-error-color',
 		displayName: 'Application/Site Error color',
 		description: 'This error color is used throughout application.',
 		defaultValue: '#ed6a5e',
