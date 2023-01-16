@@ -575,7 +575,7 @@ export const page = {
       key: "himanshuDropdown",
       type: "Dropdown",
       properties: {
-        dataBinding: {
+        data: {
           location: {
             type: "VALUE",
             value: "Store.dropdownData",
@@ -586,9 +586,6 @@ export const page = {
         },
         selectionType: {
           value: "OBJECT",
-        },
-        label: {
-          value: "Select Users",
         },
         uniqueKeyType: {
           value: "KEY",
@@ -605,11 +602,20 @@ export const page = {
         // selectionKey: {
         //   value: "name",
         // },
+        label: {
+          value: "User",
+        },
         placeholder: {
           value: "Select User",
         },
-        headerText: {
-          value: "User",
+        isSearchable: {
+          value: true,
+        },
+        noFloat: {
+          value: false,
+        },
+        isMultiSelect: {
+          value: true,
         },
         readOnly: {
           value: false,
