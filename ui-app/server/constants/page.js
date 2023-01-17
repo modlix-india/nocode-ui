@@ -367,6 +367,27 @@ export const page = {
         himanshuDropdown: true,
         popupGrid: true,
         menuGrid: true,
+        tabs: true,
+      },
+    },
+    tabs: {
+      name: "tabs",
+      key: "tabs",
+      type: "Tabs",
+      properties: {
+        tabs: {
+          value: [
+            { tabName: "Description", childKey: "tab1" },
+            { tabName: "specification", childKey: "tab2" },
+            { tabName: "features", childKey: "tab3" },
+            { tabName: "" },
+          ],
+        },
+        bindingPath: {
+          type: "VALUE",
+          value: "Store.tabs",
+        },
+        children: {},
       },
     },
     popupGrid: {

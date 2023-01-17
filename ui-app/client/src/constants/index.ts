@@ -26,3 +26,5 @@ export const SCHEMA_REF_NUM_COMP_PROP = `${NAMESPACE_UI_ENGINE}.NumberComponentP
 export const SCHEMA_REF_ANY_COMP_PROP = `${NAMESPACE_UI_ENGINE}.AnyComponentProperty`;
 
 export const EMPTY_STRING = '';
+
+export const GOBAL_CONTEXT_NAME = '_global';
