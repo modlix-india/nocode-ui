@@ -1,28 +1,20 @@
 import React from 'react';
 import {
 	addListener,
-	addListenerAndCallImmediately,
 	getDataFromLocation,
-	getDataFromPath,
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
 import { HelperComponent } from '../HelperComponent';
-import {
-	ComponentProperty,
-	ComponentPropertyDefinition,
-	ComponentProps,
-	DataLocation,
-	RenderContext,
-} from '../../types/common';
+import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { getTranslations } from '../util/getTranslations';
-import { Validation } from '../../types/validation';
 import { Component } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './textBoxProperties';
 import TextBoxStyle from './TextBoxStyle';
 import useDefinition from '../util/useDefinition';
 import { isNullValue } from '@fincity/kirun-js';
+import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 
 interface mapType {
 	[key: string]: any;
@@ -31,9 +23,7 @@ interface mapType {
 function TextBox(props: ComponentProps) {
 	const [isDirty, setIsDirty] = React.useState(false);
 	const [errorMessage, setErrorMessage] = React.useState('');
-
-	const [isFocussed, setIsFocussed] = React.useState(false);
-	const [hasText, setHasText] = React.useState(false);
+	const [focus, setFocus] = React.useState(false);
 	const mapValue: mapType = {
 		UNDEFINED: undefined,
 		NULL: null,
@@ -48,22 +38,12 @@ function TextBox(props: ComponentProps) {
 		context,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
-	const x = useDefinition(
-		definition,
-		propertiesDefinition,
-		stylePropertiesDefinition,
-		locationHistory,
-		pageExtractor,
-	);
 	const {
 		properties: {
 			updateStoreImmediately,
 			removeKeyWhenEmpty,
-			maxValue,
-			minValue,
 			valueType,
 			emptyValue,
-			validation,
 			supportingText,
 			readOnly,
 			defaultValue,
@@ -71,26 +51,39 @@ function TextBox(props: ComponentProps) {
 			leftIcon,
 			label,
 			noFloat,
+			numberType,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
-	} = x;
+	} = useDefinition(
+		definition,
+		propertiesDefinition,
+		stylePropertiesDefinition,
+		locationHistory,
+		pageExtractor,
+	);
+	const computedStyles = processComponentStylePseudoClasses(
+		{ focus, readOnly },
+		stylePropertiesWithPseudoStates,
+	);
 	const [value, setvalue] = React.useState(defaultValue ?? '');
 	if (!bindingPath) throw new Error('Definition requires bindingpath');
 	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
-	const textBoxValue = getDataFromLocation(bindingPath, locationHistory, pageExtractor);
 	React.useEffect(() => {
 		const initValue = getDataFromLocation(bindingPath, locationHistory, pageExtractor);
 		if (!isNullValue(defaultValue) && isNullValue(initValue)) {
 			setData(bindingPathPath, defaultValue, context.pageName);
 		}
-		setvalue(initValue ?? defaultValue ?? '');
+		setvalue(initValue ?? defaultValue?.toString() ?? '');
 	}, []);
 	React.useEffect(
 		() =>
 			addListener(
 				(_, value) => {
-					console.log(_, value, defaultValue);
+					if (value === undefined || value === null) {
+						setvalue('');
+						return;
+					}
 					setvalue(value);
 				},
 				pageExtractor,
@@ -98,40 +91,56 @@ function TextBox(props: ComponentProps) {
 			),
 		[],
 	);
-	const handleFocus = () => {
-		setIsFocussed(true);
-	};
 	const handleBlur = async (event: any) => {
+		let temp = value === '' && emptyValue ? mapValue[emptyValue] : value;
+		if (valueType === 'NUMBER') {
+			const tempNumber =
+				value !== ''
+					? numberType === 'DECIMAL'
+						? parseFloat(value)
+						: parseInt(value)
+					: temp;
+			temp = isNaN(tempNumber) ? temp : tempNumber;
+		}
 		if (!updateStoreImmediately) {
 			if (event?.target.value === '' && removeKeyWhenEmpty) {
 				setData(bindingPathPath, undefined, context?.pageName, true);
 			} else {
-				setData(bindingPathPath, value, context?.pageName);
+				setData(bindingPathPath, temp, context?.pageName);
 			}
 		}
-		setIsFocussed(false);
+		setFocus(false);
+	};
+	const handleTextChange = (text: string) => {
+		if (removeKeyWhenEmpty && text === '') {
+			setData(bindingPathPath, undefined, context?.pageName, true);
+			return;
+		}
+		let temp = text === '' && emptyValue ? mapValue[emptyValue] : text;
+		if (updateStoreImmediately) setData(bindingPathPath, temp, context?.pageName);
+		if (!updateStoreImmediately) setvalue(text);
+	};
+
+	const handleNumberChange = (text: string) => {
+		if (removeKeyWhenEmpty && text === '') {
+			setData(bindingPathPath, undefined, context?.pageName, true);
+			return;
+		}
+		let temp = text === '' && emptyValue ? mapValue[emptyValue] : text;
+		let tempNumber = numberType === 'DECIMAL' ? parseFloat(temp) : parseInt(temp);
+		temp = !isNaN(tempNumber) ? tempNumber : temp;
+		if (updateStoreImmediately) setData(bindingPathPath, temp, context?.pageName);
+		if (!updateStoreImmediately) setvalue(!isNaN(tempNumber) ? temp?.toString() : '');
 	};
 	const handleChange = (event: any) => {
-		let temp =
-			event?.target.value === '' && emptyValue ? mapValue[emptyValue] : event?.target.value;
 		if (!isDirty) {
 			setIsDirty(true);
 		}
-		if (valueType === 'number' && (temp > maxValue || temp < minValue)) {
-			temp = event?.target.value > maxValue ? maxValue?.toString() : minValue?.toString();
-		}
-		if (updateStoreImmediately) {
-			if (removeKeyWhenEmpty && temp === '') {
-				setData(bindingPathPath, undefined, context?.pageName, true);
-			} else {
-				setData(bindingPathPath, temp, context?.pageName);
-			}
-		} else {
-			setvalue(temp);
-		}
+		if (valueType === 'STRING') handleTextChange(event.target.value);
+		else handleNumberChange(event.target.value);
 	};
 	const handleClickClose = () => {
-		let temp = emptyValue ? mapValue[emptyValue] : value;
+		let temp = mapValue[emptyValue];
 		if (removeKeyWhenEmpty) {
 			setData(bindingPathPath, undefined, context?.pageName, true);
 		} else {
@@ -139,10 +148,11 @@ function TextBox(props: ComponentProps) {
 		}
 	};
 	return (
-		<div className="comp compTextBox">
+		<div className="comp compTextBox" style={computedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />
 			{noFloat && (
 				<label
+					style={computedStyles.noFloatLabel ?? {}}
 					htmlFor={key}
 					className={`noFloatTextBoxLabel ${readOnly ? 'disabled' : ''}${
 						value?.length ? `hasText` : ``
@@ -152,8 +162,9 @@ function TextBox(props: ComponentProps) {
 				</label>
 			)}
 			<div
+				style={computedStyles.textBoxContainer ?? {}}
 				className={`textBoxDiv ${errorMessage ? 'error' : ''} ${
-					isFocussed && !value?.length ? 'focussed' : ''
+					focus && !value?.length ? 'focussed' : ''
 				} ${value?.length && !readOnly ? 'hasText' : ''} ${
 					readOnly && !errorMessage ? 'disabled' : ''
 				} ${
@@ -164,15 +175,22 @@ function TextBox(props: ComponentProps) {
 						: 'textBoxContainer'
 				}`}
 			>
-				{leftIcon && <i className={`leftIcon ${leftIcon}`} />}
+				{leftIcon && (
+					<i style={computedStyles.leftIcon ?? {}} className={`leftIcon ${leftIcon}`} />
+				)}
 				<div className={`inputContainer`}>
 					<input
-						className={`textbox ${valueType === 'number' ? 'remove-spin-button' : ''}`}
+						style={computedStyles.inputBox ?? {}}
+						className={`textbox ${valueType === 'NUMBER' ? 'remove-spin-button' : ''}`}
 						type={valueType}
 						value={value}
 						onChange={handleChange}
 						placeholder={getTranslations(label, translations)}
-						onFocus={handleFocus}
+						onFocus={
+							stylePropertiesWithPseudoStates?.focus
+								? () => setFocus(true)
+								: undefined
+						}
 						onBlur={handleBlur}
 						name={key}
 						id={key}
@@ -180,6 +198,7 @@ function TextBox(props: ComponentProps) {
 					/>
 					{!noFloat && (
 						<label
+							style={computedStyles.floatingLabel ?? {}}
 							htmlFor={key}
 							className={`textBoxLabel ${readOnly ? 'disabled' : ''}${
 								value?.length ? `hasText` : ``
@@ -189,15 +208,22 @@ function TextBox(props: ComponentProps) {
 						</label>
 					)}
 				</div>
-				{rightIcon && <i className={`rightIcon ${rightIcon}`} />}
+				{rightIcon && (
+					<i
+						style={computedStyles.rightIcon ?? {}}
+						className={`rightIcon ${rightIcon}`}
+					/>
+				)}
 				{errorMessage ? (
 					<i
+						style={computedStyles.errorText ?? {}}
 						className={`errorIcon ${
 							value?.length ? `hasText` : ``
 						} fa fa-solid fa-circle-exclamation`}
 					/>
-				) : value?.length && !rightIcon ? (
+				) : value?.length && !rightIcon && !readOnly ? (
 					<i
+						style={computedStyles.supportText ?? {}}
 						onClick={handleClickClose}
 						className="clearText fa fa-regular fa-circle-xmark fa-fw"
 					/>
