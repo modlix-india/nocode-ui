@@ -570,6 +570,9 @@ export const page = {
               flexDirection: {
                 value: "column",
               },
+              gap: {
+                value: "18px",
+              },
             },
           },
         },
@@ -753,10 +756,6 @@ export const page = {
         noFloat: {
           value: true,
         },
-
-        supportingText: {
-          value: "Supporting Text",
-        },
         isMandatory: {
           value: true,
         },
@@ -783,9 +782,7 @@ export const page = {
         readOnly: {
           value: true,
         },
-        supportingText: {
-          value: "Supporting Text",
-        },
+
         isMandatory: {
           value: true,
         },
@@ -811,9 +808,6 @@ export const page = {
         },
         defaultValue: {
           value: "Hello World",
-        },
-        supportingText: {
-          value: "Supporting Text",
         },
         isMandatory: {
           value: true,
@@ -843,9 +837,6 @@ export const page = {
         },
         defaultValue: {
           value: "Hello World",
-        },
-        supportingText: {
-          value: "Supporting Text",
         },
         isMandatory: {
           value: true,

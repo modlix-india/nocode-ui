@@ -171,10 +171,15 @@ export default function useDefinition(
 	locationHistory: Array<DataLocation | string>,
 	pageExtractor: PageStoreExtractor,
 ): ComponentDefinitionValues {
-	const [compState, setCompState] = useState<ComponentDefinitionValues>({
-		properties: defaultPropValues(definition, properties),
-		key: definition.key,
-	});
+	const [compState, setCompState] = useState<ComponentDefinitionValues>(
+		createNewState(
+			definition,
+			properties,
+			stylePropertiesDefinition,
+			locationHistory,
+			pageExtractor,
+		),
+	);
 	const evaluatorMaps = new Map<string, TokenValueExtractor>([
 		[storeExtractor.getPrefix(), storeExtractor],
 		[localStoreExtractor.getPrefix(), localStoreExtractor],

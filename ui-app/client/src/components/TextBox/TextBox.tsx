@@ -22,6 +22,7 @@ import { Component } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './textBoxProperties';
 import TextBoxStyle from './TextBoxStyle';
 import useDefinition from '../util/useDefinition';
+import { isNullValue } from '@fincity/kirun-js';
 
 interface mapType {
 	[key: string]: any;
@@ -30,7 +31,7 @@ interface mapType {
 function TextBox(props: ComponentProps) {
 	const [isDirty, setIsDirty] = React.useState(false);
 	const [errorMessage, setErrorMessage] = React.useState('');
-	const [value, setvalue] = React.useState('');
+
 	const [isFocussed, setIsFocussed] = React.useState(false);
 	const [hasText, setHasText] = React.useState(false);
 	const mapValue: mapType = {
@@ -47,6 +48,13 @@ function TextBox(props: ComponentProps) {
 		context,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const x = useDefinition(
+		definition,
+		propertiesDefinition,
+		stylePropertiesDefinition,
+		locationHistory,
+		pageExtractor,
+	);
 	const {
 		properties: {
 			updateStoreImmediately,
@@ -66,21 +74,24 @@ function TextBox(props: ComponentProps) {
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
-	} = useDefinition(
-		definition,
-		propertiesDefinition,
-		stylePropertiesDefinition,
-		locationHistory,
-		pageExtractor,
-	);
+	} = x;
+	const [value, setvalue] = React.useState(defaultValue ?? '');
 	if (!bindingPath) throw new Error('Definition requires bindingpath');
 	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
 	const textBoxValue = getDataFromLocation(bindingPath, locationHistory, pageExtractor);
+	React.useEffect(() => {
+		const initValue = getDataFromLocation(bindingPath, locationHistory, pageExtractor);
+		if (!isNullValue(defaultValue) && isNullValue(initValue)) {
+			setData(bindingPathPath, defaultValue, context.pageName);
+		}
+		setvalue(initValue ?? defaultValue ?? '');
+	}, []);
 	React.useEffect(
 		() =>
-			addListenerAndCallImmediately(
+			addListener(
 				(_, value) => {
-					setvalue(value ?? defaultValue ?? '');
+					console.log(_, value, defaultValue);
+					setvalue(value);
 				},
 				pageExtractor,
 				bindingPathPath,
@@ -133,9 +144,7 @@ function TextBox(props: ComponentProps) {
 			{noFloat && (
 				<label
 					htmlFor={key}
-					className={`noFloatTextBoxLabel ${
-						readOnly ? 'disabled' : ''
-					}${
+					className={`noFloatTextBoxLabel ${readOnly ? 'disabled' : ''}${
 						value?.length ? `hasText` : ``
 					}`}
 				>
@@ -147,7 +156,13 @@ function TextBox(props: ComponentProps) {
 					isFocussed && !value?.length ? 'focussed' : ''
 				} ${value?.length && !readOnly ? 'hasText' : ''} ${
 					readOnly && !errorMessage ? 'disabled' : ''
-				} ${leftIcon || rightIcon ? rightIcon ? 'textBoxwithRightIconContainer' : 'textBoxwithIconContainer' : 'textBoxContainer'}`}
+				} ${
+					leftIcon || rightIcon
+						? rightIcon
+							? 'textBoxwithRightIconContainer'
+							: 'textBoxwithIconContainer'
+						: 'textBoxContainer'
+				}`}
 			>
 				{leftIcon && <i className={`leftIcon ${leftIcon}`} />}
 				<div className={`inputContainer`}>
@@ -166,9 +181,7 @@ function TextBox(props: ComponentProps) {
 					{!noFloat && (
 						<label
 							htmlFor={key}
-							className={`textBoxLabel ${
-								readOnly ? 'disabled' : ''
-							}${
+							className={`textBoxLabel ${readOnly ? 'disabled' : ''}${
 								value?.length ? `hasText` : ``
 							}`}
 						>
@@ -183,7 +196,7 @@ function TextBox(props: ComponentProps) {
 							value?.length ? `hasText` : ``
 						} fa fa-solid fa-circle-exclamation`}
 					/>
-				) : value?.length  && !rightIcon ? (
+				) : value?.length && !rightIcon ? (
 					<i
 						onClick={handleClickClose}
 						className="clearText fa fa-regular fa-circle-xmark fa-fw"
