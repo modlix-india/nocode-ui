@@ -3,7 +3,7 @@ import { getData, PageStoreExtractor } from '../../context/StoreContext';
 import { HelperComponent } from '../HelperComponent';
 import { Schema } from '@fincity/kirun-js';
 import { NAMESPACE_UI_ENGINE } from '../../constants';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { getTranslations } from '../util/getTranslations';
 import {
 	DataLocation,
@@ -16,8 +16,10 @@ import { Component } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './linkProperties';
 import LinkStyle from './LinkStyle';
 import useDefinition from '../util/useDefinition';
+import { getHref } from '../util/getHref';
 
 function Link(props: ComponentProps) {
+	const location = useLocation();
 	const {
 		pageDefinition: { translations },
 		definition,
@@ -47,12 +49,12 @@ function Link(props: ComponentProps) {
 		<div className="comp compLinks ">
 			<HelperComponent definition={definition} />
 			<div className="linkDiv">
-				<RouterLink className="link" to={`${linkPath}`} target={target}>
+				<RouterLink className="link" to={getHref(linkPath, location)} target={target}>
 					{getTranslations(label, translations)}
 				</RouterLink>
 				{showButton ? (
 					<RouterLink
-						to={`${linkPath}`}
+						to={getHref(linkPath, location)}
 						target={externalButtonTarget}
 						className="secondLink"
 					>
