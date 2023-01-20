@@ -22,6 +22,7 @@ import Children from '../Children';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
 import { runEvent } from '../util/runEvent';
+import { flattenUUID } from '../util/uuid';
 
 function Grid(props: ComponentProps) {
 	const [hover, setHover] = React.useState(false);
@@ -62,9 +63,12 @@ function Grid(props: ComponentProps) {
 	);
 
 	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
-	const spinnerPath = `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${key}.isRunning`;
+	const spinnerPath = `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
+		key,
+	)}.isRunning`;
+
 	const [isLoading, setIsLoading] = useState(
-		getDataFromPath(spinnerPath, props.locationHistory) || false,
+		getDataFromPath(spinnerPath, locationHistory) ?? false,
 	);
 
 	useEffect(() => addListener((_, value) => setIsLoading(value), pageExtractor, spinnerPath), []);
@@ -75,7 +79,7 @@ function Grid(props: ComponentProps) {
 			: async () => await runEvent(clickEvent, onClick, props.context.pageName);
 
 	if (linkPath) {
-		return React.createElement(containerType, { className: 'comp compGrid' }, [
+		return React.createElement(containerType.toLowerCase(), { className: 'comp compGrid' }, [
 			<HelperComponent definition={definition} />,
 			<Link
 				className={`_anchorGrid _${layout}`}
@@ -97,7 +101,7 @@ function Grid(props: ComponentProps) {
 	}
 
 	return React.createElement(
-		containerType,
+		containerType.toLowerCase(),
 		{
 			onMouseEnter: stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined,
 			onMouseLeave: stylePropertiesWithPseudoStates?.hover
