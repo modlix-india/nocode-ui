@@ -86,40 +86,41 @@
 			},
 			"dependentStatements": { "Steps.applicationData.output": true }
 		},
-		"himashudropdowndata": {
-			"statementName": "setDropdownData",
+		"themeData": {
+			"statementName": "themeData",
+			"namespace": "UIEngine",
+			"name": "FetchData",
+			"parameterMap": {
+				"url": {
+					"themeURL": {
+						"key": "themeURL",
+						"type": "VALUE",
+						"value": "api/ui/theme"
+					}
+				}
+			},
+			"dependentStatements": { "Steps.setLoginData.output": true }
+		},
+		"setThemeData": {
+			"statementName": "setThemeData",
 			"namespace": "UIEngine",
 			"name": "SetStore",
 			"parameterMap": {
 				"path": {
-					"himashudropdowndataPath": {
-						"key": "himashudropdowndataPath",
+					"setThemeDataPath": {
+						"key": "setThemeDataPath",
 						"type": "VALUE",
-						"value": "Store.dropdownData"
+						"value": "Store.theme"
 					}
 				},
 				"value": {
-					"dropdownDataValue": {
-						"key": "dropdownDataValue",
-						"type": "VALUE",
-						"value": [
-							{
-								"name": "Himanshu",
-								"id": "1"
-							},
-							{
-								"name": "Tarun",
-								"id": "2"
-							},
-							{
-								"name": "Shagil",
-								"id": "3"
-							}
-						]
+					"setThemeDataValue": {
+						"key": "setThemeDataValue",
+						"type": "EXPRESSION",
+						"expression": "Steps.themeData.output.data"
 					}
 				}
-			},
-			"dependentStatements": { "Steps.applicationData.output": true }
+			}
 		},
 		"setLanguage": {
 			"statementName": "setLanguage",
@@ -170,7 +171,8 @@
 			"name": "GenerateEvent",
 			"dependentStatements": {
 				"Steps.setAppData.output": true,
-				"Steps.setApplicationFailureData.output": true
+				"Steps.setApplicationFailureData.output": true,
+				"Steps.setThemeData.output": true
 			}
 		}
 	}

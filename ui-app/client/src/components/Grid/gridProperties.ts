@@ -13,7 +13,21 @@ import {
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
-	{ ...COMMON_COMPONENT_PROPERTIES.onClick, notImplemented: true },
+	{ ...COMMON_COMPONENT_PROPERTIES.onClick },
+	{
+		name: 'linkPath',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'Link path',
+		description: `Path that page needs to be redirected on click.`,
+		translatable: false,
+	},
+
+	{
+		name: 'target',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'Link target',
+		description: `Link's target.`,
+	},
 	{
 		name: 'layout',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
@@ -51,6 +65,23 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				description:
 					'Five Columns layout in desktop and widescreen and two in tablet and one in mobile',
 			},
+		],
+	},
+	{
+		name: 'containerType',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'Container Type (SEO)',
+		description: 'container type for seo optimization',
+		editor: ComponentPropertyEditor.ENUM,
+		defaultValue: 'DIV',
+		enumValues: [
+			{ name: 'DIV', displayName: 'DIV', description: 'Div tag' },
+			{ name: 'ARTICLE', displayName: 'ARTICLE', description: 'Article tag' },
+			{ name: 'SECTION', displayName: 'SECTION', description: 'Section tag' },
+			{ name: 'ASIDE', displayName: 'ASIDE', description: 'Aside tag' },
+			{ name: 'FOOTER', displayName: 'FOOTER', description: 'Footer tag' },
+			{ name: 'HEADER', displayName: 'HEADER', description: 'Header tag' },
+			{ name: 'MAIN', displayName: 'MAIN', description: 'Main tag' },
 		],
 	},
 	COMMON_COMPONENT_PROPERTIES.readOnly,
