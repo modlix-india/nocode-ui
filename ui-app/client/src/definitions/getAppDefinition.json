@@ -121,6 +121,57 @@
 			},
 			"dependentStatements": { "Steps.applicationData.output": true }
 		},
+		"radioButtonData": {
+			"statementName": "setRadioButtonData",
+			"namespace": "UIEngine",
+			"name": "SetStore",
+			"parameterMap": {
+				"path": {
+					"radioButtonData": {
+						"key": "radioButtonData",
+						"type": "VALUE",
+						"value": "Store.radioButtonData"
+					}
+				},
+				"value": {
+					"radioButtonDataValue": {
+						"key": "radioButtonDataValue",
+						"type": "VALUE",
+						"value": [
+							{
+								"name": "Himanshu",
+								"id": "1"
+							},
+							{
+								"name": "Tarun",
+								"id": "2"
+							},
+							{
+								"name": "Shagil",
+								"id": "3"
+							},
+							{
+								"name": "Vishwas",
+								"id": "4"
+							},
+							{
+								"name": "Vishwas",
+								"id": "5"
+							},
+							{
+								"name": "Vishwas",
+								"id": "6"
+							},
+							{
+								"name": "Vishwas",
+								"id": "7"
+							}
+						]
+					}
+				}
+			},
+			"dependentStatements": { "Steps.applicationData.output": true }
+		},
 		"setLanguage": {
 			"statementName": "setLanguage",
 			"namespace": "UIEngine",

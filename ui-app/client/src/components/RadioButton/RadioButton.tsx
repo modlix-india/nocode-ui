@@ -1,56 +1,125 @@
-import { Schema } from '@fincity/kirun-js';
-import React from 'react';
-import { NAMESPACE_UI_ENGINE } from '../../constants';
-import { getData, PageStoreExtractor } from '../../context/StoreContext';
+import React, { useEffect, useState } from 'react';
+import {
+	addListener,
+	getData,
+	getPathFromLocation,
+	PageStoreExtractor,
+	setData,
+} from '../../context/StoreContext';
 import { HelperComponent } from '../HelperComponent';
-import { DataLocation, ComponentProperty, RenderContext } from '../../types/common';
+import {
+	DataLocation,
+	ComponentProperty,
+	RenderContext,
+	ComponentProps,
+	ComponentPropertyDefinition,
+} from '../../types/common';
 import { getTranslations } from '../util/getTranslations';
-import properties from './radioButtonProperties';
+import { getSelectedKeys } from '../util/getSelectedKeys';
+import { propertiesDefinition, stylePropertiesDefinition } from './radioButtonProperties';
 import { Component } from '../../types/common';
+import useDefinition from '../util/useDefinition';
+import { getRenderData } from '../util/getRenderData';
+// import RadioButtonStyle from './RadioButtonStyle';
+import { runEvent } from '../util/runEvent';
+import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 
-interface RadioButtonProps extends React.ComponentPropsWithoutRef<'input'> {
-	definition: {
-		key: string;
-		name: string;
-		children: any;
-		properties: {
-			label: ComponentProperty<string>;
-		};
-	};
-	pageDefinition: {
-		eventFunctions: {
-			[key: string]: any;
-		};
-		translations: {
-			[key: string]: {
-				[key: string]: string;
-			};
-		};
-	};
-	locationHistory: Array<DataLocation | string>;
-	context: RenderContext;
-}
+function RadioButton(props: ComponentProps) {
+	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
+	const [selected, setSelected] = useState();
 
-function RadioButton(props: RadioButtonProps) {
+	// console.log('stylePropertiesDefinition ', stylePropertiesDefinition);
+
 	const {
-		definition: {
-			name,
-			properties: { label },
-		},
-		definition,
-		pageDefinition: { translations },
+		definition: { bindingPath },
 		locationHistory,
 		context,
+		pageDefinition,
 	} = props;
-	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
-	const labelValue = getData(label, locationHistory, pageExtractor);
+
+	const {
+		key,
+		properties: {
+			labelKey,
+			uniqueKey,
+			selectionKey,
+			labelKeyType,
+			selectionType,
+			uniqueKeyType,
+			onClick,
+			name,
+			datatype,
+			dataBinding,
+			readOnly,
+		} = {},
+		stylePropertiesWithPseudoStates,
+	} = useDefinition(
+		props.definition,
+		propertiesDefinition,
+		stylePropertiesDefinition,
+		locationHistory,
+		pageExtractor,
+	);
+
+	// if (!bindingPath) throw new Error('Definition requires binding path');
+	if (!bindingPath) return <>Binding Path Required</>;
+	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
+
+	useEffect(() => {
+		addListener(
+			(_, value) => {
+				setSelected(value);
+			},
+			pageExtractor,
+			bindingPathPath,
+		);
+	}, []);
+
+	const resolvedStyles = processComponentStylePseudoClasses(
+		{ disabled: readOnly },
+		stylePropertiesWithPseudoStates,
+	);
+
+	const radioButtonData: any = getRenderData(
+		dataBinding,
+		datatype,
+		uniqueKeyType,
+		uniqueKey,
+		selectionType,
+		selectionKey,
+		labelKeyType,
+		labelKey,
+	);
+
+	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
+	// const selectedDataKey = getSelectedKeys(radioButtonData, selected);
+
+	const handleSelect = async (each: { key: any; label: any; value: any }) => {
+		console.log('select ', each);
+		setData(bindingPathPath, each.value, context?.pageName);
+		if (clickEvent) {
+			await runEvent(clickEvent, key, context.pageName);
+		}
+	};
+
 	return (
-		<div className="comp compRadioButton">
-			<HelperComponent definition={definition} />
-			<label className=" radiobutton">
-				<input type="radio" name={name} />
-				{getTranslations(labelValue, translations)}
-			</label>
+		<div className="comp compRadioButton" style={resolvedStyles.radioButtonContainer ?? {}}>
+			<HelperComponent definition={props.definition} />
+			{/* <div className="radioButtonContainer" > */}
+			{radioButtonData?.map((each: any, index: number) => (
+				<label className="radioButton" key={index} style={resolvedStyles.radioButton ?? {}}>
+					<input
+						className="input"
+						style={resolvedStyles.input ?? {}}
+						type="radio"
+						name={name}
+						value={selected}
+						onChange={() => handleSelect(each)}
+					/>
+					{getTranslations(each?.label, props.pageDefinition.translations)}
+				</label>
+			))}
+			{/* </div> */}
 		</div>
 	);
 }
@@ -60,8 +129,11 @@ const component: Component = {
 	displayName: 'RadioButton',
 	description: 'RadioButton component',
 	component: RadioButton,
-	propertyValidation: (props: RadioButtonProps): Array<string> => [],
-	properties,
+	styleComponent: RadioButtonStyle,
+	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
+	properties: propertiesDefinition,
+	styleProperties: stylePropertiesDefinition,
+	stylePseudoStates: ['focus', 'hover', 'disabled'],
 };
 
 export default component;
