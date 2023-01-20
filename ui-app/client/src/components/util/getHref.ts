@@ -14,8 +14,8 @@ export function getHref(linkPath: string, location: Location) {
 		prefix = appCode + clientCode;
 	}
 
-	if (linkPath.startsWith('/')) {
-		if (linkPath.startsWith('/api/')) {
+	if (linkPath?.startsWith('/')) {
+		if (linkPath?.startsWith('/api/')) {
 			url = prefix + '' + linkPath;
 		} else {
 			if (location.pathname.includes('/page')) {
@@ -34,7 +34,7 @@ export function getHref(linkPath: string, location: Location) {
 			midfix += '/';
 		}
 
-		if (linkPath.startsWith('api')) {
+		if (linkPath?.startsWith('api')) {
 			if (location.pathname.includes('/page')) {
 				url = prefix + '/' + midfix + linkPath;
 			} else {

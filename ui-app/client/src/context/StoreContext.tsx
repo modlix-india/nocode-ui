@@ -134,7 +134,7 @@ export function getDataFromPath(
 	return _getData(dotPathBuilder(path, locationHistory));
 }
 
-export function setData(path: string, value: any, context?: string) {
+export function setData(path: string, value: any, context?: string, deleteKey?: boolean) {
 	if (path.startsWith(LOCAL_STORE_PREFIX)) {
 		if (!value) return;
 		let parts = path.split(TokenValueExtractor.REGEX_DOT);
@@ -160,6 +160,7 @@ export function setData(path: string, value: any, context?: string) {
 					value,
 					LOCAL_STORE_PREFIX,
 					new Map([[LOCAL_STORE_PREFIX, localStoreExtractor]]),
+					deleteKey,
 				);
 				localStore.setItem(key, JSON.stringify(store));
 			} catch (error) {
@@ -170,8 +171,9 @@ export function setData(path: string, value: any, context?: string) {
 		_setData(
 			`Store.pageData.${context}.${path.substring(PAGE_STORE_PREFIX.length + 1)}`,
 			value,
+			deleteKey,
 		);
-	} else _setData(path, value);
+	} else _setData(path, value, deleteKey);
 	console.log(path, _store, context);
 }
 

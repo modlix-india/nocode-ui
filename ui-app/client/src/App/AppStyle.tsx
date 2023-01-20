@@ -48,10 +48,6 @@ export default function AppStyle() {
 	*:after {
 		box-sizing: border-box;
 	}
-
-	body {
-		margin: 0px;
-	}
 	
 	.hide{
 		opacity:0;

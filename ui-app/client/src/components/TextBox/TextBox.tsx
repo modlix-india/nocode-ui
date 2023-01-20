@@ -2,32 +2,34 @@ import React from 'react';
 import {
 	addListener,
 	getDataFromLocation,
-	getDataFromPath,
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
 import { HelperComponent } from '../HelperComponent';
-import {
-	ComponentProperty,
-	ComponentPropertyDefinition,
-	ComponentProps,
-	DataLocation,
-	RenderContext,
-} from '../../types/common';
+import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { getTranslations } from '../util/getTranslations';
-import { Validation } from '../../types/validation';
 import { Component } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './textBoxProperties';
 import TextBoxStyle from './TextBoxStyle';
 import useDefinition from '../util/useDefinition';
+import { isNullValue } from '@fincity/kirun-js';
+import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+
+interface mapType {
+	[key: string]: any;
+}
 
 function TextBox(props: ComponentProps) {
 	const [isDirty, setIsDirty] = React.useState(false);
 	const [errorMessage, setErrorMessage] = React.useState('');
-	const [value, setvalue] = React.useState('');
-	const [isFocussed, setIsFocussed] = React.useState(false);
-	const [hasText, setHasText] = React.useState(false);
+	const [focus, setFocus] = React.useState(false);
+	const mapValue: mapType = {
+		UNDEFINED: undefined,
+		NULL: null,
+		ENMPTYSTRING: '',
+		ZERO: 0,
+	};
 	const {
 		definition: { bindingPath },
 		definition,
@@ -40,18 +42,16 @@ function TextBox(props: ComponentProps) {
 		properties: {
 			updateStoreImmediately,
 			removeKeyWhenEmpty,
-			maxValue,
-			minValue,
 			valueType,
 			emptyValue,
-			validation,
 			supportingText,
-			visibility,
 			readOnly,
 			defaultValue,
 			rightIcon,
 			leftIcon,
 			label,
+			noFloat,
+			numberType,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -62,76 +62,175 @@ function TextBox(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
+	const computedStyles = processComponentStylePseudoClasses(
+		{ focus, readOnly },
+		stylePropertiesWithPseudoStates,
+	);
+	const [value, setvalue] = React.useState(defaultValue ?? '');
 	if (!bindingPath) throw new Error('Definition requires bindingpath');
 	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
-	const textBoxValue = getDataFromLocation(bindingPath, locationHistory, pageExtractor);
+	React.useEffect(() => {
+		const initValue = getDataFromLocation(bindingPath, locationHistory, pageExtractor);
+		if (!isNullValue(defaultValue) && isNullValue(initValue)) {
+			setData(bindingPathPath, defaultValue, context.pageName);
+		}
+		setvalue(initValue ?? defaultValue?.toString() ?? '');
+	}, []);
 	React.useEffect(
 		() =>
 			addListener(
 				(_, value) => {
-					setvalue(value ?? defaultValue ?? '');
+					if (value === undefined || value === null) {
+						setvalue('');
+						return;
+					}
+					setvalue(value);
 				},
 				pageExtractor,
 				bindingPathPath,
 			),
-		[bindingPathPath],
+		[],
 	);
-	const handleFocus = () => {
-		setIsFocussed(true);
+	const handleBlur = async (event: any) => {
+		let temp = value === '' && emptyValue ? mapValue[emptyValue] : value;
+		if (valueType === 'NUMBER') {
+			const tempNumber =
+				value !== ''
+					? numberType === 'DECIMAL'
+						? parseFloat(value)
+						: parseInt(value)
+					: temp;
+			temp = isNaN(tempNumber) ? temp : tempNumber;
+		}
+		if (!updateStoreImmediately) {
+			if (event?.target.value === '' && removeKeyWhenEmpty) {
+				setData(bindingPathPath, undefined, context?.pageName, true);
+			} else {
+				setData(bindingPathPath, temp, context?.pageName);
+			}
+		}
+		setFocus(false);
 	};
-	const handleBlur = async () => {
-		setIsFocussed(false);
+	const handleTextChange = (text: string) => {
+		if (removeKeyWhenEmpty && text === '') {
+			setData(bindingPathPath, undefined, context?.pageName, true);
+			return;
+		}
+		let temp = text === '' && emptyValue ? mapValue[emptyValue] : text;
+		if (updateStoreImmediately) setData(bindingPathPath, temp, context?.pageName);
+		if (!updateStoreImmediately) setvalue(text);
+	};
+
+	const handleNumberChange = (text: string) => {
+		if (removeKeyWhenEmpty && text === '') {
+			setData(bindingPathPath, undefined, context?.pageName, true);
+			return;
+		}
+		let temp = text === '' && emptyValue ? mapValue[emptyValue] : text;
+		let tempNumber = numberType === 'DECIMAL' ? parseFloat(temp) : parseInt(temp);
+		temp = !isNaN(tempNumber) ? tempNumber : temp;
+		if (updateStoreImmediately) setData(bindingPathPath, temp, context?.pageName);
+		if (!updateStoreImmediately) setvalue(!isNaN(tempNumber) ? temp?.toString() : '');
 	};
 	const handleChange = (event: any) => {
 		if (!isDirty) {
 			setIsDirty(true);
 		}
-		setData(bindingPathPath, event?.target.value, context?.pageName);
+		if (valueType === 'STRING') handleTextChange(event.target.value);
+		else handleNumberChange(event.target.value);
 	};
 	const handleClickClose = () => {
-		setvalue('');
+		let temp = mapValue[emptyValue];
+		if (removeKeyWhenEmpty) {
+			setData(bindingPathPath, undefined, context?.pageName, true);
+		} else {
+			setData(bindingPathPath, temp, context?.pageName);
+		}
 	};
 	return (
-		<div className="comp compTextBox">
+		<div className="comp compTextBox" style={computedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />
+			{noFloat && (
+				<label
+					style={computedStyles.noFloatLabel ?? {}}
+					htmlFor={key}
+					className={`noFloatTextBoxLabel ${readOnly ? 'disabled' : ''}${
+						value?.length ? `hasText` : ``
+					}`}
+				>
+					{getTranslations(label, translations)}
+				</label>
+			)}
 			<div
+				style={computedStyles.textBoxContainer ?? {}}
 				className={`textBoxDiv ${errorMessage ? 'error' : ''} ${
-					isFocussed && !value.length ? 'focussed' : ''
-				} ${value.length && !readOnly ? 'hasText' : ''} ${
-					readOnly ? 'textBoxDisabled' : ''
-				} ${leftIcon ? 'textBoxwithIconContainer' : 'textBoxContainer'}`}
+					focus && !value?.length ? 'focussed' : ''
+				} ${value?.length && !readOnly ? 'hasText' : ''} ${
+					readOnly && !errorMessage ? 'disabled' : ''
+				} ${
+					leftIcon || rightIcon
+						? rightIcon
+							? 'textBoxwithRightIconContainer'
+							: 'textBoxwithIconContainer'
+						: 'textBoxContainer'
+				}`}
 			>
-				{leftIcon && <i className={`leftIcon ${leftIcon}`} />}
-				<div className="inputContainer">
+				{leftIcon && (
+					<i style={computedStyles.leftIcon ?? {}} className={`leftIcon ${leftIcon}`} />
+				)}
+				<div className={`inputContainer`}>
 					<input
-						className="textbox"
-						type={'text'}
+						style={computedStyles.inputBox ?? {}}
+						className={`textbox ${valueType === 'NUMBER' ? 'remove-spin-button' : ''}`}
+						type={valueType}
 						value={value}
 						onChange={handleChange}
 						placeholder={getTranslations(label, translations)}
-						onFocus={handleFocus}
+						onFocus={
+							stylePropertiesWithPseudoStates?.focus
+								? () => setFocus(true)
+								: undefined
+						}
 						onBlur={handleBlur}
 						name={key}
 						id={key}
 						disabled={readOnly}
 					/>
-					<label
-						htmlFor={key}
-						className={`textBoxLabel ${errorMessage ? 'error' : ''} ${
-							readOnly ? 'disabled' : ''
-						}`}
-					>
-						{getTranslations(label, translations)}
-					</label>
+					{!noFloat && (
+						<label
+							style={computedStyles.floatingLabel ?? {}}
+							htmlFor={key}
+							className={`textBoxLabel ${readOnly ? 'disabled' : ''}${
+								value?.length ? `hasText` : ``
+							}`}
+						>
+							{getTranslations(label, translations)}
+						</label>
+					)}
 				</div>
-				{value.length ? (
+				{rightIcon && (
 					<i
+						style={computedStyles.rightIcon ?? {}}
+						className={`rightIcon ${rightIcon}`}
+					/>
+				)}
+				{errorMessage ? (
+					<i
+						style={computedStyles.errorText ?? {}}
+						className={`errorIcon ${
+							value?.length ? `hasText` : ``
+						} fa fa-solid fa-circle-exclamation`}
+					/>
+				) : value?.length && !rightIcon && !readOnly ? (
+					<i
+						style={computedStyles.supportText ?? {}}
 						onClick={handleClickClose}
-						className="clearText fa fa-solid fa-circle-xmark fa-fw"
+						className="clearText fa fa-regular fa-circle-xmark fa-fw"
 					/>
 				) : null}
 			</div>
 			<label
+				title={errorMessage ? errorMessage : supportingText}
 				className={`supportText ${readOnly ? 'disabled' : ''} ${
 					errorMessage ? 'error' : ''
 				}`}
@@ -150,6 +249,7 @@ const component: Component = {
 	styleComponent: TextBoxStyle,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
+	stylePseudoStates: ['focus', 'disabled'],
 };
 
 export default component;
