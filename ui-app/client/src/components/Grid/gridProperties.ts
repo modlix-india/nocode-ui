@@ -10,24 +10,83 @@ import {
 	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
-import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
+import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
+	{ ...COMMON_COMPONENT_PROPERTIES.onClick },
 	{
-		name: 'readOnly',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
-		displayName: 'Read Only',
-		description: 'Grid will be rendered un editable when this property is true.',
-		group: ComponentPropertyGroup.COMMON,
+		name: 'linkPath',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'Link path',
+		description: `Path that page needs to be redirected on click.`,
+		translatable: false,
 	},
 
 	{
-		name: 'visibility',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
-		displayName: 'Visibility',
-		description: 'This component will be hidden when this property is true.',
-		group: ComponentPropertyGroup.COMMON,
+		name: 'target',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'Link target',
+		description: `Link's target.`,
 	},
+	{
+		name: 'layout',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'Layout',
+		description: 'Name of the layout',
+		editor: ComponentPropertyEditor.LAYOUT,
+		defaultValue: 'SINGLECOLUMNLAYOUT',
+		enumValues: [
+			{ name: 'ROWLAYOUT', displayName: 'Row Layout', description: 'Default row layout' },
+			{
+				name: 'SINGLECOLUMNLAYOUT',
+				displayName: 'Column Layout',
+				description: 'Single Column layout in all resolutions',
+			},
+			{
+				name: 'TWOCOLUMNSLAYOUT',
+				displayName: 'Two Columns Layout',
+				description: 'Two Columns layout in all resolutions except mobile',
+			},
+			{
+				name: 'THREECOLUMNSLAYOUT',
+				displayName: 'Three Columns Layout',
+				description:
+					'Three Columns layout in all resolutions and two in tablet and one in mobile',
+			},
+			{
+				name: 'FOURCOLUMNSLAYOUT',
+				displayName: 'Four Columns Layout',
+				description:
+					'Four Columns layout in desktop and widescreen and two in tablet and one in mobile',
+			},
+			{
+				name: 'FIVECOLUMNSLAYOUT',
+				displayName: 'Five Columns Layout',
+				description:
+					'Five Columns layout in desktop and widescreen and two in tablet and one in mobile',
+			},
+		],
+	},
+	{
+		name: 'containerType',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'Container Type (SEO)',
+		description: 'container type for seo optimization',
+		editor: ComponentPropertyEditor.ENUM,
+		defaultValue: 'DIV',
+		enumValues: [
+			{ name: 'DIV', displayName: 'DIV', description: 'Div tag' },
+			{ name: 'ARTICLE', displayName: 'ARTICLE', description: 'Article tag' },
+			{ name: 'SECTION', displayName: 'SECTION', description: 'Section tag' },
+			{ name: 'ASIDE', displayName: 'ASIDE', description: 'Aside tag' },
+			{ name: 'FOOTER', displayName: 'FOOTER', description: 'Footer tag' },
+			{ name: 'HEADER', displayName: 'HEADER', description: 'Header tag' },
+			{ name: 'MAIN', displayName: 'MAIN', description: 'Main tag' },
+			{ name: 'NAV', displayName: 'NAV', description: 'Nav tag' },
+		],
+	},
+	COMMON_COMPONENT_PROPERTIES.readOnly,
+	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

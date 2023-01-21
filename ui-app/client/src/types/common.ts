@@ -44,6 +44,7 @@ export enum ComponentPropertyEditor {
 	PAGE_SELECTOR,
 	COMPONENT_SELECTOR,
 	EVENT_SELECTOR,
+	LAYOUT,
 }
 
 export enum ComponentPropertyGroup {
