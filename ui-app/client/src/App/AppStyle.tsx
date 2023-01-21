@@ -67,7 +67,7 @@ export default function AppStyle() {
 		if (compList.size != 0 && !compList.has(comp.name)) continue;
 
 		const StyleComp = comp.styleComponent;
-		styleComps.push(<StyleComp theme={theme} />);
+		styleComps.push(<StyleComp key={comp.displayName + '_stylcomps'} theme={theme} />);
 	}
 
 	return (

@@ -73,7 +73,7 @@ function Children({
 						: undefined;
 				})
 				.filter(e => !!e)
-				.sort((a: any, b: any) => (a?.displayOrder || 0) - (b?.displayOrder || 0))
+				.sort((a: any, b: any) => (a?.displayOrder ?? 0) - (b?.displayOrder ?? 0))
 				.map(e => {
 					let comp = Components.get(e.type);
 					if (!comp && e.type === 'Page') {

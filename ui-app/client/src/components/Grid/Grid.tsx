@@ -50,6 +50,7 @@ function Grid(props: ComponentProps) {
 
 	const childs = (
 		<Children
+			key={`${key}_chld`}
 			pageDefinition={pageDefinition}
 			children={definition.children}
 			context={{ ...context, isReadonly }}
@@ -116,7 +117,7 @@ function Grid(props: ComponentProps) {
 
 			onClick: handleClick,
 		},
-		[<HelperComponent definition={definition} />, childs],
+		[<HelperComponent key={`${key}_hlp`} definition={definition} />, childs],
 	);
 }
 
