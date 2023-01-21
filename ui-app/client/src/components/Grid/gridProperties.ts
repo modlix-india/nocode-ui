@@ -34,12 +34,12 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Layout',
 		description: 'Name of the layout',
 		editor: ComponentPropertyEditor.LAYOUT,
-		defaultValue: 'ROWLAYOUT',
+		defaultValue: 'SINGLECOLUMNLAYOUT',
 		enumValues: [
 			{ name: 'ROWLAYOUT', displayName: 'Row Layout', description: 'Default row layout' },
 			{
 				name: 'SINGLECOLUMNLAYOUT',
-				displayName: 'Single Column Layout',
+				displayName: 'Column Layout',
 				description: 'Single Column layout in all resolutions',
 			},
 			{
@@ -82,6 +82,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{ name: 'FOOTER', displayName: 'FOOTER', description: 'Footer tag' },
 			{ name: 'HEADER', displayName: 'HEADER', description: 'Header tag' },
 			{ name: 'MAIN', displayName: 'MAIN', description: 'Main tag' },
+			{ name: 'NAV', displayName: 'NAV', description: 'Nav tag' },
 		],
 	},
 	COMMON_COMPONENT_PROPERTIES.readOnly,

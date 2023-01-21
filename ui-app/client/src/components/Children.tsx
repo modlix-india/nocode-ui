@@ -46,7 +46,7 @@ function Children({
 	]);
 
 	React.useEffect(() => {
-		let set = Object.entries(children)
+		let set = Object.entries(children ?? {})
 			.filter(([, v]) => !!v)
 			.map(([k]) => pageDefinition.componentDefinition[k])
 			.filter(e => !!e?.properties?.visibility)
@@ -62,7 +62,7 @@ function Children({
 
 	return (
 		<>
-			{Object.entries(children)
+			{Object.entries(children ?? {})
 				.filter(([, v]) => !!v)
 				.map(([k]) => pageDefinition.componentDefinition[k])
 				.map(e => {
