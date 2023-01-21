@@ -4,6 +4,7 @@ import {
 	KIRuntime,
 	TokenValueExtractor,
 } from '@fincity/kirun-js';
+import { GOBAL_CONTEXT_NAME } from '../../constants';
 import {
 	localStoreExtractor,
 	PageStoreExtractor,
@@ -12,10 +13,14 @@ import {
 } from '../../context/StoreContext';
 import { UIFunctionRepository } from '../../functions';
 import { UISchemaRepository } from '../../schemas/common';
-import UUID from './uuid';
+import UUID, { flattenUUID } from './uuid';
 
-export const runEvent = async (functionDefinition: any, key: string = UUID(), page = 'global') => {
-	setData(`Store.functionExecutions.${page}.${key}.isRunning`, true);
+export const runEvent = async (
+	functionDefinition: any,
+	key: string = UUID(),
+	page = GOBAL_CONTEXT_NAME,
+) => {
+	setData(`Store.functionExecutions.${page}.${flattenUUID(key)}.isRunning`, true);
 	try {
 		const def: FunctionDefinition = FunctionDefinition.from(functionDefinition);
 		const runtime = new KIRuntime(def);
@@ -32,10 +37,10 @@ export const runEvent = async (functionDefinition: any, key: string = UUID(), pa
 			]),
 		);
 		const x = await runtime.execute(fep);
-		setData(`Store.functionExecutions.${page}.${key}.isRunning`, false);
+		setData(`Store.functionExecutions.${page}.${flattenUUID(key)}.isRunning`, false);
 		return new Promise(resolve => resolve(x));
 	} catch (error) {
-		setData(`Store.functionExecutions.${page}.${key}.isRunning`, false);
+		setData(`Store.functionExecutions.${page}.${flattenUUID(key)}.isRunning`, false);
 		return new Promise((_, rej) => rej(error));
 	}
 };

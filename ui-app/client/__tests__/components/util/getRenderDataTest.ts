@@ -9,12 +9,12 @@ describe('Testing data with different structures for iteration', () => {
 		const uniqueKeyType = 'OBJECT';
 		const selectionType = 'OBJECT';
 		expect(getRenderData(data, dataType, uniqueKeyType, '', selectionType)).toStrictEqual([
-			{ key: 'Raja', label: 'Raja', value: 'Raja' },
-			{ key: 'Avinash', label: 'Avinash', value: 'Avinash' },
-			{ key: 'Alli', label: 'Alli', value: 'Alli' },
-			{ key: 'Akhilesh', label: 'Akhilesh', value: 'Akhilesh' },
-			{ key: 'Surendhar', label: 'Surendhar', value: 'Surendhar' },
-			{ key: 'Kiran', label: 'Kiran', value: 'Kiran' },
+			{ key: 'Raja', label: 'Raja', value: 'Raja', originalObjectKey: 0 },
+			{ key: 'Avinash', label: 'Avinash', value: 'Avinash', originalObjectKey: 1 },
+			{ key: 'Alli', label: 'Alli', value: 'Alli', originalObjectKey: 2 },
+			{ key: 'Akhilesh', label: 'Akhilesh', value: 'Akhilesh', originalObjectKey: 3 },
+			{ key: 'Surendhar', label: 'Surendhar', value: 'Surendhar', originalObjectKey: 4 },
+			{ key: 'Kiran', label: 'Kiran', value: 'Kiran', originalObjectKey: 5 },
 		]);
 	});
 
@@ -24,12 +24,12 @@ describe('Testing data with different structures for iteration', () => {
 		const uniqueKeyType = 'OBJECT';
 		const selectionType = 'INDEX';
 		expect(getRenderData(testList, dataType, uniqueKeyType, '', selectionType)).toStrictEqual([
-			{ key: 'Raja', label: 'Raja', value: 0 },
-			{ key: 'Avinash', label: 'Avinash', value: 1 },
-			{ key: 'Alli', label: 'Alli', value: 2 },
-			{ key: 'Akhilesh', label: 'Akhilesh', value: 3 },
-			{ key: 'Surendhar', label: 'Surendhar', value: 4 },
-			{ key: 'Kiran', label: 'Kiran', value: 5 },
+			{ key: 'Raja', label: 'Raja', value: 0, originalObjectKey: 0 },
+			{ key: 'Avinash', label: 'Avinash', value: 1, originalObjectKey: 1 },
+			{ key: 'Alli', label: 'Alli', value: 2, originalObjectKey: 2 },
+			{ key: 'Akhilesh', label: 'Akhilesh', value: 3, originalObjectKey: 3 },
+			{ key: 'Surendhar', label: 'Surendhar', value: 4, originalObjectKey: 4 },
+			{ key: 'Kiran', label: 'Kiran', value: 5, originalObjectKey: 5 },
 		]);
 	});
 
@@ -39,12 +39,12 @@ describe('Testing data with different structures for iteration', () => {
 		const uniqueKeyType = 'INDEX';
 		const selectionType = 'INDEX';
 		expect(getRenderData(testList, dataType, uniqueKeyType, '', selectionType)).toStrictEqual([
-			{ key: 0, label: 'Raja', value: 0 },
-			{ key: 1, label: 'Avinash', value: 1 },
-			{ key: 2, label: 'Alli', value: 2 },
-			{ key: 3, label: 'Akhilesh', value: 3 },
-			{ key: 4, label: 'Surendhar', value: 4 },
-			{ key: 5, label: 'Kiran', value: 5 },
+			{ key: 0, label: 'Raja', value: 0, originalObjectKey: 0 },
+			{ key: 1, label: 'Avinash', value: 1, originalObjectKey: 1 },
+			{ key: 2, label: 'Alli', value: 2, originalObjectKey: 2 },
+			{ key: 3, label: 'Akhilesh', value: 3, originalObjectKey: 3 },
+			{ key: 4, label: 'Surendhar', value: 4, originalObjectKey: 4 },
+			{ key: 5, label: 'Kiran', value: 5, originalObjectKey: 5 },
 		]);
 	});
 
@@ -75,12 +75,12 @@ describe('Testing data with different structures for iteration', () => {
 				labelKey,
 			),
 		).toStrictEqual([
-			{ key: 1, label: 'Raja', value: 'IT' },
-			{ key: 2, label: 'Avinash', value: 'CS' },
-			{ key: 3, label: 'Alli', value: 'EE' },
-			{ key: 4, label: 'Akhilesh', value: 'EC' },
-			{ key: 5, label: 'Surendhar', value: 'IT' },
-			{ key: 6, label: 'Kiran', value: 'IT' },
+			{ key: 1, label: 'Raja', value: 'IT', originalObjectKey: 0 },
+			{ key: 2, label: 'Avinash', value: 'CS', originalObjectKey: 1 },
+			{ key: 3, label: 'Alli', value: 'EE', originalObjectKey: 2 },
+			{ key: 4, label: 'Akhilesh', value: 'EC', originalObjectKey: 3 },
+			{ key: 5, label: 'Surendhar', value: 'IT', originalObjectKey: 4 },
+			{ key: 6, label: 'Kiran', value: 'IT', originalObjectKey: 5 },
 		]);
 	});
 
@@ -115,31 +115,37 @@ describe('Testing data with different structures for iteration', () => {
 				key: 1,
 				label: 'Raja',
 				value: { name: 'Raja', id: 1, department: 'IT' },
+				originalObjectKey: 0,
 			},
 			{
 				key: 2,
 				label: 'Avinash',
 				value: { name: 'Avinash', id: 2, department: 'CS' },
+				originalObjectKey: 1,
 			},
 			{
 				key: 3,
 				label: 'Alli',
 				value: { name: 'Alli', id: 3, department: 'EE' },
+				originalObjectKey: 2,
 			},
 			{
 				key: 4,
 				label: 'Akhilesh',
 				value: { name: 'Akhilesh', id: 4, department: 'EC' },
+				originalObjectKey: 3,
 			},
 			{
 				key: 5,
 				label: 'Surendhar',
 				value: { name: 'Surendhar', id: 5, department: 'IT' },
+				originalObjectKey: 4,
 			},
 			{
 				key: 6,
 				label: 'Kiran',
 				value: { name: 'Kiran', id: 6, department: 'IT' },
+				originalObjectKey: 5,
 			},
 		]);
 	});
@@ -151,36 +157,42 @@ describe('Testing data with different structures for iteration', () => {
 				id: 1,
 				department: 'IT',
 				links: { a: { b: 'c' } },
+				originalObjectKey: 0,
 			},
 			{
 				name: 'Avinash',
 				id: 2,
 				department: 'CS',
 				links: { a: { b: 'c' } },
+				originalObjectKey: 1,
 			},
 			{
 				name: 'Alli',
 				id: 3,
 				department: 'EE',
 				links: { a: { b: 'c' } },
+				originalObjectKey: 2,
 			},
 			{
 				name: 'Akhilesh',
 				id: 4,
 				department: 'EC',
 				links: { a: { b: 'c' } },
+				originalObjectKey: 3,
 			},
 			{
 				name: 'Surendhar',
 				id: 5,
 				department: 'IT',
 				links: { a: { b: 'c' } },
+				originalObjectKey: 4,
 			},
 			{
 				name: 'Kiran',
 				id: 6,
 				department: 'IT',
 				links: { a: { b: 'c' } },
+				originalObjectKey: 5,
 			},
 		];
 		const dataType = 'LIST_OF_OBJECTS';
@@ -201,12 +213,12 @@ describe('Testing data with different structures for iteration', () => {
 				labelKey,
 			),
 		).toStrictEqual([
-			{ key: 1, label: 'Raja', value: 'c' },
-			{ key: 2, label: 'Avinash', value: 'c' },
-			{ key: 3, label: 'Alli', value: 'c' },
-			{ key: 4, label: 'Akhilesh', value: 'c' },
-			{ key: 5, label: 'Surendhar', value: 'c' },
-			{ key: 6, label: 'Kiran', value: 'c' },
+			{ key: 1, label: 'Raja', value: 'c', originalObjectKey: 0 },
+			{ key: 2, label: 'Avinash', value: 'c', originalObjectKey: 1 },
+			{ key: 3, label: 'Alli', value: 'c', originalObjectKey: 2 },
+			{ key: 4, label: 'Akhilesh', value: 'c', originalObjectKey: 3 },
+			{ key: 5, label: 'Surendhar', value: 'c', originalObjectKey: 4 },
+			{ key: 6, label: 'Kiran', value: 'c', originalObjectKey: 5 },
 		]);
 	});
 
@@ -267,12 +279,12 @@ describe('Testing data with different structures for iteration', () => {
 				labelKey,
 			),
 		).toStrictEqual([
-			{ key: 'c', label: 'Raja', value: 'c' },
-			{ key: 'c', label: 'Avinash', value: 'c' },
-			{ key: 'c', label: 'Alli', value: 'c' },
-			{ key: 'c', label: 'Akhilesh', value: 'c' },
-			{ key: 'c', label: 'Surendhar', value: 'c' },
-			{ key: 'c', label: 'Kiran', value: 'c' },
+			{ key: 'c', label: 'Raja', value: 'c', originalObjectKey: 0 },
+			{ key: 'c', label: 'Avinash', value: 'c', originalObjectKey: 1 },
+			{ key: 'c', label: 'Alli', value: 'c', originalObjectKey: 2 },
+			{ key: 'c', label: 'Akhilesh', value: 'c', originalObjectKey: 3 },
+			{ key: 'c', label: 'Surendhar', value: 'c', originalObjectKey: 4 },
+			{ key: 'c', label: 'Kiran', value: 'c', originalObjectKey: 5 },
 		]);
 	});
 
@@ -345,12 +357,12 @@ describe('Testing data with different structures for iteration', () => {
 				labelKey,
 			),
 		).toStrictEqual([
-			{ key: 1, label: 'Raja', value: 'c' },
-			{ key: 2, label: 'Avinash', value: 'c' },
-			{ key: 3, label: 'Alli', value: 'c' },
-			{ key: 4, label: 'Akhilesh', value: 'c' },
-			{ key: 5, label: 'Surendhar', value: 'c' },
-			{ key: 6, label: 'Kiran', value: 'c' },
+			{ key: 1, label: 'Raja', value: 'c', originalObjectKey: 0 },
+			{ key: 2, label: 'Avinash', value: 'c', originalObjectKey: 1 },
+			{ key: 3, label: 'Alli', value: 'c', originalObjectKey: 2 },
+			{ key: 4, label: 'Akhilesh', value: 'c', originalObjectKey: 3 },
+			{ key: 5, label: 'Surendhar', value: 'c', originalObjectKey: 4 },
+			{ key: 6, label: 'Kiran', value: 'c', originalObjectKey: 5 },
 		]);
 	});
 
@@ -369,10 +381,10 @@ describe('Testing data with different structures for iteration', () => {
 		expect(
 			getRenderData(testList, dataType, uniqueKeyType, '', selectionType, '', labelKeyType),
 		).toStrictEqual([
-			{ key: 'b', label: 'b', value: 'b' },
-			{ key: true, label: true, value: true },
-			{ key: 'f', label: 'f', value: 'f' },
-			{ key: 'h', label: 'h', value: 'h' },
+			{ key: 'b', label: 'b', value: 'b', originalObjectKey: 'a' },
+			{ key: true, label: true, value: true, originalObjectKey: 'c' },
+			{ key: 'f', label: 'f', value: 'f', originalObjectKey: 'e' },
+			{ key: 'h', label: 'h', value: 'h', originalObjectKey: 'g' },
 		]);
 	});
 
@@ -391,10 +403,10 @@ describe('Testing data with different structures for iteration', () => {
 		expect(
 			getRenderData(testList, dataType, uniqueKeyType, '', selectionType, '', labelKeyType),
 		).toStrictEqual([
-			{ key: 0, label: 0, value: 0 },
-			{ key: 1, label: 1, value: 1 },
-			{ key: 2, label: 2, value: 2 },
-			{ key: 3, label: 3, value: 3 },
+			{ key: 0, label: 0, value: 0, originalObjectKey: 'a' },
+			{ key: 1, label: 1, value: 1, originalObjectKey: 'c' },
+			{ key: 2, label: 2, value: 2, originalObjectKey: 'e' },
+			{ key: 3, label: 3, value: 3, originalObjectKey: 'g' },
 		]);
 	});
 
@@ -413,10 +425,10 @@ describe('Testing data with different structures for iteration', () => {
 		expect(
 			getRenderData(testList, dataType, uniqueKeyType, '', selectionType, '', labelKeyType),
 		).toStrictEqual([
-			{ key: 'a', label: 'a', value: 'a' },
-			{ key: 'c', label: 'c', value: 'c' },
-			{ key: 'e', label: 'e', value: 'e' },
-			{ key: 'g', label: 'g', value: 'g' },
+			{ key: 'a', label: 'a', value: 'a', originalObjectKey: 'a' },
+			{ key: 'c', label: 'c', value: 'c', originalObjectKey: 'c' },
+			{ key: 'e', label: 'e', value: 'e', originalObjectKey: 'e' },
+			{ key: 'g', label: 'g', value: 'g', originalObjectKey: 'g' },
 		]);
 	});
 
@@ -444,10 +456,10 @@ describe('Testing data with different structures for iteration', () => {
 				labelKeyType,
 			),
 		).toStrictEqual([
-			{ key: 'b', label: 'a', value: 'a' },
-			{ key: true, label: 'c', value: 'c' },
-			{ key: 'f', label: 'e', value: 'e' },
-			{ key: 'h', label: 'g', value: 'g' },
+			{ key: 'b', label: 'a', value: 'a', originalObjectKey: 'a' },
+			{ key: true, label: 'c', value: 'c', originalObjectKey: 'c' },
+			{ key: 'f', label: 'e', value: 'e', originalObjectKey: 'e' },
+			{ key: 'h', label: 'g', value: 'g', originalObjectKey: 'g' },
 		]);
 	});
 
@@ -475,10 +487,10 @@ describe('Testing data with different structures for iteration', () => {
 				labelKeyType,
 			),
 		).toStrictEqual([
-			{ key: 'b', label: 'a', value: { test: { test: 'b' } } },
-			{ key: true, label: 'c', value: { test: { test: true } } },
-			{ key: 'f', label: 'e', value: { test: { test: 'f' } } },
-			{ key: 'h', label: 'g', value: { test: { test: 'h' } } },
+			{ key: 'b', label: 'a', value: { test: { test: 'b' } }, originalObjectKey: 'a' },
+			{ key: true, label: 'c', value: { test: { test: true } }, originalObjectKey: 'c' },
+			{ key: 'f', label: 'e', value: { test: { test: 'f' } }, originalObjectKey: 'e' },
+			{ key: 'h', label: 'g', value: { test: { test: 'h' } }, originalObjectKey: 'g' },
 		]);
 	});
 
@@ -497,10 +509,10 @@ describe('Testing data with different structures for iteration', () => {
 		expect(
 			getRenderData(testList, dataType, uniqueKeyType, '', selectionType, '', labelKeyType),
 		).toStrictEqual([
-			{ key: 'a', label: 'a', value: [{ a: 'b' }, 'hello'] },
-			{ key: 'c', label: 'c', value: [{ a: 'c' }, 'world'] },
-			{ key: 'e', label: 'e', value: [{ a: 'd' }, 'earth'] },
-			{ key: 'g', label: 'g', value: [{ a: 'e' }, 'mars'] },
+			{ key: 'a', label: 'a', value: [{ a: 'b' }, 'hello'], originalObjectKey: 'a' },
+			{ key: 'c', label: 'c', value: [{ a: 'c' }, 'world'], originalObjectKey: 'c' },
+			{ key: 'e', label: 'e', value: [{ a: 'd' }, 'earth'], originalObjectKey: 'e' },
+			{ key: 'g', label: 'g', value: [{ a: 'e' }, 'mars'], originalObjectKey: 'g' },
 		]);
 	});
 
@@ -529,10 +541,10 @@ describe('Testing data with different structures for iteration', () => {
 				labelKeyType,
 			),
 		).toStrictEqual([
-			{ key: 'b', label: 'a', value: 'b' },
-			{ key: 'c', label: 'c', value: 'c' },
-			{ key: 'd', label: 'e', value: 'd' },
-			{ key: 'e', label: 'g', value: 'e' },
+			{ key: 'b', label: 'a', value: 'b', originalObjectKey: 'a' },
+			{ key: 'c', label: 'c', value: 'c', originalObjectKey: 'c' },
+			{ key: 'd', label: 'e', value: 'd', originalObjectKey: 'e' },
+			{ key: 'e', label: 'g', value: 'e', originalObjectKey: 'g' },
 		]);
 	});
 
@@ -560,10 +572,10 @@ describe('Testing data with different structures for iteration', () => {
 				labelKeyType,
 			),
 		).toStrictEqual([
-			{ key: 'b', label: 'a', value: [{ a: 'b' }, 'hello'] },
-			{ key: 'c', label: 'c', value: [{ a: 'c' }, 'world'] },
-			{ key: 'd', label: 'e', value: [{ a: 'd' }, 'earth'] },
-			{ key: 'e', label: 'g', value: [{ a: 'e' }, 'mars'] },
+			{ key: 'b', label: 'a', value: [{ a: 'b' }, 'hello'], originalObjectKey: 'a' },
+			{ key: 'c', label: 'c', value: [{ a: 'c' }, 'world'], originalObjectKey: 'c' },
+			{ key: 'd', label: 'e', value: [{ a: 'd' }, 'earth'], originalObjectKey: 'e' },
+			{ key: 'e', label: 'g', value: [{ a: 'e' }, 'mars'], originalObjectKey: 'g' },
 		]);
 	});
 });

@@ -11,6 +11,7 @@ import {
 	ComponentPropertyEditor,
 	ComponentPropertyGroup,
 } from '../../types/common';
+import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
@@ -19,6 +20,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Label',
 		description: 'Label that should be associated with the textbox.',
 		translatable: true,
+	},
+
+	{
+		name: 'noFloat',
+		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		displayName: 'No Float Label',
+		description: 'Textbox without floating label.',
+		translatable: true,
+		defaultValue: false,
 	},
 
 	{
@@ -119,7 +129,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				description: 'Zero Number Value (0)',
 			},
 		],
-		notImplemented: true,
 	},
 
 	{
@@ -133,23 +142,19 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{ name: 'STRING', displayName: 'Text', description: 'Javascript String type' },
 			{ name: 'NUMBER', displayName: 'Number', description: 'Javascript Number type' },
 		],
-		notImplemented: true,
 	},
 
 	{
-		name: 'minValue',
+		name: 'numberType',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-		displayName: 'Minimum Value',
-		description: 'Minimum Value',
-		notImplemented: true,
-	},
-
-	{
-		name: 'maxValue',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-		displayName: 'Maximum Value',
-		description: 'Maximum Value',
-		notImplemented: true,
+		displayName: 'Number Type',
+		description: 'Choose whether number can be decimal or integer',
+		defaultValue: 'DECIMAL',
+		editor: ComponentPropertyEditor.ENUM,
+		enumValues: [
+			{ name: 'DECIMAL', displayName: 'Decimal', description: 'Javascript Float type' },
+			{ name: 'INTEGER', displayName: 'Integer', description: 'Javascript Integer type' },
+		],
 	},
 
 	{
@@ -169,6 +174,160 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 ];
 
-const stylePropertiesDefinition = {};
+const stylePropertiesDefinition = {
+	'': {
+		[COMPONENT_STYLE_GROUP_PROPERTIES.flex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.flex,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: COMPONENT_STYLE_GROUP_PROPERTIES.margin,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: COMPONENT_STYLE_GROUP_PROPERTIES.padding,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.outline.type]: COMPONENT_STYLE_GROUP_PROPERTIES.outline,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.position.type]: COMPONENT_STYLE_GROUP_PROPERTIES.position,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: COMPONENT_STYLE_GROUP_PROPERTIES.size,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.transform.type]:
+			COMPONENT_STYLE_GROUP_PROPERTIES.transform,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.zIndex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.zIndex,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.font,
+			target: ['noFloatLabel'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
+			target: ['noFloatLabel'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.border,
+			target: ['textBoxContainer'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
+			target: ['textBoxContainer'],
+		},
+	},
+	textBoxContainer: {
+		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.size,
+			name: 'textBoxContainer',
+			displayName: 'textBoxContainer size properties',
+			description: 'textBoxContainer size properties',
+			prefix: 'textBoxContainer',
+			target: ['textBoxContainer'],
+		},
+	},
+	leftIcon: {
+		[COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.font,
+			name: 'leftIcon',
+			displayName: 'leftIcon font properties',
+			description: 'leftIcon font properties',
+			prefix: 'leftIcon',
+			target: ['leftIcon'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
+			name: 'leftIcon',
+			displayName: 'leftIcon color properties',
+			description: 'leftIcon color properties',
+			prefix: 'leftIcon',
+			target: ['leftIcon'],
+		},
+	},
+	rightIcon: {
+		[COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.font,
+			name: 'rightIcon',
+			displayName: 'rightIcon font properties',
+			description: 'rightIcon font properties',
+			prefix: 'rightIcon',
+			target: ['rightIcon'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
+			name: 'rightIcon',
+			displayName: 'rightIcon color properties',
+			description: 'rightIcon color properties',
+			prefix: 'rightIcon',
+			target: ['rightIcon'],
+		},
+	},
+	inputBox: {
+		[COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.font,
+			name: 'inputBox',
+			displayName: 'inputBox font properties',
+			description: 'inputBox font properties',
+			prefix: 'inputBox',
+			target: ['inputBox'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
+			name: 'inputBox',
+			displayName: 'inputBox color properties',
+			description: 'inputBox color properties',
+			prefix: 'inputBox',
+			target: ['inputBox'],
+		},
+	},
+	floatingLabel: {
+		[COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.font,
+			name: 'floatingLabel',
+			displayName: 'floatingLabel font properties',
+			description: 'floatingLabel font properties',
+			prefix: 'floatingLabel',
+			target: ['floatingLabel'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
+			name: 'floatingLabel',
+			displayName: 'floatingLabel color properties',
+			description: 'floatingLabel color properties',
+			prefix: 'floatingLabel',
+			target: ['floatingLabel'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.background.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.background,
+			name: 'floatingLabel',
+			displayName: 'floatingLabel background properties',
+			description: 'floatingLabel background properties',
+			prefix: 'floatingLabel',
+			target: ['floatingLabel'],
+		},
+	},
+	supportText: {
+		[COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.font,
+			name: 'supportText',
+			displayName: 'supportText font properties',
+			description: 'supportText font properties',
+			prefix: 'supportText',
+			target: ['supportText'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
+			name: 'supportText',
+			displayName: 'supportText color properties',
+			description: 'supportText color properties',
+			prefix: 'supportText',
+			target: ['supportText'],
+		},
+	},
+	errorText: {
+		[COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.font,
+			name: 'errorText',
+			displayName: 'errorText font properties',
+			description: 'errorText font properties',
+			prefix: 'errorText',
+			target: ['errorText'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
+			name: 'errorText',
+			displayName: 'errorText color properties',
+			description: 'errorText color properties',
+			prefix: 'errorText',
+			target: ['errorText'],
+		},
+	},
+};
 
 export { propertiesDefinition, stylePropertiesDefinition };

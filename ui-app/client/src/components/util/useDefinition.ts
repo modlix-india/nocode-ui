@@ -1,10 +1,9 @@
-import { TokenValueExtractor } from '@fincity/kirun-js';
+import { isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
 import { useEffect, useState } from 'react';
 import { STORE_PREFIX } from '../../constants';
 import {
 	addListener,
 	getData,
-	getDataFromLocation,
 	getDataFromPath,
 	localStoreExtractor,
 	PageStoreExtractor,
@@ -16,7 +15,6 @@ import {
 	ComponentPropertyDefinition,
 	ComponentResoltuions,
 	ComponentStylePropertyDefinition,
-	ComponentStylePropertyGroupDefinition,
 	DataLocation,
 	StyleResolution,
 } from '../../types/common';
@@ -49,18 +47,19 @@ function createNewState(
 
 	if (definition.styleProperties) {
 		const devices = getDataFromPath(`${STORE_PREFIX}.devices`, locationHistory);
-		const pseudoStates = { '': { defaultOne: {}, conditioned: [] } };
+		const pseudoStates: { [key: string]: any } = { '': { defaultOne: {}, conditioned: [] } };
 		for (const ecs of Object.values(definition.styleProperties)) {
 			if (ecs.condition) {
 				let value = false;
-				if (pageExtractor) value = getData(ecs.condition, locationHistory, pageExtractor);
-				else value = getData(ecs.condition, locationHistory);
+				if (pageExtractor)
+					value = getData(ecs.condition, locationHistory, pageExtractor) as boolean;
+				else value = getData(ecs.condition, locationHistory) as boolean;
 
 				if (!value) continue;
 			}
 
 			const pTargets = processTargets(
-				ecs.resolutions,
+				ecs.resolutions || {},
 				devices,
 				stylePropertiesDefinition,
 				locationHistory,
@@ -75,7 +74,7 @@ function createNewState(
 			else pseudoStates[state].defaultOne = pTargets;
 		}
 
-		const consolidateStates = {};
+		const consolidateStates: any = {};
 		for (const [state, object] of Object.entries(pseudoStates)) {
 			let targetStyles = object.defaultOne;
 			for (const eachConditionTargets of object.conditioned) {
@@ -108,7 +107,7 @@ const ORDER_OF_RESOLUTION = [
 ];
 
 function processTargets(
-	resolutions: ComponentResoltuions,
+	resolutions: ComponentResoltuions = {},
 	devices: any,
 	stylePropertiesDefinition: ComponentStylePropertyDefinition,
 	locationHistory: Array<DataLocation | string>,
@@ -121,7 +120,7 @@ function processTargets(
 			if (devices[res]) style = { ...style, ...resolutions[res] };
 	}
 
-	const finStyle = {};
+	const finStyle: any = {};
 
 	for (let [prop, value] of Object.entries(style)) {
 		const v = pageExtractor
@@ -150,6 +149,21 @@ function processTargets(
 	return finStyle;
 }
 
+const defPropValuesBank: any = {};
+
+function defaultPropValues(def: ComponentDefinition, props: Array<ComponentPropertyDefinition>) {
+	let defaultValues = defPropValuesBank[def.type];
+	if (defaultValues) return defaultValues;
+
+	defaultValues = {};
+	for (const cp of props) {
+		if (isNullValue(cp.defaultValue)) continue;
+		defaultValues[cp.name] = cp.defaultValue;
+	}
+	defPropValuesBank[def.type] = defaultValues;
+	return defaultValues;
+}
+
 export default function useDefinition(
 	definition: ComponentDefinition,
 	properties: Array<ComponentPropertyDefinition>,
@@ -157,7 +171,15 @@ export default function useDefinition(
 	locationHistory: Array<DataLocation | string>,
 	pageExtractor: PageStoreExtractor,
 ): ComponentDefinitionValues {
-	const [compState, setCompState] = useState<ComponentDefinitionValues>({ key: definition.key });
+	const [compState, setCompState] = useState<ComponentDefinitionValues>(
+		createNewState(
+			definition,
+			properties,
+			stylePropertiesDefinition,
+			locationHistory,
+			pageExtractor,
+		),
+	);
 	const evaluatorMaps = new Map<string, TokenValueExtractor>([
 		[storeExtractor.getPrefix(), storeExtractor],
 		[localStoreExtractor.getPrefix(), localStoreExtractor],

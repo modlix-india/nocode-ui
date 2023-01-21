@@ -38,11 +38,13 @@ export enum ComponentPropertyEditor {
 	DATA_LOCATION,
 	TRANSLATABLE_PROP,
 	ICON,
+	ICON_PACK,
 	VALIDATION,
 	ENUM,
 	PAGE_SELECTOR,
 	COMPONENT_SELECTOR,
 	EVENT_SELECTOR,
+	LAYOUT,
 }
 
 export enum ComponentPropertyGroup {

@@ -6,3 +6,16 @@ export default function UUID() {
 		return (c == 'x' ? r : (r & 0x3) | 0x8).toString(16);
 	});
 }
+
+export function flattenUUID(key: string): string {
+	let x = '';
+	for (let i = 0; i < key.length; i++)
+		x +=
+			(key[i] >= 'a' && key[i] <= 'z') ||
+			(key[i] >= 'A' && key[i] <= 'A') ||
+			(key[i] >= '0' && key[i] <= '9')
+				? key[i]
+				: '';
+
+	return x;
+}
