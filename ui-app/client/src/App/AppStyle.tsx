@@ -57,6 +57,14 @@ export default function AppStyle() {
 		position: relative;
 	}
 
+	*:hover::-webkit-scrollbar {
+		float: right;
+	}
+	
+	*:hover::-webkit-scrollbar-thumb {
+		visibility: visible;
+	}
+
 	` + processStyleDefinition('', styleProperties, styleDefaults, theme);
 
 	const styleComps = new Array();
