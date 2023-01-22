@@ -5,8 +5,8 @@ import Nothing from '../Nothing';
 import { DataLocation, RenderContext } from '../../types/common';
 import Page from '../Page';
 import { useLocation } from 'react-router-dom';
-import { processLocation } from '../../Engine/RenderEngineContainer';
 import { STORE_PREFIX } from '../../constants';
+import { processLocation } from '../../util/locationProcessor';
 
 const getPageDefinition = () => {
 	const location = useLocation();
