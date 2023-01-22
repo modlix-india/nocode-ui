@@ -17,14 +17,16 @@ function Text(props: ComponentProps) {
 		context,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
-	const { properties: { text, textContainer, textType } = {}, stylePropertiesWithPseudoStates } =
-		useDefinition(
-			definition,
-			propertiesDefinition,
-			stylePropertiesDefinition,
-			locationHistory,
-			pageExtractor,
-		);
+	const {
+		properties: { text, textContainer, textType, processNewLine } = {},
+		stylePropertiesWithPseudoStates,
+	} = useDefinition(
+		definition,
+		propertiesDefinition,
+		stylePropertiesDefinition,
+		locationHistory,
+		pageExtractor,
+	);
 	const [hover, setHover] = useState(false);
 	const styleProperties = processComponentStylePseudoClasses(
 		{ hover },
@@ -45,6 +47,18 @@ function Text(props: ComponentProps) {
 		);
 	}
 
+	let comps: React.ReactNode[] = [];
+
+	if (translatedText !== undefined) {
+		if (processNewLine) {
+			comps = translatedText
+				?.split('\n')
+				.flatMap((e, i, a) => (i + 1 === a.length ? [e] : [e, <br></br>]));
+		} else {
+			comps = [translatedText];
+		}
+	}
+
 	const onMouseEnter = stylePropertiesWithPseudoStates?.hover ? hoverTrue : undefined;
 	const onMouseLeave = stylePropertiesWithPseudoStates?.hover ? hoverFalse : undefined;
 
@@ -56,7 +70,7 @@ function Text(props: ComponentProps) {
 			style: styleProperties.text ?? {},
 			className: '_textContainer',
 		},
-		translatedText,
+		...comps,
 	);
 	return (
 		<div className="comp compText" style={styleProperties.comp ?? {}}>
