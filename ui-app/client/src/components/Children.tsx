@@ -9,13 +9,13 @@ import {
 	storeExtractor,
 } from '../context/StoreContext';
 import { useLocation } from 'react-router-dom';
-import { processLocation } from '../Engine/RenderEngineContainer';
 import { STORE_PREFIX } from '../constants';
 import { Components } from './index';
 import Page from './Page';
 import Nothing from './Nothing';
 import { TokenValueExtractor } from '@fincity/kirun-js';
 import { getPathsFrom } from './util/getPaths';
+import { processLocation } from '../util/locationProcessor';
 
 const getPageDefinition = (location: any) => {
 	let { pageName } = processLocation(location);
