@@ -48,119 +48,16 @@ function Text(props: ComponentProps) {
 	const onMouseEnter = stylePropertiesWithPseudoStates?.hover ? hoverTrue : undefined;
 	const onMouseLeave = stylePropertiesWithPseudoStates?.hover ? hoverFalse : undefined;
 
-	let comp;
-	switch (textContainer) {
-		case 'H1':
-			comp = (
-				<h1
-					onMouseEnter={onMouseEnter}
-					onMouseLeave={onMouseLeave}
-					style={styleProperties.text ?? {}}
-				>
-					{translatedText}
-				</h1>
-			);
-			break;
-		case 'H2':
-			comp = (
-				<h2
-					onMouseEnter={onMouseEnter}
-					onMouseLeave={onMouseLeave}
-					style={styleProperties.text ?? {}}
-				>
-					{translatedText}
-				</h2>
-			);
-			break;
-		case 'H3':
-			comp = (
-				<h3
-					onMouseEnter={onMouseEnter}
-					onMouseLeave={onMouseLeave}
-					style={styleProperties.text ?? {}}
-				>
-					{translatedText}
-				</h3>
-			);
-			break;
-		case 'H4':
-			comp = (
-				<h4
-					onMouseEnter={onMouseEnter}
-					onMouseLeave={onMouseLeave}
-					style={styleProperties.text ?? {}}
-				>
-					{translatedText}
-				</h4>
-			);
-			break;
-		case 'H5':
-			comp = (
-				<h5
-					onMouseEnter={onMouseEnter}
-					onMouseLeave={onMouseLeave}
-					style={styleProperties.text ?? {}}
-				>
-					{translatedText}
-				</h5>
-			);
-			break;
-		case 'H6':
-			comp = (
-				<h6
-					onMouseEnter={onMouseEnter}
-					onMouseLeave={onMouseLeave}
-					style={styleProperties.text ?? {}}
-				>
-					{translatedText}
-				</h6>
-			);
-			break;
-		case 'I':
-			comp = (
-				<i
-					onMouseEnter={onMouseEnter}
-					onMouseLeave={onMouseLeave}
-					style={styleProperties.text ?? {}}
-				>
-					{translatedText}
-				</i>
-			);
-			break;
-		case 'P':
-			comp = (
-				<p
-					onMouseEnter={onMouseEnter}
-					onMouseLeave={onMouseLeave}
-					style={styleProperties.text ?? {}}
-				>
-					{translatedText}
-				</p>
-			);
-			break;
-		case 'PRE':
-			comp = (
-				<pre
-					onMouseEnter={onMouseEnter}
-					onMouseLeave={onMouseLeave}
-					style={styleProperties.text ?? {}}
-				>
-					{translatedText}
-				</pre>
-			);
-			break;
-		default:
-			comp = (
-				<span
-					onMouseEnter={onMouseEnter}
-					onMouseLeave={onMouseLeave}
-					style={styleProperties.text ?? {}}
-				>
-					{translatedText}
-				</span>
-			);
-	}
-
+	let comp = React.createElement(
+		textContainer.toLowerCase(),
+		{
+			onMouseEnter,
+			onMouseLeave,
+			style: styleProperties.text ?? {},
+			className: '_textContainer',
+		},
+		translatedText,
+	);
 	return (
 		<div className="comp compText" style={styleProperties.comp ?? {}}>
 			<HelperComponent definition={definition} />
