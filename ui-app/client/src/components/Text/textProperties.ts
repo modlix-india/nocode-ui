@@ -39,6 +39,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
+		name: 'processNewLine',
+		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		displayName: 'Text with line breaks',
+		description: 'Process text to show new line characters',
+		defaultValue: false,
+	},
+
+	{
 		name: 'textContainer',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: 'Text Container Type (SEO)',

@@ -16,13 +16,16 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		`
 		${PREFIX} ._anchorGrid,
 		${PREFIX}._noAnchorGrid {
-			display: flex;
 			flex-direction: column;
 		}
 
 		${PREFIX} ._anchorGrid._ROWLAYOUT,
 		${PREFIX}._noAnchorGrid._ROWLAYOUT {
 			flex-direction: row;
+		}
+
+		._ROWLAYOUT,._SINGLECOLUMNLAYOUT {
+			display: flex;
 		}
 
 		._FIVECOLUMNSLAYOUT,
