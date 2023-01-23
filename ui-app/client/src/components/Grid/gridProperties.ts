@@ -85,6 +85,52 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{ name: 'NAV', displayName: 'NAV', description: 'Nav tag' },
 		],
 	},
+	{
+		name: 'background',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'Background',
+		description: 'Background to be applied',
+		editor: ComponentPropertyEditor.BACKGROUND,
+		defaultValue: '',
+		enumValues: [
+			{ name: '', displayName: 'None', description: 'None' },
+			{
+				name: '_PRIMARYBG',
+				displayName: 'Primary background',
+				description: 'Primary background',
+			},
+			{
+				name: '_SECONDARYBG',
+				displayName: 'Secondary background',
+				description: 'Secondary background',
+			},
+			{
+				name: '_TERTIARYBG',
+				displayName: 'Tertiary background',
+				description: 'Tertiary background',
+			},
+			{
+				name: '_QUATERNARYBG',
+				displayName: 'Quaternary background',
+				description: 'Quaternary background',
+			},
+			{
+				name: '_QUINARYBG',
+				displayName: 'Quinary background',
+				description: 'Quinary background',
+			},
+			{
+				name: '_SENARYBG',
+				displayName: 'Senary background',
+				description: 'Senary background',
+			},
+			{
+				name: '_SEPTENARYBG',
+				displayName: 'Septenary background',
+				description: 'Septenary background',
+			},
+		],
+	},
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
