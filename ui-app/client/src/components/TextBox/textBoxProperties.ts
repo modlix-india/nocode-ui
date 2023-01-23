@@ -172,6 +172,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
 		notImplemented: true,
 	},
+
+	{
+		name: 'isPassword',
+		displayName: 'Password',
+		description: 'Textbox to enter password',
+		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		defaultValue: false,
+	},
 ];
 
 const stylePropertiesDefinition = {

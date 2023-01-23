@@ -71,6 +71,7 @@ function ButtonComponent(props: ComponentProps) {
 			}`}
 		/>
 	);
+	console.log(styleProperties, props.definition.styleProperties);
 	return (
 		<div className="comp compButton" style={styleProperties.comp ?? {}}>
 			<HelperComponent definition={props.definition} />

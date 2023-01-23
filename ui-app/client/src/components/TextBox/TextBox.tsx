@@ -52,6 +52,7 @@ function TextBox(props: ComponentProps) {
 			label,
 			noFloat,
 			numberType,
+			isPassword,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -182,7 +183,7 @@ function TextBox(props: ComponentProps) {
 					<input
 						style={computedStyles.inputBox ?? {}}
 						className={`textbox ${valueType === 'NUMBER' ? 'remove-spin-button' : ''}`}
-						type={valueType}
+						type={isPassword ? 'password' : valueType}
 						value={value}
 						onChange={handleChange}
 						placeholder={getTranslations(label, translations)}

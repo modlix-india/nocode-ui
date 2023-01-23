@@ -227,7 +227,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		noPrefix: true,
 		cssProperty: 'background',
 		selector: '._SECONDARYBG',
-		defaultValue: 'white',
+		defaultValue: '#FFFFFFF8',
 	},
 	{
 		name: 'tertiary-background',
