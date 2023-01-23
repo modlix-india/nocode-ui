@@ -374,22 +374,62 @@ export const page = {
       name: "tabs",
       key: "tabs",
       type: "Tabs",
+      bindingPath: {
+        type: "VALUE",
+        value: "Store.tabs",
+      },
       properties: {
         tabs: {
           value: [
             { tabName: "Description", childKey: "tab1" },
             { tabName: "specification", childKey: "tab2" },
             { tabName: "features", childKey: "tab3" },
-            { tabName: "" },
+            { tabName: "MoreInfo", childKey: "tab4" },
           ],
         },
-        bindingPath: {
-          type: "VALUE",
-          value: "Store.tabs",
-        },
-        children: {},
       },
     },
+    tab1: {
+      name: "popupcompTabs",
+      key: "tab1",
+      type: "Label",
+      properties: {
+        text: {
+          value: "Tab 1",
+        },
+      },
+    },
+    tab2: {
+      name: "popupcompTabs",
+      key: "tab2",
+      type: "Label",
+      properties: {
+        text: {
+          value: "Tab 2",
+        },
+      },
+    },
+    tab3: {
+      name: "popupcompTabs",
+      key: "tab3",
+      type: "Label",
+      properties: {
+        text: {
+          value: "Tab 3",
+        },
+      },
+    },
+    tab4: {
+      name: "popupcompTabs",
+      key: "tab4",
+      type: "Label",
+      properties: {
+        text: {
+          value: "Tab 4",
+        },
+      },
+    },
+
     popupGrid: {
       name: "popupCompGrid",
       key: "popupCompGrid",
@@ -905,9 +945,9 @@ export const page = {
         },
       },
     },
-    tagTag: {
-      name: "tagtagatag",
-      key: "tagtagatag",
+    tagTwdag: {
+      name: "tagTwdag",
+      key: "tagTwdag",
       type: "Tags",
       bindingPath: {},
       properties: {

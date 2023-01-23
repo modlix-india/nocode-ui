@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import {
 	addListener,
+	addListenerAndCallImmediately,
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
@@ -15,26 +16,29 @@ import TabsStyles from './TabsStyle';
 function TabsComponent(props: ComponentProps) {
 	const {
 		definition,
-		definition: { children },
+		definition: { bindingPath },
 		locationHistory = [],
 		context,
 		pageDefinition,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
-	const { properties: { tabs, defaultActive, bindingPath } = {} } = useDefinition(
+	const { properties: { tabs, defaultActive } = {} } = useDefinition(
 		definition,
 		propertiesDefinition,
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
 	);
+	if (!bindingPath) throw new Error('Definition requires binding path');
 	const [activeTab, setActiveTab] = React.useState(defaultActive || '');
 	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory);
+	console.log(bindingPathPath);
 
 	useEffect(() => {
-		return addListener(
+		return addListenerAndCallImmediately(
 			(_, value) => {
-				setActiveTab(value ?? defaultActive ?? tabs[0].childKey);
+				console.log(value);
+				setActiveTab(value ?? defaultActive ?? tabs[0]?.childKey);
 			},
 			pageExtractor,
 			bindingPathPath,
@@ -58,7 +62,7 @@ function TabsComponent(props: ComponentProps) {
 	};
 
 	const handleClick = function (key: string) {
-		setData(bindingPath, key);
+		setData(bindingPathPath, key, context.pageName);
 	};
 
 	return (
