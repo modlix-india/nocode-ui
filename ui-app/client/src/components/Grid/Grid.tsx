@@ -39,6 +39,7 @@ function Grid(props: ComponentProps) {
 			containerType,
 			layout,
 			onClick,
+			background,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -83,7 +84,7 @@ function Grid(props: ComponentProps) {
 		return React.createElement(containerType.toLowerCase(), { className: 'comp compGrid' }, [
 			<HelperComponent definition={definition} />,
 			<Link
-				className={`_anchorGrid _${layout}`}
+				className={`_anchorGrid _${layout} ${background}`}
 				onMouseEnter={
 					stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
 				}
@@ -112,7 +113,7 @@ function Grid(props: ComponentProps) {
 			onFocus: stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined,
 			onBlur: stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined,
 
-			className: `comp compGrid _noAnchorGrid _${layout}`,
+			className: `comp compGrid _noAnchorGrid _${layout} ${background}`,
 			style: resolvedStyles.comp ?? {},
 
 			onClick: handleClick,
