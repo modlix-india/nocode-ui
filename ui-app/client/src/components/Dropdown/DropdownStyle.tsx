@@ -29,11 +29,6 @@ export default function DropdownStyle({ theme }: { theme: Map<string, Map<string
         z-index: 1;
     }
 
-    ${PREFIX} .container.disabled {
-        border: 1px solid #DDDEE6;
-        cursor: not-allowed;
-    }
-
     ${PREFIX} .container:hover {
         border: 1px solid #2680EB;
     }
@@ -42,20 +37,13 @@ export default function DropdownStyle({ theme }: { theme: Map<string, Map<string
         border: 1px solid #2680EB;
     }
 
-    ${PREFIX} .container.disabled:hover {
+    ${PREFIX} .container.disabled {
         border: 1px solid #DDDEE6;
         cursor: not-allowed;
     }
-    
-    ${PREFIX} .placeholderContainer {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center
-    }
 
-    ${PREFIX} .container.disabled .placeholderContainer {
+    ${PREFIX} .container.disabled:hover {
+        border: 1px solid #DDDEE6;
         cursor: not-allowed;
     }
 
@@ -74,27 +62,17 @@ export default function DropdownStyle({ theme }: { theme: Map<string, Map<string
         border-radius: 4px;
         outline: none;
     }
-
-    ${PREFIX} .labelFloat { 
-        position: absolute;
-        letter-spacing: 0px;
-        left: 16px;
-        top: 50%;
-        transform: translateY(-50%);
-        transition: top 100ms, transform 100ms ease-in;
-        cursor: text;
-        color: #6C7586;
-    }
-    ${PREFIX} .labelFloat.float { 
-        top: 0;
-        left: 16px;
-        transform: translateY(-55%);
-        background-color: #fff;
+    
+    ${PREFIX} .placeholderContainer {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center
     }
 
-    ${PREFIX} .container.disabled .labelFloat {
+    ${PREFIX} .container.disabled .placeholderContainer {
         cursor: not-allowed;
-        color: #A7ACB6;
     }
 
     ${PREFIX} .placeholder {
@@ -120,6 +98,29 @@ export default function DropdownStyle({ theme }: { theme: Map<string, Map<string
     }
     ${PREFIX} .container.disabled .placeholderIcon {
         color:  #798A8B;
+    }
+
+    ${PREFIX} .labelFloat { 
+        position: absolute;
+        letter-spacing: 0px;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        transition: top 100ms, transform 100ms ease-in;
+        cursor: text;
+        color: #6C7586;
+    }
+    
+    ${PREFIX} .labelFloat.float { 
+        top: 0;
+        left: 16px;
+        transform: translateY(-55%);
+        background-color: #fff;
+    }
+
+    ${PREFIX} .container.disabled .labelFloat {
+        cursor: not-allowed;
+        color: #A7ACB6;
     }
 
     ${PREFIX} .dropdownContainer {
