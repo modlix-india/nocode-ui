@@ -70,14 +70,10 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
 			target: ['button'],
 		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.container.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.container,
-			target: ['container'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.flex.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.flex,
-			target: ['container'],
-		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.container.type]:
+			COMPONENT_STYLE_GROUP_PROPERTIES.container,
+
+		[COMPONENT_STYLE_GROUP_PROPERTIES.flex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.flex,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.font,
 			target: ['button'],
