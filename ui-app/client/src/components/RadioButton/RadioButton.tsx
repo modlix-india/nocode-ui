@@ -20,15 +20,13 @@ import { propertiesDefinition, stylePropertiesDefinition } from './radioButtonPr
 import { Component } from '../../types/common';
 import useDefinition from '../util/useDefinition';
 import { getRenderData } from '../util/getRenderData';
-// import RadioButtonStyle from './RadioButtonStyle';
+import RadioButtonStyle from './RadioButtonStyles';
 import { runEvent } from '../util/runEvent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 
 function RadioButton(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const [selected, setSelected] = useState();
-
-	// console.log('stylePropertiesDefinition ', stylePropertiesDefinition);
 
 	const {
 		definition: { bindingPath },
@@ -103,13 +101,12 @@ function RadioButton(props: ComponentProps) {
 	};
 
 	return (
-		<div className="comp compRadioButton" style={resolvedStyles.radioButtonContainer ?? {}}>
+		<div className="comp compRadioButton" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={props.definition} />
-			{/* <div className="radioButtonContainer" > */}
 			{radioButtonData?.map((each: any, index: number) => (
-				<label className="radioButton" key={index} style={resolvedStyles.radioButton ?? {}}>
+				<label className="radiobutton" key={index} style={resolvedStyles.radiobutton ?? {}}>
 					<input
-						className="input"
+						className="radioInput"
 						style={resolvedStyles.input ?? {}}
 						type="radio"
 						name={name}
@@ -119,7 +116,6 @@ function RadioButton(props: ComponentProps) {
 					{getTranslations(each?.label, props.pageDefinition.translations)}
 				</label>
 			))}
-			{/* </div> */}
 		</div>
 	);
 }

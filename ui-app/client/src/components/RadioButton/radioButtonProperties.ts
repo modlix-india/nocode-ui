@@ -202,38 +202,28 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 const stylePropertiesDefinition = {
 	'': {
-		[COMPONENT_STYLE_GROUP_PROPERTIES.flex.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.flex,
-			target: ['radioButtonContainer'],
+		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: COMPONENT_STYLE_GROUP_PROPERTIES.margin,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.flex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.flex,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: COMPONENT_STYLE_GROUP_PROPERTIES.border,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow.type]:
+			COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.container.type]:
+			COMPONENT_STYLE_GROUP_PROPERTIES.container,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.outline.type]: COMPONENT_STYLE_GROUP_PROPERTIES.outline,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: COMPONENT_STYLE_GROUP_PROPERTIES.padding,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.position.type]: COMPONENT_STYLE_GROUP_PROPERTIES.position,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: COMPONENT_STYLE_GROUP_PROPERTIES.size,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.transform.type]:
+			COMPONENT_STYLE_GROUP_PROPERTIES.transform,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.zIndex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.zIndex,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.font,
+			target: ['radiobutton'],
 		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.container.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.container,
-			target: ['radioButtonContainer'],
-		},
-	},
-	radioButton: {
-		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.size,
-			target: ['radioButton'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
-			target: ['radioButton'],
-		},
-	},
-	input: {
-		[COMPONENT_STYLE_GROUP_PROPERTIES.flex.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.flex,
-			target: ['input'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.size,
-			target: ['input'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.margin,
-			target: ['input'],
-		},
+		// [COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
+		// 	...COMPONENT_STYLE_GROUP_PROPERTIES.color,
+		// 	target: ['radiobutton'],
+		// },
 	},
 };
 

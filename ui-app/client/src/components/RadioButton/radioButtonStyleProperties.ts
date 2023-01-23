@@ -1,9 +1,153 @@
 import { StylePropertyDefinition } from '../../types/common';
 
-export const styleProperties: Array<StylePropertyDefinition> = [];
+export const styleProperties: Array<StylePropertyDefinition> = [
+	{
+		name: 'radioButtonContainerDisplay',
+		cssProperty: 'display',
+		displayName: 'Radio Button Container display.',
+		description: 'Radio Button Container display.',
+		defaultValue: 'flex',
+		noPrefix: true,
+		selector: '.comp.compRadioButton',
+	},
+	{
+		name: 'radioButtonContainerBorderColor',
+		cssProperty: 'border',
+		displayName: 'Radio Button Container border.',
+		description: 'Radio Button Container border.',
+		defaultValue: '',
+		noPrefix: true,
+		selector: '.comp.compRadioButton',
+	},
+	{
+		name: 'radioButtonContainerBoxShadow',
+		cssProperty: 'box-shadow',
+		displayName: 'Radio Button Container box shadow.',
+		description: 'Radio Button Container box shadow.',
+		defaultValue: '',
+		noPrefix: true,
+		selector: '.comp.compRadioButton',
+	},
+	{
+		name: 'radioButtonContainerGap',
+		cssProperty: 'gap',
+		displayName: 'Radio Button Container gap.',
+		description: 'Radio Button Container gap.',
+		defaultValue: '18px',
+		noPrefix: true,
+		selector: '.comp.compRadioButton',
+	},
+	{
+		name: 'radioButtonDisplay',
+		cssProperty: 'display',
+		displayName: 'Radio Button display.',
+		description: 'Radio Button display.',
+		defaultValue: 'flex',
+		selector: '.radiobutton',
+	},
+	{
+		name: 'radioButtonGap',
+		cssProperty: 'gap',
+		displayName: 'Radio Button gap.',
+		description: 'Radio Button gap.',
+		defaultValue: '22px',
+		selector: '.radiobutton',
+	},
+	{
+		name: 'radioButtonColor',
+		cssProperty: 'color',
+		displayName: 'Radio Button color.',
+		description: 'Radio Button color.',
+		defaultValue: '<from-input-error-icon-hastext-color>',
+		selector: '.radiobutton',
+	},
+	{
+		name: 'radioInputBorder',
+		cssProperty: 'border',
+		displayName: 'Radio Input border.',
+		description: 'Radio Input border.',
+		defaultValue: '2.5px solid #C7C8D6',
+		selector: '.radiobutton .radioInput',
+	},
+	// {
+	// 	name: 'radioInputMargin',
+	// 	cssProperty: 'margin',
+	// 	displayName: 'Radio Input margin.',
+	// 	description: 'Radio Input margin.',
+	// 	defaultValue: '5px',
+	// 	selector: '.radiobutton .radioInput',
+	// },
+	{
+		name: 'radioInputBeforeBoxShadow',
+		cssProperty: 'box-shadow',
+		displayName: 'Radio Input before box shadow.',
+		description: 'Radio Input before box shadow.',
+		defaultValue: 'inset 16px 16px #e5b122',
+		selector: '.radiobutton .radioInput::before',
+	},
+	{
+		name: 'radioInputCheckedBorder',
+		cssProperty: 'border',
+		displayName: 'Radio Input checked border property.',
+		description: 'Radio Input checked border.',
+		defaultValue: '2.5px solid #e5b122',
+		selector: '.radiobutton .radioInput:checked',
+	},
+	{
+		name: 'radioInputCheckedFocusBoxShadow',
+		cssProperty: 'box-shadow',
+		displayName: 'Radio Input checked box shadow property.',
+		description: 'Radio Input checked box shadow.',
+		defaultValue: '0 0 0 10px #fcf5e2, 0 0 0 5px #fcf5e2',
+		selector: '.radiobutton .radioInput:checked:focus',
+	},
+	// {
+	// 	name: 'radioInputCheckedActiveBoxShadow',
+	// 	cssProperty: 'box-shadow',
+	// 	displayName: 'Radio Input checked active box shadow property.',
+	// 	description: 'Radio Input checked active box shadow.',
+	// 	defaultValue: '0 0 0 10px #fcf5e2, 0 0 0 5px #fcf5e2',
+	// 	selector: '.radiobutton .radioInput:checked:active',
+	// },
+	{
+		name: 'radioInputCheckedHoverBoxShadow',
+		cssProperty: 'box-shadow',
+		displayName: 'Radio Input checked hover box shadow property.',
+		description: 'Radio Input checked hover box shadow.',
+		defaultValue: '0 0 0 10px #fcf5e2, 0 0 0 5px #fcf5e2',
+		selector: '.radiobutton .radioInput:checked:hover',
+	},
+	// {
+	// 	name: 'radioInputActiveBoxShadow',
+	// 	cssProperty: 'box-shadow',
+	// 	displayName: 'Radio Input checked active box shadow property.',
+	// 	description: 'Radio Input checked active box shadow.',
+	// 	defaultValue: '0 0 0 10px #C7C8D6, 0 0 0 5px #C7C8D6',
+	// 	selector: '.radiobutton .radioInput:active',
+	// },
+	{
+		name: 'radioInputHoverBoxShadow',
+		cssProperty: 'box-shadow',
+		displayName: 'Radio Input checked hover box shadow property.',
+		description: 'Radio Input checked hover box shadow.',
+		defaultValue: '0 0 0 10px #C7C8D6, 0 0 0 5px #C7C8D6',
+		selector: '.radiobutton .radioInput:hover',
+	},
+	// {
+	// 	name: 'radioInputFocusBoxShadow',
+	// 	cssProperty: 'box-shadow',
+	// 	displayName: 'Radio Input checked focus box shadow property.',
+	// 	description: 'Radio Input checked focus box shadow.',
+	// 	defaultValue: '0 0 0 10px #C7C8D6, 0 0 0 5px #C7C8D6',
+	// 	selector: '.radiobutton .radioInput:focus',
+	// },
+];
 
 export const styleDefaults = new Map<string, string>(
 	styleProperties
 		.filter(e => !!e.defaultValue)
 		.map(({ name, defaultValue }) => [name, defaultValue!]),
 );
+
+// border, box-shadow, container, flex, margin, outline, padding, position, size, transorm, index
+// font, color
