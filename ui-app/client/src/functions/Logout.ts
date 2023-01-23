@@ -10,6 +10,7 @@ import {
 } from '@fincity/kirun-js';
 import axios from 'axios';
 import { NAMESPACE_UI_ENGINE } from '../constants';
+import { getData, getDataFromLocation, getDataFromPath } from '../context/StoreContext';
 
 const SIGNATURE = new FunctionSignature('Login')
 	.setNamespace(NAMESPACE_UI_ENGINE)
@@ -23,17 +24,19 @@ const SIGNATURE = new FunctionSignature('Login')
 		]),
 	);
 
-export class Login extends AbstractFunction {
+export class Logout extends AbstractFunction {
 	protected async internalExecute(context: FunctionExecutionParameters): Promise<FunctionOutput> {
 		const userName: string = context.getArguments()?.get('userName');
 		const password: string = context.getArguments()?.get('password');
 		const rememberMe: string = context.getArguments()?.get('rememberMe');
 
 		try {
+			const token = getDataFromPath('LocalStore.AuthToken', []);
+
 			const response = await axios({
 				url: 'api/security/revoke',
 				method: 'GET',
-				headers: {},
+				headers: { AUTHORIZATION: token },
 			});
 
 			return new FunctionOutput([EventResult.outputOf(new Map([['data', new Map()]]))]);
