@@ -1,7 +1,6 @@
 import { deepEqual } from '@fincity/kirun-js';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-	addListener,
 	addListenerAndCallImmediately,
 	getPathFromLocation,
 	PageStoreExtractor,
@@ -170,11 +169,11 @@ function DropdownComponent(props: ComponentProps) {
 	return (
 		<div className="comp compDropdown" onClick={handleBubbling}>
 			<HelperComponent definition={props.definition} />
-			{noFloat ? (
+			{noFloat && (
 				<label htmlFor="key" className={`label ${readOnly ? 'disabled' : ''}`}>
 					{getTranslations(label || placeholder, translations)}
 				</label>
-			) : null}
+			)}
 			<div
 				onMouseLeave={() => closeOnMouseLeave && handleClose()}
 				className={`container ${showDropdown && !readOnly ? 'focus' : ''} ${
@@ -206,7 +205,7 @@ function DropdownComponent(props: ComponentProps) {
 						>
 							<label
 								htmlFor="key"
-								className={`placeholder ${!selected ? 'selected' : ''}`}
+								className={`placeholder ${selected ? 'selected' : ''}`}
 							>
 								{getTranslations(getLabel(), translations)}
 							</label>
@@ -220,7 +219,7 @@ function DropdownComponent(props: ComponentProps) {
 					>
 						<label
 							htmlFor="key"
-							className={`placeholder ${!selected ? 'selected' : ''}`}
+							className={`placeholder ${selected ? 'selected' : ''}`}
 						>
 							{getTranslations(getLabel(), translations)}
 						</label>

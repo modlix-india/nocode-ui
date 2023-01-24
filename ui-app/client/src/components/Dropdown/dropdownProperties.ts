@@ -186,6 +186,27 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
+		name: 'searchKeyType',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: "Search key type",
+		description: `type of value that needs to be selected for search`,
+		defaultValue: 'LIST_OF_STRINGS',
+		editor: ComponentPropertyEditor.ENUM,
+		enumValues: [
+			{
+				name: 'KEY',
+				displayName: 'Key',
+				description: "Select key as label key's value",
+			},
+			{
+				name: 'OBJECT',
+				displayName: 'Object',
+				description: "Select object as label key's value",
+			},
+		],
+	},
+
+	{
 		name: 'selectionKey',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: "Selection key's value ",
