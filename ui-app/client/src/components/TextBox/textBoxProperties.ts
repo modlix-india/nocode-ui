@@ -11,7 +11,7 @@ import {
 	ComponentPropertyEditor,
 	ComponentPropertyGroup,
 } from '../../types/common';
-import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
+import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
@@ -180,6 +180,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
 		defaultValue: false,
 	},
+	COMMON_COMPONENT_PROPERTIES.onEnter,
 ];
 
 const stylePropertiesDefinition = {
@@ -254,6 +255,24 @@ const stylePropertiesDefinition = {
 			description: 'rightIcon color properties',
 			prefix: 'rightIcon',
 			target: ['rightIcon'],
+		},
+	},
+	passwordIcon: {
+		[COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.font,
+			name: 'passwordIcon',
+			displayName: 'passwordIcon font properties',
+			description: 'passwordIcon font properties',
+			prefix: 'passwordIcon',
+			target: ['passwordIcon'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
+			name: 'passwordIcon',
+			displayName: 'passwordIcon color properties',
+			description: 'passwordIcon color properties',
+			prefix: 'passwordIcon',
+			target: ['passwordIcon'],
 		},
 	},
 	inputBox: {

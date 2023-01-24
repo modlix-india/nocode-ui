@@ -12,7 +12,7 @@ function Page({
 	context: RenderContext;
 	locationHistory: Array<DataLocation | string>;
 }) {
-	if (!definition) return <>Loading...</>;
+	if (!definition) return <>...</>;
 	return (
 		<div className="comp compPage">
 			<HelperComponent definition={definition} />

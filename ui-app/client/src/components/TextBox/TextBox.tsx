@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
 	addListener,
 	getDataFromLocation,
+	getDataFromPath,
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
@@ -15,6 +16,9 @@ import TextBoxStyle from './TextBoxStyle';
 import useDefinition from '../util/useDefinition';
 import { isNullValue } from '@fincity/kirun-js';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
+import { flattenUUID } from '../util/uuid';
+import { runEvent } from '../util/runEvent';
 
 interface mapType {
 	[key: string]: any;
@@ -24,6 +28,7 @@ function TextBox(props: ComponentProps) {
 	const [isDirty, setIsDirty] = React.useState(false);
 	const [errorMessage, setErrorMessage] = React.useState('');
 	const [focus, setFocus] = React.useState(false);
+	const [show, setShow] = React.useState(false);
 	const mapValue: mapType = {
 		UNDEFINED: undefined,
 		NULL: null,
@@ -53,6 +58,7 @@ function TextBox(props: ComponentProps) {
 			noFloat,
 			numberType,
 			isPassword,
+			onEnter,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -92,6 +98,23 @@ function TextBox(props: ComponentProps) {
 			),
 		[],
 	);
+
+	const spinnerPath = onEnter
+		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
+				onEnter,
+		  )}.isRunning`
+		: undefined;
+
+	const [isLoading, setIsLoading] = useState(
+		onEnter ? getDataFromPath(spinnerPath, props.locationHistory) ?? false : false,
+	);
+
+	useEffect(() => {
+		if (spinnerPath) {
+			return addListener((_, value) => setIsLoading(value), pageExtractor, spinnerPath);
+		}
+	}, []);
+
 	const handleBlur = async (event: any) => {
 		let temp = value === '' && emptyValue ? mapValue[emptyValue] : value;
 		if (valueType === 'NUMBER') {
@@ -148,6 +171,16 @@ function TextBox(props: ComponentProps) {
 			setData(bindingPathPath, temp, context?.pageName);
 		}
 	};
+	const clickEvent = onEnter ? props.pageDefinition.eventFunctions[onEnter] : undefined;
+	const handleKeyUp = onEnter
+		? async (e: React.KeyboardEvent) => {
+				if (!clickEvent || isLoading || e.key !== 'Enter') return;
+				if (!updateStoreImmediately) {
+					handleBlur(e);
+				}
+				await runEvent(clickEvent, onEnter, props.context.pageName);
+		  }
+		: undefined;
 	return (
 		<div className="comp compTextBox" style={computedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />
@@ -183,7 +216,7 @@ function TextBox(props: ComponentProps) {
 					<input
 						style={computedStyles.inputBox ?? {}}
 						className={`textbox ${valueType === 'NUMBER' ? 'remove-spin-button' : ''}`}
-						type={isPassword ? 'password' : valueType}
+						type={isPassword && !show ? 'password' : valueType}
 						value={value}
 						onChange={handleChange}
 						placeholder={getTranslations(label, translations)}
@@ -193,6 +226,7 @@ function TextBox(props: ComponentProps) {
 								: undefined
 						}
 						onBlur={handleBlur}
+						onKeyUp={handleKeyUp}
 						name={key}
 						id={key}
 						disabled={readOnly}
@@ -215,6 +249,13 @@ function TextBox(props: ComponentProps) {
 						className={`rightIcon ${rightIcon}`}
 					/>
 				)}
+				{isPassword && !readOnly && (
+					<i 
+						style={computedStyles.passwordIcon ?? {}}
+						className={`passwordIcon ${show ? `fa fa-regular fa-eye` : `fa fa-regular fa-eye-slash`}`}
+						onClick={() => setShow(!show)}
+					/>
+				)}
 				{errorMessage ? (
 					<i
 						style={computedStyles.errorText ?? {}}
@@ -222,7 +263,7 @@ function TextBox(props: ComponentProps) {
 							value?.length ? `hasText` : ``
 						} fa fa-solid fa-circle-exclamation`}
 					/>
-				) : value?.length && !rightIcon && !readOnly ? (
+				) : value?.length && !rightIcon && !readOnly && !isPassword ? (
 					<i
 						style={computedStyles.supportText ?? {}}
 						onClick={handleClickClose}
