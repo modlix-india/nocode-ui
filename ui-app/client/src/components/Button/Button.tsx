@@ -33,15 +33,21 @@ function ButtonComponent(props: ComponentProps) {
 	);
 
 	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
-	const spinnerPath = `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
-		key,
-	)}.isRunning`;
+	const spinnerPath = onClick
+		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
+				onClick,
+		  )}.isRunning`
+		: undefined;
 
 	const [isLoading, setIsLoading] = useState(
-		getDataFromPath(spinnerPath, props.locationHistory) || false,
+		onClick ? getDataFromPath(spinnerPath, props.locationHistory) ?? false : false,
 	);
 
-	useEffect(() => addListener((_, value) => setIsLoading(value), pageExtractor, spinnerPath), []);
+	useEffect(() => {
+		if (spinnerPath) {
+			return addListener((_, value) => setIsLoading(value), pageExtractor, spinnerPath);
+		}
+	}, []);
 
 	const styleProperties = processComponentStylePseudoClasses(
 		{ focus, hover, disabled: isLoading || readOnly },
@@ -71,7 +77,6 @@ function ButtonComponent(props: ComponentProps) {
 			}`}
 		/>
 	);
-	console.log(styleProperties, props.definition.styleProperties);
 	return (
 		<div className="comp compButton" style={styleProperties.comp ?? {}}>
 			<HelperComponent definition={props.definition} />
