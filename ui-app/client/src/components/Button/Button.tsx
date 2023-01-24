@@ -14,6 +14,7 @@ import { propertiesDefinition, stylePropertiesDefinition } from './buttonPropert
 import ButtonStyle from './ButtonStyle';
 import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import { flattenUUID } from '../util/uuid';
 
 function ButtonComponent(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -32,7 +33,9 @@ function ButtonComponent(props: ComponentProps) {
 	);
 
 	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
-	const spinnerPath = `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${key}.isRunning`;
+	const spinnerPath = `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
+		key,
+	)}.isRunning`;
 
 	const [isLoading, setIsLoading] = useState(
 		getDataFromPath(spinnerPath, props.locationHistory) || false,
@@ -68,6 +71,7 @@ function ButtonComponent(props: ComponentProps) {
 			}`}
 		/>
 	);
+	console.log(styleProperties, props.definition.styleProperties);
 	return (
 		<div className="comp compButton" style={styleProperties.comp ?? {}}>
 			<HelperComponent definition={props.definition} />

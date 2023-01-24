@@ -1,5 +1,5 @@
 import { Location, useLocation } from 'react-router-dom';
-import { processLocation } from '../../Engine/RenderEngineContainer';
+import { processLocation } from '../../util/locationProcessor';
 
 export function getHref(linkPath: string, location: Location) {
 	// {pathname: '/page/dashboard', search: '', hash: '', state: null, key: 'default'}
