@@ -13,8 +13,13 @@ export function Messages() {
 
 	const msgComps = msgs.map((e: any) => (
 		<div key={e.id} className={`_message ${e.type}`}>
+			<i className={`fa-xl ${ICONS[e.type]}`} />
 			<div className="_msgString">{typeof e.msg === 'object' ? e.msg.message : e.msg}</div>
-			<i className="fa fa-solid fa-close" />
+			<i
+				className="fa fa-solid fa-circle-xmark"
+				tabIndex={0}
+				onClick={() => removeMessage(e.id)}
+			/>
 		</div>
 	));
 
@@ -27,6 +32,13 @@ export enum MESSAGE_TYPE {
 	INFORMATION = 'INFORMATION',
 	SUCCESS = 'SUCCESS',
 }
+
+const ICONS: any = {
+	[MESSAGE_TYPE.ERROR]: 'fa-solid fa-xmark',
+	[MESSAGE_TYPE.WARNING]: 'fa-solid fa-exclamation',
+	[MESSAGE_TYPE.INFORMATION]: 'fa-solid fa-info',
+	[MESSAGE_TYPE.SUCCESS]: 'fa-solid fa-circle-check',
+};
 
 export function addMessage(type: MESSAGE_TYPE, msg: any, isGlobalScope: boolean, pageName: string) {
 	const messages = getDataFromPath(STORE_PATH_MESSAGES, []) ?? [];
@@ -44,20 +56,19 @@ export function removeMessage(id: number) {
 	setData(STORE_PATH_MESSAGES, newMsgs);
 }
 
-// setInterval(() => {
-// 	const messages = [...(getDataFromPath(STORE_PATH_MESSAGES, []) ?? [])];
+setInterval(() => {
+	const messages = [...(getDataFromPath(STORE_PATH_MESSAGES, []) ?? [])];
 
-// 	if (messages.length === 0) return;
+	if (messages.length === 0) return;
 
-// 	let timeout = parseInt(getDataFromPath(STORE_PATH_APP_MESSAGE_TIMEOUT, []) ?? '10000');
-// 	if (isNaN(timeout)) timeout = 10000;
+	let timeout = parseInt(getDataFromPath(STORE_PATH_APP_MESSAGE_TIMEOUT, []) ?? '10000');
+	if (isNaN(timeout)) timeout = 10000;
 
-// 	const now = Date.now();
+	const now = Date.now();
 
-// 	const newMsgs = messages.filter((e: any) => e.id + timeout > now);
-// 	console.log(newMsgs.length, messages.length);
+	const newMsgs = messages.filter((e: any) => e.id + timeout > now);
 
-// 	if (messages.length === newMsgs.length) return;
+	if (messages.length === newMsgs.length) return;
 
-// 	setData(STORE_PATH_MESSAGES, newMsgs);
-// }, 1000);
+	setData(STORE_PATH_MESSAGES, newMsgs);
+}, 1000);

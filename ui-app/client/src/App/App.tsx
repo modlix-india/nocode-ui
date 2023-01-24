@@ -61,7 +61,7 @@ export function App() {
 	if (isApplicationLoadFailed)
 		return <>Application Load failed, Please contact your administrator</>;
 
-	if (!applicationLoaded) return <>Loading...</>;
+	if (!applicationLoaded) return <>...</>;
 	return (
 		<>
 			<BrowserRouter>
