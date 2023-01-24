@@ -39,7 +39,17 @@ export const RenderEngineContainer = () => {
 			setPageDefinition(pDef);
 			setCurrentPageName(pageName);
 		}
-	}, [location]);
+	}, [pageDefinition, location]);
+
+	useEffect(() => {
+		const { pageName } = processLocation(location);
+
+		return addListener(
+			(_, v) => setPageDefinition(v),
+			undefined,
+			`${STORE_PREFIX}.pageDefinition.${pageName}`,
+		);
+	}, []);
 
 	useEffect(
 		() =>

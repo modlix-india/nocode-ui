@@ -5,11 +5,13 @@ import {
 	FunctionExecutionParameters,
 	FunctionOutput,
 	FunctionSignature,
+	isNullValue,
 	Parameter,
 	Schema,
 } from '@fincity/kirun-js';
 import axios from 'axios';
 import { NAMESPACE_UI_ENGINE } from '../constants';
+import { getDataFromPath, setData } from '../context/StoreContext';
 
 const SIGNATURE = new FunctionSignature('Login')
 	.setNamespace(NAMESPACE_UI_ENGINE)
@@ -43,7 +45,17 @@ export class Login extends AbstractFunction {
 				data: { userName, password, rememberMe },
 			});
 
-			console.log('Login Response: ', response);
+			setData('Store.auth', response.data);
+			setData('LocalStore.AuthToken', response.data?.accessToken);
+
+			let def = getDataFromPath('Store.pageDefinition', []);
+			if (!isNullValue(def)) {
+				def = JSON.parse(JSON.stringify(def));
+				const remKeys = Object.keys(def).filter(k => def[k].name !== k);
+				if (remKeys.length) remKeys.forEach(k => delete def[k]);
+
+				setData('Store.pageDefinition', def);
+			}
 
 			return new FunctionOutput([EventResult.outputOf(new Map([['data', response.data]]))]);
 		} catch (err: any) {
