@@ -28,6 +28,7 @@ function TextBox(props: ComponentProps) {
 	const [isDirty, setIsDirty] = React.useState(false);
 	const [errorMessage, setErrorMessage] = React.useState('');
 	const [focus, setFocus] = React.useState(false);
+	const [show, setShow] = React.useState(false);
 	const mapValue: mapType = {
 		UNDEFINED: undefined,
 		NULL: null,
@@ -215,7 +216,7 @@ function TextBox(props: ComponentProps) {
 					<input
 						style={computedStyles.inputBox ?? {}}
 						className={`textbox ${valueType === 'NUMBER' ? 'remove-spin-button' : ''}`}
-						type={isPassword ? 'password' : valueType}
+						type={isPassword && !show ? 'password' : valueType}
 						value={value}
 						onChange={handleChange}
 						placeholder={getTranslations(label, translations)}
@@ -248,6 +249,13 @@ function TextBox(props: ComponentProps) {
 						className={`rightIcon ${rightIcon}`}
 					/>
 				)}
+				{isPassword && !readOnly && (
+					<i 
+						style={computedStyles.passwordIcon ?? {}}
+						className={`passwordIcon ${show ? `fa fa-regular fa-eye` : `fa fa-regular fa-eye-slash`}`}
+						onClick={() => setShow(!show)}
+					/>
+				)}
 				{errorMessage ? (
 					<i
 						style={computedStyles.errorText ?? {}}
@@ -255,7 +263,7 @@ function TextBox(props: ComponentProps) {
 							value?.length ? `hasText` : ``
 						} fa fa-solid fa-circle-exclamation`}
 					/>
-				) : value?.length && !rightIcon && !readOnly ? (
+				) : value?.length && !rightIcon && !readOnly && !isPassword ? (
 					<i
 						style={computedStyles.supportText ?? {}}
 						onClick={handleClickClose}
