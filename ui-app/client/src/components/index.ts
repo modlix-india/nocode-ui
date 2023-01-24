@@ -6,6 +6,7 @@ import Link from './Link/Link';
 import Page from './Page';
 import RadioButton from './RadioButton/RadioButton';
 import TextBox from './TextBox/TextBox';
+import Calendar from './Calendar/Calendar';
 import ToggleButton from './ToggleButton/ToggleButton';
 import ArrayRepeater from './ArrayRepeater/ArrayRepeater';
 import Popup from './Popup/Popup';
@@ -25,6 +26,7 @@ export const Components = new Map<string, React.ElementType>([
 	[RadioButton.name, RadioButton.component],
 	[ToggleButton.name, ToggleButton.component],
 	[TextBox.name, TextBox.component],
+	[Calendar.name, Calendar.component],
 	[Link.name, Link.component],
 	[ArrayRepeater.name, ArrayRepeater.component],
 	[Popup.name, Popup.component],
@@ -44,6 +46,7 @@ export const ComponentDefinitions = [
 	RadioButton,
 	ToggleButton,
 	TextBox,
+	Calendar,
 	Link,
 	ArrayRepeater,
 	Popup,
