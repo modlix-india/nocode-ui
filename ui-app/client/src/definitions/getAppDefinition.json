@@ -13,17 +13,6 @@
 						"type": "VALUE",
 						"value": "api/security/verifyToken"
 					}
-				},
-				"queryParams": {
-					"param1": {
-						"key": "param1",
-						"type": "VALUE",
-						"value": {
-							"name": {
-								"value": "raja"
-							}
-						}
-					}
 				}
 			}
 		},

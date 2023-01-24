@@ -374,6 +374,46 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<from-input-error-icon-hastext-color>',
 		selector: '.textBoxDiv .errorIcon.hasText',
 	},
+	{
+		name: 'textBoxPasswordIconPadding',
+		cssProperty: 'padding',
+		displayName: "textbox's Password Icon Padding",
+		description:
+			"This color is used for textbox's password icon padding",
+		selector: '.textBoxDiv .passwordIcon',
+	},
+	{
+		name: 'textBoxPasswordIconPaddingLeft',
+		cssProperty: 'padding-left',
+		displayName: "textbox's Password Icon Padding left",
+		description:
+			"This color is used for textbox's password icon padding left",
+		selector: '.textBoxDiv .passwordIcon',
+	},
+	{
+		name: 'textBoxPasswordIconPaddingRight',
+		cssProperty: 'padding-right',
+		displayName: "textbox's Password Icon Padding right",
+		description:
+			"This color is used for textbox's password icon padding right",
+		selector: '.textBoxDiv .passwordIcon',
+	},
+	{
+		name: 'textBoxPasswordIconPaddingTop',
+		cssProperty: 'padding-top',
+		displayName: "textbox's Password Icon Padding Top",
+		description:
+			"This color is used for textbox's password icon padding top",
+		selector: '.textBoxDiv .passwordIcon',
+	},
+	{
+		name: 'textBoxPasswordIconPaddingBottom',
+		cssProperty: 'padding-bottom',
+		displayName: "textbox's Password Icon Padding bottom",
+		description:
+			"This color is used for textbox's password icon padding bottom",
+		selector: '.textBoxDiv .passwordIcon',
+	},
 ];
 
 export const styleDefaults = new Map<string, string>(

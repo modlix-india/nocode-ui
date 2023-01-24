@@ -172,6 +172,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
 		notImplemented: true,
 	},
+
+	{
+		name: 'isPassword',
+		displayName: 'Password',
+		description: 'Textbox to enter password',
+		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		defaultValue: false,
+	},
 ];
 
 const stylePropertiesDefinition = {
@@ -246,6 +254,24 @@ const stylePropertiesDefinition = {
 			description: 'rightIcon color properties',
 			prefix: 'rightIcon',
 			target: ['rightIcon'],
+		},
+	},
+	passwordIcon: {
+		[COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.font,
+			name: 'passwordIcon',
+			displayName: 'passwordIcon font properties',
+			description: 'passwordIcon font properties',
+			prefix: 'passwordIcon',
+			target: ['passwordIcon'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
+			name: 'passwordIcon',
+			displayName: 'passwordIcon color properties',
+			description: 'passwordIcon color properties',
+			prefix: 'passwordIcon',
+			target: ['passwordIcon'],
 		},
 	},
 	inputBox: {
