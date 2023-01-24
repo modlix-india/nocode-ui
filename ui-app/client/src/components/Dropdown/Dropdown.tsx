@@ -62,7 +62,7 @@ function DropdownComponent(props: ComponentProps) {
 		);
 	}, []);
 
-	const dropdownData = getRenderData(
+	const dropdownData: any = getRenderData(
 		dataBinding,
 		datatype,
 		uniqueKeyType,
@@ -74,7 +74,6 @@ function DropdownComponent(props: ComponentProps) {
 	);
 	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
 	const selectedDataKey = getSelectedKeys(dropdownData, selected);
-
 
 	const handleClick = async (each: { key: any; label: any; value: any }) => {
 		setData(bindingPathPath, each.value, context?.pageName);
@@ -120,7 +119,7 @@ function DropdownComponent(props: ComponentProps) {
 						{getTranslations(
 							selected === undefined
 								? placeholder
-								: dropdownData?.find(e => e?.key === selectedDataKey)?.label,
+								: dropdownData?.find((e: any) => e?.key === selectedDataKey)?.label,
 							translations,
 						)}
 					</label>
@@ -131,7 +130,7 @@ function DropdownComponent(props: ComponentProps) {
 						className="dropdowncontainer"
 						onMouseLeave={() => closeOnMouseLeave && handleClose()}
 					>
-						{dropdownData?.map(each => (
+						{dropdownData?.map((each: any) => (
 							<div
 								onClick={() => handleClick(each!)}
 								className="dropdownItem"

@@ -5,8 +5,8 @@ import Nothing from '../Nothing';
 import { DataLocation, RenderContext } from '../../types/common';
 import Page from '../Page';
 import { useLocation } from 'react-router-dom';
-import { processLocation } from '../../Engine/RenderEngineContainer';
 import { STORE_PREFIX } from '../../constants';
+import { processLocation } from '../../util/locationProcessor';
 
 const getPageDefinition = () => {
 	const location = useLocation();
@@ -39,12 +39,13 @@ export const renderChildren = (
 			let comp = Components.get(e.type);
 			if (!comp && e.type === 'Page') {
 				const pageDef = getPageDefinition();
-				return React.createElement(Page, {
-					definition: pageDef,
-					key: pageDef.key,
-					context: { pageName: pageDef.name },
-					locationHistory: [],
-				});
+				if (pageDef)
+					return React.createElement(Page, {
+						definition: pageDef,
+						key: pageDef.key,
+						context: { pageName: pageDef.name },
+						locationHistory: [],
+					});
 			}
 			if (!comp) comp = Nothing;
 			if (!comp) return undefined;

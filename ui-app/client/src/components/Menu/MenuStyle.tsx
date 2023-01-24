@@ -7,23 +7,29 @@ const PREFIX = '.comp.compMenu';
 export default function MenuStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
 	const css =
 		`
-		${PREFIX} .menuContainer {
+		${PREFIX} {
+			width: 100%;
+		}
+		${PREFIX} {
 			cursor: pointer;
 		}
-		${PREFIX} .menuContainer .menu {
-			width: 100%;
+		${PREFIX} .menuItemsContainer {
+			display: flex;
+		}
+		${PREFIX} .menu {
+			flex: 1;
 			display: flex;
 			flex-direction : row;
 			align-items: center;
-			justify-content: center;
+			justify-content: space-between;
 		}
-		${PREFIX} .menuContainer .isActive {
-			background-color: white;
-		}
-		${PREFIX} .menuContainer .menu .menuLink a{
+		${PREFIX} .menuLink {
 			display: flex;
-			align-items: center;
-			gap: 10px;
+		}
+		
+		${PREFIX} .link{
+			text-decoration: none;
+			flex: 1
 		}
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

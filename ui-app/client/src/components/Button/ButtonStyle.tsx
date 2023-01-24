@@ -7,6 +7,10 @@ const PREFIX = '.comp.compButton';
 export default function ButtonStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
 	const css =
 		`
+		${PREFIX} {
+			display: flex;
+		}
+
 		${PREFIX} .button.fabButton {
 			height: ${
 				theme.get(StyleResolution.ALL)?.get('fabButtonWidth') ??

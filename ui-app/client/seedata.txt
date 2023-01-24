@@ -1,0 +1,7 @@
+http://localhost:1234/api/ui/applications/63bce182d071ab04c40babff
+http://localhost:1234/api/ui/themes/63cb920ad439047078ec8460
+http://localhost:1234/api/ui/pages/63cb93f9d439047078ec8462
+
+{"_id":{"$oid":"63c8022ed439047078ec845a"},"variables":{"ALL":{"main-font-color":"#000000"}},"name":"nothingtheme","message":"JUST CREATED","clientCode":"SYSTEM","appCode":"nothing","version":{"$numberInt":"1"},"createdAt":{"$date":{"$numberLong":"1674052142879"}},"createdBy":"1"}
+
+{"_id":{"$oid":"63cb920ad439047078ec8460"},"variables":{"ALL":{"main-font-color":"#474A50","body-background":"#D5D7DB"}},"name":"appbuildertheme","message":"theme for the appbuilder","clientCode":"SYSTEM","appCode":"appbuilder","version":{"$numberInt":"2"},"updatedAt":{"$date":{"$numberLong":"1674286464847"}},"updatedBy":"1","createdAt":{"$date":{"$numberLong":"1674285578375"}},"createdBy":"1"}

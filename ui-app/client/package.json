@@ -5,7 +5,7 @@
 	"source": "src/index.html",
 	"browserslist": "> 0.5%, last 2 versions, not dead",
 	"scripts": {
-		"start": "parcel",
+		"start": "parcel --no-cache",
 		"build": "parcel build src/index.html",
 		"aws": "parcel build src/index.tsx",
 		"test": "jest --watchAll",
@@ -55,7 +55,7 @@
 	},
 	"dependencies": {
 		"@fincity/kirun-js": "^1.4.4",
-		"@fincity/path-reactive-state-management": "^1.4.7",
+		"@fincity/path-reactive-state-management": "^1.4.8",
 		"@tsconfig/recommended": "^1.0.1",
 		"axios": "^0.27.2",
 		"react": "^18.2.0",

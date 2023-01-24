@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
 	addListener,
+	addListenerAndCallImmediately,
 	getData,
 	getPathFromLocation,
 	PageStoreExtractor,
@@ -18,16 +19,18 @@ import { Component } from '../../types/common';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './menuProperties';
 import { HelperComponent } from '../HelperComponent';
-import { renderChildren } from '../util/renderChildren';
 import { getTranslations } from '../util/getTranslations';
 import MenuStyle from './MenuStyle';
 import { runEvent } from '../util/runEvent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import { getHref } from '../util/getHref';
+import Children from '../Children';
 
 function Menu(props: ComponentProps) {
 	const [isMenuActive, setIsMenuActive] = React.useState(false);
 	const [hover, setHover] = React.useState(false);
-	const { pathname } = useLocation();
+	const location = useLocation();
+	const { pathname } = location;
 
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 
@@ -45,12 +48,15 @@ function Menu(props: ComponentProps) {
 		properties: {
 			label,
 			onClick,
+			onMenuOpen,
+			onMenuClose,
+			onlyIconMenu,
 			icon,
 			isMenuOpen,
 			linkPath,
 			target,
 			readOnly,
-			pathsActiveFor = '',
+			pathsActiveFor,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -60,26 +66,48 @@ function Menu(props: ComponentProps) {
 		props.locationHistory,
 		pageExtractor,
 	);
-	const [isMenuOpenState, setIsMenuOpenState] = React.useState(isMenuOpen ?? false);
+
 	React.useEffect(() => {
-		addListener(
-			() => {
-				const paths = pathsActiveFor.split(',');
-				if (!paths.length) return;
-				const hasPath = !!paths.find((e: string) => pathname.indexOf(e));
-				setIsMenuActive(hasPath);
-			},
-			pageExtractor,
-			'Store.urlDetails.pageName',
-		);
-	}, []);
+		if (!pathsActiveFor?.length) return;
+		const paths = pathsActiveFor.split(',');
+		let hasPath = false;
+		if (pathname === '/') {
+			hasPath = !!paths.find((e: string) => pathname === e);
+		} else {
+			hasPath = !!paths
+				.filter((e: string) => e !== '/')
+				.find((e: string) => pathname.indexOf(e) >= 0);
+		}
+		setIsMenuActive(hasPath);
+	}, [pathname, pathsActiveFor]);
+	const [isMenuOpenState, setIsMenuOpenState] = React.useState(isMenuOpen ?? false);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
 		{ hover, disabled: readOnly },
 		stylePropertiesWithPseudoStates,
 	);
 
-	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
+	const clickEvent = onClick ? props.pageDefinition?.eventFunctions?.[onClick] : undefined;
+
+	const menuCloseEvent = onMenuClose
+		? props.pageDefinition?.eventFunctions?.[onMenuClose]
+		: undefined;
+
+	const menuOpenEvent = onMenuOpen
+		? props.pageDefinition?.eventFunctions?.[onMenuOpen]
+		: undefined;
+
+	const refObj = useRef({ firstRender: true });
+
+	React.useEffect(() => {
+		if (menuCloseEvent && isMenuOpen && !refObj.current.firstRender) {
+			async () => await runEvent(menuCloseEvent, key, context.pageName);
+		}
+		if (menuOpenEvent && !isMenuOpen && !refObj.current.firstRender) {
+			async () => await runEvent(menuOpenEvent, key, context.pageName);
+		}
+		refObj.current.firstRender = false;
+	}, [isMenuOpen]);
 
 	const handleClick = async () => {
 		setIsMenuOpenState(!isMenuOpenState);
@@ -88,58 +116,78 @@ function Menu(props: ComponentProps) {
 
 	const menuDetails = (
 		<>
-			{icon ? <i style={resolvedStyles.icon ?? {}} className={icon}></i> : null}
-			<span className="menuText">
-				{getTranslations(label, props.pageDefinition.translations)}
-			</span>
+			{icon ? (
+				<i style={resolvedStyles.icon ?? {}} className={`${icon} icon`}></i>
+			) : (
+				<i className="icon fa-solid fa-user icon hide"></i>
+			)}
+			{!onlyIconMenu && (
+				<span className="menuText">
+					{getTranslations(label, props.pageDefinition.translations)}
+				</span>
+			)}
 		</>
 	);
 
 	return (
-		<div className="comp compMenu ">
+		<div className="comp compMenu" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={props.definition} />
-			<div className="menuContainer" style={resolvedStyles.menuContainer ?? {}}>
-				<div
-					onClick={!readOnly ? handleClick : undefined}
-					className={`menu ${isMenuActive ? 'isActive' : ''}`}
-					onMouseEnter={() => setHover(true)}
-					onMouseLeave={() => setHover(false)}
-					style={resolvedStyles.menu ?? {}}
+			<div className={`menuItemsContainer ${isMenuActive ? 'isActive' : ''}`}>
+				<Link
+					style={resolvedStyles.link ?? {}}
+					className="link"
+					target={target}
+					to={getHref(linkPath, location)}
+					title={
+						onlyIconMenu
+							? getTranslations(label, props.pageDefinition.translations)
+							: ''
+					}
 				>
-					<div className="menuLink">
-						{linkPath ? (
-							<Link
-								style={resolvedStyles.link ?? {}}
-								className="link"
-								target={target}
-								to={linkPath}
-							>
-								{menuDetails}
-							</Link>
-						) : (
-							menuDetails
+					<div
+						onClick={!readOnly ? handleClick : undefined}
+						className={`menu ${onlyIconMenu ? 'onlyIconMenu' : ''}`}
+						onMouseEnter={
+							stylePropertiesWithPseudoStates?.hover
+								? () => setHover(true)
+								: undefined
+						}
+						onMouseLeave={
+							stylePropertiesWithPseudoStates?.hover
+								? () => setHover(false)
+								: undefined
+						}
+						style={resolvedStyles.menu ?? {}}
+					>
+						<div className="menuLink">{menuDetails}</div>
+						{!onlyIconMenu && (
+							<div className="menuCaretIcon">
+								{hasChildren ? (
+									!isMenuOpenState ? (
+										<i
+											style={resolvedStyles.caretIcon ?? {}}
+											className="fa fa-solid fa-angle-down"
+										></i>
+									) : (
+										<i
+											style={resolvedStyles.caretIcon ?? {}}
+											className="fa fa-solid fa-angle-up"
+										></i>
+									)
+								) : null}
+							</div>
 						)}
 					</div>
-					<div className="menuCaretIcon">
-						{hasChildren ? (
-							!isMenuOpenState ? (
-								<i
-									style={resolvedStyles.caretIcon ?? {}}
-									className="fa fa-solid fa-angle-down"
-								></i>
-							) : (
-								<i
-									style={resolvedStyles.caretIcon ?? {}}
-									className="fa fa-solid fa-angle-up"
-								></i>
-							)
-						) : null}
-					</div>
-				</div>
-				{hasChildren && isMenuOpenState
-					? renderChildren(pageDefinition, children, context, locationHistory)
-					: null}
+				</Link>
 			</div>
+			{hasChildren && isMenuOpenState ? (
+				<Children
+					pageDefinition={pageDefinition}
+					children={children}
+					context={context}
+					locationHistory={locationHistory}
+				/>
+			) : null}
 		</div>
 	);
 }

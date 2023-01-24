@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { HelperComponent } from '../HelperComponent';
 import {
 	ComponentProperty,
@@ -7,14 +7,22 @@ import {
 	DataLocation,
 	RenderContext,
 } from '../../types/common';
-import { renderChildren } from '../util/renderChildren';
-import { getData, PageStoreExtractor } from '../../context/StoreContext';
+import {
+	addListener,
+	getData,
+	getDataFromPath,
+	PageStoreExtractor,
+} from '../../context/StoreContext';
 import { Component } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './gridProperties';
 import GridStyle from './GridStyle';
 import useDefinition from '../util/useDefinition';
 import { Link } from 'react-router-dom';
+import Children from '../Children';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
+import { runEvent } from '../util/runEvent';
+import { flattenUUID } from '../util/uuid';
 
 function Grid(props: ComponentProps) {
 	const [hover, setHover] = React.useState(false);
@@ -24,7 +32,15 @@ function Grid(props: ComponentProps) {
 	const {
 		key,
 		stylePropertiesWithPseudoStates,
-		properties: { readOnly: isReadonly = false, linkPath, target } = {},
+		properties: {
+			readOnly: isReadonly = false,
+			linkPath,
+			target,
+			containerType,
+			layout,
+			onClick,
+			background,
+		} = {},
 	} = useDefinition(
 		definition,
 		propertiesDefinition,
@@ -32,21 +48,43 @@ function Grid(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	const childs = renderChildren(
-		pageDefinition,
-		definition.children,
-		{ ...context, isReadonly },
-		locationHistory,
+
+	const childs = (
+		<Children
+			key={`${key}_chld`}
+			pageDefinition={pageDefinition}
+			children={definition.children}
+			context={{ ...context, isReadonly }}
+			locationHistory={locationHistory}
+		/>
 	);
+
 	const resolvedStyles = processComponentStylePseudoClasses(
 		{ focus, hover, disabled: isReadonly },
 		stylePropertiesWithPseudoStates,
 	);
-	return linkPath ? (
-		<div className="comp compGrid">
-			<HelperComponent definition={definition} />
+
+	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
+	const spinnerPath = `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
+		key,
+	)}.isRunning`;
+
+	const [isLoading, setIsLoading] = useState(
+		getDataFromPath(spinnerPath, locationHistory) ?? false,
+	);
+
+	useEffect(() => addListener((_, value) => setIsLoading(value), pageExtractor, spinnerPath), []);
+
+	const handleClick =
+		!clickEvent || isLoading
+			? undefined
+			: async () => await runEvent(clickEvent, onClick, props.context.pageName);
+
+	if (linkPath) {
+		return React.createElement(containerType.toLowerCase(), { className: 'comp compGrid' }, [
+			<HelperComponent definition={definition} />,
 			<Link
-				className="anchorGrid"
+				className={`_anchorGrid _${layout} ${background}`}
 				onMouseEnter={
 					stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
 				}
@@ -60,22 +98,27 @@ function Grid(props: ComponentProps) {
 				style={resolvedStyles.comp ?? {}}
 			>
 				{childs}
-			</Link>
-		</div>
-	) : (
-		<div
-			onMouseEnter={stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined}
-			onMouseLeave={
-				stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
-			}
-			onFocus={stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined}
-			onBlur={stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined}
-			className="comp compGrid noAnchorGrid"
-			style={resolvedStyles.comp ?? {}}
-		>
-			<HelperComponent definition={definition} />
-			{childs}
-		</div>
+			</Link>,
+		]);
+	}
+
+	return React.createElement(
+		containerType.toLowerCase(),
+		{
+			onMouseEnter: stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined,
+			onMouseLeave: stylePropertiesWithPseudoStates?.hover
+				? () => setHover(false)
+				: undefined,
+
+			onFocus: stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined,
+			onBlur: stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined,
+
+			className: `comp compGrid _noAnchorGrid _${layout} ${background}`,
+			style: resolvedStyles.comp ?? {},
+
+			onClick: handleClick,
+		},
+		[<HelperComponent key={`${key}_hlp`} definition={definition} />, childs],
 	);
 }
 
@@ -87,6 +130,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: GridStyle,
+	stylePseudoStates: ['hover', 'focus', 'readonly'],
 };
 
 export default component;

@@ -7,11 +7,14 @@ import { propertiesDefinition, stylePropertiesDefinition } from './imageProperti
 import ImageStyle from './ImageStyles';
 import { runEvent } from '../util/runEvent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import { getHref } from '../util/getHref';
+import { useLocation } from 'react-router-dom';
 
 function ImageComponent(props: ComponentProps) {
 	const { definition, locationHistory, context } = props;
 	const [hover, setHover] = useState(false);
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const location = useLocation();
 	const {
 		properties: { alt, src, onClickEvent, fallBackImg } = {},
 		key,
@@ -40,7 +43,7 @@ function ImageComponent(props: ComponentProps) {
 	);
 
 	return (
-		<div className="comp compImage">
+		<div className="comp compImage" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />
 			<img
 				onMouseEnter={
@@ -52,7 +55,7 @@ function ImageComponent(props: ComponentProps) {
 				onClick={onClickEvent ? handleClick : undefined}
 				className={onClickEvent ? '_onclicktrue' : ''}
 				style={resolvedStyles.image ?? {}}
-				src={src}
+				src={getHref(src, location)}
 				alt={alt}
 				onError={fallBackImg ? handleError : undefined}
 			/>
