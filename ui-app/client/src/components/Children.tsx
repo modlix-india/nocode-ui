@@ -9,13 +9,13 @@ import {
 	storeExtractor,
 } from '../context/StoreContext';
 import { useLocation } from 'react-router-dom';
-import { processLocation } from '../Engine/RenderEngineContainer';
 import { STORE_PREFIX } from '../constants';
 import { Components } from './index';
 import Page from './Page';
 import Nothing from './Nothing';
 import { TokenValueExtractor } from '@fincity/kirun-js';
 import { getPathsFrom } from './util/getPaths';
+import { processLocation } from '../util/locationProcessor';
 
 const getPageDefinition = (location: any) => {
 	let { pageName } = processLocation(location);
@@ -46,7 +46,7 @@ function Children({
 	]);
 
 	React.useEffect(() => {
-		let set = Object.entries(children)
+		let set = Object.entries(children ?? {})
 			.filter(([, v]) => !!v)
 			.map(([k]) => pageDefinition.componentDefinition[k])
 			.filter(e => !!e?.properties?.visibility)
@@ -62,7 +62,7 @@ function Children({
 
 	return (
 		<>
-			{Object.entries(children)
+			{Object.entries(children ?? {})
 				.filter(([, v]) => !!v)
 				.map(([k]) => pageDefinition.componentDefinition[k])
 				.map(e => {
@@ -73,7 +73,7 @@ function Children({
 						: undefined;
 				})
 				.filter(e => !!e)
-				.sort((a: any, b: any) => (a?.displayOrder || 0) - (b?.displayOrder || 0))
+				.sort((a: any, b: any) => (a?.displayOrder ?? 0) - (b?.displayOrder ?? 0))
 				.map(e => {
 					let comp = Components.get(e.type);
 					if (!comp && e.type === 'Page') {

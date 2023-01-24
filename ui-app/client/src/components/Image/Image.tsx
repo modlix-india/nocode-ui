@@ -43,7 +43,7 @@ function ImageComponent(props: ComponentProps) {
 	);
 
 	return (
-		<div className="comp compImage">
+		<div className="comp compImage" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />
 			<img
 				onMouseEnter={
