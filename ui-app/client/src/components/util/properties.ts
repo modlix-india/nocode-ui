@@ -15,6 +15,13 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		description: 'Event to be triggered when clicked.',
 	},
+	onEnter: {
+		name: 'onEnter',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'On Enter',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered when enter is pressed.',
+	},
 	label: {
 		name: 'label',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
