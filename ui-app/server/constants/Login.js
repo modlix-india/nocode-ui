@@ -198,6 +198,9 @@ export const login = {
         label: {
           value: "Password",
         },
+        isPassword: {
+          value: true,
+        },
       },
     },
     "6dbe196f-3690-464f-b693-356cb537192e": {
@@ -314,6 +317,9 @@ export const login = {
               width: {
                 value: "500px",
               },
+              gap: {
+                value: "190px",
+              },
             },
           },
         },
@@ -344,6 +350,9 @@ export const login = {
               },
               fontSize: {
                 value: "24px",
+              },
+              width: {
+                value: "82%",
               },
             },
           },
