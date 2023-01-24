@@ -69,14 +69,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '2.5px solid #C7C8D6',
 		selector: '.radiobutton .radioInput',
 	},
-	// {
-	// 	name: 'radioInputMargin',
-	// 	cssProperty: 'margin',
-	// 	displayName: 'Radio Input margin.',
-	// 	description: 'Radio Input margin.',
-	// 	defaultValue: '5px',
-	// 	selector: '.radiobutton .radioInput',
-	// },
 	{
 		name: 'radioInputBeforeBoxShadow',
 		cssProperty: 'box-shadow',
@@ -148,6 +140,3 @@ export const styleDefaults = new Map<string, string>(
 		.filter(e => !!e.defaultValue)
 		.map(({ name, defaultValue }) => [name, defaultValue!]),
 );
-
-// border, box-shadow, container, flex, margin, outline, padding, position, size, transorm, index
-// font, color

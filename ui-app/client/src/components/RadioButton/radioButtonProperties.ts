@@ -2,7 +2,6 @@ import { Schema } from '@fincity/kirun-js';
 import {
 	SCHEMA_REF_ANY_COMP_PROP,
 	SCHEMA_REF_BOOL_COMP_PROP,
-	SCHEMA_REF_DATA_LOCATION,
 	SCHEMA_REF_STRING_COMP_PROP,
 } from '../../constants';
 import {
@@ -220,14 +219,7 @@ const stylePropertiesDefinition = {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.font,
 			target: ['radiobutton'],
 		},
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
-		// 	...COMPONENT_STYLE_GROUP_PROPERTIES.color,
-		// 	target: ['radiobutton'],
-		// },
 	},
 };
 
 export { propertiesDefinition, stylePropertiesDefinition };
-
-// border, box-shadow, container, flex, margin, outline, padding, position, size, transorm, index
-// font, color
