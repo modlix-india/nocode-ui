@@ -5,12 +5,10 @@ import {
 	FunctionExecutionParameters,
 	FunctionOutput,
 	FunctionSignature,
-	Parameter,
 	Schema,
 } from '@fincity/kirun-js';
 import axios from 'axios';
 import { NAMESPACE_UI_ENGINE } from '../constants';
-import { getData, getDataFromLocation, getDataFromPath } from '../context/StoreContext';
 
 const SIGNATURE = new FunctionSignature('Login')
 	.setNamespace(NAMESPACE_UI_ENGINE)
@@ -26,10 +24,6 @@ const SIGNATURE = new FunctionSignature('Login')
 
 export class Logout extends AbstractFunction {
 	protected async internalExecute(context: FunctionExecutionParameters): Promise<FunctionOutput> {
-		const userName: string = context.getArguments()?.get('userName');
-		const password: string = context.getArguments()?.get('password');
-		const rememberMe: string = context.getArguments()?.get('rememberMe');
-
 		try {
 			const token = getDataFromPath('LocalStore.AuthToken', []);
 
@@ -39,15 +33,20 @@ export class Logout extends AbstractFunction {
 				headers: { AUTHORIZATION: token },
 			});
 
+			setData('Store.auth', undefined, undefined, true);
+			setData('LocalStore.AuthToken', undefined, undefined, true);
+
 			return new FunctionOutput([EventResult.outputOf(new Map([['data', new Map()]]))]);
 		} catch (err: any) {
-			const errOutput = {
-				headers: err.response.headers,
-				data: err.response.data,
-				status: err.response.status,
-			};
 			return new FunctionOutput([
-				EventResult.of(Event.ERROR, new Map([['error', errOutput]])),
+				EventResult.of(
+					Event.ERROR,
+					new Map([
+						['data', err.response.data],
+						['headers', err.response.headers],
+						['status', err.response.status],
+					]),
+				),
 				EventResult.outputOf(new Map([['data', null]])),
 			]);
 		}

@@ -24,7 +24,7 @@ export const runEvent = async (
 	setData(`Store.functionExecutions.${page}.${flattenUUID(key)}.isRunning`, true);
 	try {
 		const def: FunctionDefinition = FunctionDefinition.from(functionDefinition);
-		const runtime = new KIRuntime(def);
+		const runtime = new KIRuntime(def, false);
 		const pageExtractor = PageStoreExtractor.getForContext(page);
 		const fep = new FunctionExecutionParameters(
 			UIFunctionRepository,
