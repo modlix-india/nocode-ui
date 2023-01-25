@@ -115,7 +115,7 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		},
 		[COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.font,
-			target: ['container'],
+			target: ['font'],
 		},
 	},
 	icon: {
