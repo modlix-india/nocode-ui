@@ -7,6 +7,7 @@ import { addListener, setData, store } from '../context/StoreContext';
 import { STORE_PREFIX } from '../constants';
 import { StyleResolution } from '../types/common';
 import { StyleResolutionDefinition } from '../util/styleProcessor';
+import { Messages } from './Messages/Messages';
 
 function processTagType(headTags: any, tag: string) {
 	if (!headTags) return;
@@ -60,13 +61,16 @@ export function App() {
 	if (isApplicationLoadFailed)
 		return <>Application Load failed, Please contact your administrator</>;
 
-	if (!applicationLoaded) return <>Loading...</>;
+	if (!applicationLoaded) return <>...</>;
 	return (
-		<BrowserRouter>
-			<Routes>
-				<Route path="/*" element={<RenderEngineContainer />} />
-			</Routes>
-		</BrowserRouter>
+		<>
+			<BrowserRouter>
+				<Routes>
+					<Route path="/*" element={<RenderEngineContainer />} />
+				</Routes>
+			</BrowserRouter>
+			<Messages />
+		</>
 	);
 }
 

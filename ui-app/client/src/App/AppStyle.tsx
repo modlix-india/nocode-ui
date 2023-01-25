@@ -5,6 +5,7 @@ import { addListener } from '../context/StoreContext';
 import { Component, StyleResolution } from '../types/common';
 import { processStyleDefinition, processStyleValue } from '../util/styleProcessor';
 import { styleDefaults, styleProperties } from './appStyleProperties';
+import MessageStyle from './Messages/MessageStyle';
 
 export default function AppStyle() {
 	const [theme, setTheme] = useState<Map<string, Map<string, string>>>(
@@ -26,6 +27,16 @@ export default function AppStyle() {
 									k,
 									new Map<string, string>(Object.entries<string>(v)),
 								]),
+							);
+
+							thm.set(
+								StyleResolution.ALL,
+								thm.has(StyleResolution.ALL)
+									? new Map<string, string>([
+											...styleDefaults,
+											...(thm.get(StyleResolution.ALL) ?? []),
+									  ])
+									: styleDefaults,
 							);
 
 							setTheme(thm);
@@ -82,6 +93,7 @@ export default function AppStyle() {
 		<>
 			<style id="AppCss">{css}</style>
 			{styleComps}
+			<MessageStyle theme={theme} />
 			<style id="AppStyle">{style}</style>
 		</>
 	);

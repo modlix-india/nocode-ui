@@ -4,6 +4,7 @@ import {
 	KIRuntime,
 	TokenValueExtractor,
 } from '@fincity/kirun-js';
+import { addMessage, MESSAGE_TYPE } from '../../App/Messages/Messages';
 import { GOBAL_CONTEXT_NAME } from '../../constants';
 import {
 	localStoreExtractor,
@@ -39,8 +40,9 @@ export const runEvent = async (
 		const x = await runtime.execute(fep);
 		setData(`Store.functionExecutions.${page}.${flattenUUID(key)}.isRunning`, false);
 		return new Promise(resolve => resolve(x));
-	} catch (error) {
+	} catch (error: any) {
 		setData(`Store.functionExecutions.${page}.${flattenUUID(key)}.isRunning`, false);
-		return new Promise((_, rej) => rej(error));
+		addMessage(MESSAGE_TYPE.ERROR, error, true, page);
+		return new Promise(resolve => resolve(error));
 	}
 };
