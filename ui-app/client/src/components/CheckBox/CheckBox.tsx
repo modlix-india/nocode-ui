@@ -50,7 +50,7 @@ function CheckBox(props: ComponentProps) {
 		);
 	}, [bindingPath]);
 	const handleChange = (event: any) => {
-		setData(bindingPathPath, event.target.checked);
+		setData(bindingPathPath, event.target.checked, context.pageName);
 	};
 	return (
 		<div className="comp compCheckBox">
