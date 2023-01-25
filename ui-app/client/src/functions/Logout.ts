@@ -9,6 +9,7 @@ import {
 } from '@fincity/kirun-js';
 import axios from 'axios';
 import { NAMESPACE_UI_ENGINE } from '../constants';
+import { getDataFromPath, setData } from '../context/StoreContext';
 
 const SIGNATURE = new FunctionSignature('Login')
 	.setNamespace(NAMESPACE_UI_ENGINE)
@@ -35,6 +36,11 @@ export class Logout extends AbstractFunction {
 
 			setData('Store.auth', undefined, undefined, true);
 			setData('LocalStore.AuthToken', undefined, undefined, true);
+			setData('Store.pageDefinition', {});
+			setData('Store.messages', []);
+			setData('Store.pageData', {});
+			setData('Store.application', undefined);
+			setData('Store.functionExecutions', {});
 
 			return new FunctionOutput([EventResult.outputOf(new Map([['data', new Map()]]))]);
 		} catch (err: any) {

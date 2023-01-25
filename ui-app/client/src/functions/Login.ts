@@ -48,14 +48,11 @@ export class Login extends AbstractFunction {
 			setData('Store.auth', response.data);
 			setData('LocalStore.AuthToken', response.data?.accessToken);
 
-			let def = getDataFromPath('Store.pageDefinition', []);
-			if (!isNullValue(def)) {
-				def = JSON.parse(JSON.stringify(def));
-				const remKeys = Object.keys(def).filter(k => def[k].name !== k);
-				if (remKeys.length) remKeys.forEach(k => delete def[k]);
-
-				setData('Store.pageDefinition', def);
-			}
+			setData('Store.pageDefinition', {});
+			setData('Store.messages', []);
+			setData('Store.pageData', {});
+			setData('Store.application', undefined);
+			setData('Store.functionExecutions', {});
 
 			return new FunctionOutput([EventResult.outputOf(new Map([['data', response.data]]))]);
 		} catch (err: any) {

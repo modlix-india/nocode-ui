@@ -43,7 +43,7 @@ export default function AppStyle() {
 						}
 					} else if (path == STORE_PATH_STYLE_PATH) setStyle(value ?? '');
 					else if (path == STORE_PATH_APP)
-						setCompList(value.components ?? new Set<string>());
+						setCompList(value?.components ?? new Set<string>());
 				},
 				undefined,
 				STORE_PATH_STYLE_PATH,

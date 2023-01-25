@@ -176,7 +176,7 @@ function TextBox(props: ComponentProps) {
 		? async (e: React.KeyboardEvent) => {
 				if (!clickEvent || isLoading || e.key !== 'Enter') return;
 				if (!updateStoreImmediately) {
-					handleBlur(e);
+					await handleBlur(e);
 				}
 				await runEvent(clickEvent, onEnter, props.context.pageName);
 		  }
@@ -250,9 +250,11 @@ function TextBox(props: ComponentProps) {
 					/>
 				)}
 				{isPassword && !readOnly && (
-					<i 
+					<i
 						style={computedStyles.passwordIcon ?? {}}
-						className={`passwordIcon ${show ? `fa fa-regular fa-eye` : `fa fa-regular fa-eye-slash`}`}
+						className={`passwordIcon ${
+							show ? `fa fa-regular fa-eye` : `fa fa-regular fa-eye-slash`
+						}`}
 						onClick={() => setShow(!show)}
 					/>
 				)}
