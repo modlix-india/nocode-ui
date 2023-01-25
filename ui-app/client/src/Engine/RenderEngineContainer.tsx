@@ -97,7 +97,7 @@ export const RenderEngineContainer = () => {
 	} else {
 		const definitions = getDataFromPath(`${STORE_PREFIX}.pageDefinition`, []) ?? {};
 		const hasDefinitions = !!Object.keys(definitions).length;
-		if (!hasDefinitions) return <>Loading...</>;
+		if (!hasDefinitions) return <>...</>;
 
 		return (
 			<Page

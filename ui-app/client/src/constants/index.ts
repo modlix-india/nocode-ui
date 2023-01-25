@@ -17,6 +17,8 @@ export const STORE_PATH_FUNCTION_EXECUTION = 'Store.functionExecutions';
 export const STORE_PATH_THEME_PATH = 'Store.theme';
 export const STORE_PATH_STYLE_PATH = 'Store.style';
 export const STORE_PATH_APP = 'Store.application';
+export const STORE_PATH_MESSAGES = 'Store.messages';
+export const STORE_PATH_APP_MESSAGE_TIMEOUT = 'Store.application.properties.messageTimeout';
 
 export const SCHEMA_REF_DATA_LOCATION = `${NAMESPACE_UI_ENGINE}.DataLocation`;
 export const SCHEMA_REF_VALIDATION_TYPE = `${NAMESPACE_UI_ENGINE}.ValidationType`;
