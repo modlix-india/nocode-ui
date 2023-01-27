@@ -17,9 +17,11 @@ import { propertiesDefinition, stylePropertiesDefinition } from './linkPropertie
 import LinkStyle from './LinkStyle';
 import useDefinition from '../util/useDefinition';
 import { getHref } from '../util/getHref';
+import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 
 function Link(props: ComponentProps) {
 	const location = useLocation();
+	const [hover, setHover] = React.useState(false);
 	const {
 		pageDefinition: { translations },
 		definition,
@@ -44,12 +46,29 @@ function Link(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-
+	const resolvedStyles = processComponentStylePseudoClasses(
+		{ hover },
+		stylePropertiesWithPseudoStates,
+	);
 	return (
 		<div className="comp compLinks ">
 			<HelperComponent definition={definition} />
-			<div className="linkDiv">
-				<RouterLink className="link" to={getHref(linkPath, location)} target={target}>
+			<div
+				className="linkDiv"
+				style={resolvedStyles.container ?? {}}
+				onMouseEnter={
+					stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
+				}
+				onMouseLeave={
+					stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
+				}
+			>
+				<RouterLink
+					style={resolvedStyles.link ?? {}}
+					className="link"
+					to={getHref(linkPath, location)}
+					target={target}
+				>
 					{getTranslations(label, translations)}
 				</RouterLink>
 				{showButton ? (
@@ -58,7 +77,10 @@ function Link(props: ComponentProps) {
 						target={externalButtonTarget}
 						className="secondLink"
 					>
-						<i className="fa-solid fa-up-right-from-square"></i>
+						<i
+							style={resolvedStyles.icon ?? {}}
+							className="fa-solid fa-up-right-from-square"
+						></i>
 					</RouterLink>
 				) : null}
 			</div>
@@ -74,6 +96,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: LinkStyle,
+	stylePseudoStates: ['hover'],
 };
 
 export default component;
