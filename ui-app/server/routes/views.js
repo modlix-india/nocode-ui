@@ -43,6 +43,10 @@ router.get("/ui/page/upload", (req, res) => {
   res.send(upload);
 });
 
+router.get("/ui/page/login", (req, res) => {
+  res.send(login);
+});
+
 router.get("/ui/page/webpersonalisation", (req, res) => {
   res.send(webPersonalisation);
 });
