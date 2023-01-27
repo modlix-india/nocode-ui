@@ -12,8 +12,9 @@ export function flattenUUID(key: string): string {
 	for (let i = 0; i < key.length; i++)
 		x +=
 			(key[i] >= 'a' && key[i] <= 'z') ||
-			(key[i] >= 'A' && key[i] <= 'A') ||
-			(key[i] >= '0' && key[i] <= '9')
+			(key[i] >= 'A' && key[i] <= 'Z') ||
+			(key[i] >= '0' && key[i] <= '9') ||
+			key[i] == '_'
 				? key[i]
 				: '';
 

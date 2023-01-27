@@ -9,7 +9,7 @@ import {
 	Schema,
 } from '@fincity/kirun-js';
 import axios from 'axios';
-import { NAMESPACE_UI_ENGINE } from '../constants';
+import { LOCAL_STORE_PREFIX, NAMESPACE_UI_ENGINE } from '../constants';
 import { getData } from '../context/StoreContext';
 import { ComponentProperty } from '../types/common';
 import { pathFromParams, queryParamsSerializer } from './utils';
@@ -28,7 +28,7 @@ const SIGNATURE = new FunctionSignature('SendData')
 				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.UrlParameters`).setDefaultValue({
 					Authorization: {
 						location: {
-							expression: 'LocalStore.AuthToken',
+							expression: `${LOCAL_STORE_PREFIX}.AuthToken`,
 							type: 'EXPRESSION',
 						},
 					},

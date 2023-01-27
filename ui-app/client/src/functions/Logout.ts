@@ -8,7 +8,7 @@ import {
 	Schema,
 } from '@fincity/kirun-js';
 import axios from 'axios';
-import { NAMESPACE_UI_ENGINE } from '../constants';
+import { LOCAL_STORE_PREFIX, NAMESPACE_UI_ENGINE } from '../constants';
 import { getDataFromPath, setData } from '../context/StoreContext';
 
 const SIGNATURE = new FunctionSignature('Login')
@@ -26,7 +26,7 @@ const SIGNATURE = new FunctionSignature('Login')
 export class Logout extends AbstractFunction {
 	protected async internalExecute(context: FunctionExecutionParameters): Promise<FunctionOutput> {
 		try {
-			const token = getDataFromPath('LocalStore.AuthToken', []);
+			const token = getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []);
 
 			const response = await axios({
 				url: 'api/security/revoke',
@@ -35,9 +35,10 @@ export class Logout extends AbstractFunction {
 			});
 
 			setData('Store.auth', undefined, undefined, true);
-			setData('LocalStore.AuthToken', undefined, undefined, true);
+			setData(`${LOCAL_STORE_PREFIX}.AuthToken`, undefined, undefined, true);
 			setData('Store.pageDefinition', {});
 			setData('Store.messages', []);
+			setData('Store.validations', {});
 			setData('Store.pageData', {});
 			setData('Store.application', undefined);
 			setData('Store.functionExecutions', {});

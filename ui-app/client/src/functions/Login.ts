@@ -10,7 +10,7 @@ import {
 	Schema,
 } from '@fincity/kirun-js';
 import axios from 'axios';
-import { NAMESPACE_UI_ENGINE } from '../constants';
+import { LOCAL_STORE_PREFIX, NAMESPACE_UI_ENGINE } from '../constants';
 import { getDataFromPath, setData } from '../context/StoreContext';
 
 const SIGNATURE = new FunctionSignature('Login')
@@ -46,11 +46,12 @@ export class Login extends AbstractFunction {
 			});
 
 			setData('Store.auth', response.data);
-			setData('LocalStore.AuthToken', response.data?.accessToken);
+			setData(`${LOCAL_STORE_PREFIX}.AuthToken`, response.data?.accessToken);
 
 			setData('Store.pageDefinition', {});
 			setData('Store.messages', []);
 			setData('Store.pageData', {});
+			setData('Store.validations', {});
 			setData('Store.application', undefined);
 			setData('Store.functionExecutions', {});
 

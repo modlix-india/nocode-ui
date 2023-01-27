@@ -9,7 +9,7 @@ import {
 	setData,
 	store,
 } from '../context/StoreContext';
-import { STORE_PREFIX } from '../constants';
+import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../constants';
 import { StyleResolution } from '../types/common';
 import { StyleResolutionDefinition } from '../util/styleProcessor';
 import { Messages } from './Messages/Messages';
@@ -38,7 +38,12 @@ export function App() {
 			addListenerAndCallImmediately(
 				async (_, appDef) => {
 					if (appDef === undefined) {
-						await runEvent(getAppDefinition, 'initialLoadFunction');
+						await runEvent(
+							getAppDefinition,
+							'initialLoadFunction',
+							GLOBAL_CONTEXT_NAME,
+							[],
+						);
 						setApplicationLoaded(true);
 						return;
 					}

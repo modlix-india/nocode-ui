@@ -14,11 +14,12 @@ import { Component } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './textBoxProperties';
 import TextBoxStyle from './TextBoxStyle';
 import useDefinition from '../util/useDefinition';
-import { isNullValue } from '@fincity/kirun-js';
+import { deepEqual, isNullValue } from '@fincity/kirun-js';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
 import { flattenUUID } from '../util/uuid';
 import { runEvent } from '../util/runEvent';
+import { validate } from '../../util/validationProcessor';
 
 interface mapType {
 	[key: string]: any;
@@ -29,6 +30,7 @@ function TextBox(props: ComponentProps) {
 	const [errorMessage, setErrorMessage] = React.useState('');
 	const [focus, setFocus] = React.useState(false);
 	const [show, setShow] = React.useState(false);
+	const [validationMessages, setValidationMessages] = React.useState<Array<string>>([]);
 	const mapValue: mapType = {
 		UNDEFINED: undefined,
 		NULL: null,
@@ -59,6 +61,7 @@ function TextBox(props: ComponentProps) {
 			numberType,
 			isPassword,
 			onEnter,
+			validation,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -73,25 +76,28 @@ function TextBox(props: ComponentProps) {
 		{ focus, readOnly },
 		stylePropertiesWithPseudoStates,
 	);
-	const [value, setvalue] = React.useState(defaultValue ?? '');
+	const [value, setValue] = React.useState(defaultValue ?? '');
+
 	if (!bindingPath) throw new Error('Definition requires bindingpath');
 	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
+
 	React.useEffect(() => {
 		const initValue = getDataFromLocation(bindingPath, locationHistory, pageExtractor);
 		if (!isNullValue(defaultValue) && isNullValue(initValue)) {
 			setData(bindingPathPath, defaultValue, context.pageName);
 		}
-		setvalue(initValue ?? defaultValue?.toString() ?? '');
+		setValue(initValue ?? defaultValue?.toString() ?? '');
 	}, []);
+
 	React.useEffect(
 		() =>
 			addListener(
 				(_, value) => {
 					if (value === undefined || value === null) {
-						setvalue('');
+						setValue('');
 						return;
 					}
-					setvalue(value);
+					setValue(value);
 				},
 				pageExtractor,
 				bindingPathPath,
@@ -115,7 +121,29 @@ function TextBox(props: ComponentProps) {
 		}
 	}, []);
 
+	useEffect(() => {
+		if (!validation?.length) return;
+
+		const msgs = validate(props.definition, props.pageDefinition, validation, value);
+		setValidationMessages(msgs);
+
+		setData(
+			`Store.validations.${context.pageName}.${flattenUUID(definition.key)}`,
+			msgs.length ? msgs : undefined,
+			context.pageName,
+			true,
+		);
+		return () =>
+			setData(
+				`Store.validations.${context.pageName}.${flattenUUID(definition.key)}`,
+				undefined,
+				context.pageName,
+				true,
+			);
+	}, [value, validation]);
+
 	const handleBlur = async (event: any) => {
+		setIsDirty(true);
 		let temp = value === '' && emptyValue ? mapValue[emptyValue] : value;
 		if (valueType === 'NUMBER') {
 			const tempNumber =
@@ -142,7 +170,7 @@ function TextBox(props: ComponentProps) {
 		}
 		let temp = text === '' && emptyValue ? mapValue[emptyValue] : text;
 		if (updateStoreImmediately) setData(bindingPathPath, temp, context?.pageName);
-		if (!updateStoreImmediately) setvalue(text);
+		if (!updateStoreImmediately) setValue(text);
 	};
 
 	const handleNumberChange = (text: string) => {
@@ -154,7 +182,7 @@ function TextBox(props: ComponentProps) {
 		let tempNumber = numberType === 'DECIMAL' ? parseFloat(temp) : parseInt(temp);
 		temp = !isNaN(tempNumber) ? tempNumber : temp;
 		if (updateStoreImmediately) setData(bindingPathPath, temp, context?.pageName);
-		if (!updateStoreImmediately) setvalue(!isNaN(tempNumber) ? temp?.toString() : '');
+		if (!updateStoreImmediately) setValue(!isNaN(tempNumber) ? temp?.toString() : '');
 	};
 	const handleChange = (event: any) => {
 		if (!isDirty) {
@@ -178,9 +206,18 @@ function TextBox(props: ComponentProps) {
 				if (!updateStoreImmediately) {
 					await handleBlur(e);
 				}
-				await runEvent(clickEvent, onEnter, props.context.pageName);
+				await runEvent(clickEvent, onEnter, props.context.pageName, props.locationHistory);
 		  }
 		: undefined;
+
+	const validationMessagesComp =
+		validationMessages?.length && (value || isDirty) ? (
+			<div className="_validationMessages">
+				{validationMessages.map(msg => (
+					<div key={msg}>{msg}</div>
+				))}
+			</div>
+		) : undefined;
 	return (
 		<div className="comp compTextBox" style={computedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />
@@ -281,6 +318,7 @@ function TextBox(props: ComponentProps) {
 			>
 				{errorMessage ? errorMessage : supportingText}
 			</label>
+			{validationMessagesComp}
 		</div>
 	);
 }
