@@ -157,6 +157,7 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		[COMPONENT_STYLE_GROUP_PROPERTIES.transform.type]:
 			COMPONENT_STYLE_GROUP_PROPERTIES.transform,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.zIndex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.zIndex,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.shape.type]: COMPONENT_STYLE_GROUP_PROPERTIES.shape,
 	},
 };
 

@@ -107,6 +107,7 @@ const COMPONENT_STYLE_GROUPS: { [key: string]: Array<string> } = {
 		'borderWidth',
 	],
 	boxShadow: ['boxShadow'],
+	shape: ['clipPath'],
 	color: ['color'],
 	container: ['overflow', 'overflowWrap', 'overflowX', 'overflowY'],
 	flex: [
@@ -217,6 +218,13 @@ const COMPONENT_STYLE_GROUP_PROPERTIES: { [key: string]: ComponentStylePropertyG
 		type: 'color',
 		displayName: 'Color',
 		description: 'Color',
+		target: ['comp'],
+	},
+	shape: {
+		name: 'shape',
+		type: 'shape',
+		displayName: 'Shape',
+		description: 'Shape',
 		target: ['comp'],
 	},
 	container: {
