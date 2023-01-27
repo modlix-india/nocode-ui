@@ -3,8 +3,13 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { RenderEngineContainer } from '../Engine/RenderEngineContainer';
 import * as getAppDefinition from '../definitions/getAppDefinition.json';
 import { runEvent } from '../components/util/runEvent';
-import { addListener, setData, store } from '../context/StoreContext';
-import { STORE_PREFIX } from '../constants';
+import {
+	addListener,
+	addListenerAndCallImmediately,
+	setData,
+	store,
+} from '../context/StoreContext';
+import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../constants';
 import { StyleResolution } from '../types/common';
 import { StyleResolutionDefinition } from '../util/styleProcessor';
 import { Messages } from './Messages/Messages';
@@ -28,25 +33,33 @@ export function App() {
 	const [isApplicationLoadFailed, setIsApplicationFailed] = useState(false);
 	const [applicationLoaded, setApplicationLoaded] = useState(false);
 
-	useEffect(() => {
-		(async () => {
-			await runEvent(getAppDefinition, 'initialLoadFunction');
-			setApplicationLoaded(true);
-		})();
+	useEffect(
+		() =>
+			addListenerAndCallImmediately(
+				async (_, appDef) => {
+					if (appDef === undefined) {
+						await runEvent(
+							getAppDefinition,
+							'initialLoadFunction',
+							GLOBAL_CONTEXT_NAME,
+							[],
+						);
+						setApplicationLoaded(true);
+						return;
+					}
 
-		if (!globalThis.nodeDev) return;
+					const { properties } = appDef;
+					if (!properties || !globalThis.nodeDev) return;
 
-		return addListener(
-			(_, { properties } = {}) => {
-				if (!properties) return;
-				processTagType(properties.links, 'LINK');
-				processTagType(properties.scripts, 'SCRIPT');
-				processTagType(properties.metas, 'META');
-			},
-			undefined,
-			`${STORE_PREFIX}.application`,
-		);
-	}, []);
+					processTagType(properties.links, 'LINK');
+					processTagType(properties.scripts, 'SCRIPT');
+					processTagType(properties.metas, 'META');
+				},
+				undefined,
+				`${STORE_PREFIX}.application`,
+			),
+		[],
+	);
 
 	useEffect(
 		() =>

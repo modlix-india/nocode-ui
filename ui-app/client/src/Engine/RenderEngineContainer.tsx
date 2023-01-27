@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, Location } from 'react-router-dom';
-import { GOBAL_CONTEXT_NAME, STORE_PREFIX } from '../constants';
+import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../constants';
 import {
 	addListener,
 	addListenerAndCallImmediately,
@@ -12,6 +12,7 @@ import * as getPageDefinition from './../definitions/getPageDefinition.json';
 import { runEvent } from '../components/util/runEvent';
 import Page from '../components/Page';
 import { processLocation } from '../util/locationProcessor';
+import { isNullValue } from '@fincity/kirun-js';
 
 export const RenderEngineContainer = () => {
 	const location = useLocation();
@@ -30,7 +31,7 @@ export const RenderEngineContainer = () => {
 		let pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
 		if (!pDef) {
 			(async () => {
-				await runEvent(getPageDefinition, 'pageDefinition');
+				await runEvent(getPageDefinition, 'pageDefinition', GLOBAL_CONTEXT_NAME, []);
 				pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
 				setPageDefinition(pDef);
 				setCurrentPageName(pageName);
@@ -54,8 +55,18 @@ export const RenderEngineContainer = () => {
 	useEffect(
 		() =>
 			addListenerAndCallImmediately(
-				(_, value) => {
+				async (_, value) => {
 					setShellPageDefinition(value);
+					if (isNullValue(value)) return;
+					const { properties: { onLoadEvent = undefined } = {}, eventFunctions } = value;
+					if (isNullValue(onLoadEvent) || isNullValue(eventFunctions[onLoadEvent]))
+						return;
+					await runEvent(
+						eventFunctions[onLoadEvent],
+						'appOnLoad',
+						GLOBAL_CONTEXT_NAME,
+						[],
+					);
 				},
 				undefined,
 				`${STORE_PREFIX}.application.properties.shellPageDefinition`,
@@ -72,7 +83,12 @@ export const RenderEngineContainer = () => {
 		)
 			return;
 
-		runEvent(shellPageDefinition.eventFunctions[shellPageDefinition.properties.onLoadFunction]);
+		runEvent(
+			shellPageDefinition.eventFunctions[shellPageDefinition.properties.onLoadFunction],
+			'appOnLoad',
+			GLOBAL_CONTEXT_NAME,
+			[],
+		);
 	}, [shellPageDefinition?.properties?.onLoadFunction]);
 
 	if (currentPageName && pageDefinition) {
@@ -83,7 +99,7 @@ export const RenderEngineContainer = () => {
 				<Page
 					locationHistory={[]}
 					definition={shellPageDefinition}
-					context={{ pageName: GOBAL_CONTEXT_NAME }}
+					context={{ pageName: GLOBAL_CONTEXT_NAME }}
 				/>
 			);
 
@@ -103,7 +119,7 @@ export const RenderEngineContainer = () => {
 			<Page
 				locationHistory={[]}
 				definition={shellPageDefinition}
-				context={{ pageName: GOBAL_CONTEXT_NAME }}
+				context={{ pageName: GLOBAL_CONTEXT_NAME }}
 			/>
 		);
 	}

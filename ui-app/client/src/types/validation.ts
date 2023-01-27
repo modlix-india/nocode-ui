@@ -2,16 +2,16 @@ import { Schema } from '@fincity/kirun-js';
 import { ComponentProperty } from './common';
 
 export enum ValidationType {
-	EVENT_FUNCTION,
+	// EVENT_FUNCTION,
 	MANDATORY,
 	REGEX,
-	UNIQUE,
+	// UNIQUE,
 	STRING_LENGTH,
 	BOOLEAN_CONDITION,
 	SCHEMA_TYPE,
 	EMAIL,
 	NUMBER_VALUE,
-	DATE_FORMAT,
+	// DATE_FORMAT,
 }
 
 export interface Validation {

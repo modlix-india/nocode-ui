@@ -177,7 +177,10 @@ export interface ComponentDefinition {
 	bindingPath?: DataLocation;
 	type: string;
 	properties?: {
-		[key: string]: ComponentProperty<any>;
+		[key: string]:
+			| ComponentProperty<any>
+			| { [key: string]: ComponentProperty<any> }
+			| { [key: string]: Validation };
 	};
 	styleProperties?: ComponentStyle;
 	validations?: Array<Validation>;
@@ -202,6 +205,11 @@ export interface PageDefinition {
 export interface ComponentProps {
 	definition: ComponentDefinition;
 	pageDefinition: PageDefinition;
-	locationHistory: Array<DataLocation | string>;
+	locationHistory: Array<LocationHistory>;
 	context: RenderContext;
+}
+
+export interface LocationHistory {
+	location: DataLocation | string;
+	index: number;
 }
