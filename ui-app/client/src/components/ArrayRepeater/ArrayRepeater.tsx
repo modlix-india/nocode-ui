@@ -46,7 +46,7 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
 
 	React.useEffect(() => {
-		addListener(
+		return addListener(
 			(_, value) => {
 				setValue(value);
 			},

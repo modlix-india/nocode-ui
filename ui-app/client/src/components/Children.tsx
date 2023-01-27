@@ -1,5 +1,5 @@
 import React from 'react';
-import { DataLocation, RenderContext } from '../types/common';
+import { ComponentDefinition, DataLocation, LocationHistory, RenderContext } from '../types/common';
 import {
 	addListener,
 	getData,
@@ -25,6 +25,18 @@ const getPageDefinition = (location: any) => {
 	return pDef;
 };
 
+function processDefinitionLocationHistory(
+	def: ComponentDefinition,
+	locationHistory: Array<LocationHistory>,
+): ComponentDefinition {
+	if (!locationHistory?.length) return def;
+
+	const newDef = JSON.parse(JSON.stringify(def));
+	const str = locationHistory.map(e => e.index).join('_');
+	newDef.key = newDef.key + '_' + str;
+	return newDef;
+}
+
 function Children({
 	pageDefinition,
 	children,
@@ -34,7 +46,7 @@ function Children({
 	pageDefinition: any;
 	children: any;
 	context: RenderContext;
-	locationHistory: Array<DataLocation | string>;
+	locationHistory: Array<LocationHistory>;
 }) {
 	const [visibilityPaths, setVisibilityPaths] = React.useState(Date.now());
 	const location = useLocation();
@@ -49,8 +61,9 @@ function Children({
 		let set = Object.entries(children ?? {})
 			.filter(([, v]) => !!v)
 			.map(([k]) => pageDefinition.componentDefinition[k])
+			.map(def => processDefinitionLocationHistory(def, locationHistory))
 			.filter(e => !!e?.properties?.visibility)
-			.map(e => getPathsFrom(e.properties.visibility, evaluatorMaps))
+			.map(e => getPathsFrom(e.properties!.visibility, evaluatorMaps))
 			.reduce((a, c) => {
 				for (let str of c) a.add(str);
 				return a;
@@ -65,6 +78,7 @@ function Children({
 			{Object.entries(children ?? {})
 				.filter(([, v]) => !!v)
 				.map(([k]) => pageDefinition.componentDefinition[k])
+				.map(def => processDefinitionLocationHistory(def, locationHistory))
 				.map(e => {
 					if (!e?.properties?.visibility) return e;
 
@@ -75,8 +89,8 @@ function Children({
 				.filter(e => !!e)
 				.sort((a: any, b: any) => (a?.displayOrder ?? 0) - (b?.displayOrder ?? 0))
 				.map(e => {
-					let comp = Components.get(e.type);
-					if (!comp && e.type === 'Page') {
+					let comp = Components.get(e!.type);
+					if (!comp && e!.type === 'Page') {
 						const pageDef = React.useMemo(
 							() => getPageDefinition(location),
 							[location],
@@ -84,7 +98,7 @@ function Children({
 						if (pageDef)
 							return React.createElement(Page, {
 								definition: pageDef,
-								key: pageDef.key,
+								key: pageDef.name,
 								context: { pageName: pageDef.name },
 								locationHistory: [],
 							});
@@ -93,7 +107,7 @@ function Children({
 					if (!comp) return undefined;
 					return React.createElement(comp, {
 						definition: e,
-						key: e.key,
+						key: e!.key,
 						pageDefinition: pageDefinition,
 						context,
 						locationHistory: locationHistory,

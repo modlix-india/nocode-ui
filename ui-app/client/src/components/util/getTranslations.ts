@@ -1,3 +1,4 @@
+import { LOCAL_STORE_PREFIX } from '../../constants';
 import { getDataFromPath } from '../../context/StoreContext';
 
 export function getTranslations(
@@ -6,7 +7,7 @@ export function getTranslations(
 ) {
 	if (!key) return key;
 	if (!languageObject) return key;
-	const lang = getDataFromPath('Store.currentLanguage', []) ?? 'en';
+	const lang = getDataFromPath(`${LOCAL_STORE_PREFIX}.currentLanguage`, []) ?? 'en';
 	if (!languageObject[lang]) return key;
 	return languageObject[lang][key] ?? key;
 }

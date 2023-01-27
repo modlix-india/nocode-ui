@@ -5,6 +5,7 @@ import {
 	SCHEMA_REF_BOOL_COMP_PROP,
 	SCHEMA_REF_DATA_LOCATION,
 	SCHEMA_REF_STRING_COMP_PROP,
+	SCHEMA_REF_VALIDATION,
 } from '../../constants';
 import {
 	ComponentPropertyDefinition,
@@ -80,19 +81,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'validation',
-		schema: Schema.ofArray(
-			'validation',
-			Schema.ofRef(`${NAMESPACE_UI_ENGINE}.EventFunctionValidation`),
-			Schema.ofRef(`${NAMESPACE_UI_ENGINE}.MandatoryValidation`),
-			Schema.ofRef(`${NAMESPACE_UI_ENGINE}.EmailValidation`),
-			Schema.ofRef(`${NAMESPACE_UI_ENGINE}.RegexValidation`),
-			Schema.ofRef(`${NAMESPACE_UI_ENGINE}.UniqueValidation`),
-			Schema.ofRef(`${NAMESPACE_UI_ENGINE}.StringValidation`),
-			Schema.ofRef(`${NAMESPACE_UI_ENGINE}.NumberValidation`),
-			Schema.ofRef(`${NAMESPACE_UI_ENGINE}.BooleanConditionValidation`),
-			Schema.ofRef(`${NAMESPACE_UI_ENGINE}.SchemaTypeValidation`),
-			Schema.ofRef(`${NAMESPACE_UI_ENGINE}.DateFormatValidation`),
-		),
+		schema: Schema.ofRef(SCHEMA_REF_VALIDATION),
 		displayName: 'Validation',
 		description: 'Validation Rule',
 		editor: ComponentPropertyEditor.VALIDATION,
