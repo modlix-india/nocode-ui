@@ -52,6 +52,7 @@ export class Login extends AbstractFunction {
 			setData('Store.messages', []);
 			setData('Store.pageData', {});
 			setData('Store.validations', {});
+			setData('Store.validationTriggers', {});
 			setData('Store.application', undefined);
 			setData('Store.functionExecutions', {});
 

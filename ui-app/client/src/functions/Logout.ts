@@ -39,6 +39,7 @@ export class Logout extends AbstractFunction {
 			setData('Store.pageDefinition', {});
 			setData('Store.messages', []);
 			setData('Store.validations', {});
+			setData('Store.validationTriggers', {});
 			setData('Store.pageData', {});
 			setData('Store.application', undefined);
 			setData('Store.functionExecutions', {});
