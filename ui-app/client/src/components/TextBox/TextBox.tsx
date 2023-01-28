@@ -211,7 +211,7 @@ function TextBox(props: ComponentProps) {
 		: undefined;
 
 	const validationMessagesComp =
-		validationMessages?.length && (value || isDirty) ? (
+		validationMessages?.length && (value || isDirty || context.showValidationMessages) ? (
 			<div className="_validationMessages">
 				{validationMessages.map(msg => (
 					<div key={msg}>{msg}</div>

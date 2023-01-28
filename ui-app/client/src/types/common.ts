@@ -23,6 +23,7 @@ export interface RenderContext {
 	pageName: string;
 	isReadonly?: boolean;
 	formKey?: Array<string>;
+	showValidationMessages?: boolean;
 }
 
 export enum ComponentPropertyDataPathType {
