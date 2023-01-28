@@ -57,7 +57,13 @@ function ButtonComponent(props: ComponentProps) {
 	const handleClick = async () =>
 		clickEvent &&
 		!isLoading &&
-		(await runEvent(clickEvent, onClick, props.context.pageName, props.locationHistory));
+		(await runEvent(
+			clickEvent,
+			onClick,
+			props.context.pageName,
+			props.locationHistory,
+			props.pageDefinition,
+		));
 
 	const rightIconTag =
 		!type?.startsWith('fabButton') && !leftIcon ? (

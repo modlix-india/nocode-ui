@@ -200,6 +200,10 @@ export interface PageDefinition {
 	eventFunctions: {
 		[key: string]: any;
 	};
+	rootComponent: string;
+	componentDefinition: {
+		[key: string]: ComponentDefinition;
+	};
 	translations: { [key: string]: { [key: string]: string } };
 }
 

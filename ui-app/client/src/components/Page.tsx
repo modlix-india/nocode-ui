@@ -5,7 +5,7 @@ import Children from './Children';
 import { isNullValue } from '@fincity/kirun-js';
 import { runEvent } from './util/runEvent';
 import { GLOBAL_CONTEXT_NAME } from '../constants';
-import { addListener } from '../context/StoreContext';
+import { addListener, addListenerWithChildrenActivity } from '../context/StoreContext';
 
 function Page({
 	definition,
@@ -26,16 +26,19 @@ function Page({
 
 		if (isNullValue(onLoadEvent) || isNullValue(eventFunctions[onLoadEvent])) return;
 		(async () =>
-			await runEvent(eventFunctions[onLoadEvent], 'pageOnLoad', pageName, locationHistory))();
+			await runEvent(
+				eventFunctions[onLoadEvent],
+				'pageOnLoad',
+				pageName,
+				locationHistory,
+				definition,
+			))();
 	}, [pageName]);
 
 	useEffect(
 		() =>
-			addListener(
-				() => {
-					console.log('validation trigger');
-					setValidationChangedAt(Date.now());
-				},
+			addListenerWithChildrenActivity(
+				() => setValidationChangedAt(Date.now()),
 				undefined,
 				`Store.validationTriggers.${pageName}`,
 			),

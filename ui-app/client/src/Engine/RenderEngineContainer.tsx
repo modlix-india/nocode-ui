@@ -83,12 +83,13 @@ export const RenderEngineContainer = () => {
 		)
 			return;
 
-		runEvent(
-			shellPageDefinition.eventFunctions[shellPageDefinition.properties.onLoadFunction],
-			'appOnLoad',
-			GLOBAL_CONTEXT_NAME,
-			[],
-		);
+		(async () =>
+			await runEvent(
+				shellPageDefinition.eventFunctions[shellPageDefinition.properties.onLoadFunction],
+				'appOnLoad',
+				GLOBAL_CONTEXT_NAME,
+				[],
+			))();
 	}, [shellPageDefinition?.properties?.onLoadFunction]);
 
 	if (currentPageName && pageDefinition) {
