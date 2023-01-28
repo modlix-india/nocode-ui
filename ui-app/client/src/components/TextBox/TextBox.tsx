@@ -206,7 +206,13 @@ function TextBox(props: ComponentProps) {
 				if (!updateStoreImmediately) {
 					await handleBlur(e);
 				}
-				await runEvent(clickEvent, onEnter, props.context.pageName, props.locationHistory);
+				await runEvent(
+					clickEvent,
+					onEnter,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				);
 		  }
 		: undefined;
 

@@ -100,7 +100,13 @@ function Tags(props: ComponentProps) {
 		}
 		if (!readOnly) {
 			(async () =>
-				await runEvent(onCloseEvent, key, props.context.pageName, props.locationHistory))();
+				await runEvent(
+					onCloseEvent,
+					key,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				))();
 		}
 	};
 
