@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { HelperComponent } from './HelperComponent';
 import { DataLocation, LocationHistory, RenderContext } from '../types/common';
 import Children from './Children';
 import { isNullValue } from '@fincity/kirun-js';
 import { runEvent } from './util/runEvent';
 import { GLOBAL_CONTEXT_NAME } from '../constants';
+import { addListener } from '../context/StoreContext';
 
 function Page({
 	definition,
@@ -16,6 +17,7 @@ function Page({
 	locationHistory: Array<LocationHistory>;
 }) {
 	const { pageName } = context;
+	const [, setValidationChangedAt] = useState(Date.now());
 
 	useEffect(() => {
 		const { eventFunctions, properties: { onLoadEvent = undefined } = {} } = definition;
@@ -26,6 +28,19 @@ function Page({
 		(async () =>
 			await runEvent(eventFunctions[onLoadEvent], 'pageOnLoad', pageName, locationHistory))();
 	}, [pageName]);
+
+	useEffect(
+		() =>
+			addListener(
+				() => {
+					console.log('validation trigger');
+					setValidationChangedAt(Date.now());
+				},
+				undefined,
+				`Store.validationTriggers.${pageName}`,
+			),
+		[],
+	);
 
 	if (!definition) return <>...</>;
 	return (

@@ -16,6 +16,7 @@ import Nothing from './Nothing';
 import { TokenValueExtractor } from '@fincity/kirun-js';
 import { getPathsFrom } from './util/getPaths';
 import { processLocation } from '../util/locationProcessor';
+import { flattenUUID } from './util/uuid';
 
 const getPageDefinition = (location: any) => {
 	let { pageName } = processLocation(location);
@@ -73,6 +74,9 @@ function Children({
 		return addListener(() => setVisibilityPaths(Date.now()), pageExtractor, ...set);
 	}, []);
 
+	const vTriggers =
+		getDataFromPath(`Store.validationTriggers.${context.pageName}`, locationHistory) ?? {};
+
 	return (
 		<>
 			{Object.entries(children ?? {})
@@ -105,11 +109,15 @@ function Children({
 					}
 					if (!comp) comp = Nothing;
 					if (!comp) return undefined;
+					const fKey = flattenUUID(e?.key);
+					const ctx = vTriggers[fKey]
+						? { ...context, showValidationMessages: true }
+						: context;
 					return React.createElement(comp, {
 						definition: e,
 						key: e!.key,
 						pageDefinition: pageDefinition,
-						context,
+						context: ctx,
 						locationHistory: locationHistory,
 					});
 				})

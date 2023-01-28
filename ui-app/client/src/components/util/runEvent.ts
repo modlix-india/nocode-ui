@@ -20,6 +20,32 @@ import { UISchemaRepository } from '../../schemas/common';
 import { LocationHistory } from '../../types/common';
 import UUID, { flattenUUID } from './uuid';
 
+function updateExpressionsWithLocationHistory(
+	def: FunctionDefinition,
+	locationHistory: Array<LocationHistory>,
+	pageExtractor: PageStoreExtractor,
+) {
+	def.getSteps().forEach(e =>
+		e.getParameterMap().forEach(p =>
+			p.forEach(pr => {
+				if (pr.getType() !== ParameterReferenceType.EXPRESSION) return;
+				pr.setValue(
+					dotPathBuilder(
+						getDataFromLocation(
+							{ type: 'EXPRESSION', expression: pr.getExpression() },
+							locationHistory,
+							pageExtractor,
+						),
+						locationHistory,
+					),
+				);
+				pr.setType(ParameterReferenceType.VALUE);
+				pr.setExpression('');
+			}),
+		),
+	);
+}
+
 export const runEvent = async (
 	functionDefinition: any,
 	key: string = UUID(),
@@ -31,25 +57,16 @@ export const runEvent = async (
 		const def: FunctionDefinition = FunctionDefinition.from(functionDefinition);
 		const pageExtractor = PageStoreExtractor.getForContext(page);
 		if (locationHistory?.length) {
-			def.getSteps().forEach(e =>
-				e.getParameterMap().forEach(p =>
-					p.forEach(pr => {
-						if (pr.getType() !== ParameterReferenceType.EXPRESSION) return;
-						pr.setValue(
-							dotPathBuilder(
-								getDataFromLocation(
-									{ type: 'EXPRESSION', expression: pr.getExpression() },
-									locationHistory,
-									pageExtractor,
-								),
-								locationHistory,
-							),
-						);
-						pr.setType(ParameterReferenceType.VALUE);
-						pr.setExpression('');
-					}),
-				),
-			);
+			updateExpressionsWithLocationHistory(def, locationHistory, pageExtractor);
+		}
+		if (functionDefinition.validationCheck) {
+			const suffixes: Array<string> = [];
+			const flatId = flattenUUID(functionDefinition.validationCheck);
+			setData(`Store.validationTriggers.${page}.${flatId}`, true, page);
+			for (let i = 0; i < locationHistory?.length ?? 0; i++) {
+				suffixes.push((i === 0 ? '' : suffixes[i - 1]) + '_' + locationHistory[i].index);
+				setData(`Store.validationTriggers.${page}.${flatId}${suffixes[i]}`, true, page);
+			}
 		}
 		const runtime = new KIRuntime(def, false);
 		const fep = new FunctionExecutionParameters(
