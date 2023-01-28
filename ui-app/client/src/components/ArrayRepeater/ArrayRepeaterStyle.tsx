@@ -4,13 +4,16 @@ import { styleProperties, styleDefaults } from './arrayRepeaterStyleProperties';
 
 const PREFIX = '.comp.compArrayRepeater';
 export default function ArrayRepeaterStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
-	const css = `
-	${PREFIX} .repeaterProperties {
-		display:flex;
-		align-items: center;
-		cursor: grab;
-		gap: 16px;
+	const css =
+		`
+	${PREFIX}{
+		flex-direction: column;
 	}
+
+	${PREFIX}._ROWLAYOUT{
+		flex-direction: row;
+	}
+
 	${PREFIX} .disabled {
 		pointer-events: none;
 		opacity: 0.7;

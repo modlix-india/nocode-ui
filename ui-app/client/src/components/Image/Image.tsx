@@ -29,7 +29,14 @@ function ImageComponent(props: ComponentProps) {
 	const clickEvent = onClickEvent ? props.pageDefinition.eventFunctions[onClickEvent] : undefined;
 
 	const handleClick = () => {
-		(async () => await runEvent(clickEvent, key, props.context.pageName))();
+		(async () =>
+			await runEvent(
+				clickEvent,
+				key,
+				props.context.pageName,
+				props.locationHistory,
+				props.pageDefinition,
+			))();
 	};
 	const handleError = (e: any) => {
 		if (fallBackImg) {

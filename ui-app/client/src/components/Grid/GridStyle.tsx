@@ -5,13 +5,6 @@ import { styleProperties, styleDefaults } from './gridStyleProperties';
 
 const PREFIX = '.comp.compGrid';
 export default function GridStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
-	const TABLET_MIN_WIDTH = StyleResolutionDefinition.get(
-		StyleResolution.TABLET_POTRAIT_SCREEN,
-	)?.minWidth;
-	const DESKTOP_MIN_WIDTH = StyleResolutionDefinition.get(
-		StyleResolution.DESKTOP_SCREEN,
-	)?.minWidth;
-
 	const css =
 		`
 		${PREFIX} ._anchorGrid,
@@ -22,43 +15,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._anchorGrid._ROWLAYOUT,
 		${PREFIX}._noAnchorGrid._ROWLAYOUT {
 			flex-direction: row;
-		}
-
-		._ROWLAYOUT,._SINGLECOLUMNLAYOUT {
-			display: flex;
-		}
-
-		._FIVECOLUMNSLAYOUT,
-		._FOURCOLUMNSLAYOUT,
-		._THREECOLUMNSLAYOUT,
-		._TWOCOLUMNSLAYOUT {
-			display: grid;
-			grid-template-columns: 1fr;
-		}
-
-		@media screen and (min-width: ${TABLET_MIN_WIDTH}px) {
-		
-			._FIVECOLUMNSLAYOUT,
-			._FOURCOLUMNSLAYOUT,
-			._THREECOLUMNSLAYOUT,
-			._TWOCOLUMNSLAYOUT {
-				grid-template-columns: 1fr 1fr;
-			}
-		}
-
-		@media screen and (min-width: ${DESKTOP_MIN_WIDTH}px) {
-		
-			._FIVECOLUMNSLAYOUT {
-				grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-			}
-	
-			._FOURCOLUMNSLAYOUT {
-				grid-template-columns: 1fr 1fr 1fr 1fr;
-			}
-	
-			._THREECOLUMNSLAYOUT {
-				grid-template-columns: 1fr 1fr 1fr;
-			}
 		}
 
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);

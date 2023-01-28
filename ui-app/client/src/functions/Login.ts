@@ -10,7 +10,7 @@ import {
 	Schema,
 } from '@fincity/kirun-js';
 import axios from 'axios';
-import { NAMESPACE_UI_ENGINE } from '../constants';
+import { LOCAL_STORE_PREFIX, NAMESPACE_UI_ENGINE } from '../constants';
 import { getDataFromPath, setData } from '../context/StoreContext';
 
 const SIGNATURE = new FunctionSignature('Login')
@@ -46,26 +46,27 @@ export class Login extends AbstractFunction {
 			});
 
 			setData('Store.auth', response.data);
-			setData('LocalStore.AuthToken', response.data?.accessToken);
+			setData(`${LOCAL_STORE_PREFIX}.AuthToken`, response.data?.accessToken);
 
-			let def = getDataFromPath('Store.pageDefinition', []);
-			if (!isNullValue(def)) {
-				def = JSON.parse(JSON.stringify(def));
-				const remKeys = Object.keys(def).filter(k => def[k].name !== k);
-				if (remKeys.length) remKeys.forEach(k => delete def[k]);
-
-				setData('Store.pageDefinition', def);
-			}
+			setData('Store.pageDefinition', {});
+			setData('Store.messages', []);
+			setData('Store.pageData', {});
+			setData('Store.validations', {});
+			setData('Store.validationTriggers', {});
+			setData('Store.application', undefined);
+			setData('Store.functionExecutions', {});
 
 			return new FunctionOutput([EventResult.outputOf(new Map([['data', response.data]]))]);
 		} catch (err: any) {
-			const errOutput = {
-				headers: err.response.headers,
-				data: err.response.data,
-				status: err.response.status,
-			};
 			return new FunctionOutput([
-				EventResult.of(Event.ERROR, new Map([['error', errOutput]])),
+				EventResult.of(
+					Event.ERROR,
+					new Map([
+						['data', err.response.data],
+						['headers', err.response.headers],
+						['status', err.response.status],
+					]),
+				),
 				EventResult.outputOf(new Map([['data', null]])),
 			]);
 		}
