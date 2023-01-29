@@ -144,7 +144,7 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 		let store;
 		store = localStore.getItem(key);
 
-		if (!store && !parts.length) {
+		if (!parts.length) {
 			localStore.setItem(key, value);
 			return;
 		}

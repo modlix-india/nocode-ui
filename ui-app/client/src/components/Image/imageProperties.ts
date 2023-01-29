@@ -50,7 +50,6 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 	'': {
 		[COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.border,
-			target: ['image'],
 		},
 		[COMPONENT_STYLE_GROUP_PROPERTIES.outline.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.outline,
@@ -58,10 +57,8 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		},
 		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: COMPONENT_STYLE_GROUP_PROPERTIES.padding,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: COMPONENT_STYLE_GROUP_PROPERTIES.margin,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.background.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.background,
-			target: ['image'],
-		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.background.type]:
+			COMPONENT_STYLE_GROUP_PROPERTIES.background,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.image.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.image,
 			target: ['image'],
@@ -72,14 +69,10 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.size,
 			target: ['image'],
 		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.opacity.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.opacity,
-			target: ['image'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.backdropFilter.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.backdropFilter,
-			target: ['image'],
-		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.opacity.type]: COMPONENT_STYLE_GROUP_PROPERTIES.opacity,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.backdropFilter.type]:
+			COMPONENT_STYLE_GROUP_PROPERTIES.backdropFilter,
+
 		[COMPONENT_STYLE_GROUP_PROPERTIES.transform.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.transform,
 			target: ['image'],
