@@ -135,6 +135,7 @@ export function getDataFromPath(path: string | undefined, locationHistory: Array
 }
 
 export function setData(path: string, value: any, context?: string, deleteKey?: boolean) {
+	console.log(path, LOCAL_STORE_PREFIX);
 	if (path.startsWith(LOCAL_STORE_PREFIX)) {
 		if (!value) return;
 		let parts = path.split(TokenValueExtractor.REGEX_DOT);
@@ -144,7 +145,7 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 		let store;
 		store = localStore.getItem(key);
 
-		if (!store && !parts.length) {
+		if (!parts.length) {
 			localStore.setItem(key, value);
 			return;
 		}

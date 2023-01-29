@@ -90,7 +90,7 @@ export function getPathsFromComponentDefinition(
 
 	if (properties) {
 		for (const [key, prop] of Object.entries(properties)) {
-			if (propDefMap[key].multiValued) {
+			if (propDefMap[key]?.multiValued) {
 				for (const iprop of Object.values(prop)) {
 					if (propDefMap[key].schema.getRef() === SCHEMA_REF_VALIDATION) {
 						for (const vprop of Object.values(iprop)) {
