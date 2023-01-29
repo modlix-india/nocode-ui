@@ -3,7 +3,7 @@ import CheckBox from './CheckBox/CheckBox';
 import Grid from './Grid/Grid';
 import Label from './Label/Label';
 import Link from './Link/Link';
-import Page from './Page';
+import Page from './Page/Page';
 import RadioButton from './RadioButton/RadioButton';
 import TextBox from './TextBox/TextBox';
 import ToggleButton from './ToggleButton/ToggleButton';
@@ -19,7 +19,7 @@ import Text from './Text/Text';
 export const Components = new Map<string, React.ElementType>([
 	[Button.name, Button.component],
 	[Grid.name, Grid.component],
-	['Page', Page],
+	[Page.name, Page.component],
 	[Label.name, Label.component],
 	[CheckBox.name, CheckBox.component],
 	[RadioButton.name, RadioButton.component],
@@ -53,4 +53,5 @@ export const ComponentDefinitions = [
 	Image,
 	Icon,
 	Text,
+	Page,
 ];
