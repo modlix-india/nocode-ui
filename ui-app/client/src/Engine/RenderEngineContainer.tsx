@@ -10,7 +10,7 @@ import {
 } from '../context/StoreContext';
 import * as getPageDefinition from './../definitions/getPageDefinition.json';
 import { runEvent } from '../components/util/runEvent';
-import Page from '../components/Page';
+import { Components } from '../components';
 import { processLocation } from '../util/locationProcessor';
 import { isNullValue } from '@fincity/kirun-js';
 
@@ -83,13 +83,16 @@ export const RenderEngineContainer = () => {
 		)
 			return;
 
-		runEvent(
-			shellPageDefinition.eventFunctions[shellPageDefinition.properties.onLoadFunction],
-			'appOnLoad',
-			GLOBAL_CONTEXT_NAME,
-			[],
-		);
+		(async () =>
+			await runEvent(
+				shellPageDefinition.eventFunctions[shellPageDefinition.properties.onLoadFunction],
+				'appOnLoad',
+				GLOBAL_CONTEXT_NAME,
+				[],
+			))();
 	}, [shellPageDefinition?.properties?.onLoadFunction]);
+
+	const Page = Components.get('Page')!;
 
 	if (currentPageName && pageDefinition) {
 		const { properties: { wrapShell = true } = {} } = pageDefinition;

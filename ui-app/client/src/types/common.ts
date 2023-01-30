@@ -23,6 +23,7 @@ export interface RenderContext {
 	pageName: string;
 	isReadonly?: boolean;
 	formKey?: Array<string>;
+	showValidationMessages?: boolean;
 }
 
 export enum ComponentPropertyDataPathType {
@@ -185,7 +186,7 @@ export interface ComponentDefinition {
 	styleProperties?: ComponentStyle;
 	validations?: Array<Validation>;
 	displayOrder?: number;
-	children: { [key: string]: boolean };
+	children?: { [key: string]: boolean };
 }
 
 export interface ComponentDefinitionValues {
@@ -198,6 +199,10 @@ export interface PageDefinition {
 	name: string;
 	eventFunctions: {
 		[key: string]: any;
+	};
+	rootComponent: string;
+	componentDefinition: {
+		[key: string]: ComponentDefinition;
 	};
 	translations: { [key: string]: { [key: string]: string } };
 }

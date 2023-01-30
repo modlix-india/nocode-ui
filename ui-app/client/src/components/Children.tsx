@@ -11,11 +11,11 @@ import {
 import { useLocation } from 'react-router-dom';
 import { STORE_PREFIX } from '../constants';
 import { Components } from './index';
-import Page from './Page';
 import Nothing from './Nothing';
 import { TokenValueExtractor } from '@fincity/kirun-js';
 import { getPathsFrom } from './util/getPaths';
 import { processLocation } from '../util/locationProcessor';
+import { flattenUUID } from './util/uuid';
 
 const getPageDefinition = (location: any) => {
 	let { pageName } = processLocation(location);
@@ -73,6 +73,9 @@ function Children({
 		return addListener(() => setVisibilityPaths(Date.now()), pageExtractor, ...set);
 	}, []);
 
+	const vTriggers =
+		getDataFromPath(`Store.validationTriggers.${context.pageName}`, locationHistory) ?? {};
+
 	return (
 		<>
 			{Object.entries(children ?? {})
@@ -90,26 +93,31 @@ function Children({
 				.sort((a: any, b: any) => (a?.displayOrder ?? 0) - (b?.displayOrder ?? 0))
 				.map(e => {
 					let comp = Components.get(e!.type);
-					if (!comp && e!.type === 'Page') {
+					if (!comp) comp = Nothing;
+					if (!comp) return undefined;
+					if (e!.type === 'Page') {
 						const pageDef = React.useMemo(
 							() => getPageDefinition(location),
 							[location],
 						);
 						if (pageDef)
-							return React.createElement(Page, {
+							return React.createElement(comp, {
 								definition: pageDef,
+								pageComponentDefinition: e,
 								key: pageDef.name,
 								context: { pageName: pageDef.name },
 								locationHistory: [],
 							});
 					}
-					if (!comp) comp = Nothing;
-					if (!comp) return undefined;
+					const fKey = flattenUUID(e?.key);
+					const ctx = vTriggers[fKey]
+						? { ...context, showValidationMessages: true }
+						: context;
 					return React.createElement(comp, {
 						definition: e,
 						key: e!.key,
 						pageDefinition: pageDefinition,
-						context,
+						context: ctx,
 						locationHistory: locationHistory,
 					});
 				})

@@ -7,7 +7,9 @@ export default function UUID() {
 	});
 }
 
-export function flattenUUID(key: string): string {
+export function flattenUUID(key: string | undefined): string {
+	if (key === undefined) return '';
+
 	let x = '';
 	for (let i = 0; i < key.length; i++)
 		x +=

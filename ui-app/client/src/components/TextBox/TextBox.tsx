@@ -206,12 +206,18 @@ function TextBox(props: ComponentProps) {
 				if (!updateStoreImmediately) {
 					await handleBlur(e);
 				}
-				await runEvent(clickEvent, onEnter, props.context.pageName, props.locationHistory);
+				await runEvent(
+					clickEvent,
+					onEnter,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				);
 		  }
 		: undefined;
 
 	const validationMessagesComp =
-		validationMessages?.length && (value || isDirty) ? (
+		validationMessages?.length && (value || isDirty || context.showValidationMessages) ? (
 			<div className="_validationMessages">
 				{validationMessages.map(msg => (
 					<div key={msg}>{msg}</div>

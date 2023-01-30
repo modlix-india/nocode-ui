@@ -51,9 +51,12 @@ export const localStoreExtractor = new LocalStoreExtractor(localStore, `${LOCAL_
 const {
 	getData: _getData,
 	setData: _setData,
-	addListener: _addListener,
 	store: _store,
+	addListener: _addListener,
 	addListenerAndCallImmediately: _addListenerAndCallImmediately,
+	addListenerWithChildrenActivity: _addListenerWithChildrenActivity,
+	addListenerAndCallImmediatelyWithChildrenActivity:
+		_addListenerAndCallImmediatelyWithChildrenActivity,
 } = useStore({}, STORE_PREFIX, localStoreExtractor);
 
 export const storeExtractor = new StoreExtractor(_store, `${STORE_PREFIX}.`);
@@ -132,6 +135,7 @@ export function getDataFromPath(path: string | undefined, locationHistory: Array
 }
 
 export function setData(path: string, value: any, context?: string, deleteKey?: boolean) {
+	console.log(path, LOCAL_STORE_PREFIX);
 	if (path.startsWith(LOCAL_STORE_PREFIX)) {
 		if (!value) return;
 		let parts = path.split(TokenValueExtractor.REGEX_DOT);
@@ -141,7 +145,7 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 		let store;
 		store = localStore.getItem(key);
 
-		if (!store && !parts.length) {
+		if (!parts.length) {
 			localStore.setItem(key, value);
 			return;
 		}
@@ -238,6 +242,35 @@ export const addListenerAndCallImmediately = (
 	});
 
 	return _addListenerAndCallImmediately(true, callback, ...nPaths);
+};
+
+export const addListenerWithChildrenActivity = (
+	callback: (path: string, value: any) => void,
+	pageExtractor?: PageStoreExtractor,
+	...path: Array<string>
+): (() => void) => {
+	if (!pageExtractor) return _addListenerWithChildrenActivity(callback, ...path);
+	const nPaths = path.map(e => {
+		if (!e.startsWith(pageExtractor.getPrefix())) return e;
+		return 'Store.pageData.' + pageExtractor.getPageName() + e.substring(4);
+	});
+
+	return _addListenerWithChildrenActivity(callback, ...nPaths);
+};
+
+export const addListenerAndCallImmediatelyWithChildrenActivity = (
+	callback: (path: string, value: any) => void,
+	pageExtractor?: PageStoreExtractor,
+	...path: Array<string>
+): (() => void) => {
+	if (!pageExtractor)
+		return _addListenerAndCallImmediatelyWithChildrenActivity(true, callback, ...path);
+	const nPaths = path.map(e => {
+		if (!e.startsWith(pageExtractor.getPrefix())) return e;
+		return 'Store.pageData.' + pageExtractor.getPageName() + e.substring(4);
+	});
+
+	return _addListenerAndCallImmediatelyWithChildrenActivity(true, callback, ...nPaths);
 };
 
 export const store = _store;

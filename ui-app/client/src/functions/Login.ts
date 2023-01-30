@@ -46,12 +46,13 @@ export class Login extends AbstractFunction {
 			});
 
 			setData('Store.auth', response.data);
-			setData(`${LOCAL_STORE_PREFIX}.AuthToken`, response.data?.accessToken);
+			setData('LocalStore.AuthToken', response.data?.accessToken);
 
 			setData('Store.pageDefinition', {});
 			setData('Store.messages', []);
 			setData('Store.pageData', {});
 			setData('Store.validations', {});
+			setData('Store.validationTriggers', {});
 			setData('Store.application', undefined);
 			setData('Store.functionExecutions', {});
 

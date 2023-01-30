@@ -61,11 +61,23 @@ function Popup(props: ComponentProps) {
 	React.useEffect(() => {
 		if (openEvent && isActive) {
 			(async () =>
-				await runEvent(openEvent, key, props.context.pageName, props.locationHistory))();
+				await runEvent(
+					openEvent,
+					key,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				))();
 		}
 		if (!isActive && closeEvent && !refObj.current.first) {
 			(async () =>
-				await runEvent(closeEvent, key, props.context.pageName, props.locationHistory))();
+				await runEvent(
+					closeEvent,
+					key,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				))();
 		}
 		refObj.current.first = false;
 	}, [isActive]);

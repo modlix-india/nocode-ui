@@ -84,6 +84,7 @@ function Grid(props: ComponentProps) {
 						onClick,
 						props.context.pageName,
 						props.locationHistory,
+						props.pageDefinition,
 					);
 
 	if (linkPath) {
