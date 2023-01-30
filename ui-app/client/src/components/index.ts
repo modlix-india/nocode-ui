@@ -15,6 +15,7 @@ import Tags from './Tags/Tags';
 import Image from './Image/Image';
 import Icon from './Icon/Icon';
 import Text from './Text/Text';
+import PageEditor from './PageEditor/PageEditor';
 
 export const Components = new Map<string, React.ElementType>([
 	[Button.name, Button.component],
@@ -34,6 +35,7 @@ export const Components = new Map<string, React.ElementType>([
 	[Image.name, Image.component],
 	[Icon.name, Icon.component],
 	[Text.name, Text.component],
+	[PageEditor.name, PageEditor.component],
 ]);
 
 export const ComponentDefinitions = [
@@ -54,4 +56,5 @@ export const ComponentDefinitions = [
 	Icon,
 	Text,
 	Page,
+	PageEditor,
 ];
