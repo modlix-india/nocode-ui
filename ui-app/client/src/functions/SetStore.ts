@@ -23,6 +23,7 @@ const SIGNATURE = new FunctionSignature('SetStore')
 
 export class SetStore extends AbstractFunction {
 	protected async internalExecute(context: FunctionExecutionParameters): Promise<FunctionOutput> {
+		console.log('context', context);
 		const path: string = context.getArguments()?.get('path');
 		const value = context.getArguments()?.get('value');
 		if (path.length) setData(path, value);
