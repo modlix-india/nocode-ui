@@ -1,7 +1,7 @@
 import { useStore, setStoreData } from '@fincity/path-reactive-state-management';
 import { LOCAL_STORE_PREFIX, STORE_PREFIX, PAGE_STORE_PREFIX } from '../constants';
 import { isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
-import { ComponentProperty, DataLocation, RenderContext } from '../types/common';
+import { ComponentProperty, DataLocation, LocationHistory, RenderContext } from '../types/common';
 
 class LocalStoreExtractor extends TokenValueExtractor {
 	private store: any;
@@ -58,14 +58,14 @@ const {
 
 export const storeExtractor = new StoreExtractor(_store, `${STORE_PREFIX}.`);
 
-export const dotPathBuilder = (path: string, locationHistory: Array<DataLocation | string>) => {
+export const dotPathBuilder = (path: string, locationHistory: Array<LocationHistory>) => {
 	if (!path.startsWith('.')) return path;
 
 	let dotsLength = 0;
 	for (let i = 0; i < path.length && path[i] === '.'; i++) {
 		dotsLength++;
 	}
-	const pickedlocationHistory = locationHistory[locationHistory.length - dotsLength];
+	const pickedlocationHistory = locationHistory[locationHistory.length - dotsLength].location;
 
 	if (!pickedlocationHistory) return path;
 	let finalPath = '';
@@ -84,7 +84,7 @@ export const dotPathBuilder = (path: string, locationHistory: Array<DataLocation
 
 export function getData<T>(
 	prop: ComponentProperty<T> | undefined,
-	locationHistory: Array<DataLocation | string>,
+	locationHistory: Array<LocationHistory>,
 	...tve: Array<TokenValueExtractor>
 ): T | undefined {
 	if (!prop) return undefined;
@@ -101,7 +101,7 @@ export function getData<T>(
 
 export function getDataFromLocation(
 	loc: DataLocation,
-	locationHistory: Array<DataLocation | string>,
+	locationHistory: Array<LocationHistory>,
 	...tve: Array<TokenValueExtractor>
 ): any {
 	if (loc?.type === 'VALUE' && loc.value) {
@@ -113,7 +113,7 @@ export function getDataFromLocation(
 
 export function getPathFromLocation(
 	loc: DataLocation,
-	locationHistory: Array<DataLocation | string>,
+	locationHistory: Array<LocationHistory>,
 	...tve: Array<TokenValueExtractor>
 ): string {
 	if (loc?.type === 'VALUE' && loc.value) {
@@ -126,10 +126,7 @@ export function getPathFromLocation(
 	return '';
 }
 
-export function getDataFromPath(
-	path: string | undefined,
-	locationHistory: Array<DataLocation | string>,
-) {
+export function getDataFromPath(path: string | undefined, locationHistory: Array<LocationHistory>) {
 	if (!path) return undefined;
 	return _getData(dotPathBuilder(path, locationHistory));
 }
@@ -174,7 +171,8 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 			deleteKey,
 		);
 	} else _setData(path, value, deleteKey);
-	console.log(path, _store, context);
+
+	console.log(path, value, JSON.parse(JSON.stringify(_store)));
 }
 
 export class PageStoreExtractor extends TokenValueExtractor {

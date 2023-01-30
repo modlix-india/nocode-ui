@@ -1,16 +1,16 @@
 import { dotPathBuilder } from '../../context/StoreContext';
-import { DataLocation } from '../../types/common';
+import { DataLocation, LocationHistory } from '../../types/common';
 
 export const updateLocationForChild = (
 	location: DataLocation | string,
 	index: number,
-	locationHistory: Array<DataLocation | string>,
-): DataLocation | string => {
+	locationHistory: Array<LocationHistory>,
+): LocationHistory => {
 	let finalPath;
 	const typeOfLoc = typeof location;
 	if (typeOfLoc === 'string') {
 		finalPath = dotPathBuilder(location as unknown as string, locationHistory);
-		return `(${finalPath ? finalPath : location})[${index}]`;
+		return { location: `(${finalPath ? finalPath : location})[${index}]`, index };
 	}
 	let childLocation = { ...(location as DataLocation) };
 	if (childLocation?.type === 'VALUE') {
@@ -26,5 +26,5 @@ export const updateLocationForChild = (
 			finalPath ? finalPath : childLocation?.expression
 		})[${index}]`;
 	}
-	return childLocation;
+	return { location: childLocation, index };
 };

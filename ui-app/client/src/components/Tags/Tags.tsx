@@ -99,7 +99,8 @@ function Tags(props: ComponentProps) {
 			setData(bindingPathPath, data, context.pageName);
 		}
 		if (!readOnly) {
-			(async () => await runEvent(onCloseEvent, key, props.context.pageName))();
+			(async () =>
+				await runEvent(onCloseEvent, key, props.context.pageName, props.locationHistory))();
 		}
 	};
 

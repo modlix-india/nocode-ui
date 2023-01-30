@@ -5,12 +5,11 @@ import {
 	FunctionExecutionParameters,
 	FunctionOutput,
 	FunctionSignature,
-	Parameter,
 	Schema,
 } from '@fincity/kirun-js';
 import axios from 'axios';
-import { NAMESPACE_UI_ENGINE } from '../constants';
-import { getData, getDataFromLocation, getDataFromPath } from '../context/StoreContext';
+import { LOCAL_STORE_PREFIX, NAMESPACE_UI_ENGINE } from '../constants';
+import { getDataFromPath, setData } from '../context/StoreContext';
 
 const SIGNATURE = new FunctionSignature('Login')
 	.setNamespace(NAMESPACE_UI_ENGINE)
@@ -26,12 +25,8 @@ const SIGNATURE = new FunctionSignature('Login')
 
 export class Logout extends AbstractFunction {
 	protected async internalExecute(context: FunctionExecutionParameters): Promise<FunctionOutput> {
-		const userName: string = context.getArguments()?.get('userName');
-		const password: string = context.getArguments()?.get('password');
-		const rememberMe: string = context.getArguments()?.get('rememberMe');
-
 		try {
-			const token = getDataFromPath('LocalStore.AuthToken', []);
+			const token = getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []);
 
 			const response = await axios({
 				url: 'api/security/revoke',
@@ -39,15 +34,26 @@ export class Logout extends AbstractFunction {
 				headers: { AUTHORIZATION: token },
 			});
 
+			setData('Store.auth', undefined, undefined, true);
+			setData(`${LOCAL_STORE_PREFIX}.AuthToken`, undefined, undefined, true);
+			setData('Store.pageDefinition', {});
+			setData('Store.messages', []);
+			setData('Store.validations', {});
+			setData('Store.pageData', {});
+			setData('Store.application', undefined);
+			setData('Store.functionExecutions', {});
+
 			return new FunctionOutput([EventResult.outputOf(new Map([['data', new Map()]]))]);
 		} catch (err: any) {
-			const errOutput = {
-				headers: err.response.headers,
-				data: err.response.data,
-				status: err.response.status,
-			};
 			return new FunctionOutput([
-				EventResult.of(Event.ERROR, new Map([['error', errOutput]])),
+				EventResult.of(
+					Event.ERROR,
+					new Map([
+						['data', err.response.data],
+						['headers', err.response.headers],
+						['status', err.response.status],
+					]),
+				),
 				EventResult.outputOf(new Map([['data', null]])),
 			]);
 		}
