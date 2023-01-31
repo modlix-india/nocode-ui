@@ -17,16 +17,23 @@ export default function ButtonBarStyle({ theme }: { theme: Map<string, Map<strin
         font-size: 16px;
         font-weight: bold;
     }
-
+    ${PREFIX} .label{
+        font-size: 24px;
+        font-weight: 500;
+        color: black;
+    }
+    
     ${PREFIX} ._selected{
         background-color: #1F3C3D;
         color: #ffffff;
-        
-      
+    }
+    ${PREFIX} .disabled {
+        cursor: not-allowed;
     }
 
-    
-    
+    ${PREFIX} .disabled:hover {
+        cursor: not-allowed;
+    }
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 	return <style id="ButtonBarcss">{css}</style>;
 }

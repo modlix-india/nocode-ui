@@ -8,34 +8,39 @@ import {
 	ComponentPropertyEditor,
 	ComponentPropertyGroup,
 	ComponentPropertyDefinition,
+	ComponentStylePropertyDefinition,
 } from '../../types/common';
+import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
-		name: 'label',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-		displayName: 'ButtonBar header text',
-		description: `Header text that\'s shown on top of ButtonBar.`,
+		name: 'read',
+		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		displayName: 'readOnly',
+		description: `ButtonBar will be rendered un editable when this property is true.',`,
+		defaultValue: true,
 	},
+
+	{
+		name: 'label',
+		schema: Schema.ofRef(SCHEMA_REF_ANY_COMP_PROP),
+		displayName: 'Header text',
+		description: `Header text that\'s shown on top of ButtonBar.`,
+		defaultValue: 'button Bar',
+	},
+
 	{
 		name: 'isMultiSelect',
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
 		displayName: 'Is MultiSelect',
 		description: `Allows the users to select multiple options.`,
-		defaultValue: true,
+		defaultValue: false,
 	},
 	{
 		name: 'data',
 		schema: Schema.ofRef(SCHEMA_REF_ANY_COMP_PROP),
 		displayName: 'ButtonBar data',
 		description: `Data that is used to render ButtonBar.`,
-	},
-	{
-		name: 'readOnly',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
-		displayName: 'Read Only',
-		description: 'Textbox will be rendered un editable when this property is true.',
-		group: ComponentPropertyGroup.COMMON,
 	},
 
 	{
@@ -44,6 +49,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Visibility',
 		description: 'This component will be hidden when this property is true.',
 		group: ComponentPropertyGroup.COMMON,
+		defaultValue: false,
 	},
 	{
 		name: 'datatype',
@@ -194,5 +200,61 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		translatable: true,
 	},
 ];
-const stylePropertiesDefinition = {};
+const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
+	'': {
+		[COMPONENT_STYLE_GROUP_PROPERTIES.flex.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.flex,
+			target: ['compButtobBar'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.size,
+			target: ['compButtobBar'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.background.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.background,
+			target: ['compButtobBar'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.padding,
+			target: ['compButtobBar'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.margin,
+			target: ['compButtobBar'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.border,
+			target: ['compButtobBar'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow,
+			target: ['compButtobBar'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.container.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.container,
+			target: ['compButtobBar'],
+		},
+
+		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
+			target: ['label'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.font,
+			target: ['label'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.outline.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.outline,
+			target: ['_button'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.opacity.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.opacity,
+			target: ['_button'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.transform.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.transform,
+			target: ['_button'],
+		},
+	},
+};
 export { propertiesDefinition, stylePropertiesDefinition };

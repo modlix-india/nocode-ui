@@ -1,15 +1,11 @@
 import React from 'react';
 import { deepEqual } from '@fincity/kirun-js';
 import {
-	addListener,
 	addListenerAndCallImmediately,
-	getData,
-	getDataFromPath,
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
-import { SetStore } from '../../functions/SetStore';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { getRenderData } from '../util/getRenderData';
 import { getSelectedKeys } from '../util/getSelectedKeys';
@@ -17,6 +13,8 @@ import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './ButtonBarproperties';
 import ButtonBarStyle from './ButtonBarStyle';
+import { HelperComponent } from '../HelperComponent';
+import { getTranslations } from '../util/getTranslations';
 
 function ButtonBar(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -39,8 +37,7 @@ function ButtonBar(props: ComponentProps) {
 			uniqueKeyType,
 			onClick,
 			datatype,
-			visibility,
-			readOnly,
+			read,
 			data,
 			label,
 			isMultiSelect,
@@ -62,6 +59,8 @@ function ButtonBar(props: ComponentProps) {
 	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
 
 	const handleClick = async (each: { key: any; label: any; value: any }) => {
+		console.log(read, 'readonly');
+		console.log(isMultiSelect, 'multiSelect');
 		if (!each) return;
 
 		if (isMultiSelect) {
@@ -72,6 +71,15 @@ function ButtonBar(props: ComponentProps) {
 			setData(bindingPathPath, nv.length ? nv : undefined, context?.pageName);
 		} else {
 			setData(bindingPathPath, each.value, context?.pageName);
+		}
+		if (clickEvent) {
+			await runEvent(
+				clickEvent,
+				key,
+				context.pageName,
+				props.locationHistory,
+				props.pageDefinition,
+			);
 		}
 	};
 
@@ -126,13 +134,17 @@ function ButtonBar(props: ComponentProps) {
 
 	return (
 		<div className="comp compButtonBar">
+			<HelperComponent definition={props.definition} />
+			<div className="label">{getTranslations(label, translations)}</div>
 			{buttonBarData?.map(each => (
 				<button
 					key={each?.key}
-					onClick={() => each && handleClick(each)}
-					className={`_button ${getIsSelected(each?.key) ? '_selected' : ''}`}
+					onClick={() => (!read && each ? handleClick(each) : '')}
+					className={`_button ${getIsSelected(each?.key) ? '_selected' : ''} ${
+						read ? 'disabled' : ''
+					}`}
 				>
-					{each?.label}
+					{getTranslations(each?.label, translations)}
 				</button>
 			))}
 		</div>
