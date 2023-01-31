@@ -1,6 +1,8 @@
 import React from 'react';
+import { deepEqual } from '@fincity/kirun-js';
 import {
 	addListener,
+	addListenerAndCallImmediately,
 	getData,
 	getDataFromPath,
 	getPathFromLocation,
@@ -10,6 +12,7 @@ import {
 import { SetStore } from '../../functions/SetStore';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { getRenderData } from '../util/getRenderData';
+import { getSelectedKeys } from '../util/getSelectedKeys';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './ButtonBarproperties';
@@ -40,6 +43,7 @@ function ButtonBar(props: ComponentProps) {
 			readOnly,
 			data,
 			label,
+			isMultiSelect,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -50,30 +54,36 @@ function ButtonBar(props: ComponentProps) {
 	);
 
 	if (!bindingPath) throw new Error('Definition requires binding path');
+
 	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
-	const [value, setvalue] = React.useState<any>(
-		getDataFromPath(bindingPathPath, locationHistory),
-	);
+
+	const [value, setvalue] = React.useState<any>();
 
 	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
 
-	const handleClick = (each: { key: any; label: any; value: any } | undefined) => {
-		setData(bindingPathPath, label, context.pageName);
-		console.log(each);
-		if (clickEvent) {
-			runEvent(clickEvent, key, context.pageName);
+	const handleClick = async (each: { key: any; label: any; value: any }) => {
+		if (!each) return;
+
+		if (isMultiSelect) {
+			const index = !value ? -1 : value.findIndex((e: any) => deepEqual(e, each.value));
+			let nv = value ? [...value] : [];
+			if (index != -1) nv.splice(index, 1);
+			else nv.push(each.value);
+			setData(bindingPathPath, nv.length ? nv : undefined, context?.pageName);
+		} else {
+			setData(bindingPathPath, each.value, context?.pageName);
 		}
 	};
 
 	React.useEffect(() => {
-		return addListener(
+		return addListenerAndCallImmediately(
 			(_, value) => {
 				setvalue(value);
 			},
 			pageExtractor,
 			bindingPathPath,
 		);
-	}, []);
+	}, [bindingPathPath]);
 
 	const buttonBarData = React.useMemo(
 		() =>
@@ -99,21 +109,32 @@ function ButtonBar(props: ComponentProps) {
 		],
 	);
 
+	console.log(buttonBarData);
+
+	const selectedDataKey: Array<any> | string | undefined = React.useMemo(
+		() => getSelectedKeys(buttonBarData, value, isMultiSelect),
+		[buttonBarData, value],
+	);
+
+	const getIsSelected = (key: any) => {
+		console.log(selectedDataKey, key);
+		if (!isMultiSelect) return deepEqual(selectedDataKey, key);
+		if (Array.isArray(selectedDataKey))
+			return !!selectedDataKey.find((e: any) => deepEqual(e, key));
+		return false;
+	};
+
 	return (
-		<div>
-			<div>
-				{buttonBarData?.map(each => (
-					<div
-						key={each?.key}
-						onClick={() => {
-							handleClick(each);
-						}}
-						className=""
-					>
-						<button>{each?.label}</button>
-					</div>
-				))}
-			</div>
+		<div className="comp compButtonBar">
+			{buttonBarData?.map(each => (
+				<button
+					key={each?.key}
+					onClick={() => each && handleClick(each)}
+					className={`_button ${getIsSelected(each?.key) ? '_selected' : ''}`}
+				>
+					{each?.label}
+				</button>
+			))}
 		</div>
 	);
 }

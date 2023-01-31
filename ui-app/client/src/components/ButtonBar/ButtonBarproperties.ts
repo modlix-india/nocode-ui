@@ -18,6 +18,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: `Header text that\'s shown on top of ButtonBar.`,
 	},
 	{
+		name: 'isMultiSelect',
+		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		displayName: 'Is MultiSelect',
+		description: `Allows the users to select multiple options.`,
+		defaultValue: true,
+	},
+	{
 		name: 'data',
 		schema: Schema.ofRef(SCHEMA_REF_ANY_COMP_PROP),
 		displayName: 'ButtonBar data',
