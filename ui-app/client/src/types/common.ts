@@ -103,6 +103,9 @@ export interface Component {
 	properties: Array<ComponentPropertyDefinition>;
 	styleProperties?: ComponentStylePropertyDefinition;
 	stylePseudoStates?: Array<String>;
+	hasChildren?: boolean;
+	noOfChildren?: number;
+	allowedChildrenType?: Array<String>;
 }
 
 export enum StyleResolution {

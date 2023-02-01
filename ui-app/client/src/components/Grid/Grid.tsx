@@ -175,6 +175,7 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleComponent: GridStyle,
 	stylePseudoStates: ['hover', 'focus', 'readonly'],
+	hasChildren: true,
 };
 
 export default component;
