@@ -77,7 +77,6 @@ function Grid(props: ComponentProps) {
 			.split(',')
 			.map((e: string) => parseFloat(e))
 			.filter((e: number) => !isNaN(e) && e <= 1 && e >= 0);
-		console.log(threshold, 'threshold');
 		const options = {
 			root: ref.current,
 			rootMargin: '0px',

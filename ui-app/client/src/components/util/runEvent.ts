@@ -137,7 +137,7 @@ export const runEvent = async (
 	} catch (error: any) {
 		setData(`Store.functionExecutions.${page}.${flattenUUID(key)}.isRunning`, false);
 		addMessage(MESSAGE_TYPE.ERROR, error, true, page);
-		console.log(error);
+		console.error(error);
 		return new Promise(resolve => resolve(error));
 	}
 };
