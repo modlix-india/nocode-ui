@@ -62,7 +62,7 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 			COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.size,
-			target: ['image'],
+			target: ['image', 'comp'],
 		},
 		[COMPONENT_STYLE_GROUP_PROPERTIES.opacity.type]: COMPONENT_STYLE_GROUP_PROPERTIES.opacity,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.backdropFilter.type]:
