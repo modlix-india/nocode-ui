@@ -223,6 +223,8 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['focus', 'hover', 'disabled'],
+	hasChildren: true,
+	allowedChildrenType: ['Menu'],
 };
 
 export default component;
