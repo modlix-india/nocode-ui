@@ -3,7 +3,7 @@ import { getHref } from '../../../src/components/util/getHref';
 describe('getHref utility tests', () => {
 	test('full url test', () => {
 		const location = {
-			pathname: '/',
+			pathname: '/markauto/SYSTEM/page/hometesting',
 			search: '',
 			hash: '',
 			state: null,
