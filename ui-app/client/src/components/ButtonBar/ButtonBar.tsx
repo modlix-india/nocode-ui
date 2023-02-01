@@ -11,10 +11,11 @@ import { getRenderData } from '../util/getRenderData';
 import { getSelectedKeys } from '../util/getSelectedKeys';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
-import { propertiesDefinition, stylePropertiesDefinition } from './ButtonBarproperties';
+import { propertiesDefinition, stylePropertiesDefinition } from './ButtonBarProperties';
 import ButtonBarStyle from './ButtonBarStyle';
 import { HelperComponent } from '../HelperComponent';
 import { getTranslations } from '../util/getTranslations';
+import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 
 function ButtonBar(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -37,11 +38,12 @@ function ButtonBar(props: ComponentProps) {
 			uniqueKeyType,
 			onClick,
 			datatype,
-			read,
+			readOnly,
 			data,
 			label,
 			isMultiSelect,
 		} = {},
+		stylePropertiesWithPseudoStates,
 	} = useDefinition(
 		definition,
 		propertiesDefinition,
@@ -51,7 +53,11 @@ function ButtonBar(props: ComponentProps) {
 	);
 
 	if (!bindingPath) throw new Error('Definition requires binding path');
-
+	const [hover, setHover] = React.useState('');
+	const resolvedStyles = processComponentStylePseudoClasses(
+		{ hover: !!hover, readOnly: !!readOnly },
+		stylePropertiesWithPseudoStates,
+	);
 	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
 
 	const [value, setvalue] = React.useState<any>();
@@ -59,10 +65,7 @@ function ButtonBar(props: ComponentProps) {
 	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
 
 	const handleClick = async (each: { key: any; label: any; value: any }) => {
-		console.log(read, 'readonly');
-		console.log(isMultiSelect, 'multiSelect');
 		if (!each) return;
-
 		if (isMultiSelect) {
 			const index = !value ? -1 : value.findIndex((e: any) => deepEqual(e, each.value));
 			let nv = value ? [...value] : [];
@@ -117,15 +120,12 @@ function ButtonBar(props: ComponentProps) {
 		],
 	);
 
-	console.log(buttonBarData);
-
 	const selectedDataKey: Array<any> | string | undefined = React.useMemo(
 		() => getSelectedKeys(buttonBarData, value, isMultiSelect),
 		[buttonBarData, value],
 	);
 
 	const getIsSelected = (key: any) => {
-		console.log(selectedDataKey, key);
 		if (!isMultiSelect) return deepEqual(selectedDataKey, key);
 		if (Array.isArray(selectedDataKey))
 			return !!selectedDataKey.find((e: any) => deepEqual(e, key));
@@ -133,20 +133,33 @@ function ButtonBar(props: ComponentProps) {
 	};
 
 	return (
-		<div className="comp compButtonBar">
+		<div className="comp compButtonBar" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={props.definition} />
-			<div className="label">{getTranslations(label, translations)}</div>
-			{buttonBarData?.map(each => (
-				<button
-					key={each?.key}
-					onClick={() => (!read && each ? handleClick(each) : '')}
-					className={`_button ${getIsSelected(each?.key) ? '_selected' : ''} ${
-						read ? 'disabled' : ''
-					}`}
-				>
-					{getTranslations(each?.label, translations)}
-				</button>
-			))}
+			<label style={resolvedStyles.label ?? {}} className="_label">
+				{getTranslations(label, translations)}
+			</label>
+			<div className="_buttonBarContainer" style={resolvedStyles.container ?? {}}>
+				{buttonBarData?.map(each => (
+					<button
+						style={resolvedStyles.button ?? {}}
+						key={each?.key}
+						onMouseEnter={
+							stylePropertiesWithPseudoStates?.hover
+								? () => setHover(each?.key)
+								: undefined
+						}
+						onMouseLeave={
+							stylePropertiesWithPseudoStates?.hover ? () => setHover('') : undefined
+						}
+						onClick={() => (!readOnly && each ? handleClick(each) : undefined)}
+						className={`_button ${getIsSelected(each?.key) ? '_selected' : ''} ${
+							readOnly ? '_disabled' : ''
+						}`}
+					>
+						{getTranslations(each?.label, translations)}
+					</button>
+				))}
+			</div>
 		</div>
 	);
 }
@@ -159,7 +172,7 @@ const component: Component = {
 	styleComponent: ButtonBarStyle,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
-	stylePseudoStates: ['hover', 'focus', 'disabled'],
+	stylePseudoStates: ['hover', 'disabled'],
 };
 
 export default component;

@@ -8,32 +8,16 @@ const PREFIX = '.comp.compButtonBar';
 export default function ButtonBarStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
 	const css =
 		`
-    ${PREFIX} ._button{
-        height: 48px;
-        background-color: #F4F6F6;
-        width:200px;
-        border: none;
-        cursor: pointer;
-        font-size: 16px;
-        font-weight: bold;
-    }
-    ${PREFIX} .label{
+    ${PREFIX} ._label{
         font-size: 24px;
         font-weight: 500;
         color: black;
     }
-    
-    ${PREFIX} ._selected{
-        background-color: #1F3C3D;
-        color: #ffffff;
-    }
-    ${PREFIX} .disabled {
-        cursor: not-allowed;
+
+    ${PREFIX} ._buttonBarContainer {
+        display: flex;
     }
 
-    ${PREFIX} .disabled:hover {
-        cursor: not-allowed;
-    }
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 	return <style id="ButtonBarcss">{css}</style>;
 }

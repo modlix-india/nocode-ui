@@ -10,30 +10,25 @@ import {
 	ComponentPropertyDefinition,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
-import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
+import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
-	{
-		name: 'read',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
-		displayName: 'readOnly',
-		description: `ButtonBar will be rendered un editable when this property is true.',`,
-		defaultValue: true,
-	},
-
+	COMMON_COMPONENT_PROPERTIES.onClick,
+	COMMON_COMPONENT_PROPERTIES.readOnly,
+	COMMON_COMPONENT_PROPERTIES.visibility,
 	{
 		name: 'label',
 		schema: Schema.ofRef(SCHEMA_REF_ANY_COMP_PROP),
-		displayName: 'Header text',
-		description: `Header text that\'s shown on top of ButtonBar.`,
-		defaultValue: 'button Bar',
+		displayName: 'Button Bar Label',
+		description: `Label thats shown on top of button bar input..`,
+		defaultValue: 'Hello',
 	},
 
 	{
 		name: 'isMultiSelect',
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
-		displayName: 'Is MultiSelect',
-		description: `Allows the users to select multiple options.`,
+		displayName: 'Is MultiSelect ?',
+		description: `Allows the users to select multiple buttons.`,
 		defaultValue: false,
 	},
 	{
@@ -43,14 +38,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: `Data that is used to render ButtonBar.`,
 	},
 
-	{
-		name: 'visibility',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
-		displayName: 'Visibility',
-		description: 'This component will be hidden when this property is true.',
-		group: ComponentPropertyGroup.COMMON,
-		defaultValue: false,
-	},
 	{
 		name: 'datatype',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
@@ -90,12 +77,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				description: 'Object with key value pairs where values are lists',
 			},
 		],
-	},
-	{
-		name: 'onClick',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-		displayName: 'Event trigger on click',
-		description: `The event that is triggered on click of ButtonBar `,
 	},
 
 	{
@@ -202,59 +183,148 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 ];
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 	'': {
-		[COMPONENT_STYLE_GROUP_PROPERTIES.flex.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.flex,
-			target: ['compButtobBar'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.size,
-			target: ['compButtobBar'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.background.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.background,
-			target: ['compButtobBar'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.padding,
-			target: ['compButtobBar'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.margin,
-			target: ['compButtobBar'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.border,
-			target: ['compButtobBar'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow,
-			target: ['compButtobBar'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.container.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.container,
-			target: ['compButtobBar'],
-		},
-
-		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
-			target: ['label'],
-		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.flex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.flex,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: COMPONENT_STYLE_GROUP_PROPERTIES.size,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.container.type]:
+			COMPONENT_STYLE_GROUP_PROPERTIES.container,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: COMPONENT_STYLE_GROUP_PROPERTIES.border,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.font,
 			target: ['label'],
 		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.outline.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.outline,
-			target: ['_button'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.opacity.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.opacity,
-			target: ['_button'],
+		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
+			target: ['label'],
 		},
 		[COMPONENT_STYLE_GROUP_PROPERTIES.transform.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.transform,
-			target: ['_button'],
+			target: ['container'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.zIndex.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.zIndex,
+			target: ['container'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.rotate.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.rotate,
+			target: ['container'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.position.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.position,
+			target: ['container'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.padding,
+			target: ['container'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.margin,
+			target: ['container'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow,
+			target: ['container'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.background.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.background,
+			target: ['button'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.height.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.height,
+			target: ['button'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.opacity.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.opacity,
+			target: ['button'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.outline.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.outline,
+			target: ['button'],
 		},
 	},
+	container: {
+		[COMPONENT_STYLE_GROUP_PROPERTIES.flex.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.flex,
+			name: "containerFlex",
+			description: "Flex properties for container.",
+			prefix: "container",
+			displayName: "Container Flex",
+			target: ['container'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.container.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.container,
+			name: "buttonContainerProps",
+			description: "Container properties for button container.",
+			prefix: "container",
+			displayName: "Button Container container props",
+			target: ['container'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.size,
+			name: "buttonSizeProps",
+			description: "Size properties for button container.",
+			prefix: "container",
+			displayName: "Button Container size props",
+			target: ['container'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.border,
+			name: "buttonBorderProps",
+			description: "Container properties for button border.",
+			prefix: "container",
+			displayName: "Button Container border props",
+			target: ['container'],
+		},
+
+	},
+	"button": {
+		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
+			name: "buttonColorProps",
+			description: "Properties for button color.",
+			prefix: "button",
+			displayName: "Button color props",
+			target: ['button'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.padding,
+			name: "buttonPaddingProps",
+			description: "Properties for button padding.",
+			prefix: "button",
+			displayName: "Button padding props",
+			target: ['button'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.margin,
+			name: "buttonmarginProps",
+			description: "Properties for button margin.",
+			prefix: "button",
+			displayName: "Button margin props",
+			target: ['button'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.border,
+			name: "buttonborderProps",
+			description: "Properties for button border.",
+			prefix: "button",
+			displayName: "Button border props",
+			target: ['button'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow,
+			name: "buttonboxShadowProps",
+			description: "Properties for button boxShadow.",
+			prefix: "button",
+			displayName: "Button boxShadow props",
+			target: ['button'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.font,
+			name: "buttonfontProps",
+			description: "Properties for button font.",
+			prefix: "button",
+			displayName: "Button font props",
+			target: ['button'],
+		},
+	}
 };
 export { propertiesDefinition, stylePropertiesDefinition };
