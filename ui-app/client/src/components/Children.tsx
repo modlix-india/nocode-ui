@@ -61,6 +61,7 @@ function Children({
 }) {
 	const [visibilityPaths, setVisibilityPaths] = React.useState(Date.now());
 	const location = useLocation();
+	const observerRefs = React.useRef<Array<HTMLElement>>([]);
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const evaluatorMaps = new Map<string, TokenValueExtractor>([
 		[storeExtractor.getPrefix(), storeExtractor],
@@ -84,26 +85,34 @@ function Children({
 		return addListener(() => setVisibilityPaths(Date.now()), pageExtractor, ...set);
 	}, []);
 
-	const vTriggers =
+	const validationTriggers =
 		getDataFromPath(`Store.validationTriggers.${context.pageName}`, locationHistory) ?? {};
 
 	if (!pageDefinition?.componentDefinition) return <></>;
 
+	const defs = Object.entries(children ?? {})
+		.filter(([, v]) => !!v)
+		.map(([k]) => pageDefinition.componentDefinition[k])
+		.map(e => {
+			if (!e?.properties?.visibility) return e;
+
+			return !!getData(e?.properties?.visibility, locationHistory, pageExtractor)
+				? e
+				: undefined;
+		})
+		.filter(e => !!e)
+		.sort((a: any, b: any) => (a?.displayOrder ?? 0) - (b?.displayOrder ?? 0));
+
+	React.useEffect(
+		() => () =>
+			context.observer && observerRefs.current.forEach(e => context.observer?.unobserve(e)),
+		[defs.length],
+	);
+
 	return (
 		<>
-			{Object.entries(children ?? {})
-				.map(([k]) => pageDefinition.componentDefinition[k])
-				.map(def => processDefinitionLocationHistory(def, locationHistory))
-				.map(e => {
-					if (!e?.properties?.visibility) return e;
-
-					return !!getData(e?.properties?.visibility, locationHistory, pageExtractor)
-						? e
-						: undefined;
-				})
-				.filter(e => !!e)
-				.sort((a: any, b: any) => (a?.displayOrder ?? 0) - (b?.displayOrder ?? 0))
-				.map(e => {
+			{defs
+				.map((e, i) => {
 					let comp = Components.get(e!.type);
 					if (!comp) comp = Nothing;
 					if (!comp) return undefined;
@@ -119,16 +128,33 @@ function Children({
 							});
 					}
 					const fKey = flattenUUID(e?.key);
-					const ctx = vTriggers[fKey]
+					const ctx = validationTriggers[fKey]
 						? { ...context, showValidationMessages: true }
 						: context;
-					return React.createElement(comp, {
+					const rComp = React.createElement(comp, {
 						definition: e,
 						key: e!.key,
 						pageDefinition: pageDefinition,
-						context: ctx,
+						context: { ...ctx, observer: undefined },
 						locationHistory: locationHistory,
 					});
+					if (!context.observer) return rComp;
+					return (
+						<div
+							data-key={e.key}
+							ref={el => {
+								if (!el || el == null) return;
+								if (observerRefs.current[i] === el) return;
+								if (observerRefs.current[i])
+									context.observer?.unobserve(observerRefs.current[i]);
+								observerRefs.current[i] = el;
+								context.observer?.observe(el);
+							}}
+							key={e.key}
+						>
+							{rComp}
+						</div>
+					);
 				})
 				.filter(e => !!e)}
 		</>

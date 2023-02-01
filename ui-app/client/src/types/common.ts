@@ -24,6 +24,7 @@ export interface RenderContext {
 	isReadonly?: boolean;
 	formKey?: Array<string>;
 	showValidationMessages?: boolean;
+	observer?: IntersectionObserver;
 }
 
 export enum ComponentPropertyDataPathType {
