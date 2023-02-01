@@ -16,23 +16,9 @@ import { TokenValueExtractor } from '@fincity/kirun-js';
 import { getPathsFrom } from './util/getPaths';
 import { processLocation } from '../util/locationProcessor';
 import { flattenUUID } from './util/uuid';
-import { runEvent } from './util/runEvent';
-import * as getPageDefinition from './../definitions/getPageDefinition.json';
 
 const getOrLoadPageDefinition = (location: any) => {
 	let { pageName } = processLocation(location);
-	const pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
-	if (pDef == undefined) {
-		(async () =>
-			await runEvent(
-				getPageDefinition,
-				'pageDefinition',
-				GLOBAL_CONTEXT_NAME,
-				[],
-				undefined,
-				new Map([['pageName', pageName]]),
-			))();
-	}
 	return getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
 };
 

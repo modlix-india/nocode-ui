@@ -56,7 +56,7 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 			COMPONENT_STYLE_GROUP_PROPERTIES.background,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.image.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.image,
-			target: ['image'],
+			target: ['image', 'comp'],
 		},
 		[COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow.type]:
 			COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow,
