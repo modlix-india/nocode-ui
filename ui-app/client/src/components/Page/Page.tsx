@@ -70,7 +70,7 @@ function Page({
 		[],
 	);
 
-	if (!definition) return <>...</>;
+	if (isNullValue(definition)) return <>...</>;
 
 	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
 

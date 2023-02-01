@@ -16,7 +16,7 @@ function ImageComponent(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const location = useLocation();
 	const {
-		properties: { alt, src, onClickEvent, fallBackImg } = {},
+		properties: { alt, src, onClick: onClickEvent, fallBackImg } = {},
 		key,
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
