@@ -49,13 +49,7 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 const COMPONENT_STYLE_GROUPS: { [key: string]: Array<string> } = {
 	accentColor: ['accentColor'],
 	backdropFilter: ['backdropFilter'],
-	image: [
-		'image-orientation',
-		'image-rendering',
-		'image-resolution',
-		'object-fit',
-		'object-position',
-	],
+	image: ['imageOrientation', 'imageRendering', 'imageResolution', 'objectFit', 'objectPosition'],
 	background: [
 		'backgroundBlendMode',
 		'backgroundClip',
