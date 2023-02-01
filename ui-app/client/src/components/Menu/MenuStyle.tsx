@@ -31,6 +31,17 @@ export default function MenuStyle({ theme }: { theme: Map<string, Map<string, st
 			text-decoration: none;
 			flex: 1
 		}
+		
+		${PREFIX} .icon {
+			width:  calc(${
+				theme.get(StyleResolution.ALL)?.get('menuIconSize') ??
+				styleDefaults.get('menuIconSize')
+			} + 4px);
+			height:  calc(${
+				theme.get(StyleResolution.ALL)?.get('menuIconSize') ??
+				styleDefaults.get('menuIconSize')
+			} + 4px);
+		}
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="MenuCss">{css}</style>;
