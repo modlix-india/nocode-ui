@@ -22,6 +22,7 @@ export const STORE_PATH_APP_MESSAGE_TIMEOUT = 'Store.application.properties.mess
 
 export const SCHEMA_REF_DATA_LOCATION = `${NAMESPACE_UI_ENGINE}.DataLocation`;
 export const SCHEMA_REF_VALIDATION_TYPE = `${NAMESPACE_UI_ENGINE}.ValidationType`;
+export const SCHEMA_REF_VALIDATION = `${NAMESPACE_UI_ENGINE}.Validation`;
 export const SCHEMA_REF_BOOL_COMP_PROP = `${NAMESPACE_UI_ENGINE}.BooleanComponentProperty`;
 export const SCHEMA_REF_STRING_COMP_PROP = `${NAMESPACE_UI_ENGINE}.StringComponentProperty`;
 export const SCHEMA_REF_NUM_COMP_PROP = `${NAMESPACE_UI_ENGINE}.NumberComponentProperty`;
@@ -29,4 +30,4 @@ export const SCHEMA_REF_ANY_COMP_PROP = `${NAMESPACE_UI_ENGINE}.AnyComponentProp
 
 export const EMPTY_STRING = '';
 
-export const GOBAL_CONTEXT_NAME = '_global';
+export const GLOBAL_CONTEXT_NAME = '_global';

@@ -79,6 +79,14 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.icon',
 	},
 	{
+		name: 'menuIconAlignment',
+		cssProperty: 'text-align',
+		displayName: "Menu's icon alignment",
+		description: "Menu's icon alignment",
+		defaultValue: 'center',
+		selector: '.icon',
+	},
+	{
 		name: 'menuCaretIconColor',
 		cssProperty: 'color',
 		displayName: "Menu's caret icon color",

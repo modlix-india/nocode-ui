@@ -115,7 +115,14 @@ function Grid(props: ComponentProps) {
 	const handleClick =
 		!clickEvent || isLoading
 			? undefined
-			: async () => await runEvent(clickEvent, onClick, props.context.pageName);
+			: async () =>
+					await runEvent(
+						clickEvent,
+						onClick,
+						props.context.pageName,
+						props.locationHistory,
+						props.pageDefinition,
+					);
 
 	if (linkPath) {
 		return React.createElement(containerType.toLowerCase(), { className: 'comp compGrid' }, [

@@ -328,6 +328,24 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '*:hover::-webkit-scrollbar-thumb',
 		defaultValue: '#6d8499',
 	},
+	{
+		name: 'validation-msg-font-size',
+		displayName: 'Validation Messages Font Size',
+		description: 'Validation Messages Font Size',
+		noPrefix: true,
+		cssProperty: 'font-size',
+		selector: '._validationMessages',
+		defaultValue: 'calc(<main-font-size> - 2px)',
+	},
+	{
+		name: 'validation-msg-font-color',
+		displayName: 'Validation Messages Font Color',
+		description: 'Validation Messages Font Color',
+		noPrefix: true,
+		cssProperty: 'color',
+		selector: '._validationMessages',
+		defaultValue: '<main-error-color>',
+	},
 ];
 
 export const styleDefaults = new Map<string, string>(

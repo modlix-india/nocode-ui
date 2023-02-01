@@ -11,7 +11,7 @@ import {
 } from '@fincity/kirun-js';
 import axios from 'axios';
 import { addMessage, MESSAGE_TYPE } from '../App/Messages/Messages';
-import { NAMESPACE_UI_ENGINE, GOBAL_CONTEXT_NAME } from '../constants';
+import { NAMESPACE_UI_ENGINE, GLOBAL_CONTEXT_NAME } from '../constants';
 import { getDataFromPath, setData } from '../context/StoreContext';
 
 const SIGNATURE = new FunctionSignature('Message')
@@ -25,7 +25,7 @@ const SIGNATURE = new FunctionSignature('Message')
 			),
 			Parameter.ofEntry(
 				'pageName',
-				Schema.ofString('pageName').setDefaultValue(GOBAL_CONTEXT_NAME),
+				Schema.ofString('pageName').setDefaultValue(GLOBAL_CONTEXT_NAME),
 			),
 			Parameter.ofEntry('type', Schema.ofString('type').setDefaultValue('ERROR')),
 		]),
@@ -39,7 +39,6 @@ export class Message extends AbstractFunction {
 		const pageName: string = context.getArguments()?.get('pageName');
 		const type: MESSAGE_TYPE = context.getArguments()?.get('type') as MESSAGE_TYPE;
 
-		console.log('Got value ', error);
 		addMessage(type, error, isGlobalScope, pageName);
 
 		return new FunctionOutput([EventResult.outputOf(new Map())]);

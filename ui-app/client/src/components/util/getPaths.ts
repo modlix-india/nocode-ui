@@ -1,6 +1,13 @@
 import { ExpressionEvaluator, isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
-import { ComponentProperty, DataLocation } from '../../types/common';
+import { SCHEMA_REF_VALIDATION } from '../../constants';
+import {
+	ComponentDefinition,
+	ComponentProperty,
+	ComponentPropertyDefinition,
+	DataLocation,
+} from '../../types/common';
 import { ComponentStyle, StyleResolution } from '../../types/common';
+import { Validation } from '../../types/validation';
 
 class PathExtractor extends TokenValueExtractor {
 	private prefix: string;
@@ -67,17 +74,47 @@ export function getPathsFrom<T>(
 }
 
 export function getPathsFromComponentDefinition(
-	properties: { [key: string]: ComponentProperty<any> } | undefined,
+	properties:
+		| {
+				[key: string]:
+					| ComponentProperty<any>
+					| { [key: string]: ComponentProperty<any> }
+					| { [key: string]: Validation };
+		  }
+		| undefined,
 	styleProperties: ComponentStyle | undefined,
 	evaluatorMaps: Map<string, TokenValueExtractor>,
+	propDefMap: { [key: string]: ComponentPropertyDefinition },
 ): Array<string> {
 	const paths: Set<string> = new Set();
 
 	if (properties) {
-		for (const prop of Object.values(properties)) {
-			const set = getPathsFrom(prop, evaluatorMaps).values();
-			let path: IteratorResult<string, any>;
-			while ((path = set.next()) !== undefined && !path.done) paths.add(path.value);
+		for (const [key, prop] of Object.entries(properties)) {
+			if (propDefMap[key]?.multiValued) {
+				for (const iprop of Object.values(prop)) {
+					if (propDefMap[key].schema.getRef() === SCHEMA_REF_VALIDATION) {
+						for (const vprop of Object.values(iprop)) {
+							if (typeof vprop === 'string') continue;
+							const set = getPathsFrom(
+								vprop as ComponentProperty<any>,
+								evaluatorMaps,
+							).values();
+							let path: IteratorResult<string, any>;
+							while ((path = set.next()) !== undefined && !path.done)
+								paths.add(path.value);
+						}
+					} else {
+						const set = getPathsFrom(iprop, evaluatorMaps).values();
+						let path: IteratorResult<string, any>;
+						while ((path = set.next()) !== undefined && !path.done)
+							paths.add(path.value);
+					}
+				}
+			} else {
+				const set = getPathsFrom(prop, evaluatorMaps).values();
+				let path: IteratorResult<string, any>;
+				while ((path = set.next()) !== undefined && !path.done) paths.add(path.value);
+			}
 		}
 	}
 
