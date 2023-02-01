@@ -79,7 +79,13 @@ function DropdownComponent(props: ComponentProps) {
 		setData(bindingPathPath, each.value, context?.pageName);
 		handleClose();
 		if (clickEvent) {
-			await runEvent(clickEvent, key, context.pageName);
+			await runEvent(
+				clickEvent,
+				key,
+				context.pageName,
+				props.locationHistory,
+				props.pageDefinition,
+			);
 		}
 	};
 

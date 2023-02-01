@@ -3,7 +3,7 @@ import { ComponentDefinitions } from '../components';
 import { STORE_PATH_APP, STORE_PATH_STYLE_PATH, STORE_PATH_THEME_PATH } from '../constants';
 import { addListener } from '../context/StoreContext';
 import { Component, StyleResolution } from '../types/common';
-import { processStyleDefinition, processStyleValue } from '../util/styleProcessor';
+import { processStyleDefinition, StyleResolutionDefinition } from '../util/styleProcessor';
 import { styleDefaults, styleProperties } from './appStyleProperties';
 import MessageStyle from './Messages/MessageStyle';
 
@@ -13,6 +13,14 @@ export default function AppStyle() {
 	);
 	const [style, setStyle] = useState('');
 	const [compList, setCompList] = useState(new Set<string>());
+
+	const TABLET_MIN_WIDTH = StyleResolutionDefinition.get(
+		StyleResolution.TABLET_POTRAIT_SCREEN,
+	)?.minWidth;
+
+	const DESKTOP_MIN_WIDTH = StyleResolutionDefinition.get(
+		StyleResolution.DESKTOP_SCREEN,
+	)?.minWidth;
 
 	useEffect(
 		() =>
@@ -43,7 +51,7 @@ export default function AppStyle() {
 						}
 					} else if (path == STORE_PATH_STYLE_PATH) setStyle(value ?? '');
 					else if (path == STORE_PATH_APP)
-						setCompList(value.components ?? new Set<string>());
+						setCompList(value?.components ?? new Set<string>());
 				},
 				undefined,
 				STORE_PATH_STYLE_PATH,
@@ -76,6 +84,42 @@ export default function AppStyle() {
 		visibility: visible;
 	}
 
+	._ROWLAYOUT,._SINGLECOLUMNLAYOUT {
+		display: flex;
+	}
+
+	._FIVECOLUMNSLAYOUT,
+	._FOURCOLUMNSLAYOUT,
+	._THREECOLUMNSLAYOUT,
+	._TWOCOLUMNSLAYOUT {
+		display: grid;
+		grid-template-columns: 1fr;
+	}
+
+	@media screen and (min-width: ${TABLET_MIN_WIDTH}px) {
+	
+		._FIVECOLUMNSLAYOUT,
+		._FOURCOLUMNSLAYOUT,
+		._THREECOLUMNSLAYOUT,
+		._TWOCOLUMNSLAYOUT {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+
+	@media screen and (min-width: ${DESKTOP_MIN_WIDTH}px) {
+	
+		._FIVECOLUMNSLAYOUT {
+			grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+		}
+
+		._FOURCOLUMNSLAYOUT {
+			grid-template-columns: 1fr 1fr 1fr 1fr;
+		}
+
+		._THREECOLUMNSLAYOUT {
+			grid-template-columns: 1fr 1fr 1fr;
+		}
+	}
 	` + processStyleDefinition('', styleProperties, styleDefaults, theme);
 
 	const styleComps = new Array();

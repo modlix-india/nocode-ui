@@ -7,9 +7,10 @@ import {
 	FunctionSignature,
 	Parameter,
 	Schema,
+	TokenValueExtractor,
 } from '@fincity/kirun-js';
-import { NAMESPACE_UI_ENGINE } from '../constants';
-import { getData, setData } from '../context/StoreContext';
+import { GLOBAL_CONTEXT_NAME, NAMESPACE_UI_ENGINE } from '../constants';
+import { getData, PageStoreExtractor, setData } from '../context/StoreContext';
 
 const SIGNATURE = new FunctionSignature('SetStore')
 	.setNamespace(NAMESPACE_UI_ENGINE)
@@ -25,7 +26,10 @@ export class SetStore extends AbstractFunction {
 	protected async internalExecute(context: FunctionExecutionParameters): Promise<FunctionOutput> {
 		const path: string = context.getArguments()?.get('path');
 		const value = context.getArguments()?.get('value');
-		if (path.length) setData(path, value);
+
+		const tve = context.getValuesMap().get('Page.') as PageStoreExtractor;
+
+		if (path.length) setData(path, value, tve?.getPageName() ?? GLOBAL_CONTEXT_NAME);
 		return new FunctionOutput([EventResult.outputOf(new Map())]);
 	}
 

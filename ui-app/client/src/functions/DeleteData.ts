@@ -9,7 +9,7 @@ import {
 	Schema,
 } from '@fincity/kirun-js';
 import axios from 'axios';
-import { NAMESPACE_UI_ENGINE, SCHEMA_REF_DATA_LOCATION } from '../constants';
+import { LOCAL_STORE_PREFIX, NAMESPACE_UI_ENGINE, SCHEMA_REF_DATA_LOCATION } from '../constants';
 import { getData } from '../context/StoreContext';
 import { ComponentProperty } from '../types/common';
 import { pathFromParams, queryParamsSerializer } from './utils';
@@ -25,7 +25,7 @@ const SIGNATURE = new FunctionSignature('DeleteData')
 				'headers',
 				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.UrlParameters`).setDefaultValue({
 					Authorization: {
-						location: ['LocalStore.AuthToken'],
+						location: [`${LOCAL_STORE_PREFIX}.AuthToken`],
 					},
 				}),
 			),
@@ -79,13 +79,16 @@ export class DeleteData extends AbstractFunction {
 
 			return new FunctionOutput([EventResult.outputOf(new Map([['data', response.data]]))]);
 		} catch (err: any) {
-			const errOutput = {
-				headers: err.response.headers,
-				data: err.response.data,
-				status: err.response.status,
-			};
 			return new FunctionOutput([
-				EventResult.of(Event.ERROR, new Map([['error', errOutput]])),
+				EventResult.of(
+					Event.ERROR,
+					new Map([
+						['data', err.response.data],
+						['headers', err.response.headers],
+						['status', err.response.status],
+					]),
+				),
+				EventResult.outputOf(new Map([['data', null]])),
 			]);
 		}
 	}

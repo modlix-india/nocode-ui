@@ -1,7 +1,7 @@
 import { useStore, setStoreData } from '@fincity/path-reactive-state-management';
 import { LOCAL_STORE_PREFIX, STORE_PREFIX, PAGE_STORE_PREFIX } from '../constants';
 import { isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
-import { ComponentProperty, DataLocation, RenderContext } from '../types/common';
+import { ComponentProperty, DataLocation, LocationHistory, RenderContext } from '../types/common';
 
 class LocalStoreExtractor extends TokenValueExtractor {
 	private store: any;
@@ -51,21 +51,24 @@ export const localStoreExtractor = new LocalStoreExtractor(localStore, `${LOCAL_
 const {
 	getData: _getData,
 	setData: _setData,
-	addListener: _addListener,
 	store: _store,
+	addListener: _addListener,
 	addListenerAndCallImmediately: _addListenerAndCallImmediately,
+	addListenerWithChildrenActivity: _addListenerWithChildrenActivity,
+	addListenerAndCallImmediatelyWithChildrenActivity:
+		_addListenerAndCallImmediatelyWithChildrenActivity,
 } = useStore({}, STORE_PREFIX, localStoreExtractor);
 
 export const storeExtractor = new StoreExtractor(_store, `${STORE_PREFIX}.`);
 
-export const dotPathBuilder = (path: string, locationHistory: Array<DataLocation | string>) => {
+export const dotPathBuilder = (path: string, locationHistory: Array<LocationHistory>) => {
 	if (!path.startsWith('.')) return path;
 
 	let dotsLength = 0;
 	for (let i = 0; i < path.length && path[i] === '.'; i++) {
 		dotsLength++;
 	}
-	const pickedlocationHistory = locationHistory[locationHistory.length - dotsLength];
+	const pickedlocationHistory = locationHistory[locationHistory.length - dotsLength].location;
 
 	if (!pickedlocationHistory) return path;
 	let finalPath = '';
@@ -84,7 +87,7 @@ export const dotPathBuilder = (path: string, locationHistory: Array<DataLocation
 
 export function getData<T>(
 	prop: ComponentProperty<T> | undefined,
-	locationHistory: Array<DataLocation | string>,
+	locationHistory: Array<LocationHistory>,
 	...tve: Array<TokenValueExtractor>
 ): T | undefined {
 	if (!prop) return undefined;
@@ -101,7 +104,7 @@ export function getData<T>(
 
 export function getDataFromLocation(
 	loc: DataLocation,
-	locationHistory: Array<DataLocation | string>,
+	locationHistory: Array<LocationHistory>,
 	...tve: Array<TokenValueExtractor>
 ): any {
 	if (loc?.type === 'VALUE' && loc.value) {
@@ -113,7 +116,7 @@ export function getDataFromLocation(
 
 export function getPathFromLocation(
 	loc: DataLocation,
-	locationHistory: Array<DataLocation | string>,
+	locationHistory: Array<LocationHistory>,
 	...tve: Array<TokenValueExtractor>
 ): string {
 	if (loc?.type === 'VALUE' && loc.value) {
@@ -126,15 +129,13 @@ export function getPathFromLocation(
 	return '';
 }
 
-export function getDataFromPath(
-	path: string | undefined,
-	locationHistory: Array<DataLocation | string>,
-) {
+export function getDataFromPath(path: string | undefined, locationHistory: Array<LocationHistory>) {
 	if (!path) return undefined;
 	return _getData(dotPathBuilder(path, locationHistory));
 }
 
 export function setData(path: string, value: any, context?: string, deleteKey?: boolean) {
+	console.log(path, value);
 	if (path.startsWith(LOCAL_STORE_PREFIX)) {
 		if (!value) return;
 		let parts = path.split(TokenValueExtractor.REGEX_DOT);
@@ -144,7 +145,7 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 		let store;
 		store = localStore.getItem(key);
 
-		if (!store && !parts.length) {
+		if (!parts.length) {
 			localStore.setItem(key, value);
 			return;
 		}
@@ -174,7 +175,8 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 			deleteKey,
 		);
 	} else _setData(path, value, deleteKey);
-	console.log(path, _store, context);
+
+	console.log(JSON.parse(JSON.stringify(_store)));
 }
 
 export class PageStoreExtractor extends TokenValueExtractor {
@@ -240,6 +242,35 @@ export const addListenerAndCallImmediately = (
 	});
 
 	return _addListenerAndCallImmediately(true, callback, ...nPaths);
+};
+
+export const addListenerWithChildrenActivity = (
+	callback: (path: string, value: any) => void,
+	pageExtractor?: PageStoreExtractor,
+	...path: Array<string>
+): (() => void) => {
+	if (!pageExtractor) return _addListenerWithChildrenActivity(callback, ...path);
+	const nPaths = path.map(e => {
+		if (!e.startsWith(pageExtractor.getPrefix())) return e;
+		return 'Store.pageData.' + pageExtractor.getPageName() + e.substring(4);
+	});
+
+	return _addListenerWithChildrenActivity(callback, ...nPaths);
+};
+
+export const addListenerAndCallImmediatelyWithChildrenActivity = (
+	callback: (path: string, value: any) => void,
+	pageExtractor?: PageStoreExtractor,
+	...path: Array<string>
+): (() => void) => {
+	if (!pageExtractor)
+		return _addListenerAndCallImmediatelyWithChildrenActivity(true, callback, ...path);
+	const nPaths = path.map(e => {
+		if (!e.startsWith(pageExtractor.getPrefix())) return e;
+		return 'Store.pageData.' + pageExtractor.getPageName() + e.substring(4);
+	});
+
+	return _addListenerAndCallImmediatelyWithChildrenActivity(true, callback, ...nPaths);
 };
 
 export const store = _store;

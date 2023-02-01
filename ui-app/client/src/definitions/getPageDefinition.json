@@ -1,6 +1,12 @@
 {
 	"name": "getPageDefinition",
 	"namespace": "UIApp",
+	"parameters": {
+		"pageName": {
+			"parameterName": "pageName",
+			"schema": { "name": "Page Name", "type": "STRING", "defaultValue": "" }
+		}
+	},
 	"steps": {
 		"pageDefinition": {
 			"statementName": "pageDefinition",
@@ -11,7 +17,7 @@
 					"pageDefinitionURL": {
 						"key": "pageDefinitionURL",
 						"type": "EXPRESSION",
-						"expression": "'api/ui/page/' + (Store.urlDetails.pageName ?? Store.application.properties.defaultPage)"
+						"expression": "'api/ui/page/' + ((Arguments.pageName = ''? null: Arguments.pageName) ?? Store.urlDetails.pageName ?? Store.application.properties.defaultPage)"
 					}
 				}
 			}
@@ -25,7 +31,7 @@
 					"setPageDefinitionPath": {
 						"key": "setPageDefinitionPath",
 						"type": "EXPRESSION",
-						"expression": "'Store.pageDefinition.{{Store.urlDetails.pageName ?? Store.application.properties.defaultPage}}'"
+						"expression": "'Store.pageDefinition.{{(Arguments.pageName = ''? null: Arguments.pageName) ?? Store.urlDetails.pageName ?? Store.application.properties.defaultPage}}'"
 					}
 				},
 				"value": {

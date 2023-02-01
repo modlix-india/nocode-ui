@@ -47,6 +47,45 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		notImplemented: true,
 	},
 	{
+		name: 'layout',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'Layout',
+		description: 'Name of the layout',
+		editor: ComponentPropertyEditor.LAYOUT,
+		defaultValue: 'SINGLECOLUMNLAYOUT',
+		enumValues: [
+			{ name: 'ROWLAYOUT', displayName: 'Row Layout', description: 'Default row layout' },
+			{
+				name: 'SINGLECOLUMNLAYOUT',
+				displayName: 'Column Layout',
+				description: 'Single Column layout in all resolutions',
+			},
+			{
+				name: 'TWOCOLUMNSLAYOUT',
+				displayName: 'Two Columns Layout',
+				description: 'Two Columns layout in all resolutions except mobile',
+			},
+			{
+				name: 'THREECOLUMNSLAYOUT',
+				displayName: 'Three Columns Layout',
+				description:
+					'Three Columns layout in all resolutions and two in tablet and one in mobile',
+			},
+			{
+				name: 'FOURCOLUMNSLAYOUT',
+				displayName: 'Four Columns Layout',
+				description:
+					'Four Columns layout in desktop and widescreen and two in tablet and one in mobile',
+			},
+			{
+				name: 'FIVECOLUMNSLAYOUT',
+				displayName: 'Five Columns Layout',
+				description:
+					'Five Columns layout in desktop and widescreen and two in tablet and one in mobile',
+			},
+		],
+	},
+	{
 		name: 'readOnly',
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
 		displayName: 'Read Only',

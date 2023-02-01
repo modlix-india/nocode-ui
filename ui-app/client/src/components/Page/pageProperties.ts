@@ -13,35 +13,6 @@ import {
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
-	{ ...COMMON_COMPONENT_PROPERTIES.onClick },
-	{
-		name: 'linkPath',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-		displayName: 'Link path',
-		description: `Path that page needs to be redirected on click.`,
-		translatable: false,
-	},
-
-	{
-		name: 'target',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-		displayName: 'Link target',
-		description: `Link's target.`,
-	},
-	{
-		name: 'observeChildren',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
-		displayName: 'Observe Children',
-		description: `Observe children using Intersection observer API.`,
-		defaultValue: false,
-	},
-	{
-		name: 'observerThresholds',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-		displayName: 'Observe Children Thresholds',
-		description: `Observe children thresholds option using Intersection observer API.`,
-		defaultValue: '0.5, 0.75',
-	},
 	{
 		name: 'layout',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
@@ -145,7 +116,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 		],
 	},
-	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
@@ -171,7 +141,6 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		[COMPONENT_STYLE_GROUP_PROPERTIES.transform.type]:
 			COMPONENT_STYLE_GROUP_PROPERTIES.transform,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.zIndex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.zIndex,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.shape.type]: COMPONENT_STYLE_GROUP_PROPERTIES.shape,
 	},
 };
 

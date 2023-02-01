@@ -16,7 +16,7 @@ function ImageComponent(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const location = useLocation();
 	const {
-		properties: { alt, src, onClickEvent, fallBackImg } = {},
+		properties: { alt, src, onClick: onClickEvent, fallBackImg } = {},
 		key,
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -29,7 +29,14 @@ function ImageComponent(props: ComponentProps) {
 	const clickEvent = onClickEvent ? props.pageDefinition.eventFunctions[onClickEvent] : undefined;
 
 	const handleClick = () => {
-		(async () => await runEvent(clickEvent, key, props.context.pageName))();
+		(async () =>
+			await runEvent(
+				clickEvent,
+				key,
+				props.context.pageName,
+				props.locationHistory,
+				props.pageDefinition,
+			))();
 	};
 	const handleError = (e: any) => {
 		if (fallBackImg) {
