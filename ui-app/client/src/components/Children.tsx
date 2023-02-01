@@ -9,20 +9,31 @@ import {
 	storeExtractor,
 } from '../context/StoreContext';
 import { useLocation } from 'react-router-dom';
-import { STORE_PREFIX } from '../constants';
+import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../constants';
 import { Components } from './index';
 import Nothing from './Nothing';
 import { TokenValueExtractor } from '@fincity/kirun-js';
 import { getPathsFrom } from './util/getPaths';
 import { processLocation } from '../util/locationProcessor';
 import { flattenUUID } from './util/uuid';
+import { runEvent } from './util/runEvent';
+import * as getPageDefinition from './../definitions/getPageDefinition.json';
 
-const getPageDefinition = (location: any) => {
+const getOrLoadPageDefinition = (location: any) => {
 	let { pageName } = processLocation(location);
-	if (!pageName)
-		pageName = getDataFromPath(`${STORE_PREFIX}.application.properties.defaultPage`, []);
-	let pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
-	return pDef;
+	const pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
+	if (pDef == undefined) {
+		(async () =>
+			await runEvent(
+				getPageDefinition,
+				'pageDefinition',
+				GLOBAL_CONTEXT_NAME,
+				[],
+				undefined,
+				new Map([['pageName', pageName]]),
+			))();
+	}
+	return getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
 };
 
 function processDefinitionLocationHistory(
@@ -58,7 +69,7 @@ function Children({
 	]);
 
 	React.useEffect(() => {
-		let set = Object.entries(children ?? {})
+		let set = Object.entries((pageDefinition?.componentDefinition ? children : {}) ?? {})
 			.filter(([, v]) => !!v)
 			.map(([k]) => pageDefinition.componentDefinition[k])
 			.map(def => processDefinitionLocationHistory(def, locationHistory))
@@ -76,10 +87,11 @@ function Children({
 	const vTriggers =
 		getDataFromPath(`Store.validationTriggers.${context.pageName}`, locationHistory) ?? {};
 
+	if (!pageDefinition?.componentDefinition) return <></>;
+
 	return (
 		<>
 			{Object.entries(children ?? {})
-				.filter(([, v]) => !!v)
 				.map(([k]) => pageDefinition.componentDefinition[k])
 				.map(def => processDefinitionLocationHistory(def, locationHistory))
 				.map(e => {
@@ -96,10 +108,7 @@ function Children({
 					if (!comp) comp = Nothing;
 					if (!comp) return undefined;
 					if (e!.type === 'Page') {
-						const pageDef = React.useMemo(
-							() => getPageDefinition(location),
-							[location],
-						);
+						const pageDef = getOrLoadPageDefinition(location);
 						if (pageDef)
 							return React.createElement(comp, {
 								definition: pageDef,
