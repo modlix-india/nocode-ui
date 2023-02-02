@@ -169,6 +169,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
 		defaultValue: false,
 	},
+	{
+		name: 'placeholder',
+		displayName: 'Placeholder',
+		description: 'Placeholder to be shown in input box.',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		defaultValue: '',
+	},
 	COMMON_COMPONENT_PROPERTIES.onEnter,
 ];
 
