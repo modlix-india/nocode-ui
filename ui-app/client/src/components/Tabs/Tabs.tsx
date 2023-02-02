@@ -33,7 +33,9 @@ function TabsComponent(props: ComponentProps) {
 	);
 	if (!bindingPath) throw new Error('Definition requires binding path');
 	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory);
-	const tabNames = (tabs ?? '').split(',');
+
+	const tabNames = (tabs ?? '').split(',').map((e: string) => e?.trim() ?? '');
+
 	const [activeTab, setActiveTab] = React.useState(defaultActive ?? tabNames[0]);
 
 	useEffect(() => {
@@ -46,16 +48,8 @@ function TabsComponent(props: ComponentProps) {
 		);
 	}, []);
 
-	const toggleActiveBorderStyle = function (childKey: any) {
-		if (activeTab === childKey || defaultActive === childKey) {
-			return 'tabButtonBorderActive';
-		} else {
-			return '';
-		}
-	};
-
 	const toggleActiveStyle = function (childKey: any) {
-		if (activeTab === childKey || defaultActive === childKey) {
+		if (activeTab === childKey ?? defaultActive === childKey) {
 			return 'tabsButtonActive';
 		} else {
 			return 'tabsButtons';
@@ -82,12 +76,11 @@ function TabsComponent(props: ComponentProps) {
 			<div className="tabButtonDiv">
 				{tabNames.map((e: any) => (
 					<button
-						className={toggleActiveStyle(e)}
-						key={e.childKey}
+						className={`${toggleActiveStyle(e)}`}
+						key={e}
 						onClick={() => handleClick(e)}
 					>
 						{getTranslations(e, pageDefinition.translations)}
-						<div className={toggleActiveBorderStyle(e)}></div>
 					</button>
 				))}
 			</div>

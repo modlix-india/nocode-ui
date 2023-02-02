@@ -6,38 +6,44 @@ const PREFIX = '.comp.compTabs';
 export default function TabsStyles({ theme }: { theme: Map<string, Map<string, string>> }) {
 	const css =
 		`
+${PREFIX}.compTabs {
+	margin-left: 20px;
+	margin-right:20px
+}
+
 ${PREFIX} .tabsButtons {
-	background-color: #fff;
+	background-color:#ffffff;
 	border: none;
 	text-align: left;
-	font: normal normal normal 15px/24px Open Sans;
+	font-size:  15px;
+	font-family: Open Sans;
 	letter-spacing: 0px;
 	color: #6c7586;
 	opacity: 1;
 	display: flex;
 	flex-direction: column;
 }
-${PREFIX} .compTabs .tabButtonBorderActive {
-	border-bottom: 6px solid #1f3c3d;
-	width: 63px;
-	align-self: center;
-}
+
 ${PREFIX} .tabsButtonActive {
-	background-color: #fff;
+	background-color:#ffffff;
 	border: none;
 	text-align: left;
-	font: normal normal normal 15px/24px Open Sans;
+	font-size:  15px;
+	font-family: Open Sans;
 	letter-spacing: 0px;
 	color: #393a3c;
 	opacity: 1;
 	display: flex;
 	flex-direction: column;
+	border-bottom: 6px solid #1f3c3d;;
 }
 ${PREFIX} .tabButtonDiv {
-	width: 97%;
+	width: 100%;
 	justify-content: space-between;
 	display: flex;
-	margin-left: 20px;
+	padding-left: 20px;
+    padding-right: 20px;
+	border-bottom: 1px solid #cecece;
 }
 ${PREFIX} .tabBorder {
 	border-bottom: 1px solid #cecece;
