@@ -135,7 +135,7 @@ export function getDataFromPath(path: string | undefined, locationHistory: Array
 }
 
 export function setData(path: string, value: any, context?: string, deleteKey?: boolean) {
-	console.log(path, LOCAL_STORE_PREFIX);
+	console.log(path, value);
 	if (path.startsWith(LOCAL_STORE_PREFIX)) {
 		if (!value) return;
 		let parts = path.split(TokenValueExtractor.REGEX_DOT);
@@ -176,7 +176,7 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 		);
 	} else _setData(path, value, deleteKey);
 
-	console.log(path, value, JSON.parse(JSON.stringify(_store)));
+	console.log(JSON.parse(JSON.stringify(_store)));
 }
 
 export class PageStoreExtractor extends TokenValueExtractor {

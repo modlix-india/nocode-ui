@@ -196,6 +196,8 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: ArrayRepeaterStyle,
+	hasChildren: true,
+	noOfChildren: 1,
 };
 
 export default component;

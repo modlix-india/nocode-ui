@@ -68,6 +68,7 @@ export const runEvent = async (
 	page = GLOBAL_CONTEXT_NAME,
 	locationHistory: Array<LocationHistory>,
 	pageDefinition?: PageDefinition,
+	args?: Map<string, any>,
 ) => {
 	try {
 		const def: FunctionDefinition = FunctionDefinition.from(functionDefinition);
@@ -126,6 +127,9 @@ export const runEvent = async (
 				[pageExtractor.getPrefix(), pageExtractor],
 			]),
 		);
+		if (args) {
+			fep.setArguments(args);
+		}
 		setData(`Store.functionExecutions.${page}.${flattenUUID(key)}.isRunning`, true);
 		const x = await runtime.execute(fep);
 		setData(`Store.functionExecutions.${page}.${flattenUUID(key)}.isRunning`, false);
@@ -133,7 +137,7 @@ export const runEvent = async (
 	} catch (error: any) {
 		setData(`Store.functionExecutions.${page}.${flattenUUID(key)}.isRunning`, false);
 		addMessage(MESSAGE_TYPE.ERROR, error, true, page);
-		console.log(error);
+		console.error(error);
 		return new Promise(resolve => resolve(error));
 	}
 };

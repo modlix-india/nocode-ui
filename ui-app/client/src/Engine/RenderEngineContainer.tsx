@@ -113,7 +113,7 @@ export const RenderEngineContainer = () => {
 				context={{ pageName: currentPageName }}
 			/>
 		);
-	} else {
+	} else if (pageDefinition) {
 		const definitions = getDataFromPath(`${STORE_PREFIX}.pageDefinition`, []) ?? {};
 		const hasDefinitions = !!Object.keys(definitions).length;
 		if (!hasDefinitions) return <>...</>;
@@ -125,5 +125,8 @@ export const RenderEngineContainer = () => {
 				context={{ pageName: GLOBAL_CONTEXT_NAME }}
 			/>
 		);
+	} else {
+		//TODO: Need to throw an error that there is not page definition found.
+		return <>...</>;
 	}
 };

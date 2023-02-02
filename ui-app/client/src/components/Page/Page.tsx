@@ -70,7 +70,7 @@ function Page({
 		[],
 	);
 
-	if (!definition) return <>...</>;
+	if (isNullValue(definition)) return <>...</>;
 
 	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
 
@@ -97,6 +97,8 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: PageStyle,
+	hasChildren: true,
+	noOfChildren: 1,
 };
 
 export default component;
