@@ -18,14 +18,13 @@ import {
 } from '../../types/common';
 import { updateLocationForChild } from '../util/updateLoactionForChild';
 import { Component } from '../../types/common';
-import { propertiesDefinition, stylePropertiesDefinition } from './arrayRepeaterProperties';
-import ArrayRepeaterStyle from './ArrayRepeaterStyle';
+import { propertiesDefinition, stylePropertiesDefinition } from './tableProperties';
+import TableStyle from './TableStyle';
 import useDefinition from '../util/useDefinition';
 import UUID from '../util/uuid';
 import Children from '../Children';
 
-function ArrayRepeaterComponent(props: ComponentProps) {
-	const [value, setValue] = React.useState([]);
+function TableComponent(props: ComponentProps) {
 	const {
 		definition: { children, bindingPath },
 		pageDefinition,
@@ -189,15 +188,19 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 }
 
 const component: Component = {
-	name: 'ArrayRepeater',
-	displayName: 'Array Repeater',
-	description: 'Array Repeater component',
-	component: ArrayRepeaterComponent,
+	name: 'Table',
+	displayName: 'Table',
+	description: 'Table component',
+	component: TableComponent,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
-	styleComponent: ArrayRepeaterStyle,
+	styleComponent: TableStyle,
 	hasChildren: true,
-	noOfChildren: 1,
+	allowedChildrenType: new Map([
+		['TableEmptyGrid', 1],
+		['TableColumns', 1],
+		['TableGrids', 1],
+	]),
 };
 
 export default component;

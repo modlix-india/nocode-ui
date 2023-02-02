@@ -104,8 +104,8 @@ export interface Component {
 	styleProperties?: ComponentStylePropertyDefinition;
 	stylePseudoStates?: Array<String>;
 	hasChildren?: boolean;
-	noOfChildren?: number;
-	allowedChildrenType?: Array<String>;
+	numberOfChildren?: number;
+	allowedChildrenType?: Map<String, number>;
 }
 
 export enum StyleResolution {
