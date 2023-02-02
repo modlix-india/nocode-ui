@@ -12,20 +12,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'tabs',
 		schema: Schema.ofRef(SCHEMA_REF_ANY_COMP_PROP),
-		displayName: 'tabs',
-		description: 'Tabs to be present on the component.',
-		defaultValue: [],
+		displayName: 'Tabs list (CSV)',
+		description: 'Tabs to be present on the component, comma seperated list of tab names',
 	},
 	{
 		name: 'defaultActive',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-		displayName: 'defaultActive',
-		description: 'Active default tab',
-	},
-	{
-		name: 'bindingPath',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-		displayName: 'defaultActive',
+		displayName: 'Active tab name',
 		description: 'Active default tab',
 	},
 ];

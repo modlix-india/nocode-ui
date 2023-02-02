@@ -7,7 +7,9 @@ import {
 	setData,
 } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
+import Children from '../Children';
 import { HelperComponent } from '../HelperComponent';
+import { getTranslations } from '../util/getTranslations';
 import { renderChildren } from '../util/renderChildren';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tabsProperties';
@@ -30,15 +32,14 @@ function TabsComponent(props: ComponentProps) {
 		pageExtractor,
 	);
 	if (!bindingPath) throw new Error('Definition requires binding path');
-	const [activeTab, setActiveTab] = React.useState(defaultActive || '');
 	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory);
-	console.log(bindingPathPath);
+	const tabNames = (tabs ?? '').split(',');
+	const [activeTab, setActiveTab] = React.useState(defaultActive ?? tabNames[0]);
 
 	useEffect(() => {
 		return addListenerAndCallImmediately(
 			(_, value) => {
-				console.log(value);
-				setActiveTab(value ?? defaultActive ?? tabs[0]?.childKey);
+				setActiveTab(value ?? defaultActive ?? tabNames[0]);
 			},
 			pageExtractor,
 			bindingPathPath,
@@ -65,32 +66,39 @@ function TabsComponent(props: ComponentProps) {
 		setData(bindingPathPath, key, context.pageName);
 	};
 
+	const index = tabNames.findIndex((e: string) => e == activeTab);
+	const entry = Object.entries(definition.children ?? {})
+		.filter(([k, v]) => !!v)
+		.sort(
+			(a: any, b: any) =>
+				(pageDefinition.componentDefinition[a[0]]?.displayOrder ?? 0) -
+				(pageDefinition.componentDefinition[b[0]]?.displayOrder ?? 0),
+		)[index == -1 ? 0 : index];
+	const selectedChild = entry ? { [entry[0]]: entry[1] } : {};
+
 	return (
 		<div className="comp compTabs">
 			<HelperComponent definition={definition} />
 			<div className="tabButtonDiv">
-				{tabs.map((e: any) => (
+				{tabNames.map((e: any) => (
 					<button
-						className={toggleActiveStyle(e.childKey)}
+						className={toggleActiveStyle(e)}
 						key={e.childKey}
-						onClick={() => handleClick(e.childKey)}
+						onClick={() => handleClick(e)}
 					>
-						{e.tabName}
-						<div className={toggleActiveBorderStyle(e.childKey)}></div>
+						{getTranslations(e, pageDefinition.translations)}
+						<div className={toggleActiveBorderStyle(e)}></div>
 					</button>
 				))}
-				<div>
-					<div>
-						{renderChildren(
-							pageDefinition,
-							{
-								[activeTab]: true,
-							},
-							context,
-							locationHistory,
-						)}
-					</div>
-				</div>
+			</div>
+			<div className="tabBodyDiv">
+				<Children
+					key={`${activeTab}_chld`}
+					pageDefinition={pageDefinition}
+					children={selectedChild}
+					context={context}
+					locationHistory={locationHistory}
+				/>
 			</div>
 		</div>
 	);
@@ -105,6 +113,7 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleComponent: TabsStyles,
 	styleProperties: stylePropertiesDefinition,
+	hasChildren: true,
 };
 
 export default component;
