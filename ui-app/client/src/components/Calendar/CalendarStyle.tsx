@@ -8,8 +8,9 @@ export default function CalendarStyle({ theme } : {theme: Map<string, Map<string
     const css = `
     ${PREFIX} .calendarDiv .inputContainer {
         position: relative;
+        display: flex;
     }
-    
+
     ${PREFIX} .calendarDiv .inputContainer .inputbox {
         border: none;
         width: 100%;
@@ -21,10 +22,7 @@ export default function CalendarStyle({ theme } : {theme: Map<string, Map<string
     ${PREFIX} .calendarDiv {
         display: grid;
         grid-template-columns: auto 30px;
-    }
-
-    ${PREFIX} .calendarDiv .calendarIcon {
-        cursor: pointer;
+        position: relative;
     }
 
     ${PREFIX} .calendarDiv .calendarPopOver {
@@ -36,31 +34,91 @@ export default function CalendarStyle({ theme } : {theme: Map<string, Map<string
         height: fit-content;
     }
 
-    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarMainData {
-        width: 100%;
-        height: 100%;
-    }
-
     ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv {
         display: grid;
-        grid-template-rows: auto auto auto;
-        width: 100%;
-        height: 100%;
+        grid-template-rows: auto auto;
+        align-items: baseline;  
     }
 
-    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarRow, 
-    .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarHeader .iconLeft, 
-    .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarHeader .iconRight {
-        text-align:center;
-        border-radius: 24px;
-        cursor: pointer;
+    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarHeader {
+        position: relative;
+    }
+
+    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarHeader .iconLeft {
+        position: absolute;
+        left: 0;
+    }
+
+    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarHeader .iconRight {
+        position: absolute;
+        right: 0;
+    }
+
+    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarHeader .currentDate,
+    .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarHeader .currentEndDate {
+        display: flex;
+        justify-content: center
     }
 
     ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
     }
-    
+
+    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol.yearDropDown {
+        display: grid;
+        justify-items: center;
+        align-items: center;
+        text-align: center;
+    }
+
+    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .yearSubDiv {
+        height: 205px;
+        overflow-y: scroll;
+    }
+
+    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol .calendarRow.notVisible, .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol .calendarRow.notAllowed {
+        display: block;
+    }
+
+    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .buttonAndTimePicker, .calendarDiv .calendarPopOver .calendarPopupDiv .buttonAndTimePicker .timePicker, .calendarDiv .calendarPopOver .calendarPopupDiv .buttonAndTimePickerRange {
+        display: flex;
+    }
+
+
+    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .caldendarMainCardWrapper {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        justify-content: center;
+    }
+
+    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .buttonAndTimePicker .timePicker .container {
+        position: relative;
+    }
+
+    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .buttonAndTimePicker .timePicker .container .labelcontainer {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center
+    }
+
+    ${PREFIX} .container .dropdowncontainer {
+        position: absolute;
+        left:0;
+        overflow-y: scroll;
+    }
+
+    ${PREFIX} .container .dropdowncontainer::-webkit-scrollbar {
+        display: none;
+    },
+
+    ${PREFIX} .container .dropdowncontainer .dropdownItem {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
     return <style id='CalendarCss'>{css}</style>
