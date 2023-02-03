@@ -21,7 +21,9 @@ ${PREFIX} .tabsButtons {
 	color: #6c7586;
 	opacity: 1;
 	display: flex;
-	flex-direction: column;
+	gap:3px;
+	justify-content: center;
+	align-items: center;
 }
 
 ${PREFIX} .tabsButtonActive {
@@ -34,8 +36,10 @@ ${PREFIX} .tabsButtonActive {
 	color: #393a3c;
 	opacity: 1;
 	display: flex;
-	flex-direction: column;
-	border-bottom: 6px solid #1f3c3d;;
+	border-bottom: 6px solid #1f3c3d;
+	gap:3px;
+	justify-content: center;
+	align-items: center;
 }
 ${PREFIX} .tabButtonDiv {
 	width: 100%;

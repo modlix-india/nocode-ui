@@ -7,6 +7,7 @@ import {
 	setData,
 } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
+import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
 import { HelperComponent } from '../HelperComponent';
 import { getTranslations } from '../util/getTranslations';
@@ -24,7 +25,10 @@ function TabsComponent(props: ComponentProps) {
 		pageDefinition,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
-	const { properties: { tabs, defaultActive } = {} } = useDefinition(
+	const {
+		properties: { tabs, defaultActive, readOnly, icon } = {},
+		stylePropertiesWithPseudoStates,
+	} = useDefinition(
 		definition,
 		propertiesDefinition,
 		stylePropertiesDefinition,
@@ -33,8 +37,24 @@ function TabsComponent(props: ComponentProps) {
 	);
 	if (!bindingPath) throw new Error('Definition requires binding path');
 	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory);
+	const [hover, setHover] = React.useState(false);
 
-	const tabNames = (tabs ?? '').split(',').map((e: string) => e?.trim() ?? '');
+	const resolvedStyles = processComponentStylePseudoClasses(
+		{ hover: !!hover, readOnly: !!readOnly, disabled: !!readOnly },
+		stylePropertiesWithPseudoStates,
+	);
+
+	const stringSpliter = (str: string) => {
+		const value = str
+			.split(',')
+			.map((e: string) => e.trim())
+			.filter(e => !!e);
+		return value;
+	};
+
+	const tabNames = stringSpliter(tabs);
+	const iconTags = stringSpliter(icon);
+	console.log(iconTags);
 
 	const [activeTab, setActiveTab] = React.useState(defaultActive ?? tabNames[0]);
 
@@ -71,28 +91,39 @@ function TabsComponent(props: ComponentProps) {
 	const selectedChild = entry ? { [entry[0]]: entry[1] } : {};
 
 	return (
-		<div className="comp compTabs">
+		<div className="comp compTabs" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />
-			<div className="tabButtonDiv">
-				{tabNames.map((e: any) => (
+			<div className="tabButtonDiv" style={resolvedStyles.container ?? {}}>
+				{tabNames.map((e: any, i: number) => (
 					<button
+						onMouseEnter={
+							stylePropertiesWithPseudoStates?.hover
+								? () => setHover(true)
+								: undefined
+						}
+						onMouseLeave={
+							stylePropertiesWithPseudoStates?.hover
+								? () => setHover(false)
+								: undefined
+						}
+						style={resolvedStyles.button ?? {}}
 						className={`${toggleActiveStyle(e)}`}
 						key={e}
 						onClick={() => handleClick(e)}
 					>
+						<i className={iconTags[i]}></i>
 						{getTranslations(e, pageDefinition.translations)}
 					</button>
 				))}
 			</div>
-			<div className="tabBodyDiv">
-				<Children
-					key={`${activeTab}_chld`}
-					pageDefinition={pageDefinition}
-					children={selectedChild}
-					context={context}
-					locationHistory={locationHistory}
-				/>
-			</div>
+
+			<Children
+				key={`${activeTab}_chld`}
+				pageDefinition={pageDefinition}
+				children={selectedChild}
+				context={context}
+				locationHistory={locationHistory}
+			/>
 		</div>
 	);
 }
@@ -107,6 +138,7 @@ const component: Component = {
 	styleComponent: TabsStyles,
 	styleProperties: stylePropertiesDefinition,
 	hasChildren: true,
+	stylePseudoStates: ['hover'],
 };
 
 export default component;
