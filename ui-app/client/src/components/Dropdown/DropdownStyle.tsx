@@ -19,7 +19,7 @@ export default function DropdownStyle({ theme }: { theme: Map<string, Map<string
 
     ${PREFIX} .container {
         position: relative;
-        min-width: 200px;
+        min-width: 35%;
         cursor: pointer;
         z-index: 1;
     }
@@ -93,7 +93,6 @@ export default function DropdownStyle({ theme }: { theme: Map<string, Map<string
         position: absolute;
         left: 0;
         top: 100%;
-        min-width: 200px;
         overflow-y: auto;
         margin-top: 1px;
     }

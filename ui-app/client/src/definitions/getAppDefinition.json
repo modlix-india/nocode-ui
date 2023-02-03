@@ -98,6 +98,52 @@
 				"Steps.setLoginData.output": true
 			}
 		},
+		"setDropdownData": {
+			"statementName": "setDropdownData",
+			"namespace": "UIEngine",
+			"name": "SetStore",
+			"parameterMap": {
+				"path": {
+					"setDropdownDataPath": {
+						"key": "setDropdownDataPath",
+						"type": "VALUE",
+						"value": "Store.dropdownData"
+					}
+				},
+				"value": {
+					"dropdownDataValue": {
+						"key": "dropdownDataValue",
+						"type": "VALUE",
+						"value": [
+							{
+								"name": "Himanshu",
+								"id": "1"
+							},
+							{
+								"name": "Tarun",
+								"id": "2"
+							},
+							{
+								"name": "Shagil",
+								"id": "3"
+							},
+							{
+								"name": "Waqas",
+								"id": "4"
+							},
+							{
+								"name": "Biren",
+								"id": "5"
+							},
+							{
+								"name": "Vishwas",
+								"id": "6"
+							}
+						]
+					}
+				}
+			}
+		},
 		"setThemeData": {
 			"statementName": "setThemeData",
 			"namespace": "UIEngine",
