@@ -169,6 +169,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
 		defaultValue: false,
 	},
+	{
+		name: 'placeholder',
+		displayName: 'Placeholder',
+		description: 'Placeholder to be shown in input box.',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		defaultValue: '',
+	},
 	COMMON_COMPONENT_PROPERTIES.onEnter,
 ];
 
@@ -179,6 +186,8 @@ const stylePropertiesDefinition = {
 		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: COMPONENT_STYLE_GROUP_PROPERTIES.padding,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.outline.type]: COMPONENT_STYLE_GROUP_PROPERTIES.outline,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.position.type]: COMPONENT_STYLE_GROUP_PROPERTIES.position,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.background.type]:
+			COMPONENT_STYLE_GROUP_PROPERTIES.background,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: COMPONENT_STYLE_GROUP_PROPERTIES.size,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.transform.type]:
 			COMPONENT_STYLE_GROUP_PROPERTIES.transform,
