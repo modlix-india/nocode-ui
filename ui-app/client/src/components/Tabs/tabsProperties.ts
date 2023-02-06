@@ -30,8 +30,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: 'icon list (CSV)',
 		description: "icon's to be present on the component, comma seperated list of icon links",
-		defaultValue:
-			'fa-brands fa-linkedin,fa-brands fa-github,fa-brands fa-discord,fa-solid fa-ghost',
+		defaultValue: '',
 	},
 ];
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
