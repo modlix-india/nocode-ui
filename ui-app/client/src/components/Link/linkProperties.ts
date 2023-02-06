@@ -37,6 +37,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
+		name: 'isExternalUrl',
+		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		displayName: 'Is external url ?',
+		description: 'Is the url an external url ?.',
+		defaultValue: false,
+	},
+
+	{
 		name: 'target',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: 'Link target',
