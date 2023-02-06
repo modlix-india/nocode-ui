@@ -122,13 +122,16 @@ function Grid(props: ComponentProps) {
 						props.locationHistory,
 						props.pageDefinition,
 					);
-
+	const styleComp = resolvedStyles?.comp?.hideScrollBar ? (
+		<style>{`._${key}_grid_css::-webkit-scrollbar { display: none }`}</style>
+	) : undefined;
 	if (linkPath) {
 		return React.createElement(containerType.toLowerCase(), { className: 'comp compGrid' }, [
 			<HelperComponent definition={definition} />,
+			styleComp,
 			<Link
 				ref={ref}
-				className={`_anchorGrid _${layout} ${background}`}
+				className={`_anchorGrid _${layout} ${background} _${key}_grid_css`}
 				onMouseEnter={
 					stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
 				}
@@ -157,12 +160,12 @@ function Grid(props: ComponentProps) {
 			onFocus: stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined,
 			onBlur: stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined,
 			ref: ref,
-			className: `comp compGrid _noAnchorGrid _${layout} ${background}`,
+			className: `comp compGrid _noAnchorGrid _${layout} ${background} _${key}_grid_css`,
 			style: resolvedStyles.comp ?? {},
 
 			onClick: handleClick,
 		},
-		[<HelperComponent key={`${key}_hlp`} definition={definition} />, childs],
+		[<HelperComponent key={`${key}_hlp`} definition={definition} />, styleComp, childs],
 	);
 }
 

@@ -37,6 +37,7 @@ function Link(props: ComponentProps) {
 			target = '_self',
 			showButton,
 			externalButtonTarget = '_blank',
+			isExternalUrl,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -46,6 +47,7 @@ function Link(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
+	const resolvedLink = getHref(linkPath, location);
 	const resolvedStyles = processComponentStylePseudoClasses(
 		{ hover },
 		stylePropertiesWithPseudoStates,
@@ -63,25 +65,45 @@ function Link(props: ComponentProps) {
 					stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
 				}
 			>
-				<RouterLink
-					style={resolvedStyles.link ?? {}}
-					className="link"
-					to={getHref(linkPath, location)}
-					target={target}
-				>
-					{getTranslations(label, translations)}
-				</RouterLink>
-				{showButton ? (
+				{!isExternalUrl ? (
 					<RouterLink
-						to={getHref(linkPath, location)}
-						target={externalButtonTarget}
-						className="secondLink"
+						style={resolvedStyles.link ?? {}}
+						className="link"
+						to={resolvedLink}
+						target={target}
 					>
-						<i
-							style={resolvedStyles.icon ?? {}}
-							className="fa-solid fa-up-right-from-square"
-						></i>
+						{getTranslations(label, translations)}
 					</RouterLink>
+				) : (
+					<a
+						style={resolvedStyles.link ?? {}}
+						className="link"
+						href={resolvedLink}
+						target={target}
+					>
+						{getTranslations(label, translations)}
+					</a>
+				)}
+				{showButton ? (
+					isExternalUrl ? (
+						<RouterLink
+							to={resolvedLink}
+							target={externalButtonTarget}
+							className="secondLink"
+						>
+							<i
+								style={resolvedStyles.icon ?? {}}
+								className="fa-solid fa-up-right-from-square"
+							></i>
+						</RouterLink>
+					) : (
+						<a href={resolvedLink} target={externalButtonTarget} className="secondLink">
+							<i
+								style={resolvedStyles.icon ?? {}}
+								className="fa-solid fa-up-right-from-square"
+							></i>
+						</a>
+					)
 				) : null}
 			</div>
 		</div>
