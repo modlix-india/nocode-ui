@@ -52,9 +52,9 @@ function TabsComponent(props: ComponentProps) {
 		return value;
 	};
 
+	console.log(icon);
 	const tabNames = stringSpliter(tabs);
 	const iconTags = stringSpliter(icon);
-	console.log(iconTags);
 
 	const [activeTab, setActiveTab] = React.useState(defaultActive ?? tabNames[0]);
 
@@ -68,12 +68,8 @@ function TabsComponent(props: ComponentProps) {
 		);
 	}, []);
 
-	const toggleActiveStyle = function (childKey: any) {
-		if (activeTab === childKey ?? defaultActive === childKey) {
-			return 'tabsButtonActive';
-		} else {
-			return 'tabsButtons';
-		}
+	const getActiveStyle = function (childKey: any) {
+		if (activeTab === childKey ?? defaultActive === childKey) return 'tabsButtonActive';
 	};
 
 	const handleClick = function (key: string) {
@@ -95,25 +91,28 @@ function TabsComponent(props: ComponentProps) {
 			<HelperComponent definition={definition} />
 			<div className="tabButtonDiv" style={resolvedStyles.container ?? {}}>
 				{tabNames.map((e: any, i: number) => (
-					<button
-						onMouseEnter={
-							stylePropertiesWithPseudoStates?.hover
-								? () => setHover(true)
-								: undefined
-						}
-						onMouseLeave={
-							stylePropertiesWithPseudoStates?.hover
-								? () => setHover(false)
-								: undefined
-						}
-						style={resolvedStyles.button ?? {}}
-						className={`${toggleActiveStyle(e)}`}
-						key={e}
-						onClick={() => handleClick(e)}
-					>
-						<i className={iconTags[i]}></i>
-						{getTranslations(e, pageDefinition.translations)}
-					</button>
+					<div>
+						<button
+							onMouseEnter={
+								stylePropertiesWithPseudoStates?.hover
+									? () => setHover(true)
+									: undefined
+							}
+							onMouseLeave={
+								stylePropertiesWithPseudoStates?.hover
+									? () => setHover(false)
+									: undefined
+							}
+							style={resolvedStyles.button ?? {}}
+							className={`tabsButtons `}
+							key={e}
+							onClick={() => handleClick(e)}
+						>
+							<i className={iconTags[i]}></i>
+							{getTranslations(e, pageDefinition.translations)}
+						</button>
+						<div className={getActiveStyle(e)}></div>
+					</div>
 				))}
 			</div>
 
