@@ -62,6 +62,7 @@ function TextBox(props: ComponentProps) {
 			isPassword,
 			onEnter,
 			validation,
+			placeholder,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -72,6 +73,7 @@ function TextBox(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
+	const effectivePlaceholder = noFloat ? (placeholder ? placeholder : label) : label;
 	const computedStyles = processComponentStylePseudoClasses(
 		{ focus, readOnly },
 		stylePropertiesWithPseudoStates,
@@ -262,7 +264,7 @@ function TextBox(props: ComponentProps) {
 						type={isPassword && !show ? 'password' : valueType}
 						value={value}
 						onChange={handleChange}
-						placeholder={getTranslations(label, translations)}
+						placeholder={getTranslations(effectivePlaceholder, translations)}
 						onFocus={
 							stylePropertiesWithPseudoStates?.focus
 								? () => setFocus(true)
