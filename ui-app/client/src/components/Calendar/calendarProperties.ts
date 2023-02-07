@@ -160,12 +160,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
         description: 'This value is use when we want to add a icon to the calendar date range compoenent.',
     },
     {
-        name: 'readOnlyTime',
-        schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
-        displayName: 'Can give true or false for time dropdown readonly date compoennt',
-        description: 'This value is use when we want to set time dropdown readonly in calendar date range compoenent.',
-    },
-    {
         name: 'closeOnMouseLeave',
         schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
         displayName: 'Can give true or false for time dropdown to make the hover to close disable for date compoennt',

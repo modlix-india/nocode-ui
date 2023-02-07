@@ -23,6 +23,7 @@ function Calendar(props: ComponentProps) {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [currentMainDate, setCurrentMainDate] = useState(dateProcessor(new Date())?.add("months", 1));
     const daysOfWeek = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+    const monthRange = [["January", "February", "March"], ["April", "May", "June"],["July", "August", "September"], ["October", "November", "December"]];
     const [selectedHour, setSelectedHour] = useState('');
     const [selectedMinute, setSelectedMinute] = useState('');
     const [ampmSelected, setAmpmSelected] = useState("AM");
@@ -34,6 +35,7 @@ function Calendar(props: ComponentProps) {
     const [showDropdown, setShowDropdown] = useState('');
     const [showDropdownRange, setShowDropdownRange] = useState('');
     const [showYears, setShowYears] = useState(false);
+    const [showMonths, setShowMonths] = useState(false);
 
     const {
 		definition: { bindingPath },
@@ -59,7 +61,6 @@ function Calendar(props: ComponentProps) {
             is24hour,
             calendarIcon,
             calendarDateRangeIcon,
-            readOnlyTime,
             closeOnMouseLeave
 		} = {},
 		stylePropertiesWithPseudoStates,
@@ -241,6 +242,11 @@ function Calendar(props: ComponentProps) {
         setShowYears(false);
     }
 
+    const handleMonthSelect = (month: any) => {
+        setCurrentDate(new Date(currentDate.setMonth(month)));
+        setShowMonths(false);
+    }
+
     const BottomButton = (handleConfirm: any, handleCancel: any) => {
         return (
             <div className="bottomButtons">
@@ -253,15 +259,15 @@ function Calendar(props: ComponentProps) {
     const TimeComp = (dropdownData: any, handleClick: any, TAG: any, selected: any, setSelected: any, showDropdown: any, setShowDropdown: any) => {
         return(
             <div
-				className={`container ${showDropdown && !readOnlyTime ? 'focussed' : ''} ${
-					readOnlyTime ? 'disabled' : ''
+				className={`container ${showDropdown && !readOnly ? 'focussed' : ''} ${
+					readOnly ? 'disabled' : ''
 				} `}
 			>
 				<div
-					className={`labelcontainer ${readOnlyTime ? 'disabled' : ''}`}
+					className={`labelcontainer ${readOnly ? 'disabled' : ''}`}
 					onClick={() => setShowDropdown(TAG)}
 				>
-					<label className={`label ${readOnlyTime ? 'disabled' : ''}`}>
+					<label className={`label ${readOnly ? 'disabled' : ''}`}>
 						{getTranslations(
 							 selected,
 							translations,
@@ -405,7 +411,8 @@ function Calendar(props: ComponentProps) {
                                 <span onClick={handleNextClick} className="fa fa-arrow-right iconRight"></span>
                             )}
                             <div className="currentDate">
-                                <span className="currentDateText" onClick={() => isDateRange ? null : setShowYears(!showYears)}>{currentDate.toLocaleString('default', { month: 'long' })} {currentDate?.getFullYear()}</span>
+                                    <span className="currentDateText" onClick={() => {if(!isDateRange) {setShowMonths(!showMonths); setShowYears(false);}}}>{currentDate.toLocaleString('default', { month: 'long' })}</span> 
+                                    <span className="currentDateText" onClick={() => {if(!isDateRange) {setShowYears(!showYears); setShowMonths(false);}}}>{currentDate?.getFullYear()}</span>
                             </div>
                         </div>
                         <table className={`calendarMainData`}>
@@ -419,7 +426,19 @@ function Calendar(props: ComponentProps) {
                                         </tr>
                                     ))}
                             </div>
-                            ) : (
+                            ) : null} 
+                            {yearAndMonthSelector && showMonths && !isDateRange ? (
+                                <div className="monthSubDiv">
+                                    {monthRange?.map((months, index) => (
+                                        <tr key={index} className={`calendarCol ${showMonths ? `monthDropDown` : ``}`}>
+                                            {months?.map((month, monthIndex) => (
+                                                <td className={`calendarRow`} key={`${index}_${monthIndex}`} onClick={() => handleMonthSelect(month)}>{month}</td>
+                                            ))}
+                                        </tr>
+                                    ))}
+                            </div>
+                            ) : null} 
+                            {!showYears && !showMonths ? (
                             <Fragment>
                                 <thead>
                                     <tr className="calendarCol">
@@ -444,7 +463,7 @@ function Calendar(props: ComponentProps) {
                                     ))}
                                 </tbody>
                             </Fragment>
-                            )}
+                            ):null}
                         </table>
                     </div>
                     {isDateRange ? (
@@ -494,6 +513,7 @@ function Calendar(props: ComponentProps) {
     return(
         <div className="comp compCalendar" style={computedStyles?.comp ?? {}} onClick={handleBubbling}>
             <HelperComponent definition={definition}/>
+            {dateOnly && timeOnly ? (
                 <div className={`calendarDiv ${errorMessage ? 'error' : ''} ${isCalendarOpen && !value?.length ? 'focussed' : ``} ${
                         readOnly && !errorMessage ? 'disabled' : ''
                     }`}>
@@ -535,6 +555,9 @@ function Calendar(props: ComponentProps) {
                         </div>
                         ) : null}
                     </div>
+            ):
+                 !dateOnly && timeOnly ? renderTime(showDropdown, setShowDropdown, selectedHour, selectedMinute, ampmSelected, setSelectedHour, setSelectedMinute, setAmpmSelected) : null
+            }
         </div>
     )
 

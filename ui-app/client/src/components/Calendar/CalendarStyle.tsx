@@ -57,23 +57,19 @@ export default function CalendarStyle({ theme } : {theme: Map<string, Map<string
     ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarHeader .currentDate,
     .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarHeader .currentEndDate {
         display: flex;
-        justify-content: center
+        justify-content: center;
+        gap: 4px;
+        flex-wrap: wrap;
     }
 
-    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-    }
-
-    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol.yearDropDown {
+    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol.yearDropDown, .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol.monthDropDown {
         display: grid;
         justify-items: center;
         align-items: center;
         text-align: center;
     }
 
-    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .yearSubDiv {
-        height: 205px;
+    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .yearSubDiv, .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .monthSubDiv {
         overflow-y: scroll;
     }
 
@@ -81,7 +77,7 @@ export default function CalendarStyle({ theme } : {theme: Map<string, Map<string
         display: block;
     }
 
-    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .buttonAndTimePicker, .calendarDiv .calendarPopOver .calendarPopupDiv .buttonAndTimePicker .timePicker, .calendarDiv .calendarPopOver .calendarPopupDiv .buttonAndTimePickerRange {
+    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .buttonAndTimePicker, .calendarDiv .calendarPopOver .calendarPopupDiv .buttonAndTimePicker .timePicker, .calendarDiv .calendarPopOver .calendarPopupDiv .buttonAndTimePickerRange, .timePicker {
         display: flex;
     }
 
@@ -92,16 +88,16 @@ export default function CalendarStyle({ theme } : {theme: Map<string, Map<string
         justify-content: center;
     }
 
-    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .buttonAndTimePicker .timePicker .container {
+    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .buttonAndTimePicker .timePicker .container, .timePicker .container {
         position: relative;
     }
 
-    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .buttonAndTimePicker .timePicker .container .labelcontainer {
+    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .buttonAndTimePicker .timePicker .container .labelcontainer, .timePicker .container .labelcontainer {
         width: 100%;
         height: 100%;
         display: flex;
         justify-content: space-between;
-        align-items: center
+        align-items: center;
     }
 
     ${PREFIX} .container .dropdowncontainer {
