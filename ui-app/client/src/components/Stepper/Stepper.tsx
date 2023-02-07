@@ -1,8 +1,9 @@
-import React, { useCallback, useState } from 'react';
+import React, { Fragment, useCallback, useState } from 'react';
 import {
 	addListenerAndCallImmediately,
 	getPathFromLocation,
 	PageStoreExtractor,
+	setData,
 } from '../../context/StoreContext';
 import { HelperComponent } from '../HelperComponent';
 import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
@@ -43,30 +44,75 @@ function Stepper(props: ComponentProps) {
 	if (!bindingPath) throw new Error('Definition requires bindingpath');
 	const [value, setValue] = React.useState(0);
 	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
-	console.log(countingType, titles, bindingPathPath);
+	console.log(countingType, titles, icons);
+	console.log(showCheckOnComplete, textPosition, moveToAnyFutureStep, moveToAnyPreviousStep);
+
 	React.useEffect(
 		() =>
 			addListenerAndCallImmediately(
 				(_, value) => {
-					setValue(value);
+					setValue(value ?? 0);
 				},
 				pageExtractor,
 				bindingPathPath,
 			),
 		[bindingPath],
 	);
+	const goToStep = (stepNumber: number) => {
+		if (stepNumber < value && moveToAnyPreviousStep)
+			setData(bindingPathPath, stepNumber, context.pageName);
+		else if (stepNumber > value && moveToAnyFutureStep)
+			setData(bindingPathPath, stepNumber, context.pageName);
+	};
+	const checkIcon = 'fa-solid fa-check';
 	const effectiveTitles = titles
-		.split(',')
-		.map((e: string) => e.trim())
-		.filter((e: string) => !!e);
+		? titles
+				.split(',')
+				.map((e: string) => e.trim())
+				.filter((e: string) => !!e)
+		: [];
+
+	const iconList = icons
+		? icons
+				.split(',')
+				.map((e: string) => e.trim())
+				.filter((e: string) => !!e)
+		: [];
 	return (
 		<div className="comp compStepper">
 			<HelperComponent definition={definition} />
-			<ul>
+			<ul className="stepper">
 				{effectiveTitles.map((e: string, i: number) => (
-					<li>
-						<span>{i + 1}</span>
-						{e}
+					<li
+						onClick={() => goToStep(i)}
+						className={`stepperItem ${
+							i < value && moveToAnyPreviousStep ? 'previousStep' : ''
+						} ${i > value && moveToAnyFutureStep ? 'futureStep' : ''}`}
+						key={i}
+					>
+						{icons ? (
+							<i
+								className={`${
+									i < value && showCheckOnComplete ? checkIcon : iconList[i]
+								} countingStep ${i <= value ? 'done' : ''}`}
+							></i>
+						) : (
+							<Fragment>
+								{i < value && showCheckOnComplete ? (
+									<i
+										className={`${checkIcon} countingStep ${
+											i <= value ? 'done' : ''
+										}`}
+									></i>
+								) : (
+									<span className={`countingStep ${i <= value ? 'done' : ''}`}>
+										{i + 1}
+									</span>
+								)}
+							</Fragment>
+						)}
+						<span className="title">{e}</span>
+						{i < effectiveTitles.length - 1 && <hr className="line" />}
 					</li>
 				))}
 			</ul>
