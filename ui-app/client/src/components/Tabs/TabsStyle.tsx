@@ -10,15 +10,10 @@ export default function TabsStyles({ theme }: { theme: Map<string, Map<string, s
 			letter-spacing: 0px;
 		}
 		${PREFIX} .tabsButtonActive {
-			
 			margin-left:12px;
 			margin-right:12px
 		}
 		
-
-		${PREFIX} .border {
-			border: 6px solid red;
-		}
 
 
 
