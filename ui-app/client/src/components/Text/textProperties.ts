@@ -39,6 +39,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
+		name: 'processNewLine',
+		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		displayName: 'Text with line breaks',
+		description: 'Process text to show new line characters',
+		defaultValue: false,
+	},
+
+	{
 		name: 'textContainer',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: 'Text Container Type (SEO)',
@@ -126,6 +134,7 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 			target: ['text'],
 		},
 		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: COMPONENT_STYLE_GROUP_PROPERTIES.margin,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.shape.type]: COMPONENT_STYLE_GROUP_PROPERTIES.shape,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.opacity.type]: COMPONENT_STYLE_GROUP_PROPERTIES.opacity,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.outline.type]: COMPONENT_STYLE_GROUP_PROPERTIES.outline,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: COMPONENT_STYLE_GROUP_PROPERTIES.padding,

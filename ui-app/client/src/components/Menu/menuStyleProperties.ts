@@ -48,6 +48,13 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.menuText',
 	},
 	{
+		name: 'menuHoverTextColor',
+		cssProperty: 'color',
+		displayName: "Menu's text color on hover",
+		description: "Menu's text color on hover.",
+		selector: '.menu:hover > .menuLink > .menuText',
+	},
+	{
 		name: 'menuTextAndIconGap',
 		cssProperty: 'padding-left',
 		displayName: 'Text and icon gap',
@@ -69,6 +76,14 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "Menu's icon size",
 		description: "Menu's icon size.",
 		defaultValue: '21px',
+		selector: '.icon',
+	},
+	{
+		name: 'menuIconAlignment',
+		cssProperty: 'text-align',
+		displayName: "Menu's icon alignment",
+		description: "Menu's icon alignment",
+		defaultValue: 'center',
 		selector: '.icon',
 	},
 	{

@@ -14,6 +14,7 @@ import { propertiesDefinition, stylePropertiesDefinition } from './buttonPropert
 import ButtonStyle from './ButtonStyle';
 import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import { flattenUUID } from '../util/uuid';
 
 function ButtonComponent(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -32,13 +33,21 @@ function ButtonComponent(props: ComponentProps) {
 	);
 
 	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
-	const spinnerPath = `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${key}.isRunning`;
+	const spinnerPath = onClick
+		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
+				onClick,
+		  )}.isRunning`
+		: undefined;
 
 	const [isLoading, setIsLoading] = useState(
-		getDataFromPath(spinnerPath, props.locationHistory) || false,
+		onClick ? getDataFromPath(spinnerPath, props.locationHistory) ?? false : false,
 	);
 
-	useEffect(() => addListener((_, value) => setIsLoading(value), pageExtractor, spinnerPath), []);
+	useEffect(() => {
+		if (spinnerPath) {
+			return addListener((_, value) => setIsLoading(value), pageExtractor, spinnerPath);
+		}
+	}, []);
 
 	const styleProperties = processComponentStylePseudoClasses(
 		{ focus, hover, disabled: isLoading || readOnly },
@@ -46,7 +55,15 @@ function ButtonComponent(props: ComponentProps) {
 	);
 
 	const handleClick = async () =>
-		clickEvent && !isLoading && (await runEvent(clickEvent, onClick, props.context.pageName));
+		clickEvent &&
+		!isLoading &&
+		(await runEvent(
+			clickEvent,
+			onClick,
+			props.context.pageName,
+			props.locationHistory,
+			props.pageDefinition,
+		));
 
 	const rightIconTag =
 		!type?.startsWith('fabButton') && !leftIcon ? (

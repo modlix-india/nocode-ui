@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
 	addListener,
 	getDataFromLocation,
+	getDataFromPath,
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
@@ -13,8 +14,12 @@ import { Component } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './textBoxProperties';
 import TextBoxStyle from './TextBoxStyle';
 import useDefinition from '../util/useDefinition';
-import { isNullValue } from '@fincity/kirun-js';
+import { deepEqual, isNullValue } from '@fincity/kirun-js';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
+import { flattenUUID } from '../util/uuid';
+import { runEvent } from '../util/runEvent';
+import { validate } from '../../util/validationProcessor';
 
 interface mapType {
 	[key: string]: any;
@@ -24,6 +29,8 @@ function TextBox(props: ComponentProps) {
 	const [isDirty, setIsDirty] = React.useState(false);
 	const [errorMessage, setErrorMessage] = React.useState('');
 	const [focus, setFocus] = React.useState(false);
+	const [show, setShow] = React.useState(false);
+	const [validationMessages, setValidationMessages] = React.useState<Array<string>>([]);
 	const mapValue: mapType = {
 		UNDEFINED: undefined,
 		NULL: null,
@@ -52,6 +59,10 @@ function TextBox(props: ComponentProps) {
 			label,
 			noFloat,
 			numberType,
+			isPassword,
+			onEnter,
+			validation,
+			placeholder,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -62,36 +73,79 @@ function TextBox(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
+	const effectivePlaceholder = noFloat ? (placeholder ? placeholder : label) : label;
 	const computedStyles = processComponentStylePseudoClasses(
 		{ focus, readOnly },
 		stylePropertiesWithPseudoStates,
 	);
-	const [value, setvalue] = React.useState(defaultValue ?? '');
+	const [value, setValue] = React.useState(defaultValue ?? '');
+
 	if (!bindingPath) throw new Error('Definition requires bindingpath');
 	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
+
 	React.useEffect(() => {
 		const initValue = getDataFromLocation(bindingPath, locationHistory, pageExtractor);
 		if (!isNullValue(defaultValue) && isNullValue(initValue)) {
 			setData(bindingPathPath, defaultValue, context.pageName);
 		}
-		setvalue(initValue ?? defaultValue?.toString() ?? '');
+		setValue(initValue ?? defaultValue?.toString() ?? '');
 	}, []);
+
 	React.useEffect(
 		() =>
 			addListener(
 				(_, value) => {
 					if (value === undefined || value === null) {
-						setvalue('');
+						setValue('');
 						return;
 					}
-					setvalue(value);
+					setValue(value);
 				},
 				pageExtractor,
 				bindingPathPath,
 			),
 		[],
 	);
+
+	const spinnerPath = onEnter
+		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
+				onEnter,
+		  )}.isRunning`
+		: undefined;
+
+	const [isLoading, setIsLoading] = useState(
+		onEnter ? getDataFromPath(spinnerPath, props.locationHistory) ?? false : false,
+	);
+
+	useEffect(() => {
+		if (spinnerPath) {
+			return addListener((_, value) => setIsLoading(value), pageExtractor, spinnerPath);
+		}
+	}, []);
+
+	useEffect(() => {
+		if (!validation?.length) return;
+
+		const msgs = validate(props.definition, props.pageDefinition, validation, value);
+		setValidationMessages(msgs);
+
+		setData(
+			`Store.validations.${context.pageName}.${flattenUUID(definition.key)}`,
+			msgs.length ? msgs : undefined,
+			context.pageName,
+			true,
+		);
+		return () =>
+			setData(
+				`Store.validations.${context.pageName}.${flattenUUID(definition.key)}`,
+				undefined,
+				context.pageName,
+				true,
+			);
+	}, [value, validation]);
+
 	const handleBlur = async (event: any) => {
+		setIsDirty(true);
 		let temp = value === '' && emptyValue ? mapValue[emptyValue] : value;
 		if (valueType === 'NUMBER') {
 			const tempNumber =
@@ -118,7 +172,7 @@ function TextBox(props: ComponentProps) {
 		}
 		let temp = text === '' && emptyValue ? mapValue[emptyValue] : text;
 		if (updateStoreImmediately) setData(bindingPathPath, temp, context?.pageName);
-		if (!updateStoreImmediately) setvalue(text);
+		if (!updateStoreImmediately) setValue(text);
 	};
 
 	const handleNumberChange = (text: string) => {
@@ -130,7 +184,7 @@ function TextBox(props: ComponentProps) {
 		let tempNumber = numberType === 'DECIMAL' ? parseFloat(temp) : parseInt(temp);
 		temp = !isNaN(tempNumber) ? tempNumber : temp;
 		if (updateStoreImmediately) setData(bindingPathPath, temp, context?.pageName);
-		if (!updateStoreImmediately) setvalue(!isNaN(tempNumber) ? temp?.toString() : '');
+		if (!updateStoreImmediately) setValue(!isNaN(tempNumber) ? temp?.toString() : '');
 	};
 	const handleChange = (event: any) => {
 		if (!isDirty) {
@@ -147,6 +201,31 @@ function TextBox(props: ComponentProps) {
 			setData(bindingPathPath, temp, context?.pageName);
 		}
 	};
+	const clickEvent = onEnter ? props.pageDefinition.eventFunctions[onEnter] : undefined;
+	const handleKeyUp = onEnter
+		? async (e: React.KeyboardEvent) => {
+				if (!clickEvent || isLoading || e.key !== 'Enter') return;
+				if (!updateStoreImmediately) {
+					await handleBlur(e);
+				}
+				await runEvent(
+					clickEvent,
+					onEnter,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				);
+		  }
+		: undefined;
+
+	const validationMessagesComp =
+		validationMessages?.length && (value || isDirty || context.showValidationMessages) ? (
+			<div className="_validationMessages">
+				{validationMessages.map(msg => (
+					<div key={msg}>{msg}</div>
+				))}
+			</div>
+		) : undefined;
 	return (
 		<div className="comp compTextBox" style={computedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />
@@ -182,16 +261,17 @@ function TextBox(props: ComponentProps) {
 					<input
 						style={computedStyles.inputBox ?? {}}
 						className={`textbox ${valueType === 'NUMBER' ? 'remove-spin-button' : ''}`}
-						type={valueType}
+						type={isPassword && !show ? 'password' : valueType}
 						value={value}
 						onChange={handleChange}
-						placeholder={getTranslations(label, translations)}
+						placeholder={getTranslations(effectivePlaceholder, translations)}
 						onFocus={
 							stylePropertiesWithPseudoStates?.focus
 								? () => setFocus(true)
 								: undefined
 						}
 						onBlur={handleBlur}
+						onKeyUp={handleKeyUp}
 						name={key}
 						id={key}
 						disabled={readOnly}
@@ -214,6 +294,15 @@ function TextBox(props: ComponentProps) {
 						className={`rightIcon ${rightIcon}`}
 					/>
 				)}
+				{isPassword && !readOnly && (
+					<i
+						style={computedStyles.passwordIcon ?? {}}
+						className={`passwordIcon ${
+							show ? `fa fa-regular fa-eye` : `fa fa-regular fa-eye-slash`
+						}`}
+						onClick={() => setShow(!show)}
+					/>
+				)}
 				{errorMessage ? (
 					<i
 						style={computedStyles.errorText ?? {}}
@@ -221,7 +310,7 @@ function TextBox(props: ComponentProps) {
 							value?.length ? `hasText` : ``
 						} fa fa-solid fa-circle-exclamation`}
 					/>
-				) : value?.length && !rightIcon && !readOnly ? (
+				) : value?.length && !rightIcon && !readOnly && !isPassword ? (
 					<i
 						style={computedStyles.supportText ?? {}}
 						onClick={handleClickClose}
@@ -237,6 +326,7 @@ function TextBox(props: ComponentProps) {
 			>
 				{errorMessage ? errorMessage : supportingText}
 			</label>
+			{validationMessagesComp}
 		</div>
 	);
 }

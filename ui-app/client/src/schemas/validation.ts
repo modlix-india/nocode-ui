@@ -157,6 +157,23 @@ const validationSchemas: Array<[string, Schema]> = [
 				]),
 			),
 	],
+	[
+		'Validation',
+		Schema.ofObject('Validation')
+			.setNamespace(NAMESPACE_UI_ENGINE)
+			.setAnyOf([
+				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.EventFunctionValidation`),
+				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.MandatoryValidation`),
+				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.EmailValidation`),
+				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.RegexValidation`),
+				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.UniqueValidation`),
+				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.StringValidation`),
+				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.NumberValidation`),
+				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.BooleanConditionValidation`),
+				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.SchemaTypeValidation`),
+				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.DateFormatValidation`),
+			]),
+	],
 ];
 
 export default validationSchemas;

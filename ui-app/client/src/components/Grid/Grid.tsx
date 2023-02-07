@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { HelperComponent } from '../HelperComponent';
 import {
 	ComponentProperty,
@@ -7,7 +7,14 @@ import {
 	DataLocation,
 	RenderContext,
 } from '../../types/common';
-import { getData, PageStoreExtractor } from '../../context/StoreContext';
+import {
+	addListener,
+	getData,
+	getDataFromPath,
+	getPathFromLocation,
+	PageStoreExtractor,
+	setData,
+} from '../../context/StoreContext';
 import { Component } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './gridProperties';
 import GridStyle from './GridStyle';
@@ -15,16 +22,34 @@ import useDefinition from '../util/useDefinition';
 import { Link } from 'react-router-dom';
 import Children from '../Children';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
+import { runEvent } from '../util/runEvent';
+import { flattenUUID } from '../util/uuid';
 
 function Grid(props: ComponentProps) {
 	const [hover, setHover] = React.useState(false);
 	const [focus, setFocus] = React.useState(false);
+	const [observer, setObserver] = React.useState<IntersectionObserver>();
+	const ref = React.useRef(null);
 	const { definition, pageDefinition, locationHistory, context } = props;
+	const {
+		definition: { bindingPath },
+	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
 		key,
 		stylePropertiesWithPseudoStates,
-		properties: { readOnly: isReadonly = false, linkPath, target } = {},
+		properties: {
+			readOnly: isReadonly = false,
+			linkPath,
+			target,
+			containerType,
+			layout,
+			onClick,
+			background,
+			observeChildren,
+			observerThresholds,
+		} = {},
 	} = useDefinition(
 		definition,
 		propertiesDefinition,
@@ -32,23 +57,81 @@ function Grid(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
+	const bindingPathPath = getPathFromLocation(bindingPath!, locationHistory, pageExtractor);
+	const observerrCallback = useCallback(
+		(entries: Array<IntersectionObserverEntry>) => {
+			if (observeChildren && !bindingPath) return;
+			const [entry] = entries;
+			const key = entry.target.getAttribute('data-key');
+			setData(
+				getPathFromLocation(bindingPath!, locationHistory, pageExtractor),
+				key,
+				context.pageName,
+			);
+		},
+		[bindingPathPath],
+	);
+	React.useEffect(() => {
+		if (!observeChildren) return;
+		const threshold = observerThresholds
+			.split(',')
+			.map((e: string) => parseFloat(e))
+			.filter((e: number) => !isNaN(e) && e <= 1 && e >= 0);
+		const options = {
+			root: ref.current,
+			rootMargin: '0px',
+			threshold,
+		};
+		setObserver(new IntersectionObserver(observerrCallback, options));
+	}, [ref.current, observerrCallback]);
+
 	const childs = (
 		<Children
+			key={`${key}_chld`}
 			pageDefinition={pageDefinition}
 			children={definition.children}
-			context={{ ...context, isReadonly }}
+			context={{ ...context, isReadonly, observer }}
 			locationHistory={locationHistory}
 		/>
 	);
+
 	const resolvedStyles = processComponentStylePseudoClasses(
 		{ focus, hover, disabled: isReadonly },
 		stylePropertiesWithPseudoStates,
 	);
-	return linkPath ? (
-		<div className="comp compGrid">
-			<HelperComponent definition={definition} />
+
+	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
+	const spinnerPath = `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
+		key,
+	)}.isRunning`;
+
+	const [isLoading, setIsLoading] = useState(
+		getDataFromPath(spinnerPath, locationHistory) ?? false,
+	);
+
+	useEffect(() => addListener((_, value) => setIsLoading(value), pageExtractor, spinnerPath), []);
+
+	const handleClick =
+		!clickEvent || isLoading
+			? undefined
+			: async () =>
+					await runEvent(
+						clickEvent,
+						onClick,
+						props.context.pageName,
+						props.locationHistory,
+						props.pageDefinition,
+					);
+	const styleComp = resolvedStyles?.comp?.hideScrollBar ? (
+		<style>{`._${key}_grid_css::-webkit-scrollbar { display: none }`}</style>
+	) : undefined;
+	if (linkPath) {
+		return React.createElement(containerType.toLowerCase(), { className: 'comp compGrid' }, [
+			<HelperComponent definition={definition} />,
+			styleComp,
 			<Link
-				className="anchorGrid"
+				ref={ref}
+				className={`_anchorGrid _${layout} ${background} _${key}_grid_css`}
 				onMouseEnter={
 					stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
 				}
@@ -62,22 +145,27 @@ function Grid(props: ComponentProps) {
 				style={resolvedStyles.comp ?? {}}
 			>
 				{childs}
-			</Link>
-		</div>
-	) : (
-		<div
-			onMouseEnter={stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined}
-			onMouseLeave={
-				stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
-			}
-			onFocus={stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined}
-			onBlur={stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined}
-			className="comp compGrid noAnchorGrid"
-			style={resolvedStyles.comp ?? {}}
-		>
-			<HelperComponent definition={definition} />
-			{childs}
-		</div>
+			</Link>,
+		]);
+	}
+
+	return React.createElement(
+		containerType.toLowerCase(),
+		{
+			onMouseEnter: stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined,
+			onMouseLeave: stylePropertiesWithPseudoStates?.hover
+				? () => setHover(false)
+				: undefined,
+
+			onFocus: stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined,
+			onBlur: stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined,
+			ref: ref,
+			className: `comp compGrid _noAnchorGrid _${layout} ${background} _${key}_grid_css`,
+			style: resolvedStyles.comp ?? {},
+
+			onClick: handleClick,
+		},
+		[<HelperComponent key={`${key}_hlp`} definition={definition} />, styleComp, childs],
 	);
 }
 
@@ -89,6 +177,8 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: GridStyle,
+	stylePseudoStates: ['hover', 'focus', 'readonly'],
+	hasChildren: true,
 };
 
 export default component;

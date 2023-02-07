@@ -34,19 +34,21 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 		definition,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
-	const { properties: { isItemDraggable, showMove, showDelete, showAdd, readOnly } = {}, key } =
-		useDefinition(
-			definition,
-			propertiesDefinition,
-			stylePropertiesDefinition,
-			locationHistory,
-			pageExtractor,
-		);
+	const {
+		properties: { isItemDraggable, showMove, showDelete, showAdd, readOnly, layout } = {},
+		key,
+	} = useDefinition(
+		definition,
+		propertiesDefinition,
+		stylePropertiesDefinition,
+		locationHistory,
+		pageExtractor,
+	);
 	if (!bindingPath) throw new Error('Definition requires bindingpath');
 	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
 
 	React.useEffect(() => {
-		addListener(
+		return addListener(
 			(_, value) => {
 				setValue(value);
 			},
@@ -111,7 +113,7 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 	};
 
 	return (
-		<div className="comp compArrayRepeater">
+		<div className={`comp compArrayRepeater _${layout}`}>
 			<HelperComponent definition={definition} />
 			{value.map((e: any, index) => {
 				const comp = (
@@ -194,6 +196,8 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: ArrayRepeaterStyle,
+	hasChildren: true,
+	noOfChildren: 1,
 };
 
 export default component;

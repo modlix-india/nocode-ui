@@ -3,10 +3,16 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { RenderEngineContainer } from '../Engine/RenderEngineContainer';
 import * as getAppDefinition from '../definitions/getAppDefinition.json';
 import { runEvent } from '../components/util/runEvent';
-import { addListener, setData, store } from '../context/StoreContext';
-import { STORE_PREFIX } from '../constants';
+import {
+	addListener,
+	addListenerAndCallImmediately,
+	setData,
+	store,
+} from '../context/StoreContext';
+import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../constants';
 import { StyleResolution } from '../types/common';
 import { StyleResolutionDefinition } from '../util/styleProcessor';
+import { Messages } from './Messages/Messages';
 
 function processTagType(headTags: any, tag: string) {
 	if (!headTags) return;
@@ -27,25 +33,33 @@ export function App() {
 	const [isApplicationLoadFailed, setIsApplicationFailed] = useState(false);
 	const [applicationLoaded, setApplicationLoaded] = useState(false);
 
-	useEffect(() => {
-		(async () => {
-			await runEvent(getAppDefinition, 'initialLoadFunction');
-			setApplicationLoaded(true);
-		})();
+	useEffect(
+		() =>
+			addListenerAndCallImmediately(
+				async (_, appDef) => {
+					if (appDef === undefined) {
+						await runEvent(
+							getAppDefinition,
+							'initialLoadFunction',
+							GLOBAL_CONTEXT_NAME,
+							[],
+						);
+						setApplicationLoaded(true);
+						return;
+					}
 
-		if (!globalThis.nodeDev) return;
+					const { properties } = appDef;
+					if (!properties || !globalThis.nodeDev) return;
 
-		return addListener(
-			(_, { properties } = {}) => {
-				if (!properties) return;
-				processTagType(properties.links, 'LINK');
-				processTagType(properties.scripts, 'SCRIPT');
-				processTagType(properties.metas, 'META');
-			},
-			undefined,
-			`${STORE_PREFIX}.application`,
-		);
-	}, []);
+					processTagType(properties.links, 'LINK');
+					processTagType(properties.scripts, 'SCRIPT');
+					processTagType(properties.metas, 'META');
+				},
+				undefined,
+				`${STORE_PREFIX}.application`,
+			),
+		[],
+	);
 
 	useEffect(
 		() =>
@@ -60,13 +74,16 @@ export function App() {
 	if (isApplicationLoadFailed)
 		return <>Application Load failed, Please contact your administrator</>;
 
-	if (!applicationLoaded) return <>Loading...</>;
+	if (!applicationLoaded) return <>...</>;
 	return (
-		<BrowserRouter>
-			<Routes>
-				<Route path="/*" element={<RenderEngineContainer />} />
-			</Routes>
-		</BrowserRouter>
+		<>
+			<BrowserRouter>
+				<Routes>
+					<Route path="/*" element={<RenderEngineContainer />} />
+				</Routes>
+			</BrowserRouter>
+			<Messages />
+		</>
 	);
 }
 
@@ -77,47 +94,47 @@ function setDeviceType() {
 
 	if (size >= (StyleResolutionDefinition.get(StyleResolution.WIDE_SCREEN)?.minWidth ?? 1281)) {
 		newDevices[StyleResolution.WIDE_SCREEN] = true;
+		newDevices[StyleResolution.DESKTOP_SCREEN] = true;
+		newDevices[StyleResolution.TABLET_LANDSCAPE_SCREEN] = true;
+		newDevices[StyleResolution.TABLET_POTRAIT_SCREEN] = true;
+		newDevices[StyleResolution.MOBILE_LANDSCAPE_SCREEN] = true;
+		newDevices[StyleResolution.MOBILE_POTRAIT_SCREEN] = true;
 	} else if (
 		size >= (StyleResolutionDefinition.get(StyleResolution.DESKTOP_SCREEN)?.minWidth ?? 1025)
 	) {
 		newDevices[StyleResolution.DESKTOP_SCREEN_ONLY] = true;
 		newDevices[StyleResolution.DESKTOP_SCREEN] = true;
-		newDevices[StyleResolution.WIDE_SCREEN] = true;
+		newDevices[StyleResolution.TABLET_LANDSCAPE_SCREEN] = true;
+		newDevices[StyleResolution.TABLET_POTRAIT_SCREEN] = true;
+		newDevices[StyleResolution.MOBILE_LANDSCAPE_SCREEN] = true;
+		newDevices[StyleResolution.MOBILE_POTRAIT_SCREEN] = true;
 	} else if (
 		size >=
 		(StyleResolutionDefinition.get(StyleResolution.TABLET_LANDSCAPE_SCREEN)?.minWidth ?? 961)
 	) {
 		newDevices[StyleResolution.TABLET_LANDSCAPE_SCREEN_ONLY] = true;
 		newDevices[StyleResolution.TABLET_LANDSCAPE_SCREEN] = true;
-		newDevices[StyleResolution.DESKTOP_SCREEN] = true;
-		newDevices[StyleResolution.WIDE_SCREEN] = true;
+		newDevices[StyleResolution.TABLET_POTRAIT_SCREEN] = true;
+		newDevices[StyleResolution.MOBILE_LANDSCAPE_SCREEN] = true;
+		newDevices[StyleResolution.MOBILE_POTRAIT_SCREEN] = true;
 	} else if (
 		size >=
 		(StyleResolutionDefinition.get(StyleResolution.TABLET_POTRAIT_SCREEN)?.minWidth ?? 641)
 	) {
 		newDevices[StyleResolution.TABLET_POTRAIT_SCREEN_ONLY] = true;
 		newDevices[StyleResolution.TABLET_POTRAIT_SCREEN] = true;
-		newDevices[StyleResolution.TABLET_LANDSCAPE_SCREEN] = true;
-		newDevices[StyleResolution.DESKTOP_SCREEN] = true;
-		newDevices[StyleResolution.WIDE_SCREEN] = true;
+		newDevices[StyleResolution.MOBILE_LANDSCAPE_SCREEN] = true;
+		newDevices[StyleResolution.MOBILE_POTRAIT_SCREEN] = true;
 	} else if (
 		size >=
 		(StyleResolutionDefinition.get(StyleResolution.MOBILE_LANDSCAPE_SCREEN)?.minWidth ?? 481)
 	) {
 		newDevices[StyleResolution.MOBILE_LANDSCAPE_SCREEN_ONLY] = true;
 		newDevices[StyleResolution.MOBILE_LANDSCAPE_SCREEN] = true;
-		newDevices[StyleResolution.TABLET_POTRAIT_SCREEN] = true;
-		newDevices[StyleResolution.TABLET_LANDSCAPE_SCREEN] = true;
-		newDevices[StyleResolution.DESKTOP_SCREEN] = true;
-		newDevices[StyleResolution.WIDE_SCREEN] = true;
+		newDevices[StyleResolution.MOBILE_POTRAIT_SCREEN] = true;
 	} else {
 		newDevices[StyleResolution.MOBILE_POTRAIT_SCREEN_ONLY] = true;
 		newDevices[StyleResolution.MOBILE_POTRAIT_SCREEN] = true;
-		newDevices[StyleResolution.MOBILE_LANDSCAPE_SCREEN] = true;
-		newDevices[StyleResolution.TABLET_POTRAIT_SCREEN] = true;
-		newDevices[StyleResolution.TABLET_LANDSCAPE_SCREEN] = true;
-		newDevices[StyleResolution.DESKTOP_SCREEN] = true;
-		newDevices[StyleResolution.WIDE_SCREEN] = true;
 	}
 
 	let devicesString = JSON.stringify(newDevices);

@@ -60,10 +60,24 @@ function Popup(props: ComponentProps) {
 
 	React.useEffect(() => {
 		if (openEvent && isActive) {
-			(async () => await runEvent(openEvent, key, props.context.pageName))();
+			(async () =>
+				await runEvent(
+					openEvent,
+					key,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				))();
 		}
 		if (!isActive && closeEvent && !refObj.current.first) {
-			(async () => await runEvent(closeEvent, key, props.context.pageName))();
+			(async () =>
+				await runEvent(
+					closeEvent,
+					key,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				))();
 		}
 		refObj.current.first = false;
 	}, [isActive]);
@@ -163,6 +177,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: PopupStyles,
+	hasChildren: true,
 };
 
 export default component;

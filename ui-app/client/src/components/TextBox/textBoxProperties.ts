@@ -5,13 +5,14 @@ import {
 	SCHEMA_REF_BOOL_COMP_PROP,
 	SCHEMA_REF_DATA_LOCATION,
 	SCHEMA_REF_STRING_COMP_PROP,
+	SCHEMA_REF_VALIDATION,
 } from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
 	ComponentPropertyGroup,
 } from '../../types/common';
-import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
+import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
@@ -80,19 +81,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'validation',
-		schema: Schema.ofArray(
-			'validation',
-			Schema.ofRef(`${NAMESPACE_UI_ENGINE}.EventFunctionValidation`),
-			Schema.ofRef(`${NAMESPACE_UI_ENGINE}.MandatoryValidation`),
-			Schema.ofRef(`${NAMESPACE_UI_ENGINE}.EmailValidation`),
-			Schema.ofRef(`${NAMESPACE_UI_ENGINE}.RegexValidation`),
-			Schema.ofRef(`${NAMESPACE_UI_ENGINE}.UniqueValidation`),
-			Schema.ofRef(`${NAMESPACE_UI_ENGINE}.StringValidation`),
-			Schema.ofRef(`${NAMESPACE_UI_ENGINE}.NumberValidation`),
-			Schema.ofRef(`${NAMESPACE_UI_ENGINE}.BooleanConditionValidation`),
-			Schema.ofRef(`${NAMESPACE_UI_ENGINE}.SchemaTypeValidation`),
-			Schema.ofRef(`${NAMESPACE_UI_ENGINE}.DateFormatValidation`),
-		),
+		schema: Schema.ofRef(SCHEMA_REF_VALIDATION),
 		displayName: 'Validation',
 		description: 'Validation Rule',
 		editor: ComponentPropertyEditor.VALIDATION,
@@ -172,6 +161,22 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
 		notImplemented: true,
 	},
+
+	{
+		name: 'isPassword',
+		displayName: 'Password',
+		description: 'Textbox to enter password',
+		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		defaultValue: false,
+	},
+	{
+		name: 'placeholder',
+		displayName: 'Placeholder',
+		description: 'Placeholder to be shown in input box.',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		defaultValue: '',
+	},
+	COMMON_COMPONENT_PROPERTIES.onEnter,
 ];
 
 const stylePropertiesDefinition = {
@@ -181,6 +186,8 @@ const stylePropertiesDefinition = {
 		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: COMPONENT_STYLE_GROUP_PROPERTIES.padding,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.outline.type]: COMPONENT_STYLE_GROUP_PROPERTIES.outline,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.position.type]: COMPONENT_STYLE_GROUP_PROPERTIES.position,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.background.type]:
+			COMPONENT_STYLE_GROUP_PROPERTIES.background,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: COMPONENT_STYLE_GROUP_PROPERTIES.size,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.transform.type]:
 			COMPONENT_STYLE_GROUP_PROPERTIES.transform,
@@ -246,6 +253,24 @@ const stylePropertiesDefinition = {
 			description: 'rightIcon color properties',
 			prefix: 'rightIcon',
 			target: ['rightIcon'],
+		},
+	},
+	passwordIcon: {
+		[COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.font,
+			name: 'passwordIcon',
+			displayName: 'passwordIcon font properties',
+			description: 'passwordIcon font properties',
+			prefix: 'passwordIcon',
+			target: ['passwordIcon'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
+			name: 'passwordIcon',
+			displayName: 'passwordIcon color properties',
+			description: 'passwordIcon color properties',
+			prefix: 'passwordIcon',
+			target: ['passwordIcon'],
 		},
 	},
 	inputBox: {

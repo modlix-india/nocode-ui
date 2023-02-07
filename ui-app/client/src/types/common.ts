@@ -23,6 +23,8 @@ export interface RenderContext {
 	pageName: string;
 	isReadonly?: boolean;
 	formKey?: Array<string>;
+	showValidationMessages?: boolean;
+	observer?: IntersectionObserver;
 }
 
 export enum ComponentPropertyDataPathType {
@@ -44,6 +46,10 @@ export enum ComponentPropertyEditor {
 	PAGE_SELECTOR,
 	COMPONENT_SELECTOR,
 	EVENT_SELECTOR,
+	LAYOUT,
+	BACKGROUND,
+	STYLE_SELECTOR,
+	THEME_SELECTOR,
 }
 
 export enum ComponentPropertyGroup {
@@ -97,6 +103,9 @@ export interface Component {
 	properties: Array<ComponentPropertyDefinition>;
 	styleProperties?: ComponentStylePropertyDefinition;
 	stylePseudoStates?: Array<String>;
+	hasChildren?: boolean;
+	noOfChildren?: number;
+	allowedChildrenType?: Array<String>;
 }
 
 export enum StyleResolution {
@@ -173,12 +182,15 @@ export interface ComponentDefinition {
 	bindingPath?: DataLocation;
 	type: string;
 	properties?: {
-		[key: string]: ComponentProperty<any>;
+		[key: string]:
+			| ComponentProperty<any>
+			| { [key: string]: ComponentProperty<any> }
+			| { [key: string]: Validation };
 	};
 	styleProperties?: ComponentStyle;
 	validations?: Array<Validation>;
 	displayOrder?: number;
-	children: { [key: string]: boolean };
+	children?: { [key: string]: boolean };
 }
 
 export interface ComponentDefinitionValues {
@@ -192,12 +204,21 @@ export interface PageDefinition {
 	eventFunctions: {
 		[key: string]: any;
 	};
+	rootComponent: string;
+	componentDefinition: {
+		[key: string]: ComponentDefinition;
+	};
 	translations: { [key: string]: { [key: string]: string } };
 }
 
 export interface ComponentProps {
 	definition: ComponentDefinition;
 	pageDefinition: PageDefinition;
-	locationHistory: Array<DataLocation | string>;
+	locationHistory: Array<LocationHistory>;
 	context: RenderContext;
+}
+
+export interface LocationHistory {
+	location: DataLocation | string;
+	index: number;
 }

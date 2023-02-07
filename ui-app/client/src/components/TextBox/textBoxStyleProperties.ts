@@ -14,6 +14,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'font-size',
 		displayName: 'textbox support text font size',
 		description: "This textbox's font size is used for textbox's support text.",
+		defaultValue: '<main-font-size>',
 		selector: '.supportText',
 	},
 	{
@@ -28,6 +29,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'font-size',
 		displayName: 'textbox input text font size',
 		description: "This textbox's font size is used for textbox's input text.",
+		defaultValue: '<main-font-size>',
 		selector: '.textBoxDiv .inputContainer .textbox',
 	},
 	{
@@ -142,6 +144,14 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.textBoxDiv.disabled',
 	},
 	{
+		name: 'textBoxLabelTextSize',
+		cssProperty: 'font-size',
+		displayName: "Textbox's label font size",
+		description: "This font size is used for textbox's label.",
+		defaultValue: '<main-font-size>',
+		selector: '.textBoxDiv .inputContainer .textBoxLabel',
+	},
+	{
 		name: 'textBoxLabelTextColor',
 		cssProperty: 'color',
 		displayName: "textbox's label color",
@@ -201,65 +211,81 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'textBoxLabelTextTransformWhenContainsTextFromTop',
 		cssProperty: 'top',
 		displayName: "textbox's label text position from top when input",
-		description: "This top is used for textbox's label text position from top when it has any input.",
+		description:
+			"This top is used for textbox's label text position from top when it has any input.",
 		defaultValue: '0',
-		selector: '.textBoxDiv .inputContainer .textbox:focus + .textBoxLabel, .textBoxDiv .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
+		selector:
+			'.textBoxDiv .inputContainer .textbox:focus + .textBoxLabel, .textBoxDiv .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
 	},
 	{
 		name: 'textBoxLabelTextTransformWhenContainsTextFromLeft',
 		cssProperty: 'left',
 		displayName: "textbox's label text position from left when input",
-		description: "This left is used for textbox's label text position from top when it has any input.",
+		description:
+			"This left is used for textbox's label text position from top when it has any input.",
 		defaultValue: '5px',
-		selector: '.textBoxDiv .inputContainer .textbox:focus + .textBoxLabel, .textBoxDiv .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
+		selector:
+			'.textBoxDiv .inputContainer .textbox:focus + .textBoxLabel, .textBoxDiv .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
 	},
 	{
 		name: 'textBoxLabelTextTransformWhenContainsTextPaddingLeft',
 		cssProperty: 'padding-left',
 		displayName: "textbox's label text padding from left when input",
-		description: "This left is used for textbox's label text padding left when it has any input.",
+		description:
+			"This left is used for textbox's label text padding left when it has any input.",
 		defaultValue: '0',
-		selector: '.textBoxDiv .inputContainer .textbox:focus + .textBoxLabel, .textBoxDiv .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
+		selector:
+			'.textBoxDiv .inputContainer .textbox:focus + .textBoxLabel, .textBoxDiv .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
 	},
 	{
 		name: 'textBoxLabelTextTransformWhenContainsTextBackgroundColor',
 		cssProperty: 'background-color',
 		displayName: "textbox's label text background color when input",
-		description: "This background color is used for textbox's label text background color when it has any input.",
+		description:
+			"This background color is used for textbox's label text background color when it has any input.",
 		defaultValue: '#fff',
-		selector: '.textBoxDiv .inputContainer .textbox:focus + .textBoxLabel, .textBoxDiv .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
+		selector:
+			'.textBoxDiv .inputContainer .textbox:focus + .textBoxLabel, .textBoxDiv .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
 	},
 	{
 		name: 'textBoxLabelTextTransformWhenContainsTextFromTopWhenContainsIcon',
 		cssProperty: 'top',
 		displayName: "textbox's label text position from top when input When Contains Icon",
-		description: "This top is used for textbox's label text position from top when it has any input when contains Icon.",
+		description:
+			"This top is used for textbox's label text position from top when it has any input when contains Icon.",
 		defaultValue: '0',
-		selector: '.textBoxDiv.textBoxwithIconContainer .inputContainer .textbox:focus + .textBoxLabel, .textBoxDiv.textBoxwithIconContainer .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
+		selector:
+			'.textBoxDiv.textBoxwithIconContainer .inputContainer .textbox:focus + .textBoxLabel, .textBoxDiv.textBoxwithIconContainer .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
 	},
 	{
 		name: 'textBoxLabelTextTransformWhenContainsTextFromLeftWhenContainsIcon',
 		cssProperty: 'left',
 		displayName: "textbox's label text position from left when input when contains icon",
-		description: "This left is used for textbox's label text position from top when it has any input when contains icon.",
+		description:
+			"This left is used for textbox's label text position from top when it has any input when contains icon.",
 		defaultValue: '0',
-		selector: '.textBoxDiv.textBoxwithIconContainer .inputContainer .textbox:focus + .textBoxLabel, .textBoxDiv.textBoxwithIconContainer .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
+		selector:
+			'.textBoxDiv.textBoxwithIconContainer .inputContainer .textbox:focus + .textBoxLabel, .textBoxDiv.textBoxwithIconContainer .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
 	},
 	{
 		name: 'textBoxLabelTextTransformWhenContainsTextPaddingLeftWhenContainsIcon',
 		cssProperty: 'padding-left',
 		displayName: "textbox's label text padding from left when input when contains icon",
-		description: "This left is used for textbox's label text padding left when it has any input when contains icon.",
+		description:
+			"This left is used for textbox's label text padding left when it has any input when contains icon.",
 		defaultValue: '0',
-		selector: '.textBoxDiv.textBoxwithIconContainer .inputContainer .textbox:focus + .textBoxLabel, .textBoxDiv.textBoxwithIconContainer .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
+		selector:
+			'.textBoxDiv.textBoxwithIconContainer .inputContainer .textbox:focus + .textBoxLabel, .textBoxDiv.textBoxwithIconContainer .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
 	},
 	{
 		name: 'textBoxLabelTextTransformWhenContainsTextBackgroundColorWhenContainsIcon',
 		cssProperty: 'background-color',
 		displayName: "textbox's label text background color when input when contains icon",
-		description: "This background color is used for textbox's label text background color when it has any input when contains icon.",
+		description:
+			"This background color is used for textbox's label text background color when it has any input when contains icon.",
 		defaultValue: '#fff',
-		selector: '.textBoxDiv.textBoxwithIconContainer .inputContainer .textbox:focus + .textBoxLabel, .textBoxDiv.textBoxwithIconContainer .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
+		selector:
+			'.textBoxDiv.textBoxwithIconContainer .inputContainer .textbox:focus + .textBoxLabel, .textBoxDiv.textBoxwithIconContainer .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
 	},
 	{
 		name: 'textBoxLabelTextOpacity',
@@ -281,7 +307,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'textBoxContainerContentAlign',
 		cssProperty: 'align-items',
 		displayName: "textbox's Container Content Align in the grid",
-		description: "This align items is used for textbox's conatiner content align when contains icons",
+		description:
+			"This align items is used for textbox's conatiner content align when contains icons",
 		defaultValue: 'center',
 		selector: '.textBoxDiv.textBoxwithIconContainer',
 	},
@@ -363,7 +390,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "textbox's text color when disabled",
 		description: "This color is used for textbox's text color when its disabled",
 		defaultValue: '<form-input-text-color-when-disabled>',
-		selector: '.textBoxDiv .inputContainer .textbox:disabled'
+		selector: '.textBoxDiv .inputContainer .textbox:disabled',
 	},
 	{
 		name: 'textBoxIconColorWhenTextPresent',
@@ -373,6 +400,46 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			"This color is used for textbox's icon color when we input new data in textbox after error",
 		defaultValue: '<from-input-error-icon-hastext-color>',
 		selector: '.textBoxDiv .errorIcon.hasText',
+	},
+	{
+		name: 'textBoxPasswordIconPadding',
+		cssProperty: 'padding',
+		displayName: "textbox's Password Icon Padding",
+		description:
+			"This color is used for textbox's password icon padding",
+		selector: '.textBoxDiv .passwordIcon',
+	},
+	{
+		name: 'textBoxPasswordIconPaddingLeft',
+		cssProperty: 'padding-left',
+		displayName: "textbox's Password Icon Padding left",
+		description:
+			"This color is used for textbox's password icon padding left",
+		selector: '.textBoxDiv .passwordIcon',
+	},
+	{
+		name: 'textBoxPasswordIconPaddingRight',
+		cssProperty: 'padding-right',
+		displayName: "textbox's Password Icon Padding right",
+		description:
+			"This color is used for textbox's password icon padding right",
+		selector: '.textBoxDiv .passwordIcon',
+	},
+	{
+		name: 'textBoxPasswordIconPaddingTop',
+		cssProperty: 'padding-top',
+		displayName: "textbox's Password Icon Padding Top",
+		description:
+			"This color is used for textbox's password icon padding top",
+		selector: '.textBoxDiv .passwordIcon',
+	},
+	{
+		name: 'textBoxPasswordIconPaddingBottom',
+		cssProperty: 'padding-bottom',
+		displayName: "textbox's Password Icon Padding bottom",
+		description:
+			"This color is used for textbox's password icon padding bottom",
+		selector: '.textBoxDiv .passwordIcon',
 	},
 ];
 

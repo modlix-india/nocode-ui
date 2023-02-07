@@ -17,9 +17,11 @@ import { propertiesDefinition, stylePropertiesDefinition } from './linkPropertie
 import LinkStyle from './LinkStyle';
 import useDefinition from '../util/useDefinition';
 import { getHref } from '../util/getHref';
+import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 
 function Link(props: ComponentProps) {
 	const location = useLocation();
+	const [hover, setHover] = React.useState(false);
 	const {
 		pageDefinition: { translations },
 		definition,
@@ -35,6 +37,7 @@ function Link(props: ComponentProps) {
 			target = '_self',
 			showButton,
 			externalButtonTarget = '_blank',
+			isExternalUrl,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -44,22 +47,63 @@ function Link(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-
+	const resolvedLink = getHref(linkPath, location);
+	const resolvedStyles = processComponentStylePseudoClasses(
+		{ hover },
+		stylePropertiesWithPseudoStates,
+	);
 	return (
 		<div className="comp compLinks ">
 			<HelperComponent definition={definition} />
-			<div className="linkDiv">
-				<RouterLink className="link" to={getHref(linkPath, location)} target={target}>
-					{getTranslations(label, translations)}
-				</RouterLink>
-				{showButton ? (
+			<div
+				className="linkDiv"
+				style={resolvedStyles.container ?? {}}
+				onMouseEnter={
+					stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
+				}
+				onMouseLeave={
+					stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
+				}
+			>
+				{!isExternalUrl ? (
 					<RouterLink
-						to={getHref(linkPath, location)}
-						target={externalButtonTarget}
-						className="secondLink"
+						style={resolvedStyles.link ?? {}}
+						className="link"
+						to={resolvedLink}
+						target={target}
 					>
-						<i className="fa-solid fa-up-right-from-square"></i>
+						{getTranslations(label, translations)}
 					</RouterLink>
+				) : (
+					<a
+						style={resolvedStyles.link ?? {}}
+						className="link"
+						href={resolvedLink}
+						target={target}
+					>
+						{getTranslations(label, translations)}
+					</a>
+				)}
+				{showButton ? (
+					isExternalUrl ? (
+						<RouterLink
+							to={resolvedLink}
+							target={externalButtonTarget}
+							className="secondLink"
+						>
+							<i
+								style={resolvedStyles.icon ?? {}}
+								className="fa-solid fa-up-right-from-square"
+							></i>
+						</RouterLink>
+					) : (
+						<a href={resolvedLink} target={externalButtonTarget} className="secondLink">
+							<i
+								style={resolvedStyles.icon ?? {}}
+								className="fa-solid fa-up-right-from-square"
+							></i>
+						</a>
+					)
 				) : null}
 			</div>
 		</div>
@@ -74,6 +118,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: LinkStyle,
+	stylePseudoStates: ['hover'],
 };
 
 export default component;

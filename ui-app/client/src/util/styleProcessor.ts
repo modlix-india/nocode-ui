@@ -179,11 +179,11 @@ export function processEachResolution(
 	let mediaQuery = '';
 
 	if (resDef?.minWidth) {
-		mediaQuery = '@media screen and (min-width: ' + resDef.minWidth + 'px) ';
+		mediaQuery = '\n@media screen and (min-width: ' + resDef.minWidth + 'px) ';
 		if (resDef.maxWidth) mediaQuery += ' and (max-width: ' + resDef.maxWidth + 'px) {';
 		else mediaQuery += ' {';
 	} else if (resDef?.maxWidth) {
-		mediaQuery = '@media screen and (max-width: ' + resDef.maxWidth + 'px) {';
+		mediaQuery = '\n@media screen and (max-width: ' + resDef.maxWidth + 'px) {';
 	}
 
 	return (

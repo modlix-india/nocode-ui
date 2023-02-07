@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, Location } from 'react-router-dom';
-import { GOBAL_CONTEXT_NAME, STORE_PREFIX } from '../constants';
+import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../constants';
 import {
 	addListener,
 	addListenerAndCallImmediately,
@@ -10,7 +10,9 @@ import {
 } from '../context/StoreContext';
 import * as getPageDefinition from './../definitions/getPageDefinition.json';
 import { runEvent } from '../components/util/runEvent';
-import Page from '../components/Page';
+import { Components } from '../components';
+import { processLocation } from '../util/locationProcessor';
+import { isNullValue } from '@fincity/kirun-js';
 
 export const RenderEngineContainer = () => {
 	const location = useLocation();
@@ -19,13 +21,17 @@ export const RenderEngineContainer = () => {
 	const [pageDefinition, setPageDefinition] = useState<any>();
 
 	useEffect(() => {
-		let { pageName } = processLocation(location);
+		const details = processLocation(location);
+		setData(`${STORE_PREFIX}.urlDetails`, details);
+
+		let { pageName } = details;
+
 		if (!pageName)
 			pageName = getDataFromPath(`${STORE_PREFIX}.application.properties.defaultPage`, []);
 		let pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
 		if (!pDef) {
 			(async () => {
-				await runEvent(getPageDefinition, 'pageDefinition');
+				await runEvent(getPageDefinition, 'pageDefinition', GLOBAL_CONTEXT_NAME, []);
 				pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
 				setPageDefinition(pDef);
 				setCurrentPageName(pageName);
@@ -34,13 +40,33 @@ export const RenderEngineContainer = () => {
 			setPageDefinition(pDef);
 			setCurrentPageName(pageName);
 		}
-	}, [location]);
+	}, [pageDefinition, location]);
+
+	useEffect(() => {
+		const { pageName } = processLocation(location);
+
+		return addListener(
+			(_, v) => setPageDefinition(v),
+			undefined,
+			`${STORE_PREFIX}.pageDefinition.${pageName}`,
+		);
+	}, []);
 
 	useEffect(
 		() =>
 			addListenerAndCallImmediately(
-				(_, value) => {
+				async (_, value) => {
 					setShellPageDefinition(value);
+					if (isNullValue(value)) return;
+					const { properties: { onLoadEvent = undefined } = {}, eventFunctions } = value;
+					if (isNullValue(onLoadEvent) || isNullValue(eventFunctions[onLoadEvent]))
+						return;
+					await runEvent(
+						eventFunctions[onLoadEvent],
+						'appOnLoad',
+						GLOBAL_CONTEXT_NAME,
+						[],
+					);
 				},
 				undefined,
 				`${STORE_PREFIX}.application.properties.shellPageDefinition`,
@@ -57,8 +83,16 @@ export const RenderEngineContainer = () => {
 		)
 			return;
 
-		runEvent(shellPageDefinition.eventFunctions[shellPageDefinition.properties.onLoadFunction]);
+		(async () =>
+			await runEvent(
+				shellPageDefinition.eventFunctions[shellPageDefinition.properties.onLoadFunction],
+				'appOnLoad',
+				GLOBAL_CONTEXT_NAME,
+				[],
+			))();
 	}, [shellPageDefinition?.properties?.onLoadFunction]);
+
+	const Page = Components.get('Page')!;
 
 	if (currentPageName && pageDefinition) {
 		const { properties: { wrapShell = true } = {} } = pageDefinition;
@@ -68,7 +102,7 @@ export const RenderEngineContainer = () => {
 				<Page
 					locationHistory={[]}
 					definition={shellPageDefinition}
-					context={{ pageName: GOBAL_CONTEXT_NAME }}
+					context={{ pageName: GLOBAL_CONTEXT_NAME }}
 				/>
 			);
 
@@ -79,56 +113,20 @@ export const RenderEngineContainer = () => {
 				context={{ pageName: currentPageName }}
 			/>
 		);
-	} else {
+	} else if (pageDefinition) {
 		const definitions = getDataFromPath(`${STORE_PREFIX}.pageDefinition`, []) ?? {};
 		const hasDefinitions = !!Object.keys(definitions).length;
-		if (!hasDefinitions) return <>Loading...</>;
+		if (!hasDefinitions) return <>...</>;
 
 		return (
 			<Page
 				locationHistory={[]}
 				definition={shellPageDefinition}
-				context={{ pageName: GOBAL_CONTEXT_NAME }}
+				context={{ pageName: GLOBAL_CONTEXT_NAME }}
 			/>
 		);
+	} else {
+		//TODO: Need to throw an error that there is not page definition found.
+		return <>...</>;
 	}
 };
-
-export function processLocation(location: Location) {
-	const details: any = { queryParameters: {} };
-
-	if (location.search) {
-		details.queryParameters = location.search
-			.split('&')
-			.map(e => {
-				if (e.startsWith('?')) e = e.substring(1);
-				const two = e.split('=');
-				if (two.length === 0) return undefined;
-				if (two.length === 1) return { key: decodeURIComponent(two[0]), value: '' };
-				return { key: decodeURIComponent(two[0]), value: decodeURIComponent(two[1]) };
-			})
-			.reduce((a: any, c) => {
-				if (!c) return a;
-
-				a[c.key] = c.value;
-				return a;
-			}, {});
-	}
-
-	if (location.pathname) {
-		const pathParts = location.pathname.split('/').filter(e => e !== '');
-
-		const ind = pathParts.indexOf('page');
-		if (ind === -1) {
-			details.pathParts = pathParts;
-			details.pageName = pathParts[0];
-		} else {
-			if (ind > 0) details.appName = pathParts[0];
-			if (ind > 1) details.clientCode = pathParts[1];
-			details.pageName = pathParts[ind + 1];
-			details.pathParts = pathParts.slice(ind + 1);
-		}
-	}
-	setData(`${STORE_PREFIX}.urlDetails`, details);
-	return details;
-}

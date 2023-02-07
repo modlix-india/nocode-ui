@@ -2,11 +2,10 @@ import React from 'react';
 import { Components } from '..';
 import { getData, getDataFromPath, PageStoreExtractor } from '../../context/StoreContext';
 import Nothing from '../Nothing';
-import { DataLocation, RenderContext } from '../../types/common';
-import Page from '../Page';
+import { DataLocation, LocationHistory, RenderContext } from '../../types/common';
 import { useLocation } from 'react-router-dom';
-import { processLocation } from '../../Engine/RenderEngineContainer';
 import { STORE_PREFIX } from '../../constants';
+import { processLocation } from '../../util/locationProcessor';
 
 const getPageDefinition = () => {
 	const location = useLocation();
@@ -21,7 +20,7 @@ export const renderChildren = (
 	pageDefinition: any,
 	children: any,
 	context: RenderContext,
-	locationHistory: Array<DataLocation | string>,
+	locationHistory: Array<LocationHistory>,
 ) => {
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	return Object.entries(children)
@@ -37,18 +36,20 @@ export const renderChildren = (
 		.sort((a: any, b: any) => (a?.displayOrder || 0) - (b?.displayOrder || 0))
 		.map(e => {
 			let comp = Components.get(e.type);
-			if (!comp && e.type === 'Page') {
+			if (!comp) comp = Nothing;
+			if (!comp) return undefined;
+
+			if (e.type === 'Page') {
 				const pageDef = getPageDefinition();
 				if (pageDef)
-					return React.createElement(Page, {
+					return React.createElement(comp, {
 						definition: pageDef,
+						pageComponentDefinition: e,
 						key: pageDef.key,
 						context: { pageName: pageDef.name },
 						locationHistory: [],
 					});
 			}
-			if (!comp) comp = Nothing;
-			if (!comp) return undefined;
 			return React.createElement(comp, {
 				definition: e,
 				key: e.key,
