@@ -155,7 +155,8 @@ const COMPONENT_STYLE_GROUPS: { [key: string]: Array<string> } = {
 	size: ['width', 'height', 'minHeight', 'minWidth', 'maxHeight', 'maxWidth', 'scale'],
 	transform: ['transform', 'transformOrigin', 'transformStyle'],
 	zIndex: ['zIndex'],
-	list: ['list-style-image', 'list-style-position', 'list-style-type'],
+	list: ['listStyleImage', 'listStylePosition', 'listStyleType'],
+	scrollbar: ['hideScrollBar'],
 };
 
 const CSS_STYLE_PROPERTY_GROUP_REF: { [key: string]: string } = Object.entries(
@@ -178,6 +179,13 @@ const COMPONENT_STYLE_GROUP_PROPERTIES: { [key: string]: ComponentStylePropertyG
 		type: 'accentColor',
 		displayName: 'Accent Color',
 		description: 'Accent Color',
+		target: ['comp'],
+	},
+	scrollbar: {
+		name: 'scrollbar',
+		type: 'scrollbar',
+		displayName: 'Scroll Bar',
+		description: 'Scroll Bar',
 		target: ['comp'],
 	},
 	backdropFilter: {
