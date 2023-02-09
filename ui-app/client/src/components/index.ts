@@ -16,6 +16,10 @@ import Image from './Image/Image';
 import Icon from './Icon/Icon';
 import Text from './Text/Text';
 import TextList from './TextList/TextList';
+import Table from './Table/Table';
+import TableGrid from './TableGrid/TableGrid';
+import TableEmptyGrid from './TableEmptyGrid/TableEmptyGrid';
+import TablePreviewGrid from './TablePreviewGrid/TablePreviewGrid';
 
 export const Components = new Map<string, React.ElementType>([
 	[Button.name, Button.component],
@@ -36,6 +40,10 @@ export const Components = new Map<string, React.ElementType>([
 	[Icon.name, Icon.component],
 	[Text.name, Text.component],
 	[TextList.name, TextList.component],
+	[Table.name, Table.component],
+	[TableGrid.name, TableGrid.component],
+	[TableEmptyGrid.name, TableEmptyGrid.component],
+	[TablePreviewGrid.name, TablePreviewGrid.component],
 ]);
 
 export const ComponentDefinitions = [
@@ -57,4 +65,8 @@ export const ComponentDefinitions = [
 	Text,
 	TextList,
 	Page,
+	Table,
+	TableEmptyGrid,
+	TableGrid,
+	TablePreviewGrid,
 ];

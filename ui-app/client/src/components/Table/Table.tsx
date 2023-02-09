@@ -1,15 +1,11 @@
-import { Schema } from '@fincity/kirun-js';
 import React, { useEffect, useState } from 'react';
-import { NAMESPACE_UI_ENGINE, STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
+import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
 import {
 	addListener,
 	addListenerAndCallImmediately,
-	getData,
-	getDataFromLocation,
 	getDataFromPath,
 	getPathFromLocation,
 	PageStoreExtractor,
-	setData,
 } from '../../context/StoreContext';
 import { HelperComponent } from '../HelperComponent';
 import {
@@ -87,7 +83,14 @@ function spinCalculate(
 
 function TableComponent(props: ComponentProps) {
 	const {
-		definition: { children, bindingPath, bindingPath2, bindingPath3, bindingPath4 },
+		definition: {
+			children,
+			bindingPath,
+			bindingPath2,
+			bindingPath3,
+			bindingPath4,
+			bindingPath5,
+		},
 		pageDefinition,
 		locationHistory = [],
 		context,
@@ -96,7 +99,6 @@ function TableComponent(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
 		properties: {
-			data,
 			offlineData,
 			showSpinner,
 			showPagination,
@@ -108,6 +110,7 @@ function TableComponent(props: ComponentProps) {
 			previewGridPosition,
 			tableDesign,
 			paginationPosition,
+			totalPages,
 			onSelect,
 			onPagination,
 		} = {},
@@ -120,17 +123,34 @@ function TableComponent(props: ComponentProps) {
 		pageExtractor,
 	);
 
-	const selectionBindingPath =
+	const dataBindingPath =
 		bindingPath && getPathFromLocation(bindingPath, locationHistory, pageExtractor);
 
-	const pageNumberBindingPath =
+	const selectionBindingPath =
 		bindingPath2 && getPathFromLocation(bindingPath2, locationHistory, pageExtractor);
 
-	const pageSizeBindingPath =
+	const pageNumberBindingPath =
 		bindingPath3 && getPathFromLocation(bindingPath3, locationHistory, pageExtractor);
 
-	const tableModeBindingPath =
+	const pageSizeBindingPath =
 		bindingPath4 && getPathFromLocation(bindingPath4, locationHistory, pageExtractor);
+
+	const tableModeBindingPath =
+		bindingPath5 && getPathFromLocation(bindingPath5, locationHistory, pageExtractor);
+
+	const [data, setData] = useState<any>();
+
+	useEffect(
+		() =>
+			dataBindingPath
+				? addListenerAndCallImmediately(
+						(_, v) => setData(v),
+						pageExtractor,
+						dataBindingPath,
+				  )
+				: undefined,
+		[dataBindingPath],
+	);
 
 	const selectEvent = onSelect ? props.pageDefinition.eventFunctions[onSelect] : undefined;
 	const spinnerPath1 = onSelect
@@ -166,7 +186,7 @@ function TableComponent(props: ComponentProps) {
 	useEffect(
 		() =>
 			tableModeBindingPath
-				? addListener(
+				? addListenerAndCallImmediately(
 						(_, v) => setMode(v ?? displayMode),
 						pageExtractor,
 						tableModeBindingPath,
@@ -175,8 +195,37 @@ function TableComponent(props: ComponentProps) {
 		[tableModeBindingPath],
 	);
 
+	const [pageSize, setPageSize] = useState(defaultSize);
+
+	useEffect(
+		() =>
+			pageSizeBindingPath
+				? addListenerAndCallImmediately(
+						(_, v) => setPageSize(v),
+						pageExtractor,
+						pageSizeBindingPath,
+				  )
+				: undefined,
+		[pageSizeBindingPath],
+	);
+
+	const [pageNumber, setPageNumber] = useState(0);
+
+	useEffect(
+		() =>
+			pageNumberBindingPath
+				? addListenerAndCallImmediately(
+						(_, v) => setPageNumber(v),
+						pageExtractor,
+						pageNumberBindingPath,
+				  )
+				: undefined,
+		[pageNumberBindingPath],
+	);
+
 	let body;
 	const childrenEntries = Object.entries(children ?? {}).filter(e => e[1]);
+	const [selection, setSelection] = useState<any>();
 
 	if (!isLoading && !data?.length) {
 		const entry = childrenEntries.filter(
@@ -193,9 +242,6 @@ function TableComponent(props: ComponentProps) {
 			);
 		}
 	}
-
-	const [selection, setSelection] = useState<any>();
-
 	useEffect(
 		() =>
 			selectionBindingPath
@@ -208,9 +254,12 @@ function TableComponent(props: ComponentProps) {
 		let previewChild;
 		if (selection) {
 			if (previewMode === 'BOTH' || previewMode === mode) {
-				previewChild = childrenEntries.filter(
-					([k]) => pageDefinition.componentDefinition[k].type === 'TablePreviewGrid',
-				);
+				previewChild = childrenEntries
+					.filter(
+						([k]) => pageDefinition.componentDefinition[k].type === 'TablePreviewGrid',
+					)
+					.map(([k]) => k)
+					.find(() => true);
 			}
 		}
 
@@ -223,10 +272,58 @@ function TableComponent(props: ComponentProps) {
 				gridChild = k;
 			}
 		}
+		let selectedChild = columnsChild;
+		if (gridChild && (!columnsChild || mode === 'GRID')) {
+			selectedChild = gridChild;
+		}
+
+		let from = offlineData ? pageNumber * pageSize : 0;
+		let to = offlineData ? (pageNumber + 1) * pageSize : pageSize;
+
+		let mainBody = selectedChild ? (
+			<Children
+				pageDefinition={pageDefinition}
+				children={{ [selectedChild]: true }}
+				context={{
+					...context,
+					table: { data, bindingPath, from, to, selectionBindingPath, selectionType },
+				}}
+				locationHistory={locationHistory}
+			/>
+		) : (
+			<></>
+		);
+
+		if (previewChild) {
+			body = (
+				<>
+					<Children
+						pageDefinition={pageDefinition}
+						children={{ [previewChild]: true }}
+						context={{
+							...context,
+							table: {
+								data,
+								bindingPath,
+								from,
+								to,
+								selectionBindingPath,
+								selectionType,
+							},
+						}}
+						locationHistory={locationHistory}
+					/>
+					{mainBody}
+				</>
+			);
+		} else {
+			body = mainBody;
+		}
 	}
 
 	return (
 		<div className={`comp compTable ${tableDesign} ${previewGridPosition}`}>
+			<HelperComponent definition={definition} />
 			{body}
 			{spinner}
 		</div>
@@ -249,10 +346,11 @@ const component: Component = {
 		['TablePreviewGrid', 1],
 	]),
 	bindingPaths: {
-		bindingPath: { name: 'Selection Binding' },
-		bindingPath2: { name: 'Page Number Binding' },
-		bindingPath3: { name: 'Page Size Binding' },
-		bindingPath4: { name: 'Table Display Mode Binding' },
+		bindingPath: { name: 'Array Binding' },
+		bindingPath2: { name: 'Selection Binding' },
+		bindingPath3: { name: 'Page Number Binding' },
+		bindingPath4: { name: 'Page Size Binding' },
+		bindingPath5: { name: 'Table Display Mode Binding' },
 	},
 };
 

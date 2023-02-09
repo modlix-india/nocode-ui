@@ -1,23 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { HelperComponent } from '../HelperComponent';
-import {
-	ComponentProperty,
-	ComponentPropertyDefinition,
-	ComponentProps,
-	DataLocation,
-	RenderContext,
-} from '../../types/common';
-import {
-	addListener,
-	getData,
-	getDataFromPath,
-	getPathFromLocation,
-	PageStoreExtractor,
-	setData,
-} from '../../context/StoreContext';
+import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
+import { addListener, getDataFromPath, PageStoreExtractor } from '../../context/StoreContext';
 import { Component } from '../../types/common';
-import { propertiesDefinition, stylePropertiesDefinition } from './gridProperties';
-import GridStyle from './GridStyle';
+import { propertiesDefinition, stylePropertiesDefinition } from './tablePreviewGridProperties';
 import useDefinition from '../util/useDefinition';
 import { Link } from 'react-router-dom';
 import Children from '../Children';
@@ -25,16 +11,12 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
 import { runEvent } from '../util/runEvent';
 import { flattenUUID } from '../util/uuid';
+import TablePreviewGridStyle from './TablePreviewGridStyle';
 
-function Grid(props: ComponentProps) {
+function TablePreviewGrid(props: ComponentProps) {
 	const [hover, setHover] = React.useState(false);
 	const [focus, setFocus] = React.useState(false);
-	const [observer, setObserver] = React.useState<IntersectionObserver>();
-	const ref = React.useRef(null);
 	const { definition, pageDefinition, locationHistory, context } = props;
-	const {
-		definition: { bindingPath },
-	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
 		key,
@@ -47,8 +29,6 @@ function Grid(props: ComponentProps) {
 			layout,
 			onClick,
 			background,
-			observeChildren,
-			observerThresholds,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -57,40 +37,13 @@ function Grid(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	const bindingPathPath = getPathFromLocation(bindingPath!, locationHistory, pageExtractor);
-	const observerrCallback = useCallback(
-		(entries: Array<IntersectionObserverEntry>) => {
-			if (observeChildren && !bindingPath) return;
-			const [entry] = entries;
-			const key = entry.target.getAttribute('data-key');
-			setData(
-				getPathFromLocation(bindingPath!, locationHistory, pageExtractor),
-				key,
-				context.pageName,
-			);
-		},
-		[bindingPathPath],
-	);
-	React.useEffect(() => {
-		if (!observeChildren) return;
-		const threshold = observerThresholds
-			.split(',')
-			.map((e: string) => parseFloat(e))
-			.filter((e: number) => !isNaN(e) && e <= 1 && e >= 0);
-		const options = {
-			root: ref.current,
-			rootMargin: '0px',
-			threshold,
-		};
-		setObserver(new IntersectionObserver(observerrCallback, options));
-	}, [ref.current, observerrCallback]);
 
 	const childs = (
 		<Children
 			key={`${key}_chld`}
 			pageDefinition={pageDefinition}
 			children={definition.children}
-			context={{ ...context, isReadonly, observer }}
+			context={{ ...context, isReadonly }}
 			locationHistory={locationHistory}
 		/>
 	);
@@ -126,27 +79,34 @@ function Grid(props: ComponentProps) {
 		<style>{`._${key}_grid_css::-webkit-scrollbar { display: none }`}</style>
 	) : undefined;
 	if (linkPath) {
-		return React.createElement(containerType.toLowerCase(), { className: 'comp compGrid' }, [
-			<HelperComponent definition={definition} />,
-			styleComp,
-			<Link
-				ref={ref}
-				className={`_anchorGrid _${layout} ${background} _${key}_grid_css`}
-				onMouseEnter={
-					stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
-				}
-				onMouseLeave={
-					stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
-				}
-				onFocus={stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined}
-				onBlur={stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined}
-				to={linkPath}
-				target={target}
-				style={resolvedStyles.comp ?? {}}
-			>
-				{childs}
-			</Link>,
-		]);
+		return React.createElement(
+			containerType.toLowerCase(),
+			{ className: 'comp compTablePreviewGrid' },
+			[
+				<HelperComponent definition={definition} />,
+				styleComp,
+				<Link
+					className={`_anchorGrid _${layout} ${background} _${key}_grid_css`}
+					onMouseEnter={
+						stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
+					}
+					onMouseLeave={
+						stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
+					}
+					onFocus={
+						stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined
+					}
+					onBlur={
+						stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined
+					}
+					to={linkPath}
+					target={target}
+					style={resolvedStyles.comp ?? {}}
+				>
+					{childs}
+				</Link>,
+			],
+		);
 	}
 
 	return React.createElement(
@@ -159,8 +119,7 @@ function Grid(props: ComponentProps) {
 
 			onFocus: stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined,
 			onBlur: stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined,
-			ref: ref,
-			className: `comp compGrid _noAnchorGrid _${layout} ${background} _${key}_grid_css`,
+			className: `comp compTablePreviewGrid _noAnchorGrid _${layout} ${background} _${key}_grid_css`,
 			style: resolvedStyles.comp ?? {},
 
 			onClick: handleClick,
@@ -170,18 +129,16 @@ function Grid(props: ComponentProps) {
 }
 
 const component: Component = {
-	name: 'Grid',
-	displayName: 'Grid',
-	description: 'Grid component',
-	component: Grid,
+	name: 'TablePreviewGrid',
+	displayName: 'Table Preview Grid',
+	description: 'Table Preview Grid component',
+	component: TablePreviewGrid,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
-	styleComponent: GridStyle,
+	styleComponent: TablePreviewGridStyle,
 	stylePseudoStates: ['hover', 'focus', 'readonly'],
 	hasChildren: true,
-	bindingPaths: {
-		bindingPath: { name: 'Scrolled Component Binding' },
-	},
+	parentType: 'Table',
 };
 
 export default component;

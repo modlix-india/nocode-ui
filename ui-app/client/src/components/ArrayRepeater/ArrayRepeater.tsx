@@ -203,6 +203,9 @@ const component: Component = {
 	styleComponent: ArrayRepeaterStyle,
 	hasChildren: true,
 	numberOfChildren: 1,
+	bindingPaths: {
+		bindingPath: { name: 'Array Binding' },
+	},
 };
 
 export default component;

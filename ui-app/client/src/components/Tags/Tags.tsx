@@ -187,6 +187,9 @@ const component: Component = {
 	styleComponent: TagsStyle,
 	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['hover', 'disabled'],
+	bindingPaths: {
+		bindingPath: { name: 'Data Binding' },
+	},
 };
 
 export default component;

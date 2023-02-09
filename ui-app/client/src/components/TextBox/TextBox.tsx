@@ -342,6 +342,9 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	stylePseudoStates: ['focus', 'disabled'],
+	bindingPaths: {
+		bindingPath: { name: 'Text Binding' },
+	},
 };
 
 export default component;

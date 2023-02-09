@@ -160,6 +160,9 @@ const component: Component = {
 	styleComponent: DropdownStyle,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
+	bindingPaths: {
+		bindingPath: { name: 'Data Binding' },
+	},
 };
 
 export default component;

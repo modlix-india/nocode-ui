@@ -1,5 +1,5 @@
-import React from 'react';
-import { addListener, getPathFromLocation, PageStoreExtractor } from '../../context/StoreContext';
+import React, { useEffect, useState } from 'react';
+import { PageStoreExtractor } from '../../context/StoreContext';
 import { HelperComponent } from '../HelperComponent';
 import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { updateLocationForChild } from '../util/updateLoactionForChild';
@@ -11,9 +11,9 @@ import Children from '../Children';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 
 function TableGridComponent(props: ComponentProps) {
-	const [value, setValue] = React.useState([]);
+	const [value, setValue] = useState([]);
 	const {
-		definition: { children, bindingPath },
+		definition: { children },
 		pageDefinition,
 		locationHistory = [],
 		context,
@@ -28,22 +28,7 @@ function TableGridComponent(props: ComponentProps) {
 		pageExtractor,
 	);
 
-	const bindingPathPath =
-		bindingPath && getPathFromLocation(bindingPath, locationHistory, pageExtractor);
-
-	React.useEffect(
-		() =>
-			bindingPathPath
-				? addListener(
-						(_, value) => {
-							setValue(value);
-						},
-						pageExtractor,
-						bindingPathPath,
-				  )
-				: undefined,
-		[bindingPathPath],
-	);
+	useEffect(() => setValue(props.context.table?.data), [props.context.table?.data]);
 
 	if (!Array.isArray(value)) return <></>;
 
@@ -55,7 +40,7 @@ function TableGridComponent(props: ComponentProps) {
 	const styleProperties = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
 
 	return (
-		<div className={`comp compArrayRepeater _${layout}`} style={styleProperties.comp}>
+		<div className={`comp compTableGrid _${layout}`} style={styleProperties.comp}>
 			<HelperComponent definition={definition} />
 			{value.map((e: any, index) => (
 				<Children
@@ -64,7 +49,7 @@ function TableGridComponent(props: ComponentProps) {
 					context={context}
 					locationHistory={[
 						...locationHistory,
-						updateLocationForChild(bindingPath!, index, locationHistory),
+						updateLocationForChild(context.table?.bindingPath, index, locationHistory),
 					]}
 				/>
 			))}
