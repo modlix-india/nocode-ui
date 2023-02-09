@@ -1,6 +1,7 @@
-import React, { Fragment, useEffect, useRef, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from 'react';
 import {
 	addListener,
+	addListenerAndCallImmediately,
 	getDataFromLocation,
 	getPathFromLocation,
 	PageStoreExtractor,
@@ -13,55 +14,101 @@ import { Component } from '../../types/common';
 import useDefinition from '../util/useDefinition';
 import { isNullValue } from '@fincity/kirun-js';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import CalendarStyle from "./CalendarStyle";
-import { propertiesDefinition, stylePropertiesDefinition } from "./calendarProperties";
-import { dateProcessor } from "../util/dateProcessor";
+import CalendarStyle from './CalendarStyle';
+import { propertiesDefinition, stylePropertiesDefinition } from './calendarProperties';
+import { dateProcessor } from '../util/dateProcessor';
+import UUID from '../util/uuid';
 
+const daysOfWeek = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+const monthLabels = [
+	'January',
+	'February',
+	'March',
+	'April',
+	'May',
+	'June',
+	'July',
+	'August',
+	'September',
+	'October',
+	'November',
+	'December',
+];
+const monthRange = [
+	['January', 'February', 'March'],
+	['April', 'May', 'June'],
+	['July', 'August', 'September'],
+	['October', 'November', 'December'],
+];
+
+const toTimeMap: { [key: string]: string } = {
+	TOAMPM: 'toAmPm',
+	TOHRS: 'toHrs',
+	TOMINS: 'toMinutes',
+};
+
+const fromTimeMap: { [key: string]: string } = {
+	AMPM: 'fromAmPm',
+	HRS: 'fromHrs',
+	MINS: 'fromMinutes',
+};
+
+const getDropdownData = (range: number) => {
+	return Array.from(new Array(range), (x, i) => i + 1 + '');
+};
+
+type DateDetails = {
+	fromAmPm?: string;
+	toAmPm?: string;
+	fromMinutes?: string;
+	fromHrs?: string;
+	toMinutes?: string;
+	toHrs?: string;
+	from?: string;
+	to?: string;
+	currentMonth?: number;
+	currentYear?: number;
+	nextMonth?: number;
+	nextYear?: number;
+};
 function Calendar(props: ComponentProps) {
-    const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
-    const [currentDate, setCurrentDate] = useState(new Date());
-    const [currentMainDate, setCurrentMainDate] = useState(dateProcessor(new Date())?.add("months", 1));
-    const daysOfWeek = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
-    const monthRange = [["January", "February", "March"], ["April", "May", "June"],["July", "August", "September"], ["October", "November", "December"]];
-    const [selectedHour, setSelectedHour] = useState('');
-    const [selectedMinute, setSelectedMinute] = useState('');
-    const [ampmSelected, setAmpmSelected] = useState("AM");
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
-    const [selectedHourRange, setSelectedHourRange] = useState('');
-    const [selectedMinuteRange, setSelectedMinuteRange] = useState('');
-    const [ampmSelectedRange, setAmpmSelectedRange] = useState("AM");
-    const [showDropdown, setShowDropdown] = useState('');
-    const [showDropdownRange, setShowDropdownRange] = useState('');
-    const [showYears, setShowYears] = useState(false);
-    const [showMonths, setShowMonths] = useState(false);
+	const [value, setvalue] = useState<{ to?: string; from: string }>();
+	const [selectedDateDetails, setSelectedDateDetails] = React.useState<DateDetails>({});
+	const [timeDisplay, setTimeDisplay] = React.useState<
+		'AMPM' | 'HRS' | 'MINS' | '' | 'TOAMPM' | 'TOHRS' | 'TOMINS'
+	>();
+	const [displayMode, setDisplayMode] = useState<'DATE' | 'MONTH' | 'YEAR'>();
+	const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+	const [errorMessage, setErrorMessage] = useState('');
+	const [currentMainDate, setCurrentMainDate] = useState(
+		dateProcessor(new Date())?.add('months', 1),
+	);
 
-    const {
+	const {
 		definition: { bindingPath },
 		definition,
 		pageDefinition: { translations },
 		locationHistory,
 		context,
 	} = props;
-    
-    const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 
-    const {
+	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+
+	const {
 		properties: {
-            defaultValue,
+			defaultValue,
 			readOnly,
-            dateFormat,
-            dateOnly,
-            timeOnly,
-            minDate,
-            maxDate,
-            yearAndMonthSelector,
-            isDateRange,
-            is24hour,
-            calendarIcon,
-            calendarDateRangeIcon,
-            closeOnMouseLeave
+			dateFormat,
+			dateOnly,
+			timeOnly,
+			minDate,
+			maxDate,
+			yearAndMonthSelector,
+			isDateRange,
+			is24hour,
+			calendarIcon,
+			calendarDateRangeIcon,
+			closeOnMouseLeave,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -73,61 +120,77 @@ function Calendar(props: ComponentProps) {
 		pageExtractor,
 	);
 
-    const computedStyles = processComponentStylePseudoClasses(
+	const computedStyles = processComponentStylePseudoClasses(
 		{ isCalendarOpen, readOnly },
 		stylePropertiesWithPseudoStates,
 	);
 
-    const [value, setvalue] = useState<any>('');
-    if (!bindingPath) throw new Error('Definition requires bindingpath');
+	if (!bindingPath) throw new Error('Definition requires bindingpath');
 	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
-    useEffect(() => {
-		const initValue = getDataFromLocation(bindingPath, locationHistory, pageExtractor);
-		if (!isNullValue(defaultValue) && isNullValue(initValue)) {
-			setData(bindingPathPath, defaultValue, context.pageName);
-		}
-		setvalue(initValue ?? defaultValue ?? '');
-        if(isDateRange) {
-            setStartDate(initValue?.from ?? defaultValue?.from ?? new Date());
-            let curr = initValue ? new Date(dateProcessor(initValue?.from)?.format(dateFormat)) : defaultValue ? new Date(dateProcessor(defaultValue?.from)?.format(dateFormat)) : new Date();
-            let currNext = initValue ? new Date(dateProcessor(initValue?.to)?.format(dateFormat)) : defaultValue ? new Date(dateProcessor(defaultValue?.to)?.format(dateFormat)) : new Date();
-            setCurrentDate(curr);
-            setCurrentMainDate(currNext.getDate() - curr.getDate() > 30 ? currNext : dateProcessor(curr)?.add("months", 1));
-            setEndDate(initValue?.to ?? defaultValue?.to ?? new Date());
-            let hours = initValue ? initValue?.from?.getHours() : defaultValue ? (is24hour ? new Date(defaultValue?.from)?.getHours() : (`0${new Date(defaultValue?.from)?.getHours() % 12}`)) : new Date()?.getHours()
-            setSelectedHour(hours);
-            let minutes = initValue ? initValue?.from?.getMinutes() : defaultValue ? new Date(defaultValue?.from)?.getMinutes() : new Date()?.getMinutes()
-            setSelectedMinute(minutes);
-            let ampm = initValue ? (initValue?.from?.getHours() > 12 ? "PM" : "AM") : defaultValue ? (new Date(defaultValue?.from)?.getHours() > 12 ? "PM" : "AM") : (new Date)?.getHours() > 12 ? "PM" : "AM";  
-            setAmpmSelected(ampm);
-            let hoursRange = initValue ? initValue?.to?.getHours() : defaultValue ? (is24hour ? new Date(defaultValue?.to)?.getHours() : (`0${new Date(defaultValue?.to)?.getHours() % 12}`)) : new Date()?.getHours()
-            setSelectedHourRange(hoursRange);
-            let minutesRange = initValue ? initValue?.to?.getMinutes() : defaultValue ? new Date(defaultValue?.to)?.getMinutes() : new Date()?.getMinutes()
-            setSelectedMinuteRange(minutesRange);
-            let ampmRange = initValue ? (initValue?.to?.getHours() > 12 ? "PM" : "AM") : defaultValue ? (new Date(defaultValue?.to)?.getHours() > 12 ? "PM" : "AM") : (new Date)?.getHours() > 12 ? "PM" : "AM";  
-            setAmpmSelectedRange(ampmRange);
-        }
-        else {
-            setStartDate(initValue ?? defaultValue ?? new Date());
-            setCurrentDate(initValue ? new Date(dateProcessor(initValue)?.format(dateFormat)) : defaultValue ? new Date(dateProcessor(defaultValue)?.format(dateFormat)) : new Date());
-            let hours = initValue ? initValue?.getHours() : defaultValue ? (is24hour ? new Date(defaultValue)?.getHours() : (`0${new Date(defaultValue)?.getHours() % 12}`)) : new Date()?.getHours()
-            setSelectedHour(hours);
-            let minutes = initValue ? initValue?.getMinutes() : defaultValue ? new Date(defaultValue)?.getMinutes() : new Date()?.getMinutes()
-            setSelectedMinute(minutes);
-            let ampm = initValue ? (initValue?.getHours() > 12 ? "PM" : "AM") : defaultValue ? (new Date(defaultValue)?.getHours() > 12 ? "PM" : "AM") : (new Date)?.getHours() > 12 ? "PM" : "AM";  
-            setAmpmSelected(ampm);
-        }
-	}, []);
 
-    useEffect(
+	useEffect(() => {
+		if (isNullValue(value)) return;
+		let toHrs = value?.to ? new Date(value.to)?.getHours() : 0;
+		let fromHrs = value?.from ? new Date(value.from)?.getHours() : 0;
+		toHrs = !is24hour && toHrs > 12 ? toHrs - 12 : toHrs === 0 && !is24hour ? 12 : toHrs;
+		fromHrs =
+			!is24hour && fromHrs > 12 ? fromHrs - 12 : fromHrs === 0 && !is24hour ? 12 : fromHrs;
+		const obj = {
+			to: value?.to ?? '',
+			from: value?.from ?? '',
+			toHrs: toHrs + '',
+			toMinutes: value?.to ? new Date(value.to)?.getMinutes() + '' : '',
+			fromHrs: fromHrs + '',
+			fromMinutes: value?.from ? new Date(value.from)?.getMinutes() + '' : '',
+			toAmPm: is24hour
+				? ''
+				: value?.to
+				? new Date(value.to)?.getHours() > 12
+					? 'PM'
+					: 'AM'
+				: '',
+			fromAmPm: is24hour
+				? ''
+				: value?.from
+				? new Date(value.from)?.getHours() > 12
+					? 'PM'
+					: 'AM'
+				: '',
+			currentMonth: selectedDateDetails?.currentMonth
+				? selectedDateDetails?.currentMonth
+				: new Date(selectedDateDetails?.from ?? value?.from ?? 0).getMonth(),
+			currentYear: selectedDateDetails?.currentYear
+				? selectedDateDetails?.currentYear
+				: new Date(selectedDateDetails?.from ?? value?.from ?? 0).getFullYear(),
+			nextMonth: selectedDateDetails?.nextMonth
+				? selectedDateDetails?.nextMonth
+				: new Date(selectedDateDetails?.from ?? value?.from ?? 0).getMonth() + 1,
+			nextYear: selectedDateDetails?.nextMonth
+				? selectedDateDetails?.nextYear
+				: dateProcessor(new Date(selectedDateDetails?.from ?? value?.from ?? 0))
+						.add('months', 1)
+						.getFullYear(),
+		};
+		setSelectedDateDetails(obj);
+	}, [value]);
+
+	useEffect(
 		() =>
-			addListener(
+			addListenerAndCallImmediately(
 				(_, value) => {
-					if (value === undefined || value === null) {
-						setvalue('');
+					if (isNullValue(value)) {
+						!isNullValue(defaultValue)
+							? setvalue(defaultValue)
+							: setvalue({
+									from: dateProcessor(new Date()).format(dateFormat),
+									...{
+										to: isDateRange
+											? dateProcessor(new Date()).format(dateFormat)
+											: null,
+									},
+							  });
 						return;
 					}
-					setvalue(value);
 				},
 				pageExtractor,
 				bindingPathPath,
@@ -135,15 +198,36 @@ function Calendar(props: ComponentProps) {
 		[],
 	);
 
-
 	const handleBubbling = (event: any) => {
 		event.stopPropagation();
 	};
 
-    const handleCloseCalendar = () => {
-        setIsCalendarOpen(false);    
-        handleClose();
-    };
+	const handleTimeClose = () => {
+		setTimeDisplay('');
+	};
+
+	const clearTemporarySelections = () => {
+		setSelectedDateDetails({
+			from: '',
+			to: '',
+			fromAmPm: '',
+			fromHrs: '',
+			fromMinutes: '',
+			toAmPm: '',
+			toHrs: '',
+			toMinutes: '',
+		});
+	};
+
+	const handleCloseCalendar = () => {
+		clearTemporarySelections();
+		setIsCalendarOpen(false);
+		handleTimeClose();
+	};
+
+	useEffect(() => {
+		console.log('picard', selectedDateDetails);
+	}, [selectedDateDetails]);
 
 	useEffect(() => {
 		if (isCalendarOpen) {
@@ -152,415 +236,385 @@ function Calendar(props: ComponentProps) {
 		return () => document.removeEventListener('click', handleCloseCalendar);
 	}, [isCalendarOpen]);
 
-    const handleHourClick = (hour: number, setSelectedHour: any) => {
-        setSelectedHour(hour?.toString());
-        handleClose();
-    }
+	const handleTimeChange = (
+		time: string,
+		selector: 'AMPM' | 'HRS' | 'MINS' | '' | 'TOAMPM' | 'TOHRS' | 'TOMINS',
+		isTo: boolean,
+	) => {
+		let x = {};
 
-    const handleMinuteClick = (minute: any, setSelectedMinute: any) => {
-        setSelectedMinute(minute);
-        handleClose();
-    }
+		switch (selector) {
+			case 'AMPM' || 'TOAMPM':
+				x = isTo ? { toAmPm: time } : { fromAmPm: time };
+				break;
+			case 'HRS' || 'TOHRS':
+				x = isTo ? { toHrs: time } : { fromHrs: time };
+				break;
+			case 'MINS' || 'TOMINS':
+				x = isTo ? { toMinutes: time } : { fromMinutes: time };
+				break;
+		}
 
-    const handleAmPmClick = (ampm: any, setAmpmSelected: any) => {
-        setAmpmSelected(ampm);
-        handleClose();
-    }
-
-    const handleClose = () => {
-		setShowDropdown('');
-        setShowDropdownRange('');
+		const obj = { ...selectedDateDetails, ...x };
+		setSelectedDateDetails(obj);
 	};
 
+	const handleDateChange = (day: string) => {
+		//clearing if date range is already selected
+		if (isDateRange && selectedDateDetails?.from && selectedDateDetails?.to) {
+			setSelectedDateDetails({ ...selectedDateDetails, from: '', to: '' });
+		}
+		// Adding as startdate or enddate if startdate already exists
+		selectedDateDetails?.from
+			? isDateRange
+				? //if date range and from already exists add as to
+				  setSelectedDateDetails({
+						...selectedDateDetails,
+						to: dateProcessor(day)?.format(dateFormat),
+				  })
+				: //if date range and from does not exists add as from
+				  setSelectedDateDetails({
+						...selectedDateDetails,
+						from: dateProcessor(day)?.format(dateFormat),
+				  })
+			: //if not date range and from already exists add as from
+			  setSelectedDateDetails({
+					...selectedDateDetails,
+					from: dateProcessor(day)?.format(dateFormat),
+			  });
+	};
 
-    const handleStartDaySelect = (day: any) => {
-        if(startDate && endDate){
-            setStartDate("");
-            setEndDate("");
-        }
-        if(!startDate){
-            setStartDate(dateProcessor(day)?.format(dateFormat));
-        }
-        else if(!endDate){
-            if(Date.parse(startDate).valueOf() > Date.parse(day).valueOf()){
-                setStartDate(dateProcessor(day)?.format(dateFormat));
-            }
-            else{
-                setEndDate(dateProcessor(day)?.format(dateFormat));
-            }
-        }
-    }
+	const handleConfirm = () => {
+		const { from, fromAmPm, fromHrs, fromMinutes, to, toAmPm, toHrs, toMinutes } =
+			selectedDateDetails!;
+		const tempFrom = new Date(from ?? '').setHours(
+			is24hour
+				? Number(fromHrs ?? 0)
+				: fromAmPm === 'PM'
+				? Number(fromHrs ?? 0 + 12)
+				: Number(fromHrs ?? 0),
+			Number(fromMinutes ?? 0),
+		);
+		const tempTo = new Date(to ?? '').setHours(
+			is24hour
+				? Number(toHrs ?? 0)
+				: toAmPm === 'PM'
+				? Number(toHrs ?? 0 + 12)
+				: Number(toHrs ?? 0),
+			Number(toMinutes ?? 0),
+		);
 
-    const handleEndDateSelect = (day: any) => {
-        if(startDate && endDate){
-            setStartDate("");
-            setEndDate("");
-        }
-        if(!startDate){
-            setStartDate(dateProcessor(day)?.format(dateFormat));
-        }
-        else if(!endDate){
-            if(Date.parse(startDate).valueOf() > Date.parse(day).valueOf()){
-                setStartDate(dateProcessor(day)?.format(dateFormat));
-            }
-            else{
-                setEndDate(dateProcessor(day)?.format(dateFormat));
-            }
-        }
-    }
+		setData(
+			bindingPathPath,
+			isDateRange
+				? {
+						from: dateProcessor(tempFrom).format(dateFormat),
+						to: dateProcessor(tempTo).format(dateFormat),
+				  }
+				: { from: dateProcessor(tempFrom).format(dateFormat) },
+			context.pageName,
+		);
+		handleCloseCalendar();
+	};
 
-    const handleConfirm = () => {
-        if(isDateRange) {
-            let start = new Date(Date.parse(startDate));
-            let end = new Date(Date.parse(endDate));
+	const handleYearSelect = (year: number) => {
+		const { from } = selectedDateDetails!;
+		setSelectedDateDetails({
+			...selectedDateDetails,
+			from: dateProcessor(new Date(from ?? '').setFullYear(year)).format(dateFormat),
+		});
+		setDisplayMode('DATE');
+	};
+	const handleMonthSelect = (month: number) => {
+		const { from } = selectedDateDetails!;
+		setSelectedDateDetails({
+			...selectedDateDetails,
+			from: dateProcessor(new Date(from ?? '').setMonth(month)).format(dateFormat),
+		});
+		setDisplayMode('DATE');
+	};
 
-            start.setHours(ampmSelected == "PM" ? Number(selectedHour) + 12 : Number(selectedHour), Number(selectedMinute));
-            end.setHours(ampmSelectedRange == "PM" ? Number(selectedHourRange) + 12 : Number(selectedHourRange) , Number(selectedMinuteRange));
-            let processedStartDate = dateProcessor(start)?.format(dateFormat);
-            let processedEndDate = dateProcessor(end)?.format(dateFormat);
-            setvalue({
-                from: processedStartDate,
-                to: processedEndDate
-            });
-        }
-        else {
-            let date = new Date(Date.parse(startDate));
-
-            date?.setHours(ampmSelected == "PM" ? Number(selectedHour) + 12 : Number(selectedHour) , Number(selectedMinute));
-            let processedDate = dateProcessor(date)?.format(dateFormat);
-            setvalue(processedDate);
-        }
-        setIsCalendarOpen(false);
-    }
-
-    const handleCancel = () => {
-        setIsCalendarOpen(false);
-    }
-
-    const handleYearSelect = (year: any) => {
-        setCurrentDate(new Date(currentDate.setFullYear(year)));
-        setShowYears(false);
-    }
-
-    const handleMonthSelect = (month: any) => {
-        setCurrentDate(new Date(currentDate.setMonth(month)));
-        setShowMonths(false);
-    }
-
-    const BottomButton = (handleConfirm: any, handleCancel: any) => {
-        return (
-            <div className="bottomButtons">
-                <div className="buttonCancel" onClick={handleCancel}>CANCEL</div>
-                <div className="buttonConfirm" onClick={handleConfirm}>OK</div>
-            </div>
-        )
-    }
-
-    const TimeComp = (dropdownData: any, handleClick: any, TAG: any, selected: any, setSelected: any, showDropdown: any, setShowDropdown: any) => {
-        return(
-            <div
-				className={`container ${showDropdown && !readOnly ? 'focussed' : ''} ${
-					readOnly ? 'disabled' : ''
-				} `}
-			>
-				<div
-					className={`labelcontainer ${readOnly ? 'disabled' : ''}`}
-					onClick={() => setShowDropdown(TAG)}
-				>
-					<label className={`label ${readOnly ? 'disabled' : ''}`}>
-						{getTranslations(
-							 selected,
-							translations,
-						)}
-					</label>
-					<i className="fa-solid fa-angle-down"></i>
-				</div>
-				{showDropdown === TAG && (
-					<div
-						className="dropdowncontainer"
-						onMouseLeave={() => closeOnMouseLeave && handleClose()}
-					>
-						{dropdownData?.map((each: any, index: any) => (
-							<div
-								onClick={() => handleClick(each!, setSelected)}
-								className="dropdownItem"
-								key={`${each}_${index}`}
-							>
-								{each}
-							</div>
-						))}
-					</div>
-				)}
+	const bottomButton = () => {
+		return (
+			<div className="bottomButtons">
+				<button className="buttonCancel" onClick={handleCloseCalendar}>
+					CANCEL
+				</button>
+				<button className="buttonConfirm" onClick={handleConfirm}>
+					OK
+				</button>
 			</div>
-        )
-    }
+		);
+	};
 
-    const renderTime = (showDropdown: any, setShowDropdown: any, selectedHour: any, selectedMinute: any, ampmSelected: any, setSelectedHour: any, setSelectedMinute: any, setAmpmSelected: any) => {
+	const getLabel = (e: string): 'AMPM' | 'HRS' | 'MINS' | '' | 'TOAMPM' | 'TOHRS' | 'TOMINS' => {
+		if (e === 'AMPM') return 'AMPM';
+		if (e === 'MINS') return 'MINS';
+		if (e === 'HRS') return 'HRS';
+		if (e === 'TOAMPM') return 'TOAMPM';
+		if (e === 'TOMINS') return 'TOMINS';
+		if (e === 'TOHRS') return 'TOHRS';
+		return '';
+	};
 
-        const hours = [];
-        for (let i = (is24hour ? 0 : 1); i <= (is24hour ? 23 : 12); i++) {
-            hours.push(i < 10 ? `0${i}` : `${i}`);
-        }
+	const getTimeSelectors = (isTo: boolean) => (
+		<div className="timePicker">
+			{(isTo ? ['TOAMPM', 'TOHRS', 'TOMINS'] : ['HRS', 'MINS', 'AMPM'])
+				.filter(e => (is24hour ? e !== 'AMPM' && e !== 'TOAMPM' : e))
+				.map((e: string) => (
+					<div
+						className={`container ${timeDisplay === e && !readOnly ? 'focussed' : ''} ${
+							readOnly ? 'disabled' : ''
+						}`}
+						key={e}
+					>
+						<div className="labelContainer" onClick={() => setTimeDisplay(getLabel(e))}>
+							<label className="label">
+								{isTo
+									? selectedDateDetails[toTimeMap[e] as keyof DateDetails]
+									: selectedDateDetails[fromTimeMap[e] as keyof DateDetails]}
+							</label>
+							<i className="fa-solid fa-angle-down" />
+						</div>
+						{timeDisplay === e ? (
+							<div
+								className="dropdowncontainer"
+								onMouseLeave={closeOnMouseLeave ? () => handleTimeClose : undefined}
+							>
+								{(e === 'HRS' || e === 'TOHRS'
+									? is24hour
+										? ['0', ...getDropdownData(23)]
+										: getDropdownData(12)
+									: e === 'MINS' || e === 'TOMINS'
+									? getDropdownData(60)
+									: ['AM', 'PM']
+								).map(time => (
+									<div
+										key={time}
+										className="dropdownItem"
+										onClick={() => handleTimeChange(time, e, isTo)}
+									>
+										{time}
+									</div>
+								))}
+							</div>
+						) : null}
+					</div>
+				))}
+		</div>
+	);
 
-        const minutes = [];
-        for (let i = 0; i <= 60; i++) {
-            minutes.push(i < 10 ? `0${i}` : `${i}`);
-        }
+	const generateWeeks = (
+		month: number,
+		year: number,
+	): Array<
+		Array<{
+			date: Date;
+			isSelected: boolean;
+			isInBetween: boolean;
+			isFrom: boolean;
+			isOutOfRange: boolean;
+		}>
+	> => {
+		const { from, to } = selectedDateDetails!;
+		const dateObjs = {
+			from: new Date(from!),
+			to: new Date(to!),
+			maxDate: new Date(maxDate),
+			minDate: new Date(minDate),
+		};
+		const fromString = `${dateObjs.from.getDate()}-${dateObjs.from.getMonth()}-${dateObjs.from.getFullYear()}`;
+		const toString = `${dateObjs.to.getDate()}-${dateObjs.to.getMonth()}-${dateObjs.to.getFullYear()}`;
+		const calendarRows = [];
+		let loopDay = new Date(year, month, 1);
+		let lastDay = new Date(year, month + 1, 0);
+		let loopWeek = [];
+		while (loopDay <= lastDay) {
+			let obj = {
+				date: loopDay,
+				isSelected: false,
+				isInBetween: false,
+				isFrom: false,
+				isOutOfRange: false,
+			};
+			if (loopDay.getDate() === 1 || loopDay.getDay() === 0) loopWeek = Array(7).fill(null);
+			if (
+				(month === dateObjs.from?.getMonth() && year === dateObjs.from?.getFullYear()) ||
+				(month === dateObjs.to?.getMonth() && year === dateObjs.to?.getFullYear())
+			) {
+				if (
+					fromString === `${loopDay.getDate()}-${month}-${year}` ||
+					toString === `${loopDay.getDate()}-${month}-${year}`
+				) {
+					obj.isSelected = true;
+					obj.isFrom =
+						fromString === `${loopDay.getDate()}-${month}-${year}` ? true : false;
+				}
+			}
 
-        const ampms = ["AM", "PM"];
+			if (dateObjs.from < loopDay && loopDay < dateObjs.to) {
+				obj.isInBetween = true;
+			}
 
-        return (
-            <div className={`timePicker ${is24hour ? `longTime` : ``}`}>
-                {TimeComp(hours, handleHourClick, "Hours", selectedHour, setSelectedHour, showDropdown, setShowDropdown)}
-                {TimeComp(minutes, handleMinuteClick, "Minutes", selectedMinute, setSelectedMinute, showDropdown, setShowDropdown)}
-                {!is24hour ? TimeComp(ampms, handleAmPmClick, "AmPm", ampmSelected, setAmpmSelected, showDropdown, setShowDropdown) : null}
-            </div>
-        )
-    }
+			if (loopDay > new Date(minDate) && loopDay < new Date(maxDate)) {
+				obj.isOutOfRange = true;
+			}
 
-    const renderCalendar = () => {
+			loopWeek[loopDay.getDay()] = obj;
+			if (loopDay.getDay() === 6 || loopDay.getDate() === lastDay.getDate()) {
+				calendarRows.push(loopWeek);
+			}
+			loopDay = new Date(year, month, loopDay.getDate() + 1);
+		}
+		return calendarRows;
+	};
 
-    let currentMonth = currentDate.getMonth();
-    let currentYear = currentDate.getFullYear();
-    let currentMonthNext = currentMainDate.getMonth();
-    let currentYearNext = currentMainDate.getFullYear();
-    let currentMonthDuplicate = currentMonth;
-    let currYearDuplicate = currentYear;
-    let currentMonthNextDuplicate = currentMonthNext;
-    let currentYearNextDuplicate = currentYearNext;
+	const handlePrevClick = () => {
+		const { currentMonth, currentYear, nextMonth, nextYear } = selectedDateDetails!;
+		const obj = {
+			...selectedDateDetails,
+			currentMonth: currentMonth! - 1 == -1 ? 11 : currentMonth! - 1,
+			currentYear: currentMonth! - 1 == -1 ? currentYear! - 1 : currentYear,
+			nextMonth: nextMonth! - 1 == -1 ? 11 : nextMonth! - 1,
+			nextYear: nextMonth! - 1 == -1 ? nextYear! - 1 : nextYear,
+		};
+		setSelectedDateDetails(obj);
+	};
 
-    // Get the first and last day of the month
-    const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
-    const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
-    const firstDayOfMonthNext = new Date(currentYearNext, currentMonthNext, 1);
-    const lastDayOfMonthNext = new Date(currentYearNext, currentMonthNext + 1, 0);
+	const handleNextClick = () => {
+		const { currentMonth, currentYear, nextMonth, nextYear } = selectedDateDetails!;
+		const obj = {
+			...selectedDateDetails,
+			currentMonth: currentMonth! == 11 ? 0 : currentMonth! + 1,
+			currentYear: currentMonth! == 11 ? currentYear! + 1 : currentYear,
+			nextMonth: nextMonth! == 11 ? 0 : nextMonth! + 1,
+			nextYear: nextMonth == 11 ? nextYear! + 1 : nextYear,
+		};
+		setSelectedDateDetails(obj);
+	};
 
-    const startYear = 1970;
-    const endYear = 2099;
-    const numOfYears = endYear - startYear + 1;
-    const numOfInnerArrays = Math.ceil(numOfYears / 5);
+	const generateMonth = (month: number, year: number, isFirstMonth: boolean) => {
+		const prev = <span onClick={handlePrevClick} className="fa fa-arrow-left iconLeft"></span>;
+		const next = (
+			<span onClick={handleNextClick} className="fa fa-arrow-right iconRight"></span>
+		);
+		const header = (
+			<div className="calendarHeader">
+				{!isDateRange ? (
+					<>
+						{prev} {next}
+					</>
+				) : isFirstMonth ? (
+					prev
+				) : (
+					next
+				)}
+				<div className="currentDate">
+					<span
+						className="currentDateText"
+						onClick={
+							!isDateRange
+								? () => setDisplayMode(displayMode === 'DATE' ? 'MONTH' : 'DATE')
+								: undefined
+						}
+					>
+						{monthLabels[month]}
+					</span>
+					<span
+						className="currentDateText"
+						onClick={
+							!isDateRange
+								? () => setDisplayMode(displayMode === 'YEAR' ? 'DATE' : 'YEAR')
+								: undefined
+						}
+					>
+						{year}
+					</span>
+				</div>
+			</div>
+		);
 
-    const yearRange = Array.from({ length: numOfInnerArrays }, (_, i) => {
-        const innerArrayStart = startYear + i * 5;
-        const innerArrayEnd = Math.min(innerArrayStart + 4, endYear);
-        return Array.from({ length: innerArrayEnd - innerArrayStart + 1 }, (_, j) => innerArrayStart + j);
-    });
+		const datesByWeeks = (
+			<div>
+				{header}
+				<table className="calendarMainData">
+					<thead>
+						<tr className="calendarRow">
+							{daysOfWeek.map(e => (
+								<th className="calendarCol" key={e}>
+									{e}
+								</th>
+							))}
+						</tr>
+					</thead>
+					<tbody>
+						{generateWeeks(month, year).map(weeks => (
+							<tr className="calendarRow" key={`${UUID()}-${month}-${year}`}>
+								{weeks.map(date => (
+									<td
+										className={`calendarCol ${
+											date?.isSelected
+												? isDateRange
+													? date?.isFrom
+														? 'selectedDayStart'
+														: 'selectedDayEnd'
+													: 'selectedDay'
+												: ''
+										} ${date?.isInBetween ? 'selectedDays' : ''} ${
+											date?.isOutOfRange ? 'notAllowed' : ''
+										} ${!date?.date ? 'notVisible' : ''}`}
+										key={`${date?.date?.getDate() ?? UUID()}-${month}-${year}`}
+									>
+										{date?.date?.getDate()}
+									</td>
+								))}
+							</tr>
+						))}
+					</tbody>
+				</table>
+				{getTimeSelectors(!isFirstMonth)}
+			</div>
+		);
 
-    const handlePrevClick = () => {
-        let prevMonth = currentMonthDuplicate === 0 ? 11 : currentMonthDuplicate - 1;
-        let prevYear = currentMonthDuplicate === 0 ? currYearDuplicate - 1 : currYearDuplicate;
-        let prevMonthNext = currentMonthNextDuplicate === 0 ? 11 : currentMonthNextDuplicate - 1;
-        let prevYearNext = currentMonthNextDuplicate === 0 ? currentYearNextDuplicate - 1 : currentYearNextDuplicate;
-        setCurrentDate(new Date(prevYear, prevMonth, 1));
-        setCurrentMainDate(new Date(prevYearNext, prevMonthNext, 1));
-    }
+		return datesByWeeks;
+	};
 
-    const handleNextClick = () => {
-        let nextMonth = currentMonthDuplicate === 11 ? 0 : currentMonthDuplicate + 1;
-        let nextYear = currentMonthDuplicate === 11 ? currYearDuplicate + 1 : currYearDuplicate;
-        let nextMonthNext = currentMonthNextDuplicate === 11 ? 0 : currentMonthNextDuplicate + 1;
-        let nextYearNext = currentMonthNextDuplicate === 11 ? currentYearNextDuplicate + 1 : currentYearNextDuplicate;
-        setCurrentDate(new Date(nextYear, nextMonth, 1));
-        setCurrentMainDate(new Date(nextYearNext, nextMonthNext, 1));
-    }
+	const renderCalendar = () => {
+		const { currentMonth, currentYear, nextMonth, nextYear } = selectedDateDetails || {};
+		const startYear = 1970;
+		const endYear = 2099;
+		const yearsRange = Array.from(
+			{ length: Math.ceil((endYear - startYear + 1) / 5) },
+			(_, i) => {
+				const innerArrayStart = startYear + i * 5;
+				const innerArrayEnd = Math.min(innerArrayStart + 4, endYear);
+				return Array.from(
+					{ length: innerArrayEnd - innerArrayStart + 1 },
+					(_, j) => innerArrayStart + j,
+				);
+			},
+		);
 
-    let calendarRows = [];
-    let currentWeek = [];
-    let currentDay = firstDayOfMonth;
-    let lastDay = lastDayOfMonth.getDate();
-    while (currentDay <= lastDayOfMonth) {
-        if(currentDay.getDate() === 1 || currentDay.getDay() === 0) currentWeek = Array(7).fill(null)
-        currentWeek[currentDay.getDay()] = currentDay;
-        if (currentDay.getDay() === 6 || currentDay.getDate() === lastDay) {
-            calendarRows.push(currentWeek);
-        }   
-        currentDay = new Date(currentYear, currentMonth, currentDay.getDate() + 1);
-        if (currentDay.getDate() === 1) {
-            currentDay = new Date(currentYear, currentMonth + 1, 1);
-            currentMonth = currentDay.getMonth();
-            currentYear = currentDay.getFullYear();
-        }
-    }
+		return (
+			<div className={`calendarPopupDiv ${isDateRange ? 'range' : ''}`}>
+				<div className={isDateRange ? 'caldendarMainCardWrapper' : ''}>
+					{generateMonth(currentMonth!, currentYear!, true)}
+					{isDateRange ? generateMonth(nextMonth!, nextYear!, false) : null}
+				</div>
+			</div>
+		);
+	};
 
-    let calendarRowsNext = [];
-    let currentWeekNext = [];
-    let currentDayNext = firstDayOfMonthNext;
-    let lastDayNext = lastDayOfMonthNext.getDate();
-    while (currentDayNext <= lastDayOfMonthNext) {
-        if(currentDayNext.getDate() === 1 || currentDayNext.getDay() === 0) currentWeekNext = Array(7).fill(null)
-        currentWeekNext[currentDayNext.getDay()] = currentDayNext;
-        if (currentDayNext.getDay() === 6 || currentDayNext.getDate() === lastDayNext) {
-            calendarRowsNext.push(currentWeekNext);
-        }   
-        currentDayNext = new Date(currentYearNext, currentMonthNext, currentDayNext.getDate() + 1);
-        if (currentDayNext.getDate() === 1) {
-            currentDayNext = new Date(currentYearNext, currentMonthNext + 1, 1);
-            currentMonthNext = currentDayNext.getMonth();
-            currentYearNext = currentDayNext.getFullYear();
-        }
-    }
-
-    return (
-        <div className={`calendarPopupDiv ${isDateRange ? `range` : ``}`}>
-            <div className="calendarMainCard">
-                <div className={isDateRange ? "caldendarMainCardWrapper" : ""}>
-                    <div>
-                        <div className="calendarHeader">
-                            <span onClick={handlePrevClick} className="fa fa-arrow-left iconLeft"></span>
-                            {isDateRange ? null : (
-                                <span onClick={handleNextClick} className="fa fa-arrow-right iconRight"></span>
-                            )}
-                            <div className="currentDate">
-                                    <span className="currentDateText" onClick={() => {if(!isDateRange) {setShowMonths(!showMonths); setShowYears(false);}}}>{currentDate.toLocaleString('default', { month: 'long' })}</span> 
-                                    <span className="currentDateText" onClick={() => {if(!isDateRange) {setShowYears(!showYears); setShowMonths(false);}}}>{currentDate?.getFullYear()}</span>
-                            </div>
-                        </div>
-                        <table className={`calendarMainData`}>
-                            {yearAndMonthSelector && showYears && !isDateRange ? (
-                                <div className="yearSubDiv">
-                                    {yearRange?.map((years, index) => (
-                                        <tr key={index} className={`calendarCol ${showYears ? `yearDropDown` : ``}`}>
-                                            {years?.map((year, yearIndex) => (
-                                                <td className={`calendarRow`} key={`${index}_${yearIndex}`} onClick={() => handleYearSelect(year)}>{year}</td>
-                                            ))}
-                                        </tr>
-                                    ))}
-                            </div>
-                            ) : null} 
-                            {yearAndMonthSelector && showMonths && !isDateRange ? (
-                                <div className="monthSubDiv">
-                                    {monthRange?.map((months, index) => (
-                                        <tr key={index} className={`calendarCol ${showMonths ? `monthDropDown` : ``}`}>
-                                            {months?.map((month, monthIndex) => (
-                                                <td className={`calendarRow`} key={`${index}_${monthIndex}`} onClick={() => handleMonthSelect(month)}>{month}</td>
-                                            ))}
-                                        </tr>
-                                    ))}
-                            </div>
-                            ) : null} 
-                            {!showYears && !showMonths ? (
-                            <Fragment>
-                                <thead>
-                                    <tr className="calendarCol">
-                                        {daysOfWeek.map((day, index) => (
-                                            <th className="calendarRow" key={index}>{day}</th>
-                                        ))}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {calendarRows.map((week, index) => (
-                                        <tr key={index} className="calendarCol">
-                                            {week.map((day, dayIndex) => (
-                                                <Fragment>
-                                                    {isDateRange ? (
-                                                        <td key={`${index}_${dayIndex}`} className={`calendarRow ${new Date(Date?.parse(startDate))?.setHours(0,0,0,0)?.valueOf() == day?.setHours(0,0,0,0)?.valueOf() ? `selectedDayStart` : ``} ${new Date(Date?.parse(endDate))?.setHours(0,0,0,0)?.valueOf() == day?.setHours(0,0,0,0)?.valueOf() ? `selectedDayEnd` : ``} ${new Date(Date?.parse(startDate))?.setHours(1,0,0,0)?.valueOf() < day?.setHours(0,0,0,0)?.valueOf() && new Date(Date?.parse(endDate))?.setHours(0,0,0,0)?.valueOf() > day?.setHours(0,0,0,0)?.valueOf() ? `selectedDays` : ``} ${day?.getDate() ? `` : `notVisible`} ${new Date(Date?.parse(minDate))?.setHours(0,0,0,0)?.valueOf() > day?.setHours(0,0,0,0)?.valueOf()  ? `notAllowed` : ``} ${new Date(Date?.parse(maxDate))?.setHours(0,0,0,0)?.valueOf() < day?.setHours(0,0,0,0)?.valueOf()  ? `notAllowed` : ``}`} onClick={() => new Date(Date?.parse(minDate))?.setHours(0,0,0,0)?.valueOf() > day?.setHours(0,0,0,0)?.valueOf() || new Date(Date?.parse(maxDate))?.setHours(0,0,0,0)?.valueOf() < day?.setHours(0,0,0,0)?.valueOf() ? null : handleStartDaySelect(dateProcessor(day)?.format(dateFormat))}>{day?.getDate()}</td>
-                                                    ):(
-                                                        <td key={`${index}_${dayIndex}`} className={`calendarRow ${new Date(Date.parse(startDate))?.setHours(0,0,0,0)?.valueOf() == day?.setHours(0,0,0,0)?.valueOf() ? `selectedDay` : ``} ${day?.getDate() ? `` : `notVisible`} ${new Date(Date?.parse(minDate))?.setHours(0,0,0,0)?.valueOf() > day?.setHours(0,0,0,0)?.valueOf()  ? `notAllowed` : ``} ${new Date(Date?.parse(maxDate))?.setHours(0,0,0,0)?.valueOf() < day?.setHours(0,0,0,0)?.valueOf()  ? `notAllowed` : ``}`} onClick={() => new Date(Date?.parse(minDate))?.setHours(0,0,0,0)?.valueOf() > day?.setHours(0,0,0,0)?.valueOf() || new Date(Date?.parse(maxDate))?.setHours(0,0,0,0)?.valueOf() < day?.setHours(0,0,0,0)?.valueOf() ? null : setStartDate(day)}>{day?.getDate()}</td>
-                                                    )}
-                                                </Fragment>
-                                            ))}
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </Fragment>
-                            ):null}
-                        </table>
-                    </div>
-                    {isDateRange ? (
-                        <div>
-                        <div className="calendarHeader">
-                            <span onClick={handleNextClick} className="fa fa-arrow-right iconRight"></span>
-                            <div className="currentEndDate">
-                                <span className="currentDateText">{currentMainDate?.toLocaleString('default', { month: 'long' })} {currentMainDate?.getFullYear()}</span>
-                            </div>
-                        </div>
-                        <table className="calendarMainData">
-                            <thead>
-                                <tr className="calendarCol">
-                                    {daysOfWeek.map((day, index) => (
-                                        <th className="calendarRow" key={index}>{day}</th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {calendarRowsNext.map((week, index) => (
-                                    <tr key={index} className="calendarCol">
-                                        {week.map((day, dayIndex) => (
-                                            <td key={`${index}_${dayIndex}`} className={`calendarRow ${new Date(Date?.parse(startDate))?.setHours(0,0,0,0)?.valueOf() == day?.setHours(0,0,0,0)?.valueOf() ? `selectedDayStart` : ``} ${new Date(Date?.parse(endDate))?.setHours(0,0,0,0)?.valueOf() == day?.setHours(0,0,0,0)?.valueOf() ? `selectedDayEnd` : ``} ${new Date(Date?.parse(startDate))?.setHours(1,0,0,0)?.valueOf() < day?.setHours(0,0,0,0)?.valueOf() && new Date(Date?.parse(endDate))?.setHours(0,0,0,0)?.valueOf() > day?.setHours(0,0,0,0)?.valueOf() ? `selectedDays` : ``} ${day?.getDate() ? `` : `notVisible`} ${new Date(Date?.parse(minDate))?.setHours(0,0,0,0)?.valueOf() > day?.setHours(0,0,0,0)?.valueOf()  ? `notAllowed` : ``} ${new Date(Date?.parse(maxDate))?.setHours(0,0,0,0)?.valueOf() < day?.setHours(0,0,0,0)?.valueOf()  ? `notAllowed` : ``}`} onClick={() => new Date(Date?.parse(minDate))?.setHours(0,0,0,0)?.valueOf() > day?.setHours(0,0,0,0)?.valueOf() || new Date(Date?.parse(maxDate))?.setHours(0,0,0,0)?.valueOf() < day?.setHours(0,0,0,0)?.valueOf() ? null : handleEndDateSelect(dateProcessor(day)?.format(dateFormat))}>{day?.getDate()}</td>
-                                        ))}
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                        </div>
-                    ) : null}
-                </div>
-            </div>
-            <div className="buttonAndTimePicker">
-                {dateOnly && timeOnly ? renderTime(showDropdown, setShowDropdown, selectedHour, selectedMinute, ampmSelected, setSelectedHour, setSelectedMinute, setAmpmSelected) : null}
-                {isDateRange ? null : BottomButton(handleConfirm, handleCancel)}
-                {isDateRange && dateOnly && timeOnly ? renderTime(showDropdownRange, setShowDropdownRange, selectedHourRange, selectedMinuteRange, ampmSelectedRange, setSelectedHourRange, setSelectedMinuteRange, setAmpmSelectedRange) : null}
-            </div>
-            {isDateRange ? (
-                <div className="buttonAndTimePickerRange">
-                    {BottomButton(handleConfirm, handleCancel)}
-                </div>
-            ) : null}
-        </div>
-        );
-    }
-
-    return(
-        <div className="comp compCalendar" style={computedStyles?.comp ?? {}} onClick={handleBubbling}>
-            <HelperComponent definition={definition}/>
-            {dateOnly && timeOnly ? (
-                <div className={`calendarDiv ${errorMessage ? 'error' : ''} ${isCalendarOpen && !value?.length ? 'focussed' : ``} ${
-                        readOnly && !errorMessage ? 'disabled' : ''
-                    }`}>
-                        <div 
-                            className="inputContainer"
-                            onFocus={() => setIsCalendarOpen(true)}
-                        >
-                            <input 
-                                className={`inputbox`} 
-                                value={isDateRange ? value?.from : value}
-                                onChange={() => {}}
-                                placeholder={dateFormat}
-                                name={`${key}_start`}
-                                id={`${key}_start`}
-                                disabled={readOnly}
-                            />
-                            {isDateRange ? (
-                                <Fragment>
-                                    <i className={`dateSplitIcon ${calendarDateRangeIcon}`}/>
-                                    <input 
-                                        className={`inputbox`} 
-                                        value={isDateRange ? value?.to : value}
-                                        onChange={() => {}}
-                                        placeholder={dateFormat}
-                                        name={`${key}_end`}
-                                        id={`${key}_end`}
-                                        disabled={readOnly}
-                                    />
-                            </Fragment>
-                            ) : null}
-                        </div>
-                        <i className={`calendarIcon ${
-                        readOnly && !errorMessage ? 'disabled' : ''
-                    } ${calendarIcon}`}/>
-                        {isCalendarOpen ? (
-                        <div className="calendarPopOver">
-                            {dateOnly ? renderCalendar() : null}
-                            {timeOnly && !dateOnly ? renderTime(showDropdown, setShowDropdown, selectedHour, selectedMinute, ampmSelected, setSelectedHour, setSelectedMinute, setAmpmSelected) : null}
-                        </div>
-                        ) : null}
-                    </div>
-            ):
-                 !dateOnly && timeOnly ? renderTime(showDropdown, setShowDropdown, selectedHour, selectedMinute, ampmSelected, setSelectedHour, setSelectedMinute, setAmpmSelected) : null
-            }
-        </div>
-    )
-
+	return (
+		<div
+			className="comp compCalendar"
+			style={computedStyles?.comp ?? {}}
+			onClick={handleBubbling}
+		>
+			<HelperComponent definition={definition} />
+			{renderCalendar()}
+		</div>
+	);
 }
 
 const component: Component = {

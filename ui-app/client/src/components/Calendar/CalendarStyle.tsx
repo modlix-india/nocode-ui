@@ -4,8 +4,9 @@ import { processStyleDefinition } from '../../util/styleProcessor';
 import { styleProperties, styleDefaults } from './calendarStyleProperties';
 
 const PREFIX = '.comp.compCalendar';
-export default function CalendarStyle({ theme } : {theme: Map<string, Map<string, string>>}) {
-    const css = `
+export default function CalendarStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+	const css =
+		`
     ${PREFIX} .calendarDiv .inputContainer {
         position: relative;
         display: flex;
@@ -29,7 +30,7 @@ export default function CalendarStyle({ theme } : {theme: Map<string, Map<string
         position: absolute;
     }
 
-    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard {
+    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv {
         width: 100%;
         height: fit-content;
     }
@@ -40,40 +41,40 @@ export default function CalendarStyle({ theme } : {theme: Map<string, Map<string
         align-items: baseline;  
     }
 
-    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarHeader {
+    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv  .calendarHeader {
         position: relative;
     }
 
-    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarHeader .iconLeft {
+    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv  .calendarHeader .iconLeft {
         position: absolute;
         left: 0;
     }
 
-    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarHeader .iconRight {
+    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv  .calendarHeader .iconRight {
         position: absolute;
         right: 0;
     }
 
-    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarHeader .currentDate,
-    .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarHeader .currentEndDate {
+    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv  .calendarHeader .currentDate,
+    .calendarDiv .calendarPopOver .calendarPopupDiv  .calendarHeader .currentEndDate {
         display: flex;
         justify-content: center;
         gap: 4px;
         flex-wrap: wrap;
     }
 
-    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol.yearDropDown, .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol.monthDropDown {
+    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv  .calendarRow.yearDropDown, .calendarDiv .calendarPopOver .calendarPopupDiv  .calendarRow.monthDropDown {
         display: grid;
         justify-items: center;
         align-items: center;
         text-align: center;
     }
 
-    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .yearSubDiv, .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .monthSubDiv {
+    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv  .yearSubDiv, .calendarDiv .calendarPopOver .calendarPopupDiv  .monthSubDiv {
         overflow-y: scroll;
     }
 
-    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol .calendarRow.notVisible, .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol .calendarRow.notAllowed {
+    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv  .calendarRow .calendarCol.notVisible, .calendarDiv .calendarPopOver .calendarPopupDiv  .calendarRow .calendarCol.notAllowed {
         display: block;
     }
 
@@ -82,17 +83,17 @@ export default function CalendarStyle({ theme } : {theme: Map<string, Map<string
     }
 
 
-    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .caldendarMainCardWrapper {
+    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv  .caldendarMainCardWrapper {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         justify-content: center;
     }
 
-    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .buttonAndTimePicker .timePicker .container, .timePicker .container {
+    ${PREFIX} .timePicker .container {
         position: relative;
     }
 
-    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .buttonAndTimePicker .timePicker .container .labelcontainer, .timePicker .container .labelcontainer {
+    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .buttonAndTimePicker .timePicker .container .labelContainer, .timePicker .container .labelContainer {
         width: 100%;
         height: 100%;
         display: flex;
@@ -117,5 +118,5 @@ export default function CalendarStyle({ theme } : {theme: Map<string, Map<string
 
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
-    return <style id='CalendarCss'>{css}</style>
+	return <style id="CalendarCss">{css}</style>;
 }
