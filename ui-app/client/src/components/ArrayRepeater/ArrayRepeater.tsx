@@ -18,7 +18,7 @@ import {
 } from '../../types/common';
 import { updateLocationForChild } from '../util/updateLoactionForChild';
 import { Component } from '../../types/common';
-import { propertiesDefinition, stylePropertiesDefinition } from './arrayRepProperties';
+import { propertiesDefinition, stylePropertiesDefinition } from './arrayRepeaterProperties';
 import ArrayRepeaterStyle from './ArrayRepeaterStyle';
 import useDefinition from '../util/useDefinition';
 import UUID from '../util/uuid';

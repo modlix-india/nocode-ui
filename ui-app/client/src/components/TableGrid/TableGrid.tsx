@@ -4,7 +4,7 @@ import { HelperComponent } from '../HelperComponent';
 import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { updateLocationForChild } from '../util/updateLoactionForChild';
 import { Component } from '../../types/common';
-import { propertiesDefinition, stylePropertiesDefinition } from './tablesGridProperties';
+import { propertiesDefinition, stylePropertiesDefinition } from './tableGridProperties';
 import TableGridStyle from './TableGridStyle';
 import useDefinition from '../util/useDefinition';
 import Children from '../Children';
