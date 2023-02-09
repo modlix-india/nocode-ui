@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { KeyboardEvent } from 'react';
 import {
 	addListener,
+	addListenerAndCallImmediately,
 	getDataFromPath,
 	getPathFromLocation,
 	PageStoreExtractor,
@@ -38,6 +39,8 @@ function Tags(props: ComponentProps) {
 			labelKeyType,
 			labelKey,
 			uniqueKey,
+			hasInputBox,
+			delimitter,
 		} = {},
 		key,
 		stylePropertiesWithPseudoStates,
@@ -50,13 +53,13 @@ function Tags(props: ComponentProps) {
 	);
 	if (!bindingPath) throw new Error('Binding path is required for definition');
 	const bindingPathPath = getPathFromLocation(bindingPath!, locationHistory, pageExtractor);
-	const [value, setvalue] = React.useState<any>(
-		getDataFromPath(bindingPathPath, locationHistory),
-	);
+	const [value, setvalue] = React.useState<any>();
+	const [inputData, setInputData] = React.useState<string>('');
 	React.useEffect(() => {
-		return addListener(
+		return addListenerAndCallImmediately(
 			(_, value) => {
 				setvalue(value);
+				console.log(value);
 			},
 			pageExtractor,
 			bindingPathPath,
@@ -66,16 +69,17 @@ function Tags(props: ComponentProps) {
 		() =>
 			getRenderData(
 				value,
-				datatype,
-				uniqueKeyType,
+				hasInputBox ? 'LIST_OF_STRINGS' : datatype,
+				hasInputBox ? 'OBJECT' : uniqueKeyType,
 				uniqueKey,
 				'OBJECT',
 				'',
 				labelKeyType,
-				labelKey,
+				hasInputBox ? 'OBJECT' : labelKey,
 			),
 		[value, datatype, uniqueKeyType, uniqueKey, labelKeyType, labelKey],
 	);
+
 	const resolvedStyles = processComponentStylePseudoClasses(
 		{ hover: false, disabled: !!readOnly },
 		stylePropertiesWithPseudoStates,
@@ -86,10 +90,27 @@ function Tags(props: ComponentProps) {
 		stylePropertiesWithPseudoStates,
 	);
 
+	const handleKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
+		if (e.key === delimitter) {
+			setData(
+				bindingPathPath,
+				[
+					...(Array.isArray(value) ? value : []),
+					...(inputData
+						?.trim()
+						?.split(delimitter)
+						.filter(e => !!e) ?? []),
+				] ?? [],
+				context.pageName,
+			);
+			setInputData('');
+		}
+	};
+
 	const onCloseEvent = closeEvent ? props.pageDefinition.eventFunctions[closeEvent] : undefined;
 
 	const handleClose = (originalKey: string | number) => {
-		if (datatype.startsWith('LIST') && Array.isArray(value)) {
+		if ((datatype.startsWith('LIST') && Array.isArray(value)) || hasInputBox) {
 			const data = value.slice();
 			data.splice(originalKey as number, 1);
 			setData(bindingPathPath, data, context.pageName);
@@ -98,7 +119,7 @@ function Tags(props: ComponentProps) {
 			delete data[originalKey];
 			setData(bindingPathPath, data, context.pageName);
 		}
-		if (!readOnly) {
+		if (!readOnly && onCloseEvent) {
 			(async () =>
 				await runEvent(
 					onCloseEvent,
@@ -113,6 +134,14 @@ function Tags(props: ComponentProps) {
 	return (
 		<div className="comp compTags">
 			<HelperComponent definition={props.definition} />
+			{hasInputBox ? (
+				<input
+					type="text"
+					value={inputData}
+					onKeyUp={handleKeyUp}
+					onChange={e => setInputData(e.target.value)}
+				/>
+			) : null}
 			<div className="tagContainer" style={resolvedStyles.tagContainer ?? {}}>
 				{renderData?.map(e => (
 					<div

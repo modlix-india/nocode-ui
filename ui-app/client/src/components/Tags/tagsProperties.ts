@@ -107,6 +107,36 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
+		name: 'hasInputBox',
+		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		displayName: 'hasInputBox',
+		description: 'has InputBox.',
+
+		defaultValue: true,
+	},
+	{
+		name: 'delimitter',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'Value Type',
+		description: 'Type of the Value',
+		defaultValue: ',',
+		editor: ComponentPropertyEditor.ENUM,
+		enumValues: [
+			{ name: ',', displayName: 'Comma', description: 'Comma' },
+			{ name: ':', displayName: 'SemiColon', description: 'SemiColon' },
+			{ name: 'Enter', displayName: 'Enter', description: 'Enter' },
+			{ name: ' ', displayName: 'Single Space', description: 'Space' },
+		],
+	},
+	{
+		name: 'placeHolder',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'placeHolder',
+		description: 'placeHolder.',
+		defaultValue: ' ',
+	},
+
+	{
 		name: 'labelKeyType',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: "Label's key type",
@@ -146,12 +176,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: "Labels key's value ",
 		description: `Key value that is used to generate label value.`,
 		translatable: true,
-	},
-	{
-		name: 'dataBinding',
-		schema: Schema.ofRef(SCHEMA_REF_ANY_COMP_PROP),
-		displayName: 'Dropdown data',
-		description: `Data that is used to render dropdown.`,
 	},
 ];
 
