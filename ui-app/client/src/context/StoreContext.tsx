@@ -129,9 +129,13 @@ export function getPathFromLocation(
 	return '';
 }
 
-export function getDataFromPath(path: string | undefined, locationHistory: Array<LocationHistory>) {
+export function getDataFromPath(
+	path: string | undefined,
+	locationHistory: Array<LocationHistory>,
+	...tve: Array<TokenValueExtractor>
+) {
 	if (!path) return undefined;
-	return _getData(dotPathBuilder(path, locationHistory));
+	return _getData(dotPathBuilder(path, locationHistory), ...tve);
 }
 
 export function setData(path: string, value: any, context?: string, deleteKey?: boolean) {

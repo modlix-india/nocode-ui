@@ -106,7 +106,7 @@ function Grid(props: ComponentProps) {
 	)}.isRunning`;
 
 	const [isLoading, setIsLoading] = useState(
-		getDataFromPath(spinnerPath, locationHistory) ?? false,
+		getDataFromPath(spinnerPath, locationHistory, pageExtractor) ?? false,
 	);
 
 	useEffect(() => addListener((_, value) => setIsLoading(value), pageExtractor, spinnerPath), []);

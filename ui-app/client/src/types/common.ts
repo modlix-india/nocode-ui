@@ -106,6 +106,15 @@ export interface Component {
 	hasChildren?: boolean;
 	numberOfChildren?: number;
 	allowedChildrenType?: Map<String, number>;
+	parentType?: string;
+	bindingPaths?: {
+		bindingPath?: { name: string };
+		bindingPath2?: { name: string };
+		bindingPath3?: { name: string };
+		bindingPath4?: { name: string };
+		bindingPath5?: { name: string };
+		bindingPath6?: { name: string };
+	};
 }
 
 export enum StyleResolution {
@@ -180,6 +189,11 @@ export interface ComponentStyle {
 export interface ComponentDefinition {
 	key: string;
 	bindingPath?: DataLocation;
+	bindingPath2?: DataLocation;
+	bindingPath3?: DataLocation;
+	bindingPath4?: DataLocation;
+	bindingPath5?: DataLocation;
+	bindingPath6?: DataLocation;
 	type: string;
 	properties?: {
 		[key: string]:

@@ -1,0 +1,88 @@
+import React from 'react';
+import { addListener, getPathFromLocation, PageStoreExtractor } from '../../context/StoreContext';
+import { HelperComponent } from '../HelperComponent';
+import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
+import { updateLocationForChild } from '../util/updateLoactionForChild';
+import { Component } from '../../types/common';
+import { propertiesDefinition, stylePropertiesDefinition } from './tablesGridProperties';
+import TableGridStyle from './TableGridStyle';
+import useDefinition from '../util/useDefinition';
+import Children from '../Children';
+import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+
+function TableGridComponent(props: ComponentProps) {
+	const [value, setValue] = React.useState([]);
+	const {
+		definition: { children, bindingPath },
+		pageDefinition,
+		locationHistory = [],
+		context,
+		definition,
+	} = props;
+	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const { properties: { layout } = {}, stylePropertiesWithPseudoStates } = useDefinition(
+		definition,
+		propertiesDefinition,
+		stylePropertiesDefinition,
+		locationHistory,
+		pageExtractor,
+	);
+
+	const bindingPathPath =
+		bindingPath && getPathFromLocation(bindingPath, locationHistory, pageExtractor);
+
+	React.useEffect(
+		() =>
+			bindingPathPath
+				? addListener(
+						(_, value) => {
+							setValue(value);
+						},
+						pageExtractor,
+						bindingPathPath,
+				  )
+				: undefined,
+		[bindingPathPath],
+	);
+
+	if (!Array.isArray(value)) return <></>;
+
+	let entry = Object.entries(children ?? {}).find(([, v]) => v);
+
+	const firstchild: any = {};
+	if (entry) firstchild[entry[0]] = true;
+
+	const styleProperties = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
+
+	return (
+		<div className={`comp compArrayRepeater _${layout}`} style={styleProperties.comp}>
+			<HelperComponent definition={definition} />
+			{value.map((e: any, index) => (
+				<Children
+					pageDefinition={pageDefinition}
+					children={firstchild}
+					context={context}
+					locationHistory={[
+						...locationHistory,
+						updateLocationForChild(bindingPath!, index, locationHistory),
+					]}
+				/>
+			))}
+		</div>
+	);
+}
+
+const component: Component = {
+	name: 'TableGrid',
+	displayName: 'Table Grid',
+	description: 'Table Grid component',
+	component: TableGridComponent,
+	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
+	properties: propertiesDefinition,
+	styleComponent: TableGridStyle,
+	hasChildren: true,
+	numberOfChildren: 1,
+	parentType: 'Table',
+};
+
+export default component;

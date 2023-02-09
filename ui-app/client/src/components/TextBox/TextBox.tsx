@@ -114,7 +114,9 @@ function TextBox(props: ComponentProps) {
 		: undefined;
 
 	const [isLoading, setIsLoading] = useState(
-		onEnter ? getDataFromPath(spinnerPath, props.locationHistory) ?? false : false,
+		onEnter
+			? getDataFromPath(spinnerPath, props.locationHistory, pageExtractor) ?? false
+			: false,
 	);
 
 	useEffect(() => {

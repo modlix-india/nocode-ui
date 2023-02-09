@@ -51,7 +51,7 @@ function Tags(props: ComponentProps) {
 	if (!bindingPath) throw new Error('Binding path is required for definition');
 	const bindingPathPath = getPathFromLocation(bindingPath!, locationHistory, pageExtractor);
 	const [value, setvalue] = React.useState<any>(
-		getDataFromPath(bindingPathPath, locationHistory),
+		getDataFromPath(bindingPathPath, locationHistory, pageExtractor),
 	);
 	React.useEffect(() => {
 		return addListener(

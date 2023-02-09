@@ -1,10 +1,12 @@
 import { Schema } from '@fincity/kirun-js';
-import React from 'react';
-import { NAMESPACE_UI_ENGINE } from '../../constants';
+import React, { useEffect, useState } from 'react';
+import { NAMESPACE_UI_ENGINE, STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
 import {
 	addListener,
+	addListenerAndCallImmediately,
 	getData,
 	getDataFromLocation,
+	getDataFromPath,
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
@@ -21,12 +23,71 @@ import { Component } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './tableProperties';
 import TableStyle from './TableStyle';
 import useDefinition from '../util/useDefinition';
-import UUID from '../util/uuid';
 import Children from '../Children';
+import { flattenUUID } from '../util/uuid';
+
+function spinCalculate(
+	spinnerPath1: string | undefined,
+	setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
+	props: ComponentProps,
+	spinnerPath2: string | undefined,
+	pageExtractor: PageStoreExtractor,
+): React.EffectCallback {
+	return () => {
+		let sp1: () => void;
+		if (spinnerPath1) {
+			sp1 = addListenerAndCallImmediately(
+				() =>
+					setIsLoading(
+						(spinnerPath1
+							? getDataFromPath(spinnerPath1, props.locationHistory, pageExtractor) ??
+							  false
+							: false) ||
+							(spinnerPath2
+								? getDataFromPath(
+										spinnerPath2,
+										props.locationHistory,
+										pageExtractor,
+								  ) ?? false
+								: false),
+					),
+				pageExtractor,
+				spinnerPath1,
+			);
+		}
+
+		let sp2: () => void;
+		if (spinnerPath2) {
+			sp2 = addListenerAndCallImmediately(
+				() =>
+					setIsLoading(
+						(spinnerPath1
+							? getDataFromPath(spinnerPath1, props.locationHistory, pageExtractor) ??
+							  false
+							: false) ||
+							(spinnerPath2
+								? getDataFromPath(
+										spinnerPath2,
+										props.locationHistory,
+										pageExtractor,
+								  ) ?? false
+								: false),
+					),
+				pageExtractor,
+				spinnerPath2,
+			);
+		}
+
+		return () => {
+			if (sp1) sp1();
+			if (sp2) sp2();
+		};
+	};
+}
 
 function TableComponent(props: ComponentProps) {
 	const {
-		definition: { children, bindingPath },
+		definition: { children, bindingPath, bindingPath2, bindingPath3, bindingPath4 },
 		pageDefinition,
 		locationHistory = [],
 		context,
@@ -34,7 +95,22 @@ function TableComponent(props: ComponentProps) {
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
-		properties: { isItemDraggable, showMove, showDelete, showAdd, readOnly, layout } = {},
+		properties: {
+			data,
+			offlineData,
+			showSpinner,
+			showPagination,
+			uniqueKey,
+			selectionType,
+			displayMode,
+			defaultSize,
+			previewMode,
+			previewGridPosition,
+			tableDesign,
+			paginationPosition,
+			onSelect,
+			onPagination,
+		} = {},
 		key,
 	} = useDefinition(
 		definition,
@@ -43,146 +119,116 @@ function TableComponent(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	if (!bindingPath) throw new Error('Definition requires bindingpath');
-	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
 
-	React.useEffect(() => {
-		return addListener(
-			(_, value) => {
-				setValue(value);
-			},
-			pageExtractor,
-			bindingPathPath,
+	const selectionBindingPath =
+		bindingPath && getPathFromLocation(bindingPath, locationHistory, pageExtractor);
+
+	const pageNumberBindingPath =
+		bindingPath2 && getPathFromLocation(bindingPath2, locationHistory, pageExtractor);
+
+	const pageSizeBindingPath =
+		bindingPath3 && getPathFromLocation(bindingPath3, locationHistory, pageExtractor);
+
+	const tableModeBindingPath =
+		bindingPath4 && getPathFromLocation(bindingPath4, locationHistory, pageExtractor);
+
+	const selectEvent = onSelect ? props.pageDefinition.eventFunctions[onSelect] : undefined;
+	const spinnerPath1 = onSelect
+		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
+				onSelect,
+		  )}.isRunning`
+		: undefined;
+
+	const paginationEvent = onPagination
+		? props.pageDefinition.eventFunctions[onPagination]
+		: undefined;
+	const spinnerPath2 = onPagination
+		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
+				onPagination,
+		  )}.isRunning`
+		: undefined;
+
+	const [isLoading, setIsLoading] = useState(false);
+
+	useEffect(spinCalculate(spinnerPath1, setIsLoading, props, spinnerPath2, pageExtractor), [
+		spinnerPath1,
+		spinnerPath2,
+	]);
+
+	const spinner = isLoading && showSpinner ? <div className="_spinner"></div> : undefined;
+
+	const [mode, setMode] = useState(
+		(tableModeBindingPath
+			? getDataFromPath(tableModeBindingPath, props.locationHistory)
+			: displayMode) ?? displayMode,
+	);
+
+	useEffect(
+		() =>
+			tableModeBindingPath
+				? addListener(
+						(_, v) => setMode(v ?? displayMode),
+						pageExtractor,
+						tableModeBindingPath,
+				  )
+				: undefined,
+		[tableModeBindingPath],
+	);
+
+	let body;
+	const childrenEntries = Object.entries(children ?? {}).filter(e => e[1]);
+
+	if (!isLoading && !data?.length) {
+		const entry = childrenEntries.filter(
+			([k]) => pageDefinition.componentDefinition[k].type === 'TableEmptyGrid',
 		);
-	}, [bindingPathPath]);
+		if (entry?.length) {
+			body = (
+				<Children
+					pageDefinition={pageDefinition}
+					children={{ [entry[0][0]]: true }}
+					context={context}
+					locationHistory={locationHistory}
+				/>
+			);
+		}
+	}
 
-	if (!Array.isArray(value)) return <></>;
-	const firstchild = {
-		[Object.entries(children)[0][0]]: Object.entries(children)[0][1],
-	};
+	const [selection, setSelection] = useState<any>();
 
-	const handleAdd = (index: any) => {
-		const newData = value.slice();
-		newData.splice(index + 1, 0, newData[index]);
-		setData(bindingPathPath, newData, context?.pageName);
-	};
+	useEffect(
+		() =>
+			selectionBindingPath
+				? addListenerAndCallImmediately((_, v) => setSelection(v))
+				: undefined,
+		[selectionBindingPath],
+	);
 
-	const handleDelete = (index: any) => {
-		const newData = value.slice();
-		newData.splice(index, 1);
-		setData(bindingPathPath, newData, context?.pageName);
-	};
+	if (!body) {
+		let previewChild;
+		if (selection) {
+			if (previewMode === 'BOTH' || previewMode === mode) {
+				previewChild = childrenEntries.filter(
+					([k]) => pageDefinition.componentDefinition[k].type === 'TablePreviewGrid',
+				);
+			}
+		}
 
-	const handleMove = (from: number, to: number) => {
-		const newData = value.slice();
-		if (from >= newData?.length || from < 0 || to >= newData.length || to < 0) return;
-		const temp = newData[from];
-		newData[from] = newData[to];
-		newData[to] = temp;
-		setData(bindingPathPath, newData, context?.pageName);
-	};
-
-	const handleDragStart = async (e: any, index: any) => {
-		e.dataTransfer.setData('application/my-app', index);
-	};
-
-	const handleDragOver = (e: any) => {
-		e.preventDefault();
-	};
-
-	const handleDragEnter = async (e: any) => {
-		e.preventDefault();
-		e.target.classList.add('dragging');
-	};
-
-	const handleDragLeave = (e: any) => {
-		e.preventDefault();
-		e.target.classList.remove('dragging');
-	};
-
-	const handleDrop = (e: any, to: any) => {
-		e.preventDefault();
-		const from = parseInt(e.dataTransfer.getData('application/my-app'));
-		const newData = value.slice();
-		const temp = newData[from];
-		to === newData.length - 1 ? newData.push(temp) : newData.splice(to, 0, temp);
-		newData.splice(from > to ? from + 1 : from, 1);
-		setData(bindingPathPath, newData, context?.pageName);
-		e.target.classList.remove('dragging');
-	};
+		let gridChild, columnsChild;
+		for (let i = 0; i < childrenEntries.length && !gridChild && !columnsChild; i++) {
+			const k = childrenEntries[i][0];
+			if (pageDefinition.componentDefinition[k].type === 'TableColumns') {
+				columnsChild = k;
+			} else if (pageDefinition.componentDefinition[k].type === 'TableGrid') {
+				gridChild = k;
+			}
+		}
+	}
 
 	return (
-		<div className={`comp compArrayRepeater _${layout}`}>
-			<HelperComponent definition={definition} />
-			{value.map((e: any, index) => {
-				const comp = (
-					<Children
-						pageDefinition={pageDefinition}
-						children={firstchild}
-						context={context}
-						locationHistory={[
-							...locationHistory,
-							updateLocationForChild(bindingPath!, index, locationHistory),
-						]}
-					/>
-				);
-				return (
-					<div
-						key={`${e.name}_${index}`}
-						className={`repeaterProperties ${readOnly ? 'disabled' : ''}`}
-						onDragStart={e => handleDragStart(e, index)}
-						onDragOver={handleDragOver}
-						onDrop={e => handleDrop(e, index)}
-						onDragEnter={handleDragEnter}
-						onDragLeave={handleDragLeave}
-						draggable={isItemDraggable && !readOnly}
-					>
-						{comp}
-						{showAdd && (
-							<i
-								className="addOne fa fa-circle-plus fa-solid"
-								onClick={showAdd ? () => handleAdd(index) : undefined}
-							/>
-						)}
-						{showDelete && (
-							<i
-								className="reduceOne fa fa-circle-minus fa-solid"
-								onClick={showDelete ? () => handleDelete(index) : undefined}
-							/>
-						)}
-						{showMove && (
-							<i
-								className={`moveOne ${
-									index == value?.length - 1
-										? 'fa fa-circle-arrow-up fa-solid'
-										: 'fa fa-circle-arrow-down fa-solid'
-								}`}
-								onClick={
-									showMove
-										? () =>
-												handleMove(
-													index,
-													index == value?.length - 1
-														? index - 1
-														: index + 1,
-												)
-										: undefined
-								}
-							/>
-						)}
-						{showMove && (
-							<i
-								className={`moveOne ${
-									index == 0 || index == value?.length - 1
-										? ''
-										: 'fa fa-circle-arrow-up fa-solid'
-								}`}
-								onClick={showMove ? () => handleMove(index, index - 1) : undefined}
-							/>
-						)}
-					</div>
-				);
-			})}
+		<div className={`comp compTable ${tableDesign} ${previewGridPosition}`}>
+			{body}
+			{spinner}
 		</div>
 	);
 }
@@ -199,8 +245,15 @@ const component: Component = {
 	allowedChildrenType: new Map([
 		['TableEmptyGrid', 1],
 		['TableColumns', 1],
-		['TableGrids', 1],
+		['TableGrid', 1],
+		['TablePreviewGrid', 1],
 	]),
+	bindingPaths: {
+		bindingPath: { name: 'Selection Binding' },
+		bindingPath2: { name: 'Page Number Binding' },
+		bindingPath3: { name: 'Page Size Binding' },
+		bindingPath4: { name: 'Table Display Mode Binding' },
+	},
 };
 
 export default component;

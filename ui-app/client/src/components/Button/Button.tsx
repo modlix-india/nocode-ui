@@ -40,7 +40,9 @@ function ButtonComponent(props: ComponentProps) {
 		: undefined;
 
 	const [isLoading, setIsLoading] = useState(
-		onClick ? getDataFromPath(spinnerPath, props.locationHistory) ?? false : false,
+		onClick
+			? getDataFromPath(spinnerPath, props.locationHistory, pageExtractor) ?? false
+			: false,
 	);
 
 	useEffect(() => {

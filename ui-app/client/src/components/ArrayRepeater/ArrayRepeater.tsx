@@ -18,11 +18,12 @@ import {
 } from '../../types/common';
 import { updateLocationForChild } from '../util/updateLoactionForChild';
 import { Component } from '../../types/common';
-import { propertiesDefinition, stylePropertiesDefinition } from './arrayRepeaterProperties';
+import { propertiesDefinition, stylePropertiesDefinition } from './arrayRepProperties';
 import ArrayRepeaterStyle from './ArrayRepeaterStyle';
 import useDefinition from '../util/useDefinition';
 import UUID from '../util/uuid';
 import Children from '../Children';
+import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 
 function ArrayRepeaterComponent(props: ComponentProps) {
 	const [value, setValue] = React.useState([]);
@@ -36,7 +37,7 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
 		properties: { isItemDraggable, showMove, showDelete, showAdd, readOnly, layout } = {},
-		key,
+		stylePropertiesWithPseudoStates,
 	} = useDefinition(
 		definition,
 		propertiesDefinition,
@@ -58,9 +59,11 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 	}, [bindingPathPath]);
 
 	if (!Array.isArray(value)) return <></>;
-	const firstchild = {
-		[Object.entries(children)[0][0]]: Object.entries(children)[0][1],
-	};
+
+	let entry = Object.entries(children ?? {}).find(([, v]) => v);
+
+	const firstchild: any = {};
+	if (entry) firstchild[entry[0]] = true;
 
 	const handleAdd = (index: any) => {
 		const newData = value.slice();
@@ -112,8 +115,10 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 		e.target.classList.remove('dragging');
 	};
 
+	const styleProperties = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
+
 	return (
-		<div className={`comp compArrayRepeater _${layout}`}>
+		<div className={`comp compArrayRepeater _${layout}`} style={styleProperties.comp}>
 			<HelperComponent definition={definition} />
 			{value.map((e: any, index) => {
 				const comp = (
@@ -197,7 +202,7 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleComponent: ArrayRepeaterStyle,
 	hasChildren: true,
-	noOfChildren: 1,
+	numberOfChildren: 1,
 };
 
 export default component;
