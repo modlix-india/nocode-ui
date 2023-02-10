@@ -14,6 +14,7 @@ import ProgressBarStyles from './ProgressBarStyles';
 
 function ProgressBar(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
+	const [hover, setHover] = React.useState(false);
 
 	const {
 		definition: { bindingPath },
@@ -25,7 +26,15 @@ function ProgressBar(props: ComponentProps) {
 
 	const {
 		key,
-		properties: { label } = {},
+		properties: {
+			label,
+			showProgressValue,
+			progressNotStartedLabel,
+			inProgressLabel,
+			progressCompletedLabel,
+			appendProgressValue,
+			prependProgressValue,
+		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
 		definition,
@@ -35,7 +44,10 @@ function ProgressBar(props: ComponentProps) {
 		pageExtractor,
 	);
 
-	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
+	const resolvedStyles = processComponentStylePseudoClasses(
+		{ hover },
+		stylePropertiesWithPseudoStates,
+	);
 
 	if (!bindingPath) throw new Error('Definition requires bindigPath');
 	const [value, setValue] = React.useState(0);
@@ -55,16 +67,38 @@ function ProgressBar(props: ComponentProps) {
 	return (
 		<div className="comp compProgressBar" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={props.definition} />
-			<div>{getTranslations(label, props.pageDefinition.translations)}</div>
-			<span className="progressBar" style={resolvedStyles.progressBar ?? {}}>
+			{label ? (
+				<label className="progressBarLabel">
+					{getTranslations(label, props.pageDefinition.translations)}
+				</label>
+			) : null}
+			<span
+				className="progressBar"
+				style={resolvedStyles.progressBar ?? {}}
+				onMouseEnter={
+					stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
+				}
+				onMouseLeave={
+					stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
+				}
+			>
 				<span
 					style={{ width: `${value}%`, ...(resolvedStyles.progress ?? {}) }}
 					className="progress"
-				>
-					<span className="progressValue" style={resolvedStyles.progressValue ?? {}}>
-						{value}%
-					</span>
-				</span>
+				></span>
+				<label className="progressValue" style={resolvedStyles.progressValue ?? {}}>
+					{`${prependProgressValue && showProgressValue ? value + '% ' : ''}` +
+						`${
+							progressNotStartedLabel || inProgressLabel || progressCompletedLabel
+								? value <= 0
+									? progressNotStartedLabel
+									: value === 100
+									? progressCompletedLabel
+									: inProgressLabel
+								: ''
+						}` +
+						`${appendProgressValue && showProgressValue ? value + '% ' : ''}`}
+				</label>
 			</span>
 		</div>
 	);
@@ -79,7 +113,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
-	stylePseudoStates: ['focus', 'hover', 'disabled'],
+	stylePseudoStates: ['hover'],
 };
 
 export default component;
