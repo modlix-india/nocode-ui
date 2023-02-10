@@ -116,6 +116,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Can Move to any Future step.',
 		defaultValue: false,
 	},
+	{
+		name: 'isStepperVertical',
+		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		displayName: 'Make stepper vertical',
+		description: 'Make stepper vertival.',
+		defaultValue: false,
+	},
 
 	{
 		name: 'visibility',

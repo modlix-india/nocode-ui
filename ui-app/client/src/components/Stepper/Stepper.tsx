@@ -32,6 +32,7 @@ function Stepper(props: ComponentProps) {
 			textPosition,
 			moveToAnyPreviousStep,
 			moveToAnyFutureStep,
+			isStepperVertical,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -44,8 +45,6 @@ function Stepper(props: ComponentProps) {
 	if (!bindingPath) throw new Error('Definition requires bindingpath');
 	const [value, setValue] = React.useState(0);
 	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
-	console.log(countingType, titles, icons);
-	console.log(showCheckOnComplete, textPosition, moveToAnyFutureStep, moveToAnyPreviousStep);
 
 	React.useEffect(
 		() =>
@@ -81,7 +80,7 @@ function Stepper(props: ComponentProps) {
 	return (
 		<div className="comp compStepper">
 			<HelperComponent definition={definition} />
-			<ul className="stepper">
+			<ul className={`stepper ${isStepperVertical ? 'vertical' : 'horizontal'}`}>
 				{effectiveTitles.map((e: string, i: number) => (
 					<li
 						onClick={() => goToStep(i)}
@@ -112,7 +111,7 @@ function Stepper(props: ComponentProps) {
 							</Fragment>
 						)}
 						<span className="title">{e}</span>
-						{i < effectiveTitles.length - 1 && <hr className="line" />}
+						{i < effectiveTitles.length - 1 && <div className="line" />}
 					</li>
 				))}
 			</ul>
