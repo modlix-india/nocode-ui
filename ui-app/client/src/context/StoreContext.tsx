@@ -1,6 +1,12 @@
 import { useStore, setStoreData } from '@fincity/path-reactive-state-management';
 import { LOCAL_STORE_PREFIX, STORE_PREFIX, PAGE_STORE_PREFIX } from '../constants';
-import { isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
+import {
+	Expression,
+	ExpressionEvaluator,
+	isNullValue,
+	LinkedList,
+	TokenValueExtractor,
+} from '@fincity/kirun-js';
 import { ComponentProperty, DataLocation, LocationHistory, RenderContext } from '../types/common';
 
 class LocalStoreExtractor extends TokenValueExtractor {
@@ -102,6 +108,30 @@ export function getData<T>(
 	return prop.value;
 }
 
+function processDotPaths(path: string, locationHistory: Array<LocationHistory>): string {
+	const ps = path.split('{{');
+
+	if (ps.length == 1) return path;
+
+	return ps
+		.map(e => {
+			if (e.startsWith('.')) {
+				let ind = e.indexOf('}}');
+				return dotPathBuilder(e.substring(0, ind), locationHistory) + e.substring(ind);
+			}
+			return e;
+		})
+		.join('{{');
+}
+
+function processDotTokens(ex: Expression): string {
+	ex.getTokens().forEach(e => {
+		console.log(e);
+	});
+
+	return ex.getExpression();
+}
+
 export function getDataFromLocation(
 	loc: DataLocation,
 	locationHistory: Array<LocationHistory>,
@@ -110,7 +140,9 @@ export function getDataFromLocation(
 	if (loc?.type === 'VALUE' && loc.value) {
 		return _getData(dotPathBuilder(loc.value, locationHistory) || '', ...tve);
 	} else if (loc?.type === 'EXPRESSION' && loc.expression) {
-		return _getData(dotPathBuilder(loc?.expression!, locationHistory) || '', ...tve);
+		let exp = processDotPaths(loc.expression, locationHistory);
+		exp = processDotTokens(new Expression(exp));
+		return _getData(dotPathBuilder(exp, locationHistory) || '', ...tve);
 	}
 }
 

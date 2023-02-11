@@ -13,6 +13,11 @@ export default function TableGridStyle({ theme }: { theme: Map<string, Map<strin
 	${PREFIX}._ROWLAYOUT{
 		flex-direction: row;
 	}
+
+	${PREFIX} ._eachTableGrid {
+		display: flex;
+		flex-direction: column;
+	}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="TableGridCss">{css}</style>;

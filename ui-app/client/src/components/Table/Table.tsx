@@ -1,20 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
 import {
-	addListener,
 	addListenerAndCallImmediately,
 	getDataFromPath,
 	getPathFromLocation,
 	PageStoreExtractor,
 } from '../../context/StoreContext';
 import { HelperComponent } from '../HelperComponent';
-import {
-	ComponentPropertyDefinition,
-	ComponentProps,
-	DataLocation,
-	RenderContext,
-} from '../../types/common';
-import { updateLocationForChild } from '../util/updateLoactionForChild';
+import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { Component } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './tableProperties';
 import TableStyle from './TableStyle';
@@ -104,6 +97,7 @@ function TableComponent(props: ComponentProps) {
 			showPagination,
 			uniqueKey,
 			selectionType,
+			multiSelect,
 			displayMode,
 			defaultSize,
 			previewMode,
@@ -286,7 +280,18 @@ function TableComponent(props: ComponentProps) {
 				children={{ [selectedChild]: true }}
 				context={{
 					...context,
-					table: { data, bindingPath, from, to, selectionBindingPath, selectionType },
+					table: {
+						data,
+						bindingPath,
+						dataBindingPath,
+						from,
+						to,
+						selectionBindingPath,
+						selectionType,
+						multiSelect,
+						pageSize,
+						uniqueKey,
+					},
 				}}
 				locationHistory={locationHistory}
 			/>
@@ -305,10 +310,14 @@ function TableComponent(props: ComponentProps) {
 							table: {
 								data,
 								bindingPath,
+								dataBindingPath,
 								from,
 								to,
 								selectionBindingPath,
 								selectionType,
+								multiSelect,
+								pageSize,
+								uniqueKey,
 							},
 						}}
 						locationHistory={locationHistory}

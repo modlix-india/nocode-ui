@@ -19,14 +19,16 @@ import { Component } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './gridProperties';
 import GridStyle from './GridStyle';
 import useDefinition from '../util/useDefinition';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Children from '../Children';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
 import { runEvent } from '../util/runEvent';
 import { flattenUUID } from '../util/uuid';
+import { getHref } from '../util/getHref';
 
 function Grid(props: ComponentProps) {
+	const location = useLocation();
 	const [hover, setHover] = React.useState(false);
 	const [focus, setFocus] = React.useState(false);
 	const [observer, setObserver] = React.useState<IntersectionObserver>();
@@ -123,13 +125,16 @@ function Grid(props: ComponentProps) {
 						props.pageDefinition,
 					);
 	const styleComp = resolvedStyles?.comp?.hideScrollBar ? (
-		<style>{`._${key}_grid_css::-webkit-scrollbar { display: none }`}</style>
+		<style
+			key={`${key}_style`}
+		>{`._${key}_grid_css::-webkit-scrollbar { display: none }`}</style>
 	) : undefined;
 	if (linkPath) {
 		return React.createElement(containerType.toLowerCase(), { className: 'comp compGrid' }, [
-			<HelperComponent definition={definition} />,
+			<HelperComponent key={`${key}_hlp`} definition={definition} />,
 			styleComp,
 			<Link
+				key={`${key}_Link`}
 				ref={ref}
 				className={`_anchorGrid _${layout} ${background} _${key}_grid_css`}
 				onMouseEnter={
@@ -140,7 +145,7 @@ function Grid(props: ComponentProps) {
 				}
 				onFocus={stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined}
 				onBlur={stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined}
-				to={linkPath}
+				to={getHref(linkPath, location)}
 				target={target}
 				style={resolvedStyles.comp ?? {}}
 			>

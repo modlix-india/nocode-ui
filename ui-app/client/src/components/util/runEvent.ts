@@ -1,6 +1,7 @@
 import {
 	FunctionDefinition,
 	FunctionExecutionParameters,
+	HybridRepository,
 	KIRuntime,
 	LinkedList,
 	ParameterReferenceType,
@@ -20,6 +21,7 @@ import {
 import { UIFunctionRepository } from '../../functions';
 import { UISchemaRepository } from '../../schemas/common';
 import { LocationHistory, PageDefinition } from '../../types/common';
+import PageDefintionFunctionsRepository from './PageDefinitionFunctionsRepository';
 import UUID, { flattenUUID } from './uuid';
 
 function updateExpressionsWithLocationHistory(
@@ -99,7 +101,7 @@ export const runEvent = async (
 					}
 				}
 				if (!pageDefinition.componentDefinition[key].children) continue;
-				Object.entries(pageDefinition.componentDefinition[key].children)
+				Object.entries(pageDefinition.componentDefinition[key].children ?? {})
 					.filter(([, v]: [string, boolean]) => v)
 					.forEach(([k]) => list.add(k));
 			}
@@ -117,7 +119,10 @@ export const runEvent = async (
 
 		const runtime = new KIRuntime(def, false);
 		const fep = new FunctionExecutionParameters(
-			UIFunctionRepository,
+			new HybridRepository(
+				UIFunctionRepository,
+				new PageDefintionFunctionsRepository(pageDefinition),
+			),
 			UISchemaRepository,
 			key,
 		).setValuesMap(

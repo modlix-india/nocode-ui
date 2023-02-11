@@ -40,6 +40,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: 'Unique Key',
 		description: 'Unique Key in each row',
+		defaultValue: 'id',
 	},
 	{
 		name: 'selectionType',
@@ -56,6 +57,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				description: 'Copy of the object that is selected',
 			},
 		],
+	},
+	{
+		name: 'multiSelect',
+		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		displayName: 'Select Multiple',
+		description: 'Select multiple items',
+		defaultValue: false,
 	},
 	{
 		name: 'displayMode',
