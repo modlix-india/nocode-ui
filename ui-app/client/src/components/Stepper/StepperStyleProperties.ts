@@ -79,7 +79,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 
 	{
 		name: 'circleSize',
-		defaultValue: '40px',
+		defaultValue: '32px',
 		displayName: 'Size for circle',
 		description: 'Size for circle with icon/number',
 	},
