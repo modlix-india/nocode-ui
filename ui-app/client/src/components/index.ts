@@ -13,6 +13,7 @@ import Dropdown from './Dropdown/Dropdown';
 import Menu from './Menu/Menu';
 import Tags from './Tags/Tags';
 import Image from './Image/Image';
+import Tabs from './Tabs/Tabs';
 import Icon from './Icon/Icon';
 import Text from './Text/Text';
 import TextList from './TextList/TextList';
@@ -34,6 +35,7 @@ export const Components = new Map<string, React.ElementType>([
 	[Menu.name, Menu.component],
 	[Tags.name, Tags.component],
 	[Image.name, Image.component],
+	[Tabs.name, Tabs.component],
 	[Icon.name, Icon.component],
 	[Text.name, Text.component],
 	[TextList.name, TextList.component],
@@ -55,6 +57,7 @@ export const ComponentDefinitions = [
 	Menu,
 	Tags,
 	Image,
+	Tabs,
 	Icon,
 	Text,
 	TextList,
