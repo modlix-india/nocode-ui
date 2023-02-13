@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import {
 	addListenerAndCallImmediately,
 	getPathFromLocation,
@@ -13,6 +13,7 @@ import { Component } from '../../types/common';
 import StepperStyle from './StepperStyle';
 import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import { getRoman, getAlphaNumeral } from '../util/numberConverter';
 
 function Stepper(props: ComponentProps) {
 	const {
@@ -77,6 +78,29 @@ function Stepper(props: ComponentProps) {
 				.map((e: string) => e.trim())
 				.filter((e: string) => !!e)
 		: [];
+
+	const getCount = (num: number) => {
+		let count;
+		switch (countingType) {
+			case 'NUMBER':
+				count = num;
+				break;
+			case 'ROMAN':
+				count = getRoman(num, false);
+				break;
+			case 'UPPER_ROMAN':
+				count = getRoman(num, true);
+				break;
+			case 'ALPHA':
+				count = getAlphaNumeral(num, false);
+				break;
+			case 'UPPER_ALPHA':
+				count = getAlphaNumeral(num, true);
+				break;
+			default:
+		}
+		return count;
+	};
 	return (
 		<div className="comp compStepper">
 			<HelperComponent definition={definition} />
@@ -105,7 +129,7 @@ function Stepper(props: ComponentProps) {
 									></i>
 								) : (
 									<span className={`countingStep ${i <= value ? 'done' : ''}`}>
-										{i + 1}
+										{getCount(i + 1)}
 									</span>
 								)}
 							</Fragment>
