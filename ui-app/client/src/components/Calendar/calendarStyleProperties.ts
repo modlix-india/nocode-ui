@@ -15,8 +15,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'textbox input text font size',
 		description: "This textbox's font size is used for textbox's input text.",
 		defaultValue: '13px',
+		noPrefix: true,
 		selector:
-			'.calendarDiv .inputContainer .inputbox, .calendarDiv .calendarPopOver .calendarPopupDiv .buttonAndTimePicker .timePicker .container, .timePicker .container',
+			'.comp.compCalendar.calendarPopOver .calendarPopupDiv .timePicker .container',
 	},
 	{
 		name: 'inputTextFontSizeDropDown',
@@ -39,14 +40,14 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "textbox's border color on focus",
 		description: "This color is used for textbox's focus border color.",
 		selector:
-			'.calendarDiv.focussed, .calendarDiv .calendarPopOver .calendarPopupDiv .buttonAndTimePicker .timePicker .container.focussed, .timePicker .container.focussed',
+			'.timePicker .container.focussed, .timePicker .container.focussed',
 	},
 	{
 		name: 'calendarDivWidth',
 		cssProperty: 'width',
 		displayName: 'date and time input box width',
 		description: 'This is used to indicate the width of the calendar input box',
-		defaultValue: '100%',
+		defaultValue: '500px',
 		selector: '.calendarDiv',
 	},
 	{
@@ -62,7 +63,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'height',
 		displayName: "Calendar Div's height",
 		description: "This is for Calendar Div's height",
-		defaultValue: '56px',
+		defaultValue: '48px',
 		selector: '.calendarDiv',
 	},
 	{
@@ -98,20 +99,13 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.calendarDiv',
 	},
 	{
-		name: 'calendarPopupContainerPositionRight',
-		cssProperty: 'right',
-		displayName: 'calendar popup Container position right in the grid',
-		description: 'This position right is used for Calendar popup conatiner positon right.',
-		defaultValue: '0',
-		selector: '.calendarDiv .calendarPopOver',
-	},
-	{
 		name: 'calendarPopupContainerHeight',
 		cssProperty: 'height',
 		displayName: 'calendar popup Container height in the grid',
 		description: 'This height is used for Calendar popup conatiner height.',
 		defaultValue: '380px',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv',
+		noPrefix: true,
+		selector: '.comp.compCalendar.calendarPopOver',
 	},
 	{
 		name: 'calendarPopupContainerHeightForDateRange',
@@ -119,23 +113,16 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'calendar popup Container height in the grid',
 		description: 'This height is used for Calendar popup conatiner height date range.',
 		defaultValue: '400px',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv.range',
+		noPrefix: true,
+		selector: '.comp.compCalendar.calendarPopOver.range',
 	},
 	{
 		name: 'calendarPopupContainerWidth',
 		cssProperty: 'width',
 		displayName: 'calendar popup Container width in the grid',
 		description: 'This width is used for Calendar popup conatiner width.',
-		defaultValue: 'fit-content',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv',
-	},
-	{
-		name: 'calendarPopupContainerDisplayGap',
-		cssProperty: 'column-gap',
-		displayName: 'calendar popup Container Display style in the grid',
-		description: 'This display is used for Calendar popup conatiner display style.',
-		defaultValue: '4px',
-		selector: '.calendarDiv .calendarPopOver',
+		defaultValue: '100%',
+		selector: '.calendarPopupDiv',
 	},
 	{
 		name: 'calendarPopupContainerTimerContainerBorderRadius',
@@ -143,8 +130,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'calendar popup timer Container border radius',
 		description: 'This display is used for Calendar popup timer container border radius.',
 		defaultValue: '4px',
+		noPrefix: true,
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .buttonAndTimePicker .timePicker .container, .timePicker .container',
+			'.comp.compCalendar.calendarPopOver .calendarPopupDiv .buttonAndTimePicker .timePicker .container, .timePicker .container',
 	},
 	{
 		name: 'calendarPopupContainerTimerContainerDropDownZIndex',
@@ -369,53 +357,56 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'left',
 		displayName: 'calendar popup Container position Left in the grid',
 		description: 'This position left is used for Calendar popup conatiner positon Left.',
-		defaultValue: '',
-		selector: '.calendarDiv .calendarPopOver',
+		noPrefix: true,
+		selector: '.comp.compCalendar.calendarPopOver',
 	},
 	{
 		name: 'calendarPopupContainerPositionBottom',
 		cssProperty: 'bottom',
 		displayName: 'calendar popup Container position bottom in the grid',
 		description: 'This position bottom is used for Calendar popup conatiner positon bottom.',
-		selector: '.calendarDiv .calendarPopOver',
+		noPrefix: true,
+		selector: '.comp.compCalendar.calendarPopOver',
 	},
 	{
 		name: 'calendarPopupContainerPositionTop',
 		cssProperty: 'top',
 		displayName: 'calendar popup Container position Top in the grid',
 		description: 'This position top is used for Calendar popup conatiner positon Top.',
-		defaultValue: '0',
-		selector: '.calendarDiv .calendarPopOver',
+		noPrefix: true,
+		selector: '.comp.compCalendar.calendarPopOver',
 	},
 	{
 		name: 'calendarPopupContainerMarginRight',
 		cssProperty: 'margin-right',
 		displayName: 'calendar popup Container margin right in the grid',
 		description: 'This margin right is used for Calendar popup conatiner margin right.',
-		selector: '.calendarDiv .calendarPopOver',
-		defaultValue: '-600px',
+		selector: '.comp.compCalendar.calendarPopOver',
+		noPrefix: true,
 	},
 	{
 		name: 'calendarPopupContainerMarginLeft',
 		cssProperty: 'margin-left',
 		displayName: 'calendar popup Container margin left in the grid',
 		description: 'This margin left is used for Calendar popup conatiner margin left.',
-		selector: '.calendarDiv .calendarPopOver',
+		selector: '.comp.compCalendar.calendarPopOver',
+		noPrefix: true,
 	},
 	{
 		name: 'calendarPopupContainerMarginTop',
 		cssProperty: 'margin-top',
 		displayName: 'calendar popup Container margin top in the grid',
 		description: 'This margin top is used for Calendar popup conatiner margin top.',
-		defaultValue: '60px',
-		selector: '.calendarDiv .calendarPopOver',
+		noPrefix: true,
+		selector: '.comp.compCalendar.calendarPopOver',
 	},
 	{
 		name: 'calendarPopupContainerMarginBottom',
 		cssProperty: 'margin-bottom',
 		displayName: 'calendar popup Container margin left in the grid',
 		description: 'This margin bottom is used for Calendar popup conatiner margin bottom.',
-		selector: '.calendarDiv .calendarPopOver',
+		noPrefix: true,
+		selector: '.comp.compCalendar.calendarPopOver',
 	},
 	{
 		name: 'calendarPopupContainerBoxShadow',
@@ -423,14 +414,16 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'calendar popup Container box shadow in the grid',
 		description: 'This box shadow is used for Calendar popup conatiner box shadow style.',
 		defaultValue: '1px 2px 8px hsl(0deg 0% 0% / 0.5)',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv',
+		noPrefix: true,
+		selector: '.comp.compCalendar.calendarPopOver',
 	},
 	{
 		name: 'calendarPopupContainerBorderColor',
 		cssProperty: 'border',
 		displayName: 'calendar popup Container border style',
 		description: 'This border is used for Calendar popup conatiner border style.',
-		selector: '.calendarDiv .calendarPopOver',
+		noPrefix: true,
+		selector: '.comp.compCalendar.calendarPopOver',
 	},
 	{
 		name: 'calendarPopupContainerBorderRadius',
@@ -438,15 +431,16 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'calendar popup Container border radius in the grid',
 		description: 'This border radius is used for Calendar popup conatiner border radius.',
 		defaultValue: '10px',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv',
+		noPrefix: true,
+		selector: '.comp.compCalendar.calendarPopOver',
 	},
 	{
 		name: 'calendarPopupContainerwidth',
 		cssProperty: 'width',
 		displayName: 'calendar popup Container border width',
 		description: 'This border radius is used for Calendar popup conatiner width.',
-		defaultValue: '100%',
-		selector: '.calendarDiv .calendarPopOver',
+		noPrefix: true,
+		selector: '.comp.compCalendar.calendarPopOver',
 	},
 	{
 		name: 'calendarCurrentDateDisplayModuleJustifyzItems',
@@ -454,7 +448,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'calendar popup Container justify items',
 		description: 'This justify items is used for Calendar popup conatiner justify in flex.',
 		defaultValue: 'flex-end',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv',
+		noPrefix: true,
+		selector: '..comp.compCalendar.calendarPopOver',
 	},
 	{
 		name: 'calendarCurrentDateDisplayModuleBackgroundColor',
@@ -463,14 +458,15 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description:
 			'This background color is used for Calendar popup conatiner background color style.',
 		defaultValue: 'white',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv',
+		noPrefix: true,
+		selector: '.comp.compCalendar.calendarPopOver',
 	},
 	{
 		name: 'calendarCurrentDateDisplayModuleHeaderBackgroundColor',
 		cssProperty: 'background-color',
 		displayName: 'calendar popup Container background color of header in the grid',
 		description: 'This background color is used for Calendar popup conatiner background color.',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .calendarHeader',
+		selector: '.calendarPopupDiv .calendarHeader',
 	},
 	{
 		name: 'calendarCurrentDateDisplayModuleHeaderCursor',
@@ -486,7 +482,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'calendar popup Container Date Display header width',
 		description: 'This width is used for Calendar popup date display header width.',
 		defaultValue: '100%',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .calendarHeader',
+		selector: '.calendarPopupDiv .calendarHeader',
 	},
 	{
 		name: 'calendarCurrentDateMainCardWidth',
@@ -495,7 +491,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description: 'This width is used for Calendar popup date Main Card width.',
 		defaultValue: '100%',
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarMainData',
+			'.calendarPopupDiv .calendarMainData',
 	},
 	{
 		name: 'calendarCurrentDateMainCardHeight',
@@ -504,7 +500,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description: 'This height is used for Calendar popup date Main Card height.',
 		defaultValue: '248px',
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarMainData',
+			'.calendarPopupDiv .calendarMainData',
 	},
 	{
 		name: 'calendarCurrentDateDisplayModuleHeaderPaddingTop',
@@ -512,7 +508,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'calendar popup Container Header pading top',
 		description: 'This padding top is used for Calendar popup conatiner padding from top.',
 		defaultValue: '10px',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .calendarHeader',
+		selector: '.calendarPopupDiv .calendarHeader',
 	},
 	{
 		name: 'calendarCurrentDateDisplayModuleHeaderPaddingBottom',
@@ -521,7 +517,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description:
 			'This margin left is used for Calendar popup conatiner padding from bottom for header.',
 		defaultValue: '10px',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .calendarHeader',
+		selector: '.calendarPopupDiv .calendarHeader',
 	},
 	{
 		name: 'calendarCurrentDateDisplayModuleHeaderPaddingLeft',
@@ -529,7 +525,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'calendar popup Container padding from left',
 		description: 'This padding left is used for Calendar popup conatiner padding left.',
 		defaultValue: '4px',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .calendarHeader',
+		selector: '.calendarPopupDiv .calendarHeader',
 	},
 	{
 		name: 'calendarCurrentDateDisplayModuleHeaderPaddingRight',
@@ -537,7 +533,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'calendar popup Container padding right for header',
 		description: 'This padding right is used for Calendar popup conatiner padding right.',
 		defaultValue: '4px',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .calendarHeader',
+		selector: '.calendarPopupDiv .calendarHeader',
 	},
 	{
 		name: 'calendarCurrentDateDisplayModuleLeftHeaderIconPadding',
@@ -547,7 +543,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'This padding is used for Calendar popup conatiner padding for icon for header.',
 		defaultValue: '4px 0px 0px 4px',
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarHeader .iconLeft',
+			'.calendarHeader .iconLeft',
 	},
 	{
 		name: 'calendarCurrentDateDisplayModuleRightIconPadding',
@@ -556,7 +552,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description: 'This padding is used for Calendar popup conatiner right icon padding.',
 		defaultValue: '4px 4px 0px 0px',
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarHeader .iconRight',
+			'.calendarHeader .iconRight',
 	},
 	{
 		name: 'calendarCurrentDateDisplayModuleLeftHeaderIconCuror',
@@ -566,7 +562,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'This padding is used for Calendar popup conatiner cursor style for icon for header.',
 		defaultValue: 'pointer',
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarHeader .iconLeft, .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarHeader .iconRight',
+			'.calendarPopupDiv .calendarHeader .iconLeft, .calendarPopupDiv .calendarHeader .iconRight',
 	},
 	{
 		name: 'calendarCurrentDateDisplayModuleHeaderAlignContent',
@@ -574,7 +570,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'calendar popup Container header align content',
 		description: 'This align items is used for Calendar popup conatiner header align content.',
 		defaultValue: 'center',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .calendarHeader',
+		selector: '.calendarPopupDiv .calendarHeader',
 	},
 	{
 		name: 'calendarPopupCalendarSelectedDateWidth',
@@ -582,14 +578,14 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'calendar popup Container selected date width',
 		description: 'This wdith is used for Calendar popup conatiner selected date width.',
 		defaultValue: '100%',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .calendarSelectedDate',
+		selector: '.calendarPopupDiv .calendarSelectedDate',
 	},
 	{
 		name: 'calendarPopupCalendarSelectedHeight',
 		cssProperty: 'height',
 		displayName: 'calendar popup Container selected date height',
 		description: 'This height is used for Calendar popup conatiner selected date height.',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .calendarSelectedDate',
+		selector: '.calendarPopOver .calendarPopupDiv .calendarSelectedDate',
 	},
 	{
 		name: 'calendarPopupCalendarSelectedDateBackgroundColor',
@@ -598,7 +594,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description:
 			'This background is used for Calendar popup conatiner selected date background color.',
 		defaultValue: '<main-font-color>',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .calendarSelectedDate',
+		selector: '.calendarPopupDiv .calendarSelectedDate',
 	},
 	{
 		name: 'calendarPopupCalendarSelectedDateFontColor',
@@ -606,7 +602,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'calendar popup Container selected date font color',
 		description: 'This color is used for Calendar popup conatiner selected date font color.',
 		defaultValue: '<light-font-color>',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .calendarSelectedDate',
+		selector: '.calendarPopupDiv .calendarSelectedDate',
 	},
 	{
 		name: 'calendarPopupCalendarSelectedDatepaddingTop',
@@ -615,7 +611,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description:
 			'This padding top is used for Calendar popup conatiner selected date padding from top.',
 		defaultValue: '25px',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .calendarSelectedDate',
+		selector: '.calendarPopupDiv .calendarSelectedDate',
 	},
 	{
 		name: 'calendarPopupCalendarSelectedDatepaddingBottom',
@@ -624,7 +620,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description:
 			'This padding bottom is used for Calendar popup conatiner selected date padding from bottom.',
 		defaultValue: '25px',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .calendarSelectedDate',
+		selector: '.calendarPopupDiv .calendarSelectedDate',
 	},
 	{
 		name: 'calendarPopupContainerCalendarSelectedDate',
@@ -633,15 +629,15 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description:
 			'This align text is used for Calendar popup conatiner selected date align text.',
 		defaultValue: 'center',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .calendarSelectedDate',
+		selector: '.calendarPopupDiv .calendarCol',
 	},
 	{
 		name: 'calendarPopupMainCardPadding',
 		cssProperty: 'padding',
 		displayName: 'calendar popup Container main card padding',
 		description: 'This padding is used for Calendar popup conatiner main card padding.',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard',
-		defaultValue: '20px 20px 0px 20px',
+		selector: '.calendarPopupDiv',
+		defaultValue: '20px 20px 20px 20px',
 	},
 	{
 		name: 'calendarPopupContainerMainCalendarPadding',
@@ -650,7 +646,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description:
 			'This padding is used for Calendar popup conatiner main calendar component padding.',
 		defaultValue: '8px 8px 8px 8px',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol',
+		selector: '.calendarPopupDiv .calendarCol',
 	},
 	{
 		name: 'calendarPopupContainerMainCalendarFontSize',
@@ -660,7 +656,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'This border radius is used for Calendar popup conatiner main calendar font size.',
 		defaultValue: '13px',
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol, .calendarDiv .calendarPopOver .timePicker .items, .timePicker .items, .calendarDiv .calendarPopOver .calendarPopupDiv .bottomButtons',
+			'.calendarPopupDiv .calendarCol, .calendarDiv .calendarPopOver .timePicker .items, .timePicker .items, .calendarDiv .calendarPopOver .calendarPopupDiv .bottomButtons',
 	},
 	{
 		name: 'calendarPopupContainerMainCalendarFontColorHead',
@@ -670,7 +666,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'This header font colot is used for Calendar popup conatiner header font color.',
 		defaultValue: '<main-font-color>',
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard thead .calendarCol',
+			'.calendarPopupDiv thead .calendarCol',
 	},
 	{
 		name: 'calendarPopupContainerMainCalendarDatesWidth',
@@ -679,7 +675,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description: 'This header font colot is used for Calendar popup conatiner Dates Width.',
 		defaultValue: '36px',
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol:not(.selectedDays):not(.selectedDayStart):not(.selectedDayEnd):not(.notAllowed), .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarRow .calendarCol.notAllowed',
+			'.calendarPopupDiv .calendarCol:not(.selectedDays):not(.selectedDayStart):not(.selectedDayEnd), .calendarDiv .calendarPopOver .calendarPopupDiv .calendarRow .calendarCol.notAllowed',
 	},
 	{
 		name: 'calendarPopupContainerMainCalendarDatesWidthForYear',
@@ -689,7 +685,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'This header font colot is used for Calendar popup conatiner Dates Width for year.',
 		defaultValue: '50px',
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .yearSubDiv .calendarCol:not(.selectedDays):not(.selectedDayStart):not(.selectedDayEnd)',
+			'.calendarPopupDiv .yearSubDiv .calendarCol:not(.selectedDays):not(.selectedDayStart):not(.selectedDayEnd)',
 	},
 	{
 		name: 'calendarPopupContainerMainCalendarDatesWidthForMonth',
@@ -699,7 +695,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'This header font colot is used for Calendar popup conatiner Dates Width for year.',
 		defaultValue: '80px',
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .monthSubDiv .calendarCol:not(.selectedDays):not(.selectedDayStart):not(.selectedDayEnd)',
+			'.calendarPopupDiv .monthSubDiv .calendarCol:not(.selectedDays):not(.selectedDayStart):not(.selectedDayEnd)',
 	},
 	{
 		name: 'calendarPopupContainerMainCalendarDatesBorderRadius',
@@ -709,7 +705,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'This header font colot is used for Calendar popup conatiner Dates border radius.',
 		defaultValue: '24px',
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol:not(.selectedDays):not(.selectedDayStart):not(.selectedDayEnd):not(.notAllowed), .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarRow .calendarCol.notAllowed',
+			'.calendarPopupDiv .calendarCol:not(.selectedDays):not(.selectedDayStart):not(.selectedDayEnd):not(.notAllowed), .calendarPopupDiv .calendarRow .calendarCol.notAllowed',
 	},
 	{
 		name: 'calendarPopupContainerMainCalendarDatesBorderRadiusForYear',
@@ -719,7 +715,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'This header font colot is used for Calendar popup conatiner Dates border radius for year.',
 		defaultValue: '12px',
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .yearSubDiv .calendarCol:not(.selectedDays):not(.selectedDayStart):not(.selectedDayEnd), .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .monthSubDiv',
+			'.calendarPopupDiv .yearSubDiv .calendarCol:not(.selectedDays):not(.selectedDayStart):not(.selectedDayEnd), .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .monthSubDiv',
 	},
 	{
 		name: 'calendarPopupContainerMainCalendarDatesBorderTopRightRadius',
@@ -729,7 +725,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'This header font colot is used for Calendar popup conatiner Dates border top right radius.',
 		defaultValue: '24px',
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol:not(.selectedDays).selectedDayEnd',
+			'.calendarPopupDiv .calendarCol.selectedDayEnd',
 	},
 	{
 		name: 'calendarPopupContainerMainCalendarDatesBorderBottomRightRadius',
@@ -739,7 +735,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'This header font colot is used for Calendar popup conatiner Dates border bottom right radius.',
 		defaultValue: '24px',
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol:not(.selectedDays).selectedDayEnd',
+			'.calendarPopupDiv .calendarCol.selectedDayEnd',
 	},
 	{
 		name: 'calendarPopupContainerMainCalendarDatesBorderTopLeftRadius',
@@ -749,7 +745,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'This header font colot is used for Calendar popup conatiner Dates border top right radius.',
 		defaultValue: '24px',
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol:not(.selectedDays).selectedDayStart',
+			'.calendarPopupDiv .calendarCol:not(.selectedDays).selectedDayStart',
 	},
 	{
 		name: 'calendarPopupContainerMainCalendarDatesBorderBottomLeftRadius',
@@ -759,7 +755,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'This header font colot is used for Calendar popup conatiner Dates border bottom right radius.',
 		defaultValue: '24px',
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol:not(.selectedDays).selectedDayStart',
+			'.calendarPopupDiv .calendarCol:not(.selectedDays).selectedDayStart',
 	},
 	{
 		name: 'calendarPopupContainerMainCalendarDatesCursor',
@@ -768,7 +764,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description: 'This header font colot is used for Calendar popup conatiner Dates cursor.',
 		defaultValue: 'pointer',
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol:not(.selectedDays):not(.selectedDayStart):not(.selectedDayEnd):not(.notAllowed), .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .yearSubDiv .calendarCol:not(.selectedDays):not(.selectedDayStart):not(.selectedDayEnd), .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol.selectedDays:not(.selectedDayStart):not(.selectedDayEnd), .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol:not(.selectedDays).selectedDayStart, .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol:not(.selectedDays).selectedDayEnd, .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .monthSubDiv ',
+			'.calendarCol:not(.notAllowed):not(.notVisible)',
 	},
 	{
 		name: 'calendarPopupContainerMainCalendarDatesTextAlign',
@@ -778,7 +774,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'This header font colot is used for Calendar popup conatiner Dates text align.',
 		defaultValue: 'center',
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol:not(.selectedDays):not(.selectedDayStart):not(.selectedDayEnd):not(.notAllowed), .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .yearSubDiv .calendarCol:not(.selectedDays):not(.selectedDayStart):not(.selectedDayEnd), .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol.selectedDays:not(.selectedDayStart):not(.selectedDayEnd), .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol:not(.selectedDays).selectedDayStart, .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol:not(.selectedDays).selectedDayEnd, .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarRow .calendarCol.notAllowed, .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .monthSubDiv ',
+			'.calendarCol',
 	},
 	{
 		name: 'calendarPopupContainerMainCalendarFontColor',
@@ -788,7 +784,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'This header font colot is used for Calendar popup conatiner main calendar font color.',
 		defaultValue: '<main-font-color>',
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard tbody .calendarCol:not(.selectedDayStart):not(.selectedDayEnd):not(.selectedDay), .calendarDiv .calendarPopOver .timePicker .items',
+			'.calendarPopupDiv tbody .calendarCol:not(.selectedDayStart):not(.selectedDayEnd):not(.selectedDay), .timePicker .items',
 	},
 	{
 		name: 'calendarPopupContainerMainCalendarSelectedDayBackgroundColorStartEnddDate',
@@ -799,7 +795,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'This backgroun color is used for Calendar popup conatiner selected start date and end date background Color.',
 		defaultValue: '<main-font-color>',
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol.selectedDayStart, .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol.selectedDayEnd, .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol.selectedDay',
+			'.calendarPopupDiv .calendarCol.selectedDayStart, .calendarPopupDiv .calendarCol.selectedDayEnd,.calendarPopupDiv .calendarCol.selectedDay',
 	},
 	{
 		name: 'calendarPopupContainerMainCalendarSelectedDayBackgroundColorMiddleDate',
@@ -810,7 +806,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'This background color is used for Calendar popup conatiner selected middle color in date range.',
 		defaultValue: '#f5f5f5',
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol.selectedDays',
+			'.calendarPopupDiv .calendarCol.selectedDays',
 	},
 	{
 		name: 'calendarPopupContainerMainCalendarSelectedDayFontColorStartEndDate',
@@ -820,7 +816,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'This font color is used for Calendar popup conatiner start date and end date.',
 		defaultValue: '<light-font-color>',
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol.selectedDayStart, .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol.selectedDayEnd, .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarCol.selectedDay',
+			'.calendarPopupDiv .calendarCol.selectedDayStart, .calendarPopupDiv .calendarCol.selectedDayEnd, .calendarPopupDiv .calendarCol.selectedDay',
 	},
 	{
 		name: 'calendarPopupContainerMainCalendarSelectedDayBackgroundColorOnHover',
@@ -830,7 +826,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'This background olor is used for Calendar popup conatiner background color for non selected days.',
 		defaultValue: '#f5f5f5',
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarRow td:hover:not(.selectedDays):hover:not(.selectedDayStart):not(.selectedDayEnd):not(.selectedDay):not(.notVisible):not(.notAllowed)',
+			'.calendarPopupDiv .calendarRow td:hover:not(.selectedDays):hover:not(.selectedDayStart):not(.selectedDayEnd):not(.selectedDay):not(.notVisible):not(.notAllowed), .yearSubDiv .calendarCol:hover, .monthSubDiv .calendarCol:hover',
 	},
 	{
 		name: 'calendarPopupContainerTimePickerContentWidth',
@@ -838,7 +834,15 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'calendar popup Container timer picker width',
 		description: 'This width is used for Calendar popup conatiner timer picker width.',
 		defaultValue: '100%',
-		selector: '.calendarDiv .calendarPopOver .buttonAndTimePicker',
+		selector: '.buttonAndTimePicker',
+	},
+	{
+		name: 'calendarPopupContainerTimePickerContentItemsAlign',
+		cssProperty: 'align-items',
+		displayName: 'calendar popup Container timer picker display',
+		description: 'This display is used for Calendar popup conatiner timer picker display style.',
+		defaultValue: 'center',
+		selector: '.buttonAndTimePicker',
 	},
 	{
 		name: 'calendarPopupContainerTimePickerFlexDirection',
@@ -846,7 +850,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'calendar popup Container timer picker flex direction',
 		description:
 			'This flex direction is used for Calendar popup conatiner flex direction for time picker.',
-		selector: '.calendarDiv .calendarPopOver .buttonAndTimePicker',
+		selector: '.buttonAndTimePicker',
 	},
 	{
 		name: 'calendarPopupContainerTimePickerContentJustify',
@@ -855,7 +859,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description:
 			'This justify content is used for Calendar popup conatiner content justify in flex.',
 		defaultValue: 'space-between',
-		selector: '.calendarDiv .calendarPopOver .buttonAndTimePicker',
+		selector: '.buttonAndTimePicker',
 	},
 	{
 		name: 'calendarPopupContainerCursorDisabled',
@@ -865,7 +869,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'This justify content is used for Calendar popup conatiner cursor when disabled.',
 		defaultValue: 'not-allowed',
 		selector:
-			'.calendarDiv.disabled, .calendarDiv input:disabled, .calendarDiv .calendarIcon.disabled, .calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarRow .calendarCol.notAllowed',
+			'.calendarDiv.disabled, .calendarDiv input:disabled, .calendarDiv .calendarIcon.disabled, .calendarCol.notAllowed',
 	},
 	{
 		name: 'calendarPopupContainerTimePickerGap',
@@ -873,49 +877,15 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'calendar popup Container gap in flex',
 		description: 'This justify content is used for Calendar popup conatiner gap in flex.',
 		defaultValue: '20px',
-		selector: '.calendarDiv .calendarPopOver .buttonAndTimePicker',
+		selector: '.buttonAndTimePicker',
 	},
 	{
 		name: 'calendarPopupContainerTimePickerMainContainerPadding',
 		cssProperty: 'padding',
 		displayName: 'calendar popup Container border time picker container padding',
 		description: 'This padding is used for Calendar popup conatiner timer picker padding.',
-		defaultValue: '0px 20px 12px 20px',
-		selector: '.calendarDiv .calendarPopOver .buttonAndTimePicker',
-	},
-	{
-		name: 'calendarPopupContainerTimePickerContentWidthRange',
-		cssProperty: 'width',
-		displayName: 'calendar popup Container time picker content width for range',
-		description:
-			'This width is used for Calendar popup conatiner timer picker width for range date.',
-		defaultValue: '100%',
-		selector: '.calendarDiv .calendarPopOver .buttonAndTimePickerRange',
-	},
-	{
-		name: 'calendarPopupContainerTimePickerFlexDirectionRange',
-		cssProperty: 'flex-direction',
-		displayName: 'calendar popup Container date range flex diretion',
-		description:
-			'This flex direction is used for Calendar popup conatiner date range flex direction.',
-		selector: '.calendarDiv .calendarPopOver .buttonAndTimePickerRange',
-	},
-	{
-		name: 'calendarPopupContainerTimePickerContentJustifyRange',
-		cssProperty: 'justify-content',
-		displayName: 'calendar popup Container time picker justify for range',
-		description: 'This justfiy content is used for Calendar popup conatiner justify content.',
-		defaultValue: 'flex-end',
-		selector: '.calendarDiv .calendarPopOver .buttonAndTimePickerRange',
-	},
-	{
-		name: 'calendarPopupContainerTimePickerMainContainerPaddingRange',
-		cssProperty: 'padding',
-		displayName: 'calendar popup Container main container padding for range',
-		description:
-			'This padding is used for Calendar popup conatiner main padding for date range.',
-		defaultValue: '0px 20px 12px 20px',
-		selector: '.calendarDiv .calendarPopOver .buttonAndTimePickerRange',
+		defaultValue: '0px 10px 12px 10px',
+		selector: '.buttonAndTimePicker',
 	},
 	{
 		name: 'calendarPopupContainerTimePickerPadding',
@@ -923,7 +893,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'calendar popup Container timer picker padding',
 		description: 'This padding is used for Calendar popup conatiner time picker padding.',
 		defaultValue: '0px 0px 0px 0px',
-		selector: '.calendarDiv .calendarPopOver .timePicker, .timePicker',
+		selector: '.timePicker, .timePicker',
 	},
 	{
 		name: 'calendarPopupContainerTimePickerPaddingEach',
@@ -932,7 +902,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description:
 			'This padding is used for Calendar popup conatiner time picker padding for each label.',
 		defaultValue: '8px 8px 8px 8px',
-		selector: '.calendarDiv .calendarPopOver .timePicker .items, .timePicker .items',
+		selector: '.timePicker .items, .timePicker .items',
 	},
 	{
 		name: 'calendarPopupContainerTimePickerPaddingEachHover',
@@ -941,7 +911,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description: 'This background is used for Calendar popup conatiner padding each on hover.',
 		defaultValue: '#f5f5f5',
 		selector:
-			'.calendarDiv .calendarPopOver .timePicker .items:hover, .timePicker .items:hover',
+			'.timePicker .items:hover, .timePicker .items:hover',
 	},
 	{
 		name: 'calendarPopupContainerTimePickerBorderRadius',
@@ -950,7 +920,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description:
 			'This border radius is used for Calendar popup conatiner border radius for time picker.',
 		defaultValue: '10px',
-		selector: '.calendarDiv .calendarPopOver .timePicker, .timePicker',
+		selector: '.timePicker, .timePicker',
 	},
 	{
 		name: 'calendarPopupContainerTimePickerBorderPadding',
@@ -959,7 +929,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description: 'This padding is used for Calendar popup conatiner body padding.',
 		defaultValue: '10px 0px 10px 0px',
 		selector:
-			'.calendarDiv .calendarPopOver .timePicker .timePickerBody, .timePicker .timePickerBody',
+			'.timePicker .timePickerBody, .timePicker .timePickerBody',
 	},
 	{
 		name: 'calendarPopupBottomButton',
@@ -968,7 +938,16 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description:
 			'This display is used for Calendar popup conatiner bottom button display style.',
 		defaultValue: 'flex',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .bottomButtons',
+		selector: '.calendarPopupDiv .bottomButtons',
+	},
+	{
+		name: 'calendarPopupBottomButtonJustifyContent',
+		cssProperty: 'justify-content',
+		displayName: 'calendar popup Container bottom button dislpay justify content',
+		description:
+			'This display is used for Calendar popup conatiner bottom button display justify content style.',
+		defaultValue: 'flex-end',
+		selector: '.calendarPopupDiv .bottomButtons',
 	},
 	{
 		name: 'calendarPopupBottomButtonGap',
@@ -976,7 +955,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'calendar popup Container flex fap for button',
 		description: 'This gap is used for Calendar popup conatiner flex gap for bottom button.',
 		defaultValue: '2px',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .bottomButtons',
+		selector: '.calendarPopupDiv .bottomButtons',
 	},
 	{
 		name: 'calendarPopupBottomButtonAlignItems',
@@ -985,15 +964,15 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description:
 			'This align items is used for Calendar popup conatiner bottombutton align items in flex.',
 		defaultValue: 'center',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .bottomButtons',
+		selector: '.calendarPopupDiv .bottomButtons',
 	},
 	{
 		name: 'calendarPopupBottomButtonPadding',
 		cssProperty: 'padding',
 		displayName: 'calendar popup Container bottom button padding',
 		description: 'This padding is used for Calendar popup conatiner bottom button padding.',
-		defaultValue: '0px 0px 0px 0px',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .bottomButtons',
+		defaultValue: '0px 0px 0px 10px',
+		selector: '.calendarPopupDiv .bottomButtons',
 	},
 	{
 		name: 'calendarPopupBottomButtonFontColorCancel',
@@ -1001,7 +980,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'calendar popup Container bottom buttton cancel font color',
 		description:
 			'This color is used for Calendar popup conatiner bottom button cancel font color.',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .bottomButtons ,buttonCancel',
+		selector: '.calendarPopupDiv .bottomButtons .buttonCancel',
 		defaultValue: '<light-font-color>',
 	},
 	{
@@ -1009,7 +988,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		displayName: 'calendar popup Container bottom button confitm font color',
 		description: 'This color is used for Calendar popup conatiner bottom button font color.',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .bottomButtons .buttonConfirm',
+		selector: '.calendarPopupDiv .bottomButtons .buttonConfirm',
 		defaultValue: '<light-font-color>',
 	},
 	{
@@ -1019,7 +998,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description:
 			'This background color is used for Calendar popup conatiner confirm button background color.',
 		defaultValue: '<main-font-color>',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .bottomButtons .buttonConfirm',
+		selector: '.calendarPopupDiv .bottomButtons .buttonConfirm',
 	},
 	{
 		name: 'calendarPopupBottomButtonFontBackgroundColorCancel',
@@ -1028,7 +1007,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description:
 			'This bacjkground color is used for Calendar popup conatiner bottom button cancel background color.',
 		defaultValue: '#631222',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .bottomButtons .buttonCancel',
+		selector: '.calendarPopupDiv .bottomButtons .buttonCancel',
 	},
 	{
 		name: 'calendarPopupBottomEachButtonPaddingCancel',
@@ -1037,7 +1016,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description:
 			'This padding is used for Calendar popup conatiner bottom button padding for cancel.',
 		defaultValue: '4px 12px 4px 12px',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .bottomButtons .buttonCancel',
+		selector: '.calendarPopupDiv .bottomButtons .buttonCancel',
 	},
 	{
 		name: 'calendarPopupBottomEachButtonPaddingConfirm',
@@ -1046,7 +1025,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description:
 			'This padding is used for Calendar popup conatiner bottom button padding for confirm.',
 		defaultValue: '4px 12px 4px 12px',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .bottomButtons .buttonConfirm',
+		selector: '.calendarPopupDiv .bottomButtons .buttonConfirm',
 	},
 	{
 		name: 'calendarPopupBottomEachButtonHover',
@@ -1056,7 +1035,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'This opacity is used for Calendar popup conatiner on hover opacoty for each button.',
 		defaultValue: '0.8',
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .bottomButtons .buttonConfirm:hover, .calendarDiv .calendarPopOver .calendarPopupDiv .bottomButtons .buttonCancel:hover',
+			'.calendarPopupDiv .bottomButtons .buttonConfirm:hover, .calendarPopupDiv .bottomButtons .buttonCancel:hover',
 	},
 	{
 		name: 'calendarPopupBottomEachButtonBorderRadius',
@@ -1066,7 +1045,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'This border radius is used for Calendar popup conatiner each bottom button border radius.',
 		defaultValue: '4px',
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .bottomButtons .buttonConfirm, .calendarDiv .calendarPopOver .calendarPopupDiv .bottomButtons .buttonCancel',
+			'.calendarPopupDiv .bottomButtons .buttonConfirm, .calendarPopupDiv .bottomButtons .buttonCancel',
 	},
 	{
 		name: 'calendarPopupBottomEachButtonBorderCursor',
@@ -1076,7 +1055,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'This cursor is used for Calendar popup conatiner each bottom button cursor style.',
 		defaultValue: 'pointer',
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .bottomButtons .buttonConfirm, .calendarDiv .calendarPopOver .calendarPopupDiv .bottomButtons .buttonCancel',
+			'.calendarPopupDiv .bottomButtons .buttonConfirm, .calendarDiv .calendarPopOver .calendarPopupDiv .bottomButtons .buttonCancel',
 	},
 	{
 		name: 'calendarPopupBottomEachButtonHoverOnClick',
@@ -1086,7 +1065,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description:
 			'This background color is used for Calendar popup conatiner bottom button background on active for confirm.',
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .bottomButtons .buttonConfirm:active',
+			'.calendarPopupDiv .bottomButtons .buttonConfirm:active',
 	},
 	{
 		name: 'calendarPopupBottomEachButtonHoverOnClick',
@@ -1095,21 +1074,21 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description:
 			'This background color is used for Calendar popup conatiner background color on active for cancel.',
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .bottomButtons .buttonCancel:active',
+			'.calendarPopupDiv .bottomButtons .buttonCancel:active',
 	},
 	{
 		name: 'calendarPopupBottomEachButtonConfirmBorderColor',
 		cssProperty: 'border',
 		displayName: 'calendar popup Container bottom button border color for confirm',
 		description: 'This border is used for Calendar popup conatiner border color for confirm.',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .bottomButtons .buttonConfirm',
+		selector: '.calendarPopupDiv .bottomButtons .buttonConfirm',
 	},
 	{
 		name: 'calendarPopupBottomEachButtonCancelBorderColor',
 		cssProperty: 'border',
 		displayName: 'calendar popup Container bottom button border color for cancel',
 		description: 'This border is used for Calendar popup conatiner border color for cancel.',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .bottomButtons .buttonCancel',
+		selector: '.calendarPopupDiv .bottomButtons .buttonCancel',
 	},
 	{
 		name: 'calendarPopupInputContainerGap',
@@ -1143,7 +1122,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description: 'This gap is used for Calendar popup conatiner wrapper grid gap.',
 		defaultValue: '20px',
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .caldendarMainCardWrapper',
+			'.calendarPopupDiv .caldendarMainCardWrapper',
 	},
 	{
 		name: 'calendarPopupInputContainerCalendarTimePickerItemsAlign',
@@ -1151,7 +1130,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'calendar popup Container Calendar main card time picker items item align',
 		description: 'This text align is used for Calendar popup conatiner time picker item align.',
 		defaultValue: 'center',
-		selector: '.calendarDiv .calendarPopOver .timePicker .items, .timePicker .items',
+		selector: '.timePicker .items, .timePicker .items',
 	},
 	{
 		name: 'calendarPopupInputContainerCalendarYearPickerGridArrangment',
@@ -1161,7 +1140,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'This grid template columns is used for Calendar popup conatiner year picker grid arrangment.',
 		defaultValue: 'repeat(5, 1fr)',
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarRow.yearDropDown',
+			'.calendarPopupDiv .calendarRow.yearDropDown',
 	},
 	{
 		name: 'calendarPopupInputContainerCalendarMonthPickerGridArrangment',
@@ -1171,7 +1150,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'This grid template columns is used for Calendar popup conatiner month picker grid arrangment.',
 		defaultValue: 'repeat(3, 1fr)',
 		selector:
-			'.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarRow.monthDropDown',
+			'.calendarPopupDiv .calendarRow.monthDropDown',
 	},
 	{
 		name: 'calendarPopupInputContainerCalendarYearPickerHeight',
@@ -1181,7 +1160,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description:
 			'This height is used for Calendar popup conatiner month picker and year picker height arrangment.',
 		defaultValue: '205px',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .yearSubDiv',
+		selector: '.calendarPopupDiv .yearSubDiv',
 	},
 	{
 		name: 'calendarPopupInputContainerCalendarMonthPickerHeight',
@@ -1191,7 +1170,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description:
 			'This height is used for Calendar popup conatiner month picker and year picker height arrangment.',
 		defaultValue: '205px',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .monthSubDiv',
+		selector: '.calendarPopupDiv .monthSubDiv',
 	},
 	{
 		name: 'calendarPopupInputContainerCalendarYearPickerDisplay',
@@ -1199,9 +1178,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName:
 			'calendar popup Container Calendar main card year and month picker display arrangment',
 		description:
-			'This height is used for Calendar popup conatiner month picker and year picker display arrangment.',
+			'This display is used for Calendar popup conatiner month picker and year picker display arrangment.',
 		defaultValue: 'grid',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .yearSubDiv',
+		selector: '.calendarPopupDiv .yearSubDiv',
 	},
 	{
 		name: 'calendarPopupInputContainerCalendarMonthPickerDisplay',
@@ -1209,25 +1188,55 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName:
 			'calendar popup Container Calendar main card year and month picker display arrangment',
 		description:
-			'This height is used for Calendar popup conatiner month picker and year picker display arrangment.',
+			'This display is used for Calendar popup conatiner month picker and year picker display arrangment.',
 		defaultValue: 'grid',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .monthSubDiv',
+		selector: '.calendarPopupDiv .monthSubDiv',
 	},
 	{
 		name: 'calendarPopupInputContainerCalendarMainCardDisplay',
 		cssProperty: 'display',
 		displayName: 'calendar popup Container Calendar main card display',
-		description: 'This height is used for Calendar popup conatiner display arrangment.',
+		description: 'This display is used for Calendar popup conatiner display arrangment.',
 		defaultValue: 'grid',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarRow',
+		selector: '.calendarPopupDiv .calendarRow',
 	},
 	{
 		name: 'calendarPopupInputContainerCalendarMainCardGridArrangmet',
 		cssProperty: 'grid-template-columns',
 		displayName: 'calendar popup Container Calendar main card grid arrangment',
-		description: 'This height is used for Calendar popup conatiner grid arrangment.',
+		description: 'This grid template columns is used for Calendar popup conatiner grid arrangment.',
 		defaultValue: 'repeat(7, 1fr)',
-		selector: '.calendarDiv .calendarPopOver .calendarPopupDiv .calendarMainCard .calendarRow',
+		selector: '.calendarPopupDiv .calendarRow',
+	},
+	{
+		name: 'calendarPopupInputContainerCalendarMainCardAlignItems',
+		cssProperty: 'justify-content',
+		displayName: 'calendar popup Container Calendar main card grid arrangment align',
+		description: 'This align is used for Calendar popup conatiner grid arrangment align.',
+		selector: '.calendarPopupDiv .calendarRow',
+	},
+	{
+		name: 'dateAndTimerPickerFlexContentRight',
+		cssProperty: 'justify-content',
+		displayName: 'calendar popup Container Calendar main card grid arrangment align',
+		description: 'This align is used for Calendar popup conatiner grid arrangment align.',
+		defaultValue: 'flex-end',
+		selector: '.buttonAndTimePicker.right',
+	},
+	{
+		name: 'dateAndTimerPickerFlexContentLeft',
+		cssProperty: 'justify-content',
+		displayName: 'calendar popup Container Calendar main card grid arrangment align',
+		description: 'This align is used for Calendar popup conatiner grid arrangment align.',
+		defaultValue: 'flex-start',
+		selector: '.buttonAndTimePicker.left',
+	},
+	{
+		name: 'dateAndTimerPickerCalendarInputBoxCenter',
+		cssProperty: 'text-align',
+		displayName: 'calendar popup Container Calendar main card text align',
+		description: 'This align is used for Calendar popup conatiner text align.',
+		selector: '.calendarDiv .inputContainer .inputbox',
 	},
 ];
 

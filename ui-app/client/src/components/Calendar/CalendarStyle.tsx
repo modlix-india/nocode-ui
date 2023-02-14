@@ -26,36 +26,30 @@ export default function CalendarStyle({ theme }: { theme: Map<string, Map<string
         position: relative;
     }
 
-    ${PREFIX} .calendarDiv .calendarPopOver {
+    ${PREFIX}.calendarPopOver {
         position: absolute;
     }
 
-    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv {
+    ${PREFIX}.calendarPopOver .calendarPopupDiv {
         width: 100%;
-        height: fit-content;
+        height: 100%;
     }
 
-    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv {
-        display: grid;
-        grid-template-rows: auto auto;
-        align-items: baseline;  
-    }
-
-    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv  .calendarHeader {
+    ${PREFIX}.calendarPopOver .calendarPopupDiv  .calendarHeader, .timePicker .container {
         position: relative;
     }
 
-    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv  .calendarHeader .iconLeft {
+    ${PREFIX}.calendarPopOver .calendarPopupDiv  .calendarHeader .iconLeft {
         position: absolute;
         left: 0;
     }
 
-    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv  .calendarHeader .iconRight {
+    ${PREFIX}.calendarPopOver .calendarPopupDiv  .calendarHeader .iconRight {
         position: absolute;
         right: 0;
     }
 
-    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv  .calendarHeader .currentDate,
+    ${PREFIX}.calendarPopOver .calendarPopupDiv  .calendarHeader .currentDate,
     .calendarDiv .calendarPopOver .calendarPopupDiv  .calendarHeader .currentEndDate {
         display: flex;
         justify-content: center;
@@ -63,37 +57,33 @@ export default function CalendarStyle({ theme }: { theme: Map<string, Map<string
         flex-wrap: wrap;
     }
 
-    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv  .calendarRow.yearDropDown, .calendarDiv .calendarPopOver .calendarPopupDiv  .calendarRow.monthDropDown {
+    ${PREFIX}.calendarPopOver .calendarPopupDiv  .calendarRow.yearDropDown,.calendarPopOver .calendarPopupDiv  .calendarRow.monthDropDown {
         display: grid;
         justify-items: center;
         align-items: center;
         text-align: center;
     }
 
-    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv  .yearSubDiv, .calendarDiv .calendarPopOver .calendarPopupDiv  .monthSubDiv {
+    ${PREFIX}.calendarPopOver .calendarPopupDiv  .yearSubDiv,.calendarPopOver .calendarPopupDiv  .monthSubDiv {
         overflow-y: scroll;
     }
 
-    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv  .calendarRow .calendarCol.notVisible, .calendarDiv .calendarPopOver .calendarPopupDiv  .calendarRow .calendarCol.notAllowed {
+    ${PREFIX}.calendarPopOver .calendarPopupDiv  .calendarRow .calendarCol.notVisible,.calendarPopOver .calendarPopupDiv  .calendarRow .calendarCol.notAllowed {
         display: block;
     }
 
-    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .buttonAndTimePicker, .calendarDiv .calendarPopOver .calendarPopupDiv .buttonAndTimePicker .timePicker, .calendarDiv .calendarPopOver .calendarPopupDiv .buttonAndTimePickerRange, .timePicker {
+    ${PREFIX}.calendarPopOver .calendarPopupDiv .buttonAndTimePicker,.calendarPopOver .calendarPopupDiv .buttonAndTimePicker .timePicker {
         display: flex;
     }
 
 
-    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv  .caldendarMainCardWrapper {
+    ${PREFIX}.calendarPopOver .calendarPopupDiv  .caldendarMainCardWrapper {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         justify-content: center;
     }
 
-    ${PREFIX} .timePicker .container {
-        position: relative;
-    }
-
-    ${PREFIX} .calendarDiv .calendarPopOver .calendarPopupDiv .buttonAndTimePicker .timePicker .container .labelContainer, .timePicker .container .labelContainer {
+    ${PREFIX}.calendarPopOver .calendarPopupDiv .buttonAndTimePicker .timePicker .container .labelContainer, .timePicker .container .labelContainer {
         width: 100%;
         height: 100%;
         display: flex;

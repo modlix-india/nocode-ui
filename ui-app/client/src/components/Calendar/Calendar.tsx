@@ -18,6 +18,7 @@ import CalendarStyle from './CalendarStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './calendarProperties';
 import { dateProcessor } from '../util/dateProcessor';
 import UUID from '../util/uuid';
+import Portal from '../Portal';
 
 const daysOfWeek = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 const monthLabels = [
@@ -77,9 +78,11 @@ function Calendar(props: ComponentProps) {
 	const [timeDisplay, setTimeDisplay] = React.useState<
 		'AMPM' | 'HRS' | 'MINS' | '' | 'TOAMPM' | 'TOHRS' | 'TOMINS'
 	>();
-	const [displayMode, setDisplayMode] = useState<'DATE' | 'MONTH' | 'YEAR'>();
+	const [displayMode, setDisplayMode] = useState<'DATE' | 'MONTH' | 'YEAR'>('DATE');
 	const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 	const [errorMessage, setErrorMessage] = useState('');
+	const [coords, setCoords] = useState({ left: 0, top: 0 });
+	const myRef = useRef<any>();
 	const [currentMainDate, setCurrentMainDate] = useState(
 		dateProcessor(new Date())?.add('months', 1),
 	);
@@ -99,11 +102,11 @@ function Calendar(props: ComponentProps) {
 			defaultValue,
 			readOnly,
 			dateFormat,
-			dateOnly,
-			timeOnly,
 			minDate,
 			maxDate,
 			yearAndMonthSelector,
+			startYear,
+			endYear,
 			isDateRange,
 			is24hour,
 			calendarIcon,
@@ -130,6 +133,7 @@ function Calendar(props: ComponentProps) {
 
 	useEffect(() => {
 		if (isNullValue(value)) return;
+		let currDate = selectedDateDetails?.from ? selectedDateDetails?.from : value?.from;
 		let toHrs = value?.to ? new Date(value.to)?.getHours() : 0;
 		let fromHrs = value?.from ? new Date(value.from)?.getHours() : 0;
 		toHrs = !is24hour && toHrs > 12 ? toHrs - 12 : toHrs === 0 && !is24hour ? 12 : toHrs;
@@ -156,24 +160,23 @@ function Calendar(props: ComponentProps) {
 					? 'PM'
 					: 'AM'
 				: '',
-			currentMonth: selectedDateDetails?.currentMonth
+			currentMonth: selectedDateDetails?.currentMonth && !isNaN(selectedDateDetails?.currentMonth!)
 				? selectedDateDetails?.currentMonth
-				: new Date(selectedDateDetails?.from ?? value?.from ?? 0).getMonth(),
-			currentYear: selectedDateDetails?.currentYear
+				: new Date(currDate ?? 0).getMonth(),
+			currentYear: selectedDateDetails?.currentYear && !isNaN(selectedDateDetails?.currentMonth!)
 				? selectedDateDetails?.currentYear
-				: new Date(selectedDateDetails?.from ?? value?.from ?? 0).getFullYear(),
-			nextMonth: selectedDateDetails?.nextMonth
+				: new Date(currDate ?? 0).getFullYear(),
+			nextMonth: selectedDateDetails?.nextMonth && !isNaN(selectedDateDetails?.currentMonth!)
 				? selectedDateDetails?.nextMonth
-				: new Date(selectedDateDetails?.from ?? value?.from ?? 0).getMonth() + 1,
-			nextYear: selectedDateDetails?.nextMonth
+				: new Date(currDate ?? 0).getMonth() + 1,
+			nextYear: selectedDateDetails?.nextMonth && !isNaN(selectedDateDetails?.currentMonth!)
 				? selectedDateDetails?.nextYear
-				: dateProcessor(new Date(selectedDateDetails?.from ?? value?.from ?? 0))
+				: dateProcessor(new Date(currDate ?? 0))
 						.add('months', 1)
 						.getFullYear(),
 		};
 		setSelectedDateDetails(obj);
-	}, [value]);
-
+	}, [value, isCalendarOpen]);
 	useEffect(
 		() =>
 			addListenerAndCallImmediately(
@@ -191,6 +194,12 @@ function Calendar(props: ComponentProps) {
 							  });
 						return;
 					}
+					setvalue({
+						from: value.from,
+						...{
+							...(value.to ? {to: value.to}: undefined),
+						},
+				  });
 				},
 				pageExtractor,
 				bindingPathPath,
@@ -220,14 +229,11 @@ function Calendar(props: ComponentProps) {
 	};
 
 	const handleCloseCalendar = () => {
+		setDisplayMode('DATE');
 		clearTemporarySelections();
 		setIsCalendarOpen(false);
 		handleTimeClose();
 	};
-
-	useEffect(() => {
-		console.log('picard', selectedDateDetails);
-	}, [selectedDateDetails]);
 
 	useEffect(() => {
 		if (isCalendarOpen) {
@@ -235,6 +241,13 @@ function Calendar(props: ComponentProps) {
 		}
 		return () => document.removeEventListener('click', handleCloseCalendar);
 	}, [isCalendarOpen]);
+
+	useEffect(() => {
+		if(timeDisplay) {
+			document.getElementById('calendarPopOver')?.addEventListener('click', handleTimeClose);
+		}
+		return () => document.getElementById('calendarPopOver')?.removeEventListener('click', handleTimeClose);
+	},[timeDisplay])
 
 	const handleTimeChange = (
 		time: string,
@@ -257,14 +270,33 @@ function Calendar(props: ComponentProps) {
 
 		const obj = { ...selectedDateDetails, ...x };
 		setSelectedDateDetails(obj);
+		handleTimeClose();
 	};
 
-	const handleDateChange = (day: string) => {
+	const handleYearSelect = (year: number) => {
+		const { from } = selectedDateDetails!;
+		setSelectedDateDetails({
+			...selectedDateDetails,
+			from: dateProcessor(new Date(from ?? '').setFullYear(year)).format(dateFormat),
+		});
+		setDisplayMode('DATE');
+	};
+	const handleMonthSelect = (month: number) => {
+		const { from } = selectedDateDetails!;
+		setSelectedDateDetails({
+			...selectedDateDetails,
+			from: dateProcessor(new Date(from ?? '').setMonth(month)).format(dateFormat),
+		});
+		setDisplayMode('DATE');
+	};
+
+	const handleDateChange = (day: Date) => {
 		//clearing if date range is already selected
 		if (isDateRange && selectedDateDetails?.from && selectedDateDetails?.to) {
 			setSelectedDateDetails({ ...selectedDateDetails, from: '', to: '' });
 		}
 		// Adding as startdate or enddate if startdate already exists
+		else 
 		selectedDateDetails?.from
 			? isDateRange
 				? //if date range and from already exists add as to
@@ -317,30 +349,17 @@ function Calendar(props: ComponentProps) {
 		handleCloseCalendar();
 	};
 
-	const handleYearSelect = (year: number) => {
-		const { from } = selectedDateDetails!;
-		setSelectedDateDetails({
-			...selectedDateDetails,
-			from: dateProcessor(new Date(from ?? '').setFullYear(year)).format(dateFormat),
-		});
-		setDisplayMode('DATE');
-	};
-	const handleMonthSelect = (month: number) => {
-		const { from } = selectedDateDetails!;
-		setSelectedDateDetails({
-			...selectedDateDetails,
-			from: dateProcessor(new Date(from ?? '').setMonth(month)).format(dateFormat),
-		});
-		setDisplayMode('DATE');
-	};
+	const getFormattedDate = (date: Date) => {
+		return new Date(date?.getFullYear(), date?.getMonth(), date?.getDate());
+	}
 
 	const bottomButton = () => {
 		return (
-			<div className="bottomButtons">
-				<button className="buttonCancel" onClick={handleCloseCalendar}>
+			<div className="bottomButtons" style={computedStyles?.bottomButton ?? {}}>
+				<button className="buttonCancel" onClick={handleCloseCalendar} style={computedStyles?.bottomButtonCancel ?? {}}>
 					CANCEL
 				</button>
-				<button className="buttonConfirm" onClick={handleConfirm}>
+				<button className="buttonConfirm" onClick={handleConfirm} style={computedStyles?.bottomButtonConfirm ?? {}}>
 					OK
 				</button>
 			</div>
@@ -363,23 +382,25 @@ function Calendar(props: ComponentProps) {
 				.filter(e => (is24hour ? e !== 'AMPM' && e !== 'TOAMPM' : e))
 				.map((e: string) => (
 					<div
+						style={computedStyles?.timeContainer ?? {}}
 						className={`container ${timeDisplay === e && !readOnly ? 'focussed' : ''} ${
 							readOnly ? 'disabled' : ''
 						}`}
 						key={e}
 					>
 						<div className="labelContainer" onClick={() => setTimeDisplay(getLabel(e))}>
-							<label className="label">
+							<label className="label" style={computedStyles?.timeLabel ?? {}}>
 								{isTo
 									? selectedDateDetails[toTimeMap[e] as keyof DateDetails]
 									: selectedDateDetails[fromTimeMap[e] as keyof DateDetails]}
 							</label>
-							<i className="fa-solid fa-angle-down" />
+							<i className="fa-solid fa-angle-down" style={computedStyles?.timeLabel ?? {}}/>
 						</div>
 						{timeDisplay === e ? (
 							<div
 								className="dropdowncontainer"
 								onMouseLeave={closeOnMouseLeave ? () => handleTimeClose : undefined}
+								style={computedStyles?.dropdown ?? {}}
 							>
 								{(e === 'HRS' || e === 'TOHRS'
 									? is24hour
@@ -391,6 +412,7 @@ function Calendar(props: ComponentProps) {
 								).map(time => (
 									<div
 										key={time}
+										style={computedStyles?.timeItems ?? {}}
 										className="dropdownItem"
 										onClick={() => handleTimeChange(time, e, isTo)}
 									>
@@ -420,8 +442,8 @@ function Calendar(props: ComponentProps) {
 		const dateObjs = {
 			from: new Date(from!),
 			to: new Date(to!),
-			maxDate: new Date(maxDate),
-			minDate: new Date(minDate),
+			maxDate: new Date(maxDate!),
+			minDate: new Date(minDate!),
 		};
 		const fromString = `${dateObjs.from.getDate()}-${dateObjs.from.getMonth()}-${dateObjs.from.getFullYear()}`;
 		const toString = `${dateObjs.to.getDate()}-${dateObjs.to.getMonth()}-${dateObjs.to.getFullYear()}`;
@@ -452,11 +474,11 @@ function Calendar(props: ComponentProps) {
 				}
 			}
 
-			if (dateObjs.from < loopDay && loopDay < dateObjs.to) {
+			if (getFormattedDate(dateObjs.from) < loopDay && loopDay < getFormattedDate(dateObjs.to)) {
 				obj.isInBetween = true;
 			}
 
-			if (loopDay > new Date(minDate) && loopDay < new Date(maxDate)) {
+			if (loopDay > getFormattedDate(dateObjs?.minDate) || loopDay < getFormattedDate(dateObjs?.maxDate)) {
 				obj.isOutOfRange = true;
 			}
 
@@ -481,6 +503,56 @@ function Calendar(props: ComponentProps) {
 		setSelectedDateDetails(obj);
 	};
 
+	const getYears = () => {
+		const yearsRange = Array.from(
+			{ length: Math.ceil((endYear - startYear + 1) / 5) },
+			(_, i) => {
+				const innerArrayStart: number = startYear + i * 5;
+				const innerArrayEnd = Math.min(innerArrayStart + 4, endYear);
+				return Array.from(
+					{ length: innerArrayEnd - innerArrayStart + 1 },
+					(_, j) => innerArrayStart + j,
+				);
+			},
+		);
+
+		return (
+			<tbody className="yearSubDiv">
+				{yearsRange?.map(years => (
+					<tr className="calendarRow yearDropDown" key={`${UUID()}}`}>
+						{years.map(year => (
+							<td className="calendarCol" key={`${UUID()}-${year}`} onClick={() => handleYearSelect(year)}>
+								{year}
+							</td>
+						))}
+					</tr>
+				))}
+			</tbody>
+		)
+	};
+
+	const getMonths = () => {
+		const monthsRange = Array.from(
+			{
+				length: 4,
+			},
+			(_, i) => monthLabels.slice(i * 3, (i + 1) * 3),
+		);
+
+		return (
+			<tbody className="monthSubDiv">
+				{monthsRange?.map(months => (
+					<tr className="calendarRow monthDropDown" key={`${UUID()}}`}>
+						{months.map((month, index) => (
+							<td className="calendarCol" key={`${UUID()}-${month}`} onClick={() => handleMonthSelect(index)}>
+								{month}
+							</td>
+						))}
+					</tr>
+				))}
+			</tbody>);
+	};
+
 	const handleNextClick = () => {
 		const { currentMonth, currentYear, nextMonth, nextYear } = selectedDateDetails!;
 		const obj = {
@@ -494,12 +566,12 @@ function Calendar(props: ComponentProps) {
 	};
 
 	const generateMonth = (month: number, year: number, isFirstMonth: boolean) => {
-		const prev = <span onClick={handlePrevClick} className="fa fa-arrow-left iconLeft"></span>;
+		const prev = <span onClick={handlePrevClick} style={computedStyles?.calendarHeaderText ?? {}} className="fa fa-arrow-left iconLeft"></span>;
 		const next = (
-			<span onClick={handleNextClick} className="fa fa-arrow-right iconRight"></span>
+			<span onClick={handleNextClick} style={computedStyles?.calendarHeaderText ?? {}} className="fa fa-arrow-right iconRight"></span>
 		);
 		const header = (
-			<div className="calendarHeader">
+			<div className="calendarHeader" style={computedStyles?.calendarHeader ?? {}}>
 				{!isDateRange ? (
 					<>
 						{prev} {next}
@@ -511,9 +583,10 @@ function Calendar(props: ComponentProps) {
 				)}
 				<div className="currentDate">
 					<span
+					style={computedStyles?.currentDate ?? {}}
 						className="currentDateText"
 						onClick={
-							!isDateRange
+							!isDateRange && yearAndMonthSelector
 								? () => setDisplayMode(displayMode === 'DATE' ? 'MONTH' : 'DATE')
 								: undefined
 						}
@@ -521,9 +594,10 @@ function Calendar(props: ComponentProps) {
 						{monthLabels[month]}
 					</span>
 					<span
+					style={computedStyles?.currentDate ?? {}}
 						className="currentDateText"
 						onClick={
-							!isDateRange
+							!isDateRange && yearAndMonthSelector
 								? () => setDisplayMode(displayMode === 'YEAR' ? 'DATE' : 'YEAR')
 								: undefined
 						}
@@ -537,42 +611,56 @@ function Calendar(props: ComponentProps) {
 		const datesByWeeks = (
 			<div>
 				{header}
-				<table className="calendarMainData">
-					<thead>
-						<tr className="calendarRow">
-							{daysOfWeek.map(e => (
-								<th className="calendarCol" key={e}>
-									{e}
-								</th>
-							))}
-						</tr>
-					</thead>
-					<tbody>
-						{generateWeeks(month, year).map(weeks => (
-							<tr className="calendarRow" key={`${UUID()}-${month}-${year}`}>
-								{weeks.map(date => (
-									<td
-										className={`calendarCol ${
-											date?.isSelected
-												? isDateRange
-													? date?.isFrom
-														? 'selectedDayStart'
-														: 'selectedDayEnd'
-													: 'selectedDay'
-												: ''
-										} ${date?.isInBetween ? 'selectedDays' : ''} ${
-											date?.isOutOfRange ? 'notAllowed' : ''
-										} ${!date?.date ? 'notVisible' : ''}`}
-										key={`${date?.date?.getDate() ?? UUID()}-${month}-${year}`}
-									>
-										{date?.date?.getDate()}
-									</td>
+				<table className="calendarMainData" style={computedStyles?.calendarTable ?? {}}>
+					{displayMode === 'DATE' ? (
+						<thead>
+							<tr className="calendarRow">
+								{daysOfWeek?.map(e => (
+									<th style={computedStyles?.dateHeader ?? {}} className="calendarCol" key={e}>
+										{e}
+									</th>
 								))}
 							</tr>
-						))}
-					</tbody>
+						</thead>
+					) : null}
+					{displayMode === 'DATE' ?
+						<tbody>
+							{generateWeeks(month, year)?.map(weeks => (
+										<tr className="calendarRow" key={`${UUID()}-${month}-${year}`}>
+											{weeks.map(date => (
+												<td
+												style={computedStyles?.dateHeader ?? {}}
+												onClick={() => !date?.date || date?.isOutOfRange ? null : handleDateChange(date?.date)}
+													className={`calendarCol ${
+														date?.isSelected
+															? isDateRange
+																? date?.isFrom
+																	? 'selectedDayStart'
+																	: 'selectedDayEnd'
+																: 'selectedDay'
+															: ''
+													} ${date?.isInBetween ? 'selectedDays' : ''} ${
+														date?.isOutOfRange ? 'notAllowed' : ''
+													} ${!date?.date ? 'notVisible' : ''}`}
+													key={`${
+														date?.date?.getDate() ?? UUID()
+													}-${month}-${year}`}
+												>
+													{date?.date?.getDate()}
+												</td>
+											))}
+										</tr>
+								))
+								}
+						</tbody>
+					: displayMode === 'MONTH'
+					? getMonths()
+					: getYears()}
 				</table>
-				{getTimeSelectors(!isFirstMonth)}
+				<div className={`buttonAndTimePicker ${!isFirstMonth ? 'right' : 'left'}`} style={computedStyles?.bottomButtonAndTime ?? {}}>
+					{getTimeSelectors(!isFirstMonth)}
+					{isDateRange ? null : bottomButton()}
+				</div>
 			</div>
 		);
 
@@ -581,28 +669,39 @@ function Calendar(props: ComponentProps) {
 
 	const renderCalendar = () => {
 		const { currentMonth, currentYear, nextMonth, nextYear } = selectedDateDetails || {};
-		const startYear = 1970;
-		const endYear = 2099;
-		const yearsRange = Array.from(
-			{ length: Math.ceil((endYear - startYear + 1) / 5) },
-			(_, i) => {
-				const innerArrayStart = startYear + i * 5;
-				const innerArrayEnd = Math.min(innerArrayStart + 4, endYear);
-				return Array.from(
-					{ length: innerArrayEnd - innerArrayStart + 1 },
-					(_, j) => innerArrayStart + j,
-				);
-			},
-		);
 
 		return (
-			<div className={`calendarPopupDiv ${isDateRange ? 'range' : ''}`}>
+			<div className="calendarPopupDiv" style={computedStyles?.calendarPopupDiv ?? {}}>
 				<div className={isDateRange ? 'caldendarMainCardWrapper' : ''}>
 					{generateMonth(currentMonth!, currentYear!, true)}
 					{isDateRange ? generateMonth(nextMonth!, nextYear!, false) : null}
 				</div>
+				{isDateRange ? bottomButton() : null}
 			</div>
 		);
+	};
+
+	const getInputContainer = (value: any, name: any) => (
+		<input
+			className={`inputbox`}
+			style={computedStyles?.inputBox ?? {}}
+			value={value}
+			onChange={() => {}}
+			placeholder={dateFormat}
+			name={`${key}_${name}`}
+			id={`${key}_${name}`}
+			disabled={readOnly}
+		/>
+	);
+
+	const handleCalendarOpen = () => {
+		const coords = (myRef.current as HTMLElement)?.getBoundingClientRect();
+		let obj = {
+			left: coords?.x ?? 0,
+			top: (coords?.y ?? 0) + (coords?.height ?? 0),
+		};
+		setCoords(obj);
+		setIsCalendarOpen(true);
 	};
 
 	return (
@@ -610,9 +709,50 @@ function Calendar(props: ComponentProps) {
 			className="comp compCalendar"
 			style={computedStyles?.comp ?? {}}
 			onClick={handleBubbling}
+			ref={myRef}
 		>
 			<HelperComponent definition={definition} />
-			{renderCalendar()}
+				<div
+				style={computedStyles?.inputBoxContainer ?? {}}
+				ref={myRef}
+					className={`calendarDiv ${errorMessage ? 'error' : ''} ${
+						isCalendarOpen && (value?.from?.length || value?.from?.length)
+							? 'focussed'
+							: ``
+					} ${readOnly && !errorMessage ? 'disabled' : ''}`}
+				>
+					<div className="inputContainer" onFocus={handleCalendarOpen}>
+						{getInputContainer(value?.from ?? '', 'start')}
+						{isDateRange ? (
+							<Fragment>
+								<i className={`dateSplitIcon ${calendarDateRangeIcon}`} style={computedStyles?.splitIcon ?? {}}/>
+								{getInputContainer(value?.to ?? '', 'end')}
+							</Fragment>
+						) : null}
+					</div>
+					<i
+						className={`calendarIcon ${
+							readOnly && !errorMessage ? 'disabled' : ''
+						} ${calendarIcon}`}
+						style={computedStyles?.rightIcon ?? {}}
+					/>
+					{isCalendarOpen ? (
+						<Portal>
+							<div
+								onClick={handleBubbling}
+								style={{
+									left: `${coords.left}px`,
+									top: `${coords.top}px`,
+									...(computedStyles?.calendarPopOver ?? {})
+								}}
+								className={`comp compCalendar calendarPopOver ${isDateRange ? 'range' : ''}`}
+								id="calendarPopOver"
+							>
+								{renderCalendar()}
+							</div>
+						</Portal>
+					) : null}
+				</div>
 		</div>
 	);
 }
