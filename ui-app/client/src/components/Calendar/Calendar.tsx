@@ -1,15 +1,12 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react';
 import {
-	addListener,
 	addListenerAndCallImmediately,
-	getDataFromLocation,
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
 import { HelperComponent } from '../HelperComponent';
 import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
-import { getTranslations } from '../util/getTranslations';
 import { Component } from '../../types/common';
 import useDefinition from '../util/useDefinition';
 import { isNullValue } from '@fincity/kirun-js';
@@ -34,12 +31,6 @@ const monthLabels = [
 	'October',
 	'November',
 	'December',
-];
-const monthRange = [
-	['January', 'February', 'March'],
-	['April', 'May', 'June'],
-	['July', 'August', 'September'],
-	['October', 'November', 'December'],
 ];
 
 const toTimeMap: { [key: string]: string } = {
@@ -83,9 +74,6 @@ function Calendar(props: ComponentProps) {
 	const [errorMessage, setErrorMessage] = useState('');
 	const [coords, setCoords] = useState({ left: 0, top: 0 });
 	const myRef = useRef<any>();
-	const [currentMainDate, setCurrentMainDate] = useState(
-		dateProcessor(new Date())?.add('months', 1),
-	);
 
 	const {
 		definition: { bindingPath },
