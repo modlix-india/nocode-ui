@@ -17,6 +17,7 @@ import Tabs from './Tabs/Tabs';
 import Icon from './Icon/Icon';
 import Text from './Text/Text';
 import TextList from './TextList/TextList';
+import ProgressBar from './ProgressBar/ProgressBar';
 
 export const Components = new Map<string, React.ElementType>([
 	[Button.name, Button.component],
@@ -38,6 +39,7 @@ export const Components = new Map<string, React.ElementType>([
 	[Icon.name, Icon.component],
 	[Text.name, Text.component],
 	[TextList.name, TextList.component],
+	[ProgressBar.name, ProgressBar.component],
 ]);
 
 export const ComponentDefinitions = [
@@ -60,4 +62,5 @@ export const ComponentDefinitions = [
 	Text,
 	TextList,
 	Page,
+	ProgressBar,
 ];
