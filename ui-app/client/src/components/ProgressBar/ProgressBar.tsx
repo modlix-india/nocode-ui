@@ -68,7 +68,7 @@ function ProgressBar(props: ComponentProps) {
 		<div className="comp compProgressBar" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={props.definition} />
 			{label ? (
-				<label className="progressBarLabel">
+				<label className="progressBarLabel" style={resolvedStyles.progressBarLabel ?? {}}>
 					{getTranslations(label, props.pageDefinition.translations)}
 				</label>
 			) : null}
