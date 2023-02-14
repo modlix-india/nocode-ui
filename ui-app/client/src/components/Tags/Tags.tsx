@@ -65,21 +65,22 @@ function Tags(props: ComponentProps) {
 			bindingPathPath,
 		);
 	}, []);
+	const showInputBox = hasInputBox && datatype == 'LIST_OF_STRINGS';
 	const renderData = React.useMemo(
 		() =>
 			getRenderData(
 				value,
-				hasInputBox ? 'LIST_OF_STRINGS' : datatype,
-				hasInputBox ? 'OBJECT' : uniqueKeyType,
+				datatype,
+				uniqueKeyType,
 				uniqueKey,
 				'OBJECT',
 				'',
 				labelKeyType,
-				hasInputBox ? 'OBJECT' : labelKey,
+				labelKey,
 			),
 		[value, datatype, uniqueKeyType, uniqueKey, labelKeyType, labelKey],
 	);
-
+	console.log(renderData, 'renderDATA');
 	const resolvedStyles = processComponentStylePseudoClasses(
 		{ hover: false, disabled: !!readOnly },
 		stylePropertiesWithPseudoStates,
@@ -110,7 +111,7 @@ function Tags(props: ComponentProps) {
 	const onCloseEvent = closeEvent ? props.pageDefinition.eventFunctions[closeEvent] : undefined;
 
 	const handleClose = (originalKey: string | number) => {
-		if ((datatype.startsWith('LIST') && Array.isArray(value)) || hasInputBox) {
+		if ((datatype.startsWith('LIST') && Array.isArray(value)) || showInputBox) {
 			const data = value.slice();
 			data.splice(originalKey as number, 1);
 			setData(bindingPathPath, data, context.pageName);
@@ -134,73 +135,83 @@ function Tags(props: ComponentProps) {
 	return (
 		<div className="comp compTags">
 			<HelperComponent definition={props.definition} />
-			{hasInputBox ? (
-				<input
-					type="text"
-					value={inputData}
-					onKeyUp={handleKeyUp}
-					onChange={e => setInputData(e.target.value)}
-				/>
-			) : null}
-			<div className="tagContainer" style={resolvedStyles.tagContainer ?? {}}>
-				{renderData?.map(e => (
-					<div
-						onMouseEnter={
-							stylePropertiesWithPseudoStates?.hover
-								? () => setHover(e?.key)
-								: undefined
-						}
-						onMouseLeave={
-							stylePropertiesWithPseudoStates?.hover ? () => setHover('') : undefined
-						}
-						className="container"
-						style={
-							(hover === e?.key ? resolvedStylesWithPseudo : resolvedStyles)
-								.container ?? {}
-						}
-						key={e?.key}
-					>
-						{icon && (
-							<i
-								className={`${icon} iconCss`}
-								style={
-									{
-										...((hover === e?.key
-											? resolvedStylesWithPseudo
-											: resolvedStyles
-										).tagIcon ?? {}),
-										...((hover === e?.key
-											? resolvedStylesWithPseudo
-											: resolvedStyles
-										).icon ?? {}),
-									} ?? {}
-								}
-							></i>
-						)}
+			<div className={hasInputBox ? 'containerWithInput' : ''}>
+				{hasInputBox ? (
+					<input
+						className="input"
+						type="text"
+						value={inputData}
+						onKeyUp={handleKeyUp}
+						onChange={e => setInputData(e.target.value)}
+					/>
+				) : null}
+				<div
+					className={hasInputBox ? 'tagcontainerWithInput' : 'tagContainer'}
+					style={resolvedStyles.tagContainer ?? {}}
+				>
+					{renderData?.map(e => (
 						<div
+							onMouseEnter={
+								stylePropertiesWithPseudoStates?.hover
+									? () => setHover(e?.key)
+									: undefined
+							}
+							onMouseLeave={
+								stylePropertiesWithPseudoStates?.hover
+									? () => setHover('')
+									: undefined
+							}
+							className="container"
 							style={
 								(hover === e?.key ? resolvedStylesWithPseudo : resolvedStyles)
-									.tagText ?? {}
+									.container ?? {}
 							}
-							className="text"
+							key={e?.key}
 						>
-							{e?.label}
-						</div>
-						{closeButton ? (
-							<i
-								tabIndex={0}
+							{icon && (
+								<i
+									className={`${icon} iconCss`}
+									style={
+										{
+											...((hover === e?.key
+												? resolvedStylesWithPseudo
+												: resolvedStyles
+											).tagIcon ?? {}),
+											...((hover === e?.key
+												? resolvedStylesWithPseudo
+												: resolvedStyles
+											).icon ?? {}),
+										} ?? {}
+									}
+								></i>
+							)}
+							<div
 								style={
 									(hover === e?.key ? resolvedStylesWithPseudo : resolvedStyles)
-										.tagCloseIcon ?? {}
+										.tagText ?? {}
 								}
-								className="fa fa-solid fa-xmark closeButton"
-								onClick={() => handleClose(e?.originalObjectKey!)}
-							></i>
-						) : (
-							''
-						)}
-					</div>
-				))}
+								className="text"
+							>
+								{e?.label}
+							</div>
+							{closeButton ? (
+								<i
+									tabIndex={0}
+									style={
+										(hover === e?.key
+											? resolvedStylesWithPseudo
+											: resolvedStyles
+										).tagCloseIcon ?? {}
+									}
+									className="fa fa-solid fa-xmark closeButton"
+									onClick={() => handleClose(e?.originalObjectKey!)}
+								></i>
+							) : (
+								''
+							)}
+						</div>
+					))}
+				</div>
 			</div>
 		</div>
 	);

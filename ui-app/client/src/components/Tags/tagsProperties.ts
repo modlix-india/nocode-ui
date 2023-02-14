@@ -103,6 +103,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				displayName: 'Object',
 				description: "Select object as unique key's value",
 			},
+			{
+				name: 'RANDOM',
+				displayName: 'Random',
+				description: 'A Random key is associated with value which is costly in rendering',
+			},
 		],
 	},
 
@@ -111,7 +116,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
 		displayName: 'hasInputBox',
 		description: 'has InputBox.',
-
 		defaultValue: true,
 	},
 	{
@@ -119,7 +123,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: 'Value Type',
 		description: 'Type of the Value',
-		defaultValue: ',',
+		defaultValue: ' ',
 		editor: ComponentPropertyEditor.ENUM,
 		enumValues: [
 			{ name: ',', displayName: 'Comma', description: 'Comma' },
@@ -228,6 +232,16 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		[COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.font,
 			target: ['icon'],
+		},
+	},
+	tagcontainerWithInput: {
+		[COMPONENT_STYLE_GROUP_PROPERTIES.flex.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.flex,
+			name: 'inputContainer',
+			description: 'tag input container',
+			displayName: 'tag input container',
+			prefix: 'tagcontainerWithInput',
+			target: ['tagcontainerWithInput'],
 		},
 	},
 	tagIcon: {
