@@ -10,7 +10,7 @@ import {
 	ComponentPropertyGroup,
 	ComponentPropertyDefinition,
 } from '../../types/common';
-import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
+import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
@@ -22,10 +22,10 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'showProgressValue',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
 		displayName: 'Show Progress Bar value ',
 		description: `Show Progress Bar value.`,
-		translatable: true,
+		defaultValue: true,
 	},
 	{
 		name: 'progressNotStartedLabel',
@@ -53,22 +53,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
 		displayName: 'Append Progress Label',
 		description: `Append Progress Label.`,
-		translatable: true,
+		defaultValue: true,
 	},
 	{
 		name: 'prependProgressValue',
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
 		displayName: 'Prepend Progress Label',
 		description: `Prepend Progress Label.`,
-		translatable: true,
+		defaultValue: false,
 	},
-	{
-		name: 'visibility',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
-		displayName: 'Visibility',
-		description: 'This component will be hidden when this property is true.',
-		group: ComponentPropertyGroup.COMMON,
-	},
+	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
 const stylePropertiesDefinition = {
