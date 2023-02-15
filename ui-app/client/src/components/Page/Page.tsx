@@ -9,18 +9,20 @@ import {
 	RenderContext,
 } from '../../types/common';
 import Children from '../Children';
-import { isNullValue } from '@fincity/kirun-js';
+import { deepEqual, isNullValue } from '@fincity/kirun-js';
 import { runEvent } from '../util/runEvent';
-import { GLOBAL_CONTEXT_NAME } from '../../constants';
+import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../../constants';
 import {
-	addListener,
 	addListenerWithChildrenActivity,
 	PageStoreExtractor,
+	setData,
 } from '../../context/StoreContext';
 import PageStyle from './PageStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './pageProperties';
 import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+
+const pageHistory: any = {};
 
 function Page({
 	definition,
@@ -44,21 +46,63 @@ function Page({
 		pageExtractor,
 	);
 
-	useEffect(() => {
-		const { eventFunctions, properties: { onLoadEvent = undefined } = {} } = definition;
+	const [urlDetails, setUrlDetails] = useState();
 
-		if (pageName === GLOBAL_CONTEXT_NAME) return;
+	useEffect(
+		() =>
+			addListenerWithChildrenActivity(
+				(_, value) => {
+					if (pageName === GLOBAL_CONTEXT_NAME) return;
 
-		if (isNullValue(onLoadEvent) || isNullValue(eventFunctions[onLoadEvent])) return;
-		(async () =>
-			await runEvent(
-				eventFunctions[onLoadEvent],
-				'pageOnLoad',
-				pageName,
-				locationHistory,
-				definition,
-			))();
-	}, [pageName]);
+					const {
+						eventFunctions = {},
+						name,
+						properties: { onLoadEvent = undefined, loadStrategy = 'default' },
+					} = definition;
+					const v = { ...value, origName: name };
+
+					let firstTime = true;
+					let sameAsExisting = false;
+					if (v.pageName === pageName) {
+						if (pageHistory[pageName]) {
+							firstTime = false;
+							if (deepEqual(v, pageHistory[pageName])) {
+								sameAsExisting = true;
+							}
+						}
+					}
+
+					pageHistory[pageName] = v;
+					setUrlDetails(v);
+					let makeCall = true;
+					if (!firstTime) {
+						makeCall = false;
+						if (loadStrategy !== 'default' || !sameAsExisting) {
+							setData(`${STORE_PREFIX}.pageData.${pageName}`, {});
+							makeCall = true;
+						}
+					}
+
+					if (
+						makeCall &&
+						!isNullValue(onLoadEvent) &&
+						!isNullValue(eventFunctions[onLoadEvent])
+					) {
+						(async () =>
+							await runEvent(
+								eventFunctions[onLoadEvent],
+								'pageOnLoad',
+								pageName,
+								locationHistory,
+								definition,
+							))();
+					}
+				},
+				pageExtractor,
+				'Store.urlDetails',
+			),
+		[],
+	);
 
 	useEffect(
 		() =>
@@ -98,7 +142,7 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleComponent: PageStyle,
 	hasChildren: true,
-	noOfChildren: 1,
+	numberOfChildren: 1,
 };
 
 export default component;
