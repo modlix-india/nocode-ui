@@ -60,7 +60,6 @@ function Tags(props: ComponentProps) {
 		return addListenerAndCallImmediately(
 			(_, value) => {
 				setvalue(value);
-				console.log(value);
 			},
 			pageExtractor,
 			bindingPathPath,
