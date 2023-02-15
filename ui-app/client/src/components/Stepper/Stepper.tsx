@@ -59,10 +59,7 @@ function Stepper(props: ComponentProps) {
 		[bindingPath],
 	);
 	const goToStep = (stepNumber: number) => {
-		if (stepNumber < value && moveToAnyPreviousStep)
-			setData(bindingPathPath, stepNumber, context.pageName);
-		else if (stepNumber > value && moveToAnyFutureStep)
-			setData(bindingPathPath, stepNumber, context.pageName);
+		setData(bindingPathPath, stepNumber, context.pageName);
 	};
 	const checkIcon = 'fa-solid fa-check';
 	const effectiveTitles = titles
@@ -101,41 +98,71 @@ function Stepper(props: ComponentProps) {
 		}
 		return count;
 	};
+
+	const getPositionStyle = () => {
+		let textStyle;
+		switch (textPosition) {
+			case 'RIGHT':
+				textStyle = 'textRight';
+				break;
+			case 'LEFT':
+				textStyle = 'textLeft';
+				break;
+			case 'TOP':
+				textStyle = 'textTop';
+				break;
+			case 'BOTTOM':
+				textStyle = '';
+				break;
+			default:
+		}
+		return textStyle;
+	};
+
+	console.log(textPosition);
 	return (
 		<div className="comp compStepper">
 			<HelperComponent definition={definition} />
-			<ul className={`stepper ${isStepperVertical ? 'vertical' : 'horizontal'}`}>
+			<ul className={`${isStepperVertical ? 'vertical' : 'horizontal'} `}>
 				{effectiveTitles.map((e: string, i: number) => (
 					<li
-						onClick={() => goToStep(i)}
-						className={`stepperItem ${
+						onClick={
+							(i < value && moveToAnyPreviousStep) ||
+							(i > value && moveToAnyFutureStep)
+								? () => goToStep(i)
+								: undefined
+						}
+						className={`itemlist ${
 							i < value && moveToAnyPreviousStep ? 'previousStep' : ''
 						} ${i > value && moveToAnyFutureStep ? 'futureStep' : ''}`}
 						key={i}
 					>
-						{icons ? (
-							<i
-								className={`${
-									i < value && showCheckOnComplete ? checkIcon : iconList[i]
-								} countingStep ${i <= value ? 'done' : ''}`}
-							></i>
-						) : (
-							<Fragment>
-								{i < value && showCheckOnComplete ? (
-									<i
-										className={`${checkIcon} countingStep ${
-											i <= value ? 'done' : ''
-										}`}
-									></i>
-								) : (
-									<span className={`countingStep ${i <= value ? 'done' : ''}`}>
-										{getCount(i + 1)}
-									</span>
-								)}
-							</Fragment>
-						)}
-						<span className="title">{e}</span>
-						{i < effectiveTitles.length - 1 && <div className="line" />}
+						<div className="itemContainer">
+							{icons ? (
+								<i
+									className={`${
+										i < value && showCheckOnComplete ? checkIcon : iconList[i]
+									} countingStep ${i <= value ? 'done' : ''}`}
+								></i>
+							) : (
+								<Fragment>
+									{i < value && showCheckOnComplete ? (
+										<i
+											className={`${checkIcon} countingStep ${
+												i <= value ? 'done' : ''
+											}`}
+										></i>
+									) : (
+										<span
+											className={`countingStep ${i <= value ? 'done' : ''}`}
+										>
+											{getCount(i + 1)}
+										</span>
+									)}
+								</Fragment>
+							)}
+							<span className="title">{getTranslations(e, translations)}</span>
+						</div>
 					</li>
 				))}
 			</ul>
