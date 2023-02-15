@@ -20,6 +20,7 @@ import Table from './Table/Table';
 import TableGrid from './TableGrid/TableGrid';
 import TableEmptyGrid from './TableEmptyGrid/TableEmptyGrid';
 import TablePreviewGrid from './TablePreviewGrid/TablePreviewGrid';
+import TextEditor from './TextEditor/TextEditor';
 
 export const Components = new Map<string, React.ElementType>([
 	[Button.name, Button.component],
@@ -44,6 +45,7 @@ export const Components = new Map<string, React.ElementType>([
 	[TableGrid.name, TableGrid.component],
 	[TableEmptyGrid.name, TableEmptyGrid.component],
 	[TablePreviewGrid.name, TablePreviewGrid.component],
+	[TextEditor.name, TextEditor.component],
 ]);
 
 export const ComponentDefinitions = [
@@ -69,4 +71,5 @@ export const ComponentDefinitions = [
 	TableEmptyGrid,
 	TableGrid,
 	TablePreviewGrid,
+	TextEditor,
 ];

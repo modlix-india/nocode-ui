@@ -49,7 +49,13 @@ function TableColumnsComponent(props: ComponentProps) {
 					context={context}
 					locationHistory={[
 						...locationHistory,
-						updateLocationForChild(context.table?.bindingPath, index, locationHistory),
+						updateLocationForChild(
+							context.table?.bindingPath,
+							index,
+							locationHistory,
+							context.pageName,
+							pageExtractor,
+						),
 					]}
 				/>
 			))}

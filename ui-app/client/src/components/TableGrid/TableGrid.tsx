@@ -127,7 +127,7 @@ function TableGridComponent(props: ComponentProps) {
 
 				if (uniqueKey) {
 					let ev: ExpressionEvaluator = new ExpressionEvaluator(`Data.${uniqueKey}`);
-					key = ev.evaluate(getExtractionMap(data[index]));
+					key = ev.evaluate(getExtractionMap(data?.[index]));
 				}
 
 				return (
@@ -157,6 +157,8 @@ function TableGridComponent(props: ComponentProps) {
 									context.table?.bindingPath,
 									index,
 									locationHistory,
+									context.pageName,
+									pageExtractor,
 								),
 							]}
 						/>
