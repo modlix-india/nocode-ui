@@ -137,7 +137,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: 'placeHolder',
 		description: 'placeHolder.',
-		defaultValue: ' ',
+		defaultValue: '',
 	},
 
 	{
@@ -169,7 +169,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'uniqueKey',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-		displayName: "Unique key's value ",
+		displayName: "Unique key's value",
 		description: `Key value that is used to generate unique key value.`,
 		translatable: true,
 	},

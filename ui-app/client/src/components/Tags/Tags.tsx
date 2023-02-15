@@ -41,6 +41,7 @@ function Tags(props: ComponentProps) {
 			uniqueKey,
 			hasInputBox,
 			delimitter,
+			placeHolder,
 		} = {},
 		key,
 		stylePropertiesWithPseudoStates,
@@ -80,7 +81,7 @@ function Tags(props: ComponentProps) {
 			),
 		[value, datatype, uniqueKeyType, uniqueKey, labelKeyType, labelKey],
 	);
-	console.log(renderData, 'renderDATA');
+
 	const resolvedStyles = processComponentStylePseudoClasses(
 		{ hover: false, disabled: !!readOnly },
 		stylePropertiesWithPseudoStates,
@@ -131,7 +132,6 @@ function Tags(props: ComponentProps) {
 				))();
 		}
 	};
-
 	return (
 		<div className="comp compTags">
 			<HelperComponent definition={props.definition} />
@@ -143,6 +143,7 @@ function Tags(props: ComponentProps) {
 						value={inputData}
 						onKeyUp={handleKeyUp}
 						onChange={e => setInputData(e.target.value)}
+						placeholder={placeHolder}
 					/>
 				) : null}
 				<div
