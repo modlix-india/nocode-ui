@@ -9,8 +9,8 @@ export function getHref(linkPath: string, location: Location) {
 	let url: string = '';
 
 	if (
-		linkPath?.startsWith('http') ||
-		linkPath?.startsWith('https') ||
+		linkPath?.startsWith('http:') ||
+		linkPath?.startsWith('https:') ||
 		linkPath?.startsWith('//') ||
 		linkPath?.startsWith('www')
 	) {

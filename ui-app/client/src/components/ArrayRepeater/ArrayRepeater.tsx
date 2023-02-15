@@ -128,7 +128,13 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 						context={context}
 						locationHistory={[
 							...locationHistory,
-							updateLocationForChild(bindingPath!, index, locationHistory),
+							updateLocationForChild(
+								bindingPath!,
+								index,
+								locationHistory,
+								context.pageName,
+								pageExtractor,
+							),
 						]}
 					/>
 				);

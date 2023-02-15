@@ -20,7 +20,7 @@ export class ObjectExtractor extends TokenValueExtractor {
 }
 
 export const getExtractionMap = (data: any) =>
-	new Map<string, TokenValueExtractor>([[`Data.`, new ObjectExtractor(data, `Data.`)]]);
+	new Map<string, TokenValueExtractor>([[`Data.`, new ObjectExtractor(data ?? {}, `Data.`)]]);
 
 const getSelection = (
 	selectionType: 'KEY' | 'INDEX' | 'OBJECT' | undefined,
