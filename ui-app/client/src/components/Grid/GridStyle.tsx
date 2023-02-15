@@ -14,6 +14,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._anchorGrid._ROWLAYOUT,
 		${PREFIX}._noAnchorGrid._ROWLAYOUT {
 			flex-direction: row;
+			align-items: center;
 		}
 
 		${PREFIX} a._anchorGrid {
