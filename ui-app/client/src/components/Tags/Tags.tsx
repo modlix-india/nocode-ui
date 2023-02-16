@@ -42,6 +42,7 @@ function Tags(props: ComponentProps) {
 			hasInputBox,
 			delimitter,
 			placeHolder,
+			label,
 		} = {},
 		key,
 		stylePropertiesWithPseudoStates,
@@ -134,7 +135,13 @@ function Tags(props: ComponentProps) {
 	return (
 		<div className="comp compTags">
 			<HelperComponent definition={props.definition} />
-			<div className={hasInputBox ? 'containerWithInput' : ''}>
+			<div className="label" style={resolvedStyles.titleLabel ?? {}}>
+				{label}
+			</div>
+			<div
+				className={hasInputBox ? 'containerWithInput' : ''}
+				style={resolvedStyles.outerContainerWithInputBox ?? {}}
+			>
 				{hasInputBox ? (
 					<input
 						className="input"
@@ -143,11 +150,15 @@ function Tags(props: ComponentProps) {
 						onKeyUp={handleKeyUp}
 						onChange={e => setInputData(e.target.value)}
 						placeholder={placeHolder}
+						style={resolvedStyles.inputBox ?? {}}
 					/>
 				) : null}
+
 				<div
 					className={hasInputBox ? 'tagcontainerWithInput' : 'tagContainer'}
-					style={resolvedStyles.tagContainer ?? {}}
+					style={
+						(resolvedStyles.tagContainer || resolvedStyles.tagsContainerWithInput) ?? {}
+					}
 				>
 					{renderData?.map(e => (
 						<div
@@ -186,6 +197,7 @@ function Tags(props: ComponentProps) {
 								></i>
 							)}
 							<div
+								title={e?.label}
 								style={
 									(hover === e?.key ? resolvedStylesWithPseudo : resolvedStyles)
 										.tagText ?? {}
