@@ -13,7 +13,10 @@ import { deepEqual, isNullValue } from '@fincity/kirun-js';
 import { runEvent } from '../util/runEvent';
 import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../../constants';
 import {
+	addListener,
+	addListenerAndCallImmediately,
 	addListenerWithChildrenActivity,
+	getDataFromPath,
 	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
@@ -45,64 +48,61 @@ function Page({
 		locationHistory,
 		pageExtractor,
 	);
-
-	const [urlDetails, setUrlDetails] = useState();
+	const [pathParts, setPathParts] = useState();
 
 	useEffect(
 		() =>
-			addListenerWithChildrenActivity(
+			addListenerAndCallImmediately(
 				(_, value) => {
 					if (pageName === GLOBAL_CONTEXT_NAME) return;
-
-					const {
-						eventFunctions = {},
-						name,
-						properties: { onLoadEvent = undefined, loadStrategy = 'default' },
-					} = definition;
-					const v = { ...value, origName: name };
-
-					let firstTime = true;
-					let sameAsExisting = false;
-					if (v.pageName === pageName) {
-						if (pageHistory[pageName]) {
-							firstTime = false;
-							if (deepEqual(v, pageHistory[pageName])) {
-								sameAsExisting = true;
-							}
-						}
-					}
-
-					pageHistory[pageName] = v;
-					setUrlDetails(v);
-					let makeCall = true;
-					if (!firstTime) {
-						makeCall = false;
-						if (loadStrategy !== 'default' || !sameAsExisting) {
-							setData(`${STORE_PREFIX}.pageData.${pageName}`, {});
-							makeCall = true;
-						}
-					}
-
-					if (
-						makeCall &&
-						!isNullValue(onLoadEvent) &&
-						!isNullValue(eventFunctions[onLoadEvent])
-					) {
-						(async () =>
-							await runEvent(
-								eventFunctions[onLoadEvent],
-								'pageOnLoad',
-								pageName,
-								locationHistory,
-								definition,
-							))();
-					}
+					setPathParts(value.pathParts.join('/'));
 				},
 				pageExtractor,
-				'Store.urlDetails',
+				`${STORE_PREFIX}.urlDetails`,
 			),
 		[],
 	);
+
+	useEffect(() => {
+		if (pathParts === undefined) return;
+		const {
+			eventFunctions = {},
+			name,
+			properties: { onLoadEvent = undefined, loadStrategy = 'default' } = {},
+		} = definition;
+		const v = { ...(getDataFromPath(`${STORE_PREFIX}.urlDetails`, []) ?? {}), origName: name };
+		let firstTime = true;
+		let sameAsExisting = false;
+		if (v.pageName === pageName) {
+			if (pageHistory[pageName]) {
+				firstTime = false;
+				if (deepEqual(v, pageHistory[pageName])) {
+					sameAsExisting = true;
+				}
+			}
+		}
+
+		pageHistory[pageName] = v;
+		let makeCall = true;
+		if (!firstTime) {
+			makeCall = false;
+			if (loadStrategy !== 'default' || !sameAsExisting) {
+				setData(`${STORE_PREFIX}.pageData.${pageName}`, {});
+				makeCall = true;
+			}
+		}
+
+		if (makeCall && !isNullValue(onLoadEvent) && !isNullValue(eventFunctions[onLoadEvent])) {
+			(async () =>
+				await runEvent(
+					eventFunctions[onLoadEvent],
+					'pageOnLoad',
+					pageName,
+					locationHistory,
+					definition,
+				))();
+		}
+	}, [pathParts]);
 
 	useEffect(
 		() =>

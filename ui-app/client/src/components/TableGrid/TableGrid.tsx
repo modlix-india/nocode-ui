@@ -107,7 +107,7 @@ function TableGridComponent(props: ComponentProps) {
 		<div className={`comp compTableGrid _${layout}`} style={styleProperties.comp}>
 			<HelperComponent definition={definition} />
 			{value.map((e: any, index) => {
-				if (index < from || index >= to) return <></>;
+				if (index < from || index >= to) return undefined;
 
 				const checkBox =
 					multiSelect && selectionType !== 'NONE' && selectionBindingPath ? (

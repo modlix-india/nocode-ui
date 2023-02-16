@@ -72,6 +72,7 @@ export const runEvent = async (
 	pageDefinition?: PageDefinition,
 	args?: Map<string, any>,
 ) => {
+	const isRunningPath = `Store.functionExecutions.${page}.${flattenUUID(key)}.isRunning`;
 	try {
 		const def: FunctionDefinition = FunctionDefinition.from(functionDefinition);
 		const pageExtractor = PageStoreExtractor.getForContext(page);
@@ -135,12 +136,13 @@ export const runEvent = async (
 		if (args) {
 			fep.setArguments(args);
 		}
-		setData(`Store.functionExecutions.${page}.${flattenUUID(key)}.isRunning`, true);
+
+		setData(isRunningPath, true);
 		const x = await runtime.execute(fep);
-		setData(`Store.functionExecutions.${page}.${flattenUUID(key)}.isRunning`, false);
+		setData(isRunningPath, false);
 		return new Promise(resolve => resolve(x));
 	} catch (error: any) {
-		setData(`Store.functionExecutions.${page}.${flattenUUID(key)}.isRunning`, false);
+		setData(isRunningPath, false);
 		addMessage(MESSAGE_TYPE.ERROR, error, true, page);
 		console.error(error);
 		return new Promise(resolve => resolve(error));
