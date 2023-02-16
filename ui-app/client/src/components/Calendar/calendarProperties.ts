@@ -165,6 +165,18 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
         displayName: 'Can give end year for calendar to choose the end year for date compoennt',
         description: 'This value is use when we want to set end value of year date compoenent.',
     },
+    {
+        name: 'dateOnly',
+        schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+        displayName: 'Can be used when we want to display calendar only without time selection',
+        description: 'This can be used when we want to display calendar only without time selection.',
+    },
+    {
+        name: 'placeholder',
+        schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+        displayName: 'Can give the placeholder value to input box for date compoennt',
+        description: 'This can give the placeholder value to input box for date compoennt.',
+    },
 ];
 
 const stylePropertiesDefinition = {

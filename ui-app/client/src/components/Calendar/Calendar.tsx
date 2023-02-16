@@ -90,6 +90,8 @@ function Calendar(props: ComponentProps) {
 			defaultValue,
 			readOnly,
 			dateFormat,
+			placeholder,
+			dateOnly,
 			minDate,
 			maxDate,
 			yearAndMonthSelector,
@@ -704,7 +706,7 @@ function Calendar(props: ComponentProps) {
 					className={`buttonAndTimePicker ${!isFirstMonth ? 'right' : 'left'}`}
 					style={computedStyles?.bottomButtonAndTime ?? {}}
 				>
-					{getTimeSelectors(!isFirstMonth)}
+					{!dateOnly ? getTimeSelectors(!isFirstMonth) : null}
 					{isDateRange ? null : bottomButton()}
 				</div>
 			</div>
@@ -731,7 +733,7 @@ function Calendar(props: ComponentProps) {
 		<input
 			className={`inputbox`}
 			style={computedStyles?.inputBox ?? {}}
-			value={value}
+			value={value ?? placeholder}
 			onChange={() => {}}
 			placeholder={dateFormat}
 			name={`${key}_${name}`}
