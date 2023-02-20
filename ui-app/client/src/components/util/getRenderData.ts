@@ -1,6 +1,7 @@
 import { ExpressionEvaluator, TokenValueExtractor } from '@fincity/kirun-js';
 import { getData, getDataFromLocation } from '../../context/StoreContext';
 import { ComponentProperty, DataLocation } from '../../types/common';
+import UUID from './uuid';
 
 export class ObjectExtractor extends TokenValueExtractor {
 	private store: any;
@@ -23,7 +24,7 @@ export const getExtractionMap = (data: any) =>
 	new Map<string, TokenValueExtractor>([[`Data.`, new ObjectExtractor(data ?? {}, `Data.`)]]);
 
 const getSelection = (
-	selectionType: 'KEY' | 'INDEX' | 'OBJECT' | undefined,
+	selectionType: 'KEY' | 'INDEX' | 'OBJECT' | 'RANDOM' | undefined,
 	selectionKey: string | undefined,
 	object: any,
 	index: number | string,
@@ -38,6 +39,10 @@ const getSelection = (
 	if (selectionType === 'OBJECT') {
 		return object;
 	}
+
+	if (selectionType === 'RANDOM') {
+		return UUID();
+	}
 };
 
 export function getRenderData<T>(
@@ -49,7 +54,7 @@ export function getRenderData<T>(
 		| 'OBJECT_OF_PRIMITIVES'
 		| 'OBJECT_OF_OBJECTS'
 		| 'OBJECT_OF_LISTS',
-	uniqueKeyType: 'KEY' | 'INDEX' | 'OBJECT',
+	uniqueKeyType: 'KEY' | 'INDEX' | 'OBJECT' | 'RANDOM',
 	uniqueKey: string,
 	selectionType: 'KEY' | 'INDEX' | 'OBJECT',
 	selectionKey?: string,
@@ -63,7 +68,12 @@ export function getRenderData<T>(
 					return {
 						label: e,
 						value: selectionType === 'INDEX' ? index : e,
-						key: uniqueKeyType === 'INDEX' ? index : e,
+						key:
+							uniqueKeyType === 'INDEX'
+								? index
+								: uniqueKeyType === 'RANDOM'
+								? UUID()
+								: e,
 						originalObjectKey: index,
 					};
 				}

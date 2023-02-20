@@ -13,6 +13,7 @@ import Dropdown from './Dropdown/Dropdown';
 import Menu from './Menu/Menu';
 import Tags from './Tags/Tags';
 import Image from './Image/Image';
+import Tabs from './Tabs/Tabs';
 import Icon from './Icon/Icon';
 import Text from './Text/Text';
 import TextList from './TextList/TextList';
@@ -24,6 +25,7 @@ import TablePreviewGrid from './TablePreviewGrid/TablePreviewGrid';
 import TextEditor from './TextEditor/TextEditor';
 import TableColumn from './TableColumn/TableColumn';
 import TableColumnHeader from './TableColumnHeader/TableColumnHeader';
+import ProgressBar from './ProgressBar/ProgressBar';
 
 export const Components = new Map<string, React.ElementType>([
 	[Button.name, Button.component],
@@ -41,6 +43,7 @@ export const Components = new Map<string, React.ElementType>([
 	[Menu.name, Menu.component],
 	[Tags.name, Tags.component],
 	[Image.name, Image.component],
+	[Tabs.name, Tabs.component],
 	[Icon.name, Icon.component],
 	[Text.name, Text.component],
 	[TextList.name, TextList.component],
@@ -52,6 +55,7 @@ export const Components = new Map<string, React.ElementType>([
 	[TableColumns.name, TableColumns.component],
 	[TableColumn.name, TableColumn.component],
 	[TableColumnHeader.name, TableColumnHeader.component],
+	[ProgressBar.name, ProgressBar.component],
 ]);
 
 export const ComponentDefinitions = [
@@ -69,6 +73,7 @@ export const ComponentDefinitions = [
 	Menu,
 	Tags,
 	Image,
+	Tabs,
 	Icon,
 	Text,
 	TextList,
@@ -81,4 +86,5 @@ export const ComponentDefinitions = [
 	TableColumns,
 	TableColumn,
 	TableColumnHeader,
+	ProgressBar,
 ];

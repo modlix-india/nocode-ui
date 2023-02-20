@@ -50,6 +50,10 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
 			target: ['icon'],
 		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.font,
+			target: ['icon'],
+		},
 		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: COMPONENT_STYLE_GROUP_PROPERTIES.margin,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.opacity.type]: COMPONENT_STYLE_GROUP_PROPERTIES.opacity,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.outline.type]: COMPONENT_STYLE_GROUP_PROPERTIES.outline,

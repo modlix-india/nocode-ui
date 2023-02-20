@@ -144,6 +144,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				displayName: 'Object',
 				description: "Select object as label key's value",
 			},
+			{
+				name: 'RANDOM',
+				displayName: 'Random',
+				description: 'A Random key is associated with value which is costly in rendering',
+			},
 		],
 	},
 
