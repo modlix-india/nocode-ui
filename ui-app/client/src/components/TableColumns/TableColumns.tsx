@@ -40,6 +40,16 @@ function TableColumnsComponent(props: ComponentProps) {
 		return np;
 	}, [pageDefinition]);
 
+	const colPageDef = useMemo(() => {
+		if (!showEmptyRows) return pageDefinition;
+		const np = JSON.parse(JSON.stringify(pageDefinition));
+		Object.keys(children ?? {})
+			.map(k => np?.componentDefinition[k])
+			.filter(e => e?.type === 'TableColumn')
+			.forEach(cd => (cd.children = {}));
+		return np;
+	}, [pageDefinition, showEmptyRows]);
+
 	const {
 		from = 0,
 		to = 0,
@@ -69,7 +79,7 @@ function TableColumnsComponent(props: ComponentProps) {
 	const styleHoverProperties =
 		processComponentStylePseudoClasses({ hover: true }, stylePropertiesWithPseudoStates) ?? {};
 
-	const total = from - to;
+	const total = to - from;
 
 	let emptyCount = pageSize - total;
 	if (emptyCount < 0 || !showEmptyRows) emptyCount = 0;
@@ -189,7 +199,16 @@ function TableColumnsComponent(props: ComponentProps) {
 	const emptyRows = [];
 	if (emptyCount) {
 		for (let i = 0; i < emptyCount; i++) {
-			emptyRows.push(<div className="_row"></div>);
+			emptyRows.push(
+				<div className="_row">
+					<Children
+						pageDefinition={colPageDef}
+						children={children}
+						context={context}
+						locationHistory={locationHistory}
+					/>
+				</div>,
+			);
 		}
 	}
 

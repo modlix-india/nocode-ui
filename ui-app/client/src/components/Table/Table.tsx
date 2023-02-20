@@ -5,6 +5,7 @@ import {
 	getDataFromPath,
 	getPathFromLocation,
 	PageStoreExtractor,
+	setData as setStoreData,
 } from '../../context/StoreContext';
 import { HelperComponent } from '../HelperComponent';
 import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
@@ -14,6 +15,7 @@ import TableStyle from './TableStyle';
 import useDefinition from '../util/useDefinition';
 import Children from '../Children';
 import { flattenUUID } from '../util/uuid';
+import { runEvent } from '../util/runEvent';
 
 function spinCalculate(
 	spinnerPath1: string | undefined,
@@ -105,6 +107,8 @@ function TableComponent(props: ComponentProps) {
 			tableDesign,
 			paginationPosition,
 			totalPages,
+			perPageNumbers,
+			showPerPage,
 			onSelect,
 			onPagination,
 		} = {},
@@ -146,7 +150,6 @@ function TableComponent(props: ComponentProps) {
 		[dataBindingPath],
 	);
 
-	const selectEvent = onSelect ? props.pageDefinition.eventFunctions[onSelect] : undefined;
 	const spinnerPath1 = onSelect
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
 				onSelect,
@@ -156,6 +159,7 @@ function TableComponent(props: ComponentProps) {
 	const paginationEvent = onPagination
 		? props.pageDefinition.eventFunctions[onPagination]
 		: undefined;
+
 	const spinnerPath2 = onPagination
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
 				onPagination,
@@ -203,7 +207,7 @@ function TableComponent(props: ComponentProps) {
 		[pageSizeBindingPath],
 	);
 
-	const [pageNumber, setPageNumber] = useState(0);
+	const [pageNumber, setPageNumber] = useState<number>(0);
 
 	useEffect(
 		() =>
@@ -272,9 +276,167 @@ function TableComponent(props: ComponentProps) {
 		}
 
 		let from = offlineData ? pageNumber * pageSize : 0;
-		let to = offlineData ? (pageNumber + 1) * pageSize : pageSize;
+		let to = data?.length ?? 0;
+		if (offlineData) {
+			to = (pageNumber + 1) * pageSize;
+			if (to >= data.length) to = data.length - 1;
+		}
 
-		const pagination = showPagination ? <div className="_tablePagination"></div> : undefined;
+		let pagination = undefined;
+
+		if (showPagination) {
+			let pages = totalPages;
+			let currentPage = pageNumber;
+			let size = pageSize;
+
+			if (offlineData) {
+				size = defaultSize;
+				currentPage = pageNumber;
+				pages = Math.ceil(data.length / size);
+			}
+
+			let numbers: Array<number> = [];
+			numbers.push(1);
+			if (pages <= 5) {
+				for (let i = 2; i <= pages; i++) numbers.push(i);
+			} else {
+				if (currentPage - 1 > 1) numbers.push(currentPage - 1);
+				if (currentPage > 1) numbers.push(currentPage);
+				if (currentPage + 1 > 1 && currentPage + 1 < pages) numbers.push(currentPage + 1);
+				if (currentPage + 2 < pages) numbers.push(currentPage + 2);
+				if (currentPage < pages) numbers.push(pages);
+			}
+
+			let modes = undefined;
+			if (gridChild && columnsChild) {
+				modes = (
+					<>
+						<i
+							className={`fa-solid fa-table-columns _pointer ${
+								mode === 'COLUMNS' ? 'fa-inverse _selected' : ''
+							}`}
+							onClick={() => {
+								if (tableModeBindingPath)
+									setStoreData(tableModeBindingPath, 'COLUMNS', context.pageName);
+								else setMode('COLUMNS');
+							}}
+						/>
+						<i
+							className={`fa-solid fa-table _pointer  ${
+								mode === 'GRID' ? '_selected' : ''
+							}`}
+							onClick={() => {
+								if (tableModeBindingPath)
+									setStoreData(tableModeBindingPath, 'GRID', context.pageName);
+								else setMode('GRID');
+							}}
+						/>
+						<i className="fa-solid fa-grip-lines fa-rotate-90 _seperator" />
+					</>
+				);
+			}
+
+			let perPage = undefined;
+			if (showPerPage) {
+				perPage = (
+					<>
+						<i className="fa-solid fa-grip-lines fa-rotate-90 _seperator" />
+						<select
+							value={pageSize}
+							onChange={e => {
+								if (pageSizeBindingPath) {
+									setStoreData(
+										pageSizeBindingPath,
+										e.target.value,
+										context.pageName,
+									);
+								} else {
+									setPageSize(e.target.value);
+								}
+
+								if (pageNumberBindingPath) {
+									setStoreData(pageNumberBindingPath, 0, context.pageName);
+								} else {
+									setPageNumber(0);
+								}
+
+								if (paginationEvent) {
+									(async () =>
+										await runEvent(
+											paginationEvent,
+											onPagination,
+											context.pageName,
+											locationHistory,
+											pageDefinition,
+										))();
+								}
+							}}
+						>
+							{(perPageNumbers ?? '')
+								.split(',')
+								.map((e: string) => parseInt(e))
+								.filter((e: number) => !isNaN(e))
+								.map((e: number) => (
+									<option value={e}>{e}</option>
+								))}
+						</select>
+					</>
+				);
+			}
+
+			pagination = (
+				<div className={`_tablePagination ${paginationPosition}`}>
+					{modes}
+					{numbers.flatMap((e, i) => {
+						const arr = [];
+
+						if (i > 0 && numbers[i - 1] + 1 !== numbers[i]) {
+							arr.push(
+								<div key={`${numbers[i]}_elipsis`} className="_noclick">
+									...
+								</div>,
+							);
+						}
+
+						arr.push(
+							<div
+								key={`${numbers[i]}_pagenumber`}
+								className={
+									e === currentPage + 1
+										? '_noclick _pageNumber _selected'
+										: '_clickable _pointer _pageNumber'
+								}
+								onClick={() => {
+									if (spinner) return;
+									if (pageNumberBindingPath)
+										setStoreData(
+											pageNumberBindingPath,
+											numbers[i] - 1,
+											context.pageName,
+										);
+									else setPageNumber(numbers[i] - 1);
+									if (paginationEvent) {
+										(async () =>
+											await runEvent(
+												paginationEvent,
+												onPagination,
+												context.pageName,
+												locationHistory,
+												pageDefinition,
+											))();
+									}
+								}}
+							>
+								{e}
+							</div>,
+						);
+
+						return arr;
+					})}
+					{perPage}
+				</div>
+			);
+		}
 
 		let mainBody = selectedChild ? (
 			<div className="_tableWithPagination">
