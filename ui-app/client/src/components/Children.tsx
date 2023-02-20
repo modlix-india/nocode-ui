@@ -112,6 +112,7 @@ function Children({
 								context: { pageName: pageDef.name },
 								locationHistory: [],
 							});
+						else return undefined;
 					}
 					const fKey = flattenUUID(e?.key);
 					const ctx = validationTriggers[fKey]

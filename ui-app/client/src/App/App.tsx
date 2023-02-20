@@ -3,12 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { RenderEngineContainer } from '../Engine/RenderEngineContainer';
 import * as getAppDefinition from '../definitions/getAppDefinition.json';
 import { runEvent } from '../components/util/runEvent';
-import {
-	addListener,
-	addListenerAndCallImmediately,
-	setData,
-	store,
-} from '../context/StoreContext';
+import { addListener, addListenerAndCallImmediately, setData } from '../context/StoreContext';
 import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../constants';
 import { StyleResolution } from '../types/common';
 import { StyleResolutionDefinition } from '../util/styleProcessor';

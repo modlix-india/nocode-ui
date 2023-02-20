@@ -80,31 +80,35 @@ function TextBox(props: ComponentProps) {
 	);
 	const [value, setValue] = React.useState(defaultValue ?? '');
 
-	if (!bindingPath) throw new Error('Definition requires bindingpath');
-	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
+	const bindingPathPath = bindingPath
+		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
+		: undefined;
 
 	React.useEffect(() => {
-		const initValue = getDataFromLocation(bindingPath, locationHistory, pageExtractor);
+		if (!bindingPathPath) return;
+		const initValue = getDataFromPath(bindingPathPath, locationHistory, pageExtractor);
 		if (!isNullValue(defaultValue) && isNullValue(initValue)) {
 			setData(bindingPathPath, defaultValue, context.pageName);
 		}
 		setValue(initValue ?? defaultValue?.toString() ?? '');
-	}, []);
+	}, [bindingPathPath]);
 
 	React.useEffect(
 		() =>
-			addListener(
-				(_, value) => {
-					if (value === undefined || value === null) {
-						setValue('');
-						return;
-					}
-					setValue(value);
-				},
-				pageExtractor,
-				bindingPathPath,
-			),
-		[],
+			bindingPathPath
+				? addListener(
+						(_, value) => {
+							if (value === undefined || value === null) {
+								setValue('');
+								return;
+							}
+							setValue(value);
+						},
+						pageExtractor,
+						bindingPathPath,
+				  )
+				: undefined,
+		[bindingPathPath],
 	);
 
 	const spinnerPath = onEnter
@@ -114,7 +118,9 @@ function TextBox(props: ComponentProps) {
 		: undefined;
 
 	const [isLoading, setIsLoading] = useState(
-		onEnter ? getDataFromPath(spinnerPath, props.locationHistory) ?? false : false,
+		onEnter
+			? getDataFromPath(spinnerPath, props.locationHistory, pageExtractor) ?? false
+			: false,
 	);
 
 	useEffect(() => {
@@ -156,7 +162,7 @@ function TextBox(props: ComponentProps) {
 					: temp;
 			temp = isNaN(tempNumber) ? temp : tempNumber;
 		}
-		if (!updateStoreImmediately) {
+		if (!updateStoreImmediately && bindingPathPath) {
 			if (event?.target.value === '' && removeKeyWhenEmpty) {
 				setData(bindingPathPath, undefined, context?.pageName, true);
 			} else {
@@ -166,24 +172,26 @@ function TextBox(props: ComponentProps) {
 		setFocus(false);
 	};
 	const handleTextChange = (text: string) => {
-		if (removeKeyWhenEmpty && text === '') {
+		if (removeKeyWhenEmpty && text === '' && bindingPathPath) {
 			setData(bindingPathPath, undefined, context?.pageName, true);
 			return;
 		}
 		let temp = text === '' && emptyValue ? mapValue[emptyValue] : text;
-		if (updateStoreImmediately) setData(bindingPathPath, temp, context?.pageName);
+		if (updateStoreImmediately && bindingPathPath)
+			setData(bindingPathPath, temp, context?.pageName);
 		if (!updateStoreImmediately) setValue(text);
 	};
 
 	const handleNumberChange = (text: string) => {
-		if (removeKeyWhenEmpty && text === '') {
+		if (removeKeyWhenEmpty && text === '' && bindingPathPath) {
 			setData(bindingPathPath, undefined, context?.pageName, true);
 			return;
 		}
 		let temp = text === '' && emptyValue ? mapValue[emptyValue] : text;
 		let tempNumber = numberType === 'DECIMAL' ? parseFloat(temp) : parseInt(temp);
 		temp = !isNaN(tempNumber) ? tempNumber : temp;
-		if (updateStoreImmediately) setData(bindingPathPath, temp, context?.pageName);
+		if (updateStoreImmediately && bindingPathPath)
+			setData(bindingPathPath, temp, context?.pageName);
 		if (!updateStoreImmediately) setValue(!isNaN(tempNumber) ? temp?.toString() : '');
 	};
 	const handleChange = (event: any) => {
@@ -195,9 +203,9 @@ function TextBox(props: ComponentProps) {
 	};
 	const handleClickClose = () => {
 		let temp = mapValue[emptyValue];
-		if (removeKeyWhenEmpty) {
+		if (removeKeyWhenEmpty && bindingPathPath) {
 			setData(bindingPathPath, undefined, context?.pageName, true);
-		} else {
+		} else if (bindingPathPath) {
 			setData(bindingPathPath, temp, context?.pageName);
 		}
 	};
@@ -340,6 +348,9 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	stylePseudoStates: ['focus', 'disabled'],
+	bindingPaths: {
+		bindingPath: { name: 'Text Binding' },
+	},
 };
 
 export default component;

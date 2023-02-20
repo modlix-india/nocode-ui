@@ -15,6 +15,13 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		description: 'Event to be triggered when clicked.',
 	},
+	onSelect: {
+		name: 'onSelect',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'On Select',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered when selection.',
+	},
 	onEnter: {
 		name: 'onEnter',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
