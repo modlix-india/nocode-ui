@@ -236,6 +236,31 @@ export default function useDefinition(
 			if (p) p.forEach(e => paths.push(e));
 		}
 
+		if (definition.bindingPath2) {
+			const p = getPathsFrom(definition.bindingPath2, evaluatorMaps);
+			if (p) p.forEach(e => paths.push(e));
+		}
+
+		if (definition.bindingPath3) {
+			const p = getPathsFrom(definition.bindingPath3, evaluatorMaps);
+			if (p) p.forEach(e => paths.push(e));
+		}
+
+		if (definition.bindingPath4) {
+			const p = getPathsFrom(definition.bindingPath4, evaluatorMaps);
+			if (p) p.forEach(e => paths.push(e));
+		}
+
+		if (definition.bindingPath5) {
+			const p = getPathsFrom(definition.bindingPath5, evaluatorMaps);
+			if (p) p.forEach(e => paths.push(e));
+		}
+
+		if (definition.bindingPath6) {
+			const p = getPathsFrom(definition.bindingPath6, evaluatorMaps);
+			if (p) p.forEach(e => paths.push(e));
+		}
+
 		setCompState(
 			createNewState(
 				definition,
