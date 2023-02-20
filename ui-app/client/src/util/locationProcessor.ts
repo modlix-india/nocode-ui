@@ -1,6 +1,6 @@
-import { Location } from 'react-router-dom';
+import { Location as ReactLocation } from 'react-router-dom';
 
-export function processLocation(location: Location) {
+export function processLocation(location: ReactLocation | Location) {
 	const details: any = { queryParameters: {} };
 
 	if (location.search) {

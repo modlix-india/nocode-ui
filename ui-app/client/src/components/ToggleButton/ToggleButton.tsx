@@ -67,6 +67,9 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: ToggleButtonStyle,
+	bindingPaths: {
+		bindingPath: { name: 'Data Binding' },
+	},
 };
 
 export default component;

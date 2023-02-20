@@ -1,6 +1,7 @@
 import {
 	FunctionDefinition,
 	FunctionExecutionParameters,
+	HybridRepository,
 	KIRuntime,
 	LinkedList,
 	ParameterReferenceType,
@@ -20,6 +21,7 @@ import {
 import { UIFunctionRepository } from '../../functions';
 import { UISchemaRepository } from '../../schemas/common';
 import { LocationHistory, PageDefinition } from '../../types/common';
+import PageDefintionFunctionsRepository from './PageDefinitionFunctionsRepository';
 import UUID, { flattenUUID } from './uuid';
 
 function updateExpressionsWithLocationHistory(
@@ -70,6 +72,7 @@ export const runEvent = async (
 	pageDefinition?: PageDefinition,
 	args?: Map<string, any>,
 ) => {
+	const isRunningPath = `Store.functionExecutions.${page}.${flattenUUID(key)}.isRunning`;
 	try {
 		const def: FunctionDefinition = FunctionDefinition.from(functionDefinition);
 		const pageExtractor = PageStoreExtractor.getForContext(page);
@@ -99,7 +102,7 @@ export const runEvent = async (
 					}
 				}
 				if (!pageDefinition.componentDefinition[key].children) continue;
-				Object.entries(pageDefinition.componentDefinition[key].children)
+				Object.entries(pageDefinition.componentDefinition[key].children ?? {})
 					.filter(([, v]: [string, boolean]) => v)
 					.forEach(([k]) => list.add(k));
 			}
@@ -117,7 +120,10 @@ export const runEvent = async (
 
 		const runtime = new KIRuntime(def, false);
 		const fep = new FunctionExecutionParameters(
-			UIFunctionRepository,
+			new HybridRepository(
+				UIFunctionRepository,
+				new PageDefintionFunctionsRepository(pageDefinition),
+			),
 			UISchemaRepository,
 			key,
 		).setValuesMap(
@@ -130,12 +136,13 @@ export const runEvent = async (
 		if (args) {
 			fep.setArguments(args);
 		}
-		setData(`Store.functionExecutions.${page}.${flattenUUID(key)}.isRunning`, true);
+
+		setData(isRunningPath, true);
 		const x = await runtime.execute(fep);
-		setData(`Store.functionExecutions.${page}.${flattenUUID(key)}.isRunning`, false);
+		setData(isRunningPath, false);
 		return new Promise(resolve => resolve(x));
 	} catch (error: any) {
-		setData(`Store.functionExecutions.${page}.${flattenUUID(key)}.isRunning`, false);
+		setData(isRunningPath, false);
 		addMessage(MESSAGE_TYPE.ERROR, error, true, page);
 		console.error(error);
 		return new Promise(resolve => resolve(error));

@@ -1,10 +1,11 @@
 import React from 'react';
 import { StyleResolution } from '../../types/common';
-import { processStyleDefinition } from '../../util/styleProcessor';
+import { processStyleDefinition, processStyleValueWithFunction } from '../../util/styleProcessor';
 import { styleProperties, styleDefaults } from '../Popup/popupStyleProperties';
 
 const PREFIX = '.comp.compPopup';
 export default function PopupStyles({ theme }: { theme: Map<string, Map<string, string>> }) {
+	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
 	const css =
 		`
      ${PREFIX} .backdrop{
@@ -16,10 +17,7 @@ export default function PopupStyles({ theme }: { theme: Map<string, Map<string, 
       display: flex;
       align-items: center;
       justify-content: center;   
-      backdrop-filter: blur(${
-			theme.get(StyleResolution.ALL)?.get('backdropFilter') ??
-			styleDefaults.get('backdropFilter')
-		}) 
+      backdrop-filter: blur(${processStyleValueWithFunction(values.get('backdropFilter'), values)}) 
     }
 
     ${PREFIX} .modal{

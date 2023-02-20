@@ -15,14 +15,18 @@ import ButtonStyle from './ButtonStyle';
 import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { flattenUUID } from '../util/uuid';
+import { getHref } from '../util/getHref';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 function ButtonComponent(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const [focus, setFocus] = useState(false);
 	const [hover, setHover] = useState(false);
+	const location = useLocation();
+	const navigate = useNavigate();
 	let {
 		key,
-		properties: { label, onClick, type, readOnly, leftIcon, rightIcon } = {},
+		properties: { label, onClick, type, readOnly, leftIcon, rightIcon, target, linkPath } = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
 		props.definition,
@@ -40,7 +44,9 @@ function ButtonComponent(props: ComponentProps) {
 		: undefined;
 
 	const [isLoading, setIsLoading] = useState(
-		onClick ? getDataFromPath(spinnerPath, props.locationHistory) ?? false : false,
+		onClick
+			? getDataFromPath(spinnerPath, props.locationHistory, pageExtractor) ?? false
+			: false,
 	);
 
 	useEffect(() => {
@@ -54,16 +60,31 @@ function ButtonComponent(props: ComponentProps) {
 		stylePropertiesWithPseudoStates,
 	);
 
-	const handleClick = async () =>
-		clickEvent &&
-		!isLoading &&
-		(await runEvent(
-			clickEvent,
-			onClick,
-			props.context.pageName,
-			props.locationHistory,
-			props.pageDefinition,
-		));
+	const handleClick = async () => {
+		if (linkPath) {
+			if (target) {
+				window.open(getHref(linkPath, location), target);
+			} else {
+				if (
+					linkPath?.startsWith('http:') ||
+					linkPath?.startsWith('https:') ||
+					linkPath?.startsWith('//') ||
+					linkPath?.startsWith('www')
+				)
+					window.location.href = linkPath;
+				else navigate(getHref(linkPath, location));
+			}
+		}
+
+		if (clickEvent && !isLoading)
+			await runEvent(
+				clickEvent,
+				onClick,
+				props.context.pageName,
+				props.locationHistory,
+				props.pageDefinition,
+			);
+	};
 
 	const rightIconTag =
 		!type?.startsWith('fabButton') && !leftIcon ? (
