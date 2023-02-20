@@ -118,6 +118,13 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 
 	{
+		name: 'lineColor',
+		defaultValue: '<main-disabled-color>',
+		displayName: 'color of line drawn when horizontal/vertical',
+		description: 'color of line drawn when horizontal/vertical',
+	},
+
+	{
 		name: 'countingStepBackgroundColor',
 		cssProperty: 'background-color',
 		displayName: 'Counting step background color',

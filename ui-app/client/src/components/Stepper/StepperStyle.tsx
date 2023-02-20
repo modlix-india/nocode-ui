@@ -53,7 +53,10 @@ export default function StepperStyle({ theme }: { theme: Map<string, Map<string,
 			content: "";
 			min-height: 0px;
 			min-width: 30px;
-			border-bottom: 1px solid #dedfe7;
+			border-bottom: 1px solid;
+			border-bottom-color: ${
+				theme.get(StyleResolution.ALL)?.get('lineColor') ?? styleDefaults.get('lineColor')
+			};
 			display: block;
 			flex-grow: 1;
 			border-left: none;
@@ -67,7 +70,10 @@ export default function StepperStyle({ theme }: { theme: Map<string, Map<string,
 
 		${PREFIX} ul.horizontal.textTop .itemlist:not(:last-child)::after {
 			align-self: flex-end;
-			border-top: 1px solid #dedfe7;
+			border-top: 1px solid;
+			border-top-color: ${
+				theme.get(StyleResolution.ALL)?.get('lineColor') ?? styleDefaults.get('lineColor')
+			};
 			border-bottom: none;
 		}
 
@@ -78,7 +84,10 @@ export default function StepperStyle({ theme }: { theme: Map<string, Map<string,
 		${PREFIX} ul.vertical .itemlist:not(:last-child)::after {
 			content: "";
 			min-height: 30px;
-			border-left: 1px solid #dedfe7;
+			border-left: 1px solid;
+			border-left-color: ${
+				theme.get(StyleResolution.ALL)?.get('lineColor') ?? styleDefaults.get('lineColor')
+			};
 			flex-grow: 1;
 		}
 
@@ -89,7 +98,10 @@ export default function StepperStyle({ theme }: { theme: Map<string, Map<string,
 				styleDefaults.get('lineHeightOrWidth')
 			};
 			border-left: none;
-			border-right: 1px solid #dedfe7;
+			border-right: 1px solid;
+			border-right-color: ${
+				theme.get(StyleResolution.ALL)?.get('lineColor') ?? styleDefaults.get('lineColor')
+			};
 		}
 
 		${PREFIX} ul.vertical.textLeft .itemlist:not(:last-child)::after {

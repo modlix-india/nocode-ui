@@ -44,8 +44,11 @@ function Stepper(props: ComponentProps) {
 		pageExtractor,
 	);
 	if (!bindingPath) throw new Error('Definition requires bindingpath');
+
 	const [value, setValue] = React.useState(0);
+	const [hover, setHover] = React.useState(false);
 	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
+	const resolvedStyles = processComponentStylePseudoClasses({ hover }, stylePropertiesDefinition);
 
 	React.useEffect(
 		() =>
@@ -77,25 +80,17 @@ function Stepper(props: ComponentProps) {
 		: [];
 
 	const getCount = (num: number) => {
-		let count;
-		switch (countingType) {
-			case 'NUMBER':
-				count = num;
-				break;
-			case 'ROMAN':
-				count = getRoman(num, false);
-				break;
-			case 'UPPER_ROMAN':
-				count = getRoman(num, true);
-				break;
-			case 'ALPHA':
-				count = getAlphaNumeral(num, false);
-				break;
-			case 'UPPER_ALPHA':
-				count = getAlphaNumeral(num, true);
-				break;
-			default:
-		}
+		let count =
+			countingType === 'NUMBER'
+				? num
+				: countingType.startsWith('ROMAN')
+				? countingType === 'ROMAN'
+					? getRoman(num, false)
+					: getRoman(num, true)
+				: countingType === 'ALPHA'
+				? getAlphaNumeral(num, false)
+				: getAlphaNumeral(num, true);
+
 		return count;
 	};
 
@@ -118,14 +113,18 @@ function Stepper(props: ComponentProps) {
 		}
 		return textStyle;
 	};
-
-	console.log(textPosition);
 	return (
-		<div className="comp compStepper">
+		<div className="comp compStepper" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />
-			<ul className={`${isStepperVertical ? 'vertical' : 'horizontal'} `}>
+			<ul
+				style={resolvedStyles.list ?? {}}
+				className={`${
+					isStepperVertical ? 'vertical' : 'horizontal'
+				} ${getPositionStyle()} `}
+			>
 				{effectiveTitles.map((e: string, i: number) => (
 					<li
+						style={resolvedStyles.listItem ?? {}}
 						onClick={
 							(i < value && moveToAnyPreviousStep) ||
 							(i > value && moveToAnyFutureStep)
@@ -137,9 +136,20 @@ function Stepper(props: ComponentProps) {
 						} ${i > value && moveToAnyFutureStep ? 'futureStep' : ''}`}
 						key={i}
 					>
-						<div className="itemContainer">
+						<div className="itemContainer" style={resolvedStyles.itemContainer ?? {}}>
 							{icons ? (
 								<i
+									onMouseEnter={
+										stylePropertiesWithPseudoStates?.hover
+											? () => setHover(true)
+											: undefined
+									}
+									onMouseLeave={
+										stylePropertiesWithPseudoStates?.hover
+											? () => setHover(false)
+											: undefined
+									}
+									style={resolvedStyles.icon ?? {}}
 									className={`${
 										i < value && showCheckOnComplete ? checkIcon : iconList[i]
 									} countingStep ${i <= value ? 'done' : ''}`}
@@ -148,12 +158,24 @@ function Stepper(props: ComponentProps) {
 								<Fragment>
 									{i < value && showCheckOnComplete ? (
 										<i
+											onMouseEnter={
+												stylePropertiesWithPseudoStates?.hover
+													? () => setHover(true)
+													: undefined
+											}
+											onMouseLeave={
+												stylePropertiesWithPseudoStates?.hover
+													? () => setHover(false)
+													: undefined
+											}
+											style={resolvedStyles.icon ?? {}}
 											className={`${checkIcon} countingStep ${
 												i <= value ? 'done' : ''
 											}`}
 										></i>
 									) : (
 										<span
+											style={resolvedStyles.text ?? {}}
 											className={`countingStep ${i <= value ? 'done' : ''}`}
 										>
 											{getCount(i + 1)}
@@ -161,7 +183,22 @@ function Stepper(props: ComponentProps) {
 									)}
 								</Fragment>
 							)}
-							<span className="title">{getTranslations(e, translations)}</span>
+							<span
+								onMouseEnter={
+									stylePropertiesWithPseudoStates?.hover
+										? () => setHover(true)
+										: undefined
+								}
+								onMouseLeave={
+									stylePropertiesWithPseudoStates?.hover
+										? () => setHover(false)
+										: undefined
+								}
+								style={resolvedStyles.text ?? {}}
+								className="title"
+							>
+								{getTranslations(e, translations)}
+							</span>
 						</div>
 					</li>
 				))}
