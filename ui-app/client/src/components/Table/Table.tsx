@@ -360,6 +360,15 @@ function TableComponent(props: ComponentProps) {
 									setPageNumber(0);
 								}
 
+								if (selectionBindingPath) {
+									setStoreData(
+										selectionBindingPath,
+										undefined,
+										context.pageName,
+										true,
+									);
+								}
+
 								if (paginationEvent) {
 									(async () =>
 										await runEvent(
@@ -377,7 +386,9 @@ function TableComponent(props: ComponentProps) {
 								.map((e: string) => parseInt(e))
 								.filter((e: number) => !isNaN(e))
 								.map((e: number) => (
-									<option value={e}>{e}</option>
+									<option key={e} value={e}>
+										{e}
+									</option>
 								))}
 						</select>
 					</>
@@ -415,6 +426,14 @@ function TableComponent(props: ComponentProps) {
 											context.pageName,
 										);
 									else setPageNumber(numbers[i] - 1);
+									if (selectionBindingPath) {
+										setStoreData(
+											selectionBindingPath,
+											undefined,
+											context.pageName,
+											true,
+										);
+									}
 									if (paginationEvent) {
 										(async () =>
 											await runEvent(
