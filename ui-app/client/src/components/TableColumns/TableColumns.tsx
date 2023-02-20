@@ -89,13 +89,14 @@ function TableColumnsComponent(props: ComponentProps) {
 	const isSelected = (index: number): boolean => {
 		if (selectionType === 'NONE' || !selectionBindingPath) return false;
 
-		return (
-			(multiSelect ? selection : [selection]).indexOf((e: any) =>
+		const selected =
+			(multiSelect ? selection ?? [] : [selection]).filter((e: any) =>
 				selectionType === 'OBJECT'
 					? deepEqual(e, data[index])
 					: e === `(${dataBindingPath})[${index}]`,
-			) !== -1
-		);
+			).length !== 0;
+
+		return selected;
 	};
 
 	const select = (index: number) => {
@@ -125,12 +126,14 @@ function TableColumnsComponent(props: ComponentProps) {
 		if (index < from || index >= to) return undefined;
 
 		const checkBox = showCheckBox ? (
-			<input
-				key="checkbox"
-				type="checkbox"
-				checked={isSelected(index)}
-				onChange={() => select(index)}
-			/>
+			<div className="comp compTableColumn">
+				<input
+					key="checkbox"
+					type="checkbox"
+					checked={isSelected(index)}
+					onChange={() => select(index)}
+				/>
+			</div>
 		) : (
 			<></>
 		);
@@ -147,7 +150,9 @@ function TableColumnsComponent(props: ComponentProps) {
 		return (
 			<div
 				key={key}
-				className={`_row ${onClick ? '_pointer' : ''}`}
+				className={`_row _dataRow ${onClick ? '_pointer' : ''} ${
+					isSelected(index) ? '_selected' : ''
+				}`}
 				onMouseEnter={
 					stylePropertiesWithPseudoStates?.hover ? () => setHoverRow(index) : undefined
 				}
@@ -181,7 +186,7 @@ function TableColumnsComponent(props: ComponentProps) {
 	if (showHeaders) {
 		let checkBoxTop = undefined;
 		if (showCheckBox) {
-			<div className="comp compTableColumn">&nbsp;</div>;
+			checkBoxTop = <div className="comp compTableHeaderColumn">&nbsp;</div>;
 		}
 		headers = (
 			<div className="_row">
@@ -200,7 +205,7 @@ function TableColumnsComponent(props: ComponentProps) {
 	if (emptyCount) {
 		for (let i = 0; i < emptyCount; i++) {
 			emptyRows.push(
-				<div className="_row">
+				<div key={`emptyRow_${i}`} className="_row">
 					<Children
 						pageDefinition={colPageDef}
 						children={children}
