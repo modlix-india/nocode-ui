@@ -17,6 +17,7 @@ import Tabs from './Tabs/Tabs';
 import Icon from './Icon/Icon';
 import Text from './Text/Text';
 import TextList from './TextList/TextList';
+import Stepper from './Stepper/Stepper';
 import Table from './Table/Table';
 import TableGrid from './TableGrid/TableGrid';
 import TableColumns from './TableColumns/TableColumns';
@@ -47,6 +48,7 @@ export const Components = new Map<string, React.ElementType>([
 	[Icon.name, Icon.component],
 	[Text.name, Text.component],
 	[TextList.name, TextList.component],
+	[Stepper.name, Stepper.component],
 	[Table.name, Table.component],
 	[TableGrid.name, TableGrid.component],
 	[TableEmptyGrid.name, TableEmptyGrid.component],
@@ -78,6 +80,7 @@ export const ComponentDefinitions = [
 	Text,
 	TextList,
 	Page,
+	Stepper,
 	Table,
 	TableEmptyGrid,
 	TableGrid,
