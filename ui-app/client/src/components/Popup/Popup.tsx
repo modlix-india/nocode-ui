@@ -178,6 +178,9 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleComponent: PopupStyles,
 	hasChildren: true,
+	bindingPaths: {
+		bindingPath: { name: 'Toggle Binding' },
+	},
 };
 
 export default component;

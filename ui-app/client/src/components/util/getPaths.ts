@@ -9,7 +9,7 @@ import {
 import { ComponentStyle, StyleResolution } from '../../types/common';
 import { Validation } from '../../types/validation';
 
-class PathExtractor extends TokenValueExtractor {
+export class PathExtractor extends TokenValueExtractor {
 	private prefix: string;
 	private paths: Set<string>;
 	private orig: TokenValueExtractor;

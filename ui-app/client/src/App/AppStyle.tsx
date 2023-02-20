@@ -120,6 +120,10 @@ export default function AppStyle() {
 			grid-template-columns: 1fr 1fr 1fr;
 		}
 	}
+
+	._pointer {
+		cursor: pointer;
+	}
 	` + processStyleDefinition('', styleProperties, styleDefaults, theme);
 
 	const styleComps = new Array();

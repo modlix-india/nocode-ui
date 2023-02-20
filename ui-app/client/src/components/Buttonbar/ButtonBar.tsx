@@ -11,8 +11,8 @@ import { getRenderData } from '../util/getRenderData';
 import { getSelectedKeys } from '../util/getSelectedKeys';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
-import { propertiesDefinition, stylePropertiesDefinition } from './buttonbarproperties';
-import ButtonBarStyle from './ButtonbarStyle';
+import { propertiesDefinition, stylePropertiesDefinition } from './buttonBarproperties';
+import ButtonBarStyle from './ButtonBarStyle';
 import { HelperComponent } from '../HelperComponent';
 import { getTranslations } from '../util/getTranslations';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
@@ -173,6 +173,9 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	stylePseudoStates: ['hover', 'disabled'],
+	bindingPaths: {
+		bindingPath: { name: 'Array Binding' },
+	},
 };
 
 export default component;

@@ -41,7 +41,7 @@ function Label(props: ComponentProps) {
 	return (
 		<div className="comp compLabel">
 			<HelperComponent definition={definition} />
-			<span style={resolvedStyles.label ?? {}}>{getTranslations(text, translations)}</span>
+			<span style={resolvedStyles.text ?? {}}>{getTranslations(text, translations)}</span>
 		</div>
 	);
 }

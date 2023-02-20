@@ -1,0 +1,222 @@
+import { StyleGroupDefinition, StylePropertyDefinition } from '../../types/common';
+
+export const styleProperties: Array<StylePropertyDefinition> = [
+	{
+		name: 'stepperBackgroundColor',
+		cssProperty: 'background-color',
+		displayName: 'Stepper background color',
+		description: 'The background color of Stepper.',
+		defaultValue: '#FFF',
+		selector: 'ul',
+	},
+
+	{
+		name: 'stepperPaddingTopWhenHorizontal',
+		cssProperty: 'padding-top',
+		displayName: 'Stepper top padding when horizontal',
+		description: 'The top padding of Stepper when it is horizontal.',
+		defaultValue: '12px',
+		selector: 'ul.horizontal',
+	},
+	{
+		name: 'stepperPaddingRightWhenHorizontal',
+		cssProperty: 'padding-right',
+		displayName: 'Stepper right padding when horizontal',
+		description: 'The right padding of Stepper when it is horizontal.',
+		defaultValue: '20px',
+		selector: 'ul.horizontal',
+	},
+	{
+		name: 'stepperPaddingBottomWhenHorizontal',
+		cssProperty: 'padding-bottom',
+		displayName: 'Stepper bottom padding when horizontal',
+		description: 'The bottom padding of Stepper when it is horizontal.',
+		defaultValue: '12px',
+		selector: 'ul.horizontal',
+	},
+	{
+		name: 'stepperPaddingLeftWhenHorizontal',
+		cssProperty: 'padding-left',
+		displayName: 'Stepper left padding when horizontal',
+		description: 'The left padding of Stepper when it is horizontal.',
+		defaultValue: '20px',
+		selector: 'ul.horizontal',
+	},
+
+	{
+		name: 'stepperPaddingTopWhenVertical',
+		cssProperty: 'padding-top',
+		displayName: 'Stepper top padding when vertical',
+		description: 'The top padding of Stepper when it is vertical.',
+		defaultValue: '20px',
+		selector: 'ul.vertical',
+	},
+	{
+		name: 'stepperPaddingRightWhenVertical',
+		cssProperty: 'padding-right',
+		displayName: 'Stepper right padding when vertical',
+		description: 'The right padding of Stepper when it is vertical.',
+		defaultValue: '12px',
+		selector: 'ul.vertical',
+	},
+	{
+		name: 'stepperPaddingBottomWhenVertical',
+		cssProperty: 'padding-bottom',
+		displayName: 'Stepper bottom padding when vertical',
+		description: 'The bottom padding of Stepper when it is vertical.',
+		defaultValue: '20px',
+		selector: 'ul.vertical',
+	},
+	{
+		name: 'stepperPaddingLeftWhenVertical',
+		cssProperty: 'padding-left',
+		displayName: 'Stepper left padding when vertical',
+		description: 'The left padding of Stepper when it is vertical.',
+		defaultValue: '12px',
+		selector: 'ul.vertical',
+	},
+
+	{
+		name: 'stepperGapWhenHorizontal',
+		cssProperty: 'column-gap',
+		displayName: 'Stepper gap when horizontal',
+		description: 'The gap between list items when it is horizontal.',
+		defaultValue: '8px',
+		selector: 'ul.horizontal',
+	},
+	{
+		name: 'stepperGapWhenVertical',
+		cssProperty: 'row-gap',
+		displayName: 'Stepper gap when vertical',
+		description: 'The gap between list items when it is vertical.',
+		defaultValue: '8px',
+		selector: 'ul.vertical',
+	},
+
+	{
+		name: 'itemListGapWhenHorizontal',
+		cssProperty: 'column-gap',
+		displayName: 'Item list gap when horizontal',
+		description: 'The gap between itemContainer and line when it is horizontal.',
+		defaultValue: '8px',
+		selector: 'ul.horizontal .itemlist',
+	},
+	{
+		name: 'itemListGapWhenVertical',
+		cssProperty: 'row-gap',
+		displayName: 'Item list gap when vertical',
+		description: 'The gap between itemContainer and line when it is vertical.',
+		defaultValue: '8px',
+		selector: 'ul.vertical .itemlist',
+	},
+
+	{
+		name: 'lineHeightOrWidth',
+		defaultValue: '16px',
+		displayName: 'height/width of line drawn when horizontal/vertical',
+		description: 'height/width of line drawn when horizontal/vertical',
+	},
+
+	{
+		name: 'lineColor',
+		defaultValue: '<main-disabled-color>',
+		displayName: 'color of line drawn when horizontal/vertical',
+		description: 'color of line drawn when horizontal/vertical',
+	},
+
+	{
+		name: 'countingStepBackgroundColor',
+		cssProperty: 'background-color',
+		displayName: 'Counting step background color',
+		description: 'The background color of counting step.',
+		defaultValue: '#C7C8D6',
+		selector: '.countingStep',
+	},
+	{
+		name: 'countingStepDoneBackgroundColor',
+		cssProperty: 'background-color',
+		displayName: 'Counting step background color',
+		description: 'The background color of countingStep.',
+		defaultValue: '#2680EB',
+		selector: '.countingStep.done',
+	},
+	{
+		name: 'countingStepColor',
+		cssProperty: 'color',
+		displayName: 'Counting step color',
+		description: 'The color of countingStep.',
+		defaultValue: '#FFF',
+		selector: '.countingStep',
+	},
+	{
+		name: 'countingStepBorderRadius',
+		cssProperty: 'border-radius',
+		displayName: 'Counting step border radius',
+		description: 'The border radius of countingStep.',
+		defaultValue: '50%',
+		selector: '.countingStep',
+	},
+	{
+		name: 'countingStepPaddingTop',
+		cssProperty: 'padding-top',
+		displayName: 'Counting step top padding',
+		description: 'The top padding of counting step.',
+		defaultValue: '8px',
+		selector: '.countingStep',
+	},
+	{
+		name: 'countingStepPaddingRight',
+		cssProperty: 'padding-right',
+		displayName: 'Counting step right padding',
+		description: 'The right padding of counting step.',
+		defaultValue: '8px',
+		selector: '.countingStep',
+	},
+	{
+		name: 'countingStepPaddingBottom',
+		cssProperty: 'padding-bottom',
+		displayName: 'Counting step bottom padding ',
+		description: 'The bottom padding of counting step.',
+		defaultValue: '8px',
+		selector: '.countingStep',
+	},
+	{
+		name: 'countingStepPaddingLeft',
+		cssProperty: 'padding-left',
+		displayName: 'Counting step left padding',
+		description: 'The left padding of counting step.',
+		defaultValue: '8px',
+		selector: '.countingStep',
+	},
+
+	{
+		name: 'itemContainerGap',
+		cssProperty: 'gap',
+		displayName: 'Item container gap when',
+		description: 'The gap between icon/number and title.',
+		defaultValue: '5px',
+		selector: '.itemContainer',
+	},
+	{
+		name: 'itemContainerGapWhenTextRight',
+		cssProperty: 'gap',
+		displayName: 'Item container gap when text right',
+		description: 'The gap between icon/number and title when text position is right.',
+		defaultValue: '10px',
+		selector: 'ul.textRight .itemContainer',
+	},
+	{
+		name: 'itemContainerGapWhenTextLeft',
+		cssProperty: 'gap',
+		displayName: 'Item container gap when text left',
+		description: 'The gap between icon/number and title when text position is left.',
+		defaultValue: '10px',
+		selector: 'ul.textLeft .itemContainer',
+	},
+];
+
+export const styleDefaults = new Map<string, string>(
+	styleProperties
+		.filter(e => !!e.defaultValue)
+		.map(({ name, defaultValue }) => [name, defaultValue!]),
+);
