@@ -63,7 +63,7 @@ function TableGridComponent(props: ComponentProps) {
 		stylePropertiesWithPseudoStates,
 	);
 
-	const total = from - to;
+	const total = to - from;
 
 	let emptyCount = pageSize - total;
 	if (emptyCount < 0 || !showEmptyGrids) emptyCount = 0;
@@ -102,6 +102,17 @@ function TableGridComponent(props: ComponentProps) {
 			setData(selectionBindingPath, putObj, context.pageName);
 		}
 	};
+
+	let emptyGrids = [];
+	if (emptyCount) {
+		for (let i = 0; i < emptyCount; i++) {
+			emptyGrids.push(
+				<div className="_eachTableGrid" style={styleProperties?.eachGrid}>
+					&nbsp;
+				</div>,
+			);
+		}
+	}
 
 	return (
 		<div className={`comp compTableGrid _${layout}`} style={styleProperties.comp}>
@@ -165,6 +176,7 @@ function TableGridComponent(props: ComponentProps) {
 					</div>
 				);
 			})}
+			{emptyGrids}
 		</div>
 	);
 }
