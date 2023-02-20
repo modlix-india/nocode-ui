@@ -137,6 +137,22 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		enumValues: [
 			{ name: '_design1', displayName: 'Design 1', description: 'Alternative row color' },
 			{ name: '_design2', displayName: 'Design 2', description: 'Plain table' },
+			{
+				name: '_design3',
+				displayName: 'Design 3',
+				description: 'Alternative three row color',
+			},
+			{ name: '_design4', displayName: 'Design 4', description: 'Plain table 2' },
+			{ name: '_design5', displayName: 'Design 5', description: 'Alternative row color 2' },
+			{ name: '_design6', displayName: 'Design 6', description: 'Plain table 3' },
+			{
+				name: '_design7',
+				displayName: 'Design 7',
+				description: 'Alternative three row color 2',
+			},
+			{ name: '_design8', displayName: 'Design 8', description: 'Plain table 4' },
+			{ name: '_design9', displayName: 'Design 9', description: 'Alternative row color 3' },
+			{ name: '_design10', displayName: 'Design 10', description: 'Plain table 5' },
 		],
 	},
 	{

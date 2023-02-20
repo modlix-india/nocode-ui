@@ -83,9 +83,8 @@ function TextEditor(props: ComponentProps) {
 				const toStore = JSON.parse(ev);
 				setData(bindingPathPath, toStore, context.pageName);
 			} catch (err) {}
-		} else {
-			setText(ev);
 		}
+		setText(ev);
 	};
 
 	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);

@@ -258,7 +258,7 @@ function TableComponent(props: ComponentProps) {
 		}
 
 		let gridChild, columnsChild;
-		for (let i = 0; i < childrenEntries.length && !gridChild && !columnsChild; i++) {
+		for (let i = 0; i < childrenEntries.length && (!gridChild || !columnsChild); i++) {
 			const k = childrenEntries[i][0];
 			if (pageDefinition.componentDefinition[k].type === 'TableColumns') {
 				columnsChild = k;
@@ -274,27 +274,32 @@ function TableComponent(props: ComponentProps) {
 		let from = offlineData ? pageNumber * pageSize : 0;
 		let to = offlineData ? (pageNumber + 1) * pageSize : pageSize;
 
+		const pagination = showPagination ? <div className="_tablePagination"></div> : undefined;
+
 		let mainBody = selectedChild ? (
-			<Children
-				pageDefinition={pageDefinition}
-				children={{ [selectedChild]: true }}
-				context={{
-					...context,
-					table: {
-						data,
-						bindingPath,
-						dataBindingPath,
-						from,
-						to,
-						selectionBindingPath,
-						selectionType,
-						multiSelect,
-						pageSize,
-						uniqueKey,
-					},
-				}}
-				locationHistory={locationHistory}
-			/>
+			<div className="_tableWithPagination">
+				<Children
+					pageDefinition={pageDefinition}
+					children={{ [selectedChild]: true }}
+					context={{
+						...context,
+						table: {
+							data,
+							bindingPath,
+							dataBindingPath,
+							from,
+							to,
+							selectionBindingPath,
+							selectionType,
+							multiSelect,
+							pageSize,
+							uniqueKey,
+						},
+					}}
+					locationHistory={locationHistory}
+				/>
+				{pagination}
+			</div>
 		) : (
 			<></>
 		);

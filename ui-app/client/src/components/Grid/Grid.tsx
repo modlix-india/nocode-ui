@@ -124,7 +124,8 @@ function Grid(props: ComponentProps) {
 						props.locationHistory,
 						props.pageDefinition,
 					);
-	const styleComp = resolvedStyles?.comp?.hideScrollBar ? (
+	const sepStyle = resolvedStyles?.comp?.hideScrollBar;
+	const styleComp = sepStyle ? (
 		<style
 			key={`${key}_style`}
 		>{`._${key}_grid_css::-webkit-scrollbar { display: none }`}</style>
@@ -136,7 +137,9 @@ function Grid(props: ComponentProps) {
 			<Link
 				key={`${key}_Link`}
 				ref={ref}
-				className={`_anchorGrid _${layout} ${background} _${key}_grid_css`}
+				className={`_anchorGrid _${layout} ${background} ${
+					sepStyle ? `_${key}_grid_css` : ''
+				}`}
 				onMouseEnter={
 					stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
 				}
@@ -165,7 +168,9 @@ function Grid(props: ComponentProps) {
 			onFocus: stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined,
 			onBlur: stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined,
 			ref: ref,
-			className: `comp compGrid _noAnchorGrid _${layout} ${background} _${key}_grid_css`,
+			className: `comp compGrid _noAnchorGrid _${layout} ${background} ${
+				sepStyle ? `_${key}_grid_css` : ''
+			}`,
 			style: resolvedStyles.comp ?? {},
 
 			onClick: handleClick,

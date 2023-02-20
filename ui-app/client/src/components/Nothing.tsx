@@ -5,7 +5,7 @@ export default function Nothing({ definition }: { definition: any }) {
 	return (
 		<div className="comp compNothing">
 			<HelperComponent definition={definition} />
-			No component with type {definition.type} not found.
+			No component with type {definition.type} found.
 		</div>
 	);
 }
