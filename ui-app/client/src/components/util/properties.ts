@@ -156,7 +156,7 @@ const COMPONENT_STYLE_GROUPS: { [key: string]: Array<string> } = {
 	margin: ['marginBottom', 'marginLeft', 'marginRight', 'marginTop'],
 	opacity: ['opacity'],
 	outline: ['outlineColor', 'outlineOffset', 'outlineStyle', 'outlineWidth'],
-	padding: ['paddingBottom', 'paddingLeft', 'paddingRight', 'paddingTop'],
+	padding: ['paddingBottom', 'paddingLeft', 'paddingRight', 'paddingTop', 'padding'],
 	position: ['bottom', 'left', 'right', 'top', 'translateX', 'translateY', 'position'],
 	rotate: ['rotate'],
 	size: ['width', 'height', 'minHeight', 'minWidth', 'maxHeight', 'maxWidth', 'scale'],
