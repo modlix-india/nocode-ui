@@ -63,7 +63,7 @@ function TableGridComponent(props: ComponentProps) {
 		stylePropertiesWithPseudoStates,
 	);
 
-	const total = from - to;
+	const total = to - from;
 
 	let emptyCount = pageSize - total;
 	if (emptyCount < 0 || !showEmptyGrids) emptyCount = 0;
@@ -73,13 +73,14 @@ function TableGridComponent(props: ComponentProps) {
 	const isSelected = (index: number): boolean => {
 		if (selectionType === 'NONE' || !selectionBindingPath) return false;
 
-		return (
-			(multiSelect ? selection : [selection]).indexOf((e: any) =>
+		const selected =
+			(multiSelect ? selection ?? [] : [selection]).filter((e: any) =>
 				selectionType === 'OBJECT'
 					? deepEqual(e, data[index])
 					: e === `(${dataBindingPath})[${index}]`,
-			) !== -1
-		);
+			).length !== 0;
+
+		return selected;
 	};
 
 	const select = (index: number) => {
@@ -102,6 +103,17 @@ function TableGridComponent(props: ComponentProps) {
 			setData(selectionBindingPath, putObj, context.pageName);
 		}
 	};
+
+	let emptyGrids = [];
+	if (emptyCount) {
+		for (let i = 0; i < emptyCount; i++) {
+			emptyGrids.push(
+				<div className="_eachTableGrid" style={styleProperties?.eachGrid}>
+					&nbsp;
+				</div>,
+			);
+		}
+	}
 
 	return (
 		<div className={`comp compTableGrid _${layout}`} style={styleProperties.comp}>
@@ -133,7 +145,9 @@ function TableGridComponent(props: ComponentProps) {
 				return (
 					<div
 						key={key}
-						className={`_eachTableGrid ${onClick ? '_pointer' : ''}`}
+						className={`_eachTableGrid _dataGrid ${onClick ? '_pointer' : ''}  ${
+							isSelected(index) ? '_selected' : ''
+						}`}
 						tabIndex={0}
 						onClick={onClick}
 						style={(hover !== index ? styleProperties : styleHoverProperties)?.eachGrid}
@@ -165,6 +179,7 @@ function TableGridComponent(props: ComponentProps) {
 					</div>
 				);
 			})}
+			{emptyGrids}
 		</div>
 	);
 }

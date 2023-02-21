@@ -1,10 +1,11 @@
 import React from 'react';
 import { StyleResolution } from '../../types/common';
-import { processStyleDefinition } from '../../util/styleProcessor';
+import { processStyleDefinition, processStyleValueWithFunction } from '../../util/styleProcessor';
 import { styleProperties, styleDefaults } from './buttonStyleProperties';
 
 const PREFIX = '.comp.compButton';
 export default function ButtonStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
 	const css =
 		`
 		${PREFIX} {
@@ -12,19 +13,13 @@ export default function ButtonStyle({ theme }: { theme: Map<string, Map<string, 
 		}
 
 		${PREFIX} .button.fabButton {
-			height: ${
-				theme.get(StyleResolution.ALL)?.get('fabButtonWidth') ??
-				styleDefaults.get('fabButtonWidth')
-			};
+			height: ${processStyleValueWithFunction(values.get('fabButtonWidth'), values)};
 			border-radius: 50%;
 			padding: 0px;
 		}
 		
 		${PREFIX} .button.fabButtonMini {
-			height: ${
-				theme.get(StyleResolution.ALL)?.get('fabButtonMiniWidth') ??
-				styleDefaults.get('fabButtonMiniWidth')
-			};
+			height: ${processStyleValueWithFunction(values.get('fabButtonMiniWidth'), values)};
 			border-radius: 50%;
 			padding: 0px;
 		}
@@ -41,28 +36,16 @@ export default function ButtonStyle({ theme }: { theme: Map<string, Map<string, 
 		}
 		
 		${PREFIX} .button .rightButtonIcon {
-			margin-left: ${
-				theme.get(StyleResolution.ALL)?.get('buttonIconMargin') ??
-				styleDefaults.get('buttonIconMargin')
-			};
+			margin-left: ${processStyleValueWithFunction(values.get('buttonIconMargin'), values)};
 		}
 		${PREFIX} .button .leftButtonIcon {
-			margin-right: ${
-				theme.get(StyleResolution.ALL)?.get('buttonIconMargin') ??
-				styleDefaults.get('buttonIconMargin')
-			};
+			margin-right: ${processStyleValueWithFunction(values.get('buttonIconMargin'), values)};
 		}		
 		${PREFIX} .button {
-			padding: ${
-				theme.get(StyleResolution.ALL)?.get('buttonPadding') ??
-				styleDefaults.get('buttonPadding')
-			};
+			padding: ${processStyleValueWithFunction(values.get('buttonPadding'), values)};
 			height: ${theme.get(StyleResolution.ALL)?.get('buttonHeight') ?? styleDefaults.get('buttonHeight')};
 			border: ${theme.get(StyleResolution.ALL)?.get('buttonBorder') ?? styleDefaults.get('buttonBorder')};
-			border-radius: ${
-				theme.get(StyleResolution.ALL)?.get('buttonBorderRadius') ??
-				styleDefaults.get('buttonBorderRadius')
-			};
+			border-radius: ${processStyleValueWithFunction(values.get('buttonBorderRadius'), values)};
 		}
 		
 		${PREFIX} .button.outlined, ${PREFIX} .button.outlined:disabled {

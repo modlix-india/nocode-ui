@@ -9,7 +9,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
 		displayName: 'Show Empty Rows',
 		description: 'Show Empty Rows when there is no data',
-		defaultValue: false,
+		defaultValue: true,
 	},
 	{
 		name: 'showHeaders',
