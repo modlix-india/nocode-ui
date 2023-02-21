@@ -17,6 +17,7 @@ export default function TableGridStyle({ theme }: { theme: Map<string, Map<strin
 	${PREFIX} ._eachTableGrid {
 		display: flex;
 		flex-direction: column;
+		align-items: flex-start;
 	}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
