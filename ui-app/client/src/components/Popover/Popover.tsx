@@ -21,7 +21,7 @@ function Popover(props: ComponentProps) {
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
-		properties: { isReadonly, position = 'bottom' } = {},
+		properties: { isReadonly, position = 'bottom-left' } = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
 		definition,
@@ -43,6 +43,8 @@ function Popover(props: ComponentProps) {
 	const popController = popChildren[0];
 	const popover = popChildren[1];
 
+	console.log;
+
 	React.useEffect(
 		() =>
 			addListenerAndCallImmediately(
@@ -59,28 +61,73 @@ function Popover(props: ComponentProps) {
 		if (!boxRef.current || !popoverRef.current || !show) return;
 		const boxRect = boxRef.current?.getBoundingClientRect();
 		const popoverRect = popoverRef.current?.getBoundingClientRect();
-		console.log(boxRect, 'box', popoverRect);
+		console.log(boxRect, 'box1');
+		console.log(popoverRect, 'box2');
+
 		if (position === 'bottom-left') {
+			let bodyWidth = document.body.clientWidth;
+			let leftStart = bodyWidth - boxRect.x - popoverRect.width;
+			leftStart =
+				leftStart < 0 ? (boxRect.x + leftStart < 0 ? 0 : boxRect.x + leftStart) : boxRect.x;
 			setCoords({
-				left: boxRect.x,
+				left: leftStart,
 				top: boxRect.height + boxRect.y,
 			});
 		}
 
-		if (position === 'bottom') {
-			console.log(boxRect, 'box');
+		if (position === 'bottom-center') {
 			let boxCenter = boxRect.x + boxRect.width / 2;
 			let leftStart = boxCenter - popoverRect.width / 2;
-			console.log(
-				pageBox?.left,
-				leftStart,
-				(pageBox?.left ?? 0) > leftStart ? pageBox?.left ?? 0 : leftStart,
-			);
-			leftStart = (pageBox?.left ?? 0) > leftStart ? pageBox?.left ?? 0 : leftStart;
+			console.log('left start', leftStart);
+			// leftStart = (pageBox?.left ?? 0) > leftStart ? pageBox?.left ?? 0 : leftStart;
+			leftStart = leftStart < 0 ? 0 : leftStart;
 			console.log(pageBox, 'pagebox', leftStart);
+			console.log('height', boxRect.height);
+			console.log('y==', boxRect.y);
 			setCoords({
 				left: leftStart,
 				top: boxRect.height + boxRect.y,
+			});
+		}
+
+		if (position === 'bottom-right') {
+			let leftStart = boxRect.x + boxRect.width - popoverRect.width;
+			leftStart = leftStart < 0 ? 0 : leftStart;
+			setCoords({
+				left: leftStart,
+				top: boxRect.height + boxRect.y,
+			});
+		}
+
+		if (position === 'top-right') {
+			let leftStart = boxRect.x + boxRect.width - popoverRect.width;
+			leftStart = leftStart < 0 ? 0 : leftStart;
+			setCoords({
+				left: leftStart,
+				top: boxRect.top - popoverRect.height,
+			});
+		}
+
+		if (position === 'top-center') {
+			let boxCenter = boxRect.x + boxRect.width / 2;
+			let leftStart = boxCenter - popoverRect.width / 2;
+			leftStart = leftStart < 0 ? 0 : leftStart;
+			setCoords({
+				left: leftStart,
+				top: boxRect.top - popoverRect.height,
+			});
+		}
+
+		if (position === 'top-left') {
+			let bodyWidth = document.body.clientWidth;
+			let leftStart = bodyWidth - boxRect.x - popoverRect.width;
+			leftStart =
+				leftStart < 0 ? (boxRect.x + leftStart < 0 ? 0 : boxRect.x + leftStart) : boxRect.x;
+			let topStart = boxRect.y - popoverRect.height;
+			topStart = topStart < 0 ? 0 : topStart;
+			setCoords({
+				left: leftStart,
+				top: topStart,
 			});
 		}
 	}, [show]);
@@ -113,7 +160,11 @@ function Popover(props: ComponentProps) {
 	return (
 		<div className="comp compPopover" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />
-			<div style={{ display: 'inline-flex' }} ref={boxRef} onClick={showPopover}>
+			<div
+				style={{ display: 'inline-flex', marginRight: '120px' }}
+				ref={boxRef}
+				onClick={showPopover}
+			>
 				<Children
 					key={`${key}_${popController}_chld`}
 					pageDefinition={pageDefinition}
