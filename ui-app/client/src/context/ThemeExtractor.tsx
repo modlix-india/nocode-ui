@@ -31,7 +31,7 @@ export class ThemeExtractor extends TokenValueExtractor {
 
 		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
 		if (parts.length != 2) return undefined;
-		console.log(token);
+
 		const devices = this.store.devices;
 		if (devices) {
 			for (const res of ORDER_OF_RESOLUTION)
