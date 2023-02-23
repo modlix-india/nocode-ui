@@ -1,7 +1,16 @@
+import { Schema } from '@fincity/kirun-js';
+import { SCHEMA_REF_STRING_COMP_PROP } from '../../constants';
 import { ComponentPropertyDefinition } from '../../types/common';
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
+	{
+		name: 'position',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'Popover position',
+		description: `Popover position.`,
+		defaultValue: 'bottom-center',
+	},
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 

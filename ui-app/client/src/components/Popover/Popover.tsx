@@ -20,16 +20,14 @@ function Popover(props: ComponentProps) {
 		context,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
-	const {
-		properties: { isReadonly, position = 'bottom-left' } = {},
-		stylePropertiesWithPseudoStates,
-	} = useDefinition(
-		definition,
-		propertiesDefinition,
-		stylePropertiesDefinition,
-		locationHistory,
-		pageExtractor,
-	);
+	const { properties: { isReadonly, position } = {}, stylePropertiesWithPseudoStates } =
+		useDefinition(
+			definition,
+			propertiesDefinition,
+			stylePropertiesDefinition,
+			locationHistory,
+			pageExtractor,
+		);
 	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
 	const [show, setShow] = React.useState(false);
 	const [coords, setCoords] = React.useState({ left: 0, top: 0 });
@@ -43,19 +41,17 @@ function Popover(props: ComponentProps) {
 	const popController = popChildren[0];
 	const popover = popChildren[1];
 
-	console.log;
-
-	React.useEffect(
-		() =>
-			addListenerAndCallImmediately(
-				(_, value) => {
-					setPageBox(value);
-				},
-				pageExtractor,
-				'Page.boundingRect',
-			),
-		[],
-	);
+	// React.useEffect(
+	// 	() =>
+	// 		addListenerAndCallImmediately(
+	// 			(_, value) => {
+	// 				setPageBox(value);
+	// 			},
+	// 			pageExtractor,
+	// 			'Page.boundingRect',
+	// 		),
+	// 	[],
+	// );
 
 	React.useEffect(() => {
 		if (!boxRef.current || !popoverRef.current || !show) return;
@@ -78,12 +74,8 @@ function Popover(props: ComponentProps) {
 		if (position === 'bottom-center') {
 			let boxCenter = boxRect.x + boxRect.width / 2;
 			let leftStart = boxCenter - popoverRect.width / 2;
-			console.log('left start', leftStart);
 			// leftStart = (pageBox?.left ?? 0) > leftStart ? pageBox?.left ?? 0 : leftStart;
 			leftStart = leftStart < 0 ? 0 : leftStart;
-			console.log(pageBox, 'pagebox', leftStart);
-			console.log('height', boxRect.height);
-			console.log('y==', boxRect.y);
 			setCoords({
 				left: leftStart,
 				top: boxRect.height + boxRect.y,
@@ -124,6 +116,61 @@ function Popover(props: ComponentProps) {
 			leftStart =
 				leftStart < 0 ? (boxRect.x + leftStart < 0 ? 0 : boxRect.x + leftStart) : boxRect.x;
 			let topStart = boxRect.y - popoverRect.height;
+			// topStart = topStart < 0 ? 0 : topStart;
+			setCoords({
+				left: leftStart,
+				top: topStart,
+			});
+		}
+
+		if (position === 'left-top') {
+			let leftStart = boxRect.x - popoverRect.width;
+			setCoords({
+				left: leftStart,
+				top: boxRect.y,
+			});
+		}
+
+		if (position === 'left-center') {
+			let leftStart = boxRect.x - popoverRect.width;
+			let topStart = boxRect.y + boxRect.height / 2 - popoverRect.height / 2;
+			topStart = topStart < 0 ? 0 : topStart;
+			setCoords({
+				left: leftStart,
+				top: topStart,
+			});
+		}
+		if (position === 'left-bottom') {
+			let leftStart = boxRect.x - popoverRect.width;
+			let topStart = boxRect.y + boxRect.height - popoverRect.height;
+			topStart = topStart < 0 ? 0 : topStart;
+			setCoords({
+				left: leftStart,
+				top: topStart,
+			});
+		}
+
+		if (position === 'right-top') {
+			let leftStart = boxRect.x + boxRect.width;
+			setCoords({
+				left: leftStart,
+				top: boxRect.y,
+			});
+		}
+
+		if (position === 'right-center') {
+			let leftStart = boxRect.x + boxRect.width;
+			let topStart = boxRect.y + boxRect.height / 2 - popoverRect.height / 2;
+			topStart = topStart < 0 ? 0 : topStart;
+			setCoords({
+				left: leftStart,
+				top: topStart,
+			});
+		}
+
+		if (position === 'right-bottom') {
+			let leftStart = boxRect.x + boxRect.width;
+			let topStart = boxRect.y + boxRect.height - popoverRect.height;
 			topStart = topStart < 0 ? 0 : topStart;
 			setCoords({
 				left: leftStart,
