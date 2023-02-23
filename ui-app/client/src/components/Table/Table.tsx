@@ -248,11 +248,6 @@ function TableComponent(props: ComponentProps) {
 		[selectionBindingPath],
 	);
 
-	console.log(data);
-	console.log(pageSize);
-	console.log(pageNumber);
-	console.log(selection);
-
 	if (!body) {
 		let previewChild;
 		if (selection) {
