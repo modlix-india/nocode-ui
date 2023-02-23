@@ -226,9 +226,9 @@ function TableComponent(props: ComponentProps) {
 	const [selection, setSelection] = useState<any>();
 
 	if (!isLoading && !data?.length) {
-		const entry = childrenEntries.filter(
-			([k]) => pageDefinition.componentDefinition[k].type === 'TableEmptyGrid',
-		);
+		const entry = childrenEntries
+			.filter(([k]) => pageDefinition.componentDefinition[k])
+			.filter(([k]) => pageDefinition.componentDefinition[k].type === 'TableEmptyGrid');
 		if (entry?.length) {
 			body = (
 				<Children
@@ -248,6 +248,11 @@ function TableComponent(props: ComponentProps) {
 		[selectionBindingPath],
 	);
 
+	console.log(data);
+	console.log(pageSize);
+	console.log(pageNumber);
+	console.log(selection);
+
 	if (!body) {
 		let previewChild;
 		if (selection) {
@@ -264,9 +269,9 @@ function TableComponent(props: ComponentProps) {
 		let gridChild, columnsChild;
 		for (let i = 0; i < childrenEntries.length && (!gridChild || !columnsChild); i++) {
 			const k = childrenEntries[i][0];
-			if (pageDefinition.componentDefinition[k].type === 'TableColumns') {
+			if (pageDefinition.componentDefinition[k]?.type === 'TableColumns') {
 				columnsChild = k;
-			} else if (pageDefinition.componentDefinition[k].type === 'TableGrid') {
+			} else if (pageDefinition.componentDefinition[k]?.type === 'TableGrid') {
 				gridChild = k;
 			}
 		}
