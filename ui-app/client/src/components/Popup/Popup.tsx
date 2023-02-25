@@ -177,6 +177,10 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: PopupStyles,
+	hasChildren: true,
+	bindingPaths: {
+		bindingPath: { name: 'Toggle Binding' },
+	},
 };
 
 export default component;

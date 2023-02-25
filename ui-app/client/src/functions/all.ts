@@ -6,3 +6,4 @@ export * from './GetStoreData';
 export * from './Login';
 export * from './Logout';
 export * from './Message';
+export * from './Navigate';

@@ -1,7 +1,7 @@
 import { Schema } from '@fincity/kirun-js';
 import { SCHEMA_REF_BOOL_COMP_PROP, SCHEMA_REF_STRING_COMP_PROP } from '../../constants';
 import { ComponentPropertyDefinition, ComponentStylePropertyDefinition } from '../../types/common';
-import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
+import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
@@ -18,12 +18,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: '',
 	},
 
-	{
-		name: 'onClickEvent',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-		displayName: 'Click event',
-		description: 'Event to be triggered on click.',
-	},
+	COMMON_COMPONENT_PROPERTIES.onClick,
 	{
 		name: 'zoom',
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
@@ -61,13 +56,13 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 			COMPONENT_STYLE_GROUP_PROPERTIES.background,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.image.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.image,
-			target: ['image'],
+			target: ['image', 'comp'],
 		},
 		[COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow.type]:
 			COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.size,
-			target: ['image'],
+			target: ['image', 'comp'],
 		},
 		[COMPONENT_STYLE_GROUP_PROPERTIES.opacity.type]: COMPONENT_STYLE_GROUP_PROPERTIES.opacity,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.backdropFilter.type]:

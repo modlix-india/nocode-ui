@@ -50,6 +50,15 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		noPrefix: true,
 	},
 	{
+		name: 'black-font-color',
+		cssProperty: 'color',
+		selector: 'body',
+		displayName: 'Application/Site Color',
+		description: 'This color is used throughout application for all fonts.',
+		defaultValue: '#000000',
+		noPrefix: true,
+	},
+	{
 		name: 'form-input-border-color',
 		displayName: 'Form input border color',
 		description: 'This border color is used throughout form input controls.',

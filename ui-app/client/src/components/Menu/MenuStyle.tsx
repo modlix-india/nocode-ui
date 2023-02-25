@@ -1,10 +1,11 @@
 import React from 'react';
 import { StyleResolution } from '../../types/common';
-import { processStyleDefinition } from '../../util/styleProcessor';
+import { processStyleDefinition, processStyleValueWithFunction } from '../../util/styleProcessor';
 import { styleProperties, styleDefaults } from '../Menu/menuStyleProperties';
 
 const PREFIX = '.comp.compMenu';
 export default function MenuStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
 	const css =
 		`
 		${PREFIX} {
@@ -30,6 +31,11 @@ export default function MenuStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} .link{
 			text-decoration: none;
 			flex: 1
+		}
+		
+		${PREFIX} .icon {
+			width:  calc(${processStyleValueWithFunction(values.get('menuIconSize'), values)} + 4px);
+			height:  calc(${processStyleValueWithFunction(values.get('menuIconSize'), values)} + 4px);
 		}
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

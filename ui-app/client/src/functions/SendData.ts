@@ -5,6 +5,7 @@ import {
 	FunctionExecutionParameters,
 	FunctionOutput,
 	FunctionSignature,
+	isNullValue,
 	Parameter,
 	Schema,
 } from '@fincity/kirun-js';
@@ -59,19 +60,19 @@ export class SendData extends AbstractFunction {
 		pathParams = Object.entries(pathParams)
 			.map(([k, v]) => [k, getData(v as ComponentProperty<any>, [], ...evmap)])
 			.reduce((a: { [key: string]: any }, [k, v]) => {
-				if (v) a[k] = v;
+				if (!isNullValue(v)) a[k] = v;
 				return a;
 			}, {});
 		queryParams = Object.entries(queryParams)
 			.map(([k, v]) => [k, getData(v as ComponentProperty<any>, [], ...evmap)])
 			.reduce((a: { [key: string]: any }, [k, v]) => {
-				if (v) a[k] = v;
+				if (!isNullValue(v)) a[k] = v;
 				return a;
 			}, {});
 		headers = Object.entries(headers)
 			.map(([k, v]) => [k, getData(v as ComponentProperty<any>, [], ...evmap)])
 			.reduce((a: { [key: string]: any }, [k, v]) => {
-				if (v) a[k] = v;
+				if (!isNullValue(v)) a[k] = v;
 				return a;
 			}, {});
 

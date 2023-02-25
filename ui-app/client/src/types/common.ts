@@ -24,6 +24,8 @@ export interface RenderContext {
 	isReadonly?: boolean;
 	formKey?: Array<string>;
 	showValidationMessages?: boolean;
+	observer?: IntersectionObserver;
+	table?: any;
 }
 
 export enum ComponentPropertyDataPathType {
@@ -102,6 +104,19 @@ export interface Component {
 	properties: Array<ComponentPropertyDefinition>;
 	styleProperties?: ComponentStylePropertyDefinition;
 	stylePseudoStates?: Array<String>;
+	hasChildren?: boolean;
+	numberOfChildren?: number;
+	allowedChildrenType?: Map<String, number>;
+	parentType?: string;
+	isHidden?: boolean;
+	bindingPaths?: {
+		bindingPath?: { name: string };
+		bindingPath2?: { name: string };
+		bindingPath3?: { name: string };
+		bindingPath4?: { name: string };
+		bindingPath5?: { name: string };
+		bindingPath6?: { name: string };
+	};
 }
 
 export enum StyleResolution {
@@ -176,6 +191,11 @@ export interface ComponentStyle {
 export interface ComponentDefinition {
 	key: string;
 	bindingPath?: DataLocation;
+	bindingPath2?: DataLocation;
+	bindingPath3?: DataLocation;
+	bindingPath4?: DataLocation;
+	bindingPath5?: DataLocation;
+	bindingPath6?: DataLocation;
 	type: string;
 	properties?: {
 		[key: string]:
@@ -217,4 +237,5 @@ export interface ComponentProps {
 export interface LocationHistory {
 	location: DataLocation | string;
 	index: number;
+	pageName: string;
 }
