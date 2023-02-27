@@ -59,6 +59,15 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		noPrefix: true,
 	},
 	{
+		name: 'light-black-font-color',
+		cssProperty: 'color',
+		selector: 'body',
+		displayName: 'Application/Site Color',
+		description: 'This color is used throughout application for all fonts.',
+		defaultValue: '#0000001F',
+		noPrefix: true,
+	},
+	{
 		name: 'form-input-border-color',
 		displayName: 'Form input border color',
 		description: 'This border color is used throughout form input controls.',
@@ -175,6 +184,13 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Application/Site Bright color',
 		description: 'This color is used throughout application where bright color is needed',
 		defaultValue: '#e5b122',
+		noPrefix: true,
+	},
+	{
+		name: 'light-contrast-bright-color',
+		displayName: 'Application/Site Bright color',
+		description: 'This color is used throughout application where bright color is needed',
+		defaultValue: '#e5b12221',
 		noPrefix: true,
 	},
 	{
