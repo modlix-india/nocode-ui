@@ -16,7 +16,7 @@ import { ComponentProps, ComponentPropertyDefinition } from '../../types/common'
 import { Component } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './checkBoxProperties';
 import CheckBoxStyle from './CheckBoxStyle';
-import CommonCheckBox from '../../commonComponents/Checkbox';
+import CommonCheckbox from '../../commonComponents/CommonCheckbox';
 import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 
@@ -76,7 +76,7 @@ function CheckBox(props: ComponentProps) {
 				className={`checkbox ${orientation === 'VERTICAL' ? 'vertical' : 'horizontal'}`}
 				htmlFor={key}
 			>
-				<CommonCheckBox
+				<CommonCheckbox
 					isChecked={checkBoxdata}
 					isReadOnly={readOnly}
 					id={key}

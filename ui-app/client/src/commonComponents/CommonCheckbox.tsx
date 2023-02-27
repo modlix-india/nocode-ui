@@ -1,24 +1,24 @@
 import React from 'react';
 
-type CommonCheckBox = {
+type CommonCheckboxType = {
 	isChecked: boolean;
-	onChange: (event: any) => void;
-	id: string;
-	isReadOnly: boolean;
-	styles: any;
-	focusHandler: () => void;
-	blurHandler: () => void;
+	onChange?: (event: any) => void;
+	id?: string;
+	isReadOnly?: boolean;
+	styles?: any;
+	focusHandler?: () => void;
+	blurHandler?: () => void;
 };
 
-function CheckBox({
+function CommonCheckbox({
 	isChecked,
 	onChange,
 	id,
-	isReadOnly,
+	isReadOnly = false,
 	styles,
 	focusHandler,
 	blurHandler,
-}: CommonCheckBox) {
+}: CommonCheckboxType) {
 	return (
 		<input
 			className="commonCheckbox"
@@ -34,4 +34,4 @@ function CheckBox({
 	);
 }
 
-export default CheckBox;
+export default CommonCheckbox;
