@@ -11,6 +11,7 @@ import Children from '../Children';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { deepEqual, ExpressionEvaluator } from '@fincity/kirun-js';
 import { getExtractionMap } from '../util/getRenderData';
+import CommonCheckbox from '../../commonComponents/CommonCheckbox';
 
 function TableColumnsComponent(props: ComponentProps) {
 	const [value, setValue] = useState([]);
@@ -127,10 +128,9 @@ function TableColumnsComponent(props: ComponentProps) {
 
 		const checkBox = showCheckBox ? (
 			<div className="comp compTableColumn">
-				<input
+				<CommonCheckbox
 					key="checkbox"
-					type="checkbox"
-					checked={isSelected(index)}
+					isChecked={isSelected(index)}
 					onChange={() => select(index)}
 				/>
 			</div>
