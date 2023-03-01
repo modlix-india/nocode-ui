@@ -28,6 +28,7 @@ import TableColumn from './TableColumn/TableColumn';
 import TableColumnHeader from './TableColumnHeader/TableColumnHeader';
 import ProgressBar from './ProgressBar/ProgressBar';
 import Popover from './Popover/Popover';
+import SubPage from './SubPage/SubPage';
 
 export const Components = new Map<string, React.ElementType>([
 	[Button.name, Button.component],
@@ -60,6 +61,7 @@ export const Components = new Map<string, React.ElementType>([
 	[TableColumnHeader.name, TableColumnHeader.component],
 	[ProgressBar.name, ProgressBar.component],
 	[Popover.name, Popover.component],
+	[SubPage.name, SubPage.component],
 ]);
 
 export const ComponentDefinitions = [
@@ -93,4 +95,5 @@ export const ComponentDefinitions = [
 	TableColumnHeader,
 	ProgressBar,
 	Popover,
+	SubPage,
 ];

@@ -12,7 +12,7 @@ import { useLocation } from 'react-router-dom';
 import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../constants';
 import { Components } from './index';
 import Nothing from './Nothing';
-import { TokenValueExtractor } from '@fincity/kirun-js';
+import { isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
 import { getPathsFrom } from './util/getPaths';
 import { processLocation } from '../util/locationProcessor';
 import { flattenUUID } from './util/uuid';
@@ -27,6 +27,7 @@ function processDefinitionLocationHistory(
 	locationHistory: Array<LocationHistory>,
 ): ComponentDefinition {
 	if (!locationHistory?.length) return def;
+	if (isNullValue(def)) return def;
 
 	const newDef = JSON.parse(JSON.stringify(def));
 	const str = locationHistory.map(e => e.index).join('_');

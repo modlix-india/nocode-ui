@@ -7,7 +7,18 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "checkbox's Color",
 		description: 'The color of the Checkbox.',
 		defaultValue: '<white>',
-		selector: ".checkbox input[type='checkbox']",
+		selector: "input[type='checkbox'].commonCheckbox",
+		noPrefix: true,
+	},
+
+	{
+		name: 'checkBoxCheckColor',
+		cssProperty: 'color',
+		displayName: "checkbox check's Color",
+		description: 'The color of the Checkbox check.',
+		defaultValue: '<light-font-color>',
+		selector: "input[type='checkbox'].commonCheckbox::before",
+		noPrefix: true,
 	},
 
 	{
@@ -16,7 +27,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "checkbox's border Color",
 		description: 'The border color of the Checkbox.',
 		defaultValue: 'rgba(0, 0, 0, 0.38)',
-		selector: ".checkbox input[type='checkbox']",
+		selector: "input[type='checkbox'].commonCheckbox",
+		noPrefix: true,
 	},
 	{
 		name: 'checkBoxChecked',
@@ -24,7 +36,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "checkbox's checked animation Color",
 		description: 'The checked animation color of the Checkbox.',
 		defaultValue: '<contrast-bright-color>',
-		selector: ".checkbox input[type='checkbox']:checked",
+		selector: "input[type='checkbox'].commonCheckbox:checked",
+		noPrefix: true,
 	},
 	{
 		name: 'checkBoxLabelColor',
@@ -42,6 +55,32 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description: 'The width of the Checkbox.',
 		defaultValue: 'auto',
 		selector: '.checkbox',
+	},
+
+	{
+		name: 'checkboxCheckedHoverColor',
+		displayName: "checkbox's hover color",
+		description: "checkbox's hover color.",
+		defaultValue: '<light-contrast-bright-color>',
+		noPrefix: true,
+	},
+
+	{
+		name: 'checkboxHoverColor',
+		displayName: "checkbox's hover color",
+		description: "checkbox's hover color.",
+		defaultValue: '<light-black-font-color>',
+		noPrefix: true,
+	},
+
+	{
+		name: 'checkBoxDisabledBorderColor',
+		cssProperty: 'border-color',
+		displayName: 'CheckBox disabled border color',
+		description: 'CheckBox disabled border color.',
+		defaultValue: '<app-grey-color>',
+		selector: "input[type='checkbox'].commonCheckbox:disabled",
+		noPrefix: true,
 	},
 ];
 
