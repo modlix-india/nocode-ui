@@ -3,8 +3,18 @@ export default function getPositions(position: String, boxRect: DOMRect, popover
 	let bottom = 0;
 	let left = 0;
 	let right = 0;
-	let xAsixTip = '';
-	let yAxisTip = '';
+	let xAsixTipStyle = position.includes('end')
+		? { left: `${boxRect.width * 0.5 + (popoverRect.width - boxRect.width)}px` }
+		: position.includes('start')
+		? { left: `${boxRect.width * 0.5}px` }
+		: { left: `50%` };
+	let yAxisTipStyle = position.includes('end')
+		? { top: `${boxRect.height * 0.5 + (popoverRect.height - boxRect.height)}px` }
+		: position.includes('start')
+		? { top: `${boxRect.height * 0.5}px` }
+		: { top: '50%' };
+	let xAsixTipStyle1 = { left: `${boxRect.width * 0.5}px` };
+	let yAxisTipStyle1 = { top: `${boxRect.height * 0.5}px` };
 
 	let bodyHeight = document.body.clientHeight;
 	let bodyWidth = document.body.clientWidth;
@@ -13,7 +23,7 @@ export default function getPositions(position: String, boxRect: DOMRect, popover
 		left = boxRect.x;
 	}
 	if (position === 'bottom' || position === 'top') {
-		left = boxRect.x + 0.5 * boxRect.width - 0.5 * popoverRect.width;
+		left = boxRect.x + boxRect.width * 0.5 - popoverRect.width * 0.5;
 	}
 	if (position === 'bottom-end' || position === 'top-end') {
 		right = bodyWidth - boxRect.x - boxRect.width;
@@ -31,16 +41,31 @@ export default function getPositions(position: String, boxRect: DOMRect, popover
 			return {
 				coords: topCoords,
 				tipPosition: 'bottomTip',
-				margin: { marginBottom: '14px' },
+				tipStyle: xAsixTipStyle,
+				marginContainer: { marginBottom: '14px' },
 			};
 		}
-		// if (bottom - popoverRect.height < 0) {
 		if (bodyHeight - bottom - popoverRect.height < 0) {
-			return { coords: bottomCoords, tipPosition: 'topTip', margin: { marginTop: '14px' } };
+			return {
+				coords: bottomCoords,
+				tipPosition: 'topTip',
+				tipStyle: xAsixTipStyle,
+				marginContainer: { marginTop: '14px' },
+			};
 		}
 		return position.includes('bottom')
-			? { coords: bottomCoords, tipPosition: 'topTip', margin: { marginTop: '14px' } }
-			: { coords: topCoords, tipPosition: 'bottomTip', margin: { marginBottom: '14px' } };
+			? {
+					coords: bottomCoords,
+					tipPosition: 'topTip',
+					tipStyle: xAsixTipStyle,
+					marginContainer: { marginTop: '14px' },
+			  }
+			: {
+					coords: topCoords,
+					tipPosition: 'bottomTip',
+					tipStyle: xAsixTipStyle,
+					marginContainer: { marginBottom: '14px' },
+			  };
 	}
 
 	if (position === 'left-start' || position === 'right-start') {
@@ -50,7 +75,7 @@ export default function getPositions(position: String, boxRect: DOMRect, popover
 		top = boxRect.y + boxRect.height * 0.5 - popoverRect.height * 0.5; ////////
 	}
 	if (position === 'left-end' || position === 'right-end') {
-		bottom = bodyHeight - boxRect.y - boxRect.height * 0.75; //////////
+		bottom = bodyHeight - boxRect.y - boxRect.height; //////////
 	}
 	if (position.includes('left') || position.includes('right')) {
 		right = bodyWidth - boxRect.x;
@@ -66,22 +91,30 @@ export default function getPositions(position: String, boxRect: DOMRect, popover
 			return {
 				coords: rightCoords,
 				tipPosition: 'leftTip',
-				margin: { marginLeft: '14px' },
+				tipStyle: yAxisTipStyle,
+				marginContainer: { marginLeft: '14px' },
 			};
 		}
 		if (left + popoverRect.width > bodyWidth) {
 			return {
 				coords: leftCoords,
 				tipPosition: 'rightTip',
-				margin: { marginRight: '14px' },
+				tipStyle: yAxisTipStyle,
+				marginContainer: { marginRight: '14px' },
 			};
 		} else {
 			return position.includes('left')
-				? { coords: leftCoords, tipPosition: 'leftTip', margin: { marginLeft: '14px' } }
+				? {
+						coords: leftCoords,
+						tipPosition: 'rightTip',
+						tipStyle: yAxisTipStyle,
+						marginContainer: { marginRight: '14px' },
+				  }
 				: {
 						coords: rightCoords,
-						tipPosition: 'rightTip',
-						margin: { marginRight: '14px' },
+						tipPosition: 'leftTip',
+						tipStyle: yAxisTipStyle,
+						marginContainer: { marginLeft: '14px' },
 				  };
 		}
 	}

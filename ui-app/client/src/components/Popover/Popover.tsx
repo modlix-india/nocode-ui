@@ -40,6 +40,7 @@ function Popover(props: ComponentProps) {
 	const [show, setShow] = React.useState(false);
 	const [coords, setCoords] = React.useState<Cords>({ left: 0, top: 0 });
 	const [tipPosition, setTipPosition] = useState('');
+	const [tipStyle, setTipStyle] = useState({});
 	const [margin, setMargin] = useState({});
 	const boxRef = React.createRef<HTMLDivElement>();
 	const popoverRef = React.createRef<HTMLDivElement>();
@@ -74,7 +75,9 @@ function Popover(props: ComponentProps) {
 		let positions = getPositions(position, boxRect, popoverRect)!;
 		setCoords(positions.coords);
 		setTipPosition(positions.tipPosition);
-		setMargin(positions.margin);
+		setMargin(positions.marginContainer);
+		setTipStyle(positions.tipStyle!);
+		console.log('tip style ', tipStyle);
 		console.log('tip position', tipPosition);
 		// if (position === 'bottom-start') {
 		// 	let bodyHeight = document.body.clientHeight;
@@ -240,7 +243,7 @@ function Popover(props: ComponentProps) {
 							}}
 							className="comp compPopover popover"
 						>
-							<div className={`popoverTip ${tipPosition}`}></div>
+							<div className={`popoverTip ${tipPosition}`} style={tipStyle}></div>
 							<div className={`popoverContainer`} style={margin}>
 								<Children
 									key={`${key}_${popover.key}_chld`}

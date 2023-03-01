@@ -13,26 +13,22 @@ export default function PopoverStyle({ theme }: { theme: Map<string, Map<string,
 		}
 
 		.topTip{
-			left: 50%;
 			transform: translateX(-50%);
 		}
 		.bottomTip{
 			top: calc(100% - 16px);
-			left: 50%;
 			transform: translateX(-50%);
 		}
 		.leftTip{
-			top: 50%;
 			transform: translateY(-50%);
 		}
 		.rightTip{
 			left: calc(100% - 16px);
-			top: 50%;
 			transform: translateY(-50%);
 		}
 
 		.popoverTip.topTip::before {
-			clip-path: polygon(50% 0%, 100% 50%, 0% 50%);
+			clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
 		}
 		.popoverTip.bottomTip::before {
 			clip-path: polygon(100% 0, 0 0, 50% 100%);
@@ -46,23 +42,19 @@ export default function PopoverStyle({ theme }: { theme: Map<string, Map<string,
 
 		.popoverTip::before {
 			content: ' ';
-			width: 16px;
-			height: 16px;
+			width: 100%;
+			height: 100%;
 			background-color: black;
 			position: absolute;
 			top: 0;
-			// left: 3px;
 			display: block;
 		}
 		.popoverContainer {
 			border-radius: 5px;
-			/* background-color: rgb(188, 188, 188); */
 			background-color: lightblue;
 			width:300px;
 			height: 300px;
-			// margin-top: 8px;
-			// margin-left: -2px;
-			border: 3px solid;
+			border: 3px solid black;
 		}
 		.
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);

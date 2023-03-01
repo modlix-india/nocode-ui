@@ -9,7 +9,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: 'Popover position',
 		description: `Popover position.`,
-		defaultValue: 'top-start',
+		defaultValue: 'bottom-end',
 		editor: ComponentPropertyEditor.ENUM,
 		enumValues: [
 			{
@@ -62,7 +62,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 const stylePropertiesDefinition = {
 	'': {
-		[COMPONENT_STYLE_GROUP_PROPERTIES.flex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.flex,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: COMPONENT_STYLE_GROUP_PROPERTIES.margin,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: COMPONENT_STYLE_GROUP_PROPERTIES.padding,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.outline.type]: COMPONENT_STYLE_GROUP_PROPERTIES.outline,
@@ -71,6 +70,44 @@ const stylePropertiesDefinition = {
 		[COMPONENT_STYLE_GROUP_PROPERTIES.transform.type]:
 			COMPONENT_STYLE_GROUP_PROPERTIES.transform,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.zIndex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.zIndex,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.flex.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.flex,
+			target: ['popoverContainer'],
+		},
+	},
+	popoverContainer: {
+		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.size,
+			name: 'popoverContainerSize',
+			displayName: 'Popover Container Size',
+			description: 'Popover Container Size',
+			prefix: 'popoverContainer',
+			target: ['popoverContainer'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.padding,
+			name: 'popoverContainerPadding',
+			displayName: 'Popover Container Padding',
+			description: 'Popover Container Padding',
+			prefix: 'popoverContainer',
+			target: ['popoverContainer'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.margin,
+			name: 'popoverContainerMargin',
+			displayName: 'Popover Container Margin',
+			description: 'Popover Container Margin',
+			prefix: 'popoverContainer',
+			target: ['popoverContainer'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.border,
+			name: 'popoverContainerBorder',
+			displayName: 'Popover Container Border',
+			description: 'Popover Container Border',
+			prefix: 'popoverContainer',
+			target: ['popoverContainer'],
+		},
 	},
 };
 
