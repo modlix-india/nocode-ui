@@ -28,6 +28,7 @@ import TextEditor from './TextEditor/TextEditor';
 import TableColumn from './TableColumn/TableColumn';
 import TableColumnHeader from './TableColumnHeader/TableColumnHeader';
 import ProgressBar from './ProgressBar/ProgressBar';
+import FileUpload from './FileUpload/FileUpload';
 
 export const Components = new Map<string, React.ElementType>([
 	[Button.name, Button.component],
@@ -60,6 +61,7 @@ export const Components = new Map<string, React.ElementType>([
 	[TableColumn.name, TableColumn.component],
 	[TableColumnHeader.name, TableColumnHeader.component],
 	[ProgressBar.name, ProgressBar.component],
+	[FileUpload.name, FileUpload.component],
 ]);
 
 export const ComponentDefinitions = [
@@ -93,4 +95,5 @@ export const ComponentDefinitions = [
 	TableColumn,
 	TableColumnHeader,
 	ProgressBar,
+	FileUpload
 ];
