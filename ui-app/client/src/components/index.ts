@@ -27,6 +27,7 @@ import TextEditor from './TextEditor/TextEditor';
 import TableColumn from './TableColumn/TableColumn';
 import TableColumnHeader from './TableColumnHeader/TableColumnHeader';
 import ProgressBar from './ProgressBar/ProgressBar';
+import SubPage from './SubPage/SubPage';
 import PageEditor from './PageEditor/PageEditor';
 
 export const Components = new Map<string, React.ElementType>([
@@ -59,6 +60,7 @@ export const Components = new Map<string, React.ElementType>([
 	[TableColumn.name, TableColumn.component],
 	[TableColumnHeader.name, TableColumnHeader.component],
 	[ProgressBar.name, ProgressBar.component],
+	[SubPage.name, SubPage.component],
 	[PageEditor.name, PageEditor.component],
 ]);
 
@@ -92,5 +94,6 @@ export const ComponentDefinitions = [
 	TableColumn,
 	TableColumnHeader,
 	ProgressBar,
+	SubPage,
 	PageEditor,
 ];
