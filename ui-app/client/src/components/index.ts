@@ -6,7 +6,6 @@ import Link from './Link/Link';
 import Page from './Page/Page';
 import RadioButton from './RadioButton/RadioButton';
 import TextBox from './TextBox/TextBox';
-import Calendar from './Calendar/Calendar';
 import ToggleButton from './ToggleButton/ToggleButton';
 import ArrayRepeater from './ArrayRepeater/ArrayRepeater';
 import Popup from './Popup/Popup';
@@ -29,6 +28,7 @@ import TableColumn from './TableColumn/TableColumn';
 import TableColumnHeader from './TableColumnHeader/TableColumnHeader';
 import ProgressBar from './ProgressBar/ProgressBar';
 import FileUpload from './FileUpload/FileUpload';
+import SubPage from './SubPage/SubPage';
 
 export const Components = new Map<string, React.ElementType>([
 	[Button.name, Button.component],
@@ -39,7 +39,6 @@ export const Components = new Map<string, React.ElementType>([
 	[RadioButton.name, RadioButton.component],
 	[ToggleButton.name, ToggleButton.component],
 	[TextBox.name, TextBox.component],
-	[Calendar.name, Calendar.component],
 	[Link.name, Link.component],
 	[ArrayRepeater.name, ArrayRepeater.component],
 	[Popup.name, Popup.component],
@@ -62,6 +61,7 @@ export const Components = new Map<string, React.ElementType>([
 	[TableColumnHeader.name, TableColumnHeader.component],
 	[ProgressBar.name, ProgressBar.component],
 	[FileUpload.name, FileUpload.component],
+	[SubPage.name, SubPage.component],
 ]);
 
 export const ComponentDefinitions = [
@@ -72,7 +72,6 @@ export const ComponentDefinitions = [
 	RadioButton,
 	ToggleButton,
 	TextBox,
-	Calendar,
 	Link,
 	ArrayRepeater,
 	Popup,
@@ -95,5 +94,6 @@ export const ComponentDefinitions = [
 	TableColumn,
 	TableColumnHeader,
 	ProgressBar,
-	FileUpload
+	FileUpload,
+	SubPage,
 ];

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getData, getDataFromPath, PageStoreExtractor, setData } from '../../context/StoreContext';
+import { getDataFromPath, PageStoreExtractor, setData } from '../../context/StoreContext';
 import { HelperComponent } from '../HelperComponent';
 import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { updateLocationForChild } from '../util/updateLoactionForChild';
@@ -11,6 +11,7 @@ import Children from '../Children';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { deepEqual, ExpressionEvaluator } from '@fincity/kirun-js';
 import { getExtractionMap } from '../util/getRenderData';
+import CommonCheckbox from '../../commonComponents/CommonCheckbox';
 
 function TableGridComponent(props: ComponentProps) {
 	const [value, setValue] = useState([]);
@@ -123,9 +124,9 @@ function TableGridComponent(props: ComponentProps) {
 
 				const checkBox =
 					multiSelect && selectionType !== 'NONE' && selectionBindingPath ? (
-						<input
-							type="checkbox"
-							checked={isSelected(index)}
+						<CommonCheckbox
+							key="checkbox"
+							isChecked={isSelected(index)}
 							onChange={() => select(index)}
 						/>
 					) : (
