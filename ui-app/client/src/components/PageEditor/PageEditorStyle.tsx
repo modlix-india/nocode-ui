@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleResolution } from '../../types/common';
 import { processStyleDefinition, StyleResolutionDefinition } from '../../util/styleProcessor';
-import { styleProperties, styleDefaults } from './pageStyleProperties';
+import { styleProperties, styleDefaults } from './pageEditorStyleProperties';
 
 const PREFIX = '.comp.compPageEditor';
 export default function GridStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
