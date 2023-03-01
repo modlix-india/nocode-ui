@@ -44,7 +44,6 @@ function Popover(props: ComponentProps) {
 	const [margin, setMargin] = useState({});
 	const boxRef = React.createRef<HTMLDivElement>();
 	const popoverRef = React.createRef<HTMLDivElement>();
-	const [pageBox, setPageBox] = React.useState<DOMRect>();
 	const popChildren = Object.keys(children ?? {})
 		.map(e => pageDefinition.componentDefinition[e])
 		.sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
@@ -52,165 +51,17 @@ function Popover(props: ComponentProps) {
 	const popController = popChildren[0];
 	const popover = popChildren[1];
 
-	// React.useEffect(
-	// 	() =>
-	// 		addListenerAndCallImmediately(
-	// 			(_, value) => {
-	// 				setPageBox(value);
-	// 			},
-	// 			pageExtractor,
-	// 			'Page.boundingRect',
-	// 		),
-	// 	[],
-	// );
-
 	React.useEffect(() => {
 		if (!boxRef.current || !popoverRef.current || !show) return;
 		const boxRect = boxRef.current?.getBoundingClientRect();
 		const popoverRect = popoverRef.current?.getBoundingClientRect();
-		console.log(boxRect, 'box1');
-		console.log(popoverRect, 'box2');
 
-		// console.log(getPositions(position, boxRect, popoverRect)!);
 		let positions = getPositions(position, boxRect, popoverRect)!;
 		setCoords(positions.coords);
 		setTipPosition(positions.tipPosition);
 		setMargin(positions.marginContainer);
 		setTipStyle(positions.tipStyle!);
-		console.log('tip style ', tipStyle);
-		console.log('tip position', tipPosition);
-		// if (position === 'bottom-start') {
-		// 	let bodyHeight = document.body.clientHeight;
-		// 	let top = boxRect.y + boxRect.height;
-		// 	top = top + popoverRect.height > bodyHeight ? boxRect.y - popoverRect.height : top;
-		// 	let left = boxRect.x;
-		// 	setCoords({ left, top });
-		// }
-
-		// if (position === 'bottom') {
-		// 	let top = boxRect.y + boxRect.height;
-		// 	let left = boxRect.x + 0.5 * boxRect.width - 0.5 * popoverRect.width;
-		// 	setCoords({ top, left });
-		// }
-
-		// if (position === 'bottom-end') {
-		// 	let bodyWidth = document.body.clientWidth;
-		// 	let top = boxRect.y + boxRect.height;
-		// 	let right = bodyWidth - boxRect.x - boxRect.width;
-		// 	setCoords({ top, right });
-		// }
-
-		// if (position === 'top-start') {
-		// 	let bodyHeight = document.body.clientHeight;
-		// 	let bottom = bodyHeight - boxRect.y;
-		// 	let left = boxRect.x;
-		// 	setCoords({
-		// 		left: left,
-		// 		bottom: bottom,
-		// 	});
-		// }
-
-		// if (position === 'top') {
-		// 	let bodyHeight = document.body.clientHeight;
-		// 	let bottom = bodyHeight - boxRect.y;
-		// 	let left = boxRect.x + 0.5 * boxRect.width - 0.5 * popoverRect.width;
-		// 	setCoords({
-		// 		left: left,
-		// 		bottom: bottom,
-		// 	});
-		// }
-
-		// if (position === 'top-end') {
-		// 	let bodyHeight = document.body.clientHeight;
-		// 	let bottom = bodyHeight - boxRect.y;
-		// 	let bodyWidth = document.body.clientWidth;
-		// 	let right = bodyWidth - boxRect.x - boxRect.width;
-		// 	setCoords({
-		// 		right: right,
-		// 		bottom: bottom,
-		// 	});
-		// }
-
-		// if (position === 'left-start') {
-		// 	let bodyWidth = document.body.clientWidth;
-		// 	let right = bodyWidth - boxRect.x;
-		// 	setCoords({
-		// 		right: right,
-		// 		top: boxRect.y,
-		// 	});
-		// }
-
-		// if (position === 'left') {
-		// 	let bodyWidth = document.body.clientWidth;
-		// 	let right = bodyWidth - boxRect.x;
-		// 	let top = boxRect.y + boxRect.height * 0.5 - popoverRect.height * 0.5;
-		// 	setCoords({
-		// 		right: right,
-		// 		top: top,
-		// 	});
-		// }
-
-		// if (position === 'left-end') {
-		// 	let bodyWidth = document.body.clientWidth;
-		// 	let right = bodyWidth - boxRect.x;
-		// 	let bodyHeight = document.body.clientHeight;
-		// 	let bottom = bodyHeight - boxRect.y - boxRect.height;
-		// 	setCoords({
-		// 		right: right,
-		// 		bottom: bottom,
-		// 	});
-		// }
-
-		// if (position === 'right-start') {
-		// 	let left = boxRect.x + boxRect.width;
-		// 	setCoords({
-		// 		left: left,
-		// 		top: boxRect.y,
-		// 	});
-		// }
-
-		// if (position === 'right') {
-		// 	let left = boxRect.x + boxRect.width;
-		// 	// let topStart = boxRect.y + boxRect.height / 2 - popoverRect.height / 2;
-		// 	// topStart = topStart < 0 ? 0 : topStart;
-		// 	let top = boxRect.y + boxRect.height * 0.5 - popoverRect.height * 0.5;
-		// 	setCoords({
-		// 		left: left,
-		// 		top: top,
-		// 	});
-		// }
-
-		// if (position === 'right-end') {
-		// 	let leftStart = boxRect.x + boxRect.width;
-		// 	let bodyHeight = document.body.clientHeight;
-		// 	let bottom = bodyHeight - boxRect.y - boxRect.height;
-		// 	setCoords({
-		// 		left: leftStart,
-		// 		bottom: bottom,
-		// 	});
-		// }
 	}, [show]);
-
-	// const getCoord = (rect: DOMRect) => {
-	// 	console.log(popoverRef.current?.getBoundingClientRect());
-	// 	if (position === 'bottom-start') {
-	// 		return {
-	// 			left: rect.x,
-	// 			top: rect.height + rect.y,
-	// 		};
-	// 	}
-
-	// 	if (position === 'bottom') {
-	// 		return {
-	// 			left: rect.x,
-	// 			top: rect.height + rect.y,
-	// 		};
-	// 	}
-	// 	return {
-	// 		left: 0,
-	// 		top: 0,
-	// 	};
-	// };
 
 	const showPopover = (e: React.MouseEvent<HTMLElement>) => {
 		setShow(!show);
@@ -270,7 +121,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
-	stylePseudoStates: ['before'],
+	stylePseudoStates: [],
 };
 
 export default component;

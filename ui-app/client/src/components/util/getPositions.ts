@@ -87,7 +87,6 @@ export default function getPositions(position: String, boxRect: DOMRect, popover
 			? { bottom: bottom, left: left }
 			: { top: top, left: left };
 		if (right + popoverRect.width > bodyWidth) {
-			console.log('left overflow');
 			return {
 				coords: rightCoords,
 				tipPosition: 'leftTip',
