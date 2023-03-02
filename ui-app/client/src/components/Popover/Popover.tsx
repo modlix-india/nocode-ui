@@ -10,8 +10,7 @@ import Children from '../Children';
 import Portal from '../Portal';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import getPositions from '../util/getPositions';
-
-export interface Cords {
+export interface PortalCoordinates {
 	left?: number;
 	top?: number;
 	right?: number;
@@ -38,7 +37,7 @@ function Popover(props: ComponentProps) {
 		);
 	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
 	const [show, setShow] = React.useState(false);
-	const [coords, setCoords] = React.useState<Cords>({ left: 0, top: 0 });
+	const [coords, setCoords] = React.useState<PortalCoordinates | undefined>();
 	const [tipPosition, setTipPosition] = useState('');
 	const [tipStyle, setTipStyle] = useState({});
 	const [margin, setMargin] = useState({});
@@ -74,7 +73,7 @@ function Popover(props: ComponentProps) {
 				style={{ display: 'inline-flex' }}
 				ref={boxRef}
 				onClick={showPopover}
-				// onMouseLeave={showPopover}
+				onMouseLeave={() => setShow(false)}
 			>
 				<Children
 					key={`${key}_${popController}_chld`}
@@ -84,28 +83,38 @@ function Popover(props: ComponentProps) {
 					locationHistory={locationHistory}
 				/>
 				{show ? (
-					<Portal coords={coords}>
-						<div
-							ref={popoverRef}
-							onClick={e => e.stopPropagation()}
-							style={{
-								position: 'absolute',
-								...coords,
-							}}
-							className="comp compPopover popover"
-						>
-							<div className={`popoverTip ${tipPosition}`} style={tipStyle}></div>
-							<div className={`popoverContainer`} style={margin}>
-								<Children
-									key={`${key}_${popover.key}_chld`}
-									pageDefinition={pageDefinition}
-									children={{ [popover.key]: true }}
-									context={{ ...context, isReadonly }}
-									locationHistory={locationHistory}
-								/>
+					<div
+					// style={{
+					// 	width: '100vw',
+					// 	height: '100vh',
+					// 	position: 'absolute',
+					// 	left: 0,
+					// 	top: 0,
+					// }}
+					>
+						<Portal>
+							<div
+								ref={popoverRef}
+								onClick={e => e.stopPropagation()}
+								style={{
+									position: 'absolute',
+									...coords,
+								}}
+								className="comp compPopover popover"
+							>
+								<div className={`popoverTip ${tipPosition}`} style={tipStyle}></div>
+								<div className={`popoverContainer`} style={margin}>
+									<Children
+										key={`${key}_${popover.key}_chld`}
+										pageDefinition={pageDefinition}
+										children={{ [popover.key]: true }}
+										context={{ ...context, isReadonly }}
+										locationHistory={locationHistory}
+									/>
+								</div>
 							</div>
-						</div>
-					</Portal>
+						</Portal>
+					</div>
 				) : null}
 			</div>
 		</div>

@@ -9,7 +9,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: 'Popover position',
 		description: `Popover position.`,
-		defaultValue: 'bottom-end',
+		defaultValue: 'left-end',
 		editor: ComponentPropertyEditor.ENUM,
 		enumValues: [
 			{
