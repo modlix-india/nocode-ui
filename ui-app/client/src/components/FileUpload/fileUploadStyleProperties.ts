@@ -94,6 +94,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
         cssProperty: 'color',
         displayName: 'upload container font color properties',
         description: 'The Upload Container font color Properties.',
+        defaultValue: '<main-font-color>',
         selector: '.labelText',
     },
     {

@@ -135,8 +135,8 @@ function FIleUpload(props: ComponentProps) {
 						? 'fixed'
 						: ''
 				} ${errorMessage?.status?.value === 'fail' && !readOnly ? 'error' : ''} ${
-					readOnly ? 'disabled' : ''
-				} ${value !== undefined ? 'selected' : ''}`}
+					value !== undefined ? 'selected' : ''
+				}`}
 				onClick={uploadFileType === 'SMALL_VIEW' ? undefined : () => handleClick()}
 				style={computedStyles?.uploadContainer ?? {}}
 			>
