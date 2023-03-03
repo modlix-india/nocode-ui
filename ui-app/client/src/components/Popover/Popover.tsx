@@ -66,6 +66,10 @@ function Popover(props: ComponentProps) {
 		setShow(!show);
 	};
 
+	const handleMouseLeave = (e: React.MouseEvent<HTMLElement>) => {
+		setShow(false);
+	};
+
 	return (
 		<div className="comp compPopover" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />
@@ -73,7 +77,7 @@ function Popover(props: ComponentProps) {
 				style={{ display: 'inline-flex' }}
 				ref={boxRef}
 				onClick={showPopover}
-				onMouseLeave={() => setShow(false)}
+				onMouseLeave={handleMouseLeave}
 			>
 				<Children
 					key={`${key}_${popController}_chld`}

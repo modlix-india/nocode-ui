@@ -9,7 +9,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: 'Popover position',
 		description: `Popover position.`,
-		defaultValue: 'left-end',
+		defaultValue: 'bottom-end',
 		editor: ComponentPropertyEditor.ENUM,
 		enumValues: [
 			{
@@ -105,6 +105,14 @@ const stylePropertiesDefinition = {
 			name: 'popoverContainerBorder',
 			displayName: 'Popover Container Border',
 			description: 'Popover Container Border',
+			prefix: 'popoverContainer',
+			target: ['popoverContainer'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.background.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.background,
+			name: 'popoverContainerBackgroung',
+			displayName: 'Popover Container Background',
+			description: 'Popover Container Background',
 			prefix: 'popoverContainer',
 			target: ['popoverContainer'],
 		},

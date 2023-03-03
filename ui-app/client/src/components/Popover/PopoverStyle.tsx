@@ -50,11 +50,11 @@ export default function PopoverStyle({ theme }: { theme: Map<string, Map<string,
 			display: block;
 		}
 		.popoverContainer {
-			border-radius: 5px;
-			background-color: lightblue;
-			width:300px;
-			height: 300px;
-			border: 3px solid black;
+			// border-radius: 5px;
+			// background-color: lightblue;
+			// width:300px;
+			// height: 300px;
+			// border: 3px solid black;
 		}
 		.
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
