@@ -29,6 +29,7 @@ import TableColumnHeader from './TableColumnHeader/TableColumnHeader';
 import ProgressBar from './ProgressBar/ProgressBar';
 import FileUpload from './FileUpload/FileUpload';
 import SubPage from './SubPage/SubPage';
+import PageEditor from './PageEditor/PageEditor';
 
 export const Components = new Map<string, React.ElementType>([
 	[Button.name, Button.component],
@@ -62,6 +63,7 @@ export const Components = new Map<string, React.ElementType>([
 	[ProgressBar.name, ProgressBar.component],
 	[FileUpload.name, FileUpload.component],
 	[SubPage.name, SubPage.component],
+	[PageEditor.name, PageEditor.component],
 ]);
 
 export const ComponentDefinitions = [
@@ -96,4 +98,5 @@ export const ComponentDefinitions = [
 	ProgressBar,
 	FileUpload,
 	SubPage,
+	PageEditor,
 ];
