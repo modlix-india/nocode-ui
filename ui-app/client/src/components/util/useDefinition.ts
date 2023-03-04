@@ -172,7 +172,7 @@ function processTargets(
 		const groupName = CSS_STYLE_PROPERTY_GROUP_REF[prop];
 		if (!groupName) continue;
 
-		for (const eachTarget of stylePropertiesDefinition[prefix][groupName].target) {
+		for (const eachTarget of stylePropertiesDefinition[prefix]?.[groupName]?.target ?? []) {
 			if (!finStyle[eachTarget]) finStyle[eachTarget] = {};
 			finStyle[eachTarget][prop] = v;
 		}

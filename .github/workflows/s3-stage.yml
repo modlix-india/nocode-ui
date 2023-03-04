@@ -1,10 +1,10 @@
-name: AWS S3 - Dev
+name: AWS S3 - Stage
 
 on:
   #To trigger manually
   workflow_dispatch:
   push:
-    branches: [development]
+    branches: [stage]
 
 jobs:
   build:
@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: development
+          ref: stage
       - name: Setting up node
         uses: actions/setup-node@v3
         with:
@@ -30,9 +30,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
       - name: Deploy
-        run: aws s3 sync ./ui-app/client/dist s3://nclc-dev
+        run: aws s3 sync ./ui-app/client/dist s3://nclc-stage
       - name: Cache Clear
         uses: fjogeleit/http-request-action@v1
         with:
-          url: https://apps-dev.fincity.ai/api/ui/cache/jsCache
+          url: https://apps-stage.fincity.ai/api/ui/cache/jsCache
           method: 'DELETE'
+
