@@ -87,38 +87,28 @@ function Popover(props: ComponentProps) {
 					locationHistory={locationHistory}
 				/>
 				{show ? (
-					<div
-					// style={{
-					// 	width: '100vw',
-					// 	height: '100vh',
-					// 	position: 'absolute',
-					// 	left: 0,
-					// 	top: 0,
-					// }}
-					>
-						<Portal>
-							<div
-								ref={popoverRef}
-								onClick={e => e.stopPropagation()}
-								style={{
-									position: 'absolute',
-									...coords,
-								}}
-								className="comp compPopover popover"
-							>
-								<div className={`popoverTip ${tipPosition}`} style={tipStyle}></div>
-								<div className={`popoverContainer`} style={margin}>
-									<Children
-										key={`${key}_${popover.key}_chld`}
-										pageDefinition={pageDefinition}
-										children={{ [popover.key]: true }}
-										context={{ ...context, isReadonly }}
-										locationHistory={locationHistory}
-									/>
-								</div>
+					<Portal>
+						<div
+							ref={popoverRef}
+							onClick={e => e.stopPropagation()}
+							style={{
+								position: 'absolute',
+								...coords,
+							}}
+							className="comp compPopover popover"
+						>
+							<div className={`popoverTip ${tipPosition}`} style={tipStyle}></div>
+							<div className={`popoverContainer`} style={margin}>
+								<Children
+									key={`${key}_${popover.key}_chld`}
+									pageDefinition={pageDefinition}
+									children={{ [popover.key]: true }}
+									context={{ ...context, isReadonly }}
+									locationHistory={locationHistory}
+								/>
 							</div>
-						</Portal>
-					</div>
+						</div>
+					</Portal>
 				) : null}
 			</div>
 		</div>
