@@ -31,3 +31,9 @@ jobs:
           aws-region: ap-south-1
       - name: Deploy
         run: aws s3 sync ./ui-app/client/dist s3://nclc-prod
+      - name: Cache Clear
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: https://apps.fincity.ai/api/ui/cache/jsCache
+          method: 'DELETE'
+
