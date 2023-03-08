@@ -52,7 +52,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		name: 'black-font-color',
 		cssProperty: 'color',
-		selector: 'body',
 		displayName: 'Application/Site Color',
 		description: 'This color is used throughout application for all fonts.',
 		defaultValue: '#000000',
@@ -60,8 +59,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		name: 'light-black-font-color',
-		cssProperty: 'color',
-		selector: 'body',
 		displayName: 'Application/Site Color',
 		description: 'This color is used throughout application for all fonts.',
 		defaultValue: '#0000001F',
