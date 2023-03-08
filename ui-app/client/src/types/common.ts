@@ -217,6 +217,9 @@ export interface ComponentDefinitionValues {
 
 export interface PageDefinition {
 	name: string;
+	appCode: string;
+	clientCode: string;
+	baseClientCode: string | undefined;
 	eventFunctions: {
 		[key: string]: any;
 	};

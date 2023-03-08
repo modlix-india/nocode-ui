@@ -59,7 +59,6 @@ function CheckBox(props: ComponentProps) {
 		stylePropertiesWithPseudoStates,
 	);
 	const handleChange = (event: any) => {
-		console.log(event.target.checked, bindingPathPath);
 		setData(bindingPathPath, event.target.checked, context.pageName);
 	};
 	return (

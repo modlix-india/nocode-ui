@@ -1,13 +1,55 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { HelperComponent } from '../HelperComponent';
-import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
-import { getPathFromLocation, PageStoreExtractor, setData } from '../../context/StoreContext';
+import {
+	ComponentPropertyDefinition,
+	ComponentProps,
+	LocationHistory,
+	PageDefinition,
+} from '../../types/common';
+import {
+	addListenerAndCallImmediately,
+	getData,
+	getDataFromPath,
+	getPathFromLocation,
+	PageStoreExtractor,
+	setData,
+} from '../../context/StoreContext';
 import { Component } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './pageEditorProperties';
 import GridStyle from './PageEditorStyle';
 import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import PageEditorContext from './context/PageEditorContext';
+import DnDEditor from './editors/DnDEditor/DnDEditor';
+import TopBar from './TopBar';
+import { runEvent } from '../util/runEvent';
+import { useLocation } from 'react-router-dom';
+import { STORE_PREFIX } from '../../constants';
+
+function savePersonalizationCurry(
+	personalizationPath: string,
+	pageName: string,
+	onChangePersonalization: any,
+	locationHistory: Array<LocationHistory>,
+	pageDefinition: PageDefinition,
+) {
+	if (!onChangePersonalization) return (key: string, value: any) => {};
+	let handle: any = -1;
+
+	return (key: string, value: any) => {
+		if (handle !== -1) clearTimeout(handle);
+		setData(`${personalizationPath}.${key}`, value, pageName);
+		handle = setTimeout(() => {
+			(async () =>
+				await runEvent(
+					onChangePersonalization,
+					'pageEditorSave',
+					pageName,
+					locationHistory,
+					pageDefinition,
+				))();
+		}, 2000);
+	};
+}
 
 function PageEditor(props: ComponentProps) {
 	const {
@@ -21,7 +63,7 @@ function PageEditor(props: ComponentProps) {
 	const {
 		key,
 		stylePropertiesWithPseudoStates,
-		properties: { onSave, onChangePersonalization } = {},
+		properties: { logo, theme, onSave, onChangePersonalization } = {},
 	} = useDefinition(
 		definition,
 		propertiesDefinition,
@@ -40,14 +82,97 @@ function PageEditor(props: ComponentProps) {
 
 	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
 
-	useEffect(() => setData('Store.pageData._global.collapseMenu', true));
+	const presonalization =
+		getDataFromPath(personalizationPath, locationHistory, pageExtractor) ?? {};
+
+	const [localTheme, setLocalTheme] = useState(presonalization.theme ?? theme);
+
+	useEffect(() => {
+		if (!personalizationPath) return;
+
+		return addListenerAndCallImmediately(
+			(_, v) => setLocalTheme(v ?? theme),
+			pageExtractor,
+			`${personalizationPath}.theme`,
+		);
+	}, [personalizationPath]);
+
+	useEffect(() => setData('Store.pageData._global.collapseMenu', true), []);
+
+	const saveFunction = useCallback(() => {
+		if (!onSave || !pageDefinition.eventFunctions?.[onSave]) return;
+
+		(async () =>
+			await runEvent(
+				pageDefinition.eventFunctions[onSave],
+				'pageEditorSave',
+				context.pageName,
+				locationHistory,
+				pageDefinition,
+			))();
+	}, [onSave]);
+
+	const savePersonalization = useMemo(() => {
+		if (!personalizationPath) return (key: string, value: any) => {};
+
+		return savePersonalizationCurry(
+			personalizationPath,
+			context.pageName,
+			pageDefinition.eventFunctions?.[onChangePersonalization],
+			locationHistory,
+			pageDefinition,
+		);
+	}, [
+		personalizationPath,
+		context.pageName,
+		onChangePersonalization,
+		locationHistory,
+		pageDefinition,
+	]);
+
+	const [url, setUrl] = useState<string>('');
+	const [clientCode, setClientCode] = useState<string>('');
+
+	useEffect(() => {
+		if (!pageDefinition || !presonalization) {
+			setUrl('');
+			return;
+		}
+
+		if (presonalization?.pageLeftAt?.[pageDefinition.name]) {
+			setUrl(presonalization.pageLeftAt[pageDefinition.name].url);
+			setClientCode(presonalization.pageLeftAt[pageDefinition.name].clientCode);
+		}
+
+		const clientCode = getDataFromPath(`${STORE_PREFIX}.auth`, locationHistory, pageExtractor);
+		const location = window.location;
+		setUrl(
+			`${location.protocol}//${location.host}/${pageDefinition.appCode}/${clientCode}/${pageDefinition.name}`,
+		);
+	}, [presonalization, pageDefinition]);
+
+	if (!presonalization || presonalization.theme !== localTheme) return <></>;
 
 	return (
-		<PageEditorContext>
-			<div className="comp compPageEditor" style={resolvedStyles.comp ?? {}}>
-				<HelperComponent key={`${key}_hlp`} definition={definition} />
-			</div>
-		</PageEditorContext>
+		<div className={`comp compPageEditor ${localTheme}`} style={resolvedStyles.comp ?? {}}>
+			<HelperComponent key={`${key}_hlp`} definition={definition} />
+			<TopBar
+				theme={localTheme}
+				personalizationPath={personalizationPath}
+				logo={logo}
+				pageName={context.pageName}
+				onSave={saveFunction}
+				onChangePersonalization={savePersonalization}
+			/>
+			<DnDEditor
+				personalizationPath={personalizationPath}
+				defPath={defPath}
+				url={url}
+				pageName={context.pageName}
+				onSave={saveFunction}
+				onChangePersonalization={savePersonalization}
+			/>
+		</div>
 	);
 }
 
@@ -59,6 +184,10 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: GridStyle,
+	bindingPaths: {
+		bindingPath: { name: 'Definition' },
+		bindingPath2: { name: 'Personalization' },
+	},
 };
 
 export default component;

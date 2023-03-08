@@ -51,8 +51,6 @@ function TabsComponent(props: ComponentProps) {
 			.filter(e => !!e);
 		return value;
 	};
-
-	console.log(icon);
 	const tabNames = stringSpliter(tabs);
 	const iconTags = stringSpliter(icon);
 
