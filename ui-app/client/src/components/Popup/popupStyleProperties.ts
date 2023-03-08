@@ -2,7 +2,7 @@ import { StylePropertyDefinition } from '../../types/common';
 
 export const styleProperties: Array<StylePropertyDefinition> = [
 	{
-		name: 'Modal TitleColor',
+		name: 'modalTitleColor',
 		cssProperty: 'color',
 		displayName: "Modal Title's Color",
 		description: 'The color of the Modal Title.',
@@ -10,7 +10,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.modelTitleStyle',
 	},
 	{
-		name: 'Modal Title font size',
+		name: 'modalTitleFontSize',
 		cssProperty: 'font-size',
 		displayName: "Modal Title's font size",
 		description: 'The font size of the Modal Title.',
@@ -18,7 +18,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.modelTitleStyle',
 	},
 	{
-		name: 'Modal background Color',
+		name: 'modalBackgroundColor',
 		cssProperty: 'background-color',
 		displayName: "Modal Title's background Color",
 		description: 'The background color of the Modal.',
@@ -26,7 +26,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.modal',
 	},
 	{
-		name: 'Modal border radius',
+		name: 'modalBorderRadius',
 		cssProperty: 'border-radius',
 		displayName: "Modal's border radius",
 		description: 'The border-radius of the Modal.',
@@ -34,7 +34,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.modal',
 	},
 	{
-		name: 'Modal min-width',
+		name: 'modalMinWidth',
 		cssProperty: 'min-width',
 		displayName: "Modal's min width",
 		description: 'The min-width of the Modal.',
@@ -42,7 +42,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.modal',
 	},
 	{
-		name: 'Modal max-width',
+		name: 'modalMaxWidth',
 		cssProperty: 'max-width',
 		displayName: "Modal's max-width",
 		description: 'The max-width of the Modal.',
@@ -50,7 +50,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.modal',
 	},
 	{
-		name: 'Modal min-height',
+		name: 'modalMinHeight',
 		cssProperty: 'min-height',
 		displayName: "Modal's min-height",
 		description: 'The min-height of the Modal.',
@@ -72,7 +72,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '1px',
 	},
 	{
-		name: 'background Color',
+		name: 'backgroundColor',
 		cssProperty: 'background-color',
 		displayName: 'background Color',
 		description: 'The background color.',
