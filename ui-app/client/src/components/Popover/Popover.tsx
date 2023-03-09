@@ -27,14 +27,16 @@ function Popover(props: ComponentProps) {
 		context,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
-	const { properties: { isReadonly, position } = {}, stylePropertiesWithPseudoStates } =
-		useDefinition(
-			definition,
-			propertiesDefinition,
-			stylePropertiesDefinition,
-			locationHistory,
-			pageExtractor,
-		);
+	const {
+		properties: { isReadonly, position, showTip, closeOnLeave } = {},
+		stylePropertiesWithPseudoStates,
+	} = useDefinition(
+		definition,
+		propertiesDefinition,
+		stylePropertiesDefinition,
+		locationHistory,
+		pageExtractor,
+	);
 	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
 	const [show, setShow] = React.useState(false);
 	const [coords, setCoords] = React.useState<PortalCoordinates | undefined>();
@@ -77,7 +79,7 @@ function Popover(props: ComponentProps) {
 				style={{ display: 'inline-flex' }}
 				ref={boxRef}
 				onClick={showPopover}
-				onMouseLeave={handleMouseLeave}
+				onMouseLeave={closeOnLeave ? handleMouseLeave : undefined}
 			>
 				<Children
 					key={`${key}_${popController}_chld`}
@@ -97,8 +99,13 @@ function Popover(props: ComponentProps) {
 							}}
 							className="comp compPopover popover"
 						>
-							<div className={`popoverTip ${tipPosition}`} style={tipStyle}></div>
-							<div className={`popoverContainer`} style={margin}>
+							{showTip ? (
+								<div className={`popoverTip ${tipPosition}`} style={tipStyle}></div>
+							) : null}
+							<div
+								className={`popoverContainer`}
+								style={{ ...margin, ...(resolvedStyles?.popoverContainer ?? {}) }}
+							>
 								<Children
 									key={`${key}_${popover.key}_chld`}
 									pageDefinition={pageDefinition}

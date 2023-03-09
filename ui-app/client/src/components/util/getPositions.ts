@@ -1,4 +1,19 @@
-export default function getPositions(position: String, boxRect: DOMRect, popoverRect: DOMRect) {
+enum Position {
+	Top = 'top',
+	TopStart = 'top-start',
+	TopEnd = 'top-end',
+	Bottom = 'bottom',
+	BottomStart = 'bottom-start',
+	BottomEnd = 'bottom-end',
+	Left = 'left',
+	LeftStart = 'left-start',
+	LeftEnd = 'left-end',
+	Right = 'right',
+	RightStart = 'right-start',
+	RightEnd = 'right-end',
+}
+
+export default function getPositions(position: Position, boxRect: DOMRect, popoverRect: DOMRect) {
 	let top = 0;
 	let bottom = 0;
 	let left = 0;

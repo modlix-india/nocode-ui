@@ -57,6 +57,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: `Show Popover tip.`,
 		defaultValue: true,
 	},
+	{
+		name: 'closeOnLeave',
+		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		displayName: 'Close Popover on leave',
+		description: `Close Popover on leave.`,
+		defaultValue: false,
+	},
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
@@ -69,20 +76,25 @@ const stylePropertiesDefinition = {
 		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: COMPONENT_STYLE_GROUP_PROPERTIES.size,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.transform.type]:
 			COMPONENT_STYLE_GROUP_PROPERTIES.transform,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: COMPONENT_STYLE_GROUP_PROPERTIES.border,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.zIndex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.zIndex,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.flex.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.flex,
 			target: ['popoverContainer'],
 		},
-	},
-	popoverTip: {
 		[COMPONENT_STYLE_GROUP_PROPERTIES.background.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.background,
-			name: 'popoverTipBackground',
-			displayName: 'Popover Container Background',
-			description: 'Popover Container Background',
-			prefix: 'popoverTip',
-			target: ['popoverTip'],
+			target: ['popoverContainer'],
+		},
+	},
+	popoverContainer: {
+		[COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.border,
+			name: 'popoverContainerBorder',
+			displayName: 'Popover Container Border',
+			description: 'Popover Container Border.',
+			prefix: 'popoverContainer',
+			target: ['popoverContainer'],
 		},
 	},
 };
