@@ -1,8 +1,6 @@
-import { isNullValue } from '@fincity/kirun-js';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
 	addListenerAndCallImmediately,
-	getDataFromPath,
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
@@ -11,18 +9,20 @@ import { Component, ComponentPropertyDefinition, ComponentProps } from '../../ty
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponent';
 import { checkFileUploadCriteria } from '../util/checkFileUploadCriteria';
+import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './fileUploadProperties';
 import FileUploadStyles from './FileUploadStyles';
 
-function FIleUpload(props: ComponentProps) {
+function FileUpload(props: ComponentProps) {
 	const [value, setValue] = useState<any>();
-	const [selected, setSelected] = useState<any>();
+	const inputRef = useRef<any>();
+	const [hover, setHover] = useState<boolean>(false);
 	const [errorMessage, setErrorMessage] = useState<any>('');
 	const {
 		definition: { bindingPath },
 		definition,
-		pageDefinition: { translations },
+		pageDefinition: {},
 		locationHistory,
 		context,
 	} = props;
@@ -31,14 +31,17 @@ function FIleUpload(props: ComponentProps) {
 	let {
 		key,
 		properties: {
-			uploadFileType,
+			uploadViewType,
 			uploadIcon,
 			options,
 			label,
 			mainText,
-			multiple,
+			isMultiple,
 			readOnly,
 			maxFileSize,
+			showFileList,
+			uploadImmediately,
+			onSelectEvent,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -48,54 +51,79 @@ function FIleUpload(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
+
+	const className = `uploadContainer ${readOnly ? 'disabled' : ''} ${
+		errorMessage?.errors && !readOnly ? 'error' : ''
+	} ${value !== undefined ? 'selected' : ''}`;
+
 	const computedStyles = processComponentStylePseudoClasses(
-		{ readOnly },
+		{ readOnly, hover },
 		stylePropertiesWithPseudoStates,
 	);
 
-	const bindingPathPath = bindingPath
-		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
+	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
+	const selectionEvent = uploadImmediately
+		? props.pageDefinition.eventFunctions[onSelectEvent]
 		: undefined;
-
-	useEffect(() => {
-		if (!bindingPathPath) return;
-		const initValue = getDataFromPath(bindingPathPath, locationHistory, pageExtractor);
-		if (isNullValue(initValue)) {
-			setData(bindingPathPath, initValue, context.pageName);
-		}
-		setValue(initValue ?? '');
-	}, [bindingPathPath]);
 
 	useEffect(
 		() =>
-			bindingPathPath
-				? addListenerAndCallImmediately(
-						(_, value) => {
-							if (value === undefined || value === null) {
-								setValue(undefined);
-								return;
-							}
-							setValue(value);
-						},
-						pageExtractor,
-						bindingPathPath,
-				  )
-				: undefined,
+			addListenerAndCallImmediately(
+				(_, value) => {
+					if (value === undefined || value === null) {
+						setValue(undefined);
+						return;
+					}
+					setValue(value);
+				},
+				pageExtractor,
+				bindingPathPath,
+			),
 		[bindingPathPath],
 	);
 
-	const handleClick = () => {
-		document.getElementsByTagName('input')?.item(0)?.click();
+	const handleClick = () => inputRef.current?.click();
+
+	const onChangeFile = (event: any) => {
+		if (!event.target.value?.length) return;
+		const files = event.target.files;
+		const isImgPassingCriteria = checkFileUploadCriteria(
+			files,
+			options?.split(','),
+			maxFileSize,
+		);
+		setErrorMessage(isImgPassingCriteria);
+		setData(bindingPathPath!, [...files], context?.pageName);
 	};
 
-	const onChangeFile = async (event: any) => {
-		if (!event.target.value?.length) return;
-		const formData = new FormData();
-		const files = event.target.files;
-		const fileTypes = options?.split(',');
-		const isImgPassingCriteria = await checkFileUploadCriteria(files, fileTypes, maxFileSize);
-		setErrorMessage(isImgPassingCriteria);
-		setData(bindingPathPath!, files, context?.pageName);
+	const handleDelete = (event: any, content: any) => {
+		event.stopPropagation();
+		if (value?.length == 0) return;
+		value.splice(value.indexOf(content), 1);
+		setData(bindingPathPath, value, context?.pageName);
+	};
+
+	React.useEffect(() => {
+		if (value && selectionEvent) {
+			(async () =>
+				await runEvent(
+					selectionEvent,
+					key,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				))();
+		}
+	}, [value]);
+
+	const returnFileSize = (number: number) => {
+		if (number < 1024) {
+			return number + 'bytes';
+		} else if (number > 1024 && number < 1048576) {
+			return (number / 1024).toFixed(1) + 'KB';
+		} else if (number > 1048576) {
+			return (number / 1048576).toFixed(1) + 'MB';
+		}
 	};
 
 	const comp = (
@@ -108,79 +136,114 @@ function FIleUpload(props: ComponentProps) {
 		<div
 			title="error_message"
 			style={computedStyles?.errorText ?? {}}
-			className={`errors ${uploadFileType !== 'LARGE_VIEW' ? 'horizontal' : ''}`}
+			className={`errors ${uploadViewType !== 'LARGE_VIEW' ? 'horizontal' : ''}`}
 		>
-			{errorMessage?.fileType?.errors ||
-				errorMessage?.fileSize?.errors ||
-				errorMessage?.fileResolution?.errors}
+			{errorMessage?.errors}
 		</div>
 	);
 
 	const selectedComp = (each: any, index = 0) => {
 		return (
-			<div className="selectedDetails" key={index}>
-				<span style={computedStyles?.selectedFiles ?? {}}>{each?.name}</span>
+			<div
+				className="selectedDetails"
+				key={index}
+				style={computedStyles?.selectedFiles ?? {}}
+			>
+				<span>{each?.name}</span>
+				<span>{`(${returnFileSize(each?.size)})`}</span>
+				{uploadImmediately ? null : (
+					<i
+						className="fa fa-solid fa-close closeIcon"
+						style={computedStyles?.closeIcon ?? {}}
+						onClick={e => handleDelete(e, each)}
+					/>
+				)}
 			</div>
 		);
 	};
 
+	const uploadIconComp = (
+		<i className={`uploadIcon ${uploadIcon}`} style={computedStyles?.icon} />
+	);
+
+	const inputContainer = (
+		<input
+			type="file"
+			ref={inputRef}
+			onChange={onChangeFile}
+			className="hidden"
+			accept={options}
+			multiple={isMultiple}
+			disabled={readOnly}
+			max={maxFileSize}
+			onClick={e => (e.currentTarget.value = '')}
+		/>
+	);
+
+	const labelComp = (
+		<label className="labelText" style={computedStyles?.label ?? {}}>
+			{label}
+		</label>
+	);
+
+	const fileContainer = (
+		<div className="selectedFileContainer" style={computedStyles?.selectedFileContainer ?? {}}>
+			{value?.map((each: any, index: any) => selectedComp(each, index))}
+		</div>
+	);
+	const largeView = (
+		<>
+			<div
+				className={`${className}`}
+				onClick={handleClick}
+				style={computedStyles?.uploadContainer ?? {}}
+				onMouseEnter={
+					stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
+				}
+				onMouseLeave={
+					stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
+				}
+			>
+				{inputContainer}
+				{uploadIconComp}
+				{comp}
+				{value?.length > 0 && showFileList ? fileContainer : labelComp}
+			</div>
+			{errorMessage?.errors ? errComp : null}
+		</>
+	);
+	const smallView = (
+		<>
+			<div
+				className={`${className} horizontal`}
+				style={computedStyles?.uploadContainer ?? {}}
+				onMouseEnter={
+					stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
+				}
+				onMouseLeave={
+					stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
+				}
+			>
+				{inputContainer}
+				<button
+					className="inputContainer"
+					style={computedStyles?.inputStyles ?? {}}
+					onClick={handleClick}
+				>
+					{!!uploadIcon ? uploadIconComp : null}
+					{comp}
+				</button>
+				{labelComp}
+			</div>
+			{errorMessage?.errors ? errComp : null}
+			{showFileList ? fileContainer : null}
+		</>
+	);
+
 	return (
 		<div className="comp compFileUpload" style={computedStyles?.comp ?? {}}>
 			<HelperComponent definition={definition} />
-			<div
-				className={`uploadContainer ${readOnly ? 'disabled' : ''} ${
-					uploadFileType === 'SMALL_VIEW'
-						? 'horizontal'
-						: uploadFileType === 'MID_VIEW'
-						? 'fixed'
-						: ''
-				} ${errorMessage?.status?.value === 'fail' && !readOnly ? 'error' : ''} ${
-					value !== undefined ? 'selected' : ''
-				}`}
-				onClick={uploadFileType === 'SMALL_VIEW' ? undefined : () => handleClick()}
-				style={computedStyles?.uploadContainer ?? {}}
-			>
-				{uploadFileType === 'SMALL_VIEW' ? null : (
-					<i className={`uploadIcon ${uploadIcon}`} style={computedStyles?.icon} />
-				)}
-				<input
-					type="file"
-					onChange={onChangeFile}
-					className="hidden"
-					accept={options}
-					multiple={multiple}
-					disabled={readOnly}
-				/>
-				{uploadFileType === 'SMALL_VIEW' ? (
-					<button
-						className="inputContainer"
-						style={computedStyles?.inputStyles ?? {}}
-						onClick={handleClick}
-					>
-						{!!uploadIcon ? (
-							<i
-								className={`uploadIcon ${uploadIcon}`}
-								style={computedStyles?.icon}
-							/>
-						) : null}
-						{comp}
-					</button>
-				) : null}
-				{uploadFileType === 'SMALL_VIEW' ? null : comp}
-				{!value ? (
-					uploadFileType === 'MID_VIEW' ? null : (
-						<label className="labelText" style={computedStyles?.label ?? {}}>
-							{label}
-						</label>
-					)
-				) : null}
-				<div className="selectedMain" style={computedStyles?.selectedMain ?? {}}>
-					{value != undefined
-						? [...value]?.map((each: any, index: any) => selectedComp(each, index))
-						: null}
-				</div>
-			</div>
-			{errorMessage ? errComp : null}
+			{uploadViewType === 'LARGE_VIEW' ? largeView : smallView}
 		</div>
 	);
 }
@@ -189,12 +252,12 @@ const component: Component = {
 	name: 'FileUpload',
 	displayName: 'FileUpload',
 	description: 'FileUpload Component',
-	component: FIleUpload,
+	component: FileUpload,
 	styleComponent: FileUploadStyles,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
-	stylePseudoStates: ['hover'],
+	stylePseudoStates: ['hover', 'disabled'],
 };
 
 export default component;

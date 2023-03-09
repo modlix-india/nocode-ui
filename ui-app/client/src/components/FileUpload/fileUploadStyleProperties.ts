@@ -2,46 +2,6 @@ import { StylePropertyDefinition } from '../../types/common';
 
 export const styleProperties: Array<StylePropertyDefinition> = [
     {
-        name: 'displayProperties',
-        cssProperty: 'display',
-        displayName: 'upload container display properties',
-        description: 'The Upload Container Display Properties.',
-        defaultValue: 'grid',
-        selector: '.uploadContainer',
-    },
-    {
-        name: 'displayPropertiesAlignHorizontal',
-        cssProperty: 'justify-content',
-        displayName: 'upload container horizontal align properties',
-        description: 'The Upload Container Horizontal Align Properties.',
-        defaultValue: 'center',
-        selector: '.uploadContainer',
-    },
-    {
-        name: 'displayPropertiesAlignItemsHorizontal',
-        cssProperty: 'justify-items',
-        displayName: 'upload container horizontal items align properties',
-        description: 'The Upload Container Horizontal Items Align Properties.',
-        defaultValue: 'center',
-        selector: '.uploadContainer',
-    },
-    {
-        name: 'displayPropertiesAlignItemsVertical',
-        cssProperty: 'align-items',
-        displayName: 'upload container vertical items align properties',
-        description: 'The Upload Container Vertical Items Align Properties.',
-        defaultValue: 'center',
-        selector: '.uploadContainer',
-    },
-    {
-        name: 'displayFlowProperties',
-        cssProperty: 'grid-auto-flow',
-        displayName: 'upload container display flow properties',
-        description: 'The Upload Container Display flow Properties.',
-        defaultValue: 'row',
-        selector: '.uploadContainer',
-    },
-    {
         name: 'gridGapProperties',
         cssProperty: 'gap',
         displayName: 'upload container display grid gap properties',
@@ -87,7 +47,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
         displayName: 'upload label text font size properties',
         description: 'The Upload Label Text font size Properties.',
         defaultValue: '11px',
-        selector: '.labelText',
+        selector: '.labelText, .selectedDetails, errorTextSize',
     },
     {
         name: 'fontColorForUploadLabelText',
@@ -95,7 +55,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
         displayName: 'upload container font color properties',
         description: 'The Upload Container font color Properties.',
         defaultValue: '<main-font-color>',
-        selector: '.labelText',
+        selector: '.labelText, .selectedDetails',
     },
     {
         name: 'uploadComponentBorder',
@@ -138,14 +98,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
         selector: '.uploadContainer',
     },
     {
-        name: 'uploadComponentPaddingSelected',
-        cssProperty: 'padding',
-        displayName: 'upload container mid view padding style',
-        description: 'The Upload Container mid view padding style.',
-        defaultValue: '40px 40px 0px 40px',
-        selector: '.uploadContainer.fixed.selected',
-    },
-    {
         name: 'uploadComponentPaddingHorizontal',
         cssProperty: 'padding',
         displayName: 'upload container padding style',
@@ -170,22 +122,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
         selector: '.uploadContainer.horizontal',
     },
     {
-        name: 'uploadComponentInputContainerBorder',
-        cssProperty: 'border',
-        displayName: 'upload container input box border style',
-        description: 'The Upload Container input box border style.',
-        defaultValue: '1px solid <form-input-border-color>',
-        selector: '.inputContainer',
-    },
-    {
-        name: 'uploadComponentInputContainerBorderRadius',
-        cssProperty: 'border-radius',
-        displayName: 'upload container input box border style',
-        description: 'The Upload Container input box border style.',
-        defaultValue: '4px',
-        selector: '.inputContainer',
-    },
-    {
         name: 'uploadComponentInputContainerPadding',
         cssProperty: 'padding',
         displayName: 'upload container input box padding style',
@@ -195,9 +131,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
     },
     {
         name: 'uploadComponentInputContainerBackgroundColor',
-        cssProperty: 'padding',
-        displayName: 'upload container input box padding style',
-        description: 'The Upload Container input box padding style.',
+        cssProperty: 'background-color',
+        displayName: 'upload container input box background style',
+        description: 'The Upload Container input box background style.',
         selector: '.inputContainer',
     },
     {
@@ -209,12 +145,20 @@ export const styleProperties: Array<StylePropertyDefinition> = [
         defaultValue: '4px'
     },
     {
-        name: 'uploadComponentInputContainerIconCursor',
-        cssProperty: 'cursor',
-        displayName: 'upload container input box cursor style',
-        description: 'The Upload Container input box cursor style.',
-        selector: '.uploadContainer',
-        defaultValue: 'pointer'
+        name: 'uploadComponentInputContainerBorderColor',
+        cssProperty: 'border',
+        displayName: 'upload container input box border color',
+        description: 'The Upload Container input box border color style.',
+        selector: '.inputContainer',
+        defaultValue: '1px solid <form-input-border-color>'
+    },
+    {
+        name: 'uploadComponentInputContainerBorderRadius',
+        cssProperty: 'border-radius',
+        displayName: 'upload container input box border style',
+        description: 'The Upload Container input box border style.',
+        defaultValue: '4px',
+        selector: '.inputContainer',
     },
     {
         name: 'uploadComponentHoverBorderColor',
@@ -238,7 +182,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
         displayName: 'upload container opacity style',
         description: 'The Upload Container opacity style.',
         selector: '.uploadContainer.disabled',
-        defaultValue: '0.8'
+        defaultValue: '0.7'
     },
     {
         name: 'uploadComponentDisabledCursorStyle',
@@ -257,58 +201,12 @@ export const styleProperties: Array<StylePropertyDefinition> = [
         defaultValue: '1px solid <form-input-border-color-when-error>'
     },
     {
-        name: 'uploadComponentWidthMid',
-        cssProperty: 'width',
-        displayName: 'upload container width',
-        description: 'The Upload Container width style.',
-        selector: '.uploadContainer.fixed',
-        defaultValue: '120px'
-    },
-    {
-        name: 'uploadComponentHeightMid',
-        cssProperty: 'height',
-        displayName: 'upload container height',
-        description: 'The Upload Container height style.',
-        selector: '.uploadContainer.fixed',
-        defaultValue: '120px'
-    },
-    {
-        name: 'uploadComponentMidBackgroundColor',
-        cssProperty: 'background-color',
-        displayName: 'upload container background color mid component',
-        description: 'The Upload Container background style for mid component.',
-        selector: '.uploadContainer.fixed',
-    },
-    {
-        name: 'uploadComponentOnAddFontStyle',
-        cssProperty: 'font-size',
-        displayName: 'upload container font style selected style',
-        description: 'The Upload Container font style for selected.',
-        selector: '.selectedDetails',
-        defaultValue: '12px'
-    },
-    {
-        name: 'uploadComponentOnAddFontStyle',
-        cssProperty: 'color',
-        displayName: 'upload container font color style selected',
-        description: 'The Upload Container font color style for selected.',
-        selector: '.selectedDetails'
-    },
-    {
         name: 'errorTextColor',
         cssProperty: 'color',
         displayName: 'upload container error font color',
         description: 'The Upload Container error font color style.',
         selector: '.errors',
         defaultValue: '<form-input-border-color-when-error>'
-    },
-    {
-        name: 'errorTextSize',
-        cssProperty: 'font-size',
-        displayName: 'upload container error font size style',
-        description: 'The Upload Container error font size style.',
-        selector: '.errors',
-        defaultValue: '12px'
     },
     {
         name: 'errorTextDivWidth',
@@ -327,27 +225,11 @@ export const styleProperties: Array<StylePropertyDefinition> = [
         defaultValue: '280px'
     },
     {
-        name: 'selectedMainDivDisplayStyle',
-        cssProperty: 'display',
-        displayName: 'upload container selected main display style',
-        description: 'The Upload Container selected main display style.',
-        selector: '.selectedMain',
-        defaultValue: 'flex'
-    },
-    {
-        name: 'selectedMainDivContainerStyle',
-        cssProperty: 'overflow',
-        displayName: 'upload container selected main overflow style',
-        description: 'The Upload Container selected main overflow style.',
-        selector: '.selectedMain',
-        defaultValue: 'auto'
-    },
-    {
         name: 'selectedMainDivDisplayWidth',
         cssProperty: 'width',
         displayName: 'upload container selected main width style',
         description: 'The Upload Container selected main width style.',
-        selector: '.selectedMain',
+        selector: '.selectedFileContainer',
         defaultValue: '100%'
     },
     {
@@ -355,7 +237,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
         cssProperty: 'height',
         displayName: 'upload container selected main height style',
         description: 'The Upload Container selected main height style.',
-        selector: '.selectedMain',
+        selector: '.selectedFileContainer',
         defaultValue: '100%'
     },
     {
@@ -363,7 +245,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
         cssProperty: 'gap',
         displayName: 'upload container selected main space between',
         description: 'The Upload Container selected main space between.',
-        selector: '.selectedMain',
+        selector: '.selectedFileContainer',
         defaultValue: '4px'
     },
     {
@@ -371,17 +253,55 @@ export const styleProperties: Array<StylePropertyDefinition> = [
         cssProperty: 'flex-direction',
         displayName: 'upload container selected main flex direction',
         description: 'The Upload Container selected main flex direction.',
-        selector: '.selectedMain'
+        defaultValue: 'column',
+        selector: '.selectedFileContainer'
     },
-
     {
-        name: 'selectedMainDivDisplayFlexAlign',
+        name: 'selectedMainDivDisplayFlexMargin',
         cssProperty: 'margin',
-        displayName: 'upload container selected main flex align',
-        description: 'The Upload Container selected main flex align.',
+        displayName: 'upload container selected main margin',
+        description: 'The Upload Container selected main margin.',
         selector: '.selectedDetails',
         defaultValue: 'auto'
     },
+    {
+        name: 'displayForSelectedFileSizeAndName',
+        cssProperty: 'display',
+        displayName: 'selected file display style',
+        description: 'The display style for selected file.',
+        selector: '.selectedDetails',
+        defaultValue: 'flex'
+    },
+    {
+        name: 'displayForSelectedFileSizeAndNameGap',
+        cssProperty: 'gap',
+        displayName: 'selected file display style gap',
+        description: 'The display style for selected file gap.',
+        selector: '.selectedDetails',
+        defaultValue: '4px'
+    },
+    {
+        name: 'displayForSelectedFileSizeAndNameAlign',
+        cssProperty: 'align-items',
+        displayName: 'selected file align style',
+        description: 'The align style for selected file.',
+        selector: '.selectedDetails',
+        defaultValue: 'center'
+    },
+    {
+        name: 'closeIconFontSize',
+        cssProperty: 'font-size',
+        displayName: 'selected close icon font style',
+        description: 'The font size is for selected close icon font style.',
+        selector: '.closeIcon'
+    },
+    {
+        name: 'closeIconFontColor',
+        cssProperty: 'color',
+        displayName: 'selected file font color style',
+        description: 'The color is used for selected icon font color.',
+        selector: '.closeIcon'
+    }
 ];
 
 export const styleDefaults = new Map<string, string>(

@@ -8,27 +8,40 @@ export default function ProgressBarStyles({ theme }: { theme: Map<string, Map<st
 	const css =
 		`
     ${PREFIX} {
-        text-align: -webkit-center;
+        text-align: center;
     }
 
     ${PREFIX} .hidden {
         display: none;
     }
 
+    ${PREFIX} .uploadContainer {
+        display: flex;
+        flex-direction: column;
+        align-content: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+
     ${PREFIX} .uploadContainer.horizontal {
-        grid-auto-flow: column;
-        position: relative;
-        justify-content: flex-start;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: start;
     }
 
     ${PREFIX} .inputContainer {
-        display: grid;
-        grid-auto-flow: column;
+        display: flex;
         align-items: center;
     }
 
     ${PREFIX} .errors {
         text-align: center;
+    }
+
+    ${PREFIX} .selectedFileContainer {
+        display: flex;
+        overflow-x: auto;
     }
 
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);

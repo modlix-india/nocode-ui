@@ -14,14 +14,13 @@ import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
     {
-        name: 'uploadFileType',
+        name: 'uploadViewType',
         schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
         displayName: 'upload File UI type',
         description: `Show the UI type of the upload component which is selected.`,
         defaultValue: 'LARGE_VIEW',
         editor: ComponentPropertyEditor.ENUM,
         enumValues: [
-            { name: 'MID_VIEW', displayName: 'Tablet like mid ui', description: 'A mid view of the component' },
             { name: 'SMALL_VIEW', displayName: 'Mobile like small ui', description: 'A small view of the component' }
         ]
     },
@@ -47,14 +46,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
         defaultValue: "Or drag and drop here"
     },
     {
-        name: 'placeholder',
-        schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-        displayName: 'placeholder text for upload component',
-        description: `Upload Component placeholder Text.`,
-        defaultValue: "Select files..."
-    },
-    {
-        name: 'multiple',
+        name: 'isMultiple',
         schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
         displayName: 'upload multiple file selected for upload component',
         description: `Upload multiple file when file selected for Upload Component.`,
@@ -79,6 +71,25 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
         displayName: 'Upload file types options',
         description: 'Upload files type options',
         defaultValue: 'image/jpeg,image/png'
+    },
+    {
+        name: 'showFileList',
+        schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+        displayName: 'show files selected List in upload component',
+        description: 'Show Selected File list in upload component',
+        defaultValue: true
+    },
+    {
+        name: 'uploadImmediately',
+        schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+        displayName: 'Upload selected files immediately in our upload component',
+        description: 'Upload selected files immediately in our upload component'
+    },
+    {
+        name: 'onSelectEvent',
+        schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+        displayName: 'Upload files on selection event type',
+        description: 'Upload files on selection event type',
     }
 ];
 
@@ -87,13 +98,16 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
         [COMPONENT_STYLE_GROUP_PROPERTIES.size.name]: COMPONENT_STYLE_GROUP_PROPERTIES.size,
         [COMPONENT_STYLE_GROUP_PROPERTIES.padding.name]: COMPONENT_STYLE_GROUP_PROPERTIES.padding,
         [COMPONENT_STYLE_GROUP_PROPERTIES.margin.name]: COMPONENT_STYLE_GROUP_PROPERTIES.margin,
-        [COMPONENT_STYLE_GROUP_PROPERTIES.flex.name]: COMPONENT_STYLE_GROUP_PROPERTIES.flex,
         [COMPONENT_STYLE_GROUP_PROPERTIES.border.name]: {
             ...COMPONENT_STYLE_GROUP_PROPERTIES.border,
             target: ['uploadContainer'],
         },
         [COMPONENT_STYLE_GROUP_PROPERTIES.background.name]: {
             ...COMPONENT_STYLE_GROUP_PROPERTIES.background,
+            target: ['uploadContainer'],
+        },
+        [COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow.name]: {
+            ...COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow,
             target: ['uploadContainer'],
         },
         [COMPONENT_STYLE_GROUP_PROPERTIES.font.name]: {
@@ -106,10 +120,24 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
         },
     },
     uploadContainer: {
+        [COMPONENT_STYLE_GROUP_PROPERTIES.margin.name]: {
+            ...COMPONENT_STYLE_GROUP_PROPERTIES.margin,
+            displayName: 'Upload Container margin',
+            description: "Upload Container margin",
+            prefix: 'uploadContainer',
+            target: ['uploadContainer'],
+        },
         [COMPONENT_STYLE_GROUP_PROPERTIES.padding.name]: {
             ...COMPONENT_STYLE_GROUP_PROPERTIES.padding,
             displayName: 'Upload Container Padding',
             description: "Upload Container Padding",
+            prefix: 'uploadContainer',
+            target: ['uploadContainer'],
+        },
+        [COMPONENT_STYLE_GROUP_PROPERTIES.size.name]: {
+            ...COMPONENT_STYLE_GROUP_PROPERTIES.size,
+            displayName: 'Upload Container size',
+            description: "Upload Container size",
             prefix: 'uploadContainer',
             target: ['uploadContainer'],
         },
@@ -182,6 +210,13 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
             prefix: 'inputStyles',
             target: ['inputStyles'],
         },
+        [COMPONENT_STYLE_GROUP_PROPERTIES.margin.name]: {
+            ...COMPONENT_STYLE_GROUP_PROPERTIES.margin,
+            displayName: 'Upload Container inputStyles margin styles',
+            description: "Upload Component inputStyles margin styles",
+            prefix: 'inputStyles',
+            target: ['inputStyles'],
+        },
     },
     selectedFiles: {
         [COMPONENT_STYLE_GROUP_PROPERTIES.font.name]: {
@@ -199,27 +234,41 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
             target: ['selectedFiles'],
         },
     },
-    selectedMain: {
-        [COMPONENT_STYLE_GROUP_PROPERTIES.flex.name]: {
-            ...COMPONENT_STYLE_GROUP_PROPERTIES.flex,
-            displayName: 'Upload Container selectedFiles Main Div flex style',
-            description: "Upload Component selectedFiles Main Div flex style",
-            prefix: 'selectedMain',
-            target: ['selectedMain'],
+    selectedFileContainer: {
+        [COMPONENT_STYLE_GROUP_PROPERTIES.size.name]: {
+            ...COMPONENT_STYLE_GROUP_PROPERTIES.size,
+            displayName: 'Upload Container selectedFiles Main Div size style',
+            description: "Upload Component selectedFiles Main Div size style",
+            prefix: 'selectedFileContainer',
+            target: ['selectedFileContainer'],
         },
-        [COMPONENT_STYLE_GROUP_PROPERTIES.container.name]: {
-            ...COMPONENT_STYLE_GROUP_PROPERTIES.container,
-            displayName: 'Upload Container selectedFiles Main Div container style',
-            description: "Upload Component selectedFiles Main Div container style",
-            prefix: 'selectedMain',
-            target: ['selectedMain'],
+        [COMPONENT_STYLE_GROUP_PROPERTIES.background.name]: {
+            ...COMPONENT_STYLE_GROUP_PROPERTIES.background,
+            displayName: 'Upload Container selectedFiles Main Div background style',
+            description: "Upload Component selectedFiles Main Div background style",
+            prefix: 'selectedFileContainer',
+            target: ['selectedFileContainer'],
+        },
+        [COMPONENT_STYLE_GROUP_PROPERTIES.margin.name]: {
+            ...COMPONENT_STYLE_GROUP_PROPERTIES.margin,
+            displayName: 'Upload Container selectedFiles Main Div margin style',
+            description: "Upload Component selectedFiles Main Div margin style",
+            prefix: 'selectedFileContainer',
+            target: ['selectedFileContainer'],
+        },
+        [COMPONENT_STYLE_GROUP_PROPERTIES.border.name]: {
+            ...COMPONENT_STYLE_GROUP_PROPERTIES.border,
+            displayName: 'Upload Container selectedFiles Main Div border style',
+            description: "Upload Component selectedFiles Main Div border style",
+            prefix: 'selectedFileContainer',
+            target: ['selectedFileContainer'],
         },
         [COMPONENT_STYLE_GROUP_PROPERTIES.scrollbar.name]: {
             ...COMPONENT_STYLE_GROUP_PROPERTIES.scrollbar,
             displayName: 'Upload Container selectedFiles Main Div sroll bar hide or show style',
             description: "Upload Component selectedFiles Main Div sroll bar hide or show style",
-            prefix: 'selectedMain',
-            target: ['selectedMain'],
+            prefix: 'selectedFileContainer',
+            target: ['selectedFileContainer'],
         }
     },
     errorText: {
@@ -236,6 +285,22 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
             description: "Upload Component errorText Font Color",
             prefix: 'errorText',
             target: ['errorText'],
+        },
+    },
+    closeIcon: {
+        [COMPONENT_STYLE_GROUP_PROPERTIES.font.name]: {
+            ...COMPONENT_STYLE_GROUP_PROPERTIES.font,
+            displayName: 'Upload Container closeIcon Font Styles',
+            description: "Upload Component closeIcon Font Styles",
+            prefix: 'closeIcon',
+            target: ['closeIcon'],
+        },
+        [COMPONENT_STYLE_GROUP_PROPERTIES.color.name]: {
+            ...COMPONENT_STYLE_GROUP_PROPERTIES.color,
+            displayName: 'Upload Container closeIcon Font color',
+            description: "Upload Component closeIcon Font Color",
+            prefix: 'closeIcon',
+            target: ['closeIcon'],
         },
     },
 };
