@@ -5,13 +5,14 @@ import {
 	SCHEMA_REF_BOOL_COMP_PROP,
 	SCHEMA_REF_DATA_LOCATION,
 	SCHEMA_REF_STRING_COMP_PROP,
+	SCHEMA_REF_VALIDATION,
 } from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
 	ComponentPropertyGroup,
 } from '../../types/common';
-import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
+import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
@@ -27,7 +28,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
 		displayName: 'No Float Label',
 		description: 'Textbox without floating label.',
-		translatable: true,
 		defaultValue: false,
 	},
 
@@ -80,19 +80,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'validation',
-		schema: Schema.ofArray(
-			'validation',
-			Schema.ofRef(`${NAMESPACE_UI_ENGINE}.EventFunctionValidation`),
-			Schema.ofRef(`${NAMESPACE_UI_ENGINE}.MandatoryValidation`),
-			Schema.ofRef(`${NAMESPACE_UI_ENGINE}.EmailValidation`),
-			Schema.ofRef(`${NAMESPACE_UI_ENGINE}.RegexValidation`),
-			Schema.ofRef(`${NAMESPACE_UI_ENGINE}.UniqueValidation`),
-			Schema.ofRef(`${NAMESPACE_UI_ENGINE}.StringValidation`),
-			Schema.ofRef(`${NAMESPACE_UI_ENGINE}.NumberValidation`),
-			Schema.ofRef(`${NAMESPACE_UI_ENGINE}.BooleanConditionValidation`),
-			Schema.ofRef(`${NAMESPACE_UI_ENGINE}.SchemaTypeValidation`),
-			Schema.ofRef(`${NAMESPACE_UI_ENGINE}.DateFormatValidation`),
-		),
+		schema: Schema.ofRef(SCHEMA_REF_VALIDATION),
 		displayName: 'Validation',
 		description: 'Validation Rule',
 		editor: ComponentPropertyEditor.VALIDATION,
@@ -132,15 +120,41 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
+		name: 'messageDisplay',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'Messages display type',
+		description: 'How messages should be displayed.',
+		editor: ComponentPropertyEditor.ENUM,
+		defaultValue: '_floatingMessages',
+		enumValues: [
+			{
+				name: '_floatingMessages',
+				displayName: 'Floating messages',
+				description: 'Messages will float below the inputbox',
+			},
+			{
+				name: '_fixedMessages',
+				displayName: 'Fixed height for messages',
+				description: 'Messages will appear in a fixed height container',
+			},
+			{
+				name: '_nonFixedMessages',
+				displayName: 'No Fixed height for messages.',
+				description: 'This will increase size of container as it adds messages',
+			},
+		],
+	},
+
+	{
 		name: 'valueType',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: 'Value Type',
 		description: 'Type of the Value',
-		defaultValue: 'STRING',
+		defaultValue: 'text',
 		editor: ComponentPropertyEditor.ENUM,
 		enumValues: [
-			{ name: 'STRING', displayName: 'Text', description: 'Javascript String type' },
-			{ name: 'NUMBER', displayName: 'Number', description: 'Javascript Number type' },
+			{ name: 'text', displayName: 'Text', description: 'Javascript String type' },
+			{ name: 'number', displayName: 'Number', description: 'Javascript Number type' },
 		],
 	},
 
@@ -180,6 +194,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
 		defaultValue: false,
 	},
+	{
+		name: 'placeholder',
+		displayName: 'Placeholder',
+		description: 'Placeholder to be shown in input box.',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		defaultValue: '',
+	},
+	COMMON_COMPONENT_PROPERTIES.onEnter,
 ];
 
 const stylePropertiesDefinition = {
@@ -189,6 +211,8 @@ const stylePropertiesDefinition = {
 		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: COMPONENT_STYLE_GROUP_PROPERTIES.padding,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.outline.type]: COMPONENT_STYLE_GROUP_PROPERTIES.outline,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.position.type]: COMPONENT_STYLE_GROUP_PROPERTIES.position,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.background.type]:
+			COMPONENT_STYLE_GROUP_PROPERTIES.background,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: COMPONENT_STYLE_GROUP_PROPERTIES.size,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.transform.type]:
 			COMPONENT_STYLE_GROUP_PROPERTIES.transform,

@@ -50,6 +50,21 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		noPrefix: true,
 	},
 	{
+		name: 'black-font-color',
+		cssProperty: 'color',
+		displayName: 'Application/Site Color',
+		description: 'This color is used throughout application for all fonts.',
+		defaultValue: '#000000',
+		noPrefix: true,
+	},
+	{
+		name: 'light-black-font-color',
+		displayName: 'Application/Site Color',
+		description: 'This color is used throughout application for all fonts.',
+		defaultValue: '#0000001F',
+		noPrefix: true,
+	},
+	{
 		name: 'form-input-border-color',
 		displayName: 'Form input border color',
 		description: 'This border color is used throughout form input controls.',
@@ -166,6 +181,13 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Application/Site Bright color',
 		description: 'This color is used throughout application where bright color is needed',
 		defaultValue: '#e5b122',
+		noPrefix: true,
+	},
+	{
+		name: 'light-contrast-bright-color',
+		displayName: 'Application/Site Bright color',
+		description: 'This color is used throughout application where bright color is needed',
+		defaultValue: '#e5b12221',
 		noPrefix: true,
 	},
 	{
@@ -327,6 +349,34 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'background',
 		selector: '*:hover::-webkit-scrollbar-thumb',
 		defaultValue: '#6d8499',
+	},
+	{
+		name: 'validation-msg-font-size',
+		displayName: 'Validation Messages Font Size',
+		description: 'Validation Messages Font Size',
+		noPrefix: true,
+		cssProperty: 'font-size',
+		selector: '._validationMessages',
+		defaultValue: 'calc(<main-font-size> - 2px)',
+	},
+	{
+		name: 'validation-msg-font-color',
+		displayName: 'Validation Messages Font Color',
+		description: 'Validation Messages Font Color',
+		noPrefix: true,
+		cssProperty: 'color',
+		selector: '._validationMessages',
+		defaultValue: '<main-error-color>',
+	},
+
+	{
+		name: 'validation-msg-fixed-height',
+		displayName: 'minHeight for Validation Messages with fixed display type',
+		description: 'minHeight for Validation Messages with fixed display type',
+		noPrefix: true,
+		cssProperty: 'min-height',
+		selector: '._validationMessages._fixedMessages',
+		defaultValue: '20px',
 	},
 ];
 

@@ -174,7 +174,7 @@
 					"setLanguagePath": {
 						"key": "setLanguagePath",
 						"type": "VALUE",
-						"value": "Store.currentLanguage"
+						"value": "LocalStore.currentLanguage"
 					}
 				},
 				"value": {

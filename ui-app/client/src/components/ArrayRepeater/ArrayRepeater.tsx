@@ -18,11 +18,12 @@ import {
 } from '../../types/common';
 import { updateLocationForChild } from '../util/updateLoactionForChild';
 import { Component } from '../../types/common';
-import { propertiesDefinition, stylePropertiesDefinition } from './ArrayRepeaterProperties';
+import { propertiesDefinition, stylePropertiesDefinition } from './arrayRepeaterProperties';
 import ArrayRepeaterStyle from './ArrayRepeaterStyle';
 import useDefinition from '../util/useDefinition';
 import UUID from '../util/uuid';
 import Children from '../Children';
+import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 
 function ArrayRepeaterComponent(props: ComponentProps) {
 	const [value, setValue] = React.useState([]);
@@ -34,19 +35,21 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 		definition,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
-	const { properties: { isItemDraggable, showMove, showDelete, showAdd, readOnly } = {}, key } =
-		useDefinition(
-			definition,
-			propertiesDefinition,
-			stylePropertiesDefinition,
-			locationHistory,
-			pageExtractor,
-		);
+	const {
+		properties: { isItemDraggable, showMove, showDelete, showAdd, readOnly, layout } = {},
+		stylePropertiesWithPseudoStates,
+	} = useDefinition(
+		definition,
+		propertiesDefinition,
+		stylePropertiesDefinition,
+		locationHistory,
+		pageExtractor,
+	);
 	if (!bindingPath) throw new Error('Definition requires bindingpath');
 	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
 
 	React.useEffect(() => {
-		addListener(
+		return addListener(
 			(_, value) => {
 				setValue(value);
 			},
@@ -56,9 +59,11 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 	}, [bindingPathPath]);
 
 	if (!Array.isArray(value)) return <></>;
-	const firstchild = {
-		[Object.entries(children)[0][0]]: Object.entries(children)[0][1],
-	};
+
+	let entry = Object.entries(children ?? {}).find(([, v]) => v);
+
+	const firstchild: any = {};
+	if (entry) firstchild[entry[0]] = true;
 
 	const handleAdd = (index: any) => {
 		const newData = value.slice();
@@ -110,8 +115,10 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 		e.target.classList.remove('dragging');
 	};
 
+	const styleProperties = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
+
 	return (
-		<div className="comp compArrayRepeater">
+		<div className={`comp compArrayRepeater _${layout}`} style={styleProperties.comp}>
 			<HelperComponent definition={definition} />
 			{value.map((e: any, index) => {
 				const comp = (
@@ -121,7 +128,13 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 						context={context}
 						locationHistory={[
 							...locationHistory,
-							updateLocationForChild(bindingPath!, index, locationHistory),
+							updateLocationForChild(
+								bindingPath!,
+								index,
+								locationHistory,
+								context.pageName,
+								pageExtractor,
+							),
 						]}
 					/>
 				);
@@ -194,6 +207,11 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: ArrayRepeaterStyle,
+	hasChildren: true,
+	numberOfChildren: 1,
+	bindingPaths: {
+		bindingPath: { name: 'Array Binding' },
+	},
 };
 
 export default component;

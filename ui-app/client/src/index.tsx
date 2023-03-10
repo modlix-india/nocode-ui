@@ -7,6 +7,7 @@ declare global {
 	var nodeDev: boolean;
 	var isDesignMode: boolean;
 	var designMode: string;
+	var getStore: () => any;
 }
 
 const app = document.getElementById('app');

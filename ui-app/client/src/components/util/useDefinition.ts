@@ -1,6 +1,6 @@
 import { isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
 import { useEffect, useState } from 'react';
-import { STORE_PREFIX } from '../../constants';
+import { SCHEMA_REF_VALIDATION, STORE_PREFIX } from '../../constants';
 import {
 	addListener,
 	getData,
@@ -12,10 +12,12 @@ import {
 import {
 	ComponentDefinition,
 	ComponentDefinitionValues,
+	ComponentProperty,
 	ComponentPropertyDefinition,
 	ComponentResoltuions,
 	ComponentStylePropertyDefinition,
 	DataLocation,
+	LocationHistory,
 	StyleResolution,
 } from '../../types/common';
 import { getPathsFrom, getPathsFromComponentDefinition } from './getPaths';
@@ -25,18 +27,47 @@ function createNewState(
 	definition: ComponentDefinition,
 	properties: Array<ComponentPropertyDefinition>,
 	stylePropertiesDefinition: ComponentStylePropertyDefinition,
-	locationHistory: Array<DataLocation | string>,
+	locationHistory: Array<LocationHistory>,
 	pageExtractor: TokenValueExtractor,
 ) {
 	const def: ComponentDefinitionValues = { key: definition.key };
 	def.properties = properties
 		.map(e => {
+			if (e.schema.getRef() === SCHEMA_REF_VALIDATION) {
+				return [
+					e.name,
+					Object.values(definition?.properties?.[e.name] ?? {}).map(evalidation =>
+						Object.entries(evalidation)
+							.map(([k, v]) => [
+								k,
+								typeof v === 'string'
+									? v
+									: getData(
+											v as ComponentProperty<any>,
+											locationHistory,
+											pageExtractor,
+									  ),
+							])
+							.reduce((a: any, c) => {
+								a[c[0]] = c[1];
+								return a;
+							}, {}),
+					),
+				];
+			}
+
 			let value = e.defaultValue;
 			if (!definition.properties) return [e.name, value];
-			if (pageExtractor)
+
+			if (e.multiValued) {
+				value =
+					Object.values(definition.properties[e.name]).map(each =>
+						getData(each, locationHistory, pageExtractor),
+					) ?? value;
+			} else {
 				value =
 					getData(definition.properties[e.name], locationHistory, pageExtractor) ?? value;
-			else value = getData(definition.properties[e.name], locationHistory) ?? value;
+			}
 			return [e.name, value];
 		})
 		.filter(e => !!e[1])
@@ -110,7 +141,7 @@ function processTargets(
 	resolutions: ComponentResoltuions = {},
 	devices: any,
 	stylePropertiesDefinition: ComponentStylePropertyDefinition,
-	locationHistory: Array<DataLocation | string>,
+	locationHistory: Array<LocationHistory>,
 	pageExtractor: TokenValueExtractor,
 ): any {
 	let style = resolutions.ALL ? { ...resolutions.ALL } : {};
@@ -141,7 +172,7 @@ function processTargets(
 		const groupName = CSS_STYLE_PROPERTY_GROUP_REF[prop];
 		if (!groupName) continue;
 
-		for (const eachTarget of stylePropertiesDefinition[prefix][groupName].target) {
+		for (const eachTarget of stylePropertiesDefinition[prefix]?.[groupName]?.target ?? []) {
 			if (!finStyle[eachTarget]) finStyle[eachTarget] = {};
 			finStyle[eachTarget][prop] = v;
 		}
@@ -168,7 +199,7 @@ export default function useDefinition(
 	definition: ComponentDefinition,
 	properties: Array<ComponentPropertyDefinition>,
 	stylePropertiesDefinition: ComponentStylePropertyDefinition,
-	locationHistory: Array<DataLocation | string>,
+	locationHistory: Array<LocationHistory>,
 	pageExtractor: PageStoreExtractor,
 ): ComponentDefinitionValues {
 	const [compState, setCompState] = useState<ComponentDefinitionValues>(
@@ -187,15 +218,46 @@ export default function useDefinition(
 
 	if (pageExtractor) evaluatorMaps.set(pageExtractor.getPrefix(), pageExtractor);
 
+	const propDefMap = properties.reduce((a: any, c) => {
+		a[c.name] = c;
+		return a;
+	}, {});
+
 	useEffect(() => {
 		const paths = getPathsFromComponentDefinition(
 			definition.properties,
 			definition.styleProperties,
 			evaluatorMaps,
+			propDefMap,
 		);
 
 		if (definition.bindingPath) {
 			const p = getPathsFrom(definition.bindingPath, evaluatorMaps);
+			if (p) p.forEach(e => paths.push(e));
+		}
+
+		if (definition.bindingPath2) {
+			const p = getPathsFrom(definition.bindingPath2, evaluatorMaps);
+			if (p) p.forEach(e => paths.push(e));
+		}
+
+		if (definition.bindingPath3) {
+			const p = getPathsFrom(definition.bindingPath3, evaluatorMaps);
+			if (p) p.forEach(e => paths.push(e));
+		}
+
+		if (definition.bindingPath4) {
+			const p = getPathsFrom(definition.bindingPath4, evaluatorMaps);
+			if (p) p.forEach(e => paths.push(e));
+		}
+
+		if (definition.bindingPath5) {
+			const p = getPathsFrom(definition.bindingPath5, evaluatorMaps);
+			if (p) p.forEach(e => paths.push(e));
+		}
+
+		if (definition.bindingPath6) {
+			const p = getPathsFrom(definition.bindingPath6, evaluatorMaps);
 			if (p) p.forEach(e => paths.push(e));
 		}
 
@@ -215,15 +277,14 @@ export default function useDefinition(
 
 		return addListener(
 			() => {
-				setCompState(
-					createNewState(
-						definition,
-						properties,
-						stylePropertiesDefinition,
-						locationHistory,
-						pageExtractor,
-					),
+				const newState = createNewState(
+					definition,
+					properties,
+					stylePropertiesDefinition,
+					locationHistory,
+					pageExtractor,
 				);
+				setCompState(newState);
 			},
 			pageExtractor,
 			...paths,

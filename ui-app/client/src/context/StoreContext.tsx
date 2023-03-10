@@ -1,32 +1,18 @@
 import { useStore, setStoreData } from '@fincity/path-reactive-state-management';
 import { LOCAL_STORE_PREFIX, STORE_PREFIX, PAGE_STORE_PREFIX } from '../constants';
-import { isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
-import { ComponentProperty, DataLocation, RenderContext } from '../types/common';
+import {
+	Expression,
+	ExpressionEvaluator,
+	isNullValue,
+	LinkedList,
+	TokenValueExtractor,
+} from '@fincity/kirun-js';
+import { ComponentProperty, DataLocation, LocationHistory, RenderContext } from '../types/common';
+import { PathExtractor } from '../components/util/getPaths';
+import { LocalStoreExtractor } from './LocalStoreExtractor';
+import { ParentExtractor } from './ParentExtractor';
+import { ThemeExtractor } from './ThemeExtractor';
 
-class LocalStoreExtractor extends TokenValueExtractor {
-	private store: any;
-	private prefix: string;
-	constructor(store: any, prefix: string) {
-		super();
-		this.store = store;
-		this.prefix = prefix;
-	}
-	protected getValueInternal(token: string) {
-		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
-		// Add isSlave_ as prefix for preview mode
-		let localStorageValue = this.store.getItem(parts[1]);
-		if (!localStorageValue) return localStorageValue;
-		try {
-			localStorageValue = JSON.parse(localStorageValue);
-			return this.retrieveElementFrom(token, parts, 2, localStorageValue);
-		} catch (error) {
-			return localStorageValue;
-		}
-	}
-	getPrefix(): string {
-		return this.prefix;
-	}
-}
 export class StoreExtractor extends TokenValueExtractor {
 	private store: any;
 	private prefix: string;
@@ -43,48 +29,79 @@ export class StoreExtractor extends TokenValueExtractor {
 		return this.prefix;
 	}
 }
+
 let localStore: any = {};
 if (typeof window !== 'undefined') {
 	localStore = window.localStorage;
 }
 export const localStoreExtractor = new LocalStoreExtractor(localStore, `${LOCAL_STORE_PREFIX}.`);
+export const themeExtractor = new ThemeExtractor();
+
 const {
 	getData: _getData,
 	setData: _setData,
-	addListener: _addListener,
 	store: _store,
+	addListener: _addListener,
 	addListenerAndCallImmediately: _addListenerAndCallImmediately,
-} = useStore({}, STORE_PREFIX, localStoreExtractor);
+	addListenerWithChildrenActivity: _addListenerWithChildrenActivity,
+	addListenerAndCallImmediatelyWithChildrenActivity:
+		_addListenerAndCallImmediatelyWithChildrenActivity,
+} = useStore({}, STORE_PREFIX, localStoreExtractor, themeExtractor);
+themeExtractor.setStore(_store);
+
+globalThis.getStore = () => JSON.parse(JSON.stringify(_store));
 
 export const storeExtractor = new StoreExtractor(_store, `${STORE_PREFIX}.`);
 
-export const dotPathBuilder = (path: string, locationHistory: Array<DataLocation | string>) => {
-	if (!path.startsWith('.')) return path;
+export const dotPathBuilder = (
+	origPath: string,
+	locationHistory: Array<LocationHistory>,
+	...tve: TokenValueExtractor[]
+) => {
+	if (origPath.indexOf('Parent.') === -1) return origPath;
 
-	let dotsLength = 0;
-	for (let i = 0; i < path.length && path[i] === '.'; i++) {
-		dotsLength++;
-	}
-	const pickedlocationHistory = locationHistory[locationHistory.length - dotsLength];
+	const retSet: Set<string> = new Set();
+	let ex = new ExpressionEvaluator(origPath);
+	try {
+		ex.evaluate(
+			new Map(
+				[
+					storeExtractor,
+					localStoreExtractor,
+					new ParentExtractor(locationHistory),
+					...tve,
+				].map(x => [x.getPrefix(), new PathExtractor(x.getPrefix(), x, retSet)]),
+			),
+		);
+	} catch (err) {}
 
-	if (!pickedlocationHistory) return path;
-	let finalPath = '';
-	if (typeof pickedlocationHistory === 'string')
-		finalPath = `${pickedlocationHistory}.${path.substring(dotsLength)}`;
-	else {
-		if (pickedlocationHistory?.type === 'VALUE') {
-			finalPath = `${pickedlocationHistory.value}.${path.substring(dotsLength)}`;
-		}
-		if (pickedlocationHistory?.type === 'EXPRESSION') {
-			finalPath = `${pickedlocationHistory.expression}.${path.substring(dotsLength)}`;
-		}
+	for (const path of retSet) {
+		const parts: string[] = path.split(TokenValueExtractor.REGEX_DOT);
+
+		let pNum: number = 0;
+		while (parts[pNum] === 'Parent') pNum++;
+
+		const lastHistory = locationHistory[locationHistory.length - pNum];
+		let fpath = '';
+
+		if (typeof lastHistory.location === 'string')
+			fpath = `${lastHistory.location}.${parts.slice(pNum).join('.')}`;
+		else
+			fpath = `${
+				lastHistory.location.type === 'VALUE'
+					? lastHistory.location.value
+					: lastHistory.location.expression
+			}.${parts.slice(pNum).join('.')}`;
+
+		origPath = origPath.replace(new RegExp(path.replace(/\./g, '\\.'), 'g'), fpath);
 	}
-	return finalPath;
+
+	return origPath;
 };
 
 export function getData<T>(
 	prop: ComponentProperty<T> | undefined,
-	locationHistory: Array<DataLocation | string>,
+	locationHistory: Array<LocationHistory>,
 	...tve: Array<TokenValueExtractor>
 ): T | undefined {
 	if (!prop) return undefined;
@@ -101,26 +118,30 @@ export function getData<T>(
 
 export function getDataFromLocation(
 	loc: DataLocation,
-	locationHistory: Array<DataLocation | string>,
+	locationHistory: Array<LocationHistory>,
 	...tve: Array<TokenValueExtractor>
 ): any {
 	if (loc?.type === 'VALUE' && loc.value) {
-		return _getData(dotPathBuilder(loc.value, locationHistory) || '', ...tve);
+		return _getData(dotPathBuilder(loc.value, locationHistory, ...tve) || '', ...tve);
 	} else if (loc?.type === 'EXPRESSION' && loc.expression) {
-		return _getData(dotPathBuilder(loc?.expression!, locationHistory) || '', ...tve);
+		return _getData(dotPathBuilder(loc.expression, locationHistory, ...tve) || '', ...tve);
 	}
 }
 
 export function getPathFromLocation(
 	loc: DataLocation,
-	locationHistory: Array<DataLocation | string>,
+	locationHistory: Array<LocationHistory>,
 	...tve: Array<TokenValueExtractor>
 ): string {
 	if (loc?.type === 'VALUE' && loc.value) {
-		return dotPathBuilder(loc.value, locationHistory) || '';
+		return dotPathBuilder(loc.value, locationHistory, ...tve) || '';
 	} else if (loc?.type === 'EXPRESSION' && loc.expression) {
 		return (
-			dotPathBuilder(getDataFromLocation(loc, locationHistory, ...tve), locationHistory) || ''
+			dotPathBuilder(
+				getDataFromLocation(loc, locationHistory, ...tve),
+				locationHistory,
+				...tve,
+			) || ''
 		);
 	}
 	return '';
@@ -128,13 +149,15 @@ export function getPathFromLocation(
 
 export function getDataFromPath(
 	path: string | undefined,
-	locationHistory: Array<DataLocation | string>,
+	locationHistory: Array<LocationHistory>,
+	...tve: Array<TokenValueExtractor>
 ) {
 	if (!path) return undefined;
-	return _getData(dotPathBuilder(path, locationHistory));
+	return _getData(dotPathBuilder(path, locationHistory), ...tve);
 }
 
 export function setData(path: string, value: any, context?: string, deleteKey?: boolean) {
+	// console.log(path, value);
 	if (path.startsWith(LOCAL_STORE_PREFIX)) {
 		if (!value) return;
 		let parts = path.split(TokenValueExtractor.REGEX_DOT);
@@ -144,7 +167,7 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 		let store;
 		store = localStore.getItem(key);
 
-		if (!store && !parts.length) {
+		if (!parts.length) {
 			localStore.setItem(key, value);
 			return;
 		}
@@ -174,7 +197,8 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 			deleteKey,
 		);
 	} else _setData(path, value, deleteKey);
-	console.log(path, _store, context);
+
+	// console.log(JSON.parse(JSON.stringify(_store)));
 }
 
 export class PageStoreExtractor extends TokenValueExtractor {
@@ -240,6 +264,35 @@ export const addListenerAndCallImmediately = (
 	});
 
 	return _addListenerAndCallImmediately(true, callback, ...nPaths);
+};
+
+export const addListenerWithChildrenActivity = (
+	callback: (path: string, value: any) => void,
+	pageExtractor?: PageStoreExtractor,
+	...path: Array<string>
+): (() => void) => {
+	if (!pageExtractor) return _addListenerWithChildrenActivity(callback, ...path);
+	const nPaths = path.map(e => {
+		if (!e.startsWith(pageExtractor.getPrefix())) return e;
+		return 'Store.pageData.' + pageExtractor.getPageName() + e.substring(4);
+	});
+
+	return _addListenerWithChildrenActivity(callback, ...nPaths);
+};
+
+export const addListenerAndCallImmediatelyWithChildrenActivity = (
+	callback: (path: string, value: any) => void,
+	pageExtractor?: PageStoreExtractor,
+	...path: Array<string>
+): (() => void) => {
+	if (!pageExtractor)
+		return _addListenerAndCallImmediatelyWithChildrenActivity(true, callback, ...path);
+	const nPaths = path.map(e => {
+		if (!e.startsWith(pageExtractor.getPrefix())) return e;
+		return 'Store.pageData.' + pageExtractor.getPageName() + e.substring(4);
+	});
+
+	return _addListenerAndCallImmediatelyWithChildrenActivity(true, callback, ...nPaths);
 };
 
 export const store = _store;

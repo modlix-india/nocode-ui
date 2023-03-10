@@ -179,11 +179,11 @@ export function processEachResolution(
 	let mediaQuery = '';
 
 	if (resDef?.minWidth) {
-		mediaQuery = '@media screen and (min-width: ' + resDef.minWidth + 'px) ';
+		mediaQuery = '\n@media screen and (min-width: ' + resDef.minWidth + 'px) ';
 		if (resDef.maxWidth) mediaQuery += ' and (max-width: ' + resDef.maxWidth + 'px) {';
 		else mediaQuery += ' {';
 	} else if (resDef?.maxWidth) {
-		mediaQuery = '@media screen and (max-width: ' + resDef.maxWidth + 'px) {';
+		mediaQuery = '\n@media screen and (max-width: ' + resDef.maxWidth + 'px) {';
 	}
 
 	return (
@@ -201,7 +201,7 @@ export function processStyleValue(
 	if (!variable || !cssStyleProp) return EMPTY_STRING;
 	const v = theme.get(variable);
 	if (!v) return EMPTY_STRING;
-	return cssStyleProp + ': ' + processFunction(v, theme) + '; ';
+	return cssStyleProp + ': ' + processStyleValueWithFunction(v, theme) + '; ';
 }
 
 export function processComponentStylePseudoClasses(
@@ -225,7 +225,11 @@ export function processComponentStylePseudoClasses(
 }
 
 // Enhance this function to support various css functions and nested expressions too.
-export function processFunction(value: string, theme: Map<string, string>): string {
+export function processStyleValueWithFunction(
+	value: string | undefined,
+	theme: Map<string, string>,
+): string {
+	if (!value) return '';
 	let finValue = '';
 	for (let i = 0; i < value.length; i++) {
 		if (value[i] !== '<') {

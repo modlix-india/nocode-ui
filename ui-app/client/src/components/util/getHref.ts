@@ -1,12 +1,21 @@
-import { Location, useLocation } from 'react-router-dom';
+import { Location as ReactLocation, useLocation } from 'react-router-dom';
 import { processLocation } from '../../util/locationProcessor';
 
-export function getHref(linkPath: string, location: Location) {
+export function getHref(linkPath: string, location: ReactLocation | Location) {
 	// {pathname: '/page/dashboard', search: '', hash: '', state: null, key: 'default'}
 	const processedLocation = processLocation(location);
 	let prefix: string = '';
 	let midfix: string = '';
 	let url: string = '';
+
+	if (
+		linkPath?.startsWith('http:') ||
+		linkPath?.startsWith('https:') ||
+		linkPath?.startsWith('//') ||
+		linkPath?.startsWith('www')
+	) {
+		return linkPath;
+	}
 
 	if (location.pathname.includes('/page')) {
 		const appCode = processedLocation.appName ? '/' + processedLocation.appName : '';

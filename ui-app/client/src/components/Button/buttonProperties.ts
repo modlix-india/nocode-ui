@@ -29,6 +29,19 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 		],
 	},
+	{
+		name: 'target',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'Link target',
+		description: `Link's target.`,
+	},
+	{
+		name: 'linkPath',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'Link path',
+		description: `Path that page needs to be redirected on click.`,
+		translatable: false,
+	},
 	COMMON_COMPONENT_PROPERTIES.onClick,
 	{
 		name: 'leftIcon',

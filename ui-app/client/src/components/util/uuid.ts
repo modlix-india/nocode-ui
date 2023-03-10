@@ -7,13 +7,16 @@ export default function UUID() {
 	});
 }
 
-export function flattenUUID(key: string): string {
+export function flattenUUID(key: string | undefined): string {
+	if (key === undefined) return '';
+
 	let x = '';
 	for (let i = 0; i < key.length; i++)
 		x +=
 			(key[i] >= 'a' && key[i] <= 'z') ||
-			(key[i] >= 'A' && key[i] <= 'A') ||
-			(key[i] >= '0' && key[i] <= '9')
+			(key[i] >= 'A' && key[i] <= 'Z') ||
+			(key[i] >= '0' && key[i] <= '9') ||
+			key[i] == '_'
 				? key[i]
 				: '';
 

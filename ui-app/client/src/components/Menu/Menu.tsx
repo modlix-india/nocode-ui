@@ -101,17 +101,38 @@ function Menu(props: ComponentProps) {
 
 	React.useEffect(() => {
 		if (menuCloseEvent && isMenuOpen && !refObj.current.firstRender) {
-			async () => await runEvent(menuCloseEvent, key, context.pageName);
+			async () =>
+				await runEvent(
+					menuCloseEvent,
+					key,
+					context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				);
 		}
 		if (menuOpenEvent && !isMenuOpen && !refObj.current.firstRender) {
-			async () => await runEvent(menuOpenEvent, key, context.pageName);
+			async () =>
+				await runEvent(
+					menuOpenEvent,
+					key,
+					context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				);
 		}
 		refObj.current.firstRender = false;
 	}, [isMenuOpen]);
 
 	const handleClick = async () => {
 		setIsMenuOpenState(!isMenuOpenState);
-		clickEvent && (await runEvent(clickEvent, key, context.pageName));
+		clickEvent &&
+			(await runEvent(
+				clickEvent,
+				key,
+				context.pageName,
+				props.locationHistory,
+				props.pageDefinition,
+			));
 	};
 
 	const menuDetails = (
@@ -202,6 +223,8 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['focus', 'hover', 'disabled'],
+	hasChildren: true,
+	allowedChildrenType: new Map([['Menu', -1]]),
 };
 
 export default component;

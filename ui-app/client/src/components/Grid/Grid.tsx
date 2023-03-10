@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { HelperComponent } from '../HelperComponent';
 import {
 	ComponentProperty,
@@ -11,23 +11,32 @@ import {
 	addListener,
 	getData,
 	getDataFromPath,
+	getPathFromLocation,
 	PageStoreExtractor,
+	setData,
 } from '../../context/StoreContext';
 import { Component } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './gridProperties';
 import GridStyle from './GridStyle';
 import useDefinition from '../util/useDefinition';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Children from '../Children';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
 import { runEvent } from '../util/runEvent';
 import { flattenUUID } from '../util/uuid';
+import { getHref } from '../util/getHref';
 
 function Grid(props: ComponentProps) {
+	const location = useLocation();
 	const [hover, setHover] = React.useState(false);
 	const [focus, setFocus] = React.useState(false);
+	const [observer, setObserver] = React.useState<IntersectionObserver>();
+	const ref = React.useRef(null);
 	const { definition, pageDefinition, locationHistory, context } = props;
+	const {
+		definition: { bindingPath },
+	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
 		key,
@@ -40,6 +49,8 @@ function Grid(props: ComponentProps) {
 			layout,
 			onClick,
 			background,
+			observeChildren,
+			observerThresholds,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -48,13 +59,40 @@ function Grid(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
+	const bindingPathPath = getPathFromLocation(bindingPath!, locationHistory, pageExtractor);
+	const observerrCallback = useCallback(
+		(entries: Array<IntersectionObserverEntry>) => {
+			if (observeChildren && !bindingPath) return;
+			const [entry] = entries;
+			const key = entry.target.getAttribute('data-key');
+			setData(
+				getPathFromLocation(bindingPath!, locationHistory, pageExtractor),
+				key,
+				context.pageName,
+			);
+		},
+		[bindingPathPath],
+	);
+	React.useEffect(() => {
+		if (!observeChildren) return;
+		const threshold = observerThresholds
+			.split(',')
+			.map((e: string) => parseFloat(e))
+			.filter((e: number) => !isNaN(e) && e <= 1 && e >= 0);
+		const options = {
+			root: ref.current,
+			rootMargin: '0px',
+			threshold,
+		};
+		setObserver(new IntersectionObserver(observerrCallback, options));
+	}, [ref.current, observerrCallback]);
 
 	const childs = (
 		<Children
 			key={`${key}_chld`}
 			pageDefinition={pageDefinition}
 			children={definition.children}
-			context={{ ...context, isReadonly }}
+			context={{ ...context, isReadonly, observer }}
 			locationHistory={locationHistory}
 		/>
 	);
@@ -70,7 +108,7 @@ function Grid(props: ComponentProps) {
 	)}.isRunning`;
 
 	const [isLoading, setIsLoading] = useState(
-		getDataFromPath(spinnerPath, locationHistory) ?? false,
+		getDataFromPath(spinnerPath, locationHistory, pageExtractor) ?? false,
 	);
 
 	useEffect(() => addListener((_, value) => setIsLoading(value), pageExtractor, spinnerPath), []);
@@ -78,13 +116,30 @@ function Grid(props: ComponentProps) {
 	const handleClick =
 		!clickEvent || isLoading
 			? undefined
-			: async () => await runEvent(clickEvent, onClick, props.context.pageName);
-
+			: async () =>
+					await runEvent(
+						clickEvent,
+						onClick,
+						props.context.pageName,
+						props.locationHistory,
+						props.pageDefinition,
+					);
+	const sepStyle = resolvedStyles?.comp?.hideScrollBar;
+	const styleComp = sepStyle ? (
+		<style
+			key={`${key}_style`}
+		>{`._${key}_grid_css::-webkit-scrollbar { display: none }`}</style>
+	) : undefined;
 	if (linkPath) {
 		return React.createElement(containerType.toLowerCase(), { className: 'comp compGrid' }, [
-			<HelperComponent definition={definition} />,
+			<HelperComponent key={`${key}_hlp`} definition={definition} />,
+			styleComp,
 			<Link
-				className={`_anchorGrid _${layout} ${background}`}
+				key={`${key}_Link`}
+				ref={ref}
+				className={`_anchorGrid _${layout} ${background} ${
+					sepStyle ? `_${key}_grid_css` : ''
+				}`}
 				onMouseEnter={
 					stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
 				}
@@ -93,7 +148,7 @@ function Grid(props: ComponentProps) {
 				}
 				onFocus={stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined}
 				onBlur={stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined}
-				to={linkPath}
+				to={getHref(linkPath, location)}
 				target={target}
 				style={resolvedStyles.comp ?? {}}
 			>
@@ -112,13 +167,15 @@ function Grid(props: ComponentProps) {
 
 			onFocus: stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined,
 			onBlur: stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined,
-
-			className: `comp compGrid _noAnchorGrid _${layout} ${background}`,
+			ref: ref,
+			className: `comp compGrid _noAnchorGrid _${layout} ${background} ${
+				sepStyle ? `_${key}_grid_css` : ''
+			}`,
 			style: resolvedStyles.comp ?? {},
 
 			onClick: handleClick,
 		},
-		[<HelperComponent key={`${key}_hlp`} definition={definition} />, childs],
+		[<HelperComponent key={`${key}_hlp`} definition={definition} />, styleComp, childs],
 	);
 }
 
@@ -131,6 +188,10 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleComponent: GridStyle,
 	stylePseudoStates: ['hover', 'focus', 'readonly'],
+	hasChildren: true,
+	bindingPaths: {
+		bindingPath: { name: 'Scrolled Component Binding' },
+	},
 };
 
 export default component;

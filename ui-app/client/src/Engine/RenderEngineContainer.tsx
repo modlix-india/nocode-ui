@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation, Location } from 'react-router-dom';
-import { GOBAL_CONTEXT_NAME, STORE_PREFIX } from '../constants';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useLocation, Location, useParams } from 'react-router-dom';
+import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../constants';
 import {
 	addListener,
 	addListenerAndCallImmediately,
@@ -10,27 +10,27 @@ import {
 } from '../context/StoreContext';
 import * as getPageDefinition from './../definitions/getPageDefinition.json';
 import { runEvent } from '../components/util/runEvent';
-import Page from '../components/Page';
+import { Components } from '../components';
 import { processLocation } from '../util/locationProcessor';
+import { deepEqual, isNullValue } from '@fincity/kirun-js';
 
 export const RenderEngineContainer = () => {
 	const location = useLocation();
+	const pathParams = useParams();
 	const [currentPageName, setCurrentPageName] = useState<string | undefined>();
 	const [shellPageDefinition, setShellPageDefinition] = useState<any>();
 	const [pageDefinition, setPageDefinition] = useState<any>();
 
-	useEffect(() => {
+	const loadDefinition = useCallback(() => {
 		const details = processLocation(location);
-		setData(`${STORE_PREFIX}.urlDetails`, details);
-
 		let { pageName } = details;
-
+		setData(`${STORE_PREFIX}.urlDetails`, details);
 		if (!pageName)
 			pageName = getDataFromPath(`${STORE_PREFIX}.application.properties.defaultPage`, []);
 		let pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
 		if (!pDef) {
 			(async () => {
-				await runEvent(getPageDefinition, 'pageDefinition');
+				await runEvent(getPageDefinition, 'pageDefinition', GLOBAL_CONTEXT_NAME, []);
 				pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
 				setPageDefinition(pDef);
 				setCurrentPageName(pageName);
@@ -39,23 +39,39 @@ export const RenderEngineContainer = () => {
 			setPageDefinition(pDef);
 			setCurrentPageName(pageName);
 		}
-	}, [pageDefinition, location]);
+	}, [location]);
 
 	useEffect(() => {
-		const { pageName } = processLocation(location);
+		loadDefinition();
+	}, [pathParams['*']]);
 
+	useEffect(() => {
 		return addListener(
-			(_, v) => setPageDefinition(v),
+			() => {
+				setPageDefinition(undefined);
+				setCurrentPageName(undefined);
+				loadDefinition();
+			},
 			undefined,
-			`${STORE_PREFIX}.pageDefinition.${pageName}`,
+			'Store.pageDefinition',
 		);
 	}, []);
 
 	useEffect(
 		() =>
 			addListenerAndCallImmediately(
-				(_, value) => {
+				async (_, value) => {
 					setShellPageDefinition(value);
+					if (isNullValue(value)) return;
+					const { properties: { onLoadEvent = undefined } = {}, eventFunctions } = value;
+					if (isNullValue(onLoadEvent) || isNullValue(eventFunctions[onLoadEvent]))
+						return;
+					await runEvent(
+						eventFunctions[onLoadEvent],
+						'appOnLoad',
+						GLOBAL_CONTEXT_NAME,
+						[],
+					);
 				},
 				undefined,
 				`${STORE_PREFIX}.application.properties.shellPageDefinition`,
@@ -67,13 +83,21 @@ export const RenderEngineContainer = () => {
 	// This has to execute even the shell page is not loaded.
 	useEffect(() => {
 		if (
-			!shellPageDefinition?.properties?.onLoadFunction ||
-			!shellPageDefinition?.eventFunctions?.[shellPageDefinition?.properties?.onLoadFunction]
+			!shellPageDefinition?.properties?.onLoadEvent ||
+			!shellPageDefinition?.eventFunctions?.[shellPageDefinition?.properties?.onLoadEvent]
 		)
 			return;
 
-		runEvent(shellPageDefinition.eventFunctions[shellPageDefinition.properties.onLoadFunction]);
-	}, [shellPageDefinition?.properties?.onLoadFunction]);
+		(async () =>
+			await runEvent(
+				shellPageDefinition.eventFunctions[shellPageDefinition.properties.onLoadEvent],
+				'appOnLoad',
+				GLOBAL_CONTEXT_NAME,
+				[],
+			))();
+	}, [shellPageDefinition?.properties?.onLoadEvent]);
+
+	const Page = Components.get('Page')!;
 
 	if (currentPageName && pageDefinition) {
 		const { properties: { wrapShell = true } = {} } = pageDefinition;
@@ -83,7 +107,7 @@ export const RenderEngineContainer = () => {
 				<Page
 					locationHistory={[]}
 					definition={shellPageDefinition}
-					context={{ pageName: GOBAL_CONTEXT_NAME }}
+					context={{ pageName: GLOBAL_CONTEXT_NAME }}
 				/>
 			);
 
@@ -94,17 +118,20 @@ export const RenderEngineContainer = () => {
 				context={{ pageName: currentPageName }}
 			/>
 		);
-	} else {
+	} else if (pageDefinition) {
 		const definitions = getDataFromPath(`${STORE_PREFIX}.pageDefinition`, []) ?? {};
 		const hasDefinitions = !!Object.keys(definitions).length;
-		if (!hasDefinitions) return <>Loading...</>;
+		if (!hasDefinitions) return <>...</>;
 
 		return (
 			<Page
 				locationHistory={[]}
 				definition={shellPageDefinition}
-				context={{ pageName: GOBAL_CONTEXT_NAME }}
+				context={{ pageName: GLOBAL_CONTEXT_NAME }}
 			/>
 		);
+	} else {
+		//TODO: Need to throw an error that there is not page definition found.
+		return <>...</>;
 	}
 };

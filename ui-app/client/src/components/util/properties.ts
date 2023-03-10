@@ -15,6 +15,20 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		description: 'Event to be triggered when clicked.',
 	},
+	onSelect: {
+		name: 'onSelect',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'On Select',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered when selection.',
+	},
+	onEnter: {
+		name: 'onEnter',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'On Enter',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered when enter is pressed.',
+	},
 	label: {
 		name: 'label',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
@@ -42,13 +56,7 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 const COMPONENT_STYLE_GROUPS: { [key: string]: Array<string> } = {
 	accentColor: ['accentColor'],
 	backdropFilter: ['backdropFilter'],
-	image: [
-		'image-orientation',
-		'image-rendering',
-		'image-resolution',
-		'object-fit',
-		'object-position',
-	],
+	image: ['imageOrientation', 'imageRendering', 'imageResolution', 'objectFit', 'objectPosition'],
 	background: [
 		'backgroundBlendMode',
 		'backgroundClip',
@@ -100,6 +108,7 @@ const COMPONENT_STYLE_GROUPS: { [key: string]: Array<string> } = {
 		'borderWidth',
 	],
 	boxShadow: ['boxShadow'],
+	shape: ['clipPath'],
 	color: ['color'],
 	container: ['overflow', 'overflowWrap', 'overflowX', 'overflowY'],
 	flex: [
@@ -153,6 +162,8 @@ const COMPONENT_STYLE_GROUPS: { [key: string]: Array<string> } = {
 	size: ['width', 'height', 'minHeight', 'minWidth', 'maxHeight', 'maxWidth', 'scale'],
 	transform: ['transform', 'transformOrigin', 'transformStyle'],
 	zIndex: ['zIndex'],
+	list: ['listStyleImage', 'listStylePosition', 'listStyleType'],
+	scrollbar: ['hideScrollBar'],
 };
 
 const CSS_STYLE_PROPERTY_GROUP_REF: { [key: string]: string } = Object.entries(
@@ -175,6 +186,13 @@ const COMPONENT_STYLE_GROUP_PROPERTIES: { [key: string]: ComponentStylePropertyG
 		type: 'accentColor',
 		displayName: 'Accent Color',
 		description: 'Accent Color',
+		target: ['comp'],
+	},
+	scrollbar: {
+		name: 'scrollbar',
+		type: 'scrollbar',
+		displayName: 'Scroll Bar',
+		description: 'Scroll Bar',
 		target: ['comp'],
 	},
 	backdropFilter: {
@@ -212,6 +230,13 @@ const COMPONENT_STYLE_GROUP_PROPERTIES: { [key: string]: ComponentStylePropertyG
 		description: 'Color',
 		target: ['comp'],
 	},
+	shape: {
+		name: 'shape',
+		type: 'shape',
+		displayName: 'Shape',
+		description: 'Shape',
+		target: ['comp'],
+	},
 	container: {
 		name: 'container',
 		type: 'container',
@@ -245,6 +270,13 @@ const COMPONENT_STYLE_GROUP_PROPERTIES: { [key: string]: ComponentStylePropertyG
 		type: 'opacity',
 		displayName: 'Opacity',
 		description: 'Opacity',
+		target: ['comp'],
+	},
+	list: {
+		name: 'list',
+		type: 'list',
+		displayName: 'List',
+		description: 'List',
 		target: ['comp'],
 	},
 	outline: {

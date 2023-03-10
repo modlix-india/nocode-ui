@@ -130,7 +130,13 @@ function DropdownComponent(props: ComponentProps) {
 		handleClose();
 
 		if (clickEvent) {
-			await runEvent(clickEvent, key, context.pageName);
+			await runEvent(
+				clickEvent,
+				key,
+				context.pageName,
+				props.locationHistory,
+				props.pageDefinition,
+			);
 		}
 	};
 
@@ -267,6 +273,9 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	stylePseudoStates: ['hover', 'focus', 'disabled'],
+	bindingPaths: {
+		bindingPath: { name: 'Data Binding' },
+	},
 };
 
 export default component;

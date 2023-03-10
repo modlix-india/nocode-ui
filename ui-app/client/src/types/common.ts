@@ -23,6 +23,9 @@ export interface RenderContext {
 	pageName: string;
 	isReadonly?: boolean;
 	formKey?: Array<string>;
+	showValidationMessages?: boolean;
+	observer?: IntersectionObserver;
+	table?: any;
 }
 
 export enum ComponentPropertyDataPathType {
@@ -101,6 +104,19 @@ export interface Component {
 	properties: Array<ComponentPropertyDefinition>;
 	styleProperties?: ComponentStylePropertyDefinition;
 	stylePseudoStates?: Array<String>;
+	hasChildren?: boolean;
+	numberOfChildren?: number;
+	allowedChildrenType?: Map<String, number>;
+	parentType?: string;
+	isHidden?: boolean;
+	bindingPaths?: {
+		bindingPath?: { name: string };
+		bindingPath2?: { name: string };
+		bindingPath3?: { name: string };
+		bindingPath4?: { name: string };
+		bindingPath5?: { name: string };
+		bindingPath6?: { name: string };
+	};
 }
 
 export enum StyleResolution {
@@ -175,14 +191,22 @@ export interface ComponentStyle {
 export interface ComponentDefinition {
 	key: string;
 	bindingPath?: DataLocation;
+	bindingPath2?: DataLocation;
+	bindingPath3?: DataLocation;
+	bindingPath4?: DataLocation;
+	bindingPath5?: DataLocation;
+	bindingPath6?: DataLocation;
 	type: string;
 	properties?: {
-		[key: string]: ComponentProperty<any>;
+		[key: string]:
+			| ComponentProperty<any>
+			| { [key: string]: ComponentProperty<any> }
+			| { [key: string]: Validation };
 	};
 	styleProperties?: ComponentStyle;
 	validations?: Array<Validation>;
 	displayOrder?: number;
-	children: { [key: string]: boolean };
+	children?: { [key: string]: boolean };
 }
 
 export interface ComponentDefinitionValues {
@@ -196,12 +220,22 @@ export interface PageDefinition {
 	eventFunctions: {
 		[key: string]: any;
 	};
+	rootComponent: string;
+	componentDefinition: {
+		[key: string]: ComponentDefinition;
+	};
 	translations: { [key: string]: { [key: string]: string } };
 }
 
 export interface ComponentProps {
 	definition: ComponentDefinition;
 	pageDefinition: PageDefinition;
-	locationHistory: Array<DataLocation | string>;
+	locationHistory: Array<LocationHistory>;
 	context: RenderContext;
+}
+
+export interface LocationHistory {
+	location: DataLocation | string;
+	index: number;
+	pageName: string;
 }
