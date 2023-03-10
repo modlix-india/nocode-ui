@@ -6,11 +6,11 @@ const PREFIX = '.comp.compTextBox';
 export default function TextBoxStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
 	const css =
 		`
-		${PREFIX} .textBoxDiv .inputContainer {
+		.commonInputBox .textBoxDiv .inputContainer {
 			position: relative;
 		}
 		
-		${PREFIX} .textBoxDiv .inputContainer .textbox {
+		.commonInputBox .textBoxDiv .inputContainer .textbox {
 			border: none;
 			width: 100%;
 			height: 100%;
@@ -18,39 +18,32 @@ export default function TextBoxStyle({ theme }: { theme: Map<string, Map<string,
 			outline: none;
 		}
 		
-		${PREFIX} .textBoxDiv .inputContainer .textBoxLabel {
+		.commonInputBox .textBoxDiv .inputContainer .textBoxLabel {
 			position: absolute;
 			top: 50%;
 			transform: translateY(-50%);
 			transition: top 100ms, transform 100ms ease-in;
 		}
 		
-		${PREFIX} .textBoxDiv.textBoxContainer {
-			display: grid;
-			grid-template-columns: auto 30px;
+		.commonInputBox .textBoxDiv {
+			display: flex;
 		}
 
-		${PREFIX} .textBoxDiv.textBoxwithRightIconContainer {
-			display: grid;
-			grid-template-columns: auto 30px;	
+		.commonInputBox .noFloatTextBoxLabel  {
+			display: inline-block;
 		}
 		
-		${PREFIX} .textBoxDiv.textBoxwithIconContainer {
-			display: grid;
-			grid-template-columns: 30px auto 30px;
-		}
-		
-		${PREFIX} .textBoxDiv .inputContainer .textbox:focus + .textBoxLabel,
-		${PREFIX} .textBoxDiv .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel {
+		.commonInputBox .textBoxDiv .inputContainer .textbox:focus + .textBoxLabel,
+		.commonInputBox .textBoxDiv .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel {
 			transform: translateY(-55%);
 		}
 		
-		${PREFIX} 
+		.commonInputBox 
 			.textBoxDiv.textBoxwithIconContainer
 			.inputContainer
 			.textbox:focus
 			+ .textBoxLabel,
-		${PREFIX} 
+		.commonInputBox 
 			.textBoxDiv.textBoxwithIconContainer
 			.inputContainer
 			.textbox:not(:placeholder-shown)
@@ -58,7 +51,7 @@ export default function TextBoxStyle({ theme }: { theme: Map<string, Map<string,
 			transform: translateY(-55%);
 		}
 
-		${PREFIX} .textbox .remove-spin-button::-webkit-outer-spin-button, .remove-spin-button::-webkit-inner-spin-button {
+		.commonInputBox .textbox .remove-spin-button::-webkit-outer-spin-button, .remove-spin-button::-webkit-inner-spin-button {
 			-webkit-appearance: none;
 			-moz-appearance: none;
 			appearance: none;
