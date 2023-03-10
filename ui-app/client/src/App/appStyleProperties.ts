@@ -371,6 +371,16 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '._validationMessages',
 		defaultValue: '<main-error-color>',
 	},
+
+	{
+		name: 'validation-msg-fixed-height',
+		displayName: 'minHeight for Validation Messages with fixed display type',
+		description: 'minHeight for Validation Messages with fixed display type',
+		noPrefix: true,
+		cssProperty: 'min-height',
+		selector: '._validationMessages._fixedMessages',
+		defaultValue: '20px',
+	},
 ];
 
 export const styleDefaults = new Map<string, string>(

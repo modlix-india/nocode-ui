@@ -1,82 +1,94 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import { getTranslations } from '../components/util/getTranslations';
-import { PageDefinition, RenderContext } from '../types/common';
+import { RenderContext, Translations } from '../types/common';
 
 type CommonInputType = {
-	isReadOnly?: boolean;
 	styles?: any;
-	focusHandler?: () => void;
-	blurHandler?: () => void;
-	keyUpHandler?: () => void;
-	showPasswordHandler?: () => void;
+	focusHandler?: (event: React.FocusEvent<HTMLInputElement>) => void;
+	blurHandler?: (event: React.FocusEvent<HTMLInputElement>) => void;
+	keyUpHandler?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 	clearContentHandler?: () => void;
 	id: string;
-	noFloat: boolean;
+	noFloat?: boolean;
 	readOnly: boolean;
 	value: string;
 	label: string;
-	pageDefinition: PageDefinition;
-	focus: boolean;
-	leftIcon: any;
-	rightIcon: any;
-	updateStoreImmediately: any;
-	removeKeyWhenEmpty: any;
-	valueType: any;
-	emptyValue: any;
-	supportingText: any;
-	defaultValue: any;
-	numberType: any;
-	isPassword: any;
-	onEnter: any;
-	validation: any;
-	placeholder: any;
-	showPassword: boolean;
-	handleChange?: (event: any) => void;
-	hasFocusStyles: boolean;
-	validationMessages: Array<string>;
-	isDirty: boolean;
+	translations: Translations;
+	leftIcon?: any;
+	rightIcon?: any;
+	valueType?: any;
+	isPassword?: any;
+	placeholder?: any;
+	handleChange?: (event: ChangeEvent<HTMLInputElement>) => void;
+	hasFocusStyles?: boolean;
+	validationMessages?: Array<string>;
 	context: RenderContext;
+	supportingText?: string;
+	messageDisplay?: string;
 };
 
 function CommonInputText(props: CommonInputType) {
 	const {
-		styles: computedStyles,
+		styles: computedStyles = {},
 		id,
 		noFloat,
 		readOnly,
 		value,
 		label,
-		pageDefinition,
-		focus,
+		translations,
 		leftIcon,
 		rightIcon,
 		valueType,
 		isPassword,
 		placeholder,
-		showPassword,
 		handleChange,
 		hasFocusStyles,
 		focusHandler,
 		blurHandler,
 		keyUpHandler,
-		showPasswordHandler,
 		clearContentHandler,
 		validationMessages,
-		isDirty,
+		supportingText,
 		context,
+		messageDisplay = '_floatingMessages',
 	} = props;
-	const { translations } = pageDefinition;
+	const [focus, setFocus] = React.useState(false);
+	const [showPassword, setShowPassowrd] = React.useState(false);
+	const [isDirty, setIsDirty] = React.useState(false);
+	const handleBlurEvent = (event: React.FocusEvent<HTMLInputElement>) => {
+		setFocus(false);
+		setIsDirty(true);
+		if (blurHandler) blurHandler(event);
+	};
+	const handleFocusEvent = (event: React.FocusEvent<HTMLInputElement>) => {
+		if (hasFocusStyles) setFocus(true);
+		if (focusHandler) focusHandler(event);
+	};
+
+	const handleChangeEvent = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setIsDirty(true);
+		if (handleChange) handleChange(event);
+	};
+
 	const hasErrorMessages =
 		validationMessages?.length && (value || isDirty || context.showValidationMessages);
 	const validationMessagesComp = hasErrorMessages ? (
-		<div className="_validationMessages">
+		<div className={`_validationMessages ${messageDisplay}`}>
 			{validationMessages.map(msg => (
 				<div key={msg}>{msg}</div>
 			))}
 		</div>
-	) : undefined;
+	) : messageDisplay === '_fixedMessages' ? (
+		<div className={`_validationMessages ${messageDisplay}`}></div>
+	) : null;
+
+	const supportText =
+		supportingText && !hasErrorMessages ? (
+			<span className={`supportText ${readOnly ? 'disabled' : ''}`}>{supportingText}</span>
+		) : null;
+
 	return (
-		<>
+		<div className="commonInputBox">
 			{noFloat && (
 				<label
 					style={computedStyles.noFloatLabel ?? {}}
@@ -94,12 +106,6 @@ function CommonInputText(props: CommonInputType) {
 					focus && !value?.length ? 'focussed' : ''
 				} ${value?.length && !readOnly ? 'hasText' : ''} ${
 					readOnly && !hasErrorMessages ? 'disabled' : ''
-				} ${
-					leftIcon || rightIcon
-						? rightIcon
-							? 'textBoxwithRightIconContainer'
-							: 'textBoxwithIconContainer'
-						: 'textBoxContainer'
 				}`}
 			>
 				{leftIcon && (
@@ -109,12 +115,18 @@ function CommonInputText(props: CommonInputType) {
 					<input
 						style={computedStyles.inputBox ?? {}}
 						className={`textbox ${valueType === 'NUMBER' ? 'remove-spin-button' : ''}`}
-						type={isPassword && !showPassword ? 'password' : valueType}
+						type={
+							isPassword && !showPassword
+								? 'password'
+								: valueType
+								? valueType
+								: 'text'
+						}
 						value={value}
-						onChange={handleChange}
+						onChange={event => handleChangeEvent(event)}
 						placeholder={getTranslations(placeholder, translations)}
-						onFocus={hasFocusStyles ? focusHandler : undefined}
-						onBlur={blurHandler}
+						onFocus={handleFocusEvent}
+						onBlur={event => handleBlurEvent(event)}
 						onKeyUp={keyUpHandler}
 						name={id}
 						id={id}
@@ -141,16 +153,16 @@ function CommonInputText(props: CommonInputType) {
 				{isPassword && !readOnly && (
 					<i
 						style={computedStyles.passwordIcon ?? {}}
-						className={`passwordIcon ${
+						className={`passwordIcon rightIcon ${
 							showPassword ? `fa fa-regular fa-eye` : `fa fa-regular fa-eye-slash`
 						}`}
-						onClick={showPasswordHandler}
+						onClick={() => setShowPassowrd(!showPassword)}
 					/>
 				)}
 				{hasErrorMessages ? (
 					<i
 						style={computedStyles.errorText ?? {}}
-						className={`errorIcon ${
+						className={`errorIcon rightIcon ${
 							value?.length ? `hasText` : ``
 						} fa fa-solid fa-circle-exclamation`}
 					/>
@@ -158,12 +170,13 @@ function CommonInputText(props: CommonInputType) {
 					<i
 						style={computedStyles.supportText ?? {}}
 						onClick={clearContentHandler}
-						className="clearText fa fa-regular fa-circle-xmark fa-fw"
+						className="clearText rightIcon fa fa-regular fa-circle-xmark fa-fw"
 					/>
 				) : null}
 			</div>
 			{validationMessagesComp}
-		</>
+			{supportText}
+		</div>
 	);
 }
 
