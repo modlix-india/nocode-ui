@@ -7,7 +7,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Application/Site Disabled font color',
 		description: "This color is used for disabled textbox's support text.",
 		defaultValue: '<form-input-text-color-when-disabled>',
-		selector: '.supportText.disabled',
+		noPrefix: true,
+		selector: '.commonInputBox .supportText.disabled',
 	},
 	{
 		name: 'supportTextFontSize',
@@ -15,14 +16,16 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'textbox support text font size',
 		description: "This textbox's font size is used for textbox's support text.",
 		defaultValue: '<main-font-size>',
-		selector: '.supportText',
+		noPrefix: true,
+		selector: '.commonInputBox .supportText',
 	},
 	{
 		name: 'supportTextFontColor',
 		cssProperty: 'color',
 		displayName: 'textbox support text font color',
 		description: "This textbox's color is used for textbox's support text.",
-		selector: '.supportText',
+		noPrefix: true,
+		selector: '.commonInputBox .supportText',
 	},
 	{
 		name: 'inputTextFontSize',
@@ -30,7 +33,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'textbox input text font size',
 		description: "This textbox's font size is used for textbox's input text.",
 		defaultValue: '<main-font-size>',
-		selector: '.textBoxDiv .inputContainer .textbox',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv .inputContainer .textbox',
 	},
 	{
 		name: 'supportTextErrorColor',
@@ -38,7 +42,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Application/Site Error font color',
 		description: "This color is used for error textbox's support text.",
 		defaultValue: '<main-error-color>',
-		selector: '.supportText.error',
+		noPrefix: true,
+		selector: '.commonInputBox .supportText.error',
 	},
 	{
 		name: 'textBoxBorderColor',
@@ -46,14 +51,16 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "textbox's border color",
 		description: "This color is used for textbox's border color.",
 		defaultValue: '1px solid <form-input-border-color>',
-		selector: '.textBoxDiv',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv',
 	},
 	{
 		name: 'textBoxWdith',
 		cssProperty: 'width',
 		displayName: "textbox's width",
 		description: "This is for textbox's width",
-		selector: '.textBoxDiv',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv',
 	},
 	{
 		name: 'textBoxHeight',
@@ -61,7 +68,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "textbox's height",
 		description: "This is for textbox's height",
 		defaultValue: '56px',
-		selector: '.textBoxDiv',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv',
 	},
 	{
 		name: 'textBoxBorderRadius',
@@ -69,7 +77,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "textbox's border radius",
 		description: "This is for textbox's border radius",
 		defaultValue: '4px',
-		selector: '.textBoxDiv',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv',
 	},
 	{
 		name: 'textBoxBorderErrorColor',
@@ -77,47 +86,70 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "textbox's border color on error",
 		description: "This color is used for textbox's error border color.",
 		defaultValue: '1px solid <form-input-border-error-color>',
-		selector: '.textBoxDiv.error',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv.error',
 	},
 	{
-		name: 'textBox left icon self align',
+		name: 'textBoxLeftIconSelfAlign',
 		cssProperty: 'justify-self',
 		displayName: "textbox's left icon self align",
 		description: "This is for textbox's left icon self align",
 		defaultValue: 'center',
-		selector: '.textBoxDiv .leftIcon',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv .leftIcon',
 	},
 	{
-		name: 'textBox left icon left padding',
+		name: 'leftIconLeftMargin',
+		cssProperty: 'margin-left',
+		displayName: 'Left icon left margin',
+		description: "Left icon's left margin.",
+		defaultValue: '5px',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv .leftIcon',
+	},
+	{
+		name: 'textBoxLeftIconLeftPadding',
 		cssProperty: 'padding-left',
 		displayName: "textbox's left icon padding left",
 		description: "This is for textbox's left icon left padding",
 		defaultValue: '0',
-		selector: '.textBoxDiv .leftIcon',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv .leftIcon',
 	},
 	{
-		name: 'textBox right icon self align',
+		name: 'textBoxRightIconSelfAlign',
 		cssProperty: 'justify-self',
 		displayName: "textbox's right icon self align",
 		description: "This is for textbox's right icon self align",
 		defaultValue: 'center',
-		selector: '.textBoxDiv .rightIcon',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv .rightIcon',
 	},
 	{
-		name: 'textBox right icon right padding',
+		name: 'textBoxRightIconRightPadding',
 		cssProperty: 'padding-right',
 		displayName: "textbox's right icon padding right",
 		description: "This is for textbox's right icon right padding",
 		defaultValue: '0',
-		selector: '.textBoxDiv .rightIcon',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv .rightIcon',
 	},
 	{
-		name: 'textBox right icon content align',
-		cssProperty: 'margin',
-		displayName: "textbox's right icon padding right",
-		description: "This is for textbox's right icon right padding",
-		defaultValue: 'auto',
-		selector: '.textBoxDiv .rightIcon',
+		name: 'textBoxRightIconRightMargin',
+		cssProperty: 'margin-right',
+		displayName: "textbox's right icon margin right",
+		description: "This is for textbox's right icon right margin",
+		defaultValue: '5px',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv .rightIcon',
+	},
+	{
+		name: 'noFloatTextBoxLabelBottomMargin',
+		cssProperty: 'margin-bottom',
+		displayName: "textbox's label margin",
+		description: "This is for textbox's space between label and input box",
+		noPrefix: true,
+		selector: '.commonInputBox .noFloatTextBoxLabel',
 	},
 	{
 		name: 'textBoxBorderColorOnFocus',
@@ -125,7 +157,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "textbox's border color on focus",
 		description: "This color is used for textbox's focus border color.",
 		defaultValue: '1px solid <form-input-border-color-focussed>',
-		selector: '.textBoxDiv.focussed',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv.focussed',
 	},
 	{
 		name: 'textBoxBorderColorWhenHasText',
@@ -133,7 +166,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "textbox's border color with text",
 		description: "This color is used for textbox's border color when it has text.",
 		defaultValue: '1px solid <form-input-border-color-with-text>',
-		selector: '.textBoxDiv.hasText',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv.hasText',
 	},
 	{
 		name: 'textBoxBorderColorWhenDisabled',
@@ -141,7 +175,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "textbox's border color when disabled",
 		description: "This color is used for textbox's border color when it is disabled.",
 		defaultValue: '1px solid <form-input-border-color-when-disabled>',
-		selector: '.textBoxDiv.disabled',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv.disabled',
 	},
 	{
 		name: 'textBoxLabelTextSize',
@@ -149,7 +184,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "Textbox's label font size",
 		description: "This font size is used for textbox's label.",
 		defaultValue: '<main-font-size>',
-		selector: '.textBoxDiv .inputContainer .textBoxLabel',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv .inputContainer .textBoxLabel',
 	},
 	{
 		name: 'textBoxLabelTextColor',
@@ -157,7 +193,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "textbox's label color",
 		description: "This color is used for textbox's label color.",
 		defaultValue: '<form-input-text-color>',
-		selector: '.textBoxDiv .inputContainer .textBoxLabel',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv .inputContainer .textBoxLabel',
 	},
 	{
 		name: 'textBoxLabelTextCursorEvent',
@@ -165,7 +202,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "textbox's label text cursor event",
 		description: "This cursor is used for textbox's label text cursor event.",
 		defaultValue: 'text',
-		selector: '.textBoxDiv .inputContainer .textBoxLabel',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv .inputContainer .textBoxLabel',
 	},
 	{
 		name: 'textBoxInputContainerHeight',
@@ -173,14 +211,16 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "textbox's input container height",
 		description: "This height is used for textbox's input container height.",
 		defaultValue: '100%',
-		selector: '.textBoxDiv .inputContainer',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv .inputContainer',
 	},
 	{
 		name: 'textBoxInputContainerHeight',
 		cssProperty: 'width',
 		displayName: "textbox's input container width",
 		description: "This width is used for textbox's input container height.",
-		selector: '.textBoxDiv .inputContainer',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv .inputContainer',
 	},
 
 	{
@@ -189,7 +229,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "textbox's border color when disabled",
 		description: "This color is used for textbox's border color when it is disabled.",
 		defaultValue: '<form-input-text-color-when-disabled>',
-		selector: '.textBoxDiv .inputContainer .textBoxLabel.disabled',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv .inputContainer .textBoxLabel.disabled',
 	},
 	{
 		name: 'textBoxLabelTextPostionFromLeft',
@@ -197,7 +238,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "textbox's label position from left when input",
 		description: "This left is used for textbox's label position when it has any input.",
 		defaultValue: '0px',
-		selector: '.textBoxDiv .inputContainer .textBoxLabel',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv .inputContainer .textBoxLabel',
 	},
 	{
 		name: 'textBoxLabelTextPaddingFromLeft',
@@ -205,7 +247,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "textbox's label padding from left when input",
 		description: "This left is used for textbox's label padding when it has any input.",
 		defaultValue: '5px',
-		selector: '.textBoxDiv .inputContainer .textBoxLabel',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv .inputContainer .textBoxLabel',
 	},
 	{
 		name: 'textBoxLabelTextTransformWhenContainsTextFromTop',
@@ -214,8 +257,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description:
 			"This top is used for textbox's label text position from top when it has any input.",
 		defaultValue: '0',
+		noPrefix: true,
 		selector:
-			'.textBoxDiv .inputContainer .textbox:focus + .textBoxLabel, .textBoxDiv .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
+			'.commonInputBox .textBoxDiv .inputContainer .textbox:focus + .textBoxLabel, .commonInputBox .textBoxDiv .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
 	},
 	{
 		name: 'textBoxLabelTextTransformWhenContainsTextFromLeft',
@@ -224,8 +268,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description:
 			"This left is used for textbox's label text position from top when it has any input.",
 		defaultValue: '5px',
+		noPrefix: true,
 		selector:
-			'.textBoxDiv .inputContainer .textbox:focus + .textBoxLabel, .textBoxDiv .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
+			'.commonInputBox .textBoxDiv .inputContainer .textbox:focus + .textBoxLabel, .commonInputBox .textBoxDiv .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
 	},
 	{
 		name: 'textBoxLabelTextTransformWhenContainsTextPaddingLeft',
@@ -234,8 +279,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description:
 			"This left is used for textbox's label text padding left when it has any input.",
 		defaultValue: '0',
+		noPrefix: true,
 		selector:
-			'.textBoxDiv .inputContainer .textbox:focus + .textBoxLabel, .textBoxDiv .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
+			'.commonInputBox .textBoxDiv .inputContainer .textbox:focus + .textBoxLabel, .commonInputBox .textBoxDiv .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
 	},
 	{
 		name: 'textBoxLabelTextTransformWhenContainsTextBackgroundColor',
@@ -244,8 +290,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description:
 			"This background color is used for textbox's label text background color when it has any input.",
 		defaultValue: '#fff',
+		noPrefix: true,
 		selector:
-			'.textBoxDiv .inputContainer .textbox:focus + .textBoxLabel, .textBoxDiv .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
+			'.commonInputBox .textBoxDiv .inputContainer .textbox:focus + .textBoxLabel, .commonInputBox .textBoxDiv .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
 	},
 	{
 		name: 'textBoxLabelTextTransformWhenContainsTextFromTopWhenContainsIcon',
@@ -254,8 +301,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description:
 			"This top is used for textbox's label text position from top when it has any input when contains Icon.",
 		defaultValue: '0',
+		noPrefix: true,
 		selector:
-			'.textBoxDiv.textBoxwithIconContainer .inputContainer .textbox:focus + .textBoxLabel, .textBoxDiv.textBoxwithIconContainer .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
+			'.commonInputBox .textBoxDiv .inputContainer .textbox:focus + .textBoxLabel, .commonInputBox .textBoxDiv .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
 	},
 	{
 		name: 'textBoxLabelTextTransformWhenContainsTextFromLeftWhenContainsIcon',
@@ -264,8 +312,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description:
 			"This left is used for textbox's label text position from top when it has any input when contains icon.",
 		defaultValue: '0',
+		noPrefix: true,
 		selector:
-			'.textBoxDiv.textBoxwithIconContainer .inputContainer .textbox:focus + .textBoxLabel, .textBoxDiv.textBoxwithIconContainer .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
+			'.commonInputBox .textBoxDiv .inputContainer .textbox:focus + .textBoxLabel, .commonInputBox .textBoxDiv .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
 	},
 	{
 		name: 'textBoxLabelTextTransformWhenContainsTextPaddingLeftWhenContainsIcon',
@@ -274,8 +323,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description:
 			"This left is used for textbox's label text padding left when it has any input when contains icon.",
 		defaultValue: '0',
+		noPrefix: true,
 		selector:
-			'.textBoxDiv.textBoxwithIconContainer .inputContainer .textbox:focus + .textBoxLabel, .textBoxDiv.textBoxwithIconContainer .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
+			'.commonInputBox .textBoxDiv .inputContainer .textbox:focus + .textBoxLabel, .commonInputBox .textBoxDiv .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
 	},
 	{
 		name: 'textBoxLabelTextTransformWhenContainsTextBackgroundColorWhenContainsIcon',
@@ -284,8 +334,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description:
 			"This background color is used for textbox's label text background color when it has any input when contains icon.",
 		defaultValue: '#fff',
+		noPrefix: true,
 		selector:
-			'.textBoxDiv.textBoxwithIconContainer .inputContainer .textbox:focus + .textBoxLabel, .textBoxDiv.textBoxwithIconContainer .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
+			'.commonInputBox .textBoxDiv .inputContainer .textbox:focus + .textBoxLabel, .commonInputBox .textBoxDiv .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
 	},
 	{
 		name: 'textBoxLabelTextOpacity',
@@ -293,7 +344,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "textbox's label text opacity",
 		description: "This opacity is used for textbox's label content opacity.",
 		defaultValue: '0',
-		selector: '.textBoxDiv .inputContainer .textbox::placeholder',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv .inputContainer .textbox::placeholder',
 	},
 	{
 		name: 'textBoxContainerContentAlign',
@@ -301,7 +353,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "textbox's Container Content Align in the grid",
 		description: "This align items is used for textbox's conatiner content align.",
 		defaultValue: 'center',
-		selector: '.textBoxDiv.textBoxContainer',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv',
 	},
 	{
 		name: 'textBoxContainerContentAlign',
@@ -310,7 +363,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description:
 			"This align items is used for textbox's conatiner content align when contains icons",
 		defaultValue: 'center',
-		selector: '.textBoxDiv.textBoxwithIconContainer',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv',
 	},
 	{
 		name: 'textBoxLabelTextColorWhenError',
@@ -318,7 +372,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "textbox's label color when error",
 		description: "This color is used for textbox's label color when it has error.",
 		defaultValue: '<form-input-error-color>',
-		selector: '.textBoxDiv .inputContainer .textBoxLabel.error',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv .inputContainer .textBoxLabel.error',
 	},
 	{
 		name: 'noFloatTextBoxLabelTextColor',
@@ -326,7 +381,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "No Float textbox's label color",
 		description: "This color is used for textbox's label color.",
 		defaultValue: '<form-input-text-color>',
-		selector: '.noFloatTextBoxLabel',
+		noPrefix: true,
+		selector: '.commonInputBox .noFloatTextBoxLabel',
 	},
 	{
 		name: 'noFloatTextBoxTextColorWhenDisabled',
@@ -334,7 +390,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "No Float textbox's border color when disabled",
 		description: "This color is used for textbox's border color when it is disabled.",
 		defaultValue: '<form-input-text-color-when-disabled>',
-		selector: '.noFloatTextBoxLabel.disabled',
+		noPrefix: true,
+		selector: '.commonInputBox .noFloatTextBoxLabel.disabled',
 	},
 	{
 		name: 'noFloatTextBoxLabelTextColorWhenError',
@@ -342,7 +399,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "No Float textbox's label color when error",
 		description: "This color is used for textbox's label color when it has error.",
 		defaultValue: '<form-input-error-color>',
-		selector: '.noFloatTextBoxLabel.error',
+		noPrefix: true,
+		selector: '.commonInputBox .noFloatTextBoxLabel.error',
 	},
 	{
 		name: 'textBoxTextMouseEventWhenDisabled',
@@ -350,7 +408,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "textbox's mouse cursor when disabled",
 		description: "This not allowed mouse event is used for textbox's when it is disabled.",
 		defaultValue: '<form-input-mouse-event-when-disabled>',
-		selector: '.textBoxDiv .inputContainer .textbox:disabled',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv .inputContainer .textbox:disabled',
 	},
 	{
 		name: 'textBoxTextBackgroundColorWhenDisabled',
@@ -358,7 +417,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "textbox's background color when disabled",
 		description: "This background color is used for textbox's when it is disabled.",
 		defaultValue: 'transparent',
-		selector: '.textBoxDiv .inputContainer .textbox:disabled',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv .inputContainer .textbox:disabled',
 	},
 	{
 		name: 'textBoxLabelBackgroundColorWhenDisabled',
@@ -366,7 +426,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "textbox's label background color when disabled",
 		description: "This background color is used for textbox's label when it is disabled.",
 		defaultValue: 'transparent',
-		selector: '.textBoxLabel.disabled',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxLabel.disabled',
 	},
 	{
 		name: 'textBoxClearTextIconPointerEvent',
@@ -374,7 +435,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "textbox's clear text icon poiter event",
 		description: "This cursor event is used for textbox's clear icon.",
 		defaultValue: 'pointer',
-		selector: '.textBoxDiv .clearText',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv .clearText',
 	},
 	{
 		name: 'textBoxIconColorWhenError',
@@ -382,7 +444,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "textbox's Error Icon color when error",
 		description: "This color is used for textbox's error icon color when it has error",
 		defaultValue: '<form-input-text-color-when-error>',
-		selector: '.textBoxDiv .errorIcon',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv .errorIcon',
 	},
 	{
 		name: 'textBoxTextColorWhenDisabled',
@@ -390,7 +453,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "textbox's text color when disabled",
 		description: "This color is used for textbox's text color when its disabled",
 		defaultValue: '<form-input-text-color-when-disabled>',
-		selector: '.textBoxDiv .inputContainer .textbox:disabled',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv .inputContainer .textbox:disabled',
 	},
 	{
 		name: 'textBoxIconColorWhenTextPresent',
@@ -399,47 +463,48 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description:
 			"This color is used for textbox's icon color when we input new data in textbox after error",
 		defaultValue: '<from-input-error-icon-hastext-color>',
-		selector: '.textBoxDiv .errorIcon.hasText',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv .errorIcon.hasText',
 	},
 	{
 		name: 'textBoxPasswordIconPadding',
 		cssProperty: 'padding',
 		displayName: "textbox's Password Icon Padding",
-		description:
-			"This color is used for textbox's password icon padding",
-		selector: '.textBoxDiv .passwordIcon',
+		description: "This color is used for textbox's password icon padding",
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv .passwordIcon',
 	},
 	{
 		name: 'textBoxPasswordIconPaddingLeft',
 		cssProperty: 'padding-left',
 		displayName: "textbox's Password Icon Padding left",
-		description:
-			"This color is used for textbox's password icon padding left",
-		selector: '.textBoxDiv .passwordIcon',
+		description: "This color is used for textbox's password icon padding left",
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv .passwordIcon',
 	},
 	{
 		name: 'textBoxPasswordIconPaddingRight',
 		cssProperty: 'padding-right',
 		displayName: "textbox's Password Icon Padding right",
-		description:
-			"This color is used for textbox's password icon padding right",
-		selector: '.textBoxDiv .passwordIcon',
+		description: "This color is used for textbox's password icon padding right",
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv .passwordIcon',
 	},
 	{
 		name: 'textBoxPasswordIconPaddingTop',
 		cssProperty: 'padding-top',
 		displayName: "textbox's Password Icon Padding Top",
-		description:
-			"This color is used for textbox's password icon padding top",
-		selector: '.textBoxDiv .passwordIcon',
+		description: "This color is used for textbox's password icon padding top",
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv .passwordIcon',
 	},
 	{
 		name: 'textBoxPasswordIconPaddingBottom',
 		cssProperty: 'padding-bottom',
 		displayName: "textbox's Password Icon Padding bottom",
-		description:
-			"This color is used for textbox's password icon padding bottom",
-		selector: '.textBoxDiv .passwordIcon',
+		description: "This color is used for textbox's password icon padding bottom",
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv .passwordIcon',
 	},
 ];
 
