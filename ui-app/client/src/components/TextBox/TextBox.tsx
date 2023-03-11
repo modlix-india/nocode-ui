@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
 	addListener,
-	getDataFromLocation,
+	addListenerAndCallImmediately,
 	getDataFromPath,
 	getPathFromLocation,
 	PageStoreExtractor,
@@ -9,27 +9,24 @@ import {
 } from '../../context/StoreContext';
 import { HelperComponent } from '../HelperComponent';
 import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
-import { getTranslations } from '../util/getTranslations';
 import { Component } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './textBoxProperties';
 import TextBoxStyle from './TextBoxStyle';
 import useDefinition from '../util/useDefinition';
-import { deepEqual, isNullValue } from '@fincity/kirun-js';
+import { isNullValue } from '@fincity/kirun-js';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
 import { flattenUUID } from '../util/uuid';
 import { runEvent } from '../util/runEvent';
 import { validate } from '../../util/validationProcessor';
+import CommonInputText from '../../commonComponents/CommonInputText';
 
 interface mapType {
 	[key: string]: any;
 }
 
 function TextBox(props: ComponentProps) {
-	const [isDirty, setIsDirty] = React.useState(false);
-	const [errorMessage, setErrorMessage] = React.useState('');
 	const [focus, setFocus] = React.useState(false);
-	const [show, setShow] = React.useState(false);
 	const [validationMessages, setValidationMessages] = React.useState<Array<string>>([]);
 	const mapValue: mapType = {
 		UNDEFINED: undefined,
@@ -63,6 +60,7 @@ function TextBox(props: ComponentProps) {
 			onEnter,
 			validation,
 			placeholder,
+			messageDisplay,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -79,35 +77,22 @@ function TextBox(props: ComponentProps) {
 		stylePropertiesWithPseudoStates,
 	);
 	const [value, setValue] = React.useState(defaultValue ?? '');
-
-	const bindingPathPath = bindingPath
-		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
-		: undefined;
-
-	React.useEffect(() => {
-		if (!bindingPathPath) return;
-		const initValue = getDataFromPath(bindingPathPath, locationHistory, pageExtractor);
-		if (!isNullValue(defaultValue) && isNullValue(initValue)) {
-			setData(bindingPathPath, defaultValue, context.pageName);
-		}
-		setValue(initValue ?? defaultValue?.toString() ?? '');
-	}, [bindingPathPath]);
+	if (!bindingPath) throw new Error('Binding path is required by definition');
+	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
 
 	React.useEffect(
 		() =>
-			bindingPathPath
-				? addListener(
-						(_, value) => {
-							if (value === undefined || value === null) {
-								setValue('');
-								return;
-							}
-							setValue(value);
-						},
-						pageExtractor,
-						bindingPathPath,
-				  )
-				: undefined,
+			addListenerAndCallImmediately(
+				(_, value) => {
+					if (isNullValue(value)) {
+						setValue('');
+						return;
+					}
+					setValue(value);
+				},
+				pageExtractor,
+				bindingPathPath,
+			),
 		[bindingPathPath],
 	);
 
@@ -150,10 +135,9 @@ function TextBox(props: ComponentProps) {
 			);
 	}, [value, validation]);
 
-	const handleBlur = async (event: any) => {
-		setIsDirty(true);
+	const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
 		let temp = value === '' && emptyValue ? mapValue[emptyValue] : value;
-		if (valueType === 'NUMBER') {
+		if (valueType === 'number') {
 			const tempNumber =
 				value !== ''
 					? numberType === 'DECIMAL'
@@ -194,11 +178,8 @@ function TextBox(props: ComponentProps) {
 			setData(bindingPathPath, temp, context?.pageName);
 		if (!updateStoreImmediately) setValue(!isNaN(tempNumber) ? temp?.toString() : '');
 	};
-	const handleChange = (event: any) => {
-		if (!isDirty) {
-			setIsDirty(true);
-		}
-		if (valueType === 'STRING') handleTextChange(event.target.value);
+	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		if (valueType === 'text') handleTextChange(event.target.value);
 		else handleNumberChange(event.target.value);
 	};
 	const handleClickClose = () => {
@@ -210,131 +191,46 @@ function TextBox(props: ComponentProps) {
 		}
 	};
 	const clickEvent = onEnter ? props.pageDefinition.eventFunctions[onEnter] : undefined;
-	const handleKeyUp = onEnter
-		? async (e: React.KeyboardEvent) => {
-				if (!clickEvent || isLoading || e.key !== 'Enter') return;
-				if (!updateStoreImmediately) {
-					await handleBlur(e);
-				}
-				await runEvent(
-					clickEvent,
-					onEnter,
-					props.context.pageName,
-					props.locationHistory,
-					props.pageDefinition,
-				);
-		  }
-		: undefined;
-
-	const validationMessagesComp =
-		validationMessages?.length && (value || isDirty || context.showValidationMessages) ? (
-			<div className="_validationMessages">
-				{validationMessages.map(msg => (
-					<div key={msg}>{msg}</div>
-				))}
-			</div>
-		) : undefined;
+	const handleKeyUp = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+		if (!clickEvent || isLoading || e.key !== 'Enter') return;
+		if (!updateStoreImmediately) {
+			handleBlur(e as unknown as React.FocusEvent<HTMLInputElement>);
+		}
+		await runEvent(
+			clickEvent,
+			onEnter,
+			props.context.pageName,
+			props.locationHistory,
+			props.pageDefinition,
+		);
+	};
 	return (
 		<div className="comp compTextBox" style={computedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />
-			{noFloat && (
-				<label
-					style={computedStyles.noFloatLabel ?? {}}
-					htmlFor={key}
-					className={`noFloatTextBoxLabel ${readOnly ? 'disabled' : ''}${
-						value?.length ? `hasText` : ``
-					}`}
-				>
-					{getTranslations(label, translations)}
-				</label>
-			)}
-			<div
-				style={computedStyles.textBoxContainer ?? {}}
-				className={`textBoxDiv ${errorMessage ? 'error' : ''} ${
-					focus && !value?.length ? 'focussed' : ''
-				} ${value?.length && !readOnly ? 'hasText' : ''} ${
-					readOnly && !errorMessage ? 'disabled' : ''
-				} ${
-					leftIcon || rightIcon
-						? rightIcon
-							? 'textBoxwithRightIconContainer'
-							: 'textBoxwithIconContainer'
-						: 'textBoxContainer'
-				}`}
-			>
-				{leftIcon && (
-					<i style={computedStyles.leftIcon ?? {}} className={`leftIcon ${leftIcon}`} />
-				)}
-				<div className={`inputContainer`}>
-					<input
-						style={computedStyles.inputBox ?? {}}
-						className={`textbox ${valueType === 'NUMBER' ? 'remove-spin-button' : ''}`}
-						type={isPassword && !show ? 'password' : valueType}
-						value={value}
-						onChange={handleChange}
-						placeholder={getTranslations(effectivePlaceholder, translations)}
-						onFocus={
-							stylePropertiesWithPseudoStates?.focus
-								? () => setFocus(true)
-								: undefined
-						}
-						onBlur={handleBlur}
-						onKeyUp={handleKeyUp}
-						name={key}
-						id={key}
-						disabled={readOnly}
-					/>
-					{!noFloat && (
-						<label
-							style={computedStyles.floatingLabel ?? {}}
-							htmlFor={key}
-							className={`textBoxLabel ${readOnly ? 'disabled' : ''}${
-								value?.length ? `hasText` : ``
-							}`}
-						>
-							{getTranslations(label, translations)}
-						</label>
-					)}
-				</div>
-				{rightIcon && (
-					<i
-						style={computedStyles.rightIcon ?? {}}
-						className={`rightIcon ${rightIcon}`}
-					/>
-				)}
-				{isPassword && !readOnly && (
-					<i
-						style={computedStyles.passwordIcon ?? {}}
-						className={`passwordIcon ${
-							show ? `fa fa-regular fa-eye` : `fa fa-regular fa-eye-slash`
-						}`}
-						onClick={() => setShow(!show)}
-					/>
-				)}
-				{errorMessage ? (
-					<i
-						style={computedStyles.errorText ?? {}}
-						className={`errorIcon ${
-							value?.length ? `hasText` : ``
-						} fa fa-solid fa-circle-exclamation`}
-					/>
-				) : value?.length && !rightIcon && !readOnly && !isPassword ? (
-					<i
-						style={computedStyles.supportText ?? {}}
-						onClick={handleClickClose}
-						className="clearText fa fa-regular fa-circle-xmark fa-fw"
-					/>
-				) : null}
-			</div>
-			<label
-				title={errorMessage ? errorMessage : supportingText}
-				className={`supportText ${readOnly ? 'disabled' : ''} ${
-					errorMessage ? 'error' : ''
-				}`}
-			>
-				{errorMessage ? errorMessage : supportingText}
-			</label>
-			{validationMessagesComp}
+
+			<CommonInputText
+				id={key}
+				noFloat={noFloat}
+				readOnly={readOnly}
+				value={value}
+				label={label}
+				translations={translations}
+				leftIcon={leftIcon}
+				rightIcon={rightIcon}
+				valueType={valueType}
+				isPassword={isPassword}
+				placeholder={effectivePlaceholder}
+				hasFocusStyles={stylePropertiesWithPseudoStates?.focus}
+				validationMessages={validationMessages}
+				context={context}
+				handleChange={handleChange}
+				clearContentHandler={handleClickClose}
+				blurHandler={handleBlur}
+				keyUpHandler={handleKeyUp}
+				focusHandler={() => setFocus(true)}
+				supportingText={supportingText}
+				messageDisplay={messageDisplay}
+			/>
 		</div>
 	);
 }

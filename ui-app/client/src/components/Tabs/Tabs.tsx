@@ -26,7 +26,7 @@ function TabsComponent(props: ComponentProps) {
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
-		properties: { tabs, defaultActive, readOnly, icon } = {},
+		properties: { tabs, defaultActive, readOnly, icon, tabsOrientation, activeStyle } = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
 		definition,
@@ -51,6 +51,7 @@ function TabsComponent(props: ComponentProps) {
 			.filter(e => !!e);
 		return value;
 	};
+
 	const tabNames = stringSpliter(tabs);
 	const iconTags = stringSpliter(icon);
 
@@ -66,8 +67,11 @@ function TabsComponent(props: ComponentProps) {
 		);
 	}, []);
 
-	const getActiveStyle = function (childKey: any) {
-		if (activeTab === childKey ?? defaultActive === childKey) return 'tabsButtonActive';
+	const getActiveStyleBorder = function (childKey: any) {
+		if (activeTab === childKey ?? defaultActive === childKey) return 'activeTabBorder';
+	};
+	const getActiveStyleHighlight = function (childKey: any) {
+		if (activeTab === childKey ?? defaultActive === childKey) return 'activeTabHighlight';
 	};
 
 	const handleClick = function (key: string) {
@@ -84,43 +88,53 @@ function TabsComponent(props: ComponentProps) {
 		)[index == -1 ? 0 : index];
 	const selectedChild = entry ? { [entry[0]]: entry[1] } : {};
 
+	const orientationClass = tabsOrientation === 'VERTICAL' ? 'vertical' : '';
+
 	return (
-		<div className="comp compTabs" style={resolvedStyles.comp ?? {}}>
+		<div className={`comp compTabs ${orientationClass}`} style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />
-			<div className="tabButtonDiv" style={resolvedStyles.container ?? {}}>
+			<div
+				className={`tabsContainer ${orientationClass}`}
+				style={resolvedStyles.tabsContainer ?? {}}
+			>
 				{tabNames.map((e: any, i: number) => (
-					<div>
-						<button
-							onMouseEnter={
-								stylePropertiesWithPseudoStates?.hover
-									? () => setHover(true)
-									: undefined
-							}
-							onMouseLeave={
-								stylePropertiesWithPseudoStates?.hover
-									? () => setHover(false)
-									: undefined
-							}
-							style={resolvedStyles.button ?? {}}
-							className={`tabsButtons `}
-							key={e}
-							onClick={() => handleClick(e)}
-						>
+					<div
+						key={e}
+						className={`tabDiv ${orientationClass} ${
+							activeStyle === 'HIGHLIGHT' ? getActiveStyleHighlight(e) : ''
+						}`}
+						style={resolvedStyles.tabDivContainer ?? {}}
+						onMouseEnter={
+							stylePropertiesWithPseudoStates?.hover
+								? () => setHover(true)
+								: undefined
+						}
+						onMouseLeave={
+							stylePropertiesWithPseudoStates?.hover
+								? () => setHover(false)
+								: undefined
+						}
+						onClick={() => handleClick(e)}
+					>
+						<button style={resolvedStyles.button ?? {}} className={`tabButton`}>
 							<i className={iconTags[i]}></i>
 							{getTranslations(e, pageDefinition.translations)}
 						</button>
-						<div className={getActiveStyle(e)}></div>
+						{activeStyle === 'BORDER' && (
+							<div className={getActiveStyleBorder(e)}></div>
+						)}
 					</div>
 				))}
 			</div>
-
-			<Children
-				key={`${activeTab}_chld`}
-				pageDefinition={pageDefinition}
-				children={selectedChild}
-				context={context}
-				locationHistory={locationHistory}
-			/>
+			<div className="tabGridDiv" style={resolvedStyles.childContainer ?? {}}>
+				<Children
+					key={`${activeTab}_chld`}
+					pageDefinition={pageDefinition}
+					children={selectedChild}
+					context={context}
+					locationHistory={locationHistory}
+				/>
+			</div>
 		</div>
 	);
 }

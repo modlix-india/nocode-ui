@@ -124,6 +124,11 @@ export default function AppStyle() {
 	._pointer {
 		cursor: pointer;
 	}
+
+	._validationMessages._floatingMessages {
+		position:absolute;
+		z-index:1;
+	}
 	` + processStyleDefinition('', styleProperties, styleDefaults, theme);
 
 	const styleComps = new Array();
