@@ -79,7 +79,7 @@ export class FetchData extends AbstractFunction {
 				if (!isNullValue(v)) a[k] = v;
 				return a;
 			}, {});
-		console.log(headers);
+
 		try {
 			const response = await axios({
 				url: pathFromParams(url, pathParams),

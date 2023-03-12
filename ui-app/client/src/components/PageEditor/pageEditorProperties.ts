@@ -56,6 +56,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		description: 'Event to be triggered on personalization changed.',
 	},
+
+	{
+		name: 'onDeletePersonalization',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'On Personalization Delete',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered on personalization cleared.',
+	},
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

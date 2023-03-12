@@ -22,8 +22,6 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import DnDEditor from './editors/DnDEditor/DnDEditor';
 import TopBar from './TopBar';
 import { runEvent } from '../util/runEvent';
-import { useLocation } from 'react-router-dom';
-import { STORE_PREFIX } from '../../constants';
 
 function savePersonalizationCurry(
 	personalizationPath: string,
@@ -37,6 +35,7 @@ function savePersonalizationCurry(
 
 	return (key: string, value: any) => {
 		if (handle !== -1) clearTimeout(handle);
+
 		setData(`${personalizationPath}.${key}`, value, pageName);
 		handle = setTimeout(() => {
 			(async () =>
@@ -63,7 +62,7 @@ function PageEditor(props: ComponentProps) {
 	const {
 		key,
 		stylePropertiesWithPseudoStates,
-		properties: { logo, theme, onSave, onChangePersonalization } = {},
+		properties: { logo, theme, onSave, onChangePersonalization, onDeletePersonalization } = {},
 	} = useDefinition(
 		definition,
 		propertiesDefinition,
@@ -112,6 +111,20 @@ function PageEditor(props: ComponentProps) {
 			))();
 	}, [onSave]);
 
+	const deletePersonalization = useCallback(() => {
+		if (!onDeletePersonalization || !pageDefinition.eventFunctions?.[onDeletePersonalization])
+			return;
+
+		(async () =>
+			await runEvent(
+				pageDefinition.eventFunctions[onDeletePersonalization],
+				onDeletePersonalization,
+				context.pageName,
+				locationHistory,
+				pageDefinition,
+			))();
+	}, [onDeletePersonalization]);
+
 	const savePersonalization = useMemo(() => {
 		if (!personalizationPath) return (key: string, value: any) => {};
 
@@ -133,42 +146,80 @@ function PageEditor(props: ComponentProps) {
 	const [url, setUrl] = useState<string>('');
 	const [clientCode, setClientCode] = useState<string>('');
 
+	const editDefinition = !defPath
+		? undefined
+		: getDataFromPath(`${defPath}`, locationHistory, pageExtractor);
+
 	useEffect(() => {
-		if (!pageDefinition || !presonalization) {
+		if (!editDefinition || !presonalization) {
 			setUrl('');
+			setClientCode('');
 			return;
 		}
 
-		if (presonalization?.pageLeftAt?.[pageDefinition.name]) {
-			setUrl(presonalization.pageLeftAt[pageDefinition.name].url);
-			setClientCode(presonalization.pageLeftAt[pageDefinition.name].clientCode);
+		if (presonalization?.pageLeftAt?.[editDefinition.name]) {
+			setUrl(presonalization.pageLeftAt[editDefinition.name].url);
+			setClientCode(presonalization.pageLeftAt[editDefinition.name].clientCode);
+			return;
 		}
 
-		const clientCode = getDataFromPath(`${STORE_PREFIX}.auth`, locationHistory, pageExtractor);
-		const location = window.location;
+		setClientCode(editDefinition.clientCode);
 		setUrl(
-			`${location.protocol}//${location.host}/${pageDefinition.appCode}/${clientCode}/${pageDefinition.name}`,
+			`/${editDefinition.appCode}/${
+				clientCode === '' ? editDefinition.clientCode : clientCode
+			}/page/${editDefinition.name}`,
 		);
-	}, [presonalization, pageDefinition]);
+		setClientCode(editDefinition.clientCode);
+	}, [presonalization, editDefinition]);
 
-	if (!presonalization || presonalization.theme !== localTheme) return <></>;
+	const urlChange = useCallback(
+		(v: string) => {
+			setUrl(v ?? '');
+			if (!personalizationPath || !editDefinition.name) return;
+			savePersonalization(`pageLeftAt.${editDefinition.name}.url`, v);
+			savePersonalization(
+				`pageLeftAt.${editDefinition.name}.clientCode`,
+				clientCode === '' ? editDefinition.clientCode : clientCode,
+			);
+		},
+		[setUrl, savePersonalization, editDefinition?.name],
+	);
+
+	useEffect(() => {
+		function onMessageFromSlave(e: MessageEvent) {
+			console.log('Message from slave : ', e);
+		}
+
+		window.addEventListener('message', onMessageFromSlave);
+		return () => window.removeEventListener('message', onMessageFromSlave);
+	}, []);
+
+	const onPageReload = useCallback(() => {}, []);
+
+	if (!presonalization) return <></>;
 
 	return (
 		<div className={`comp compPageEditor ${localTheme}`} style={resolvedStyles.comp ?? {}}>
 			<HelperComponent key={`${key}_hlp`} definition={definition} />
 			<TopBar
+				url={url}
 				theme={localTheme}
 				personalizationPath={personalizationPath}
 				logo={logo}
 				pageName={context.pageName}
 				onSave={saveFunction}
 				onChangePersonalization={savePersonalization}
+				onUrlChange={urlChange}
+				onDeletePersonalization={deletePersonalization}
+				pageExtractor={pageExtractor}
+				onPageReload={onPageReload}
 			/>
 			<DnDEditor
 				personalizationPath={personalizationPath}
 				defPath={defPath}
 				url={url}
 				pageName={context.pageName}
+				pageExtractor={pageExtractor}
 				onSave={saveFunction}
 				onChangePersonalization={savePersonalization}
 			/>
