@@ -63,6 +63,25 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Title of the modal',
 		description: 'Title of the modal',
 	},
+	{
+		name: 'popupDesign',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'Pupup Design',
+		description: 'Pupup Design',
+		defaultValue: '_design1',
+		enumValues: [
+			{
+				name: '_design1',
+				displayName: 'Design 1',
+				description: 'Padding with close button in title grid',
+			},
+			{
+				name: '_design2',
+				displayName: 'Design 2',
+				description: 'No padding with close button as absolute top-right',
+			},
+		],
+	},
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
