@@ -8,6 +8,7 @@ declare global {
 	var isDesignMode: boolean;
 	var designMode: string;
 	var getStore: () => any;
+	var pageEditor: { selectedComponent: string; editingPageDefinition: any };
 }
 
 const app = document.getElementById('app');

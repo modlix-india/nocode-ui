@@ -156,6 +156,8 @@ export function getDataFromPath(
 	return _getData(dotPathBuilder(path, locationHistory), ...tve);
 }
 
+export const innerSetData = _setData;
+
 export function setData(path: string, value: any, context?: string, deleteKey?: boolean) {
 	// console.log(path, value);
 	if (path.startsWith(LOCAL_STORE_PREFIX)) {
@@ -196,6 +198,13 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 			value,
 			deleteKey,
 		);
+	} else if (
+		window.isDesignMode &&
+		window.designMode === 'PAGE' &&
+		window.pageEditor?.editingPageDefinition?.name &&
+		path === `${STORE_PREFIX}.pageDefinition.${window.pageEditor.editingPageDefinition.name}`
+	) {
+		_setData(path, window.pageEditor.editingPageDefinition);
 	} else _setData(path, value, deleteKey);
 
 	// console.log(JSON.parse(JSON.stringify(_store)));

@@ -10,16 +10,14 @@ interface DnDIFrameProps {
 	pageName: string | undefined;
 	url: string;
 	pageExtractor: PageStoreExtractor;
-	defPath: string | undefined;
-	selectedComponent: string;
+	iframeRef: React.RefObject<HTMLIFrameElement>;
 }
 
 export default function DnDIFrame({
 	url,
 	personalizationPath,
 	pageExtractor,
-	defPath,
-	selectedComponent,
+	iframeRef,
 }: DnDIFrameProps) {
 	const [device, setDevice] = useState<string>();
 
@@ -32,35 +30,9 @@ export default function DnDIFrame({
 		);
 	}, [personalizationPath]);
 
-	const ref = useRef<HTMLIFrameElement>(null);
-
-	useEffect(() => {
-		if (!defPath) return;
-		return addListenerAndCallImmediatelyWithChildrenActivity(
-			(_, payload) => {
-				if (!ref.current) return;
-				ref.current.contentWindow?.postMessage({
-					type: 'EDITOR_TO_SLAVE_DEFINITION',
-					payload,
-				});
-			},
-			pageExtractor,
-			defPath,
-		);
-	}, [defPath, ref.current]);
-
-	useEffect(() => {
-		if (!defPath) return;
-		if (!ref.current) return;
-		ref.current.contentWindow?.postMessage({
-			type: 'EDITOR_TO_SLAVE_SELECTION',
-			selectedComponent,
-		});
-	}, [selectedComponent, ref.current]);
-
 	return (
 		<div className={`_iframe ${device ?? ''}`}>
-			<iframe ref={ref} src={url} width="100%" height="100%" />
+			<iframe ref={iframeRef} src={url} width="100%" height="100%" />
 		</div>
 	);
 }

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import React, { useCallback, useEffect, useState, useMemo, useRef } from 'react';
 import { HelperComponent } from '../HelperComponent';
 import {
 	ComponentPropertyDefinition,
@@ -8,6 +8,7 @@ import {
 } from '../../types/common';
 import {
 	addListenerAndCallImmediately,
+	addListenerAndCallImmediatelyWithChildrenActivity,
 	getData,
 	getDataFromPath,
 	getPathFromLocation,
@@ -22,6 +23,7 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import DnDEditor from './editors/DnDEditor/DnDEditor';
 import TopBar from './TopBar';
 import { runEvent } from '../util/runEvent';
+import { MASTER_FUNCTIONS } from './masterFunctions';
 
 function savePersonalizationCurry(
 	personalizationPath: string,
@@ -81,8 +83,9 @@ function PageEditor(props: ComponentProps) {
 
 	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
 
-	const presonalization =
-		getDataFromPath(personalizationPath, locationHistory, pageExtractor) ?? {};
+	const presonalization = personalizationPath
+		? getDataFromPath(personalizationPath, locationHistory, pageExtractor) ?? {}
+		: {};
 
 	const [localTheme, setLocalTheme] = useState(presonalization.theme ?? theme);
 
@@ -146,53 +149,103 @@ function PageEditor(props: ComponentProps) {
 	const [url, setUrl] = useState<string>('');
 	const [clientCode, setClientCode] = useState<string>('');
 
-	const editDefinition = !defPath
+	const editPageDefinition = !defPath
 		? undefined
 		: getDataFromPath(`${defPath}`, locationHistory, pageExtractor);
 
 	useEffect(() => {
-		if (!editDefinition || !presonalization) {
+		if (!editPageDefinition || !presonalization) {
 			setUrl('');
 			setClientCode('');
 			return;
 		}
 
-		if (presonalization?.pageLeftAt?.[editDefinition.name]) {
-			setUrl(presonalization.pageLeftAt[editDefinition.name].url);
-			setClientCode(presonalization.pageLeftAt[editDefinition.name].clientCode);
+		if (presonalization?.pageLeftAt?.[editPageDefinition.name]) {
+			setUrl(presonalization.pageLeftAt[editPageDefinition.name].url);
+			setClientCode(presonalization.pageLeftAt[editPageDefinition.name].clientCode);
 			return;
 		}
 
-		setClientCode(editDefinition.clientCode);
+		setClientCode(editPageDefinition.clientCode);
 		setUrl(
-			`/${editDefinition.appCode}/${
-				clientCode === '' ? editDefinition.clientCode : clientCode
-			}/page/${editDefinition.name}`,
+			`/${editPageDefinition.appCode}/${
+				clientCode === '' ? editPageDefinition.clientCode : clientCode
+			}/page/${editPageDefinition.name}`,
 		);
-		setClientCode(editDefinition.clientCode);
-	}, [presonalization, editDefinition]);
+		setClientCode(editPageDefinition.clientCode);
+	}, [presonalization, editPageDefinition]);
 
 	const urlChange = useCallback(
 		(v: string) => {
 			setUrl(v ?? '');
-			if (!personalizationPath || !editDefinition.name) return;
-			savePersonalization(`pageLeftAt.${editDefinition.name}.url`, v);
+			if (!personalizationPath || !editPageDefinition.name) return;
+			savePersonalization(`pageLeftAt.${editPageDefinition.name}.url`, v);
 			savePersonalization(
-				`pageLeftAt.${editDefinition.name}.clientCode`,
-				clientCode === '' ? editDefinition.clientCode : clientCode,
+				`pageLeftAt.${editPageDefinition.name}.clientCode`,
+				clientCode === '' ? editPageDefinition.clientCode : clientCode,
 			);
 		},
-		[setUrl, savePersonalization, editDefinition?.name],
+		[setUrl, savePersonalization, editPageDefinition?.name],
 	);
+
+	const ref = useRef<HTMLIFrameElement>(null);
+	const [selectedComponent, setSelectedComponent] = useState<string>();
+
+	useEffect(() => {
+		if (!defPath) return;
+		return addListenerAndCallImmediatelyWithChildrenActivity(
+			(_, payload) => {
+				if (!ref.current) return;
+				ref.current.contentWindow?.postMessage({
+					type: 'EDITOR_DEFINITION',
+					payload,
+				});
+			},
+			pageExtractor,
+			defPath,
+		);
+	}, [defPath, ref.current]);
+
+	useEffect(() => {
+		if (!defPath) return;
+		if (!ref.current) return;
+		ref.current.contentWindow?.postMessage({
+			type: 'EDITOR_SELECTION',
+			payload: selectedComponent,
+		});
+	}, [selectedComponent, ref.current]);
+
+	useEffect(() => {
+		if (!ref.current) return;
+		ref.current.contentWindow?.postMessage({
+			type: 'EDITOR_TYPE',
+			payload: 'PAGE',
+		});
+	}, [ref.current]);
 
 	useEffect(() => {
 		function onMessageFromSlave(e: MessageEvent) {
-			console.log('Message from slave : ', e);
+			const {
+				data: { type, payload },
+			} = e;
+
+			if (!type || !type.startsWith('SLAVE_') || !ref.current) return;
+			if (!MASTER_FUNCTIONS.has(type)) throw Error('Unknown message from Slave : ' + type);
+
+			MASTER_FUNCTIONS.get(type)?.(
+				{
+					iframe: ref.current,
+					editPageDefinition,
+					defPath,
+					personalizationPath,
+				},
+				payload,
+			);
 		}
 
 		window.addEventListener('message', onMessageFromSlave);
 		return () => window.removeEventListener('message', onMessageFromSlave);
-	}, []);
+	}, [ref.current, editPageDefinition, defPath, personalizationPath]);
 
 	const onPageReload = useCallback(() => {}, []);
 
@@ -222,6 +275,7 @@ function PageEditor(props: ComponentProps) {
 				pageExtractor={pageExtractor}
 				onSave={saveFunction}
 				onChangePersonalization={savePersonalization}
+				iframeRef={ref}
 			/>
 		</div>
 	);

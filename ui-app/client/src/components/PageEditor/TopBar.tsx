@@ -1,12 +1,5 @@
-import { TokenValueExtractor } from '@fincity/kirun-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import {
-	addListenerWithChildrenActivity,
-	PageStoreExtractor,
-	setData,
-} from '../../context/StoreContext';
-import { LocationHistory, PageDefinition } from '../../types/common';
-import { runEvent } from '../util/runEvent';
+import { addListenerWithChildrenActivity, PageStoreExtractor } from '../../context/StoreContext';
 import { propertiesDefinition } from './pageEditorProperties';
 
 interface TopBarProps {

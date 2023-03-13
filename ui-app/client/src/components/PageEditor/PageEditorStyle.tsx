@@ -270,6 +270,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX}._dark ._buttonBar i.fa.active, ${PREFIX}._dark ._buttonBar i.fa:hover{
 			color: #aaa;
 		}
+
+		${PREFIX}._dark ._iconMenuOption {
+			color: #000;
+		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="PageEditorCss">{css}</style>;

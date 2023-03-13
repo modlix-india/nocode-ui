@@ -11,6 +11,7 @@ interface DnDEditorProps {
 	onChangePersonalization: (prop: string, value: any) => void;
 	url: string;
 	pageExtractor: PageStoreExtractor;
+	iframeRef: React.RefObject<HTMLIFrameElement>;
 }
 
 export default function DnDEditor({
@@ -19,19 +20,17 @@ export default function DnDEditor({
 	url,
 	pageName,
 	pageExtractor,
+	iframeRef,
 }: DnDEditorProps) {
-	const [selectedComponent, setSelectedComponent] = useState<string>();
-
 	return (
 		<div className="_dndGrid">
 			<DnDSideBar />
 			<DnDIFrame
 				url={url}
-				selectedComponent={selectedComponent}
-				defPath={defPath}
 				personalizationPath={personalizationPath}
 				pageName={pageName}
 				pageExtractor={pageExtractor}
+				iframeRef={iframeRef}
 			/>
 		</div>
 	);
