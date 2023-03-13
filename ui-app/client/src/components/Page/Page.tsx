@@ -42,7 +42,7 @@ function Page({
 	const [, setValidationChangedAt] = useState(Date.now());
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const { stylePropertiesWithPseudoStates } = useDefinition(
-		pageComponentDefinition ?? { key: 'PageWithNoDef', type: 'Page' },
+		pageComponentDefinition ?? { key: 'PageWithNoDef', name: 'page', type: 'Page' },
 		propertiesDefinition,
 		stylePropertiesDefinition,
 		locationHistory,

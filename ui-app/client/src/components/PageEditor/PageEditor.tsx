@@ -83,11 +83,11 @@ function PageEditor(props: ComponentProps) {
 
 	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
 
-	const presonalization = personalizationPath
+	const personalization = personalizationPath
 		? getDataFromPath(personalizationPath, locationHistory, pageExtractor) ?? {}
 		: {};
 
-	const [localTheme, setLocalTheme] = useState(presonalization.theme ?? theme);
+	const [localTheme, setLocalTheme] = useState(personalization.theme ?? theme);
 
 	useEffect(() => {
 		if (!personalizationPath) return;
@@ -154,15 +154,15 @@ function PageEditor(props: ComponentProps) {
 		: getDataFromPath(`${defPath}`, locationHistory, pageExtractor);
 
 	useEffect(() => {
-		if (!editPageDefinition || !presonalization) {
+		if (!editPageDefinition || !personalization) {
 			setUrl('');
 			setClientCode('');
 			return;
 		}
 
-		if (presonalization?.pageLeftAt?.[editPageDefinition.name]) {
-			setUrl(presonalization.pageLeftAt[editPageDefinition.name].url);
-			setClientCode(presonalization.pageLeftAt[editPageDefinition.name].clientCode);
+		if (personalization?.pageLeftAt?.[editPageDefinition.name]) {
+			setUrl(personalization.pageLeftAt[editPageDefinition.name].url);
+			setClientCode(personalization.pageLeftAt[editPageDefinition.name].clientCode);
 			return;
 		}
 
@@ -173,7 +173,7 @@ function PageEditor(props: ComponentProps) {
 			}/page/${editPageDefinition.name}`,
 		);
 		setClientCode(editPageDefinition.clientCode);
-	}, [presonalization, editPageDefinition]);
+	}, [personalization, editPageDefinition]);
 
 	const urlChange = useCallback(
 		(v: string) => {
@@ -207,6 +207,21 @@ function PageEditor(props: ComponentProps) {
 	}, [defPath, ref.current]);
 
 	useEffect(() => {
+		if (!personalizationPath) return;
+		return addListenerAndCallImmediatelyWithChildrenActivity(
+			(_, payload) => {
+				if (!ref.current) return;
+				ref.current.contentWindow?.postMessage({
+					type: 'EDITOR_PERSONALIZATION',
+					payload,
+				});
+			},
+			pageExtractor,
+			personalizationPath,
+		);
+	}, [personalizationPath, ref.current]);
+
+	useEffect(() => {
 		if (!defPath) return;
 		if (!ref.current) return;
 		ref.current.contentWindow?.postMessage({
@@ -237,7 +252,9 @@ function PageEditor(props: ComponentProps) {
 					iframe: ref.current,
 					editPageDefinition,
 					defPath,
+					personalization,
 					personalizationPath,
+					onSelectedComponentChange: key => setSelectedComponent(key),
 				},
 				payload,
 			);
@@ -245,11 +262,18 @@ function PageEditor(props: ComponentProps) {
 
 		window.addEventListener('message', onMessageFromSlave);
 		return () => window.removeEventListener('message', onMessageFromSlave);
-	}, [ref.current, editPageDefinition, defPath, personalizationPath]);
+	}, [
+		ref.current,
+		editPageDefinition,
+		defPath,
+		personalization,
+		personalizationPath,
+		setSelectedComponent,
+	]);
 
 	const onPageReload = useCallback(() => {}, []);
 
-	if (!presonalization) return <></>;
+	if (!personalization) return <></>;
 
 	return (
 		<div className={`comp compPageEditor ${localTheme}`} style={resolvedStyles.comp ?? {}}>

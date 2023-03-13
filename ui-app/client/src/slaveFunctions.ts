@@ -18,4 +18,8 @@ export const SLAVE_FUNCTIONS = new Map<string, (payload: any) => void>([
 		p => (window.pageEditor = { ...window.pageEditor, editingPageDefinition: p }),
 	],
 	['EDITOR_SELECTION', p => (window.pageEditor = { ...window.pageEditor, selectedComponent: p })],
+	[
+		'EDITOR_PERSONALIZATION',
+		p => (window.pageEditor = { ...window.pageEditor, personalization: p }),
+	],
 ]);

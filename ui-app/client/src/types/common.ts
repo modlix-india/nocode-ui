@@ -190,6 +190,7 @@ export interface ComponentStyle {
 
 export interface ComponentDefinition {
 	key: string;
+	name: string;
 	bindingPath?: DataLocation;
 	bindingPath2?: DataLocation;
 	bindingPath3?: DataLocation;

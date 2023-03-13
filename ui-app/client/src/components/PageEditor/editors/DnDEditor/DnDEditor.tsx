@@ -21,10 +21,16 @@ export default function DnDEditor({
 	pageName,
 	pageExtractor,
 	iframeRef,
+	onChangePersonalization,
 }: DnDEditorProps) {
 	return (
 		<div className="_dndGrid">
-			<DnDSideBar />
+			<DnDSideBar
+				personalizationPath={personalizationPath}
+				pageName={pageName}
+				pageExtractor={pageExtractor}
+				onChangePersonalization={onChangePersonalization}
+			/>
 			<DnDIFrame
 				url={url}
 				personalizationPath={personalizationPath}

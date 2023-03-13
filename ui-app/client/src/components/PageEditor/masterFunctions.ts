@@ -2,7 +2,9 @@ interface MasterFunctionOptions {
 	iframe: HTMLIFrameElement;
 	editPageDefinition: any;
 	defPath: string | undefined;
+	personalization: any;
 	personalizationPath: string | undefined;
+	onSelectedComponentChange: (key: string) => void;
 }
 export const MASTER_FUNCTIONS = new Map<
 	string,
@@ -20,6 +22,14 @@ export const MASTER_FUNCTIONS = new Map<
 				type: 'EDITOR_DEFINITION',
 				payload: options.editPageDefinition,
 			});
+
+			options.iframe.contentWindow?.postMessage({
+				type: 'EDITOR_PERSONALIZATION',
+				payload: options.personalization,
+			});
 		},
 	],
+	['SLAVE_CONTEXT_MENU', () => {}],
+	['SLAVE_SELECTED', (options, payload) => options?.onSelectedComponentChange(payload)],
+	['SLAVE_DROPPED_SOMETHING', () => {}],
 ]);

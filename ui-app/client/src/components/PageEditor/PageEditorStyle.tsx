@@ -30,6 +30,24 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._sideBar {
 			width: 48px;
 			background-color: #fff;
+			display: flex;
+			flex-direction: column;
+		}
+
+		${PREFIX} ._sideBar ._top {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+    		gap: 10px;
+		}
+
+		${PREFIX} ._sideBar ._bottom {
+			display: flex;
+			flex-direction: column;
+			padding-bottom: 30px;
+			align-items: center;
+    		gap: 10px;
 		}
 
 		${PREFIX} ._topLeftBarGrid {
@@ -108,6 +126,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} i.fa {
 			color: #555;
+			font-size: 18px;
 		}
 
 		${PREFIX} ._iconMenu:hover i.fa {
