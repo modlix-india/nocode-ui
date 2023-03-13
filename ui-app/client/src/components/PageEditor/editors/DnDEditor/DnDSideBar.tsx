@@ -49,7 +49,10 @@ export default function DnDSideBar({
 					tabIndex={0}
 					onClick={() => onChangePersonalization('slave.noSelection', !noSelection)}
 				>
-					<span className="fa-stack">
+					<span
+						className="fa-stack"
+						title={noSelection ? 'Enable Selection' : 'Disable Selection'}
+					>
 						<i className="fa fa-solid fa-arrow-pointer fa-stack-1x"></i>
 						<i
 							className="fa fa-solid fa-slash fa-stack-1x"
@@ -61,11 +64,13 @@ export default function DnDSideBar({
 					className="_iconMenu"
 					tabIndex={0}
 					onClick={() => onChangePersonalization('slave.noShell', !noShell)}
+					title={noSelection ? 'Disable Selection' : 'Enable Selection'}
 				>
 					<i
 						className={`fa fa-solid ${
 							noShell ? 'fa-window-maximize' : 'fa-window-restore'
 						}`}
+						title={noSelection ? 'Show Shell' : 'Hide Shell'}
 					/>
 				</div>
 			</div>
