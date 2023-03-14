@@ -271,8 +271,6 @@ function PageEditor(props: ComponentProps) {
 		setSelectedComponent,
 	]);
 
-	const onPageReload = useCallback(() => {}, []);
-
 	if (!personalization) return <></>;
 
 	return (
@@ -289,7 +287,7 @@ function PageEditor(props: ComponentProps) {
 				onUrlChange={urlChange}
 				onDeletePersonalization={deletePersonalization}
 				pageExtractor={pageExtractor}
-				onPageReload={onPageReload}
+				onPageReload={() => ref.current?.contentWindow?.location.reload()}
 			/>
 			<DnDEditor
 				personalizationPath={personalizationPath}

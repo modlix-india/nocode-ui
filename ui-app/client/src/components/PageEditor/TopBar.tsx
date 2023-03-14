@@ -87,13 +87,15 @@ export default function TopBar({
 							}
 						}}
 					/>
-					<i
-						className="fa fa-solid fa-rotate-left"
-						title="Reload Page"
-						tabIndex={0}
-						role="button"
-						onClick={onPageReload}
-					></i>
+					<div className="_iconMenu" tabIndex={0}>
+						<i
+							className="fa fa-solid fa-rotate-left"
+							title="Reload Page"
+							tabIndex={0}
+							role="button"
+							onClick={onPageReload}
+						></i>
+					</div>
 				</div>
 				<div className="_buttonBar _lightBackground">
 					<i
