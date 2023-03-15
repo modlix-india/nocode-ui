@@ -8,6 +8,10 @@ export default function CheckBoxStyle({ theme }: { theme: Map<string, Map<string
 	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
 	const css =
 		`
+
+    input[type='checkbox'].commonCheckbox.radio {
+        border-radius:50%;
+    }
     input[type='checkbox'].commonCheckbox {
         -webkit-appearance: none;
         appearance: none;
@@ -35,6 +39,12 @@ export default function CheckBoxStyle({ theme }: { theme: Map<string, Map<string
         box-shadow: inset 1em 1em;
         transform-origin: bottom left;
         clip-path: polygon(13% 58%, 4% 68%, 35% 94%, 100% 15%, 90% 5%, 34% 77%);
+    }
+    input[type='checkbox'].commonCheckbox.radio::before {
+        background-color: #F5E2C6;
+        border-radius: 50%;
+        transform-origin: initial;
+        clip-path: none;
     }
     
     input[type='checkbox'].commonCheckbox:checked {
