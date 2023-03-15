@@ -140,6 +140,7 @@ function TabsComponent(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-diagram-predecessor',
 	name: 'Tabs',
 	displayName: 'Tabs',
 	description: 'Tabs Component',

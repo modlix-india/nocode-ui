@@ -30,6 +30,7 @@ function Icon(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-fonticons',
 	name: 'Icon',
 	displayName: 'Icon',
 	description: 'Icon component',

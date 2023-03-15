@@ -526,6 +526,7 @@ function TableComponent(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-table',
 	name: 'Table',
 	displayName: 'Table',
 	description: 'Table component',

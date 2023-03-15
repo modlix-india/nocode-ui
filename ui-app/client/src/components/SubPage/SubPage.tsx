@@ -104,6 +104,7 @@ function SubPage(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-note-sticky',
 	name: 'SubPage',
 	displayName: 'SubPage',
 	description: 'SubPage component',

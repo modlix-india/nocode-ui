@@ -235,6 +235,7 @@ function TableColumnsComponent(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-table-columns',
 	name: 'TableColumns',
 	displayName: 'Table Columns',
 	description: 'Table Columns component',

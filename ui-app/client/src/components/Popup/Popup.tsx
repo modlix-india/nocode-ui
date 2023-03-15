@@ -172,6 +172,7 @@ function Popup(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-window-restore',
 	name: 'Popup',
 	displayName: 'Popup',
 	description: 'Popup component',

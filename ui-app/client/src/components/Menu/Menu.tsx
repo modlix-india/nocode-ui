@@ -214,6 +214,7 @@ function Menu(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-elementor',
 	name: 'Menu',
 	displayName: 'Menu',
 	description: 'Menu component',

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { PageStoreExtractor } from '../../../../context/StoreContext';
 import DnDIFrame from './DnDIFrame';
 import DnDSideBar from './DnDSideBar';
+import { SelectionBar } from './SelectionBar';
 
 interface DnDEditorProps {
 	defPath: string | undefined;
@@ -12,6 +13,8 @@ interface DnDEditorProps {
 	url: string;
 	pageExtractor: PageStoreExtractor;
 	iframeRef: React.RefObject<HTMLIFrameElement>;
+	selectedComponent: string | undefined;
+	onSelectedComponentChanged: (key: string) => void;
 }
 
 export default function DnDEditor({
@@ -22,6 +25,8 @@ export default function DnDEditor({
 	pageExtractor,
 	iframeRef,
 	onChangePersonalization,
+	selectedComponent,
+	onSelectedComponentChanged,
 }: DnDEditorProps) {
 	return (
 		<div className="_dndGrid">
@@ -31,13 +36,22 @@ export default function DnDEditor({
 				pageExtractor={pageExtractor}
 				onChangePersonalization={onChangePersonalization}
 			/>
-			<DnDIFrame
-				url={url}
-				personalizationPath={personalizationPath}
-				pageName={pageName}
-				pageExtractor={pageExtractor}
-				iframeRef={iframeRef}
-			/>
+			<div className="_dndGridMain">
+				<DnDIFrame
+					url={url}
+					personalizationPath={personalizationPath}
+					pageName={pageName}
+					pageExtractor={pageExtractor}
+					iframeRef={iframeRef}
+				/>
+				<SelectionBar
+					defPath={defPath}
+					pageName={pageName}
+					pageExtractor={pageExtractor}
+					selectedComponent={selectedComponent}
+					onSelectedComponentChanged={onSelectedComponentChanged}
+				/>
+			</div>
 		</div>
 	);
 }

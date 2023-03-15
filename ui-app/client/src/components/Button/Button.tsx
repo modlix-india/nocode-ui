@@ -135,6 +135,7 @@ function ButtonComponent(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-rectangle-ad',
 	name: 'Button',
 	displayName: 'Button',
 	description: 'Button component',

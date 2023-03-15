@@ -136,6 +136,9 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._iconMenuOption {
 			padding: 5px 10px;
 			color: #555;
+			display: flex;
+			align-items: center;
+			gap: 8px;
 		}
 
 		${PREFIX} ._iconMenuBody{
@@ -144,6 +147,16 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			font-size: 12px;
 			box-shadow: 2px 2px 5px #ccc;
 			display: none;
+			z-index: 1;
+		}
+
+		${PREFIX} ._iconMenuBody._clickable {
+			display: none;
+		}
+
+		${PREFIX} ._iconMenuBody._top{
+			bottom: 20px;
+			left: -3px;
 		}
 
 		${PREFIX} ._iconMenu{
@@ -235,7 +248,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			width: ${StyleResolutionDefinition.get('WIDE_SCREEN')?.minWidth}px;
 			min-width: ${StyleResolutionDefinition.get('WIDE_SCREEN')?.minWidth}px;
 		}
-		
 
 		${PREFIX} ._iframe iframe {
 			border: none;
@@ -245,13 +257,55 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			width: 500px;
 		}
 
+		${PREFIX} ._dndGridMain {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+		}
+
+		${PREFIX} ._selectionBar {
+			display: flex;
+			background-color: #fff;
+    		border-left: 1px solid #ccc;
+		}
+
+		${PREFIX} ._eachSelectionBar {
+			font-size: 11px;
+			padding: 3px 14px;
+			display: flex;
+    		align-items: center;
+			position: relative;
+			cursor: pointer;
+			user-select: none;
+			display: flex;
+			gap: 8px;
+			align-items: center;
+		}
+		
+		${PREFIX} ._eachSelectionBar::before {
+			content: ' ';
+			width: 16px;
+			height: 16px;
+			position: absolute;
+			border: 2px solid #aaa;
+			border-left: none;
+			border-top: none;
+			transform: rotate(-45deg);
+			right: 0px;
+			border-radius: 2px;
+		}
+
+		${PREFIX} ._eachSelectionBar i.fa, ${PREFIX} ._iconMenuBody i.fa {
+			font-size: 11px;
+			width: 10px;
+		}
 		/* Dark theme values  */
 		${PREFIX}._dark ._dndGrid{
 			background-color: #000;
 		}
 
 		${PREFIX}._dark ._topBarGrid {
-			background-color: #555;
+			background-color: #555;                                                                                                     
 		}
 
 		${PREFIX}._dark ._iconMenuBody{
@@ -292,6 +346,15 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX}._dark ._iconMenuOption {
 			color: #000;
+		}
+
+		${PREFIX}._dark ._selectionBar {
+			background-color: #555;
+    		border-left: 1px solid #aaa;
+		}
+
+		${PREFIX}._dark ._eachSelectionBar {
+			color: #aaa;
 		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

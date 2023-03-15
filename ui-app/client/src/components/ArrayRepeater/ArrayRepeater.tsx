@@ -200,6 +200,7 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-layer-group',
 	name: 'ArrayRepeater',
 	displayName: 'Array Repeater',
 	description: 'Array Repeater component',

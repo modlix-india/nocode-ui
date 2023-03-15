@@ -186,6 +186,7 @@ function TableGridComponent(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-table-cells',
 	name: 'TableGrid',
 	displayName: 'Table Grid',
 	description: 'Table Grid component',

@@ -298,12 +298,15 @@ function PageEditor(props: ComponentProps) {
 				onSave={saveFunction}
 				onChangePersonalization={savePersonalization}
 				iframeRef={ref}
+				selectedComponent={selectedComponent}
+				onSelectedComponentChanged={(key: string) => setSelectedComponent(key)}
 			/>
 		</div>
 	);
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-newspaper',
 	name: 'PageEditor',
 	displayName: 'Page Editor',
 	description: 'Page Editor component',

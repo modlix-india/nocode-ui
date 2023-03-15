@@ -129,6 +129,7 @@ function TablePreviewGrid(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-magnifying-glass',
 	name: 'TablePreviewGrid',
 	displayName: 'Table Preview Grid',
 	description: 'Table Preview Grid component',

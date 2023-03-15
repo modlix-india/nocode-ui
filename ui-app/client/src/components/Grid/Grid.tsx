@@ -180,6 +180,7 @@ function Grid(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-table-cells',
 	name: 'Grid',
 	displayName: 'Grid',
 	description: 'Grid component',

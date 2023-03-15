@@ -129,6 +129,7 @@ function TableEmptyGrid(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-battery-empty',
 	name: 'TableEmptyGrid',
 	displayName: 'Table Empty Grid',
 	description: 'Table Empty Grid component',

@@ -134,6 +134,7 @@ function Page({
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-file',
 	name: 'Page',
 	displayName: 'Page',
 	description: 'Page component',

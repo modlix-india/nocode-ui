@@ -96,6 +96,7 @@ export interface ComponentStylePropertyDefinition {
 
 export interface Component {
 	name: string;
+	icon: string;
 	displayName: string;
 	description: string;
 	component: React.ElementType;
