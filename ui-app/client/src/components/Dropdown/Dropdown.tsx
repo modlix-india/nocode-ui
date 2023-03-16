@@ -1,6 +1,7 @@
+import { deepEqual } from '@fincity/kirun-js';
 import React, { useEffect, useState } from 'react';
 import {
-	addListener,
+	addListenerAndCallImmediately,
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
@@ -17,7 +18,8 @@ import DropdownStyle from './DropdownStyle';
 
 function DropdownComponent(props: ComponentProps) {
 	const [showDropdown, setShowDropdown] = useState(false);
-	const [selected, setSelected] = useState();
+	const [selected, setSelected] = useState<any>();
+	const [searchText, setSearchText] = useState('');
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const {
 		definition: { bindingPath },
@@ -37,11 +39,14 @@ function DropdownComponent(props: ComponentProps) {
 			uniqueKeyType,
 			onClick,
 			datatype,
-			dataBinding,
+			data,
 			placeholder,
 			readOnly,
-			headerText,
+			label,
 			closeOnMouseLeave,
+			isMultiSelect,
+			isSearchable,
+			noFloat,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -53,7 +58,7 @@ function DropdownComponent(props: ComponentProps) {
 	if (!bindingPath) throw new Error('Definition requires binding path');
 	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
 	useEffect(() => {
-		addListener(
+		addListenerAndCallImmediately(
 			(_, value) => {
 				setSelected(value);
 			},
@@ -62,22 +67,68 @@ function DropdownComponent(props: ComponentProps) {
 		);
 	}, []);
 
-	const dropdownData: any = getRenderData(
-		dataBinding,
-		datatype,
-		uniqueKeyType,
-		uniqueKey,
-		selectionType,
-		selectionKey,
-		labelKeyType,
-		labelKey,
+	const dropdownData = React.useMemo(
+		() =>
+			getRenderData(
+				data,
+				datatype,
+				uniqueKeyType,
+				uniqueKey,
+				selectionType,
+				selectionKey,
+				labelKeyType,
+				labelKey,
+			),
+		[
+			data,
+			datatype,
+			uniqueKeyType,
+			uniqueKey,
+			selectionType,
+			selectionKey,
+			labelKeyType,
+			labelKey,
+		],
 	);
 	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
-	const selectedDataKey = getSelectedKeys(dropdownData, selected);
 
-	const handleClick = async (each: { key: any; label: any; value: any }) => {
-		setData(bindingPathPath, each.value, context?.pageName);
+	const selectedDataKey: Array<any> | string | undefined = React.useMemo(
+		() => getSelectedKeys(dropdownData, selected, isMultiSelect),
+		[selected],
+	);
+
+	const getIsSelected = (key: any) => {
+		if (!isMultiSelect) return deepEqual(selectedDataKey, key);
+		if (Array.isArray(selectedDataKey))
+			return !!selectedDataKey.find((e: any) => deepEqual(e, key));
+		return false;
+	};
+
+	const handleClick = async (each: { key: any; label: any; value: any } | undefined) => {
+		let newSelection;
+		if (each) {
+			if (isMultiSelect && Array.isArray(selected)) {
+				newSelection = selected.find((e: any) => deepEqual(e, each.value));
+				if (newSelection) {
+					setData(
+						bindingPathPath,
+						selected.filter(e => !deepEqual(e, each.value)).length > 0
+							? selected.filter(e => !deepEqual(e, each.value))
+							: undefined,
+						context.pageName,
+					);
+					return;
+				}
+			}
+			setData(
+				bindingPathPath,
+				isMultiSelect ? (selected ? [...selected, each.value] : [each.value]) : each.value,
+				context?.pageName,
+			);
+		}
+
 		handleClose();
+
 		if (clickEvent) {
 			await runEvent(
 				clickEvent,
@@ -89,12 +140,29 @@ function DropdownComponent(props: ComponentProps) {
 		}
 	};
 
-	const handleClose = (event?: any) => {
+	const handleClose = () => {
 		setShowDropdown(false);
+		setSearchText('');
 	};
 
 	const handleBubbling = (event: any) => {
 		event.stopPropagation();
+	};
+
+	const getLabel = () => {
+		const label =
+			!selected ||
+			!selectedDataKey ||
+			(Array.isArray(selectedDataKey) && !selectedDataKey.length)
+				? noFloat
+					? placeholder
+					: ''
+				: !Array.isArray(selectedDataKey)
+				? dropdownData?.find((each: any) => each?.key === selectedDataKey)?.label
+				: `${selectedDataKey.length} Item${
+						selectedDataKey.length > 1 ? 's' : ''
+				  }  selected`;
+		return label;
 	};
 
 	useEffect(() => {
@@ -107,42 +175,86 @@ function DropdownComponent(props: ComponentProps) {
 	return (
 		<div className="comp compDropdown" onClick={handleBubbling}>
 			<HelperComponent definition={props.definition} />
-			{headerText !== undefined && (
-				<label className={`headerText ${readOnly ? 'disabled' : ''}`}>
-					{getTranslations(headerText, translations)}
+			{noFloat && (
+				<label htmlFor="key" className={`label ${readOnly ? 'disabled' : ''}`}>
+					{getTranslations(label || placeholder, translations)}
 				</label>
 			)}
 			<div
-				className={`container ${showDropdown && !readOnly ? 'onFocus' : ''} ${
+				onMouseLeave={() => closeOnMouseLeave && handleClose()}
+				className={`container ${showDropdown && !readOnly ? 'focus' : ''} ${
 					readOnly ? 'disabled' : ''
 				} `}
 			>
-				<div
-					className={`labelcontainer ${readOnly ? 'disabled' : ''}`}
-					onClick={() => !readOnly && setShowDropdown(!showDropdown)}
-				>
-					<label className={`label ${readOnly ? 'disabled' : ''}`}>
-						{getTranslations(
-							selected === undefined
-								? placeholder
-								: dropdownData?.find((e: any) => e?.key === selectedDataKey)?.label,
-							translations,
-						)}
-					</label>
-					<i className="fa-solid fa-angle-down"></i>
-				</div>
-				{showDropdown && (
+				{isSearchable ? (
+					showDropdown ? (
+						<div className={`searchContainer`}>
+							<input
+								className="searchBox"
+								type={'text'}
+								value={searchText}
+								key={key}
+								onChange={(event: any) => {
+									setSearchText(event.target.value);
+								}}
+								autoFocus
+							/>
+							<i
+								className="fa-solid fa-angle-down placeholderIcon"
+								onClick={() => !readOnly && setShowDropdown(!showDropdown)}
+							></i>
+						</div>
+					) : (
+						<div
+							className={`placeholderContainer`}
+							onClick={() => !readOnly && setShowDropdown(!showDropdown)}
+						>
+							<label
+								htmlFor="key"
+								className={`placeholder ${selected ? 'selected' : ''}`}
+							>
+								{getTranslations(getLabel(), translations)}
+							</label>
+							<i className="fa-solid fa-angle-down placeholderIcon"></i>
+						</div>
+					)
+				) : (
 					<div
-						className="dropdowncontainer"
-						onMouseLeave={() => closeOnMouseLeave && handleClose()}
+						className={`placeholderContainer`}
+						onClick={() => !readOnly && setShowDropdown(!showDropdown)}
 					>
-						{dropdownData?.map((each: any) => (
+						<label
+							htmlFor="key"
+							className={`placeholder ${selected ? 'selected' : ''}`}
+						>
+							{getTranslations(getLabel(), translations)}
+						</label>
+						<i className="fa-solid fa-angle-down placeholderIcon"></i>
+					</div>
+				)}
+				{!noFloat && (
+					<label
+						htmlFor="key"
+						className={`labelFloat ${showDropdown && !selected ? 'float' : ''} ${
+							selected ? 'float' : ''
+						}  `}
+						onClick={() => !readOnly && !selected && setShowDropdown(true)}
+					>
+						{getTranslations(placeholder, translations)}
+					</label>
+				)}
+				{showDropdown && (
+					<div className="dropdownContainer">
+						{dropdownData?.map(each => (
 							<div
 								onClick={() => handleClick(each!)}
 								className="dropdownItem"
 								key={each?.key}
 							>
-								{each?.label}
+								<label className="dropdownItemLabel">{each?.label}</label>
+								{getIsSelected(each?.key) && (
+									<i className="fa fa-solid fa-check checkedIcon"></i>
+								)}
 							</div>
 						))}
 					</div>
@@ -161,6 +273,7 @@ const component: Component = {
 	styleComponent: DropdownStyle,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
+	stylePseudoStates: ['hover', 'focus', 'disabled'],
 	bindingPaths: {
 		bindingPath: { name: 'Data Binding' },
 	},

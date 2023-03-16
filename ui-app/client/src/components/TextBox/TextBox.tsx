@@ -230,6 +230,7 @@ function TextBox(props: ComponentProps) {
 				focusHandler={() => setFocus(true)}
 				supportingText={supportingText}
 				messageDisplay={messageDisplay}
+				styles={computedStyles}
 			/>
 		</div>
 	);
