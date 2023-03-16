@@ -227,16 +227,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
-		name: 'closeOnMouseLeave',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
-		displayName: 'Close dropdown',
-		description:
-			'Dropdown will be closed on mouse cursor leaving dropdown container when this property is true.',
-		group: ComponentPropertyGroup.COMMON,
-		defaultValue: true,
-	},
-
-	{
 		name: 'readOnly',
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
 		displayName: 'Read Only',
@@ -272,11 +262,209 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 		],
 	},
+	{
+		name: 'layout',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'Layout',
+		description: 'Name of the layout',
+		editor: ComponentPropertyEditor.LAYOUT,
+		defaultValue: 'ROWLAYOUT',
+		enumValues: [
+			{ name: 'ROWLAYOUT', displayName: 'Row Layout', description: 'Default row layout' },
+			{
+				name: 'SINGLECOLUMNLAYOUT',
+				displayName: 'Column Layout',
+				description: 'Single Column layout in all resolutions',
+			},
+			{
+				name: 'TWOCOLUMNSLAYOUT',
+				displayName: 'Two Columns Layout',
+				description: 'Two Columns layout in all resolutions except mobile',
+			},
+			{
+				name: 'THREECOLUMNSLAYOUT',
+				displayName: 'Three Columns Layout',
+				description:
+					'Three Columns layout in all resolutions and two in tablet and one in mobile',
+			},
+			{
+				name: 'FOURCOLUMNSLAYOUT',
+				displayName: 'Four Columns Layout',
+				description:
+					'Four Columns layout in desktop and widescreen and two in tablet and one in mobile',
+			},
+			{
+				name: 'FIVECOLUMNSLAYOUT',
+				displayName: 'Five Columns Layout',
+				description:
+					'Five Columns layout in desktop and widescreen and two in tablet and one in mobile',
+			},
+		],
+	},
 ];
 
 const stylePropertiesDefinition = {
 	'': {
+		[COMPONENT_STYLE_GROUP_PROPERTIES.backdropFilter.type]:
+			COMPONENT_STYLE_GROUP_PROPERTIES.backdropFilter,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.background.type]:
+			COMPONENT_STYLE_GROUP_PROPERTIES.background,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: COMPONENT_STYLE_GROUP_PROPERTIES.border,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow.type]:
+			COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.container.type]:
+			COMPONENT_STYLE_GROUP_PROPERTIES.container,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.flex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.flex,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: COMPONENT_STYLE_GROUP_PROPERTIES.margin,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.opacity.type]: COMPONENT_STYLE_GROUP_PROPERTIES.opacity,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.outline.type]: COMPONENT_STYLE_GROUP_PROPERTIES.outline,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: COMPONENT_STYLE_GROUP_PROPERTIES.padding,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.position.type]: COMPONENT_STYLE_GROUP_PROPERTIES.position,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.rotate.type]: COMPONENT_STYLE_GROUP_PROPERTIES.rotate,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: COMPONENT_STYLE_GROUP_PROPERTIES.size,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.transform.type]:
+			COMPONENT_STYLE_GROUP_PROPERTIES.transform,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.zIndex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.zIndex,
+	},
+	label: {
+		[COMPONENT_STYLE_GROUP_PROPERTIES.backdropFilter.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.backdropFilter,
+			name: 'labelBackdropFilter',
+			displayName: 'Label Backdrop Filter',
+			description: 'Label Backdrop Filter',
+			prefix: 'label',
+			target: ['label'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.background.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.background,
+			name: 'labelBackground',
+			displayName: 'Label Background',
+			description: 'Label Background',
+			prefix: 'label',
+			target: ['label'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.border,
+			name: 'labelBorder',
+			displayName: 'Label Border',
+			description: 'Label Border',
+			prefix: 'label',
+			target: ['label'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow,
+			name: 'labelBoxShadow',
+			displayName: 'Label Box Shadow',
+			description: 'Label Box Shadow',
+			prefix: 'label',
+			target: ['label'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.container.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.container,
+			name: 'labelContainer',
+			displayName: 'Label Container',
+			description: 'Label Container',
+			prefix: 'label',
+			target: ['label'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.flex.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.flex,
+			name: 'labelFlex',
+			displayName: 'Label Flex',
+			description: 'Label Flex',
+			prefix: 'label',
+			target: ['label'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.margin,
+			name: 'labelMargin',
+			displayName: 'Label Margin',
+			description: 'Label Margin',
+			prefix: 'label',
+			target: ['label'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.opacity.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.opacity,
+			name: 'labelOpacity',
+			displayName: 'Label Opacity',
+			description: 'Label Opacity',
+			prefix: 'label',
+			target: ['label'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.padding,
+			name: 'labelPadding',
+			displayName: 'Label Padding',
+			description: 'Label Padding',
+			prefix: 'label',
+			target: ['label'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.position.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.position,
+			name: 'labelPosition',
+			displayName: 'Label Position',
+			description: 'Label Position',
+			prefix: 'label',
+			target: ['label'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.rotate.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.rotate,
+			name: 'labelRotate',
+			displayName: 'Label Rotate',
+			description: 'Label Rotate',
+			prefix: 'label',
+			target: ['label'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.size,
+			name: 'labelSize',
+			displayName: 'Label Size',
+			description: 'Label Size',
+			prefix: 'label',
+			target: ['label'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.transform.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.transform,
+			name: 'labelTransform',
+			displayName: 'Label Transform',
+			description: 'Label Transform',
+			prefix: 'label',
+			target: ['label'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.font,
+			name: 'labelFont',
+			displayName: 'Label Font',
+			description: 'Label Font',
+			prefix: 'label',
+			target: ['label'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
+			name: 'labelColor',
+			displayName: 'Label Color',
+			description: 'Label Color',
+			prefix: 'label',
+			target: ['label'],
+		},
+	},
+	radio: {
+		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.margin,
+			name: 'inputMargin',
+			displayName: 'Radio Box Margin',
+			description: 'Radio Box Margin',
+			prefix: 'radio',
+			target: ['radio'],
+		},
+		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.padding,
+			name: 'inputPadding',
+			displayName: 'Radio Box Padding',
+			description: 'Radio Box Padding',
+			prefix: 'radio',
+			target: ['radio'],
+		},
 	},
 };
 
