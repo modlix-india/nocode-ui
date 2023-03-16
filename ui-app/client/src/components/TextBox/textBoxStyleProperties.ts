@@ -306,17 +306,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'.commonInputBox .textBoxDiv .inputContainer .textbox:focus + .textBoxLabel, .commonInputBox .textBoxDiv .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
 	},
 	{
-		name: 'textBoxLabelTextTransformWhenContainsTextFromLeftWhenContainsIcon',
-		cssProperty: 'left',
-		displayName: "textbox's label text position from left when input when contains icon",
-		description:
-			"This left is used for textbox's label text position from top when it has any input when contains icon.",
-		defaultValue: '0',
-		noPrefix: true,
-		selector:
-			'.commonInputBox .textBoxDiv .inputContainer .textbox:focus + .textBoxLabel, .commonInputBox .textBoxDiv .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
-	},
-	{
 		name: 'textBoxLabelTextTransformWhenContainsTextPaddingLeftWhenContainsIcon',
 		cssProperty: 'padding-left',
 		displayName: "textbox's label text padding from left when input when contains icon",
@@ -343,7 +332,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'opacity',
 		displayName: "textbox's label text opacity",
 		description: "This opacity is used for textbox's label content opacity.",
-		defaultValue: '0',
 		noPrefix: true,
 		selector: '.commonInputBox .textBoxDiv .inputContainer .textbox::placeholder',
 	},
