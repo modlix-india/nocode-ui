@@ -13,6 +13,7 @@ import { HelperComponent } from '../HelperComponent';
 import { getRenderData } from '../util/getRenderData';
 import { getSelectedKeys } from '../util/getSelectedKeys';
 import { getTranslations } from '../util/getTranslations';
+import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './radioButtonProperties';
 import RadioButtonStyle from './RadioButtonStyle';
@@ -25,6 +26,7 @@ function RadioButton(props: ComponentProps) {
 		context,
 		definition,
 		pageDefinition: { translations },
+		pageDefinition,
 	} = props;
 	const {
 		key,
@@ -40,13 +42,9 @@ function RadioButton(props: ComponentProps) {
 			onClick,
 			datatype,
 			data,
-			placeholder,
+			layout,
 			readOnly,
-			label,
-			closeOnMouseLeave,
 			isMultiSelect,
-			isSearchable,
-			noFloat,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -55,6 +53,9 @@ function RadioButton(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
+
+	const [hover, setHover] = useState('');
+	const [focus, setFocus] = useState('');
 
 	const radioButtonData = React.useMemo(
 		() =>
@@ -83,9 +84,22 @@ function RadioButton(props: ComponentProps) {
 	const [selected, setSelected] = useState<any>();
 
 	const resolvedStyles = processComponentStylePseudoClasses(
-		{ disabled: readOnly },
+		{ hover: false, focus: false, disabled: readOnly },
 		stylePropertiesWithPseudoStates,
 	);
+
+	const resolvedStylesHover = processComponentStylePseudoClasses(
+		{ hover: true, focus: false, disabled: readOnly },
+		stylePropertiesWithPseudoStates,
+	);
+
+	const resolvedStylesFocus = processComponentStylePseudoClasses(
+		{ hover: false, focus: true, disabled: readOnly },
+		stylePropertiesWithPseudoStates,
+	);
+
+	const clickEvent = onClick ? pageDefinition.eventFunctions[onClick] : undefined;
+
 	const bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
 		: undefined;
@@ -102,28 +116,25 @@ function RadioButton(props: ComponentProps) {
 		);
 	}, [bindingPathPath]);
 
-	const handleClick = (each: { key: any; label: any; value: any } | undefined) => {
-		let newSelection;
+	const handleClick = async (each: { key: any; label: any; value: any } | undefined) => {
 		if (!each || !bindingPathPath) return;
 
-		if (isMultiSelect && Array.isArray(selected)) {
-			newSelection = selected.find((e: any) => deepEqual(e, each.value));
-			if (newSelection) {
-				setData(
-					bindingPathPath,
-					selected.filter(e => !deepEqual(e, each.value)).length > 0
-						? selected.filter(e => !deepEqual(e, each.value))
-						: undefined,
-					context.pageName,
-				);
-				return;
-			}
+		if (!isMultiSelect) {
+			setData(
+				bindingPathPath,
+				deepEqual(each.value, selected) ? undefined : each.value,
+				context?.pageName,
+			);
+		} else {
+			const index = (selected ?? []).findIndex((e: any) => deepEqual(e, each.value));
+			const newValue = [...(selected ?? [])];
+			if (index === -1) newValue.push(each.value);
+			else newValue.splice(index, 1);
+			setData(bindingPathPath, newValue, context?.pageName);
 		}
-		setData(
-			bindingPathPath,
-			isMultiSelect ? (selected ? [...selected, each.value] : [each.value]) : each.value,
-			context?.pageName,
-		);
+
+		if (clickEvent)
+			await runEvent(clickEvent, key, context.pageName, locationHistory, pageDefinition);
 	};
 
 	const selectedDataKey: Array<any> | string | undefined = React.useMemo(
@@ -139,19 +150,50 @@ function RadioButton(props: ComponentProps) {
 	};
 
 	return (
-		<div className="comp compRadioButton">
+		<div className={`comp compRadioButton _${layout}`} style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />
 			{radioButtonData?.map((e: any) => (
 				<label
-					className={`checkbox ${orientation === 'VERTICAL' ? 'vertical' : 'horizontal'}`}
-					htmlFor={key}
+					className={`radioLabel ${
+						orientation === 'VERTICAL' ? 'vertical' : 'horizontal'
+					}`}
 					key={e.key}
+					htmlFor={e.key}
+					onMouseEnter={
+						stylePropertiesWithPseudoStates?.hover ? () => setHover(e.key) : undefined
+					}
+					onMouseLeave={
+						stylePropertiesWithPseudoStates?.hover ? () => setHover('') : undefined
+					}
+					style={{
+						...((focus === e.key ? resolvedStylesFocus.label : resolvedStyles.label) ??
+							{}),
+						...((hover === e.key ? resolvedStylesHover.label : resolvedStyles.label) ??
+							{}),
+					}}
 				>
 					<CommonCheckbox
+						id={e.key}
 						isChecked={getIsSelected(e.key)}
 						onChange={() => handleClick(e)}
 						showAsRadio={!isMultiSelect}
 						isReadOnly={readOnly}
+						styles={{
+							...((focus === e.key
+								? resolvedStylesFocus.radio
+								: resolvedStyles.radio) ?? {}),
+							...((hover === e.key
+								? resolvedStylesHover.radio
+								: resolvedStyles.radio) ?? {}),
+						}}
+						focusHandler={
+							stylePropertiesWithPseudoStates?.focus
+								? () => setFocus(e.key)
+								: undefined
+						}
+						blurHandler={
+							stylePropertiesWithPseudoStates?.focus ? () => setFocus('') : undefined
+						}
 					/>
 
 					{getTranslations(e.label, translations)}
