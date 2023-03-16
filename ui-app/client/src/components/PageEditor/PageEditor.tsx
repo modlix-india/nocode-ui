@@ -298,6 +298,7 @@ function PageEditor(props: ComponentProps) {
 				onSave={saveFunction}
 				onChangePersonalization={savePersonalization}
 				iframeRef={ref}
+				locationHistory={locationHistory}
 				selectedComponent={selectedComponent}
 				onSelectedComponentChanged={(key: string) => setSelectedComponent(key)}
 			/>

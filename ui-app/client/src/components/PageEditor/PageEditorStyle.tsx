@@ -40,6 +40,11 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction: column;
 			align-items: center;
     		gap: 10px;
+			padding-top: 15px;
+		}
+
+		${PREFIX} ._sideBar ._top i.fa {
+			font-size: 22px;
 		}
 
 		${PREFIX} ._sideBar ._bottom {
@@ -119,7 +124,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			z-index: 1;
 		}
 
-		${PREFIX} button:hover, ${PREFIX} select:hover, ${PREFIX} ._iconMenuOption:hover {
+		${PREFIX} button:hover, ${PREFIX} select:hover, ${PREFIX} ._iconMenuOption:hover,
+		._compMenuBackground ._compMenuItem:hover, ._compMenuBackground ._compMenuItem.active {
 			background-color: #555;
     		color: #eee;
 		}
@@ -133,12 +139,14 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			color: #aaa;
 		}
 
-		${PREFIX} ._iconMenuOption {
+		${PREFIX} ._iconMenuOption, ._compMenuBackground ._compMenuItem  {
 			padding: 5px 10px;
 			color: #555;
 			display: flex;
 			align-items: center;
 			gap: 8px;
+			white-space: nowrap;
+			cursor: pointer;
 		}
 
 		${PREFIX} ._iconMenuBody{
@@ -147,6 +155,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			font-size: 12px;
 			box-shadow: 2px 2px 5px #ccc;
 			display: none;
+			border-radius: 2px;
 			z-index: 1;
 		}
 
@@ -155,12 +164,16 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._iconMenuBody._top{
-			bottom: 20px;
-			left: -3px;
+			bottom: 100%;
+		}
+
+		${PREFIX} ._iconMenuBody._right{
+			right: 0px;
 		}
 
 		${PREFIX} ._iconMenu{
 			cursor: pointer;
+			position: relative;
 		}
 
 		${PREFIX} ._iconMenu:hover ._iconMenuBody{
@@ -299,6 +312,42 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			font-size: 11px;
 			width: 10px;
 		}
+
+		._compMenuBackground {
+			position: absolute;
+			left: 0px;
+			top: 0px;
+			width: 100vw;
+			height: 100vh;
+		}
+
+		._compMenuBackground ._compMenuContainer {
+			box-shadow: 2px 2px 5px #ccc;
+			display: flex;
+			left: 48px;
+			top: 65px;
+			height: 85vh;
+			min-width: 100px;
+			background-color: #fff;
+			position: absolute;
+			border-radius: 3px;
+			border-left: 1px solid #eee;
+			font-size: 13px;
+		}
+
+		._compMenuBackground ._compMenu {
+			border-top: 4px solid #aaa;
+			padding-top: 10px;
+			display: flex;
+			flex-direction: column;
+			overflow: auto;
+		}
+
+		._compMenuBackground ._compMenuItem {
+			border-radius: 2px;
+		}
+
+		
 		/* Dark theme values  */
 		${PREFIX}._dark ._dndGrid{
 			background-color: #000;
@@ -310,7 +359,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX}._dark ._iconMenuBody{
 			background-color: #555;
-			box-shadow: 2px 2px 5px #555
+			box-shadow: 2px 2px 5px #555;
 		}
 		
 		${PREFIX}._dark ._sideBar {
@@ -327,7 +376,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			color: #aaa;
 		}
 
-		${PREFIX}._dark button:hover, ${PREFIX}._dark select:hover,  ${PREFIX}._dark ._iconMenuOption:hover {
+		${PREFIX}._dark button:hover, ${PREFIX}._dark select:hover,  ${PREFIX}._dark ._iconMenuOption:hover,
+		._compMenuBackground._dark ._compMenuItem:hover, ._compMenuBackground._dark ._compMenuItem.active {
 			background-color: #aaa;
     		color: #222;
 		}
@@ -344,7 +394,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			color: #aaa;
 		}
 
-		${PREFIX}._dark ._iconMenuOption {
+		${PREFIX}._dark ._iconMenuOption, ._compMenuBackground._dark ._compMenuItem {
 			color: #000;
 		}
 
@@ -355,6 +405,16 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX}._dark ._eachSelectionBar {
 			color: #aaa;
+		}
+		._compMenuBackground._dark ._compMenuContainer  {
+			border-color: #444;
+		}
+		._compMenuBackground._dark ._compMenu {
+			background-color: #555;
+			border-color: #aaa;
+		}
+		._compMenuBackground ._compMenuContainer {
+			box-shadow: 2px 2px 5px #555;
 		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

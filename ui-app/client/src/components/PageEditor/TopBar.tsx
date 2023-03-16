@@ -146,12 +146,13 @@ export default function TopBar({
 				<div className="_buttonBar _lightBackground"></div>
 				<div className="_iconMenu" tabIndex={0}>
 					<i className="fa fa-solid fa-gear" />
-					<div className="_iconMenuBody _bottom">
+					<div className="_iconMenuBody _bottom _right">
 						<div
 							className="_iconMenuOption"
 							tabIndex={0}
 							onClick={onDeletePersonalization}
 						>
+							<i className="fa fa-solid fa-broom" />
 							Clear Personalization
 						</div>
 					</div>

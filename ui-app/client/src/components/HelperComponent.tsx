@@ -102,10 +102,14 @@ function HelperComponentInternal({
 				});
 				setDragOver(false);
 			}}
-			onClick={e => {
+			onMouseUp={e => {
 				e.stopPropagation();
 				e.preventDefault();
 				messageToMaster({ type: 'SLAVE_SELECTED', payload: definition.key });
+			}}
+			onClick={e => {
+				e.stopPropagation();
+				e.preventDefault();
 				onClick?.(e);
 			}}
 			onDoubleClick={e => {
