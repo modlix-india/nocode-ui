@@ -2,6 +2,7 @@ import React from 'react';
 
 type CommonCheckboxType = {
 	isChecked: boolean;
+	showAsRadio?: boolean;
 	onChange?: (event: any) => void;
 	id?: string;
 	isReadOnly?: boolean;
@@ -13,6 +14,7 @@ type CommonCheckboxType = {
 function CommonCheckbox({
 	isChecked,
 	onChange,
+	showAsRadio = false,
 	id,
 	isReadOnly = false,
 	styles,
@@ -21,7 +23,7 @@ function CommonCheckbox({
 }: CommonCheckboxType) {
 	return (
 		<input
-			className="commonCheckbox"
+			className={`commonCheckbox ${showAsRadio ? 'radio' : ''}`}
 			disabled={isReadOnly}
 			type="checkbox"
 			id={id}
