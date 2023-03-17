@@ -108,9 +108,6 @@ export default function TopBar({
 		[onChangePersonalization, deviceType],
 	);
 
-	console.log(undoStack);
-	console.log(redoStack);
-
 	return (
 		<div className="_topBarGrid">
 			<div className="_topLeftBarGrid">
