@@ -21,9 +21,11 @@ import GridStyle from './PageEditorStyle';
 import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import DnDEditor from './editors/DnDEditor/DnDEditor';
-import TopBar from './TopBar';
+import TopBar from './editors/DnDEditor/TopBar';
 import { runEvent } from '../util/runEvent';
-import { MASTER_FUNCTIONS } from './masterFunctions';
+import { MASTER_FUNCTIONS } from './functions/masterFunctions';
+import PageOperations from './functions/PageOperations';
+import IssuePopup, { Issue } from './components/IssuePopup';
 
 function savePersonalizationCurry(
 	personalizationPath: string,
@@ -190,6 +192,27 @@ function PageEditor(props: ComponentProps) {
 
 	const ref = useRef<HTMLIFrameElement>(null);
 	const [selectedComponent, setSelectedComponent] = useState<string>();
+	const [issue, setIssue] = useState<Issue>();
+
+	const operations = useMemo(
+		() =>
+			new PageOperations(
+				defPath,
+				locationHistory,
+				pageExtractor,
+				setIssue,
+				selectedComponent,
+				key => setSelectedComponent(key),
+			),
+		[
+			defPath,
+			locationHistory,
+			pageExtractor,
+			selectedComponent,
+			setIssue,
+			setSelectedComponent,
+		],
+	);
 
 	useEffect(() => {
 		if (!defPath) return;
@@ -274,35 +297,46 @@ function PageEditor(props: ComponentProps) {
 	if (!personalization) return <></>;
 
 	return (
-		<div className={`comp compPageEditor ${localTheme}`} style={resolvedStyles.comp ?? {}}>
-			<HelperComponent key={`${key}_hlp`} definition={definition} />
-			<TopBar
-				url={url}
-				theme={localTheme}
+		<>
+			<div className={`comp compPageEditor ${localTheme}`} style={resolvedStyles.comp ?? {}}>
+				<HelperComponent key={`${key}_hlp`} definition={definition} />
+				<TopBar
+					defPath={defPath}
+					locationHistory={locationHistory}
+					url={url}
+					theme={localTheme}
+					personalizationPath={personalizationPath}
+					logo={logo}
+					pageName={context.pageName}
+					onSave={saveFunction}
+					onChangePersonalization={savePersonalization}
+					onUrlChange={urlChange}
+					onDeletePersonalization={deletePersonalization}
+					pageExtractor={pageExtractor}
+					onPageReload={() => ref.current?.contentWindow?.location.reload()}
+				/>
+				<DnDEditor
+					personalizationPath={personalizationPath}
+					defPath={defPath}
+					url={url}
+					pageName={context.pageName}
+					pageExtractor={pageExtractor}
+					onSave={saveFunction}
+					onChangePersonalization={savePersonalization}
+					iframeRef={ref}
+					locationHistory={locationHistory}
+					selectedComponent={selectedComponent}
+					onSelectedComponentChanged={(key: string) => setSelectedComponent(key)}
+					operations={operations}
+				/>
+			</div>
+			<IssuePopup
+				issue={issue}
 				personalizationPath={personalizationPath}
-				logo={logo}
-				pageName={context.pageName}
-				onSave={saveFunction}
-				onChangePersonalization={savePersonalization}
-				onUrlChange={urlChange}
-				onDeletePersonalization={deletePersonalization}
 				pageExtractor={pageExtractor}
-				onPageReload={() => ref.current?.contentWindow?.location.reload()}
+				onClearIssue={() => setIssue(undefined)}
 			/>
-			<DnDEditor
-				personalizationPath={personalizationPath}
-				defPath={defPath}
-				url={url}
-				pageName={context.pageName}
-				pageExtractor={pageExtractor}
-				onSave={saveFunction}
-				onChangePersonalization={savePersonalization}
-				iframeRef={ref}
-				locationHistory={locationHistory}
-				selectedComponent={selectedComponent}
-				onSelectedComponentChanged={(key: string) => setSelectedComponent(key)}
-			/>
-		</div>
+		</>
 	);
 }
 

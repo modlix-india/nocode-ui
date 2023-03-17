@@ -1,5 +1,7 @@
 import React, { CSSProperties, MouseEvent, ReactNode, useEffect, useState } from 'react';
 import { ComponentDefinitions } from '.';
+import { DRAG_CD_KEY } from '../constants';
+import { getDataFromPath } from '../context/StoreContext';
 import { messageToMaster } from '../slaveFunctions';
 import { ComponentDefinition } from '../types/common';
 
@@ -37,14 +39,16 @@ function HelperComponentInternal({
 	}, [setLastChanged]);
 
 	const {
-		editingPageDefinition: { componentDefinition = {} } = {},
+		editingPageDefinition: { name = '', componentDefinition = {} } = {},
 		selectedComponent,
 		personalization: { slave: { highlightColor = '#b2d33f', noSelection = false } = {} } = {},
 	} = window.pageEditor ?? {};
 
-	if (noSelection || !componentDefinition?.[definition.key]) return <></>;
+	const currentPage = getDataFromPath(`Store.urlDetails.pageName`, []);
 
-	let style: CSSProperties = {
+	if (noSelection || !componentDefinition?.[definition.key] || name !== currentPage) return <></>;
+
+	let style = {
 		all: 'initial',
 		fontFamily: 'Arial',
 		position: 'absolute',
@@ -79,14 +83,11 @@ function HelperComponentInternal({
 
 	return (
 		<div
-			style={style}
+			style={style as CSSProperties}
 			draggable="true"
 			className="opacityShowOnHover"
 			onDragStart={e =>
-				e.dataTransfer.items.add(
-					`COMPONENT_DEFINITION_DRAG_${definition.key}`,
-					'text/plain',
-				)
+				e.dataTransfer.items.add(`${DRAG_CD_KEY}${definition.key}`, 'text/plain')
 			}
 			onDragOver={e => {
 				e.preventDefault();

@@ -16,6 +16,7 @@ import { isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
 import { getPathsFrom } from './util/getPaths';
 import { processLocation } from '../util/locationProcessor';
 import { flattenUUID } from './util/uuid';
+import duplicate from '../util/duplicate';
 
 const getOrLoadPageDefinition = (location: any) => {
 	let { pageName } = processLocation(location);
@@ -29,7 +30,7 @@ function processDefinitionLocationHistory(
 	if (!locationHistory?.length) return def;
 	if (isNullValue(def)) return def;
 
-	const newDef = JSON.parse(JSON.stringify(def));
+	const newDef = duplicate(def);
 	const str = locationHistory.map(e => e.index).join('_');
 	newDef.key = newDef.key + '_' + str;
 	return newDef;

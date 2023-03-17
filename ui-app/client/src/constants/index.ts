@@ -31,3 +31,5 @@ export const SCHEMA_REF_ANY_COMP_PROP = `${NAMESPACE_UI_ENGINE}.AnyComponentProp
 export const EMPTY_STRING = '';
 
 export const GLOBAL_CONTEXT_NAME = '_global';
+
+export const DRAG_CD_KEY = 'COMPONENT_DEFINITION_DRAG_';

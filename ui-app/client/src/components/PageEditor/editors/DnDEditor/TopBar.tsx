@@ -1,6 +1,16 @@
+import { deepEqual } from '@fincity/kirun-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { addListenerWithChildrenActivity, PageStoreExtractor } from '../../context/StoreContext';
-import { propertiesDefinition } from './pageEditorProperties';
+import {
+	addListener,
+	addListenerAndCallImmediatelyWithChildrenActivity,
+	addListenerWithChildrenActivity,
+	getData,
+	getDataFromPath,
+	PageStoreExtractor,
+	setData,
+} from '../../../../context/StoreContext';
+import { LocationHistory, PageDefinition } from '../../../../types/common';
+import { propertiesDefinition } from '../../pageEditorProperties';
 
 interface TopBarProps {
 	theme: string;
@@ -14,7 +24,13 @@ interface TopBarProps {
 	onDeletePersonalization: () => void;
 	pageExtractor: PageStoreExtractor;
 	onPageReload: () => void;
+	defPath: string | undefined;
+	locationHistory: Array<LocationHistory>;
 }
+
+const undoStack: Array<PageDefinition> = [];
+const redoStack: Array<PageDefinition> = [];
+const firstTime: Array<PageDefinition> = [];
 
 export default function TopBar({
 	theme,
@@ -27,11 +43,14 @@ export default function TopBar({
 	onDeletePersonalization,
 	pageExtractor,
 	onPageReload,
+	defPath,
+	locationHistory,
 }: TopBarProps) {
 	const svgLogo = logo ? <img className="_logo" src={logo} /> : undefined;
 
 	const [localUrl, setLocalUrl] = useState(url);
 	const [deviceType, setDeviceType] = useState<string | undefined>();
+	const [changed, setChanged] = useState(Date.now());
 
 	useEffect(() => setLocalUrl(url), [url]);
 	useEffect(
@@ -47,6 +66,28 @@ export default function TopBar({
 				: undefined,
 		[personalizationPath],
 	);
+	useEffect(() => {
+		if (!defPath) return;
+
+		return addListenerWithChildrenActivity(
+			(_, v) => {
+				if (
+					!v ||
+					deepEqual(v, undoStack.length ? undoStack[undoStack.length - 1] : firstTime[0])
+				)
+					return;
+				if (!firstTime.length) {
+					firstTime.push(v);
+					return;
+				}
+				undoStack.push(v);
+				redoStack.length = 0;
+				setChanged(Date.now());
+			},
+			pageExtractor,
+			defPath,
+		);
+	}, [defPath, pageExtractor]);
 
 	const changeUrl = useCallback(() => {
 		if (url === localUrl) return;
@@ -66,6 +107,9 @@ export default function TopBar({
 			onChangePersonalization('deviceType', device === deviceType ? undefined : device),
 		[onChangePersonalization, deviceType],
 	);
+
+	console.log(undoStack);
+	console.log(redoStack);
 
 	return (
 		<div className="_topBarGrid">
@@ -143,7 +187,40 @@ export default function TopBar({
 				</div>
 			</div>
 			<div className="_topRightBarGrid">
-				<div className="_buttonBar _lightBackground"></div>
+				<div className="_buttonBar">
+					<i
+						className={`fa fa-solid fa-left-long ${undoStack.length ? 'active' : ''}`}
+						onClick={() => {
+							if (!undoStack.length || !defPath) return;
+							const x = undoStack[undoStack.length - 1];
+							undoStack.splice(undoStack.length - 1, 1);
+							redoStack.splice(0, 0, x);
+							setData(
+								defPath,
+								undoStack.length ? undoStack[undoStack.length - 1] : firstTime[0],
+								pageExtractor.getPageName(),
+							);
+							setChanged(Date.now());
+						}}
+						title="Undo"
+					/>
+					<i
+						className={`fa fa-solid fa-right-long ${redoStack.length ? 'active' : ''}`}
+						onClick={() => {
+							if (!redoStack.length || !defPath) return;
+							const x = redoStack[0];
+							undoStack.push(x);
+							redoStack.splice(0, 1);
+							setData(
+								defPath,
+								undoStack.length ? undoStack[undoStack.length - 1] : firstTime[0],
+								pageExtractor.getPageName(),
+							);
+							setChanged(Date.now());
+						}}
+						title="Redo"
+					/>
+				</div>
 				<div className="_iconMenu" tabIndex={0}>
 					<i className="fa fa-solid fa-gear" />
 					<div className="_iconMenuBody _bottom _right">

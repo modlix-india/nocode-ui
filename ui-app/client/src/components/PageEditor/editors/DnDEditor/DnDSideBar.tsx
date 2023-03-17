@@ -7,6 +7,8 @@ import {
 import { Component, LocationHistory, PageDefinition } from '../../../../types/common';
 import Portal from '../../../Portal';
 import { ComponentDefinitions } from '../../../';
+import PageOperations from '../../functions/PageOperations';
+import { DRAG_CD_KEY } from '../../../../constants';
 
 interface DnDSideBarProps {
 	personalizationPath: string | undefined;
@@ -16,6 +18,7 @@ interface DnDSideBarProps {
 	onChangePersonalization: (prop: string, value: any) => void;
 	selectedComponent: string | undefined;
 	locationHistory: Array<LocationHistory>;
+	operations: PageOperations;
 }
 
 export default function DnDSideBar({
@@ -26,6 +29,7 @@ export default function DnDSideBar({
 	locationHistory,
 	selectedComponent,
 	onChangePersonalization,
+	operations,
 }: DnDSideBarProps) {
 	const [noSelection, setNoSelection] = useState<boolean>(false);
 	const [noShell, setNoShell] = useState<boolean>(false);
@@ -87,6 +91,7 @@ export default function DnDSideBar({
 			.sort((a, b) => a.displayName.localeCompare(b.displayName))
 			.map(e => (
 				<div
+					key={e.name}
 					className={`_compMenuItem ${selectedComponentType === e.name ? 'active' : ''}`}
 					title={e.description}
 					onClick={() => setSelectedComponentType(e.name)}
@@ -130,6 +135,23 @@ export default function DnDSideBar({
 					</div>
 				</div>
 				<div className="_bottom">
+					<div
+						className="_iconMenu"
+						tabIndex={0}
+						onClick={() => operations.deleteComponent(selectedComponent)}
+						onDrop={e => {
+							e.preventDefault();
+							e.dataTransfer.items[0].getAsString(dragData => {
+								if (!dragData.startsWith(DRAG_CD_KEY)) return;
+								operations.deleteComponent(dragData.substring(DRAG_CD_KEY.length));
+							});
+						}}
+						onDragOver={e => {
+							e.preventDefault();
+						}}
+					>
+						<i className="fa fa-solid fa-trash"></i>
+					</div>
 					<div
 						className="_iconMenu"
 						tabIndex={0}

@@ -4,6 +4,7 @@ import {
 	PageStoreExtractor,
 } from '../../../../context/StoreContext';
 import { ComponentDefinitions } from '../../../';
+import { DRAG_CD_KEY } from '../../../../constants';
 
 interface SelectionBarProps {
 	defPath: string | undefined;
@@ -67,6 +68,10 @@ export function SelectionBar({
 					onMouseLeave={e => {
 						if (e.target !== e.currentTarget) setMenuForComponent('');
 					}}
+					draggable="true"
+					onDragStart={e =>
+						e.dataTransfer.items.add(`${DRAG_CD_KEY}${comp.key}`, 'text/plain')
+					}
 				>
 					<i className={`fa ${ComponentDefinitions.get(defMap[comp.key].type)?.icon}`} />
 					{comp.name}
@@ -86,6 +91,19 @@ export function SelectionBar({
 									tabIndex={0}
 									key={f}
 									onClick={() => onSelectedComponentChanged(f)}
+									draggable="true"
+									onDragEnd={e => {
+										e.stopPropagation();
+										e.preventDefault();
+										setMenuForComponent('');
+									}}
+									onDragStart={e => {
+										e.stopPropagation();
+										e.dataTransfer.items.add(
+											`${DRAG_CD_KEY}${f}`,
+											'text/plain',
+										);
+									}}
 								>
 									<i
 										className={`fa ${

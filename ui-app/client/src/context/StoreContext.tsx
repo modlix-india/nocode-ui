@@ -12,6 +12,7 @@ import { PathExtractor } from '../components/util/getPaths';
 import { LocalStoreExtractor } from './LocalStoreExtractor';
 import { ParentExtractor } from './ParentExtractor';
 import { ThemeExtractor } from './ThemeExtractor';
+import duplicate from '../util/duplicate';
 
 export class StoreExtractor extends TokenValueExtractor {
 	private store: any;
@@ -49,7 +50,7 @@ const {
 } = useStore({}, STORE_PREFIX, localStoreExtractor, themeExtractor);
 themeExtractor.setStore(_store);
 
-globalThis.getStore = () => JSON.parse(JSON.stringify(_store));
+globalThis.getStore = () => duplicate(_store);
 
 export const storeExtractor = new StoreExtractor(_store, `${STORE_PREFIX}.`);
 
@@ -207,7 +208,7 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 		_setData(path, window.pageEditor.editingPageDefinition);
 	} else _setData(path, value, deleteKey);
 
-	// console.log(JSON.parse(JSON.stringify(_store)));
+	// console.log(duplicate(_store));
 }
 
 export class PageStoreExtractor extends TokenValueExtractor {

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { PageStoreExtractor } from '../../../../context/StoreContext';
 import { LocationHistory } from '../../../../types/common';
+import PageOperations from '../../functions/PageOperations';
 import DnDIFrame from './DnDIFrame';
 import DnDSideBar from './DnDSideBar';
 import { SelectionBar } from './SelectionBar';
@@ -17,6 +18,7 @@ interface DnDEditorProps {
 	selectedComponent: string | undefined;
 	onSelectedComponentChanged: (key: string) => void;
 	locationHistory: Array<LocationHistory>;
+	operations: PageOperations;
 }
 
 export default function DnDEditor({
@@ -30,6 +32,7 @@ export default function DnDEditor({
 	selectedComponent,
 	onSelectedComponentChanged,
 	locationHistory,
+	operations,
 }: DnDEditorProps) {
 	return (
 		<div className="_dndGrid">
@@ -41,6 +44,7 @@ export default function DnDEditor({
 				onChangePersonalization={onChangePersonalization}
 				defPath={defPath}
 				locationHistory={locationHistory}
+				operations={operations}
 			/>
 			<div className="_dndGridMain">
 				<DnDIFrame
