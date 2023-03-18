@@ -4,7 +4,7 @@ import { LocationHistory } from '../../../../types/common';
 import PageOperations from '../../functions/PageOperations';
 import DnDIFrame from './DnDIFrame';
 import DnDSideBar from './DnDSideBar';
-import DnDSelectionBar from './DnDSelectionBar';
+import DnDBottomBar from './DnDBottomBar';
 import DnDTopBar from './DnDTopBar';
 
 interface DnDEditorProps {
@@ -79,7 +79,7 @@ export default function DnDEditor({
 					pageExtractor={pageExtractor}
 					iframeRef={iframeRef}
 				/>
-				<DnDSelectionBar
+				<DnDBottomBar
 					defPath={defPath}
 					pageName={pageName}
 					pageExtractor={pageExtractor}

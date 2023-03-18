@@ -8,7 +8,7 @@ import { Component, LocationHistory, PageDefinition } from '../../../../types/co
 import Portal from '../../../Portal';
 import { ComponentDefinitions } from '../../../';
 import PageOperations from '../../functions/PageOperations';
-import { DRAG_CD_KEY } from '../../../../constants';
+import { DRAG_CD_KEY, DRAG_COMP_NAME } from '../../../../constants';
 
 interface DnDSideBarProps {
 	personalizationPath: string | undefined;
@@ -98,6 +98,14 @@ export default function DnDSideBar({
 					onClick={() => setSelectedComponentType(e.name)}
 					onDoubleClick={() => {
 						if (!selectedComponent) return;
+					}}
+					draggable={true}
+					onDragStart={ev =>
+						ev.dataTransfer.items.add(`${DRAG_COMP_NAME}${e.name}`, 'text/plain')
+					}
+					onDragOver={e => {
+						e.preventDefault();
+						setShowCompMenu(false);
 					}}
 				>
 					<i className={`fa ${e.icon}`} />

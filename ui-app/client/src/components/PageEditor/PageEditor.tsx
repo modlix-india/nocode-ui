@@ -75,10 +75,12 @@ function PageEditor(props: ComponentProps) {
 		pageExtractor,
 	);
 
+	// binding path for the page definition to load
 	const defPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
 		: undefined;
 
+	// binding path for the editor's personalization.
 	const personalizationPath = bindingPath2
 		? getPathFromLocation(bindingPath2, locationHistory, pageExtractor)
 		: undefined;
@@ -89,8 +91,10 @@ function PageEditor(props: ComponentProps) {
 		? getDataFromPath(personalizationPath, locationHistory, pageExtractor) ?? {}
 		: {};
 
+	// Managing theme with local state.
 	const [localTheme, setLocalTheme] = useState(personalization.theme ?? theme);
 
+	// Checking if someone changed the theme
 	useEffect(() => {
 		if (!personalizationPath) return;
 
@@ -103,6 +107,7 @@ function PageEditor(props: ComponentProps) {
 
 	useEffect(() => setData('Store.pageData._global.collapseMenu', true), []);
 
+	// Function to save the page
 	const saveFunction = useCallback(() => {
 		if (!onSave || !pageDefinition.eventFunctions?.[onSave]) return;
 
@@ -116,6 +121,7 @@ function PageEditor(props: ComponentProps) {
 			))();
 	}, [onSave]);
 
+	// Clear the personalization
 	const deletePersonalization = useCallback(() => {
 		if (!onDeletePersonalization || !pageDefinition.eventFunctions?.[onDeletePersonalization])
 			return;
@@ -130,6 +136,7 @@ function PageEditor(props: ComponentProps) {
 			))();
 	}, [onDeletePersonalization]);
 
+	// Function to save the personalization
 	const savePersonalization = useMemo(() => {
 		if (!personalizationPath) return (key: string, value: any) => {};
 
@@ -148,6 +155,7 @@ function PageEditor(props: ComponentProps) {
 		pageDefinition,
 	]);
 
+	// Managing url and client code of the URL.
 	const [url, setUrl] = useState<string>('');
 	const [clientCode, setClientCode] = useState<string>('');
 
@@ -177,6 +185,7 @@ function PageEditor(props: ComponentProps) {
 		setClientCode(editPageDefinition.clientCode);
 	}, [personalization, editPageDefinition]);
 
+	// Function to remember url for a client.
 	const urlChange = useCallback(
 		(v: string) => {
 			setUrl(v ?? '');
@@ -194,6 +203,7 @@ function PageEditor(props: ComponentProps) {
 	const [selectedComponent, setSelectedComponent] = useState<string>();
 	const [issue, setIssue] = useState<Issue>();
 
+	// Creating an object to manage the changes because of various operations like drag and drop.
 	const operations = useMemo(
 		() =>
 			new PageOperations(
@@ -214,6 +224,7 @@ function PageEditor(props: ComponentProps) {
 		],
 	);
 
+	// On changing the definition of the page, this effect sends to the iframe/slave.
 	useEffect(() => {
 		if (!defPath) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
@@ -229,6 +240,7 @@ function PageEditor(props: ComponentProps) {
 		);
 	}, [defPath, ref.current]);
 
+	// On changing the personalization, this effect sends to the iframe/slave.
 	useEffect(() => {
 		if (!personalizationPath) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
@@ -244,6 +256,7 @@ function PageEditor(props: ComponentProps) {
 		);
 	}, [personalizationPath, ref.current]);
 
+	// On changing the selection, this effect sends to the iframe/slave.
 	useEffect(() => {
 		if (!defPath) return;
 		if (!ref.current) return;
@@ -253,6 +266,7 @@ function PageEditor(props: ComponentProps) {
 		});
 	}, [selectedComponent, ref.current]);
 
+	// The type of the editor should b esent to iframe/slave.
 	useEffect(() => {
 		if (!ref.current) return;
 		ref.current.contentWindow?.postMessage({
@@ -261,6 +275,7 @@ function PageEditor(props: ComponentProps) {
 		});
 	}, [ref.current]);
 
+	// Effect to listen to all the messages from the iframe/slave.
 	useEffect(() => {
 		function onMessageFromSlave(e: MessageEvent) {
 			const {
@@ -296,7 +311,8 @@ function PageEditor(props: ComponentProps) {
 		operations,
 	]);
 
-	if (!personalization) return <></>;
+	// If the personalization is not loaded, we don't load the view.
+	if (personalizationPath && !personalization) return <></>;
 
 	return (
 		<>

@@ -14,7 +14,7 @@ interface SelectionBarProps {
 	onSelectedComponentChanged: (key: string) => void;
 }
 
-export default function DnDSelectionBar({
+export default function DnDBottomBar({
 	defPath,
 	selectedComponent,
 	onSelectedComponentChanged,
