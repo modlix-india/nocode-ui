@@ -85,6 +85,7 @@ export default function DnDEditor({
 					pageExtractor={pageExtractor}
 					selectedComponent={selectedComponent}
 					onSelectedComponentChanged={onSelectedComponentChanged}
+					operations={operations}
 				/>
 			</div>
 		</div>

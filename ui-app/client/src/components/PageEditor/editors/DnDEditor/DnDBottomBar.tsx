@@ -1,10 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
 	addListenerAndCallImmediatelyWithChildrenActivity,
 	PageStoreExtractor,
 } from '../../../../context/StoreContext';
 import { ComponentDefinitions } from '../../..';
 import { DRAG_CD_KEY } from '../../../../constants';
+import PageOperations from '../../functions/PageOperations';
 
 interface SelectionBarProps {
 	defPath: string | undefined;
@@ -12,6 +13,7 @@ interface SelectionBarProps {
 	pageName: string | undefined;
 	pageExtractor: PageStoreExtractor;
 	onSelectedComponentChanged: (key: string) => void;
+	operations: PageOperations;
 }
 
 export default function DnDBottomBar({
@@ -20,6 +22,7 @@ export default function DnDBottomBar({
 	onSelectedComponentChanged,
 	pageName,
 	pageExtractor,
+	operations,
 }: SelectionBarProps) {
 	const [map, setMap] = useState(new Map<string, string>());
 	const [defMap, setDefMap] = useState<any>();
@@ -72,6 +75,16 @@ export default function DnDBottomBar({
 					onDragStart={e =>
 						e.dataTransfer.items.add(`${DRAG_CD_KEY}${comp.key}`, 'text/plain')
 					}
+					onDragOver={e => {
+						e.preventDefault();
+						e.stopPropagation();
+						setMenuForComponent(comp.key);
+					}}
+					onDrop={e =>
+						e.dataTransfer.items[0].getAsString(dragData =>
+							operations.droppedOn(comp.key, dragData),
+						)
+					}
 				>
 					<i className={`fa ${ComponentDefinitions.get(defMap[comp.key].type)?.icon}`} />
 					{comp.name}
@@ -95,13 +108,23 @@ export default function DnDBottomBar({
 									onDragEnd={e => {
 										e.stopPropagation();
 										e.preventDefault();
-										setMenuForComponent('');
+										// setMenuForComponent('');
 									}}
 									onDragStart={e => {
 										e.stopPropagation();
 										e.dataTransfer.items.add(
 											`${DRAG_CD_KEY}${f}`,
 											'text/plain',
+										);
+									}}
+									onDragOver={e => {
+										e.preventDefault();
+										e.stopPropagation();
+									}}
+									onDrop={e => {
+										e.stopPropagation();
+										e.dataTransfer.items[0].getAsString(dragData =>
+											operations.droppedOn(f, dragData),
 										);
 									}}
 								>

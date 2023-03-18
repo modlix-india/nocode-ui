@@ -332,7 +332,7 @@ function PageEditor(props: ComponentProps) {
 					onSelectedComponentChanged={(key: string) => setSelectedComponent(key)}
 					operations={operations}
 					onPageReload={() => ref.current?.contentWindow?.location.reload()}
-					theme={theme}
+					theme={localTheme}
 					logo={logo}
 					onUrlChange={urlChange}
 					onDeletePersonalization={deletePersonalization}

@@ -89,6 +89,7 @@ export default class PageOperations {
 	}
 
 	public droppedOn(componentKey: any, droppedData: any) {
+		console.log(componentKey, droppedData);
 		if (droppedData.startsWith(DRAG_CD_KEY)) {
 		} else if (droppedData.startsWith(DRAG_COMP_NAME)) {
 		}
