@@ -32,6 +32,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			background-color: #fff;
 			display: flex;
 			flex-direction: column;
+			align-items: center;
+			padding-top: 10px;
 		}
 
 		${PREFIX} ._sideBar ._top {

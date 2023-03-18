@@ -33,3 +33,4 @@ export const EMPTY_STRING = '';
 export const GLOBAL_CONTEXT_NAME = '_global';
 
 export const DRAG_CD_KEY = 'COMPONENT_DEFINITION_DRAG_';
+export const DRAG_COMP_NAME = 'COMPOENT_NAME_DRAG_';

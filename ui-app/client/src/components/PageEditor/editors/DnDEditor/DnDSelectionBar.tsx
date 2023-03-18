@@ -3,7 +3,7 @@ import {
 	addListenerAndCallImmediatelyWithChildrenActivity,
 	PageStoreExtractor,
 } from '../../../../context/StoreContext';
-import { ComponentDefinitions } from '../../../';
+import { ComponentDefinitions } from '../../..';
 import { DRAG_CD_KEY } from '../../../../constants';
 
 interface SelectionBarProps {
@@ -14,7 +14,7 @@ interface SelectionBarProps {
 	onSelectedComponentChanged: (key: string) => void;
 }
 
-export function SelectionBar({
+export default function DnDSelectionBar({
 	defPath,
 	selectedComponent,
 	onSelectedComponentChanged,

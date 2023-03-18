@@ -1,11 +1,7 @@
 import { deepEqual } from '@fincity/kirun-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-	addListener,
-	addListenerAndCallImmediatelyWithChildrenActivity,
 	addListenerWithChildrenActivity,
-	getData,
-	getDataFromPath,
 	PageStoreExtractor,
 	setData,
 } from '../../../../context/StoreContext';
@@ -15,8 +11,6 @@ import { propertiesDefinition } from '../../pageEditorProperties';
 interface TopBarProps {
 	theme: string;
 	personalizationPath: string | undefined;
-	logo: string | undefined;
-	pageName: string | undefined;
 	onSave: () => void;
 	onChangePersonalization: (prop: string, value: any) => void;
 	url: string;
@@ -32,10 +26,9 @@ const undoStack: Array<PageDefinition> = [];
 const redoStack: Array<PageDefinition> = [];
 const firstTime: Array<PageDefinition> = [];
 
-export default function TopBar({
+export default function DnDTopBar({
 	theme,
 	personalizationPath,
-	logo,
 	onChangePersonalization,
 	onSave,
 	url,
@@ -44,10 +37,7 @@ export default function TopBar({
 	pageExtractor,
 	onPageReload,
 	defPath,
-	locationHistory,
 }: TopBarProps) {
-	const svgLogo = logo ? <img className="_logo" src={logo} /> : undefined;
-
 	const [localUrl, setLocalUrl] = useState(url);
 	const [deviceType, setDeviceType] = useState<string | undefined>();
 	const [changed, setChanged] = useState(Date.now());
@@ -111,7 +101,6 @@ export default function TopBar({
 	return (
 		<div className="_topBarGrid">
 			<div className="_topLeftBarGrid">
-				{svgLogo}
 				<div className="_inputBar">
 					<input
 						ref={inputRef}

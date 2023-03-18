@@ -3,6 +3,7 @@ import { getDataFromPath, PageStoreExtractor, setData } from '../../../context/S
 import { LocationHistory, PageDefinition } from '../../../types/common';
 import duplicate from '../../../util/duplicate';
 import { Issue } from '../components/IssuePopup';
+import { DRAG_CD_KEY, DRAG_COMP_NAME } from '../../../constants';
 
 const base = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const baseDivisor = BigInt('' + base.length);
@@ -84,6 +85,12 @@ export default class PageOperations {
 			}
 			if (this.selectedComponent === compkey) this.onSelectedComponentChanged('');
 			setData(this.defPath, def, this.pageExtractor.getPageName());
+		}
+	}
+
+	public droppedOn(componentKey: any, droppedData: any) {
+		if (droppedData.startsWith(DRAG_CD_KEY)) {
+		} else if (droppedData.startsWith(DRAG_COMP_NAME)) {
 		}
 	}
 

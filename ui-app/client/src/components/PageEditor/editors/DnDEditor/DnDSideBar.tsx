@@ -13,7 +13,7 @@ import { DRAG_CD_KEY } from '../../../../constants';
 interface DnDSideBarProps {
 	personalizationPath: string | undefined;
 	defPath: string | undefined;
-	pageName: string | undefined;
+	logo: string | undefined;
 	pageExtractor: PageStoreExtractor;
 	onChangePersonalization: (prop: string, value: any) => void;
 	selectedComponent: string | undefined;
@@ -24,7 +24,7 @@ interface DnDSideBarProps {
 export default function DnDSideBar({
 	personalizationPath,
 	defPath,
-	pageName,
+	logo,
 	pageExtractor,
 	locationHistory,
 	selectedComponent,
@@ -36,6 +36,7 @@ export default function DnDSideBar({
 	const [showCompMenu, setShowCompMenu] = useState<boolean>(false);
 	const [selectedComponentType, setSelectedComponentType] = useState('');
 	const [theme, setTheme] = useState('light');
+	const svgLogo = logo ? <img className="_logo" src={logo} /> : undefined;
 
 	useEffect(() => {
 		if (!personalizationPath) return;
@@ -122,6 +123,7 @@ export default function DnDSideBar({
 	return (
 		<>
 			<div className="_sideBar">
+				{svgLogo}
 				<div className="_top">
 					<div
 						className="_iconMenu"

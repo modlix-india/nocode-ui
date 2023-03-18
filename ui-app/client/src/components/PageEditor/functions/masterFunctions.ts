@@ -1,3 +1,5 @@
+import PageOperations from './PageOperations';
+
 interface MasterFunctionOptions {
 	iframe: HTMLIFrameElement;
 	editPageDefinition: any;
@@ -5,6 +7,7 @@ interface MasterFunctionOptions {
 	personalization: any;
 	personalizationPath: string | undefined;
 	onSelectedComponentChange: (key: string) => void;
+	operations: PageOperations;
 }
 export const MASTER_FUNCTIONS = new Map<
 	string,
@@ -29,7 +32,11 @@ export const MASTER_FUNCTIONS = new Map<
 			});
 		},
 	],
-	['SLAVE_CONTEXT_MENU', () => {}],
 	['SLAVE_SELECTED', (options, payload) => options?.onSelectedComponentChange(payload)],
-	['SLAVE_DROPPED_SOMETHING', () => {}],
+	[
+		'SLAVE_DROPPED_SOMETHING',
+		(options, { componentKey, droppedData }) =>
+			options.operations.droppedOn(componentKey, droppedData),
+	],
+	['SLAVE_CONTEXT_MENU', () => {}],
 ]);

@@ -21,7 +21,7 @@ import GridStyle from './PageEditorStyle';
 import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import DnDEditor from './editors/DnDEditor/DnDEditor';
-import TopBar from './editors/DnDEditor/TopBar';
+import TopBar from './editors/DnDEditor/DnDTopBar';
 import { runEvent } from '../util/runEvent';
 import { MASTER_FUNCTIONS } from './functions/masterFunctions';
 import PageOperations from './functions/PageOperations';
@@ -278,6 +278,7 @@ function PageEditor(props: ComponentProps) {
 					personalization,
 					personalizationPath,
 					onSelectedComponentChange: key => setSelectedComponent(key),
+					operations,
 				},
 				payload,
 			);
@@ -292,6 +293,7 @@ function PageEditor(props: ComponentProps) {
 		personalization,
 		personalizationPath,
 		setSelectedComponent,
+		operations,
 	]);
 
 	if (!personalization) return <></>;
@@ -300,21 +302,6 @@ function PageEditor(props: ComponentProps) {
 		<>
 			<div className={`comp compPageEditor ${localTheme}`} style={resolvedStyles.comp ?? {}}>
 				<HelperComponent key={`${key}_hlp`} definition={definition} />
-				<TopBar
-					defPath={defPath}
-					locationHistory={locationHistory}
-					url={url}
-					theme={localTheme}
-					personalizationPath={personalizationPath}
-					logo={logo}
-					pageName={context.pageName}
-					onSave={saveFunction}
-					onChangePersonalization={savePersonalization}
-					onUrlChange={urlChange}
-					onDeletePersonalization={deletePersonalization}
-					pageExtractor={pageExtractor}
-					onPageReload={() => ref.current?.contentWindow?.location.reload()}
-				/>
 				<DnDEditor
 					personalizationPath={personalizationPath}
 					defPath={defPath}
@@ -328,6 +315,11 @@ function PageEditor(props: ComponentProps) {
 					selectedComponent={selectedComponent}
 					onSelectedComponentChanged={(key: string) => setSelectedComponent(key)}
 					operations={operations}
+					onPageReload={() => ref.current?.contentWindow?.location.reload()}
+					theme={theme}
+					logo={logo}
+					onUrlChange={urlChange}
+					onDeletePersonalization={deletePersonalization}
 				/>
 			</div>
 			<IssuePopup
