@@ -1,3 +1,4 @@
+import { ContextMenuDetails } from '../components/ContextMenu';
 import PageOperations from './PageOperations';
 
 interface MasterFunctionOptions {
@@ -8,6 +9,7 @@ interface MasterFunctionOptions {
 	personalizationPath: string | undefined;
 	onSelectedComponentChange: (key: string) => void;
 	operations: PageOperations;
+	onContextMenu: (m: ContextMenuDetails) => void;
 }
 export const MASTER_FUNCTIONS = new Map<
 	string,
@@ -38,5 +40,5 @@ export const MASTER_FUNCTIONS = new Map<
 		(options, { componentKey, droppedData }) =>
 			options.operations.droppedOn(componentKey, droppedData),
 	],
-	['SLAVE_CONTEXT_MENU', () => {}],
+	['SLAVE_CONTEXT_MENU', (options, payload) => options.onContextMenu(payload)],
 ]);

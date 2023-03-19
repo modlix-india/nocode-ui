@@ -7,7 +7,6 @@ import {
 
 interface DnDIFrameProps {
 	personalizationPath: string | undefined;
-	pageName: string | undefined;
 	url: string;
 	pageExtractor: PageStoreExtractor;
 	iframeRef: React.RefObject<HTMLIFrameElement>;

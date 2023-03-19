@@ -193,7 +193,6 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TableGridStyle,
-	hasChildren: true,
 	numberOfChildren: 1,
 	parentType: 'Table',
 	stylePseudoStates: ['hover'],

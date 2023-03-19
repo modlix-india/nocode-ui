@@ -1,3 +1,4 @@
+import React from 'react';
 import { StyleResolution } from '../../types/common';
 import { processStyleDefinition, StyleResolutionDefinition } from '../../util/styleProcessor';
 import { styleProperties, styleDefaults } from './pageStyleProperties';

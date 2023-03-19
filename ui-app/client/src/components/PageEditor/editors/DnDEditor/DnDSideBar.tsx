@@ -18,7 +18,7 @@ interface DnDSideBarProps {
 	onChangePersonalization: (prop: string, value: any) => void;
 	selectedComponent: string | undefined;
 	locationHistory: Array<LocationHistory>;
-	operations: PageOperations;
+	pageOperations: PageOperations;
 }
 
 export default function DnDSideBar({
@@ -29,7 +29,7 @@ export default function DnDSideBar({
 	locationHistory,
 	selectedComponent,
 	onChangePersonalization,
-	operations,
+	pageOperations,
 }: DnDSideBarProps) {
 	const [noSelection, setNoSelection] = useState<boolean>(false);
 	const [noShell, setNoShell] = useState<boolean>(false);
@@ -93,7 +93,7 @@ export default function DnDSideBar({
 			.map(e => (
 				<div
 					key={e.name}
-					className={`_compMenuItem ${selectedComponentType === e.name ? 'active' : ''}`}
+					className={`_popupMenuItem ${selectedComponentType === e.name ? 'active' : ''}`}
 					title={e.description}
 					onClick={() => setSelectedComponentType(e.name)}
 					onDoubleClick={() => {
@@ -116,11 +116,11 @@ export default function DnDSideBar({
 		compMenu = (
 			<Portal>
 				<div
-					className={`_compMenuBackground ${theme}`}
+					className={`_popupMenuBackground ${theme}`}
 					onMouseDown={e => e.currentTarget === e.target && setShowCompMenu(false)}
 				>
-					<div className="_compMenuContainer">
-						<div className="_compMenu">{compList}</div>
+					<div className="_popupMenuContainer _compMenu">
+						<div className="_popupMenu">{compList}</div>
 						<div className="_compTemplates"></div>
 					</div>
 				</div>
@@ -148,12 +148,14 @@ export default function DnDSideBar({
 					<div
 						className="_iconMenu"
 						tabIndex={0}
-						onClick={() => operations.deleteComponent(selectedComponent)}
+						onClick={() => pageOperations.deleteComponent(selectedComponent)}
 						onDrop={e => {
 							e.preventDefault();
 							e.dataTransfer.items[0].getAsString(dragData => {
 								if (!dragData.startsWith(DRAG_CD_KEY)) return;
-								operations.deleteComponent(dragData.substring(DRAG_CD_KEY.length));
+								pageOperations.deleteComponent(
+									dragData.substring(DRAG_CD_KEY.length),
+								);
 							});
 						}}
 						onDragOver={e => {

@@ -534,7 +534,6 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TableStyle,
-	hasChildren: true,
 	allowedChildrenType: new Map([
 		['TableEmptyGrid', 1],
 		['TableColumns', 1],

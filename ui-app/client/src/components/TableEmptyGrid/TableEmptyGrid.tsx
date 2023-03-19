@@ -138,7 +138,7 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleComponent: TableEmptyGridStyle,
 	stylePseudoStates: ['hover', 'focus', 'readonly'],
-	hasChildren: true,
+	numberOfChildren: -1,
 	parentType: 'Table',
 };
 

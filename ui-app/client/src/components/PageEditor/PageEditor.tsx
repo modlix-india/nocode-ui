@@ -9,7 +9,6 @@ import {
 import {
 	addListenerAndCallImmediately,
 	addListenerAndCallImmediatelyWithChildrenActivity,
-	getData,
 	getDataFromPath,
 	getPathFromLocation,
 	PageStoreExtractor,
@@ -21,11 +20,11 @@ import GridStyle from './PageEditorStyle';
 import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import DnDEditor from './editors/DnDEditor/DnDEditor';
-import TopBar from './editors/DnDEditor/DnDTopBar';
 import { runEvent } from '../util/runEvent';
 import { MASTER_FUNCTIONS } from './functions/masterFunctions';
 import PageOperations from './functions/PageOperations';
 import IssuePopup, { Issue } from './components/IssuePopup';
+import { ContextMenu, ContextMenuDetails } from './components/ContextMenu';
 
 function savePersonalizationCurry(
 	personalizationPath: string,
@@ -202,6 +201,7 @@ function PageEditor(props: ComponentProps) {
 	const ref = useRef<HTMLIFrameElement>(null);
 	const [selectedComponent, setSelectedComponent] = useState<string>();
 	const [issue, setIssue] = useState<Issue>();
+	const [contextMenu, setContextMenu] = useState<ContextMenuDetails>();
 
 	// Creating an object to manage the changes because of various operations like drag and drop.
 	const operations = useMemo(
@@ -294,6 +294,7 @@ function PageEditor(props: ComponentProps) {
 					personalizationPath,
 					onSelectedComponentChange: key => setSelectedComponent(key),
 					operations,
+					onContextMenu: (m: ContextMenuDetails) => setContextMenu(m),
 				},
 				payload,
 			);
@@ -330,12 +331,13 @@ function PageEditor(props: ComponentProps) {
 					locationHistory={locationHistory}
 					selectedComponent={selectedComponent}
 					onSelectedComponentChanged={(key: string) => setSelectedComponent(key)}
-					operations={operations}
+					pageOperations={operations}
 					onPageReload={() => ref.current?.contentWindow?.location.reload()}
 					theme={localTheme}
 					logo={logo}
 					onUrlChange={urlChange}
 					onDeletePersonalization={deletePersonalization}
+					onContextMenu={(m: ContextMenuDetails) => setContextMenu(m)}
 				/>
 			</div>
 			<IssuePopup
@@ -343,6 +345,13 @@ function PageEditor(props: ComponentProps) {
 				personalizationPath={personalizationPath}
 				pageExtractor={pageExtractor}
 				onClearIssue={() => setIssue(undefined)}
+			/>
+			<ContextMenu
+				menuDetails={contextMenu}
+				personalizationPath={personalizationPath}
+				pageExtractor={pageExtractor}
+				onCloseContextmenu={() => setContextMenu(undefined)}
+				pageOperations={operations}
 			/>
 		</>
 	);

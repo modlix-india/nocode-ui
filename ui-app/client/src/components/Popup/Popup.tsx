@@ -180,7 +180,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: PopupStyles,
-	hasChildren: true,
+	numberOfChildren: -1,
 	bindingPaths: {
 		bindingPath: { name: 'Toggle Binding' },
 	},

@@ -113,7 +113,6 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleComponent: SubPageStyle,
 	stylePseudoStates: [],
-	hasChildren: false,
 	bindingPaths: {
 		bindingPath: { name: 'Parent Binding' },
 	},

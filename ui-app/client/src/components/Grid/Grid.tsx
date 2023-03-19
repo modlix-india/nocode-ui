@@ -189,7 +189,7 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleComponent: GridStyle,
 	stylePseudoStates: ['hover', 'focus', 'readonly'],
-	hasChildren: true,
+	numberOfChildren: -1,
 	bindingPaths: {
 		bindingPath: { name: 'Scrolled Component Binding' },
 	},

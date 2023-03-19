@@ -127,7 +127,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} button:hover, ${PREFIX} select:hover, ${PREFIX} ._iconMenuOption:hover,
-		._compMenuBackground ._compMenuItem:hover, ._compMenuBackground ._compMenuItem.active,
+		._popupMenuBackground ._popupMenuItem:hover, ._popupMenuBackground ._popupMenuItem.active,
 		._popupButtons button:hover {
 			background-color: #555;
     		color: #eee;
@@ -142,7 +142,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			color: #aaa;
 		}
 
-		${PREFIX} ._iconMenuOption, ._compMenuBackground ._compMenuItem  {
+		${PREFIX} ._iconMenuOption, ._popupMenuBackground ._popupMenuItem  {
 			padding: 5px 10px;
 			color: #555;
 			display: flex;
@@ -316,7 +316,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			width: 10px;
 		}
 
-		._compMenuBackground, ._popupBackground {
+		._popupMenuBackground, ._popupBackground {
 			position: absolute;
 			left: 0px;
 			top: 0px;
@@ -348,14 +348,9 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			justify-content: end;
 		}
 
-		._compMenuBackground ._compMenuContainer {
+		._popupMenuBackground ._popupMenuContainer {
 			box-shadow: 2px 2px 5px #ccc;
 			display: flex;
-			left: 48px;
-			top: 65px;
-			max-height: 85vh;
-			min-height: 50vh;
-			min-width: 100px;
 			background-color: #fff;
 			position: absolute;
 			border-radius: 3px;
@@ -363,16 +358,30 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			font-size: 13px;
 		}
 
-		._compMenuBackground ._compMenu {
-			border-top: 4px solid #aaa;
-			padding-top: 10px;
+		._compMenu {
+			left: 48px;
+			top: 65px;
+			max-height: 85vh;
+			min-height: 50vh;
+			min-width: 100px;
 			padding-bottom: 10px;
+		}
+
+		._popupMenuBackground ._popupMenu {
+			border-top: 4px solid #aaa;
+			
 			display: flex;
 			flex-direction: column;
 			overflow: auto;
 		}
 
-		._compMenuBackground ._compMenuItem {
+		._popupMenuBackground ._popupMenuSeperator {
+			height: 0px;
+			border: 1px solid #aaa;
+			margin: 1px;
+		}
+
+		._popupMenuBackground ._popupMenuItem {
 			border-radius: 2px;
 		}
 
@@ -406,7 +415,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX}._dark button:hover, ${PREFIX}._dark select:hover,  ${PREFIX}._dark ._iconMenuOption:hover,
-		._compMenuBackground._dark ._compMenuItem:hover, ._compMenuBackground._dark ._compMenuItem.active,
+		._popupMenuBackground._dark ._popupMenuItem:hover, ._popupMenuBackground._dark ._popupMenuItem.active,
 		._popupBackground._dark button:hover {
 			background-color: #aaa;
     		color: #222;
@@ -424,7 +433,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			color: #aaa;
 		}
 
-		${PREFIX}._dark ._iconMenuOption, ._compMenuBackground._dark ._compMenuItem {
+		${PREFIX}._dark ._iconMenuOption, ._popupMenuBackground._dark ._popupMenuItem {
 			color: #000;
 		}
 
@@ -437,16 +446,15 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._popupBackground._dark {
 			color: #aaa;
 		}
-		._compMenuBackground._dark ._compMenuContainer  {
+		._popupMenuBackground._dark ._popupMenuContainer  {
 			border-color: #444;
+			box-shadow: 2px 2px 5px #555;
 		}
-		._compMenuBackground._dark ._compMenu {
+		._popupMenuBackground._dark ._popupMenu {
 			background-color: #555;
 			border-color: #aaa;
 		}
-		._compMenuBackground ._compMenuContainer {
-			box-shadow: 2px 2px 5px #555;
-		}
+
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="PageEditorCss">{css}</style>;

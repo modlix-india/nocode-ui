@@ -242,7 +242,6 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TableColumnsStyle,
-	hasChildren: true,
 	allowedChildrenType: new Map([['TableColumn', -1]]),
 	parentType: 'Table',
 	stylePseudoStates: ['hover'],

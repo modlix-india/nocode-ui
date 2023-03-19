@@ -6,6 +6,7 @@ import DnDIFrame from './DnDIFrame';
 import DnDSideBar from './DnDSideBar';
 import DnDBottomBar from './DnDBottomBar';
 import DnDTopBar from './DnDTopBar';
+import { ContextMenuDetails } from '../../components/ContextMenu';
 
 interface DnDEditorProps {
 	defPath: string | undefined;
@@ -19,12 +20,13 @@ interface DnDEditorProps {
 	selectedComponent: string | undefined;
 	onSelectedComponentChanged: (key: string) => void;
 	locationHistory: Array<LocationHistory>;
-	operations: PageOperations;
+	pageOperations: PageOperations;
 	onPageReload: () => void;
 	theme: string;
 	onUrlChange: (url: string) => void;
 	onDeletePersonalization: () => void;
 	logo: string | undefined;
+	onContextMenu: (m: ContextMenuDetails) => void;
 }
 
 export default function DnDEditor({
@@ -38,13 +40,14 @@ export default function DnDEditor({
 	selectedComponent,
 	onSelectedComponentChanged,
 	locationHistory,
-	operations,
+	pageOperations,
 	theme,
 	onSave,
 	onUrlChange,
 	onDeletePersonalization,
 	onPageReload,
 	logo,
+	onContextMenu,
 }: DnDEditorProps) {
 	return (
 		<div className="_dndGrid">
@@ -56,7 +59,7 @@ export default function DnDEditor({
 				onChangePersonalization={onChangePersonalization}
 				defPath={defPath}
 				locationHistory={locationHistory}
-				operations={operations}
+				pageOperations={pageOperations}
 			/>
 			<div className="_dndGridMain">
 				<DnDTopBar
@@ -75,17 +78,16 @@ export default function DnDEditor({
 				<DnDIFrame
 					url={url}
 					personalizationPath={personalizationPath}
-					pageName={pageName}
 					pageExtractor={pageExtractor}
 					iframeRef={iframeRef}
 				/>
 				<DnDBottomBar
 					defPath={defPath}
-					pageName={pageName}
 					pageExtractor={pageExtractor}
 					selectedComponent={selectedComponent}
 					onSelectedComponentChanged={onSelectedComponentChanged}
-					operations={operations}
+					pageOperations={pageOperations}
+					onContextMenu={onContextMenu}
 				/>
 			</div>
 		</div>

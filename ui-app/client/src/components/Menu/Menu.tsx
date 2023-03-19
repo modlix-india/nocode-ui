@@ -224,7 +224,7 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['focus', 'hover', 'disabled'],
-	hasChildren: true,
+	numberOfChildren: -1,
 	allowedChildrenType: new Map([['Menu', -1]]),
 };
 

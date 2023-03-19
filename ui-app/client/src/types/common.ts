@@ -105,7 +105,6 @@ export interface Component {
 	properties: Array<ComponentPropertyDefinition>;
 	styleProperties?: ComponentStylePropertyDefinition;
 	stylePseudoStates?: Array<String>;
-	hasChildren?: boolean;
 	numberOfChildren?: number;
 	allowedChildrenType?: Map<String, number>;
 	parentType?: string;

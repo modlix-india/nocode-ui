@@ -102,7 +102,7 @@ function Children({
 			{defs
 				.map((e, i) => {
 					let comp = Components.get(e!.type);
-					if (!comp) comp = Nothing;
+					if (!comp) comp = Nothing.component;
 					if (!comp) return undefined;
 					if (e!.type === 'Page') {
 						const pageDef = getOrLoadPageDefinition(location);

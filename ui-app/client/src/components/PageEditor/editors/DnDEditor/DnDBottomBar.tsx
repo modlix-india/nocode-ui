@@ -6,23 +6,24 @@ import {
 import { ComponentDefinitions } from '../../..';
 import { DRAG_CD_KEY } from '../../../../constants';
 import PageOperations from '../../functions/PageOperations';
+import { ContextMenuDetails } from '../../components/ContextMenu';
 
 interface SelectionBarProps {
 	defPath: string | undefined;
 	selectedComponent: string | undefined;
-	pageName: string | undefined;
 	pageExtractor: PageStoreExtractor;
 	onSelectedComponentChanged: (key: string) => void;
-	operations: PageOperations;
+	pageOperations: PageOperations;
+	onContextMenu: (m: ContextMenuDetails) => void;
 }
 
 export default function DnDBottomBar({
 	defPath,
 	selectedComponent,
 	onSelectedComponentChanged,
-	pageName,
 	pageExtractor,
-	operations,
+	pageOperations,
+	onContextMenu,
 }: SelectionBarProps) {
 	const [map, setMap] = useState(new Map<string, string>());
 	const [defMap, setDefMap] = useState<any>();
@@ -82,9 +83,17 @@ export default function DnDBottomBar({
 					}}
 					onDrop={e =>
 						e.dataTransfer.items[0].getAsString(dragData =>
-							operations.droppedOn(comp.key, dragData),
+							pageOperations.droppedOn(comp.key, dragData),
 						)
 					}
+					onContextMenu={e => {
+						e.stopPropagation();
+						e.preventDefault();
+						onContextMenu({
+							componentKey: comp.key,
+							menuPosition: { x: e.screenX, y: e.screenY },
+						});
+					}}
 				>
 					<i className={`fa ${ComponentDefinitions.get(defMap[comp.key].type)?.icon}`} />
 					{comp.name}
@@ -124,8 +133,16 @@ export default function DnDBottomBar({
 									onDrop={e => {
 										e.stopPropagation();
 										e.dataTransfer.items[0].getAsString(dragData =>
-											operations.droppedOn(f, dragData),
+											pageOperations.droppedOn(f, dragData),
 										);
+									}}
+									onContextMenu={e => {
+										e.stopPropagation();
+										e.preventDefault();
+										onContextMenu({
+											componentKey: f,
+											menuPosition: { x: e.screenX, y: e.screenY },
+										});
 									}}
 								>
 									<i

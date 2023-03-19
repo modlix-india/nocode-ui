@@ -34,3 +34,5 @@ export const GLOBAL_CONTEXT_NAME = '_global';
 
 export const DRAG_CD_KEY = 'COMPONENT_DEFINITION_DRAG_';
 export const DRAG_COMP_NAME = 'COMPOENT_NAME_DRAG_';
+export const COPY_CD_KEY = 'COMPONENT_DEFINITION_COPY_';
+export const CUT_CD_KEY = 'COMPONENT_DEFINITION_CUT_';
