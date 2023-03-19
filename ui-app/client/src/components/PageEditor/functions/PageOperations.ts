@@ -243,7 +243,7 @@ export default class PageOperations {
 			return;
 		}
 
-		if ()
+		// if (!doCompComponent.hasChildren)
 	}
 
 	public genId(): string {
