@@ -111,6 +111,7 @@ function Link(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-link',
 	name: 'Link',
 	displayName: 'Link',
 	description: 'Link component',

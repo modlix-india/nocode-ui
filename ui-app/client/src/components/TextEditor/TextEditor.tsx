@@ -97,6 +97,7 @@ function TextEditor(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-rectangle-list',
 	name: 'TextEditor',
 	displayName: 'Text Editor',
 	description: 'Text Editor component',

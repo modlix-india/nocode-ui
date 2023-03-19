@@ -150,6 +150,7 @@ function TextList(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-list-ul',
 	name: 'TextList',
 	displayName: 'TextList',
 	description: 'TextList component',

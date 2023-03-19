@@ -52,7 +52,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		name: 'black-font-color',
 		cssProperty: 'color',
-		selector: 'body',
 		displayName: 'Application/Site Color',
 		description: 'This color is used throughout application for all fonts.',
 		defaultValue: '#000000',
@@ -60,8 +59,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		name: 'light-black-font-color',
-		cssProperty: 'color',
-		selector: 'body',
 		displayName: 'Application/Site Color',
 		description: 'This color is used throughout application for all fonts.',
 		defaultValue: '#0000001F',
@@ -370,6 +367,16 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		selector: '._validationMessages',
 		defaultValue: '<main-error-color>',
+	},
+
+	{
+		name: 'validation-msg-fixed-height',
+		displayName: 'minHeight for Validation Messages with fixed display type',
+		description: 'minHeight for Validation Messages with fixed display type',
+		noPrefix: true,
+		cssProperty: 'min-height',
+		selector: '._validationMessages._fixedMessages',
+		defaultValue: '20px',
 	},
 ];
 

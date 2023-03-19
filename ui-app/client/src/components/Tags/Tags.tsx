@@ -230,6 +230,7 @@ function Tags(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-tags',
 	name: 'Tags',
 	displayName: 'Tags',
 	description: 'Tags Component',

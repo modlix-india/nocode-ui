@@ -60,6 +60,7 @@ function ToggleButton(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-toggle-off',
 	name: 'ToggleButton',
 	displayName: 'ToggleButton',
 	description: 'ToggleButton component',

@@ -165,6 +165,7 @@ function ButtonBar(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-grip',
 	name: 'ButtonBar',
 	displayName: 'ButtonBar',
 	description: 'ButtonBar component',
