@@ -208,6 +208,7 @@ function Stepper(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-arrow-down-1-9',
 	name: 'Stepper',
 	displayName: 'Stepper',
 	description: 'Stepper component',

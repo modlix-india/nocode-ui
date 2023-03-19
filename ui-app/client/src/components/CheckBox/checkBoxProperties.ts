@@ -43,6 +43,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
+		name: 'onClick',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'Event trigger on click',
+		description: `The event that is triggered on click of dropdown option`,
+	},
+
+	{
 		name: 'readOnly',
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
 		displayName: 'Read Only',
@@ -94,16 +101,16 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.margin,
 			name: 'inputMargin',
-			displayName: 'inputMargin properties',
-			description: 'inputMargin properties',
+			displayName: 'Check Box Margin',
+			description: 'Check Box Margin',
 			prefix: 'checkbox',
 			target: ['checkbox'],
 		},
 		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.padding,
 			name: 'inputPadding',
-			displayName: 'inputPadding properties',
-			description: 'inputPadding properties',
+			displayName: 'Check Box Padding',
+			description: 'Check Box Padding',
 			prefix: 'checkbox',
 			target: ['checkbox'],
 		},

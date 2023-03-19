@@ -42,7 +42,7 @@ function Page({
 	const [, setValidationChangedAt] = useState(Date.now());
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const { stylePropertiesWithPseudoStates } = useDefinition(
-		pageComponentDefinition ?? { key: 'PageWithNoDef', type: 'Page' },
+		pageComponentDefinition ?? { key: 'PageWithNoDef', name: 'page', type: 'Page' },
 		propertiesDefinition,
 		stylePropertiesDefinition,
 		locationHistory,
@@ -134,6 +134,7 @@ function Page({
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-file',
 	name: 'Page',
 	displayName: 'Page',
 	description: 'Page component',
@@ -141,8 +142,6 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: PageStyle,
-	hasChildren: true,
-	numberOfChildren: 1,
 };
 
 export default component;

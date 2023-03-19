@@ -129,6 +129,7 @@ function TablePreviewGrid(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-magnifying-glass',
 	name: 'TablePreviewGrid',
 	displayName: 'Table Preview Grid',
 	description: 'Table Preview Grid component',
@@ -137,7 +138,7 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleComponent: TablePreviewGridStyle,
 	stylePseudoStates: ['hover', 'focus', 'readonly'],
-	hasChildren: true,
+	numberOfChildren: -1,
 	parentType: 'Table',
 };
 

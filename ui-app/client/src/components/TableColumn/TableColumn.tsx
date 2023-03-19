@@ -62,6 +62,7 @@ function TableColumnComponent(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-table-columns',
 	name: 'TableColumn',
 	displayName: 'Table Column',
 	description: 'Table Column component',
@@ -69,7 +70,6 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TableColumnStyle,
-	hasChildren: true,
 	numberOfChildren: 1,
 	parentType: 'TableColumns',
 	stylePseudoStates: ['hover'],

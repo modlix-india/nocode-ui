@@ -8,12 +8,16 @@ export default function CheckBoxStyle({ theme }: { theme: Map<string, Map<string
 	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
 	const css =
 		`
+
+    input[type='checkbox'].commonCheckbox.radio {
+        border-radius:50%;
+    }
     input[type='checkbox'].commonCheckbox {
         -webkit-appearance: none;
         appearance: none;
         margin: 0;
-        width: 1.15em;
-        height: 1.15em;
+        width: 16px;
+        height: 16px;
         border: 0.15em solid;
         
         border-radius: 0.15em;
@@ -25,16 +29,24 @@ export default function CheckBoxStyle({ theme }: { theme: Map<string, Map<string
     input[type='checkbox'].commonCheckbox:disabled {
         border: 0.15em solid;
     }
-    
+
     input[type='checkbox'].commonCheckbox::before {
         content: '';
-        width: 0.65em;
-        height: 0.65em;
+        width: 12px;
+        height: 12px;
         transform: scale(0);
         transition: 500ms transform ease-in-out;
         box-shadow: inset 1em 1em;
         transform-origin: bottom left;
-        clip-path: polygon(13% 58%, 4% 68%, 35% 94%, 100% 15%, 90% 5%, 34% 77%);
+        clip-path: polygon(13% 49%, 4% 66%, 35% 98%, 100% 25%, 90% 7%, 34% 72%);
+    }
+    input[type='checkbox'].commonCheckbox.radio::before {
+        background-color: #F5E2C6;
+        border-radius: 50%;
+        transform-origin: center center;
+        clip-path: none;
+        width:8px;
+        height:8px;
     }
     
     input[type='checkbox'].commonCheckbox:checked {
@@ -109,19 +121,19 @@ export default function CheckBoxStyle({ theme }: { theme: Map<string, Map<string
     }
     
     ${PREFIX} .checkbox {
-        grid-template-rows: 1em auto;
-        gap: 0.5em;
+        display: inline-flex;
+        gap: 5px;
         justify-items: center;
         text-align: center;
         align-items: center;
-        display: inline-grid;
+        
     }
     ${PREFIX} .checkbox.horizontal {
-        grid-template-columns: 1em auto;
+        flex-direction: row;
     }
 
     ${PREFIX} .checkbox.vertical {
-        grid-template-rows: 1em auto;
+        flex-direction: column;
     }
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

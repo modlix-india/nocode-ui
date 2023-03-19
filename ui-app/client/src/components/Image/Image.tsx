@@ -71,6 +71,7 @@ function ImageComponent(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-image',
 	name: 'Image',
 	displayName: 'Image',
 	description: 'Image Component',

@@ -47,6 +47,7 @@ function Label(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-font',
 	name: 'Label',
 	displayName: 'Label',
 	description: 'Label component',

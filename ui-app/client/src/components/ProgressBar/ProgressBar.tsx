@@ -105,6 +105,7 @@ function ProgressBar(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-bars-progress',
 	name: 'ProgressBar',
 	displayName: 'ProgressBar',
 	description: 'ProgressBar component',

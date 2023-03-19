@@ -214,6 +214,7 @@ function Menu(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-bars',
 	name: 'Menu',
 	displayName: 'Menu',
 	description: 'Menu component',
@@ -223,7 +224,7 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['focus', 'hover', 'disabled'],
-	hasChildren: true,
+	numberOfChildren: -1,
 	allowedChildrenType: new Map([['Menu', -1]]),
 };
 

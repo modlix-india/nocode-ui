@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import {
-	addListener,
+	addListenerAndCallImmediately,
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
@@ -20,19 +20,21 @@ function Popup(props: ComponentProps) {
 	const [isActive, setIsActive] = React.useState(false);
 	const {
 		definition: { bindingPath },
+		context,
 	} = props;
 	if (!bindingPath) throw new Error('Definition needs binding path');
+	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const bindingPathPath = getPathFromLocation(bindingPath, props.locationHistory, pageExtractor);
 	React.useEffect(() => {
 		if (bindingPath)
-			addListener(
+			addListenerAndCallImmediately(
 				(_, value) => {
 					setIsActive(!!value);
 				},
 				pageExtractor,
-				getPathFromLocation(bindingPath, props.locationHistory),
+				bindingPathPath,
 			);
 	}, []);
-	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	let {
 		key,
 		properties: {
@@ -170,6 +172,7 @@ function Popup(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-window-restore',
 	name: 'Popup',
 	displayName: 'Popup',
 	description: 'Popup component',
@@ -177,7 +180,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: PopupStyles,
-	hasChildren: true,
+	numberOfChildren: -1,
 	bindingPaths: {
 		bindingPath: { name: 'Toggle Binding' },
 	},

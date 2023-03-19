@@ -97,12 +97,31 @@ export const RenderEngineContainer = () => {
 			))();
 	}, [shellPageDefinition?.properties?.onLoadEvent]);
 
+	const [, setLastChanged] = useState(Date.now());
+
+	useEffect(() => {
+		if (window.designMode !== 'PAGE') return;
+
+		function onMessageRecieved(e: MessageEvent) {
+			const { data: { type } = {} } = e;
+
+			if (!type || !type.startsWith('EDITOR_')) return;
+			setLastChanged(Date.now());
+		}
+		window.addEventListener('message', onMessageRecieved);
+		return () => window.removeEventListener('message', onMessageRecieved);
+	}, [setLastChanged]);
+
 	const Page = Components.get('Page')!;
 
 	if (currentPageName && pageDefinition) {
 		const { properties: { wrapShell = true } = {} } = pageDefinition;
 
-		if (wrapShell && shellPageDefinition)
+		if (
+			wrapShell &&
+			shellPageDefinition &&
+			(window.designMode !== 'PAGE' || window.pageEditor?.personalization?.slave?.noShell)
+		)
 			return (
 				<Page
 					locationHistory={[]}

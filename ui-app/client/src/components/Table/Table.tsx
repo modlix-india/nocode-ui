@@ -526,6 +526,7 @@ function TableComponent(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-table',
 	name: 'Table',
 	displayName: 'Table',
 	description: 'Table component',
@@ -533,7 +534,6 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TableStyle,
-	hasChildren: true,
 	allowedChildrenType: new Map([
 		['TableEmptyGrid', 1],
 		['TableColumns', 1],

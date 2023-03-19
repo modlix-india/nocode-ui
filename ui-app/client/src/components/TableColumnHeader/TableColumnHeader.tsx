@@ -42,6 +42,7 @@ function TableColumnHeaderComponent(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-diagram-next',
 	name: 'TableColumnHeader',
 	displayName: 'Table Header',
 	description: 'Table Header component',
@@ -49,7 +50,6 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TableColumnHeaderStyle,
-	hasChildren: false,
 	isHidden: true,
 };
 

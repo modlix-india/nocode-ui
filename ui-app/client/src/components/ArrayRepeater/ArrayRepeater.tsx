@@ -200,14 +200,14 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-layer-group',
 	name: 'ArrayRepeater',
-	displayName: 'Array Repeater',
+	displayName: 'Repeater',
 	description: 'Array Repeater component',
 	component: ArrayRepeaterComponent,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: ArrayRepeaterStyle,
-	hasChildren: true,
 	numberOfChildren: 1,
 	bindingPaths: {
 		bindingPath: { name: 'Array Binding' },
