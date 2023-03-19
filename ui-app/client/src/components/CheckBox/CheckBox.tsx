@@ -111,6 +111,7 @@ function CheckBox(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-square-check',
 	name: 'CheckBox',
 	displayName: 'CheckBox',
 	description: 'CheckBox component',

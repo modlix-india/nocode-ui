@@ -12,6 +12,7 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { deepEqual, ExpressionEvaluator } from '@fincity/kirun-js';
 import { getExtractionMap } from '../util/getRenderData';
 import CommonCheckbox from '../../commonComponents/CommonCheckbox';
+import duplicate from '../../util/duplicate';
 
 function TableGridComponent(props: ComponentProps) {
 	const [value, setValue] = useState([]);
@@ -88,9 +89,7 @@ function TableGridComponent(props: ComponentProps) {
 		if (selectionType === 'NONE' || !selectionBindingPath) return;
 
 		const putObj =
-			selectionType === 'OBJECT'
-				? JSON.parse(JSON.stringify(data[index]))
-				: `(${dataBindingPath})[${index}]`;
+			selectionType === 'OBJECT' ? duplicate(data[index]) : `(${dataBindingPath})[${index}]`;
 
 		if (multiSelect) {
 			let x = selection ? [...selection] : [];
@@ -186,6 +185,7 @@ function TableGridComponent(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-table-cells',
 	name: 'TableGrid',
 	displayName: 'Table Grid',
 	description: 'Table Grid component',
@@ -193,7 +193,6 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TableGridStyle,
-	hasChildren: true,
 	numberOfChildren: 1,
 	parentType: 'Table',
 	stylePseudoStates: ['hover'],

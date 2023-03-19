@@ -172,6 +172,7 @@ function Popup(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-window-restore',
 	name: 'Popup',
 	displayName: 'Popup',
 	description: 'Popup component',
@@ -179,7 +180,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: PopupStyles,
-	hasChildren: true,
+	numberOfChildren: -1,
 	bindingPaths: {
 		bindingPath: { name: 'Toggle Binding' },
 	},

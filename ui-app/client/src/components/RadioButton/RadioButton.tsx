@@ -204,6 +204,7 @@ function RadioButton(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-circle-dot',
 	name: 'RadioButton',
 	displayName: 'RadioButton',
 	description: 'RadioButton component',

@@ -237,6 +237,7 @@ function TextBox(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-i-cursor',
 	name: 'TextBox',
 	displayName: 'TextBox',
 	description: 'TextBox component',

@@ -265,6 +265,7 @@ function DropdownComponent(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-square-caret-down',
 	name: 'Dropdown',
 	displayName: 'Dropdown',
 	description: 'Dropdown component',
