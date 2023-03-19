@@ -62,6 +62,7 @@ function TableColumnComponent(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-table-columns',
 	name: 'TableColumn',
 	displayName: 'Table Column',
 	description: 'Table Column component',

@@ -96,6 +96,7 @@ export interface ComponentStylePropertyDefinition {
 
 export interface Component {
 	name: string;
+	icon: string;
 	displayName: string;
 	description: string;
 	component: React.ElementType;
@@ -104,7 +105,6 @@ export interface Component {
 	properties: Array<ComponentPropertyDefinition>;
 	styleProperties?: ComponentStylePropertyDefinition;
 	stylePseudoStates?: Array<String>;
-	hasChildren?: boolean;
 	numberOfChildren?: number;
 	allowedChildrenType?: Map<String, number>;
 	parentType?: string;
@@ -190,6 +190,7 @@ export interface ComponentStyle {
 
 export interface ComponentDefinition {
 	key: string;
+	name: string;
 	bindingPath?: DataLocation;
 	bindingPath2?: DataLocation;
 	bindingPath3?: DataLocation;
@@ -217,6 +218,9 @@ export interface ComponentDefinitionValues {
 
 export interface PageDefinition {
 	name: string;
+	appCode: string;
+	clientCode: string;
+	baseClientCode: string | undefined;
 	eventFunctions: {
 		[key: string]: any;
 	};

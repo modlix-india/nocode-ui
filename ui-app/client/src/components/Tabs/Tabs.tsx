@@ -140,6 +140,7 @@ function TabsComponent(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-diagram-predecessor',
 	name: 'Tabs',
 	displayName: 'Tabs',
 	description: 'Tabs Component',
@@ -148,7 +149,7 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleComponent: TabsStyles,
 	styleProperties: stylePropertiesDefinition,
-	hasChildren: true,
+	numberOfChildren: -1,
 	stylePseudoStates: ['hover'],
 };
 
