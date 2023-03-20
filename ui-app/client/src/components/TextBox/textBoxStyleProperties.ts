@@ -332,8 +332,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'opacity',
 		displayName: "textbox's label text opacity",
 		description: "This opacity is used for textbox's label content opacity.",
+		defaultValue: '0',
 		noPrefix: true,
-		selector: '.commonInputBox .textBoxDiv .inputContainer .textbox::placeholder',
+		selector: '.commonInputBox .textBoxDiv .inputContainer .textbox.float::placeholder',
 	},
 	{
 		name: 'textBoxContainerContentAlign',
