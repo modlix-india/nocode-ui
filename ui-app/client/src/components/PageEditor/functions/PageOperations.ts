@@ -92,7 +92,7 @@ export default class PageOperations {
 		}
 	}
 
-	public droppedOn(componentKey: string, droppedData: any) {
+	public droppedOn(componentKey: string, droppedData: any, forceSameParent: boolean = false) {
 		if (droppedData.startsWith(DRAG_CD_KEY)) {
 			const mainKey = droppedData.substring(DRAG_CD_KEY.length);
 			if (mainKey === componentKey) return;
@@ -326,6 +326,20 @@ export default class PageOperations {
 				return;
 			}
 
+			if (dpCompComponent.parentType && doCompComponent.name !== dpCompComponent.parentType) {
+				this.setIssue({
+					message: `${dpCompComponent.displayName} cannot be part of ${
+						doCompComponent.displayName
+					}. It can be part of only ${
+						ComponentDefinitions.get(dpCompComponent.parentType)?.displayName
+					}`,
+					defaultOption: 'Ok',
+					options: ['Ok'],
+				});
+
+				return;
+			}
+
 			if (allowedChildCount !== -1) {
 				let count = isGenericChild
 					? Object.keys(doComp.children).length
@@ -405,7 +419,7 @@ export default class PageOperations {
 		droppedOnPosition: number,
 		dpComp: ComponentDefinition,
 		comps: { [key: string]: ComponentDefinition },
-		droppedDisplayOrder?: number,
+		droppedCompPosition?: number,
 	) {
 		let childrenOrder = Object.keys(doComp.children ?? {})
 			.map(e => pageDef.componentDefinition[e])
@@ -421,12 +435,12 @@ export default class PageOperations {
 			if (ind === -1) {
 				childrenOrder.push({ key: dpComp.key, displayOrder: dpComp.displayOrder });
 			} else {
-				console.log(droppedOnPosition, droppedDisplayOrder, ind);
+				console.log(droppedOnPosition, droppedCompPosition, ind);
 				console.log(duplicate(childrenOrder));
-				if (droppedOnPosition !== -1 && !isNullValue(droppedDisplayOrder)) {
-					if (droppedOnPosition > droppedDisplayOrder!) ind++;
+				if (droppedOnPosition !== -1 && !isNullValue(droppedCompPosition)) {
+					if (droppedOnPosition > droppedCompPosition!) ind++;
 					if (ind < 0) ind = 0;
-					console.log(droppedOnPosition, droppedDisplayOrder, ind);
+					console.log(droppedOnPosition, droppedCompPosition, ind);
 				}
 				childrenOrder.splice(ind, 0, {
 					key: dpComp.key,
