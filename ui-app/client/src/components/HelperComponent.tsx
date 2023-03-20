@@ -131,7 +131,7 @@ function HelperComponentInternal({
 			}}
 			onMouseOver={e => onMouseOver?.(e)}
 			onMouseOut={e => onMouseOut?.(e)}
-			title={definition.name}
+			title={`${definition.name} - ${definition.key}`}
 		>
 			<div style={labelStyle}>{ComponentDefinitions.get(definition.type)?.displayName}</div>
 			{children}

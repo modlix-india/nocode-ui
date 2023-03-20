@@ -1,5 +1,5 @@
 import React from 'react';
-import { LinkedList } from '@fincity/kirun-js';
+import { isNullValue, LinkedList } from '@fincity/kirun-js';
 
 import { getDataFromPath, PageStoreExtractor, setData } from '../../../context/StoreContext';
 import { ComponentDefinition, LocationHistory, PageDefinition } from '../../../types/common';
@@ -93,8 +93,36 @@ export default class PageOperations {
 	}
 
 	public droppedOn(componentKey: string, droppedData: any) {
-		console.log(componentKey, droppedData);
 		if (droppedData.startsWith(DRAG_CD_KEY)) {
+			const mainKey = droppedData.substring(DRAG_CD_KEY.length);
+			if (mainKey === componentKey) return;
+			let pageDef: PageDefinition = getDataFromPath(
+				this.defPath,
+				this.locationHistory,
+				this.pageExtractor,
+			);
+			if (!pageDef) return;
+			pageDef = duplicate(pageDef);
+			if (!pageDef.componentDefinition) pageDef.componentDefinition = {};
+
+			const obj = pageDef.componentDefinition[mainKey];
+			if (!obj) return;
+			delete pageDef.componentDefinition[mainKey];
+			const sourceParent = Object.values(pageDef.componentDefinition).find(
+				e => e.children?.[mainKey],
+			);
+			if (sourceParent) {
+				delete sourceParent.children?.[mainKey];
+			}
+
+			this._dropOn(
+				pageDef,
+				componentKey,
+				mainKey,
+				{ [mainKey]: obj },
+				sourceParent?.key,
+				obj.displayOrder,
+			);
 		} else if (droppedData.startsWith(DRAG_COMP_NAME)) {
 		}
 	}
@@ -198,12 +226,16 @@ export default class PageOperations {
 						pageDef.componentDefinition[current.key],
 					);
 					obj.key = this.genId();
-					if (current.key === mainKey) mainKey = obj.key;
+					if (!current.parent) mainKey = obj.key;
+					else if (current.parent && newComps[current.parent]?.children)
+						newComps[current.parent].children![obj.key] = true;
+					newComps[obj.key] = obj;
 
 					if (!obj.children) continue;
 					Object.entries(obj.children)
 						.filter(([, show]: [string, boolean]) => show)
 						.forEach(([key]: [string, boolean]) => que.push({ key, parent: obj.key }));
+					obj.children = {};
 				}
 
 				this._dropOn(pageDef, componentKey, mainKey, newComps);
@@ -216,13 +248,15 @@ export default class PageOperations {
 		onKey: string,
 		mainKey: string,
 		comps: { [key: string]: ComponentDefinition },
+		sourceParent?: string,
+		sourceDisplayOrder?: number,
 	) {
 		//Dropped On component
-		const doComp = pageDef.componentDefinition[onKey];
+		let doComp: ComponentDefinition | undefined = pageDef.componentDefinition[onKey];
 		//Dropping component
-		const dpComp = comps[mainKey];
+		const dpComp: ComponentDefinition | undefined = comps[mainKey];
 
-		const doCompComponent = ComponentDefinitions.get(doComp.type);
+		let doCompComponent = ComponentDefinitions.get(doComp.type);
 		const dpCompComponent = ComponentDefinitions.get(dpComp.type);
 
 		if (!doComp || !dpComp) {
@@ -243,7 +277,171 @@ export default class PageOperations {
 			return;
 		}
 
-		// if (!doCompComponent.hasChildren)
+		let droppedOnPosition = -1;
+		let sameParent = false;
+
+		if (!doCompComponent.allowedChildrenType) {
+			droppedOnPosition = doComp.displayOrder ?? -1;
+			doComp = Object.values(pageDef.componentDefinition).find(e => e.children?.[onKey]);
+
+			if (!doComp || !ComponentDefinitions.get(doComp.type)) {
+				this.setIssue({
+					message: 'Error in finding the right component to paste/drop',
+					options: ['Ok'],
+					defaultOption: 'Ok',
+				});
+				return;
+			}
+
+			sameParent = doComp.key === sourceParent;
+		}
+
+		doCompComponent = ComponentDefinitions.get(doComp!.type);
+
+		if (doCompComponent?.allowedChildrenType) {
+			if (!doComp.children) doComp.children = {};
+
+			let allowedChildCount = doCompComponent.allowedChildrenType.get('');
+			let isGenericChild = true;
+			if (isNullValue(allowedChildCount)) {
+				allowedChildCount = doCompComponent.allowedChildrenType.get(doComp.type);
+				isGenericChild = false;
+			}
+
+			if (isNullValue(allowedChildCount)) {
+				this.setIssue({
+					message: `${doCompComponent.displayName} cannot contain ${
+						dpCompComponent.displayName
+					}. It can contain only ${Array.from(doCompComponent.allowedChildrenType.keys())
+						.map(e => ComponentDefinitions.get(e)?.displayName!)
+						.reduce((a: string, c: string, i, arr) => {
+							if (i + 2 === arr.length) return a + c + ' or ';
+							else if (i + 1 === arr.length) return a + c;
+							else return a + c + ', ';
+						}, '')}.`,
+					defaultOption: 'Ok',
+					options: ['Ok'],
+				});
+
+				return;
+			}
+
+			if (allowedChildCount !== -1) {
+				let count = isGenericChild
+					? Object.keys(doComp.children).length
+					: Object.keys(doComp.children).filter(
+							e => pageDef.componentDefinition[e].type === dpComp.type,
+					  ).length;
+				if (count >= allowedChildCount!) {
+					this.setIssue({
+						message: `${doCompComponent.displayName} allows ${allowedChildCount} ${
+							isGenericChild ? '' : `of type ${dpCompComponent.displayName} as`
+						} children. Do you want to replace the existing components?`,
+						defaultOption: 'No',
+						options: ['Yes', 'No'],
+						callbackOnOption: {
+							Yes: () => {
+								if (!doComp || !doComp.key) return;
+
+								const inPgDef: PageDefinition = duplicate(
+									getDataFromPath(
+										this.defPath,
+										this.locationHistory,
+										this.pageExtractor,
+									),
+								);
+
+								let removeChildren = isGenericChild
+									? Object.keys(doComp.children ?? {})
+									: Object.keys(doComp.children ?? {}).filter(
+											e =>
+												dpComp.type === inPgDef.componentDefinition[e].type,
+									  );
+
+								removeChildren.forEach(e => {
+									delete inPgDef.componentDefinition[e];
+									delete inPgDef.componentDefinition[doComp!.key]?.children?.[e];
+								});
+
+								this._updateDisplayOrder(
+									inPgDef.componentDefinition[doComp.key],
+									inPgDef,
+									droppedOnPosition,
+									comps[dpComp.key],
+									comps,
+									sameParent ? sourceDisplayOrder : undefined,
+								);
+								setData(this.defPath!, inPgDef, this.pageExtractor.getPageName());
+							},
+						},
+					});
+					return;
+				}
+			}
+
+			this._updateDisplayOrder(
+				doComp,
+				pageDef,
+				droppedOnPosition,
+				dpComp,
+				comps,
+				sameParent ? sourceDisplayOrder : undefined,
+			);
+		} else {
+			this.setIssue({
+				message: `Cannot paste/drop ${dpCompComponent.displayName} on ${doCompComponent?.displayName}.`,
+				options: ['Ok'],
+				defaultOption: 'Ok',
+			});
+			return;
+		}
+
+		setData(this.defPath!, pageDef, this.pageExtractor.getPageName());
+	}
+
+	private _updateDisplayOrder(
+		doComp: ComponentDefinition,
+		pageDef: PageDefinition,
+		droppedOnPosition: number,
+		dpComp: ComponentDefinition,
+		comps: { [key: string]: ComponentDefinition },
+		droppedDisplayOrder?: number,
+	) {
+		let childrenOrder = Object.keys(doComp.children ?? {})
+			.map(e => pageDef.componentDefinition[e])
+			.map(e => ({ key: e.key, displayOrder: e.displayOrder }))
+			.sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
+
+		if (droppedOnPosition === -1 || !childrenOrder.length) {
+			dpComp.displayOrder = childrenOrder.length
+				? Math.max(...childrenOrder.map(e => e.displayOrder ?? 0)) + 1
+				: 0;
+		} else {
+			let ind = childrenOrder.findIndex(e => e.displayOrder === droppedOnPosition);
+			if (ind === -1) {
+				childrenOrder.push({ key: dpComp.key, displayOrder: dpComp.displayOrder });
+			} else {
+				console.log(droppedOnPosition, droppedDisplayOrder, ind);
+				console.log(duplicate(childrenOrder));
+				if (droppedOnPosition !== -1 && !isNullValue(droppedDisplayOrder)) {
+					if (droppedOnPosition > droppedDisplayOrder!) ind++;
+					if (ind < 0) ind = 0;
+					console.log(droppedOnPosition, droppedDisplayOrder, ind);
+				}
+				childrenOrder.splice(ind, 0, {
+					key: dpComp.key,
+					displayOrder: dpComp.displayOrder,
+				});
+				console.log(childrenOrder);
+			}
+		}
+		if (!doComp.children) doComp.children = {};
+		doComp.children[dpComp.key] = true;
+		pageDef.componentDefinition = { ...pageDef.componentDefinition, ...comps };
+
+		childrenOrder.forEach(
+			({ key }, i) => (pageDef.componentDefinition[key].displayOrder = i + 1),
+		);
 	}
 
 	public genId(): string {

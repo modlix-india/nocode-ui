@@ -59,7 +59,7 @@ export const dotPathBuilder = (
 	locationHistory: Array<LocationHistory>,
 	...tve: TokenValueExtractor[]
 ) => {
-	if (origPath.indexOf('Parent.') === -1) return origPath;
+	if (origPath.indexOf('Parent.') === -1 || !locationHistory.length) return origPath;
 
 	const retSet: Set<string> = new Set();
 	let ex = new ExpressionEvaluator(origPath);
