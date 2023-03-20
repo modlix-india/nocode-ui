@@ -95,7 +95,7 @@ export default class PageOperations {
 	public droppedOn(componentKey: string, droppedData: any, forceSameParent: boolean = false) {
 		if (droppedData.startsWith(DRAG_CD_KEY)) {
 			const mainKey = droppedData.substring(DRAG_CD_KEY.length);
-			if (mainKey === componentKey) return;
+			if (mainKey === componentKey || !this.defPath) return;
 			let pageDef: PageDefinition = getDataFromPath(
 				this.defPath,
 				this.locationHistory,
@@ -107,10 +107,35 @@ export default class PageOperations {
 
 			const obj = pageDef.componentDefinition[mainKey];
 			if (!obj) return;
-			delete pageDef.componentDefinition[mainKey];
 			const sourceParent = Object.values(pageDef.componentDefinition).find(
 				e => e.children?.[mainKey],
 			);
+
+			if (forceSameParent && sourceParent?.children?.[componentKey]) {
+				let childrenOrder = Object.keys(sourceParent.children ?? {})
+					.map(e => pageDef.componentDefinition[e])
+					.map(e => ({ key: e.key, displayOrder: e.displayOrder }))
+					.sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
+				let doPosition = -1;
+				let dpPosition = -1;
+				for (let i = 0; i < childrenOrder.length; i++) {
+					if (childrenOrder[i].key === componentKey) doPosition = i;
+					else if (childrenOrder[i].key === mainKey) dpPosition = i;
+				}
+
+				let x = childrenOrder.splice(dpPosition, 1);
+				if (doPosition < dpPosition) doPosition--;
+				if (doPosition < 0) doPosition = 0;
+				childrenOrder.splice(doPosition, 0, ...x);
+				childrenOrder.forEach(
+					({ key }, i) => (pageDef.componentDefinition[key].displayOrder = i + 1),
+				);
+
+				setData(this.defPath, pageDef, this.pageExtractor.getPageName());
+
+				return;
+			}
+			delete pageDef.componentDefinition[mainKey];
 			if (sourceParent) {
 				delete sourceParent.children?.[mainKey];
 			}
