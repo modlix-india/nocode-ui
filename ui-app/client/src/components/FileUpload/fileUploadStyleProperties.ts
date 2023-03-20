@@ -78,7 +78,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
         cssProperty: 'width',
         displayName: 'upload container wdith style',
         description: 'The Upload Container width style.',
-        defaultValue: "320px",
         selector: '.uploadContainer',
     },
     {
@@ -86,7 +85,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
         cssProperty: 'height',
         displayName: 'upload container height style',
         description: 'The Upload Container height style.',
-        defaultValue: '160px',
         selector: '.uploadContainer',
     },
     {
@@ -110,7 +108,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
         cssProperty: 'width',
         displayName: 'upload container width horizontal style',
         description: 'The Upload Container width horizontal style.',
-        defaultValue: '280px',
         selector: '.uploadContainer.horizontal',
     },
     {

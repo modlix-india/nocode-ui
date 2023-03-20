@@ -69,6 +69,18 @@ function DATE_FORMAT(validation: any, value: any): Array<string> {
 	return [];
 }
 
+
+function FILE_SIZE(validation: any, value: FileList): Array<string> {
+	if (isNullValue(value)) return [];
+	const size = validation.sizeType !== undefined ? Array.from(value).reduce((a, c: any) => a + c.size, 0) / validation.sizeType : Array.from(value).reduce((a, c: any) => a + c.size, 0);
+	if (isNaN(size)) return [validation.message];
+	if (!isNullValue(validation.minValue) && size < parseInt(validation.minValue))
+		return [validation.message];
+	if (!isNullValue(validation.maxValue) && size > parseInt(validation.maxValue))
+		return [validation.message];
+	return [];
+}
+
 const validationFunctions: { [key: string]: (validation: any, value: any) => Array<string> } = {
 	EVENT_FUNCTION,
 	MANDATORY,
@@ -80,6 +92,7 @@ const validationFunctions: { [key: string]: (validation: any, value: any) => Arr
 	EMAIL,
 	NUMBER_VALUE,
 	DATE_FORMAT,
+	FILE_SIZE
 };
 
 export function validate(

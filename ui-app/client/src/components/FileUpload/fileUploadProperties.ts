@@ -4,6 +4,7 @@ import {
     SCHEMA_REF_BOOL_COMP_PROP,
     SCHEMA_REF_NUM_COMP_PROP,
     SCHEMA_REF_STRING_COMP_PROP,
+    SCHEMA_REF_VALIDATION,
 } from '../../constants';
 import {
     ComponentPropertyEditor,
@@ -90,7 +91,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
         schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
         displayName: 'Upload files on selection event type',
         description: 'Upload files on selection event type',
-    }
+    },
+    {
+        name: 'validation',
+        schema: Schema.ofRef(SCHEMA_REF_VALIDATION),
+        displayName: 'Validation',
+        description: 'Validation Rule',
+        editor: ComponentPropertyEditor.VALIDATION,
+        multiValued: true,
+        notImplemented: true,
+    },
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

@@ -8,17 +8,19 @@ import {
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponent';
-import { checkFileUploadCriteria } from '../util/checkFileUploadCriteria';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './fileUploadProperties';
 import FileUploadStyles from './FileUploadStyles';
+import { validate } from '../../util/validationProcessor';
+import { flattenUUID } from '../util/uuid';
 
 function FileUpload(props: ComponentProps) {
 	const [value, setValue] = useState<any>();
 	const inputRef = useRef<any>();
 	const [hover, setHover] = useState<boolean>(false);
 	const [errorMessage, setErrorMessage] = useState<any>('');
+	const [validationMessages, setValidationMessages] = useState<Array<string>>([]);
 	const {
 		definition: { bindingPath },
 		definition,
@@ -42,6 +44,7 @@ function FileUpload(props: ComponentProps) {
 			showFileList,
 			uploadImmediately,
 			onSelectEvent,
+			validation,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -66,6 +69,27 @@ function FileUpload(props: ComponentProps) {
 		? props.pageDefinition.eventFunctions[onSelectEvent]
 		: undefined;
 
+	useEffect(() => {
+		if (!validation?.length) return;
+
+		const msgs = validate(props.definition, props.pageDefinition, validation, value);
+		setValidationMessages(msgs);
+
+		setData(
+			`Store.validations.${context.pageName}.${flattenUUID(definition.key)}`,
+			msgs.length ? msgs : undefined,
+			context.pageName,
+			true,
+		);
+		return () =>
+			setData(
+				`Store.validations.${context.pageName}.${flattenUUID(definition.key)}`,
+				undefined,
+				context.pageName,
+				true,
+			);
+	}, [value, validation]);
+
 	useEffect(
 		() =>
 			addListenerAndCallImmediately(
@@ -87,12 +111,6 @@ function FileUpload(props: ComponentProps) {
 	const onChangeFile = (event: any) => {
 		if (!event.target.value?.length) return;
 		const files = event.target.files;
-		const isImgPassingCriteria = checkFileUploadCriteria(
-			files,
-			options?.split(','),
-			maxFileSize,
-		);
-		setErrorMessage(isImgPassingCriteria);
 		setData(bindingPathPath!, [...files], context?.pageName);
 	};
 
@@ -132,15 +150,14 @@ function FileUpload(props: ComponentProps) {
 		</span>
 	);
 
-	const errComp = (
-		<div
-			title="error_message"
-			style={computedStyles?.errorText ?? {}}
-			className={`errors ${uploadViewType !== 'LARGE_VIEW' ? 'horizontal' : ''}`}
-		>
-			{errorMessage?.errors}
-		</div>
-	);
+	const validationMessagesComp =
+		validationMessages?.length && (value || context.showValidationMessages) ? (
+			<div className="_validationMessages">
+				{validationMessages.map(msg => (
+					<div key={msg}>{msg}</div>
+				))}
+			</div>
+		) : undefined;
 
 	const selectedComp = (each: any, index = 0) => {
 		return (
@@ -209,7 +226,7 @@ function FileUpload(props: ComponentProps) {
 				{comp}
 				{value?.length > 0 && showFileList ? fileContainer : labelComp}
 			</div>
-			{errorMessage?.errors ? errComp : null}
+			{validationMessagesComp}
 		</>
 	);
 	const smallView = (
@@ -235,7 +252,6 @@ function FileUpload(props: ComponentProps) {
 				</button>
 				{labelComp}
 			</div>
-			{errorMessage?.errors ? errComp : null}
 			{showFileList ? fileContainer : null}
 		</>
 	);
