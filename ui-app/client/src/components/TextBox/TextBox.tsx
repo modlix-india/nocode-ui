@@ -230,12 +230,14 @@ function TextBox(props: ComponentProps) {
 				focusHandler={() => setFocus(true)}
 				supportingText={supportingText}
 				messageDisplay={messageDisplay}
+				styles={computedStyles}
 			/>
 		</div>
 	);
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-i-cursor',
 	name: 'TextBox',
 	displayName: 'TextBox',
 	description: 'TextBox component',

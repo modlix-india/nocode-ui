@@ -14,6 +14,34 @@ import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '.
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
+		name: 'theme',
+		schema: Schema.ofBoolean(SCHEMA_REF_BOOL_COMP_PROP),
+		displayName: 'Theme',
+		editor: ComponentPropertyEditor.ENUM,
+		description: 'Editor color schemes',
+		defaultValue: '_light',
+		enumValues: [
+			{
+				name: '_light',
+				displayName: 'Light Theme',
+				description: 'Light colors look and feel',
+			},
+			{
+				name: '_dark',
+				displayName: 'Dark Theme',
+				description: 'Dark colors look and feel',
+			},
+		],
+	},
+
+	{
+		name: 'logo',
+		schema: Schema.ofString(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'SVG logo',
+		description: 'SVG Logo with no fill to match the theme',
+	},
+
+	{
 		name: 'onSave',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: 'On Save',
@@ -27,6 +55,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'On Personalization Change',
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		description: 'Event to be triggered on personalization changed.',
+	},
+
+	{
+		name: 'onDeletePersonalization',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'On Personalization Delete',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered on personalization cleared.',
 	},
 ];
 

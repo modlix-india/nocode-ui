@@ -55,7 +55,7 @@
 	},
 	"dependencies": {
 		"@fincity/kirun-js": "^1.5.0",
-		"@fincity/path-reactive-state-management": "^1.5.0",
+		"@fincity/path-reactive-state-management": "^1.5.1",
 		"@monaco-editor/react": "^4.4.6",
 		"@tsconfig/recommended": "^1.0.1",
 		"axios": "^0.27.2",
