@@ -125,7 +125,7 @@ function Popup(props: ComponentProps) {
 
 	return (
 		<Portal>
-			<div className="comp compPopup">
+			<div className="comp compPopup" style={resolvedStyles.comp ?? {}}>
 				<HelperComponent definition={props.definition} />
 				<div
 					className="backdrop"
