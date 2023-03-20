@@ -86,6 +86,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 	'': {
+		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: COMPONENT_STYLE_GROUP_PROPERTIES.size,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.backdropFilter.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.backdropFilter,
 			target: ['backdrop'],
