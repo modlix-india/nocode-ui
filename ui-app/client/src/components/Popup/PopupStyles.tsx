@@ -26,15 +26,20 @@ export default function PopupStyles({ theme }: { theme: Map<string, Map<string, 
     ${PREFIX} .closeButtonPosition{
       margin-bottom: 10px
     }
+    ${PREFIX} .design2CloseButton {
+      position: absolute;
+      top: 10px;
+      right: 16px;
+      z-index: 1;
+    }
     ${PREFIX} .TitleIconGrid{
       display: flex;
       flex-direction: row;
-     justify-content: space-between;
+      justify-content: space-between;
     }
     ${PREFIX} .iconClass{
       cursor: pointer
     }
-    
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="PopupCss">{css}</style>;
