@@ -77,7 +77,7 @@ export default function DnDSideBar({
 			const def: PageDefinition = getDataFromPath(defPath, locationHistory, pageExtractor);
 			const compDef = def.componentDefinition[selectedComponent];
 			const component: Component | undefined = ComponentDefinitions.get(compDef?.type);
-			if (component?.allowedChildrenType) {
+			if (component?.allowedChildrenType && !component?.allowedChildrenType.has('')) {
 				compsList = Array.from(ComponentDefinitions.values()).filter(
 					e => component.allowedChildrenType?.has(e.name) && !e.isHidden,
 				);
@@ -98,6 +98,7 @@ export default function DnDSideBar({
 					onClick={() => setSelectedComponentType(e.name)}
 					onDoubleClick={() => {
 						if (!selectedComponent) return;
+						pageOperations.droppedOn(selectedComponent, `${DRAG_COMP_NAME}${e.name}`);
 					}}
 					draggable={true}
 					onDragStart={ev =>

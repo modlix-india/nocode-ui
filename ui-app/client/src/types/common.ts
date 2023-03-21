@@ -108,6 +108,7 @@ export interface Component {
 	allowedChildrenType?: Map<string, number>;
 	parentType?: string;
 	isHidden?: boolean;
+	defaultTemplate?: ComponentDefinition;
 	bindingPaths?: {
 		bindingPath?: { name: string };
 		bindingPath2?: { name: string };

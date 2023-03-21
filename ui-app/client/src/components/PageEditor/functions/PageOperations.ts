@@ -93,17 +93,18 @@ export default class PageOperations {
 	}
 
 	public droppedOn(componentKey: string, droppedData: any, forceSameParent: boolean = false) {
+		let pageDef: PageDefinition = getDataFromPath(
+			this.defPath,
+			this.locationHistory,
+			this.pageExtractor,
+		);
+		if (!pageDef) return;
+		pageDef = duplicate(pageDef);
+		if (!pageDef.componentDefinition) pageDef.componentDefinition = {};
+
 		if (droppedData.startsWith(DRAG_CD_KEY)) {
 			const mainKey = droppedData.substring(DRAG_CD_KEY.length);
 			if (mainKey === componentKey || !this.defPath) return;
-			let pageDef: PageDefinition = getDataFromPath(
-				this.defPath,
-				this.locationHistory,
-				this.pageExtractor,
-			);
-			if (!pageDef) return;
-			pageDef = duplicate(pageDef);
-			if (!pageDef.componentDefinition) pageDef.componentDefinition = {};
 
 			const obj = pageDef.componentDefinition[mainKey];
 			if (!obj) return;
@@ -149,6 +150,13 @@ export default class PageOperations {
 				obj.displayOrder,
 			);
 		} else if (droppedData.startsWith(DRAG_COMP_NAME)) {
+			const compName = droppedData.substring(DRAG_COMP_NAME.length);
+			const key = this.genId();
+			const obj = ComponentDefinitions.get(compName)?.defaultTemplate
+				? duplicate(ComponentDefinitions.get(compName)?.defaultTemplate)
+				: { name: compName, type: compName };
+			obj.key = key;
+			this._dropOn(pageDef, componentKey, key, { [key]: obj });
 		}
 	}
 
@@ -460,18 +468,14 @@ export default class PageOperations {
 			if (ind === -1) {
 				childrenOrder.push({ key: dpComp.key, displayOrder: dpComp.displayOrder });
 			} else {
-				console.log(droppedOnPosition, droppedCompPosition, ind);
-				console.log(duplicate(childrenOrder));
 				if (droppedOnPosition !== -1 && !isNullValue(droppedCompPosition)) {
 					if (droppedOnPosition > droppedCompPosition!) ind++;
 					if (ind < 0) ind = 0;
-					console.log(droppedOnPosition, droppedCompPosition, ind);
 				}
 				childrenOrder.splice(ind, 0, {
 					key: dpComp.key,
 					displayOrder: dpComp.displayOrder,
 				});
-				console.log(childrenOrder);
 			}
 		}
 		if (!doComp.children) doComp.children = {};
