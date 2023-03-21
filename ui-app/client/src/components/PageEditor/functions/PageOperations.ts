@@ -6,7 +6,7 @@ import { ComponentDefinition, LocationHistory, PageDefinition } from '../../../t
 import duplicate from '../../../util/duplicate';
 import { Issue } from '../components/IssuePopup';
 import { COPY_CD_KEY, CUT_CD_KEY, DRAG_CD_KEY, DRAG_COMP_NAME } from '../../../constants';
-import { ComponentDefinitions } from '../../';
+import ComponentDefinitions from '../../';
 import NothingComponent from '../../Nothing';
 
 const base = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';

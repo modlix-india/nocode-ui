@@ -3,10 +3,10 @@ import {
 	addListenerAndCallImmediatelyWithChildrenActivity,
 	PageStoreExtractor,
 } from '../../../../context/StoreContext';
-import { ComponentDefinitions } from '../../..';
 import { DRAG_CD_KEY } from '../../../../constants';
 import PageOperations from '../../functions/PageOperations';
 import { ContextMenuDetails } from '../../components/ContextMenu';
+import ComponentDefinitions from '../../..';
 
 interface SelectionBarProps {
 	defPath: string | undefined;
