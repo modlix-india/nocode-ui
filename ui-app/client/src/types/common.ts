@@ -229,6 +229,7 @@ export interface PageDefinition {
 		[key: string]: ComponentDefinition;
 	};
 	translations: { [key: string]: { [key: string]: string } };
+	properties: { onLoadEvent?: string; loadStrategy?: string };
 }
 
 export interface ComponentProps {
