@@ -250,6 +250,7 @@ function FileUpload(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-upload',
 	name: 'FileUpload',
 	displayName: 'FileUpload',
 	description: 'FileUpload Component',
