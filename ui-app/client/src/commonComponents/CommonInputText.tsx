@@ -114,7 +114,9 @@ function CommonInputText(props: CommonInputType) {
 				<div className={`inputContainer`}>
 					<input
 						style={computedStyles.inputBox ?? {}}
-						className={`textbox ${valueType === 'NUMBER' ? 'remove-spin-button' : ''}`}
+						className={`textbox ${noFloat ? '' : 'float'} ${
+							valueType === 'NUMBER' ? 'remove-spin-button' : ''
+						}`}
 						type={
 							isPassword && !showPassword
 								? 'password'

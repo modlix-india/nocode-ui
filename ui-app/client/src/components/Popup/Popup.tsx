@@ -35,7 +35,7 @@ function Popup(props: ComponentProps) {
 				bindingPathPath,
 			);
 	}, []);
-	let {
+	const {
 		key,
 		properties: {
 			showClose,
@@ -45,6 +45,7 @@ function Popup(props: ComponentProps) {
 			eventOnClose,
 			closeButtonPosition,
 			modelTitle,
+			popupDesign,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -124,7 +125,7 @@ function Popup(props: ComponentProps) {
 
 	return (
 		<Portal>
-			<div className="comp compPopup">
+			<div className="comp compPopup" style={resolvedStyles.comp ?? {}}>
 				<HelperComponent definition={props.definition} />
 				<div
 					className="backdrop"
@@ -132,7 +133,7 @@ function Popup(props: ComponentProps) {
 					style={resolvedStyles.backdrop ?? {}}
 				>
 					<div
-						className="modal"
+						className={`modal ${popupDesign === '_design2' ? 'design2' : ''} `}
 						style={
 							{
 								...(resolvedStyles?.modal || {}),
@@ -141,23 +142,27 @@ function Popup(props: ComponentProps) {
 						}
 						onClick={handleBubbling}
 					>
-						<div
-							className="TitleIconGrid"
-							style={
-								{
-									...(resolvedStyles?.titleGrid || {}),
-									...(resolvedStyles?.titleGridExtra || {}),
-								} ?? {}
-							}
-						>
-							<div className="closeButtonPosition">
-								{showClose && closeButtonPosition === 'LEFT' ? closeIcon : ''}
+						{popupDesign === '_design1' ? (
+							<div
+								className="TitleIconGrid"
+								style={
+									{
+										...(resolvedStyles?.titleGrid || {}),
+										...(resolvedStyles?.titleGridExtra || {}),
+									} ?? {}
+								}
+							>
+								<div className="closeButtonPosition">
+									{showClose && closeButtonPosition === 'LEFT' ? closeIcon : ''}
+								</div>
+								<div className="modelTitleStyle">{modelTitle && modelTitle}</div>
+								<div className="closeButtonPosition">
+									{showClose && closeButtonPosition === 'RIGHT' ? closeIcon : ''}
+								</div>
 							</div>
-							<div className="modelTitleStyle">{modelTitle && modelTitle}</div>
-							<div className="closeButtonPosition">
-								{showClose && closeButtonPosition === 'RIGHT' ? closeIcon : ''}
-							</div>
-						</div>
+						) : (
+							<div className="design2CloseButton">{showClose ? closeIcon : ''}</div>
+						)}
 						<Children
 							pageDefinition={props.pageDefinition}
 							children={props.definition.children}
