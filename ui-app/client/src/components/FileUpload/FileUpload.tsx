@@ -14,12 +14,13 @@ import { propertiesDefinition, stylePropertiesDefinition } from './fileUploadPro
 import FileUploadStyles from './FileUploadStyles';
 import { validate } from '../../util/validationProcessor';
 import { flattenUUID } from '../util/uuid';
+import { isNullValue } from '@fincity/kirun-js';
+import { returnFileSize } from '../util/getFileSize';
 
 function FileUpload(props: ComponentProps) {
 	const [value, setValue] = useState<any>();
 	const inputRef = useRef<any>();
 	const [hover, setHover] = useState<boolean>(false);
-	const [errorMessage, setErrorMessage] = useState<any>('');
 	const [validationMessages, setValidationMessages] = useState<Array<string>>([]);
 	const {
 		definition: { bindingPath },
@@ -28,7 +29,7 @@ function FileUpload(props: ComponentProps) {
 		locationHistory,
 		context,
 	} = props;
-	if (!bindingPath) throw new Error('Definition needs binding path');
+	if (!bindingPath) return null;
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	let {
 		key,
@@ -36,7 +37,7 @@ function FileUpload(props: ComponentProps) {
 			uploadViewType,
 			uploadIcon,
 			options,
-			label,
+			subText,
 			mainText,
 			isMultiple,
 			readOnly,
@@ -56,31 +57,41 @@ function FileUpload(props: ComponentProps) {
 	);
 
 	const className = `uploadContainer ${readOnly ? 'disabled' : ''} ${
-		errorMessage?.errors && !readOnly ? 'error' : ''
+		validationMessages.length && !readOnly ? 'error' : ''
 	} ${value !== undefined ? 'selected' : ''}`;
 
 	const computedStyles = processComponentStylePseudoClasses(
-		{ readOnly, hover },
+		{ disabled: readOnly, hover },
 		stylePropertiesWithPseudoStates,
 	);
-
 	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
-	const selectionEvent = uploadImmediately
+	const uploadImmediatelyEvent = onSelectEvent
 		? props.pageDefinition.eventFunctions[onSelectEvent]
 		: undefined;
-
 	useEffect(() => {
-		if (!validation?.length) return;
+		const msgs = validation?.length
+			? validate(props.definition, props.pageDefinition, validation, value)
+			: [];
+		if (msgs.length) {
+			setValidationMessages(msgs);
+			setData(
+				`Store.validations.${context.pageName}.${flattenUUID(definition.key)}`,
+				msgs.length ? msgs : undefined,
+				context.pageName,
+				true,
+			);
+		}
+		if (!msgs.length && value && uploadImmediatelyEvent) {
+			(async () =>
+				await runEvent(
+					uploadImmediatelyEvent,
+					key,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				))();
+		}
 
-		const msgs = validate(props.definition, props.pageDefinition, validation, value);
-		setValidationMessages(msgs);
-
-		setData(
-			`Store.validations.${context.pageName}.${flattenUUID(definition.key)}`,
-			msgs.length ? msgs : undefined,
-			context.pageName,
-			true,
-		);
 		return () =>
 			setData(
 				`Store.validations.${context.pageName}.${flattenUUID(definition.key)}`,
@@ -94,10 +105,7 @@ function FileUpload(props: ComponentProps) {
 		() =>
 			addListenerAndCallImmediately(
 				(_, value) => {
-					if (value === undefined || value === null) {
-						setValue(undefined);
-						return;
-					}
+					if (isNullValue(value)) return;
 					setValue(value);
 				},
 				pageExtractor,
@@ -111,7 +119,7 @@ function FileUpload(props: ComponentProps) {
 	const onChangeFile = (event: any) => {
 		if (!event.target.value?.length) return;
 		const files = event.target.files;
-		setData(bindingPathPath!, [...files], context?.pageName);
+		setData(bindingPathPath, [...files], context?.pageName);
 	};
 
 	const handleDelete = (event: any, content: any) => {
@@ -119,29 +127,6 @@ function FileUpload(props: ComponentProps) {
 		if (value?.length == 0) return;
 		value.splice(value.indexOf(content), 1);
 		setData(bindingPathPath, value, context?.pageName);
-	};
-
-	React.useEffect(() => {
-		if (value && selectionEvent) {
-			(async () =>
-				await runEvent(
-					selectionEvent,
-					key,
-					props.context.pageName,
-					props.locationHistory,
-					props.pageDefinition,
-				))();
-		}
-	}, [value]);
-
-	const returnFileSize = (number: number) => {
-		if (number < 1024) {
-			return number + 'bytes';
-		} else if (number > 1024 && number < 1048576) {
-			return (number / 1024).toFixed(1) + 'KB';
-		} else if (number > 1048576) {
-			return (number / 1048576).toFixed(1) + 'MB';
-		}
 	};
 
 	const comp = (
@@ -199,7 +184,7 @@ function FileUpload(props: ComponentProps) {
 
 	const labelComp = (
 		<label className="labelText" style={computedStyles?.label ?? {}}>
-			{label}
+			{subText}
 		</label>
 	);
 
