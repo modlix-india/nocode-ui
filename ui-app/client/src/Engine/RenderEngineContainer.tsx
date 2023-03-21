@@ -9,7 +9,7 @@ import {
 } from '../context/StoreContext';
 import * as getPageDefinition from './../definitions/getPageDefinition.json';
 import { runEvent } from '../components/util/runEvent';
-import { Components } from '../components';
+import ComponentDefinitions from '../components';
 import { processLocation } from '../util/locationProcessor';
 import { isNullValue } from '@fincity/kirun-js';
 
@@ -121,7 +121,7 @@ export const RenderEngineContainer = () => {
 		);
 	}, [currentPageName]);
 
-	const Page = Components.get('Page')!;
+	const Page = ComponentDefinitions.get('Page')!.component;
 
 	if (isNullValue(pageDefinition)) return <>...</>;
 
