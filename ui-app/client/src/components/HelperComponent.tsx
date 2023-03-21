@@ -1,10 +1,9 @@
 import React, { CSSProperties, MouseEvent, ReactNode, useEffect, useState } from 'react';
-import { ComponentDefinitions } from '.';
 import { DRAG_CD_KEY } from '../constants';
 import { getDataFromPath } from '../context/StoreContext';
 import { messageToMaster } from '../slaveFunctions';
 import { ComponentDefinition } from '../types/common';
-
+import ComponentDefinitions from '.';
 interface HelperComponentPropsType {
 	definition: ComponentDefinition;
 	children?: ReactNode;

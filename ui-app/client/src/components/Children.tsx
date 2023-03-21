@@ -16,7 +16,7 @@ import {
 } from '../context/StoreContext';
 import { useLocation } from 'react-router-dom';
 import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../constants';
-import { Components } from './index';
+import ComponentDefinitions from './index';
 import Nothing from './Nothing';
 import { isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
 import { getPathsFrom } from './util/getPaths';
@@ -109,7 +109,7 @@ function Children({
 			{defs
 				.map((e, i) => {
 					if (!e) return;
-					let Comp = Components.get(e!.type);
+					let Comp = ComponentDefinitions.get(e!.type)?.component;
 					if (!Comp) Comp = Nothing.component;
 					if (!Comp) return undefined;
 					if (e!.type === 'Page') {

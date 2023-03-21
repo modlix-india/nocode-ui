@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ComponentDefinitions } from '../components';
+import ComponentDefinitions from '../components';
 import { STORE_PATH_APP, STORE_PATH_STYLE_PATH, STORE_PATH_THEME_PATH } from '../constants';
 import { addListener } from '../context/StoreContext';
 import { Component, StyleResolution } from '../types/common';
