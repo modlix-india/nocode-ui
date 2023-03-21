@@ -104,11 +104,11 @@ export interface Component {
 	propertyValidation: (props: any) => Array<string>;
 	properties: Array<ComponentPropertyDefinition>;
 	styleProperties?: ComponentStylePropertyDefinition;
-	stylePseudoStates?: Array<String>;
-	numberOfChildren?: number;
-	allowedChildrenType?: Map<String, number>;
+	stylePseudoStates?: Array<string>;
+	allowedChildrenType?: Map<string, number>;
 	parentType?: string;
 	isHidden?: boolean;
+	defaultTemplate?: ComponentDefinition;
 	bindingPaths?: {
 		bindingPath?: { name: string };
 		bindingPath2?: { name: string };

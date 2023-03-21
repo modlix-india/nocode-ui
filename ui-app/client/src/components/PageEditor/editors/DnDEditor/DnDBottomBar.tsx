@@ -133,7 +133,7 @@ export default function DnDBottomBar({
 									onDrop={e => {
 										e.stopPropagation();
 										e.dataTransfer.items[0].getAsString(dragData =>
-											pageOperations.droppedOn(f, dragData),
+											pageOperations.droppedOn(f, dragData, true),
 										);
 									}}
 									onContextMenu={e => {
