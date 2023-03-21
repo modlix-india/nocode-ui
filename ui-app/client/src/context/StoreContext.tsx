@@ -164,8 +164,8 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 	if (path.startsWith(LOCAL_STORE_PREFIX)) {
 		if (!value) return;
 		let parts = path.split(TokenValueExtractor.REGEX_DOT);
-		// Add isSlave_ as prefix for preview mode
-		const key = parts[1];
+
+		const key = window.isDesignMode ? 'designmode_' + parts[1] : parts[1];
 		parts = parts.slice(2);
 		let store;
 		store = localStore.getItem(key);
@@ -205,7 +205,12 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 		window.pageEditor?.editingPageDefinition?.name &&
 		path === `${STORE_PREFIX}.pageDefinition.${window.pageEditor.editingPageDefinition.name}`
 	) {
-		_setData(path, window.pageEditor.editingPageDefinition);
+		_setData(
+			path,
+			window.pageEditor.editingPageDefinition.name !== value.name
+				? value
+				: window.pageEditor.editingPageDefinition,
+		);
 	} else _setData(path, value, deleteKey);
 
 	// console.log(duplicate(_store));

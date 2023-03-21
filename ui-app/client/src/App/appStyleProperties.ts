@@ -75,6 +75,13 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'form-input-border-color-focussed',
 		displayName: 'Form input border color when focussed',
 		description: 'This border color is used throughout form input controls when focussed.',
+		defaultValue: '#393A3C',
+		noPrefix: true,
+	},
+	{
+		name: 'form-input-border-color-hover',
+		displayName: 'Form input border color when hover',
+		description: 'This border color is used throughout form input controls when hover.',
 		defaultValue: '#2680EB',
 		noPrefix: true,
 	},

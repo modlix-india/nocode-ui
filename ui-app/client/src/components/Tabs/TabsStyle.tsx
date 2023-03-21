@@ -39,6 +39,10 @@ export default function TabsStyles({ theme }: { theme: Map<string, Map<string, s
 			display: flex;
 			letter-spacing: 0px;
 			white-space: nowrap;	
+			cursor: pointer;
+		}
+		${PREFIX} .tabButton.noIcon {
+			gap: 0;
 		}
 		
 		
