@@ -60,7 +60,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'max-width',
 		displayName: "Modal's max-width",
 		description: 'The max-width of the Modal.',
-		defaultValue: '80%',
+		defaultValue: '100%',
 		selector: '.modal',
 	},
 	{
@@ -76,7 +76,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'max-height',
 		displayName: "Modal's max-height",
 		description: 'The max-height of the Modal.',
-		defaultValue: '80%',
+		defaultValue: '100%',
 		selector: '.modal',
 	},
 	{
