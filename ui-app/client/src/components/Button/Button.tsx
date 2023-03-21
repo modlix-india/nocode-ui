@@ -145,6 +145,14 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['focus', 'hover', 'disabled'],
+	defaultTemplate: {
+		key: '',
+		name: 'button',
+		type: 'Button',
+		properties: {
+			label: { value: 'Button' },
+		},
+	},
 };
 
 export default component;

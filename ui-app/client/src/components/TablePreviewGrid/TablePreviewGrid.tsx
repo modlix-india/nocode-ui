@@ -138,7 +138,7 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleComponent: TablePreviewGridStyle,
 	stylePseudoStates: ['hover', 'focus', 'readonly'],
-	numberOfChildren: -1,
+	allowedChildrenType: new Map<string, number>([['', -1]]),
 	parentType: 'Table',
 };
 

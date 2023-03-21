@@ -152,7 +152,7 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleComponent: TabsStyles,
 	styleProperties: stylePropertiesDefinition,
-	numberOfChildren: -1,
+	allowedChildrenType: new Map<string, number>([['', -1]]),
 	stylePseudoStates: ['hover'],
 };
 
