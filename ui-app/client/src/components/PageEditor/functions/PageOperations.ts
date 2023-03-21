@@ -12,6 +12,11 @@ import NothingComponent from '../../Nothing';
 const base = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const baseDivisor = BigInt('' + base.length);
 
+interface ClipboardObject {
+	mainKey: string;
+	objects: { [key: string]: ComponentDefinition };
+}
+
 export default class PageOperations {
 	private defPath: string | undefined;
 	private locationHistory: Array<LocationHistory>;
@@ -47,6 +52,8 @@ export default class PageOperations {
 		if (!pageDef) return;
 
 		if (pageDef.rootComponent === compkey) {
+			// When a root component is delete we need to add a new grid so people can add components to it.
+			// It requires a confirmation if we can delete a grid that is root.
 			this.setIssue({
 				message:
 					'Deleting the root component will delete the entire screen. Do you want to delete?',
@@ -78,7 +85,9 @@ export default class PageOperations {
 				...pageDef,
 				componentDefinition: { ...(pageDef.componentDefinition ?? {}) },
 			};
+			// Delete the component that is selected or delete triggered on.
 			delete def.componentDefinition[compkey];
+			// Finding the parent component of the deleting component and removing it from its children.
 			let keys = Object.values(def.componentDefinition)
 				.filter(e => e.children?.[compkey])
 				.map(e => e.key);
@@ -103,20 +112,28 @@ export default class PageOperations {
 		if (!pageDef.componentDefinition) pageDef.componentDefinition = {};
 
 		if (droppedData.startsWith(DRAG_CD_KEY)) {
+			// When a component is dragged on to another in the same page.
 			const mainKey = droppedData.substring(DRAG_CD_KEY.length);
 			if (mainKey === componentKey || !this.defPath) return;
 
 			const obj = pageDef.componentDefinition[mainKey];
 			if (!obj) return;
+
+			// Finding the parent of the dropped component.
 			const sourceParent = Object.values(pageDef.componentDefinition).find(
 				e => e.children?.[mainKey],
 			);
 
+			// Force same parent is used to force the sorting in the bottom bar when the parent of
+			// dropped component and dropped on component.
 			if (forceSameParent && sourceParent?.children?.[componentKey]) {
+				// Finding the order of children keys and sorting them before adding the droppped
+				// key and it's order
 				let childrenOrder = Object.keys(sourceParent.children ?? {})
 					.map(e => pageDef.componentDefinition[e])
 					.map(e => ({ key: e.key, displayOrder: e.displayOrder }))
 					.sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
+				// Figuring out the current positions of the dropped on and dropped components.
 				let doPosition = -1;
 				let dpPosition = -1;
 				for (let i = 0; i < childrenOrder.length; i++) {
@@ -124,23 +141,35 @@ export default class PageOperations {
 					else if (childrenOrder[i].key === mainKey) dpPosition = i;
 				}
 
+				// Removing the component from the order
 				let x = childrenOrder.splice(dpPosition, 1);
+
+				// If the dropped component is coming from below the dropped on component
 				if (doPosition < dpPosition) doPosition--;
 				if (doPosition < 0) doPosition = 0;
+
+				// Adding it back into order in the right position
 				childrenOrder.splice(doPosition, 0, ...x);
+
+				// Generating the right displayOrder starting fromn 0
 				childrenOrder.forEach(
 					({ key }, i) => (pageDef.componentDefinition[key].displayOrder = i + 1),
 				);
 
+				// Then saving back to the store.
 				setData(this.defPath, pageDef, this.pageExtractor.getPageName());
 
 				return;
 			}
+
+			// If it is otherwise, not of same parent and no forcing same parent.
+			// Remove the object from the definition and remove from it's parent's children too.
 			delete pageDef.componentDefinition[mainKey];
 			if (sourceParent) {
 				delete sourceParent.children?.[mainKey];
 			}
 
+			// Call the drop on internal function to finish the job.
 			this._dropOn(
 				pageDef,
 				componentKey,
@@ -150,22 +179,39 @@ export default class PageOperations {
 				obj.displayOrder,
 			);
 		} else if (droppedData.startsWith(DRAG_COMP_NAME)) {
+			// If a component from the side bar is dragged.
+
 			const compName = droppedData.substring(DRAG_COMP_NAME.length);
 			const key = this.genId();
+
 			const obj = ComponentDefinitions.get(compName)?.defaultTemplate
 				? duplicate(ComponentDefinitions.get(compName)?.defaultTemplate)
 				: { name: compName, type: compName };
 			obj.key = key;
+
+			// Created the definition from the default template or create one with just the name and key.
 			this._dropOn(pageDef, componentKey, key, { [key]: obj });
 		}
 	}
 
 	public copy(componentKey: any) {
-		if (!ClipboardItem) return;
+		if (!ClipboardItem || !this.defPath || !componentKey) return;
+
+		let def: PageDefinition = getDataFromPath(
+			this.defPath,
+			this.locationHistory,
+			this.pageExtractor,
+		);
+
+		const pageDef: PageDefinition = duplicate(def);
+		// Prepare the copy object and write to the clipboard.
+		const cutObject: ClipboardObject = this._makeCutOrCopyObject(pageDef, componentKey, true);
 
 		navigator.clipboard.write([
 			new ClipboardItem({
-				'text/plain': new Blob([`${COPY_CD_KEY}${componentKey}`], { type: 'text/plain' }),
+				'text/plain': new Blob([COPY_CD_KEY + JSON.stringify(cutObject)], {
+					type: 'text/plain',
+				}),
 			}),
 		]);
 	}
@@ -181,6 +227,8 @@ export default class PageOperations {
 		if (!def) return;
 
 		if (componentKey === def.rootComponent) {
+			// If the root component is the one that get's cut, similar to delete we need a new
+			// root component to hold the components which requires a confirmation.
 			this.setIssue({
 				message:
 					'Cutting the root component will delete the entire screen. Do you want to cut?',
@@ -194,13 +242,30 @@ export default class PageOperations {
 							this.locationHistory,
 							this.pageExtractor,
 						);
-						const key = this.genId();
 						def = duplicate(def);
-						const obj = def.componentDefinition[componentKey];
+						// Here making the copy of the object to move it to clipboard.
+						const cutObject: {
+							mainKey: string;
+							objects: { [key: string]: ComponentDefinition };
+						} = this._makeCutOrCopyObject(def, componentKey, true);
+
+						const key = this.genId();
+						// Similar to delete we created a new root component.
 						def.rootComponent = key;
 						def.componentDefinition[key] = { key, name: 'Page Grid', type: 'Grid' };
+
+						// Also, if something is selected remove it from the selection.
 						this.onSelectedComponentChanged('');
 						setData(this.defPath, def, this.pageExtractor.getPageName());
+
+						// Copy to clipboard.
+						navigator.clipboard.write([
+							new ClipboardItem({
+								'text/plain': new Blob([CUT_CD_KEY + JSON.stringify(cutObject)], {
+									type: 'text/plain',
+								}),
+							}),
+						]);
 					},
 				},
 			});
@@ -208,20 +273,55 @@ export default class PageOperations {
 		}
 
 		const pageDef: PageDefinition = duplicate(def);
-		const obj = pageDef.componentDefinition[componentKey];
-		delete pageDef.componentDefinition[componentKey];
-		Object.values(pageDef.componentDefinition)
-			.filter(e => e.children?.[componentKey])
-			.filter(e => delete e.children?.[componentKey]);
+		// Just prepare the Clipboard object and no more fuss if it is not root component.
+		const cutObject: ClipboardObject = this._makeCutOrCopyObject(pageDef, componentKey, true);
 
 		setData(this.defPath, pageDef, this.pageExtractor.getPageName());
-		if (componentKey === this.selectedComponent) this.onSelectedComponentChanged('');
 
+		// Set the clipboard
 		navigator.clipboard.write([
 			new ClipboardItem({
-				'text/plain': new Blob([CUT_CD_KEY + JSON.stringify(obj)], { type: 'text/plain' }),
+				'text/plain': new Blob([CUT_CD_KEY + JSON.stringify(cutObject)], {
+					type: 'text/plain',
+				}),
 			}),
 		]);
+	}
+
+	private _makeCutOrCopyObject(
+		pageDef: PageDefinition,
+		componentKey: any,
+		deleteExisting: boolean = false,
+	) {
+		const obj = pageDef.componentDefinition[componentKey];
+		const cutObject: ClipboardObject = {
+			mainKey: obj.key,
+			objects: {},
+		};
+
+		// Adding the first object to the que to traverse the children tree.
+		// Delete existing is for cut. If this fuction is called from a cut function.
+		const que = new LinkedList<ComponentDefinition>();
+		que.add(obj);
+		const keySet = new Set<string>();
+		if (deleteExisting) delete pageDef.componentDefinition[componentKey];
+		while (que.size() > 0) {
+			const x = que.pop();
+			cutObject.objects[x.key] = x;
+			keySet.add(x.key);
+
+			if (!x.children) continue;
+			Object.keys(x.children).forEach(k => {
+				const e = pageDef.componentDefinition[k];
+				que.add(e);
+				if (deleteExisting) delete pageDef.componentDefinition[k];
+			});
+		}
+
+		// If we delete the component which is part of the tree and is selected then we remove the selection.
+		if (deleteExisting && this.selectedComponent && keySet.has(this.selectedComponent))
+			this.onSelectedComponentChanged('');
+		return cutObject;
 	}
 
 	public paste(componentKey: any) {
@@ -237,43 +337,69 @@ export default class PageOperations {
 			pageDef = duplicate(pageDef);
 			if (!pageDef.componentDefinition) pageDef.componentDefinition = {};
 
-			if (data.startsWith(CUT_CD_KEY)) {
-				const obj = JSON.parse(data.substring(CUT_CD_KEY.length));
-				if (!pageDef.componentDefinition[obj.key]) {
-					this._dropOn(pageDef, componentKey, obj.key, { [obj.key]: obj });
-					return;
-				} else {
-					data = COPY_CD_KEY + obj.key;
+			// This function called on pasting the component.
+			let clipObj: ClipboardObject | undefined;
+			try {
+				if (data.startsWith(CUT_CD_KEY)) {
+					clipObj = JSON.parse(data.substring(CUT_CD_KEY.length));
+				} else if (data.startsWith(COPY_CD_KEY)) {
+					clipObj = JSON.parse(data.substring(COPY_CD_KEY.length));
 				}
+			} catch (err) {}
+
+			if (!clipObj) return;
+
+			// Since we can paste from copy, the keys will already there in the definition.
+			// We need to change keys. If we cut there won't these keys and can continue with pasting.
+			// If we paste twice from a cut, there will be already there in the definition.
+			if (this._hasAtleastOneKey(pageDef, clipObj)) {
+				clipObj = this._changeKeys(clipObj);
 			}
 
-			if (data.startsWith(COPY_CD_KEY)) {
-				const que = new LinkedList<{ key: string; parent: string | undefined }>();
-				let mainKey = data.substring(COPY_CD_KEY.length);
-				que.add({ key: mainKey, parent: undefined });
-				const newComps: { [key: string]: ComponentDefinition } = {};
-
-				while (que.size() > 0) {
-					const current = que.pop();
-					const obj: ComponentDefinition = duplicate(
-						pageDef.componentDefinition[current.key],
-					);
-					obj.key = this.genId();
-					if (!current.parent) mainKey = obj.key;
-					else if (current.parent && newComps[current.parent]?.children)
-						newComps[current.parent].children![obj.key] = true;
-					newComps[obj.key] = obj;
-
-					if (!obj.children) continue;
-					Object.entries(obj.children)
-						.filter(([, show]: [string, boolean]) => show)
-						.forEach(([key]: [string, boolean]) => que.push({ key, parent: obj.key }));
-					obj.children = {};
-				}
-
-				this._dropOn(pageDef, componentKey, mainKey, newComps);
-			}
+			// Once the clipboard object is sorted and keys are changed if required we move ahead with
+			// pasting / dropping.
+			this._dropOn(pageDef, componentKey, clipObj.mainKey, clipObj.objects);
 		});
+	}
+
+	private _changeKeys(clipObj: ClipboardObject): ClipboardObject {
+		const newObj: ClipboardObject = { mainKey: '', objects: {} };
+		const index: { [key: string]: string } = {};
+
+		// All the objects will get new keys and set in the newObj.objects.
+		// Also added index with the old key to new key.
+		for (const obj of Object.values(clipObj.objects)) {
+			const x = duplicate(obj);
+			const newKey = this.genId();
+			index[x.key] = newKey;
+			x.key = newKey;
+			newObj.objects[newKey] = x;
+		}
+
+		// Change the main key from the set of the new keys generated.
+		newObj.mainKey = index[clipObj.mainKey];
+
+		// Reset all children keys from the index that is generated earlier.
+		Object.values(newObj.objects).forEach(e => {
+			if (!e.children) return;
+			e.children = Object.entries(e.children)
+				.map(x => ({ key: index[x[0]], value: x[1] }))
+				.reduce((a, c) => {
+					a[c.key] = c.value;
+					return a;
+				}, {} as { [key: string]: boolean });
+		});
+
+		return newObj;
+	}
+
+	private _hasAtleastOneKey(pageDef: PageDefinition, clipObj: ClipboardObject): boolean {
+		// This function checks if the clipboard object keys are already part of the definition.
+		if (pageDef.componentDefinition[clipObj.mainKey]) return true;
+
+		// Checking each key in the clipboard object.
+		for (let str of Object.keys(clipObj)) if (pageDef.componentDefinition[str]) return true;
+		return false;
 	}
 
 	private _dropOn(
@@ -292,6 +418,7 @@ export default class PageOperations {
 		let doCompComponent = ComponentDefinitions.get(doComp.type);
 		const dpCompComponent = ComponentDefinitions.get(dpComp.type);
 
+		// Check if the the component being dropped and dropped are in the valid format.
 		if (!doComp || !dpComp) {
 			this.setIssue({
 				message: 'Error in finding the right component to paste/drop',
@@ -301,6 +428,7 @@ export default class PageOperations {
 			return;
 		}
 
+		// Checking if the component defintion of component is valid.
 		if (!doCompComponent || !dpCompComponent) {
 			this.setIssue({
 				message: 'Wrong component type is pasted/dropped',
@@ -314,9 +442,13 @@ export default class PageOperations {
 		let sameParent = false;
 
 		if (!doCompComponent.allowedChildrenType) {
+			// If the component that is being dropped on is not a component which can have children.
 			droppedOnPosition = doComp.displayOrder ?? -1;
+			// Finding the parent of the droppped on component so the dropped component can
+			// be part of the same component.
 			doComp = Object.values(pageDef.componentDefinition).find(e => e.children?.[onKey]);
 
+			// If the parent is not found or the component definition of the parent type is not found.
 			if (!doComp || !ComponentDefinitions.get(doComp.type)) {
 				this.setIssue({
 					message: 'Error in finding the right component to paste/drop',
@@ -326,6 +458,7 @@ export default class PageOperations {
 				return;
 			}
 
+			// See if the dropped or dropped on component are from the same parent.
 			sameParent = doComp.key === sourceParent;
 		}
 
@@ -336,12 +469,16 @@ export default class PageOperations {
 
 			let allowedChildCount = doCompComponent.allowedChildrenType.get('');
 			let isGenericChild = true;
+
 			if (isNullValue(allowedChildCount)) {
+				// If the the component type don't allow all children
 				allowedChildCount = doCompComponent.allowedChildrenType.get(doComp.type);
 				isGenericChild = false;
 			}
 
 			if (isNullValue(allowedChildCount)) {
+				// If it cannot contain the type of the child dropped show the message what
+				// are the valid children.
 				this.setIssue({
 					message: `${doCompComponent.displayName} cannot contain ${
 						dpCompComponent.displayName
@@ -360,6 +497,8 @@ export default class PageOperations {
 			}
 
 			if (dpCompComponent.parentType && doCompComponent.name !== dpCompComponent.parentType) {
+				// If there is a parent restriction like the allowed children. We have to
+				// show it is not allowed.
 				this.setIssue({
 					message: `${dpCompComponent.displayName} cannot be part of ${
 						doCompComponent.displayName
@@ -374,12 +513,14 @@ export default class PageOperations {
 			}
 
 			if (allowedChildCount !== -1) {
+				// Counting the number of children if there is a restriction.
 				let count = isGenericChild
 					? Object.keys(doComp.children).length
 					: Object.keys(doComp.children).filter(
 							e => pageDef.componentDefinition[e].type === dpComp.type,
 					  ).length;
 				if (count >= allowedChildCount!) {
+					// If there is a count restriction we need a confirmation to replace the existing ones.
 					this.setIssue({
 						message: `${doCompComponent.displayName} allows ${allowedChildCount} ${
 							isGenericChild ? '' : `of type ${dpCompComponent.displayName} as`
@@ -397,7 +538,7 @@ export default class PageOperations {
 										this.pageExtractor,
 									),
 								);
-
+								// Clean children and add the new ones.
 								let removeChildren = isGenericChild
 									? Object.keys(doComp.children ?? {})
 									: Object.keys(doComp.children ?? {}).filter(
@@ -435,6 +576,7 @@ export default class PageOperations {
 				sameParent ? sourceDisplayOrder : undefined,
 			);
 		} else {
+			//If for some reason the dropped on component cannot have children.
 			this.setIssue({
 				message: `Cannot paste/drop ${dpCompComponent.displayName} on ${doCompComponent?.displayName}.`,
 				options: ['Ok'],
@@ -454,16 +596,23 @@ export default class PageOperations {
 		comps: { [key: string]: ComponentDefinition },
 		droppedCompPosition?: number,
 	) {
+		// Creating the children order to update the new order.
 		let childrenOrder = Object.keys(doComp.children ?? {})
 			.map(e => pageDef.componentDefinition[e])
 			.map(e => ({ key: e.key, displayOrder: e.displayOrder }))
 			.sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
 
 		if (droppedOnPosition === -1 || !childrenOrder.length) {
+			// If the droppedOnPosition is -1 i.e. when dropped on a parent but not a
+			// non child type. We have to add the component to the end of the list.
 			dpComp.displayOrder = childrenOrder.length
 				? Math.max(...childrenOrder.map(e => e.displayOrder ?? 0)) + 1
 				: 0;
 		} else {
+			// To put the droppedComponent in the right position we need to find it's
+			// positon and add it just above or below the droppedOnComponent.
+			// If the dropped component is from below, it is added above the dropped on component
+			// and vice versa.
 			let ind = childrenOrder.findIndex(e => e.displayOrder === droppedOnPosition);
 			if (ind === -1) {
 				childrenOrder.push({ key: dpComp.key, displayOrder: dpComp.displayOrder });
@@ -482,6 +631,7 @@ export default class PageOperations {
 		doComp.children[dpComp.key] = true;
 		pageDef.componentDefinition = { ...pageDef.componentDefinition, ...comps };
 
+		// The new set of children will have the new order staring from 1
 		childrenOrder.forEach(
 			({ key }, i) => (pageDef.componentDefinition[key].displayOrder = i + 1),
 		);
