@@ -1,3 +1,5 @@
+import { PageDefinition } from './types/common';
+
 export const isSlave = (() => {
 	try {
 		return window.self !== window.top;

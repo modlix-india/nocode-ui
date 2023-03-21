@@ -1,5 +1,11 @@
 import React from 'react';
-import { ComponentDefinition, DataLocation, LocationHistory, RenderContext } from '../types/common';
+import {
+	ComponentDefinition,
+	DataLocation,
+	LocationHistory,
+	PageDefinition,
+	RenderContext,
+} from '../types/common';
 import {
 	addListener,
 	getData,
@@ -17,6 +23,7 @@ import { getPathsFrom } from './util/getPaths';
 import { processLocation } from '../util/locationProcessor';
 import { flattenUUID } from './util/uuid';
 import duplicate from '../util/duplicate';
+import PageComponentDefinition from './Page/Page';
 
 const getOrLoadPageDefinition = (location: any) => {
 	let { pageName } = processLocation(location);
@@ -42,7 +49,7 @@ function Children({
 	context,
 	locationHistory,
 }: {
-	pageDefinition: any;
+	pageDefinition: PageDefinition;
 	children: any;
 	context: RenderContext;
 	locationHistory: Array<LocationHistory>;
@@ -101,26 +108,29 @@ function Children({
 		<>
 			{defs
 				.map((e, i) => {
-					let comp = Components.get(e!.type);
-					if (!comp) comp = Nothing.component;
-					if (!comp) return undefined;
+					if (!e) return;
+					let Comp = Components.get(e!.type);
+					if (!Comp) Comp = Nothing.component;
+					if (!Comp) return undefined;
 					if (e!.type === 'Page') {
 						const pageDef = getOrLoadPageDefinition(location);
 						if (pageDef)
-							return React.createElement(comp, {
-								definition: pageDef,
-								pageComponentDefinition: e,
-								key: pageDef.name,
-								context: { pageName: pageDef.name },
-								locationHistory: [],
-							});
+							return (
+								<PageComponentDefinition.component
+									definition={e}
+									pageDefinition={pageDef}
+									key={pageDef.name}
+									context={{ pageName: pageDef.name }}
+									locationHistory={[]}
+								/>
+							);
 						else return undefined;
 					}
 					const fKey = flattenUUID(e?.key);
 					const ctx = validationTriggers[fKey]
 						? { ...context, showValidationMessages: true }
 						: context;
-					const rComp = React.createElement(comp, {
+					const rComp = React.createElement(Comp, {
 						definition: e,
 						key: e!.key,
 						pageDefinition: pageDefinition,
