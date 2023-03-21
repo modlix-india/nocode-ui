@@ -12,6 +12,7 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { deepEqual, ExpressionEvaluator } from '@fincity/kirun-js';
 import { getExtractionMap } from '../util/getRenderData';
 import CommonCheckbox from '../../commonComponents/CommonCheckbox';
+import duplicate from '../../util/duplicate';
 
 function TableColumnsComponent(props: ComponentProps) {
 	const [value, setValue] = useState([]);
@@ -33,7 +34,7 @@ function TableColumnsComponent(props: ComponentProps) {
 		);
 
 	const newPageDef = useMemo(() => {
-		const np = JSON.parse(JSON.stringify(pageDefinition));
+		const np = duplicate(pageDefinition);
 		Object.keys(children ?? {})
 			.map(k => np?.componentDefinition[k])
 			.filter(e => e?.type === 'TableColumn')
@@ -43,7 +44,7 @@ function TableColumnsComponent(props: ComponentProps) {
 
 	const colPageDef = useMemo(() => {
 		if (!showEmptyRows) return pageDefinition;
-		const np = JSON.parse(JSON.stringify(pageDefinition));
+		const np = duplicate(pageDefinition);
 		Object.keys(children ?? {})
 			.map(k => np?.componentDefinition[k])
 			.filter(e => e?.type === 'TableColumn')
@@ -104,9 +105,7 @@ function TableColumnsComponent(props: ComponentProps) {
 		if (selectionType === 'NONE' || !selectionBindingPath) return;
 
 		const putObj =
-			selectionType === 'OBJECT'
-				? JSON.parse(JSON.stringify(data[index]))
-				: `(${dataBindingPath})[${index}]`;
+			selectionType === 'OBJECT' ? duplicate(data[index]) : `(${dataBindingPath})[${index}]`;
 
 		if (multiSelect) {
 			let x = selection ? [...selection] : [];
@@ -235,6 +234,7 @@ function TableColumnsComponent(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-table-columns',
 	name: 'TableColumns',
 	displayName: 'Table Columns',
 	description: 'Table Columns component',
@@ -242,7 +242,6 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TableColumnsStyle,
-	hasChildren: true,
 	allowedChildrenType: new Map([['TableColumn', -1]]),
 	parentType: 'Table',
 	stylePseudoStates: ['hover'],

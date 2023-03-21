@@ -10,79 +10,99 @@ export default function DropdownStyle({ theme }: { theme: Map<string, Map<string
     ${PREFIX} {
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 4px;
+        margin-top:1rem;
      }
-    ${PREFIX} .headerText {
-        font-family: san-sarif;
-        font-size: 14px;
-        font-weight: 700;
-    }
-    ${PREFIX} .headerText.disabled {
-        opacity: 60%;
-    }
+     ${PREFIX} .label {
+        cursor: text;
+     }
+
     ${PREFIX} .container {
         position: relative;
-        min-width: 120px;
-        width : 100%;
-        height: 56px;
+        min-width: 35%;
         cursor: pointer;
-        padding: 0 16px;
-        border: 1px solid #C7C8D6;
-        border-radius: 4px;
+        z-index: 1;
     }
-    ${PREFIX} .container:hover {
-        border-color: #2680EB;
-    }
-    ${PREFIX} .container:hover.disabled {
-        border-color: #C7C8D6;
+
+    ${PREFIX} .container.disabled {
         cursor: not-allowed;
     }
-    ${PREFIX} .container.onFocus {
-        border-color: #2680EB;
+
+    ${PREFIX} .container.disabled:hover {
+        cursor: not-allowed;
     }
-    ${PREFIX} .container .labelcontainer {
+
+    ${PREFIX} .searchContainer {
         width: 100%;
         height: 100%;
         display: flex;
         justify-content: space-between;
         align-items: center
     }
-    ${PREFIX} .container .labelcontainer.disabled {
-        cursor: not-allowed;
-        opacity: 60%;
+
+    ${PREFIX} .searchBox {
+        border: none;
+        width: 100%;
+        height: 100%;
+        border-radius: 4px;
+        outline: none;
     }
-    ${PREFIX} .container .labelcontainer .label {
-        font-family: san-sarif;
-        font-size: 16px;
-        font-weight: 400;
+    
+    ${PREFIX} .placeholderContainer {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center
+    }
+
+    ${PREFIX} .container.disabled .placeholderContainer {
+        cursor: not-allowed;
+    }
+
+    ${PREFIX} .placeholder {
         cursor: pointer;
     }
-    ${PREFIX} .container .labelcontainer .label.disabled {
+
+    ${PREFIX} .container.disabled .placeholder {
         cursor: not-allowed;
-        opacity: 60%;
     }
-    ${PREFIX} .container .dropdowncontainer {
+
+    ${PREFIX} .labelFloat { 
+        position: absolute;
+        letter-spacing: 0px;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        transition: top 100ms, transform 100ms ease-in;
+        cursor: text;
+    }
+    
+    ${PREFIX} .labelFloat.float { 
+        top: 0;
+        left: 16px;
+        transform: translateY(-55%);
+        background-color: #FFF;
+    }
+
+    ${PREFIX} .container.disabled .labelFloat {
+        cursor: not-allowed;
+    }
+
+    ${PREFIX} .dropdownContainer {
         position: absolute;
         left: 0;
-        top: 56px;
-        width: 100%;
-        min-width: 120px;
-        box-shadow: 0 4px 6px 1px rgba(0, 0, 0, 0.1);
-        padding: 12px 0;
-        z-index : 10;
+        top: 100%;
+        overflow-y: auto;
+        margin-top: 1px;
     }
-    ${PREFIX} .container .dropdowncontainer .dropdownItem {
-        font-family: san-sarif;
-        font-size: 16px;
-        font-weight: 400;
+
+    ${PREFIX} .dropdownItem {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         cursor: pointer;
-        padding: 8px 0;
-        padding-left: 16px;
     }
-    ${PREFIX} .container .dropdowncontainer .dropdownItem:hover {
-        background-color: #F4F6F6;
-    }
-		
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="DropdownCss">{css}</style>;

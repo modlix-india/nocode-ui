@@ -135,6 +135,7 @@ function ButtonComponent(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-rectangle-ad',
 	name: 'Button',
 	displayName: 'Button',
 	description: 'Button component',
@@ -144,6 +145,14 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['focus', 'hover', 'disabled'],
+	defaultTemplate: {
+		key: '',
+		name: 'button',
+		type: 'Button',
+		properties: {
+			label: { value: 'Button' },
+		},
+	},
 };
 
 export default component;

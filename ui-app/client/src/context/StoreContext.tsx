@@ -12,6 +12,7 @@ import { PathExtractor } from '../components/util/getPaths';
 import { LocalStoreExtractor } from './LocalStoreExtractor';
 import { ParentExtractor } from './ParentExtractor';
 import { ThemeExtractor } from './ThemeExtractor';
+import duplicate from '../util/duplicate';
 
 export class StoreExtractor extends TokenValueExtractor {
 	private store: any;
@@ -49,7 +50,7 @@ const {
 } = useStore({}, STORE_PREFIX, localStoreExtractor, themeExtractor);
 themeExtractor.setStore(_store);
 
-globalThis.getStore = () => JSON.parse(JSON.stringify(_store));
+globalThis.getStore = () => duplicate(_store);
 
 export const storeExtractor = new StoreExtractor(_store, `${STORE_PREFIX}.`);
 
@@ -58,7 +59,7 @@ export const dotPathBuilder = (
 	locationHistory: Array<LocationHistory>,
 	...tve: TokenValueExtractor[]
 ) => {
-	if (origPath.indexOf('Parent.') === -1) return origPath;
+	if (origPath.indexOf('Parent.') === -1 || !locationHistory.length) return origPath;
 
 	const retSet: Set<string> = new Set();
 	let ex = new ExpressionEvaluator(origPath);
@@ -156,6 +157,8 @@ export function getDataFromPath(
 	return _getData(dotPathBuilder(path, locationHistory), ...tve);
 }
 
+export const innerSetData = _setData;
+
 export function setData(path: string, value: any, context?: string, deleteKey?: boolean) {
 	// console.log(path, value);
 	if (path.startsWith(LOCAL_STORE_PREFIX)) {
@@ -196,9 +199,16 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 			value,
 			deleteKey,
 		);
+	} else if (
+		window.isDesignMode &&
+		window.designMode === 'PAGE' &&
+		window.pageEditor?.editingPageDefinition?.name &&
+		path === `${STORE_PREFIX}.pageDefinition.${window.pageEditor.editingPageDefinition.name}`
+	) {
+		_setData(path, window.pageEditor.editingPageDefinition);
 	} else _setData(path, value, deleteKey);
 
-	// console.log(JSON.parse(JSON.stringify(_store)));
+	// console.log(duplicate(_store));
 }
 
 export class PageStoreExtractor extends TokenValueExtractor {

@@ -96,6 +96,7 @@ export interface ComponentStylePropertyDefinition {
 
 export interface Component {
 	name: string;
+	icon: string;
 	displayName: string;
 	description: string;
 	component: React.ElementType;
@@ -103,12 +104,11 @@ export interface Component {
 	propertyValidation: (props: any) => Array<string>;
 	properties: Array<ComponentPropertyDefinition>;
 	styleProperties?: ComponentStylePropertyDefinition;
-	stylePseudoStates?: Array<String>;
-	hasChildren?: boolean;
-	numberOfChildren?: number;
-	allowedChildrenType?: Map<String, number>;
+	stylePseudoStates?: Array<string>;
+	allowedChildrenType?: Map<string, number>;
 	parentType?: string;
 	isHidden?: boolean;
+	defaultTemplate?: ComponentDefinition;
 	bindingPaths?: {
 		bindingPath?: { name: string };
 		bindingPath2?: { name: string };
@@ -190,6 +190,7 @@ export interface ComponentStyle {
 
 export interface ComponentDefinition {
 	key: string;
+	name: string;
 	bindingPath?: DataLocation;
 	bindingPath2?: DataLocation;
 	bindingPath3?: DataLocation;
@@ -217,6 +218,9 @@ export interface ComponentDefinitionValues {
 
 export interface PageDefinition {
 	name: string;
+	appCode: string;
+	clientCode: string;
+	baseClientCode: string | undefined;
 	eventFunctions: {
 		[key: string]: any;
 	};

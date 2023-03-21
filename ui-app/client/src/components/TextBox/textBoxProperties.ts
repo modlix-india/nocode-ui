@@ -28,7 +28,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
 		displayName: 'No Float Label',
 		description: 'Textbox without floating label.',
-		translatable: true,
 		defaultValue: false,
 	},
 
@@ -121,15 +120,41 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
+		name: 'messageDisplay',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'Messages display type',
+		description: 'How messages should be displayed.',
+		editor: ComponentPropertyEditor.ENUM,
+		defaultValue: '_floatingMessages',
+		enumValues: [
+			{
+				name: '_floatingMessages',
+				displayName: 'Floating messages',
+				description: 'Messages will float below the inputbox',
+			},
+			{
+				name: '_fixedMessages',
+				displayName: 'Fixed height for messages',
+				description: 'Messages will appear in a fixed height container',
+			},
+			{
+				name: '_nonFixedMessages',
+				displayName: 'No Fixed height for messages.',
+				description: 'This will increase size of container as it adds messages',
+			},
+		],
+	},
+
+	{
 		name: 'valueType',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: 'Value Type',
 		description: 'Type of the Value',
-		defaultValue: 'STRING',
+		defaultValue: 'text',
 		editor: ComponentPropertyEditor.ENUM,
 		enumValues: [
-			{ name: 'STRING', displayName: 'Text', description: 'Javascript String type' },
-			{ name: 'NUMBER', displayName: 'Number', description: 'Javascript Number type' },
+			{ name: 'text', displayName: 'Text', description: 'Javascript String type' },
+			{ name: 'number', displayName: 'Number', description: 'Javascript Number type' },
 		],
 	},
 

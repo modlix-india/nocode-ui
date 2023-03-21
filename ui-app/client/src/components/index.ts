@@ -30,6 +30,7 @@ import ProgressBar from './ProgressBar/ProgressBar';
 import FileUpload from './FileUpload/FileUpload';
 import SubPage from './SubPage/SubPage';
 import PageEditor from './PageEditor/PageEditor';
+import { Component } from '../types/common';
 
 export const Components = new Map<string, React.ElementType>([
 	[Button.name, Button.component],
