@@ -116,7 +116,10 @@ function TabsComponent(props: ComponentProps) {
 						}
 						onClick={() => handleClick(e)}
 					>
-						<button style={resolvedStyles.button ?? {}} className={`tabButton`}>
+						<button
+							style={resolvedStyles.button ?? {}}
+							className={`tabButton ${iconTags.length === 0 ? 'noIcon' : ''}`}
+						>
 							<i className={iconTags[i]}></i>
 							{getTranslations(e, pageDefinition.translations)}
 						</button>

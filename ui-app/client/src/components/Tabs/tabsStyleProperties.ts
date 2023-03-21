@@ -34,6 +34,14 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.tabsContainer',
 	},
 	{
+		name: 'tabsContainerWidthWhenVertical',
+		cssProperty: 'width',
+		displayName: 'Tab container width when vertical',
+		description: 'This property specifies the width of container when vrtical',
+		defaultValue: 'auto',
+		selector: '.tabsContainer.vertical',
+	},
+	{
 		name: 'tabsContainerPaddingWhenVertical',
 		cssProperty: 'padding',
 		displayName: 'Tab Button Padding',
