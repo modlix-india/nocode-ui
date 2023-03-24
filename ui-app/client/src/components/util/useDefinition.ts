@@ -1,6 +1,6 @@
 import { isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
 import { useEffect, useState } from 'react';
-import { SCHEMA_REF_VALIDATION, STORE_PREFIX } from '../../constants';
+import { SCHEMA_VALIDATION, STORE_PREFIX } from '../../constants';
 import {
 	addListener,
 	getData,
@@ -33,7 +33,7 @@ function createNewState(
 	const def: ComponentDefinitionValues = { key: definition.key };
 	def.properties = properties
 		.map(e => {
-			if (e.schema.getRef() === SCHEMA_REF_VALIDATION) {
+			if (e.schema.getRef() === SCHEMA_VALIDATION) {
 				return [
 					e.name,
 					Object.values(definition?.properties?.[e.name] ?? {}).map(evalidation =>

@@ -1,8 +1,8 @@
 import { Schema } from '@fincity/kirun-js';
 import {
-	SCHEMA_REF_BOOL_COMP_PROP,
-	SCHEMA_REF_DATA_LOCATION,
-	SCHEMA_REF_STRING_COMP_PROP,
+	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_DATA_LOCATION,
+	SCHEMA_STRING_COMP_PROP,
 } from '../../constants';
 import {
 	ComponentPropertyDefinition,
@@ -15,7 +15,7 @@ import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '.
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'theme',
-		schema: Schema.ofBoolean(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: Schema.ofBoolean(SCHEMA_BOOL_COMP_PROP),
 		displayName: 'Theme',
 		editor: ComponentPropertyEditor.ENUM,
 		description: 'Editor color schemes',
@@ -36,14 +36,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'logo',
-		schema: Schema.ofString(SCHEMA_REF_STRING_COMP_PROP),
+		schema: Schema.ofString(SCHEMA_STRING_COMP_PROP),
 		displayName: 'SVG logo',
 		description: 'SVG Logo with no fill to match the theme',
 	},
 
 	{
 		name: 'onSave',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'On Save',
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		description: 'Event to be triggered on page save.',
@@ -51,7 +51,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'onChangePersonalization',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'On Personalization Change',
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		description: 'Event to be triggered on personalization changed.',
@@ -59,7 +59,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'onDeletePersonalization',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'On Personalization Delete',
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		description: 'Event to be triggered on personalization cleared.',

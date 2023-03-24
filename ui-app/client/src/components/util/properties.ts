@@ -1,5 +1,4 @@
-import { Schema } from '@fincity/kirun-js';
-import { SCHEMA_REF_BOOL_COMP_PROP, SCHEMA_REF_STRING_COMP_PROP } from '../../constants';
+import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
@@ -10,28 +9,28 @@ import {
 const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition } = {
 	onClick: {
 		name: 'onClick',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'On Click',
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		description: 'Event to be triggered when clicked.',
 	},
 	onSelect: {
 		name: 'onSelect',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'On Select',
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		description: 'Event to be triggered when selection.',
 	},
 	onEnter: {
 		name: 'onEnter',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'On Enter',
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		description: 'Event to be triggered when enter is pressed.',
 	},
 	label: {
 		name: 'label',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Label',
 		description: 'Label to be displayed',
 		translatable: true,
@@ -39,14 +38,14 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 	},
 	readOnly: {
 		name: 'readOnly',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Read Only',
 		description: 'This component will be rendered un editable when this property is true.',
 		group: ComponentPropertyGroup.COMMON,
 	},
 	visibility: {
 		name: 'visibility',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Visibility',
 		description: 'This component will be hidden when this property is true.',
 		group: ComponentPropertyGroup.COMMON,

@@ -1,8 +1,8 @@
 import { Schema } from '@fincity/kirun-js';
 import {
-	SCHEMA_REF_BOOL_COMP_PROP,
-	SCHEMA_REF_DATA_LOCATION,
-	SCHEMA_REF_STRING_COMP_PROP,
+	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_DATA_LOCATION,
+	SCHEMA_STRING_COMP_PROP,
 } from '../../constants';
 import {
 	ComponentPropertyDefinition,
@@ -15,7 +15,7 @@ import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '.
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'layout',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Layout',
 		description: 'Name of the layout',
 		editor: ComponentPropertyEditor.LAYOUT,
@@ -54,7 +54,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'containerType',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Container Type (SEO)',
 		description: 'container type for seo optimization',
 		editor: ComponentPropertyEditor.ENUM,
@@ -72,7 +72,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'background',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Background',
 		description: 'Background to be applied',
 		editor: ComponentPropertyEditor.BACKGROUND,

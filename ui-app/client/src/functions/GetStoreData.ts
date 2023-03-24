@@ -8,7 +8,7 @@ import {
 	Parameter,
 	Schema,
 } from '@fincity/kirun-js';
-import { NAMESPACE_UI_ENGINE, SCHEMA_REF_DATA_LOCATION } from '../constants';
+import { NAMESPACE_UI_ENGINE, SCHEMA_DATA_LOCATION } from '../constants';
 import { getData, getDataFromPath } from '../context/StoreContext';
 
 const SIGNATURE = new FunctionSignature('GetStoreData')

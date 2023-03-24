@@ -1,3 +1,5 @@
+import { Schema, SchemaType } from '@fincity/kirun-js';
+
 export interface ButtonProps {}
 
 export interface GridProps {}
@@ -20,13 +22,21 @@ export const STORE_PATH_APP = 'Store.application';
 export const STORE_PATH_MESSAGES = 'Store.messages';
 export const STORE_PATH_APP_MESSAGE_TIMEOUT = 'Store.application.properties.messageTimeout';
 
-export const SCHEMA_REF_DATA_LOCATION = `${NAMESPACE_UI_ENGINE}.DataLocation`;
-export const SCHEMA_REF_VALIDATION_TYPE = `${NAMESPACE_UI_ENGINE}.ValidationType`;
-export const SCHEMA_REF_VALIDATION = `${NAMESPACE_UI_ENGINE}.Validation`;
-export const SCHEMA_REF_BOOL_COMP_PROP = `${NAMESPACE_UI_ENGINE}.BooleanComponentProperty`;
-export const SCHEMA_REF_STRING_COMP_PROP = `${NAMESPACE_UI_ENGINE}.StringComponentProperty`;
-export const SCHEMA_REF_NUM_COMP_PROP = `${NAMESPACE_UI_ENGINE}.NumberComponentProperty`;
-export const SCHEMA_REF_ANY_COMP_PROP = `${NAMESPACE_UI_ENGINE}.AnyComponentProperty`;
+export const SCHEMA_DATA_LOCATION = Schema.ofRef(`${NAMESPACE_UI_ENGINE}.DataLocation`);
+export const SCHEMA_VALIDATION_TYPE = Schema.of(`${NAMESPACE_UI_ENGINE}.ValidationType`);
+export const SCHEMA_VALIDATION = Schema.of(`${NAMESPACE_UI_ENGINE}.Validation`);
+
+export const SCHEMA_BOOL_COMP_PROP = Schema.of(SchemaType.BOOLEAN)
+	.setName('BooleanComponentProperty')
+	.setNamespace(NAMESPACE_UI_ENGINE);
+export const SCHEMA_STRING_COMP_PROP = Schema.of(SchemaType.STRING)
+	.setName('StringComponentProperty')
+	.setNamespace(NAMESPACE_UI_ENGINE);
+export const SCHEMA_NUM_COMP_PROP = Schema.of(SchemaType.INTEGER)
+	.setName('NumberComponentProperty')
+	.setNamespace(NAMESPACE_UI_ENGINE);
+export const SCHEMA_ANY_COMP_PROP =
+	Schema.ofAny('AnyComponentProperty').setNamespace(NAMESPACE_UI_ENGINE);
 
 export const EMPTY_STRING = '';
 
