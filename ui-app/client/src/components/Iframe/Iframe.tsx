@@ -10,16 +10,12 @@ import IframeStyle from './IframeStyle';
 
 function Iframe(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
-	const {
-		definition: { bindingPath },
-		locationHistory,
-		context,
-		definition,
-		pageDefinition: { translations },
-	} = props;
+	const { locationHistory, definition } = props;
 	const {
 		key,
+		stylePropertiesWithPseudoStates,
 		properties: {
+			readOnly: isReadonly = false,
 			width,
 			height,
 			srcdoc,
@@ -51,12 +47,16 @@ function Iframe(props: ComponentProps) {
 				props.pageDefinition,
 			))();
 	};
-
+	const resolvedStyles = processComponentStylePseudoClasses(
+		{ disabled: isReadonly },
+		stylePropertiesWithPseudoStates,
+	);
 	return (
-		<div className="comp compIframe">
+		<div className="comp compIframe" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />
 			<iframe
-				className="comp"
+				className="iframe"
+				style={resolvedStyles.iframe ?? {}}
 				width={width}
 				src={src}
 				height={height}
@@ -67,6 +67,7 @@ function Iframe(props: ComponentProps) {
 				referrerPolicy={referrerpolicy}
 				allowFullScreen={allowfullscreen}
 				srcDoc={srcdoc}
+				onClick={handleClick}
 			></iframe>
 		</div>
 	);

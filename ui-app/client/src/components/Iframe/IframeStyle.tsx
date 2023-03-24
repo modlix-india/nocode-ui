@@ -9,9 +9,12 @@ export default function IframeStyle({ theme }: { theme: Map<string, Map<string, 
 	const css =
 		`
     ${PREFIX}{
-  
-    width:100%;
-    height:100%;
+        display: flex;
+    
+    }
+    ${PREFIX} iframe{
+        flex:1;
+        height:100%;
     }
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 	return <style id="IframeCss">{css}</style>;
