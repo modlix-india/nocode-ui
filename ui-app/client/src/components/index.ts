@@ -30,6 +30,7 @@ import ProgressBar from './ProgressBar/ProgressBar';
 import SubPage from './SubPage/SubPage';
 import PageEditor from './PageEditor/PageEditor';
 import { Component } from '../types/common';
+import Iframe from './Iframe/Iframe';
 
 export default new Map<string, Component>([
 	[Button.name, Button],
@@ -63,4 +64,5 @@ export default new Map<string, Component>([
 	[ProgressBar.name, ProgressBar],
 	[SubPage.name, SubPage],
 	[PageEditor.name, PageEditor],
+	[Iframe.name, Iframe],
 ]);

@@ -55,19 +55,19 @@ function Iframe(props: ComponentProps) {
 	return (
 		<div className="comp compIframe">
 			<HelperComponent definition={definition} />
-			<iframe>
-				className= "" width={width}
+			<iframe
+				className="comp"
+				width={width}
 				src={src}
-				height ={height}
-				allowfullscreen ={allowfullscreen}
-				referrerpolicy={referrerpolicy}
+				height={height}
 				name={name}
 				loading={loading}
 				allow={allow}
-				csp={csp}
-				srcdoc={srcdoc}
 				sandbox={sandbox}
-			</iframe>
+				referrerPolicy={referrerpolicy}
+				allowFullScreen={allowfullscreen}
+				srcDoc={srcdoc}
+			></iframe>
 		</div>
 	);
 }

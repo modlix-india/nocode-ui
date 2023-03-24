@@ -9,7 +9,7 @@ export default function IframeStyle({ theme }: { theme: Map<string, Map<string, 
 	const css =
 		`
     ${PREFIX}{
-    display:flex;
+  
     width:100%;
     height:100%;
     }

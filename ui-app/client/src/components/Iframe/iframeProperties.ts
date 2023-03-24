@@ -13,7 +13,6 @@ import {
 import { COMMON_COMPONENT_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
-	COMMON_COMPONENT_PROPERTIES.onClick,
 	{
 		name: 'src',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
@@ -22,15 +21,17 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'width',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: Schema.ofRef(SCHEMA_REF_ANY_COMP_PROP),
 		displayName: 'width',
 		description: 'width of the iframe',
+		defaultValue: '650',
 	},
 	{
 		name: 'height',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: Schema.ofRef(SCHEMA_REF_ANY_COMP_PROP),
 		displayName: 'height',
 		description: 'height of the iframe',
+		defaultValue: '420',
 	},
 	{
 		name: 'name',
@@ -55,30 +56,21 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: 'referrerpolicy',
 		description: 'referrerpolicy of the iframe',
+		defaultValue: 'no-referrer-when-downgrade',
 	},
 	{
 		name: 'loading',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: 'loading',
-		description: 'loading of the iframe',
-	},
-	{
-		name: 'loading',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-		displayName: 'loading',
-		description: 'loading of the iframe',
-	},
-	{
-		name: 'csp',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-		displayName: 'loacspding',
-		description: 'csp of the iframe',
+		description: 'loading type of the iframe',
+		defaultValue: 'lazy',
 	},
 	{
 		name: 'allowfullscreen',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: 'allowfullscreen',
-		description: 'allowfullscreen of the iframe',
+		description: 'It allows i frame to be of fullscreen',
+		defaultValue: true,
 	},
 	{
 		name: 'allow',
@@ -86,6 +78,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'allow',
 		description: 'allow of the iframe',
 	},
+	COMMON_COMPONENT_PROPERTIES.onClick,
 ];
 const stylePropertiesDefinition = {};
 
