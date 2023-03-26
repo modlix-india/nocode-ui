@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { SCHEMA_BOOL_COMP_PROP } from '../../../../constants';
+import { SCHEMA_ANY_COMP_PROP, SCHEMA_BOOL_COMP_PROP } from '../../../../constants';
 import {
 	ComponentProperty,
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
 	DataLocation,
 } from '../../../../types/common';
+import { AnyValueEditor } from './AnyValueEditor';
 import { BooleanValueEditor } from './BooleanValueEditor';
 import { ExpressionEditor } from './ExpressionEditor';
 import { IconSelectionEditor } from './IconSelectionEditor';
@@ -146,6 +147,16 @@ function makeValueEditor(
 					</option>
 				))}
 			</select>
+		);
+	}
+
+	if (propDef.schema.getName() === SCHEMA_ANY_COMP_PROP.getName()) {
+		return (
+			<AnyValueEditor
+				value={chngValue === '' ? undefined : chngValue}
+				defaultValue={propDef.defaultValue}
+				onChange={e => onChange({ ...value, value: e })}
+			/>
 		);
 	}
 
