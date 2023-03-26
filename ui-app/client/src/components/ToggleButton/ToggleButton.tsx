@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
 	addListener,
 	getData,
@@ -35,19 +35,28 @@ function ToggleButton(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	const bindingPathPath = getPathFromLocation(bindingPath!, locationHistory, pageExtractor);
+	const bindingPathPath = bindingPath
+		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
+		: undefined;
 	React.useEffect(() => {
-		addListener(
+		if (!bindingPathPath) return;
+
+		return addListener(
 			(_, value) => {
 				setIsToggled(value);
 			},
 			pageExtractor,
 			bindingPathPath,
 		);
-	}, []);
-	const handleChange = (event: any) => {
-		setData(bindingPathPath, event.target.checked);
-	};
+	}, [bindingPathPath]);
+
+	const handleChange = useCallback(
+		(event: any) => {
+			if (!bindingPathPath) return;
+			setData(bindingPathPath, event.target.checked, context.pageName);
+		},
+		[bindingPathPath],
+	);
 	return (
 		<div className="comp compToggleButton">
 			<HelperComponent definition={definition} />

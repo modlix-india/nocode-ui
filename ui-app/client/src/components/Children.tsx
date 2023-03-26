@@ -1,11 +1,7 @@
+import { isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
 import React from 'react';
-import {
-	ComponentDefinition,
-	DataLocation,
-	LocationHistory,
-	PageDefinition,
-	RenderContext,
-} from '../types/common';
+import { useLocation } from 'react-router-dom';
+import { STORE_PREFIX } from '../constants';
 import {
 	addListener,
 	getData,
@@ -14,16 +10,19 @@ import {
 	PageStoreExtractor,
 	storeExtractor,
 } from '../context/StoreContext';
-import { useLocation } from 'react-router-dom';
-import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../constants';
+import {
+	ComponentDefinition,
+	LocationHistory,
+	PageDefinition,
+	RenderContext,
+} from '../types/common';
+import duplicate from '../util/duplicate';
+import { processLocation } from '../util/locationProcessor';
 import ComponentDefinitions from './index';
 import Nothing from './Nothing';
-import { isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
-import { getPathsFrom } from './util/getPaths';
-import { processLocation } from '../util/locationProcessor';
-import { flattenUUID } from './util/uuid';
-import duplicate from '../util/duplicate';
 import PageComponentDefinition from './Page/Page';
+import { getPathsFrom } from './util/getPaths';
+import { flattenUUID } from './util/uuid';
 
 const getOrLoadPageDefinition = (location: any) => {
 	let { pageName } = processLocation(location);

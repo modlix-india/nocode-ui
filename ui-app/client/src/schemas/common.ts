@@ -5,7 +5,7 @@ import {
 	Repository,
 	Schema,
 } from '@fincity/kirun-js';
-import { NAMESPACE_UI_ENGINE, SCHEMA_REF_ANY_COMP_PROP } from '../constants';
+import { NAMESPACE_UI_ENGINE, SCHEMA_ANY_COMP_PROP } from '../constants';
 
 import componentSchemas from './component';
 import validationSchemas from './validation';
@@ -29,9 +29,7 @@ const map = new Map([
 		Schema.ofObject('UrlParameters')
 			.setNamespace(NAMESPACE_UI_ENGINE)
 			.setAdditionalProperties(
-				new AdditionalPropertiesType().setSchemaValue(
-					Schema.ofRef(SCHEMA_REF_ANY_COMP_PROP),
-				),
+				new AdditionalPropertiesType().setSchemaValue(SCHEMA_ANY_COMP_PROP),
 			)
 			.setDefaultValue({}),
 	],

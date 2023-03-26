@@ -13,6 +13,7 @@ import { LocalStoreExtractor } from './LocalStoreExtractor';
 import { ParentExtractor } from './ParentExtractor';
 import { ThemeExtractor } from './ThemeExtractor';
 import duplicate from '../util/duplicate';
+import { messageToMaster } from '../slaveFunctions';
 
 export class StoreExtractor extends TokenValueExtractor {
 	private store: any;
@@ -162,7 +163,6 @@ export const innerSetData = _setData;
 export function setData(path: string, value: any, context?: string, deleteKey?: boolean) {
 	// console.log(path, value);
 	if (path.startsWith(LOCAL_STORE_PREFIX)) {
-		if (!value) return;
 		let parts = path.split(TokenValueExtractor.REGEX_DOT);
 
 		const key = window.isDesignMode ? 'designmode_' + parts[1] : parts[1];
@@ -212,6 +212,10 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 				: window.pageEditor.editingPageDefinition,
 		);
 	} else _setData(path, value, deleteKey);
+
+	if (window.designMode !== 'PAGE') return;
+
+	messageToMaster({ type: 'SLAVE_STORE', payload: _store });
 
 	// console.log(duplicate(_store));
 }

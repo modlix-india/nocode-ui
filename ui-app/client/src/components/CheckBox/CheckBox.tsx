@@ -66,7 +66,7 @@ function CheckBox(props: ComponentProps) {
 		stylePropertiesWithPseudoStates,
 	);
 	const handleChange = async (event: any) => {
-		if (bindingPathPath) setData(bindingPathPath, event.target.checked, context.pageName);
+		if (bindingPathPath) setData(bindingPathPath, !!event.target.checked, context.pageName);
 		if (clickEvent)
 			await runEvent(
 				pageDefinition.eventFunctions[onClick],

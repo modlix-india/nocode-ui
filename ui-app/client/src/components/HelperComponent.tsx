@@ -115,6 +115,8 @@ function HelperComponentInternal({
 			onDoubleClick={e => {
 				e.stopPropagation();
 				e.preventDefault();
+				if (definition.key === selectedComponent)
+					messageToMaster({ type: 'SLAVE_SELECTED', payload: '' });
 				onDoubleClick?.(e);
 			}}
 			onContextMenu={e => {

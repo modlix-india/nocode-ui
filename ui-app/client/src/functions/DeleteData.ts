@@ -13,7 +13,7 @@ import axios from 'axios';
 import {
 	LOCAL_STORE_PREFIX,
 	NAMESPACE_UI_ENGINE,
-	SCHEMA_REF_DATA_LOCATION,
+	SCHEMA_DATA_LOCATION,
 	STORE_PREFIX,
 } from '../constants';
 import { getData } from '../context/StoreContext';

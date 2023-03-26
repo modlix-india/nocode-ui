@@ -77,24 +77,25 @@ function TextBox(props: ComponentProps) {
 		stylePropertiesWithPseudoStates,
 	);
 	const [value, setValue] = React.useState(defaultValue ?? '');
-	if (!bindingPath) throw new Error('Binding path is required by definition');
-	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
 
-	React.useEffect(
-		() =>
-			addListenerAndCallImmediately(
-				(_, value) => {
-					if (isNullValue(value)) {
-						setValue('');
-						return;
-					}
-					setValue(value);
-				},
-				pageExtractor,
-				bindingPathPath,
-			),
-		[bindingPathPath],
-	);
+	const bindingPathPath = bindingPath
+		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
+		: undefined;
+
+	React.useEffect(() => {
+		if (!bindingPathPath) return;
+		return addListenerAndCallImmediately(
+			(_, value) => {
+				if (isNullValue(value)) {
+					setValue('');
+					return;
+				}
+				setValue(value);
+			},
+			pageExtractor,
+			bindingPathPath,
+		);
+	}, [bindingPathPath]);
 
 	const spinnerPath = onEnter
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(

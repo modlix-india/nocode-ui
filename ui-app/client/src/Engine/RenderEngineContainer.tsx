@@ -131,7 +131,7 @@ export const RenderEngineContainer = () => {
 		if (
 			wrapShell &&
 			shellPageDefinition &&
-			(window.designMode !== 'PAGE' || window.pageEditor?.personalization?.slave?.noShell)
+			(window.designMode !== 'PAGE' || !window.pageEditor?.personalization?.slave?.noShell)
 		)
 			return (
 				<Page

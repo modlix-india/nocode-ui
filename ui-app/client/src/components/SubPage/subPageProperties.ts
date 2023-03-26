@@ -1,12 +1,12 @@
 import { Schema } from '@fincity/kirun-js';
-import { SCHEMA_REF_STRING_COMP_PROP } from '../../constants';
+import { SCHEMA_STRING_COMP_PROP } from '../../constants';
 import { ComponentPropertyDefinition, ComponentStylePropertyDefinition } from '../../types/common';
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'pageName',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Page Name',
 		description: 'Sub page name',
 		translatable: false,

@@ -1,5 +1,5 @@
 import { ExpressionEvaluator, isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
-import { SCHEMA_REF_VALIDATION } from '../../constants';
+import { SCHEMA_VALIDATION } from '../../constants';
 import {
 	ComponentDefinition,
 	ComponentProperty,
@@ -92,7 +92,7 @@ export function getPathsFromComponentDefinition(
 		for (const [key, prop] of Object.entries(properties)) {
 			if (propDefMap[key]?.multiValued) {
 				for (const iprop of Object.values(prop)) {
-					if (propDefMap[key].schema.getRef() === SCHEMA_REF_VALIDATION) {
+					if (propDefMap[key].schema.getRef() === SCHEMA_VALIDATION) {
 						for (const vprop of Object.values(iprop)) {
 							if (typeof vprop === 'string') continue;
 							const set = getPathsFrom(
