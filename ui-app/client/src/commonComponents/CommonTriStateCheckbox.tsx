@@ -21,7 +21,6 @@ function CommonTriStateCheckbox({
 	blurHandler,
 	states = 3,
 }: CommonTriStateCheckboxType) {
-	console.log(states);
 	return (
 		<span
 			className={`commonTriStateCheckbox _${states === 3 ? value : !!value} ${

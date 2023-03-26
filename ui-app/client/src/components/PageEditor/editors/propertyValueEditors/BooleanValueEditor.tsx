@@ -5,19 +5,12 @@ import CommonTriStateCheckbox from '../../../../commonComponents/CommonTriStateC
 
 interface BooleanValueEditorProps {
 	value?: boolean;
-	title?: string;
 	defaultValue?: boolean;
 	onChange?: (v: boolean | undefined) => void;
 }
 
-export function BooleanValueEditor({
-	title,
-	value,
-	defaultValue,
-	onChange,
-}: BooleanValueEditorProps) {
+export function BooleanValueEditor({ value, defaultValue, onChange }: BooleanValueEditorProps) {
 	const hasDefaultValue = !isNullValue(defaultValue);
-	console.log(title, value, defaultValue);
 	return (
 		<CommonTriStateCheckbox
 			states={hasDefaultValue ? 2 : 3}

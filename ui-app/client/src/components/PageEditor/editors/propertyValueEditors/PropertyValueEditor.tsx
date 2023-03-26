@@ -85,36 +85,7 @@ export default function PropertyValueEditor({
 		);
 	}
 
-	let valueEditor = undefined;
-	if (propDef.editor) {
-		//Give a specific editor...
-	}
-
-	if (!valueEditor) {
-		if (propDef.schema.getName() === SCHEMA_BOOL_COMP_PROP.getName()) {
-			valueEditor = (
-				<BooleanValueEditor
-					title={propDef.displayName}
-					value={chngValue === '' ? undefined : !!chngValue}
-					defaultValue={propDef.defaultValue}
-					onChange={e => onChange({ ...value, value: e })}
-				/>
-			);
-		}
-	}
-
-	if (!valueEditor) {
-		valueEditor = (
-			<input
-				type="text"
-				value={chngValue}
-				onChange={e => setChngValue(e.target.value)}
-				onBlur={() =>
-					onChange({ ...value, value: chngValue === '' ? undefined : chngValue })
-				}
-			/>
-		);
-	}
+	let valueEditor = makeValueEditor(propDef, chngValue, onChange, value, setChngValue);
 
 	const microToggle = onlyValue ? undefined : (
 		<div
@@ -134,5 +105,54 @@ export default function PropertyValueEditor({
 			</div>
 			{advancedEditor}
 		</div>
+	);
+}
+
+function makeValueEditor(
+	propDef: ComponentPropertyDefinition,
+	chngValue: any,
+	onChange: (v: any) => void,
+	value: ComponentProperty<any> | undefined,
+	setChngValue: React.Dispatch<any>,
+) {
+	if (propDef.editor === ComponentPropertyEditor.ENUM) {
+		return (
+			<select
+				value={chngValue}
+				onChange={e => {
+					const newValue: ComponentProperty<any> = {
+						...(value ?? {}),
+						value: e.target.value,
+					};
+					if (newValue.value === propDef.defaultValue) delete newValue.value;
+					onChange(newValue);
+				}}
+			>
+				{propDef.enumValues?.map(v => (
+					<option key={v.name} value={v.name} title={v.description}>
+						{v.displayName}
+					</option>
+				))}
+			</select>
+		);
+	}
+
+	if (propDef.schema.getName() === SCHEMA_BOOL_COMP_PROP.getName()) {
+		return (
+			<BooleanValueEditor
+				value={chngValue === '' ? undefined : !!chngValue}
+				defaultValue={propDef.defaultValue}
+				onChange={e => onChange({ ...value, value: e })}
+			/>
+		);
+	}
+
+	return (
+		<input
+			type="text"
+			value={chngValue}
+			onChange={e => setChngValue(e.target.value)}
+			onBlur={() => onChange({ ...value, value: chngValue === '' ? undefined : chngValue })}
+		/>
 	);
 }
