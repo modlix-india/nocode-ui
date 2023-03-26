@@ -115,16 +115,17 @@ function makeValueEditor(
 	value: ComponentProperty<any> | undefined,
 	setChngValue: React.Dispatch<any>,
 ) {
-	if (propDef.editor === ComponentPropertyEditor.ENUM) {
+	if (propDef.editor === ComponentPropertyEditor.ENUM || propDef.enumValues?.length) {
 		return (
 			<select
-				value={chngValue}
+				value={chngValue === '' ? propDef.defaultValue : chngValue}
 				onChange={e => {
 					const newValue: ComponentProperty<any> = {
 						...(value ?? {}),
 						value: e.target.value,
 					};
 					if (newValue.value === propDef.defaultValue) delete newValue.value;
+					console.log(e.target.value, propDef.defaultValue, newValue);
 					onChange(newValue);
 				}}
 			>
@@ -151,8 +152,17 @@ function makeValueEditor(
 		<input
 			type="text"
 			value={chngValue}
+			placeholder={propDef.defaultValue}
 			onChange={e => setChngValue(e.target.value)}
-			onBlur={() => onChange({ ...value, value: chngValue === '' ? undefined : chngValue })}
+			onBlur={() =>
+				onChange({
+					...value,
+					value:
+						chngValue === '' || chngValue === propDef.defaultValue
+							? undefined
+							: chngValue,
+				})
+			}
 		/>
 	);
 }

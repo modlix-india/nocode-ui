@@ -43,7 +43,7 @@ function updatePropertyDefinition(
 	} else {
 		pageDef.componentDefinition[component].properties![propertyName] = value;
 	}
-	console.log(pageDef.componentDefinition[component].properties);
+	console.log(propertyName, value, pageDef.componentDefinition[component].properties);
 	setData(defPath, pageDef, pageExtractor.getPageName());
 }
 
