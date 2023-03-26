@@ -143,13 +143,18 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			align-items: center;
 			padding-right: 8px;
+			gap: 5px;
 		}
 
 		${PREFIX} ._pvExpressionEditor input[type='text'] {
 			border: none;
 			background-color: transparent;
 			flex: 1;
-			padding: 5px;
+			padding: 5px 5px 5px 0;
+		}
+
+		${PREFIX} ._pvExpressionEditor i.fa {
+			cursor: pointer;
 		}
 
 		${PREFIX} ._urlInput {
@@ -158,6 +163,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			left: 22px;
 			z-index: 1;
 		}
+		
 
 		${PREFIX} button:hover, ${PREFIX} select:hover, ${PREFIX} ._iconMenuOption:hover,
 		._popupMenuBackground ._popupMenuItem:hover, ._popupMenuBackground ._popupMenuItem.active,
@@ -494,6 +500,71 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			cursor: pointer;
 		}
 
+		${PREFIX} i._pillTag.fa {
+			font-size: 10px;
+		}
+
+		${PREFIX} ._iconSelectionEditor {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
+		}
+
+		${PREFIX} ._iconSelectionButtons {
+			display: flex;
+			flex-direction: row;
+			gap: 10px;
+			align-items: center;
+			flex-wrap: wrap;
+		}
+
+		${PREFIX} ._iconSelectionButton {
+			background-color: #fff;
+			padding: 5px;
+			border-radius: 2px;
+			border: 1px solid #eee;
+			cursor: pointer;
+			width: 24px;
+			text-align: center;
+			height: 24px;
+		}
+
+		${PREFIX} ._iconSelectionButton.active {
+			background-color: #eee;
+		}
+
+		._popupContainer ._iconSelectionBrowser {
+			height: 450px;
+			width: 600px;
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+		}
+
+		._popupContainer ._iconSelectionDisplay {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 20px;
+			overflow: auto;
+		}
+		
+		._popupContainer ._iconSelectionDisplay ._eachIcon {
+			width: 90px;
+			height: 90px;
+			display: flex;
+			flex-direction: column;
+			font-size: 11px;
+			cursor: pointer;
+			align-items: center;
+			padding: 5px;
+			border-radius: 5px;
+			background-color: #fafafa;
+			justify-content: center;
+			gap: 15px;
+			text-align: center;
+		}
+
 		._popupMenuBackground, ._popupBackground {
 			position: absolute;
 			left: 0px;
@@ -656,6 +727,20 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX}._dark ._pillTag {
 			background-color: #555;
 			color: #000;
+		}
+
+		${PREFIX}._dark ._iconSelectionEditor { 
+			color: #bbb;
+		}
+
+		${PREFIX}._dark ._iconSelectionButton {
+			background-color: #555;
+			color: #000;
+			border: 1px solid transparent;
+		}
+
+		${PREFIX}._dark ._iconSelectionButton.active {
+			background-color: #333;
 		}
 
 		._popupMenuBackground._dark ._popupMenuContainer  {

@@ -8,6 +8,7 @@ import {
 } from '../../../../types/common';
 import { BooleanValueEditor } from './BooleanValueEditor';
 import { ExpressionEditor } from './ExpressionEditor';
+import { IconSelectionEditor } from './IconSelectionEditor';
 
 interface PropertyValueEditorProps {
 	propDef: ComponentPropertyDefinition;
@@ -115,6 +116,16 @@ function makeValueEditor(
 	value: ComponentProperty<any> | undefined,
 	setChngValue: React.Dispatch<any>,
 ) {
+	if (propDef.editor === ComponentPropertyEditor.ICON) {
+		return (
+			<IconSelectionEditor
+				value={chngValue}
+				propDef={propDef}
+				onChange={e => onChange({ ...value, value: e })}
+			/>
+		);
+	}
+
 	if (propDef.editor === ComponentPropertyEditor.ENUM || propDef.enumValues?.length) {
 		return (
 			<select
