@@ -68,12 +68,16 @@ export default function PropertyEditor({
 	pageExtractor,
 }: PropertyEditorProps) {
 	const [def, setDef] = useState<ComponentDefinition>();
+	const [pageDef, setPageDef] = useState<PageDefinition>();
 
 	useEffect(() => {
 		if (!defPath) return;
 
 		return addListenerAndCallImmediatelyWithChildrenActivity(
-			(_, v: PageDefinition) => setDef(v.componentDefinition[selectedComponent]),
+			(_, v: PageDefinition) => {
+				setDef(v.componentDefinition[selectedComponent]);
+				setPageDef(v);
+			},
 			pageExtractor,
 			defPath,
 		);
@@ -139,6 +143,7 @@ export default function PropertyEditor({
 					</span>
 				</div>
 				<PropertyValueEditor
+					pageDefinition={pageDef}
 					propDef={{
 						name: 'name',
 						displayName: 'Name',
@@ -171,6 +176,7 @@ export default function PropertyEditor({
 							</span>
 						</div>
 						<PropertyValueEditor
+							pageDefinition={pageDef}
 							propDef={e}
 							value={def.properties?.[e.name] as ComponentProperty<any>}
 							onChange={v =>

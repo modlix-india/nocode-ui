@@ -386,12 +386,23 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			overflow: auto;
 		}
 
+		${PREFIX} ._propertyEditor{
+			gap: 10px;
+			display: flex;
+			flex-direction: column;
+		}
+
 		${PREFIX} ._eachProp {
 			font-size: 12px;
 			padding: 5px;
 			display: flex;
 			flex-direction: column;
 			gap: 5px;
+			border-radius: 4px;
+		}
+
+		${PREFIX} ._eachProp:hover {
+			background-color:#eee;
 		}
 
 		${PREFIX} ._pvEditor {
@@ -534,7 +545,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			background-color: #eee;
 		}
 
-		${PREFIX} ._anyValueEditor {
+		${PREFIX} ._smallEditorContainer {
 			display: flex;
 			flex: 1;
 		}
@@ -549,7 +560,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._popupContainer ._iconSelectionBrowser {
 			height: 450px;
-			width: 600px;
+			width: 540px;
 			display: flex;
 			flex-direction: column;
 			gap: 10px;
@@ -709,6 +720,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX}._dark ._pvEditor ._microToggle::before {
 			background-color: #333;
 			color: #777;
+		}
+
+		${PREFIX}._dark ._eachProp:hover {
+			background-color:#444a;
 		}
 		
 		${PREFIX}._dark ._pvEditor ._microToggle {

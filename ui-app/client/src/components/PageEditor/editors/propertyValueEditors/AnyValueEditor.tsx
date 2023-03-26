@@ -25,7 +25,6 @@ export function AnyValueEditor({ value, defaultValue, onChange }: AnyValueEditor
 		setLocalValue(getTextualValue(value));
 	}, [value]);
 
-	console.log(value, localValue);
 	let popup = <></>;
 	if (showEditor) {
 		popup = (
@@ -80,7 +79,7 @@ export function AnyValueEditor({ value, defaultValue, onChange }: AnyValueEditor
 	}
 
 	return (
-		<div className="_anyValueEditor">
+		<div className="_smallEditorContainer">
 			<button
 				onClick={() => {
 					setShowEditor(true);
