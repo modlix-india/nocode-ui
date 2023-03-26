@@ -14,7 +14,7 @@ export function BooleanValueEditor({ value, defaultValue, onChange }: BooleanVal
 	return (
 		<CommonTriStateCheckbox
 			states={hasDefaultValue ? 2 : 3}
-			value={value}
+			value={hasDefaultValue ? (isNullValue(value) ? defaultValue : value) : value}
 			onChange={v => onChange?.(hasDefaultValue ? (defaultValue === v ? undefined : v) : v)}
 		/>
 	);

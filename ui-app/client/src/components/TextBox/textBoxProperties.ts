@@ -183,6 +183,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Update Immediately',
 		description: 'Update the store Immediately after typing or on blur by default.',
 		schema: SCHEMA_BOOL_COMP_PROP,
+		notImplemented: true,
 	},
 
 	{
@@ -190,6 +191,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Password',
 		description: 'Textbox to enter password',
 		schema: SCHEMA_BOOL_COMP_PROP,
+		defaultValue: false,
 	},
 	{
 		name: 'placeholder',
