@@ -92,7 +92,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'validation',
-		schema: Schema.ofRef(SCHEMA_VALIDATION),
+		schema: SCHEMA_VALIDATION,
 		displayName: 'Validation',
 		description: 'Validation Rule',
 		editor: ComponentPropertyEditor.VALIDATION,

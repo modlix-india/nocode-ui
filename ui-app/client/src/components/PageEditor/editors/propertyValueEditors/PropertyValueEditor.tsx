@@ -1,21 +1,26 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { SCHEMA_BOOL_COMP_PROP } from '../../../../constants';
 import {
 	ComponentProperty,
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
+	DataLocation,
 } from '../../../../types/common';
+import { BooleanValueEditor } from './BooleanValueEditor';
 import { ExpressionEditor } from './ExpressionEditor';
 
 interface PropertyValueEditorProps {
 	propDef: ComponentPropertyDefinition;
 	value?: ComponentProperty<any>;
 	onChange: (v: any) => void;
+	onlyValue?: boolean;
 }
 
 export default function PropertyValueEditor({
 	propDef,
 	value,
 	onChange,
+	onlyValue = false,
 }: PropertyValueEditorProps) {
 	const [chngValue, setChngValue] = useState<any>('');
 	const [showAdvanced, setShowAdvanced] = useState<boolean>(false);
@@ -36,48 +41,118 @@ export default function PropertyValueEditor({
 		}
 	}, [value]);
 
+	const toggleAdvanced = useCallback(() => {
+		setShowAdvanced(!showAdvanced);
+		if (!value) return;
+		const newValue = { ...value };
+		if (showAdvanced) {
+			delete newValue.location;
+			if (value.location)
+				newValue.backupExpression =
+					value.location.type === 'VALUE'
+						? value.location.value
+						: value.location.expression;
+		} else {
+			delete newValue.backupExpression;
+			newValue.location = {
+				type: 'EXPRESSION',
+				expression: value.backupExpression,
+			};
+		}
+		onChange(newValue);
+	}, [setShowAdvanced, onChange, value, showAdvanced]);
+
 	let advancedEditor = undefined;
 
-	if (showAdvanced) {
-		advancedEditor = <ExpressionEditor />;
+	if (showAdvanced && !onlyValue) {
+		advancedEditor = (
+			<ExpressionEditor
+				value={
+					value?.location
+						? value.location.type === 'VALUE'
+							? value.location.value
+							: value.location.expression
+						: undefined
+				}
+				onChange={(v: string | undefined) =>
+					onChange(
+						!v
+							? { ...(value ?? {}), location: undefined }
+							: { ...(value ?? {}), location: { type: 'EXPRESSION', expression: v } },
+					)
+				}
+			/>
+		);
 	}
 
-	if (propDef.editor) {
-		//Give a specific editor...
-	} else {
-	}
+	let valueEditor = makeValueEditor(propDef, chngValue, onChange, value, setChngValue);
+
+	const microToggle = onlyValue ? undefined : (
+		<div
+			className={`_microToggle ${showAdvanced ? '_on' : '_off'}`}
+			tabIndex={0}
+			onKeyDown={e => (e.key === ' ' ? toggleAdvanced() : undefined)}
+			onClick={toggleAdvanced}
+			title={showAdvanced ? 'Value' : 'Expression'}
+		/>
+	);
 
 	return (
 		<div className="_pvEditor">
 			<div className="_pvValueEditor">
-				<input type="text" value={chngValue} onChange={() => {}} />
-				<div
-					className={`_microToggle ${showAdvanced ? '_on' : '_off'}`}
-					tabIndex={0}
-					onClick={() => {
-						setShowAdvanced(!showAdvanced);
-						if (!value) return;
-						const newValue = { ...value };
-						if (showAdvanced) {
-							delete newValue.location;
-							if (value.location)
-								newValue.backupExpression =
-									value.location.type === 'VALUE'
-										? value.location.value
-										: value.location.expression;
-						} else {
-							delete newValue.backupExpression;
-							newValue.location = {
-								type: 'EXPRESSION',
-								expression: value.backupExpression,
-							};
-						}
-						onChange(newValue);
-					}}
-					title={showAdvanced ? 'Value' : 'Expression'}
-				/>
+				{valueEditor}
+				{microToggle}
 			</div>
 			{advancedEditor}
 		</div>
+	);
+}
+
+function makeValueEditor(
+	propDef: ComponentPropertyDefinition,
+	chngValue: any,
+	onChange: (v: any) => void,
+	value: ComponentProperty<any> | undefined,
+	setChngValue: React.Dispatch<any>,
+) {
+	if (propDef.editor === ComponentPropertyEditor.ENUM) {
+		return (
+			<select
+				value={chngValue}
+				onChange={e => {
+					const newValue: ComponentProperty<any> = {
+						...(value ?? {}),
+						value: e.target.value,
+					};
+					if (newValue.value === propDef.defaultValue) delete newValue.value;
+					onChange(newValue);
+				}}
+			>
+				{propDef.enumValues?.map(v => (
+					<option key={v.name} value={v.name} title={v.description}>
+						{v.displayName}
+					</option>
+				))}
+			</select>
+		);
+	}
+
+	if (propDef.schema.getName() === SCHEMA_BOOL_COMP_PROP.getName()) {
+		return (
+			<BooleanValueEditor
+				value={chngValue === '' ? undefined : !!chngValue}
+				defaultValue={propDef.defaultValue}
+				onChange={e => onChange({ ...value, value: e })}
+			/>
+		);
+	}
+
+	return (
+		<input
+			type="text"
+			value={chngValue}
+			onChange={e => setChngValue(e.target.value)}
+			onBlur={() => onChange({ ...value, value: chngValue === '' ? undefined : chngValue })}
+		/>
 	);
 }

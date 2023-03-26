@@ -118,7 +118,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border: 1px solid #ccc;
 		}
 
-		${PREFIX} input {
+		${PREFIX} input, ${PREFIX} ._pvExpressionEditor {
 			color: #555;
 			background-color: #eee;
 			font-size: 11px;
@@ -127,12 +127,29 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border: 1px solid #ccc;
 		}
 
-		${PREFIX} input[type='text'] {
+		${PREFIX} input[type='text'], ${PREFIX} ._pvExpressionEditor{
 			height: 25px;
 			font-size: 12px;
 			border-radius: 12px;
 			padding-left: 8px;
 			flex: 1;
+			outline: none;
+		}
+
+		${PREFIX} ._pvExpressionEditor {
+			padding-top: 0px;
+			padding-bottom: 0px;
+			border-radius: 2px;
+			display: flex;
+			align-items: center;
+			padding-right: 8px;
+		}
+
+		${PREFIX} ._pvExpressionEditor input[type='text'] {
+			border: none;
+			background-color: transparent;
+			flex: 1;
+			padding: 5px;
 		}
 
 		${PREFIX} ._urlInput {
@@ -374,6 +391,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._pvEditor {
 			display: flex;
 			flex-direction: column;
+			gap: 5px;
 		}
 
 		${PREFIX} ._pvEditor input[type='text'] {
@@ -462,11 +480,18 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			color: #777;
 			margin-top: 10px;
 		}
+		
+		${PREFIX} ._pvExpressionEditor {
+			display: flex;
+		}
 
-		${PREFIX}._dark span._description:hover::after {
-			background-color: #555b;
-			color: #bbb;
-			border-color: #777;
+		${PREFIX} ._pillTag {
+			border: 1px solid;
+			padding: 2px 7px;
+			border-radius: 10px;
+			background-color: #fff;
+			font-size: 10px;
+			cursor: pointer;
 		}
 
 		._popupMenuBackground, ._popupBackground {
@@ -551,14 +576,19 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX}._dark ._sideBar, ${PREFIX}._dark ._iconMenuBody,
 		${PREFIX}._dark ._topBarGrid, ._popupBackground._dark ._popupContainer,
 		${PREFIX}._dark ._selectionBar, ${PREFIX}._dark ._propBar,${PREFIX}._dark ._tabBar i.fa.active
-		._popupMenuBackground._dark ._popupMenu {
+		._popupMenuBackground._dark ._popupMenu, ${PREFIX}._dark ._tabBar i.fa.active {
 			background-color:#555;
 		}
 
-		${PREFIX}._dark button, ${PREFIX}._dark select, ${PREFIX}._dark input[type='text'], ._popupBackground._dark button {
+		${PREFIX}._dark button, ${PREFIX}._dark select, ${PREFIX}._dark input[type='text'],
+		${PREFIX}._dark ._pvExpressionEditor, ._popupBackground._dark button {
 			color: #aaa;
 			background-color: #222;
 			border: 1px solid #333;
+		}
+
+		${PREFIX}._dark ._pvExpressionEditor input {
+			border: none;
 		}
 
 		${PREFIX}._dark i.fa {
@@ -615,6 +645,17 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX}._dark span._description {
 			background-color: #444;
 			color: #777;
+		}
+		
+		${PREFIX}._dark span._description:hover::after {
+			background-color: #555b;
+			color: #bbb;
+			border-color: #777;
+		}
+
+		${PREFIX}._dark ._pillTag {
+			background-color: #555;
+			color: #000;
 		}
 
 		._popupMenuBackground._dark ._popupMenuContainer  {

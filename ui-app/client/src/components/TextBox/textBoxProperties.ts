@@ -80,7 +80,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'validation',
-		schema: Schema.ofRef(SCHEMA_VALIDATION),
+		schema: SCHEMA_VALIDATION,
 		displayName: 'Validation',
 		description: 'Validation Rule',
 		editor: ComponentPropertyEditor.VALIDATION,
@@ -176,7 +176,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Delete Key on Empty',
 		description: 'Removes the key when the textbox is emptied.',
-		notImplemented: true,
 	},
 
 	{

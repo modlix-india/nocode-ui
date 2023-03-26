@@ -23,8 +23,8 @@ export const STORE_PATH_MESSAGES = 'Store.messages';
 export const STORE_PATH_APP_MESSAGE_TIMEOUT = 'Store.application.properties.messageTimeout';
 
 export const SCHEMA_DATA_LOCATION = Schema.ofRef(`${NAMESPACE_UI_ENGINE}.DataLocation`);
-export const SCHEMA_VALIDATION_TYPE = Schema.of(`${NAMESPACE_UI_ENGINE}.ValidationType`);
-export const SCHEMA_VALIDATION = Schema.of(`${NAMESPACE_UI_ENGINE}.Validation`);
+export const SCHEMA_VALIDATION_TYPE = Schema.ofRef(`${NAMESPACE_UI_ENGINE}.ValidationType`);
+export const SCHEMA_VALIDATION = Schema.ofRef(`${NAMESPACE_UI_ENGINE}.Validation`);
 
 export const SCHEMA_BOOL_COMP_PROP = Schema.of(SchemaType.BOOLEAN)
 	.setName('BooleanComponentProperty')
