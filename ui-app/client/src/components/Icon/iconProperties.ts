@@ -19,16 +19,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
-		name: 'iconPack',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Icon Pack',
-		description: 'Icon Pack',
-		translatable: true,
-		editor: ComponentPropertyEditor.ICON_PACK,
-		defaultValue: 'Font Awesome',
-	},
-
-	{
 		name: 'visibility',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Visibility',
