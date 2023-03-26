@@ -534,6 +534,19 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			background-color: #eee;
 		}
 
+		${PREFIX} ._anyValueEditor {
+			display: flex;
+			flex: 1;
+		}
+
+		._popupContainer ._jsonEditorContainer{
+			border: 1px solid #eee;
+			border-radius: 4px;
+			padding: 2px;
+			width:400px;
+			height: 400px;
+		}
+
 		._popupContainer ._iconSelectionBrowser {
 			height: 450px;
 			width: 600px;
@@ -585,7 +598,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			background-color: #fff;
 			padding: 15px;
 			border-radius: 3px;
-			max-width: 40vw;
+			max-width: 60vw;
 			display: flex;
 			flex-direction: column;
 			gap: 15px;
