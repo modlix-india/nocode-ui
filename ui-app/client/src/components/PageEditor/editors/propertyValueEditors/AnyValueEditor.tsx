@@ -25,7 +25,6 @@ export function AnyValueEditor({ value, defaultValue, onChange }: AnyValueEditor
 		setLocalValue(getTextualValue(value));
 	}, [value]);
 
-	console.log(value, localValue);
 	let popup = <></>;
 	if (showEditor) {
 		popup = (

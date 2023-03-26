@@ -32,6 +32,7 @@ export function IconSelectionEditor({ value, onChange, propDef }: IconSelectionE
 					<div className="_popupContainer" onClick={e => e.stopPropagation()}>
 						<div className="_iconSelectionBrowser">
 							<input
+								placeholder="Search for icons..."
 								type="text"
 								value={filter}
 								onChange={e => setFilter(e.target.value)}
@@ -42,6 +43,7 @@ export function IconSelectionEditor({ value, onChange, propDef }: IconSelectionE
 									: ICONS.slice(0, 30)
 								).map(i => (
 									<div
+										key={i}
 										className="_eachIcon"
 										onClick={() => {
 											let v =
@@ -161,7 +163,6 @@ function generateButtons(
 }
 
 function clean(value: string, options: string[], currentOption: string): string {
-	console.log(value, options, currentOption);
 	if (value.includes(currentOption)) return value.replace(currentOption, '');
 	return (
 		options
