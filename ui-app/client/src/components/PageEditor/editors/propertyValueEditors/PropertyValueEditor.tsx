@@ -5,6 +5,7 @@ import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
 	DataLocation,
+	PageDefinition,
 } from '../../../../types/common';
 import { AnyValueEditor } from './AnyValueEditor';
 import { BooleanValueEditor } from './BooleanValueEditor';
@@ -16,6 +17,7 @@ interface PropertyValueEditorProps {
 	value?: ComponentProperty<any>;
 	onChange: (v: any) => void;
 	onlyValue?: boolean;
+	pageDefinition?: PageDefinition;
 }
 
 export default function PropertyValueEditor({
@@ -23,6 +25,7 @@ export default function PropertyValueEditor({
 	value,
 	onChange,
 	onlyValue = false,
+	pageDefinition,
 }: PropertyValueEditorProps) {
 	const [chngValue, setChngValue] = useState<any>('');
 	const [showAdvanced, setShowAdvanced] = useState<boolean>(false);
@@ -87,7 +90,14 @@ export default function PropertyValueEditor({
 		);
 	}
 
-	let valueEditor = makeValueEditor(propDef, chngValue, onChange, value, setChngValue);
+	let valueEditor = makeValueEditor(
+		propDef,
+		chngValue,
+		onChange,
+		value,
+		setChngValue,
+		pageDefinition,
+	);
 
 	const microToggle = onlyValue ? undefined : (
 		<div
@@ -116,6 +126,7 @@ function makeValueEditor(
 	onChange: (v: any) => void,
 	value: ComponentProperty<any> | undefined,
 	setChngValue: React.Dispatch<any>,
+	pageDef?: PageDefinition,
 ) {
 	if (propDef.editor === ComponentPropertyEditor.ICON) {
 		return (
@@ -129,24 +140,52 @@ function makeValueEditor(
 
 	if (propDef.editor === ComponentPropertyEditor.ENUM || propDef.enumValues?.length) {
 		return (
-			<select
-				value={chngValue === '' ? propDef.defaultValue : chngValue}
-				onChange={e => {
-					const newValue: ComponentProperty<any> = {
-						...(value ?? {}),
-						value: e.target.value,
-					};
-					if (newValue.value === propDef.defaultValue) delete newValue.value;
-					console.log(e.target.value, propDef.defaultValue, newValue);
-					onChange(newValue);
-				}}
-			>
-				{propDef.enumValues?.map(v => (
-					<option key={v.name} value={v.name} title={v.description}>
-						{v.displayName}
+			<div className="_smallEditorContainer">
+				<select
+					value={chngValue === '' ? propDef.defaultValue : chngValue}
+					onChange={e => {
+						const newValue: ComponentProperty<any> = {
+							...(value ?? {}),
+							value: e.target.value,
+						};
+						if (newValue.value === propDef.defaultValue) delete newValue.value;
+						onChange(newValue);
+					}}
+				>
+					{propDef.enumValues?.map(v => (
+						<option key={v.name} value={v.name} title={v.description}>
+							{v.displayName}
+						</option>
+					))}
+				</select>
+			</div>
+		);
+	}
+
+	if (propDef.editor === ComponentPropertyEditor.EVENT_SELECTOR) {
+		return (
+			<div className="_smallEditorContainer">
+				<select
+					value={chngValue === '' ? propDef.defaultValue : chngValue}
+					onChange={e => {
+						const newValue: ComponentProperty<any> = {
+							...(value ?? {}),
+							value: e.target.value,
+						};
+						if (newValue.value === propDef.defaultValue) delete newValue.value;
+						onChange(newValue);
+					}}
+				>
+					<option value="" title="No event">
+						-- No event --
 					</option>
-				))}
-			</select>
+					{Object.entries(pageDef?.eventFunctions ?? {}).map(v => (
+						<option key={v[0]} value={v[0]} title={v[0]}>
+							{v[1].name}
+						</option>
+					))}
+				</select>
+			</div>
 		);
 	}
 

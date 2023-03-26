@@ -534,7 +534,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			background-color: #eee;
 		}
 
-		${PREFIX} ._anyValueEditor {
+		${PREFIX} ._smallEditorContainer {
 			display: flex;
 			flex: 1;
 		}

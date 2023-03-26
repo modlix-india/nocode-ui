@@ -80,7 +80,7 @@ export function AnyValueEditor({ value, defaultValue, onChange }: AnyValueEditor
 	}
 
 	return (
-		<div className="_anyValueEditor">
+		<div className="_smallEditorContainer">
 			<button
 				onClick={() => {
 					setShowEditor(true);

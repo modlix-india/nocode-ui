@@ -12,10 +12,14 @@ interface BooleanValueEditorProps {
 export function BooleanValueEditor({ value, defaultValue, onChange }: BooleanValueEditorProps) {
 	const hasDefaultValue = !isNullValue(defaultValue);
 	return (
-		<CommonTriStateCheckbox
-			states={hasDefaultValue ? 2 : 3}
-			value={hasDefaultValue ? (isNullValue(value) ? defaultValue : value) : value}
-			onChange={v => onChange?.(hasDefaultValue ? (defaultValue === v ? undefined : v) : v)}
-		/>
+		<div className="_smallEditorContainer">
+			<CommonTriStateCheckbox
+				states={hasDefaultValue ? 2 : 3}
+				value={hasDefaultValue ? (isNullValue(value) ? defaultValue : value) : value}
+				onChange={v =>
+					onChange?.(hasDefaultValue ? (defaultValue === v ? undefined : v) : v)
+				}
+			/>
+		</div>
 	);
 }
