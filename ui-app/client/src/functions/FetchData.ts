@@ -11,7 +11,7 @@ import {
 } from '@fincity/kirun-js';
 import axios from 'axios';
 import { LOCAL_STORE_PREFIX, NAMESPACE_UI_ENGINE, STORE_PREFIX } from '../constants';
-import { getData, getDataFromLocation } from '../context/StoreContext';
+import { getData } from '../context/StoreContext';
 import { ComponentProperty } from '../types/common';
 import { pathFromParams, queryParamsSerializer } from './utils';
 

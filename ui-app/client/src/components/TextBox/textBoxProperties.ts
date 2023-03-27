@@ -1,11 +1,11 @@
 import { Schema } from '@fincity/kirun-js';
 import {
 	NAMESPACE_UI_ENGINE,
-	SCHEMA_REF_ANY_COMP_PROP,
-	SCHEMA_REF_BOOL_COMP_PROP,
-	SCHEMA_REF_DATA_LOCATION,
-	SCHEMA_REF_STRING_COMP_PROP,
-	SCHEMA_REF_VALIDATION,
+	SCHEMA_ANY_COMP_PROP,
+	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_DATA_LOCATION,
+	SCHEMA_STRING_COMP_PROP,
+	SCHEMA_VALIDATION,
 } from '../../constants';
 import {
 	ComponentPropertyDefinition,
@@ -17,7 +17,7 @@ import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '.
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'label',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Label',
 		description: 'Label that should be associated with the textbox.',
 		translatable: true,
@@ -25,7 +25,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'noFloat',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'No Float Label',
 		description: 'Textbox without floating label.',
 		defaultValue: false,
@@ -33,7 +33,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'leftIcon',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Left Icon',
 		description: 'Icon to be shown on the left side.',
 		editor: ComponentPropertyEditor.ICON,
@@ -41,7 +41,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'rightIcon',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Right Icon',
 		description: 'Icon to be shown on the right side.',
 		editor: ComponentPropertyEditor.ICON,
@@ -49,14 +49,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'defaultValue',
-		schema: Schema.ofRef(SCHEMA_REF_ANY_COMP_PROP),
+		schema: SCHEMA_ANY_COMP_PROP,
 		displayName: 'Default Value',
 		description: 'This value is use when the data entered is empty or not entered.',
 	},
 
 	{
 		name: 'readOnly',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Read Only',
 		description: 'Textbox will be rendered un editable when this property is true.',
 		group: ComponentPropertyGroup.COMMON,
@@ -64,7 +64,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'visibility',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Visibility',
 		description: 'This component will be hidden when this property is true.',
 		group: ComponentPropertyGroup.COMMON,
@@ -72,7 +72,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'supportingText',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Supporting Text',
 		description: 'Text to be shown to help fill the textbox.',
 		translatable: true,
@@ -80,7 +80,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'validation',
-		schema: Schema.ofRef(SCHEMA_REF_VALIDATION),
+		schema: SCHEMA_VALIDATION,
 		displayName: 'Validation',
 		description: 'Validation Rule',
 		editor: ComponentPropertyEditor.VALIDATION,
@@ -90,7 +90,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'emptyValue',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Empty Value',
 		description: 'Value that should be stored when the textbox is empty.',
 		editor: ComponentPropertyEditor.ENUM,
@@ -121,7 +121,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'messageDisplay',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Messages display type',
 		description: 'How messages should be displayed.',
 		editor: ComponentPropertyEditor.ENUM,
@@ -147,7 +147,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'valueType',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Value Type',
 		description: 'Type of the Value',
 		defaultValue: 'text',
@@ -160,7 +160,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'numberType',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Number Type',
 		description: 'Choose whether number can be decimal or integer',
 		defaultValue: 'DECIMAL',
@@ -173,17 +173,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'removeKeyWhenEmpty',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Delete Key on Empty',
 		description: 'Removes the key when the textbox is emptied.',
-		notImplemented: true,
 	},
 
 	{
 		name: 'updateStoreImmediately',
 		displayName: 'Update Immediately',
 		description: 'Update the store Immediately after typing or on blur by default.',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		notImplemented: true,
 	},
 
@@ -191,14 +190,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'isPassword',
 		displayName: 'Password',
 		description: 'Textbox to enter password',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		defaultValue: false,
 	},
 	{
 		name: 'placeholder',
 		displayName: 'Placeholder',
 		description: 'Placeholder to be shown in input box.',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		defaultValue: '',
 	},
 	COMMON_COMPONENT_PROPERTIES.onEnter,

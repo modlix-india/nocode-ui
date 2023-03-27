@@ -7,6 +7,7 @@ import DnDSideBar from './DnDSideBar';
 import DnDBottomBar from './DnDBottomBar';
 import DnDTopBar from './DnDTopBar';
 import { ContextMenuDetails } from '../../components/ContextMenu';
+import DnDPropertyBar from './DnDPropertyBar';
 
 interface DnDEditorProps {
 	defPath: string | undefined;
@@ -75,12 +76,24 @@ export default function DnDEditor({
 					pageExtractor={pageExtractor}
 					onPageReload={onPageReload}
 				/>
-				<DnDIFrame
-					url={url}
-					personalizationPath={personalizationPath}
-					pageExtractor={pageExtractor}
-					iframeRef={iframeRef}
-				/>
+				<div className="_iframeContainer">
+					<DnDIFrame
+						url={url}
+						personalizationPath={personalizationPath}
+						pageExtractor={pageExtractor}
+						iframeRef={iframeRef}
+					/>
+					<DnDPropertyBar
+						defPath={defPath}
+						locationHistory={locationHistory}
+						url={url}
+						selectedComponent={selectedComponent}
+						personalizationPath={personalizationPath}
+						onChangePersonalization={onChangePersonalization}
+						theme={theme}
+						pageExtractor={pageExtractor}
+					/>
+				</div>
 				<DnDBottomBar
 					defPath={defPath}
 					pageExtractor={pageExtractor}

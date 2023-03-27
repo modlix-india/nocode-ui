@@ -1,10 +1,11 @@
-import { Schema } from '@fincity/kirun-js';
+import { Schema, SchemaType, Type } from '@fincity/kirun-js';
 import { Validation } from './validation';
 
 export interface ComponentProperty<T> {
 	value?: T;
 	location?: DataLocation;
 	overrideValue?: T;
+	backupExpression?: string;
 }
 
 export interface DataLocation {
@@ -41,7 +42,6 @@ export enum ComponentPropertyEditor {
 	DATA_LOCATION,
 	TRANSLATABLE_PROP,
 	ICON,
-	ICON_PACK,
 	VALIDATION,
 	ENUM,
 	PAGE_SELECTOR,

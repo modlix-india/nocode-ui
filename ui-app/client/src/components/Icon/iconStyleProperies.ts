@@ -15,7 +15,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'font-size',
 		displayName: 'Icon Font Size',
 		description: 'The icon size',
-		defaultValue: 'calc(<main-font-size> * 2)',
 		selector: '._icon',
 	},
 ];
