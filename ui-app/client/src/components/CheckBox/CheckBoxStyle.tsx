@@ -12,7 +12,8 @@ export default function CheckBoxStyle({ theme }: { theme: Map<string, Map<string
     input[type='checkbox'].commonCheckbox.radio {
         border-radius:50%;
     }
-    input[type='checkbox'].commonCheckbox {
+    input[type='checkbox'].commonCheckbox,
+    span.commonTriStateCheckbox {
         -webkit-appearance: none;
         appearance: none;
         margin: 0;
@@ -26,11 +27,13 @@ export default function CheckBoxStyle({ theme }: { theme: Map<string, Map<string
         cursor: pointer;
     }
     
-    input[type='checkbox'].commonCheckbox:disabled {
+    input[type='checkbox'].commonCheckbox:disabled,
+    span.commonTriStateCheckbox.disabled {
         border: 0.15em solid;
     }
 
-    input[type='checkbox'].commonCheckbox::before {
+    input[type='checkbox'].commonCheckbox::before,
+    span.commonTriStateCheckbox::before {
         content: '';
         width: 12px;
         height: 12px;
@@ -49,8 +52,21 @@ export default function CheckBoxStyle({ theme }: { theme: Map<string, Map<string
         height:8px;
     }
     
+    span.commonTriStateCheckbox._true,
     input[type='checkbox'].commonCheckbox:checked {
         border: 0px;
+    }
+
+    span.commonTriStateCheckbox._false {
+        background-color:${processStyleValueWithFunction(
+			values.get('checkBoxBorderColor') as string,
+			values as Map<string, string>,
+		)}
+    }
+
+    span.commonTriStateCheckbox._false::before {
+        transform: scale(1);
+        clip-path: polygon(20% 0%, 0% 20%, 30% 50%, 0% 80%, 20% 100%, 50% 70%, 80% 100%, 100% 80%, 70% 50%, 100% 20%, 80% 0%, 50% 30%);
     }
     
     input[type='checkbox'].commonCheckbox:checked:hover {
@@ -116,7 +132,8 @@ export default function CheckBoxStyle({ theme }: { theme: Map<string, Map<string
 		)};
     }
     
-    input[type='checkbox'].commonCheckbox:checked::before {
+    input[type='checkbox'].commonCheckbox:checked::before,
+    span.commonTriStateCheckbox._true::before {
         transform: scale(1);
     }
     

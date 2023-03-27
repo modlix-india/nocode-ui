@@ -275,6 +275,9 @@ function PageEditor(props: ComponentProps) {
 		});
 	}, [ref.current]);
 
+	// This will be used to store slave store.
+	const [slaveStore, setSlaveStore] = useState<any>(undefined);
+
 	// Effect to listen to all the messages from the iframe/slave.
 	useEffect(() => {
 		function onMessageFromSlave(e: MessageEvent) {
@@ -295,6 +298,16 @@ function PageEditor(props: ComponentProps) {
 					onSelectedComponentChange: key => setSelectedComponent(key),
 					operations,
 					onContextMenu: (m: ContextMenuDetails) => setContextMenu(m),
+					onSlaveStore: (store: any) => {
+						setSlaveStore({
+							store,
+							localStore: Object.entries(window.localStorage).reduce((a, c) => {
+								if (c[1].length && (c[1][0] === '[' || c[1][0] === '{')) {
+								}
+								return a;
+							}, {}),
+						});
+					},
 				},
 				payload,
 			);

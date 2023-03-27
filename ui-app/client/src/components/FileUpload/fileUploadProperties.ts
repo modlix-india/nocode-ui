@@ -1,22 +1,22 @@
 import { Schema } from '@fincity/kirun-js';
 import {
-	SCHEMA_REF_ANY_COMP_PROP,
-	SCHEMA_REF_BOOL_COMP_PROP,
-	SCHEMA_REF_NUM_COMP_PROP,
-	SCHEMA_REF_STRING_COMP_PROP,
-	SCHEMA_REF_VALIDATION,
+	SCHEMA_ANY_COMP_PROP,
+	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_NUM_COMP_PROP,
+	SCHEMA_STRING_COMP_PROP,
+	SCHEMA_VALIDATION,
 } from '../../constants';
 import {
 	ComponentPropertyEditor,
 	ComponentPropertyDefinition,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
-import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
+import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'uploadViewType',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'upload File UI type',
 		description: `Show the UI type of the upload component which is selected.`,
 		defaultValue: 'LARGE_VIEW',
@@ -31,74 +31,70 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'uploadIcon',
-		schema: Schema.ofRef(SCHEMA_REF_ANY_COMP_PROP),
+		schema: SCHEMA_ANY_COMP_PROP,
 		displayName: 'Upload Icon',
 		description: `Upload Icon.`,
 		defaultValue: 'fa fa-solid fa-upload',
 	},
 	{
 		name: 'mainText',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Main text for upload component',
 		description: `Upload Component Main Text.`,
 		defaultValue: 'Upload',
 	},
 	{
 		name: 'subText',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'sub text for upload component',
 		description: `Upload Component sub Text.`,
 		defaultValue: 'Or drag and drop here',
 	},
 	{
 		name: 'isMultiple',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'upload multiple file selected for upload component',
 		description: `Upload multiple file when file selected for Upload Component.`,
 		defaultValue: true,
 	},
 	{
-		name: 'readOnly',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
-		displayName: 'Upload component disabled',
-		description: 'Upload Component disabled',
-	},
-	{
 		name: 'maxFileSize',
-		schema: Schema.ofRef(SCHEMA_REF_NUM_COMP_PROP),
+		schema: SCHEMA_NUM_COMP_PROP,
 		displayName: 'Upload component max file size in bytes',
 		description: 'Upload Component Max File Size in bytes',
 		defaultValue: '1000000',
 	},
 	{
 		name: 'options',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Upload file types options',
 		description: 'Upload files type options',
 		defaultValue: 'image/jpeg,image/png',
 	},
 	{
 		name: 'showFileList',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'show files selected List in upload component',
 		description: 'Show Selected File list in upload component',
 		defaultValue: true,
 	},
 	{
 		name: 'onSelectEvent',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Upload files on selection event type',
 		description: 'Upload files on selection event type',
 	},
 	{
 		name: 'validation',
-		schema: Schema.ofRef(SCHEMA_REF_VALIDATION),
+		schema: SCHEMA_VALIDATION,
 		displayName: 'Validation',
 		description: 'Validation Rule',
 		editor: ComponentPropertyEditor.VALIDATION,
 		multiValued: true,
 		notImplemented: true,
 	},
+	COMMON_COMPONENT_PROPERTIES.readOnly,
+	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

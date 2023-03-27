@@ -1,5 +1,5 @@
 import { deepEqual } from '@fincity/kirun-js';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
 	addListenerAndCallImmediately,
 	getPathFromLocation,
@@ -149,7 +149,7 @@ function DropdownComponent(props: ComponentProps) {
 		event.stopPropagation();
 	};
 
-	const getLabel = () => {
+	const getLabel = useCallback(() => {
 		const label =
 			!selected ||
 			!selectedDataKey ||
@@ -163,7 +163,7 @@ function DropdownComponent(props: ComponentProps) {
 						selectedDataKey.length > 1 ? 's' : ''
 				  }  selected`;
 		return label;
-	};
+	}, [selected, selectedDataKey, dropdownData, noFloat, placeholder, isMultiSelect]);
 
 	useEffect(() => {
 		if (showDropdown) {
