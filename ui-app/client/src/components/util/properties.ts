@@ -13,6 +13,7 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 		displayName: 'On Click',
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		description: 'Event to be triggered when clicked.',
+		group: ComponentPropertyGroup.EVENTS,
 	},
 	onSelect: {
 		name: 'onSelect',
@@ -20,6 +21,7 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 		displayName: 'On Select',
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		description: 'Event to be triggered when selection.',
+		group: ComponentPropertyGroup.EVENTS,
 	},
 	onEnter: {
 		name: 'onEnter',
@@ -27,6 +29,7 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 		displayName: 'On Enter',
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		description: 'Event to be triggered when enter is pressed.',
+		group: ComponentPropertyGroup.EVENTS,
 	},
 	label: {
 		name: 'label',
@@ -34,6 +37,7 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 		displayName: 'Label',
 		description: 'Label to be displayed',
 		translatable: true,
+		group: ComponentPropertyGroup.IMPORTANT,
 		editor: ComponentPropertyEditor.TRANSLATABLE_PROP,
 	},
 	readOnly: {

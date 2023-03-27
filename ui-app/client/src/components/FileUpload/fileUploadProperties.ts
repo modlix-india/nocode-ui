@@ -11,7 +11,7 @@ import {
 	ComponentPropertyDefinition,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
-import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
+import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
@@ -58,12 +58,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: true,
 	},
 	{
-		name: 'readOnly',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Upload component disabled',
-		description: 'Upload Component disabled',
-	},
-	{
 		name: 'maxFileSize',
 		schema: SCHEMA_NUM_COMP_PROP,
 		displayName: 'Upload component max file size in bytes',
@@ -99,6 +93,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		multiValued: true,
 		notImplemented: true,
 	},
+	COMMON_COMPONENT_PROPERTIES.readOnly,
+	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

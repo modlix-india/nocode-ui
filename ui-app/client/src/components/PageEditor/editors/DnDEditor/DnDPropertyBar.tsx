@@ -20,6 +20,9 @@ export default function DnDPropertyBar({
 	defPath,
 	locationHistory,
 	pageExtractor,
+	personalizationPath,
+	onChangePersonalization,
+	theme,
 }: PropertyBarProps) {
 	const [currentTab, setCurrentTab] = useState(1);
 
@@ -28,6 +31,9 @@ export default function DnDPropertyBar({
 	const tab =
 		currentTab === 1 ? (
 			<PropertyEditor
+				theme={theme}
+				personalizationPath={personalizationPath}
+				onChangePersonalization={onChangePersonalization}
 				selectedComponent={selectedComponent}
 				defPath={defPath}
 				locationHistory={locationHistory}

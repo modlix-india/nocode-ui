@@ -11,10 +11,13 @@ import {
 import {
 	ComponentDefinition,
 	ComponentProperty,
+	ComponentPropertyDefinition,
+	ComponentPropertyGroup,
 	LocationHistory,
 	PageDefinition,
 } from '../../../types/common';
 import duplicate from '../../../util/duplicate';
+import { PropertyGroup } from './PropertyGroup';
 import BindingPathEditor from './propertyValueEditors/BindingPathEditor';
 import PropertyValueEditor from './propertyValueEditors/PropertyValueEditor';
 
@@ -23,6 +26,9 @@ interface PropertyEditorProps {
 	pageExtractor: PageStoreExtractor;
 	defPath: string | undefined;
 	locationHistory: Array<LocationHistory>;
+	theme: string;
+	personalizationPath: string | undefined;
+	onChangePersonalization: (prop: string, value: any) => void;
 }
 
 function updatePropertyDefinition(
@@ -66,6 +72,9 @@ export default function PropertyEditor({
 	defPath,
 	locationHistory,
 	pageExtractor,
+	onChangePersonalization,
+	theme,
+	personalizationPath,
 }: PropertyEditorProps) {
 	const [def, setDef] = useState<ComponentDefinition>();
 	const [pageDef, setPageDef] = useState<PageDefinition>();
@@ -87,24 +96,24 @@ export default function PropertyEditor({
 
 	const cd = ComponentDefinitions.get(def.type);
 
-	let bps = [];
-	let x: [
-		'bindingPath',
-		'bindingPath2',
-		'bindingPath3',
-		'bindingPath4',
-		'bindingPath5',
-		'bindingPath6',
-	] = [
-		'bindingPath',
-		'bindingPath2',
-		'bindingPath3',
-		'bindingPath4',
-		'bindingPath5',
-		'bindingPath6',
-	];
-
+	let bpGroup = undefined;
 	if (cd?.bindingPaths) {
+		let bps = [];
+		let x: [
+			'bindingPath',
+			'bindingPath2',
+			'bindingPath3',
+			'bindingPath4',
+			'bindingPath5',
+			'bindingPath6',
+		] = [
+			'bindingPath',
+			'bindingPath2',
+			'bindingPath3',
+			'bindingPath4',
+			'bindingPath5',
+			'bindingPath6',
+		];
 		for (let i = 0; i < 6; i++) {
 			if (!cd.bindingPaths[x[i]]) continue;
 			bps.push(
@@ -131,66 +140,112 @@ export default function PropertyEditor({
 				</div>,
 			);
 		}
+		if (bps.length) {
+			bpGroup = (
+				<PropertyGroup
+					name="bindings"
+					displayName="Bindings"
+					defaultStateOpen={false}
+					pageExtractor={pageExtractor}
+					locationHistory={locationHistory}
+					onChangePersonalization={onChangePersonalization}
+					personalizationPath={personalizationPath}
+				>
+					{bps}
+				</PropertyGroup>
+			);
+		}
 	}
 
-	return (
-		<div className="_propertyEditor">
-			<div className="_eachProp">
-				<div className="_propLabel" title="Name">
-					Name :
-					<span className="_description" title="Name to identify the component">
+	const propGroups = cd?.properties?.reduce((a: { [key: string]: Array<React.ReactNode> }, e) => {
+		let grp = '' + (e.group ?? ComponentPropertyGroup.ADVANCED);
+		if (!a[grp]) a[grp] = [];
+		a[grp].push(
+			<div className="_eachProp" key={`${selectedComponent}-${e.name}`}>
+				<div className="_propLabel" title={e.description}>
+					{e.displayName} :
+					<span className="_description" title={e.description}>
 						i
 					</span>
 				</div>
 				<PropertyValueEditor
 					pageDefinition={pageDef}
-					propDef={{
-						name: 'name',
-						displayName: 'Name',
-						description: 'Name to identify the component',
-						schema: SCHEMA_STRING_COMP_PROP,
-					}}
-					value={{ value: def.name }}
-					onlyValue={true}
-					onChange={v => {
-						const newDef = duplicate(def);
-						newDef.name = v.value;
-						updateDefinition(
+					propDef={e}
+					value={def.properties?.[e.name] as ComponentProperty<any>}
+					onChange={v =>
+						updatePropertyDefinition(
 							defPath!,
 							locationHistory,
 							pageExtractor,
 							selectedComponent,
-							newDef,
-						);
-					}}
+							e.name,
+							v,
+						)
+					}
 				/>
-			</div>
-			{bps}
-			{cd?.properties.map(e => {
-				return (
-					<div className="_eachProp" key={`${selectedComponent}-${e.name}`}>
-						<div className="_propLabel" title={e.description}>
-							{e.displayName} :
-							<span className="_description" title={e.description}>
-								i
-							</span>
-						</div>
-						<PropertyValueEditor
-							pageDefinition={pageDef}
-							propDef={e}
-							value={def.properties?.[e.name] as ComponentProperty<any>}
-							onChange={v =>
-								updatePropertyDefinition(
-									defPath!,
-									locationHistory,
-									pageExtractor,
-									selectedComponent,
-									e.name,
-									v,
-								)
-							}
-						/>
+			</div>,
+		);
+		return a;
+	}, {});
+
+	return (
+		<div className="_propertyEditor">
+			<PropertyGroup
+				name="first"
+				displayName="General"
+				defaultStateOpen={true}
+				pageExtractor={pageExtractor}
+				locationHistory={locationHistory}
+				onChangePersonalization={onChangePersonalization}
+				personalizationPath={personalizationPath}
+			>
+				<div className="_eachProp">
+					<div className="_propLabel" title="Name">
+						Name :
+						<span className="_description" title="Name to identify the component">
+							i
+						</span>
 					</div>
+					<PropertyValueEditor
+						pageDefinition={pageDef}
+						propDef={{
+							name: 'name',
+							displayName: 'Name',
+							description: 'Name to identify the component',
+							schema: SCHEMA_STRING_COMP_PROP,
+						}}
+						value={{ value: def.name }}
+						onlyValue={true}
+						onChange={v => {
+							const newDef = duplicate(def);
+							newDef.name = v.value;
+							updateDefinition(
+								defPath!,
+								locationHistory,
+								pageExtractor,
+								selectedComponent,
+								newDef,
+							);
+						}}
+					/>
+				</div>
+			</PropertyGroup>
+			{bpGroup}
+			{Object.entries(ComponentPropertyGroup).map((e, i) => {
+				if (!propGroups?.[e[1]]) return null;
+				return (
+					<PropertyGroup
+						key={e[0]}
+						name={e[1]}
+						displayName={e[0]}
+						defaultStateOpen={e[1] === ComponentPropertyGroup.IMPORTANT}
+						pageExtractor={pageExtractor}
+						locationHistory={locationHistory}
+						onChangePersonalization={onChangePersonalization}
+						personalizationPath={personalizationPath}
+					>
+						{propGroups[e[1]]}
+					</PropertyGroup>
 				);
 			})}
 		</div>

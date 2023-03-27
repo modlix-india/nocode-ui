@@ -10,7 +10,7 @@ import {
 	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
-import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
+import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
@@ -31,14 +31,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'closeEvent',
 		description: 'closeEvent that should be associated with the tag.',
-	},
-	{
-		name: 'readOnly',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'readOnly',
-		description: 'read only.',
-		group: ComponentPropertyGroup.COMMON,
-		defaultValue: false,
 	},
 	{
 		name: 'datatype',
@@ -188,6 +180,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: `Key value that is used to generate label value.`,
 		translatable: true,
 	},
+	COMMON_COMPONENT_PROPERTIES.readOnly,
+	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

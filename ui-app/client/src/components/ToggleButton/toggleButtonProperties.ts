@@ -10,6 +10,7 @@ import {
 	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
+import { COMMON_COMPONENT_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
@@ -20,29 +21,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		translatable: true,
 	},
 
-	{
-		name: 'bindingPath',
-		schema: Schema.ofRef(SCHEMA_DATA_LOCATION),
-		displayName: 'Binding Path',
-		description: `Path in the store to which this CheckBox is bound to.`,
-	},
-
-	{
-		name: 'readOnly',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Read Only',
-		description: 'CheckBox will be rendered un editable when this property is true.',
-		group: ComponentPropertyGroup.COMMON,
-		notImplemented: true,
-	},
-
-	{
-		name: 'visibility',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Visibility',
-		description: 'This component will be hidden when this property is true.',
-		group: ComponentPropertyGroup.COMMON,
-	},
+	COMMON_COMPONENT_PROPERTIES.readOnly,
+	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {};
