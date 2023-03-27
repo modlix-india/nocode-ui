@@ -550,6 +550,35 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex: 1;
 		}
 
+		${PREFIX} ._propertyGroup {
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
+		}
+
+		${PREFIX} ._propertyGroupHeader {
+			font-size: 13px;
+			font-weight: bold;
+			background-color: #ccc;
+			color: #888;
+			padding: 3px;
+			cursor: pointer;
+			border-radius: 3px;
+			display: flex;
+			align-items: center;
+			gap: 5px;
+			padding-left: 5px;
+		}
+
+		${PREFIX} ._propertyGroupHeader i.fa {
+			transition: transform 0.5s;
+			color: #eee;
+		}
+
+		${PREFIX} ._propertyGroup._closed i.fa {
+			transform: rotate(-90deg);
+		}
+
 		._popupContainer ._jsonEditorContainer{
 			border: 1px solid #eee;
 			border-radius: 4px;
@@ -769,6 +798,14 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX}._dark ._iconSelectionButton.active {
 			background-color: #333;
+		}
+
+		${PREFIX}._dark ._propertyGroupHeader {
+			background-color: #444c;
+			color: #222;
+		}
+		${PREFIX}._dark ._propertyGroupHeader i.fa {
+			color: #222;
 		}
 
 		._popupMenuBackground._dark ._popupMenuContainer  {

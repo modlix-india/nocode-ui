@@ -54,9 +54,13 @@ export enum ComponentPropertyEditor {
 }
 
 export enum ComponentPropertyGroup {
-	DEFAULT,
-	COMMON,
-	VALIDATION,
+	IMPORTANT = 'IMPORTANT',
+	DATA = 'DATA',
+	EVENTS = 'EVENTS',
+	ADVANCED = 'ADVANCED',
+	COMMON = 'COMMON',
+	VALIDATION = 'VALIDATION',
+	SEO = 'SEO',
 }
 
 export interface ComponentENUM {

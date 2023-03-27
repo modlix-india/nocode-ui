@@ -1,9 +1,6 @@
-import { Schema } from '@fincity/kirun-js';
 import {
-	NAMESPACE_UI_ENGINE,
 	SCHEMA_ANY_COMP_PROP,
 	SCHEMA_BOOL_COMP_PROP,
-	SCHEMA_DATA_LOCATION,
 	SCHEMA_STRING_COMP_PROP,
 	SCHEMA_VALIDATION,
 } from '../../constants';
@@ -15,13 +12,7 @@ import {
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
-	{
-		name: 'label',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Label',
-		description: 'Label that should be associated with the textbox.',
-		translatable: true,
-	},
+	COMMON_COMPONENT_PROPERTIES.label,
 
 	{
 		name: 'noFloat',
@@ -29,22 +20,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'No Float Label',
 		description: 'Textbox without floating label.',
 		defaultValue: false,
-	},
-
-	{
-		name: 'leftIcon',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Left Icon',
-		description: 'Icon to be shown on the left side.',
-		editor: ComponentPropertyEditor.ICON,
-	},
-
-	{
-		name: 'rightIcon',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Right Icon',
-		description: 'Icon to be shown on the right side.',
-		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
 	},
 
 	{
@@ -52,22 +28,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_ANY_COMP_PROP,
 		displayName: 'Default Value',
 		description: 'This value is use when the data entered is empty or not entered.',
-	},
-
-	{
-		name: 'readOnly',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Read Only',
-		description: 'Textbox will be rendered un editable when this property is true.',
-		group: ComponentPropertyGroup.COMMON,
-	},
-
-	{
-		name: 'visibility',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Visibility',
-		description: 'This component will be hidden when this property is true.',
-		group: ComponentPropertyGroup.COMMON,
+		group: ComponentPropertyGroup.DATA,
 	},
 
 	{
@@ -76,7 +37,46 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Supporting Text',
 		description: 'Text to be shown to help fill the textbox.',
 		translatable: true,
+		group: ComponentPropertyGroup.ADVANCED,
 	},
+
+	{
+		name: 'leftIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Left Icon',
+		description: 'Icon to be shown on the left side.',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+
+	{
+		name: 'rightIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Right Icon',
+		description: 'Icon to be shown on the right side.',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+
+	{
+		name: 'isPassword',
+		displayName: 'Password',
+		description: 'Textbox to enter password',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'placeholder',
+		displayName: 'Placeholder',
+		description: 'Placeholder to be shown in input box.',
+		schema: SCHEMA_STRING_COMP_PROP,
+		defaultValue: '',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+
+	COMMON_COMPONENT_PROPERTIES.readOnly,
+	COMMON_COMPONENT_PROPERTIES.visibility,
 
 	{
 		name: 'validation',
@@ -86,6 +86,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		editor: ComponentPropertyEditor.VALIDATION,
 		multiValued: true,
 		notImplemented: true,
+		group: ComponentPropertyGroup.VALIDATION,
 	},
 
 	{
@@ -95,6 +96,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Value that should be stored when the textbox is empty.',
 		editor: ComponentPropertyEditor.ENUM,
 		defaultValue: 'UNDEFINED',
+		group: ComponentPropertyGroup.DATA,
 		enumValues: [
 			{
 				name: 'UNDEFINED',
@@ -126,6 +128,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'How messages should be displayed.',
 		editor: ComponentPropertyEditor.ENUM,
 		defaultValue: '_floatingMessages',
+		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
 			{
 				name: '_floatingMessages',
@@ -152,6 +155,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Type of the Value',
 		defaultValue: 'text',
 		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.DATA,
 		enumValues: [
 			{ name: 'text', displayName: 'Text', description: 'Javascript String type' },
 			{ name: 'number', displayName: 'Number', description: 'Javascript Number type' },
@@ -165,6 +169,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Choose whether number can be decimal or integer',
 		defaultValue: 'DECIMAL',
 		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.DATA,
 		enumValues: [
 			{ name: 'DECIMAL', displayName: 'Decimal', description: 'Javascript Float type' },
 			{ name: 'INTEGER', displayName: 'Integer', description: 'Javascript Integer type' },
@@ -176,6 +181,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Delete Key on Empty',
 		description: 'Removes the key when the textbox is emptied.',
+		group: ComponentPropertyGroup.DATA,
 	},
 
 	{
@@ -184,22 +190,9 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Update the store Immediately after typing or on blur by default.',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		notImplemented: true,
+		group: ComponentPropertyGroup.DATA,
 	},
 
-	{
-		name: 'isPassword',
-		displayName: 'Password',
-		description: 'Textbox to enter password',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		defaultValue: false,
-	},
-	{
-		name: 'placeholder',
-		displayName: 'Placeholder',
-		description: 'Placeholder to be shown in input box.',
-		schema: SCHEMA_STRING_COMP_PROP,
-		defaultValue: '',
-	},
 	COMMON_COMPONENT_PROPERTIES.onEnter,
 ];
 

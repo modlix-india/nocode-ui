@@ -134,7 +134,10 @@ function HelperComponentInternal({
 			onMouseOut={e => onMouseOut?.(e)}
 			title={`${definition.name} - ${definition.key}`}
 		>
-			<div style={labelStyle}>{ComponentDefinitions.get(definition.type)?.displayName}</div>
+			<div style={labelStyle}>
+				<i className={ComponentDefinitions.get(definition.type)?.icon} />
+				{ComponentDefinitions.get(definition.type)?.displayName}
+			</div>
 			{children}
 		</div>
 	);

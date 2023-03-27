@@ -10,7 +10,7 @@ import {
 	ComponentPropertyGroup,
 	ComponentPropertyDefinition,
 } from '../../types/common';
-import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
+import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
@@ -80,20 +80,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: "Link's target.",
 		defaultValue: '_self',
 	},
-	{
-		name: 'readOnly',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Read Only',
-		description: 'Textbox will be rendered un editable when this property is true.',
-		group: ComponentPropertyGroup.COMMON,
-	},
-	{
-		name: 'visibility',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Visibility',
-		description: 'This component will be hidden when this property is true.',
-		group: ComponentPropertyGroup.COMMON,
-	},
+	COMMON_COMPONENT_PROPERTIES.readOnly,
+	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
 const stylePropertiesDefinition = {
