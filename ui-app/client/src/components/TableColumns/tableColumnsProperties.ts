@@ -1,19 +1,19 @@
 import { Schema } from '@fincity/kirun-js';
-import { SCHEMA_REF_BOOL_COMP_PROP } from '../../constants';
+import { SCHEMA_BOOL_COMP_PROP } from '../../constants';
 import { ComponentPropertyDefinition } from '../../types/common';
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'showEmptyRows',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show Empty Rows',
 		description: 'Show Empty Rows when there is no data',
 		defaultValue: true,
 	},
 	{
 		name: 'showHeaders',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show Headers',
 		description: 'Show Headers',
 		defaultValue: true,

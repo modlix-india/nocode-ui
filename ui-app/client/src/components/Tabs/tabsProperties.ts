@@ -1,5 +1,5 @@
 import { Schema } from '@fincity/kirun-js';
-import { SCHEMA_REF_ANY_COMP_PROP, SCHEMA_REF_STRING_COMP_PROP } from '../../constants';
+import { SCHEMA_ANY_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
@@ -14,20 +14,20 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'tabs',
-		schema: Schema.ofRef(SCHEMA_REF_ANY_COMP_PROP),
+		schema: SCHEMA_ANY_COMP_PROP,
 		displayName: 'Tabs list (CSV)',
 		description: 'Tabs to be present on the component, comma seperated list of tab names',
 		defaultValue: '',
 	},
 	{
 		name: 'defaultActive',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Active tab name',
 		description: 'Active default tab',
 	},
 	{
 		name: 'icon',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'icon list (CSV)',
 		editor: ComponentPropertyEditor.ICON,
 		description: "icon's to be present on the component, comma seperated list of icon links",
@@ -35,7 +35,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'tabsOrientation',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Tabs Orientation',
 		description: 'Orientation of tabs coponent',
 		editor: ComponentPropertyEditor.ENUM,
@@ -51,7 +51,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'activeStyle',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Active tab style',
 		description: 'Orientation of tabs coponent',
 		editor: ComponentPropertyEditor.ENUM,

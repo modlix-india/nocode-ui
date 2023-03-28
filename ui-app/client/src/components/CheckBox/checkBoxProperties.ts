@@ -1,8 +1,8 @@
 import { Schema } from '@fincity/kirun-js';
 import {
-	SCHEMA_REF_BOOL_COMP_PROP,
-	SCHEMA_REF_DATA_LOCATION,
-	SCHEMA_REF_STRING_COMP_PROP,
+	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_DATA_LOCATION,
+	SCHEMA_STRING_COMP_PROP,
 } from '../../constants';
 import {
 	ComponentPropertyDefinition,
@@ -10,12 +10,12 @@ import {
 	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
-import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
+import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'label',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'CheckBox label',
 		description: `CheckBox's display label.`,
 		translatable: true,
@@ -23,7 +23,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'orientation',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'CheckBox orientation',
 		description: `CheckBox's display orientation.`,
 		defaultValue: 'HORIZONATAL',
@@ -44,26 +44,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'onClick',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Event trigger on click',
 		description: `The event that is triggered on click of dropdown option`,
 	},
 
-	{
-		name: 'readOnly',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
-		displayName: 'Read Only',
-		description: 'CheckBox will be rendered un editable when this property is true.',
-		group: ComponentPropertyGroup.COMMON,
-	},
-
-	{
-		name: 'visibility',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
-		displayName: 'Visibility',
-		description: 'This component will be hidden when this property is true.',
-		group: ComponentPropertyGroup.COMMON,
-	},
+	COMMON_COMPONENT_PROPERTIES.readOnly,
+	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

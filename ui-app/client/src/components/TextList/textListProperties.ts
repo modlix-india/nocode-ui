@@ -1,12 +1,12 @@
 import { Schema } from '@fincity/kirun-js';
 import {
 	NAMESPACE_UI_ENGINE,
-	SCHEMA_REF_ANY_COMP_PROP,
-	SCHEMA_REF_BOOL_COMP_PROP,
-	SCHEMA_REF_DATA_LOCATION,
-	SCHEMA_REF_NUM_COMP_PROP,
-	SCHEMA_REF_STRING_COMP_PROP,
-	SCHEMA_REF_VALIDATION,
+	SCHEMA_ANY_COMP_PROP,
+	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_DATA_LOCATION,
+	SCHEMA_NUM_COMP_PROP,
+	SCHEMA_STRING_COMP_PROP,
+	SCHEMA_VALIDATION,
 } from '../../constants';
 import {
 	ComponentPropertyDefinition,
@@ -18,7 +18,7 @@ import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '.
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'text',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Text',
 		description: 'Delimitter separated string for multiple list items.',
 		translatable: true,
@@ -26,7 +26,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'delimitter',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Value Type',
 		description: 'Type of the Value',
 		defaultValue: ',',
@@ -41,7 +41,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'listType',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'List Type',
 		description: 'Type of the list to use',
 		defaultValue: 'ul',
@@ -54,7 +54,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'listIcon',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'List icon',
 		description: 'Icon to be used for list',
 		defaultValue: '',
@@ -63,7 +63,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'listStyleType',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'List style type',
 		description: 'Style Type of the List to use for listing',
 		defaultValue: 'none',
@@ -71,7 +71,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'textKeyType',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: "Text's text type",
 		description: `type of value that needs to be selected for dispaly label`,
 		defaultValue: 'OBJECT',
@@ -97,7 +97,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'textKey',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: "Text text's value ",
 		description: `Key value that is used to generate Text value.`,
 		translatable: false,
@@ -105,7 +105,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'start',
-		schema: Schema.ofRef(SCHEMA_REF_NUM_COMP_PROP),
+		schema: SCHEMA_NUM_COMP_PROP,
 		displayName: "List's start count",
 		description:
 			'The start attribute allows you to start the list counting from a number other than 1.',
@@ -114,7 +114,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'reversed',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: "List's reverse count",
 		description: 'The reversed attribute will start the list counting down instead of up.',
 		defaultValue: false,
@@ -123,7 +123,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'uniqueKeyType',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: "Text's key type",
 		description: `type of value that needs to be selected for text key`,
 		defaultValue: 'OBJECT',
@@ -154,7 +154,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'uniqueKey',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: "Text key's value ",
 		description: `Key value that is used to generate Text value.`,
 		translatable: false,
@@ -162,7 +162,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'datatype',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: "TextList's data type",
 		description: "TextList's data format.",
 		defaultValue: 'LIST_OF_STRINGS',
@@ -203,14 +203,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'data',
-		schema: Schema.ofRef(SCHEMA_REF_ANY_COMP_PROP),
+		schema: SCHEMA_ANY_COMP_PROP,
 		displayName: "TextLis's data",
 		description: 'Data that is used to render TextList.',
 	},
 
 	{
 		name: 'visibility',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Visibility',
 		description: 'This component will be hidden when this property is true.',
 		group: ComponentPropertyGroup.COMMON,

@@ -1,8 +1,8 @@
 import { Schema } from '@fincity/kirun-js';
 import {
-	SCHEMA_REF_ANY_COMP_PROP,
-	SCHEMA_REF_BOOL_COMP_PROP,
-	SCHEMA_REF_STRING_COMP_PROP,
+	SCHEMA_ANY_COMP_PROP,
+	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_STRING_COMP_PROP,
 } from '../../constants';
 import {
 	ComponentPropertyDefinition,
@@ -10,39 +10,31 @@ import {
 	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
-import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
+import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'icon',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'icon',
 		description: 'icon that should be associated with the tag.',
 	},
 	{
 		name: 'closeButton',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'closeButton',
 		description: 'closeButton that should be associated with the tag.',
 		defaultValue: true,
 	},
 	{
 		name: 'closeEvent',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'closeEvent',
 		description: 'closeEvent that should be associated with the tag.',
 	},
 	{
-		name: 'readOnly',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
-		displayName: 'readOnly',
-		description: 'read only.',
-		group: ComponentPropertyGroup.COMMON,
-		defaultValue: false,
-	},
-	{
 		name: 'datatype',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Dropdown data type',
 		description: `Dropdown's data format.`,
 		defaultValue: 'LIST_OF_STRINGS',
@@ -82,7 +74,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'uniqueKeyType',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: "Unique key's type",
 		description: `Type for sleection unique key`,
 		defaultValue: 'LIST_OF_STRINGS',
@@ -113,14 +105,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'hasInputBox',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'hasInputBox',
 		description: 'has InputBox.',
 		defaultValue: true,
 	},
 	{
 		name: 'delimitter',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Value Type',
 		description: 'Type of the Value',
 		defaultValue: ' ',
@@ -134,14 +126,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'placeHolder',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'placeHolder',
 		description: 'placeHolder.',
 		defaultValue: '',
 	},
 	{
 		name: 'label',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'label',
 		description: 'label.',
 		defaultValue: '',
@@ -149,7 +141,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'labelKeyType',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: "Label's key type",
 		description: `type of value that needs to be selected for dispaly label`,
 		defaultValue: 'LIST_OF_STRINGS',
@@ -175,7 +167,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'uniqueKey',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: "Unique key's value",
 		description: `Key value that is used to generate unique key value.`,
 		translatable: true,
@@ -183,11 +175,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'labelKey',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: "Labels key's value ",
 		description: `Key value that is used to generate label value.`,
 		translatable: true,
 	},
+	COMMON_COMPONENT_PROPERTIES.readOnly,
+	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

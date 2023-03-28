@@ -1,5 +1,5 @@
 import { deepEqual } from '@fincity/kirun-js';
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import CommonInputText from '../../commonComponents/CommonInputText';
 import {
 	addListenerAndCallImmediately,
@@ -208,7 +208,7 @@ function DropdownComponent(props: ComponentProps) {
 		event.stopPropagation();
 	};
 
-	const getLabel = () => {
+	const getLabel = useCallback(() => {
 		let label = '';
 		if (!selected || (Array.isArray(selected) && !selected.length)) {
 			return noFloat ? placeholder : '';
@@ -238,7 +238,7 @@ function DropdownComponent(props: ComponentProps) {
 						selectedDataKey.length > 1 ? 's' : ''
 				  }  selected`;
 		return label;
-	};
+	}, [selected, selectedDataKey, dropdownData, noFloat, placeholder, isMultiSelect]);
 	const effectivePlaceholder = noFloat ? (placeholder ? placeholder : label) : label;
 	const computedStyles = processComponentStylePseudoClasses(
 		{ focus, readOnly },

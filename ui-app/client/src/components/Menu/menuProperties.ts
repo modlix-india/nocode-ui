@@ -1,73 +1,73 @@
 import { Schema } from '@fincity/kirun-js';
 import {
-	SCHEMA_REF_ANY_COMP_PROP,
-	SCHEMA_REF_BOOL_COMP_PROP,
-	SCHEMA_REF_DATA_LOCATION,
-	SCHEMA_REF_STRING_COMP_PROP,
+	SCHEMA_ANY_COMP_PROP,
+	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_DATA_LOCATION,
+	SCHEMA_STRING_COMP_PROP,
 } from '../../constants';
 import {
 	ComponentPropertyEditor,
 	ComponentPropertyGroup,
 	ComponentPropertyDefinition,
 } from '../../types/common';
-import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
+import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'pathsActiveFor',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: "Path's menu is active",
 		description: 'A list of comma separated paths for which the menu is shown in active.',
 		defaultValue: '',
 	},
 	{
 		name: 'label',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Menu label',
 		description: "Menu's display label.",
 		translatable: true,
 	},
 	{
 		name: 'onClick',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Menu click event',
 		description: "Menu's event to trigger on click.",
 	},
 	{
 		name: 'onMenuOpen',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Menu open click event',
 		description: "Menu's event to trigger on menu open click.",
 	},
 	{
 		name: 'onMenuClose',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Menu close click event',
 		description: "Menu's event to trigger on menu close click.",
 	},
 	{
 		name: 'onlyIconMenu',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Only Icon Menu',
 		description: 'Menu have only icons.',
 	},
 	{
 		name: 'icon',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: "Menu's icon",
 		description: "Menu's icon to be displayed on left of label.",
 		editor: ComponentPropertyEditor.ICON,
 	},
 	{
 		name: 'isMenuOpen',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Menu open or not',
 		description: 'Menu open or not after click event.',
 		defaultValue: true,
 	},
 	{
 		name: 'linkPath',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Link path',
 		description: 'Path that page needs to be redirected on click.',
 		translatable: false,
@@ -75,25 +75,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'target',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Link target',
 		description: "Link's target.",
 		defaultValue: '_self',
 	},
-	{
-		name: 'readOnly',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
-		displayName: 'Read Only',
-		description: 'Textbox will be rendered un editable when this property is true.',
-		group: ComponentPropertyGroup.COMMON,
-	},
-	{
-		name: 'visibility',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
-		displayName: 'Visibility',
-		description: 'This component will be hidden when this property is true.',
-		group: ComponentPropertyGroup.COMMON,
-	},
+	COMMON_COMPONENT_PROPERTIES.readOnly,
+	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
 const stylePropertiesDefinition = {

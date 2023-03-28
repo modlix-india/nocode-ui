@@ -1,5 +1,5 @@
 import { Schema } from '@fincity/kirun-js';
-import { SCHEMA_REF_BOOL_COMP_PROP, SCHEMA_REF_STRING_COMP_PROP } from '../../constants';
+import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
@@ -11,7 +11,7 @@ import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'icon',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Icon',
 		description: 'Icon',
 		translatable: true,
@@ -19,18 +19,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
-		name: 'iconPack',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-		displayName: 'Icon Pack',
-		description: 'Icon Pack',
-		translatable: true,
-		editor: ComponentPropertyEditor.ICON_PACK,
-		defaultValue: 'Font Awesome',
-	},
-
-	{
 		name: 'visibility',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Visibility',
 		description: 'This component will be hidden when this property is true.',
 		group: ComponentPropertyGroup.COMMON,

@@ -1,9 +1,9 @@
 import { Schema } from '@fincity/kirun-js';
 import {
-	SCHEMA_REF_ANY_COMP_PROP,
-	SCHEMA_REF_BOOL_COMP_PROP,
-	SCHEMA_REF_NUM_COMP_PROP,
-	SCHEMA_REF_STRING_COMP_PROP,
+	SCHEMA_ANY_COMP_PROP,
+	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_NUM_COMP_PROP,
+	SCHEMA_STRING_COMP_PROP,
 } from '../../constants';
 import {
 	ComponentPropertyEditor,
@@ -15,49 +15,49 @@ import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '.
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'label',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Progress Bar Labels value ',
 		description: `Progress Bar Label value.`,
 		translatable: true,
 	},
 	{
 		name: 'showProgressValue',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show Progress Bar value ',
 		description: `Show Progress Bar value.`,
 		defaultValue: true,
 	},
 	{
 		name: 'progressNotStartedLabel',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Progress Not started Label',
 		description: `Progress Not started Label.`,
 		translatable: true,
 	},
 	{
 		name: 'inProgressLabel',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'In Progress Label',
 		description: `In Progress Label.`,
 		translatable: true,
 	},
 	{
 		name: 'progressCompletedLabel',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Progress Completed Label',
 		description: `Progress Completed Label.`,
 		translatable: true,
 	},
 	{
 		name: 'appendProgressValue',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Append Progress Label',
 		description: `Append Progress Label.`,
 		defaultValue: true,
 	},
 	{
 		name: 'prependProgressValue',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Prepend Progress Label',
 		description: `Prepend Progress Label.`,
 		defaultValue: false,

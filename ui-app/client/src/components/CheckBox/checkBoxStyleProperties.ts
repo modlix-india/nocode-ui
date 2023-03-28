@@ -7,7 +7,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "checkbox's Color",
 		description: 'The color of the Checkbox.',
 		defaultValue: '<white>',
-		selector: "input[type='checkbox'].commonCheckbox",
+		selector: "input[type='checkbox'].commonCheckbox, span.commonTriStateCheckbox",
 		noPrefix: true,
 	},
 
@@ -17,7 +17,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "checkbox check's Color",
 		description: 'The color of the Checkbox check.',
 		defaultValue: '<light-font-color>',
-		selector: "input[type='checkbox'].commonCheckbox::before",
+		selector:
+			"input[type='checkbox'].commonCheckbox::before, span.commonTriStateCheckbox::before",
 		noPrefix: true,
 	},
 
@@ -27,7 +28,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "checkbox's border Color",
 		description: 'The border color of the Checkbox.',
 		defaultValue: 'rgba(0, 0, 0, 0.38)',
-		selector: "input[type='checkbox'].commonCheckbox",
+		selector: "input[type='checkbox'].commonCheckbox, span.commonTriStateCheckbox",
 		noPrefix: true,
 	},
 	{
@@ -36,7 +37,17 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "checkbox's checked animation Color",
 		description: 'The checked animation color of the Checkbox.',
 		defaultValue: '<contrast-bright-color>',
-		selector: "input[type='checkbox'].commonCheckbox:checked",
+		selector:
+			"input[type='checkbox'].commonCheckbox:checked, span.commonTriStateCheckbox._true",
+		noPrefix: true,
+	},
+	{
+		name: 'checkBoxTriStateFalseChecked',
+		cssProperty: 'color',
+		displayName: "checkbox's checked false animation Color",
+		description: 'The checked animation color of the Checkbox when false.',
+		defaultValue: '<black-font-color>',
+		selector: 'span.commonTriStateCheckbox._false::before',
 		noPrefix: true,
 	},
 	{
