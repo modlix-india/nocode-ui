@@ -20,6 +20,13 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		noPrefix: true,
 	},
 	{
+		name: 'box-box-shadow',
+		displayName: 'Box shadow for container',
+		description: 'Box shadow for container.',
+		defaultValue: '#E6E6E6',
+		noPrefix: true,
+	},
+	{
 		name: 'main-font-weight',
 		displayName: 'Application/Site Font Weight',
 		description: 'This font is used throughout application.',
@@ -83,6 +90,13 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Form input border color when hover',
 		description: 'This border color is used throughout form input controls when hover.',
 		defaultValue: '#2680EB',
+		noPrefix: true,
+	},
+	{
+		name: 'option-hover-background',
+		displayName: 'Hover background color',
+		description: 'Background color on hover.',
+		defaultValue: '#F4F6F6',
 		noPrefix: true,
 	},
 	{

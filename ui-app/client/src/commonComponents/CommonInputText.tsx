@@ -12,7 +12,7 @@ type CommonInputType = {
 	noFloat?: boolean;
 	readOnly: boolean;
 	value: string;
-	label: string;
+	label?: string;
 	translations: Translations;
 	leftIcon?: any;
 	rightIcon?: any;
@@ -25,6 +25,7 @@ type CommonInputType = {
 	context: RenderContext;
 	supportingText?: string;
 	messageDisplay?: string;
+	hideClearContentIcon?: boolean;
 };
 
 function CommonInputText(props: CommonInputType) {
@@ -51,6 +52,7 @@ function CommonInputText(props: CommonInputType) {
 		supportingText,
 		context,
 		messageDisplay = '_floatingMessages',
+		hideClearContentIcon,
 	} = props;
 	const [focus, setFocus] = React.useState(false);
 	const [showPassword, setShowPassowrd] = React.useState(false);
@@ -89,7 +91,7 @@ function CommonInputText(props: CommonInputType) {
 
 	return (
 		<div className="commonInputBox">
-			{noFloat && (
+			{noFloat && label && (
 				<label
 					style={computedStyles.noFloatLabel ?? {}}
 					htmlFor={id}
@@ -168,7 +170,7 @@ function CommonInputText(props: CommonInputType) {
 							value?.length ? `hasText` : ``
 						} fa fa-solid fa-circle-exclamation`}
 					/>
-				) : value?.length && !rightIcon && !readOnly && !isPassword ? (
+				) : !hideClearContentIcon && value?.length && !readOnly && !isPassword ? (
 					<i
 						style={computedStyles.supportText ?? {}}
 						onClick={clearContentHandler}

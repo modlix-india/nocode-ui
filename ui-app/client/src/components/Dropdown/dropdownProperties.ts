@@ -16,7 +16,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'placeholder',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: 'Dropdown placeholder',
-		description: `Placeholder that\'s shown when no item is selected in dropdown.`,
+		description: "Placeholder that's shown when no item is selected in dropdown.",
 		defaultValue: 'Select ...',
 	},
 
@@ -24,16 +24,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'isMultiSelect',
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
 		displayName: 'Is MultiSelect',
-		description: `Allows the users to select multiple options.`,
-		defaultValue: true,
+		description: 'Allows the users to select multiple options.',
+		defaultValue: false,
 	},
 
 	{
 		name: 'isSearchable',
 		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
 		displayName: 'Is Searchable',
-		description: `Allows the users search options.`,
-		defaultValue: true,
+		description: 'Allows the users search options.',
+		defaultValue: false,
 	},
 
 	{
@@ -49,21 +49,21 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'label',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: 'Dropdown header text',
-		description: `Header text that\'s shown on top of dropdown.`,
+		description: "Header text that's shown on top of dropdown.",
 	},
 
 	{
 		name: 'data',
 		schema: Schema.ofRef(SCHEMA_REF_ANY_COMP_PROP),
 		displayName: 'Dropdown data',
-		description: `Data that is used to render dropdown.`,
+		description: 'Data that is used to render dropdown.',
 	},
 
 	{
 		name: 'datatype',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: 'Dropdown data type',
-		description: `Dropdown's data format.`,
+		description: "Dropdown's data format.",
 		defaultValue: 'LIST_OF_STRINGS',
 		editor: ComponentPropertyEditor.ENUM,
 		enumValues: [
@@ -104,14 +104,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'onClick',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: 'Event trigger on click',
-		description: `The event that is triggered on click of dropdown option`,
+		description: 'The event that is triggered on click of dropdown option',
 	},
 
 	{
 		name: 'uniqueKeyType',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: "Unique key's type",
-		description: `Type for selection unique key`,
+		description: 'Type for selection unique key',
 		defaultValue: 'LIST_OF_STRINGS',
 		editor: ComponentPropertyEditor.ENUM,
 		enumValues: [
@@ -168,7 +168,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'labelKeyType',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: "Label's key type",
-		description: `type of value that needs to be selected for dispaly label`,
+		description: 'type of value that needs to be selected for dispaly label',
 		defaultValue: 'LIST_OF_STRINGS',
 		editor: ComponentPropertyEditor.ENUM,
 		enumValues: [
@@ -193,7 +193,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'searchKeyType',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-		displayName: "Search key type",
+		displayName: 'Search key type',
 		description: `type of value that needs to be selected for search`,
 		defaultValue: 'LIST_OF_STRINGS',
 		editor: ComponentPropertyEditor.ENUM,
@@ -215,7 +215,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'selectionKey',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: "Selection key's value ",
-		description: `Key value that is used to generate Selection value.`,
+		description: 'Key value that is used to generate Selection value.',
 		translatable: true,
 	},
 
@@ -223,7 +223,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'uniqueKey',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: "Unique key's value ",
-		description: `Key value that is used to generate unique key value.`,
+		description: 'Key value that is used to generate unique key value.',
 		translatable: true,
 	},
 
@@ -231,14 +231,31 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'labelKey',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
 		displayName: "Labels key's value ",
-		description: `Key value that is used to generate label value.`,
+		description: 'Key value that is used to generate label value.',
 		translatable: true,
 	},
+
 	{
-		name: 'searchKey',
+		name: 'clearSearchTextOnClose',
+		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		displayName: 'Clear Search on close',
+		description: 'Clear Search on close.',
+		defaultValue: false,
+	},
+
+	{
+		name: 'onSearch',
 		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-		displayName: "Search key's value ",
-		description: `Key value that is used to search dropdown data.`,
+		displayName: 'On Search Event',
+		description: 'Search event to run on search.',
+		translatable: true,
+	},
+
+	{
+		name: 'searchLabel',
+		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		displayName: 'Search Label ',
+		description: 'Label for searchbox.',
 		translatable: true,
 	},
 
@@ -248,7 +265,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Close dropdown',
 		description:
 			'Dropdown will be closed on mouse cursor leaving dropdown container when this property is true.',
-		group: ComponentPropertyGroup.COMMON,
 		defaultValue: true,
 	},
 
