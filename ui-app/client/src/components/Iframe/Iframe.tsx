@@ -55,7 +55,7 @@ function Iframe(props: ComponentProps) {
 	);
 }
 const component: Component = {
-	icon: '',
+	icon: 'fa-solid fa-clapperboard',
 	name: 'Iframe',
 	displayName: 'Iframe',
 	description: 'Iframe component',
