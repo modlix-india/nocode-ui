@@ -10,7 +10,6 @@ export default function IframeStyle({ theme }: { theme: Map<string, Map<string, 
 		`
     ${PREFIX}{
         display: flex;
-    
     }
     ${PREFIX} iframe{
         flex:1;

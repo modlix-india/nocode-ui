@@ -78,7 +78,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'allow',
 		description: 'allow of the iframe',
 	},
-	COMMON_COMPONENT_PROPERTIES.onClick,
 ];
 const stylePropertiesDefinition = {
 	'': {

@@ -3,7 +3,6 @@ import { PageStoreExtractor } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponent';
-import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './iframeProperties';
 import IframeStyle from './IframeStyle';
@@ -15,7 +14,6 @@ function Iframe(props: ComponentProps) {
 		key,
 		stylePropertiesWithPseudoStates,
 		properties: {
-			readOnly: isReadonly = false,
 			width,
 			height,
 			srcdoc,
@@ -24,10 +22,8 @@ function Iframe(props: ComponentProps) {
 			referrerpolicy,
 			name,
 			loading,
-			csp,
 			allowfullscreen,
 			allow,
-			onClick: onClickEvent,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -36,21 +32,8 @@ function Iframe(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	const clickEvent = onClickEvent ? props.pageDefinition.eventFunctions[onClickEvent] : undefined;
-	const handleClick = () => {
-		(async () =>
-			await runEvent(
-				clickEvent,
-				key,
-				props.context.pageName,
-				props.locationHistory,
-				props.pageDefinition,
-			))();
-	};
-	const resolvedStyles = processComponentStylePseudoClasses(
-		{ disabled: isReadonly },
-		stylePropertiesWithPseudoStates,
-	);
+
+	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
 	return (
 		<div className="comp compIframe" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />
@@ -67,7 +50,6 @@ function Iframe(props: ComponentProps) {
 				referrerPolicy={referrerpolicy}
 				allowFullScreen={allowfullscreen}
 				srcDoc={srcdoc}
-				onClick={handleClick}
 			></iframe>
 		</div>
 	);
@@ -81,7 +63,6 @@ const component: Component = {
 	styleComponent: IframeStyle,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
-	stylePseudoStates: ['hover', 'focus', 'disabled'],
 };
 
 export default component;
