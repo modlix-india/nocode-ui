@@ -127,7 +127,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border: 1px solid #ccc;
 		}
 
-		${PREFIX} input[type='text'], ${PREFIX} ._pvExpressionEditor{
+		${PREFIX} input[type='text'], ${PREFIX} ._pvExpressionEditor, ${PREFIX} input[type='number'] {
 			height: 25px;
 			font-size: 12px;
 			border-radius: 12px;
@@ -146,7 +146,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			gap: 5px;
 		}
 
-		${PREFIX} ._pvExpressionEditor input[type='text'] {
+		${PREFIX} ._pvExpressionEditor input[type='text'],  ${PREFIX} ._pvExpressionEditor input[type='number']{
 			border: none;
 			background-color: transparent;
 			flex: 1;
@@ -411,7 +411,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			gap: 5px;
 		}
 
-		${PREFIX} ._pvEditor input[type='text'] {
+		${PREFIX} ._pvEditor input[type='text'], ${PREFIX} ._pvEditor input[type='number']  {
 			border-radius: 2px;
 		}
 
@@ -568,6 +568,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			align-items: center;
 			gap: 5px;
 			padding-left: 5px;
+			text-transform: uppercase;
 		}
 
 		${PREFIX} ._propertyGroupHeader i.fa {
@@ -577,6 +578,32 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._propertyGroup._closed i.fa {
 			transform: rotate(-90deg);
+		}
+
+		${PREFIX} ._multiValueEditor {
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
+		}
+
+		${PREFIX} ._eachProperty {
+			display: flex;
+			gap: 10px;
+			align-items: center;
+		}
+
+		${PREFIX} ._eachProperty i.fa {
+			color: #aaa;
+			cursor: pointer;
+			font-size: 13px;
+		}
+
+		${PREFIX} ._eachProperty:hover i.fa {
+			color: inherit;
+		}
+
+		${PREFIX} ._eachProperty ._pvEditor {
+			flex: 1;
 		}
 
 		._popupContainer ._jsonEditorContainer{
@@ -705,7 +732,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX}._dark button, ${PREFIX}._dark select, ${PREFIX}._dark input[type='text'],
-		${PREFIX}._dark ._pvExpressionEditor, ._popupBackground._dark button {
+		${PREFIX}._dark ._pvExpressionEditor, ._popupBackground._dark button,
+		${PREFIX}._dark input[type='number'] {
 			color: #aaa;
 			background-color: #222;
 			border: 1px solid #333;
@@ -806,6 +834,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 		${PREFIX}._dark ._propertyGroupHeader i.fa {
 			color: #222;
+		}
+
+		${PREFIX}._dark ._eachProperty:hover i.fa {
+			color: #333;
 		}
 
 		._popupMenuBackground._dark ._popupMenuContainer  {

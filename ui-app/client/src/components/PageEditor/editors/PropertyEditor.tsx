@@ -10,6 +10,7 @@ import {
 } from '../../../context/StoreContext';
 import {
 	ComponentDefinition,
+	ComponentMultiProperty,
 	ComponentProperty,
 	ComponentPropertyDefinition,
 	ComponentPropertyGroup,
@@ -19,6 +20,7 @@ import {
 import duplicate from '../../../util/duplicate';
 import { PropertyGroup } from './PropertyGroup';
 import BindingPathEditor from './propertyValueEditors/BindingPathEditor';
+import PropertyMultiValueEditor from './propertyValueEditors/PropertyMultiValueEditor';
 import PropertyValueEditor from './propertyValueEditors/PropertyValueEditor';
 
 interface PropertyEditorProps {
@@ -32,24 +34,42 @@ interface PropertyEditorProps {
 }
 
 function updatePropertyDefinition(
+	propDef: ComponentPropertyDefinition,
 	defPath: string,
 	locationHistory: Array<LocationHistory>,
 	pageExtractor: PageStoreExtractor,
 	component: string,
 	propertyName: string,
-	value: ComponentProperty<any>,
+	value: ComponentProperty<any> | ComponentMultiProperty<any>,
 ) {
 	const pageDef = duplicate(
 		getDataFromPath(defPath, locationHistory, pageExtractor),
 	) as PageDefinition;
 	if (!pageDef.componentDefinition[component].properties)
 		pageDef.componentDefinition[component].properties = {};
-	if (!value.location && isNullValue(value.value) && isNullValue(value.overrideValue)) {
-		delete pageDef.componentDefinition[component].properties![propertyName];
+
+	if (propDef.multiValued) {
+		const newVal = Object.values(value)
+			.filter(
+				e =>
+					!(
+						!e.property.location &&
+						isNullValue(e.property.value) &&
+						isNullValue(e.property.overrideValue)
+					),
+			)
+			.reduce((a, b) => ({ ...a, [b.key]: b }), {});
+
+		if (Object.keys(newVal).length)
+			pageDef.componentDefinition[component].properties![propertyName] = newVal;
+		else delete pageDef.componentDefinition[component].properties![propertyName];
 	} else {
-		pageDef.componentDefinition[component].properties![propertyName] = value;
+		if (!value.location && isNullValue(value.value) && isNullValue(value.overrideValue)) {
+			delete pageDef.componentDefinition[component].properties![propertyName];
+		} else {
+			pageDef.componentDefinition[component].properties![propertyName] = value;
+		}
 	}
-	console.log(propertyName, value, pageDef.componentDefinition[component].properties);
 	setData(defPath, pageDef, pageExtractor.getPageName());
 }
 
@@ -160,20 +180,17 @@ export default function PropertyEditor({
 	const propGroups = cd?.properties?.reduce((a: { [key: string]: Array<React.ReactNode> }, e) => {
 		let grp = '' + (e.group ?? ComponentPropertyGroup.ADVANCED);
 		if (!a[grp]) a[grp] = [];
-		a[grp].push(
-			<div className="_eachProp" key={`${selectedComponent}-${e.name}`}>
-				<div className="_propLabel" title={e.description}>
-					{e.displayName} :
-					<span className="_description" title={e.description}>
-						i
-					</span>
-				</div>
-				<PropertyValueEditor
+		let valueEditor;
+
+		if (e.multiValued) {
+			valueEditor = (
+				<PropertyMultiValueEditor
 					pageDefinition={pageDef}
 					propDef={e}
-					value={def.properties?.[e.name] as ComponentProperty<any>}
+					value={def.properties?.[e.name] as ComponentMultiProperty<any>}
 					onChange={v =>
 						updatePropertyDefinition(
+							e,
 							defPath!,
 							locationHistory,
 							pageExtractor,
@@ -183,6 +200,37 @@ export default function PropertyEditor({
 						)
 					}
 				/>
+			);
+		} else {
+			valueEditor = (
+				<PropertyValueEditor
+					pageDefinition={pageDef}
+					propDef={e}
+					value={def.properties?.[e.name] as ComponentProperty<any>}
+					onChange={v =>
+						updatePropertyDefinition(
+							e,
+							defPath!,
+							locationHistory,
+							pageExtractor,
+							selectedComponent,
+							e.name,
+							v,
+						)
+					}
+				/>
+			);
+		}
+
+		a[grp].push(
+			<div className="_eachProp" key={`${selectedComponent}-${e.name}`}>
+				<div className="_propLabel" title={e.description}>
+					{e.displayName} :
+					<span className="_description" title={e.description}>
+						i
+					</span>
+				</div>
+				{valueEditor}
 			</div>,
 		);
 		return a;

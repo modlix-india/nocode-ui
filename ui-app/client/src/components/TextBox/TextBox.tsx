@@ -205,6 +205,7 @@ function TextBox(props: ComponentProps) {
 			props.pageDefinition,
 		);
 	};
+
 	return (
 		<div className="comp compTextBox" style={computedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />

@@ -91,7 +91,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Validation Rule',
 		editor: ComponentPropertyEditor.VALIDATION,
 		multiValued: true,
-		notImplemented: true,
 	},
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,

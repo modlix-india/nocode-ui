@@ -44,10 +44,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'perPageNumbers',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Per Page Numbers (CSV)',
-		description: 'Per Page Numbers (Comma seperated values)',
-		defaultValue: '10,20,50',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Per Page Numbers',
+		description: 'Per Page Numbers',
+		multiValued: true,
+		defaultValue: [10, 20, 50],
 	},
 	{
 		name: 'uniqueKey',

@@ -1,5 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { SCHEMA_ANY_COMP_PROP, SCHEMA_BOOL_COMP_PROP } from '../../../../constants';
+import {
+	SCHEMA_ANY_COMP_PROP,
+	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_NUM_COMP_PROP,
+} from '../../../../constants';
 import {
 	ComponentProperty,
 	ComponentPropertyDefinition,
@@ -15,9 +19,10 @@ import { IconSelectionEditor } from './IconSelectionEditor';
 interface PropertyValueEditorProps {
 	propDef: ComponentPropertyDefinition;
 	value?: ComponentProperty<any>;
-	onChange: (v: any) => void;
+	onChange: (v: ComponentProperty<any>) => void;
 	onlyValue?: boolean;
 	pageDefinition?: PageDefinition;
+	showPlaceholder?: boolean;
 }
 
 export default function PropertyValueEditor({
@@ -26,6 +31,7 @@ export default function PropertyValueEditor({
 	onChange,
 	onlyValue = false,
 	pageDefinition,
+	showPlaceholder = true,
 }: PropertyValueEditorProps) {
 	const [chngValue, setChngValue] = useState<any>('');
 	const [showAdvanced, setShowAdvanced] = useState<boolean>(false);
@@ -97,6 +103,7 @@ export default function PropertyValueEditor({
 		value,
 		setChngValue,
 		pageDefinition,
+		showPlaceholder,
 	);
 
 	const microToggle = onlyValue ? undefined : (
@@ -127,6 +134,7 @@ function makeValueEditor(
 	value: ComponentProperty<any> | undefined,
 	setChngValue: React.Dispatch<any>,
 	pageDef?: PageDefinition,
+	showPlaceholder = true,
 ) {
 	if (propDef.editor === ComponentPropertyEditor.ICON) {
 		return (
@@ -209,11 +217,31 @@ function makeValueEditor(
 		);
 	}
 
+	if (propDef.schema.getName() === SCHEMA_NUM_COMP_PROP.getName()) {
+		return (
+			<input
+				type="number"
+				value={chngValue}
+				placeholder={showPlaceholder ? propDef.defaultValue : undefined}
+				onChange={e => setChngValue(e.target.value)}
+				onBlur={() =>
+					onChange({
+						...value,
+						value:
+							chngValue === '' || chngValue === propDef.defaultValue
+								? undefined
+								: Number(chngValue),
+					})
+				}
+			/>
+		);
+	}
+
 	return (
 		<input
 			type="text"
 			value={chngValue}
-			placeholder={propDef.defaultValue}
+			placeholder={showPlaceholder ? propDef.defaultValue : undefined}
 			onChange={e => setChngValue(e.target.value)}
 			onBlur={() =>
 				onChange({

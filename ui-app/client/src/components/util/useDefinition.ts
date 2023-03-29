@@ -12,6 +12,7 @@ import {
 import {
 	ComponentDefinition,
 	ComponentDefinitionValues,
+	ComponentMultiProperty,
 	ComponentProperty,
 	ComponentPropertyDefinition,
 	ComponentResoltuions,
@@ -48,6 +49,7 @@ function createNewState(
 											pageExtractor,
 									  ),
 							])
+							.sort(([a], [b]) => (a.order ?? 0) - (b.order ?? 0))
 							.reduce((a: any, c) => {
 								a[c[0]] = c[1];
 								return a;
@@ -61,10 +63,12 @@ function createNewState(
 			if (!definition.properties) return [e.name, value];
 
 			if (e.multiValued) {
-				value =
-					Object.values(definition.properties[e.name]).map(each =>
-						getData(each, locationHistory, pageExtractor),
-					) ?? value;
+				if (!isNullValue(definition.properties[e.name]))
+					value = Object.values(
+						definition.properties[e.name] as ComponentMultiProperty<any>,
+					)
+						.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+						.map(each => getData(each.property, locationHistory, pageExtractor));
 			} else {
 				value =
 					getData(definition.properties[e.name], locationHistory, pageExtractor) ?? value;
