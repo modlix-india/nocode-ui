@@ -31,6 +31,7 @@ import SubPage from './SubPage/SubPage';
 import PageEditor from './PageEditor/PageEditor';
 import { Component } from '../types/common';
 import Iframe from './Iframe/Iframe';
+import Carousel from './Carousel/Carousel';
 
 export default new Map<string, Component>([
 	[Button.name, Button],
@@ -65,4 +66,5 @@ export default new Map<string, Component>([
 	[SubPage.name, SubPage],
 	[PageEditor.name, PageEditor],
 	[Iframe.name, Iframe],
+	[Carousel.name, Carousel],
 ]);
