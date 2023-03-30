@@ -118,7 +118,14 @@ function TextBox(props: ComponentProps) {
 	useEffect(() => {
 		if (!validation?.length) return;
 
-		const msgs = validate(props.definition, props.pageDefinition, validation, value);
+		const msgs = validate(
+			props.definition,
+			props.pageDefinition,
+			validation,
+			value,
+			locationHistory,
+			pageExtractor,
+		);
 		setValidationMessages(msgs);
 
 		setData(

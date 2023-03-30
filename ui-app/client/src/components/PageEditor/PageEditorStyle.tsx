@@ -457,6 +457,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._pvValueEditor {
 			display: flex;
 			gap: 5px;
+			flex: 1;
 		}
 
 		${PREFIX} ._propLabel {
@@ -590,6 +591,9 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			gap: 10px;
 			align-items: center;
+			border: 2px solid #ddd;
+			padding: 5px;
+			border-radius: 3px;
 		}
 
 		${PREFIX} ._eachProperty i.fa {
@@ -604,6 +608,13 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._eachProperty ._pvEditor {
 			flex: 1;
+		}
+
+		${PREFIX} ._validationEditor {
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
+			flex:1;
 		}
 
 		._popupContainer ._jsonEditorContainer{
@@ -838,6 +849,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX}._dark ._eachProperty:hover i.fa {
 			color: #333;
+		}
+
+		${PREFIX}._dark ._eachProperty{
+			border:  2px solid #333;
 		}
 
 		._popupMenuBackground._dark ._popupMenuContainer  {

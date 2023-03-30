@@ -34,30 +34,6 @@ function createNewState(
 	const def: ComponentDefinitionValues = { key: definition.key };
 	def.properties = properties
 		.map(e => {
-			if (e.schema.getRef() === SCHEMA_VALIDATION.getRef()) {
-				return [
-					e.name,
-					Object.values(definition?.properties?.[e.name] ?? {}).map(evalidation =>
-						Object.entries(evalidation)
-							.map(([k, v]) => [
-								k,
-								typeof v === 'string'
-									? v
-									: getData(
-											v as ComponentProperty<any>,
-											locationHistory,
-											pageExtractor,
-									  ),
-							])
-							.sort(([a], [b]) => (a.order ?? 0) - (b.order ?? 0))
-							.reduce((a: any, c) => {
-								a[c[0]] = c[1];
-								return a;
-							}, {}),
-					),
-				];
-			}
-
 			let value = e.defaultValue;
 
 			if (!definition.properties) return [e.name, value];
