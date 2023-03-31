@@ -1,5 +1,5 @@
 import { deepEqual } from '@fincity/kirun-js';
-import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import CommonInputText from '../../commonComponents/CommonInputText';
 import {
 	addListenerAndCallImmediately,
@@ -37,6 +37,7 @@ function DropdownComponent(props: ComponentProps) {
 	const [searchText, setSearchText] = useState('');
 	const [focus, setFocus] = useState(false);
 	const [validationMessages, setValidationMessages] = React.useState<Array<string>>([]);
+	const inputRef = useRef<HTMLInputElement>(null);
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const {
 		definition: { bindingPath, bindingPath2 },
@@ -201,6 +202,8 @@ function DropdownComponent(props: ComponentProps) {
 
 	const handleClose = () => {
 		setShowDropdown(false);
+		setFocus(false);
+		inputRef?.current?.blur();
 		clearSearchTextOnClose && setSearchText('');
 	};
 
@@ -273,7 +276,11 @@ function DropdownComponent(props: ComponentProps) {
 	}, [selected, validation]);
 
 	return (
-		<div className="comp compDropdown" onClick={handleBubbling}>
+		<div
+			className="comp compDropdown"
+			onClick={handleBubbling}
+			onMouseLeave={closeOnMouseLeave ? handleClose : undefined}
+		>
 			<HelperComponent definition={props.definition} />
 			<CommonInputText
 				id={key}
@@ -296,9 +303,10 @@ function DropdownComponent(props: ComponentProps) {
 					setShowDropdown(true);
 				}}
 				styles={computedStyles}
+				inputRef={inputRef}
 			/>
 			{showDropdown && (
-				<div className="dropdownContainer">
+				<div className="dropdownContainer" style={computedStyles.dropDownContainer ?? {}}>
 					{isSearchable && (
 						<div className="dropdownSearchContainer">
 							<CommonInputText
