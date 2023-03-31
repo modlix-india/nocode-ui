@@ -1,19 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { HelperComponent } from '../HelperComponent';
-import {
-	Component,
-	ComponentDefinition,
-	ComponentPropertyDefinition,
-	DataLocation,
-	LocationHistory,
-	RenderContext,
-} from '../../types/common';
+import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import Children from '../Children';
 import { deepEqual, isNullValue } from '@fincity/kirun-js';
 import { runEvent } from '../util/runEvent';
 import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../../constants';
 import {
-	addListener,
 	addListenerAndCallImmediately,
 	addListenerWithChildrenActivity,
 	getDataFromPath,
@@ -27,22 +19,18 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 
 const pageHistory: any = {};
 
-function Page({
-	definition,
-	pageComponentDefinition,
-	context,
-	locationHistory,
-}: {
-	definition: any;
-	pageComponentDefinition?: ComponentDefinition;
-	context: RenderContext;
-	locationHistory: Array<LocationHistory>;
-}) {
+function Page(props: ComponentProps) {
+	const {
+		context,
+		pageDefinition,
+		definition = { key: 'PageWithNoDef', name: 'page', type: 'Page' },
+		locationHistory,
+	} = props;
 	const { pageName } = context;
 	const [, setValidationChangedAt] = useState(Date.now());
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const { stylePropertiesWithPseudoStates } = useDefinition(
-		pageComponentDefinition ?? { key: 'PageWithNoDef', type: 'Page' },
+		definition,
 		propertiesDefinition,
 		stylePropertiesDefinition,
 		locationHistory,
@@ -69,7 +57,7 @@ function Page({
 			eventFunctions = {},
 			name,
 			properties: { onLoadEvent = undefined, loadStrategy = 'default' } = {},
-		} = definition;
+		} = pageDefinition;
 		const v = { ...(getDataFromPath(`${STORE_PREFIX}.urlDetails`, []) ?? {}), origName: name };
 		let firstTime = true;
 		let sameAsExisting = false;
@@ -92,14 +80,14 @@ function Page({
 			}
 		}
 
-		if (makeCall && !isNullValue(onLoadEvent) && !isNullValue(eventFunctions[onLoadEvent])) {
+		if (makeCall && !isNullValue(onLoadEvent) && !isNullValue(eventFunctions[onLoadEvent!])) {
 			(async () =>
 				await runEvent(
-					eventFunctions[onLoadEvent],
+					eventFunctions[onLoadEvent!],
 					'pageOnLoad',
 					pageName,
 					locationHistory,
-					definition,
+					pageDefinition,
 				))();
 		}
 	}, [pathParts]);
@@ -114,17 +102,15 @@ function Page({
 		[],
 	);
 
-	if (isNullValue(definition)) return <>...</>;
-
 	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
 
 	return (
 		<div className="comp compPage" style={resolvedStyles?.comp ?? {}}>
 			<HelperComponent definition={definition} />
 			<Children
-				pageDefinition={definition}
+				pageDefinition={pageDefinition}
 				children={{
-					[definition.rootComponent]: true,
+					[pageDefinition.rootComponent]: true,
 				}}
 				context={context}
 				locationHistory={locationHistory}
@@ -134,6 +120,7 @@ function Page({
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-file',
 	name: 'Page',
 	displayName: 'Page',
 	description: 'Page component',
@@ -141,8 +128,6 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: PageStyle,
-	hasChildren: true,
-	numberOfChildren: 1,
 };
 
 export default component;

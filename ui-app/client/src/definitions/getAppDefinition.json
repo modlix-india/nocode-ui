@@ -36,7 +36,9 @@
 					}
 				}
 			},
-			"dependentStatements": { "Steps.verifyToken.output": true }
+			"dependentStatements": {
+				"Steps.verifyToken.output": true
+			}
 		},
 		"applicationData": {
 			"statementName": "applicationData",
@@ -51,7 +53,9 @@
 					}
 				}
 			},
-			"dependentStatements": { "Steps.setLoginData.output": true }
+			"dependentStatements": {
+				"Steps.setLoginData.output": true
+			}
 		},
 		"setAppData": {
 			"statementName": "setAppData",
@@ -73,7 +77,9 @@
 					}
 				}
 			},
-			"dependentStatements": { "Steps.applicationData.output": true }
+			"dependentStatements": {
+				"Steps.applicationData.output": true
+			}
 		},
 		"themeData": {
 			"statementName": "themeData",
@@ -88,7 +94,55 @@
 					}
 				}
 			},
-			"dependentStatements": { "Steps.setLoginData.output": true }
+			"dependentStatements": {
+				"Steps.setLoginData.output": true
+			}
+		},
+		"setDropdownData": {
+			"statementName": "setDropdownData",
+			"namespace": "UIEngine",
+			"name": "SetStore",
+			"parameterMap": {
+				"path": {
+					"setDropdownDataPath": {
+						"key": "setDropdownDataPath",
+						"type": "VALUE",
+						"value": "Store.dropdownData"
+					}
+				},
+				"value": {
+					"dropdownDataValue": {
+						"key": "dropdownDataValue",
+						"type": "VALUE",
+						"value": [
+							{
+								"name": "Himanshu",
+								"id": "1"
+							},
+							{
+								"name": "Tarun",
+								"id": "2"
+							},
+							{
+								"name": "Shagil",
+								"id": "3"
+							},
+							{
+								"name": "Waqas",
+								"id": "4"
+							},
+							{
+								"name": "Biren",
+								"id": "5"
+							},
+							{
+								"name": "Vishwas",
+								"id": "6"
+							}
+						]
+					}
+				}
+			}
 		},
 		"setThemeData": {
 			"statementName": "setThemeData",
@@ -152,7 +206,9 @@
 					}
 				}
 			},
-			"dependentStatements": { "Steps.applicationData.output": true }
+			"dependentStatements": {
+				"Steps.applicationData.output": true
+			}
 		},
 		"genOutput": {
 			"statementName": "genOutput",

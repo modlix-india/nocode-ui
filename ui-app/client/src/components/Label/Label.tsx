@@ -1,22 +1,12 @@
-import { Schema } from '@fincity/kirun-js';
 import React from 'react';
-import { NAMESPACE_UI_ENGINE } from '../../constants';
-import { getData, PageStoreExtractor } from '../../context/StoreContext';
-import { HelperComponent } from '../HelperComponent';
-import {
-	ComponentProperty,
-	ComponentPropertyDefinition,
-	ComponentProps,
-	DataLocation,
-	RenderContext,
-	Translations,
-} from '../../types/common';
-import { getTranslations } from '../util/getTranslations';
-import { propertiesDefinition, stylePropertiesDefinition } from './labelProperties';
-import { Component } from '../../types/common';
-import LabelStyle from './LabelStyle';
-import useDefinition from '../util/useDefinition';
+import { PageStoreExtractor } from '../../context/StoreContext';
+import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import { HelperComponent } from '../HelperComponent';
+import { getTranslations } from '../util/getTranslations';
+import useDefinition from '../util/useDefinition';
+import { propertiesDefinition, stylePropertiesDefinition } from './labelProperties';
+import LabelStyle from './LabelStyle';
 
 function Label(props: ComponentProps) {
 	const {
@@ -37,16 +27,24 @@ function Label(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
+
 	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
+	let finText = text;
+	if (typeof finText === 'object') {
+		finText = JSON.stringify(finText);
+	} else {
+		finText = '' + finText;
+	}
 	return (
 		<div className="comp compLabel">
 			<HelperComponent definition={definition} />
-			<span style={resolvedStyles.text ?? {}}>{getTranslations(text, translations)}</span>
+			<span style={resolvedStyles.text ?? {}}>{getTranslations(finText, translations)}</span>
 		</div>
 	);
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-font',
 	name: 'Label',
 	displayName: 'Label',
 	description: 'Label component',

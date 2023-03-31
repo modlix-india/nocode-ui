@@ -1,8 +1,8 @@
 import { Schema } from '@fincity/kirun-js';
 import {
-	SCHEMA_REF_ANY_COMP_PROP,
-	SCHEMA_REF_BOOL_COMP_PROP,
-	SCHEMA_REF_STRING_COMP_PROP,
+	SCHEMA_ANY_COMP_PROP,
+	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_STRING_COMP_PROP,
 } from '../../constants';
 import {
 	ComponentPropertyEditor,
@@ -18,7 +18,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.visibility,
 	{
 		name: 'label',
-		schema: Schema.ofRef(SCHEMA_REF_ANY_COMP_PROP),
+		schema: SCHEMA_ANY_COMP_PROP,
 		displayName: 'Button Bar Label',
 		description: `Label thats shown on top of button bar input..`,
 		defaultValue: 'Hello',
@@ -26,21 +26,21 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'isMultiSelect',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Is MultiSelect ?',
 		description: `Allows the users to select multiple buttons.`,
 		defaultValue: false,
 	},
 	{
 		name: 'data',
-		schema: Schema.ofRef(SCHEMA_REF_ANY_COMP_PROP),
+		schema: SCHEMA_ANY_COMP_PROP,
 		displayName: 'ButtonBar data',
 		description: `Data that is used to render ButtonBar.`,
 	},
 
 	{
 		name: 'datatype',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'ButtonBar data type',
 		description: `ButtonBar's data format.`,
 		defaultValue: 'LIST_OF_STRINGS',
@@ -81,7 +81,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'uniqueKeyType',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: "Unique key's type",
 		description: `Type for selection unique key`,
 		defaultValue: 'LIST_OF_STRINGS',
@@ -112,7 +112,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'selectionType',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Selection value type',
 		description: `type of value that needs to be selected on selection`,
 		defaultValue: 'LIST_OF_STRINGS',
@@ -138,7 +138,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'labelKeyType',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: "Label's key type",
 		description: `type of value that needs to be selected for dispaly label`,
 		defaultValue: 'LIST_OF_STRINGS',
@@ -164,7 +164,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'selectionKey',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: "Selection key's value ",
 		description: `Key value that is used to generate Selection value.`,
 		translatable: true,
@@ -172,7 +172,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'uniqueKey',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: "Unique key's value ",
 		description: `Key value that is used to generate unique key value.`,
 		translatable: true,
@@ -180,7 +180,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'labelKey',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: "Labels key's value ",
 		description: `Key value that is used to generate label value.`,
 		translatable: true,

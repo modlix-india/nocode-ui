@@ -1,6 +1,6 @@
-import { isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
+import { deepEqual, isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
 import { useEffect, useState } from 'react';
-import { SCHEMA_REF_VALIDATION, STORE_PREFIX } from '../../constants';
+import { SCHEMA_VALIDATION, STORE_PREFIX } from '../../constants';
 import {
 	addListener,
 	getData,
@@ -33,7 +33,7 @@ function createNewState(
 	const def: ComponentDefinitionValues = { key: definition.key };
 	def.properties = properties
 		.map(e => {
-			if (e.schema.getRef() === SCHEMA_REF_VALIDATION) {
+			if (e.schema.getRef() === SCHEMA_VALIDATION.getRef()) {
 				return [
 					e.name,
 					Object.values(definition?.properties?.[e.name] ?? {}).map(evalidation =>
@@ -57,6 +57,7 @@ function createNewState(
 			}
 
 			let value = e.defaultValue;
+
 			if (!definition.properties) return [e.name, value];
 
 			if (e.multiValued) {
@@ -68,9 +69,10 @@ function createNewState(
 				value =
 					getData(definition.properties[e.name], locationHistory, pageExtractor) ?? value;
 			}
+
 			return [e.name, value];
 		})
-		.filter(e => !!e[1])
+		.filter(e => !isNullValue(e[1]))
 		.reduce((a: any, [k, v]) => {
 			a[k] = v;
 			return a;
@@ -172,7 +174,7 @@ function processTargets(
 		const groupName = CSS_STYLE_PROPERTY_GROUP_REF[prop];
 		if (!groupName) continue;
 
-		for (const eachTarget of stylePropertiesDefinition[prefix][groupName].target) {
+		for (const eachTarget of stylePropertiesDefinition[prefix]?.[groupName]?.target ?? []) {
 			if (!finStyle[eachTarget]) finStyle[eachTarget] = {};
 			finStyle[eachTarget][prop] = v;
 		}
@@ -261,15 +263,15 @@ export default function useDefinition(
 			if (p) p.forEach(e => paths.push(e));
 		}
 
-		setCompState(
-			createNewState(
-				definition,
-				properties,
-				stylePropertiesDefinition,
-				locationHistory,
-				pageExtractor,
-			),
+		const x = createNewState(
+			definition,
+			properties,
+			stylePropertiesDefinition,
+			locationHistory,
+			pageExtractor,
 		);
+
+		if (!deepEqual(x, compState)) setCompState(x);
 
 		if (!paths || !paths.length) {
 			return;
@@ -289,7 +291,7 @@ export default function useDefinition(
 			pageExtractor,
 			...paths,
 		);
-	}, []);
+	}, [definition]);
 
 	return compState;
 }

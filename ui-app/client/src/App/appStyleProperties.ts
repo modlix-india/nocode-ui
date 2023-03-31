@@ -52,7 +52,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		name: 'black-font-color',
 		cssProperty: 'color',
-		selector: 'body',
 		displayName: 'Application/Site Color',
 		description: 'This color is used throughout application for all fonts.',
 		defaultValue: '#000000',
@@ -60,8 +59,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		name: 'light-black-font-color',
-		cssProperty: 'color',
-		selector: 'body',
 		displayName: 'Application/Site Color',
 		description: 'This color is used throughout application for all fonts.',
 		defaultValue: '#0000001F',
@@ -78,6 +75,13 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'form-input-border-color-focussed',
 		displayName: 'Form input border color when focussed',
 		description: 'This border color is used throughout form input controls when focussed.',
+		defaultValue: '#393A3C',
+		noPrefix: true,
+	},
+	{
+		name: 'form-input-border-color-hover',
+		displayName: 'Form input border color when hover',
+		description: 'This border color is used throughout form input controls when hover.',
 		defaultValue: '#2680EB',
 		noPrefix: true,
 	},
@@ -370,6 +374,16 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		selector: '._validationMessages',
 		defaultValue: '<main-error-color>',
+	},
+
+	{
+		name: 'validation-msg-fixed-height',
+		displayName: 'minHeight for Validation Messages with fixed display type',
+		description: 'minHeight for Validation Messages with fixed display type',
+		noPrefix: true,
+		cssProperty: 'min-height',
+		selector: '._validationMessages._fixedMessages',
+		defaultValue: '20px',
 	},
 ];
 

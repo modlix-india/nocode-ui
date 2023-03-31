@@ -1,10 +1,5 @@
 import { useStore, setStoreData } from '@fincity/path-reactive-state-management';
-import {
-	LOCAL_STORE_PREFIX,
-	STORE_PREFIX,
-	PAGE_STORE_PREFIX,
-	GLOBAL_CONTEXT_NAME,
-} from '../constants';
+import { LOCAL_STORE_PREFIX, STORE_PREFIX, PAGE_STORE_PREFIX } from '../constants';
 import {
 	Expression,
 	ExpressionEvaluator,
@@ -14,31 +9,12 @@ import {
 } from '@fincity/kirun-js';
 import { ComponentProperty, DataLocation, LocationHistory, RenderContext } from '../types/common';
 import { PathExtractor } from '../components/util/getPaths';
+import { LocalStoreExtractor } from './LocalStoreExtractor';
+import { ParentExtractor } from './ParentExtractor';
+import { ThemeExtractor } from './ThemeExtractor';
+import duplicate from '../util/duplicate';
+import { messageToMaster } from '../slaveFunctions';
 
-class LocalStoreExtractor extends TokenValueExtractor {
-	private store: any;
-	private prefix: string;
-	constructor(store: any, prefix: string) {
-		super();
-		this.store = store;
-		this.prefix = prefix;
-	}
-	protected getValueInternal(token: string) {
-		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
-		// Add isSlave_ as prefix for preview mode
-		let localStorageValue = this.store.getItem(parts[1]);
-		if (!localStorageValue) return localStorageValue;
-		try {
-			localStorageValue = JSON.parse(localStorageValue);
-			return this.retrieveElementFrom(token, parts, 2, localStorageValue);
-		} catch (error) {
-			return localStorageValue;
-		}
-	}
-	getPrefix(): string {
-		return this.prefix;
-	}
-}
 export class StoreExtractor extends TokenValueExtractor {
 	private store: any;
 	private prefix: string;
@@ -55,11 +31,14 @@ export class StoreExtractor extends TokenValueExtractor {
 		return this.prefix;
 	}
 }
+
 let localStore: any = {};
 if (typeof window !== 'undefined') {
 	localStore = window.localStorage;
 }
 export const localStoreExtractor = new LocalStoreExtractor(localStore, `${LOCAL_STORE_PREFIX}.`);
+export const themeExtractor = new ThemeExtractor();
+
 const {
 	getData: _getData,
 	setData: _setData,
@@ -69,60 +48,19 @@ const {
 	addListenerWithChildrenActivity: _addListenerWithChildrenActivity,
 	addListenerAndCallImmediatelyWithChildrenActivity:
 		_addListenerAndCallImmediatelyWithChildrenActivity,
-} = useStore({}, STORE_PREFIX, localStoreExtractor);
+} = useStore({}, STORE_PREFIX, localStoreExtractor, themeExtractor);
+themeExtractor.setStore(_store);
 
-globalThis.getStore = () => JSON.parse(JSON.stringify(_store));
+globalThis.getStore = () => duplicate(_store);
 
 export const storeExtractor = new StoreExtractor(_store, `${STORE_PREFIX}.`);
-
-export class ParentExtractor extends TokenValueExtractor {
-	private history: Array<LocationHistory>;
-
-	constructor(history: Array<LocationHistory>) {
-		super();
-		this.history = history;
-	}
-
-	public getHistory(): Array<LocationHistory> {
-		return this.history;
-	}
-
-	public getPrefix(): string {
-		return 'Parent.';
-	}
-
-	protected getValueInternal(token: string) {
-		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
-
-		let pNum: number = 0;
-		while (parts[pNum] === 'Parent') pNum++;
-
-		const lastHistory = this.history[this.history.length - pNum];
-		let path = '';
-
-		if (typeof lastHistory.location === 'string')
-			path = `${lastHistory.location}[${lastHistory.index}].${parts.slice(pNum).join('.')}`;
-		else
-			path = `${
-				lastHistory.location.type === 'VALUE'
-					? lastHistory.location.value
-					: lastHistory.location.expression
-			}[${lastHistory.index}].${parts.slice(pNum).join('.')}`;
-
-		return getDataFromPath(
-			path,
-			this.history.length === 1 ? [] : this.history.slice(0, this.history.length - 1),
-			PageStoreExtractor.getForContext(lastHistory.pageName ?? GLOBAL_CONTEXT_NAME),
-		);
-	}
-}
 
 export const dotPathBuilder = (
 	origPath: string,
 	locationHistory: Array<LocationHistory>,
 	...tve: TokenValueExtractor[]
 ) => {
-	if (origPath.indexOf('Parent.') === -1) return origPath;
+	if (origPath.indexOf('Parent.') === -1 || !locationHistory.length) return origPath;
 
 	const retSet: Set<string> = new Set();
 	let ex = new ExpressionEvaluator(origPath);
@@ -220,13 +158,14 @@ export function getDataFromPath(
 	return _getData(dotPathBuilder(path, locationHistory), ...tve);
 }
 
+export const innerSetData = _setData;
+
 export function setData(path: string, value: any, context?: string, deleteKey?: boolean) {
 	// console.log(path, value);
 	if (path.startsWith(LOCAL_STORE_PREFIX)) {
-		if (!value) return;
 		let parts = path.split(TokenValueExtractor.REGEX_DOT);
-		// Add isSlave_ as prefix for preview mode
-		const key = parts[1];
+
+		const key = window.isDesignMode ? 'designmode_' + parts[1] : parts[1];
 		parts = parts.slice(2);
 		let store;
 		store = localStore.getItem(key);
@@ -260,9 +199,25 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 			value,
 			deleteKey,
 		);
+	} else if (
+		window.isDesignMode &&
+		window.designMode === 'PAGE' &&
+		window.pageEditor?.editingPageDefinition?.name &&
+		path === `${STORE_PREFIX}.pageDefinition.${window.pageEditor.editingPageDefinition.name}`
+	) {
+		_setData(
+			path,
+			window.pageEditor.editingPageDefinition.name !== value.name
+				? value
+				: window.pageEditor.editingPageDefinition,
+		);
 	} else _setData(path, value, deleteKey);
 
-	// console.log(JSON.parse(JSON.stringify(_store)));
+	if (window.designMode !== 'PAGE') return;
+
+	messageToMaster({ type: 'SLAVE_STORE', payload: _store });
+
+	// console.log(duplicate(_store));
 }
 
 export class PageStoreExtractor extends TokenValueExtractor {

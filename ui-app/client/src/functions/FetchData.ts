@@ -10,8 +10,8 @@ import {
 	Schema,
 } from '@fincity/kirun-js';
 import axios from 'axios';
-import { LOCAL_STORE_PREFIX, NAMESPACE_UI_ENGINE } from '../constants';
-import { getData, getDataFromLocation } from '../context/StoreContext';
+import { LOCAL_STORE_PREFIX, NAMESPACE_UI_ENGINE, STORE_PREFIX } from '../constants';
+import { getData } from '../context/StoreContext';
 import { ComponentProperty } from '../types/common';
 import { pathFromParams, queryParamsSerializer } from './utils';
 
@@ -28,6 +28,12 @@ const SIGNATURE = new FunctionSignature('FetchData')
 					Authorization: {
 						location: {
 							expression: `${LOCAL_STORE_PREFIX}.AuthToken`,
+							type: 'EXPRESSION',
+						},
+					},
+					clientCode: {
+						location: {
+							expression: `${STORE_PREFIX}.auth.loggedInClientCode`,
 							type: 'EXPRESSION',
 						},
 					},
@@ -73,6 +79,7 @@ export class FetchData extends AbstractFunction {
 				if (!isNullValue(v)) a[k] = v;
 				return a;
 			}, {});
+
 		try {
 			const response = await axios({
 				url: pathFromParams(url, pathParams),

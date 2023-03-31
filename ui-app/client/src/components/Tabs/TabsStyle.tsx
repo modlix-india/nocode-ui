@@ -6,17 +6,46 @@ const PREFIX = '.comp.compTabs';
 export default function TabsStyles({ theme }: { theme: Map<string, Map<string, string>> }) {
 	const css =
 		`
-		${PREFIX} .tabsButtons {
-			letter-spacing: 0px;
+		${PREFIX} {
+			width: 100%;
+			height: 100%;
+			display: flex;
+			flex-direction: column;
 		}
-		${PREFIX} .tabsButtonActive {
-			margin-left:12px;
-			margin-right:12px
+		${PREFIX}.vertical {
+			flex-direction: row;
+		}
+		${PREFIX} .tabGridDiv {
+			flex: 1;
+			width: 100%;
+			height: 100%;
+			overflow: auto;
+		}
+		${PREFIX} .tabsContainer {
+			display: flex;
+			overflow: auto;
+			justify-content: space-between;
+			
+		}
+		${PREFIX} .tabsContainer.vertical {
+			flex-direction: column;
+			border-bottom: none;
+		}
+		${PREFIX} .tabDiv {
+			padding: 0 16px 0 16px;
+			cursor: pointer;
+		}
+		${PREFIX} .tabButton {
+			display: flex;
+			letter-spacing: 0px;
+			white-space: nowrap;	
+			cursor: pointer;
+		}
+		${PREFIX} .tabButton.noIcon {
+			gap: 0;
 		}
 		
-
-
-
+		
 ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="TabsCss">{css}</style>;

@@ -43,25 +43,26 @@ function Stepper(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	if (!bindingPath) throw new Error('Definition requires bindingpath');
 
 	const [value, setValue] = React.useState(0);
 	const [hover, setHover] = React.useState(false);
-	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
+	const bindingPathPath = bindingPath
+		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
+		: undefined;
 	const resolvedStyles = processComponentStylePseudoClasses({ hover }, stylePropertiesDefinition);
 
-	React.useEffect(
-		() =>
-			addListenerAndCallImmediately(
-				(_, value) => {
-					setValue(value ?? 0);
-				},
-				pageExtractor,
-				bindingPathPath,
-			),
-		[bindingPath],
-	);
+	React.useEffect(() => {
+		if (!bindingPathPath) return;
+		return addListenerAndCallImmediately(
+			(_, value) => {
+				setValue(value ?? 0);
+			},
+			pageExtractor,
+			bindingPathPath,
+		);
+	}, [bindingPath]);
 	const goToStep = (stepNumber: number) => {
+		if (!bindingPathPath) return;
 		setData(bindingPathPath, stepNumber, context.pageName);
 	};
 	const checkIcon = 'fa-solid fa-check';
@@ -208,6 +209,7 @@ function Stepper(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-arrow-down-1-9',
 	name: 'Stepper',
 	displayName: 'Stepper',
 	description: 'Stepper component',

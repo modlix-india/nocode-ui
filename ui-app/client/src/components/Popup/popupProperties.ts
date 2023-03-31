@@ -1,5 +1,5 @@
 import { Schema } from '@fincity/kirun-js';
-import { SCHEMA_REF_BOOL_COMP_PROP, SCHEMA_REF_STRING_COMP_PROP } from '../../constants';
+import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyEditor,
 	ComponentPropertyGroup,
@@ -11,7 +11,7 @@ import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'showClose',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show Close Button',
 		description: `Show Close button on Modal.`,
 		defaultValue: true,
@@ -19,7 +19,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'closeButtonPosition',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Show Close on desired side',
 		description: `Show Close on desired side either left or right.`,
 		defaultValue: 'RIGHT',
@@ -31,7 +31,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'closeOnEscape',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Close Modal on ESC',
 		description: `Close Modal when escape key is pressed.`,
 		translatable: false,
@@ -39,7 +39,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'closeOnOutsideClick',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Close Modal on clicking outside the modal',
 		description: `Close Modal when clicked outside the modal.`,
 		translatable: false,
@@ -47,26 +47,46 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'eventOnOpen',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'event to be run on Modal Open',
 		description: `Event that is triggered when Modal is open.`,
 	},
 	{
 		name: 'eventOnClose',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'event to be run on Modal close',
 		description: `Event that is triggered when Modal is closed.`,
 	},
 	{
 		name: 'modelTitle',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Title of the modal',
 		description: 'Title of the modal',
+	},
+	{
+		name: 'popupDesign',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Pupup Design',
+		description: 'Pupup Design',
+		defaultValue: '_design1',
+		enumValues: [
+			{
+				name: '_design1',
+				displayName: 'Design 1',
+				description: 'Padding with close button in title grid',
+			},
+			{
+				name: '_design2',
+				displayName: 'Design 2',
+				description: 'No padding with close button as absolute top-right',
+			},
+		],
 	},
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 	'': {
+		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: COMPONENT_STYLE_GROUP_PROPERTIES.size,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.backdropFilter.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.backdropFilter,
 			target: ['backdrop'],

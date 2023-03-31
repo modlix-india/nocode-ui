@@ -1,5 +1,5 @@
 import { Schema } from '@fincity/kirun-js';
-import { SCHEMA_REF_STRING_COMP_PROP } from '../../constants';
+import { SCHEMA_STRING_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyEditor,
 	ComponentPropertyDefinition,
@@ -12,7 +12,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.label,
 	{
 		name: 'type',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Button label',
 		description: `Button's display label.`,
 		defaultValue: 'default',
@@ -31,13 +31,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'target',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Link target',
 		description: `Link's target.`,
 	},
 	{
 		name: 'linkPath',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Link path',
 		description: `Path that page needs to be redirected on click.`,
 		translatable: false,
@@ -45,14 +45,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.onClick,
 	{
 		name: 'leftIcon',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: "Button's left icon",
 		description: `Button's icon to be displayed on left of label.`,
 		editor: ComponentPropertyEditor.ICON,
 	},
 	{
 		name: 'rightIcon',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: "Button's right icon",
 		description: `Button's icon to be displayed on right of label.`,
 		editor: ComponentPropertyEditor.ICON,

@@ -8,12 +8,17 @@ export default function CheckBoxStyle({ theme }: { theme: Map<string, Map<string
 	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
 	const css =
 		`
-    input[type='checkbox'].commonCheckbox {
+
+    input[type='checkbox'].commonCheckbox.radio {
+        border-radius:50%;
+    }
+    input[type='checkbox'].commonCheckbox,
+    span.commonTriStateCheckbox {
         -webkit-appearance: none;
         appearance: none;
         margin: 0;
-        width: 1.15em;
-        height: 1.15em;
+        width: 16px;
+        height: 16px;
         border: 0.15em solid;
         
         border-radius: 0.15em;
@@ -22,23 +27,46 @@ export default function CheckBoxStyle({ theme }: { theme: Map<string, Map<string
         cursor: pointer;
     }
     
-    input[type='checkbox'].commonCheckbox:disabled {
+    input[type='checkbox'].commonCheckbox:disabled,
+    span.commonTriStateCheckbox.disabled {
         border: 0.15em solid;
     }
-    
-    input[type='checkbox'].commonCheckbox::before {
+
+    input[type='checkbox'].commonCheckbox::before,
+    span.commonTriStateCheckbox::before {
         content: '';
-        width: 0.65em;
-        height: 0.65em;
+        width: 12px;
+        height: 12px;
         transform: scale(0);
         transition: 500ms transform ease-in-out;
         box-shadow: inset 1em 1em;
         transform-origin: bottom left;
-        clip-path: polygon(13% 58%, 4% 68%, 35% 94%, 100% 15%, 90% 5%, 34% 77%);
+        clip-path: polygon(13% 49%, 4% 66%, 35% 98%, 100% 25%, 90% 7%, 34% 72%);
+    }
+    input[type='checkbox'].commonCheckbox.radio::before {
+        background-color: #F5E2C6;
+        border-radius: 50%;
+        transform-origin: center center;
+        clip-path: none;
+        width:8px;
+        height:8px;
     }
     
+    span.commonTriStateCheckbox._true,
     input[type='checkbox'].commonCheckbox:checked {
         border: 0px;
+    }
+
+    span.commonTriStateCheckbox._false {
+        background-color:${processStyleValueWithFunction(
+			values.get('checkBoxBorderColor') as string,
+			values as Map<string, string>,
+		)}
+    }
+
+    span.commonTriStateCheckbox._false::before {
+        transform: scale(1);
+        clip-path: polygon(20% 0%, 0% 20%, 30% 50%, 0% 80%, 20% 100%, 50% 70%, 80% 100%, 100% 80%, 70% 50%, 100% 20%, 80% 0%, 50% 30%);
     }
     
     input[type='checkbox'].commonCheckbox:checked:hover {
@@ -104,24 +132,25 @@ export default function CheckBoxStyle({ theme }: { theme: Map<string, Map<string
 		)};
     }
     
-    input[type='checkbox'].commonCheckbox:checked::before {
+    input[type='checkbox'].commonCheckbox:checked::before,
+    span.commonTriStateCheckbox._true::before {
         transform: scale(1);
     }
     
     ${PREFIX} .checkbox {
-        grid-template-rows: 1em auto;
-        gap: 0.5em;
+        display: inline-flex;
+        gap: 5px;
         justify-items: center;
         text-align: center;
         align-items: center;
-        display: inline-grid;
+        
     }
     ${PREFIX} .checkbox.horizontal {
-        grid-template-columns: 1em auto;
+        flex-direction: row;
     }
 
     ${PREFIX} .checkbox.vertical {
-        grid-template-rows: 1em auto;
+        flex-direction: column;
     }
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

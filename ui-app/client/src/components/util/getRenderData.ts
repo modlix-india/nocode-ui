@@ -60,7 +60,7 @@ export function getRenderData<T>(
 	selectionKey?: string,
 	labelKeyType?: 'KEY' | 'INDEX' | 'OBJECT',
 	labelKey?: string,
-) {
+): Array<{ label: any; value: any; key: any; originalObjectKey: any } | undefined> {
 	if (dataType === 'LIST_OF_STRINGS') {
 		if (Array.isArray(data)) {
 			const res = data.map((e: any, index: number) => {
@@ -80,6 +80,7 @@ export function getRenderData<T>(
 			});
 			return res;
 		}
+		return [];
 	}
 
 	if (dataType === 'LIST_OF_OBJECTS') {
@@ -96,6 +97,7 @@ export function getRenderData<T>(
 			});
 			return res;
 		}
+		return [];
 	}
 
 	if (dataType === 'LIST_OF_LISTS') {
@@ -112,6 +114,7 @@ export function getRenderData<T>(
 			});
 			return res;
 		}
+		return [];
 	}
 
 	if (dataType === 'OBJECT_OF_PRIMITIVES') {
@@ -129,7 +132,7 @@ export function getRenderData<T>(
 	}
 
 	if (dataType === 'OBJECT_OF_OBJECTS') {
-		const res = Object.entries(data).map(([k, v], index: number) => {
+		const res = Object.entries(data).map(([k, v]) => {
 			if (typeof v === 'object') {
 				return {
 					label: getSelection(labelKeyType, labelKey, v, k),
@@ -143,7 +146,7 @@ export function getRenderData<T>(
 	}
 
 	if (dataType === 'OBJECT_OF_LISTS') {
-		const res = Object.entries(data).map(([k, v], index: number) => {
+		const res = Object.entries(data).map(([k, v]) => {
 			if (Array.isArray(v)) {
 				return {
 					label: getSelection(labelKeyType, labelKey, v, k),
@@ -155,4 +158,6 @@ export function getRenderData<T>(
 		});
 		return res;
 	}
+
+	return [];
 }

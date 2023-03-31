@@ -180,6 +180,7 @@ function Grid(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-table-cells',
 	name: 'Grid',
 	displayName: 'Grid',
 	description: 'Grid component',
@@ -188,7 +189,7 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleComponent: GridStyle,
 	stylePseudoStates: ['hover', 'focus', 'readonly'],
-	hasChildren: true,
+	allowedChildrenType: new Map<string, number>([['', -1]]),
 	bindingPaths: {
 		bindingPath: { name: 'Scrolled Component Binding' },
 	},
