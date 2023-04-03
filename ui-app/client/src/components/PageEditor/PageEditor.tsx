@@ -199,7 +199,8 @@ function PageEditor(props: ComponentProps) {
 	);
 
 	const ref = useRef<HTMLIFrameElement>(null);
-	const [selectedComponent, setSelectedComponent] = useState<string>();
+	const [selectedComponent, setSelectedComponent] = useState<string>('');
+	const [selectedSubComponent, setSelectedSubComponent] = useState<string>('');
 	const [issue, setIssue] = useState<Issue>();
 	const [contextMenu, setContextMenu] = useState<ContextMenuDetails>();
 
@@ -266,6 +267,16 @@ function PageEditor(props: ComponentProps) {
 		});
 	}, [selectedComponent, ref.current]);
 
+	// On changing the sub selection, this effect sends to the iframe/slave.
+	useEffect(() => {
+		if (!defPath) return;
+		if (!ref.current) return;
+		ref.current.contentWindow?.postMessage({
+			type: 'EDITOR_SUB_SELECTION',
+			payload: selectedSubComponent,
+		});
+	}, [selectedSubComponent, ref.current]);
+
 	// The type of the editor should b esent to iframe/slave.
 	useEffect(() => {
 		if (!ref.current) return;
@@ -296,6 +307,7 @@ function PageEditor(props: ComponentProps) {
 					personalization,
 					personalizationPath,
 					onSelectedComponentChange: key => setSelectedComponent(key),
+					onSelectedSubComponentChange: key => setSelectedSubComponent(key),
 					operations,
 					onContextMenu: (m: ContextMenuDetails) => setContextMenu(m),
 					onSlaveStore: (store: any) => {
@@ -345,7 +357,11 @@ function PageEditor(props: ComponentProps) {
 					selectedComponent={selectedComponent}
 					onSelectedComponentChanged={(key: string) => setSelectedComponent(key)}
 					pageOperations={operations}
-					onPageReload={() => ref.current?.contentWindow?.location.reload()}
+					onPageReload={() => {
+						ref.current?.contentWindow?.location.reload();
+						setSelectedComponent('');
+						setSelectedSubComponent('');
+					}}
 					theme={localTheme}
 					logo={logo}
 					onUrlChange={urlChange}

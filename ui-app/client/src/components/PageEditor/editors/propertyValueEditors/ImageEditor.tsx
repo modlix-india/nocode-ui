@@ -64,7 +64,6 @@ export function ImageEditor({ value, onChange, propDef }: IconSelectionEditorPro
 	const callForFiles = useCallback(() => {
 		setInProgress(true);
 		(async () => {
-			console.log('calling for files', path, filter);
 			let url = `/api/files/static/${path}`;
 			if (filter.trim() !== '') url += `&filter=${filter}`;
 			await axios
@@ -85,7 +84,6 @@ export function ImageEditor({ value, onChange, propDef }: IconSelectionEditorPro
 		[callForFiles, path, showImageBrowser],
 	);
 
-	console.log(files);
 	let popup = <></>;
 	if (showImageBrowser) {
 		const newFolderDiv = newFolder ? (
@@ -102,7 +100,6 @@ export function ImageEditor({ value, onChange, propDef }: IconSelectionEditorPro
 					}}
 					onKeyUp={e => {
 						if (e.key !== 'Enter') return;
-						console.log(newFolder);
 					}}
 				/>
 			</div>
@@ -131,9 +128,7 @@ export function ImageEditor({ value, onChange, propDef }: IconSelectionEditorPro
 									},
 								},
 							);
-						} catch (e) {
-							console.log(e);
-						}
+						} catch (e) {}
 						setInProgress(false);
 						callForFiles();
 					}}

@@ -8,6 +8,7 @@ interface MasterFunctionOptions {
 	personalization: any;
 	personalizationPath: string | undefined;
 	onSelectedComponentChange: (key: string) => void;
+	onSelectedSubComponentChange: (key: string) => void;
 	operations: PageOperations;
 	onContextMenu: (m: ContextMenuDetails) => void;
 	onSlaveStore: (payload: any) => void;
@@ -36,6 +37,7 @@ export const MASTER_FUNCTIONS = new Map<
 		},
 	],
 	['SLAVE_SELECTED', (options, payload) => options?.onSelectedComponentChange(payload)],
+	['SLAVE_SELECTED_SUB', (options, payload) => options?.onSelectedSubComponentChange(payload)],
 	[
 		'SLAVE_DROPPED_SOMETHING',
 		(options, { componentKey, droppedData }) =>
