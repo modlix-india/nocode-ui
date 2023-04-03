@@ -29,7 +29,6 @@ export function PropertyGroup({
 	locationHistory,
 }: PropertyGroupProps) {
 	const [state, setState] = React.useState(defaultStateOpen ?? true);
-	console.log(state);
 
 	useEffect(() => {
 		if (!personalizationPath) return;

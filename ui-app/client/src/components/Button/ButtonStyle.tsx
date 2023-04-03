@@ -24,7 +24,7 @@ export default function ButtonStyle({ theme }: { theme: Map<string, Map<string, 
 			padding: 0px;
 		}
 		
-		${PREFIX} .button .buttonInternalContainer {
+		${PREFIX} .button {
 			display: flex;
 			justify-content: center;
 			align-items: center;

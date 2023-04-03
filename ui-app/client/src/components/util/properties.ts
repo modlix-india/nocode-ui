@@ -54,6 +54,46 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 		description: 'This component will be hidden when this property is true.',
 		group: ComponentPropertyGroup.COMMON,
 	},
+	layout: {
+		name: 'layout',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Layout',
+		description: 'Name of the layout',
+		editor: ComponentPropertyEditor.LAYOUT,
+		defaultValue: 'SINGLECOLUMNLAYOUT',
+		group: ComponentPropertyGroup.ADVANCED,
+		enumValues: [
+			{ name: 'ROWLAYOUT', displayName: 'Row Layout', description: 'Default row layout' },
+			{
+				name: 'SINGLECOLUMNLAYOUT',
+				displayName: 'Column Layout',
+				description: 'Single Column layout in all resolutions',
+			},
+			{
+				name: 'TWOCOLUMNSLAYOUT',
+				displayName: 'Two Columns Layout',
+				description: 'Two Columns layout in all resolutions except mobile',
+			},
+			{
+				name: 'THREECOLUMNSLAYOUT',
+				displayName: 'Three Columns Layout',
+				description:
+					'Three Columns layout in all resolutions and two in tablet and one in mobile',
+			},
+			{
+				name: 'FOURCOLUMNSLAYOUT',
+				displayName: 'Four Columns Layout',
+				description:
+					'Four Columns layout in desktop and widescreen and two in tablet and one in mobile',
+			},
+			{
+				name: 'FIVECOLUMNSLAYOUT',
+				displayName: 'Five Columns Layout',
+				description:
+					'Five Columns layout in desktop and widescreen and two in tablet and one in mobile',
+			},
+		],
+	},
 };
 
 const COMPONENT_STYLE_GROUPS: { [key: string]: Array<string> } = {

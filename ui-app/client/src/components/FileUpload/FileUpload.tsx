@@ -70,7 +70,14 @@ function FileUpload(props: ComponentProps) {
 		: undefined;
 	useEffect(() => {
 		const msgs = validation?.length
-			? validate(props.definition, props.pageDefinition, validation, value)
+			? validate(
+					props.definition,
+					props.pageDefinition,
+					validation,
+					value,
+					locationHistory,
+					pageExtractor,
+			  )
 			: [];
 		if (msgs.length) {
 			setValidationMessages(msgs);

@@ -16,9 +16,9 @@ function getTextualValue(value: any) {
 }
 
 export function AnyValueEditor({ value, defaultValue, onChange }: AnyValueEditorProps) {
-	const [localValue, setLocalValue] = React.useState(getTextualValue(value));
+	const [localValue, setLocalValue] = React.useState(getTextualValue(value ?? defaultValue));
 	const [showEditor, setShowEditor] = React.useState(false);
-	const [editorValue, setEditorValue] = React.useState(getTextualValue(value));
+	const [editorValue, setEditorValue] = React.useState(getTextualValue(value ?? defaultValue));
 	const [enableOk, setEnableOk] = React.useState(false);
 
 	useEffect(() => {

@@ -85,7 +85,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Validation Rule',
 		editor: ComponentPropertyEditor.VALIDATION,
 		multiValued: true,
-		notImplemented: true,
 		group: ComponentPropertyGroup.VALIDATION,
 	},
 
@@ -189,7 +188,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Update Immediately',
 		description: 'Update the store Immediately after typing or on blur by default.',
 		schema: SCHEMA_BOOL_COMP_PROP,
-		notImplemented: true,
 		group: ComponentPropertyGroup.DATA,
 	},
 

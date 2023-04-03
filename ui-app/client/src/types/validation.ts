@@ -18,6 +18,7 @@ export interface Validation {
 	type: ValidationType;
 	condition: ComponentProperty<boolean>;
 	message: ComponentProperty<string>;
+	order?: number;
 }
 
 export interface EventFunctionValidation extends Validation {

@@ -9,7 +9,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Add button',
 		description: 'When this option is set to true, User will be able to add items to repeater',
 		defaultValue: false,
-		notImplemented: true,
 	},
 	{
 		name: 'showDelete',
@@ -18,7 +17,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description:
 			'When this option is set to true, User will be able to delete items from repeater',
 		defaultValue: false,
-		notImplemented: true,
 	},
 	{
 		name: 'showMove',
@@ -27,7 +25,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description:
 			'When this option is set to true, User will be able to move items up/down the index in the repeater',
 		defaultValue: false,
-		notImplemented: true,
 	},
 	{
 		name: 'isItemDraggable',
@@ -36,47 +33,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description:
 			'When this option is set to true, User will be able to drag items up the index in the repeater',
 		defaultValue: false,
-		notImplemented: true,
 	},
-	{
-		name: 'layout',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Layout',
-		description: 'Name of the layout',
-		editor: ComponentPropertyEditor.LAYOUT,
-		defaultValue: 'SINGLECOLUMNLAYOUT',
-		enumValues: [
-			{ name: 'ROWLAYOUT', displayName: 'Row Layout', description: 'Default row layout' },
-			{
-				name: 'SINGLECOLUMNLAYOUT',
-				displayName: 'Column Layout',
-				description: 'Single Column layout in all resolutions',
-			},
-			{
-				name: 'TWOCOLUMNSLAYOUT',
-				displayName: 'Two Columns Layout',
-				description: 'Two Columns layout in all resolutions except mobile',
-			},
-			{
-				name: 'THREECOLUMNSLAYOUT',
-				displayName: 'Three Columns Layout',
-				description:
-					'Three Columns layout in all resolutions and two in tablet and one in mobile',
-			},
-			{
-				name: 'FOURCOLUMNSLAYOUT',
-				displayName: 'Four Columns Layout',
-				description:
-					'Four Columns layout in desktop and widescreen and two in tablet and one in mobile',
-			},
-			{
-				name: 'FIVECOLUMNSLAYOUT',
-				displayName: 'Five Columns Layout',
-				description:
-					'Five Columns layout in desktop and widescreen and two in tablet and one in mobile',
-			},
-		],
-	},
+	COMMON_COMPONENT_PROPERTIES.layout,
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];

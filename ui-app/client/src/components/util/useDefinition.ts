@@ -12,6 +12,7 @@ import {
 import {
 	ComponentDefinition,
 	ComponentDefinitionValues,
+	ComponentMultiProperty,
 	ComponentProperty,
 	ComponentPropertyDefinition,
 	ComponentResoltuions,
@@ -33,38 +34,17 @@ function createNewState(
 	const def: ComponentDefinitionValues = { key: definition.key };
 	def.properties = properties
 		.map(e => {
-			if (e.schema.getRef() === SCHEMA_VALIDATION.getRef()) {
-				return [
-					e.name,
-					Object.values(definition?.properties?.[e.name] ?? {}).map(evalidation =>
-						Object.entries(evalidation)
-							.map(([k, v]) => [
-								k,
-								typeof v === 'string'
-									? v
-									: getData(
-											v as ComponentProperty<any>,
-											locationHistory,
-											pageExtractor,
-									  ),
-							])
-							.reduce((a: any, c) => {
-								a[c[0]] = c[1];
-								return a;
-							}, {}),
-					),
-				];
-			}
-
 			let value = e.defaultValue;
 
 			if (!definition.properties) return [e.name, value];
 
 			if (e.multiValued) {
-				value =
-					Object.values(definition.properties[e.name]).map(each =>
-						getData(each, locationHistory, pageExtractor),
-					) ?? value;
+				if (!isNullValue(definition.properties[e.name]))
+					value = Object.values(
+						definition.properties[e.name] as ComponentMultiProperty<any>,
+					)
+						.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+						.map(each => getData(each.property, locationHistory, pageExtractor));
 			} else {
 				value =
 					getData(definition.properties[e.name], locationHistory, pageExtractor) ?? value;

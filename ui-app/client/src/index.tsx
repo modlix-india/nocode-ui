@@ -11,6 +11,7 @@ declare global {
 	var getStore: () => any;
 	var pageEditor: {
 		selectedComponent: string;
+		selectedSubComponent: string;
 		editingPageDefinition: PageDefinition;
 		personalization: any;
 	};

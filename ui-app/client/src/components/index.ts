@@ -27,9 +27,12 @@ import TextEditor from './TextEditor/TextEditor';
 import TableColumn from './TableColumn/TableColumn';
 import TableColumnHeader from './TableColumnHeader/TableColumnHeader';
 import ProgressBar from './ProgressBar/ProgressBar';
+import Popover from './Popover/Popover';
 import SubPage from './SubPage/SubPage';
 import PageEditor from './PageEditor/PageEditor';
 import { Component } from '../types/common';
+import Iframe from './Iframe/Iframe';
+import FileUpload from './FileUpload/FileUpload';
 
 export default new Map<string, Component>([
 	[Button.name, Button],
@@ -63,4 +66,7 @@ export default new Map<string, Component>([
 	[ProgressBar.name, ProgressBar],
 	[SubPage.name, SubPage],
 	[PageEditor.name, PageEditor],
+	[Iframe.name, Iframe],
+	[Popover.name, Popover],
+	[FileUpload.name, FileUpload],
 ]);
