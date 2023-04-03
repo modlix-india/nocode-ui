@@ -9,9 +9,12 @@ export default function CarouselStyle({ theme }: { theme: Map<string, Map<string
 	const css =
 		`
     ${PREFIX} {
-        display: flex;
+     display: flex;
+     flex-direction: column;
+     width:600px;
+     height:400px;
     }
-    ${PREFIX} button {
+    ${PREFIX} .button {
         position: absolute;
         height: 40px;
         top: calc(50% - 40px);
@@ -41,6 +44,21 @@ export default function CarouselStyle({ theme }: { theme: Map<string, Map<string
 
     ${PREFIX} .rightArrowButton {
        right: 0;
+    }
+    ${PREFIX} .dotsDiv{
+        display: flex;
+        flex-direction: row;
+        position: absolute;
+        bottom: 0;
+        padding-bottom: 10px;
+        left:50%;
+        transform: translateX(-50%);
+    }
+    ${PREFIX} .dots{
+        width: fit-content;
+        height:fit-content;
+        background: transparent;
+        border:none
     }
    
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);

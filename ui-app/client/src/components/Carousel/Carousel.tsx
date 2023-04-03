@@ -10,11 +10,7 @@ import Children from '../Children';
 function Carousel(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const { locationHistory, definition } = props;
-	const {
-		key,
-		stylePropertiesWithPseudoStates,
-		properties: {} = {},
-	} = useDefinition(
+	const { properties: { showDotsButtons, showArrowButtons, slideSpeed } = {} } = useDefinition(
 		definition,
 		propertiesDefinition,
 		stylePropertiesDefinition,
@@ -42,7 +38,7 @@ function Carousel(props: ComponentProps) {
 		const handle = setTimeout(() => {
 			let num = slideNum + 1;
 			setSlideNum(value.length > num ? num : 0);
-		}, 2000);
+		}, slideSpeed);
 		return () => clearTimeout(handle);
 	}, [value, ref.current, slideNum, setSlideNum]);
 
@@ -61,20 +57,35 @@ function Carousel(props: ComponentProps) {
 			/>
 		</div>
 	));
+
 	return (
 		<div className="comp compCarousel">
 			<HelperComponent definition={definition} />
 			<div className="innerDiv" ref={ref}>
 				{slides}
 			</div>
-			<button
-				className="rightArrowButton fa-solid fa-chevron-right"
-				onClick={() => setSlideNum(slideNum == 0 ? value.length - 1 : slideNum - 1)}
-			></button>
-			<button
-				className="leftArrowButton fa-solid fa-chevron-left"
-				onClick={() => setSlideNum(slideNum + 1 >= value.length ? 0 : slideNum + 1)}
-			></button>
+			{showArrowButtons && (
+				<div>
+					<button
+						className="rightArrowButton fa-solid fa-chevron-right button"
+						onClick={() => setSlideNum(slideNum == 0 ? value.length - 1 : slideNum - 1)}
+					></button>
+					<button
+						className="leftArrowButton fa-solid fa-chevron-left button"
+						onClick={() => setSlideNum(slideNum + 1 >= value.length ? 0 : slideNum + 1)}
+					></button>
+				</div>
+			)}
+
+			<div className="dotsDiv">
+				{showDotsButtons &&
+					(value ?? []).map((e: any, key: any) => (
+						<button
+							className="dots fa-regular fa-circle"
+							onClick={() => setSlideNum(key)}
+						></button>
+					))}
+			</div>
 		</div>
 	);
 }
