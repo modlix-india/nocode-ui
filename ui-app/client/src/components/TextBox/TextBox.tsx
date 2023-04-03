@@ -118,7 +118,14 @@ function TextBox(props: ComponentProps) {
 	useEffect(() => {
 		if (!validation?.length) return;
 
-		const msgs = validate(props.definition, props.pageDefinition, validation, value);
+		const msgs = validate(
+			props.definition,
+			props.pageDefinition,
+			validation,
+			value,
+			locationHistory,
+			pageExtractor,
+		);
 		setValidationMessages(msgs);
 
 		setData(
@@ -205,6 +212,7 @@ function TextBox(props: ComponentProps) {
 			props.pageDefinition,
 		);
 	};
+
 	return (
 		<div className="comp compTextBox" style={computedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />

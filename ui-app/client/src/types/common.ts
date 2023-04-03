@@ -8,6 +8,14 @@ export interface ComponentProperty<T> {
 	backupExpression?: string;
 }
 
+export interface ComponentMultiProperty<T> {
+	[key: string]: {
+		key: string;
+		order?: number;
+		property: ComponentProperty<T>;
+	};
+}
+
 export interface DataLocation {
 	type: 'EXPRESSION' | 'VALUE';
 	value?: string;
@@ -51,6 +59,7 @@ export enum ComponentPropertyEditor {
 	BACKGROUND,
 	STYLE_SELECTOR,
 	THEME_SELECTOR,
+	IMAGE,
 }
 
 export enum ComponentPropertyGroup {
