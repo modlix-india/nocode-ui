@@ -11,8 +11,6 @@ export default function CarouselStyle({ theme }: { theme: Map<string, Map<string
     ${PREFIX} {
      display: flex;
      flex-direction: column;
-     width:600px;
-     height:400px;
     }
     ${PREFIX} .button {
         position: absolute;
