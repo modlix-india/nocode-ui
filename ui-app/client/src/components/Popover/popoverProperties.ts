@@ -1,12 +1,12 @@
 import { Schema } from '@fincity/kirun-js';
-import { SCHEMA_REF_BOOL_COMP_PROP, SCHEMA_REF_STRING_COMP_PROP } from '../../constants';
+import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
 import { ComponentPropertyDefinition, ComponentPropertyEditor } from '../../types/common';
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'position',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Popover position',
 		description: `Popover position.`,
 		defaultValue: 'bottom-end',
@@ -52,14 +52,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'showTip',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show Popover tip',
 		description: `Show Popover tip.`,
 		defaultValue: true,
 	},
 	{
 		name: 'closeOnLeave',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Close Popover on leave',
 		description: `Close Popover on leave.`,
 		defaultValue: false,
