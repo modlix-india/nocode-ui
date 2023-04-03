@@ -111,7 +111,7 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 			COMPONENT_STYLE_GROUP_PROPERTIES.transform,
 		[COMPONENT_STYLE_GROUP_PROPERTIES.zIndex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.zIndex,
 	},
-
+	button: {},
 	icon: {
 		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.color,

@@ -59,8 +59,6 @@ function TabsComponent(props: ComponentProps) {
 		);
 	}, [bindingPathPath, defaultActive, tabs]);
 
-	console.log(tabs);
-
 	const getActiveStyleBorder = function (childKey: any) {
 		if (activeTab === childKey ?? defaultActive === childKey) return 'activeTabBorder';
 	};

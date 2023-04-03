@@ -137,6 +137,10 @@ export default function AppStyle() {
 	.opacityShowOnHover:hover {
 		opacity: 1 !important;
 	}
+
+	.disableChildrenEvents * {
+		pointer-events: none;
+	}
 	` + processStyleDefinition('', styleProperties, styleDefaults, theme);
 
 	const styleComps = new Array();
