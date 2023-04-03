@@ -59,6 +59,7 @@ export enum ComponentPropertyEditor {
 	BACKGROUND,
 	STYLE_SELECTOR,
 	THEME_SELECTOR,
+	IMAGE,
 }
 
 export enum ComponentPropertyGroup {

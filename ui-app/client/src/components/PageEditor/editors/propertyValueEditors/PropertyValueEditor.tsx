@@ -15,6 +15,7 @@ import { AnyValueEditor } from './AnyValueEditor';
 import { BooleanValueEditor } from './BooleanValueEditor';
 import { ExpressionEditor } from './ExpressionEditor';
 import { IconSelectionEditor } from './IconSelectionEditor';
+import { ImageEditor } from './ImageEditor';
 import { ValidationEditor } from './ValidationEditor';
 
 interface PropertyValueEditorProps {
@@ -201,6 +202,16 @@ function makeValueEditor(
 	if (propDef.editor === ComponentPropertyEditor.VALIDATION) {
 		return (
 			<ValidationEditor
+				value={chngValue === '' ? undefined : chngValue}
+				onChange={e => onChange({ ...value, value: e })}
+			/>
+		);
+	}
+
+	if (propDef.editor === ComponentPropertyEditor.IMAGE) {
+		return (
+			<ImageEditor
+				propDef={propDef}
 				value={chngValue === '' ? undefined : chngValue}
 				onChange={e => onChange({ ...value, value: e })}
 			/>

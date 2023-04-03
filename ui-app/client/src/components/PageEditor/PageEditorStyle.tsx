@@ -617,6 +617,16 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex:1;
 		}
 
+		._popupContainer ._progressBar {
+			flex: 1;
+			text-align: center;
+			padding-top: 150px;
+		}
+
+		._popupContainer ._progressBar i.fa {
+			font-size: 50px;
+		}
+
 		._popupContainer ._jsonEditorContainer{
 			border: 1px solid #eee;
 			border-radius: 4px;
@@ -654,6 +664,80 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			justify-content: center;
 			gap: 15px;
 			text-align: center;
+			word-break: break-all;
+			position: relative;
+		}
+
+		._popupContainer ._iconSelectionDisplay ._eachIcon:hover {
+			background-color: #ddd;
+		}
+
+		._popupContainer ._pathParts {
+			display: flex;
+			flex-direction: row;
+			gap: 5px;
+			flex:1;
+		}
+
+		._popupContainer ._pathContainer {
+			display: flex;
+			gap: 10px;
+		}
+
+		._popupContainer ._pathContainer i.fa {
+			cursor: pointer;
+		}
+
+		._popupContainer ._eachIcon input{
+			font-size: 11px;
+			border: none;
+			width: 80px;
+			background-color: #eee;
+			padding:0px 5px;
+		}
+
+		._popupContainer ._eachIcon ._deleteButton {
+			position: absolute;
+			display: none;
+			right: 5px;
+			top: 5px;
+		}
+		._popupContainer ._eachIcon:hover ._deleteButton {
+			display: block;
+		}
+
+		._popupContainer ._pathParts span {
+			padding: 0px 5px;
+		}
+
+		._popupContainer ._eachIcon._upload {
+			border: 2px dashed #ccc;
+		}
+
+		._popupContainer ._eachIcon input[type="file"] {
+			position: absolute;
+			opacity: 0;
+			width: 100%;
+    		height: 100%;
+			cursor: pointer;
+		}
+
+		._popupContainer ._image {
+			width: 48px;
+			height: 48px;
+			background-repeat: no-repeat;
+			background-size: contain;
+			background-position: center center;
+		}
+
+		._popupContainer ._pathParts span._clickable {
+			cursor: pointer;
+			border-radius: 3px;
+		}
+
+		._popupContainer ._pathParts span._clickable:hover {
+			color: #000;
+			background-color: #eee;
 		}
 
 		._popupMenuBackground, ._popupBackground {
