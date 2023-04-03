@@ -80,14 +80,10 @@ function DropdownComponent(props: ComponentProps) {
 	);
 	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
 	const searchEvent = onSearch ? props.pageDefinition.eventFunctions[onSearch] : undefined;
-	if (!bindingPath) return <>Binding path is required.</>;
-	if (isSearchable && !bindingPath2)
-		return <>Search Binding path is required when search is enabled.</>;
-	if (searchEvent && selectionType !== 'OBJECT')
-		return <>When search is external, selection type must be object.</>;
-	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
+	const bindingPathPath = getPathFromLocation(bindingPath!, locationHistory, pageExtractor);
 	const searchBindingPath = getPathFromLocation(bindingPath2!, locationHistory, pageExtractor);
 	useEffect(() => {
+		if (!bindingPathPath) return;
 		addListenerAndCallImmediately(
 			(_, value) => {
 				setSelected(value);
@@ -95,9 +91,10 @@ function DropdownComponent(props: ComponentProps) {
 			pageExtractor,
 			bindingPathPath,
 		);
-	}, []);
+	}, [bindingPathPath]);
 
 	useEffect(() => {
+		if (!searchBindingPath) return;
 		addListenerAndCallImmediately(
 			(_, value) => {
 				setSearchText(value ?? '');
@@ -105,7 +102,7 @@ function DropdownComponent(props: ComponentProps) {
 			pageExtractor,
 			searchBindingPath,
 		);
-	}, []);
+	}, [searchBindingPath]);
 
 	const dropdownData = React.useMemo(
 		() =>
