@@ -8,9 +8,7 @@ import { Issue } from '../components/IssuePopup';
 import { COPY_CD_KEY, CUT_CD_KEY, DRAG_CD_KEY, DRAG_COMP_NAME } from '../../../constants';
 import ComponentDefinitions from '../../';
 import NothingComponent from '../../Nothing';
-
-const base = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-const baseDivisor = BigInt('' + base.length);
+import { shortUUID } from '../../../util/shortUUID';
 
 interface ClipboardObject {
 	mainKey: string;
@@ -205,7 +203,12 @@ export default class PageOperations {
 
 		const pageDef: PageDefinition = duplicate(def);
 		// Prepare the copy object and write to the clipboard.
-		const cutObject: ClipboardObject = this._makeCutOrCopyObject(pageDef, componentKey, true);
+		const cutObject: ClipboardObject = this._makeCutOrCopyObject(
+			pageDef,
+			componentKey,
+			true,
+			false,
+		);
 
 		navigator.clipboard.write([
 			new ClipboardItem({
@@ -292,6 +295,7 @@ export default class PageOperations {
 		pageDef: PageDefinition,
 		componentKey: any,
 		deleteExisting: boolean = false,
+		deselect: boolean = true,
 	) {
 		const obj = pageDef.componentDefinition[componentKey];
 		const cutObject: ClipboardObject = {
@@ -319,7 +323,12 @@ export default class PageOperations {
 		}
 
 		// If we delete the component which is part of the tree and is selected then we remove the selection.
-		if (deleteExisting && this.selectedComponent && keySet.has(this.selectedComponent))
+		if (
+			deselect &&
+			deleteExisting &&
+			this.selectedComponent &&
+			keySet.has(this.selectedComponent)
+		)
 			this.onSelectedComponentChanged('');
 		return cutObject;
 	}
@@ -638,22 +647,6 @@ export default class PageOperations {
 	}
 
 	public genId(): string {
-		let hex = crypto
-			? crypto.randomUUID().replace(/-/g, '')
-			: Math.random().toString(16).substring(2);
-
-		if (BigInt) {
-			let num = BigInt('0x' + hex);
-			let a = [];
-
-			while (num > 0) {
-				a.push(base[Number(num % baseDivisor)]);
-				num = num / baseDivisor;
-			}
-
-			return a.reverse().join('');
-		}
-
-		return hex;
+		return shortUUID();
 	}
 }

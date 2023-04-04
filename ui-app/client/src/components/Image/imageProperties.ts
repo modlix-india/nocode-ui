@@ -1,6 +1,10 @@
 import { Schema } from '@fincity/kirun-js';
 import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
-import { ComponentPropertyDefinition, ComponentStylePropertyDefinition } from '../../types/common';
+import {
+	ComponentPropertyDefinition,
+	ComponentPropertyEditor,
+	ComponentStylePropertyDefinition,
+} from '../../types/common';
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
@@ -9,6 +13,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'source',
 		description: 'source of the image',
+		editor: ComponentPropertyEditor.IMAGE,
 	},
 	{
 		name: 'alt',

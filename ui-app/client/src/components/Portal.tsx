@@ -1,10 +1,11 @@
+import { isNullValue } from '@fincity/kirun-js';
 import React from 'react';
 import ReactDOM from 'react-dom';
-
-type Props = {
+interface Props {
 	children: React.ReactNode;
 	parent?: HTMLElement;
-};
+}
+
 const Portal: React.FC<Props> = ({ children, parent }) => {
 	const el = React.useMemo(() => document.createElement('div'), []);
 

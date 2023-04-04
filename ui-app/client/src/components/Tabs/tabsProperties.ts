@@ -14,10 +14,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'tabs',
-		schema: SCHEMA_ANY_COMP_PROP,
-		displayName: 'Tabs list (CSV)',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Tabs list',
 		description: 'Tabs to be present on the component, comma seperated list of tab names',
-		defaultValue: '',
+		multiValued: true,
+		defaultValue: [],
 	},
 	{
 		name: 'defaultActive',
@@ -28,10 +29,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'icon',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'icon list (CSV)',
+		displayName: 'Icon list',
 		editor: ComponentPropertyEditor.ICON,
-		description: "icon's to be present on the component, comma seperated list of icon links",
-		defaultValue: ' ',
+		description: "Icon's to be present on the component, comma seperated list of icon links",
+		multiValued: true,
+		defaultValue: [],
 	},
 	{
 		name: 'tabsOrientation',

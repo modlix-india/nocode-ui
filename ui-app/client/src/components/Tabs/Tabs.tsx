@@ -35,8 +35,9 @@ function TabsComponent(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	if (!bindingPath) throw new Error('Definition requires binding path');
-	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory);
+	const bindingPathPath = bindingPath
+		? getPathFromLocation(bindingPath, locationHistory)
+		: undefined;
 	const [hover, setHover] = React.useState(false);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
@@ -44,28 +45,19 @@ function TabsComponent(props: ComponentProps) {
 		stylePropertiesWithPseudoStates,
 	);
 
-	const stringSpliter = (str: string) => {
-		const value = str
-			.split(',')
-			.map((e: string) => e.trim())
-			.filter(e => !!e);
-		return value;
-	};
-
-	const tabNames = stringSpliter(tabs);
-	const iconTags = stringSpliter(icon);
-
-	const [activeTab, setActiveTab] = React.useState(defaultActive ?? tabNames[0]);
+	const [activeTab, setActiveTab] = React.useState(defaultActive ?? tabs[0]);
 
 	useEffect(() => {
+		if (!bindingPathPath) return;
+
 		return addListenerAndCallImmediately(
 			(_, value) => {
-				setActiveTab(value ?? defaultActive ?? tabNames[0]);
+				setActiveTab(value ?? defaultActive ?? tabs[0]);
 			},
 			pageExtractor,
 			bindingPathPath,
 		);
-	}, []);
+	}, [bindingPathPath, defaultActive, tabs]);
 
 	const getActiveStyleBorder = function (childKey: any) {
 		if (activeTab === childKey ?? defaultActive === childKey) return 'activeTabBorder';
@@ -75,10 +67,14 @@ function TabsComponent(props: ComponentProps) {
 	};
 
 	const handleClick = function (key: string) {
+		if (!bindingPathPath) {
+			setActiveTab(key);
+			return;
+		}
 		setData(bindingPathPath, key, context.pageName);
 	};
 
-	const index = tabNames.findIndex((e: string) => e == activeTab);
+	const index = tabs.findIndex((e: string) => e == activeTab);
 	const entry = Object.entries(definition.children ?? {})
 		.filter(([k, v]) => !!v)
 		.sort(
@@ -97,7 +93,7 @@ function TabsComponent(props: ComponentProps) {
 				className={`tabsContainer ${orientationClass}`}
 				style={resolvedStyles.tabsContainer ?? {}}
 			>
-				{tabNames.map((e: any, i: number) => (
+				{tabs.map((e: any, i: number) => (
 					<div
 						key={e}
 						className={`tabDiv ${orientationClass} ${
@@ -118,9 +114,9 @@ function TabsComponent(props: ComponentProps) {
 					>
 						<button
 							style={resolvedStyles.button ?? {}}
-							className={`tabButton ${iconTags.length === 0 ? 'noIcon' : ''}`}
+							className={`tabButton ${icon.length === 0 ? 'noIcon' : ''}`}
 						>
-							<i className={iconTags[i]}></i>
+							<i className={icon[i]}></i>
 							{getTranslations(e, pageDefinition.translations)}
 						</button>
 						{activeStyle === 'BORDER' && (
@@ -154,6 +150,9 @@ const component: Component = {
 	styleProperties: stylePropertiesDefinition,
 	allowedChildrenType: new Map<string, number>([['', -1]]),
 	stylePseudoStates: ['hover'],
+	bindingPaths: {
+		bindingPath: { name: 'Active Tab Binding' },
+	},
 };
 
 export default component;

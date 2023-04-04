@@ -127,7 +127,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border: 1px solid #ccc;
 		}
 
-		${PREFIX} input[type='text'], ${PREFIX} ._pvExpressionEditor{
+		${PREFIX} input[type='text'], ${PREFIX} ._pvExpressionEditor, ${PREFIX} input[type='number'] {
 			height: 25px;
 			font-size: 12px;
 			border-radius: 12px;
@@ -146,7 +146,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			gap: 5px;
 		}
 
-		${PREFIX} ._pvExpressionEditor input[type='text'] {
+		${PREFIX} ._pvExpressionEditor input[type='text'],  ${PREFIX} ._pvExpressionEditor input[type='number']{
 			border: none;
 			background-color: transparent;
 			flex: 1;
@@ -411,7 +411,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			gap: 5px;
 		}
 
-		${PREFIX} ._pvEditor input[type='text'] {
+		${PREFIX} ._pvEditor input[type='text'], ${PREFIX} ._pvEditor input[type='number']  {
 			border-radius: 2px;
 		}
 
@@ -457,6 +457,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._pvValueEditor {
 			display: flex;
 			gap: 5px;
+			flex: 1;
 		}
 
 		${PREFIX} ._propLabel {
@@ -568,6 +569,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			align-items: center;
 			gap: 5px;
 			padding-left: 5px;
+			text-transform: uppercase;
 		}
 
 		${PREFIX} ._propertyGroupHeader i.fa {
@@ -577,6 +579,52 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._propertyGroup._closed i.fa {
 			transform: rotate(-90deg);
+		}
+
+		${PREFIX} ._multiValueEditor {
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
+		}
+
+		${PREFIX} ._eachProperty {
+			display: flex;
+			gap: 10px;
+			align-items: center;
+			border: 2px solid #ddd;
+			padding: 5px;
+			border-radius: 3px;
+		}
+
+		${PREFIX} ._eachProperty i.fa {
+			color: #aaa;
+			cursor: pointer;
+			font-size: 13px;
+		}
+
+		${PREFIX} ._eachProperty:hover i.fa {
+			color: inherit;
+		}
+
+		${PREFIX} ._eachProperty ._pvEditor {
+			flex: 1;
+		}
+
+		${PREFIX} ._validationEditor {
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
+			flex:1;
+		}
+
+		._popupContainer ._progressBar {
+			flex: 1;
+			text-align: center;
+			padding-top: 150px;
+		}
+
+		._popupContainer ._progressBar i.fa {
+			font-size: 50px;
 		}
 
 		._popupContainer ._jsonEditorContainer{
@@ -616,6 +664,80 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			justify-content: center;
 			gap: 15px;
 			text-align: center;
+			word-break: break-all;
+			position: relative;
+		}
+
+		._popupContainer ._iconSelectionDisplay ._eachIcon:hover {
+			background-color: #ddd;
+		}
+
+		._popupContainer ._pathParts {
+			display: flex;
+			flex-direction: row;
+			gap: 5px;
+			flex:1;
+		}
+
+		._popupContainer ._pathContainer {
+			display: flex;
+			gap: 10px;
+		}
+
+		._popupContainer ._pathContainer i.fa {
+			cursor: pointer;
+		}
+
+		._popupContainer ._eachIcon input{
+			font-size: 11px;
+			border: none;
+			width: 80px;
+			background-color: #eee;
+			padding:0px 5px;
+		}
+
+		._popupContainer ._eachIcon ._deleteButton {
+			position: absolute;
+			display: none;
+			right: 5px;
+			top: 5px;
+		}
+		._popupContainer ._eachIcon:hover ._deleteButton {
+			display: block;
+		}
+
+		._popupContainer ._pathParts span {
+			padding: 0px 5px;
+		}
+
+		._popupContainer ._eachIcon._upload {
+			border: 2px dashed #ccc;
+		}
+
+		._popupContainer ._eachIcon input[type="file"] {
+			position: absolute;
+			opacity: 0;
+			width: 100%;
+    		height: 100%;
+			cursor: pointer;
+		}
+
+		._popupContainer ._image {
+			width: 48px;
+			height: 48px;
+			background-repeat: no-repeat;
+			background-size: contain;
+			background-position: center center;
+		}
+
+		._popupContainer ._pathParts span._clickable {
+			cursor: pointer;
+			border-radius: 3px;
+		}
+
+		._popupContainer ._pathParts span._clickable:hover {
+			color: #000;
+			background-color: #eee;
 		}
 
 		._popupMenuBackground, ._popupBackground {
@@ -705,7 +827,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX}._dark button, ${PREFIX}._dark select, ${PREFIX}._dark input[type='text'],
-		${PREFIX}._dark ._pvExpressionEditor, ._popupBackground._dark button {
+		${PREFIX}._dark ._pvExpressionEditor, ._popupBackground._dark button,
+		${PREFIX}._dark input[type='number'] {
 			color: #aaa;
 			background-color: #222;
 			border: 1px solid #333;
@@ -806,6 +929,14 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 		${PREFIX}._dark ._propertyGroupHeader i.fa {
 			color: #222;
+		}
+
+		${PREFIX}._dark ._eachProperty:hover i.fa {
+			color: #333;
+		}
+
+		${PREFIX}._dark ._eachProperty{
+			border:  2px solid #333;
 		}
 
 		._popupMenuBackground._dark ._popupMenuContainer  {
