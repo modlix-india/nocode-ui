@@ -39,6 +39,7 @@ export default function CodeEditor({
 	const [editPage, setEditPage] = useState<any>();
 
 	const eventFunctions = editPage?.eventFunctions ?? {};
+	console.log(eventFunctions);
 
 	useEffect(() => {
 		if (showCodeEditor === selectedFunction && selectedFunction !== '') return;
@@ -227,21 +228,30 @@ export default function CodeEditor({
 									title="Validation trigger on the element"
 								>
 									<i className="fa-solid fa-check-double" />
-									<select
-										value={
-											eventFunctions[selectedFunction].validationCheck ?? ''
-										}
-									>
-										<option>--None--</option>
-										{Object.values(editPage.componentDefinition ?? {}).map(
-											(e: any) => (
-												<option key={e.key} value={e.key}>
-													{e.name ?? e.key}
-												</option>
-											),
-										)}
-									</select>
 								</div>
+								<select
+									value={eventFunctions[selectedFunction].validationCheck ?? ''}
+									onChange={e => {
+										let newFun = duplicate(eventFunctions[selectedFunction]);
+										if (e.target.value === '') {
+											delete newFun.validationCheck;
+										} else {
+											newFun.validationCheck = e.target.value;
+										}
+										changeEventFunction(selectedFunction, newFun);
+									}}
+								>
+									<option value="">--None--</option>
+									{Object.values(editPage.componentDefinition ?? {})
+										.sort((a: any, b: any) =>
+											(a.name ?? a.key).localeCompare(b.name ?? b.key),
+										)
+										.map((e: any) => (
+											<option key={e.key} value={e.key}>
+												{e.name ?? e.key}
+											</option>
+										))}
+								</select>
 							</>
 						)}
 					</div>
