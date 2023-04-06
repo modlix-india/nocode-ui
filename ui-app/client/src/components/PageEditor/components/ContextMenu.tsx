@@ -71,7 +71,7 @@ export function ContextMenu({
 							title="Delete"
 							onClick={() => pageOperations.deleteComponent(menuDetails.componentKey)}
 						>
-							<i className="fa fa-solid fa-trash" />
+							<i className="fa fa-regular fa-trash-can" />
 							Delete
 						</div>
 						<div className="_popupMenuSeperator" />
@@ -80,7 +80,7 @@ export function ContextMenu({
 							title="Copy"
 							onClick={() => pageOperations.copy(menuDetails.componentKey)}
 						>
-							<i className="fa fa-solid fa-copy" />
+							<i className="fa fa-regular fa-clipboard" />
 							Copy
 						</div>
 						<div
@@ -97,7 +97,7 @@ export function ContextMenu({
 							title="Paste"
 							onClick={() => pageOperations.paste(menuDetails.componentKey)}
 						>
-							<i className="fa fa-solid fa-clipboard" />
+							<i className="fa fa-regular fa-paste" />
 							Paste
 						</div>
 					</div>

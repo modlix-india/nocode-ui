@@ -19,6 +19,7 @@ interface DnDSideBarProps {
 	selectedComponent: string | undefined;
 	locationHistory: Array<LocationHistory>;
 	pageOperations: PageOperations;
+	onShowCodeEditor: (eventName: string) => void;
 }
 
 export default function DnDSideBar({
@@ -30,6 +31,7 @@ export default function DnDSideBar({
 	selectedComponent,
 	onChangePersonalization,
 	pageOperations,
+	onShowCodeEditor,
 }: DnDSideBarProps) {
 	const [noSelection, setNoSelection] = useState<boolean>(false);
 	const [noShell, setNoShell] = useState<boolean>(false);
@@ -142,10 +144,13 @@ export default function DnDSideBar({
 							setSelectedComponentType('');
 						}}
 					>
-						<i className="fa fa-solid fa-circle-plus" />
+						<i className="fa fa-regular fa-square-plus" />
 					</div>
 				</div>
 				<div className="_bottom">
+					<div className="_iconMenu" tabIndex={0} onClick={() => onShowCodeEditor('')}>
+						<i className="fa fa-solid fa-code"></i>
+					</div>
 					<div
 						className="_iconMenu"
 						tabIndex={0}
@@ -163,7 +168,7 @@ export default function DnDSideBar({
 							e.preventDefault();
 						}}
 					>
-						<i className="fa fa-solid fa-trash"></i>
+						<i className="fa fa-regular fa-trash-can"></i>
 					</div>
 					<div
 						className="_iconMenu"

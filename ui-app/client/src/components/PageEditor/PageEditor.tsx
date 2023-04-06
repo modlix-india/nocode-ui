@@ -1,11 +1,4 @@
-import React, { useCallback, useEffect, useState, useMemo, useRef } from 'react';
-import { HelperComponent } from '../HelperComponent';
-import {
-	ComponentPropertyDefinition,
-	ComponentProps,
-	LocationHistory,
-	PageDefinition,
-} from '../../types/common';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
 	addListenerAndCallImmediately,
 	addListenerAndCallImmediatelyWithChildrenActivity,
@@ -14,17 +7,25 @@ import {
 	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
-import { Component } from '../../types/common';
-import { propertiesDefinition, stylePropertiesDefinition } from './pageEditorProperties';
-import GridStyle from './PageEditorStyle';
-import useDefinition from '../util/useDefinition';
+import {
+	Component,
+	ComponentPropertyDefinition,
+	ComponentProps,
+	LocationHistory,
+	PageDefinition,
+} from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import DnDEditor from './editors/DnDEditor/DnDEditor';
+import { HelperComponent } from '../HelperComponent';
 import { runEvent } from '../util/runEvent';
+import useDefinition from '../util/useDefinition';
+import CodeEditor from './components/CodeEditor';
+import { ContextMenu, ContextMenuDetails } from './components/ContextMenu';
+import IssuePopup, { Issue } from './components/IssuePopup';
+import DnDEditor from './editors/DnDEditor/DnDEditor';
 import { MASTER_FUNCTIONS } from './functions/masterFunctions';
 import PageOperations from './functions/PageOperations';
-import IssuePopup, { Issue } from './components/IssuePopup';
-import { ContextMenu, ContextMenuDetails } from './components/ContextMenu';
+import { propertiesDefinition, stylePropertiesDefinition } from './pageEditorProperties';
+import GridStyle from './PageEditorStyle';
 
 function savePersonalizationCurry(
 	personalizationPath: string,
@@ -203,6 +204,7 @@ function PageEditor(props: ComponentProps) {
 	const [selectedSubComponent, setSelectedSubComponent] = useState<string>('');
 	const [issue, setIssue] = useState<Issue>();
 	const [contextMenu, setContextMenu] = useState<ContextMenuDetails>();
+	const [showCodeEditor, setShowCodeEditor] = useState<string | undefined>(undefined);
 
 	// Creating an object to manage the changes because of various operations like drag and drop.
 	const operations = useMemo(
@@ -367,6 +369,16 @@ function PageEditor(props: ComponentProps) {
 					onUrlChange={urlChange}
 					onDeletePersonalization={deletePersonalization}
 					onContextMenu={(m: ContextMenuDetails) => setContextMenu(m)}
+					onShowCodeEditor={evName => setShowCodeEditor(evName)}
+				/>
+				<CodeEditor
+					showCodeEditor={showCodeEditor}
+					onSetShowCodeEditor={funcName => setShowCodeEditor(funcName)}
+					defPath={defPath}
+					locationHistory={locationHistory}
+					context={context}
+					pageDefinition={pageDefinition}
+					pageExtractor={pageExtractor}
 				/>
 			</div>
 			<IssuePopup
