@@ -9,8 +9,6 @@ export default function CarouselStyle({ theme }: { theme: Map<string, Map<string
 	const css =
 		`
     ${PREFIX} {
-     display: flex;
-     flex-direction: column;
     }
     ${PREFIX} .button {
         position: absolute;
@@ -18,17 +16,16 @@ export default function CarouselStyle({ theme }: { theme: Map<string, Map<string
         top: calc(50% - 40px);
     }
     ${PREFIX} .innerDiv{
-        display:flex;
-        flex-direction:row;
-        flex:1;
         overflow: hidden;
+        position: relative;
+        width:100%;
+        height: 100%;
     }
 
     ${PREFIX} .innerDiv ._eachSlide{
-        min-width: 100%;
-        max-width: 100%;
-        min-height: 100%;
-        max-height: 100%;
+        width:100%;
+        height: 100%;
+        position: absolute;
     }
     ${PREFIX} .valueContainer{
         display:flex;
@@ -59,6 +56,82 @@ export default function CarouselStyle({ theme }: { theme: Map<string, Map<string
         border:none
     }
    
+    ${PREFIX} ._eachSlide._current._slideover{
+        left: 100%;
+    }
+    ${PREFIX} ._eachSlide._current._slideover._slideoverStart{
+        left: 0px;
+    }
+
+    ${PREFIX} ._eachSlide._current._slideover._reverse{
+        left: -100%;
+    }
+    ${PREFIX} ._eachSlide._current._slideover._slideoverStart._reverse{
+        left: 0px;
+    }
+
+    ${PREFIX} ._eachSlide._current._fadeover{
+        opacity: 0;
+    }
+    ${PREFIX} ._eachSlide._current._fadeoverStart{
+        opacity: 1;
+    }
+
+    ${PREFIX} ._eachSlide._current._fadeoutin{
+        opacity: 0;
+    }
+    ${PREFIX} ._eachSlide._current._fadeoutinStart{
+        opacity: 1;
+    }
+
+    ${PREFIX} ._eachSlide._previous._fadeoutin{
+        opacity: 1;
+    }
+    ${PREFIX} ._eachSlide._previous._fadeoutinStart{
+        opacity: 0;
+    }
+
+    ${PREFIX} ._eachSlide._current._crossover{
+        opacity: 0;
+    }
+    ${PREFIX} ._eachSlide._current._crossoverStart{
+        opacity: 1;
+    }
+
+    ${PREFIX} ._eachSlide._previous._crossover{
+        opacity: 1;
+    }
+    ${PREFIX} ._eachSlide._previous._crossoverStart{
+        opacity: 0;
+    }
+
+    ${PREFIX} ._eachSlide._current._slide{
+        left: 100%;
+    }
+    ${PREFIX} ._eachSlide._current._slide._slideStart{
+        left: 0px;
+    }
+    ${PREFIX} ._eachSlide._current._slide._reverse{
+        left: -100%;
+    }
+    ${PREFIX} ._eachSlide._current._slide._slideStart._reverse{
+        left: 0px;
+    }
+
+    ${PREFIX} ._eachSlide._previous._slide{
+        left: 0px;
+    }
+    ${PREFIX} ._eachSlide._previous._slide._slideStart{
+        left: -100%;
+    }
+    ${PREFIX} ._eachSlide._previous._slide._reverse{
+        left: 0%;
+    }
+    ${PREFIX} ._eachSlide._previous._slide._slideStart._reverse{
+        left: 100%;
+    }
+
+
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 	return <style id="CarouselCss">{css}</style>;
 }
