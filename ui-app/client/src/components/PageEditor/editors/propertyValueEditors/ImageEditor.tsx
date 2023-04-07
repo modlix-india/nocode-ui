@@ -125,6 +125,10 @@ export function ImageEditor({ value, onChange, propDef }: IconSelectionEditorPro
 								{
 									headers: {
 										'Content-Type': 'multipart/form-data',
+										Authorization: getDataFromPath(
+											`${LOCAL_STORE_PREFIX}.AuthToken`,
+											[],
+										),
 									},
 								},
 							);
@@ -180,11 +184,24 @@ export function ImageEditor({ value, onChange, propDef }: IconSelectionEditorPro
 								onClick={async ev => {
 									ev.stopPropagation();
 									ev.preventDefault();
-									await axios.delete(
-										`/api/files/static/${path}${path === '' ? '' : '/'}${
-											e.name
-										}`,
-									);
+									setInProgress(true);
+									try {
+										await axios.delete(
+											`/api/files/static/${path}${path === '' ? '' : '/'}${
+												e.name
+											}`,
+											{
+												headers: {
+													Authorization: getDataFromPath(
+														`${LOCAL_STORE_PREFIX}.AuthToken`,
+														[],
+													),
+												},
+											},
+										);
+									} catch (e) {}
+									setInProgress(false);
+									callForFiles();
 								}}
 							>
 								<i className="fa fa-solid fa-trash" />
