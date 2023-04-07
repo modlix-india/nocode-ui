@@ -17,6 +17,7 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { flattenUUID } from '../util/uuid';
 import { getHref } from '../util/getHref';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { SubHelperComponent } from '../SubHelperComponent';
 
 function ButtonComponent(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -88,48 +89,56 @@ function ButtonComponent(props: ComponentProps) {
 
 	const rightIconTag =
 		!type?.startsWith('fabButton') && !leftIcon ? (
-			<i
-				style={styleProperties.icon ?? {}}
-				className={`rightButtonIcon ${rightIcon ?? 'fa fa-circle-notch hide'}`}
-			/>
+			<SubHelperComponent definition={props.definition} subComponentName="rightIcon">
+				<i
+					style={styleProperties.icon ?? {}}
+					className={`rightButtonIcon ${rightIcon ?? 'fa fa-circle-notch hide'}`}
+				/>
+			</SubHelperComponent>
 		) : undefined;
 
 	const leftIconTag = (
-		<i
-			style={styleProperties.icon ?? {}}
-			className={`leftButtonIcon ${
-				leftIcon
-					? !isLoading
-						? leftIcon
-						: 'fa fa-circle-notch fa-spin'
-					: 'fa fa-circle-notch hide'
-			}`}
-		/>
+		<SubHelperComponent definition={props.definition} subComponentName="leftIcon">
+			<i
+				style={styleProperties.icon ?? {}}
+				className={`leftButtonIcon ${
+					leftIcon
+						? !isLoading
+							? leftIcon
+							: 'fa fa-circle-notch fa-spin'
+						: 'fa fa-circle-notch hide'
+				}`}
+			/>
+		</SubHelperComponent>
 	);
 	return (
 		<div className="comp compButton" style={styleProperties.comp ?? {}}>
 			<HelperComponent definition={props.definition} />
-			<button
-				className={`button ${type}`}
-				disabled={isLoading || readOnly}
-				onClick={handleClick}
-				style={styleProperties.button ?? {}}
-				onMouseEnter={
-					stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
-				}
-				onMouseLeave={
-					stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
-				}
-				onFocus={stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined}
-				onBlur={stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined}
-			>
-				<div className="buttonInternalContainer" style={styleProperties.container ?? {}}>
+			<SubHelperComponent definition={props.definition} subComponentName="button">
+				<button
+					className={`button ${type}`}
+					disabled={isLoading || readOnly}
+					onClick={handleClick}
+					style={styleProperties.button ?? {}}
+					onMouseEnter={
+						stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
+					}
+					onMouseLeave={
+						stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
+					}
+					onFocus={
+						stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined
+					}
+					onBlur={
+						stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined
+					}
+				>
 					{leftIconTag}
 					{!type?.startsWith('fabButton') &&
 						getTranslations(label, props.pageDefinition.translations)}
 					{rightIconTag}
-				</div>
-			</button>
+				</button>
+			</SubHelperComponent>
 		</div>
 	);
 }
