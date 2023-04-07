@@ -13,6 +13,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			height: 100%;
 			flex-direction: column;
 			overflow: hidden;
+			position: relative;
 		}
 
 		${PREFIX} ._dndGrid {
@@ -216,6 +217,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._iconMenu{
 			cursor: pointer;
 			position: relative;
+			min-height: 32px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
 		}
 
 		${PREFIX} ._iconMenu:hover ._iconMenuBody{
@@ -269,9 +274,9 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._iframe {
 			flex: 1;
 			display: flex;
-			align-items: center;
 			justify-content: center;
 			overflow: auto;
+
 		}
 
 		${PREFIX} ._iframe.MOBILE_POTRAIT_SCREEN iframe{
@@ -295,17 +300,50 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._iframe.DESKTOP_SCREEN iframe{
-			width: ${StyleResolutionDefinition.get('DESKTOP_SCREEN')?.minWidth}px;
+			width: 100%;
 			min-width: ${StyleResolutionDefinition.get('DESKTOP_SCREEN')?.minWidth}px;
 		}
 
 		${PREFIX} ._iframe.WIDE_SCREEN iframe{
-			width: ${StyleResolutionDefinition.get('WIDE_SCREEN')?.minWidth}px;
+			width: 100%;
+			min-width: ${StyleResolutionDefinition.get('WIDE_SCREEN')?.minWidth}px;
+		}
+
+		${PREFIX} ._iframe.MOBILE_POTRAIT_SCREEN {
+			width: ${StyleResolutionDefinition.get('MOBILE_POTRAIT_SCREEN')?.minWidth}px;
+			min-width: ${StyleResolutionDefinition.get('MOBILE_POTRAIT_SCREEN')?.minWidth}px;
+		}
+
+		${PREFIX} ._iframe.MOBILE_LANDSCAPE_SCREEN {
+			width: ${StyleResolutionDefinition.get('MOBILE_LANDSCAPE_SCREEN')?.minWidth}px;
+			min-width: ${StyleResolutionDefinition.get('MOBILE_LANDSCAPE_SCREEN')?.minWidth}px;
+		}
+
+		${PREFIX} ._iframe.TABLET_POTRAIT_SCREEN{
+			width: ${StyleResolutionDefinition.get('TABLET_POTRAIT_SCREEN')?.minWidth}px;
+			min-width: ${StyleResolutionDefinition.get('TABLET_POTRAIT_SCREEN')?.minWidth}px;
+		}
+
+		${PREFIX} ._iframe.TABLET_LANDSCAPE_SCREEN{
+			width: ${StyleResolutionDefinition.get('TABLET_LANDSCAPE_SCREEN')?.minWidth}px;
+			min-width: ${StyleResolutionDefinition.get('TABLET_LANDSCAPE_SCREEN')?.minWidth}px;
+		}
+
+		${PREFIX} ._iframe.DESKTOP_SCREEN{
+			width: 100%;
+			min-width: ${StyleResolutionDefinition.get('DESKTOP_SCREEN')?.minWidth}px;
+		}
+
+		${PREFIX} ._iframe.WIDE_SCREEN{
+			width: 100%;
 			min-width: ${StyleResolutionDefinition.get('WIDE_SCREEN')?.minWidth}px;
 		}
 
 		${PREFIX} ._iframe iframe {
 			border: none;
+			width: 100%;
+			min-height: 100%;
+			overflow: hidden;
 		}
 
 		${PREFIX} input._urlInput:focus {
@@ -316,6 +354,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex: 1;
 			display: flex;
 			flex-direction: column;
+			overflow: hidden;
 		}
 
 		${PREFIX} ._selectionBar {
@@ -323,6 +362,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			background-color: #fff;
     		border-left: 1px solid #ccc;
 			height: 20px;
+		}
+
+		${PREFIX} ._selectionBar ._iconMenu {
+			min-height: 20px;
 		}
 
 		${PREFIX} ._eachSelectionBar {
@@ -360,6 +403,12 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
     		flex: 1;
 			max-height: calc(100% - 48px - 20px);
+		}
+
+		${PREFIX} ._iframeHolder {
+			flex: 1;
+			display: flex;
+			overflow: auto;
 		}
 
 		${PREFIX} ._tabBar {
@@ -615,6 +664,85 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction: column;
 			gap: 5px;
 			flex:1;
+		}
+
+		${PREFIX} ._codeEditor {
+			display: flex;
+			visibility: hidden;
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			align-items: center;
+			z-index: 6;
+			opacity: 0;
+			transition: opacity 1s;
+		}
+
+		${PREFIX} ._codeEditorContent {
+			background-color: #fff;
+			width: 70vw;
+			height: 80vh;
+			margin-left: 5vw;
+			display: flex;
+			border-radius: 4px;
+			box-shadow: 0 15px 30px 0 rgba(0,0,0,.10), 0 5px 15px 0 rgba(0,0,0,.10);
+			flex-direction: column;
+			opacity: 0;
+			transition: margin-left 1s, width 1s, height 1s, opacity 1s, visibility 1s;
+		}
+
+		${PREFIX} ._codeEditor.show ._codeEditorContent{
+			opacity:1;
+		}
+
+		${PREFIX} ._codeEditor.show {
+			opacity: 1;
+			visibility: visible;
+		}
+
+		${PREFIX} ._codeEditorContent._fullScreen {
+			width: 98vw;
+			height: 98vh;
+			margin-left: 1vw;
+		}
+
+		${PREFIX} ._codeEditorContent ._codeEditorHeader {
+			background-color: #eeea;
+			display: flex;
+			border-top-left-radius: 4px;
+			border-top-right-radius: 4px;
+		}
+
+		${PREFIX} ._codeEditorContent ._codeFunctions {
+			flex: 1;
+			display: flex;
+			gap: 5px;
+			padding: 8px;
+			align-items: center;
+		}
+
+		${PREFIX} ._codeEditorContent ._codeFunctions select {
+			text-transform: none;
+		}
+
+		${PREFIX} ._codeEditorContent ._codeButtons {
+			display: flex;
+			
+			justify-content: center;
+			align-items: center;
+		}
+
+		${PREFIX} ._codeEditorContent ._iconMenu {
+			width: 32px;
+		} 
+
+		${PREFIX} ._codeEditorContent ._iconMenuSeperator{
+			border: 1.5px solid #ccc;
+			height: 75%;
+			width: 0;
+			margin-right: 5px;
+			border-radius: 4px;
+			margin-left: 5px;
 		}
 
 		._popupContainer ._progressBar {
@@ -937,6 +1065,9 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX}._dark ._eachProperty{
 			border:  2px solid #333;
+		}
+		${PREFIX}._dark ._codeEditorContent ._codeEditorHeader {
+			background-color: #666;
 		}
 
 		._popupMenuBackground._dark ._popupMenuContainer  {

@@ -28,6 +28,7 @@ interface DnDEditorProps {
 	onDeletePersonalization: () => void;
 	logo: string | undefined;
 	onContextMenu: (m: ContextMenuDetails) => void;
+	onShowCodeEditor: (eventName: string) => void;
 }
 
 export default function DnDEditor({
@@ -49,6 +50,7 @@ export default function DnDEditor({
 	onPageReload,
 	logo,
 	onContextMenu,
+	onShowCodeEditor,
 }: DnDEditorProps) {
 	return (
 		<div className="_dndGrid">
@@ -61,6 +63,7 @@ export default function DnDEditor({
 				defPath={defPath}
 				locationHistory={locationHistory}
 				pageOperations={pageOperations}
+				onShowCodeEditor={onShowCodeEditor}
 			/>
 			<div className="_dndGridMain">
 				<DnDTopBar
@@ -92,6 +95,7 @@ export default function DnDEditor({
 						onChangePersonalization={onChangePersonalization}
 						theme={theme}
 						pageExtractor={pageExtractor}
+						onShowCodeEditor={onShowCodeEditor}
 					/>
 				</div>
 				<DnDBottomBar

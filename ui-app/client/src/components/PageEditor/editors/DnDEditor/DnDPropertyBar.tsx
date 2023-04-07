@@ -13,6 +13,7 @@ interface PropertyBarProps {
 	defPath: string | undefined;
 	locationHistory: Array<LocationHistory>;
 	selectedComponent?: string;
+	onShowCodeEditor: (eventName: string) => void;
 }
 
 export default function DnDPropertyBar({
@@ -23,6 +24,7 @@ export default function DnDPropertyBar({
 	personalizationPath,
 	onChangePersonalization,
 	theme,
+	onShowCodeEditor,
 }: PropertyBarProps) {
 	const [currentTab, setCurrentTab] = useState(1);
 
