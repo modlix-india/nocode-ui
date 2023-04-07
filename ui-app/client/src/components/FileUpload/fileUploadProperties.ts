@@ -10,6 +10,7 @@ import {
 	ComponentPropertyEditor,
 	ComponentPropertyDefinition,
 	ComponentStylePropertyDefinition,
+	ComponentPropertyGroup,
 } from '../../types/common';
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
@@ -24,10 +25,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		enumValues: [
 			{
 				name: 'SMALL_VIEW',
-				displayName: 'Mobile like small ui',
+				displayName: 'Small inline upload component',
 				description: 'A small view of the component',
 			},
+			{
+				name: 'LARGE_VIEW',
+				displayName: 'Upload with drag and drop',
+				description: 'A large view of the component',
+			},
 		],
+		group: ComponentPropertyGroup.IMPORTANT,
 	},
 	{
 		name: 'uploadIcon',
@@ -55,7 +62,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'upload multiple file selected for upload component',
 		description: `Upload multiple file when file selected for Upload Component.`,
-		defaultValue: true,
+		defaultValue: false,
 	},
 	{
 		name: 'maxFileSize',
@@ -66,10 +73,9 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'options',
-		schema: SCHEMA_BOOL_COMP_PROP,
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Upload file types options',
 		description: 'Upload files type options',
-		defaultValue: 'image/jpeg,image/png',
 	},
 	{
 		name: 'showFileList',
