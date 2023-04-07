@@ -39,7 +39,6 @@ export default function CodeEditor({
 	const [editPage, setEditPage] = useState<any>();
 
 	const eventFunctions = editPage?.eventFunctions ?? {};
-	console.log(eventFunctions);
 
 	useEffect(() => {
 		if (showCodeEditor === selectedFunction && selectedFunction !== '') return;
@@ -230,7 +229,7 @@ export default function CodeEditor({
 									<i className="fa-solid fa-check-double" />
 								</div>
 								<select
-									value={eventFunctions[selectedFunction].validationCheck ?? ''}
+									value={eventFunctions[selectedFunction]?.validationCheck ?? ''}
 									onChange={e => {
 										let newFun = duplicate(eventFunctions[selectedFunction]);
 										if (e.target.value === '') {
@@ -274,7 +273,20 @@ export default function CodeEditor({
 					context={context}
 					pageDefinition={pageDefinition}
 					locationHistory={locationHistory}
-					definition={{ key: uuid, name: 'Code Editor', type: 'KIRunEditor' }}
+					definition={{
+						key: uuid,
+						name: 'Code Editor',
+						type: 'KIRunEditor',
+						properties: {
+							editorType: { value: 'ui' },
+						},
+						bindingPath: {
+							type: 'VALUE',
+							value: selectedFunction
+								? `${defPath}.eventFunctions.${selectedFunction}`
+								: undefined,
+						},
+					}}
 				/>
 			</div>
 		</div>

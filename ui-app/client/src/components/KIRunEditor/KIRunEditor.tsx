@@ -6,7 +6,7 @@ import KIRunEditorStyle from './KIRunEditorStyle';
 function KIRunEditor(props: ComponentProps) {
 	return (
 		<div className="comp compKIRunEditor">
-			<div className="_bodyDesigner"></div>
+			<div className="_designer"></div>
 		</div>
 	);
 }
