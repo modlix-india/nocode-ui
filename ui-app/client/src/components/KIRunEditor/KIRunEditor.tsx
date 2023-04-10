@@ -11,13 +11,16 @@ import {
 	StatementExecution,
 	TokenValueExtractor,
 	Tuple2,
+	deepEqual,
 	isNullValue,
 } from '@fincity/kirun-js';
-import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import React, { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediately,
+	getDataFromPath,
 	getPathFromLocation,
+	setData,
 } from '../../context/StoreContext';
 import { UIFunctionRepository } from '../../functions';
 import { UISchemaRepository } from '../../schemas/common';
@@ -27,6 +30,7 @@ import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './KIRunEditorProperties';
 import KIRunEditorStyle from './KIRunEditorStyle';
 import StatementNode from './components/StatementNode';
+import duplicate from '../../util/duplicate';
 
 const gridSize = 20;
 
@@ -62,18 +66,21 @@ function KIRunEditor(
 		? getPathFromLocation(bindingPath!, locationHistory, pageExtractor)
 		: undefined;
 
-	const isReadonly = readOnly || !bindingPath;
+	const isReadonly = readOnly || !bindingPathPath;
 
 	// Getting function definition.
-	const [funDef, setFunDef] = useState<FunctionDefinition>();
+	const [rawDef, setRawDef] = useState<any>();
+
 	useEffect(() => {
 		if (!bindingPathPath) return;
-		return addListenerAndCallImmediately(
-			(_, v) => setFunDef(isNullValue(v) ? undefined : FunctionDefinition.from(v)),
-			pageExtractor,
-			bindingPathPath,
-		);
+		let def = getDataFromPath(bindingPathPath, locationHistory, pageExtractor);
+		setRawDef(def);
 	}, [bindingPathPath]);
+
+	const funDef = useMemo(
+		() => (isNullValue(rawDef) ? undefined : FunctionDefinition.from(rawDef)),
+		[rawDef],
+	);
 
 	// Making an executionPlan to show the execution graph.
 	const [executionPlan, setExecutionPlan] = useState<
@@ -104,12 +111,14 @@ function KIRunEditor(
 	}, [funDef]);
 
 	// Calculating the positions of each statement
-	const [positions, setPositions] = useState<Map<string, Position>>(new Map<string, Position>());
+	const [positions, setPositions] = useState<Map<string, { left: number; top: number }>>(
+		new Map(),
+	);
 	useEffect(() => {
 		if (!executionPlan) return;
 		if ('message' in executionPlan) return;
 
-		const positions = new Map<string, Position>();
+		const positions: Map<string, { left: number; top: number }> = new Map();
 		const list = new LinkedList(executionPlan.getT2().getVerticesWithNoIncomingEdges());
 		const finishedSet = new Set<string>();
 		while (!list.isEmpty()) {
@@ -127,7 +136,7 @@ function KIRunEditor(
 			}
 
 			if (!isNullValue(s.getPosition())) {
-				positions.set(s.getStatementName(), new Position(0, 0));
+				positions.set(s.getStatementName(), { left: 0, top: 0 });
 				continue;
 			}
 		}
@@ -152,33 +161,50 @@ function KIRunEditor(
 	);
 
 	const container = useRef<HTMLDivElement>(null);
-	const [dragNode, setDragNode] = useState<Position>();
+	const [dragNode, setDragNode] = useState<
+		| {
+				left: number;
+				top: number;
+				dLeft?: number;
+				dTop?: number;
+		  }
+		| undefined
+	>();
 
-	if (executionPlan && !('message' in executionPlan) && funDef?.getSteps()) {
-		statements = Array.from(funDef.getSteps().values()).map(s => (
-			<StatementNode
-				statement={s}
-				position={s.getPosition() ?? positions.get(s.getStatementName())}
-				key={s.getStatementName()}
-				functionRepository={functionRepository}
-				schemaRepository={schemaRepository}
-				tokenValueExtractors={tokenValueExtractors}
-				onClick={selectStatement}
-				selected={selectedStatements.has(s.getStatementName())}
-				onDragStart={(append, statementName, startPosition) => {
-					selectStatement(append, statementName, true);
-					setDragNode(startPosition);
-				}}
-				container={container}
-			/>
-		));
+	if (executionPlan && !('message' in executionPlan) && rawDef?.steps) {
+		statements = Object.keys(rawDef.steps ?? {})
+			.map(k => rawDef.steps[k])
+			.map((s: any) => (
+				<StatementNode
+					statement={s}
+					position={s.position ?? positions.get(s.statementName)}
+					key={s.statementName}
+					functionRepository={functionRepository}
+					schemaRepository={schemaRepository}
+					tokenValueExtractors={tokenValueExtractors}
+					onClick={(append, statementName) => {
+						selectStatement(append, statementName);
+						setDragNode(undefined);
+					}}
+					selected={selectedStatements.has(s.statementName)}
+					onDragStart={(append, statementName, startPosition) => {
+						if (!selectedStatements.get(statementName))
+							selectStatement(append, statementName, true);
+						setDragNode(startPosition);
+					}}
+					dragNode={dragNode}
+					container={container}
+				/>
+			));
 	}
 
 	const [selectionBox, setSelectionBox] = useState<any>({});
 	const [scrMove, setScrMove] = useState<any>({});
+	const [primedToClick, setPrimedToClick] = useState(false);
 
 	const designerMouseDown = useCallback(
 		(e: any) => {
+			if (e.target === e.currentTarget) setPrimedToClick(true);
 			if (!container.current) return;
 
 			if (e.buttons !== 1) return;
@@ -236,51 +262,97 @@ function KIRunEditor(
 				e.preventDefault();
 				container.current.scrollLeft = oldLeft + (startLeft - e.screenX);
 				container.current.scrollTop = oldTop + (startTop - e.screenY);
+			} else if (dragNode) {
+				e.preventDefault();
+				const dLeft = Math.round(
+					e.clientX - rect.left + container.current.scrollLeft - dragNode.left,
+				);
+				const dTop = Math.round(
+					e.clientY - rect.top + container.current.scrollTop - dragNode.top,
+				);
+				setDragNode({ ...dragNode, dLeft, dTop });
 			}
 		},
-		[container, scrMove, selectionBox, dragNode],
+		[container, scrMove, selectionBox, dragNode, rawDef, setRawDef, selectedStatements],
 	);
 
-	const designerMouseUp = useCallback((e: any) => {
-		if (!dragNode && !scrMove && !selectionBox) {
-			setSelectedStatements(new Map());
-		}
-
-		if (!dragNode && !scrMove && selectionBox) {
-			let { left, top, width, height } = selectionBox;
-			if (width && height) {
-				width = left + width;
-				height = top + height;
-				if (left > width) {
-					const t = left;
-					left = width;
-					width = t;
-				}
-				if (top > height) {
-					const t = top;
-					top = height;
-					height = t;
-				}
-
-				//   const nodes = Object.entries(code?.definition?.steps || {})
-				// 	.filter(([, v]) => {
-				// 	  const { properties: { x, y } = {} } = v;
-				// 	  return left <= x && x <= width && top <= y && y <= height;
-				// 	})
-				// 	.reduce((a, [k]) => {
-				// 	  a.set(k, true)
-				// 	  return a;
-				// 	}, new Map<string, boolean>());
-				//   setSelectedStatements(nodes);
+	const designerMouseUp = useCallback(
+		(e: any) => {
+			if (e.target === e.currentTarget && primedToClick) {
+				setSelectedStatements(new Map());
+				setPrimedToClick(false);
 			}
-		}
 
-		setSelectionBox({ ...selectionBox, selectionStart: false });
-		setScrMove({ ...scrMove, dragStart: false });
-		if (dragNode) {
-			setDragNode(undefined);
-		}
-	}, []);
+			if (!dragNode && !scrMove && !selectionBox) {
+				setSelectedStatements(new Map());
+			}
+
+			if (!dragNode && !scrMove && selectionBox.selectionStart) {
+				let { left, top, width, height } = selectionBox;
+				if (width && height) {
+					width = left + width;
+					height = top + height;
+					if (left > width) {
+						const t = left;
+						left = width;
+						width = t;
+					}
+					if (top > height) {
+						const t = top;
+						top = height;
+						height = t;
+					}
+
+					//   const nodes = Object.entries(code?.definition?.steps || {})
+					// 	.filter(([, v]) => {
+					// 	  const { properties: { x, y } = {} } = v;
+					// 	  return left <= x && x <= width && top <= y && y <= height;
+					// 	})
+					// 	.reduce((a, [k]) => {
+					// 	  a.set(k, true)
+					// 	  return a;
+					// 	}, new Map<string, boolean>());
+					//   setSelectedStatements(nodes);
+				}
+			}
+
+			setSelectionBox({ ...selectionBox, selectionStart: false });
+			setScrMove({ ...scrMove, dragStart: false });
+			if (dragNode) {
+				const { dLeft, dTop } = dragNode;
+				const def = duplicate(rawDef);
+				if (def.steps) {
+					for (const [name] of selectedStatements) {
+						const step = def.steps[name];
+						if (!step) continue;
+						step.position = step.position ?? {};
+						step.position.left =
+							(!isNaN(step.position.left) ? step.position.left : 0) + (dLeft ?? 0);
+						step.position.top =
+							(!isNaN(step.position.top) ? step.position.top : 0) + (dTop ?? 0);
+					}
+				}
+
+				if (!isReadonly) {
+					setRawDef(def);
+					setData(bindingPathPath, def, context.pageName);
+				}
+				setDragNode(undefined);
+			}
+		},
+		[
+			container,
+			setDragNode,
+			dragNode,
+			setSelectedStatements,
+			scrMove,
+			selectionBox,
+			rawDef,
+			setRawDef,
+			selectedStatements,
+			isReadonly,
+		],
+	);
 
 	let selector = undefined;
 	if (selectionBox.selectionStart) {
@@ -297,7 +369,6 @@ function KIRunEditor(
 			/>
 		);
 	}
-
 	return (
 		<div className="comp compKIRunEditor" ref={container}>
 			<div

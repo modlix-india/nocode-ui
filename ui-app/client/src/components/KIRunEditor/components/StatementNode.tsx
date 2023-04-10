@@ -9,15 +9,20 @@ import {
 import React, { RefObject, useCallback, useEffect, useState } from 'react';
 
 interface StatementProps {
-	position?: Position;
-	statement: Statement;
+	position?: { left: number; top: number };
+	statement: any;
 	functionRepository: Repository<Function>;
 	schemaRepository: Repository<Schema>;
 	tokenValueExtractors: Map<string, TokenValueExtractor>;
-	onDragStart: (append: boolean, statementName: string, startPosition: Position) => void;
+	onDragStart: (
+		append: boolean,
+		statementName: string,
+		startPosition: { left: number; top: number } | undefined,
+	) => void;
 	selected: boolean;
 	onClick: (append: boolean, statementName: string) => void;
 	container: RefObject<HTMLDivElement>;
+	dragNode: any;
 }
 
 function generateNumber(str: string) {
@@ -30,80 +35,70 @@ function generateNumber(str: string) {
 	return hash % SIDE_COLORS.length;
 }
 
+const DEFAULT_POSITION = { left: 0, top: 0 };
 export default function StatementNode({
-	position = new Position(0, 0),
+	position = DEFAULT_POSITION,
 	statement,
 	functionRepository,
 	onDragStart,
 	onClick,
 	selected = false,
 	container,
+	dragNode,
 }: StatementProps) {
-	const [statementName, setStatementName] = useState(statement.getStatementName());
+	const [statementName, setStatementName] = useState(statement.statementName);
 	const [name, setName] = useState(
-		((statement.getNamespace() ?? '_') === '_' ? '' : statement.getNamespace() + '.') +
-			statement.getName(),
+		((statement.namespace ?? '_') === '_' ? '' : statement.namespace + '.') + statement.name,
 	);
 
 	useEffect(() => {
-		setStatementName(statement.getStatementName());
+		setStatementName(statement.statementName);
 		setName(
-			((statement.getNamespace() ?? '_') === '_' ? '' : statement.getNamespace() + '.') +
-				statement.getName(),
+			((statement.namespace ?? '_') === '_' ? '' : statement.namespace + '.') +
+				statement.name,
 		);
 	}, [statement]);
 
-	const [pos, setPos] = useState(position);
-	useEffect(() => setPos(position), [position, setPos]);
-
-	const [mouseDown, setMouseDown] = useState(false);
 	const [mouseMove, setMouseMove] = useState(false);
-
-	const nodeMouseMove = useCallback(
-		(e: any) => {
-			if (!mouseDown) return;
-
-			if (e.type === 'mouseup') {
-				if (!mouseMove && e.button === 0) {
-					e.stopPropagation();
-					e.preventDefault();
-					onClick(e.shiftKey, statement.getStatementName());
-				}
-				setMouseMove(false);
-				setMouseDown(false);
-			} else if (!mouseMove) {
-				const rect = container.current!.getBoundingClientRect();
-				const left = e.clientX - rect.left + container.current!.scrollLeft;
-				const top = e.clientY - rect.top + container.current!.scrollTop;
-				setMouseMove(true);
-				onDragStart(e.shiftKey, statement.getStatementName(), new Position(left, top));
-			}
-		},
-		[mouseDown, onClick, onDragStart, statement, container, mouseMove],
-	);
-
 	return (
 		<div
 			className={`_statement ${selected ? '_selected' : ''}`}
 			style={{
-				left: pos.getLeft(),
-				top: pos.getTop(),
+				left: position.left + (selected && dragNode ? dragNode.dLeft : 0) + 'px',
+				top: position.top + (selected && dragNode ? dragNode.dTop : 0) + 'px',
 				borderColor: selected
-					? SIDE_COLORS[generateNumber(statement.getNamespace() + statement.getName())]
+					? SIDE_COLORS[generateNumber(statement.namespace + statement.name)]
 					: '',
+				zIndex: selected ? '3' : '',
 			}}
-			id={`statement_${statement.getStatementName()}`}
+			id={`statement_${statement.statementName}`}
 		>
 			<div
 				className="_nameContainer"
 				onMouseDown={e => {
-					if (e.button !== 0) return;
 					e.stopPropagation();
 					e.preventDefault();
-					setMouseDown(true);
+
+					if (e.button !== 0) return;
+
+					const rect = container.current!.getBoundingClientRect();
+					const left = Math.round(e.clientX - rect.left + container.current!.scrollLeft);
+					const top = Math.round(e.clientY - rect.top + container.current!.scrollTop);
+					onDragStart(e.ctrlKey || e.metaKey, statement.statementName, { left, top });
 				}}
-				onMouseMove={nodeMouseMove}
-				onMouseUp={nodeMouseMove}
+				onMouseMove={e => {
+					if (!mouseMove && dragNode) setMouseMove(true);
+				}}
+				onMouseUp={e => {
+					if (e.button !== 0) return;
+
+					if (e.target === e.currentTarget && !mouseMove) {
+						e.preventDefault();
+						e.stopPropagation();
+						onClick(e.ctrlKey || e.metaKey, statement.statementName);
+					}
+					setMouseMove(false);
+				}}
 				onDoubleClick={e => {
 					e.stopPropagation();
 					e.preventDefault();
@@ -111,13 +106,11 @@ export default function StatementNode({
 			>
 				<i
 					className={`_icon fa fa-solid ${
-						ICONS_GROUPS.get(statement.getNamespace()) ?? 'fa-microchip'
+						ICONS_GROUPS.get(statement.namespace) ?? 'fa-microchip'
 					}`}
 					style={{
 						backgroundColor:
-							SIDE_COLORS[
-								generateNumber(statement.getNamespace() + statement.getName())
-							],
+							SIDE_COLORS[generateNumber(statement.namespace + statement.name)],
 					}}
 				></i>
 				<div className={`_statementName`}>{statementName}</div>
