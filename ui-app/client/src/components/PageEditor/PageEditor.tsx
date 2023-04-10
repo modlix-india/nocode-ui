@@ -279,7 +279,7 @@ function PageEditor(props: ComponentProps) {
 		});
 	}, [selectedSubComponent, ref.current]);
 
-	// The type of the editor should b esent to iframe/slave.
+	// The type of the editor should be sent to iframe/slave.
 	useEffect(() => {
 		if (!ref.current) return;
 		ref.current.contentWindow?.postMessage({
@@ -315,11 +315,21 @@ function PageEditor(props: ComponentProps) {
 					onSlaveStore: (store: any) => {
 						setSlaveStore({
 							store,
-							localStore: Object.entries(window.localStorage).reduce((a, c) => {
-								if (c[1].length && (c[1][0] === '[' || c[1][0] === '{')) {
-								}
-								return a;
-							}, {}),
+							localStore: Object.entries(window.localStorage)
+								.filter((e: [string, string]) => e[0].startsWith('designmode_'))
+								.reduce((a, c: [string, string]) => {
+									let key = c[0].substring('designmode_'.length);
+									if (c[1].length && (c[1][0] === '[' || c[1][0] === '{')) {
+										try {
+											a[key] = JSON.parse(c[1]);
+										} catch (e) {
+											a[key] = c[1];
+										}
+									} else {
+										a[key] = c[1];
+									}
+									return a;
+								}, {} as any),
 						});
 					},
 				},
@@ -379,6 +389,7 @@ function PageEditor(props: ComponentProps) {
 					context={context}
 					pageDefinition={pageDefinition}
 					pageExtractor={pageExtractor}
+					slaveStore={slaveStore}
 				/>
 			</div>
 			<IssuePopup

@@ -33,7 +33,7 @@ export default function DnDIFrame({
 	useEffect(() => {
 		if (!iframeRef.current) return;
 		const handle = setInterval(() => {
-			const hgt = iframeRef.current?.contentWindow?.document.body.scrollHeight + 'px';
+			const hgt = iframeRef.current?.contentWindow?.document.body?.scrollHeight + 'px';
 			if (hgt === height) return;
 			setHeight(hgt);
 		}, 100);
