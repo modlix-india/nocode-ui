@@ -7,6 +7,8 @@ import {
 	TokenValueExtractor,
 } from '@fincity/kirun-js';
 import React, { RefObject, useCallback, useEffect, useState } from 'react';
+import duplicate from '../../../util/duplicate';
+import Search from './Search';
 
 interface StatementProps {
 	position?: { left: number; top: number };
@@ -23,6 +25,10 @@ interface StatementProps {
 	onClick: (append: boolean, statementName: string) => void;
 	container: RefObject<HTMLDivElement>;
 	dragNode: any;
+	executionPlanMessage?: string[];
+	onChange: (statement: any) => void;
+	functionNames: string[];
+	onDelete: (statementName: string) => void;
 }
 
 function generateNumber(str: string) {
@@ -36,6 +42,9 @@ function generateNumber(str: string) {
 }
 
 const DEFAULT_POSITION = { left: 0, top: 0 };
+
+const VARIBALE_NAME_REGEX = /^[A-Za-z]{1,1}[A-Za-z0-9]+$/;
+
 export default function StatementNode({
 	position = DEFAULT_POSITION,
 	statement,
@@ -45,8 +54,15 @@ export default function StatementNode({
 	selected = false,
 	container,
 	dragNode,
+	executionPlanMessage,
+	onChange,
+	functionNames,
+	onDelete,
 }: StatementProps) {
 	const [statementName, setStatementName] = useState(statement.statementName);
+	const [editStatementName, setEditStatementName] = useState(false);
+	const [editNameNamespace, setEditNameNamespace] = useState(false);
+	const [validationMessages, setValidationMessages] = useState<Map<string, string>>(new Map());
 	const [name, setName] = useState(
 		((statement.namespace ?? '_') === '_' ? '' : statement.namespace + '.') + statement.name,
 	);
@@ -59,16 +75,53 @@ export default function StatementNode({
 		);
 	}, [statement]);
 
+	useEffect(() => {
+		const map = new Map();
+		if (!VARIBALE_NAME_REGEX.test(statementName)) {
+			map.set(
+				'statementName',
+				'Step name cannot have spaces or special characters and should be atleast one character.',
+			);
+		}
+		setValidationMessages(map);
+	}, [statementName, name]);
+
 	const [mouseMove, setMouseMove] = useState(false);
+	const highlightColor =
+		validationMessages.size > 0 || executionPlanMessage?.length
+			? '#f25332'
+			: selected
+			? SIDE_COLORS[generateNumber(statement.namespace + statement.name)]
+			: '';
+
+	const buttons = selected ? (
+		<div className="_buttons" style={{ color: highlightColor }}>
+			<i
+				className="fa fa-regular fa-trash-can"
+				title={`Delete ${statementName}`}
+				onMouseDown={e => {
+					e.stopPropagation();
+					e.preventDefault();
+					onDelete(statement.statementName);
+				}}
+			></i>
+			<i
+				className="fa fa-regular fa-clipboard"
+				title={`Copy ${statementName}`}
+				onClick={() => {}}
+			></i>
+		</div>
+	) : (
+		<></>
+	);
+
 	return (
 		<div
 			className={`_statement ${selected ? '_selected' : ''}`}
 			style={{
 				left: position.left + (selected && dragNode ? dragNode.dLeft : 0) + 'px',
 				top: position.top + (selected && dragNode ? dragNode.dTop : 0) + 'px',
-				borderColor: selected
-					? SIDE_COLORS[generateNumber(statement.namespace + statement.name)]
-					: '',
+				borderColor: selected ? highlightColor : '',
 				zIndex: selected ? '3' : '',
 			}}
 			id={`statement_${statement.statementName}`}
@@ -77,7 +130,6 @@ export default function StatementNode({
 				className="_nameContainer"
 				onMouseDown={e => {
 					e.stopPropagation();
-					e.preventDefault();
 
 					if (e.button !== 0) return;
 
@@ -109,16 +161,123 @@ export default function StatementNode({
 						ICONS_GROUPS.get(statement.namespace) ?? 'fa-microchip'
 					}`}
 					style={{
-						backgroundColor:
-							SIDE_COLORS[generateNumber(statement.namespace + statement.name)],
+						backgroundColor: highlightColor
+							? highlightColor
+							: SIDE_COLORS[generateNumber(statement.namespace + statement.name)],
 					}}
 				></i>
-				<div className={`_statementName`}>{statementName}</div>
-				<i className="_editIcon fa fa-1x fa-solid fa-pencil" />
+				<div
+					className={`_statementName`}
+					onDoubleClick={e => {
+						e.stopPropagation();
+						e.preventDefault();
+						setEditStatementName(true);
+					}}
+				>
+					{editStatementName ? (
+						<>
+							<input
+								type="text"
+								value={statementName}
+								onChange={e => setStatementName(e.target.value)}
+								autoFocus={true}
+								onBlur={() => {
+									setEditStatementName(false);
+									onChange({ ...duplicate(statement), statementName });
+								}}
+								onKeyUp={e => {
+									if (e.key === 'Escape') {
+										setStatementName(statement.statementName);
+										setEditStatementName(false);
+									} else if (e.key === 'Enter') {
+										setEditStatementName(false);
+										onChange({ ...duplicate(statement), statementName });
+									}
+								}}
+							/>
+						</>
+					) : (
+						statementName
+					)}
+				</div>
+				<i
+					className="_editIcon fa fa-1x fa-solid fa-pencil"
+					style={{ visibility: editStatementName ? 'visible' : undefined }}
+					onClick={() => {
+						setEditStatementName(true);
+					}}
+				/>
 			</div>
-			<div className="_otherContainer">
-				<div className={`_name`}>{name}</div>
+			<div
+				className={`_nameNamespaceContainer`}
+				style={{
+					backgroundColor: highlightColor
+						? highlightColor
+						: SIDE_COLORS[generateNumber(statement.namespace + statement.name)],
+				}}
+			>
+				<div
+					className={`_nameNamespace`}
+					onDoubleClick={e => {
+						e.stopPropagation();
+						e.preventDefault();
+						setEditNameNamespace(true);
+						onClick(false, statement.statementName);
+					}}
+				>
+					{editNameNamespace ? (
+						<Search
+							value={name}
+							options={functionNames.map(e => ({
+								value: e,
+							}))}
+							style={{
+								backgroundColor: highlightColor
+									? highlightColor
+									: SIDE_COLORS[
+											generateNumber(statement.namespace + statement.name)
+									  ],
+							}}
+							onChange={value => {
+								const index = value.lastIndexOf('.');
+
+								const name = index === -1 ? value : value.substring(index + 1);
+								const namespace =
+									index === -1 ? undefined : value.substring(0, index);
+								onChange({ ...duplicate(statement), name, namespace });
+								setEditNameNamespace(false);
+							}}
+							onClose={() => setEditNameNamespace(false)}
+						/>
+					) : (
+						name
+					)}
+				</div>
+				<i
+					className="_editIcon fa fa-1x fa-solid fa-bars-staggered"
+					style={{ visibility: editNameNamespace ? 'visible' : undefined }}
+					onClick={() => {
+						setEditNameNamespace(true);
+						onClick(false, statement.statementName);
+					}}
+				/>
 			</div>
+			<div className="_otherContainer"></div>
+			<div className="_messages">
+				{executionPlanMessage &&
+					executionPlanMessage.map(value => (
+						<div key={value} className="_message">
+							{value}
+						</div>
+					))}
+				{validationMessages.size > 0 &&
+					Array.from(validationMessages.entries()).map(([key, value]) => (
+						<div key={key} className="_message">
+							{value}
+						</div>
+					))}
+			</div>
+			{buttons}
 		</div>
 	);
 }

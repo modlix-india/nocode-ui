@@ -254,7 +254,14 @@ function DropdownComponent(props: ComponentProps) {
 	useEffect(() => {
 		if (!validation?.length) return;
 
-		const msgs = validate(props.definition, props.pageDefinition, validation, selected);
+		const msgs = validate(
+			props.definition,
+			props.pageDefinition,
+			validation,
+			selected,
+			locationHistory,
+			pageExtractor,
+		);
 		setValidationMessages(msgs);
 
 		setData(

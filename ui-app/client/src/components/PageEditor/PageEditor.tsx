@@ -349,6 +349,10 @@ function PageEditor(props: ComponentProps) {
 		operations,
 	]);
 
+	const undoStackRef = useRef<Array<PageDefinition>>([]);
+	const redoStackRef = useRef<Array<PageDefinition>>([]);
+	const firstTimeRef = useRef<Array<PageDefinition>>([]);
+
 	// If the personalization is not loaded, we don't load the view.
 	if (personalizationPath && !personalization) return <></>;
 
@@ -380,6 +384,9 @@ function PageEditor(props: ComponentProps) {
 					onDeletePersonalization={deletePersonalization}
 					onContextMenu={(m: ContextMenuDetails) => setContextMenu(m)}
 					onShowCodeEditor={evName => setShowCodeEditor(evName)}
+					undoStackRef={undoStackRef}
+					redoStackRef={redoStackRef}
+					firstTimeRef={firstTimeRef}
 				/>
 				<CodeEditor
 					showCodeEditor={showCodeEditor}
@@ -390,6 +397,9 @@ function PageEditor(props: ComponentProps) {
 					pageDefinition={pageDefinition}
 					pageExtractor={pageExtractor}
 					slaveStore={slaveStore}
+					undoStackRef={undoStackRef}
+					redoStackRef={redoStackRef}
+					firstTimeRef={firstTimeRef}
 				/>
 			</div>
 			<IssuePopup

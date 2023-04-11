@@ -25,6 +25,9 @@ interface CodeEditorProps {
 	pageDefinition: PageDefinition;
 	pageExtractor: PageStoreExtractor;
 	slaveStore: any;
+	firstTimeRef: React.MutableRefObject<PageDefinition[]>;
+	undoStackRef: React.MutableRefObject<PageDefinition[]>;
+	redoStackRef: React.MutableRefObject<PageDefinition[]>;
 }
 
 export default function CodeEditor({
@@ -36,12 +39,16 @@ export default function CodeEditor({
 	pageDefinition,
 	pageExtractor,
 	slaveStore,
+	firstTimeRef,
+	undoStackRef,
+	redoStackRef,
 }: CodeEditorProps) {
 	const uuid = useMemo(() => shortUUID(), []);
 	const [fullScreen, setFullScreen] = useState(false);
 	const [selectedFunction, setSelectedFunction] = useState(showCodeEditor);
 	const [editPage, setEditPage] = useState<any>();
 	const [primedToClose, setPrimedToClose] = useState(false);
+	const [changed, setChanged] = useState(Date.now());
 
 	const eventFunctions = editPage?.eventFunctions ?? {};
 
@@ -289,6 +296,49 @@ export default function CodeEditor({
 								</select>
 							</>
 						)}
+						<div className="_iconMenuSeperator" />
+						<div className="_buttonBar">
+							<i
+								className={`fa fa-solid fa-left-long ${
+									undoStackRef.current.length ? 'active' : ''
+								}`}
+								onClick={() => {
+									if (!undoStackRef.current.length || !defPath) return;
+									const x = undoStackRef.current[undoStackRef.current.length - 1];
+									undoStackRef.current.splice(undoStackRef.current.length - 1, 1);
+									redoStackRef.current.splice(0, 0, x);
+									setData(
+										defPath,
+										undoStackRef.current.length
+											? undoStackRef.current[undoStackRef.current.length - 1]
+											: firstTimeRef.current[0],
+										pageExtractor.getPageName(),
+									);
+									setChanged(Date.now());
+								}}
+								title="Undo"
+							/>
+							<i
+								className={`fa fa-solid fa-right-long ${
+									redoStackRef.current.length ? 'active' : ''
+								}`}
+								onClick={() => {
+									if (!redoStackRef.current.length || !defPath) return;
+									const x = redoStackRef.current[0];
+									undoStackRef.current.push(x);
+									redoStackRef.current.splice(0, 1);
+									setData(
+										defPath,
+										undoStackRef.current.length
+											? undoStackRef.current[undoStackRef.current.length - 1]
+											: firstTimeRef.current[0],
+										pageExtractor.getPageName(),
+									);
+									setChanged(Date.now());
+								}}
+								title="Redo"
+							/>
+						</div>
 					</div>
 					<div className="_codeButtons">
 						<div className="_iconMenu" onClick={() => setFullScreen(!fullScreen)}>

@@ -73,8 +73,11 @@ function KIRunEditor(
 
 	useEffect(() => {
 		if (!bindingPathPath) return;
-		let def = getDataFromPath(bindingPathPath, locationHistory, pageExtractor);
-		setRawDef(def);
+		return addListenerAndCallImmediately(
+			(_, v) => setRawDef(v),
+			pageExtractor,
+			bindingPathPath,
+		);
 	}, [bindingPathPath]);
 
 	const funDef = useMemo(
@@ -84,10 +87,9 @@ function KIRunEditor(
 
 	// Making an executionPlan to show the execution graph.
 	const [executionPlan, setExecutionPlan] = useState<
-		| Tuple2<Tuple2<string, string>[], ExecutionGraph<string, StatementExecution>>
-		| UIError
-		| undefined
+		ExecutionGraph<string, StatementExecution> | UIError | undefined
 	>();
+	const [kirunMessages, setKirunMessages] = useState<Map<string, string[]>>(new Map());
 	useEffect(() => {
 		if (isNullValue(funDef)) {
 			setExecutionPlan(undefined);
@@ -102,8 +104,29 @@ function KIRunEditor(
 			}
 
 			try {
-				const ep = await new KIRuntime(funDef!, false).getExecutionPlan(fep);
+				const ep = await new KIRuntime(funDef!, false).getExecutionPlan(
+					functionRepository,
+					schemaRepository,
+				);
 				setExecutionPlan(ep);
+				// setKirunMessages(new Map(ep.getT1().map(e => [e.getT1(), e.getT2()])));
+
+				const map = new Map();
+				Array.from(ep.getNodeMap().values()).forEach(e => {
+					map.set(
+						e.getData().getStatement().getStatementName(),
+						e
+							.getData()
+							.getMessages()
+							.map(m => m.getMessage()),
+					);
+				});
+
+				// map.set('genOutput', [
+				// 	'This is a very long message from the KIRun runtime after fetching the execution plan. Please consider this message to change your atitude towards life.',
+				// ]);
+
+				setKirunMessages(map);
 			} catch (err) {
 				setExecutionPlan(toUIError(err));
 			}
@@ -119,7 +142,7 @@ function KIRunEditor(
 		if ('message' in executionPlan) return;
 
 		const positions: Map<string, { left: number; top: number }> = new Map();
-		const list = new LinkedList(executionPlan.getT2().getVerticesWithNoIncomingEdges());
+		const list = new LinkedList(executionPlan.getVerticesWithNoIncomingEdges());
 		const finishedSet = new Set<string>();
 		while (!list.isEmpty()) {
 			const v = list.removeFirst();
@@ -171,6 +194,8 @@ function KIRunEditor(
 		| undefined
 	>();
 
+	const functionNames = useMemo(() => functionRepository.filter(''), [functionRepository]);
+
 	if (executionPlan && !('message' in executionPlan) && rawDef?.steps) {
 		statements = Object.keys(rawDef.steps ?? {})
 			.map(k => rawDef.steps[k])
@@ -194,6 +219,29 @@ function KIRunEditor(
 					}}
 					dragNode={dragNode}
 					container={container}
+					executionPlanMessage={kirunMessages.get(s.statementName)}
+					onChange={stmt => {
+						if (isReadonly) return;
+
+						const def = duplicate(rawDef);
+						delete def.steps[s.statementName];
+						def.steps[stmt.statementName] = stmt;
+
+						setData(bindingPathPath, def, context.pageName);
+					}}
+					functionNames={functionNames}
+					onDelete={stmt => {
+						if (isReadonly) return;
+						const def = duplicate(rawDef);
+						delete def.steps[s.statementName];
+						if (selectedStatements.has(s.statementName)) {
+							const newSelectedStatements = new Map(selectedStatements);
+							newSelectedStatements.delete(s.statementName);
+							setSelectedStatements(newSelectedStatements);
+						}
+
+						setData(bindingPathPath, def, context.pageName);
+					}}
 				/>
 			));
 	}
@@ -208,7 +256,7 @@ function KIRunEditor(
 			if (!container.current) return;
 
 			if (e.buttons !== 1) return;
-			e.preventDefault();
+			// e.preventDefault();
 			if (e.altKey) {
 				setScrMove({
 					...scrMove,
@@ -232,6 +280,7 @@ function KIRunEditor(
 		(e: any) => {
 			if (!container.current) return;
 
+			setPrimedToClick(false);
 			const rect = container.current.getBoundingClientRect();
 			const { dragStart, startLeft, startTop, oldLeft, oldTop } = scrMove;
 			if (selectionBox.selectionStart || dragNode) {
@@ -287,32 +336,50 @@ function KIRunEditor(
 				setSelectedStatements(new Map());
 			}
 
-			if (!dragNode && !scrMove && selectionBox.selectionStart) {
-				let { left, top, width, height } = selectionBox;
-				if (width && height) {
-					width = left + width;
-					height = top + height;
-					if (left > width) {
-						const t = left;
-						left = width;
-						width = t;
-					}
-					if (top > height) {
-						const t = top;
-						top = height;
-						height = t;
-					}
+			if (selectionBox.selectionStart) {
+				let { left, top, right, bottom } = selectionBox;
+				if (right < left) {
+					const t = left;
+					left = right;
+					right = t;
+				}
+				if (bottom < top) {
+					const t = top;
+					top = bottom;
+					bottom = t;
+				}
+				const boxRect = new DOMRect(left, top, right - left, bottom - top);
+				const containerRect = container.current?.getBoundingClientRect();
+				if (!isNaN(boxRect.width) && !isNaN(boxRect.height)) {
+					const nodes = Object.keys(rawDef.steps || {})
+						.filter(k => {
+							const el = document.getElementById(`statement_${k}`);
+							const rect = el?.getBoundingClientRect();
+							if (!rect) return false;
 
-					//   const nodes = Object.entries(code?.definition?.steps || {})
-					// 	.filter(([, v]) => {
-					// 	  const { properties: { x, y } = {} } = v;
-					// 	  return left <= x && x <= width && top <= y && y <= height;
-					// 	})
-					// 	.reduce((a, [k]) => {
-					// 	  a.set(k, true)
-					// 	  return a;
-					// 	}, new Map<string, boolean>());
-					//   setSelectedStatements(nodes);
+							let { left, top, right, bottom, x, y } = rect;
+
+							left +=
+								(container.current?.scrollLeft || 0) - (containerRect?.left ?? 0);
+							top += (container.current?.scrollTop || 0) - (containerRect?.top ?? 0);
+							right +=
+								(container.current?.scrollLeft || 0) - (containerRect?.left ?? 0);
+							bottom +=
+								(container.current?.scrollTop || 0) - (containerRect?.top ?? 0);
+
+							if (boxRect.left > right || left > boxRect.right) return false;
+							if (boxRect.top > bottom || top > boxRect.bottom) return false;
+
+							return true;
+						})
+						.reduce((a, k) => {
+							a.set(k, true);
+							return a;
+						}, new Map<string, boolean>());
+
+					setSelectedStatements(nodes);
+				} else {
+					setSelectedStatements(new Map());
 				}
 			}
 
@@ -334,7 +401,6 @@ function KIRunEditor(
 				}
 
 				if (!isReadonly) {
-					setRawDef(def);
 					setData(bindingPathPath, def, context.pageName);
 				}
 				setDragNode(undefined);
@@ -369,6 +435,7 @@ function KIRunEditor(
 			/>
 		);
 	}
+
 	return (
 		<div className="comp compKIRunEditor" ref={container}>
 			<div
