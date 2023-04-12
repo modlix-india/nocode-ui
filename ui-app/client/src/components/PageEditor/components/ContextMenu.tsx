@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { PageStoreExtractor, addListener } from '../../../context/StoreContext';
 import Portal from '../../Portal';
 import PageOperations from '../functions/PageOperations';
+import { PageDefinition } from '../../../types/common';
 
 export interface ContextMenuDetails {
 	componentKey: string;

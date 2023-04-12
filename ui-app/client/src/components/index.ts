@@ -33,6 +33,7 @@ import PageEditor from './PageEditor/PageEditor';
 import { Component } from '../types/common';
 import Iframe from './Iframe/Iframe';
 import FileUpload from './FileUpload/FileUpload';
+import KIRunEditor from './KIRunEditor/KIRunEditor';
 
 export default new Map<string, Component>([
 	[Button.name, Button],
@@ -69,4 +70,5 @@ export default new Map<string, Component>([
 	[Iframe.name, Iframe],
 	[Popover.name, Popover],
 	[FileUpload.name, FileUpload],
+	[KIRunEditor.name, KIRunEditor],
 ]);

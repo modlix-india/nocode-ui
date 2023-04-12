@@ -1,18 +1,20 @@
-import { isNullValue, KIRunSchemaRepository } from '@fincity/kirun-js';
+import { HybridRepository, TokenValueExtractor, isNullValue } from '@fincity/kirun-js';
+import { StoreExtractor } from '@fincity/path-reactive-state-management';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import KIRunEditor from '../../KIRunEditor/KIRunEditor';
-import { UIFunctionRepository } from '../../../functions';
-import { UISchemaRepository } from '../../../schemas/common';
-import { LocationHistory, PageDefinition, RenderContext } from '../../../types/common';
-import { shortUUID } from '../../../util/shortUUID';
+import { COPY_FUNCTION_KEY, LOCAL_STORE_PREFIX, STORE_PREFIX } from '../../../constants';
 import {
-	addListenerAndCallImmediately,
-	getDataFromPath,
 	PageStoreExtractor,
+	addListenerAndCallImmediatelyWithChildrenActivity,
+	getDataFromPath,
 	setData,
 } from '../../../context/StoreContext';
+import { LocationHistory, PageDefinition, RenderContext } from '../../../types/common';
 import duplicate from '../../../util/duplicate';
-import { COPY_CD_KEY, COPY_FUNCTION_KEY } from '../../../constants';
+import { shortUUID } from '../../../util/shortUUID';
+import KIRunEditor from '../../KIRunEditor/KIRunEditor';
+import PageDefintionFunctionsRepository from '../../util/PageDefinitionFunctionsRepository';
+import { ThemeExtractor } from '../../../context/ThemeExtractor';
+import { UIFunctionRepository } from '../../../functions';
 
 interface CodeEditorProps {
 	showCodeEditor: string | undefined;
@@ -22,6 +24,10 @@ interface CodeEditorProps {
 	context: RenderContext;
 	pageDefinition: PageDefinition;
 	pageExtractor: PageStoreExtractor;
+	slaveStore: any;
+	firstTimeRef: React.MutableRefObject<PageDefinition[]>;
+	undoStackRef: React.MutableRefObject<PageDefinition[]>;
+	redoStackRef: React.MutableRefObject<PageDefinition[]>;
 }
 
 export default function CodeEditor({
@@ -32,11 +38,17 @@ export default function CodeEditor({
 	context,
 	pageDefinition,
 	pageExtractor,
+	slaveStore,
+	firstTimeRef,
+	undoStackRef,
+	redoStackRef,
 }: CodeEditorProps) {
 	const uuid = useMemo(() => shortUUID(), []);
 	const [fullScreen, setFullScreen] = useState(false);
 	const [selectedFunction, setSelectedFunction] = useState(showCodeEditor);
 	const [editPage, setEditPage] = useState<any>();
+	const [primedToClose, setPrimedToClose] = useState(false);
+	const [changed, setChanged] = useState(Date.now());
 
 	const eventFunctions = editPage?.eventFunctions ?? {};
 
@@ -52,8 +64,31 @@ export default function CodeEditor({
 
 	useEffect(() => {
 		if (!defPath) return;
-		return addListenerAndCallImmediately((_, v) => setEditPage(v), pageExtractor, defPath);
+		return addListenerAndCallImmediatelyWithChildrenActivity(
+			(_, v) => setEditPage(v),
+			pageExtractor,
+			defPath,
+		);
 	}, [defPath]);
+
+	const tokenValueExtractors = useMemo(() => {
+		if (!slaveStore) return new Map<string, TokenValueExtractor>();
+
+		const localStoreExtractor = new StoreExtractor(
+			slaveStore.localStore,
+			`${LOCAL_STORE_PREFIX}.`,
+		);
+		const storeExtractor = new StoreExtractor(slaveStore.store, `${STORE_PREFIX}.`);
+		const pageStoreExtractor = new PageStoreExtractor(slaveStore.store);
+		const themeExtractor = new ThemeExtractor();
+		themeExtractor.setStore(slaveStore.store);
+		return new Map<string, TokenValueExtractor>([
+			[storeExtractor.getPrefix(), storeExtractor],
+			[localStoreExtractor.getPrefix(), localStoreExtractor],
+			[pageStoreExtractor.getPrefix(), pageStoreExtractor],
+			[themeExtractor.getPrefix(), themeExtractor],
+		]);
+	}, [slaveStore]);
 
 	const changeEventFunction = useCallback(
 		(key: string, functionObj: any) => {
@@ -81,7 +116,15 @@ export default function CodeEditor({
 		);
 
 	return (
-		<div className="_codeEditor show" onClick={e => onSetShowCodeEditor(undefined)}>
+		<div
+			className="_codeEditor show"
+			onMouseDown={e => (e.target === e.currentTarget ? setPrimedToClose(true) : null)}
+			onMouseUp={e => {
+				if (e.target !== e.currentTarget || !primedToClose) return;
+				onSetShowCodeEditor(undefined);
+				setPrimedToClose(false);
+			}}
+		>
 			<div
 				className={`_codeEditorContent ${fullScreen ? '_fullScreen' : ''}`}
 				onClick={e => e.stopPropagation()}
@@ -253,6 +296,57 @@ export default function CodeEditor({
 								</select>
 							</>
 						)}
+						<div className="_iconMenuSeperator" />
+						<div className="_buttonBar">
+							<i
+								className={`fa fa-solid fa-left-long ${
+									undoStackRef.current.length ? 'active' : ''
+								}`}
+								onClick={() => {
+									if (!undoStackRef.current.length || !defPath) return;
+									const x = undoStackRef.current[undoStackRef.current.length - 1];
+									undoStackRef.current.splice(undoStackRef.current.length - 1, 1);
+									redoStackRef.current.splice(0, 0, x);
+									setData(
+										defPath,
+										duplicate(
+											undoStackRef.current.length
+												? undoStackRef.current[
+														undoStackRef.current.length - 1
+												  ]
+												: firstTimeRef.current[0],
+										),
+										pageExtractor.getPageName(),
+									);
+									setChanged(Date.now());
+								}}
+								title="Undo"
+							/>
+							<i
+								className={`fa fa-solid fa-right-long ${
+									redoStackRef.current.length ? 'active' : ''
+								}`}
+								onClick={() => {
+									if (!redoStackRef.current.length || !defPath) return;
+									const x = redoStackRef.current[0];
+									undoStackRef.current.push(x);
+									redoStackRef.current.splice(0, 1);
+									setData(
+										defPath,
+										duplicate(
+											undoStackRef.current.length
+												? undoStackRef.current[
+														undoStackRef.current.length - 1
+												  ]
+												: firstTimeRef.current[0],
+										),
+										pageExtractor.getPageName(),
+									);
+									setChanged(Date.now());
+								}}
+								title="Redo"
+							/>
+						</div>
 					</div>
 					<div className="_codeButtons">
 						<div className="_iconMenu" onClick={() => setFullScreen(!fullScreen)}>
@@ -284,9 +378,16 @@ export default function CodeEditor({
 							type: 'VALUE',
 							value: selectedFunction
 								? `${defPath}.eventFunctions.${selectedFunction}`
-								: undefined,
+								: '',
 						},
 					}}
+					functionRepository={
+						new HybridRepository(
+							UIFunctionRepository,
+							new PageDefintionFunctionsRepository(editPage),
+						)
+					}
+					tokenValueExtractors={tokenValueExtractors}
 				/>
 			</div>
 		</div>
