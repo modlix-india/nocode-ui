@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { PageStoreExtractor } from '../../../../context/StoreContext';
-import { LocationHistory } from '../../../../types/common';
+import { LocationHistory, PageDefinition } from '../../../../types/common';
 import PageOperations from '../../functions/PageOperations';
 import DnDIFrame from './DnDIFrame';
 import DnDSideBar from './DnDSideBar';
@@ -28,6 +28,10 @@ interface DnDEditorProps {
 	onDeletePersonalization: () => void;
 	logo: string | undefined;
 	onContextMenu: (m: ContextMenuDetails) => void;
+	onShowCodeEditor: (eventName: string) => void;
+	firstTimeRef: React.MutableRefObject<PageDefinition[]>;
+	undoStackRef: React.MutableRefObject<PageDefinition[]>;
+	redoStackRef: React.MutableRefObject<PageDefinition[]>;
 }
 
 export default function DnDEditor({
@@ -49,6 +53,10 @@ export default function DnDEditor({
 	onPageReload,
 	logo,
 	onContextMenu,
+	onShowCodeEditor,
+	firstTimeRef,
+	undoStackRef,
+	redoStackRef,
 }: DnDEditorProps) {
 	return (
 		<div className="_dndGrid">
@@ -61,6 +69,7 @@ export default function DnDEditor({
 				defPath={defPath}
 				locationHistory={locationHistory}
 				pageOperations={pageOperations}
+				onShowCodeEditor={onShowCodeEditor}
 			/>
 			<div className="_dndGridMain">
 				<DnDTopBar
@@ -75,6 +84,9 @@ export default function DnDEditor({
 					onDeletePersonalization={onDeletePersonalization}
 					pageExtractor={pageExtractor}
 					onPageReload={onPageReload}
+					undoStackRef={undoStackRef}
+					redoStackRef={redoStackRef}
+					firstTimeRef={firstTimeRef}
 				/>
 				<div className="_iframeContainer">
 					<DnDIFrame
@@ -92,6 +104,7 @@ export default function DnDEditor({
 						onChangePersonalization={onChangePersonalization}
 						theme={theme}
 						pageExtractor={pageExtractor}
+						onShowCodeEditor={onShowCodeEditor}
 					/>
 				</div>
 				<DnDBottomBar

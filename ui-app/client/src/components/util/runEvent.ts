@@ -17,6 +17,7 @@ import {
 	PageStoreExtractor,
 	setData,
 	storeExtractor,
+	themeExtractor,
 } from '../../context/StoreContext';
 import { UIFunctionRepository } from '../../functions';
 import { UISchemaRepository } from '../../schemas/common';
@@ -131,6 +132,7 @@ export const runEvent = async (
 				[storeExtractor.getPrefix(), storeExtractor],
 				[localStoreExtractor.getPrefix(), localStoreExtractor],
 				[pageExtractor.getPrefix(), pageExtractor],
+				[themeExtractor.getPrefix(), themeExtractor],
 			]),
 		);
 		if (args) {

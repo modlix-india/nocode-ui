@@ -1,5 +1,5 @@
 import {
-	AdditionalPropertiesType,
+	AdditionalType,
 	HybridRepository,
 	KIRunSchemaRepository,
 	Repository,
@@ -28,9 +28,7 @@ const map = new Map([
 		'UrlParameters',
 		Schema.ofObject('UrlParameters')
 			.setNamespace(NAMESPACE_UI_ENGINE)
-			.setAdditionalProperties(
-				new AdditionalPropertiesType().setSchemaValue(SCHEMA_ANY_COMP_PROP),
-			)
+			.setAdditionalProperties(new AdditionalType().setSchemaValue(SCHEMA_ANY_COMP_PROP))
 			.setDefaultValue({}),
 	],
 	['Url', Schema.ofString('Url').setNamespace(NAMESPACE_UI_ENGINE)],
@@ -61,11 +59,9 @@ const map = new Map([
 		Schema.ofObject('Translations')
 			.setNamespace(NAMESPACE_UI_ENGINE)
 			.setAdditionalProperties(
-				new AdditionalPropertiesType().setSchemaValue(
+				new AdditionalType().setSchemaValue(
 					Schema.ofObject('Language').setAdditionalProperties(
-						new AdditionalPropertiesType().setSchemaValue(
-							Schema.ofString('translation'),
-						),
+						new AdditionalType().setSchemaValue(Schema.ofString('translation')),
 					),
 				),
 			),
@@ -76,9 +72,20 @@ const map = new Map([
 ]);
 
 class _UISchemaRepository implements Repository<Schema> {
-	find(namespace: string, name: string): Schema | undefined {
+	public find(namespace: string, name: string): Schema | undefined {
 		if (namespace !== NAMESPACE_UI_ENGINE) return undefined;
 		return map.get(name);
+	}
+
+	public filter(name: string): string[] {
+		const lowerCaseName = name.toLowerCase();
+		return Array.from(
+			new Set(
+				Array.from(map.values())
+					.map(e => e.getFullName())
+					.filter(e => e.toLowerCase().includes(lowerCaseName)),
+			),
+		);
 	}
 }
 

@@ -222,12 +222,14 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 
 export class PageStoreExtractor extends TokenValueExtractor {
 	private pageName: string;
+	private myStore: any;
 
 	static readonly extractorMap: Map<string, PageStoreExtractor> = new Map();
 
-	constructor(pageName: string) {
+	constructor(pageName: string, myStore: any = _store) {
 		super();
 		this.pageName = pageName;
+		this.myStore = myStore;
 	}
 
 	protected getValueInternal(token: string) {
@@ -236,7 +238,7 @@ export class PageStoreExtractor extends TokenValueExtractor {
 			token,
 			['pageData', this.pageName, ...parts.slice(1)],
 			0,
-			_store,
+			this.myStore,
 		);
 	}
 

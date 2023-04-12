@@ -19,6 +19,7 @@ export default function DnDIFrame({
 	iframeRef,
 }: DnDIFrameProps) {
 	const [device, setDevice] = useState<string>();
+	const [height, setHeight] = useState('100%');
 
 	useEffect(() => {
 		if (!personalizationPath) return;
@@ -29,9 +30,22 @@ export default function DnDIFrame({
 		);
 	}, [personalizationPath]);
 
+	useEffect(() => {
+		if (!iframeRef.current) return;
+		const handle = setInterval(() => {
+			const hgt = iframeRef.current?.contentWindow?.document.body?.scrollHeight + 'px';
+			if (hgt === height) return;
+			setHeight(hgt);
+		}, 100);
+
+		return () => clearInterval(handle);
+	}, [iframeRef.current, height]);
+
 	return (
-		<div className={`_iframe ${device ?? ''}`}>
-			<iframe ref={iframeRef} src={url} width="100%" height="100%" />
+		<div className="_iframeHolder">
+			<div className={`_iframe ${device ?? ''}`}>
+				<iframe ref={iframeRef} src={url} height={height} />
+			</div>
 		</div>
 	);
 }

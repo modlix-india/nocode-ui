@@ -67,9 +67,15 @@ export default function AppStyle() {
 	*:after {
 		box-sizing: border-box;
 	}
-	
+
+	${window.isDesignMode ? 'html { overflow-y: hidden; }' : ''}
+
 	.hide{
 		opacity:0;
+	}
+
+	.show{
+		opacity:1;
 	}
 
 	.comp {
