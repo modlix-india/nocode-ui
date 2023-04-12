@@ -234,7 +234,7 @@ function KIRunEditor(
 						if (isReadonly) return;
 						const def = duplicate(rawDef);
 						delete def.steps[s.statementName];
-						if (selectedStatements.has(s.statementName)) {
+						if (!selectedStatements.has(s.statementName)) {
 							const newSelectedStatements = new Map(selectedStatements);
 							newSelectedStatements.delete(s.statementName);
 							setSelectedStatements(newSelectedStatements);

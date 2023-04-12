@@ -309,9 +309,13 @@ export default function CodeEditor({
 									redoStackRef.current.splice(0, 0, x);
 									setData(
 										defPath,
-										undoStackRef.current.length
-											? undoStackRef.current[undoStackRef.current.length - 1]
-											: firstTimeRef.current[0],
+										duplicate(
+											undoStackRef.current.length
+												? undoStackRef.current[
+														undoStackRef.current.length - 1
+												  ]
+												: firstTimeRef.current[0],
+										),
 										pageExtractor.getPageName(),
 									);
 									setChanged(Date.now());
@@ -329,9 +333,13 @@ export default function CodeEditor({
 									redoStackRef.current.splice(0, 1);
 									setData(
 										defPath,
-										undoStackRef.current.length
-											? undoStackRef.current[undoStackRef.current.length - 1]
-											: firstTimeRef.current[0],
+										duplicate(
+											undoStackRef.current.length
+												? undoStackRef.current[
+														undoStackRef.current.length - 1
+												  ]
+												: firstTimeRef.current[0],
+										),
 										pageExtractor.getPageName(),
 									);
 									setChanged(Date.now());
