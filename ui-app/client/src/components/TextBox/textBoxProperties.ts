@@ -24,6 +24,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
+		name: 'autoComplete',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Autocomplete type',
+		description:
+			'Autocomplete specifies what type or if any assistance that is provided to user while filling forms, uses same values as its html attribute.',
+		defaultValue: 'off',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+
+	{
 		name: 'defaultValue',
 		schema: SCHEMA_ANY_COMP_PROP,
 		displayName: 'Default Value',

@@ -286,6 +286,7 @@ function DropdownComponent(props: ComponentProps) {
 			onMouseLeave={closeOnMouseLeave ? handleClose : undefined}
 		>
 			<HelperComponent definition={props.definition} />
+
 			<CommonInputText
 				id={key}
 				noFloat={noFloat}
@@ -306,6 +307,7 @@ function DropdownComponent(props: ComponentProps) {
 					setFocus(true);
 					setShowDropdown(true);
 				}}
+				autoComplete="off"
 				styles={computedStyles}
 				inputRef={inputRef}
 			/>
