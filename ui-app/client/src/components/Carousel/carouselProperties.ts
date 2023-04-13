@@ -147,6 +147,62 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		],
 	},
 
+	{
+		name: 'arrowButtons',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'arrowButtons',
+		description: 'Position of arrow buttons',
+		editor: ComponentPropertyEditor.ENUM,
+		defaultValue: 'OutsideTopLeft',
+		enumValues: [
+			{
+				name: 'Middle',
+				displayName: 'Middle',
+				description: 'arrow navigations button positioned on middle',
+			},
+			{
+				name: 'LeftTop',
+				displayName: 'topLeft',
+				description: 'arrow navigations button positioned on topLeft',
+			},
+			{
+				name: 'RightTop',
+				displayName: 'right',
+				description: 'arrow navigations button positioned on right',
+			},
+			{
+				name: 'LeftBottom',
+				displayName: 'bottom',
+				description: 'arrow navigations button positioned on bottom',
+			},
+			{
+				name: 'RightBottom',
+				displayName: 'left',
+				description: 'arrow navigations button positioned on left',
+			},
+			{
+				name: 'OutsideBottomLeft',
+				displayName: 'OutsideBottomLeft',
+				description: 'arrow navigations button positioned on outside bottom left',
+			},
+			{
+				name: 'OutsideBottomRight',
+				displayName: 'OutsideBottomRight',
+				description: 'arrow navigations button positioned on outside bottom right',
+			},
+			{
+				name: 'OutsideTopLeft',
+				displayName: 'OutsideTopLeft',
+				description: 'arrow navigations button positioned on outside Top left',
+			},
+			{
+				name: 'OutsideTopRight',
+				displayName: 'OutsideTopRight',
+				description: 'arrow navigations button positioned on outside Top right',
+			},
+		],
+	},
+
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 

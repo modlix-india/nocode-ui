@@ -26,6 +26,7 @@ function Carousel(props: ComponentProps) {
 			dotsButtonIconType,
 			hasNumbersInSlideNav,
 			slideNavButtonPosition,
+			arrowButtons,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -180,63 +181,68 @@ function Carousel(props: ComponentProps) {
 	}
 
 	return (
-		<div
-			className={`comp compCarousel ${`slideNavDiv${
-				slideNavButtonPosition === 'OutsideTop' ? 'OutsideTop' : ''
-			}`}`}
-			style={resolvedStyles.comp ?? {}}
-		>
+		<div className={`comp compCarousel`} style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />
-			<div className="innerDiv">{showChildren}</div>
 			{showArrowButtons && (
-				<div>
-					<button
-						className="rightArrowButton fa-solid fa-chevron-right button"
-						onClick={() => {
-							if (!isNullValue(transitionFrom)) return;
-							setTransitionFrom(slideNum);
-							setSlideNum(slideNum + 1 >= childrenDef.length ? 0 : slideNum + 1);
-							setTimeout(() => setTransitionFrom(undefined), animationDuration + 120);
-						}}
-					></button>
-					<button
-						className="leftArrowButton fa-solid fa-chevron-left button"
+				<div className={`arrowButtons arrowButtons${arrowButtons}`}>
+					<i
+						className={` fa-solid fa-chevron-left button ${
+							arrowButtons === 'Middle' ? 'leftArrowButton' : ''
+						}`}
 						onClick={() => {
 							if (!isNullValue(transitionFrom)) return;
 							setTransitionFrom(slideNum);
 							setSlideNum(slideNum == 0 ? childrenDef.length - 1 : slideNum - 1);
 							setTimeout(() => setTransitionFrom(undefined), animationDuration + 120);
 						}}
-					></button>
+					></i>
+					<i
+						className={` fa-solid fa-chevron-right button ${
+							arrowButtons === 'Middle' ? 'rightArrowButton' : ''
+						}`}
+						onClick={() => {
+							if (!isNullValue(transitionFrom)) return;
+							setTransitionFrom(slideNum);
+							setSlideNum(slideNum + 1 >= childrenDef.length ? 0 : slideNum + 1);
+							setTimeout(() => setTransitionFrom(undefined), animationDuration + 120);
+						}}
+					></i>
 				</div>
 			)}
 			<div
-				className={` slideNavDiv${slideNavButtonPosition} ${
-					slideNavButtonPosition === 'OutsideTop' ? 'slideNavDiv' : ''
-				}`}
+				className={`innerDivSlideNav ${`slideNavDiv${
+					slideNavButtonPosition === 'OutsideTop' ? 'OutsideTop' : 'innerDivSlideNav'
+				}`}`}
 			>
-				{showDotsButtons &&
-					(childrenDef ?? []).map((e: any, key: any) => (
-						<button
-							key={key}
-							className={`slideNav  ${
-								dotsButtonType !== 'none' && hasNumbersInSlideNav === false
-									? `fa-${dotsButtonIconType} fa-${dotsButtonType}`
-									: ` `
-							}  ${hasNumbersInSlideNav ? `${dotsButtonType}WithNumbers` : ''} `}
-							onClick={() => {
-								if (!isNullValue(transitionFrom)) return;
-								setTransitionFrom(slideNum);
-								setSlideNum(key);
-								setTimeout(
-									() => setTransitionFrom(undefined),
-									animationDuration + 20,
-								);
-							}}
-						>
-							{hasNumbersInSlideNav ? key + 1 : ''}
-						</button>
-					))}
+				<div className="innerDiv">{showChildren}</div>
+				<div
+					className={` slideNavDiv${slideNavButtonPosition} ${
+						slideNavButtonPosition === 'OutsideTop' ? 'slideNavDiv' : ''
+					}`}
+				>
+					{showDotsButtons &&
+						(childrenDef ?? []).map((e: any, key: any) => (
+							<button
+								key={key}
+								className={`slideNav  ${
+									dotsButtonType !== 'none' && hasNumbersInSlideNav === false
+										? `fa-${dotsButtonIconType} fa-${dotsButtonType}`
+										: ` `
+								}  ${hasNumbersInSlideNav ? `${dotsButtonType}WithNumbers` : ''} `}
+								onClick={() => {
+									if (!isNullValue(transitionFrom)) return;
+									setTransitionFrom(slideNum);
+									setSlideNum(key);
+									setTimeout(
+										() => setTransitionFrom(undefined),
+										animationDuration + 20,
+									);
+								}}
+							>
+								{hasNumbersInSlideNav ? key + 1 : ''}
+							</button>
+						))}
+				</div>
 			</div>
 		</div>
 	);

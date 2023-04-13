@@ -12,10 +12,19 @@ export default function CarouselStyle({ theme }: { theme: Map<string, Map<string
         display:flex;
         flex-direction:column;
     }
+
+    ${PREFIX} .innerDivSlideNav{
+        display:flex;
+        flex:1;
+        flex-direction: column;
+       
+    }
+    ${PREFIX} .notOutsideTop{
+        flex-direction:column;
+    }
     ${PREFIX} .button {
-        position: absolute;
-        height: 40px;
-        top: calc(50% - 40px);
+        font-size: 50px;
+       
     }
     ${PREFIX} .innerDiv{
         overflow: hidden;
@@ -33,15 +42,37 @@ export default function CarouselStyle({ theme }: { theme: Map<string, Map<string
         display:flex;
         flex-direction:row;
     }
-
+    ${PREFIX} .arrowButtonsOutsideTopRight{
+        display:flex;
+        justify-content:end;
+        width:100%;
+    }
+    ${PREFIX} .arrowButtonsOutsideTopLeft{
+        width:100%;
+    }
+    ${PREFIX} .arrowButtonsMiddle{
+      
+    }
     ${PREFIX} .leftArrowButton {
         left: 0;
-        
+        position:absolute;
+        top:50%;
+        transform:translateY(-50%);
     }
 
     ${PREFIX} .rightArrowButton {
        right: 0;
+       position:absolute;
+       top:50%;
+       transform:translateY(-50%);
     }
+
+    ${PREFIX} .LeftTop{
+        position:absolute;
+        left:0;
+        top:0;
+    }
+
     ${PREFIX} .slideNavDivBottom{
         display: flex;
         flex-direction: row;
@@ -56,7 +87,7 @@ export default function CarouselStyle({ theme }: { theme: Map<string, Map<string
         display: flex;
         flex-direction: row;
         position: absolute;
-        top: 0;
+        top: 5;
         padding-top: 10px;
         left: 50%;
         transform: translateX(-50%);
@@ -90,7 +121,7 @@ export default function CarouselStyle({ theme }: { theme: Map<string, Map<string
         justify-content: center;
         padding-top: 5px;
     }
-    ${PREFIX}.slideNavDivOutsideTop{
+    ${PREFIX} .slideNavDivOutsideTop{
         display:flex;
         flex-direction: column-reverse;
         align-items:center;
@@ -99,8 +130,9 @@ export default function CarouselStyle({ theme }: { theme: Map<string, Map<string
 
     ${PREFIX} .slideNavDiv{
         display:flex;
-        flex-direction: row;
         gap:3px;
+        flex-direction:row;
+
     }
     
     ${PREFIX} .slideNav{
