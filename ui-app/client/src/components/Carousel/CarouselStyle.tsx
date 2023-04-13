@@ -58,20 +58,45 @@ export default function CarouselStyle({ theme }: { theme: Map<string, Map<string
         position:absolute;
         top:50%;
         transform:translateY(-50%);
+        z-index:1;
     }
-
     ${PREFIX} .rightArrowButton {
-       right: 0;
-       position:absolute;
-       top:50%;
-       transform:translateY(-50%);
+        right: 0;
+        position:absolute;
+        top:50%;
+        transform:translateY(-50%);
+        z-index:1;
     }
 
-    ${PREFIX} .LeftTop{
+    ${PREFIX} .arrowButtonsRightTop{
+        position:absolute;
+        right:0;
+        top:0;
+        z-index:1;
+    }
+
+    ${PREFIX} .arrowButtonsRightBottom{
+        position:absolute;
+        right:0;
+        bottom:0;
+        z-index:1;
+    }
+  
+
+    ${PREFIX} .arrowButtonsLeftTop{
         position:absolute;
         left:0;
         top:0;
+        z-index:1;
     }
+
+    ${PREFIX} .arrowButtonsLeftBottom{
+        position:absolute;
+        left:0;
+        Bottom:0;
+        z-index:1;
+    }
+
 
     ${PREFIX} .slideNavDivBottom{
         display: flex;

@@ -184,7 +184,7 @@ function Carousel(props: ComponentProps) {
 		<div className={`comp compCarousel`} style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />
 			{showArrowButtons && (
-				<div className={`arrowButtons arrowButtons${arrowButtons}`}>
+				<div className={`arrowButtons${arrowButtons}`}>
 					<i
 						className={` fa-solid fa-chevron-left button ${
 							arrowButtons === 'Middle' ? 'leftArrowButton' : ''
