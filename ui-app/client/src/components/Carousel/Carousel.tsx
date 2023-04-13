@@ -22,6 +22,10 @@ function Carousel(props: ComponentProps) {
 			easing,
 			animationDuration,
 			animationType,
+			dotsButtonType,
+			dotsButtonIconType,
+			hasNumbersInSlideNav,
+			slideNavButtonPosition,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -176,7 +180,12 @@ function Carousel(props: ComponentProps) {
 	}
 
 	return (
-		<div className="comp compCarousel" style={resolvedStyles.comp ?? {}}>
+		<div
+			className={`comp compCarousel ${`slideNavDiv${
+				slideNavButtonPosition === 'OutsideTop' ? 'OutsideTop' : ''
+			}`}`}
+			style={resolvedStyles.comp ?? {}}
+		>
 			<HelperComponent definition={definition} />
 			<div className="innerDiv">{showChildren}</div>
 			{showArrowButtons && (
@@ -201,12 +210,20 @@ function Carousel(props: ComponentProps) {
 					></button>
 				</div>
 			)}
-			<div className="dotsDiv">
+			<div
+				className={` slideNavDiv${slideNavButtonPosition} ${
+					slideNavButtonPosition === 'OutsideTop' ? 'slideNavDiv' : ''
+				}`}
+			>
 				{showDotsButtons &&
 					(childrenDef ?? []).map((e: any, key: any) => (
 						<button
 							key={key}
-							className="dots fa-regular fa-circle"
+							className={`slideNav  ${
+								dotsButtonType !== 'none' && hasNumbersInSlideNav === false
+									? `fa-${dotsButtonIconType} fa-${dotsButtonType}`
+									: ` `
+							}  ${hasNumbersInSlideNav ? `${dotsButtonType}WithNumbers` : ''} `}
 							onClick={() => {
 								if (!isNullValue(transitionFrom)) return;
 								setTransitionFrom(slideNum);
@@ -216,7 +233,9 @@ function Carousel(props: ComponentProps) {
 									animationDuration + 20,
 								);
 							}}
-						></button>
+						>
+							{hasNumbersInSlideNav ? key + 1 : ''}
+						</button>
 					))}
 			</div>
 		</div>

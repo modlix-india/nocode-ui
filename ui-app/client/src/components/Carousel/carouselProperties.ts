@@ -72,8 +72,81 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Auto Play',
 		description: 'Play automatically without interaction',
-		defaultValue: false,
+		defaultValue: true,
 	},
+	{
+		name: 'dotsButtonType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'dotsButtonType',
+		description: 'Types of Dot buttons',
+		editor: ComponentPropertyEditor.ENUM,
+		defaultValue: 'circle',
+		enumValues: [
+			{ name: 'circle', displayName: 'dots', description: 'dots' },
+			{ name: 'square', displayName: 'square', description: 'square buttons' },
+			{ name: 'none', displayName: 'none', description: 'none' },
+		],
+	},
+	{
+		name: 'dotsButtonIconType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'dotsButtonType',
+		description: 'Position of Dot buttons',
+		editor: ComponentPropertyEditor.ENUM,
+		defaultValue: 'regular',
+		enumValues: [
+			{ name: 'regular', displayName: 'regular', description: 'hallo icon' },
+			{ name: 'solid', displayName: 'solid', description: 'solid icon' },
+		],
+	},
+	{
+		name: 'hasNumbersInSlideNav',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'hasNumbersInSlideNav',
+		description: 'has numbers in slide nav',
+		defaultValue: true,
+	},
+	{
+		name: 'slideNavButtonPosition',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'slideNavButtonType',
+		description: 'Types of Dot buttons',
+		editor: ComponentPropertyEditor.ENUM,
+		defaultValue: 'Right',
+		enumValues: [
+			{
+				name: 'Top',
+				displayName: 'top',
+				description: 'slide navigations button positioned on top',
+			},
+			{
+				name: 'Right',
+				displayName: 'right',
+				description: 'slide navigations button positioned on right',
+			},
+			{
+				name: 'Bottom',
+				displayName: 'bottom',
+				description: 'slide navigations button positioned on bottom',
+			},
+			{
+				name: 'Left',
+				displayName: 'left',
+				description: 'slide navigations button positioned on left',
+			},
+			{
+				name: 'OutsideBottom',
+				displayName: 'OutsideBottom',
+				description: 'slide navigations button positioned on outside bottom',
+			},
+			{
+				name: 'OutsideTop',
+				displayName: 'OutsideTop',
+				description: 'slide navigations button positioned on outside Top',
+			},
+		],
+	},
+
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 

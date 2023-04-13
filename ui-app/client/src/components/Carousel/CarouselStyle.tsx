@@ -9,6 +9,8 @@ export default function CarouselStyle({ theme }: { theme: Map<string, Map<string
 	const css =
 		`
     ${PREFIX} {
+        display:flex;
+        flex-direction:column;
     }
     ${PREFIX} .button {
         position: absolute;
@@ -19,7 +21,7 @@ export default function CarouselStyle({ theme }: { theme: Map<string, Map<string
         overflow: hidden;
         position: relative;
         width:100%;
-        height: 100%;
+        flex:1;
     }
 
     ${PREFIX} .innerDiv ._eachSlide{
@@ -40,20 +42,94 @@ export default function CarouselStyle({ theme }: { theme: Map<string, Map<string
     ${PREFIX} .rightArrowButton {
        right: 0;
     }
-    ${PREFIX} .dotsDiv{
+    ${PREFIX} .slideNavDivBottom{
         display: flex;
         flex-direction: row;
         position: absolute;
         bottom: 0;
-        padding-bottom: 10px;
+        padding-bottom:20px;
         left:50%;
         transform: translateX(-50%);
+        gap:3px;
     }
-    ${PREFIX} .dots{
+    ${PREFIX} .slideNavDivTop{
+        display: flex;
+        flex-direction: row;
+        position: absolute;
+        top: 0;
+        padding-top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        gap: 3px;
+    }
+    ${PREFIX} .slideNavDivRight{
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 50%;
+        padding-right: 10px;
+        right: 0;
+        transform: translateY(-50%);
+        gap: 3px;
+    }
+    
+    ${PREFIX} .slideNavDivLeft{
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 50%;
+        padding-left: 10px;
+        left: 0;
+        transform: translateY(-50%);
+        gap: 3px;
+    }
+    ${PREFIX} .slideNavDivOutsideBottom{
+        display: flex;
+        flex-direction: row;
+        gap: 3px;
+        justify-content: center;
+        padding-top: 5px;
+    }
+    ${PREFIX}.slideNavDivOutsideTop{
+        display:flex;
+        flex-direction: column-reverse;
+        align-items:center;
+        gap:5px;
+    }
+
+    ${PREFIX} .slideNavDiv{
+        display:flex;
+        flex-direction: row;
+        gap:3px;
+    }
+    
+    ${PREFIX} .slideNav{
         width: fit-content;
         height:fit-content;
         background: transparent;
-        border:none
+        border:none;
+    }
+    ${PREFIX} .circleWithNumbers{
+        width:15px;
+        height:15px;
+        background-color: #ffffff;
+        border-radius: 50%;
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid grey;
+        opacity:1;
+    }
+
+    ${PREFIX} .squareWithNumbers{
+        width:15px;
+        height:15px;
+        background-color: #ffffff;
+        display:flex;
+        justify-content: center;
+        border: 1px solid grey;
+        opacity:1;
+        align-items: center;
     }
    
     ${PREFIX} ._eachSlide._current._slideover{
