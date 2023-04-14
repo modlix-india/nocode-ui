@@ -10,6 +10,13 @@ export default function CarouselStyle({ theme }: { theme: Map<string, Map<string
 		`
     ${PREFIX} {
         display:flex;
+       
+    }
+    ${PREFIX}.containerReverse{
+        flex-direction:column-reverse;
+        
+    }
+    ${PREFIX}.container{
         flex-direction:column;
     }
 
@@ -48,6 +55,14 @@ export default function CarouselStyle({ theme }: { theme: Map<string, Map<string
         width:100%;
     }
     ${PREFIX} .arrowButtonsOutsideTopLeft{
+        width:100%;
+    }
+    ${PREFIX} .arrowButtonsOutsideBottomRight{
+        width:100%;
+        justify-content:end;
+        display:flex;
+    }
+    ${PREFIX} .arrowButtonsOutsideBottomLeft{
         width:100%;
     }
     ${PREFIX} .arrowButtonsMiddle{
@@ -97,6 +112,10 @@ export default function CarouselStyle({ theme }: { theme: Map<string, Map<string
         z-index:1;
     }
 
+    ${PREFIX} .arrowbuttonsColumnRverse{
+        display:flex;
+        flex-direction: row-reverse;
+    }
 
     ${PREFIX} .slideNavDivBottom{
         display: flex;

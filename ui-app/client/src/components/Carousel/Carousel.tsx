@@ -181,7 +181,14 @@ function Carousel(props: ComponentProps) {
 	}
 
 	return (
-		<div className={`comp compCarousel`} style={resolvedStyles.comp ?? {}}>
+		<div
+			className={`comp compCarousel ${
+				arrowButtons !== 'OutsideBottomRight' && arrowButtons !== 'OutsideBottomLeft'
+					? 'container'
+					: 'containerReverse'
+			}`}
+			style={resolvedStyles.comp ?? {}}
+		>
 			<HelperComponent definition={definition} />
 			{showArrowButtons && (
 				<div className={`arrowButtons${arrowButtons}`}>

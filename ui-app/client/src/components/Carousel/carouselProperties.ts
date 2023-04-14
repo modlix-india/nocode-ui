@@ -153,11 +153,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'arrowButtons',
 		description: 'Position of arrow buttons',
 		editor: ComponentPropertyEditor.ENUM,
-		defaultValue: 'OutsideTopLeft',
+		defaultValue: 'OutsideBottomRight',
 		enumValues: [
 			{
 				name: 'Middle',
-				displayName: 'Middle',
+				displayName: 'Center',
 				description: 'arrow navigations button positioned on middle',
 			},
 			{
@@ -201,6 +201,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				description: 'arrow navigations button positioned on outside-Top-right',
 			},
 		],
+	},
+
+	{
+		name: 'navigationsOnHover',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'navigationsOnHover',
+		description: 'navigationsOnHover',
+		defaultValue: true,
 	},
 
 	COMMON_COMPONENT_PROPERTIES.visibility,
