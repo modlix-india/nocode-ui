@@ -6,6 +6,7 @@ import {
 	Schema,
 	Statement,
 	TokenValueExtractor,
+	isNullValue,
 } from '@fincity/kirun-js';
 import React, { RefObject, useCallback, useEffect, useState } from 'react';
 import duplicate from '../../../util/duplicate';
@@ -148,6 +149,8 @@ export default function StatementNode({
 			<div className="_paramHeader">Parameters</div>
 			{parameters.map(e => {
 				const paramValue = statement.parameterMap?.[e.getParameterName()];
+				const hasValue = paramValue && Object.values(paramValue).length;
+				const title = stringValue(paramValue);
 				return (
 					<div className="_param" key={e.getParameterName()}>
 						<div
@@ -155,11 +158,7 @@ export default function StatementNode({
 							className="_paramNode"
 							style={{ borderColor: alwaysColor }}
 						></div>
-						<div
-							className={`_paramName ${
-								paramValue && Object.values(paramValue).length ? '_hasValue' : ''
-							}`}
-						>
+						<div className={`_paramName ${hasValue ? '_hasValue' : ''}`} title={title}>
 							{e.getParameterName()}
 						</div>
 					</div>
@@ -389,3 +388,18 @@ const ICONS_GROUPS = new Map<string, string>([
 	['System.Object', 'fa-circle-dot'],
 	['UIEngine', 'fa-snowflake'],
 ]);
+function stringValue(paramValue: any) {
+	if (paramValue === undefined) return undefined;
+	const value = Object.values(paramValue)
+		.filter(e => !isNullValue(e))
+		.sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0))
+		.map((e: any) => {
+			if (e.type === 'EXPRESSION') return e.expression;
+			if (typeof e.value === 'object') return JSON.stringify(e.value, undefined, 2);
+			return e.value;
+		})
+		.join('\n')
+		.trim();
+
+	return value ? value : undefined;
+}

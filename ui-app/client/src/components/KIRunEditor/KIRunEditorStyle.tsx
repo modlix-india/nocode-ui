@@ -188,7 +188,7 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			flex: 1;
 		}
 
-		${PREFIX} ._statement ._paramName ._hasValue {
+		${PREFIX} ._statement ._paramName._hasValue {
 			font-weight: bold;
 		}
 
