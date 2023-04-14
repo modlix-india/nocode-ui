@@ -448,6 +448,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction: column;
 			gap: 5px;
 			border-radius: 4px;
+			position: relative;
 		}
 
 		${PREFIX} ._eachProp:hover {
@@ -643,12 +644,30 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border: 2px solid #ddd;
 			padding: 5px;
 			border-radius: 3px;
+			padding-top: 20px;
+			position: relative;
 		}
 
 		${PREFIX} ._eachProperty i.fa {
 			color: #aaa;
 			cursor: pointer;
 			font-size: 13px;
+			position: absolute;
+			top: 5px;
+			left: 5px;
+			background-color: #eee;
+			width:14px;
+			height: 14px;
+			display: inline-flex;
+			justify-content: center;
+			align-items: center;
+			border-radius: 3px;
+			font-size: 12px;
+		}
+
+		${PREFIX} ._eachProperty i.fa-close {
+			left: 24px;
+			
 		}
 
 		${PREFIX} ._eachProperty:hover i.fa {
@@ -1060,14 +1079,19 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX}._dark ._eachProperty:hover i.fa {
-			color: #333;
+			color: #777;
 		}
 
 		${PREFIX}._dark ._eachProperty{
 			border:  2px solid #333;
 		}
+		
 		${PREFIX}._dark ._codeEditorContent ._codeEditorHeader {
 			background-color: #666;
+		}
+
+		${PREFIX}._dark ._eachProperty i.fa {
+			background-color: #333;
 		}
 
 		._popupMenuBackground._dark ._popupMenuContainer  {

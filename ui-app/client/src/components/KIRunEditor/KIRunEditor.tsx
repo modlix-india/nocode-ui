@@ -5,34 +5,35 @@ import {
 	FunctionExecutionParameters,
 	KIRuntime,
 	LinkedList,
-	Position,
+	ParameterReferenceType,
 	Repository,
 	Schema,
 	StatementExecution,
 	TokenValueExtractor,
-	Tuple2,
-	deepEqual,
 	isNullValue,
+	Parameter,
 } from '@fincity/kirun-js';
 import React, { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediately,
-	getDataFromPath,
 	getPathFromLocation,
 	setData,
 } from '../../context/StoreContext';
 import { UIFunctionRepository } from '../../functions';
 import { UISchemaRepository } from '../../schemas/common';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
+import duplicate from '../../util/duplicate';
 import { UIError, toUIError } from '../util/errorHandling';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './KIRunEditorProperties';
 import KIRunEditorStyle from './KIRunEditorStyle';
 import StatementNode from './components/StatementNode';
-import duplicate from '../../util/duplicate';
+import { generateColor } from './colors';
 
 const gridSize = 20;
+
+const STEP_REGEX = /Steps\.([a-zA-Z0-9\-]{1,})\.([a-zA-Z0-9\-]{1,})([\.]{0,}[a-zA-Z0-9\-]{1,})+/g;
 
 function KIRunEditor(
 	props: ComponentProps & {
@@ -144,6 +145,8 @@ function KIRunEditor(
 		const positions: Map<string, { left: number; top: number }> = new Map();
 		const list = new LinkedList(executionPlan.getVerticesWithNoIncomingEdges());
 		const finishedSet = new Set<string>();
+		let firstLeft = 20;
+		let firstTop = 20;
 		while (!list.isEmpty()) {
 			const v = list.removeFirst();
 			const s = v.getData().getStatement();
@@ -158,11 +161,19 @@ function KIRunEditor(
 				);
 			}
 
-			if (!isNullValue(s.getPosition())) {
-				positions.set(s.getStatementName(), { left: 0, top: 0 });
+			if (
+				isNullValue(s.getPosition()) ||
+				((s.getPosition()?.getLeft() ?? 0) <= 0 && (s.getPosition()?.getTop() ?? 0) <= 0)
+			) {
+				if (!v.getInVertices() || !v.getInVertices().size) {
+					positions.set(s.getStatementName(), { left: firstLeft, top: firstTop });
+					firstTop += 100;
+				}
 				continue;
 			}
 		}
+
+		setPositions(positions);
 	}, [executionPlan]);
 
 	const [selectedStatements, setSelectedStatements] = useState<Map<string, boolean>>(new Map());
@@ -436,6 +447,100 @@ function KIRunEditor(
 		);
 	}
 
+	const designerRef = useRef<HTMLDivElement>(null);
+
+	let lines: Array<ReactNode> = [];
+	let gradients: Map<string, ReactNode> = new Map();
+
+	if (executionPlan instanceof ExecutionGraph && designerRef.current) {
+		const nodeMap = executionPlan.getNodeMap();
+		lines = Array.from(nodeMap.values()).flatMap(v => {
+			const statement = v.getData().getStatement();
+			const depNode = document.getElementById(
+				`eventNode_dependentNode_${statement.getStatementName()}`,
+			);
+			if (!depNode) return [];
+			const toColor = generateColor(statement.getNamespace(), statement.getName());
+			const array: Array<ReactNode> = Array.from(
+				v.getData().getStatement().getDependentStatements().entries(),
+			)
+				.filter(e => e[1])
+				.map(e => e[0])
+				.map(e => {
+					const names = e.split('.');
+					if (names.length < 3) return;
+					const fromNode = document.getElementById(
+						names.length > 3
+							? `eventParameter_${names[1]}_${names[2]}_${names[3]}`
+							: `eventNode_${names[1]}_${names[2]}`,
+					);
+					if (!fromNode || !rawDef.steps[names[1]]) return;
+					const fromColor = generateColor(
+						rawDef.steps[names[1]].namespace,
+						rawDef.steps[names[1]].name,
+					);
+					makeGradients(fromColor, toColor, gradients);
+					return lineFrom(
+						fromNode,
+						depNode,
+						designerRef.current!,
+						fromColor,
+						toColor,
+						undefined,
+						true,
+					);
+				});
+
+			const functionSignature = functionRepository
+				.find(statement.getNamespace(), statement.getName())
+				?.getSignature();
+
+			if (!functionSignature) return array;
+			const inLines = Array.from(functionSignature.getParameters().values() ?? []).map(
+				(p: Parameter) => {
+					const paramValue = statement.getParameterMap()?.get(p.getParameterName());
+					if (!paramValue) return undefined;
+
+					const toNode = document.getElementById(
+						`paramNode_${statement.getStatementName()}_${p.getParameterName()}`,
+					);
+					if (!toNode) return undefined;
+
+					const toColor = generateColor(statement.getNamespace(), statement.getName());
+
+					return Array.from(paramValue.values() ?? []).flatMap(pr => {
+						if (!pr) return undefined;
+						if (pr.getType() === ParameterReferenceType.EXPRESSION) {
+							let expression = pr.getExpression();
+							if (!expression) return undefined;
+
+							return makeLineFromExpression(
+								expression,
+								rawDef,
+								toColor,
+								gradients,
+								toNode,
+								designerRef,
+							);
+						} else if (typeof pr.getValue() === 'object') {
+						}
+						return undefined;
+					});
+				},
+			);
+			array.push(...inLines);
+
+			return array;
+		});
+	}
+
+	let lineSvg = (
+		<svg className="_linesSvg">
+			<defs>{Array.from(gradients.values())}</defs>
+			{lines}
+		</svg>
+	);
+
 	return (
 		<div className="comp compKIRunEditor" ref={container}>
 			<div
@@ -444,11 +549,114 @@ function KIRunEditor(
 				onMouseMove={designerMouseMove}
 				onMouseUp={designerMouseUp}
 				onMouseLeave={designerMouseUp}
+				ref={designerRef}
 			>
+				{lineSvg}
 				{statements}
 				{selector}
 			</div>
 		</div>
+	);
+}
+
+function makeLineFromExpression(
+	expression: string,
+	rawDef: any,
+	toColor: string,
+	gradients: Map<string, React.ReactNode>,
+	toNode: HTMLElement,
+	designerRef: React.RefObject<HTMLDivElement>,
+): ReactNode[] {
+	const lines: ReactNode[] = Array.from(expression.match(STEP_REGEX) ?? []).flatMap(e => {
+		const names = e.split('.');
+		if (names.length < 3) return [<></>];
+		const fromNode = document.getElementById(
+			names.length > 3
+				? `eventParameter_${names[1]}_${names[2]}_${names[3]}`
+				: `eventNode_${names[1]}_${names[2]}`,
+		);
+		if (!fromNode || !rawDef.steps[names[1]]) return [<></>];
+		const fromColor = generateColor(
+			rawDef.steps[names[1]].namespace,
+			rawDef.steps[names[1]].name,
+		);
+		makeGradients(fromColor, toColor, gradients);
+		return lineFrom(
+			fromNode,
+			toNode,
+			designerRef.current!,
+			fromColor,
+			toColor,
+			undefined,
+			false,
+		);
+	});
+
+	return lines;
+}
+
+function makeGradients(fromColor: string, toColor: string, gradients: Map<string, ReactNode>) {
+	const gradName = `grad_${fromColor}_${toColor}`;
+	const revGradNam = `grad_${toColor}_${fromColor}`;
+	if (gradients.has(gradName)) return;
+
+	gradients.set(
+		gradName,
+		<linearGradient key={gradName} id={gradName} x1="0%" y1="0%" x2="100%" y2="100%">
+			<stop offset="0%" stopColor={`#${fromColor}`} />
+			<stop offset="100%" stopColor={`#${toColor}`} />
+		</linearGradient>,
+	);
+
+	gradients.set(
+		revGradNam,
+		<linearGradient key={revGradNam} id={revGradNam} x1="0%" y1="0%" x2="100%" y2="100%">
+			<stop offset="0%" stopColor={`#${toColor}`} />
+			<stop offset="100%" stopColor={`#${fromColor}`} />
+		</linearGradient>,
+	);
+}
+
+function lineFrom(
+	fromNode: HTMLElement,
+	toNode: HTMLElement,
+	parentElement: HTMLElement,
+	fromColor: string,
+	toColor: string,
+	props = {},
+	isNodeOnTop = false,
+): ReactNode {
+	if (!fromNode || !toNode || !fromNode.parentElement || !toNode.parentElement || !parentElement)
+		return <></>;
+	const fromRect = fromNode.getBoundingClientRect();
+	const toRect = toNode.getBoundingClientRect();
+	const parentRect = parentElement.getBoundingClientRect();
+
+	const sx = fromRect.left - parentRect.left + parent.scrollX;
+	const sy = fromRect.top - parentRect.top + parent.scrollY;
+	const ex = toRect.left - parentRect.left + parent.scrollX;
+	const ey = toRect.top - parentRect.top + parent.scrollY;
+
+	let dPath = `M ${sx} ${sy} `;
+	if (isNodeOnTop)
+		dPath += `C ${sx + Math.abs(ex - sx) / 1.5} ${sy} ${ex} ${
+			ey - Math.abs(ey - sy) / 0.98
+		} ${ex} ${ey}`;
+	else {
+		dPath += `Q ${sx + Math.abs(ex - sx) / 3} ${sy} ${sx + Math.abs(ex - sx) / 2} ${
+			sy + Math.abs(ey - sy) / 2
+		} `;
+		dPath += `T ${ex} ${ey}`;
+	}
+	return (
+		<path
+			key={`line_${sx}_${sy}_${ex}_${ey}`}
+			d={dPath}
+			className={`_connector`}
+			role="button"
+			{...props}
+			stroke={`url(#grad_${sx < ex ? fromColor : toColor}_${ex < sx ? fromColor : toColor})`}
+		/>
 	);
 }
 

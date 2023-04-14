@@ -1,7 +1,12 @@
 import { HybridRepository, TokenValueExtractor, isNullValue } from '@fincity/kirun-js';
 import { StoreExtractor } from '@fincity/path-reactive-state-management';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { COPY_FUNCTION_KEY, LOCAL_STORE_PREFIX, STORE_PREFIX } from '../../../constants';
+import {
+	COPY_FUNCTION_KEY,
+	COPY_STMT_KEY,
+	LOCAL_STORE_PREFIX,
+	STORE_PREFIX,
+} from '../../../constants';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediatelyWithChildrenActivity,
@@ -215,46 +220,70 @@ export default function CodeEditor({
 							</div>
 						)}
 						<div
-							title="Paste copied function"
+							title="Paste copied function / step"
 							className="_iconMenu"
 							onClick={() => {
 								if (!ClipboardItem) return;
 								navigator.clipboard.readText().then(data => {
-									if (!data.startsWith(COPY_FUNCTION_KEY)) return;
+									if (data.startsWith(COPY_FUNCTION_KEY)) {
+										const functWithKey = JSON.parse(
+											data.substring(COPY_FUNCTION_KEY.length),
+										);
 
-									const functWithKey = JSON.parse(
-										data.substring(COPY_FUNCTION_KEY.length),
-									);
+										const funct = functWithKey.functionDefinition;
 
-									const funct = functWithKey.functionDefinition;
-
-									if (
-										Object.values(eventFunctions).findIndex(
-											(v: any) =>
-												v.name === funct.name &&
-												v.namespace === funct.namespace,
-										) !== -1
-									) {
-										let name = funct.name + '_copy';
-										let i = 0;
-										while (
+										if (
 											Object.values(eventFunctions).findIndex(
-												(v: any) => v.name === name,
+												(v: any) =>
+													v.name === funct.name &&
+													v.namespace === funct.namespace,
 											) !== -1
 										) {
-											i++;
-											name = `${funct.name}_copy_${i}`;
+											let name = funct.name + '_copy';
+											let i = 0;
+											while (
+												Object.values(eventFunctions).findIndex(
+													(v: any) => v.name === name,
+												) !== -1
+											) {
+												i++;
+												name = `${funct.name}_copy_${i}`;
+											}
+
+											funct.name = name;
 										}
 
-										funct.name = name;
-									}
+										changeEventFunction(
+											eventFunctions[functWithKey.key]
+												? shortUUID()
+												: functWithKey.key,
+											funct,
+										);
+									} else if (data.startsWith(COPY_STMT_KEY)) {
+										if (!selectedFunction) return;
 
-									changeEventFunction(
-										eventFunctions[functWithKey.key]
-											? shortUUID()
-											: functWithKey.key,
-										funct,
-									);
+										const step = JSON.parse(
+											data.substring(COPY_STMT_KEY.length),
+										);
+
+										let newFun = duplicate(eventFunctions[selectedFunction]);
+
+										if (!newFun.steps) newFun.steps = {};
+										let name = step.statementName;
+										let i = 0;
+										while (newFun.steps[name]) {
+											i++;
+											name = step.statementName + '_Copy_' + i;
+										}
+										step.position = {
+											left: (step.position.left ?? 0) + 40 * i,
+											top: (step.position.top ?? 0) + 40 * i,
+										};
+										step.statementName = name;
+										newFun.steps[name] = step;
+
+										changeEventFunction(selectedFunction, newFun);
+									}
 								});
 							}}
 						>

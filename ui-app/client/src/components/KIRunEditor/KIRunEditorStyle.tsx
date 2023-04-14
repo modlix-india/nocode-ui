@@ -144,8 +144,88 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 		${PREFIX} ._statement ._otherContainer { 
 			padding: 5px;
 			display: flex;
-			flex-direction: column;
+			flex-direction: row;
 			gap: 10px;
+		}
+
+		${PREFIX} ._statement ._otherContainer ._eventsContainer,
+		${PREFIX} ._statement ._otherContainer ._paramsContainer {
+			flex: 1;
+		}
+
+		${PREFIX} ._statement ._otherContainer ._eventsContainer {
+			display: flex;
+			flex-direction: column;
+			gap: 15px;
+		}
+
+		${PREFIX} ._statement ._param {
+			position: relative;
+			display: flex;
+			align-items: center;
+			gap: 5px;
+			padding: 3px;
+			padding-left: 0px;
+		}
+
+		${PREFIX} ._paramsContainer._event ._param{
+			flex-direction: row-reverse;
+			justify-content: flex-end;
+		}
+
+		${PREFIX} ._statement ._paramNode {
+			position: absolute;
+			left: -14px;
+			top: 4px;
+			width: 12px;
+			height: 12px;
+			border-radius: 50%;
+			background-color: #fff;
+			border: 2px solid #fff;
+		}
+
+		${PREFIX} ._statement ._param ._paramName {
+			flex: 1;
+		}
+
+		${PREFIX} ._statement ._paramName ._hasValue {
+			font-weight: bold;
+		}
+
+		${PREFIX} ._statement ._paramsContainer._event ._paramName {
+			text-align: right;
+		}
+
+		${PREFIX} ._statement ._paramsContainer {
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
+			position: relative;
+		} 
+
+		${PREFIX} ._statement ._paramsContainer._event ._paramHeader{
+			text-align: right;
+		}
+
+		${PREFIX} ._statement ._paramNode._eventNode {
+			border-width: 3px;
+			cursor: pointer;
+		}
+
+		${PREFIX} ._statement ._paramsContainer._event ._paramNode {
+			cursor: pointer;
+		}
+
+		${PREFIX} ._statement ._paramsContainer._event ._paramNode,
+		${PREFIX} ._statement ._paramNode._eventNode {
+			left: auto;
+			right: -14px;
+		}
+
+		${PREFIX} ._statement ._paramHeader {
+			font-family: monospace;
+			font-size: 14px;
+			color: #aaa;
 		}
 
 		${PREFIX} ._statement ._buttons {
@@ -173,6 +253,26 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 		${PREFIX} ._statement ._buttons i.fa:hover {
 			opacity: 0.8;
 			border: 1px solid;
+		}
+
+		${PREFIX} ._statement ._dependencyNode:hover,
+		${PREFIX} ._statement ._paramNode:hover,
+		${PREFIX} ._statement ._paramHeader:hover~._paramNode,
+		${PREFIX} ._statement ._paramsContainer._event ._param:hover ._paramNode {
+			border-width: 7px;
+			margin-left: -1px;
+			margin-top: -1px;
+		}
+
+		${PREFIX} ._statement ._dependencyNode {
+			position: absolute;
+			width: 12px;
+			height: 12px;
+			background-color: #fff;
+			border: 2px solid;
+			border-radius: 50%;
+			top: -8px;
+			left: 50%;
 		}
 
 		${PREFIX} ._search {
@@ -215,6 +315,18 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 		${PREFIX} ._search ._option:hover {
 			background-color: #f8f8f833;
 			border-radius: 2px;
+		}
+
+		${PREFIX} ._linesSvg {
+			width: 100%;
+			height: 100%;
+		}
+
+		${PREFIX} ._connector {
+			fill:none;
+			stroke-width: 3px;
+			stroke-linecap: round;
+			transform: translate(6px, 5px);
 		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

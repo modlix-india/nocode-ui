@@ -1,4 +1,5 @@
 import {
+	Event,
 	Function,
 	Position,
 	Repository,
@@ -9,6 +10,8 @@ import {
 import React, { RefObject, useCallback, useEffect, useState } from 'react';
 import duplicate from '../../../util/duplicate';
 import Search from './Search';
+import { COPY_STMT_KEY } from '../../../constants';
+import { generateColor } from '../colors';
 
 interface StatementProps {
 	position?: { left: number; top: number };
@@ -31,19 +34,9 @@ interface StatementProps {
 	onDelete: (statementName: string) => void;
 }
 
-function generateNumber(str: string) {
-	let hash = 0;
-	for (let i = 0; i < str.length; i++) {
-		hash = str.charCodeAt(i) + ((hash << 5) - hash);
-	}
-	if (hash < 0) hash = -hash;
-	hash += 12;
-	return hash % SIDE_COLORS.length;
-}
-
 const DEFAULT_POSITION = { left: 0, top: 0 };
 
-const VARIBALE_NAME_REGEX = /^[A-Za-z]{1,1}[A-Za-z0-9]+$/;
+const VARIBALE_NAME_REGEX = /^[A-Za-z_]{1,1}[_A-Za-z0-9]+$/;
 
 export default function StatementNode({
 	position = DEFAULT_POSITION,
@@ -83,15 +76,23 @@ export default function StatementNode({
 				'Step name cannot have spaces or special characters and should be atleast one character.',
 			);
 		}
+		if (!functionRepository.find(statement.namespace, statement.name)) {
+			map.set('function', 'Function does not exist.');
+		}
 		setValidationMessages(map);
-	}, [statementName, name]);
+	}, [statementName, name, statement]);
 
 	const [mouseMove, setMouseMove] = useState(false);
+	const alwaysColor =
+		validationMessages.size > 0 || executionPlanMessage?.length
+			? '#f25332'
+			: `#${generateColor(statement.namespace, statement.name)}`;
+
 	const highlightColor =
 		validationMessages.size > 0 || executionPlanMessage?.length
 			? '#f25332'
 			: selected
-			? SIDE_COLORS[generateNumber(statement.namespace + statement.name)]
+			? alwaysColor
 			: '';
 
 	const buttons = selected ? (
@@ -108,9 +109,104 @@ export default function StatementNode({
 			<i
 				className="fa fa-regular fa-clipboard"
 				title={`Copy ${statementName}`}
-				onClick={() => {}}
+				onMouseDown={e => {
+					e.stopPropagation();
+					e.preventDefault();
+
+					if (!navigator.clipboard) return;
+
+					navigator.clipboard.write([
+						new ClipboardItem({
+							'text/plain': new Blob([COPY_STMT_KEY + JSON.stringify(statement)], {
+								type: 'text/plain',
+							}),
+						}),
+					]);
+				}}
 			></i>
 		</div>
+	) : (
+		<></>
+	);
+
+	const repoFunction = functionRepository.find(statement.namespace, statement.name);
+
+	const parameters = repoFunction?.getSignature()?.getParameters()
+		? Array.from(repoFunction.getSignature().getParameters().values())
+		: [];
+
+	let eventsMap = repoFunction?.getSignature()?.getEvents();
+	if (!eventsMap || !eventsMap.get(Event.OUTPUT)) {
+		if (!eventsMap) eventsMap = new Map();
+		eventsMap.set(Event.OUTPUT, new Event(Event.OUTPUT, new Map()));
+	}
+
+	const events = Array.from(eventsMap.values());
+
+	const params = parameters.length ? (
+		<div className="_paramsContainer">
+			<div className="_paramHeader">Parameters</div>
+			{parameters.map(e => {
+				const paramValue = statement.parameterMap?.[e.getParameterName()];
+				return (
+					<div className="_param" key={e.getParameterName()}>
+						<div
+							id={`paramNode_${statement.statementName}_${e.getParameterName()}`}
+							className="_paramNode"
+							style={{ borderColor: alwaysColor }}
+						></div>
+						<div
+							className={`_paramName ${
+								paramValue && Object.values(paramValue).length ? '_hasValue' : ''
+							}`}
+						>
+							{e.getParameterName()}
+						</div>
+					</div>
+				);
+			})}
+		</div>
+	) : (
+		<></>
+	);
+
+	const dependcyNode = (
+		<div
+			className="_dependencyNode"
+			id={`eventNode_dependentNode_${statement.statementName}`}
+			style={{ borderColor: alwaysColor }}
+			title="Depends on"
+		></div>
+	);
+
+	const eventsDiv = events.length ? (
+		events.map(e => {
+			const eventParams = Array.from(e.getParameters()?.entries() ?? []);
+			return (
+				<div className="_paramsContainer _event" key={e.getName()}>
+					<div className="_paramHeader">{e.getName()}</div>
+					<div
+						id={`eventNode_${statement.statementName}_${e.getName()}`}
+						className="_paramNode _eventNode"
+						style={{ borderColor: alwaysColor }}
+					></div>
+					{eventParams.map(([pname]) => {
+						return (
+							<div className="_param" key={pname}>
+								<div
+									id={`eventParameter_${
+										statement.statementName
+									}_${e.getName()}_${pname}`}
+									className="_paramNode"
+									style={{ borderColor: alwaysColor }}
+								></div>
+								<div className="_paramName">{pname}</div>
+							</div>
+						);
+					})}
+				</div>
+			);
+		})
 	) : (
 		<></>
 	);
@@ -125,6 +221,11 @@ export default function StatementNode({
 				zIndex: selected ? '3' : '',
 			}}
 			id={`statement_${statement.statementName}`}
+			onClick={e => {
+				e.preventDefault();
+				e.stopPropagation();
+				onClick(e.ctrlKey || e.metaKey, statement.statementName);
+			}}
 		>
 			<div
 				className="_nameContainer"
@@ -161,9 +262,7 @@ export default function StatementNode({
 						ICONS_GROUPS.get(statement.namespace) ?? 'fa-microchip'
 					}`}
 					style={{
-						backgroundColor: highlightColor
-							? highlightColor
-							: SIDE_COLORS[generateNumber(statement.namespace + statement.name)],
+						backgroundColor: highlightColor ? highlightColor : alwaysColor,
 					}}
 				></i>
 				<div
@@ -211,9 +310,7 @@ export default function StatementNode({
 			<div
 				className={`_nameNamespaceContainer`}
 				style={{
-					backgroundColor: highlightColor
-						? highlightColor
-						: SIDE_COLORS[generateNumber(statement.namespace + statement.name)],
+					backgroundColor: highlightColor ? highlightColor : alwaysColor,
 				}}
 			>
 				<div
@@ -232,11 +329,7 @@ export default function StatementNode({
 								value: e,
 							}))}
 							style={{
-								backgroundColor: highlightColor
-									? highlightColor
-									: SIDE_COLORS[
-											generateNumber(statement.namespace + statement.name)
-									  ],
+								backgroundColor: highlightColor ? highlightColor : alwaysColor,
 							}}
 							onChange={value => {
 								const index = value.lastIndexOf('.');
@@ -262,7 +355,10 @@ export default function StatementNode({
 					}}
 				/>
 			</div>
-			<div className="_otherContainer"></div>
+			<div className="_otherContainer">
+				{params}
+				<div className="_eventsContainer">{eventsDiv}</div>
+			</div>
 			<div className="_messages">
 				{executionPlanMessage &&
 					executionPlanMessage.map(value => (
@@ -278,6 +374,7 @@ export default function StatementNode({
 					))}
 			</div>
 			{buttons}
+			{dependcyNode}
 		</div>
 	);
 }
@@ -289,60 +386,6 @@ const ICONS_GROUPS = new Map<string, string>([
 	['System.Math', 'fa-calculator'],
 	['System.String', 'fa-candy-cane'],
 	['System.Array', 'fa-layer-group'],
+	['System.Object', 'fa-circle-dot'],
 	['UIEngine', 'fa-snowflake'],
 ]);
-
-const SIDE_COLORS = [
-	'#679ae6',
-	'#00b9f6',
-	'#00d4e7',
-	'#00e8bf',
-	'#9af58f',
-	'#f9f871',
-	'#7887da',
-	'#8973c9',
-	'#985eb2',
-	'#a24698',
-	'#a62b79',
-	'#2567ae',
-	'#663f00',
-	'#887455',
-	'#404756',
-	'#a4abbd',
-	'#e27892',
-	'#a74460',
-	'#26605c',
-	'#002a66',
-
-	'#d9f0ed',
-	'#328c86',
-	'#73fac9',
-	'#2fc193',
-	'#008a60',
-	'#7b91bc',
-
-	'#e57d41',
-	'#00b1ab',
-	'#bea5a9',
-	'#00c0f8',
-	'#00e0ea',
-	'#ee7561',
-	'#28ad70',
-	'#004bb6',
-	'#508984',
-	'#005a55',
-	'#0e2624',
-
-	'#948bfb',
-	'#fc648f',
-	'#00498b',
-	'#d9a21b',
-	'#407ac2',
-	'#055ba0',
-	'#003e7e',
-	'#00235f',
-	'#00174f',
-	'#81b2ff',
-	'#558ad5',
-	'#6497e3',
-];
