@@ -27,6 +27,7 @@ function Carousel(props: ComponentProps) {
 			hasNumbersInSlideNav,
 			slideNavButtonPosition,
 			arrowButtons,
+			navigationsOnlyOnHover,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -37,11 +38,11 @@ function Carousel(props: ComponentProps) {
 	);
 
 	const ref = useRef<HTMLDivElement>(null);
-
 	const [childrenDef, setChildrenDef] = useState<any>();
 	const [transitionFrom, setTransitionFrom] = useState<number | undefined>(undefined);
 	const [slideNum, setSlideNum] = useState<number>(0);
 	const [firstTime, setFirstTime] = useState(true);
+	const [isHover, setIsHover] = useState(false);
 
 	useEffect(() => {
 		setChildrenDef(
@@ -180,6 +181,15 @@ function Carousel(props: ComponentProps) {
 		}
 	}
 
+	const handleMouse = (e: any) => {
+		if (navigationsOnlyOnHover) setIsHover(true);
+	};
+	const handleMouseLeave = (e: any) => {
+		if (navigationsOnlyOnHover) setIsHover(false);
+	};
+
+	console.log(navigationsOnlyOnHover, 'navigationsOnlyOnHover');
+	console.log(isHover, 'isHover');
 	return (
 		<div
 			className={`comp compCarousel ${
@@ -188,10 +198,22 @@ function Carousel(props: ComponentProps) {
 					: 'containerReverse'
 			}`}
 			style={resolvedStyles.comp ?? {}}
+			onMouseEnter={handleMouse}
+			onMouseLeave={handleMouseLeave}
 		>
 			<HelperComponent definition={definition} />
 			{showArrowButtons && (
-				<div className={`arrowButtons${arrowButtons}`}>
+				<div
+					className={` ${
+						navigationsOnlyOnHover
+							? `${
+									isHover
+										? `showNavButtonsOnHover  arrowButtons${arrowButtons}`
+										: `hideNavButtonsIfnotHover`
+							  }`
+							: `arrowButtons${arrowButtons}`
+					}`}
+				>
 					<i
 						className={` fa-solid fa-chevron-left button ${
 							arrowButtons === 'Middle' ? 'leftArrowButton' : ''
@@ -217,7 +239,7 @@ function Carousel(props: ComponentProps) {
 				</div>
 			)}
 			<div
-				className={`innerDivSlideNav ${`slideNavDiv${
+				className={` innerDivSlideNav ${`slideNavDiv${
 					slideNavButtonPosition === 'OutsideTop' ? 'OutsideTop' : 'innerDivSlideNav'
 				}`}`}
 			>

@@ -204,7 +204,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
-		name: 'navigationsOnHover',
+		name: 'navigationsOnlyOnHover',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'navigationsOnHover',
 		description: 'navigationsOnHover',
