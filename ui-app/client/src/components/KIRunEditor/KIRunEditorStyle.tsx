@@ -22,6 +22,7 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			background-size: 20px 20px;
 			background-image: linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 0px),
 				linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 0px);
+			outline: none;
 		}
 
 		${PREFIX} ._designer._moving {
@@ -323,10 +324,48 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 		}
 
 		${PREFIX} ._connector {
-			fill:none;
-			stroke-width: 3px;
+			fill: transparent;
+			stroke-width: 8px;
 			stroke-linecap: round;
 			transform: translate(6px, 5px);
+			opacity: 0.3;
+			transition: opacity 0.5s;
+			cursor: pointer;
+		}
+
+		${PREFIX} ._connector._straight {
+			stroke-width: 7px;
+		}
+
+		${PREFIX} ._connector:hover,
+		${PREFIX} ._connector._selected {
+			opacity: 1;
+		}
+
+		${PREFIX} ._menu {
+			position: absolute;
+			padding-top: 5px;
+			padding-bottom: 5px;
+			background-color: #fff;
+			border-radius: 4px;
+			border-top-left-radius: 0px;
+			border-top-right-radius: 0px;
+			border-top: 3px solid #aaa;
+			box-shadow: 0 15px 30px 0 rgba(0,0,0,.10), 0 5px 15px 0 rgba(0,0,0,.10);
+			font-size: 13px;
+		}
+
+		${PREFIX} ._menu ._menuItem {
+			padding: 5px;
+			cursor: pointer;
+		}
+
+		${PREFIX} ._menu ._menuItem i.fa {
+			font-size: 12px;
+		}
+
+		${PREFIX} ._menu ._menuItem:hover {
+			background-color: #eee;
 		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

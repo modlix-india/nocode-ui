@@ -181,6 +181,7 @@ function KIRunEditor(
 
 	const selectStatement = useCallback(
 		(append: boolean, statementName: string, selectOverride: boolean = false) => {
+			console.log(append, statementName);
 			if (!append) {
 				setSelectedStatements(new Map([[statementName, true]]));
 			} else {
@@ -206,6 +207,22 @@ function KIRunEditor(
 	>();
 
 	const functionNames = useMemo(() => functionRepository.filter(''), [functionRepository]);
+
+	const deleteStatements = useCallback(
+		(stmts: string[]) => {
+			if (isReadonly || !stmts.length) return;
+			const def = duplicate(rawDef);
+			const newSelectedStatements = new Map(selectedStatements);
+			for (let name of stmts) {
+				delete def.steps[name];
+				if (selectedStatements.has(name)) newSelectedStatements.delete(name);
+			}
+
+			setSelectedStatements(newSelectedStatements);
+			setData(bindingPathPath, def, context.pageName);
+		},
+		[bindingPathPath, rawDef, selectedStatements, isReadonly, setData, context.pageName],
+	);
 
 	if (executionPlan && !('message' in executionPlan) && rawDef?.steps) {
 		statements = Object.keys(rawDef.steps ?? {})
@@ -241,18 +258,7 @@ function KIRunEditor(
 						setData(bindingPathPath, def, context.pageName);
 					}}
 					functionNames={functionNames}
-					onDelete={stmt => {
-						if (isReadonly) return;
-						const def = duplicate(rawDef);
-						delete def.steps[s.statementName];
-						if (!selectedStatements.has(s.statementName)) {
-							const newSelectedStatements = new Map(selectedStatements);
-							newSelectedStatements.delete(s.statementName);
-							setSelectedStatements(newSelectedStatements);
-						}
-
-						setData(bindingPathPath, def, context.pageName);
-					}}
+					onDelete={stmt => deleteStatements([stmt])}
 				/>
 			));
 	}
@@ -448,6 +454,7 @@ function KIRunEditor(
 	}
 
 	const designerRef = useRef<HTMLDivElement>(null);
+	const [menu, showMenu] = useState<any>(undefined);
 
 	let lines: Array<ReactNode> = [];
 	let gradients: Map<string, ReactNode> = new Map();
@@ -461,9 +468,7 @@ function KIRunEditor(
 			);
 			if (!depNode) return [];
 			const toColor = generateColor(statement.getNamespace(), statement.getName());
-			const array: Array<ReactNode> = Array.from(
-				v.getData().getStatement().getDependentStatements().entries(),
-			)
+			const array: Array<ReactNode> = Array.from(statement.getDependentStatements().entries())
 				.filter(e => e[1])
 				.map(e => e[0])
 				.map(e => {
@@ -486,7 +491,38 @@ function KIRunEditor(
 						designerRef.current!,
 						fromColor,
 						toColor,
-						undefined,
+						{
+							className: `_connector ${
+								selectedStatements.get(statement.getStatementName()) ||
+								selectedStatements.get(names[1])
+									? '_selected'
+									: ''
+							}`,
+							onClick: () => {
+								setSelectedStatements(
+									new Map<string, boolean>([
+										[statement.getStatementName(), true],
+										[names[1], true],
+									]),
+								);
+							},
+							onContextMenu: (ev: MouseEvent) => {
+								ev.preventDefault();
+								ev.stopPropagation();
+								const parentRect = designerRef.current!.getBoundingClientRect();
+								showMenu({
+									position: {
+										x: ev.clientX - parentRect.left,
+										y: ev.clientY - parentRect.top,
+									},
+									type: 'dependent',
+									value: {
+										statementName: statement.getStatementName(),
+										dependency: e,
+									},
+								});
+							},
+						},
 						true,
 					);
 				});
@@ -520,9 +556,13 @@ function KIRunEditor(
 								toColor,
 								gradients,
 								toNode,
+								statement.getStatementName(),
 								designerRef,
+								selectedStatements,
+								setSelectedStatements,
 							);
 						} else if (typeof pr.getValue() === 'object') {
+							//TODO: work on this
 						}
 						return undefined;
 					});
@@ -541,6 +581,43 @@ function KIRunEditor(
 		</svg>
 	);
 
+	let menuDiv = undefined;
+
+	if (menu) {
+		menuDiv = (
+			<div
+				className="_menu"
+				style={{
+					left: `${menu.position.x - 5}px`,
+					top: `${menu.position.y - 5}px`,
+				}}
+				onMouseLeave={() => showMenu(undefined)}
+			>
+				{menu.type === 'dependent' && (
+					<>
+						<div
+							className="_menuItem"
+							onClick={() => {
+								if (isReadonly) return;
+
+								const newDef = duplicate(rawDef);
+								const statement = newDef.steps[menu.value.statementName];
+								if (!statement) return;
+								const dependentStatements = statement.dependentStatements;
+								if (!dependentStatements) return;
+								dependentStatements[menu.value.dependency] = false;
+								showMenu(undefined);
+								setData(bindingPathPath, newDef, context.pageName);
+							}}
+						>
+							<i className="fa fa-regular fa-trash-can" /> Remove
+						</div>
+					</>
+				)}
+			</div>
+		);
+	}
+
 	return (
 		<div className="comp compKIRunEditor" ref={container}>
 			<div
@@ -550,10 +627,18 @@ function KIRunEditor(
 				onMouseUp={designerMouseUp}
 				onMouseLeave={designerMouseUp}
 				ref={designerRef}
+				tabIndex={0}
+				onKeyUp={ev => {
+					if (ev.key === 'Delete' || ev.key === 'Backspace') {
+						if (selectedStatements.size > 0)
+							deleteStatements(Array.from(selectedStatements.keys()));
+					}
+				}}
 			>
 				{lineSvg}
 				{statements}
 				{selector}
+				{menuDiv}
 			</div>
 		</div>
 	);
@@ -565,32 +650,55 @@ function makeLineFromExpression(
 	toColor: string,
 	gradients: Map<string, React.ReactNode>,
 	toNode: HTMLElement,
+	statementName: string,
 	designerRef: React.RefObject<HTMLDivElement>,
+	selectedStatements: Map<string, boolean>,
+	setSelectedStatements: (statements: Map<string, boolean>) => void,
+	props: any = {},
 ): ReactNode[] {
-	const lines: ReactNode[] = Array.from(expression.match(STEP_REGEX) ?? []).flatMap(e => {
-		const names = e.split('.');
-		if (names.length < 3) return [<></>];
-		const fromNode = document.getElementById(
-			names.length > 3
-				? `eventParameter_${names[1]}_${names[2]}_${names[3]}`
-				: `eventNode_${names[1]}_${names[2]}`,
-		);
-		if (!fromNode || !rawDef.steps[names[1]]) return [<></>];
-		const fromColor = generateColor(
-			rawDef.steps[names[1]].namespace,
-			rawDef.steps[names[1]].name,
-		);
-		makeGradients(fromColor, toColor, gradients);
-		return lineFrom(
-			fromNode,
-			toNode,
-			designerRef.current!,
-			fromColor,
-			toColor,
-			undefined,
-			false,
-		);
-	});
+	const lines: ReactNode[] = Array.from(expression.match(STEP_REGEX) ?? []).flatMap(
+		(e: string) => {
+			const names = e.split('.');
+			if (names.length < 3) return undefined;
+			const fromNode = document.getElementById(
+				names.length > 3
+					? `eventParameter_${names[1]}_${names[2]}_${names[3]}`
+					: `eventNode_${names[1]}_${names[2]}`,
+			);
+			if (!fromNode || !rawDef.steps[names[1]]) return undefined;
+			const fromColor = generateColor(
+				rawDef.steps[names[1]].namespace,
+				rawDef.steps[names[1]].name,
+			);
+			makeGradients(fromColor, toColor, gradients);
+			return lineFrom(
+				fromNode,
+				toNode,
+				designerRef.current!,
+				fromColor,
+				toColor,
+				{
+					...props,
+
+					className: `_connector ${
+						selectedStatements.get(statementName) || selectedStatements.get(names[1])
+							? '_selected'
+							: ''
+					}`,
+
+					onClick: () => {
+						setSelectedStatements(
+							new Map([
+								[statementName, true],
+								[names[1], true],
+							]),
+						);
+					},
+				},
+				false,
+			);
+		},
+	);
 
 	return lines;
 }
@@ -602,7 +710,7 @@ function makeGradients(fromColor: string, toColor: string, gradients: Map<string
 
 	gradients.set(
 		gradName,
-		<linearGradient key={gradName} id={gradName} x1="0%" y1="0%" x2="100%" y2="100%">
+		<linearGradient key={gradName} id={gradName} x1="0%" y1="0%" x2="100%" y2="0%">
 			<stop offset="0%" stopColor={`#${fromColor}`} />
 			<stop offset="100%" stopColor={`#${toColor}`} />
 		</linearGradient>,
@@ -610,7 +718,7 @@ function makeGradients(fromColor: string, toColor: string, gradients: Map<string
 
 	gradients.set(
 		revGradNam,
-		<linearGradient key={revGradNam} id={revGradNam} x1="0%" y1="0%" x2="100%" y2="100%">
+		<linearGradient key={revGradNam} id={revGradNam} x1="0%" y1="0%" x2="100%" y2="0%">
 			<stop offset="0%" stopColor={`#${toColor}`} />
 			<stop offset="100%" stopColor={`#${fromColor}`} />
 		</linearGradient>,
@@ -623,7 +731,7 @@ function lineFrom(
 	parentElement: HTMLElement,
 	fromColor: string,
 	toColor: string,
-	props = {},
+	props: any = {},
 	isNodeOnTop = false,
 ): ReactNode {
 	if (!fromNode || !toNode || !fromNode.parentElement || !toNode.parentElement || !parentElement)
@@ -632,27 +740,30 @@ function lineFrom(
 	const toRect = toNode.getBoundingClientRect();
 	const parentRect = parentElement.getBoundingClientRect();
 
-	const sx = fromRect.left - parentRect.left + parent.scrollX;
-	const sy = fromRect.top - parentRect.top + parent.scrollY;
-	const ex = toRect.left - parentRect.left + parent.scrollX;
-	const ey = toRect.top - parentRect.top + parent.scrollY;
+	const sx = fromRect.left - parentRect.left;
+	const sy = fromRect.top - parentRect.top;
+	const ex = toRect.left - parentRect.left;
+	const ey = toRect.top - parentRect.top;
 
 	let dPath = `M ${sx} ${sy} `;
 	if (isNodeOnTop)
-		dPath += `C ${sx + Math.abs(ex - sx) / 1.5} ${sy} ${ex} ${
+		dPath += `C ${sx + (ex - sx) / 1.5} ${sy} ${ex} ${
 			ey - Math.abs(ey - sy) / 0.98
 		} ${ex} ${ey}`;
 	else {
-		dPath += `Q ${sx + Math.abs(ex - sx) / 3} ${sy} ${sx + Math.abs(ex - sx) / 2} ${
-			sy + Math.abs(ey - sy) / 2
-		} `;
-		dPath += `T ${ex} ${ey}`;
+		if (Math.abs(sy - ey) < 0.4) {
+			props = { ...props, className: `${props.className ?? ''} _straight` };
+			dPath += `L ${ex} ${sy} L ${ex} ${ey + 1} L ${sx} ${ey + 1} Z`;
+		} else {
+			dPath += `Q ${sx + (ex - sx) / 3} ${sy} ${sx + (ex - sx) / 2} ${
+				sy + (ey - sy) / 2
+			} T ${ex} ${ey}`;
+		}
 	}
 	return (
 		<path
 			key={`line_${sx}_${sy}_${ex}_${ey}`}
 			d={dPath}
-			className={`_connector`}
 			role="button"
 			{...props}
 			stroke={`url(#grad_${sx < ex ? fromColor : toColor}_${ex < sx ? fromColor : toColor})`}

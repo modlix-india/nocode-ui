@@ -223,12 +223,13 @@ export default function StatementNode({
 			onClick={e => {
 				e.preventDefault();
 				e.stopPropagation();
-				onClick(e.ctrlKey || e.metaKey, statement.statementName);
+				// onClick(e.ctrlKey || e.metaKey, statement.statementName);
 			}}
 		>
 			<div
 				className="_nameContainer"
 				onMouseDown={e => {
+					e.preventDefault();
 					e.stopPropagation();
 
 					if (e.button !== 0) return;
