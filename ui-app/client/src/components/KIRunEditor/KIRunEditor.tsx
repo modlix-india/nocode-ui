@@ -495,6 +495,8 @@ function KIRunEditor(
 	let lines: Array<ReactNode> = [];
 	let gradients: Map<string, ReactNode> = new Map();
 
+	const [magnification, setMagnification] = useState(1);
+
 	if (executionPlan instanceof ExecutionGraph && designerRef.current) {
 		const nodeMap = executionPlan.getNodeMap();
 		lines = Array.from(nodeMap.values()).flatMap(v => {
@@ -687,27 +689,50 @@ function KIRunEditor(
 	}
 
 	return (
-		<div className="comp compKIRunEditor" ref={container}>
-			<div
-				className={`_designer ${scrMove.dragStart ? '_moving' : ''}`}
-				onMouseDown={designerMouseDown}
-				onMouseMove={designerMouseMove}
-				onMouseUp={designerMouseUp}
-				onMouseLeave={designerMouseUp}
-				ref={designerRef}
-				tabIndex={0}
-				onKeyUp={ev => {
-					if (ev.key === 'Delete' || ev.key === 'Backspace') {
-						if (selectedStatements.size > 0)
-							deleteStatements(Array.from(selectedStatements.keys()));
-					}
-				}}
-			>
-				{lineSvg}
-				{statements}
-				{selector}
-				{menuDiv}
-				{overLine}
+		<div className="comp compKIRunEditor">
+			<div className="_header">
+				<div className="_left" />
+				<div className="_right">
+					<i
+						className="fa fa-solid fa-magnifying-glass-plus"
+						role="button"
+						onClick={() => setMagnification(magnification + 0.1)}
+					/>
+					<i
+						className="fa fa-solid fa-magnifying-glass"
+						role="button"
+						onClick={() => setMagnification(1)}
+					/>
+					<i
+						className="fa fa-solid fa-magnifying-glass-minus"
+						role="button"
+						onClick={() => setMagnification(magnification - 0.1)}
+					/>
+				</div>
+			</div>
+			<div className="_container" ref={container}>
+				<div
+					className={`_designer ${scrMove.dragStart ? '_moving' : ''}`}
+					style={{ transform: `scale(${magnification})` }}
+					onMouseDown={designerMouseDown}
+					onMouseMove={designerMouseMove}
+					onMouseUp={designerMouseUp}
+					onMouseLeave={designerMouseUp}
+					ref={designerRef}
+					tabIndex={0}
+					onKeyUp={ev => {
+						if (ev.key === 'Delete' || ev.key === 'Backspace') {
+							if (selectedStatements.size > 0)
+								deleteStatements(Array.from(selectedStatements.keys()));
+						}
+					}}
+				>
+					{lineSvg}
+					{statements}
+					{selector}
+					{menuDiv}
+					{overLine}
+				</div>
 			</div>
 		</div>
 	);
@@ -809,10 +834,11 @@ function lineFrom(
 	const toRect = toNode.getBoundingClientRect();
 	const parentRect = parentElement.getBoundingClientRect();
 
-	const sx = fromRect.left - parentRect.left;
-	const sy = fromRect.top - parentRect.top;
-	const ex = toRect.left - parentRect.left;
-	const ey = toRect.top - parentRect.top;
+	const magnification = parentRect.width / parentElement.offsetWidth;
+	const sx = (fromRect.left - parentRect.left) / magnification;
+	const sy = (fromRect.top - parentRect.top) / magnification;
+	const ex = (toRect.left - parentRect.left) / magnification;
+	const ey = (toRect.top - parentRect.top) / magnification;
 
 	let dPath = `M ${sx} ${sy} `;
 	if (isNodeOnTop)

@@ -14,15 +14,62 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			overflow: auto;
 		}
 
+		${PREFIX} ._header {
+			min-height: 36px;
+			background-color: #eee;
+			width: 100%;
+			display: flex;
+			align-items: center;
+		}
+
+		${PREFIX} ._header i.fa {
+			color: #777;
+			font-size: 14px;
+			padding: 5px;
+			background-color: #ccc;
+			border-radius: 3px;
+			cursor: pointer;
+			transition: all 0.4s;	
+		}
+
+		${PREFIX} ._header i.fa:hover {
+			color: #ccc;
+			background-color: #777;
+		}
+
+		${PREFIX} ._header ._left {
+			display: flex;
+			gap: 5px;
+			padding: 5px;
+			flex: 1;
+		}
+
+		${PREFIX} ._header ._right {
+			display: flex;
+			gap: 5px;
+			padding: 5px;
+			justify-content: flex-end;
+		}
+
+		${PREFIX} ._container {
+			flex: 1;
+			overflow: auto;
+			width: 100%;
+			height: 100%;
+			background-image: linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 0px),
+				linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 0px);
+			background-size: 20px 20px;
+			background-color: #fff;
+		}
+
 		${PREFIX} ._designer {
 			position: relative;
 			min-width: 3000px;
 			min-height: 3000px;
-			background-color: #fff;
-			background-size: 20px 20px;
-			background-image: linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 0px),
-				linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 0px);
 			outline: none;
+			transform-origin: left top;
+			transition: transform 1s ease-in;
+			overflow: hidden;
 		}
 
 		${PREFIX} ._designer._moving {
@@ -61,7 +108,7 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 		${PREFIX} ._statementName input[type = "text"] {
 			color: #555;
 			border-radius: 4px;
-			font-size: 11px;
+			font-size: 13px;
 			font-family: inherit;
 			border: none;
 			background-color: #0000000a;
@@ -77,7 +124,7 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			border-radius: 4px;
 			display: flex;
 			flex-direction: column;
-			font-size: 11px;
+			font-size: 13px;
 			box-shadow: 0 15px 30px 0 rgba(0,0,0,.10), 0 5px 15px 0 rgba(0,0,0,.10);
 			padding: 2px;
 		}
@@ -126,7 +173,7 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 
 		${PREFIX} ._nameNamespaceContainer {
 			display: flex;
-			height: 24px;
+			height: 32px;
 			align-items: center;
 			padding: 5px;
 			color: #fff;
@@ -225,7 +272,7 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 
 		${PREFIX} ._statement ._paramHeader {
 			font-family: monospace;
-			font-size: 14px;
+			font-size: 16px;
 			color: #aaa;
 		}
 

@@ -700,14 +700,15 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._codeEditorContent {
 			background-color: #fff;
 			width: 70vw;
-			height: 80vh;
+			min-height: 80vh;
+			max-height: 80vh;
 			margin-left: 5vw;
 			display: flex;
 			border-radius: 4px;
 			box-shadow: 0 15px 30px 0 rgba(0,0,0,.10), 0 5px 15px 0 rgba(0,0,0,.10);
 			flex-direction: column;
 			opacity: 0;
-			transition: margin-left 1s, width 1s, height 1s, opacity 1s, visibility 1s;
+			transition: margin-left 1s, width 1s, height 1s, min-height 1s, max-height 1s, opacity 1s, visibility 1s;
 		}
 
 		${PREFIX} ._codeEditor.show ._codeEditorContent{
@@ -721,7 +722,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._codeEditorContent._fullScreen {
 			width: 98vw;
-			height: 98vh;
+			min-height: 98vh;
+			max-height: 98vh;
 			margin-left: 1vw;
 		}
 
