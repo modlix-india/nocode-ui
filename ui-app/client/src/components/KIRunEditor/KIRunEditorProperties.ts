@@ -25,6 +25,21 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{ name: 'ui', displayName: 'UI', description: 'UI only' },
 		],
 	},
+	{
+		name: 'onChangePersonalization',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Personalization Change',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered on personalization changed.',
+	},
+
+	{
+		name: 'onDeletePersonalization',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Personalization Delete',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered on personalization cleared.',
+	},
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];

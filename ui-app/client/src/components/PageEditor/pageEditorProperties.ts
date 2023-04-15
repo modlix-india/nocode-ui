@@ -1,21 +1,15 @@
-import { Schema } from '@fincity/kirun-js';
-import {
-	SCHEMA_BOOL_COMP_PROP,
-	SCHEMA_DATA_LOCATION,
-	SCHEMA_STRING_COMP_PROP,
-} from '../../constants';
+import { SCHEMA_STRING_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
-	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
-import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
+import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'theme',
-		schema: Schema.ofBoolean(SCHEMA_BOOL_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Theme',
 		editor: ComponentPropertyEditor.ENUM,
 		description: 'Editor color schemes',
@@ -36,7 +30,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'logo',
-		schema: Schema.ofString(SCHEMA_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'SVG logo',
 		description: 'SVG Logo with no fill to match the theme',
 	},

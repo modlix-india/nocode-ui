@@ -13,7 +13,12 @@ import {
 	getDataFromPath,
 	setData,
 } from '../../../context/StoreContext';
-import { LocationHistory, PageDefinition, RenderContext } from '../../../types/common';
+import {
+	ComponentDefinition,
+	LocationHistory,
+	PageDefinition,
+	RenderContext,
+} from '../../../types/common';
 import duplicate from '../../../util/duplicate';
 import { shortUUID } from '../../../util/shortUUID';
 import KIRunEditor from '../../KIRunEditor/KIRunEditor';
@@ -33,12 +38,15 @@ interface CodeEditorProps {
 	firstTimeRef: React.MutableRefObject<PageDefinition[]>;
 	undoStackRef: React.MutableRefObject<PageDefinition[]>;
 	redoStackRef: React.MutableRefObject<PageDefinition[]>;
+	definition: ComponentDefinition;
+	personalizationPath: string | undefined;
 }
 
 export default function CodeEditor({
 	showCodeEditor,
 	onSetShowCodeEditor,
 	defPath,
+	personalizationPath,
 	locationHistory,
 	context,
 	pageDefinition,
@@ -47,6 +55,7 @@ export default function CodeEditor({
 	firstTimeRef,
 	undoStackRef,
 	redoStackRef,
+	definition,
 }: CodeEditorProps) {
 	const uuid = useMemo(() => shortUUID(), []);
 	const [fullScreen, setFullScreen] = useState(false);
@@ -402,12 +411,17 @@ export default function CodeEditor({
 						type: 'KIRunEditor',
 						properties: {
 							editorType: { value: 'ui' },
+							...definition.properties,
 						},
 						bindingPath: {
 							type: 'VALUE',
 							value: selectedFunction
 								? `${defPath}.eventFunctions.${selectedFunction}`
 								: '',
+						},
+						bindingPath2: {
+							type: 'VALUE',
+							value: `${personalizationPath}.kirunEditor`,
 						},
 					}}
 					functionRepository={

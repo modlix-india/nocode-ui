@@ -392,6 +392,7 @@ function PageEditor(props: ComponentProps) {
 					showCodeEditor={showCodeEditor}
 					onSetShowCodeEditor={funcName => setShowCodeEditor(funcName)}
 					defPath={defPath}
+					personalizationPath={personalizationPath}
 					locationHistory={locationHistory}
 					context={context}
 					pageDefinition={pageDefinition}
@@ -400,6 +401,7 @@ function PageEditor(props: ComponentProps) {
 					undoStackRef={undoStackRef}
 					redoStackRef={redoStackRef}
 					firstTimeRef={firstTimeRef}
+					definition={definition}
 				/>
 			</div>
 			<IssuePopup
