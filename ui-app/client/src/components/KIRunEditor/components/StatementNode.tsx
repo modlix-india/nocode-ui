@@ -33,6 +33,8 @@ interface StatementProps {
 	onChange: (statement: any) => void;
 	functionNames: string[];
 	onDelete: (statementName: string) => void;
+	onDependencyDragStart: (ddPos: any) => void;
+	onDependencyDrop: (statement: string) => void;
 }
 
 const DEFAULT_POSITION = { left: 0, top: 0 };
@@ -52,6 +54,8 @@ export default function StatementNode({
 	onChange,
 	functionNames,
 	onDelete,
+	onDependencyDragStart,
+	onDependencyDrop,
 }: StatementProps) {
 	const [statementName, setStatementName] = useState(statement.statementName);
 	const [editStatementName, setEditStatementName] = useState(false);
@@ -188,6 +192,23 @@ export default function StatementNode({
 						id={`eventNode_${statement.statementName}_${e.getName()}`}
 						className="_paramNode _eventNode"
 						style={{ borderColor: alwaysColor }}
+						onMouseDown={ev => {
+							ev.stopPropagation();
+							ev.preventDefault();
+							const rect = container.current!.getBoundingClientRect();
+							const tRect = ev.currentTarget.getBoundingClientRect();
+							const left = Math.round(
+								tRect.left - rect.left + container.current!.scrollLeft,
+							);
+							const top = Math.round(
+								tRect.top - rect.top + container.current!.scrollTop,
+							);
+							onDependencyDragStart({
+								left,
+								top,
+								dependency: `Steps.${statement.statementName}.${e.getName()}`,
+							});
+						}}
 					></div>
 					{eventParams.map(([pname]) => {
 						return (
@@ -198,6 +219,25 @@ export default function StatementNode({
 									}_${e.getName()}_${pname}`}
 									className="_paramNode"
 									style={{ borderColor: alwaysColor }}
+									onMouseDown={ev => {
+										ev.stopPropagation();
+										ev.preventDefault();
+										const rect = container.current!.getBoundingClientRect();
+										const tRect = ev.currentTarget.getBoundingClientRect();
+										const left = Math.round(
+											tRect.left - rect.left + container.current!.scrollLeft,
+										);
+										const top = Math.round(
+											tRect.top - rect.top + container.current!.scrollTop,
+										);
+										onDependencyDragStart({
+											left,
+											top,
+											dependency: `Steps.${
+												statement.statementName
+											}.${e.getName()}.${pname}`,
+										});
+									}}
 								></div>
 								<div className="_paramName">{pname}</div>
 							</div>
@@ -225,6 +265,9 @@ export default function StatementNode({
 				e.stopPropagation();
 				// onClick(e.ctrlKey || e.metaKey, statement.statementName);
 			}}
+			onMouseUp={e => {
+				onDependencyDrop(statement.statementName);
+			}}
 		>
 			<div
 				className="_nameContainer"
@@ -250,6 +293,8 @@ export default function StatementNode({
 						e.stopPropagation();
 						onClick(e.ctrlKey || e.metaKey, statement.statementName);
 					}
+					onDependencyDrop(statement.statementName);
+
 					setMouseMove(false);
 				}}
 				onDoubleClick={e => {

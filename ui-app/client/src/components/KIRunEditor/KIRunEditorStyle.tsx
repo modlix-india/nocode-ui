@@ -321,13 +321,21 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 		${PREFIX} ._linesSvg {
 			width: 100%;
 			height: 100%;
+			position: absolute;
+			top: 0;
+			left: 0;
+		}
+
+		${PREFIX} ._linesSvg._overLine {
+			pointer-events: none;
+			z-index: 4;
 		}
 
 		${PREFIX} ._connector {
 			fill: transparent;
 			stroke-width: 8px;
 			stroke-linecap: round;
-			transform: translate(6px, 5px);
+			transform: translate(6px, 6px);
 			opacity: 0.3;
 			transition: opacity 0.5s;
 			cursor: pointer;

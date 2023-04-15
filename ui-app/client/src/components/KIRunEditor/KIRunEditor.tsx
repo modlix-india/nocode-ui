@@ -181,7 +181,6 @@ function KIRunEditor(
 
 	const selectStatement = useCallback(
 		(append: boolean, statementName: string, selectOverride: boolean = false) => {
-			console.log(append, statementName);
 			if (!append) {
 				setSelectedStatements(new Map([[statementName, true]]));
 			} else {
@@ -207,6 +206,8 @@ function KIRunEditor(
 	>();
 
 	const functionNames = useMemo(() => functionRepository.filter(''), [functionRepository]);
+	const [dragDependencyNode, setDragDependencyNode] = useState<any>();
+	const [dragDependencyTo, setDragDependencyTo] = useState<any>();
 
 	const deleteStatements = useCallback(
 		(stmts: string[]) => {
@@ -259,6 +260,23 @@ function KIRunEditor(
 					}}
 					functionNames={functionNames}
 					onDelete={stmt => deleteStatements([stmt])}
+					onDependencyDragStart={(pos: any) => setDragDependencyNode(pos)}
+					onDependencyDrop={stmt => {
+						if (!dragDependencyNode) return;
+						if (isReadonly) return;
+
+						const newRawDef = duplicate(rawDef);
+
+						if (!newRawDef.steps[stmt].dependentStatements)
+							newRawDef.steps[stmt].dependentStatements = {};
+						newRawDef.steps[stmt].dependentStatements[dragDependencyNode.dependency] =
+							true;
+
+						setDragDependencyNode(undefined);
+						setDragDependencyTo(undefined);
+
+						setData(bindingPathPath, newRawDef, context.pageName);
+					}}
 				/>
 			));
 	}
@@ -337,9 +355,23 @@ function KIRunEditor(
 					e.clientY - rect.top + container.current.scrollTop - dragNode.top,
 				);
 				setDragNode({ ...dragNode, dLeft, dTop });
+			} else if (dragDependencyNode) {
+				e.preventDefault();
+				const dLeft = Math.round(e.clientX - rect.left + container.current.scrollLeft);
+				const dTop = Math.round(e.clientY - rect.top + container.current.scrollTop);
+				setDragDependencyTo({ left: dLeft, top: dTop });
 			}
 		},
-		[container, scrMove, selectionBox, dragNode, rawDef, setRawDef, selectedStatements],
+		[
+			container,
+			scrMove,
+			selectionBox,
+			dragNode,
+			rawDef,
+			setRawDef,
+			selectedStatements,
+			dragDependencyNode,
+		],
 	);
 
 	const designerMouseUp = useCallback(
@@ -402,6 +434,10 @@ function KIRunEditor(
 
 			setSelectionBox({ ...selectionBox, selectionStart: false });
 			setScrMove({ ...scrMove, dragStart: false });
+
+			setDragDependencyNode(undefined);
+			setDragDependencyTo(undefined);
+
 			if (dragNode) {
 				const { dLeft, dTop } = dragNode;
 				const def = duplicate(rawDef);
@@ -494,7 +530,10 @@ function KIRunEditor(
 						{
 							className: `_connector ${
 								selectedStatements.get(statement.getStatementName()) ||
-								selectedStatements.get(names[1])
+								selectedStatements.get(names[1]) ||
+								(menu?.type === 'dependent' &&
+									menu.value.statementName === statement.getStatementName() &&
+									menu.value.dependency === e)
 									? '_selected'
 									: ''
 							}`,
@@ -574,6 +613,35 @@ function KIRunEditor(
 		});
 	}
 
+	let overLine = undefined;
+	if (dragDependencyTo) {
+		const sx = dragDependencyNode.left;
+		const sy = dragDependencyNode.top;
+		const ex = dragDependencyTo.left;
+		const ey = dragDependencyTo.top;
+
+		let dPath = `M ${sx} ${sy} Q ${sx + (ex - sx) / 3} ${sy} ${sx + (ex - sx) / 2} ${
+			sy + (ey - sy) / 2
+		} T ${ex} ${ey}`;
+
+		const stepName = dragDependencyNode.dependency?.split('.')?.[1];
+		const fromColor = stepName
+			? generateColor(rawDef.steps[stepName].namespace, rawDef.steps[stepName].name)
+			: '000000';
+
+		overLine = (
+			<svg className="_linesSvg _overLine">
+				<path
+					key="line_drag_path"
+					d={dPath}
+					role="button"
+					className="_connector _selected"
+					stroke={'#' + fromColor}
+				/>
+			</svg>
+		);
+	}
+
 	let lineSvg = (
 		<svg className="_linesSvg">
 			<defs>{Array.from(gradients.values())}</defs>
@@ -639,6 +707,7 @@ function KIRunEditor(
 				{statements}
 				{selector}
 				{menuDiv}
+				{overLine}
 			</div>
 		</div>
 	);
