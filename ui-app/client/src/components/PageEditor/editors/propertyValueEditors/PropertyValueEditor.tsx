@@ -25,6 +25,7 @@ interface PropertyValueEditorProps {
 	onlyValue?: boolean;
 	pageDefinition?: PageDefinition;
 	showPlaceholder?: boolean;
+	storePaths: Set<string>;
 }
 
 export default function PropertyValueEditor({
@@ -34,6 +35,7 @@ export default function PropertyValueEditor({
 	onlyValue = false,
 	pageDefinition,
 	showPlaceholder = true,
+	storePaths,
 }: PropertyValueEditorProps) {
 	const [chngValue, setChngValue] = useState<any>('');
 	const [showAdvanced, setShowAdvanced] = useState<boolean>(false);
@@ -82,6 +84,7 @@ export default function PropertyValueEditor({
 			<ExpressionEditor2
 				value={value?.location}
 				onChange={(v: DataLocation | undefined) => onChange({ ...value, location: v })}
+				storePaths={storePaths}
 			/>
 		);
 	}

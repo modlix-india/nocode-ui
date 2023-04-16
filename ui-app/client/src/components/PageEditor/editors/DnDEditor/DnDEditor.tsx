@@ -32,6 +32,8 @@ interface DnDEditorProps {
 	firstTimeRef: React.MutableRefObject<PageDefinition[]>;
 	undoStackRef: React.MutableRefObject<PageDefinition[]>;
 	redoStackRef: React.MutableRefObject<PageDefinition[]>;
+	slaveStore: any;
+	editPageName: string | undefined;
 }
 
 export default function DnDEditor({
@@ -57,6 +59,8 @@ export default function DnDEditor({
 	firstTimeRef,
 	undoStackRef,
 	redoStackRef,
+	slaveStore,
+	editPageName,
 }: DnDEditorProps) {
 	return (
 		<div className="_dndGrid">
@@ -105,6 +109,8 @@ export default function DnDEditor({
 						theme={theme}
 						pageExtractor={pageExtractor}
 						onShowCodeEditor={onShowCodeEditor}
+						slaveStore={slaveStore}
+						editPageName={editPageName}
 					/>
 				</div>
 				<DnDBottomBar

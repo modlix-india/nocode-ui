@@ -147,6 +147,28 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			gap: 5px;
 		}
 
+		${PREFIX} ._pvExpressionEditor ._pathsList{
+			z-index: 2;
+			background-color: #fff;
+			display: flex;
+			flex-direction: column;
+			border-radius: 4px;
+			float: left;
+			position: absolute;
+			top: 100%;
+			box-shadow: 0 15px 30px 0 rgba(0,0,0,.10), 0 5px 15px 0 rgba(0,0,0,.10);
+		}
+
+		${PREFIX} ._pvExpressionEditor ._pathsList ._path{
+			padding: 5px 5px;
+			border-radius: 2px;
+			cursor: pointer;
+		}
+
+		${PREFIX} ._pvExpressionEditor ._pathsList ._path:hover{
+			background-color: #eee;
+		}
+
 		${PREFIX} ._pvExpressionEditor input[type='text'],  ${PREFIX} ._pvExpressionEditor input[type='number']{
 			border: none;
 			background-color: transparent;

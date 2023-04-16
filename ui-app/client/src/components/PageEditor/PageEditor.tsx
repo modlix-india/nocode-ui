@@ -347,6 +347,9 @@ function PageEditor(props: ComponentProps) {
 		personalizationPath,
 		setSelectedComponent,
 		operations,
+		setSelectedSubComponent,
+		setContextMenu,
+		setSlaveStore,
 	]);
 
 	const undoStackRef = useRef<Array<PageDefinition>>([]);
@@ -387,6 +390,8 @@ function PageEditor(props: ComponentProps) {
 					undoStackRef={undoStackRef}
 					redoStackRef={redoStackRef}
 					firstTimeRef={firstTimeRef}
+					slaveStore={slaveStore}
+					editPageName={editPageDefinition?.name}
 				/>
 				<CodeEditor
 					showCodeEditor={showCodeEditor}

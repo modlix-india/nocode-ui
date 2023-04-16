@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { PageStoreExtractor } from '../../../../context/StoreContext';
+import React, { useMemo, useState } from 'react';
+import { PageStoreExtractor, store } from '../../../../context/StoreContext';
 import { LocationHistory } from '../../../../types/common';
 import PropertyEditor from '../PropertyEditor';
 import StylePropertyEditor from '../StylePropertyEditor';
+import { allPaths } from '../../../../util/allPaths';
+import { LOCAL_STORE_PREFIX, PAGE_STORE_PREFIX, STORE_PREFIX } from '../../../../constants';
 
 interface PropertyBarProps {
 	theme: string;
@@ -14,6 +16,8 @@ interface PropertyBarProps {
 	locationHistory: Array<LocationHistory>;
 	selectedComponent?: string;
 	onShowCodeEditor: (eventName: string) => void;
+	slaveStore: any;
+	editPageName: string | undefined;
 }
 
 export default function DnDPropertyBar({
@@ -25,8 +29,24 @@ export default function DnDPropertyBar({
 	onChangePersonalization,
 	theme,
 	onShowCodeEditor,
+	slaveStore,
+	editPageName,
 }: PropertyBarProps) {
 	const [currentTab, setCurrentTab] = useState(1);
+
+	const storePaths = useMemo<Set<string>>(
+		() =>
+			allPaths(
+				STORE_PREFIX,
+				slaveStore?.store,
+				allPaths(
+					LOCAL_STORE_PREFIX,
+					slaveStore?.localStore,
+					allPaths(PAGE_STORE_PREFIX, slaveStore?.store?.pageData?.[editPageName ?? '']),
+				),
+			),
+		[slaveStore],
+	);
 
 	if (!selectedComponent) return <div className="_propBar"></div>;
 
@@ -40,9 +60,10 @@ export default function DnDPropertyBar({
 				defPath={defPath}
 				locationHistory={locationHistory}
 				pageExtractor={pageExtractor}
+				storePaths={storePaths}
 			/>
 		) : (
-			<StylePropertyEditor selectedComponent={selectedComponent} />
+			<StylePropertyEditor selectedComponent={selectedComponent} storePaths={storePaths} />
 		);
 
 	return (

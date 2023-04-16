@@ -31,6 +31,7 @@ interface PropertyEditorProps {
 	theme: string;
 	personalizationPath: string | undefined;
 	onChangePersonalization: (prop: string, value: any) => void;
+	storePaths: Set<string>;
 }
 
 function updatePropertyDefinition(
@@ -95,6 +96,7 @@ export default function PropertyEditor({
 	onChangePersonalization,
 	theme,
 	personalizationPath,
+	storePaths,
 }: PropertyEditorProps) {
 	const [def, setDef] = useState<ComponentDefinition>();
 	const [pageDef, setPageDef] = useState<PageDefinition>();
@@ -145,7 +147,6 @@ export default function PropertyEditor({
 						value={def[x[i]]}
 						bothModes={true}
 						onChange={bp => {
-							console.log(bp);
 							const newDef = duplicate(def);
 							if (!bp || (bp.value === undefined && bp.expression === undefined))
 								delete newDef[x[i]];
@@ -158,6 +159,7 @@ export default function PropertyEditor({
 								newDef,
 							);
 						}}
+						storePaths={storePaths}
 					/>
 				</div>,
 			);
@@ -209,6 +211,7 @@ export default function PropertyEditor({
 					pageDefinition={pageDef}
 					propDef={e}
 					value={def.properties?.[e.name] as ComponentProperty<any>}
+					storePaths={storePaths}
 					onChange={v =>
 						updatePropertyDefinition(
 							e,
@@ -266,6 +269,7 @@ export default function PropertyEditor({
 						}}
 						value={{ value: def.name }}
 						onlyValue={true}
+						storePaths={storePaths}
 						onChange={v => {
 							const newDef = duplicate(def);
 							newDef.name = v.value;
