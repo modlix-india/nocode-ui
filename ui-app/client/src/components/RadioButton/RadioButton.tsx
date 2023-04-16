@@ -216,6 +216,26 @@ const component: Component = {
 	bindingPaths: {
 		bindingPath: { name: 'Data Binding' },
 	},
+	defaultTemplate: {
+		key: '',
+		type: 'RadioButton',
+		name: 'RadioButton',
+		properties: {},
+		styleProperties: {
+			'4c43530094da-f5fd-4b9246-af84-9ebb9d41a49776': {
+				resolutions: {
+					ALL: {
+						width: {
+							value: '100%',
+						},
+						height: {
+							value: '50px',
+						},
+					},
+				},
+			},
+		},
+	},
 };
 
 export default component;

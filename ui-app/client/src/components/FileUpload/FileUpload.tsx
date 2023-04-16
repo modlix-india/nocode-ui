@@ -43,7 +43,6 @@ function FileUpload(props: ComponentProps) {
 			readOnly,
 			maxFileSize,
 			showFileList,
-			uploadImmediately,
 			onSelectEvent,
 			validation,
 		} = {},
@@ -167,7 +166,7 @@ function FileUpload(props: ComponentProps) {
 			>
 				<span>{each?.name}</span>
 				<span>{`(${returnFileSize(each?.size)})`}</span>
-				{uploadImmediately ? null : (
+				{uploadImmediatelyEvent ? null : (
 					<i
 						className="fa fa-solid fa-close closeIcon"
 						style={computedStyles?.closeIcon ?? {}}
@@ -282,6 +281,12 @@ const component: Component = {
 	stylePseudoStates: ['hover', 'disabled'],
 	bindingPaths: {
 		bindingPath: { name: 'File binding' },
+	},
+	defaultTemplate: {
+		key: '',
+		name: 'FileUpload',
+		type: 'FileUpload',
+		properties: {},
 	},
 };
 

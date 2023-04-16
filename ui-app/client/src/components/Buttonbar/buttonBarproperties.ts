@@ -20,171 +20,34 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'label',
 		schema: SCHEMA_ANY_COMP_PROP,
 		displayName: 'Button Bar Label',
-		description: `Label thats shown on top of button bar input..`,
-		defaultValue: 'Hello',
+		group: ComponentPropertyGroup.IMPORTANT,
+		description: "Label that's shown on top of button bar input.",
 	},
 
 	{
 		name: 'isMultiSelect',
 		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Is MultiSelect ?',
-		description: `Allows the users to select multiple buttons.`,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'Multiple Selection Allowed ?',
+		description: 'Allows the users to select multiple buttons.',
 		defaultValue: false,
 	},
 	{
 		name: 'data',
 		schema: SCHEMA_ANY_COMP_PROP,
+		group: ComponentPropertyGroup.DATA,
 		displayName: 'ButtonBar data',
-		description: `Data that is used to render ButtonBar.`,
+		description:
+			'Data that is used to render ButtonBar, you can either give a value or expression, please read documentation for more information on Expressions.',
 	},
 
-	{
-		name: 'datatype',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'ButtonBar data type',
-		description: `ButtonBar's data format.`,
-		defaultValue: 'LIST_OF_STRINGS',
-		editor: ComponentPropertyEditor.ENUM,
-		enumValues: [
-			{
-				name: 'LIST_OF_STRINGS',
-				displayName: 'List of strings',
-				description: 'data has an array of strings',
-			},
-			{
-				name: 'LIST_OF_OBJECTS',
-				displayName: 'List of objects',
-				description: 'data has an array of objects',
-			},
-			{
-				name: 'LIST_OF_LISTS',
-				displayName: 'List of lists',
-				description: 'data has an array of arrays',
-			},
-			{
-				name: 'OBJECT_OF_PRIMITIVES',
-				displayName: 'Object of primitives',
-				description: 'Object with key value pairs where values are primitives',
-			},
-			{
-				name: 'OBJECT_OF_OBJECTS',
-				displayName: 'Object of objects',
-				description: 'Object with key value pairs where values are objects',
-			},
-			{
-				name: 'OBJECT_OF_LISTS',
-				displayName: 'Object of lists',
-				description: 'Object with key value pairs where values are lists',
-			},
-		],
-	},
-
-	{
-		name: 'uniqueKeyType',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: "Unique key's type",
-		description: `Type for selection unique key`,
-		defaultValue: 'LIST_OF_STRINGS',
-		editor: ComponentPropertyEditor.ENUM,
-		enumValues: [
-			{
-				name: 'KEY',
-				displayName: 'Key',
-				description: "Select key as unique key's value",
-			},
-			{
-				name: 'INDEX',
-				displayName: 'Index',
-				description: "Select index as unique key's value",
-			},
-			{
-				name: 'OBJECT',
-				displayName: 'Object',
-				description: "Select object as unique key's value",
-			},
-			{
-				name: 'RANDOM',
-				displayName: 'Random',
-				description: 'A Random key is associated with value which is costly in rendering',
-			},
-		],
-	},
-
-	{
-		name: 'selectionType',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Selection value type',
-		description: `type of value that needs to be selected on selection`,
-		defaultValue: 'LIST_OF_STRINGS',
-		editor: ComponentPropertyEditor.ENUM,
-		enumValues: [
-			{
-				name: 'KEY',
-				displayName: 'Key',
-				description: "Select key as selection key's value",
-			},
-			{
-				name: 'INDEX',
-				displayName: 'Index',
-				description: "Select index as selection key's value",
-			},
-			{
-				name: 'OBJECT',
-				displayName: 'Object',
-				description: "Select object as selection key's value",
-			},
-		],
-	},
-
-	{
-		name: 'labelKeyType',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: "Label's key type",
-		description: `type of value that needs to be selected for dispaly label`,
-		defaultValue: 'LIST_OF_STRINGS',
-		editor: ComponentPropertyEditor.ENUM,
-		enumValues: [
-			{
-				name: 'KEY',
-				displayName: 'Key',
-				description: "Select key as label key's value",
-			},
-			{
-				name: 'INDEX',
-				displayName: 'Index',
-				description: "Select index as label key's value",
-			},
-			{
-				name: 'OBJECT',
-				displayName: 'Object',
-				description: "Select object as label key's value",
-			},
-		],
-	},
-
-	{
-		name: 'selectionKey',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: "Selection key's value ",
-		description: `Key value that is used to generate Selection value.`,
-		translatable: true,
-	},
-
-	{
-		name: 'uniqueKey',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: "Unique key's value ",
-		description: `Key value that is used to generate unique key value.`,
-		translatable: true,
-	},
-
-	{
-		name: 'labelKey',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: "Labels key's value ",
-		description: `Key value that is used to generate label value.`,
-		translatable: true,
-	},
+	COMMON_COMPONENT_PROPERTIES.datatype,
+	COMMON_COMPONENT_PROPERTIES.uniqueKeyType,
+	COMMON_COMPONENT_PROPERTIES.selectionType,
+	COMMON_COMPONENT_PROPERTIES.labelKeyType,
+	COMMON_COMPONENT_PROPERTIES.selectionKey,
+	COMMON_COMPONENT_PROPERTIES.uniqueKey,
+	COMMON_COMPONENT_PROPERTIES.labelKey,
 ];
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 	'': {
@@ -233,8 +96,8 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.background,
 			target: ['button'],
 		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.height.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.height,
+		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: {
+			...COMPONENT_STYLE_GROUP_PROPERTIES.size,
 			target: ['button'],
 		},
 		[COMPONENT_STYLE_GROUP_PROPERTIES.opacity.type]: {

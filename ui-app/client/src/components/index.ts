@@ -1,4 +1,5 @@
 import Button from './Button/Button';
+import ButtonBar from './Buttonbar/ButtonBar';
 import CheckBox from './CheckBox/CheckBox';
 import Grid from './Grid/Grid';
 import Label from './Label/Label';
@@ -37,6 +38,7 @@ import KIRunEditor from './KIRunEditor/KIRunEditor';
 
 export default new Map<string, Component>([
 	[Button.name, Button],
+	[ButtonBar.name, ButtonBar],
 	[Grid.name, Grid],
 	[Page.name, Page],
 	[Label.name, Label],

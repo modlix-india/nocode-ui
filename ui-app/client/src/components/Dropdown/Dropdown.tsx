@@ -369,6 +369,14 @@ const component: Component = {
 		bindingPath: { name: 'Selection Binding' },
 		bindingPath2: { name: 'Search Binding' },
 	},
+	defaultTemplate: {
+		key: '',
+		name: 'Dropdown',
+		type: 'Dropdown',
+		properties: {
+			label: { value: 'Dropdown' },
+		},
+	},
 };
 
 export default component;

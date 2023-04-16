@@ -6,7 +6,7 @@ import {
 	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
-import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
+import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
@@ -15,16 +15,10 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Icon',
 		description: 'Icon',
 		translatable: true,
+		group: ComponentPropertyGroup.IMPORTANT,
 		editor: ComponentPropertyEditor.ICON,
 	},
-
-	{
-		name: 'visibility',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Visibility',
-		description: 'This component will be hidden when this property is true.',
-		group: ComponentPropertyGroup.COMMON,
-	},
+	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

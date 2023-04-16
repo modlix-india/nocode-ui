@@ -18,6 +18,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'offlineData',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Offline Data',
+		group: ComponentPropertyGroup.IMPORTANT,
 		description: 'When all the data is available to be served in the table',
 		defaultValue: false,
 	},
@@ -25,6 +26,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'showSpinner',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show Spinner',
+		group: ComponentPropertyGroup.IMPORTANT,
 		description: 'Show Spinner when the events are running',
 		defaultValue: true,
 	},
@@ -33,20 +35,23 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show Pagination',
 		description: 'Show Pagination',
+		group: ComponentPropertyGroup.IMPORTANT,
 		defaultValue: true,
 	},
 	{
 		name: 'showPerPage',
 		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Show Per Page',
-		description: 'Show Per Page',
+		displayName: 'Show Items per page selection.',
+		description: 'Show Items Per page selection.',
+		group: ComponentPropertyGroup.IMPORTANT,
 		defaultValue: true,
 	},
 	{
 		name: 'perPageNumbers',
 		schema: SCHEMA_NUM_COMP_PROP,
-		displayName: 'Per Page Numbers',
-		description: 'Per Page Numbers',
+		displayName: 'Options for per page',
+		description: 'Options array for items per page selection.',
+		group: ComponentPropertyGroup.ADVANCED,
 		multiValued: true,
 		defaultValue: [10, 20, 50],
 	},
@@ -55,6 +60,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Unique Key',
 		description: 'Unique Key in each row',
+		group: ComponentPropertyGroup.DATA,
 		defaultValue: 'id',
 	},
 	{
@@ -63,6 +69,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Selection Type',
 		description: 'Type of the selection of a row',
 		defaultValue: 'NONE',
+		group: ComponentPropertyGroup.DATA,
 		enumValues: [
 			{ name: 'NONE', displayName: 'No Selection', description: 'No selection is required' },
 			{ name: 'PATH', displayName: 'Path', description: 'Path of the object of the row' },
@@ -78,6 +85,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Select Multiple',
 		description: 'Select multiple items',
+		group: ComponentPropertyGroup.IMPORTANT,
 		defaultValue: false,
 	},
 	{
@@ -86,6 +94,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Display Mode',
 		description: 'Display mode, either columns or grid',
 		defaultValue: 'COLUMNS',
+		group: ComponentPropertyGroup.IMPORTANT,
 		enumValues: [
 			{ name: 'COLUMNS', displayName: 'Columns', description: 'Columns mode' },
 			{ name: 'GRID', displayName: 'Grid', description: 'Grid mode' },
@@ -96,6 +105,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Preview Mode',
 		description: 'Preview mode, either columns or grid',
+		group: ComponentPropertyGroup.IMPORTANT,
 		defaultValue: 'BOTH',
 		enumValues: [
 			{ name: 'BOTH', displayName: 'All', description: 'All modes' },
@@ -108,6 +118,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Preview Grid Position',
 		description: 'Preview grid position',
+		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: 'BOTH',
 		enumValues: [
 			{
@@ -135,6 +146,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_NUM_COMP_PROP,
 		displayName: 'Default Size',
 		description: 'Display size',
+		group: ComponentPropertyGroup.IMPORTANT,
 		defaultValue: 10,
 	},
 	{
@@ -142,6 +154,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_NUM_COMP_PROP,
 		displayName: 'Total Pages',
 		description: 'Total number of pages in the data',
+		group: ComponentPropertyGroup.IMPORTANT,
 	},
 	{
 		name: 'tableDesign',
@@ -149,6 +162,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Table Design',
 		description: 'Table Design',
 		defaultValue: '_design1',
+		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
 			{ name: '_design1', displayName: 'Design 1', description: 'Alternative row color' },
 			{ name: '_design2', displayName: 'Design 2', description: 'Plain table' },
@@ -176,6 +190,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Pagination Position',
 		description: 'Position where pagination will be shown',
 		defaultValue: '_LEFT',
+		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
 			{ name: '_LEFT', displayName: 'Left', description: 'Left' },
 			{ name: '_RIGHT', displayName: 'Right', description: 'Right' },
@@ -187,16 +202,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'onPagination',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'On Pagination',
+		group: ComponentPropertyGroup.EVENTS,
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		description: 'Event to be triggered when the page is changed.',
 	},
-	{
-		name: 'visibility',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Visibility',
-		description: 'This component will be hidden when this property is true.',
-		group: ComponentPropertyGroup.COMMON,
-	},
+	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
 const stylePropertiesDefinition = {

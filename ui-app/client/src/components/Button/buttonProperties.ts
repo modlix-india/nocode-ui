@@ -5,6 +5,7 @@ import {
 	ComponentPropertyDefinition,
 	ComponentStylePropertyGroupDefinition,
 	ComponentStylePropertyDefinition,
+	ComponentPropertyGroup,
 } from '../../types/common';
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
@@ -13,10 +14,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'type',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Button label',
-		description: `Button's display label.`,
+		displayName: 'Button Type',
+		description: 'Select different types of buttons',
 		defaultValue: 'default',
 		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.IMPORTANT,
 		enumValues: [
 			{ name: 'default', displayName: 'Default Button', description: 'Default Button type' },
 			{ name: 'outlined', displayName: 'Outline Button', description: 'Outline Button type' },
@@ -29,32 +31,23 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 		],
 	},
-	{
-		name: 'target',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Link target',
-		description: `Link's target.`,
-	},
-	{
-		name: 'linkPath',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Link path',
-		description: `Path that page needs to be redirected on click.`,
-		translatable: false,
-	},
+	COMMON_COMPONENT_PROPERTIES.linkPath,
+	COMMON_COMPONENT_PROPERTIES.linkTargetType,
 	COMMON_COMPONENT_PROPERTIES.onClick,
 	{
 		name: 'leftIcon',
 		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
 		displayName: "Button's left icon",
-		description: `Button's icon to be displayed on left of label.`,
+		description: "Button's icon to be displayed on left of label.",
 		editor: ComponentPropertyEditor.ICON,
 	},
 	{
 		name: 'rightIcon',
 		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
 		displayName: "Button's right icon",
-		description: `Button's icon to be displayed on right of label.`,
+		description: "Button's icon to be displayed on right of label.",
 		editor: ComponentPropertyEditor.ICON,
 	},
 	COMMON_COMPONENT_PROPERTIES.readOnly,

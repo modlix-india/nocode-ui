@@ -105,6 +105,12 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TextEditorStyle,
+	defaultTemplate: {
+		key: '',
+		type: 'TextEditor',
+		name: 'TextEditor',
+		properties: {},
+	},
 };
 
 export default component;

@@ -52,6 +52,14 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: LabelStyle,
+	defaultTemplate: {
+		key: '',
+		name: 'Label',
+		type: 'Label',
+		properties: {
+			text: { value: 'Label' },
+		},
+	},
 };
 
 export default component;

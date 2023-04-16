@@ -1,16 +1,9 @@
-import { Schema } from '@fincity/kirun-js';
 import {
 	SCHEMA_ANY_COMP_PROP,
 	SCHEMA_BOOL_COMP_PROP,
-	SCHEMA_DATA_LOCATION,
 	SCHEMA_STRING_COMP_PROP,
-	SCHEMA_VALIDATION,
 } from '../../constants';
-import {
-	ComponentPropertyEditor,
-	ComponentPropertyGroup,
-	ComponentPropertyDefinition,
-} from '../../types/common';
+import { ComponentPropertyGroup, ComponentPropertyDefinition } from '../../types/common';
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
@@ -19,7 +12,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Dropdown placeholder',
 		description: "Placeholder that's shown when no item is selected in dropdown.",
-		defaultValue: 'Select ...',
+		defaultValue: 'Select...',
 		group: ComponentPropertyGroup.IMPORTANT,
 	},
 
@@ -68,169 +61,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
-		name: 'datatype',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Dropdown data type',
-		description: "Dropdown's data format.",
-		defaultValue: 'LIST_OF_STRINGS',
-		editor: ComponentPropertyEditor.ENUM,
-		group: ComponentPropertyGroup.DATA,
-		enumValues: [
-			{
-				name: 'LIST_OF_STRINGS',
-				displayName: 'List of strings',
-				description: 'data has an array of strings',
-			},
-			{
-				name: 'LIST_OF_OBJECTS',
-				displayName: 'List of objects',
-				description: 'data has an array of objects',
-			},
-			{
-				name: 'LIST_OF_LISTS',
-				displayName: 'List of lists',
-				description: 'data has an array of arrays',
-			},
-			{
-				name: 'OBJECT_OF_PRIMITIVES',
-				displayName: 'Object of primitives',
-				description: 'Object with key value pairs where values are primitives',
-			},
-			{
-				name: 'OBJECT_OF_OBJECTS',
-				displayName: 'Object of objects',
-				description: 'Object with key value pairs where values are objects',
-			},
-			{
-				name: 'OBJECT_OF_LISTS',
-				displayName: 'Object of lists',
-				description: 'Object with key value pairs where values are lists',
-			},
-		],
-	},
-
-	{
-		name: 'onClick',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Event trigger on click',
-		group: ComponentPropertyGroup.EVENTS,
-		description: 'The event that is triggered on click of dropdown option',
-	},
-
-	{
-		name: 'uniqueKeyType',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: "Unique key's type",
-		description: 'Type for selection unique key',
-		defaultValue: 'LIST_OF_STRINGS',
-		group: ComponentPropertyGroup.DATA,
-		editor: ComponentPropertyEditor.ENUM,
-		enumValues: [
-			{
-				name: 'KEY',
-				displayName: 'Key',
-				description: "Select key as unique key's value",
-			},
-			{
-				name: 'INDEX',
-				displayName: 'Index',
-				description: "Select index as unique key's value",
-			},
-			{
-				name: 'OBJECT',
-				displayName: 'Object',
-				description: "Select object as unique key's value",
-			},
-			{
-				name: 'RANDOM',
-				displayName: 'Random',
-				description: 'A Random key is associated with value which is costly in rendering',
-			},
-		],
-	},
-
-	{
-		name: 'selectionType',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Selection value type',
-		description: `type of value that needs to be selected on selection`,
-		defaultValue: 'LIST_OF_STRINGS',
-		editor: ComponentPropertyEditor.ENUM,
-		group: ComponentPropertyGroup.DATA,
-		enumValues: [
-			{
-				name: 'KEY',
-				displayName: 'Key',
-				description: "Select key as selection key's value",
-			},
-			{
-				name: 'INDEX',
-				displayName: 'Index',
-				description: "Select index as selection key's value",
-			},
-			{
-				name: 'OBJECT',
-				displayName: 'Object',
-				description: "Select object as selection key's value",
-			},
-		],
-	},
-
-	{
-		name: 'labelKeyType',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: "Label's key type",
-		description: 'type of value that needs to be selected for dispaly label',
-		defaultValue: 'LIST_OF_STRINGS',
-		editor: ComponentPropertyEditor.ENUM,
-		group: ComponentPropertyGroup.DATA,
-		enumValues: [
-			{
-				name: 'KEY',
-				displayName: 'Key',
-				description: "Select key as label key's value",
-			},
-			{
-				name: 'INDEX',
-				displayName: 'Index',
-				description: "Select index as label key's value",
-			},
-			{
-				name: 'OBJECT',
-				displayName: 'Object',
-				description: "Select object as label key's value",
-			},
-		],
-	},
-
-	{
-		name: 'selectionKey',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: "Selection key's value ",
-		description: 'Key value that is used to generate Selection value.',
-		translatable: true,
-		group: ComponentPropertyGroup.DATA,
-	},
-
-	{
-		name: 'uniqueKey',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: "Unique key's value ",
-		description: 'Key value that is used to generate unique key value.',
-		translatable: true,
-		group: ComponentPropertyGroup.DATA,
-	},
-
-	{
-		name: 'labelKey',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: "Labels key's value ",
-		description: 'Key value that is used to generate label value.',
-		translatable: true,
-		group: ComponentPropertyGroup.DATA,
-	},
-
-	{
 		name: 'clearSearchTextOnClose',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Clear Search on close',
@@ -238,7 +68,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
-
 	{
 		name: 'onSearch',
 		schema: SCHEMA_STRING_COMP_PROP,
@@ -256,15 +85,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		translatable: true,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
-	{
-		name: 'validation',
-		schema: SCHEMA_VALIDATION,
-		displayName: 'Validation',
-		description: 'Validation Rule',
-		editor: ComponentPropertyEditor.VALIDATION,
-		multiValued: true,
-		group: ComponentPropertyGroup.VALIDATION,
-	},
+
 	{
 		name: 'closeOnMouseLeave',
 		schema: SCHEMA_BOOL_COMP_PROP,
@@ -274,9 +95,17 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
-
+	COMMON_COMPONENT_PROPERTIES.validation,
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
+	COMMON_COMPONENT_PROPERTIES.onClick,
+	COMMON_COMPONENT_PROPERTIES.datatype,
+	COMMON_COMPONENT_PROPERTIES.uniqueKeyType,
+	COMMON_COMPONENT_PROPERTIES.selectionType,
+	COMMON_COMPONENT_PROPERTIES.labelKeyType,
+	COMMON_COMPONENT_PROPERTIES.selectionKey,
+	COMMON_COMPONENT_PROPERTIES.uniqueKey,
+	COMMON_COMPONENT_PROPERTIES.labelKey,
 ];
 
 const stylePropertiesDefinition = {
