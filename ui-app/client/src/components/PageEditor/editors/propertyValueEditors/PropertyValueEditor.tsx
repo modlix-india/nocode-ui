@@ -13,7 +13,7 @@ import {
 } from '../../../../types/common';
 import { AnyValueEditor } from './AnyValueEditor';
 import { BooleanValueEditor } from './BooleanValueEditor';
-import { ExpressionEditor } from './ExpressionEditor';
+import { ExpressionEditor2 } from './ExpressionEditor2';
 import { IconSelectionEditor } from './IconSelectionEditor';
 import { ImageEditor } from './ImageEditor';
 import { ValidationEditor } from './ValidationEditor';
@@ -79,21 +79,9 @@ export default function PropertyValueEditor({
 
 	if (showAdvanced && !onlyValue) {
 		advancedEditor = (
-			<ExpressionEditor
-				value={
-					value?.location
-						? value.location.type === 'VALUE'
-							? value.location.value
-							: value.location.expression
-						: undefined
-				}
-				onChange={(v: string | undefined) =>
-					onChange(
-						!v
-							? { ...(value ?? {}), location: undefined }
-							: { ...(value ?? {}), location: { type: 'EXPRESSION', expression: v } },
-					)
-				}
+			<ExpressionEditor2
+				value={value?.location}
+				onChange={(v: DataLocation | undefined) => onChange({ ...value, location: v })}
 			/>
 		);
 	}
