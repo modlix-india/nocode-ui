@@ -37,11 +37,21 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			background-color: #777;
 		}
 
+		${PREFIX} ._header ._separator {
+			height: 18px;
+			border-radius: 2px;
+			width: 2px;
+			background-color: #aaa;
+			margin-left: 4px;
+			margin-right: 4px;
+		}
+
 		${PREFIX} ._header ._left {
 			display: flex;
 			gap: 5px;
 			padding: 5px;
 			flex: 1;
+			align-items: center;
 		}
 
 		${PREFIX} ._header ._right {
@@ -112,7 +122,7 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			font-family: inherit;
 			border: none;
 			background-color: #0000000a;
-			width: 100%;
+			width: 160px;
 			padding-left: 5px;
 			margin-left: -5px;
 		}
@@ -136,7 +146,7 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 		${PREFIX} ._statement ._icon {
 			width: 32px;
 			height: 32px;
-			background-color: #679AE6;
+			background-color: inherit;
 			color: #fff;
 			border-top-right-radius: 2px;
 			border-top-left-radius: 4px;
@@ -144,9 +154,23 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			justify-content: center;
 			align-items: center;
 		}
+		${PREFIX} ._statement ._statementContanier{
+			background-color: #f8f8f8;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			border-top-right-radius: 4px;
+    		
+		}
 
 		${PREFIX} ._statement ._statementName {
 			flex: 1;
+			
+			height: 33px;
+			display: flex;
+			align-items: center;
+			padding-left: 5px;
+			min-width: 160px
 		}
 
 		${PREFIX} ._editIcon {
@@ -161,11 +185,14 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			visibility: visible;
 		}
 
+		${PREFIX} ._statement ._namesContainer {
+			border-radius: 4px;
+		}
+
 		${PREFIX} ._statement ._nameContainer {
 			display: flex;
-			gap: 6px;
+			
 			align-items: center;
-			background-color: #f8f8f8;
 			min-width: 200px;
 			border-radius: 2px;
 			cursor: move;

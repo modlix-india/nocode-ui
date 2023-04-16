@@ -157,7 +157,6 @@ function KIRunEditor(
 					schemaRepository,
 				);
 				setExecutionPlan(ep);
-				// setKirunMessages(new Map(ep.getT1().map(e => [e.getT1(), e.getT2()])));
 
 				const map = new Map();
 				Array.from(ep.getNodeMap().values()).forEach(e => {
@@ -169,10 +168,6 @@ function KIRunEditor(
 							.map(m => m.getMessage()),
 					);
 				});
-
-				// map.set('genOutput', [
-				// 	'This is a very long message from the KIRun runtime after fetching the execution plan. Please consider this message to change your atitude towards life.',
-				// ]);
 
 				setKirunMessages(map);
 			} catch (err) {
@@ -607,6 +602,28 @@ function KIRunEditor(
 							);
 						}}
 					/>
+					<div className="_separator" />
+					<i
+						className="fa fa-solid fa-square-plus"
+						role="button"
+						title="Add Step"
+						onClick={() => {}}
+					/>
+					<i
+						className="fa fa-solid fa-trash"
+						role="button"
+						title="Delete selected Steps"
+						onClick={() => {
+							if (isReadonly || !selectedStatements.size || !rawDef.steps) return;
+
+							const def = duplicate(rawDef);
+							for (const [name] of selectedStatements) {
+								delete def.steps[name];
+							}
+
+							setData(bindingPathPath, def, context.pageName);
+						}}
+					/>
 				</div>
 				<div className="_right">
 					<i
@@ -644,6 +661,29 @@ function KIRunEditor(
 						if (ev.key === 'Delete' || ev.key === 'Backspace') {
 							if (selectedStatements.size > 0)
 								deleteStatements(Array.from(selectedStatements.keys()));
+						} else if (
+							(ev.key === 'a' || ev.key === 'A') &&
+							(ev.ctrlKey || ev.metaKey)
+						) {
+							ev.stopPropagation();
+							ev.preventDefault();
+							const entries = Object.entries(rawDef.steps);
+
+							setSelectedStatements(
+								entries.length === selectedStatements.size
+									? new Map()
+									: new Map<string, boolean>(entries.map(([k, v]) => [k, true])),
+							);
+						} else if (ev.key === 'Escape') {
+							setSelectedStatements(new Map());
+						} else if (
+							(ev.key === '+' || ev.key === '=' || ev.key === '-') &&
+							(ev.ctrlKey || ev.metaKey)
+						) {
+							savePersonalization(
+								'magnification',
+								magnification + (ev.key === '-' ? -0.1 : 0.1),
+							);
 						}
 					}}
 				>

@@ -270,135 +270,149 @@ export default function StatementNode({
 			}}
 		>
 			<div
-				className="_nameContainer"
-				onMouseDown={e => {
-					e.preventDefault();
-					e.stopPropagation();
-
-					if (e.button !== 0) return;
-
-					const rect = container.current!.getBoundingClientRect();
-					const left = Math.round(e.clientX - rect.left + container.current!.scrollLeft);
-					const top = Math.round(e.clientY - rect.top + container.current!.scrollTop);
-					onDragStart(e.ctrlKey || e.metaKey, statement.statementName, { left, top });
-				}}
-				onMouseMove={e => {
-					if (!mouseMove && dragNode) setMouseMove(true);
-				}}
-				onMouseUp={e => {
-					if (e.button !== 0) return;
-
-					if (e.target === e.currentTarget && !mouseMove) {
-						e.preventDefault();
-						e.stopPropagation();
-						onClick(e.ctrlKey || e.metaKey, statement.statementName);
-					}
-					onDependencyDrop(statement.statementName);
-
-					setMouseMove(false);
-				}}
-				onDoubleClick={e => {
-					e.stopPropagation();
-					e.preventDefault();
-				}}
-			>
-				<i
-					className={`_icon fa fa-solid ${
-						ICONS_GROUPS.get(statement.namespace) ?? 'fa-microchip'
-					}`}
-					style={{
-						backgroundColor: highlightColor ? highlightColor : alwaysColor,
-					}}
-				></i>
-				<div
-					className={`_statementName`}
-					onDoubleClick={e => {
-						e.stopPropagation();
-						e.preventDefault();
-						setEditStatementName(true);
-					}}
-				>
-					{editStatementName ? (
-						<>
-							<input
-								type="text"
-								value={statementName}
-								onChange={e => setStatementName(e.target.value)}
-								autoFocus={true}
-								onBlur={() => {
-									setEditStatementName(false);
-									onChange({ ...duplicate(statement), statementName });
-								}}
-								onKeyUp={e => {
-									if (e.key === 'Escape') {
-										setStatementName(statement.statementName);
-										setEditStatementName(false);
-									} else if (e.key === 'Enter') {
-										setEditStatementName(false);
-										onChange({ ...duplicate(statement), statementName });
-									}
-								}}
-							/>
-						</>
-					) : (
-						statementName
-					)}
-				</div>
-				<i
-					className="_editIcon fa fa-1x fa-solid fa-pencil"
-					style={{ visibility: editStatementName ? 'visible' : undefined }}
-					onClick={() => {
-						setEditStatementName(true);
-					}}
-				/>
-			</div>
-			<div
-				className={`_nameNamespaceContainer`}
+				className="_namesContainer"
 				style={{
 					backgroundColor: highlightColor ? highlightColor : alwaysColor,
 				}}
 			>
 				<div
-					className={`_nameNamespace`}
+					className="_nameContainer"
+					onMouseDown={e => {
+						e.preventDefault();
+						e.stopPropagation();
+
+						if (e.button !== 0) return;
+
+						const rect = container.current!.getBoundingClientRect();
+						const left = Math.round(
+							e.clientX - rect.left + container.current!.scrollLeft,
+						);
+						const top = Math.round(e.clientY - rect.top + container.current!.scrollTop);
+						onDragStart(e.ctrlKey || e.metaKey, statement.statementName, { left, top });
+					}}
+					onMouseMove={e => {
+						if (!mouseMove && dragNode) setMouseMove(true);
+					}}
+					onMouseUp={e => {
+						if (e.button !== 0) return;
+
+						if (e.target === e.currentTarget && !mouseMove) {
+							e.preventDefault();
+							e.stopPropagation();
+							onClick(e.ctrlKey || e.metaKey, statement.statementName);
+						}
+						onDependencyDrop(statement.statementName);
+
+						setMouseMove(false);
+					}}
 					onDoubleClick={e => {
 						e.stopPropagation();
 						e.preventDefault();
-						setEditNameNamespace(true);
-						onClick(false, statement.statementName);
 					}}
 				>
-					{editNameNamespace ? (
-						<Search
-							value={name}
-							options={functionNames.map(e => ({
-								value: e,
-							}))}
-							style={{
-								backgroundColor: highlightColor ? highlightColor : alwaysColor,
+					<i
+						className={`_icon fa fa-solid ${
+							ICONS_GROUPS.get(statement.namespace) ?? 'fa-microchip'
+						}`}
+					></i>
+					<div
+						className="_statementContanier"
+						style={{
+							borderColor: highlightColor ? highlightColor : alwaysColor,
+						}}
+					>
+						<div
+							className={`_statementName`}
+							onDoubleClick={e => {
+								e.stopPropagation();
+								e.preventDefault();
+								setEditStatementName(true);
 							}}
-							onChange={value => {
-								const index = value.lastIndexOf('.');
-
-								const name = index === -1 ? value : value.substring(index + 1);
-								const namespace =
-									index === -1 ? undefined : value.substring(0, index);
-								onChange({ ...duplicate(statement), name, namespace });
-								setEditNameNamespace(false);
+						>
+							{editStatementName ? (
+								<>
+									<input
+										type="text"
+										value={statementName}
+										onChange={e => setStatementName(e.target.value)}
+										autoFocus={true}
+										onBlur={() => {
+											setEditStatementName(false);
+											onChange({ ...duplicate(statement), statementName });
+										}}
+										onKeyUp={e => {
+											if (e.key === 'Delete' || e.key === 'Backspace') {
+												e.stopPropagation();
+												e.preventDefault();
+											} else if (e.key === 'Escape') {
+												setStatementName(statement.statementName);
+												setEditStatementName(false);
+											} else if (e.key === 'Enter') {
+												setEditStatementName(false);
+												onChange({
+													...duplicate(statement),
+													statementName,
+												});
+											}
+										}}
+									/>
+								</>
+							) : (
+								statementName
+							)}
+						</div>
+						<i
+							className="_editIcon fa fa-1x fa-solid fa-pencil"
+							style={{ visibility: editStatementName ? 'visible' : undefined }}
+							onClick={() => {
+								setEditStatementName(true);
 							}}
-							onClose={() => setEditNameNamespace(false)}
 						/>
-					) : (
-						name
-					)}
+					</div>
 				</div>
-				<i
-					className="_editIcon fa fa-1x fa-solid fa-bars-staggered"
-					style={{ visibility: editNameNamespace ? 'visible' : undefined }}
-					onClick={() => {
-						setEditNameNamespace(true);
-						onClick(false, statement.statementName);
-					}}
-				/>
+				<div className={`_nameNamespaceContainer`}>
+					<div
+						className={`_nameNamespace`}
+						onDoubleClick={e => {
+							e.stopPropagation();
+							e.preventDefault();
+							setEditNameNamespace(true);
+							onClick(false, statement.statementName);
+						}}
+					>
+						{editNameNamespace ? (
+							<Search
+								value={name}
+								options={functionNames.map(e => ({
+									value: e,
+								}))}
+								style={{
+									backgroundColor: highlightColor ? highlightColor : alwaysColor,
+								}}
+								onChange={value => {
+									const index = value.lastIndexOf('.');
+
+									const name = index === -1 ? value : value.substring(index + 1);
+									const namespace =
+										index === -1 ? '_' : value.substring(0, index);
+									onChange({ ...duplicate(statement), name, namespace });
+									setEditNameNamespace(false);
+								}}
+								onClose={() => setEditNameNamespace(false)}
+							/>
+						) : (
+							name
+						)}
+					</div>
+					<i
+						className="_editIcon fa fa-1x fa-solid fa-bars-staggered"
+						style={{ visibility: editNameNamespace ? 'visible' : undefined }}
+						onClick={() => {
+							setEditNameNamespace(true);
+							onClick(false, statement.statementName);
+						}}
+					/>
+				</div>
 			</div>
 			<div className="_otherContainer">
 				{params}
