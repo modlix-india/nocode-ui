@@ -27,7 +27,7 @@ function Carousel(props: ComponentProps) {
 			hasNumbersInSlideNav,
 			slideNavButtonPosition,
 			arrowButtons,
-			navigationsOnlyOnHover,
+			showNavigationControlsOnHover,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -42,7 +42,7 @@ function Carousel(props: ComponentProps) {
 	const [transitionFrom, setTransitionFrom] = useState<number | undefined>(undefined);
 	const [slideNum, setSlideNum] = useState<number>(0);
 	const [firstTime, setFirstTime] = useState(true);
-	const [isHover, setIsHover] = useState(false);
+	const [hover, setHover] = useState(false);
 
 	useEffect(() => {
 		setChildrenDef(
@@ -183,10 +183,10 @@ function Carousel(props: ComponentProps) {
 	}
 
 	const handleMouse = (e: any) => {
-		if (navigationsOnlyOnHover) setIsHover(true);
+		if (showNavigationControlsOnHover) setHover(true);
 	};
 	const handleMouseLeave = (e: any) => {
-		if (navigationsOnlyOnHover) setIsHover(false);
+		if (showNavigationControlsOnHover) setHover(false);
 	};
 
 	return (
@@ -204,12 +204,8 @@ function Carousel(props: ComponentProps) {
 			{showArrowButtons && (
 				<div
 					className={` ${
-						navigationsOnlyOnHover
-							? `${
-									isHover
-										? `showNavButtonsOnHover  arrowButtons${arrowButtons}`
-										: `hideNavButtonsIfnotHover`
-							  }`
+						showNavigationControlsOnHover
+							? `${hover ? `show  arrowButtons${arrowButtons}` : `hide`}`
 							: `arrowButtons${arrowButtons}`
 					}`}
 				>
@@ -238,21 +234,21 @@ function Carousel(props: ComponentProps) {
 				</div>
 			)}
 			<div
-				className={` innerDivSlideNav ${`slideNavDiv${
+				className={`innerDivSlideNav ${`slideNavDiv${
 					slideNavButtonPosition === 'OutsideTop' ? 'OutsideTop' : 'innerDivSlideNav'
 				}`}`}
 			>
 				<div className="innerDiv">{showChildren}</div>
 				<div
-					className={` slideNavDiv${slideNavButtonPosition} ${
+					className={`slideNavDiv${slideNavButtonPosition} ${
 						slideNavButtonPosition === 'OutsideTop' ? 'slideNavDiv' : ''
-					}`}
+					} ${showNavigationControlsOnHover ? (hover ? 'showFlex' : 'hide') : ''}`}
 				>
 					{showDotsButtons &&
 						(childrenDef ?? []).map((e: any, key: any) => (
 							<button
 								key={key}
-								className={`slideNav  ${
+								className={` slideNav  ${
 									dotsButtonType !== 'none' && hasNumbersInSlideNav === false
 										? `fa-${dotsButtonIconType} fa-${dotsButtonType}`
 										: ` `

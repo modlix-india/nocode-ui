@@ -4,7 +4,11 @@ import {
 	SCHEMA_BOOL_COMP_PROP,
 	SCHEMA_STRING_COMP_PROP,
 } from '../../constants';
-import { ComponentPropertyDefinition, ComponentPropertyEditor } from '../../types/common';
+import {
+	ComponentPropertyDefinition,
+	ComponentPropertyEditor,
+	ComponentPropertyGroup,
+} from '../../types/common';
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
@@ -12,7 +16,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'showArrowButtons',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Left and right Buttons',
-		description: `Left and right arrow buttons to control carousel`,
+		description: 'Left and right arrow buttons to control carousel',
+		group: ComponentPropertyGroup.IMPORTANT,
 		defaultValue: true,
 	},
 	{
@@ -20,6 +25,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Dot buttons in carousel',
 		description: `Dot buttons that will show on bottom of the carousel.`,
+		group: ComponentPropertyGroup.IMPORTANT,
 		defaultValue: true,
 	},
 	{
@@ -27,6 +33,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_NUM_COMP_PROP,
 		displayName: 'Carousel slide speed',
 		description: `Adjust the slide speed by giving the time in milliseconds.`,
+		group: ComponentPropertyGroup.IMPORTANT,
 		defaultValue: 2000,
 	},
 	{
@@ -35,6 +42,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Animation Type',
 		description: 'Animation Type',
 		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: 'slide',
 		enumValues: [
 			{ name: 'slide', displayName: 'Slide', description: 'Slide' },
@@ -49,6 +57,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_NUM_COMP_PROP,
 		displayName: 'Animation Duration',
 		description: 'How long the animation should last.',
+		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: 2000,
 	},
 	{
@@ -57,6 +66,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Easing',
 		description: 'Easing',
 		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: 'linear',
 		enumValues: [
 			{ name: 'linear', displayName: 'Linear', description: 'Linear' },
@@ -72,6 +82,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Auto Play',
 		description: 'Play automatically without interaction',
+		group: ComponentPropertyGroup.IMPORTANT,
 		defaultValue: true,
 	},
 	{
@@ -81,6 +92,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Types of Dot buttons',
 		editor: ComponentPropertyEditor.ENUM,
 		defaultValue: 'circle',
+		group: ComponentPropertyGroup.IMPORTANT,
 		enumValues: [
 			{ name: 'circle', displayName: 'dots', description: 'dots' },
 			{ name: 'square', displayName: 'square', description: 'square buttons' },
@@ -93,6 +105,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'dotsButtonType',
 		description: 'Position of Dot buttons',
 		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.IMPORTANT,
 		defaultValue: 'regular',
 		enumValues: [
 			{ name: 'regular', displayName: 'regular', description: 'hallo icon' },
@@ -104,6 +117,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'hasNumbersInSlideNav',
 		description: 'has numbers in slide nav',
+		group: ComponentPropertyGroup.IMPORTANT,
 		defaultValue: true,
 	},
 	{
@@ -112,6 +126,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'slideNavButtonType',
 		description: 'Types of Dot buttons',
 		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: 'Right',
 		enumValues: [
 			{
@@ -154,6 +169,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Position of arrow buttons',
 		editor: ComponentPropertyEditor.ENUM,
 		defaultValue: 'OutsideBottomRight',
+		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
 			{
 				name: 'Middle',
@@ -204,10 +220,12 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
-		name: 'navigationsOnlyOnHover',
+		name: 'showNavigationControlsOnHover',
 		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'navigationsOnHover',
-		description: 'navigationsOnHover',
+		displayName: 'Show navigation controls on hover',
+		description:
+			'This property display navigation controls, i.e; arrows and buttons, when the carousel is hovered upon.',
+		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: true,
 	},
 

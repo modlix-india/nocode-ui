@@ -208,14 +208,15 @@ export default function CarouselStyle({ theme }: { theme: Map<string, Map<string
         opacity:1;
         align-items: center;
     }
-   ${PREFIX} .hideNavButtonsIfnotHover{
+   ${PREFIX} .hide{
     display:none;
     
    }
-   ${PREFIX} .showNavButtonsOnHover{
+   ${PREFIX} .show{
     display:block;
-    transition:display 5s ease-in;
-    
+   }
+   ${PREFIX} .showFlex{
+    display:flex;
    }
     ${PREFIX} ._eachSlide._current._slideover{
         left: 100%;
