@@ -3,6 +3,7 @@ import React from 'react';
 import { NAMESPACE_UI_ENGINE } from '../../constants';
 import {
 	addListener,
+	addListenerAndCallImmediately,
 	getData,
 	getDataFromLocation,
 	getPathFromLocation,
@@ -45,11 +46,13 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	if (!bindingPath) throw new Error('Definition requires bindingpath');
-	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
+	const bindingPathPath = bindingPath
+		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
+		: undefined;
 
 	React.useEffect(() => {
-		return addListener(
+		if (!bindingPathPath) return;
+		return addListenerAndCallImmediately(
 			(_, value) => {
 				setValue(value);
 			},
@@ -68,13 +71,13 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 	const handleAdd = (index: any) => {
 		const newData = value.slice();
 		newData.splice(index + 1, 0, newData[index]);
-		setData(bindingPathPath, newData, context?.pageName);
+		setData(bindingPathPath!, newData, context?.pageName);
 	};
 
 	const handleDelete = (index: any) => {
 		const newData = value.slice();
 		newData.splice(index, 1);
-		setData(bindingPathPath, newData, context?.pageName);
+		setData(bindingPathPath!, newData, context?.pageName);
 	};
 
 	const handleMove = (from: number, to: number) => {
@@ -83,7 +86,7 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 		const temp = newData[from];
 		newData[from] = newData[to];
 		newData[to] = temp;
-		setData(bindingPathPath, newData, context?.pageName);
+		setData(bindingPathPath!, newData, context?.pageName);
 	};
 
 	const handleDragStart = async (e: any, index: any) => {
@@ -111,7 +114,7 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 		const temp = newData[from];
 		to === newData.length - 1 ? newData.push(temp) : newData.splice(to, 0, temp);
 		newData.splice(from > to ? from + 1 : from, 1);
-		setData(bindingPathPath, newData, context?.pageName);
+		setData(bindingPathPath!, newData, context?.pageName);
 		e.target.classList.remove('dragging');
 	};
 
@@ -211,6 +214,12 @@ const component: Component = {
 	allowedChildrenType: new Map<string, number>([['', 1]]),
 	bindingPaths: {
 		bindingPath: { name: 'Array Binding' },
+	},
+	defaultTemplate: {
+		key: '',
+		name: 'repeator',
+		type: 'ArrayRepeater',
+		properties: {},
 	},
 };
 

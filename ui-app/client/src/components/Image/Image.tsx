@@ -81,6 +81,15 @@ const component: Component = {
 	styleComponent: ImageStyle,
 	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['hover'],
+	defaultTemplate: {
+		key: '',
+		name: 'Image',
+		type: 'Image',
+		properties: {
+			src: { value: 'api/files/static/file/SYSTEM/markauto/fincityLogo.png' },
+			alt: { value: 'Placeholder image' },
+		},
+	},
 };
 
 export default component;

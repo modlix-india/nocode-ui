@@ -18,6 +18,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show Empty Grids',
 		description: 'Show Empty Grids when there is no data',
+		group: ComponentPropertyGroup.IMPORTANT,
 		defaultValue: false,
 	},
 	COMMON_COMPONENT_PROPERTIES.layout,

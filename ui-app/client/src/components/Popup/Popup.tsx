@@ -22,18 +22,18 @@ function Popup(props: ComponentProps) {
 		definition: { bindingPath },
 		context,
 	} = props;
-	if (!bindingPath) throw new Error('Definition needs binding path');
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
-	const bindingPathPath = getPathFromLocation(bindingPath, props.locationHistory, pageExtractor);
+	const bindingPathPath =
+		bindingPath && getPathFromLocation(bindingPath, props.locationHistory, pageExtractor);
 	React.useEffect(() => {
-		if (bindingPath)
-			addListenerAndCallImmediately(
-				(_, value) => {
-					setIsActive(!!value);
-				},
-				pageExtractor,
-				bindingPathPath,
-			);
+		if (!bindingPathPath) return;
+		return addListenerAndCallImmediately(
+			(_, value) => {
+				setIsActive(!!value);
+			},
+			pageExtractor,
+			bindingPathPath,
+		);
 	}, []);
 	const {
 		key,
@@ -87,7 +87,7 @@ function Popup(props: ComponentProps) {
 
 	const handleClose = React.useCallback(() => {
 		setData(
-			getPathFromLocation(bindingPath, props.locationHistory),
+			getPathFromLocation(bindingPath!, props.locationHistory),
 			false,
 			props.context?.pageName,
 		);
@@ -188,6 +188,11 @@ const component: Component = {
 	allowedChildrenType: new Map<string, number>([['', -1]]),
 	bindingPaths: {
 		bindingPath: { name: 'Toggle Binding' },
+	},
+	defaultTemplate: {
+		key: '',
+		type: 'Popup',
+		name: 'Popup',
 	},
 };
 

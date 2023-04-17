@@ -1,5 +1,9 @@
 import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
-import { ComponentPropertyDefinition, ComponentPropertyEditor } from '../../types/common';
+import {
+	ComponentPropertyDefinition,
+	ComponentPropertyEditor,
+	ComponentPropertyGroup,
+} from '../../types/common';
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
@@ -8,12 +12,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Add button',
 		description: 'When this option is set to true, User will be able to add items to repeater',
+		group: ComponentPropertyGroup.IMPORTANT,
 		defaultValue: false,
 	},
 	{
 		name: 'showDelete',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Delete button',
+		group: ComponentPropertyGroup.IMPORTANT,
 		description:
 			'When this option is set to true, User will be able to delete items from repeater',
 		defaultValue: false,
@@ -22,6 +28,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'showMove',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Move buttons',
+		group: ComponentPropertyGroup.IMPORTANT,
 		description:
 			'When this option is set to true, User will be able to move items up/down the index in the repeater',
 		defaultValue: false,
@@ -30,6 +37,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'isItemDraggable',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Draggable Items',
+		group: ComponentPropertyGroup.ADVANCED,
 		description:
 			'When this option is set to true, User will be able to drag items up the index in the repeater',
 		defaultValue: false,

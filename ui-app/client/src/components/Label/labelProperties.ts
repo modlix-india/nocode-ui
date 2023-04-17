@@ -5,7 +5,7 @@ import {
 	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
-import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
+import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
@@ -13,16 +13,10 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Label text',
 		description: `Label's display text.`,
+		group: ComponentPropertyGroup.IMPORTANT,
 		translatable: true,
 	},
-
-	{
-		name: 'visibility',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Visibility',
-		description: 'This component will be hidden when this property is true.',
-		group: ComponentPropertyGroup.COMMON,
-	},
+	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

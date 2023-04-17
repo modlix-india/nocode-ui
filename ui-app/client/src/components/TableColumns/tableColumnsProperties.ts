@@ -1,6 +1,5 @@
-import { Schema } from '@fincity/kirun-js';
 import { SCHEMA_BOOL_COMP_PROP } from '../../constants';
-import { ComponentPropertyDefinition } from '../../types/common';
+import { ComponentPropertyDefinition, ComponentPropertyGroup } from '../../types/common';
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
@@ -9,6 +8,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show Empty Rows',
 		description: 'Show Empty Rows when there is no data',
+		group: ComponentPropertyGroup.IMPORTANT,
 		defaultValue: true,
 	},
 	{
@@ -16,6 +16,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show Headers',
 		description: 'Show Headers',
+		group: ComponentPropertyGroup.IMPORTANT,
 		defaultValue: true,
 	},
 	COMMON_COMPONENT_PROPERTIES.readOnly,

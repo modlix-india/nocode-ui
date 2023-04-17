@@ -85,7 +85,7 @@ function TabsComponent(props: ComponentProps) {
 	const selectedChild = entry ? { [entry[0]]: entry[1] } : {};
 
 	const orientationClass = tabsOrientation === 'VERTICAL' ? 'vertical' : '';
-
+	console.log(tabs);
 	return (
 		<div className={`comp compTabs ${orientationClass}`} style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />
@@ -152,6 +152,15 @@ const component: Component = {
 	stylePseudoStates: ['hover'],
 	bindingPaths: {
 		bindingPath: { name: 'Active Tab Binding' },
+	},
+	defaultTemplate: {
+		key: '',
+		type: 'Tabs',
+		name: 'Tabs',
+		properties: {
+			tabs: { value: ['Tab1', 'Tab2', 'Tab3'] },
+			defaultActive: { value: 'Tab1' },
+		},
 	},
 };
 

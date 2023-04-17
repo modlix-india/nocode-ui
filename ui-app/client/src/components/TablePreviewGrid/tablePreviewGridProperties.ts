@@ -14,20 +14,8 @@ import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '.
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{ ...COMMON_COMPONENT_PROPERTIES.onClick },
-	{
-		name: 'linkPath',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Link path',
-		description: `Path that page needs to be redirected on click.`,
-		translatable: false,
-	},
-
-	{
-		name: 'target',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Link target',
-		description: `Link's target.`,
-	},
+	COMMON_COMPONENT_PROPERTIES.linkPath,
+	COMMON_COMPONENT_PROPERTIES.linkTargetType,
 	COMMON_COMPONENT_PROPERTIES.layout,
 	{
 		name: 'containerType',
@@ -35,6 +23,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Container Type (SEO)',
 		description: 'container type for seo optimization',
 		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: 'DIV',
 		enumValues: [
 			{ name: 'DIV', displayName: 'DIV', description: 'Div tag' },
@@ -53,6 +42,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Background',
 		description: 'Background to be applied',
 		editor: ComponentPropertyEditor.BACKGROUND,
+		group: ComponentPropertyGroup.IMPORTANT,
 		defaultValue: '',
 		enumValues: [
 			{ name: '', displayName: 'None', description: 'None' },
