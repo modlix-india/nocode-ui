@@ -34,6 +34,8 @@ interface DnDEditorProps {
 	redoStackRef: React.MutableRefObject<PageDefinition[]>;
 	slaveStore: any;
 	editPageName: string | undefined;
+	selectedSubComponent: string;
+	onSelectedSubComponentChanged: (key: string) => void;
 }
 
 export default function DnDEditor({
@@ -61,6 +63,8 @@ export default function DnDEditor({
 	redoStackRef,
 	slaveStore,
 	editPageName,
+	selectedSubComponent,
+	onSelectedSubComponentChanged,
 }: DnDEditorProps) {
 	return (
 		<div className="_dndGrid">
@@ -111,6 +115,8 @@ export default function DnDEditor({
 						onShowCodeEditor={onShowCodeEditor}
 						slaveStore={slaveStore}
 						editPageName={editPageName}
+						selectedSubComponent={selectedSubComponent}
+						onSelectedSubComponentChanged={onSelectedSubComponentChanged}
 					/>
 				</div>
 				<DnDBottomBar

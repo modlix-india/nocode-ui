@@ -81,7 +81,7 @@ export interface ComponentENUM {
 export interface ComponentPropertyDefinition {
 	name: string;
 	displayName: string;
-	description: string;
+	description?: string;
 	schema: Schema;
 	editor?: ComponentPropertyEditor;
 	translatable?: boolean;
@@ -193,6 +193,7 @@ export interface ComponentResoltuions {
 
 export interface EachComponentStyle {
 	condition?: ComponentProperty<boolean>;
+	conditionName?: string;
 	pseudoState?: string;
 	resolutions?: ComponentResoltuions;
 }

@@ -537,6 +537,11 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			gap: 5px;
 			align-items: center;
+			text-transform: capitalize;
+		}
+
+		${PREFIX} ._propLabel i.fa {
+			cursor: pointer;
 		}
 
 		${PREFIX} span._description {

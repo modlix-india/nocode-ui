@@ -33,47 +33,6 @@ export const StyleResolutionDefinition = new Map<string, StyleResolutionProperti
 		},
 	],
 	[
-		StyleResolution.TABLET_LANDSCAPE_SCREEN,
-		{
-			name: StyleResolution.TABLET_LANDSCAPE_SCREEN,
-			displayName: 'Tablet (Landscape) and Larger',
-			description:
-				'Resolution larger than Table landscape orientation, width more than 960px.',
-			minWidth: 961,
-		},
-	],
-	[
-		StyleResolution.TABLET_POTRAIT_SCREEN,
-		{
-			name: StyleResolution.TABLET_POTRAIT_SCREEN,
-			displayName: 'Tablet (Portrait) and Larger',
-			description:
-				'Resolution larger than Table portrait orientation, width more than 640px.',
-			minWidth: 641,
-		},
-	],
-
-	[
-		StyleResolution.MOBILE_LANDSCAPE_SCREEN,
-		{
-			name: StyleResolution.MOBILE_LANDSCAPE_SCREEN,
-			displayName: 'Mobile (Landscape) and Larger',
-			description:
-				'Resolution larger than Table landscape orientation, width more than 480px.',
-			minWidth: 481,
-		},
-	],
-	[
-		StyleResolution.MOBILE_POTRAIT_SCREEN,
-		{
-			name: StyleResolution.MOBILE_POTRAIT_SCREEN,
-			displayName: 'Tablet (Portrait) and Larger',
-			description:
-				'Resolution larger than Table portrait orientation, width more than 320px.',
-			minWidth: 321,
-		},
-	],
-	[
 		StyleResolution.DESKTOP_SCREEN_ONLY,
 		{
 			name: StyleResolution.DESKTOP_SCREEN_ONLY,
@@ -120,6 +79,47 @@ export const StyleResolutionDefinition = new Map<string, StyleResolutionProperti
 			displayName: 'Mobile (Portrait)',
 			description: 'Mobile portrait orientation, width smaller than 480px.',
 			maxWidth: 480,
+		},
+	],
+	[
+		StyleResolution.MOBILE_POTRAIT_SCREEN,
+		{
+			name: StyleResolution.MOBILE_POTRAIT_SCREEN,
+			displayName: 'Tablet (Portrait) and Larger',
+			description:
+				'Resolution larger than Table portrait orientation, width more than 320px.',
+			minWidth: 321,
+		},
+	],
+	[
+		StyleResolution.TABLET_LANDSCAPE_SCREEN,
+		{
+			name: StyleResolution.TABLET_LANDSCAPE_SCREEN,
+			displayName: 'Tablet (Landscape) and Larger',
+			description:
+				'Resolution larger than Table landscape orientation, width more than 960px.',
+			minWidth: 961,
+		},
+	],
+	[
+		StyleResolution.TABLET_POTRAIT_SCREEN,
+		{
+			name: StyleResolution.TABLET_POTRAIT_SCREEN,
+			displayName: 'Tablet (Portrait) and Larger',
+			description:
+				'Resolution larger than Table portrait orientation, width more than 640px.',
+			minWidth: 641,
+		},
+	],
+
+	[
+		StyleResolution.MOBILE_LANDSCAPE_SCREEN,
+		{
+			name: StyleResolution.MOBILE_LANDSCAPE_SCREEN,
+			displayName: 'Mobile (Landscape) and Larger',
+			description:
+				'Resolution larger than Table landscape orientation, width more than 480px.',
+			minWidth: 481,
 		},
 	],
 ]);
