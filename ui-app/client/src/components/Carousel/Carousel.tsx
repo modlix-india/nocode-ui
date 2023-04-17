@@ -189,8 +189,6 @@ function Carousel(props: ComponentProps) {
 		if (navigationsOnlyOnHover) setIsHover(false);
 	};
 
-	console.log(navigationsOnlyOnHover, 'navigationsOnlyOnHover');
-	console.log(isHover, 'isHover');
 	return (
 		<div
 			className={`comp compCarousel ${
