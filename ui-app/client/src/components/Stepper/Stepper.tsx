@@ -217,6 +217,14 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: StepperStyle,
+	defaultTemplate: {
+		key: '',
+		type: 'Stepper',
+		name: 'Stepper',
+		properties: {
+			titles: { value: 'Step1, Step2, Step3' },
+		},
+	},
 };
 
 export default component;

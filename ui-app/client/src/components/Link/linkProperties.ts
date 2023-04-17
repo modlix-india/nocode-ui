@@ -1,70 +1,45 @@
-import { Schema } from '@fincity/kirun-js';
-import {
-	SCHEMA_BOOL_COMP_PROP,
-	SCHEMA_DATA_LOCATION,
-	SCHEMA_STRING_COMP_PROP,
-} from '../../constants';
+import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyDefinition,
-	ComponentPropertyEditor,
 	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
-import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
+import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'label',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Link label',
-		description: `Link's display label.`,
+		description: "Link's display label.",
 		translatable: true,
+		group: ComponentPropertyGroup.IMPORTANT,
 	},
-
-	{
-		name: 'linkPath',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Link path',
-		description: `Path that page needs to be redirected on click.`,
-		translatable: false,
-	},
-
+	{ ...COMMON_COMPONENT_PROPERTIES.linkPath, group: ComponentPropertyGroup.IMPORTANT },
+	{ ...COMMON_COMPONENT_PROPERTIES.linkTargetType, group: ComponentPropertyGroup.IMPORTANT },
 	{
 		name: 'showButton',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show Link Button',
 		description: 'Button beside the link to redirect.',
+		group: ComponentPropertyGroup.ADVANCED,
 	},
-
 	{
 		name: 'isExternalUrl',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Is external url ?',
 		description: 'Is the url an external url ?.',
 		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
 	},
-
-	{
-		name: 'target',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Link target',
-		description: `Link's target.`,
-	},
-
 	{
 		name: 'externalButtonTarget',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Link Button target',
 		description: `Link Button's target.`,
+		group: ComponentPropertyGroup.ADVANCED,
 	},
-
-	{
-		name: 'visibility',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Visibility',
-		description: 'This component will be hidden when this property is true.',
-		group: ComponentPropertyGroup.COMMON,
-	},
+	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

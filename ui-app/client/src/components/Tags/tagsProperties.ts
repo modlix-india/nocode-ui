@@ -1,9 +1,4 @@
-import { Schema } from '@fincity/kirun-js';
-import {
-	SCHEMA_ANY_COMP_PROP,
-	SCHEMA_BOOL_COMP_PROP,
-	SCHEMA_STRING_COMP_PROP,
-} from '../../constants';
+import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
@@ -18,12 +13,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'icon',
 		description: 'icon that should be associated with the tag.',
+		group: ComponentPropertyGroup.IMPORTANT,
+		editor: ComponentPropertyEditor.ICON,
 	},
 	{
 		name: 'closeButton',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'closeButton',
 		description: 'closeButton that should be associated with the tag.',
+		group: ComponentPropertyGroup.IMPORTANT,
 		defaultValue: true,
 	},
 	{
@@ -31,76 +29,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'closeEvent',
 		description: 'closeEvent that should be associated with the tag.',
-	},
-	{
-		name: 'datatype',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Dropdown data type',
-		description: `Dropdown's data format.`,
-		defaultValue: 'LIST_OF_STRINGS',
-		editor: ComponentPropertyEditor.ENUM,
-		enumValues: [
-			{
-				name: 'LIST_OF_STRINGS',
-				displayName: 'List of strings',
-				description: 'data has an array of strings',
-			},
-			{
-				name: 'LIST_OF_OBJECTS',
-				displayName: 'List of objects',
-				description: 'data has an array of objects',
-			},
-			{
-				name: 'LIST_OF_LISTS',
-				displayName: 'List of lists',
-				description: 'data has an array of arrays',
-			},
-			{
-				name: 'OBJECT_OF_PRIMITIVES',
-				displayName: 'Object of primitives',
-				description: 'Object with key value pairs where values are primitives',
-			},
-			{
-				name: 'OBJECT_OF_OBJECTS',
-				displayName: 'Object of objects',
-				description: 'Object with key value pairs where values are objects',
-			},
-			{
-				name: 'OBJECT_OF_LISTS',
-				displayName: 'Object of lists',
-				description: 'Object with key value pairs where values are lists',
-			},
-		],
-	},
-	{
-		name: 'uniqueKeyType',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: "Unique key's type",
-		description: `Type for sleection unique key`,
-		defaultValue: 'LIST_OF_STRINGS',
-		editor: ComponentPropertyEditor.ENUM,
-		enumValues: [
-			{
-				name: 'KEY',
-				displayName: 'Key',
-				description: "Select key as unique key's value",
-			},
-			{
-				name: 'INDEX',
-				displayName: 'Index',
-				description: "Select index as unique key's value",
-			},
-			{
-				name: 'OBJECT',
-				displayName: 'Object',
-				description: "Select object as unique key's value",
-			},
-			{
-				name: 'RANDOM',
-				displayName: 'Random',
-				description: 'A Random key is associated with value which is costly in rendering',
-			},
-		],
+		group: ComponentPropertyGroup.EVENTS,
 	},
 
 	{
@@ -108,6 +37,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'hasInputBox',
 		description: 'has InputBox.',
+		group: ComponentPropertyGroup.IMPORTANT,
 		defaultValue: true,
 	},
 	{
@@ -117,6 +47,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Type of the Value',
 		defaultValue: ' ',
 		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
 			{ name: ',', displayName: 'Comma', description: 'Comma' },
 			{ name: ':', displayName: 'SemiColon', description: 'SemiColon' },
@@ -129,6 +60,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'placeHolder',
 		description: 'placeHolder.',
+		group: ComponentPropertyGroup.IMPORTANT,
 		defaultValue: '',
 	},
 	{
@@ -136,50 +68,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'label',
 		description: 'label.',
+		group: ComponentPropertyGroup.IMPORTANT,
 		defaultValue: '',
 	},
-
-	{
-		name: 'labelKeyType',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: "Label's key type",
-		description: `type of value that needs to be selected for dispaly label`,
-		defaultValue: 'LIST_OF_STRINGS',
-		editor: ComponentPropertyEditor.ENUM,
-		enumValues: [
-			{
-				name: 'KEY',
-				displayName: 'Key',
-				description: "Select key as label key's value",
-			},
-			{
-				name: 'INDEX',
-				displayName: 'Index',
-				description: "Select index as label key's value",
-			},
-			{
-				name: 'OBJECT',
-				displayName: 'Object',
-				description: "Select object as label key's value",
-			},
-		],
-	},
-
-	{
-		name: 'uniqueKey',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: "Unique key's value",
-		description: `Key value that is used to generate unique key value.`,
-		translatable: true,
-	},
-
-	{
-		name: 'labelKey',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: "Labels key's value ",
-		description: `Key value that is used to generate label value.`,
-		translatable: true,
-	},
+	COMMON_COMPONENT_PROPERTIES.datatype,
+	COMMON_COMPONENT_PROPERTIES.uniqueKeyType,
+	COMMON_COMPONENT_PROPERTIES.labelKeyType,
+	COMMON_COMPONENT_PROPERTIES.uniqueKey,
+	COMMON_COMPONENT_PROPERTIES.labelKey,
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];

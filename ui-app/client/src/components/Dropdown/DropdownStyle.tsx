@@ -11,7 +11,7 @@ export default function DropdownStyle({ theme }: { theme: Map<string, Map<string
         display: flex;
         flex-direction: column;
         gap: 4px;
-        margin-top:1rem;
+        align-self: flex-start;
      }
 
     ${PREFIX} .dropdownContainer {

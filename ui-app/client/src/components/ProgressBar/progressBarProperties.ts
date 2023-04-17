@@ -1,15 +1,5 @@
-import { Schema } from '@fincity/kirun-js';
-import {
-	SCHEMA_ANY_COMP_PROP,
-	SCHEMA_BOOL_COMP_PROP,
-	SCHEMA_NUM_COMP_PROP,
-	SCHEMA_STRING_COMP_PROP,
-} from '../../constants';
-import {
-	ComponentPropertyEditor,
-	ComponentPropertyGroup,
-	ComponentPropertyDefinition,
-} from '../../types/common';
+import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
+import { ComponentPropertyDefinition, ComponentPropertyGroup } from '../../types/common';
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
@@ -17,50 +7,57 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'label',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Progress Bar Labels value ',
-		description: `Progress Bar Label value.`,
+		description: 'Progress Bar Label value.',
+		group: ComponentPropertyGroup.IMPORTANT,
 		translatable: true,
 	},
 	{
 		name: 'showProgressValue',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show Progress Bar value ',
-		description: `Show Progress Bar value.`,
+		description: 'Show Progress Bar value.',
+		group: ComponentPropertyGroup.IMPORTANT,
 		defaultValue: true,
 	},
 	{
 		name: 'progressNotStartedLabel',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Progress Not started Label',
-		description: `Progress Not started Label.`,
+		description: 'Progress Not started Label.',
+		group: ComponentPropertyGroup.IMPORTANT,
 		translatable: true,
 	},
 	{
 		name: 'inProgressLabel',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'In Progress Label',
-		description: `In Progress Label.`,
+		description: 'In Progress Label.',
+		group: ComponentPropertyGroup.IMPORTANT,
 		translatable: true,
 	},
 	{
 		name: 'progressCompletedLabel',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Progress Completed Label',
-		description: `Progress Completed Label.`,
+		description: 'Progress Completed Label.',
+		group: ComponentPropertyGroup.IMPORTANT,
 		translatable: true,
 	},
 	{
 		name: 'appendProgressValue',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Append Progress Label',
-		description: `Append Progress Label.`,
+		description: 'Append Progress value to the progress label.',
+		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: true,
 	},
 	{
 		name: 'prependProgressValue',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Prepend Progress Label',
-		description: `Prepend Progress Label.`,
+		description: `Prepend Progress value to the progress label.`,
 		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
 	},
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];

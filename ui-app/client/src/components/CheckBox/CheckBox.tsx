@@ -123,6 +123,14 @@ const component: Component = {
 		bindingPath: { name: 'Data Binding' },
 	},
 	stylePseudoStates: ['hover', 'focus', 'disabled'],
+	defaultTemplate: {
+		key: '',
+		name: 'CheckBox',
+		type: 'CheckBox',
+		properties: {
+			label: { value: 'Check Box' },
+		},
+	},
 };
 
 export default component;

@@ -63,6 +63,14 @@ const component: Component = {
 	styleComponent: IframeStyle,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
+	defaultTemplate: {
+		key: '',
+		name: 'Iframe',
+		type: 'Iframe',
+		properties: {
+			src: { value: 'https://fincity.ai/marketing' },
+		},
+	},
 };
 
 export default component;

@@ -225,6 +225,15 @@ const component: Component = {
 	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['focus', 'hover', 'disabled'],
 	allowedChildrenType: new Map([['Menu', -1]]),
+	defaultTemplate: {
+		key: '',
+		type: 'Menu',
+		name: 'Menu',
+		properties: {
+			label: { value: 'Menu' },
+			icon: { value: 'fa-solid fa-bars' },
+		},
+	},
 };
 
 export default component;

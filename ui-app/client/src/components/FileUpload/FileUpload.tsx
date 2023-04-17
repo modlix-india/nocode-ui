@@ -18,7 +18,7 @@ import { isNullValue } from '@fincity/kirun-js';
 import { returnFileSize } from '../util/getFileSize';
 
 function FileUpload(props: ComponentProps) {
-	const [value, setValue] = useState<any>();
+	const [fileValue, setFileValue] = useState<any>();
 	const inputRef = useRef<any>();
 	const [hover, setHover] = useState<boolean>(false);
 	const [validationMessages, setValidationMessages] = useState<Array<string>>([]);
@@ -29,7 +29,7 @@ function FileUpload(props: ComponentProps) {
 		locationHistory,
 		context,
 	} = props;
-	if (!bindingPath) return null;
+
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	let {
 		key,
@@ -43,7 +43,6 @@ function FileUpload(props: ComponentProps) {
 			readOnly,
 			maxFileSize,
 			showFileList,
-			uploadImmediately,
 			onSelectEvent,
 			validation,
 		} = {},
@@ -58,13 +57,15 @@ function FileUpload(props: ComponentProps) {
 
 	const className = `uploadContainer ${readOnly ? 'disabled' : ''} ${
 		validationMessages.length && !readOnly ? 'error' : ''
-	} ${value !== undefined ? 'selected' : ''}`;
+	} ${fileValue !== undefined ? 'selected' : ''}`;
 
 	const computedStyles = processComponentStylePseudoClasses(
 		{ disabled: readOnly, hover },
 		stylePropertiesWithPseudoStates,
 	);
-	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
+	const bindingPathPath = bindingPath
+		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
+		: undefined;
 	const uploadImmediatelyEvent = onSelectEvent
 		? props.pageDefinition.eventFunctions[onSelectEvent]
 		: undefined;
@@ -74,7 +75,7 @@ function FileUpload(props: ComponentProps) {
 					props.definition,
 					props.pageDefinition,
 					validation,
-					value,
+					fileValue,
 					locationHistory,
 					pageExtractor,
 			  )
@@ -88,7 +89,7 @@ function FileUpload(props: ComponentProps) {
 				true,
 			);
 		}
-		if (!msgs.length && value && uploadImmediatelyEvent) {
+		if (!msgs.length && fileValue && uploadImmediatelyEvent) {
 			(async () =>
 				await runEvent(
 					uploadImmediatelyEvent,
@@ -106,34 +107,39 @@ function FileUpload(props: ComponentProps) {
 				context.pageName,
 				true,
 			);
-	}, [value, validation]);
+	}, [fileValue, validation]);
 
-	useEffect(
-		() =>
-			addListenerAndCallImmediately(
-				(_, value) => {
-					if (isNullValue(value)) return;
-					setValue(value);
-				},
-				pageExtractor,
-				bindingPathPath,
-			),
-		[bindingPathPath],
-	);
+	useEffect(() => {
+		if (!bindingPathPath) return;
+		return addListenerAndCallImmediately(
+			(_, value) => {
+				if (isNullValue(value)) {
+					setFileValue(value);
+					return;
+				}
+				isMultiple && !Array.isArray(value) ? setFileValue([value]) : setFileValue(value);
+			},
+			pageExtractor,
+			bindingPathPath,
+		);
+	}, [bindingPathPath]);
 
 	const handleClick = () => inputRef.current?.click();
 
 	const onChangeFile = (event: any) => {
-		if (!event.target.value?.length) return;
+		if (!event.target.value?.length || !bindingPathPath) return;
 		const files = event.target.files;
-		setData(bindingPathPath, [...files], context?.pageName);
+		setData(bindingPathPath, isMultiple ? [...files] : files[0], context?.pageName);
 	};
 
 	const handleDelete = (event: any, content: any) => {
 		event.stopPropagation();
-		if (value?.length == 0) return;
-		value.splice(value.indexOf(content), 1);
-		setData(bindingPathPath, value, context?.pageName);
+		let deleted: any;
+		if (isMultiple) {
+			deleted = fileValue.slice();
+			deleted.splice(fileValue.indexOf(content), 1);
+		}
+		setData(bindingPathPath!, deleted, context?.pageName);
 	};
 
 	const comp = (
@@ -143,7 +149,7 @@ function FileUpload(props: ComponentProps) {
 	);
 
 	const validationMessagesComp =
-		validationMessages?.length && (value || context.showValidationMessages) ? (
+		validationMessages?.length && (fileValue || context.showValidationMessages) ? (
 			<div className="_validationMessages">
 				{validationMessages.map(msg => (
 					<div key={msg}>{msg}</div>
@@ -160,7 +166,7 @@ function FileUpload(props: ComponentProps) {
 			>
 				<span>{each?.name}</span>
 				<span>{`(${returnFileSize(each?.size)})`}</span>
-				{uploadImmediately ? null : (
+				{uploadImmediatelyEvent ? null : (
 					<i
 						className="fa fa-solid fa-close closeIcon"
 						style={computedStyles?.closeIcon ?? {}}
@@ -197,7 +203,9 @@ function FileUpload(props: ComponentProps) {
 
 	const fileContainer = (
 		<div className="selectedFileContainer" style={computedStyles?.selectedFileContainer ?? {}}>
-			{value?.map((each: any, index: any) => selectedComp(each, index))}
+			{(isMultiple ? fileValue : [fileValue])?.map((each: any, index: any) =>
+				selectedComp(each, index),
+			)}
 		</div>
 	);
 	const largeView = (
@@ -216,7 +224,11 @@ function FileUpload(props: ComponentProps) {
 				{inputContainer}
 				{uploadIconComp}
 				{comp}
-				{value?.length > 0 && showFileList ? fileContainer : labelComp}
+				{((Array.isArray(fileValue) && fileValue.length > 0) ||
+					fileValue?.constructor?.name === 'File') &&
+				showFileList
+					? fileContainer
+					: labelComp}
 			</div>
 			{validationMessagesComp}
 		</>
@@ -267,6 +279,15 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['hover', 'disabled'],
+	bindingPaths: {
+		bindingPath: { name: 'File binding' },
+	},
+	defaultTemplate: {
+		key: '',
+		name: 'FileUpload',
+		type: 'FileUpload',
+		properties: {},
+	},
 };
 
 export default component;

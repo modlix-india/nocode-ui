@@ -12,6 +12,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Theme',
 		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.IMPORTANT,
 		description: 'Editor color schemes',
 		defaultValue: '_light',
 		enumValues: [
@@ -32,6 +33,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'logo',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'SVG logo',
+		group: ComponentPropertyGroup.IMPORTANT,
 		description: 'SVG Logo with no fill to match the theme',
 	},
 
@@ -40,6 +42,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'On Save',
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		group: ComponentPropertyGroup.EVENTS,
 		description: 'Event to be triggered on page save.',
 	},
 
@@ -48,6 +51,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'On Personalization Change',
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		group: ComponentPropertyGroup.EVENTS,
 		description: 'Event to be triggered on personalization changed.',
 	},
 
@@ -56,6 +60,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'On Personalization Delete',
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		group: ComponentPropertyGroup.EVENTS,
 		description: 'Event to be triggered on personalization cleared.',
 	},
 ];

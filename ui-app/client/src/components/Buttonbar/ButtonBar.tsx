@@ -52,13 +52,14 @@ function ButtonBar(props: ComponentProps) {
 		pageExtractor,
 	);
 
-	if (!bindingPath) throw new Error('Definition requires binding path');
 	const [hover, setHover] = React.useState('');
 	const resolvedStyles = processComponentStylePseudoClasses(
 		{ hover: !!hover, readOnly: !!readOnly },
 		stylePropertiesWithPseudoStates,
 	);
-	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
+	const bindingPathPath = bindingPath
+		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
+		: undefined;
 
 	const [value, setvalue] = React.useState<any>();
 
@@ -71,9 +72,9 @@ function ButtonBar(props: ComponentProps) {
 			let nv = value ? [...value] : [];
 			if (index != -1) nv.splice(index, 1);
 			else nv.push(each.value);
-			setData(bindingPathPath, nv.length ? nv : undefined, context?.pageName);
+			setData(bindingPathPath!, nv.length ? nv : undefined, context?.pageName);
 		} else {
-			setData(bindingPathPath, each.value, context?.pageName);
+			setData(bindingPathPath!, each.value, context?.pageName);
 		}
 		if (clickEvent) {
 			await runEvent(
@@ -87,6 +88,7 @@ function ButtonBar(props: ComponentProps) {
 	};
 
 	React.useEffect(() => {
+		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
 			(_, value) => {
 				setvalue(value);
@@ -176,6 +178,14 @@ const component: Component = {
 	stylePseudoStates: ['hover', 'disabled'],
 	bindingPaths: {
 		bindingPath: { name: 'Array Binding' },
+	},
+	defaultTemplate: {
+		key: '',
+		name: 'buttonBar',
+		type: 'ButtonBar',
+		properties: {
+			label: { value: 'ButtonBar' },
+		},
 	},
 };
 
