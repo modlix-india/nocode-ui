@@ -18,7 +18,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'offlineData',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Offline Data',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		description: 'When all the data is available to be served in the table',
 		defaultValue: false,
 	},
@@ -26,7 +26,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'showSpinner',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show Spinner',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		description: 'Show Spinner when the events are running',
 		defaultValue: true,
 	},
@@ -35,7 +35,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show Pagination',
 		description: 'Show Pagination',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: true,
 	},
 	{
@@ -43,7 +43,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show Items per page selection.',
 		description: 'Show Items Per page selection.',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: true,
 	},
 	{
@@ -85,7 +85,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Select Multiple',
 		description: 'Select multiple items',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: false,
 	},
 	{
@@ -94,7 +94,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Display Mode',
 		description: 'Display mode, either columns or grid',
 		defaultValue: 'COLUMNS',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		enumValues: [
 			{ name: 'COLUMNS', displayName: 'Columns', description: 'Columns mode' },
 			{ name: 'GRID', displayName: 'Grid', description: 'Grid mode' },
@@ -105,7 +105,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Preview Mode',
 		description: 'Preview mode, either columns or grid',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: 'BOTH',
 		enumValues: [
 			{ name: 'BOTH', displayName: 'All', description: 'All modes' },
@@ -146,7 +146,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_NUM_COMP_PROP,
 		displayName: 'Default Size',
 		description: 'Display size',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: 10,
 	},
 	{
@@ -154,7 +154,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_NUM_COMP_PROP,
 		displayName: 'Total Pages',
 		description: 'Total number of pages in the data',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 	},
 	{
 		name: 'tableDesign',

@@ -13,7 +13,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Label text',
 		description: `Label's display text.`,
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		translatable: true,
 	},
 	COMMON_COMPONENT_PROPERTIES.visibility,

@@ -16,7 +16,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'source',
 		description: 'source of the image',
 		editor: ComponentPropertyEditor.IMAGE,
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 	},
 	{
 		name: 'alt',
@@ -24,7 +24,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Alt Text',
 		description: 'Text describing the image.',
 		defaultValue: '',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 	},
 	{
 		name: 'zoom',

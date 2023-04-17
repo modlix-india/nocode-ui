@@ -18,7 +18,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description:
 			'Allows the users to select multiple options, also turns the radios to checkboxes.',
 		defaultValue: false,
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 	},
 	{
 		name: 'data',

@@ -13,10 +13,10 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Link label',
 		description: "Link's display label.",
 		translatable: true,
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 	},
-	{ ...COMMON_COMPONENT_PROPERTIES.linkPath, group: ComponentPropertyGroup.IMPORTANT },
-	{ ...COMMON_COMPONENT_PROPERTIES.linkTargetType, group: ComponentPropertyGroup.IMPORTANT },
+	{ ...COMMON_COMPONENT_PROPERTIES.linkPath, group: ComponentPropertyGroup.BASIC },
+	{ ...COMMON_COMPONENT_PROPERTIES.linkTargetType, group: ComponentPropertyGroup.BASIC },
 	{
 		name: 'showButton',
 		schema: SCHEMA_BOOL_COMP_PROP,

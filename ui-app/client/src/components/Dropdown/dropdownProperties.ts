@@ -13,7 +13,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Dropdown placeholder',
 		description: "Placeholder that's shown when no item is selected in dropdown.",
 		defaultValue: 'Select...',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 	},
 
 	{
@@ -22,7 +22,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Is MultiSelect',
 		description: 'Allows the users to select multiple options.',
 		defaultValue: false,
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 	},
 
 	{
@@ -41,7 +41,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Dropdown without floating label.',
 		translatable: true,
 		defaultValue: false,
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 	},
 
 	{
@@ -49,7 +49,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Dropdown header text',
 		description: "Header text that's shown on top of dropdown.",
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 	},
 
 	{

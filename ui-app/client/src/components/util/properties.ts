@@ -37,7 +37,7 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 		displayName: 'Label',
 		description: 'Label to be displayed',
 		translatable: true,
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		editor: ComponentPropertyEditor.TRANSLATABLE_PROP,
 	},
 	readOnly: {

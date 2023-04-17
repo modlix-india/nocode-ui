@@ -19,7 +19,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Editor Type',
 		description: 'Editor Type UI or Backend',
 		editor: ComponentPropertyEditor.ENUM,
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: 'backend',
 		enumValues: [
 			{ name: 'backend', displayName: 'Backend', description: 'Backend only' },

@@ -17,7 +17,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Left and right Buttons',
 		description: 'Left and right arrow buttons to control carousel',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: true,
 	},
 	{
@@ -25,7 +25,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Dot buttons in carousel',
 		description: `Dot buttons that will show on bottom of the carousel.`,
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: true,
 	},
 	{
@@ -33,7 +33,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_NUM_COMP_PROP,
 		displayName: 'Carousel slide speed',
 		description: `Adjust the slide speed by giving the time in milliseconds.`,
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: 2000,
 	},
 	{
@@ -82,7 +82,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Auto Play',
 		description: 'Play automatically without interaction',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: true,
 	},
 	{
@@ -92,7 +92,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Types of Dot buttons',
 		editor: ComponentPropertyEditor.ENUM,
 		defaultValue: 'circle',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		enumValues: [
 			{ name: 'circle', displayName: 'dots', description: 'dots' },
 			{ name: 'square', displayName: 'square', description: 'square buttons' },
@@ -105,7 +105,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'dotsButtonType',
 		description: 'Position of Dot buttons',
 		editor: ComponentPropertyEditor.ENUM,
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: 'regular',
 		enumValues: [
 			{ name: 'regular', displayName: 'regular', description: 'hallo icon' },
@@ -117,7 +117,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'hasNumbersInSlideNav',
 		description: 'has numbers in slide nav',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: true,
 	},
 	{

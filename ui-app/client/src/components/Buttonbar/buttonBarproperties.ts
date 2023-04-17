@@ -20,7 +20,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'label',
 		schema: SCHEMA_ANY_COMP_PROP,
 		displayName: 'Button Bar Label',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		description: "Label that's shown on top of button bar input.",
 	},
 

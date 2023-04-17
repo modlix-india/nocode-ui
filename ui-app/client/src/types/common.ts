@@ -63,7 +63,7 @@ export enum ComponentPropertyEditor {
 }
 
 export enum ComponentPropertyGroup {
-	IMPORTANT = 'IMPORTANT',
+	BASIC = 'BASIC',
 	DATA = 'DATA',
 	EVENTS = 'EVENTS',
 	ADVANCED = 'ADVANCED',

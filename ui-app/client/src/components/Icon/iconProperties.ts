@@ -15,7 +15,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Icon',
 		description: 'Icon',
 		translatable: true,
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		editor: ComponentPropertyEditor.ICON,
 	},
 	COMMON_COMPONENT_PROPERTIES.visibility,

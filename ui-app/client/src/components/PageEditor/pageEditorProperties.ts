@@ -2,6 +2,7 @@ import { SCHEMA_STRING_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
+	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
 import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
@@ -12,7 +13,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Theme',
 		editor: ComponentPropertyEditor.ENUM,
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		description: 'Editor color schemes',
 		defaultValue: '_light',
 		enumValues: [
@@ -33,7 +34,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'logo',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'SVG logo',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		description: 'SVG Logo with no fill to match the theme',
 	},
 

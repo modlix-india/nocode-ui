@@ -292,7 +292,7 @@ export default function PropertyEditor({
 						key={e[0]}
 						name={e[1]}
 						displayName={e[0]}
-						defaultStateOpen={e[1] === ComponentPropertyGroup.IMPORTANT}
+						defaultStateOpen={e[1] === ComponentPropertyGroup.BASIC}
 						pageExtractor={pageExtractor}
 						locationHistory={locationHistory}
 						onChangePersonalization={onChangePersonalization}

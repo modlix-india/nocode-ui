@@ -14,7 +14,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Popover position with respect to first child which is the trigger.',
 		defaultValue: 'bottom-end',
 		editor: ComponentPropertyEditor.ENUM,
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		enumValues: [
 			{
 				name: 'bottom',
@@ -60,7 +60,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Show Popover tip',
 		description: 'Show Popover tip.',
 		defaultValue: true,
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 	},
 	{
 		name: 'closeOnLeave',
