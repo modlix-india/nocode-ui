@@ -81,6 +81,7 @@ function Carousel(props: ComponentProps) {
 	useEffect(() => {
 		if (!currentSlide.current || isNullValue(transitionFrom)) return;
 		setTimeout(() => {
+			if (!currentSlide.current || isNullValue(transitionFrom)) return;
 			currentSlide.current!.className = `_eachSlide _current _${animationType} _${animationType}Start ${
 				slideNum - transitionFrom! + 1 == childrenDef.length ||
 				(slideNum - transitionFrom! < 0 &&
@@ -278,7 +279,7 @@ function Carousel(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: '',
+	icon: 'fa-solid fa-tv',
 	name: 'Carousel',
 	displayName: 'Carousel',
 	description: 'Carousel component',
