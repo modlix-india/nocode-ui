@@ -442,6 +442,7 @@ const component: Component = {
 	displayName: 'Page Editor',
 	description: 'Page Editor component',
 	component: PageEditor,
+	isHidden: true,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: GridStyle,

@@ -720,6 +720,7 @@ const component: Component = {
 	displayName: 'KIRun Editor',
 	description: 'KIRun Editor component',
 	component: KIRunEditor,
+	isHidden: true,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: KIRunEditorStyle,
