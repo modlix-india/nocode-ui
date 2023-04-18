@@ -10,6 +10,11 @@ export default function ImageStyle({ theme }: { theme: Map<string, Map<string, s
         ${PREFIX} ._onClickTrue {
             cursor: pointer;
         }
+
+        ${PREFIX} img {
+            width: inherit;
+            height: inherit;
+        }
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="ImageCss">{css}</style>;

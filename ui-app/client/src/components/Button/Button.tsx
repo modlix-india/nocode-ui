@@ -91,7 +91,7 @@ function ButtonComponent(props: ComponentProps) {
 		!type?.startsWith('fabButton') && !leftIcon ? (
 			<SubHelperComponent definition={props.definition} subComponentName="rightIcon">
 				<i
-					style={styleProperties.icon ?? {}}
+					style={styleProperties.rightIcon ?? {}}
 					className={`rightButtonIcon ${rightIcon ?? 'fa fa-circle-notch hide'}`}
 				/>
 			</SubHelperComponent>
@@ -100,7 +100,7 @@ function ButtonComponent(props: ComponentProps) {
 	const leftIconTag = (
 		<SubHelperComponent definition={props.definition} subComponentName="leftIcon">
 			<i
-				style={styleProperties.icon ?? {}}
+				style={styleProperties.leftIcon ?? {}}
 				className={`leftButtonIcon ${
 					leftIcon
 						? !isLoading
