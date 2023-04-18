@@ -1,12 +1,8 @@
-import { Schema } from '@fincity/kirun-js';
 import {
-	NAMESPACE_UI_ENGINE,
 	SCHEMA_ANY_COMP_PROP,
 	SCHEMA_BOOL_COMP_PROP,
-	SCHEMA_DATA_LOCATION,
 	SCHEMA_NUM_COMP_PROP,
 	SCHEMA_STRING_COMP_PROP,
-	SCHEMA_VALIDATION,
 } from '../../constants';
 import {
 	ComponentPropertyDefinition,
@@ -21,6 +17,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Text',
 		description: 'Delimitter separated string for multiple list items.',
+		group: ComponentPropertyGroup.BASIC,
 		translatable: true,
 	},
 
@@ -31,6 +28,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Type of the Value',
 		defaultValue: ',',
 		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.BASIC,
 		enumValues: [
 			{ name: ',', displayName: 'Comma', description: 'Comma' },
 			{ name: ':', displayName: 'SemiColon', description: 'SemiColon' },
@@ -46,6 +44,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Type of the list to use',
 		defaultValue: 'ul',
 		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.BASIC,
 		enumValues: [
 			{ name: 'ul', displayName: 'Unordered List', description: 'An unordered List' },
 			{ name: 'ol', displayName: 'Ordered List', description: 'An Ordered List' },
@@ -58,6 +57,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'List icon',
 		description: 'Icon to be used for list',
 		defaultValue: '',
+		group: ComponentPropertyGroup.BASIC,
 		editor: ComponentPropertyEditor.ICON,
 	},
 
@@ -65,48 +65,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'listStyleType',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'List style type',
-		description: 'Style Type of the List to use for listing',
+		description: 'Style Type of the List to use for listing, based on HTML list style type.',
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: 'none',
-	},
-
-	{
-		name: 'textKeyType',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: "Text's text type",
-		description: `type of value that needs to be selected for dispaly label`,
-		defaultValue: 'OBJECT',
-		editor: ComponentPropertyEditor.ENUM,
-		enumValues: [
-			{
-				name: 'KEY',
-				displayName: 'Key',
-				description: "Select key as label key's value",
-			},
-			{
-				name: 'INDEX',
-				displayName: 'Index',
-				description: "Select index as label key's value",
-			},
-			{
-				name: 'OBJECT',
-				displayName: 'Object',
-				description: "Select object as label key's value",
-			},
-		],
-	},
-
-	{
-		name: 'textKey',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: "Text text's value ",
-		description: `Key value that is used to generate Text value.`,
-		translatable: false,
 	},
 
 	{
 		name: 'start',
 		schema: SCHEMA_NUM_COMP_PROP,
 		displayName: "List's start count",
+		group: ComponentPropertyGroup.ADVANCED,
 		description:
 			'The start attribute allows you to start the list counting from a number other than 1.',
 		translatable: false,
@@ -116,105 +84,29 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'reversed',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: "List's reverse count",
+		group: ComponentPropertyGroup.ADVANCED,
 		description: 'The reversed attribute will start the list counting down instead of up.',
 		defaultValue: false,
 		translatable: false,
 	},
 
-	{
-		name: 'uniqueKeyType',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: "Text's key type",
-		description: `type of value that needs to be selected for text key`,
-		defaultValue: 'OBJECT',
-		editor: ComponentPropertyEditor.ENUM,
-		enumValues: [
-			{
-				name: 'KEY',
-				displayName: 'Key',
-				description: "Select key as label key's value",
-			},
-			{
-				name: 'INDEX',
-				displayName: 'Index',
-				description: "Select index as label key's value",
-			},
-			{
-				name: 'OBJECT',
-				displayName: 'Object',
-				description: "Select object as label key's value",
-			},
-			{
-				name: 'RANDOM',
-				displayName: 'Random',
-				description: 'A Random key is associated with value which is costly in rendering',
-			},
-		],
-	},
+	COMMON_COMPONENT_PROPERTIES.datatype,
+	COMMON_COMPONENT_PROPERTIES.uniqueKeyType,
 
-	{
-		name: 'uniqueKey',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: "Text key's value ",
-		description: `Key value that is used to generate Text value.`,
-		translatable: false,
-	},
+	COMMON_COMPONENT_PROPERTIES.labelKeyType,
 
-	{
-		name: 'datatype',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: "TextList's data type",
-		description: "TextList's data format.",
-		defaultValue: 'LIST_OF_STRINGS',
-		editor: ComponentPropertyEditor.ENUM,
-		enumValues: [
-			{
-				name: 'LIST_OF_STRINGS',
-				displayName: 'List of strings',
-				description: 'data has an array of strings',
-			},
-			{
-				name: 'LIST_OF_OBJECTS',
-				displayName: 'List of objects',
-				description: 'data has an array of objects',
-			},
-			{
-				name: 'LIST_OF_LISTS',
-				displayName: 'List of lists',
-				description: 'data has an array of arrays',
-			},
-			{
-				name: 'OBJECT_OF_PRIMITIVES',
-				displayName: 'Object of primitives',
-				description: 'Object with key value pairs where values are primitives',
-			},
-			{
-				name: 'OBJECT_OF_OBJECTS',
-				displayName: 'Object of objects',
-				description: 'Object with key value pairs where values are objects',
-			},
-			{
-				name: 'OBJECT_OF_LISTS',
-				displayName: 'Object of lists',
-				description: 'Object with key value pairs where values are lists',
-			},
-		],
-	},
+	COMMON_COMPONENT_PROPERTIES.uniqueKey,
+	COMMON_COMPONENT_PROPERTIES.labelKey,
 
 	{
 		name: 'data',
 		schema: SCHEMA_ANY_COMP_PROP,
-		displayName: "TextLis's data",
+		displayName: "TextList's data",
+		group: ComponentPropertyGroup.DATA,
 		description: 'Data that is used to render TextList.',
 	},
 
-	{
-		name: 'visibility',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Visibility',
-		description: 'This component will be hidden when this property is true.',
-		group: ComponentPropertyGroup.COMMON,
-	},
+	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
 const stylePropertiesDefinition = {

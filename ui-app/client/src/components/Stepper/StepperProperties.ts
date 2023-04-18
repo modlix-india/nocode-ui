@@ -1,4 +1,3 @@
-import { Schema } from '@fincity/kirun-js';
 import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyDefinition,
@@ -14,6 +13,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Counting type of Stepper',
 		description: "Stepper's counting type",
+		group: ComponentPropertyGroup.BASIC,
 		editor: ComponentPropertyEditor.ENUM,
 		defaultValue: 'NUMBER',
 		enumValues: [
@@ -51,6 +51,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Comma separated titles',
 		description: 'List of titles that are comma separated and should be in order.',
 		defaultValue: '',
+		group: ComponentPropertyGroup.BASIC,
 		translatable: true,
 	},
 
@@ -59,6 +60,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Comma separated icons',
 		description: 'List of icon that are comma separated and should be in order of titles.',
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: '',
 	},
 
@@ -67,6 +69,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Displays a check icon in complete steps',
 		description: 'Displays a check icon in complete steps.',
+		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: false,
 	},
 
@@ -76,6 +79,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Text position',
 		description: 'Text position relative to icon',
 		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: 'RIGHT',
 		enumValues: [
 			{
@@ -106,6 +110,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Can Move to any previous step',
 		description: 'Can Move to any previous step.',
+		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: false,
 	},
 
@@ -114,6 +119,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Can Move to any Future step',
 		description: 'Can Move to any Future step.',
+		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: false,
 	},
 	{
@@ -121,6 +127,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Make stepper vertical',
 		description: 'Make stepper vertival.',
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: false,
 	},
 

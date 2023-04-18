@@ -153,6 +153,15 @@ const component: Component = {
 	bindingPaths: {
 		bindingPath: { name: 'Active Tab Binding' },
 	},
+	defaultTemplate: {
+		key: '',
+		type: 'Tabs',
+		name: 'Tabs',
+		properties: {
+			tabs: { value: ['Tab1', 'Tab2', 'Tab3'] },
+			defaultActive: { value: 'Tab1' },
+		},
+	},
 };
 
 export default component;

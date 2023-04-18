@@ -13,36 +13,36 @@ import {
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
-	{ ...COMMON_COMPONENT_PROPERTIES.onClick },
-	{
-		name: 'linkPath',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Link path',
-		description: `Path that page needs to be redirected on click.`,
-		translatable: false,
-	},
-
-	{
-		name: 'target',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Link target',
-		description: `Link's target.`,
-	},
+	COMMON_COMPONENT_PROPERTIES.onClick,
+	COMMON_COMPONENT_PROPERTIES.linkPath,
+	COMMON_COMPONENT_PROPERTIES.linkTargetType,
+	COMMON_COMPONENT_PROPERTIES.layout,
 	{
 		name: 'observeChildren',
 		schema: SCHEMA_BOOL_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
 		displayName: 'Observe Children',
-		description: `Observe children using Intersection observer API.`,
+		description:
+			'Observe children using Intersection observer API, the current grid would act as root.',
 		defaultValue: false,
 	},
 	{
 		name: 'observerThresholds',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Observe Children Thresholds',
-		description: `Observe children thresholds option using Intersection observer API.`,
-		defaultValue: '0.5, 0.75',
+		description:
+			'Thresholds for which the observer callback will be called, give as comma separated string.',
+		group: ComponentPropertyGroup.ADVANCED,
 	},
-	COMMON_COMPONENT_PROPERTIES.layout,
+	{
+		name: 'rootMargin',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Observe Children Thresholds',
+		description:
+			'Margin around the root. Can have values similar to the CSS margin property, e.g. "10px 20px 30px 40px" (top, right, bottom, left). The values can be percentages.',
+		defaultValue: '0px',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
 	{
 		name: 'containerType',
 		schema: SCHEMA_STRING_COMP_PROP,
@@ -50,6 +50,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'container type for seo optimization',
 		editor: ComponentPropertyEditor.ENUM,
 		defaultValue: 'DIV',
+		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
 			{ name: 'DIV', displayName: 'DIV', description: 'Div tag' },
 			{ name: 'ARTICLE', displayName: 'ARTICLE', description: 'Article tag' },
@@ -65,9 +66,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'background',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Background',
-		description: 'Background to be applied',
+		description:
+			'Background to be applied, these backgrounds come from theme, please visit theme editor to check or modify the colors.',
 		editor: ComponentPropertyEditor.BACKGROUND,
 		defaultValue: '',
+		group: ComponentPropertyGroup.BASIC,
 		enumValues: [
 			{ name: '', displayName: 'None', description: 'None' },
 			{

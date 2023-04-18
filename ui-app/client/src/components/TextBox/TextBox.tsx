@@ -258,6 +258,15 @@ const component: Component = {
 	bindingPaths: {
 		bindingPath: { name: 'Text Binding' },
 	},
+	defaultTemplate: {
+		key: '',
+		type: 'TextBox',
+		name: 'TextBox',
+		properties: {
+			placeholder: { value: 'placeholder' },
+			label: { value: 'TextBox' },
+		},
+	},
 };
 
 export default component;

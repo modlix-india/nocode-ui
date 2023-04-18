@@ -1,11 +1,4 @@
-import React, { useCallback, useEffect, useState, useMemo, useRef } from 'react';
-import { HelperComponent } from '../HelperComponent';
-import {
-	ComponentPropertyDefinition,
-	ComponentProps,
-	LocationHistory,
-	PageDefinition,
-} from '../../types/common';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
 	addListenerAndCallImmediately,
 	addListenerAndCallImmediatelyWithChildrenActivity,
@@ -14,17 +7,25 @@ import {
 	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
-import { Component } from '../../types/common';
-import { propertiesDefinition, stylePropertiesDefinition } from './pageEditorProperties';
-import GridStyle from './PageEditorStyle';
-import useDefinition from '../util/useDefinition';
+import {
+	Component,
+	ComponentPropertyDefinition,
+	ComponentProps,
+	LocationHistory,
+	PageDefinition,
+} from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import DnDEditor from './editors/DnDEditor/DnDEditor';
+import { HelperComponent } from '../HelperComponent';
 import { runEvent } from '../util/runEvent';
+import useDefinition from '../util/useDefinition';
+import CodeEditor from './components/CodeEditor';
+import { ContextMenu, ContextMenuDetails } from './components/ContextMenu';
+import IssuePopup, { Issue } from './components/IssuePopup';
+import DnDEditor from './editors/DnDEditor/DnDEditor';
 import { MASTER_FUNCTIONS } from './functions/masterFunctions';
 import PageOperations from './functions/PageOperations';
-import IssuePopup, { Issue } from './components/IssuePopup';
-import { ContextMenu, ContextMenuDetails } from './components/ContextMenu';
+import { propertiesDefinition, stylePropertiesDefinition } from './pageEditorProperties';
+import GridStyle from './PageEditorStyle';
 
 function savePersonalizationCurry(
 	personalizationPath: string,
@@ -199,10 +200,19 @@ function PageEditor(props: ComponentProps) {
 	);
 
 	const ref = useRef<HTMLIFrameElement>(null);
-	const [selectedComponent, setSelectedComponent] = useState<string>('');
+	const [selectedComponent, setSelectedComponentOriginal] = useState<string>('');
 	const [selectedSubComponent, setSelectedSubComponent] = useState<string>('');
 	const [issue, setIssue] = useState<Issue>();
 	const [contextMenu, setContextMenu] = useState<ContextMenuDetails>();
+	const [showCodeEditor, setShowCodeEditor] = useState<string | undefined>(undefined);
+
+	const setSelectedComponent = useCallback(
+		(v: string) => {
+			setSelectedComponentOriginal(v ?? '');
+			setSelectedSubComponent('');
+		},
+		[setSelectedComponentOriginal, setSelectedSubComponent],
+	);
 
 	// Creating an object to manage the changes because of various operations like drag and drop.
 	const operations = useMemo(
@@ -277,7 +287,7 @@ function PageEditor(props: ComponentProps) {
 		});
 	}, [selectedSubComponent, ref.current]);
 
-	// The type of the editor should b esent to iframe/slave.
+	// The type of the editor should be sent to iframe/slave.
 	useEffect(() => {
 		if (!ref.current) return;
 		ref.current.contentWindow?.postMessage({
@@ -313,11 +323,21 @@ function PageEditor(props: ComponentProps) {
 					onSlaveStore: (store: any) => {
 						setSlaveStore({
 							store,
-							localStore: Object.entries(window.localStorage).reduce((a, c) => {
-								if (c[1].length && (c[1][0] === '[' || c[1][0] === '{')) {
-								}
-								return a;
-							}, {}),
+							localStore: Object.entries(window.localStorage)
+								.filter((e: [string, string]) => e[0].startsWith('designmode_'))
+								.reduce((a, c: [string, string]) => {
+									let key = c[0].substring('designmode_'.length);
+									if (c[1].length && (c[1][0] === '[' || c[1][0] === '{')) {
+										try {
+											a[key] = JSON.parse(c[1]);
+										} catch (e) {
+											a[key] = c[1];
+										}
+									} else {
+										a[key] = c[1];
+									}
+									return a;
+								}, {} as any),
 						});
 					},
 				},
@@ -335,7 +355,14 @@ function PageEditor(props: ComponentProps) {
 		personalizationPath,
 		setSelectedComponent,
 		operations,
+		setSelectedSubComponent,
+		setContextMenu,
+		setSlaveStore,
 	]);
+
+	const undoStackRef = useRef<Array<PageDefinition>>([]);
+	const redoStackRef = useRef<Array<PageDefinition>>([]);
+	const firstTimeRef = useRef<Array<PageDefinition>>([]);
 
 	// If the personalization is not loaded, we don't load the view.
 	if (personalizationPath && !personalization) return <></>;
@@ -367,6 +394,29 @@ function PageEditor(props: ComponentProps) {
 					onUrlChange={urlChange}
 					onDeletePersonalization={deletePersonalization}
 					onContextMenu={(m: ContextMenuDetails) => setContextMenu(m)}
+					onShowCodeEditor={evName => setShowCodeEditor(evName)}
+					undoStackRef={undoStackRef}
+					redoStackRef={redoStackRef}
+					firstTimeRef={firstTimeRef}
+					slaveStore={slaveStore}
+					editPageName={editPageDefinition?.name}
+					selectedSubComponent={selectedSubComponent}
+					onSelectedSubComponentChanged={(key: string) => setSelectedSubComponent(key)}
+				/>
+				<CodeEditor
+					showCodeEditor={showCodeEditor}
+					onSetShowCodeEditor={funcName => setShowCodeEditor(funcName)}
+					defPath={defPath}
+					personalizationPath={personalizationPath}
+					locationHistory={locationHistory}
+					context={context}
+					pageDefinition={pageDefinition}
+					pageExtractor={pageExtractor}
+					slaveStore={slaveStore}
+					undoStackRef={undoStackRef}
+					redoStackRef={redoStackRef}
+					firstTimeRef={firstTimeRef}
+					definition={definition}
 				/>
 			</div>
 			<IssuePopup

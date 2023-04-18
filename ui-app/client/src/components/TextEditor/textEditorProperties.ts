@@ -13,6 +13,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Editor Type',
 		description: 'Type of the text to edit',
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: 'text',
 		enumValues: [
 			{

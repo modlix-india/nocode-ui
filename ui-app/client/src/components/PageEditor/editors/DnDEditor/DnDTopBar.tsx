@@ -7,6 +7,7 @@ import {
 } from '../../../../context/StoreContext';
 import { LocationHistory, PageDefinition } from '../../../../types/common';
 import { propertiesDefinition } from '../../pageEditorProperties';
+import duplicate from '../../../../util/duplicate';
 
 interface TopBarProps {
 	theme: string;
@@ -20,11 +21,10 @@ interface TopBarProps {
 	onPageReload: () => void;
 	defPath: string | undefined;
 	locationHistory: Array<LocationHistory>;
+	firstTimeRef: React.MutableRefObject<PageDefinition[]>;
+	undoStackRef: React.MutableRefObject<PageDefinition[]>;
+	redoStackRef: React.MutableRefObject<PageDefinition[]>;
 }
-
-const undoStack: Array<PageDefinition> = [];
-const redoStack: Array<PageDefinition> = [];
-const firstTime: Array<PageDefinition> = [];
 
 export default function DnDTopBar({
 	theme,
@@ -37,6 +37,9 @@ export default function DnDTopBar({
 	pageExtractor,
 	onPageReload,
 	defPath,
+	firstTimeRef,
+	undoStackRef,
+	redoStackRef,
 }: TopBarProps) {
 	const [localUrl, setLocalUrl] = useState(url);
 	const [deviceType, setDeviceType] = useState<string | undefined>();
@@ -63,15 +66,21 @@ export default function DnDTopBar({
 			(_, v) => {
 				if (
 					!v ||
-					deepEqual(v, undoStack.length ? undoStack[undoStack.length - 1] : firstTime[0])
+					deepEqual(
+						v,
+						undoStackRef.current.length
+							? undoStackRef.current[undoStackRef.current.length - 1]
+							: firstTimeRef.current[0],
+					)
 				)
 					return;
-				if (!firstTime.length) {
-					firstTime.push(v);
+				if (!firstTimeRef.current.length) {
+					firstTimeRef.current.push(duplicate(v));
 					return;
 				}
-				undoStack.push(v);
-				redoStack.length = 0;
+
+				undoStackRef.current.push(duplicate(v));
+				redoStackRef.current.length = 0;
 				setChanged(Date.now());
 			},
 			pageExtractor,
@@ -175,15 +184,21 @@ export default function DnDTopBar({
 			<div className="_topRightBarGrid">
 				<div className="_buttonBar">
 					<i
-						className={`fa fa-solid fa-left-long ${undoStack.length ? 'active' : ''}`}
+						className={`fa fa-solid fa-left-long ${
+							undoStackRef.current.length ? 'active' : ''
+						}`}
 						onClick={() => {
-							if (!undoStack.length || !defPath) return;
-							const x = undoStack[undoStack.length - 1];
-							undoStack.splice(undoStack.length - 1, 1);
-							redoStack.splice(0, 0, x);
+							if (!undoStackRef.current.length || !defPath) return;
+							const x = undoStackRef.current[undoStackRef.current.length - 1];
+							undoStackRef.current.splice(undoStackRef.current.length - 1, 1);
+							redoStackRef.current.splice(0, 0, x);
 							setData(
 								defPath,
-								undoStack.length ? undoStack[undoStack.length - 1] : firstTime[0],
+								duplicate(
+									undoStackRef.current.length
+										? undoStackRef.current[undoStackRef.current.length - 1]
+										: firstTimeRef.current[0],
+								),
 								pageExtractor.getPageName(),
 							);
 							setChanged(Date.now());
@@ -191,15 +206,21 @@ export default function DnDTopBar({
 						title="Undo"
 					/>
 					<i
-						className={`fa fa-solid fa-right-long ${redoStack.length ? 'active' : ''}`}
+						className={`fa fa-solid fa-right-long ${
+							redoStackRef.current.length ? 'active' : ''
+						}`}
 						onClick={() => {
-							if (!redoStack.length || !defPath) return;
-							const x = redoStack[0];
-							undoStack.push(x);
-							redoStack.splice(0, 1);
+							if (!redoStackRef.current.length || !defPath) return;
+							const x = redoStackRef.current[0];
+							undoStackRef.current.push(x);
+							redoStackRef.current.splice(0, 1);
 							setData(
 								defPath,
-								undoStack.length ? undoStack[undoStack.length - 1] : firstTime[0],
+								duplicate(
+									undoStackRef.current.length
+										? undoStackRef.current[undoStackRef.current.length - 1]
+										: firstTimeRef.current[0],
+								),
 								pageExtractor.getPageName(),
 							);
 							setChanged(Date.now());

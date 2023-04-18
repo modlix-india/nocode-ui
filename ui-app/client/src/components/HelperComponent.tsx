@@ -25,6 +25,7 @@ function HelperComponentInternal({
 }: HelperComponentPropsType) {
 	const [dragOver, setDragOver] = useState(false);
 	const [, setLastChanged] = useState(Date.now());
+	const [hover, setHover] = useState(false);
 
 	useEffect(() => {
 		function onMessageRecieved(e: MessageEvent) {
@@ -52,10 +53,10 @@ function HelperComponentInternal({
 		fontFamily: 'Arial',
 		position: 'absolute',
 		border: `2px solid ${highlightColor}`,
-		height: 'calc( 100% + 2px)',
-		width: 'calc( 100% + 2px)',
-		top: '-1px',
-		left: '-1px',
+		height: 'calc( 100% - 2px)',
+		width: 'calc( 100% - 2px)',
+		top: '1px',
+		left: '1px',
 		zIndex: '6',
 		minWidth: '10px',
 		opacity: '0',
@@ -77,6 +78,10 @@ function HelperComponentInternal({
 		cursor: 'pointer',
 		display: showNameLabel ? 'inline-block' : 'none',
 	};
+
+	if (hover) {
+		labelStyle.right = '0px';
+	}
 
 	if (selectedComponent?.endsWith(definition.key) || dragOver) style.opacity = '0.6';
 
@@ -132,6 +137,17 @@ function HelperComponentInternal({
 			}}
 			onMouseOver={e => onMouseOver?.(e)}
 			onMouseOut={e => onMouseOut?.(e)}
+			onMouseMove={e => {
+				const x = e.clientX - e.currentTarget.getBoundingClientRect().left;
+				const y = e.clientY - e.currentTarget.getBoundingClientRect().top;
+
+				if (x < 50 && y < 20) {
+					if (!hover) setHover(true);
+				} else {
+					if (hover) setHover(false);
+				}
+			}}
+			onMouseLeave={() => setHover(false)}
 			title={`${definition.name} - ${definition.key}`}
 		>
 			<div style={labelStyle}>

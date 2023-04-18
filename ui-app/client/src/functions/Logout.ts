@@ -11,17 +11,19 @@ import axios from 'axios';
 import { LOCAL_STORE_PREFIX, NAMESPACE_UI_ENGINE } from '../constants';
 import { getDataFromPath, setData } from '../context/StoreContext';
 
-const SIGNATURE = new FunctionSignature('Login')
-	.setNamespace(NAMESPACE_UI_ENGINE)
-	.setEvents(
-		new Map([
-			Event.eventMapEntry(Event.OUTPUT, new Map()),
-			Event.eventMapEntry(
-				Event.ERROR,
-				new Map([['error', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.FetchError`)]]),
-			),
-		]),
-	);
+const SIGNATURE = new FunctionSignature('Login').setNamespace(NAMESPACE_UI_ENGINE).setEvents(
+	new Map([
+		Event.eventMapEntry(Event.OUTPUT, new Map()),
+		Event.eventMapEntry(
+			Event.ERROR,
+			new Map([
+				['data', Schema.ofAny('data')],
+				['headers', Schema.ofAny('headers')],
+				['status', Schema.ofNumber('status')],
+			]),
+		),
+	]),
+);
 
 export class Logout extends AbstractFunction {
 	protected async internalExecute(context: FunctionExecutionParameters): Promise<FunctionOutput> {

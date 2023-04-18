@@ -80,6 +80,14 @@ const component: Component = {
 	bindingPaths: {
 		bindingPath: { name: 'Data Binding' },
 	},
+	defaultTemplate: {
+		key: '',
+		type: 'ToggleButton',
+		name: 'ToggleButton',
+		properties: {
+			label: { value: 'ToggleButton' },
+		},
+	},
 };
 
 export default component;

@@ -17,7 +17,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'label',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'CheckBox label',
-		description: `CheckBox's display label.`,
+		description: "CheckBox's display label.",
+		group: ComponentPropertyGroup.BASIC,
 		translatable: true,
 	},
 
@@ -25,9 +26,10 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'orientation',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'CheckBox orientation',
-		description: `CheckBox's display orientation.`,
+		description: "CheckBox's display orientation.",
 		defaultValue: 'HORIZONATAL',
 		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.BASIC,
 		enumValues: [
 			{
 				name: 'HORIZONATAL',
@@ -41,14 +43,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 		],
 	},
-
-	{
-		name: 'onClick',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Event trigger on click',
-		description: `The event that is triggered on click of dropdown option`,
-	},
-
+	COMMON_COMPONENT_PROPERTIES.onClick,
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];

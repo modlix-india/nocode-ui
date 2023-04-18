@@ -38,6 +38,14 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: IconStyle,
+	defaultTemplate: {
+		key: '',
+		name: 'Icon',
+		type: 'Icon',
+		properties: {
+			icon: { value: 'fa-solid fa-icons' },
+		},
+	},
 };
 
 export default component;
