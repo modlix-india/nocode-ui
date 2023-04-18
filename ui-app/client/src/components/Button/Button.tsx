@@ -89,57 +89,53 @@ function ButtonComponent(props: ComponentProps) {
 
 	const rightIconTag =
 		!type?.startsWith('fabButton') && !leftIcon ? (
-			<SubHelperComponent definition={props.definition} subComponentName="rightIcon">
-				<i
-					style={styleProperties.rightIcon ?? {}}
-					className={`rightButtonIcon ${rightIcon ?? 'fa fa-circle-notch hide'}`}
-				/>
-			</SubHelperComponent>
+			<i
+				style={styleProperties.rightIcon ?? {}}
+				className={`rightButtonIcon ${rightIcon ?? 'fa fa-circle-notch hide'}`}
+			>
+				<SubHelperComponent
+					definition={props.definition}
+					subComponentName="rightIcon"
+				></SubHelperComponent>
+			</i>
 		) : undefined;
 
 	const leftIconTag = (
-		<SubHelperComponent definition={props.definition} subComponentName="leftIcon">
-			<i
-				style={styleProperties.leftIcon ?? {}}
-				className={`leftButtonIcon ${
-					leftIcon
-						? !isLoading
-							? leftIcon
-							: 'fa fa-circle-notch fa-spin'
-						: 'fa fa-circle-notch hide'
-				}`}
-			/>
-		</SubHelperComponent>
+		<i
+			style={styleProperties.leftIcon ?? {}}
+			className={`leftButtonIcon ${
+				leftIcon
+					? !isLoading
+						? leftIcon
+						: 'fa fa-circle-notch fa-spin'
+					: 'fa fa-circle-notch hide'
+			}`}
+		>
+			<SubHelperComponent
+				definition={props.definition}
+				subComponentName="leftIcon"
+			></SubHelperComponent>
+		</i>
 	);
 	return (
-		<div className="comp compButton" style={styleProperties.comp ?? {}}>
+		<button
+			className={`comp compButton button ${type}`}
+			disabled={isLoading || readOnly}
+			onClick={handleClick}
+			style={styleProperties.comp ?? {}}
+			onMouseEnter={stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined}
+			onMouseLeave={
+				stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
+			}
+			onFocus={stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined}
+			onBlur={stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined}
+		>
 			<HelperComponent definition={props.definition} />
-			<SubHelperComponent definition={props.definition} subComponentName="button">
-				<button
-					className={`button ${type}`}
-					disabled={isLoading || readOnly}
-					onClick={handleClick}
-					style={styleProperties.button ?? {}}
-					onMouseEnter={
-						stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
-					}
-					onMouseLeave={
-						stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
-					}
-					onFocus={
-						stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined
-					}
-					onBlur={
-						stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined
-					}
-				>
-					{leftIconTag}
-					{!type?.startsWith('fabButton') &&
-						getTranslations(label, props.pageDefinition.translations)}
-					{rightIconTag}
-				</button>
-			</SubHelperComponent>
-		</div>
+			{leftIconTag}
+			{!type?.startsWith('fabButton') &&
+				getTranslations(label, props.pageDefinition.translations)}
+			{rightIconTag}
+		</button>
 	);
 }
 

@@ -5,7 +5,7 @@ import { ComponentDefinition } from '../types/common';
 
 interface SubHelperComponentPropsType {
 	definition: ComponentDefinition;
-	children: React.ReactNode;
+	children?: React.ReactNode;
 	subComponentName: string;
 }
 
@@ -50,9 +50,15 @@ function SubHelperComponentInternal({
 			hover || selectedSubComponent.endsWith(subComponentName)
 				? `2px solid ${highlightColor}`
 				: '',
-		zIndex: '6',
 		borderRadius: '3px',
+		zIndex: '6',
 		pointerEvents: 'all',
+		height: '100%',
+		width: '100%',
+
+		left: '0px',
+		top: '0px',
+		position: 'absolute',
 	};
 
 	return (
@@ -86,9 +92,6 @@ function SubHelperComponentInternal({
 
 export function SubHelperComponent(props: SubHelperComponentPropsType) {
 	let { children } = props;
-	return window.designMode === 'PAGE' ? (
-		<SubHelperComponentInternal {...props}>{children}</SubHelperComponentInternal>
-	) : (
-		<>{props.children}</>
-	);
+
+	return window.designMode === 'PAGE' ? <SubHelperComponentInternal {...props} /> : <></>;
 }

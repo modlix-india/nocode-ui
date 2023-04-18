@@ -101,6 +101,7 @@ export default function DnDSideBar({
 					onDoubleClick={() => {
 						if (!selectedComponent) return;
 						pageOperations.droppedOn(selectedComponent, `${DRAG_COMP_NAME}${e.name}`);
+						setShowCompMenu(false);
 					}}
 					draggable={true}
 					onDragStart={ev =>
