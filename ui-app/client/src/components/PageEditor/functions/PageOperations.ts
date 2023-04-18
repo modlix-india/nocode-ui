@@ -189,6 +189,7 @@ export default class PageOperations {
 
 			// Created the definition from the default template or create one with just the name and key.
 			this._dropOn(pageDef, componentKey, key, { [key]: obj });
+			this.onSelectedComponentChanged(key);
 		}
 	}
 
