@@ -37,7 +37,7 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 		displayName: 'Label',
 		description: 'Label to be displayed',
 		translatable: true,
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		editor: ComponentPropertyEditor.TRANSLATABLE_PROP,
 	},
 	readOnly: {
@@ -553,4 +553,5 @@ export {
 	COMMON_COMPONENT_PROPERTIES,
 	COMPONENT_STYLE_GROUP_PROPERTIES,
 	CSS_STYLE_PROPERTY_GROUP_REF,
+	COMPONENT_STYLE_GROUPS,
 };

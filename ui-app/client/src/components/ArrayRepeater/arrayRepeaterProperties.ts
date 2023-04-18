@@ -12,14 +12,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Add button',
 		description: 'When this option is set to true, User will be able to add items to repeater',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: false,
 	},
 	{
 		name: 'showDelete',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Delete button',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		description:
 			'When this option is set to true, User will be able to delete items from repeater',
 		defaultValue: false,
@@ -28,7 +28,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'showMove',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Move buttons',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		description:
 			'When this option is set to true, User will be able to move items up/down the index in the repeater',
 		defaultValue: false,

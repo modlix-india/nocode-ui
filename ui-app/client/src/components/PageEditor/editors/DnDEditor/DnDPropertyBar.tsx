@@ -1,8 +1,15 @@
-import React, { useState } from 'react';
-import { PageStoreExtractor } from '../../../../context/StoreContext';
+import React, { useEffect, useMemo, useState } from 'react';
+import {
+	PageStoreExtractor,
+	addListenerAndCallImmediately,
+	store,
+} from '../../../../context/StoreContext';
 import { LocationHistory } from '../../../../types/common';
 import PropertyEditor from '../PropertyEditor';
 import StylePropertyEditor from '../StylePropertyEditor';
+import { allPaths } from '../../../../util/allPaths';
+import { LOCAL_STORE_PREFIX, PAGE_STORE_PREFIX, STORE_PREFIX } from '../../../../constants';
+import { isNullValue } from '@fincity/kirun-js';
 
 interface PropertyBarProps {
 	theme: string;
@@ -14,6 +21,10 @@ interface PropertyBarProps {
 	locationHistory: Array<LocationHistory>;
 	selectedComponent?: string;
 	onShowCodeEditor: (eventName: string) => void;
+	slaveStore: any;
+	editPageName: string | undefined;
+	selectedSubComponent: string;
+	onSelectedSubComponentChanged: (key: string) => void;
 }
 
 export default function DnDPropertyBar({
@@ -25,8 +36,36 @@ export default function DnDPropertyBar({
 	onChangePersonalization,
 	theme,
 	onShowCodeEditor,
+	slaveStore,
+	editPageName,
+	selectedSubComponent,
+	onSelectedSubComponentChanged,
 }: PropertyBarProps) {
-	const [currentTab, setCurrentTab] = useState(1);
+	const storePaths = useMemo<Set<string>>(
+		() =>
+			allPaths(
+				STORE_PREFIX,
+				slaveStore?.store,
+				allPaths(
+					LOCAL_STORE_PREFIX,
+					slaveStore?.localStore,
+					allPaths(PAGE_STORE_PREFIX, slaveStore?.store?.pageData?.[editPageName ?? '']),
+				),
+			),
+		[slaveStore],
+	);
+
+	const [currentTab, setCurrentTab] = React.useState(1);
+
+	useEffect(() => {
+		if (!personalizationPath) return;
+
+		return addListenerAndCallImmediately(
+			(_, v) => setCurrentTab(!isNullValue(v) ? v : 1),
+			pageExtractor,
+			`${personalizationPath}.currentPropertyTab`,
+		);
+	}, [personalizationPath]);
 
 	if (!selectedComponent) return <div className="_propBar"></div>;
 
@@ -40,9 +79,21 @@ export default function DnDPropertyBar({
 				defPath={defPath}
 				locationHistory={locationHistory}
 				pageExtractor={pageExtractor}
+				storePaths={storePaths}
 			/>
 		) : (
-			<StylePropertyEditor selectedComponent={selectedComponent} />
+			<StylePropertyEditor
+				theme={theme}
+				personalizationPath={personalizationPath}
+				onChangePersonalization={onChangePersonalization}
+				selectedComponent={selectedComponent}
+				defPath={defPath}
+				locationHistory={locationHistory}
+				pageExtractor={pageExtractor}
+				storePaths={storePaths}
+				selectedSubComponent={selectedSubComponent}
+				onSelectedSubComponentChanged={onSelectedSubComponentChanged}
+			/>
 		);
 
 	return (
@@ -51,12 +102,12 @@ export default function DnDPropertyBar({
 				<i
 					className={`fa fa-solid fa-sliders ${currentTab === 1 ? 'active' : ''}`}
 					tabIndex={0}
-					onClick={() => setCurrentTab(1)}
+					onClick={() => onChangePersonalization('currentPropertyTab', 1)}
 				/>
 				<i
 					className={`fa fa-solid fa-brush ${currentTab === 2 ? 'active' : ''}`}
 					tabIndex={0}
-					onClick={() => setCurrentTab(2)}
+					onClick={() => onChangePersonalization('currentPropertyTab', 2)}
 				/>
 			</div>
 			<div className="_propContainer">{tab}</div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { SCHEMA_BOOL_COMP_PROP } from '../../../../constants';
+import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../../../constants';
 import { VALIDATION_FUNCTIONS } from '../../../../util/validationProcessor';
 import PropertyValueEditor from './PropertyValueEditor';
 
@@ -42,16 +42,31 @@ export function ValidationEditor({ value, onChange }: ValidationEditorProps) {
 				/>
 			</div>
 			{(VALIDATION_FUNCTIONS[value?.type ?? 'MANDATORY'].fields ?? []).map(propDef => (
-				<div className="_eachProp">
+				<div className="_eachProp" key={propDef.name}>
 					<div className="_propLabel">{propDef.displayName}</div>
 					<PropertyValueEditor
-						key={propDef.name}
 						propDef={propDef}
 						value={value?.[propDef.name]}
 						onChange={v => onChange({ ...value, [propDef.name]: v })}
 					/>
 				</div>
 			))}
+			{value && (
+				<div className="_eachProp">
+					<div className="_propLabel">Message:</div>
+					<PropertyValueEditor
+						propDef={{
+							name: 'message',
+							displayName: 'Message',
+							description: 'Message to display when validation fails',
+							schema: SCHEMA_STRING_COMP_PROP,
+							translatable: true,
+						}}
+						value={value?.message}
+						onChange={v => onChange({ ...value, message: v })}
+					/>
+				</div>
+			)}
 		</div>
 	);
 }

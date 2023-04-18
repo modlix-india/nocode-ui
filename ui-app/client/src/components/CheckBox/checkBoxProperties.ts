@@ -18,7 +18,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'CheckBox label',
 		description: "CheckBox's display label.",
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		translatable: true,
 	},
 
@@ -29,7 +29,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: "CheckBox's display orientation.",
 		defaultValue: 'HORIZONATAL',
 		editor: ComponentPropertyEditor.ENUM,
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		enumValues: [
 			{
 				name: 'HORIZONATAL',

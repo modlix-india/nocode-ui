@@ -13,7 +13,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Counting type of Stepper',
 		description: "Stepper's counting type",
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		editor: ComponentPropertyEditor.ENUM,
 		defaultValue: 'NUMBER',
 		enumValues: [
@@ -51,7 +51,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Comma separated titles',
 		description: 'List of titles that are comma separated and should be in order.',
 		defaultValue: '',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		translatable: true,
 	},
 
@@ -60,7 +60,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Comma separated icons',
 		description: 'List of icon that are comma separated and should be in order of titles.',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: '',
 	},
 
@@ -127,7 +127,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Make stepper vertical',
 		description: 'Make stepper vertival.',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: false,
 	},
 

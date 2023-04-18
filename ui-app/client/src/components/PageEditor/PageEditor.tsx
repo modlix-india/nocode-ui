@@ -200,11 +200,19 @@ function PageEditor(props: ComponentProps) {
 	);
 
 	const ref = useRef<HTMLIFrameElement>(null);
-	const [selectedComponent, setSelectedComponent] = useState<string>('');
+	const [selectedComponent, setSelectedComponentOriginal] = useState<string>('');
 	const [selectedSubComponent, setSelectedSubComponent] = useState<string>('');
 	const [issue, setIssue] = useState<Issue>();
 	const [contextMenu, setContextMenu] = useState<ContextMenuDetails>();
 	const [showCodeEditor, setShowCodeEditor] = useState<string | undefined>(undefined);
+
+	const setSelectedComponent = useCallback(
+		(v: string) => {
+			setSelectedComponentOriginal(v ?? '');
+			setSelectedSubComponent('');
+		},
+		[setSelectedComponentOriginal, setSelectedSubComponent],
+	);
 
 	// Creating an object to manage the changes because of various operations like drag and drop.
 	const operations = useMemo(
@@ -347,6 +355,9 @@ function PageEditor(props: ComponentProps) {
 		personalizationPath,
 		setSelectedComponent,
 		operations,
+		setSelectedSubComponent,
+		setContextMenu,
+		setSlaveStore,
 	]);
 
 	const undoStackRef = useRef<Array<PageDefinition>>([]);
@@ -387,11 +398,16 @@ function PageEditor(props: ComponentProps) {
 					undoStackRef={undoStackRef}
 					redoStackRef={redoStackRef}
 					firstTimeRef={firstTimeRef}
+					slaveStore={slaveStore}
+					editPageName={editPageDefinition?.name}
+					selectedSubComponent={selectedSubComponent}
+					onSelectedSubComponentChanged={(key: string) => setSelectedSubComponent(key)}
 				/>
 				<CodeEditor
 					showCodeEditor={showCodeEditor}
 					onSetShowCodeEditor={funcName => setShowCodeEditor(funcName)}
 					defPath={defPath}
+					personalizationPath={personalizationPath}
 					locationHistory={locationHistory}
 					context={context}
 					pageDefinition={pageDefinition}
@@ -400,6 +416,7 @@ function PageEditor(props: ComponentProps) {
 					undoStackRef={undoStackRef}
 					redoStackRef={redoStackRef}
 					firstTimeRef={firstTimeRef}
+					definition={definition}
 				/>
 			</div>
 			<IssuePopup

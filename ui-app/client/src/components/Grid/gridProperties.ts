@@ -70,7 +70,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			'Background to be applied, these backgrounds come from theme, please visit theme editor to check or modify the colors.',
 		editor: ComponentPropertyEditor.BACKGROUND,
 		defaultValue: '',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		enumValues: [
 			{ name: '', displayName: 'None', description: 'None' },
 			{

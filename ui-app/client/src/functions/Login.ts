@@ -27,7 +27,11 @@ const SIGNATURE = new FunctionSignature('Login')
 			Event.eventMapEntry(Event.OUTPUT, new Map([['data', Schema.ofAny('data')]])),
 			Event.eventMapEntry(
 				Event.ERROR,
-				new Map([['error', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.FetchError`)]]),
+				new Map([
+					['data', Schema.ofAny('data')],
+					['headers', Schema.ofAny('headers')],
+					['status', Schema.ofNumber('status')],
+				]),
 			),
 		]),
 	);

@@ -29,6 +29,12 @@ export default function Search({ value, options, style, onClose, onChange }: Sea
 				value={filter}
 				placeholder={value}
 				onChange={e => setFilter(e.target.value)}
+				onKeyUp={e => {
+					if (e.key === 'Delete' || e.key === 'Backspace') {
+						e.stopPropagation();
+						e.preventDefault();
+					}
+				}}
 				autoFocus
 			/>
 			<div className="_options">

@@ -14,7 +14,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Text',
 		description: 'Text to display',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		translatable: true,
 	},
 
@@ -24,7 +24,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Text Type',
 		description: 'Text type',
 		editor: ComponentPropertyEditor.ENUM,
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: 'TEXT',
 		enumValues: [
 			{

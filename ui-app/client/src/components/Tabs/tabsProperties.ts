@@ -15,7 +15,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Tabs list',
 		description: 'Tabs to be present on the component, an array of string in order.',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		multiValued: true,
 		defaultValue: [],
 	},
@@ -24,7 +24,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Active tab name',
 		description: 'Active default tab',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 	},
 	{
 		name: 'icon',
@@ -33,7 +33,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		editor: ComponentPropertyEditor.ICON,
 		description: "Icon's to be present on the component, comma seperated list of icons.",
 		multiValued: true,
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: [],
 	},
 	{
@@ -42,7 +42,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Tabs Orientation',
 		description: 'Orientation of tabs coponent',
 		editor: ComponentPropertyEditor.ENUM,
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: 'HORIZONTAL',
 		enumValues: [
 			{ name: 'HORIZONTAL', displayName: 'Row Layout', description: 'Default row layout' },

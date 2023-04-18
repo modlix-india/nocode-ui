@@ -18,7 +18,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Select different types of buttons',
 		defaultValue: 'default',
 		editor: ComponentPropertyEditor.ENUM,
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		enumValues: [
 			{ name: 'default', displayName: 'Default Button', description: 'Default Button type' },
 			{ name: 'outlined', displayName: 'Outline Button', description: 'Outline Button type' },
@@ -105,7 +105,8 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		[COMPONENT_STYLE_GROUP_PROPERTIES.zIndex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.zIndex,
 	},
 	button: {},
-	icon: {
+	rightIcon: {},
+	leftIcon: {
 		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
 			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
 			name: 'iconColor',

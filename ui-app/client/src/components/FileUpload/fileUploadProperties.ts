@@ -35,7 +35,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				description: 'A large view of the component',
 			},
 		],
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 	},
 	{
 		name: 'uploadIcon',
@@ -43,7 +43,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Upload Icon',
 		description: 'The icon that is shown in the upload box.',
 		defaultValue: 'fa fa-solid fa-upload',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 	},
 	{
 		name: 'mainText',
@@ -51,7 +51,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Main text for upload component',
 		description: 'The text that directly proceeds the upload icon.',
 		defaultValue: 'Upload',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 	},
 	{
 		name: 'subText',
@@ -59,7 +59,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Helper text.',
 		description:
 			'This is the etxt below main text, usually used to help user with instructions on how to upload.',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: 'Or drag and drop here',
 	},
 	{
@@ -93,7 +93,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Show selected files ?',
 		description:
 			'This option when set to true displays a list of file(s) selected by the user.',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: true,
 	},
 	{

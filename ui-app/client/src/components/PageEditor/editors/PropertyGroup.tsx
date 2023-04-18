@@ -9,7 +9,7 @@ import { LocationHistory } from '../../../types/common';
 
 interface PropertyGroupProps {
 	name: string;
-	children: React.ReactNode;
+	children?: React.ReactNode;
 	displayName: string;
 	defaultStateOpen?: boolean;
 	personalizationPath: string | undefined;

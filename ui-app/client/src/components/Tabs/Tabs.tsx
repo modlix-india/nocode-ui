@@ -85,7 +85,7 @@ function TabsComponent(props: ComponentProps) {
 	const selectedChild = entry ? { [entry[0]]: entry[1] } : {};
 
 	const orientationClass = tabsOrientation === 'VERTICAL' ? 'vertical' : '';
-	console.log(tabs);
+
 	return (
 		<div className={`comp compTabs ${orientationClass}`} style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />

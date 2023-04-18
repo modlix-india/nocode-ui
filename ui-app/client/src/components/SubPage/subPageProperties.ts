@@ -12,7 +12,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Page Name',
 		description: 'Sub page name',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		translatable: false,
 	},
 	COMMON_COMPONENT_PROPERTIES.visibility,

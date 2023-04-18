@@ -147,6 +147,28 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			gap: 5px;
 		}
 
+		${PREFIX} ._pvExpressionEditor ._pathsList{
+			z-index: 2;
+			background-color: #fff;
+			display: flex;
+			flex-direction: column;
+			border-radius: 4px;
+			float: left;
+			position: absolute;
+			top: 100%;
+			box-shadow: 0 15px 30px 0 rgba(0,0,0,.10), 0 5px 15px 0 rgba(0,0,0,.10);
+		}
+
+		${PREFIX} ._pvExpressionEditor ._pathsList ._path{
+			padding: 5px 5px;
+			border-radius: 2px;
+			cursor: pointer;
+		}
+
+		${PREFIX} ._pvExpressionEditor ._pathsList ._path:hover{
+			background-color: #eee;
+		}
+
 		${PREFIX} ._pvExpressionEditor input[type='text'],  ${PREFIX} ._pvExpressionEditor input[type='number']{
 			border: none;
 			background-color: transparent;
@@ -448,6 +470,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction: column;
 			gap: 5px;
 			border-radius: 4px;
+			position: relative;
 		}
 
 		${PREFIX} ._eachProp:hover {
@@ -514,6 +537,11 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			gap: 5px;
 			align-items: center;
+			text-transform: capitalize;
+		}
+
+		${PREFIX} ._propLabel i.fa {
+			cursor: pointer;
 		}
 
 		${PREFIX} span._description {
@@ -643,12 +671,30 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border: 2px solid #ddd;
 			padding: 5px;
 			border-radius: 3px;
+			padding-top: 20px;
+			position: relative;
 		}
 
 		${PREFIX} ._eachProperty i.fa {
 			color: #aaa;
 			cursor: pointer;
 			font-size: 13px;
+			position: absolute;
+			top: 5px;
+			left: 5px;
+			background-color: #eee;
+			width:14px;
+			height: 14px;
+			display: inline-flex;
+			justify-content: center;
+			align-items: center;
+			border-radius: 3px;
+			font-size: 12px;
+		}
+
+		${PREFIX} ._eachProperty i.fa-close {
+			left: 24px;
+			
 		}
 
 		${PREFIX} ._eachProperty:hover i.fa {
@@ -681,14 +727,15 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._codeEditorContent {
 			background-color: #fff;
 			width: 70vw;
-			height: 80vh;
+			min-height: 80vh;
+			max-height: 80vh;
 			margin-left: 5vw;
 			display: flex;
 			border-radius: 4px;
 			box-shadow: 0 15px 30px 0 rgba(0,0,0,.10), 0 5px 15px 0 rgba(0,0,0,.10);
 			flex-direction: column;
 			opacity: 0;
-			transition: margin-left 1s, width 1s, height 1s, opacity 1s, visibility 1s;
+			transition: margin-left 1s, width 1s, height 1s, min-height 1s, max-height 1s, opacity 1s, visibility 1s;
 		}
 
 		${PREFIX} ._codeEditor.show ._codeEditorContent{
@@ -702,7 +749,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._codeEditorContent._fullScreen {
 			width: 98vw;
-			height: 98vh;
+			min-height: 98vh;
+			max-height: 98vh;
 			margin-left: 1vw;
 		}
 
@@ -1060,14 +1108,19 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX}._dark ._eachProperty:hover i.fa {
-			color: #333;
+			color: #777;
 		}
 
 		${PREFIX}._dark ._eachProperty{
 			border:  2px solid #333;
 		}
+		
 		${PREFIX}._dark ._codeEditorContent ._codeEditorHeader {
 			background-color: #666;
+		}
+
+		${PREFIX}._dark ._eachProperty i.fa {
+			background-color: #333;
 		}
 
 		._popupMenuBackground._dark ._popupMenuContainer  {

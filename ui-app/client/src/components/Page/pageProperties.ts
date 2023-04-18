@@ -20,7 +20,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Container Type (SEO)',
 		description: 'container type for seo optimization',
 		editor: ComponentPropertyEditor.ENUM,
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: 'DIV',
 		enumValues: [
 			{ name: 'DIV', displayName: 'DIV', description: 'Div tag' },
@@ -39,7 +39,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Background',
 		description: 'Background to be applied',
 		editor: ComponentPropertyEditor.BACKGROUND,
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: '',
 		enumValues: [
 			{ name: '', displayName: 'None', description: 'None' },

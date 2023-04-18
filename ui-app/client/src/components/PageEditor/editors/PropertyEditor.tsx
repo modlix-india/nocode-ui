@@ -3,9 +3,9 @@ import React, { useEffect, useState } from 'react';
 import ComponentDefinitions from '../../';
 import { SCHEMA_STRING_COMP_PROP } from '../../../constants';
 import {
+	PageStoreExtractor,
 	addListenerAndCallImmediatelyWithChildrenActivity,
 	getDataFromPath,
-	PageStoreExtractor,
 	setData,
 } from '../../../context/StoreContext';
 import {
@@ -19,7 +19,7 @@ import {
 } from '../../../types/common';
 import duplicate from '../../../util/duplicate';
 import { PropertyGroup } from './PropertyGroup';
-import BindingPathEditor from './propertyValueEditors/BindingPathEditor';
+import { ExpressionEditor2 } from './propertyValueEditors/ExpressionEditor2';
 import PropertyMultiValueEditor from './propertyValueEditors/PropertyMultiValueEditor';
 import PropertyValueEditor from './propertyValueEditors/PropertyValueEditor';
 
@@ -31,6 +31,7 @@ interface PropertyEditorProps {
 	theme: string;
 	personalizationPath: string | undefined;
 	onChangePersonalization: (prop: string, value: any) => void;
+	storePaths: Set<string>;
 }
 
 function updatePropertyDefinition(
@@ -95,6 +96,7 @@ export default function PropertyEditor({
 	onChangePersonalization,
 	theme,
 	personalizationPath,
+	storePaths,
 }: PropertyEditorProps) {
 	const [def, setDef] = useState<ComponentDefinition>();
 	const [pageDef, setPageDef] = useState<PageDefinition>();
@@ -141,8 +143,9 @@ export default function PropertyEditor({
 					<div className="_propLabel" title="Name">
 						{cd.bindingPaths[x[i]]?.name}
 					</div>
-					<BindingPathEditor
+					<ExpressionEditor2
 						value={def[x[i]]}
+						bothModes={true}
 						onChange={bp => {
 							const newDef = duplicate(def);
 							if (!bp || (bp.value === undefined && bp.expression === undefined))
@@ -156,6 +159,7 @@ export default function PropertyEditor({
 								newDef,
 							);
 						}}
+						storePaths={storePaths}
 					/>
 				</div>,
 			);
@@ -207,6 +211,7 @@ export default function PropertyEditor({
 					pageDefinition={pageDef}
 					propDef={e}
 					value={def.properties?.[e.name] as ComponentProperty<any>}
+					storePaths={storePaths}
 					onChange={v =>
 						updatePropertyDefinition(
 							e,
@@ -264,6 +269,7 @@ export default function PropertyEditor({
 						}}
 						value={{ value: def.name }}
 						onlyValue={true}
+						storePaths={storePaths}
 						onChange={v => {
 							const newDef = duplicate(def);
 							newDef.name = v.value;
@@ -286,7 +292,7 @@ export default function PropertyEditor({
 						key={e[0]}
 						name={e[1]}
 						displayName={e[0]}
-						defaultStateOpen={e[1] === ComponentPropertyGroup.IMPORTANT}
+						defaultStateOpen={e[1] === ComponentPropertyGroup.BASIC}
 						pageExtractor={pageExtractor}
 						locationHistory={locationHistory}
 						onChangePersonalization={onChangePersonalization}

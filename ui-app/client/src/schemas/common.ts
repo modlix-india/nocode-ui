@@ -34,27 +34,6 @@ const map = new Map([
 	['Url', Schema.ofString('Url').setNamespace(NAMESPACE_UI_ENGINE)],
 	['SimpleDataLocation', Schema.ofString('SimpleDataLocation').setNamespace(NAMESPACE_UI_ENGINE)],
 	[
-		'FetchError',
-		Schema.ofObject('FetchError')
-			.setNamespace(NAMESPACE_UI_ENGINE)
-			.setProperties(
-				new Map([
-					[
-						'error',
-						Schema.ofObject('error')
-							.setNamespace(NAMESPACE_UI_ENGINE)
-							.setProperties(
-								new Map<string, Schema>([
-									['status', Schema.ofNumber('status')],
-									['data', Schema.ofNumber('data')],
-									['headers', Schema.ofNumber('headers')],
-								]),
-							),
-					],
-				]),
-			),
-	],
-	[
 		'Translations',
 		Schema.ofObject('Translations')
 			.setNamespace(NAMESPACE_UI_ENGINE)

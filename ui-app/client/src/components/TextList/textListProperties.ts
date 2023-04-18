@@ -17,7 +17,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Text',
 		description: 'Delimitter separated string for multiple list items.',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		translatable: true,
 	},
 
@@ -28,7 +28,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Type of the Value',
 		defaultValue: ',',
 		editor: ComponentPropertyEditor.ENUM,
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		enumValues: [
 			{ name: ',', displayName: 'Comma', description: 'Comma' },
 			{ name: ':', displayName: 'SemiColon', description: 'SemiColon' },
@@ -44,7 +44,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Type of the list to use',
 		defaultValue: 'ul',
 		editor: ComponentPropertyEditor.ENUM,
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		enumValues: [
 			{ name: 'ul', displayName: 'Unordered List', description: 'An unordered List' },
 			{ name: 'ol', displayName: 'Ordered List', description: 'An Ordered List' },
@@ -57,7 +57,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'List icon',
 		description: 'Icon to be used for list',
 		defaultValue: '',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		editor: ComponentPropertyEditor.ICON,
 	},
 
@@ -66,7 +66,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'List style type',
 		description: 'Style Type of the List to use for listing, based on HTML list style type.',
-		group: ComponentPropertyGroup.IMPORTANT,
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: 'none',
 	},
 
