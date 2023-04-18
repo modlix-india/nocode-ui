@@ -475,93 +475,95 @@ export default function StylePropertyEditor({
 											const newProps = duplicate(
 												styleProps,
 											) as ComponentStyle;
+											const screenSize = ((selectorPref[selectedComponent]
+												?.screenSize?.value as string) ??
+												'ALL') as StyleResolution;
+											let value = iterateProps[prop] ?? {};
+											if (pseudoState) {
+												value = {
+													...value,
+													...(screenSize === 'ALL'
+														? {}
+														: properties[1].resolutions?.[screenSize]?.[
+																`${prop}:${pseudoState}`
+														  ] ?? {}),
+													...(iterateProps[`${prop}:${pseudoState}`] ??
+														{}),
+												};
+											}
+											if (subComponentName) {
+												value = {
+													...value,
+													...(screenSize === 'ALL'
+														? {}
+														: properties[1].resolutions?.[screenSize]?.[
+																`${subComponentName}-${prop}`
+														  ] ?? {}),
+													...(iterateProps[
+														`${subComponentName}-${prop}`
+													] ?? {}),
+												};
+											}
+											if (pseudoState) {
+												value = {
+													...value,
+													...(screenSize === 'ALL'
+														? {}
+														: properties[1].resolutions?.[screenSize]?.[
+																`${subComponentName}-${prop}:${pseudoState}`
+														  ] ?? {}),
+													...(iterateProps[
+														`${subComponentName}-${prop}:${pseudoState}`
+													] ?? {}),
+												};
+											}
+
 											if (selectorPref[selectedComponent]?.condition?.value) {
-											} else {
-												const screenSize = ((selectorPref[selectedComponent]
-													?.screenSize?.value as string) ??
-													'ALL') as StyleResolution;
-												let value = iterateProps[prop] ?? {};
-												if (pseudoState) {
-													value = {
-														...value,
-														...(screenSize === 'ALL'
-															? {}
-															: properties[1].resolutions?.[
-																	screenSize
-															  ]?.[`${prop}:${pseudoState}`] ?? {}),
-														...(iterateProps[
-															`${prop}:${pseudoState}`
-														] ?? {}),
-													};
-												}
-												if (subComponentName) {
-													value = {
-														...value,
-														...(screenSize === 'ALL'
-															? {}
-															: properties[1].resolutions?.[
-																	screenSize
-															  ]?.[`${subComponentName}-${prop}`] ??
-															  {}),
-														...(iterateProps[
-															`${subComponentName}-${prop}`
-														] ?? {}),
-													};
-												}
-												if (pseudoState) {
-													value = {
-														...value,
-														...(screenSize === 'ALL'
-															? {}
-															: properties[1].resolutions?.[
-																	screenSize
-															  ]?.[
-																	`${subComponentName}-${prop}:${pseudoState}`
-															  ] ?? {}),
-														...(iterateProps[
-															`${subComponentName}-${prop}:${pseudoState}`
-														] ?? {}),
-													};
-												}
+											}
 
-												let actualProp = prop;
-												if (subComponentName && pseudoState) {
-													actualProp = `${subComponentName}-${prop}:${pseudoState}`;
-												} else if (subComponentName) {
-													actualProp = `${subComponentName}-${prop}`;
-												} else if (pseudoState) {
-													actualProp = `${prop}:${pseudoState}`;
-												}
+											let actualProp = prop;
+											if (subComponentName && pseudoState) {
+												actualProp = `${subComponentName}-${prop}:${pseudoState}`;
+											} else if (subComponentName) {
+												actualProp = `${subComponentName}-${prop}`;
+											} else if (pseudoState) {
+												actualProp = `${prop}:${pseudoState}`;
+											}
 
-												if (newProps[properties[0]].resolutions) {
+											if (newProps[properties[0]].resolutions) {
+												if (
+													!newProps[properties[0]].resolutions![
+														screenSize
+													]
+												)
+													newProps[properties[0]].resolutions![
+														screenSize
+													] = {};
+												if (
+													deepEqual(value, v) ||
+													(!v.value &&
+														!v.location?.expression &&
+														!v.location?.value)
+												) {
+													delete newProps[properties[0]].resolutions![
+														screenSize
+													]![actualProp];
+												} else {
 													if (
 														!newProps[properties[0]].resolutions![
 															screenSize
 														]
-													)
+													) {
 														newProps[properties[0]].resolutions![
 															screenSize
 														] = {};
-													if (deepEqual(value, v)) {
-														delete newProps[properties[0]].resolutions![
-															screenSize
-														]![actualProp];
-													} else {
-														if (
-															!newProps[properties[0]].resolutions![
-																screenSize
-															]
-														) {
-															newProps[properties[0]].resolutions![
-																screenSize
-															] = {};
-														}
-														newProps[properties[0]].resolutions![
-															screenSize
-														]![actualProp] = v;
 													}
-													saveStyle(newProps);
+													newProps[properties[0]].resolutions![
+														screenSize
+													]![actualProp] = v;
 												}
+												console.log(newProps);
+												saveStyle(newProps);
 											}
 										}}
 									/>
