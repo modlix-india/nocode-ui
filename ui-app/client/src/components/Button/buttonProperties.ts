@@ -56,7 +56,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 	'': {},
-	button: {},
 	rightIcon: {},
 	leftIcon: {},
 };
