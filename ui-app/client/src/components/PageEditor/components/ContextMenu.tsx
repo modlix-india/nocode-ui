@@ -69,6 +69,15 @@ export function ContextMenu({
 					<div className="_popupMenu">
 						<div
 							className="_popupMenuItem"
+							title="Wrap a grid"
+							onClick={() => pageOperations.wrapGrid(menuDetails.componentKey)}
+						>
+							<i className="fa fa-regular fa-square-full" />
+							Wrap a Grid
+						</div>
+						<div className="_popupMenuSeperator" />
+						<div
+							className="_popupMenuItem"
 							title="Delete"
 							onClick={() => pageOperations.deleteComponent(menuDetails.componentKey)}
 						>

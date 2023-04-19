@@ -7,7 +7,7 @@ import duplicate from '../../../util/duplicate';
 import { Issue } from '../components/IssuePopup';
 import { COPY_CD_KEY, CUT_CD_KEY, DRAG_CD_KEY, DRAG_COMP_NAME } from '../../../constants';
 import ComponentDefinitions from '../../';
-import NothingComponent from '../../Nothing';
+import Grid from '../../Grid/Grid';
 import { shortUUID } from '../../../util/shortUUID';
 
 interface ClipboardObject {
@@ -97,6 +97,56 @@ export default class PageOperations {
 			if (this.selectedComponent === compkey) this.onSelectedComponentChanged('');
 			setData(this.defPath, def, this.pageExtractor.getPageName());
 		}
+	}
+
+	public wrapGrid(compkey: string | undefined) {
+		if (!compkey || !this.defPath) return;
+
+		const pageDef: PageDefinition = getDataFromPath(
+			this.defPath,
+			this.locationHistory,
+			this.pageExtractor,
+		);
+		if (!pageDef) return;
+
+		const key = this.genId();
+		let def = duplicate(pageDef) as PageDefinition;
+
+		if (pageDef.rootComponent === compkey) {
+			if (!def.componentDefinition) def.componentDefinition = {};
+			if (!def.rootComponent) {
+				def.rootComponent = key;
+				def.componentDefinition[key] = {
+					...(Grid.defaultTemplate ?? { name: 'Grid', type: 'Grid' }),
+					key,
+				};
+			} else {
+				def.componentDefinition[key] = {
+					...(Grid.defaultTemplate ?? { name: 'Grid', type: 'Grid' }),
+					key,
+					children: { [def.rootComponent]: true },
+				};
+			}
+		} else {
+			let keys = Object.values(def.componentDefinition)
+				.filter(e => e.children?.[compkey])
+				.map(e => e.key);
+			for (let i = 0; i < keys.length; i++) {
+				const x = def.componentDefinition[keys[i]] as ComponentDefinition;
+				delete x!.children![compkey];
+				x!.children![key] = true;
+			}
+			def.componentDefinition[key] = {
+				...(Grid.defaultTemplate ?? { name: 'Grid', type: 'Grid' }),
+				key,
+				displayOrder: def.componentDefinition[compkey].displayOrder,
+				children: { [compkey]: true },
+			};
+			def.componentDefinition[compkey].displayOrder = 0;
+		}
+
+		this.onSelectedComponentChanged(key);
+		setData(this.defPath, def, this.pageExtractor.getPageName());
 	}
 
 	public droppedOn(componentKey: string, droppedData: any, forceSameParent: boolean = false) {
