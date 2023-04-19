@@ -34,6 +34,7 @@ import { Component } from '../types/common';
 import Iframe from './Iframe/Iframe';
 import FileUpload from './FileUpload/FileUpload';
 import KIRunEditor from './KIRunEditor/KIRunEditor';
+import Video from './Video/Video';
 
 export default new Map<string, Component>([
 	[Button.name, Button],
@@ -71,4 +72,5 @@ export default new Map<string, Component>([
 	[Popover.name, Popover],
 	[FileUpload.name, FileUpload],
 	[KIRunEditor.name, KIRunEditor],
+	[Video.name, Video],
 ]);
