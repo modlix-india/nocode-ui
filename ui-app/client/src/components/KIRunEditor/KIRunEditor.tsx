@@ -260,7 +260,7 @@ function KIRunEditor(
 	}, [
 		preference,
 		personalizationPath,
-		context.pageName,
+		context,
 		onChangePersonalization,
 		locationHistory,
 		pageDefinition,
@@ -338,6 +338,7 @@ function KIRunEditor(
 
 						setData(bindingPathPath, newRawDef, context.pageName);
 					}}
+					showComment={preference.showComments}
 				/>
 			));
 	}
@@ -622,6 +623,15 @@ function KIRunEditor(
 							}
 
 							setData(bindingPathPath, def, context.pageName);
+						}}
+					/>
+					<div className="_separator" />
+					<i
+						className="fa fa-regular fa-comment-dots"
+						role="button"
+						title="Edit Comment"
+						onClick={() => {
+							savePersonalization('showComments', !preference?.showComments);
 						}}
 					/>
 				</div>

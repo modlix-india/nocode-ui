@@ -137,6 +137,40 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			font-size: 13px;
 			box-shadow: 0 15px 30px 0 rgba(0,0,0,.10), 0 5px 15px 0 rgba(0,0,0,.10);
 			padding: 2px;
+			
+		}
+
+		${PREFIX} ._statement ._commentContainer {
+			position: absolute;
+			top: -10px;
+			transform: translateY(-100%);
+			padding: 10px;
+			font-size: 12px;
+			background: #fff6;
+			min-width: 100%;
+			border-radius: 4px;
+			color: #628D4E;
+			font-family: monospace;
+			line-height: 13px;
+		}
+
+		${PREFIX} ._statement ._commentContainer ._comment,
+		${PREFIX} ._statement ._commentContainer ._commentEditor {
+			min-width: 100%;
+			height: 100%;
+			padding: 3px;
+			border: none;
+			outline-color: #ccc;
+			font-family: inherit;
+			font-size: inherit;
+			white-space: pre;
+		}
+
+		${PREFIX} ._statement ._commentContainer textarea._commentEditor {
+			position: absolute;
+			top:10px;
+			left: 10px;
+			min-width: calc(100% - 14px);
 		}
 
 		${PREFIX} ._statement._selected {

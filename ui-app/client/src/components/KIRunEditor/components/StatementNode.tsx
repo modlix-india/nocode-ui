@@ -35,6 +35,7 @@ interface StatementProps {
 	onDelete: (statementName: string) => void;
 	onDependencyDragStart: (ddPos: any) => void;
 	onDependencyDrop: (statement: string) => void;
+	showComment: boolean;
 }
 
 const DEFAULT_POSITION = { left: 0, top: 0 };
@@ -56,6 +57,7 @@ export default function StatementNode({
 	onDelete,
 	onDependencyDragStart,
 	onDependencyDrop,
+	showComment,
 }: StatementProps) {
 	const [statementName, setStatementName] = useState(statement.statementName);
 	const [editStatementName, setEditStatementName] = useState(false);
@@ -100,6 +102,8 @@ export default function StatementNode({
 			? alwaysColor
 			: '';
 
+	const [editComment, setEditComment] = useState(false);
+
 	const buttons = selected ? (
 		<div className="_buttons" style={{ color: highlightColor }}>
 			<i
@@ -127,6 +131,15 @@ export default function StatementNode({
 							}),
 						}),
 					]);
+				}}
+			></i>
+			<i
+				className="fa fa-regular fa-comment-dots"
+				title={`Comment ${statementName}`}
+				onMouseDown={e => {
+					e.stopPropagation();
+					e.preventDefault();
+					setEditComment(true);
 				}}
 			></i>
 		</div>
@@ -250,6 +263,58 @@ export default function StatementNode({
 		<></>
 	);
 
+	const [changeComment, setChangeComment] = useState<string>(statement.comment ?? '');
+	useEffect(() => setChangeComment(statement.comment), [statement.comment]);
+
+	const comments =
+		(showComment && statement.comment) || editComment ? (
+			<div className="_commentContainer">
+				<span
+					className="_comment"
+					onMouseDown={e => {
+						e.preventDefault();
+						e.stopPropagation();
+					}}
+					onDoubleClick={e => {
+						e.preventDefault();
+						e.stopPropagation();
+						setEditComment(true);
+					}}
+				>
+					{statement.comment ?? ''}
+				</span>
+				{editComment ? (
+					<textarea
+						className="_commentEditor"
+						value={changeComment}
+						placeholder="Add a comment"
+						onKeyUp={e => {
+							e.preventDefault();
+							e.stopPropagation();
+							if (e.key === 'Escape') {
+								setEditComment(false);
+								setChangeComment(statement.comment);
+							}
+						}}
+						onBlur={() => {
+							setEditComment(false);
+							onChange({ ...duplicate(statement), comment: changeComment });
+						}}
+						onChange={e => setChangeComment(e.target.value)}
+						onMouseDown={e => {
+							e.preventDefault();
+							e.stopPropagation();
+						}}
+						autoFocus
+					/>
+				) : (
+					<></>
+				)}
+			</div>
+		) : (
+			<></>
+		);
+
 	return (
 		<div
 			className={`_statement ${selected ? '_selected' : ''}`}
@@ -269,6 +334,7 @@ export default function StatementNode({
 				onDependencyDrop(statement.statementName);
 			}}
 		>
+			{comments}
 			<div
 				className="_namesContainer"
 				style={{
