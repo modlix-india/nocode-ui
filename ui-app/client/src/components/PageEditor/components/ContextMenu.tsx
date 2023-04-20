@@ -2,7 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { PageStoreExtractor, addListener } from '../../../context/StoreContext';
 import Portal from '../../Portal';
 import PageOperations from '../functions/PageOperations';
-import { PageDefinition } from '../../../types/common';
+import Components from '../..';
+import { ComponentDefinition } from '../../../types/common';
 
 export interface ContextMenuDetails {
 	componentKey: string;
@@ -56,6 +57,23 @@ export function ContextMenu({
 		left = 'auto';
 	}
 
+	const componentDefinition = pageOperations.getComponentDefinitionIfNotRoot(
+		menuDetails.componentKey,
+	);
+	const deleteForContainer =
+		componentDefinition?.type &&
+		Components.get(componentDefinition.type)?.allowedChildrenType?.get('') === -1 ? (
+			<div
+				className="_popupMenuItem"
+				title="Delete "
+				onClick={() => pageOperations.moveChildrenUpAndDelete(menuDetails.componentKey)}
+			>
+				<i className="fa fa-solid fa-trash-arrow-up" />
+				Delete and Move Children Up
+			</div>
+		) : (
+			<></>
+		);
 	return (
 		<Portal>
 			<div
@@ -84,6 +102,7 @@ export function ContextMenu({
 							<i className="fa fa-regular fa-trash-can" />
 							Delete
 						</div>
+						{deleteForContainer}
 						<div className="_popupMenuSeperator" />
 						<div
 							className="_popupMenuItem"

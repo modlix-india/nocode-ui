@@ -39,8 +39,30 @@ export default class PageOperations {
 		this.onSelectedComponentChanged = onSelectedComponentChanged;
 	}
 
-	public deleteComponent(compkey: string | undefined) {
-		if (!compkey || !this.defPath) return;
+	public getComponentDefinition(componentKey: string): ComponentDefinition | undefined {
+		const pageDef: PageDefinition = getDataFromPath(
+			this.defPath,
+			this.locationHistory,
+			this.pageExtractor,
+		);
+		if (!pageDef) return;
+
+		return pageDef.componentDefinition[componentKey];
+	}
+
+	public getComponentDefinitionIfNotRoot(componentKey: string): ComponentDefinition | undefined {
+		const pageDef: PageDefinition = getDataFromPath(
+			this.defPath,
+			this.locationHistory,
+			this.pageExtractor,
+		);
+		if (!pageDef || pageDef.rootComponent === componentKey) return;
+
+		return pageDef.componentDefinition[componentKey];
+	}
+
+	public deleteComponent(componentKey: string | undefined) {
+		if (!componentKey || !this.defPath) return;
 
 		const pageDef: PageDefinition = getDataFromPath(
 			this.defPath,
@@ -49,7 +71,7 @@ export default class PageOperations {
 		);
 		if (!pageDef) return;
 
-		if (pageDef.rootComponent === compkey) {
+		if (pageDef.rootComponent === componentKey) {
 			// When a root component is delete we need to add a new grid so people can add components to it.
 			// It requires a confirmation if we can delete a grid that is root.
 			this.setIssue({
@@ -84,23 +106,51 @@ export default class PageOperations {
 				componentDefinition: { ...(pageDef.componentDefinition ?? {}) },
 			};
 			// Delete the component that is selected or delete triggered on.
-			delete def.componentDefinition[compkey];
+			delete def.componentDefinition[componentKey];
 			// Finding the parent component of the deleting component and removing it from its children.
 			let keys = Object.values(def.componentDefinition)
-				.filter(e => e.children?.[compkey])
+				.filter(e => e.children?.[componentKey])
 				.map(e => e.key);
 			for (let i = 0; i < keys.length; i++) {
 				const x = duplicate(def.componentDefinition[keys[i]]);
-				delete x.children[compkey];
+				delete x.children[componentKey];
 				def.componentDefinition[x.key] = x;
 			}
-			if (this.selectedComponent === compkey) this.onSelectedComponentChanged('');
+			if (this.selectedComponent === componentKey) this.onSelectedComponentChanged('');
 			setData(this.defPath, def, this.pageExtractor.getPageName());
 		}
 	}
 
-	public wrapGrid(compkey: string | undefined) {
-		if (!compkey || !this.defPath) return;
+	public moveChildrenUpAndDelete(componentKey: string) {
+		if (!componentKey || !this.defPath) return;
+
+		const pageDef: PageDefinition = getDataFromPath(
+			this.defPath,
+			this.locationHistory,
+			this.pageExtractor,
+		);
+		if (!pageDef || pageDef.rootComponent === componentKey) return;
+
+		const key = this.genId();
+		let def = duplicate(pageDef) as PageDefinition;
+
+		let keys = Object.values(def.componentDefinition)
+			.filter(e => e.children?.[componentKey])
+			.map(e => e.key);
+
+		let children = def.componentDefinition[componentKey].children;
+		for (let i = 0; i < keys.length; i++) {
+			const x = def.componentDefinition[keys[i]];
+			if (!x.children) continue;
+			delete x.children[componentKey];
+			x.children = { ...x.children, ...children };
+		}
+		if (this.selectedComponent === componentKey) this.onSelectedComponentChanged('');
+		setData(this.defPath, def, this.pageExtractor.getPageName());
+	}
+
+	public wrapGrid(componentKey: string | undefined) {
+		if (!componentKey || !this.defPath) return;
 
 		const pageDef: PageDefinition = getDataFromPath(
 			this.defPath,
@@ -112,7 +162,7 @@ export default class PageOperations {
 		const key = this.genId();
 		let def = duplicate(pageDef) as PageDefinition;
 
-		if (pageDef.rootComponent === compkey) {
+		if (pageDef.rootComponent === componentKey) {
 			if (!def.componentDefinition) def.componentDefinition = {};
 			if (!def.rootComponent) {
 				def.rootComponent = key;
@@ -129,20 +179,20 @@ export default class PageOperations {
 			}
 		} else {
 			let keys = Object.values(def.componentDefinition)
-				.filter(e => e.children?.[compkey])
+				.filter(e => e.children?.[componentKey])
 				.map(e => e.key);
 			for (let i = 0; i < keys.length; i++) {
 				const x = def.componentDefinition[keys[i]] as ComponentDefinition;
-				delete x!.children![compkey];
+				delete x!.children![componentKey];
 				x!.children![key] = true;
 			}
 			def.componentDefinition[key] = {
 				...(Grid.defaultTemplate ?? { name: 'Grid', type: 'Grid' }),
 				key,
-				displayOrder: def.componentDefinition[compkey].displayOrder,
-				children: { [compkey]: true },
+				displayOrder: def.componentDefinition[componentKey].displayOrder,
+				children: { [componentKey]: true },
 			};
-			def.componentDefinition[compkey].displayOrder = 0;
+			def.componentDefinition[componentKey].displayOrder = 0;
 		}
 
 		this.onSelectedComponentChanged(key);
