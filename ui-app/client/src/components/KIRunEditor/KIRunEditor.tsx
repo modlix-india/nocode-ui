@@ -38,6 +38,7 @@ import { generateColor } from './colors';
 import ExecutionGraphLines from './components/ExecutionGraphLines';
 import Menu from './components/Menu';
 import StatementNode from './components/StatementNode';
+import Search from './components/Search';
 
 const gridSize = 20;
 
@@ -113,7 +114,7 @@ function KIRunEditor(
 			pageExtractor,
 			bindingPathPath,
 		);
-	}, [bindingPathPath]);
+	}, [bindingPathPath, setRawDef, pageExtractor]);
 
 	const personalizationPath = bindingPath2
 		? getPathFromLocation(bindingPath2!, locationHistory, pageExtractor)
@@ -338,7 +339,7 @@ function KIRunEditor(
 
 						setData(bindingPathPath, newRawDef, context.pageName);
 					}}
-					showComment={preference.showComments}
+					showComment={!preference.showComments}
 				/>
 			));
 	}
@@ -346,6 +347,7 @@ function KIRunEditor(
 	const [selectionBox, setSelectionBox] = useState<any>({});
 	const [scrMove, setScrMove] = useState<any>({});
 	const [primedToClick, setPrimedToClick] = useState(false);
+	const [showAddSearch, setShowAddSearch] = useState<{ left: number; top: number }>();
 
 	const designerMouseDown = useCallback(
 		(e: any) => {
@@ -585,6 +587,52 @@ function KIRunEditor(
 
 	const magnification = preference.magnification ?? 1;
 
+	const searchBox = showAddSearch ? (
+		<div className="_statement _forAdd" style={{ ...showAddSearch }}>
+			<Search
+				options={functionNames.map(e => ({
+					value: e,
+				}))}
+				onChange={value => {
+					if (isReadonly) return;
+
+					const index = value.lastIndexOf('.');
+
+					const name = index === -1 ? value : value.substring(index + 1);
+					const namespace = index === -1 ? '_' : value.substring(0, index);
+
+					const def = duplicate(rawDef);
+					let sName = name.substring(0, 1).toLowerCase() + name.substring(1);
+
+					if (!def.steps) def.steps = {};
+
+					let i = '';
+					let num = 0;
+					while (def.steps[`${sName}${i}`]) i = `${++num}`;
+					console.log(`${sName}${i}`);
+
+					sName = `${sName}${i}`;
+					def.steps[sName] = {
+						statementName: sName,
+						name,
+						namespace,
+						position: {
+							left: showAddSearch.left,
+							top: showAddSearch.top,
+						},
+					};
+					setShowAddSearch(undefined);
+					setData(bindingPathPath, def, context.pageName);
+				}}
+				onClose={() => {
+					setShowAddSearch(undefined);
+				}}
+			/>
+		</div>
+	) : (
+		<></>
+	);
+
 	return (
 		<div className="comp compKIRunEditor">
 			<div className="_header">
@@ -608,7 +656,10 @@ function KIRunEditor(
 						className="fa fa-solid fa-square-plus"
 						role="button"
 						title="Add Step"
-						onClick={() => {}}
+						onClick={() => {
+							if (isReadonly) return;
+							setShowAddSearch({ left: 20, top: 20 });
+						}}
 					/>
 					<i
 						className="fa fa-solid fa-trash"
@@ -631,7 +682,12 @@ function KIRunEditor(
 						role="button"
 						title="Edit Comment"
 						onClick={() => {
-							savePersonalization('showComments', !preference?.showComments);
+							savePersonalization(
+								'showComments',
+								preference?.showComments === undefined
+									? true
+									: !preference.showComments,
+							);
 						}}
 					/>
 				</div>
@@ -696,6 +752,19 @@ function KIRunEditor(
 							);
 						}
 					}}
+					onContextMenu={ev => {
+						ev.preventDefault();
+						ev.stopPropagation();
+						const parentRect = designerRef.current!.getBoundingClientRect();
+						showMenu({
+							position: {
+								x: ev.clientX - parentRect.left,
+								y: ev.clientY - parentRect.top,
+							},
+							type: 'designer',
+							value: {},
+						});
+					}}
 				>
 					<ExecutionGraphLines
 						executionPlan={executionPlan}
@@ -716,8 +785,10 @@ function KIRunEditor(
 						rawDef={rawDef}
 						bindingPathPath={bindingPathPath}
 						pageName={context.pageName}
+						setShowAddSearch={setShowAddSearch}
 					/>
 					{overLine}
+					{searchBox}
 				</div>
 			</div>
 		</div>

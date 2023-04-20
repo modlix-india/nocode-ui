@@ -146,12 +146,21 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			transform: translateY(-100%);
 			padding: 10px;
 			font-size: 12px;
-			background: #fff6;
+			background: #fff9;
 			min-width: 100%;
 			border-radius: 4px;
 			color: #628D4E;
 			font-family: monospace;
 			line-height: 13px;
+			border: 2px solid #628D4E33;
+		}
+
+		${PREFIX} ._statement ._commentContainer ._comment::before {
+			content: '/* ';
+		}
+
+		${PREFIX} ._statement ._commentContainer ._comment::after {
+			content: ' */';
 		}
 
 		${PREFIX} ._statement ._commentContainer ._comment,
@@ -248,6 +257,10 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 
 		${PREFIX} ._nameNamespaceContainer i.fa {
 			color: #fff;
+		}
+
+		${PREFIX} ._statement._forAdd {
+			width: 300px;
 		}
 
 		${PREFIX} ._statement ._otherContainer { 
@@ -392,6 +405,7 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
     		margin-top: -12px;
 			min-width: 100%;
 			z-Index: 3;
+			background-color: #eee;
 		}
 
 		${PREFIX} ._search ._value {

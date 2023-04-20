@@ -9,6 +9,7 @@ interface MenuProps {
 	rawDef: any;
 	bindingPathPath: string | undefined;
 	pageName: string;
+	setShowAddSearch: (position: { left: number; top: number }) => void;
 }
 
 export default function Menu({
@@ -18,6 +19,7 @@ export default function Menu({
 	rawDef,
 	bindingPathPath,
 	pageName,
+	setShowAddSearch,
 }: MenuProps) {
 	if (!menu) return <></>;
 	return (
@@ -47,6 +49,22 @@ export default function Menu({
 						}}
 					>
 						<i className="fa fa-regular fa-trash-can" /> Remove
+					</div>
+				</>
+			)}
+			{menu.type === 'designer' && (
+				<>
+					<div
+						className="_menuItem"
+						onClick={() => {
+							if (isReadonly || !bindingPathPath) return;
+							setShowAddSearch({
+								left: menu.position.x - 5,
+								top: menu.position.y - 5,
+							});
+						}}
+					>
+						<i className="fa fa-regular fa-square-plus" /> Add a Step
 					</div>
 				</>
 			)}
