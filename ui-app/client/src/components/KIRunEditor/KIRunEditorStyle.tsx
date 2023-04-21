@@ -157,10 +157,16 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 
 		${PREFIX} ._statement ._commentContainer ._comment::before {
 			content: '/* ';
+			position: absolute;
+			left: 2px;
+			top: 2px;
 		}
 
 		${PREFIX} ._statement ._commentContainer ._comment::after {
 			content: ' */';
+			position: absolute;
+			right: 2px;
+			bottom: 2px;
 		}
 
 		${PREFIX} ._statement ._commentContainer ._comment,
@@ -177,9 +183,11 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 
 		${PREFIX} ._statement ._commentContainer textarea._commentEditor {
 			position: absolute;
-			top:10px;
-			left: 10px;
-			min-width: calc(100% - 14px);
+			left: 0px;
+			top: 0px;
+			width: 100%;
+			height: 100%;
+			padding: 10px;
 		}
 
 		${PREFIX} ._statement._selected {

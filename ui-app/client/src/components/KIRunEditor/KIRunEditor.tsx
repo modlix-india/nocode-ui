@@ -616,10 +616,7 @@ function KIRunEditor(
 						statementName: sName,
 						name,
 						namespace,
-						position: {
-							left: showAddSearch.left,
-							top: showAddSearch.top,
-						},
+						position: showAddSearch,
 					};
 					setShowAddSearch(undefined);
 					setData(bindingPathPath, def, context.pageName);
@@ -720,7 +717,16 @@ function KIRunEditor(
 					onMouseMove={designerMouseMove}
 					onMouseUp={designerMouseUp}
 					onMouseLeave={designerMouseUp}
-					onDoubleClick={() => {}}
+					onDoubleClick={ev => {
+						ev.preventDefault();
+						ev.stopPropagation();
+						const parentRect = designerRef.current!.getBoundingClientRect();
+
+						setShowAddSearch({
+							left: ev.clientX - parentRect.left - 5,
+							top: ev.clientY - parentRect.top - 5,
+						});
+					}}
 					ref={designerRef}
 					tabIndex={0}
 					onKeyUp={ev => {
@@ -758,8 +764,8 @@ function KIRunEditor(
 						const parentRect = designerRef.current!.getBoundingClientRect();
 						showMenu({
 							position: {
-								x: ev.clientX - parentRect.left,
-								y: ev.clientY - parentRect.top,
+								left: ev.clientX - parentRect.left,
+								top: ev.clientY - parentRect.top,
 							},
 							type: 'designer',
 							value: {},

@@ -92,8 +92,8 @@ export default function ExecutionGraphLines({
 							const parentRect = designerRef.current!.getBoundingClientRect();
 							showMenu({
 								position: {
-									x: ev.clientX - parentRect.left,
-									y: ev.clientY - parentRect.top,
+									left: ev.clientX - parentRect.left,
+									top: ev.clientY - parentRect.top,
 								},
 								type: 'dependent',
 								value: {

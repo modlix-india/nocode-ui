@@ -302,7 +302,6 @@ export default function StatementNode({
 						}}
 						onChange={e => setChangeComment(e.target.value)}
 						onMouseDown={e => {
-							e.preventDefault();
 							e.stopPropagation();
 						}}
 						autoFocus
@@ -332,6 +331,10 @@ export default function StatementNode({
 			}}
 			onMouseUp={e => {
 				onDependencyDrop(statement.statementName);
+			}}
+			onContextMenu={e => {
+				e.preventDefault();
+				e.stopPropagation();
 			}}
 		>
 			{comments}

@@ -26,8 +26,8 @@ export default function Menu({
 		<div
 			className="_menu"
 			style={{
-				left: `${menu.position.x - 5}px`,
-				top: `${menu.position.y - 5}px`,
+				left: `${menu.position.left - 5}px`,
+				top: `${menu.position.top - 5}px`,
 			}}
 			onMouseLeave={() => showMenu(undefined)}
 		>
@@ -59,8 +59,8 @@ export default function Menu({
 						onClick={() => {
 							if (isReadonly || !bindingPathPath) return;
 							setShowAddSearch({
-								left: menu.position.x - 5,
-								top: menu.position.y - 5,
+								left: menu.position.left - 5,
+								top: menu.position.top - 5,
 							});
 						}}
 					>
