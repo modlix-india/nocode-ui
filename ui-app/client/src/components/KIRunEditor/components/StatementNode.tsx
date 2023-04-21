@@ -268,17 +268,19 @@ export default function StatementNode({
 
 	const comments =
 		(showComment && statement.comment) || editComment ? (
-			<div className="_commentContainer">
+			<div
+				className="_commentContainer"
+				onDoubleClick={e => {
+					e.preventDefault();
+					e.stopPropagation();
+					setEditComment(true);
+				}}
+			>
 				<span
 					className="_comment"
 					onMouseDown={e => {
 						e.preventDefault();
 						e.stopPropagation();
-					}}
-					onDoubleClick={e => {
-						e.preventDefault();
-						e.stopPropagation();
-						setEditComment(true);
 					}}
 				>
 					{statement.comment ?? ''}
@@ -302,7 +304,6 @@ export default function StatementNode({
 						}}
 						onChange={e => setChangeComment(e.target.value)}
 						onMouseDown={e => {
-							e.preventDefault();
 							e.stopPropagation();
 						}}
 						autoFocus
@@ -332,6 +333,14 @@ export default function StatementNode({
 			}}
 			onMouseUp={e => {
 				onDependencyDrop(statement.statementName);
+			}}
+			onContextMenu={e => {
+				e.preventDefault();
+				e.stopPropagation();
+			}}
+			onDoubleClick={ev => {
+				ev.preventDefault();
+				ev.stopPropagation();
 			}}
 		>
 			{comments}

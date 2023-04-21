@@ -431,6 +431,8 @@ export default function CodeEditor({
 						)
 					}
 					tokenValueExtractors={tokenValueExtractors}
+					stores={['Store', 'Page', 'Theme', 'LocalStore']}
+					hideArguments={true}
 				/>
 			</div>
 		</div>
