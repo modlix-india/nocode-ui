@@ -1,10 +1,12 @@
 import {
 	ExecutionGraph,
 	Function,
+	LinkedList,
 	Parameter,
 	ParameterReferenceType,
 	Repository,
 	StatementExecution,
+	isNullValue,
 } from '@fincity/kirun-js';
 import React, { ReactNode, useMemo } from 'react';
 import { UIError } from '../../util/errorHandling';
@@ -126,6 +128,8 @@ export default function ExecutionGraphLines({
 			?.getSignature();
 
 		if (!functionSignature) return array;
+
+		const redundancyCheck = new Set<string>();
 		const inLines = Array.from(functionSignature.getParameters().values() ?? []).map(
 			(p: Parameter) => {
 				const paramValue = statement.getParameterMap()?.get(p.getParameterName());
@@ -155,9 +159,58 @@ export default function ExecutionGraphLines({
 							selectedStatements,
 							setSelectedStatements,
 							regexMap,
+							redundancyCheck,
 						);
-					} else if (typeof pr.getValue() === 'object') {
-						//TODO: work on this
+					} else if (!isNullValue(pr.getValue())) {
+						const value = pr.getValue();
+
+						if (typeof value === 'string') {
+							return makeLineFromExpression(
+								value,
+								rawDef,
+								toColor,
+								gradients,
+								toNode,
+								statement.getStatementName(),
+								designerRef,
+								selectedStatements,
+								setSelectedStatements,
+								regexMap,
+								redundancyCheck,
+							);
+						} else {
+							const ll = new LinkedList<any>();
+							const set = new Set<string>();
+							ll.push(value);
+							let v: any;
+							const lines = [];
+							while (ll.size() > 0) {
+								v = ll.pop();
+								if (Array.isArray(v)) {
+									ll.addAll(v);
+								} else if (typeof v === 'object') {
+									ll.addAll(Array.from(Object.values(v)));
+								} else if (typeof v === 'string' && !set.has(v)) {
+									set.add(v);
+									lines.push(
+										...makeLineFromExpression(
+											v,
+											rawDef,
+											toColor,
+											gradients,
+											toNode,
+											statement.getStatementName(),
+											designerRef,
+											selectedStatements,
+											setSelectedStatements,
+											regexMap,
+											redundancyCheck,
+										),
+									);
+								}
+							}
+							return lines;
+						}
 					}
 					return undefined;
 				});
@@ -187,6 +240,7 @@ function makeLineFromExpression(
 	selectedStatements: Map<string, boolean>,
 	setSelectedStatements: (statements: Map<string, boolean>) => void,
 	regexMap: Map<string, RegExp>,
+	redundancyCheck: Set<string>,
 	props: any = {},
 ): ReactNode[] {
 	const lines: ReactNode[] = Array.from(regexMap)
@@ -204,13 +258,15 @@ function makeLineFromExpression(
 			exprs.map(e => {
 				const names = e.split('.');
 				if (names.length < 2) return undefined;
-				const fromNode = document.getElementById(
+				const fromId =
 					type === 'Steps'
 						? names.length > 3
 							? `eventParameter_${names[1]}_${names[2]}_${names[3]}`
 							: `eventNode_${names[1]}_${names[2]}`
-						: `_storeNode_${type}`,
-				);
+						: `_storeNode_${type}`;
+				if (redundancyCheck.has(fromId + '-' + toNode.id)) return undefined;
+				redundancyCheck.add(fromId + '-' + toNode.id);
+				const fromNode = document.getElementById(fromId);
 				if (!fromNode || (type === 'Steps' && !rawDef.steps[names[1]])) return undefined;
 
 				const fromColor =
