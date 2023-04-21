@@ -144,7 +144,7 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			position: absolute;
 			top: -10px;
 			transform: translateY(-100%);
-			padding: 10px;
+			padding: 5px 18px;
 			font-size: 12px;
 			background: #fff9;
 			min-width: 100%;
@@ -159,21 +159,21 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			content: '/* ';
 			position: absolute;
 			left: 2px;
-			top: 2px;
+			top: 4px;
 		}
 
 		${PREFIX} ._statement ._commentContainer ._comment::after {
 			content: ' */';
 			position: absolute;
 			right: 2px;
-			bottom: 2px;
+			bottom: 4px;
 		}
 
 		${PREFIX} ._statement ._commentContainer ._comment,
 		${PREFIX} ._statement ._commentContainer ._commentEditor {
 			min-width: 100%;
 			height: 100%;
-			padding: 3px;
+			
 			border: none;
 			outline-color: #ccc;
 			font-family: inherit;
@@ -187,7 +187,8 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			top: 0px;
 			width: 100%;
 			height: 100%;
-			padding: 10px;
+			padding: 5px 18px;
+			line-height: 13px;
 		}
 
 		${PREFIX} ._statement._selected {
