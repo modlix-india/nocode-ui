@@ -338,6 +338,10 @@ export default function StatementNode({
 				e.preventDefault();
 				e.stopPropagation();
 			}}
+			onDoubleClick={ev => {
+				ev.preventDefault();
+				ev.stopPropagation();
+			}}
 		>
 			{comments}
 			<div

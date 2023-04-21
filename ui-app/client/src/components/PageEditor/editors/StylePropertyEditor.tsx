@@ -562,7 +562,6 @@ export default function StylePropertyEditor({
 														screenSize
 													]![actualProp] = v;
 												}
-												console.log(newProps);
 												saveStyle(newProps);
 											}
 										}}

@@ -39,6 +39,7 @@ import ExecutionGraphLines from './components/ExecutionGraphLines';
 import Menu from './components/Menu';
 import StatementNode from './components/StatementNode';
 import Search from './components/Search';
+import { StoreNode } from './components/StoreNode';
 
 const gridSize = 20;
 
@@ -69,11 +70,27 @@ function savePersonalizationCurry(
 	};
 }
 
+function correctStatementNames(def: any) {
+	def = duplicate(def);
+
+	Object.keys(def?.steps ?? {}).forEach(k => {
+		if (k === def.steps[k].statementName) return;
+
+		let x = def.steps[k];
+		delete def.steps[k];
+		def.steps[x.statementName] = x;
+	});
+
+	return def;
+}
+
 function KIRunEditor(
 	props: ComponentProps & {
 		functionRepository?: Repository<Function>;
 		schemaRepository?: Repository<Schema>;
 		tokenValueExtractors?: Map<string, TokenValueExtractor>;
+		stores?: Array<string>;
+		hideArguments?: boolean;
 	},
 ) {
 	const {
@@ -110,7 +127,7 @@ function KIRunEditor(
 	useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
-			(_, v) => setRawDef(v),
+			(_, v) => setRawDef(correctStatementNames(v)),
 			pageExtractor,
 			bindingPathPath,
 		);
@@ -342,6 +359,20 @@ function KIRunEditor(
 					showComment={!preference.showComments}
 				/>
 			));
+	}
+
+	let stores: ReactNode = <></>;
+
+	const magnification = preference.magnification ?? 1;
+
+	if (props.stores) {
+		stores = (
+			<div className="_storeContainer">
+				{props.stores.map(storeName => (
+					<StoreNode name={storeName} key={storeName} />
+				))}
+			</div>
+		);
 	}
 
 	const [selectionBox, setSelectionBox] = useState<any>({});
@@ -585,8 +616,6 @@ function KIRunEditor(
 		);
 	}
 
-	const magnification = preference.magnification ?? 1;
-
 	const searchBox = showAddSearch ? (
 		<div className="_statement _forAdd" style={{ ...showAddSearch }}>
 			<Search
@@ -609,7 +638,6 @@ function KIRunEditor(
 					let i = '';
 					let num = 0;
 					while (def.steps[`${sName}${i}`]) i = `${++num}`;
-					console.log(`${sName}${i}`);
 
 					sName = `${sName}${i}`;
 					def.steps[sName] = {
@@ -677,13 +705,26 @@ function KIRunEditor(
 					<i
 						className="fa fa-regular fa-comment-dots"
 						role="button"
-						title="Edit Comment"
+						title={preference?.showComments ? 'Show Comments' : 'Hide Comments'}
 						onClick={() => {
 							savePersonalization(
 								'showComments',
 								preference?.showComments === undefined
 									? true
 									: !preference.showComments,
+							);
+						}}
+					/>
+					<i
+						className="fa fa-solid fa-database"
+						role="button"
+						title={preference?.showStores ? 'Show Stores' : 'Hide Stores'}
+						onClick={() => {
+							savePersonalization(
+								'showStores',
+								preference?.showStores === undefined
+									? true
+									: !preference.showStores,
 							);
 						}}
 					/>
@@ -781,8 +822,12 @@ function KIRunEditor(
 						setSelectedStatements={setSelectedStatements}
 						functionRepository={functionRepository}
 						showMenu={showMenu}
+						stores={props.stores}
+						showStores={!preference?.showStores}
+						hideArguments={props.hideArguments}
 					/>
 					{statements}
+					{stores}
 					{selector}
 					<Menu
 						menu={menu}

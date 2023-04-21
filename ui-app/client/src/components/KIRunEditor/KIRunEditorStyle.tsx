@@ -137,7 +137,61 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			font-size: 13px;
 			box-shadow: 0 15px 30px 0 rgba(0,0,0,.10), 0 5px 15px 0 rgba(0,0,0,.10);
 			padding: 2px;
-			
+		}
+
+		${PREFIX} ._storeContainer {
+			position: fixed;
+			display: flex;
+			flex-direction: column;
+			padding: 15px;
+			gap: 10px;
+			transform-origin: left top;
+			transition: transform 1s ease-in;
+		}
+
+		${PREFIX} ._storeNode {
+			display: flex;
+			background-color: #fff;
+			padding: 2px;
+			justify-content: left;
+			align-items: center;
+			box-shadow: 0 15px 30px 0 rgba(0,0,0,.10), 0 5px 15px 0 rgba(0,0,0,.10);
+			border-radius: 4px;
+			position: relative;
+		}
+
+		${PREFIX} ._storeNode i.fa {
+			font-size: 12px;
+			background-color: #ccc;
+			color: #fff;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 20px;
+			height: 20px;
+			border-radius: 3px;
+			border-top-right-radius: 0px;
+    		border-bottom-right-radius: 0px;
+		}
+
+		${PREFIX} ._storeNode ._storeNode_name {
+			font-size: 12px;
+			background-color: #f8f8f8;
+			padding: 3px 8px;
+			border-radius: 3px;
+			flex: 1;
+		}
+
+		${PREFIX} ._storeNode_node {
+			position: absolute;
+			right: 0px;
+			top: 0px;
+			transform: translate(50%, 50%);
+			width: 12px;
+			height: 12px;
+			border-radius: 50%;
+			background-color: #fff;
+			border: 2px solid #fff;
 		}
 
 		${PREFIX} ._statement ._commentContainer {
@@ -153,6 +207,7 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			font-family: monospace;
 			line-height: 13px;
 			border: 2px solid #628D4E33;
+			min-height: 44px;
 		}
 
 		${PREFIX} ._statement ._commentContainer ._comment::before {
@@ -189,6 +244,7 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			height: 100%;
 			padding: 5px 18px;
 			line-height: 13px;
+			min-height: 40px;
 		}
 
 		${PREFIX} ._statement._selected {
@@ -316,6 +372,7 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 		}
 
 		${PREFIX} ._statement ._param ._paramName {
+			cursor: pointer;
 			flex: 1;
 		}
 
