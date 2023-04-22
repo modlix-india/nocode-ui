@@ -425,6 +425,10 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			gap: 5px;
 		}
 
+		${PREFIX} ._statement ._buttons ._buttonsGap {
+			height: 6px;	
+		}
+
 		${PREFIX} ._statement ._buttons i.fa {
 			color: inherit;
 			cursor: pointer;

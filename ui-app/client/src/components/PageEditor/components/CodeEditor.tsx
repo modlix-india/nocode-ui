@@ -40,6 +40,7 @@ interface CodeEditorProps {
 	redoStackRef: React.MutableRefObject<PageDefinition[]>;
 	definition: ComponentDefinition;
 	personalizationPath: string | undefined;
+	storePaths: Set<string>;
 }
 
 export default function CodeEditor({
@@ -56,6 +57,7 @@ export default function CodeEditor({
 	undoStackRef,
 	redoStackRef,
 	definition,
+	storePaths,
 }: CodeEditorProps) {
 	const uuid = useMemo(() => shortUUID(), []);
 	const [fullScreen, setFullScreen] = useState(false);
@@ -432,6 +434,7 @@ export default function CodeEditor({
 					}
 					tokenValueExtractors={tokenValueExtractors}
 					stores={['Store', 'Page', 'Theme', 'LocalStore']}
+					storePaths={storePaths}
 					hideArguments={true}
 				/>
 			</div>

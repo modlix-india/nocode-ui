@@ -3,10 +3,13 @@ import {
 	Function,
 	FunctionDefinition,
 	FunctionExecutionParameters,
+	KIRunSchemaRepository,
 	KIRuntime,
 	LinkedList,
 	Repository,
 	Schema,
+	SchemaType,
+	SchemaUtil,
 	StatementExecution,
 	TokenValueExtractor,
 	isNullValue,
@@ -40,49 +43,9 @@ import Menu from './components/Menu';
 import StatementNode from './components/StatementNode';
 import Search from './components/Search';
 import { StoreNode } from './components/StoreNode';
+import { correctStatementNames, makeObjectPaths, savePersonalizationCurry } from './utils';
 
 const gridSize = 20;
-
-function savePersonalizationCurry(
-	personalizationPath: string,
-	pageName: string,
-	onChangePersonalization: any,
-	locationHistory: Array<LocationHistory>,
-	pageDefinition: PageDefinition,
-) {
-	if (!onChangePersonalization) return (key: string, value: any) => {};
-	let handle: any = -1;
-
-	return (key: string, value: any) => {
-		if (handle !== -1) clearTimeout(handle);
-
-		setData(`${personalizationPath}.${key}`, value, pageName);
-		handle = setTimeout(() => {
-			(async () =>
-				await runEvent(
-					onChangePersonalization,
-					'pageEditorSave',
-					pageName,
-					locationHistory,
-					pageDefinition,
-				))();
-		}, 2000);
-	};
-}
-
-function correctStatementNames(def: any) {
-	def = duplicate(def);
-
-	Object.keys(def?.steps ?? {}).forEach(k => {
-		if (k === def.steps[k].statementName) return;
-
-		let x = def.steps[k];
-		delete def.steps[k];
-		def.steps[x.statementName] = x;
-	});
-
-	return def;
-}
 
 function KIRunEditor(
 	props: ComponentProps & {
@@ -90,6 +53,7 @@ function KIRunEditor(
 		schemaRepository?: Repository<Schema>;
 		tokenValueExtractors?: Map<string, TokenValueExtractor>;
 		stores?: Array<string>;
+		storePaths?: Set<string>;
 		hideArguments?: boolean;
 	},
 ) {
@@ -101,6 +65,7 @@ function KIRunEditor(
 		functionRepository = UIFunctionRepository,
 		schemaRepository = UISchemaRepository,
 		tokenValueExtractors = new Map(),
+		storePaths = new Set(),
 		pageDefinition,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
@@ -194,7 +159,7 @@ function KIRunEditor(
 		})();
 	}, [funDef]);
 
-	// Calculating the positions of each statement
+	// TODO: Calculating the positions of each statement
 	const [positions, setPositions] = useState<Map<string, { left: number; top: number }>>(
 		new Map(),
 	);
@@ -365,7 +330,7 @@ function KIRunEditor(
 
 	const magnification = preference.magnification ?? 1;
 
-	if (props.stores) {
+	if (props.stores && props.stores.length) {
 		stores = (
 			<div className="_storeContainer">
 				{props.stores.map(storeName => (
@@ -583,6 +548,40 @@ function KIRunEditor(
 			/>
 		);
 	}
+
+	const kirunStorePaths = useMemo(() => {
+		const paths = new Set<string>(storePaths);
+
+		if (!rawDef?.steps) return paths;
+
+		for (const step of Object.values(rawDef.steps)) {
+			if (isNullValue(step)) continue;
+
+			const { namespace, name, statementName } = step as any;
+			const func = functionRepository.find(namespace, name);
+			if (!func) continue;
+
+			const prefix = `Steps.${statementName}`;
+
+			const events = func.getSignature().getEvents();
+			if (events.size === 0) {
+				paths.add(`${prefix}.output`);
+				continue;
+			}
+
+			for (const event of events) {
+				const eventName = `${prefix}.${event[1].getName()}`;
+				paths.add(eventName);
+				for (const [name, schema] of event[1].getParameters()) {
+					const paramName = `${eventName}.${name}`;
+					paths.add(paramName);
+					makeObjectPaths(paramName, schema, schemaRepository, paths);
+				}
+			}
+		}
+
+		return paths;
+	}, [storePaths, rawDef]);
 
 	const designerRef = useRef<HTMLDivElement>(null);
 	const [menu, showMenu] = useState<any>(undefined);

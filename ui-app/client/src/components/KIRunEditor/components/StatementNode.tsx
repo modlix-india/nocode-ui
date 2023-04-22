@@ -1,18 +1,10 @@
-import {
-	Event,
-	Function,
-	Position,
-	Repository,
-	Schema,
-	Statement,
-	TokenValueExtractor,
-	isNullValue,
-} from '@fincity/kirun-js';
-import React, { RefObject, useCallback, useEffect, useState } from 'react';
+import { Event, Function, Repository, Schema, TokenValueExtractor } from '@fincity/kirun-js';
+import React, { RefObject, useEffect, useState } from 'react';
 import duplicate from '../../../util/duplicate';
-import Search from './Search';
-import { COPY_STMT_KEY } from '../../../constants';
 import { generateColor } from '../colors';
+import { stringValue } from '../utils';
+import Search from './Search';
+import StatementButtons from './StatementButtons';
 
 interface StatementProps {
 	position?: { left: number; top: number };
@@ -103,49 +95,7 @@ export default function StatementNode({
 			: '';
 
 	const [editComment, setEditComment] = useState(false);
-
-	const buttons = selected ? (
-		<div className="_buttons" style={{ color: highlightColor }}>
-			<i
-				className="fa fa-regular fa-trash-can"
-				title={`Delete ${statementName}`}
-				onMouseDown={e => {
-					e.stopPropagation();
-					e.preventDefault();
-					onDelete(statement.statementName);
-				}}
-			></i>
-			<i
-				className="fa fa-regular fa-clipboard"
-				title={`Copy ${statementName}`}
-				onMouseDown={e => {
-					e.stopPropagation();
-					e.preventDefault();
-
-					if (!navigator.clipboard) return;
-
-					navigator.clipboard.write([
-						new ClipboardItem({
-							'text/plain': new Blob([COPY_STMT_KEY + JSON.stringify(statement)], {
-								type: 'text/plain',
-							}),
-						}),
-					]);
-				}}
-			></i>
-			<i
-				className="fa fa-regular fa-comment-dots"
-				title={`Comment ${statementName}`}
-				onMouseDown={e => {
-					e.stopPropagation();
-					e.preventDefault();
-					setEditComment(true);
-				}}
-			></i>
-		</div>
-	) : (
-		<></>
-	);
+	const [editParameters, setEditParameters] = useState(false);
 
 	const repoFunction = functionRepository.find(statement.namespace, statement.name);
 
@@ -186,7 +136,7 @@ export default function StatementNode({
 		<></>
 	);
 
-	const dependcyNode = (
+	const dependencyNode = (
 		<div
 			className="_dependencyNode"
 			id={`eventNode_dependentNode_${statement.statementName}`}
@@ -507,8 +457,17 @@ export default function StatementNode({
 						</div>
 					))}
 			</div>
-			{buttons}
-			{dependcyNode}
+			<StatementButtons
+				selected={selected}
+				highlightColor={highlightColor}
+				setEditParameters={setEditParameters}
+				setEditComment={setEditComment}
+				statementName={statement.statementName}
+				onDelete={onDelete}
+				statement={statement}
+			/>
+
+			{dependencyNode}
 		</div>
 	);
 }
@@ -523,18 +482,3 @@ const ICONS_GROUPS = new Map<string, string>([
 	['System.Object', 'fa-circle-dot'],
 	['UIEngine', 'fa-snowflake'],
 ]);
-function stringValue(paramValue: any) {
-	if (paramValue === undefined) return undefined;
-	const value = Object.values(paramValue)
-		.filter(e => !isNullValue(e))
-		.sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0))
-		.map((e: any) => {
-			if (e.type === 'EXPRESSION') return e.expression;
-			if (typeof e.value === 'object') return JSON.stringify(e.value, undefined, 2);
-			return e.value;
-		})
-		.join('\n')
-		.trim();
-
-	return value ? value : undefined;
-}

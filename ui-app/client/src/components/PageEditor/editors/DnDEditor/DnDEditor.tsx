@@ -36,6 +36,7 @@ interface DnDEditorProps {
 	editPageName: string | undefined;
 	selectedSubComponent: string;
 	onSelectedSubComponentChanged: (key: string) => void;
+	storePaths: Set<string>;
 }
 
 export default function DnDEditor({
@@ -65,6 +66,7 @@ export default function DnDEditor({
 	editPageName,
 	selectedSubComponent,
 	onSelectedSubComponentChanged,
+	storePaths,
 }: DnDEditorProps) {
 	return (
 		<div className="_dndGrid">
@@ -117,6 +119,7 @@ export default function DnDEditor({
 						editPageName={editPageName}
 						selectedSubComponent={selectedSubComponent}
 						onSelectedSubComponentChanged={onSelectedSubComponentChanged}
+						storePaths={storePaths}
 					/>
 				</div>
 				<DnDBottomBar
