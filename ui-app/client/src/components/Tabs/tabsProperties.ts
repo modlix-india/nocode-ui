@@ -1,5 +1,4 @@
-import { Schema } from '@fincity/kirun-js';
-import { SCHEMA_ANY_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
+import { SCHEMA_STRING_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
@@ -11,12 +10,12 @@ import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '.
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
-
 	{
 		name: 'tabs',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Tabs list',
-		description: 'Tabs to be present on the component, comma seperated list of tab names',
+		description: 'Tabs to be present on the component, an array of string in order.',
+		group: ComponentPropertyGroup.BASIC,
 		multiValued: true,
 		defaultValue: [],
 	},
@@ -25,14 +24,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Active tab name',
 		description: 'Active default tab',
+		group: ComponentPropertyGroup.BASIC,
 	},
 	{
 		name: 'icon',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Icon list',
 		editor: ComponentPropertyEditor.ICON,
-		description: "Icon's to be present on the component, comma seperated list of icon links",
+		description: "Icon's to be present on the component, comma seperated list of icons.",
 		multiValued: true,
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: [],
 	},
 	{
@@ -41,6 +42,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Tabs Orientation',
 		description: 'Orientation of tabs coponent',
 		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: 'HORIZONTAL',
 		enumValues: [
 			{ name: 'HORIZONTAL', displayName: 'Row Layout', description: 'Default row layout' },
@@ -57,6 +59,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Active tab style',
 		description: 'Orientation of tabs coponent',
 		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: 'BORDER',
 		enumValues: [
 			{ name: 'BORDER', displayName: 'Border', description: 'Show border as a active style' },

@@ -1,7 +1,7 @@
 import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
 
 interface SearchProps {
-	value: string;
+	value?: string;
 	options: { label?: string; key?: string; value: string }[];
 	placeholder?: string;
 	onChange: (value: string) => void;
@@ -27,8 +27,14 @@ export default function Search({ value, options, style, onClose, onChange }: Sea
 			<input
 				className="_value"
 				value={filter}
-				placeholder={value}
+				placeholder={value ?? 'Search...'}
 				onChange={e => setFilter(e.target.value)}
+				onKeyUp={e => {
+					if (e.key === 'Delete' || e.key === 'Backspace') {
+						e.stopPropagation();
+						e.preventDefault();
+					}
+				}}
 				autoFocus
 			/>
 			<div className="_options">

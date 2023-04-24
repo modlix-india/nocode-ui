@@ -53,11 +53,13 @@ function Tags(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	if (!bindingPath) throw new Error('Binding path is required for definition');
-	const bindingPathPath = getPathFromLocation(bindingPath!, locationHistory, pageExtractor);
+
+	const bindingPathPath =
+		bindingPath && getPathFromLocation(bindingPath!, locationHistory, pageExtractor);
 	const [value, setvalue] = React.useState<any>();
 	const [inputData, setInputData] = React.useState<string>('');
 	React.useEffect(() => {
+		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
 			(_, value) => {
 				setvalue(value);
@@ -95,7 +97,7 @@ function Tags(props: ComponentProps) {
 	const handleKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
 		if (e.key === delimitter) {
 			setData(
-				bindingPathPath,
+				bindingPathPath!,
 				[
 					...(Array.isArray(value) ? value : []),
 					...(inputData
@@ -115,11 +117,11 @@ function Tags(props: ComponentProps) {
 		if ((datatype.startsWith('LIST') && Array.isArray(value)) || showInputBox) {
 			const data = value.slice();
 			data.splice(originalKey as number, 1);
-			setData(bindingPathPath, data, context.pageName);
+			setData(bindingPathPath!, data, context.pageName);
 		} else {
 			const data = { ...value };
 			delete data[originalKey];
-			setData(bindingPathPath, data, context.pageName);
+			setData(bindingPathPath!, data, context.pageName);
 		}
 		if (!readOnly && onCloseEvent) {
 			(async () =>
@@ -242,6 +244,12 @@ const component: Component = {
 	stylePseudoStates: ['hover', 'disabled'],
 	bindingPaths: {
 		bindingPath: { name: 'Data Binding' },
+	},
+	defaultTemplate: {
+		key: '',
+		type: 'Tags',
+		name: 'Tags',
+		properties: {},
 	},
 };
 

@@ -102,6 +102,27 @@ function createNewState(
 
 		def.stylePropertiesWithPseudoStates = consolidateStates;
 	}
+	if (def.stylePropertiesWithPseudoStates?.['']) {
+		const targets = Object.keys(def.stylePropertiesWithPseudoStates['']);
+		for (const target of targets) {
+			const targetStyles = Object.keys(def.stylePropertiesWithPseudoStates[''][target]);
+			for (const style of targetStyles) {
+				let index = style.indexOf(':');
+				if (index === -1) continue;
+				const pseudoState = style.substring(index + 1);
+				if (!def.stylePropertiesWithPseudoStates[pseudoState])
+					def.stylePropertiesWithPseudoStates[pseudoState] = {};
+				if (!def.stylePropertiesWithPseudoStates[pseudoState][target])
+					def.stylePropertiesWithPseudoStates[pseudoState][target] = {};
+
+				def.stylePropertiesWithPseudoStates[pseudoState][target][
+					style.substring(0, index)
+				] = def.stylePropertiesWithPseudoStates[''][target][style];
+				delete def.stylePropertiesWithPseudoStates[''][target][style];
+			}
+		}
+	}
+
 	return def;
 }
 
@@ -143,21 +164,14 @@ function processTargets(
 		if (!v) continue;
 
 		const index = prop.indexOf('-');
-		let prefix = '';
+		let prefix = 'comp';
 		if (index !== -1) {
 			prefix = prop.substring(0, index);
 			prop = prop.substring(index + 1);
 		}
 
-		if (!stylePropertiesDefinition[prefix]) continue;
-
-		const groupName = CSS_STYLE_PROPERTY_GROUP_REF[prop];
-		if (!groupName) continue;
-
-		for (const eachTarget of stylePropertiesDefinition[prefix]?.[groupName]?.target ?? []) {
-			if (!finStyle[eachTarget]) finStyle[eachTarget] = {};
-			finStyle[eachTarget][prop] = v;
-		}
+		if (!finStyle[prefix]) finStyle[prefix] = {};
+		finStyle[prefix][prop] = v;
 	}
 	return finStyle;
 }

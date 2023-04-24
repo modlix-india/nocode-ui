@@ -1,4 +1,5 @@
 import Button from './Button/Button';
+import ButtonBar from './Buttonbar/ButtonBar';
 import CheckBox from './CheckBox/CheckBox';
 import Grid from './Grid/Grid';
 import Label from './Label/Label';
@@ -32,12 +33,14 @@ import SubPage from './SubPage/SubPage';
 import PageEditor from './PageEditor/PageEditor';
 import { Component } from '../types/common';
 import Iframe from './Iframe/Iframe';
+import Carousel from './Carousel/Carousel';
 import FileUpload from './FileUpload/FileUpload';
 import KIRunEditor from './KIRunEditor/KIRunEditor';
 import Video from './Video/Video';
 
 export default new Map<string, Component>([
 	[Button.name, Button],
+	[ButtonBar.name, ButtonBar],
 	[Grid.name, Grid],
 	[Page.name, Page],
 	[Label.name, Label],
@@ -69,6 +72,7 @@ export default new Map<string, Component>([
 	[SubPage.name, SubPage],
 	[PageEditor.name, PageEditor],
 	[Iframe.name, Iframe],
+	[Carousel.name, Carousel],
 	[Popover.name, Popover],
 	[FileUpload.name, FileUpload],
 	[KIRunEditor.name, KIRunEditor],

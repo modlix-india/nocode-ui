@@ -17,9 +17,19 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'noFloat',
 		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'No Float Label',
+		displayName: 'Do not float Label',
 		description: 'Textbox without floating label.',
 		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+
+	{
+		name: 'autoComplete',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Autocomplete type',
+		description:
+			'Autocomplete specifies what type or if any assistance that is provided to user while filling forms, uses same values as its html attribute.',
+		defaultValue: 'off',
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 

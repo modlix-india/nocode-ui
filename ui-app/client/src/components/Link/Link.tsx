@@ -120,6 +120,14 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleComponent: LinkStyle,
 	stylePseudoStates: ['hover'],
+	defaultTemplate: {
+		key: '',
+		type: 'Link',
+		name: 'Link',
+		properties: {
+			label: { value: 'Link' },
+		},
+	},
 };
 
 export default component;

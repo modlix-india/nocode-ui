@@ -19,11 +19,27 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Editor Type',
 		description: 'Editor Type UI or Backend',
 		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: 'backend',
 		enumValues: [
 			{ name: 'backend', displayName: 'Backend', description: 'Backend only' },
 			{ name: 'ui', displayName: 'UI', description: 'UI only' },
 		],
+	},
+	{
+		name: 'onChangePersonalization',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Personalization Change',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered on personalization changed.',
+	},
+
+	{
+		name: 'onDeletePersonalization',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Personalization Delete',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered on personalization cleared.',
 	},
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,

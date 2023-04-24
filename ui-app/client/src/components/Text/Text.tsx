@@ -94,6 +94,12 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleComponent: TextStyle,
 	stylePseudoStates: ['hover'],
+	defaultTemplate: {
+		key: '',
+		type: 'Text',
+		name: 'Text',
+		properties: { text: { value: 'Text' } },
+	},
 };
 
 export default component;

@@ -51,6 +51,7 @@ function Grid(props: ComponentProps) {
 			background,
 			observeChildren,
 			observerThresholds,
+			rootMargin,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -81,7 +82,7 @@ function Grid(props: ComponentProps) {
 			.filter((e: number) => !isNaN(e) && e <= 1 && e >= 0);
 		const options = {
 			root: ref.current,
-			rootMargin: '0px',
+			rootMargin: rootMargin,
 			threshold,
 		};
 		setObserver(new IntersectionObserver(observerrCallback, options));
@@ -192,6 +193,11 @@ const component: Component = {
 	allowedChildrenType: new Map<string, number>([['', -1]]),
 	bindingPaths: {
 		bindingPath: { name: 'Scrolled Component Binding' },
+	},
+	defaultTemplate: {
+		key: '',
+		name: 'Grid',
+		type: 'Grid',
 	},
 };
 

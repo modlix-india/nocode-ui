@@ -5,56 +5,109 @@ import {
 	FunctionExecutionParameters,
 	KIRuntime,
 	LinkedList,
-	Position,
 	Repository,
 	Schema,
 	StatementExecution,
 	TokenValueExtractor,
-	Tuple2,
-	deepEqual,
 	isNullValue,
 } from '@fincity/kirun-js';
 import React, { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediately,
-	getDataFromPath,
+	addListenerAndCallImmediatelyWithChildrenActivity,
 	getPathFromLocation,
 	setData,
 } from '../../context/StoreContext';
 import { UIFunctionRepository } from '../../functions';
 import { UISchemaRepository } from '../../schemas/common';
-import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
+import {
+	Component,
+	ComponentPropertyDefinition,
+	ComponentProps,
+	LocationHistory,
+	PageDefinition,
+} from '../../types/common';
+import duplicate from '../../util/duplicate';
 import { UIError, toUIError } from '../util/errorHandling';
+import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './KIRunEditorProperties';
 import KIRunEditorStyle from './KIRunEditorStyle';
+import { generateColor } from './colors';
+import ExecutionGraphLines from './components/ExecutionGraphLines';
+import Menu from './components/Menu';
 import StatementNode from './components/StatementNode';
-import duplicate from '../../util/duplicate';
+import Search from './components/Search';
+import { StoreNode } from './components/StoreNode';
 
 const gridSize = 20;
+
+function savePersonalizationCurry(
+	personalizationPath: string,
+	pageName: string,
+	onChangePersonalization: any,
+	locationHistory: Array<LocationHistory>,
+	pageDefinition: PageDefinition,
+) {
+	if (!onChangePersonalization) return (key: string, value: any) => {};
+	let handle: any = -1;
+
+	return (key: string, value: any) => {
+		if (handle !== -1) clearTimeout(handle);
+
+		setData(`${personalizationPath}.${key}`, value, pageName);
+		handle = setTimeout(() => {
+			(async () =>
+				await runEvent(
+					onChangePersonalization,
+					'pageEditorSave',
+					pageName,
+					locationHistory,
+					pageDefinition,
+				))();
+		}, 2000);
+	};
+}
+
+function correctStatementNames(def: any) {
+	def = duplicate(def);
+
+	Object.keys(def?.steps ?? {}).forEach(k => {
+		if (k === def.steps[k].statementName) return;
+
+		let x = def.steps[k];
+		delete def.steps[k];
+		def.steps[x.statementName] = x;
+	});
+
+	return def;
+}
 
 function KIRunEditor(
 	props: ComponentProps & {
 		functionRepository?: Repository<Function>;
 		schemaRepository?: Repository<Schema>;
 		tokenValueExtractors?: Map<string, TokenValueExtractor>;
+		stores?: Array<string>;
+		hideArguments?: boolean;
 	},
 ) {
 	const {
-		definition: { bindingPath },
+		definition: { bindingPath, bindingPath2 },
 		definition,
 		context,
 		locationHistory,
 		functionRepository = UIFunctionRepository,
 		schemaRepository = UISchemaRepository,
 		tokenValueExtractors = new Map(),
+		pageDefinition,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
 		key,
 		stylePropertiesWithPseudoStates,
-		properties: { readOnly, editorType } = {},
+		properties: { readOnly, editorType, onDeletePersonalization, onChangePersonalization } = {},
 	} = useDefinition(
 		definition,
 		propertiesDefinition,
@@ -74,11 +127,24 @@ function KIRunEditor(
 	useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
-			(_, v) => setRawDef(v),
+			(_, v) => setRawDef(correctStatementNames(v)),
 			pageExtractor,
 			bindingPathPath,
 		);
-	}, [bindingPathPath]);
+	}, [bindingPathPath, setRawDef, pageExtractor]);
+
+	const personalizationPath = bindingPath2
+		? getPathFromLocation(bindingPath2!, locationHistory, pageExtractor)
+		: undefined;
+	const [preference, setPreference] = useState<any>({});
+	useEffect(() => {
+		if (!personalizationPath) return;
+		return addListenerAndCallImmediatelyWithChildrenActivity(
+			(_, v) => setPreference({ ...(v ?? {}) }),
+			pageExtractor,
+			personalizationPath,
+		);
+	}, [personalizationPath]);
 
 	const funDef = useMemo(
 		() => (isNullValue(rawDef) ? undefined : FunctionDefinition.from(rawDef)),
@@ -109,7 +175,6 @@ function KIRunEditor(
 					schemaRepository,
 				);
 				setExecutionPlan(ep);
-				// setKirunMessages(new Map(ep.getT1().map(e => [e.getT1(), e.getT2()])));
 
 				const map = new Map();
 				Array.from(ep.getNodeMap().values()).forEach(e => {
@@ -121,10 +186,6 @@ function KIRunEditor(
 							.map(m => m.getMessage()),
 					);
 				});
-
-				// map.set('genOutput', [
-				// 	'This is a very long message from the KIRun runtime after fetching the execution plan. Please consider this message to change your atitude towards life.',
-				// ]);
 
 				setKirunMessages(map);
 			} catch (err) {
@@ -144,6 +205,8 @@ function KIRunEditor(
 		const positions: Map<string, { left: number; top: number }> = new Map();
 		const list = new LinkedList(executionPlan.getVerticesWithNoIncomingEdges());
 		const finishedSet = new Set<string>();
+		let firstLeft = 20;
+		let firstTop = 20;
 		while (!list.isEmpty()) {
 			const v = list.removeFirst();
 			const s = v.getData().getStatement();
@@ -158,11 +221,19 @@ function KIRunEditor(
 				);
 			}
 
-			if (!isNullValue(s.getPosition())) {
-				positions.set(s.getStatementName(), { left: 0, top: 0 });
+			if (
+				isNullValue(s.getPosition()) ||
+				((s.getPosition()?.getLeft() ?? 0) <= 0 && (s.getPosition()?.getTop() ?? 0) <= 0)
+			) {
+				if (!v.getInVertices() || !v.getInVertices().size) {
+					positions.set(s.getStatementName(), { left: firstLeft, top: firstTop });
+					firstTop += 100;
+				}
 				continue;
 			}
 		}
+
+		setPositions(positions);
 	}, [executionPlan]);
 
 	const [selectedStatements, setSelectedStatements] = useState<Map<string, boolean>>(new Map());
@@ -194,7 +265,44 @@ function KIRunEditor(
 		| undefined
 	>();
 
+	const savePersonalization = useMemo(() => {
+		if (!personalizationPath) return (key: string, value: any) => {};
+
+		return savePersonalizationCurry(
+			personalizationPath,
+			context.pageName,
+			pageDefinition.eventFunctions?.[onChangePersonalization],
+			locationHistory,
+			pageDefinition,
+		);
+	}, [
+		preference,
+		personalizationPath,
+		context,
+		onChangePersonalization,
+		locationHistory,
+		pageDefinition,
+	]);
+
 	const functionNames = useMemo(() => functionRepository.filter(''), [functionRepository]);
+	const [dragDependencyNode, setDragDependencyNode] = useState<any>();
+	const [dragDependencyTo, setDragDependencyTo] = useState<any>();
+
+	const deleteStatements = useCallback(
+		(stmts: string[]) => {
+			if (isReadonly || !stmts.length) return;
+			const def = duplicate(rawDef);
+			const newSelectedStatements = new Map(selectedStatements);
+			for (let name of stmts) {
+				delete def.steps[name];
+				if (selectedStatements.has(name)) newSelectedStatements.delete(name);
+			}
+
+			setSelectedStatements(newSelectedStatements);
+			setData(bindingPathPath, def, context.pageName);
+		},
+		[bindingPathPath, rawDef, selectedStatements, isReadonly, setData, context.pageName],
+	);
 
 	if (executionPlan && !('message' in executionPlan) && rawDef?.steps) {
 		statements = Object.keys(rawDef.steps ?? {})
@@ -230,25 +338,47 @@ function KIRunEditor(
 						setData(bindingPathPath, def, context.pageName);
 					}}
 					functionNames={functionNames}
-					onDelete={stmt => {
+					onDelete={stmt => deleteStatements([stmt])}
+					onDependencyDragStart={(pos: any) => setDragDependencyNode(pos)}
+					onDependencyDrop={stmt => {
+						if (!dragDependencyNode) return;
 						if (isReadonly) return;
-						const def = duplicate(rawDef);
-						delete def.steps[s.statementName];
-						if (!selectedStatements.has(s.statementName)) {
-							const newSelectedStatements = new Map(selectedStatements);
-							newSelectedStatements.delete(s.statementName);
-							setSelectedStatements(newSelectedStatements);
-						}
 
-						setData(bindingPathPath, def, context.pageName);
+						const newRawDef = duplicate(rawDef);
+
+						if (!newRawDef.steps[stmt].dependentStatements)
+							newRawDef.steps[stmt].dependentStatements = {};
+						newRawDef.steps[stmt].dependentStatements[dragDependencyNode.dependency] =
+							true;
+
+						setDragDependencyNode(undefined);
+						setDragDependencyTo(undefined);
+
+						setData(bindingPathPath, newRawDef, context.pageName);
 					}}
+					showComment={!preference.showComments}
 				/>
 			));
+	}
+
+	let stores: ReactNode = <></>;
+
+	const magnification = preference.magnification ?? 1;
+
+	if (props.stores) {
+		stores = (
+			<div className="_storeContainer">
+				{props.stores.map(storeName => (
+					<StoreNode name={storeName} key={storeName} />
+				))}
+			</div>
+		);
 	}
 
 	const [selectionBox, setSelectionBox] = useState<any>({});
 	const [scrMove, setScrMove] = useState<any>({});
 	const [primedToClick, setPrimedToClick] = useState(false);
+	const [showAddSearch, setShowAddSearch] = useState<{ left: number; top: number }>();
 
 	const designerMouseDown = useCallback(
 		(e: any) => {
@@ -320,9 +450,23 @@ function KIRunEditor(
 					e.clientY - rect.top + container.current.scrollTop - dragNode.top,
 				);
 				setDragNode({ ...dragNode, dLeft, dTop });
+			} else if (dragDependencyNode) {
+				e.preventDefault();
+				const dLeft = Math.round(e.clientX - rect.left + container.current.scrollLeft);
+				const dTop = Math.round(e.clientY - rect.top + container.current.scrollTop);
+				setDragDependencyTo({ left: dLeft, top: dTop });
 			}
 		},
-		[container, scrMove, selectionBox, dragNode, rawDef, setRawDef, selectedStatements],
+		[
+			container,
+			scrMove,
+			selectionBox,
+			dragNode,
+			rawDef,
+			setRawDef,
+			selectedStatements,
+			dragDependencyNode,
+		],
 	);
 
 	const designerMouseUp = useCallback(
@@ -385,6 +529,10 @@ function KIRunEditor(
 
 			setSelectionBox({ ...selectionBox, selectionStart: false });
 			setScrMove({ ...scrMove, dragStart: false });
+
+			setDragDependencyNode(undefined);
+			setDragDependencyTo(undefined);
+
 			if (dragNode) {
 				const { dLeft, dTop } = dragNode;
 				const def = duplicate(rawDef);
@@ -436,17 +584,263 @@ function KIRunEditor(
 		);
 	}
 
+	const designerRef = useRef<HTMLDivElement>(null);
+	const [menu, showMenu] = useState<any>(undefined);
+
+	let overLine = undefined;
+	if (dragDependencyTo) {
+		const sx = dragDependencyNode.left;
+		const sy = dragDependencyNode.top;
+		const ex = dragDependencyTo.left;
+		const ey = dragDependencyTo.top;
+
+		let dPath = `M ${sx} ${sy} Q ${sx + (ex - sx) / 3} ${sy} ${sx + (ex - sx) / 2} ${
+			sy + (ey - sy) / 2
+		} T ${ex} ${ey}`;
+
+		const stepName = dragDependencyNode.dependency?.split('.')?.[1];
+		const fromColor = stepName
+			? generateColor(rawDef.steps[stepName].namespace, rawDef.steps[stepName].name)
+			: '000000';
+
+		overLine = (
+			<svg className="_linesSvg _overLine">
+				<path
+					key="line_drag_path"
+					d={dPath}
+					role="button"
+					className="_connector _selected"
+					stroke={'#' + fromColor}
+				/>
+			</svg>
+		);
+	}
+
+	const searchBox = showAddSearch ? (
+		<div className="_statement _forAdd" style={{ ...showAddSearch }}>
+			<Search
+				options={functionNames.map(e => ({
+					value: e,
+				}))}
+				onChange={value => {
+					if (isReadonly) return;
+
+					const index = value.lastIndexOf('.');
+
+					const name = index === -1 ? value : value.substring(index + 1);
+					const namespace = index === -1 ? '_' : value.substring(0, index);
+
+					const def = duplicate(rawDef);
+					let sName = name.substring(0, 1).toLowerCase() + name.substring(1);
+
+					if (!def.steps) def.steps = {};
+
+					let i = '';
+					let num = 0;
+					while (def.steps[`${sName}${i}`]) i = `${++num}`;
+
+					sName = `${sName}${i}`;
+					def.steps[sName] = {
+						statementName: sName,
+						name,
+						namespace,
+						position: showAddSearch,
+					};
+					setShowAddSearch(undefined);
+					setData(bindingPathPath, def, context.pageName);
+				}}
+				onClose={() => {
+					setShowAddSearch(undefined);
+				}}
+			/>
+		</div>
+	) : (
+		<></>
+	);
+
 	return (
-		<div className="comp compKIRunEditor" ref={container}>
-			<div
-				className={`_designer ${scrMove.dragStart ? '_moving' : ''}`}
-				onMouseDown={designerMouseDown}
-				onMouseMove={designerMouseMove}
-				onMouseUp={designerMouseUp}
-				onMouseLeave={designerMouseUp}
-			>
-				{statements}
-				{selector}
+		<div className="comp compKIRunEditor">
+			<div className="_header">
+				<div className="_left">
+					<i
+						className="fa fa-solid fa-object-group"
+						role="button"
+						title="Select all"
+						onClick={() => {
+							const entries = Object.entries(rawDef.steps);
+
+							setSelectedStatements(
+								entries.length === selectedStatements.size
+									? new Map()
+									: new Map<string, boolean>(entries.map(([k, v]) => [k, true])),
+							);
+						}}
+					/>
+					<div className="_separator" />
+					<i
+						className="fa fa-solid fa-square-plus"
+						role="button"
+						title="Add Step"
+						onClick={() => {
+							if (isReadonly) return;
+							setShowAddSearch({ left: 20, top: 20 });
+						}}
+					/>
+					<i
+						className="fa fa-solid fa-trash"
+						role="button"
+						title="Delete selected Steps"
+						onClick={() => {
+							if (isReadonly || !selectedStatements.size || !rawDef.steps) return;
+
+							const def = duplicate(rawDef);
+							for (const [name] of selectedStatements) {
+								delete def.steps[name];
+							}
+
+							setData(bindingPathPath, def, context.pageName);
+						}}
+					/>
+					<div className="_separator" />
+					<i
+						className="fa fa-regular fa-comment-dots"
+						role="button"
+						title={preference?.showComments ? 'Show Comments' : 'Hide Comments'}
+						onClick={() => {
+							savePersonalization(
+								'showComments',
+								preference?.showComments === undefined
+									? true
+									: !preference.showComments,
+							);
+						}}
+					/>
+					<i
+						className="fa fa-solid fa-database"
+						role="button"
+						title={preference?.showStores ? 'Show Stores' : 'Hide Stores'}
+						onClick={() => {
+							savePersonalization(
+								'showStores',
+								preference?.showStores === undefined
+									? true
+									: !preference.showStores,
+							);
+						}}
+					/>
+				</div>
+				<div className="_right">
+					<i
+						className="fa fa-solid fa-magnifying-glass-plus"
+						role="button"
+						title="Zoom in"
+						onClick={() => savePersonalization('magnification', magnification + 0.1)}
+					/>
+					<i
+						className="fa fa-solid fa-magnifying-glass"
+						role="button"
+						title="Reset zoom"
+						onClick={() => savePersonalization('magnification', 1)}
+					/>
+					<i
+						className="fa fa-solid fa-magnifying-glass-minus"
+						role="button"
+						title="Zoom out"
+						onClick={() => savePersonalization('magnification', magnification - 0.1)}
+					/>
+				</div>
+			</div>
+			<div className="_container" ref={container}>
+				<div
+					className={`_designer ${scrMove.dragStart ? '_moving' : ''}`}
+					style={{ transform: `scale(${magnification})` }}
+					onMouseDown={designerMouseDown}
+					onMouseMove={designerMouseMove}
+					onMouseUp={designerMouseUp}
+					onMouseLeave={designerMouseUp}
+					onDoubleClick={ev => {
+						ev.preventDefault();
+						ev.stopPropagation();
+						const parentRect = designerRef.current!.getBoundingClientRect();
+
+						setShowAddSearch({
+							left: ev.clientX - parentRect.left - 5,
+							top: ev.clientY - parentRect.top - 5,
+						});
+					}}
+					ref={designerRef}
+					tabIndex={0}
+					onKeyUp={ev => {
+						if (ev.key === 'Delete' || ev.key === 'Backspace') {
+							if (selectedStatements.size > 0)
+								deleteStatements(Array.from(selectedStatements.keys()));
+						} else if (
+							(ev.key === 'a' || ev.key === 'A') &&
+							(ev.ctrlKey || ev.metaKey)
+						) {
+							ev.stopPropagation();
+							ev.preventDefault();
+							const entries = Object.entries(rawDef.steps);
+
+							setSelectedStatements(
+								entries.length === selectedStatements.size
+									? new Map()
+									: new Map<string, boolean>(entries.map(([k, v]) => [k, true])),
+							);
+						} else if (ev.key === 'Escape') {
+							setSelectedStatements(new Map());
+						} else if (
+							(ev.key === '+' || ev.key === '=' || ev.key === '-') &&
+							(ev.ctrlKey || ev.metaKey)
+						) {
+							savePersonalization(
+								'magnification',
+								magnification + (ev.key === '-' ? -0.1 : 0.1),
+							);
+						}
+					}}
+					onContextMenu={ev => {
+						ev.preventDefault();
+						ev.stopPropagation();
+						const parentRect = designerRef.current!.getBoundingClientRect();
+						showMenu({
+							position: {
+								left: ev.clientX - parentRect.left,
+								top: ev.clientY - parentRect.top,
+							},
+							type: 'designer',
+							value: {},
+						});
+					}}
+				>
+					<ExecutionGraphLines
+						executionPlan={executionPlan}
+						designerRef={designerRef}
+						rawDef={rawDef}
+						selectedStatements={selectedStatements}
+						menu={menu}
+						setSelectedStatements={setSelectedStatements}
+						functionRepository={functionRepository}
+						showMenu={showMenu}
+						stores={props.stores}
+						showStores={!preference?.showStores}
+						hideArguments={props.hideArguments}
+					/>
+					{statements}
+					{stores}
+					{selector}
+					<Menu
+						menu={menu}
+						showMenu={showMenu}
+						isReadonly={isReadonly}
+						rawDef={rawDef}
+						bindingPathPath={bindingPathPath}
+						pageName={context.pageName}
+						setShowAddSearch={setShowAddSearch}
+					/>
+					{overLine}
+					{searchBox}
+				</div>
 			</div>
 		</div>
 	);
@@ -458,11 +852,13 @@ const component: Component = {
 	displayName: 'KIRun Editor',
 	description: 'KIRun Editor component',
 	component: KIRunEditor,
+	isHidden: true,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: KIRunEditorStyle,
 	bindingPaths: {
 		bindingPath: { name: 'Function Binding' },
+		bindingPath2: { name: 'Personalization' },
 	},
 };
 

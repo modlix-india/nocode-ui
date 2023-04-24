@@ -27,6 +27,7 @@ type CommonInputType = {
 	messageDisplay?: string;
 	hideClearContentIcon?: boolean;
 	inputRef?: React.RefObject<HTMLInputElement>;
+	autoComplete?: string;
 };
 
 function CommonInputText(props: CommonInputType) {
@@ -55,6 +56,7 @@ function CommonInputText(props: CommonInputType) {
 		messageDisplay = '_floatingMessages',
 		hideClearContentIcon,
 		inputRef,
+		autoComplete,
 	} = props;
 	const [focus, setFocus] = React.useState(false);
 	const [showPassword, setShowPassowrd] = React.useState(false);
@@ -138,6 +140,7 @@ function CommonInputText(props: CommonInputType) {
 						id={id}
 						disabled={readOnly}
 						ref={inputRef}
+						autoComplete={autoComplete}
 					/>
 					{!noFloat && (
 						<label

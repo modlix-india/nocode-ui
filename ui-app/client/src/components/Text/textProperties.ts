@@ -6,7 +6,7 @@ import {
 	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
-import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
+import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
@@ -14,6 +14,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Text',
 		description: 'Text to display',
+		group: ComponentPropertyGroup.BASIC,
 		translatable: true,
 	},
 
@@ -23,6 +24,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Text Type',
 		description: 'Text type',
 		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: 'TEXT',
 		enumValues: [
 			{
@@ -42,6 +44,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'processNewLine',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Text with line breaks',
+		group: ComponentPropertyGroup.ADVANCED,
 		description: 'Process text to show new line characters',
 		defaultValue: false,
 	},
@@ -52,6 +55,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Text Container Type (SEO)',
 		description: 'Text container type for seo optimization',
 		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: 'SPAN',
 		enumValues: [
 			{
@@ -106,14 +110,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 		],
 	},
-
-	{
-		name: 'visibility',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Visibility',
-		description: 'This component will be hidden when this property is true.',
-		group: ComponentPropertyGroup.COMMON,
-	},
+	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

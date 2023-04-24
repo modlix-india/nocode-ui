@@ -6,6 +6,7 @@ import {
 	FunctionOutput,
 	FunctionSignature,
 	isNullValue,
+	LinkedList,
 	Parameter,
 	Schema,
 } from '@fincity/kirun-js';
@@ -48,7 +49,11 @@ const SIGNATURE = new FunctionSignature('SendData')
 			Event.eventMapEntry(Event.OUTPUT, new Map([['data', Schema.ofAny('data')]])),
 			Event.eventMapEntry(
 				Event.ERROR,
-				new Map([['error', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.FetchError`)]]),
+				new Map([
+					['data', Schema.ofAny('data')],
+					['headers', Schema.ofAny('headers')],
+					['status', Schema.ofNumber('status')],
+				]),
 			),
 		]),
 	);
@@ -61,7 +66,7 @@ export class SendData extends AbstractFunction {
 		let headers = context.getArguments()?.get('headers');
 		let pathParams = context.getArguments()?.get('pathParams');
 		let queryParams = context.getArguments()?.get('queryParams');
-		const payload = context.getArguments()?.get('payload');
+		let payload = context.getArguments()?.get('payload');
 
 		pathParams = Object.entries(pathParams)
 			.map(([k, v]) => [k, getData(v as ComponentProperty<any>, [], ...evmap)])
@@ -81,6 +86,37 @@ export class SendData extends AbstractFunction {
 				if (!isNullValue(v)) a[k] = v;
 				return a;
 			}, {});
+
+		let isFormData = false || headers['content-type'] == 'multipart/form-data';
+		if (!isFormData && typeof payload === 'object' && !Array.isArray(payload)) {
+			const ll = new LinkedList<any>();
+			ll.add(payload);
+			while (ll.size() > 0) {
+				const current = ll.pop();
+				if (Array.isArray(current)) {
+					ll.addAll([...current]);
+				} else if (typeof current === 'object') {
+					if (current.constructor?.name === 'File') {
+						isFormData = true;
+						break;
+					} else {
+						ll.addAll(Array.from(Object.values(current)));
+					}
+				}
+			}
+		}
+
+		if (isFormData) {
+			const fd = Object.entries(payload).reduce((a, c) => {
+				if (Array.isArray(c[1])) c[1].forEach(e => a.append(c[0], e));
+				else a.append(c[0], c[1] as any);
+				return a;
+			}, new FormData());
+
+			payload = fd;
+
+			headers['content-type'] = 'multipart/form-data';
+		}
 
 		try {
 			const response = await axios({
