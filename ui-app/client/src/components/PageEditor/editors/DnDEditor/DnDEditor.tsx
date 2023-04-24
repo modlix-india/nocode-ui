@@ -32,6 +32,7 @@ interface DnDEditorProps {
 	firstTimeRef: React.MutableRefObject<PageDefinition[]>;
 	undoStackRef: React.MutableRefObject<PageDefinition[]>;
 	redoStackRef: React.MutableRefObject<PageDefinition[]>;
+	latestVersion: React.MutableRefObject<number>;
 	slaveStore: any;
 	editPageName: string | undefined;
 	selectedSubComponent: string;
@@ -62,6 +63,7 @@ export default function DnDEditor({
 	firstTimeRef,
 	undoStackRef,
 	redoStackRef,
+	latestVersion,
 	slaveStore,
 	editPageName,
 	selectedSubComponent,
@@ -97,6 +99,7 @@ export default function DnDEditor({
 					undoStackRef={undoStackRef}
 					redoStackRef={redoStackRef}
 					firstTimeRef={firstTimeRef}
+					latestVersion={latestVersion}
 				/>
 				<div className="_iframeContainer">
 					<DnDIFrame

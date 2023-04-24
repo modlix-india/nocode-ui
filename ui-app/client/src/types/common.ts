@@ -235,6 +235,8 @@ export interface PageDefinition {
 	appCode: string;
 	clientCode: string;
 	baseClientCode: string | undefined;
+	version: number;
+	isFromUndoRedoStack: boolean;
 	eventFunctions: {
 		[key: string]: any;
 	};

@@ -365,6 +365,7 @@ function PageEditor(props: ComponentProps) {
 	const undoStackRef = useRef<Array<PageDefinition>>([]);
 	const redoStackRef = useRef<Array<PageDefinition>>([]);
 	const firstTimeRef = useRef<Array<PageDefinition>>([]);
+	const latestVersion = useRef<number>(0);
 
 	const storePaths = useMemo<Set<string>>(
 		() =>
@@ -417,6 +418,7 @@ function PageEditor(props: ComponentProps) {
 					undoStackRef={undoStackRef}
 					redoStackRef={redoStackRef}
 					firstTimeRef={firstTimeRef}
+					latestVersion={latestVersion}
 					slaveStore={slaveStore}
 					editPageName={editPageDefinition?.name}
 					selectedSubComponent={selectedSubComponent}
@@ -436,6 +438,7 @@ function PageEditor(props: ComponentProps) {
 					undoStackRef={undoStackRef}
 					redoStackRef={redoStackRef}
 					firstTimeRef={firstTimeRef}
+					latestVersion={latestVersion}
 					definition={definition}
 					storePaths={storePaths}
 				/>
