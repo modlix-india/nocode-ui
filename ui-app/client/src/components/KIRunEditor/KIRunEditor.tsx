@@ -3,13 +3,10 @@ import {
 	Function,
 	FunctionDefinition,
 	FunctionExecutionParameters,
-	KIRunSchemaRepository,
 	KIRuntime,
 	LinkedList,
 	Repository,
 	Schema,
-	SchemaType,
-	SchemaUtil,
 	StatementExecution,
 	TokenValueExtractor,
 	isNullValue,
@@ -24,26 +21,20 @@ import {
 } from '../../context/StoreContext';
 import { UIFunctionRepository } from '../../functions';
 import { UISchemaRepository } from '../../schemas/common';
-import {
-	Component,
-	ComponentPropertyDefinition,
-	ComponentProps,
-	LocationHistory,
-	PageDefinition,
-} from '../../types/common';
+import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import duplicate from '../../util/duplicate';
 import { UIError, toUIError } from '../util/errorHandling';
-import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './KIRunEditorProperties';
 import KIRunEditorStyle from './KIRunEditorStyle';
 import { generateColor } from './colors';
 import ExecutionGraphLines from './components/ExecutionGraphLines';
-import Menu from './components/Menu';
-import StatementNode from './components/StatementNode';
+import KIRunContextMenu from './components/KIRunContextMenu';
 import Search from './components/Search';
+import StatementNode from './components/StatementNode';
 import { StoreNode } from './components/StoreNode';
 import { correctStatementNames, makeObjectPaths, savePersonalizationCurry } from './utils';
+import StatementParameters from './components/StatementParameters';
 
 const gridSize = 20;
 
@@ -269,6 +260,8 @@ function KIRunEditor(
 		[bindingPathPath, rawDef, selectedStatements, isReadonly, setData, context.pageName],
 	);
 
+	const [editParameters, setEditParameters] = useState<string>('');
+
 	if (executionPlan && !('message' in executionPlan) && rawDef?.steps) {
 		statements = Object.keys(rawDef.steps ?? {})
 			.map(k => rawDef.steps[k])
@@ -322,6 +315,7 @@ function KIRunEditor(
 						setData(bindingPathPath, newRawDef, context.pageName);
 					}}
 					showComment={!preference.showComments}
+					onEditParameters={() => setEditParameters(s.statementName)}
 				/>
 			));
 	}
@@ -657,6 +651,51 @@ function KIRunEditor(
 		<></>
 	);
 
+	let paramEditor = <></>;
+
+	if (editParameters && rawDef?.steps?.[editParameters]) {
+		const s = rawDef.steps[editParameters];
+		paramEditor = (
+			<StatementParameters
+				position={rawDef?.steps?.[editParameters].position ?? positions.get(editParameters)}
+				statement={rawDef?.steps?.[editParameters]}
+				functionRepository={functionRepository}
+				schemaRepository={schemaRepository}
+				storePaths={storePaths}
+				onEditParametersClose={() => setEditParameters('')}
+			>
+				<StatementNode
+					statement={s}
+					position={s.position ?? positions.get(s.statementName)}
+					key={s.statementName}
+					functionRepository={functionRepository}
+					schemaRepository={schemaRepository}
+					tokenValueExtractors={tokenValueExtractors}
+					selected={selectedStatements.has(s.statementName)}
+					dragNode={dragNode}
+					container={container}
+					executionPlanMessage={kirunMessages.get(s.statementName)}
+					onChange={stmt => {
+						if (isReadonly) return;
+
+						const def = duplicate(rawDef);
+						delete def.steps[s.statementName];
+						def.steps[stmt.statementName] = stmt;
+
+						if (s.statementName === editParameters)
+							setEditParameters(stmt.statementName);
+						setData(bindingPathPath, def, context.pageName);
+					}}
+					functionNames={functionNames}
+					onDelete={stmt => deleteStatements([stmt])}
+					showComment={true}
+					onEditParameters={name => setEditParameters(name)}
+					editParameters={true}
+				/>
+			</StatementParameters>
+		);
+	}
+
 	return (
 		<div className="comp compKIRunEditor">
 			<div className="_header">
@@ -828,7 +867,7 @@ function KIRunEditor(
 					{statements}
 					{stores}
 					{selector}
-					<Menu
+					<KIRunContextMenu
 						menu={menu}
 						showMenu={showMenu}
 						isReadonly={isReadonly}
@@ -840,6 +879,7 @@ function KIRunEditor(
 					{overLine}
 					{searchBox}
 				</div>
+				{paramEditor}
 			</div>
 		</div>
 	);

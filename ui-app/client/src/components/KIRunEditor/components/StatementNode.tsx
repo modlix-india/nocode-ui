@@ -12,22 +12,24 @@ interface StatementProps {
 	functionRepository: Repository<Function>;
 	schemaRepository: Repository<Schema>;
 	tokenValueExtractors: Map<string, TokenValueExtractor>;
-	onDragStart: (
+	onDragStart?: (
 		append: boolean,
 		statementName: string,
 		startPosition: { left: number; top: number } | undefined,
 	) => void;
 	selected: boolean;
-	onClick: (append: boolean, statementName: string) => void;
+	onClick?: (append: boolean, statementName: string) => void;
 	container: RefObject<HTMLDivElement>;
 	dragNode: any;
 	executionPlanMessage?: string[];
 	onChange: (statement: any) => void;
 	functionNames: string[];
 	onDelete: (statementName: string) => void;
-	onDependencyDragStart: (ddPos: any) => void;
-	onDependencyDrop: (statement: string) => void;
+	onDependencyDragStart?: (ddPos: any) => void;
+	onDependencyDrop?: (statement: string) => void;
 	showComment: boolean;
+	onEditParameters?: (statementName: string) => void;
+	editParameters?: boolean;
 }
 
 const DEFAULT_POSITION = { left: 0, top: 0 };
@@ -38,6 +40,7 @@ export default function StatementNode({
 	position = DEFAULT_POSITION,
 	statement,
 	functionRepository,
+	schemaRepository,
 	onDragStart,
 	onClick,
 	selected = false,
@@ -50,6 +53,8 @@ export default function StatementNode({
 	onDependencyDragStart,
 	onDependencyDrop,
 	showComment,
+	onEditParameters,
+	editParameters,
 }: StatementProps) {
 	const [statementName, setStatementName] = useState(statement.statementName);
 	const [editStatementName, setEditStatementName] = useState(false);
@@ -95,12 +100,12 @@ export default function StatementNode({
 			: '';
 
 	const [editComment, setEditComment] = useState(false);
-	const [editParameters, setEditParameters] = useState(false);
 
 	const repoFunction = functionRepository.find(statement.namespace, statement.name);
+	const repoSignature = repoFunction?.getSignature();
 
-	const parameters = repoFunction?.getSignature()?.getParameters()
-		? Array.from(repoFunction.getSignature().getParameters().values())
+	const parameters = repoSignature?.getParameters()
+		? Array.from(repoSignature?.getParameters().values())
 		: [];
 
 	let eventsMap = repoFunction?.getSignature()?.getEvents();
@@ -166,7 +171,7 @@ export default function StatementNode({
 							const top = Math.round(
 								tRect.top - rect.top + container.current!.scrollTop,
 							);
-							onDependencyDragStart({
+							onDependencyDragStart?.({
 								left,
 								top,
 								dependency: `Steps.${statement.statementName}.${e.getName()}`,
@@ -193,7 +198,7 @@ export default function StatementNode({
 										const top = Math.round(
 											tRect.top - rect.top + container.current!.scrollTop,
 										);
-										onDependencyDragStart({
+										onDependencyDragStart?.({
 											left,
 											top,
 											dependency: `Steps.${
@@ -268,7 +273,9 @@ export default function StatementNode({
 
 	return (
 		<div
-			className={`_statement ${selected ? '_selected' : ''}`}
+			className={`_statement ${selected ? '_selected' : ''} ${
+				editParameters ? '_editParameters' : ''
+			}`}
 			style={{
 				left: position.left + (selected && dragNode ? dragNode.dLeft : 0) + 'px',
 				top: position.top + (selected && dragNode ? dragNode.dTop : 0) + 'px',
@@ -282,7 +289,7 @@ export default function StatementNode({
 				// onClick(e.ctrlKey || e.metaKey, statement.statementName);
 			}}
 			onMouseUp={e => {
-				onDependencyDrop(statement.statementName);
+				onDependencyDrop?.(statement.statementName);
 			}}
 			onContextMenu={e => {
 				e.preventDefault();
@@ -313,7 +320,10 @@ export default function StatementNode({
 							e.clientX - rect.left + container.current!.scrollLeft,
 						);
 						const top = Math.round(e.clientY - rect.top + container.current!.scrollTop);
-						onDragStart(e.ctrlKey || e.metaKey, statement.statementName, { left, top });
+						onDragStart?.(e.ctrlKey || e.metaKey, statement.statementName, {
+							left,
+							top,
+						});
 					}}
 					onMouseMove={e => {
 						if (!mouseMove && dragNode) setMouseMove(true);
@@ -324,9 +334,9 @@ export default function StatementNode({
 						if (e.target === e.currentTarget && !mouseMove) {
 							e.preventDefault();
 							e.stopPropagation();
-							onClick(e.ctrlKey || e.metaKey, statement.statementName);
+							onClick?.(e.ctrlKey || e.metaKey, statement.statementName);
 						}
-						onDependencyDrop(statement.statementName);
+						onDependencyDrop?.(statement.statementName);
 
 						setMouseMove(false);
 					}}
@@ -378,6 +388,7 @@ export default function StatementNode({
 													...duplicate(statement),
 													statementName,
 												});
+												onEditParameters?.(statementName);
 											}
 										}}
 									/>
@@ -402,7 +413,7 @@ export default function StatementNode({
 							e.stopPropagation();
 							e.preventDefault();
 							setEditNameNamespace(true);
-							onClick(false, statement.statementName);
+							onClick?.(false, statement.statementName);
 						}}
 					>
 						{editNameNamespace ? (
@@ -434,7 +445,7 @@ export default function StatementNode({
 						style={{ visibility: editNameNamespace ? 'visible' : undefined }}
 						onClick={() => {
 							setEditNameNamespace(true);
-							onClick(false, statement.statementName);
+							onClick?.(false, statement.statementName);
 						}}
 					/>
 				</div>
@@ -460,11 +471,12 @@ export default function StatementNode({
 			<StatementButtons
 				selected={selected}
 				highlightColor={highlightColor}
-				setEditParameters={setEditParameters}
-				setEditComment={setEditComment}
+				onEditParameters={onEditParameters}
+				onEditComment={() => setEditComment(true)}
 				statementName={statement.statementName}
 				onDelete={onDelete}
 				statement={statement}
+				showEditParameters={!!parameters.length}
 			/>
 
 			{dependencyNode}

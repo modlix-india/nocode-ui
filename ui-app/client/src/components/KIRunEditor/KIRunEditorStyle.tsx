@@ -567,6 +567,24 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 		${PREFIX} ._menu ._menuItem:hover {
 			background-color: #eee;
 		}
+
+		${PREFIX} ._paramEditorBack {
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			background-color: #fffa;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		${PREFIX} ._statement._editParameters {
+			position: inherit;
+		}
+
+
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="KIRUNEditorCss">{css}</style>;

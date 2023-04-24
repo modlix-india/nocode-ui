@@ -4,43 +4,53 @@ import { COPY_STMT_KEY } from '../../../constants';
 interface StatementButtonsProps {
 	selected: boolean;
 	highlightColor: string;
-	setEditParameters: (v: boolean) => void;
-	setEditComment: (v: boolean) => void;
+	onEditParameters?: (name: string) => void;
+	onEditComment: () => void;
 	statementName: string;
 	onDelete: (statementName: string) => void;
 	statement: any;
+	showEditParameters: boolean;
 }
 
 export default function StatementButtons({
 	selected,
 	highlightColor,
-	setEditParameters,
-	setEditComment,
+	onEditComment,
+	onEditParameters,
 	statementName,
 	onDelete,
 	statement,
+	showEditParameters,
 }: StatementButtonsProps) {
 	if (!selected) return <></>;
 
-	return (
-		<div className="_buttons" style={{ color: highlightColor }}>
+	const editParamsButton = showEditParameters ? (
+		<>
 			<i
 				className="fa fa-solid fa-table-list"
 				title={`Edit Parameters`}
 				onMouseDown={e => {
 					e.stopPropagation();
 					e.preventDefault();
-					setEditParameters(true);
+					onEditParameters?.(statementName);
 				}}
 			></i>
 			<div className="_buttonsGap"></div>
+		</>
+	) : (
+		<></>
+	);
+
+	return (
+		<div className="_buttons" style={{ color: highlightColor }}>
+			{editParamsButton}
 			<i
 				className="fa fa-regular fa-comment-dots"
 				title={`Comment`}
 				onMouseDown={e => {
 					e.stopPropagation();
 					e.preventDefault();
-					setEditComment(true);
+					onEditComment();
 				}}
 			></i>
 			<div className="_buttonsGap"></div>
