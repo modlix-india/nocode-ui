@@ -316,6 +316,7 @@ function KIRunEditor(
 					}}
 					showComment={!preference.showComments}
 					onEditParameters={() => setEditParameters(s.statementName)}
+					showParamValues={!!preference.showParamValues}
 				/>
 			));
 	}
@@ -324,7 +325,7 @@ function KIRunEditor(
 
 	const magnification = preference.magnification ?? 1;
 
-	if (props.stores && props.stores.length) {
+	if (!preference?.showStores && props.stores && props.stores.length) {
 		stores = (
 			<div className="_storeContainer">
 				{props.stores.map(storeName => (
@@ -534,10 +535,10 @@ function KIRunEditor(
 			<div
 				className="_selectionBox"
 				style={{
-					left: `${Math.min(left, right)}px`,
-					top: `${Math.min(top, bottom)}px`,
-					width: `${Math.abs(left - right)}px`,
-					height: `${Math.abs(top - bottom)}px`,
+					left: `${Math.min(left, right) / magnification}px`,
+					top: `${Math.min(top, bottom) / magnification}px`,
+					width: `${Math.abs(left - right) / magnification}px`,
+					height: `${Math.abs(top - bottom) / magnification}px`,
 				}}
 			/>
 		);
@@ -582,10 +583,10 @@ function KIRunEditor(
 
 	let overLine = undefined;
 	if (dragDependencyTo) {
-		const sx = dragDependencyNode.left;
-		const sy = dragDependencyNode.top;
-		const ex = dragDependencyTo.left;
-		const ey = dragDependencyTo.top;
+		const sx = dragDependencyNode.left / magnification;
+		const sy = dragDependencyNode.top / magnification;
+		const ex = dragDependencyTo.left / magnification;
+		const ey = dragDependencyTo.top / magnification;
 
 		let dPath = `M ${sx} ${sy} Q ${sx + (ex - sx) / 3} ${sy} ${sx + (ex - sx) / 2} ${
 			sy + (ey - sy) / 2
@@ -691,6 +692,7 @@ function KIRunEditor(
 					showComment={true}
 					onEditParameters={name => setEditParameters(name)}
 					editParameters={true}
+					showParamValues={true}
 				/>
 			</StatementParameters>
 		);
@@ -740,6 +742,18 @@ function KIRunEditor(
 						}}
 					/>
 					<div className="_separator" />
+					<i
+						className="fa fa-solid fa-square-root-variable"
+						role="button"
+						title={
+							!preference?.showParamValues
+								? 'Show Parameter Values'
+								: 'Hide Parameter Values'
+						}
+						onClick={() => {
+							savePersonalization('showParamValues', !preference?.showParamValues);
+						}}
+					/>
 					<i
 						className="fa fa-regular fa-comment-dots"
 						role="button"
@@ -843,8 +857,8 @@ function KIRunEditor(
 						const parentRect = designerRef.current!.getBoundingClientRect();
 						showMenu({
 							position: {
-								left: ev.clientX - parentRect.left,
-								top: ev.clientY - parentRect.top,
+								left: (ev.clientX - parentRect.left) / magnification,
+								top: (ev.clientY - parentRect.top) / magnification,
 							},
 							type: 'designer',
 							value: {},
@@ -862,6 +876,7 @@ function KIRunEditor(
 						showMenu={showMenu}
 						stores={props.stores}
 						showStores={!preference?.showStores}
+						showParamValues={!preference?.showParamValues}
 						hideArguments={props.hideArguments}
 					/>
 					{statements}

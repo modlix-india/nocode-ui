@@ -4,20 +4,31 @@ import { LocationHistory, PageDefinition } from '../../types/common';
 import duplicate from '../../util/duplicate';
 import { runEvent } from '../util/runEvent';
 
-export function stringValue(paramValue: any) {
+interface StringValue {
+	isExpression: boolean;
+	isValue: boolean;
+	string?: string;
+}
+
+export function stringValue(paramValue: any): StringValue | undefined {
 	if (paramValue === undefined) return undefined;
-	const value = Object.values(paramValue)
+
+	return Object.values(paramValue)
 		.filter(e => !isNullValue(e))
 		.sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0))
-		.map((e: any) => {
-			if (e.type === 'EXPRESSION') return e.expression;
-			if (typeof e.value === 'object') return JSON.stringify(e.value, undefined, 2);
-			return e.value;
-		})
-		.join('\n')
-		.trim();
-
-	return value ? value : undefined;
+		.reduce(
+			(a: StringValue, c: any) => ({
+				isExpression: a.isExpression || c.type === 'EXPRESSION',
+				isValue: a.isValue || c.type === 'VALUE',
+				string:
+					a.string + (a.string ? '\n' : '') + c.type === 'EXPRESSION'
+						? c.expression
+						: typeof c.value === 'object'
+						? JSON.stringify(c.value, undefined, 2)
+						: c.value,
+			}),
+			{ isExpression: false, isValue: false, string: '' } as StringValue,
+		);
 }
 
 export function savePersonalizationCurry(

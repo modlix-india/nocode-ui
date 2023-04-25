@@ -30,6 +30,7 @@ interface StatementProps {
 	showComment: boolean;
 	onEditParameters?: (statementName: string) => void;
 	editParameters?: boolean;
+	showParamValues: boolean;
 }
 
 const DEFAULT_POSITION = { left: 0, top: 0 };
@@ -55,6 +56,7 @@ export default function StatementNode({
 	showComment,
 	onEditParameters,
 	editParameters,
+	showParamValues,
 }: StatementProps) {
 	const [statementName, setStatementName] = useState(statement.statementName);
 	const [editStatementName, setEditStatementName] = useState(false);
@@ -123,16 +125,26 @@ export default function StatementNode({
 				const paramValue = statement.parameterMap?.[e.getParameterName()];
 				const hasValue = paramValue && Object.values(paramValue).length;
 				const title = stringValue(paramValue);
+				const paramDiv =
+					showParamValues && title?.string ? (
+						<div className="_paramValue">{title?.string}</div>
+					) : (
+						<></>
+					);
 				return (
 					<div className="_param" key={e.getParameterName()}>
 						<div
 							id={`paramNode_${statement.statementName}_${e.getParameterName()}`}
-							className="_paramNode"
+							className="_paramNode _hideInEdit"
 							style={{ borderColor: alwaysColor }}
 						></div>
-						<div className={`_paramName ${hasValue ? '_hasValue' : ''}`} title={title}>
+						<div
+							className={`_paramName ${hasValue ? '_hasValue' : ''}`}
+							title={title?.string ?? ''}
+						>
 							{e.getParameterName()}
 						</div>
+						{paramDiv}
 					</div>
 				);
 			})}
@@ -143,7 +155,7 @@ export default function StatementNode({
 
 	const dependencyNode = (
 		<div
-			className="_dependencyNode"
+			className="_dependencyNode _hideInEdit"
 			id={`eventNode_dependentNode_${statement.statementName}`}
 			style={{ borderColor: alwaysColor }}
 			title="Depends on"
@@ -361,6 +373,7 @@ export default function StatementNode({
 							onDoubleClick={e => {
 								e.stopPropagation();
 								e.preventDefault();
+								if (editParameters) return;
 								setEditStatementName(true);
 							}}
 						>
@@ -398,7 +411,7 @@ export default function StatementNode({
 							)}
 						</div>
 						<i
-							className="_editIcon fa fa-1x fa-solid fa-pencil"
+							className="_editIcon fa fa-1x fa-solid fa-pencil _hideInEdit"
 							style={{ visibility: editStatementName ? 'visible' : undefined }}
 							onClick={() => {
 								setEditStatementName(true);
@@ -412,6 +425,7 @@ export default function StatementNode({
 						onDoubleClick={e => {
 							e.stopPropagation();
 							e.preventDefault();
+							if (editParameters) return;
 							setEditNameNamespace(true);
 							onClick?.(false, statement.statementName);
 						}}
@@ -441,7 +455,7 @@ export default function StatementNode({
 						)}
 					</div>
 					<i
-						className="_editIcon fa fa-1x fa-solid fa-bars-staggered"
+						className="_editIcon fa fa-1x fa-solid fa-bars-staggered _hideInEdit"
 						style={{ visibility: editNameNamespace ? 'visible' : undefined }}
 						onClick={() => {
 							setEditNameNamespace(true);
@@ -452,7 +466,7 @@ export default function StatementNode({
 			</div>
 			<div className="_otherContainer">
 				{params}
-				<div className="_eventsContainer">{eventsDiv}</div>
+				<div className="_eventsContainer _hideInEdit">{eventsDiv}</div>
 			</div>
 			<div className="_messages">
 				{executionPlanMessage &&
@@ -477,6 +491,7 @@ export default function StatementNode({
 				onDelete={onDelete}
 				statement={statement}
 				showEditParameters={!!parameters.length}
+				editParameters={editParameters}
 			/>
 
 			{dependencyNode}

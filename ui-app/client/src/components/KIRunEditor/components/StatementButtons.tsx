@@ -10,6 +10,7 @@ interface StatementButtonsProps {
 	onDelete: (statementName: string) => void;
 	statement: any;
 	showEditParameters: boolean;
+	editParameters?: boolean;
 }
 
 export default function StatementButtons({
@@ -21,25 +22,27 @@ export default function StatementButtons({
 	onDelete,
 	statement,
 	showEditParameters,
+	editParameters,
 }: StatementButtonsProps) {
 	if (!selected) return <></>;
 
-	const editParamsButton = showEditParameters ? (
-		<>
-			<i
-				className="fa fa-solid fa-table-list"
-				title={`Edit Parameters`}
-				onMouseDown={e => {
-					e.stopPropagation();
-					e.preventDefault();
-					onEditParameters?.(statementName);
-				}}
-			></i>
-			<div className="_buttonsGap"></div>
-		</>
-	) : (
-		<></>
-	);
+	const editParamsButton =
+		showEditParameters && !editParameters ? (
+			<>
+				<i
+					className="fa fa-solid fa-table-list"
+					title={`Edit Parameters`}
+					onMouseDown={e => {
+						e.stopPropagation();
+						e.preventDefault();
+						onEditParameters?.(statementName);
+					}}
+				></i>
+				<div className="_buttonsGap"></div>
+			</>
+		) : (
+			<></>
+		);
 
 	return (
 		<div className="_buttons" style={{ color: highlightColor }}>
@@ -55,7 +58,7 @@ export default function StatementButtons({
 			></i>
 			<div className="_buttonsGap"></div>
 			<i
-				className="fa fa-regular fa-trash-can"
+				className="fa fa-regular fa-trash-can _hideInEdit"
 				title={`Delete ${statementName} Step`}
 				onMouseDown={e => {
 					e.stopPropagation();

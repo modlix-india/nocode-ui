@@ -24,7 +24,7 @@ export default function StatementParameters({
 				onEditParametersClose?.();
 			}}
 		>
-			{children}
+			<div className="_statementBack">{children}</div>
 		</div>
 	);
 }

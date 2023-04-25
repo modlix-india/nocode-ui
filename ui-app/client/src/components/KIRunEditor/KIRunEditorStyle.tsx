@@ -139,6 +139,11 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			padding: 2px;
 		}
 
+		${PREFIX} ._statement._editParameters {
+			width: 450px;
+			min-height: 450px;
+		}
+
 		${PREFIX} ._storeContainer {
 			position: fixed;
 			display: flex;
@@ -210,6 +215,10 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			min-height: 44px;
 		}
 
+		${PREFIX} ._statement._editParameters ._commentContainer {
+			background: #fff;
+		}
+
 		${PREFIX} ._statement ._commentContainer ._comment::before {
 			content: '/* ';
 			position: absolute;
@@ -268,7 +277,7 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			flex-direction: row;
 			align-items: center;
 			border-top-right-radius: 4px;
-    		
+    		flex: 1
 		}
 
 		${PREFIX} ._statement ._statementName {
@@ -349,10 +358,18 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 		${PREFIX} ._statement ._param {
 			position: relative;
 			display: flex;
-			align-items: center;
 			gap: 5px;
 			padding: 3px;
 			padding-left: 0px;
+			flex-direction: column;
+		}
+
+		${PREFIX} ._statement ._paramValue {
+			font-family: monospace;
+			white-space: nowrap;
+			max-width: 200px;
+			text-overflow: ellipsis;
+			overflow: hidden;
 		}
 
 		${PREFIX} ._paramsContainer._event ._param{
@@ -580,8 +597,16 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			justify-content: center;
 		}
 
+		${PREFIX} ._paramEditorBack ._statementBack {
+			position: absolute;
+		}
+
 		${PREFIX} ._statement._editParameters {
-			position: inherit;
+			position: unset;
+		}
+
+		${PREFIX} ._statement._editParameters ._hideInEdit{
+			display: none !important;
 		}
 
 
