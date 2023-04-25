@@ -61,6 +61,7 @@ function Carousel(props: ComponentProps) {
 
 	useEffect(() => {
 		if (!autoPlay) return;
+		if (!childrenDef || childrenDef?.length <= 1) return;
 		const handle = setTimeout(
 			() => {
 				setTransitionFrom(slideNum);
@@ -125,7 +126,6 @@ function Carousel(props: ComponentProps) {
 		style.transition = `left ${duration}s ${easing}, right ${duration}s ${easing}`;
 		prevStyle.transition = `left ${duration}s ${easing}, right ${duration}s ${easing}`;
 	}
-
 	if (childrenDef?.length) {
 		if (!isNullValue(transitionFrom)) {
 			showChildren = [
@@ -281,6 +281,8 @@ const component: Component = {
 	styleComponent: CarouselStyle,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
+	allowedChildrenType: new Map<string, number>([['', -1]]),
+	styleProperties: stylePropertiesDefinition,
 };
 
 export default component;

@@ -215,6 +215,7 @@ export interface ComponentDefinition {
 	properties?: {
 		[key: string]:
 			| ComponentProperty<any>
+			| ComponentMultiProperty<any>
 			| { [key: string]: ComponentProperty<any> }
 			| { [key: string]: Validation };
 	};
