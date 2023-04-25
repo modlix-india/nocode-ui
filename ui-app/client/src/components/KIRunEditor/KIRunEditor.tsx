@@ -21,58 +21,31 @@ import {
 } from '../../context/StoreContext';
 import { UIFunctionRepository } from '../../functions';
 import { UISchemaRepository } from '../../schemas/common';
-import {
-	Component,
-	ComponentPropertyDefinition,
-	ComponentProps,
-	LocationHistory,
-	PageDefinition,
-} from '../../types/common';
+import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import duplicate from '../../util/duplicate';
 import { UIError, toUIError } from '../util/errorHandling';
-import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './KIRunEditorProperties';
 import KIRunEditorStyle from './KIRunEditorStyle';
 import { generateColor } from './colors';
 import ExecutionGraphLines from './components/ExecutionGraphLines';
-import Menu from './components/Menu';
+import KIRunContextMenu from './components/KIRunContextMenu';
+import Search from './components/Search';
 import StatementNode from './components/StatementNode';
+import { StoreNode } from './components/StoreNode';
+import { correctStatementNames, makeObjectPaths, savePersonalizationCurry } from './utils';
+import StatementParameters from './components/StatementParameters';
 
 const gridSize = 20;
-
-function savePersonalizationCurry(
-	personalizationPath: string,
-	pageName: string,
-	onChangePersonalization: any,
-	locationHistory: Array<LocationHistory>,
-	pageDefinition: PageDefinition,
-) {
-	if (!onChangePersonalization) return (key: string, value: any) => {};
-	let handle: any = -1;
-
-	return (key: string, value: any) => {
-		if (handle !== -1) clearTimeout(handle);
-
-		setData(`${personalizationPath}.${key}`, value, pageName);
-		handle = setTimeout(() => {
-			(async () =>
-				await runEvent(
-					onChangePersonalization,
-					'pageEditorSave',
-					pageName,
-					locationHistory,
-					pageDefinition,
-				))();
-		}, 2000);
-	};
-}
 
 function KIRunEditor(
 	props: ComponentProps & {
 		functionRepository?: Repository<Function>;
 		schemaRepository?: Repository<Schema>;
 		tokenValueExtractors?: Map<string, TokenValueExtractor>;
+		stores?: Array<string>;
+		storePaths?: Set<string>;
+		hideArguments?: boolean;
 	},
 ) {
 	const {
@@ -83,6 +56,7 @@ function KIRunEditor(
 		functionRepository = UIFunctionRepository,
 		schemaRepository = UISchemaRepository,
 		tokenValueExtractors = new Map(),
+		storePaths = new Set(),
 		pageDefinition,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
@@ -109,11 +83,11 @@ function KIRunEditor(
 	useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
-			(_, v) => setRawDef(v),
+			(_, v) => setRawDef(correctStatementNames(v)),
 			pageExtractor,
 			bindingPathPath,
 		);
-	}, [bindingPathPath]);
+	}, [bindingPathPath, setRawDef, pageExtractor]);
 
 	const personalizationPath = bindingPath2
 		? getPathFromLocation(bindingPath2!, locationHistory, pageExtractor)
@@ -176,7 +150,7 @@ function KIRunEditor(
 		})();
 	}, [funDef]);
 
-	// Calculating the positions of each statement
+	// TODO: Calculating the positions of each statement
 	const [positions, setPositions] = useState<Map<string, { left: number; top: number }>>(
 		new Map(),
 	);
@@ -260,7 +234,7 @@ function KIRunEditor(
 	}, [
 		preference,
 		personalizationPath,
-		context.pageName,
+		context,
 		onChangePersonalization,
 		locationHistory,
 		pageDefinition,
@@ -285,6 +259,8 @@ function KIRunEditor(
 		},
 		[bindingPathPath, rawDef, selectedStatements, isReadonly, setData, context.pageName],
 	);
+
+	const [editParameters, setEditParameters] = useState<string>('');
 
 	if (executionPlan && !('message' in executionPlan) && rawDef?.steps) {
 		statements = Object.keys(rawDef.steps ?? {})
@@ -338,13 +314,31 @@ function KIRunEditor(
 
 						setData(bindingPathPath, newRawDef, context.pageName);
 					}}
+					showComment={!preference.showComments}
+					onEditParameters={() => setEditParameters(s.statementName)}
+					showParamValues={!!preference.showParamValues}
 				/>
 			));
+	}
+
+	let stores: ReactNode = <></>;
+
+	const magnification = preference.magnification ?? 1;
+
+	if (!preference?.showStores && props.stores && props.stores.length) {
+		stores = (
+			<div className="_storeContainer">
+				{props.stores.map(storeName => (
+					<StoreNode name={storeName} key={storeName} />
+				))}
+			</div>
+		);
 	}
 
 	const [selectionBox, setSelectionBox] = useState<any>({});
 	const [scrMove, setScrMove] = useState<any>({});
 	const [primedToClick, setPrimedToClick] = useState(false);
+	const [showAddSearch, setShowAddSearch] = useState<{ left: number; top: number }>();
 
 	const designerMouseDown = useCallback(
 		(e: any) => {
@@ -541,24 +535,58 @@ function KIRunEditor(
 			<div
 				className="_selectionBox"
 				style={{
-					left: `${Math.min(left, right)}px`,
-					top: `${Math.min(top, bottom)}px`,
-					width: `${Math.abs(left - right)}px`,
-					height: `${Math.abs(top - bottom)}px`,
+					left: `${Math.min(left, right) / magnification}px`,
+					top: `${Math.min(top, bottom) / magnification}px`,
+					width: `${Math.abs(left - right) / magnification}px`,
+					height: `${Math.abs(top - bottom) / magnification}px`,
 				}}
 			/>
 		);
 	}
+
+	const kirunStorePaths = useMemo(() => {
+		const paths = new Set<string>(storePaths);
+
+		if (!rawDef?.steps) return paths;
+
+		for (const step of Object.values(rawDef.steps)) {
+			if (isNullValue(step)) continue;
+
+			const { namespace, name, statementName } = step as any;
+			const func = functionRepository.find(namespace, name);
+			if (!func) continue;
+
+			const prefix = `Steps.${statementName}`;
+
+			const events = func.getSignature().getEvents();
+			if (events.size === 0) {
+				paths.add(`${prefix}.output`);
+				continue;
+			}
+
+			for (const event of events) {
+				const eventName = `${prefix}.${event[1].getName()}`;
+				paths.add(eventName);
+				for (const [name, schema] of event[1].getParameters()) {
+					const paramName = `${eventName}.${name}`;
+					paths.add(paramName);
+					makeObjectPaths(paramName, schema, schemaRepository, paths);
+				}
+			}
+		}
+
+		return paths;
+	}, [storePaths, rawDef]);
 
 	const designerRef = useRef<HTMLDivElement>(null);
 	const [menu, showMenu] = useState<any>(undefined);
 
 	let overLine = undefined;
 	if (dragDependencyTo) {
-		const sx = dragDependencyNode.left;
-		const sy = dragDependencyNode.top;
-		const ex = dragDependencyTo.left;
-		const ey = dragDependencyTo.top;
+		const sx = dragDependencyNode.left / magnification;
+		const sy = dragDependencyNode.top / magnification;
+		const ex = dragDependencyTo.left / magnification;
+		const ey = dragDependencyTo.top / magnification;
 
 		let dPath = `M ${sx} ${sy} Q ${sx + (ex - sx) / 3} ${sy} ${sx + (ex - sx) / 2} ${
 			sy + (ey - sy) / 2
@@ -582,7 +610,93 @@ function KIRunEditor(
 		);
 	}
 
-	const magnification = preference.magnification ?? 1;
+	const searchBox = showAddSearch ? (
+		<div className="_statement _forAdd" style={{ ...showAddSearch }}>
+			<Search
+				options={functionNames.map(e => ({
+					value: e,
+				}))}
+				onChange={value => {
+					if (isReadonly) return;
+
+					const index = value.lastIndexOf('.');
+
+					const name = index === -1 ? value : value.substring(index + 1);
+					const namespace = index === -1 ? '_' : value.substring(0, index);
+
+					const def = duplicate(rawDef);
+					let sName = name.substring(0, 1).toLowerCase() + name.substring(1);
+
+					if (!def.steps) def.steps = {};
+
+					let i = '';
+					let num = 0;
+					while (def.steps[`${sName}${i}`]) i = `${++num}`;
+
+					sName = `${sName}${i}`;
+					def.steps[sName] = {
+						statementName: sName,
+						name,
+						namespace,
+						position: showAddSearch,
+					};
+					setShowAddSearch(undefined);
+					setData(bindingPathPath, def, context.pageName);
+				}}
+				onClose={() => {
+					setShowAddSearch(undefined);
+				}}
+			/>
+		</div>
+	) : (
+		<></>
+	);
+
+	let paramEditor = <></>;
+
+	if (editParameters && rawDef?.steps?.[editParameters]) {
+		const s = rawDef.steps[editParameters];
+		paramEditor = (
+			<StatementParameters
+				position={rawDef?.steps?.[editParameters].position ?? positions.get(editParameters)}
+				statement={rawDef?.steps?.[editParameters]}
+				functionRepository={functionRepository}
+				schemaRepository={schemaRepository}
+				storePaths={storePaths}
+				onEditParametersClose={() => setEditParameters('')}
+			>
+				<StatementNode
+					statement={s}
+					position={s.position ?? positions.get(s.statementName)}
+					key={s.statementName}
+					functionRepository={functionRepository}
+					schemaRepository={schemaRepository}
+					tokenValueExtractors={tokenValueExtractors}
+					selected={selectedStatements.has(s.statementName)}
+					dragNode={dragNode}
+					container={container}
+					executionPlanMessage={kirunMessages.get(s.statementName)}
+					onChange={stmt => {
+						if (isReadonly) return;
+
+						const def = duplicate(rawDef);
+						delete def.steps[s.statementName];
+						def.steps[stmt.statementName] = stmt;
+
+						if (s.statementName === editParameters)
+							setEditParameters(stmt.statementName);
+						setData(bindingPathPath, def, context.pageName);
+					}}
+					functionNames={functionNames}
+					onDelete={stmt => deleteStatements([stmt])}
+					showComment={true}
+					onEditParameters={name => setEditParameters(name)}
+					editParameters={true}
+					showParamValues={true}
+				/>
+			</StatementParameters>
+		);
+	}
 
 	return (
 		<div className="comp compKIRunEditor">
@@ -607,7 +721,10 @@ function KIRunEditor(
 						className="fa fa-solid fa-square-plus"
 						role="button"
 						title="Add Step"
-						onClick={() => {}}
+						onClick={() => {
+							if (isReadonly) return;
+							setShowAddSearch({ left: 20, top: 20 });
+						}}
 					/>
 					<i
 						className="fa fa-solid fa-trash"
@@ -622,6 +739,45 @@ function KIRunEditor(
 							}
 
 							setData(bindingPathPath, def, context.pageName);
+						}}
+					/>
+					<div className="_separator" />
+					<i
+						className="fa fa-solid fa-square-root-variable"
+						role="button"
+						title={
+							!preference?.showParamValues
+								? 'Show Parameter Values'
+								: 'Hide Parameter Values'
+						}
+						onClick={() => {
+							savePersonalization('showParamValues', !preference?.showParamValues);
+						}}
+					/>
+					<i
+						className="fa fa-regular fa-comment-dots"
+						role="button"
+						title={preference?.showComments ? 'Show Comments' : 'Hide Comments'}
+						onClick={() => {
+							savePersonalization(
+								'showComments',
+								preference?.showComments === undefined
+									? true
+									: !preference.showComments,
+							);
+						}}
+					/>
+					<i
+						className="fa fa-solid fa-database"
+						role="button"
+						title={preference?.showStores ? 'Show Stores' : 'Hide Stores'}
+						onClick={() => {
+							savePersonalization(
+								'showStores',
+								preference?.showStores === undefined
+									? true
+									: !preference.showStores,
+							);
 						}}
 					/>
 				</div>
@@ -654,7 +810,16 @@ function KIRunEditor(
 					onMouseMove={designerMouseMove}
 					onMouseUp={designerMouseUp}
 					onMouseLeave={designerMouseUp}
-					onDoubleClick={() => {}}
+					onDoubleClick={ev => {
+						ev.preventDefault();
+						ev.stopPropagation();
+						const parentRect = designerRef.current!.getBoundingClientRect();
+
+						setShowAddSearch({
+							left: ev.clientX - parentRect.left - 5,
+							top: ev.clientY - parentRect.top - 5,
+						});
+					}}
 					ref={designerRef}
 					tabIndex={0}
 					onKeyUp={ev => {
@@ -686,6 +851,19 @@ function KIRunEditor(
 							);
 						}
 					}}
+					onContextMenu={ev => {
+						ev.preventDefault();
+						ev.stopPropagation();
+						const parentRect = designerRef.current!.getBoundingClientRect();
+						showMenu({
+							position: {
+								left: (ev.clientX - parentRect.left) / magnification,
+								top: (ev.clientY - parentRect.top) / magnification,
+							},
+							type: 'designer',
+							value: {},
+						});
+					}}
 				>
 					<ExecutionGraphLines
 						executionPlan={executionPlan}
@@ -696,19 +874,27 @@ function KIRunEditor(
 						setSelectedStatements={setSelectedStatements}
 						functionRepository={functionRepository}
 						showMenu={showMenu}
+						stores={props.stores}
+						showStores={!preference?.showStores}
+						showParamValues={!preference?.showParamValues}
+						hideArguments={props.hideArguments}
 					/>
 					{statements}
+					{stores}
 					{selector}
-					<Menu
+					<KIRunContextMenu
 						menu={menu}
 						showMenu={showMenu}
 						isReadonly={isReadonly}
 						rawDef={rawDef}
 						bindingPathPath={bindingPathPath}
 						pageName={context.pageName}
+						setShowAddSearch={setShowAddSearch}
 					/>
 					{overLine}
+					{searchBox}
 				</div>
+				{paramEditor}
 			</div>
 		</div>
 	);
@@ -720,6 +906,7 @@ const component: Component = {
 	displayName: 'KIRun Editor',
 	description: 'KIRun Editor component',
 	component: KIRunEditor,
+	isHidden: true,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: KIRunEditorStyle,

@@ -86,7 +86,7 @@ const component: Component = {
 		name: 'Image',
 		type: 'Image',
 		properties: {
-			src: { value: 'api/files/static/file/SYSTEM/markauto/fincityLogo.png' },
+			src: { value: 'api/files/static/file/SYSTEM/appbuilder/Placeholder_view_vector.svg' },
 			alt: { value: 'Placeholder image' },
 		},
 	},

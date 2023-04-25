@@ -215,6 +215,7 @@ export interface ComponentDefinition {
 	properties?: {
 		[key: string]:
 			| ComponentProperty<any>
+			| ComponentMultiProperty<any>
 			| { [key: string]: ComponentProperty<any> }
 			| { [key: string]: Validation };
 	};
@@ -235,6 +236,8 @@ export interface PageDefinition {
 	appCode: string;
 	clientCode: string;
 	baseClientCode: string | undefined;
+	version: number;
+	isFromUndoRedoStack: boolean;
 	eventFunctions: {
 		[key: string]: any;
 	};

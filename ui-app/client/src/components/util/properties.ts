@@ -289,7 +289,6 @@ const COMPONENT_STYLE_GROUPS: { [key: string]: Array<string> } = {
 		'backgroundSize',
 	],
 	border: [
-		'borderBottom',
 		'borderBottomColor',
 		'borderBottomLeftRadius',
 		'borderBottomRightRadius',
@@ -305,12 +304,9 @@ const COMPONENT_STYLE_GROUPS: { [key: string]: Array<string> } = {
 		'borderImageSlice',
 		'borderImageSource',
 		'borderImageWidth',
-		'borderLeft',
 		'borderLeftColor',
 		'borderLeftStyle',
 		'borderLeftWidth',
-		'borderRadius',
-		'borderRight',
 		'borderRightColor',
 		'borderRightStyle',
 		'borderRightWidth',
@@ -318,7 +314,6 @@ const COMPONENT_STYLE_GROUPS: { [key: string]: Array<string> } = {
 		'borderStartEndRadius',
 		'borderStartStartRadius',
 		'borderStyle',
-		'borderTop',
 		'borderTopColor',
 		'borderTopLeftRadius',
 		'borderTopRightRadius',
@@ -383,6 +378,7 @@ const COMPONENT_STYLE_GROUPS: { [key: string]: Array<string> } = {
 	zIndex: ['zIndex'],
 	list: ['listStyleImage', 'listStylePosition', 'listStyleType'],
 	scrollbar: ['hideScrollBar'],
+	className: ['className'],
 };
 
 const CSS_STYLE_PROPERTY_GROUP_REF: { [key: string]: string } = Object.entries(
@@ -545,6 +541,13 @@ const COMPONENT_STYLE_GROUP_PROPERTIES: { [key: string]: ComponentStylePropertyG
 		type: 'zIndex',
 		displayName: 'Z Index',
 		description: 'Z Index',
+		target: ['comp'],
+	},
+	className: {
+		name: 'className',
+		type: 'className',
+		displayName: 'CSS Classes',
+		description: 'CSS ClassNames',
 		target: ['comp'],
 	},
 };

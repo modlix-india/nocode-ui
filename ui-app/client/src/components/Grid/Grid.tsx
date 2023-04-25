@@ -198,25 +198,6 @@ const component: Component = {
 		key: '',
 		name: 'Grid',
 		type: 'Grid',
-		properties: {
-			background: {
-				value: '_PRIMARYBG',
-			},
-		},
-		styleProperties: {
-			'4c0094da-f5fd-4b96-af84-9ebb9da49776': {
-				resolutions: {
-					ALL: {
-						width: {
-							value: '100%',
-						},
-						height: {
-							value: '200px',
-						},
-					},
-				},
-			},
-		},
 	},
 };
 

@@ -43,7 +43,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Animation Type',
 		editor: ComponentPropertyEditor.ENUM,
 		group: ComponentPropertyGroup.ADVANCED,
-		defaultValue: 'slide',
+		defaultValue: 'fadeover',
 		enumValues: [
 			{ name: 'slide', displayName: 'Slide', description: 'Slide' },
 			{ name: 'slideover', displayName: 'Slide Over', description: 'Slide Over' },
@@ -67,7 +67,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Easing',
 		editor: ComponentPropertyEditor.ENUM,
 		group: ComponentPropertyGroup.ADVANCED,
-		defaultValue: 'linear',
+		defaultValue: 'ease',
 		enumValues: [
 			{ name: 'linear', displayName: 'Linear', description: 'Linear' },
 			{ name: 'ease', displayName: 'Ease', description: 'Ease' },
@@ -118,7 +118,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'hasNumbersInSlideNav',
 		description: 'has numbers in slide nav',
 		group: ComponentPropertyGroup.BASIC,
-		defaultValue: true,
+		defaultValue: false,
 	},
 	{
 		name: 'slideNavButtonPosition',
@@ -127,7 +127,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Types of Dot buttons',
 		editor: ComponentPropertyEditor.ENUM,
 		group: ComponentPropertyGroup.ADVANCED,
-		defaultValue: 'Right',
+		defaultValue: 'Bottom',
 		enumValues: [
 			{
 				name: 'Top',
@@ -168,7 +168,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'arrowButtons',
 		description: 'Position of arrow buttons',
 		editor: ComponentPropertyEditor.ENUM,
-		defaultValue: 'OutsideBottomRight',
+		defaultValue: 'Middle',
 		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
 			{
@@ -226,7 +226,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description:
 			'This property display navigation controls, i.e; arrows and buttons, when the carousel is hovered upon.',
 		group: ComponentPropertyGroup.ADVANCED,
-		defaultValue: true,
+		defaultValue: false,
 	},
 
 	COMMON_COMPONENT_PROPERTIES.visibility,

@@ -22,7 +22,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		enumValues: [
 			{ name: 'default', displayName: 'Default Button', description: 'Default Button type' },
 			{ name: 'outlined', displayName: 'Outline Button', description: 'Outline Button type' },
-			{ name: 'text', displayName: 'Outline Button', description: 'Outline Button type' },
+			{ name: 'text', displayName: 'Text Button', description: 'Outline Button type' },
 			{ name: 'fabButton', displayName: 'Fab Button', description: 'Fab Button type' },
 			{
 				name: 'fabButtonMini',
@@ -55,67 +55,9 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
-	'': {
-		[COMPONENT_STYLE_GROUP_PROPERTIES.backdropFilter.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.backdropFilter,
-			target: ['button'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.background.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.background,
-			target: ['button'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.border,
-			target: ['button'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow,
-			target: ['button'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
-			target: ['button'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.container.type]:
-			COMPONENT_STYLE_GROUP_PROPERTIES.container,
-
-		[COMPONENT_STYLE_GROUP_PROPERTIES.flex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.flex,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.font,
-			target: ['button'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: COMPONENT_STYLE_GROUP_PROPERTIES.margin,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.opacity.type]: COMPONENT_STYLE_GROUP_PROPERTIES.opacity,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.outline.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.outline,
-			target: ['button'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.padding,
-			target: ['button'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.position.type]: COMPONENT_STYLE_GROUP_PROPERTIES.position,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.rotate.type]: COMPONENT_STYLE_GROUP_PROPERTIES.rotate,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.size,
-			target: ['button'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.transform.type]:
-			COMPONENT_STYLE_GROUP_PROPERTIES.transform,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.zIndex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.zIndex,
-	},
-	button: {},
+	'': {},
 	rightIcon: {},
-	leftIcon: {
-		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
-			name: 'iconColor',
-			displayName: 'Icon Color',
-			description: 'Icon Color',
-			prefix: 'icon',
-			target: ['icon'],
-		},
-	},
+	leftIcon: {},
 };
 
 export { propertiesDefinition, stylePropertiesDefinition };

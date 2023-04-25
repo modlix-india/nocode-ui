@@ -7,7 +7,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "Fab Button's Color",
 		description: 'The color of the Fab Button.',
 		defaultValue: '<main-font-color>',
-		selector: '.button.fabButton',
+		noPrefix: true,
+		selector: '.compButton.button.fabButton',
 	},
 	{
 		name: 'fabButtonIconColor',
@@ -15,7 +16,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "Fab Button's Icon Color",
 		description: 'The color of the Fab Button Icon.',
 		defaultValue: '<light-font-color>',
-		selector: '.button.fabButton',
+		noPrefix: true,
+		selector: '.compButton.fabButton',
 	},
 	{
 		name: 'fabButtonWidth',
@@ -23,7 +25,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "Fab Button's Width",
 		description: 'The width of the Fab Button.',
 		defaultValue: '56px',
-		selector: '.button.fabButton',
+		noPrefix: true,
+		selector: '.compButton.fabButton',
 	},
 	{
 		name: 'fabButtonMiniColor',
@@ -31,7 +34,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "Mini Fab Button's Color",
 		description: 'The color of the Mini Fab Button.',
 		defaultValue: '<main-font-color>',
-		selector: '.button.fabButtonMini',
+		noPrefix: true,
+		selector: '.compButton.fabButtonMini',
 	},
 	{
 		name: 'fabButtonMiniIconColor',
@@ -39,7 +43,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "Mini Fab Button's Icon Color",
 		description: 'The color of the Mini Fab Button Icon.',
 		defaultValue: '<light-font-color>',
-		selector: '.button.fabButtonMini',
+		noPrefix: true,
+		selector: '.compButton.fabButtonMini',
 	},
 	{
 		name: 'fabButtonMiniWidth',
@@ -47,7 +52,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "Fab Button Mini's Width",
 		description: 'The width of the Fab mini Button.',
 		defaultValue: '40px',
-		selector: '.button.fabButtonMini',
+		noPrefix: true,
+		selector: '.compButton.fabButtonMini',
 	},
 	{
 		name: 'buttonColor',
@@ -55,7 +61,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "Button's  Color",
 		description: 'The color of the Primary Button.',
 		defaultValue: '<main-font-color>',
-		selector: '.button',
+		noPrefix: true,
+		selector: '.compButton',
 	},
 	{
 		name: 'buttonColorHover',
@@ -63,7 +70,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "Button's background color on hover",
 		description: 'The color of the Button on hover.',
 		defaultValue: '#647879',
-		selector: '.button:hover',
+		noPrefix: true,
+		selector: '.compButton:hover',
 	},
 	{
 		name: 'buttonTextColor',
@@ -71,7 +79,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "Button's text Color",
 		description: "The color of the Primary Button's text.",
 		defaultValue: '<light-font-color>',
-		selector: '.button',
+		noPrefix: true,
+		selector: '.compButton',
 	},
 	{
 		name: 'buttonColorDisabled',
@@ -79,7 +88,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "Disabled Button's Color",
 		description: 'The color of the disabled Primary Button.',
 		defaultValue: '<main-disabled-color>',
-		selector: '.button:disabled',
+		noPrefix: true,
+		selector: '.compButton:disabled',
 	},
 	{
 		name: 'buttonTextColorDisabled',
@@ -87,7 +97,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "Disabled Button's text Color",
 		description: "The color of the Primary Button's text when disabled.",
 		defaultValue: '<main-font-color>',
-		selector: '.button:disabled',
+		noPrefix: true,
+		selector: '.compButton:disabled',
 	},
 	{
 		name: 'buttonOutlinedColorBorder',
@@ -95,7 +106,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "Oultined Button's Border color",
 		description: "The color of the Outline Button's border.",
 		defaultValue: '1px solid <main-font-color>',
-		selector: '.button.outlined',
+		noPrefix: true,
+		selector: '.compButton.outlined',
 	},
 	{
 		name: 'buttonOutlinedTextColor',
@@ -103,7 +115,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "Outlined Button's text Color",
 		description: "The color of the Oultined Button's text.",
 		defaultValue: '<main-font-color>',
-		selector: '.button.outlined',
+		noPrefix: true,
+		selector: '.compButton.outlined',
 	},
 	{
 		name: 'buttonOutlinedColorBorderDisabled',
@@ -111,7 +124,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "Oultined Button's Border color when disabled",
 		description: "The color of the Outline Button's border when disabled.",
 		defaultValue: '<secondary-disabled-border>',
-		selector: '.button.outlined:disabled',
+		noPrefix: true,
+		selector: '.compButton.outlined:disabled',
 	},
 	{
 		name: 'buttonOutlinedTextColorDisabled',
@@ -119,7 +133,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "Outlined Button's text Color when disabled",
 		description: "The color of the Oultined Button's text when disabled.",
 		defaultValue: '<main-disabled-text>',
-		selector: '.button.outlined:disabled',
+		noPrefix: true,
+		selector: '.compButton.outlined:disabled',
 	},
 	{
 		name: 'buttonOutlinedColorHover',
@@ -127,7 +142,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "Outlined Button's Color when hover",
 		description: 'The color of the Oultined Button on hover.',
 		defaultValue: 'rgba(31, 60, 61, 0.109)',
-		selector: '.button.outlined:hover',
+		noPrefix: true,
+		selector: '.compButton.outlined:hover',
 	},
 	{
 		name: 'buttonOutlinedColorBorderHover',
@@ -135,7 +151,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "Oultined Button's Border color on hover",
 		description: "The color of the Outline Button's border on hover.",
 		defaultValue: '<main-font-color>',
-		selector: '.button.outlined:hover',
+		noPrefix: true,
+		selector: '.compButton.outlined:hover',
 	},
 	{
 		name: 'buttonOutlinedTextColorHover',
@@ -143,7 +160,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "Outlined Button's text Color on hover",
 		description: "The color of the Oultined Button's text on hover.",
 		defaultValue: '<main-disabled-text>',
-		selector: '.button.outlined:hover',
+		noPrefix: true,
+		selector: '.compButton.outlined:hover',
 	},
 	{
 		name: 'buttonOutlinedColorFocus',
@@ -151,7 +169,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "Outlined Button's Color on focus",
 		description: 'The color of the Oultined Button on focus.',
 		defaultValue: 'rgba(31, 60, 61, 0.109)',
-		selector: '.button.outlined:focus',
+		noPrefix: true,
+		selector: '.compButton.outlined:focus',
 	},
 	{
 		name: 'buttonOutlinedColorBorderFocus',
@@ -159,7 +178,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "Oultined Button's Border color on focus",
 		description: "The color of the Outline Button's border on focus.",
 		defaultValue: '<main-font-color>',
-		selector: '.button.outlined:focus',
+		noPrefix: true,
+		selector: '.compButton.outlined:focus',
 	},
 	{
 		name: 'buttonOutlinedTextColorFocus',
@@ -167,7 +187,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "Outlined Button's text Color on focus",
 		description: "The color of the Oultined Button's text on focus.",
 		defaultValue: '<main-disabled-text>',
-		selector: '.button.outlined:focus',
+		noPrefix: true,
+		selector: '.compButton.outlined:focus',
 	},
 	{
 		name: 'textButtonTextColor',
@@ -175,7 +196,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "Text Button's text Color",
 		description: "The color of the Text Button's text.",
 		defaultValue: '<main-font-color>',
-		selector: '.button.text',
+		noPrefix: true,
+		selector: '.compButton.text',
 	},
 	{
 		name: 'textButtonTextColorDisabled',
@@ -183,7 +205,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "Text Button's text Color on disabled",
 		description: "The color of the Text Button's text on disabed.",
 		defaultValue: '<secondary-disabled-border>',
-		selector: '.button.text:disabled',
+		noPrefix: true,
+		selector: '.compButton.text:disabled',
 	},
 	{
 		name: 'textButtonTextBackgroundColorHover',
@@ -191,7 +214,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "Text Button's background color on hover",
 		description: "The color of the Text Button's text on hover.",
 		defaultValue: '#EDEFEF',
-		selector: '.button.text:hover',
+		noPrefix: true,
+		selector: '.compButton.text:hover',
 	},
 	{
 		name: 'buttonIconMargin',
@@ -229,7 +253,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "Button's cursor",
 		description: 'Cursor to be used on hover',
 		defaultValue: 'pointer',
-		selector: '.button',
+		noPrefix: true,
+		selector: '.compButton',
 	},
 ];
 

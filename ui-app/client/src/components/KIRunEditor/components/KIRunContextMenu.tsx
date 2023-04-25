@@ -2,30 +2,32 @@ import React from 'react';
 import duplicate from '../../../util/duplicate';
 import { setData } from '../../../context/StoreContext';
 
-interface MenuProps {
+interface KIRunContextMenuProps {
 	menu: any;
 	showMenu: React.Dispatch<any>;
 	isReadonly: boolean;
 	rawDef: any;
 	bindingPathPath: string | undefined;
 	pageName: string;
+	setShowAddSearch: (position: { left: number; top: number }) => void;
 }
 
-export default function Menu({
+export default function KIRunContextMenu({
 	menu,
 	showMenu,
 	isReadonly,
 	rawDef,
 	bindingPathPath,
 	pageName,
-}: MenuProps) {
+	setShowAddSearch,
+}: KIRunContextMenuProps) {
 	if (!menu) return <></>;
 	return (
 		<div
 			className="_menu"
 			style={{
-				left: `${menu.position.x - 5}px`,
-				top: `${menu.position.y - 5}px`,
+				left: `${menu.position.left - 5}px`,
+				top: `${menu.position.top - 5}px`,
 			}}
 			onMouseLeave={() => showMenu(undefined)}
 		>
@@ -47,6 +49,22 @@ export default function Menu({
 						}}
 					>
 						<i className="fa fa-regular fa-trash-can" /> Remove
+					</div>
+				</>
+			)}
+			{menu.type === 'designer' && (
+				<>
+					<div
+						className="_menuItem"
+						onClick={() => {
+							if (isReadonly || !bindingPathPath) return;
+							setShowAddSearch({
+								left: menu.position.left - 5,
+								top: menu.position.top - 5,
+							});
+						}}
+					>
+						<i className="fa fa-regular fa-square-plus" /> Add a Step
 					</div>
 				</>
 			)}

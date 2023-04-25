@@ -124,6 +124,7 @@ const component: Component = {
 	name: 'Page',
 	displayName: 'Page',
 	description: 'Page component',
+	isHidden: true,
 	component: Page,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,

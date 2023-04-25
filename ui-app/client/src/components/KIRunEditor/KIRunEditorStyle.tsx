@@ -139,6 +139,123 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			padding: 2px;
 		}
 
+		${PREFIX} ._statement._editParameters {
+			width: 450px;
+			min-height: 450px;
+		}
+
+		${PREFIX} ._storeContainer {
+			position: fixed;
+			display: flex;
+			flex-direction: column;
+			padding: 15px;
+			gap: 10px;
+			transform-origin: left top;
+			transition: transform 1s ease-in;
+		}
+
+		${PREFIX} ._storeNode {
+			display: flex;
+			background-color: #fff;
+			padding: 2px;
+			justify-content: left;
+			align-items: center;
+			box-shadow: 0 15px 30px 0 rgba(0,0,0,.10), 0 5px 15px 0 rgba(0,0,0,.10);
+			border-radius: 4px;
+			position: relative;
+		}
+
+		${PREFIX} ._storeNode i.fa {
+			font-size: 12px;
+			background-color: #ccc;
+			color: #fff;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 20px;
+			height: 20px;
+			border-radius: 3px;
+			border-top-right-radius: 0px;
+    		border-bottom-right-radius: 0px;
+		}
+
+		${PREFIX} ._storeNode ._storeNode_name {
+			font-size: 12px;
+			background-color: #f8f8f8;
+			padding: 3px 8px;
+			border-radius: 3px;
+			flex: 1;
+		}
+
+		${PREFIX} ._storeNode_node {
+			position: absolute;
+			right: 0px;
+			top: 0px;
+			transform: translate(50%, 50%);
+			width: 12px;
+			height: 12px;
+			border-radius: 50%;
+			background-color: #fff;
+			border: 2px solid #fff;
+		}
+
+		${PREFIX} ._statement ._commentContainer {
+			position: absolute;
+			top: -10px;
+			transform: translateY(-100%);
+			padding: 5px 18px;
+			font-size: 12px;
+			background: #fff9;
+			min-width: 100%;
+			border-radius: 4px;
+			color: #628D4E;
+			font-family: monospace;
+			line-height: 13px;
+			border: 2px solid #628D4E33;
+			min-height: 44px;
+		}
+
+		${PREFIX} ._statement._editParameters ._commentContainer {
+			background: #fff;
+		}
+
+		${PREFIX} ._statement ._commentContainer ._comment::before {
+			content: '/* ';
+			position: absolute;
+			left: 2px;
+			top: 4px;
+		}
+
+		${PREFIX} ._statement ._commentContainer ._comment::after {
+			content: ' */';
+			position: absolute;
+			right: 2px;
+			bottom: 4px;
+		}
+
+		${PREFIX} ._statement ._commentContainer ._comment,
+		${PREFIX} ._statement ._commentContainer ._commentEditor {
+			min-width: 100%;
+			height: 100%;
+			
+			border: none;
+			outline-color: #ccc;
+			font-family: inherit;
+			font-size: inherit;
+			white-space: pre;
+		}
+
+		${PREFIX} ._statement ._commentContainer textarea._commentEditor {
+			position: absolute;
+			left: 0px;
+			top: 0px;
+			width: 100%;
+			height: 100%;
+			padding: 5px 18px;
+			line-height: 13px;
+			min-height: 40px;
+		}
+
 		${PREFIX} ._statement._selected {
 			border: 2px solid #679AE6;
 		}
@@ -160,7 +277,7 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			flex-direction: row;
 			align-items: center;
 			border-top-right-radius: 4px;
-    		
+    		flex: 1
 		}
 
 		${PREFIX} ._statement ._statementName {
@@ -216,6 +333,10 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			color: #fff;
 		}
 
+		${PREFIX} ._statement._forAdd {
+			width: 300px;
+		}
+
 		${PREFIX} ._statement ._otherContainer { 
 			padding: 5px;
 			display: flex;
@@ -237,10 +358,18 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 		${PREFIX} ._statement ._param {
 			position: relative;
 			display: flex;
-			align-items: center;
 			gap: 5px;
 			padding: 3px;
 			padding-left: 0px;
+			flex-direction: column;
+		}
+
+		${PREFIX} ._statement ._paramValue {
+			font-family: monospace;
+			white-space: nowrap;
+			max-width: 200px;
+			text-overflow: ellipsis;
+			overflow: hidden;
 		}
 
 		${PREFIX} ._paramsContainer._event ._param{
@@ -260,6 +389,7 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 		}
 
 		${PREFIX} ._statement ._param ._paramName {
+			cursor: pointer;
 			flex: 1;
 		}
 
@@ -312,6 +442,10 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			gap: 5px;
 		}
 
+		${PREFIX} ._statement ._buttons ._buttonsGap {
+			height: 6px;	
+		}
+
 		${PREFIX} ._statement ._buttons i.fa {
 			color: inherit;
 			cursor: pointer;
@@ -358,6 +492,7 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
     		margin-top: -12px;
 			min-width: 100%;
 			z-Index: 3;
+			background-color: #eee;
 		}
 
 		${PREFIX} ._search ._value {
@@ -449,6 +584,32 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 		${PREFIX} ._menu ._menuItem:hover {
 			background-color: #eee;
 		}
+
+		${PREFIX} ._paramEditorBack {
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			background-color: #fffa;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		${PREFIX} ._paramEditorBack ._statementBack {
+			position: absolute;
+		}
+
+		${PREFIX} ._statement._editParameters {
+			position: unset;
+		}
+
+		${PREFIX} ._statement._editParameters ._hideInEdit{
+			display: none !important;
+		}
+
+
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="KIRUNEditorCss">{css}</style>;
