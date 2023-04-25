@@ -25,6 +25,7 @@ interface PropertyBarProps {
 	editPageName: string | undefined;
 	selectedSubComponent: string;
 	onSelectedSubComponentChanged: (key: string) => void;
+	storePaths: Set<string>;
 }
 
 export default function DnDPropertyBar({
@@ -37,24 +38,11 @@ export default function DnDPropertyBar({
 	theme,
 	onShowCodeEditor,
 	slaveStore,
+	storePaths,
 	editPageName,
 	selectedSubComponent,
 	onSelectedSubComponentChanged,
 }: PropertyBarProps) {
-	const storePaths = useMemo<Set<string>>(
-		() =>
-			allPaths(
-				STORE_PREFIX,
-				slaveStore?.store,
-				allPaths(
-					LOCAL_STORE_PREFIX,
-					slaveStore?.localStore,
-					allPaths(PAGE_STORE_PREFIX, slaveStore?.store?.pageData?.[editPageName ?? '']),
-				),
-			),
-		[slaveStore],
-	);
-
 	const [currentTab, setCurrentTab] = React.useState(1);
 
 	useEffect(() => {

@@ -1,6 +1,7 @@
 import {
 	ExecutionGraph,
 	Function,
+	GraphVertex,
 	LinkedList,
 	Parameter,
 	ParameterReferenceType,
@@ -8,9 +9,10 @@ import {
 	StatementExecution,
 	isNullValue,
 } from '@fincity/kirun-js';
-import React, { ReactNode, useMemo } from 'react';
+import React, { ReactNode, useEffect, useMemo } from 'react';
 import { UIError } from '../../util/errorHandling';
 import { generateColor } from '../colors';
+import { shortUUID } from '../../../util/shortUUID';
 
 interface ExecutionGraphLinesProps {
 	executionPlan: ExecutionGraph<string, StatementExecution> | UIError | undefined;
@@ -24,6 +26,7 @@ interface ExecutionGraphLinesProps {
 	stores?: Array<string>;
 	hideArguments?: boolean;
 	showStores?: boolean;
+	showParamValues?: boolean;
 }
 
 const STEP_REGEX = /Steps\.([a-zA-Z0-9\-]{1,})\.([a-zA-Z0-9\-]{1,})([\.]{0,}[a-zA-Z0-9\-]{1,})+/g;
@@ -40,10 +43,17 @@ export default function ExecutionGraphLines({
 	stores,
 	hideArguments,
 	showStores,
+	showParamValues,
 }: ExecutionGraphLinesProps) {
-	if (!(executionPlan instanceof ExecutionGraph) || !designerRef.current) return <></>;
+	const [sid, setSid] = React.useState(shortUUID());
+	useEffect(() => {
+		setTimeout(() => setSid(shortUUID()), 0);
+	}, [showStores, showParamValues]);
 
-	const nodeMap = executionPlan.getNodeMap();
+	const nodeMap =
+		executionPlan instanceof ExecutionGraph
+			? executionPlan?.getNodeMap()
+			: new Map<string, GraphVertex<string, StatementExecution>>();
 
 	const regexMap = useMemo(() => {
 		const rMap = new Map<string, RegExp>([['Steps', STEP_REGEX]]);
@@ -51,6 +61,8 @@ export default function ExecutionGraphLines({
 		stores.forEach(s => rMap.set(s, new RegExp(`${s}\\.[a-zA-Z0-9\-]{1,}`, 'g')));
 		return rMap;
 	}, [stores, showStores]);
+
+	if (!(executionPlan instanceof ExecutionGraph) || !designerRef.current) return <></>;
 
 	let gradients: Map<string, ReactNode> = new Map();
 	const lines = Array.from(nodeMap.values()).flatMap(v => {
@@ -106,10 +118,12 @@ export default function ExecutionGraphLines({
 							ev.preventDefault();
 							ev.stopPropagation();
 							const parentRect = designerRef.current!.getBoundingClientRect();
+							const magnification =
+								parentRect.width / (designerRef.current!.offsetWidth ?? 1);
 							showMenu({
 								position: {
-									left: ev.clientX - parentRect.left,
-									top: ev.clientY - parentRect.top,
+									left: (ev.clientX - parentRect.left) / magnification,
+									top: (ev.clientY - parentRect.top) / magnification,
 								},
 								type: 'dependent',
 								value: {

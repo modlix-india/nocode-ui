@@ -26,6 +26,8 @@ import { MASTER_FUNCTIONS } from './functions/masterFunctions';
 import PageOperations from './functions/PageOperations';
 import { propertiesDefinition, stylePropertiesDefinition } from './pageEditorProperties';
 import GridStyle from './PageEditorStyle';
+import { allPaths } from '../../util/allPaths';
+import { LOCAL_STORE_PREFIX, PAGE_STORE_PREFIX, STORE_PREFIX } from '../../constants';
 
 function savePersonalizationCurry(
 	personalizationPath: string,
@@ -363,6 +365,24 @@ function PageEditor(props: ComponentProps) {
 	const undoStackRef = useRef<Array<PageDefinition>>([]);
 	const redoStackRef = useRef<Array<PageDefinition>>([]);
 	const firstTimeRef = useRef<Array<PageDefinition>>([]);
+	const latestVersion = useRef<number>(0);
+
+	const storePaths = useMemo<Set<string>>(
+		() =>
+			allPaths(
+				STORE_PREFIX,
+				slaveStore?.store,
+				allPaths(
+					LOCAL_STORE_PREFIX,
+					slaveStore?.localStore,
+					allPaths(
+						PAGE_STORE_PREFIX,
+						slaveStore?.store?.pageData?.[editPageDefinition?.name ?? ''],
+					),
+				),
+			),
+		[slaveStore],
+	);
 
 	// If the personalization is not loaded, we don't load the view.
 	if (personalizationPath && !personalization) return <></>;
@@ -398,10 +418,12 @@ function PageEditor(props: ComponentProps) {
 					undoStackRef={undoStackRef}
 					redoStackRef={redoStackRef}
 					firstTimeRef={firstTimeRef}
+					latestVersion={latestVersion}
 					slaveStore={slaveStore}
 					editPageName={editPageDefinition?.name}
 					selectedSubComponent={selectedSubComponent}
 					onSelectedSubComponentChanged={(key: string) => setSelectedSubComponent(key)}
+					storePaths={storePaths}
 				/>
 				<CodeEditor
 					showCodeEditor={showCodeEditor}
@@ -416,7 +438,9 @@ function PageEditor(props: ComponentProps) {
 					undoStackRef={undoStackRef}
 					redoStackRef={redoStackRef}
 					firstTimeRef={firstTimeRef}
+					latestVersion={latestVersion}
 					definition={definition}
+					storePaths={storePaths}
 				/>
 			</div>
 			<IssuePopup

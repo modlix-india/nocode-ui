@@ -32,10 +32,12 @@ interface DnDEditorProps {
 	firstTimeRef: React.MutableRefObject<PageDefinition[]>;
 	undoStackRef: React.MutableRefObject<PageDefinition[]>;
 	redoStackRef: React.MutableRefObject<PageDefinition[]>;
+	latestVersion: React.MutableRefObject<number>;
 	slaveStore: any;
 	editPageName: string | undefined;
 	selectedSubComponent: string;
 	onSelectedSubComponentChanged: (key: string) => void;
+	storePaths: Set<string>;
 }
 
 export default function DnDEditor({
@@ -61,10 +63,12 @@ export default function DnDEditor({
 	firstTimeRef,
 	undoStackRef,
 	redoStackRef,
+	latestVersion,
 	slaveStore,
 	editPageName,
 	selectedSubComponent,
 	onSelectedSubComponentChanged,
+	storePaths,
 }: DnDEditorProps) {
 	return (
 		<div className="_dndGrid">
@@ -95,6 +99,7 @@ export default function DnDEditor({
 					undoStackRef={undoStackRef}
 					redoStackRef={redoStackRef}
 					firstTimeRef={firstTimeRef}
+					latestVersion={latestVersion}
 				/>
 				<div className="_iframeContainer">
 					<DnDIFrame
@@ -117,6 +122,7 @@ export default function DnDEditor({
 						editPageName={editPageName}
 						selectedSubComponent={selectedSubComponent}
 						onSelectedSubComponentChanged={onSelectedSubComponentChanged}
+						storePaths={storePaths}
 					/>
 				</div>
 				<DnDBottomBar

@@ -139,6 +139,11 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			padding: 2px;
 		}
 
+		${PREFIX} ._statement._editParameters {
+			width: 450px;
+			min-height: 450px;
+		}
+
 		${PREFIX} ._storeContainer {
 			position: fixed;
 			display: flex;
@@ -210,6 +215,10 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			min-height: 44px;
 		}
 
+		${PREFIX} ._statement._editParameters ._commentContainer {
+			background: #fff;
+		}
+
 		${PREFIX} ._statement ._commentContainer ._comment::before {
 			content: '/* ';
 			position: absolute;
@@ -268,7 +277,7 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			flex-direction: row;
 			align-items: center;
 			border-top-right-radius: 4px;
-    		
+    		flex: 1
 		}
 
 		${PREFIX} ._statement ._statementName {
@@ -349,10 +358,18 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 		${PREFIX} ._statement ._param {
 			position: relative;
 			display: flex;
-			align-items: center;
 			gap: 5px;
 			padding: 3px;
 			padding-left: 0px;
+			flex-direction: column;
+		}
+
+		${PREFIX} ._statement ._paramValue {
+			font-family: monospace;
+			white-space: nowrap;
+			max-width: 200px;
+			text-overflow: ellipsis;
+			overflow: hidden;
 		}
 
 		${PREFIX} ._paramsContainer._event ._param{
@@ -423,6 +440,10 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			flex-direction: column;
 			margin-left: 10px;
 			gap: 5px;
+		}
+
+		${PREFIX} ._statement ._buttons ._buttonsGap {
+			height: 6px;	
 		}
 
 		${PREFIX} ._statement ._buttons i.fa {
@@ -563,6 +584,32 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 		${PREFIX} ._menu ._menuItem:hover {
 			background-color: #eee;
 		}
+
+		${PREFIX} ._paramEditorBack {
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			background-color: #fffa;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		${PREFIX} ._paramEditorBack ._statementBack {
+			position: absolute;
+		}
+
+		${PREFIX} ._statement._editParameters {
+			position: unset;
+		}
+
+		${PREFIX} ._statement._editParameters ._hideInEdit{
+			display: none !important;
+		}
+
+
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="KIRUNEditorCss">{css}</style>;
