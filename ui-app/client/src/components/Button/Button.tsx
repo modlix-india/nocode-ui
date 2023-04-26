@@ -195,7 +195,21 @@ function ButtonComponent(props: ComponentProps) {
 						/>
 					</>
 				)}
-				<div className="textToolBar">
+				<div
+					className="textToolBar"
+					onClick={e => {
+						e.preventDefault();
+						e.stopPropagation();
+					}}
+					onMouseDown={e => {
+						e.preventDefault();
+						e.stopPropagation();
+					}}
+					onMouseUp={e => {
+						e.preventDefault();
+						e.stopPropagation();
+					}}
+				>
 					<i
 						className="fa fa-solid fa-bold"
 						onClick={() => {
