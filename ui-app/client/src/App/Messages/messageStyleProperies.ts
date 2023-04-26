@@ -52,7 +52,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'background',
 		displayName: 'Messages Container Background',
 		description: 'Messages Container background',
-		defaultValue: '<secondary-background>',
+		defaultValue: '<secondaryBackground>',
 		selector: '._message',
 	},
 	{
@@ -76,7 +76,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'font-size',
 		displayName: 'Message Font Size',
 		description: 'Message Font Size',
-		defaultValue: 'calc(<main-font-size> - 1px)',
+		defaultValue: 'calc(<mainFontSize> - 1px)',
 		selector: '._message ._msgString',
 	},
 	{

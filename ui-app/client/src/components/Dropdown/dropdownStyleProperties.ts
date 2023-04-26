@@ -30,7 +30,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'background-color',
 		displayName: 'Dropdown Container background color',
 		description: 'The background color of Dropdown Container.',
-		defaultValue: '<light-font-color>',
+		defaultValue: '<lightFontColor>',
 		selector: '.dropdownContainer',
 	},
 	{
@@ -38,7 +38,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'box-shadow',
 		displayName: 'Dropdown Container box shadow',
 		description: 'The box shadow of Dropdown Container.',
-		defaultValue: '0 4px 6px 1px <box-box-shadow>',
+		defaultValue: '0 4px 6px 1px <boxBoxShadow>',
 		selector: '.dropdownContainer',
 	},
 	{
@@ -62,7 +62,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'background-color',
 		displayName: 'Dropdown Item background color on hover',
 		description: 'The background color of Dropdown Item on hover.',
-		defaultValue: '<option-hover-background>',
+		defaultValue: '<optionHoverBackground>',
 		selector: '.dropdownItem:hover',
 	},
 	{
@@ -70,7 +70,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		displayName: 'Font color for Dropdown Item Label',
 		description: 'Font color for Dropdown Item Label.',
-		defaultValue: '<main-font-color>',
+		defaultValue: '<mainFontColor>',
 		selector: '.dropdownItemLabel',
 	},
 	{
@@ -78,7 +78,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		displayName: 'Font color for Checked Icon',
 		description: 'Font color for Checked Icon.',
-		defaultValue: '<form-input-border-color-hover>',
+		defaultValue: '<formInputBorderColor-hover>',
 		selector: '.checkedIcon',
 	},
 ];
