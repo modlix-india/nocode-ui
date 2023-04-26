@@ -95,7 +95,10 @@ function Children({
 				: undefined;
 		})
 		.filter(e => !!e)
-		.sort((a: any, b: any) => (a?.displayOrder ?? 0) - (b?.displayOrder ?? 0));
+		.sort((a: any, b: any) => {
+			const v = (a?.displayOrder ?? 0) - (b?.displayOrder ?? 0);
+			return v === 0 ? (a?.key ?? '').localeCompare(b?.key ?? '') : v;
+		});
 
 	React.useEffect(
 		() => () =>

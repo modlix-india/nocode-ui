@@ -103,10 +103,13 @@ export default function DnDBottomBar({
 					>
 						{Object.keys(defMap[comp.key].children ?? {})
 							.filter(f => !!defMap[f])
-							.sort(
-								(a, b) =>
-									(defMap[a].displayOrder ?? 0) - (defMap[b].displayOrder ?? 0),
-							)
+							.sort((a: any, b: any) => {
+								const v =
+									(defMap[a]?.displayOrder ?? 0) - (defMap[b]?.displayOrder ?? 0);
+								return v === 0
+									? (defMap[a]?.key ?? '').localeCompare(defMap[b]?.key ?? '')
+									: v;
+							})
 							.map(f => (
 								<div
 									className="_iconMenuOption"

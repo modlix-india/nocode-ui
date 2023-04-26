@@ -366,7 +366,11 @@ export default class PageOperations {
 				let childrenOrder = Object.keys(sourceParent.children ?? {})
 					.map(e => pageDef.componentDefinition[e])
 					.map(e => ({ key: e.key, displayOrder: e.displayOrder }))
-					.sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
+					.sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
+					.sort((a: any, b: any) => {
+						const v = (a?.displayOrder ?? 0) - (b?.displayOrder ?? 0);
+						return v === 0 ? (a?.key ?? '').localeCompare(b?.key ?? '') : v;
+					});
 				// Figuring out the current positions of the dropped on and dropped components.
 				let doPosition = -1;
 				let dpPosition = -1;
@@ -846,7 +850,10 @@ export default class PageOperations {
 		let childrenOrder = Object.keys(doComp.children ?? {})
 			.map(e => pageDef.componentDefinition[e])
 			.map(e => ({ key: e.key, displayOrder: e.displayOrder }))
-			.sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
+			.sort((a: any, b: any) => {
+				const v = (a?.displayOrder ?? 0) - (b?.displayOrder ?? 0);
+				return v === 0 ? (a?.key ?? '').localeCompare(b?.key ?? '') : v;
+			});
 
 		if (droppedOnPosition === -1 || !childrenOrder.length) {
 			// If the droppedOnPosition is -1 i.e. when dropped on a parent but not a
