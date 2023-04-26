@@ -6,7 +6,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		displayName: 'Default text Color',
 		description: 'Default text Color',
-		defaultValue: '<main-font-color>',
+		defaultValue: '<mainFontColor>',
 		selector: 'span',
 	},
 	{
@@ -14,7 +14,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'font-size',
 		displayName: 'Default text Size',
 		description: 'Default text Size',
-		defaultValue: '<main-font-size>',
+		defaultValue: '<mainFontSize>',
 		selector: 'span',
 	},
 ];
