@@ -181,7 +181,7 @@ export default class PageOperations {
 
 			let subComp = undefined;
 			if (this.selectedSubComponent) {
-				const splits = this.selectedComponent?.split(':');
+				const splits = this.selectedSubComponent?.split(':');
 				if (splits?.length === 2 && splits[0] === componentKey) subComp = splits[1];
 			}
 
