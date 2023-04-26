@@ -2,7 +2,6 @@ import Button from './Button/Button';
 import ButtonBar from './Buttonbar/ButtonBar';
 import CheckBox from './CheckBox/CheckBox';
 import Grid from './Grid/Grid';
-import Label from './Label/Label';
 import Link from './Link/Link';
 import Page from './Page/Page';
 import RadioButton from './RadioButton/RadioButton';
@@ -42,7 +41,6 @@ export default new Map<string, Component>([
 	[ButtonBar.name, ButtonBar],
 	[Grid.name, Grid],
 	[Page.name, Page],
-	[Label.name, Label],
 	[CheckBox.name, CheckBox],
 	[RadioButton.name, RadioButton],
 	[ToggleButton.name, ToggleButton],

@@ -75,33 +75,33 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 const stylePropertiesDefinition = {
 	'': {
-		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: COMPONENT_STYLE_GROUP_PROPERTIES.margin,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: COMPONENT_STYLE_GROUP_PROPERTIES.padding,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.outline.type]: COMPONENT_STYLE_GROUP_PROPERTIES.outline,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.position.type]: COMPONENT_STYLE_GROUP_PROPERTIES.position,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: COMPONENT_STYLE_GROUP_PROPERTIES.size,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.transform.type]:
-			COMPONENT_STYLE_GROUP_PROPERTIES.transform,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: COMPONENT_STYLE_GROUP_PROPERTIES.border,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.zIndex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.zIndex,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.flex.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.flex,
-			target: ['popoverContainer'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.background.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.background,
-			target: ['popoverContainer'],
-		},
+		// [COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: COMPONENT_STYLE_GROUP_PROPERTIES.margin,
+		// [COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: COMPONENT_STYLE_GROUP_PROPERTIES.padding,
+		// [COMPONENT_STYLE_GROUP_PROPERTIES.outline.type]: COMPONENT_STYLE_GROUP_PROPERTIES.outline,
+		// [COMPONENT_STYLE_GROUP_PROPERTIES.position.type]: COMPONENT_STYLE_GROUP_PROPERTIES.position,
+		// [COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: COMPONENT_STYLE_GROUP_PROPERTIES.size,
+		// [COMPONENT_STYLE_GROUP_PROPERTIES.transform.type]:
+		// 	COMPONENT_STYLE_GROUP_PROPERTIES.transform,
+		// [COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: COMPONENT_STYLE_GROUP_PROPERTIES.border,
+		// [COMPONENT_STYLE_GROUP_PROPERTIES.zIndex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.zIndex,
+		// [COMPONENT_STYLE_GROUP_PROPERTIES.flex.type]: {
+		// 	...COMPONENT_STYLE_GROUP_PROPERTIES.flex,
+		// 	target: ['popoverContainer'],
+		// },
+		// [COMPONENT_STYLE_GROUP_PROPERTIES.background.type]: {
+		// 	...COMPONENT_STYLE_GROUP_PROPERTIES.background,
+		// 	target: ['popoverContainer'],
+		// },
 	},
 	popoverContainer: {
-		[COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.border,
-			name: 'popoverContainerBorder',
-			displayName: 'Popover Container Border',
-			description: 'Popover Container Border.',
-			prefix: 'popoverContainer',
-			target: ['popoverContainer'],
-		},
+		// [COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: {
+		// 	...COMPONENT_STYLE_GROUP_PROPERTIES.border,
+		// 	name: 'popoverContainerBorder',
+		// 	displayName: 'Popover Container Border',
+		// 	description: 'Popover Container Border.',
+		// 	prefix: 'popoverContainer',
+		// 	target: ['popoverContainer'],
+		// },
 	},
 };
 

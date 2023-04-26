@@ -64,52 +64,52 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 const stylePropertiesDefinition = {
 	'': {
-		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: COMPONENT_STYLE_GROUP_PROPERTIES.margin,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: COMPONENT_STYLE_GROUP_PROPERTIES.padding,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.position.type]: COMPONENT_STYLE_GROUP_PROPERTIES.position,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.flex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.flex,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.font,
-			target: ['progressBarLabel'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
-			target: ['progressBarLabel'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.size,
-			target: ['progressBar'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.border,
-			target: ['progressBar'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow,
-			target: ['progressBar'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.background.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.background,
-			target: ['progress'],
-		},
+		// [COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: COMPONENT_STYLE_GROUP_PROPERTIES.margin,
+		// [COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: COMPONENT_STYLE_GROUP_PROPERTIES.padding,
+		// [COMPONENT_STYLE_GROUP_PROPERTIES.position.type]: COMPONENT_STYLE_GROUP_PROPERTIES.position,
+		// [COMPONENT_STYLE_GROUP_PROPERTIES.flex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.flex,
+		// [COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
+		// 	...COMPONENT_STYLE_GROUP_PROPERTIES.font,
+		// 	target: ['progressBarLabel'],
+		// },
+		// [COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
+		// 	...COMPONENT_STYLE_GROUP_PROPERTIES.color,
+		// 	target: ['progressBarLabel'],
+		// },
+		// [COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: {
+		// 	...COMPONENT_STYLE_GROUP_PROPERTIES.size,
+		// 	target: ['progressBar'],
+		// },
+		// [COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: {
+		// 	...COMPONENT_STYLE_GROUP_PROPERTIES.border,
+		// 	target: ['progressBar'],
+		// },
+		// [COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow.type]: {
+		// 	...COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow,
+		// 	target: ['progressBar'],
+		// },
+		// [COMPONENT_STYLE_GROUP_PROPERTIES.background.type]: {
+		// 	...COMPONENT_STYLE_GROUP_PROPERTIES.background,
+		// 	target: ['progress'],
+		// },
 	},
 	progressValue: {
-		[COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.font,
-			name: 'Progress Bar Value Font',
-			description: 'Progress Bar Value Font',
-			displayName: 'Progress Bar Value Font',
-			prefix: 'progress',
-			target: ['progressValue'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
-			name: 'Progress Bar Value Color',
-			description: 'Progress Bar Value Color',
-			displayName: 'Progress Bar Value Color',
-			prefix: 'progress',
-			target: ['progressValue'],
-		},
+		// [COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
+		// 	...COMPONENT_STYLE_GROUP_PROPERTIES.font,
+		// 	name: 'Progress Bar Value Font',
+		// 	description: 'Progress Bar Value Font',
+		// 	displayName: 'Progress Bar Value Font',
+		// 	prefix: 'progress',
+		// 	target: ['progressValue'],
+		// },
+		// [COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
+		// 	...COMPONENT_STYLE_GROUP_PROPERTIES.color,
+		// 	name: 'Progress Bar Value Color',
+		// 	description: 'Progress Bar Value Color',
+		// 	displayName: 'Progress Bar Value Color',
+		// 	prefix: 'progress',
+		// 	target: ['progressValue'],
+		// },
 	},
 };
 
