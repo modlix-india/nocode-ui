@@ -38,6 +38,8 @@ interface DnDEditorProps {
 	selectedSubComponent: string;
 	onSelectedSubComponentChanged: (key: string) => void;
 	storePaths: Set<string>;
+	setStyleSelectorPref: (pref: any) => void;
+	styleSelectorPref: any;
 }
 
 export default function DnDEditor({
@@ -69,6 +71,8 @@ export default function DnDEditor({
 	selectedSubComponent,
 	onSelectedSubComponentChanged,
 	storePaths,
+	styleSelectorPref,
+	setStyleSelectorPref,
 }: DnDEditorProps) {
 	return (
 		<div className="_dndGrid">
@@ -123,6 +127,8 @@ export default function DnDEditor({
 						selectedSubComponent={selectedSubComponent}
 						onSelectedSubComponentChanged={onSelectedSubComponentChanged}
 						storePaths={storePaths}
+						styleSelectorPref={styleSelectorPref}
+						setStyleSelectorPref={setStyleSelectorPref}
 					/>
 				</div>
 				<DnDBottomBar

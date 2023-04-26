@@ -2,13 +2,20 @@ import React from 'react';
 import { isNullValue, LinkedList } from '@fincity/kirun-js';
 
 import { getDataFromPath, PageStoreExtractor, setData } from '../../../context/StoreContext';
-import { ComponentDefinition, LocationHistory, PageDefinition } from '../../../types/common';
+import {
+	ComponentDefinition,
+	ComponentProperty,
+	ComponentResoltuions,
+	LocationHistory,
+	PageDefinition,
+} from '../../../types/common';
 import duplicate from '../../../util/duplicate';
 import { Issue } from '../components/IssuePopup';
 import { COPY_CD_KEY, CUT_CD_KEY, DRAG_CD_KEY, DRAG_COMP_NAME } from '../../../constants';
 import ComponentDefinitions from '../../';
 import Grid from '../../Grid/Grid';
 import { shortUUID } from '../../../util/shortUUID';
+import { StyleResolution } from '../../../types/common';
 
 interface ClipboardObject {
 	mainKey: string;
@@ -22,6 +29,8 @@ export default class PageOperations {
 	private setIssue: React.Dispatch<Issue>;
 	private selectedComponent: string | undefined;
 	private onSelectedComponentChanged: (key: string) => void;
+	private styleSelectorPref: any;
+	private selectedSubComponent: string | undefined;
 
 	constructor(
 		defPath: string | undefined,
@@ -29,7 +38,9 @@ export default class PageOperations {
 		pageExtractor: PageStoreExtractor,
 		setIssue: React.Dispatch<Issue>,
 		selectedComponent: string | undefined,
+		selectedSubComponent: string | undefined,
 		onSelectedComponentChanged: (key: string) => void,
+		styleSelectorPref: any,
 	) {
 		this.defPath = defPath;
 		this.locationHistory = locationHistory;
@@ -37,6 +48,8 @@ export default class PageOperations {
 		this.setIssue = setIssue;
 		this.selectedComponent = selectedComponent;
 		this.onSelectedComponentChanged = onSelectedComponentChanged;
+		this.styleSelectorPref = styleSelectorPref;
+		this.selectedSubComponent = selectedSubComponent;
 	}
 
 	public getComponentDefinition(componentKey: string): ComponentDefinition | undefined {
@@ -59,6 +72,129 @@ export default class PageOperations {
 		if (!pageDef || pageDef.rootComponent === componentKey) return;
 
 		return pageDef.componentDefinition[componentKey];
+	}
+
+	public componentChanged(componentDef: ComponentDefinition | undefined) {
+		if (!componentDef || !this.defPath) return;
+
+		const pageDef: PageDefinition = getDataFromPath(
+			this.defPath,
+			this.locationHistory,
+			this.pageExtractor,
+		);
+
+		if (!pageDef) return;
+
+		const newPageDef = duplicate(pageDef);
+		if (!newPageDef.componentDefinition) newPageDef.componentDefinition = {};
+		newPageDef.componentDefinition[componentDef.key] = componentDef;
+
+		setData(this.defPath, newPageDef, this.pageExtractor.getPageName());
+	}
+
+	private applyPropertyWithStrategy(
+		props: any,
+		eachProp: { name: string; value: string; strategy?: string },
+	): void {
+		if (!eachProp.strategy || eachProp.strategy === 'replace') {
+			props[eachProp.name] = { value: eachProp.value };
+		} else if (eachProp.strategy === 'append') {
+			props[eachProp.name] = {
+				value: `${props[eachProp.name]?.value ?? ''}${eachProp.value}`,
+			};
+		} else if (eachProp.strategy === 'prepend') {
+			props[eachProp.name] = {
+				value: `${eachProp.value}${props[eachProp.name]?.value ?? ''}`,
+			};
+		} else if (eachProp.strategy === 'delete') {
+			delete props[eachProp.name];
+		} else if (eachProp.strategy === 'toggle') {
+			let value = props[eachProp.name]?.value ?? '';
+			let ind = value.indexOf(eachProp.value);
+			if (ind === -1) value = (value ? value + ' ' : '') + eachProp.value;
+			else value = value.substring(0, ind) + value.substring(ind + eachProp.value.length);
+			value = value.trim();
+			props[eachProp.name] = { value };
+		}
+	}
+
+	private makePropName(subComp: string | undefined, selector: any, propName: string): string {
+		if (subComp) propName = subComp + '-' + propName;
+		if (!selector) return propName;
+		if (selector.stylePseudoState?.value) {
+			propName = propName + ':' + selector.stylePseudoState.value;
+		}
+
+		return propName;
+	}
+
+	public componentPropChanged({
+		key: componentKey,
+		styleProperties,
+		properties,
+	}: {
+		key: string;
+		styleProperties?: { name: string; value: string; strategy?: string }[];
+		properties?: { name: string; value: string; strategy?: string }[];
+	}) {
+		if (!componentKey || !this.defPath) return;
+
+		const pageDef: PageDefinition = getDataFromPath(
+			this.defPath,
+			this.locationHistory,
+			this.pageExtractor,
+		);
+		if (!pageDef || !pageDef.componentDefinition?.[componentKey]) return;
+		const newPageDef = duplicate(pageDef);
+		const componentDef = newPageDef.componentDefinition[componentKey] as ComponentDefinition;
+
+		if (properties?.length) {
+			if (!componentDef.properties) componentDef.properties = {};
+			for (let i = 0; i < properties.length; i++)
+				this.applyPropertyWithStrategy(componentDef.properties, properties[i]);
+		}
+		if (styleProperties?.length) {
+			if (!componentDef.styleProperties) componentDef.styleProperties = {};
+			let styleObj = Object.values(componentDef.styleProperties).find(e => {
+				if (!this.styleSelectorPref[componentKey]?.condition?.value && !e.condition)
+					return true;
+				if (
+					this.styleSelectorPref[componentKey]?.condition?.value &&
+					this.styleSelectorPref[componentKey]?.condition?.value === e.conditionName
+				)
+					return true;
+				return false;
+			});
+			if (!styleObj) {
+				styleObj = {};
+				componentDef.styleProperties[shortUUID()] = styleObj;
+			}
+
+			if (!styleObj.resolutions) styleObj.resolutions = {};
+
+			const selector = this.styleSelectorPref[componentKey];
+
+			let resolution: StyleResolution = selector?.screenSize?.value ?? StyleResolution.ALL;
+			if (!styleObj.resolutions[resolution]) styleObj.resolutions[resolution] = {};
+
+			let resolutionObj = styleObj.resolutions[resolution];
+
+			let subComp = undefined;
+			if (this.selectedSubComponent) {
+				const splits = this.selectedComponent?.split(':');
+				if (splits?.length === 2 && splits[0] === componentKey) subComp = splits[1];
+			}
+
+			for (let i = 0; i < styleProperties.length; i++) {
+				this.applyPropertyWithStrategy(resolutionObj, {
+					name: this.makePropName(subComp, selector, styleProperties[i].name),
+					value: styleProperties[i].value,
+					strategy: styleProperties[i].strategy,
+				});
+			}
+		}
+
+		setData(this.defPath, newPageDef, this.pageExtractor.getPageName());
 	}
 
 	public deleteComponent(componentKey: string | undefined) {

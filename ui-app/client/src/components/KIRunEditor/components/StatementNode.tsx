@@ -125,12 +125,12 @@ export default function StatementNode({
 				const paramValue = statement.parameterMap?.[e.getParameterName()];
 				const hasValue = paramValue && Object.values(paramValue).length;
 				const title = stringValue(paramValue);
-				const paramDiv =
-					showParamValues && title?.string ? (
-						<div className="_paramValue">{title?.string}</div>
-					) : (
-						<></>
-					);
+				let paramDiv = undefined;
+				if (editParameters) {
+				}
+				if (showParamValues && title?.string)
+					paramDiv = <div className="_paramValue">{title?.string}</div>;
+				else paramDiv = <></>;
 				return (
 					<div className="_param" key={e.getParameterName()}>
 						<div
