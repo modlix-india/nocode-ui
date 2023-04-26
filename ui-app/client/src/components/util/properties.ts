@@ -378,6 +378,7 @@ const COMPONENT_STYLE_GROUPS: { [key: string]: Array<string> } = {
 	zIndex: ['zIndex'],
 	list: ['listStyleImage', 'listStylePosition', 'listStyleType'],
 	scrollbar: ['hideScrollBar'],
+	className: ['className'],
 };
 
 const CSS_STYLE_PROPERTY_GROUP_REF: { [key: string]: string } = Object.entries(
@@ -540,6 +541,13 @@ const COMPONENT_STYLE_GROUP_PROPERTIES: { [key: string]: ComponentStylePropertyG
 		type: 'zIndex',
 		displayName: 'Z Index',
 		description: 'Z Index',
+		target: ['comp'],
+	},
+	className: {
+		name: 'className',
+		type: 'className',
+		displayName: 'CSS Classes',
+		description: 'CSS ClassNames',
 		target: ['comp'],
 	},
 };
