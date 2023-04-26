@@ -26,6 +26,8 @@ interface PropertyBarProps {
 	selectedSubComponent: string;
 	onSelectedSubComponentChanged: (key: string) => void;
 	storePaths: Set<string>;
+	setStyleSelectorPref: (pref: any) => void;
+	styleSelectorPref: any;
 }
 
 export default function DnDPropertyBar({
@@ -42,6 +44,8 @@ export default function DnDPropertyBar({
 	editPageName,
 	selectedSubComponent,
 	onSelectedSubComponentChanged,
+	setStyleSelectorPref,
+	styleSelectorPref,
 }: PropertyBarProps) {
 	const [currentTab, setCurrentTab] = React.useState(1);
 
@@ -81,6 +85,8 @@ export default function DnDPropertyBar({
 				storePaths={storePaths}
 				selectedSubComponent={selectedSubComponent}
 				onSelectedSubComponentChanged={onSelectedSubComponentChanged}
+				styleSelectorPref={styleSelectorPref}
+				setStyleSelectorPref={setStyleSelectorPref}
 			/>
 		);
 

@@ -216,6 +216,8 @@ function PageEditor(props: ComponentProps) {
 		[setSelectedComponentOriginal, setSelectedSubComponent],
 	);
 
+	const [styleSelectorPref, setStyleSelectorPref] = useState<any>({});
+
 	// Creating an object to manage the changes because of various operations like drag and drop.
 	const operations = useMemo(
 		() =>
@@ -225,7 +227,9 @@ function PageEditor(props: ComponentProps) {
 				pageExtractor,
 				setIssue,
 				selectedComponent,
+				selectedSubComponent,
 				key => setSelectedComponent(key),
+				styleSelectorPref,
 			),
 		[
 			defPath,
@@ -234,6 +238,8 @@ function PageEditor(props: ComponentProps) {
 			selectedComponent,
 			setIssue,
 			setSelectedComponent,
+			styleSelectorPref,
+			selectedSubComponent,
 		],
 	);
 
@@ -424,6 +430,8 @@ function PageEditor(props: ComponentProps) {
 					selectedSubComponent={selectedSubComponent}
 					onSelectedSubComponentChanged={(key: string) => setSelectedSubComponent(key)}
 					storePaths={storePaths}
+					setStyleSelectorPref={setStyleSelectorPref}
+					styleSelectorPref={styleSelectorPref}
 				/>
 				<CodeEditor
 					showCodeEditor={showCodeEditor}
