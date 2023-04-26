@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import {
-	addListener,
 	addListenerAndCallImmediately,
 	getPathFromLocation,
 	PageStoreExtractor,
@@ -11,7 +10,6 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
 import { HelperComponent } from '../HelperComponent';
 import { getTranslations } from '../util/getTranslations';
-import { renderChildren } from '../util/renderChildren';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tabsProperties';
 import TabsStyles from './TabsStyle';
@@ -77,11 +75,16 @@ function TabsComponent(props: ComponentProps) {
 	const index = tabs.findIndex((e: string) => e == activeTab);
 	const entry = Object.entries(definition.children ?? {})
 		.filter(([k, v]) => !!v)
-		.sort(
-			(a: any, b: any) =>
+		.sort((a: any, b: any) => {
+			const v =
 				(pageDefinition.componentDefinition[a[0]]?.displayOrder ?? 0) -
-				(pageDefinition.componentDefinition[b[0]]?.displayOrder ?? 0),
-		)[index == -1 ? 0 : index];
+				(pageDefinition.componentDefinition[b[0]]?.displayOrder ?? 0);
+			return v === 0
+				? (pageDefinition.componentDefinition[a[0]]?.key ?? '').localeCompare(
+						pageDefinition.componentDefinition[b[0]]?.key ?? '',
+				  )
+				: v;
+		})[index == -1 ? 0 : index];
 	const selectedChild = entry ? { [entry[0]]: entry[1] } : {};
 
 	const orientationClass = tabsOrientation === 'VERTICAL' ? 'vertical' : '';

@@ -88,7 +88,12 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 		defaultValue: 'SINGLECOLUMNLAYOUT',
 		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
-			{ name: 'ROWLAYOUT', displayName: 'Row Layout', description: 'Default row layout' },
+			{ name: 'ROWLAYOUT', displayName: 'Row Layout', description: 'Row layout' },
+			{
+				name: 'ROWCOLUMNLAYOUT',
+				displayName: 'Row/Column Layout',
+				description: 'Row/Column layout in mobile it truns to column. ',
+			},
 			{
 				name: 'SINGLECOLUMNLAYOUT',
 				displayName: 'Column Layout',

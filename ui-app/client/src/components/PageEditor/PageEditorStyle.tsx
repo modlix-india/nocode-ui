@@ -27,6 +27,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			height: 48px;
 			background-color: #fff;
+			border-bottom: 1px solid #eee;
 		}
 
 		${PREFIX} ._sideBar {
@@ -36,6 +37,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction: column;
 			align-items: center;
 			padding-top: 10px;
+			border-right: 1px solid #eee;
 		}
 		
 		${PREFIX} ._propBar {
@@ -43,7 +45,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			background-color: #fff;
 			flex-direction: column;
 			align-items: center;
-			padding-top: 10px;
 			width: 0px;
 			transition: width 1s;
 		}
@@ -51,6 +52,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._propBar._propBarVisible{
 			display: flex;
 			width: 300px;
+			border-left: 1px solid #eee;
 		}
 
 		${PREFIX} ._sideBar ._top {
@@ -222,6 +224,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: none;
 			border-radius: 2px;
 			z-index: 1;
+			transform: translateX(40px);
 		}
 
 		${PREFIX} ._iconMenuBody._clickable {
@@ -382,7 +385,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._selectionBar {
 			display: flex;
 			background-color: #fff;
-    		border-left: 1px solid #ccc;
+    		border-top: 1px solid #eee;
 			height: 20px;
 		}
 
