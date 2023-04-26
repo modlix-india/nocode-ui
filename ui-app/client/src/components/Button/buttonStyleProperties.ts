@@ -65,6 +65,15 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.compButton',
 	},
 	{
+		name: 'buttonFontFamily',
+		cssProperty: 'font-family',
+		displayName: "Button's Font Family",
+		description: 'The font of the Primary Button.',
+		defaultValue: '<mainFontFamily>',
+		noPrefix: true,
+		selector: '.compButton',
+	},
+	{
 		name: 'buttonColorHover',
 		cssProperty: 'background-color',
 		displayName: "Button's background color on hover",

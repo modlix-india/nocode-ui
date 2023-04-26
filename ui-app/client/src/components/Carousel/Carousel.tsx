@@ -50,11 +50,18 @@ function Carousel(props: ComponentProps) {
 			props.definition.children
 				? Object.entries(props.definition.children)
 						.filter((e: any) => !!e[1])
-						.sort(
-							(a: any, b: any) =>
+						.sort((a: any, b: any) => {
+							const v =
 								(pageDefinition?.componentDefinition[a[0]]?.displayOrder ?? 0) -
-								(pageDefinition?.componentDefinition[b[0]]?.displayOrder ?? 0),
-						)
+								(pageDefinition?.componentDefinition[b[0]]?.displayOrder ?? 0);
+							return v === 0
+								? (
+										pageDefinition?.componentDefinition[a[0]]?.key ?? ''
+								  ).localeCompare(
+										pageDefinition?.componentDefinition[b[0]]?.key ?? '',
+								  )
+								: v;
+						})
 						.map(e => ({ key: e[0], children: { [e[0]]: e[1] } }))
 				: [],
 		);

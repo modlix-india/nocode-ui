@@ -310,7 +310,9 @@ export default function StylePropertyEditor({
 							schema: SCHEMA_STRING_COMP_PROP,
 							editor: ComponentPropertyEditor.ENUM,
 							defaultValue: 'ALL',
-							enumValues: Array.from(StyleResolutionDefinition.values()),
+							enumValues: Array.from(StyleResolutionDefinition.values()).sort(
+								(a, b) => a.order - b.order,
+							),
 						}}
 						value={selectorPref[selectedComponent]?.screenSize}
 						onlyValue={true}

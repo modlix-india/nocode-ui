@@ -47,7 +47,10 @@ function Popover(props: ComponentProps) {
 	const popoverRef = React.createRef<HTMLDivElement>();
 	const popChildren = Object.keys(children ?? {})
 		.map(e => pageDefinition.componentDefinition[e])
-		.sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
+		.sort((a: any, b: any) => {
+			const v = (a?.displayOrder ?? 0) - (b?.displayOrder ?? 0);
+			return v === 0 ? (a?.key ?? '').localeCompare(b?.key ?? '') : v;
+		});
 
 	const popController = popChildren[0];
 	const popover = popChildren[1];
