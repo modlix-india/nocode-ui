@@ -37,6 +37,7 @@ interface StylePropertyEditorProps {
 	onSelectedSubComponentChanged: (key: string) => void;
 	setStyleSelectorPref: (pref: any) => void;
 	styleSelectorPref: any;
+	reverseStyleSections?: boolean;
 }
 
 function makeObject(pref: any = {}, styles: any = {}) {}
@@ -66,21 +67,13 @@ export default function StylePropertyEditor({
 	onSelectedSubComponentChanged,
 	styleSelectorPref: selectorPref,
 	setStyleSelectorPref: setSelectorPref,
+	reverseStyleSections,
 }: StylePropertyEditorProps) {
 	const [def, setDef] = useState<ComponentDefinition>();
 	const [pageDef, setPageDef] = useState<PageDefinition>();
 	const [styleProps, setStyleProps] = useState<ComponentStyle>();
 	const [showAdvanced, setShowAdvanced] = useState<Array<string>>([]);
-	useEffect(() => {
-		console.log(
-			selectedComponent,
-			selectedSubComponent,
-			def,
-			pageDef,
-			styleProps,
-			showAdvanced,
-		);
-	}, [selectedSubComponent]);
+
 	useEffect(
 		() =>
 			addListenerAndCallImmediatelyWithChildrenActivity(
@@ -283,6 +276,14 @@ export default function StylePropertyEditor({
 	if (selectedSubComponent) {
 		subComponentName = selectedSubComponent.split(':')[1];
 	}
+	const subComponentSectionsArray = (cd?.styleProperties ?? {})[subComponentName];
+	const styleSectionsToShow = Object.values(COMPONENT_STYLE_GROUP_PROPERTIES).filter(each =>
+		reverseStyleSections
+			? subComponentSectionsArray.findIndex(e => e === each.name) === -1
+			: subComponentSectionsArray.findIndex(e => e === each.name) !== -1,
+	);
+
+	console.log(styleSectionsToShow);
 
 	let pseudoState = '';
 	if (selectorPref[selectedComponent]?.stylePseudoState?.value)
@@ -440,7 +441,7 @@ export default function StylePropertyEditor({
 				</div>
 			</PropertyGroup>
 
-			{Object.values(COMPONENT_STYLE_GROUP_PROPERTIES).map(group => {
+			{styleSectionsToShow.map(group => {
 				console.log('group', selectedSubComponent);
 				const isAdvancedSelected = showAdvanced.findIndex(e => e === group.name) !== -1;
 				return (

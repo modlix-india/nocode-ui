@@ -328,11 +328,11 @@ const component: Component = {
 	displayName: 'Carousel',
 	description: 'Carousel component',
 	component: Carousel,
+	styleProperties: stylePropertiesDefinition,
 	styleComponent: CarouselStyle,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	allowedChildrenType: new Map<string, number>([['', -1]]),
-	styleProperties: stylePropertiesDefinition,
 };
 
 export default component;

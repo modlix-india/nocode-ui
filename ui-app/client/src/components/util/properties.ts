@@ -351,14 +351,14 @@ const COMPONENT_STYLE_GROUP_PROPERTIES: { [key: string]: ComponentStylePropertyG
 	spacing: {
 		name: 'spacing',
 		type: 'spacing',
-		displayName: 'Spacing Properties',
+		displayName: 'Spacing',
 		description: 'Spacing Properties',
 		target: ['comp'],
 	},
 	typography: {
 		name: 'typography',
 		type: 'typography',
-		displayName: 'Typography Properties',
+		displayName: 'Typography',
 		description: 'Typography Properties',
 		target: ['comp'],
 		advanced: [
@@ -387,14 +387,14 @@ const COMPONENT_STYLE_GROUP_PROPERTIES: { [key: string]: ComponentStylePropertyG
 	position: {
 		name: 'position',
 		type: 'position',
-		displayName: 'Position Properties',
+		displayName: 'Position',
 		description: 'Position Properties',
 		target: ['comp'],
 		advanced: ['float', 'clear', 'zIndex'],
 	},
 	layout: {
 		name: 'layout',
-		type: 'Layout',
+		type: 'layout',
 		displayName: 'Layout',
 		description: 'Layout Properties',
 		target: ['comp'],
@@ -415,7 +415,7 @@ const COMPONENT_STYLE_GROUP_PROPERTIES: { [key: string]: ComponentStylePropertyG
 	image: {
 		name: 'image',
 		type: 'image',
-		displayName: 'Image Properties',
+		displayName: 'Image',
 		description: 'Image Properties',
 		target: ['comp'],
 	},

@@ -192,6 +192,7 @@ const component: Component = {
 	component: TableGridComponent,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
+	styleProperties: stylePropertiesDefinition,
 	styleComponent: TableGridStyle,
 	allowedChildrenType: new Map<string, number>([['', 1]]),
 	parentType: 'Table',

@@ -74,65 +74,34 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 ];
 
 const stylePropertiesDefinition = {
-	'': {
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: COMPONENT_STYLE_GROUP_PROPERTIES.size,
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.background.type]:
-		// 	COMPONENT_STYLE_GROUP_PROPERTIES.background,
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: COMPONENT_STYLE_GROUP_PROPERTIES.padding,
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: COMPONENT_STYLE_GROUP_PROPERTIES.margin,
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: COMPONENT_STYLE_GROUP_PROPERTIES.border,
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow.type]:
-		// 	COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow,
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.container.type]:
-		// 	COMPONENT_STYLE_GROUP_PROPERTIES.container,
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.outline.type]: COMPONENT_STYLE_GROUP_PROPERTIES.outline,
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
-		// 	...COMPONENT_STYLE_GROUP_PROPERTIES.color,
-		// 	target: ['link'],
-		// },
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
-		// 	...COMPONENT_STYLE_GROUP_PROPERTIES.font,
-		// 	target: ['menu'],
-		// },
-	},
-	menu: {
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: {
-		// 	...COMPONENT_STYLE_GROUP_PROPERTIES.padding,
-		// 	name: 'menuPadding',
-		// 	displayName: 'Menu Padding',
-		// 	description: 'Menu Padding',
-		// 	prefix: 'menu',
-		// 	target: ['menu'],
-		// },
-	},
-	icon: {
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
-		// 	...COMPONENT_STYLE_GROUP_PROPERTIES.color,
-		// 	name: 'iconColor',
-		// 	displayName: 'Menu Icon Color',
-		// 	description: 'Menu Icon Color',
-		// 	prefix: 'icon',
-		// 	target: ['icon'],
-		// },
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: {
-		// 	...COMPONENT_STYLE_GROUP_PROPERTIES.margin,
-		// 	name: 'iconMargin',
-		// 	displayName: 'Menu Icon margin',
-		// 	description: 'Menu Icon margin',
-		// 	prefix: 'icon',
-		// 	target: ['icon'],
-		// },
-	},
-	caretIcon: {
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
-		// 	...COMPONENT_STYLE_GROUP_PROPERTIES.color,
-		// 	name: 'caretIconColor',
-		// 	displayName: 'Menu Icon Color',
-		// 	description: 'Menu Icon Color',
-		// 	prefix: 'caretIcon',
-		// 	target: ['caretIcon'],
-		// },
-	},
+	'': [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	menu: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	icon: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+	],
+	caretIcon: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+	],
 };
 
 export { propertiesDefinition, stylePropertiesDefinition };

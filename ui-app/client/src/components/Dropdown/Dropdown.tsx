@@ -365,6 +365,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	stylePseudoStates: ['hover', 'focus', 'disabled'],
+	styleProperties: stylePropertiesDefinition,
 	bindingPaths: {
 		bindingPath: { name: 'Selection Binding' },
 		bindingPath2: { name: 'Search Binding' },

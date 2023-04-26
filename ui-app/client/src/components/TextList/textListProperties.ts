@@ -8,6 +8,7 @@ import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
 	ComponentPropertyGroup,
+	ComponentStylePropertyDefinition,
 } from '../../types/common';
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
@@ -109,90 +110,30 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
-const stylePropertiesDefinition = {
-	'': {
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.flex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.flex,
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: COMPONENT_STYLE_GROUP_PROPERTIES.margin,
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: COMPONENT_STYLE_GROUP_PROPERTIES.padding,
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.outline.type]: COMPONENT_STYLE_GROUP_PROPERTIES.outline,
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.position.type]: COMPONENT_STYLE_GROUP_PROPERTIES.position,
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: COMPONENT_STYLE_GROUP_PROPERTIES.size,
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.transform.type]:
-		// 	COMPONENT_STYLE_GROUP_PROPERTIES.transform,
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.zIndex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.zIndex,
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.list.type]: {
-		// 	...COMPONENT_STYLE_GROUP_PROPERTIES.list,
-		// 	target: ['list'],
-		// },
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
-		// 	...COMPONENT_STYLE_GROUP_PROPERTIES.font,
-		// 	target: ['listItem'],
-		// },
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
-		// 	...COMPONENT_STYLE_GROUP_PROPERTIES.color,
-		// 	target: ['listItem'],
-		// },
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: {
-		// 	...COMPONENT_STYLE_GROUP_PROPERTIES.border,
-		// 	target: ['listItem'],
-		// },
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow.type]: {
-		// 	...COMPONENT_STYLE_GROUP_PROPERTIES.color,
-		// 	target: ['listItem'],
-		// },
-	},
-	listItem: {
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: {
-		// 	...COMPONENT_STYLE_GROUP_PROPERTIES.margin,
-		// 	name: 'listItemMargin',
-		// 	displayName: 'List Item margin',
-		// 	description: 'Margin for list item, used for indent purposes.',
-		// 	prefix: 'listItem',
-		// 	target: ['listItem'],
-		// },
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: {
-		// 	...COMPONENT_STYLE_GROUP_PROPERTIES.padding,
-		// 	name: 'listItemPadding',
-		// 	displayName: 'List Item padding',
-		// 	description: 'Paddin for list item.',
-		// 	prefix: 'listItem',
-		// 	target: ['listItem'],
-		// },
-	},
-	listItemIcon: {
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
-		// 	...COMPONENT_STYLE_GROUP_PROPERTIES.font,
-		// 	name: 'listItemIconFont',
-		// 	displayName: 'listItemIcon font properties',
-		// 	description: 'listItemIcon font properties',
-		// 	prefix: 'listItemIcon',
-		// 	target: ['listItemIcon'],
-		// },
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
-		// 	...COMPONENT_STYLE_GROUP_PROPERTIES.color,
-		// 	name: 'listItemIconColor',
-		// 	displayName: 'listItemIcon color properties',
-		// 	description: 'listItemIcon color properties',
-		// 	prefix: 'listItemIcon',
-		// 	target: ['listItemIcon'],
-		// },
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: {
-		// 	...COMPONENT_STYLE_GROUP_PROPERTIES.margin,
-		// 	name: 'listItemIconMargin',
-		// 	displayName: 'List Item Icon margin',
-		// 	description: 'Margin for list item Icon.',
-		// 	prefix: 'listItemIcon',
-		// 	target: ['listItemIcon'],
-		// },
-		// [COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: {
-		// 	...COMPONENT_STYLE_GROUP_PROPERTIES.padding,
-		// 	name: 'listItemIconPadding',
-		// 	displayName: 'List Item Icon padding',
-		// 	description: 'Paddin for list item Icon.',
-		// 	prefix: 'listItemIcon',
-		// 	target: ['listItemIcon'],
-		// },
-	},
+const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
+	'': [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	listItem: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.list.type,
+	],
+	listItemIcon: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+	],
 };
 
 export { propertiesDefinition, stylePropertiesDefinition };

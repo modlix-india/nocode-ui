@@ -136,6 +136,7 @@ const component: Component = {
 	component: TableEmptyGrid,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
+	styleProperties: stylePropertiesDefinition,
 	styleComponent: TableEmptyGridStyle,
 	stylePseudoStates: ['hover', 'focus', 'readonly'],
 	allowedChildrenType: new Map<string, number>([['', -1]]),

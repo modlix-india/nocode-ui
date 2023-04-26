@@ -105,7 +105,7 @@ export interface ComponentStylePropertyGroupDefinition {
 }
 
 export interface ComponentStylePropertyDefinition {
-	[key: string]: { [key: string]: ComponentStylePropertyGroupDefinition };
+	[key: string]: Array<string>;
 }
 
 export interface Component {
