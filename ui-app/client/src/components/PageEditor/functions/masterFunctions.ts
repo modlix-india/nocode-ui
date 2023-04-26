@@ -45,4 +45,9 @@ export const MASTER_FUNCTIONS = new Map<
 	],
 	['SLAVE_CONTEXT_MENU', (options, payload) => options.onContextMenu(payload)],
 	['SLAVE_STORE', (options, payload) => options.onSlaveStore(payload)],
+	['SLAVE_COMP_CHANGED', (options, payload) => options.operations.componentChanged(payload)],
+	[
+		'SLAVE_COMP_PROP_CHANGED',
+		(options, payload) => options.operations.componentPropChanged(payload),
+	],
 ]);

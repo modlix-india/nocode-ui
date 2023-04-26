@@ -140,8 +140,8 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 		}
 
 		${PREFIX} ._statement._editParameters {
-			width: 450px;
-			min-height: 450px;
+			width: 400px;
+			min-height: 350px;
 		}
 
 		${PREFIX} ._storeContainer {

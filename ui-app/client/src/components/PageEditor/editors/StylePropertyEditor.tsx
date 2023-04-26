@@ -35,6 +35,8 @@ interface StylePropertyEditorProps {
 	storePaths: Set<string>;
 	selectedSubComponent: string;
 	onSelectedSubComponentChanged: (key: string) => void;
+	setStyleSelectorPref: (pref: any) => void;
+	styleSelectorPref: any;
 }
 
 function makeObject(pref: any = {}, styles: any = {}) {}
@@ -62,10 +64,11 @@ export default function StylePropertyEditor({
 	storePaths,
 	selectedSubComponent,
 	onSelectedSubComponentChanged,
+	styleSelectorPref: selectorPref,
+	setStyleSelectorPref: setSelectorPref,
 }: StylePropertyEditorProps) {
 	const [def, setDef] = useState<ComponentDefinition>();
 	const [pageDef, setPageDef] = useState<PageDefinition>();
-	const [selectorPref, setSelectorPref] = useState<any>({});
 	const [styleProps, setStyleProps] = useState<ComponentStyle>();
 
 	useEffect(
