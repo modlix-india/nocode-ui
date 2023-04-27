@@ -26,6 +26,9 @@ interface PropertyValueEditorProps {
 	pageDefinition?: PageDefinition;
 	showPlaceholder?: boolean;
 	storePaths: Set<string>;
+	onShowCodeEditor?: (eventName: string) => void;
+	slaveStore: any;
+	editPageName: string | undefined;
 }
 
 export default function PropertyValueEditor({
@@ -36,6 +39,9 @@ export default function PropertyValueEditor({
 	pageDefinition,
 	showPlaceholder = true,
 	storePaths,
+	onShowCodeEditor,
+	slaveStore,
+	editPageName,
 }: PropertyValueEditorProps) {
 	const [chngValue, setChngValue] = useState<any>('');
 	const [showAdvanced, setShowAdvanced] = useState<boolean>(false);
@@ -95,6 +101,10 @@ export default function PropertyValueEditor({
 		onChange,
 		value,
 		setChngValue,
+		storePaths,
+		slaveStore,
+		editPageName,
+		onShowCodeEditor,
 		pageDefinition,
 		showPlaceholder,
 	);
@@ -126,6 +136,10 @@ function makeValueEditor(
 	onChange: (v: any) => void,
 	value: ComponentProperty<any> | undefined,
 	setChngValue: React.Dispatch<any>,
+	storePaths: Set<string>,
+	slaveStore: any,
+	editPageName: string | undefined,
+	onShowCodeEditor?: (eventName: string) => void,
 	pageDef?: PageDefinition,
 	showPlaceholder = true,
 ) {
@@ -143,6 +157,7 @@ function makeValueEditor(
 		return (
 			<div className="_smallEditorContainer">
 				<select
+					className="_peSelect"
 					value={chngValue === '' ? propDef.defaultValue : chngValue}
 					onChange={e => {
 						const newValue: ComponentProperty<any> = {
@@ -167,6 +182,7 @@ function makeValueEditor(
 		return (
 			<div className="_smallEditorContainer">
 				<select
+					className="_peSelect"
 					value={chngValue === '' ? propDef.defaultValue : chngValue}
 					onChange={e => {
 						const newValue: ComponentProperty<any> = {
@@ -186,6 +202,14 @@ function makeValueEditor(
 						</option>
 					))}
 				</select>
+				<i
+					className="fa fa-solid fa-up-right-from-square"
+					onClick={() =>
+						onShowCodeEditor?.(
+							(chngValue === '' ? propDef.defaultValue : chngValue) ?? '',
+						)
+					}
+				></i>
 			</div>
 		);
 	}
@@ -195,6 +219,10 @@ function makeValueEditor(
 			<ValidationEditor
 				value={chngValue === '' ? undefined : chngValue}
 				onChange={e => onChange({ ...value, value: e })}
+				storePaths={storePaths}
+				onShowCodeEditor={onShowCodeEditor}
+				editPageName={editPageName}
+				slaveStore={slaveStore}
 			/>
 		);
 	}
@@ -232,6 +260,7 @@ function makeValueEditor(
 	if (propDef.schema.getName() === SCHEMA_NUM_COMP_PROP.getName()) {
 		return (
 			<input
+				className="_peInput"
 				type="number"
 				value={chngValue}
 				placeholder={showPlaceholder ? propDef.defaultValue : undefined}
@@ -251,6 +280,7 @@ function makeValueEditor(
 
 	return (
 		<input
+			className="_peInput"
 			type="text"
 			value={chngValue}
 			placeholder={showPlaceholder ? propDef.defaultValue : undefined}

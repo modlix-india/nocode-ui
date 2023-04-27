@@ -391,6 +391,7 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 		${PREFIX} ._statement ._param ._paramName {
 			cursor: pointer;
 			flex: 1;
+			user-select: none;
 		}
 
 		${PREFIX} ._statement ._paramName._hasValue {
@@ -504,6 +505,9 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			align-items: center;
 			padding-left: 5px;
 			width: 100%;
+			font-size: 11px;
+    		padding: 5px 15px;
+			border: 1px solid #ccc;
 		}
 
 		${PREFIX} ._search ._options {

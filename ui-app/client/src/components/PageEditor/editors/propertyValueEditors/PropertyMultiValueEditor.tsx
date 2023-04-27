@@ -14,6 +14,10 @@ interface PropertyMultiValueEditorProps {
 	value?: ComponentMultiProperty<any>;
 	onChange: (v: ComponentMultiProperty<any>) => void;
 	pageDefinition?: PageDefinition;
+	onShowCodeEditor: (eventName: string) => void;
+	slaveStore: any;
+	editPageName: string | undefined;
+	storePaths: Set<string>;
 }
 
 export default function PropertyMultiValueEditor({
@@ -21,6 +25,10 @@ export default function PropertyMultiValueEditor({
 	value,
 	onChange,
 	pageDefinition,
+	onShowCodeEditor,
+	slaveStore,
+	editPageName,
+	storePaths,
 }: PropertyMultiValueEditorProps) {
 	const [chngValue, setChngValue] = useState<ComponentMultiProperty<any> | undefined>(value);
 	const [newValueKey, setNewValueKey] = useState<string>(shortUUID());
@@ -111,6 +119,10 @@ export default function PropertyMultiValueEditor({
 						}}
 						pageDefinition={pageDefinition}
 						showPlaceholder={false}
+						onShowCodeEditor={onShowCodeEditor}
+						editPageName={editPageName}
+						slaveStore={slaveStore}
+						storePaths={storePaths}
 					/>
 				</div>
 			));
@@ -136,6 +148,10 @@ export default function PropertyMultiValueEditor({
 					}}
 					pageDefinition={pageDefinition}
 					showPlaceholder={false}
+					onShowCodeEditor={onShowCodeEditor}
+					editPageName={editPageName}
+					slaveStore={slaveStore}
+					storePaths={storePaths}
 				/>
 			</div>
 		</div>

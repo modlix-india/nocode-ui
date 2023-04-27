@@ -122,7 +122,7 @@ export default function DnDTopBar({
 					<input
 						ref={inputRef}
 						type="text"
-						className="_urlInput"
+						className="_urlInput _peInput"
 						value={localUrl}
 						onChange={e => setLocalUrl(e.target.value)}
 						onBlur={changeUrl}
@@ -248,6 +248,7 @@ export default function DnDTopBar({
 					</div>
 				</div>
 				<select
+					className="_peSelect"
 					value={theme}
 					onChange={e => onChangePersonalization('theme', e.target.value)}
 				>

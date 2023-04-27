@@ -38,6 +38,8 @@ interface StylePropertyEditorProps {
 	setStyleSelectorPref: (pref: any) => void;
 	styleSelectorPref: any;
 	reverseStyleSections?: boolean;
+	slaveStore: any;
+	editPageName: string | undefined;
 }
 
 function makeObject(pref: any = {}, styles: any = {}) {}
@@ -68,6 +70,8 @@ export default function StylePropertyEditor({
 	styleSelectorPref: selectorPref,
 	setStyleSelectorPref: setSelectorPref,
 	reverseStyleSections,
+	slaveStore,
+	editPageName,
 }: StylePropertyEditorProps) {
 	const [def, setDef] = useState<ComponentDefinition>();
 	const [pageDef, setPageDef] = useState<PageDefinition>();
@@ -205,6 +209,8 @@ export default function StylePropertyEditor({
 				updateSelectorPref('condition', v);
 			}}
 			storePaths={storePaths}
+			editPageName={editPageName}
+			slaveStore={slaveStore}
 		/>
 	);
 
@@ -231,6 +237,8 @@ export default function StylePropertyEditor({
 				updateSelectorPref('condition', v);
 			}}
 			storePaths={storePaths}
+			editPageName={editPageName}
+			slaveStore={slaveStore}
 		/>
 	) : (
 		<></>
@@ -260,6 +268,8 @@ export default function StylePropertyEditor({
 				if (styleObj) styleObj.condition = v;
 				saveStyle(newStyleProps);
 			}}
+			editPageName={editPageName}
+			slaveStore={slaveStore}
 		/>
 	) : (
 		<></>
@@ -317,6 +327,8 @@ export default function StylePropertyEditor({
 						onlyValue={true}
 						onChange={v => updateSelectorPref('screenSize', v)}
 						storePaths={storePaths}
+						editPageName={editPageName}
+						slaveStore={slaveStore}
 					/>
 				</div>
 				{subComponentsList.length !== 1 ? (
@@ -351,6 +363,8 @@ export default function StylePropertyEditor({
 								)
 							}
 							storePaths={storePaths}
+							editPageName={editPageName}
+							slaveStore={slaveStore}
 						/>
 					</div>
 				) : (
@@ -384,6 +398,8 @@ export default function StylePropertyEditor({
 								updateSelectorPref('stylePseudoState', v);
 							}}
 							storePaths={storePaths}
+							editPageName={editPageName}
+							slaveStore={slaveStore}
 						/>
 					</div>
 				) : (
@@ -486,6 +502,8 @@ export default function StylePropertyEditor({
 										}}
 										value={value}
 										storePaths={storePaths}
+										editPageName={editPageName}
+										slaveStore={slaveStore}
 										onChange={v => {
 											const newProps = duplicate(
 												styleProps,
@@ -589,6 +607,7 @@ export default function StylePropertyEditor({
 									htmlFor={`${group.name}_showAdvanced`}
 								>
 									<input
+										className="_peInput"
 										type="checkbox"
 										checked={isAdvancedSelected}
 										onChange={e => {
@@ -644,6 +663,8 @@ export default function StylePropertyEditor({
 											}}
 											value={value}
 											storePaths={storePaths}
+											editPageName={editPageName}
+											slaveStore={slaveStore}
 											onChange={v => {
 												const newProps = duplicate(
 													styleProps,
