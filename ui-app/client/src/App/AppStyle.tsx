@@ -96,9 +96,6 @@ export default function AppStyle() {
 
 	._ROWLAYOUT, ._SINGLECOLUMNLAYOUT, ._ROWCOLUMNLAYOUT {
 		display: flex;
-	}
-
-	._ROWCOLUMNLAYOUT {
 		flex-direction: column;
 	}
 
@@ -134,7 +131,7 @@ export default function AppStyle() {
 			grid-template-columns: 1fr 1fr 1fr;
 		}
 
-		.comp.compGrid ._anchorGrid._ROWCOLUMNLAYOUT, .comp.compGrid._noAnchorGrid._ROWCOLUMNLAYOUT {
+		._ROWCOLUMNLAYOUT{
 			flex-direction: row;
 		}
 	}
