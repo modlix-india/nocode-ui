@@ -35,6 +35,7 @@ import StatementNode from './components/StatementNode';
 import { StoreNode } from './components/StoreNode';
 import { correctStatementNames, makeObjectPaths, savePersonalizationCurry } from './utils';
 import StatementParameters from './components/StatementParameters';
+import FunctionDetialsEditor from './components/FunctionDetailsEditor';
 
 const gridSize = 20;
 
@@ -455,7 +456,7 @@ function KIRunEditor(
 				const boxRect = new DOMRect(left, top, right - left, bottom - top);
 				const containerRect = container.current?.getBoundingClientRect();
 				if (!isNaN(boxRect.width) && !isNaN(boxRect.height)) {
-					const nodes = Object.keys(rawDef.steps || {})
+					const nodes = Object.keys(rawDef?.steps || {})
 						.filter(k => {
 							const el = document.getElementById(`statement_${k}`);
 							const rect = el?.getBoundingClientRect();
@@ -698,6 +699,64 @@ function KIRunEditor(
 		);
 	}
 
+	const [editFunction, setEditFunction] = useState<boolean>(false);
+
+	let functionEditor = editFunction ? (
+		<FunctionDetialsEditor
+			rawDef={rawDef}
+			onChange={(def: any) => {
+				if (isReadonly) return;
+				setData(bindingPathPath, def, context.pageName);
+			}}
+			onEditFunctionClose={() => setEditFunction(false)}
+		/>
+	) : (
+		<></>
+	);
+
+	const editableIcons = isReadonly ? (
+		<></>
+	) : (
+		<>
+			<i
+				className="fa fa-solid fa-square-plus"
+				role="button"
+				title="Add Step"
+				onClick={() => {
+					if (isReadonly) return;
+					setShowAddSearch({ left: 20, top: 20 });
+				}}
+			/>
+			<i
+				className="fa fa-solid fa-trash"
+				role="button"
+				title="Delete selected Steps"
+				onClick={() => {
+					if (isReadonly || !selectedStatements.size || !rawDef.steps) return;
+
+					const def = duplicate(rawDef);
+					for (const [name] of selectedStatements) {
+						delete def.steps[name];
+					}
+
+					setData(bindingPathPath, def, context.pageName);
+				}}
+			/>
+			<div className="_separator" />
+		</>
+	);
+
+	const editPencilIcon = isReadonly ? (
+		<></>
+	) : (
+		<i
+			className="fa fa-solid fa-pencil"
+			role="button"
+			title="Edit Function"
+			onClick={() => setEditFunction(true)}
+		/>
+	);
+
 	return (
 		<div className="comp compKIRunEditor">
 			<div className="_header">
@@ -717,31 +776,7 @@ function KIRunEditor(
 						}}
 					/>
 					<div className="_separator" />
-					<i
-						className="fa fa-solid fa-square-plus"
-						role="button"
-						title="Add Step"
-						onClick={() => {
-							if (isReadonly) return;
-							setShowAddSearch({ left: 20, top: 20 });
-						}}
-					/>
-					<i
-						className="fa fa-solid fa-trash"
-						role="button"
-						title="Delete selected Steps"
-						onClick={() => {
-							if (isReadonly || !selectedStatements.size || !rawDef.steps) return;
-
-							const def = duplicate(rawDef);
-							for (const [name] of selectedStatements) {
-								delete def.steps[name];
-							}
-
-							setData(bindingPathPath, def, context.pageName);
-						}}
-					/>
-					<div className="_separator" />
+					{editableIcons}
 					<i
 						className="fa fa-solid fa-square-root-variable"
 						role="button"
@@ -780,6 +815,8 @@ function KIRunEditor(
 							);
 						}}
 					/>
+					<div className="_separator" />
+					{editPencilIcon}
 				</div>
 				<div className="_right">
 					<i
@@ -895,6 +932,7 @@ function KIRunEditor(
 					{searchBox}
 				</div>
 				{paramEditor}
+				{functionEditor}
 			</div>
 		</div>
 	);
