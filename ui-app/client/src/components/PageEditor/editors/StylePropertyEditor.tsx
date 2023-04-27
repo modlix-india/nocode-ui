@@ -589,21 +589,26 @@ export default function StylePropertyEditor({
 						})}
 
 						{group?.advanced?.length && (
-							<label className="_propLabel" htmlFor={`${group.name}_showAdvanced`}>
-								<input
-									type="checkbox"
-									checked={isAdvancedSelected}
-									onChange={e => {
-										if (isAdvancedSelected)
-											setShowAdvanced(
-												showAdvanced.filter(e => e !== group.name),
-											);
-										else setShowAdvanced([...showAdvanced, group.name]);
-									}}
-									name={`${group.name}_showAdvanced`}
-								/>
-								Show Advanced Properties
-							</label>
+							<div className="_eachProp">
+								<label
+									className="_propLabel"
+									htmlFor={`${group.name}_showAdvanced`}
+								>
+									<input
+										type="checkbox"
+										checked={isAdvancedSelected}
+										onChange={e => {
+											if (isAdvancedSelected)
+												setShowAdvanced(
+													showAdvanced.filter(e => e !== group.name),
+												);
+											else setShowAdvanced([...showAdvanced, group.name]);
+										}}
+										id={`${group.name}_showAdvanced`}
+									/>
+									Show Advanced Properties
+								</label>
+							</div>
 						)}
 						{isAdvancedSelected &&
 							(group.advanced ?? []).map(prop => {
