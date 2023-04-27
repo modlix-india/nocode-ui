@@ -10,6 +10,8 @@ interface DnDIFrameProps {
 	url: string;
 	pageExtractor: PageStoreExtractor;
 	iframeRef: React.RefObject<HTMLIFrameElement>;
+	previewMode: boolean;
+	onChangePersonalization: (prop: string, value: any) => void;
 }
 
 export default function DnDIFrame({
@@ -17,6 +19,8 @@ export default function DnDIFrame({
 	personalizationPath,
 	pageExtractor,
 	iframeRef,
+	previewMode,
+	onChangePersonalization,
 }: DnDIFrameProps) {
 	const [device, setDevice] = useState<string>();
 	const [height, setHeight] = useState('100%');
@@ -41,11 +45,29 @@ export default function DnDIFrame({
 		return () => clearInterval(handle);
 	}, [iframeRef.current, height]);
 
+	let previewCloser = <></>;
+	if (previewMode)
+		previewCloser = (
+			<div
+				className="_previewModeCloser"
+				tabIndex={0}
+				onClick={e => {
+					e.preventDefault();
+					e.stopPropagation();
+
+					onChangePersonalization('preview', false);
+				}}
+			>
+				<i className="fa fa-solid fa-eye-slash"></i>
+			</div>
+		);
+
 	return (
 		<div className="_iframeHolder">
 			<div className={`_iframe ${device ?? ''}`}>
 				<iframe ref={iframeRef} src={url} height={height} />
 			</div>
+			{previewCloser}
 		</div>
 	);
 }
