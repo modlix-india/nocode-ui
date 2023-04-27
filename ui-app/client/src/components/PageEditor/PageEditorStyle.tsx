@@ -30,6 +30,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border-bottom: 1px solid #eee;
 		}
 
+		${PREFIX} ._topBarGrid._previewMode{
+			height: 0px;
+		}
+
 		${PREFIX} ._sideBar {
 			width: 48px;
 			background-color: #fff;
@@ -38,6 +42,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			align-items: center;
 			padding-top: 10px;
 			border-right: 1px solid #eee;
+		}
+
+		${PREFIX} ._sideBar._previewMode {
+			width: 0px;
 		}
 		
 		${PREFIX} ._propBar {
@@ -388,9 +396,13 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
     		border-top: 1px solid #eee;
 			height: 20px;
 		}
+		
+		${PREFIX} ._selectionBar._previewMode {
+			height: 0px;
+		}
 
 		${PREFIX} ._selectionBar ._iconMenu {
-			min-height: 20px;
+			min-height: 100%;
 		}
 
 		${PREFIX} ._eachSelectionBar {
@@ -430,10 +442,36 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			max-height: calc(100% - 48px - 20px);
 		}
 
+		${PREFIX} ._iframeContainer._previewMode {
+			max-height: 100%;
+		}
+
 		${PREFIX} ._iframeHolder {
 			flex: 1;
 			display: flex;
 			overflow: auto;
+			position: relative;
+		}
+
+		${PREFIX}  ._previewModeCloser {
+			position: fixed;
+			bottom: 20px;
+			left: 50%;
+			transform: translateX(-50%);
+			cursor: pointer;
+			width: 30px;
+			height: 30px;
+			background-color: #aaa7;
+			border-radius: 50%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			border: 1.5px solid;
+			transition: bottom 0.5s;
+		}
+
+		${PREFIX}  ._previewModeCloser:hover {
+			bottom: 25px
 		}
 
 		${PREFIX} ._tabBar {

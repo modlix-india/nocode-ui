@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { PageStoreExtractor } from '../../../../context/StoreContext';
+import {
+	PageStoreExtractor,
+	addListenerAndCallImmediately,
+} from '../../../../context/StoreContext';
 import { LocationHistory, PageDefinition } from '../../../../types/common';
 import PageOperations from '../../functions/PageOperations';
 import DnDIFrame from './DnDIFrame';
@@ -74,6 +77,17 @@ export default function DnDEditor({
 	styleSelectorPref,
 	setStyleSelectorPref,
 }: DnDEditorProps) {
+	const [preview, setPreview] = useState(false);
+
+	useEffect(() => {
+		if (!personalizationPath) return;
+		return addListenerAndCallImmediately(
+			(_, v) => setPreview(v ?? false),
+			pageExtractor,
+			`${personalizationPath}.preview`,
+		);
+	}, [personalizationPath]);
+
 	return (
 		<div className="_dndGrid">
 			<DnDSideBar
@@ -86,6 +100,7 @@ export default function DnDEditor({
 				locationHistory={locationHistory}
 				pageOperations={pageOperations}
 				onShowCodeEditor={onShowCodeEditor}
+				previewMode={preview}
 			/>
 			<div className="_dndGridMain">
 				<DnDTopBar
@@ -104,13 +119,16 @@ export default function DnDEditor({
 					redoStackRef={redoStackRef}
 					firstTimeRef={firstTimeRef}
 					latestVersion={latestVersion}
+					previewMode={preview}
 				/>
-				<div className="_iframeContainer">
+				<div className={`_iframeContainer ${preview ? '_previewMode' : ''}`}>
 					<DnDIFrame
 						url={url}
 						personalizationPath={personalizationPath}
 						pageExtractor={pageExtractor}
 						iframeRef={iframeRef}
+						previewMode={preview}
+						onChangePersonalization={onChangePersonalization}
 					/>
 					<DnDPropertyBar
 						defPath={defPath}
@@ -129,6 +147,7 @@ export default function DnDEditor({
 						storePaths={storePaths}
 						styleSelectorPref={styleSelectorPref}
 						setStyleSelectorPref={setStyleSelectorPref}
+						previewMode={preview}
 					/>
 				</div>
 				<DnDBottomBar
@@ -138,6 +157,7 @@ export default function DnDEditor({
 					onSelectedComponentChanged={onSelectedComponentChanged}
 					pageOperations={pageOperations}
 					onContextMenu={onContextMenu}
+					previewMode={preview}
 				/>
 			</div>
 		</div>

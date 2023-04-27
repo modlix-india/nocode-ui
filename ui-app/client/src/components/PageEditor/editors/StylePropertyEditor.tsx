@@ -283,8 +283,6 @@ export default function StylePropertyEditor({
 			: subComponentSectionsArray.findIndex(e => e === each.name) !== -1,
 	);
 
-	console.log(styleSectionsToShow);
-
 	let pseudoState = '';
 	if (selectorPref[selectedComponent]?.stylePseudoState?.value)
 		pseudoState = selectorPref[selectedComponent].stylePseudoState.value;
@@ -442,7 +440,6 @@ export default function StylePropertyEditor({
 			</PropertyGroup>
 
 			{styleSectionsToShow.map(group => {
-				console.log('group', selectedSubComponent);
 				const isAdvancedSelected = showAdvanced.findIndex(e => e === group.name) !== -1;
 				return (
 					<PropertyGroup
