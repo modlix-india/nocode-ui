@@ -73,6 +73,7 @@ const component: Component = {
 	allowedChildrenType: new Map<string, number>([['', 1]]),
 	parentType: 'TableColumns',
 	stylePseudoStates: ['hover'],
+	styleProperties: stylePropertiesDefinition,
 };
 
 export default component;

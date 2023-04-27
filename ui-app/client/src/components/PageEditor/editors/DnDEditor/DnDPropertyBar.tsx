@@ -73,6 +73,21 @@ export default function DnDPropertyBar({
 				pageExtractor={pageExtractor}
 				storePaths={storePaths}
 			/>
+		) : currentTab === 2 ? (
+			<StylePropertyEditor
+				theme={theme}
+				personalizationPath={personalizationPath}
+				onChangePersonalization={onChangePersonalization}
+				selectedComponent={selectedComponent}
+				defPath={defPath}
+				locationHistory={locationHistory}
+				pageExtractor={pageExtractor}
+				storePaths={storePaths}
+				selectedSubComponent={selectedSubComponent}
+				onSelectedSubComponentChanged={onSelectedSubComponentChanged}
+				styleSelectorPref={styleSelectorPref}
+				setStyleSelectorPref={setStyleSelectorPref}
+			/>
 		) : (
 			<StylePropertyEditor
 				theme={theme}
@@ -87,6 +102,7 @@ export default function DnDPropertyBar({
 				onSelectedSubComponentChanged={onSelectedSubComponentChanged}
 				styleSelectorPref={styleSelectorPref}
 				setStyleSelectorPref={setStyleSelectorPref}
+				reverseStyleSections={true}
 			/>
 		);
 
@@ -102,6 +118,11 @@ export default function DnDPropertyBar({
 					className={`fa fa-solid fa-brush ${currentTab === 2 ? 'active' : ''}`}
 					tabIndex={0}
 					onClick={() => onChangePersonalization('currentPropertyTab', 2)}
+				/>
+				<i
+					className={`fa fa-solid fa-gears ${currentTab === 3 ? 'active' : ''}`}
+					tabIndex={0}
+					onClick={() => onChangePersonalization('currentPropertyTab', 3)}
 				/>
 			</div>
 			<div className="_propContainer">{tab}</div>

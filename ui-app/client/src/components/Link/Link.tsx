@@ -118,6 +118,7 @@ const component: Component = {
 	component: Link,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
+	styleProperties: stylePropertiesDefinition,
 	styleComponent: LinkStyle,
 	stylePseudoStates: ['hover'],
 	defaultTemplate: {

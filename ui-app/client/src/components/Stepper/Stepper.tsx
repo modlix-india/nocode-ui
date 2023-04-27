@@ -216,6 +216,7 @@ const component: Component = {
 	component: Stepper,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
+	styleProperties: stylePropertiesDefinition,
 	styleComponent: StepperStyle,
 	defaultTemplate: {
 		key: '',

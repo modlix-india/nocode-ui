@@ -37,6 +37,7 @@ interface StylePropertyEditorProps {
 	onSelectedSubComponentChanged: (key: string) => void;
 	setStyleSelectorPref: (pref: any) => void;
 	styleSelectorPref: any;
+	reverseStyleSections?: boolean;
 }
 
 function makeObject(pref: any = {}, styles: any = {}) {}
@@ -66,10 +67,12 @@ export default function StylePropertyEditor({
 	onSelectedSubComponentChanged,
 	styleSelectorPref: selectorPref,
 	setStyleSelectorPref: setSelectorPref,
+	reverseStyleSections,
 }: StylePropertyEditorProps) {
 	const [def, setDef] = useState<ComponentDefinition>();
 	const [pageDef, setPageDef] = useState<PageDefinition>();
 	const [styleProps, setStyleProps] = useState<ComponentStyle>();
+	const [showAdvanced, setShowAdvanced] = useState<Array<string>>([]);
 
 	useEffect(
 		() =>
@@ -273,6 +276,14 @@ export default function StylePropertyEditor({
 	if (selectedSubComponent) {
 		subComponentName = selectedSubComponent.split(':')[1];
 	}
+	const subComponentSectionsArray = (cd?.styleProperties ?? {})[subComponentName];
+	const styleSectionsToShow = Object.values(COMPONENT_STYLE_GROUP_PROPERTIES).filter(each =>
+		reverseStyleSections
+			? subComponentSectionsArray.findIndex(e => e === each.name) === -1
+			: subComponentSectionsArray.findIndex(e => e === each.name) !== -1,
+	);
+
+	console.log(styleSectionsToShow);
 
 	let pseudoState = '';
 	if (selectorPref[selectedComponent]?.stylePseudoState?.value)
@@ -430,13 +441,15 @@ export default function StylePropertyEditor({
 				</div>
 			</PropertyGroup>
 
-			{Object.values(COMPONENT_STYLE_GROUP_PROPERTIES).map(group => {
+			{styleSectionsToShow.map(group => {
+				console.log('group', selectedSubComponent);
+				const isAdvancedSelected = showAdvanced.findIndex(e => e === group.name) !== -1;
 				return (
 					<PropertyGroup
 						key={group.name}
 						name={group.name}
 						displayName={group.displayName}
-						defaultStateOpen={true}
+						defaultStateOpen={false}
 						pageExtractor={pageExtractor}
 						locationHistory={locationHistory}
 						onChangePersonalization={onChangePersonalization}
@@ -574,6 +587,169 @@ export default function StylePropertyEditor({
 								</div>
 							);
 						})}
+
+						{group?.advanced?.length && (
+							<label className="_propLabel" htmlFor={`${group.name}_showAdvanced`}>
+								<input
+									type="checkbox"
+									checked={isAdvancedSelected}
+									onChange={e => {
+										if (isAdvancedSelected)
+											setShowAdvanced(
+												showAdvanced.filter(e => e !== group.name),
+											);
+										else setShowAdvanced([...showAdvanced, group.name]);
+									}}
+									name={`${group.name}_showAdvanced`}
+								/>
+								Show Advanced Properties
+							</label>
+						)}
+						{isAdvancedSelected &&
+							(group.advanced ?? []).map(prop => {
+								let value = iterateProps[prop] ?? {};
+								if (pseudoState && iterateProps[`${prop}:${pseudoState}`]) {
+									value = { ...value, ...iterateProps[`${prop}:${pseudoState}`] };
+								}
+								if (
+									subComponentName &&
+									iterateProps[`${subComponentName}-${prop}`]
+								) {
+									value = {
+										...value,
+										...iterateProps[`${subComponentName}-${prop}`],
+									};
+								}
+								if (
+									pseudoState &&
+									iterateProps[`${subComponentName}-${prop}:${pseudoState}`]
+								) {
+									value = {
+										...value,
+										...iterateProps[
+											`${subComponentName}-${prop}:${pseudoState}`
+										],
+									};
+								}
+								return (
+									<div className="_eachProp" key={prop}>
+										<div className="_propLabel" title="Name">
+											{prop.replace(/([A-Z])/g, ' $1')}:
+										</div>
+										<PropertyValueEditor
+											pageDefinition={pageDef}
+											propDef={{
+												name: prop,
+												displayName: '',
+												schema: SCHEMA_STRING_COMP_PROP,
+											}}
+											value={value}
+											storePaths={storePaths}
+											onChange={v => {
+												const newProps = duplicate(
+													styleProps,
+												) as ComponentStyle;
+												const screenSize = ((selectorPref[selectedComponent]
+													?.screenSize?.value as string) ??
+													'ALL') as StyleResolution;
+												let value = iterateProps[prop] ?? {};
+												if (pseudoState) {
+													value = {
+														...value,
+														...(screenSize === 'ALL'
+															? {}
+															: properties[1].resolutions?.[
+																	screenSize
+															  ]?.[`${prop}:${pseudoState}`] ?? {}),
+														...(iterateProps[
+															`${prop}:${pseudoState}`
+														] ?? {}),
+													};
+												}
+												if (subComponentName) {
+													value = {
+														...value,
+														...(screenSize === 'ALL'
+															? {}
+															: properties[1].resolutions?.[
+																	screenSize
+															  ]?.[`${subComponentName}-${prop}`] ??
+															  {}),
+														...(iterateProps[
+															`${subComponentName}-${prop}`
+														] ?? {}),
+													};
+												}
+												if (pseudoState) {
+													value = {
+														...value,
+														...(screenSize === 'ALL'
+															? {}
+															: properties[1].resolutions?.[
+																	screenSize
+															  ]?.[
+																	`${subComponentName}-${prop}:${pseudoState}`
+															  ] ?? {}),
+														...(iterateProps[
+															`${subComponentName}-${prop}:${pseudoState}`
+														] ?? {}),
+													};
+												}
+
+												if (
+													selectorPref[selectedComponent]?.condition
+														?.value
+												) {
+												}
+
+												let actualProp = prop;
+												if (subComponentName && pseudoState) {
+													actualProp = `${subComponentName}-${prop}:${pseudoState}`;
+												} else if (subComponentName) {
+													actualProp = `${subComponentName}-${prop}`;
+												} else if (pseudoState) {
+													actualProp = `${prop}:${pseudoState}`;
+												}
+
+												if (newProps[properties[0]].resolutions) {
+													if (
+														!newProps[properties[0]].resolutions![
+															screenSize
+														]
+													)
+														newProps[properties[0]].resolutions![
+															screenSize
+														] = {};
+													if (
+														deepEqual(value, v) ||
+														(!v.value &&
+															!v.location?.expression &&
+															!v.location?.value)
+													) {
+														delete newProps[properties[0]].resolutions![
+															screenSize
+														]![actualProp];
+													} else {
+														if (
+															!newProps[properties[0]].resolutions![
+																screenSize
+															]
+														) {
+															newProps[properties[0]].resolutions![
+																screenSize
+															] = {};
+														}
+														newProps[properties[0]].resolutions![
+															screenSize
+														]![actualProp] = v;
+													}
+													saveStyle(newProps);
+												}
+											}}
+										/>
+									</div>
+								);
+							})}
 					</PropertyGroup>
 				);
 			})}

@@ -101,10 +101,11 @@ export interface ComponentStylePropertyGroupDefinition {
 	target: Array<string>;
 	prefix?: string;
 	displayOrder?: number;
+	advanced?: Array<string>;
 }
 
 export interface ComponentStylePropertyDefinition {
-	[key: string]: { [key: string]: ComponentStylePropertyGroupDefinition };
+	[key: string]: Array<string>;
 }
 
 export interface Component {
