@@ -94,6 +94,7 @@ export function ExpressionEditor2({
 				{inValue?.type === 'VALUE' ? 'Path' : 'Expr'}
 			</span>
 			<input
+				className="_peInput"
 				type="text"
 				value={textValue}
 				ref={inputRef}

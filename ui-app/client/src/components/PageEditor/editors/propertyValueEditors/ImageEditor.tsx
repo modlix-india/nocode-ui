@@ -91,6 +91,7 @@ export function ImageEditor({ value, onChange, propDef }: IconSelectionEditorPro
 				<i className={`fa fa-2x fa-solid fa-folder`} />
 				<input
 					type="text"
+					className="_peInput"
 					placeholder="folderName"
 					autoFocus={true}
 					onChange={e => setNewFolderName(e.target.value)}
@@ -112,6 +113,7 @@ export function ImageEditor({ value, onChange, propDef }: IconSelectionEditorPro
 				<i className={`fa fa-2x fa-solid fa-upload`} />
 				Upload / Add a new file
 				<input
+					className="_peInput"
 					type="file"
 					onChange={async e => {
 						if (e.target.files?.length === 0) return;
@@ -218,6 +220,7 @@ export function ImageEditor({ value, onChange, propDef }: IconSelectionEditorPro
 					<div className="_popupContainer" onClick={e => e.stopPropagation()}>
 						<div className="_iconSelectionBrowser">
 							<input
+								className="_peInput"
 								placeholder="Search for images..."
 								type="text"
 								value={filter}
@@ -247,6 +250,7 @@ export function ImageEditor({ value, onChange, propDef }: IconSelectionEditorPro
 		<div className="_iconSelectionEditor">
 			<div className="_pvExpressionEditor">
 				<input
+					className="_peInput"
 					type="text"
 					value={chngValue}
 					placeholder={propDef.defaultValue}

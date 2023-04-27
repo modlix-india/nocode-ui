@@ -219,7 +219,7 @@ export function validate(
 			return vals;
 		})
 		.filter((e: any) => e.condition !== false)
-		.flatMap((e: any) => VALIDATION_FUNCTIONS[e.type].function(e, value))
+		.flatMap((e: any) => VALIDATION_FUNCTIONS[e.type ?? 'MANDATORY'].function(e, value))
 		.map((e: string) => getTranslations(e, pageDefinition.translations))
 		.filter((e: string) => !!e);
 }

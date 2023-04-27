@@ -156,6 +156,7 @@ export default function CodeEditor({
 							<i className="fa-solid fa-code" />
 						</div>
 						<select
+							className="_peSelect"
 							value={selectedFunction}
 							onChange={e => onSetShowCodeEditor(e.target.value)}
 							title="Select a function to edit"
@@ -317,6 +318,7 @@ export default function CodeEditor({
 									<i className="fa-solid fa-check-double" />
 								</div>
 								<select
+									className="_peSelect"
 									value={eventFunctions[selectedFunction]?.validationCheck ?? ''}
 									onChange={e => {
 										let newFun = duplicate(eventFunctions[selectedFunction]);

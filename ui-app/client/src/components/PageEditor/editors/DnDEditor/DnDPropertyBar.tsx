@@ -74,6 +74,9 @@ export default function DnDPropertyBar({
 				locationHistory={locationHistory}
 				pageExtractor={pageExtractor}
 				storePaths={storePaths}
+				onShowCodeEditor={onShowCodeEditor}
+				editPageName={editPageName}
+				slaveStore={slaveStore}
 			/>
 		) : currentTab === 2 ? (
 			<StylePropertyEditor
@@ -89,6 +92,8 @@ export default function DnDPropertyBar({
 				onSelectedSubComponentChanged={onSelectedSubComponentChanged}
 				styleSelectorPref={styleSelectorPref}
 				setStyleSelectorPref={setStyleSelectorPref}
+				editPageName={editPageName}
+				slaveStore={slaveStore}
 			/>
 		) : (
 			<StylePropertyEditor
@@ -105,6 +110,8 @@ export default function DnDPropertyBar({
 				styleSelectorPref={styleSelectorPref}
 				setStyleSelectorPref={setStyleSelectorPref}
 				reverseStyleSections={true}
+				editPageName={editPageName}
+				slaveStore={slaveStore}
 			/>
 		);
 
