@@ -255,6 +255,19 @@ function makeValueEditor(
 			value={chngValue}
 			placeholder={showPlaceholder ? propDef.defaultValue : undefined}
 			onChange={e => setChngValue(e.target.value)}
+			onKeyDown={e => {
+				if (e.key === 'Enter') {
+					onChange({
+						...value,
+						value:
+							chngValue === '' || chngValue === propDef.defaultValue
+								? undefined
+								: chngValue,
+					});
+				} else if (e.key === 'Escape') {
+					setChngValue(value?.value ?? '');
+				}
+			}}
 			onBlur={() =>
 				onChange({
 					...value,

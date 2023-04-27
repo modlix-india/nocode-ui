@@ -494,42 +494,35 @@ export default function StylePropertyEditor({
 												?.screenSize?.value as string) ??
 												'ALL') as StyleResolution;
 											let value = iterateProps[prop] ?? {};
-											if (pseudoState) {
+											if (
+												pseudoState &&
+												iterateProps[`${prop}:${pseudoState}`]
+											) {
 												value = {
 													...value,
-													...(screenSize === 'ALL'
-														? {}
-														: properties[1].resolutions?.[screenSize]?.[
-																`${prop}:${pseudoState}`
-														  ] ?? {}),
-													...(iterateProps[`${prop}:${pseudoState}`] ??
-														{}),
+													...iterateProps[`${prop}:${pseudoState}`],
 												};
 											}
-											if (subComponentName) {
+											if (
+												subComponentName &&
+												iterateProps[`${subComponentName}-${prop}`]
+											) {
 												value = {
 													...value,
-													...(screenSize === 'ALL'
-														? {}
-														: properties[1].resolutions?.[screenSize]?.[
-																`${subComponentName}-${prop}`
-														  ] ?? {}),
-													...(iterateProps[
-														`${subComponentName}-${prop}`
-													] ?? {}),
+													...iterateProps[`${subComponentName}-${prop}`],
 												};
 											}
-											if (pseudoState) {
+											if (
+												pseudoState &&
+												iterateProps[
+													`${subComponentName}-${prop}:${pseudoState}`
+												]
+											) {
 												value = {
 													...value,
-													...(screenSize === 'ALL'
-														? {}
-														: properties[1].resolutions?.[screenSize]?.[
-																`${subComponentName}-${prop}:${pseudoState}`
-														  ] ?? {}),
-													...(iterateProps[
+													...iterateProps[
 														`${subComponentName}-${prop}:${pseudoState}`
-													] ?? {}),
+													],
 												};
 											}
 
@@ -555,7 +548,11 @@ export default function StylePropertyEditor({
 														screenSize
 													] = {};
 												if (
-													deepEqual(value, v) ||
+													(deepEqual(value, v) &&
+														(prop !== actualProp ||
+															screenSize !== 'ALL' ||
+															selectorPref[selectedComponent]
+																?.condition?.value)) ||
 													(!v.value &&
 														!v.location?.expression &&
 														!v.location?.value)
