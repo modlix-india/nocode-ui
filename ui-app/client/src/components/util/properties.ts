@@ -403,6 +403,8 @@ const COMPONENT_STYLE_GROUP_PROPERTIES: { [key: string]: ComponentStylePropertyG
 			'alignItems',
 			'alignSelf',
 			'justifyContent',
+			'justifyItems',
+			'justifySelf',
 			'flex',
 			'flexBasis',
 			'flexDirection',
@@ -528,7 +530,6 @@ const COMPONENT_STYLE_GROUP_PROPERTIES: { [key: string]: ComponentStylePropertyG
 			'backdropFilter',
 			'cursor',
 			'transformOrigin',
-			'clipPath',
 		],
 	},
 	className: {
