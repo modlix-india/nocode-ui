@@ -78,16 +78,19 @@ export default function CodeEditor({
 		} else {
 			setSelectedFunction(showCodeEditor);
 		}
-	}, [showCodeEditor, eventFunctions]);
+	}, [showCodeEditor, eventFunctions, setSelectedFunction, selectedFunction]);
 
 	useEffect(() => {
 		if (!defPath) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
-			(_, v) => setEditPage(v),
+			(_, v) => {
+				setEditPage(v);
+				setChanged(Date.now());
+			},
 			pageExtractor,
 			defPath,
 		);
-	}, [defPath]);
+	}, [defPath, setEditPage, pageExtractor]);
 
 	const tokenValueExtractors = useMemo(() => {
 		if (!slaveStore) return new Map<string, TokenValueExtractor>();
@@ -160,7 +163,7 @@ export default function CodeEditor({
 							{(eventFunctions ? Object.entries(eventFunctions) : []).map(
 								([key, funct]: [string, any]) => {
 									return (
-										<option key={key} value={key}>
+										<option key={`${key}-${funct?.name ?? ''}`} value={key}>
 											{funct.namespace
 												? `${funct.namespace}.${funct.name}`
 												: funct.name}

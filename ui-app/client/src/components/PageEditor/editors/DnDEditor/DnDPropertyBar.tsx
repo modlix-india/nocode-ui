@@ -28,6 +28,7 @@ interface PropertyBarProps {
 	storePaths: Set<string>;
 	setStyleSelectorPref: (pref: any) => void;
 	styleSelectorPref: any;
+	previewMode: boolean;
 }
 
 export default function DnDPropertyBar({
@@ -46,6 +47,7 @@ export default function DnDPropertyBar({
 	onSelectedSubComponentChanged,
 	setStyleSelectorPref,
 	styleSelectorPref,
+	previewMode,
 }: PropertyBarProps) {
 	const [currentTab, setCurrentTab] = React.useState(1);
 
@@ -59,7 +61,7 @@ export default function DnDPropertyBar({
 		);
 	}, [personalizationPath]);
 
-	if (!selectedComponent) return <div className="_propBar"></div>;
+	if (!selectedComponent || previewMode) return <div className="_propBar"></div>;
 
 	const tab =
 		currentTab === 1 ? (

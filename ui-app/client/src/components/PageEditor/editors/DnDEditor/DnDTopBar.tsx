@@ -25,6 +25,7 @@ interface TopBarProps {
 	undoStackRef: React.MutableRefObject<PageDefinition[]>;
 	redoStackRef: React.MutableRefObject<PageDefinition[]>;
 	latestVersion: React.MutableRefObject<number>;
+	previewMode: boolean;
 }
 
 export default function DnDTopBar({
@@ -42,6 +43,7 @@ export default function DnDTopBar({
 	undoStackRef,
 	redoStackRef,
 	latestVersion,
+	previewMode,
 }: TopBarProps) {
 	const [localUrl, setLocalUrl] = useState(url);
 	const [deviceType, setDeviceType] = useState<string | undefined>();
@@ -110,6 +112,8 @@ export default function DnDTopBar({
 			onChangePersonalization('deviceType', device === deviceType ? undefined : device),
 		[onChangePersonalization, deviceType],
 	);
+
+	if (previewMode) return <div className="_topBarGrid _previewMode"> </div>;
 
 	return (
 		<div className="_topBarGrid">

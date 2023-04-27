@@ -15,6 +15,7 @@ interface SelectionBarProps {
 	onSelectedComponentChanged: (key: string) => void;
 	pageOperations: PageOperations;
 	onContextMenu: (m: ContextMenuDetails) => void;
+	previewMode: boolean;
 }
 
 export default function DnDBottomBar({
@@ -24,6 +25,7 @@ export default function DnDBottomBar({
 	pageExtractor,
 	pageOperations,
 	onContextMenu,
+	previewMode,
 }: SelectionBarProps) {
 	const [map, setMap] = useState(new Map<string, string>());
 	const [defMap, setDefMap] = useState<any>();
@@ -53,6 +55,8 @@ export default function DnDBottomBar({
 			),
 		[defPath, setMap],
 	);
+
+	if (previewMode) return <div className="_selectionBar _previewMode"></div>;
 
 	const compPaths = new Array();
 	let currentKey: string | undefined = selectedComponent;

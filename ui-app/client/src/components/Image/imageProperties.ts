@@ -50,6 +50,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'FallBack image will be dispalyed when main image is broken.',
 		group: ComponentPropertyGroup.ADVANCED,
 	},
+	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 	'': [
