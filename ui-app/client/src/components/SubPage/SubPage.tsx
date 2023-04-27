@@ -111,6 +111,7 @@ const component: Component = {
 	component: SubPage,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
+	styleProperties: stylePropertiesDefinition,
 	styleComponent: SubPageStyle,
 	stylePseudoStates: [],
 	bindingPaths: {
