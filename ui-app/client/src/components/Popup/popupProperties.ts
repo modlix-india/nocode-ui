@@ -92,95 +92,40 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
-	'': {
-		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: COMPONENT_STYLE_GROUP_PROPERTIES.size,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.backdropFilter.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.backdropFilter,
-			target: ['backdrop'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.background.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.background,
-			target: ['backdrop'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.border,
-			target: ['modal'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow,
-			target: ['modal'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.container.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.container,
-			target: ['modal'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.opacity.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.opacity,
-			target: ['modal'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.outline.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.outline,
-			target: ['modal'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.padding,
-			target: ['modal'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.position.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.position,
-			target: ['modal'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.font,
-			target: ['titleGrid'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
-			target: ['titleGrid'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.margin,
-			target: ['titleGrid'],
-		},
-	},
-	modalbg: {
-		[COMPONENT_STYLE_GROUP_PROPERTIES.background.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.background,
-			name: 'Modal Background',
-			description: 'Modal Background',
-			displayName: 'Modal Background',
-			prefix: 'modalbg',
-			target: ['modalbg'],
-		},
-	},
-	titleGridExtra: {
-		[COMPONENT_STYLE_GROUP_PROPERTIES.background.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.background,
-			name: 'Title Grid Background',
-			description: 'Title Grid Background',
-			displayName: 'Title Grid Background',
-			prefix: 'titleGridExtra',
-			target: ['titleGridExtra'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.border,
-			name: 'Title Grid Border',
-			description: 'Title Grid Border',
-			displayName: 'Title Grid Border',
-			prefix: 'titleGridExtra',
-			target: ['titleGridExtra'],
-		},
-	},
-	icon: {
-		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
-			name: 'Icon Color',
-			description: 'Icon Color',
-			displayName: 'Icon Color',
-			prefix: 'icon',
-			target: ['icon'],
-		},
-	},
+	'': [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	modalbg: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	titleGridExtra: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	icon: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+	],
 };
 
 export { propertiesDefinition, stylePropertiesDefinition };

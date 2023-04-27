@@ -137,6 +137,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TablePreviewGridStyle,
+	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['hover', 'focus', 'readonly'],
 	allowedChildrenType: new Map<string, number>([['', -1]]),
 	parentType: 'Table',

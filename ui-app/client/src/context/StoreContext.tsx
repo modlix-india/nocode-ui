@@ -1,5 +1,10 @@
 import { useStore, setStoreData } from '@fincity/path-reactive-state-management';
-import { LOCAL_STORE_PREFIX, STORE_PREFIX, PAGE_STORE_PREFIX } from '../constants';
+import {
+	LOCAL_STORE_PREFIX,
+	STORE_PREFIX,
+	PAGE_STORE_PREFIX,
+	SAMPLE_STORE_PREFIX,
+} from '../constants';
 import {
 	Expression,
 	ExpressionEvaluator,
@@ -14,6 +19,7 @@ import { ParentExtractor } from './ParentExtractor';
 import { ThemeExtractor } from './ThemeExtractor';
 import duplicate from '../util/duplicate';
 import { messageToMaster } from '../slaveFunctions';
+import { sample } from './sampleData';
 
 export class StoreExtractor extends TokenValueExtractor {
 	private store: any;
@@ -48,7 +54,13 @@ const {
 	addListenerWithChildrenActivity: _addListenerWithChildrenActivity,
 	addListenerAndCallImmediatelyWithChildrenActivity:
 		_addListenerAndCallImmediatelyWithChildrenActivity,
-} = useStore({}, STORE_PREFIX, localStoreExtractor, themeExtractor);
+} = useStore(
+	{},
+	STORE_PREFIX,
+	localStoreExtractor,
+	themeExtractor,
+	new StoreExtractor(sample, `${SAMPLE_STORE_PREFIX}`),
+);
 themeExtractor.setStore(_store);
 
 globalThis.getStore = () => duplicate(_store);

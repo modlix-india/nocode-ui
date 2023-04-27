@@ -477,6 +477,7 @@ const component: Component = {
 	isHidden: true,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
+	styleProperties: stylePropertiesDefinition,
 	styleComponent: GridStyle,
 	bindingPaths: {
 		bindingPath: { name: 'Definition' },
