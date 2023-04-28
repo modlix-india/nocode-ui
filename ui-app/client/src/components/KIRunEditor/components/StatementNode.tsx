@@ -142,7 +142,12 @@ export default function StatementNode({
 							parameter={e}
 							schemaRepository={schemaRepository}
 							value={paramValue}
-							onChange={v => {}}
+							onChange={v => {
+								const newStatement = duplicate(statement);
+								if (!newStatement.parameterMap) newStatement.parameterMap = {};
+								newStatement.parameterMap[e.getParameterName()] = v;
+								onChange(newStatement);
+							}}
 						/>
 					);
 				else if (showParamValues && title?.string)

@@ -141,7 +141,7 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 
 		${PREFIX} ._statement._editParameters {
 			width: 400px;
-			min-height: 350px;
+			height: 350px;
 		}
 
 		${PREFIX} ._storeContainer {
@@ -342,6 +342,10 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			display: flex;
 			flex-direction: row;
 			gap: 10px;
+		}
+
+		${PREFIX} ._statement._editParameters ._otherContainer { 
+			overflow: auto;
 		}
 
 		${PREFIX} ._statement ._otherContainer ._eventsContainer,
@@ -682,6 +686,63 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 		${PREFIX} ._formButtons ._okButton {
 			background-color: #555;
 			color: #fff;
+		}
+
+		${PREFIX} ._paramEditorRow {
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
+		}
+
+		${PREFIX} ._paramToggleContainer ._paramEditorToggle {
+			display: flex;
+			position: relative;
+			font-size: 10px;
+			cursor: pointer;
+			padding: 3px 22px;
+			padding-left: 5px;
+			height: 20px;
+			border-radius: 20px;
+			border: 1px solid #ccc;
+			transition: width 0.5s;
+			width: 40px;
+		}
+
+		${PREFIX} ._paramEditorRow ._paramEditorToggle::before {
+			position: absolute;
+			content: " ";
+			width: 20px;
+			height: 20px;
+			border-radius: 50%;
+			left: -1px;
+			top: -1px;
+			background-color: #ccc8;
+			transition: left 0.5s;
+			border: 1px solid #ccc;
+		}
+
+		${PREFIX} ._paramEditorRow ._paramEditorToggle._value::before {
+			left: calc(100% - 19px);
+		}
+
+
+		${PREFIX} ._paramToggleContainer {
+			display: flex;
+		}
+
+		${PREFIX} ._paramExpression input {
+			color: #555;
+			border-radius: 4px;
+			font-size: 13px;
+			font-family: inherit;
+			border: none;
+			background-color: #0000000a;
+			width: 100%;
+			
+			padding: 5px 5px;
+		}
+		${PREFIX} ._paramExpression input:focus {
+			outline: #cccccc solid 1px;
 		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

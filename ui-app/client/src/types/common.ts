@@ -60,6 +60,7 @@ export enum ComponentPropertyEditor {
 	STYLE_SELECTOR,
 	THEME_SELECTOR,
 	IMAGE,
+	SCHEMA,
 }
 
 export enum ComponentPropertyGroup {
