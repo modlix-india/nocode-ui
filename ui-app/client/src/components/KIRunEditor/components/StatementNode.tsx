@@ -5,6 +5,7 @@ import { generateColor } from '../colors';
 import { stringValue } from '../utils';
 import Search from './Search';
 import StatementButtons from './StatementButtons';
+import ParamEditor from './ParamEditor';
 
 interface StatementProps {
 	position?: { left: number; top: number };
@@ -119,16 +120,32 @@ export default function StatementNode({
 	const events = Array.from(eventsMap.values());
 
 	const params = parameters.length ? (
-		<div className="_paramsContainer">
+		<div
+			className="_paramsContainer"
+			onDoubleClick={ev => {
+				ev.preventDefault();
+				ev.stopPropagation();
+				if (editParameters) return;
+				onClick?.(false, statement.statementName);
+				onEditParameters?.(statement.statementName);
+			}}
+		>
 			<div className="_paramHeader">Parameters</div>
 			{parameters.map(e => {
 				const paramValue = statement.parameterMap?.[e.getParameterName()];
 				const hasValue = paramValue && Object.values(paramValue).length;
 				const title = stringValue(paramValue);
 				let paramDiv = undefined;
-				if (editParameters) {
-				}
-				if (showParamValues && title?.string)
+				if (editParameters)
+					paramDiv = (
+						<ParamEditor
+							parameter={e}
+							schemaRepository={schemaRepository}
+							value={paramValue}
+							onChange={v => {}}
+						/>
+					);
+				else if (showParamValues && title?.string)
 					paramDiv = <div className="_paramValue">{title?.string}</div>;
 				else paramDiv = <></>;
 				return (

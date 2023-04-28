@@ -25,6 +25,7 @@ interface TopBarProps {
 	undoStackRef: React.MutableRefObject<PageDefinition[]>;
 	redoStackRef: React.MutableRefObject<PageDefinition[]>;
 	latestVersion: React.MutableRefObject<number>;
+	previewMode: boolean;
 }
 
 export default function DnDTopBar({
@@ -42,6 +43,7 @@ export default function DnDTopBar({
 	undoStackRef,
 	redoStackRef,
 	latestVersion,
+	previewMode,
 }: TopBarProps) {
 	const [localUrl, setLocalUrl] = useState(url);
 	const [deviceType, setDeviceType] = useState<string | undefined>();
@@ -111,6 +113,8 @@ export default function DnDTopBar({
 		[onChangePersonalization, deviceType],
 	);
 
+	if (previewMode) return <div className="_topBarGrid _previewMode"> </div>;
+
 	return (
 		<div className="_topBarGrid">
 			<div className="_topLeftBarGrid">
@@ -118,7 +122,7 @@ export default function DnDTopBar({
 					<input
 						ref={inputRef}
 						type="text"
-						className="_urlInput"
+						className="_urlInput _peInput"
 						value={localUrl}
 						onChange={e => setLocalUrl(e.target.value)}
 						onBlur={changeUrl}
@@ -244,6 +248,7 @@ export default function DnDTopBar({
 					</div>
 				</div>
 				<select
+					className="_peSelect"
 					value={theme}
 					onChange={e => onChangePersonalization('theme', e.target.value)}
 				>

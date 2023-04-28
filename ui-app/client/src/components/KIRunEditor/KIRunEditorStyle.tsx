@@ -391,6 +391,7 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 		${PREFIX} ._statement ._param ._paramName {
 			cursor: pointer;
 			flex: 1;
+			user-select: none;
 		}
 
 		${PREFIX} ._statement ._paramName._hasValue {
@@ -504,6 +505,9 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			align-items: center;
 			padding-left: 5px;
 			width: 100%;
+			font-size: 11px;
+    		padding: 5px 15px;
+			border: 1px solid #ccc;
 		}
 
 		${PREFIX} ._search ._options {
@@ -609,7 +613,76 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			display: none !important;
 		}
 
+		${PREFIX} ._statement._editForm {
+			width: 400px;
+		}
 
+		${PREFIX} ._statement._editForm ._header {
+			border-top-left-radius: 4px;
+			border-top-right-radius: 4px;
+			padding-left: 10px;
+		}
+
+		${PREFIX} ._form {
+			padding: 10px;
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+			font-size: 11px;
+		}
+
+		${PREFIX} ._form ._field {
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
+			position: relative;
+		}
+
+		${PREFIX} ._form ._field input{
+			height: 25px;
+			font-size: 11px;
+			padding: 5px 10px;
+			border-radius: 2px;
+			flex: 1;
+			outline: initial;
+			color: #555;
+			background-color: #eee;
+			border: 1px solid #ddd;
+		}
+
+		${PREFIX} ._form ._field span._errors{
+			color: #ff2b2b;
+			background-color: #fffa;
+			position: absolute;
+			bordre-radius: 2px;
+			top: 100%;
+			translate: 0px, 5px;
+			padding: 5px;
+			border-raidus: 4px;
+		}
+
+		${PREFIX} ._formButtons {
+			padding: 10px;
+			display: flex;
+			gap: 10px;
+			justify-content: flex-end;
+		}
+
+		${PREFIX} ._formButtons button {
+			color: #555;
+			background-color: #eee;
+			text-transform: uppercase;
+			font-size: 11px;
+			padding: 5px 15px;
+			cursor: pointer;
+			border-radius: 2px;
+			border: 1px solid #ccc;
+		}
+
+		${PREFIX} ._formButtons ._okButton {
+			background-color: #555;
+			color: #fff;
+		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="KIRUNEditorCss">{css}</style>;

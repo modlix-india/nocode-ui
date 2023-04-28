@@ -168,18 +168,24 @@ function setDeviceType() {
 		StyleResolutionDefinition.get(StyleResolution.MOBILE_LANDSCAPE_SCREEN_SMALL)?.maxWidth!
 	) {
 		newDevices[StyleResolution.MOBILE_LANDSCAPE_SCREEN_SMALL] = true;
+		newDevices[StyleResolution.TABLET_POTRAIT_SCREEN_SMALL] = true;
+		newDevices[StyleResolution.TABLET_LANDSCAPE_SCREEN_SMALL] = true;
+		newDevices[StyleResolution.DESKTOP_SCREEN_SMALL] = true;
 	}
 	if (
 		size <=
 		StyleResolutionDefinition.get(StyleResolution.TABLET_POTRAIT_SCREEN_SMALL)?.maxWidth!
 	) {
 		newDevices[StyleResolution.TABLET_POTRAIT_SCREEN_SMALL] = true;
+		newDevices[StyleResolution.TABLET_LANDSCAPE_SCREEN_SMALL] = true;
+		newDevices[StyleResolution.DESKTOP_SCREEN_SMALL] = true;
 	}
 	if (
 		size <=
 		StyleResolutionDefinition.get(StyleResolution.TABLET_LANDSCAPE_SCREEN_SMALL)?.maxWidth!
 	) {
 		newDevices[StyleResolution.TABLET_LANDSCAPE_SCREEN_SMALL] = true;
+		newDevices[StyleResolution.DESKTOP_SCREEN_SMALL] = true;
 	}
 	if (size <= StyleResolutionDefinition.get(StyleResolution.DESKTOP_SCREEN_SMALL)?.maxWidth!) {
 		newDevices[StyleResolution.DESKTOP_SCREEN_SMALL] = true;

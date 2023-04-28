@@ -32,6 +32,9 @@ interface PropertyEditorProps {
 	personalizationPath: string | undefined;
 	onChangePersonalization: (prop: string, value: any) => void;
 	storePaths: Set<string>;
+	onShowCodeEditor: (eventName: string) => void;
+	slaveStore: any;
+	editPageName: string | undefined;
 }
 
 function updatePropertyDefinition(
@@ -97,6 +100,9 @@ export default function PropertyEditor({
 	theme,
 	personalizationPath,
 	storePaths,
+	onShowCodeEditor,
+	slaveStore,
+	editPageName,
 }: PropertyEditorProps) {
 	const [def, setDef] = useState<ComponentDefinition>();
 	const [pageDef, setPageDef] = useState<PageDefinition>();
@@ -203,6 +209,10 @@ export default function PropertyEditor({
 							v,
 						)
 					}
+					onShowCodeEditor={onShowCodeEditor}
+					editPageName={editPageName}
+					slaveStore={slaveStore}
+					storePaths={storePaths}
 				/>
 			);
 		} else {
@@ -223,6 +233,9 @@ export default function PropertyEditor({
 							v,
 						)
 					}
+					onShowCodeEditor={onShowCodeEditor}
+					editPageName={editPageName}
+					slaveStore={slaveStore}
 				/>
 			);
 		}
@@ -281,6 +294,9 @@ export default function PropertyEditor({
 								newDef,
 							);
 						}}
+						onShowCodeEditor={onShowCodeEditor}
+						editPageName={editPageName}
+						slaveStore={slaveStore}
 					/>
 				</div>
 			</PropertyGroup>

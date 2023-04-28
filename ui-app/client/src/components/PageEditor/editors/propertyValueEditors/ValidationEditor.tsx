@@ -6,9 +6,20 @@ import PropertyValueEditor from './PropertyValueEditor';
 interface ValidationEditorProps {
 	value?: any;
 	onChange: (v: any) => void;
+	storePaths: Set<string>;
+	onShowCodeEditor?: (eventName: string) => void;
+	slaveStore: any;
+	editPageName: string | undefined;
 }
 
-export function ValidationEditor({ value, onChange }: ValidationEditorProps) {
+export function ValidationEditor({
+	value,
+	onChange,
+	storePaths,
+	onShowCodeEditor,
+	slaveStore,
+	editPageName,
+}: ValidationEditorProps) {
 	return (
 		<div className="_validationEditor">
 			<div className="_eachProp">
@@ -17,6 +28,7 @@ export function ValidationEditor({ value, onChange }: ValidationEditorProps) {
 					<select
 						value={value?.type ?? 'MANDATORY'}
 						onChange={e => onChange({ ...value, type: e.target.value })}
+						className="_peSelect"
 					>
 						{Object.entries(VALIDATION_FUNCTIONS)
 							.sort()
@@ -39,6 +51,10 @@ export function ValidationEditor({ value, onChange }: ValidationEditorProps) {
 					}}
 					value={value?.condition}
 					onChange={v => onChange({ ...value, condition: v })}
+					storePaths={storePaths}
+					onShowCodeEditor={onShowCodeEditor}
+					editPageName={editPageName}
+					slaveStore={slaveStore}
 				/>
 			</div>
 			{(VALIDATION_FUNCTIONS[value?.type ?? 'MANDATORY'].fields ?? []).map(propDef => (
@@ -48,25 +64,31 @@ export function ValidationEditor({ value, onChange }: ValidationEditorProps) {
 						propDef={propDef}
 						value={value?.[propDef.name]}
 						onChange={v => onChange({ ...value, [propDef.name]: v })}
+						storePaths={storePaths}
+						onShowCodeEditor={onShowCodeEditor}
+						editPageName={editPageName}
+						slaveStore={slaveStore}
 					/>
 				</div>
 			))}
-			{value && (
-				<div className="_eachProp">
-					<div className="_propLabel">Message:</div>
-					<PropertyValueEditor
-						propDef={{
-							name: 'message',
-							displayName: 'Message',
-							description: 'Message to display when validation fails',
-							schema: SCHEMA_STRING_COMP_PROP,
-							translatable: true,
-						}}
-						value={value?.message}
-						onChange={v => onChange({ ...value, message: v })}
-					/>
-				</div>
-			)}
+			<div className="_eachProp">
+				<div className="_propLabel">Message:</div>
+				<PropertyValueEditor
+					propDef={{
+						name: 'message',
+						displayName: 'Message',
+						description: 'Message to display when validation fails',
+						schema: SCHEMA_STRING_COMP_PROP,
+						translatable: true,
+					}}
+					value={value?.message}
+					onChange={v => onChange({ ...value, message: v })}
+					storePaths={storePaths}
+					onShowCodeEditor={onShowCodeEditor}
+					editPageName={editPageName}
+					slaveStore={slaveStore}
+				/>
+			</div>
 		</div>
 	);
 }

@@ -20,6 +20,7 @@ interface DnDSideBarProps {
 	locationHistory: Array<LocationHistory>;
 	pageOperations: PageOperations;
 	onShowCodeEditor: (eventName: string) => void;
+	previewMode: boolean;
 }
 
 export default function DnDSideBar({
@@ -32,6 +33,7 @@ export default function DnDSideBar({
 	onChangePersonalization,
 	pageOperations,
 	onShowCodeEditor,
+	previewMode,
 }: DnDSideBarProps) {
 	const [noSelection, setNoSelection] = useState<boolean>(false);
 	const [noShell, setNoShell] = useState<boolean>(false);
@@ -66,6 +68,10 @@ export default function DnDSideBar({
 			`${personalizationPath}.theme`,
 		);
 	}, [personalizationPath]);
+
+	if (previewMode) {
+		return <div className="_sideBar _previewMode"></div>;
+	}
 
 	let compMenu = undefined;
 	if (showCompMenu) {
@@ -151,6 +157,13 @@ export default function DnDSideBar({
 				<div className="_bottom">
 					<div className="_iconMenu" tabIndex={0} onClick={() => onShowCodeEditor('')}>
 						<i className="fa fa-solid fa-code"></i>
+					</div>
+					<div
+						className="_iconMenu"
+						tabIndex={0}
+						onClick={() => onChangePersonalization('preview', true)}
+					>
+						<i className="fa fa-regular fa-eye"></i>
 					</div>
 					<div
 						className="_iconMenu"

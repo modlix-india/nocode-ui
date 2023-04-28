@@ -39,6 +39,8 @@ interface StylePropertyEditorProps {
 	setStyleSelectorPref: (pref: any) => void;
 	styleSelectorPref: any;
 	reverseStyleSections?: boolean;
+	slaveStore: any;
+	editPageName: string | undefined;
 }
 
 function makeObject(pref: any = {}, styles: any = {}) {}
@@ -69,6 +71,8 @@ export default function StylePropertyEditor({
 	styleSelectorPref: selectorPref,
 	setStyleSelectorPref: setSelectorPref,
 	reverseStyleSections,
+	slaveStore,
+	editPageName,
 }: StylePropertyEditorProps) {
 	const [def, setDef] = useState<ComponentDefinition>();
 	const [pageDef, setPageDef] = useState<PageDefinition>();
@@ -206,6 +210,8 @@ export default function StylePropertyEditor({
 				updateSelectorPref('condition', v);
 			}}
 			storePaths={storePaths}
+			editPageName={editPageName}
+			slaveStore={slaveStore}
 		/>
 	);
 
@@ -232,6 +238,8 @@ export default function StylePropertyEditor({
 				updateSelectorPref('condition', v);
 			}}
 			storePaths={storePaths}
+			editPageName={editPageName}
+			slaveStore={slaveStore}
 		/>
 	) : (
 		<></>
@@ -261,6 +269,8 @@ export default function StylePropertyEditor({
 				if (styleObj) styleObj.condition = v;
 				saveStyle(newStyleProps);
 			}}
+			editPageName={editPageName}
+			slaveStore={slaveStore}
 		/>
 	) : (
 		<></>
@@ -318,6 +328,8 @@ export default function StylePropertyEditor({
 						onlyValue={true}
 						onChange={v => updateSelectorPref('screenSize', v)}
 						storePaths={storePaths}
+						editPageName={editPageName}
+						slaveStore={slaveStore}
 					/>
 				</div>
 				{subComponentsList.length !== 1 ? (
@@ -353,6 +365,8 @@ export default function StylePropertyEditor({
 								)
 							}
 							storePaths={storePaths}
+							editPageName={editPageName}
+							slaveStore={slaveStore}
 						/>
 					</div>
 				) : (
@@ -386,6 +400,8 @@ export default function StylePropertyEditor({
 								updateSelectorPref('stylePseudoState', v);
 							}}
 							storePaths={storePaths}
+							editPageName={editPageName}
+							slaveStore={slaveStore}
 						/>
 					</div>
 				) : (
@@ -489,6 +505,8 @@ export default function StylePropertyEditor({
 										}}
 										value={value}
 										storePaths={storePaths}
+										editPageName={editPageName}
+										slaveStore={slaveStore}
 										onChange={v => {
 											const newProps = duplicate(
 												styleProps,
@@ -497,42 +515,35 @@ export default function StylePropertyEditor({
 												?.screenSize?.value as string) ??
 												'ALL') as StyleResolution;
 											let value = iterateProps[prop] ?? {};
-											if (pseudoState) {
+											if (
+												pseudoState &&
+												iterateProps[`${prop}:${pseudoState}`]
+											) {
 												value = {
 													...value,
-													...(screenSize === 'ALL'
-														? {}
-														: properties[1].resolutions?.[screenSize]?.[
-																`${prop}:${pseudoState}`
-														  ] ?? {}),
-													...(iterateProps[`${prop}:${pseudoState}`] ??
-														{}),
+													...iterateProps[`${prop}:${pseudoState}`],
 												};
 											}
-											if (subComponentName) {
+											if (
+												subComponentName &&
+												iterateProps[`${subComponentName}-${prop}`]
+											) {
 												value = {
 													...value,
-													...(screenSize === 'ALL'
-														? {}
-														: properties[1].resolutions?.[screenSize]?.[
-																`${subComponentName}-${prop}`
-														  ] ?? {}),
-													...(iterateProps[
-														`${subComponentName}-${prop}`
-													] ?? {}),
+													...iterateProps[`${subComponentName}-${prop}`],
 												};
 											}
-											if (pseudoState) {
+											if (
+												pseudoState &&
+												iterateProps[
+													`${subComponentName}-${prop}:${pseudoState}`
+												]
+											) {
 												value = {
 													...value,
-													...(screenSize === 'ALL'
-														? {}
-														: properties[1].resolutions?.[screenSize]?.[
-																`${subComponentName}-${prop}:${pseudoState}`
-														  ] ?? {}),
-													...(iterateProps[
+													...iterateProps[
 														`${subComponentName}-${prop}:${pseudoState}`
-													] ?? {}),
+													],
 												};
 											}
 
@@ -558,7 +569,11 @@ export default function StylePropertyEditor({
 														screenSize
 													] = {};
 												if (
-													deepEqual(value, v) ||
+													(deepEqual(value, v) &&
+														(prop !== actualProp ||
+															screenSize !== 'ALL' ||
+															selectorPref[selectedComponent]
+																?.condition?.value)) ||
 													(!v.value &&
 														!v.location?.expression &&
 														!v.location?.value)
@@ -589,21 +604,27 @@ export default function StylePropertyEditor({
 						})}
 
 						{group?.advanced?.length && (
-							<label className="_propLabel" htmlFor={`${group.name}_showAdvanced`}>
-								<input
-									type="checkbox"
-									checked={isAdvancedSelected}
-									onChange={e => {
-										if (isAdvancedSelected)
-											setShowAdvanced(
-												showAdvanced.filter(e => e !== group.name),
-											);
-										else setShowAdvanced([...showAdvanced, group.name]);
-									}}
-									name={`${group.name}_showAdvanced`}
-								/>
-								Show Advanced Properties
-							</label>
+							<div className="_eachProp">
+								<label
+									className="_propLabel"
+									htmlFor={`${group.name}_showAdvanced`}
+								>
+									<input
+										className="_peInput"
+										type="checkbox"
+										checked={isAdvancedSelected}
+										onChange={e => {
+											if (isAdvancedSelected)
+												setShowAdvanced(
+													showAdvanced.filter(e => e !== group.name),
+												);
+											else setShowAdvanced([...showAdvanced, group.name]);
+										}}
+										id={`${group.name}_showAdvanced`}
+									/>
+									Show Advanced Properties
+								</label>
+							</div>
 						)}
 						{isAdvancedSelected &&
 							(group.advanced ?? []).map(prop => {
@@ -645,6 +666,8 @@ export default function StylePropertyEditor({
 											}}
 											value={value}
 											storePaths={storePaths}
+											editPageName={editPageName}
+											slaveStore={slaveStore}
 											onChange={v => {
 												const newProps = duplicate(
 													styleProps,

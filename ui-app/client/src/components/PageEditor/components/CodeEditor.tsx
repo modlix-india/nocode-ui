@@ -78,16 +78,19 @@ export default function CodeEditor({
 		} else {
 			setSelectedFunction(showCodeEditor);
 		}
-	}, [showCodeEditor, eventFunctions]);
+	}, [showCodeEditor, eventFunctions, setSelectedFunction, selectedFunction]);
 
 	useEffect(() => {
 		if (!defPath) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
-			(_, v) => setEditPage(v),
+			(_, v) => {
+				setEditPage(v);
+				setChanged(Date.now());
+			},
 			pageExtractor,
 			defPath,
 		);
-	}, [defPath]);
+	}, [defPath, setEditPage, pageExtractor]);
 
 	const tokenValueExtractors = useMemo(() => {
 		if (!slaveStore) return new Map<string, TokenValueExtractor>();
@@ -153,6 +156,7 @@ export default function CodeEditor({
 							<i className="fa-solid fa-code" />
 						</div>
 						<select
+							className="_peSelect"
 							value={selectedFunction}
 							onChange={e => onSetShowCodeEditor(e.target.value)}
 							title="Select a function to edit"
@@ -160,7 +164,7 @@ export default function CodeEditor({
 							{(eventFunctions ? Object.entries(eventFunctions) : []).map(
 								([key, funct]: [string, any]) => {
 									return (
-										<option key={key} value={key}>
+										<option key={`${key}-${funct?.name ?? ''}`} value={key}>
 											{funct.namespace
 												? `${funct.namespace}.${funct.name}`
 												: funct.name}
@@ -314,6 +318,7 @@ export default function CodeEditor({
 									<i className="fa-solid fa-check-double" />
 								</div>
 								<select
+									className="_peSelect"
 									value={eventFunctions[selectedFunction]?.validationCheck ?? ''}
 									onChange={e => {
 										let newFun = duplicate(eventFunctions[selectedFunction]);

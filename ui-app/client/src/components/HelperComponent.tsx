@@ -41,12 +41,16 @@ function HelperComponentInternal({
 	const {
 		editingPageDefinition: { name = '', componentDefinition = {} } = {},
 		selectedComponent,
-		personalization: { slave: { highlightColor = '#b2d33f', noSelection = false } = {} } = {},
+		personalization: {
+			preview = false,
+			slave: { highlightColor = '#b2d33f', noSelection = false } = {},
+		} = {},
 	} = window.pageEditor ?? {};
 
 	const currentPage = getDataFromPath(`Store.urlDetails.pageName`, []);
 
-	if (noSelection || !componentDefinition?.[definition.key] || name !== currentPage) return <></>;
+	if (noSelection || preview || !componentDefinition?.[definition.key] || name !== currentPage)
+		return <></>;
 
 	let style = {
 		all: 'initial',

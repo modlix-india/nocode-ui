@@ -28,6 +28,7 @@ interface PropertyBarProps {
 	storePaths: Set<string>;
 	setStyleSelectorPref: (pref: any) => void;
 	styleSelectorPref: any;
+	previewMode: boolean;
 }
 
 export default function DnDPropertyBar({
@@ -46,6 +47,7 @@ export default function DnDPropertyBar({
 	onSelectedSubComponentChanged,
 	setStyleSelectorPref,
 	styleSelectorPref,
+	previewMode,
 }: PropertyBarProps) {
 	const [currentTab, setCurrentTab] = React.useState(1);
 
@@ -59,7 +61,7 @@ export default function DnDPropertyBar({
 		);
 	}, [personalizationPath]);
 
-	if (!selectedComponent) return <div className="_propBar"></div>;
+	if (!selectedComponent || previewMode) return <div className="_propBar"></div>;
 
 	const tab =
 		currentTab === 1 ? (
@@ -72,6 +74,9 @@ export default function DnDPropertyBar({
 				locationHistory={locationHistory}
 				pageExtractor={pageExtractor}
 				storePaths={storePaths}
+				onShowCodeEditor={onShowCodeEditor}
+				editPageName={editPageName}
+				slaveStore={slaveStore}
 			/>
 		) : currentTab === 2 ? (
 			<StylePropertyEditor
@@ -87,6 +92,8 @@ export default function DnDPropertyBar({
 				onSelectedSubComponentChanged={onSelectedSubComponentChanged}
 				styleSelectorPref={styleSelectorPref}
 				setStyleSelectorPref={setStyleSelectorPref}
+				editPageName={editPageName}
+				slaveStore={slaveStore}
 			/>
 		) : (
 			<StylePropertyEditor
@@ -103,6 +110,8 @@ export default function DnDPropertyBar({
 				styleSelectorPref={styleSelectorPref}
 				setStyleSelectorPref={setStyleSelectorPref}
 				reverseStyleSections={true}
+				editPageName={editPageName}
+				slaveStore={slaveStore}
 			/>
 		);
 
