@@ -112,6 +112,9 @@ const component: Component = {
 		name: 'TextEditor',
 		properties: {},
 	},
+	bindingPaths: {
+		bindingPath: { name: 'Text binding' },
+	},
 };
 
 export default component;
