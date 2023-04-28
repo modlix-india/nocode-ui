@@ -23,6 +23,7 @@ import { ComponentStyle } from '../../../types/common';
 import { shortUUID } from '../../../util/shortUUID';
 import duplicate from '../../../util/duplicate';
 import { deepEqual } from '@fincity/kirun-js';
+import { camelCaseToUpperSpaceCase } from '../../../functions/utils';
 
 interface StylePropertyEditorProps {
 	selectedComponent: string;
@@ -283,8 +284,6 @@ export default function StylePropertyEditor({
 			: subComponentSectionsArray.findIndex(e => e === each.name) !== -1,
 	);
 
-	console.log(styleSectionsToShow);
-
 	let pseudoState = '';
 	if (selectorPref[selectedComponent]?.stylePseudoState?.value)
 		pseudoState = selectorPref[selectedComponent].stylePseudoState.value;
@@ -336,7 +335,8 @@ export default function StylePropertyEditor({
 								defaultValue: '',
 								enumValues: subComponentsList.map(name => ({
 									name,
-									displayName: name === '' ? 'Component' : name.toUpperCase(),
+									displayName:
+										name === '' ? 'Component' : camelCaseToUpperSpaceCase(name),
 									description: '',
 								})),
 							}}
@@ -442,7 +442,6 @@ export default function StylePropertyEditor({
 			</PropertyGroup>
 
 			{styleSectionsToShow.map(group => {
-				console.log('group', selectedSubComponent);
 				const isAdvancedSelected = showAdvanced.findIndex(e => e === group.name) !== -1;
 				return (
 					<PropertyGroup
@@ -456,17 +455,18 @@ export default function StylePropertyEditor({
 						personalizationPath={personalizationPath}
 					>
 						{COMPONENT_STYLE_GROUPS[group.name].map(prop => {
-							let value = iterateProps[prop] ?? {};
-							if (pseudoState && iterateProps[`${prop}:${pseudoState}`]) {
+							let value = subComponentName
+								? iterateProps[`${subComponentName}-${prop}`] ?? {}
+								: iterateProps[prop] ?? {};
+							if (
+								pseudoState &&
+								!subComponentName &&
+								iterateProps[`${prop}:${pseudoState}`]
+							) {
 								value = { ...value, ...iterateProps[`${prop}:${pseudoState}`] };
 							}
-							if (subComponentName && iterateProps[`${subComponentName}-${prop}`]) {
-								value = {
-									...value,
-									...iterateProps[`${subComponentName}-${prop}`],
-								};
-							}
 							if (
+								subComponentName &&
 								pseudoState &&
 								iterateProps[`${subComponentName}-${prop}:${pseudoState}`]
 							) {

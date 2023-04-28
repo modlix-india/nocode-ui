@@ -143,6 +143,14 @@ export default function AppStyle() {
 		cursor: pointer;
 	}
 
+	._validationMessages {
+		position: relative;
+	}
+
+	._eachValidationMessage {
+		position: relative;
+	}
+
 	._validationMessages._floatingMessages {
 		position:absolute;
 		z-index:1;

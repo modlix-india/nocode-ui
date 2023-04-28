@@ -86,7 +86,7 @@ function HelperComponentInternal({
 	if (selectedComponent?.endsWith(definition.key) || dragOver)
 		style.opacity = children ? '1' : '0.6';
 
-	if (children) {
+	if (children || selectedComponent?.endsWith(definition.key)) {
 		labelStyle.top = '0px';
 		labelStyle.transform = 'translateY(-100%)';
 	}
