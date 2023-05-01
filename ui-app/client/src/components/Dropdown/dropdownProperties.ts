@@ -47,8 +47,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'label',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Dropdown header text',
-		description: "Header text that's shown on top of dropdown.",
+		displayName: 'Dropdown Label text',
+		description: "Label text that's shown on top of dropdown.",
 		group: ComponentPropertyGroup.BASIC,
 	},
 
