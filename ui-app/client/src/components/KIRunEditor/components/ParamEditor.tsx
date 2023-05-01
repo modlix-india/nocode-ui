@@ -11,6 +11,7 @@ import { shortUUID } from '../../../util/shortUUID';
 import duplicate from '../../../util/duplicate';
 import SchemaForm from '../../SchemaForm/SchemaForm';
 import { PageDefinition, LocationHistory, RenderContext } from '../../../types/common';
+import { AnyValueEditor } from '../../PageEditor/editors/propertyValueEditors/AnyValueEditor';
 
 interface ParamEditorProps {
 	parameter: Parameter;
@@ -116,10 +117,12 @@ export default function ParamEditor({
 								key: eachValue.key,
 								name: 'SchemaForm',
 								type: 'SchemaForm',
-								properties: {},
+								properties: {
+									showJSONEditorButton: { value: false },
+								},
 							}}
 							onChange={(v: any) => {
-								console.log(v);
+								updateValue(key, 'value', v);
 							}}
 						/>
 					);
@@ -148,9 +151,24 @@ export default function ParamEditor({
 						</div>
 					</div>
 				);
+				const fullValueEditor =
+					eachValue.type === 'VALUE' ? (
+						<AnyValueEditor
+							value={eachValue.value === undefined ? null : eachValue.value}
+							onChange={v => {
+								updateValue(key, 'value', v);
+							}}
+							isIconButton={true}
+						/>
+					) : (
+						<></>
+					);
 				return (
 					<div className="_paramEditorRow" key={key}>
-						{paramToggle}
+						<div className="_paramToggleValueGrid">
+							{paramToggle}
+							{fullValueEditor}
+						</div>
 						{valueEditor}
 					</div>
 				);

@@ -744,6 +744,11 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 		${PREFIX} ._paramExpression input:focus {
 			outline: #cccccc solid 1px;
 		}
+
+		${PREFIX} ._paramToggleValueGrid {
+			display: flex;
+			gap: 10px;	
+		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="KIRUNEditorCss">{css}</style>;

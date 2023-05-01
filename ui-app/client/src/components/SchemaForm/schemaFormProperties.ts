@@ -53,6 +53,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Show JSON Editor Button',
 		description: 'Show JSON Editor Button',
 		schema: SCHEMA_BOOL_COMP_PROP,
+		defaultValue: false,
 	},
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
