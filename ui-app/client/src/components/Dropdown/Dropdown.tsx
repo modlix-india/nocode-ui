@@ -2,9 +2,9 @@ import { deepEqual } from '@fincity/kirun-js';
 import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import CommonInputText from '../../commonComponents/CommonInputText';
 import {
+	PageStoreExtractor,
 	addListenerAndCallImmediately,
 	getPathFromLocation,
-	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
@@ -13,12 +13,11 @@ import { validate } from '../../util/validationProcessor';
 import { HelperComponent } from '../HelperComponent';
 import { getRenderData } from '../util/getRenderData';
 import { getSelectedKeys } from '../util/getSelectedKeys';
-import { getTranslations } from '../util/getTranslations';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { flattenUUID } from '../util/uuid';
-import { propertiesDefinition, stylePropertiesDefinition } from './dropdownProperties';
 import DropdownStyle from './DropdownStyle';
+import { propertiesDefinition, stylePropertiesDefinition } from './dropdownProperties';
 
 function DropdownComponent(props: ComponentProps) {
 	const [showDropdown, setShowDropdown] = useState(false);

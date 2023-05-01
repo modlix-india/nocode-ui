@@ -132,6 +132,7 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 			'Expected format of the data, so that the processor can process the data correctly.',
 		editor: ComponentPropertyEditor.ENUM,
 		group: ComponentPropertyGroup.DATA,
+		defaultValue: 'LIST_OF_STRINGS',
 		enumValues: [
 			{
 				name: 'LIST_OF_STRINGS',
@@ -228,7 +229,7 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 		displayName: 'Label type.',
 		description:
 			'This is the label that user sees on the scree, OBJECT works when value is primitive.',
-		defaultValue: 'LIST_OF_STRINGS',
+		defaultValue: 'OBJECT',
 		editor: ComponentPropertyEditor.ENUM,
 		group: ComponentPropertyGroup.DATA,
 		enumValues: [
