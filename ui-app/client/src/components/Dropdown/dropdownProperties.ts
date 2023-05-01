@@ -47,8 +47,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'label',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Dropdown header text',
-		description: "Header text that's shown on top of dropdown.",
+		displayName: 'Dropdown Label text',
+		description: "Label text that's shown on top of dropdown.",
 		group: ComponentPropertyGroup.BASIC,
 	},
 
@@ -150,6 +150,11 @@ const stylePropertiesDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
+	noFloatLabel: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
 	supportText: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
@@ -160,6 +165,16 @@ const stylePropertiesDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	errorTextContainer: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 };
