@@ -318,6 +318,9 @@ function KIRunEditor(
 					showComment={!preference.showComments}
 					onEditParameters={() => setEditParameters(s.statementName)}
 					showParamValues={!!preference.showParamValues}
+					context={context}
+					pageDefinition={pageDefinition}
+					locationHistory={locationHistory}
 				/>
 			));
 	}
@@ -694,6 +697,9 @@ function KIRunEditor(
 					onEditParameters={name => setEditParameters(name)}
 					editParameters={true}
 					showParamValues={true}
+					context={context}
+					pageDefinition={pageDefinition}
+					locationHistory={locationHistory}
 				/>
 			</StatementParameters>
 		);
