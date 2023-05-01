@@ -21,6 +21,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'top',
 		displayName: 'Messages Outer Container Top',
 		description: 'Messages Outer Container position on the page top',
+		defaultValue: '100vh',
 		selector: ' ',
 	},
 	{
@@ -28,7 +29,15 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'bottom',
 		displayName: 'Messages Outer Container Bottom',
 		description: 'Messages Outer Container position on the page bottom',
-		defaultValue: '10px',
+		defaultValue: ' ',
+		selector: ' ',
+	},
+	{
+		name: 'messagesOuterContainerTransform',
+		cssProperty: 'transform',
+		displayName: 'Messages Outer Container Top',
+		description: 'Messages Outer Container position on the page top',
+		defaultValue: 'translateY(-100%)',
 		selector: ' ',
 	},
 	{
