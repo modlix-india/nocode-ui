@@ -6,8 +6,9 @@ import { stringValue } from '../utils';
 import Search from './Search';
 import StatementButtons from './StatementButtons';
 import ParamEditor from './ParamEditor';
+import { LocationHistory, PageDefinition, RenderContext } from '../../../types/common';
 
-interface StatementProps {
+interface StatementNodeProps {
 	position?: { left: number; top: number };
 	statement: any;
 	functionRepository: Repository<Function>;
@@ -32,6 +33,9 @@ interface StatementProps {
 	onEditParameters?: (statementName: string) => void;
 	editParameters?: boolean;
 	showParamValues: boolean;
+	pageDefinition: PageDefinition;
+	locationHistory: Array<LocationHistory>;
+	context: RenderContext;
 }
 
 const DEFAULT_POSITION = { left: 0, top: 0 };
@@ -58,7 +62,10 @@ export default function StatementNode({
 	onEditParameters,
 	editParameters,
 	showParamValues,
-}: StatementProps) {
+	pageDefinition,
+	locationHistory,
+	context,
+}: StatementNodeProps) {
 	const [statementName, setStatementName] = useState(statement.statementName);
 	const [editStatementName, setEditStatementName] = useState(false);
 	const [editNameNamespace, setEditNameNamespace] = useState(false);
@@ -142,7 +149,15 @@ export default function StatementNode({
 							parameter={e}
 							schemaRepository={schemaRepository}
 							value={paramValue}
-							onChange={v => {}}
+							onChange={v => {
+								const newStatement = duplicate(statement);
+								if (!newStatement.parameterMap) newStatement.parameterMap = {};
+								newStatement.parameterMap[e.getParameterName()] = v;
+								onChange(newStatement);
+							}}
+							context={context}
+							pageDefinition={pageDefinition}
+							locationHistory={locationHistory}
 						/>
 					);
 				else if (showParamValues && title?.string)
