@@ -310,6 +310,7 @@ function DropdownComponent(props: ComponentProps) {
 				autoComplete="off"
 				styles={computedStyles}
 				inputRef={inputRef}
+				definition={props.definition}
 			/>
 			{showDropdown && (
 				<div className="dropdownContainer" style={computedStyles.dropDownContainer ?? {}}>
@@ -334,6 +335,7 @@ function DropdownComponent(props: ComponentProps) {
 								blurHandler={() => setFocus(false)}
 								focusHandler={() => setFocus(true)}
 								styles={computedStyles}
+								definition={props.definition}
 							/>
 						</div>
 					)}

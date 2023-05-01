@@ -8,6 +8,10 @@ export default function PopupStyles({ theme }: { theme: Map<string, Map<string, 
 	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
 	const css =
 		`
+    ${PREFIX} {
+      z-index: 7;
+    }
+
      ${PREFIX} .backdrop{
       position: fixed;
       top: 0;

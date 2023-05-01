@@ -240,6 +240,7 @@ function TextBox(props: ComponentProps) {
 				supportingText={supportingText}
 				messageDisplay={messageDisplay}
 				styles={computedStyles}
+				definition={props.definition}
 			/>
 		</div>
 	);

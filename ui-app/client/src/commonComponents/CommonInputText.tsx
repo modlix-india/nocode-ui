@@ -1,6 +1,7 @@
 import React, { ChangeEvent } from 'react';
 import { getTranslations } from '../components/util/getTranslations';
-import { RenderContext, Translations } from '../types/common';
+import { ComponentDefinition, RenderContext, Translations } from '../types/common';
+import { SubHelperComponent } from '../components/SubHelperComponent';
 
 type CommonInputType = {
 	styles?: any;
@@ -28,6 +29,7 @@ type CommonInputType = {
 	hideClearContentIcon?: boolean;
 	inputRef?: React.RefObject<HTMLInputElement>;
 	autoComplete?: string;
+	definition: ComponentDefinition;
 };
 
 function CommonInputText(props: CommonInputType) {
@@ -57,6 +59,7 @@ function CommonInputText(props: CommonInputType) {
 		hideClearContentIcon,
 		inputRef,
 		autoComplete,
+		definition,
 	} = props;
 	const [focus, setFocus] = React.useState(false);
 	const [showPassword, setShowPassowrd] = React.useState(false);
@@ -79,9 +82,20 @@ function CommonInputText(props: CommonInputType) {
 	const hasErrorMessages =
 		validationMessages?.length && (value || isDirty || context.showValidationMessages);
 	const validationMessagesComp = hasErrorMessages ? (
-		<div className={`_validationMessages ${messageDisplay}`}>
+		<div
+			className={`_validationMessages ${messageDisplay}`}
+			style={computedStyles.errorTextContainer ?? {}}
+		>
+			<SubHelperComponent definition={definition} subComponentName="errorTextContainer" />
 			{validationMessages.map(msg => (
-				<div key={msg}>{msg}</div>
+				<div
+					className={`_eachValidationMessage`}
+					style={computedStyles.errorText ?? {}}
+					key={msg}
+				>
+					<SubHelperComponent definition={definition} subComponentName="errorText" />
+					{msg}
+				</div>
 			))}
 		</div>
 	) : messageDisplay === '_fixedMessages' ? (
@@ -90,7 +104,13 @@ function CommonInputText(props: CommonInputType) {
 
 	const supportText =
 		supportingText && !hasErrorMessages ? (
-			<span className={`supportText ${readOnly ? 'disabled' : ''}`}>{supportingText}</span>
+			<span
+				style={computedStyles.supportText ?? {}}
+				className={`supportText ${readOnly ? 'disabled' : ''}`}
+			>
+				<SubHelperComponent definition={definition} subComponentName="supportText" />
+				{supportingText}
+			</span>
 		) : null;
 
 	return (
@@ -103,9 +123,14 @@ function CommonInputText(props: CommonInputType) {
 						value?.length ? `hasText` : ``
 					}`}
 				>
+					<SubHelperComponent
+						definition={definition}
+						subComponentName="noFloatLabel"
+					></SubHelperComponent>
 					{getTranslations(label, translations)}
 				</label>
 			)}
+
 			<div
 				style={computedStyles.textBoxContainer ?? {}}
 				className={`textBoxDiv ${hasErrorMessages ? 'error' : ''} ${
@@ -114,9 +139,19 @@ function CommonInputText(props: CommonInputType) {
 					readOnly && !hasErrorMessages ? 'disabled' : ''
 				}`}
 			>
+				<SubHelperComponent
+					definition={definition}
+					subComponentName="textBoxContainer"
+				></SubHelperComponent>
 				{leftIcon && (
-					<i style={computedStyles.leftIcon ?? {}} className={`leftIcon ${leftIcon}`} />
+					<i style={computedStyles.leftIcon ?? {}} className={`leftIcon ${leftIcon}`}>
+						<SubHelperComponent
+							definition={definition}
+							subComponentName="leftIcon"
+						></SubHelperComponent>
+					</i>
 				)}
+
 				<div className={`inputContainer`}>
 					<input
 						style={computedStyles.inputBox ?? {}}
@@ -142,6 +177,14 @@ function CommonInputText(props: CommonInputType) {
 						ref={inputRef}
 						autoComplete={autoComplete}
 					/>
+					<SubHelperComponent
+						style={computedStyles.inputBox ?? {}}
+						className={`textbox ${noFloat ? '' : 'float'} ${
+							valueType === 'NUMBER' ? 'remove-spin-button' : ''
+						}`}
+						definition={definition}
+						subComponentName="inputBox"
+					></SubHelperComponent>
 					{!noFloat && (
 						<label
 							style={computedStyles.floatingLabel ?? {}}
@@ -150,40 +193,54 @@ function CommonInputText(props: CommonInputType) {
 								value?.length ? `hasText` : ``
 							}`}
 						>
+							<SubHelperComponent
+								definition={definition}
+								subComponentName="floatingLabel"
+							></SubHelperComponent>
 							{getTranslations(label, translations)}
 						</label>
 					)}
 				</div>
+
 				{rightIcon && !isPassword && (
-					<i
-						style={computedStyles.rightIcon ?? {}}
-						className={`rightIcon ${rightIcon}`}
-					/>
+					<i style={computedStyles.rightIcon ?? {}} className={`rightIcon ${rightIcon}`}>
+						<SubHelperComponent
+							definition={definition}
+							subComponentName="rightIcon"
+						></SubHelperComponent>
+					</i>
 				)}
 				{isPassword && !readOnly && (
 					<i
-						style={computedStyles.passwordIcon ?? {}}
+						style={computedStyles.rightIcon ?? {}}
 						className={`passwordIcon rightIcon ${
 							showPassword ? `fa fa-regular fa-eye` : `fa fa-regular fa-eye-slash`
 						}`}
 						onClick={() => setShowPassowrd(!showPassword)}
-					/>
+					>
+						<SubHelperComponent definition={definition} subComponentName="rightIcon" />{' '}
+					</i>
 				)}
 				{hasErrorMessages ? (
 					<i
-						style={computedStyles.errorText ?? {}}
+						style={computedStyles.rightIcon ?? {}}
 						className={`errorIcon rightIcon ${
 							value?.length ? `hasText` : ``
 						} fa fa-solid fa-circle-exclamation`}
-					/>
+					>
+						<SubHelperComponent definition={definition} subComponentName="rightIcon" />
+					</i>
 				) : !hideClearContentIcon && value?.length && !readOnly && !isPassword ? (
 					<i
-						style={computedStyles.supportText ?? {}}
+						style={computedStyles.rightIcon ?? {}}
 						onClick={clearContentHandler}
 						className="clearText rightIcon fa fa-regular fa-circle-xmark fa-fw"
-					/>
+					>
+						<SubHelperComponent definition={definition} subComponentName="rightIcon" />
+					</i>
 				) : null}
 			</div>
+
 			{validationMessagesComp}
 			{supportText}
 		</div>
