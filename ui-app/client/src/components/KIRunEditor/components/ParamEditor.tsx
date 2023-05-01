@@ -10,12 +10,16 @@ import React, { useCallback, useEffect } from 'react';
 import { shortUUID } from '../../../util/shortUUID';
 import duplicate from '../../../util/duplicate';
 import SchemaForm from '../../SchemaForm/SchemaForm';
+import { PageDefinition, LocationHistory, RenderContext } from '../../../types/common';
 
 interface ParamEditorProps {
 	parameter: Parameter;
 	schemaRepository: Repository<Schema>;
 	value: any;
 	onChange: (newValue: any) => void;
+	pageDefinition: PageDefinition;
+	locationHistory: Array<LocationHistory>;
+	context: RenderContext;
 }
 
 export default function ParamEditor({
@@ -23,12 +27,11 @@ export default function ParamEditor({
 	schemaRepository,
 	value,
 	onChange,
+	pageDefinition,
+	locationHistory,
+	context,
 }: ParamEditorProps) {
-	console.log(parameter, value);
-	if (parameter.getType() === ParameterType.CONSTANT) {
-		return <></>;
-	}
-
+	const onlyValue = parameter.getType() === ParameterType.CONSTANT;
 	const isArray = parameter.isVariableArgument();
 	const [values, setValues] = React.useState<any[]>([]);
 
@@ -58,10 +61,9 @@ export default function ParamEditor({
 		if (arr.length === 0 || isArray) {
 			arr.push({
 				key: shortUUID(),
-				type: 'EXPRESSION',
+				type: onlyValue ? 'VALUE' : 'EXPRESSION',
 				isNew: true,
 				expression: '',
-				value: '',
 			});
 		}
 		setValues(arr);
@@ -104,8 +106,12 @@ export default function ParamEditor({
 						</div>
 					) : (
 						<SchemaForm.component
+							context={context}
+							pageDefinition={pageDefinition}
+							locationHistory={locationHistory}
 							schemaRepository={schemaRepository}
 							schema={schema}
+							value={eachValue.value}
 							definition={{
 								key: eachValue.key,
 								name: 'SchemaForm',
@@ -117,29 +123,34 @@ export default function ParamEditor({
 							}}
 						/>
 					);
+				const paramToggle = onlyValue ? (
+					<></>
+				) : (
+					<div className="_paramToggleContainer">
+						<div
+							className={`_paramEditorToggle ${
+								eachValue.type === 'EXPRESSION' ? '' : '_value'
+							}`}
+							title={
+								eachValue.type === 'EXPRESSION'
+									? 'Change to Value'
+									: 'Change to Expression'
+							}
+							onClick={e =>
+								updateValue(
+									key,
+									'type',
+									eachValue.type === 'EXPRESSION' ? 'VALUE' : 'EXPRESSION',
+								)
+							}
+						>
+							{eachValue.type === 'EXPRESSION' ? 'Expr' : 'Value'}
+						</div>
+					</div>
+				);
 				return (
 					<div className="_paramEditorRow" key={key}>
-						<div className="_paramToggleContainer">
-							<div
-								className={`_paramEditorToggle ${
-									eachValue.type === 'EXPRESSION' ? '' : '_value'
-								}`}
-								title={
-									eachValue.type === 'EXPRESSION'
-										? 'Change to Value'
-										: 'Change to Expression'
-								}
-								onClick={e =>
-									updateValue(
-										key,
-										'type',
-										eachValue.type === 'EXPRESSION' ? 'VALUE' : 'EXPRESSION',
-									)
-								}
-							>
-								{eachValue.type === 'EXPRESSION' ? 'Expr' : 'Value'}
-							</div>
-						</div>
+						{paramToggle}
 						{valueEditor}
 					</div>
 				);

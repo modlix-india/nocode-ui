@@ -8,7 +8,6 @@ export default function MessageStyle({ theme }: { theme: Map<string, Map<string,
 		`
 		${PREFIX} {
 			position: sticky;
-			float: left;
 		}
 
 		${PREFIX} ._message {

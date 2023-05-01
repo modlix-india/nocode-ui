@@ -11,14 +11,25 @@ import { HelperComponent } from '../HelperComponent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './schemaFormProperties';
 import SchemaFormStyle from './SchemaFormStyle';
-import { deepEqual, Repository, Schema } from '@fincity/kirun-js';
+import {
+	deepEqual,
+	isNullValue,
+	Repository,
+	Schema,
+	SchemaType,
+	SchemaUtil,
+	TypeUtil,
+} from '@fincity/kirun-js';
 import { AnyValueEditor } from '../PageEditor/editors/propertyValueEditors/AnyValueEditor';
+import { UISchemaRepository } from '../../schemas/common';
+import SingleSchema from './components/SingleSchemaForm';
 
 function SchemaForm(
 	props: ComponentProps & {
 		schema?: Schema;
 		schemaRepository?: Repository<Schema>;
 		onChange?: (value: any) => void;
+		value?: any;
 	},
 ) {
 	const {
@@ -46,15 +57,20 @@ function SchemaForm(
 
 	const [value, setValue] = React.useState<any>(null);
 	useEffect(() => {
-		if (!bindingPathPath) return;
+		if (!bindingPathPath) {
+			setValue(props.value);
+			return;
+		}
 		return addListenerAndCallImmediately((_, v) => setValue(v), pageExtractor, bindingPathPath);
-	}, [bindingPathPath]);
+	}, [bindingPathPath, props.value]);
 
 	const isReadonly = readOnly || (!bindingPathPath && !props.onChange);
 
 	const schema = React.useMemo(() => props.schema ?? Schema.from(jsonSchema), [jsonSchema]);
 
 	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
+	const schemaRepository = props.schemaRepository ?? UISchemaRepository;
+
 	return (
 		<div className="comp compSchemaForm" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />
@@ -71,27 +87,15 @@ function SchemaForm(
 			)}
 			<SingleSchema
 				schema={schema}
+				path=""
 				value={value}
+				schemaRepository={schemaRepository}
 				onChange={(path, v) => {
 					console.log(path, v);
 				}}
 			/>
 		</div>
 	);
-}
-
-function SingleSchema({
-	schema = Schema.ofAny('Any'),
-	value,
-	showLabel = false,
-	onChange,
-}: {
-	schema?: Schema;
-	value: any;
-	showLabel?: boolean;
-	onChange: (path: string, v: any) => void;
-}) {
-	return <div className="_singleSchema"></div>;
 }
 
 const component: Component = {
