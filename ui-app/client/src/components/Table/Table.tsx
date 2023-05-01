@@ -381,9 +381,7 @@ function TableComponent(props: ComponentProps) {
 								}
 							}}
 						>
-							{(perPageNumbers ?? '')
-								.split(',')
-								.map((e: string) => parseInt(e))
+							{perPageNumbers
 								.filter((e: number) => !isNaN(e))
 								.map((e: number) => (
 									<option key={e} value={e}>
@@ -526,14 +524,15 @@ function TableComponent(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-table',
 	name: 'Table',
 	displayName: 'Table',
 	description: 'Table component',
 	component: TableComponent,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
+	styleProperties: stylePropertiesDefinition,
 	styleComponent: TableStyle,
-	hasChildren: true,
 	allowedChildrenType: new Map([
 		['TableEmptyGrid', 1],
 		['TableColumns', 1],

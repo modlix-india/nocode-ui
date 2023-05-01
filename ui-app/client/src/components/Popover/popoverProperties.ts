@@ -1,16 +1,20 @@
-import { Schema } from '@fincity/kirun-js';
-import { SCHEMA_REF_BOOL_COMP_PROP, SCHEMA_REF_STRING_COMP_PROP } from '../../constants';
-import { ComponentPropertyDefinition, ComponentPropertyEditor } from '../../types/common';
+import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
+import {
+	ComponentPropertyDefinition,
+	ComponentPropertyEditor,
+	ComponentPropertyGroup,
+} from '../../types/common';
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'position',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Popover position',
-		description: `Popover position.`,
+		description: 'Popover position with respect to first child which is the trigger.',
 		defaultValue: 'bottom-end',
 		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.BASIC,
 		enumValues: [
 			{
 				name: 'bottom',
@@ -52,51 +56,44 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'showTip',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show Popover tip',
-		description: `Show Popover tip.`,
+		description: 'Show Popover tip.',
 		defaultValue: true,
+		group: ComponentPropertyGroup.BASIC,
 	},
 	{
 		name: 'closeOnLeave',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Close Popover on leave',
-		description: `Close Popover on leave.`,
+		description: 'Close Popover on leave.',
 		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
 	},
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
 const stylePropertiesDefinition = {
-	'': {
-		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: COMPONENT_STYLE_GROUP_PROPERTIES.margin,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: COMPONENT_STYLE_GROUP_PROPERTIES.padding,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.outline.type]: COMPONENT_STYLE_GROUP_PROPERTIES.outline,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.position.type]: COMPONENT_STYLE_GROUP_PROPERTIES.position,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: COMPONENT_STYLE_GROUP_PROPERTIES.size,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.transform.type]:
-			COMPONENT_STYLE_GROUP_PROPERTIES.transform,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: COMPONENT_STYLE_GROUP_PROPERTIES.border,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.zIndex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.zIndex,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.flex.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.flex,
-			target: ['popoverContainer'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.background.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.background,
-			target: ['popoverContainer'],
-		},
-	},
-	popoverContainer: {
-		[COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.border,
-			name: 'popoverContainerBorder',
-			displayName: 'Popover Container Border',
-			description: 'Popover Container Border.',
-			prefix: 'popoverContainer',
-			target: ['popoverContainer'],
-		},
-	},
+	'': [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	popoverContainer: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
 };
 
 export { propertiesDefinition, stylePropertiesDefinition };

@@ -9,6 +9,24 @@ export default function RadioButtonStyle({ theme }: { theme: Map<string, Map<str
 		`
     ${PREFIX}{
         display: flex;
-    }` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
+    }
+
+    ${PREFIX} .radioLabel {
+        display: inline-flex;
+        gap: 5px;
+        justify-items: center;
+        text-align: center;
+        align-items: center;
+        
+    }
+
+    ${PREFIX} .radioLabel.horizontal {
+        flex-direction: row;
+    }
+
+    ${PREFIX} .radioLabel.vertical {
+        flex-direction: column;
+    }
+    ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 	return <style id="RadioButtonCss">{css}</style>;
 }

@@ -97,6 +97,7 @@ function TextEditor(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-rectangle-list',
 	name: 'TextEditor',
 	displayName: 'Text Editor',
 	description: 'Text Editor component',
@@ -104,6 +105,16 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TextEditorStyle,
+	styleProperties: stylePropertiesDefinition,
+	defaultTemplate: {
+		key: '',
+		type: 'TextEditor',
+		name: 'TextEditor',
+		properties: {},
+	},
+	bindingPaths: {
+		bindingPath: { name: 'Text binding' },
+	},
 };
 
 export default component;

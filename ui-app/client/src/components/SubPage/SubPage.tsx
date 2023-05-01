@@ -104,15 +104,16 @@ function SubPage(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-note-sticky',
 	name: 'SubPage',
 	displayName: 'SubPage',
 	description: 'SubPage component',
 	component: SubPage,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
+	styleProperties: stylePropertiesDefinition,
 	styleComponent: SubPageStyle,
 	stylePseudoStates: [],
-	hasChildren: false,
 	bindingPaths: {
 		bindingPath: { name: 'Parent Binding' },
 	},

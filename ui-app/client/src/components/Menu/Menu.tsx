@@ -140,7 +140,10 @@ function Menu(props: ComponentProps) {
 			{icon ? (
 				<i style={resolvedStyles.icon ?? {}} className={`${icon} icon`}></i>
 			) : (
-				<i className="icon fa-solid fa-user icon hide"></i>
+				<i
+					className="icon fa-solid fa-user icon hide"
+					style={resolvedStyles.icon ?? {}}
+				></i>
 			)}
 			{!onlyIconMenu && (
 				<span className="menuText">
@@ -214,6 +217,7 @@ function Menu(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-bars',
 	name: 'Menu',
 	displayName: 'Menu',
 	description: 'Menu component',
@@ -223,8 +227,16 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['focus', 'hover', 'disabled'],
-	hasChildren: true,
 	allowedChildrenType: new Map([['Menu', -1]]),
+	defaultTemplate: {
+		key: '',
+		type: 'Menu',
+		name: 'Menu',
+		properties: {
+			label: { value: 'Menu' },
+			icon: { value: 'fa-solid fa-bars' },
+		},
+	},
 };
 
 export default component;

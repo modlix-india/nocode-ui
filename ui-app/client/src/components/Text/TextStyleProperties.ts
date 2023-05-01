@@ -6,7 +6,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		displayName: 'Default text Color',
 		description: 'Default text Color',
-		defaultValue: '<main-font-color>',
+		defaultValue: '<mainFontColor>',
 		selector: 'span',
 	},
 	{
@@ -14,7 +14,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'font-size',
 		displayName: 'Default text Size',
 		description: 'Default text Size',
-		defaultValue: '<main-font-size>',
+		defaultValue: '<mainFontSize>',
 		selector: 'span',
 	},
 	{
@@ -22,7 +22,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		displayName: 'H1 text Color',
 		description: 'H1 text Color',
-		defaultValue: '<main-font-color>',
+		defaultValue: '<mainFontColor>',
 		selector: 'h1',
 	},
 	{
@@ -37,7 +37,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		displayName: 'H2 text Color',
 		description: 'H2 text Color',
-		defaultValue: '<main-font-color>',
+		defaultValue: '<mainFontColor>',
 		selector: 'h2',
 	},
 	{
@@ -52,7 +52,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		displayName: 'H3 text Color',
 		description: 'H3 text Color',
-		defaultValue: '<main-font-color>',
+		defaultValue: '<mainFontColor>',
 		selector: 'h3',
 	},
 	{
@@ -67,7 +67,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		displayName: 'H4 text Color',
 		description: 'H4 text Color',
-		defaultValue: '<main-font-color>',
+		defaultValue: '<mainFontColor>',
 		selector: 'h4',
 	},
 	{
@@ -82,7 +82,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		displayName: 'H5 text Color',
 		description: 'H5 text Color',
-		defaultValue: '<main-font-color>',
+		defaultValue: '<mainFontColor>',
 		selector: 'h5',
 	},
 	{
@@ -97,7 +97,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		displayName: 'H6 text Color',
 		description: 'H6 text Color',
-		defaultValue: '<main-font-color>',
+		defaultValue: '<mainFontColor>',
 		selector: 'h6',
 	},
 	{
@@ -112,7 +112,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		displayName: 'I text Color',
 		description: 'I text Color',
-		defaultValue: '<main-font-color>',
+		defaultValue: '<mainFontColor>',
 		selector: 'i',
 	},
 	{
@@ -127,7 +127,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		displayName: 'P text Color',
 		description: 'P text Color',
-		defaultValue: '<main-font-color>',
+		defaultValue: '<mainFontColor>',
 		selector: 'p',
 	},
 	{
@@ -142,7 +142,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		displayName: 'PRE text Color',
 		description: 'PRE text Color',
-		defaultValue: '<main-font-color>',
+		defaultValue: '<mainFontColor>',
 		selector: 'pre',
 	},
 	{

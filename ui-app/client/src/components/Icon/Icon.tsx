@@ -22,14 +22,14 @@ function Icon(props: ComponentProps) {
 	const styleProperties = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
 
 	return (
-		<div className="comp compIcon" style={styleProperties.comp ?? {}}>
+		<i className={`comp compIcon _icon ${icon}`} style={styleProperties.comp ?? {}}>
 			<HelperComponent definition={definition} />
-			<i className={`_icon ${icon}`} style={styleProperties.icon ?? {}}></i>
-		</div>
+		</i>
 	);
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-icons',
 	name: 'Icon',
 	displayName: 'Icon',
 	description: 'Icon component',
@@ -37,6 +37,15 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: IconStyle,
+	styleProperties: stylePropertiesDefinition,
+	defaultTemplate: {
+		key: '',
+		name: 'Icon',
+		type: 'Icon',
+		properties: {
+			icon: { value: 'fa-solid fa-icons' },
+		},
+	},
 };
 
 export default component;

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ComponentDefinitions } from '../components';
+import ComponentDefinitions from '../components';
 import { STORE_PATH_APP, STORE_PATH_STYLE_PATH, STORE_PATH_THEME_PATH } from '../constants';
 import { addListener } from '../context/StoreContext';
 import { Component, StyleResolution } from '../types/common';
@@ -16,6 +16,10 @@ export default function AppStyle() {
 
 	const TABLET_MIN_WIDTH = StyleResolutionDefinition.get(
 		StyleResolution.TABLET_POTRAIT_SCREEN,
+	)?.minWidth;
+
+	const TABLET_LAND_MIN_WIDTH = StyleResolutionDefinition.get(
+		StyleResolution.TABLET_LANDSCAPE_SCREEN,
 	)?.minWidth;
 
 	const DESKTOP_MIN_WIDTH = StyleResolutionDefinition.get(
@@ -67,9 +71,15 @@ export default function AppStyle() {
 	*:after {
 		box-sizing: border-box;
 	}
-	
+
+	${window.isDesignMode ? 'html { overflow-y: hidden; }' : ''}
+
 	.hide{
 		opacity:0;
+	}
+
+	.show{
+		opacity:1;
 	}
 
 	.comp {
@@ -84,8 +94,9 @@ export default function AppStyle() {
 		visibility: visible;
 	}
 
-	._ROWLAYOUT,._SINGLECOLUMNLAYOUT {
+	._ROWLAYOUT, ._SINGLECOLUMNLAYOUT, ._ROWCOLUMNLAYOUT {
 		display: flex;
+		flex-direction: column;
 	}
 
 	._FIVECOLUMNSLAYOUT,
@@ -119,27 +130,52 @@ export default function AppStyle() {
 		._THREECOLUMNSLAYOUT {
 			grid-template-columns: 1fr 1fr 1fr;
 		}
+
+		._ROWCOLUMNLAYOUT{
+			flex-direction: row;
+		}
 	}
 
 	._pointer {
 		cursor: pointer;
 	}
 
+	._validationMessages {
+		position: relative;
+	}
+
+	._eachValidationMessage {
+		position: relative;
+	}
+
 	._validationMessages._floatingMessages {
 		position:absolute;
 		z-index:1;
+	}
+
+	.opacityShowOnHover {
+		opacity: 0;
+	}
+	
+	.opacityShowOnHover:hover {
+		opacity: 1 !important;
+	}
+
+	.disableChildrenEvents * {
+		pointer-events: none;
 	}
 	` + processStyleDefinition('', styleProperties, styleDefaults, theme);
 
 	const styleComps = new Array();
 
-	for (let i = 0; i < ComponentDefinitions.length; i++) {
-		const comp: Component = ComponentDefinitions[i];
-		if (!comp.styleComponent) continue;
-		if (compList.size != 0 && !compList.has(comp.name)) continue;
+	const comps = ComponentDefinitions.values();
+	let comp: IteratorResult<Component, boolean>;
+	while (!(comp = comps.next()).done) {
+		if (!comp.value.styleComponent) continue;
+		if (compList.size != 0 && !compList.has(comp.value.name)) continue;
 
-		const StyleComp = comp.styleComponent;
-		styleComps.push(<StyleComp key={comp.displayName + '_stylcomps'} theme={theme} />);
+		const StyleComp = comp.value.styleComponent;
+		styleComps.push(<StyleComp key={comp.value.displayName + '_stylcomps'} theme={theme} />);
 	}
 
 	return (

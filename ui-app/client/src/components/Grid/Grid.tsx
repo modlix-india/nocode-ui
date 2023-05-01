@@ -51,6 +51,7 @@ function Grid(props: ComponentProps) {
 			background,
 			observeChildren,
 			observerThresholds,
+			rootMargin,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -81,7 +82,7 @@ function Grid(props: ComponentProps) {
 			.filter((e: number) => !isNaN(e) && e <= 1 && e >= 0);
 		const options = {
 			root: ref.current,
-			rootMargin: '0px',
+			rootMargin: rootMargin,
 			threshold,
 		};
 		setObserver(new IntersectionObserver(observerrCallback, options));
@@ -180,6 +181,7 @@ function Grid(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-table-cells',
 	name: 'Grid',
 	displayName: 'Grid',
 	description: 'Grid component',
@@ -188,9 +190,15 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleComponent: GridStyle,
 	stylePseudoStates: ['hover', 'focus', 'readonly'],
-	hasChildren: true,
+	allowedChildrenType: new Map<string, number>([['', -1]]),
+	styleProperties: stylePropertiesDefinition,
 	bindingPaths: {
 		bindingPath: { name: 'Scrolled Component Binding' },
+	},
+	defaultTemplate: {
+		key: '',
+		name: 'Grid',
+		type: 'Grid',
 	},
 };
 

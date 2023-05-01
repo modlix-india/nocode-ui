@@ -49,20 +49,19 @@ function ProgressBar(props: ComponentProps) {
 		stylePropertiesWithPseudoStates,
 	);
 
-	if (!bindingPath) throw new Error('Definition requires bindigPath');
 	const [value, setValue] = React.useState(0);
-	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
-	React.useEffect(
-		() =>
-			addListenerAndCallImmediately(
-				(_, value) => {
-					setValue(value ?? 0);
-				},
-				pageExtractor,
-				bindingPathPath,
-			),
-		[bindingPath],
-	);
+	const bindingPathPath =
+		bindingPath && getPathFromLocation(bindingPath, locationHistory, pageExtractor);
+	React.useEffect(() => {
+		if (!bindingPathPath) return;
+		return addListenerAndCallImmediately(
+			(_, value) => {
+				setValue(value ?? 0);
+			},
+			pageExtractor,
+			bindingPathPath,
+		);
+	}, [bindingPath]);
 
 	return (
 		<div className="comp compProgressBar" style={resolvedStyles.comp ?? {}}>
@@ -105,6 +104,7 @@ function ProgressBar(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-bars-progress',
 	name: 'ProgressBar',
 	displayName: 'ProgressBar',
 	description: 'ProgressBar component',
@@ -114,6 +114,11 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['hover'],
+	defaultTemplate: {
+		key: '',
+		type: 'ProgressBar',
+		name: 'ProgressBar',
+	},
 };
 
 export default component;

@@ -85,6 +85,7 @@ function MarkDown({ text }: { text: string }) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-heading',
 	name: 'Text',
 	displayName: 'Text',
 	description: 'Text component',
@@ -92,7 +93,14 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TextStyle,
+	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['hover'],
+	defaultTemplate: {
+		key: '',
+		type: 'Text',
+		name: 'Text',
+		properties: { text: { value: 'Text' } },
+	},
 };
 
 export default component;

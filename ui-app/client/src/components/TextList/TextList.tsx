@@ -25,8 +25,8 @@ function TextList(props: ComponentProps) {
 			listIcon,
 			listType,
 			listStyleType,
-			textKey,
-			textKeyType,
+			labelKey,
+			labelKeyType,
 			uniqueKey,
 			uniqueKeyType,
 			datatype,
@@ -49,12 +49,12 @@ function TextList(props: ComponentProps) {
 				datatype,
 				uniqueKeyType,
 				uniqueKey,
-				textKeyType,
-				textKey,
-				textKeyType,
-				textKey,
+				labelKeyType,
+				labelKey,
+				labelKeyType,
+				labelKey,
 			),
-		[data, datatype, uniqueKeyType, uniqueKey, textKeyType, textKey, textKeyType, textKey],
+		[data, datatype, uniqueKeyType, uniqueKey, labelKeyType, labelKey, labelKeyType, labelKey],
 	);
 
 	const [hover, setHover] = useState('');
@@ -150,6 +150,7 @@ function TextList(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-list-ul',
 	name: 'TextList',
 	displayName: 'TextList',
 	description: 'TextList component',
@@ -157,7 +158,16 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TextListStyle,
+	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['hover'],
+	defaultTemplate: {
+		key: '',
+		type: 'TextList',
+		name: 'TextList',
+		properties: {
+			text: { value: 'Text1,Text2,Text3' },
+		},
+	},
 };
 
 export default component;

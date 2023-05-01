@@ -19,6 +19,7 @@ import CheckBoxStyle from './CheckBoxStyle';
 import CommonCheckbox from '../../commonComponents/CommonCheckbox';
 import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import { runEvent } from '../util/runEvent';
 
 function CheckBox(props: ComponentProps) {
 	const [checkBoxdata, setCheckBoxData] = useState(false);
@@ -26,6 +27,7 @@ function CheckBox(props: ComponentProps) {
 	const [focus, setFocus] = useState(false);
 	const {
 		pageDefinition: { translations },
+		pageDefinition,
 		definition: { bindingPath },
 		locationHistory,
 		definition,
@@ -34,7 +36,7 @@ function CheckBox(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
 		key,
-		properties: { label, readOnly, orientation } = {},
+		properties: { label, readOnly, orientation, onClick } = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
 		definition,
@@ -43,9 +45,14 @@ function CheckBox(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	if (!bindingPath) return <>Binding Path Required</>;
-	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
+
+	const clickEvent = onClick ? pageDefinition.eventFunctions[onClick] : undefined;
+
+	const bindingPathPath =
+		bindingPath && getPathFromLocation(bindingPath, locationHistory, pageExtractor);
+
 	useEffect(() => {
+		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
 			(_, value) => {
 				setCheckBoxData(!!value);
@@ -58,10 +65,18 @@ function CheckBox(props: ComponentProps) {
 		{ hover, focus, disabled: readOnly },
 		stylePropertiesWithPseudoStates,
 	);
-	const handleChange = (event: any) => {
-		console.log(event.target.checked, bindingPathPath);
-		setData(bindingPathPath, event.target.checked, context.pageName);
+	const handleChange = async (event: any) => {
+		if (bindingPathPath) setData(bindingPathPath, !!event.target.checked, context.pageName);
+		if (clickEvent)
+			await runEvent(
+				pageDefinition.eventFunctions[onClick],
+				key,
+				context.pageName,
+				locationHistory,
+				pageDefinition,
+			);
 	};
+
 	return (
 		<div className="comp compCheckBox" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />
@@ -96,6 +111,7 @@ function CheckBox(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-square-check',
 	name: 'CheckBox',
 	displayName: 'CheckBox',
 	description: 'CheckBox component',
@@ -103,8 +119,18 @@ const component: Component = {
 	component: CheckBox,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
+	styleProperties: stylePropertiesDefinition,
 	bindingPaths: {
 		bindingPath: { name: 'Data Binding' },
+	},
+	stylePseudoStates: ['hover', 'focus', 'disabled'],
+	defaultTemplate: {
+		key: '',
+		name: 'CheckBox',
+		type: 'CheckBox',
+		properties: {
+			label: { value: 'Check Box' },
+		},
 	},
 };
 

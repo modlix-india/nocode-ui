@@ -42,14 +42,15 @@ function TableColumnHeaderComponent(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-diagram-next',
 	name: 'TableColumnHeader',
 	displayName: 'Table Header',
 	description: 'Table Header component',
 	component: TableColumnHeaderComponent,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
+	styleProperties: stylePropertiesDefinition,
 	properties: propertiesDefinition,
 	styleComponent: TableColumnHeaderStyle,
-	hasChildren: false,
 	isHidden: true,
 };
 

@@ -47,8 +47,11 @@ function Popover(props: ComponentProps) {
 	const popoverRef = React.createRef<HTMLDivElement>();
 	const popChildren = Object.keys(children ?? {})
 		.map(e => pageDefinition.componentDefinition[e])
-		.sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
-	if (!popChildren.length) throw new Error('Definition requires children');
+		.sort((a: any, b: any) => {
+			const v = (a?.displayOrder ?? 0) - (b?.displayOrder ?? 0);
+			return v === 0 ? (a?.key ?? '').localeCompare(b?.key ?? '') : v;
+		});
+
 	const popController = popChildren[0];
 	const popover = popChildren[1];
 
@@ -75,54 +78,63 @@ function Popover(props: ComponentProps) {
 	return (
 		<div className="comp compPopover" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />
-			<div
-				style={{ display: 'inline-flex' }}
-				ref={boxRef}
-				onClick={showPopover}
-				onMouseLeave={closeOnLeave ? handleMouseLeave : undefined}
-			>
-				<Children
-					key={`${key}_${popController}_chld`}
-					pageDefinition={pageDefinition}
-					children={{ [popController.key]: true }}
-					context={{ ...context, isReadonly }}
-					locationHistory={locationHistory}
-				/>
-				{show ? (
-					<Portal>
-						<div
-							ref={popoverRef}
-							onClick={e => e.stopPropagation()}
-							style={{
-								position: 'absolute',
-								...coords,
-							}}
-							className="comp compPopover popover"
-						>
-							{showTip ? (
-								<div className={`popoverTip ${tipPosition}`} style={tipStyle}></div>
-							) : null}
+			{popChildren.length ? (
+				<div
+					style={{ display: 'inline-flex' }}
+					ref={boxRef}
+					onClick={showPopover}
+					onMouseLeave={closeOnLeave ? handleMouseLeave : undefined}
+				>
+					<Children
+						key={`${key}_${popController}_chld`}
+						pageDefinition={pageDefinition}
+						children={{ [popController.key]: true }}
+						context={{ ...context, isReadonly }}
+						locationHistory={locationHistory}
+					/>
+					{show ? (
+						<Portal>
 							<div
-								className={`popoverContainer`}
-								style={{ ...margin, ...(resolvedStyles?.popoverContainer ?? {}) }}
+								ref={popoverRef}
+								onClick={e => e.stopPropagation()}
+								style={{
+									position: 'absolute',
+									...coords,
+								}}
+								className="comp compPopover popover"
 							>
-								<Children
-									key={`${key}_${popover.key}_chld`}
-									pageDefinition={pageDefinition}
-									children={{ [popover.key]: true }}
-									context={{ ...context, isReadonly }}
-									locationHistory={locationHistory}
-								/>
+								{showTip ? (
+									<div
+										className={`popoverTip ${tipPosition}`}
+										style={tipStyle}
+									></div>
+								) : null}
+								<div
+									className={`popoverContainer`}
+									style={{
+										...margin,
+										...(resolvedStyles?.popoverContainer ?? {}),
+									}}
+								>
+									<Children
+										key={`${key}_${popover.key}_chld`}
+										pageDefinition={pageDefinition}
+										children={{ [popover.key]: true }}
+										context={{ ...context, isReadonly }}
+										locationHistory={locationHistory}
+									/>
+								</div>
 							</div>
-						</div>
-					</Portal>
-				) : null}
-			</div>
+						</Portal>
+					) : null}
+				</div>
+			) : null}
 		</div>
 	);
 }
 
 const component: Component = {
+	icon: 'fa-regular fa-message',
 	name: 'Popover',
 	displayName: 'Popover',
 	description: 'Popover component',
@@ -132,6 +144,12 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: [],
+	defaultTemplate: {
+		key: '',
+		type: 'Popover',
+		name: 'Popover',
+		properties: {},
+	},
 };
 
 export default component;

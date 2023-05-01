@@ -1,18 +1,17 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useLocation, Location, useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../constants';
 import {
 	addListener,
 	addListenerAndCallImmediately,
-	getData,
 	getDataFromPath,
 	setData,
 } from '../context/StoreContext';
 import * as getPageDefinition from './../definitions/getPageDefinition.json';
 import { runEvent } from '../components/util/runEvent';
-import { Components } from '../components';
+import ComponentDefinitions from '../components';
 import { processLocation } from '../util/locationProcessor';
-import { deepEqual, isNullValue } from '@fincity/kirun-js';
+import { isNullValue } from '@fincity/kirun-js';
 
 export const RenderEngineContainer = () => {
 	const location = useLocation();
@@ -97,16 +96,47 @@ export const RenderEngineContainer = () => {
 			))();
 	}, [shellPageDefinition?.properties?.onLoadEvent]);
 
-	const Page = Components.get('Page')!;
+	const [, setLastChanged] = useState(Date.now());
+
+	useEffect(() => {
+		if (window.designMode !== 'PAGE') return;
+
+		function onMessageRecieved(e: MessageEvent) {
+			const { data: { type } = {} } = e;
+
+			if (!type || !type.startsWith('EDITOR_')) return;
+			setLastChanged(Date.now());
+		}
+		window.addEventListener('message', onMessageRecieved);
+		return () => window.removeEventListener('message', onMessageRecieved);
+	}, [setLastChanged]);
+
+	useEffect(() => {
+		if (window.designMode !== 'PAGE') return;
+
+		return addListener(
+			(_, v) => setPageDefinition(v),
+			undefined,
+			`${STORE_PREFIX}.pageDefinition.${currentPageName}`,
+		);
+	}, [currentPageName]);
+
+	const Page = ComponentDefinitions.get('Page')!.component;
+
+	if (isNullValue(pageDefinition)) return <>...</>;
 
 	if (currentPageName && pageDefinition) {
 		const { properties: { wrapShell = true } = {} } = pageDefinition;
 
-		if (wrapShell && shellPageDefinition)
+		if (
+			wrapShell &&
+			shellPageDefinition &&
+			(window.designMode !== 'PAGE' || !window.pageEditor?.personalization?.slave?.noShell)
+		)
 			return (
 				<Page
 					locationHistory={[]}
-					definition={shellPageDefinition}
+					pageDefinition={shellPageDefinition}
 					context={{ pageName: GLOBAL_CONTEXT_NAME }}
 				/>
 			);
@@ -114,7 +144,7 @@ export const RenderEngineContainer = () => {
 		return (
 			<Page
 				locationHistory={[]}
-				definition={pageDefinition}
+				pageDefinition={pageDefinition}
 				context={{ pageName: currentPageName }}
 			/>
 		);
@@ -126,7 +156,7 @@ export const RenderEngineContainer = () => {
 		return (
 			<Page
 				locationHistory={[]}
-				definition={shellPageDefinition}
+				pageDefinition={shellPageDefinition}
 				context={{ pageName: GLOBAL_CONTEXT_NAME }}
 			/>
 		);

@@ -3,11 +3,42 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { RenderEngineContainer } from '../Engine/RenderEngineContainer';
 import * as getAppDefinition from '../definitions/getAppDefinition.json';
 import { runEvent } from '../components/util/runEvent';
-import { addListener, addListenerAndCallImmediately, setData } from '../context/StoreContext';
+import {
+	addListener,
+	addListenerAndCallImmediately,
+	getDataFromPath,
+	innerSetData,
+	setData,
+} from '../context/StoreContext';
 import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../constants';
 import { StyleResolution } from '../types/common';
 import { StyleResolutionDefinition } from '../util/styleProcessor';
 import { Messages } from './Messages/Messages';
+import { isSlave, messageToMaster, SLAVE_FUNCTIONS } from '../slaveFunctions';
+
+// In design mode we are listening to the messages from editor
+
+window.isDesignMode = isSlave;
+
+function onMessageFromEditor(event: MessageEvent) {
+	const { data: { type, payload } = {} } = event;
+
+	if (!type || !type.startsWith('EDITOR_')) return;
+
+	if (!SLAVE_FUNCTIONS.has(type)) throw Error('Unknown message from Editor : ' + type);
+
+	SLAVE_FUNCTIONS.get(type)?.(payload);
+	if (type === 'EDITOR_DEFINITION') {
+		const storePage = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${payload.name}`, []);
+		if (storePage?.name !== payload.name) return;
+		innerSetData(`${STORE_PREFIX}.pageDefinition.${payload.name}`, payload);
+	}
+}
+
+if (window.isDesignMode) {
+	window.addEventListener('message', onMessageFromEditor);
+	messageToMaster({ type: 'SLAVE_STARTED', payload: undefined });
+}
 
 function processTagType(headTags: any, tag: string) {
 	if (!headTags) return;
@@ -130,6 +161,34 @@ function setDeviceType() {
 	} else {
 		newDevices[StyleResolution.MOBILE_POTRAIT_SCREEN_ONLY] = true;
 		newDevices[StyleResolution.MOBILE_POTRAIT_SCREEN] = true;
+	}
+
+	if (
+		size <=
+		StyleResolutionDefinition.get(StyleResolution.MOBILE_LANDSCAPE_SCREEN_SMALL)?.maxWidth!
+	) {
+		newDevices[StyleResolution.MOBILE_LANDSCAPE_SCREEN_SMALL] = true;
+		newDevices[StyleResolution.TABLET_POTRAIT_SCREEN_SMALL] = true;
+		newDevices[StyleResolution.TABLET_LANDSCAPE_SCREEN_SMALL] = true;
+		newDevices[StyleResolution.DESKTOP_SCREEN_SMALL] = true;
+	}
+	if (
+		size <=
+		StyleResolutionDefinition.get(StyleResolution.TABLET_POTRAIT_SCREEN_SMALL)?.maxWidth!
+	) {
+		newDevices[StyleResolution.TABLET_POTRAIT_SCREEN_SMALL] = true;
+		newDevices[StyleResolution.TABLET_LANDSCAPE_SCREEN_SMALL] = true;
+		newDevices[StyleResolution.DESKTOP_SCREEN_SMALL] = true;
+	}
+	if (
+		size <=
+		StyleResolutionDefinition.get(StyleResolution.TABLET_LANDSCAPE_SCREEN_SMALL)?.maxWidth!
+	) {
+		newDevices[StyleResolution.TABLET_LANDSCAPE_SCREEN_SMALL] = true;
+		newDevices[StyleResolution.DESKTOP_SCREEN_SMALL] = true;
+	}
+	if (size <= StyleResolutionDefinition.get(StyleResolution.DESKTOP_SCREEN_SMALL)?.maxWidth!) {
+		newDevices[StyleResolution.DESKTOP_SCREEN_SMALL] = true;
 	}
 
 	let devicesString = JSON.stringify(newDevices);

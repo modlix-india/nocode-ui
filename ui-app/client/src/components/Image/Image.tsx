@@ -71,6 +71,7 @@ function ImageComponent(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-image',
 	name: 'Image',
 	displayName: 'Image',
 	description: 'Image Component',
@@ -80,6 +81,15 @@ const component: Component = {
 	styleComponent: ImageStyle,
 	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['hover'],
+	defaultTemplate: {
+		key: '',
+		name: 'Image',
+		type: 'Image',
+		properties: {
+			src: { value: 'api/files/static/file/SYSTEM/appbuilder/Placeholder_view_vector.svg' },
+			alt: { value: 'Placeholder image' },
+		},
+	},
 };
 
 export default component;

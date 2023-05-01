@@ -12,6 +12,7 @@ export const StyleResolutionDefinition = new Map<string, StyleResolutionProperti
 			name: StyleResolution.ALL,
 			displayName: 'Default',
 			description: 'Default for all resolution.',
+			order: 1,
 		},
 	],
 	[
@@ -21,6 +22,7 @@ export const StyleResolutionDefinition = new Map<string, StyleResolutionProperti
 			displayName: 'Wide Screen',
 			description: 'Resolution larger than Wide Screen, width more than 1280px.',
 			minWidth: 1281,
+			order: 2,
 		},
 	],
 	[
@@ -30,6 +32,112 @@ export const StyleResolutionDefinition = new Map<string, StyleResolutionProperti
 			displayName: 'Desktop Screen and Larger',
 			description: 'Resolution larger than Desktop Screen, width more than 1024px.',
 			minWidth: 1025,
+			order: 3,
+		},
+	],
+	[
+		StyleResolution.DESKTOP_SCREEN_ONLY,
+		{
+			name: StyleResolution.DESKTOP_SCREEN_ONLY,
+			displayName: 'Desktop',
+			description: 'Desktop Screen resolution, width 1025px to 1280px (inclusive).',
+			minWidth: 1025,
+			maxWidth: 1280,
+			order: 4,
+		},
+	],
+	[
+		StyleResolution.DESKTOP_SCREEN_SMALL,
+		{
+			name: StyleResolution.DESKTOP_SCREEN_SMALL,
+			displayName: 'Desktop Screen and Smaller',
+			description: 'Desktop Screen resolution, width less than 1280px (inclusive).',
+			maxWidth: 1280,
+			order: 5,
+		},
+	],
+	[
+		StyleResolution.TABLET_LANDSCAPE_SCREEN_ONLY,
+		{
+			name: StyleResolution.TABLET_LANDSCAPE_SCREEN_ONLY,
+			displayName: 'Tablet (Landscape)',
+			description: 'Tablet landscape orientation, width 961px to 1024px (inclusive).',
+			minWidth: 961,
+			maxWidth: 1024,
+			order: 7,
+		},
+	],
+	[
+		StyleResolution.TABLET_LANDSCAPE_SCREEN_SMALL,
+		{
+			name: StyleResolution.TABLET_LANDSCAPE_SCREEN_SMALL,
+			displayName: 'Tablet (Landscape) and Smaller',
+			description: 'Tablet landscape orientation, width less than 1024px (inclusive).',
+			maxWidth: 1024,
+			order: 8,
+		},
+	],
+	[
+		StyleResolution.TABLET_POTRAIT_SCREEN_ONLY,
+		{
+			name: StyleResolution.TABLET_POTRAIT_SCREEN_ONLY,
+			displayName: 'Tablet (Portrait)',
+			description: 'Tablet portrait orientation, width 641px to 960px (inclusive).',
+			minWidth: 641,
+			maxWidth: 960,
+			order: 10,
+		},
+	],
+	[
+		StyleResolution.TABLET_POTRAIT_SCREEN_SMALL,
+		{
+			name: StyleResolution.TABLET_POTRAIT_SCREEN_SMALL,
+			displayName: 'Tablet (Portrait) and Smaller',
+			description: 'Tablet portrait orientation, width less than 960px (inclusive).',
+			maxWidth: 960,
+			order: 11,
+		},
+	],
+	[
+		StyleResolution.MOBILE_LANDSCAPE_SCREEN_ONLY,
+		{
+			name: StyleResolution.MOBILE_LANDSCAPE_SCREEN_ONLY,
+			displayName: 'Mobile (Landscape)',
+			description: 'Mobile landscape orientation, width 481px to 640px (inclusive).',
+			minWidth: 481,
+			maxWidth: 640,
+			order: 13,
+		},
+	],
+	[
+		StyleResolution.MOBILE_LANDSCAPE_SCREEN_SMALL,
+		{
+			name: StyleResolution.MOBILE_LANDSCAPE_SCREEN_SMALL,
+			displayName: 'Mobile (Landscape) and Smaller',
+			description: 'Mobile landscape orientation, width less than 640px (inclusive).',
+			maxWidth: 640,
+			order: 14,
+		},
+	],
+	[
+		StyleResolution.MOBILE_POTRAIT_SCREEN_ONLY,
+		{
+			name: StyleResolution.MOBILE_POTRAIT_SCREEN_ONLY,
+			displayName: 'Mobile (Portrait)',
+			description: 'Mobile portrait orientation, width smaller than 480px.',
+			maxWidth: 480,
+			order: 16,
+		},
+	],
+	[
+		StyleResolution.MOBILE_POTRAIT_SCREEN,
+		{
+			name: StyleResolution.MOBILE_POTRAIT_SCREEN,
+			displayName: 'Mobile (Portrait) and Larger',
+			description:
+				'Resolution larger than Mobile portrait orientation, width more than 320px.',
+			minWidth: 321,
+			order: 15,
 		},
 	],
 	[
@@ -40,6 +148,7 @@ export const StyleResolutionDefinition = new Map<string, StyleResolutionProperti
 			description:
 				'Resolution larger than Table landscape orientation, width more than 960px.',
 			minWidth: 961,
+			order: 6,
 		},
 	],
 	[
@@ -50,6 +159,7 @@ export const StyleResolutionDefinition = new Map<string, StyleResolutionProperti
 			description:
 				'Resolution larger than Table portrait orientation, width more than 640px.',
 			minWidth: 641,
+			order: 9,
 		},
 	],
 
@@ -61,65 +171,7 @@ export const StyleResolutionDefinition = new Map<string, StyleResolutionProperti
 			description:
 				'Resolution larger than Table landscape orientation, width more than 480px.',
 			minWidth: 481,
-		},
-	],
-	[
-		StyleResolution.MOBILE_POTRAIT_SCREEN,
-		{
-			name: StyleResolution.MOBILE_POTRAIT_SCREEN,
-			displayName: 'Tablet (Portrait) and Larger',
-			description:
-				'Resolution larger than Table portrait orientation, width more than 320px.',
-			minWidth: 321,
-		},
-	],
-	[
-		StyleResolution.DESKTOP_SCREEN_ONLY,
-		{
-			name: StyleResolution.DESKTOP_SCREEN_ONLY,
-			displayName: 'Desktop',
-			description: 'Desktop Screen resolution, width 1025px to 1280px (inclusive).',
-			minWidth: 1025,
-			maxWidth: 1280,
-		},
-	],
-	[
-		StyleResolution.TABLET_LANDSCAPE_SCREEN_ONLY,
-		{
-			name: StyleResolution.TABLET_LANDSCAPE_SCREEN_ONLY,
-			displayName: 'Tablet (Landscape)',
-			description: 'Tablet landscape orientation, width 961px to 1024px (inclusive).',
-			minWidth: 961,
-			maxWidth: 1024,
-		},
-	],
-	[
-		StyleResolution.TABLET_POTRAIT_SCREEN_ONLY,
-		{
-			name: StyleResolution.TABLET_POTRAIT_SCREEN_ONLY,
-			displayName: 'Tablet (Portrait)',
-			description: 'Tablet portrait orientation, width 641px to 960px (inclusive).',
-			minWidth: 641,
-			maxWidth: 960,
-		},
-	],
-	[
-		StyleResolution.MOBILE_LANDSCAPE_SCREEN_ONLY,
-		{
-			name: StyleResolution.MOBILE_LANDSCAPE_SCREEN_ONLY,
-			displayName: 'Mobile (Landscape)',
-			description: 'Mobile landscape orientation, width 481px to 640px (inclusive).',
-			minWidth: 481,
-			maxWidth: 640,
-		},
-	],
-	[
-		StyleResolution.MOBILE_POTRAIT_SCREEN_ONLY,
-		{
-			name: StyleResolution.MOBILE_POTRAIT_SCREEN_ONLY,
-			displayName: 'Mobile (Portrait)',
-			description: 'Mobile portrait orientation, width smaller than 480px.',
-			maxWidth: 480,
+			order: 12,
 		},
 	],
 ]);

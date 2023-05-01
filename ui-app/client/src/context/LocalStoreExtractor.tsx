@@ -11,7 +11,8 @@ export class LocalStoreExtractor extends TokenValueExtractor {
 	protected getValueInternal(token: string) {
 		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
 		// Add isSlave_ as prefix for preview mode
-		let localStorageValue = this.store.getItem(parts[1]);
+		const key = window.isDesignMode ? 'designmode_' + parts[1] : parts[1];
+		let localStorageValue = this.store.getItem(key);
 		if (!localStorageValue) return localStorageValue;
 		try {
 			localStorageValue = JSON.parse(localStorageValue);

@@ -10,7 +10,12 @@ import {
 	Schema,
 } from '@fincity/kirun-js';
 import axios from 'axios';
-import { LOCAL_STORE_PREFIX, NAMESPACE_UI_ENGINE, SCHEMA_REF_DATA_LOCATION } from '../constants';
+import {
+	LOCAL_STORE_PREFIX,
+	NAMESPACE_UI_ENGINE,
+	SCHEMA_DATA_LOCATION,
+	STORE_PREFIX,
+} from '../constants';
 import { getData } from '../context/StoreContext';
 import { ComponentProperty } from '../types/common';
 import { pathFromParams, queryParamsSerializer } from './utils';
@@ -26,7 +31,16 @@ const SIGNATURE = new FunctionSignature('DeleteData')
 				'headers',
 				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.UrlParameters`).setDefaultValue({
 					Authorization: {
-						location: [`${LOCAL_STORE_PREFIX}.AuthToken`],
+						location: {
+							expression: `${LOCAL_STORE_PREFIX}.AuthToken`,
+							type: 'EXPRESSION',
+						},
+					},
+					clientCode: {
+						location: {
+							expression: `${STORE_PREFIX}.auth.loggedInClientCode`,
+							type: 'EXPRESSION',
+						},
 					},
 				}),
 			),
@@ -37,7 +51,11 @@ const SIGNATURE = new FunctionSignature('DeleteData')
 			Event.eventMapEntry(Event.OUTPUT, new Map([['data', Schema.ofAny('data')]])),
 			Event.eventMapEntry(
 				Event.ERROR,
-				new Map([['error', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.FetchError`)]]),
+				new Map([
+					['data', Schema.ofAny('data')],
+					['headers', Schema.ofAny('headers')],
+					['status', Schema.ofNumber('status')],
+				]),
 			),
 		]),
 	);

@@ -22,20 +22,20 @@ function Popup(props: ComponentProps) {
 		definition: { bindingPath },
 		context,
 	} = props;
-	if (!bindingPath) throw new Error('Definition needs binding path');
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
-	const bindingPathPath = getPathFromLocation(bindingPath, props.locationHistory, pageExtractor);
+	const bindingPathPath =
+		bindingPath && getPathFromLocation(bindingPath, props.locationHistory, pageExtractor);
 	React.useEffect(() => {
-		if (bindingPath)
-			addListenerAndCallImmediately(
-				(_, value) => {
-					setIsActive(!!value);
-				},
-				pageExtractor,
-				bindingPathPath,
-			);
+		if (!bindingPathPath) return;
+		return addListenerAndCallImmediately(
+			(_, value) => {
+				setIsActive(!!value);
+			},
+			pageExtractor,
+			bindingPathPath,
+		);
 	}, []);
-	let {
+	const {
 		key,
 		properties: {
 			showClose,
@@ -45,6 +45,7 @@ function Popup(props: ComponentProps) {
 			eventOnClose,
 			closeButtonPosition,
 			modelTitle,
+			popupDesign,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -86,7 +87,7 @@ function Popup(props: ComponentProps) {
 
 	const handleClose = React.useCallback(() => {
 		setData(
-			getPathFromLocation(bindingPath, props.locationHistory),
+			getPathFromLocation(bindingPath!, props.locationHistory),
 			false,
 			props.context?.pageName,
 		);
@@ -124,7 +125,7 @@ function Popup(props: ComponentProps) {
 
 	return (
 		<Portal>
-			<div className="comp compPopup">
+			<div className="comp compPopup" style={resolvedStyles.comp ?? {}}>
 				<HelperComponent definition={props.definition} />
 				<div
 					className="backdrop"
@@ -132,7 +133,7 @@ function Popup(props: ComponentProps) {
 					style={resolvedStyles.backdrop ?? {}}
 				>
 					<div
-						className="modal"
+						className={`modal ${popupDesign === '_design2' ? 'design2' : ''} `}
 						style={
 							{
 								...(resolvedStyles?.modal || {}),
@@ -141,23 +142,27 @@ function Popup(props: ComponentProps) {
 						}
 						onClick={handleBubbling}
 					>
-						<div
-							className="TitleIconGrid"
-							style={
-								{
-									...(resolvedStyles?.titleGrid || {}),
-									...(resolvedStyles?.titleGridExtra || {}),
-								} ?? {}
-							}
-						>
-							<div className="closeButtonPosition">
-								{showClose && closeButtonPosition === 'LEFT' ? closeIcon : ''}
+						{popupDesign === '_design1' ? (
+							<div
+								className="TitleIconGrid"
+								style={
+									{
+										...(resolvedStyles?.titleGrid || {}),
+										...(resolvedStyles?.titleGridExtra || {}),
+									} ?? {}
+								}
+							>
+								<div className="closeButtonPosition">
+									{showClose && closeButtonPosition === 'LEFT' ? closeIcon : ''}
+								</div>
+								<div className="modelTitleStyle">{modelTitle && modelTitle}</div>
+								<div className="closeButtonPosition">
+									{showClose && closeButtonPosition === 'RIGHT' ? closeIcon : ''}
+								</div>
 							</div>
-							<div className="modelTitleStyle">{modelTitle && modelTitle}</div>
-							<div className="closeButtonPosition">
-								{showClose && closeButtonPosition === 'RIGHT' ? closeIcon : ''}
-							</div>
-						</div>
+						) : (
+							<div className="design2CloseButton">{showClose ? closeIcon : ''}</div>
+						)}
 						<Children
 							pageDefinition={props.pageDefinition}
 							children={props.definition.children}
@@ -172,6 +177,7 @@ function Popup(props: ComponentProps) {
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-window-restore',
 	name: 'Popup',
 	displayName: 'Popup',
 	description: 'Popup component',
@@ -179,9 +185,15 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: PopupStyles,
-	hasChildren: true,
+	styleProperties: stylePropertiesDefinition,
+	allowedChildrenType: new Map<string, number>([['', -1]]),
 	bindingPaths: {
 		bindingPath: { name: 'Toggle Binding' },
+	},
+	defaultTemplate: {
+		key: '',
+		type: 'Popup',
+		name: 'Popup',
 	},
 };
 

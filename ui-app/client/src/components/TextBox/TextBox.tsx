@@ -77,24 +77,25 @@ function TextBox(props: ComponentProps) {
 		stylePropertiesWithPseudoStates,
 	);
 	const [value, setValue] = React.useState(defaultValue ?? '');
-	if (!bindingPath) throw new Error('Binding path is required by definition');
-	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
 
-	React.useEffect(
-		() =>
-			addListenerAndCallImmediately(
-				(_, value) => {
-					if (isNullValue(value)) {
-						setValue('');
-						return;
-					}
-					setValue(value);
-				},
-				pageExtractor,
-				bindingPathPath,
-			),
-		[bindingPathPath],
-	);
+	const bindingPathPath = bindingPath
+		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
+		: undefined;
+
+	React.useEffect(() => {
+		if (!bindingPathPath) return;
+		return addListenerAndCallImmediately(
+			(_, value) => {
+				if (isNullValue(value)) {
+					setValue('');
+					return;
+				}
+				setValue(value);
+			},
+			pageExtractor,
+			bindingPathPath,
+		);
+	}, [bindingPathPath]);
 
 	const spinnerPath = onEnter
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
@@ -117,7 +118,14 @@ function TextBox(props: ComponentProps) {
 	useEffect(() => {
 		if (!validation?.length) return;
 
-		const msgs = validate(props.definition, props.pageDefinition, validation, value);
+		const msgs = validate(
+			props.definition,
+			props.pageDefinition,
+			validation,
+			value,
+			locationHistory,
+			pageExtractor,
+		);
 		setValidationMessages(msgs);
 
 		setData(
@@ -204,6 +212,7 @@ function TextBox(props: ComponentProps) {
 			props.pageDefinition,
 		);
 	};
+
 	return (
 		<div className="comp compTextBox" style={computedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />
@@ -230,12 +239,15 @@ function TextBox(props: ComponentProps) {
 				focusHandler={() => setFocus(true)}
 				supportingText={supportingText}
 				messageDisplay={messageDisplay}
+				styles={computedStyles}
+				definition={props.definition}
 			/>
 		</div>
 	);
 }
 
 const component: Component = {
+	icon: 'fa-solid fa-i-cursor',
 	name: 'TextBox',
 	displayName: 'TextBox',
 	description: 'TextBox component',
@@ -244,8 +256,18 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	stylePseudoStates: ['focus', 'disabled'],
+	styleProperties: stylePropertiesDefinition,
 	bindingPaths: {
 		bindingPath: { name: 'Text Binding' },
+	},
+	defaultTemplate: {
+		key: '',
+		type: 'TextBox',
+		name: 'TextBox',
+		properties: {
+			placeholder: { value: 'placeholder' },
+			label: { value: 'TextBox' },
+		},
 	},
 };
 
