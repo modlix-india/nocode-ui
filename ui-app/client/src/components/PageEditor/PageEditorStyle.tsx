@@ -766,7 +766,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			width: 100%;
 			height: 100%;
 			align-items: center;
-			z-index: 6;
+			z-index: 3;
 			opacity: 0;
 			transition: opacity 1s;
 		}

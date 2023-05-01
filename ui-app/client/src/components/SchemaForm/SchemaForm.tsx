@@ -23,6 +23,8 @@ import {
 import { AnyValueEditor } from '../PageEditor/editors/propertyValueEditors/AnyValueEditor';
 import { UISchemaRepository } from '../../schemas/common';
 import SingleSchema from './components/SingleSchemaForm';
+import { setStoreData, StoreExtractor } from '@fincity/path-reactive-state-management';
+import duplicate from '../../util/duplicate';
 
 function SchemaForm(
 	props: ComponentProps & {
@@ -83,6 +85,7 @@ function SchemaForm(
 							setData(bindingPathPath, v, pageExtractor.getPageName());
 						else if (props.onChange) props.onChange(v);
 					}}
+					isIconButton={true}
 				/>
 			)}
 			<SingleSchema
@@ -91,7 +94,18 @@ function SchemaForm(
 				value={value}
 				schemaRepository={schemaRepository}
 				onChange={(path, v) => {
-					console.log(path, v);
+					const inValue = undefined;
+
+					const internal = { value: duplicate(value) };
+
+					const map = new Map([['Internal.', new StoreExtractor(internal, 'Internal.')]]);
+
+					setStoreData('Internal.value', internal, v, 'Internal', map);
+
+					if (bindingPathPath) {
+						setData(bindingPathPath, internal.value, pageExtractor.getPageName());
+					}
+					props.onChange?.(internal.value);
 				}}
 			/>
 		</div>
