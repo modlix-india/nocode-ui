@@ -23,11 +23,11 @@ function CommonTriStateCheckbox({
 }: CommonTriStateCheckboxType) {
 	return (
 		<span
-			className={`commonTriStateCheckbox _${states === 3 ? value : !!value} ${
+			className={`commonTriStateCheckbox _${states == 3 ? value : !!value} ${
 				isReadOnly ? 'disabled' : ''
 			}`}
 			id={id}
-			onClick={() =>
+			onClick={() => {
 				(isReadOnly ? undefined : onChange)?.(
 					states === 3
 						? value === true
@@ -36,8 +36,8 @@ function CommonTriStateCheckbox({
 							? undefined
 							: true
 						: !value,
-				)
-			}
+				);
+			}}
 			style={styles}
 			onFocus={focusHandler}
 			onBlur={blurHandler}

@@ -94,13 +94,17 @@ function SchemaForm(
 				value={value}
 				schemaRepository={schemaRepository}
 				onChange={(path, v) => {
-					const inValue = undefined;
-
 					const internal = { value: duplicate(value) };
 
 					const map = new Map([['Internal.', new StoreExtractor(internal, 'Internal.')]]);
 
-					setStoreData('Internal.value', internal, v, 'Internal', map);
+					setStoreData(
+						'Internal.value' + (path ? '.' + path : ''),
+						internal,
+						v,
+						'Internal',
+						map,
+					);
 
 					if (bindingPathPath) {
 						setData(bindingPathPath, internal.value, pageExtractor.getPageName());

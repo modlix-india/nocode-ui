@@ -1,6 +1,7 @@
 import {
 	Repository,
 	Schema,
+	SchemaType,
 	SchemaUtil,
 	SchemaValidationException,
 	SchemaValidator,
@@ -9,21 +10,21 @@ import {
 import React, { useEffect, useState } from 'react';
 import duplicate from '../../../util/duplicate';
 
-export function StringValueEditor({
+export function NumberValueEditor({
 	value,
 	schema,
 	onChange,
 	schemaRepository,
 }: {
-	value: string | undefined;
+	value: number | undefined;
 	schema: Schema;
-	onChange: (v: string | undefined) => void;
+	onChange: (v: number | undefined) => void;
 	schemaRepository: Repository<Schema>;
 }) {
-	const [inValue, setInValue] = useState(value ?? '');
+	const [inValue, setInValue] = useState<number>(isNullValue(value) ? 0 : value!);
 
 	useEffect(() => {
-		setInValue(value ?? '');
+		setInValue(isNullValue(value) ? 0 : value!);
 	}, [value]);
 
 	const [msg, setMsg] = useState<string>('');
@@ -62,12 +63,15 @@ export function StringValueEditor({
 		</select>
 	) : (
 		<input
-			type="text"
+			type="number"
 			value={inValue}
-			onChange={ev => setInValue(ev.target.value)}
+			onChange={ev => {
+				const ind = ev.target.value.indexOf('.');
+				setInValue((ind === -1 ? parseInt : parseFloat)(ev.target.value));
+			}}
 			onKeyDown={ev => {
 				if (ev.key === 'Enter') onChange(inValue);
-				else if (ev.key === 'Escape') setInValue(value ?? '');
+				else if (ev.key === 'Escape') setInValue(isNullValue(value) ? 0 : value!);
 			}}
 			onBlur={() => onChange(inValue)}
 		/>
