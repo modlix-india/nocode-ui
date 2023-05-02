@@ -12,12 +12,13 @@ import { runEvent } from '../components/util/runEvent';
 import ComponentDefinitions from '../components';
 import { processLocation } from '../util/locationProcessor';
 import { isNullValue } from '@fincity/kirun-js';
+import { PageDefinition } from '../types/common';
 
 export const RenderEngineContainer = () => {
 	const location = useLocation();
 	const pathParams = useParams();
 	const [currentPageName, setCurrentPageName] = useState<string | undefined>();
-	const [shellPageDefinition, setShellPageDefinition] = useState<any>();
+	const [shellPageDefinition, setShellPageDefinition] = useState<PageDefinition>();
 	const [pageDefinition, setPageDefinition] = useState<any>();
 
 	const loadDefinition = useCallback(() => {
@@ -99,7 +100,7 @@ export const RenderEngineContainer = () => {
 
 		(async () =>
 			await runEvent(
-				shellPageDefinition.eventFunctions[shellPageDefinition.properties.onLoadEvent],
+				shellPageDefinition.eventFunctions[shellPageDefinition.properties.onLoadEvent!],
 				'appOnLoad',
 				GLOBAL_CONTEXT_NAME,
 				[],
@@ -147,7 +148,11 @@ export const RenderEngineContainer = () => {
 				<Page
 					locationHistory={[]}
 					pageDefinition={shellPageDefinition}
-					context={{ pageName: GLOBAL_CONTEXT_NAME }}
+					context={{
+						pageName: GLOBAL_CONTEXT_NAME,
+						shellPageName: shellPageDefinition?.name,
+						level: 0,
+					}}
 				/>
 			);
 
@@ -155,7 +160,11 @@ export const RenderEngineContainer = () => {
 			<Page
 				locationHistory={[]}
 				pageDefinition={pageDefinition}
-				context={{ pageName: currentPageName }}
+				context={{
+					pageName: currentPageName,
+					shellPageName: shellPageDefinition?.name,
+					level: 0,
+				}}
 			/>
 		);
 	} else if (pageDefinition) {
@@ -167,7 +176,11 @@ export const RenderEngineContainer = () => {
 			<Page
 				locationHistory={[]}
 				pageDefinition={shellPageDefinition}
-				context={{ pageName: GLOBAL_CONTEXT_NAME }}
+				context={{
+					pageName: GLOBAL_CONTEXT_NAME,
+					shellPageName: shellPageDefinition?.name,
+					level: 0,
+				}}
 			/>
 		);
 	} else {

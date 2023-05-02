@@ -107,6 +107,7 @@ function HelperComponentInternal({
 				e.preventDefault();
 				setDragOver(true);
 			}}
+			onDragEnd={() => setDragOver(false)}
 			onDragLeave={() => setDragOver(false)}
 			onDrop={e => {
 				e.dataTransfer.items[0].getAsString(dragData => {
