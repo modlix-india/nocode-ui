@@ -8,6 +8,7 @@ import CarouselStyle from './CarouselStyle';
 import Children from '../Children';
 import { isNullValue } from '@fincity/kirun-js';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import { SubHelperComponent } from '../SubHelperComponent';
 
 function Carousel(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -49,11 +50,18 @@ function Carousel(props: ComponentProps) {
 			props.definition.children
 				? Object.entries(props.definition.children)
 						.filter((e: any) => !!e[1])
-						.sort(
-							(a: any, b: any) =>
+						.sort((a: any, b: any) => {
+							const v =
 								(pageDefinition?.componentDefinition[a[0]]?.displayOrder ?? 0) -
-								(pageDefinition?.componentDefinition[b[0]]?.displayOrder ?? 0),
-						)
+								(pageDefinition?.componentDefinition[b[0]]?.displayOrder ?? 0);
+							return v === 0
+								? (
+										pageDefinition?.componentDefinition[a[0]]?.key ?? ''
+								  ).localeCompare(
+										pageDefinition?.componentDefinition[b[0]]?.key ?? '',
+								  )
+								: v;
+						})
 						.map(e => ({ key: e[0], children: { [e[0]]: e[1] } }))
 				: [],
 		);
@@ -61,6 +69,7 @@ function Carousel(props: ComponentProps) {
 
 	useEffect(() => {
 		if (!autoPlay) return;
+		if (!childrenDef || childrenDef?.length <= 1) return;
 		const handle = setTimeout(
 			() => {
 				setTransitionFrom(slideNum);
@@ -125,7 +134,6 @@ function Carousel(props: ComponentProps) {
 		style.transition = `left ${duration}s ${easing}, right ${duration}s ${easing}`;
 		prevStyle.transition = `left ${duration}s ${easing}, right ${duration}s ${easing}`;
 	}
-
 	if (childrenDef?.length) {
 		if (!isNullValue(transitionFrom)) {
 			showChildren = [
@@ -202,36 +210,59 @@ function Carousel(props: ComponentProps) {
 		>
 			<HelperComponent definition={definition} />
 			{showArrowButtons && (
-				<div
-					className={` ${
-						showNavigationControlsOnHover
-							? `${hover ? `show  arrowButtons${arrowButtons}` : `hide`}`
-							: `arrowButtons${arrowButtons}`
-					}`}
+				<SubHelperComponent
+					definition={props.definition}
+					subComponentName="arrowButtonsContainer"
 				>
-					<i
-						className={` fa-solid fa-chevron-left button ${
-							arrowButtons === 'Middle' ? 'leftArrowButton' : ''
+					<div
+						className={` ${
+							showNavigationControlsOnHover
+								? `${hover ? `show  arrowButtons${arrowButtons}` : `hide`}`
+								: `arrowButtons${arrowButtons}`
 						}`}
-						onClick={() => {
-							if (!isNullValue(transitionFrom)) return;
-							setTransitionFrom(slideNum);
-							setSlideNum(slideNum == 0 ? childrenDef.length - 1 : slideNum - 1);
-							setTimeout(() => setTransitionFrom(undefined), animationDuration + 120);
-						}}
-					></i>
-					<i
-						className={` fa-solid fa-chevron-right button ${
-							arrowButtons === 'Middle' ? 'rightArrowButton' : ''
-						}`}
-						onClick={() => {
-							if (!isNullValue(transitionFrom)) return;
-							setTransitionFrom(slideNum);
-							setSlideNum(slideNum + 1 >= childrenDef.length ? 0 : slideNum + 1);
-							setTimeout(() => setTransitionFrom(undefined), animationDuration + 120);
-						}}
-					></i>
-				</div>
+						style={resolvedStyles.arrowButtonsContainer ?? {}}
+					>
+						<SubHelperComponent
+							definition={props.definition}
+							subComponentName="arrowButtons"
+						>
+							<i
+								className={` fa-solid fa-chevron-left button ${
+									arrowButtons === 'Middle' ? 'leftArrowButton' : ''
+								}`}
+								style={resolvedStyles.arrowButtons ?? {}}
+								onClick={() => {
+									if (!isNullValue(transitionFrom)) return;
+									setTransitionFrom(slideNum);
+									setSlideNum(
+										slideNum == 0 ? childrenDef.length - 1 : slideNum - 1,
+									);
+									setTimeout(
+										() => setTransitionFrom(undefined),
+										animationDuration + 120,
+									);
+								}}
+							></i>
+							<i
+								className={` fa-solid fa-chevron-right button ${
+									arrowButtons === 'Middle' ? 'rightArrowButton' : ''
+								}`}
+								style={resolvedStyles.arrowButtons ?? {}}
+								onClick={() => {
+									if (!isNullValue(transitionFrom)) return;
+									setTransitionFrom(slideNum);
+									setSlideNum(
+										slideNum + 1 >= childrenDef.length ? 0 : slideNum + 1,
+									);
+									setTimeout(
+										() => setTransitionFrom(undefined),
+										animationDuration + 120,
+									);
+								}}
+							></i>
+						</SubHelperComponent>
+					</div>
+				</SubHelperComponent>
 			)}
 			<div
 				className={`innerDivSlideNav ${`slideNavDiv${
@@ -239,34 +270,53 @@ function Carousel(props: ComponentProps) {
 				}`}`}
 			>
 				<div className="innerDiv">{showChildren}</div>
-				<div
-					className={`slideNavDiv${slideNavButtonPosition} ${
-						slideNavButtonPosition === 'OutsideTop' ? 'slideNavDiv' : ''
-					} ${showNavigationControlsOnHover ? (hover ? 'showFlex' : 'hide') : ''}`}
+
+				<SubHelperComponent
+					definition={props.definition}
+					subComponentName="slideButtonsContainer"
 				>
-					{showDotsButtons &&
-						(childrenDef ?? []).map((e: any, key: any) => (
-							<button
-								key={key}
-								className={` slideNav  ${
-									dotsButtonType !== 'none' && hasNumbersInSlideNav === false
-										? `fa-${dotsButtonIconType} fa-${dotsButtonType}`
-										: ` `
-								}  ${hasNumbersInSlideNav ? `${dotsButtonType}WithNumbers` : ''} `}
-								onClick={() => {
-									if (!isNullValue(transitionFrom)) return;
-									setTransitionFrom(slideNum);
-									setSlideNum(key);
-									setTimeout(
-										() => setTransitionFrom(undefined),
-										animationDuration + 20,
-									);
-								}}
-							>
-								{hasNumbersInSlideNav ? key + 1 : ''}
-							</button>
-						))}
-				</div>
+					<div
+						className={`slideNavDiv${slideNavButtonPosition} ${
+							slideNavButtonPosition === 'OutsideTop' ? 'slideNavDiv' : ''
+						} ${showNavigationControlsOnHover ? (hover ? 'showFlex' : 'hide') : ''}`}
+						style={resolvedStyles.slideButtonsContainer ?? {}}
+					>
+						{showDotsButtons &&
+							(childrenDef ?? []).map((e: any, key: any) => (
+								<SubHelperComponent
+									definition={props.definition}
+									subComponentName="dotButtons"
+									key={key}
+								>
+									<button
+										key={key}
+										className={` slideNav  ${
+											dotsButtonType !== 'none' &&
+											hasNumbersInSlideNav === false
+												? `fa-${dotsButtonIconType} fa-${dotsButtonType}`
+												: ` `
+										}  ${
+											hasNumbersInSlideNav
+												? `${dotsButtonType}WithNumbers`
+												: ''
+										} `}
+										style={resolvedStyles.dotButtons ?? {}}
+										onClick={() => {
+											if (!isNullValue(transitionFrom)) return;
+											setTransitionFrom(slideNum);
+											setSlideNum(key);
+											setTimeout(
+												() => setTransitionFrom(undefined),
+												animationDuration + 20,
+											);
+										}}
+									>
+										{hasNumbersInSlideNav ? key + 1 : ''}
+									</button>
+								</SubHelperComponent>
+							))}
+					</div>
+				</SubHelperComponent>
 			</div>
 		</div>
 	);
@@ -278,9 +328,11 @@ const component: Component = {
 	displayName: 'Carousel',
 	description: 'Carousel component',
 	component: Carousel,
+	styleProperties: stylePropertiesDefinition,
 	styleComponent: CarouselStyle,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
+	allowedChildrenType: new Map<string, number>([['', -1]]),
 };
 
 export default component;

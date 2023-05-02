@@ -139,6 +139,11 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			padding: 2px;
 		}
 
+		${PREFIX} ._statement._editParameters {
+			width: 400px;
+			height: 350px;
+		}
+
 		${PREFIX} ._storeContainer {
 			position: fixed;
 			display: flex;
@@ -210,6 +215,10 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			min-height: 44px;
 		}
 
+		${PREFIX} ._statement._editParameters ._commentContainer {
+			background: #fff;
+		}
+
 		${PREFIX} ._statement ._commentContainer ._comment::before {
 			content: '/* ';
 			position: absolute;
@@ -268,7 +277,7 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			flex-direction: row;
 			align-items: center;
 			border-top-right-radius: 4px;
-    		
+    		flex: 1
 		}
 
 		${PREFIX} ._statement ._statementName {
@@ -335,6 +344,10 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			gap: 10px;
 		}
 
+		${PREFIX} ._statement._editParameters ._otherContainer { 
+			overflow: auto;
+		}
+
 		${PREFIX} ._statement ._otherContainer ._eventsContainer,
 		${PREFIX} ._statement ._otherContainer ._paramsContainer {
 			flex: 1;
@@ -349,10 +362,18 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 		${PREFIX} ._statement ._param {
 			position: relative;
 			display: flex;
-			align-items: center;
 			gap: 5px;
 			padding: 3px;
 			padding-left: 0px;
+			flex-direction: column;
+		}
+
+		${PREFIX} ._statement ._paramValue {
+			font-family: monospace;
+			white-space: nowrap;
+			max-width: 200px;
+			text-overflow: ellipsis;
+			overflow: hidden;
 		}
 
 		${PREFIX} ._paramsContainer._event ._param{
@@ -374,6 +395,7 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 		${PREFIX} ._statement ._param ._paramName {
 			cursor: pointer;
 			flex: 1;
+			user-select: none;
 		}
 
 		${PREFIX} ._statement ._paramName._hasValue {
@@ -423,6 +445,10 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			flex-direction: column;
 			margin-left: 10px;
 			gap: 5px;
+		}
+
+		${PREFIX} ._statement ._buttons ._buttonsGap {
+			height: 6px;	
 		}
 
 		${PREFIX} ._statement ._buttons i.fa {
@@ -483,6 +509,9 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			align-items: center;
 			padding-left: 5px;
 			width: 100%;
+			font-size: 11px;
+    		padding: 5px 15px;
+			border: 1px solid #ccc;
 		}
 
 		${PREFIX} ._search ._options {
@@ -562,6 +591,169 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 
 		${PREFIX} ._menu ._menuItem:hover {
 			background-color: #eee;
+		}
+
+		${PREFIX} ._paramEditorBack {
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			background-color: #fffa;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		${PREFIX} ._paramEditorBack ._statementBack {
+			position: absolute;
+		}
+
+		${PREFIX} ._statement._editParameters {
+			position: unset;
+		}
+
+		${PREFIX} ._statement._editParameters ._hideInEdit{
+			display: none !important;
+		}
+
+		${PREFIX} ._statement._editForm {
+			width: 400px;
+		}
+
+		${PREFIX} ._statement._editForm ._header {
+			border-top-left-radius: 4px;
+			border-top-right-radius: 4px;
+			padding-left: 10px;
+		}
+
+		${PREFIX} ._form {
+			padding: 10px;
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+			font-size: 11px;
+		}
+
+		${PREFIX} ._form ._field {
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
+			position: relative;
+		}
+
+		${PREFIX} ._form ._field input{
+			height: 25px;
+			font-size: 11px;
+			padding: 5px 10px;
+			border-radius: 2px;
+			flex: 1;
+			outline: initial;
+			color: #555;
+			background-color: #eee;
+			border: 1px solid #ddd;
+		}
+
+		${PREFIX} ._form ._field span._errors{
+			color: #ff2b2b;
+			background-color: #fffa;
+			position: absolute;
+			bordre-radius: 2px;
+			top: 100%;
+			translate: 0px, 5px;
+			padding: 5px;
+			border-raidus: 4px;
+		}
+
+		${PREFIX} ._formButtons {
+			padding: 10px;
+			display: flex;
+			gap: 10px;
+			justify-content: flex-end;
+		}
+
+		${PREFIX} ._formButtons button {
+			color: #555;
+			background-color: #eee;
+			text-transform: uppercase;
+			font-size: 11px;
+			padding: 5px 15px;
+			cursor: pointer;
+			border-radius: 2px;
+			border: 1px solid #ccc;
+		}
+
+		${PREFIX} ._formButtons ._okButton {
+			background-color: #555;
+			color: #fff;
+		}
+
+		${PREFIX} ._paramEditorRow {
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
+		}
+
+		${PREFIX} ._paramToggleContainer ._paramEditorToggle {
+			display: flex;
+			position: relative;
+			font-size: 10px;
+			cursor: pointer;
+			padding: 3px 22px;
+			padding-left: 5px;
+			height: 20px;
+			border-radius: 20px;
+			border: 1px solid #ccc;
+			transition: width 0.5s;
+			width: 40px;
+		}
+
+		${PREFIX} ._paramEditorRow ._paramEditorToggle::before {
+			position: absolute;
+			content: " ";
+			width: 20px;
+			height: 20px;
+			border-radius: 50%;
+			left: -1px;
+			top: -1px;
+			background-color: #ccc8;
+			transition: left 0.5s;
+			border: 1px solid #ccc;
+		}
+
+		${PREFIX} ._paramEditorRow ._paramEditorToggle._value::before {
+			left: calc(100% - 19px);
+		}
+
+
+		${PREFIX} ._paramToggleContainer {
+			display: flex;
+		}
+
+		${PREFIX} ._paramExpression input {
+			color: #555;
+			border-radius: 4px;
+			font-size: 13px;
+			font-family: inherit;
+			border: none;
+			background-color: #0000000a;
+			width: 100%;
+			
+			padding: 5px 5px;
+		}
+		${PREFIX} ._paramExpression input:focus {
+			outline: #cccccc solid 1px;
+		}
+
+		${PREFIX} ._paramToggleValueGrid {
+			display: flex;
+			gap: 10px;
+			align-items: center;
+		}
+
+		${PREFIX} ._paramToggleValueGrid i.fa {
+			font-size: 13px;
+			cursor: pointer;
 		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

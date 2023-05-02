@@ -212,6 +212,7 @@ const component: Component = {
 	styleComponent: RadioButtonStyle,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
+	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['hover', 'focus', 'disabled'],
 	bindingPaths: {
 		bindingPath: { name: 'Data Binding' },

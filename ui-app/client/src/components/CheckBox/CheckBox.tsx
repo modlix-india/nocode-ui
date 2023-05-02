@@ -119,6 +119,7 @@ const component: Component = {
 	component: CheckBox,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
+	styleProperties: stylePropertiesDefinition,
 	bindingPaths: {
 		bindingPath: { name: 'Data Binding' },
 	},

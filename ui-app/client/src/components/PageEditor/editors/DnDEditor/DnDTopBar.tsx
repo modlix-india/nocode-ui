@@ -24,6 +24,8 @@ interface TopBarProps {
 	firstTimeRef: React.MutableRefObject<PageDefinition[]>;
 	undoStackRef: React.MutableRefObject<PageDefinition[]>;
 	redoStackRef: React.MutableRefObject<PageDefinition[]>;
+	latestVersion: React.MutableRefObject<number>;
+	previewMode: boolean;
 }
 
 export default function DnDTopBar({
@@ -40,6 +42,8 @@ export default function DnDTopBar({
 	firstTimeRef,
 	undoStackRef,
 	redoStackRef,
+	latestVersion,
+	previewMode,
 }: TopBarProps) {
 	const [localUrl, setLocalUrl] = useState(url);
 	const [deviceType, setDeviceType] = useState<string | undefined>();
@@ -64,8 +68,8 @@ export default function DnDTopBar({
 
 		return addListenerWithChildrenActivity(
 			(_, v) => {
+				if (v?.isFromUndoRedoStack) return;
 				if (
-					!v ||
 					deepEqual(
 						v,
 						undoStackRef.current.length
@@ -78,6 +82,8 @@ export default function DnDTopBar({
 					firstTimeRef.current.push(duplicate(v));
 					return;
 				}
+
+				if (latestVersion.current < v.version) latestVersion.current = v.version;
 
 				undoStackRef.current.push(duplicate(v));
 				redoStackRef.current.length = 0;
@@ -107,6 +113,8 @@ export default function DnDTopBar({
 		[onChangePersonalization, deviceType],
 	);
 
+	if (previewMode) return <div className="_topBarGrid _previewMode"> </div>;
+
 	return (
 		<div className="_topBarGrid">
 			<div className="_topLeftBarGrid">
@@ -114,7 +122,7 @@ export default function DnDTopBar({
 					<input
 						ref={inputRef}
 						type="text"
-						className="_urlInput"
+						className="_urlInput _peInput"
 						value={localUrl}
 						onChange={e => setLocalUrl(e.target.value)}
 						onBlur={changeUrl}
@@ -192,15 +200,14 @@ export default function DnDTopBar({
 							const x = undoStackRef.current[undoStackRef.current.length - 1];
 							undoStackRef.current.splice(undoStackRef.current.length - 1, 1);
 							redoStackRef.current.splice(0, 0, x);
-							setData(
-								defPath,
-								duplicate(
-									undoStackRef.current.length
-										? undoStackRef.current[undoStackRef.current.length - 1]
-										: firstTimeRef.current[0],
-								),
-								pageExtractor.getPageName(),
+							const pg = duplicate(
+								undoStackRef.current.length
+									? undoStackRef.current[undoStackRef.current.length - 1]
+									: firstTimeRef.current[0],
 							);
+							pg.version = latestVersion.current;
+							pg.isFromUndoRedoStack = true;
+							setData(defPath, pg, pageExtractor.getPageName());
 							setChanged(Date.now());
 						}}
 						title="Undo"
@@ -214,15 +221,14 @@ export default function DnDTopBar({
 							const x = redoStackRef.current[0];
 							undoStackRef.current.push(x);
 							redoStackRef.current.splice(0, 1);
-							setData(
-								defPath,
-								duplicate(
-									undoStackRef.current.length
-										? undoStackRef.current[undoStackRef.current.length - 1]
-										: firstTimeRef.current[0],
-								),
-								pageExtractor.getPageName(),
+							const pg = duplicate(
+								undoStackRef.current.length
+									? undoStackRef.current[undoStackRef.current.length - 1]
+									: firstTimeRef.current[0],
 							);
+							pg.version = latestVersion.current;
+							pg.isFromUndoRedoStack = true;
+							setData(defPath, pg, pageExtractor.getPageName());
 							setChanged(Date.now());
 						}}
 						title="Redo"
@@ -242,6 +248,7 @@ export default function DnDTopBar({
 					</div>
 				</div>
 				<select
+					className="_peSelect"
 					value={theme}
 					onChange={e => onChangePersonalization('theme', e.target.value)}
 				>

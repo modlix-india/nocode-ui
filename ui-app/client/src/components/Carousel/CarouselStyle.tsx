@@ -10,7 +10,9 @@ export default function CarouselStyle({ theme }: { theme: Map<string, Map<string
 		`
     ${PREFIX} {
         display:flex;
-       
+        width: 100%;
+        height: 100%;
+        flex: 1;
     }
     ${PREFIX}.containerReverse{
         flex-direction:column-reverse;

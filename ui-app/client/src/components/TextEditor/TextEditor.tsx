@@ -105,11 +105,15 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TextEditorStyle,
+	styleProperties: stylePropertiesDefinition,
 	defaultTemplate: {
 		key: '',
 		type: 'TextEditor',
 		name: 'TextEditor',
 		properties: {},
+	},
+	bindingPaths: {
+		bindingPath: { name: 'Text binding' },
 	},
 };
 

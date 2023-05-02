@@ -60,6 +60,7 @@ export enum ComponentPropertyEditor {
 	STYLE_SELECTOR,
 	THEME_SELECTOR,
 	IMAGE,
+	SCHEMA,
 }
 
 export enum ComponentPropertyGroup {
@@ -101,10 +102,11 @@ export interface ComponentStylePropertyGroupDefinition {
 	target: Array<string>;
 	prefix?: string;
 	displayOrder?: number;
+	advanced?: Array<string>;
 }
 
 export interface ComponentStylePropertyDefinition {
-	[key: string]: { [key: string]: ComponentStylePropertyGroupDefinition };
+	[key: string]: Array<string>;
 }
 
 export interface Component {
@@ -145,6 +147,10 @@ export enum StyleResolution {
 	TABLET_POTRAIT_SCREEN_ONLY = 'TABLET_POTRAIT_SCREEN_ONLY',
 	MOBILE_LANDSCAPE_SCREEN_ONLY = 'MOBILE_LANDSCAPE_SCREEN_ONLY',
 	MOBILE_POTRAIT_SCREEN_ONLY = 'MOBILE_POTRAIT_SCREEN_ONLY',
+	DESKTOP_SCREEN_SMALL = 'DESKTOP_SCREEN_SMALL',
+	TABLET_LANDSCAPE_SCREEN_SMALL = 'TABLET_LANDSCAPE_SCREEN_SMALL',
+	TABLET_POTRAIT_SCREEN_SMALL = 'TABLET_POTRAIT_SCREEN_SMALL',
+	MOBILE_LANDSCAPE_SCREEN_SMALL = 'MOBILE_LANDSCAPE_SCREEN_SMALL',
 }
 
 export interface StylePropertyDefinition {
@@ -170,6 +176,7 @@ export interface StyleResolutionProperties {
 	name: string;
 	displayName: string;
 	description: string;
+	order: number;
 }
 
 export interface EachComponentResolutionStyle {
@@ -189,6 +196,10 @@ export interface ComponentResoltuions {
 	[StyleResolution.TABLET_POTRAIT_SCREEN_ONLY]?: EachComponentResolutionStyle;
 	[StyleResolution.MOBILE_LANDSCAPE_SCREEN_ONLY]?: EachComponentResolutionStyle;
 	[StyleResolution.MOBILE_POTRAIT_SCREEN_ONLY]?: EachComponentResolutionStyle;
+	[StyleResolution.DESKTOP_SCREEN_SMALL]?: EachComponentResolutionStyle;
+	[StyleResolution.TABLET_LANDSCAPE_SCREEN_SMALL]?: EachComponentResolutionStyle;
+	[StyleResolution.TABLET_POTRAIT_SCREEN_SMALL]?: EachComponentResolutionStyle;
+	[StyleResolution.MOBILE_LANDSCAPE_SCREEN_SMALL]?: EachComponentResolutionStyle;
 }
 
 export interface EachComponentStyle {
@@ -215,6 +226,7 @@ export interface ComponentDefinition {
 	properties?: {
 		[key: string]:
 			| ComponentProperty<any>
+			| ComponentMultiProperty<any>
 			| { [key: string]: ComponentProperty<any> }
 			| { [key: string]: Validation };
 	};
@@ -235,6 +247,8 @@ export interface PageDefinition {
 	appCode: string;
 	clientCode: string;
 	baseClientCode: string | undefined;
+	version: number;
+	isFromUndoRedoStack: boolean;
 	eventFunctions: {
 		[key: string]: any;
 	};

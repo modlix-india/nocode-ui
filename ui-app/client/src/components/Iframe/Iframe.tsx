@@ -63,6 +63,7 @@ const component: Component = {
 	styleComponent: IframeStyle,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
+	styleProperties: stylePropertiesDefinition,
 	defaultTemplate: {
 		key: '',
 		name: 'Iframe',

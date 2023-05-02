@@ -25,6 +25,10 @@ interface PropertyBarProps {
 	editPageName: string | undefined;
 	selectedSubComponent: string;
 	onSelectedSubComponentChanged: (key: string) => void;
+	storePaths: Set<string>;
+	setStyleSelectorPref: (pref: any) => void;
+	styleSelectorPref: any;
+	previewMode: boolean;
 }
 
 export default function DnDPropertyBar({
@@ -37,24 +41,14 @@ export default function DnDPropertyBar({
 	theme,
 	onShowCodeEditor,
 	slaveStore,
+	storePaths,
 	editPageName,
 	selectedSubComponent,
 	onSelectedSubComponentChanged,
+	setStyleSelectorPref,
+	styleSelectorPref,
+	previewMode,
 }: PropertyBarProps) {
-	const storePaths = useMemo<Set<string>>(
-		() =>
-			allPaths(
-				STORE_PREFIX,
-				slaveStore?.store,
-				allPaths(
-					LOCAL_STORE_PREFIX,
-					slaveStore?.localStore,
-					allPaths(PAGE_STORE_PREFIX, slaveStore?.store?.pageData?.[editPageName ?? '']),
-				),
-			),
-		[slaveStore],
-	);
-
 	const [currentTab, setCurrentTab] = React.useState(1);
 
 	useEffect(() => {
@@ -67,7 +61,7 @@ export default function DnDPropertyBar({
 		);
 	}, [personalizationPath]);
 
-	if (!selectedComponent) return <div className="_propBar"></div>;
+	if (!selectedComponent || previewMode) return <div className="_propBar"></div>;
 
 	const tab =
 		currentTab === 1 ? (
@@ -80,6 +74,26 @@ export default function DnDPropertyBar({
 				locationHistory={locationHistory}
 				pageExtractor={pageExtractor}
 				storePaths={storePaths}
+				onShowCodeEditor={onShowCodeEditor}
+				editPageName={editPageName}
+				slaveStore={slaveStore}
+			/>
+		) : currentTab === 2 ? (
+			<StylePropertyEditor
+				theme={theme}
+				personalizationPath={personalizationPath}
+				onChangePersonalization={onChangePersonalization}
+				selectedComponent={selectedComponent}
+				defPath={defPath}
+				locationHistory={locationHistory}
+				pageExtractor={pageExtractor}
+				storePaths={storePaths}
+				selectedSubComponent={selectedSubComponent}
+				onSelectedSubComponentChanged={onSelectedSubComponentChanged}
+				styleSelectorPref={styleSelectorPref}
+				setStyleSelectorPref={setStyleSelectorPref}
+				editPageName={editPageName}
+				slaveStore={slaveStore}
 			/>
 		) : (
 			<StylePropertyEditor
@@ -93,6 +107,11 @@ export default function DnDPropertyBar({
 				storePaths={storePaths}
 				selectedSubComponent={selectedSubComponent}
 				onSelectedSubComponentChanged={onSelectedSubComponentChanged}
+				styleSelectorPref={styleSelectorPref}
+				setStyleSelectorPref={setStyleSelectorPref}
+				reverseStyleSections={true}
+				editPageName={editPageName}
+				slaveStore={slaveStore}
 			/>
 		);
 
@@ -108,6 +127,11 @@ export default function DnDPropertyBar({
 					className={`fa fa-solid fa-brush ${currentTab === 2 ? 'active' : ''}`}
 					tabIndex={0}
 					onClick={() => onChangePersonalization('currentPropertyTab', 2)}
+				/>
+				<i
+					className={`fa fa-solid fa-gears ${currentTab === 3 ? 'active' : ''}`}
+					tabIndex={0}
+					onClick={() => onChangePersonalization('currentPropertyTab', 3)}
 				/>
 			</div>
 			<div className="_propContainer">{tab}</div>

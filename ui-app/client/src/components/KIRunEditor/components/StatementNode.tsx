@@ -1,41 +1,41 @@
-import {
-	Event,
-	Function,
-	Position,
-	Repository,
-	Schema,
-	Statement,
-	TokenValueExtractor,
-	isNullValue,
-} from '@fincity/kirun-js';
-import React, { RefObject, useCallback, useEffect, useState } from 'react';
+import { Event, Function, Repository, Schema, TokenValueExtractor } from '@fincity/kirun-js';
+import React, { RefObject, useEffect, useState } from 'react';
 import duplicate from '../../../util/duplicate';
-import Search from './Search';
-import { COPY_STMT_KEY } from '../../../constants';
 import { generateColor } from '../colors';
+import { stringValue } from '../utils';
+import Search from './Search';
+import StatementButtons from './StatementButtons';
+import ParamEditor from './ParamEditor';
+import { LocationHistory, PageDefinition, RenderContext } from '../../../types/common';
 
-interface StatementProps {
+interface StatementNodeProps {
 	position?: { left: number; top: number };
 	statement: any;
 	functionRepository: Repository<Function>;
 	schemaRepository: Repository<Schema>;
 	tokenValueExtractors: Map<string, TokenValueExtractor>;
-	onDragStart: (
+	onDragStart?: (
 		append: boolean,
 		statementName: string,
 		startPosition: { left: number; top: number } | undefined,
 	) => void;
 	selected: boolean;
-	onClick: (append: boolean, statementName: string) => void;
+	onClick?: (append: boolean, statementName: string) => void;
 	container: RefObject<HTMLDivElement>;
 	dragNode: any;
 	executionPlanMessage?: string[];
 	onChange: (statement: any) => void;
 	functionNames: string[];
 	onDelete: (statementName: string) => void;
-	onDependencyDragStart: (ddPos: any) => void;
-	onDependencyDrop: (statement: string) => void;
+	onDependencyDragStart?: (ddPos: any) => void;
+	onDependencyDrop?: (statement: string) => void;
 	showComment: boolean;
+	onEditParameters?: (statementName: string) => void;
+	editParameters?: boolean;
+	showParamValues: boolean;
+	pageDefinition: PageDefinition;
+	locationHistory: Array<LocationHistory>;
+	context: RenderContext;
 }
 
 const DEFAULT_POSITION = { left: 0, top: 0 };
@@ -46,6 +46,7 @@ export default function StatementNode({
 	position = DEFAULT_POSITION,
 	statement,
 	functionRepository,
+	schemaRepository,
 	onDragStart,
 	onClick,
 	selected = false,
@@ -58,7 +59,13 @@ export default function StatementNode({
 	onDependencyDragStart,
 	onDependencyDrop,
 	showComment,
-}: StatementProps) {
+	onEditParameters,
+	editParameters,
+	showParamValues,
+	pageDefinition,
+	locationHistory,
+	context,
+}: StatementNodeProps) {
 	const [statementName, setStatementName] = useState(statement.statementName);
 	const [editStatementName, setEditStatementName] = useState(false);
 	const [editNameNamespace, setEditNameNamespace] = useState(false);
@@ -104,53 +111,11 @@ export default function StatementNode({
 
 	const [editComment, setEditComment] = useState(false);
 
-	const buttons = selected ? (
-		<div className="_buttons" style={{ color: highlightColor }}>
-			<i
-				className="fa fa-regular fa-trash-can"
-				title={`Delete ${statementName}`}
-				onMouseDown={e => {
-					e.stopPropagation();
-					e.preventDefault();
-					onDelete(statement.statementName);
-				}}
-			></i>
-			<i
-				className="fa fa-regular fa-clipboard"
-				title={`Copy ${statementName}`}
-				onMouseDown={e => {
-					e.stopPropagation();
-					e.preventDefault();
-
-					if (!navigator.clipboard) return;
-
-					navigator.clipboard.write([
-						new ClipboardItem({
-							'text/plain': new Blob([COPY_STMT_KEY + JSON.stringify(statement)], {
-								type: 'text/plain',
-							}),
-						}),
-					]);
-				}}
-			></i>
-			<i
-				className="fa fa-regular fa-comment-dots"
-				title={`Comment ${statementName}`}
-				onMouseDown={e => {
-					e.stopPropagation();
-					e.preventDefault();
-					setEditComment(true);
-				}}
-			></i>
-		</div>
-	) : (
-		<></>
-	);
-
 	const repoFunction = functionRepository.find(statement.namespace, statement.name);
+	const repoSignature = repoFunction?.getSignature();
 
-	const parameters = repoFunction?.getSignature()?.getParameters()
-		? Array.from(repoFunction.getSignature().getParameters().values())
+	const parameters = repoSignature?.getParameters()
+		? Array.from(repoSignature?.getParameters().values())
 		: [];
 
 	let eventsMap = repoFunction?.getSignature()?.getEvents();
@@ -162,22 +127,56 @@ export default function StatementNode({
 	const events = Array.from(eventsMap.values());
 
 	const params = parameters.length ? (
-		<div className="_paramsContainer">
+		<div
+			className="_paramsContainer"
+			onDoubleClick={ev => {
+				ev.preventDefault();
+				ev.stopPropagation();
+				if (editParameters) return;
+				onClick?.(false, statement.statementName);
+				onEditParameters?.(statement.statementName);
+			}}
+		>
 			<div className="_paramHeader">Parameters</div>
 			{parameters.map(e => {
 				const paramValue = statement.parameterMap?.[e.getParameterName()];
 				const hasValue = paramValue && Object.values(paramValue).length;
 				const title = stringValue(paramValue);
+				let paramDiv = undefined;
+				if (editParameters)
+					paramDiv = (
+						<ParamEditor
+							parameter={e}
+							schemaRepository={schemaRepository}
+							value={paramValue}
+							onChange={v => {
+								const newStatement = duplicate(statement);
+								if (!newStatement.parameterMap) newStatement.parameterMap = {};
+								newStatement.parameterMap[e.getParameterName()] = v;
+								onChange(newStatement);
+							}}
+							context={context}
+							pageDefinition={pageDefinition}
+							locationHistory={locationHistory}
+						/>
+					);
+				else if (showParamValues && title?.string)
+					paramDiv = <div className="_paramValue">{title?.string}</div>;
+				else paramDiv = <></>;
 				return (
 					<div className="_param" key={e.getParameterName()}>
 						<div
 							id={`paramNode_${statement.statementName}_${e.getParameterName()}`}
-							className="_paramNode"
+							className="_paramNode _hideInEdit"
 							style={{ borderColor: alwaysColor }}
 						></div>
-						<div className={`_paramName ${hasValue ? '_hasValue' : ''}`} title={title}>
+						<div
+							className={`_paramName ${hasValue ? '_hasValue' : ''}`}
+							title={'' + (title?.string ?? '')}
+						>
 							{e.getParameterName()}
 						</div>
+						{paramDiv}
 					</div>
 				);
 			})}
@@ -186,9 +185,9 @@ export default function StatementNode({
 		<></>
 	);
 
-	const dependcyNode = (
+	const dependencyNode = (
 		<div
-			className="_dependencyNode"
+			className="_dependencyNode _hideInEdit"
 			id={`eventNode_dependentNode_${statement.statementName}`}
 			style={{ borderColor: alwaysColor }}
 			title="Depends on"
@@ -216,7 +215,7 @@ export default function StatementNode({
 							const top = Math.round(
 								tRect.top - rect.top + container.current!.scrollTop,
 							);
-							onDependencyDragStart({
+							onDependencyDragStart?.({
 								left,
 								top,
 								dependency: `Steps.${statement.statementName}.${e.getName()}`,
@@ -243,7 +242,7 @@ export default function StatementNode({
 										const top = Math.round(
 											tRect.top - rect.top + container.current!.scrollTop,
 										);
-										onDependencyDragStart({
+										onDependencyDragStart?.({
 											left,
 											top,
 											dependency: `Steps.${
@@ -318,7 +317,9 @@ export default function StatementNode({
 
 	return (
 		<div
-			className={`_statement ${selected ? '_selected' : ''}`}
+			className={`_statement ${selected ? '_selected' : ''} ${
+				editParameters ? '_editParameters' : ''
+			}`}
 			style={{
 				left: position.left + (selected && dragNode ? dragNode.dLeft : 0) + 'px',
 				top: position.top + (selected && dragNode ? dragNode.dTop : 0) + 'px',
@@ -332,7 +333,7 @@ export default function StatementNode({
 				// onClick(e.ctrlKey || e.metaKey, statement.statementName);
 			}}
 			onMouseUp={e => {
-				onDependencyDrop(statement.statementName);
+				onDependencyDrop?.(statement.statementName);
 			}}
 			onContextMenu={e => {
 				e.preventDefault();
@@ -363,7 +364,10 @@ export default function StatementNode({
 							e.clientX - rect.left + container.current!.scrollLeft,
 						);
 						const top = Math.round(e.clientY - rect.top + container.current!.scrollTop);
-						onDragStart(e.ctrlKey || e.metaKey, statement.statementName, { left, top });
+						onDragStart?.(e.ctrlKey || e.metaKey, statement.statementName, {
+							left,
+							top,
+						});
 					}}
 					onMouseMove={e => {
 						if (!mouseMove && dragNode) setMouseMove(true);
@@ -374,9 +378,9 @@ export default function StatementNode({
 						if (e.target === e.currentTarget && !mouseMove) {
 							e.preventDefault();
 							e.stopPropagation();
-							onClick(e.ctrlKey || e.metaKey, statement.statementName);
+							onClick?.(e.ctrlKey || e.metaKey, statement.statementName);
 						}
-						onDependencyDrop(statement.statementName);
+						onDependencyDrop?.(statement.statementName);
 
 						setMouseMove(false);
 					}}
@@ -401,6 +405,7 @@ export default function StatementNode({
 							onDoubleClick={e => {
 								e.stopPropagation();
 								e.preventDefault();
+								if (editParameters) return;
 								setEditStatementName(true);
 							}}
 						>
@@ -428,6 +433,7 @@ export default function StatementNode({
 													...duplicate(statement),
 													statementName,
 												});
+												onEditParameters?.(statementName);
 											}
 										}}
 									/>
@@ -437,7 +443,7 @@ export default function StatementNode({
 							)}
 						</div>
 						<i
-							className="_editIcon fa fa-1x fa-solid fa-pencil"
+							className="_editIcon fa fa-1x fa-solid fa-pencil _hideInEdit"
 							style={{ visibility: editStatementName ? 'visible' : undefined }}
 							onClick={() => {
 								setEditStatementName(true);
@@ -451,8 +457,9 @@ export default function StatementNode({
 						onDoubleClick={e => {
 							e.stopPropagation();
 							e.preventDefault();
+							if (editParameters) return;
 							setEditNameNamespace(true);
-							onClick(false, statement.statementName);
+							onClick?.(false, statement.statementName);
 						}}
 					>
 						{editNameNamespace ? (
@@ -480,18 +487,18 @@ export default function StatementNode({
 						)}
 					</div>
 					<i
-						className="_editIcon fa fa-1x fa-solid fa-bars-staggered"
+						className="_editIcon fa fa-1x fa-solid fa-bars-staggered _hideInEdit"
 						style={{ visibility: editNameNamespace ? 'visible' : undefined }}
 						onClick={() => {
 							setEditNameNamespace(true);
-							onClick(false, statement.statementName);
+							onClick?.(false, statement.statementName);
 						}}
 					/>
 				</div>
 			</div>
 			<div className="_otherContainer">
 				{params}
-				<div className="_eventsContainer">{eventsDiv}</div>
+				<div className="_eventsContainer _hideInEdit">{eventsDiv}</div>
 			</div>
 			<div className="_messages">
 				{executionPlanMessage &&
@@ -507,8 +514,19 @@ export default function StatementNode({
 						</div>
 					))}
 			</div>
-			{buttons}
-			{dependcyNode}
+			<StatementButtons
+				selected={selected}
+				highlightColor={highlightColor}
+				onEditParameters={onEditParameters}
+				onEditComment={() => setEditComment(true)}
+				statementName={statement.statementName}
+				onDelete={onDelete}
+				statement={statement}
+				showEditParameters={!!parameters.length}
+				editParameters={editParameters}
+			/>
+
+			{dependencyNode}
 		</div>
 	);
 }
@@ -523,18 +541,3 @@ const ICONS_GROUPS = new Map<string, string>([
 	['System.Object', 'fa-circle-dot'],
 	['UIEngine', 'fa-snowflake'],
 ]);
-function stringValue(paramValue: any) {
-	if (paramValue === undefined) return undefined;
-	const value = Object.values(paramValue)
-		.filter(e => !isNullValue(e))
-		.sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0))
-		.map((e: any) => {
-			if (e.type === 'EXPRESSION') return e.expression;
-			if (typeof e.value === 'object') return JSON.stringify(e.value, undefined, 2);
-			return e.value;
-		})
-		.join('\n')
-		.trim();
-
-	return value ? value : undefined;
-}

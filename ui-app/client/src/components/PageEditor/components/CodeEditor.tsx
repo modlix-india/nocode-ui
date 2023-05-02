@@ -38,8 +38,10 @@ interface CodeEditorProps {
 	firstTimeRef: React.MutableRefObject<PageDefinition[]>;
 	undoStackRef: React.MutableRefObject<PageDefinition[]>;
 	redoStackRef: React.MutableRefObject<PageDefinition[]>;
+	latestVersion: React.MutableRefObject<number>;
 	definition: ComponentDefinition;
 	personalizationPath: string | undefined;
+	storePaths: Set<string>;
 }
 
 export default function CodeEditor({
@@ -55,7 +57,9 @@ export default function CodeEditor({
 	firstTimeRef,
 	undoStackRef,
 	redoStackRef,
+	latestVersion,
 	definition,
+	storePaths,
 }: CodeEditorProps) {
 	const uuid = useMemo(() => shortUUID(), []);
 	const [fullScreen, setFullScreen] = useState(false);
@@ -74,16 +78,19 @@ export default function CodeEditor({
 		} else {
 			setSelectedFunction(showCodeEditor);
 		}
-	}, [showCodeEditor, eventFunctions]);
+	}, [showCodeEditor, eventFunctions, setSelectedFunction, selectedFunction]);
 
 	useEffect(() => {
 		if (!defPath) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
-			(_, v) => setEditPage(v),
+			(_, v) => {
+				setEditPage(v);
+				setChanged(Date.now());
+			},
 			pageExtractor,
 			defPath,
 		);
-	}, [defPath]);
+	}, [defPath, setEditPage, pageExtractor]);
 
 	const tokenValueExtractors = useMemo(() => {
 		if (!slaveStore) return new Map<string, TokenValueExtractor>();
@@ -149,6 +156,7 @@ export default function CodeEditor({
 							<i className="fa-solid fa-code" />
 						</div>
 						<select
+							className="_peSelect"
 							value={selectedFunction}
 							onChange={e => onSetShowCodeEditor(e.target.value)}
 							title="Select a function to edit"
@@ -156,7 +164,7 @@ export default function CodeEditor({
 							{(eventFunctions ? Object.entries(eventFunctions) : []).map(
 								([key, funct]: [string, any]) => {
 									return (
-										<option key={key} value={key}>
+										<option key={`${key}-${funct?.name ?? ''}`} value={key}>
 											{funct.namespace
 												? `${funct.namespace}.${funct.name}`
 												: funct.name}
@@ -310,6 +318,7 @@ export default function CodeEditor({
 									<i className="fa-solid fa-check-double" />
 								</div>
 								<select
+									className="_peSelect"
 									value={eventFunctions[selectedFunction]?.validationCheck ?? ''}
 									onChange={e => {
 										let newFun = duplicate(eventFunctions[selectedFunction]);
@@ -345,17 +354,14 @@ export default function CodeEditor({
 									const x = undoStackRef.current[undoStackRef.current.length - 1];
 									undoStackRef.current.splice(undoStackRef.current.length - 1, 1);
 									redoStackRef.current.splice(0, 0, x);
-									setData(
-										defPath,
-										duplicate(
-											undoStackRef.current.length
-												? undoStackRef.current[
-														undoStackRef.current.length - 1
-												  ]
-												: firstTimeRef.current[0],
-										),
-										pageExtractor.getPageName(),
+									const pg = duplicate(
+										undoStackRef.current.length
+											? undoStackRef.current[undoStackRef.current.length - 1]
+											: firstTimeRef.current[0],
 									);
+									pg.version = latestVersion.current;
+									pg.isFromUndoRedoStack = true;
+									setData(defPath, pg, pageExtractor.getPageName());
 									setChanged(Date.now());
 								}}
 								title="Undo"
@@ -369,17 +375,14 @@ export default function CodeEditor({
 									const x = redoStackRef.current[0];
 									undoStackRef.current.push(x);
 									redoStackRef.current.splice(0, 1);
-									setData(
-										defPath,
-										duplicate(
-											undoStackRef.current.length
-												? undoStackRef.current[
-														undoStackRef.current.length - 1
-												  ]
-												: firstTimeRef.current[0],
-										),
-										pageExtractor.getPageName(),
+									const pg = duplicate(
+										undoStackRef.current.length
+											? undoStackRef.current[undoStackRef.current.length - 1]
+											: firstTimeRef.current[0],
 									);
+									pg.version = latestVersion.current;
+									pg.isFromUndoRedoStack = true;
+									setData(defPath, pg, pageExtractor.getPageName());
 									setChanged(Date.now());
 								}}
 								title="Redo"
@@ -432,6 +435,7 @@ export default function CodeEditor({
 					}
 					tokenValueExtractors={tokenValueExtractors}
 					stores={['Store', 'Page', 'Theme', 'LocalStore']}
+					storePaths={storePaths}
 					hideArguments={true}
 				/>
 			</div>

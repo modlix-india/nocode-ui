@@ -239,6 +239,7 @@ const component: Component = {
 	displayName: 'Table Columns',
 	description: 'Table Columns component',
 	component: TableColumnsComponent,
+	styleProperties: stylePropertiesDefinition,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TableColumnsStyle,
