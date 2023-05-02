@@ -35,6 +35,8 @@ import Iframe from './Iframe/Iframe';
 import Carousel from './Carousel/Carousel';
 import FileUpload from './FileUpload/FileUpload';
 import KIRunEditor from './KIRunEditor/KIRunEditor';
+import Video from './Video/Video';
+import SchemaForm from './SchemaForm/SchemaForm';
 
 export default new Map<string, Component>([
 	[Button.name, Button],
@@ -73,4 +75,6 @@ export default new Map<string, Component>([
 	[Popover.name, Popover],
 	[FileUpload.name, FileUpload],
 	[KIRunEditor.name, KIRunEditor],
+	[Video.name, Video],
+	[SchemaForm.name, SchemaForm],
 ]);

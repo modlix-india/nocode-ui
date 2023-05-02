@@ -766,7 +766,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			width: 100%;
 			height: 100%;
 			align-items: center;
-			z-index: 6;
+			z-index: 3;
 			opacity: 0;
 			transition: opacity 1s;
 		}
@@ -856,6 +856,11 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			padding: 2px;
 			width:400px;
 			height: 400px;
+			transition: width 0s, height 0s;
+		}
+
+		._popupContainer ._jsonEditorContainer > * {
+			transition: width 0s, height 0s;
 		}
 
 		._popupContainer ._iconSelectionBrowser {

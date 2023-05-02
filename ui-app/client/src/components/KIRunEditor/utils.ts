@@ -13,7 +13,7 @@ interface StringValue {
 export function stringValue(paramValue: any): StringValue | undefined {
 	if (paramValue === undefined) return undefined;
 
-	return Object.values(paramValue)
+	const value = Object.values(paramValue)
 		.filter(e => !isNullValue(e))
 		.sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0))
 		.reduce(
@@ -21,14 +21,18 @@ export function stringValue(paramValue: any): StringValue | undefined {
 				isExpression: a.isExpression || c.type === 'EXPRESSION',
 				isValue: a.isValue || c.type === 'VALUE',
 				string:
-					a.string + (a.string ? '\n' : '') + c.type === 'EXPRESSION'
+					a.string +
+					(a.string ? '\n' : '') +
+					(c.type === 'EXPRESSION'
 						? c.expression
 						: typeof c.value === 'object'
 						? JSON.stringify(c.value, undefined, 2)
-						: c.value,
+						: c.value),
 			}),
 			{ isExpression: false, isValue: false, string: '' } as StringValue,
 		);
+
+	return value;
 }
 
 export function savePersonalizationCurry(

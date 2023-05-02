@@ -8,6 +8,7 @@ import { Component } from '../../types/common';
 import TextStyle from './TextStyle';
 import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import { SubHelperComponent } from '../SubHelperComponent';
 
 function Text(props: ComponentProps) {
 	const {
@@ -48,14 +49,14 @@ function Text(props: ComponentProps) {
 	}
 
 	let comps: React.ReactNode[] = [];
-
+	const subcomp = <SubHelperComponent definition={props.definition} subComponentName="text" />;
 	if (translatedText !== undefined) {
 		if (processNewLine) {
 			comps = translatedText
 				?.split('\n')
 				.flatMap((e, i, a) => (i + 1 === a.length ? [e] : [e, <br></br>]));
 		} else {
-			comps = [translatedText];
+			comps = [subcomp, translatedText];
 		}
 	}
 

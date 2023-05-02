@@ -35,6 +35,8 @@ export interface RenderContext {
 	showValidationMessages?: boolean;
 	observer?: IntersectionObserver;
 	table?: any;
+	level: number;
+	shellPageName: string;
 }
 
 export enum ComponentPropertyDataPathType {
@@ -257,7 +259,7 @@ export interface PageDefinition {
 		[key: string]: ComponentDefinition;
 	};
 	translations: { [key: string]: { [key: string]: string } };
-	properties: { onLoadEvent?: string; loadStrategy?: string };
+	properties: { onLoadEvent?: string; loadStrategy?: string; wrapShell?: boolean };
 }
 
 export interface ComponentProps {

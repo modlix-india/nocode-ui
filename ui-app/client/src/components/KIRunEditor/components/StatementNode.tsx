@@ -172,7 +172,7 @@ export default function StatementNode({
 						></div>
 						<div
 							className={`_paramName ${hasValue ? '_hasValue' : ''}`}
-							title={title?.string ?? ''}
+							title={'' + (title?.string ?? '')}
 						>
 							{e.getParameterName()}
 						</div>

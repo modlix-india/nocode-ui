@@ -365,6 +365,7 @@ export default class PageOperations {
 				// key and it's order
 				let childrenOrder = Object.keys(sourceParent.children ?? {})
 					.map(e => pageDef.componentDefinition[e])
+					.filter(e => !!e)
 					.map(e => ({ key: e.key, displayOrder: e.displayOrder }))
 					.sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
 					.sort((a: any, b: any) => {
@@ -849,6 +850,7 @@ export default class PageOperations {
 		// Creating the children order to update the new order.
 		let childrenOrder = Object.keys(doComp.children ?? {})
 			.map(e => pageDef.componentDefinition[e])
+			.filter(e => !!e)
 			.map(e => ({ key: e.key, displayOrder: e.displayOrder }))
 			.sort((a: any, b: any) => {
 				const v = (a?.displayOrder ?? 0) - (b?.displayOrder ?? 0);

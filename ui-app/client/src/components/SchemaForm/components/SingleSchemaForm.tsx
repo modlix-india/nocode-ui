@@ -1,6 +1,9 @@
-import { Schema, Repository, isNullValue, SchemaUtil, SchemaType } from '@fincity/kirun-js';
+import { Repository, Schema, SchemaType, SchemaUtil, isNullValue } from '@fincity/kirun-js';
 import React, { useEffect, useMemo, useState } from 'react';
-import { intersection, isEqual, isProperSubset, isSubset } from '../../../util/setOperations';
+import { intersection, isSubset } from '../../../util/setOperations';
+import { StringValueEditor } from './StringValueEditor';
+import { BooleanValueEditor } from './BooleanValueEditor';
+import { NumberValueEditor } from './NumberValueEditor';
 
 const NUMBER_SET = new Set([
 	SchemaType.FLOAT,
@@ -45,8 +48,9 @@ export default function SingleSchema({
 
 	const [value, setValue] = useState(actualValue);
 	useEffect(() => {
-		if (!isNullValue(actualValue) || isNullValue(defaultValue)) return;
-		setValue(defaultValue);
+		if (!isNullValue(actualValue)) setValue(actualValue);
+		else if (!isNullValue(defaultValue)) setValue(defaultValue);
+		else setValue(actualValue);
 	}, [actualValue]);
 
 	let types: Set<SchemaType> = schema.getType()?.getAllowedSchemaTypes() ?? ALL_SET;
@@ -135,14 +139,42 @@ export default function SingleSchema({
 		} else if (types.has(SchemaType.ARRAY)) {
 			return <div className="_singleSchema"></div>;
 		} else if (types.has(SchemaType.STRING)) {
-			return <div className="_singleSchema"></div>;
+			return (
+				<StringValueEditor
+					value={value}
+					schema={schema}
+					onChange={v => onChange(path, v)}
+					schemaRepository={schemaRepository}
+				/>
+			);
 		} else if (types.has(SchemaType.BOOLEAN)) {
-			return <div className="_singleSchema"></div>;
+			return (
+				<BooleanValueEditor
+					value={value}
+					schema={schema}
+					onChange={v => onChange(path, v)}
+					schemaRepository={schemaRepository}
+				/>
+			);
 		} else if (isSubset(types, NUMBER_SET)) {
-			return <div className="_singleSchema"></div>;
+			return (
+				<NumberValueEditor
+					value={value}
+					schema={schema}
+					onChange={v => onChange(path, v)}
+					schemaRepository={schemaRepository}
+				/>
+			);
 		}
 	} else if (isSubset(types, NUMBER_SET)) {
-		return <div className="_singleSchema"></div>;
+		return (
+			<NumberValueEditor
+				value={value}
+				schema={schema}
+				onChange={v => onChange(path, v)}
+				schemaRepository={schemaRepository}
+			/>
+		);
 	}
 
 	return <div className="_singleSchema"></div>;
