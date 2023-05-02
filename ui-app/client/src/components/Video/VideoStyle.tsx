@@ -9,14 +9,16 @@ export default function VideoStyle({ theme }: { theme: Map<string, Map<string, s
     ${PREFIX} {
         position:relative;
     }
+    ${PREFIX} video {
+      width: 100%;
+      height: 100%;
+    }
     ${PREFIX} .videoControlsContainer{
       position:absolute;
       bottom:1%;
       width:100%;
-      padding: 0px 10px 5px 5px;
       display:flex;
       flex-direction:column;
-      gap:8px;
     }
 
     ${PREFIX} .playBackIcon {
@@ -81,14 +83,14 @@ export default function VideoStyle({ theme }: { theme: Map<string, Map<string, s
         display:flex;
        }
 
-       ${PREFIX} .pipAndFullScreenGrid{
+       ${PREFIX} .pipAndFullScreenGrid {
         justify-content: flex-end;
         display: flex;
         width: 100%;
         gap: 42px;
         align-items: center;
        }
-       ${PREFIX} .volumeControls{
+       ${PREFIX} .volumeControls {
         display: flex;
         align-items: center;
         width:110px;
@@ -97,7 +99,6 @@ export default function VideoStyle({ theme }: { theme: Map<string, Map<string, s
 
        ${PREFIX} .pip {
         color: #ffffff;
-        
        }
 
        ${PREFIX} .fullScreen{
