@@ -45,6 +45,16 @@ export const RenderEngineContainer = () => {
 	}, [pathParams['*']]);
 
 	useEffect(() => {
+		if (!location.hash) return;
+		setTimeout(() => {
+			const id = location.hash.replace('#', '');
+			const element = document.getElementById(id);
+			if (!element) return;
+			element.scrollIntoView();
+		}, 0);
+	}, [location]);
+
+	useEffect(() => {
 		return addListener(
 			() => {
 				setPageDefinition(undefined);
