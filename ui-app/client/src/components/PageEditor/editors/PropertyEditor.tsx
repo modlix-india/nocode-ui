@@ -299,6 +299,30 @@ export default function PropertyEditor({
 						slaveStore={slaveStore}
 					/>
 				</div>
+				<div className="_eachProp">
+					<div className="_propLabel" title="Key">
+						Key :
+						<span className="_description" title="Key Identifier">
+							i
+						</span>
+					</div>
+					<PropertyValueEditor
+						pageDefinition={pageDef}
+						propDef={{
+							name: 'key',
+							displayName: 'Key',
+							description: 'Key Identifier',
+							schema: SCHEMA_STRING_COMP_PROP,
+						}}
+						value={{ value: def.key }}
+						onlyValue={true}
+						storePaths={storePaths}
+						onChange={v => {}}
+						onShowCodeEditor={onShowCodeEditor}
+						editPageName={editPageName}
+						slaveStore={slaveStore}
+					/>
+				</div>
 			</PropertyGroup>
 			{bpGroup}
 			{Object.entries(ComponentPropertyGroup).map((e, i) => {
