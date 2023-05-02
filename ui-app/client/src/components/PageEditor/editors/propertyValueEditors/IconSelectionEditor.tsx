@@ -32,6 +32,7 @@ export function IconSelectionEditor({ value, onChange, propDef }: IconSelectionE
 					<div className="_popupContainer" onClick={e => e.stopPropagation()}>
 						<div className="_iconSelectionBrowser">
 							<input
+								className="_peInput"
 								placeholder="Search for icons..."
 								type="text"
 								value={filter}
@@ -82,6 +83,7 @@ export function IconSelectionEditor({ value, onChange, propDef }: IconSelectionE
 			<div className="_pvExpressionEditor">
 				<input
 					type="text"
+					className="_peInput"
 					value={chngValue}
 					placeholder={propDef.defaultValue}
 					onChange={e => setChngValue(e.target.value)}

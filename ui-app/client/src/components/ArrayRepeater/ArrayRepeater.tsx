@@ -210,6 +210,7 @@ const component: Component = {
 	component: ArrayRepeaterComponent,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
+	styleProperties: stylePropertiesDefinition,
 	styleComponent: ArrayRepeaterStyle,
 	allowedChildrenType: new Map<string, number>([['', 1]]),
 	bindingPaths: {

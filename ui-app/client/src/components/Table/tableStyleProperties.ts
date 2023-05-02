@@ -280,7 +280,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'background-color',
 		displayName: 'Pagination Selected BG Color',
 		description: 'Pagination Selected BG Color',
-		defaultValue: '<main-font-color>',
+		defaultValue: '<mainFontColor>',
 		selector: '._tablePagination ._selected',
 	},
 	{
@@ -312,7 +312,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		displayName: 'Pagination Selected Color',
 		description: 'Pagination Selected Color',
-		defaultValue: '<light-font-color>',
+		defaultValue: '<lightFontColor>',
 		selector: '._tablePagination ._selected',
 	},
 	{
@@ -328,7 +328,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		displayName: 'Pagination Seperator Color',
 		description: 'Pagination Seperator Color',
-		defaultValue: '<light-font-color>',
+		defaultValue: '<lightFontColor>',
 	},
 	{
 		name: 'paginationMargin',

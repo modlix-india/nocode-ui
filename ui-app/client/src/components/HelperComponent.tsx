@@ -41,12 +41,16 @@ function HelperComponentInternal({
 	const {
 		editingPageDefinition: { name = '', componentDefinition = {} } = {},
 		selectedComponent,
-		personalization: { slave: { highlightColor = '#b2d33f', noSelection = false } = {} } = {},
+		personalization: {
+			preview = false,
+			slave: { highlightColor = '#b2d33f', noSelection = false } = {},
+		} = {},
 	} = window.pageEditor ?? {};
 
 	const currentPage = getDataFromPath(`Store.urlDetails.pageName`, []);
 
-	if (noSelection || !componentDefinition?.[definition.key] || name !== currentPage) return <></>;
+	if (noSelection || preview || !componentDefinition?.[definition.key] || name !== currentPage)
+		return <></>;
 
 	let style = {
 		all: 'initial',
@@ -83,7 +87,13 @@ function HelperComponentInternal({
 		labelStyle.right = '0px';
 	}
 
-	if (selectedComponent?.endsWith(definition.key) || dragOver) style.opacity = '0.6';
+	if (selectedComponent?.endsWith(definition.key) || dragOver)
+		style.opacity = children ? '1' : '0.6';
+
+	if (children || selectedComponent?.endsWith(definition.key)) {
+		labelStyle.top = '0px';
+		labelStyle.transform = 'translateY(-100%)';
+	}
 
 	return (
 		<div
@@ -113,16 +123,18 @@ function HelperComponentInternal({
 				messageToMaster({ type: 'SLAVE_SELECTED', payload: definition.key });
 			}}
 			onClick={e => {
-				e.stopPropagation();
-				e.preventDefault();
+				if (e.target === e.currentTarget) {
+					e.stopPropagation();
+					e.preventDefault();
+				}
 				onClick?.(e);
 			}}
 			onDoubleClick={e => {
 				e.stopPropagation();
 				e.preventDefault();
-				if (definition.key === selectedComponent)
+				if (!onDoubleClick && definition.key === selectedComponent)
 					messageToMaster({ type: 'SLAVE_SELECTED', payload: '' });
-				onDoubleClick?.(e);
+				else onDoubleClick?.(e);
 			}}
 			onContextMenu={e => {
 				e.stopPropagation();

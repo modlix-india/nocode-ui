@@ -43,7 +43,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Animation Type',
 		editor: ComponentPropertyEditor.ENUM,
 		group: ComponentPropertyGroup.ADVANCED,
-		defaultValue: 'slide',
+		defaultValue: 'fadeover',
 		enumValues: [
 			{ name: 'slide', displayName: 'Slide', description: 'Slide' },
 			{ name: 'slideover', displayName: 'Slide Over', description: 'Slide Over' },
@@ -67,7 +67,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Easing',
 		editor: ComponentPropertyEditor.ENUM,
 		group: ComponentPropertyGroup.ADVANCED,
-		defaultValue: 'linear',
+		defaultValue: 'ease',
 		enumValues: [
 			{ name: 'linear', displayName: 'Linear', description: 'Linear' },
 			{ name: 'ease', displayName: 'Ease', description: 'Ease' },
@@ -118,7 +118,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'hasNumbersInSlideNav',
 		description: 'has numbers in slide nav',
 		group: ComponentPropertyGroup.BASIC,
-		defaultValue: true,
+		defaultValue: false,
 	},
 	{
 		name: 'slideNavButtonPosition',
@@ -127,7 +127,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Types of Dot buttons',
 		editor: ComponentPropertyEditor.ENUM,
 		group: ComponentPropertyGroup.ADVANCED,
-		defaultValue: 'Right',
+		defaultValue: 'Bottom',
 		enumValues: [
 			{
 				name: 'Top',
@@ -168,7 +168,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'arrowButtons',
 		description: 'Position of arrow buttons',
 		editor: ComponentPropertyEditor.ENUM,
-		defaultValue: 'OutsideBottomRight',
+		defaultValue: 'Middle',
 		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
 			{
@@ -226,38 +226,47 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description:
 			'This property display navigation controls, i.e; arrows and buttons, when the carousel is hovered upon.',
 		group: ComponentPropertyGroup.ADVANCED,
-		defaultValue: true,
+		defaultValue: false,
 	},
 
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
 const stylePropertiesDefinition = {
-	'': {
-		[COMPONENT_STYLE_GROUP_PROPERTIES.backdropFilter.type]:
-			COMPONENT_STYLE_GROUP_PROPERTIES.backdropFilter,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.background.type]:
-			COMPONENT_STYLE_GROUP_PROPERTIES.background,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: COMPONENT_STYLE_GROUP_PROPERTIES.border,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow.type]:
-			COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.container.type]:
-			COMPONENT_STYLE_GROUP_PROPERTIES.container,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.flex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.flex,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: COMPONENT_STYLE_GROUP_PROPERTIES.margin,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.opacity.type]: COMPONENT_STYLE_GROUP_PROPERTIES.opacity,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.outline.type]: COMPONENT_STYLE_GROUP_PROPERTIES.outline,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: COMPONENT_STYLE_GROUP_PROPERTIES.padding,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.position.type]: COMPONENT_STYLE_GROUP_PROPERTIES.position,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.rotate.type]: COMPONENT_STYLE_GROUP_PROPERTIES.rotate,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: COMPONENT_STYLE_GROUP_PROPERTIES.size,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.transform.type]:
-			COMPONENT_STYLE_GROUP_PROPERTIES.transform,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.zIndex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.zIndex,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.shape.type]: COMPONENT_STYLE_GROUP_PROPERTIES.shape,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.scrollbar.type]:
-			COMPONENT_STYLE_GROUP_PROPERTIES.scrollbar,
-	},
+	'': [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	arrowButtonsContainer: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	arrowButtons: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+	],
+	slideButtonsContainer: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+	],
+	dotButtons: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+	],
 };
 
 export { propertiesDefinition, stylePropertiesDefinition };

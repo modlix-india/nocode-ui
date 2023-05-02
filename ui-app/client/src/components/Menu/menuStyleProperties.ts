@@ -142,6 +142,13 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.menuItemsContainer.isActive .menu',
 	},
 	{
+		name: 'menuHighlightFontWeightOnHover',
+		cssProperty: 'font-weight',
+		displayName: "Menu's Highlight font weight on hover",
+		description: "Menu's highlight font weight when active on hover.",
+		selector: '.menuItemsContainer:hover .menu',
+	},
+	{
 		name: 'menuHighlightLeftBorderOnHover',
 		cssProperty: 'border-left',
 		displayName: "Menu's Highlight border on hover",

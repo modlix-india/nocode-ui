@@ -2,7 +2,7 @@ import React from 'react';
 import duplicate from '../../../util/duplicate';
 import { setData } from '../../../context/StoreContext';
 
-interface MenuProps {
+interface KIRunContextMenuProps {
 	menu: any;
 	showMenu: React.Dispatch<any>;
 	isReadonly: boolean;
@@ -12,7 +12,7 @@ interface MenuProps {
 	setShowAddSearch: (position: { left: number; top: number }) => void;
 }
 
-export default function Menu({
+export default function KIRunContextMenu({
 	menu,
 	showMenu,
 	isReadonly,
@@ -20,7 +20,7 @@ export default function Menu({
 	bindingPathPath,
 	pageName,
 	setShowAddSearch,
-}: MenuProps) {
+}: KIRunContextMenuProps) {
 	if (!menu) return <></>;
 	return (
 		<div

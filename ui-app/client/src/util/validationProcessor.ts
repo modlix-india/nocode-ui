@@ -98,14 +98,14 @@ function FILE_SIZE(validation: any, value: FileList): Array<string> {
 
 export const VALIDATION_FUNCTIONS: {
 	[key: string]: {
-		function: (validation: any, value: any) => Array<string>;
+		functionCode: (validation: any, value: any) => Array<string>;
 		displayName: string;
 		fields?: Array<ComponentPropertyDefinition>;
 	};
 } = {
-	MANDATORY: { function: MANDATORY, displayName: 'Mandatory' },
+	MANDATORY: { functionCode: MANDATORY, displayName: 'Mandatory' },
 	REGEX: {
-		function: REGEX,
+		functionCode: REGEX,
 		displayName: 'Regular Expression',
 		fields: [
 			{
@@ -117,7 +117,7 @@ export const VALIDATION_FUNCTIONS: {
 		],
 	},
 	STRING_LENGTH: {
-		function: STRING_LENGTH,
+		functionCode: STRING_LENGTH,
 		displayName: 'String Length',
 		fields: [
 			{
@@ -135,7 +135,7 @@ export const VALIDATION_FUNCTIONS: {
 		],
 	},
 	BOOLEAN_CONDITION: {
-		function: BOOLEAN_CONDITION,
+		functionCode: BOOLEAN_CONDITION,
 		displayName: 'Truthy Condition',
 		fields: [
 			{
@@ -147,7 +147,7 @@ export const VALIDATION_FUNCTIONS: {
 		],
 	},
 	SCHEMA_TYPE: {
-		function: SCHEMA_TYPE,
+		functionCode: SCHEMA_TYPE,
 		displayName: 'Schema',
 		fields: [
 			{
@@ -158,9 +158,9 @@ export const VALIDATION_FUNCTIONS: {
 			},
 		],
 	},
-	EMAIL: { function: EMAIL, displayName: 'Email' },
+	EMAIL: { functionCode: EMAIL, displayName: 'Email' },
 	NUMBER_VALUE: {
-		function: NUMBER_VALUE,
+		functionCode: NUMBER_VALUE,
 		displayName: 'Number',
 		fields: [
 			{
@@ -178,7 +178,7 @@ export const VALIDATION_FUNCTIONS: {
 		],
 	},
 	FILE_SIZE: {
-		function: FILE_SIZE,
+		functionCode: FILE_SIZE,
 		displayName: 'File Size',
 		fields: [
 			{
@@ -219,7 +219,7 @@ export function validate(
 			return vals;
 		})
 		.filter((e: any) => e.condition !== false)
-		.flatMap((e: any) => VALIDATION_FUNCTIONS[e.type].function(e, value))
+		.flatMap((e: any) => VALIDATION_FUNCTIONS[e.type ?? 'MANDATORY'].functionCode(e, value))
 		.map((e: string) => getTranslations(e, pageDefinition.translations))
 		.filter((e: string) => !!e);
 }

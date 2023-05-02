@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { PageStoreExtractor } from '../../../../context/StoreContext';
+import {
+	PageStoreExtractor,
+	addListenerAndCallImmediately,
+} from '../../../../context/StoreContext';
 import { LocationHistory, PageDefinition } from '../../../../types/common';
 import PageOperations from '../../functions/PageOperations';
 import DnDIFrame from './DnDIFrame';
@@ -32,10 +35,14 @@ interface DnDEditorProps {
 	firstTimeRef: React.MutableRefObject<PageDefinition[]>;
 	undoStackRef: React.MutableRefObject<PageDefinition[]>;
 	redoStackRef: React.MutableRefObject<PageDefinition[]>;
+	latestVersion: React.MutableRefObject<number>;
 	slaveStore: any;
 	editPageName: string | undefined;
 	selectedSubComponent: string;
 	onSelectedSubComponentChanged: (key: string) => void;
+	storePaths: Set<string>;
+	setStyleSelectorPref: (pref: any) => void;
+	styleSelectorPref: any;
 }
 
 export default function DnDEditor({
@@ -61,11 +68,26 @@ export default function DnDEditor({
 	firstTimeRef,
 	undoStackRef,
 	redoStackRef,
+	latestVersion,
 	slaveStore,
 	editPageName,
 	selectedSubComponent,
 	onSelectedSubComponentChanged,
+	storePaths,
+	styleSelectorPref,
+	setStyleSelectorPref,
 }: DnDEditorProps) {
+	const [preview, setPreview] = useState(false);
+
+	useEffect(() => {
+		if (!personalizationPath) return;
+		return addListenerAndCallImmediately(
+			(_, v) => setPreview(v ?? false),
+			pageExtractor,
+			`${personalizationPath}.preview`,
+		);
+	}, [personalizationPath]);
+
 	return (
 		<div className="_dndGrid">
 			<DnDSideBar
@@ -78,6 +100,7 @@ export default function DnDEditor({
 				locationHistory={locationHistory}
 				pageOperations={pageOperations}
 				onShowCodeEditor={onShowCodeEditor}
+				previewMode={preview}
 			/>
 			<div className="_dndGridMain">
 				<DnDTopBar
@@ -95,13 +118,17 @@ export default function DnDEditor({
 					undoStackRef={undoStackRef}
 					redoStackRef={redoStackRef}
 					firstTimeRef={firstTimeRef}
+					latestVersion={latestVersion}
+					previewMode={preview}
 				/>
-				<div className="_iframeContainer">
+				<div className={`_iframeContainer ${preview ? '_previewMode' : ''}`}>
 					<DnDIFrame
 						url={url}
 						personalizationPath={personalizationPath}
 						pageExtractor={pageExtractor}
 						iframeRef={iframeRef}
+						previewMode={preview}
+						onChangePersonalization={onChangePersonalization}
 					/>
 					<DnDPropertyBar
 						defPath={defPath}
@@ -117,6 +144,10 @@ export default function DnDEditor({
 						editPageName={editPageName}
 						selectedSubComponent={selectedSubComponent}
 						onSelectedSubComponentChanged={onSelectedSubComponentChanged}
+						storePaths={storePaths}
+						styleSelectorPref={styleSelectorPref}
+						setStyleSelectorPref={setStyleSelectorPref}
+						previewMode={preview}
 					/>
 				</div>
 				<DnDBottomBar
@@ -126,6 +157,7 @@ export default function DnDEditor({
 					onSelectedComponentChanged={onSelectedComponentChanged}
 					pageOperations={pageOperations}
 					onContextMenu={onContextMenu}
+					previewMode={preview}
 				/>
 			</div>
 		</div>

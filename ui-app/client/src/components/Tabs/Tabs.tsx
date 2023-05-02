@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import {
-	addListener,
 	addListenerAndCallImmediately,
 	getPathFromLocation,
 	PageStoreExtractor,
@@ -11,7 +10,6 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
 import { HelperComponent } from '../HelperComponent';
 import { getTranslations } from '../util/getTranslations';
-import { renderChildren } from '../util/renderChildren';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tabsProperties';
 import TabsStyles from './TabsStyle';
@@ -77,11 +75,16 @@ function TabsComponent(props: ComponentProps) {
 	const index = tabs.findIndex((e: string) => e == activeTab);
 	const entry = Object.entries(definition.children ?? {})
 		.filter(([k, v]) => !!v)
-		.sort(
-			(a: any, b: any) =>
+		.sort((a: any, b: any) => {
+			const v =
 				(pageDefinition.componentDefinition[a[0]]?.displayOrder ?? 0) -
-				(pageDefinition.componentDefinition[b[0]]?.displayOrder ?? 0),
-		)[index == -1 ? 0 : index];
+				(pageDefinition.componentDefinition[b[0]]?.displayOrder ?? 0);
+			return v === 0
+				? (pageDefinition.componentDefinition[a[0]]?.key ?? '').localeCompare(
+						pageDefinition.componentDefinition[b[0]]?.key ?? '',
+				  )
+				: v;
+		})[index == -1 ? 0 : index];
 	const selectedChild = entry ? { [entry[0]]: entry[1] } : {};
 
 	const orientationClass = tabsOrientation === 'VERTICAL' ? 'vertical' : '';
@@ -153,13 +156,75 @@ const component: Component = {
 	bindingPaths: {
 		bindingPath: { name: 'Active Tab Binding' },
 	},
+
 	defaultTemplate: {
 		key: '',
-		type: 'Tabs',
 		name: 'Tabs',
+		type: 'Tabs',
 		properties: {
-			tabs: { value: ['Tab1', 'Tab2', 'Tab3'] },
-			defaultActive: { value: 'Tab1' },
+			tabs: {
+				'3iFvRBg47fg0Mk7OR7Oshz': {
+					key: '3iFvRBg47fg0Mk7OR7Oshz',
+					order: 1,
+					property: {
+						value: 'Tab1',
+					},
+				},
+				'5sEds41k2jvLbJgcOsDyVZ': {
+					key: '5sEds41k2jvLbJgcOsDyVZ',
+					order: 2,
+					property: {
+						value: 'Tab2',
+					},
+				},
+				'3fmhmBLHzvC5yFJGK7IRmx': {
+					key: '3fmhmBLHzvC5yFJGK7IRmx',
+					order: 3,
+					property: {
+						value: 'Tab3',
+					},
+				},
+				'24Aou1fgffDV4hpQMxj4jy': {
+					key: '24Aou1fgffDV4hpQMxj4jy',
+					order: 4,
+					property: {
+						value: 'Tab4',
+					},
+				},
+			},
+			icon: {
+				'1gweTkTDaBOAUFGHDSV77J': {
+					key: '1gweTkTDaBOAUFGHDSV77J',
+					order: 1,
+					property: {
+						value: 'fa-arrows-to-circle fa-solid',
+					},
+				},
+				'2Sr6eN2CeR1tOnODcFuoEB': {
+					key: '2Sr6eN2CeR1tOnODcFuoEB',
+					order: 2,
+					property: {
+						value: 'fa-text-height fa-solid',
+					},
+				},
+				'5oxu4PeICV9XbUM8uaUUGn': {
+					key: '5oxu4PeICV9XbUM8uaUUGn',
+					order: 3,
+					property: {
+						value: 'fa-message fa-solid',
+					},
+				},
+				'7yb3thIp2JDvXMlUy6uTMS': {
+					key: '7yb3thIp2JDvXMlUy6uTMS',
+					order: 4,
+					property: {
+						value: 'fa-file-lines fa-solid',
+					},
+				},
+			},
+			defaultActive: {
+				value: 'Tab1',
+			},
 		},
 	},
 };

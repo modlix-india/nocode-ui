@@ -18,8 +18,7 @@ export function queryParamsSerializer(
 
 	const typeOfParams = typeof params;
 	if (Array.isArray(params)) {
-		prefix =
-			prefix !== '' ? prefix.substring(0, prefix.length - 1) : prefix;
+		prefix = prefix !== '' ? prefix.substring(0, prefix.length - 1) : prefix;
 		return [
 			true,
 			params
@@ -43,4 +42,11 @@ export function queryParamsSerializer(
 	} else {
 		return [false, encodeURIComponent('' + params)];
 	}
+}
+
+export function camelCaseToUpperSpaceCase(str: string) {
+	if (str.trim().length <= 0) return str;
+
+	const retStr = str.replace(/([A-Z])/g, ' $1');
+	return retStr.substring(0, 1).toUpperCase() + retStr.substring(1);
 }

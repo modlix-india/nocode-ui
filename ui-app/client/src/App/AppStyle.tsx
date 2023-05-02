@@ -18,6 +18,10 @@ export default function AppStyle() {
 		StyleResolution.TABLET_POTRAIT_SCREEN,
 	)?.minWidth;
 
+	const TABLET_LAND_MIN_WIDTH = StyleResolutionDefinition.get(
+		StyleResolution.TABLET_LANDSCAPE_SCREEN,
+	)?.minWidth;
+
 	const DESKTOP_MIN_WIDTH = StyleResolutionDefinition.get(
 		StyleResolution.DESKTOP_SCREEN,
 	)?.minWidth;
@@ -90,8 +94,9 @@ export default function AppStyle() {
 		visibility: visible;
 	}
 
-	._ROWLAYOUT,._SINGLECOLUMNLAYOUT {
+	._ROWLAYOUT, ._SINGLECOLUMNLAYOUT, ._ROWCOLUMNLAYOUT {
 		display: flex;
+		flex-direction: column;
 	}
 
 	._FIVECOLUMNSLAYOUT,
@@ -125,10 +130,22 @@ export default function AppStyle() {
 		._THREECOLUMNSLAYOUT {
 			grid-template-columns: 1fr 1fr 1fr;
 		}
+
+		._ROWCOLUMNLAYOUT{
+			flex-direction: row;
+		}
 	}
 
 	._pointer {
 		cursor: pointer;
+	}
+
+	._validationMessages {
+		position: relative;
+	}
+
+	._eachValidationMessage {
+		position: relative;
 	}
 
 	._validationMessages._floatingMessages {

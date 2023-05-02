@@ -140,7 +140,10 @@ function Menu(props: ComponentProps) {
 			{icon ? (
 				<i style={resolvedStyles.icon ?? {}} className={`${icon} icon`}></i>
 			) : (
-				<i className="icon fa-solid fa-user icon hide"></i>
+				<i
+					className="icon fa-solid fa-user icon hide"
+					style={resolvedStyles.icon ?? {}}
+				></i>
 			)}
 			{!onlyIconMenu && (
 				<span className="menuText">

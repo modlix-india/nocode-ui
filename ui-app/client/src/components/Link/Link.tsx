@@ -53,59 +53,60 @@ function Link(props: ComponentProps) {
 		stylePropertiesWithPseudoStates,
 	);
 	return (
-		<div className="comp compLinks ">
+		<div
+			className="comp compLinks linkDiv"
+			style={resolvedStyles.container ?? {}}
+			onMouseEnter={stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined}
+			onMouseLeave={
+				stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
+			}
+		>
 			<HelperComponent definition={definition} />
-			<div
-				className="linkDiv"
-				style={resolvedStyles.container ?? {}}
-				onMouseEnter={
-					stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
-				}
-				onMouseLeave={
-					stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
-				}
-			>
-				{!isExternalUrl ? (
+			{!isExternalUrl ? (
+				<RouterLink
+					style={resolvedStyles.link ?? {}}
+					className="link"
+					to={resolvedLink}
+					target={target}
+				>
+					{getTranslations(label, translations)}
+				</RouterLink>
+			) : (
+				<a
+					style={resolvedStyles.link ?? {}}
+					className="link"
+					href={resolvedLink}
+					target={target}
+				>
+					{getTranslations(label, translations)}
+				</a>
+			)}
+			{showButton ? (
+				isExternalUrl ? (
 					<RouterLink
-						style={resolvedStyles.link ?? {}}
-						className="link"
 						to={resolvedLink}
-						target={target}
+						target={externalButtonTarget}
+						className="secondLink"
 					>
-						{getTranslations(label, translations)}
+						<i
+							style={resolvedStyles.icon ?? {}}
+							className="fa-solid fa-up-right-from-square"
+						></i>
 					</RouterLink>
 				) : (
 					<a
-						style={resolvedStyles.link ?? {}}
-						className="link"
 						href={resolvedLink}
-						target={target}
+						target={externalButtonTarget}
+						className="secondLink"
+						style={resolvedStyles.link ?? {}}
 					>
-						{getTranslations(label, translations)}
+						<i
+							style={resolvedStyles.icon ?? {}}
+							className="fa-solid fa-up-right-from-square"
+						></i>
 					</a>
-				)}
-				{showButton ? (
-					isExternalUrl ? (
-						<RouterLink
-							to={resolvedLink}
-							target={externalButtonTarget}
-							className="secondLink"
-						>
-							<i
-								style={resolvedStyles.icon ?? {}}
-								className="fa-solid fa-up-right-from-square"
-							></i>
-						</RouterLink>
-					) : (
-						<a href={resolvedLink} target={externalButtonTarget} className="secondLink">
-							<i
-								style={resolvedStyles.icon ?? {}}
-								className="fa-solid fa-up-right-from-square"
-							></i>
-						</a>
-					)
-				) : null}
-			</div>
+				)
+			) : null}
 		</div>
 	);
 }
@@ -118,6 +119,7 @@ const component: Component = {
 	component: Link,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
+	styleProperties: stylePropertiesDefinition,
 	styleComponent: LinkStyle,
 	stylePseudoStates: ['hover'],
 	defaultTemplate: {

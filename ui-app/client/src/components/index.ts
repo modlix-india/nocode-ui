@@ -2,7 +2,6 @@ import Button from './Button/Button';
 import ButtonBar from './Buttonbar/ButtonBar';
 import CheckBox from './CheckBox/CheckBox';
 import Grid from './Grid/Grid';
-import Label from './Label/Label';
 import Link from './Link/Link';
 import Page from './Page/Page';
 import RadioButton from './RadioButton/RadioButton';
@@ -37,13 +36,13 @@ import Carousel from './Carousel/Carousel';
 import FileUpload from './FileUpload/FileUpload';
 import KIRunEditor from './KIRunEditor/KIRunEditor';
 import Video from './Video/Video';
+import SchemaForm from './SchemaForm/SchemaForm';
 
 export default new Map<string, Component>([
 	[Button.name, Button],
 	[ButtonBar.name, ButtonBar],
 	[Grid.name, Grid],
 	[Page.name, Page],
-	[Label.name, Label],
 	[CheckBox.name, CheckBox],
 	[RadioButton.name, RadioButton],
 	[ToggleButton.name, ToggleButton],
@@ -77,4 +76,5 @@ export default new Map<string, Component>([
 	[FileUpload.name, FileUpload],
 	[KIRunEditor.name, KIRunEditor],
 	[Video.name, Video],
+	[SchemaForm.name, SchemaForm],
 ]);

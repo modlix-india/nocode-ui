@@ -6,7 +6,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		displayName: 'Icon Color',
 		description: 'The color of the Icon.',
-		defaultValue: '<main-font-color>',
+		defaultValue: '<mainFontColor>',
 		selector: '._icon',
 	},
 

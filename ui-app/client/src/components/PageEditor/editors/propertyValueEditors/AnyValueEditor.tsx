@@ -1,5 +1,5 @@
 import Editor from '@monaco-editor/react';
-import React, { useEffect } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 
 import Portal from '../../../Portal';
 
@@ -7,6 +7,7 @@ interface AnyValueEditorProps {
 	value?: any;
 	defaultValue?: any;
 	onChange?: (v: any) => void;
+	isIconButton?: boolean;
 }
 
 function getTextualValue(value: any) {
@@ -15,7 +16,12 @@ function getTextualValue(value: any) {
 	return JSON.stringify(value, null, 2);
 }
 
-export function AnyValueEditor({ value, defaultValue, onChange }: AnyValueEditorProps) {
+export function AnyValueEditor({
+	value,
+	defaultValue,
+	onChange,
+	isIconButton = false,
+}: AnyValueEditorProps) {
 	const [localValue, setLocalValue] = React.useState(getTextualValue(value ?? defaultValue));
 	const [showEditor, setShowEditor] = React.useState(false);
 	const [editorValue, setEditorValue] = React.useState(getTextualValue(value ?? defaultValue));
@@ -78,16 +84,30 @@ export function AnyValueEditor({ value, defaultValue, onChange }: AnyValueEditor
 		);
 	}
 
+	const trigger = isIconButton ? (
+		<i
+			className="fa fa-solid fa-arrow-up-right-from-square"
+			tabIndex={0}
+			role="button"
+			onClick={() => {
+				setShowEditor(true);
+				setEditorValue(localValue);
+			}}
+		/>
+	) : (
+		<button
+			onClick={() => {
+				setShowEditor(true);
+				setEditorValue(localValue);
+			}}
+		>
+			Edit
+		</button>
+	);
+
 	return (
 		<div className="_smallEditorContainer">
-			<button
-				onClick={() => {
-					setShowEditor(true);
-					setEditorValue(localValue);
-				}}
-			>
-				Edit
-			</button>
+			{trigger}
 			{popup}
 		</div>
 	);

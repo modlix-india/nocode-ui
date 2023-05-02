@@ -27,6 +27,11 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			height: 48px;
 			background-color: #fff;
+			border-bottom: 1px solid #eee;
+		}
+
+		${PREFIX} ._topBarGrid._previewMode{
+			height: 0px;
 		}
 
 		${PREFIX} ._sideBar {
@@ -36,6 +41,11 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction: column;
 			align-items: center;
 			padding-top: 10px;
+			border-right: 1px solid #eee;
+		}
+
+		${PREFIX} ._sideBar._previewMode {
+			width: 0px;
 		}
 		
 		${PREFIX} ._propBar {
@@ -43,7 +53,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			background-color: #fff;
 			flex-direction: column;
 			align-items: center;
-			padding-top: 10px;
 			width: 0px;
 			transition: width 1s;
 		}
@@ -51,6 +60,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._propBar._propBarVisible{
 			display: flex;
 			width: 300px;
+			border-left: 1px solid #eee;
 		}
 
 		${PREFIX} ._sideBar ._top {
@@ -95,7 +105,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			gap: 10px;
 		}
 
-		${PREFIX} select {
+		${PREFIX} select._peSelect {
 			height: 25px;
 			font-size: 11px;
 			padding: 5px;
@@ -119,7 +129,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border: 1px solid #ccc;
 		}
 
-		${PREFIX} input, ${PREFIX} ._pvExpressionEditor {
+		${PREFIX} input._peInput, ${PREFIX} ._pvExpressionEditor {
 			color: #555;
 			background-color: #eee;
 			font-size: 11px;
@@ -128,7 +138,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border: 1px solid #ccc;
 		}
 
-		${PREFIX} input[type='text'], ${PREFIX} ._pvExpressionEditor, ${PREFIX} input[type='number'] {
+		${PREFIX} input._peInput[type='text'], ${PREFIX} ._pvExpressionEditor, ${PREFIX} input._peInput[type='number'] {
 			height: 25px;
 			font-size: 12px;
 			border-radius: 12px;
@@ -169,7 +179,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			background-color: #eee;
 		}
 
-		${PREFIX} ._pvExpressionEditor input[type='text'],  ${PREFIX} ._pvExpressionEditor input[type='number']{
+		${PREFIX} ._pvExpressionEditor input._peInput[type='text'],  ${PREFIX} ._pvExpressionEditor input._peInput[type='number']{
 			border: none;
 			background-color: transparent;
 			flex: 1;
@@ -222,6 +232,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: none;
 			border-radius: 2px;
 			z-index: 1;
+			transform: translateX(40px);
 		}
 
 		${PREFIX} ._iconMenuBody._clickable {
@@ -382,12 +393,16 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._selectionBar {
 			display: flex;
 			background-color: #fff;
-    		border-left: 1px solid #ccc;
+    		border-top: 1px solid #eee;
 			height: 20px;
+		}
+		
+		${PREFIX} ._selectionBar._previewMode {
+			height: 0px;
 		}
 
 		${PREFIX} ._selectionBar ._iconMenu {
-			min-height: 20px;
+			min-height: 100%;
 		}
 
 		${PREFIX} ._eachSelectionBar {
@@ -427,10 +442,36 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			max-height: calc(100% - 48px - 20px);
 		}
 
+		${PREFIX} ._iframeContainer._previewMode {
+			max-height: 100%;
+		}
+
 		${PREFIX} ._iframeHolder {
 			flex: 1;
 			display: flex;
 			overflow: auto;
+			position: relative;
+		}
+
+		${PREFIX}  ._previewModeCloser {
+			position: fixed;
+			bottom: 20px;
+			left: 50%;
+			transform: translateX(-50%);
+			cursor: pointer;
+			width: 30px;
+			height: 30px;
+			background-color: #aaa7;
+			border-radius: 50%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			border: 1.5px solid;
+			transition: bottom 0.5s;
+		}
+
+		${PREFIX}  ._previewModeCloser:hover {
+			bottom: 25px
 		}
 
 		${PREFIX} ._tabBar {
@@ -483,7 +524,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			gap: 5px;
 		}
 
-		${PREFIX} ._pvEditor input[type='text'], ${PREFIX} ._pvEditor input[type='number']  {
+		${PREFIX} ._pvEditor input._peInput[type='text'], ${PREFIX} ._pvEditor input._peInput[type='number']  {
 			border-radius: 2px;
 		}
 
@@ -626,6 +667,12 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._smallEditorContainer {
 			display: flex;
 			flex: 1;
+			align-items: center;
+			gap: 10px;
+		}
+
+		${PREFIX} ._smallEditorContainer i.fa {
+			cursor: pointer;
 		}
 
 		${PREFIX} ._propertyGroup {
@@ -719,7 +766,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			width: 100%;
 			height: 100%;
 			align-items: center;
-			z-index: 6;
+			z-index: 3;
 			opacity: 0;
 			transition: opacity 1s;
 		}
@@ -769,7 +816,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			align-items: center;
 		}
 
-		${PREFIX} ._codeEditorContent ._codeFunctions select {
+		${PREFIX} ._codeEditorContent ._codeFunctions select._peSelect {
 			text-transform: none;
 		}
 
@@ -890,7 +937,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border: 2px dashed #ccc;
 		}
 
-		._popupContainer ._eachIcon input[type="file"] {
+		._popupContainer ._eachIcon input._peInput[type="file"] {
 			position: absolute;
 			opacity: 0;
 			width: 100%;
@@ -1002,15 +1049,15 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			background-color:#555;
 		}
 
-		${PREFIX}._dark button, ${PREFIX}._dark select, ${PREFIX}._dark input[type='text'],
+		${PREFIX}._dark button, ${PREFIX}._dark select._peSelect, ${PREFIX}._dark input._peInput[type='text'],
 		${PREFIX}._dark ._pvExpressionEditor, ._popupBackground._dark button,
-		${PREFIX}._dark input[type='number'] {
+		${PREFIX}._dark input._peInput[type='number'] {
 			color: #aaa;
 			background-color: #222;
 			border: 1px solid #333;
 		}
 
-		${PREFIX}._dark ._pvExpressionEditor input {
+		${PREFIX}._dark ._pvExpressionEditor input._peInput {
 			border: none;
 		}
 

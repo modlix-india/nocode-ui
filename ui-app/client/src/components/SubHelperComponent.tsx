@@ -2,17 +2,22 @@ import React, { Children, CSSProperties, useEffect, useState } from 'react';
 import { getDataFromPath } from '../context/StoreContext';
 import { messageToMaster } from '../slaveFunctions';
 import { ComponentDefinition } from '../types/common';
+import { camelCaseToUpperSpaceCase } from '../functions/utils';
 
 interface SubHelperComponentPropsType {
 	definition: ComponentDefinition;
 	children?: React.ReactNode;
 	subComponentName: string;
+	style?: React.CSSProperties;
+	className?: string;
 }
 
 function SubHelperComponentInternal({
 	definition,
 	subComponentName,
 	children,
+	style: upperStyle = {},
+	className,
 }: SubHelperComponentPropsType) {
 	const [, setLastChanged] = useState(Date.now());
 	const [hover, setHover] = useState(false);
@@ -46,6 +51,7 @@ function SubHelperComponentInternal({
 		return <>{children}</>;
 
 	let style: CSSProperties = {
+		...upperStyle,
 		outline:
 			hover || selectedSubComponent.endsWith(subComponentName)
 				? `2px solid ${highlightColor}`
@@ -55,16 +61,18 @@ function SubHelperComponentInternal({
 		pointerEvents: 'all',
 		height: '100%',
 		width: '100%',
-
 		left: '0px',
 		top: '0px',
 		position: 'absolute',
+		cursor: 'pointer',
+		border: 'none',
+		background: 'none',
 	};
 
 	return (
 		<div
 			style={style}
-			className="disableChildrenEvents"
+			className={`${className ?? ''} disableChildrenEvents `}
 			onMouseEnter={e => setHover(true)}
 			onMouseLeave={e => setHover(false)}
 			onClick={e => {
@@ -83,7 +91,7 @@ function SubHelperComponentInternal({
 					payload: '',
 				});
 			}}
-			title={subComponentName.toUpperCase()}
+			title={camelCaseToUpperSpaceCase(subComponentName)}
 		>
 			{children}
 		</div>
