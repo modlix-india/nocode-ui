@@ -4,6 +4,8 @@ import { Component, ComponentPropertyDefinition, ComponentProps } from '../../ty
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './videoProperties';
 import VideoStyle from './VideoStyle';
+import { HelperComponent } from '../HelperComponent';
+import { isNullValue } from '@fincity/kirun-js';
 
 function Video(props: ComponentProps) {
 	const { definition, locationHistory, context } = props;
@@ -15,7 +17,7 @@ function Video(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	const [manuallySeeking, setManuallySeeking] = useState<boolean>(false);
+
 	//to check wheater browser supports html5 video
 	const [videoControls, setVideoControl] = useState<boolean>(true);
 	//playPauseButton
@@ -106,7 +108,7 @@ function Video(props: ComponentProps) {
 	const updateTimeElapsed = () => {
 		if (!video.current) return;
 		const time = formatTime(Math.round(video.current.currentTime));
-		if (!manuallySeeking) setProgressBarCurr(Math.floor(video.current.currentTime));
+		setProgressBarCurr(Math.floor(video.current.currentTime));
 		//to show in the time tag of time Elapsed
 		settimeElapsed(time);
 	};
@@ -136,24 +138,12 @@ function Video(props: ComponentProps) {
 		}
 	};
 
-	const skipAhead = (event: any) => {
+	const skipAhead = (value: number) => {
 		if (!video.current) return;
-		const skipTo = event.target.value;
-		setProgressBarCurr(skipTo);
-		if (video.current.seeking) return;
-		video.current.currentTime = skipTo;
+		video.current.currentTime = value;
 	};
 
-	useEffect(() => {
-		const handle = setInterval(() => {
-			if (!video.current || video.current?.seeking) return;
-			video.current.currentTime = progressbarCurr;
-			clearInterval(handle);
-		}, 10);
-		return () => {
-			clearInterval(handle);
-		};
-	}, [progressbarCurr]);
+	const [manualSeek, setManualSeek] = useState<number | undefined>(undefined);
 
 	//volumeControl
 	let vol: number;
@@ -164,6 +154,7 @@ function Video(props: ComponentProps) {
 		vol = parseFloat(event.target.value);
 		if (isNaN(vol)) return;
 		video.current.volume = vol;
+		setMuted(false);
 	};
 	const volumeIconHandle = (event: any) => {
 		if (!video.current) return;
@@ -221,6 +212,7 @@ function Video(props: ComponentProps) {
 			onMouseEnter={handleMouseEnterVideo}
 			onMouseLeave={handleMouseLeaveVideo}
 		>
+			<HelperComponent definition={definition} />
 			<video
 				width={width}
 				height={height}
@@ -247,16 +239,23 @@ function Video(props: ComponentProps) {
 						<input
 							className="progressBar progress"
 							id="seek"
-							value={progressbarCurr}
+							value={manualSeek === undefined ? progressbarCurr : manualSeek}
 							min="0"
 							type="range"
 							step="1"
 							max={progressbarMax}
 							onMouseMove={updateSeek}
-							onMouseDown={() => setManuallySeeking(true)}
-							onMouseUp={() => setManuallySeeking(false)}
+							onMouseDown={() => setManualSeek(progressbarCurr)}
+							onMouseUp={ev => {
+								let value = Number.parseInt(ev.target.value ?? '') ?? 0;
+								skipAhead(value);
+								setProgressBarCurr(value);
+								setManualSeek(undefined);
+							}}
 							ref={progressBarRef}
-							onChange={skipAhead}
+							onChange={ev => {
+								if (manualSeek) setManualSeek(parseInt(ev.target.value));
+							}}
 						/>
 						{toogleToolTip && (
 							<div style={{ left: `${toolTipX}px` }} className="toolTip">{`${
@@ -296,7 +295,7 @@ function Video(props: ComponentProps) {
 									id="volume-button"
 									ref={volumeButton}
 									className={`volumeButton fa-solid fa-volume-${
-										volume === '0' || muted ? 'xmark' : 'high'
+										volume == '0' || muted ? 'xmark' : 'high'
 									}`}
 									onClick={volumeIconHandle}
 								></i>
@@ -307,7 +306,7 @@ function Video(props: ComponentProps) {
 									min={'0'}
 									step={'0.01'}
 									type="range"
-									onInput={updateVolume}
+									onChange={updateVolume}
 								/>
 							</div>
 						</div>
@@ -332,13 +331,14 @@ function Video(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: '',
+	icon: 'fa fa-solid fa-film',
 	name: 'Video',
 	displayName: 'Video',
 	description: 'Video component',
 	component: Video,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
+	styleProperties: stylePropertiesDefinition,
 	styleComponent: VideoStyle,
 	allowedChildrenType: new Map<string, number>([['', -1]]),
 };

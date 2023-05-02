@@ -122,7 +122,11 @@ function Children({
 									definition={e}
 									pageDefinition={pageDef}
 									key={pageDef.name}
-									context={{ pageName: pageDef.name }}
+									context={{
+										pageName: pageDef.name,
+										level: context.level + 1,
+										shellPageName: context.pageName,
+									}}
 									locationHistory={[]}
 								/>
 							);
