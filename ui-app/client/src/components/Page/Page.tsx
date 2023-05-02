@@ -104,6 +104,15 @@ function Page(props: ComponentProps) {
 
 	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
 
+	if (context.level >= 2 || (context.level > 0 && pageName === context.shellPageName)) {
+		return (
+			<div className="comp compPage _blockPageRendering" style={resolvedStyles?.comp ?? {}}>
+				<HelperComponent definition={definition} />
+				Design Mode
+			</div>
+		);
+	}
+
 	return (
 		<div className="comp compPage" style={resolvedStyles?.comp ?? {}}>
 			<HelperComponent definition={definition} />
