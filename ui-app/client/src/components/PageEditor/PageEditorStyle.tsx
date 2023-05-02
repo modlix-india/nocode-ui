@@ -856,6 +856,11 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			padding: 2px;
 			width:400px;
 			height: 400px;
+			transition: width 0s, height 0s;
+		}
+
+		._popupContainer ._jsonEditorContainer > * {
+			transition: width 0s, height 0s;
 		}
 
 		._popupContainer ._iconSelectionBrowser {
