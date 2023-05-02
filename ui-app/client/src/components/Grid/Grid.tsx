@@ -132,30 +132,38 @@ function Grid(props: ComponentProps) {
 		>{`._${key}_grid_css::-webkit-scrollbar { display: none }`}</style>
 	) : undefined;
 	if (linkPath) {
-		return React.createElement(containerType.toLowerCase(), { className: 'comp compGrid' }, [
-			<HelperComponent key={`${key}_hlp`} definition={definition} />,
-			styleComp,
-			<Link
-				key={`${key}_Link`}
-				ref={ref}
-				className={`_anchorGrid _${layout} ${background} ${
-					sepStyle ? `_${key}_grid_css` : ''
-				}`}
-				onMouseEnter={
-					stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
-				}
-				onMouseLeave={
-					stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
-				}
-				onFocus={stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined}
-				onBlur={stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined}
-				to={getHref(linkPath, location)}
-				target={target}
-				style={resolvedStyles.comp ?? {}}
-			>
-				{childs}
-			</Link>,
-		]);
+		return React.createElement(
+			containerType.toLowerCase(),
+			{ className: 'comp compGrid', id: key },
+			[
+				<HelperComponent key={`${key}_hlp`} definition={definition} />,
+				styleComp,
+				<Link
+					key={`${key}_Link`}
+					ref={ref}
+					className={`_anchorGrid _${layout} ${background} ${
+						sepStyle ? `_${key}_grid_css` : ''
+					}`}
+					onMouseEnter={
+						stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
+					}
+					onMouseLeave={
+						stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
+					}
+					onFocus={
+						stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined
+					}
+					onBlur={
+						stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined
+					}
+					to={getHref(linkPath, location)}
+					target={target}
+					style={resolvedStyles.comp ?? {}}
+				>
+					{childs}
+				</Link>,
+			],
+		);
 	}
 
 	return React.createElement(
@@ -175,6 +183,7 @@ function Grid(props: ComponentProps) {
 			style: resolvedStyles.comp ?? {},
 
 			onClick: handleClick,
+			id: key,
 		},
 		[<HelperComponent key={`${key}_hlp`} definition={definition} />, styleComp, childs],
 	);

@@ -13,6 +13,7 @@ export default function LabelStyle({ theme }: { theme: Map<string, Map<string, s
 		color: inherit;
 		font-size: inherit;
 		font-weight: inherit;
+		position: relative;
 	}
 	
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);

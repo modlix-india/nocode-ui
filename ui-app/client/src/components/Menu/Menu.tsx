@@ -183,7 +183,9 @@ function Menu(props: ComponentProps) {
 						}
 						style={resolvedStyles.menu ?? {}}
 					>
-						<div className="menuLink">{menuDetails}</div>
+						<div className="menuLink" style={resolvedStyles.link ?? {}}>
+							{menuDetails}
+						</div>
 						{!onlyIconMenu && (
 							<div className="menuCaretIcon">
 								{hasChildren ? (
@@ -226,7 +228,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
-	stylePseudoStates: ['focus', 'hover', 'disabled'],
+	stylePseudoStates: ['hover', 'disabled'],
 	allowedChildrenType: new Map([['Menu', -1]]),
 	defaultTemplate: {
 		key: '',
