@@ -80,13 +80,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: true,
 		group: ComponentPropertyGroup.BASIC,
 	},
-	{
-		name: 'hideAllControls',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Hide all controls',
-		defaultValue: false,
-		group: ComponentPropertyGroup.BASIC,
-	},
 ];
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 	'': [

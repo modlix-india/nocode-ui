@@ -24,7 +24,6 @@ function Video(props: ComponentProps) {
 			showSeekBar,
 			showPlaypause,
 			showTime,
-			hideAllControls,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -251,7 +250,7 @@ function Video(props: ComponentProps) {
 				<source src={src} type={type} />
 				Your browser does not support HTML5 video.
 			</video>
-			{!hideAllControls && controlsOnHover && (
+			{controlsOnHover && (
 				<div className={`videoControlsContainer ${videoControls ? 'hidden' : ''} `}>
 					{showSeekBar && (
 						<div
