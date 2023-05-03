@@ -144,6 +144,14 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.commonInputBox .textBoxDiv .rightIcon',
 	},
 	{
+		name: 'noFloatTextBoxLabelFontSize',
+		cssProperty: 'font-size',
+		displayName: "textbox's no float label font size",
+		description: "This is for textbox's no float label font size.",
+		noPrefix: true,
+		selector: '.commonInputBox .noFloatTextBoxLabel',
+	},
+	{
 		name: 'noFloatTextBoxLabelBottomMargin',
 		cssProperty: 'margin-bottom',
 		displayName: "textbox's label margin",
