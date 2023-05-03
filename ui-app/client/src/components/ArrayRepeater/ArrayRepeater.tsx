@@ -118,7 +118,11 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 		e.target.classList.remove('dragging');
 	};
 
-	const styleProperties = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
+	const styleProperties = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{},
+		stylePropertiesWithPseudoStates,
+	);
 
 	return (
 		<div className={`comp compArrayRepeater _${layout}`} style={styleProperties.comp}>

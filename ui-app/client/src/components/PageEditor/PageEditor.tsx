@@ -87,7 +87,11 @@ function PageEditor(props: ComponentProps) {
 		? getPathFromLocation(bindingPath2, locationHistory, pageExtractor)
 		: undefined;
 
-	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
+	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{},
+		stylePropertiesWithPseudoStates,
+	);
 
 	const personalization = personalizationPath
 		? getDataFromPath(personalizationPath, locationHistory, pageExtractor) ?? {}

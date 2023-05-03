@@ -240,6 +240,7 @@ function DropdownComponent(props: ComponentProps) {
 	}, [selected, selectedDataKey, dropdownData, noFloat, placeholder, isMultiSelect]);
 	const effectivePlaceholder = noFloat ? (placeholder ? placeholder : label) : label;
 	const computedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ focus, readOnly },
 		stylePropertiesWithPseudoStates,
 	);

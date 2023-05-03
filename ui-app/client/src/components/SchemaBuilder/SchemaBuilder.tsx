@@ -43,7 +43,11 @@ function SchemaBuilder(props: ComponentProps) {
 
 	const isReadonly = readOnly || !bindingPathPath;
 
-	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
+	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{},
+		stylePropertiesWithPseudoStates,
+	);
 
 	return (
 		<div className="comp compSchemaBuilder" style={resolvedStyles.comp ?? {}}>

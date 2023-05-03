@@ -64,7 +64,6 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.rotate.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.list.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.scrollbar.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.className.type,
 	],
 };
 

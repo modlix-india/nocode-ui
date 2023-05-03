@@ -37,7 +37,11 @@ function Popover(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
+	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{},
+		stylePropertiesWithPseudoStates,
+	);
 	const [show, setShow] = React.useState(false);
 	const [coords, setCoords] = React.useState<PortalCoordinates | undefined>();
 	const [tipPosition, setTipPosition] = useState('');
