@@ -235,7 +235,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
-	stylePseudoStates: ['focus', 'hover', 'disabled'],
+	stylePseudoStates: ['hover', 'disabled'],
 	allowedChildrenType: new Map([['Menu', -1]]),
 	defaultTemplate: {
 		key: '',

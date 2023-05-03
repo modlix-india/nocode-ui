@@ -89,6 +89,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 		],
 	},
+	{
+		name: 'showInDesign',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show in Design Mode',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: false,
+	},
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

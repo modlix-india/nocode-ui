@@ -45,14 +45,14 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "Menu's text color",
 		description: "Menu's text color.",
 		defaultValue: '#DCDCDC',
-		selector: '.menuText',
+		selector: '.menuLink',
 	},
 	{
 		name: 'menuHoverTextColor',
 		cssProperty: 'color',
 		displayName: "Menu's text color on hover",
 		description: "Menu's text color on hover.",
-		selector: '.menu:hover > .menuLink > .menuText',
+		selector: '.menu:hover > .menuLink',
 	},
 	{
 		name: 'menuHoverTextColorWhenActive',

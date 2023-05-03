@@ -7,12 +7,14 @@ export function getHref(linkPath: string = '', location: ReactLocation | Locatio
 	let prefix: string = '';
 	let midfix: string = '';
 	let url: string = '';
-
 	if (
 		linkPath?.startsWith('http:') ||
 		linkPath?.startsWith('https:') ||
 		linkPath?.startsWith('//') ||
-		linkPath?.startsWith('www')
+		linkPath?.startsWith('www') ||
+		linkPath?.startsWith('mailto:') ||
+		linkPath?.startsWith('tel:') ||
+		linkPath?.startsWith('#')
 	) {
 		return linkPath;
 	}
