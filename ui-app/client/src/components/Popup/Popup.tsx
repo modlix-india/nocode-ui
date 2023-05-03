@@ -46,6 +46,7 @@ function Popup(props: ComponentProps) {
 			closeButtonPosition,
 			modelTitle,
 			popupDesign,
+			showInDesign,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -86,11 +87,9 @@ function Popup(props: ComponentProps) {
 	}, [isActive]);
 
 	const handleClose = React.useCallback(() => {
-		setData(
-			getPathFromLocation(bindingPath!, props.locationHistory),
-			false,
-			props.context?.pageName,
-		);
+		if (!bindingPathPath) return;
+
+		setData(bindingPathPath, false, props.context?.pageName);
 	}, []);
 
 	const handleCloseOnOutsideClick = closeOnOutsideClick ? handleClose : undefined;
@@ -121,17 +120,19 @@ function Popup(props: ComponentProps) {
 		></i>
 	);
 
-	if (!isActive) return null;
+	if (isDesignMode) {
+		if (!showInDesign) return <></>;
+	} else if (!isActive) return <></>;
 
 	return (
 		<Portal>
 			<div className="comp compPopup" style={resolvedStyles.comp ?? {}}>
-				<HelperComponent definition={props.definition} />
 				<div
 					className="backdrop"
 					onClick={handleCloseOnOutsideClick}
 					style={resolvedStyles.backdrop ?? {}}
 				>
+					<HelperComponent definition={props.definition} />
 					<div
 						className={`modal ${popupDesign === '_design2' ? 'design2' : ''} `}
 						style={

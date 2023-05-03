@@ -59,7 +59,7 @@ const {
 	STORE_PREFIX,
 	localStoreExtractor,
 	themeExtractor,
-	new StoreExtractor(sample, `${SAMPLE_STORE_PREFIX}`),
+	new StoreExtractor(sample, `${SAMPLE_STORE_PREFIX}.`),
 );
 themeExtractor.setStore(_store);
 

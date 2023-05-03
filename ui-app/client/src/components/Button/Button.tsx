@@ -69,8 +69,6 @@ function ButtonComponent(props: ComponentProps) {
 	);
 
 	const handleClick = async (e: any) => {
-		if (e.target !== e.currentTarget) return;
-
 		if (linkPath) {
 			if (target) {
 				window.open(getHref(linkPath, location), target);
@@ -192,6 +190,16 @@ function ButtonComponent(props: ComponentProps) {
 								});
 							}}
 							autoFocus={true}
+							onClick={e => {
+								e.preventDefault();
+								e.stopPropagation();
+							}}
+							onMouseDown={e => {
+								e.stopPropagation();
+							}}
+							onMouseUp={e => {
+								e.stopPropagation();
+							}}
 						/>
 					</>
 				)}
