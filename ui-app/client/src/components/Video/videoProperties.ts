@@ -66,6 +66,27 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: true,
 		group: ComponentPropertyGroup.BASIC,
 	},
+	{
+		name: 'showPlaypause',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show playpause Button',
+		defaultValue: true,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'showTime',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Time ',
+		defaultValue: true,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'hideAllControls',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Hide all controls',
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
+	},
 ];
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 	'': [
@@ -109,7 +130,6 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
-
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 	seekTimeTextOnHover: [

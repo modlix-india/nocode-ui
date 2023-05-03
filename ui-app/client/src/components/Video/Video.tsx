@@ -22,6 +22,9 @@ function Video(props: ComponentProps) {
 			showFullScreenButton,
 			showAudioControls,
 			showSeekBar,
+			showPlaypause,
+			showTime,
+			hideAllControls,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -248,7 +251,7 @@ function Video(props: ComponentProps) {
 				<source src={src} type={type} />
 				Your browser does not support HTML5 video.
 			</video>
-			{controlsOnHover && (
+			{!hideAllControls && controlsOnHover && (
 				<div className={`videoControlsContainer ${videoControls ? 'hidden' : ''} `}>
 					{showSeekBar && (
 						<div
@@ -295,34 +298,42 @@ function Video(props: ComponentProps) {
 
 					<div className="playAndFullscreenGrid">
 						<div className="playAndVolumeGrid">
-							<i
-								className={`playBackIcon  fa-solid fa-${playPauseEnd}`}
-								onClick={handlePlayPause}
-								style={resolvedStyles.playPauseButton ?? {}}
-							></i>
-							<div className="time">
-								<time
-									className="timeElapsed"
-									id="time-elapsed"
-									dateTime={`${timElapsed.hours != '00' ? timElapsed.hours : ''}${
-										timElapsed.minutes != '00' ? timElapsed.minutes : ''
-									}${timElapsed.seconds}`}
-									style={resolvedStyles.timeText ?? {}}
-								>{`${timElapsed.hours != '00' ? timElapsed.hours + ':' : ''}${
-									timElapsed.minutes
-								}:${timElapsed.seconds}`}</time>
-								<span className="timeSplitter">/</span>
-								<time
-									className="duration"
-									id="duration"
-									dateTime={`${duration.hours != '00' ? duration.hours : ''}:${
-										duration.minutes != '00' ? duration.minutes : ''
-									}:${duration.seconds}`}
-									style={resolvedStyles.timeText ?? {}}
-								>{`${duration.hours != '00' ? duration.hours + ':' : ''}${
-									duration.minutes
-								}:${duration.seconds}`}</time>
-							</div>
+							{showPlaypause && (
+								<i
+									className={`playBackIcon  fa-solid fa-${playPauseEnd}`}
+									onClick={handlePlayPause}
+									style={resolvedStyles.playPauseButton ?? {}}
+								></i>
+							)}
+							{showTime && (
+								<div className="time">
+									<time
+										className="timeElapsed"
+										id="time-elapsed"
+										dateTime={`${
+											timElapsed.hours != '00' ? timElapsed.hours : ''
+										}${timElapsed.minutes != '00' ? timElapsed.minutes : ''}${
+											timElapsed.seconds
+										}`}
+										style={resolvedStyles.timeText ?? {}}
+									>{`${timElapsed.hours != '00' ? timElapsed.hours + ':' : ''}${
+										timElapsed.minutes
+									}:${timElapsed.seconds}`}</time>
+									<span className="timeSplitter">/</span>
+									<time
+										className="duration"
+										id="duration"
+										dateTime={`${
+											duration.hours != '00' ? duration.hours : ''
+										}:${duration.minutes != '00' ? duration.minutes : ''}:${
+											duration.seconds
+										}`}
+										style={resolvedStyles.timeText ?? {}}
+									>{`${duration.hours != '00' ? duration.hours + ':' : ''}${
+										duration.minutes
+									}:${duration.seconds}`}</time>
+								</div>
+							)}
 							{showAudioControls && (
 								<div className="volumeControls">
 									<i
