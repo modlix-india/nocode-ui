@@ -84,7 +84,7 @@ function Menu(props: ComponentProps) {
 	const [isMenuOpenState, setIsMenuOpenState] = React.useState(isMenuOpen ?? false);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
-		{ hover, disabled: readOnly },
+		{ hover, disabled: readOnly, active: isMenuActive },
 		stylePropertiesWithPseudoStates,
 	);
 
@@ -139,17 +139,25 @@ function Menu(props: ComponentProps) {
 	const menuDetails = (
 		<>
 			{icon ? (
-				<i style={resolvedStyles.icon ?? {}} className={`${icon} icon`}>
+				<i
+					style={resolvedStyles.icon ?? {}}
+					className={`${icon} ${resolvedStyles.icon?.className ?? ''} icon`}
+				>
 					<SubHelperComponent definition={props.definition} subComponentName="icon" />
 				</i>
 			) : (
 				<i
-					className="icon fa-solid fa-user icon hide"
+					className={`icon fa-solid fa-user icon hide ${
+						resolvedStyles.icon?.className ?? ''
+					}`}
 					style={resolvedStyles.icon ?? {}}
 				></i>
 			)}
 			{!onlyIconMenu && (
-				<span style={resolvedStyles.menuText ?? {}} className="menuText">
+				<span
+					style={resolvedStyles.menuText ?? {}}
+					className={`menuText ${resolvedStyles.menuText?.className ?? ''}`}
+				>
 					<SubHelperComponent definition={props.definition} subComponentName="menuText" />
 					{getTranslations(label, props.pageDefinition.translations)}
 				</span>
@@ -158,11 +166,16 @@ function Menu(props: ComponentProps) {
 	);
 
 	return (
-		<div className="comp compMenu" style={resolvedStyles.comp ?? {}}>
+		<div
+			className={`comp compMenu ${resolvedStyles.comp?.className ?? ''}`}
+			style={resolvedStyles.comp ?? {}}
+		>
 			<HelperComponent definition={props.definition} />
 			<Link
 				style={resolvedStyles.link ?? {}}
-				className={`menuItemsContainer ${isMenuActive ? 'isActive' : ''} link`}
+				className={` ${resolvedStyles.link?.className ?? ''} ${
+					isMenuActive ? 'isActive' : ''
+				} menuItemsContainer link`}
 				target={target}
 				to={getHref(linkPath, location)}
 				title={
@@ -172,7 +185,9 @@ function Menu(props: ComponentProps) {
 				<SubHelperComponent definition={props.definition} subComponentName="link" />
 				<div
 					onClick={!readOnly ? handleClick : undefined}
-					className={`menu ${onlyIconMenu ? 'onlyIconMenu' : ''}`}
+					className={`menu ${onlyIconMenu ? 'onlyIconMenu' : ''} ${
+						resolvedStyles.menu?.className ?? ''
+					}`}
 					onMouseEnter={
 						stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
 					}
@@ -182,14 +197,16 @@ function Menu(props: ComponentProps) {
 					style={resolvedStyles.menu ?? {}}
 				>
 					<SubHelperComponent definition={props.definition} subComponentName="menu" />
-					<div className="menuLink">{menuDetails}</div>
+					{menuDetails}
 					{!onlyIconMenu && (
 						<div className="menuCaretIcon">
 							{hasChildren ? (
 								!isMenuOpenState ? (
 									<i
 										style={resolvedStyles.caretIcon ?? {}}
-										className="fa fa-solid fa-angle-down"
+										className={`fa fa-solid fa-angle-down caretIcon ${
+											resolvedStyles.caretIcon?.className ?? ''
+										}`}
 									>
 										<SubHelperComponent
 											definition={props.definition}
@@ -199,7 +216,9 @@ function Menu(props: ComponentProps) {
 								) : (
 									<i
 										style={resolvedStyles.caretIcon ?? {}}
-										className="fa fa-solid fa-angle-up"
+										className={`fa fa-solid fa-angle-up caretIcon ${
+											resolvedStyles.caretIcon?.className ?? ''
+										}`}
 									>
 										<SubHelperComponent
 											definition={props.definition}
@@ -235,7 +254,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
-	stylePseudoStates: ['hover', 'disabled'],
+	stylePseudoStates: ['hover', 'disabled', 'active'],
 	allowedChildrenType: new Map([['Menu', -1]]),
 	defaultTemplate: {
 		key: '',

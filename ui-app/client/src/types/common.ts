@@ -63,6 +63,7 @@ export enum ComponentPropertyEditor {
 	THEME_SELECTOR,
 	IMAGE,
 	SCHEMA,
+	LARGE_TEXT,
 }
 
 export enum ComponentPropertyGroup {
@@ -244,6 +245,14 @@ export interface ComponentDefinitionValues {
 	stylePropertiesWithPseudoStates?: any;
 }
 
+export interface StyleClassDefinition {
+	selector?: string;
+	comments?: string;
+	mediaQuery?: string;
+	style?: string;
+	key: string;
+	priority?: number;
+}
 export interface PageDefinition {
 	name: string;
 	appCode: string;
@@ -259,7 +268,12 @@ export interface PageDefinition {
 		[key: string]: ComponentDefinition;
 	};
 	translations: { [key: string]: { [key: string]: string } };
-	properties: { onLoadEvent?: string; loadStrategy?: string; wrapShell?: boolean };
+	properties: {
+		onLoadEvent?: string;
+		loadStrategy?: string;
+		wrapShell?: boolean;
+		classes?: { [key: string]: StyleClassDefinition };
+	};
 }
 
 export interface ComponentProps {

@@ -45,21 +45,21 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "Menu's text color",
 		description: "Menu's text color.",
 		defaultValue: '#DCDCDC',
-		selector: '.menuLink',
+		selector: '.menu',
 	},
 	{
 		name: 'menuHoverTextColor',
 		cssProperty: 'color',
 		displayName: "Menu's text color on hover",
 		description: "Menu's text color on hover.",
-		selector: '.menu:hover > .menuLink',
+		selector: '.menu:hover',
 	},
 	{
 		name: 'menuHoverTextColorWhenActive',
 		cssProperty: 'color',
 		displayName: "Menu's text color on hover when active",
 		description: "Menu's text color on hover when active.",
-		selector: '.menu:hover > .menuLink > .menuText',
+		selector: '.menu:hover',
 	},
 	{
 		name: 'menuTextAndIconGap',
@@ -74,7 +74,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		displayName: "Menu's icon color",
 		description: "Menu's icon color.",
-		defaultValue: '#DCDCDC',
 		selector: '.icon',
 	},
 	{
@@ -121,7 +120,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		displayName: "Menu's Active color",
 		description: "Menu's color when the menu is activated.",
-		selector: '.menuItemsContainer.isActive .menuText, .menuItemsContainer.isActive .icon',
+		selector: '.menuItemsContainer.isActive .menu',
 	},
 	{
 		name: 'menuActiveBgColor',
@@ -129,7 +128,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "Menu's Active background color",
 		description: "Menu's background color when the menu is activated.",
 		defaultValue: '#FCF6E7',
-		selector: '.menuItemsContainer.isActive .menuText',
+		selector: '.menuItemsContainer.isActive .menu',
 	},
 	{
 		name: 'menuPadding',

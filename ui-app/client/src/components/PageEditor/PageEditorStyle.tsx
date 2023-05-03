@@ -129,13 +129,30 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border: 1px solid #ccc;
 		}
 
-		${PREFIX} input._peInput, ${PREFIX} ._pvExpressionEditor {
+		${PREFIX} input._peInput, ${PREFIX} ._pvExpressionEditor,
+		${PREFIX} textarea._peInput {
 			color: #555;
 			background-color: #eee;
 			font-size: 11px;
 			padding: 5px 15px;
 			border-radius: 2px;
 			border: 1px solid #ccc;
+		}
+
+		${PREFIX} textarea._peInput {
+			flex: 1;
+			height: 80px;
+			font-size: 12px;
+			padding: 4px;
+		}
+
+		${PREFIX} ._eachStyleClass {
+			border-bottom: 1px solid #ccc;
+		}
+
+		${PREFIX} ._eachStyleClass ._propLabel i.fa {
+			font-size: 14px;
+			cursor: pointer;
 		}
 
 		${PREFIX} input._peInput[type='text'], ${PREFIX} ._pvExpressionEditor, ${PREFIX} input._peInput[type='number'] {
