@@ -46,7 +46,6 @@ function ImageComponent(props: ComponentProps) {
 	useEffect(() => {
 		addListenerAndCallImmediately(
 			(_, value) => {
-				console.log(value);
 				if (value?.WIDE_SCREEN) {
 					setSrc(src6);
 				} else if (value?.DESKTOP_SCREEN && value?.DESKTOP_SCREEN_ONLY) {
@@ -82,7 +81,6 @@ function ImageComponent(props: ComponentProps) {
 			'Store.devices',
 		);
 	}, []);
-	console.log('image data ', getStore().devices);
 
 	const handleClick = () => {
 		(async () =>
