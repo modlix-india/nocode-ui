@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { HelperComponent } from '../HelperComponent';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import useDefinition from '../util/useDefinition';
-import { PageStoreExtractor } from '../../context/StoreContext';
+import {
+	PageStoreExtractor,
+	addListenerAndCallImmediately,
+	getData,
+} from '../../context/StoreContext';
 import { propertiesDefinition, stylePropertiesDefinition } from './imageProperties';
 import ImageStyle from './ImageStyles';
 import { runEvent } from '../util/runEvent';
@@ -13,10 +17,21 @@ import { useLocation } from 'react-router-dom';
 function ImageComponent(props: ComponentProps) {
 	const { definition, locationHistory, context } = props;
 	const [hover, setHover] = useState(false);
+	const [src, setSrc] = useState('');
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const location = useLocation();
 	const {
-		properties: { alt, src, onClick: onClickEvent, fallBackImg } = {},
+		properties: {
+			alt,
+			src1,
+			src2,
+			src3,
+			src4,
+			src5,
+			src6,
+			onClick: onClickEvent,
+			fallBackImg,
+		} = {},
 		key,
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -27,6 +42,47 @@ function ImageComponent(props: ComponentProps) {
 		pageExtractor,
 	);
 	const clickEvent = onClickEvent ? props.pageDefinition.eventFunctions[onClickEvent] : undefined;
+
+	useEffect(() => {
+		addListenerAndCallImmediately(
+			(_, value) => {
+				console.log(value);
+				if (value?.WIDE_SCREEN) {
+					setSrc(src6);
+				} else if (value?.DESKTOP_SCREEN && value?.DESKTOP_SCREEN_ONLY) {
+					setSrc(src1);
+				} else if (
+					value?.DESKTOP_SCREEN_SMALL &&
+					value?.TABLET_LANDSCAPE_SCREEN &&
+					value?.TABLET_LANDSCAPE_SCREEN_ONLY
+				) {
+					setSrc(src2);
+				} else if (value?.TABLET_POTRAIT_SCREEN && value?.TABLET_POTRAIT_SCREEN_ONLY) {
+					setSrc(src3);
+				} else if (
+					value?.MOBILE_LANDSCAPE_SCREEN &&
+					value?.MOBILE_LANDSCAPE_SCREEN_ONLY &&
+					value?.MOBILE_LANDSCAPE_SCREEN_SMALL &&
+					value?.MOBILE_POTRAIT_SCREEN &&
+					value?.TABLET_LANDSCAPE_SCREEN_SMALL &&
+					value?.TABLET_POTRAIT_SCREEN_SMALL
+				) {
+					setSrc(src4);
+				} else if (
+					value?.MOBILE_LANDSCAPE_SCREEN_SMALL &&
+					value?.MOBILE_POTRAIT_SCREEN &&
+					value?.MOBILE_POTRAIT_SCREEN_ONLY &&
+					value?.TABLET_LANDSCAPE_SCREEN_SMALL &&
+					value?.TABLET_POTRAIT_SCREEN_SMALL
+				) {
+					setSrc(src5);
+				}
+			},
+			pageExtractor,
+			'Store.devices',
+		);
+	}, []);
+	console.log('image data ', getStore().devices);
 
 	const handleClick = () => {
 		(async () =>
