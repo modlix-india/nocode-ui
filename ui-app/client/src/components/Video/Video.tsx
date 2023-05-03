@@ -6,7 +6,6 @@ import { propertiesDefinition, stylePropertiesDefinition } from './videoProperti
 import VideoStyle from './VideoStyle';
 import { HelperComponent } from '../HelperComponent';
 import { isNullValue } from '@fincity/kirun-js';
-import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 
 function Video(props: ComponentProps) {
 	const { definition, locationHistory, context } = props;
@@ -22,7 +21,6 @@ function Video(props: ComponentProps) {
 			showAudioControls,
 			showSeekBar,
 		} = {},
-		stylePropertiesWithPseudoStates,
 	} = useDefinition(
 		definition,
 		propertiesDefinition,
@@ -87,8 +85,6 @@ function Video(props: ComponentProps) {
 	const videoContainer = createRef<HTMLDivElement>();
 	//Pip ref
 	const pipRef = createRef<HTMLButtonElement>();
-
-	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
 
 	useEffect(() => {
 		if (!video.current) return;
@@ -229,7 +225,6 @@ function Video(props: ComponentProps) {
 			ref={videoContainer}
 			onMouseEnter={handleMouseEnterVideo}
 			onMouseLeave={handleMouseLeaveVideo}
-			style={resolvedStyles.comp ?? {}}
 		>
 			<HelperComponent definition={definition} />
 			<video
@@ -242,7 +237,6 @@ function Video(props: ComponentProps) {
 				data-seek
 				onChange={volumeIconHandle}
 				onClick={handlePlayPause}
-				style={resolvedStyles.player ?? {}}
 			>
 				<source src={src} type={type} />
 				Your browser does not support HTML5 video.
@@ -276,18 +270,11 @@ function Video(props: ComponentProps) {
 								onChange={ev => {
 									if (manualSeek) setManualSeek(parseInt(ev.target.value));
 								}}
-								style={resolvedStyles.seekSlider ?? {}}
 							/>
 							{toogleToolTip && (
-								<div
-									style={{
-										left: `${toolTipX}px`,
-										...(resolvedStyles.seekTimeTextOnHover ?? {}),
-									}}
-									className="toolTip"
-								>{`${seekToolTip.hours != '00' ? seekToolTip.hours + ':' : ''}${
-									seekToolTip.minutes
-								}:${seekToolTip.seconds}`}</div>
+								<div style={{ left: `${toolTipX}px` }} className="toolTip">{`${
+									seekToolTip.hours != '00' ? seekToolTip.hours + ':' : ''
+								}${seekToolTip.minutes}:${seekToolTip.seconds}`}</div>
 							)}
 						</div>
 					)}
@@ -297,7 +284,6 @@ function Video(props: ComponentProps) {
 							<i
 								className={`playBackIcon  fa-solid fa-${playPauseEnd}`}
 								onClick={handlePlayPause}
-								style={resolvedStyles.playPauseButton ?? {}}
 							></i>
 							<div className="time">
 								<time
@@ -306,7 +292,6 @@ function Video(props: ComponentProps) {
 									dateTime={`${timElapsed.hours != '00' ? timElapsed.hours : ''}${
 										timElapsed.minutes != '00' ? timElapsed.minutes : ''
 									}${timElapsed.seconds}`}
-									style={resolvedStyles.timeText ?? {}}
 								>{`${timElapsed.hours != '00' ? timElapsed.hours + ':' : ''}${
 									timElapsed.minutes
 								}:${timElapsed.seconds}`}</time>
@@ -317,7 +302,6 @@ function Video(props: ComponentProps) {
 									dateTime={`${duration.hours != '00' ? duration.hours : ''}:${
 										duration.minutes != '00' ? duration.minutes : ''
 									}:${duration.seconds}`}
-									style={resolvedStyles.timeText ?? {}}
 								>{`${duration.hours != '00' ? duration.hours + ':' : ''}${
 									duration.minutes
 								}:${duration.seconds}`}</time>
@@ -340,7 +324,6 @@ function Video(props: ComponentProps) {
 										step={'0.01'}
 										type="range"
 										onChange={updateVolume}
-										style={resolvedStyles.volumeSlider ?? {}}
 									/>
 								</div>
 							)}
@@ -351,7 +334,6 @@ function Video(props: ComponentProps) {
 									className="fa-solid fa-window-restore pip"
 									onClick={handlePictureInPicture}
 									ref={pipRef}
-									style={resolvedStyles.pipButton ?? {}}
 								></i>
 							)}
 							{showFullScreenButton && (
@@ -360,7 +342,6 @@ function Video(props: ComponentProps) {
 									ref={fullScreen}
 									id="fullscreen-button"
 									onClick={handleFullScreen}
-									style={resolvedStyles.fullScreenButton ?? {}}
 								></i>
 							)}
 						</div>
