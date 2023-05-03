@@ -37,6 +37,7 @@ function TableColumnComponent(props: ComponentProps) {
 	if (entry) firstchild[entry[0]] = true;
 
 	const styleProperties = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover },
 		stylePropertiesWithPseudoStates,
 	);

@@ -39,6 +39,7 @@ function TabsComponent(props: ComponentProps) {
 	const [hover, setHover] = React.useState(false);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover: !!hover, readOnly: !!readOnly, disabled: !!readOnly },
 		stylePropertiesWithPseudoStates,
 	);

@@ -84,16 +84,19 @@ function RadioButton(props: ComponentProps) {
 	const [selected, setSelected] = useState<any>();
 
 	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover: false, focus: false, disabled: readOnly },
 		stylePropertiesWithPseudoStates,
 	);
 
 	const resolvedStylesHover = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover: true, focus: false, disabled: readOnly },
 		stylePropertiesWithPseudoStates,
 	);
 
 	const resolvedStylesFocus = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover: false, focus: true, disabled: readOnly },
 		stylePropertiesWithPseudoStates,
 	);

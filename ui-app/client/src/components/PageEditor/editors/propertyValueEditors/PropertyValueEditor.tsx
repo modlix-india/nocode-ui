@@ -237,6 +237,39 @@ function makeValueEditor(
 		);
 	}
 
+	if (propDef.editor === ComponentPropertyEditor.LARGE_TEXT) {
+		return (
+			<textarea
+				className="_peInput"
+				value={chngValue}
+				placeholder={showPlaceholder ? propDef.defaultValue : undefined}
+				onChange={e => setChngValue(e.target.value)}
+				onKeyDown={e => {
+					if (e.key === 'Enter') {
+						onChange({
+							...value,
+							value:
+								chngValue === '' || chngValue === propDef.defaultValue
+									? undefined
+									: chngValue,
+						});
+					} else if (e.key === 'Escape') {
+						setChngValue(value?.value ?? '');
+					}
+				}}
+				onBlur={() =>
+					onChange({
+						...value,
+						value:
+							chngValue === '' || chngValue === propDef.defaultValue
+								? undefined
+								: chngValue,
+					})
+				}
+			/>
+		);
+	}
+
 	if (propDef.schema.getName() === SCHEMA_ANY_COMP_PROP.getName()) {
 		return (
 			<AnyValueEditor
