@@ -85,11 +85,13 @@ function Tags(props: ComponentProps) {
 	);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover: false, disabled: !!readOnly },
 		stylePropertiesWithPseudoStates,
 	);
 
 	const resolvedStylesWithPseudo = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover: true, disabled: !!readOnly },
 		stylePropertiesWithPseudoStates,
 	);

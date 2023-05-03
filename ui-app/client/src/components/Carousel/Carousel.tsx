@@ -82,7 +82,11 @@ function Carousel(props: ComponentProps) {
 		return () => clearTimeout(handle);
 	}, [childrenDef, slideNum, setSlideNum, slideSpeed, firstTime, setFirstTime]);
 
-	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
+	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{},
+		stylePropertiesWithPseudoStates,
+	);
 
 	const currentSlide = useRef<HTMLDivElement>(null);
 	const previousSlide = useRef<HTMLDivElement>(null);

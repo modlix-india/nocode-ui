@@ -70,7 +70,11 @@ function SchemaForm(
 
 	const schema = React.useMemo(() => props.schema ?? Schema.from(jsonSchema), [jsonSchema]);
 
-	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
+	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{},
+		stylePropertiesWithPseudoStates,
+	);
 	const schemaRepository = props.schemaRepository ?? UISchemaRepository;
 
 	return (

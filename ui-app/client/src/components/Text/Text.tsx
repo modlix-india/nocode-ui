@@ -30,6 +30,7 @@ function Text(props: ComponentProps) {
 	);
 	const [hover, setHover] = useState(false);
 	const styleProperties = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover },
 		stylePropertiesWithPseudoStates,
 	);
@@ -74,7 +75,10 @@ function Text(props: ComponentProps) {
 		...comps,
 	);
 	return (
-		<div className="comp compText" style={styleProperties.comp ?? {}}>
+		<div
+			className={`comp compText ${styleProperties.comp?.className ?? ''}`}
+			style={styleProperties.comp ?? {}}
+		>
 			<HelperComponent definition={definition} />
 			{comp}
 		</div>

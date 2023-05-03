@@ -62,6 +62,7 @@ function CheckBox(props: ComponentProps) {
 		);
 	}, [bindingPath]);
 	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover, focus, disabled: readOnly },
 		stylePropertiesWithPseudoStates,
 	);

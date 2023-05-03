@@ -56,7 +56,11 @@ function Popup(props: ComponentProps) {
 		props.locationHistory,
 		pageExtractor,
 	);
-	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
+	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{},
+		stylePropertiesWithPseudoStates,
+	);
 	const openEvent = eventOnOpen ? props.pageDefinition.eventFunctions[eventOnOpen] : undefined;
 	const closeEvent = eventOnClose ? props.pageDefinition.eventFunctions[eventOnClose] : undefined;
 

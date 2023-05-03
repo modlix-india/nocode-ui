@@ -19,7 +19,11 @@ function Icon(props: ComponentProps) {
 		pageExtractor,
 	);
 
-	const styleProperties = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
+	const styleProperties = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{},
+		stylePropertiesWithPseudoStates,
+	);
 
 	return (
 		<i className={`comp compIcon _icon ${icon}`} style={styleProperties.comp ?? {}}>
