@@ -26,16 +26,12 @@ export default function MenuStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 		${PREFIX} .menuLink {
 			display: flex;
+			align-items: center;
 		}
 		
 		${PREFIX} .link{
 			text-decoration: none;
 			flex: 1
-		}
-		
-		${PREFIX} .icon {
-			width:  calc(${processStyleValueWithFunction(values.get('menuIconSize'), values)} + 4px);
-			height:  calc(${processStyleValueWithFunction(values.get('menuIconSize'), values)} + 4px);
 		}
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

@@ -25,6 +25,7 @@ import { runEvent } from '../util/runEvent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { getHref } from '../util/getHref';
 import Children from '../Children';
+import { SubHelperComponent } from '../SubHelperComponent';
 
 function Menu(props: ComponentProps) {
 	const [isMenuActive, setIsMenuActive] = React.useState(false);
@@ -138,7 +139,9 @@ function Menu(props: ComponentProps) {
 	const menuDetails = (
 		<>
 			{icon ? (
-				<i style={resolvedStyles.icon ?? {}} className={`${icon} icon`}></i>
+				<i style={resolvedStyles.icon ?? {}} className={`${icon} icon`}>
+					<SubHelperComponent definition={props.definition} subComponentName="icon" />
+				</i>
 			) : (
 				<i
 					className="icon fa-solid fa-user icon hide"
@@ -146,7 +149,8 @@ function Menu(props: ComponentProps) {
 				></i>
 			)}
 			{!onlyIconMenu && (
-				<span className="menuText">
+				<span style={resolvedStyles.menuText ?? {}} className="menuText">
+					<SubHelperComponent definition={props.definition} subComponentName="menuText" />
 					{getTranslations(label, props.pageDefinition.translations)}
 				</span>
 			)}
@@ -156,54 +160,59 @@ function Menu(props: ComponentProps) {
 	return (
 		<div className="comp compMenu" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={props.definition} />
-			<div className={`menuItemsContainer ${isMenuActive ? 'isActive' : ''}`}>
-				<Link
-					style={resolvedStyles.link ?? {}}
-					className="link"
-					target={target}
-					to={getHref(linkPath, location)}
-					title={
-						onlyIconMenu
-							? getTranslations(label, props.pageDefinition.translations)
-							: ''
+			<Link
+				style={resolvedStyles.link ?? {}}
+				className={`menuItemsContainer ${isMenuActive ? 'isActive' : ''} link`}
+				target={target}
+				to={getHref(linkPath, location)}
+				title={
+					onlyIconMenu ? getTranslations(label, props.pageDefinition.translations) : ''
+				}
+			>
+				<SubHelperComponent definition={props.definition} subComponentName="link" />
+				<div
+					onClick={!readOnly ? handleClick : undefined}
+					className={`menu ${onlyIconMenu ? 'onlyIconMenu' : ''}`}
+					onMouseEnter={
+						stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
 					}
+					onMouseLeave={
+						stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
+					}
+					style={resolvedStyles.menu ?? {}}
 				>
-					<div
-						onClick={!readOnly ? handleClick : undefined}
-						className={`menu ${onlyIconMenu ? 'onlyIconMenu' : ''}`}
-						onMouseEnter={
-							stylePropertiesWithPseudoStates?.hover
-								? () => setHover(true)
-								: undefined
-						}
-						onMouseLeave={
-							stylePropertiesWithPseudoStates?.hover
-								? () => setHover(false)
-								: undefined
-						}
-						style={resolvedStyles.menu ?? {}}
-					>
-						<div className="menuLink">{menuDetails}</div>
-						{!onlyIconMenu && (
-							<div className="menuCaretIcon">
-								{hasChildren ? (
-									!isMenuOpenState ? (
-										<i
-											style={resolvedStyles.caretIcon ?? {}}
-											className="fa fa-solid fa-angle-down"
-										></i>
-									) : (
-										<i
-											style={resolvedStyles.caretIcon ?? {}}
-											className="fa fa-solid fa-angle-up"
-										></i>
-									)
-								) : null}
-							</div>
-						)}
-					</div>
-				</Link>
-			</div>
+					<SubHelperComponent definition={props.definition} subComponentName="menu" />
+					<div className="menuLink">{menuDetails}</div>
+					{!onlyIconMenu && (
+						<div className="menuCaretIcon">
+							{hasChildren ? (
+								!isMenuOpenState ? (
+									<i
+										style={resolvedStyles.caretIcon ?? {}}
+										className="fa fa-solid fa-angle-down"
+									>
+										<SubHelperComponent
+											definition={props.definition}
+											subComponentName="caretIcon"
+										/>
+									</i>
+								) : (
+									<i
+										style={resolvedStyles.caretIcon ?? {}}
+										className="fa fa-solid fa-angle-up"
+									>
+										<SubHelperComponent
+											definition={props.definition}
+											subComponentName="caretIcon"
+										/>
+									</i>
+								)
+							) : null}
+						</div>
+					)}
+				</div>
+			</Link>
+
 			{hasChildren && isMenuOpenState ? (
 				<Children
 					pageDefinition={pageDefinition}
