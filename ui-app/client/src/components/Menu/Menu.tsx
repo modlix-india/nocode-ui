@@ -84,6 +84,7 @@ function Menu(props: ComponentProps) {
 	const [isMenuOpenState, setIsMenuOpenState] = React.useState(isMenuOpen ?? false);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover, disabled: readOnly, active: isMenuActive },
 		stylePropertiesWithPseudoStates,
 	);

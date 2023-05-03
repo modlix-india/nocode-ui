@@ -274,6 +274,9 @@ export interface PageDefinition {
 		wrapShell?: boolean;
 		classes?: { [key: string]: StyleClassDefinition };
 	};
+	processedClasses?: {
+		[key: string]: { [key: string]: string };
+	};
 }
 
 export interface ComponentProps {

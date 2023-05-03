@@ -155,6 +155,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			cursor: pointer;
 		}
 
+		${PREFIX} ._eachStyleClass ._propLabel button {
+			flex: 1;
+		}
+
 		${PREFIX} input._peInput[type='text'], ${PREFIX} ._pvExpressionEditor, ${PREFIX} input._peInput[type='number'] {
 			height: 25px;
 			font-size: 12px;

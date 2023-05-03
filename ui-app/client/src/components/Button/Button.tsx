@@ -64,6 +64,7 @@ function ButtonComponent(props: ComponentProps) {
 	}, []);
 
 	const styleProperties = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ focus, hover, disabled: isLoading || readOnly },
 		stylePropertiesWithPseudoStates,
 	);

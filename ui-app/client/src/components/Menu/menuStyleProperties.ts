@@ -52,14 +52,14 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		displayName: "Menu's text color on hover",
 		description: "Menu's text color on hover.",
-		selector: '.menu:hover',
+		selector: '.menuItemsContainer:hover',
 	},
 	{
 		name: 'menuHoverTextColorWhenActive',
 		cssProperty: 'color',
 		displayName: "Menu's text color on hover when active",
 		description: "Menu's text color on hover when active.",
-		selector: '.menu:hover',
+		selector: '.menuItemsContainer.isActive:hover',
 	},
 	{
 		name: 'menuTextAndIconGap',

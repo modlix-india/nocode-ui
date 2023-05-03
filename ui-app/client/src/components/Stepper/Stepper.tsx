@@ -49,7 +49,11 @@ function Stepper(props: ComponentProps) {
 	const bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
 		: undefined;
-	const resolvedStyles = processComponentStylePseudoClasses({ hover }, stylePropertiesDefinition);
+	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{ hover },
+		stylePropertiesDefinition,
+	);
 
 	React.useEffect(() => {
 		if (!bindingPathPath) return;

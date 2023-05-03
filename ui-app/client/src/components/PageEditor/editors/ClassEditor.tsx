@@ -138,8 +138,8 @@ export default function ClassEditor({
 						<div className="_eachStyleClass" key={eClass[1].key}>
 							<div className="_eachProp" key="selector">
 								<div className="_propLabel" title="Selector">
-									Selector :
-									<span className="_description" title="CSS Selector">
+									Selector Name :
+									<span className="_description" title="CSS Selector Name">
 										i
 									</span>
 									<i

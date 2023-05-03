@@ -17,7 +17,11 @@ import ComponentDefinitions from '../../';
 import { COMPONENT_STYLE_GROUP_PROPERTIES, COMPONENT_STYLE_GROUPS } from '../../util/properties';
 import { PropertyGroup } from './PropertyGroup';
 import PropertyValueEditor from './propertyValueEditors/PropertyValueEditor';
-import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../../constants';
+import {
+	COPY_STYLE_PROPS_KEY,
+	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_STRING_COMP_PROP,
+} from '../../../constants';
 import { StyleResolutionDefinition } from '../../../util/styleProcessor';
 import { ComponentStyle } from '../../../types/common';
 import { shortUUID } from '../../../util/shortUUID';
@@ -310,6 +314,53 @@ export default function StylePropertyEditor({
 		pseudoState = selectorPref[selectedComponent].stylePseudoState.value;
 	return (
 		<div className="_propertyEditor">
+			<div className="_eachStyleClass">
+				<div className="_propLabel">
+					<button onClick={() => saveStyle({})} title="Clear Styles">
+						<i className="fa fa-regular fa-trash-can" /> Clear
+					</button>
+					<button
+						onClick={() => {
+							if (!navigator?.clipboard) return;
+							navigator.clipboard.write([
+								new ClipboardItem({
+									'text/plain': new Blob(
+										[COPY_STYLE_PROPS_KEY + JSON.stringify(styleProps ?? {})],
+										{
+											type: 'text/plain',
+										},
+									),
+								}),
+							]);
+						}}
+						title="Copy Styles"
+					>
+						<i className="fa fa-regular fa-clipboard" /> Copy
+					</button>
+					<button
+						onClick={() => {
+							if (!navigator?.clipboard) return;
+							navigator.clipboard.readText().then(data => {
+								if (!data.startsWith(COPY_STYLE_PROPS_KEY)) return;
+								const copiedStyleProps = JSON.parse(
+									data.replace(COPY_STYLE_PROPS_KEY, ''),
+								);
+								const newStyleProps = Object.entries(copiedStyleProps).reduce(
+									(a, [key, value]) => {
+										a[shortUUID()] = value as EachComponentStyle;
+										return a;
+									},
+									{} as ComponentStyle,
+								);
+								saveStyle(newStyleProps);
+							});
+						}}
+						title="Paste Styles"
+					>
+						<i className="fa fa-regular fa-paste" /> Paste
+					</button>
+				</div>
+			</div>
 			<PropertyGroup
 				name="selector"
 				displayName="Selector"
@@ -607,6 +658,8 @@ function EachPropEditor({
 					const newProps = duplicate(styleProps) as ComponentStyle;
 					const screenSize = ((selectorPref[selectedComponent]?.screenSize
 						?.value as string) ?? 'ALL') as StyleResolution;
+
+					if (!newProps[properties[0]]) newProps[properties[0]] = { resolutions: {} };
 
 					if (!newProps[properties[0]].resolutions)
 						newProps[properties[0]].resolutions = {};

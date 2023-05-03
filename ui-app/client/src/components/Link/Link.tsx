@@ -49,6 +49,7 @@ function Link(props: ComponentProps) {
 	);
 	const resolvedLink = getHref(linkPath, location);
 	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover },
 		stylePropertiesWithPseudoStates,
 	);

@@ -1,5 +1,6 @@
 import { EMPTY_STRING } from '../constants';
 import {
+	PageDefinition,
 	StylePropertyDefinition,
 	StyleResolution,
 	StyleResolutionProperties,
@@ -257,6 +258,7 @@ export function processStyleValue(
 }
 
 export function processComponentStylePseudoClasses(
+	pdef: PageDefinition,
 	pseudoStates: { [key: string]: boolean },
 	styleProperties: any | undefined,
 ): any {
@@ -272,7 +274,17 @@ export function processComponentStylePseudoClasses(
 			else style[target] = styleObj;
 		}
 	}
-
+	if (pdef.processedClasses) {
+		for (let [target, styleObj] of Object.entries(style)) {
+			let s = styleObj as any;
+			if (!s?.selectorName) continue;
+			for (let eachSelector of s.selectorName.split(' ')) {
+				if (!pdef.processedClasses[eachSelector]) continue;
+				s = { ...s, ...pdef.processedClasses[eachSelector] };
+			}
+			style[target] = s;
+		}
+	}
 	return style;
 }
 
@@ -300,4 +312,36 @@ export function processStyleValueWithFunction(
 	}
 
 	return finValue;
+}
+
+export function processClassesForPageDefinition(pdef: PageDefinition): PageDefinition {
+	if (pdef?.processedClasses || !pdef?.properties?.classes) return pdef;
+	const newDef = { ...pdef };
+	newDef.processedClasses = Object.values(pdef.properties.classes).reduce((a, c) => {
+		if (!c.selector || !c.style) return a;
+		a[c.selector] = c.style
+			.split(';')
+			.map(s => {
+				let ind = s.indexOf(':');
+				if (ind <= 0) return undefined;
+				let prop = s.substring(0, ind).trim();
+				if (!prop) return undefined;
+				prop = prop
+					.split('-')
+					.map((s, i) => (i ? s[0].toUpperCase() + s.substring(1) : s))
+					.join('');
+				let value = s.substring(ind + 1).trim();
+				if (!value) return undefined;
+				return { prop, value };
+			})
+			.filter(e => !!e)
+			.reduce((ia, ic) => {
+				if (!ic) return ia;
+				ia[ic.prop] = ic.value;
+				return ia;
+			}, {} as any);
+		return a;
+	}, {} as any);
+	console.log(newDef.processedClasses);
+	return newDef;
 }

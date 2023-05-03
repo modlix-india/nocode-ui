@@ -73,6 +73,7 @@ function TextBox(props: ComponentProps) {
 	);
 	const effectivePlaceholder = noFloat ? (placeholder ? placeholder : '') : label;
 	const computedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ focus, readOnly },
 		stylePropertiesWithPseudoStates,
 	);
