@@ -10,7 +10,18 @@ import { isNullValue } from '@fincity/kirun-js';
 function Video(props: ComponentProps) {
 	const { definition, locationHistory, context } = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
-	const { properties: { width, height, src, type, poster } = {} } = useDefinition(
+	const {
+		properties: {
+			src,
+			type,
+			poster,
+			autoPlay,
+			showPipButton,
+			showFullScreenButton,
+			showAudioControls,
+			showSeekBar,
+		} = {},
+	} = useDefinition(
 		definition,
 		propertiesDefinition,
 		stylePropertiesDefinition,
@@ -80,6 +91,9 @@ function Video(props: ComponentProps) {
 		// checking wheather browser supports html5 video or not.
 		if (typeof video.current.canPlayType === 'function') {
 			setVideoControl(false);
+		}
+		if (autoPlay) {
+			video.current.play();
 		}
 	}, []);
 
@@ -214,8 +228,6 @@ function Video(props: ComponentProps) {
 		>
 			<HelperComponent definition={definition} />
 			<video
-				width={width}
-				height={height}
 				controls={videoControls}
 				poster={poster}
 				preload="metadata"
@@ -229,40 +241,44 @@ function Video(props: ComponentProps) {
 				<source src={src} type={type} />
 				Your browser does not support HTML5 video.
 			</video>
-			{
+			{controlsOnHover && (
 				<div className={`videoControlsContainer ${videoControls ? 'hidden' : ''} `}>
-					<div
-						className="progressBarContainer"
-						onMouseEnter={handleMouseEnterInput}
-						onMouseLeave={handleMouseLeaveInput}
-					>
-						<input
-							className="progressBar progress"
-							id="seek"
-							value={manualSeek === undefined ? progressbarCurr : manualSeek}
-							min="0"
-							type="range"
-							step="1"
-							max={progressbarMax}
-							onMouseMove={updateSeek}
-							onMouseDown={() => setManualSeek(progressbarCurr)}
-							onMouseUp={ev => {
-								let value = Number.parseInt(ev.target.value ?? '') ?? 0;
-								skipAhead(value);
-								setProgressBarCurr(value);
-								setManualSeek(undefined);
-							}}
-							ref={progressBarRef}
-							onChange={ev => {
-								if (manualSeek) setManualSeek(parseInt(ev.target.value));
-							}}
-						/>
-						{toogleToolTip && (
-							<div style={{ left: `${toolTipX}px` }} className="toolTip">{`${
-								seekToolTip.hours != '00' ? seekToolTip.hours + ':' : ''
-							}${seekToolTip.minutes}:${seekToolTip.seconds}`}</div>
-						)}
-					</div>
+					{showSeekBar && (
+						<div
+							className="progressBarContainer"
+							onMouseEnter={handleMouseEnterInput}
+							onMouseLeave={handleMouseLeaveInput}
+						>
+							<input
+								className="progressBar progress"
+								id="seek"
+								value={manualSeek === undefined ? progressbarCurr : manualSeek}
+								min="0"
+								type="range"
+								step="1"
+								max={progressbarMax}
+								onMouseMove={updateSeek}
+								onMouseDown={() => setManualSeek(progressbarCurr)}
+								onMouseUp={() => {
+									let value =
+										Number.parseInt(progressBarRef.current?.value ?? '') ?? 0;
+									skipAhead(value);
+									setProgressBarCurr(value);
+									setManualSeek(undefined);
+								}}
+								ref={progressBarRef}
+								onChange={ev => {
+									if (manualSeek) setManualSeek(parseInt(ev.target.value));
+								}}
+							/>
+							{toogleToolTip && (
+								<div style={{ left: `${toolTipX}px` }} className="toolTip">{`${
+									seekToolTip.hours != '00' ? seekToolTip.hours + ':' : ''
+								}${seekToolTip.minutes}:${seekToolTip.seconds}`}</div>
+							)}
+						</div>
+					)}
+
 					<div className="playAndFullscreenGrid">
 						<div className="playAndVolumeGrid">
 							<i
@@ -290,42 +306,48 @@ function Video(props: ComponentProps) {
 									duration.minutes
 								}:${duration.seconds}`}</time>
 							</div>
-							<div className="volumeControls">
-								<i
-									id="volume-button"
-									ref={volumeButton}
-									className={`volumeButton fa-solid fa-volume-${
-										volume == '0' || muted ? 'xmark' : 'high'
-									}`}
-									onClick={volumeIconHandle}
-								></i>
-								<input
-									id="volume"
-									value={volume}
-									max={'1'}
-									min={'0'}
-									step={'0.01'}
-									type="range"
-									onChange={updateVolume}
-								/>
-							</div>
+							{showAudioControls && (
+								<div className="volumeControls">
+									<i
+										id="volume-button"
+										ref={volumeButton}
+										className={`volumeButton fa-solid fa-volume-${
+											volume == '0' || muted ? 'xmark' : 'high'
+										}`}
+										onClick={volumeIconHandle}
+									></i>
+									<input
+										id="volume"
+										value={volume}
+										max={'1'}
+										min={'0'}
+										step={'0.01'}
+										type="range"
+										onChange={updateVolume}
+									/>
+								</div>
+							)}
 						</div>
 						<div className="pipAndFullScreenGrid">
-							<i
-								className="fa-solid fa-window-restore pip"
-								onClick={handlePictureInPicture}
-								ref={pipRef}
-							></i>
-							<i
-								className="fa-solid fa-expand fullScreen"
-								ref={fullScreen}
-								id="fullscreen-button"
-								onClick={handleFullScreen}
-							></i>
+							{showPipButton && (
+								<i
+									className="fa-solid fa-window-restore pip"
+									onClick={handlePictureInPicture}
+									ref={pipRef}
+								></i>
+							)}
+							{showFullScreenButton && (
+								<i
+									className="fa-solid fa-expand fullScreen"
+									ref={fullScreen}
+									id="fullscreen-button"
+									onClick={handleFullScreen}
+								></i>
+							)}
 						</div>
 					</div>
 				</div>
-			}
+			)}
 		</div>
 	);
 }
