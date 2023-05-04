@@ -99,9 +99,7 @@ function ButtonComponent(props: ComponentProps) {
 		!type?.startsWith('fabButton') && !leftIcon ? (
 			<i
 				style={styleProperties.rightIcon ?? {}}
-				className={`rightButtonIcon ${styleProperties.rightIcon?.className ?? ''} ${
-					rightIcon ?? 'fa fa-circle-notch hide'
-				}`}
+				className={`rightButtonIcon ${rightIcon ?? 'fa fa-circle-notch hide'}`}
 			>
 				<SubHelperComponent
 					definition={props.definition}
@@ -113,7 +111,7 @@ function ButtonComponent(props: ComponentProps) {
 	const leftIconTag = (
 		<i
 			style={styleProperties.leftIcon ?? {}}
-			className={`leftButtonIcon ${styleProperties.leftIcon?.className ?? ''} ${
+			className={`leftButtonIcon ${
 				leftIcon
 					? !isLoading
 						? leftIcon
@@ -132,7 +130,7 @@ function ButtonComponent(props: ComponentProps) {
 	useEffect(() => setEditableLabel(label), [label]);
 	return (
 		<button
-			className={`comp compButton button ${styleProperties.comp?.className ?? ''} ${type}`}
+			className={`comp compButton button ${type}`}
 			disabled={isLoading || readOnly}
 			onClick={handleClick}
 			style={styleProperties.comp ?? {}}

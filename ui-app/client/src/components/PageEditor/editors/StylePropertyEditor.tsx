@@ -22,7 +22,7 @@ import {
 	SCHEMA_BOOL_COMP_PROP,
 	SCHEMA_STRING_COMP_PROP,
 } from '../../../constants';
-import { StyleResolutionDefinition } from '../../../util/styleProcessor';
+import { StyleResolutionDefinition, processStyleFromString } from '../../../util/styleProcessor';
 import { ComponentStyle } from '../../../types/common';
 import { shortUUID } from '../../../util/shortUUID';
 import duplicate from '../../../util/duplicate';
@@ -341,7 +341,50 @@ export default function StylePropertyEditor({
 						onClick={() => {
 							if (!navigator?.clipboard) return;
 							navigator.clipboard.readText().then(data => {
-								if (!data.startsWith(COPY_STYLE_PROPS_KEY)) return;
+								if (!data.startsWith(COPY_STYLE_PROPS_KEY)) {
+									if (!properties || !data) return;
+
+									const pastedStyles = processStyleFromString(data);
+
+									if (!Object.keys(pastedStyles).length) {
+										return;
+									}
+
+									const newProps = duplicate(styleProps) as ComponentStyle;
+									const screenSize = ((selectorPref[selectedComponent]?.screenSize
+										?.value as string) ?? 'ALL') as StyleResolution;
+
+									if (!newProps[properties[0]])
+										newProps[properties[0]] = { resolutions: {} };
+
+									if (!newProps[properties[0]].resolutions)
+										newProps[properties[0]].resolutions = {};
+
+									if (!newProps[properties[0]].resolutions![screenSize])
+										newProps[properties[0]].resolutions![screenSize] = {};
+
+									const styleObj =
+										newProps[properties[0]].resolutions![screenSize];
+
+									Object.entries(pastedStyles).forEach(
+										([prop, v]: [string, string]) => {
+											let actualProp = prop;
+											if (pseudoState) actualProp = `${prop}:${pseudoState}`;
+											if (subComponentName)
+												actualProp = `${subComponentName}-${actualProp}`;
+											if (!styleObj![actualProp])
+												styleObj![actualProp] = { value: v };
+											else
+												styleObj![actualProp] = {
+													...styleObj![actualProp],
+													value: v,
+												};
+										},
+									);
+
+									saveStyle(newProps);
+									return;
+								}
 								const copiedStyleProps = JSON.parse(
 									data.replace(COPY_STYLE_PROPS_KEY, ''),
 								);

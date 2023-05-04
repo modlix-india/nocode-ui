@@ -75,10 +75,7 @@ function Text(props: ComponentProps) {
 		...comps,
 	);
 	return (
-		<div
-			className={`comp compText ${styleProperties.comp?.className ?? ''}`}
-			style={styleProperties.comp ?? {}}
-		>
+		<div className="comp compText" style={styleProperties.comp ?? {}}>
 			<HelperComponent definition={definition} />
 			{comp}
 		</div>
