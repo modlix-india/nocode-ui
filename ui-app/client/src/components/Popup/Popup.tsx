@@ -15,6 +15,7 @@ import { HelperComponent } from '../HelperComponent';
 import { runEvent } from '../util/runEvent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
+import { SubHelperComponent } from '../SubHelperComponent';
 
 function Popup(props: ComponentProps) {
 	const [isActive, setIsActive] = React.useState(false);
@@ -118,10 +119,12 @@ function Popup(props: ComponentProps) {
 
 	const closeIcon = (
 		<i
-			style={resolvedStyles.icon ?? {}}
+			style={resolvedStyles.closeButton ?? {}}
 			className="fa-solid fa-xmark iconClass"
 			onClick={handleClose}
-		></i>
+		>
+			<SubHelperComponent definition={props.definition} subComponentName="closeButton" />
+		</i>
 	);
 
 	if (isDesignMode) {
@@ -130,43 +133,74 @@ function Popup(props: ComponentProps) {
 
 	return (
 		<Portal>
-			<div className="comp compPopup" style={resolvedStyles.comp ?? {}}>
+			<div className="comp compPopup">
 				<div
 					className="backdrop"
 					onClick={handleCloseOnOutsideClick}
-					style={resolvedStyles.backdrop ?? {}}
+					style={resolvedStyles.comp ?? {}}
 				>
 					<HelperComponent definition={props.definition} />
 					<div
 						className={`modal ${popupDesign === '_design2' ? 'design2' : ''} `}
-						style={
-							{
-								...(resolvedStyles?.modal || {}),
-								...(resolvedStyles?.modalbg || {}),
-							} ?? {}
-						}
+						style={resolvedStyles?.modal || {}}
 						onClick={handleBubbling}
 					>
+						<SubHelperComponent
+							definition={props.definition}
+							subComponentName="modal"
+						/>
 						{popupDesign === '_design1' ? (
-							<div
-								className="TitleIconGrid"
-								style={
-									{
-										...(resolvedStyles?.titleGrid || {}),
-										...(resolvedStyles?.titleGridExtra || {}),
-									} ?? {}
-								}
-							>
-								<div className="closeButtonPosition">
-									{showClose && closeButtonPosition === 'LEFT' ? closeIcon : ''}
+							<div className="TitleIconGrid" style={resolvedStyles?.titleGrid || {}}>
+								<SubHelperComponent
+									definition={props.definition}
+									subComponentName="titleGrid"
+								/>
+								{showClose && closeButtonPosition === 'LEFT' && (
+									<div
+										className="closeButtonPosition"
+										style={resolvedStyles.closeButtonContainer ?? {}}
+									>
+										<SubHelperComponent
+											definition={props.definition}
+											subComponentName="closeButtonContainer"
+										/>
+										{closeIcon}
+									</div>
+								)}
+								<div
+									className="modelTitleStyle"
+									style={resolvedStyles.modalTitle ?? {}}
+								>
+									<SubHelperComponent
+										definition={props.definition}
+										subComponentName="modalTitle"
+									/>
+									{modelTitle && modelTitle}
 								</div>
-								<div className="modelTitleStyle">{modelTitle && modelTitle}</div>
-								<div className="closeButtonPosition">
-									{showClose && closeButtonPosition === 'RIGHT' ? closeIcon : ''}
-								</div>
+								{showClose && closeButtonPosition === 'RIGHT' && (
+									<div
+										className="closeButtonPosition"
+										style={resolvedStyles.closeButtonContainer ?? {}}
+									>
+										<SubHelperComponent
+											definition={props.definition}
+											subComponentName="closeButtonContainer"
+										/>
+										{closeIcon}
+									</div>
+								)}
 							</div>
 						) : (
-							<div className="design2CloseButton">{showClose ? closeIcon : ''}</div>
+							<div
+								className="design2CloseButton"
+								style={resolvedStyles.closeButtonContainer ?? {}}
+							>
+								<SubHelperComponent
+									definition={props.definition}
+									subComponentName="closeButtonContainer"
+								/>
+								{showClose ? closeIcon : ''}
+							</div>
 						)}
 						<Children
 							pageDefinition={props.pageDefinition}
