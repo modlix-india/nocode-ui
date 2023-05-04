@@ -319,29 +319,33 @@ export function processClassesForPageDefinition(pdef: PageDefinition): PageDefin
 	const newDef = { ...pdef };
 	newDef.processedClasses = Object.values(pdef.properties.classes).reduce((a, c) => {
 		if (!c.selector || !c.style) return a;
-		a[c.selector] = c.style
-			.split(';')
-			.map(s => {
-				let ind = s.indexOf(':');
-				if (ind <= 0) return undefined;
-				let prop = s.substring(0, ind).trim();
-				if (!prop) return undefined;
-				prop = prop
-					.split('-')
-					.map((s, i) => (i ? s[0].toUpperCase() + s.substring(1) : s))
-					.join('');
-				let value = s.substring(ind + 1).trim();
-				if (!value) return undefined;
-				return { prop, value };
-			})
-			.filter(e => !!e)
-			.reduce((ia, ic) => {
-				if (!ic) return ia;
-				ia[ic.prop] = ic.value;
-				return ia;
-			}, {} as any);
+		a[c.selector] = processStyleFromString(c.style);
 		return a;
 	}, {} as any);
 	console.log(newDef.processedClasses);
 	return newDef;
+}
+
+export function processStyleFromString(str: string): { [key: string]: string } {
+	return str
+		.split(';')
+		.map(s => {
+			let ind = s.indexOf(':');
+			if (ind <= 0) return undefined;
+			let prop = s.substring(0, ind).trim();
+			if (!prop) return undefined;
+			prop = prop
+				.split('-')
+				.map((s, i) => (i ? s[0].toUpperCase() + s.substring(1) : s))
+				.join('');
+			let value = s.substring(ind + 1).trim();
+			if (!value) return undefined;
+			return { prop, value };
+		})
+		.filter(e => !!e)
+		.reduce((ia, ic) => {
+			if (!ic) return ia;
+			ia[ic.prop] = ic.value;
+			return ia;
+		}, {} as any);
 }
