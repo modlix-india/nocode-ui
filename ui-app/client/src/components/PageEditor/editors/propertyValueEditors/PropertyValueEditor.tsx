@@ -17,6 +17,7 @@ import { ExpressionEditor2 } from './ExpressionEditor2';
 import { IconSelectionEditor } from './IconSelectionEditor';
 import { ImageEditor } from './ImageEditor';
 import { ValidationEditor } from './ValidationEditor';
+import { isNullValue } from '@fincity/kirun-js';
 
 interface PropertyValueEditorProps {
 	propDef: ComponentPropertyDefinition;
@@ -154,20 +155,31 @@ function makeValueEditor(
 	}
 
 	if (propDef.editor === ComponentPropertyEditor.ENUM || propDef.enumValues?.length) {
+		let noneOption = !isNullValue(propDef.defaultValue) ? (
+			<></>
+		) : (
+			<option key="" value="">
+				--NONE--
+			</option>
+		);
 		return (
 			<div className="_smallEditorContainer">
 				<select
 					className="_peSelect"
-					value={chngValue === '' ? propDef.defaultValue : chngValue}
+					value={chngValue === '' ? propDef.defaultValue ?? '' : chngValue}
 					onChange={e => {
 						const newValue: ComponentProperty<any> = {
 							...(value ?? {}),
 							value: e.target.value,
 						};
-						if (newValue.value === propDef.defaultValue) delete newValue.value;
+
+						if (newValue.value === propDef.defaultValue || newValue.value === '')
+							delete newValue.value;
+
 						onChange(newValue);
 					}}
 				>
+					{noneOption}
 					{propDef.enumValues?.map(v => (
 						<option key={v.name} value={v.name} title={v.description}>
 							{v.displayName}

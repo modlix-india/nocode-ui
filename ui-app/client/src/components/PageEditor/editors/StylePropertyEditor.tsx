@@ -303,11 +303,11 @@ export default function StylePropertyEditor({
 		subComponentName = selectedSubComponent.split(':')[1];
 	}
 	const subComponentSectionsArray = (cd?.styleProperties ?? {})[subComponentName];
-	const styleSectionsToShow = Object.values(COMPONENT_STYLE_GROUP_PROPERTIES).filter(each =>
-		reverseStyleSections
-			? subComponentSectionsArray.findIndex(e => e === each.name) === -1
-			: subComponentSectionsArray.findIndex(e => e === each.name) !== -1,
-	);
+	const styleSectionsToShow = reverseStyleSections
+		? Object.values(COMPONENT_STYLE_GROUP_PROPERTIES).filter(
+				each => subComponentSectionsArray.findIndex(e => e === each.name) === -1,
+		  )
+		: subComponentSectionsArray.map(each => COMPONENT_STYLE_GROUP_PROPERTIES[each]);
 
 	let pseudoState = '';
 	if (selectorPref[selectedComponent]?.stylePseudoState?.value)
