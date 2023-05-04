@@ -48,32 +48,15 @@ function ImageComponent(props: ComponentProps) {
 			(_, value) => {
 				if (value?.WIDE_SCREEN) {
 					setSrc(src6);
-				} else if (value?.DESKTOP_SCREEN && value?.DESKTOP_SCREEN_ONLY) {
+				} else if (value?.DESKTOP_SCREEN_ONLY) {
 					setSrc(src1);
-				} else if (
-					value?.DESKTOP_SCREEN_SMALL &&
-					value?.TABLET_LANDSCAPE_SCREEN &&
-					value?.TABLET_LANDSCAPE_SCREEN_ONLY
-				) {
+				} else if (value?.TABLET_LANDSCAPE_SCREEN_ONLY) {
 					setSrc(src2);
-				} else if (value?.TABLET_POTRAIT_SCREEN && value?.TABLET_POTRAIT_SCREEN_ONLY) {
+				} else if (value?.TABLET_POTRAIT_SCREEN_ONLY) {
 					setSrc(src3);
-				} else if (
-					value?.MOBILE_LANDSCAPE_SCREEN &&
-					value?.MOBILE_LANDSCAPE_SCREEN_ONLY &&
-					value?.MOBILE_LANDSCAPE_SCREEN_SMALL &&
-					value?.MOBILE_POTRAIT_SCREEN &&
-					value?.TABLET_LANDSCAPE_SCREEN_SMALL &&
-					value?.TABLET_POTRAIT_SCREEN_SMALL
-				) {
+				} else if (value?.MOBILE_LANDSCAPE_SCREEN_ONLY) {
 					setSrc(src4);
-				} else if (
-					value?.MOBILE_LANDSCAPE_SCREEN_SMALL &&
-					value?.MOBILE_POTRAIT_SCREEN &&
-					value?.MOBILE_POTRAIT_SCREEN_ONLY &&
-					value?.TABLET_LANDSCAPE_SCREEN_SMALL &&
-					value?.TABLET_POTRAIT_SCREEN_SMALL
-				) {
+				} else if (value?.MOBILE_POTRAIT_SCREEN_ONLY) {
 					setSrc(src5);
 				}
 			},
