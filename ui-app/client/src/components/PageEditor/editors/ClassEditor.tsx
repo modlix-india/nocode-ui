@@ -1,6 +1,4 @@
-import { isNullValue } from '@fincity/kirun-js';
 import React, { useEffect, useState } from 'react';
-import ComponentDefinitions from '../..';
 import { SCHEMA_STRING_COMP_PROP } from '../../../constants';
 import {
 	PageStoreExtractor,
@@ -9,22 +7,14 @@ import {
 	setData,
 } from '../../../context/StoreContext';
 import {
-	ComponentDefinition,
-	ComponentMultiProperty,
-	ComponentProperty,
-	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
-	ComponentPropertyGroup,
 	LocationHistory,
 	PageDefinition,
 	StyleClassDefinition,
 } from '../../../types/common';
 import duplicate from '../../../util/duplicate';
-import { PropertyGroup } from './PropertyGroup';
-import { ExpressionEditor2 } from './propertyValueEditors/ExpressionEditor2';
-import PropertyMultiValueEditor from './propertyValueEditors/PropertyMultiValueEditor';
-import PropertyValueEditor from './propertyValueEditors/PropertyValueEditor';
 import { shortUUID } from '../../../util/shortUUID';
+import PropertyValueEditor from './propertyValueEditors/PropertyValueEditor';
 
 interface ClassEditorProps {
 	selectedComponent: string;
@@ -123,7 +113,7 @@ export default function ClassEditor({
 								updateDefCurry(key, { key });
 							}}
 						>
-							+ Add Class
+							+ Selector
 						</button>
 					</div>
 				</div>
