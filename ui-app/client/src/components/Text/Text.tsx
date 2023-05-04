@@ -30,6 +30,7 @@ function Text(props: ComponentProps) {
 	);
 	const [hover, setHover] = useState(false);
 	const styleProperties = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover },
 		stylePropertiesWithPseudoStates,
 	);

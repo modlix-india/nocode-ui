@@ -57,10 +57,12 @@ function TableGridComponent(props: ComponentProps) {
 	if (entry) firstchild[entry[0]] = true;
 
 	const styleProperties = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover: false },
 		stylePropertiesWithPseudoStates,
 	);
 	const styleHoverProperties = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover: true },
 		stylePropertiesWithPseudoStates,
 	);

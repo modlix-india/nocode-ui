@@ -77,9 +77,17 @@ function TableColumnsComponent(props: ComponentProps) {
 	if (entry) firstchild[entry[0]] = true;
 
 	const styleNormalProperties =
-		processComponentStylePseudoClasses({ hover: false }, stylePropertiesWithPseudoStates) ?? {};
+		processComponentStylePseudoClasses(
+			props.pageDefinition,
+			{ hover: false },
+			stylePropertiesWithPseudoStates,
+		) ?? {};
 	const styleHoverProperties =
-		processComponentStylePseudoClasses({ hover: true }, stylePropertiesWithPseudoStates) ?? {};
+		processComponentStylePseudoClasses(
+			props.pageDefinition,
+			{ hover: true },
+			stylePropertiesWithPseudoStates,
+		) ?? {};
 
 	const total = to - from;
 

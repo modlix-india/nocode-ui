@@ -45,6 +45,7 @@ function ProgressBar(props: ComponentProps) {
 	);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover },
 		stylePropertiesWithPseudoStates,
 	);

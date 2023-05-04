@@ -16,6 +16,7 @@ export default function MenuStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 		${PREFIX} .menuItemsContainer {
 			display: flex;
+			position: relative;
 		}
 		${PREFIX} .menu {
 			flex: 1;
@@ -23,17 +24,27 @@ export default function MenuStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction : row;
 			align-items: center;
 			justify-content: space-between;
+			position: relative;
 		}
-		${PREFIX} .menuLink {
-			display: flex;
-			align-items: center;
+
+		${PREFIX} .menuText {
+			position: relative;
+			flex:1;
+		}
+
+		${PREFIX} .icon {
+			position: relative;
+		}
+
+		${PREFIX} .caretIcon {
+			position: relative;
 		}
 		
 		${PREFIX} .link{
 			text-decoration: none;
-			flex: 1
+			flex: 1;
+			position: relative;
 		}
-		
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="MenuCss">{css}</style>;

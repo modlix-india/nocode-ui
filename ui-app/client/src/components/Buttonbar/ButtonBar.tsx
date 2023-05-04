@@ -55,6 +55,7 @@ function ButtonBar(props: ComponentProps) {
 
 	const [hover, setHover] = React.useState('');
 	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover: !!hover, readOnly: !!readOnly },
 		stylePropertiesWithPseudoStates,
 	);
