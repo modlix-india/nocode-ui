@@ -15,6 +15,7 @@ import {
 import duplicate from '../../../util/duplicate';
 import { shortUUID } from '../../../util/shortUUID';
 import PropertyValueEditor from './propertyValueEditors/PropertyValueEditor';
+import { processStyleFromString } from '../../../util/styleProcessor';
 
 interface ClassEditorProps {
 	selectedComponent: string;
@@ -180,11 +181,12 @@ export default function ClassEditor({
 									onlyValue={true}
 									storePaths={storePaths}
 									onChange={v => {
-										let style = (v.value ?? '').trim();
-										let ind = style.indexOf('{');
-										if (ind != -1) style = style.substring(ind + 1);
-										ind = style.indexOf('}');
-										if (ind != -1) style = style.substring(0, ind);
+										let style = Object.entries(
+											processStyleFromString((v.value ?? '').trim()),
+										)
+											.map(e => e[0] + ': ' + e[1])
+											.join(';\n');
+										if (!style.endsWith(';')) style += ';';
 										updateDefCurry(eClass[1].key, {
 											...eClass[1],
 											style,
