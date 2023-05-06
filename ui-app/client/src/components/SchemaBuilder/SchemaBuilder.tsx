@@ -3,6 +3,7 @@ import {
 	addListenerAndCallImmediately,
 	getPathFromLocation,
 	PageStoreExtractor,
+	setData,
 } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
@@ -10,6 +11,9 @@ import { HelperComponent } from '../HelperComponent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './schemaBuilderProperties';
 import SchemaFormStyle from './SchemaBuilderStyle';
+import SingleSchema from './components/SingleSchema';
+import { UISchemaRepository } from '../../schemas/common';
+import { isNullValue } from '@fincity/kirun-js';
 
 function SchemaBuilder(props: ComponentProps) {
 	const {
@@ -52,6 +56,22 @@ function SchemaBuilder(props: ComponentProps) {
 	return (
 		<div className="comp compSchemaBuilder" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />
+			<SingleSchema
+				schema={value}
+				type={rootSchemaType}
+				onChange={v => {
+					if (isReadonly) return;
+					if (rootSchemaType) {
+						v.type = rootSchemaType;
+					}
+					if (isNullValue(v.version)) {
+						v.version = 1;
+					}
+					setData(bindingPathPath!, v, pageExtractor.getPageName());
+				}}
+				schemaRepository={UISchemaRepository}
+				shouldShowNameNamespace={true}
+			/>
 		</div>
 	);
 }

@@ -361,5 +361,7 @@ export function processStyleFromString(str: string): { [key: string]: string } {
 			return ia;
 		}, {} as any);
 
+	console.log(styles);
+
 	return styles;
 }
