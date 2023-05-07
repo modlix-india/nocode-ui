@@ -6,13 +6,6 @@ const PREFIX = '.comp.compSchemaBuilder';
 export default function SchemaBuilderStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
 	const css =
 		`
-	${PREFIX} ._singleSchema {
-		display: grid;
-		grid-template-columns: auto 1fr;
-		font-size: 14px;
-		border-top: 1px solid #eee;
-		border-left: 1px solid #eee;
-	}
 
 	${PREFIX} ._leftJustify {
 		justify-self: left;
@@ -44,7 +37,6 @@ export default function SchemaBuilderStyle({ theme }: { theme: Map<string, Map<s
 		display: flex;
 		flex-direction: row;
 		gap: 5px;
-		align-items: center;
 	}
 
 	${PREFIX} ._array {
@@ -85,6 +77,11 @@ export default function SchemaBuilderStyle({ theme }: { theme: Map<string, Map<s
 		border: none;
 	}
 
+	${PREFIX} ._object > ._leftJustify,
+	${PREFIX} ._object > ._rightJustify {
+		border: none;
+	}
+
 	${PREFIX} select,
 	${PREFIX} input[type="text"],
 	${PREFIX} input[type="number"],
@@ -106,6 +103,15 @@ export default function SchemaBuilderStyle({ theme }: { theme: Map<string, Map<s
 	${PREFIX} ._error {
 		color: #ff2b2b;
 		font-size: 12px;
+	}
+
+	${PREFIX} ._singleSchema,
+	${PREFIX} ._object {
+		display: grid;
+		grid-template-columns: auto 1fr;
+		font-size: 14px;
+		border-top: 1px solid #eee;
+		border-left: 1px solid #eee;
 	}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

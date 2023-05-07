@@ -1,20 +1,26 @@
-import { Repository, Schema, SchemaType, StringFormat, isNullValue } from '@fincity/kirun-js';
-import React, { useCallback, useState } from 'react';
-import StringField from './StringField';
-import duplicate from '../../../util/duplicate';
+import { Repository, Schema, SchemaType, isNullValue } from '@fincity/kirun-js';
 import { StoreExtractor, setStoreData } from '@fincity/path-reactive-state-management';
-import SelectField from './SelectField';
-import NumberField from './NumberField';
+import React, { useCallback, useState } from 'react';
+import duplicate from '../../../util/duplicate';
+import { intersection } from '../../../util/setOperations';
 import AnyField from './AnyField';
 import ArrayField from './ArrayField';
-import { intersection, isSubset } from '../../../util/setOperations';
+import NumberField from './NumberField';
+import SchemaAdvanced from './../fields/SchemaAdvanced';
+import SchemaNumbers from './../fields/SchemaNumbers';
+import SchemaObjects from './../fields/SchemaObjects';
+import SchemaStrings from './../fields/SchemaStrings';
+import SelectField from './SelectField';
+import StringField from './StringField';
+import SchemaArrays from '../fields/SchemaArrays';
 
 interface SingleSchemaProps {
 	schema: any;
-	type?: SchemaType;
+	type?: string;
 	onChange: (v: any) => void;
 	schemaRepository: Repository<Schema>;
 	shouldShowNameNamespace?: boolean;
+	showRemove?: boolean;
 }
 
 const ALL_SET = [...Schema.ofAny('Any').getType()?.getAllowedSchemaTypes()!];
@@ -30,6 +36,7 @@ export default function SingleSchema({
 	onChange,
 	schemaRepository,
 	shouldShowNameNamespace,
+	showRemove = false,
 }: SingleSchemaProps) {
 	const [backup, setBackup] = React.useState<any>({});
 	const schema = inSchema ?? {};
@@ -38,10 +45,6 @@ export default function SingleSchema({
 		inSchema.type = [inSchema.type];
 	}
 
-	const [showAdvanced, setShowAdvanced] = useState(
-		(schema.oneOf?.length || schema.allOf?.length || schema.anyOf?.length || schema.not) ??
-			false,
-	);
 	const [showDesFields, setShowDesFields] = useState(
 		(schema.description || schema.comment) ?? false,
 	);
@@ -72,7 +75,7 @@ export default function SingleSchema({
 	let typeFields = undefined;
 	const finType = new Set<SchemaType>();
 	if (type) {
-		finType.add(type);
+		finType.add(SchemaType[type as keyof typeof SchemaType]);
 	} else {
 		if (schema.type) {
 			if (Array.isArray(schema.type)) {
@@ -87,81 +90,24 @@ export default function SingleSchema({
 
 	if (isNullValue(schema.constant) && isNullValue(schema.ref) && finType.size) {
 		if (intersection(finType, NUMBER_SET).size) {
-			typeFields = (
-				<>
-					<NumberField
-						label="Multiple Of"
-						value={schema.multipleOf}
-						propPath="multipleOf"
-						onChange={schemaChange}
-					/>
-					<NumberField
-						label="Minimum"
-						value={schema.minimum}
-						propPath="minimum"
-						onChange={schemaChange}
-					/>
-					<NumberField
-						label="Maximum"
-						value={schema.maximum}
-						propPath="maximum"
-						onChange={schemaChange}
-					/>
-					<NumberField
-						label="Exclusive Minimum"
-						value={schema.exclusiveMinimum}
-						propPath="exclusiveMinimum"
-						onChange={schemaChange}
-					/>
-					<NumberField
-						label="Exclusive Maximum"
-						value={schema.exclusiveMaximum}
-						propPath="exclusiveMaximum"
-						onChange={schemaChange}
-					/>
-				</>
-			);
+			typeFields = <SchemaNumbers schema={schema} schemaChange={schemaChange} />;
 		} else if (finType.has(SchemaType.STRING)) {
+			typeFields = <SchemaStrings schema={schema} schemaChange={schemaChange} />;
+		} else if (finType.has(SchemaType.OBJECT)) {
 			typeFields = (
-				<>
-					<NumberField
-						label="Minimum Length"
-						value={schema.minLength}
-						propPath="minLength"
-						onChange={schemaChange}
-					/>
-					<NumberField
-						label="Maximum Length"
-						value={schema.maxLength}
-						propPath="maxLength"
-						onChange={schemaChange}
-					/>
-					<SelectField
-						label="Format"
-						value={schema.format}
-						propPath="format"
-						onChange={schemaChange}
-						options={[
-							{ label: 'None', value: '' },
-							...Object.values(StringFormat).map(e => ({ label: e, value: e })),
-						]}
-					/>
-					<StringField
-						label="Pattern"
-						value={schema.pattern}
-						propPath="pattern"
-						onChange={schemaChange}
-						validationLogic={v => {
-							try {
-								if (!v) return '';
-								new RegExp(v);
-							} catch (e: any) {
-								return e.message;
-							}
-							return '';
-						}}
-					/>
-				</>
+				<SchemaObjects
+					schema={schema}
+					schemaChange={schemaChange}
+					schemaRepository={schemaRepository}
+				/>
+			);
+		} else if (finType.has(SchemaType.ARRAY)) {
+			typeFields = (
+				<SchemaArrays
+					schema={schema}
+					schemaChange={schemaChange}
+					schemaRepository={schemaRepository}
+				/>
 			);
 		}
 	}
@@ -241,80 +187,6 @@ export default function SingleSchema({
 		</>
 	);
 
-	const showAdvancedCheckbox = (
-		<>
-			<label className="_rightJustify">Show Advanced :</label>
-			<div className="_leftJustify">
-				<input
-					type="checkbox"
-					checked={showAdvanced}
-					onChange={() => setShowAdvanced(!showAdvanced)}
-				/>
-			</div>
-		</>
-	);
-
-	const advancedComps = showAdvanced ? (
-		<>
-			<ArrayField
-				label="One of"
-				value={schema.oneOf}
-				propPath="oneOf"
-				onChange={schemaChange}
-				schemaRepository={schemaRepository}
-				type="SCHEMA"
-			/>
-			<ArrayField
-				label="All of"
-				value={schema.allOf}
-				propPath="allOf"
-				onChange={schemaChange}
-				schemaRepository={schemaRepository}
-				type="SCHEMA"
-			/>
-			<ArrayField
-				label="Any of"
-				value={schema.anyOf}
-				propPath="anyOf"
-				onChange={schemaChange}
-				schemaRepository={schemaRepository}
-				type="SCHEMA"
-			/>
-			<label className="_rightJustify">Not :</label>
-			<div className="_leftJustify">
-				<SingleSchema
-					schema={schema.not}
-					onChange={v => {
-						const s = duplicate(schema ?? {});
-						s.not = v;
-						onChange(s);
-					}}
-					schemaRepository={schemaRepository}
-					shouldShowNameNamespace={false}
-				/>
-				<button
-					onClick={v => {
-						const s = duplicate(schema ?? {});
-						delete s.not;
-						onChange(s);
-					}}
-				>
-					Remove
-				</button>
-			</div>
-			<ArrayField
-				label="examples"
-				value={schema.examples}
-				propPath="examples"
-				onChange={schemaChange}
-				type="ANY"
-				schemaRepository={schemaRepository}
-			/>
-		</>
-	) : (
-		<></>
-	);
-
 	const showDesFieldsCheckBox = (
 		<>
 			<label className="_rightJustify">Show Description Fields :</label>
@@ -348,6 +220,12 @@ export default function SingleSchema({
 		<></>
 	);
 
+	const removeButton = showRemove ? (
+		<button onClick={v => onChange(undefined)}>Remove</button>
+	) : (
+		<></>
+	);
+
 	console.log(schema);
 
 	return (
@@ -363,10 +241,15 @@ export default function SingleSchema({
 			/>
 			{refNTypeFields}
 			{typeFields}
-			{showAdvancedCheckbox}
-			{advancedComps}
+			<SchemaAdvanced
+				schema={schema}
+				schemaChange={schemaChange}
+				schemaRepository={schemaRepository}
+				onChange={onChange}
+			/>
 			{showDesFieldsCheckBox}
 			{desComps}
+			{removeButton}
 		</div>
 	);
 }
