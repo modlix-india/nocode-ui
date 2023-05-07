@@ -18,9 +18,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Root Schema type',
 		schema: SCHEMA_STRING_COMP_PROP,
 		description: 'Root schema type',
-		defaultValue: 'ANY',
 		enumValues: [
-			{ name: 'ANY', displayName: 'Any', description: 'Any' },
 			{ name: 'OBJECT', displayName: 'Object', description: 'Object' },
 			{ name: 'ARRAY', displayName: 'Array', description: 'Array' },
 			{ name: 'STRING', displayName: 'String', description: 'String' },
