@@ -22,6 +22,7 @@ import { PropertyGroup } from './PropertyGroup';
 import { ExpressionEditor2 } from './propertyValueEditors/ExpressionEditor2';
 import PropertyMultiValueEditor from './propertyValueEditors/PropertyMultiValueEditor';
 import PropertyValueEditor from './propertyValueEditors/PropertyValueEditor';
+import PageOperations from '../functions/PageOperations';
 
 interface PropertyEditorProps {
 	selectedComponent: string;
@@ -35,6 +36,7 @@ interface PropertyEditorProps {
 	onShowCodeEditor: (eventName: string) => void;
 	slaveStore: any;
 	editPageName: string | undefined;
+	pageOperations: PageOperations;
 }
 
 function updatePropertyDefinition(
@@ -103,6 +105,7 @@ export default function PropertyEditor({
 	onShowCodeEditor,
 	slaveStore,
 	editPageName,
+	pageOperations,
 }: PropertyEditorProps) {
 	const [def, setDef] = useState<ComponentDefinition>();
 	const [pageDef, setPageDef] = useState<PageDefinition>();
@@ -236,6 +239,7 @@ export default function PropertyEditor({
 					onShowCodeEditor={onShowCodeEditor}
 					editPageName={editPageName}
 					slaveStore={slaveStore}
+					pageOperations={pageOperations}
 				/>
 			);
 		}
@@ -297,6 +301,7 @@ export default function PropertyEditor({
 						onShowCodeEditor={onShowCodeEditor}
 						editPageName={editPageName}
 						slaveStore={slaveStore}
+						pageOperations={pageOperations}
 					/>
 				</div>
 				<div className="_eachProp">
@@ -321,6 +326,7 @@ export default function PropertyEditor({
 						onShowCodeEditor={onShowCodeEditor}
 						editPageName={editPageName}
 						slaveStore={slaveStore}
+						pageOperations={pageOperations}
 					/>
 				</div>
 			</PropertyGroup>

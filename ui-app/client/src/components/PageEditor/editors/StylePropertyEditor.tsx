@@ -28,6 +28,7 @@ import { shortUUID } from '../../../util/shortUUID';
 import duplicate from '../../../util/duplicate';
 import { deepEqual } from '@fincity/kirun-js';
 import { camelCaseToUpperSpaceCase } from '../../../functions/utils';
+import PageOperations from '../functions/PageOperations';
 
 interface StylePropertyEditorProps {
 	selectedComponent: string;
@@ -45,6 +46,7 @@ interface StylePropertyEditorProps {
 	reverseStyleSections?: boolean;
 	slaveStore: any;
 	editPageName: string | undefined;
+	pageOperations: PageOperations;
 }
 
 function processOldCondition(styleProps: ComponentStyle | undefined): ComponentStyle {
@@ -125,6 +127,7 @@ export default function StylePropertyEditor({
 	reverseStyleSections,
 	slaveStore,
 	editPageName,
+	pageOperations,
 }: StylePropertyEditorProps) {
 	const [def, setDef] = useState<ComponentDefinition>();
 	const [pageDef, setPageDef] = useState<PageDefinition>();
@@ -227,6 +230,7 @@ export default function StylePropertyEditor({
 			storePaths={storePaths}
 			editPageName={editPageName}
 			slaveStore={slaveStore}
+			pageOperations={pageOperations}
 		/>
 	);
 
@@ -255,6 +259,7 @@ export default function StylePropertyEditor({
 			storePaths={storePaths}
 			editPageName={editPageName}
 			slaveStore={slaveStore}
+			pageOperations={pageOperations}
 		/>
 	) : (
 		<></>
@@ -286,6 +291,7 @@ export default function StylePropertyEditor({
 			}}
 			editPageName={editPageName}
 			slaveStore={slaveStore}
+			pageOperations={pageOperations}
 		/>
 	) : (
 		<></>
@@ -457,6 +463,7 @@ export default function StylePropertyEditor({
 						storePaths={storePaths}
 						editPageName={editPageName}
 						slaveStore={slaveStore}
+						pageOperations={pageOperations}
 					/>
 				</div>
 				{subComponentsList.length !== 1 ? (
@@ -497,6 +504,7 @@ export default function StylePropertyEditor({
 							storePaths={storePaths}
 							editPageName={editPageName}
 							slaveStore={slaveStore}
+							pageOperations={pageOperations}
 						/>
 					</div>
 				) : (
@@ -540,6 +548,7 @@ export default function StylePropertyEditor({
 							storePaths={storePaths}
 							editPageName={editPageName}
 							slaveStore={slaveStore}
+							pageOperations={pageOperations}
 						/>
 					</div>
 				) : (
@@ -624,6 +633,7 @@ export default function StylePropertyEditor({
 								selectedComponent={selectedComponent}
 								saveStyle={saveStyle}
 								properties={properties}
+								pageOperations={pageOperations}
 							/>
 						))}
 
@@ -667,6 +677,7 @@ export default function StylePropertyEditor({
 									selectedComponent={selectedComponent}
 									saveStyle={saveStyle}
 									properties={properties}
+									pageOperations={pageOperations}
 								/>
 							))}
 					</PropertyGroup>
@@ -690,6 +701,7 @@ function EachPropEditor({
 	selectedComponent,
 	saveStyle,
 	properties,
+	pageOperations,
 }: {
 	pseudoState: string;
 	subComponentName: string;
@@ -704,6 +716,7 @@ function EachPropEditor({
 	selectedComponent: string;
 	saveStyle: (newStyleProps: ComponentStyle) => void;
 	properties: [string, EachComponentStyle] | undefined;
+	pageOperations: PageOperations;
 }) {
 	const compProp = subComponentName ? `${subComponentName}-${prop}` : prop;
 	let value = iterateProps[compProp] ?? {};
@@ -766,6 +779,7 @@ function EachPropEditor({
 
 					saveStyle(newProps);
 				}}
+				pageOperations={pageOperations}
 			/>
 		</div>
 	);

@@ -18,6 +18,7 @@ import { IconSelectionEditor } from './IconSelectionEditor';
 import { ImageEditor } from './ImageEditor';
 import { ValidationEditor } from './ValidationEditor';
 import { isNullValue } from '@fincity/kirun-js';
+import PageOperations from '../../functions/PageOperations';
 
 interface PropertyValueEditorProps {
 	propDef: ComponentPropertyDefinition;
@@ -30,6 +31,7 @@ interface PropertyValueEditorProps {
 	onShowCodeEditor?: (eventName: string) => void;
 	slaveStore: any;
 	editPageName: string | undefined;
+	pageOperations: PageOperations;
 }
 
 export default function PropertyValueEditor({
@@ -43,6 +45,7 @@ export default function PropertyValueEditor({
 	onShowCodeEditor,
 	slaveStore,
 	editPageName,
+	pageOperations,
 }: PropertyValueEditorProps) {
 	const [chngValue, setChngValue] = useState<any>('');
 	const [showAdvanced, setShowAdvanced] = useState<boolean>(false);
@@ -105,6 +108,7 @@ export default function PropertyValueEditor({
 		storePaths,
 		slaveStore,
 		editPageName,
+		pageOperations,
 		onShowCodeEditor,
 		pageDefinition,
 		showPlaceholder,
@@ -140,6 +144,7 @@ function makeValueEditor(
 	storePaths: Set<string>,
 	slaveStore: any,
 	editPageName: string | undefined,
+	pageOperations: PageOperations,
 	onShowCodeEditor?: (eventName: string) => void,
 	pageDef?: PageDefinition,
 	showPlaceholder = true,
@@ -245,6 +250,7 @@ function makeValueEditor(
 				propDef={propDef}
 				value={chngValue === '' ? undefined : chngValue}
 				onChange={e => onChange({ ...value, value: e })}
+				pageOperations={pageOperations}
 			/>
 		);
 	}

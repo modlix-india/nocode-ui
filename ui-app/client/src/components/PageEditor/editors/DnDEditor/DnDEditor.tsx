@@ -127,6 +127,7 @@ export default function DnDEditor({
 					selectedComponent={selectedComponent}
 					onSelectedComponentChanged={onSelectedComponentChanged}
 					onSelectedSubComponentChanged={onSelectedSubComponentChanged}
+					pageOperations={pageOperations}
 				/>
 				<div className={`_iframeContainer ${preview ? '_previewMode' : ''}`}>
 					<DnDIFrame
@@ -155,6 +156,7 @@ export default function DnDEditor({
 						styleSelectorPref={styleSelectorPref}
 						setStyleSelectorPref={setStyleSelectorPref}
 						previewMode={preview}
+						pageOperations={pageOperations}
 					/>
 				</div>
 				<DnDBottomBar

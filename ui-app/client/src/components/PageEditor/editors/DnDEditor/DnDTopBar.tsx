@@ -16,6 +16,7 @@ import PropertyValueEditor from '../propertyValueEditors/PropertyValueEditor';
 import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../../../constants';
 import { ComponentPropertyEditor } from '../../../../types/common';
 import { ComponentPropertyDefinition } from '../../../../types/common';
+import PageOperations from '../../functions/PageOperations';
 
 interface TopBarProps {
 	theme: string;
@@ -41,6 +42,7 @@ interface TopBarProps {
 	selectedComponent?: string;
 	onSelectedSubComponentChanged: (key: string) => void;
 	onSelectedComponentChanged: (key: string) => void;
+	pageOperations: PageOperations;
 }
 
 export default function DnDTopBar({
@@ -67,6 +69,7 @@ export default function DnDTopBar({
 	selectedSubComponent,
 	onSelectedComponentChanged,
 	onSelectedSubComponentChanged,
+	pageOperations,
 }: TopBarProps) {
 	const [localUrl, setLocalUrl] = useState(url);
 	const [deviceType, setDeviceType] = useState<string | undefined>();
@@ -237,6 +240,7 @@ export default function DnDTopBar({
 					storePaths={storePaths}
 					slaveStore={slaveStore}
 					editPageName={editPageName}
+					pageOperations={pageOperations}
 				/>
 			</div>
 		));
@@ -263,6 +267,7 @@ export default function DnDTopBar({
 										storePaths={storePaths}
 										slaveStore={slaveStore}
 										editPageName={editPageName}
+										pageOperations={pageOperations}
 									/>
 								</div>
 								<div className="_eachProp">
@@ -279,6 +284,7 @@ export default function DnDTopBar({
 										storePaths={storePaths}
 										slaveStore={slaveStore}
 										editPageName={editPageName}
+										pageOperations={pageOperations}
 									/>
 								</div>
 								<div className="_eachProp">
@@ -297,6 +303,7 @@ export default function DnDTopBar({
 										storePaths={storePaths}
 										slaveStore={slaveStore}
 										editPageName={editPageName}
+										pageOperations={pageOperations}
 									/>
 								</div>
 								{eventEnums.length ? (
@@ -317,6 +324,7 @@ export default function DnDTopBar({
 											storePaths={storePaths}
 											slaveStore={slaveStore}
 											editPageName={editPageName}
+											pageOperations={pageOperations}
 										/>
 									</div>
 								) : (
@@ -353,6 +361,7 @@ export default function DnDTopBar({
 										storePaths={storePaths}
 										slaveStore={slaveStore}
 										editPageName={editPageName}
+										pageOperations={pageOperations}
 									/>
 								</div>
 							</div>
