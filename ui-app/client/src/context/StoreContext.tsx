@@ -266,6 +266,14 @@ export class PageStoreExtractor extends TokenValueExtractor {
 		return this.extractorMap.get(pageName)!;
 	}
 
+	public static getForContextIfAvailable(
+		pageName: string | undefined,
+	): PageStoreExtractor | undefined {
+		if (isNullValue(pageName)) return undefined;
+
+		return PageStoreExtractor.getForContext(pageName!);
+	}
+
 	public getPageName(): string {
 		return this.pageName;
 	}

@@ -120,6 +120,9 @@ export default function DnDEditor({
 					firstTimeRef={firstTimeRef}
 					latestVersion={latestVersion}
 					previewMode={preview}
+					storePaths={storePaths}
+					slaveStore={slaveStore}
+					editPageName={editPageName}
 				/>
 				<div className={`_iframeContainer ${preview ? '_previewMode' : ''}`}>
 					<DnDIFrame
