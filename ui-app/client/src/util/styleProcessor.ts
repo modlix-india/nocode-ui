@@ -360,8 +360,5 @@ export function processStyleFromString(str: string): { [key: string]: string } {
 			ia[ic.prop] = ic.value;
 			return ia;
 		}, {} as any);
-
-	console.log(styles);
-
 	return styles;
 }

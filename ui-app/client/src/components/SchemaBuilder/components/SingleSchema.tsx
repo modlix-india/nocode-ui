@@ -141,7 +141,6 @@ export default function SingleSchema({
 				options={TYPE_OPTIONS}
 				type="SELECT"
 				onChange={(p: string, v: undefined | any) => {
-					console.log(p, v);
 					if (!v || v.length === 0) schemaChange('type', undefined);
 					else if (v.length === 1) schemaChange('type', v[0]);
 					else schemaChange(p, v);
@@ -226,12 +225,9 @@ export default function SingleSchema({
 		<></>
 	);
 
-	console.log(schema);
-
 	return (
 		<div className="_singleSchema">
 			{nameNamespace}
-
 			<AnyField
 				label="Constant"
 				value={schema.constant}

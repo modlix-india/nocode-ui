@@ -177,7 +177,6 @@ export default function DnDTopBar({
 
 	if (previewMode) return <div className="_topBarGrid _previewMode"> </div>;
 
-	console.log('properties', properties);
 	const eventEnums = Object.entries(page?.eventFunctions ?? {}).map(([k, v]) => ({
 		name: k,
 		displayName: v.name,
