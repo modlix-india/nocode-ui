@@ -135,6 +135,7 @@ export interface Component {
 		bindingPath5?: { name: string };
 		bindingPath6?: { name: string };
 	};
+	needShowInDesginMode?: boolean;
 }
 
 export enum StyleResolution {
