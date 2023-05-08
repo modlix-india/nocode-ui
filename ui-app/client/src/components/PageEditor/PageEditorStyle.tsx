@@ -655,7 +655,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		i._pillTag.fa {
-			font-size: 10px;
+			font-size: 10px !important;
 		}
 
 		${PREFIX} ._iconSelectionEditor {

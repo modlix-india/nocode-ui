@@ -52,6 +52,10 @@ export default class PageOperations {
 		this.selectedSubComponent = selectedSubComponent;
 	}
 
+	public setIssuePopup(issue: Issue): void {
+		this.setIssue(issue);
+	}
+
 	public getComponentDefinition(componentKey: string): ComponentDefinition | undefined {
 		const pageDef: PageDefinition = getDataFromPath(
 			this.defPath,
