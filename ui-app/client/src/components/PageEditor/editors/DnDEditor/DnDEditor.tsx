@@ -123,6 +123,10 @@ export default function DnDEditor({
 					storePaths={storePaths}
 					slaveStore={slaveStore}
 					editPageName={editPageName}
+					selectedSubComponent={selectedSubComponent}
+					selectedComponent={selectedComponent}
+					onSelectedComponentChanged={onSelectedComponentChanged}
+					onSelectedSubComponentChanged={onSelectedSubComponentChanged}
 				/>
 				<div className={`_iframeContainer ${preview ? '_previewMode' : ''}`}>
 					<DnDIFrame

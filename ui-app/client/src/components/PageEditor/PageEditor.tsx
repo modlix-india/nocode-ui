@@ -453,6 +453,10 @@ function PageEditor(props: ComponentProps) {
 					latestVersion={latestVersion}
 					definition={definition}
 					storePaths={storePaths}
+					selectedSubComponent={selectedSubComponent}
+					selectedComponent={selectedComponent}
+					onSelectedSubComponentChanged={(key: string) => setSelectedSubComponent(key)}
+					onSelectedComponentChanged={(key: string) => setSelectedComponent(key)}
 				/>
 			</div>
 			<IssuePopup
