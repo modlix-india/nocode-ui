@@ -714,10 +714,24 @@ function EachPropEditor({
 
 	if (!properties) return <></>;
 
+	let propName = prop.replace(/([A-Z])/g, ' $1');
+	propName = propName[0].toUpperCase() + propName.slice(1);
+
+	const screenSize = ((selectorPref[selectedComponent]?.screenSize?.value as string) ??
+		'ALL') as StyleResolution;
+
 	return (
 		<div className="_eachProp">
-			<div className="_propLabel" title="Name">
-				{prop.replace(/([A-Z])/g, ' $1')}:
+			<div className="_propLabel" title={propName}>
+				{propName}:{' '}
+				{(pseudoState && iterateProps[compProp]) ||
+				(screenSize !== 'ALL' &&
+					(properties[1]?.resolutions?.ALL?.[compProp] ||
+						properties[1]?.resolutions?.ALL?.[actualProp])) ? (
+					<span title="Has a default value">★</span>
+				) : (
+					''
+				)}
 			</div>
 			<PropertyValueEditor
 				pageDefinition={pageDef}
@@ -732,8 +746,6 @@ function EachPropEditor({
 				slaveStore={slaveStore}
 				onChange={v => {
 					const newProps = duplicate(styleProps) as ComponentStyle;
-					const screenSize = ((selectorPref[selectedComponent]?.screenSize
-						?.value as string) ?? 'ALL') as StyleResolution;
 
 					if (!newProps[properties[0]]) newProps[properties[0]] = { resolutions: {} };
 
