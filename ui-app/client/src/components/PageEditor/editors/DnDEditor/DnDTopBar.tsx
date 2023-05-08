@@ -1,13 +1,21 @@
-import { deepEqual } from '@fincity/kirun-js';
+import { deepEqual, isNullValue } from '@fincity/kirun-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
 	addListenerWithChildrenActivity,
+	getData,
+	getDataFromPath,
 	PageStoreExtractor,
 	setData,
 } from '../../../../context/StoreContext';
-import { LocationHistory, PageDefinition } from '../../../../types/common';
+import { ComponentProperty, LocationHistory, PageDefinition } from '../../../../types/common';
 import { propertiesDefinition } from '../../pageEditorProperties';
 import duplicate from '../../../../util/duplicate';
+import Portal from '../../../Portal';
+import { StringValueEditor } from '../../../SchemaForm/components/StringValueEditor';
+import PropertyValueEditor from '../propertyValueEditors/PropertyValueEditor';
+import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../../../constants';
+import { ComponentPropertyEditor } from '../../../../types/common';
+import { ComponentPropertyDefinition } from '../../../../types/common';
 
 interface TopBarProps {
 	theme: string;
@@ -26,6 +34,9 @@ interface TopBarProps {
 	redoStackRef: React.MutableRefObject<PageDefinition[]>;
 	latestVersion: React.MutableRefObject<number>;
 	previewMode: boolean;
+	editPageName: string | undefined;
+	slaveStore: any;
+	storePaths: Set<string>;
 }
 
 export default function DnDTopBar({
@@ -44,9 +55,16 @@ export default function DnDTopBar({
 	redoStackRef,
 	latestVersion,
 	previewMode,
+	editPageName,
+	slaveStore,
+	storePaths,
+	locationHistory,
 }: TopBarProps) {
 	const [localUrl, setLocalUrl] = useState(url);
 	const [deviceType, setDeviceType] = useState<string | undefined>();
+	const [properties, setProperties] = useState<any>({});
+	const [showProperties, setShowProperties] = useState(false);
+	const [page, setPage] = useState<PageDefinition>();
 	const [changed, setChanged] = useState(Date.now());
 
 	useEffect(() => setLocalUrl(url), [url]);
@@ -78,6 +96,10 @@ export default function DnDTopBar({
 					)
 				)
 					return;
+
+				setProperties(v.properties ?? {});
+				setPage(v as PageDefinition);
+
 				if (!firstTimeRef.current.length) {
 					firstTimeRef.current.push(duplicate(v));
 					return;
@@ -113,7 +135,230 @@ export default function DnDTopBar({
 		[onChangePersonalization, deviceType],
 	);
 
+	const updatePageProperties = useCallback(
+		(propType: 'title' | 'simple' | 'compprop' | 'seo', propName: string, value: any) => {
+			if (!defPath) return;
+
+			const page = duplicate(
+				getDataFromPath(defPath, locationHistory, pageExtractor) ?? {},
+			) as PageDefinition;
+			if (!page.properties) page.properties = {};
+			if (propType === 'title') {
+				if (!page.properties.title) page.properties.title = {};
+				if (propName === 'name')
+					if (isNullValue(value.value) && isNullValue(value.location?.expression))
+						delete page.properties.title.name;
+					else page.properties.title.name = value as ComponentProperty<string>;
+				else if (propName === 'append')
+					if (isNullValue(value.value) && isNullValue(value.location?.expression))
+						delete page.properties.title.append;
+					else page.properties.title.append = value as ComponentProperty<boolean>;
+			} else if (propType === 'seo') {
+				if (!page.properties.seo) page.properties.seo = {};
+				if (isNullValue(value.value) && isNullValue(value.location?.expression))
+					delete page.properties.seo[propName];
+				else page.properties.seo[propName] = value as ComponentProperty<string>;
+			} else {
+				if (isNullValue(value.value)) delete page.properties[propName];
+				else page.properties[propName] = value.value;
+			}
+			setData(defPath, page, pageExtractor.getPageName());
+		},
+		[],
+	);
+
 	if (previewMode) return <div className="_topBarGrid _previewMode"> </div>;
+
+	console.log('properties', properties);
+	const eventEnums = Object.entries(page?.eventFunctions ?? {}).map(([k, v]) => ({
+		name: k,
+		displayName: v.name,
+		description: v.description ?? v.name,
+	}));
+	let popup = <></>;
+	if (showProperties) {
+		const seoNames = [
+			{
+				name: 'description',
+				displayName: 'Description',
+				schema: SCHEMA_STRING_COMP_PROP,
+				editor: ComponentPropertyEditor.LARGE_TEXT,
+			},
+			{
+				name: 'keywords',
+				displayName: 'Keywords',
+				schema: SCHEMA_STRING_COMP_PROP,
+				editor: undefined,
+			},
+			{
+				name: 'robots',
+				displayName: 'Robots',
+				schema: SCHEMA_STRING_COMP_PROP,
+				editor: undefined,
+			},
+			{
+				name: 'charset',
+				displayName: 'Charset',
+				schema: SCHEMA_STRING_COMP_PROP,
+				editor: undefined,
+			},
+			{
+				name: 'author',
+				displayName: 'Author',
+				schema: SCHEMA_STRING_COMP_PROP,
+				editor: undefined,
+			},
+			{
+				name: 'applicationName',
+				displayName: 'Application Name',
+				schema: SCHEMA_STRING_COMP_PROP,
+				editor: undefined,
+			},
+			{
+				name: 'generator',
+				displayName: 'Generator',
+				schema: SCHEMA_STRING_COMP_PROP,
+				editor: undefined,
+			},
+		].map((propDef: ComponentPropertyDefinition) => (
+			<div className="_eachProp" key={propDef.name}>
+				<div className="_propLabel">{propDef.displayName}</div>
+				<PropertyValueEditor
+					propDef={propDef}
+					value={properties?.seo?.[propDef.name]}
+					onChange={v => updatePageProperties('seo', propDef.name, v)}
+					storePaths={storePaths}
+					slaveStore={slaveStore}
+					editPageName={editPageName}
+				/>
+			</div>
+		));
+		popup = (
+			<Portal>
+				<div className={`_popupBackground`} onClick={() => setShowProperties(false)}>
+					<div
+						className="_popupContainer _pageProperties"
+						onClick={e => e.stopPropagation()}
+					>
+						<div className="_popupHeader">Page Properties</div>
+						<div className="_popupContent _propertyContent">
+							<div className="_pagePropertiesGrid _pageSimplePropGrid">
+								<div className="_eachProp">
+									<div className="_propLabel">Page Title</div>
+									<PropertyValueEditor
+										propDef={{
+											name: 'title',
+											displayName: 'Page Title',
+											schema: SCHEMA_STRING_COMP_PROP,
+										}}
+										value={properties?.title?.name}
+										onChange={v => updatePageProperties('title', 'name', v)}
+										storePaths={storePaths}
+										slaveStore={slaveStore}
+										editPageName={editPageName}
+									/>
+								</div>
+								<div className="_eachProp">
+									<div className="_propLabel">Append Title</div>
+									<PropertyValueEditor
+										propDef={{
+											name: 'append',
+											displayName: 'Append Title',
+											defaultValue: true,
+											schema: SCHEMA_BOOL_COMP_PROP,
+										}}
+										value={properties?.title?.append}
+										onChange={v => updatePageProperties('title', 'append', v)}
+										storePaths={storePaths}
+										slaveStore={slaveStore}
+										editPageName={editPageName}
+									/>
+								</div>
+								<div className="_eachProp">
+									<div className="_propLabel">Wrap Shell</div>
+									<PropertyValueEditor
+										propDef={{
+											name: 'wrapShell',
+											displayName: 'Wrap Shell',
+											schema: SCHEMA_BOOL_COMP_PROP,
+										}}
+										value={{ value: properties?.wrapShell }}
+										onlyValue={true}
+										onChange={v =>
+											updatePageProperties('simple', 'wrapShell', v)
+										}
+										storePaths={storePaths}
+										slaveStore={slaveStore}
+										editPageName={editPageName}
+									/>
+								</div>
+								{eventEnums.length ? (
+									<div className="_eachProp">
+										<div className="_propLabel">On Load Function</div>
+										<PropertyValueEditor
+											propDef={{
+												name: 'onLoadEvent',
+												displayName: 'On Load Event Function',
+												schema: SCHEMA_STRING_COMP_PROP,
+												enumValues: eventEnums,
+											}}
+											value={{ value: properties?.onLoadEvent }}
+											onlyValue={true}
+											onChange={v =>
+												updatePageProperties('simple', 'onLoadEvent', v)
+											}
+											storePaths={storePaths}
+											slaveStore={slaveStore}
+											editPageName={editPageName}
+										/>
+									</div>
+								) : (
+									<></>
+								)}
+								<div className="_eachProp">
+									<div className="_propLabel">Load Strategy</div>
+									<PropertyValueEditor
+										propDef={{
+											name: 'loadStrategy',
+											displayName: 'Load Strategy',
+											schema: SCHEMA_STRING_COMP_PROP,
+											defaultValue: 'default',
+											enumValues: [
+												{
+													name: 'default',
+													displayName: 'No Force Call',
+													description:
+														"Don't call on load function on page loading.",
+												},
+												{
+													name: 'reload',
+													displayName: 'Force Call',
+													description:
+														'Force call on load function on page loading',
+												},
+											],
+										}}
+										value={{ value: properties?.loadStrategy }}
+										onlyValue={true}
+										onChange={v =>
+											updatePageProperties('simple', 'loadStrategy', v)
+										}
+										storePaths={storePaths}
+										slaveStore={slaveStore}
+										editPageName={editPageName}
+									/>
+								</div>
+							</div>
+							<div className="_pagePropertiesGrid">{seoNames}</div>
+						</div>
+						<div className="_right">
+							<button onClick={() => setShowProperties(false)}>Close</button>
+						</div>
+					</div>
+				</div>
+			</Portal>
+		);
+	}
 
 	return (
 		<div className="_topBarGrid">
@@ -245,6 +490,14 @@ export default function DnDTopBar({
 							<i className="fa fa-solid fa-broom" />
 							Clear Personalization
 						</div>
+						<div
+							className="_iconMenuOption"
+							tabIndex={0}
+							onClick={() => setShowProperties(true)}
+						>
+							<i className="fa fa-solid fa-wrench" />
+							Page Properties
+						</div>
 					</div>
 				</div>
 				<select
@@ -262,6 +515,7 @@ export default function DnDTopBar({
 				</select>
 				<button onClick={onSave}>Save</button>
 			</div>
+			{popup}
 		</div>
 	);
 }
