@@ -37,6 +37,10 @@ interface TopBarProps {
 	editPageName: string | undefined;
 	slaveStore: any;
 	storePaths: Set<string>;
+	selectedSubComponent: string;
+	selectedComponent?: string;
+	onSelectedSubComponentChanged: (key: string) => void;
+	onSelectedComponentChanged: (key: string) => void;
 }
 
 export default function DnDTopBar({
@@ -59,6 +63,10 @@ export default function DnDTopBar({
 	slaveStore,
 	storePaths,
 	locationHistory,
+	selectedComponent,
+	selectedSubComponent,
+	onSelectedComponentChanged,
+	onSelectedSubComponentChanged,
 }: TopBarProps) {
 	const [localUrl, setLocalUrl] = useState(url);
 	const [deviceType, setDeviceType] = useState<string | undefined>();
@@ -449,9 +457,15 @@ export default function DnDTopBar({
 								undoStackRef.current.length
 									? undoStackRef.current[undoStackRef.current.length - 1]
 									: firstTimeRef.current[0],
-							);
+							) as PageDefinition;
 							pg.version = latestVersion.current;
 							pg.isFromUndoRedoStack = true;
+
+							if (selectedComponent && !pg.componentDefinition[selectedComponent]) {
+								onSelectedComponentChanged('');
+								onSelectedSubComponentChanged('');
+							}
+
 							setData(defPath, pg, pageExtractor.getPageName());
 							setChanged(Date.now());
 						}}
@@ -470,9 +484,13 @@ export default function DnDTopBar({
 								undoStackRef.current.length
 									? undoStackRef.current[undoStackRef.current.length - 1]
 									: firstTimeRef.current[0],
-							);
+							) as PageDefinition;
 							pg.version = latestVersion.current;
 							pg.isFromUndoRedoStack = true;
+							if (selectedComponent && !pg.componentDefinition[selectedComponent]) {
+								onSelectedComponentChanged('');
+								onSelectedSubComponentChanged('');
+							}
 							setData(defPath, pg, pageExtractor.getPageName());
 							setChanged(Date.now());
 						}}

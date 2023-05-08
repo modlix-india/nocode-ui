@@ -550,7 +550,12 @@ export default class PageOperations {
 		const que = new LinkedList<ComponentDefinition>();
 		que.add(obj);
 		const keySet = new Set<string>();
-		if (deleteExisting) delete pageDef.componentDefinition[componentKey];
+		if (deleteExisting) {
+			Object.values(pageDef.componentDefinition)
+				.filter(e => e.children?.[componentKey] !== undefined)
+				.forEach(e => delete e.children?.[componentKey]);
+			delete pageDef.componentDefinition[componentKey];
+		}
 		while (que.size() > 0) {
 			const x = que.pop();
 			cutObject.objects[x.key] = x;
