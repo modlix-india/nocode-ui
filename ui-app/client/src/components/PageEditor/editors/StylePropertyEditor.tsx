@@ -298,6 +298,17 @@ export default function StylePropertyEditor({
 		iterateProps = { ...iterateProps, ...sizedProps };
 	}
 
+	const hasSubComponents = new Set<string>();
+	const hasPseudoStates = new Set<string>();
+	Object.keys(iterateProps).forEach(e => {
+		let splits = e.split(':');
+		if (splits.length > 1) hasPseudoStates.add(splits[1]);
+		else hasPseudoStates.add('');
+		splits = e.split('-');
+		if (splits.length > 1) hasSubComponents.add(splits[0]);
+		else hasSubComponents.add('');
+	});
+
 	let subComponentName = '';
 	if (selectedSubComponent) {
 		subComponentName = selectedSubComponent.split(':')[1];
@@ -425,9 +436,20 @@ export default function StylePropertyEditor({
 							schema: SCHEMA_STRING_COMP_PROP,
 							editor: ComponentPropertyEditor.ENUM,
 							defaultValue: 'ALL',
-							enumValues: Array.from(StyleResolutionDefinition.values()).sort(
-								(a, b) => a.order - b.order,
-							),
+							enumValues: Array.from(StyleResolutionDefinition.values())
+								.map(e => {
+									if (
+										properties?.[1].resolutions?.[e.name as StyleResolution] &&
+										Object.keys(
+											properties?.[1].resolutions?.[
+												e.name as StyleResolution
+											] ?? {},
+										).length
+									)
+										return { ...e, displayName: `★ ${e.displayName}` };
+									return e;
+								})
+								.sort((a, b) => a.order - b.order),
 						}}
 						value={selectorPref[selectedComponent]?.screenSize}
 						onlyValue={true}
@@ -453,7 +475,10 @@ export default function StylePropertyEditor({
 								enumValues: subComponentsList.map(name => ({
 									name,
 									displayName:
-										name === '' ? 'Component' : camelCaseToUpperSpaceCase(name),
+										(hasSubComponents.has(name) ? '★ ' : '') +
+										(name === ''
+											? 'Component'
+											: camelCaseToUpperSpaceCase(name)),
 									description: '',
 								})),
 							}}
@@ -491,10 +516,18 @@ export default function StylePropertyEditor({
 								editor: ComponentPropertyEditor.ENUM,
 								defaultValue: '',
 								enumValues: [
-									{ name: '', displayName: 'Default', description: 'No State' },
+									{
+										name: '',
+										displayName: hasPseudoStates.has('')
+											? '★ Default'
+											: 'Default',
+										description: 'No State',
+									},
 									...pseudoStates.map(name => ({
 										name,
-										displayName: name.toUpperCase(),
+										displayName:
+											(hasPseudoStates.has(name) ? '★ ' : '') +
+											name.toUpperCase(),
 										description: '',
 									})),
 								],
