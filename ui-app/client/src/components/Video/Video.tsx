@@ -10,7 +10,7 @@ import { isNullValue } from '@fincity/kirun-js';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 
 function Video(props: ComponentProps) {
-	const { definition, locationHistory, context } = props;
+	const { definition, locationHistory, context, pageDefinition } = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
 		properties: {
@@ -91,7 +91,11 @@ function Video(props: ComponentProps) {
 	//Pip ref
 	const pipRef = createRef<HTMLButtonElement>();
 
-	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
+	const resolvedStyles = processComponentStylePseudoClasses(
+		pageDefinition,
+		{},
+		stylePropertiesWithPseudoStates,
+	);
 
 	useEffect(() => {
 		if (!video.current) return;
