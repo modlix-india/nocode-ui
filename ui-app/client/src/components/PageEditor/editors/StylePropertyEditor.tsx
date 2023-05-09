@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { Component, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediatelyWithChildrenActivity,
@@ -12,6 +12,7 @@ import {
 	ComponentPropertyEditor,
 	EachComponentStyle,
 	StyleResolution,
+	EachComponentResolutionStyle,
 } from '../../../types/common';
 import ComponentDefinitions from '../../';
 import { COMPONENT_STYLE_GROUP_PROPERTIES, COMPONENT_STYLE_GROUPS } from '../../util/properties';
@@ -606,38 +607,34 @@ export default function StylePropertyEditor({
 
 			{styleSectionsToShow.map(group => {
 				const isAdvancedSelected = showAdvanced.findIndex(e => e === group.name) !== -1;
-				return (
-					<PropertyGroup
-						key={group.name}
-						name={group.name}
-						displayName={group.displayName}
-						defaultStateOpen={false}
-						pageExtractor={pageExtractor}
-						locationHistory={locationHistory}
-						onChangePersonalization={onChangePersonalization}
-						personalizationPath={personalizationPath}
-					>
-						{COMPONENT_STYLE_GROUPS[group.name].map(prop => (
-							<EachPropEditor
-								key={prop}
-								subComponentName={subComponentName}
-								pseudoState={pseudoState}
-								prop={prop}
-								iterateProps={iterateProps}
-								pageDef={pageDef}
-								editPageName={editPageName}
-								slaveStore={slaveStore}
-								storePaths={storePaths}
-								selectorPref={selectorPref}
-								styleProps={styleProps}
-								selectedComponent={selectedComponent}
-								saveStyle={saveStyle}
-								properties={properties}
-								pageOperations={pageOperations}
-							/>
-						))}
 
-						{group?.advanced?.length && (
+				const withValueProps: string[] = [];
+				const withoutValueProps: string[] = [];
+				const advancedProps: string[] = [];
+
+				const props: ReactNode[] = [];
+
+				const prefix = subComponentName ? `${subComponentName}-` : '';
+				const postfix = pseudoState ? `:${pseudoState}` : '';
+
+				COMPONENT_STYLE_GROUPS[group.name].forEach(prop => {
+					if (iterateProps[prefix + prop]) withValueProps.push(prop);
+					else if (postfix && iterateProps[prefix + prop + postfix])
+						withValueProps.push(prop);
+					else withoutValueProps.push(prop);
+				});
+
+				group.advanced?.forEach(prop => {
+					if (iterateProps[prefix + prop]) withValueProps.push(prop);
+					else if (postfix && iterateProps[prefix + prop + postfix])
+						withValueProps.push(prop);
+					else advancedProps.push(prop);
+				});
+
+				let i = 0;
+				for (const eachGroup of [withValueProps, withoutValueProps, advancedProps]) {
+					if (i === 2 && eachGroup.length) {
+						props.push(
 							<div className="_eachProp">
 								<label
 									className="_propLabel"
@@ -658,28 +655,46 @@ export default function StylePropertyEditor({
 									/>
 									Show Advanced Properties
 								</label>
-							</div>
-						)}
-						{isAdvancedSelected &&
-							(group.advanced ?? []).map(prop => (
-								<EachPropEditor
-									key={prop}
-									subComponentName={subComponentName}
-									pseudoState={pseudoState}
-									prop={prop}
-									iterateProps={iterateProps}
-									pageDef={pageDef}
-									editPageName={editPageName}
-									slaveStore={slaveStore}
-									storePaths={storePaths}
-									selectorPref={selectorPref}
-									styleProps={styleProps}
-									selectedComponent={selectedComponent}
-									saveStyle={saveStyle}
-									properties={properties}
-									pageOperations={pageOperations}
-								/>
-							))}
+							</div>,
+						);
+					}
+					if (i === 2 && !isAdvancedSelected) break;
+					for (const prop of eachGroup) {
+						props.push(
+							<EachPropEditor
+								key={prop}
+								subComponentName={subComponentName}
+								pseudoState={pseudoState}
+								prop={prop}
+								iterateProps={iterateProps}
+								pageDef={pageDef}
+								editPageName={editPageName}
+								slaveStore={slaveStore}
+								storePaths={storePaths}
+								selectorPref={selectorPref}
+								styleProps={styleProps}
+								selectedComponent={selectedComponent}
+								saveStyle={saveStyle}
+								properties={properties}
+								pageOperations={pageOperations}
+							/>,
+						);
+					}
+					i++;
+				}
+
+				return (
+					<PropertyGroup
+						key={group.name}
+						name={group.name}
+						displayName={group.displayName + (withValueProps.length ? ' ★' : '')}
+						defaultStateOpen={false}
+						pageExtractor={pageExtractor}
+						locationHistory={locationHistory}
+						onChangePersonalization={onChangePersonalization}
+						personalizationPath={personalizationPath}
+					>
+						{props}
 					</PropertyGroup>
 				);
 			})}
