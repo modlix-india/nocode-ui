@@ -17,6 +17,8 @@ import { ExpressionEditor2 } from './ExpressionEditor2';
 import { IconSelectionEditor } from './IconSelectionEditor';
 import { ImageEditor } from './ImageEditor';
 import { ValidationEditor } from './ValidationEditor';
+import { isNullValue } from '@fincity/kirun-js';
+import PageOperations from '../../functions/PageOperations';
 
 interface PropertyValueEditorProps {
 	propDef: ComponentPropertyDefinition;
@@ -29,6 +31,7 @@ interface PropertyValueEditorProps {
 	onShowCodeEditor?: (eventName: string) => void;
 	slaveStore: any;
 	editPageName: string | undefined;
+	pageOperations: PageOperations;
 }
 
 export default function PropertyValueEditor({
@@ -42,6 +45,7 @@ export default function PropertyValueEditor({
 	onShowCodeEditor,
 	slaveStore,
 	editPageName,
+	pageOperations,
 }: PropertyValueEditorProps) {
 	const [chngValue, setChngValue] = useState<any>('');
 	const [showAdvanced, setShowAdvanced] = useState<boolean>(false);
@@ -104,6 +108,7 @@ export default function PropertyValueEditor({
 		storePaths,
 		slaveStore,
 		editPageName,
+		pageOperations,
 		onShowCodeEditor,
 		pageDefinition,
 		showPlaceholder,
@@ -139,6 +144,7 @@ function makeValueEditor(
 	storePaths: Set<string>,
 	slaveStore: any,
 	editPageName: string | undefined,
+	pageOperations: PageOperations,
 	onShowCodeEditor?: (eventName: string) => void,
 	pageDef?: PageDefinition,
 	showPlaceholder = true,
@@ -154,20 +160,31 @@ function makeValueEditor(
 	}
 
 	if (propDef.editor === ComponentPropertyEditor.ENUM || propDef.enumValues?.length) {
+		let noneOption = !isNullValue(propDef.defaultValue) ? (
+			<></>
+		) : (
+			<option key="" value="">
+				--NONE--
+			</option>
+		);
 		return (
 			<div className="_smallEditorContainer">
 				<select
 					className="_peSelect"
-					value={chngValue === '' ? propDef.defaultValue : chngValue}
+					value={chngValue === '' ? propDef.defaultValue ?? '' : chngValue}
 					onChange={e => {
 						const newValue: ComponentProperty<any> = {
 							...(value ?? {}),
 							value: e.target.value,
 						};
-						if (newValue.value === propDef.defaultValue) delete newValue.value;
+
+						if (newValue.value === propDef.defaultValue || newValue.value === '')
+							delete newValue.value;
+
 						onChange(newValue);
 					}}
 				>
+					{noneOption}
 					{propDef.enumValues?.map(v => (
 						<option key={v.name} value={v.name} title={v.description}>
 							{v.displayName}
@@ -233,6 +250,40 @@ function makeValueEditor(
 				propDef={propDef}
 				value={chngValue === '' ? undefined : chngValue}
 				onChange={e => onChange({ ...value, value: e })}
+				pageOperations={pageOperations}
+			/>
+		);
+	}
+
+	if (propDef.editor === ComponentPropertyEditor.LARGE_TEXT) {
+		return (
+			<textarea
+				className="_peInput"
+				value={chngValue}
+				placeholder={showPlaceholder ? propDef.defaultValue : undefined}
+				onChange={e => setChngValue(e.target.value)}
+				onKeyDown={e => {
+					if (e.key === 'Enter') {
+						onChange({
+							...value,
+							value:
+								chngValue === '' || chngValue === propDef.defaultValue
+									? undefined
+									: chngValue,
+						});
+					} else if (e.key === 'Escape') {
+						setChngValue(value?.value ?? '');
+					}
+				}}
+				onBlur={() =>
+					onChange({
+						...value,
+						value:
+							chngValue === '' || chngValue === propDef.defaultValue
+								? undefined
+								: chngValue,
+					})
+				}
 			/>
 		);
 	}

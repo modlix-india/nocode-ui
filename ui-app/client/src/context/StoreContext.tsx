@@ -59,7 +59,7 @@ const {
 	STORE_PREFIX,
 	localStoreExtractor,
 	themeExtractor,
-	new StoreExtractor(sample, `${SAMPLE_STORE_PREFIX}`),
+	new StoreExtractor(sample, `${SAMPLE_STORE_PREFIX}.`),
 );
 themeExtractor.setStore(_store);
 
@@ -264,6 +264,14 @@ export class PageStoreExtractor extends TokenValueExtractor {
 		this.extractorMap.set(pageName, new PageStoreExtractor(pageName));
 
 		return this.extractorMap.get(pageName)!;
+	}
+
+	public static getForContextIfAvailable(
+		pageName: string | undefined,
+	): PageStoreExtractor | undefined {
+		if (isNullValue(pageName)) return undefined;
+
+		return PageStoreExtractor.getForContext(pageName!);
 	}
 
 	public getPageName(): string {

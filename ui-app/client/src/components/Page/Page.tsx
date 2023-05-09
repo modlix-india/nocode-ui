@@ -92,22 +92,32 @@ function Page(props: ComponentProps) {
 		}
 	}, [pathParts]);
 
-	useEffect(
-		() =>
-			addListenerWithChildrenActivity(
-				() => setValidationChangedAt(Date.now()),
-				undefined,
-				`Store.validationTriggers.${pageName}`,
-			),
-		[],
-	);
+	// const styleText =
+	// 	'@media all {' +
+	// 	React.useMemo(() => {
+	// 		if (!pageDefinition?.properties?.classes) return '';
 
-	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
+	// 		return Object.values(pageDefinition?.properties?.classes)
+	// 			.map(e => {
+	// 				const txt = `${e.selector} { ${e.style} }`;
+	// 				if (!e.mediaQuery) return txt;
+	// 				return `${e.mediaQuery} { ${txt} }`;
+	// 			})
+	// 			.join('\n');
+	// 	}, [pageDefinition?.properties?.classes]);
+	// +' }';
+
+	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{},
+		stylePropertiesWithPseudoStates,
+	);
 
 	if (context.level >= 2 || (context.level > 0 && pageName === context.shellPageName)) {
 		return (
 			<div className="comp compPage _blockPageRendering" style={resolvedStyles?.comp ?? {}}>
 				<HelperComponent definition={definition} />
+				{/* <style>{styleText}</style> */}
 				Design Mode
 			</div>
 		);
@@ -116,6 +126,7 @@ function Page(props: ComponentProps) {
 	return (
 		<div className="comp compPage" style={resolvedStyles?.comp ?? {}}>
 			<HelperComponent definition={definition} />
+			{/* <style>{styleText}</style> */}
 			<Children
 				pageDefinition={pageDefinition}
 				children={{

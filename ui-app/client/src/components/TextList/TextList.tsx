@@ -59,11 +59,13 @@ function TextList(props: ComponentProps) {
 
 	const [hover, setHover] = useState('');
 	const styleHoverProperties = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover: true },
 		stylePropertiesWithPseudoStates,
 	);
 
 	const styleProperties = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover: false },
 		stylePropertiesWithPseudoStates,
 	);

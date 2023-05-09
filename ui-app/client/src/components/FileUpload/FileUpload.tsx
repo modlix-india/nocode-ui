@@ -60,6 +60,7 @@ function FileUpload(props: ComponentProps) {
 	} ${fileValue !== undefined ? 'selected' : ''}`;
 
 	const computedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ disabled: readOnly, hover },
 		stylePropertiesWithPseudoStates,
 	);

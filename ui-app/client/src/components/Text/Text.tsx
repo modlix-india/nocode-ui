@@ -19,7 +19,7 @@ function Text(props: ComponentProps) {
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
-		properties: { text, textContainer, textType, processNewLine } = {},
+		properties: { text: originalTextObj, textContainer, textType, processNewLine } = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
 		definition,
@@ -30,12 +30,18 @@ function Text(props: ComponentProps) {
 	);
 	const [hover, setHover] = useState(false);
 	const styleProperties = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover },
 		stylePropertiesWithPseudoStates,
 	);
 
 	const hoverTrue = useCallback(() => setHover(true), [stylePropertiesWithPseudoStates]);
 	const hoverFalse = useCallback(() => setHover(false), [stylePropertiesWithPseudoStates]);
+
+	const text =
+		typeof originalTextObj === 'object'
+			? JSON.stringify(originalTextObj, undefined, 2)
+			: originalTextObj;
 
 	let translatedText = getTranslations(text, translations);
 

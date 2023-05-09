@@ -42,6 +42,10 @@ interface CodeEditorProps {
 	definition: ComponentDefinition;
 	personalizationPath: string | undefined;
 	storePaths: Set<string>;
+	selectedSubComponent: string;
+	selectedComponent?: string;
+	onSelectedSubComponentChanged: (key: string) => void;
+	onSelectedComponentChanged: (key: string) => void;
 }
 
 export default function CodeEditor({
@@ -60,6 +64,10 @@ export default function CodeEditor({
 	latestVersion,
 	definition,
 	storePaths,
+	selectedComponent,
+	selectedSubComponent,
+	onSelectedComponentChanged,
+	onSelectedSubComponentChanged,
 }: CodeEditorProps) {
 	const uuid = useMemo(() => shortUUID(), []);
 	const [fullScreen, setFullScreen] = useState(false);
@@ -358,9 +366,16 @@ export default function CodeEditor({
 										undoStackRef.current.length
 											? undoStackRef.current[undoStackRef.current.length - 1]
 											: firstTimeRef.current[0],
-									);
+									) as PageDefinition;
 									pg.version = latestVersion.current;
 									pg.isFromUndoRedoStack = true;
+									if (
+										selectedComponent &&
+										!pg.componentDefinition[selectedComponent]
+									) {
+										onSelectedComponentChanged('');
+										onSelectedSubComponentChanged('');
+									}
 									setData(defPath, pg, pageExtractor.getPageName());
 									setChanged(Date.now());
 								}}
@@ -379,9 +394,16 @@ export default function CodeEditor({
 										undoStackRef.current.length
 											? undoStackRef.current[undoStackRef.current.length - 1]
 											: firstTimeRef.current[0],
-									);
+									) as PageDefinition;
 									pg.version = latestVersion.current;
 									pg.isFromUndoRedoStack = true;
+									if (
+										selectedComponent &&
+										!pg.componentDefinition[selectedComponent]
+									) {
+										onSelectedComponentChanged('');
+										onSelectedSubComponentChanged('');
+									}
 									setData(defPath, pg, pageExtractor.getPageName());
 									setChanged(Date.now());
 								}}

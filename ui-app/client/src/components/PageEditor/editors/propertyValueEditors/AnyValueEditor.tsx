@@ -8,10 +8,11 @@ interface AnyValueEditorProps {
 	defaultValue?: any;
 	onChange?: (v: any) => void;
 	isIconButton?: boolean;
+	buttonLabel?: string;
 }
 
 function getTextualValue(value: any) {
-	if (value === undefined) return 'undefined';
+	if (value === undefined) return '';
 	if (value === null) return 'null';
 	return JSON.stringify(value, null, 2);
 }
@@ -21,6 +22,7 @@ export function AnyValueEditor({
 	defaultValue,
 	onChange,
 	isIconButton = false,
+	buttonLabel = 'Edit',
 }: AnyValueEditorProps) {
 	const [localValue, setLocalValue] = React.useState(getTextualValue(value ?? defaultValue));
 	const [showEditor, setShowEditor] = React.useState(false);
@@ -60,7 +62,7 @@ export function AnyValueEditor({
 								onClick={() => {
 									let v = undefined;
 									let ev = (editorValue ?? '').trim();
-									if (ev === 'undefined') v = undefined;
+									if (ev === 'undefined' || ev === '') v = undefined;
 									else if (ev === 'null') v = null;
 									else if (ev) v = JSON.parse(ev);
 									onChange?.(v);
@@ -101,7 +103,7 @@ export function AnyValueEditor({
 				setEditorValue(localValue);
 			}}
 		>
-			Edit
+			{buttonLabel}
 		</button>
 	);
 

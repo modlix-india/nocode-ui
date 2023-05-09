@@ -45,6 +45,7 @@ function ImageComponent(props: ComponentProps) {
 	};
 
 	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover },
 		stylePropertiesWithPseudoStates,
 	);

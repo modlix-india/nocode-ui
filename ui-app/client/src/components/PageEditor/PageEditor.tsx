@@ -28,6 +28,8 @@ import { propertiesDefinition, stylePropertiesDefinition } from './pageEditorPro
 import GridStyle from './PageEditorStyle';
 import { allPaths } from '../../util/allPaths';
 import { LOCAL_STORE_PREFIX, PAGE_STORE_PREFIX, STORE_PREFIX } from '../../constants';
+import ComponentDefinitions from '../';
+import duplicate from '../../util/duplicate';
 
 function savePersonalizationCurry(
 	personalizationPath: string,
@@ -87,7 +89,11 @@ function PageEditor(props: ComponentProps) {
 		? getPathFromLocation(bindingPath2, locationHistory, pageExtractor)
 		: undefined;
 
-	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
+	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{},
+		stylePropertiesWithPseudoStates,
+	);
 
 	const personalization = personalizationPath
 		? getDataFromPath(personalizationPath, locationHistory, pageExtractor) ?? {}
@@ -163,7 +169,7 @@ function PageEditor(props: ComponentProps) {
 
 	const editPageDefinition = !defPath
 		? undefined
-		: getDataFromPath(`${defPath}`, locationHistory, pageExtractor);
+		: (getDataFromPath(`${defPath}`, locationHistory, pageExtractor) as PageDefinition);
 
 	useEffect(() => {
 		if (!editPageDefinition || !personalization) {
@@ -191,11 +197,11 @@ function PageEditor(props: ComponentProps) {
 	const urlChange = useCallback(
 		(v: string) => {
 			setUrl(v ?? '');
-			if (!personalizationPath || !editPageDefinition.name) return;
-			savePersonalization(`pageLeftAt.${editPageDefinition.name}.url`, v);
+			if (!personalizationPath || !editPageDefinition!.name) return;
+			savePersonalization(`pageLeftAt.${editPageDefinition!.name}.url`, v);
 			savePersonalization(
-				`pageLeftAt.${editPageDefinition.name}.clientCode`,
-				clientCode === '' ? editPageDefinition.clientCode : clientCode,
+				`pageLeftAt.${editPageDefinition!.name}.clientCode`,
+				clientCode === '' ? editPageDefinition!.clientCode : clientCode,
 			);
 		},
 		[setUrl, savePersonalization, editPageDefinition?.name],
@@ -212,8 +218,32 @@ function PageEditor(props: ComponentProps) {
 		(v: string) => {
 			setSelectedComponentOriginal(v ?? '');
 			setSelectedSubComponent('');
+			if (!defPath) return;
+
+			let pageDef = getDataFromPath(
+				defPath!,
+				locationHistory,
+				pageExtractor,
+			) as PageDefinition;
+			if (!pageDef?.componentDefinition?.[v]) return;
+
+			const def = ComponentDefinitions.get(pageDef.componentDefinition[v].type);
+			if (!def?.needShowInDesginMode) return;
+
+			pageDef = duplicate(pageDef);
+
+			Object.values(pageDef.componentDefinition).forEach(e => {
+				if (e.key === v) {
+					if (!e.properties) e.properties = {};
+					e.properties.showInDesign = { value: true };
+				} else if (e.properties?.showInDesign) {
+					delete e.properties.showInDesign;
+				}
+			});
+
+			setData(defPath, pageDef, pageExtractor.getPageName());
 		},
-		[setSelectedComponentOriginal, setSelectedSubComponent],
+		[setSelectedComponentOriginal, setSelectedSubComponent, defPath],
 	);
 
 	const [styleSelectorPref, setStyleSelectorPref] = useState<any>({});
@@ -449,6 +479,10 @@ function PageEditor(props: ComponentProps) {
 					latestVersion={latestVersion}
 					definition={definition}
 					storePaths={storePaths}
+					selectedSubComponent={selectedSubComponent}
+					selectedComponent={selectedComponent}
+					onSelectedSubComponentChanged={(key: string) => setSelectedSubComponent(key)}
+					onSelectedComponentChanged={(key: string) => setSelectedComponent(key)}
 				/>
 			</div>
 			<IssuePopup

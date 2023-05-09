@@ -63,6 +63,7 @@ export enum ComponentPropertyEditor {
 	THEME_SELECTOR,
 	IMAGE,
 	SCHEMA,
+	LARGE_TEXT,
 }
 
 export enum ComponentPropertyGroup {
@@ -134,6 +135,7 @@ export interface Component {
 		bindingPath5?: { name: string };
 		bindingPath6?: { name: string };
 	};
+	needShowInDesginMode?: boolean;
 }
 
 export enum StyleResolution {
@@ -244,6 +246,14 @@ export interface ComponentDefinitionValues {
 	stylePropertiesWithPseudoStates?: any;
 }
 
+export interface StyleClassDefinition {
+	selector?: string;
+	comments?: string;
+	mediaQuery?: string;
+	style?: string;
+	key: string;
+	priority?: number;
+}
 export interface PageDefinition {
 	name: string;
 	appCode: string;
@@ -259,7 +269,30 @@ export interface PageDefinition {
 		[key: string]: ComponentDefinition;
 	};
 	translations: { [key: string]: { [key: string]: string } };
-	properties: { onLoadEvent?: string; loadStrategy?: string; wrapShell?: boolean };
+	properties: {
+		title?: {
+			name?: ComponentProperty<string>;
+			append?: ComponentProperty<boolean>;
+		};
+		onLoadEvent?: string;
+		loadStrategy?: string;
+		wrapShell?: boolean;
+		seo?: {
+			description?: ComponentProperty<string>;
+			keywords?: ComponentProperty<string>;
+			robots?: ComponentProperty<string>;
+			charset?: ComponentProperty<string>;
+			author?: ComponentProperty<string>;
+			applicationName?: ComponentProperty<string>;
+			generator?: ComponentProperty<string>;
+			[key: string]: ComponentProperty<string> | undefined;
+		};
+		classes?: { [key: string]: StyleClassDefinition };
+		[key: string]: any;
+	};
+	processedClasses?: {
+		[key: string]: { [key: string]: string };
+	};
 }
 
 export interface ComponentProps {

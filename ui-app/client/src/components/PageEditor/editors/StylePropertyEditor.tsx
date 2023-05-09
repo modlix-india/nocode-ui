@@ -17,13 +17,18 @@ import ComponentDefinitions from '../../';
 import { COMPONENT_STYLE_GROUP_PROPERTIES, COMPONENT_STYLE_GROUPS } from '../../util/properties';
 import { PropertyGroup } from './PropertyGroup';
 import PropertyValueEditor from './propertyValueEditors/PropertyValueEditor';
-import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../../constants';
-import { StyleResolutionDefinition } from '../../../util/styleProcessor';
+import {
+	COPY_STYLE_PROPS_KEY,
+	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_STRING_COMP_PROP,
+} from '../../../constants';
+import { StyleResolutionDefinition, processStyleFromString } from '../../../util/styleProcessor';
 import { ComponentStyle } from '../../../types/common';
 import { shortUUID } from '../../../util/shortUUID';
 import duplicate from '../../../util/duplicate';
 import { deepEqual } from '@fincity/kirun-js';
 import { camelCaseToUpperSpaceCase } from '../../../functions/utils';
+import PageOperations from '../functions/PageOperations';
 
 interface StylePropertyEditorProps {
 	selectedComponent: string;
@@ -41,9 +46,8 @@ interface StylePropertyEditorProps {
 	reverseStyleSections?: boolean;
 	slaveStore: any;
 	editPageName: string | undefined;
+	pageOperations: PageOperations;
 }
-
-function makeObject(pref: any = {}, styles: any = {}) {}
 
 function processOldCondition(styleProps: ComponentStyle | undefined): ComponentStyle {
 	if (!styleProps) return { [shortUUID()]: { resolutions: { ALL: {} } } };
@@ -55,6 +59,56 @@ function processOldCondition(styleProps: ComponentStyle | undefined): ComponentS
 		.forEach(e => (e.conditionName = `Condition ${i++}`));
 
 	return styleProps!;
+}
+
+function getDefaultStyles(styleProps: ComponentStyle | undefined) {
+	const inStyles = Object.entries(styleProps ?? {}).filter(e => !e[1].condition);
+	if (inStyles.length !== 1) {
+		if (inStyles.length === 0) {
+			const key = shortUUID();
+			const newStyleProps = duplicate(styleProps ?? {}) as ComponentStyle;
+			newStyleProps[key] = { resolutions: { ALL: {} } };
+			return [key, {}];
+		} else {
+			let styles = duplicate(inStyles);
+			const first = styles[0];
+			const newStyleProps = duplicate(styleProps) as ComponentStyle;
+			for (let i = 1; i < styles.length; i++) {
+				delete newStyleProps[styles[i][0]];
+				Object.entries(styles[i][1].resolutions).forEach(e => {
+					if (!first[1].resolutions[e[0]]) first[1].resolutions[e[0]] = {};
+					Object.assign(first[1].resolutions[e[0]], e[1]);
+				});
+			}
+			newStyleProps[first[0]] = first[1];
+			return first;
+		}
+	}
+	return inStyles[0];
+}
+
+function getProperties(
+	defaultStyles: [string, EachComponentStyle],
+	styleProps: ComponentStyle | undefined,
+	selectedComponent: string,
+	selectorPref: any,
+) {
+	if (!selectorPref[selectedComponent]?.condition?.value) return duplicate(defaultStyles);
+
+	const conditionStyles = Object.entries(styleProps ?? {}).filter(
+		e => e[1].conditionName === selectorPref[selectedComponent]?.condition?.value,
+	)?.[0];
+	if (!conditionStyles) return duplicate(defaultStyles);
+
+	let styles = duplicate(conditionStyles);
+	const first = duplicate(defaultStyles);
+
+	Object.entries(styles[1].resolutions).forEach(e => {
+		if (!first[1].resolutions[e[0]]) first[1].resolutions[e[0]] = {};
+		Object.assign(first[1].resolutions[e[0]], e[1]);
+	});
+
+	return [styles[0], first[1]];
 }
 
 export default function StylePropertyEditor({
@@ -73,30 +127,39 @@ export default function StylePropertyEditor({
 	reverseStyleSections,
 	slaveStore,
 	editPageName,
+	pageOperations,
 }: StylePropertyEditorProps) {
 	const [def, setDef] = useState<ComponentDefinition>();
 	const [pageDef, setPageDef] = useState<PageDefinition>();
 	const [styleProps, setStyleProps] = useState<ComponentStyle>();
 	const [showAdvanced, setShowAdvanced] = useState<Array<string>>([]);
 
+	const [properties, setProperties] = useState<[string, EachComponentStyle]>();
+
 	useEffect(
 		() =>
 			addListenerAndCallImmediatelyWithChildrenActivity(
 				(_, v: PageDefinition) => {
 					setPageDef(v);
+					if (!v) return;
+					const inDef = v.componentDefinition[selectedComponent];
+					setDef(inDef);
+					const props = processOldCondition(inDef?.styleProperties);
+					setStyleProps(props);
+					setProperties(
+						getProperties(
+							getDefaultStyles(props),
+							props,
+							selectedComponent,
+							selectorPref,
+						),
+					);
 				},
 				pageExtractor,
 				defPath!,
 			),
 		[defPath, selectedComponent],
 	);
-
-	useEffect(() => {
-		const inDef = pageDef?.componentDefinition[selectedComponent];
-		setDef(inDef);
-		const props = processOldCondition(inDef?.styleProperties);
-		setStyleProps(props);
-	}, [pageDef, selectedComponent]);
 
 	const updateSelectorPref = useCallback(
 		(pref1: string, value1: any) => {
@@ -109,59 +172,14 @@ export default function StylePropertyEditor({
 
 	const saveStyle = useCallback(
 		(newStyleProps: ComponentStyle) => {
-			const pageDef = duplicate(
+			const newPDef = duplicate(
 				getDataFromPath(defPath, locationHistory, pageExtractor),
 			) as PageDefinition;
-			pageDef.componentDefinition[selectedComponent].styleProperties = newStyleProps;
-			setData(`${defPath}`, pageDef, pageExtractor.getPageName());
+			newPDef.componentDefinition[selectedComponent].styleProperties = newStyleProps;
+			setData(`${defPath}`, newPDef, pageExtractor.getPageName());
 		},
 		[defPath, locationHistory, pageExtractor, selectedComponent],
 	);
-
-	const defaultStyles: [string, EachComponentStyle] = useMemo(() => {
-		const defaultStyles = Object.entries(styleProps ?? {}).filter(e => !e[1].condition);
-		if (defaultStyles.length !== 1) {
-			if (defaultStyles.length === 0) {
-				const key = shortUUID();
-				const newStyleProps = duplicate(styleProps ?? {}) as ComponentStyle;
-				newStyleProps[key] = { resolutions: { ALL: {} } };
-				return [key, {}];
-			} else {
-				let styles = duplicate(defaultStyles);
-				const first = styles[0];
-				const newStyleProps = duplicate(styleProps) as ComponentStyle;
-				for (let i = 1; i < styles.length; i++) {
-					delete newStyleProps[styles[i][0]];
-					Object.entries(styles[i][1].resolutions).forEach(e => {
-						if (!first[1].resolutions[e[0]]) first[1].resolutions[e[0]] = {};
-						Object.assign(first[1].resolutions[e[0]], e[1]);
-					});
-				}
-				newStyleProps[first[0]] = first[1];
-				return first;
-			}
-		}
-		return defaultStyles[0];
-	}, [styleProps]);
-
-	const properties: [string, EachComponentStyle] = useMemo(() => {
-		if (!selectorPref[selectedComponent]?.condition?.value) return defaultStyles;
-
-		const conditionStyles = Object.entries(styleProps ?? {}).filter(
-			e => e[1].conditionName === selectorPref[selectedComponent]?.condition?.value,
-		)?.[0];
-		if (!conditionStyles) return defaultStyles;
-
-		let styles = duplicate(conditionStyles);
-		const first = duplicate(defaultStyles);
-
-		Object.entries(styles[1].resolutions).forEach(e => {
-			if (!first[1].resolutions[e[0]]) first[1].resolutions[e[0]] = {};
-			Object.assign(first[1].resolutions[e[0]], e[1]);
-		});
-
-		return [styles[0], first[1]];
-	}, [selectorPref, selectedComponent, styleProps, defaultStyles]);
 
 	if (!def) return <></>;
 
@@ -212,6 +230,7 @@ export default function StylePropertyEditor({
 			storePaths={storePaths}
 			editPageName={editPageName}
 			slaveStore={slaveStore}
+			pageOperations={pageOperations}
 		/>
 	);
 
@@ -240,6 +259,7 @@ export default function StylePropertyEditor({
 			storePaths={storePaths}
 			editPageName={editPageName}
 			slaveStore={slaveStore}
+			pageOperations={pageOperations}
 		/>
 	) : (
 		<></>
@@ -271,34 +291,136 @@ export default function StylePropertyEditor({
 			}}
 			editPageName={editPageName}
 			slaveStore={slaveStore}
+			pageOperations={pageOperations}
 		/>
 	) : (
 		<></>
 	);
 
 	const size = (selectorPref[selectedComponent]?.screenSize?.value as string) ?? 'ALL';
-	let iterateProps = properties[1].resolutions?.ALL ?? {};
+	let iterateProps = properties?.[1].resolutions?.ALL ?? {};
 	if (size !== 'ALL') {
-		const sizedProps = properties[1].resolutions?.[size as StyleResolution] ?? {};
+		const sizedProps = properties?.[1].resolutions?.[size as StyleResolution] ?? {};
 		iterateProps = { ...iterateProps, ...sizedProps };
 	}
+
+	const hasSubComponents = new Set<string>();
+	const hasPseudoStates = new Set<string>();
+	Object.keys(iterateProps).forEach(e => {
+		let splits = e.split(':');
+		if (splits.length > 1) hasPseudoStates.add(splits[1]);
+		else hasPseudoStates.add('');
+		splits = e.split('-');
+		if (splits.length > 1) hasSubComponents.add(splits[0]);
+		else hasSubComponents.add('');
+	});
 
 	let subComponentName = '';
 	if (selectedSubComponent) {
 		subComponentName = selectedSubComponent.split(':')[1];
 	}
 	const subComponentSectionsArray = (cd?.styleProperties ?? {})[subComponentName];
-	const styleSectionsToShow = Object.values(COMPONENT_STYLE_GROUP_PROPERTIES).filter(each =>
-		reverseStyleSections
-			? subComponentSectionsArray.findIndex(e => e === each.name) === -1
-			: subComponentSectionsArray.findIndex(e => e === each.name) !== -1,
-	);
+	const styleSectionsToShow = reverseStyleSections
+		? Object.values(COMPONENT_STYLE_GROUP_PROPERTIES).filter(
+				each => subComponentSectionsArray.findIndex(e => e === each.name) === -1,
+		  )
+		: subComponentSectionsArray.map(each => COMPONENT_STYLE_GROUP_PROPERTIES[each]);
 
 	let pseudoState = '';
 	if (selectorPref[selectedComponent]?.stylePseudoState?.value)
 		pseudoState = selectorPref[selectedComponent].stylePseudoState.value;
 	return (
 		<div className="_propertyEditor">
+			<div className="_eachStyleClass">
+				<div className="_propLabel">
+					<button onClick={() => saveStyle({})} title="Clear Styles">
+						<i className="fa fa-regular fa-trash-can" /> Clear
+					</button>
+					<button
+						onClick={() => {
+							if (!navigator?.clipboard) return;
+							navigator.clipboard.write([
+								new ClipboardItem({
+									'text/plain': new Blob(
+										[COPY_STYLE_PROPS_KEY + JSON.stringify(styleProps ?? {})],
+										{
+											type: 'text/plain',
+										},
+									),
+								}),
+							]);
+						}}
+						title="Copy Styles"
+					>
+						<i className="fa fa-regular fa-clipboard" /> Copy
+					</button>
+					<button
+						onClick={() => {
+							if (!navigator?.clipboard) return;
+							navigator.clipboard.readText().then(data => {
+								if (!data.startsWith(COPY_STYLE_PROPS_KEY)) {
+									if (!properties || !data) return;
+
+									const pastedStyles = processStyleFromString(data);
+
+									if (!Object.keys(pastedStyles).length) {
+										return;
+									}
+
+									const newProps = duplicate(styleProps) as ComponentStyle;
+									const screenSize = ((selectorPref[selectedComponent]?.screenSize
+										?.value as string) ?? 'ALL') as StyleResolution;
+
+									if (!newProps[properties[0]])
+										newProps[properties[0]] = { resolutions: {} };
+
+									if (!newProps[properties[0]].resolutions)
+										newProps[properties[0]].resolutions = {};
+
+									if (!newProps[properties[0]].resolutions![screenSize])
+										newProps[properties[0]].resolutions![screenSize] = {};
+
+									const styleObj =
+										newProps[properties[0]].resolutions![screenSize];
+
+									Object.entries(pastedStyles).forEach(
+										([prop, v]: [string, string]) => {
+											let actualProp = prop;
+											if (pseudoState) actualProp = `${prop}:${pseudoState}`;
+											if (subComponentName)
+												actualProp = `${subComponentName}-${actualProp}`;
+											if (!styleObj![actualProp])
+												styleObj![actualProp] = { value: v };
+											else
+												styleObj![actualProp] = {
+													...styleObj![actualProp],
+													value: v,
+												};
+										},
+									);
+
+									saveStyle(newProps);
+									return;
+								}
+								const copiedStyleProps = JSON.parse(
+									data.replace(COPY_STYLE_PROPS_KEY, ''),
+								);
+								const newStyleProps = Object.entries(copiedStyleProps).reduce(
+									(a, [key, value]) => {
+										a[shortUUID()] = value as EachComponentStyle;
+										return a;
+									},
+									{} as ComponentStyle,
+								);
+								saveStyle(newStyleProps);
+							});
+						}}
+						title="Paste Styles"
+					>
+						<i className="fa fa-regular fa-paste" /> Paste
+					</button>
+				</div>
+			</div>
 			<PropertyGroup
 				name="selector"
 				displayName="Selector"
@@ -320,9 +442,20 @@ export default function StylePropertyEditor({
 							schema: SCHEMA_STRING_COMP_PROP,
 							editor: ComponentPropertyEditor.ENUM,
 							defaultValue: 'ALL',
-							enumValues: Array.from(StyleResolutionDefinition.values()).sort(
-								(a, b) => a.order - b.order,
-							),
+							enumValues: Array.from(StyleResolutionDefinition.values())
+								.map(e => {
+									if (
+										properties?.[1].resolutions?.[e.name as StyleResolution] &&
+										Object.keys(
+											properties?.[1].resolutions?.[
+												e.name as StyleResolution
+											] ?? {},
+										).length
+									)
+										return { ...e, displayName: `★ ${e.displayName}` };
+									return e;
+								})
+								.sort((a, b) => a.order - b.order),
 						}}
 						value={selectorPref[selectedComponent]?.screenSize}
 						onlyValue={true}
@@ -330,6 +463,7 @@ export default function StylePropertyEditor({
 						storePaths={storePaths}
 						editPageName={editPageName}
 						slaveStore={slaveStore}
+						pageOperations={pageOperations}
 					/>
 				</div>
 				{subComponentsList.length !== 1 ? (
@@ -348,7 +482,10 @@ export default function StylePropertyEditor({
 								enumValues: subComponentsList.map(name => ({
 									name,
 									displayName:
-										name === '' ? 'Component' : camelCaseToUpperSpaceCase(name),
+										(hasSubComponents.has(name) ? '★ ' : '') +
+										(name === ''
+											? 'Component'
+											: camelCaseToUpperSpaceCase(name)),
 									description: '',
 								})),
 							}}
@@ -367,6 +504,7 @@ export default function StylePropertyEditor({
 							storePaths={storePaths}
 							editPageName={editPageName}
 							slaveStore={slaveStore}
+							pageOperations={pageOperations}
 						/>
 					</div>
 				) : (
@@ -386,10 +524,18 @@ export default function StylePropertyEditor({
 								editor: ComponentPropertyEditor.ENUM,
 								defaultValue: '',
 								enumValues: [
-									{ name: '', displayName: 'Default', description: 'No State' },
+									{
+										name: '',
+										displayName: hasPseudoStates.has('')
+											? '★ Default'
+											: 'Default',
+										description: 'No State',
+									},
 									...pseudoStates.map(name => ({
 										name,
-										displayName: name.toUpperCase(),
+										displayName:
+											(hasPseudoStates.has(name) ? '★ ' : '') +
+											name.toUpperCase(),
 										description: '',
 									})),
 								],
@@ -402,6 +548,7 @@ export default function StylePropertyEditor({
 							storePaths={storePaths}
 							editPageName={editPageName}
 							slaveStore={slaveStore}
+							pageOperations={pageOperations}
 						/>
 					</div>
 				) : (
@@ -470,138 +617,25 @@ export default function StylePropertyEditor({
 						onChangePersonalization={onChangePersonalization}
 						personalizationPath={personalizationPath}
 					>
-						{COMPONENT_STYLE_GROUPS[group.name].map(prop => {
-							let value = subComponentName
-								? iterateProps[`${subComponentName}-${prop}`] ?? {}
-								: iterateProps[prop] ?? {};
-							if (
-								pseudoState &&
-								!subComponentName &&
-								iterateProps[`${prop}:${pseudoState}`]
-							) {
-								value = { ...value, ...iterateProps[`${prop}:${pseudoState}`] };
-							}
-							if (
-								subComponentName &&
-								pseudoState &&
-								iterateProps[`${subComponentName}-${prop}:${pseudoState}`]
-							) {
-								value = {
-									...value,
-									...iterateProps[`${subComponentName}-${prop}:${pseudoState}`],
-								};
-							}
-							return (
-								<div className="_eachProp" key={prop}>
-									<div className="_propLabel" title="Name">
-										{prop.replace(/([A-Z])/g, ' $1')}:
-									</div>
-									<PropertyValueEditor
-										pageDefinition={pageDef}
-										propDef={{
-											name: prop,
-											displayName: '',
-											schema: SCHEMA_STRING_COMP_PROP,
-										}}
-										value={value}
-										storePaths={storePaths}
-										editPageName={editPageName}
-										slaveStore={slaveStore}
-										onChange={v => {
-											const newProps = duplicate(
-												styleProps,
-											) as ComponentStyle;
-											const screenSize = ((selectorPref[selectedComponent]
-												?.screenSize?.value as string) ??
-												'ALL') as StyleResolution;
-											let value = iterateProps[prop] ?? {};
-											if (
-												pseudoState &&
-												iterateProps[`${prop}:${pseudoState}`]
-											) {
-												value = {
-													...value,
-													...iterateProps[`${prop}:${pseudoState}`],
-												};
-											}
-											if (
-												subComponentName &&
-												iterateProps[`${subComponentName}-${prop}`]
-											) {
-												value = {
-													...value,
-													...iterateProps[`${subComponentName}-${prop}`],
-												};
-											}
-											if (
-												pseudoState &&
-												iterateProps[
-													`${subComponentName}-${prop}:${pseudoState}`
-												]
-											) {
-												value = {
-													...value,
-													...iterateProps[
-														`${subComponentName}-${prop}:${pseudoState}`
-													],
-												};
-											}
-
-											if (selectorPref[selectedComponent]?.condition?.value) {
-											}
-
-											let actualProp = prop;
-											if (subComponentName && pseudoState) {
-												actualProp = `${subComponentName}-${prop}:${pseudoState}`;
-											} else if (subComponentName) {
-												actualProp = `${subComponentName}-${prop}`;
-											} else if (pseudoState) {
-												actualProp = `${prop}:${pseudoState}`;
-											}
-
-											if (newProps[properties[0]].resolutions) {
-												if (
-													!newProps[properties[0]].resolutions![
-														screenSize
-													]
-												)
-													newProps[properties[0]].resolutions![
-														screenSize
-													] = {};
-												if (
-													(deepEqual(value, v) &&
-														(prop !== actualProp ||
-															screenSize !== 'ALL' ||
-															selectorPref[selectedComponent]
-																?.condition?.value)) ||
-													(!v.value &&
-														!v.location?.expression &&
-														!v.location?.value)
-												) {
-													delete newProps[properties[0]].resolutions![
-														screenSize
-													]![actualProp];
-												} else {
-													if (
-														!newProps[properties[0]].resolutions![
-															screenSize
-														]
-													) {
-														newProps[properties[0]].resolutions![
-															screenSize
-														] = {};
-													}
-													newProps[properties[0]].resolutions![
-														screenSize
-													]![actualProp] = v;
-												}
-												saveStyle(newProps);
-											}
-										}}
-									/>
-								</div>
-							);
-						})}
+						{COMPONENT_STYLE_GROUPS[group.name].map(prop => (
+							<EachPropEditor
+								key={prop}
+								subComponentName={subComponentName}
+								pseudoState={pseudoState}
+								prop={prop}
+								iterateProps={iterateProps}
+								pageDef={pageDef}
+								editPageName={editPageName}
+								slaveStore={slaveStore}
+								storePaths={storePaths}
+								selectorPref={selectorPref}
+								styleProps={styleProps}
+								selectedComponent={selectedComponent}
+								saveStyle={saveStyle}
+								properties={properties}
+								pageOperations={pageOperations}
+							/>
+						))}
 
 						{group?.advanced?.length && (
 							<div className="_eachProp">
@@ -627,155 +661,126 @@ export default function StylePropertyEditor({
 							</div>
 						)}
 						{isAdvancedSelected &&
-							(group.advanced ?? []).map(prop => {
-								let value = iterateProps[prop] ?? {};
-								if (pseudoState && iterateProps[`${prop}:${pseudoState}`]) {
-									value = { ...value, ...iterateProps[`${prop}:${pseudoState}`] };
-								}
-								if (
-									subComponentName &&
-									iterateProps[`${subComponentName}-${prop}`]
-								) {
-									value = {
-										...value,
-										...iterateProps[`${subComponentName}-${prop}`],
-									};
-								}
-								if (
-									pseudoState &&
-									iterateProps[`${subComponentName}-${prop}:${pseudoState}`]
-								) {
-									value = {
-										...value,
-										...iterateProps[
-											`${subComponentName}-${prop}:${pseudoState}`
-										],
-									};
-								}
-								return (
-									<div className="_eachProp" key={prop}>
-										<div className="_propLabel" title="Name">
-											{prop.replace(/([A-Z])/g, ' $1')}:
-										</div>
-										<PropertyValueEditor
-											pageDefinition={pageDef}
-											propDef={{
-												name: prop,
-												displayName: '',
-												schema: SCHEMA_STRING_COMP_PROP,
-											}}
-											value={value}
-											storePaths={storePaths}
-											editPageName={editPageName}
-											slaveStore={slaveStore}
-											onChange={v => {
-												const newProps = duplicate(
-													styleProps,
-												) as ComponentStyle;
-												const screenSize = ((selectorPref[selectedComponent]
-													?.screenSize?.value as string) ??
-													'ALL') as StyleResolution;
-												let value = iterateProps[prop] ?? {};
-												if (pseudoState) {
-													value = {
-														...value,
-														...(screenSize === 'ALL'
-															? {}
-															: properties[1].resolutions?.[
-																	screenSize
-															  ]?.[`${prop}:${pseudoState}`] ?? {}),
-														...(iterateProps[
-															`${prop}:${pseudoState}`
-														] ?? {}),
-													};
-												}
-												if (subComponentName) {
-													value = {
-														...value,
-														...(screenSize === 'ALL'
-															? {}
-															: properties[1].resolutions?.[
-																	screenSize
-															  ]?.[`${subComponentName}-${prop}`] ??
-															  {}),
-														...(iterateProps[
-															`${subComponentName}-${prop}`
-														] ?? {}),
-													};
-												}
-												if (pseudoState) {
-													value = {
-														...value,
-														...(screenSize === 'ALL'
-															? {}
-															: properties[1].resolutions?.[
-																	screenSize
-															  ]?.[
-																	`${subComponentName}-${prop}:${pseudoState}`
-															  ] ?? {}),
-														...(iterateProps[
-															`${subComponentName}-${prop}:${pseudoState}`
-														] ?? {}),
-													};
-												}
-
-												if (
-													selectorPref[selectedComponent]?.condition
-														?.value
-												) {
-												}
-
-												let actualProp = prop;
-												if (subComponentName && pseudoState) {
-													actualProp = `${subComponentName}-${prop}:${pseudoState}`;
-												} else if (subComponentName) {
-													actualProp = `${subComponentName}-${prop}`;
-												} else if (pseudoState) {
-													actualProp = `${prop}:${pseudoState}`;
-												}
-
-												if (newProps[properties[0]].resolutions) {
-													if (
-														!newProps[properties[0]].resolutions![
-															screenSize
-														]
-													)
-														newProps[properties[0]].resolutions![
-															screenSize
-														] = {};
-													if (
-														deepEqual(value, v) ||
-														(!v.value &&
-															!v.location?.expression &&
-															!v.location?.value)
-													) {
-														delete newProps[properties[0]].resolutions![
-															screenSize
-														]![actualProp];
-													} else {
-														if (
-															!newProps[properties[0]].resolutions![
-																screenSize
-															]
-														) {
-															newProps[properties[0]].resolutions![
-																screenSize
-															] = {};
-														}
-														newProps[properties[0]].resolutions![
-															screenSize
-														]![actualProp] = v;
-													}
-													saveStyle(newProps);
-												}
-											}}
-										/>
-									</div>
-								);
-							})}
+							(group.advanced ?? []).map(prop => (
+								<EachPropEditor
+									key={prop}
+									subComponentName={subComponentName}
+									pseudoState={pseudoState}
+									prop={prop}
+									iterateProps={iterateProps}
+									pageDef={pageDef}
+									editPageName={editPageName}
+									slaveStore={slaveStore}
+									storePaths={storePaths}
+									selectorPref={selectorPref}
+									styleProps={styleProps}
+									selectedComponent={selectedComponent}
+									saveStyle={saveStyle}
+									properties={properties}
+									pageOperations={pageOperations}
+								/>
+							))}
 					</PropertyGroup>
 				);
 			})}
+		</div>
+	);
+}
+
+function EachPropEditor({
+	subComponentName,
+	pseudoState,
+	iterateProps,
+	prop,
+	pageDef,
+	editPageName,
+	slaveStore,
+	storePaths,
+	selectorPref,
+	styleProps,
+	selectedComponent,
+	saveStyle,
+	properties,
+	pageOperations,
+}: {
+	pseudoState: string;
+	subComponentName: string;
+	prop: string;
+	iterateProps: any;
+	pageDef: PageDefinition | undefined;
+	editPageName: string | undefined;
+	slaveStore: any;
+	storePaths: Set<string>;
+	selectorPref: any;
+	styleProps: ComponentStyle | undefined;
+	selectedComponent: string;
+	saveStyle: (newStyleProps: ComponentStyle) => void;
+	properties: [string, EachComponentStyle] | undefined;
+	pageOperations: PageOperations;
+}) {
+	const compProp = subComponentName ? `${subComponentName}-${prop}` : prop;
+	let value = iterateProps[compProp] ?? {};
+	const actualProp = pseudoState ? `${compProp}:${pseudoState}` : compProp;
+	if (pseudoState && iterateProps[`${compProp}:${pseudoState}`]) {
+		value = { ...value, ...iterateProps[`${compProp}:${pseudoState}`] };
+	}
+
+	if (!properties) return <></>;
+
+	let propName = prop.replace(/([A-Z])/g, ' $1');
+	propName = propName[0].toUpperCase() + propName.slice(1);
+
+	const screenSize = ((selectorPref[selectedComponent]?.screenSize?.value as string) ??
+		'ALL') as StyleResolution;
+
+	return (
+		<div className="_eachProp">
+			<div className="_propLabel" title={propName}>
+				{propName}:{' '}
+				{(pseudoState && iterateProps[compProp]) ||
+				(screenSize !== 'ALL' &&
+					(properties[1]?.resolutions?.ALL?.[compProp] ||
+						properties[1]?.resolutions?.ALL?.[actualProp])) ? (
+					<span title="Has a default value">★</span>
+				) : (
+					''
+				)}
+			</div>
+			<PropertyValueEditor
+				pageDefinition={pageDef}
+				propDef={{
+					name: prop,
+					displayName: '',
+					schema: SCHEMA_STRING_COMP_PROP,
+				}}
+				value={value}
+				storePaths={storePaths}
+				editPageName={editPageName}
+				slaveStore={slaveStore}
+				onChange={v => {
+					const newProps = duplicate(styleProps) as ComponentStyle;
+
+					if (!newProps[properties[0]]) newProps[properties[0]] = { resolutions: {} };
+
+					if (!newProps[properties[0]].resolutions)
+						newProps[properties[0]].resolutions = {};
+
+					if (!newProps[properties[0]].resolutions![screenSize])
+						newProps[properties[0]].resolutions![screenSize] = {};
+
+					if (
+						(pseudoState && deepEqual(v, iterateProps[compProp] ?? {})) ||
+						(!v.value && !v.location?.expression && !v.location?.value)
+					) {
+						delete newProps[properties[0]].resolutions![screenSize]![actualProp];
+					} else {
+						newProps[properties[0]].resolutions![screenSize]![actualProp] = v;
+					}
+
+					saveStyle(newProps);
+				}}
+				pageOperations={pageOperations}
+			/>
 		</div>
 	);
 }

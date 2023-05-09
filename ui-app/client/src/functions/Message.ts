@@ -24,7 +24,12 @@ const SIGNATURE = new FunctionSignature('Message')
 				'pageName',
 				Schema.ofString('pageName').setDefaultValue(GLOBAL_CONTEXT_NAME),
 			),
-			Parameter.ofEntry('type', Schema.ofString('type').setDefaultValue('ERROR')),
+			Parameter.ofEntry(
+				'type',
+				Schema.ofString('type')
+					.setEnums(['ERROR', 'WARNING', 'INFO', 'SUCCESS'])
+					.setDefaultValue('ERROR'),
+			),
 		]),
 	)
 	.setEvents(new Map([Event.eventMapEntry(Event.OUTPUT, new Map())]));

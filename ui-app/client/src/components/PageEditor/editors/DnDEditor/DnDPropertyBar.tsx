@@ -6,10 +6,12 @@ import {
 } from '../../../../context/StoreContext';
 import { LocationHistory } from '../../../../types/common';
 import PropertyEditor from '../PropertyEditor';
+import ClassEditor from '../ClassEditor';
 import StylePropertyEditor from '../StylePropertyEditor';
 import { allPaths } from '../../../../util/allPaths';
 import { LOCAL_STORE_PREFIX, PAGE_STORE_PREFIX, STORE_PREFIX } from '../../../../constants';
 import { isNullValue } from '@fincity/kirun-js';
+import PageOperations from '../../functions/PageOperations';
 
 interface PropertyBarProps {
 	theme: string;
@@ -29,6 +31,7 @@ interface PropertyBarProps {
 	setStyleSelectorPref: (pref: any) => void;
 	styleSelectorPref: any;
 	previewMode: boolean;
+	pageOperations: PageOperations;
 }
 
 export default function DnDPropertyBar({
@@ -48,6 +51,7 @@ export default function DnDPropertyBar({
 	setStyleSelectorPref,
 	styleSelectorPref,
 	previewMode,
+	pageOperations,
 }: PropertyBarProps) {
 	const [currentTab, setCurrentTab] = React.useState(1);
 
@@ -62,9 +66,9 @@ export default function DnDPropertyBar({
 	}, [personalizationPath]);
 
 	if (!selectedComponent || previewMode) return <div className="_propBar"></div>;
-
-	const tab =
-		currentTab === 1 ? (
+	let tab = <></>;
+	if (currentTab === 1) {
+		tab = (
 			<PropertyEditor
 				theme={theme}
 				personalizationPath={personalizationPath}
@@ -77,8 +81,11 @@ export default function DnDPropertyBar({
 				onShowCodeEditor={onShowCodeEditor}
 				editPageName={editPageName}
 				slaveStore={slaveStore}
+				pageOperations={pageOperations}
 			/>
-		) : currentTab === 2 ? (
+		);
+	} else if (currentTab === 2) {
+		tab = (
 			<StylePropertyEditor
 				theme={theme}
 				personalizationPath={personalizationPath}
@@ -94,8 +101,11 @@ export default function DnDPropertyBar({
 				setStyleSelectorPref={setStyleSelectorPref}
 				editPageName={editPageName}
 				slaveStore={slaveStore}
+				pageOperations={pageOperations}
 			/>
-		) : (
+		);
+	} else if (currentTab === 3) {
+		tab = (
 			<StylePropertyEditor
 				theme={theme}
 				personalizationPath={personalizationPath}
@@ -112,8 +122,26 @@ export default function DnDPropertyBar({
 				reverseStyleSections={true}
 				editPageName={editPageName}
 				slaveStore={slaveStore}
+				pageOperations={pageOperations}
 			/>
 		);
+	} else if (currentTab === 4) {
+		tab = (
+			<ClassEditor
+				theme={theme}
+				personalizationPath={personalizationPath}
+				onChangePersonalization={onChangePersonalization}
+				selectedComponent={selectedComponent}
+				defPath={defPath}
+				locationHistory={locationHistory}
+				pageExtractor={pageExtractor}
+				storePaths={storePaths}
+				onShowCodeEditor={onShowCodeEditor}
+				editPageName={editPageName}
+				slaveStore={slaveStore}
+			/>
+		);
+	}
 
 	return (
 		<div className="_propBar _propBarVisible">
@@ -132,6 +160,11 @@ export default function DnDPropertyBar({
 					className={`fa fa-solid fa-gears ${currentTab === 3 ? 'active' : ''}`}
 					tabIndex={0}
 					onClick={() => onChangePersonalization('currentPropertyTab', 3)}
+				/>
+				<i
+					className={`fa fa-solid fa-swatchbook ${currentTab === 4 ? 'active' : ''}`}
+					tabIndex={0}
+					onClick={() => onChangePersonalization('currentPropertyTab', 4)}
 				/>
 			</div>
 			<div className="_propContainer">{tab}</div>

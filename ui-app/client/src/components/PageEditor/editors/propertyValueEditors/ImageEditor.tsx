@@ -4,11 +4,13 @@ import { LOCAL_STORE_PREFIX } from '../../../../constants';
 import { getDataFromPath } from '../../../../context/StoreContext';
 import { ComponentPropertyDefinition } from '../../../../types/common';
 import Portal from '../../../Portal';
+import PageOperations from '../../functions/PageOperations';
 
 interface IconSelectionEditorProps {
 	value?: string;
 	propDef: ComponentPropertyDefinition;
 	onChange: (v: string | undefined) => void;
+	pageOperations: PageOperations;
 }
 
 const EXT_SET = new Set<string>([
@@ -49,11 +51,16 @@ function isImage(name: string) {
 	let ext = smallName.substring(smallName.lastIndexOf('.'));
 	return EXT_SET.has(ext);
 }
-export function ImageEditor({ value, onChange, propDef }: IconSelectionEditorProps) {
+export function ImageEditor({
+	value,
+	onChange,
+	propDef,
+	pageOperations,
+}: IconSelectionEditorProps) {
 	const [chngValue, setChngValue] = useState(value ?? '');
 	const [showImageBrowser, setShowImageBrowser] = useState(false);
 	const [filter, setFilter] = useState('');
-	const [path, setPath] = useState('');
+	const [path, setInternalPath] = useState('');
 	const [files, setFiles] = useState<any>();
 	const [inProgress, setInProgress] = useState(false);
 	const [newFolder, setNewFolder] = useState(false);
@@ -61,10 +68,18 @@ export function ImageEditor({ value, onChange, propDef }: IconSelectionEditorPro
 
 	useEffect(() => setChngValue(value ?? ''), [value]);
 
+	const setPath = useCallback(
+		(v: string) => {
+			setInternalPath(v);
+			setFilter('');
+		},
+		[setInternalPath, setFilter],
+	);
+
 	const callForFiles = useCallback(() => {
 		setInProgress(true);
 		(async () => {
-			let url = `/api/files/static/${path}`;
+			let url = `/api/files/static/${path}?size=200`; // for now hardcoding size with value 200 in future update with infinite scrolling
 			if (filter.trim() !== '') url += `&filter=${filter}`;
 			await axios
 				.get(url, {
@@ -101,6 +116,32 @@ export function ImageEditor({ value, onChange, propDef }: IconSelectionEditorPro
 					}}
 					onKeyUp={e => {
 						if (e.key !== 'Enter') return;
+						e.preventDefault();
+						e.stopPropagation();
+						const formData = new FormData();
+						(async () => {
+							setInProgress(true);
+							try {
+								let url = `/api/files/static/${
+									path === '' ? '/' : path + '/'
+								}${newFolderName}`;
+								await axios
+									.post(url, formData, {
+										headers: {
+											Authorization: getDataFromPath(
+												`${LOCAL_STORE_PREFIX}.AuthToken`,
+												[],
+											),
+										},
+									})
+									.finally(() => {
+										setInProgress(false);
+										setNewFolder(false);
+										setNewFolderName('');
+									});
+							} catch (e) {}
+							callForFiles();
+						})();
 					}}
 				/>
 			</div>
@@ -183,27 +224,36 @@ export function ImageEditor({ value, onChange, propDef }: IconSelectionEditorPro
 							{e.name}
 							<div
 								className="_deleteButton"
-								onClick={async ev => {
+								onClick={ev => {
 									ev.stopPropagation();
 									ev.preventDefault();
-									setInProgress(true);
-									try {
-										await axios.delete(
-											`/api/files/static/${path}${path === '' ? '' : '/'}${
-												e.name
-											}`,
-											{
-												headers: {
-													Authorization: getDataFromPath(
-														`${LOCAL_STORE_PREFIX}.AuthToken`,
-														[],
-													),
-												},
+									pageOperations?.setIssuePopup({
+										message: `Confirm deletion of file : ${e.name} ?`,
+										options: ['Yes', 'No'],
+										callbackOnOption: {
+											Yes: () => {
+												setInProgress(true);
+												try {
+													(async () =>
+														await axios.delete(
+															`/api/files/static/${path}${
+																path === '' ? '' : '/'
+															}${e.name}`,
+															{
+																headers: {
+																	Authorization: getDataFromPath(
+																		`${LOCAL_STORE_PREFIX}.AuthToken`,
+																		[],
+																	),
+																},
+															},
+														))();
+												} catch (e) {}
+												setInProgress(false);
+												callForFiles();
 											},
-										);
-									} catch (e) {}
-									setInProgress(false);
-									callForFiles();
+										},
+									});
 								}}
 							>
 								<i className="fa fa-solid fa-trash" />
@@ -218,14 +268,14 @@ export function ImageEditor({ value, onChange, propDef }: IconSelectionEditorPro
 			<Portal>
 				<div className={`_popupBackground`} onClick={() => setShowImageBrowser(false)}>
 					<div className="_popupContainer" onClick={e => e.stopPropagation()}>
+						<input
+							className="_peInput"
+							placeholder="Search for images..."
+							type="text"
+							value={filter}
+							onChange={e => setFilter(e.target.value)}
+						/>
 						<div className="_iconSelectionBrowser">
-							<input
-								className="_peInput"
-								placeholder="Search for images..."
-								type="text"
-								value={filter}
-								onChange={e => setFilter(e.target.value)}
-							/>
 							<div className="_pathContainer">
 								<PathParts path={path} setPath={p => setPath(p)} />
 								<i

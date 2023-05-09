@@ -29,6 +29,7 @@ function TableColumnHeaderComponent(props: ComponentProps) {
 	);
 
 	const styleProperties = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover: false },
 		stylePropertiesWithPseudoStates,
 	);
