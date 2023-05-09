@@ -12,7 +12,10 @@ import { propertiesDefinition, stylePropertiesDefinition } from './subPageProper
 import SubPageStyle from './SubPageStyle';
 import useDefinition from '../util/useDefinition';
 import Children from '../Children';
-import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import {
+	processClassesForPageDefinition,
+	processComponentStylePseudoClasses,
+} from '../../util/styleProcessor';
 import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../../constants';
 import { isNullValue } from '@fincity/kirun-js';
 import { runEvent } from '../util/runEvent';
@@ -45,7 +48,7 @@ function SubPage(props: ComponentProps) {
 	useEffect(
 		() =>
 			addListenerAndCallImmediately(
-				(_, v) => setSubPage(v),
+				(_, v) => setSubPage(processClassesForPageDefinition(v)),
 				pageExtractor,
 				`${STORE_PREFIX}.pageDefinition.${pageName}`,
 			),
@@ -93,7 +96,11 @@ function SubPage(props: ComponentProps) {
 		<></>
 	);
 
-	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
+	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{},
+		stylePropertiesWithPseudoStates,
+	);
 
 	return (
 		<div className="comp compSubPage" style={resolvedStyles.comp ?? {}}>

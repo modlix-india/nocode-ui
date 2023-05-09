@@ -64,13 +64,12 @@ function ButtonComponent(props: ComponentProps) {
 	}, []);
 
 	const styleProperties = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ focus, hover, disabled: isLoading || readOnly },
 		stylePropertiesWithPseudoStates,
 	);
 
 	const handleClick = async (e: any) => {
-		if (e.target !== e.currentTarget) return;
-
 		if (linkPath) {
 			if (target) {
 				window.open(getHref(linkPath, location), target);
@@ -100,9 +99,7 @@ function ButtonComponent(props: ComponentProps) {
 		!type?.startsWith('fabButton') && !leftIcon ? (
 			<i
 				style={styleProperties.rightIcon ?? {}}
-				className={`rightButtonIcon ${styleProperties.rightIcon?.className ?? ''} ${
-					rightIcon ?? 'fa fa-circle-notch hide'
-				}`}
+				className={`rightButtonIcon ${rightIcon ?? 'fa fa-circle-notch hide'}`}
 			>
 				<SubHelperComponent
 					definition={props.definition}
@@ -114,7 +111,7 @@ function ButtonComponent(props: ComponentProps) {
 	const leftIconTag = (
 		<i
 			style={styleProperties.leftIcon ?? {}}
-			className={`leftButtonIcon ${styleProperties.leftIcon?.className ?? ''} ${
+			className={`leftButtonIcon ${
 				leftIcon
 					? !isLoading
 						? leftIcon
@@ -133,7 +130,7 @@ function ButtonComponent(props: ComponentProps) {
 	useEffect(() => setEditableLabel(label), [label]);
 	return (
 		<button
-			className={`comp compButton button ${styleProperties.comp?.className ?? ''} ${type}`}
+			className={`comp compButton button ${type}`}
 			disabled={isLoading || readOnly}
 			onClick={handleClick}
 			style={styleProperties.comp ?? {}}
@@ -192,6 +189,16 @@ function ButtonComponent(props: ComponentProps) {
 								});
 							}}
 							autoFocus={true}
+							onClick={e => {
+								e.preventDefault();
+								e.stopPropagation();
+							}}
+							onMouseDown={e => {
+								e.stopPropagation();
+							}}
+							onMouseUp={e => {
+								e.stopPropagation();
+							}}
 						/>
 					</>
 				)}

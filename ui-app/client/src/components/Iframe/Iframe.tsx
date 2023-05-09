@@ -33,7 +33,11 @@ function Iframe(props: ComponentProps) {
 		pageExtractor,
 	);
 
-	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
+	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{},
+		stylePropertiesWithPseudoStates,
+	);
 	return (
 		<div className="comp compIframe" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />

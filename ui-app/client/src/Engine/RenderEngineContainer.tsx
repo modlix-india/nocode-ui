@@ -13,6 +13,7 @@ import ComponentDefinitions from '../components';
 import { processLocation } from '../util/locationProcessor';
 import { isNullValue } from '@fincity/kirun-js';
 import { PageDefinition } from '../types/common';
+import { processClassesForPageDefinition } from '../util/styleProcessor';
 
 export const RenderEngineContainer = () => {
 	const location = useLocation();
@@ -32,11 +33,11 @@ export const RenderEngineContainer = () => {
 			(async () => {
 				await runEvent(getPageDefinition, 'pageDefinition', GLOBAL_CONTEXT_NAME, []);
 				pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
-				setPageDefinition(pDef);
+				setPageDefinition(processClassesForPageDefinition(pDef));
 				setCurrentPageName(pageName);
 			})();
 		} else {
-			setPageDefinition(pDef);
+			setPageDefinition(processClassesForPageDefinition(pDef));
 			setCurrentPageName(pageName);
 		}
 	}, [location]);
@@ -44,6 +45,16 @@ export const RenderEngineContainer = () => {
 	useEffect(() => {
 		loadDefinition();
 	}, [pathParams['*']]);
+
+	useEffect(() => {
+		if (!location.hash) return;
+		setTimeout(() => {
+			const id = location.hash.replace('#', '');
+			const element = document.getElementById(id);
+			if (!element) return;
+			element.scrollIntoView();
+		}, 0);
+	}, [location]);
 
 	useEffect(() => {
 		return addListener(
@@ -61,7 +72,7 @@ export const RenderEngineContainer = () => {
 		() =>
 			addListenerAndCallImmediately(
 				async (_, value) => {
-					setShellPageDefinition(value);
+					setShellPageDefinition(processClassesForPageDefinition(value));
 					if (isNullValue(value)) return;
 					const { properties: { onLoadEvent = undefined } = {}, eventFunctions } = value;
 					if (isNullValue(onLoadEvent) || isNullValue(eventFunctions[onLoadEvent]))
@@ -116,7 +127,7 @@ export const RenderEngineContainer = () => {
 		if (window.designMode !== 'PAGE') return;
 
 		return addListener(
-			(_, v) => setPageDefinition(v),
+			(_, v) => setPageDefinition(processClassesForPageDefinition(v)),
 			undefined,
 			`${STORE_PREFIX}.pageDefinition.${currentPageName}`,
 		);

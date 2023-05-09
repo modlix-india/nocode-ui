@@ -338,7 +338,7 @@ const COMPONENT_STYLE_GROUPS: { [key: string]: Array<string> } = {
 	rotate: ['rotate'],
 	list: ['listStyleImage', 'listStylePosition', 'listStyleType'],
 	scrollbar: ['hideScrollBar'],
-	className: ['className'],
+	selectorName: ['selectorName'],
 };
 
 const CSS_STYLE_PROPERTY_GROUP_REF: { [key: string]: string } = Object.entries(
@@ -533,11 +533,11 @@ const COMPONENT_STYLE_GROUP_PROPERTIES: { [key: string]: ComponentStylePropertyG
 			'transformOrigin',
 		],
 	},
-	className: {
-		name: 'className',
-		type: 'className',
-		displayName: 'CSS Classes',
-		description: 'CSS ClassNames',
+	slectorName: {
+		name: 'selectorName',
+		type: 'selectorName',
+		displayName: 'Selector Names',
+		description: 'Selector Names',
 		target: ['comp'],
 	},
 };

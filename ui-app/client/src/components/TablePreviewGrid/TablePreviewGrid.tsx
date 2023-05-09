@@ -49,6 +49,7 @@ function TablePreviewGrid(props: ComponentProps) {
 	);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ focus, hover, disabled: isReadonly },
 		stylePropertiesWithPseudoStates,
 	);

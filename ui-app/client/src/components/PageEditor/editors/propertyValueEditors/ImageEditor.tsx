@@ -53,7 +53,7 @@ export function ImageEditor({ value, onChange, propDef }: IconSelectionEditorPro
 	const [chngValue, setChngValue] = useState(value ?? '');
 	const [showImageBrowser, setShowImageBrowser] = useState(false);
 	const [filter, setFilter] = useState('');
-	const [path, setPath] = useState('');
+	const [path, setInternalPath] = useState('');
 	const [files, setFiles] = useState<any>();
 	const [inProgress, setInProgress] = useState(false);
 	const [newFolder, setNewFolder] = useState(false);
@@ -61,10 +61,18 @@ export function ImageEditor({ value, onChange, propDef }: IconSelectionEditorPro
 
 	useEffect(() => setChngValue(value ?? ''), [value]);
 
+	const setPath = useCallback(
+		(v: string) => {
+			setInternalPath(v);
+			setFilter('');
+		},
+		[setInternalPath, setFilter],
+	);
+
 	const callForFiles = useCallback(() => {
 		setInProgress(true);
 		(async () => {
-			let url = `/api/files/static/${path}`;
+			let url = `/api/files/static/${path}?size=200`; // for now hardcoding size with value 200 in future update with infinite scrolling
 			if (filter.trim() !== '') url += `&filter=${filter}`;
 			await axios
 				.get(url, {
@@ -101,6 +109,32 @@ export function ImageEditor({ value, onChange, propDef }: IconSelectionEditorPro
 					}}
 					onKeyUp={e => {
 						if (e.key !== 'Enter') return;
+						e.preventDefault();
+						e.stopPropagation();
+						const formData = new FormData();
+						(async () => {
+							setInProgress(true);
+							try {
+								let url = `/api/files/static/${
+									path === '' ? '/' : path + '/'
+								}${newFolderName}`;
+								await axios
+									.post(url, formData, {
+										headers: {
+											Authorization: getDataFromPath(
+												`${LOCAL_STORE_PREFIX}.AuthToken`,
+												[],
+											),
+										},
+									})
+									.finally(() => {
+										setInProgress(false);
+										setNewFolder(false);
+										setNewFolderName('');
+									});
+							} catch (e) {}
+							callForFiles();
+						})();
 					}}
 				/>
 			</div>

@@ -365,6 +365,14 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.commonInputBox .textBoxDiv .inputContainer .textBoxLabel.error',
 	},
 	{
+		name: 'noFloatTextBoxLabelFontSize',
+		cssProperty: 'font-size',
+		displayName: "No Float textbox's font size",
+		description: 'Textbox label font size (no float variant).',
+		noPrefix: true,
+		selector: '.commonInputBox .noFloatTextBoxLabel',
+	},
+	{
 		name: 'noFloatTextBoxLabelTextColor',
 		cssProperty: 'color',
 		displayName: "No Float textbox's label color",
