@@ -28,7 +28,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Type',
 		description: 'Type of the resource.',
-		defaultValue: 'mp4',
+		defaultValue: 'video/mp4',
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
