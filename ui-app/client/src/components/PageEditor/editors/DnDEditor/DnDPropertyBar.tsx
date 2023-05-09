@@ -11,6 +11,7 @@ import StylePropertyEditor from '../StylePropertyEditor';
 import { allPaths } from '../../../../util/allPaths';
 import { LOCAL_STORE_PREFIX, PAGE_STORE_PREFIX, STORE_PREFIX } from '../../../../constants';
 import { isNullValue } from '@fincity/kirun-js';
+import PageOperations from '../../functions/PageOperations';
 
 interface PropertyBarProps {
 	theme: string;
@@ -30,6 +31,7 @@ interface PropertyBarProps {
 	setStyleSelectorPref: (pref: any) => void;
 	styleSelectorPref: any;
 	previewMode: boolean;
+	pageOperations: PageOperations;
 }
 
 export default function DnDPropertyBar({
@@ -49,6 +51,7 @@ export default function DnDPropertyBar({
 	setStyleSelectorPref,
 	styleSelectorPref,
 	previewMode,
+	pageOperations,
 }: PropertyBarProps) {
 	const [currentTab, setCurrentTab] = React.useState(1);
 
@@ -78,6 +81,7 @@ export default function DnDPropertyBar({
 				onShowCodeEditor={onShowCodeEditor}
 				editPageName={editPageName}
 				slaveStore={slaveStore}
+				pageOperations={pageOperations}
 			/>
 		);
 	} else if (currentTab === 2) {
@@ -97,6 +101,7 @@ export default function DnDPropertyBar({
 				setStyleSelectorPref={setStyleSelectorPref}
 				editPageName={editPageName}
 				slaveStore={slaveStore}
+				pageOperations={pageOperations}
 			/>
 		);
 	} else if (currentTab === 3) {
@@ -117,6 +122,7 @@ export default function DnDPropertyBar({
 				reverseStyleSections={true}
 				editPageName={editPageName}
 				slaveStore={slaveStore}
+				pageOperations={pageOperations}
 			/>
 		);
 	} else if (currentTab === 4) {

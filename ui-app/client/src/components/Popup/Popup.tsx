@@ -234,6 +234,7 @@ const component: Component = {
 		type: 'Popup',
 		name: 'Popup',
 	},
+	needShowInDesginMode: true,
 };
 
 export default component;

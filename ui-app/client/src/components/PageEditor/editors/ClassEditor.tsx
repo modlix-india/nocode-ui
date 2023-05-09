@@ -1,6 +1,4 @@
-import { isNullValue } from '@fincity/kirun-js';
 import React, { useEffect, useState } from 'react';
-import ComponentDefinitions from '../..';
 import { SCHEMA_STRING_COMP_PROP } from '../../../constants';
 import {
 	PageStoreExtractor,
@@ -9,22 +7,15 @@ import {
 	setData,
 } from '../../../context/StoreContext';
 import {
-	ComponentDefinition,
-	ComponentMultiProperty,
-	ComponentProperty,
-	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
-	ComponentPropertyGroup,
 	LocationHistory,
 	PageDefinition,
 	StyleClassDefinition,
 } from '../../../types/common';
 import duplicate from '../../../util/duplicate';
-import { PropertyGroup } from './PropertyGroup';
-import { ExpressionEditor2 } from './propertyValueEditors/ExpressionEditor2';
-import PropertyMultiValueEditor from './propertyValueEditors/PropertyMultiValueEditor';
-import PropertyValueEditor from './propertyValueEditors/PropertyValueEditor';
 import { shortUUID } from '../../../util/shortUUID';
+import PropertyValueEditor from './propertyValueEditors/PropertyValueEditor';
+import { processStyleFromString } from '../../../util/styleProcessor';
 
 interface ClassEditorProps {
 	selectedComponent: string;
@@ -123,7 +114,7 @@ export default function ClassEditor({
 								updateDefCurry(key, { key });
 							}}
 						>
-							+ Add Class
+							+ Selector
 						</button>
 					</div>
 				</div>
@@ -190,11 +181,12 @@ export default function ClassEditor({
 									onlyValue={true}
 									storePaths={storePaths}
 									onChange={v => {
-										let style = (v.value ?? '').trim();
-										let ind = style.indexOf('{');
-										if (ind != -1) style = style.substring(ind + 1);
-										ind = style.indexOf('}');
-										if (ind != -1) style = style.substring(0, ind);
+										let style = Object.entries(
+											processStyleFromString((v.value ?? '').trim()),
+										)
+											.map(e => e[0] + ': ' + e[1])
+											.join(';\n');
+										if (!style.endsWith(';')) style += ';';
 										updateDefCurry(eClass[1].key, {
 											...eClass[1],
 											style,

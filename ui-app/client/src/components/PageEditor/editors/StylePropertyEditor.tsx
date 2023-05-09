@@ -28,6 +28,7 @@ import { shortUUID } from '../../../util/shortUUID';
 import duplicate from '../../../util/duplicate';
 import { deepEqual } from '@fincity/kirun-js';
 import { camelCaseToUpperSpaceCase } from '../../../functions/utils';
+import PageOperations from '../functions/PageOperations';
 
 interface StylePropertyEditorProps {
 	selectedComponent: string;
@@ -45,6 +46,7 @@ interface StylePropertyEditorProps {
 	reverseStyleSections?: boolean;
 	slaveStore: any;
 	editPageName: string | undefined;
+	pageOperations: PageOperations;
 }
 
 function processOldCondition(styleProps: ComponentStyle | undefined): ComponentStyle {
@@ -125,6 +127,7 @@ export default function StylePropertyEditor({
 	reverseStyleSections,
 	slaveStore,
 	editPageName,
+	pageOperations,
 }: StylePropertyEditorProps) {
 	const [def, setDef] = useState<ComponentDefinition>();
 	const [pageDef, setPageDef] = useState<PageDefinition>();
@@ -227,6 +230,7 @@ export default function StylePropertyEditor({
 			storePaths={storePaths}
 			editPageName={editPageName}
 			slaveStore={slaveStore}
+			pageOperations={pageOperations}
 		/>
 	);
 
@@ -255,6 +259,7 @@ export default function StylePropertyEditor({
 			storePaths={storePaths}
 			editPageName={editPageName}
 			slaveStore={slaveStore}
+			pageOperations={pageOperations}
 		/>
 	) : (
 		<></>
@@ -286,6 +291,7 @@ export default function StylePropertyEditor({
 			}}
 			editPageName={editPageName}
 			slaveStore={slaveStore}
+			pageOperations={pageOperations}
 		/>
 	) : (
 		<></>
@@ -298,16 +304,27 @@ export default function StylePropertyEditor({
 		iterateProps = { ...iterateProps, ...sizedProps };
 	}
 
+	const hasSubComponents = new Set<string>();
+	const hasPseudoStates = new Set<string>();
+	Object.keys(iterateProps).forEach(e => {
+		let splits = e.split(':');
+		if (splits.length > 1) hasPseudoStates.add(splits[1]);
+		else hasPseudoStates.add('');
+		splits = e.split('-');
+		if (splits.length > 1) hasSubComponents.add(splits[0]);
+		else hasSubComponents.add('');
+	});
+
 	let subComponentName = '';
 	if (selectedSubComponent) {
 		subComponentName = selectedSubComponent.split(':')[1];
 	}
 	const subComponentSectionsArray = (cd?.styleProperties ?? {})[subComponentName];
-	const styleSectionsToShow = Object.values(COMPONENT_STYLE_GROUP_PROPERTIES).filter(each =>
-		reverseStyleSections
-			? subComponentSectionsArray.findIndex(e => e === each.name) === -1
-			: subComponentSectionsArray.findIndex(e => e === each.name) !== -1,
-	);
+	const styleSectionsToShow = reverseStyleSections
+		? Object.values(COMPONENT_STYLE_GROUP_PROPERTIES).filter(
+				each => subComponentSectionsArray.findIndex(e => e === each.name) === -1,
+		  )
+		: subComponentSectionsArray.map(each => COMPONENT_STYLE_GROUP_PROPERTIES[each]);
 
 	let pseudoState = '';
 	if (selectorPref[selectedComponent]?.stylePseudoState?.value)
@@ -425,9 +442,20 @@ export default function StylePropertyEditor({
 							schema: SCHEMA_STRING_COMP_PROP,
 							editor: ComponentPropertyEditor.ENUM,
 							defaultValue: 'ALL',
-							enumValues: Array.from(StyleResolutionDefinition.values()).sort(
-								(a, b) => a.order - b.order,
-							),
+							enumValues: Array.from(StyleResolutionDefinition.values())
+								.map(e => {
+									if (
+										properties?.[1].resolutions?.[e.name as StyleResolution] &&
+										Object.keys(
+											properties?.[1].resolutions?.[
+												e.name as StyleResolution
+											] ?? {},
+										).length
+									)
+										return { ...e, displayName: `★ ${e.displayName}` };
+									return e;
+								})
+								.sort((a, b) => a.order - b.order),
 						}}
 						value={selectorPref[selectedComponent]?.screenSize}
 						onlyValue={true}
@@ -435,6 +463,7 @@ export default function StylePropertyEditor({
 						storePaths={storePaths}
 						editPageName={editPageName}
 						slaveStore={slaveStore}
+						pageOperations={pageOperations}
 					/>
 				</div>
 				{subComponentsList.length !== 1 ? (
@@ -453,7 +482,10 @@ export default function StylePropertyEditor({
 								enumValues: subComponentsList.map(name => ({
 									name,
 									displayName:
-										name === '' ? 'Component' : camelCaseToUpperSpaceCase(name),
+										(hasSubComponents.has(name) ? '★ ' : '') +
+										(name === ''
+											? 'Component'
+											: camelCaseToUpperSpaceCase(name)),
 									description: '',
 								})),
 							}}
@@ -472,6 +504,7 @@ export default function StylePropertyEditor({
 							storePaths={storePaths}
 							editPageName={editPageName}
 							slaveStore={slaveStore}
+							pageOperations={pageOperations}
 						/>
 					</div>
 				) : (
@@ -491,10 +524,18 @@ export default function StylePropertyEditor({
 								editor: ComponentPropertyEditor.ENUM,
 								defaultValue: '',
 								enumValues: [
-									{ name: '', displayName: 'Default', description: 'No State' },
+									{
+										name: '',
+										displayName: hasPseudoStates.has('')
+											? '★ Default'
+											: 'Default',
+										description: 'No State',
+									},
 									...pseudoStates.map(name => ({
 										name,
-										displayName: name.toUpperCase(),
+										displayName:
+											(hasPseudoStates.has(name) ? '★ ' : '') +
+											name.toUpperCase(),
 										description: '',
 									})),
 								],
@@ -507,6 +548,7 @@ export default function StylePropertyEditor({
 							storePaths={storePaths}
 							editPageName={editPageName}
 							slaveStore={slaveStore}
+							pageOperations={pageOperations}
 						/>
 					</div>
 				) : (
@@ -591,6 +633,7 @@ export default function StylePropertyEditor({
 								selectedComponent={selectedComponent}
 								saveStyle={saveStyle}
 								properties={properties}
+								pageOperations={pageOperations}
 							/>
 						))}
 
@@ -634,6 +677,7 @@ export default function StylePropertyEditor({
 									selectedComponent={selectedComponent}
 									saveStyle={saveStyle}
 									properties={properties}
+									pageOperations={pageOperations}
 								/>
 							))}
 					</PropertyGroup>
@@ -657,6 +701,7 @@ function EachPropEditor({
 	selectedComponent,
 	saveStyle,
 	properties,
+	pageOperations,
 }: {
 	pseudoState: string;
 	subComponentName: string;
@@ -671,6 +716,7 @@ function EachPropEditor({
 	selectedComponent: string;
 	saveStyle: (newStyleProps: ComponentStyle) => void;
 	properties: [string, EachComponentStyle] | undefined;
+	pageOperations: PageOperations;
 }) {
 	const compProp = subComponentName ? `${subComponentName}-${prop}` : prop;
 	let value = iterateProps[compProp] ?? {};
@@ -681,10 +727,24 @@ function EachPropEditor({
 
 	if (!properties) return <></>;
 
+	let propName = prop.replace(/([A-Z])/g, ' $1');
+	propName = propName[0].toUpperCase() + propName.slice(1);
+
+	const screenSize = ((selectorPref[selectedComponent]?.screenSize?.value as string) ??
+		'ALL') as StyleResolution;
+
 	return (
 		<div className="_eachProp">
-			<div className="_propLabel" title="Name">
-				{prop.replace(/([A-Z])/g, ' $1')}:
+			<div className="_propLabel" title={propName}>
+				{propName}:{' '}
+				{(pseudoState && iterateProps[compProp]) ||
+				(screenSize !== 'ALL' &&
+					(properties[1]?.resolutions?.ALL?.[compProp] ||
+						properties[1]?.resolutions?.ALL?.[actualProp])) ? (
+					<span title="Has a default value">★</span>
+				) : (
+					''
+				)}
 			</div>
 			<PropertyValueEditor
 				pageDefinition={pageDef}
@@ -699,8 +759,6 @@ function EachPropEditor({
 				slaveStore={slaveStore}
 				onChange={v => {
 					const newProps = duplicate(styleProps) as ComponentStyle;
-					const screenSize = ((selectorPref[selectedComponent]?.screenSize
-						?.value as string) ?? 'ALL') as StyleResolution;
 
 					if (!newProps[properties[0]]) newProps[properties[0]] = { resolutions: {} };
 
@@ -721,6 +779,7 @@ function EachPropEditor({
 
 					saveStyle(newProps);
 				}}
+				pageOperations={pageOperations}
 			/>
 		</div>
 	);
