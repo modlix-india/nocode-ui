@@ -100,9 +100,10 @@ function HelperComponentInternal({
 			style={style as CSSProperties}
 			draggable="true"
 			className="opacityShowOnHover"
-			onDragStart={e =>
-				e.dataTransfer.items.add(`${DRAG_CD_KEY}${definition.key}`, 'text/plain')
-			}
+			onDragStart={e => {
+				if (e.dataTransfer.items.length) return;
+				e.dataTransfer.items.add(`${DRAG_CD_KEY}${definition.key}`, 'text/plain');
+			}}
 			onDragOver={e => {
 				e.preventDefault();
 				setDragOver(true);
