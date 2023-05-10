@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { Component, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediatelyWithChildrenActivity,
@@ -12,6 +12,7 @@ import {
 	ComponentPropertyEditor,
 	EachComponentStyle,
 	StyleResolution,
+	EachComponentResolutionStyle,
 } from '../../../types/common';
 import ComponentDefinitions from '../../';
 import { COMPONENT_STYLE_GROUP_PROPERTIES, COMPONENT_STYLE_GROUPS } from '../../util/properties';
@@ -22,12 +23,13 @@ import {
 	SCHEMA_BOOL_COMP_PROP,
 	SCHEMA_STRING_COMP_PROP,
 } from '../../../constants';
-import { StyleResolutionDefinition } from '../../../util/styleProcessor';
+import { StyleResolutionDefinition, processStyleFromString } from '../../../util/styleProcessor';
 import { ComponentStyle } from '../../../types/common';
 import { shortUUID } from '../../../util/shortUUID';
 import duplicate from '../../../util/duplicate';
 import { deepEqual } from '@fincity/kirun-js';
 import { camelCaseToUpperSpaceCase } from '../../../functions/utils';
+import PageOperations from '../functions/PageOperations';
 
 interface StylePropertyEditorProps {
 	selectedComponent: string;
@@ -45,6 +47,7 @@ interface StylePropertyEditorProps {
 	reverseStyleSections?: boolean;
 	slaveStore: any;
 	editPageName: string | undefined;
+	pageOperations: PageOperations;
 }
 
 function processOldCondition(styleProps: ComponentStyle | undefined): ComponentStyle {
@@ -125,6 +128,7 @@ export default function StylePropertyEditor({
 	reverseStyleSections,
 	slaveStore,
 	editPageName,
+	pageOperations,
 }: StylePropertyEditorProps) {
 	const [def, setDef] = useState<ComponentDefinition>();
 	const [pageDef, setPageDef] = useState<PageDefinition>();
@@ -227,6 +231,7 @@ export default function StylePropertyEditor({
 			storePaths={storePaths}
 			editPageName={editPageName}
 			slaveStore={slaveStore}
+			pageOperations={pageOperations}
 		/>
 	);
 
@@ -255,6 +260,7 @@ export default function StylePropertyEditor({
 			storePaths={storePaths}
 			editPageName={editPageName}
 			slaveStore={slaveStore}
+			pageOperations={pageOperations}
 		/>
 	) : (
 		<></>
@@ -286,6 +292,7 @@ export default function StylePropertyEditor({
 			}}
 			editPageName={editPageName}
 			slaveStore={slaveStore}
+			pageOperations={pageOperations}
 		/>
 	) : (
 		<></>
@@ -298,16 +305,27 @@ export default function StylePropertyEditor({
 		iterateProps = { ...iterateProps, ...sizedProps };
 	}
 
+	const hasSubComponents = new Set<string>();
+	const hasPseudoStates = new Set<string>();
+	Object.keys(iterateProps).forEach(e => {
+		let splits = e.split(':');
+		if (splits.length > 1) hasPseudoStates.add(splits[1]);
+		else hasPseudoStates.add('');
+		splits = e.split('-');
+		if (splits.length > 1) hasSubComponents.add(splits[0]);
+		else hasSubComponents.add('');
+	});
+
 	let subComponentName = '';
 	if (selectedSubComponent) {
 		subComponentName = selectedSubComponent.split(':')[1];
 	}
 	const subComponentSectionsArray = (cd?.styleProperties ?? {})[subComponentName];
-	const styleSectionsToShow = Object.values(COMPONENT_STYLE_GROUP_PROPERTIES).filter(each =>
-		reverseStyleSections
-			? subComponentSectionsArray.findIndex(e => e === each.name) === -1
-			: subComponentSectionsArray.findIndex(e => e === each.name) !== -1,
-	);
+	const styleSectionsToShow = reverseStyleSections
+		? Object.values(COMPONENT_STYLE_GROUP_PROPERTIES).filter(
+				each => subComponentSectionsArray.findIndex(e => e === each.name) === -1,
+		  )
+		: subComponentSectionsArray.map(each => COMPONENT_STYLE_GROUP_PROPERTIES[each]);
 
 	let pseudoState = '';
 	if (selectorPref[selectedComponent]?.stylePseudoState?.value)
@@ -341,7 +359,50 @@ export default function StylePropertyEditor({
 						onClick={() => {
 							if (!navigator?.clipboard) return;
 							navigator.clipboard.readText().then(data => {
-								if (!data.startsWith(COPY_STYLE_PROPS_KEY)) return;
+								if (!data.startsWith(COPY_STYLE_PROPS_KEY)) {
+									if (!properties || !data) return;
+
+									const pastedStyles = processStyleFromString(data);
+
+									if (!Object.keys(pastedStyles).length) {
+										return;
+									}
+
+									const newProps = duplicate(styleProps) as ComponentStyle;
+									const screenSize = ((selectorPref[selectedComponent]?.screenSize
+										?.value as string) ?? 'ALL') as StyleResolution;
+
+									if (!newProps[properties[0]])
+										newProps[properties[0]] = { resolutions: {} };
+
+									if (!newProps[properties[0]].resolutions)
+										newProps[properties[0]].resolutions = {};
+
+									if (!newProps[properties[0]].resolutions![screenSize])
+										newProps[properties[0]].resolutions![screenSize] = {};
+
+									const styleObj =
+										newProps[properties[0]].resolutions![screenSize];
+
+									Object.entries(pastedStyles).forEach(
+										([prop, v]: [string, string]) => {
+											let actualProp = prop;
+											if (pseudoState) actualProp = `${prop}:${pseudoState}`;
+											if (subComponentName)
+												actualProp = `${subComponentName}-${actualProp}`;
+											if (!styleObj![actualProp])
+												styleObj![actualProp] = { value: v };
+											else
+												styleObj![actualProp] = {
+													...styleObj![actualProp],
+													value: v,
+												};
+										},
+									);
+
+									saveStyle(newProps);
+									return;
+								}
 								const copiedStyleProps = JSON.parse(
 									data.replace(COPY_STYLE_PROPS_KEY, ''),
 								);
@@ -382,9 +443,20 @@ export default function StylePropertyEditor({
 							schema: SCHEMA_STRING_COMP_PROP,
 							editor: ComponentPropertyEditor.ENUM,
 							defaultValue: 'ALL',
-							enumValues: Array.from(StyleResolutionDefinition.values()).sort(
-								(a, b) => a.order - b.order,
-							),
+							enumValues: Array.from(StyleResolutionDefinition.values())
+								.map(e => {
+									if (
+										properties?.[1].resolutions?.[e.name as StyleResolution] &&
+										Object.keys(
+											properties?.[1].resolutions?.[
+												e.name as StyleResolution
+											] ?? {},
+										).length
+									)
+										return { ...e, displayName: `★ ${e.displayName}` };
+									return e;
+								})
+								.sort((a, b) => a.order - b.order),
 						}}
 						value={selectorPref[selectedComponent]?.screenSize}
 						onlyValue={true}
@@ -392,6 +464,7 @@ export default function StylePropertyEditor({
 						storePaths={storePaths}
 						editPageName={editPageName}
 						slaveStore={slaveStore}
+						pageOperations={pageOperations}
 					/>
 				</div>
 				{subComponentsList.length !== 1 ? (
@@ -410,7 +483,10 @@ export default function StylePropertyEditor({
 								enumValues: subComponentsList.map(name => ({
 									name,
 									displayName:
-										name === '' ? 'Component' : camelCaseToUpperSpaceCase(name),
+										(hasSubComponents.has(name) ? '★ ' : '') +
+										(name === ''
+											? 'Component'
+											: camelCaseToUpperSpaceCase(name)),
 									description: '',
 								})),
 							}}
@@ -429,6 +505,7 @@ export default function StylePropertyEditor({
 							storePaths={storePaths}
 							editPageName={editPageName}
 							slaveStore={slaveStore}
+							pageOperations={pageOperations}
 						/>
 					</div>
 				) : (
@@ -448,10 +525,18 @@ export default function StylePropertyEditor({
 								editor: ComponentPropertyEditor.ENUM,
 								defaultValue: '',
 								enumValues: [
-									{ name: '', displayName: 'Default', description: 'No State' },
+									{
+										name: '',
+										displayName: hasPseudoStates.has('')
+											? '★ Default'
+											: 'Default',
+										description: 'No State',
+									},
 									...pseudoStates.map(name => ({
 										name,
-										displayName: name.toUpperCase(),
+										displayName:
+											(hasPseudoStates.has(name) ? '★ ' : '') +
+											name.toUpperCase(),
 										description: '',
 									})),
 								],
@@ -464,6 +549,7 @@ export default function StylePropertyEditor({
 							storePaths={storePaths}
 							editPageName={editPageName}
 							slaveStore={slaveStore}
+							pageOperations={pageOperations}
 						/>
 					</div>
 				) : (
@@ -521,38 +607,35 @@ export default function StylePropertyEditor({
 
 			{styleSectionsToShow.map(group => {
 				const isAdvancedSelected = showAdvanced.findIndex(e => e === group.name) !== -1;
-				return (
-					<PropertyGroup
-						key={group.name}
-						name={group.name}
-						displayName={group.displayName}
-						defaultStateOpen={false}
-						pageExtractor={pageExtractor}
-						locationHistory={locationHistory}
-						onChangePersonalization={onChangePersonalization}
-						personalizationPath={personalizationPath}
-					>
-						{COMPONENT_STYLE_GROUPS[group.name].map(prop => (
-							<EachPropEditor
-								key={prop}
-								subComponentName={subComponentName}
-								pseudoState={pseudoState}
-								prop={prop}
-								iterateProps={iterateProps}
-								pageDef={pageDef}
-								editPageName={editPageName}
-								slaveStore={slaveStore}
-								storePaths={storePaths}
-								selectorPref={selectorPref}
-								styleProps={styleProps}
-								selectedComponent={selectedComponent}
-								saveStyle={saveStyle}
-								properties={properties}
-							/>
-						))}
 
-						{group?.advanced?.length && (
-							<div className="_eachProp">
+				const withValueProps: string[] = [];
+				const withoutValueProps: string[] = [];
+				const advancedProps: string[] = [];
+
+				const props: ReactNode[] = [];
+
+				const prefix = subComponentName ? `${subComponentName}-` : '';
+				const postfix = pseudoState ? `:${pseudoState}` : '';
+
+				COMPONENT_STYLE_GROUPS[group.name].forEach(prop => {
+					if (iterateProps[prefix + prop]) withValueProps.push(prop);
+					else if (postfix && iterateProps[prefix + prop + postfix])
+						withValueProps.push(prop);
+					else withoutValueProps.push(prop);
+				});
+
+				group.advanced?.forEach(prop => {
+					if (iterateProps[prefix + prop]) withValueProps.push(prop);
+					else if (postfix && iterateProps[prefix + prop + postfix])
+						withValueProps.push(prop);
+					else advancedProps.push(prop);
+				});
+
+				let i = 0;
+				for (const eachGroup of [withValueProps, withoutValueProps, advancedProps]) {
+					if (i === 2 && eachGroup.length) {
+						props.push(
+							<div className="_eachProp" key="advancedCheckBox">
 								<label
 									className="_propLabel"
 									htmlFor={`${group.name}_showAdvanced`}
@@ -572,27 +655,46 @@ export default function StylePropertyEditor({
 									/>
 									Show Advanced Properties
 								</label>
-							</div>
-						)}
-						{isAdvancedSelected &&
-							(group.advanced ?? []).map(prop => (
-								<EachPropEditor
-									key={prop}
-									subComponentName={subComponentName}
-									pseudoState={pseudoState}
-									prop={prop}
-									iterateProps={iterateProps}
-									pageDef={pageDef}
-									editPageName={editPageName}
-									slaveStore={slaveStore}
-									storePaths={storePaths}
-									selectorPref={selectorPref}
-									styleProps={styleProps}
-									selectedComponent={selectedComponent}
-									saveStyle={saveStyle}
-									properties={properties}
-								/>
-							))}
+							</div>,
+						);
+					}
+					if (i === 2 && !isAdvancedSelected) break;
+					for (const prop of eachGroup) {
+						props.push(
+							<EachPropEditor
+								key={prop}
+								subComponentName={subComponentName}
+								pseudoState={pseudoState}
+								prop={prop}
+								iterateProps={iterateProps}
+								pageDef={pageDef}
+								editPageName={editPageName}
+								slaveStore={slaveStore}
+								storePaths={storePaths}
+								selectorPref={selectorPref}
+								styleProps={styleProps}
+								selectedComponent={selectedComponent}
+								saveStyle={saveStyle}
+								properties={properties}
+								pageOperations={pageOperations}
+							/>,
+						);
+					}
+					i++;
+				}
+
+				return (
+					<PropertyGroup
+						key={group.name}
+						name={group.name}
+						displayName={group.displayName + (withValueProps.length ? ' ★' : '')}
+						defaultStateOpen={false}
+						pageExtractor={pageExtractor}
+						locationHistory={locationHistory}
+						onChangePersonalization={onChangePersonalization}
+						personalizationPath={personalizationPath}
+					>
+						{props}
 					</PropertyGroup>
 				);
 			})}
@@ -614,6 +716,7 @@ function EachPropEditor({
 	selectedComponent,
 	saveStyle,
 	properties,
+	pageOperations,
 }: {
 	pseudoState: string;
 	subComponentName: string;
@@ -628,6 +731,7 @@ function EachPropEditor({
 	selectedComponent: string;
 	saveStyle: (newStyleProps: ComponentStyle) => void;
 	properties: [string, EachComponentStyle] | undefined;
+	pageOperations: PageOperations;
 }) {
 	const compProp = subComponentName ? `${subComponentName}-${prop}` : prop;
 	let value = iterateProps[compProp] ?? {};
@@ -638,10 +742,24 @@ function EachPropEditor({
 
 	if (!properties) return <></>;
 
+	let propName = prop.replace(/([A-Z])/g, ' $1');
+	propName = propName[0].toUpperCase() + propName.slice(1);
+
+	const screenSize = ((selectorPref[selectedComponent]?.screenSize?.value as string) ??
+		'ALL') as StyleResolution;
+
 	return (
 		<div className="_eachProp">
-			<div className="_propLabel" title="Name">
-				{prop.replace(/([A-Z])/g, ' $1')}:
+			<div className="_propLabel" title={propName}>
+				{propName}:{' '}
+				{(pseudoState && iterateProps[compProp]) ||
+				(screenSize !== 'ALL' &&
+					(properties[1]?.resolutions?.ALL?.[compProp] ||
+						properties[1]?.resolutions?.ALL?.[actualProp])) ? (
+					<span title="Has a default value">★</span>
+				) : (
+					''
+				)}
 			</div>
 			<PropertyValueEditor
 				pageDefinition={pageDef}
@@ -656,8 +774,6 @@ function EachPropEditor({
 				slaveStore={slaveStore}
 				onChange={v => {
 					const newProps = duplicate(styleProps) as ComponentStyle;
-					const screenSize = ((selectorPref[selectedComponent]?.screenSize
-						?.value as string) ?? 'ALL') as StyleResolution;
 
 					if (!newProps[properties[0]]) newProps[properties[0]] = { resolutions: {} };
 
@@ -678,6 +794,7 @@ function EachPropEditor({
 
 					saveStyle(newProps);
 				}}
+				pageOperations={pageOperations}
 			/>
 		</div>
 	);

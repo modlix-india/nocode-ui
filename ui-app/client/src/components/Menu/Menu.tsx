@@ -140,25 +140,17 @@ function Menu(props: ComponentProps) {
 	const menuDetails = (
 		<>
 			{icon ? (
-				<i
-					style={resolvedStyles.icon ?? {}}
-					className={`${icon} ${resolvedStyles.icon?.className ?? ''} icon`}
-				>
+				<i style={resolvedStyles.icon ?? {}} className={`${icon}  icon`}>
 					<SubHelperComponent definition={props.definition} subComponentName="icon" />
 				</i>
 			) : (
 				<i
-					className={`icon fa-solid fa-user icon hide ${
-						resolvedStyles.icon?.className ?? ''
-					}`}
+					className={`icon fa-solid fa-user icon hide`}
 					style={resolvedStyles.icon ?? {}}
 				></i>
 			)}
 			{!onlyIconMenu && (
-				<span
-					style={resolvedStyles.menuText ?? {}}
-					className={`menuText ${resolvedStyles.menuText?.className ?? ''}`}
-				>
+				<span style={resolvedStyles.menuText ?? {}} className={`menuText `}>
 					<SubHelperComponent definition={props.definition} subComponentName="menuText" />
 					{getTranslations(label, props.pageDefinition.translations)}
 				</span>
@@ -167,16 +159,11 @@ function Menu(props: ComponentProps) {
 	);
 
 	return (
-		<div
-			className={`comp compMenu ${resolvedStyles.comp?.className ?? ''}`}
-			style={resolvedStyles.comp ?? {}}
-		>
+		<div className={`comp compMenu `} style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={props.definition} />
 			<Link
 				style={resolvedStyles.link ?? {}}
-				className={` ${resolvedStyles.link?.className ?? ''} ${
-					isMenuActive ? 'isActive' : ''
-				} menuItemsContainer link`}
+				className={`  ${isMenuActive ? 'isActive' : ''} menuItemsContainer link`}
 				target={target}
 				to={getHref(linkPath, location)}
 				title={
@@ -186,9 +173,7 @@ function Menu(props: ComponentProps) {
 				<SubHelperComponent definition={props.definition} subComponentName="link" />
 				<div
 					onClick={!readOnly ? handleClick : undefined}
-					className={`menu ${onlyIconMenu ? 'onlyIconMenu' : ''} ${
-						resolvedStyles.menu?.className ?? ''
-					}`}
+					className={`menu ${onlyIconMenu ? 'onlyIconMenu' : ''}`}
 					onMouseEnter={
 						stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
 					}
@@ -205,9 +190,7 @@ function Menu(props: ComponentProps) {
 								!isMenuOpenState ? (
 									<i
 										style={resolvedStyles.caretIcon ?? {}}
-										className={`fa fa-solid fa-angle-down caretIcon ${
-											resolvedStyles.caretIcon?.className ?? ''
-										}`}
+										className={`fa fa-solid fa-angle-down caretIcon`}
 									>
 										<SubHelperComponent
 											definition={props.definition}
@@ -217,9 +200,7 @@ function Menu(props: ComponentProps) {
 								) : (
 									<i
 										style={resolvedStyles.caretIcon ?? {}}
-										className={`fa fa-solid fa-angle-up caretIcon ${
-											resolvedStyles.caretIcon?.className ?? ''
-										}`}
+										className={`fa fa-solid fa-angle-up caretIcon`}
 									>
 										<SubHelperComponent
 											definition={props.definition}

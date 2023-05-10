@@ -63,14 +63,24 @@ export function ContextMenu({
 	const deleteForContainer =
 		componentDefinition?.type &&
 		Components.get(componentDefinition.type)?.allowedChildrenType?.get('') === -1 ? (
-			<div
-				className="_popupMenuItem"
-				title="Delete "
-				onClick={() => pageOperations.moveChildrenUpAndDelete(menuDetails.componentKey)}
-			>
-				<i className="fa fa-solid fa-trash-arrow-up" />
-				Delete and Move Children Up
-			</div>
+			<>
+				<div
+					className="_popupMenuItem"
+					title="Delete "
+					onClick={() => pageOperations.moveChildrenUpAndDelete(menuDetails.componentKey)}
+				>
+					<i className="fa fa-solid fa-trash-arrow-up" />
+					Delete and Move Children Up
+				</div>
+				<div
+					className="_popupMenuItem"
+					title="Delete"
+					onClick={() => pageOperations.clearChildrenOnly(menuDetails.componentKey)}
+				>
+					<i className="fa fa-regular fa-trash-can" />
+					Delete Children Only
+				</div>
+			</>
 		) : (
 			<></>
 		);
@@ -99,7 +109,7 @@ export function ContextMenu({
 							title="Delete"
 							onClick={() => pageOperations.deleteComponent(menuDetails.componentKey)}
 						>
-							<i className="fa fa-regular fa-trash-can" />
+							<i className="fa fa-solid fa-trash-can" />
 							Delete
 						</div>
 						{deleteForContainer}

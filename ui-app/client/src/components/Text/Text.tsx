@@ -19,7 +19,7 @@ function Text(props: ComponentProps) {
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
-		properties: { text, textContainer, textType, processNewLine } = {},
+		properties: { text: originalTextObj, textContainer, textType, processNewLine } = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
 		definition,
@@ -37,6 +37,11 @@ function Text(props: ComponentProps) {
 
 	const hoverTrue = useCallback(() => setHover(true), [stylePropertiesWithPseudoStates]);
 	const hoverFalse = useCallback(() => setHover(false), [stylePropertiesWithPseudoStates]);
+
+	const text =
+		typeof originalTextObj === 'object'
+			? JSON.stringify(originalTextObj, undefined, 2)
+			: originalTextObj;
 
 	let translatedText = getTranslations(text, translations);
 
@@ -75,10 +80,7 @@ function Text(props: ComponentProps) {
 		...comps,
 	);
 	return (
-		<div
-			className={`comp compText ${styleProperties.comp?.className ?? ''}`}
-			style={styleProperties.comp ?? {}}
-		>
+		<div className="comp compText" style={styleProperties.comp ?? {}}>
 			<HelperComponent definition={definition} />
 			{comp}
 		</div>

@@ -58,7 +58,7 @@ function HelperComponentInternal({
 		position: 'absolute',
 		border: `2px solid ${highlightColor}`,
 		height: 'calc( 100% - 2px)',
-		width: 'calc( 100% - 2px)',
+		width: 'calc( 100% - 4px)',
 		top: '1px',
 		left: '1px',
 		zIndex: '6',
@@ -100,9 +100,10 @@ function HelperComponentInternal({
 			style={style as CSSProperties}
 			draggable="true"
 			className="opacityShowOnHover"
-			onDragStart={e =>
-				e.dataTransfer.items.add(`${DRAG_CD_KEY}${definition.key}`, 'text/plain')
-			}
+			onDragStart={e => {
+				if (e.dataTransfer.items.length) return;
+				e.dataTransfer.items.add(`${DRAG_CD_KEY}${definition.key}`, 'text/plain');
+			}}
 			onDragOver={e => {
 				e.preventDefault();
 				setDragOver(true);
