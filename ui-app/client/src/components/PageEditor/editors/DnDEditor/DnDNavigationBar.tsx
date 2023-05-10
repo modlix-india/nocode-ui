@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediately,
@@ -39,9 +39,10 @@ export default function DnDNavigationBar({
 	const [pageDef, setPageDef] = useState<PageDefinition>();
 	const [openParents, setOpenParents] = useState<Set<string>>(new Set());
 	const [expandAll, setExpandAll] = useState(false);
-	const [filter, setFilter] = useState('');
+	const [filter, setFilterOriginal] = useState('');
 	const [lastOpened, setLastOpened] = useState<string | undefined>(undefined);
 	const [dragStart, setDragStart] = useState<boolean>(false);
+	const [map, setMap] = useState(new Map<string, string>());
 
 	useEffect(() => {
 		if (!personalizationPath) return;
@@ -68,11 +69,48 @@ export default function DnDNavigationBar({
 			addListenerAndCallImmediatelyWithChildrenActivity(
 				(_, v) => {
 					setPageDef(v);
+					setMap(
+						new Map<string, string>(
+							Object.values(v?.componentDefinition ?? {})
+								.map((e: any) => ({
+									parentKey: e.key as string,
+									children: Object.keys(e.children ?? {}),
+								}))
+								.filter(e => !!e.children.length)
+								.flatMap(e => e.children.map(f => [f, e.parentKey])),
+						),
+					);
 				},
 				pageExtractor,
 				`${defPath}`,
 			),
 		[defPath, setPageDef],
+	);
+
+	const setFilter = useCallback(
+		(f: string) => {
+			if (!f.trim()) {
+				setFilterOriginal(f);
+				return;
+			}
+
+			const set = new Set(openParents);
+
+			Object.values(pageDef?.componentDefinition ?? {})
+				.filter(e => (e.name ?? '').toUpperCase().includes(f.toUpperCase()))
+				.map(e => e.key)
+				.forEach(e => {
+					let p: string | undefined = e;
+					while ((p = map.get(p))) {
+						if (expandAll) set.delete(p);
+						else set.add(p);
+					}
+				});
+
+			setFilterOriginal(f);
+			setOpenParents(set);
+		},
+		[openParents, setFilterOriginal, setOpenParents, pageDef, expandAll, map],
 	);
 
 	if (!componentTree || previewMode || !pageDef?.componentDefinition || !pageDef.rootComponent)
@@ -115,6 +153,7 @@ export default function DnDNavigationBar({
 					onContextMenu={onContextMenu}
 					dragStart={dragStart}
 					setDragStart={setDragStart}
+					filter={filter}
 				/>
 			</div>
 		</div>
@@ -135,6 +174,7 @@ interface CompTreeProps {
 	onContextMenu: (m: ContextMenuDetails) => void;
 	dragStart: boolean;
 	setDragStart: (v: boolean) => void;
+	filter: string;
 }
 
 function CompTree({
@@ -151,6 +191,7 @@ function CompTree({
 	onContextMenu,
 	dragStart,
 	setDragStart,
+	filter,
 }: CompTreeProps) {
 	const comp = pageDef?.componentDefinition[compKey];
 	if (!comp) return <></>;
@@ -202,6 +243,7 @@ function CompTree({
 					onContextMenu={onContextMenu}
 					dragStart={dragStart}
 					setDragStart={setDragStart}
+					filter={filter}
 				/>
 			));
 	}
@@ -255,10 +297,40 @@ function CompTree({
 						}}
 					/>
 					<i className={`fa ${ComponenstDefinition.get(comp.type)?.icon} ?? '`} />
-					<span className="_treeText">{comp.name ?? compKey}</span>
+					<span className="_treeText">
+						{filter ? (
+							<Filter name={comp.name ?? compKey} filter={filter} />
+						) : (
+							comp.name ?? compKey
+						)}
+					</span>
 				</div>
 			</div>
 			{childrenLevels}
 		</>
 	);
+}
+
+function Filter({ name, filter }: { name: string; filter: string }) {
+	const parts = name.toUpperCase().split(filter.toUpperCase());
+	if (parts.length === 1) return <>{name}</>;
+	console.log(name, parts, filter);
+	const result: ReactNode[] = [];
+	let start = 0;
+	for (let i = 0; i < parts.length; i++) {
+		if (i !== 0 && parts[i].length === 0) continue;
+		result.push(<span key={`part${i}`}>{name.substring(start, start + parts[i].length)}</span>);
+		console.log(name.substring(start, parts[i].length), start, start + parts[i].length);
+		start += parts[i].length;
+		if (i < parts.length - 1) {
+			result.push(
+				<span key={`filter${i}`} className="_filter">
+					{name.substring(start, start + filter.length)}
+				</span>,
+			);
+			console.log(name.substring(start, start + filter.length), start, start + filter.length);
+			start += filter.length;
+		}
+	}
+	return <>{result}</>;
 }
