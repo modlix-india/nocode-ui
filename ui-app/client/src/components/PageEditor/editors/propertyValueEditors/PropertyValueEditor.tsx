@@ -99,8 +99,6 @@ export default function PropertyValueEditor({
 		);
 	}
 
-	console.log(propDef.name, showAdvanced, value);
-
 	let valueEditor = makeValueEditor(
 		propDef,
 		chngValue,

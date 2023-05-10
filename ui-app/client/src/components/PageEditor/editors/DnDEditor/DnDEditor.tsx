@@ -11,6 +11,7 @@ import DnDBottomBar from './DnDBottomBar';
 import DnDTopBar from './DnDTopBar';
 import { ContextMenuDetails } from '../../components/ContextMenu';
 import DnDPropertyBar from './DnDPropertyBar';
+import DnDNavigationBar from './DnDNavigationBar';
 
 interface DnDEditorProps {
 	defPath: string | undefined;
@@ -130,6 +131,18 @@ export default function DnDEditor({
 					pageOperations={pageOperations}
 				/>
 				<div className={`_iframeContainer ${preview ? '_previewMode' : ''}`}>
+					<DnDNavigationBar
+						personalizationPath={personalizationPath}
+						onChangePersonalization={onChangePersonalization}
+						selectedComponent={selectedComponent}
+						onSelectedComponentChanged={onSelectedComponentChanged}
+						pageExtractor={pageExtractor}
+						defPath={defPath}
+						locationHistory={locationHistory}
+						pageOperations={pageOperations}
+						onContextMenu={onContextMenu}
+						previewMode={preview}
+					/>
 					<DnDIFrame
 						url={url}
 						personalizationPath={personalizationPath}
