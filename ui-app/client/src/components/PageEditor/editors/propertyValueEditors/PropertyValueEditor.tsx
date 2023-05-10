@@ -68,7 +68,7 @@ export default function PropertyValueEditor({
 
 	const toggleAdvanced = useCallback(() => {
 		setShowAdvanced(!showAdvanced);
-		if (!value) return;
+		if (!value?.value && !value?.location && !value?.backupExpression) return;
 		const newValue = { ...value };
 		if (showAdvanced) {
 			delete newValue.location;

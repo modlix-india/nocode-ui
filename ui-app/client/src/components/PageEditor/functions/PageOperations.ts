@@ -289,6 +289,39 @@ export default class PageOperations {
 		setData(this.defPath, def, this.pageExtractor.getPageName());
 	}
 
+	public clearChildrenOnly(componentKey: string) {
+		if (!componentKey || !this.defPath) return;
+
+		const pageDef: PageDefinition = getDataFromPath(
+			this.defPath,
+			this.locationHistory,
+			this.pageExtractor,
+		);
+		if (!pageDef) return;
+
+		let def = duplicate(pageDef) as PageDefinition;
+		let delKeys = new Set<string>();
+		let currentKeys = new LinkedList<string>(
+			Object.keys(def.componentDefinition[componentKey].children ?? {}),
+		);
+		def.componentDefinition[componentKey].children = {};
+		while (currentKeys.size() > 0) {
+			let key = currentKeys.pop();
+			if (!key) continue;
+			delKeys.add(key);
+			currentKeys.addAll([...Object.keys(def.componentDefinition[key].children ?? {})]);
+		}
+
+		const iterator = delKeys.values();
+		let key;
+		while ((key = iterator.next()?.value)) {
+			delete def.componentDefinition[key];
+		}
+		if (this.selectedComponent && delKeys.has(this.selectedComponent))
+			this.onSelectedComponentChanged('');
+		setData(this.defPath, def, this.pageExtractor.getPageName());
+	}
+
 	public wrapGrid(componentKey: string | undefined) {
 		if (!componentKey || !this.defPath) return;
 
