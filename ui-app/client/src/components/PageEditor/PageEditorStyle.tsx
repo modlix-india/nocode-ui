@@ -152,6 +152,9 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			transition: transform 0.5s;
 		}
 
+		${PREFIX} ._compsTree ._treeNode._dragStart ._treeNodeLevel {
+			border-right: none;
+		}
 		
 
 		${PREFIX} ._sideBar ._top {

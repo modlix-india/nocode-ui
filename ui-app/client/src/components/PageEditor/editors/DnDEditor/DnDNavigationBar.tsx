@@ -41,6 +41,7 @@ export default function DnDNavigationBar({
 	const [expandAll, setExpandAll] = useState(false);
 	const [filter, setFilter] = useState('');
 	const [lastOpened, setLastOpened] = useState<string | undefined>(undefined);
+	const [dragStart, setDragStart] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (!personalizationPath) return;
@@ -112,6 +113,8 @@ export default function DnDNavigationBar({
 					}}
 					pageOperations={pageOperations}
 					onContextMenu={onContextMenu}
+					dragStart={dragStart}
+					setDragStart={setDragStart}
 				/>
 			</div>
 		</div>
@@ -130,6 +133,8 @@ interface CompTreeProps {
 	lastOpened: string | undefined;
 	pageOperations: PageOperations;
 	onContextMenu: (m: ContextMenuDetails) => void;
+	dragStart: boolean;
+	setDragStart: (v: boolean) => void;
 }
 
 function CompTree({
@@ -144,6 +149,8 @@ function CompTree({
 	lastOpened,
 	pageOperations,
 	onContextMenu,
+	dragStart,
+	setDragStart,
 }: CompTreeProps) {
 	const comp = pageDef?.componentDefinition[compKey];
 	if (!comp) return <></>;
@@ -168,41 +175,60 @@ function CompTree({
 	let childrenLevels: ReactNode[] = [];
 
 	if (isOpen) {
-		childrenLevels = children?.map((cKey, i) => (
-			<CompTree
-				pageDef={pageDef}
-				compKey={cKey}
-				parents={[...parents, compKey]}
-				key={cKey}
-				expandAll={expandAll}
-				openParents={openParents}
-				onOpenClose={onOpenClose}
-				selectedComponent={selectedComponent}
-				onSelectedComponentChanged={onSelectedComponentChanged}
-				lastOpened={lastOpened}
-				pageOperations={pageOperations}
-				onContextMenu={onContextMenu}
-			/>
-		));
+		childrenLevels = children
+			?.sort((a, b) => {
+				const v =
+					(pageDef?.componentDefinition[a]?.displayOrder ?? 0) -
+					(pageDef?.componentDefinition[b]?.displayOrder ?? 0);
+				return v === 0
+					? (pageDef?.componentDefinition[a]?.key ?? '').localeCompare(
+							pageDef?.componentDefinition[b]?.key ?? '',
+					  )
+					: v;
+			})
+			.map((cKey, i) => (
+				<CompTree
+					pageDef={pageDef}
+					compKey={cKey}
+					parents={[...parents, compKey]}
+					key={cKey}
+					expandAll={expandAll}
+					openParents={openParents}
+					onOpenClose={onOpenClose}
+					selectedComponent={selectedComponent}
+					onSelectedComponentChanged={onSelectedComponentChanged}
+					lastOpened={lastOpened}
+					pageOperations={pageOperations}
+					onContextMenu={onContextMenu}
+					dragStart={dragStart}
+					setDragStart={setDragStart}
+				/>
+			));
 	}
 
 	return (
 		<>
 			<div
-				className={`_treeNode ${selectedComponent === compKey ? '_selected' : ''}`}
+				className={`_treeNode ${selectedComponent === compKey ? '_selected' : ''} ${
+					dragStart ? '_dragStart' : ''
+				}`}
 				title={`${comp.name ?? ''} - ${compKey}`}
 				onClick={() => onSelectedComponentChanged(compKey)}
 				draggable="true"
-				onDragStart={e =>
-					e.dataTransfer.items.add(`${DRAG_CD_KEY}${comp.key}`, 'text/plain')
-				}
+				onDragStart={e => {
+					setDragStart(true);
+					e.dataTransfer.items.add(`${DRAG_CD_KEY}${comp.key}`, 'text/plain');
+				}}
 				onDragOver={e => {
 					e.preventDefault();
 					e.stopPropagation();
+					if (!dragStart || !children?.length || isOpen) return;
+					onOpenClose(compKey);
 				}}
+				onDragEnd={e => setDragStart(false)}
 				onDrop={e =>
 					e.dataTransfer.items[0].getAsString(dragData =>
-						pageOperations.droppedOn(comp.key, dragData),
+						pageOperations.droppedOn(comp.key, dragData, true),
 					)
 				}
 				onContextMenu={e => {
