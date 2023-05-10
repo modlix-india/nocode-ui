@@ -63,6 +63,97 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border-left: 1px solid #eee;
 		}
 
+		._propBar._compNavBarVisible{
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+			width: auto;
+			border-left: 1px solid #eee;
+		}
+
+		${PREFIX} ._filterBar {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: center;
+			padding: 5px;
+			gap: 5px;
+		}
+
+		${PREFIX} ._filterBar i.fa {
+			font-size: 22px;
+			cursor: pointer;
+		}
+
+		${PREFIX} ._compsTree {
+			display: flex;
+			flex-direction: column;
+			width: 100%;
+			overflow: auto;
+		}
+
+		${PREFIX} ._compsTree ._treeNode {
+			font-size: 12px;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+		}
+
+		${PREFIX} ._compsTree ._treeNodeName {
+			padding: 3px 5px;
+			display: flex;
+			align-items: center;
+		}
+
+		${PREFIX} ._compsTree ._treeNodeLevel {
+			width: 10px;
+			height: 100%;
+		}
+
+		${PREFIX} ._compsTree ._treeNode._selected {
+			background-color: #ddd;
+		}
+
+		${PREFIX} ._compsTree:hover ._treeNodeLevel {
+			border-right: 1px solid #ccc;
+		} 
+
+		${PREFIX} ._compsTree ._treeNodeLevel._lastOpened {
+
+			border-right: 1px solid #aaa;
+		}
+
+		${PREFIX} ._compsTree ._treeNode:hover {
+			background-color: #eee;
+		}
+
+		${PREFIX} ._compsTree ._treeNode i.fa {
+			font-size: 13px;
+			width: 13px;
+			height: 13px;
+			display: flex;
+			justify-content: center;
+			margin: 0px 2px;
+		}
+
+		${PREFIX} ._compsTree ._treeNode ._treeText {
+			padding-left: 5px;
+		}
+
+		${PREFIX} ._compsTree:hover ._animateTransform::before {
+			color: #777;	
+		}
+
+		${PREFIX} ._compsTree ._animateTransform::before {
+			color: #ccc;	
+		}
+
+		${PREFIX} ._compsTree ._animateTransform {
+			transition: transform 0.5s;
+		}
+
+		
+
 		${PREFIX} ._sideBar ._top {
 			flex: 1;
 			display: flex;
@@ -129,6 +220,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border: 1px solid #ccc;
 		}
 
+		${PREFIX} ._filterBar input,
 		input._peInput, ._pvExpressionEditor,
 		textarea._peInput {
 			color: #555;
