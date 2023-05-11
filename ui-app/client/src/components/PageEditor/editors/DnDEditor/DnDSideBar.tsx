@@ -36,6 +36,7 @@ export default function DnDSideBar({
 	previewMode,
 }: DnDSideBarProps) {
 	const [noSelection, setNoSelection] = useState<boolean>(false);
+	const [componentTree, setComponentTree] = useState<boolean>(false);
 	const [noShell, setNoShell] = useState<boolean>(false);
 	const [showCompMenu, setShowCompMenu] = useState<boolean>(false);
 	const [selectedComponentType, setSelectedComponentType] = useState('');
@@ -66,6 +67,15 @@ export default function DnDSideBar({
 			(_, v) => setTheme(v),
 			pageExtractor,
 			`${personalizationPath}.theme`,
+		);
+	}, [personalizationPath]);
+
+	useEffect(() => {
+		if (!personalizationPath) return;
+		return addListenerAndCallImmediately(
+			(_, v) => setComponentTree(v),
+			pageExtractor,
+			`${personalizationPath}.componentTree`,
 		);
 	}, [personalizationPath]);
 
@@ -152,6 +162,13 @@ export default function DnDSideBar({
 						}}
 					>
 						<i className="fa fa-regular fa-square-plus" />
+					</div>
+					<div
+						className="_iconMenu"
+						tabIndex={0}
+						onClick={() => onChangePersonalization('componentTree', !componentTree)}
+					>
+						<i className="fa fa-solid fa-tree" />
 					</div>
 				</div>
 				<div className="_bottom">

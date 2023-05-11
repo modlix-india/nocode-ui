@@ -635,7 +635,7 @@ export default function StylePropertyEditor({
 				for (const eachGroup of [withValueProps, withoutValueProps, advancedProps]) {
 					if (i === 2 && eachGroup.length) {
 						props.push(
-							<div className="_eachProp">
+							<div className="_eachProp" key="advancedCheckBox">
 								<label
 									className="_propLabel"
 									htmlFor={`${group.name}_showAdvanced`}
