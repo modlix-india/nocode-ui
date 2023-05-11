@@ -1,51 +1,36 @@
 import React from 'react';
-import { StyleResolution } from '../../types/common';
-import { processStyleDefinition, processStyleValueWithFunction } from '../../util/styleProcessor';
-import { styleProperties, styleDefaults } from '../Menu/menuStyleProperties';
+import { processStyleDefinition } from '../../util/styleProcessor';
+import { styleProperties, styleDefaults } from './menuStyleProperties';
 
 const PREFIX = '.comp.compMenu';
-export default function MenuStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
-	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
+export default function LinkStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
 	const css =
 		`
-		${PREFIX} {
-			width: 100%;
-		}
-		${PREFIX} {
-			cursor: pointer;
-		}
-		${PREFIX} .menuItemsContainer {
-			display: flex;
-			position: relative;
-		}
-		${PREFIX} .menu {
-			flex: 1;
-			display: flex;
-			flex-direction : row;
-			align-items: center;
-			justify-content: space-between;
-			position: relative;
-		}
+	${PREFIX} {
+		display: inline-flex;
+		flex-direction: row;
+		align-items: center;
+		gap: 3px;
+	}
 
-		${PREFIX} .menuText {
-			position: relative;
-			flex:1;
-		}
+	${PREFIX} ._externalButton {
+		position: relative;
+	}
 
-		${PREFIX} .icon {
-			position: relative;
-		}
+	${PREFIX} ._icon {
+		position: relative;
+	}
 
-		${PREFIX} .caretIcon {
-			position: relative;
-		}
-		
-		${PREFIX} .link{
-			text-decoration: none;
-			flex: 1;
-			position: relative;
-		}
-    ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
+	${PREFIX} ._caretIcon {
+		position: relative;
+		transition: transform 0.5s ease-in-out;
+	}
+
+	${PREFIX} ._caretIconContainer {
+		flex: 1;
+		text-align: right;
+ 	} 
+	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="MenuCss">{css}</style>;
 }
