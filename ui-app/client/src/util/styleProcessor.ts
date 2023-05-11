@@ -362,3 +362,21 @@ export function processStyleFromString(str: string): { [key: string]: string } {
 		}, {} as any);
 	return styles;
 }
+
+export function processStyleObjectToCSS(styleObj: any): string {
+	if (!styleObj) return '';
+	const x = Object.entries(styleObj)
+		.map(
+			([key, value]) =>
+				key
+					.split(/(?=[A-Z])/g)
+					.map(s => s.toLowerCase())
+					.join('-') +
+				': ' +
+				value +
+				';',
+		)
+		.join('\n');
+
+	return x;
+}
