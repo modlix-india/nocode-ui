@@ -59,7 +59,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show Popover tip',
 		description: 'Show Popover tip.',
-		defaultValue: true,
+		defaultValue: false,
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
@@ -70,11 +70,36 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
+	{
+		name: 'closeOnOutsideClick',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Close Popover on outside click',
+		description: 'Close Popover on outside click.',
+		defaultValue: true,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'showInDesign',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show in Design Mode',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: false,
+	},
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
 const stylePropertiesDefinition = {
 	'': [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	popoverParentContainer: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,

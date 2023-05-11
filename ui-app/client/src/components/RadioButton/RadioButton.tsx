@@ -17,6 +17,7 @@ import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './radioButtonProperties';
 import RadioButtonStyle from './RadioButtonStyle';
+import { SubHelperComponent } from '../SubHelperComponent';
 
 function RadioButton(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -181,6 +182,7 @@ function RadioButton(props: ComponentProps) {
 						onChange={() => handleClick(e)}
 						showAsRadio={!isMultiSelect}
 						isReadOnly={readOnly}
+						definition={props.definition}
 						styles={{
 							...((focus === e.key
 								? resolvedStylesFocus.radio
@@ -198,7 +200,7 @@ function RadioButton(props: ComponentProps) {
 							stylePropertiesWithPseudoStates?.focus ? () => setFocus('') : undefined
 						}
 					/>
-
+					<SubHelperComponent definition={props.definition} subComponentName="label" />
 					{getTranslations(e.label, translations)}
 				</label>
 			))}

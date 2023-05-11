@@ -163,7 +163,7 @@ function Menu(props: ComponentProps) {
 			<HelperComponent definition={props.definition} />
 			<Link
 				style={resolvedStyles.link ?? {}}
-				className={`  ${isMenuActive ? 'isActive' : ''} menuItemsContainer link`}
+				className={`${isMenuActive ? 'isActive' : ''} menuItemsContainer link`}
 				target={target}
 				to={getHref(linkPath, location)}
 				title={

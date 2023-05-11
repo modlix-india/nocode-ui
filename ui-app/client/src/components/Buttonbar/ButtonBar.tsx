@@ -139,39 +139,39 @@ function ButtonBar(props: ComponentProps) {
 	return (
 		<div className="comp compButtonBar" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={props.definition} />
-			<SubHelperComponent definition={props.definition} subComponentName="label">
-				<label style={resolvedStyles.label ?? {}} className="_label">
-					{getTranslations(label, translations)}
-				</label>
-			</SubHelperComponent>
-			<SubHelperComponent definition={props.definition} subComponentName="container">
-				<div className="_buttonBarContainer" style={resolvedStyles.container ?? {}}>
-					{buttonBarData?.map(each => (
-						<SubHelperComponent definition={props.definition} subComponentName="button">
-							<button
-								style={resolvedStyles.button ?? {}}
-								key={each?.key}
-								onMouseEnter={
-									stylePropertiesWithPseudoStates?.hover
-										? () => setHover(each?.key)
-										: undefined
-								}
-								onMouseLeave={
-									stylePropertiesWithPseudoStates?.hover
-										? () => setHover('')
-										: undefined
-								}
-								onClick={() => (!readOnly && each ? handleClick(each) : undefined)}
-								className={`_button ${
-									getIsSelected(each?.key) ? '_selected' : ''
-								} ${readOnly ? '_disabled' : ''}`}
-							>
-								{getTranslations(each?.label, translations)}
-							</button>
-						</SubHelperComponent>
-					))}
-				</div>
-			</SubHelperComponent>
+
+			<label style={resolvedStyles.label ?? {}} className="_label">
+				<SubHelperComponent definition={props.definition} subComponentName="label" />
+				{getTranslations(label, translations)}
+			</label>
+
+			<div className="_buttonBarContainer" style={resolvedStyles.container ?? {}}>
+				<SubHelperComponent definition={props.definition} subComponentName="container" />
+				{buttonBarData?.map(each => (
+					<button
+						style={resolvedStyles.button ?? {}}
+						key={each?.key}
+						onMouseEnter={
+							stylePropertiesWithPseudoStates?.hover
+								? () => setHover(each?.key)
+								: undefined
+						}
+						onMouseLeave={
+							stylePropertiesWithPseudoStates?.hover ? () => setHover('') : undefined
+						}
+						onClick={() => (!readOnly && each ? handleClick(each) : undefined)}
+						className={`_button ${getIsSelected(each?.key) ? '_selected' : ''} ${
+							readOnly ? '_disabled' : ''
+						}`}
+					>
+						<SubHelperComponent
+							definition={props.definition}
+							subComponentName="button"
+						/>
+						{getTranslations(each?.label, translations)}
+					</button>
+				))}
+			</div>
 		</div>
 	);
 }

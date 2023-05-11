@@ -1,6 +1,7 @@
 import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyDefinition,
+	ComponentPropertyEditor,
 	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
@@ -39,6 +40,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: `Link Button's target.`,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
+	{
+		name: 'leftIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: "Link's left icon",
+		description: "Link's icon to be displayed on left of Link label.",
+		editor: ComponentPropertyEditor.ICON,
+	},
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
@@ -66,6 +75,20 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 	icon: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+	],
+	leftIcon: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+	],
+	secondLink: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 };
 

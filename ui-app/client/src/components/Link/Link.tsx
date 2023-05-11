@@ -18,6 +18,7 @@ import LinkStyle from './LinkStyle';
 import useDefinition from '../util/useDefinition';
 import { getHref } from '../util/getHref';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import { SubHelperComponent } from '../SubHelperComponent';
 
 function Link(props: ComponentProps) {
 	const location = useLocation();
@@ -38,6 +39,7 @@ function Link(props: ComponentProps) {
 			showButton,
 			externalButtonTarget = '_blank',
 			isExternalUrl,
+			leftIcon,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -53,10 +55,19 @@ function Link(props: ComponentProps) {
 		{ hover },
 		stylePropertiesWithPseudoStates,
 	);
+
+	const leftIconTag = leftIcon ? (
+		<i style={resolvedStyles.leftIcon ?? {}} className={`leftIcon ${leftIcon}`}>
+			<SubHelperComponent
+				definition={props.definition}
+				subComponentName="leftIcon"
+			></SubHelperComponent>
+		</i>
+	) : null;
 	return (
 		<div
 			className="comp compLinks linkDiv"
-			style={resolvedStyles.container ?? {}}
+			style={resolvedStyles.comp ?? {}}
 			onMouseEnter={stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined}
 			onMouseLeave={
 				stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
@@ -70,6 +81,11 @@ function Link(props: ComponentProps) {
 					to={resolvedLink}
 					target={target}
 				>
+					<SubHelperComponent
+						definition={props.definition}
+						subComponentName="link"
+					></SubHelperComponent>
+					{leftIconTag}
 					{getTranslations(label, translations)}
 				</RouterLink>
 			) : (
@@ -79,6 +95,11 @@ function Link(props: ComponentProps) {
 					href={resolvedLink}
 					target={target}
 				>
+					<SubHelperComponent
+						definition={props.definition}
+						subComponentName="link"
+					></SubHelperComponent>
+					{leftIconTag}
 					{getTranslations(label, translations)}
 				</a>
 			)}
@@ -88,23 +109,42 @@ function Link(props: ComponentProps) {
 						to={resolvedLink}
 						target={externalButtonTarget}
 						className="secondLink"
+						style={resolvedStyles.secondLink ?? {}}
 					>
+						<SubHelperComponent
+							definition={props.definition}
+							subComponentName="secondLink"
+						/>
 						<i
 							style={resolvedStyles.icon ?? {}}
-							className="fa-solid fa-up-right-from-square"
-						></i>
+							className="icon fa-solid fa-up-right-from-square"
+						>
+							<SubHelperComponent
+								definition={props.definition}
+								subComponentName="icon"
+							></SubHelperComponent>
+						</i>
 					</RouterLink>
 				) : (
 					<a
 						href={resolvedLink}
 						target={externalButtonTarget}
 						className="secondLink"
-						style={resolvedStyles.link ?? {}}
+						style={resolvedStyles.secondLink ?? {}}
 					>
+						<SubHelperComponent
+							definition={props.definition}
+							subComponentName="secondLink"
+						/>
 						<i
 							style={resolvedStyles.icon ?? {}}
-							className="fa-solid fa-up-right-from-square"
-						></i>
+							className="icon fa-solid fa-up-right-from-square"
+						>
+							<SubHelperComponent
+								definition={props.definition}
+								subComponentName="icon"
+							></SubHelperComponent>
+						</i>
 					</a>
 				)
 			) : null}

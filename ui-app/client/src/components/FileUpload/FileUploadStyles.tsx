@@ -15,12 +15,42 @@ export default function ProgressBarStyles({ theme }: { theme: Map<string, Map<st
         display: none;
     }
 
+    ${PREFIX} .mainText {
+        position: relative;
+    }
+
+    ${PREFIX} ._validationMessages {
+        position: relative;
+    }
+
+    ${PREFIX} .selectedDetails {
+        position: relative;
+    }
+
+    ${PREFIX} .closeIcon {
+        position: relative;
+    }
+
+    ${PREFIX} .uploadIcon {
+        position: relative;
+    }
+
+    ${PREFIX} .labelText {
+        position: relative;
+    }
+
+
+    ${PREFIX} ._eachvalidationMessage {
+        position: relative;
+    }
+
     ${PREFIX} .uploadContainer {
         display: flex;
         flex-direction: column;
         align-content: center;
         justify-content: center;
         cursor: pointer;
+        position: relative;
     }
 
     ${PREFIX} .uploadContainer.horizontal {
@@ -33,6 +63,7 @@ export default function ProgressBarStyles({ theme }: { theme: Map<string, Map<st
     ${PREFIX} .inputContainer {
         display: flex;
         align-items: center;
+        position: relative;
     }
 
     ${PREFIX} .errors {
@@ -42,6 +73,7 @@ export default function ProgressBarStyles({ theme }: { theme: Map<string, Map<st
     ${PREFIX} .selectedFileContainer {
         display: flex;
         overflow-x: auto;
+        position: relative;
     }
 
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
