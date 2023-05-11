@@ -1,27 +1,20 @@
 import React from 'react';
-import { getData, PageStoreExtractor } from '../../context/StoreContext';
-import { HelperComponent } from '../HelperComponent';
-import { Schema } from '@fincity/kirun-js';
-import { NAMESPACE_UI_ENGINE } from '../../constants';
-import { Link as RouterLink, useLocation } from 'react-router-dom';
-import { getTranslations } from '../util/getTranslations';
+import { useLocation } from 'react-router-dom';
+import { PageStoreExtractor } from '../../context/StoreContext';
+import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import {
-	DataLocation,
-	ComponentProperty,
-	RenderContext,
-	ComponentPropertyDefinition,
-	ComponentProps,
-} from '../../types/common';
-import { Component } from '../../types/common';
+	processComponentStylePseudoClasses,
+	processStyleObjectToCSS,
+} from '../../util/styleProcessor';
+import { HelperComponent } from '../HelperComponent';
+import { getHref } from '../util/getHref';
+import { getTranslations } from '../util/getTranslations';
+import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './linkProperties';
 import LinkStyle from './LinkStyle';
-import useDefinition from '../util/useDefinition';
-import { getHref } from '../util/getHref';
-import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 
 function Link(props: ComponentProps) {
 	const location = useLocation();
-	const [hover, setHover] = React.useState(false);
 	const {
 		pageDefinition: { translations },
 		definition,
@@ -34,10 +27,11 @@ function Link(props: ComponentProps) {
 		properties: {
 			linkPath,
 			label,
-			target = '_self',
+			target,
+			features,
 			showButton,
 			externalButtonTarget = '_blank',
-			isExternalUrl,
+			externalButtonFeatures,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -48,67 +42,95 @@ function Link(props: ComponentProps) {
 		pageExtractor,
 	);
 	const resolvedLink = getHref(linkPath, location);
-	const resolvedStyles = processComponentStylePseudoClasses(
+	const hoverStyle = processComponentStylePseudoClasses(
 		props.pageDefinition,
-		{ hover },
+		{ hover: true },
 		stylePropertiesWithPseudoStates,
 	);
+
+	const visitedStyle = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{ visited: true },
+		stylePropertiesWithPseudoStates,
+	);
+
+	const regularStyle = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{ visited: false, hover: false },
+		stylePropertiesWithPseudoStates,
+	);
+
+	const externalButton = showButton ? (
+		<i
+			className="_externalButton fa fa-solid fa-up-right-from-square"
+			onClick={e => {
+				e.stopPropagation();
+				e.preventDefault();
+				if (externalButtonTarget === '_self') {
+					window.history.pushState(undefined, '', resolvedLink);
+					window.history.back();
+					setTimeout(() => window.history.forward(), 100);
+				} else {
+					window.open(
+						resolvedLink,
+						externalButtonTarget,
+						externalButtonFeatures ?? features,
+					);
+				}
+			}}
+		></i>
+	) : (
+		<></>
+	);
+
+	const styleKey = `${key}_${
+		locationHistory?.length ? locationHistory.map(e => e.index).join('_') : ''
+	}`;
+
+	const styleComp = (
+		<style key={`${styleKey}_style`}>
+			{`._${styleKey}link_css { ${processStyleObjectToCSS(regularStyle?.comp)} }`}
+			{`._${styleKey}link_css:visited { ${processStyleObjectToCSS(visitedStyle?.comp)} }`}
+			{`._${styleKey}link_css:hover { ${processStyleObjectToCSS(hoverStyle?.comp)} }`}
+
+			{`._${styleKey}link_css > ._externalButton { ${processStyleObjectToCSS(
+				regularStyle?.icon,
+			)} }`}
+			{`._${styleKey}link_css:visited > ._externalButton { ${processStyleObjectToCSS(
+				visitedStyle?.icon,
+			)} }`}
+			{`._${styleKey}link_css:hover > ._externalButton { ${processStyleObjectToCSS(
+				hoverStyle?.icon,
+			)} }`}
+		</style>
+	);
+
 	return (
-		<div
-			className="comp compLinks linkDiv"
-			style={resolvedStyles.container ?? {}}
-			onMouseEnter={stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined}
-			onMouseLeave={
-				stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
-			}
-		>
-			<HelperComponent definition={definition} />
-			{!isExternalUrl ? (
-				<RouterLink
-					style={resolvedStyles.link ?? {}}
-					className="link"
-					to={resolvedLink}
-					target={target}
-				>
-					{getTranslations(label, translations)}
-				</RouterLink>
-			) : (
-				<a
-					style={resolvedStyles.link ?? {}}
-					className="link"
-					href={resolvedLink}
-					target={target}
-				>
-					{getTranslations(label, translations)}
-				</a>
-			)}
-			{showButton ? (
-				isExternalUrl ? (
-					<RouterLink
-						to={resolvedLink}
-						target={externalButtonTarget}
-						className="secondLink"
-					>
-						<i
-							style={resolvedStyles.icon ?? {}}
-							className="fa-solid fa-up-right-from-square"
-						></i>
-					</RouterLink>
-				) : (
-					<a
-						href={resolvedLink}
-						target={externalButtonTarget}
-						className="secondLink"
-						style={resolvedStyles.link ?? {}}
-					>
-						<i
-							style={resolvedStyles.icon ?? {}}
-							className="fa-solid fa-up-right-from-square"
-						></i>
-					</a>
-				)
-			) : null}
-		</div>
+		<>
+			{styleComp}
+			<a
+				className={`comp compLink _${styleKey}link_css`}
+				href={resolvedLink}
+				target={target}
+				onClick={e => {
+					if (!target || target === '_self') {
+						e.stopPropagation();
+						e.preventDefault();
+						window.history.pushState(undefined, '', resolvedLink);
+						window.history.back();
+						setTimeout(() => window.history.forward(), 100);
+					} else if (features) {
+						e.stopPropagation();
+						e.preventDefault();
+						window.open(resolvedLink, target, features);
+					}
+				}}
+			>
+				<HelperComponent definition={definition} />
+				{getTranslations(label, translations)}
+				{externalButton}
+			</a>
+		</>
 	);
 }
 
@@ -122,7 +144,7 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	styleComponent: LinkStyle,
-	stylePseudoStates: ['hover'],
+	stylePseudoStates: ['hover', 'visited'],
 	defaultTemplate: {
 		key: '',
 		type: 'Link',

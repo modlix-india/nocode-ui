@@ -314,13 +314,13 @@ function CompTree({
 function Filter({ name, filter }: { name: string; filter: string }) {
 	const parts = name.toUpperCase().split(filter.toUpperCase());
 	if (parts.length === 1) return <>{name}</>;
-	console.log(name, parts, filter);
+
 	const result: ReactNode[] = [];
 	let start = 0;
 	for (let i = 0; i < parts.length; i++) {
 		if (i !== 0 && parts[i].length === 0) continue;
 		result.push(<span key={`part${i}`}>{name.substring(start, start + parts[i].length)}</span>);
-		console.log(name.substring(start, parts[i].length), start, start + parts[i].length);
+
 		start += parts[i].length;
 		if (i < parts.length - 1) {
 			result.push(
@@ -328,7 +328,7 @@ function Filter({ name, filter }: { name: string; filter: string }) {
 					{name.substring(start, start + filter.length)}
 				</span>,
 			);
-			console.log(name.substring(start, start + filter.length), start, start + filter.length);
+
 			start += filter.length;
 		}
 	}
