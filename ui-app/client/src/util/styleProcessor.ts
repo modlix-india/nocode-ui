@@ -363,7 +363,7 @@ export function processStyleFromString(str: string): { [key: string]: string } {
 	return styles;
 }
 
-export function processStyleObjectToCSS(styleObj: any): string {
+export function processStyleObjectToCSS(styleObj: any, selector: string): string {
 	if (!styleObj) return '';
 	const x = Object.entries(styleObj)
 		.map(
@@ -378,5 +378,7 @@ export function processStyleObjectToCSS(styleObj: any): string {
 		)
 		.join('\n');
 
-	return x;
+	if (x.trim() === '') return '';
+
+	return `${selector} { ${x} }`;
 }

@@ -12,6 +12,10 @@ export default function LinkStyle({ theme }: { theme: Map<string, Map<string, st
 		align-items: center;
 		gap: 3px;
 	}
+
+	${PREFIX} ._externalButton {
+		position: relative;
+	}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="LinkCss">{css}</style>;

@@ -12,6 +12,7 @@ import { getTranslations } from '../util/getTranslations';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './linkProperties';
 import LinkStyle from './LinkStyle';
+import { SubHelperComponent } from '../SubHelperComponent';
 
 function Link(props: ComponentProps) {
 	const location = useLocation();
@@ -78,7 +79,9 @@ function Link(props: ComponentProps) {
 					);
 				}
 			}}
-		></i>
+		>
+			<SubHelperComponent definition={definition} subComponentName="externalIcon" />
+		</i>
 	) : (
 		<></>
 	);
@@ -89,19 +92,21 @@ function Link(props: ComponentProps) {
 
 	const styleComp = (
 		<style key={`${styleKey}_style`}>
-			{`._${styleKey}link_css { ${processStyleObjectToCSS(regularStyle?.comp)} }`}
-			{`._${styleKey}link_css:visited { ${processStyleObjectToCSS(visitedStyle?.comp)} }`}
-			{`._${styleKey}link_css:hover { ${processStyleObjectToCSS(hoverStyle?.comp)} }`}
-
-			{`._${styleKey}link_css > ._externalButton { ${processStyleObjectToCSS(
-				regularStyle?.icon,
-			)} }`}
-			{`._${styleKey}link_css:visited > ._externalButton { ${processStyleObjectToCSS(
-				visitedStyle?.icon,
-			)} }`}
-			{`._${styleKey}link_css:hover > ._externalButton { ${processStyleObjectToCSS(
-				hoverStyle?.icon,
-			)} }`}
+			{processStyleObjectToCSS(regularStyle?.comp, `._${styleKey}link_css`)}
+			{processStyleObjectToCSS(visitedStyle?.comp, `._${styleKey}link_css:visited`)}
+			{processStyleObjectToCSS(hoverStyle?.comp, `._${styleKey}link_css:hover`)}
+			{processStyleObjectToCSS(
+				regularStyle?.externalIcon,
+				`._${styleKey}link_css > ._externalButton`,
+			)}
+			{processStyleObjectToCSS(
+				visitedStyle?.externalIcon,
+				`._${styleKey}link_css:visited > ._externalButton`,
+			)}
+			{processStyleObjectToCSS(
+				hoverStyle?.externalIcon,
+				`._${styleKey}link_css:hover > ._externalButton`,
+			)}
 		</style>
 	);
 
