@@ -1,18 +1,73 @@
-import { Schema } from '@fincity/kirun-js';
+import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
 import {
-	SCHEMA_ANY_COMP_PROP,
-	SCHEMA_BOOL_COMP_PROP,
-	SCHEMA_DATA_LOCATION,
-	SCHEMA_STRING_COMP_PROP,
-} from '../../constants';
-import {
+	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
 	ComponentPropertyGroup,
-	ComponentPropertyDefinition,
+	ComponentStylePropertyDefinition,
 } from '../../types/common';
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
+	{
+		name: 'label',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Link label',
+		description: "Link's display label.",
+		translatable: true,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{ ...COMMON_COMPONENT_PROPERTIES.linkPath, group: ComponentPropertyGroup.BASIC },
+	{ ...COMMON_COMPONENT_PROPERTIES.linkTargetType, group: ComponentPropertyGroup.BASIC },
+	{ ...COMMON_COMPONENT_PROPERTIES.linkTargetFeatures, group: ComponentPropertyGroup.BASIC },
+	{
+		name: 'showButton',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Link Button',
+		description: 'Button beside the link to redirect.',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'externalButtonTarget',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: "Link Button's target",
+		description: "Link Button's target.",
+		defaultValue: '_blank',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'externalButtonFeatures',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: "Link Button's target features",
+		description: "Link Button's target features",
+	},
+	{
+		name: 'icon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: "Menu's icon",
+		description: "Menu's icon to be displayed on left.",
+		defaultValue: 'fa fa-solid fa-home',
+		editor: ComponentPropertyEditor.ICON,
+	},
+	{
+		name: 'caretIconOpen',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: "Menu's caret icon open",
+		description: "Menu's icon to be displayed when menu open.",
+		defaultValue: 'fa fa-solid fa-angle-down',
+		editor: ComponentPropertyEditor.ICON,
+	},
+	{
+		name: 'caretIconClose',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: "Menu's caret icon close",
+		description: "Menu's icon to be displayed when menu close.",
+		defaultValue: 'fa fa-solid fa-angle-down fa-rotate-180',
+		editor: ComponentPropertyEditor.ICON,
+	},
 	{
 		name: 'pathsActiveFor',
 		schema: SCHEMA_STRING_COMP_PROP,
@@ -20,14 +75,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'A list of comma separated paths for which the menu is shown in active.',
 		defaultValue: '',
 		group: ComponentPropertyGroup.ADVANCED,
-	},
-	{
-		name: 'label',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Menu label',
-		description: "Menu's display label.",
-		translatable: true,
-		group: ComponentPropertyGroup.BASIC,
 	},
 	COMMON_COMPONENT_PROPERTIES.onClick,
 	{
@@ -52,14 +99,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
-		name: 'icon',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: "Menu's icon",
-		description: "Menu's icon to be displayed on left of label.",
-		editor: ComponentPropertyEditor.ICON,
-		group: ComponentPropertyGroup.BASIC,
-	},
-	{
 		name: 'isMenuOpen',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Default state of submenus',
@@ -67,50 +106,23 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 		defaultValue: true,
 	},
-	COMMON_COMPONENT_PROPERTIES.linkPath,
-	COMMON_COMPONENT_PROPERTIES.linkTargetType,
-	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
-const stylePropertiesDefinition = {
+const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 	'': [
 		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
-	],
-	menu: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
-	],
-	link: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
-	menuText: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+	externalIcon: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 	icon: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,

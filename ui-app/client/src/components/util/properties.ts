@@ -79,6 +79,13 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 		description: 'Path that page needs to be redirected on click.',
 		translatable: false,
 	},
+	linkTargetFeatures: {
+		name: 'features',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'Link target features',
+		description: 'Link target features',
+	},
 	layout: {
 		name: 'layout',
 		schema: SCHEMA_STRING_COMP_PROP,

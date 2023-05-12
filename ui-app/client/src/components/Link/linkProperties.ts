@@ -18,6 +18,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{ ...COMMON_COMPONENT_PROPERTIES.linkPath, group: ComponentPropertyGroup.BASIC },
 	{ ...COMMON_COMPONENT_PROPERTIES.linkTargetType, group: ComponentPropertyGroup.BASIC },
+	{ ...COMMON_COMPONENT_PROPERTIES.linkTargetFeatures, group: ComponentPropertyGroup.BASIC },
 	{
 		name: 'showButton',
 		schema: SCHEMA_BOOL_COMP_PROP,
@@ -26,19 +27,18 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
-		name: 'isExternalUrl',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Is external url ?',
-		description: 'Is the url an external url ?.',
-		defaultValue: false,
+		name: 'externalButtonTarget',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: "Link Button's target",
+		description: "Link Button's target.",
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
-		name: 'externalButtonTarget',
+		name: 'externalButtonFeatures',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Link Button target',
-		description: `Link Button's target.`,
 		group: ComponentPropertyGroup.ADVANCED,
+		displayName: "Link Button's target features",
+		description: "Link Button's target features",
 	},
 	{
 		name: 'leftIcon',
@@ -62,17 +62,7 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
-	link: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
-	],
-	icon: [
+	externalIcon: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 	],
