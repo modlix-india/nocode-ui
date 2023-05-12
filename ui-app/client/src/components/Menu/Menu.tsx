@@ -1,72 +1,62 @@
-import React, { useRef } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { MouseEvent } from 'react';
+import { useLocation } from 'react-router-dom';
+import { PageStoreExtractor } from '../../context/StoreContext';
+import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import {
-	addListener,
-	addListenerAndCallImmediately,
-	getData,
-	getPathFromLocation,
-	PageStoreExtractor,
-	setData,
-} from '../../context/StoreContext';
-import {
-	ComponentProps,
-	ComponentPropertyDefinition,
-	ComponentProperty,
-	DataLocation,
-	RenderContext,
-} from '../../types/common';
-import { Component } from '../../types/common';
-import useDefinition from '../util/useDefinition';
-import { propertiesDefinition, stylePropertiesDefinition } from './menuProperties';
+	processComponentStylePseudoClasses,
+	processStyleObjectToCSS,
+} from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponent';
-import { getTranslations } from '../util/getTranslations';
-import MenuStyle from './MenuStyle';
-import { runEvent } from '../util/runEvent';
-import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import { getHref } from '../util/getHref';
-import Children from '../Children';
 import { SubHelperComponent } from '../SubHelperComponent';
+import { getHref } from '../util/getHref';
+import { getTranslations } from '../util/getTranslations';
+import { runEvent } from '../util/runEvent';
+import useDefinition from '../util/useDefinition';
+import MenuStyle from './MenuStyle';
+import { propertiesDefinition, stylePropertiesDefinition } from './menuProperties';
+import Children from '../Children';
 
 function Menu(props: ComponentProps) {
-	const [isMenuActive, setIsMenuActive] = React.useState(false);
-	const [hover, setHover] = React.useState(false);
 	const location = useLocation();
-	const { pathname } = location;
-
-	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
-
 	const {
-		definition: { children = {} },
+		pageDefinition: { translations },
+		definition,
 		locationHistory,
 		context,
-		pageDefinition,
 	} = props;
-
-	const hasChildren = !!Object.keys(children).length;
-
+	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
 		key,
 		properties: {
+			linkPath,
 			label,
-			onClick,
-			onMenuOpen,
-			onMenuClose,
-			onlyIconMenu,
+			target,
+			features,
+			showButton,
+			externalButtonTarget,
+			externalButtonFeatures,
+			caretIconClose,
+			caretIconOpen,
 			icon,
 			isMenuOpen,
-			linkPath,
-			target,
-			readOnly,
+			onlyIconMenu,
+			onMenuClose,
+			onMenuOpen,
+			onClick,
 			pathsActiveFor,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
-		props.definition,
+		definition,
 		propertiesDefinition,
 		stylePropertiesDefinition,
-		props.locationHistory,
+		locationHistory,
 		pageExtractor,
 	);
+	const resolvedLink = getHref(linkPath, location);
+	const [isMenuOpenState, setIsMenuOpenState] = React.useState(isMenuOpen);
+	const [isMenuActive, setIsMenuActive] = React.useState(false);
+	const { pathname } = useLocation();
 
 	React.useEffect(() => {
 		if (!pathsActiveFor?.length) return;
@@ -81,148 +71,192 @@ function Menu(props: ComponentProps) {
 		}
 		setIsMenuActive(hasPath);
 	}, [pathname, pathsActiveFor]);
-	const [isMenuOpenState, setIsMenuOpenState] = React.useState(isMenuOpen ?? false);
 
-	const resolvedStyles = processComponentStylePseudoClasses(
+	const hoverStyle = processComponentStylePseudoClasses(
 		props.pageDefinition,
-		{ hover, disabled: readOnly, active: isMenuActive },
+		{ hover: true },
 		stylePropertiesWithPseudoStates,
 	);
 
-	const clickEvent = onClick ? props.pageDefinition?.eventFunctions?.[onClick] : undefined;
-
-	const menuCloseEvent = onMenuClose
-		? props.pageDefinition?.eventFunctions?.[onMenuClose]
-		: undefined;
-
-	const menuOpenEvent = onMenuOpen
-		? props.pageDefinition?.eventFunctions?.[onMenuOpen]
-		: undefined;
-
-	const refObj = useRef({ firstRender: true });
-
-	React.useEffect(() => {
-		if (menuCloseEvent && isMenuOpen && !refObj.current.firstRender) {
-			async () =>
-				await runEvent(
-					menuCloseEvent,
-					key,
-					context.pageName,
-					props.locationHistory,
-					props.pageDefinition,
-				);
-		}
-		if (menuOpenEvent && !isMenuOpen && !refObj.current.firstRender) {
-			async () =>
-				await runEvent(
-					menuOpenEvent,
-					key,
-					context.pageName,
-					props.locationHistory,
-					props.pageDefinition,
-				);
-		}
-		refObj.current.firstRender = false;
-	}, [isMenuOpen]);
-
-	const handleClick = async () => {
-		setIsMenuOpenState(!isMenuOpenState);
-		clickEvent &&
-			(await runEvent(
-				clickEvent,
-				key,
-				context.pageName,
-				props.locationHistory,
-				props.pageDefinition,
-			));
-	};
-
-	const menuDetails = (
-		<>
-			{icon ? (
-				<i style={resolvedStyles.icon ?? {}} className={`${icon}  icon`}>
-					<SubHelperComponent definition={props.definition} subComponentName="icon" />
-				</i>
-			) : (
-				<i
-					className={`icon fa-solid fa-user icon hide`}
-					style={resolvedStyles.icon ?? {}}
-				></i>
-			)}
-			{!onlyIconMenu && (
-				<span style={resolvedStyles.menuText ?? {}} className={`menuText `}>
-					<SubHelperComponent definition={props.definition} subComponentName="menuText" />
-					{getTranslations(label, props.pageDefinition.translations)}
-				</span>
-			)}
-		</>
+	const visitedStyle = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{ visited: true },
+		stylePropertiesWithPseudoStates,
 	);
 
-	return (
-		<div className={`comp compMenu `} style={resolvedStyles.comp ?? {}}>
-			<HelperComponent definition={props.definition} />
-			<Link
-				style={resolvedStyles.link ?? {}}
-				className={`${isMenuActive ? 'isActive' : ''} menuItemsContainer link`}
-				target={target}
-				to={getHref(linkPath, location)}
-				title={
-					onlyIconMenu ? getTranslations(label, props.pageDefinition.translations) : ''
-				}
-			>
-				<SubHelperComponent definition={props.definition} subComponentName="link" />
-				<div
-					onClick={!readOnly ? handleClick : undefined}
-					className={`menu ${onlyIconMenu ? 'onlyIconMenu' : ''}`}
-					onMouseEnter={
-						stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
-					}
-					onMouseLeave={
-						stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
-					}
-					style={resolvedStyles.menu ?? {}}
-				>
-					<SubHelperComponent definition={props.definition} subComponentName="menu" />
-					{menuDetails}
-					{!onlyIconMenu && (
-						<div className="menuCaretIcon">
-							{hasChildren ? (
-								!isMenuOpenState ? (
-									<i
-										style={resolvedStyles.caretIcon ?? {}}
-										className={`fa fa-solid fa-angle-down caretIcon`}
-									>
-										<SubHelperComponent
-											definition={props.definition}
-											subComponentName="caretIcon"
-										/>
-									</i>
-								) : (
-									<i
-										style={resolvedStyles.caretIcon ?? {}}
-										className={`fa fa-solid fa-angle-up caretIcon`}
-									>
-										<SubHelperComponent
-											definition={props.definition}
-											subComponentName="caretIcon"
-										/>
-									</i>
-								)
-							) : null}
-						</div>
-					)}
-				</div>
-			</Link>
+	const regularStyle = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{ visited: false, hover: false },
+		stylePropertiesWithPseudoStates,
+	);
 
-			{hasChildren && isMenuOpenState ? (
-				<Children
-					pageDefinition={pageDefinition}
-					children={children}
-					context={context}
-					locationHistory={locationHistory}
-				/>
-			) : null}
+	const externalButton = showButton ? (
+		<i
+			className="_externalButton fa fa-solid fa-up-right-from-square"
+			onClick={e => {
+				e.stopPropagation();
+				e.preventDefault();
+				if (externalButtonTarget === '_self') {
+					window.history.pushState(undefined, '', resolvedLink);
+					window.history.back();
+					setTimeout(() => window.history.forward(), 100);
+				} else {
+					window.open(
+						resolvedLink,
+						externalButtonTarget,
+						externalButtonFeatures ?? features,
+					);
+				}
+			}}
+		>
+			<SubHelperComponent definition={definition} subComponentName="externalIcon" />
+		</i>
+	) : (
+		<></>
+	);
+
+	const leftIconButton = icon ? (
+		<i className={`_icon ${icon}`}>
+			<SubHelperComponent definition={definition} subComponentName="icon" />
+		</i>
+	) : (
+		<></>
+	);
+
+	const menuToggle = (e: MouseEvent<HTMLElement>) => {
+		e.stopPropagation();
+		e.preventDefault();
+		const func =
+			props.pageDefinition?.eventFunctions?.[isMenuOpenState ? onMenuClose : onMenuOpen];
+		if (func) {
+			(async () =>
+				await runEvent(
+					func,
+					key,
+					context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				))();
+		}
+		setIsMenuOpenState(!isMenuOpenState);
+	};
+
+	const caretIcon = Object.entries(definition?.children ?? {}).filter(e => e[1]).length ? (
+		<div className="_caretIconContainer">
+			<i
+				className={`_caretIcon ${isMenuOpenState ? caretIconOpen : caretIconClose}`}
+				onClick={menuToggle}
+			>
+				<SubHelperComponent definition={definition} subComponentName="caretIcon" />
+			</i>
 		</div>
+	) : (
+		<></>
+	);
+
+	const styleKey = `${key}_${
+		locationHistory?.length ? locationHistory.map(e => e.index).join('_') : ''
+	}`;
+
+	const styleComp = (
+		<style key={`${styleKey}_style`}>
+			{processStyleObjectToCSS(regularStyle?.comp, `._${styleKey}menu_css`)}
+			{processStyleObjectToCSS(visitedStyle?.comp, `._${styleKey}menu_css:visited`)}
+			{processStyleObjectToCSS(
+				hoverStyle?.comp,
+				`._${styleKey}menu_css:hover, ._${styleKey}menu_css._isActive`,
+			)}
+			{processStyleObjectToCSS(
+				regularStyle?.externalIcon,
+				`._${styleKey}menu_css > ._externalButton`,
+			)}
+			{processStyleObjectToCSS(
+				visitedStyle?.externalIcon,
+				`._${styleKey}menu_css:visited > ._externalButton`,
+			)}
+			{processStyleObjectToCSS(
+				hoverStyle?.externalIcon,
+				`._${styleKey}menu_css:hover > ._externalButton, ._${styleKey}menu_css._isActive > ._externalButton`,
+			)}
+
+			{processStyleObjectToCSS(regularStyle?.icon, `._${styleKey}menu_css > ._icon`)}
+			{processStyleObjectToCSS(visitedStyle?.icon, `._${styleKey}menu_css:visited > ._icon`)}
+			{processStyleObjectToCSS(
+				hoverStyle?.icon,
+				`._${styleKey}menu_css:hover > ._icon, ._${styleKey}menu_css._isActive > ._icon`,
+			)}
+
+			{processStyleObjectToCSS(
+				regularStyle?.caretIcon,
+				`._${styleKey}menu_css > ._caretIcon`,
+			)}
+			{processStyleObjectToCSS(
+				visitedStyle?.caretIcon,
+				`._${styleKey}menu_css:visited > ._caretIcon`,
+			)}
+			{processStyleObjectToCSS(
+				hoverStyle?.caretIcon,
+				`._${styleKey}menu_css:hover > ._caretIcon, ._${styleKey}menu_css._isActive > ._caretIcon`,
+			)}
+		</style>
+	);
+
+	const children =
+		definition.children && isMenuOpenState ? (
+			<Children
+				pageDefinition={props.pageDefinition}
+				children={definition.children}
+				context={context}
+				locationHistory={locationHistory}
+			/>
+		) : (
+			<></>
+		);
+
+	return (
+		<>
+			{styleComp}
+			<a
+				className={`comp compMenu _${styleKey}menu_css ${isMenuActive ? '_isActive' : ''}`}
+				href={resolvedLink}
+				target={target}
+				onClick={e => {
+					if ((!target || target === '_self') && linkPath) {
+						e.stopPropagation();
+						e.preventDefault();
+						window.history.pushState(undefined, '', resolvedLink);
+						window.history.back();
+						setTimeout(() => window.history.forward(), 100);
+					} else if (features && linkPath) {
+						e.stopPropagation();
+						e.preventDefault();
+						window.open(resolvedLink, target, features);
+					} else if (!onClick) {
+						menuToggle(e);
+					}
+
+					const func = onClick
+						? props.pageDefinition?.eventFunctions?.[onClick]
+						: undefined;
+					if (!func) return;
+					(async () =>
+						await runEvent(
+							func,
+							key,
+							context.pageName,
+							props.locationHistory,
+							props.pageDefinition,
+						))();
+				}}
+			>
+				<HelperComponent definition={definition} />
+				{leftIconButton}
+				{onlyIconMenu ? '' : getTranslations(label, translations)}
+				{externalButton}
+				{caretIcon}
+			</a>
+			{children}
+		</>
 	);
 }
 

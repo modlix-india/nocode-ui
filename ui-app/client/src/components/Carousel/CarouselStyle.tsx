@@ -28,13 +28,24 @@ export default function CarouselStyle({ theme }: { theme: Map<string, Map<string
         flex-direction: column;
        
     }
+
+    ${PREFIX} .arrowButtonsContainer {
+        z-index: 8;
+        
+    }
+
+    ${PREFIX} .slideButtonsContainer {
+        z-index: 8;
+        position: relative;
+    }
+
     ${PREFIX} .notOutsideTop{
         flex-direction:column;
     }
     ${PREFIX} .button {
         font-size: 50px;
         cursor:pointer;
-       
+        position: relative;
     }
     ${PREFIX} .innerDiv{
         overflow: hidden;
@@ -186,7 +197,9 @@ export default function CarouselStyle({ theme }: { theme: Map<string, Map<string
         height:fit-content;
         background: transparent;
         border:none;
-       cursor:pointer;
+        cursor:pointer;
+        position: relative;
+        
     }
     ${PREFIX} .circleWithNumbers{
         width:15px;

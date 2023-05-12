@@ -8,6 +8,7 @@ import { HelperComponent } from '../HelperComponent';
 import { isNullValue } from '@fincity/kirun-js';
 
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import { SubHelperComponent } from '../SubHelperComponent';
 
 function Video(props: ComponentProps) {
 	const { definition, locationHistory, context, pageDefinition } = props;
@@ -254,6 +255,11 @@ function Video(props: ComponentProps) {
 				<source src={src} type={type} />
 				Your browser does not support HTML5 video.
 			</video>
+			<SubHelperComponent
+				definition={props.definition}
+				subComponentName="player"
+				style={resolvedStyles.player ?? {}}
+			/>
 			{controlsOnHover && (
 				<div className={`videoControlsContainer ${videoControls ? 'hidden' : ''} `}>
 					{showSeekBar && (
@@ -284,6 +290,10 @@ function Video(props: ComponentProps) {
 									if (manualSeek) setManualSeek(parseInt(ev.target.value));
 								}}
 								style={resolvedStyles.seekSlider ?? {}}
+							/>
+							<SubHelperComponent
+								definition={props.definition}
+								subComponentName="seekSlider"
 							/>
 							{toogleToolTip && (
 								<div
