@@ -422,282 +422,288 @@ export default function StylePropertyEditor({
 					</button>
 				</div>
 			</div>
-			<PropertyGroup
-				name="selector"
-				displayName="Selector"
-				defaultStateOpen={true}
-				pageExtractor={pageExtractor}
-				locationHistory={locationHistory}
-				onChangePersonalization={onChangePersonalization}
-				personalizationPath={personalizationPath}
-			>
-				<div className="_eachProp">
-					<div className="_propLabel" title="Screen Size">
-						Screen Size:
-					</div>
-					<PropertyValueEditor
-						pageDefinition={pageDef}
-						propDef={{
-							name: 'screenSize',
-							displayName: 'Screen Size',
-							schema: SCHEMA_STRING_COMP_PROP,
-							editor: ComponentPropertyEditor.ENUM,
-							defaultValue: 'ALL',
-							enumValues: Array.from(StyleResolutionDefinition.values())
-								.map(e => {
-									if (
-										properties?.[1].resolutions?.[e.name as StyleResolution] &&
-										Object.keys(
+			<div className="_overflowContainer">
+				<PropertyGroup
+					name="selector"
+					displayName="Selector"
+					defaultStateOpen={true}
+					pageExtractor={pageExtractor}
+					locationHistory={locationHistory}
+					onChangePersonalization={onChangePersonalization}
+					personalizationPath={personalizationPath}
+				>
+					<div className="_eachProp">
+						<div className="_propLabel" title="Screen Size">
+							Screen Size:
+						</div>
+						<PropertyValueEditor
+							pageDefinition={pageDef}
+							propDef={{
+								name: 'screenSize',
+								displayName: 'Screen Size',
+								schema: SCHEMA_STRING_COMP_PROP,
+								editor: ComponentPropertyEditor.ENUM,
+								defaultValue: 'ALL',
+								enumValues: Array.from(StyleResolutionDefinition.values())
+									.map(e => {
+										if (
 											properties?.[1].resolutions?.[
 												e.name as StyleResolution
-											] ?? {},
-										).length
-									)
-										return { ...e, displayName: `★ ${e.displayName}` };
-									return e;
-								})
-								.sort((a, b) => a.order - b.order),
-						}}
-						value={selectorPref[selectedComponent]?.screenSize}
-						onlyValue={true}
-						onChange={v => updateSelectorPref('screenSize', v)}
-						storePaths={storePaths}
-						editPageName={editPageName}
-						slaveStore={slaveStore}
-						pageOperations={pageOperations}
-					/>
-				</div>
-				{subComponentsList.length !== 1 ? (
-					<div className="_eachProp">
-						<div className="_propLabel" title="Subcomponent">
-							Sub Component:
-						</div>
-						<PropertyValueEditor
-							pageDefinition={pageDef}
-							propDef={{
-								name: 'subcomponent',
-								displayName: 'Sub Component',
-								schema: SCHEMA_STRING_COMP_PROP,
-								editor: ComponentPropertyEditor.ENUM,
-								defaultValue: '',
-								enumValues: subComponentsList.map(name => ({
-									name,
-									displayName:
-										(hasSubComponents.has(name) ? '★ ' : '') +
-										(name === ''
-											? 'Component'
-											: camelCaseToUpperSpaceCase(name)),
-									description: '',
-								})),
+											] &&
+											Object.keys(
+												properties?.[1].resolutions?.[
+													e.name as StyleResolution
+												] ?? {},
+											).length
+										)
+											return { ...e, displayName: `★ ${e.displayName}` };
+										return e;
+									})
+									.sort((a, b) => a.order - b.order),
 							}}
-							value={{
-								value:
-									selectedSubComponent === ''
-										? selectedSubComponent
-										: selectedSubComponent.split(':')[1],
-							}}
+							value={selectorPref[selectedComponent]?.screenSize}
 							onlyValue={true}
-							onChange={v =>
-								onSelectedSubComponentChanged(
-									!v.value ? '' : `${selectedComponent}:${v.value}`,
-								)
-							}
+							onChange={v => updateSelectorPref('screenSize', v)}
 							storePaths={storePaths}
 							editPageName={editPageName}
 							slaveStore={slaveStore}
 							pageOperations={pageOperations}
 						/>
 					</div>
-				) : (
-					<></>
-				)}
-				{pseudoStates.length ? (
-					<div className="_eachProp">
-						<div className="_propLabel" title="Pseudo State">
-							Pseudo State:
-						</div>
-						<PropertyValueEditor
-							pageDefinition={pageDef}
-							propDef={{
-								name: 'stylePseudoState',
-								displayName: 'Pseudo State',
-								schema: SCHEMA_STRING_COMP_PROP,
-								editor: ComponentPropertyEditor.ENUM,
-								defaultValue: '',
-								enumValues: [
-									{
-										name: '',
-										displayName: hasPseudoStates.has('')
-											? '★ Default'
-											: 'Default',
-										description: 'No State',
-									},
-									...pseudoStates.map(name => ({
+					{subComponentsList.length !== 1 ? (
+						<div className="_eachProp">
+							<div className="_propLabel" title="Subcomponent">
+								Sub Component:
+							</div>
+							<PropertyValueEditor
+								pageDefinition={pageDef}
+								propDef={{
+									name: 'subcomponent',
+									displayName: 'Sub Component',
+									schema: SCHEMA_STRING_COMP_PROP,
+									editor: ComponentPropertyEditor.ENUM,
+									defaultValue: '',
+									enumValues: subComponentsList.map(name => ({
 										name,
 										displayName:
-											(hasPseudoStates.has(name) ? '★ ' : '') +
-											name.toUpperCase(),
+											(hasSubComponents.has(name) ? '★ ' : '') +
+											(name === ''
+												? 'Component'
+												: camelCaseToUpperSpaceCase(name)),
 										description: '',
 									})),
-								],
-							}}
-							value={selectorPref[selectedComponent]?.stylePseudoState}
-							onlyValue={true}
-							onChange={v => {
-								updateSelectorPref('stylePseudoState', v);
-							}}
-							storePaths={storePaths}
-							editPageName={editPageName}
-							slaveStore={slaveStore}
-							pageOperations={pageOperations}
-						/>
-					</div>
-				) : (
-					<></>
-				)}
-				<div className="_eachProp">
-					<div className="_propLabel" title="Conditional Application">
-						Conditional Application:
-						<i
-							className="fa fa-solid fa-square-plus"
-							onClick={() => {
-								const newStyleProps = duplicate(styleProps) as ComponentStyle;
-								const conditionNames = new Set(
-									Object.values(newStyleProps).map(e => e.conditionName),
-								);
-								let i = 0;
-								while (conditionNames.has(`Condition ${i}`)) i++;
-								const key = shortUUID();
-								newStyleProps[key] = {
-									resolutions: { ALL: {} },
-									conditionName: `Condition ${i}`,
-									condition: { value: true },
-								};
-								if (selectorPref[selectedComponent]?.stylePseudoState?.value)
-									newStyleProps[key].pseudoState =
-										selectorPref[selectedComponent].stylePseudoState.value;
-								saveStyle(newStyleProps);
-								updateSelectorPref('condition', { value: `Condition ${i}` });
-							}}
-						></i>
-						{selectorPref[selectedComponent]?.condition?.value ? (
-							<i
-								className="fa fa-regular fa-trash-can"
-								onClick={() => {
-									const newStyleProps = duplicate(styleProps) as ComponentStyle;
-									const conditionKey = Object.entries(newStyleProps).find(
-										([_, e]) =>
-											e.conditionName ===
-											selectorPref[selectedComponent]?.condition?.value,
-									)?.[0];
-									if (conditionKey) delete newStyleProps[conditionKey];
-									saveStyle(newStyleProps);
-									updateSelectorPref('condition', undefined);
 								}}
-							/>
-						) : (
-							<></>
-						)}
-					</div>
-					{conditionSelector}
-					{conditionNameEditor}
-					{conditionEditor}
-				</div>
-			</PropertyGroup>
-
-			{styleSectionsToShow.map(group => {
-				const isAdvancedSelected = showAdvanced.findIndex(e => e === group.name) !== -1;
-
-				const withValueProps: string[] = [];
-				const withoutValueProps: string[] = [];
-				const advancedProps: string[] = [];
-
-				const props: ReactNode[] = [];
-
-				const prefix = subComponentName ? `${subComponentName}-` : '';
-				const postfix = pseudoState ? `:${pseudoState}` : '';
-
-				COMPONENT_STYLE_GROUPS[group.name].forEach(prop => {
-					if (iterateProps[prefix + prop]) withValueProps.push(prop);
-					else if (postfix && iterateProps[prefix + prop + postfix])
-						withValueProps.push(prop);
-					else withoutValueProps.push(prop);
-				});
-
-				group.advanced?.forEach(prop => {
-					if (iterateProps[prefix + prop]) withValueProps.push(prop);
-					else if (postfix && iterateProps[prefix + prop + postfix])
-						withValueProps.push(prop);
-					else advancedProps.push(prop);
-				});
-
-				let i = 0;
-				for (const eachGroup of [withValueProps, withoutValueProps, advancedProps]) {
-					if (i === 2 && eachGroup.length) {
-						props.push(
-							<div className="_eachProp" key="advancedCheckBox">
-								<label
-									className="_propLabel"
-									htmlFor={`${group.name}_showAdvanced`}
-								>
-									<input
-										className="_peInput"
-										type="checkbox"
-										checked={isAdvancedSelected}
-										onChange={e => {
-											if (isAdvancedSelected)
-												setShowAdvanced(
-													showAdvanced.filter(e => e !== group.name),
-												);
-											else setShowAdvanced([...showAdvanced, group.name]);
-										}}
-										id={`${group.name}_showAdvanced`}
-									/>
-									Show Advanced Properties
-								</label>
-							</div>,
-						);
-					}
-					if (i === 2 && !isAdvancedSelected) break;
-					for (const prop of eachGroup) {
-						props.push(
-							<EachPropEditor
-								key={prop}
-								subComponentName={subComponentName}
-								pseudoState={pseudoState}
-								prop={prop}
-								iterateProps={iterateProps}
-								pageDef={pageDef}
+								value={{
+									value:
+										selectedSubComponent === ''
+											? selectedSubComponent
+											: selectedSubComponent.split(':')[1],
+								}}
+								onlyValue={true}
+								onChange={v =>
+									onSelectedSubComponentChanged(
+										!v.value ? '' : `${selectedComponent}:${v.value}`,
+									)
+								}
+								storePaths={storePaths}
 								editPageName={editPageName}
 								slaveStore={slaveStore}
-								storePaths={storePaths}
-								selectorPref={selectorPref}
-								styleProps={styleProps}
-								selectedComponent={selectedComponent}
-								saveStyle={saveStyle}
-								properties={properties}
 								pageOperations={pageOperations}
-							/>,
-						);
-					}
-					i++;
-				}
+							/>
+						</div>
+					) : (
+						<></>
+					)}
+					{pseudoStates.length ? (
+						<div className="_eachProp">
+							<div className="_propLabel" title="Pseudo State">
+								Pseudo State:
+							</div>
+							<PropertyValueEditor
+								pageDefinition={pageDef}
+								propDef={{
+									name: 'stylePseudoState',
+									displayName: 'Pseudo State',
+									schema: SCHEMA_STRING_COMP_PROP,
+									editor: ComponentPropertyEditor.ENUM,
+									defaultValue: '',
+									enumValues: [
+										{
+											name: '',
+											displayName: hasPseudoStates.has('')
+												? '★ Default'
+												: 'Default',
+											description: 'No State',
+										},
+										...pseudoStates.map(name => ({
+											name,
+											displayName:
+												(hasPseudoStates.has(name) ? '★ ' : '') +
+												name.toUpperCase(),
+											description: '',
+										})),
+									],
+								}}
+								value={selectorPref[selectedComponent]?.stylePseudoState}
+								onlyValue={true}
+								onChange={v => {
+									updateSelectorPref('stylePseudoState', v);
+								}}
+								storePaths={storePaths}
+								editPageName={editPageName}
+								slaveStore={slaveStore}
+								pageOperations={pageOperations}
+							/>
+						</div>
+					) : (
+						<></>
+					)}
+					<div className="_eachProp">
+						<div className="_propLabel" title="Conditional Application">
+							Conditional Application:
+							<i
+								className="fa fa-solid fa-square-plus"
+								onClick={() => {
+									const newStyleProps = duplicate(styleProps) as ComponentStyle;
+									const conditionNames = new Set(
+										Object.values(newStyleProps).map(e => e.conditionName),
+									);
+									let i = 0;
+									while (conditionNames.has(`Condition ${i}`)) i++;
+									const key = shortUUID();
+									newStyleProps[key] = {
+										resolutions: { ALL: {} },
+										conditionName: `Condition ${i}`,
+										condition: { value: true },
+									};
+									if (selectorPref[selectedComponent]?.stylePseudoState?.value)
+										newStyleProps[key].pseudoState =
+											selectorPref[selectedComponent].stylePseudoState.value;
+									saveStyle(newStyleProps);
+									updateSelectorPref('condition', { value: `Condition ${i}` });
+								}}
+							></i>
+							{selectorPref[selectedComponent]?.condition?.value ? (
+								<i
+									className="fa fa-regular fa-trash-can"
+									onClick={() => {
+										const newStyleProps = duplicate(
+											styleProps,
+										) as ComponentStyle;
+										const conditionKey = Object.entries(newStyleProps).find(
+											([_, e]) =>
+												e.conditionName ===
+												selectorPref[selectedComponent]?.condition?.value,
+										)?.[0];
+										if (conditionKey) delete newStyleProps[conditionKey];
+										saveStyle(newStyleProps);
+										updateSelectorPref('condition', undefined);
+									}}
+								/>
+							) : (
+								<></>
+							)}
+						</div>
+						{conditionSelector}
+						{conditionNameEditor}
+						{conditionEditor}
+					</div>
+				</PropertyGroup>
 
-				return (
-					<PropertyGroup
-						key={group.name}
-						name={group.name}
-						displayName={group.displayName + (withValueProps.length ? ' ★' : '')}
-						defaultStateOpen={false}
-						pageExtractor={pageExtractor}
-						locationHistory={locationHistory}
-						onChangePersonalization={onChangePersonalization}
-						personalizationPath={personalizationPath}
-					>
-						{props}
-					</PropertyGroup>
-				);
-			})}
+				{styleSectionsToShow.map(group => {
+					const isAdvancedSelected = showAdvanced.findIndex(e => e === group.name) !== -1;
+
+					const withValueProps: string[] = [];
+					const withoutValueProps: string[] = [];
+					const advancedProps: string[] = [];
+
+					const props: ReactNode[] = [];
+
+					const prefix = subComponentName ? `${subComponentName}-` : '';
+					const postfix = pseudoState ? `:${pseudoState}` : '';
+
+					COMPONENT_STYLE_GROUPS[group.name].forEach(prop => {
+						if (iterateProps[prefix + prop]) withValueProps.push(prop);
+						else if (postfix && iterateProps[prefix + prop + postfix])
+							withValueProps.push(prop);
+						else withoutValueProps.push(prop);
+					});
+
+					group.advanced?.forEach(prop => {
+						if (iterateProps[prefix + prop]) withValueProps.push(prop);
+						else if (postfix && iterateProps[prefix + prop + postfix])
+							withValueProps.push(prop);
+						else advancedProps.push(prop);
+					});
+
+					let i = 0;
+					for (const eachGroup of [withValueProps, withoutValueProps, advancedProps]) {
+						if (i === 2 && eachGroup.length) {
+							props.push(
+								<div className="_eachProp" key="advancedCheckBox">
+									<label
+										className="_propLabel"
+										htmlFor={`${group.name}_showAdvanced`}
+									>
+										<input
+											className="_peInput"
+											type="checkbox"
+											checked={isAdvancedSelected}
+											onChange={e => {
+												if (isAdvancedSelected)
+													setShowAdvanced(
+														showAdvanced.filter(e => e !== group.name),
+													);
+												else setShowAdvanced([...showAdvanced, group.name]);
+											}}
+											id={`${group.name}_showAdvanced`}
+										/>
+										Show Advanced Properties
+									</label>
+								</div>,
+							);
+						}
+						if (i === 2 && !isAdvancedSelected) break;
+						for (const prop of eachGroup) {
+							props.push(
+								<EachPropEditor
+									key={prop}
+									subComponentName={subComponentName}
+									pseudoState={pseudoState}
+									prop={prop}
+									iterateProps={iterateProps}
+									pageDef={pageDef}
+									editPageName={editPageName}
+									slaveStore={slaveStore}
+									storePaths={storePaths}
+									selectorPref={selectorPref}
+									styleProps={styleProps}
+									selectedComponent={selectedComponent}
+									saveStyle={saveStyle}
+									properties={properties}
+									pageOperations={pageOperations}
+								/>,
+							);
+						}
+						i++;
+					}
+
+					return (
+						<PropertyGroup
+							key={group.name}
+							name={group.name}
+							displayName={group.displayName + (withValueProps.length ? ' ★' : '')}
+							defaultStateOpen={false}
+							pageExtractor={pageExtractor}
+							locationHistory={locationHistory}
+							onChangePersonalization={onChangePersonalization}
+							personalizationPath={personalizationPath}
+						>
+							{props}
+						</PropertyGroup>
+					);
+				})}
+			</div>
 		</div>
 	);
 }

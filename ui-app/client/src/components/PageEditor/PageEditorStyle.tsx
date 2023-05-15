@@ -245,6 +245,11 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border-bottom: 1px solid #ccc;
 		}
 
+		${PREFIX} ._overflowContainer {
+			height: calc(100vh - 158px);
+			overflow: auto;
+		}
+
 		${PREFIX} ._eachStyleClass ._propLabel i.fa {
 			font-size: 14px;
 			cursor: pointer;
@@ -621,6 +626,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			gap: 10px;
 			display: flex;
 			flex-direction: column;
+			position: relative;
 		}
 
 		._eachProp {

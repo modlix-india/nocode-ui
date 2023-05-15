@@ -32,6 +32,10 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.accentColor.type,
 	],
+	label: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+	],
 };
 
 export { propertiesDefinition, stylePropertiesDefinition };

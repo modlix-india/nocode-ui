@@ -193,7 +193,7 @@ function Carousel(props: ComponentProps) {
 			];
 		}
 	}
-
+	console.log(slideNum);
 	const handleMouse = (e: any) => {
 		if (showNavigationControlsOnHover) setHover(true);
 	};
@@ -214,59 +214,55 @@ function Carousel(props: ComponentProps) {
 		>
 			<HelperComponent definition={definition} />
 			{showArrowButtons && (
-				<SubHelperComponent
-					definition={props.definition}
-					subComponentName="arrowButtonsContainer"
+				<div
+					className={`arrowButtonsContainer ${
+						showNavigationControlsOnHover
+							? `${hover ? `show  arrowButtons${arrowButtons}` : `hide`}`
+							: `arrowButtons${arrowButtons}`
+					}`}
+					style={resolvedStyles.arrowButtonsContainer ?? {}}
 				>
-					<div
-						className={` ${
-							showNavigationControlsOnHover
-								? `${hover ? `show  arrowButtons${arrowButtons}` : `hide`}`
-								: `arrowButtons${arrowButtons}`
+					<SubHelperComponent
+						definition={props.definition}
+						subComponentName="arrowButtonsContainer"
+					></SubHelperComponent>
+
+					<i
+						className={` fa-solid fa-chevron-left button ${
+							arrowButtons === 'Middle' ? 'leftArrowButton' : ''
 						}`}
-						style={resolvedStyles.arrowButtonsContainer ?? {}}
+						style={resolvedStyles.arrowButtons ?? {}}
+						onClick={() => {
+							if (!isNullValue(transitionFrom)) return;
+							setTransitionFrom(slideNum);
+							setSlideNum(slideNum == 0 ? childrenDef.length - 1 : slideNum - 1);
+							setTimeout(() => setTransitionFrom(undefined), animationDuration + 120);
+						}}
+					>
+						{' '}
+						<SubHelperComponent
+							definition={props.definition}
+							subComponentName="arrowButtons"
+						></SubHelperComponent>
+					</i>
+					<i
+						className={` fa-solid fa-chevron-right button ${
+							arrowButtons === 'Middle' ? 'rightArrowButton' : ''
+						}`}
+						style={resolvedStyles.arrowButtons ?? {}}
+						onClick={() => {
+							if (!isNullValue(transitionFrom)) return;
+							setTransitionFrom(slideNum);
+							setSlideNum(slideNum + 1 >= childrenDef.length ? 0 : slideNum + 1);
+							setTimeout(() => setTransitionFrom(undefined), animationDuration + 120);
+						}}
 					>
 						<SubHelperComponent
 							definition={props.definition}
 							subComponentName="arrowButtons"
-						>
-							<i
-								className={` fa-solid fa-chevron-left button ${
-									arrowButtons === 'Middle' ? 'leftArrowButton' : ''
-								}`}
-								style={resolvedStyles.arrowButtons ?? {}}
-								onClick={() => {
-									if (!isNullValue(transitionFrom)) return;
-									setTransitionFrom(slideNum);
-									setSlideNum(
-										slideNum == 0 ? childrenDef.length - 1 : slideNum - 1,
-									);
-									setTimeout(
-										() => setTransitionFrom(undefined),
-										animationDuration + 120,
-									);
-								}}
-							></i>
-							<i
-								className={` fa-solid fa-chevron-right button ${
-									arrowButtons === 'Middle' ? 'rightArrowButton' : ''
-								}`}
-								style={resolvedStyles.arrowButtons ?? {}}
-								onClick={() => {
-									if (!isNullValue(transitionFrom)) return;
-									setTransitionFrom(slideNum);
-									setSlideNum(
-										slideNum + 1 >= childrenDef.length ? 0 : slideNum + 1,
-									);
-									setTimeout(
-										() => setTransitionFrom(undefined),
-										animationDuration + 120,
-									);
-								}}
-							></i>
-						</SubHelperComponent>
-					</div>
-				</SubHelperComponent>
+						></SubHelperComponent>
+					</i>
+				</div>
 			)}
 			<div
 				className={`innerDivSlideNav ${`slideNavDiv${
@@ -275,52 +271,45 @@ function Carousel(props: ComponentProps) {
 			>
 				<div className="innerDiv">{showChildren}</div>
 
-				<SubHelperComponent
-					definition={props.definition}
-					subComponentName="slideButtonsContainer"
+				<div
+					className={`slideButtonsContainer slideNavDiv${slideNavButtonPosition} ${
+						slideNavButtonPosition === 'OutsideTop' ? 'slideNavDiv' : ''
+					} ${showNavigationControlsOnHover ? (hover ? 'showFlex' : 'hide') : ''}`}
+					style={resolvedStyles.slideButtonsContainer ?? {}}
 				>
-					<div
-						className={`slideNavDiv${slideNavButtonPosition} ${
-							slideNavButtonPosition === 'OutsideTop' ? 'slideNavDiv' : ''
-						} ${showNavigationControlsOnHover ? (hover ? 'showFlex' : 'hide') : ''}`}
-						style={resolvedStyles.slideButtonsContainer ?? {}}
-					>
-						{showDotsButtons &&
-							(childrenDef ?? []).map((e: any, key: any) => (
+					<SubHelperComponent
+						definition={props.definition}
+						subComponentName="slideButtonsContainer"
+					></SubHelperComponent>
+					{showDotsButtons &&
+						(childrenDef ?? []).map((e: any, key: any) => (
+							<button
+								key={key}
+								className={` slideNav  ${
+									dotsButtonType !== 'none' && hasNumbersInSlideNav === false
+										? `fa-${dotsButtonIconType} fa-${dotsButtonType}`
+										: ` `
+								}  ${hasNumbersInSlideNav ? `${dotsButtonType}WithNumbers` : ''} `}
+								style={resolvedStyles.dotButtons ?? {}}
+								onClick={() => {
+									if (!isNullValue(transitionFrom)) return;
+									setTransitionFrom(slideNum);
+									setSlideNum(key);
+									setTimeout(
+										() => setTransitionFrom(undefined),
+										animationDuration + 20,
+									);
+								}}
+							>
 								<SubHelperComponent
 									definition={props.definition}
 									subComponentName="dotButtons"
 									key={key}
-								>
-									<button
-										key={key}
-										className={` slideNav  ${
-											dotsButtonType !== 'none' &&
-											hasNumbersInSlideNav === false
-												? `fa-${dotsButtonIconType} fa-${dotsButtonType}`
-												: ` `
-										}  ${
-											hasNumbersInSlideNav
-												? `${dotsButtonType}WithNumbers`
-												: ''
-										} `}
-										style={resolvedStyles.dotButtons ?? {}}
-										onClick={() => {
-											if (!isNullValue(transitionFrom)) return;
-											setTransitionFrom(slideNum);
-											setSlideNum(key);
-											setTimeout(
-												() => setTransitionFrom(undefined),
-												animationDuration + 20,
-											);
-										}}
-									>
-										{hasNumbersInSlideNav ? key + 1 : ''}
-									</button>
-								</SubHelperComponent>
-							))}
-					</div>
-				</SubHelperComponent>
+								></SubHelperComponent>
+								{hasNumbersInSlideNav ? key + 1 : ''}
+							</button>
+						))}
+				</div>
 			</div>
 		</div>
 	);

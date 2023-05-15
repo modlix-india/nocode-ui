@@ -13,6 +13,7 @@ import { getTranslations } from '../util/getTranslations';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tabsProperties';
 import TabsStyles from './TabsStyle';
+import { SubHelperComponent } from '../SubHelperComponent';
 
 function TabsComponent(props: ComponentProps) {
 	const {
@@ -97,6 +98,10 @@ function TabsComponent(props: ComponentProps) {
 				className={`tabsContainer ${orientationClass}`}
 				style={resolvedStyles.tabsContainer ?? {}}
 			>
+				<SubHelperComponent
+					definition={props.definition}
+					subComponentName="tabsContainer"
+				/>
 				{tabs.map((e: any, i: number) => (
 					<div
 						key={e}
@@ -116,20 +121,42 @@ function TabsComponent(props: ComponentProps) {
 						}
 						onClick={() => handleClick(e)}
 					>
+						<SubHelperComponent
+							definition={props.definition}
+							subComponentName="tabDivContainer"
+						/>
 						<button
 							style={resolvedStyles.button ?? {}}
 							className={`tabButton ${icon.length === 0 ? 'noIcon' : ''}`}
 						>
-							<i className={icon[i]}></i>
+							<SubHelperComponent
+								definition={props.definition}
+								subComponentName="button"
+							/>
+							<i className={`icon ${icon[i]}`} style={resolvedStyles.icon ?? {}}>
+								<SubHelperComponent
+									definition={props.definition}
+									subComponentName="icon"
+								/>
+							</i>
 							{getTranslations(e, pageDefinition.translations)}
 						</button>
 						{activeStyle === 'BORDER' && (
-							<div className={getActiveStyleBorder(e)}></div>
+							<div
+								className={`border ${getActiveStyleBorder(e)}`}
+								style={resolvedStyles.border ?? {}}
+							>
+								<SubHelperComponent
+									definition={props.definition}
+									subComponentName="border"
+								/>
+							</div>
 						)}
 					</div>
 				))}
 			</div>
 			<div className="tabGridDiv" style={resolvedStyles.childContainer ?? {}}>
+				<SubHelperComponent definition={props.definition} subComponentName="tabGridDiv" />
 				<Children
 					key={`${activeTab}_chld`}
 					pageDefinition={pageDefinition}

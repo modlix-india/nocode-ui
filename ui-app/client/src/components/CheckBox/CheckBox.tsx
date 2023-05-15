@@ -20,6 +20,7 @@ import CommonCheckbox from '../../commonComponents/CommonCheckbox';
 import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { runEvent } from '../util/runEvent';
+import { SubHelperComponent } from '../SubHelperComponent';
 
 function CheckBox(props: ComponentProps) {
 	const [checkBoxdata, setCheckBoxData] = useState(false);
@@ -92,6 +93,7 @@ function CheckBox(props: ComponentProps) {
 				className={`checkbox ${orientation === 'VERTICAL' ? 'vertical' : 'horizontal'}`}
 				htmlFor={key}
 			>
+				<SubHelperComponent definition={props.definition} subComponentName="label" />
 				<CommonCheckbox
 					isChecked={checkBoxdata}
 					isReadOnly={readOnly}
@@ -104,6 +106,7 @@ function CheckBox(props: ComponentProps) {
 					blurHandler={
 						stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined
 					}
+					definition={props.definition}
 				/>
 				{getTranslations(label, translations)}
 			</label>
