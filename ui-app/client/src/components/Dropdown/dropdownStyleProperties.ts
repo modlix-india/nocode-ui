@@ -41,14 +41,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '0 4px 6px 1px <boxBoxShadow>',
 		selector: '.dropdownContainer',
 	},
-	{
-		name: 'dropdownContainerZIndex',
-		cssProperty: 'z-index',
-		displayName: 'Dropdown Container z index',
-		description: 'The z index of Dropdown Container.',
-		defaultValue: '1',
-		selector: '.dropdownContainer',
-	},
+
 	{
 		name: 'dropdownItemPadding',
 		cssProperty: 'padding',

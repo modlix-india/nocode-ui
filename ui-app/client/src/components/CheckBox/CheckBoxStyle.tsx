@@ -143,6 +143,7 @@ export default function CheckBoxStyle({ theme }: { theme: Map<string, Map<string
         justify-items: center;
         text-align: center;
         align-items: center;
+        position: relative;
         
     }
     ${PREFIX} .checkbox.horizontal {

@@ -20,7 +20,8 @@ export default function DropdownStyle({ theme }: { theme: Map<string, Map<string
         top: 100%;
         overflow-y: auto;
         margin-top: 1px;
-        
+        position: relative;
+        z-index: 7;
     }
 
     ${PREFIX} .dropdownItem {
@@ -28,6 +29,7 @@ export default function DropdownStyle({ theme }: { theme: Map<string, Map<string
         justify-content: space-between;
         align-items: center;
         cursor: pointer;
+        position: relative;
     }
     ${PREFIX} .textbox {
         caret-color: transparent;
@@ -38,6 +40,13 @@ export default function DropdownStyle({ theme }: { theme: Map<string, Map<string
 
     ${PREFIX} .dropdownContainer .dropdownSearchContainer {
         padding: 20px;
+        position: relative;
+    }
+    ${PREFIX} .dropdownItemLabel {
+        position: relative;
+    }
+    ${PREFIX} .dropdownCheckIcon {
+        position: relative;
     }
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

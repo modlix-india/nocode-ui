@@ -18,6 +18,7 @@ import useDefinition from '../util/useDefinition';
 import { flattenUUID } from '../util/uuid';
 import DropdownStyle from './DropdownStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './dropdownProperties';
+import { SubHelperComponent } from '../SubHelperComponent';
 
 function DropdownComponent(props: ComponentProps) {
 	const [showDropdown, setShowDropdown] = useState(false);
@@ -314,8 +315,19 @@ function DropdownComponent(props: ComponentProps) {
 			/>
 			{showDropdown && (
 				<div className="dropdownContainer" style={computedStyles.dropDownContainer ?? {}}>
+					<SubHelperComponent
+						definition={props.definition}
+						subComponentName="dropDownContainer"
+					/>
 					{isSearchable && (
-						<div className="dropdownSearchContainer">
+						<div
+							className="dropdownSearchContainer"
+							style={computedStyles.dropdownSearchContainer ?? {}}
+						>
+							<SubHelperComponent
+								definition={props.definition}
+								subComponentName="dropdownSearchContainer"
+							/>
 							<CommonInputText
 								id={key}
 								noFloat={false}
@@ -343,11 +355,33 @@ function DropdownComponent(props: ComponentProps) {
 						<div
 							onClick={() => handleClick(each)}
 							className="dropdownItem"
+							style={computedStyles.dropdownItem ?? {}}
 							key={each?.key}
 						>
-							<label className="dropdownItemLabel">{each?.label}</label>
+							<SubHelperComponent
+								definition={props.definition}
+								subComponentName="dropdownItem"
+							/>
+							<label
+								style={computedStyles.dropdownItemLabel ?? {}}
+								className="dropdownItemLabel"
+							>
+								<SubHelperComponent
+									definition={props.definition}
+									subComponentName="dropdownItemLabel"
+								/>
+								{each?.label}
+							</label>
 							{getIsSelected(each?.key) && (
-								<i className="fa fa-solid fa-check checkedIcon"></i>
+								<i
+									className="dropdownCheckIcon fa fa-solid fa-check checkedIcon"
+									style={computedStyles.dropdownCheckIcon ?? {}}
+								>
+									<SubHelperComponent
+										definition={props.definition}
+										subComponentName="dropdownCheckIcon"
+									/>
+								</i>
 							)}
 						</div>
 					))}

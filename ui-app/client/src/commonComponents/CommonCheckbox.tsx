@@ -1,4 +1,6 @@
 import React from 'react';
+import { SubHelperComponent } from '../components/SubHelperComponent';
+import { ComponentDefinition } from '../types/common';
 
 type CommonCheckboxType = {
 	isChecked: boolean;
@@ -9,6 +11,7 @@ type CommonCheckboxType = {
 	styles?: any;
 	focusHandler?: () => void;
 	blurHandler?: () => void;
+	definition: ComponentDefinition;
 };
 
 function CommonCheckbox({
@@ -20,19 +23,28 @@ function CommonCheckbox({
 	styles,
 	focusHandler,
 	blurHandler,
+	definition,
 }: CommonCheckboxType) {
 	return (
-		<input
-			className={`commonCheckbox ${showAsRadio ? 'radio' : ''}`}
-			disabled={isReadOnly}
-			type="checkbox"
-			id={id}
-			onChange={onChange}
-			checked={isChecked}
-			style={styles}
-			onFocus={focusHandler}
-			onBlur={blurHandler}
-		/>
+		<>
+			<input
+				className={`commonCheckbox ${showAsRadio ? 'radio' : ''}`}
+				disabled={isReadOnly}
+				type="checkbox"
+				id={id}
+				onChange={onChange}
+				checked={isChecked}
+				style={styles}
+				onFocus={focusHandler}
+				onBlur={blurHandler}
+			/>
+			<SubHelperComponent
+				style={styles ?? {}}
+				className={`commonCheckbox ${showAsRadio ? 'radio' : ''}`}
+				definition={definition}
+				subComponentName="checkbox"
+			></SubHelperComponent>
+		</>
 	);
 }
 

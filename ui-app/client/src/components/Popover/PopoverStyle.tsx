@@ -48,6 +48,9 @@ export default function PopoverStyle({ theme }: { theme: Map<string, Map<string,
 			top: 0;
 			display: block;
 		}
+		.popoverContainer {
+			position: relative;
+		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="PopoverCss">{css}</style>;

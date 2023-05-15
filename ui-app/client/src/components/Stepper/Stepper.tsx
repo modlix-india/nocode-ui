@@ -14,6 +14,7 @@ import StepperStyle from './StepperStyle';
 import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { getRoman, getAlphaNumeral } from '../util/numberConverter';
+import { SubHelperComponent } from '../SubHelperComponent';
 
 function Stepper(props: ComponentProps) {
 	const {
@@ -127,6 +128,7 @@ function Stepper(props: ComponentProps) {
 					isStepperVertical ? 'vertical' : 'horizontal'
 				} ${getPositionStyle()} `}
 			>
+				<SubHelperComponent definition={props.definition} subComponentName="list" />
 				{effectiveTitles.map((e: string, i: number) => (
 					<li
 						style={resolvedStyles.listItem ?? {}}
@@ -141,7 +143,15 @@ function Stepper(props: ComponentProps) {
 						} ${i > value && moveToAnyFutureStep ? 'futureStep' : ''}`}
 						key={i}
 					>
+						<SubHelperComponent
+							definition={props.definition}
+							subComponentName="listItem"
+						/>
 						<div className="itemContainer" style={resolvedStyles.itemContainer ?? {}}>
+							<SubHelperComponent
+								definition={props.definition}
+								subComponentName="itemContainer"
+							/>
 							{icons ? (
 								<i
 									onMouseEnter={
@@ -157,10 +167,15 @@ function Stepper(props: ComponentProps) {
 									style={resolvedStyles.icon ?? {}}
 									className={`${
 										i < value && showCheckOnComplete ? checkIcon : iconList[i]
-									} countingStep ${i <= value ? 'done' : ''}`}
-								></i>
+									} countingStep ${i <= value ? 'done' : ''} icon`}
+								>
+									<SubHelperComponent
+										definition={props.definition}
+										subComponentName="icon"
+									/>
+								</i>
 							) : (
-								<Fragment>
+								<>
 									{i < value && showCheckOnComplete ? (
 										<i
 											onMouseEnter={
@@ -174,19 +189,28 @@ function Stepper(props: ComponentProps) {
 													: undefined
 											}
 											style={resolvedStyles.icon ?? {}}
-											className={`${checkIcon} countingStep ${
+											className={`${checkIcon} countingStep icon ${
 												i <= value ? 'done' : ''
 											}`}
-										></i>
+										>
+											<SubHelperComponent
+												definition={props.definition}
+												subComponentName="icon"
+											/>
+										</i>
 									) : (
 										<span
 											style={resolvedStyles.text ?? {}}
 											className={`countingStep ${i <= value ? 'done' : ''}`}
 										>
+											<SubHelperComponent
+												definition={props.definition}
+												subComponentName="text"
+											/>
 											{getCount(i + 1)}
 										</span>
 									)}
-								</Fragment>
+								</>
 							)}
 							<span
 								onMouseEnter={
@@ -202,6 +226,10 @@ function Stepper(props: ComponentProps) {
 								style={resolvedStyles.text ?? {}}
 								className="title"
 							>
+								<SubHelperComponent
+									definition={props.definition}
+									subComponentName="text"
+								/>
 								{getTranslations(e, translations)}
 							</span>
 						</div>
@@ -222,6 +250,9 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	styleComponent: StepperStyle,
+	bindingPaths: {
+		bindingPath: { name: 'Stepper Count' },
+	},
 	defaultTemplate: {
 		key: '',
 		type: 'Stepper',
