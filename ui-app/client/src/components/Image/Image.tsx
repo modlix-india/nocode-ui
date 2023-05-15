@@ -103,7 +103,7 @@ function ImageComponent(props: ComponentProps) {
 				onError={fallBackImg ? handleError : undefined}
 			/>
 			<SubHelperComponent
-				style={resolvedStyles.inputBox ?? {}}
+				style={resolvedStyles.image ?? {}}
 				className={onClickEvent ? '_onclicktrue' : ''}
 				definition={definition}
 				subComponentName="image"
