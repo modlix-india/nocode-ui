@@ -98,7 +98,7 @@ function ImageComponent(props: ComponentProps) {
 				onClick={onClickEvent ? handleClick : undefined}
 				className={onClickEvent ? '_onclicktrue' : ''}
 				style={resolvedStyles.image ?? {}}
-				src={getHref(src, location)}
+				src={getHref(src ?? defaultSrc, location)}
 				alt={alt}
 				onError={fallBackImg ? handleError : undefined}
 			/>
