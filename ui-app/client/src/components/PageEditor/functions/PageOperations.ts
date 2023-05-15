@@ -52,6 +52,10 @@ export default class PageOperations {
 		this.selectedSubComponent = selectedSubComponent;
 	}
 
+	public setIssuePopup(issue: Issue): void {
+		this.setIssue(issue);
+	}
+
 	public getComponentDefinition(componentKey: string): ComponentDefinition | undefined {
 		const pageDef: PageDefinition = getDataFromPath(
 			this.defPath,
@@ -282,6 +286,39 @@ export default class PageOperations {
 			x.children = { ...x.children, ...children };
 		}
 		if (this.selectedComponent === componentKey) this.onSelectedComponentChanged('');
+		setData(this.defPath, def, this.pageExtractor.getPageName());
+	}
+
+	public clearChildrenOnly(componentKey: string) {
+		if (!componentKey || !this.defPath) return;
+
+		const pageDef: PageDefinition = getDataFromPath(
+			this.defPath,
+			this.locationHistory,
+			this.pageExtractor,
+		);
+		if (!pageDef) return;
+
+		let def = duplicate(pageDef) as PageDefinition;
+		let delKeys = new Set<string>();
+		let currentKeys = new LinkedList<string>(
+			Object.keys(def.componentDefinition[componentKey].children ?? {}),
+		);
+		def.componentDefinition[componentKey].children = {};
+		while (currentKeys.size() > 0) {
+			let key = currentKeys.pop();
+			if (!key) continue;
+			delKeys.add(key);
+			currentKeys.addAll([...Object.keys(def.componentDefinition[key].children ?? {})]);
+		}
+
+		const iterator = delKeys.values();
+		let key;
+		while ((key = iterator.next()?.value)) {
+			delete def.componentDefinition[key];
+		}
+		if (this.selectedComponent && delKeys.has(this.selectedComponent))
+			this.onSelectedComponentChanged('');
 		setData(this.defPath, def, this.pageExtractor.getPageName());
 	}
 
@@ -550,7 +587,12 @@ export default class PageOperations {
 		const que = new LinkedList<ComponentDefinition>();
 		que.add(obj);
 		const keySet = new Set<string>();
-		if (deleteExisting) delete pageDef.componentDefinition[componentKey];
+		if (deleteExisting) {
+			Object.values(pageDef.componentDefinition)
+				.filter(e => e.children?.[componentKey] !== undefined)
+				.forEach(e => delete e.children?.[componentKey]);
+			delete pageDef.componentDefinition[componentKey];
+		}
 		while (que.size() > 0) {
 			const x = que.pop();
 			cutObject.objects[x.key] = x;

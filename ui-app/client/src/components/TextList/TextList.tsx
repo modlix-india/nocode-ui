@@ -9,6 +9,7 @@ import TextListStyle from './TextListStyle';
 import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { getRenderData } from '../util/getRenderData';
+import { SubHelperComponent } from '../SubHelperComponent';
 
 function TextList(props: ComponentProps) {
 	const {
@@ -89,15 +90,18 @@ function TextList(props: ComponentProps) {
 						...(styleProperties.list ?? {}),
 						listStyleType: listStyleType,
 					}}
+					className="list"
 					start={start ? start : undefined}
 					reversed={reversed}
 				>
+					<SubHelperComponent definition={props.definition} subComponentName="list" />
 					{translatedText.map((e: any) => (
 						<li
 							style={
 								(e[0] === hover ? styleProperties : styleHoverProperties)
 									.listItem ?? {}
 							}
+							className="listItem"
 							key={e[0]}
 							onMouseEnter={() =>
 								stylePropertiesWithPseudoStates?.hover && setHover(e[0])
@@ -108,6 +112,10 @@ function TextList(props: ComponentProps) {
 								setHover('')
 							}
 						>
+							<SubHelperComponent
+								definition={props.definition}
+								subComponentName="listItem"
+							/>
 							{e[1]}
 						</li>
 					))}
@@ -119,12 +127,14 @@ function TextList(props: ComponentProps) {
 						listStyleType: listIcon ? 'none' : listStyleType,
 					}}
 				>
+					<SubHelperComponent definition={props.definition} subComponentName="list" />
 					{translatedText.map((e: any) => (
 						<li
 							style={
 								(e[0] === hover ? styleProperties : styleHoverProperties)
 									.listItem ?? {}
 							}
+							className="listItem"
 							key={e[0]}
 							onMouseEnter={() =>
 								stylePropertiesWithPseudoStates?.hover && setHover(e[0])
@@ -135,13 +145,22 @@ function TextList(props: ComponentProps) {
 								setHover('')
 							}
 						>
+							<SubHelperComponent
+								definition={props.definition}
+								subComponentName="listItem"
+							/>
 							<i
 								style={
 									(e[0] === hover ? styleProperties : styleHoverProperties)
 										.listItemIcon ?? {}
 								}
-								className={`${listIcon}`}
-							/>
+								className={`${listIcon} listItemIcon`}
+							>
+								<SubHelperComponent
+									definition={props.definition}
+									subComponentName="listItemIcon"
+								/>
+							</i>
 							{e[1]}
 						</li>
 					))}

@@ -11,6 +11,7 @@ import DnDBottomBar from './DnDBottomBar';
 import DnDTopBar from './DnDTopBar';
 import { ContextMenuDetails } from '../../components/ContextMenu';
 import DnDPropertyBar from './DnDPropertyBar';
+import DnDNavigationBar from './DnDNavigationBar';
 
 interface DnDEditorProps {
 	defPath: string | undefined;
@@ -120,8 +121,28 @@ export default function DnDEditor({
 					firstTimeRef={firstTimeRef}
 					latestVersion={latestVersion}
 					previewMode={preview}
+					storePaths={storePaths}
+					slaveStore={slaveStore}
+					editPageName={editPageName}
+					selectedSubComponent={selectedSubComponent}
+					selectedComponent={selectedComponent}
+					onSelectedComponentChanged={onSelectedComponentChanged}
+					onSelectedSubComponentChanged={onSelectedSubComponentChanged}
+					pageOperations={pageOperations}
 				/>
 				<div className={`_iframeContainer ${preview ? '_previewMode' : ''}`}>
+					<DnDNavigationBar
+						personalizationPath={personalizationPath}
+						onChangePersonalization={onChangePersonalization}
+						selectedComponent={selectedComponent}
+						onSelectedComponentChanged={onSelectedComponentChanged}
+						pageExtractor={pageExtractor}
+						defPath={defPath}
+						locationHistory={locationHistory}
+						pageOperations={pageOperations}
+						onContextMenu={onContextMenu}
+						previewMode={preview}
+					/>
 					<DnDIFrame
 						url={url}
 						personalizationPath={personalizationPath}
@@ -148,6 +169,7 @@ export default function DnDEditor({
 						styleSelectorPref={styleSelectorPref}
 						setStyleSelectorPref={setStyleSelectorPref}
 						previewMode={preview}
+						pageOperations={pageOperations}
 					/>
 				</div>
 				<DnDBottomBar

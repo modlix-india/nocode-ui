@@ -10,6 +10,7 @@ import Children from '../Children';
 import Portal from '../Portal';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import getPositions from '../util/getPositions';
+import { SubHelperComponent } from '../SubHelperComponent';
 export interface PortalCoordinates {
 	left?: number;
 	top?: number;
@@ -28,7 +29,14 @@ function Popover(props: ComponentProps) {
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
-		properties: { isReadonly, position, showTip, closeOnLeave } = {},
+		properties: {
+			isReadonly,
+			position,
+			showTip,
+			closeOnLeave,
+			showInDesign,
+			closeOnOutsideClick,
+		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
 		definition,
@@ -79,16 +87,41 @@ function Popover(props: ComponentProps) {
 		setShow(false);
 	};
 
+	React.useEffect(() => {
+		if (isDesignMode && showInDesign) return;
+		const closePopover = () => setShow(false);
+		if (show && closeOnOutsideClick) {
+			document.body.addEventListener('click', closePopover);
+		}
+		return () => document.body.removeEventListener('click', closePopover);
+	}, [show]);
+
 	return (
-		<div className="comp compPopover" style={resolvedStyles.comp ?? {}}>
+		<div
+			className="comp compPopover"
+			style={resolvedStyles.comp ?? {}}
+			onClick={e => e.stopPropagation()}
+		>
 			<HelperComponent definition={definition} />
 			{popChildren.length ? (
 				<div
-					style={{ display: 'inline-flex' }}
+					style={{
+						display: 'inline-flex',
+						position: 'relative',
+						...(resolvedStyles.popoverParentContainer ?? {}),
+					}}
 					ref={boxRef}
 					onClick={showPopover}
-					onMouseLeave={closeOnLeave ? handleMouseLeave : undefined}
+					onMouseLeave={
+						!(isDesignMode && showInDesign) && closeOnLeave
+							? handleMouseLeave
+							: undefined
+					}
 				>
+					<SubHelperComponent
+						definition={props.definition}
+						subComponentName="popoverParentContainer"
+					/>
 					<Children
 						key={`${key}_${popController}_chld`}
 						pageDefinition={pageDefinition}
@@ -96,7 +129,7 @@ function Popover(props: ComponentProps) {
 						context={{ ...context, isReadonly }}
 						locationHistory={locationHistory}
 					/>
-					{show ? (
+					{(isDesignMode && showInDesign) || show ? (
 						<Portal>
 							<div
 								ref={popoverRef}
@@ -116,10 +149,14 @@ function Popover(props: ComponentProps) {
 								<div
 									className={`popoverContainer`}
 									style={{
-										...margin,
+										...(showTip ? margin : null),
 										...(resolvedStyles?.popoverContainer ?? {}),
 									}}
 								>
+									<SubHelperComponent
+										definition={props.definition}
+										subComponentName="popoverContainer"
+									/>
 									<Children
 										key={`${key}_${popover.key}_chld`}
 										pageDefinition={pageDefinition}
@@ -148,6 +185,7 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: [],
+	allowedChildrenType: new Map<string, number>([['', -1]]),
 	defaultTemplate: {
 		key: '',
 		type: 'Popover',

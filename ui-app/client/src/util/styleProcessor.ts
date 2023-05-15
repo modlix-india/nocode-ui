@@ -322,12 +322,24 @@ export function processClassesForPageDefinition(pdef: PageDefinition): PageDefin
 		a[c.selector] = processStyleFromString(c.style);
 		return a;
 	}, {} as any);
-	console.log(newDef.processedClasses);
+
 	return newDef;
 }
 
 export function processStyleFromString(str: string): { [key: string]: string } {
-	return str
+	str = str
+		.replace(/\n/g, '')
+		.split('}')
+		.map(e => e.trim())
+		.filter(e => !!e)
+		.map(e => {
+			const ind = e.indexOf('{');
+			if (ind <= 0) return e;
+			return e.substring(ind + 1).trim();
+		})
+		.join('');
+
+	const styles = str
 		.split(';')
 		.map(s => {
 			let ind = s.indexOf(':');
@@ -348,4 +360,25 @@ export function processStyleFromString(str: string): { [key: string]: string } {
 			ia[ic.prop] = ic.value;
 			return ia;
 		}, {} as any);
+	return styles;
+}
+
+export function processStyleObjectToCSS(styleObj: any, selector: string): string {
+	if (!styleObj) return '';
+	const x = Object.entries(styleObj)
+		.map(
+			([key, value]) =>
+				key
+					.split(/(?=[A-Z])/g)
+					.map(s => s.toLowerCase())
+					.join('-') +
+				': ' +
+				value +
+				';',
+		)
+		.join('\n');
+
+	if (x.trim() === '') return '';
+
+	return `${selector} { ${x} }`;
 }

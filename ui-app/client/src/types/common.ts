@@ -135,6 +135,7 @@ export interface Component {
 		bindingPath5?: { name: string };
 		bindingPath6?: { name: string };
 	};
+	needShowInDesginMode?: boolean;
 }
 
 export enum StyleResolution {
@@ -269,10 +270,25 @@ export interface PageDefinition {
 	};
 	translations: { [key: string]: { [key: string]: string } };
 	properties: {
+		title?: {
+			name?: ComponentProperty<string>;
+			append?: ComponentProperty<boolean>;
+		};
 		onLoadEvent?: string;
 		loadStrategy?: string;
 		wrapShell?: boolean;
+		seo?: {
+			description?: ComponentProperty<string>;
+			keywords?: ComponentProperty<string>;
+			robots?: ComponentProperty<string>;
+			charset?: ComponentProperty<string>;
+			author?: ComponentProperty<string>;
+			applicationName?: ComponentProperty<string>;
+			generator?: ComponentProperty<string>;
+			[key: string]: ComponentProperty<string> | undefined;
+		};
 		classes?: { [key: string]: StyleClassDefinition };
+		[key: string]: any;
 	};
 	processedClasses?: {
 		[key: string]: { [key: string]: string };
