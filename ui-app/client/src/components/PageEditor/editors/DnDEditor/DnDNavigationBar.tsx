@@ -9,6 +9,7 @@ import { ContextMenuDetails } from '../../components/ContextMenu';
 import PageOperations from '../../functions/PageOperations';
 import ComponenstDefinition from '../../../';
 import { DRAG_CD_KEY } from '../../../../constants';
+import { LinkedList } from '@fincity/kirun-js';
 
 interface DnDNavigationBarProps {
 	personalizationPath: string | undefined;
@@ -86,6 +87,21 @@ export default function DnDNavigationBar({
 			),
 		[defPath, setPageDef],
 	);
+
+	const [oldSelected, setOldSelected] = useState<string>('');
+
+	useEffect(() => {
+		if (oldSelected === selectedComponent || !selectedComponent) return;
+		let current = map.get(selectedComponent);
+		let set = new Set(openParents);
+		while (current) {
+			if (expandAll) set.delete(current);
+			else set.add(current);
+			current = map.get(current);
+		}
+		setOpenParents(set);
+		setOldSelected(selectedComponent);
+	}, [pageDef, expandAll, selectedComponent, openParents, map, setOpenParents, setOldSelected]);
 
 	const setFilter = useCallback(
 		(f: string) => {
