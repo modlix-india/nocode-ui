@@ -11,6 +11,7 @@ import { getTranslations } from '../util/getTranslations';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './progressBarProperties';
 import ProgressBarStyles from './ProgressBarStyles';
+import { SubHelperComponent } from '../SubHelperComponent';
 
 function ProgressBar(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -69,6 +70,10 @@ function ProgressBar(props: ComponentProps) {
 			<HelperComponent definition={props.definition} />
 			{label ? (
 				<label className="progressBarLabel" style={resolvedStyles.progressBarLabel ?? {}}>
+					<SubHelperComponent
+						definition={props.definition}
+						subComponentName="progressBarLabel"
+					/>
 					{getTranslations(label, props.pageDefinition.translations)}
 				</label>
 			) : null}
@@ -82,11 +87,18 @@ function ProgressBar(props: ComponentProps) {
 					stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
 				}
 			>
+				<SubHelperComponent definition={props.definition} subComponentName="progressBar" />
 				<span
 					style={{ width: `${value}%`, ...(resolvedStyles.progress ?? {}) }}
 					className="progress"
-				></span>
+				>
+					<SubHelperComponent definition={props.definition} subComponentName="progress" />
+				</span>
 				<label className="progressValue" style={resolvedStyles.progressValue ?? {}}>
+					<SubHelperComponent
+						definition={props.definition}
+						subComponentName="progressValue"
+					/>
 					{`${prependProgressValue && showProgressValue ? value + '% ' : ''}` +
 						`${
 							progressNotStartedLabel || inProgressLabel || progressCompletedLabel
@@ -119,6 +131,9 @@ const component: Component = {
 		key: '',
 		type: 'ProgressBar',
 		name: 'ProgressBar',
+	},
+	bindingPaths: {
+		bindingPath: { name: 'Progress Value' },
 	},
 };
 

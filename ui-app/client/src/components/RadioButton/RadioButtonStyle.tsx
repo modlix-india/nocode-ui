@@ -17,7 +17,7 @@ export default function RadioButtonStyle({ theme }: { theme: Map<string, Map<str
         justify-items: center;
         text-align: center;
         align-items: center;
-        
+        position: relative;
     }
 
     ${PREFIX} .radioLabel.horizontal {
