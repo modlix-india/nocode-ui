@@ -23,12 +23,11 @@ function ImageComponent(props: ComponentProps) {
 	const {
 		properties: {
 			alt,
-			src1,
+			src: defaultSrc,
 			src2,
 			src3,
 			src4,
 			src5,
-			src6,
 			onClick: onClickEvent,
 			fallBackImg,
 		} = {},
@@ -46,18 +45,16 @@ function ImageComponent(props: ComponentProps) {
 	useEffect(() => {
 		addListenerAndCallImmediately(
 			(_, value) => {
-				if (value?.WIDE_SCREEN) {
-					setSrc(src6);
-				} else if (value?.DESKTOP_SCREEN_ONLY) {
-					setSrc(src1);
-				} else if (value?.TABLET_LANDSCAPE_SCREEN_ONLY) {
-					setSrc(src2);
+				if (value?.TABLET_LANDSCAPE_SCREEN_ONLY) {
+					src2 && setSrc(src2);
 				} else if (value?.TABLET_POTRAIT_SCREEN_ONLY) {
-					setSrc(src3);
+					src3 && setSrc(src3);
 				} else if (value?.MOBILE_LANDSCAPE_SCREEN_ONLY) {
-					setSrc(src4);
+					src4 && setSrc(src4);
 				} else if (value?.MOBILE_POTRAIT_SCREEN_ONLY) {
-					setSrc(src5);
+					src5 && setSrc(src5);
+				} else {
+					setSrc(defaultSrc);
 				}
 			},
 			pageExtractor,

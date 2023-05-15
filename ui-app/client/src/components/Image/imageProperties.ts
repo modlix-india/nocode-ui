@@ -11,10 +11,10 @@ import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '.
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.onClick,
 	{
-		name: 'src1',
+		name: 'src',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Image source for Desktop screen',
-		description: 'source of the image for Desktop screen.',
+		displayName: 'Default image source.',
+		description: 'Default image source.',
 		editor: ComponentPropertyEditor.IMAGE,
 		group: ComponentPropertyGroup.BASIC,
 	},
@@ -47,14 +47,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Image source for Mobile portrait screen',
 		description: 'source of the image for Mobile portrait screen.',
-		editor: ComponentPropertyEditor.IMAGE,
-		group: ComponentPropertyGroup.BASIC,
-	},
-	{
-		name: 'src6',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Image source for Desktop wide screen',
-		description: 'source of the image for Desktop wide screen.',
 		editor: ComponentPropertyEditor.IMAGE,
 		group: ComponentPropertyGroup.BASIC,
 	},
