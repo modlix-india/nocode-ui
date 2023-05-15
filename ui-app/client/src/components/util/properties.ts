@@ -428,6 +428,7 @@ const COMPONENT_STYLE_GROUP_PROPERTIES: { [key: string]: ComponentStylePropertyG
 		displayName: 'Image',
 		description: 'Image Properties',
 		target: ['comp'],
+		advanced: ['aspectRatio'],
 	},
 	accentColor: {
 		name: 'accentColor',
@@ -528,6 +529,7 @@ const COMPONENT_STYLE_GROUP_PROPERTIES: { [key: string]: ComponentStylePropertyG
 		description: 'Effects Properties',
 		target: ['comp'],
 		advanced: [
+			'mixBlendMode',
 			'transform',
 			'transformStyle',
 			'transitionProperty',
