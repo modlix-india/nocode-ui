@@ -456,7 +456,7 @@ function PageEditor(props: ComponentProps) {
 					pageName={context.pageName}
 					pageExtractor={pageExtractor}
 					onSave={saveFunction}
-					onPublish={publishFunction}
+					onPublish={onPublish ? publishFunction : undefined}
 					onChangePersonalization={savePersonalization}
 					iframeRef={ref}
 					locationHistory={locationHistory}

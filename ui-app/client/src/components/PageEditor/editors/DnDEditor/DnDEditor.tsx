@@ -18,7 +18,7 @@ interface DnDEditorProps {
 	personalizationPath: string | undefined;
 	pageName: string | undefined;
 	onSave: () => void;
-	onPublish: () => void;
+	onPublish?: () => void;
 	onChangePersonalization: (prop: string, value: any) => void;
 	url: string;
 	pageExtractor: PageStoreExtractor;

@@ -22,7 +22,7 @@ interface TopBarProps {
 	theme: string;
 	personalizationPath: string | undefined;
 	onSave: () => void;
-	onPublish: () => void;
+	onPublish?: () => void;
 	onChangePersonalization: (prop: string, value: any) => void;
 	url: string;
 	onUrlChange: (url: string) => void;
@@ -79,7 +79,6 @@ export default function DnDTopBar({
 	const [showProperties, setShowProperties] = useState(false);
 	const [page, setPage] = useState<PageDefinition>();
 	const [changed, setChanged] = useState(Date.now());
-
 	useEffect(() => setLocalUrl(url), [url]);
 	useEffect(
 		() =>
@@ -542,7 +541,8 @@ export default function DnDTopBar({
 						))}
 				</select>
 				<button onClick={onSave}>Save</button>
-				<button onClick={onPublish}>Publish</button>
+
+				{onPublish && <button onClick={onPublish}>Publish</button>}
 			</div>
 			{popup}
 		</div>
