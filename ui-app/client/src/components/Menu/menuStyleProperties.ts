@@ -24,7 +24,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		displayName: 'Visited Color',
 		description: 'The color of the menu after visited',
-		defaultValue: '<lightFontColor>',
+		defaultValue: '<mainFontColor>',
 		noPrefix: true,
 		selector: '.comp.compMenu:visited',
 	},
