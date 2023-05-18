@@ -29,7 +29,7 @@ export function getHref(linkPath: string = '', location: ReactLocation | Locatio
 		if (linkPath?.startsWith('/api/')) {
 			url = prefix + '' + linkPath;
 		} else {
-			if (location.pathname.includes('/page')) {
+			if (location.pathname.includes('/page/')) {
 				url = prefix + '/page' + linkPath;
 			} else {
 				url = linkPath;
@@ -46,13 +46,13 @@ export function getHref(linkPath: string = '', location: ReactLocation | Locatio
 		}
 
 		if (linkPath?.startsWith('api')) {
-			if (location.pathname.includes('/page')) {
+			if (location.pathname.includes('/page/')) {
 				url = prefix + '/' + midfix + linkPath;
 			} else {
 				url = linkPath;
 			}
 		} else {
-			if (location.pathname.includes('/page')) {
+			if (location.pathname.includes('/page/')) {
 				url = prefix + '/page/' + midfix + linkPath;
 			} else {
 				url = linkPath;
