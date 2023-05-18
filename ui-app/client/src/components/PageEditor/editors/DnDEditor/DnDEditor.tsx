@@ -18,6 +18,7 @@ interface DnDEditorProps {
 	personalizationPath: string | undefined;
 	pageName: string | undefined;
 	onSave: () => void;
+	onPublish: () => void;
 	onChangePersonalization: (prop: string, value: any) => void;
 	url: string;
 	pageExtractor: PageStoreExtractor;
@@ -60,6 +61,7 @@ export default function DnDEditor({
 	pageOperations,
 	theme,
 	onSave,
+	onPublish,
 	onUrlChange,
 	onDeletePersonalization,
 	onPageReload,
@@ -108,6 +110,7 @@ export default function DnDEditor({
 					defPath={defPath}
 					locationHistory={locationHistory}
 					url={url}
+					onPublish={onPublish}
 					personalizationPath={personalizationPath}
 					onChangePersonalization={onChangePersonalization}
 					theme={theme}

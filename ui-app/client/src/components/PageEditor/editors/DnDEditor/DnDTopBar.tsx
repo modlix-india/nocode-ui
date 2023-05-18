@@ -22,6 +22,7 @@ interface TopBarProps {
 	theme: string;
 	personalizationPath: string | undefined;
 	onSave: () => void;
+	onPublish: () => void;
 	onChangePersonalization: (prop: string, value: any) => void;
 	url: string;
 	onUrlChange: (url: string) => void;
@@ -50,6 +51,7 @@ export default function DnDTopBar({
 	personalizationPath,
 	onChangePersonalization,
 	onSave,
+	onPublish,
 	url,
 	onUrlChange,
 	onDeletePersonalization,
@@ -540,6 +542,7 @@ export default function DnDTopBar({
 						))}
 				</select>
 				<button onClick={onSave}>Save</button>
+				<button onClick={onPublish}>Publish</button>
 			</div>
 			{popup}
 		</div>

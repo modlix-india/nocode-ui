@@ -83,6 +83,7 @@ export default function ExecutionGraphLines({
 						? `eventParameter_${names[1]}_${names[2]}_${names[3]}`
 						: `eventNode_${names[1]}_${names[2]}`,
 				);
+				if (!rawDef.steps) return;
 				if (!fromNode || !rawDef.steps[names[1]]) return;
 				const fromColor = generateColor(
 					rawDef.steps[names[1]].namespace,
@@ -272,6 +273,7 @@ function makeLineFromExpression(
 			exprs.map(e => {
 				const names = e.split('.');
 				if (names.length < 2) return undefined;
+				if (!rawDef.steps) return undefined;
 				const fromId =
 					type === 'Steps'
 						? names.length > 3
@@ -281,6 +283,7 @@ function makeLineFromExpression(
 				if (redundancyCheck.has(fromId + '-' + toNode.id)) return undefined;
 				redundancyCheck.add(fromId + '-' + toNode.id);
 				const fromNode = document.getElementById(fromId);
+
 				if (!fromNode || (type === 'Steps' && !rawDef.steps[names[1]])) return undefined;
 
 				const fromColor =
