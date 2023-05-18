@@ -61,7 +61,7 @@ function ImageComponent(props: ComponentProps) {
 			pageExtractor,
 			'Store.devices',
 		);
-	}, []);
+	}, [defaultSrc, src2, src3, src4, src5]);
 
 	const handleClick = () => {
 		(async () =>
