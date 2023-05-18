@@ -70,7 +70,14 @@ function PageEditor(props: ComponentProps) {
 	const {
 		key,
 		stylePropertiesWithPseudoStates,
-		properties: { logo, theme, onSave, onChangePersonalization, onDeletePersonalization } = {},
+		properties: {
+			logo,
+			theme,
+			onSave,
+			onPublish,
+			onChangePersonalization,
+			onDeletePersonalization,
+		} = {},
 	} = useDefinition(
 		definition,
 		propertiesDefinition,
@@ -128,6 +135,21 @@ function PageEditor(props: ComponentProps) {
 				pageDefinition,
 			))();
 	}, [onSave]);
+	console.log(onPublish);
+	// Function to publish the page
+	const publishFunction = useCallback(() => {
+		console.log(pageDefinition.eventFunctions[onPublish]);
+		if (!onPublish || !pageDefinition.eventFunctions?.[onPublish]) return;
+		console.log(pageDefinition.eventFunctions[onPublish]);
+		(async () =>
+			await runEvent(
+				pageDefinition.eventFunctions[onPublish],
+				'pageEditorPublish',
+				context.pageName,
+				locationHistory,
+				pageDefinition,
+			))();
+	}, [onPublish]);
 
 	// Clear the personalization
 	const deletePersonalization = useCallback(() => {
@@ -434,6 +456,7 @@ function PageEditor(props: ComponentProps) {
 					pageName={context.pageName}
 					pageExtractor={pageExtractor}
 					onSave={saveFunction}
+					onPublish={onPublish ? publishFunction : undefined}
 					onChangePersonalization={savePersonalization}
 					iframeRef={ref}
 					locationHistory={locationHistory}

@@ -47,7 +47,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 		displayName: "Menu's icon",
 		description: "Menu's icon to be displayed on left.",
-		defaultValue: 'fa fa-solid fa-home',
 		editor: ComponentPropertyEditor.ICON,
 	},
 	{

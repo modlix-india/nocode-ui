@@ -63,7 +63,7 @@ export function savePersonalizationCurry(
 }
 
 export function correctStatementNames(def: any) {
-	def = duplicate(def);
+	def = duplicate(def) ?? {};
 
 	Object.keys(def?.steps ?? {}).forEach(k => {
 		if (k === def.steps[k].statementName) return;

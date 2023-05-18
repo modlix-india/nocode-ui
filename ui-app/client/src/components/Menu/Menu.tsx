@@ -160,43 +160,52 @@ function Menu(props: ComponentProps) {
 
 	const styleComp = (
 		<style key={`${styleKey}_style`}>
-			{processStyleObjectToCSS(regularStyle?.comp, `._${styleKey}menu_css`)}
-			{processStyleObjectToCSS(visitedStyle?.comp, `._${styleKey}menu_css:visited`)}
+			{processStyleObjectToCSS(regularStyle?.comp, `.comp.compMenu._${styleKey}menu_css`)}
+			{processStyleObjectToCSS(
+				visitedStyle?.comp,
+				`.comp.compMenu._${styleKey}menu_css:visited`,
+			)}
 			{processStyleObjectToCSS(
 				hoverStyle?.comp,
-				`._${styleKey}menu_css:hover, ._${styleKey}menu_css._isActive`,
+				`.comp.compMenu._${styleKey}menu_css:hover, .comp.compMenu._${styleKey}menu_css._isActive`,
 			)}
 			{processStyleObjectToCSS(
 				regularStyle?.externalIcon,
-				`._${styleKey}menu_css > ._externalButton`,
+				`.comp.compMenu._${styleKey}menu_css > ._externalButton`,
 			)}
 			{processStyleObjectToCSS(
 				visitedStyle?.externalIcon,
-				`._${styleKey}menu_css:visited > ._externalButton`,
+				`.comp.compMenu._${styleKey}menu_css:visited > ._externalButton`,
 			)}
 			{processStyleObjectToCSS(
 				hoverStyle?.externalIcon,
-				`._${styleKey}menu_css:hover > ._externalButton, ._${styleKey}menu_css._isActive > ._externalButton`,
+				`.comp.compMenu._${styleKey}menu_css:hover > ._externalButton, .comp.compMenu._${styleKey}menu_css._isActive > ._externalButton`,
 			)}
 
-			{processStyleObjectToCSS(regularStyle?.icon, `._${styleKey}menu_css > ._icon`)}
-			{processStyleObjectToCSS(visitedStyle?.icon, `._${styleKey}menu_css:visited > ._icon`)}
+			{processStyleObjectToCSS(
+				regularStyle?.icon,
+				`.comp.compMenu._${styleKey}menu_css > ._icon`,
+			)}
+			{processStyleObjectToCSS(
+				visitedStyle?.icon,
+				`.comp.compMenu._${styleKey}menu_css:visited > ._icon`,
+			)}
 			{processStyleObjectToCSS(
 				hoverStyle?.icon,
-				`._${styleKey}menu_css:hover > ._icon, ._${styleKey}menu_css._isActive > ._icon`,
+				`.comp.compMenu._${styleKey}menu_css:hover > ._icon, .comp.compMenu._${styleKey}menu_css._isActive > ._icon`,
 			)}
 
 			{processStyleObjectToCSS(
 				regularStyle?.caretIcon,
-				`._${styleKey}menu_css > ._caretIcon`,
+				`.comp.compMenu._${styleKey}menu_css > ._caretIcon`,
 			)}
 			{processStyleObjectToCSS(
 				visitedStyle?.caretIcon,
-				`._${styleKey}menu_css:visited > ._caretIcon`,
+				`.comp.compMenu._${styleKey}menu_css:visited > ._caretIcon`,
 			)}
 			{processStyleObjectToCSS(
 				hoverStyle?.caretIcon,
-				`._${styleKey}menu_css:hover > ._caretIcon, ._${styleKey}menu_css._isActive > ._caretIcon`,
+				`.comp.compMenu._${styleKey}menu_css:hover > ._caretIcon, .comp.compMenu._${styleKey}menu_css._isActive > ._caretIcon`,
 			)}
 		</style>
 	);
@@ -270,7 +279,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
-	stylePseudoStates: ['hover', 'disabled', 'active'],
+	stylePseudoStates: ['hover', 'disabled', 'active', 'visited'],
 	allowedChildrenType: new Map([['Menu', -1]]),
 	defaultTemplate: {
 		key: '',
