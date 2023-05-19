@@ -167,7 +167,7 @@ function TableColumnsComponent(props: ComponentProps) {
 					stylePropertiesWithPseudoStates?.hover ? () => setHoverRow(-1) : undefined
 				}
 				onClick={onClick}
-				style={(hoverRow === index ? styleHoverProperties : styleNormalProperties).comp}
+				style={(hoverRow === index ? styleHoverProperties : styleNormalProperties).row}
 			>
 				{checkBox}
 				<Children
@@ -196,7 +196,10 @@ function TableColumnsComponent(props: ComponentProps) {
 			checkBoxTop = <div className="comp compTableHeaderColumn">&nbsp;</div>;
 		}
 		headers = (
-			<div className="_row">
+			<div
+				className="_row"
+				style={(hover ? styleHoverProperties : styleNormalProperties).header}
+			>
 				{checkBoxTop}
 				<Children
 					pageDefinition={newPageDef}
@@ -212,7 +215,7 @@ function TableColumnsComponent(props: ComponentProps) {
 	if (emptyCount) {
 		for (let i = 0; i < emptyCount; i++) {
 			emptyRows.push(
-				<div key={`emptyRow_${i}`} className="_row">
+				<div key={`emptyRow_${i}`} className="_row" style={styleNormalProperties.row}>
 					<Children
 						pageDefinition={colPageDef}
 						children={children}

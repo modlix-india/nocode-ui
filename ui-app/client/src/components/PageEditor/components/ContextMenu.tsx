@@ -84,6 +84,24 @@ export function ContextMenu({
 		) : (
 			<></>
 		);
+
+	const showInDesignModeToggle =
+		componentDefinition?.type &&
+		Components.get(componentDefinition.type)?.needShowInDesginMode ? (
+			<>
+				<div className="_popupMenuSeperator" />
+				<div
+					className="_popupMenuItem"
+					title="Show/Hide in desgin mode"
+					onClick={() => pageOperations.toggleInDesignMode(menuDetails.componentKey)}
+				>
+					<i className="fa fa-solid fa-toggle-on" />
+					Toggle in Design mode
+				</div>
+			</>
+		) : (
+			<></>
+		);
 	return (
 		<Portal>
 			<div
@@ -103,6 +121,7 @@ export function ContextMenu({
 							<i className="fa fa-regular fa-square-full" />
 							Wrap a Grid
 						</div>
+						{showInDesignModeToggle}
 						<div className="_popupMenuSeperator" />
 						<div
 							className="_popupMenuItem"

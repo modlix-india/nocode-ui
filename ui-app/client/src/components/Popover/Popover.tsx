@@ -88,7 +88,7 @@ function Popover(props: ComponentProps) {
 	};
 
 	React.useEffect(() => {
-		if (isDesignMode && showInDesign) return;
+		if (isDesignMode && showInDesign === true) return;
 		const closePopover = () => setShow(false);
 		if (show && closeOnOutsideClick) {
 			document.body.addEventListener('click', closePopover);
@@ -113,7 +113,7 @@ function Popover(props: ComponentProps) {
 					ref={boxRef}
 					onClick={showPopover}
 					onMouseLeave={
-						!(isDesignMode && showInDesign) && closeOnLeave
+						!(isDesignMode && showInDesign === true) && closeOnLeave
 							? handleMouseLeave
 							: undefined
 					}
@@ -129,7 +129,7 @@ function Popover(props: ComponentProps) {
 						context={{ ...context, isReadonly }}
 						locationHistory={locationHistory}
 					/>
-					{(isDesignMode && showInDesign) || show ? (
+					{(isDesignMode && showInDesign === true) || show ? (
 						<Portal>
 							<div
 								ref={popoverRef}

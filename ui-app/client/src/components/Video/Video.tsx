@@ -214,7 +214,7 @@ function Video(props: ComponentProps) {
 				await document.exitPictureInPicture();
 			}
 		} catch (error) {
-			console.log(error);
+			console.error(error);
 		} finally {
 			pipRef.current.disabled = false;
 		}

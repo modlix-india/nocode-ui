@@ -6,7 +6,7 @@ import {
 	ComponentPropertyDefinition,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
-import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
+import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
@@ -89,13 +89,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 		],
 	},
-	{
-		name: 'showInDesign',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Show in Design Mode',
-		group: ComponentPropertyGroup.BASIC,
-		defaultValue: false,
-	},
+	COMMON_COMPONENT_PROPERTIES.showInDesign,
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

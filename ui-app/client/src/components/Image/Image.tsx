@@ -46,14 +46,14 @@ function ImageComponent(props: ComponentProps) {
 	useEffect(() => {
 		addListenerAndCallImmediately(
 			(_, value) => {
-				if (value?.TABLET_LANDSCAPE_SCREEN_ONLY) {
-					src2 && setSrc(src2);
-				} else if (value?.TABLET_POTRAIT_SCREEN_ONLY) {
-					src3 && setSrc(src3);
-				} else if (value?.MOBILE_LANDSCAPE_SCREEN_ONLY) {
-					src4 && setSrc(src4);
-				} else if (value?.MOBILE_POTRAIT_SCREEN_ONLY) {
-					src5 && setSrc(src5);
+				if (value?.TABLET_LANDSCAPE_SCREEN_ONLY && src2) {
+					setSrc(src2);
+				} else if (value?.TABLET_POTRAIT_SCREEN_ONLY && src3) {
+					setSrc(src3);
+				} else if (value?.MOBILE_LANDSCAPE_SCREEN_ONLY && src4) {
+					setSrc(src4);
+				} else if (value?.MOBILE_POTRAIT_SCREEN_ONLY && src5) {
+					setSrc(src5);
 				} else {
 					setSrc(defaultSrc);
 				}
@@ -61,7 +61,7 @@ function ImageComponent(props: ComponentProps) {
 			pageExtractor,
 			'Store.devices',
 		);
-	}, []);
+	}, [defaultSrc, src2, src3, src4, src5]);
 
 	const handleClick = () => {
 		(async () =>

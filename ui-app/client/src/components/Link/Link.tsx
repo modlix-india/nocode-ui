@@ -92,20 +92,23 @@ function Link(props: ComponentProps) {
 
 	const styleComp = (
 		<style key={`${styleKey}_style`}>
-			{processStyleObjectToCSS(regularStyle?.comp, `._${styleKey}link_css`)}
-			{processStyleObjectToCSS(visitedStyle?.comp, `._${styleKey}link_css:visited`)}
-			{processStyleObjectToCSS(hoverStyle?.comp, `._${styleKey}link_css:hover`)}
+			{processStyleObjectToCSS(regularStyle?.comp, `.comp.compLink._${styleKey}link_css`)}
+			{processStyleObjectToCSS(
+				visitedStyle?.comp,
+				`.comp.compLink._${styleKey}link_css:visited`,
+			)}
+			{processStyleObjectToCSS(hoverStyle?.comp, `.comp.compLink._${styleKey}link_css:hover`)}
 			{processStyleObjectToCSS(
 				regularStyle?.externalIcon,
-				`._${styleKey}link_css > ._externalButton`,
+				`.comp.compLink._${styleKey}link_css > ._externalButton`,
 			)}
 			{processStyleObjectToCSS(
 				visitedStyle?.externalIcon,
-				`._${styleKey}link_css:visited > ._externalButton`,
+				`.comp.compLink._${styleKey}link_css:visited > ._externalButton`,
 			)}
 			{processStyleObjectToCSS(
 				hoverStyle?.externalIcon,
-				`._${styleKey}link_css:hover > ._externalButton`,
+				`.comp.compLink._${styleKey}link_css:hover > ._externalButton`,
 			)}
 		</style>
 	);

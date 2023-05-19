@@ -2,6 +2,7 @@ import React from 'react';
 import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../../../constants';
 import { VALIDATION_FUNCTIONS } from '../../../../util/validationProcessor';
 import PropertyValueEditor from './PropertyValueEditor';
+import PageOperations from '../../functions/PageOperations';
 
 interface ValidationEditorProps {
 	value?: any;
@@ -10,6 +11,7 @@ interface ValidationEditorProps {
 	onShowCodeEditor?: (eventName: string) => void;
 	slaveStore: any;
 	editPageName: string | undefined;
+	pageOperations: PageOperations;
 }
 
 export function ValidationEditor({
@@ -19,6 +21,7 @@ export function ValidationEditor({
 	onShowCodeEditor,
 	slaveStore,
 	editPageName,
+	pageOperations,
 }: ValidationEditorProps) {
 	return (
 		<div className="_validationEditor">
@@ -55,6 +58,7 @@ export function ValidationEditor({
 					onShowCodeEditor={onShowCodeEditor}
 					editPageName={editPageName}
 					slaveStore={slaveStore}
+					pageOperations={pageOperations}
 				/>
 			</div>
 			{(VALIDATION_FUNCTIONS[value?.type ?? 'MANDATORY'].fields ?? []).map(propDef => (
@@ -68,6 +72,7 @@ export function ValidationEditor({
 						onShowCodeEditor={onShowCodeEditor}
 						editPageName={editPageName}
 						slaveStore={slaveStore}
+						pageOperations={pageOperations}
 					/>
 				</div>
 			))}
@@ -87,6 +92,7 @@ export function ValidationEditor({
 					onShowCodeEditor={onShowCodeEditor}
 					editPageName={editPageName}
 					slaveStore={slaveStore}
+					pageOperations={pageOperations}
 				/>
 			</div>
 		</div>

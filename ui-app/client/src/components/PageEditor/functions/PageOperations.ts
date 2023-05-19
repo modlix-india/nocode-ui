@@ -1,21 +1,19 @@
-import React from 'react';
 import { isNullValue, LinkedList } from '@fincity/kirun-js';
+import React from 'react';
 
+import ComponentDefinitions from '../../';
+import { COPY_CD_KEY, CUT_CD_KEY, DRAG_CD_KEY, DRAG_COMP_NAME } from '../../../constants';
 import { getDataFromPath, PageStoreExtractor, setData } from '../../../context/StoreContext';
 import {
 	ComponentDefinition,
-	ComponentProperty,
-	ComponentResoltuions,
 	LocationHistory,
 	PageDefinition,
+	StyleResolution,
 } from '../../../types/common';
 import duplicate from '../../../util/duplicate';
-import { Issue } from '../components/IssuePopup';
-import { COPY_CD_KEY, CUT_CD_KEY, DRAG_CD_KEY, DRAG_COMP_NAME } from '../../../constants';
-import ComponentDefinitions from '../../';
-import Grid from '../../Grid/Grid';
 import { shortUUID } from '../../../util/shortUUID';
-import { StyleResolution } from '../../../types/common';
+import Grid from '../../Grid/Grid';
+import { Issue } from '../components/IssuePopup';
 
 interface ClipboardObject {
 	mainKey: string;
@@ -372,6 +370,26 @@ export default class PageOperations {
 		setData(this.defPath, def, this.pageExtractor.getPageName());
 	}
 
+	public toggleInDesignMode(componentKey: string) {
+		if (!componentKey || !this.defPath) return;
+
+		const pageDef: PageDefinition = getDataFromPath(
+			this.defPath,
+			this.locationHistory,
+			this.pageExtractor,
+		);
+		if (!pageDef) return;
+
+		let def = duplicate(pageDef) as PageDefinition;
+		let component = def.componentDefinition[componentKey];
+		if (!component) return;
+
+		if (!component.properties) component.properties = {};
+
+		component.properties.showInDesign = { value: !component.properties.showInDesign?.value };
+		setData(this.defPath, def, this.pageExtractor.getPageName());
+	}
+
 	public droppedOn(componentKey: string, droppedData: any, forceSameParent: boolean = false) {
 		let pageDef: PageDefinition = getDataFromPath(
 			this.defPath,
@@ -638,7 +656,7 @@ export default class PageOperations {
 				} else if (data.startsWith(COPY_CD_KEY)) {
 					clipObj = JSON.parse(data.substring(COPY_CD_KEY.length));
 				}
-			} catch (err) { }
+			} catch (err) {}
 
 			if (!clipObj) return;
 
@@ -773,14 +791,15 @@ export default class PageOperations {
 				// If it cannot contain the type of the child dropped show the message what
 				// are the valid children.
 				this.setIssue({
-					message: `${doCompComponent.displayName} cannot contain ${dpCompComponent.displayName
-						}. It can contain only ${Array.from(doCompComponent.allowedChildrenType.keys())
-							.map(e => ComponentDefinitions.get(e)?.displayName!)
-							.reduce((a: string, c: string, i, arr) => {
-								if (i + 2 === arr.length) return a + c + ' or ';
-								else if (i + 1 === arr.length) return a + c;
-								else return a + c + ', ';
-							}, '')}.`,
+					message: `${doCompComponent.displayName} cannot contain ${
+						dpCompComponent.displayName
+					}. It can contain only ${Array.from(doCompComponent.allowedChildrenType.keys())
+						.map(e => ComponentDefinitions.get(e)?.displayName!)
+						.reduce((a: string, c: string, i, arr) => {
+							if (i + 2 === arr.length) return a + c + ' or ';
+							else if (i + 1 === arr.length) return a + c;
+							else return a + c + ', ';
+						}, '')}.`,
 					defaultOption: 'Ok',
 					options: ['Ok'],
 				});
@@ -792,9 +811,11 @@ export default class PageOperations {
 				// If there is a parent restriction like the allowed children. We have to
 				// show it is not allowed.
 				this.setIssue({
-					message: `${dpCompComponent.displayName} cannot be part of ${doCompComponent.displayName
-						}. It can be part of only ${ComponentDefinitions.get(dpCompComponent.parentType)?.displayName
-						}`,
+					message: `${dpCompComponent.displayName} cannot be part of ${
+						doCompComponent.displayName
+					}. It can be part of only ${
+						ComponentDefinitions.get(dpCompComponent.parentType)?.displayName
+					}`,
 					defaultOption: 'Ok',
 					options: ['Ok'],
 				});
@@ -807,13 +828,14 @@ export default class PageOperations {
 				let count = isGenericChild
 					? Object.keys(doComp.children).length
 					: Object.keys(doComp.children).filter(
-						e => pageDef.componentDefinition[e].type === dpComp.type,
-					).length;
+							e => pageDef.componentDefinition[e].type === dpComp.type,
+					  ).length;
 				if (count >= allowedChildCount!) {
 					// If there is a count restriction we need a confirmation to replace the existing ones.
 					this.setIssue({
-						message: `${doCompComponent.displayName} allows ${allowedChildCount} ${isGenericChild ? '' : `of type ${dpCompComponent.displayName} as`
-							} children. Do you want to replace the existing components?`,
+						message: `${doCompComponent.displayName} allows ${allowedChildCount} ${
+							isGenericChild ? '' : `of type ${dpCompComponent.displayName} as`
+						} children. Do you want to replace the existing components?`,
 						defaultOption: 'No',
 						options: ['Yes', 'No'],
 						callbackOnOption: {
@@ -831,9 +853,9 @@ export default class PageOperations {
 								let removeChildren = isGenericChild
 									? Object.keys(doComp.children ?? {})
 									: Object.keys(doComp.children ?? {}).filter(
-										e =>
-											dpComp.type === inPgDef.componentDefinition[e].type,
-									);
+											e =>
+												dpComp.type === inPgDef.componentDefinition[e].type,
+									  );
 
 								removeChildren.forEach(e => {
 									delete inPgDef.componentDefinition[e];

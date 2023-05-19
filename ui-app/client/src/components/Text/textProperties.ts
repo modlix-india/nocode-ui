@@ -1,5 +1,9 @@
 import { Schema } from '@fincity/kirun-js';
-import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
+import {
+	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_NUM_COMP_PROP,
+	SCHEMA_STRING_COMP_PROP,
+} from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
@@ -36,6 +40,83 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				name: 'MD',
 				displayName: 'Markdown',
 				description: 'Markdown Format',
+			},
+		],
+	},
+
+	{
+		name: 'stringFormat',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'String Format',
+		description: 'String format with dates, numbers and strings',
+		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: 'STRING',
+		enumValues: [
+			{
+				name: 'STRING',
+				displayName: 'Plain String',
+				description: 'Plain String',
+			},
+			{
+				name: 'UTC_TO_MM/DD/YYYY',
+				displayName: 'UTC to MM/DD/YYYY',
+				description: 'UTC to MM/DD/YYYY',
+			},
+			{
+				name: 'UTC_TO_MM/DD/YYYY_HH:MM',
+				displayName: 'UTC to MM/DD/YYYY HH:MM',
+				description: 'UTC to MM/DD/YYYY HH:MM',
+			},
+			{
+				name: 'UTC_TO_MM/DD/YYYY_HH:MM:SS',
+				displayName: 'UTC to MM/DD/YYYY HH:MM:SS',
+				description: 'UTC to MM/DD/YYYY HH:MM:SS',
+			},
+			{
+				name: 'UTC_TO_MM/DD/YYYY_HH:MM:SS.SSS',
+				displayName: 'UTC to MM/DD/YYYY HH:MM:SS.SSS',
+				description: 'UTC to MM/DD/YYYY HH:MM:SS.SSS',
+			},
+			{
+				name: 'UTC_TO_YYYY-MM-DD',
+				displayName: 'UTC to YYYY-MM-DD',
+				description: 'UTC to YYYY-MM-DD',
+			},
+			{
+				name: 'UTC_TO_YYYY-MM-DD_HH:MM',
+				displayName: 'UTC to YYYY-MM-DD HH:MM',
+				description: 'UTC to YYYY-MM-DD HH:MM',
+			},
+			{
+				name: 'UTC_TO_YYYY-MM-DD_HH:MM:SS',
+				displayName: 'UTC to YYYY-MM-DD HH:MM:SS',
+				description: 'UTC to YYYY-MM-DD HH:MM:SS',
+			},
+			{
+				name: 'UTC_TO_YYYY-MM-DD_HH:MM:SS.SSS',
+				displayName: 'UTC to YYYY-MM-DD HH:MM:SS.SSS',
+				description: 'UTC to YYYY-MM-DD HH:MM:SS.SSS',
+			},
+			{
+				name: 'UTC_TO_MONTH_DD,YYYY',
+				displayName: 'UTC to Month DD, YYYY',
+				description: 'UTC to Month DD, YYYY',
+			},
+			{
+				name: 'UTC_TO_MONTH_DD,YYYY_HH:MM',
+				displayName: 'UTC to Month DD, YYYY HH:MM',
+				description: 'UTC to Month DD, YYYY HH:MM',
+			},
+			{
+				name: 'UTC_TO_MONTH_DD,YYYY_HH:MM:SS',
+				displayName: 'UTC to Month DD, YYYY HH:MM:SS',
+				description: 'UTC to Month DD, YYYY HH:MM:SS',
+			},
+			{
+				name: 'UTC_TO_MONTH_DD,YYYY_HH:MM:SS.SSS',
+				displayName: 'UTC to Month DD, YYYY HH:MM:SS.SSS',
+				description: 'UTC to Month DD, YYYY HH:MM:SS.SSS',
 			},
 		],
 	},
@@ -110,6 +191,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 		],
 	},
+
+	{
+		name: 'textLength',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Max Text Length',
+		description: 'Max text length',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
