@@ -43,10 +43,14 @@ const ICONS: any = {
 export function addMessage(type: MESSAGE_TYPE, msg: any, isGlobalScope: boolean, pageName: string) {
 	const messages = getDataFromPath(STORE_PATH_MESSAGES, []) ?? [];
 
-	setData(STORE_PATH_MESSAGES, [...messages, { id: Date.now(), type, msg, isGlobalScope }]);
+	const key = `${Date.now()}-${Math.round(Math.random() * 10000)}`;
+	setData(STORE_PATH_MESSAGES, [
+		...messages,
+		{ id: key, when: Date.now(), type, msg, isGlobalScope },
+	]);
 }
 
-export function removeMessage(id: number) {
+export function removeMessage(id: string) {
 	const messages = getDataFromPath(STORE_PATH_MESSAGES, []) ?? [];
 
 	if (messages.length === 0) return;
@@ -66,7 +70,7 @@ setInterval(() => {
 
 	const now = Date.now();
 
-	const newMsgs = messages.filter((e: any) => e.id + timeout > now);
+	const newMsgs = messages.filter((e: any) => e.when + timeout > now);
 
 	if (messages.length === newMsgs.length) return;
 
