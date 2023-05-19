@@ -103,7 +103,7 @@ export default function ParamEditor({
 				};
 				if (obj[key].isNew) delete obj[key].isNew;
 			}
-			const delKey = Object.values(obj)
+			const delKey = Object.values(obj ?? {})
 				.filter((e: any) => e.isNew && !e.expression && isNullValue(e.value))
 				.map((e: any) => e.key as string);
 			if (delKey.length) {
