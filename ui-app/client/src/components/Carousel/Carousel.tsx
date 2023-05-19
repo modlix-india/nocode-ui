@@ -193,7 +193,7 @@ function Carousel(props: ComponentProps) {
 			];
 		}
 	}
-	console.log(slideNum);
+
 	const handleMouse = (e: any) => {
 		if (showNavigationControlsOnHover) setHover(true);
 	};

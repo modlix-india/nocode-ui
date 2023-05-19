@@ -10,6 +10,7 @@ import {
 } from '@fincity/kirun-js';
 import { addMessage, MESSAGE_TYPE } from '../App/Messages/Messages';
 import { NAMESPACE_UI_ENGINE, GLOBAL_CONTEXT_NAME } from '../constants';
+import duplicate from '../util/duplicate';
 
 const SIGNATURE = new FunctionSignature('Message')
 	.setNamespace(NAMESPACE_UI_ENGINE)
@@ -40,6 +41,8 @@ export class Message extends AbstractFunction {
 		const isGlobalScope: boolean = context.getArguments()?.get('isGlobalScope');
 		const pageName: string = context.getArguments()?.get('pageName');
 		const type: MESSAGE_TYPE = context.getArguments()?.get('type') as MESSAGE_TYPE;
+
+		console.log(error, duplicate(context.getSteps()));
 
 		addMessage(type, error, isGlobalScope, pageName);
 
