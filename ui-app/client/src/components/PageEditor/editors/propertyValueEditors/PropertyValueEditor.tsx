@@ -240,6 +240,7 @@ function makeValueEditor(
 				onShowCodeEditor={onShowCodeEditor}
 				editPageName={editPageName}
 				slaveStore={slaveStore}
+				pageOperations={pageOperations}
 			/>
 		);
 	}

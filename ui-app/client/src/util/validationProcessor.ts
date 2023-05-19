@@ -27,7 +27,8 @@ function MANDATORY(validation: any, value: any): Array<string> {
 
 function REGEX(validation: any, value: any): Array<string> {
 	if (isNullValue(value) || value === '') return [];
-	if (!value.match(new RegExp(validation.pattern, validation.ignoreCase ? 'i' : undefined)))
+
+	if (!new RegExp(validation.pattern, validation.ignoreCase ? 'i' : undefined).test(value))
 		return [validation.message];
 	return [];
 }
@@ -113,6 +114,13 @@ export const VALIDATION_FUNCTIONS: {
 				displayName: 'Pattern',
 				description: 'Regular expression pattern',
 				schema: SCHEMA_STRING_COMP_PROP,
+			},
+			{
+				name: 'ignoreCase',
+				displayName: 'Ignore Case',
+				description: 'Ignore case while matching',
+				schema: SCHEMA_BOOL_COMP_PROP,
+				defaultValue: false,
 			},
 		],
 	},

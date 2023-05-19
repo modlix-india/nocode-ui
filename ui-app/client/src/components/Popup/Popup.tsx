@@ -127,92 +127,94 @@ function Popup(props: ComponentProps) {
 		</i>
 	);
 
-	if (isDesignMode) {
-		if (!showInDesign) return <></>;
-	} else if (!isActive) return <></>;
-
-	return (
-		<Portal>
-			<div className="comp compPopup">
-				<div
-					className="backdrop"
-					onClick={handleCloseOnOutsideClick}
-					style={resolvedStyles.comp ?? {}}
-				>
-					<HelperComponent definition={props.definition} />
+	if (isActive || (isDesignMode && showInDesign === true)) {
+		return (
+			<Portal>
+				<div className="comp compPopup">
 					<div
-						className={`modal ${popupDesign === '_design2' ? 'design2' : ''} `}
-						style={resolvedStyles?.modal || {}}
-						onClick={handleBubbling}
+						className="backdrop"
+						onClick={handleCloseOnOutsideClick}
+						style={resolvedStyles.comp ?? {}}
 					>
-						<SubHelperComponent
-							definition={props.definition}
-							subComponentName="modal"
-						/>
-						{popupDesign === '_design1' ? (
-							<div className="TitleIconGrid" style={resolvedStyles?.titleGrid || {}}>
-								<SubHelperComponent
-									definition={props.definition}
-									subComponentName="titleGrid"
-								/>
-								{showClose && closeButtonPosition === 'LEFT' && (
-									<div
-										className="closeButtonPosition"
-										style={resolvedStyles.closeButtonContainer ?? {}}
-									>
-										<SubHelperComponent
-											definition={props.definition}
-											subComponentName="closeButtonContainer"
-										/>
-										{closeIcon}
-									</div>
-								)}
+						<HelperComponent definition={props.definition} />
+						<div
+							className={`modal ${popupDesign === '_design2' ? 'design2' : ''} `}
+							style={resolvedStyles?.modal || {}}
+							onClick={handleBubbling}
+						>
+							<SubHelperComponent
+								definition={props.definition}
+								subComponentName="modal"
+							/>
+							{popupDesign === '_design1' ? (
 								<div
-									className="modelTitleStyle"
-									style={resolvedStyles.modalTitle ?? {}}
+									className="TitleIconGrid"
+									style={resolvedStyles?.titleGrid || {}}
 								>
 									<SubHelperComponent
 										definition={props.definition}
-										subComponentName="modalTitle"
+										subComponentName="titleGrid"
 									/>
-									{modelTitle && modelTitle}
-								</div>
-								{showClose && closeButtonPosition === 'RIGHT' && (
+									{showClose && closeButtonPosition === 'LEFT' && (
+										<div
+											className="closeButtonPosition"
+											style={resolvedStyles.closeButtonContainer ?? {}}
+										>
+											<SubHelperComponent
+												definition={props.definition}
+												subComponentName="closeButtonContainer"
+											/>
+											{closeIcon}
+										</div>
+									)}
 									<div
-										className="closeButtonPosition"
-										style={resolvedStyles.closeButtonContainer ?? {}}
+										className="modelTitleStyle"
+										style={resolvedStyles.modalTitle ?? {}}
 									>
 										<SubHelperComponent
 											definition={props.definition}
-											subComponentName="closeButtonContainer"
+											subComponentName="modalTitle"
 										/>
-										{closeIcon}
+										{modelTitle && modelTitle}
 									</div>
-								)}
-							</div>
-						) : (
-							<div
-								className="design2CloseButton"
-								style={resolvedStyles.closeButtonContainer ?? {}}
-							>
-								<SubHelperComponent
-									definition={props.definition}
-									subComponentName="closeButtonContainer"
-								/>
-								{showClose ? closeIcon : ''}
-							</div>
-						)}
-						<Children
-							pageDefinition={props.pageDefinition}
-							children={props.definition.children}
-							context={props.context}
-							locationHistory={props.locationHistory}
-						/>
+									{showClose && closeButtonPosition === 'RIGHT' && (
+										<div
+											className="closeButtonPosition"
+											style={resolvedStyles.closeButtonContainer ?? {}}
+										>
+											<SubHelperComponent
+												definition={props.definition}
+												subComponentName="closeButtonContainer"
+											/>
+											{closeIcon}
+										</div>
+									)}
+								</div>
+							) : (
+								<div
+									className="design2CloseButton"
+									style={resolvedStyles.closeButtonContainer ?? {}}
+								>
+									<SubHelperComponent
+										definition={props.definition}
+										subComponentName="closeButtonContainer"
+									/>
+									{showClose ? closeIcon : ''}
+								</div>
+							)}
+							<Children
+								pageDefinition={props.pageDefinition}
+								children={props.definition.children}
+								context={props.context}
+								locationHistory={props.locationHistory}
+							/>
+						</div>
 					</div>
 				</div>
-			</div>
-		</Portal>
-	);
+			</Portal>
+		);
+	}
+	return <></>;
 }
 
 const component: Component = {

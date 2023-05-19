@@ -9,12 +9,16 @@ export default class PageDefintionFunctionsRepository implements Repository<Func
 	}
 
 	public find(namespace: string, name: string): Function | undefined {
-		if (!this.pageDefinition?.eventFunctions || namespace !== '_') return undefined;
+		if (!this.pageDefinition?.eventFunctions || (namespace !== '_' && namespace !== undefined))
+			return undefined;
 
-		const fd = this.pageDefinition.eventFunctions[name];
+		const fd = Object.values(this.pageDefinition.eventFunctions ?? {}).filter(
+			e => e.name === name,
+		)?.[0];
 		if (!fd) return undefined;
 
-		return new KIRuntime(FunctionDefinition.from(fd), false);
+		const funDef = FunctionDefinition.from(fd);
+		return new KIRuntime(funDef, false);
 	}
 
 	public filter(name: string): string[] {

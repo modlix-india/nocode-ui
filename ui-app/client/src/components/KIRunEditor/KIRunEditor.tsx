@@ -253,6 +253,13 @@ function KIRunEditor(
 			for (let name of stmts) {
 				delete def.steps[name];
 				if (selectedStatements.has(name)) newSelectedStatements.delete(name);
+				Object.values(def.steps).forEach((s: any) => {
+					if (!s.dependentStatements) return;
+					const keysToDelete = Object.keys(s.dependentStatements).filter(e =>
+						e.startsWith(`Steps.${name}`),
+					);
+					keysToDelete.forEach(e => delete s.dependentStatements[e]);
+				});
 			}
 
 			setSelectedStatements(newSelectedStatements);

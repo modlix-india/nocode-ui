@@ -23,8 +23,12 @@ export function StringValueEditor({
 	const [inValue, setInValue] = useState(value ?? '');
 
 	useEffect(() => {
-		setInValue(value ?? '');
-	}, [value]);
+		setInValue(
+			value ??
+				(schema ? SchemaUtil.getDefaultValue(schema, schemaRepository) : undefined) ??
+				'',
+		);
+	}, [value, schema]);
 
 	const [msg, setMsg] = useState<string>('');
 
@@ -55,9 +59,11 @@ export function StringValueEditor({
 	}, [schema, schemaRepository]);
 
 	const inputElement = options.length ? (
-		<select value={inValue}>
+		<select value={inValue} onChange={ev => onChange(ev.target.value)}>
 			{options.map(e => (
-				<option value={e}>{isNullValue(e) ? 'None' : '' + e}</option>
+				<option key={e} value={e}>
+					{isNullValue(e) ? 'None' : '' + e}
+				</option>
 			))}
 		</select>
 	) : (

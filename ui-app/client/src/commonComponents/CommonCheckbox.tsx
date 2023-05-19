@@ -11,7 +11,7 @@ type CommonCheckboxType = {
 	styles?: any;
 	focusHandler?: () => void;
 	blurHandler?: () => void;
-	definition: ComponentDefinition;
+	definition?: ComponentDefinition;
 };
 
 function CommonCheckbox({
@@ -25,6 +25,14 @@ function CommonCheckbox({
 	blurHandler,
 	definition,
 }: CommonCheckboxType) {
+	let sh = definition ? (
+		<SubHelperComponent
+			style={styles ?? {}}
+			className={`commonCheckbox ${showAsRadio ? 'radio' : ''}`}
+			definition={definition}
+			subComponentName="checkbox"
+		></SubHelperComponent>
+	) : undefined;
 	return (
 		<>
 			<input
@@ -38,12 +46,7 @@ function CommonCheckbox({
 				onFocus={focusHandler}
 				onBlur={blurHandler}
 			/>
-			<SubHelperComponent
-				style={styles ?? {}}
-				className={`commonCheckbox ${showAsRadio ? 'radio' : ''}`}
-				definition={definition}
-				subComponentName="checkbox"
-			></SubHelperComponent>
+			{sh}
 		</>
 	);
 }

@@ -135,12 +135,11 @@ function PageEditor(props: ComponentProps) {
 				pageDefinition,
 			))();
 	}, [onSave]);
-	console.log(onPublish);
+
 	// Function to publish the page
 	const publishFunction = useCallback(() => {
-		console.log(pageDefinition.eventFunctions[onPublish]);
 		if (!onPublish || !pageDefinition.eventFunctions?.[onPublish]) return;
-		console.log(pageDefinition.eventFunctions[onPublish]);
+
 		(async () =>
 			await runEvent(
 				pageDefinition.eventFunctions[onPublish],
