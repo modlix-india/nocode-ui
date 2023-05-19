@@ -7,7 +7,7 @@ export default function MessageStyle({ theme }: { theme: Map<string, Map<string,
 	const css =
 		`
 		${PREFIX} {
-			position: sticky;
+			position: fixed;
 		}
 
 		${PREFIX} ._message {
