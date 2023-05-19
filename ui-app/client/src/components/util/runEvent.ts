@@ -7,14 +7,14 @@ import {
 	ParameterReferenceType,
 	TokenValueExtractor,
 } from '@fincity/kirun-js';
-import { addMessage, MESSAGE_TYPE } from '../../App/Messages/Messages';
+import { MESSAGE_TYPE, addMessage } from '../../App/Messages/Messages';
 import { GLOBAL_CONTEXT_NAME } from '../../constants';
+import { ParentExtractorForRunEvent } from '../../context/ParentExtractor';
 import {
-	dotPathBuilder,
+	PageStoreExtractor,
 	getDataFromLocation,
 	getDataFromPath,
 	localStoreExtractor,
-	PageStoreExtractor,
 	setData,
 	storeExtractor,
 	themeExtractor,
@@ -24,32 +24,6 @@ import { UISchemaRepository } from '../../schemas/common';
 import { LocationHistory, PageDefinition } from '../../types/common';
 import PageDefintionFunctionsRepository from './PageDefinitionFunctionsRepository';
 import UUID, { flattenUUID } from './uuid';
-
-function updateExpressionsWithLocationHistory(
-	def: FunctionDefinition,
-	locationHistory: Array<LocationHistory>,
-	pageExtractor: PageStoreExtractor,
-) {
-	def.getSteps().forEach(e =>
-		e.getParameterMap().forEach(p =>
-			p.forEach(pr => {
-				if (pr.getType() !== ParameterReferenceType.EXPRESSION) return;
-				pr.setValue(
-					dotPathBuilder(
-						getDataFromLocation(
-							{ type: 'EXPRESSION', expression: pr.getExpression() },
-							locationHistory,
-							pageExtractor,
-						),
-						locationHistory,
-					),
-				);
-				pr.setType(ParameterReferenceType.VALUE);
-				pr.setExpression('');
-			}),
-		),
-	);
-}
 
 function addValidationTriggers(
 	flatId: string,
@@ -77,8 +51,8 @@ export const runEvent = async (
 	try {
 		const def: FunctionDefinition = FunctionDefinition.from(functionDefinition);
 		const pageExtractor = PageStoreExtractor.getForContext(page);
-		if (locationHistory?.length)
-			updateExpressionsWithLocationHistory(def, locationHistory, pageExtractor);
+		// if (locationHistory?.length)
+		// 	updateExpressionsWithLocationHistory(def, locationHistory, pageExtractor);
 
 		if (functionDefinition.validationCheck && pageDefinition) {
 			const flatId = flattenUUID(functionDefinition.validationCheck);
@@ -119,6 +93,18 @@ export const runEvent = async (
 			}
 		}
 
+		const valuesMap = new Map<string, TokenValueExtractor>([
+			[storeExtractor.getPrefix(), storeExtractor],
+			[localStoreExtractor.getPrefix(), localStoreExtractor],
+			[pageExtractor.getPrefix(), pageExtractor],
+			[themeExtractor.getPrefix(), themeExtractor],
+		]);
+
+		if (locationHistory?.length) {
+			const pse = new ParentExtractorForRunEvent(locationHistory, valuesMap);
+			valuesMap.set(pse.getPrefix(), pse);
+		}
+
 		const runtime = new KIRuntime(def, false);
 		const fep = new FunctionExecutionParameters(
 			new HybridRepository(
@@ -127,14 +113,7 @@ export const runEvent = async (
 			),
 			UISchemaRepository,
 			key,
-		).setValuesMap(
-			new Map<string, TokenValueExtractor>([
-				[storeExtractor.getPrefix(), storeExtractor],
-				[localStoreExtractor.getPrefix(), localStoreExtractor],
-				[pageExtractor.getPrefix(), pageExtractor],
-				[themeExtractor.getPrefix(), themeExtractor],
-			]),
-		);
+		).setValuesMap(valuesMap);
 		if (args) {
 			fep.setArguments(args);
 		}

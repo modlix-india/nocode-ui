@@ -44,3 +44,48 @@ export class ParentExtractor extends TokenValueExtractor {
 		);
 	}
 }
+
+export class ParentExtractorForRunEvent extends TokenValueExtractor {
+	private history: Array<LocationHistory>;
+	private valueMaps: Map<string, TokenValueExtractor>;
+
+	constructor(history: Array<LocationHistory>, valueMaps: Map<string, TokenValueExtractor>) {
+		super();
+		this.history = history;
+		this.valueMaps = valueMaps;
+	}
+
+	public getHistory(): Array<LocationHistory> {
+		return this.history;
+	}
+
+	public getPrefix(): string {
+		return 'Parent.';
+	}
+
+	protected getValueInternal(token: string) {
+		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
+
+		let pNum: number = 0;
+		while (parts[pNum] === 'Parent') pNum++;
+
+		let path = parts.slice(pNum).join('.');
+
+		let lastHistory;
+
+		while (pNum > 0) {
+			lastHistory = this.history[this.history.length - pNum];
+			if (typeof lastHistory.location === 'string') path = `${lastHistory.location}.${path}`;
+			else
+				path = `${
+					lastHistory.location.type === 'VALUE'
+						? lastHistory.location.value
+						: lastHistory.location.expression
+				}.${path}`;
+
+			pNum--;
+		}
+
+		return getDataFromPath(path, [], ...Array.from(this.valueMaps.values()));
+	}
+}
