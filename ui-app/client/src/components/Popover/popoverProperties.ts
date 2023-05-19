@@ -78,13 +78,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: true,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
-	{
-		name: 'showInDesign',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Show in Design Mode',
-		group: ComponentPropertyGroup.BASIC,
-		defaultValue: false,
-	},
+	COMMON_COMPONENT_PROPERTIES.showInDesign,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 

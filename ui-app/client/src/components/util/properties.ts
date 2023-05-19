@@ -283,6 +283,14 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 			'Key value that is used to get label value when label key type is selected as KEY',
 		group: ComponentPropertyGroup.DATA,
 	},
+
+	showInDesign: {
+		name: 'showInDesign',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show in Design Mode',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: false,
+	},
 };
 
 const COMPONENT_STYLE_GROUPS: { [key: string]: Array<string> } = {

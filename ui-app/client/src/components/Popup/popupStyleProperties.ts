@@ -34,7 +34,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		name: 'modalBackgroundColor',
 		cssProperty: 'background-color',
-		displayName: "Modal Title's background Color",
+		displayName: 'Modal Background Color',
 		description: 'The background color of the Modal.',
 		defaultValue: '#000000',
 		selector: '.modal',
