@@ -128,6 +128,7 @@ function ButtonComponent(props: ComponentProps) {
 	const [editableLabel, setEditableLabel] = useState(label);
 	const [editName, setEditName] = useState(false);
 	useEffect(() => setEditableLabel(label), [label]);
+	label = getTranslations(label, props.pageDefinition.translations);
 	return (
 		<button
 			className={`comp compButton button ${type}`}
@@ -140,6 +141,7 @@ function ButtonComponent(props: ComponentProps) {
 			}
 			onFocus={stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined}
 			onBlur={stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined}
+			title={label ?? ''}
 		>
 			<HelperComponent definition={props.definition} onDoubleClick={() => setEditName(true)}>
 				{editName && (
@@ -348,8 +350,7 @@ function ButtonComponent(props: ComponentProps) {
 				</div>
 			</HelperComponent>
 			{leftIconTag}
-			{!type?.startsWith('fabButton') &&
-				getTranslations(label, props.pageDefinition.translations)}
+			{!type?.startsWith('fabButton') && label}
 			{rightIconTag}
 		</button>
 	);
