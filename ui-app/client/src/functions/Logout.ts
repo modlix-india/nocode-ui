@@ -11,7 +11,7 @@ import axios from 'axios';
 import { LOCAL_STORE_PREFIX, NAMESPACE_UI_ENGINE } from '../constants';
 import { getDataFromPath, setData } from '../context/StoreContext';
 
-const SIGNATURE = new FunctionSignature('Login').setNamespace(NAMESPACE_UI_ENGINE).setEvents(
+const SIGNATURE = new FunctionSignature('Logout').setNamespace(NAMESPACE_UI_ENGINE).setEvents(
 	new Map([
 		Event.eventMapEntry(Event.OUTPUT, new Map()),
 		Event.eventMapEntry(
