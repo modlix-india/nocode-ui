@@ -126,8 +126,6 @@ export const RenderEngineContainer = () => {
 		if (titleProp) {
 			const paths = getPathsFrom(titleProp.name, evaluatorMaps);
 
-			console.log(paths);
-
 			if (paths?.size) {
 				returnFunction = addListener(
 					() => {
