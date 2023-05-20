@@ -7,7 +7,9 @@ import {
 	addListenerAndCallImmediately,
 	getDataFromLocation,
 	getDataFromPath,
+	localStoreExtractor,
 	setData,
+	storeExtractor,
 } from '../context/StoreContext';
 import * as getPageDefinition from './../definitions/getPageDefinition.json';
 import { runEvent } from '../components/util/runEvent';
@@ -17,6 +19,7 @@ import { TokenValueExtractor, isNullValue } from '@fincity/kirun-js';
 import { ComponentProperty, PageDefinition } from '../types/common';
 import { processClassesForPageDefinition } from '../util/styleProcessor';
 import { getData } from '../context/StoreContext';
+import { getPathsFrom } from '../components/util/getPaths';
 
 export const RenderEngineContainer = () => {
 	const location = useLocation();
@@ -108,10 +111,50 @@ export const RenderEngineContainer = () => {
 		let title = appTitle ?? '';
 		const titleProp =
 			pageDefinition?.properties?.title ?? shellPageDefinition?.properties?.title;
-		const pageContext = PageStoreExtractor.getForContextIfAvailable(pageDefinition?.pageName);
+		const pageExtractor = PageStoreExtractor.getForContextIfAvailable(pageDefinition?.name);
+
+		const evaluatorMaps = new Map<string, TokenValueExtractor>([
+			[storeExtractor.getPrefix(), storeExtractor],
+			[localStoreExtractor.getPrefix(), localStoreExtractor],
+		]);
 		const tve: TokenValueExtractor[] = [];
-		if (pageContext) tve.push(pageContext);
+		let returnFunction = undefined;
+		if (pageExtractor) {
+			tve.push(pageExtractor);
+			evaluatorMaps.set(pageExtractor.getPrefix(), pageExtractor);
+		}
 		if (titleProp) {
+			const paths = getPathsFrom(titleProp.name, evaluatorMaps);
+
+			console.log(paths);
+
+			if (paths?.size) {
+				returnFunction = addListener(
+					() => {
+						let title = appTitle ?? '';
+						const titleValue = getData(titleProp.name, [], ...tve) ?? '';
+						const appendValue = getData(titleProp.append, [], ...tve) ?? true;
+
+						if (titleValue) {
+							if (appendValue && title) title = `${title} - ${titleValue}`;
+							else title = '' + titleValue;
+						}
+
+						if (title) {
+							let tag = document.getElementsByTagName('title')?.[0];
+							if (!tag) {
+								tag = document.createElement('title');
+								document.head.appendChild(tag);
+							}
+
+							tag.innerHTML = title;
+						}
+					},
+					pageExtractor,
+					...paths,
+				);
+			}
+
 			const titleValue = getData(titleProp.name, [], ...tve) ?? '';
 			const appendValue = getData(titleProp.append, [], ...tve) ?? true;
 
@@ -133,7 +176,7 @@ export const RenderEngineContainer = () => {
 
 		const seo = pageDefinition?.properties?.seo ?? shellPageDefinition?.properties?.seo;
 
-		if (!seo) return;
+		if (!seo) return returnFunction;
 
 		const metas = Array.from(document.getElementsByTagName('meta'));
 
@@ -160,7 +203,14 @@ export const RenderEngineContainer = () => {
 			}
 			if (tag.getAttribute('content') !== value) tag.setAttribute('content', value);
 		});
-	}, [appTitle, shellPageDefinition?.properties, pageDefinition?.properties]);
+
+		return returnFunction;
+	}, [
+		appTitle,
+		shellPageDefinition?.properties,
+		pageDefinition?.properties,
+		pageDefinition?.pageName,
+	]);
 
 	// This is to execute the shell page on load event function so this acts as a application on load event.
 	// This has to execute even the shell page is not loaded.

@@ -42,8 +42,6 @@ export class Message extends AbstractFunction {
 		const pageName: string = context.getArguments()?.get('pageName');
 		const type: MESSAGE_TYPE = context.getArguments()?.get('type') as MESSAGE_TYPE;
 
-		console.log(error, duplicate(context.getSteps()));
-
 		addMessage(type, error, isGlobalScope, pageName);
 
 		return new FunctionOutput([EventResult.outputOf(new Map())]);

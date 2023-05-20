@@ -41,6 +41,8 @@ export function getPathsFrom<T>(
 ): Set<string> {
 	let expression: string | undefined = undefined;
 
+	if (!anything) return new Set();
+
 	if (typeof anything === 'string') expression = anything;
 	else if ('type' in anything) {
 		const dl = anything as DataLocation;
@@ -92,7 +94,7 @@ export function getPathsFromComponentDefinition(
 		for (const [key, prop] of Object.entries(properties)) {
 			if (propDefMap[key]?.multiValued) {
 				for (const iprop of Object.values(prop)) {
-					if (propDefMap[key].schema.getRef() === SCHEMA_VALIDATION) {
+					if (propDefMap[key].schema.getRef() === SCHEMA_VALIDATION.getRef()) {
 						for (const vprop of Object.values(iprop)) {
 							if (typeof vprop === 'string') continue;
 							const set = getPathsFrom(
