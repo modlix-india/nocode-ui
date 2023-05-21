@@ -9,7 +9,7 @@ import {
 } from '../../../../context/StoreContext';
 import { ComponentProperty, LocationHistory, PageDefinition } from '../../../../types/common';
 import { propertiesDefinition } from '../../pageEditorProperties';
-import duplicate from '../../../../util/duplicate';
+import { duplicate } from '@fincity/kirun-js';
 import Portal from '../../../Portal';
 import { StringValueEditor } from '../../../SchemaForm/components/StringValueEditor';
 import PropertyValueEditor from '../propertyValueEditors/PropertyValueEditor';

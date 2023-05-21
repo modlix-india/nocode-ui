@@ -60,9 +60,10 @@ export function ContextMenu({
 	const componentDefinition = pageOperations.getComponentDefinitionIfNotRoot(
 		menuDetails.componentKey,
 	);
+
+	const cdDef = Components.get(componentDefinition?.type ?? '');
 	const deleteForContainer =
-		componentDefinition?.type &&
-		Components.get(componentDefinition.type)?.allowedChildrenType?.get('') === -1 ? (
+		componentDefinition?.type && cdDef?.allowedChildrenType?.get('') === -1 ? (
 			<>
 				<div
 					className="_popupMenuItem"
@@ -86,8 +87,7 @@ export function ContextMenu({
 		);
 
 	const showInDesignModeToggle =
-		componentDefinition?.type &&
-		Components.get(componentDefinition.type)?.needShowInDesginMode ? (
+		componentDefinition?.type && cdDef?.needShowInDesginMode ? (
 			<>
 				<div className="_popupMenuSeperator" />
 				<div
@@ -98,6 +98,23 @@ export function ContextMenu({
 					<i className="fa fa-solid fa-toggle-on" />
 					Toggle in Design mode
 				</div>
+			</>
+		) : (
+			<></>
+		);
+
+	const addGrid =
+		componentDefinition?.type && cdDef?.allowedChildrenType?.get('') === -1 ? (
+			<>
+				<div
+					className="_popupMenuItem"
+					title="Delete"
+					onClick={() => pageOperations.addGrid(menuDetails.componentKey)}
+				>
+					<i className="fa fa-solid fa-table-cells" />
+					Add a Grid
+				</div>
+				<div className="_popupMenuSeperator" />
 			</>
 		) : (
 			<></>
@@ -113,6 +130,7 @@ export function ContextMenu({
 			>
 				<div className="_popupMenuContainer" style={{ left, top, right, bottom }}>
 					<div className="_popupMenu">
+						{addGrid}
 						<div
 							className="_popupMenuItem"
 							title="Wrap a grid"

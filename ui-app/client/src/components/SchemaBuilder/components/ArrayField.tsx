@@ -5,7 +5,7 @@ import AnyField from './AnyField';
 import SingleSchema from './SingleSchema';
 import { Repository, Schema, isNullValue } from '@fincity/kirun-js';
 import { shortUUID } from '../../../util/shortUUID';
-import duplicate from '../../../util/duplicate';
+import { duplicate } from '@fincity/kirun-js';
 import SelectField from './SelectField';
 
 interface ArrayFieldProps {

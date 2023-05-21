@@ -17,7 +17,7 @@ import { PathExtractor } from '../components/util/getPaths';
 import { LocalStoreExtractor } from './LocalStoreExtractor';
 import { ParentExtractor } from './ParentExtractor';
 import { ThemeExtractor } from './ThemeExtractor';
-import duplicate from '../util/duplicate';
+import { duplicate } from '@fincity/kirun-js';
 import { messageToMaster } from '../slaveFunctions';
 import { sample } from './sampleData';
 

@@ -1,6 +1,6 @@
 import { deepEqual, isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
 import { useEffect, useState } from 'react';
-import { SCHEMA_VALIDATION, STORE_PREFIX } from '../../constants';
+import { STORE_PREFIX } from '../../constants';
 import {
 	addListener,
 	getData,
@@ -13,16 +13,14 @@ import {
 	ComponentDefinition,
 	ComponentDefinitionValues,
 	ComponentMultiProperty,
-	ComponentProperty,
 	ComponentPropertyDefinition,
 	ComponentResoltuions,
 	ComponentStylePropertyDefinition,
-	DataLocation,
 	LocationHistory,
 	StyleResolution,
 } from '../../types/common';
-import { getPathsFrom, getPathsFromComponentDefinition } from './getPaths';
-import { CSS_STYLE_PROPERTY_GROUP_REF } from './properties';
+import { isNotEqual } from '../../util/setOperations';
+import { getPathsFromComponentDefinition } from './getPaths';
 
 function createNewState(
 	definition: ComponentDefinition,
@@ -211,6 +209,8 @@ export default function useDefinition(
 			pageExtractor,
 		),
 	);
+	const [pathsChanged, setPathsChangedAt] = useState(Date.now());
+
 	const evaluatorMaps = new Map<string, TokenValueExtractor>([
 		[storeExtractor.getPrefix(), storeExtractor],
 		[localStoreExtractor.getPrefix(), localStoreExtractor],
@@ -224,42 +224,7 @@ export default function useDefinition(
 	}, {});
 
 	useEffect(() => {
-		const paths = getPathsFromComponentDefinition(
-			definition.properties,
-			definition.styleProperties,
-			evaluatorMaps,
-			propDefMap,
-		);
-
-		if (definition.bindingPath) {
-			const p = getPathsFrom(definition.bindingPath, evaluatorMaps);
-			if (p) p.forEach(e => paths.push(e));
-		}
-
-		if (definition.bindingPath2) {
-			const p = getPathsFrom(definition.bindingPath2, evaluatorMaps);
-			if (p) p.forEach(e => paths.push(e));
-		}
-
-		if (definition.bindingPath3) {
-			const p = getPathsFrom(definition.bindingPath3, evaluatorMaps);
-			if (p) p.forEach(e => paths.push(e));
-		}
-
-		if (definition.bindingPath4) {
-			const p = getPathsFrom(definition.bindingPath4, evaluatorMaps);
-			if (p) p.forEach(e => paths.push(e));
-		}
-
-		if (definition.bindingPath5) {
-			const p = getPathsFrom(definition.bindingPath5, evaluatorMaps);
-			if (p) p.forEach(e => paths.push(e));
-		}
-
-		if (definition.bindingPath6) {
-			const p = getPathsFrom(definition.bindingPath6, evaluatorMaps);
-			if (p) p.forEach(e => paths.push(e));
-		}
+		const paths = getPathsFromComponentDefinition(definition, evaluatorMaps, propDefMap);
 
 		const x = createNewState(
 			definition,
@@ -274,9 +239,8 @@ export default function useDefinition(
 		if (!paths || !paths.length) {
 			return;
 		}
-
 		return addListener(
-			() => {
+			(p, v) => {
 				const newState = createNewState(
 					definition,
 					properties,
@@ -284,12 +248,26 @@ export default function useDefinition(
 					locationHistory,
 					pageExtractor,
 				);
+
+				if (pageExtractor.getPageName() === '_global') {
+					const newPaths = getPathsFromComponentDefinition(
+						definition,
+						evaluatorMaps,
+						propDefMap,
+					);
+					if (
+						paths.length !== newPaths.length ||
+						isNotEqual(new Set(paths), new Set(newPaths))
+					) {
+						setPathsChangedAt(Date.now());
+					}
+				}
 				setCompState(newState);
 			},
 			pageExtractor,
 			...paths,
 		);
-	}, [definition]);
+	}, [definition, pathsChanged]);
 
 	return compState;
 }
