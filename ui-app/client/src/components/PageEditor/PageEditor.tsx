@@ -29,7 +29,7 @@ import GridStyle from './PageEditorStyle';
 import { allPaths } from '../../util/allPaths';
 import { LOCAL_STORE_PREFIX, PAGE_STORE_PREFIX, STORE_PREFIX } from '../../constants';
 import ComponentDefinitions from '../';
-import duplicate from '../../util/duplicate';
+import { duplicate } from '@fincity/kirun-js';
 
 function savePersonalizationCurry(
 	personalizationPath: string,

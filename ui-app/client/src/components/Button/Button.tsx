@@ -24,7 +24,7 @@ import { getHref } from '../util/getHref';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { SubHelperComponent } from '../SubHelperComponent';
 import { SLAVE_FUNCTIONS, messageToMaster } from '../../slaveFunctions';
-import duplicate from '../../util/duplicate';
+import { duplicate } from '@fincity/kirun-js';
 
 function ButtonComponent(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);

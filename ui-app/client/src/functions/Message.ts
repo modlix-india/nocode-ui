@@ -10,7 +10,7 @@ import {
 } from '@fincity/kirun-js';
 import { addMessage, MESSAGE_TYPE } from '../App/Messages/Messages';
 import { NAMESPACE_UI_ENGINE, GLOBAL_CONTEXT_NAME } from '../constants';
-import duplicate from '../util/duplicate';
+import { duplicate } from '@fincity/kirun-js';
 
 const SIGNATURE = new FunctionSignature('Message')
 	.setNamespace(NAMESPACE_UI_ENGINE)

@@ -1,6 +1,5 @@
-import { setStoreData } from '@fincity/path-reactive-state-management';
-import { ComponentDefinition, PageDefinition } from './types/common';
-import duplicate from './util/duplicate';
+import { duplicate } from '@fincity/kirun-js';
+import { ComponentDefinition } from './types/common';
 
 export const isSlave = (() => {
 	try {

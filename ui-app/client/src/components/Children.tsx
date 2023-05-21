@@ -16,7 +16,7 @@ import {
 	PageDefinition,
 	RenderContext,
 } from '../types/common';
-import duplicate from '../util/duplicate';
+import { duplicate } from '@fincity/kirun-js';
 import { processLocation } from '../util/locationProcessor';
 import ComponentDefinitions from './index';
 import Nothing from './Nothing';

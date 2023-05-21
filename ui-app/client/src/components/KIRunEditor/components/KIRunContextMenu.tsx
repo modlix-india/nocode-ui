@@ -1,5 +1,5 @@
 import React from 'react';
-import duplicate from '../../../util/duplicate';
+import { duplicate } from '@fincity/kirun-js';
 import { setData } from '../../../context/StoreContext';
 
 interface KIRunContextMenuProps {

@@ -8,7 +8,7 @@ import {
 } from '@fincity/kirun-js';
 import React, { useCallback, useEffect } from 'react';
 import { shortUUID } from '../../../util/shortUUID';
-import duplicate from '../../../util/duplicate';
+import { duplicate } from '@fincity/kirun-js';
 import SchemaForm from '../../SchemaForm/SchemaForm';
 import { PageDefinition, LocationHistory, RenderContext } from '../../../types/common';
 import { AnyValueEditor } from '../../PageEditor/editors/propertyValueEditors/AnyValueEditor';
