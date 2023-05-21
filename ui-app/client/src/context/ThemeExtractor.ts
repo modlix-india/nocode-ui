@@ -1,5 +1,6 @@
 import { isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
 import { StyleResolution } from '../types/common';
+import { SpecialTokenValueExtractor } from './SpecialTokenValueExtractor';
 
 const ORDER_OF_RESOLUTION = [
 	StyleResolution.MOBILE_POTRAIT_SCREEN,
@@ -19,7 +20,7 @@ const ORDER_OF_RESOLUTION = [
 	StyleResolution.MOBILE_POTRAIT_SCREEN_ONLY,
 ].reverse();
 
-export class ThemeExtractor extends TokenValueExtractor {
+export class ThemeExtractor extends SpecialTokenValueExtractor {
 	private store: any;
 
 	constructor() {

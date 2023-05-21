@@ -21,10 +21,11 @@ export function allPaths(
 }
 
 export function allPathsFilter(
-	paths: Set<string>,
+	paths: Set<string> | undefined,
 	filter: string,
 	limit: number = -1,
 ): Array<string> {
+	if (paths === undefined) return [];
 	const filtered = new Array<string>();
 
 	const index = filter.lastIndexOf('.');
