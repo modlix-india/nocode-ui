@@ -7,7 +7,7 @@ interface ExpressionEditor2Props {
 	value?: DataLocation | undefined;
 	onChange: (v: DataLocation | undefined) => void;
 	bothModes?: boolean;
-	storePaths: Set<string>;
+	storePaths?: Set<string>;
 }
 
 const allowedValues = new Set(

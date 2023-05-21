@@ -741,8 +741,12 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			
 			padding: 5px 5px;
 		}
-		${PREFIX} ._paramExpression input:focus {
-			outline: #cccccc solid 1px;
+		
+
+		${PREFIX} input._peInput {
+			border: none;
+			background: transparent;
+			
 		}
 
 		${PREFIX} ._paramToggleValueGrid {

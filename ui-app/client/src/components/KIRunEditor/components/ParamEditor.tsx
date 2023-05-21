@@ -12,6 +12,7 @@ import { duplicate } from '@fincity/kirun-js';
 import SchemaForm from '../../SchemaForm/SchemaForm';
 import { PageDefinition, LocationHistory, RenderContext } from '../../../types/common';
 import { AnyValueEditor } from '../../PageEditor/editors/propertyValueEditors/AnyValueEditor';
+import { ExpressionEditor2 } from '../../PageEditor/editors/propertyValueEditors/ExpressionEditor2';
 
 interface ParamEditorProps {
 	parameter: Parameter;
@@ -164,9 +165,9 @@ export default function ParamEditor({
 				const valueEditor =
 					eachValue.type === 'EXPRESSION' ? (
 						<div className="_paramExpression">
-							<input
-								value={eachValue.expression ?? ''}
-								onChange={e => updateValue(key, 'expression', e.target.value)}
+							<ExpressionEditor2
+								value={{ type: 'EXPRESSION', expression: eachValue.expression }}
+								onChange={e => updateValue(key, 'expression', e?.expression)}
 							/>
 						</div>
 					) : (
