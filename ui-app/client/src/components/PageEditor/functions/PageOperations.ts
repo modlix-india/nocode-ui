@@ -10,7 +10,7 @@ import {
 	PageDefinition,
 	StyleResolution,
 } from '../../../types/common';
-import duplicate from '../../../util/duplicate';
+import { duplicate } from '@fincity/kirun-js';
 import { shortUUID } from '../../../util/shortUUID';
 import Grid from '../../Grid/Grid';
 import { Issue } from '../components/IssuePopup';
@@ -318,6 +318,45 @@ export default class PageOperations {
 		if (this.selectedComponent && delKeys.has(this.selectedComponent))
 			this.onSelectedComponentChanged('');
 		setData(this.defPath, def, this.pageExtractor.getPageName());
+	}
+
+	public changeComponentName(componentKey: string | undefined, name: string) {
+		if (!componentKey || !this.defPath) return;
+
+		const pageDef: PageDefinition = getDataFromPath(
+			this.defPath,
+			this.locationHistory,
+			this.pageExtractor,
+		);
+		if (!pageDef) return;
+
+		let def = duplicate(pageDef) as PageDefinition;
+		def.componentDefinition[componentKey].name = name;
+		setData(this.defPath, def, this.pageExtractor.getPageName());
+	}
+
+	public addGrid(componentKey: string | undefined) {
+		if (!componentKey || !this.defPath) return;
+
+		const pageDef: PageDefinition = getDataFromPath(
+			this.defPath,
+			this.locationHistory,
+			this.pageExtractor,
+		);
+		if (!pageDef) return;
+
+		const key = this.genId();
+		let def = duplicate(pageDef) as PageDefinition;
+
+		const newCompDef = { key, name: 'Grid', type: 'Grid' };
+		def.componentDefinition[key] = newCompDef;
+
+		const parentDef = def.componentDefinition[componentKey];
+		if (!parentDef.children) parentDef.children = {};
+		parentDef.children[key] = true;
+
+		setData(this.defPath, def, this.pageExtractor.getPageName());
+		this.onSelectedComponentChanged(key);
 	}
 
 	public wrapGrid(componentKey: string | undefined) {

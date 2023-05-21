@@ -18,7 +18,7 @@ export default class PageDefintionFunctionsRepository implements Repository<Func
 		if (!fd) return undefined;
 
 		const funDef = FunctionDefinition.from(fd);
-		return new KIRuntime(funDef, false);
+		return new KIRuntime(funDef, isDesignMode);
 	}
 
 	public filter(name: string): string[] {
