@@ -26,7 +26,7 @@ import {
 import { StyleResolutionDefinition, processStyleFromString } from '../../../util/styleProcessor';
 import { ComponentStyle } from '../../../types/common';
 import { shortUUID } from '../../../util/shortUUID';
-import duplicate from '../../../util/duplicate';
+import { duplicate } from '@fincity/kirun-js';
 import { deepEqual } from '@fincity/kirun-js';
 import { camelCaseToUpperSpaceCase } from '../../../functions/utils';
 import PageOperations from '../functions/PageOperations';

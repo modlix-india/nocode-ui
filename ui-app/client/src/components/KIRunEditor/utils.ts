@@ -1,7 +1,7 @@
 import { Repository, Schema, SchemaType, SchemaUtil, isNullValue } from '@fincity/kirun-js';
 import { setData } from '../../context/StoreContext';
 import { LocationHistory, PageDefinition } from '../../types/common';
-import duplicate from '../../util/duplicate';
+import { duplicate } from '@fincity/kirun-js';
 import { runEvent } from '../util/runEvent';
 
 interface StringValue {

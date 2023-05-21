@@ -231,6 +231,8 @@ function CompTree({
 
 	let childrenLevels: ReactNode[] = [];
 
+	const [changingName, setChangingName] = useState('');
+
 	if (isOpen) {
 		childrenLevels = children
 			?.sort((a, b) => {
@@ -263,6 +265,27 @@ function CompTree({
 				/>
 			));
 	}
+
+	const text = changingName ? (
+		<>
+			<input
+				type="text"
+				value={changingName}
+				autoFocus={true}
+				onChange={e => setChangingName(e.target.value)}
+				onBlur={() => {
+					setChangingName('');
+					if (changingName === comp.name) return;
+
+					pageOperations.changeComponentName(compKey, changingName);
+				}}
+			/>
+		</>
+	) : (
+		<span className="_treeText">
+			{filter ? <Filter name={comp.name ?? compKey} filter={filter} /> : comp.name ?? compKey}
+		</span>
+	);
 
 	return (
 		<>
@@ -297,6 +320,7 @@ function CompTree({
 						menuPosition: { x: e.screenX, y: e.screenY },
 					});
 				}}
+				onDoubleClick={() => setChangingName(comp.name ?? comp.key)}
 			>
 				{levels}
 				<div className="_treeNodeName" onClick={() => {}}>
@@ -313,13 +337,7 @@ function CompTree({
 						}}
 					/>
 					<i className={`fa ${ComponenstDefinition.get(comp.type)?.icon} ?? '`} />
-					<span className="_treeText">
-						{filter ? (
-							<Filter name={comp.name ?? compKey} filter={filter} />
-						) : (
-							comp.name ?? compKey
-						)}
-					</span>
+					{text}
 				</div>
 			</div>
 			{childrenLevels}

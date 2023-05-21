@@ -64,105 +64,112 @@ export default function DnDBottomBar({
 	if (defMap && defPath && selectedComponent && currentKey) {
 		do {
 			let comp = defMap[currentKey];
-			compPaths.push(
-				<div
-					className="_eachSelectionBar _iconMenu"
-					title={comp.key}
-					key={comp.key}
-					tabIndex={0}
-					role="button"
-					onDoubleClick={() => onSelectedComponentChanged(comp.key)}
-					onClick={() => setMenuForComponent(comp.key)}
-					onMouseLeave={e => {
-						if (e.target !== e.currentTarget) setMenuForComponent('');
-					}}
-					draggable="true"
-					onDragStart={e =>
-						e.dataTransfer.items.add(`${DRAG_CD_KEY}${comp.key}`, 'text/plain')
-					}
-					onDragOver={e => {
-						e.preventDefault();
-						e.stopPropagation();
-						setMenuForComponent(comp.key);
-					}}
-					onDrop={e =>
-						e.dataTransfer.items[0].getAsString(dragData =>
-							pageOperations.droppedOn(comp.key, dragData),
-						)
-					}
-					onContextMenu={e => {
-						e.stopPropagation();
-						e.preventDefault();
-						onContextMenu({
-							componentKey: comp.key,
-							menuPosition: { x: e.screenX, y: e.screenY },
-						});
-					}}
-				>
-					<i className={`fa ${ComponentDefinitions.get(defMap[comp.key].type)?.icon}`} />
-					{comp.name}
+			if (comp) {
+				compPaths.push(
 					<div
-						className="_iconMenuBody _top _clickable"
-						style={{ display: menuForComponent === comp.key ? 'block' : 'none' }}
+						className="_eachSelectionBar _iconMenu"
+						title={comp.key}
+						key={comp.key}
+						tabIndex={0}
+						role="button"
+						onDoubleClick={() => onSelectedComponentChanged(comp.key)}
+						onClick={() => setMenuForComponent(comp.key)}
+						onMouseLeave={e => {
+							if (e.target !== e.currentTarget) setMenuForComponent('');
+						}}
+						draggable="true"
+						onDragStart={e =>
+							e.dataTransfer.items.add(`${DRAG_CD_KEY}${comp.key}`, 'text/plain')
+						}
+						onDragOver={e => {
+							e.preventDefault();
+							e.stopPropagation();
+							setMenuForComponent(comp.key);
+						}}
+						onDrop={e =>
+							e.dataTransfer.items[0].getAsString(dragData =>
+								pageOperations.droppedOn(comp.key, dragData),
+							)
+						}
+						onContextMenu={e => {
+							e.stopPropagation();
+							e.preventDefault();
+							onContextMenu({
+								componentKey: comp.key,
+								menuPosition: { x: e.screenX, y: e.screenY },
+							});
+						}}
 					>
-						{Object.keys(defMap[comp.key].children ?? {})
-							.filter(f => !!defMap[f])
-							.sort((a: any, b: any) => {
-								const v =
-									(defMap[a]?.displayOrder ?? 0) - (defMap[b]?.displayOrder ?? 0);
-								return v === 0
-									? (defMap[a]?.key ?? '').localeCompare(defMap[b]?.key ?? '')
-									: v;
-							})
-							.map(f => (
-								<div
-									className="_iconMenuOption"
-									tabIndex={0}
-									key={f}
-									onClick={() => onSelectedComponentChanged(f)}
-									draggable="true"
-									onDragEnd={e => {
-										e.stopPropagation();
-										e.preventDefault();
-										// setMenuForComponent('');
-									}}
-									onDragStart={e => {
-										e.stopPropagation();
-										e.dataTransfer.items.add(
-											`${DRAG_CD_KEY}${f}`,
-											'text/plain',
-										);
-									}}
-									onDragOver={e => {
-										e.preventDefault();
-										e.stopPropagation();
-									}}
-									onDrop={e => {
-										e.stopPropagation();
-										e.dataTransfer.items[0].getAsString(dragData =>
-											pageOperations.droppedOn(f, dragData, true),
-										);
-									}}
-									onContextMenu={e => {
-										e.stopPropagation();
-										e.preventDefault();
-										onContextMenu({
-											componentKey: f,
-											menuPosition: { x: e.screenX, y: e.screenY },
-										});
-									}}
-								>
-									<i
-										className={`fa ${
-											ComponentDefinitions.get(defMap[f].type)?.icon
-										}`}
-									/>
-									{defMap[f].name}
-								</div>
-							))}
-					</div>
-				</div>,
-			);
+						<i
+							className={`fa ${
+								ComponentDefinitions.get(defMap[comp.key].type)?.icon
+							}`}
+						/>
+						{comp.name}
+						<div
+							className="_iconMenuBody _top _clickable"
+							style={{ display: menuForComponent === comp.key ? 'block' : 'none' }}
+						>
+							{Object.keys(defMap[comp.key].children ?? {})
+								.filter(f => !!defMap[f])
+								.sort((a: any, b: any) => {
+									const v =
+										(defMap[a]?.displayOrder ?? 0) -
+										(defMap[b]?.displayOrder ?? 0);
+									return v === 0
+										? (defMap[a]?.key ?? '').localeCompare(defMap[b]?.key ?? '')
+										: v;
+								})
+								.map(f => (
+									<div
+										className="_iconMenuOption"
+										tabIndex={0}
+										key={f}
+										onClick={() => onSelectedComponentChanged(f)}
+										draggable="true"
+										onDragEnd={e => {
+											e.stopPropagation();
+											e.preventDefault();
+											// setMenuForComponent('');
+										}}
+										onDragStart={e => {
+											e.stopPropagation();
+											e.dataTransfer.items.add(
+												`${DRAG_CD_KEY}${f}`,
+												'text/plain',
+											);
+										}}
+										onDragOver={e => {
+											e.preventDefault();
+											e.stopPropagation();
+										}}
+										onDrop={e => {
+											e.stopPropagation();
+											e.dataTransfer.items[0].getAsString(dragData =>
+												pageOperations.droppedOn(f, dragData, true),
+											);
+										}}
+										onContextMenu={e => {
+											e.stopPropagation();
+											e.preventDefault();
+											onContextMenu({
+												componentKey: f,
+												menuPosition: { x: e.screenX, y: e.screenY },
+											});
+										}}
+									>
+										<i
+											className={`fa ${
+												ComponentDefinitions.get(defMap[f].type)?.icon
+											}`}
+										/>
+										{defMap[f].name}
+									</div>
+								))}
+						</div>
+					</div>,
+				);
+			}
 			currentKey = map.get(currentKey);
 		} while (currentKey);
 	}

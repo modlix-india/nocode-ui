@@ -12,7 +12,7 @@ import {
 	PageDefinition,
 	StyleClassDefinition,
 } from '../../../types/common';
-import duplicate from '../../../util/duplicate';
+import { duplicate } from '@fincity/kirun-js';
 import { shortUUID } from '../../../util/shortUUID';
 import PropertyValueEditor from './propertyValueEditors/PropertyValueEditor';
 import { processStyleFromString } from '../../../util/styleProcessor';

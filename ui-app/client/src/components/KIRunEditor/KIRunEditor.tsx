@@ -22,7 +22,7 @@ import {
 import { UIFunctionRepository } from '../../functions';
 import { UISchemaRepository } from '../../schemas/common';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
-import duplicate from '../../util/duplicate';
+import { duplicate } from '@fincity/kirun-js';
 import { UIError, toUIError } from '../util/errorHandling';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './KIRunEditorProperties';
@@ -36,6 +36,7 @@ import { StoreNode } from './components/StoreNode';
 import { correctStatementNames, makeObjectPaths, savePersonalizationCurry } from './utils';
 import StatementParameters from './components/StatementParameters';
 import FunctionDetialsEditor from './components/FunctionDetailsEditor';
+import { HelperComponent } from '../HelperComponent';
 
 const gridSize = 20;
 
@@ -83,7 +84,7 @@ function KIRunEditor(
 
 	useEffect(() => {
 		if (!bindingPathPath) return;
-		return addListenerAndCallImmediately(
+		return addListenerAndCallImmediatelyWithChildrenActivity(
 			(_, v) => setRawDef(correctStatementNames(v)),
 			pageExtractor,
 			bindingPathPath,
@@ -127,7 +128,7 @@ function KIRunEditor(
 			}
 
 			try {
-				const ep = await new KIRuntime(funDef!, false).getExecutionPlan(
+				const ep = await new KIRuntime(funDef!, isDesignMode).getExecutionPlan(
 					functionRepository,
 					schemaRepository,
 				);
@@ -772,6 +773,7 @@ function KIRunEditor(
 
 	return (
 		<div className="comp compKIRunEditor">
+			<HelperComponent definition={definition} />
 			<div className="_header">
 				<div className="_left">
 					<i
@@ -957,7 +959,6 @@ const component: Component = {
 	displayName: 'KIRun Editor',
 	description: 'KIRun Editor component',
 	component: KIRunEditor,
-	isHidden: true,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: KIRunEditorStyle,

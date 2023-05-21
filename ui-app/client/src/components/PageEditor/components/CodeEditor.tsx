@@ -19,7 +19,7 @@ import {
 	PageDefinition,
 	RenderContext,
 } from '../../../types/common';
-import duplicate from '../../../util/duplicate';
+import { duplicate } from '@fincity/kirun-js';
 import { shortUUID } from '../../../util/shortUUID';
 import KIRunEditor from '../../KIRunEditor/KIRunEditor';
 import PageDefintionFunctionsRepository from '../../util/PageDefinitionFunctionsRepository';

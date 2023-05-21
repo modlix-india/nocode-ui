@@ -1,7 +1,7 @@
 import { Repository, Schema, SchemaType, isNullValue } from '@fincity/kirun-js';
 import { StoreExtractor, setStoreData } from '@fincity/path-reactive-state-management';
 import React, { useCallback, useState } from 'react';
-import duplicate from '../../../util/duplicate';
+import { duplicate } from '@fincity/kirun-js';
 import { intersection } from '../../../util/setOperations';
 import AnyField from './AnyField';
 import ArrayField from './ArrayField';

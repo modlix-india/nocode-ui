@@ -83,6 +83,17 @@ function SubHelperComponentInternal({
 					payload: `${definition.key}:${subComponentName}`,
 				});
 			}}
+			onContextMenu={e => {
+				e.stopPropagation();
+				e.preventDefault();
+				messageToMaster({
+					type: 'SLAVE_CONTEXT_MENU',
+					payload: {
+						componentKey: definition.key,
+						menuPosition: { x: e.screenX, y: e.screenY },
+					},
+				});
+			}}
 			onDoubleClick={e => {
 				e.stopPropagation();
 				e.preventDefault();

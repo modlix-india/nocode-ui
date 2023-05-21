@@ -7,7 +7,7 @@ import {
 	isNullValue,
 } from '@fincity/kirun-js';
 import React, { useEffect, useState } from 'react';
-import duplicate from '../../../util/duplicate';
+import { duplicate } from '@fincity/kirun-js';
 
 export function StringValueEditor({
 	value,

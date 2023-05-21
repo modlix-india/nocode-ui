@@ -1,6 +1,6 @@
 import { Event, Function, Repository, Schema, TokenValueExtractor } from '@fincity/kirun-js';
 import React, { RefObject, useEffect, useState } from 'react';
-import duplicate from '../../../util/duplicate';
+import { duplicate } from '@fincity/kirun-js';
 import { generateColor } from '../colors';
 import { stringValue } from '../utils';
 import Search from './Search';

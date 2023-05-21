@@ -24,7 +24,7 @@ import { AnyValueEditor } from '../PageEditor/editors/propertyValueEditors/AnyVa
 import { UISchemaRepository } from '../../schemas/common';
 import SingleSchema from './components/SingleSchemaForm';
 import { setStoreData, StoreExtractor } from '@fincity/path-reactive-state-management';
-import duplicate from '../../util/duplicate';
+import { duplicate } from '@fincity/kirun-js';
 
 function SchemaForm(
 	props: ComponentProps & {

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ArrayField from '../components/ArrayField';
 import SingleSchema from '../components/SingleSchema';
-import duplicate from '../../../util/duplicate';
+import { duplicate } from '@fincity/kirun-js';
 import { isNullValue } from '@fincity/kirun-js';
 
 export default function SchemaAdvanced({
