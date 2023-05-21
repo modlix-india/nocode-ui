@@ -1,9 +1,10 @@
-import { GLOBAL_CONTEXT_NAME } from '../constants';
 import { TokenValueExtractor } from '@fincity/kirun-js';
+import { GLOBAL_CONTEXT_NAME } from '../constants';
 import { LocationHistory } from '../types/common';
+import { SpecialTokenValueExtractor } from './SpecialTokenValueExtractor';
 import { getDataFromPath, PageStoreExtractor } from './StoreContext';
 
-export class ParentExtractor extends TokenValueExtractor {
+export class ParentExtractor extends SpecialTokenValueExtractor {
 	private history: Array<LocationHistory>;
 
 	constructor(history: Array<LocationHistory>) {

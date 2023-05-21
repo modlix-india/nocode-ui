@@ -1,6 +1,7 @@
 import { TokenValueExtractor } from '@fincity/kirun-js';
+import { SpecialTokenValueExtractor } from './SpecialTokenValueExtractor';
 
-export class LocalStoreExtractor extends TokenValueExtractor {
+export class LocalStoreExtractor extends SpecialTokenValueExtractor {
 	private store: any;
 	private prefix: string;
 	constructor(store: any, prefix: string) {
