@@ -27,6 +27,22 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 	},
 	{
+		name: 'onMouseEnter',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Mouse Enter',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered when Mouse Enter.',
+		group: ComponentPropertyGroup.EVENTS,
+	},
+	{
+		name: 'onMouseLeave',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Mouse Leave',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered when Mouse Leave.',
+		group: ComponentPropertyGroup.EVENTS,
+	},
+	{
 		name: 'observerThresholds',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Observe Children Thresholds',

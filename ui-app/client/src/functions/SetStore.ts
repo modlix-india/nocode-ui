@@ -8,6 +8,8 @@ import {
 	Parameter,
 	Schema,
 	TokenValueExtractor,
+	duplicate,
+	isNullValue,
 } from '@fincity/kirun-js';
 import { GLOBAL_CONTEXT_NAME, NAMESPACE_UI_ENGINE } from '../constants';
 import { getData, PageStoreExtractor, setData } from '../context/StoreContext';
@@ -29,7 +31,12 @@ export class SetStore extends AbstractFunction {
 
 		const tve = context.getValuesMap().get('Page.') as PageStoreExtractor;
 
-		if (path.length) setData(path, value, tve?.getPageName() ?? GLOBAL_CONTEXT_NAME);
+		if (path.length)
+			setData(
+				path,
+				isNullValue(value) ? value : duplicate(value),
+				tve?.getPageName() ?? GLOBAL_CONTEXT_NAME,
+			);
 		return new FunctionOutput([EventResult.outputOf(new Map())]);
 	}
 

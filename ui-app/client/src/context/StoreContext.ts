@@ -1,27 +1,26 @@
-import { useStore, setStoreData } from '@fincity/path-reactive-state-management';
+import {
+	ExpressionEvaluator,
+	TokenValueExtractor,
+	duplicate,
+	isNullValue,
+} from '@fincity/kirun-js';
+import { setStoreData, useStore } from '@fincity/path-reactive-state-management';
+import { PathExtractor } from '../components/util/getPaths';
 import {
 	LOCAL_STORE_PREFIX,
-	STORE_PREFIX,
 	PAGE_STORE_PREFIX,
 	SAMPLE_STORE_PREFIX,
+	STORE_PREFIX,
 } from '../constants';
-import {
-	Expression,
-	ExpressionEvaluator,
-	isNullValue,
-	LinkedList,
-	TokenValueExtractor,
-} from '@fincity/kirun-js';
-import { ComponentProperty, DataLocation, LocationHistory, RenderContext } from '../types/common';
-import { PathExtractor } from '../components/util/getPaths';
+import { messageToMaster } from '../slaveFunctions';
+import { ComponentProperty, DataLocation, LocationHistory } from '../types/common';
 import { LocalStoreExtractor } from './LocalStoreExtractor';
 import { ParentExtractor } from './ParentExtractor';
+import { SpecialTokenValueExtractor } from './SpecialTokenValueExtractor';
 import { ThemeExtractor } from './ThemeExtractor';
-import { duplicate } from '@fincity/kirun-js';
-import { messageToMaster } from '../slaveFunctions';
 import { sample } from './sampleData';
 
-export class StoreExtractor extends TokenValueExtractor {
+export class StoreExtractor extends SpecialTokenValueExtractor {
 	private store: any;
 	private prefix: string;
 	constructor(store: any, prefix: string) {
@@ -232,7 +231,7 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 	// console.log(duplicate(_store));
 }
 
-export class PageStoreExtractor extends TokenValueExtractor {
+export class PageStoreExtractor extends SpecialTokenValueExtractor {
 	private pageName: string;
 	private myStore: any;
 
