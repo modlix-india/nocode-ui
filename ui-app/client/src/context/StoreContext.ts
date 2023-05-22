@@ -52,7 +52,7 @@ const {
 	addListenerAndCallImmediately: _addListenerAndCallImmediately,
 	addListenerWithChildrenActivity: _addListenerWithChildrenActivity,
 	addListenerAndCallImmediatelyWithChildrenActivity:
-		_addListenerAndCallImmediatelyWithChildrenActivity,
+	_addListenerAndCallImmediatelyWithChildrenActivity,
 } = useStore(
 	{},
 	STORE_PREFIX,
@@ -86,7 +86,7 @@ export const dotPathBuilder = (
 				].map(x => [x.getPrefix(), new PathExtractor(x.getPrefix(), x, retSet)]),
 			),
 		);
-	} catch (err) {}
+	} catch (err) { }
 
 	for (const path of retSet) {
 		const parts: string[] = path.split(TokenValueExtractor.REGEX_DOT);
@@ -100,11 +100,10 @@ export const dotPathBuilder = (
 		if (typeof lastHistory.location === 'string')
 			fpath = `${lastHistory.location}.${parts.slice(pNum).join('.')}`;
 		else
-			fpath = `${
-				lastHistory.location.type === 'VALUE'
-					? lastHistory.location.value
-					: lastHistory.location.expression
-			}.${parts.slice(pNum).join('.')}`;
+			fpath = `${lastHistory.location.type === 'VALUE'
+				? lastHistory.location.value
+				: lastHistory.location.expression
+				}.${parts.slice(pNum).join('.')}`;
 
 		origPath = origPath.replace(new RegExp(path.replace(/\./g, '\\.'), 'g'), fpath);
 	}
@@ -172,7 +171,6 @@ export function getDataFromPath(
 export const innerSetData = _setData;
 
 export function setData(path: string, value: any, context?: string, deleteKey?: boolean) {
-	// console.log(path, value);
 	if (path.startsWith(LOCAL_STORE_PREFIX)) {
 		let parts = path.split(TokenValueExtractor.REGEX_DOT);
 

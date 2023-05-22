@@ -52,6 +52,8 @@ function Grid(props: ComponentProps) {
 			observeChildren,
 			observerThresholds,
 			rootMargin,
+			onMouseEnter,
+			onMouseLeave,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -105,6 +107,12 @@ function Grid(props: ComponentProps) {
 	);
 
 	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
+	const onMouseEnterEvent = onMouseEnter
+		? props.pageDefinition.eventFunctions[onMouseEnter]
+		: undefined;
+	const onMouseLeaveEvent = onMouseLeave
+		? props.pageDefinition.eventFunctions[onMouseLeave]
+		: undefined;
 	const spinnerPath = `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
 		key,
 	)}.isRunning`;
@@ -114,7 +122,6 @@ function Grid(props: ComponentProps) {
 	);
 
 	useEffect(() => addListener((_, value) => setIsLoading(value), pageExtractor, spinnerPath), []);
-
 	const handleClick =
 		!clickEvent || isLoading
 			? undefined
@@ -146,10 +153,37 @@ function Grid(props: ComponentProps) {
 						sepStyle ? `_${key}_grid_css` : ''
 					}`}
 					onMouseEnter={
-						stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
+						stylePropertiesWithPseudoStates?.hover || onMouseEnterEvent
+							? () => {
+									setHover(true);
+
+									if (!onMouseEnterEvent) return;
+									(async () =>
+										await runEvent(
+											onMouseEnterEvent,
+											onMouseEnter,
+											props.context.pageName,
+											props.locationHistory,
+											props.pageDefinition,
+										))();
+							  }
+							: undefined
 					}
 					onMouseLeave={
-						stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
+						stylePropertiesWithPseudoStates?.hover || onMouseLeaveEvent
+							? () => {
+									setHover(false);
+									if (!onMouseLeaveEvent) return;
+									(async () =>
+										await runEvent(
+											onMouseLeaveEvent,
+											onMouseLeave,
+											props.context.pageName,
+											props.locationHistory,
+											props.pageDefinition,
+										))();
+							  }
+							: undefined
 					}
 					onFocus={
 						stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined
@@ -170,11 +204,37 @@ function Grid(props: ComponentProps) {
 	return React.createElement(
 		containerType.toLowerCase(),
 		{
-			onMouseEnter: stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined,
-			onMouseLeave: stylePropertiesWithPseudoStates?.hover
-				? () => setHover(false)
-				: undefined,
+			onMouseEnter:
+				stylePropertiesWithPseudoStates?.hover || onMouseEnterEvent
+					? () => {
+							setHover(true);
+							if (!onMouseEnterEvent) return;
+							(async () =>
+								await runEvent(
+									onMouseEnterEvent,
+									onMouseEnter,
+									props.context.pageName,
+									props.locationHistory,
+									props.pageDefinition,
+								))();
+					  }
+					: undefined,
 
+			onMouseLeave:
+				stylePropertiesWithPseudoStates?.hover || onMouseLeaveEvent
+					? () => {
+							setHover(false);
+							if (!onMouseLeaveEvent) return;
+							(async () =>
+								await runEvent(
+									onMouseLeaveEvent,
+									onMouseLeave,
+									props.context.pageName,
+									props.locationHistory,
+									props.pageDefinition,
+								))();
+					  }
+					: undefined,
 			onFocus: stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined,
 			onBlur: stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined,
 			ref: ref,
