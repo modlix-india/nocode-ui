@@ -122,29 +122,6 @@ function Grid(props: ComponentProps) {
 	);
 
 	useEffect(() => addListener((_, value) => setIsLoading(value), pageExtractor, spinnerPath), []);
-	useEffect(() => {
-		if (hover) {
-			console.log(hover, onMouseEnterEvent);
-			async () =>
-				await runEvent(
-					onMouseEnterEvent,
-					onClick,
-					props.context.pageName,
-					props.locationHistory,
-					props.pageDefinition,
-				);
-			return;
-		}
-		console.log(hover, onMouseLeaveEvent);
-		async () =>
-			await runEvent(
-				onMouseLeaveEvent,
-				onClick,
-				props.context.pageName,
-				props.locationHistory,
-				props.pageDefinition,
-			);
-	}, [hover]);
 	const handleClick =
 		!clickEvent || isLoading
 			? undefined
@@ -176,17 +153,36 @@ function Grid(props: ComponentProps) {
 						sepStyle ? `_${key}_grid_css` : ''
 					}`}
 					onMouseEnter={
-						stylePropertiesWithPseudoStates?.hover ||
-						onMouseEnterEvent ||
-						onMouseLeaveEvent
-							? () => setHover(true)
+						stylePropertiesWithPseudoStates?.hover || onMouseEnterEvent
+							? () => {
+									setHover(true);
+
+									if (!onMouseEnterEvent) return;
+									(async () =>
+										await runEvent(
+											onMouseEnterEvent,
+											onMouseEnter,
+											props.context.pageName,
+											props.locationHistory,
+											props.pageDefinition,
+										))();
+							  }
 							: undefined
 					}
 					onMouseLeave={
-						stylePropertiesWithPseudoStates?.hover ||
-						onMouseEnterEvent ||
-						onMouseLeaveEvent
-							? () => setHover(false)
+						stylePropertiesWithPseudoStates?.hover || onMouseLeaveEvent
+							? () => {
+									setHover(false);
+									if (!onMouseLeaveEvent) return;
+									(async () =>
+										await runEvent(
+											onMouseLeaveEvent,
+											onMouseLeave,
+											props.context.pageName,
+											props.locationHistory,
+											props.pageDefinition,
+										))();
+							  }
 							: undefined
 					}
 					onFocus={
@@ -209,15 +205,36 @@ function Grid(props: ComponentProps) {
 		containerType.toLowerCase(),
 		{
 			onMouseEnter:
-				stylePropertiesWithPseudoStates?.hover || onMouseEnterEvent || onMouseLeaveEvent
-					? () => setHover(true)
+				stylePropertiesWithPseudoStates?.hover || onMouseEnterEvent
+					? () => {
+							setHover(true);
+							if (!onMouseEnterEvent) return;
+							(async () =>
+								await runEvent(
+									onMouseEnterEvent,
+									onMouseEnter,
+									props.context.pageName,
+									props.locationHistory,
+									props.pageDefinition,
+								))();
+					  }
 					: undefined,
 
 			onMouseLeave:
-				stylePropertiesWithPseudoStates?.hover || onMouseEnterEvent || onMouseLeaveEvent
-					? () => setHover(false)
+				stylePropertiesWithPseudoStates?.hover || onMouseLeaveEvent
+					? () => {
+							setHover(false);
+							if (!onMouseLeaveEvent) return;
+							(async () =>
+								await runEvent(
+									onMouseLeaveEvent,
+									onMouseLeave,
+									props.context.pageName,
+									props.locationHistory,
+									props.pageDefinition,
+								))();
+					  }
 					: undefined,
-
 			onFocus: stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined,
 			onBlur: stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined,
 			ref: ref,
