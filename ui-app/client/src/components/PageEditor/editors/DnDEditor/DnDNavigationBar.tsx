@@ -266,6 +266,15 @@ function CompTree({
 			));
 	}
 
+	const nameChange = () => {
+		if (changingName === comp.name || changingName.trim() === '') {
+			setChangingName('');
+			return;
+		}
+		pageOperations.changeComponentName(compKey, changingName.trim());
+		setChangingName('');
+	};
+
 	const text = changingName ? (
 		<>
 			<input
@@ -273,12 +282,11 @@ function CompTree({
 				value={changingName}
 				autoFocus={true}
 				onChange={e => setChangingName(e.target.value)}
-				onBlur={() => {
-					setChangingName('');
-					if (changingName === comp.name) return;
-
-					pageOperations.changeComponentName(compKey, changingName);
+				onKeyDown={e => {
+					if (e.key !== 'Enter') return;
+					nameChange();
 				}}
+				onBlur={nameChange}
 			/>
 		</>
 	) : (
