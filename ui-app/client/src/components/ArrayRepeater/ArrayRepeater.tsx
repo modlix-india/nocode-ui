@@ -1,5 +1,5 @@
 import { Schema } from '@fincity/kirun-js';
-import React from 'react';
+import React, { useState } from 'react';
 import { NAMESPACE_UI_ENGINE } from '../../constants';
 import {
 	addListener,
@@ -25,6 +25,7 @@ import useDefinition from '../util/useDefinition';
 import UUID from '../util/uuid';
 import Children from '../Children';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import { shortUUID } from '../../util/shortUUID';
 
 function ArrayRepeaterComponent(props: ComponentProps) {
 	const [value, setValue] = React.useState([]);
@@ -49,12 +50,20 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 	const bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
 		: undefined;
+	const [indexKeys, setIndexKeys] = useState<{ [key: number]: string; object?: any }>({});
 
 	React.useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
 			(_, value) => {
 				setValue(value);
+				const objKeys: { [key: number]: string } = {};
+				if (value?.length) {
+					for (let i = 0; i < value.length; i++) {
+						objKeys[i] = shortUUID();
+					}
+				}
+				setIndexKeys(objKeys);
 			},
 			pageExtractor,
 			bindingPathPath,
@@ -147,7 +156,7 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 				);
 				return (
 					<div
-						key={`${e.name}_${index}`}
+						key={`${indexKeys[index]}`}
 						className={`repeaterProperties ${readOnly ? 'disabled' : ''}`}
 						onDragStart={e => handleDragStart(e, index)}
 						onDragOver={handleDragOver}

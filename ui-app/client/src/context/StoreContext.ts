@@ -15,7 +15,7 @@ import {
 import { messageToMaster } from '../slaveFunctions';
 import { ComponentProperty, DataLocation, LocationHistory } from '../types/common';
 import { LocalStoreExtractor } from './LocalStoreExtractor';
-import { ParentExtractor } from './ParentExtractor';
+import { ParentExtractor, ParentExtractorForRunEvent } from './ParentExtractor';
 import { SpecialTokenValueExtractor } from './SpecialTokenValueExtractor';
 import { ThemeExtractor } from './ThemeExtractor';
 import { sample } from './sampleData';
@@ -52,7 +52,7 @@ const {
 	addListenerAndCallImmediately: _addListenerAndCallImmediately,
 	addListenerWithChildrenActivity: _addListenerWithChildrenActivity,
 	addListenerAndCallImmediatelyWithChildrenActivity:
-	_addListenerAndCallImmediatelyWithChildrenActivity,
+		_addListenerAndCallImmediatelyWithChildrenActivity,
 } = useStore(
 	{},
 	STORE_PREFIX,
@@ -65,51 +65,6 @@ themeExtractor.setStore(_store);
 globalThis.getStore = () => duplicate(_store);
 
 export const storeExtractor = new StoreExtractor(_store, `${STORE_PREFIX}.`);
-
-export const dotPathBuilder = (
-	origPath: string,
-	locationHistory: Array<LocationHistory>,
-	...tve: TokenValueExtractor[]
-) => {
-	if (origPath.indexOf('Parent.') === -1 || !locationHistory.length) return origPath;
-
-	const retSet: Set<string> = new Set();
-	let ex = new ExpressionEvaluator(origPath);
-	try {
-		ex.evaluate(
-			new Map(
-				[
-					storeExtractor,
-					localStoreExtractor,
-					new ParentExtractor(locationHistory),
-					...tve,
-				].map(x => [x.getPrefix(), new PathExtractor(x.getPrefix(), x, retSet)]),
-			),
-		);
-	} catch (err) { }
-
-	for (const path of retSet) {
-		const parts: string[] = path.split(TokenValueExtractor.REGEX_DOT);
-
-		let pNum: number = 0;
-		while (parts[pNum] === 'Parent') pNum++;
-
-		const lastHistory = locationHistory[locationHistory.length - pNum];
-		let fpath = '';
-
-		if (typeof lastHistory.location === 'string')
-			fpath = `${lastHistory.location}.${parts.slice(pNum).join('.')}`;
-		else
-			fpath = `${lastHistory.location.type === 'VALUE'
-				? lastHistory.location.value
-				: lastHistory.location.expression
-				}.${parts.slice(pNum).join('.')}`;
-
-		origPath = origPath.replace(new RegExp(path.replace(/\./g, '\\.'), 'g'), fpath);
-	}
-
-	return origPath;
-};
 
 export function getData<T>(
 	prop: ComponentProperty<T> | undefined,
@@ -133,10 +88,18 @@ export function getDataFromLocation(
 	locationHistory: Array<LocationHistory>,
 	...tve: Array<TokenValueExtractor>
 ): any {
+	if (locationHistory?.length)
+		tve = [
+			...tve,
+			new ParentExtractorForRunEvent(
+				locationHistory,
+				new Map(tve.map(e => [e.getPrefix(), e])),
+			),
+		];
 	if (loc?.type === 'VALUE' && loc.value) {
-		return _getData(dotPathBuilder(loc.value, locationHistory, ...tve) || '', ...tve);
+		return _getData(loc.value || '', ...tve);
 	} else if (loc?.type === 'EXPRESSION' && loc.expression) {
-		return _getData(dotPathBuilder(loc.expression, locationHistory, ...tve) || '', ...tve);
+		return _getData(loc.expression || '', ...tve);
 	}
 }
 
@@ -145,16 +108,19 @@ export function getPathFromLocation(
 	locationHistory: Array<LocationHistory>,
 	...tve: Array<TokenValueExtractor>
 ): string {
-	if (loc?.type === 'VALUE' && loc.value) {
-		return dotPathBuilder(loc.value, locationHistory, ...tve) || '';
-	} else if (loc?.type === 'EXPRESSION' && loc.expression) {
-		return (
-			dotPathBuilder(
-				getDataFromLocation(loc, locationHistory, ...tve),
+	if (locationHistory?.length)
+		tve = [
+			...tve,
+			new ParentExtractorForRunEvent(
 				locationHistory,
-				...tve,
-			) || ''
-		);
+				new Map(tve.map(e => [e.getPrefix(), e])),
+			),
+		];
+	if (loc?.type === 'VALUE' && loc.value) {
+		return loc.value || '';
+	} else if (loc?.type === 'EXPRESSION' && loc.expression) {
+		const data = getDataFromLocation(loc, locationHistory, ...tve);
+		return data || '';
 	}
 	return '';
 }
@@ -165,7 +131,15 @@ export function getDataFromPath(
 	...tve: Array<TokenValueExtractor>
 ) {
 	if (!path) return undefined;
-	return _getData(dotPathBuilder(path, locationHistory), ...tve);
+	if (locationHistory?.length)
+		tve = [
+			...tve,
+			new ParentExtractorForRunEvent(
+				locationHistory,
+				new Map(tve.map(e => [e.getPrefix(), e])),
+			),
+		];
+	return _getData(path, ...tve);
 }
 
 export const innerSetData = _setData;

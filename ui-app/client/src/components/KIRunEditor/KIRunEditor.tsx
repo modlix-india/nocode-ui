@@ -37,6 +37,7 @@ import { correctStatementNames, makeObjectPaths, savePersonalizationCurry } from
 import StatementParameters from './components/StatementParameters';
 import FunctionDetialsEditor from './components/FunctionDetailsEditor';
 import { HelperComponent } from '../HelperComponent';
+import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 
 const gridSize = 20;
 
@@ -771,8 +772,14 @@ function KIRunEditor(
 		/>
 	);
 
+	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{},
+		stylePropertiesWithPseudoStates,
+	);
+
 	return (
-		<div className="comp compKIRunEditor">
+		<div className="comp compKIRunEditor" style={resolvedStyles?.comp ?? {}}>
 			<HelperComponent definition={definition} />
 			<div className="_header">
 				<div className="_left">
