@@ -51,7 +51,7 @@ export const RenderEngineContainer = () => {
 
 	useEffect(() => {
 		loadDefinition();
-	}, [pathParams['*']]);
+	}, [pathParams['*'], location.search]);
 
 	useEffect(() => {
 		if (!location.hash) return;
