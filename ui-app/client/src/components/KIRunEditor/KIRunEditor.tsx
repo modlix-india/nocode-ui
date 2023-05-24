@@ -105,10 +105,17 @@ function KIRunEditor(
 		);
 	}, [personalizationPath]);
 
-	const funDef = useMemo(
-		() => (isNullValue(rawDef) ? undefined : FunctionDefinition.from(rawDef)),
-		[rawDef],
-	);
+	const [error, setError] = useState<any>();
+	const [funDef, setFunDef] = useState<any>();
+
+	useEffect(() => {
+		try {
+			setFunDef(isNullValue(rawDef) ? undefined : FunctionDefinition.from(rawDef));
+			setError(undefined);
+		} catch (error) {
+			setError(error);
+		}
+	}, [rawDef]);
 
 	// Making an executionPlan to show the execution graph.
 	const [executionPlan, setExecutionPlan] = useState<
@@ -778,90 +785,11 @@ function KIRunEditor(
 		stylePropertiesWithPseudoStates,
 	);
 
-	return (
-		<div className="comp compKIRunEditor" style={resolvedStyles?.comp ?? {}}>
-			<HelperComponent definition={definition} />
-			<div className="_header">
-				<div className="_left">
-					<i
-						className="fa fa-solid fa-object-group"
-						role="button"
-						title="Select all"
-						onClick={() => {
-							const entries = Object.entries(rawDef.steps);
+	let containerContents = <></>;
 
-							setSelectedStatements(
-								entries.length === selectedStatements.size
-									? new Map()
-									: new Map<string, boolean>(entries.map(([k, v]) => [k, true])),
-							);
-						}}
-					/>
-					<div className="_separator" />
-					{editableIcons}
-					<i
-						className="fa fa-solid fa-square-root-variable"
-						role="button"
-						title={
-							!preference?.showParamValues
-								? 'Show Parameter Values'
-								: 'Hide Parameter Values'
-						}
-						onClick={() => {
-							savePersonalization('showParamValues', !preference?.showParamValues);
-						}}
-					/>
-					<i
-						className="fa fa-regular fa-comment-dots"
-						role="button"
-						title={preference?.showComments ? 'Show Comments' : 'Hide Comments'}
-						onClick={() => {
-							savePersonalization(
-								'showComments',
-								preference?.showComments === undefined
-									? true
-									: !preference.showComments,
-							);
-						}}
-					/>
-					<i
-						className="fa fa-solid fa-database"
-						role="button"
-						title={preference?.showStores ? 'Show Stores' : 'Hide Stores'}
-						onClick={() => {
-							savePersonalization(
-								'showStores',
-								preference?.showStores === undefined
-									? true
-									: !preference.showStores,
-							);
-						}}
-					/>
-					<div className="_separator" />
-					{editPencilIcon}
-				</div>
-				<div className="_right">
-					<i
-						className="fa fa-solid fa-magnifying-glass-plus"
-						role="button"
-						title="Zoom in"
-						onClick={() => savePersonalization('magnification', magnification + 0.1)}
-					/>
-					<i
-						className="fa fa-solid fa-magnifying-glass"
-						role="button"
-						title="Reset zoom"
-						onClick={() => savePersonalization('magnification', 1)}
-					/>
-					<i
-						className="fa fa-solid fa-magnifying-glass-minus"
-						role="button"
-						title="Zoom out"
-						onClick={() => savePersonalization('magnification', magnification - 0.1)}
-					/>
-				</div>
-			</div>
-			<div className="_container" ref={container}>
+	if (!error) {
+		containerContents = (
+			<>
 				<div
 					className={`_designer ${scrMove.dragStart ? '_moving' : ''}`}
 					style={{ transform: `scale(${magnification})` }}
@@ -955,6 +883,97 @@ function KIRunEditor(
 				</div>
 				{paramEditor}
 				{functionEditor}
+			</>
+		);
+	} else {
+		containerContents = <div className="_error">{error?.message ?? error}</div>;
+	}
+
+	return (
+		<div className="comp compKIRunEditor" style={resolvedStyles?.comp ?? {}}>
+			<HelperComponent definition={definition} />
+			<div className="_header">
+				<div className="_left">
+					<i
+						className="fa fa-solid fa-object-group"
+						role="button"
+						title="Select all"
+						onClick={() => {
+							const entries = Object.entries(rawDef.steps);
+
+							setSelectedStatements(
+								entries.length === selectedStatements.size
+									? new Map()
+									: new Map<string, boolean>(entries.map(([k, v]) => [k, true])),
+							);
+						}}
+					/>
+					<div className="_separator" />
+					{editableIcons}
+					<i
+						className="fa fa-solid fa-square-root-variable"
+						role="button"
+						title={
+							!preference?.showParamValues
+								? 'Show Parameter Values'
+								: 'Hide Parameter Values'
+						}
+						onClick={() => {
+							savePersonalization('showParamValues', !preference?.showParamValues);
+						}}
+					/>
+					<i
+						className="fa fa-regular fa-comment-dots"
+						role="button"
+						title={preference?.showComments ? 'Show Comments' : 'Hide Comments'}
+						onClick={() => {
+							savePersonalization(
+								'showComments',
+								preference?.showComments === undefined
+									? true
+									: !preference.showComments,
+							);
+						}}
+					/>
+					<i
+						className="fa fa-solid fa-database"
+						role="button"
+						title={preference?.showStores ? 'Show Stores' : 'Hide Stores'}
+						onClick={() => {
+							savePersonalization(
+								'showStores',
+								preference?.showStores === undefined
+									? true
+									: !preference.showStores,
+							);
+						}}
+					/>
+					<div className="_separator" />
+					{editPencilIcon}
+				</div>
+				<div className="_right">
+					<i
+						className="fa fa-solid fa-magnifying-glass-plus"
+						role="button"
+						title="Zoom in"
+						onClick={() => savePersonalization('magnification', magnification + 0.1)}
+					/>
+					<i
+						className="fa fa-solid fa-magnifying-glass"
+						role="button"
+						title="Reset zoom"
+						onClick={() => savePersonalization('magnification', 1)}
+					/>
+					<i
+						className="fa fa-solid fa-magnifying-glass-minus"
+						role="button"
+						title="Zoom out"
+						onClick={() => savePersonalization('magnification', magnification - 0.1)}
+					/>
+				</div>
+			</div>
+			<div className="_container" ref={container}>
+				{containerContents}
 			</div>
 		</div>
 	);
