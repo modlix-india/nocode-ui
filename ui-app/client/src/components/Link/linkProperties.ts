@@ -39,6 +39,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: "Link Button's target features",
 		description: "Link Button's target features",
 	},
+	COMMON_COMPONENT_PROPERTIES.onClick,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
