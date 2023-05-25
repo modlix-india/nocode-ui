@@ -179,7 +179,7 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 		displayName: "Unique key's type",
 		description:
 			'A key to identify every item uniquely in the list, RANDOM option creates a random id everytime',
-		defaultValue: 'LIST_OF_STRINGS',
+		defaultValue: 'KEY',
 		editor: ComponentPropertyEditor.ENUM,
 		group: ComponentPropertyGroup.DATA,
 		enumValues: [
