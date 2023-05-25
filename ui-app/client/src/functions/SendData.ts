@@ -26,6 +26,14 @@ const SIGNATURE = new FunctionSignature('SendData')
 			Parameter.ofEntry('pathParams', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.UrlParameters`)),
 			Parameter.ofEntry('payload', Schema.ofAny('payload')),
 			Parameter.ofEntry(
+				'downloadAsAFile',
+				Schema.ofBoolean('downloadAsAFile').setDefaultValue(false),
+			),
+			Parameter.ofEntry(
+				'downloadFileName',
+				Schema.ofString('downloadFileName').setDefaultValue(''),
+			),
+			Parameter.ofEntry(
 				'headers',
 				Schema.ofRef(`${NAMESPACE_UI_ENGINE}.UrlParameters`).setDefaultValue({
 					Authorization: {
@@ -58,6 +66,8 @@ const SIGNATURE = new FunctionSignature('SendData')
 		]),
 	);
 
+const FILE_NAME = 'filename=';
+
 export class SendData extends AbstractFunction {
 	protected async internalExecute(context: FunctionExecutionParameters): Promise<FunctionOutput> {
 		const evmap = [...context.getValuesMap().values()];
@@ -67,6 +77,9 @@ export class SendData extends AbstractFunction {
 		let pathParams = context.getArguments()?.get('pathParams');
 		let queryParams = context.getArguments()?.get('queryParams');
 		let payload = context.getArguments()?.get('payload');
+
+		let downloadAsAFile = context.getArguments()?.get('downloadAsAFile');
+		let downloadFileName = context.getArguments()?.get('downloadFileName');
 
 		pathParams = Object.entries(pathParams)
 			.map(([k, v]) => [k, getData(v as ComponentProperty<any>, [], ...evmap)])
@@ -127,6 +140,32 @@ export class SendData extends AbstractFunction {
 				headers,
 				data: payload,
 			});
+
+			if (downloadAsAFile) {
+				let name = downloadFileName ?? response.headers['Content-Disposition'];
+				let index = name.indexOf(FILE_NAME);
+				if (index !== -1) {
+					name = name.substring(index + FILE_NAME.length);
+					index = name.indexOf('"');
+					name = name.substring(0, index);
+				}
+
+				const data =
+					response.headers['content-type'] === 'application/json' && response.data
+						? JSON.stringify(response.data)
+						: response.data;
+				const url = window.URL.createObjectURL(
+					new Blob([data], { type: 'application/octet-stream' }),
+				);
+
+				const aTag = document.createElement('a');
+				aTag.setAttribute('href', url);
+				aTag.setAttribute('target', '_blank');
+				aTag.setAttribute('download', name === '' ? 'file' : name);
+				document.body.appendChild(aTag);
+				aTag.click();
+				document.body.removeChild(aTag);
+			}
 
 			return new FunctionOutput([EventResult.outputOf(new Map([['data', response.data]]))]);
 		} catch (err: any) {
