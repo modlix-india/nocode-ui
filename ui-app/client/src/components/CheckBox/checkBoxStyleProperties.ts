@@ -72,7 +72,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'checkboxCheckedHoverColor',
 		displayName: "checkbox's hover color",
 		description: "checkbox's hover color.",
-		defaultValue: '<light-contrastBrightColor>',
+		defaultValue: '<lightContrastBrightColor>',
 		noPrefix: true,
 	},
 
@@ -80,7 +80,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'checkboxHoverColor',
 		displayName: "checkbox's hover color",
 		description: "checkbox's hover color.",
-		defaultValue: '<light-blackFontColor>',
+		defaultValue: '<lightBlackFontColor>',
 		noPrefix: true,
 	},
 

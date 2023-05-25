@@ -37,6 +37,7 @@ function Page(props: ComponentProps) {
 		pageExtractor,
 	);
 	const [pathParts, setPathParts] = useState();
+	const [queryParameters, setQueryParameters] = useState();
 
 	useEffect(
 		() =>
@@ -44,6 +45,7 @@ function Page(props: ComponentProps) {
 				(_, value) => {
 					if (pageName === GLOBAL_CONTEXT_NAME) return;
 					setPathParts(value.pathParts.join('/'));
+					setQueryParameters(value.queryParameters);
 				},
 				pageExtractor,
 				`${STORE_PREFIX}.urlDetails`,
@@ -90,7 +92,7 @@ function Page(props: ComponentProps) {
 					pageDefinition,
 				))();
 		}
-	}, [pathParts]);
+	}, [pathParts, queryParameters]);
 
 	// const styleText =
 	// 	'@media all {' +

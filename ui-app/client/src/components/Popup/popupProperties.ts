@@ -51,6 +51,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'eventOnOpen',
 		schema: SCHEMA_STRING_COMP_PROP,
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		displayName: 'event to be run on Modal Open',
 		description: 'Event that is triggered when Modal is open.',
 		group: ComponentPropertyGroup.EVENTS,
@@ -58,6 +59,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'eventOnClose',
 		schema: SCHEMA_STRING_COMP_PROP,
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		displayName: 'event to be run on Modal close',
 		description: `Event that is triggered when Modal is closed.`,
 		group: ComponentPropertyGroup.EVENTS,

@@ -81,6 +81,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Fallback image',
 		description: 'FallBack image will be dispalyed when main image is broken.',
 		group: ComponentPropertyGroup.ADVANCED,
+		editor: ComponentPropertyEditor.IMAGE,
 	},
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];

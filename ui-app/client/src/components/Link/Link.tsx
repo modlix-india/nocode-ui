@@ -13,6 +13,7 @@ import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './linkProperties';
 import LinkStyle from './LinkStyle';
 import { SubHelperComponent } from '../SubHelperComponent';
+import { runEvent } from '../util/runEvent';
 
 function Link(props: ComponentProps) {
 	const location = useLocation();
@@ -33,6 +34,7 @@ function Link(props: ComponentProps) {
 			showButton,
 			externalButtonTarget = '_blank',
 			externalButtonFeatures,
+			onClick,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -42,12 +44,25 @@ function Link(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
+	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
 	const resolvedLink = getHref(linkPath, location);
 	const hoverStyle = processComponentStylePseudoClasses(
 		props.pageDefinition,
 		{ hover: true },
 		stylePropertiesWithPseudoStates,
 	);
+	const handleClick = clickEvent
+		? () => {
+				(async () =>
+					await runEvent(
+						clickEvent,
+						key,
+						props.context.pageName,
+						props.locationHistory,
+						props.pageDefinition,
+					))();
+		  }
+		: undefined;
 
 	const visitedStyle = processComponentStylePseudoClasses(
 		props.pageDefinition,
@@ -67,7 +82,9 @@ function Link(props: ComponentProps) {
 			onClick={e => {
 				e.stopPropagation();
 				e.preventDefault();
-				if (externalButtonTarget === '_self') {
+				if (resolvedLink.startsWith('tel') || resolvedLink.startsWith('mailto')) {
+					window.open(resolvedLink, target);
+				} else if (externalButtonTarget === '_self') {
 					window.history.pushState(undefined, '', resolvedLink);
 					window.history.back();
 					setTimeout(() => window.history.forward(), 100);
@@ -121,7 +138,9 @@ function Link(props: ComponentProps) {
 				href={resolvedLink}
 				target={target}
 				onClick={e => {
-					if (!target || target === '_self') {
+					if (resolvedLink.startsWith('tel') || resolvedLink.startsWith('mailto')) {
+						window.open(resolvedLink, target);
+					} else if (!target || target === '_self') {
 						e.stopPropagation();
 						e.preventDefault();
 						window.history.pushState(undefined, '', resolvedLink);
@@ -132,6 +151,7 @@ function Link(props: ComponentProps) {
 						e.preventDefault();
 						window.open(resolvedLink, target, features);
 					}
+					handleClick?.();
 				}}
 			>
 				<HelperComponent definition={definition} />
