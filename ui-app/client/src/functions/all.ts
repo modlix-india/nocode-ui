@@ -9,4 +9,4 @@ export * from './Message';
 export * from './Navigate';
 export * from './ShortUniqueId';
 export * from './NavigateBack';
-export * from './NavigateFront';
+export * from './NavigateForward';

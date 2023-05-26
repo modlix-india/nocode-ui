@@ -9,13 +9,13 @@ import {
 
 import { NAMESPACE_UI_ENGINE } from '../constants';
 
-const SIGNATURE = new FunctionSignature('NavigateFront')
+const SIGNATURE = new FunctionSignature('NavigateForward')
 	.setNamespace(NAMESPACE_UI_ENGINE)
 	.setEvents(new Map([Event.eventMapEntry(Event.OUTPUT, new Map())]));
 
-export class NavigateFront extends AbstractFunction {
+export class NavigateForward extends AbstractFunction {
 	protected async internalExecute(context: FunctionExecutionParameters): Promise<FunctionOutput> {
-		window.history.go();
+		window.history.forward();
 		return new FunctionOutput([EventResult.outputOf(new Map())]);
 	}
 
