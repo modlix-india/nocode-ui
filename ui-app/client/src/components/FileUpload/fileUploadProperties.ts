@@ -42,8 +42,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_ANY_COMP_PROP,
 		displayName: 'Upload Icon',
 		description: 'The icon that is shown in the upload box.',
-		defaultValue: 'fa fa-solid fa-upload',
 		group: ComponentPropertyGroup.BASIC,
+		editor: ComponentPropertyEditor.ICON,
 	},
 	{
 		name: 'mainText',
@@ -60,7 +60,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description:
 			'This is the etxt below main text, usually used to help user with instructions on how to upload.',
 		group: ComponentPropertyGroup.BASIC,
-		defaultValue: 'Or drag and drop here',
 	},
 	{
 		name: 'isMultiple',
@@ -101,6 +100,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Event to be run on selection of files.',
 		group: ComponentPropertyGroup.EVENTS,
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		description:
 			'This event is usually triggered after selection by user, used for upload immediately on selection instead of delegating the control to a button',
 	},
