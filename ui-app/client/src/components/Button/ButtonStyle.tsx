@@ -25,6 +25,13 @@ export default function ButtonStyle({ theme }: { theme: Map<string, Map<string, 
 			border-radius: 50%;
 			padding: 0px;
 		}
+
+		${PREFIX}.button.iconButton {
+			padding: 0px 5px;
+		}
+		${PREFIX}.button.iconButton .leftButtonIcon {
+			margin-right: 0px;
+		}
 		
 		${PREFIX}.button {
 			display: flex;
