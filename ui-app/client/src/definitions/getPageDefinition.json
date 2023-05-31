@@ -17,7 +17,7 @@
 					"pageDefinitionURL": {
 						"key": "pageDefinitionURL",
 						"type": "EXPRESSION",
-						"expression": "'api/ui/page/' + ((Arguments.pageName = ''? null: Arguments.pageName) ?? Store.urlDetails.pageName ?? Store.application.properties.defaultPage)"
+						"expression": "'api/ui/page/{{(Arguments.pageName = ''? null: Arguments.pageName) ?? Store.urlDetails.pageName ?? Store.application.properties.defaultPage}}'"
 					}
 				}
 			}
