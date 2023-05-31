@@ -1,4 +1,4 @@
-import { deepEqual } from '@fincity/kirun-js';
+import { deepEqual, isNullValue } from '@fincity/kirun-js';
 import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import CommonInputText from '../../commonComponents/CommonInputText';
 import {
@@ -194,7 +194,11 @@ function DropdownComponent(props: ComponentProps) {
 		} catch (error) {
 			searchExpression = '';
 		}
-		setSearchDropdownData(dropdownData.filter(e => e?.label.search(searchExpression) !== -1));
+		setSearchDropdownData(
+			dropdownData
+				.filter(e => !isNullValue(e?.label))
+				.filter(e => (e?.label + '').search(searchExpression) !== -1),
+		);
 	}, [searchText]);
 
 	const handleClose = () => {
