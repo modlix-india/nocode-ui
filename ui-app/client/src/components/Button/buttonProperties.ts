@@ -23,6 +23,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{ name: 'default', displayName: 'Default Button', description: 'Default Button type' },
 			{ name: 'outlined', displayName: 'Outline Button', description: 'Outline Button type' },
 			{ name: 'text', displayName: 'Text Button', description: 'Outline Button type' },
+			{ name: 'iconButton', displayName: 'Icon Button', description: 'Icon Button type' },
 			{ name: 'fabButton', displayName: 'Fab Button', description: 'Fab Button type' },
 			{
 				name: 'fabButtonMini',

@@ -1,20 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { STORE_PATH_FUNCTION_EXECUTION, NAMESPACE_UI_ENGINE } from '../../constants';
-import {
-	addListener,
-	getData,
-	getDataFromPath,
-	PageStoreExtractor,
-} from '../../context/StoreContext';
+import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
+import { addListener, getDataFromPath, PageStoreExtractor } from '../../context/StoreContext';
 import { runEvent } from '../util/runEvent';
 import { HelperComponent } from '../HelperComponent';
 import { getTranslations } from '../util/getTranslations';
-import {
-	Component,
-	ComponentDefinition,
-	ComponentPropertyDefinition,
-	ComponentProps,
-} from '../../types/common';
+import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './buttonProperties';
 import ButtonStyle from './ButtonStyle';
 import useDefinition from '../util/useDefinition';
@@ -23,8 +13,7 @@ import { flattenUUID } from '../util/uuid';
 import { getHref } from '../util/getHref';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { SubHelperComponent } from '../SubHelperComponent';
-import { SLAVE_FUNCTIONS, messageToMaster } from '../../slaveFunctions';
-import { duplicate } from '@fincity/kirun-js';
+import { messageToMaster } from '../../slaveFunctions';
 
 function ButtonComponent(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -96,7 +85,7 @@ function ButtonComponent(props: ComponentProps) {
 	};
 
 	const rightIconTag =
-		!type?.startsWith('fabButton') && !leftIcon ? (
+		!type?.startsWith('fabButton') && type !== 'iconButton' && !leftIcon ? (
 			<i
 				style={styleProperties.rightIcon ?? {}}
 				className={`rightButtonIcon ${rightIcon ?? 'fa fa-circle-notch hide'}`}
@@ -350,7 +339,7 @@ function ButtonComponent(props: ComponentProps) {
 				</div>
 			</HelperComponent>
 			{leftIconTag}
-			{!type?.startsWith('fabButton') && label}
+			{!type?.startsWith('fabButton') && type !== 'iconButton' ? label : ''}
 			{rightIconTag}
 		</button>
 	);
