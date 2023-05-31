@@ -20,7 +20,6 @@ export default function DropdownStyle({ theme }: { theme: Map<string, Map<string
         top: 100%;
         overflow-y: auto;
         margin-top: 1px;
-        position: relative;
         z-index: 7;
     }
 

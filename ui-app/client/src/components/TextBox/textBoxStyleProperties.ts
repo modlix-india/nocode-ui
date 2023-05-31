@@ -55,6 +55,15 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.commonInputBox .textBoxDiv',
 	},
 	{
+		name: 'dropDownTextBoxDivBackgroundColor',
+		cssProperty: 'background-color',
+		displayName: 'Dropdown Background Color',
+		description: 'The background color of Dropdown.',
+		defaultValue: '#ffffff',
+		noPrefix: true,
+		selector: '.commonInputBox .textBoxDiv',
+	},
+	{
 		name: 'textBoxWdith',
 		cssProperty: 'width',
 		displayName: "textbox's width",
@@ -272,6 +281,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector:
 			'.commonInputBox .textBoxDiv .inputContainer .textbox:focus + .textBoxLabel, .commonInputBox .textBoxDiv .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel',
 	},
+
 	{
 		name: 'textBoxLabelTextTransformWhenContainsTextPaddingLeft',
 		cssProperty: 'padding-left',
