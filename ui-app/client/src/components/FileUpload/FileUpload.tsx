@@ -219,12 +219,13 @@ function FileUpload(props: ComponentProps) {
 		/>
 	);
 
-	const labelComp = (
-		<label className="labelText" style={computedStyles?.label ?? {}}>
-			<SubHelperComponent definition={props.definition} subComponentName="label" />
-			{subText}
-		</label>
-	);
+	const labelComp =
+		subText && subText.length ? (
+			<label className="labelText" style={computedStyles?.label ?? {}}>
+				<SubHelperComponent definition={props.definition} subComponentName="label" />
+				{subText}
+			</label>
+		) : null;
 
 	const fileContainer = (
 		<div className="selectedFileContainer" style={computedStyles?.selectedFileContainer ?? {}}>
