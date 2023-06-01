@@ -318,11 +318,13 @@ function KIRunEditor(
 					onDependencyDrop={stmt => {
 						if (!dragDependencyNode) return;
 						if (isReadonly) return;
+						if (dragDependencyNode.dependency?.startsWith(`Steps.${stmt}`)) return;
 
 						const newRawDef = duplicate(rawDef);
 
 						if (!newRawDef.steps[stmt].dependentStatements)
 							newRawDef.steps[stmt].dependentStatements = {};
+
 						newRawDef.steps[stmt].dependentStatements[dragDependencyNode.dependency] =
 							true;
 
@@ -803,8 +805,8 @@ function KIRunEditor(
 						const parentRect = designerRef.current!.getBoundingClientRect();
 
 						setShowAddSearch({
-							left: ev.clientX - parentRect.left - 5,
-							top: ev.clientY - parentRect.top - 5,
+							left: (ev.clientX - parentRect.left - 5) / magnification,
+							top: (ev.clientY - parentRect.top - 5) / magnification,
 						});
 					}}
 					ref={designerRef}
