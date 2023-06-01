@@ -145,7 +145,13 @@ function HelperComponentInternal({
 					type: 'SLAVE_CONTEXT_MENU',
 					payload: {
 						componentKey: definition.key,
-						menuPosition: { x: e.screenX, y: e.screenY },
+						menuPosition: {
+							x: e.screenX - window.screenX,
+							y:
+								e.screenY -
+								window.screenY -
+								((window.top?.outerHeight ?? 0) - (window.top?.innerHeight ?? 0)),
+						},
 					},
 				});
 			}}

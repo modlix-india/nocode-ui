@@ -96,7 +96,7 @@ export default function DnDBottomBar({
 							e.preventDefault();
 							onContextMenu({
 								componentKey: comp.key,
-								menuPosition: { x: e.screenX, y: e.screenY },
+								menuPosition: { x: e.clientX, y: e.clientY },
 							});
 						}}
 					>
@@ -154,7 +154,7 @@ export default function DnDBottomBar({
 											e.preventDefault();
 											onContextMenu({
 												componentKey: f,
-												menuPosition: { x: e.screenX, y: e.screenY },
+												menuPosition: { x: e.clientX, y: e.clientY },
 											});
 										}}
 									>
