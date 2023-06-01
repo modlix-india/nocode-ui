@@ -106,9 +106,10 @@ export class SendData extends AbstractFunction {
 			ll.add(payload);
 			while (ll.size() > 0) {
 				const current = ll.pop();
+				console.log(current, ll);
 				if (Array.isArray(current)) {
 					ll.addAll([...current]);
-				} else if (typeof current === 'object') {
+				} else if (typeof current === 'object' && current !== null) {
 					if (current.constructor?.name === 'File') {
 						isFormData = true;
 						break;
