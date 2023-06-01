@@ -389,8 +389,10 @@ function lineFrom(
 			props = { ...props, className: `${props.className ?? ''} _straight` };
 			dPath += `L ${ex + 1} ${sy} L ${ex + 1} ${ey} L ${sx} ${ey} Z`;
 		} else {
-			dPath += `Q ${sx + (ex - sx) / 3} ${sy} ${sx + (ex - sx) / 2} ${
-				sy + (ey - sy) / 2
+			const xdiff = ex - sx;
+			const ydiff = ey - sy;
+			dPath += `Q ${sx + (xdiff * (ex - sx < 0 ? -1 : 1)) / 3} ${sy} ${sx + xdiff / 2} ${
+				sy + ydiff / 2
 			} T ${ex} ${ey}`;
 		}
 	}
