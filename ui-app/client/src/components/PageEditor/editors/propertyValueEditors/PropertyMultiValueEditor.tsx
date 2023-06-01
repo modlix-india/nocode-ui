@@ -8,6 +8,7 @@ import {
 import { duplicate } from '@fincity/kirun-js';
 import { shortUUID } from '../../../../util/shortUUID';
 import PropertyValueEditor from './PropertyValueEditor';
+import PageOperations from '../../functions/PageOperations';
 
 interface PropertyMultiValueEditorProps {
 	propDef: ComponentPropertyDefinition;
@@ -18,6 +19,7 @@ interface PropertyMultiValueEditorProps {
 	slaveStore: any;
 	editPageName: string | undefined;
 	storePaths: Set<string>;
+	pageOperations: PageOperations;
 }
 
 export default function PropertyMultiValueEditor({
@@ -29,6 +31,7 @@ export default function PropertyMultiValueEditor({
 	slaveStore,
 	editPageName,
 	storePaths,
+	pageOperations,
 }: PropertyMultiValueEditorProps) {
 	const [chngValue, setChngValue] = useState<ComponentMultiProperty<any> | undefined>(value);
 	const [newValueKey, setNewValueKey] = useState<string>(shortUUID());
@@ -123,6 +126,7 @@ export default function PropertyMultiValueEditor({
 						editPageName={editPageName}
 						slaveStore={slaveStore}
 						storePaths={storePaths}
+						pageOperations={pageOperations}
 					/>
 				</div>
 			));
@@ -152,6 +156,7 @@ export default function PropertyMultiValueEditor({
 					editPageName={editPageName}
 					slaveStore={slaveStore}
 					storePaths={storePaths}
+					pageOperations={pageOperations}
 				/>
 			</div>
 		</div>
