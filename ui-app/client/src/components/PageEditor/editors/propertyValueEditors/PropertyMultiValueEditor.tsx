@@ -99,9 +99,9 @@ export default function PropertyMultiValueEditor({
 						})
 					}
 				>
-					<i className="fa fa-solid fa-up-down" />
+					<i className="_controlIcons fa fa-solid fa-up-down" />
 					<i
-						className="fa fa-solid fa-close"
+						className="_controlIcons fa fa-solid fa-close"
 						tabIndex={0}
 						onClick={() => {
 							const newValue = { ...chngValue };
