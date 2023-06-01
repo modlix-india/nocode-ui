@@ -81,7 +81,7 @@ export class Login extends AbstractFunction {
 						['status', err.response.status],
 					]),
 				),
-				EventResult.outputOf(new Map([['data', null]])),
+				EventResult.outputOf(new Map([])),
 			]);
 		}
 	}
