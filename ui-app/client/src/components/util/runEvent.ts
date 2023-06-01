@@ -105,7 +105,7 @@ export const runEvent = async (
 			valuesMap.set(pse.getPrefix(), pse);
 		}
 
-		const runtime = new KIRuntime(def, isDesignMode);
+		const runtime = new KIRuntime(def, isDesignMode || isDebugMode);
 		const fep = new FunctionExecutionParameters(
 			new HybridRepository(
 				UIFunctionRepository,

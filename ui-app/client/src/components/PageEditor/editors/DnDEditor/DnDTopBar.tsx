@@ -79,6 +79,7 @@ export default function DnDTopBar({
 	const [showProperties, setShowProperties] = useState(false);
 	const [page, setPage] = useState<PageDefinition>();
 	const [changed, setChanged] = useState(Date.now());
+	const [permission, setPermission] = useState<string>('');
 	useEffect(() => setLocalUrl(url), [url]);
 	useEffect(
 		() =>
@@ -111,6 +112,7 @@ export default function DnDTopBar({
 
 				setProperties(v.properties ?? {});
 				setPage(v as PageDefinition);
+				setPermission(v.permission ?? '');
 
 				if (!firstTimeRef.current.length) {
 					firstTimeRef.current.push(duplicate(v));
@@ -148,14 +150,21 @@ export default function DnDTopBar({
 	);
 
 	const updatePageProperties = useCallback(
-		(propType: 'title' | 'simple' | 'compprop' | 'seo', propName: string, value: any) => {
+		(
+			propType: 'title' | 'simple' | 'compprop' | 'seo' | 'permission',
+			propName: string,
+			value: any,
+		) => {
 			if (!defPath) return;
 
 			const page = duplicate(
 				getDataFromPath(defPath, locationHistory, pageExtractor) ?? {},
 			) as PageDefinition;
 			if (!page.properties) page.properties = {};
-			if (propType === 'title') {
+			if (propType === 'permission') {
+				if (isNullValue(value.value)) delete page.permission;
+				else page.permission = value?.value;
+			} else if (propType === 'title') {
 				if (!page.properties.title) page.properties.title = {};
 				if (propName === 'name')
 					if (isNullValue(value.value) && isNullValue(value.location?.expression))
@@ -358,6 +367,25 @@ export default function DnDTopBar({
 										onlyValue={true}
 										onChange={v =>
 											updatePageProperties('simple', 'loadStrategy', v)
+										}
+										storePaths={storePaths}
+										slaveStore={slaveStore}
+										editPageName={editPageName}
+										pageOperations={pageOperations}
+									/>
+								</div>
+								<div className="_eachProp">
+									<div className="_propLabel">Permission Expression</div>
+									<PropertyValueEditor
+										propDef={{
+											name: 'permission',
+											displayName: 'Permission Expression',
+											schema: SCHEMA_STRING_COMP_PROP,
+										}}
+										value={{ value: permission }}
+										onlyValue={true}
+										onChange={v =>
+											updatePageProperties('permission', 'permission', v)
 										}
 										storePaths={storePaths}
 										slaveStore={slaveStore}
