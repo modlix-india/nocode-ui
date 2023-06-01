@@ -375,7 +375,7 @@ export default function DnDTopBar({
 									/>
 								</div>
 								<div className="_eachProp">
-									<div className="_propLabel">Permission Experssion</div>
+									<div className="_propLabel">Permission Expression</div>
 									<PropertyValueEditor
 										propDef={{
 											name: 'permission',
