@@ -216,6 +216,7 @@ export default function PropertyEditor({
 					editPageName={editPageName}
 					slaveStore={slaveStore}
 					storePaths={storePaths}
+					pageOperations={pageOperations}
 				/>
 			);
 		} else {

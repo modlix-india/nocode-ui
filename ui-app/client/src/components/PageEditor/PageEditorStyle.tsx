@@ -264,7 +264,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			font-size: 12px;
 			border-radius: 12px;
 			padding-left: 8px;
-			flex: 1;
 			outline: none;
 		}
 
@@ -847,7 +846,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			position: relative;
 		}
 
-		._eachProperty i.fa {
+		._eachProperty i.fa._controlIcons {
 			color: #aaa;
 			cursor: pointer;
 			font-size: 13px;
@@ -864,9 +863,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			font-size: 12px;
 		}
 
-		._eachProperty i.fa-close {
+		._eachProperty i.fa-close._controlIcons {
 			left: 24px;
-			
 		}
 
 		._eachProperty:hover i.fa {
