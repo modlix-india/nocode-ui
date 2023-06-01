@@ -325,7 +325,7 @@ function CompTree({
 					e.preventDefault();
 					onContextMenu({
 						componentKey: comp.key,
-						menuPosition: { x: e.screenX, y: e.screenY },
+						menuPosition: { x: e.clientX, y: e.clientY },
 					});
 				}}
 				onDoubleClick={() => setChangingName(comp.name ?? comp.key)}

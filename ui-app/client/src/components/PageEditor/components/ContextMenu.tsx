@@ -39,10 +39,8 @@ export function ContextMenu({
 
 	if (!menuDetails) return <></>;
 
-	let left: number | string =
-		menuDetails.menuPosition.x - (window.screenLeft + (window.outerWidth - window.innerWidth));
-	let top: number | string =
-		menuDetails.menuPosition.y - (window.screenTop + (window.outerHeight - window.innerHeight));
+	let left: number | string = menuDetails.menuPosition.x;
+	let top: number | string = menuDetails.menuPosition.y;
 
 	let right: number | string = 'auto';
 	let bottom: number | string = 'auto';
