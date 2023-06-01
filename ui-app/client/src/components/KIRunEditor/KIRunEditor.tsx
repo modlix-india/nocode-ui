@@ -136,10 +136,10 @@ function KIRunEditor(
 			}
 
 			try {
-				const ep = await new KIRuntime(funDef!, isDesignMode).getExecutionPlan(
-					functionRepository,
-					schemaRepository,
-				);
+				const ep = await new KIRuntime(
+					funDef!,
+					isDesignMode || isDebugMode,
+				).getExecutionPlan(functionRepository, schemaRepository);
 				setExecutionPlan(ep);
 
 				const map = new Map();

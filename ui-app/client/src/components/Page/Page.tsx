@@ -63,12 +63,11 @@ function Page(props: ComponentProps) {
 		const v = { ...(getDataFromPath(`${STORE_PREFIX}.urlDetails`, []) ?? {}), origName: name };
 		let firstTime = true;
 		let sameAsExisting = false;
-		if (v.pageName === pageName) {
-			if (pageHistory[pageName]) {
-				firstTime = false;
-				if (deepEqual(v, pageHistory[pageName])) {
-					sameAsExisting = true;
-				}
+		if (v.pageName !== pageName) return;
+		if (pageHistory[pageName]) {
+			firstTime = false;
+			if (deepEqual(v, pageHistory[pageName])) {
+				sameAsExisting = true;
 			}
 		}
 
