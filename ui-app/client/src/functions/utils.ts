@@ -13,6 +13,7 @@ export function pathFromParams(url: string, params: any): string {
 export function queryParamsSerializer(
 	params: any,
 	prefix: string = '',
+	level: number = 0,
 ): [boolean, string] | undefined {
 	if (params === undefined) return undefined;
 
@@ -22,9 +23,13 @@ export function queryParamsSerializer(
 		return [
 			true,
 			params
-				.map((v, i) => queryParamsSerializer(v, `${prefix}[${i}].`))
+				.map((v, i) => queryParamsSerializer(v, `${prefix}[${i}].`), level + 1)
 				.filter(e => e != undefined)
-				.map((bs, i) => (bs![0] ? bs![1] : `${prefix}[${i}]=${bs![1]}`))
+				.map((bs, i) => {
+					if (bs![0]) return bs![1];
+
+					return level == 1 ? `${prefix}=${bs![1]}` : `${prefix}[${i}]=${bs![1]}`;
+				})
 				.join('&'),
 		];
 	} else if (typeOfParams === 'object') {
@@ -32,7 +37,7 @@ export function queryParamsSerializer(
 			true,
 			Object.entries(params)
 				.map(([k, v]) => {
-					const x = queryParamsSerializer(v, `${prefix}${k}.`);
+					const x = queryParamsSerializer(v, `${prefix}${k}.`, level + 1);
 					if (x === undefined) return undefined;
 					return x[0] ? x[1] : `${prefix}${k}=${x[1]}`;
 				})
