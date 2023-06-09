@@ -1,7 +1,7 @@
 const base = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const baseDivisor = BigInt('' + base.length);
 export function shortUUID() {
-	let hex = crypto
+	let hex = crypto?.randomUUID
 		? crypto.randomUUID().replace(/-/g, '')
 		: Math.random().toString(16).substring(2);
 
