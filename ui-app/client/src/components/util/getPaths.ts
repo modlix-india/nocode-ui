@@ -1,5 +1,5 @@
 import { ExpressionEvaluator, isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
-import { SCHEMA_REF_VALIDATION } from '../../constants';
+import { SCHEMA_VALIDATION } from '../../constants';
 import {
 	ComponentDefinition,
 	ComponentProperty,
@@ -39,6 +39,8 @@ export function getPathsFrom<T>(
 	anything: string | DataLocation | ComponentProperty<T>,
 	evaluatorMaps: Map<string, TokenValueExtractor>,
 ): Set<string> {
+	if (!anything) return new Set();
+
 	let expression: string | undefined = undefined;
 
 	if (typeof anything === 'string') expression = anything;
@@ -73,7 +75,7 @@ export function getPathsFrom<T>(
 	return retSet;
 }
 
-export function getPathsFromComponentDefinition(
+export function getPathsFromComponentProperties(
 	properties:
 		| {
 				[key: string]:
@@ -92,9 +94,9 @@ export function getPathsFromComponentDefinition(
 		for (const [key, prop] of Object.entries(properties)) {
 			if (propDefMap[key]?.multiValued) {
 				for (const iprop of Object.values(prop)) {
-					if (propDefMap[key].schema.getRef() === SCHEMA_REF_VALIDATION) {
-						for (const vprop of Object.values(iprop)) {
-							if (typeof vprop === 'string') continue;
+					if (propDefMap[key].schema.getRef() === SCHEMA_VALIDATION.getRef()) {
+						for (const vprop of Object.values(iprop?.property?.value ?? {})) {
+							if (typeof vprop !== 'object') continue;
 							const set = getPathsFrom(
 								vprop as ComponentProperty<any>,
 								evaluatorMaps,
@@ -147,4 +149,39 @@ export function getPathsFromComponentDefinition(
 	if (hasOtherResolutions) paths.add('Store.devices');
 
 	return Array.from(paths);
+}
+
+export function getPathsFromComponentDefinition(
+	definition: ComponentDefinition,
+	evaluatorMaps: Map<string, TokenValueExtractor>,
+	propDefMap: any,
+) {
+	const paths = getPathsFromComponentProperties(
+		definition.properties,
+		definition.styleProperties,
+		evaluatorMaps,
+		propDefMap,
+	);
+
+	for (let bp of [
+		'bindingPath',
+		'bindingPath2',
+		'bindingPath3',
+		'bindingPath4',
+		'bindingPath5',
+		'bindingPath6',
+	]) {
+		let x = bp as
+			| 'bindingPath'
+			| 'bindingPath2'
+			| 'bindingPath3'
+			| 'bindingPath4'
+			| 'bindingPath5'
+			| 'bindingPath6';
+		if (definition[x]) {
+			const p = getPathsFrom(definition[x]!, evaluatorMaps);
+			if (p) p.forEach(e => paths.push(e));
+		}
+	}
+	return paths;
 }

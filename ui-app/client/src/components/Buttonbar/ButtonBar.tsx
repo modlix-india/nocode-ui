@@ -16,6 +16,7 @@ import ButtonBarStyle from './ButtonBarStyle';
 import { HelperComponent } from '../HelperComponent';
 import { getTranslations } from '../util/getTranslations';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import { SubHelperComponent } from '../SubHelperComponent';
 
 function ButtonBar(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -52,13 +53,15 @@ function ButtonBar(props: ComponentProps) {
 		pageExtractor,
 	);
 
-	if (!bindingPath) throw new Error('Definition requires binding path');
 	const [hover, setHover] = React.useState('');
 	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover: !!hover, readOnly: !!readOnly },
 		stylePropertiesWithPseudoStates,
 	);
-	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
+	const bindingPathPath = bindingPath
+		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
+		: undefined;
 
 	const [value, setvalue] = React.useState<any>();
 
@@ -71,9 +74,9 @@ function ButtonBar(props: ComponentProps) {
 			let nv = value ? [...value] : [];
 			if (index != -1) nv.splice(index, 1);
 			else nv.push(each.value);
-			setData(bindingPathPath, nv.length ? nv : undefined, context?.pageName);
+			setData(bindingPathPath!, nv.length ? nv : undefined, context?.pageName);
 		} else {
-			setData(bindingPathPath, each.value, context?.pageName);
+			setData(bindingPathPath!, each.value, context?.pageName);
 		}
 		if (clickEvent) {
 			await runEvent(
@@ -87,6 +90,7 @@ function ButtonBar(props: ComponentProps) {
 	};
 
 	React.useEffect(() => {
+		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
 			(_, value) => {
 				setvalue(value);
@@ -135,10 +139,14 @@ function ButtonBar(props: ComponentProps) {
 	return (
 		<div className="comp compButtonBar" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={props.definition} />
+
 			<label style={resolvedStyles.label ?? {}} className="_label">
+				<SubHelperComponent definition={props.definition} subComponentName="label" />
 				{getTranslations(label, translations)}
 			</label>
+
 			<div className="_buttonBarContainer" style={resolvedStyles.container ?? {}}>
+				<SubHelperComponent definition={props.definition} subComponentName="container" />
 				{buttonBarData?.map(each => (
 					<button
 						style={resolvedStyles.button ?? {}}
@@ -156,6 +164,10 @@ function ButtonBar(props: ComponentProps) {
 							readOnly ? '_disabled' : ''
 						}`}
 					>
+						<SubHelperComponent
+							definition={props.definition}
+							subComponentName="button"
+						/>
 						{getTranslations(each?.label, translations)}
 					</button>
 				))}
@@ -174,8 +186,17 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	stylePseudoStates: ['hover', 'disabled'],
+	styleProperties: stylePropertiesDefinition,
 	bindingPaths: {
 		bindingPath: { name: 'Array Binding' },
+	},
+	defaultTemplate: {
+		key: '',
+		name: 'buttonBar',
+		type: 'ButtonBar',
+		properties: {
+			label: { value: 'ButtonBar' },
+		},
 	},
 };
 

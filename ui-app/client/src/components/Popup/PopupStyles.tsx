@@ -8,6 +8,10 @@ export default function PopupStyles({ theme }: { theme: Map<string, Map<string, 
 	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
 	const css =
 		`
+    ${PREFIX} {
+      z-index: 7;
+    }
+
      ${PREFIX} .backdrop{
       position: fixed;
       top: 0;
@@ -24,17 +28,28 @@ export default function PopupStyles({ theme }: { theme: Map<string, Map<string, 
       position: relative;
     }
     ${PREFIX} .closeButtonPosition{
-      margin-bottom: 10px
+      margin-bottom: 10px;
+      position: relative;
+    }
+    ${PREFIX} .design2CloseButton {
+      position: absolute;
+      top: 10px;
+      right: 16px;
+      z-index: 1;
+    }
+    ${PREFIX} .modelTitleStyle {
+      position: relative;
     }
     ${PREFIX} .TitleIconGrid{
       display: flex;
       flex-direction: row;
-     justify-content: space-between;
+      justify-content: space-between;
+      position: relative;
     }
     ${PREFIX} .iconClass{
-      cursor: pointer
+      cursor: pointer;
+      position: relative;
     }
-    
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="PopupCss">{css}</style>;

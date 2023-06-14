@@ -11,6 +11,7 @@ import { getTranslations } from '../util/getTranslations';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './progressBarProperties';
 import ProgressBarStyles from './ProgressBarStyles';
+import { SubHelperComponent } from '../SubHelperComponent';
 
 function ProgressBar(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -45,30 +46,34 @@ function ProgressBar(props: ComponentProps) {
 	);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover },
 		stylePropertiesWithPseudoStates,
 	);
 
-	if (!bindingPath) throw new Error('Definition requires bindigPath');
 	const [value, setValue] = React.useState(0);
-	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
-	React.useEffect(
-		() =>
-			addListenerAndCallImmediately(
-				(_, value) => {
-					setValue(value ?? 0);
-				},
-				pageExtractor,
-				bindingPathPath,
-			),
-		[bindingPath],
-	);
+	const bindingPathPath =
+		bindingPath && getPathFromLocation(bindingPath, locationHistory, pageExtractor);
+	React.useEffect(() => {
+		if (!bindingPathPath) return;
+		return addListenerAndCallImmediately(
+			(_, value) => {
+				setValue(value ?? 0);
+			},
+			pageExtractor,
+			bindingPathPath,
+		);
+	}, [bindingPath]);
 
 	return (
 		<div className="comp compProgressBar" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={props.definition} />
 			{label ? (
 				<label className="progressBarLabel" style={resolvedStyles.progressBarLabel ?? {}}>
+					<SubHelperComponent
+						definition={props.definition}
+						subComponentName="progressBarLabel"
+					/>
 					{getTranslations(label, props.pageDefinition.translations)}
 				</label>
 			) : null}
@@ -82,11 +87,18 @@ function ProgressBar(props: ComponentProps) {
 					stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
 				}
 			>
+				<SubHelperComponent definition={props.definition} subComponentName="progressBar" />
 				<span
 					style={{ width: `${value}%`, ...(resolvedStyles.progress ?? {}) }}
 					className="progress"
-				></span>
+				>
+					<SubHelperComponent definition={props.definition} subComponentName="progress" />
+				</span>
 				<label className="progressValue" style={resolvedStyles.progressValue ?? {}}>
+					<SubHelperComponent
+						definition={props.definition}
+						subComponentName="progressValue"
+					/>
 					{`${prependProgressValue && showProgressValue ? value + '% ' : ''}` +
 						`${
 							progressNotStartedLabel || inProgressLabel || progressCompletedLabel
@@ -115,6 +127,14 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['hover'],
+	defaultTemplate: {
+		key: '',
+		type: 'ProgressBar',
+		name: 'ProgressBar',
+	},
+	bindingPaths: {
+		bindingPath: { name: 'Progress Value' },
+	},
 };
 
 export default component;

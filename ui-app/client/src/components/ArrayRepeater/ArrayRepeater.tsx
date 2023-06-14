@@ -1,8 +1,9 @@
 import { Schema } from '@fincity/kirun-js';
-import React from 'react';
+import React, { useState } from 'react';
 import { NAMESPACE_UI_ENGINE } from '../../constants';
 import {
 	addListener,
+	addListenerAndCallImmediately,
 	getData,
 	getDataFromLocation,
 	getPathFromLocation,
@@ -24,6 +25,7 @@ import useDefinition from '../util/useDefinition';
 import UUID from '../util/uuid';
 import Children from '../Children';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import { shortUUID } from '../../util/shortUUID';
 
 function ArrayRepeaterComponent(props: ComponentProps) {
 	const [value, setValue] = React.useState([]);
@@ -45,13 +47,23 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	if (!bindingPath) throw new Error('Definition requires bindingpath');
-	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory, pageExtractor);
+	const bindingPathPath = bindingPath
+		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
+		: undefined;
+	const [indexKeys, setIndexKeys] = useState<{ [key: number]: string; object?: any }>({});
 
 	React.useEffect(() => {
-		return addListener(
+		if (!bindingPathPath) return;
+		return addListenerAndCallImmediately(
 			(_, value) => {
 				setValue(value);
+				const objKeys: { [key: number]: string } = {};
+				if (value?.length) {
+					for (let i = 0; i < value.length; i++) {
+						objKeys[i] = shortUUID();
+					}
+				}
+				setIndexKeys(objKeys);
 			},
 			pageExtractor,
 			bindingPathPath,
@@ -68,13 +80,13 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 	const handleAdd = (index: any) => {
 		const newData = value.slice();
 		newData.splice(index + 1, 0, newData[index]);
-		setData(bindingPathPath, newData, context?.pageName);
+		setData(bindingPathPath!, newData, context?.pageName);
 	};
 
 	const handleDelete = (index: any) => {
 		const newData = value.slice();
 		newData.splice(index, 1);
-		setData(bindingPathPath, newData, context?.pageName);
+		setData(bindingPathPath!, newData, context?.pageName);
 	};
 
 	const handleMove = (from: number, to: number) => {
@@ -83,7 +95,7 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 		const temp = newData[from];
 		newData[from] = newData[to];
 		newData[to] = temp;
-		setData(bindingPathPath, newData, context?.pageName);
+		setData(bindingPathPath!, newData, context?.pageName);
 	};
 
 	const handleDragStart = async (e: any, index: any) => {
@@ -111,11 +123,15 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 		const temp = newData[from];
 		to === newData.length - 1 ? newData.push(temp) : newData.splice(to, 0, temp);
 		newData.splice(from > to ? from + 1 : from, 1);
-		setData(bindingPathPath, newData, context?.pageName);
+		setData(bindingPathPath!, newData, context?.pageName);
 		e.target.classList.remove('dragging');
 	};
 
-	const styleProperties = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
+	const styleProperties = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{},
+		stylePropertiesWithPseudoStates,
+	);
 
 	return (
 		<div className={`comp compArrayRepeater _${layout}`} style={styleProperties.comp}>
@@ -140,7 +156,7 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 				);
 				return (
 					<div
-						key={`${e.name}_${index}`}
+						key={`${indexKeys[index]}`}
 						className={`repeaterProperties ${readOnly ? 'disabled' : ''}`}
 						onDragStart={e => handleDragStart(e, index)}
 						onDragOver={handleDragOver}
@@ -207,10 +223,17 @@ const component: Component = {
 	component: ArrayRepeaterComponent,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
+	styleProperties: stylePropertiesDefinition,
 	styleComponent: ArrayRepeaterStyle,
-	numberOfChildren: 1,
+	allowedChildrenType: new Map<string, number>([['', 1]]),
 	bindingPaths: {
 		bindingPath: { name: 'Array Binding' },
+	},
+	defaultTemplate: {
+		key: '',
+		name: 'repeator',
+		type: 'ArrayRepeater',
+		properties: {},
 	},
 };
 

@@ -8,6 +8,8 @@ import { Component } from '../../types/common';
 import TextStyle from './TextStyle';
 import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import { SubHelperComponent } from '../SubHelperComponent';
+import { formatString } from '../../util/stringFormat';
 
 function Text(props: ComponentProps) {
 	const {
@@ -18,7 +20,14 @@ function Text(props: ComponentProps) {
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
-		properties: { text, textContainer, textType, processNewLine } = {},
+		properties: {
+			text: originalTextObj,
+			textContainer,
+			textType,
+			processNewLine,
+			stringFormat,
+			textLength,
+		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
 		definition,
@@ -29,6 +38,7 @@ function Text(props: ComponentProps) {
 	);
 	const [hover, setHover] = useState(false);
 	const styleProperties = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover },
 		stylePropertiesWithPseudoStates,
 	);
@@ -36,7 +46,13 @@ function Text(props: ComponentProps) {
 	const hoverTrue = useCallback(() => setHover(true), [stylePropertiesWithPseudoStates]);
 	const hoverFalse = useCallback(() => setHover(false), [stylePropertiesWithPseudoStates]);
 
+	const text =
+		typeof originalTextObj === 'object'
+			? JSON.stringify(originalTextObj, undefined, 2)
+			: originalTextObj;
+
 	let translatedText = getTranslations(text, translations);
+	let originalText = translatedText;
 
 	if (textType === 'MD') {
 		return (
@@ -47,15 +63,29 @@ function Text(props: ComponentProps) {
 		);
 	}
 
-	let comps: React.ReactNode[] = [];
+	if (stringFormat !== 'STRING' && translatedText) {
+		translatedText = formatString(translatedText, stringFormat);
+	}
 
+	if (textLength && translatedText) {
+		let finTextLength = textLength - 3;
+		if (finTextLength < 3) finTextLength = 3;
+		const ellipsis = finTextLength === 3 ? '' : '...';
+		translatedText =
+			translatedText.length > finTextLength
+				? translatedText.substring(0, finTextLength) + ellipsis
+				: translatedText;
+	}
+
+	let comps: React.ReactNode[] = [];
+	const subcomp = <SubHelperComponent definition={props.definition} subComponentName="text" />;
 	if (translatedText !== undefined) {
 		if (processNewLine) {
 			comps = translatedText
 				?.split('\n')
 				.flatMap((e, i, a) => (i + 1 === a.length ? [e] : [e, <br></br>]));
 		} else {
-			comps = [translatedText];
+			comps = [subcomp, translatedText];
 		}
 	}
 
@@ -73,7 +103,7 @@ function Text(props: ComponentProps) {
 		...comps,
 	);
 	return (
-		<div className="comp compText" style={styleProperties.comp ?? {}}>
+		<div className="comp compText" style={styleProperties.comp ?? {}} title={originalText}>
 			<HelperComponent definition={definition} />
 			{comp}
 		</div>
@@ -93,7 +123,14 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TextStyle,
+	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['hover'],
+	defaultTemplate: {
+		key: '',
+		type: 'Text',
+		name: 'Text',
+		properties: { text: { value: 'Text' } },
+	},
 };
 
 export default component;

@@ -13,7 +13,7 @@ import axios from 'axios';
 import {
 	LOCAL_STORE_PREFIX,
 	NAMESPACE_UI_ENGINE,
-	SCHEMA_REF_DATA_LOCATION,
+	SCHEMA_DATA_LOCATION,
 	STORE_PREFIX,
 } from '../constants';
 import { getData } from '../context/StoreContext';
@@ -51,7 +51,11 @@ const SIGNATURE = new FunctionSignature('DeleteData')
 			Event.eventMapEntry(Event.OUTPUT, new Map([['data', Schema.ofAny('data')]])),
 			Event.eventMapEntry(
 				Event.ERROR,
-				new Map([['error', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.FetchError`)]]),
+				new Map([
+					['data', Schema.ofAny('data')],
+					['headers', Schema.ofAny('headers')],
+					['status', Schema.ofNumber('status')],
+				]),
 			),
 		]),
 	);

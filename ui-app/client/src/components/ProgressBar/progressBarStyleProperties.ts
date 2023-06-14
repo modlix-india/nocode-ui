@@ -14,7 +14,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		displayName: 'Progress Bar Label Color',
 		description: 'Progress Bar Label Color.',
-		defaultValue: '<black-font-color>',
+		defaultValue: '<blackFontColor>',
 		selector: '.progressBarLabel',
 	},
 	{
@@ -54,7 +54,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'background',
 		displayName: 'Progress Bar BackGround Color',
 		description: 'BackGround Color of the Progress Bar.',
-		defaultValue: '<contrast-bright-color>',
+		defaultValue: '<contrastBrightColor>',
 		selector: '.progress',
 	},
 	{
@@ -70,7 +70,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		displayName: 'Progress Bar Font Color',
 		description: 'Font Color of the Progress Bar.',
-		defaultValue: '<black-font-color>',
+		defaultValue: '<blackFontColor>',
 		selector: '.progressValue',
 	},
 ];

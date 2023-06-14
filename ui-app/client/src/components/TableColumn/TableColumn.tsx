@@ -37,6 +37,7 @@ function TableColumnComponent(props: ComponentProps) {
 	if (entry) firstchild[entry[0]] = true;
 
 	const styleProperties = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover },
 		stylePropertiesWithPseudoStates,
 	);
@@ -70,9 +71,10 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TableColumnStyle,
-	numberOfChildren: 1,
+	allowedChildrenType: new Map<string, number>([['', 1]]),
 	parentType: 'TableColumns',
 	stylePseudoStates: ['hover'],
+	styleProperties: stylePropertiesDefinition,
 };
 
 export default component;

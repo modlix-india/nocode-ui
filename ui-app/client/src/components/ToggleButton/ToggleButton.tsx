@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
 	addListener,
 	getData,
@@ -13,6 +13,8 @@ import { Component } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './toggleButtonProperties';
 import ToggleButtonStyle from './ToggleButtonStyle';
 import useDefinition from '../util/useDefinition';
+import { SubHelperComponent } from '../SubHelperComponent';
+import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 
 function ToggleButton(props: ComponentProps) {
 	const {
@@ -35,24 +37,50 @@ function ToggleButton(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	const bindingPathPath = getPathFromLocation(bindingPath!, locationHistory, pageExtractor);
+	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{},
+		stylePropertiesWithPseudoStates,
+	);
+	const bindingPathPath = bindingPath
+		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
+		: undefined;
 	React.useEffect(() => {
-		addListener(
+		if (!bindingPathPath) return;
+
+		return addListener(
 			(_, value) => {
 				setIsToggled(value);
 			},
 			pageExtractor,
 			bindingPathPath,
 		);
-	}, []);
-	const handleChange = (event: any) => {
-		setData(bindingPathPath, event.target.checked);
-	};
+	}, [bindingPathPath]);
+
+	const handleChange = useCallback(
+		(event: any) => {
+			if (!bindingPathPath) return;
+			setData(bindingPathPath, event.target.checked, context.pageName);
+		},
+		[bindingPathPath],
+	);
 	return (
 		<div className="comp compToggleButton">
 			<HelperComponent definition={definition} />
-			<label className="toggleButton">
-				<input type="checkbox" id={key} onChange={handleChange} checked={isToggled} />
+			<label style={resolvedStyles.label ?? {}} className="toggleButton">
+				<SubHelperComponent definition={props.definition} subComponentName="label" />
+				<input
+					style={resolvedStyles.input ?? {}}
+					type="checkbox"
+					id={key}
+					onChange={handleChange}
+					checked={isToggled}
+				/>
+				<SubHelperComponent
+					style={resolvedStyles.input ?? {}}
+					definition={props.definition}
+					subComponentName="input"
+				/>
 				{getTranslations(label, translations)}
 			</label>
 		</div>
@@ -68,8 +96,17 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: ToggleButtonStyle,
+	styleProperties: stylePropertiesDefinition,
 	bindingPaths: {
 		bindingPath: { name: 'Data Binding' },
+	},
+	defaultTemplate: {
+		key: '',
+		type: 'ToggleButton',
+		name: 'ToggleButton',
+		properties: {
+			label: { value: 'ToggleButton' },
+		},
 	},
 };
 

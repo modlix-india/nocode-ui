@@ -12,7 +12,7 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { deepEqual, ExpressionEvaluator } from '@fincity/kirun-js';
 import { getExtractionMap } from '../util/getRenderData';
 import CommonCheckbox from '../../commonComponents/CommonCheckbox';
-import duplicate from '../../util/duplicate';
+import { duplicate } from '@fincity/kirun-js';
 
 function TableColumnsComponent(props: ComponentProps) {
 	const [value, setValue] = useState([]);
@@ -77,9 +77,17 @@ function TableColumnsComponent(props: ComponentProps) {
 	if (entry) firstchild[entry[0]] = true;
 
 	const styleNormalProperties =
-		processComponentStylePseudoClasses({ hover: false }, stylePropertiesWithPseudoStates) ?? {};
+		processComponentStylePseudoClasses(
+			props.pageDefinition,
+			{ hover: false },
+			stylePropertiesWithPseudoStates,
+		) ?? {};
 	const styleHoverProperties =
-		processComponentStylePseudoClasses({ hover: true }, stylePropertiesWithPseudoStates) ?? {};
+		processComponentStylePseudoClasses(
+			props.pageDefinition,
+			{ hover: true },
+			stylePropertiesWithPseudoStates,
+		) ?? {};
 
 	const total = to - from;
 
@@ -159,7 +167,7 @@ function TableColumnsComponent(props: ComponentProps) {
 					stylePropertiesWithPseudoStates?.hover ? () => setHoverRow(-1) : undefined
 				}
 				onClick={onClick}
-				style={(hoverRow === index ? styleHoverProperties : styleNormalProperties).comp}
+				style={(hoverRow === index ? styleHoverProperties : styleNormalProperties).row}
 			>
 				{checkBox}
 				<Children
@@ -188,7 +196,10 @@ function TableColumnsComponent(props: ComponentProps) {
 			checkBoxTop = <div className="comp compTableHeaderColumn">&nbsp;</div>;
 		}
 		headers = (
-			<div className="_row">
+			<div
+				className="_row"
+				style={(hover ? styleHoverProperties : styleNormalProperties).header}
+			>
 				{checkBoxTop}
 				<Children
 					pageDefinition={newPageDef}
@@ -204,7 +215,7 @@ function TableColumnsComponent(props: ComponentProps) {
 	if (emptyCount) {
 		for (let i = 0; i < emptyCount; i++) {
 			emptyRows.push(
-				<div key={`emptyRow_${i}`} className="_row">
+				<div key={`emptyRow_${i}`} className="_row" style={styleNormalProperties.row}>
 					<Children
 						pageDefinition={colPageDef}
 						children={children}
@@ -239,6 +250,7 @@ const component: Component = {
 	displayName: 'Table Columns',
 	description: 'Table Columns component',
 	component: TableColumnsComponent,
+	styleProperties: stylePropertiesDefinition,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TableColumnsStyle,

@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { PageStoreExtractor, addListener } from '../../../context/StoreContext';
 import Portal from '../../Portal';
 import PageOperations from '../functions/PageOperations';
+import Components from '../..';
+import { ComponentDefinition } from '../../../types/common';
 
 export interface ContextMenuDetails {
 	componentKey: string;
@@ -37,10 +39,8 @@ export function ContextMenu({
 
 	if (!menuDetails) return <></>;
 
-	let left: number | string =
-		menuDetails.menuPosition.x - (window.screenLeft + (window.outerWidth - window.innerWidth));
-	let top: number | string =
-		menuDetails.menuPosition.y - (window.screenTop + (window.outerHeight - window.innerHeight));
+	let left: number | string = menuDetails.menuPosition.x;
+	let top: number | string = menuDetails.menuPosition.y;
 
 	let right: number | string = 'auto';
 	let bottom: number | string = 'auto';
@@ -55,6 +55,68 @@ export function ContextMenu({
 		left = 'auto';
 	}
 
+	const componentDefinition = pageOperations.getComponentDefinitionIfNotRoot(
+		menuDetails.componentKey,
+	);
+
+	const cdDef = Components.get(componentDefinition?.type ?? '');
+	const deleteForContainer =
+		componentDefinition?.type && cdDef?.allowedChildrenType?.get('') === -1 ? (
+			<>
+				<div
+					className="_popupMenuItem"
+					title="Delete "
+					onClick={() => pageOperations.moveChildrenUpAndDelete(menuDetails.componentKey)}
+				>
+					<i className="fa fa-solid fa-trash-arrow-up" />
+					Delete and Move Children Up
+				</div>
+				<div
+					className="_popupMenuItem"
+					title="Delete"
+					onClick={() => pageOperations.clearChildrenOnly(menuDetails.componentKey)}
+				>
+					<i className="fa fa-regular fa-trash-can" />
+					Delete Children Only
+				</div>
+			</>
+		) : (
+			<></>
+		);
+
+	const showInDesignModeToggle =
+		componentDefinition?.type && cdDef?.needShowInDesginMode ? (
+			<>
+				<div className="_popupMenuSeperator" />
+				<div
+					className="_popupMenuItem"
+					title="Show/Hide in desgin mode"
+					onClick={() => pageOperations.toggleInDesignMode(menuDetails.componentKey)}
+				>
+					<i className="fa fa-solid fa-toggle-on" />
+					Toggle in Design mode
+				</div>
+			</>
+		) : (
+			<></>
+		);
+
+	const addGrid =
+		componentDefinition?.type && cdDef?.allowedChildrenType?.get('') === -1 ? (
+			<>
+				<div
+					className="_popupMenuItem"
+					title="Delete"
+					onClick={() => pageOperations.addGrid(menuDetails.componentKey)}
+				>
+					<i className="fa fa-solid fa-table-cells" />
+					Add a Grid
+				</div>
+				<div className="_popupMenuSeperator" />
+			</>
+		) : (
+			<></>
+		);
 	return (
 		<Portal>
 			<div
@@ -66,21 +128,33 @@ export function ContextMenu({
 			>
 				<div className="_popupMenuContainer" style={{ left, top, right, bottom }}>
 					<div className="_popupMenu">
+						{addGrid}
+						<div
+							className="_popupMenuItem"
+							title="Wrap a grid"
+							onClick={() => pageOperations.wrapGrid(menuDetails.componentKey)}
+						>
+							<i className="fa fa-regular fa-square-full" />
+							Wrap a Grid
+						</div>
+						{showInDesignModeToggle}
+						<div className="_popupMenuSeperator" />
 						<div
 							className="_popupMenuItem"
 							title="Delete"
 							onClick={() => pageOperations.deleteComponent(menuDetails.componentKey)}
 						>
-							<i className="fa fa-solid fa-trash" />
+							<i className="fa fa-solid fa-trash-can" />
 							Delete
 						</div>
+						{deleteForContainer}
 						<div className="_popupMenuSeperator" />
 						<div
 							className="_popupMenuItem"
 							title="Copy"
 							onClick={() => pageOperations.copy(menuDetails.componentKey)}
 						>
-							<i className="fa fa-solid fa-copy" />
+							<i className="fa fa-regular fa-clipboard" />
 							Copy
 						</div>
 						<div
@@ -97,7 +171,7 @@ export function ContextMenu({
 							title="Paste"
 							onClick={() => pageOperations.paste(menuDetails.componentKey)}
 						>
-							<i className="fa fa-solid fa-clipboard" />
+							<i className="fa fa-regular fa-paste" />
 							Paste
 						</div>
 					</div>

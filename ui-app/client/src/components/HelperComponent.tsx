@@ -1,10 +1,9 @@
 import React, { CSSProperties, MouseEvent, ReactNode, useEffect, useState } from 'react';
-import { ComponentDefinitions } from '.';
 import { DRAG_CD_KEY } from '../constants';
 import { getDataFromPath } from '../context/StoreContext';
 import { messageToMaster } from '../slaveFunctions';
 import { ComponentDefinition } from '../types/common';
-
+import ComponentDefinitions from '.';
 interface HelperComponentPropsType {
 	definition: ComponentDefinition;
 	children?: ReactNode;
@@ -26,6 +25,7 @@ function HelperComponentInternal({
 }: HelperComponentPropsType) {
 	const [dragOver, setDragOver] = useState(false);
 	const [, setLastChanged] = useState(Date.now());
+	const [hover, setHover] = useState(false);
 
 	useEffect(() => {
 		function onMessageRecieved(e: MessageEvent) {
@@ -41,12 +41,16 @@ function HelperComponentInternal({
 	const {
 		editingPageDefinition: { name = '', componentDefinition = {} } = {},
 		selectedComponent,
-		personalization: { slave: { highlightColor = '#b2d33f', noSelection = false } = {} } = {},
+		personalization: {
+			preview = false,
+			slave: { highlightColor = '#b2d33f', noSelection = false } = {},
+		} = {},
 	} = window.pageEditor ?? {};
 
 	const currentPage = getDataFromPath(`Store.urlDetails.pageName`, []);
 
-	if (noSelection || !componentDefinition?.[definition.key] || name !== currentPage) return <></>;
+	if (noSelection || preview || !componentDefinition?.[definition.key] || name !== currentPage)
+		return <></>;
 
 	let style = {
 		all: 'initial',
@@ -54,7 +58,7 @@ function HelperComponentInternal({
 		position: 'absolute',
 		border: `2px solid ${highlightColor}`,
 		height: 'calc( 100% - 2px)',
-		width: 'calc( 100% - 2px)',
+		width: 'calc( 100% - 4px)',
 		top: '1px',
 		left: '1px',
 		zIndex: '6',
@@ -79,20 +83,32 @@ function HelperComponentInternal({
 		display: showNameLabel ? 'inline-block' : 'none',
 	};
 
-	if (selectedComponent?.endsWith(definition.key) || dragOver) style.opacity = '0.6';
+	if (hover) {
+		labelStyle.right = '0px';
+	}
+
+	if (selectedComponent?.endsWith(definition.key) || dragOver)
+		style.opacity = children ? '1' : '0.6';
+
+	if (children || selectedComponent?.endsWith(definition.key)) {
+		labelStyle.top = '0px';
+		labelStyle.transform = 'translateY(-100%)';
+	}
 
 	return (
 		<div
 			style={style as CSSProperties}
 			draggable="true"
 			className="opacityShowOnHover"
-			onDragStart={e =>
-				e.dataTransfer.items.add(`${DRAG_CD_KEY}${definition.key}`, 'text/plain')
-			}
+			onDragStart={e => {
+				if (e.dataTransfer.items.length) return;
+				e.dataTransfer.items.add(`${DRAG_CD_KEY}${definition.key}`, 'text/plain');
+			}}
 			onDragOver={e => {
 				e.preventDefault();
 				setDragOver(true);
 			}}
+			onDragEnd={() => setDragOver(false)}
 			onDragLeave={() => setDragOver(false)}
 			onDrop={e => {
 				e.dataTransfer.items[0].getAsString(dragData => {
@@ -109,14 +125,18 @@ function HelperComponentInternal({
 				messageToMaster({ type: 'SLAVE_SELECTED', payload: definition.key });
 			}}
 			onClick={e => {
-				e.stopPropagation();
-				e.preventDefault();
+				if (e.target === e.currentTarget) {
+					e.stopPropagation();
+					e.preventDefault();
+				}
 				onClick?.(e);
 			}}
 			onDoubleClick={e => {
 				e.stopPropagation();
 				e.preventDefault();
-				onDoubleClick?.(e);
+				if (!onDoubleClick && definition.key === selectedComponent)
+					messageToMaster({ type: 'SLAVE_SELECTED', payload: '' });
+				else onDoubleClick?.(e);
 			}}
 			onContextMenu={e => {
 				e.stopPropagation();
@@ -125,15 +145,35 @@ function HelperComponentInternal({
 					type: 'SLAVE_CONTEXT_MENU',
 					payload: {
 						componentKey: definition.key,
-						menuPosition: { x: e.screenX, y: e.screenY },
+						menuPosition: {
+							x: e.screenX - window.screenX,
+							y:
+								e.screenY -
+								window.screenY -
+								((window.top?.outerHeight ?? 0) - (window.top?.innerHeight ?? 0)),
+						},
 					},
 				});
 			}}
 			onMouseOver={e => onMouseOver?.(e)}
 			onMouseOut={e => onMouseOut?.(e)}
-			title={definition.name}
+			onMouseMove={e => {
+				const x = e.clientX - e.currentTarget.getBoundingClientRect().left;
+				const y = e.clientY - e.currentTarget.getBoundingClientRect().top;
+
+				if (x < 50 && y < 20) {
+					if (!hover) setHover(true);
+				} else {
+					if (hover) setHover(false);
+				}
+			}}
+			onMouseLeave={() => setHover(false)}
+			title={`${definition.name} - ${definition.key}`}
 		>
-			<div style={labelStyle}>{ComponentDefinitions.get(definition.type)?.displayName}</div>
+			<div style={labelStyle}>
+				<i className={ComponentDefinitions.get(definition.type)?.icon} />
+				{ComponentDefinitions.get(definition.type)?.displayName}
+			</div>
 			{children}
 		</div>
 	);

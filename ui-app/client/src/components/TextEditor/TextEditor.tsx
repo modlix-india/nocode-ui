@@ -87,7 +87,11 @@ function TextEditor(props: ComponentProps) {
 		setText(ev);
 	};
 
-	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
+	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{},
+		stylePropertiesWithPseudoStates,
+	);
 	return (
 		<div className="comp compTextEditor" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />
@@ -105,6 +109,16 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TextEditorStyle,
+	styleProperties: stylePropertiesDefinition,
+	defaultTemplate: {
+		key: '',
+		type: 'TextEditor',
+		name: 'TextEditor',
+		properties: {},
+	},
+	bindingPaths: {
+		bindingPath: { name: 'Text binding' },
+	},
 };
 
 export default component;

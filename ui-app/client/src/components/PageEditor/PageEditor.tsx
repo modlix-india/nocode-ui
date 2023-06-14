@@ -1,11 +1,4 @@
-import React, { useCallback, useEffect, useState, useMemo, useRef } from 'react';
-import { HelperComponent } from '../HelperComponent';
-import {
-	ComponentPropertyDefinition,
-	ComponentProps,
-	LocationHistory,
-	PageDefinition,
-} from '../../types/common';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
 	addListenerAndCallImmediately,
 	addListenerAndCallImmediatelyWithChildrenActivity,
@@ -14,17 +7,29 @@ import {
 	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
-import { Component } from '../../types/common';
-import { propertiesDefinition, stylePropertiesDefinition } from './pageEditorProperties';
-import GridStyle from './PageEditorStyle';
-import useDefinition from '../util/useDefinition';
+import {
+	Component,
+	ComponentPropertyDefinition,
+	ComponentProps,
+	LocationHistory,
+	PageDefinition,
+} from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import DnDEditor from './editors/DnDEditor/DnDEditor';
+import { HelperComponent } from '../HelperComponent';
 import { runEvent } from '../util/runEvent';
+import useDefinition from '../util/useDefinition';
+import CodeEditor from './components/CodeEditor';
+import { ContextMenu, ContextMenuDetails } from './components/ContextMenu';
+import IssuePopup, { Issue } from './components/IssuePopup';
+import DnDEditor from './editors/DnDEditor/DnDEditor';
 import { MASTER_FUNCTIONS } from './functions/masterFunctions';
 import PageOperations from './functions/PageOperations';
-import IssuePopup, { Issue } from './components/IssuePopup';
-import { ContextMenu, ContextMenuDetails } from './components/ContextMenu';
+import { propertiesDefinition, stylePropertiesDefinition } from './pageEditorProperties';
+import GridStyle from './PageEditorStyle';
+import { allPaths } from '../../util/allPaths';
+import { LOCAL_STORE_PREFIX, PAGE_STORE_PREFIX, STORE_PREFIX } from '../../constants';
+import ComponentDefinitions from '../';
+import { duplicate } from '@fincity/kirun-js';
 
 function savePersonalizationCurry(
 	personalizationPath: string,
@@ -65,7 +70,14 @@ function PageEditor(props: ComponentProps) {
 	const {
 		key,
 		stylePropertiesWithPseudoStates,
-		properties: { logo, theme, onSave, onChangePersonalization, onDeletePersonalization } = {},
+		properties: {
+			logo,
+			theme,
+			onSave,
+			onPublish,
+			onChangePersonalization,
+			onDeletePersonalization,
+		} = {},
 	} = useDefinition(
 		definition,
 		propertiesDefinition,
@@ -84,7 +96,11 @@ function PageEditor(props: ComponentProps) {
 		? getPathFromLocation(bindingPath2, locationHistory, pageExtractor)
 		: undefined;
 
-	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
+	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{},
+		stylePropertiesWithPseudoStates,
+	);
 
 	const personalization = personalizationPath
 		? getDataFromPath(personalizationPath, locationHistory, pageExtractor) ?? {}
@@ -119,6 +135,20 @@ function PageEditor(props: ComponentProps) {
 				pageDefinition,
 			))();
 	}, [onSave]);
+
+	// Function to publish the page
+	const publishFunction = useCallback(() => {
+		if (!onPublish || !pageDefinition.eventFunctions?.[onPublish]) return;
+
+		(async () =>
+			await runEvent(
+				pageDefinition.eventFunctions[onPublish],
+				'pageEditorPublish',
+				context.pageName,
+				locationHistory,
+				pageDefinition,
+			))();
+	}, [onPublish]);
 
 	// Clear the personalization
 	const deletePersonalization = useCallback(() => {
@@ -160,7 +190,7 @@ function PageEditor(props: ComponentProps) {
 
 	const editPageDefinition = !defPath
 		? undefined
-		: getDataFromPath(`${defPath}`, locationHistory, pageExtractor);
+		: (getDataFromPath(`${defPath}`, locationHistory, pageExtractor) as PageDefinition);
 
 	useEffect(() => {
 		if (!editPageDefinition || !personalization) {
@@ -188,20 +218,56 @@ function PageEditor(props: ComponentProps) {
 	const urlChange = useCallback(
 		(v: string) => {
 			setUrl(v ?? '');
-			if (!personalizationPath || !editPageDefinition.name) return;
-			savePersonalization(`pageLeftAt.${editPageDefinition.name}.url`, v);
+			if (!personalizationPath || !editPageDefinition!.name) return;
+			savePersonalization(`pageLeftAt.${editPageDefinition!.name}.url`, v);
 			savePersonalization(
-				`pageLeftAt.${editPageDefinition.name}.clientCode`,
-				clientCode === '' ? editPageDefinition.clientCode : clientCode,
+				`pageLeftAt.${editPageDefinition!.name}.clientCode`,
+				clientCode === '' ? editPageDefinition!.clientCode : clientCode,
 			);
 		},
 		[setUrl, savePersonalization, editPageDefinition?.name],
 	);
 
 	const ref = useRef<HTMLIFrameElement>(null);
-	const [selectedComponent, setSelectedComponent] = useState<string>();
+	const [selectedComponent, setSelectedComponentOriginal] = useState<string>('');
+	const [selectedSubComponent, setSelectedSubComponent] = useState<string>('');
 	const [issue, setIssue] = useState<Issue>();
 	const [contextMenu, setContextMenu] = useState<ContextMenuDetails>();
+	const [showCodeEditor, setShowCodeEditor] = useState<string | undefined>(undefined);
+
+	const setSelectedComponent = useCallback(
+		(v: string) => {
+			setSelectedComponentOriginal(v ?? '');
+			setSelectedSubComponent('');
+			if (!defPath) return;
+
+			let pageDef = getDataFromPath(
+				defPath!,
+				locationHistory,
+				pageExtractor,
+			) as PageDefinition;
+			if (!pageDef?.componentDefinition?.[v]) return;
+
+			const def = ComponentDefinitions.get(pageDef.componentDefinition[v].type);
+			if (!def?.needShowInDesginMode) return;
+
+			pageDef = duplicate(pageDef);
+
+			Object.values(pageDef.componentDefinition).forEach(e => {
+				if (e.key === v) {
+					if (!e.properties) e.properties = {};
+					e.properties.showInDesign = { value: true };
+				} else if (e.properties?.showInDesign) {
+					delete e.properties.showInDesign;
+				}
+			});
+
+			setData(defPath, pageDef, pageExtractor.getPageName());
+		},
+		[setSelectedComponentOriginal, setSelectedSubComponent, defPath],
+	);
+
+	const [styleSelectorPref, setStyleSelectorPref] = useState<any>({});
 
 	// Creating an object to manage the changes because of various operations like drag and drop.
 	const operations = useMemo(
@@ -212,7 +278,9 @@ function PageEditor(props: ComponentProps) {
 				pageExtractor,
 				setIssue,
 				selectedComponent,
+				selectedSubComponent,
 				key => setSelectedComponent(key),
+				styleSelectorPref,
 			),
 		[
 			defPath,
@@ -221,6 +289,8 @@ function PageEditor(props: ComponentProps) {
 			selectedComponent,
 			setIssue,
 			setSelectedComponent,
+			styleSelectorPref,
+			selectedSubComponent,
 		],
 	);
 
@@ -266,7 +336,17 @@ function PageEditor(props: ComponentProps) {
 		});
 	}, [selectedComponent, ref.current]);
 
-	// The type of the editor should b esent to iframe/slave.
+	// On changing the sub selection, this effect sends to the iframe/slave.
+	useEffect(() => {
+		if (!defPath) return;
+		if (!ref.current) return;
+		ref.current.contentWindow?.postMessage({
+			type: 'EDITOR_SUB_SELECTION',
+			payload: selectedSubComponent,
+		});
+	}, [selectedSubComponent, ref.current]);
+
+	// The type of the editor should be sent to iframe/slave.
 	useEffect(() => {
 		if (!ref.current) return;
 		ref.current.contentWindow?.postMessage({
@@ -274,6 +354,9 @@ function PageEditor(props: ComponentProps) {
 			payload: 'PAGE',
 		});
 	}, [ref.current]);
+
+	// This will be used to store slave store.
+	const [slaveStore, setSlaveStore] = useState<any>(undefined);
 
 	// Effect to listen to all the messages from the iframe/slave.
 	useEffect(() => {
@@ -293,8 +376,29 @@ function PageEditor(props: ComponentProps) {
 					personalization,
 					personalizationPath,
 					onSelectedComponentChange: key => setSelectedComponent(key),
+					onSelectedSubComponentChange: key => setSelectedSubComponent(key),
 					operations,
 					onContextMenu: (m: ContextMenuDetails) => setContextMenu(m),
+					onSlaveStore: (store: any) => {
+						setSlaveStore({
+							store,
+							localStore: Object.entries(window.localStorage)
+								.filter((e: [string, string]) => e[0].startsWith('designmode_'))
+								.reduce((a, c: [string, string]) => {
+									let key = c[0].substring('designmode_'.length);
+									if (c[1].length && (c[1][0] === '[' || c[1][0] === '{')) {
+										try {
+											a[key] = JSON.parse(c[1]);
+										} catch (e) {
+											a[key] = c[1];
+										}
+									} else {
+										a[key] = c[1];
+									}
+									return a;
+								}, {} as any),
+						});
+					},
 				},
 				payload,
 			);
@@ -310,7 +414,32 @@ function PageEditor(props: ComponentProps) {
 		personalizationPath,
 		setSelectedComponent,
 		operations,
+		setSelectedSubComponent,
+		setContextMenu,
+		setSlaveStore,
 	]);
+
+	const undoStackRef = useRef<Array<PageDefinition>>([]);
+	const redoStackRef = useRef<Array<PageDefinition>>([]);
+	const firstTimeRef = useRef<Array<PageDefinition>>([]);
+	const latestVersion = useRef<number>(0);
+
+	const storePaths = useMemo<Set<string>>(
+		() =>
+			allPaths(
+				STORE_PREFIX,
+				slaveStore?.store,
+				allPaths(
+					LOCAL_STORE_PREFIX,
+					slaveStore?.localStore,
+					allPaths(
+						PAGE_STORE_PREFIX,
+						slaveStore?.store?.pageData?.[editPageDefinition?.name ?? ''],
+					),
+				),
+			),
+		[slaveStore],
+	);
 
 	// If the personalization is not loaded, we don't load the view.
 	if (personalizationPath && !personalization) return <></>;
@@ -326,18 +455,56 @@ function PageEditor(props: ComponentProps) {
 					pageName={context.pageName}
 					pageExtractor={pageExtractor}
 					onSave={saveFunction}
+					onPublish={onPublish ? publishFunction : undefined}
 					onChangePersonalization={savePersonalization}
 					iframeRef={ref}
 					locationHistory={locationHistory}
 					selectedComponent={selectedComponent}
 					onSelectedComponentChanged={(key: string) => setSelectedComponent(key)}
 					pageOperations={operations}
-					onPageReload={() => ref.current?.contentWindow?.location.reload()}
+					onPageReload={() => {
+						ref.current?.contentWindow?.location.reload();
+						setSelectedComponent('');
+						setSelectedSubComponent('');
+					}}
 					theme={localTheme}
 					logo={logo}
 					onUrlChange={urlChange}
 					onDeletePersonalization={deletePersonalization}
 					onContextMenu={(m: ContextMenuDetails) => setContextMenu(m)}
+					onShowCodeEditor={evName => setShowCodeEditor(evName)}
+					undoStackRef={undoStackRef}
+					redoStackRef={redoStackRef}
+					firstTimeRef={firstTimeRef}
+					latestVersion={latestVersion}
+					slaveStore={slaveStore}
+					editPageName={editPageDefinition?.name}
+					selectedSubComponent={selectedSubComponent}
+					onSelectedSubComponentChanged={(key: string) => setSelectedSubComponent(key)}
+					storePaths={storePaths}
+					setStyleSelectorPref={setStyleSelectorPref}
+					styleSelectorPref={styleSelectorPref}
+				/>
+				<CodeEditor
+					showCodeEditor={showCodeEditor}
+					onSetShowCodeEditor={funcName => setShowCodeEditor(funcName)}
+					defPath={defPath}
+					personalizationPath={personalizationPath}
+					locationHistory={locationHistory}
+					context={context}
+					pageDefinition={pageDefinition}
+					pageExtractor={pageExtractor}
+					slaveStore={slaveStore}
+					undoStackRef={undoStackRef}
+					redoStackRef={redoStackRef}
+					firstTimeRef={firstTimeRef}
+					latestVersion={latestVersion}
+					definition={definition}
+					storePaths={storePaths}
+					selectedSubComponent={selectedSubComponent}
+					selectedComponent={selectedComponent}
+					onSelectedSubComponentChanged={(key: string) => setSelectedSubComponent(key)}
+					onSelectedComponentChanged={(key: string) => setSelectedComponent(key)}
 				/>
 			</div>
 			<IssuePopup
@@ -363,8 +530,10 @@ const component: Component = {
 	displayName: 'Page Editor',
 	description: 'Page Editor component',
 	component: PageEditor,
+	isHidden: true,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
+	styleProperties: stylePropertiesDefinition,
 	styleComponent: GridStyle,
 	bindingPaths: {
 		bindingPath: { name: 'Definition' },

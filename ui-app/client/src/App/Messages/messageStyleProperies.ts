@@ -21,6 +21,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'top',
 		displayName: 'Messages Outer Container Top',
 		description: 'Messages Outer Container position on the page top',
+		defaultValue: '100vh',
 		selector: ' ',
 	},
 	{
@@ -28,7 +29,15 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'bottom',
 		displayName: 'Messages Outer Container Bottom',
 		description: 'Messages Outer Container position on the page bottom',
-		defaultValue: '10px',
+		defaultValue: ' ',
+		selector: ' ',
+	},
+	{
+		name: 'messagesOuterContainerTransform',
+		cssProperty: 'transform',
+		displayName: 'Messages Outer Container Top',
+		description: 'Messages Outer Container position on the page top',
+		defaultValue: 'translateY(-100%)',
 		selector: ' ',
 	},
 	{
@@ -52,7 +61,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'background',
 		displayName: 'Messages Container Background',
 		description: 'Messages Container background',
-		defaultValue: '<secondary-background>',
+		defaultValue: '<secondaryBackground>',
 		selector: '._message',
 	},
 	{
@@ -76,7 +85,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'font-size',
 		displayName: 'Message Font Size',
 		description: 'Message Font Size',
-		defaultValue: 'calc(<main-font-size> - 1px)',
+		defaultValue: 'calc(<mainFontSize> - 1px)',
 		selector: '._message ._msgString',
 	},
 	{

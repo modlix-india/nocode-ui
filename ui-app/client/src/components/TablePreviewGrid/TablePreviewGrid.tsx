@@ -49,6 +49,7 @@ function TablePreviewGrid(props: ComponentProps) {
 	);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ focus, hover, disabled: isReadonly },
 		stylePropertiesWithPseudoStates,
 	);
@@ -137,8 +138,9 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TablePreviewGridStyle,
+	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['hover', 'focus', 'readonly'],
-	numberOfChildren: -1,
+	allowedChildrenType: new Map<string, number>([['', -1]]),
 	parentType: 'Table',
 };
 

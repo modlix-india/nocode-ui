@@ -20,6 +20,11 @@ const SIGNATURE = new FunctionSignature('Login')
 			Parameter.ofEntry('userName', Schema.ofString('userName')),
 			Parameter.ofEntry('password', Schema.ofString('password')),
 			Parameter.ofEntry('rememberMe', Schema.ofBoolean('rememberMe').setDefaultValue(false)),
+			Parameter.ofEntry(
+				'identifierType',
+				Schema.ofString('identifierType').setDefaultValue(''),
+			),
+			Parameter.ofEntry('cookie', Schema.ofBoolean('cookie').setDefaultValue(false)),
 		]),
 	)
 	.setEvents(
@@ -27,7 +32,11 @@ const SIGNATURE = new FunctionSignature('Login')
 			Event.eventMapEntry(Event.OUTPUT, new Map([['data', Schema.ofAny('data')]])),
 			Event.eventMapEntry(
 				Event.ERROR,
-				new Map([['error', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.FetchError`)]]),
+				new Map([
+					['data', Schema.ofAny('data')],
+					['headers', Schema.ofAny('headers')],
+					['status', Schema.ofNumber('status')],
+				]),
 			),
 		]),
 	);
@@ -37,12 +46,17 @@ export class Login extends AbstractFunction {
 		const userName: string = context.getArguments()?.get('userName');
 		const password: string = context.getArguments()?.get('password');
 		const rememberMe: string = context.getArguments()?.get('rememberMe');
+		const cookie: boolean = context.getArguments()?.get('cookie');
+		const identifierType: string = context.getArguments()?.get('identifierType');
+
+		const data: any = { userName, password, rememberMe, cookie };
+		if (identifierType) data.indentifierType = identifierType;
 
 		try {
 			const response = await axios({
 				url: 'api/security/authenticate',
 				method: 'POST',
-				data: { userName, password, rememberMe },
+				data,
 			});
 
 			setData('Store.auth', response.data);
@@ -67,7 +81,7 @@ export class Login extends AbstractFunction {
 						['status', err.response.status],
 					]),
 				),
-				EventResult.outputOf(new Map([['data', null]])),
+				EventResult.outputOf(new Map([])),
 			]);
 		}
 	}

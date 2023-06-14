@@ -7,7 +7,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "checkbox's Color",
 		description: 'The color of the Checkbox.',
 		defaultValue: '<white>',
-		selector: "input[type='checkbox'].commonCheckbox",
+		selector: "input[type='checkbox'].commonCheckbox, span.commonTriStateCheckbox",
 		noPrefix: true,
 	},
 
@@ -16,8 +16,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		displayName: "checkbox check's Color",
 		description: 'The color of the Checkbox check.',
-		defaultValue: '<light-font-color>',
-		selector: "input[type='checkbox'].commonCheckbox::before",
+		defaultValue: '<lightFontColor>',
+		selector:
+			"input[type='checkbox'].commonCheckbox::before, span.commonTriStateCheckbox::before",
 		noPrefix: true,
 	},
 
@@ -27,7 +28,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "checkbox's border Color",
 		description: 'The border color of the Checkbox.',
 		defaultValue: 'rgba(0, 0, 0, 0.38)',
-		selector: "input[type='checkbox'].commonCheckbox",
+		selector: "input[type='checkbox'].commonCheckbox, span.commonTriStateCheckbox",
 		noPrefix: true,
 	},
 	{
@@ -35,8 +36,18 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'background-color',
 		displayName: "checkbox's checked animation Color",
 		description: 'The checked animation color of the Checkbox.',
-		defaultValue: '<contrast-bright-color>',
-		selector: "input[type='checkbox'].commonCheckbox:checked",
+		defaultValue: '<contrastBrightColor>',
+		selector:
+			"input[type='checkbox'].commonCheckbox:checked, span.commonTriStateCheckbox._true",
+		noPrefix: true,
+	},
+	{
+		name: 'checkBoxTriStateFalseChecked',
+		cssProperty: 'color',
+		displayName: "checkbox's checked false animation Color",
+		description: 'The checked animation color of the Checkbox when false.',
+		defaultValue: '<blackFontColor>',
+		selector: 'span.commonTriStateCheckbox._false::before',
 		noPrefix: true,
 	},
 	{
@@ -61,7 +72,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'checkboxCheckedHoverColor',
 		displayName: "checkbox's hover color",
 		description: "checkbox's hover color.",
-		defaultValue: '<light-contrast-bright-color>',
+		defaultValue: '<lightContrastBrightColor>',
 		noPrefix: true,
 	},
 
@@ -69,7 +80,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'checkboxHoverColor',
 		displayName: "checkbox's hover color",
 		description: "checkbox's hover color.",
-		defaultValue: '<light-black-font-color>',
+		defaultValue: '<lightBlackFontColor>',
 		noPrefix: true,
 	},
 
@@ -78,7 +89,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'border-color',
 		displayName: 'CheckBox disabled border color',
 		description: 'CheckBox disabled border color.',
-		defaultValue: '<app-grey-color>',
+		defaultValue: '<appGreyColor>',
 		selector: "input[type='checkbox'].commonCheckbox:disabled",
 		noPrefix: true,
 	},

@@ -15,6 +15,7 @@ import { HelperComponent } from '../HelperComponent';
 import { runEvent } from '../util/runEvent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
+import { SubHelperComponent } from '../SubHelperComponent';
 
 function Popup(props: ComponentProps) {
 	const [isActive, setIsActive] = React.useState(false);
@@ -22,20 +23,20 @@ function Popup(props: ComponentProps) {
 		definition: { bindingPath },
 		context,
 	} = props;
-	if (!bindingPath) throw new Error('Definition needs binding path');
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
-	const bindingPathPath = getPathFromLocation(bindingPath, props.locationHistory, pageExtractor);
+	const bindingPathPath =
+		bindingPath && getPathFromLocation(bindingPath, props.locationHistory, pageExtractor);
 	React.useEffect(() => {
-		if (bindingPath)
-			addListenerAndCallImmediately(
-				(_, value) => {
-					setIsActive(!!value);
-				},
-				pageExtractor,
-				bindingPathPath,
-			);
+		if (!bindingPathPath) return;
+		return addListenerAndCallImmediately(
+			(_, value) => {
+				setIsActive(!!value);
+			},
+			pageExtractor,
+			bindingPathPath,
+		);
 	}, []);
-	let {
+	const {
 		key,
 		properties: {
 			showClose,
@@ -45,6 +46,8 @@ function Popup(props: ComponentProps) {
 			eventOnClose,
 			closeButtonPosition,
 			modelTitle,
+			popupDesign,
+			showInDesign,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -54,7 +57,11 @@ function Popup(props: ComponentProps) {
 		props.locationHistory,
 		pageExtractor,
 	);
-	const resolvedStyles = processComponentStylePseudoClasses({}, stylePropertiesWithPseudoStates);
+	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{},
+		stylePropertiesWithPseudoStates,
+	);
 	const openEvent = eventOnOpen ? props.pageDefinition.eventFunctions[eventOnOpen] : undefined;
 	const closeEvent = eventOnClose ? props.pageDefinition.eventFunctions[eventOnClose] : undefined;
 
@@ -85,11 +92,9 @@ function Popup(props: ComponentProps) {
 	}, [isActive]);
 
 	const handleClose = React.useCallback(() => {
-		setData(
-			getPathFromLocation(bindingPath, props.locationHistory),
-			false,
-			props.context?.pageName,
-		);
+		if (!bindingPathPath) return;
+
+		setData(bindingPathPath, false, props.context?.pageName);
 	}, []);
 
 	const handleCloseOnOutsideClick = closeOnOutsideClick ? handleClose : undefined;
@@ -114,61 +119,102 @@ function Popup(props: ComponentProps) {
 
 	const closeIcon = (
 		<i
-			style={resolvedStyles.icon ?? {}}
+			style={resolvedStyles.closeButton ?? {}}
 			className="fa-solid fa-xmark iconClass"
 			onClick={handleClose}
-		></i>
+		>
+			<SubHelperComponent definition={props.definition} subComponentName="closeButton" />
+		</i>
 	);
 
-	if (!isActive) return null;
-
-	return (
-		<Portal>
-			<div className="comp compPopup">
-				<HelperComponent definition={props.definition} />
-				<div
-					className="backdrop"
-					onClick={handleCloseOnOutsideClick}
-					style={resolvedStyles.backdrop ?? {}}
-				>
+	if (isActive || (isDesignMode && showInDesign === true)) {
+		return (
+			<Portal>
+				<div className="comp compPopup">
 					<div
-						className="modal"
-						style={
-							{
-								...(resolvedStyles?.modal || {}),
-								...(resolvedStyles?.modalbg || {}),
-							} ?? {}
-						}
-						onClick={handleBubbling}
+						className="backdrop"
+						onClick={handleCloseOnOutsideClick}
+						style={resolvedStyles.comp ?? {}}
 					>
+						<HelperComponent definition={props.definition} />
 						<div
-							className="TitleIconGrid"
-							style={
-								{
-									...(resolvedStyles?.titleGrid || {}),
-									...(resolvedStyles?.titleGridExtra || {}),
-								} ?? {}
-							}
+							className={`modal ${popupDesign === '_design2' ? 'design2' : ''} `}
+							style={resolvedStyles?.modal || {}}
+							onClick={handleBubbling}
 						>
-							<div className="closeButtonPosition">
-								{showClose && closeButtonPosition === 'LEFT' ? closeIcon : ''}
-							</div>
-							<div className="modelTitleStyle">{modelTitle && modelTitle}</div>
-							<div className="closeButtonPosition">
-								{showClose && closeButtonPosition === 'RIGHT' ? closeIcon : ''}
-							</div>
+							<SubHelperComponent
+								definition={props.definition}
+								subComponentName="modal"
+							/>
+							{popupDesign === '_design1' ? (
+								<div
+									className="TitleIconGrid"
+									style={resolvedStyles?.titleGrid || {}}
+								>
+									<SubHelperComponent
+										definition={props.definition}
+										subComponentName="titleGrid"
+									/>
+									{showClose && closeButtonPosition === 'LEFT' && (
+										<div
+											className="closeButtonPosition"
+											style={resolvedStyles.closeButtonContainer ?? {}}
+										>
+											<SubHelperComponent
+												definition={props.definition}
+												subComponentName="closeButtonContainer"
+											/>
+											{closeIcon}
+										</div>
+									)}
+									<div
+										className="modelTitleStyle"
+										style={resolvedStyles.modalTitle ?? {}}
+									>
+										<SubHelperComponent
+											definition={props.definition}
+											subComponentName="modalTitle"
+										/>
+										{modelTitle && modelTitle}
+									</div>
+									{showClose && closeButtonPosition === 'RIGHT' && (
+										<div
+											className="closeButtonPosition"
+											style={resolvedStyles.closeButtonContainer ?? {}}
+										>
+											<SubHelperComponent
+												definition={props.definition}
+												subComponentName="closeButtonContainer"
+											/>
+											{closeIcon}
+										</div>
+									)}
+								</div>
+							) : (
+								<div
+									className="design2CloseButton"
+									style={resolvedStyles.closeButtonContainer ?? {}}
+								>
+									<SubHelperComponent
+										definition={props.definition}
+										subComponentName="closeButtonContainer"
+									/>
+									{showClose ? closeIcon : ''}
+								</div>
+							)}
+							<Children
+								pageDefinition={props.pageDefinition}
+								children={props.definition.children}
+								context={props.context}
+								locationHistory={props.locationHistory}
+							/>
 						</div>
-						<Children
-							pageDefinition={props.pageDefinition}
-							children={props.definition.children}
-							context={props.context}
-							locationHistory={props.locationHistory}
-						/>
 					</div>
 				</div>
-			</div>
-		</Portal>
-	);
+			</Portal>
+		);
+	}
+	return <></>;
 }
 
 const component: Component = {
@@ -180,10 +226,17 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: PopupStyles,
-	numberOfChildren: -1,
+	styleProperties: stylePropertiesDefinition,
+	allowedChildrenType: new Map<string, number>([['', -1]]),
 	bindingPaths: {
 		bindingPath: { name: 'Toggle Binding' },
 	},
+	defaultTemplate: {
+		key: '',
+		type: 'Popup',
+		name: 'Popup',
+	},
+	needShowInDesginMode: true,
 };
 
 export default component;

@@ -49,6 +49,7 @@ function TableEmptyGrid(props: ComponentProps) {
 	);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ focus, hover, disabled: isReadonly },
 		stylePropertiesWithPseudoStates,
 	);
@@ -136,9 +137,10 @@ const component: Component = {
 	component: TableEmptyGrid,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
+	styleProperties: stylePropertiesDefinition,
 	styleComponent: TableEmptyGridStyle,
 	stylePseudoStates: ['hover', 'focus', 'readonly'],
-	numberOfChildren: -1,
+	allowedChildrenType: new Map<string, number>([['', -1]]),
 	parentType: 'Table',
 };
 
