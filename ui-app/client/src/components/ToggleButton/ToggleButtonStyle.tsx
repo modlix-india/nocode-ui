@@ -20,6 +20,7 @@ export default function ToggleButtonStyle({ theme }: { theme: Map<string, Map<st
         display: grid;
         align-items: center;
         cursor: pointer;
+        position: relative;
     }
     
     ${PREFIX} .toggleButton input[type='checkbox']::before {
@@ -56,6 +57,7 @@ export default function ToggleButtonStyle({ theme }: { theme: Map<string, Map<st
         gap: 0.5em;
         color: rgba(0 ,0 , 0, 0.6);
         justify-items: center;
+        position: relative;
     }
     
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);

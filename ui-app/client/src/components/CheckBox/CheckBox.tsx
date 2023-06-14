@@ -20,6 +20,7 @@ import CommonCheckbox from '../../commonComponents/CommonCheckbox';
 import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { runEvent } from '../util/runEvent';
+import { SubHelperComponent } from '../SubHelperComponent';
 
 function CheckBox(props: ComponentProps) {
 	const [checkBoxdata, setCheckBoxData] = useState(false);
@@ -62,11 +63,12 @@ function CheckBox(props: ComponentProps) {
 		);
 	}, [bindingPath]);
 	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover, focus, disabled: readOnly },
 		stylePropertiesWithPseudoStates,
 	);
 	const handleChange = async (event: any) => {
-		if (bindingPathPath) setData(bindingPathPath, event.target.checked, context.pageName);
+		if (bindingPathPath) setData(bindingPathPath, !!event.target.checked, context.pageName);
 		if (clickEvent)
 			await runEvent(
 				pageDefinition.eventFunctions[onClick],
@@ -91,6 +93,7 @@ function CheckBox(props: ComponentProps) {
 				className={`checkbox ${orientation === 'VERTICAL' ? 'vertical' : 'horizontal'}`}
 				htmlFor={key}
 			>
+				<SubHelperComponent definition={props.definition} subComponentName="label" />
 				<CommonCheckbox
 					isChecked={checkBoxdata}
 					isReadOnly={readOnly}
@@ -103,6 +106,7 @@ function CheckBox(props: ComponentProps) {
 					blurHandler={
 						stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined
 					}
+					definition={props.definition}
 				/>
 				{getTranslations(label, translations)}
 			</label>
@@ -119,10 +123,19 @@ const component: Component = {
 	component: CheckBox,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
+	styleProperties: stylePropertiesDefinition,
 	bindingPaths: {
 		bindingPath: { name: 'Data Binding' },
 	},
 	stylePseudoStates: ['hover', 'focus', 'disabled'],
+	defaultTemplate: {
+		key: '',
+		name: 'CheckBox',
+		type: 'CheckBox',
+		properties: {
+			label: { value: 'Check Box' },
+		},
+	},
 };
 
 export default component;

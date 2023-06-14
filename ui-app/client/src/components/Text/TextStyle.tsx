@@ -9,6 +9,11 @@ export default function LabelStyle({ theme }: { theme: Map<string, Map<string, s
 	${PREFIX} ._textContainer {
 		width: 100%;
 		display: block;
+		font-family: inherit;
+		color: inherit;
+		font-size: inherit;
+		font-weight: inherit;
+		position: relative;
 	}
 	
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);

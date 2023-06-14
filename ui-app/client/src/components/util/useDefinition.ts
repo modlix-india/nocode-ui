@@ -1,6 +1,6 @@
-import { isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
+import { deepEqual, isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
 import { useEffect, useState } from 'react';
-import { SCHEMA_REF_VALIDATION, STORE_PREFIX } from '../../constants';
+import { STORE_PREFIX } from '../../constants';
 import {
 	addListener,
 	getData,
@@ -12,16 +12,15 @@ import {
 import {
 	ComponentDefinition,
 	ComponentDefinitionValues,
-	ComponentProperty,
+	ComponentMultiProperty,
 	ComponentPropertyDefinition,
 	ComponentResoltuions,
 	ComponentStylePropertyDefinition,
-	DataLocation,
 	LocationHistory,
 	StyleResolution,
 } from '../../types/common';
-import { getPathsFrom, getPathsFromComponentDefinition } from './getPaths';
-import { CSS_STYLE_PROPERTY_GROUP_REF } from './properties';
+import { isNotEqual } from '../../util/setOperations';
+import { getPathsFromComponentDefinition } from './getPaths';
 
 function createNewState(
 	definition: ComponentDefinition,
@@ -33,44 +32,25 @@ function createNewState(
 	const def: ComponentDefinitionValues = { key: definition.key };
 	def.properties = properties
 		.map(e => {
-			if (e.schema.getRef() === SCHEMA_REF_VALIDATION) {
-				return [
-					e.name,
-					Object.values(definition?.properties?.[e.name] ?? {}).map(evalidation =>
-						Object.entries(evalidation)
-							.map(([k, v]) => [
-								k,
-								typeof v === 'string'
-									? v
-									: getData(
-											v as ComponentProperty<any>,
-											locationHistory,
-											pageExtractor,
-									  ),
-							])
-							.reduce((a: any, c) => {
-								a[c[0]] = c[1];
-								return a;
-							}, {}),
-					),
-				];
-			}
-
 			let value = e.defaultValue;
+
 			if (!definition.properties) return [e.name, value];
 
 			if (e.multiValued) {
-				value =
-					Object.values(definition.properties[e.name]).map(each =>
-						getData(each, locationHistory, pageExtractor),
-					) ?? value;
+				if (!isNullValue(definition.properties[e.name]))
+					value = Object.values(
+						definition.properties[e.name] as ComponentMultiProperty<any>,
+					)
+						.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+						.map(each => getData(each.property, locationHistory, pageExtractor));
 			} else {
 				value =
 					getData(definition.properties[e.name], locationHistory, pageExtractor) ?? value;
 			}
+
 			return [e.name, value];
 		})
-		.filter(e => !!e[1])
+		.filter(e => !isNullValue(e[1]))
 		.reduce((a: any, [k, v]) => {
 			a[k] = v;
 			return a;
@@ -120,6 +100,27 @@ function createNewState(
 
 		def.stylePropertiesWithPseudoStates = consolidateStates;
 	}
+	if (def.stylePropertiesWithPseudoStates?.['']) {
+		const targets = Object.keys(def.stylePropertiesWithPseudoStates['']);
+		for (const target of targets) {
+			const targetStyles = Object.keys(def.stylePropertiesWithPseudoStates[''][target]);
+			for (const style of targetStyles) {
+				let index = style.indexOf(':');
+				if (index === -1) continue;
+				const pseudoState = style.substring(index + 1);
+				if (!def.stylePropertiesWithPseudoStates[pseudoState])
+					def.stylePropertiesWithPseudoStates[pseudoState] = {};
+				if (!def.stylePropertiesWithPseudoStates[pseudoState][target])
+					def.stylePropertiesWithPseudoStates[pseudoState][target] = {};
+
+				def.stylePropertiesWithPseudoStates[pseudoState][target][
+					style.substring(0, index)
+				] = def.stylePropertiesWithPseudoStates[''][target][style];
+				delete def.stylePropertiesWithPseudoStates[''][target][style];
+			}
+		}
+	}
+
 	return def;
 }
 
@@ -130,6 +131,10 @@ const ORDER_OF_RESOLUTION = [
 	StyleResolution.TABLET_LANDSCAPE_SCREEN,
 	StyleResolution.DESKTOP_SCREEN,
 	StyleResolution.WIDE_SCREEN,
+	StyleResolution.DESKTOP_SCREEN_SMALL,
+	StyleResolution.TABLET_LANDSCAPE_SCREEN_SMALL,
+	StyleResolution.TABLET_POTRAIT_SCREEN_SMALL,
+	StyleResolution.MOBILE_LANDSCAPE_SCREEN_SMALL,
 	StyleResolution.DESKTOP_SCREEN_ONLY,
 	StyleResolution.TABLET_LANDSCAPE_SCREEN_ONLY,
 	StyleResolution.TABLET_POTRAIT_SCREEN_ONLY,
@@ -161,21 +166,14 @@ function processTargets(
 		if (!v) continue;
 
 		const index = prop.indexOf('-');
-		let prefix = '';
+		let prefix = 'comp';
 		if (index !== -1) {
 			prefix = prop.substring(0, index);
 			prop = prop.substring(index + 1);
 		}
 
-		if (!stylePropertiesDefinition[prefix]) continue;
-
-		const groupName = CSS_STYLE_PROPERTY_GROUP_REF[prop];
-		if (!groupName) continue;
-
-		for (const eachTarget of stylePropertiesDefinition[prefix]?.[groupName]?.target ?? []) {
-			if (!finStyle[eachTarget]) finStyle[eachTarget] = {};
-			finStyle[eachTarget][prop] = v;
-		}
+		if (!finStyle[prefix]) finStyle[prefix] = {};
+		finStyle[prefix][prop] = v;
 	}
 	return finStyle;
 }
@@ -211,6 +209,8 @@ export default function useDefinition(
 			pageExtractor,
 		),
 	);
+	const [pathsChanged, setPathsChangedAt] = useState(Date.now());
+
 	const evaluatorMaps = new Map<string, TokenValueExtractor>([
 		[storeExtractor.getPrefix(), storeExtractor],
 		[localStoreExtractor.getPrefix(), localStoreExtractor],
@@ -224,59 +224,23 @@ export default function useDefinition(
 	}, {});
 
 	useEffect(() => {
-		const paths = getPathsFromComponentDefinition(
-			definition.properties,
-			definition.styleProperties,
-			evaluatorMaps,
-			propDefMap,
+		const paths = getPathsFromComponentDefinition(definition, evaluatorMaps, propDefMap);
+
+		const x = createNewState(
+			definition,
+			properties,
+			stylePropertiesDefinition,
+			locationHistory,
+			pageExtractor,
 		);
 
-		if (definition.bindingPath) {
-			const p = getPathsFrom(definition.bindingPath, evaluatorMaps);
-			if (p) p.forEach(e => paths.push(e));
-		}
-
-		if (definition.bindingPath2) {
-			const p = getPathsFrom(definition.bindingPath2, evaluatorMaps);
-			if (p) p.forEach(e => paths.push(e));
-		}
-
-		if (definition.bindingPath3) {
-			const p = getPathsFrom(definition.bindingPath3, evaluatorMaps);
-			if (p) p.forEach(e => paths.push(e));
-		}
-
-		if (definition.bindingPath4) {
-			const p = getPathsFrom(definition.bindingPath4, evaluatorMaps);
-			if (p) p.forEach(e => paths.push(e));
-		}
-
-		if (definition.bindingPath5) {
-			const p = getPathsFrom(definition.bindingPath5, evaluatorMaps);
-			if (p) p.forEach(e => paths.push(e));
-		}
-
-		if (definition.bindingPath6) {
-			const p = getPathsFrom(definition.bindingPath6, evaluatorMaps);
-			if (p) p.forEach(e => paths.push(e));
-		}
-
-		setCompState(
-			createNewState(
-				definition,
-				properties,
-				stylePropertiesDefinition,
-				locationHistory,
-				pageExtractor,
-			),
-		);
+		if (!deepEqual(x, compState)) setCompState(x);
 
 		if (!paths || !paths.length) {
 			return;
 		}
-
 		return addListener(
-			() => {
+			(p, v) => {
 				const newState = createNewState(
 					definition,
 					properties,
@@ -284,12 +248,26 @@ export default function useDefinition(
 					locationHistory,
 					pageExtractor,
 				);
+
+				if (pageExtractor.getPageName() === '_global') {
+					const newPaths = getPathsFromComponentDefinition(
+						definition,
+						evaluatorMaps,
+						propDefMap,
+					);
+					if (
+						paths.length !== newPaths.length ||
+						isNotEqual(new Set(paths), new Set(newPaths))
+					) {
+						setPathsChangedAt(Date.now());
+					}
+				}
 				setCompState(newState);
 			},
 			pageExtractor,
 			...paths,
 		);
-	}, []);
+	}, [definition, pathsChanged]);
 
 	return compState;
 }

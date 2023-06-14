@@ -14,6 +14,7 @@ export default function StepperStyle({ theme }: { theme: Map<string, Map<string,
 		${PREFIX} ul {
 			display: flex;
 			list-style-type: none;
+			position: relative;
 		}
 
 		${PREFIX} ul.horizontal {
@@ -31,6 +32,7 @@ export default function StepperStyle({ theme }: { theme: Map<string, Map<string,
 			display: flex;
 			flex-direction: column;
 			align-items: center;
+			position: relative;
 		}
 
 		${PREFIX} .itemlist.futureStep {
@@ -118,6 +120,7 @@ export default function StepperStyle({ theme }: { theme: Map<string, Map<string,
 			justify-content: center;
 			align-items: center;
 			gap: 5px;
+			position: relative;
 		}
 
 		${PREFIX} ul.vertical .itemContainer {
@@ -139,6 +142,13 @@ export default function StepperStyle({ theme }: { theme: Map<string, Map<string,
 		
 		${PREFIX} .title {
 		    white-space: nowrap;
+			position: relative;
+		}
+		${PREFIX} .icon {
+			position: relative;
+		}
+		${PREFIX} .countingStep {
+			position: relative;
 		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

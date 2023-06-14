@@ -6,7 +6,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'background-color',
 		displayName: 'toggleButton Background Color',
 		description: 'The backgroundcolor of the toggleButton.',
-		defaultValue: '<app-secondary-grey-color>',
+		defaultValue: '<appSecondaryGreyColor>',
 		selector: ".toggleButton input[type='checkbox'] ",
 	},
 	{
@@ -22,7 +22,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'background-color',
 		displayName: 'toggleButton background after checked',
 		description: 'The Backgroundcolor to be filled after checked`',
-		defaultValue: '<contrast-bright-color>',
+		defaultValue: '<contrastBrightColor>',
 		selector: ".toggleButton input[type='checkbox']:checked ",
 	},
 

@@ -9,12 +9,17 @@ declare global {
 	var isDesignMode: boolean;
 	var designMode: string;
 	var getStore: () => any;
+	var isDebugMode: boolean;
 	var pageEditor: {
 		selectedComponent: string;
+		selectedSubComponent: string;
 		editingPageDefinition: PageDefinition;
 		personalization: any;
 	};
 }
+
+// To enable debug mode, add ?debug to the URL
+window.isDebugMode = window.location.search.indexOf('debug') != -1;
 
 const app = document.getElementById('app');
 if (!app) {

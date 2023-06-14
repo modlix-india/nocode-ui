@@ -6,7 +6,7 @@ import {
 } from '../../../../context/StoreContext';
 import { Component, LocationHistory, PageDefinition } from '../../../../types/common';
 import Portal from '../../../Portal';
-import { ComponentDefinitions } from '../../../';
+import ComponentDefinitions from '../../../';
 import PageOperations from '../../functions/PageOperations';
 import { DRAG_CD_KEY, DRAG_COMP_NAME } from '../../../../constants';
 
@@ -19,6 +19,8 @@ interface DnDSideBarProps {
 	selectedComponent: string | undefined;
 	locationHistory: Array<LocationHistory>;
 	pageOperations: PageOperations;
+	onShowCodeEditor: (eventName: string) => void;
+	previewMode: boolean;
 }
 
 export default function DnDSideBar({
@@ -30,8 +32,11 @@ export default function DnDSideBar({
 	selectedComponent,
 	onChangePersonalization,
 	pageOperations,
+	onShowCodeEditor,
+	previewMode,
 }: DnDSideBarProps) {
 	const [noSelection, setNoSelection] = useState<boolean>(false);
+	const [componentTree, setComponentTree] = useState<boolean>(false);
 	const [noShell, setNoShell] = useState<boolean>(false);
 	const [showCompMenu, setShowCompMenu] = useState<boolean>(false);
 	const [selectedComponentType, setSelectedComponentType] = useState('');
@@ -65,6 +70,19 @@ export default function DnDSideBar({
 		);
 	}, [personalizationPath]);
 
+	useEffect(() => {
+		if (!personalizationPath) return;
+		return addListenerAndCallImmediately(
+			(_, v) => setComponentTree(v),
+			pageExtractor,
+			`${personalizationPath}.componentTree`,
+		);
+	}, [personalizationPath]);
+
+	if (previewMode) {
+		return <div className="_sideBar _previewMode"></div>;
+	}
+
 	let compMenu = undefined;
 	if (showCompMenu) {
 		let compsList = undefined;
@@ -77,7 +95,7 @@ export default function DnDSideBar({
 			const def: PageDefinition = getDataFromPath(defPath, locationHistory, pageExtractor);
 			const compDef = def.componentDefinition[selectedComponent];
 			const component: Component | undefined = ComponentDefinitions.get(compDef?.type);
-			if (component?.allowedChildrenType) {
+			if (component?.allowedChildrenType && !component?.allowedChildrenType.has('')) {
 				compsList = Array.from(ComponentDefinitions.values()).filter(
 					e => component.allowedChildrenType?.has(e.name) && !e.isHidden,
 				);
@@ -98,6 +116,8 @@ export default function DnDSideBar({
 					onClick={() => setSelectedComponentType(e.name)}
 					onDoubleClick={() => {
 						if (!selectedComponent) return;
+						pageOperations.droppedOn(selectedComponent, `${DRAG_COMP_NAME}${e.name}`);
+						setShowCompMenu(false);
 					}}
 					draggable={true}
 					onDragStart={ev =>
@@ -141,10 +161,27 @@ export default function DnDSideBar({
 							setSelectedComponentType('');
 						}}
 					>
-						<i className="fa fa-solid fa-circle-plus" />
+						<i className="fa fa-regular fa-square-plus" />
+					</div>
+					<div
+						className="_iconMenu"
+						tabIndex={0}
+						onClick={() => onChangePersonalization('componentTree', !componentTree)}
+					>
+						<i className="fa fa-solid fa-tree" />
 					</div>
 				</div>
 				<div className="_bottom">
+					<div className="_iconMenu" tabIndex={0} onClick={() => onShowCodeEditor('')}>
+						<i className="fa fa-solid fa-code"></i>
+					</div>
+					<div
+						className="_iconMenu"
+						tabIndex={0}
+						onClick={() => onChangePersonalization('preview', true)}
+					>
+						<i className="fa fa-regular fa-eye"></i>
+					</div>
 					<div
 						className="_iconMenu"
 						tabIndex={0}
@@ -162,7 +199,7 @@ export default function DnDSideBar({
 							e.preventDefault();
 						}}
 					>
-						<i className="fa fa-solid fa-trash"></i>
+						<i className="fa fa-regular fa-trash-can"></i>
 					</div>
 					<div
 						className="_iconMenu"

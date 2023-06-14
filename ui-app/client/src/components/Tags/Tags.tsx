@@ -16,6 +16,7 @@ import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tagsProperties';
 import TagsStyle from './TagsStyles';
+import { SubHelperComponent } from '../SubHelperComponent';
 
 function Tags(props: ComponentProps) {
 	const [hover, setHover] = React.useState('');
@@ -53,11 +54,13 @@ function Tags(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	if (!bindingPath) throw new Error('Binding path is required for definition');
-	const bindingPathPath = getPathFromLocation(bindingPath!, locationHistory, pageExtractor);
+
+	const bindingPathPath =
+		bindingPath && getPathFromLocation(bindingPath!, locationHistory, pageExtractor);
 	const [value, setvalue] = React.useState<any>();
 	const [inputData, setInputData] = React.useState<string>('');
 	React.useEffect(() => {
+		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
 			(_, value) => {
 				setvalue(value);
@@ -83,11 +86,13 @@ function Tags(props: ComponentProps) {
 	);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover: false, disabled: !!readOnly },
 		stylePropertiesWithPseudoStates,
 	);
 
 	const resolvedStylesWithPseudo = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover: true, disabled: !!readOnly },
 		stylePropertiesWithPseudoStates,
 	);
@@ -95,7 +100,7 @@ function Tags(props: ComponentProps) {
 	const handleKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
 		if (e.key === delimitter) {
 			setData(
-				bindingPathPath,
+				bindingPathPath!,
 				[
 					...(Array.isArray(value) ? value : []),
 					...(inputData
@@ -115,11 +120,11 @@ function Tags(props: ComponentProps) {
 		if ((datatype.startsWith('LIST') && Array.isArray(value)) || showInputBox) {
 			const data = value.slice();
 			data.splice(originalKey as number, 1);
-			setData(bindingPathPath, data, context.pageName);
+			setData(bindingPathPath!, data, context.pageName);
 		} else {
 			const data = { ...value };
 			delete data[originalKey];
-			setData(bindingPathPath, data, context.pageName);
+			setData(bindingPathPath!, data, context.pageName);
 		}
 		if (!readOnly && onCloseEvent) {
 			(async () =>
@@ -136,30 +141,45 @@ function Tags(props: ComponentProps) {
 		<div className="comp compTags">
 			<HelperComponent definition={props.definition} />
 			<div className="label" style={resolvedStyles.titleLabel ?? {}}>
+				<SubHelperComponent definition={props.definition} subComponentName="titleLabel" />
 				{label}
 			</div>
 			<div
 				className={hasInputBox ? 'containerWithInput' : ''}
 				style={resolvedStyles.outerContainerWithInputBox ?? {}}
 			>
+				<SubHelperComponent
+					definition={props.definition}
+					subComponentName="outerContainerWithInputBox"
+				/>
 				{hasInputBox ? (
-					<input
-						className="input"
-						type="text"
-						value={inputData}
-						onKeyUp={handleKeyUp}
-						onChange={e => setInputData(e.target.value)}
-						placeholder={placeHolder}
-						style={resolvedStyles.inputBox ?? {}}
-					/>
+					<>
+						<input
+							className="input"
+							type="text"
+							value={inputData}
+							onKeyUp={handleKeyUp}
+							onChange={e => setInputData(e.target.value)}
+							placeholder={placeHolder}
+							style={resolvedStyles.inputBox ?? {}}
+						/>
+						<SubHelperComponent
+							style={resolvedStyles.inputBox ?? {}}
+							className="input"
+							definition={definition}
+							subComponentName="inputBox"
+						></SubHelperComponent>
+					</>
 				) : null}
 
 				<div
-					className={hasInputBox ? 'tagcontainerWithInput' : 'tagContainer'}
-					style={
-						(resolvedStyles.tagContainer || resolvedStyles.tagsContainerWithInput) ?? {}
-					}
+					className={`${hasInputBox ? 'tagcontainerWithInput' : 'tagContainer'} `}
+					style={resolvedStyles.tagContainer ?? {}}
 				>
+					<SubHelperComponent
+						definition={props.definition}
+						subComponentName="tagContainer"
+					/>
 					{renderData?.map(e => (
 						<div
 							onMouseEnter={
@@ -179,6 +199,10 @@ function Tags(props: ComponentProps) {
 							}
 							key={e?.key}
 						>
+							<SubHelperComponent
+								definition={props.definition}
+								subComponentName="container"
+							/>
 							{icon && (
 								<i
 									className={`${icon} iconCss`}
@@ -187,14 +211,15 @@ function Tags(props: ComponentProps) {
 											...((hover === e?.key
 												? resolvedStylesWithPseudo
 												: resolvedStyles
-											).tagIcon ?? {}),
-											...((hover === e?.key
-												? resolvedStylesWithPseudo
-												: resolvedStyles
 											).icon ?? {}),
 										} ?? {}
 									}
-								></i>
+								>
+									<SubHelperComponent
+										definition={props.definition}
+										subComponentName="icon"
+									/>
+								</i>
 							)}
 							<div
 								title={e?.label}
@@ -204,6 +229,10 @@ function Tags(props: ComponentProps) {
 								}
 								className="text"
 							>
+								<SubHelperComponent
+									definition={props.definition}
+									subComponentName="tagText"
+								/>
 								{e?.label}
 							</div>
 							{closeButton ? (
@@ -217,7 +246,12 @@ function Tags(props: ComponentProps) {
 									}
 									className="fa fa-solid fa-xmark closeButton"
 									onClick={() => handleClose(e?.originalObjectKey!)}
-								></i>
+								>
+									<SubHelperComponent
+										definition={props.definition}
+										subComponentName="tagCloseIcon"
+									/>
+								</i>
 							) : (
 								''
 							)}
@@ -242,6 +276,12 @@ const component: Component = {
 	stylePseudoStates: ['hover', 'disabled'],
 	bindingPaths: {
 		bindingPath: { name: 'Data Binding' },
+	},
+	defaultTemplate: {
+		key: '',
+		type: 'Tags',
+		name: 'Tags',
+		properties: {},
 	},
 };
 

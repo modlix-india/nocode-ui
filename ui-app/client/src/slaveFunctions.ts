@@ -1,3 +1,6 @@
+import { duplicate } from '@fincity/kirun-js';
+import { ComponentDefinition } from './types/common';
+
 export const isSlave = (() => {
 	try {
 		return window.self !== window.top;
@@ -19,7 +22,29 @@ export const SLAVE_FUNCTIONS = new Map<string, (payload: any) => void>([
 	],
 	['EDITOR_SELECTION', p => (window.pageEditor = { ...window.pageEditor, selectedComponent: p })],
 	[
+		'EDITOR_SUB_SELECTION',
+		p => (window.pageEditor = { ...window.pageEditor, selectedSubComponent: p }),
+	],
+	[
 		'EDITOR_PERSONALIZATION',
 		p => (window.pageEditor = { ...window.pageEditor, personalization: p }),
 	],
 ]);
+
+export function componentDefinitionPropertyUpdate(
+	compDef: ComponentDefinition,
+	...kvPairs: string[]
+) {
+	const def = duplicate(compDef) as ComponentDefinition;
+	if (!def.properties) def.properties = {};
+	if (!def.styleProperties) def.styleProperties = {};
+
+	if (kvPairs.length % 2 !== 0) throw new Error('Invalid number of arguments');
+
+	for (let i = 0; i < kvPairs.length; i += 2) {
+		const key = kvPairs[i];
+		const value = kvPairs[i + 1];
+	}
+
+	return compDef;
+}

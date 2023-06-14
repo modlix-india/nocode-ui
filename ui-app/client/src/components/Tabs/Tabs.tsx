@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import {
-	addListener,
 	addListenerAndCallImmediately,
 	getPathFromLocation,
 	PageStoreExtractor,
@@ -11,10 +10,10 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
 import { HelperComponent } from '../HelperComponent';
 import { getTranslations } from '../util/getTranslations';
-import { renderChildren } from '../util/renderChildren';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tabsProperties';
 import TabsStyles from './TabsStyle';
+import { SubHelperComponent } from '../SubHelperComponent';
 
 function TabsComponent(props: ComponentProps) {
 	const {
@@ -35,37 +34,30 @@ function TabsComponent(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	if (!bindingPath) throw new Error('Definition requires binding path');
-	const bindingPathPath = getPathFromLocation(bindingPath, locationHistory);
+	const bindingPathPath = bindingPath
+		? getPathFromLocation(bindingPath, locationHistory)
+		: undefined;
 	const [hover, setHover] = React.useState(false);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover: !!hover, readOnly: !!readOnly, disabled: !!readOnly },
 		stylePropertiesWithPseudoStates,
 	);
 
-	const stringSpliter = (str: string) => {
-		const value = str
-			.split(',')
-			.map((e: string) => e.trim())
-			.filter(e => !!e);
-		return value;
-	};
-
-	const tabNames = stringSpliter(tabs);
-	const iconTags = stringSpliter(icon);
-
-	const [activeTab, setActiveTab] = React.useState(defaultActive ?? tabNames[0]);
+	const [activeTab, setActiveTab] = React.useState(defaultActive ?? tabs[0]);
 
 	useEffect(() => {
+		if (!bindingPathPath) return;
+
 		return addListenerAndCallImmediately(
 			(_, value) => {
-				setActiveTab(value ?? defaultActive ?? tabNames[0]);
+				setActiveTab(value ?? defaultActive ?? tabs[0]);
 			},
 			pageExtractor,
 			bindingPathPath,
 		);
-	}, []);
+	}, [bindingPathPath, defaultActive, tabs]);
 
 	const getActiveStyleBorder = function (childKey: any) {
 		if (activeTab === childKey ?? defaultActive === childKey) return 'activeTabBorder';
@@ -75,17 +67,26 @@ function TabsComponent(props: ComponentProps) {
 	};
 
 	const handleClick = function (key: string) {
+		if (!bindingPathPath) {
+			setActiveTab(key);
+			return;
+		}
 		setData(bindingPathPath, key, context.pageName);
 	};
 
-	const index = tabNames.findIndex((e: string) => e == activeTab);
+	const index = tabs.findIndex((e: string) => e == activeTab);
 	const entry = Object.entries(definition.children ?? {})
 		.filter(([k, v]) => !!v)
-		.sort(
-			(a: any, b: any) =>
+		.sort((a: any, b: any) => {
+			const v =
 				(pageDefinition.componentDefinition[a[0]]?.displayOrder ?? 0) -
-				(pageDefinition.componentDefinition[b[0]]?.displayOrder ?? 0),
-		)[index == -1 ? 0 : index];
+				(pageDefinition.componentDefinition[b[0]]?.displayOrder ?? 0);
+			return v === 0
+				? (pageDefinition.componentDefinition[a[0]]?.key ?? '').localeCompare(
+						pageDefinition.componentDefinition[b[0]]?.key ?? '',
+				  )
+				: v;
+		})[index == -1 ? 0 : index];
 	const selectedChild = entry ? { [entry[0]]: entry[1] } : {};
 
 	const orientationClass = tabsOrientation === 'VERTICAL' ? 'vertical' : '';
@@ -97,7 +98,11 @@ function TabsComponent(props: ComponentProps) {
 				className={`tabsContainer ${orientationClass}`}
 				style={resolvedStyles.tabsContainer ?? {}}
 			>
-				{tabNames.map((e: any, i: number) => (
+				<SubHelperComponent
+					definition={props.definition}
+					subComponentName="tabsContainer"
+				/>
+				{tabs.map((e: any, i: number) => (
 					<div
 						key={e}
 						className={`tabDiv ${orientationClass} ${
@@ -116,17 +121,42 @@ function TabsComponent(props: ComponentProps) {
 						}
 						onClick={() => handleClick(e)}
 					>
-						<button style={resolvedStyles.button ?? {}} className={`tabButton`}>
-							<i className={iconTags[i]}></i>
+						<SubHelperComponent
+							definition={props.definition}
+							subComponentName="tabDivContainer"
+						/>
+						<button
+							style={resolvedStyles.button ?? {}}
+							className={`tabButton ${icon.length === 0 ? 'noIcon' : ''}`}
+						>
+							<SubHelperComponent
+								definition={props.definition}
+								subComponentName="button"
+							/>
+							<i className={`icon ${icon[i]}`} style={resolvedStyles.icon ?? {}}>
+								<SubHelperComponent
+									definition={props.definition}
+									subComponentName="icon"
+								/>
+							</i>
 							{getTranslations(e, pageDefinition.translations)}
 						</button>
 						{activeStyle === 'BORDER' && (
-							<div className={getActiveStyleBorder(e)}></div>
+							<div
+								className={`border ${getActiveStyleBorder(e)}`}
+								style={resolvedStyles.border ?? {}}
+							>
+								<SubHelperComponent
+									definition={props.definition}
+									subComponentName="border"
+								/>
+							</div>
 						)}
 					</div>
 				))}
 			</div>
 			<div className="tabGridDiv" style={resolvedStyles.childContainer ?? {}}>
+				<SubHelperComponent definition={props.definition} subComponentName="tabGridDiv" />
 				<Children
 					key={`${activeTab}_chld`}
 					pageDefinition={pageDefinition}
@@ -149,8 +179,82 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleComponent: TabsStyles,
 	styleProperties: stylePropertiesDefinition,
-	numberOfChildren: -1,
+	allowedChildrenType: new Map<string, number>([['', -1]]),
 	stylePseudoStates: ['hover'],
+	bindingPaths: {
+		bindingPath: { name: 'Active Tab Binding' },
+	},
+
+	defaultTemplate: {
+		key: '',
+		name: 'Tabs',
+		type: 'Tabs',
+		properties: {
+			tabs: {
+				'3iFvRBg47fg0Mk7OR7Oshz': {
+					key: '3iFvRBg47fg0Mk7OR7Oshz',
+					order: 1,
+					property: {
+						value: 'Tab1',
+					},
+				},
+				'5sEds41k2jvLbJgcOsDyVZ': {
+					key: '5sEds41k2jvLbJgcOsDyVZ',
+					order: 2,
+					property: {
+						value: 'Tab2',
+					},
+				},
+				'3fmhmBLHzvC5yFJGK7IRmx': {
+					key: '3fmhmBLHzvC5yFJGK7IRmx',
+					order: 3,
+					property: {
+						value: 'Tab3',
+					},
+				},
+				'24Aou1fgffDV4hpQMxj4jy': {
+					key: '24Aou1fgffDV4hpQMxj4jy',
+					order: 4,
+					property: {
+						value: 'Tab4',
+					},
+				},
+			},
+			icon: {
+				'1gweTkTDaBOAUFGHDSV77J': {
+					key: '1gweTkTDaBOAUFGHDSV77J',
+					order: 1,
+					property: {
+						value: 'fa-arrows-to-circle fa-solid',
+					},
+				},
+				'2Sr6eN2CeR1tOnODcFuoEB': {
+					key: '2Sr6eN2CeR1tOnODcFuoEB',
+					order: 2,
+					property: {
+						value: 'fa-text-height fa-solid',
+					},
+				},
+				'5oxu4PeICV9XbUM8uaUUGn': {
+					key: '5oxu4PeICV9XbUM8uaUUGn',
+					order: 3,
+					property: {
+						value: 'fa-message fa-solid',
+					},
+				},
+				'7yb3thIp2JDvXMlUy6uTMS': {
+					key: '7yb3thIp2JDvXMlUy6uTMS',
+					order: 4,
+					property: {
+						value: 'fa-file-lines fa-solid',
+					},
+				},
+			},
+			defaultActive: {
+				value: 'Tab1',
+			},
+		},
+	},
 };
 
 export default component;

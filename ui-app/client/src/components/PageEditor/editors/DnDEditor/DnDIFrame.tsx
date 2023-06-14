@@ -10,6 +10,8 @@ interface DnDIFrameProps {
 	url: string;
 	pageExtractor: PageStoreExtractor;
 	iframeRef: React.RefObject<HTMLIFrameElement>;
+	previewMode: boolean;
+	onChangePersonalization: (prop: string, value: any) => void;
 }
 
 export default function DnDIFrame({
@@ -17,8 +19,11 @@ export default function DnDIFrame({
 	personalizationPath,
 	pageExtractor,
 	iframeRef,
+	previewMode,
+	onChangePersonalization,
 }: DnDIFrameProps) {
 	const [device, setDevice] = useState<string>();
+	const [height, setHeight] = useState('100%');
 
 	useEffect(() => {
 		if (!personalizationPath) return;
@@ -29,9 +34,45 @@ export default function DnDIFrame({
 		);
 	}, [personalizationPath]);
 
+	useEffect(() => {
+		if (!iframeRef.current) return;
+		const handle = setInterval(() => {
+			const hgt = iframeRef.current?.contentWindow?.document.body?.scrollHeight + 'px';
+			if (
+				(iframeRef.current?.contentWindow?.document.body?.scrollHeight ?? 0) -
+					Number.parseInt(height) <
+				50
+			)
+				return;
+			setHeight(hgt);
+		}, 100);
+
+		return () => clearInterval(handle);
+	}, [iframeRef.current, height]);
+
+	let previewCloser = <></>;
+	if (previewMode)
+		previewCloser = (
+			<div
+				className="_previewModeCloser"
+				tabIndex={0}
+				onClick={e => {
+					e.preventDefault();
+					e.stopPropagation();
+
+					onChangePersonalization('preview', false);
+				}}
+			>
+				<i className="fa fa-solid fa-eye-slash"></i>
+			</div>
+		);
+
 	return (
-		<div className={`_iframe ${device ?? ''}`}>
-			<iframe ref={iframeRef} src={url} width="100%" height="100%" />
+		<div className="_iframeHolder">
+			<div className={`_iframe ${device ?? ''}`}>
+				<iframe ref={iframeRef} src={url} height={height} />
+			</div>
+			{previewCloser}
 		</div>
 	);
 }

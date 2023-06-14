@@ -27,10 +27,18 @@ export default function TextBoxStyle({ theme }: { theme: Map<string, Map<string,
 		
 		.commonInputBox .textBoxDiv {
 			display: flex;
+			position: relative;
+		}
+
+		.commonInputBox .textBoxDiv .leftIcon,
+		.commonInputBox .textBoxDiv .rightIcon,
+		.commonInputBox .supportText {
+			position: relative;
 		}
 
 		.commonInputBox .noFloatTextBoxLabel  {
 			display: inline-block;
+			position: relative;
 		}
 		
 		.commonInputBox .textBoxDiv .inputContainer .textbox:focus + .textBoxLabel,

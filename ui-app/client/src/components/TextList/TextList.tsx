@@ -9,6 +9,7 @@ import TextListStyle from './TextListStyle';
 import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { getRenderData } from '../util/getRenderData';
+import { SubHelperComponent } from '../SubHelperComponent';
 
 function TextList(props: ComponentProps) {
 	const {
@@ -25,8 +26,8 @@ function TextList(props: ComponentProps) {
 			listIcon,
 			listType,
 			listStyleType,
-			textKey,
-			textKeyType,
+			labelKey,
+			labelKeyType,
 			uniqueKey,
 			uniqueKeyType,
 			datatype,
@@ -49,21 +50,23 @@ function TextList(props: ComponentProps) {
 				datatype,
 				uniqueKeyType,
 				uniqueKey,
-				textKeyType,
-				textKey,
-				textKeyType,
-				textKey,
+				labelKeyType,
+				labelKey,
+				labelKeyType,
+				labelKey,
 			),
-		[data, datatype, uniqueKeyType, uniqueKey, textKeyType, textKey, textKeyType, textKey],
+		[data, datatype, uniqueKeyType, uniqueKey, labelKeyType, labelKey, labelKeyType, labelKey],
 	);
 
 	const [hover, setHover] = useState('');
 	const styleHoverProperties = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover: true },
 		stylePropertiesWithPseudoStates,
 	);
 
 	const styleProperties = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover: false },
 		stylePropertiesWithPseudoStates,
 	);
@@ -87,15 +90,18 @@ function TextList(props: ComponentProps) {
 						...(styleProperties.list ?? {}),
 						listStyleType: listStyleType,
 					}}
+					className="list"
 					start={start ? start : undefined}
 					reversed={reversed}
 				>
+					<SubHelperComponent definition={props.definition} subComponentName="list" />
 					{translatedText.map((e: any) => (
 						<li
 							style={
 								(e[0] === hover ? styleProperties : styleHoverProperties)
 									.listItem ?? {}
 							}
+							className="listItem"
 							key={e[0]}
 							onMouseEnter={() =>
 								stylePropertiesWithPseudoStates?.hover && setHover(e[0])
@@ -106,6 +112,10 @@ function TextList(props: ComponentProps) {
 								setHover('')
 							}
 						>
+							<SubHelperComponent
+								definition={props.definition}
+								subComponentName="listItem"
+							/>
 							{e[1]}
 						</li>
 					))}
@@ -117,12 +127,14 @@ function TextList(props: ComponentProps) {
 						listStyleType: listIcon ? 'none' : listStyleType,
 					}}
 				>
+					<SubHelperComponent definition={props.definition} subComponentName="list" />
 					{translatedText.map((e: any) => (
 						<li
 							style={
 								(e[0] === hover ? styleProperties : styleHoverProperties)
 									.listItem ?? {}
 							}
+							className="listItem"
 							key={e[0]}
 							onMouseEnter={() =>
 								stylePropertiesWithPseudoStates?.hover && setHover(e[0])
@@ -133,13 +145,22 @@ function TextList(props: ComponentProps) {
 								setHover('')
 							}
 						>
+							<SubHelperComponent
+								definition={props.definition}
+								subComponentName="listItem"
+							/>
 							<i
 								style={
 									(e[0] === hover ? styleProperties : styleHoverProperties)
 										.listItemIcon ?? {}
 								}
-								className={`${listIcon}`}
-							/>
+								className={`${listIcon} listItemIcon`}
+							>
+								<SubHelperComponent
+									definition={props.definition}
+									subComponentName="listItemIcon"
+								/>
+							</i>
 							{e[1]}
 						</li>
 					))}
@@ -158,7 +179,16 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TextListStyle,
+	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['hover'],
+	defaultTemplate: {
+		key: '',
+		type: 'TextList',
+		name: 'TextList',
+		properties: {
+			text: { value: 'Text1,Text2,Text3' },
+		},
+	},
 };
 
 export default component;

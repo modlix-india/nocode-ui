@@ -53,7 +53,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'background-color',
 		displayName: 'Selected Button background color',
 		description: 'Background color for the button when selected.',
-		defaultValue: '<main-font-color>',
+		defaultValue: '<mainFontColor>',
 		selector: '._button._selected',
 	},
 	{
@@ -61,7 +61,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		displayName: 'Selected Button text color',
 		description: 'Text color for the button when selected.',
-		defaultValue: '<light-font-color>',
+		defaultValue: '<lightFontColor>',
 		selector: '._button._selected',
 	},
 	{

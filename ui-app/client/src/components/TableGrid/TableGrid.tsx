@@ -12,7 +12,7 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { deepEqual, ExpressionEvaluator } from '@fincity/kirun-js';
 import { getExtractionMap } from '../util/getRenderData';
 import CommonCheckbox from '../../commonComponents/CommonCheckbox';
-import duplicate from '../../util/duplicate';
+import { duplicate } from '@fincity/kirun-js';
 
 function TableGridComponent(props: ComponentProps) {
 	const [value, setValue] = useState([]);
@@ -57,10 +57,12 @@ function TableGridComponent(props: ComponentProps) {
 	if (entry) firstchild[entry[0]] = true;
 
 	const styleProperties = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover: false },
 		stylePropertiesWithPseudoStates,
 	);
 	const styleHoverProperties = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover: true },
 		stylePropertiesWithPseudoStates,
 	);
@@ -192,8 +194,9 @@ const component: Component = {
 	component: TableGridComponent,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
+	styleProperties: stylePropertiesDefinition,
 	styleComponent: TableGridStyle,
-	numberOfChildren: 1,
+	allowedChildrenType: new Map<string, number>([['', 1]]),
 	parentType: 'Table',
 	stylePseudoStates: ['hover'],
 };

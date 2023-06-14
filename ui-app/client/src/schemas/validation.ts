@@ -1,10 +1,10 @@
 import { Schema } from '@fincity/kirun-js';
 import {
 	NAMESPACE_UI_ENGINE,
-	SCHEMA_REF_VALIDATION_TYPE,
-	SCHEMA_REF_BOOL_COMP_PROP,
-	SCHEMA_REF_STRING_COMP_PROP,
-	SCHEMA_REF_NUM_COMP_PROP,
+	SCHEMA_VALIDATION_TYPE,
+	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_STRING_COMP_PROP,
+	SCHEMA_NUM_COMP_PROP,
 } from '../constants';
 
 const validationSchemas: Array<[string, Schema]> = [
@@ -31,10 +31,10 @@ const validationSchemas: Array<[string, Schema]> = [
 			.setNamespace(NAMESPACE_UI_ENGINE)
 			.setProperties(
 				new Map<string, Schema>([
-					['type', Schema.ofRef(SCHEMA_REF_VALIDATION_TYPE)],
-					['condition', Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP)],
-					['message', Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP)],
-					['functionName', Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP)],
+					['type', Schema.ofRef(SCHEMA_VALIDATION_TYPE)],
+					['condition', Schema.ofRef(SCHEMA_BOOL_COMP_PROP)],
+					['message', Schema.ofRef(SCHEMA_STRING_COMP_PROP)],
+					['functionName', Schema.ofRef(SCHEMA_STRING_COMP_PROP)],
 				]),
 			),
 	],
@@ -44,9 +44,9 @@ const validationSchemas: Array<[string, Schema]> = [
 			.setNamespace(NAMESPACE_UI_ENGINE)
 			.setProperties(
 				new Map<string, Schema>([
-					['type', Schema.ofRef(SCHEMA_REF_VALIDATION_TYPE)],
-					['condition', Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP)],
-					['message', Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP)],
+					['type', Schema.ofRef(SCHEMA_VALIDATION_TYPE)],
+					['condition', Schema.ofRef(SCHEMA_BOOL_COMP_PROP)],
+					['message', Schema.ofRef(SCHEMA_STRING_COMP_PROP)],
 				]),
 			),
 	],
@@ -56,9 +56,9 @@ const validationSchemas: Array<[string, Schema]> = [
 			.setNamespace(NAMESPACE_UI_ENGINE)
 			.setProperties(
 				new Map<string, Schema>([
-					['type', Schema.ofRef(SCHEMA_REF_VALIDATION_TYPE)],
-					['condition', Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP)],
-					['message', Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP)],
+					['type', Schema.ofRef(SCHEMA_VALIDATION_TYPE)],
+					['condition', Schema.ofRef(SCHEMA_BOOL_COMP_PROP)],
+					['message', Schema.ofRef(SCHEMA_STRING_COMP_PROP)],
 				]),
 			),
 	],
@@ -68,12 +68,12 @@ const validationSchemas: Array<[string, Schema]> = [
 			.setNamespace(NAMESPACE_UI_ENGINE)
 			.setProperties(
 				new Map<string, Schema>([
-					['type', Schema.ofRef(SCHEMA_REF_VALIDATION_TYPE)],
-					['condition', Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP)],
-					['message', Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP)],
-					['pattern', Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP)],
-					['ignoreCase', Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP)],
-					['global', Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP)],
+					['type', Schema.ofRef(SCHEMA_VALIDATION_TYPE)],
+					['condition', Schema.ofRef(SCHEMA_BOOL_COMP_PROP)],
+					['message', Schema.ofRef(SCHEMA_STRING_COMP_PROP)],
+					['pattern', Schema.ofRef(SCHEMA_STRING_COMP_PROP)],
+					['ignoreCase', Schema.ofRef(SCHEMA_BOOL_COMP_PROP)],
+					['global', Schema.ofRef(SCHEMA_BOOL_COMP_PROP)],
 				]),
 			),
 	],
@@ -83,9 +83,9 @@ const validationSchemas: Array<[string, Schema]> = [
 			.setNamespace(NAMESPACE_UI_ENGINE)
 			.setProperties(
 				new Map<string, Schema>([
-					['type', Schema.ofRef(SCHEMA_REF_VALIDATION_TYPE)],
-					['condition', Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP)],
-					['message', Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP)],
+					['type', Schema.ofRef(SCHEMA_VALIDATION_TYPE)],
+					['condition', Schema.ofRef(SCHEMA_BOOL_COMP_PROP)],
+					['message', Schema.ofRef(SCHEMA_STRING_COMP_PROP)],
 					['keyPath', Schema.ofString('keyPath')],
 				]),
 			),
@@ -96,11 +96,11 @@ const validationSchemas: Array<[string, Schema]> = [
 			.setNamespace(NAMESPACE_UI_ENGINE)
 			.setProperties(
 				new Map<string, Schema>([
-					['type', Schema.ofRef(SCHEMA_REF_VALIDATION_TYPE)],
-					['condition', Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP)],
-					['message', Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP)],
-					['minLength', Schema.ofRef(SCHEMA_REF_NUM_COMP_PROP)],
-					['maxLength', Schema.ofRef(SCHEMA_REF_NUM_COMP_PROP)],
+					['type', Schema.ofRef(SCHEMA_VALIDATION_TYPE)],
+					['condition', Schema.ofRef(SCHEMA_BOOL_COMP_PROP)],
+					['message', Schema.ofRef(SCHEMA_STRING_COMP_PROP)],
+					['minLength', Schema.ofRef(SCHEMA_NUM_COMP_PROP)],
+					['maxLength', Schema.ofRef(SCHEMA_NUM_COMP_PROP)],
 				]),
 			),
 	],
@@ -110,11 +110,11 @@ const validationSchemas: Array<[string, Schema]> = [
 			.setNamespace(NAMESPACE_UI_ENGINE)
 			.setProperties(
 				new Map<string, Schema>([
-					['type', Schema.ofRef(SCHEMA_REF_VALIDATION_TYPE)],
-					['condition', Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP)],
-					['message', Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP)],
-					['minValue', Schema.ofRef(SCHEMA_REF_NUM_COMP_PROP)],
-					['maxValue', Schema.ofRef(SCHEMA_REF_NUM_COMP_PROP)],
+					['type', Schema.ofRef(SCHEMA_VALIDATION_TYPE)],
+					['condition', Schema.ofRef(SCHEMA_BOOL_COMP_PROP)],
+					['message', Schema.ofRef(SCHEMA_STRING_COMP_PROP)],
+					['minValue', Schema.ofRef(SCHEMA_NUM_COMP_PROP)],
+					['maxValue', Schema.ofRef(SCHEMA_NUM_COMP_PROP)],
 				]),
 			),
 	],
@@ -124,10 +124,10 @@ const validationSchemas: Array<[string, Schema]> = [
 			.setNamespace(NAMESPACE_UI_ENGINE)
 			.setProperties(
 				new Map<string, Schema>([
-					['type', Schema.ofRef(SCHEMA_REF_VALIDATION_TYPE)],
-					['condition', Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP)],
-					['message', Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP)],
-					['booleanCondition', Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP)],
+					['type', Schema.ofRef(SCHEMA_VALIDATION_TYPE)],
+					['condition', Schema.ofRef(SCHEMA_BOOL_COMP_PROP)],
+					['message', Schema.ofRef(SCHEMA_STRING_COMP_PROP)],
+					['booleanCondition', Schema.ofRef(SCHEMA_BOOL_COMP_PROP)],
 				]),
 			),
 	],
@@ -137,9 +137,9 @@ const validationSchemas: Array<[string, Schema]> = [
 			.setNamespace(NAMESPACE_UI_ENGINE)
 			.setProperties(
 				new Map<string, Schema>([
-					['type', Schema.ofRef(SCHEMA_REF_VALIDATION_TYPE)],
-					['condition', Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP)],
-					['message', Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP)],
+					['type', Schema.ofRef(SCHEMA_VALIDATION_TYPE)],
+					['condition', Schema.ofRef(SCHEMA_BOOL_COMP_PROP)],
+					['message', Schema.ofRef(SCHEMA_STRING_COMP_PROP)],
 					['schema', Schema.ofRef(`${NAMESPACE_UI_ENGINE}.SchemaComponentProperty`)],
 				]),
 			),
@@ -150,10 +150,10 @@ const validationSchemas: Array<[string, Schema]> = [
 			.setNamespace(NAMESPACE_UI_ENGINE)
 			.setProperties(
 				new Map<string, Schema>([
-					['type', Schema.ofRef(SCHEMA_REF_VALIDATION_TYPE)],
-					['condition', Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP)],
-					['message', Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP)],
-					['formatString', Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP)],
+					['type', Schema.ofRef(SCHEMA_VALIDATION_TYPE)],
+					['condition', Schema.ofRef(SCHEMA_BOOL_COMP_PROP)],
+					['message', Schema.ofRef(SCHEMA_STRING_COMP_PROP)],
+					['formatString', Schema.ofRef(SCHEMA_STRING_COMP_PROP)],
 				]),
 			),
 	],

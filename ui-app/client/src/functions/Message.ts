@@ -10,6 +10,7 @@ import {
 } from '@fincity/kirun-js';
 import { addMessage, MESSAGE_TYPE } from '../App/Messages/Messages';
 import { NAMESPACE_UI_ENGINE, GLOBAL_CONTEXT_NAME } from '../constants';
+import { duplicate } from '@fincity/kirun-js';
 
 const SIGNATURE = new FunctionSignature('Message')
 	.setNamespace(NAMESPACE_UI_ENGINE)
@@ -24,7 +25,12 @@ const SIGNATURE = new FunctionSignature('Message')
 				'pageName',
 				Schema.ofString('pageName').setDefaultValue(GLOBAL_CONTEXT_NAME),
 			),
-			Parameter.ofEntry('type', Schema.ofString('type').setDefaultValue('ERROR')),
+			Parameter.ofEntry(
+				'type',
+				Schema.ofString('type')
+					.setEnums(['ERROR', 'WARNING', 'INFO', 'SUCCESS'])
+					.setDefaultValue('ERROR'),
+			),
 		]),
 	)
 	.setEvents(new Map([Event.eventMapEntry(Event.OUTPUT, new Map())]));

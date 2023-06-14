@@ -1,10 +1,10 @@
 import { Schema } from '@fincity/kirun-js';
 import {
-	SCHEMA_REF_ANY_COMP_PROP,
-	SCHEMA_REF_BOOL_COMP_PROP,
-	SCHEMA_REF_DATA_LOCATION,
-	SCHEMA_REF_NUM_COMP_PROP,
-	SCHEMA_REF_STRING_COMP_PROP,
+	SCHEMA_ANY_COMP_PROP,
+	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_DATA_LOCATION,
+	SCHEMA_NUM_COMP_PROP,
+	SCHEMA_STRING_COMP_PROP,
 } from '../../constants';
 import {
 	ComponentPropertyEditor,
@@ -16,52 +16,60 @@ import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '.
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'offlineData',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Offline Data',
+		group: ComponentPropertyGroup.BASIC,
 		description: 'When all the data is available to be served in the table',
 		defaultValue: false,
 	},
 	{
 		name: 'showSpinner',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show Spinner',
+		group: ComponentPropertyGroup.BASIC,
 		description: 'Show Spinner when the events are running',
 		defaultValue: true,
 	},
 	{
 		name: 'showPagination',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show Pagination',
 		description: 'Show Pagination',
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: true,
 	},
 	{
 		name: 'showPerPage',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
-		displayName: 'Show Per Page',
-		description: 'Show Per Page',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Items per page selection.',
+		description: 'Show Items Per page selection.',
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: true,
 	},
 	{
 		name: 'perPageNumbers',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
-		displayName: 'Per Page Numbers (CSV)',
-		description: 'Per Page Numbers (Comma seperated values)',
-		defaultValue: '10,20,50',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Options for per page',
+		description: 'Options array for items per page selection.',
+		group: ComponentPropertyGroup.ADVANCED,
+		multiValued: true,
+		defaultValue: [10, 20, 50],
 	},
 	{
 		name: 'uniqueKey',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Unique Key',
 		description: 'Unique Key in each row',
+		group: ComponentPropertyGroup.DATA,
 		defaultValue: 'id',
 	},
 	{
 		name: 'selectionType',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Selection Type',
 		description: 'Type of the selection of a row',
 		defaultValue: 'NONE',
+		group: ComponentPropertyGroup.DATA,
 		enumValues: [
 			{ name: 'NONE', displayName: 'No Selection', description: 'No selection is required' },
 			{ name: 'PATH', displayName: 'Path', description: 'Path of the object of the row' },
@@ -74,17 +82,19 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'multiSelect',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Select Multiple',
 		description: 'Select multiple items',
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: false,
 	},
 	{
 		name: 'displayMode',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Display Mode',
 		description: 'Display mode, either columns or grid',
 		defaultValue: 'COLUMNS',
+		group: ComponentPropertyGroup.BASIC,
 		enumValues: [
 			{ name: 'COLUMNS', displayName: 'Columns', description: 'Columns mode' },
 			{ name: 'GRID', displayName: 'Grid', description: 'Grid mode' },
@@ -92,9 +102,10 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'previewMode',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Preview Mode',
 		description: 'Preview mode, either columns or grid',
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: 'BOTH',
 		enumValues: [
 			{ name: 'BOTH', displayName: 'All', description: 'All modes' },
@@ -104,9 +115,10 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'previewGridPosition',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Preview Grid Position',
 		description: 'Preview grid position',
+		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: 'BOTH',
 		enumValues: [
 			{
@@ -131,23 +143,26 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'defaultSize',
-		schema: Schema.ofRef(SCHEMA_REF_NUM_COMP_PROP),
+		schema: SCHEMA_NUM_COMP_PROP,
 		displayName: 'Default Size',
 		description: 'Display size',
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: 10,
 	},
 	{
 		name: 'totalPages',
-		schema: Schema.ofRef(SCHEMA_REF_NUM_COMP_PROP),
+		schema: SCHEMA_NUM_COMP_PROP,
 		displayName: 'Total Pages',
 		description: 'Total number of pages in the data',
+		group: ComponentPropertyGroup.BASIC,
 	},
 	{
 		name: 'tableDesign',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Table Design',
 		description: 'Table Design',
 		defaultValue: '_design1',
+		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
 			{ name: '_design1', displayName: 'Design 1', description: 'Alternative row color' },
 			{ name: '_design2', displayName: 'Design 2', description: 'Plain table' },
@@ -171,10 +186,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'paginationPosition',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Pagination Position',
 		description: 'Position where pagination will be shown',
 		defaultValue: '_LEFT',
+		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
 			{ name: '_LEFT', displayName: 'Left', description: 'Left' },
 			{ name: '_RIGHT', displayName: 'Right', description: 'Right' },
@@ -184,42 +200,26 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.onSelect,
 	{
 		name: 'onPagination',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'On Pagination',
+		group: ComponentPropertyGroup.EVENTS,
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		description: 'Event to be triggered when the page is changed.',
 	},
-	{
-		name: 'visibility',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
-		displayName: 'Visibility',
-		description: 'This component will be hidden when this property is true.',
-		group: ComponentPropertyGroup.COMMON,
-	},
+	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
 const stylePropertiesDefinition = {
-	'': {
-		[COMPONENT_STYLE_GROUP_PROPERTIES.backdropFilter.type]:
-			COMPONENT_STYLE_GROUP_PROPERTIES.backdropFilter,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.background.type]:
-			COMPONENT_STYLE_GROUP_PROPERTIES.background,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: COMPONENT_STYLE_GROUP_PROPERTIES.border,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow.type]:
-			COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.container.type]:
-			COMPONENT_STYLE_GROUP_PROPERTIES.container,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.flex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.flex,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: COMPONENT_STYLE_GROUP_PROPERTIES.margin,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.opacity.type]: COMPONENT_STYLE_GROUP_PROPERTIES.opacity,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: COMPONENT_STYLE_GROUP_PROPERTIES.padding,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.position.type]: COMPONENT_STYLE_GROUP_PROPERTIES.position,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.rotate.type]: COMPONENT_STYLE_GROUP_PROPERTIES.rotate,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: COMPONENT_STYLE_GROUP_PROPERTIES.size,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.transform.type]:
-			COMPONENT_STYLE_GROUP_PROPERTIES.transform,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.zIndex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.zIndex,
-	},
+	'': [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
 };
 
 export { propertiesDefinition, stylePropertiesDefinition };

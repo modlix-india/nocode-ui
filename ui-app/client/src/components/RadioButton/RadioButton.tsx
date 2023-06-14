@@ -17,6 +17,7 @@ import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './radioButtonProperties';
 import RadioButtonStyle from './RadioButtonStyle';
+import { SubHelperComponent } from '../SubHelperComponent';
 
 function RadioButton(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -84,16 +85,19 @@ function RadioButton(props: ComponentProps) {
 	const [selected, setSelected] = useState<any>();
 
 	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover: false, focus: false, disabled: readOnly },
 		stylePropertiesWithPseudoStates,
 	);
 
 	const resolvedStylesHover = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover: true, focus: false, disabled: readOnly },
 		stylePropertiesWithPseudoStates,
 	);
 
 	const resolvedStylesFocus = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover: false, focus: true, disabled: readOnly },
 		stylePropertiesWithPseudoStates,
 	);
@@ -178,6 +182,7 @@ function RadioButton(props: ComponentProps) {
 						onChange={() => handleClick(e)}
 						showAsRadio={!isMultiSelect}
 						isReadOnly={readOnly}
+						definition={props.definition}
 						styles={{
 							...((focus === e.key
 								? resolvedStylesFocus.radio
@@ -195,7 +200,7 @@ function RadioButton(props: ComponentProps) {
 							stylePropertiesWithPseudoStates?.focus ? () => setFocus('') : undefined
 						}
 					/>
-
+					<SubHelperComponent definition={props.definition} subComponentName="label" />
 					{getTranslations(e.label, translations)}
 				</label>
 			))}
@@ -212,9 +217,30 @@ const component: Component = {
 	styleComponent: RadioButtonStyle,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
+	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['hover', 'focus', 'disabled'],
 	bindingPaths: {
 		bindingPath: { name: 'Data Binding' },
+	},
+	defaultTemplate: {
+		key: '',
+		type: 'RadioButton',
+		name: 'RadioButton',
+		properties: {},
+		styleProperties: {
+			'4c43530094da-f5fd-4b9246-af84-9ebb9d41a49776': {
+				resolutions: {
+					ALL: {
+						width: {
+							value: '100%',
+						},
+						height: {
+							value: '50px',
+						},
+					},
+				},
+			},
+		},
 	},
 };
 

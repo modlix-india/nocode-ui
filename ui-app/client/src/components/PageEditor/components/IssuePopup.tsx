@@ -50,7 +50,7 @@ export default function IssuePopup({
 				className={`_popupBackground ${theme}`}
 				onClick={() => handleClick(issue.defaultOption)}
 			>
-				<div className="_popupContainer">
+				<div className="_popupContainer" onClick={e => e.stopPropagation()}>
 					{issue.message}
 					<div className="_popupButtons">
 						{issue.options.map(e => (

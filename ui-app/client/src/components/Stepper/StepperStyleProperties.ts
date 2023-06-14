@@ -119,7 +119,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 
 	{
 		name: 'lineColor',
-		defaultValue: '<main-disabled-color>',
+		defaultValue: '<mainDisabledColor>',
 		displayName: 'color of line drawn when horizontal/vertical',
 		description: 'color of line drawn when horizontal/vertical',
 	},

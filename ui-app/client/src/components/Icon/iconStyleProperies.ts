@@ -6,7 +6,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		displayName: 'Icon Color',
 		description: 'The color of the Icon.',
-		defaultValue: '<main-font-color>',
+		defaultValue: '<mainFontColor>',
 		selector: '._icon',
 	},
 
@@ -15,7 +15,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'font-size',
 		displayName: 'Icon Font Size',
 		description: 'The icon size',
-		defaultValue: 'calc(<main-font-size> * 2)',
 		selector: '._icon',
 	},
 ];

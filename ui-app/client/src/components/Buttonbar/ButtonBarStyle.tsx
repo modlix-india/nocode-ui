@@ -12,10 +12,16 @@ export default function ButtonBarStyle({ theme }: { theme: Map<string, Map<strin
         font-size: 24px;
         font-weight: 500;
         color: black;
+        position: relative;
     }
 
     ${PREFIX} ._buttonBarContainer {
         display: flex;
+        position: relative;
+    }
+
+    ${PREFIX} ._button {
+        position: relative;
     }
 
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);

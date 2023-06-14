@@ -13,6 +13,7 @@ export default function ProgressBarStyles({ theme }: { theme: Map<string, Map<st
         }
         ${PREFIX} .progressBarLabel {
             text-align: left;
+            position: relative;
         }
 
         ${PREFIX} .progressBar {
@@ -25,6 +26,7 @@ export default function ProgressBarStyles({ theme }: { theme: Map<string, Map<st
         ${PREFIX} .progressBar .progress {
             display: inline-block;
             height: 100%;
+            position: relative;
         }
 
         ${PREFIX} .progressBar .progressValue {

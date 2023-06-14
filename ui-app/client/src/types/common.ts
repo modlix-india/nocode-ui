@@ -1,10 +1,19 @@
-import { Schema } from '@fincity/kirun-js';
+import { Schema, SchemaType, Type } from '@fincity/kirun-js';
 import { Validation } from './validation';
 
 export interface ComponentProperty<T> {
 	value?: T;
 	location?: DataLocation;
 	overrideValue?: T;
+	backupExpression?: string;
+}
+
+export interface ComponentMultiProperty<T> {
+	[key: string]: {
+		key: string;
+		order?: number;
+		property: ComponentProperty<T>;
+	};
 }
 
 export interface DataLocation {
@@ -26,6 +35,8 @@ export interface RenderContext {
 	showValidationMessages?: boolean;
 	observer?: IntersectionObserver;
 	table?: any;
+	level: number;
+	shellPageName: string;
 }
 
 export enum ComponentPropertyDataPathType {
@@ -41,7 +52,6 @@ export enum ComponentPropertyEditor {
 	DATA_LOCATION,
 	TRANSLATABLE_PROP,
 	ICON,
-	ICON_PACK,
 	VALIDATION,
 	ENUM,
 	PAGE_SELECTOR,
@@ -51,12 +61,19 @@ export enum ComponentPropertyEditor {
 	BACKGROUND,
 	STYLE_SELECTOR,
 	THEME_SELECTOR,
+	IMAGE,
+	SCHEMA,
+	LARGE_TEXT,
 }
 
 export enum ComponentPropertyGroup {
-	DEFAULT,
-	COMMON,
-	VALIDATION,
+	BASIC = 'BASIC',
+	DATA = 'DATA',
+	EVENTS = 'EVENTS',
+	ADVANCED = 'ADVANCED',
+	COMMON = 'COMMON',
+	VALIDATION = 'VALIDATION',
+	SEO = 'SEO',
 }
 
 export interface ComponentENUM {
@@ -68,7 +85,7 @@ export interface ComponentENUM {
 export interface ComponentPropertyDefinition {
 	name: string;
 	displayName: string;
-	description: string;
+	description?: string;
 	schema: Schema;
 	editor?: ComponentPropertyEditor;
 	translatable?: boolean;
@@ -88,10 +105,11 @@ export interface ComponentStylePropertyGroupDefinition {
 	target: Array<string>;
 	prefix?: string;
 	displayOrder?: number;
+	advanced?: Array<string>;
 }
 
 export interface ComponentStylePropertyDefinition {
-	[key: string]: { [key: string]: ComponentStylePropertyGroupDefinition };
+	[key: string]: Array<string>;
 }
 
 export interface Component {
@@ -104,11 +122,11 @@ export interface Component {
 	propertyValidation: (props: any) => Array<string>;
 	properties: Array<ComponentPropertyDefinition>;
 	styleProperties?: ComponentStylePropertyDefinition;
-	stylePseudoStates?: Array<String>;
-	numberOfChildren?: number;
-	allowedChildrenType?: Map<String, number>;
+	stylePseudoStates?: Array<string>;
+	allowedChildrenType?: Map<string, number>;
 	parentType?: string;
 	isHidden?: boolean;
+	defaultTemplate?: ComponentDefinition;
 	bindingPaths?: {
 		bindingPath?: { name: string };
 		bindingPath2?: { name: string };
@@ -117,6 +135,7 @@ export interface Component {
 		bindingPath5?: { name: string };
 		bindingPath6?: { name: string };
 	};
+	needShowInDesginMode?: boolean;
 }
 
 export enum StyleResolution {
@@ -132,6 +151,10 @@ export enum StyleResolution {
 	TABLET_POTRAIT_SCREEN_ONLY = 'TABLET_POTRAIT_SCREEN_ONLY',
 	MOBILE_LANDSCAPE_SCREEN_ONLY = 'MOBILE_LANDSCAPE_SCREEN_ONLY',
 	MOBILE_POTRAIT_SCREEN_ONLY = 'MOBILE_POTRAIT_SCREEN_ONLY',
+	DESKTOP_SCREEN_SMALL = 'DESKTOP_SCREEN_SMALL',
+	TABLET_LANDSCAPE_SCREEN_SMALL = 'TABLET_LANDSCAPE_SCREEN_SMALL',
+	TABLET_POTRAIT_SCREEN_SMALL = 'TABLET_POTRAIT_SCREEN_SMALL',
+	MOBILE_LANDSCAPE_SCREEN_SMALL = 'MOBILE_LANDSCAPE_SCREEN_SMALL',
 }
 
 export interface StylePropertyDefinition {
@@ -157,6 +180,7 @@ export interface StyleResolutionProperties {
 	name: string;
 	displayName: string;
 	description: string;
+	order: number;
 }
 
 export interface EachComponentResolutionStyle {
@@ -176,10 +200,15 @@ export interface ComponentResoltuions {
 	[StyleResolution.TABLET_POTRAIT_SCREEN_ONLY]?: EachComponentResolutionStyle;
 	[StyleResolution.MOBILE_LANDSCAPE_SCREEN_ONLY]?: EachComponentResolutionStyle;
 	[StyleResolution.MOBILE_POTRAIT_SCREEN_ONLY]?: EachComponentResolutionStyle;
+	[StyleResolution.DESKTOP_SCREEN_SMALL]?: EachComponentResolutionStyle;
+	[StyleResolution.TABLET_LANDSCAPE_SCREEN_SMALL]?: EachComponentResolutionStyle;
+	[StyleResolution.TABLET_POTRAIT_SCREEN_SMALL]?: EachComponentResolutionStyle;
+	[StyleResolution.MOBILE_LANDSCAPE_SCREEN_SMALL]?: EachComponentResolutionStyle;
 }
 
 export interface EachComponentStyle {
 	condition?: ComponentProperty<boolean>;
+	conditionName?: string;
 	pseudoState?: string;
 	resolutions?: ComponentResoltuions;
 }
@@ -201,6 +230,7 @@ export interface ComponentDefinition {
 	properties?: {
 		[key: string]:
 			| ComponentProperty<any>
+			| ComponentMultiProperty<any>
 			| { [key: string]: ComponentProperty<any> }
 			| { [key: string]: Validation };
 	};
@@ -216,11 +246,22 @@ export interface ComponentDefinitionValues {
 	stylePropertiesWithPseudoStates?: any;
 }
 
+export interface StyleClassDefinition {
+	selector?: string;
+	comments?: string;
+	mediaQuery?: string;
+	style?: string;
+	key: string;
+	priority?: number;
+}
 export interface PageDefinition {
 	name: string;
 	appCode: string;
 	clientCode: string;
 	baseClientCode: string | undefined;
+	permission: string | undefined;
+	version: number;
+	isFromUndoRedoStack: boolean;
 	eventFunctions: {
 		[key: string]: any;
 	};
@@ -229,6 +270,30 @@ export interface PageDefinition {
 		[key: string]: ComponentDefinition;
 	};
 	translations: { [key: string]: { [key: string]: string } };
+	properties: {
+		title?: {
+			name?: ComponentProperty<string>;
+			append?: ComponentProperty<boolean>;
+		};
+		onLoadEvent?: string;
+		loadStrategy?: string;
+		wrapShell?: boolean;
+		seo?: {
+			description?: ComponentProperty<string>;
+			keywords?: ComponentProperty<string>;
+			robots?: ComponentProperty<string>;
+			charset?: ComponentProperty<string>;
+			author?: ComponentProperty<string>;
+			applicationName?: ComponentProperty<string>;
+			generator?: ComponentProperty<string>;
+			[key: string]: ComponentProperty<string> | undefined;
+		};
+		classes?: { [key: string]: StyleClassDefinition };
+		[key: string]: any;
+	};
+	processedClasses?: {
+		[key: string]: { [key: string]: string };
+	};
 }
 
 export interface ComponentProps {

@@ -1,28 +1,34 @@
 import { Schema } from '@fincity/kirun-js';
-import { SCHEMA_REF_BOOL_COMP_PROP, SCHEMA_REF_STRING_COMP_PROP } from '../../constants';
+import {
+	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_NUM_COMP_PROP,
+	SCHEMA_STRING_COMP_PROP,
+} from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
 	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
-import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
+import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'text',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Text',
 		description: 'Text to display',
+		group: ComponentPropertyGroup.BASIC,
 		translatable: true,
 	},
 
 	{
 		name: 'textType',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Text Type',
 		description: 'Text type',
 		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.BASIC,
 		defaultValue: 'TEXT',
 		enumValues: [
 			{
@@ -39,19 +45,98 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
+		name: 'stringFormat',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'String Format',
+		description: 'String format with dates, numbers and strings',
+		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: 'STRING',
+		enumValues: [
+			{
+				name: 'STRING',
+				displayName: 'Plain String',
+				description: 'Plain String',
+			},
+			{
+				name: 'UTC_TO_MM/DD/YYYY',
+				displayName: 'UTC to MM/DD/YYYY',
+				description: 'UTC to MM/DD/YYYY',
+			},
+			{
+				name: 'UTC_TO_MM/DD/YYYY_HH:MM',
+				displayName: 'UTC to MM/DD/YYYY HH:MM',
+				description: 'UTC to MM/DD/YYYY HH:MM',
+			},
+			{
+				name: 'UTC_TO_MM/DD/YYYY_HH:MM:SS',
+				displayName: 'UTC to MM/DD/YYYY HH:MM:SS',
+				description: 'UTC to MM/DD/YYYY HH:MM:SS',
+			},
+			{
+				name: 'UTC_TO_MM/DD/YYYY_HH:MM:SS.SSS',
+				displayName: 'UTC to MM/DD/YYYY HH:MM:SS.SSS',
+				description: 'UTC to MM/DD/YYYY HH:MM:SS.SSS',
+			},
+			{
+				name: 'UTC_TO_YYYY-MM-DD',
+				displayName: 'UTC to YYYY-MM-DD',
+				description: 'UTC to YYYY-MM-DD',
+			},
+			{
+				name: 'UTC_TO_YYYY-MM-DD_HH:MM',
+				displayName: 'UTC to YYYY-MM-DD HH:MM',
+				description: 'UTC to YYYY-MM-DD HH:MM',
+			},
+			{
+				name: 'UTC_TO_YYYY-MM-DD_HH:MM:SS',
+				displayName: 'UTC to YYYY-MM-DD HH:MM:SS',
+				description: 'UTC to YYYY-MM-DD HH:MM:SS',
+			},
+			{
+				name: 'UTC_TO_YYYY-MM-DD_HH:MM:SS.SSS',
+				displayName: 'UTC to YYYY-MM-DD HH:MM:SS.SSS',
+				description: 'UTC to YYYY-MM-DD HH:MM:SS.SSS',
+			},
+			{
+				name: 'UTC_TO_MONTH_DD,YYYY',
+				displayName: 'UTC to Month DD, YYYY',
+				description: 'UTC to Month DD, YYYY',
+			},
+			{
+				name: 'UTC_TO_MONTH_DD,YYYY_HH:MM',
+				displayName: 'UTC to Month DD, YYYY HH:MM',
+				description: 'UTC to Month DD, YYYY HH:MM',
+			},
+			{
+				name: 'UTC_TO_MONTH_DD,YYYY_HH:MM:SS',
+				displayName: 'UTC to Month DD, YYYY HH:MM:SS',
+				description: 'UTC to Month DD, YYYY HH:MM:SS',
+			},
+			{
+				name: 'UTC_TO_MONTH_DD,YYYY_HH:MM:SS.SSS',
+				displayName: 'UTC to Month DD, YYYY HH:MM:SS.SSS',
+				description: 'UTC to Month DD, YYYY HH:MM:SS.SSS',
+			},
+		],
+	},
+
+	{
 		name: 'processNewLine',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Text with line breaks',
+		group: ComponentPropertyGroup.ADVANCED,
 		description: 'Process text to show new line characters',
 		defaultValue: false,
 	},
 
 	{
 		name: 'textContainer',
-		schema: Schema.ofRef(SCHEMA_REF_STRING_COMP_PROP),
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Text Container Type (SEO)',
 		description: 'Text container type for seo optimization',
 		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: 'SPAN',
 		enumValues: [
 			{
@@ -108,43 +193,34 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
-		name: 'visibility',
-		schema: Schema.ofRef(SCHEMA_REF_BOOL_COMP_PROP),
-		displayName: 'Visibility',
-		description: 'This component will be hidden when this property is true.',
-		group: ComponentPropertyGroup.COMMON,
+		name: 'textLength',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Max Text Length',
+		description: 'Max text length',
+		group: ComponentPropertyGroup.ADVANCED,
 	},
+
+	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
-	'': {
-		[COMPONENT_STYLE_GROUP_PROPERTIES.backdropFilter.type]:
-			COMPONENT_STYLE_GROUP_PROPERTIES.backdropFilter,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.background.type]:
-			COMPONENT_STYLE_GROUP_PROPERTIES.background,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: COMPONENT_STYLE_GROUP_PROPERTIES.border,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow.type]:
-			COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.color,
-			target: ['text'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
-			...COMPONENT_STYLE_GROUP_PROPERTIES.font,
-			target: ['text'],
-		},
-		[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: COMPONENT_STYLE_GROUP_PROPERTIES.margin,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.shape.type]: COMPONENT_STYLE_GROUP_PROPERTIES.shape,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.opacity.type]: COMPONENT_STYLE_GROUP_PROPERTIES.opacity,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.outline.type]: COMPONENT_STYLE_GROUP_PROPERTIES.outline,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: COMPONENT_STYLE_GROUP_PROPERTIES.padding,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.position.type]: COMPONENT_STYLE_GROUP_PROPERTIES.position,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.rotate.type]: COMPONENT_STYLE_GROUP_PROPERTIES.rotate,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: COMPONENT_STYLE_GROUP_PROPERTIES.size,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.transform.type]:
-			COMPONENT_STYLE_GROUP_PROPERTIES.transform,
-		[COMPONENT_STYLE_GROUP_PROPERTIES.zIndex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.zIndex,
-	},
+	'': [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	text: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
 };
 
 export { propertiesDefinition, stylePropertiesDefinition };

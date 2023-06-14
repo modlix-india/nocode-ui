@@ -1,18 +1,20 @@
 import { Location as ReactLocation, useLocation } from 'react-router-dom';
 import { processLocation } from '../../util/locationProcessor';
 
-export function getHref(linkPath: string, location: ReactLocation | Location) {
+export function getHref(linkPath: string = '', location: ReactLocation | Location) {
 	// {pathname: '/page/dashboard', search: '', hash: '', state: null, key: 'default'}
 	const processedLocation = processLocation(location);
 	let prefix: string = '';
 	let midfix: string = '';
 	let url: string = '';
-
 	if (
 		linkPath?.startsWith('http:') ||
 		linkPath?.startsWith('https:') ||
 		linkPath?.startsWith('//') ||
-		linkPath?.startsWith('www')
+		linkPath?.startsWith('www') ||
+		linkPath?.startsWith('mailto:') ||
+		linkPath?.startsWith('tel:') ||
+		linkPath?.startsWith('#')
 	) {
 		return linkPath;
 	}
@@ -27,7 +29,7 @@ export function getHref(linkPath: string, location: ReactLocation | Location) {
 		if (linkPath?.startsWith('/api/')) {
 			url = prefix + '' + linkPath;
 		} else {
-			if (location.pathname.includes('/page')) {
+			if (location.pathname.includes('/page/')) {
 				url = prefix + '/page' + linkPath;
 			} else {
 				url = linkPath;
@@ -44,13 +46,13 @@ export function getHref(linkPath: string, location: ReactLocation | Location) {
 		}
 
 		if (linkPath?.startsWith('api')) {
-			if (location.pathname.includes('/page')) {
+			if (location.pathname.includes('/page/')) {
 				url = prefix + '/' + midfix + linkPath;
 			} else {
 				url = linkPath;
 			}
 		} else {
-			if (location.pathname.includes('/page')) {
+			if (location.pathname.includes('/page/')) {
 				url = prefix + '/page/' + midfix + linkPath;
 			} else {
 				url = linkPath;

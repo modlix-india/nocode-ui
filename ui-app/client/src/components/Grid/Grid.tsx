@@ -51,6 +51,9 @@ function Grid(props: ComponentProps) {
 			background,
 			observeChildren,
 			observerThresholds,
+			rootMargin,
+			onMouseEnter,
+			onMouseLeave,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -81,7 +84,7 @@ function Grid(props: ComponentProps) {
 			.filter((e: number) => !isNaN(e) && e <= 1 && e >= 0);
 		const options = {
 			root: ref.current,
-			rootMargin: '0px',
+			rootMargin: rootMargin,
 			threshold,
 		};
 		setObserver(new IntersectionObserver(observerrCallback, options));
@@ -98,11 +101,18 @@ function Grid(props: ComponentProps) {
 	);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ focus, hover, disabled: isReadonly },
 		stylePropertiesWithPseudoStates,
 	);
 
 	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
+	const onMouseEnterEvent = onMouseEnter
+		? props.pageDefinition.eventFunctions[onMouseEnter]
+		: undefined;
+	const onMouseLeaveEvent = onMouseLeave
+		? props.pageDefinition.eventFunctions[onMouseLeave]
+		: undefined;
 	const spinnerPath = `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
 		key,
 	)}.isRunning`;
@@ -112,7 +122,6 @@ function Grid(props: ComponentProps) {
 	);
 
 	useEffect(() => addListener((_, value) => setIsLoading(value), pageExtractor, spinnerPath), []);
-
 	const handleClick =
 		!clickEvent || isLoading
 			? undefined
@@ -131,40 +140,101 @@ function Grid(props: ComponentProps) {
 		>{`._${key}_grid_css::-webkit-scrollbar { display: none }`}</style>
 	) : undefined;
 	if (linkPath) {
-		return React.createElement(containerType.toLowerCase(), { className: 'comp compGrid' }, [
-			<HelperComponent key={`${key}_hlp`} definition={definition} />,
-			styleComp,
-			<Link
-				key={`${key}_Link`}
-				ref={ref}
-				className={`_anchorGrid _${layout} ${background} ${
-					sepStyle ? `_${key}_grid_css` : ''
-				}`}
-				onMouseEnter={
-					stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
-				}
-				onMouseLeave={
-					stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
-				}
-				onFocus={stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined}
-				onBlur={stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined}
-				to={getHref(linkPath, location)}
-				target={target}
-				style={resolvedStyles.comp ?? {}}
-			>
-				{childs}
-			</Link>,
-		]);
+		return React.createElement(
+			containerType.toLowerCase(),
+			{ className: 'comp compGrid', id: key },
+			[
+				<HelperComponent key={`${key}_hlp`} definition={definition} />,
+				styleComp,
+				<Link
+					key={`${key}_Link`}
+					ref={ref}
+					className={`_anchorGrid _${layout} ${background} ${
+						sepStyle ? `_${key}_grid_css` : ''
+					}`}
+					onMouseEnter={
+						stylePropertiesWithPseudoStates?.hover || onMouseEnterEvent
+							? () => {
+									setHover(true);
+
+									if (!onMouseEnterEvent) return;
+									(async () =>
+										await runEvent(
+											onMouseEnterEvent,
+											onMouseEnter,
+											props.context.pageName,
+											props.locationHistory,
+											props.pageDefinition,
+										))();
+							  }
+							: undefined
+					}
+					onMouseLeave={
+						stylePropertiesWithPseudoStates?.hover || onMouseLeaveEvent
+							? () => {
+									setHover(false);
+									if (!onMouseLeaveEvent) return;
+									(async () =>
+										await runEvent(
+											onMouseLeaveEvent,
+											onMouseLeave,
+											props.context.pageName,
+											props.locationHistory,
+											props.pageDefinition,
+										))();
+							  }
+							: undefined
+					}
+					onFocus={
+						stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined
+					}
+					onBlur={
+						stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined
+					}
+					to={getHref(linkPath, location)}
+					target={target}
+					style={resolvedStyles.comp ?? {}}
+				>
+					{childs}
+				</Link>,
+			],
+		);
 	}
 
 	return React.createElement(
 		containerType.toLowerCase(),
 		{
-			onMouseEnter: stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined,
-			onMouseLeave: stylePropertiesWithPseudoStates?.hover
-				? () => setHover(false)
-				: undefined,
+			onMouseEnter:
+				stylePropertiesWithPseudoStates?.hover || onMouseEnterEvent
+					? () => {
+							setHover(true);
+							if (!onMouseEnterEvent) return;
+							(async () =>
+								await runEvent(
+									onMouseEnterEvent,
+									onMouseEnter,
+									props.context.pageName,
+									props.locationHistory,
+									props.pageDefinition,
+								))();
+					  }
+					: undefined,
 
+			onMouseLeave:
+				stylePropertiesWithPseudoStates?.hover || onMouseLeaveEvent
+					? () => {
+							setHover(false);
+							if (!onMouseLeaveEvent) return;
+							(async () =>
+								await runEvent(
+									onMouseLeaveEvent,
+									onMouseLeave,
+									props.context.pageName,
+									props.locationHistory,
+									props.pageDefinition,
+								))();
+					  }
+					: undefined,
 			onFocus: stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined,
 			onBlur: stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined,
 			ref: ref,
@@ -174,6 +244,7 @@ function Grid(props: ComponentProps) {
 			style: resolvedStyles.comp ?? {},
 
 			onClick: handleClick,
+			id: key,
 		},
 		[<HelperComponent key={`${key}_hlp`} definition={definition} />, styleComp, childs],
 	);
@@ -189,9 +260,15 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleComponent: GridStyle,
 	stylePseudoStates: ['hover', 'focus', 'readonly'],
-	numberOfChildren: -1,
+	allowedChildrenType: new Map<string, number>([['', -1]]),
+	styleProperties: stylePropertiesDefinition,
 	bindingPaths: {
 		bindingPath: { name: 'Scrolled Component Binding' },
+	},
+	defaultTemplate: {
+		key: '',
+		name: 'Grid',
+		type: 'Grid',
 	},
 };
 

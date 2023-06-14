@@ -13,6 +13,7 @@ export default function TagsStyle({ theme }: { theme: Map<string, Map<string, st
 			align-items: center;
 			padding: 5px;
 			cursor:pointer;
+			position: relative;
 		}
 
 		${PREFIX} .tagcontainerWithInput{
@@ -20,15 +21,18 @@ export default function TagsStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-wrap: wrap; 
 			overflow: scroll; 
 			gap:5px;
+			position: relative;
 	    }
 
 		${PREFIX} .tagContainer {
 			display: flex;
 			flex-direction:row;
+			position: relative;
 		}
     	
 		${PREFIX} .closeButton{
 			cursor: pointer;
+			position: relative;
 		}
 
 		${PREFIX} .input{
@@ -39,6 +43,15 @@ export default function TagsStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} .text{
 			overflow: hidden;
 			text-overflow: ellipsis;
+			position: relative;
+		}
+
+		${PREFIX} .label {
+			position: relative;
+		}
+
+		${PREFIX} .iconCss {
+			position: relative;
 		}
 		
 		

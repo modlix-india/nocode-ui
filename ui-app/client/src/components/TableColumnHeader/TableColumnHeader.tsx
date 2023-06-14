@@ -29,6 +29,7 @@ function TableColumnHeaderComponent(props: ComponentProps) {
 	);
 
 	const styleProperties = processComponentStylePseudoClasses(
+		props.pageDefinition,
 		{ hover: false },
 		stylePropertiesWithPseudoStates,
 	);
@@ -48,6 +49,7 @@ const component: Component = {
 	description: 'Table Header component',
 	component: TableColumnHeaderComponent,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
+	styleProperties: stylePropertiesDefinition,
 	properties: propertiesDefinition,
 	styleComponent: TableColumnHeaderStyle,
 	isHidden: true,
