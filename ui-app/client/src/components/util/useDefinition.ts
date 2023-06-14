@@ -21,6 +21,7 @@ import {
 } from '../../types/common';
 import { isNotEqual } from '../../util/setOperations';
 import { getPathsFromComponentDefinition } from './getPaths';
+import { ParentExtractor } from '../../context/ParentExtractor';
 
 function createNewState(
 	definition: ComponentDefinition,
@@ -218,13 +219,20 @@ export default function useDefinition(
 
 	if (pageExtractor) evaluatorMaps.set(pageExtractor.getPrefix(), pageExtractor);
 
+	let parentExtractor: ParentExtractor | undefined;
+
+	if (locationHistory.length) {
+		parentExtractor = new ParentExtractor(locationHistory);
+		evaluatorMaps.set(parentExtractor.getPrefix(), parentExtractor);
+	}
+
 	const propDefMap = properties.reduce((a: any, c) => {
 		a[c.name] = c;
 		return a;
 	}, {});
 
 	useEffect(() => {
-		const paths = getPathsFromComponentDefinition(definition, evaluatorMaps, propDefMap);
+		let paths = getPathsFromComponentDefinition(definition, evaluatorMaps, propDefMap);
 
 		const x = createNewState(
 			definition,
@@ -239,6 +247,15 @@ export default function useDefinition(
 		if (!paths || !paths.length) {
 			return;
 		}
+
+		if (parentExtractor) {
+			paths = paths.map(p => {
+				if (!p.startsWith(parentExtractor!.getPrefix())) return p;
+
+				return parentExtractor?.getPath(p).path ?? p;
+			});
+		}
+
 		return addListener(
 			(p, v) => {
 				const newState = createNewState(

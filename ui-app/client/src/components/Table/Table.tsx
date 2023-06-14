@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
 import {
 	addListenerAndCallImmediately,
+	addListenerAndCallImmediatelyWithChildrenActivity,
 	getDataFromPath,
 	getPathFromLocation,
 	PageStoreExtractor,
@@ -141,7 +142,7 @@ function TableComponent(props: ComponentProps) {
 	useEffect(
 		() =>
 			dataBindingPath
-				? addListenerAndCallImmediately(
+				? addListenerAndCallImmediatelyWithChildrenActivity(
 						(_, v) => setData(v),
 						pageExtractor,
 						dataBindingPath,
