@@ -474,6 +474,7 @@ function TableComponent(props: ComponentProps) {
 							multiSelect,
 							pageSize,
 							uniqueKey,
+							onSelect,
 						},
 					}}
 					locationHistory={locationHistory}
