@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
 import {
 	addListenerAndCallImmediately,
+	addListenerAndCallImmediatelyWithChildrenActivity,
 	getDataFromPath,
 	getPathFromLocation,
 	PageStoreExtractor,
@@ -16,6 +17,7 @@ import useDefinition from '../util/useDefinition';
 import Children from '../Children';
 import { flattenUUID } from '../util/uuid';
 import { runEvent } from '../util/runEvent';
+import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 
 function spinCalculate(
 	spinnerPath1: string | undefined,
@@ -112,6 +114,7 @@ function TableComponent(props: ComponentProps) {
 			onSelect,
 			onPagination,
 		} = {},
+		stylePropertiesWithPseudoStates,
 		key,
 	} = useDefinition(
 		definition,
@@ -141,7 +144,7 @@ function TableComponent(props: ComponentProps) {
 	useEffect(
 		() =>
 			dataBindingPath
-				? addListenerAndCallImmediately(
+				? addListenerAndCallImmediatelyWithChildrenActivity(
 						(_, v) => setData(v),
 						pageExtractor,
 						dataBindingPath,
@@ -473,6 +476,7 @@ function TableComponent(props: ComponentProps) {
 							multiSelect,
 							pageSize,
 							uniqueKey,
+							onSelect,
 						},
 					}}
 					locationHistory={locationHistory}
@@ -514,8 +518,18 @@ function TableComponent(props: ComponentProps) {
 		}
 	}
 
+	const resolvedStyles =
+		processComponentStylePseudoClasses(
+			props.pageDefinition,
+			{},
+			stylePropertiesWithPseudoStates,
+		) ?? {};
+
 	return (
-		<div className={`comp compTable ${tableDesign} ${previewGridPosition}`}>
+		<div
+			className={`comp compTable ${tableDesign} ${previewGridPosition}`}
+			style={resolvedStyles?.comp ?? {}}
+		>
 			<HelperComponent definition={definition} />
 			{body}
 			{spinner}
