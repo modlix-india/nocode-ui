@@ -38,10 +38,9 @@ function TextEditor(props: ComponentProps) {
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
 		: undefined;
 
-	const [text, setText] = useState('{}');
-	const [data, setDataInState] = useState({});
 	const editorRef = useRef<any>(null);
-	const [_, setNow] = useState(0);
+	const [_, setNow] = useState(Date.now());
+	const [dataInState, setDataInState] = useState<any>(undefined);
 
 	useEffect(() => {
 		if (!bindingPathPath) return;
@@ -51,14 +50,12 @@ function TextEditor(props: ComponentProps) {
 				const editorModel = editorRef.current?.getModel().getValue();
 				if (documentType === 'json') {
 					const tJSON = JSON.stringify(fromStore, undefined, 2);
-					if (!deepEqual(fromStore, data) || editorModel != tJSON) {
+					if (!deepEqual(fromStore, dataInState) || editorModel != tJSON) {
 						setDataInState(fromStore);
-						if (tJSON != editorModel) setText(tJSON);
-						editorRef.current?.getModel().setValue(tJSON);
+						if (tJSON != editorModel) editorRef.current?.getModel().setValue(tJSON);
 					}
 				} else {
-					if (text != fromStore || editorModel != fromStore) {
-						setText(fromStore);
+					if (editorModel != fromStore) {
 						editorRef.current?.getModel().setValue(fromStore);
 					}
 				}
@@ -66,7 +63,7 @@ function TextEditor(props: ComponentProps) {
 			pageExtractor,
 			bindingPathPath,
 		);
-	}, [bindingPathPath, editorRef.current, documentType, text, data, setText, setData]);
+	}, [bindingPathPath, editorRef.current, documentType, dataInState, setDataInState]);
 
 	const handleChange = (ev: any) => {
 		if (!bindingPathPath) return;
@@ -76,8 +73,9 @@ function TextEditor(props: ComponentProps) {
 				const toStore = JSON.parse(ev);
 				setData(bindingPathPath, toStore, context.pageName);
 			} catch (err) {}
+		} else {
+			setData(bindingPathPath, ev, context.pageName);
 		}
-		setText(ev);
 	};
 
 	const resolvedStyles = processComponentStylePseudoClasses(
@@ -92,7 +90,7 @@ function TextEditor(props: ComponentProps) {
 			<Editor
 				language={documentType}
 				height="100%"
-				value={text}
+				defaultValue={''}
 				onChange={handleChange}
 				onMount={editor => {
 					editorRef.current = editor;

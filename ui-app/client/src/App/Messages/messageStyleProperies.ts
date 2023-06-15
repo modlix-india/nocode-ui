@@ -94,7 +94,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Message Container Border Left',
 		description: 'Message Container Border Left',
 		defaultValue: '7px solid',
-		selector: '._message ',
+		selector: '._message, ._msgStackTrace ',
 	},
 	{
 		name: 'messagesGap',
@@ -110,7 +110,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Message error color',
 		description: 'Message error color',
 		defaultValue: '#ed6a5e',
-		selector: '._message.ERROR ._msgString, ._message.ERROR i',
+		selector: '._message.ERROR ._msgString, ._message.ERROR i, ._msgStackTrace.ERROR',
 	},
 	{
 		name: 'messageWarningColor',
@@ -118,7 +118,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Message warning color',
 		description: 'Message warning color',
 		defaultValue: '#e5d122',
-		selector: '._message.WARNING ._msgString, ._message.WARNING i',
+		selector: '._message.WARNING ._msgString, ._message.WARNING i, ._msgStackTrace.WARNING',
 	},
 	{
 		name: 'messageInformationColor',
@@ -126,7 +126,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Message information color',
 		description: 'Message information color',
 		defaultValue: '#059',
-		selector: '._message.INFORMATION ._msgString, ._message.INFORMATION i',
+		selector:
+			'._message.INFORMATION ._msgString, ._message.INFORMATION i, ._msgStackTrace.INFORMATION ',
 	},
 	{
 		name: 'messageSuccessColor',
@@ -134,7 +135,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Message success color',
 		description: 'Message success color',
 		defaultValue: '#270',
-		selector: '._message.SUCCESS ._msgString, ._message.SUCCESS i',
+		selector: '._message.SUCCESS ._msgString, ._message.SUCCESS i, ._msgStackTrace.SUCCESS',
 	},
 	{
 		name: 'messageErrorBorderColor',
