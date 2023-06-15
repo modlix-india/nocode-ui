@@ -13,6 +13,7 @@ import { deepEqual, ExpressionEvaluator } from '@fincity/kirun-js';
 import { getExtractionMap } from '../util/getRenderData';
 import CommonCheckbox from '../../commonComponents/CommonCheckbox';
 import { duplicate } from '@fincity/kirun-js';
+import { runEvent } from '../util/runEvent';
 
 function TableGridComponent(props: ComponentProps) {
 	const [value, setValue] = useState([]);
@@ -43,6 +44,7 @@ function TableGridComponent(props: ComponentProps) {
 		multiSelect,
 		pageSize,
 		uniqueKey,
+		onSelect,
 	} = props.context.table ?? {};
 
 	useEffect(() => setValue(data), [data]);
@@ -104,6 +106,19 @@ function TableGridComponent(props: ComponentProps) {
 		} else {
 			setData(selectionBindingPath, putObj, context.pageName);
 		}
+
+		const selectEvent = onSelect ? props.pageDefinition.eventFunctions[onSelect] : undefined;
+
+		if (!selectEvent) return;
+
+		(async () =>
+			await runEvent(
+				selectEvent,
+				uniqueKey,
+				context.pageName,
+				locationHistory,
+				props.pageDefinition,
+			))();
 	};
 
 	let emptyGrids = [];

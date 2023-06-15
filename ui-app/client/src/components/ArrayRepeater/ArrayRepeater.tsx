@@ -4,6 +4,7 @@ import { NAMESPACE_UI_ENGINE } from '../../constants';
 import {
 	addListener,
 	addListenerAndCallImmediately,
+	addListenerAndCallImmediatelyWithChildrenActivity,
 	getData,
 	getDataFromLocation,
 	getPathFromLocation,
@@ -54,7 +55,7 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 
 	React.useEffect(() => {
 		if (!bindingPathPath) return;
-		return addListenerAndCallImmediately(
+		return addListenerAndCallImmediatelyWithChildrenActivity(
 			(_, value) => {
 				setValue(value);
 				const objKeys: { [key: number]: string } = {};
@@ -134,7 +135,13 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 	);
 
 	return (
-		<div className={`comp compArrayRepeater _${layout}`} style={styleProperties.comp}>
+		<div
+			key={Object.values(indexKeys)
+				.map(e => e.key)
+				.join('_')}
+			className={`comp compArrayRepeater _${layout}`}
+			style={styleProperties.comp}
+		>
 			<HelperComponent definition={definition} />
 			{value.map((e: any, index) => {
 				const comp = (
@@ -157,6 +164,7 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 				return (
 					<div
 						key={`${indexKeys[index]}`}
+						data-key={`${indexKeys[index]}`}
 						className={`repeaterProperties ${readOnly ? 'disabled' : ''}`}
 						onDragStart={e => handleDragStart(e, index)}
 						onDragOver={handleDragOver}

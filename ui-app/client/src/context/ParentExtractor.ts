@@ -21,6 +21,16 @@ export class ParentExtractor extends SpecialTokenValueExtractor {
 	}
 
 	protected getValueInternal(token: string) {
+		const { path, lastHistory } = this.getPath(token);
+
+		return getDataFromPath(
+			path,
+			this.history.length === 1 ? [] : this.history.slice(0, this.history.length - 1),
+			PageStoreExtractor.getForContext(lastHistory.pageName ?? GLOBAL_CONTEXT_NAME),
+		);
+	}
+
+	public getPath(token: string): { path: string; lastHistory: LocationHistory } {
 		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
 
 		let pNum: number = 0;
@@ -30,19 +40,14 @@ export class ParentExtractor extends SpecialTokenValueExtractor {
 		let path = '';
 
 		if (typeof lastHistory.location === 'string')
-			path = `${lastHistory.location}[${lastHistory.index}].${parts.slice(pNum).join('.')}`;
+			path = `${lastHistory.location}.${parts.slice(pNum).join('.')}`;
 		else
 			path = `${
 				lastHistory.location.type === 'VALUE'
 					? lastHistory.location.value
 					: lastHistory.location.expression
-			}[${lastHistory.index}].${parts.slice(pNum).join('.')}`;
-
-		return getDataFromPath(
-			path,
-			this.history.length === 1 ? [] : this.history.slice(0, this.history.length - 1),
-			PageStoreExtractor.getForContext(lastHistory.pageName ?? GLOBAL_CONTEXT_NAME),
-		);
+			}.${parts.slice(pNum).join('.')}`;
+		return { path, lastHistory };
 	}
 }
 

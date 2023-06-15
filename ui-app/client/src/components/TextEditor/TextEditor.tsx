@@ -1,31 +1,18 @@
-import { deepEqual, Schema } from '@fincity/kirun-js';
+import { deepEqual } from '@fincity/kirun-js';
+import Editor from '@monaco-editor/react';
 import React, { useEffect, useRef, useState } from 'react';
-import { NAMESPACE_UI_ENGINE } from '../../constants';
 import {
 	addListenerAndCallImmediately,
-	getData,
-	setData,
-	getDataFromLocation,
-	getDataFromPath,
 	getPathFromLocation,
 	PageStoreExtractor,
+	setData,
 } from '../../context/StoreContext';
-import { HelperComponent } from '../HelperComponent';
-import {
-	ComponentProperty,
-	ComponentPropertyDefinition,
-	ComponentProps,
-	DataLocation,
-	RenderContext,
-	Translations,
-} from '../../types/common';
-import { getTranslations } from '../util/getTranslations';
-import { propertiesDefinition, stylePropertiesDefinition } from './textEditorProperties';
-import { Component } from '../../types/common';
-import TextEditorStyle from './TextEditorStyle';
-import useDefinition from '../util/useDefinition';
+import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import Editor from '@monaco-editor/react';
+import { HelperComponent } from '../HelperComponent';
+import useDefinition from '../util/useDefinition';
+import { propertiesDefinition, stylePropertiesDefinition } from './textEditorProperties';
+import TextEditorStyle from './TextEditorStyle';
 
 function TextEditor(props: ComponentProps) {
 	const {
@@ -53,27 +40,33 @@ function TextEditor(props: ComponentProps) {
 
 	const [text, setText] = useState('{}');
 	const [data, setDataInState] = useState({});
+	const editorRef = useRef<any>(null);
+	const [_, setNow] = useState(0);
 
 	useEffect(() => {
 		if (!bindingPathPath) return;
 
 		return addListenerAndCallImmediately(
 			(_, fromStore) => {
+				const editorModel = editorRef.current?.getModel().getValue();
 				if (documentType === 'json') {
-					if (!deepEqual(fromStore, data)) {
+					const tJSON = JSON.stringify(fromStore, undefined, 2);
+					if (!deepEqual(fromStore, data) || editorModel != tJSON) {
 						setDataInState(fromStore);
-						setText(JSON.stringify(fromStore, undefined, 2));
+						if (tJSON != editorModel) setText(tJSON);
+						editorRef.current?.getModel().setValue(tJSON);
 					}
 				} else {
-					if (text != fromStore) {
+					if (text != fromStore || editorModel != fromStore) {
 						setText(fromStore);
+						editorRef.current?.getModel().setValue(fromStore);
 					}
 				}
 			},
 			pageExtractor,
 			bindingPathPath,
 		);
-	}, [bindingPathPath]);
+	}, [bindingPathPath, editorRef.current, documentType, text, data, setText, setData]);
 
 	const handleChange = (ev: any) => {
 		if (!bindingPathPath) return;
@@ -92,10 +85,20 @@ function TextEditor(props: ComponentProps) {
 		{},
 		stylePropertiesWithPseudoStates,
 	);
+
 	return (
 		<div className="comp compTextEditor" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />
-			<Editor language={documentType} height="100%" value={text} onChange={handleChange} />
+			<Editor
+				language={documentType}
+				height="100%"
+				value={text}
+				onChange={handleChange}
+				onMount={editor => {
+					editorRef.current = editor;
+					setNow(Date.now());
+				}}
+			/>
 		</div>
 	);
 }
