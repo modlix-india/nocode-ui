@@ -13,6 +13,7 @@ import { deepEqual, ExpressionEvaluator } from '@fincity/kirun-js';
 import { getExtractionMap } from '../util/getRenderData';
 import CommonCheckbox from '../../commonComponents/CommonCheckbox';
 import { duplicate } from '@fincity/kirun-js';
+import { runEvent } from '../util/runEvent';
 
 function TableColumnsComponent(props: ComponentProps) {
 	const [value, setValue] = useState([]);
@@ -62,6 +63,7 @@ function TableColumnsComponent(props: ComponentProps) {
 		multiSelect,
 		pageSize,
 		uniqueKey,
+		onSelect,
 	} = props.context.table ?? {};
 
 	useEffect(() => setValue(props.context.table?.data), [props.context.table?.data]);
@@ -126,6 +128,19 @@ function TableColumnsComponent(props: ComponentProps) {
 		} else {
 			setData(selectionBindingPath, putObj, context.pageName);
 		}
+
+		const selectEvent = onSelect ? props.pageDefinition.eventFunctions[onSelect] : undefined;
+
+		if (!selectEvent) return;
+
+		(async () =>
+			await runEvent(
+				selectEvent,
+				uniqueKey,
+				context.pageName,
+				locationHistory,
+				props.pageDefinition,
+			))();
 	};
 
 	const showCheckBox = multiSelect && selectionType !== 'NONE' && selectionBindingPath;
