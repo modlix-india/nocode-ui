@@ -32,6 +32,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			'Autocomplete specifies what type or if any assistance that is provided to user while filling forms, uses same values as its html attribute.',
 		defaultValue: 'off',
 		group: ComponentPropertyGroup.ADVANCED,
+		enumValues: [
+			{ name: 'off', displayName: 'Off', description: 'Autocomplete off' },
+			{ name: 'on', displayName: 'On', description: 'Autocomplete on' },
+			{ name: 'none', displayName: 'None', description: 'No autocomplete' },
+		],
 	},
 
 	{
