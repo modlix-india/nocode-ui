@@ -3,7 +3,11 @@ import {
 	SCHEMA_BOOL_COMP_PROP,
 	SCHEMA_STRING_COMP_PROP,
 } from '../../constants';
-import { ComponentPropertyGroup, ComponentPropertyDefinition } from '../../types/common';
+import {
+	ComponentPropertyGroup,
+	ComponentPropertyDefinition,
+	ComponentPropertyEditor,
+} from '../../types/common';
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
@@ -74,6 +78,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'On Search Event',
 		description: 'Search event to run on search.',
 		translatable: true,
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		group: ComponentPropertyGroup.EVENTS,
 	},
 
@@ -92,7 +97,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Close dropdown on mouse leave',
 		description:
 			'Dropdown will be closed on mouse cursor leaving dropdown container when this property is true.',
-		defaultValue: false,
+		defaultValue: true,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	COMMON_COMPONENT_PROPERTIES.validation,
