@@ -19,6 +19,7 @@ import {
 import { getData } from '../context/StoreContext';
 import { ComponentProperty } from '../types/common';
 import { pathFromParams, queryParamsSerializer } from './utils';
+import { shortUUID } from '../util/shortUUID';
 
 const SIGNATURE = new FunctionSignature('DeleteData')
 	.setNamespace(NAMESPACE_UI_ENGINE)
@@ -87,6 +88,8 @@ export class DeleteData extends AbstractFunction {
 				if (!isNullValue(v)) a[k] = v;
 				return a;
 			}, {});
+
+		if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
 		try {
 			const response = await axios({
 				url: pathFromParams(url, pathParams),
