@@ -82,15 +82,27 @@ function KIRunEditor(
 
 	// Getting function definition.
 	const [rawDef, setRawDef] = useState<any>();
+	const [name, setName] = useState<string>();
+	const [selectedStatements, setSelectedStatements] = useState<Map<string, boolean>>(new Map());
+	const [editParameters, setEditParameters] = useState<string>('');
 
 	useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
-			(_, v) => setRawDef(correctStatementNames(v)),
+			(_, v) => {
+				const hereDef = correctStatementNames(v);
+				setRawDef(hereDef);
+				const finName = `${hereDef.namespace ?? '_'}.${hereDef.name}`;
+				if (name !== finName) {
+					setName(finName);
+					setEditParameters('');
+					setSelectedStatements(new Map());
+				}
+			},
 			pageExtractor,
 			bindingPathPath,
 		);
-	}, [bindingPathPath, setRawDef, pageExtractor]);
+	}, [bindingPathPath, setRawDef, pageExtractor, name]);
 
 	const personalizationPath = bindingPath2
 		? getPathFromLocation(bindingPath2!, locationHistory, pageExtractor)
@@ -202,7 +214,6 @@ function KIRunEditor(
 		setPositions(positions);
 	}, [executionPlan]);
 
-	const [selectedStatements, setSelectedStatements] = useState<Map<string, boolean>>(new Map());
 	let statements: Array<ReactNode> = [];
 
 	const selectStatement = useCallback(
@@ -276,8 +287,6 @@ function KIRunEditor(
 		},
 		[bindingPathPath, rawDef, selectedStatements, isReadonly, setData, context.pageName],
 	);
-
-	const [editParameters, setEditParameters] = useState<string>('');
 
 	if (executionPlan && !('message' in executionPlan) && rawDef?.steps) {
 		statements = Object.keys(rawDef.steps ?? {})
