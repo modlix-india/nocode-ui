@@ -38,10 +38,8 @@ function Gallery(props: ComponentProps) {
 			fullScreen,
 			showArrowButtons,
 			arrowButtons,
-			showThumbnailFeature,
-			thumbnailPosition,
-			showPreviewFeature,
-			previewPosition,
+			previewMode,
+			position,
 			easing,
 			autoPlay,
 			slideSpeed,
@@ -218,8 +216,15 @@ function Gallery(props: ComponentProps) {
 				>
 					<img
 						className="slideImage"
+						style={resolvedStyles?.slideImage ?? {}}
 						src={galleryData[transitionFrom!].src}
 						alt="previousSlide"
+					/>
+					<SubHelperComponent
+						style={resolvedStyles.slideImage ?? {}}
+						className="slideImage"
+						definition={props.definition}
+						subComponentName="slideImage"
 					/>
 				</div>,
 				<div
@@ -236,8 +241,15 @@ function Gallery(props: ComponentProps) {
 				>
 					<img
 						className="slideImage"
+						style={resolvedStyles?.slideImage ?? {}}
 						src={galleryData[slideNum!].src}
 						alt="CurrentSlide"
+					/>
+					<SubHelperComponent
+						style={resolvedStyles.slideImage ?? {}}
+						className="slideImage"
+						definition={props.definition}
+						subComponentName="slideImage"
 					/>
 				</div>,
 			];
@@ -249,13 +261,20 @@ function Gallery(props: ComponentProps) {
 					onClick={handleBubbling}
 				>
 					<img
-						className={`slideImage ${zoom ? 'allowZoom' : ''}`}
+						className="slideImage"
+						style={resolvedStyles?.slideImage ?? {}}
 						src={galleryData[slideNum!].src}
 						alt="displayedImage"
 						ref={imageRef}
 						onClick={event => {
 							zoom && handleImageClick(event);
 						}}
+					/>
+					<SubHelperComponent
+						style={resolvedStyles.slideImage ?? {}}
+						className="slideImage"
+						definition={props.definition}
+						subComponentName="slideImage"
 					/>
 				</div>,
 			];
@@ -349,15 +368,22 @@ function Gallery(props: ComponentProps) {
 			style={resolvedStyles.previewCloseButton ?? {}}
 			className="fa-solid fa-xmark fa-xl"
 			onClick={() => setShowPreview(false)}
-		></i>
+		>
+			<SubHelperComponent
+				definition={props.definition}
+				subComponentName="previewCloseButton"
+			/>
+		</i>
 	);
 	const zoomIcon = zoom ? (
 		<i
-			style={resolvedStyles.previewCloseButton ?? {}}
+			style={resolvedStyles.toolbarButton ?? {}}
 			className="fa-solid fa-magnifying-glass fa-xl"
 			onClick={() => handleZoomIconClick()}
 			key="zoom"
-		></i>
+		>
+			<SubHelperComponent definition={props.definition} subComponentName="toolbarButton" />
+		</i>
 	) : null;
 
 	const autoPlayIcon = autoPlay ? (
@@ -368,14 +394,24 @@ function Gallery(props: ComponentProps) {
 					className="fa-solid fa-play fa-xl"
 					onClick={() => setSlideShow(true)}
 					key="play"
-				></i>
+				>
+					<SubHelperComponent
+						definition={props.definition}
+						subComponentName="toolbarButton"
+					/>
+				</i>
 			) : (
 				<i
 					style={resolvedStyles.toolbarButton ?? {}}
 					className="fa-solid fa-pause fa-xl"
 					onClick={() => setSlideShow(false)}
 					key="pause"
-				></i>
+				>
+					<SubHelperComponent
+						definition={props.definition}
+						subComponentName="toolbarButton"
+					/>
+				</i>
 			)}
 		</>
 	) : null;
@@ -385,31 +421,47 @@ function Gallery(props: ComponentProps) {
 			className="fa-solid fa-expand fa-xl"
 			onClick={() => toogleFullscreen()}
 			key="fullscreen"
-		></i>
+		>
+			<SubHelperComponent definition={props.definition} subComponentName="toolbarButton" />
+		</i>
 	) : null;
-	const thumbnailIcon = showThumbnailFeature ? (
-		<i
-			style={resolvedStyles.toolbarButton ?? {}}
-			className="fa-solid fa-grip-vertical fa-xl"
-			onClick={() => setShowThumbnail(!showThumbnail)}
-			key="thumbnail"
-		></i>
-	) : null;
-	const previewIcon = showPreviewFeature ? (
-		<i
-			style={resolvedStyles.toolbarButton ?? {}}
-			className="fa-solid fa-list fa-xl"
-			onClick={() => setShowPreview(!showPreivew)}
-			key="preview"
-		></i>
-	) : null;
+	const thumbnailIcon =
+		previewMode === 'Thumbnail' ? (
+			<i
+				style={resolvedStyles.toolbarButton ?? {}}
+				className="fa-solid fa-grip-vertical fa-xl"
+				onClick={() => setShowThumbnail(!showThumbnail)}
+				key="thumbnail"
+			>
+				<SubHelperComponent
+					definition={props.definition}
+					subComponentName="toolbarButton"
+				/>
+			</i>
+		) : null;
+	const previewIcon =
+		previewMode === 'Preview' ? (
+			<i
+				style={resolvedStyles.toolbarButton ?? {}}
+				className="fa-solid fa-list fa-xl"
+				onClick={() => setShowPreview(!showPreivew)}
+				key="preview"
+			>
+				<SubHelperComponent
+					definition={props.definition}
+					subComponentName="toolbarButton"
+				/>
+			</i>
+		) : null;
 	const closeIcon = showClose ? (
 		<i
 			style={resolvedStyles.toolbarButton ?? {}}
 			className="fa-solid fa-xmark fa-xl closeIcon"
 			onClick={handleClose}
 			key="close"
-		></i>
+		>
+			<SubHelperComponent definition={props.definition} subComponentName="toolbarButton" />
+		</i>
 	) : null;
 	const galleryTools = [
 		zoomIcon,
@@ -430,13 +482,29 @@ function Gallery(props: ComponentProps) {
 					ref={galleryRef}
 				>
 					<HelperComponent definition={props.definition} />
-					<div className={`mainContainer preview${previewPosition}`}>
-						<div className={`galleryContainer thumbnail${thumbnailPosition}`}>
+					<div className={`mainContainer preview${position}`}>
+						<div className={`galleryContainer thumbnail${position}`}>
 							<div className={`galleryToolbar`} onClick={handleBubbling}>
-								<div className="leftColumn">
+								<div
+									className="leftColumn"
+									style={resolvedStyles.toolbarLeftColumn ?? {}}
+								>
 									{`${slideNum + 1} / ${galleryData?.length}`}
+									<SubHelperComponent
+										definition={props.definition}
+										subComponentName="toolbarLeftColumn"
+									/>
 								</div>
-								<div className="rightColumn"> {galleryTools}</div>
+								<div
+									className="rightColumn"
+									style={resolvedStyles.toolbarRightColumn ?? {}}
+								>
+									{galleryTools}
+									<SubHelperComponent
+										definition={props.definition}
+										subComponentName="toolbarRightColumn"
+									/>
+								</div>
 							</div>
 							<div
 								className={`imageSliderContainer ${isZoomed ? 'imageZoomed' : ''}`}
@@ -452,69 +520,117 @@ function Gallery(props: ComponentProps) {
 											className={`fa-solid fa-chevron-left button`}
 											style={resolvedStyles.arrowButtons ?? {}}
 											onClick={() => prevImage()}
-										></i>
+										>
+											<SubHelperComponent
+												definition={props.definition}
+												subComponentName="arrowButtons"
+											/>
+										</i>
 										<i
 											className={` fa-solid fa-chevron-right button`}
 											style={resolvedStyles.arrowButtons ?? {}}
 											onClick={() => nextImage()}
-										></i>
+										>
+											<SubHelperComponent
+												definition={props.definition}
+												subComponentName="arrowButtons"
+											/>
+										</i>
 									</div>
 								)}
 								{showChildren}
 							</div>
-							{showThumbnailFeature && (
+							{previewMode === 'Thumbnail' && (
 								<div
-									className={`thumbnailContainer thumbnail${thumbnailPosition} ${
-										!showThumbnail ? `hide${thumbnailPosition}` : ''
+									className={`thumbnailContainer thumbnail${position} ${
+										!showThumbnail ? `hide${position}` : ''
 									} ${isZoomed ? 'imageZoomed' : ''}`}
 									style={resolvedStyles?.thumbnailContainer ?? {}}
 									onClick={handleBubbling}
 								>
+									<SubHelperComponent
+										definition={props.definition}
+										subComponentName="thumbnailContainer"
+									/>
 									{galleryData?.map((each: any, index: number) => (
 										<div
 											className={`thumbnailImageDiv ${
 												slideNum === index ? 'selected' : ''
 											}`}
+											style={resolvedStyles?.thumbnailImageDiv ?? {}}
 											onClick={() => selectedImage(index)}
 											key={each[`${startingImage?.keyName}`]}
 										>
+											<SubHelperComponent
+												definition={props.definition}
+												subComponentName="thumbnailImageDiv"
+											/>
 											<img
 												src={each?.src}
 												alt={`${each?.name}}`}
 												className="thumbnailImage"
+												style={resolvedStyles?.thumbnailImage ?? {}}
+											/>
+											<SubHelperComponent
+												style={resolvedStyles.thumbnailImage ?? {}}
+												className="thumbnailImage"
+												definition={props.definition}
+												subComponentName="thumbnailImage"
 											/>
 										</div>
 									))}
 								</div>
 							)}
 						</div>
-						{showPreviewFeature && (
+						{previewMode === 'Preview' && (
 							<div
-								className={`previewContainer ${previewPosition} ${
-									showPreivew ? `show${previewPosition}` : ''
+								className={`previewContainer ${position} ${
+									showPreivew ? `show${position}` : ''
 								}`}
+								style={resolvedStyles.previewContainer ?? {}}
 								onClick={handleBubbling}
 							>
+								<SubHelperComponent
+									definition={props.definition}
+									subComponentName="previewContainer"
+								/>
 								<div className={`previewCloseIcon ${!showPreivew ? 'hide' : ''}`}>
 									{previewCloseIcon}
 								</div>
 								<div
-									className={`previewList ${previewPosition} ${
-										!showPreivew ? `hide${previewPosition}` : ''
+									className={`previewList ${position} ${
+										!showPreivew ? `hide${position}` : ''
 									}`}
+									style={resolvedStyles.previewList ?? {}}
 								>
+									<SubHelperComponent
+										definition={props.definition}
+										subComponentName="previewList"
+									/>
 									{galleryData?.map((each: any, index: number) => (
 										<div
-											className={`previewImageDiv ${previewPosition} ${
+											className={`previewImageDiv ${position} ${
 												slideNum === index ? 'selected' : ''
 											}`}
+											style={resolvedStyles.previewImageDiv ?? {}}
 											onClick={() => selectedImage(index)}
 											key={each[`${startingImage?.keyName}`]}
 										>
+											<SubHelperComponent
+												definition={props.definition}
+												subComponentName="previewImageDiv"
+											/>
 											<img
 												src={each?.src}
 												alt={`${each?.name}}`}
 												className="previewImage"
+												style={resolvedStyles.previewImage ?? {}}
+											/>
+											<SubHelperComponent
+												style={resolvedStyles.previewImage ?? {}}
+												className="previewImage"
+												definition={props.definition}
+												subComponentName="previewImage"
 											/>
 										</div>
 									))}

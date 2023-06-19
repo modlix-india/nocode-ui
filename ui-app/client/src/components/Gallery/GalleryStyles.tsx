@@ -60,11 +60,14 @@ export default function PopupStyles({ theme }: { theme: Map<string, Map<string, 
     }
     ${PREFIX} .previewList.Top , ${PREFIX} .previewList.Bottom {
       display: flex;
-      justify-content: center;
+      justify-content: start;
       align-items:center;
       width: 90%;
       margin: -22px auto 16px;
       overflow: auto;
+      overflow-y: hidden;
+      height: 80px;
+
     }
     ${PREFIX} .previewList.hideLeft, ${PREFIX} .previewList.Top.hideTop {
       display: none;
@@ -147,11 +150,12 @@ export default function PopupStyles({ theme }: { theme: Map<string, Map<string, 
     ${PREFIX} .thumbnailContainer {
       width: 80%;
       display: flex;
-      justify-content: center;
+      justify-content: start;
       align-items: center;
       gap: 8px;
       margin: 8px auto;
       overflow: auto;
+      overflow-y: hidden;
       max-height: 90px;
       max-width: none;
       transition: max-width .3s, max-height .3s, margin .3s;
@@ -159,7 +163,7 @@ export default function PopupStyles({ theme }: { theme: Map<string, Map<string, 
     ${PREFIX} .thumbnailContainer.imageZoomed {
       z-index: -1;
     }
-    
+   
     ${PREFIX} .thumbnailContainer.thumbnailRight, ${PREFIX} .thumbnailContainer.thumbnailLeft {
       flex-direction: column;
       width: auto;
@@ -167,6 +171,7 @@ export default function PopupStyles({ theme }: { theme: Map<string, Map<string, 
       margin: 0 10px;
       max-height: none;
       max-width: 140px;
+      overflow-y: auto;
     }
     ${PREFIX} .thumbnailContainer.thumbnailTop {
       margin: 50px auto 8px auto;
@@ -255,7 +260,7 @@ export default function PopupStyles({ theme }: { theme: Map<string, Map<string, 
       top: auto;
       bottom: 0;
       right: 0;
-      width:auto;
+      width: auto;
     }
     ${PREFIX} .button {
       font-size: 50px;
