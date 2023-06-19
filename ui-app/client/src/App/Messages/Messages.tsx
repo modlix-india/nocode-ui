@@ -1,27 +1,99 @@
 import React, { useEffect, useState } from 'react';
 import { STORE_PATH_APP_MESSAGE_TIMEOUT, STORE_PATH_MESSAGES } from '../../constants';
 import {
-	addListenerAndCallImmediately as alci,
+	addListenerAndCallImmediately,
+	addListenerAndCallImmediatelyWithChildrenActivity,
 	getDataFromPath,
 	setData,
 } from '../../context/StoreContext';
+import { duplicate } from '@fincity/kirun-js';
 
 export function Messages() {
-	const [msgs, setMsgs] = useState([]);
+	const [msgs, setMsgs] = useState<any[]>([]);
+	const [showStackTraceId, setShowStackTraceId] = useState<string | undefined>(undefined);
 
-	useEffect(() => alci((_, m) => setMsgs(m ?? []), undefined, STORE_PATH_MESSAGES), []);
+	useEffect(
+		() =>
+			addListenerAndCallImmediately(
+				(_, m) => setMsgs(m ?? []),
+				undefined,
+				STORE_PATH_MESSAGES,
+			),
+		[],
+	);
 
-	const msgComps = msgs.map((e: any) => (
-		<div key={e.id} className={`_message ${e.type}`}>
-			<i className={`fa-xl ${ICONS[e.type]}`} />
-			<div className="_msgString">{typeof e.msg === 'object' ? e.msg.message : e.msg}</div>
-			<i
-				className="fa fa-solid fa-circle-xmark"
-				tabIndex={0}
-				onClick={() => removeMessage(e.id)}
-			/>
-		</div>
-	));
+	const msgComps = msgs.map((e: any, i: number) => {
+		const isObject = typeof e.msg === 'object';
+		const debugMessageCaret =
+			isObject && e.msg.debugMessage ? (
+				<i
+					className={`fa _pointer fa-solid fa-angle-${
+						e.isOpened?.status ? 'down' : 'right'
+					}`}
+					onClick={() => {
+						const lMsgs = duplicate(msgs);
+						lMsgs[i] = {
+							...lMsgs[i],
+							isOpened: { status: !e.isOpened?.status },
+						};
+						setData(STORE_PATH_MESSAGES, lMsgs);
+					}}
+				/>
+			) : undefined;
+		const debugMessage =
+			isObject && e.isOpened?.status ? (
+				<div className="_msgString _msgDebug">{e.msg.debugMessage}</div>
+			) : undefined;
+		const stackTraceIcon =
+			isObject && e.msg.stackTrace ? (
+				<i
+					className="fa _pointer fa-solid  fa-arrow-up-right-from-square"
+					onClick={() => {
+						const lMsgs = duplicate(msgs);
+
+						lMsgs[i] = {
+							...lMsgs[i],
+							isOpened: { status: e.isOpened?.status },
+						};
+						setShowStackTraceId(showStackTraceId === e.id ? undefined : e.id);
+						setData(STORE_PATH_MESSAGES, lMsgs);
+					}}
+				/>
+			) : undefined;
+
+		let stackTrace = undefined;
+		if (e.id === showStackTraceId) {
+			const msg = msgs.find((e: any) => e.id === showStackTraceId);
+			if (msg)
+				stackTrace = (
+					<div className={`_msgStackTrace ${e.type}`}>
+						<div className="_stackTrace">{e.msg.stackTrace}</div>
+					</div>
+				);
+		}
+
+		return (
+			<>
+				<div key={e.id} data-custom={e.id} className={`_message ${e.type}`}>
+					<i className={`fa-xl ${ICONS[e.type]}`} />
+					<div className="_msgStringContainer">
+						<div className="_msgString">
+							{debugMessageCaret}
+							{isObject ? e.msg.message : e.msg}
+							{stackTraceIcon}
+						</div>
+						{debugMessage}
+					</div>
+					<i
+						className="fa fa-solid fa-circle-xmark"
+						tabIndex={0}
+						onClick={() => removeMessage(e.id)}
+					/>
+				</div>
+				{stackTrace}
+			</>
+		);
+	});
 
 	return <div className="comp compMessages">{msgComps}</div>;
 }
@@ -70,7 +142,7 @@ setInterval(() => {
 
 	const now = Date.now();
 
-	const newMsgs = messages.filter((e: any) => e.when + timeout > now);
+	const newMsgs = messages.filter((e: any) => !!e.isOpened || e.when + timeout > now);
 
 	if (messages.length === newMsgs.length) return;
 
