@@ -1,5 +1,5 @@
 import { deepEqual, isNullValue } from '@fincity/kirun-js';
-import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
+import React, { ChangeEvent, UIEvent, useCallback, useEffect, useRef, useState } from 'react';
 import CommonInputText from '../../commonComponents/CommonInputText';
 import {
 	PageStoreExtractor,
@@ -69,6 +69,7 @@ function DropdownComponent(props: ComponentProps) {
 			searchLabel,
 			clearSearchTextOnClose,
 			onSearch,
+			onScrollReachedEnd,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -284,6 +285,24 @@ function DropdownComponent(props: ComponentProps) {
 			);
 	}, [selected, validation]);
 
+	const scrollEndEvent =
+		onScrollReachedEnd && props.pageDefinition.eventFunctions[onScrollReachedEnd]
+			? async (e: UIEvent<HTMLDivElement>) => {
+					const target = e.target as HTMLDivElement;
+
+					if (Math.abs(target.scrollHeight - target.scrollTop - target.clientHeight) > 2)
+						return;
+
+					await runEvent(
+						props.pageDefinition.eventFunctions[onScrollReachedEnd],
+						key,
+						context.pageName,
+						locationHistory,
+						props.pageDefinition,
+					);
+			  }
+			: undefined;
+
 	return (
 		<div
 			className="comp compDropdown"
@@ -318,7 +337,11 @@ function DropdownComponent(props: ComponentProps) {
 				definition={props.definition}
 			/>
 			{showDropdown && (
-				<div className="dropdownContainer" style={computedStyles.dropDownContainer ?? {}}>
+				<div
+					className="dropdownContainer"
+					style={computedStyles.dropDownContainer ?? {}}
+					onScroll={scrollEndEvent}
+				>
 					<SubHelperComponent
 						definition={props.definition}
 						subComponentName="dropDownContainer"

@@ -77,11 +77,17 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'On Search Event',
 		description: 'Search event to run on search.',
-		translatable: true,
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		group: ComponentPropertyGroup.EVENTS,
 	},
-
+	{
+		name: 'onScrollReachedEnd',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Scroll Reached End',
+		description: 'When the scroll reaches the end of the dropdown.',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		group: ComponentPropertyGroup.EVENTS,
+	},
 	{
 		name: 'searchLabel',
 		schema: SCHEMA_STRING_COMP_PROP,
