@@ -1,10 +1,10 @@
 import React from 'react';
 import { StyleResolution } from '../../types/common';
 import { processStyleDefinition, processStyleValueWithFunction } from '../../util/styleProcessor';
-import { styleProperties, styleDefaults } from '../Popup/popupStyleProperties';
+import { styleProperties, styleDefaults } from './galleryStyleProperties';
 
 const PREFIX = '.comp.compGallery';
-export default function PopupStyles({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function GalleryStyles({ theme }: { theme: Map<string, Map<string, string>> }) {
 	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
 	const css =
 		`
@@ -15,7 +15,6 @@ export default function PopupStyles({ theme }: { theme: Map<string, Map<string, 
       right: 0;
       bottom: 0;
       left: 0;  
-      background-color: rgb(24 24 27 / 80%);
       backdrop-filter: blur(${processStyleValueWithFunction(values.get('backdropFilter'), values)}) 
     }
     ${PREFIX} .mainContainer {
@@ -36,7 +35,6 @@ export default function PopupStyles({ theme }: { theme: Map<string, Map<string, 
     ${PREFIX} .previewContainer {
       position: relative;
       height: 100vh;
-      background-color: #FFFFFF;
       max-width: 0px;
       max-height: none;
       transition: max-width .3s, max-height .3s;
@@ -55,15 +53,13 @@ export default function PopupStyles({ theme }: { theme: Map<string, Map<string, 
     ${PREFIX} .previewList {
       display: grid;
       grid-template-columns: auto auto;
-      gap: 8px;
-      margin: 22px 12px;
+      position: relative;
     }
     ${PREFIX} .previewList.Top , ${PREFIX} .previewList.Bottom {
       display: flex;
       justify-content: start;
       align-items:center;
       width: 90%;
-      margin: -22px auto 16px;
       overflow: auto;
       overflow-y: hidden;
       height: 80px;
@@ -73,31 +69,24 @@ export default function PopupStyles({ theme }: { theme: Map<string, Map<string, 
       display: none;
     }
     ${PREFIX} .previewImageDiv {
-      width: 80px;
-      height: 100px;
-      border: 2px solid grey;
-      border-radius: 4px;
       cursor: pointer;
-    }
-    ${PREFIX} .previewImageDiv.selected {
-      border: 2px solid blue;
+      position: relative;
     }
     ${PREFIX} .previewImageDiv.Top , ${PREFIX} .previewImageDiv.Bottom {
-      width: 100px;
-      height: 80px;
       flex-shrink: 0;
     }
     ${PREFIX} .previewImage {
       width: 100%;
       height: 100%;
-      border-radius: 4px;
-      object-fit: cover;
+      position: relative;
     }
     ${PREFIX} .previewCloseIcon {
       display: flex;
       justify-content: end;
       cursor: pointer;
-      margin: 22px 14px;
+    }
+    ${PREFIX} .previewCloseIcon i {
+      position: relative;
     }
     ${PREFIX} .previewCloseIcon.hideLeft, ${PREFIX} .previewCloseIcon.hideTop {
       display: none
@@ -130,35 +119,28 @@ export default function PopupStyles({ theme }: { theme: Map<string, Map<string, 
     ${PREFIX} .galleryToolbar .rightColumn {
       display: flex;
       justify-content: flex-end;
-      gap: 20px;
       cursor: pointer;
-      padding: 22px 12px;
-      background-color: rgb(24 24 27 / 50%);
-      z-index: 1;
+      z-index: 9;
+      position: relative;
     }
     ${PREFIX} .galleryToolbar .rightColumn i {
-      color: #FFFFFF;
       cursor: pointer;
-      width: 24px;
+      position: relative;
+      z-index: 10;
     }
     ${PREFIX} .galleryToolbar .leftColumn {
-      color: #FFFFFF;
-      font-size: 18px;
-      z-index: 1;
-      margin-left: 12px;
+      z-index: 9;
+      position: relative;
     }
     ${PREFIX} .thumbnailContainer {
-      width: 80%;
       display: flex;
       justify-content: start;
       align-items: center;
-      gap: 8px;
-      margin: 8px auto;
       overflow: auto;
       overflow-y: hidden;
-      max-height: 90px;
       max-width: none;
       transition: max-width .3s, max-height .3s, margin .3s;
+      position: relative;
     }
     ${PREFIX} .thumbnailContainer.imageZoomed {
       z-index: -1;
@@ -167,14 +149,8 @@ export default function PopupStyles({ theme }: { theme: Map<string, Map<string, 
     ${PREFIX} .thumbnailContainer.thumbnailRight, ${PREFIX} .thumbnailContainer.thumbnailLeft {
       flex-direction: column;
       width: auto;
-      height: 80%;
-      margin: 0 10px;
       max-height: none;
-      max-width: 140px;
       overflow-y: auto;
-    }
-    ${PREFIX} .thumbnailContainer.thumbnailTop {
-      margin: 50px auto 8px auto;
     }
     ${PREFIX} .thumbnailContainer.thumbnailBottom.hideBottom,
     ${PREFIX} .thumbnailContainer.thumbnailTop.hideTop {
@@ -187,12 +163,10 @@ export default function PopupStyles({ theme }: { theme: Map<string, Map<string, 
       margin: 0;
     }
     ${PREFIX} .thumbnailImageDiv {
-      height: 80px; 
       flex-shrink: 0;
-      border: 1px solid grey;
-      border-radius: 4px;
       cursor: pointer;
       opacity: .5;
+      position: relative;
     }
     ${PREFIX} .thumbnailImageDiv.selected {
       opacity: 1;
@@ -200,8 +174,7 @@ export default function PopupStyles({ theme }: { theme: Map<string, Map<string, 
     ${PREFIX} .thumbnailImage {
       width: 100%;
       height: 100%;
-      border-radius: 4px;
-      object-fit: cover;
+      position: relative;
     }
     ${PREFIX} .imageSliderContainer {
       flex: 1;
@@ -225,8 +198,8 @@ export default function PopupStyles({ theme }: { theme: Map<string, Map<string, 
     }
     ${PREFIX} .slideImage {
       width: 100%;
-      object-fit: cover;
       transition: transform .3s;
+      position: relative;
     }
     ${PREFIX} .arrowButtonsContainer {
       position: absolute;
@@ -237,7 +210,7 @@ export default function PopupStyles({ theme }: { theme: Map<string, Map<string, 
       justify-content: space-between;
       align-items: center;
       padding: 0 10px;
-      z-index: 1;
+      z-index: 9;
     }
     ${PREFIX} .arrowButtonsContainer.LeftTop {
       top: 10%;

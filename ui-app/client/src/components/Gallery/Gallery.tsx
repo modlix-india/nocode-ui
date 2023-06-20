@@ -366,7 +366,7 @@ function Gallery(props: ComponentProps) {
 	const previewCloseIcon = (
 		<i
 			style={resolvedStyles.previewCloseButton ?? {}}
-			className="fa-solid fa-xmark fa-xl"
+			className="fa-solid fa-xmark"
 			onClick={() => setShowPreview(false)}
 		>
 			<SubHelperComponent
@@ -378,7 +378,7 @@ function Gallery(props: ComponentProps) {
 	const zoomIcon = zoom ? (
 		<i
 			style={resolvedStyles.toolbarButton ?? {}}
-			className="fa-solid fa-magnifying-glass fa-xl"
+			className="fa-solid fa-magnifying-glass"
 			onClick={() => handleZoomIconClick()}
 			key="zoom"
 		>
@@ -391,7 +391,7 @@ function Gallery(props: ComponentProps) {
 			{!slideShow ? (
 				<i
 					style={resolvedStyles.toolbarButton ?? {}}
-					className="fa-solid fa-play fa-xl"
+					className="fa-solid fa-play"
 					onClick={() => setSlideShow(true)}
 					key="play"
 				>
@@ -403,7 +403,7 @@ function Gallery(props: ComponentProps) {
 			) : (
 				<i
 					style={resolvedStyles.toolbarButton ?? {}}
-					className="fa-solid fa-pause fa-xl"
+					className="fa-solid fa-pause"
 					onClick={() => setSlideShow(false)}
 					key="pause"
 				>
@@ -418,7 +418,7 @@ function Gallery(props: ComponentProps) {
 	const fullScreenIcon = fullScreen ? (
 		<i
 			style={resolvedStyles.toolbarButton ?? {}}
-			className="fa-solid fa-expand fa-xl"
+			className="fa-solid fa-expand"
 			onClick={() => toogleFullscreen()}
 			key="fullscreen"
 		>
@@ -429,7 +429,7 @@ function Gallery(props: ComponentProps) {
 		previewMode === 'Thumbnail' ? (
 			<i
 				style={resolvedStyles.toolbarButton ?? {}}
-				className="fa-solid fa-grip-vertical fa-xl"
+				className="fa-solid fa-grip-vertical"
 				onClick={() => setShowThumbnail(!showThumbnail)}
 				key="thumbnail"
 			>
@@ -443,7 +443,7 @@ function Gallery(props: ComponentProps) {
 		previewMode === 'Preview' ? (
 			<i
 				style={resolvedStyles.toolbarButton ?? {}}
-				className="fa-solid fa-list fa-xl"
+				className="fa-solid fa-list"
 				onClick={() => setShowPreview(!showPreivew)}
 				key="preview"
 			>
@@ -456,7 +456,7 @@ function Gallery(props: ComponentProps) {
 	const closeIcon = showClose ? (
 		<i
 			style={resolvedStyles.toolbarButton ?? {}}
-			className="fa-solid fa-xmark fa-xl closeIcon"
+			className="fa-solid fa-xmark"
 			onClick={handleClose}
 			key="close"
 		>
