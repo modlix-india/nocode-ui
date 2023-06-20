@@ -288,6 +288,16 @@ function KIRunEditor(
 		[bindingPathPath, rawDef, selectedStatements, isReadonly, setData, context.pageName],
 	);
 
+	const removeAllDependencies = useCallback(
+		(stmt: string) => {
+			if (isReadonly || !stmt) return;
+			const def = duplicate(rawDef);
+			delete def.steps[stmt].dependentStatements;
+			setData(bindingPathPath, def, context.pageName);
+		},
+		[bindingPathPath, rawDef, isReadonly, setData, context.pageName],
+	);
+
 	if (executionPlan && !('message' in executionPlan) && rawDef?.steps) {
 		statements = Object.keys(rawDef.steps ?? {})
 			.map(k => rawDef.steps[k])
@@ -348,6 +358,7 @@ function KIRunEditor(
 					context={context}
 					pageDefinition={pageDefinition}
 					locationHistory={locationHistory}
+					onRemoveAllDependencies={() => removeAllDependencies(s.statementName)}
 				/>
 			));
 	}
@@ -727,6 +738,7 @@ function KIRunEditor(
 					context={context}
 					pageDefinition={pageDefinition}
 					locationHistory={locationHistory}
+					onRemoveAllDependencies={() => removeAllDependencies(s.statementName)}
 				/>
 			</StatementParameters>
 		);
