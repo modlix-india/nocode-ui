@@ -30,7 +30,7 @@ export const RenderEngineContainer = () => {
 	const [appTitle, setAppTitle] = useState<string>('');
 
 	const loadDefinition = useCallback(() => {
-		const details = processLocation(location);
+		const details = processLocation(window.location);
 		let { pageName } = details;
 		setData(`${STORE_PREFIX}.urlDetails`, details);
 		if (!pageName)

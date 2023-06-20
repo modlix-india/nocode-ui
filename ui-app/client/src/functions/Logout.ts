@@ -46,7 +46,7 @@ export class Logout extends AbstractFunction {
 				headers: { AUTHORIZATION: token },
 			});
 
-			return new FunctionOutput([EventResult.outputOf(new Map([['data', new Map()]]))]);
+			return new FunctionOutput([EventResult.outputOf(new Map([['data', {}]]))]);
 		} catch (err: any) {
 			return new FunctionOutput([
 				EventResult.of(
