@@ -19,7 +19,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_ANY_COMP_PROP,
 		displayName: 'Gallery Data',
 		description: 'Gallery data to be displayed on the component.',
-		group: ComponentPropertyGroup.BASIC,
+		group: ComponentPropertyGroup.DATA,
 		multiValued: false,
 		defaultValue: [],
 	},
