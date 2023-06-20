@@ -49,6 +49,7 @@ function KIRunEditor(
 		stores?: Array<string>;
 		storePaths?: Set<string>;
 		hideArguments?: boolean;
+		functionKey?: string;
 	},
 ) {
 	const {
@@ -748,6 +749,7 @@ function KIRunEditor(
 
 	let functionEditor = editFunction ? (
 		<FunctionDetialsEditor
+			functionKey={props.functionKey}
 			rawDef={rawDef}
 			onChange={(def: any) => {
 				if (isReadonly) return;
