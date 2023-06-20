@@ -375,6 +375,30 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: 'cover',
 		selector: '.slideImage',
 	},
+	{
+		name: 'arrowButtonContainerPadding',
+		cssProperty: 'padding',
+		displayName: 'Arrow Button Container Padding',
+		description: 'The padding of Arrow Button Container.',
+		defaultValue: '0 10px',
+		selector: '.arrowButtonsContainer',
+	},
+	{
+		name: 'arrowButtonColor',
+		cssProperty: 'color',
+		displayName: 'Arrow Button Container Color',
+		description: 'The Color of Arrow Button.',
+		defaultValue: '<lightFontColor>',
+		selector: '.button',
+	},
+	{
+		name: 'arrowButtonFontSize',
+		cssProperty: 'font-size',
+		displayName: 'Arrow Button Container Font Size',
+		description: 'The Font Size of Arrow Button.',
+		defaultValue: '50px',
+		selector: '.button',
+	},
 ];
 
 export const styleDefaults = new Map<string, string>(

@@ -209,7 +209,6 @@ export default function GalleryStyles({ theme }: { theme: Map<string, Map<string
       transform: translateY(-50%);
       justify-content: space-between;
       align-items: center;
-      padding: 0 10px;
       z-index: 9;
     }
     ${PREFIX} .arrowButtonsContainer.LeftTop {
@@ -236,10 +235,8 @@ export default function GalleryStyles({ theme }: { theme: Map<string, Map<string
       width: auto;
     }
     ${PREFIX} .button {
-      font-size: 50px;
       cursor:pointer;
       position: relative;
-      color: #FFFFFF;
     }
 
     ${PREFIX} ._eachSlide._current._slideover{
