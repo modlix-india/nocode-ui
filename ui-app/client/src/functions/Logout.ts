@@ -30,12 +30,6 @@ export class Logout extends AbstractFunction {
 		try {
 			const token = getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []);
 
-			const response = await axios({
-				url: 'api/security/revoke',
-				method: 'GET',
-				headers: { AUTHORIZATION: token },
-			});
-
 			setData('Store.auth', undefined, undefined, true);
 			setData(`${LOCAL_STORE_PREFIX}.AuthToken`, undefined, undefined, true);
 			setData('Store.pageDefinition', {});
@@ -43,8 +37,14 @@ export class Logout extends AbstractFunction {
 			setData('Store.validations', {});
 			setData('Store.validationTriggers', {});
 			setData('Store.pageData', {});
-			setData('Store.application', undefined);
+			setData('Store.application', undefined, undefined, true);
 			setData('Store.functionExecutions', {});
+
+			const response = await axios({
+				url: 'api/security/revoke',
+				method: 'GET',
+				headers: { AUTHORIZATION: token },
+			});
 
 			return new FunctionOutput([EventResult.outputOf(new Map([['data', new Map()]]))]);
 		} catch (err: any) {
