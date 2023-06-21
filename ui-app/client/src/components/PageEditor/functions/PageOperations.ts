@@ -2,7 +2,13 @@ import { isNullValue, LinkedList } from '@fincity/kirun-js';
 import React from 'react';
 
 import ComponentDefinitions from '../../';
-import { COPY_CD_KEY, CUT_CD_KEY, DRAG_CD_KEY, DRAG_COMP_NAME } from '../../../constants';
+import {
+	COPY_CD_KEY,
+	CUT_CD_KEY,
+	DRAG_CD_KEY,
+	DRAG_COMP_NAME,
+	TEMPLATE_DRAG,
+} from '../../../constants';
 import { getDataFromPath, PageStoreExtractor, setData } from '../../../context/StoreContext';
 import {
 	ComponentDefinition,
@@ -525,6 +531,17 @@ export default class PageOperations {
 			// Created the definition from the default template or create one with just the name and key.
 			this._dropOn(pageDef, componentKey, key, { [key]: obj });
 			this.onSelectedComponentChanged(key);
+		} else if (droppedData.startsWith(TEMPLATE_DRAG)) {
+			const compName = droppedData.substring(TEMPLATE_DRAG.length);
+			let def: ClipboardObject;
+			try {
+				def = JSON.parse(compName);
+				def = this._changeKeys(def);
+				this._dropOn(pageDef, componentKey, def.mainKey, def.objects);
+				this.onSelectedComponentChanged(def.mainKey);
+			} catch (error) {
+				console.log('Unable to parse clipboard object');
+			}
 		}
 	}
 

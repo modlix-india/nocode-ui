@@ -54,6 +54,7 @@ function Grid(props: ComponentProps) {
 			rootMargin,
 			onMouseEnter,
 			onMouseLeave,
+			dragData,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -100,6 +101,10 @@ function Grid(props: ComponentProps) {
 		/>
 	);
 
+	const dragstartHandler = (ev: React.DragEvent<HTMLElement>) => {
+		ev.dataTransfer.setData('text/plain', dragData);
+	};
+
 	const resolvedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
 		{ focus, hover, disabled: isReadonly },
@@ -142,7 +147,16 @@ function Grid(props: ComponentProps) {
 	if (linkPath) {
 		return React.createElement(
 			containerType.toLowerCase(),
-			{ className: 'comp compGrid', id: key },
+			{
+				className: 'comp compGrid',
+				id: key,
+				draggable:
+					dragData?.length && dragData?.startsWith('TEMPLATE_DRAG_') ? true : false,
+				onDragStart:
+					dragData?.length && dragData?.startsWith('TEMPLATE_DRAG_')
+						? dragstartHandler
+						: undefined,
+			},
 			[
 				<HelperComponent key={`${key}_hlp`} definition={definition} />,
 				styleComp,
@@ -235,9 +249,14 @@ function Grid(props: ComponentProps) {
 								))();
 					  }
 					: undefined,
+			onDragStart:
+				dragData?.length && dragData?.startsWith('TEMPLATE_DRAG_')
+					? dragstartHandler
+					: undefined,
 			onFocus: stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined,
 			onBlur: stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined,
 			ref: ref,
+			draggable: dragData?.length && dragData?.startsWith('TEMPLATE_DRAG_') ? true : false,
 			className: `comp compGrid _noAnchorGrid _${layout} ${background} ${
 				sepStyle ? `_${key}_grid_css` : ''
 			}`,

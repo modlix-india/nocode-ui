@@ -27,6 +27,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 	},
 	{
+		name: 'dragData',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'Drag Data',
+		description: 'Drag Data.',
+	},
+	{
 		name: 'onMouseEnter',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'On Mouse Enter',
