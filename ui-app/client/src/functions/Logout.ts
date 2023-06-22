@@ -10,6 +10,7 @@ import {
 import axios from 'axios';
 import { LOCAL_STORE_PREFIX, NAMESPACE_UI_ENGINE } from '../constants';
 import { getDataFromPath, setData } from '../context/StoreContext';
+import { shortUUID } from '../util/shortUUID';
 
 const SIGNATURE = new FunctionSignature('Logout').setNamespace(NAMESPACE_UI_ENGINE).setEvents(
 	new Map([
@@ -40,10 +41,13 @@ export class Logout extends AbstractFunction {
 			setData('Store.application', undefined, undefined, true);
 			setData('Store.functionExecutions', {});
 
+			const headers: any = { AUTHORIZATION: token };
+			if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
+
 			const response = await axios({
 				url: 'api/security/revoke',
 				method: 'GET',
-				headers: { AUTHORIZATION: token },
+				headers,
 			});
 
 			return new FunctionOutput([EventResult.outputOf(new Map([['data', {}]]))]);
