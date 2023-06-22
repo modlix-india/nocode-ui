@@ -112,6 +112,11 @@ export interface ComponentStylePropertyDefinition {
 	[key: string]: Array<string>;
 }
 
+export interface Section {
+	name: string;
+	pageName: string;
+}
+
 export interface Component {
 	name: string;
 	icon: string;
@@ -135,6 +140,7 @@ export interface Component {
 		bindingPath5?: { name: string };
 		bindingPath6?: { name: string };
 	};
+	sections?: Array<Section>;
 	needShowInDesginMode?: boolean;
 }
 

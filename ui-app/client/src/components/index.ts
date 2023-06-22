@@ -38,6 +38,7 @@ import KIRunEditor from './KIRunEditor/KIRunEditor';
 import Video from './Video/Video';
 import SchemaForm from './SchemaForm/SchemaForm';
 import SchemaBuilder from './SchemaBuilder/SchemaBuilder';
+import Gallery from './Gallery/Gallery';
 
 export default new Map<string, Component>([
 	[Button.name, Button],
@@ -79,4 +80,5 @@ export default new Map<string, Component>([
 	[Video.name, Video],
 	[SchemaForm.name, SchemaForm],
 	[SchemaBuilder.name, SchemaBuilder],
+	[Gallery.name, Gallery],
 ]);
