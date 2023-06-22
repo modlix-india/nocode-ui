@@ -11,6 +11,7 @@ import {
 import axios from 'axios';
 import { NAMESPACE_UI_ENGINE } from '../constants';
 import { setData } from '../context/StoreContext';
+import { shortUUID } from '../util/shortUUID';
 
 const SIGNATURE = new FunctionSignature('Login')
 	.setNamespace(NAMESPACE_UI_ENGINE)
@@ -51,11 +52,15 @@ export class Login extends AbstractFunction {
 		const data: any = { userName, password, rememberMe, cookie };
 		if (identifierType) data.indentifierType = identifierType;
 
+		const headers: any = {};
+		if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
+
 		try {
 			const response = await axios({
 				url: 'api/security/authenticate',
 				method: 'POST',
 				data,
+				headers,
 			});
 
 			setData('Store.auth', response.data);
