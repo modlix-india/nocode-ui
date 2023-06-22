@@ -279,7 +279,7 @@ export interface PageDefinition {
 	properties: {
 		title?: {
 			name?: ComponentProperty<string>;
-			append?: ComponentProperty<boolean>;
+			append?: ComponentProperty<string>;
 		};
 		onLoadEvent?: string;
 		loadStrategy?: string;

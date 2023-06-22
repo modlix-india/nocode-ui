@@ -175,7 +175,7 @@ export default function DnDTopBar({
 				else if (propName === 'append')
 					if (isNullValue(value.value) && isNullValue(value.location?.expression))
 						delete page.properties.title.append;
-					else page.properties.title.append = value as ComponentProperty<boolean>;
+					else page.properties.title.append = value as ComponentProperty<string>;
 			} else if (propType === 'seo') {
 				if (!page.properties.seo) page.properties.seo = {};
 				if (isNullValue(value.value) && isNullValue(value.location?.expression))
@@ -283,13 +283,32 @@ export default function DnDTopBar({
 									/>
 								</div>
 								<div className="_eachProp">
-									<div className="_propLabel">Append Title</div>
+									<div className="_propLabel">Append/Prepend Title</div>
 									<PropertyValueEditor
 										propDef={{
 											name: 'append',
 											displayName: 'Append Title',
-											defaultValue: true,
-											schema: SCHEMA_BOOL_COMP_PROP,
+											defaultValue: 'true',
+											schema: SCHEMA_STRING_COMP_PROP,
+											enumValues: [
+												{
+													name: 'true',
+													displayName: 'Append',
+													description:
+														'Appends the title after the application title',
+												},
+												{
+													name: 'prepend',
+													displayName: 'Prepend',
+													description:
+														'Prepends the title before the application title',
+												},
+												{
+													name: 'false',
+													displayName: 'Full',
+													description: 'Shows the title only',
+												},
+											],
 										}}
 										value={properties?.title?.append}
 										onChange={v => updatePageProperties('title', 'append', v)}

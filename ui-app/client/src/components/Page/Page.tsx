@@ -50,7 +50,7 @@ function Page(props: ComponentProps) {
 				pageExtractor,
 				`${STORE_PREFIX}.urlDetails`,
 			),
-		[],
+		[setPathParts, setQueryParameters],
 	);
 
 	useEffect(() => {
@@ -61,8 +61,12 @@ function Page(props: ComponentProps) {
 			properties: { onLoadEvent = undefined, loadStrategy = 'default' } = {},
 		} = pageDefinition;
 		const v = { ...(getDataFromPath(`${STORE_PREFIX}.urlDetails`, []) ?? {}), origName: name };
+		if (isNullValue(v.pageName)) {
+			v.pageName = getDataFromPath(`${STORE_PREFIX}.application.properties.defaultPage`, []);
+		}
 		let firstTime = true;
 		let sameAsExisting = false;
+
 		if (v.pageName !== pageName) return;
 		if (pageHistory[pageName]) {
 			firstTime = false;

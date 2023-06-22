@@ -30,7 +30,7 @@ export const RenderEngineContainer = () => {
 	const [appTitle, setAppTitle] = useState<string>('');
 
 	const loadDefinition = useCallback(() => {
-		const details = processLocation(location);
+		const details = processLocation(window.location);
 		let { pageName } = details;
 		setData(`${STORE_PREFIX}.urlDetails`, details);
 		if (!pageName)
@@ -131,10 +131,12 @@ export const RenderEngineContainer = () => {
 					() => {
 						let title = appTitle ?? '';
 						const titleValue = getData(titleProp.name, [], ...tve) ?? '';
-						const appendValue = getData(titleProp.append, [], ...tve) ?? true;
+						const appendValue = '' + (getData(titleProp.append, [], ...tve) ?? true);
 
 						if (titleValue) {
-							if (appendValue && title) title = `${title} - ${titleValue}`;
+							if (appendValue === 'true' && title) title = `${title} - ${titleValue}`;
+							else if (appendValue === 'prepend' && title)
+								title = `${titleValue} - ${title}`;
 							else title = '' + titleValue;
 						}
 
@@ -154,10 +156,11 @@ export const RenderEngineContainer = () => {
 			}
 
 			const titleValue = getData(titleProp.name, [], ...tve) ?? '';
-			const appendValue = getData(titleProp.append, [], ...tve) ?? true;
+			const appendValue = '' + (getData(titleProp.append, [], ...tve) ?? true);
 
 			if (titleValue) {
-				if (appendValue && title) title = `${title} - ${titleValue}`;
+				if (appendValue === 'true' && title) title = `${title} - ${titleValue}`;
+				else if (appendValue === 'prepend' && title) title = `${titleValue} - ${title}`;
 				else title = '' + titleValue;
 			}
 		}

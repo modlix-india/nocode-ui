@@ -139,6 +139,7 @@ export default function DnDPropertyBar({
 				onShowCodeEditor={onShowCodeEditor}
 				editPageName={editPageName}
 				slaveStore={slaveStore}
+				pageOperations={pageOperations}
 			/>
 		);
 	}

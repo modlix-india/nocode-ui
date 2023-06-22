@@ -49,6 +49,7 @@ function KIRunEditor(
 		stores?: Array<string>;
 		storePaths?: Set<string>;
 		hideArguments?: boolean;
+		functionKey?: string;
 	},
 ) {
 	const {
@@ -82,15 +83,27 @@ function KIRunEditor(
 
 	// Getting function definition.
 	const [rawDef, setRawDef] = useState<any>();
+	const [name, setName] = useState<string>();
+	const [selectedStatements, setSelectedStatements] = useState<Map<string, boolean>>(new Map());
+	const [editParameters, setEditParameters] = useState<string>('');
 
 	useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
-			(_, v) => setRawDef(correctStatementNames(v)),
+			(_, v) => {
+				const hereDef = correctStatementNames(v);
+				setRawDef(hereDef);
+				const finName = `${hereDef.namespace ?? '_'}.${hereDef.name}`;
+				if (name !== finName) {
+					setName(finName);
+					setEditParameters('');
+					setSelectedStatements(new Map());
+				}
+			},
 			pageExtractor,
 			bindingPathPath,
 		);
-	}, [bindingPathPath, setRawDef, pageExtractor]);
+	}, [bindingPathPath, setRawDef, pageExtractor, name]);
 
 	const personalizationPath = bindingPath2
 		? getPathFromLocation(bindingPath2!, locationHistory, pageExtractor)
@@ -202,7 +215,6 @@ function KIRunEditor(
 		setPositions(positions);
 	}, [executionPlan]);
 
-	const [selectedStatements, setSelectedStatements] = useState<Map<string, boolean>>(new Map());
 	let statements: Array<ReactNode> = [];
 
 	const selectStatement = useCallback(
@@ -277,7 +289,15 @@ function KIRunEditor(
 		[bindingPathPath, rawDef, selectedStatements, isReadonly, setData, context.pageName],
 	);
 
-	const [editParameters, setEditParameters] = useState<string>('');
+	const removeAllDependencies = useCallback(
+		(stmt: string) => {
+			if (isReadonly || !stmt) return;
+			const def = duplicate(rawDef);
+			delete def.steps[stmt].dependentStatements;
+			setData(bindingPathPath, def, context.pageName);
+		},
+		[bindingPathPath, rawDef, isReadonly, setData, context.pageName],
+	);
 
 	if (executionPlan && !('message' in executionPlan) && rawDef?.steps) {
 		statements = Object.keys(rawDef.steps ?? {})
@@ -339,6 +359,7 @@ function KIRunEditor(
 					context={context}
 					pageDefinition={pageDefinition}
 					locationHistory={locationHistory}
+					onRemoveAllDependencies={() => removeAllDependencies(s.statementName)}
 				/>
 			));
 	}
@@ -718,6 +739,7 @@ function KIRunEditor(
 					context={context}
 					pageDefinition={pageDefinition}
 					locationHistory={locationHistory}
+					onRemoveAllDependencies={() => removeAllDependencies(s.statementName)}
 				/>
 			</StatementParameters>
 		);
@@ -727,6 +749,7 @@ function KIRunEditor(
 
 	let functionEditor = editFunction ? (
 		<FunctionDetialsEditor
+			functionKey={props.functionKey}
 			rawDef={rawDef}
 			onChange={(def: any) => {
 				if (isReadonly) return;
