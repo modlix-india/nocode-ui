@@ -5,6 +5,7 @@ import { getDataFromPath } from '../../../../context/StoreContext';
 import { ComponentPropertyDefinition } from '../../../../types/common';
 import Portal from '../../../Portal';
 import PageOperations from '../../functions/PageOperations';
+import { shortUUID } from '../../../../util/shortUUID';
 
 interface IconSelectionEditorProps {
 	value?: string;
@@ -76,16 +77,20 @@ export function ImageEditor({
 		[setInternalPath, setFilter],
 	);
 
+	const headers: any = {
+		Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
+	};
+	if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
+
 	const callForFiles = useCallback(() => {
 		setInProgress(true);
+
 		(async () => {
 			let url = `/api/files/static/${path}?size=200`; // for now hardcoding size with value 200 in future update with infinite scrolling
 			if (filter.trim() !== '') url += `&filter=${filter}`;
 			await axios
 				.get(url, {
-					headers: {
-						Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
-					},
+					headers,
 				})
 				.then(res => {
 					setFiles(res.data);
@@ -127,12 +132,7 @@ export function ImageEditor({
 								}${newFolderName}`;
 								await axios
 									.post(url, formData, {
-										headers: {
-											Authorization: getDataFromPath(
-												`${LOCAL_STORE_PREFIX}.AuthToken`,
-												[],
-											),
-										},
+										headers,
 									})
 									.finally(() => {
 										setInProgress(false);
@@ -166,13 +166,7 @@ export function ImageEditor({
 								`/api/files/static${path === '' ? '/' : path}`,
 								formData,
 								{
-									headers: {
-										'Content-Type': 'multipart/form-data',
-										Authorization: getDataFromPath(
-											`${LOCAL_STORE_PREFIX}.AuthToken`,
-											[],
-										),
-									},
+									headers,
 								},
 							);
 						} catch (e) {}
@@ -240,12 +234,7 @@ export function ImageEditor({
 																path === '' ? '' : '/'
 															}${e.name}`,
 															{
-																headers: {
-																	Authorization: getDataFromPath(
-																		`${LOCAL_STORE_PREFIX}.AuthToken`,
-																		[],
-																	),
-																},
+																headers,
 															},
 														))();
 												} catch (e) {}
