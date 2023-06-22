@@ -231,6 +231,10 @@ export default function useDefinition(
 		return a;
 	}, {});
 
+	const locationHistoryString = (locationHistory ?? [])
+		.map(e => e.location + '_' + e.index)
+		.join('');
+
 	useEffect(() => {
 		let paths = getPathsFromComponentDefinition(definition, evaluatorMaps, propDefMap);
 
@@ -284,7 +288,7 @@ export default function useDefinition(
 			pageExtractor,
 			...paths,
 		);
-	}, [definition, pathsChanged]);
+	}, [definition, pathsChanged, locationHistoryString]);
 
 	return compState;
 }

@@ -154,7 +154,8 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 		store = localStore.getItem(key);
 
 		if (!parts.length) {
-			localStore.setItem(key, value);
+			if (isNullValue(value)) localStore.removeItem(key);
+			else localStore.setItem(key, value);
 			return;
 		}
 		if (!store && parts.length) {
@@ -171,7 +172,8 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 					new Map([[LOCAL_STORE_PREFIX, localStoreExtractor]]),
 					deleteKey,
 				);
-				localStore.setItem(key, JSON.stringify(store));
+				if (isNullValue(store)) localStore.removeItem(key);
+				else localStore.setItem(key, JSON.stringify(store));
 			} catch (error) {
 				localStore.setItem(key, value);
 			}

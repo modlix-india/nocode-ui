@@ -39,8 +39,9 @@ function TextEditor(props: ComponentProps) {
 		: undefined;
 
 	const editorRef = useRef<any>(null);
+	const editorJSONTextRef = useRef<string>('');
 	const [_, setNow] = useState(Date.now());
-	const [dataInState, setDataInState] = useState<any>(undefined);
+	const datInStoreRef = useRef<any>(undefined);
 
 	useEffect(() => {
 		if (!bindingPathPath) return;
@@ -50,9 +51,11 @@ function TextEditor(props: ComponentProps) {
 				const editorModel = editorRef.current?.getModel().getValue();
 				if (documentType === 'json') {
 					const tJSON = JSON.stringify(fromStore, undefined, 2);
-					if (!deepEqual(fromStore, dataInState) || editorModel != tJSON) {
-						setDataInState(fromStore);
-						if (tJSON != editorModel) editorRef.current?.getModel().setValue(tJSON);
+					const notEqual = !deepEqual(fromStore, datInStoreRef.current);
+					if (notEqual && editorRef.current) {
+						datInStoreRef.current = fromStore;
+						editorJSONTextRef.current = tJSON;
+						editorRef.current?.getModel().setValue(tJSON);
 					}
 				} else {
 					if (editorModel != fromStore) {
@@ -63,14 +66,16 @@ function TextEditor(props: ComponentProps) {
 			pageExtractor,
 			bindingPathPath,
 		);
-	}, [bindingPathPath, editorRef.current, documentType, dataInState, setDataInState]);
+	}, [bindingPathPath, editorRef.current, editorJSONTextRef, documentType, datInStoreRef]);
 
 	const handleChange = (ev: any) => {
 		if (!bindingPathPath) return;
 
 		if (documentType === 'json') {
 			try {
+				editorJSONTextRef.current = ev;
 				const toStore = JSON.parse(ev);
+				datInStoreRef.current = toStore;
 				setData(bindingPathPath, toStore, context.pageName);
 			} catch (err) {}
 		} else {

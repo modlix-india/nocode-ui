@@ -329,7 +329,6 @@ const COMPONENT_STYLE_GROUPS: { [key: string]: Array<string> } = {
 	],
 
 	border: [
-		'borderRadius',
 		'borderTopLeftRadius',
 		'borderTopRightRadius',
 		'borderBottomLeftRadius',

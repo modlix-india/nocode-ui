@@ -455,6 +455,7 @@ export default function CodeEditor({
 							new PageDefintionFunctionsRepository(editPage),
 						)
 					}
+					functionKey={selectedFunction}
 					tokenValueExtractors={tokenValueExtractors}
 					stores={['Store', 'Page', 'Theme', 'LocalStore']}
 					storePaths={storePaths}

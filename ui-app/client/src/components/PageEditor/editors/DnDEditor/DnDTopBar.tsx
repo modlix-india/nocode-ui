@@ -130,6 +130,8 @@ export default function DnDTopBar({
 		);
 	}, [defPath, pageExtractor]);
 
+	console.log(propertiesDefinition);
+
 	const changeUrl = useCallback(() => {
 		if (url === localUrl) return;
 
@@ -173,7 +175,7 @@ export default function DnDTopBar({
 				else if (propName === 'append')
 					if (isNullValue(value.value) && isNullValue(value.location?.expression))
 						delete page.properties.title.append;
-					else page.properties.title.append = value as ComponentProperty<boolean>;
+					else page.properties.title.append = value as ComponentProperty<string>;
 			} else if (propType === 'seo') {
 				if (!page.properties.seo) page.properties.seo = {};
 				if (isNullValue(value.value) && isNullValue(value.location?.expression))
@@ -281,13 +283,32 @@ export default function DnDTopBar({
 									/>
 								</div>
 								<div className="_eachProp">
-									<div className="_propLabel">Append Title</div>
+									<div className="_propLabel">Append/Prepend Title</div>
 									<PropertyValueEditor
 										propDef={{
 											name: 'append',
 											displayName: 'Append Title',
-											defaultValue: true,
-											schema: SCHEMA_BOOL_COMP_PROP,
+											defaultValue: 'true',
+											schema: SCHEMA_STRING_COMP_PROP,
+											enumValues: [
+												{
+													name: 'true',
+													displayName: 'Append',
+													description:
+														'Appends the title after the application title',
+												},
+												{
+													name: 'prepend',
+													displayName: 'Prepend',
+													description:
+														'Prepends the title before the application title',
+												},
+												{
+													name: 'false',
+													displayName: 'Full',
+													description: 'Shows the title only',
+												},
+											],
 										}}
 										value={properties?.title?.append}
 										onChange={v => updatePageProperties('title', 'append', v)}
@@ -409,29 +430,22 @@ export default function DnDTopBar({
 		<div className="_topBarGrid">
 			<div className="_topLeftBarGrid">
 				<div className="_inputBar">
-					<input
-						ref={inputRef}
-						type="text"
-						className="_urlInput _peInput"
-						value={localUrl}
-						onChange={e => setLocalUrl(e.target.value)}
-						onBlur={changeUrl}
-						onKeyUp={e => {
-							if (e.key === 'Enter') changeUrl();
-							else if (e.key === 'Escape') {
-								setLocalUrl(url);
-								setTimeout(() => inputRef.current?.blur(), 100);
-							}
-						}}
-					/>
-					<div className="_iconMenu" tabIndex={0}>
-						<i
-							className="fa fa-solid fa-rotate-left"
-							title="Reload Page"
-							tabIndex={0}
-							role="button"
-							onClick={onPageReload}
-						></i>
+					<div className="_urlInput _peInput">
+						<i className="fa fa-solid fa-globe" title="Current Address."></i>
+						<input
+							ref={inputRef}
+							type="text"
+							value={localUrl}
+							onChange={e => setLocalUrl(e.target.value)}
+							onBlur={changeUrl}
+							onKeyUp={e => {
+								if (e.key === 'Enter') changeUrl();
+								else if (e.key === 'Escape') {
+									setLocalUrl(url);
+									setTimeout(() => inputRef.current?.blur(), 100);
+								}
+							}}
+						/>
 					</div>
 				</div>
 				<div className="_buttonBar _lightBackground">
@@ -482,7 +496,15 @@ export default function DnDTopBar({
 			<div className="_topRightBarGrid">
 				<div className="_buttonBar">
 					<i
-						className={`fa fa-solid fa-left-long ${
+						className="fa fa-solid fa-rotate-left"
+						title="Reload Page"
+						tabIndex={0}
+						role="button"
+						onClick={onPageReload}
+					></i>
+
+					<i
+						className={`fa fa-solid fa-arrow-turn-up fa-rotate-270 ${
 							undoStackRef.current.length ? 'active' : ''
 						}`}
 						onClick={() => {
@@ -509,7 +531,7 @@ export default function DnDTopBar({
 						title="Undo"
 					/>
 					<i
-						className={`fa fa-solid fa-right-long ${
+						className={`fa fa-solid fa-arrow-turn-down fa-rotate-270 ${
 							redoStackRef.current.length ? 'active' : ''
 						}`}
 						onClick={() => {
@@ -533,8 +555,19 @@ export default function DnDTopBar({
 						}}
 						title="Redo"
 					/>
+					<i
+						onClick={() =>
+							onChangePersonalization(
+								'theme',
+								theme === '_light' ? '_dark' : '_light',
+							)
+						}
+						className={`fa fa-solid fa-circle-half-stroke ${
+							theme === '_light' ? 'fa-rotate-180' : ''
+						}`}
+					/>
 				</div>
-				<div className="_iconMenu" tabIndex={0}>
+				<div className="_iconMenu _personalize" tabIndex={0}>
 					<i className="fa fa-solid fa-gear" />
 					<div className="_iconMenuBody _bottom _right">
 						<div
@@ -555,19 +588,6 @@ export default function DnDTopBar({
 						</div>
 					</div>
 				</div>
-				<select
-					className="_peSelect"
-					value={theme}
-					onChange={e => onChangePersonalization('theme', e.target.value)}
-				>
-					{propertiesDefinition
-						.find(e => e.name === 'theme')
-						?.enumValues?.map(e => (
-							<option key={e.name} value={e.name} title={e.description}>
-								{e.displayName}
-							</option>
-						))}
-				</select>
 				<button onClick={onSave}>Save</button>
 
 				{onPublish && <button onClick={onPublish}>Publish</button>}

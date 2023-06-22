@@ -316,13 +316,44 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			left: 22px;
 			z-index: 1;
 		}
+
+		${PREFIX} ._urlInput._peInput input {
+			border: none;
+			outline: none;
+			height: 100%;
+			flex: 1;
+			background: #F8FAFB;
+			padding-left: 5px;
+		}
+
+		${PREFIX} ._urlInput._peInput {
+			background: #F8FAFB;
+			border: 0.8px solid #E9ECEF;
+			box-shadow: inset 0px 0px 2px rgba(0, 0, 0, 0.05);
+			border-radius: 4px;
+			position: static;
+			height: 38px;
+			display: flex;
+    		align-items: center;
+			padding: 8px;
+		}
+
+		${PREFIX} ._iconMenu._personalize {
+			background: #F8FAFB;
+			border-radius: 10px;
+		}
 		
 
 		${PREFIX} button:hover, ${PREFIX} select:hover, ${PREFIX} ._iconMenuOption:hover,
-		._popupMenuBackground ._popupMenuItem:hover, ._popupMenuBackground ._popupMenuItem.active,
 		._popupButtons button:hover {
 			background-color: #555;
     		color: #eee;
+		}
+
+		._popupMenuBackground ._popupMenuItem:hover, ._popupMenuBackground ._popupMenuItem.active {
+			color: #08705C;
+			background: linear-gradient(90deg, rgba(8, 112, 92, 0.2) 0%, rgba(248, 250, 251, 0) 93.35%);
+			border-radius: 2px;
 		}
 
 		${PREFIX} i.fa {
@@ -331,7 +362,11 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._iconMenu:hover i.fa {
-			color: #aaa;
+			color: #4C7FEE;
+		}
+
+		${PREFIX} ._iconMenu._active i.fa {
+			color: #4C7FEE;
 		}
 
 		${PREFIX} ._iconMenuOption, ._popupMenuBackground ._popupMenuItem  {
@@ -377,10 +412,21 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			align-items: center;
 			justify-content: center;
+			padding: 0 5px;
 		}
 
 		${PREFIX} ._iconMenu:hover ._iconMenuBody{
 			display: block;
+		}
+
+		${PREFIX} ._iconMenu:hover {
+			background-color: rgba(77, 127, 238, 0.05);
+			border-radius: 5px
+		}
+
+		${PREFIX} ._iconMenu._active {
+			background-color: rgba(77, 127, 238, 0.05);
+			border-radius: 5px
 		}
 
 		${PREFIX} ._buttonBar{
@@ -399,6 +445,12 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			color: #aaa;
 			padding: 7px;
 			cursor: pointer;
+			background: #F8FAFB;
+			border-radius: 10px;
+		}
+
+		${PREFIX} ._buttonBar i.fa:not(:last-child) {
+			margin-right: 10px;
 		}
 
 		${PREFIX} ._buttonBar i.fa.active, ${PREFIX} ._buttonBar i.fa:hover{
@@ -502,7 +554,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			overflow: hidden;
 		}
 
-		${PREFIX} input._urlInput:focus {
+		${PREFIX} ._urlInput._peInput:focus-within {
 			width: 500px;
 		}
 
@@ -1105,6 +1157,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			justify-content: center;
 			align-items: center;
+			width: 100vw;
 		}
 
 		._popupBackground ._popupContainer {
@@ -1124,26 +1177,87 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		._popupMenuBackground ._popupMenuContainer {
-			box-shadow: 2px 2px 5px #ccc;
+			box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.25);
 			display: flex;
+			flex-direction: column;
 			background-color: #fff;
 			position: absolute;
-			border-radius: 3px;
+			
 			border-left: 1px solid #eee;
 			font-size: 13px;
 		}
 
+		._popupMenuBackground ._popupMenuContainer ._elementBarSearchContainer{
+			padding: 20px 50px 20px 20px;
+			background: #FFFFFF;
+			border-bottom: 1px solid rgba(150, 161, 180, 0.4);
+		}
+		._popupMenuBackground ._popupMenuContainer ._elementBarSearchContainer p{
+			color: #4C7FEE;
+			font-weight: 600;
+			font-size: 14px;
+			line-height: 16px;
+			margin-top: 0;
+		}
+
+		._popupMenuBackground ._popupMenuContainer ._elementBarSearchContainer input{
+			width: 345px;
+			height: 38px;
+			background: #F8FAFB;
+			border: 0.8px solid #E9ECEF;
+			box-shadow: inset 0px 0px 2px rgba(0, 0, 0, 0.05);
+			border-radius: 4px;
+			
+		}
+
+		._popupMenuBackground ._popupMenuContainer ._elementsBarContainer {
+			overflow: auto;
+			display: flex;
+			flex-direction: row;
+			flex: 1;
+		}
+
+		._popupMenuBackground ._popupMenuContainer ._elementsBarContainer ._popupMenu {
+			background-color: #F8FAFB;
+		}
+
+		._popupMenuBackground ._popupMenuContainer ._elementsBarContainer ._popupMenu::-webkit-scrollbar {
+			width: 3px;
+		}
+
+		._popupMenuBackground ._popupMenuContainer ._compTemplates {
+			display: flex;
+			flex-direction: column;
+		}
+
+		._popupMenuBackground ._popupMenuContainer ._compTemplates iframe{
+			flex: 1;
+		}
+
+		._popupMenuBackground ._popupMenuContainer ._compTemplateSections {
+			border-bottom: 0.5px dashed rgba(0, 0, 0, 0.3);
+		}
+
+		._popupMenuBackground ._popupMenuContainer ._compTemplateSections ._eachTemplateSection {
+			min-width: 278px;
+			padding: 11px 20px 11px 20px;
+			cursor: pointer;
+		}
+
+		._popupMenuBackground ._popupMenuContainer ._compTemplateSections ._eachTemplateSection:hover, ._popupMenuBackground ._popupMenuContainer ._compTemplateSections ._eachTemplateSection._active {
+			background: linear-gradient(90deg, rgba(8, 112, 92, 0.2) 0%, rgba(248, 250, 251, 0) 93.35%);
+		}
+
 		._compMenu {
 			left: 48px;
-			top: 65px;
-			max-height: 85vh;
-			min-height: 50vh;
+			top: 48px;
+			height: calc(100% - 68px);
 			min-width: 100px;
 			padding-bottom: 10px;
+			overflow: hidden;
 		}
 
 		._popupMenuBackground ._popupMenu {
-			border-top: 4px solid #aaa;
 			
 			display: flex;
 			flex-direction: column;

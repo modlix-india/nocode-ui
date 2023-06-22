@@ -44,7 +44,7 @@ function TextBox(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
 		properties: {
-			updateStoreImmediately,
+			updateStoreImmediately: upStoreImm,
 			removeKeyWhenEmpty,
 			valueType,
 			emptyValue,
@@ -61,6 +61,7 @@ function TextBox(props: ComponentProps) {
 			validation,
 			placeholder,
 			messageDisplay,
+			autoComplete,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -143,6 +144,8 @@ function TextBox(props: ComponentProps) {
 				true,
 			);
 	}, [value, validation]);
+
+	const updateStoreImmediately = upStoreImm || autoComplete === 'on';
 
 	const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
 		let temp = value === '' && emptyValue ? mapValue[emptyValue] : value;
@@ -242,6 +245,7 @@ function TextBox(props: ComponentProps) {
 				messageDisplay={messageDisplay}
 				styles={computedStyles}
 				definition={props.definition}
+				autoComplete={autoComplete}
 			/>
 		</div>
 	);

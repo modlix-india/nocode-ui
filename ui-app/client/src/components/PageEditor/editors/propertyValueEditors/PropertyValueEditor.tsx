@@ -171,7 +171,7 @@ function makeValueEditor(
 			<div className="_smallEditorContainer">
 				<select
 					className="_peSelect"
-					value={chngValue === '' ? propDef.defaultValue ?? '' : chngValue}
+					value={(chngValue === '' ? propDef.defaultValue ?? '' : chngValue) ?? ''}
 					onChange={e => {
 						const newValue: ComponentProperty<any> = {
 							...(value ?? {}),
@@ -200,7 +200,7 @@ function makeValueEditor(
 			<div className="_smallEditorContainer">
 				<select
 					className="_peSelect"
-					value={chngValue === '' ? propDef.defaultValue : chngValue}
+					value={(chngValue === '' ? propDef.defaultValue : chngValue) ?? ''}
 					onChange={e => {
 						const newValue: ComponentProperty<any> = {
 							...(value ?? {}),
