@@ -195,7 +195,6 @@ export function processStyleDefinition(
 				: styleDefaults,
 		);
 	}
-
 	if (!theme) return EMPTY_STRING;
 
 	let style = '';
@@ -307,10 +306,9 @@ export function processStyleValueWithFunction(
 		}
 
 		if (!variable) continue;
-
 		finValue += theme.get(variable) ?? '';
 	}
-
+	if (finValue.indexOf('<') !== -1) finValue = processStyleValueWithFunction(finValue, theme);
 	return finValue;
 }
 
