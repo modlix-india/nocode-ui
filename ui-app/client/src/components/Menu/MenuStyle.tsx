@@ -30,6 +30,48 @@ export default function LinkStyle({ theme }: { theme: Map<string, Map<string, st
 		flex: 1;
 		text-align: right;
  	} 
+
+	${PREFIX}._simpleMenuDesign2 {
+		border-left: 1px solid transparent;
+		border-right: 1px solid transparent;
+		justify-content: center;
+	}
+
+	${PREFIX}._simpleMenuDesign3 {
+		border-top: 1px solid transparent;
+		border-bottom: 1px solid transparent;
+		justify-content: center;
+	}
+
+	${PREFIX}._colouredMenuDesign1 {
+		border-top : 1px solid transparent;
+		border-bottom : 1px solid transparent;
+		border-left : 1px solid transparent;
+		border-right : 1px solid transparent;
+	}
+
+	${PREFIX}._colouredMenuDesign2 {
+		border-top : 1px solid transparent;
+		border-bottom : 1px solid transparent;
+		border-left : 1px solid transparent;
+		border-right : 1px solid transparent;
+	}
+
+
+	${PREFIX}._colouredMenuDesign3 {
+		border-top : 1px solid transparent;
+		border-bottom : 1px solid transparent;
+		border-left : 1px solid transparent;
+		border-right : 1px solid transparent;
+	}
+	${PREFIX}._filledMenuDesign1{
+		border-bottom : 1px solid transparent;
+	}
+	${PREFIX}._filledMenuDesign4:hover, ${PREFIX}._filledMenuDesign4._isActive {
+		border : 1px solid transparent;
+	}
+
+
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="MenuCss">{css}</style>;
