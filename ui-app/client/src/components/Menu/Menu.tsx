@@ -44,6 +44,7 @@ function Menu(props: ComponentProps) {
 			onMenuOpen,
 			onClick,
 			pathsActiveFor,
+			MenuDesignSelectionType,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -226,7 +227,9 @@ function Menu(props: ComponentProps) {
 		<>
 			{styleComp}
 			<a
-				className={`comp compMenu _${styleKey}menu_css ${isMenuActive ? '_isActive' : ''}`}
+				className={`comp compMenu _${styleKey}menu_css ${MenuDesignSelectionType} ${
+					isMenuActive ? '_isActive' : ''
+				}`}
 				href={resolvedLink}
 				target={target}
 				onClick={e => {
@@ -290,6 +293,10 @@ const component: Component = {
 			icon: { value: 'fa-solid fa-bars' },
 		},
 	},
+	sections: [
+		{ name: 'Horizontal Menu', pageName: 'horizontalMenu' },
+		{ name: 'Vertical Menu', pageName: 'verticalMenu' },
+	],
 };
 
 export default component;

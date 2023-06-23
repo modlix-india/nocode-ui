@@ -1239,29 +1239,38 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		._popupMenuBackground ._popupMenuContainer ._compTemplateSections ._eachTemplateSection {
-			min-width: 278px;
+			
 			padding: 11px 20px 11px 20px;
 			cursor: pointer;
 		}
 
 		._popupMenuBackground ._popupMenuContainer ._compTemplateSections ._eachTemplateSection:hover, ._popupMenuBackground ._popupMenuContainer ._compTemplateSections ._eachTemplateSection._active {
 			background: linear-gradient(90deg, rgba(8, 112, 92, 0.2) 0%, rgba(248, 250, 251, 0) 93.35%);
+			color: #08705C;
 		}
 
 		._compMenu {
 			left: 48px;
 			top: 48px;
 			height: calc(100% - 68px);
-			min-width: 100px;
+			width: 0px;
 			padding-bottom: 10px;
 			overflow: hidden;
+			transition: width 0.5s ease-in-out;
+		}
+
+		._compMenu._show {
+			width: 415px;
 		}
 
 		._popupMenuBackground ._popupMenu {
-			
+			flex: 1;
 			display: flex;
 			flex-direction: column;
 			overflow: auto;
+			padding-left: 5px;
+			width: 137px;
+			padding-top: 5px;
 		}
 
 		._popupMenuBackground ._popupMenuSeperator {

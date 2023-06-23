@@ -130,8 +130,6 @@ export default function DnDTopBar({
 		);
 	}, [defPath, pageExtractor]);
 
-	console.log(propertiesDefinition);
-
 	const changeUrl = useCallback(() => {
 		if (url === localUrl) return;
 
