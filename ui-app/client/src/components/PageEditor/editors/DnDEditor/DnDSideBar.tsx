@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
 	addListenerAndCallImmediately,
 	getDataFromPath,
@@ -43,6 +43,8 @@ export default function DnDSideBar({
 	const [theme, setTheme] = useState('light');
 	const [selectedTemplateSection, setSelectedTemplateSection] = useState<Section>();
 	const svgLogo = logo ? <img className="_logo" src={logo} /> : undefined;
+	const [openCompMenu, setOpenCompMenu] = useState(false);
+	const compMenuRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		if (!personalizationPath) return;
@@ -52,6 +54,15 @@ export default function DnDSideBar({
 			`${personalizationPath}.slave.noSelection`,
 		);
 	}, [personalizationPath]);
+
+	useEffect(() => {
+		const handle = setInterval(() => {
+			if (!compMenuRef.current) return;
+			setOpenCompMenu(true);
+			clearInterval(handle);
+		}, 100);
+		return () => clearInterval(handle);
+	}, [setOpenCompMenu, compMenuRef.current]);
 
 	useEffect(() => {
 		if (!personalizationPath) return;
@@ -106,6 +117,14 @@ export default function DnDSideBar({
 		return <div className="_sideBar _previewMode"></div>;
 	}
 
+	const closeMenu = () => {
+		setOpenCompMenu(false);
+		compMenuRef.current?.classList.remove('foo');
+		setTimeout(() => {
+			setShowCompMenu(false);
+		}, 700);
+	};
+
 	let compMenu = undefined;
 	if (showCompMenu) {
 		let compsList = undefined;
@@ -155,7 +174,7 @@ export default function DnDSideBar({
 					onDoubleClick={() => {
 						if (!selectedComponent) return;
 						pageOperations.droppedOn(selectedComponent, `${DRAG_COMP_NAME}${e.name}`);
-						setShowCompMenu(false);
+						closeMenu();
 					}}
 					draggable={true}
 					onDragStart={ev =>
@@ -163,7 +182,7 @@ export default function DnDSideBar({
 					}
 					onDragOver={e => {
 						e.preventDefault();
-						setShowCompMenu(false);
+						closeMenu();
 					}}
 				>
 					{e.displayName}
@@ -177,11 +196,14 @@ export default function DnDSideBar({
 		compMenu = (
 			<div
 				className={`_popupMenuBackground ${theme}`}
-				onMouseDown={e => e.target === e.currentTarget && setShowCompMenu(false)}
+				onMouseDown={e => e.target === e.currentTarget && closeMenu()}
 				onDrop={() => {}}
-				onDragOver={e => e.target === e.currentTarget && setShowCompMenu(false)}
+				onDragOver={e => e.target === e.currentTarget && closeMenu()}
 			>
-				<div className="_popupMenuContainer _compMenu">
+				<div
+					className={`_popupMenuContainer _compMenu ${openCompMenu ? '_show' : ''}`}
+					ref={compMenuRef}
+				>
 					<div className="_elementBarSearchContainer">
 						<p className="_elementBarSearchContainerHeading">ADD ELEMENT</p>
 						<input
