@@ -17,6 +17,7 @@ import { flattenUUID } from '../util/uuid';
 import { isNullValue } from '@fincity/kirun-js';
 import { returnFileSize } from '../util/getFileSize';
 import { SubHelperComponent } from '../SubHelperComponent';
+import { MESSAGE_TYPE, addMessage } from '../../App/Messages/Messages';
 
 function FileUpload(props: ComponentProps) {
 	const [fileValue, setFileValue] = useState<any>();
@@ -46,6 +47,7 @@ function FileUpload(props: ComponentProps) {
 			showFileList,
 			onSelectEvent,
 			validation,
+			uploadType,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -131,7 +133,33 @@ function FileUpload(props: ComponentProps) {
 	const onChangeFile = (event: any) => {
 		if (!event.target.value?.length || !bindingPathPath) return;
 		const files = event.target.files;
-		setData(bindingPathPath, isMultiple ? [...files] : files[0], context?.pageName);
+
+		if (uploadType === 'FILE_OBJECT') {
+			setData(bindingPathPath, isMultiple ? [...files] : files[0], context?.pageName);
+			return;
+		}
+
+		let fReader = new FileReader();
+		fReader.onload = () => {
+			let fileContent: any = fReader.result;
+
+			if (uploadType === 'JSON_OBJECT') {
+				try {
+					fileContent = JSON.parse(fileContent);
+				} catch (error: any) {
+					addMessage(
+						MESSAGE_TYPE.ERROR,
+						'Invalid JSON file : ' + error.message,
+						true,
+						props.context.pageName,
+					);
+					return;
+				}
+			}
+
+			setData(bindingPathPath, fileContent, context?.pageName);
+		};
+		fReader.readAsText(files[0]);
 	};
 
 	const handleDelete = (event: any, content: any) => {
