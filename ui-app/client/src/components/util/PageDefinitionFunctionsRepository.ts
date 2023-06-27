@@ -8,7 +8,7 @@ export default class PageDefintionFunctionsRepository implements Repository<Func
 		this.pageDefinition = pageDefinition;
 	}
 
-	public find(namespace: string, name: string): Function | undefined {
+	public async find(namespace: string, name: string): Promise<Function | undefined> {
 		if (!this.pageDefinition?.eventFunctions || (namespace !== '_' && namespace !== undefined))
 			return undefined;
 
@@ -21,7 +21,7 @@ export default class PageDefintionFunctionsRepository implements Repository<Func
 		return new KIRuntime(funDef, isDesignMode || isDebugMode);
 	}
 
-	public filter(name: string): string[] {
+	public async filter(name: string): Promise<string[]> {
 		const lowerCaseName = name.toLowerCase();
 
 		return Array.from(

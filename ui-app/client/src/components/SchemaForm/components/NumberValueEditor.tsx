@@ -1,14 +1,12 @@
 import {
 	Repository,
 	Schema,
-	SchemaType,
 	SchemaUtil,
-	SchemaValidationException,
 	SchemaValidator,
+	duplicate,
 	isNullValue,
 } from '@fincity/kirun-js';
 import React, { useEffect, useState } from 'react';
-import { duplicate } from '@fincity/kirun-js';
 
 export function NumberValueEditor({
 	value,
@@ -43,16 +41,20 @@ export function NumberValueEditor({
 	const [options, setOptions] = useState<any[]>([]);
 
 	useEffect(() => {
-		let sch = schema;
-		if (!isNullValue(schema.getRef())) {
-			sch = SchemaUtil.getSchemaFromRef(sch, schemaRepository, schema.getRef()) ?? sch;
-		}
+		(async () => {
+			let sch = schema;
+			if (!isNullValue(schema.getRef())) {
+				sch =
+					(await SchemaUtil.getSchemaFromRef(sch, schemaRepository, schema.getRef())) ??
+					sch;
+			}
 
-		if (sch.getEnums()?.length) {
-			const enums = duplicate(sch.getEnums() ?? []);
-			enums.unshift(undefined);
-			setOptions(enums);
-		}
+			if (sch.getEnums()?.length) {
+				const enums = duplicate(sch.getEnums() ?? []);
+				enums.unshift(undefined);
+				setOptions(enums);
+			}
+		})();
 	}, [schema, schemaRepository]);
 
 	const inputElement = options.length ? (
