@@ -113,7 +113,12 @@ export default function StatementNode({
 
 	const [editComment, setEditComment] = useState(false);
 
-	const repoFunction = functionRepository.find(statement.namespace, statement.name);
+	const [repoFunction, setRepoFunction] = useState<Function | undefined>(undefined);
+
+	useEffect(() => {
+		(async () =>
+			setRepoFunction(await functionRepository.find(statement.namespace, statement.name)))();
+	}, [statement, functionRepository]);
 	const repoSignature = repoFunction?.getSignature();
 
 	const parameters = repoSignature?.getParameters()

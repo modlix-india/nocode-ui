@@ -23,7 +23,7 @@ interface SingleSchemaProps {
 	showRemove?: boolean;
 }
 
-const ALL_SET = [...Schema.ofAny('Any').getType()?.getAllowedSchemaTypes()!];
+const ALL_SET = Array.from(Schema.ofAny('Any').getType()?.getAllowedSchemaTypes()!);
 const TYPE_OPTIONS = [
 	{ label: 'None', value: undefined },
 	...ALL_SET.map(e => ({ label: e, value: e.toUpperCase() })),

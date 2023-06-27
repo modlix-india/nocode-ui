@@ -262,7 +262,14 @@ function KIRunEditor(
 		pageDefinition,
 	]);
 
-	const functionNames = useMemo(() => functionRepository.filter(''), [functionRepository]);
+	const [functionNames, setFunctionNames] = useState<string[]>([]);
+
+	useEffect(() => {
+		(async () => {
+			const filterNames = await functionRepository.filter('');
+			setFunctionNames(filterNames);
+		})();
+	}, [functionRepository]);
 	const [dragDependencyNode, setDragDependencyNode] = useState<any>();
 	const [dragDependencyTo, setDragDependencyTo] = useState<any>();
 
@@ -540,7 +547,7 @@ function KIRunEditor(
 				const { dLeft, dTop } = dragNode;
 				const def = duplicate(rawDef);
 				if (def.steps) {
-					for (const [name] of selectedStatements) {
+					for (const [name] of Array.from(selectedStatements)) {
 						const step = def.steps[name];
 						if (!step) continue;
 						step.position = step.position ?? {};
@@ -587,38 +594,43 @@ function KIRunEditor(
 		);
 	}
 
-	const kirunStorePaths = useMemo(() => {
+	const [kirunStorePaths, setKirunStorePaths] = useState<Set<string>>(new Set());
+	useEffect(() => {
 		const paths = new Set<string>(storePaths);
 
-		if (!rawDef?.steps) return paths;
+		if (!rawDef?.steps) {
+			setKirunStorePaths(paths);
+			return;
+		}
+		(async () => {
+			for (const step of Object.values(rawDef.steps)) {
+				if (isNullValue(step)) continue;
 
-		for (const step of Object.values(rawDef.steps)) {
-			if (isNullValue(step)) continue;
+				const { namespace, name, statementName } = step as any;
+				const func = await functionRepository.find(namespace, name);
+				if (!func) continue;
 
-			const { namespace, name, statementName } = step as any;
-			const func = functionRepository.find(namespace, name);
-			if (!func) continue;
+				const prefix = `Steps.${statementName}`;
 
-			const prefix = `Steps.${statementName}`;
+				const events = func.getSignature().getEvents();
+				if (events.size === 0) {
+					paths.add(`${prefix}.output`);
+					continue;
+				}
 
-			const events = func.getSignature().getEvents();
-			if (events.size === 0) {
-				paths.add(`${prefix}.output`);
-				continue;
-			}
-
-			for (const event of events) {
-				const eventName = `${prefix}.${event[1].getName()}`;
-				paths.add(eventName);
-				for (const [name, schema] of event[1].getParameters()) {
-					const paramName = `${eventName}.${name}`;
-					paths.add(paramName);
-					makeObjectPaths(paramName, schema, schemaRepository, paths);
+				for (const event of Array.from(events)) {
+					const eventName = `${prefix}.${event[1].getName()}`;
+					paths.add(eventName);
+					for (const [name, schema] of Array.from(event[1].getParameters())) {
+						const paramName = `${eventName}.${name}`;
+						paths.add(paramName);
+						await makeObjectPaths(paramName, schema, schemaRepository, paths);
+					}
 				}
 			}
-		}
 
-		return paths;
+			setKirunStorePaths(paths);
+		})();
 	}, [storePaths, rawDef]);
 
 	const designerRef = useRef<HTMLDivElement>(null);
@@ -782,7 +794,7 @@ function KIRunEditor(
 					if (isReadonly || !selectedStatements.size || !rawDef.steps) return;
 
 					const def = duplicate(rawDef);
-					for (const [name] of selectedStatements) {
+					for (const [name] of Array.from(selectedStatements)) {
 						delete def.steps[name];
 					}
 
