@@ -23,11 +23,15 @@ export function StringValueEditor({
 	const [inValue, setInValue] = useState(value ?? '');
 
 	useEffect(() => {
-		setInValue(
-			value ??
-				(schema ? SchemaUtil.getDefaultValue(schema, schemaRepository) : undefined) ??
-				'',
-		);
+		(async () => {
+			setInValue(
+				value ??
+					(schema
+						? await SchemaUtil.getDefaultValue(schema, schemaRepository)
+						: undefined) ??
+					'',
+			);
+		})();
 	}, [value, schema]);
 
 	const [msg, setMsg] = useState<string>('');
@@ -46,16 +50,20 @@ export function StringValueEditor({
 	const [options, setOptions] = useState<any[]>([]);
 
 	useEffect(() => {
-		let sch = schema;
-		if (!isNullValue(schema.getRef())) {
-			sch = SchemaUtil.getSchemaFromRef(sch, schemaRepository, schema.getRef()) ?? sch;
-		}
+		(async () => {
+			let sch = schema;
+			if (!isNullValue(schema.getRef())) {
+				sch =
+					(await SchemaUtil.getSchemaFromRef(sch, schemaRepository, schema.getRef())) ??
+					sch;
+			}
 
-		if (sch.getEnums()?.length) {
-			const enums = duplicate(sch.getEnums() ?? []);
-			enums.unshift(undefined);
-			setOptions(enums);
-		}
+			if (sch.getEnums()?.length) {
+				const enums = duplicate(sch.getEnums() ?? []);
+				enums.unshift(undefined);
+				setOptions(enums);
+			}
+		})();
 	}, [schema, schemaRepository]);
 
 	const inputElement = options.length ? (
