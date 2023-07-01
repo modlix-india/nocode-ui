@@ -71,7 +71,7 @@ const FILE_NAME = 'filename=';
 
 export class SendData extends AbstractFunction {
 	protected async internalExecute(context: FunctionExecutionParameters): Promise<FunctionOutput> {
-		const evmap = [...context.getValuesMap().values()];
+		const evmap = Array.from(context.getValuesMap().values());
 		const url: string = context.getArguments()?.get('url');
 		const method: string = context.getArguments()?.get('method');
 		let headers = context.getArguments()?.get('headers');
