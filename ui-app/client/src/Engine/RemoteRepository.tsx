@@ -59,6 +59,12 @@ export class RemoteRepository<T> implements Repository<T> {
 		this.includeRemoteKIRunRepos = includeRemoteKIRunRepos;
 	}
 
+	public emptyCache() {
+		this.internalCache.clear();
+		this.internalFilterCache = undefined;
+		this.filterCachedAt = 0;
+	}
+
 	private makeFindCall(namespace: string, name: string): Promise<T | undefined> {
 		return new Promise((resolve, reject) => {
 			const headers: any = {};
@@ -163,8 +169,7 @@ export class RemoteRepository<T> implements Repository<T> {
 			appCode,
 			clientCode,
 			(jsonDef: any) => {
-				if (isNullValue(jsonDef)) return undefined;
-				console.log(jsonDef);
+				if (isNullValue(jsonDef?.definition)) return undefined;
 				const fd: FunctionDefinition = FunctionDefinition.from(jsonDef.definition);
 				if (repoServer === REPO_SERVER.CORE)
 					return new RemoteFunction(appCode, clientCode, fd, repoServer);
