@@ -136,7 +136,9 @@ export default function SingleSchema({
 		!schema.constant && !type ? (
 			<ArrayField
 				label="Type"
-				value={Array.from(finType).map(e => e.toUpperCase())}
+				value={Array.from(finType)
+					.filter(e => !isNullValue(e))
+					.map(e => e.toUpperCase())}
 				propPath="type"
 				options={TYPE_OPTIONS}
 				type="SELECT"

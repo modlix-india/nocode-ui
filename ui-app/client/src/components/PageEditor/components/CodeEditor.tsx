@@ -1,4 +1,11 @@
-import { HybridRepository, TokenValueExtractor, isNullValue } from '@fincity/kirun-js';
+import {
+	Function,
+	HybridRepository,
+	Repository,
+	Schema,
+	TokenValueExtractor,
+	isNullValue,
+} from '@fincity/kirun-js';
 import { StoreExtractor } from '@fincity/path-reactive-state-management';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
@@ -25,6 +32,8 @@ import KIRunEditor from '../../KIRunEditor/KIRunEditor';
 import PageDefintionFunctionsRepository from '../../util/PageDefinitionFunctionsRepository';
 import { ThemeExtractor } from '../../../context/ThemeExtractor';
 import { UIFunctionRepository } from '../../../functions';
+import { REPO_SERVER, RemoteRepository } from '../../../Engine/RemoteRepository';
+import { UISchemaRepository } from '../../../schemas/common';
 
 interface CodeEditorProps {
 	showCodeEditor: string | undefined;
@@ -72,9 +81,14 @@ export default function CodeEditor({
 	const uuid = useMemo(() => shortUUID(), []);
 	const [fullScreen, setFullScreen] = useState(false);
 	const [selectedFunction, setSelectedFunction] = useState(showCodeEditor);
-	const [editPage, setEditPage] = useState<any>();
+	const [editPage, setEditPage] = useState<PageDefinition>();
 	const [primedToClose, setPrimedToClose] = useState(false);
 	const [changed, setChanged] = useState(Date.now());
+	const [remoteFunctionRepository, setRemoteFunctionRepository] = useState<Repository<Function>>(
+		new HybridRepository(UIFunctionRepository, new PageDefintionFunctionsRepository(editPage)),
+	);
+	const [remoteSchemaRepository, setRemoteSchemaRepository] =
+		useState<Repository<Schema>>(UISchemaRepository);
 
 	const eventFunctions = editPage?.eventFunctions ?? {};
 
@@ -94,6 +108,42 @@ export default function CodeEditor({
 			(_, v) => {
 				setEditPage(v);
 				setChanged(Date.now());
+				if (!v || !v.appCode || !v.clientCode) return;
+				setRemoteFunctionRepository(
+					new HybridRepository<Function>(
+						UIFunctionRepository,
+						new PageDefintionFunctionsRepository(editPage),
+						RemoteRepository.getRemoteFunctionRepository(
+							v.appCode,
+							v.clientCode,
+							false,
+							REPO_SERVER.CORE,
+						),
+						RemoteRepository.getRemoteFunctionRepository(
+							v.appCode,
+							v.clientCode,
+							false,
+							REPO_SERVER.UI,
+						),
+					),
+				);
+				setRemoteSchemaRepository(
+					new HybridRepository<Schema>(
+						UISchemaRepository,
+						RemoteRepository.getRemoteSchemaRepository(
+							v.appCode,
+							v.clientCode,
+							false,
+							REPO_SERVER.CORE,
+						),
+						RemoteRepository.getRemoteSchemaRepository(
+							v.appCode,
+							v.clientCode,
+							false,
+							REPO_SERVER.UI,
+						),
+					),
+				);
 			},
 			pageExtractor,
 			defPath,
@@ -339,7 +389,7 @@ export default function CodeEditor({
 									}}
 								>
 									<option value="">--None--</option>
-									{Object.values(editPage.componentDefinition ?? {})
+									{Object.values(editPage?.componentDefinition ?? {})
 										.sort((a: any, b: any) =>
 											(a.name ?? a.key).localeCompare(b.name ?? b.key),
 										)
@@ -435,7 +485,7 @@ export default function CodeEditor({
 						name: 'Code Editor',
 						type: 'KIRunEditor',
 						properties: {
-							editorType: { value: 'ui' },
+							editorType: { value: 'page' },
 							...definition.properties,
 						},
 						bindingPath: {
@@ -449,12 +499,8 @@ export default function CodeEditor({
 							value: `${personalizationPath}.kirunEditor`,
 						},
 					}}
-					functionRepository={
-						new HybridRepository(
-							UIFunctionRepository,
-							new PageDefintionFunctionsRepository(editPage),
-						)
-					}
+					functionRepository={remoteFunctionRepository}
+					schemaRepository={remoteSchemaRepository}
 					functionKey={selectedFunction}
 					tokenValueExtractors={tokenValueExtractors}
 					stores={['Store', 'Page', 'Theme', 'LocalStore']}
