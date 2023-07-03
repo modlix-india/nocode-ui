@@ -168,6 +168,31 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				displayName: 'FilledMenuDesign5',
 				description: 'filled menu design five',
 			},
+			{
+				name: '_simpleMenuHorizontalDesign1',
+				displayName: 'simpleMenuHorizontalDesign1',
+				description: 'simple menu design one',
+			},
+			{
+				name: '_simpleMenuHorizontalDesign2',
+				displayName: 'simpleMenuHorizontalDesign2',
+				description: 'simple menu design two',
+			},
+			{
+				name: '_simpleMenuHorizontalDesign3',
+				displayName: 'simpleMenuHorizontalDesign3',
+				description: 'simple menu design three',
+			},
+			{
+				name: '_simpleMenuHorizontalDesign4',
+				displayName: 'simpleMenuHorizontalDesign4',
+				description: 'simple menu design four',
+			},
+			{
+				name: '_filledMenuHorizontalDesign1',
+				displayName: 'filledMenuHorizontalDesign1',
+				description: 'filled menu horizontal design one',
+			},
 		],
 	},
 	COMMON_COMPONENT_PROPERTIES.visibility,
