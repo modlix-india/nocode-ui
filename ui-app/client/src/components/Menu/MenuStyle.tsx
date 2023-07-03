@@ -71,6 +71,10 @@ export default function LinkStyle({ theme }: { theme: Map<string, Map<string, st
 		border : 1px solid transparent;
 	}
 
+	${PREFIX}._simpleMenuHorizontalDesign4{
+		border-bottom : 1px solid transparent;
+	}
+
 
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
