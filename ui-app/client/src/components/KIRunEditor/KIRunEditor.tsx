@@ -187,11 +187,27 @@ function KIRunEditor(
 
 	const functionRepository: Repository<Function> = useMemo(() => {
 		if (!actualFunctionRepository && appCode && clientCode) {
-			return RemoteRepository.getRemoteFunctionRepository(
-				appCode,
-				clientCode,
-				true,
-				editorType == 'ui' ? REPO_SERVER.UI : REPO_SERVER.CORE,
+			if (editorType != 'ui') {
+				return RemoteRepository.getRemoteFunctionRepository(
+					appCode,
+					clientCode,
+					true,
+					REPO_SERVER.CORE,
+				);
+			}
+			return new HybridRepository(
+				RemoteRepository.getRemoteFunctionRepository(
+					appCode,
+					clientCode,
+					true,
+					REPO_SERVER.UI,
+				),
+				RemoteRepository.getRemoteFunctionRepository(
+					appCode,
+					clientCode,
+					true,
+					REPO_SERVER.CORE,
+				),
 			);
 		}
 
@@ -200,11 +216,27 @@ function KIRunEditor(
 
 	const schemaRepository: Repository<Schema> = useMemo(() => {
 		if (!actualSchemaRepository && appCode && clientCode) {
-			return RemoteRepository.getRemoteSchemaRepository(
-				appCode,
-				clientCode,
-				true,
-				editorType == 'ui' ? REPO_SERVER.UI : REPO_SERVER.CORE,
+			if (editorType != 'ui') {
+				return RemoteRepository.getRemoteSchemaRepository(
+					appCode,
+					clientCode,
+					true,
+					REPO_SERVER.CORE,
+				);
+			}
+			return new HybridRepository(
+				RemoteRepository.getRemoteSchemaRepository(
+					appCode,
+					clientCode,
+					true,
+					REPO_SERVER.UI,
+				),
+				RemoteRepository.getRemoteSchemaRepository(
+					appCode,
+					clientCode,
+					true,
+					REPO_SERVER.CORE,
+				),
 			);
 		}
 		return actualSchemaRepository;
