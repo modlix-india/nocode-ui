@@ -112,7 +112,7 @@ export default function CodeEditor({
 				setRemoteFunctionRepository(
 					new HybridRepository<Function>(
 						UIFunctionRepository,
-						new PageDefintionFunctionsRepository(editPage),
+						new PageDefintionFunctionsRepository(v),
 						RemoteRepository.getRemoteFunctionRepository(
 							v.appCode,
 							v.clientCode,
