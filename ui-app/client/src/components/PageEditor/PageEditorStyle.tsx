@@ -441,6 +441,11 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border-radius: 5px
 		}
 
+		${PREFIX} ._selectionBar ._iconMenu:hover {
+			background-color: transparent;
+			color: #4C7FEE;
+		}
+
 		${PREFIX} ._iconMenu._active {
 			background-color: rgba(77, 127, 238, 0.05);
 			border-radius: 5px

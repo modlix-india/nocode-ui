@@ -176,9 +176,13 @@ export default function DnDBottomBar({
 		} while (currentKey);
 	}
 
+	const comps = compPaths.length
+		? compPaths.reverse()
+		: [<div className="_eachSelectionBar _iconMenu">No component selected</div>];
+
 	return (
 		<div className="_selectionBar" onMouseLeave={() => setMenuForComponent('')}>
-			{compPaths.reverse()}
+			{comps}
 		</div>
 	);
 }
