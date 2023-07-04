@@ -110,9 +110,9 @@ export default function DnDTopBar({
 				)
 					return;
 
-				setProperties(v.properties ?? {});
+				setProperties(v?.properties ?? {});
 				setPage(v as PageDefinition);
-				setPermission(v.permission ?? '');
+				setPermission(v?.permission ?? '');
 
 				if (!firstTimeRef.current.length) {
 					firstTimeRef.current.push(duplicate(v));
