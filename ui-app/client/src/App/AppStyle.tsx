@@ -164,6 +164,14 @@ export default function AppStyle() {
 	.disableChildrenEvents * {
 		pointer-events: none;
 	}
+
+	._helperChildren {
+		display: none;
+	}
+
+	._helper:hover ._helperChildren {
+		display: block;
+	}
 	` + processStyleDefinition('', styleProperties, styleDefaults, theme);
 
 	const styleComps = new Array();

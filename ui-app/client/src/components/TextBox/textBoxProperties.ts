@@ -208,6 +208,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	COMMON_COMPONENT_PROPERTIES.onEnter,
+
+	{
+		name: 'onClear',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Clear',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered when clear button is pressed.',
+		group: ComponentPropertyGroup.EVENTS,
+	},
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

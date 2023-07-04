@@ -56,13 +56,14 @@ export default function DnDSideBar({
 	}, [personalizationPath]);
 
 	useEffect(() => {
+		if (!showCompMenu) return;
 		const handle = setInterval(() => {
 			if (!compMenuRef.current) return;
 			setOpenCompMenu(true);
 			clearInterval(handle);
 		}, 100);
 		return () => clearInterval(handle);
-	}, [setOpenCompMenu, compMenuRef.current]);
+	}, [showCompMenu, setOpenCompMenu, compMenuRef.current]);
 
 	useEffect(() => {
 		if (!personalizationPath) return;
@@ -220,6 +221,7 @@ export default function DnDSideBar({
 								<div className="_compTemplateSections">
 									{tempSections.map((e: Section) => (
 										<div
+											key={e.name}
 											onClick={() => {
 												onChangePersonalization('selectedComponent', {
 													componentName: selectedComponentType,
@@ -269,7 +271,7 @@ export default function DnDSideBar({
 						tabIndex={0}
 						onClick={() => onChangePersonalization('componentTree', !componentTree)}
 					>
-						<i className="fa fa-solid fa-tree" />
+						<i className="fa fa-solid fa-layer-group" />
 					</div>
 				</div>
 				<div className="_bottom">
@@ -303,7 +305,7 @@ export default function DnDSideBar({
 						<i className="fa fa-regular fa-trash-can"></i>
 					</div>
 					<div
-						className="_iconMenu"
+						className="_iconMenu _arrow"
 						tabIndex={0}
 						onClick={() => onChangePersonalization('slave.noSelection', !noSelection)}
 					>
