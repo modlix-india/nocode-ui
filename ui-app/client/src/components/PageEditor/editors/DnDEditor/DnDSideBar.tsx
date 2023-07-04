@@ -56,13 +56,14 @@ export default function DnDSideBar({
 	}, [personalizationPath]);
 
 	useEffect(() => {
+		if (!showCompMenu) return;
 		const handle = setInterval(() => {
 			if (!compMenuRef.current) return;
 			setOpenCompMenu(true);
 			clearInterval(handle);
 		}, 100);
 		return () => clearInterval(handle);
-	}, [setOpenCompMenu, compMenuRef.current]);
+	}, [showCompMenu, setOpenCompMenu, compMenuRef.current]);
 
 	useEffect(() => {
 		if (!personalizationPath) return;
@@ -220,6 +221,7 @@ export default function DnDSideBar({
 								<div className="_compTemplateSections">
 									{tempSections.map((e: Section) => (
 										<div
+											key={e.name}
 											onClick={() => {
 												onChangePersonalization('selectedComponent', {
 													componentName: selectedComponentType,
