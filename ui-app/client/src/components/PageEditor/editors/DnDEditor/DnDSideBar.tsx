@@ -269,7 +269,7 @@ export default function DnDSideBar({
 						tabIndex={0}
 						onClick={() => onChangePersonalization('componentTree', !componentTree)}
 					>
-						<i className="fa fa-solid fa-tree" />
+						<i className="fa fa-solid fa-layer-group" />
 					</div>
 				</div>
 				<div className="_bottom">
@@ -303,7 +303,7 @@ export default function DnDSideBar({
 						<i className="fa fa-regular fa-trash-can"></i>
 					</div>
 					<div
-						className="_iconMenu"
+						className="_iconMenu _arrow"
 						tabIndex={0}
 						onClick={() => onChangePersonalization('slave.noSelection', !noSelection)}
 					>
