@@ -110,9 +110,9 @@ export default function DnDTopBar({
 				)
 					return;
 
-				setProperties(v.properties ?? {});
+				setProperties(v?.properties ?? {});
 				setPage(v as PageDefinition);
-				setPermission(v.permission ?? '');
+				setPermission(v?.permission ?? '');
 
 				if (!firstTimeRef.current.length) {
 					firstTimeRef.current.push(duplicate(v));
@@ -446,49 +446,51 @@ export default function DnDTopBar({
 						/>
 					</div>
 				</div>
-				<div className="_buttonBar _lightBackground">
-					<i
-						className={`fa fa-solid fa-display ${
-							deviceType === 'WIDE_SCREEN' ? 'active' : ''
-						}`}
-						onClick={() => changeDeviceType('WIDE_SCREEN')}
-						title="Wide Screen"
-					></i>
-					<i
-						className={`fa fa-solid fa-laptop ${
-							deviceType === 'DESKTOP_SCREEN' ? 'active' : ''
-						}`}
-						onClick={() => changeDeviceType('DESKTOP_SCREEN')}
-						title="Desktop"
-					></i>
-					<i
-						className={`fa fa-solid fa-tablet-screen-button _rotate-before-270 ${
-							deviceType === 'TABLET_LANDSCAPE_SCREEN' ? 'active' : ''
-						}`}
-						onClick={() => changeDeviceType('TABLET_LANDSCAPE_SCREEN')}
-						title="Tablet Landscape"
-					></i>
-					<i
-						className={`fa fa-solid fa-tablet-screen-button ${
-							deviceType === 'TABLET_POTRAIT_SCREEN' ? 'active' : ''
-						}`}
-						onClick={() => changeDeviceType('TABLET_POTRAIT_SCREEN')}
-						title="Tablet"
-					></i>
-					<i
-						className={`fa fa-solid fa-mobile-screen-button _rotate-before-270 ${
-							deviceType === 'MOBILE_LANDSCAPE_SCREEN' ? 'active' : ''
-						}`}
-						onClick={() => changeDeviceType('MOBILE_LANDSCAPE_SCREEN')}
-						title="Mobile Landscape"
-					></i>
-					<i
-						className={`fa fa-solid fa-mobile-screen-button ${
-							deviceType === 'MOBILE_POTRAIT_SCREEN' ? 'active' : ''
-						}`}
-						onClick={() => changeDeviceType('MOBILE_POTRAIT_SCREEN')}
-						title="Mobile"
-					></i>
+				<div className="_topLeftCenterBarGrid">
+					<div className="_buttonBar _screenSizes">
+						<i
+							className={`fa fa-solid fa-display ${
+								deviceType === 'WIDE_SCREEN' ? 'active' : ''
+							}`}
+							onClick={() => changeDeviceType('WIDE_SCREEN')}
+							title="Wide Screen"
+						></i>
+						<i
+							className={`fa fa-solid fa-laptop ${
+								deviceType === 'DESKTOP_SCREEN' ? 'active' : ''
+							}`}
+							onClick={() => changeDeviceType('DESKTOP_SCREEN')}
+							title="Desktop"
+						></i>
+						<i
+							className={`fa fa-solid fa-tablet-screen-button _rotate-before-270 ${
+								deviceType === 'TABLET_LANDSCAPE_SCREEN' ? 'active' : ''
+							}`}
+							onClick={() => changeDeviceType('TABLET_LANDSCAPE_SCREEN')}
+							title="Tablet Landscape"
+						></i>
+						<i
+							className={`fa fa-solid fa-tablet-screen-button ${
+								deviceType === 'TABLET_POTRAIT_SCREEN' ? 'active' : ''
+							}`}
+							onClick={() => changeDeviceType('TABLET_POTRAIT_SCREEN')}
+							title="Tablet"
+						></i>
+						<i
+							className={`fa fa-solid fa-mobile-screen-button _rotate-before-270 ${
+								deviceType === 'MOBILE_LANDSCAPE_SCREEN' ? 'active' : ''
+							}`}
+							onClick={() => changeDeviceType('MOBILE_LANDSCAPE_SCREEN')}
+							title="Mobile Landscape"
+						></i>
+						<i
+							className={`fa fa-solid fa-mobile-screen-button ${
+								deviceType === 'MOBILE_POTRAIT_SCREEN' ? 'active' : ''
+							}`}
+							onClick={() => changeDeviceType('MOBILE_POTRAIT_SCREEN')}
+							title="Mobile"
+						></i>
+					</div>
 				</div>
 			</div>
 			<div className="_topRightBarGrid">
@@ -503,7 +505,7 @@ export default function DnDTopBar({
 
 					<i
 						className={`fa fa-solid fa-arrow-turn-up fa-rotate-270 ${
-							undoStackRef.current.length ? 'active' : ''
+							undoStackRef.current.length ? '_hasData' : '_hasNoData'
 						}`}
 						onClick={() => {
 							if (!undoStackRef.current.length || !defPath) return;
@@ -530,7 +532,7 @@ export default function DnDTopBar({
 					/>
 					<i
 						className={`fa fa-solid fa-arrow-turn-down fa-rotate-270 ${
-							redoStackRef.current.length ? 'active' : ''
+							redoStackRef.current.length ? '_hasData' : '_hasNoData'
 						}`}
 						onClick={() => {
 							if (!redoStackRef.current.length || !defPath) return;
