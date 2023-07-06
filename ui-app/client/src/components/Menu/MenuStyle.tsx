@@ -75,7 +75,10 @@ export default function LinkStyle({ theme }: { theme: Map<string, Map<string, st
 		border-bottom : 1px solid transparent;
 	}
 
-
+	${PREFIX}.childrenDiv{
+		display:flex;
+		flex-direction: column;
+	}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="MenuCss">{css}</style>;

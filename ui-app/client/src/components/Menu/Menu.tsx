@@ -213,61 +213,65 @@ function Menu(props: ComponentProps) {
 
 	const children =
 		definition.children && isMenuOpenState ? (
-			<Children
-				pageDefinition={props.pageDefinition}
-				children={definition.children}
-				context={context}
-				locationHistory={locationHistory}
-			/>
+			<div className="childrenDiv">
+				<Children
+					pageDefinition={props.pageDefinition}
+					children={definition.children}
+					context={context}
+					locationHistory={locationHistory}
+				/>
+			</div>
 		) : (
 			<></>
 		);
 
 	return (
 		<>
-			{styleComp}
-			<a
-				className={`comp compMenu _${styleKey}menu_css ${MenuDesignSelectionType} ${
-					isMenuActive ? '_isActive' : ''
-				}`}
-				href={resolvedLink}
-				target={target}
-				onClick={e => {
-					if ((!target || target === '_self') && linkPath) {
-						e.stopPropagation();
-						e.preventDefault();
-						window.history.pushState(undefined, '', resolvedLink);
-						window.history.back();
-						setTimeout(() => window.history.forward(), 100);
-					} else if (features && linkPath) {
-						e.stopPropagation();
-						e.preventDefault();
-						window.open(resolvedLink, target, features);
-					} else if (!onClick) {
-						menuToggle(e);
-					}
+			<div>
+				{styleComp}
+				<a
+					className={`comp compMenu _${styleKey}menu_css ${MenuDesignSelectionType} ${
+						isMenuActive ? '_isActive' : ''
+					}`}
+					href={resolvedLink}
+					target={target}
+					onClick={e => {
+						if ((!target || target === '_self') && linkPath) {
+							e.stopPropagation();
+							e.preventDefault();
+							window.history.pushState(undefined, '', resolvedLink);
+							window.history.back();
+							setTimeout(() => window.history.forward(), 100);
+						} else if (features && linkPath) {
+							e.stopPropagation();
+							e.preventDefault();
+							window.open(resolvedLink, target, features);
+						} else if (!onClick) {
+							menuToggle(e);
+						}
 
-					const func = onClick
-						? props.pageDefinition?.eventFunctions?.[onClick]
-						: undefined;
-					if (!func) return;
-					(async () =>
-						await runEvent(
-							func,
-							key,
-							context.pageName,
-							props.locationHistory,
-							props.pageDefinition,
-						))();
-				}}
-			>
-				<HelperComponent definition={definition} />
-				{leftIconButton}
-				{onlyIconMenu ? '' : getTranslations(label, translations)}
-				{externalButton}
-				{caretIcon}
-			</a>
-			{children}
+						const func = onClick
+							? props.pageDefinition?.eventFunctions?.[onClick]
+							: undefined;
+						if (!func) return;
+						(async () =>
+							await runEvent(
+								func,
+								key,
+								context.pageName,
+								props.locationHistory,
+								props.pageDefinition,
+							))();
+					}}
+				>
+					<HelperComponent definition={definition} />
+					{leftIconButton}
+					{onlyIconMenu ? '' : getTranslations(label, translations)}
+					{externalButton}
+					{caretIcon}
+				</a>
+				{children}
+			</div>
 		</>
 	);
 }
