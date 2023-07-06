@@ -47,12 +47,35 @@ function processTagType(headTags: any, tag: string) {
 	for (let i = 0; i < existingLinks.length; i++) {
 		document.head.removeChild(existingLinks[i]);
 	}
-	Object.entries(headTags).forEach(([key, attributes]: [string, any]) => {
-		const link = document.createElement(tag);
-		link.id = key;
-		Object.entries(attributes).forEach(e => link.setAttribute(e[0], e[1] as string));
-		document.head.appendChild(link);
-	});
+	Object.entries(headTags)
+		.sort((a: any[], b: any[]) => (b[1]?.order ?? 0) - (a[1]?.order ?? 0))
+		.forEach(([key, attributes]: [string, any]) => {
+			const link = document.createElement(tag);
+			link.id = key;
+			Object.entries(attributes).forEach(e => link.setAttribute(e[0], e[1] as string));
+			document.head.appendChild(link);
+		});
+}
+
+function processCodeParts(codeParts: any) {
+	if (!codeParts) return;
+
+	Object.entries(codeParts)
+		.sort((a: any[], b: any[]) => (a[1]?.order ?? 0) - (b[1]?.order ?? 0))
+		.forEach(([key, code]: [string, any]) => {
+			if (document.getElementById(key)) return;
+
+			let div = document.createElement('div');
+			div.innerHTML = code.part.trim();
+			let cp = div.firstChild as HTMLElement;
+			cp.id = key;
+			if (code.place == 'AFTER_HEAD')
+				document.head.insertBefore(cp, document.head.firstChild);
+			else if (code.place == 'BEFORE_HEAD') document.head.appendChild(cp);
+			else if (code.place == 'AFTER_BODY')
+				document.body.insertBefore(cp, document.body.firstChild);
+			else if (code.place == 'BEFORE_BODY') document.body.appendChild(cp);
+		});
 }
 
 export function App() {
@@ -80,6 +103,7 @@ export function App() {
 					processTagType(properties.links, 'LINK');
 					processTagType(properties.scripts, 'SCRIPT');
 					processTagType(properties.metas, 'META');
+					processCodeParts(properties.codeParts);
 				},
 				undefined,
 				`${STORE_PREFIX}.application`,
