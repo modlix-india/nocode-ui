@@ -15,6 +15,7 @@ import { StyleResolution } from '../types/common';
 import { StyleResolutionDefinition } from '../util/styleProcessor';
 import { Messages } from './Messages/Messages';
 import { isSlave, messageToMaster, SLAVE_FUNCTIONS } from '../slaveFunctions';
+import { isNullValue } from '@fincity/kirun-js';
 
 // In design mode we are listening to the messages from editor
 
@@ -57,25 +58,130 @@ function processTagType(headTags: any, tag: string) {
 		});
 }
 
+const addedKeySet = new Set<string>();
+
 function processCodeParts(codeParts: any) {
 	if (!codeParts) return;
 
 	Object.entries(codeParts)
-		.sort((a: any[], b: any[]) => (a[1]?.order ?? 0) - (b[1]?.order ?? 0))
+		.sort(
+			(a: any[], b: any[]) =>
+				((b[1]?.order ?? 0) - (a[1]?.order ?? 0)) *
+				(a[1]?.place.startsWith('AFTER_') ? 1 : -1),
+		)
 		.forEach(([key, code]: [string, any]) => {
-			if (document.getElementById(key)) return;
+			const setKey = `${code.place}_${key}`;
+			if (addedKeySet.has(setKey)) return;
 
 			let div = document.createElement('div');
 			div.innerHTML = code.part.trim();
-			let cp = div.firstChild as HTMLElement;
-			cp.id = key;
+
 			if (code.place == 'AFTER_HEAD')
-				document.head.insertBefore(cp, document.head.firstChild);
-			else if (code.place == 'BEFORE_HEAD') document.head.appendChild(cp);
+				Array.from(div.children)
+					.reverse()
+					.forEach(cp => document.head.insertBefore(cp, document.head.firstChild));
+			else if (code.place == 'BEFORE_HEAD')
+				Array.from(div.children).forEach(cp => document.head.appendChild(cp));
 			else if (code.place == 'AFTER_BODY')
-				document.body.insertBefore(cp, document.body.firstChild);
-			else if (code.place == 'BEFORE_BODY') document.body.appendChild(cp);
+				Array.from(div.children)
+					.reverse()
+					.forEach(cp => document.body.insertBefore(cp, document.body.firstChild));
+			else if (code.place == 'BEFORE_BODY')
+				Array.from(div.children).forEach(cp => document.body.appendChild(cp));
+
+			addedKeySet.add(setKey);
 		});
+}
+
+function processFontPacks(fontPacks: any) {
+	if (!fontPacks) return;
+
+	Object.entries(fontPacks)
+		.sort((a: any[], b: any[]) => (a[1]?.order ?? 0) - (b[1]?.order ?? 0))
+		.forEach(([key, fontPack]: [string, any]) => {
+			const setKey = `FONT_${key}`;
+			if (addedKeySet.has(setKey)) return;
+
+			let div = document.createElement('div');
+			div.innerHTML = fontPack.code.trim();
+
+			Array.from(div.children).forEach(cp => document.head.appendChild(cp));
+		});
+}
+
+const ICON_PACKS = new Map<string, string>([
+	[
+		'FREE_FONT_AWESOME_ALL',
+		'<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />',
+	],
+
+	[
+		'FREE_FONT_AWESOME_SOLID_ONLY',
+		'<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/solid.min.css" rel="stylesheet" />',
+	],
+
+	[
+		'FREE_FONT_AWESOME_REGULAR_ONLY',
+		'<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/regular.min.css" rel="stylesheet" />',
+	],
+
+	[
+		'MATERIAL_SYMBOLS_OUTLINED',
+		'<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />',
+	],
+
+	[
+		'MATERIAL_SYMBOLS_ROUNDED',
+		'<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />',
+	],
+
+	[
+		'MATERIAL_SYMBOLS_SHARP',
+		'<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />',
+	],
+
+	[
+		'MATERIAL_ICONS_FILLED',
+		'<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">',
+	],
+
+	[
+		'MATERIAL_ICONS_OUTLINED',
+		'<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">',
+	],
+
+	[
+		'MATERIAL_ICONS_ROUNDED',
+		'<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">',
+	],
+
+	[
+		'MATERIAL_ICONS_FILLED_SHARP',
+		'<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">',
+	],
+
+	[
+		'MATERIAL_ICONS_TWO_TONE',
+		'<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Two+Tone" rel="stylesheet">',
+	],
+]);
+
+function processIconPacks(iconPacks: any) {
+	if (!iconPacks) return;
+
+	Object.entries(iconPacks).forEach(([key, iconPack]: [string, any]) => {
+		const setKey = `ICON_${key}`;
+		if (addedKeySet.has(setKey)) return;
+
+		let code = iconPack.code;
+
+		if (isNullValue(code)) code = ICON_PACKS.get(iconPack.name);
+
+		let div = document.createElement('div');
+		div.innerHTML = code.trim();
+
+		Array.from(div.children).forEach(cp => document.head.appendChild(cp));
+	});
 }
 
 export function App() {
@@ -103,6 +209,8 @@ export function App() {
 					processTagType(properties.links, 'LINK');
 					processTagType(properties.scripts, 'SCRIPT');
 					processTagType(properties.metas, 'META');
+					processFontPacks(properties.fontPacks);
+					processIconPacks(properties.iconPacks);
 					processCodeParts(properties.codeParts);
 				},
 				undefined,
