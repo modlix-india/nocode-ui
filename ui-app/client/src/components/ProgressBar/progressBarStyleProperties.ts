@@ -49,14 +49,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '20px',
 		selector: '.progressBar',
 	},
-	{
-		name: 'progressBarBackGroundColor',
-		cssProperty: 'background',
-		displayName: 'Progress Bar BackGround Color',
-		description: 'BackGround Color of the Progress Bar.',
-		defaultValue: '<contrastBrightColor>',
-		selector: '.progress',
-	},
+
 	{
 		name: 'progressBarValueFontSize',
 		cssProperty: 'font-size',
@@ -72,6 +65,29 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description: 'Font Color of the Progress Bar.',
 		defaultValue: '<blackFontColor>',
 		selector: '.progressValue',
+	},
+
+	// Design 1
+
+	{
+		groupName: 'Design1',
+		displayName: 'Background Of Progress Completed',
+		name: 'progressCompletedBackgroundOne',
+		defaultValue: '<backgroundColorGradientEight>',
+		description: 'Background Color For completed progress',
+		cssProperty: 'background',
+		selector: '.comp.compProgressBar._progressBarDesignOne .progressBar .progress',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Design1',
+		displayName: 'Background Of Progress Bar',
+		name: 'progressBarBackgroundOne',
+		defaultValue: '<fontColorNine>',
+		description: 'Background Color For Progress bar',
+		cssProperty: 'background-color',
+		selector: '.comp.compProgressBar._progressBarDesignOne .progressBar',
+		noPrefix: true,
 	},
 ];
 
