@@ -193,6 +193,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				displayName: 'filledMenuHorizontalDesign1',
 				description: 'filled menu horizontal design one',
 			},
+			{
+				name: '_transparentMenuDesign1',
+				displayName: 'TransparentMenuDesign1',
+				description: 'Transparent menu vertical design one',
+			},
+			{
+				name: '_transparentMenuHorizontalDesign1',
+				displayName: 'TransparentMenuHorizontalDesign1',
+				description: 'Transparent menu horizontal design one',
+			},
 		],
 	},
 	COMMON_COMPONENT_PROPERTIES.visibility,

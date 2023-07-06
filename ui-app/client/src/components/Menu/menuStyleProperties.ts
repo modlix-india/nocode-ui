@@ -1608,6 +1608,115 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._filledMenuHorizontalDesign1',
 		noPrefix: true,
 	},
+	{
+		groupName: 'Design12',
+		displayName: 'Font ', name: 'TransparentMenuDesignOneFont',
+		defaultValue: '<secondaryFontSize>',
+		description: 'Font of Transparent Menu design One',
+		cssProperty: 'font',
+		selector: '.comp.compMenu._transparentMenuDesign1',
+		noPrefix: true
+	},
+	{
+		groupName: 'Design12',
+		displayName: 'Font Weight',
+		name: 'TransparentMenuDesignOneFontWeight',
+		defaultValue: '<normalFontWeight>',
+		description: 'Normal Font weight of Transparent Menu',
+		cssProperty: 'font-weight',
+		selector: '.comp.compMenu._transparentMenuDesign1',
+		noPrefix: true
+	},
+	{
+		groupName: 'Design12',
+		displayName: 'Color',
+		name: 'TransparentMenuDesignOneColor',
+		defaultValue: 'rgba(255, 255, 255, 0.6000000238418579)',
+		description: 'The color of the Transparent menu design  one',
+		cssProperty: 'color',
+		selector: '.comp.compMenu._transparentMenuDesign1',
+		noPrefix: true
+	},
+	{
+		groupName: 'Design12',
+		displayName: 'Line Height',
+		name: 'TransparentMenuDesignOneLineHeight',
+		defaultValue: '<tertiaryFontLineHeight>',
+		description: 'Line Height of the transparent menu design one',
+		cssProperty: 'line-height',
+		selector: '.comp.compMenu._transparentMenuDesign1',
+		noPrefix: true
+	},
+	{
+		groupName: 'Design12',
+		displayName: 'Padding ',
+		name: 'TransparentMenuDesignOnePadding',
+		defaultValue: '<FilledMenuDesignFivePadding>',
+		description: 'Padding for design one of menu',
+		cssProperty: 'padding',
+		selector: '.comp.compMenu._transparentMenuDesign1',
+		noPrefix: true
+	},
+	{
+		groupName: 'Design12',
+		displayName: 'Color on Hover',
+		name: 'TransparentMenuDesignOneHoverAndActiveColor',
+		defaultValue: 'rgba(255, 255, 255, 1)',
+		description: 'Font color on hover of menu ',
+		cssProperty: 'color',
+		selector: '.comp.compMenu._transparentMenuDesign1:hover, .comp.compMenu._transparentMenuDesign1._isActive',
+		noPrefix: true
+	},
+	{
+		groupName: 'Design12',
+		displayName: 'Font Weight On Hover and Active',
+		name: 'TransparentMenuDesignOneFontWeightOnHoverAndActive',
+		defaultValue: '<boldFontWeight>',
+		description: 'Font weight on hover and active',
+		cssProperty: 'font-weight',
+		selector: '.comp.compMenu._transparentMenuDesign1:hover, .comp.compMenu._transparentMenuDesign1._isActive',
+		noPrefix: true
+	},
+	{
+		groupName: 'Design12',
+		displayName: 'Background Color Hover',
+		name: 'TransparentMenuDesignOneBackgroundColorOnHoverAndActive',
+		defaultValue: 'linear-gradient(90deg, rgba(0, 0, 0, 0.40) 0%, rgba(0, 0, 0, 0.00) 100%)',
+		description: 'Background color on hover and active for menu',
+		cssProperty: 'background-image',
+		selector: '.comp.compMenu._transparentMenuDesign1:hover, .comp.compMenu._transparentMenuDesign1._isActive',
+		noPrefix: true
+	},
+	{
+		groupName: 'Design12',
+		displayName: 'Border ',
+		name: 'TransparentMenuDesignOneBorder',
+		defaultValue: 'none',
+		description: 'Border Style for transparent menu',
+		cssProperty: 'border',
+		selector: '.comp.compMenu._transparentMenuDesign1',
+		noPrefix: true
+	},
+	{
+		groupName: 'Design12',
+		displayName: 'Border Hover',
+		name: 'TransparentMenuDesignOneBorderOnHoverAndActive',
+		defaultValue: 'none',
+		description: 'Border Style on hover and active',
+		cssProperty: 'border',
+		selector: '.comp.compMenu._transparentMenuDesign1:hover, .comp.compMenu._transparentMenuDesign1._isActive',
+		noPrefix: true
+	},
+	{
+		groupName: 'Design12',
+		displayName: 'Gap in between icon and text',
+		name: 'TransparentMenuDesignOneGap',
+		defaultValue: '10px',
+		description: 'Gap between icon and text of menu',
+		cssProperty: 'gap',
+		selector: '.comp.compMenu._transparentMenuDesign1',
+		noPrefix: true
+	},
 ];
 
 export const styleDefaults = new Map<string, string>(
