@@ -20,6 +20,7 @@ function ImageComponent(props: ComponentProps) {
 	const [hover, setHover] = useState(false);
 	const [src, setSrc] = useState('');
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const [falledBack, setFalledBack] = useState(false);
 	const location = useLocation();
 	const {
 		properties: {
@@ -74,9 +75,9 @@ function ImageComponent(props: ComponentProps) {
 			))();
 	};
 	const handleError = (e: any) => {
-		if (fallBackImg) {
-			e.currentTarget.src = fallBackImg;
-		}
+		if (falledBack) return;
+		e.currentTarget.src = fallBackImg;
+		setFalledBack(true);
 	};
 
 	const resolvedStyles = processComponentStylePseudoClasses(
