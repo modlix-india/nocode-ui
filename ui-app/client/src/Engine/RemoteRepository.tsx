@@ -37,6 +37,7 @@ export class RemoteRepository<T> implements Repository<T> {
 
 	private internalCache: Map<string, Tuple2<number, T>> = new Map();
 	private internalFilterCache: Array<string> | undefined = undefined;
+	private promiseCache: Map<string, Promise<T | undefined>> = new Map();
 	private filterCachedAt: number = 0;
 
 	private jsonConversion: (json: any) => T | undefined;
@@ -66,12 +67,13 @@ export class RemoteRepository<T> implements Repository<T> {
 	}
 
 	private makeFindCall(namespace: string, name: string): Promise<T | undefined> {
-		return new Promise((resolve, reject) => {
+		const key = `${namespace}.${name}`;
+		if (this.promiseCache.has(key)) return this.promiseCache.get(key)!;
+		const promise = new Promise<T | undefined>((resolve, reject) => {
 			const headers: any = {};
 			const authToken = getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []);
 			if (authToken) headers.Authorization = authToken;
 			if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
-
 			axios
 				.get(`${this.url}repositoryFind`, {
 					params: {
@@ -84,27 +86,25 @@ export class RemoteRepository<T> implements Repository<T> {
 					headers,
 				})
 				.then(response => {
-					this.internalCache.set(
-						`${namespace}.${name}`,
-						new Tuple2<number, any>(Date.now(), this.jsonConversion(response.data)),
-					);
-					resolve(this.jsonConversion(response.data));
+					const convObj = this.jsonConversion(response.data);
+					this.internalCache.set(key, new Tuple2<number, any>(Date.now(), convObj));
+					resolve(convObj);
 				})
 				.catch(error => {
 					reject(error);
-				});
+				})
+				.finally(() => this.promiseCache.delete(key));
 		});
+
+		this.promiseCache.set(key, promise);
+		return promise;
 	}
 
 	public async find(namespace: string, name: string): Promise<T | undefined> {
 		const key = `${namespace}.${name}`;
-		if (this.internalCache.has(key)) {
-			if (Date.now() - (this.internalCache.get(key)?.getT1() ?? 0) > HALF_A_MINUTE) {
-				this.makeFindCall(namespace, name).then(v => {});
-			}
-			return Promise.resolve(this.internalCache.get(key)?.getT2());
-		} else {
-			await this.makeFindCall(namespace, name);
+
+		if (Date.now() - (this.internalCache.get(key)?.getT1() ?? 0) > HALF_A_MINUTE) {
+			return await this.makeFindCall(namespace, name);
 		}
 
 		return this.internalCache.get(key)?.getT2();

@@ -62,6 +62,7 @@ function TextBox(props: ComponentProps) {
 			placeholder,
 			messageDisplay,
 			autoComplete,
+			onClear,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -99,22 +100,31 @@ function TextBox(props: ComponentProps) {
 		);
 	}, [bindingPathPath]);
 
-	const spinnerPath = onEnter
+	const spinnerPath1 = onEnter
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
 				onEnter,
 		  )}.isRunning`
 		: undefined;
 
+	const spinnerPath2 = onClear
+		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
+				onClear,
+		  )}.isRunning`
+		: undefined;
+
 	const [isLoading, setIsLoading] = useState(
-		onEnter
-			? getDataFromPath(spinnerPath, props.locationHistory, pageExtractor) ?? false
-			: false,
+		(getDataFromPath(spinnerPath1, props.locationHistory, pageExtractor) ||
+			getDataFromPath(spinnerPath2, props.locationHistory, pageExtractor)) ??
+			false,
 	);
 
 	useEffect(() => {
-		if (spinnerPath) {
-			return addListener((_, value) => setIsLoading(value), pageExtractor, spinnerPath);
-		}
+		let paths = [];
+		if (spinnerPath1) paths.push(spinnerPath1);
+		if (spinnerPath2) paths.push(spinnerPath2);
+
+		if (!paths.length) return;
+		return addListener((_, value) => setIsLoading(value), pageExtractor, ...paths);
 	}, []);
 
 	useEffect(() => {
@@ -194,13 +204,23 @@ function TextBox(props: ComponentProps) {
 		if (valueType === 'text') handleTextChange(event.target.value);
 		else handleNumberChange(event.target.value);
 	};
-	const handleClickClose = () => {
+	const handleClickClose = async () => {
 		let temp = mapValue[emptyValue];
 		if (removeKeyWhenEmpty && bindingPathPath) {
 			setData(bindingPathPath, undefined, context?.pageName, true);
 		} else if (bindingPathPath) {
 			setData(bindingPathPath, temp, context?.pageName);
 		}
+		if (!onClear) return;
+		const clearEvent = props.pageDefinition.eventFunctions[onClear];
+		if (!clearEvent) return;
+		await runEvent(
+			clearEvent,
+			onEnter,
+			props.context.pageName,
+			props.locationHistory,
+			props.pageDefinition,
+		);
 	};
 	const clickEvent = onEnter ? props.pageDefinition.eventFunctions[onEnter] : undefined;
 	const handleKeyUp = async (e: React.KeyboardEvent<HTMLInputElement>) => {
