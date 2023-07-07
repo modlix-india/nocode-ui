@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
 	addListenerAndCallImmediately,
 	getPathFromLocation,
@@ -28,13 +28,15 @@ function ProgressBar(props: ComponentProps) {
 	const {
 		key,
 		properties: {
-			label,
 			showProgressValue,
-			progressNotStartedLabel,
-			inProgressLabel,
-			progressCompletedLabel,
-			appendProgressValue,
-			prependProgressValue,
+			progressValue = 0,
+			progressValueUnit,
+			showProgressLabel,
+			noProgressLabel = '',
+			progressLabel = '',
+			completedProgressLabel = '',
+			progressLabelPosition,
+			labelAndValueContainerPosition,
 			progressBarDesignSelection,
 		} = {},
 		stylePropertiesWithPseudoStates,
@@ -51,20 +53,55 @@ function ProgressBar(props: ComponentProps) {
 		{ hover },
 		stylePropertiesWithPseudoStates,
 	);
+	const [relativeToProgressBar, setRelativeToProgressBar] = useState(false);
+	const [relativeToCurrentProgress, setRelativeToCurrentProgress] = useState(false);
+	const designMap: Map<string, boolean> = new Map([
+		['_progressBarDesignOne', true],
+		['_progressBarDesignTwo', false],
+		['_progressBarDesignThree', true],
+	]);
 
-	const [value, setValue] = React.useState(0);
-	const bindingPathPath =
-		bindingPath && getPathFromLocation(bindingPath, locationHistory, pageExtractor);
-	React.useEffect(() => {
-		if (!bindingPathPath) return;
-		return addListenerAndCallImmediately(
-			(_, value) => {
-				setValue(value ?? 0);
-			},
-			pageExtractor,
-			bindingPathPath,
-		);
-	}, [bindingPath]);
+	// console.log(relativeToProgressBar);
+	// console.log(relativeToCurrentProgress);
+
+	useEffect(() => {
+		if (designMap.get(progressBarDesignSelection)) setRelativeToCurrentProgress(true);
+		else setRelativeToProgressBar(true);
+	}, [progressBarDesignSelection]);
+
+	const getEffectiveLabel = () => {
+		if (progressValue <= 0) return noProgressLabel;
+		else if (progressValue == 100) return completedProgressLabel;
+		else return progressLabel;
+	};
+
+	const effectiveProgressLabel = showProgressLabel ? (
+		<span className="_progressLabel" style={resolvedStyles.progressLabel ?? {}}>
+			{getEffectiveLabel()}
+			<SubHelperComponent definition={props.definition} subComponentName="progressLabel" />
+		</span>
+	) : null;
+	const effectiveProgressValue = showProgressValue ? (
+		<span className="_progressValue" style={resolvedStyles.progressValue ?? {}}>
+			{`${progressValue}${progressValueUnit ? progressValueUnit : ''}`}
+			<SubHelperComponent definition={props.definition} subComponentName="progressValue" />
+		</span>
+	) : null;
+
+	const progressLabelAndValueContainer = (
+		<span
+			className={`_labelAndValueContainer _${labelAndValueContainerPosition}`}
+			style={resolvedStyles.labelAndValueContainer ?? {}}
+		>
+			{progressLabelPosition === 'Right'
+				? [effectiveProgressValue, effectiveProgressLabel]
+				: [effectiveProgressLabel, effectiveProgressValue]}
+			<SubHelperComponent
+				definition={props.definition}
+				subComponentName="labelAndValueContainer"
+			/>
+		</span>
+	);
 
 	return (
 		<div
@@ -72,17 +109,8 @@ function ProgressBar(props: ComponentProps) {
 			style={resolvedStyles.comp ?? {}}
 		>
 			<HelperComponent definition={props.definition} />
-			{label ? (
-				<label className="progressBarLabel" style={resolvedStyles.progressBarLabel ?? {}}>
-					<SubHelperComponent
-						definition={props.definition}
-						subComponentName="progressBarLabel"
-					/>
-					{getTranslations(label, props.pageDefinition.translations)}
-				</label>
-			) : null}
 			<span
-				className="progressBar"
+				className="_progressBar"
 				style={resolvedStyles.progressBar ?? {}}
 				onMouseEnter={
 					stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
@@ -93,28 +121,19 @@ function ProgressBar(props: ComponentProps) {
 			>
 				<SubHelperComponent definition={props.definition} subComponentName="progressBar" />
 				<span
-					style={{ width: `${value}%`, ...(resolvedStyles.progress ?? {}) }}
-					className="progress"
+					style={{
+						width: `${progressValue}%`,
+						...(resolvedStyles.currentProgress ?? {}),
+					}}
+					className="_currentProgress"
 				>
-					<SubHelperComponent definition={props.definition} subComponentName="progress" />
-				</span>
-				<label className="progressValue" style={resolvedStyles.progressValue ?? {}}>
 					<SubHelperComponent
 						definition={props.definition}
-						subComponentName="progressValue"
+						subComponentName="currentProgress"
 					/>
-					{`${prependProgressValue && showProgressValue ? value + '% ' : ''}` +
-						`${
-							progressNotStartedLabel || inProgressLabel || progressCompletedLabel
-								? value <= 0
-									? progressNotStartedLabel
-									: value === 100
-									? progressCompletedLabel
-									: inProgressLabel
-								: ''
-						}` +
-						`${appendProgressValue && showProgressValue ? value + '% ' : ''}`}
-				</label>
+					{relativeToCurrentProgress ? progressLabelAndValueContainer : null}
+				</span>
+				{relativeToProgressBar ? progressLabelAndValueContainer : null}
 			</span>
 		</div>
 	);
@@ -135,9 +154,6 @@ const component: Component = {
 		key: '',
 		type: 'ProgressBar',
 		name: 'ProgressBar',
-	},
-	bindingPaths: {
-		bindingPath: { name: 'Progress Value' },
 	},
 	sections: [{ name: 'Default Progress Bar', pageName: 'progressBar' }],
 };
