@@ -199,7 +199,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				description: 'Transparent menu vertical design one',
 			},
 			{
-				name: '_transparentMenuHorizontalDesign1',
+				name: '_transparentHorizontalMenuDesign1',
 				displayName: 'TransparentMenuHorizontalDesign1',
 				description: 'Transparent menu horizontal design one',
 			},

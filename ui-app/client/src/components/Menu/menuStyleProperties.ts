@@ -1717,6 +1717,116 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._transparentMenuDesign1',
 		noPrefix: true
 	},
+	{
+		groupName: 'Design17',
+		displayName: 'Font ',
+		name: 'TransparentHorizontalMenuDesignOneFont',
+		defaultValue: '<secondaryFontSize>',
+		description: 'Font of Transparent horizontal Menu design One',
+		cssProperty: 'font',
+		selector: '.comp.compMenu._transparentHorizontalMenuDesign1',
+		noPrefix: true
+	},
+	{
+		groupName: 'Design17',
+		displayName: 'Font Weight',
+		name: 'TransparentHorizontalMenuDesignOneFontWeight',
+		defaultValue: '<normalFontWeight>',
+		description: 'Normal Font weight of horizontal Transparent Menu',
+		cssProperty: 'font-weight',
+		selector: '.comp.compMenu._transparentHorizontalMenuDesign1',
+		noPrefix: true
+	},
+	{
+		groupName: 'Design17',
+		displayName: 'Color',
+		name: 'TransparentHorizontalMenuDesignOneColor',
+		defaultValue: '<TransparentMenuDesignOneColor>',
+		description: 'The color of the horizontal Transparent menu design one',
+		cssProperty: 'color',
+		selector: '.comp.compMenu._transparentHorizontalMenuDesign1',
+		noPrefix: true
+	},
+	{
+		groupName: 'Design17',
+		displayName: 'Line Height',
+		name: 'TransparentHorizontalMenuDesignOneLineHeight',
+		defaultValue: '<tertiaryFontLineHeight>',
+		description: 'Line Height of the horizontal transparent menu design one',
+		cssProperty: 'line-height',
+		selector: '.comp.compMenu._transparentHorizontalMenuDesign1',
+		noPrefix: true
+	},
+	{
+		groupName: 'Design17',
+		displayName: 'Padding ',
+		name: 'TransparentHorizontalMenuDesignOnePadding',
+		defaultValue: '<FilledMenuDesignFivePadding>',
+		description: 'Padding for design one of horizontal menu',
+		cssProperty: 'padding',
+		selector: '.comp.compMenu._transparentHorizontalMenuDesign1',
+		noPrefix: true
+	},
+	{
+		groupName: 'Design17',
+		displayName: 'Color on Hover',
+		name: 'TransparentHorizontalMenuDesignOneHoverAndActiveColor',
+		defaultValue: '<TransparentMenuDesignOneHoverAndActiveColor>',
+		description: 'Font color on hover of horizontal menu ',
+		cssProperty: 'color',
+		selector: '.comp.compMenu._transparentHorizontalMenuDesign1:hover, .comp.compMenu._transparentMenuDesign1._isActive',
+		noPrefix: true
+	},
+	{
+		groupName: 'Design17',
+		displayName: 'Font Weight On Hover and Active',
+		name: 'TransparentHorizontalMenuDesignOneFontWeightOnHoverAndActive',
+		defaultValue: '<boldFontWeight>',
+		description: 'Font weight on hover and active horizontal menu',
+		cssProperty: 'font-weight',
+		selector: '.comp.compMenu._transparentHorizontalMenuDesign1:hover, .comp.compMenu._transparentMenuDesign1._isActive',
+		noPrefix: true
+	},
+	{
+		groupName: 'Design17',
+		displayName: 'Background Color Hover',
+		name: 'TransparentHorizontalMenuDesignOneBackgroundColorOnHoverAndActive',
+		defaultValue: '<TransparentMenuDesignOneBackgroundColorOnHoverAndActive>',
+		description: 'Background color on hover and active for horizontal menu',
+		cssProperty: 'background-image',
+		selector: '.comp.compMenu._transparentHorizontalMenuDesign1:hover, .comp.compMenu._transparentMenuDesign1._isActive',
+		noPrefix: true
+	},
+	{
+		groupName: 'Design17',
+		displayName: 'Border ',
+		name: 'TransparentHorizontalMenuDesignOneBorder',
+		defaultValue: '<TransparentMenuDesignOneBorder>',
+		description: 'Border Style for transparent horizontal menu',
+		cssProperty: 'border',
+		selector: '.comp.compMenu._transparentHorizontalMenuDesign1',
+		noPrefix: true
+	},
+	{
+		groupName: 'Design17',
+		displayName: 'Border Hover',
+		name: 'TransparentHorizontalMenuDesignOneBorderOnHoverAndActive',
+		defaultValue: '<TransparentMenuDesignOneBorderOnHoverAndActive>',
+		description: 'Border Style on hover and active horizontal menu',
+		cssProperty: 'border',
+		selector: '.comp.compMenu._transparentHorizontalMenuDesign1:hover, .comp.compMenu._transparentMenuDesign1._isActive',
+		noPrefix: true
+	},
+	{
+		groupName: 'Design17',
+		displayName: 'Gap in between icon and text',
+		name: 'TransparentHorizontalMenuDesignOneGap',
+		defaultValue: '10px',
+		description: 'Gap between icon and text of horizontal menu',
+		cssProperty: 'gap',
+		selector: '.comp.compMenu._transparentHorizontalMenuDesign1',
+		noPrefix: true
+	},
 ];
 
 export const styleDefaults = new Map<string, string>(
