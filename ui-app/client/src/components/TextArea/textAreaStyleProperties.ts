@@ -54,7 +54,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'width',
 		displayName: "TextArea's width",
 		description: "This is for TextArea's width",
-		selector: ' ',
+		selector: '.inputContainer',
 	},
 	{
 		name: 'textAreaHeight',
@@ -62,7 +62,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: "TextArea's height",
 		description: "This is for TextArea's height",
 		defaultValue: '150px',
-		selector: ' ',
+		selector: '.inputContainer',
 	},
 	{
 		name: 'textAreaBorderRadius',
@@ -263,14 +263,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'.inputContainer .textArea:focus + .textAreaLabel, .inputContainer .textArea:not(:placeholder-shown) + .textAreaLabel',
 	},
 	{
-		name: 'textAreaLabelTextOpacity',
-		cssProperty: 'opacity',
-		displayName: "TextArea's label text opacity",
-		description: "This opacity is used for TextArea's label content opacity.",
-		defaultValue: '0',
-		selector: '.inputContainer .textArea.float::placeholder',
-	},
-	{
 		name: 'textAreaContainerContentAlign',
 		cssProperty: 'align-items',
 		displayName: "TextArea's Container Content Align in the grid",
@@ -379,6 +371,56 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description: "This is for TextArea's right icon right margin",
 		defaultValue: '5px',
 		selector: '.inputContainer .errorIcon',
+	},
+
+	{
+		name: 'textAreaAutofillBackgroundColor',
+		cssProperty: 'background-color',
+		displayName: "TextArea's Browser Autofill Background color.",
+		description: "TextArea's Background color for override browser autofill style.",
+		defaultValue: '<textAreaDivBackgroundColor>',
+		selector: '.inputContainer .textArea:-webkit-autofill, .inputContainer .textArea:autofill',
+	},
+
+	{
+		name: 'textAreaPlaceholderColor',
+		cssProperty: 'color',
+		displayName: "TextArea's placeholder color.",
+		description: "TextArea's placeholder color.",
+		selector: '.inputContainer .textArea::placeholder',
+	},
+
+	{
+		name: 'textAreaPlaceholderFontSize',
+		cssProperty: 'font-size',
+		displayName: "TextArea's placeholder font size.",
+		description: "TextArea's placeholder font size.",
+		selector: '.inputContainer .textArea::placeholder',
+	},
+
+	{
+		name: 'textAreaPlaceholderFontWeight',
+		cssProperty: 'font-weight',
+		displayName: "TextArea's placeholder font weight.",
+		description: "TextArea's placeholder font weight.",
+		selector: '.inputContainer .textArea::placeholder',
+	},
+
+	{
+		name: 'textAreaPlaceholderlineHeight',
+		cssProperty: 'line-height',
+		displayName: "TextArea's placeholder line height.",
+		description: "TextArea's placeholder line height.",
+		selector: '.inputContainer .textArea::placeholder',
+	},
+
+	{
+		name: 'textAreaPlaceholderColorWhenDisabled',
+		cssProperty: 'color',
+		displayName: "TextArea's placeholder color when disabled.",
+		description: "TextArea's placeholder color when disabled.",
+		defaultValue: '<formInputTextColorWhenDisabled>',
+		selector: '.inputContainer.disabled .textArea:disabled::placeholder',
 	},
 ];
 

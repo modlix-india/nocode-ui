@@ -47,6 +47,10 @@ export default function TextAreaStyle({ theme }: { theme: Map<string, Map<string
 			display: inline-block;
 			position: relative;
 		}
+
+		${PREFIX} .inputContainer .textArea.float::placeholder {
+			opacity: 0;
+		}
 		
 		${PREFIX} .inputContainer .textArea:focus + .textAreaLabel,
 		${PREFIX} .inputContainer .textArea:not(:placeholder-shown) + .textAreaLabel {
