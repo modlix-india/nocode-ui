@@ -35,6 +35,7 @@ function ProgressBar(props: ComponentProps) {
 			progressCompletedLabel,
 			appendProgressValue,
 			prependProgressValue,
+			progressBarDesignSelection,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -66,7 +67,10 @@ function ProgressBar(props: ComponentProps) {
 	}, [bindingPath]);
 
 	return (
-		<div className="comp compProgressBar" style={resolvedStyles.comp ?? {}}>
+		<div
+			className={`comp compProgressBar ${progressBarDesignSelection}`}
+			style={resolvedStyles.comp ?? {}}
+		>
 			<HelperComponent definition={props.definition} />
 			{label ? (
 				<label className="progressBarLabel" style={resolvedStyles.progressBarLabel ?? {}}>
@@ -135,6 +139,7 @@ const component: Component = {
 	bindingPaths: {
 		bindingPath: { name: 'Progress Value' },
 	},
+	sections: [{ name: 'Default Progress Bar', pageName: 'progressBar' }],
 };
 
 export default component;
