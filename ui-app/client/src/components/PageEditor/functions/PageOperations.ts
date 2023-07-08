@@ -1011,4 +1011,8 @@ export default class PageOperations {
 	public genId(): string {
 		return shortUUID();
 	}
+
+	public getPageExtractor(): PageStoreExtractor {
+		return this.pageExtractor;
+	}
 }

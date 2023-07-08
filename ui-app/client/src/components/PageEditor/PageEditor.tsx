@@ -61,7 +61,7 @@ function savePersonalizationCurry(
 function PageEditor(props: ComponentProps) {
 	const {
 		definition,
-		definition: { bindingPath, bindingPath2 },
+		definition: { bindingPath, bindingPath2, bindingPath3 },
 		pageDefinition,
 		locationHistory,
 		context,
@@ -94,6 +94,11 @@ function PageEditor(props: ComponentProps) {
 	// binding path for the editor's personalization.
 	const personalizationPath = bindingPath2
 		? getPathFromLocation(bindingPath2, locationHistory, pageExtractor)
+		: undefined;
+
+	// binding path for the application definition.
+	const appPath = bindingPath3
+		? getPathFromLocation(bindingPath3, locationHistory, pageExtractor)
 		: undefined;
 
 	const resolvedStyles = processComponentStylePseudoClasses(
@@ -484,6 +489,7 @@ function PageEditor(props: ComponentProps) {
 					storePaths={storePaths}
 					setStyleSelectorPref={setStyleSelectorPref}
 					styleSelectorPref={styleSelectorPref}
+					appPath={appPath}
 				/>
 				<CodeEditor
 					showCodeEditor={showCodeEditor}
@@ -538,6 +544,7 @@ const component: Component = {
 	bindingPaths: {
 		bindingPath: { name: 'Definition' },
 		bindingPath2: { name: 'Personalization' },
+		bindingPath3: { name: 'Application Definition' },
 	},
 };
 
