@@ -45,8 +45,8 @@ export default function AppStyle() {
 								StyleResolution.ALL,
 								thm.has(StyleResolution.ALL)
 									? new Map<string, string>([
-											...styleDefaults,
-											...(thm.get(StyleResolution.ALL) ?? []),
+											...Array.from(styleDefaults),
+											...Array.from(thm.get(StyleResolution.ALL) ?? []),
 									  ])
 									: styleDefaults,
 							);
@@ -74,25 +74,11 @@ export default function AppStyle() {
 
 	${window.isDesignMode ? 'html { overflow-y: hidden; }' : ''}
 
-	.hide{
-		opacity:0;
-	}
-
-	.show{
-		opacity:1;
-	}
-
-	.comp {
-		position: relative;
-	}
-
-	*:hover::-webkit-scrollbar {
-		float: right;
-	}
-	
-	*:hover::-webkit-scrollbar-thumb {
-		visibility: visible;
-	}
+	.hide{opacity:0;}
+	.show{opacity:1;}
+	.comp {position: relative;}
+	*:hover::-webkit-scrollbar {float: right;}
+	*:hover::-webkit-scrollbar-thumb {visibility: visible;}
 
 	._ROWLAYOUT, ._SINGLECOLUMNLAYOUT, ._ROWCOLUMNLAYOUT {
 		display: flex;
@@ -119,59 +105,42 @@ export default function AppStyle() {
 
 	@media screen and (min-width: ${DESKTOP_MIN_WIDTH}px) {
 	
-		._FIVECOLUMNSLAYOUT {
-			grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-		}
+		._FIVECOLUMNSLAYOUT {grid-template-columns: 1fr 1fr 1fr 1fr 1fr;}
 
-		._FOURCOLUMNSLAYOUT {
-			grid-template-columns: 1fr 1fr 1fr 1fr;
-		}
+		._FOURCOLUMNSLAYOUT {grid-template-columns: 1fr 1fr 1fr 1fr;}
 
-		._THREECOLUMNSLAYOUT {
-			grid-template-columns: 1fr 1fr 1fr;
-		}
+		._THREECOLUMNSLAYOUT {grid-template-columns: 1fr 1fr 1fr;}
 
-		._ROWCOLUMNLAYOUT{
-			flex-direction: row;
-		}
+		._ROWCOLUMNLAYOUT {flex-direction: row;}
 	}
 
-	._pointer {
-		cursor: pointer;
-	}
-
-	._validationMessages {
-		position: relative;
-	}
-
-	._eachValidationMessage {
-		position: relative;
-	}
-
+	._pointer {cursor: pointer;}
+	._validationMessages {position: relative;}
+	._eachValidationMessage {position: relative;}
 	._validationMessages._floatingMessages {
 		position:absolute;
 		z-index:1;
 	}
 
-	.opacityShowOnHover {
-		opacity: 0;
-	}
+	.opacityShowOnHover {opacity: 0;}
+	.opacityShowOnHover:hover {opacity: 1 !important;}
+	.disableChildrenEvents * {pointer-events: none;}
+	._helperChildren {display: none;}
+	._helper:hover ._helperChildren {display: block;}
+
+	.fa._rotate-45, .ms._rotate-45, .mi._rotate-45 {transform: rotate(45deg);}
+	.fa._rotate-90, .ms._rotate-90, .mi._rotate-90 {transform: rotate(90deg);}
+	.fa._rotate-135, .ms._rotate-135, .mi._rotate-135 {transform: rotate(135deg);}
+	.fa._rotate-180, .ms._rotate-180, .mi._rotate-180 {transform: rotate(180deg);}
+	.fa._rotate-225, .ms._rotate-225, .mi._rotate-225 {transform: rotate(225deg);}
+	.fa._rotate-270, .ms._rotate-270, .mi._rotate-270 {transform: rotate(270deg);}
+	.fa._rotate-315, .ms._rotate-315, .mi._rotate-315 {transform: rotate(315deg);}
 	
-	.opacityShowOnHover:hover {
-		opacity: 1 !important;
-	}
+	.fa._flip-x, .ms._flip-x, .mi._flip-x {transform: scaleX(-1);}
+	.fa._flip-y, .ms._flip-y, .mi._flip-y {transform: scaleY(-1);}
+	.fa._flip-both, .ms._flip-both, .mi._flip-both {transform: scale(-1, -1);}
 
-	.disableChildrenEvents * {
-		pointer-events: none;
-	}
-
-	._helperChildren {
-		display: none;
-	}
-
-	._helper:hover ._helperChildren {
-		display: block;
-	}
+	
 	` + processStyleDefinition('', styleProperties, styleDefaults, theme);
 
 	const styleComps = new Array();
