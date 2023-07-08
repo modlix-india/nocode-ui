@@ -7,7 +7,7 @@ import Portal from '../../../Portal';
 import PageOperations from '../../functions/PageOperations';
 import { shortUUID } from '../../../../util/shortUUID';
 
-interface IconSelectionEditorProps {
+interface ImageSelectionEditorProps {
 	value?: string;
 	propDef: ComponentPropertyDefinition;
 	onChange: (v: string | undefined) => void;
@@ -57,7 +57,7 @@ export function ImageEditor({
 	onChange,
 	propDef,
 	pageOperations,
-}: IconSelectionEditorProps) {
+}: ImageSelectionEditorProps) {
 	const [chngValue, setChngValue] = useState(value ?? '');
 	const [showImageBrowser, setShowImageBrowser] = useState(false);
 	const [filter, setFilter] = useState('');

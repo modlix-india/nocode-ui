@@ -37,6 +37,7 @@ interface PropertyEditorProps {
 	slaveStore: any;
 	editPageName: string | undefined;
 	pageOperations: PageOperations;
+	appPath: string | undefined;
 }
 
 function updatePropertyDefinition(
@@ -106,6 +107,7 @@ export default function PropertyEditor({
 	slaveStore,
 	editPageName,
 	pageOperations,
+	appPath,
 }: PropertyEditorProps) {
 	const [def, setDef] = useState<ComponentDefinition>();
 	const [pageDef, setPageDef] = useState<PageDefinition>();
@@ -198,6 +200,7 @@ export default function PropertyEditor({
 		if (e.multiValued) {
 			valueEditor = (
 				<PropertyMultiValueEditor
+					appPath={appPath}
 					pageDefinition={pageDef}
 					propDef={e}
 					value={def.properties?.[e.name] as ComponentMultiProperty<any>}
@@ -222,6 +225,7 @@ export default function PropertyEditor({
 		} else {
 			valueEditor = (
 				<PropertyValueEditor
+					appPath={appPath}
 					pageDefinition={pageDef}
 					propDef={e}
 					value={def.properties?.[e.name] as ComponentProperty<any>}
@@ -278,6 +282,7 @@ export default function PropertyEditor({
 						</span>
 					</div>
 					<PropertyValueEditor
+						appPath={appPath}
 						pageDefinition={pageDef}
 						propDef={{
 							name: 'name',
@@ -313,6 +318,7 @@ export default function PropertyEditor({
 						</span>
 					</div>
 					<PropertyValueEditor
+						appPath={appPath}
 						pageDefinition={pageDef}
 						propDef={{
 							name: 'key',
