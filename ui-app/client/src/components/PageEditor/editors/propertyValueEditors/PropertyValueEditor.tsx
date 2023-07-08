@@ -1,3 +1,4 @@
+import { isNullValue } from '@fincity/kirun-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
 	SCHEMA_ANY_COMP_PROP,
@@ -11,14 +12,13 @@ import {
 	DataLocation,
 	PageDefinition,
 } from '../../../../types/common';
+import PageOperations from '../../functions/PageOperations';
 import { AnyValueEditor } from './AnyValueEditor';
 import { BooleanValueEditor } from './BooleanValueEditor';
 import { ExpressionEditor2 } from './ExpressionEditor2';
-import { IconSelectionEditor } from './IconSelectionEditor';
+import { IconSelectionEditor2 } from './IconSelectionEditor2';
 import { ImageEditor } from './ImageEditor';
 import { ValidationEditor } from './ValidationEditor';
-import { isNullValue } from '@fincity/kirun-js';
-import PageOperations from '../../functions/PageOperations';
 
 interface PropertyValueEditorProps {
 	propDef: ComponentPropertyDefinition;
@@ -32,6 +32,7 @@ interface PropertyValueEditorProps {
 	slaveStore: any;
 	editPageName: string | undefined;
 	pageOperations: PageOperations;
+	appPath?: string;
 }
 
 export default function PropertyValueEditor({
@@ -46,6 +47,7 @@ export default function PropertyValueEditor({
 	slaveStore,
 	editPageName,
 	pageOperations,
+	appPath,
 }: PropertyValueEditorProps) {
 	const [chngValue, setChngValue] = useState<any>('');
 	const [showAdvanced, setShowAdvanced] = useState<boolean>(false);
@@ -112,6 +114,7 @@ export default function PropertyValueEditor({
 		onShowCodeEditor,
 		pageDefinition,
 		showPlaceholder,
+		appPath,
 	);
 
 	const microToggle = onlyValue ? undefined : (
@@ -148,13 +151,16 @@ function makeValueEditor(
 	onShowCodeEditor?: (eventName: string) => void,
 	pageDef?: PageDefinition,
 	showPlaceholder = true,
+	appPath?: string,
 ) {
 	if (propDef.editor === ComponentPropertyEditor.ICON) {
 		return (
-			<IconSelectionEditor
+			<IconSelectionEditor2
+				appPath={appPath}
 				value={chngValue}
 				propDef={propDef}
 				onChange={e => onChange({ ...value, value: e })}
+				pageExtractor={pageOperations.getPageExtractor()}
 			/>
 		);
 	}
