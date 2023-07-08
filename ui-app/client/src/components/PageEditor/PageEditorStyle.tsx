@@ -224,7 +224,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._filterBar input,
 		input._peInput, ._pvExpressionEditor,
-		textarea._peInput {
+		textarea._peInput, select._peInput {
 			color: #555;
 			background-color: #eee;
 			font-size: 11px;
@@ -881,13 +881,18 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._iconSelectionButton {
 			background-color: #fff;
-			padding: 5px;
+			padding: 2px;
 			border-radius: 2px;
 			border: 1px solid #eee;
 			cursor: pointer;
-			width: 24px;
+			width: 30px;
 			text-align: center;
-			height: 24px;
+			font-size: 24px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 30px;
+			border-radius: 4px
 		}
 
 		${PREFIX} ._iconSelectionButton.active {
@@ -1098,6 +1103,11 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			flex-direction: column;
 			gap: 10px;
+		}
+
+		._popupContainer ._iconSelectionBrowser ._selectors {
+			display: flex;
+			gap: 5px;
 		}
 
 		._popupContainer ._iconSelectionDisplay {
