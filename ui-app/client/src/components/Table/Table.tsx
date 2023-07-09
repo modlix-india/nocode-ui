@@ -267,16 +267,39 @@ function TableComponent(props: ComponentProps) {
 		let gridChild, columnsChild;
 		for (let i = 0; i < childrenEntries.length && (!gridChild || !columnsChild); i++) {
 			const k = childrenEntries[i][0];
-			if (pageDefinition.componentDefinition[k]?.type === 'TableColumns') {
+			if (
+				pageDefinition.componentDefinition[k]?.type === 'TableColumns' ||
+				pageDefinition.componentDefinition[k]?.type === 'TableDynamicColumns'
+			) {
 				columnsChild = k;
 			} else if (pageDefinition.componentDefinition[k]?.type === 'TableGrid') {
 				gridChild = k;
 			}
 		}
-		let selectedChild = columnsChild;
+		let selectedChildrenArray = [columnsChild];
+		let firstchildKey = undefined;
 		if (gridChild && (!columnsChild || mode === 'GRID')) {
-			selectedChild = gridChild;
+			selectedChildrenArray = [gridChild];
+		} else {
+			selectedChildrenArray = [];
+			let order = Number.MAX_VALUE;
+			for (let i = 0; i < childrenEntries.length; i++) {
+				const k = pageDefinition.componentDefinition[childrenEntries[i][0]];
+				if (k?.type === 'TableColumns' || k?.type === 'TableDynamicColumns') {
+					if (
+						(k.displayOrder ?? 0) < order ||
+						((k.displayOrder ?? 0) === order &&
+							(!firstchildKey || k.key.localeCompare(firstchildKey) < 0))
+					)
+						firstchildKey = childrenEntries[i][0];
+					selectedChildrenArray.push(childrenEntries[i][0]);
+				}
+			}
 		}
+		const selectedChildren = selectedChildrenArray.reduce((a, c) => {
+			a[c!] = true;
+			return a;
+		}, {} as any);
 
 		let from = offlineData ? pageNumber * pageSize : 0;
 		let to = data?.length ?? 0;
@@ -458,11 +481,11 @@ function TableComponent(props: ComponentProps) {
 			);
 		}
 
-		let mainBody = selectedChild ? (
+		let mainBody = selectedChildrenArray?.length ? (
 			<div className="_tableWithPagination">
 				<Children
 					pageDefinition={pageDefinition}
-					children={{ [selectedChild]: true }}
+					children={selectedChildren}
 					context={{
 						...context,
 						table: {
@@ -477,6 +500,7 @@ function TableComponent(props: ComponentProps) {
 							pageSize,
 							uniqueKey,
 							onSelect,
+							firstchildKey,
 						},
 					}}
 					locationHistory={locationHistory}
@@ -549,7 +573,8 @@ const component: Component = {
 	styleComponent: TableStyle,
 	allowedChildrenType: new Map([
 		['TableEmptyGrid', 1],
-		['TableColumns', 1],
+		['TableColumns', -1],
+		['TableDynamicColumns', -1],
 		['TableGrid', 1],
 		['TablePreviewGrid', 1],
 	]),
