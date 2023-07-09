@@ -114,7 +114,7 @@ function CommonInputText(props: CommonInputType) {
 		) : null;
 
 	return (
-		<div className="commonInputBox">
+		<div className="commonInputBox" style={computedStyles.inputBox ?? {}}>
 			{noFloat && label && (
 				<label
 					style={computedStyles.noFloatLabel ?? {}}

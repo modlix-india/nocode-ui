@@ -308,6 +308,7 @@ function DropdownComponent(props: ComponentProps) {
 			className="comp compDropdown"
 			onClick={handleBubbling}
 			onMouseLeave={closeOnMouseLeave ? handleClose : undefined}
+			style={computedStyles?.comp}
 		>
 			<HelperComponent definition={props.definition} />
 
