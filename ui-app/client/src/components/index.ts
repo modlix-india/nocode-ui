@@ -39,6 +39,7 @@ import Video from './Video/Video';
 import SchemaForm from './SchemaForm/SchemaForm';
 import SchemaBuilder from './SchemaBuilder/SchemaBuilder';
 import Gallery from './Gallery/Gallery';
+import TableDynamicColumns from './TableDynamicColumns/TableDynamicColumns';
 
 export default new Map<string, Component>([
 	[Button.name, Button],
@@ -81,4 +82,5 @@ export default new Map<string, Component>([
 	[SchemaForm.name, SchemaForm],
 	[SchemaBuilder.name, SchemaBuilder],
 	[Gallery.name, Gallery],
+	[TableDynamicColumns.name, TableDynamicColumns],
 ]);
