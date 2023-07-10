@@ -45,6 +45,7 @@ interface DnDEditorProps {
 	storePaths: Set<string>;
 	setStyleSelectorPref: (pref: any) => void;
 	styleSelectorPref: any;
+	appPath: string | undefined;
 }
 
 export default function DnDEditor({
@@ -79,6 +80,7 @@ export default function DnDEditor({
 	storePaths,
 	styleSelectorPref,
 	setStyleSelectorPref,
+	appPath,
 }: DnDEditorProps) {
 	const [preview, setPreview] = useState(false);
 
@@ -155,6 +157,7 @@ export default function DnDEditor({
 						onChangePersonalization={onChangePersonalization}
 					/>
 					<DnDPropertyBar
+						appPath={appPath}
 						defPath={defPath}
 						locationHistory={locationHistory}
 						url={url}

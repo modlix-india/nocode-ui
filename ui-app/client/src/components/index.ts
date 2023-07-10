@@ -40,6 +40,7 @@ import SchemaForm from './SchemaForm/SchemaForm';
 import SchemaBuilder from './SchemaBuilder/SchemaBuilder';
 import Gallery from './Gallery/Gallery';
 import TextArea from './TextArea/TextArea';
+import TableDynamicColumns from './TableDynamicColumns/TableDynamicColumns';
 
 export default new Map<string, Component>([
 	[Button.name, Button],
@@ -83,4 +84,5 @@ export default new Map<string, Component>([
 	[SchemaBuilder.name, SchemaBuilder],
 	[Gallery.name, Gallery],
 	[TextArea.name, TextArea],
+	[TableDynamicColumns.name, TableDynamicColumns],
 ]);
