@@ -53,11 +53,12 @@ function TextArea(props: ComponentProps) {
 			defaultValue,
 			label,
 			noFloat,
-			onEnter,
+			onChange,
 			validation,
 			placeholder,
 			messageDisplay,
 			autoComplete,
+			onClear,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -95,9 +96,9 @@ function TextArea(props: ComponentProps) {
 		);
 	}, [bindingPathPath]);
 
-	const spinnerPath1 = onEnter
+	const spinnerPath1 = onChange
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
-				onEnter,
+				onChange,
 		  )}.isRunning`
 		: undefined;
 
@@ -196,21 +197,14 @@ function TextArea(props: ComponentProps) {
 			setData(bindingPathPath, temp, context?.pageName);
 		if (!updateStoreImmediately) setValue(text);
 	};
-
-	const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+	const changeEvent = onChange ? props.pageDefinition.eventFunctions[onChange] : undefined;
+	const handleChange = async (event: React.ChangeEvent<HTMLTextAreaElement>) => {
 		setIsDirty(true);
 		handleTextChange(event.target.value);
-	};
-
-	const clickEvent = onEnter ? props.pageDefinition.eventFunctions[onEnter] : undefined;
-	const handleKeyUp = async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-		if (!clickEvent || isLoading || e.key !== 'Enter') return;
-		if (!updateStoreImmediately) {
-			handleBlur(e as unknown as React.FocusEvent<HTMLTextAreaElement>);
-		}
+		if (!changeEvent || isLoading) return;
 		await runEvent(
-			clickEvent,
-			onEnter,
+			changeEvent,
+			onChange,
 			props.context.pageName,
 			props.locationHistory,
 			props.pageDefinition,
@@ -251,7 +245,6 @@ function TextArea(props: ComponentProps) {
 					placeholder={getTranslations(effectivePlaceholder, translations)}
 					onFocus={() => setFocus(true)}
 					onBlur={event => handleBlur(event)}
-					onKeyUp={handleKeyUp}
 					name={key}
 					id={key}
 					disabled={readOnly}

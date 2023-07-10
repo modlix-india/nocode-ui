@@ -2,7 +2,7 @@ import { StylePropertyDefinition } from '../../types/common';
 
 export const styleProperties: Array<StylePropertyDefinition> = [
 	{
-		name: 'supportTextDisabledColor',
+		name: 'textAreaSupportTextDisabledColor',
 		cssProperty: 'color',
 		displayName: 'Application/Site Disabled font color',
 		description: "This color is used for disabled TextArea's support text.",
@@ -11,7 +11,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.supportText.disabled',
 	},
 	{
-		name: 'supportTextFontSize',
+		name: 'textAreaSupportTextFontSize',
 		cssProperty: 'font-size',
 		displayName: 'TextArea support text font size',
 		description: "This TextArea's font size is used for TextArea's support text.",
@@ -19,14 +19,14 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.supportText',
 	},
 	{
-		name: 'supportTextFontColor',
+		name: 'textAreaSupportTextFontColor',
 		cssProperty: 'color',
 		displayName: 'TextArea support text font color',
 		description: "This TextArea's color is used for TextArea's support text.",
 		selector: '.supportText',
 	},
 	{
-		name: 'inputTextFontSize',
+		name: 'textAreaInputTextFontSize',
 		cssProperty: 'font-size',
 		displayName: 'TextArea input text font size',
 		description: "This TextArea's font size is used for TextArea's input text.",

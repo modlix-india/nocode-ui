@@ -153,7 +153,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.DATA,
 	},
 
-	COMMON_COMPONENT_PROPERTIES.onEnter,
+	COMMON_COMPONENT_PROPERTIES.onChange,
 
 	{
 		name: 'onClear',
