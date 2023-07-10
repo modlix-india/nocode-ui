@@ -68,6 +68,108 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 
 	{
 		groupName: 'Design1',
+		displayName: 'Top of Label and Value Container When Left',
+		name: 'labelAndValueContainerTopOneWhenLeft',
+		defaultValue: '50%',
+		description: 'Top of Label and Value Container When Left',
+		cssProperty: 'top',
+		selector:
+			'.comp.compProgressBar._progressBarDesignOne ._progressBar ._labelAndValueContainer._Left',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Design1',
+		displayName: 'Left of Label and Value Container When Left',
+		name: 'labelAndValueContainerLeftOneWhenLeft',
+		defaultValue: '16px',
+		description: 'Left of Label and Value Container When Left',
+		cssProperty: 'left',
+		selector:
+			'.comp.compProgressBar._progressBarDesignOne ._progressBar ._labelAndValueContainer._Left',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Design1',
+		displayName: 'Transform for Label and Value Container When Left',
+		name: 'labelAndValueContainerTransformOneWhenLeft',
+		defaultValue: 'translate(0%, -50%)',
+		description: 'Transform for Label and Value Container When Left',
+		cssProperty: ' transform',
+		selector:
+			'.comp.compProgressBar._progressBarDesignOne ._progressBar ._labelAndValueContainer._Left',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'Design1',
+		displayName: 'Top of Label and Value Container When Center',
+		name: 'labelAndValueContainerTopOneWhenCenter',
+		defaultValue: '50%',
+		description: 'Top of Label and Value Container When Center',
+		cssProperty: 'top',
+		selector:
+			'.comp.compProgressBar._progressBarDesignOne ._progressBar ._labelAndValueContainer._Center',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Design1',
+		displayName: 'Left of Label and Value Container When Center',
+		name: 'labelAndValueContainerLeftOneWhenCenter',
+		defaultValue: '50%',
+		description: 'Left of Label and Value Container When Center',
+		cssProperty: 'left',
+		selector:
+			'.comp.compProgressBar._progressBarDesignOne ._progressBar ._labelAndValueContainer._Center',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Design1',
+		displayName: 'Transform for Label and Value Container When Center',
+		name: 'labelAndValueContainerTransformOneWhenCenter',
+		defaultValue: 'translate(-50%, -50%)',
+		description: 'Transform for Label and Value Container When Center',
+		cssProperty: ' transform',
+		selector:
+			'.comp.compProgressBar._progressBarDesignOne ._progressBar ._labelAndValueContainer._Center',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'Design1',
+		displayName: 'Top of Label and Value Container When Right',
+		name: 'labelAndValueContainerTopOneWhenRight',
+		defaultValue: '50%',
+		description: 'Top of Label and Value Container When Right',
+		cssProperty: 'top',
+		selector:
+			'.comp.compProgressBar._progressBarDesignOne ._progressBar ._labelAndValueContainer._Right',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Design1',
+		displayName: 'Right of Label and Value Container When Right',
+		name: 'labelAndValueContainerRightOneWhenRight',
+		defaultValue: '16px',
+		description: 'Right of Label and Value Container When Right',
+		cssProperty: 'right',
+		selector:
+			'.comp.compProgressBar._progressBarDesignOne ._progressBar ._labelAndValueContainer._Right',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Design1',
+		displayName: 'Transform for Label and Value Container When Right',
+		name: 'labelAndValueContainerTransformOneWhenRight',
+		defaultValue: 'translate(0%, -50%)',
+		description: 'Transform for Label and Value Container When Right',
+		cssProperty: ' transform',
+		selector:
+			'.comp.compProgressBar._progressBarDesignOne ._progressBar ._labelAndValueContainer._Right',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'Design1',
 		displayName: 'Color of Progress Label',
 		name: 'progressLabelColorOne',
 		defaultValue: '<fontColorFifteen>',

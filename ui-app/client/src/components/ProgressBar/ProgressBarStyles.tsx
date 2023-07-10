@@ -28,21 +28,6 @@ export default function ProgressBarStyles({ theme }: { theme: Map<string, Map<st
             align-items: center;
             z-index: 8;
         }
-        ${PREFIX} ._progressBar ._labelAndValueContainer._Left {
-            top: 50%;
-            left: 16px;
-            transform: translate(0,-50%);
-        }
-        ${PREFIX} ._progressBar ._labelAndValueContainer._Center {
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%,-50%);
-        }
-        ${PREFIX} ._progressBar ._labelAndValueContainer._Right {
-            top: 50%;
-            right: 16px;
-            transform: translate(0,-50%);
-        }
       
         ${PREFIX} ._progressBar ._labelAndValueContainer ._progressValue {
             position: relative;
