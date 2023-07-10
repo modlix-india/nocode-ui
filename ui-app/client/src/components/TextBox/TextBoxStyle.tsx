@@ -23,6 +23,7 @@ export default function TextBoxStyle({ theme }: { theme: Map<string, Map<string,
 			top: 50%;
 			transform: translateY(-50%);
 			transition: top 100ms, transform 100ms ease-in;
+			pointer-events: none;
 		}
 		
 		.commonInputBox .textBoxDiv {
