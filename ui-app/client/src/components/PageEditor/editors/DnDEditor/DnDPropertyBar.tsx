@@ -32,6 +32,7 @@ interface PropertyBarProps {
 	styleSelectorPref: any;
 	previewMode: boolean;
 	pageOperations: PageOperations;
+	appPath: string | undefined;
 }
 
 export default function DnDPropertyBar({
@@ -52,6 +53,7 @@ export default function DnDPropertyBar({
 	styleSelectorPref,
 	previewMode,
 	pageOperations,
+	appPath,
 }: PropertyBarProps) {
 	const [currentTab, setCurrentTab] = React.useState(1);
 
@@ -82,6 +84,7 @@ export default function DnDPropertyBar({
 				editPageName={editPageName}
 				slaveStore={slaveStore}
 				pageOperations={pageOperations}
+				appPath={appPath}
 			/>
 		);
 	} else if (currentTab === 2) {

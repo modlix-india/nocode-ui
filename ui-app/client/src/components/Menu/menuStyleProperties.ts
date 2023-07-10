@@ -377,7 +377,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'coloredMenuDesignOneBackgroundColorOnHover',
 		defaultValue: '#EC6B5F',
 		description: 'The background of the coloured menu design  One',
-		cssProperty: 'background-color',
+		cssProperty: 'background',
 		selector:
 			'.comp.compMenu._colouredMenuDesign1:hover, .comp.compMenu._colouredMenuDesign1._isActive',
 		noPrefix: true,
@@ -482,7 +482,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'coloredMenuDesignTwoBackgroundColorOnHover',
 		defaultValue: '#08705C',
 		description: 'The background of the coloured menu design  Two',
-		cssProperty: 'background-color',
+		cssProperty: 'background',
 		selector:
 			'.comp.compMenu._colouredMenuDesign2:hover, .comp.compMenu._colouredMenuDesign2._isActive',
 		noPrefix: true,
@@ -587,7 +587,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'coloredMenuDesignThreeBackgroundColor',
 		defaultValue: '',
 		description: 'The background of the coloured menu design  Three',
-		cssProperty: 'background-color',
+		cssProperty: 'background',
 		selector:
 			'.comp.compMenu._colouredMenuDesign3:hover, .comp.compMenu._colouredMenuDesign3._isActive',
 		noPrefix: true,
@@ -692,7 +692,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'FilledMenuDesignOneBackgroundColor',
 		defaultValue: '',
 		description: 'The background of the Filled menu design  One',
-		cssProperty: 'background-color',
+		cssProperty: 'background',
 		selector:
 			'.comp.compMenu._filledMenuDesign1:hover, .comp.compMenu._filledMenuDesign1._isActive',
 		noPrefix: true,
@@ -808,7 +808,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'FilledMenuDesignTwoBackgroundColor',
 		defaultValue: '',
 		description: 'The background of the Filled menu design  Two',
-		cssProperty: 'background-color',
+		cssProperty: 'background',
 		selector:
 			'.comp.compMenu._filledMenuDesign2:hover, .comp.compMenu._filledMenuDesign2._isActive',
 		noPrefix: true,
@@ -924,7 +924,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'FilledMenuDesignThreeBackgroundColor Hover',
 		defaultValue: '<simpleMenuDesignTwoColorHoverSelected>',
 		description: 'The background of the Filled menu design  Three',
-		cssProperty: 'background-color',
+		cssProperty: 'background',
 		selector:
 			'.comp.compMenu._filledMenuDesign3:hover, .comp.compMenu._filledMenuDesign3._isActive',
 		noPrefix: true,
@@ -968,7 +968,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'FilledMenuDesignThreeBackgroundColor',
 		defaultValue: 'rgba(82, 189, 148, 0.2)',
 		description: 'The background of the Filled menu design  Three',
-		cssProperty: 'background-color',
+		cssProperty: 'background',
 		selector: '.comp.compMenu._filledMenuDesign3',
 		noPrefix: true,
 	},
@@ -1050,7 +1050,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'FilledMenuDesignFourBackgroundColor Hover',
 		defaultValue: '<FilledMenuDesignTwoColor>',
 		description: 'The background of the Filled menu design  Four',
-		cssProperty: 'background-color',
+		cssProperty: 'background',
 		selector:
 			'.comp.compMenu._filledMenuDesign4:hover, .comp.compMenu._filledMenuDesign4._isActive',
 		noPrefix: true,
@@ -1094,7 +1094,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'FilledMenuDesignFourBackgroundColor',
 		defaultValue: '',
 		description: 'The background of the Filled menu design  Four',
-		cssProperty: 'background-color',
+		cssProperty: 'background',
 		selector: '.comp.compMenu._filledMenuDesign4',
 		noPrefix: true,
 	},
@@ -1196,7 +1196,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'FilledMenuDesignFiveBackgroundColor Hover',
 		defaultValue: '<FilledMenuDesignFiveColor>',
 		description: 'The background of the Filled menu design  Five',
-		cssProperty: 'background-color',
+		cssProperty: 'background',
 		selector:
 			'.comp.compMenu._filledMenuDesign5:hover, .comp.compMenu._filledMenuDesign5._isActive',
 		noPrefix: true,
@@ -1240,7 +1240,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'FilledMenuDesignFiveBackgroundColor',
 		defaultValue: '#61C55433',
 		description: 'The background of the Filled menu design  Five',
-		cssProperty: 'background-color',
+		cssProperty: 'background',
 		selector: '.comp.compMenu._filledMenuDesign5',
 		noPrefix: true,
 	},
@@ -1560,7 +1560,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'FilledMenuDesignOneVerticalBackgroundColor Hover',
 		defaultValue: '<simpleMenuDesignTwoColorHoverSelected>',
 		description: 'The background of the Filled menu design  OneHorizontal',
-		cssProperty: 'background-color',
+		cssProperty: 'background',
 		selector:
 			'.comp.compMenu._filledMenuHorizontalDesign1:hover, .comp.compMenu._filledMenuHorizontalDesign1._isActive',
 		noPrefix: true,
@@ -1604,10 +1604,10 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'FilledMenuDesignOneVerticalBackgroundColor',
 		defaultValue: '',
 		description: 'The background of the Filled menu design  OneHorizontal',
-		cssProperty: 'background-color',
+		cssProperty: 'background',
 		selector: '.comp.compMenu._filledMenuHorizontalDesign1',
 		noPrefix: true,
-	},
+	}
 ];
 
 export const styleDefaults = new Map<string, string>(
