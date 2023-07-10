@@ -15,6 +15,8 @@ import { difference } from '../../util/setOperations';
 
 function fieldToName(field: string): string {
 	return field
+		.replace('_', ' ')
+		.trim()
 		.replace(/([A-Z])/g, ' $1')
 		.replace('.', ' ')
 		.split(' ')
@@ -72,6 +74,15 @@ function TableDynamicColumnsComponent(props: ComponentProps) {
 			columns = [...columns, ...Array.from(difference(includedColumns, new Set(columns)))];
 		}
 
+		let columnNamesIndex = columns.reduce((a: { [key: string]: string }, c: string) => {
+			a[c] = fieldToName(c);
+			return a;
+		}, {} as { [key: string]: string });
+
+		columns = columns.sort((a: string, b: string) =>
+			columnNamesIndex[a].localeCompare(columnNamesIndex[b]),
+		);
+
 		const index = columnsOrder.reduce((a: { [key: string]: number }, c: string, i: number) => {
 			a[c] = i + 1;
 			return a;
@@ -100,7 +111,7 @@ function TableDynamicColumnsComponent(props: ComponentProps) {
 				displayOrder: i,
 				properties: {
 					label: {
-						value: fieldToName(eachField),
+						value: columnNamesIndex[eachField],
 					},
 				},
 				children: { [childRendererKey]: true },
