@@ -61,9 +61,6 @@ function ProgressBar(props: ComponentProps) {
 		['_progressBarDesignThree', true],
 	]);
 
-	// console.log(relativeToProgressBar);
-	// console.log(relativeToCurrentProgress);
-
 	useEffect(() => {
 		if (designMap.get(progressBarDesignSelection)) setRelativeToCurrentProgress(true);
 		else setRelativeToProgressBar(true);
