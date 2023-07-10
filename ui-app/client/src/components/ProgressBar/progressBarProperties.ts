@@ -20,6 +20,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_NUM_COMP_PROP,
 		displayName: 'Progress Value',
 		description: 'Progress Value.',
+		defaultValue: 0,
 		group: ComponentPropertyGroup.DATA,
 	},
 	{
@@ -44,6 +45,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'No Progress Label',
 		description: 'No Progress Label.',
 		group: ComponentPropertyGroup.BASIC,
+		defaultValue: '',
 		translatable: true,
 	},
 	{
@@ -52,6 +54,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Progress Label',
 		description: 'Progress Label.',
 		group: ComponentPropertyGroup.BASIC,
+		defaultValue: '',
 		translatable: true,
 	},
 	{
@@ -60,6 +63,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Completed Progress Label',
 		description: 'Completed Progress Label.',
 		group: ComponentPropertyGroup.BASIC,
+		defaultValue: '',
 		translatable: true,
 	},
 
@@ -123,12 +127,12 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				description: 'Progress Bar design one.',
 			},
 			{
-				name: '_simpleMenuDesigntwo',
+				name: '_progressBarDesigntwo',
 				displayName: 'Progress Bar Design Two',
 				description: 'Progress Bar design two.',
 			},
 			{
-				name: '_simpleMenuDesignThree',
+				name: '_progressBarDesignThree',
 				displayName: 'Progress Bar Design Three',
 				description: 'Progress Bar design three.',
 			},

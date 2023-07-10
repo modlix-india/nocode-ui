@@ -1,9 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import {
-	addListenerAndCallImmediately,
-	getPathFromLocation,
-	PageStoreExtractor,
-} from '../../context/StoreContext';
+import React from 'react';
+import { PageStoreExtractor } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponent';
@@ -13,28 +9,27 @@ import { propertiesDefinition, stylePropertiesDefinition } from './progressBarPr
 import ProgressBarStyles from './ProgressBarStyles';
 import { SubHelperComponent } from '../SubHelperComponent';
 
+const designMap: Map<string, boolean> = new Map([
+	['_progressBarDesignOne', true],
+	['_progressBarDesignTwo', false],
+	['_progressBarDesignThree', true],
+]);
+
 function ProgressBar(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const [hover, setHover] = React.useState(false);
 
-	const {
-		definition: { bindingPath },
-		definition,
-		context,
-		locationHistory,
-		pageDefinition,
-	} = props;
+	const { definition, locationHistory, pageDefinition } = props;
 
 	const {
-		key,
 		properties: {
 			showProgressValue,
-			progressValue = 0,
+			progressValue,
 			progressValueUnit,
 			showProgressLabel,
-			noProgressLabel = '',
-			progressLabel = '',
-			completedProgressLabel = '',
+			noProgressLabel,
+			progressLabel,
+			completedProgressLabel,
 			progressLabelPosition,
 			labelAndValueContainerPosition,
 			progressBarDesignSelection,
@@ -53,33 +48,34 @@ function ProgressBar(props: ComponentProps) {
 		{ hover },
 		stylePropertiesWithPseudoStates,
 	);
-	const [relativeToProgressBar, setRelativeToProgressBar] = useState(false);
-	const [relativeToCurrentProgress, setRelativeToCurrentProgress] = useState(false);
-	const designMap: Map<string, boolean> = new Map([
-		['_progressBarDesignOne', true],
-		['_progressBarDesignTwo', false],
-		['_progressBarDesignThree', true],
-	]);
-
-	useEffect(() => {
-		if (designMap.get(progressBarDesignSelection)) setRelativeToCurrentProgress(true);
-		else setRelativeToProgressBar(true);
-	}, [progressBarDesignSelection]);
 
 	const getEffectiveLabel = () => {
-		if (progressValue <= 0) return noProgressLabel;
-		else if (progressValue == 100) return completedProgressLabel;
-		else return progressLabel;
+		if (progressValue <= 0)
+			return getTranslations(noProgressLabel, pageDefinition.translations);
+		else if (progressValue === 100)
+			return getTranslations(completedProgressLabel, pageDefinition.translations);
+		else return getTranslations(progressLabel, pageDefinition.translations);
+	};
+	const getEffectiveLabelColorClass = () => {
+		if (progressValue <= 0) return '_noProgress';
+		else if (progressValue === 100) return '_completedProgress';
+		else return '_progress';
 	};
 
 	const effectiveProgressLabel = showProgressLabel ? (
-		<span className="_progressLabel" style={resolvedStyles.progressLabel ?? {}}>
+		<span
+			className={`_progressLabel ${getEffectiveLabelColorClass()}`}
+			style={resolvedStyles.progressLabel ?? {}}
+		>
 			{getEffectiveLabel()}
 			<SubHelperComponent definition={props.definition} subComponentName="progressLabel" />
 		</span>
 	) : null;
 	const effectiveProgressValue = showProgressValue ? (
-		<span className="_progressValue" style={resolvedStyles.progressValue ?? {}}>
+		<span
+			className={`_progressValue ${getEffectiveLabelColorClass()}`}
+			style={resolvedStyles.progressValue ?? {}}
+		>
 			{`${progressValue}${progressValueUnit ? progressValueUnit : ''}`}
 			<SubHelperComponent definition={props.definition} subComponentName="progressValue" />
 		</span>
@@ -90,9 +86,15 @@ function ProgressBar(props: ComponentProps) {
 			className={`_labelAndValueContainer _${labelAndValueContainerPosition}`}
 			style={resolvedStyles.labelAndValueContainer ?? {}}
 		>
-			{progressLabelPosition === 'Right'
-				? [effectiveProgressValue, effectiveProgressLabel]
-				: [effectiveProgressLabel, effectiveProgressValue]}
+			{progressLabelPosition === 'Right' ? (
+				<>
+					{effectiveProgressValue} {effectiveProgressLabel}
+				</>
+			) : (
+				<>
+					{effectiveProgressLabel} {effectiveProgressValue}
+				</>
+			)}
 			<SubHelperComponent
 				definition={props.definition}
 				subComponentName="labelAndValueContainer"
@@ -119,8 +121,8 @@ function ProgressBar(props: ComponentProps) {
 				<SubHelperComponent definition={props.definition} subComponentName="progressBar" />
 				<span
 					style={{
-						width: `${progressValue}%`,
 						...(resolvedStyles.currentProgress ?? {}),
+						width: `${progressValue}%`,
 					}}
 					className="_currentProgress"
 				>
@@ -128,9 +130,11 @@ function ProgressBar(props: ComponentProps) {
 						definition={props.definition}
 						subComponentName="currentProgress"
 					/>
-					{relativeToCurrentProgress ? progressLabelAndValueContainer : null}
+					{designMap.get(progressBarDesignSelection)
+						? progressLabelAndValueContainer
+						: null}
 				</span>
-				{relativeToProgressBar ? progressLabelAndValueContainer : null}
+				{!designMap.get(progressBarDesignSelection) ? progressLabelAndValueContainer : null}
 			</span>
 		</div>
 	);

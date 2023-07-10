@@ -170,12 +170,35 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 
 	{
 		groupName: 'Design1',
-		displayName: 'Color of Progress Label',
-		name: 'progressLabelColorOne',
+		displayName: 'Color of Progress Label When Progress',
+		name: 'progressLabelColorOneWhenProgress',
 		defaultValue: '<fontColorFifteen>',
-		description: 'Color of Progress Label',
+		description: 'Color of Progress Label When Progress',
 		cssProperty: 'color',
-		selector: '.comp.compProgressBar._progressBarDesignOne ._progressBar ._progressLabel',
+		selector:
+			'.comp.compProgressBar._progressBarDesignOne ._progressBar ._progressLabel._progress',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Design1',
+		displayName: 'Color of Progress Label When No Progress',
+		name: 'progressLabelColorOneWhenNoProgress',
+		defaultValue: '<fontColorTwo>',
+		description: 'Color of Progress Label When No Progress',
+		cssProperty: 'color',
+		selector:
+			'.comp.compProgressBar._progressBarDesignOne ._progressBar ._progressLabel._noProgress',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Design1',
+		displayName: 'Color of Progress Label When Progress Completed',
+		name: 'progressLabelColorOneWhenProgressCompleted',
+		defaultValue: '<fontColorFifteen>',
+		description: 'Color of Progress Label When Progress Completed',
+		cssProperty: 'color',
+		selector:
+			'.comp.compProgressBar._progressBarDesignOne ._progressBar ._progressLabel._completedProgress',
 		noPrefix: true,
 	},
 	{
@@ -231,12 +254,35 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 
 	{
 		groupName: 'Design1',
-		displayName: 'Color of Progress Value',
-		name: 'progressValueColorOne',
+		displayName: 'Color of Progress Value When Progress',
+		name: 'progressValueColorOneWhenProgress',
 		defaultValue: '<fontColorFifteen>',
-		description: 'Color of Progress Value',
+		description: 'Color of Progress Value When Progress',
 		cssProperty: 'color',
-		selector: '.comp.compProgressBar._progressBarDesignOne ._progressBar ._progressValue',
+		selector:
+			'.comp.compProgressBar._progressBarDesignOne ._progressBar ._progressValue._progress',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Design1',
+		displayName: 'Color of Progress Value When No Progress',
+		name: 'progressValueColorOneWhenNoProgress',
+		defaultValue: '<fontColorTwo>',
+		description: 'Color of Progress Value When No Progress',
+		cssProperty: 'color',
+		selector:
+			'.comp.compProgressBar._progressBarDesignOne ._progressBar ._progressValue._noProgress',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Design1',
+		displayName: 'Color of Progress Value When Progress Completed',
+		name: 'progressValueColorOneWhenProgressCompleted',
+		defaultValue: '<fontColorFifteen>',
+		description: 'Color of Progress Value When Progress Completed',
+		cssProperty: 'color',
+		selector:
+			'.comp.compProgressBar._progressBarDesignOne ._progressBar ._progressValue._completedProgress',
 		noPrefix: true,
 	},
 	{
