@@ -7,33 +7,35 @@ const PREFIX = '.comp.compProgressBar';
 export default function ProgressBarStyles({ theme }: { theme: Map<string, Map<string, string>> }) {
 	const css =
 		`
-        ${PREFIX} {
-            display: flex;
-            flex-direction: column;
-        }
-        ${PREFIX} .progressBarLabel {
-            text-align: left;
-            position: relative;
-        }
-
-        ${PREFIX} .progressBar {
+        ${PREFIX} ._progressBar {
+            width: 100%;
             position: relative;
             display: inline-block;
             overflow: hidden;
-            transition: width 2s;
         }
 
-        ${PREFIX} .progressBar .progress {
+        ${PREFIX} ._progressBar ._currentProgress {
+            position: relative;
             display: inline-block;
             height: 100%;
-            position: relative;
+            width: 0px;
+            transition: width .5s ease;
         }
 
-        ${PREFIX} .progressBar .progressValue {
+        ${PREFIX} ._progressBar ._labelAndValueContainer {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            z-index: 8;
+        }
+      
+        ${PREFIX} ._progressBar ._labelAndValueContainer ._progressValue {
+            position: relative;
+            z-index: 8;
+        }
+        ${PREFIX} ._progressBar ._labelAndValueContainer ._progressLabel {
+            position: relative;
+            z-index: 8;
         }
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

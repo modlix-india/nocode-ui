@@ -589,7 +589,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Quaternary Font',
 		displayName: 'Quaternary Font Family',
 		name: 'quaternaryFontFamily',
-		defaultValue: 'Roboto',
+		defaultValue: 'Inter',
 		description: 'Quaternary Font Family used in application.',
 		cssProperty: '',
 		selector: '._quaternaryFont',
@@ -705,6 +705,17 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description: 'Quinary Line Height used in application.',
 		cssProperty: '',
 		selector: '._quinaryFont',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'Senary Font',
+		displayName: 'Senary Font Line Height',
+		name: 'senaryFontLineHeight',
+		defaultValue: 'normal',
+		description: 'Senary Line Height used in application.',
+		cssProperty: '',
+		selector: '._senaryFont',
 		noPrefix: true,
 	},
 

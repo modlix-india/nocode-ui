@@ -32,7 +32,16 @@
 			"git add"
 		]
 	},
-	"author": "Raja Avinash Alli",
+	"author": "Kiran Kumar Grandhi",
+	"contributors": [
+		"Kiran Kumar Grandhi",
+		"Raja Avinash Alli",
+		"Akhilesh Alli",
+		"Surendhar Satyavarapu",
+		"Tarun Jangra",
+		"Md Shagil Nizami",
+		"Himanshu"
+	],
 	"license": "MIT",
 	"devDependencies": {
 		"@babel/core": "^7.12.0",

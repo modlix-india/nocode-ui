@@ -18,6 +18,7 @@ import { isNullValue } from '@fincity/kirun-js';
 import { returnFileSize } from '../util/getFileSize';
 import { SubHelperComponent } from '../SubHelperComponent';
 import { MESSAGE_TYPE, addMessage } from '../../App/Messages/Messages';
+import { ToArray } from '../../util/csvUtil';
 
 function FileUpload(props: ComponentProps) {
 	const [fileValue, setFileValue] = useState<any>();
@@ -143,18 +144,32 @@ function FileUpload(props: ComponentProps) {
 		fReader.onload = () => {
 			let fileContent: any = fReader.result;
 
-			if (uploadType === 'JSON_OBJECT') {
-				try {
-					fileContent = JSON.parse(fileContent);
-				} catch (error: any) {
-					addMessage(
-						MESSAGE_TYPE.ERROR,
-						'Invalid JSON file : ' + error.message,
-						true,
-						props.context.pageName,
-					);
-					return;
+			try {
+				switch (uploadType) {
+					case 'JSON_OBJECT':
+						fileContent = JSON.parse(JSON.stringify(fileContent));
+						break;
+					case 'JSON_LIST_CSV':
+						fileContent = ToArray(fileContent, false, ',');
+						break;
+					case 'JSON_LIST_CSV_OBJECTS':
+						fileContent = ToArray(fileContent, true, ',');
+						break;
+					case 'JSON_LIST_TSV':
+						fileContent = ToArray(fileContent, false, '\t');
+						break;
+					case 'JSON_LIST_TSV_OBJECTS':
+						fileContent = ToArray(fileContent, true, '\t');
+						break;
 				}
+			} catch (error: any) {
+				addMessage(
+					MESSAGE_TYPE.ERROR,
+					'Invalid JSON file : ' + error.message,
+					true,
+					props.context.pageName,
+				);
+				return;
 			}
 
 			setData(bindingPathPath, fileContent, context?.pageName);

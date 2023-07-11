@@ -15,6 +15,14 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 		description: 'Event to be triggered when clicked.',
 		group: ComponentPropertyGroup.EVENTS,
 	},
+	onChange: {
+		name: 'onChange',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Change',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered on input change.',
+		group: ComponentPropertyGroup.EVENTS,
+	},
 	onSelect: {
 		name: 'onSelect',
 		schema: SCHEMA_STRING_COMP_PROP,
