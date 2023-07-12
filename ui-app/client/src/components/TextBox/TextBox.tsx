@@ -63,6 +63,7 @@ function TextBox(props: ComponentProps) {
 			messageDisplay,
 			autoComplete,
 			onClear,
+			onChange,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -112,9 +113,16 @@ function TextBox(props: ComponentProps) {
 		  )}.isRunning`
 		: undefined;
 
+	const spinnerPath3 = onChange
+		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
+				onChange,
+		  )}.isRunning`
+		: undefined;
+
 	const [isLoading, setIsLoading] = useState(
 		(getDataFromPath(spinnerPath1, props.locationHistory, pageExtractor) ||
-			getDataFromPath(spinnerPath2, props.locationHistory, pageExtractor)) ??
+			getDataFromPath(spinnerPath2, props.locationHistory, pageExtractor) ||
+			getDataFromPath(spinnerPath3, props.locationHistory, pageExtractor)) ??
 			false,
 	);
 
@@ -122,6 +130,7 @@ function TextBox(props: ComponentProps) {
 		let paths = [];
 		if (spinnerPath1) paths.push(spinnerPath1);
 		if (spinnerPath2) paths.push(spinnerPath2);
+		if (spinnerPath3) paths.push(spinnerPath3);
 
 		if (!paths.length) return;
 		return addListener((_, value) => setIsLoading(value), pageExtractor, ...paths);
@@ -154,8 +163,8 @@ function TextBox(props: ComponentProps) {
 				true,
 			);
 	}, [value, validation]);
-
-	const updateStoreImmediately = upStoreImm || autoComplete === 'on';
+	const changeEvent = onChange ? props.pageDefinition.eventFunctions[onChange] : undefined;
+	const updateStoreImmediately = upStoreImm || autoComplete === 'on' || changeEvent;
 
 	const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
 		let temp = value === '' && emptyValue ? mapValue[emptyValue] : value;
@@ -200,9 +209,17 @@ function TextBox(props: ComponentProps) {
 			setData(bindingPathPath, temp, context?.pageName);
 		if (!updateStoreImmediately) setValue(!isNaN(tempNumber) ? temp?.toString() : '');
 	};
-	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+
+	const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
 		if (valueType === 'text') handleTextChange(event.target.value);
 		else handleNumberChange(event.target.value);
+		await runEvent(
+			changeEvent,
+			onChange,
+			props.context.pageName,
+			props.locationHistory,
+			props.pageDefinition,
+		);
 	};
 	const handleClickClose = async () => {
 		let temp = mapValue[emptyValue];
@@ -223,6 +240,7 @@ function TextBox(props: ComponentProps) {
 		);
 	};
 	const clickEvent = onEnter ? props.pageDefinition.eventFunctions[onEnter] : undefined;
+
 	const handleKeyUp = async (e: React.KeyboardEvent<HTMLInputElement>) => {
 		if (!clickEvent || isLoading || e.key !== 'Enter') return;
 		if (!updateStoreImmediately) {
