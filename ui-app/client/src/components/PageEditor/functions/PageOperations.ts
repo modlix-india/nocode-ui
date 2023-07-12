@@ -895,6 +895,10 @@ export default class PageOperations {
 						defaultOption: 'No',
 						options: ['Yes', 'No'],
 						callbackOnOption: {
+							No: () => {
+								if (isNullValue(doComp?.key)) return;
+								this.onSelectedComponentChanged(doComp!.key!);
+							},
 							Yes: () => {
 								if (!doComp || !doComp.key) return;
 

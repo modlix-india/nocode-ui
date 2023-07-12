@@ -6,6 +6,7 @@ import Children from '../Children';
 import useDefinition from '../util/useDefinition';
 import AnimatorStyle from './AnimatorStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './animatorProperties';
+import { HelperComponent } from '../HelperComponent';
 
 function Animator(props: ComponentProps) {
 	const { definition, pageDefinition, locationHistory, context } = props;
@@ -40,6 +41,7 @@ function Animator(props: ComponentProps) {
 	);
 	return (
 		<div className="comp compAnimator" style={resolvedStyles.comp}>
+			<HelperComponent key={`${key}_hlp`} definition={definition} />
 			{childs}
 		</div>
 	);
