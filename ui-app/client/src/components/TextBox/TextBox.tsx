@@ -213,6 +213,7 @@ function TextBox(props: ComponentProps) {
 	const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
 		if (valueType === 'text') handleTextChange(event.target.value);
 		else handleNumberChange(event.target.value);
+		if (isNullValue(changeEvent)) return;
 		await runEvent(
 			changeEvent,
 			onChange,
