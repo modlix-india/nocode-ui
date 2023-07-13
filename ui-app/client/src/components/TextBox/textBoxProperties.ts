@@ -208,6 +208,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	COMMON_COMPONENT_PROPERTIES.onEnter,
+	COMMON_COMPONENT_PROPERTIES.onChange,
 
 	{
 		name: 'onClear',
