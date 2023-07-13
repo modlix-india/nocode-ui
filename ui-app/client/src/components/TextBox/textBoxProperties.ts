@@ -91,6 +91,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 
+	{
+		name: 'autoFocus',
+		displayName: 'Auto Focus',
+		description: 'Textbox to be focused automatically when page loads.',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 
