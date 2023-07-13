@@ -76,7 +76,7 @@ function Children({
 			}, new Set<string>());
 
 		if (set.size == 0) return undefined;
-		return addListener(() => setVisibilityPaths(Date.now()), pageExtractor, ...set);
+		return addListener(() => setVisibilityPaths(Date.now()), pageExtractor, ...Array.from(set));
 	}, []);
 
 	const validationTriggers =

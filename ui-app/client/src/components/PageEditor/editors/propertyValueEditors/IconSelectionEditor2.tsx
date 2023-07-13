@@ -126,7 +126,6 @@ const prefixMap = new Map([
 const packData = new Map<string, Promise<[{ n: string; d: string; k: string }]>>();
 
 function getPackData(pack: string): Promise<[{ n: string; d: string; k: string }]> {
-	console.log('Data get for ... ', pack);
 	if (packData.has(pack)) return packData.get(pack)!;
 	const url = dataMap.get(pack)!;
 	const data = new Promise<[{ n: string; d: string; k: string }]>((resolve, reject) => {

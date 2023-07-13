@@ -4,6 +4,7 @@ import {
 	ComponentDefinition,
 	ComponentProperty,
 	ComponentPropertyDefinition,
+	ComponentPropertyEditor,
 	DataLocation,
 } from '../../types/common';
 import { ComponentStyle, StyleResolution } from '../../types/common';
@@ -94,7 +95,11 @@ export function getPathsFromComponentProperties(
 		for (const [key, prop] of Object.entries(properties)) {
 			if (propDefMap[key]?.multiValued) {
 				for (const iprop of Object.values(prop)) {
-					if (propDefMap[key].schema.getRef() === SCHEMA_VALIDATION.getRef()) {
+					if (
+						propDefMap[key].editor === ComponentPropertyEditor.VALIDATION ||
+						propDefMap[key].editor === ComponentPropertyEditor.ANIMATION ||
+						propDefMap[key].editor === ComponentPropertyEditor.ANIMATIONOBSERVER
+					) {
 						for (const vprop of Object.values(iprop?.property?.value ?? {})) {
 							if (typeof vprop !== 'object') continue;
 							const set = getPathsFrom(

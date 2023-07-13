@@ -986,7 +986,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex: 1;
 		}
 
-		${PREFIX} ._validationEditor {
+		${PREFIX} ._validationEditor,
+		${PREFIX} ._animationValueEditor {
 			display: flex;
 			flex-direction: column;
 			gap: 5px;

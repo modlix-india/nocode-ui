@@ -251,9 +251,9 @@ export default function PropertyEditor({
 
 		a[grp].push(
 			<div className="_eachProp" key={`${selectedComponent}-${e.name}`}>
-				<div className="_propLabel" title={e.description}>
+				<div className="_propLabel" title={e.description ?? e.displayName}>
 					{e.displayName} :
-					<span className="_description" title={e.description}>
+					<span className="_description" title={e.description ?? e.displayName}>
 						i
 					</span>
 				</div>
