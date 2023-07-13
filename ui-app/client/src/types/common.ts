@@ -64,6 +64,8 @@ export enum ComponentPropertyEditor {
 	IMAGE,
 	SCHEMA,
 	LARGE_TEXT,
+	ANIMATION,
+	ANIMATIONOBSERVER,
 }
 
 export enum ComponentPropertyGroup {
@@ -79,7 +81,7 @@ export enum ComponentPropertyGroup {
 export interface ComponentENUM {
 	name: string;
 	displayName: string;
-	description: string;
+	description?: string;
 }
 
 export interface ComponentPropertyDefinition {
