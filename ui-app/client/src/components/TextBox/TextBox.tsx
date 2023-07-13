@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
 	addListener,
 	addListenerAndCallImmediately,
@@ -164,7 +164,19 @@ function TextBox(props: ComponentProps) {
 			);
 	}, [value, validation]);
 	const changeEvent = onChange ? props.pageDefinition.eventFunctions[onChange] : undefined;
-	const updateStoreImmediately = upStoreImm || autoComplete === 'on' || changeEvent;
+	const updateStoreImmediately = upStoreImm || autoComplete === 'on';
+
+	const callChangeEvent = useCallback(() => {
+		if (!changeEvent) return;
+		(async () =>
+			await runEvent(
+				changeEvent,
+				onChange,
+				props.context.pageName,
+				props.locationHistory,
+				props.pageDefinition,
+			))();
+	}, [changeEvent]);
 
 	const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
 		let temp = value === '' && emptyValue ? mapValue[emptyValue] : value;
@@ -183,51 +195,54 @@ function TextBox(props: ComponentProps) {
 			} else {
 				setData(bindingPathPath, temp, context?.pageName);
 			}
+			callChangeEvent();
 		}
 		setFocus(false);
 	};
 	const handleTextChange = (text: string) => {
 		if (removeKeyWhenEmpty && text === '' && bindingPathPath) {
 			setData(bindingPathPath, undefined, context?.pageName, true);
+			callChangeEvent();
 			return;
 		}
 		let temp = text === '' && emptyValue ? mapValue[emptyValue] : text;
-		if (updateStoreImmediately && bindingPathPath)
+		if (updateStoreImmediately && bindingPathPath) {
 			setData(bindingPathPath, temp, context?.pageName);
+			callChangeEvent();
+		}
 		if (!updateStoreImmediately) setValue(text);
 	};
 
 	const handleNumberChange = (text: string) => {
 		if (removeKeyWhenEmpty && text === '' && bindingPathPath) {
 			setData(bindingPathPath, undefined, context?.pageName, true);
+			callChangeEvent();
 			return;
 		}
 		let temp = text === '' && emptyValue ? mapValue[emptyValue] : text;
 		let tempNumber = numberType === 'DECIMAL' ? parseFloat(temp) : parseInt(temp);
 		temp = !isNaN(tempNumber) ? tempNumber : temp;
-		if (updateStoreImmediately && bindingPathPath)
+		if (updateStoreImmediately && bindingPathPath) {
 			setData(bindingPathPath, temp, context?.pageName);
+			callChangeEvent();
+		}
+
 		if (!updateStoreImmediately) setValue(!isNaN(tempNumber) ? temp?.toString() : '');
 	};
 
 	const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
 		if (valueType === 'text') handleTextChange(event.target.value);
 		else handleNumberChange(event.target.value);
-		if (isNullValue(changeEvent)) return;
-		await runEvent(
-			changeEvent,
-			onChange,
-			props.context.pageName,
-			props.locationHistory,
-			props.pageDefinition,
-		);
 	};
+
 	const handleClickClose = async () => {
 		let temp = mapValue[emptyValue];
 		if (removeKeyWhenEmpty && bindingPathPath) {
 			setData(bindingPathPath, undefined, context?.pageName, true);
+			callChangeEvent();
 		} else if (bindingPathPath) {
 			setData(bindingPathPath, temp, context?.pageName);
+			callChangeEvent();
 		}
 		if (!onClear) return;
 		const clearEvent = props.pageDefinition.eventFunctions[onClear];

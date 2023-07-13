@@ -326,7 +326,6 @@ const COMPONENT_STYLE_GROUPS: { [key: string]: Array<string> } = {
 		'letterSpacing',
 	],
 	background: [
-		'background',
 		'backgroundColor',
 		'backgroundClip',
 		'backgroundImage',
