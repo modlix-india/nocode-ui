@@ -12,6 +12,7 @@ import axios from 'axios';
 import { NAMESPACE_UI_ENGINE } from '../constants';
 import { setData } from '../context/StoreContext';
 import { shortUUID } from '../util/shortUUID';
+import pageHistory from '../components/Page/pageHistory';
 
 const SIGNATURE = new FunctionSignature('Login')
 	.setNamespace(NAMESPACE_UI_ENGINE)
@@ -62,6 +63,7 @@ export class Login extends AbstractFunction {
 				data,
 				headers,
 			});
+			for (let key of Object.keys(pageHistory)) delete pageHistory[key];
 
 			setData('Store.auth', response.data);
 			setData('LocalStore.AuthToken', response.data?.accessToken, undefined, true);

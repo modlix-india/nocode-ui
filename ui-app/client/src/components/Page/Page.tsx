@@ -16,10 +16,9 @@ import PageStyle from './PageStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './pageProperties';
 import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import pageHistory from './pageHistory';
 
-const pageHistory: any = {};
-
-function Page(props: ComponentProps) {
+function PageComponent(props: ComponentProps) {
 	const {
 		context,
 		pageDefinition,
@@ -95,7 +94,7 @@ function Page(props: ComponentProps) {
 					pageDefinition,
 				))();
 		}
-	}, [pathParts, queryParameters]);
+	}, [pathParts, queryParameters, pageName]);
 
 	// const styleText =
 	// 	'@media all {' +
@@ -150,7 +149,7 @@ const component: Component = {
 	displayName: 'Page',
 	description: 'Page component',
 	isHidden: true,
-	component: Page,
+	component: PageComponent,
 	styleProperties: stylePropertiesDefinition,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,

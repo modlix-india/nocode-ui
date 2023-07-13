@@ -64,6 +64,7 @@ function TextBox(props: ComponentProps) {
 			autoComplete,
 			onClear,
 			onChange,
+			autoFocus,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -300,6 +301,7 @@ function TextBox(props: ComponentProps) {
 				styles={computedStyles}
 				definition={props.definition}
 				autoComplete={autoComplete}
+				autoFocus={autoFocus}
 			/>
 		</div>
 	);
