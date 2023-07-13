@@ -151,7 +151,7 @@ export const RenderEngineContainer = () => {
 						}
 					},
 					pageExtractor,
-					...paths,
+					...Array.from(paths),
 				);
 			}
 

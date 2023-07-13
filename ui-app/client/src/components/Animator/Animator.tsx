@@ -87,11 +87,8 @@ function Animator(props: ComponentProps) {
 			}
 		}
 
-		console.log(entering, exiting);
-
 		const io = new IntersectionObserver(
 			entries => {
-				console.log(entries);
 				if (entries.length !== 1) return;
 				const entry = entries[0];
 
