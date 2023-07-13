@@ -14,6 +14,7 @@ import {
 	ComponentDefinitionValues,
 	ComponentMultiProperty,
 	ComponentPropertyDefinition,
+	ComponentPropertyEditor,
 	ComponentResoltuions,
 	ComponentStylePropertyDefinition,
 	LocationHistory,
@@ -22,6 +23,7 @@ import {
 import { isNotEqual } from '../../util/setOperations';
 import { getPathsFromComponentDefinition } from './getPaths';
 import { ParentExtractor } from '../../context/ParentExtractor';
+import { ANIMATION_PROPERTIES } from './properties';
 
 function createNewState(
 	definition: ComponentDefinition,
@@ -31,31 +33,12 @@ function createNewState(
 	pageExtractor: TokenValueExtractor,
 ) {
 	const def: ComponentDefinitionValues = { key: definition.key };
-	def.properties = properties
-		.map(e => {
-			let value = e.defaultValue;
-
-			if (!definition.properties) return [e.name, value];
-
-			if (e.multiValued) {
-				if (!isNullValue(definition.properties[e.name]))
-					value = Object.values(
-						definition.properties[e.name] as ComponentMultiProperty<any>,
-					)
-						.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-						.map(each => getData(each.property, locationHistory, pageExtractor));
-			} else {
-				value =
-					getData(definition.properties[e.name], locationHistory, pageExtractor) ?? value;
-			}
-
-			return [e.name, value];
-		})
-		.filter(e => !isNullValue(e[1]))
-		.reduce((a: any, [k, v]) => {
-			a[k] = v;
-			return a;
-		}, {});
+	def.properties = makePropertiesObject(
+		properties,
+		definition.properties,
+		locationHistory,
+		pageExtractor,
+	);
 
 	if (definition.styleProperties) {
 		const devices = getDataFromPath(`${STORE_PREFIX}.devices`, locationHistory);
@@ -143,6 +126,53 @@ const ORDER_OF_RESOLUTION = [
 	StyleResolution.MOBILE_POTRAIT_SCREEN_ONLY,
 ];
 
+function makePropertiesObject(
+	properties: ComponentPropertyDefinition[],
+	propertyValues: any,
+	locationHistory: LocationHistory[],
+	pageExtractor: TokenValueExtractor,
+): any {
+	return properties
+		.map(e => {
+			let value = e.defaultValue;
+
+			if (!propertyValues) return [e.name, value];
+
+			if (e.multiValued) {
+				if (!isNullValue(propertyValues[e.name])) {
+					const sortedMultiValues = Object.values(
+						propertyValues[e.name] as ComponentMultiProperty<any>,
+					).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+					if (
+						e.editor === ComponentPropertyEditor.ANIMATION ||
+						e.editor === ComponentPropertyEditor.ANIMATIONOBSERVER
+					) {
+						value = sortedMultiValues.map(each => {
+							return makePropertiesObject(
+								ANIMATION_PROPERTIES,
+								each.property.value,
+								locationHistory,
+								pageExtractor,
+							);
+						});
+					} else
+						value = sortedMultiValues.map(each =>
+							getData(each.property, locationHistory, pageExtractor),
+						);
+				}
+			} else {
+				value = getData(propertyValues[e.name], locationHistory, pageExtractor) ?? value;
+			}
+
+			return [e.name, value];
+		})
+		.filter(e => !isNullValue(e[1]))
+		.reduce((a: any, [k, v]) => {
+			a[k] = v;
+			return a;
+		}, {});
+}
+
 function processTargets(
 	resolutions: ComponentResoltuions = {},
 	devices: any,
@@ -177,21 +207,6 @@ function processTargets(
 		finStyle[prefix][prop] = v;
 	}
 	return finStyle;
-}
-
-const defPropValuesBank: any = {};
-
-function defaultPropValues(def: ComponentDefinition, props: Array<ComponentPropertyDefinition>) {
-	let defaultValues = defPropValuesBank[def.type];
-	if (defaultValues) return defaultValues;
-
-	defaultValues = {};
-	for (const cp of props) {
-		if (isNullValue(cp.defaultValue)) continue;
-		defaultValues[cp.name] = cp.defaultValue;
-	}
-	defPropValuesBank[def.type] = defaultValues;
-	return defaultValues;
 }
 
 export default function useDefinition(

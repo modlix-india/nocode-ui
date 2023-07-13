@@ -144,7 +144,7 @@ export default function DnDSideBar({
 				);
 			} else {
 				compsList = Array.from(ComponentDefinitions.values()).filter(
-					e => (!e.parentType || e.parentType === compDef.type) && !e.isHidden,
+					e => (!e.parentType || e.parentType === compDef?.type) && !e.isHidden,
 				);
 			}
 		}

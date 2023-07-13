@@ -19,6 +19,7 @@ import { ExpressionEditor2 } from './ExpressionEditor2';
 import { IconSelectionEditor2 } from './IconSelectionEditor2';
 import { ImageEditor } from './ImageEditor';
 import { ValidationEditor } from './ValidationEditor';
+import { AnimationValueEditor } from './AnimationValueEditor';
 
 interface PropertyValueEditorProps {
 	propDef: ComponentPropertyDefinition;
@@ -153,6 +154,27 @@ function makeValueEditor(
 	showPlaceholder = true,
 	appPath?: string,
 ) {
+	if (
+		propDef.editor === ComponentPropertyEditor.ANIMATION ||
+		propDef.editor === ComponentPropertyEditor.ANIMATIONOBSERVER
+	) {
+		return (
+			<AnimationValueEditor
+				value={chngValue}
+				propDef={propDef}
+				onChange={e => onChange({ ...value, value: e })}
+				appPath={appPath}
+				storePaths={storePaths}
+				defaultValue={propDef.defaultValue}
+				pageDefinition={pageDef}
+				onShowCodeEditor={onShowCodeEditor}
+				slaveStore={slaveStore}
+				editPageName={editPageName}
+				pageOperations={pageOperations}
+			/>
+		);
+	}
+
 	if (propDef.editor === ComponentPropertyEditor.ICON) {
 		return (
 			<IconSelectionEditor2
@@ -192,7 +214,7 @@ function makeValueEditor(
 				>
 					{noneOption}
 					{propDef.enumValues?.map(v => (
-						<option key={v.name} value={v.name} title={v.description}>
+						<option key={v.name} value={v.name} title={v.description ?? v.displayName}>
 							{v.displayName}
 						</option>
 					))}
