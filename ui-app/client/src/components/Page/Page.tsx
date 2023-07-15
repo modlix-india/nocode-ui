@@ -148,7 +148,7 @@ const component: Component = {
 	name: 'Page',
 	displayName: 'Page',
 	description: 'Page component',
-	isHidden: true,
+	isHidden: false,
 	component: PageComponent,
 	styleProperties: stylePropertiesDefinition,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
