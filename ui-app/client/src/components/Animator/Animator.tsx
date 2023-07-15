@@ -108,13 +108,6 @@ function Animator(props: ComponentProps) {
 		return () => io.unobserve(ref.current!);
 	}, [animation, ref.current, setObservations]);
 
-	console.log(
-		makeAnimationString([
-			...animation,
-			...observations.map(e => ({ ...e, observation: 'none' })),
-		]),
-	);
-
 	return (
 		<div className="comp compAnimator" style={resolvedStyles.comp ?? {}} ref={ref}>
 			<HelperComponent key={`${key}_hlp`} definition={definition} />
