@@ -26,6 +26,9 @@ import { flattenUUID } from './util/uuid';
 
 const getOrLoadPageDefinition = (location: any) => {
 	let { pageName } = processLocation(location);
+	if (!pageName) {
+		pageName = getDataFromPath(`${STORE_PREFIX}.application.properties.defaultPage`, []);
+	}
 	return getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
 };
 
