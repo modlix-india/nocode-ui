@@ -236,6 +236,7 @@ function TextArea(props: ComponentProps) {
 				} ${value?.length ? 'hasText' : ''} ${
 					readOnly && !hasErrorMessages ? 'disabled' : ''
 				}`}
+				style={computedStyles.inputContainer ?? {}}
 			>
 				<textarea
 					style={computedStyles.inputBox ?? {}}
