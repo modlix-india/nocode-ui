@@ -74,7 +74,7 @@ function Children({
 			.filter(e => !!e?.properties?.visibility)
 			.map(e => getPathsFrom(e.properties!.visibility, evaluatorMaps))
 			.reduce((a, c) => {
-				for (let str of c) a.add(str);
+				for (let str of Array.from(c)) a.add(str);
 				return a;
 			}, new Set<string>());
 
