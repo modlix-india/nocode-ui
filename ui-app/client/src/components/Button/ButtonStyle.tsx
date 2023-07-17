@@ -5,7 +5,10 @@ import { styleProperties, styleDefaults } from './buttonStyleProperties';
 
 const PREFIX = '.comp.compButton';
 export default function ButtonStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
-	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
+	const values = new Map([
+		...Array.from(theme.get(StyleResolution.ALL) ?? []),
+		...Array.from(styleDefaults),
+	]);
 	const css =
 		`
 		${PREFIX} {

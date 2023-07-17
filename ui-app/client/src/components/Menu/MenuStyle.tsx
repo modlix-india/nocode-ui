@@ -1,9 +1,15 @@
 import React from 'react';
-import { processStyleDefinition } from '../../util/styleProcessor';
+import { processStyleDefinition, processStyleValueWithFunction } from '../../util/styleProcessor';
 import { styleProperties, styleDefaults } from './menuStyleProperties';
+import { StyleResolution } from '../../types/common';
 
 const PREFIX = '.comp.compMenu';
 export default function LinkStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+	const values = new Map([
+		...Array.from(theme.get(StyleResolution.ALL) ?? []),
+		...Array.from(styleDefaults),
+	]);
+
 	const css =
 		`
 	${PREFIX} {
@@ -11,6 +17,7 @@ export default function LinkStyle({ theme }: { theme: Map<string, Map<string, st
 		flex-direction: row;
 		align-items: center;
 		gap: 3px;
+		text-decoration: none;
 	}
 
 	${PREFIX} ._externalButton {
@@ -29,52 +36,117 @@ export default function LinkStyle({ theme }: { theme: Map<string, Map<string, st
 	${PREFIX} ._caretIconContainer {
 		flex: 1;
 		text-align: right;
- 	} 
+ 	}
 
-	${PREFIX}._simpleMenuDesign2 {
-		border-left: 1px solid transparent;
-		border-right: 1px solid transparent;
-		justify-content: center;
+	${PREFIX}._default,
+	${PREFIX}._default:visited {
+		color: ${processStyleValueWithFunction(values.get('menuFontColor'), values)};
 	}
 
-	${PREFIX}._simpleMenuDesign3 {
-		border-top: 1px solid transparent;
-		border-bottom: 1px solid transparent;
-		justify-content: center;
+	${PREFIX}._default._primary._isActive,
+	${PREFIX}._default._primary:hover {
+		color: ${processStyleValueWithFunction(values.get('menuLightFontColor'), values)};
+		background: ${processStyleValueWithFunction(values.get('primaryMenuColor'), values)};
 	}
 
-	${PREFIX}._colouredMenuDesign1 {
-		border-top : 1px solid transparent;
-		border-bottom : 1px solid transparent;
-		border-left : 1px solid transparent;
-		border-right : 1px solid transparent;
+	${PREFIX}._default._secondary._isActive,
+	${PREFIX}._default._secondary:hover {
+		color: ${processStyleValueWithFunction(values.get('menuLightFontColor'), values)};
+		background: ${processStyleValueWithFunction(values.get('secondaryMenuColor'), values)};
 	}
 
-	${PREFIX}._colouredMenuDesign2 {
-		border-top : 1px solid transparent;
-		border-bottom : 1px solid transparent;
-		border-left : 1px solid transparent;
-		border-right : 1px solid transparent;
+	${PREFIX}._default._tertiary._isActive,
+	${PREFIX}._default._tertiary:hover {	
+		color: ${processStyleValueWithFunction(values.get('menuDarkFontColor'), values)};
+		background: ${processStyleValueWithFunction(values.get('tertiaryMenuColor'), values)};
 	}
 
-
-	${PREFIX}._colouredMenuDesign3 {
-		border-top : 1px solid transparent;
-		border-bottom : 1px solid transparent;
-		border-left : 1px solid transparent;
-		border-right : 1px solid transparent;
-	}
-	${PREFIX}._filledMenuDesign1{
-		border-bottom : 1px solid transparent;
-	}
-	${PREFIX}._filledMenuDesign4:hover, ${PREFIX}._filledMenuDesign4._isActive {
-		border : 1px solid transparent;
+	${PREFIX}._default._quaternary._isActive,
+	${PREFIX}._default._quaternary:hover {
+		color: ${processStyleValueWithFunction(values.get('menuLightFontColor'), values)};
+		background: ${processStyleValueWithFunction(values.get('quaternaryMenuColor'), values)};
 	}
 
-	${PREFIX}._simpleMenuHorizontalDesign4{
-		border-bottom : 1px solid transparent;
+	${PREFIX}._default._quinary._isActive,
+	${PREFIX}._default._quinary:hover {
+		color: ${processStyleValueWithFunction(values.get('menuLightFontColor'), values)};
+		background: ${processStyleValueWithFunction(values.get('quinaryMenuColor'), values)};
 	}
 
+	${PREFIX}._outlined._primary,
+	${PREFIX}._outlined._primary:visited {
+		color: ${processStyleValueWithFunction(values.get('primaryMenuColor'), values)};
+		border: ${processStyleValueWithFunction(
+			values.get('menuBorder'),
+			values,
+		)} ${processStyleValueWithFunction(values.get('primaryMenuColor'), values)};
+	}
+
+	${PREFIX}._outlined._secondary,
+	${PREFIX}._outlined._secondary:visited {
+		color: ${processStyleValueWithFunction(values.get('secondaryMenuColor'), values)};
+		border: ${processStyleValueWithFunction(
+			values.get('menuBorder'),
+			values,
+		)} ${processStyleValueWithFunction(values.get('secondaryMenuColor'), values)};
+	}
+
+	${PREFIX}._outlined._tertiary,
+	${PREFIX}._outlined._tertiary:visited {
+		color: ${processStyleValueWithFunction(values.get('tertiaryMenuColor'), values)};
+		border: ${processStyleValueWithFunction(
+			values.get('menuBorder'),
+			values,
+		)} ${processStyleValueWithFunction(values.get('tertiaryMenuColor'), values)};
+	}
+
+	${PREFIX}._outlined._quaternary,
+	${PREFIX}._outlined._quaternary:visited {
+		color: ${processStyleValueWithFunction(values.get('quaternaryMenuColor'), values)};
+		border: ${processStyleValueWithFunction(
+			values.get('menuBorder'),
+			values,
+		)} ${processStyleValueWithFunction(values.get('quaternaryMenuColor'), values)};
+	}
+
+	${PREFIX}._outlined._quinary,
+	${PREFIX}._outlined._quinary:visited {
+		color: ${processStyleValueWithFunction(values.get('quinaryMenuColor'), values)};
+		border: ${processStyleValueWithFunction(
+			values.get('menuBorder'),
+			values,
+		)} ${processStyleValueWithFunction(values.get('quinaryMenuColor'), values)};
+	}
+	
+	${PREFIX}._outlined._primary._isActive,
+	${PREFIX}._outlined._primary:hover {
+		color: ${processStyleValueWithFunction(values.get('menuLightFontColor'), values)};
+		background: ${processStyleValueWithFunction(values.get('primaryMenuColor'), values)};
+	}
+
+	${PREFIX}._outlined._secondary._isActive,
+	${PREFIX}._outlined._secondary:hover {
+		color: ${processStyleValueWithFunction(values.get('menuLightFontColor'), values)};
+		background: ${processStyleValueWithFunction(values.get('secondaryMenuColor'), values)};
+	}
+
+	${PREFIX}._outlined._tertiary._isActive,
+	${PREFIX}._outlined._tertiary:hover {
+		color: ${processStyleValueWithFunction(values.get('menuDarkFontColor'), values)};
+		background: ${processStyleValueWithFunction(values.get('tertiaryMenuColor'), values)};
+	}
+
+	${PREFIX}._outlined._quaternary._isActive,
+	${PREFIX}._outlined._quaternary:hover {
+		color: ${processStyleValueWithFunction(values.get('menuLightFontColor'), values)};
+		background: ${processStyleValueWithFunction(values.get('quaternaryMenuColor'), values)};
+	}
+
+	${PREFIX}._outlined._quinary._isActive,
+	${PREFIX}._outlined._quinary:hover {
+		color: ${processStyleValueWithFunction(values.get('menuLightFontColor'), values)};
+		background: ${processStyleValueWithFunction(values.get('quinaryMenuColor'), values)};
+	}
 
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

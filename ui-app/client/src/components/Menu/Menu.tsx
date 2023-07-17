@@ -45,6 +45,7 @@ function Menu(props: ComponentProps) {
 			onClick,
 			pathsActiveFor,
 			menuDesignSelectionType,
+			menuColorScheme,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -227,7 +228,7 @@ function Menu(props: ComponentProps) {
 		<>
 			{styleComp}
 			<a
-				className={`comp compMenu _${styleKey}menu_css ${menuDesignSelectionType} ${
+				className={`comp compMenu _${styleKey}menu_css ${menuDesignSelectionType} ${menuColorScheme} ${
 					isMenuActive ? '_isActive' : ''
 				}`}
 				href={resolvedLink}
