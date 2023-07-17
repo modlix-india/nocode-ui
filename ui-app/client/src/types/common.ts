@@ -141,6 +141,10 @@ export interface Component {
 		bindingPath4?: { name: string };
 		bindingPath5?: { name: string };
 		bindingPath6?: { name: string };
+		bindingPath7?: { name: string };
+		bindingPath8?: { name: string };
+		bindingPath9?: { name: string };
+		bindingPath10?: { name: string };
 	};
 	sections?: Array<Section>;
 	needShowInDesginMode?: boolean;
@@ -234,6 +238,10 @@ export interface ComponentDefinition {
 	bindingPath4?: DataLocation;
 	bindingPath5?: DataLocation;
 	bindingPath6?: DataLocation;
+	bindingPath7?: DataLocation;
+	bindingPath8?: DataLocation;
+	bindingPath9?: DataLocation;
+	bindingPath10?: DataLocation;
 	type: string;
 	properties?: {
 		[key: string]:

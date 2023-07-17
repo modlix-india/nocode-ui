@@ -80,6 +80,30 @@ export default function AppStyle() {
 	*:hover::-webkit-scrollbar {float: right;}
 	*:hover::-webkit-scrollbar-thumb {visibility: visible;}
 
+	._popup._backdrop {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100vw;
+		height: 100vh;
+	}
+
+	._flexBox{
+		display: flex;
+	}
+
+	._flexBox._column {
+		flex-direction: column;
+	}
+
+	._flexBox._verticalCenter {
+		align-items: center;
+	}
+
+	._flexBox._horizonatalCenter {
+		justify-content: center;
+	}
+
 	._ROWLAYOUT, ._SINGLECOLUMNLAYOUT, ._ROWCOLUMNLAYOUT {
 		display: flex;
 		flex-direction: column;
