@@ -719,6 +719,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._tabBar i.fa.active{
 			background-color: #fff;
 		}
+		
+		${PREFIX} i._separator {
+			opacity: 0.1;
+		}
 
 		._propContainer {
 			width: 100%;

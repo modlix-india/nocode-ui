@@ -19,6 +19,7 @@ interface DnDEditorProps {
 	pageName: string | undefined;
 	onSave: () => void;
 	onPublish?: () => void;
+	onVersions?: () => void;
 	onChangePersonalization: (prop: string, value: any) => void;
 	url: string;
 	pageExtractor: PageStoreExtractor;
@@ -81,6 +82,7 @@ export default function DnDEditor({
 	styleSelectorPref,
 	setStyleSelectorPref,
 	appPath,
+	onVersions,
 }: DnDEditorProps) {
 	const [preview, setPreview] = useState(false);
 
@@ -113,6 +115,7 @@ export default function DnDEditor({
 					locationHistory={locationHistory}
 					url={url}
 					onPublish={onPublish}
+					onVersions={onVersions}
 					personalizationPath={personalizationPath}
 					onChangePersonalization={onChangePersonalization}
 					theme={theme}

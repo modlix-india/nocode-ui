@@ -75,6 +75,7 @@ function PageEditor(props: ComponentProps) {
 			theme,
 			onSave,
 			onPublish,
+			onVersions,
 			onChangePersonalization,
 			onDeletePersonalization,
 		} = {},
@@ -154,6 +155,20 @@ function PageEditor(props: ComponentProps) {
 				pageDefinition,
 			))();
 	}, [onPublish]);
+
+	// Function to get the versions
+	const versionsFunction = useCallback(() => {
+		if (!onVersions || !pageDefinition.eventFunctions?.[onVersions]) return;
+
+		(async () =>
+			await runEvent(
+				pageDefinition.eventFunctions[onVersions],
+				'pageEditorVersions',
+				context.pageName,
+				locationHistory,
+				pageDefinition,
+			))();
+	}, [onVersions]);
 
 	// Clear the personalization
 	const deletePersonalization = useCallback(() => {
@@ -490,6 +505,7 @@ function PageEditor(props: ComponentProps) {
 					setStyleSelectorPref={setStyleSelectorPref}
 					styleSelectorPref={styleSelectorPref}
 					appPath={appPath}
+					onVersions={onVersions ? versionsFunction : undefined}
 				/>
 				<CodeEditor
 					showCodeEditor={showCodeEditor}
