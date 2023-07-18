@@ -237,7 +237,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 
 	// Global Theme
-
 	{
 		groupName: 'Primary Font',
 		displayName: 'Primary Font',
@@ -547,6 +546,16 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'fontColorEight',
 		defaultValue: '<colorThirteen>',
 		description: 'Font Color Eight used in application',
+		cssProperty: '',
+		selector: '',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Font Color',
+		displayName: 'Font Color Nine',
+		name: 'fontColorNine',
+		defaultValue: '<colorFour>',
+		description: 'Font Color Nine used in application',
 		cssProperty: '',
 		selector: '',
 		noPrefix: true,
