@@ -23,6 +23,7 @@ interface TopBarProps {
 	personalizationPath: string | undefined;
 	onSave: () => void;
 	onPublish?: () => void;
+	onVersions?: () => void;
 	onChangePersonalization: (prop: string, value: any) => void;
 	url: string;
 	onUrlChange: (url: string) => void;
@@ -72,6 +73,7 @@ export default function DnDTopBar({
 	onSelectedComponentChanged,
 	onSelectedSubComponentChanged,
 	pageOperations,
+	onVersions,
 }: TopBarProps) {
 	const [localUrl, setLocalUrl] = useState(url);
 	const [deviceType, setDeviceType] = useState<string | undefined>();
@@ -502,9 +504,11 @@ export default function DnDTopBar({
 						role="button"
 						onClick={onPageReload}
 					></i>
-
+				</div>
+				<i className="fa fa-solid fa-grip-lines-vertical _separator" />
+				<div className="_buttonBar">
 					<i
-						className={`fa fa-solid fa-arrow-turn-up fa-rotate-270 ${
+						className={`fa fa-solid fa-arrow-turn-up _rotate-270 ${
 							undoStackRef.current.length ? '_hasData' : '_hasNoData'
 						}`}
 						onClick={() => {
@@ -531,7 +535,7 @@ export default function DnDTopBar({
 						title="Undo"
 					/>
 					<i
-						className={`fa fa-solid fa-arrow-turn-down fa-rotate-270 ${
+						className={`fa fa-solid fa-arrow-turn-down _rotate-270 ${
 							redoStackRef.current.length ? '_hasData' : '_hasNoData'
 						}`}
 						onClick={() => {
@@ -555,6 +559,9 @@ export default function DnDTopBar({
 						}}
 						title="Redo"
 					/>
+				</div>
+				<i className="fa fa-solid fa-grip-lines-vertical _separator" />
+				<div className="_buttonBar">
 					<i
 						onClick={() =>
 							onChangePersonalization(
@@ -563,7 +570,7 @@ export default function DnDTopBar({
 							)
 						}
 						className={`fa fa-solid fa-circle-half-stroke ${
-							theme === '_light' ? 'fa-rotate-180' : ''
+							theme === '_light' ? '_rotate-180' : ''
 						}`}
 					/>
 				</div>
@@ -588,9 +595,24 @@ export default function DnDTopBar({
 						</div>
 					</div>
 				</div>
-				<button onClick={onSave}>Save</button>
-
-				{onPublish && <button onClick={onPublish}>Publish</button>}
+				<i className="fa fa-solid fa-grip-lines-vertical _separator" />
+				<div className="_buttonBar">
+					<i onClick={onSave} title="Save" className="fa fa-solid fa-floppy-disk" />
+					{onPublish && (
+						<i
+							onClick={onPublish}
+							title="Publish"
+							className="fa fa-solid fa-square-arrow-up-right"
+						/>
+					)}
+					{onVersions && (
+						<i
+							onClick={onVersions}
+							title="Versions"
+							className="fa fa-solid  fa-clock-rotate-left"
+						/>
+					)}
+				</div>
 			</div>
 			{popup}
 		</div>

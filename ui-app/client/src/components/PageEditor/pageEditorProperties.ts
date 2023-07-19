@@ -57,6 +57,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
+		name: 'onVersions',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Versions',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		group: ComponentPropertyGroup.EVENTS,
+		description: 'Event to be triggered on page versions request.',
+	},
+
+	{
 		name: 'onChangePersonalization',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'On Personalization Change',

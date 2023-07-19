@@ -139,6 +139,10 @@ export default function PropertyEditor({
 			'bindingPath4',
 			'bindingPath5',
 			'bindingPath6',
+			'bindingPath7',
+			'bindingPath8',
+			'bindingPath9',
+			'bindingPath10',
 		] = [
 			'bindingPath',
 			'bindingPath2',
@@ -146,8 +150,12 @@ export default function PropertyEditor({
 			'bindingPath4',
 			'bindingPath5',
 			'bindingPath6',
+			'bindingPath7',
+			'bindingPath8',
+			'bindingPath9',
+			'bindingPath10',
 		];
-		for (let i = 0; i < 6; i++) {
+		for (let i = 0; i < x.length; i++) {
 			if (!cd.bindingPaths[x[i]]) continue;
 			bps.push(
 				<div className="_eachProp" key={x[i]}>

@@ -42,6 +42,7 @@ import TextEditor from './TextEditor/TextEditor';
 import TextList from './TextList/TextList';
 import ToggleButton from './ToggleButton/ToggleButton';
 import Video from './Video/Video';
+import ImageWithBrowser from './ImageWithBrowser/ImageWithBrowser';
 
 export default new Map<string, Component>([
 	[Button.name, Button],
@@ -87,4 +88,5 @@ export default new Map<string, Component>([
 	[TextArea.name, TextArea],
 	[TableDynamicColumns.name, TableDynamicColumns],
 	[Animator.name, Animator],
+	[ImageWithBrowser.name, ImageWithBrowser],
 ]);

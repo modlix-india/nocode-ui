@@ -719,6 +719,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._tabBar i.fa.active{
 			background-color: #fff;
 		}
+		
+		${PREFIX} i._separator {
+			opacity: 0.1;
+		}
 
 		._propContainer {
 			width: 100%;
@@ -1242,12 +1246,12 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		._popupMenuBackground ._popupMenuContainer {
-			box-shadow: 0px 3px 4px 0px #00000040;
+			box-shadow: 0px 1px 8px 0px #00000020;
 			display: flex;
 			flex-direction: column;
 			background-color: #fff;
 			position: absolute;
-			
+			border-radius: 4px;
 			border-left: 1px solid #eee;
 			font-size: 13px;
 		}
