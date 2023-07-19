@@ -60,11 +60,12 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 	React.useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
-			(_, value) => {
-				setValue(value);
+			(_, _v) => {
+				console.log('hi', bindingPathPath, _v);
+				setValue(_v);
 				const objKeys: { [key: number]: string } = {};
-				if (value?.length) {
-					for (let i = 0; i < value.length; i++) {
+				if (_v?.length) {
+					for (let i = 0; i < _v.length; i++) {
 						objKeys[i] = shortUUID();
 					}
 				}
@@ -83,7 +84,7 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 	if (entry) firstchild[entry[0]] = true;
 
 	const handleAdd = async (index: any) => {
-		const newData = value.slice();
+		const newData = [...value];
 		newData.splice(index + 1, 0, undefined as unknown as never);
 		setData(bindingPathPath!, newData, context?.pageName);
 
@@ -227,7 +228,7 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 							{showAdd && (
 								<i
 									className="addOne fa fa-circle-plus fa-solid"
-									onClick={showAdd && handleAdd(index)}
+									onClick={showAdd ? () => handleAdd(index) : undefined}
 									style={styleProperties.add ?? {}}
 								>
 									<SubHelperComponent
