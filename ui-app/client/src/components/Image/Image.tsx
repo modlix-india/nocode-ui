@@ -126,7 +126,7 @@ const component: Component = {
 	stylePseudoStates: ['hover'],
 	defaultTemplate: {
 		key: '',
-		name: 'Image',
+		name: 'image',
 		type: 'Image',
 		properties: {
 			src: { value: 'api/files/static/file/SYSTEM/appbuilder/Placeholder_view_vector.svg' },

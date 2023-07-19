@@ -175,6 +175,10 @@ export function getPathsFromComponentDefinition(
 		'bindingPath4',
 		'bindingPath5',
 		'bindingPath6',
+		'bindingPath7',
+		'bindingPath8',
+		'bindingPath9',
+		'bindingPath10',
 	]) {
 		let x = bp as
 			| 'bindingPath'
@@ -182,7 +186,11 @@ export function getPathsFromComponentDefinition(
 			| 'bindingPath3'
 			| 'bindingPath4'
 			| 'bindingPath5'
-			| 'bindingPath6';
+			| 'bindingPath6'
+			| 'bindingPath7'
+			| 'bindingPath8'
+			| 'bindingPath9'
+			| 'bindingPath10';
 		if (definition[x]) {
 			const p = getPathsFrom(definition[x]!, evaluatorMaps);
 			if (p) p.forEach(e => paths.push(e));
