@@ -44,7 +44,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 	},
 	{
-		name: 'add',
+		name: 'addEvent',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'add',
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
@@ -52,7 +52,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.EVENTS,
 	},
 	{
-		name: 'remove',
+		name: 'removeEvent',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'remove',
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
@@ -60,7 +60,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.EVENTS,
 	},
 	{
-		name: 'move',
+		name: 'moveEvent',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'move',
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
