@@ -1,14 +1,22 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import Portal from '../Portal';
 import axios from 'axios';
-import { getDataFromPath } from '../../context/StoreContext';
-import { LOCAL_STORE_PREFIX } from '../../constants';
-import { shortUUID } from '../../util/shortUUID';
+import React, { useCallback, useEffect, useState } from 'react';
 import PathParts from '../../commonComponents/PathParts';
+import { LOCAL_STORE_PREFIX } from '../../constants';
+import {
+	PageStoreExtractor,
+	addListenerAndCallImmediately,
+	getDataFromPath,
+	setData,
+} from '../../context/StoreContext';
+import { LocationHistory } from '../../types/common';
+import { shortUUID } from '../../util/shortUUID';
+import Portal from '../Portal';
 
 interface ImageBrowserProps {
 	onClose: () => void;
 	bindingPaths: Map<string, string>;
+	pageExtractor: PageStoreExtractor;
+	locationHistory: LocationHistory[];
 }
 
 const bindingPathNamesMap = new Map<string, string>([
@@ -20,7 +28,12 @@ const bindingPathNamesMap = new Map<string, string>([
 	['bindingPath6', 'Fallback Image'],
 ]);
 
-export default function ImageBrowser({ bindingPaths, onClose }: ImageBrowserProps) {
+export default function ImageBrowser({
+	bindingPaths,
+	onClose,
+	pageExtractor,
+	locationHistory,
+}: ImageBrowserProps) {
 	const [filter, setFilter] = useState('');
 	const [path, setInternalPath] = useState('');
 	const [newFolder, setNewFolder] = useState(false);
@@ -30,6 +43,7 @@ export default function ImageBrowser({ bindingPaths, onClose }: ImageBrowserProp
 	const [currentBindingPath, setCurrentBindingPath] = useState<string>(
 		bindingPaths.size > 0 ? bindingPaths.keys().next().value : '',
 	);
+	const [altText, setAltText] = useState<string>('');
 
 	const setPath = useCallback(
 		(v: string) => {
@@ -62,6 +76,16 @@ export default function ImageBrowser({ bindingPaths, onClose }: ImageBrowserProp
 	}, [path, filter, setFiles]);
 
 	useEffect(() => callForFiles(), [callForFiles, path]);
+
+	useEffect(() => {
+		if (!bindingPaths.get('bindingPath7')) return;
+
+		return addListenerAndCallImmediately(
+			(_, v) => setAltText(v),
+			pageExtractor,
+			bindingPaths.get('bindingPath7')!,
+		);
+	}, [bindingPaths.get('bindingPath7')]);
 
 	const newFolderDiv = newFolder ? (
 		<div className="_eachIcon">
@@ -134,7 +158,7 @@ export default function ImageBrowser({ bindingPaths, onClose }: ImageBrowserProp
 			<i className="fa fa-spin fa-solid fa-hurricane" />
 		</div>
 	) : (
-		<div className="_iconSelectionDisplay">
+		<div className={`_iconSelectionDisplay ${inProgress ? '_inProgress' : ''}`}>
 			{uploadDiv}
 			{newFolderDiv}
 			{files?.content?.map((e: any) => {
@@ -147,7 +171,11 @@ export default function ImageBrowser({ bindingPaths, onClose }: ImageBrowserProp
 								setPath(path + '\\' + e.name);
 								return;
 							}
-							console.log(e.url);
+							setData(
+								bindingPaths.get(currentBindingPath)!,
+								e.url,
+								pageExtractor.getPageName(),
+							);
 						}}
 					>
 						{e.directory ? (
@@ -161,11 +189,55 @@ export default function ImageBrowser({ bindingPaths, onClose }: ImageBrowserProp
 							/>
 						)}
 						{e.name}
+						<div
+							className="_deleteButton"
+							onClick={ev => {
+								ev.stopPropagation();
+								ev.preventDefault();
+								setInProgress(true);
+								try {
+									(async () => {
+										await axios.delete(
+											`/api/files/static/${path}${path === '' ? '' : '/'}${
+												e.name
+											}`,
+											{
+												headers,
+											},
+										);
+										setInProgress(false);
+										callForFiles();
+									})();
+								} catch (e) {}
+							}}
+						>
+							<i className="fa fa-solid fa-trash" />
+						</div>
 					</div>
 				);
 			})}
 		</div>
 	);
+
+	let altTextControl = <></>;
+	if (bindingPaths.get('bindingPath7') !== undefined) {
+		altTextControl = (
+			<input
+				className="_searchBar"
+				placeholder="Alt text"
+				type="text"
+				value={altText}
+				onChange={e => setAltText(e.target.value)}
+				onBlur={e =>
+					setData(
+						bindingPaths.get('bindingPath7')!,
+						e.target.value,
+						pageExtractor.getPageName(),
+					)
+				}
+			/>
+		);
+	}
 
 	const options = (
 		<select value={currentBindingPath} onChange={e => setCurrentBindingPath(e.target.value)}>
@@ -179,6 +251,8 @@ export default function ImageBrowser({ bindingPaths, onClose }: ImageBrowserProp
 		</select>
 	);
 
+	console.log(bindingPaths.get(currentBindingPath)!);
+
 	return (
 		<Portal>
 			<div
@@ -187,7 +261,21 @@ export default function ImageBrowser({ bindingPaths, onClose }: ImageBrowserProp
 			>
 				<div className="_flexBox _column _browserBack" onClick={e => e.stopPropagation()}>
 					<i className="_closeIcon fa fa-solid fa-times" onClick={onClose} />
-					<div>{options}</div>
+					<div className="_flexBox _altTextContainer">
+						{options}
+						<input
+							className="_searchBar"
+							type="text"
+							value={
+								getDataFromPath(
+									bindingPaths.get(currentBindingPath)!,
+									locationHistory,
+									pageExtractor,
+								) ?? ''
+							}
+						/>
+					</div>
+					<div className="_flexBox _altTextContainer">{altTextControl}</div>
 					<input
 						className="_searchBar"
 						placeholder="Search for images..."
