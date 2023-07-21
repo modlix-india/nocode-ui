@@ -25,6 +25,14 @@ export default function ImageStyle({ theme }: { theme: Map<string, Map<string, s
 			position: relative;
         }
 
+		._imageBrowserPopup ._altTextContainer {
+			gap: 10px;
+		}
+
+		._imageBrowserPopup ._altTextContainer input {
+			flex: 1;
+		}
+
         ._imageBrowserPopup ._browserBack input,
 		._imageBrowserPopup ._browserBack select {
             border: none;
@@ -161,6 +169,18 @@ export default function ImageStyle({ theme }: { theme: Map<string, Map<string, s
 			transform: translate(-50%, -50%);
 			box-shadow: 3px 1px 3px 0px #00000020;
 			cursor: pointer;
+		}
+
+		._imageBrowserPopup ._progressBar {
+			height: 100%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			padding-bottom: 5%;
+		}
+
+		._imageBrowserPopup ._progressBar  i.fa {
+			font-size: 50px;
 		}
 
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 
 export default function PathParts({
 	path,
@@ -25,13 +25,13 @@ export default function PathParts({
 					const slash = i === 0 ? <></> : <span>\</span>;
 					if (i === arr.length - 1)
 						return (
-							<>
+							<Fragment key={i}>
 								{slash}
 								<span key={i}>{p}</span>
-							</>
+							</Fragment>
 						);
 					return (
-						<>
+						<Fragment key={i}>
 							{slash}
 							<span
 								className="_clickable"
@@ -40,7 +40,7 @@ export default function PathParts({
 							>
 								{p}
 							</span>
-						</>
+						</Fragment>
 					);
 				})}
 		</div>
