@@ -146,7 +146,12 @@ function ImageWithBrowser(props: ComponentProps) {
 	);
 
 	const browser = showBrowser ? (
-		<ImageBrowser bindingPaths={bindingPaths} onClose={() => setShowBrowser(false)} />
+		<ImageBrowser
+			bindingPaths={bindingPaths}
+			onClose={() => setShowBrowser(false)}
+			locationHistory={locationHistory}
+			pageExtractor={pageExtractor}
+		/>
 	) : (
 		<></>
 	);
