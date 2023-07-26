@@ -147,7 +147,7 @@ function FileUpload(props: ComponentProps) {
 			try {
 				switch (uploadType) {
 					case 'JSON_OBJECT':
-						fileContent = JSON.parse(JSON.stringify(fileContent));
+						fileContent = JSON.parse(fileContent);
 						break;
 					case 'JSON_LIST_CSV':
 						fileContent = ToArray(fileContent, false, ',');
