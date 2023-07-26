@@ -1121,6 +1121,13 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			gap: 20px;
 			overflow: auto;
 		}
+
+		._popupContainer ._iconSelectionDisplay._inProgress {
+			height: 100%;
+			justify-content: center;
+			align-items: center;
+			padding-bottom: 5%;
+		}
 		
 		._popupContainer ._iconSelectionDisplay ._eachIcon {
 			width: 90px;
