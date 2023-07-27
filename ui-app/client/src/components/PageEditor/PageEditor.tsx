@@ -29,7 +29,7 @@ import GridStyle from './PageEditorStyle';
 import { allPaths } from '../../util/allPaths';
 import { LOCAL_STORE_PREFIX, PAGE_STORE_PREFIX, STORE_PREFIX } from '../../constants';
 import ComponentDefinitions from '../';
-import { duplicate } from '@fincity/kirun-js';
+import { deepEqual, duplicate } from '@fincity/kirun-js';
 
 function savePersonalizationCurry(
 	personalizationPath: string,
@@ -460,6 +460,46 @@ function PageEditor(props: ComponentProps) {
 			),
 		[slaveStore],
 	);
+
+	// Use effect to see if editor is closed abruptly.
+	useEffect(() => {
+		if (!defPath) return;
+		const removeListener = addListenerAndCallImmediately(
+			(_, v) => {
+				if (!v || !v.id) return;
+
+				removeListener();
+
+				let i = 0,
+					key = null;
+				while ((key = window.localStorage.key(i++))) {
+					if (key.indexOf(v.id) === -1) continue;
+					break;
+				}
+
+				if (!key) return;
+
+				const storagePage = JSON.parse(window.localStorage.getItem(key)!);
+				if (deepEqual(v, storagePage)) return;
+
+				setIssue({
+					message: 'Editor was closed abruptly. Do you want to recover the page?',
+					options: ['Yes', 'No'],
+					defaultOption: 'Yes',
+					callbackOnOption: {
+						Yes: () => {
+							setData(defPath, storagePage, pageExtractor.getPageName());
+							window.localStorage.removeItem(key!);
+						},
+					},
+				});
+			},
+			pageExtractor,
+			defPath,
+		);
+
+		return removeListener;
+	}, [defPath, setIssue]);
 
 	// If the personalization is not loaded, we don't load the view.
 	if (personalizationPath && !personalization) return <></>;
