@@ -108,21 +108,21 @@ export function getPathFromLocation(
 	locationHistory: Array<LocationHistory>,
 	...tve: Array<TokenValueExtractor>
 ): string {
-	if (locationHistory?.length)
-		tve = [
-			...tve,
-			new ParentExtractorForRunEvent(
-				locationHistory,
-				new Map(tve.map(e => [e.getPrefix(), e])),
-			),
-		];
+	const pe = locationHistory.length
+		? new ParentExtractorForRunEvent(locationHistory, new Map(tve.map(e => [e.getPrefix(), e])))
+		: undefined;
+
+	let path = '';
 	if (loc?.type === 'VALUE' && loc.value) {
-		return loc.value || '';
+		path = loc.value || '';
 	} else if (loc?.type === 'EXPRESSION' && loc.expression) {
-		const data = getDataFromLocation(loc, locationHistory, ...tve);
-		return data || '';
+		const data = pe
+			? getDataFromLocation(loc, locationHistory, ...tve, pe)
+			: getDataFromLocation(loc, locationHistory, ...tve);
+		path = data || '';
 	}
-	return '';
+
+	return pe ? pe.computeParentPath(path) : path;
 }
 
 export function getDataFromPath(
@@ -154,7 +154,8 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 		store = localStore.getItem(key);
 
 		if (!parts.length) {
-			localStore.setItem(key, value);
+			if (isNullValue(value)) localStore.removeItem(key);
+			else localStore.setItem(key, value);
 			return;
 		}
 		if (!store && parts.length) {
@@ -171,7 +172,8 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 					new Map([[LOCAL_STORE_PREFIX, localStoreExtractor]]),
 					deleteKey,
 				);
-				localStore.setItem(key, JSON.stringify(store));
+				if (isNullValue(store)) localStore.removeItem(key);
+				else localStore.setItem(key, JSON.stringify(store));
 			} catch (error) {
 				localStore.setItem(key, value);
 			}

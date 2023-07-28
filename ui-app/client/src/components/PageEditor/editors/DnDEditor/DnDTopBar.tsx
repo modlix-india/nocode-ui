@@ -13,7 +13,11 @@ import { duplicate } from '@fincity/kirun-js';
 import Portal from '../../../Portal';
 import { StringValueEditor } from '../../../SchemaForm/components/StringValueEditor';
 import PropertyValueEditor from '../propertyValueEditors/PropertyValueEditor';
-import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../../../constants';
+import {
+	LOCAL_STORE_PREFIX,
+	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_STRING_COMP_PROP,
+} from '../../../../constants';
 import { ComponentPropertyEditor } from '../../../../types/common';
 import { ComponentPropertyDefinition } from '../../../../types/common';
 import PageOperations from '../../functions/PageOperations';
@@ -23,6 +27,7 @@ interface TopBarProps {
 	personalizationPath: string | undefined;
 	onSave: () => void;
 	onPublish?: () => void;
+	onVersions?: () => void;
 	onChangePersonalization: (prop: string, value: any) => void;
 	url: string;
 	onUrlChange: (url: string) => void;
@@ -44,6 +49,27 @@ interface TopBarProps {
 	onSelectedSubComponentChanged: (key: string) => void;
 	onSelectedComponentChanged: (key: string) => void;
 	pageOperations: PageOperations;
+}
+
+function removeExcessPages(pid: string) {
+	let i = 0,
+		key = null;
+	const delKeys = new Array<string>();
+	const allKeys = new Array<string>();
+
+	while ((key = window.localStorage.key(i++))) {
+		if (!key.startsWith('pgdef_')) continue;
+		if (key.indexOf(pid) != -1) delKeys.push(key);
+		else allKeys.push(key);
+	}
+
+	delKeys.forEach(k => window.localStorage.removeItem(k));
+	const remKeys = allKeys.sort((a, b) => {
+		let anum = parseInt(a.split('_')[2]);
+		let bnum = parseInt(b.split('_')[2]);
+		return bnum - anum;
+	});
+	if (remKeys.length > 10) remKeys.slice(10).forEach(k => window.localStorage.removeItem(k));
 }
 
 export default function DnDTopBar({
@@ -72,6 +98,7 @@ export default function DnDTopBar({
 	onSelectedComponentChanged,
 	onSelectedSubComponentChanged,
 	pageOperations,
+	onVersions,
 }: TopBarProps) {
 	const [localUrl, setLocalUrl] = useState(url);
 	const [deviceType, setDeviceType] = useState<string | undefined>();
@@ -110,9 +137,9 @@ export default function DnDTopBar({
 				)
 					return;
 
-				setProperties(v.properties ?? {});
+				setProperties(v?.properties ?? {});
 				setPage(v as PageDefinition);
-				setPermission(v.permission ?? '');
+				setPermission(v?.permission ?? '');
 
 				if (!firstTimeRef.current.length) {
 					firstTimeRef.current.push(duplicate(v));
@@ -120,6 +147,9 @@ export default function DnDTopBar({
 				}
 
 				if (latestVersion.current < v.version) latestVersion.current = v.version;
+
+				removeExcessPages(v.id);
+				window.localStorage.setItem(`pgdef_${v.id}_${Date.now()}`, JSON.stringify(v));
 
 				undoStackRef.current.push(duplicate(v));
 				redoStackRef.current.length = 0;
@@ -173,7 +203,7 @@ export default function DnDTopBar({
 				else if (propName === 'append')
 					if (isNullValue(value.value) && isNullValue(value.location?.expression))
 						delete page.properties.title.append;
-					else page.properties.title.append = value as ComponentProperty<boolean>;
+					else page.properties.title.append = value as ComponentProperty<string>;
 			} else if (propType === 'seo') {
 				if (!page.properties.seo) page.properties.seo = {};
 				if (isNullValue(value.value) && isNullValue(value.location?.expression))
@@ -281,13 +311,32 @@ export default function DnDTopBar({
 									/>
 								</div>
 								<div className="_eachProp">
-									<div className="_propLabel">Append Title</div>
+									<div className="_propLabel">Append/Prepend Title</div>
 									<PropertyValueEditor
 										propDef={{
 											name: 'append',
 											displayName: 'Append Title',
-											defaultValue: true,
-											schema: SCHEMA_BOOL_COMP_PROP,
+											defaultValue: 'true',
+											schema: SCHEMA_STRING_COMP_PROP,
+											enumValues: [
+												{
+													name: 'true',
+													displayName: 'Append',
+													description:
+														'Appends the title after the application title',
+												},
+												{
+													name: 'prepend',
+													displayName: 'Prepend',
+													description:
+														'Prepends the title before the application title',
+												},
+												{
+													name: 'false',
+													displayName: 'Full',
+													description: 'Shows the title only',
+												},
+											],
 										}}
 										value={properties?.title?.append}
 										onChange={v => updatePageProperties('title', 'append', v)}
@@ -409,81 +458,86 @@ export default function DnDTopBar({
 		<div className="_topBarGrid">
 			<div className="_topLeftBarGrid">
 				<div className="_inputBar">
-					<input
-						ref={inputRef}
-						type="text"
-						className="_urlInput _peInput"
-						value={localUrl}
-						onChange={e => setLocalUrl(e.target.value)}
-						onBlur={changeUrl}
-						onKeyUp={e => {
-							if (e.key === 'Enter') changeUrl();
-							else if (e.key === 'Escape') {
-								setLocalUrl(url);
-								setTimeout(() => inputRef.current?.blur(), 100);
-							}
-						}}
-					/>
-					<div className="_iconMenu" tabIndex={0}>
-						<i
-							className="fa fa-solid fa-rotate-left"
-							title="Reload Page"
-							tabIndex={0}
-							role="button"
-							onClick={onPageReload}
-						></i>
+					<div className="_urlInput _peInput">
+						<i className="fa fa-solid fa-globe" title="Current Address."></i>
+						<input
+							ref={inputRef}
+							type="text"
+							value={localUrl}
+							onChange={e => setLocalUrl(e.target.value)}
+							onBlur={changeUrl}
+							onKeyUp={e => {
+								if (e.key === 'Enter') changeUrl();
+								else if (e.key === 'Escape') {
+									setLocalUrl(url);
+									setTimeout(() => inputRef.current?.blur(), 100);
+								}
+							}}
+						/>
 					</div>
 				</div>
-				<div className="_buttonBar _lightBackground">
-					<i
-						className={`fa fa-solid fa-display ${
-							deviceType === 'WIDE_SCREEN' ? 'active' : ''
-						}`}
-						onClick={() => changeDeviceType('WIDE_SCREEN')}
-						title="Wide Screen"
-					></i>
-					<i
-						className={`fa fa-solid fa-laptop ${
-							deviceType === 'DESKTOP_SCREEN' ? 'active' : ''
-						}`}
-						onClick={() => changeDeviceType('DESKTOP_SCREEN')}
-						title="Desktop"
-					></i>
-					<i
-						className={`fa fa-solid fa-tablet-screen-button _rotate-before-270 ${
-							deviceType === 'TABLET_LANDSCAPE_SCREEN' ? 'active' : ''
-						}`}
-						onClick={() => changeDeviceType('TABLET_LANDSCAPE_SCREEN')}
-						title="Tablet Landscape"
-					></i>
-					<i
-						className={`fa fa-solid fa-tablet-screen-button ${
-							deviceType === 'TABLET_POTRAIT_SCREEN' ? 'active' : ''
-						}`}
-						onClick={() => changeDeviceType('TABLET_POTRAIT_SCREEN')}
-						title="Tablet"
-					></i>
-					<i
-						className={`fa fa-solid fa-mobile-screen-button _rotate-before-270 ${
-							deviceType === 'MOBILE_LANDSCAPE_SCREEN' ? 'active' : ''
-						}`}
-						onClick={() => changeDeviceType('MOBILE_LANDSCAPE_SCREEN')}
-						title="Mobile Landscape"
-					></i>
-					<i
-						className={`fa fa-solid fa-mobile-screen-button ${
-							deviceType === 'MOBILE_POTRAIT_SCREEN' ? 'active' : ''
-						}`}
-						onClick={() => changeDeviceType('MOBILE_POTRAIT_SCREEN')}
-						title="Mobile"
-					></i>
+				<div className="_topLeftCenterBarGrid">
+					<div className="_buttonBar _screenSizes">
+						<i
+							className={`fa fa-solid fa-display ${
+								deviceType === 'WIDE_SCREEN' ? 'active' : ''
+							}`}
+							onClick={() => changeDeviceType('WIDE_SCREEN')}
+							title="Wide Screen"
+						></i>
+						<i
+							className={`fa fa-solid fa-laptop ${
+								deviceType === 'DESKTOP_SCREEN' ? 'active' : ''
+							}`}
+							onClick={() => changeDeviceType('DESKTOP_SCREEN')}
+							title="Desktop"
+						></i>
+						<i
+							className={`fa fa-solid fa-tablet-screen-button _rotate-before-270 ${
+								deviceType === 'TABLET_LANDSCAPE_SCREEN' ? 'active' : ''
+							}`}
+							onClick={() => changeDeviceType('TABLET_LANDSCAPE_SCREEN')}
+							title="Tablet Landscape"
+						></i>
+						<i
+							className={`fa fa-solid fa-tablet-screen-button ${
+								deviceType === 'TABLET_POTRAIT_SCREEN' ? 'active' : ''
+							}`}
+							onClick={() => changeDeviceType('TABLET_POTRAIT_SCREEN')}
+							title="Tablet"
+						></i>
+						<i
+							className={`fa fa-solid fa-mobile-screen-button _rotate-before-270 ${
+								deviceType === 'MOBILE_LANDSCAPE_SCREEN' ? 'active' : ''
+							}`}
+							onClick={() => changeDeviceType('MOBILE_LANDSCAPE_SCREEN')}
+							title="Mobile Landscape"
+						></i>
+						<i
+							className={`fa fa-solid fa-mobile-screen-button ${
+								deviceType === 'MOBILE_POTRAIT_SCREEN' ? 'active' : ''
+							}`}
+							onClick={() => changeDeviceType('MOBILE_POTRAIT_SCREEN')}
+							title="Mobile"
+						></i>
+					</div>
 				</div>
 			</div>
 			<div className="_topRightBarGrid">
 				<div className="_buttonBar">
 					<i
-						className={`fa fa-solid fa-left-long ${
-							undoStackRef.current.length ? 'active' : ''
+						className="fa fa-solid fa-rotate-left"
+						title="Reload Page"
+						tabIndex={0}
+						role="button"
+						onClick={onPageReload}
+					></i>
+				</div>
+				<i className="fa fa-solid fa-grip-lines-vertical _separator" />
+				<div className="_buttonBar">
+					<i
+						className={`fa fa-solid fa-arrow-turn-up _rotate-270 ${
+							undoStackRef.current.length ? '_hasData' : '_hasNoData'
 						}`}
 						onClick={() => {
 							if (!undoStackRef.current.length || !defPath) return;
@@ -509,8 +563,8 @@ export default function DnDTopBar({
 						title="Undo"
 					/>
 					<i
-						className={`fa fa-solid fa-right-long ${
-							redoStackRef.current.length ? 'active' : ''
+						className={`fa fa-solid fa-arrow-turn-down _rotate-270 ${
+							redoStackRef.current.length ? '_hasData' : '_hasNoData'
 						}`}
 						onClick={() => {
 							if (!redoStackRef.current.length || !defPath) return;
@@ -534,7 +588,21 @@ export default function DnDTopBar({
 						title="Redo"
 					/>
 				</div>
-				<div className="_iconMenu" tabIndex={0}>
+				<i className="fa fa-solid fa-grip-lines-vertical _separator" />
+				<div className="_buttonBar">
+					<i
+						onClick={() =>
+							onChangePersonalization(
+								'theme',
+								theme === '_light' ? '_dark' : '_light',
+							)
+						}
+						className={`fa fa-solid fa-circle-half-stroke ${
+							theme === '_light' ? '_rotate-180' : ''
+						}`}
+					/>
+				</div>
+				<div className="_iconMenu _personalize" tabIndex={0}>
 					<i className="fa fa-solid fa-gear" />
 					<div className="_iconMenuBody _bottom _right">
 						<div
@@ -555,22 +623,24 @@ export default function DnDTopBar({
 						</div>
 					</div>
 				</div>
-				<select
-					className="_peSelect"
-					value={theme}
-					onChange={e => onChangePersonalization('theme', e.target.value)}
-				>
-					{propertiesDefinition
-						.find(e => e.name === 'theme')
-						?.enumValues?.map(e => (
-							<option key={e.name} value={e.name} title={e.description}>
-								{e.displayName}
-							</option>
-						))}
-				</select>
-				<button onClick={onSave}>Save</button>
-
-				{onPublish && <button onClick={onPublish}>Publish</button>}
+				<i className="fa fa-solid fa-grip-lines-vertical _separator" />
+				<div className="_buttonBar">
+					<i onClick={onSave} title="Save" className="fa fa-solid fa-floppy-disk" />
+					{onPublish && (
+						<i
+							onClick={onPublish}
+							title="Publish"
+							className="fa fa-solid fa-square-arrow-up-right"
+						/>
+					)}
+					{onVersions && (
+						<i
+							onClick={onVersions}
+							title="Versions"
+							className="fa fa-solid  fa-clock-rotate-left"
+						/>
+					)}
+				</div>
 			</div>
 			{popup}
 		</div>

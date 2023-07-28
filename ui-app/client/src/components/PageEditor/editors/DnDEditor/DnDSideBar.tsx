@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
 	addListenerAndCallImmediately,
 	getDataFromPath,
 	PageStoreExtractor,
 } from '../../../../context/StoreContext';
-import { Component, LocationHistory, PageDefinition } from '../../../../types/common';
-import Portal from '../../../Portal';
+import { Component, LocationHistory, PageDefinition, Section } from '../../../../types/common';
 import ComponentDefinitions from '../../../';
 import PageOperations from '../../functions/PageOperations';
 import { DRAG_CD_KEY, DRAG_COMP_NAME } from '../../../../constants';
@@ -38,10 +37,14 @@ export default function DnDSideBar({
 	const [noSelection, setNoSelection] = useState<boolean>(false);
 	const [componentTree, setComponentTree] = useState<boolean>(false);
 	const [noShell, setNoShell] = useState<boolean>(false);
-	const [showCompMenu, setShowCompMenu] = useState<boolean>(false);
+	const [showCompMenu, setShowCompMenu] = useState(false);
 	const [selectedComponentType, setSelectedComponentType] = useState('');
+	const [query, setQuery] = useState('');
 	const [theme, setTheme] = useState('light');
+	const [selectedTemplateSection, setSelectedTemplateSection] = useState<Section>();
 	const svgLogo = logo ? <img className="_logo" src={logo} /> : undefined;
+	const [openCompMenu, setOpenCompMenu] = useState(false);
+	const compMenuRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		if (!personalizationPath) return;
@@ -51,6 +54,16 @@ export default function DnDSideBar({
 			`${personalizationPath}.slave.noSelection`,
 		);
 	}, [personalizationPath]);
+
+	useEffect(() => {
+		if (!showCompMenu) return;
+		const handle = setInterval(() => {
+			if (!compMenuRef.current) return;
+			setOpenCompMenu(true);
+			clearInterval(handle);
+		}, 100);
+		return () => clearInterval(handle);
+	}, [showCompMenu, setOpenCompMenu, compMenuRef.current]);
 
 	useEffect(() => {
 		if (!personalizationPath) return;
@@ -79,9 +92,39 @@ export default function DnDSideBar({
 		);
 	}, [personalizationPath]);
 
+	useEffect(() => {
+		if (!personalizationPath) return;
+		return addListenerAndCallImmediately(
+			(_, v) => {
+				const componentName = !v?.componentName
+					? Array.from(ComponentDefinitions.values()).filter(e => !e.isHidden)[0]?.name
+					: v.componentName;
+				const comp = Array.from(ComponentDefinitions.values()).find(
+					e => e.name === componentName,
+				);
+				const selectedSection = !v?.selectedSection
+					? comp?.sections && comp.sections[0]
+					: comp?.sections &&
+					  comp.sections.find(e => e.name === v?.selectedSection?.name);
+				setSelectedComponentType(componentName);
+				setSelectedTemplateSection(selectedSection);
+			},
+			pageExtractor,
+			`${personalizationPath}.selectedComponent`,
+		);
+	}, [personalizationPath]);
+
 	if (previewMode) {
 		return <div className="_sideBar _previewMode"></div>;
 	}
+
+	const closeMenu = () => {
+		setOpenCompMenu(false);
+		compMenuRef.current?.classList.remove('foo');
+		setTimeout(() => {
+			setShowCompMenu(false);
+		}, 700);
+	};
 
 	let compMenu = undefined;
 	if (showCompMenu) {
@@ -101,23 +144,38 @@ export default function DnDSideBar({
 				);
 			} else {
 				compsList = Array.from(ComponentDefinitions.values()).filter(
-					e => (!e.parentType || e.parentType === compDef.type) && !e.isHidden,
+					e => (!e.parentType || e.parentType === compDef?.type) && !e.isHidden,
 				);
 			}
 		}
-
+		let pattern = query
+			.toLowerCase()
+			.split('')
+			.map(x => {
+				return `(?=.*${x})`;
+			})
+			.join('');
+		let regex = new RegExp(`${pattern}`, 'g');
 		const compList = compsList
 			.sort((a, b) => a.displayName.localeCompare(b.displayName))
+			.filter(
+				f => f.displayName.toLowerCase().match(regex) || f.name.toLowerCase().match(regex),
+			)
 			.map(e => (
 				<div
 					key={e.name}
 					className={`_popupMenuItem ${selectedComponentType === e.name ? 'active' : ''}`}
 					title={e.description}
-					onClick={() => setSelectedComponentType(e.name)}
+					onClick={() =>
+						onChangePersonalization('selectedComponent', {
+							componentName: e.name,
+							selectedSection: e.sections ? e.sections[0] : undefined,
+						})
+					}
 					onDoubleClick={() => {
 						if (!selectedComponent) return;
 						pageOperations.droppedOn(selectedComponent, `${DRAG_COMP_NAME}${e.name}`);
-						setShowCompMenu(false);
+						closeMenu();
 					}}
 					draggable={true}
 					onDragStart={ev =>
@@ -125,26 +183,72 @@ export default function DnDSideBar({
 					}
 					onDragOver={e => {
 						e.preventDefault();
-						setShowCompMenu(false);
+						closeMenu();
 					}}
 				>
-					<i className={`fa ${e.icon}`} />
 					{e.displayName}
 				</div>
 			));
-
+		let tempSections: any =
+			(selectedComponentType
+				? compsList.find(e => e.name === selectedComponentType)
+				: undefined
+			)?.sections || [];
 		compMenu = (
-			<Portal>
+			<div
+				className={`_popupMenuBackground ${theme}`}
+				onMouseDown={e => e.target === e.currentTarget && closeMenu()}
+				onDrop={() => {}}
+				onDragOver={e => e.target === e.currentTarget && closeMenu()}
+			>
 				<div
-					className={`_popupMenuBackground ${theme}`}
-					onMouseDown={e => e.currentTarget === e.target && setShowCompMenu(false)}
+					className={`_popupMenuContainer _compMenu ${openCompMenu ? '_show' : ''}`}
+					ref={compMenuRef}
 				>
-					<div className="_popupMenuContainer _compMenu">
+					<div className="_elementBarSearchContainer">
+						<p className="_elementBarSearchContainerHeading">ADD ELEMENT</p>
+						<input
+							value={query}
+							onChange={e => setQuery(e.target.value)}
+							placeholder="Search for elements or sections."
+							type="text"
+						/>
+					</div>
+					<div className="_elementsBarContainer">
 						<div className="_popupMenu">{compList}</div>
-						<div className="_compTemplates"></div>
+						{selectedComponentType && (
+							<div className="_compTemplates">
+								<div className="_compTemplateSections">
+									{tempSections.map((e: Section) => (
+										<div
+											key={e.name}
+											onClick={() => {
+												onChangePersonalization('selectedComponent', {
+													componentName: selectedComponentType,
+													selectedSection: e,
+												});
+											}}
+											className={`_eachTemplateSection ${
+												e.name === selectedTemplateSection?.name
+													? '_active'
+													: ''
+											}`}
+										>
+											{e.name}
+										</div>
+									))}
+								</div>
+								{selectedTemplateSection && (
+									<iframe
+										style={{ border: 'none' }}
+										src={`/editortemplates/SYSTEM/page/${selectedTemplateSection?.pageName}`}
+									/>
+								)}
+							</div>
+						)}
 					</div>
 				</div>
-			</Portal>
+			</div>
 		);
 	}
 
@@ -154,21 +258,20 @@ export default function DnDSideBar({
 				{svgLogo}
 				<div className="_top">
 					<div
-						className="_iconMenu"
+						className={`_iconMenu ${showCompMenu ? '_active' : ''}`}
 						tabIndex={0}
 						onClick={() => {
 							setShowCompMenu(true);
-							setSelectedComponentType('');
 						}}
 					>
-						<i className="fa fa-regular fa-square-plus" />
+						<i className="fa fa-solid fa-circle-plus" />
 					</div>
 					<div
-						className="_iconMenu"
+						className={`_iconMenu ${componentTree ? '_active' : ''}`}
 						tabIndex={0}
 						onClick={() => onChangePersonalization('componentTree', !componentTree)}
 					>
-						<i className="fa fa-solid fa-tree" />
+						<i className="fa fa-solid fa-layer-group" />
 					</div>
 				</div>
 				<div className="_bottom">
@@ -202,7 +305,7 @@ export default function DnDSideBar({
 						<i className="fa fa-regular fa-trash-can"></i>
 					</div>
 					<div
-						className="_iconMenu"
+						className="_iconMenu _arrow"
 						tabIndex={0}
 						onClick={() => onChangePersonalization('slave.noSelection', !noSelection)}
 					>

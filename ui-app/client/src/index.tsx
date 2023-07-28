@@ -3,6 +3,8 @@ import { createRoot } from 'react-dom/client';
 import { App } from './App/App';
 import AppStyle from './App/AppStyle';
 import { PageDefinition } from './types/common';
+import { REPO_SERVER, RemoteRepository } from './Engine/RemoteRepository';
+import { Function, Schema } from '@fincity/kirun-js';
 
 declare global {
 	var nodeDev: boolean;
@@ -16,7 +18,22 @@ declare global {
 		editingPageDefinition: PageDefinition;
 		personalization: any;
 	};
+	var getRemoteFunctionRepository: (
+		appCode: string | undefined,
+		clientCode: string | undefined,
+		includeRemoteKIRunSchemas: boolean,
+		repoServer: REPO_SERVER,
+	) => RemoteRepository<Function>;
+	var getRemoteSchemaRepository: (
+		appCode: string | undefined,
+		clientCode: string | undefined,
+		includeRemoteKIRunSchemas: boolean,
+		repoServer: REPO_SERVER,
+	) => RemoteRepository<Schema>;
 }
+
+globalThis.getRemoteFunctionRepository = RemoteRepository.getRemoteFunctionRepository;
+globalThis.getRemoteSchemaRepository = RemoteRepository.getRemoteSchemaRepository;
 
 // To enable debug mode, add ?debug to the URL
 window.isDebugMode = window.location.search.indexOf('debug') != -1;

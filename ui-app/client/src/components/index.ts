@@ -1,43 +1,48 @@
+import { Component } from '../types/common';
+import Animator from './Animator/Animator';
+import ArrayRepeater from './ArrayRepeater/ArrayRepeater';
 import Button from './Button/Button';
 import ButtonBar from './Buttonbar/ButtonBar';
+import Carousel from './Carousel/Carousel';
 import CheckBox from './CheckBox/CheckBox';
-import Grid from './Grid/Grid';
-import Link from './Link/Link';
-import Page from './Page/Page';
-import RadioButton from './RadioButton/RadioButton';
-import TextBox from './TextBox/TextBox';
-import ToggleButton from './ToggleButton/ToggleButton';
-import ArrayRepeater from './ArrayRepeater/ArrayRepeater';
-import Popup from './Popup/Popup';
 import Dropdown from './Dropdown/Dropdown';
-import Menu from './Menu/Menu';
-import Tags from './Tags/Tags';
-import Image from './Image/Image';
-import Tabs from './Tabs/Tabs';
+import FileUpload from './FileUpload/FileUpload';
+import Gallery from './Gallery/Gallery';
+import Grid from './Grid/Grid';
 import Icon from './Icon/Icon';
-import Text from './Text/Text';
-import TextList from './TextList/TextList';
+import Iframe from './Iframe/Iframe';
+import Image from './Image/Image';
+import KIRunEditor from './KIRunEditor/KIRunEditor';
+import Link from './Link/Link';
+import Menu from './Menu/Menu';
+import Page from './Page/Page';
+import PageEditor from './PageEditor/PageEditor';
+import Popover from './Popover/Popover';
+import Popup from './Popup/Popup';
+import ProgressBar from './ProgressBar/ProgressBar';
+import RadioButton from './RadioButton/RadioButton';
+import SchemaBuilder from './SchemaBuilder/SchemaBuilder';
+import SchemaForm from './SchemaForm/SchemaForm';
 import Stepper from './Stepper/Stepper';
+import SubPage from './SubPage/SubPage';
 import Table from './Table/Table';
-import TableGrid from './TableGrid/TableGrid';
-import TableColumns from './TableColumns/TableColumns';
-import TableEmptyGrid from './TableEmptyGrid/TableEmptyGrid';
-import TablePreviewGrid from './TablePreviewGrid/TablePreviewGrid';
-import TextEditor from './TextEditor/TextEditor';
 import TableColumn from './TableColumn/TableColumn';
 import TableColumnHeader from './TableColumnHeader/TableColumnHeader';
-import ProgressBar from './ProgressBar/ProgressBar';
-import Popover from './Popover/Popover';
-import SubPage from './SubPage/SubPage';
-import PageEditor from './PageEditor/PageEditor';
-import { Component } from '../types/common';
-import Iframe from './Iframe/Iframe';
-import Carousel from './Carousel/Carousel';
-import FileUpload from './FileUpload/FileUpload';
-import KIRunEditor from './KIRunEditor/KIRunEditor';
+import TableColumns from './TableColumns/TableColumns';
+import TableDynamicColumns from './TableDynamicColumns/TableDynamicColumns';
+import TableEmptyGrid from './TableEmptyGrid/TableEmptyGrid';
+import TableGrid from './TableGrid/TableGrid';
+import TablePreviewGrid from './TablePreviewGrid/TablePreviewGrid';
+import Tabs from './Tabs/Tabs';
+import Tags from './Tags/Tags';
+import Text from './Text/Text';
+import TextArea from './TextArea/TextArea';
+import TextBox from './TextBox/TextBox';
+import TextEditor from './TextEditor/TextEditor';
+import TextList from './TextList/TextList';
+import ToggleButton from './ToggleButton/ToggleButton';
 import Video from './Video/Video';
-import SchemaForm from './SchemaForm/SchemaForm';
-import SchemaBuilder from './SchemaBuilder/SchemaBuilder';
+import ImageWithBrowser from './ImageWithBrowser/ImageWithBrowser';
 
 export default new Map<string, Component>([
 	[Button.name, Button],
@@ -79,4 +84,9 @@ export default new Map<string, Component>([
 	[Video.name, Video],
 	[SchemaForm.name, SchemaForm],
 	[SchemaBuilder.name, SchemaBuilder],
+	[Gallery.name, Gallery],
+	[TextArea.name, TextArea],
+	[TableDynamicColumns.name, TableDynamicColumns],
+	[Animator.name, Animator],
+	[ImageWithBrowser.name, ImageWithBrowser],
 ]);

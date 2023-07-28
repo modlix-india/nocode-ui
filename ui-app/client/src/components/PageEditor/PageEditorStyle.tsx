@@ -25,9 +25,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._topBarGrid {
 			display: flex;
-			height: 48px;
+			height: 65px;
 			background-color: #fff;
-			border-bottom: 1px solid #eee;
 		}
 
 		${PREFIX} ._topBarGrid._previewMode{
@@ -41,7 +40,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction: column;
 			align-items: center;
 			padding-top: 10px;
-			border-right: 1px solid #eee;
+			background-color: #F8FAFB;
 		}
 
 		${PREFIX} ._sideBar._previewMode {
@@ -60,7 +59,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._propBar._propBarVisible{
 			display: flex;
 			width: 300px;
-			border-left: 1px solid #eee;
+			
 		}
 
 		._propBar._compNavBarVisible{
@@ -68,7 +67,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction: column;
 			gap: 10px;
 			width: auto;
-			border-left: 1px solid #eee;
+			
 		}
 
 		${PREFIX} ._filterBar {
@@ -225,7 +224,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._filterBar input,
 		input._peInput, ._pvExpressionEditor,
-		textarea._peInput {
+		textarea._peInput, select._peInput {
 			color: #555;
 			background-color: #eee;
 			font-size: 11px;
@@ -316,32 +315,82 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			left: 22px;
 			z-index: 1;
 		}
+
+		${PREFIX} ._urlInput._peInput input {
+			border: none;
+			outline: none;
+			height: 100%;
+			flex: 1;
+			background: #F8FAFB;
+			padding-left: 5px;
+		}
+
+		${PREFIX} ._urlInput._peInput {
+			background: #F8FAFB;
+			border: 0.8px solid #E9ECEF;
+			box-shadow: inset 0px 0px 2px rgba(0, 0, 0, 0.05);
+			border-radius: 4px;
+			position: static;
+			height: 38px;
+			display: flex;
+    		align-items: center;
+			padding: 8px;
+		}
+
+		${PREFIX} ._iconMenu._personalize {
+			background: #F8FAFB;
+			border-radius: 10px;
+		}
+
+		${PREFIX} ._iconMenu._arrow i.fa {
+			width: 16px;
+		}
+
+		${PREFIX} ._iconMenu._arrow span.fa-stack {
+			width: 16px;
+		}
+		${PREFIX} ._iconMenu._arrow span.fa-stack .fa-slash {
+			margin-left: -4px;
+		}
 		
 
 		${PREFIX} button:hover, ${PREFIX} select:hover, ${PREFIX} ._iconMenuOption:hover,
-		._popupMenuBackground ._popupMenuItem:hover, ._popupMenuBackground ._popupMenuItem.active,
 		._popupButtons button:hover {
-			background-color: #555;
-    		color: #eee;
+			background-color: rgba(77, 127, 238, 0.05);
+    		color: #96A1B4;
+		}
+
+		._popupMenuBackground ._popupMenuItem:hover, ._popupMenuBackground ._popupMenuItem.active {
+			color: #08705C;
+			background: linear-gradient(90deg, rgba(8, 112, 92, 0.2) 0%, rgba(248, 250, 251, 0) 93.35%);
+			border-radius: 2px;
 		}
 
 		${PREFIX} i.fa {
-			color: #555;
+			color: #96A1B4;
 			font-size: 18px;
 		}
 
 		${PREFIX} ._iconMenu:hover i.fa {
-			color: #aaa;
+			color: #4C7FEE;
+		}
+
+		${PREFIX} ._iconMenu._active i.fa {
+			color: #4C7FEE;
 		}
 
 		${PREFIX} ._iconMenuOption, ._popupMenuBackground ._popupMenuItem  {
 			padding: 5px 10px;
-			color: #555;
+			color: #96A1B4;
 			display: flex;
 			align-items: center;
 			gap: 8px;
 			white-space: nowrap;
 			cursor: pointer;
+		}
+
+		${PREFIX} ._iconMenuBody ._iconMenuOption i.fa{
+			color: #96A1B4;
 		}
 
 		${PREFIX} ._iconMenuBody{
@@ -353,6 +402,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border-radius: 2px;
 			z-index: 1;
 			transform: translateX(40px);
+			font-weight: normal;
+			text-transform: initial;
 		}
 
 		${PREFIX} ._iconMenuBody._clickable {
@@ -370,17 +421,34 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			right: 100%;
 		}
 
-		${PREFIX} ._iconMenu{
+		${PREFIX} ._iconMenu {
 			cursor: pointer;
 			position: relative;
 			min-height: 32px;
 			display: flex;
 			align-items: center;
 			justify-content: center;
+			padding: 0 5px;
+			width: 32px;
 		}
 
 		${PREFIX} ._iconMenu:hover ._iconMenuBody{
 			display: block;
+		}
+
+		${PREFIX} ._iconMenu:hover {
+			background-color: rgba(77, 127, 238, 0.05);
+			border-radius: 5px
+		}
+
+		${PREFIX} ._selectionBar ._iconMenu:hover {
+			background-color: transparent;
+			color: #4C7FEE;
+		}
+
+		${PREFIX} ._iconMenu._active {
+			background-color: rgba(77, 127, 238, 0.05);
+			border-radius: 5px
 		}
 
 		${PREFIX} ._buttonBar{
@@ -396,13 +464,53 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._buttonBar i.fa{
-			color: #aaa;
+		
 			padding: 7px;
 			cursor: pointer;
+			background: #F8FAFB;
+			border-radius: 10px;
+			width: 32px;
+			height: 32px;
+			text-align: center;
+		}
+
+		${PREFIX} ._buttonBar i.fa:not(:last-child) {
+			margin-right: 10px;
 		}
 
 		${PREFIX} ._buttonBar i.fa.active, ${PREFIX} ._buttonBar i.fa:hover{
-			color: #555;
+			background-color: rgba(77, 127, 238, 0.05);
+			color: #4C7FEE;
+		}
+
+		${PREFIX} ._buttonBar i.fa._hasNoData {
+			color: #8E90A44D;
+		}
+
+		${PREFIX} ._buttonBar._screenSizes i.fa {
+			background-color: transparent;
+			border-bottom: 3px solid transparent;
+			border-radius: 0;
+			height: 100%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			margin: 3px;
+		}
+
+		${PREFIX} ._buttonBar._screenSizes {
+			height: 65px;
+		}
+
+		${PREFIX} ._buttonBar._screenSizes i.fa:hover,
+		${PREFIX} ._buttonBar._screenSizes i.fa.active {
+			color: #8E90A4;
+			border-bottom: 3px solid #8E90A4;
+			background: linear-gradient(360deg, rgba(142, 144, 164, 0.1) 0.78%, rgba(142, 144, 164, 0.011) 157.03%);
+		}
+
+		${PREFIX} ._buttonBar._screenSizes i.fa {
+			color: #8E90A480;
 		}
 
 		${PREFIX} i._rotate-before-270::before {
@@ -427,12 +535,19 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			min-width: 220px;
 		}
 
+		${PREFIX} ._topLeftCenterBarGrid {
+			display: flex;
+			flex:1;
+			align-items: center;
+			justify-content: center;
+		}
+
 		${PREFIX} ._iframe {
 			flex: 1;
 			display: flex;
 			justify-content: center;
 			overflow: auto;
-			border: 1px solid #ccc;
+			transform-origin: top left;
 		}
 
 		${PREFIX} ._iframe.MOBILE_POTRAIT_SCREEN iframe{
@@ -502,7 +617,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			overflow: hidden;
 		}
 
-		${PREFIX} input._urlInput:focus {
+		${PREFIX} ._urlInput._peInput:focus-within {
 			width: 500px;
 		}
 
@@ -516,8 +631,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._selectionBar {
 			display: flex;
 			background-color: #fff;
-    		border-top: 1px solid #eee;
-			height: 20px;
+			height: 29px;
+			padding-left: 28px;
 		}
 		
 		${PREFIX} ._selectionBar._previewMode {
@@ -529,8 +644,9 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._eachSelectionBar {
-			font-size: 11px;
-			padding: 3px 14px;
+			font-size: 10px;
+			font-weight: 600;
+			padding: 3px;
 			display: flex;
     		align-items: center;
 			position: relative;
@@ -539,21 +655,11 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			gap: 8px;
 			align-items: center;
+			width: auto;
+			text-transform: uppercase;
+    		color: #8E90A4B2;
 		}
 		
-		${PREFIX} ._eachSelectionBar::before {
-			content: ' ';
-			width: 16px;
-			height: 16px;
-			position: absolute;
-			border: 2px solid #aaa;
-			border-left: none;
-			border-top: none;
-			transform: rotate(-45deg);
-			right: 0px;
-			border-radius: 2px;
-		}
-
 		${PREFIX} ._eachSelectionBar i.fa, ${PREFIX} ._iconMenuBody i.fa {
 			font-size: 11px;
 			width: 10px;
@@ -562,7 +668,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._iframeContainer {
 			display: flex;
     		flex: 1;
-			max-height: calc(100% - 48px - 20px);
+			max-height: calc(100% - 65px - 29px);
 		}
 
 		${PREFIX} ._iframeContainer._previewMode {
@@ -612,6 +718,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._tabBar i.fa.active{
 			background-color: #fff;
+		}
+		
+		${PREFIX} i._separator {
+			opacity: 0.1;
 		}
 
 		._propContainer {
@@ -775,13 +885,18 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._iconSelectionButton {
 			background-color: #fff;
-			padding: 5px;
+			padding: 2px;
 			border-radius: 2px;
 			border: 1px solid #eee;
 			cursor: pointer;
-			width: 24px;
+			width: 30px;
 			text-align: center;
-			height: 24px;
+			font-size: 24px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 30px;
+			border-radius: 4px
 		}
 
 		${PREFIX} ._iconSelectionButton.active {
@@ -875,7 +990,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex: 1;
 		}
 
-		${PREFIX} ._validationEditor {
+		${PREFIX} ._validationEditor,
+		${PREFIX} ._animationValueEditor {
 			display: flex;
 			flex-direction: column;
 			gap: 5px;
@@ -994,11 +1110,23 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			gap: 10px;
 		}
 
+		._popupContainer ._iconSelectionBrowser ._selectors {
+			display: flex;
+			gap: 5px;
+		}
+
 		._popupContainer ._iconSelectionDisplay {
 			display: flex;
 			flex-wrap: wrap;
 			gap: 20px;
 			overflow: auto;
+		}
+
+		._popupContainer ._iconSelectionDisplay._inProgress {
+			height: 100%;
+			justify-content: center;
+			align-items: center;
+			padding-bottom: 5%;
 		}
 		
 		._popupContainer ._iconSelectionDisplay ._eachIcon {
@@ -1105,6 +1233,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			justify-content: center;
 			align-items: center;
+			width: 100vw;
 		}
 
 		._popupBackground ._popupContainer {
@@ -1124,30 +1253,98 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		._popupMenuBackground ._popupMenuContainer {
-			box-shadow: 2px 2px 5px #ccc;
+			box-shadow: 0px 1px 8px 0px #00000020;
 			display: flex;
+			flex-direction: column;
 			background-color: #fff;
 			position: absolute;
-			border-radius: 3px;
+			border-radius: 4px;
 			border-left: 1px solid #eee;
 			font-size: 13px;
 		}
 
+		._popupMenuBackground ._popupMenuContainer ._elementBarSearchContainer{
+			padding: 20px 50px 20px 20px;
+			background: #FFFFFF;
+			border-bottom: 1px solid rgba(150, 161, 180, 0.4);
+		}
+		._popupMenuBackground ._popupMenuContainer ._elementBarSearchContainer p{
+			color: #4C7FEE;
+			font-weight: 600;
+			font-size: 14px;
+			line-height: 16px;
+			margin-top: 0;
+		}
+
+		._popupMenuBackground ._popupMenuContainer ._elementBarSearchContainer input{
+			width: 345px;
+			height: 38px;
+			background: #F8FAFB;
+			border: 0.8px solid #E9ECEF;
+			box-shadow: inset 0px 0px 2px rgba(0, 0, 0, 0.05);
+			border-radius: 4px;
+			
+		}
+
+		._popupMenuBackground ._popupMenuContainer ._elementsBarContainer {
+			overflow: auto;
+			display: flex;
+			flex-direction: row;
+			flex: 1;
+		}
+
+		._popupMenuBackground ._popupMenuContainer ._elementsBarContainer ._popupMenu {
+			background-color: #F8FAFB;
+		}
+
+		._popupMenuBackground ._popupMenuContainer ._elementsBarContainer ._popupMenu::-webkit-scrollbar {
+			width: 3px;
+		}
+
+		._popupMenuBackground ._popupMenuContainer ._compTemplates {
+			display: flex;
+			flex-direction: column;
+		}
+
+		._popupMenuBackground ._popupMenuContainer ._compTemplates iframe{
+			flex: 1;
+		}
+
+		._popupMenuBackground ._popupMenuContainer ._compTemplateSections {
+			border-bottom: 0.5px dashed rgba(0, 0, 0, 0.3);
+		}
+
+		._popupMenuBackground ._popupMenuContainer ._compTemplateSections ._eachTemplateSection {
+			
+			padding: 11px 20px 11px 20px;
+			cursor: pointer;
+		}
+
+		._popupMenuBackground ._popupMenuContainer ._compTemplateSections ._eachTemplateSection:hover, ._popupMenuBackground ._popupMenuContainer ._compTemplateSections ._eachTemplateSection._active {
+			background: linear-gradient(90deg, rgba(8, 112, 92, 0.2) 0%, rgba(248, 250, 251, 0) 93.35%);
+			color: #08705C;
+		}
+
 		._compMenu {
 			left: 48px;
-			top: 65px;
-			max-height: 85vh;
-			min-height: 50vh;
-			min-width: 100px;
-			padding-bottom: 10px;
+			top: 48px;
+			height: calc(100% - 68px);
+			width: 0px;
+			overflow: hidden;
+			transition: width 0.5s ease-in-out;
+		}
+
+		._compMenu._show {
+			width: 415px;
 		}
 
 		._popupMenuBackground ._popupMenu {
-			border-top: 4px solid #aaa;
-			
+			flex: 1;
 			display: flex;
 			flex-direction: column;
 			overflow: auto;
+			padding-left: 5px;
+			padding-top: 5px;
 		}
 
 		._popupMenuBackground ._popupMenuSeperator {

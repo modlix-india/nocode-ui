@@ -5,13 +5,14 @@ import {
 	FunctionExecutionParameters,
 	FunctionOutput,
 	FunctionSignature,
-	isNullValue,
 	Parameter,
 	Schema,
 } from '@fincity/kirun-js';
 import axios from 'axios';
-import { LOCAL_STORE_PREFIX, NAMESPACE_UI_ENGINE } from '../constants';
-import { getDataFromPath, setData } from '../context/StoreContext';
+import { NAMESPACE_UI_ENGINE } from '../constants';
+import { setData } from '../context/StoreContext';
+import { shortUUID } from '../util/shortUUID';
+import pageHistory from '../components/Page/pageHistory';
 
 const SIGNATURE = new FunctionSignature('Login')
 	.setNamespace(NAMESPACE_UI_ENGINE)
@@ -52,22 +53,27 @@ export class Login extends AbstractFunction {
 		const data: any = { userName, password, rememberMe, cookie };
 		if (identifierType) data.indentifierType = identifierType;
 
+		const headers: any = {};
+		if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
+
 		try {
 			const response = await axios({
 				url: 'api/security/authenticate',
 				method: 'POST',
 				data,
+				headers,
 			});
+			for (let key of Object.keys(pageHistory)) delete pageHistory[key];
 
 			setData('Store.auth', response.data);
-			setData('LocalStore.AuthToken', response.data?.accessToken);
+			setData('LocalStore.AuthToken', response.data?.accessToken, undefined, true);
 
 			setData('Store.pageDefinition', {});
 			setData('Store.messages', []);
 			setData('Store.pageData', {});
 			setData('Store.validations', {});
 			setData('Store.validationTriggers', {});
-			setData('Store.application', undefined);
+			setData('Store.application', undefined, undefined, true);
 			setData('Store.functionExecutions', {});
 
 			return new FunctionOutput([EventResult.outputOf(new Map([['data', response.data]]))]);

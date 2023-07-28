@@ -364,6 +364,12 @@ const component: Component = {
 			label: { value: 'Button' },
 		},
 	},
+	sections: [
+		{ name: 'Text & Icon Buttons', pageName: 'texticonbuttons' },
+		{ name: 'Icon Buttons', pageName: 'texticonbuttons' },
+		{ name: 'Image Buttons', pageName: 'texticonbuttons' },
+		{ name: 'Document Buttons', pageName: 'texticonbuttons' },
+	],
 };
 
 export default component;

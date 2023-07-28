@@ -1,6 +1,7 @@
 import {
 	ExecutionGraph,
 	Function,
+	FunctionSignature,
 	GraphVertex,
 	LinkedList,
 	Parameter,
@@ -47,7 +48,7 @@ export default function ExecutionGraphLines({
 }: ExecutionGraphLinesProps) {
 	const [sid, setSid] = React.useState(shortUUID());
 	useEffect(() => {
-		setTimeout(() => setSid(shortUUID()), 0);
+		setTimeout(() => setSid(shortUUID()), 10);
 	}, [showStores, showParamValues]);
 
 	const nodeMap =
@@ -61,6 +62,27 @@ export default function ExecutionGraphLines({
 		stores.forEach(s => rMap.set(s, new RegExp(`${s}\\.[a-zA-Z0-9\-]{1,}`, 'g')));
 		return rMap;
 	}, [stores, showStores]);
+
+	const [signatures, setSignatures] = React.useState<Map<string, FunctionSignature>>(new Map());
+
+	useEffect(() => {
+		if (!nodeMap.size) return;
+
+		(async () => {
+			const signatures = new Map<string, FunctionSignature>();
+
+			for (const vertex of Array.from(nodeMap.values())) {
+				const statement = vertex.getData().getStatement();
+				const func = await functionRepository.find(
+					statement.getNamespace(),
+					statement.getName(),
+				);
+				if (!func) continue;
+				signatures.set(statement.getStatementName(), func.getSignature());
+			}
+			setSignatures(signatures);
+		})();
+	}, [setSignatures, functionRepository, nodeMap]);
 
 	if (!(executionPlan instanceof ExecutionGraph) || !designerRef.current) return <></>;
 
@@ -138,10 +160,7 @@ export default function ExecutionGraphLines({
 				);
 			});
 
-		const functionSignature = functionRepository
-			.find(statement.getNamespace(), statement.getName())
-			?.getSignature();
-
+		const functionSignature = signatures.get(statement.getStatementName());
 		if (!functionSignature) return array;
 
 		const redundancyCheck = new Set<string>();

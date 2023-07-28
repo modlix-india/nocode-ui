@@ -4,6 +4,7 @@ import {
 	ComponentDefinition,
 	ComponentProperty,
 	ComponentPropertyDefinition,
+	ComponentPropertyEditor,
 	DataLocation,
 } from '../../types/common';
 import { ComponentStyle, StyleResolution } from '../../types/common';
@@ -94,7 +95,11 @@ export function getPathsFromComponentProperties(
 		for (const [key, prop] of Object.entries(properties)) {
 			if (propDefMap[key]?.multiValued) {
 				for (const iprop of Object.values(prop)) {
-					if (propDefMap[key].schema.getRef() === SCHEMA_VALIDATION.getRef()) {
+					if (
+						propDefMap[key].editor === ComponentPropertyEditor.VALIDATION ||
+						propDefMap[key].editor === ComponentPropertyEditor.ANIMATION ||
+						propDefMap[key].editor === ComponentPropertyEditor.ANIMATIONOBSERVER
+					) {
 						for (const vprop of Object.values(iprop?.property?.value ?? {})) {
 							if (typeof vprop !== 'object') continue;
 							const set = getPathsFrom(
@@ -170,6 +175,10 @@ export function getPathsFromComponentDefinition(
 		'bindingPath4',
 		'bindingPath5',
 		'bindingPath6',
+		'bindingPath7',
+		'bindingPath8',
+		'bindingPath9',
+		'bindingPath10',
 	]) {
 		let x = bp as
 			| 'bindingPath'
@@ -177,7 +186,11 @@ export function getPathsFromComponentDefinition(
 			| 'bindingPath3'
 			| 'bindingPath4'
 			| 'bindingPath5'
-			| 'bindingPath6';
+			| 'bindingPath6'
+			| 'bindingPath7'
+			| 'bindingPath8'
+			| 'bindingPath9'
+			| 'bindingPath10';
 		if (definition[x]) {
 			const p = getPathsFrom(definition[x]!, evaluatorMaps);
 			if (p) p.forEach(e => paths.push(e));

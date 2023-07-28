@@ -29,7 +29,7 @@ import GridStyle from './PageEditorStyle';
 import { allPaths } from '../../util/allPaths';
 import { LOCAL_STORE_PREFIX, PAGE_STORE_PREFIX, STORE_PREFIX } from '../../constants';
 import ComponentDefinitions from '../';
-import { duplicate } from '@fincity/kirun-js';
+import { deepEqual, duplicate } from '@fincity/kirun-js';
 
 function savePersonalizationCurry(
 	personalizationPath: string,
@@ -61,7 +61,7 @@ function savePersonalizationCurry(
 function PageEditor(props: ComponentProps) {
 	const {
 		definition,
-		definition: { bindingPath, bindingPath2 },
+		definition: { bindingPath, bindingPath2, bindingPath3 },
 		pageDefinition,
 		locationHistory,
 		context,
@@ -75,6 +75,7 @@ function PageEditor(props: ComponentProps) {
 			theme,
 			onSave,
 			onPublish,
+			onVersions,
 			onChangePersonalization,
 			onDeletePersonalization,
 		} = {},
@@ -94,6 +95,11 @@ function PageEditor(props: ComponentProps) {
 	// binding path for the editor's personalization.
 	const personalizationPath = bindingPath2
 		? getPathFromLocation(bindingPath2, locationHistory, pageExtractor)
+		: undefined;
+
+	// binding path for the application definition.
+	const appPath = bindingPath3
+		? getPathFromLocation(bindingPath3, locationHistory, pageExtractor)
 		: undefined;
 
 	const resolvedStyles = processComponentStylePseudoClasses(
@@ -149,6 +155,20 @@ function PageEditor(props: ComponentProps) {
 				pageDefinition,
 			))();
 	}, [onPublish]);
+
+	// Function to get the versions
+	const versionsFunction = useCallback(() => {
+		if (!onVersions || !pageDefinition.eventFunctions?.[onVersions]) return;
+
+		(async () =>
+			await runEvent(
+				pageDefinition.eventFunctions[onVersions],
+				'pageEditorVersions',
+				context.pageName,
+				locationHistory,
+				pageDefinition,
+			))();
+	}, [onVersions]);
 
 	// Clear the personalization
 	const deletePersonalization = useCallback(() => {
@@ -441,6 +461,46 @@ function PageEditor(props: ComponentProps) {
 		[slaveStore],
 	);
 
+	// Use effect to see if editor is closed abruptly.
+	useEffect(() => {
+		if (!defPath) return;
+		const removeListener = addListenerAndCallImmediately(
+			(_, v) => {
+				if (!v || !v.id) return;
+
+				removeListener();
+
+				let i = 0,
+					key = null;
+				while ((key = window.localStorage.key(i++))) {
+					if (key.indexOf(v.id) === -1) continue;
+					break;
+				}
+
+				if (!key) return;
+
+				const storagePage = JSON.parse(window.localStorage.getItem(key)!);
+				if (deepEqual(v, storagePage)) return;
+
+				setIssue({
+					message: 'Editor was closed abruptly. Do you want to recover the page?',
+					options: ['Yes', 'No'],
+					defaultOption: 'Yes',
+					callbackOnOption: {
+						Yes: () => {
+							setData(defPath, storagePage, pageExtractor.getPageName());
+							window.localStorage.removeItem(key!);
+						},
+					},
+				});
+			},
+			pageExtractor,
+			defPath,
+		);
+
+		return removeListener;
+	}, [defPath, setIssue]);
+
 	// If the personalization is not loaded, we don't load the view.
 	if (personalizationPath && !personalization) return <></>;
 
@@ -484,6 +544,8 @@ function PageEditor(props: ComponentProps) {
 					storePaths={storePaths}
 					setStyleSelectorPref={setStyleSelectorPref}
 					styleSelectorPref={styleSelectorPref}
+					appPath={appPath}
+					onVersions={onVersions ? versionsFunction : undefined}
 				/>
 				<CodeEditor
 					showCodeEditor={showCodeEditor}
@@ -538,6 +600,7 @@ const component: Component = {
 	bindingPaths: {
 		bindingPath: { name: 'Definition' },
 		bindingPath2: { name: 'Personalization' },
+		bindingPath3: { name: 'Application Definition' },
 	},
 };
 

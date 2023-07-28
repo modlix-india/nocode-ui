@@ -5,8 +5,10 @@ import { getDataFromPath } from '../../../../context/StoreContext';
 import { ComponentPropertyDefinition } from '../../../../types/common';
 import Portal from '../../../Portal';
 import PageOperations from '../../functions/PageOperations';
+import { shortUUID } from '../../../../util/shortUUID';
+import PathParts from '../../../../commonComponents/PathParts';
 
-interface IconSelectionEditorProps {
+interface ImageSelectionEditorProps {
 	value?: string;
 	propDef: ComponentPropertyDefinition;
 	onChange: (v: string | undefined) => void;
@@ -56,7 +58,7 @@ export function ImageEditor({
 	onChange,
 	propDef,
 	pageOperations,
-}: IconSelectionEditorProps) {
+}: ImageSelectionEditorProps) {
 	const [chngValue, setChngValue] = useState(value ?? '');
 	const [showImageBrowser, setShowImageBrowser] = useState(false);
 	const [filter, setFilter] = useState('');
@@ -76,16 +78,20 @@ export function ImageEditor({
 		[setInternalPath, setFilter],
 	);
 
+	const headers: any = {
+		Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
+	};
+	if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
+
 	const callForFiles = useCallback(() => {
 		setInProgress(true);
+
 		(async () => {
 			let url = `/api/files/static/${path}?size=200`; // for now hardcoding size with value 200 in future update with infinite scrolling
 			if (filter.trim() !== '') url += `&filter=${filter}`;
 			await axios
 				.get(url, {
-					headers: {
-						Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
-					},
+					headers,
 				})
 				.then(res => {
 					setFiles(res.data);
@@ -127,12 +133,7 @@ export function ImageEditor({
 								}${newFolderName}`;
 								await axios
 									.post(url, formData, {
-										headers: {
-											Authorization: getDataFromPath(
-												`${LOCAL_STORE_PREFIX}.AuthToken`,
-												[],
-											),
-										},
+										headers,
 									})
 									.finally(() => {
 										setInProgress(false);
@@ -166,13 +167,7 @@ export function ImageEditor({
 								`/api/files/static${path === '' ? '/' : path}`,
 								formData,
 								{
-									headers: {
-										'Content-Type': 'multipart/form-data',
-										Authorization: getDataFromPath(
-											`${LOCAL_STORE_PREFIX}.AuthToken`,
-											[],
-										),
-									},
+									headers,
 								},
 							);
 						} catch (e) {}
@@ -240,12 +235,7 @@ export function ImageEditor({
 																path === '' ? '' : '/'
 															}${e.name}`,
 															{
-																headers: {
-																	Authorization: getDataFromPath(
-																		`${LOCAL_STORE_PREFIX}.AuthToken`,
-																		[],
-																	),
-																},
+																headers,
 															},
 														))();
 												} catch (e) {}
@@ -323,47 +313,6 @@ export function ImageEditor({
 				/>
 			</div>
 			{popup}
-		</div>
-	);
-}
-
-function PathParts({ path, setPath }: { path: string; setPath: (p: string) => void }) {
-	const parts = path.split('\\');
-	return (
-		<div className="_pathParts">
-			<span>
-				<b>Path:</b>
-			</span>
-			<span
-				className={path === '' ? '' : '_clickable'}
-				onClick={() => (path !== '' ? setPath('') : undefined)}
-			>
-				\
-			</span>
-			{parts
-				.filter(e => e !== '')
-				.map((p, i, arr) => {
-					const slash = i === 0 ? <></> : <span>\</span>;
-					if (i === arr.length - 1)
-						return (
-							<>
-								{slash}
-								<span key={i}>{p}</span>
-							</>
-						);
-					return (
-						<>
-							{slash}
-							<span
-								className="_clickable"
-								key={i}
-								onClick={() => setPath('\\' + arr.slice(0, i + 1).join('\\'))}
-							>
-								{p}
-							</span>
-						</>
-					);
-				})}
 		</div>
 	);
 }

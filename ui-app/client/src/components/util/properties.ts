@@ -1,4 +1,10 @@
-import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP, SCHEMA_VALIDATION } from '../../constants';
+import {
+	SCHEMA_ANY_COMP_PROP,
+	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_NUM_COMP_PROP,
+	SCHEMA_STRING_COMP_PROP,
+	SCHEMA_VALIDATION,
+} from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
@@ -13,6 +19,14 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 		displayName: 'On Click',
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		description: 'Event to be triggered when clicked.',
+		group: ComponentPropertyGroup.EVENTS,
+	},
+	onChange: {
+		name: 'onChange',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Change',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered on input change.',
 		group: ComponentPropertyGroup.EVENTS,
 	},
 	onSelect: {
@@ -291,6 +305,16 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 		group: ComponentPropertyGroup.BASIC,
 		defaultValue: false,
 	},
+
+	animation: {
+		name: 'animation',
+		schema: SCHEMA_ANY_COMP_PROP,
+		displayName: 'Animation',
+		editor: ComponentPropertyEditor.ANIMATION,
+		description: 'Animation to be played.',
+		group: ComponentPropertyGroup.COMMON,
+		multiValued: true,
+	},
 };
 
 const COMPONENT_STYLE_GROUPS: { [key: string]: Array<string> } = {
@@ -329,7 +353,6 @@ const COMPONENT_STYLE_GROUPS: { [key: string]: Array<string> } = {
 	],
 
 	border: [
-		'borderRadius',
 		'borderTopLeftRadius',
 		'borderTopRightRadius',
 		'borderBottomLeftRadius',
@@ -354,6 +377,16 @@ const COMPONENT_STYLE_GROUPS: { [key: string]: Array<string> } = {
 	list: ['listStyleImage', 'listStylePosition', 'listStyleType'],
 	scrollbar: ['hideScrollBar'],
 	selectorName: ['selectorName'],
+	animation: [
+		'animationName',
+		'animationDuration',
+		'animationTimingFunction',
+		'animationDelay',
+		'animationIterationCount',
+		'animationDirection',
+		'animationFillMode',
+		'animationPlayState',
+	],
 };
 
 const CSS_STYLE_PROPERTY_GROUP_REF: { [key: string]: string } = Object.entries(
@@ -557,11 +590,416 @@ const COMPONENT_STYLE_GROUP_PROPERTIES: { [key: string]: ComponentStylePropertyG
 		description: 'Selector Names',
 		target: ['comp'],
 	},
+	animation: {
+		name: 'animation',
+		type: 'animation',
+		displayName: 'Animation',
+		description: 'Animation',
+		target: ['comp'],
+	},
 };
+
+const ANIMATION_BASIC_PROPERTIES: Array<ComponentPropertyDefinition> = [
+	{
+		name: 'animationName',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Animation',
+		description: 'The Animation name',
+		defaultValue: '_bounce',
+		enumValues: [
+			{
+				name: '_bounce',
+				displayName: 'Bounce',
+			},
+			{
+				name: '_flash',
+				displayName: 'Flash',
+			},
+			{
+				name: '_pulse',
+				displayName: 'Pulse',
+			},
+			{
+				name: '_shake',
+				displayName: 'Shake',
+			},
+			{
+				name: '_swing',
+				displayName: 'Swing',
+			},
+			{
+				name: '_tada',
+				displayName: 'Tada',
+			},
+			{
+				name: '_wobble',
+				displayName: 'Wobble',
+			},
+			{
+				name: '_bounceIn',
+				displayName: 'Bounce In',
+			},
+			{
+				name: '_bounceInDown',
+				displayName: 'Bounce In Down',
+			},
+			{
+				name: '_bounceInLeft',
+				displayName: 'Bounce In Left',
+			},
+			{
+				name: '_bounceInRight',
+				displayName: 'Bounce In Right',
+			},
+			{
+				name: '_bounceInUp',
+				displayName: 'Bounce In Up',
+			},
+			{
+				name: '_bounceOut',
+				displayName: 'Bounce Out',
+			},
+			{
+				name: '_bounceOutDown',
+				displayName: 'Bounce Out Down',
+			},
+			{
+				name: '_bounceOutLeft',
+				displayName: 'Bounce Out Left',
+			},
+			{
+				name: '_bounceOutRight',
+				displayName: 'Bounce Out Right',
+			},
+			{
+				name: '_bounceOutUp',
+				displayName: 'Bounce Out Up',
+			},
+			{
+				name: '_fadeIn',
+				displayName: 'Fade In',
+			},
+			{
+				name: '_fadeInDown',
+				displayName: 'Fade In Down',
+			},
+			{
+				name: '_fadeInDownBig',
+				displayName: 'Fade In Down Big',
+			},
+			{
+				name: '_fadeInLeft',
+				displayName: 'Fade In Left',
+			},
+			{
+				name: '_fadeInLeftBig',
+				displayName: 'Fade In Left Big',
+			},
+			{
+				name: '_fadeInRight',
+				displayName: 'Fade In Right',
+			},
+			{
+				name: '_fadeInRightBig',
+				displayName: 'Fade In Right Big',
+			},
+			{
+				name: '_fadeInUp',
+				displayName: 'Fade In Up',
+			},
+			{
+				name: '_fadeInUpBig',
+				displayName: 'Fade In Up Big',
+			},
+			{
+				name: '_fadeOut',
+				displayName: 'Fade Out',
+			},
+			{
+				name: '_fadeOutDown',
+				displayName: 'Fade Out Down',
+			},
+			{
+				name: '_fadeOutDownBig',
+				displayName: 'Fade Out Down Big',
+			},
+			{
+				name: '_fadeOutLeft',
+				displayName: 'Fade Out Left',
+			},
+			{
+				name: '_fadeOutLeftBig',
+				displayName: 'Fade Out Left Big',
+			},
+			{
+				name: '_fadeOutRight',
+				displayName: 'Fade Out Right',
+			},
+			{
+				name: '_fadeOutRightBig',
+				displayName: 'Fade Out Right Big',
+			},
+			{
+				name: '_fadeOutUp',
+				displayName: 'Fade Out Up',
+			},
+			{
+				name: '_fadeOutUpBig',
+				displayName: 'Fade Out Up Big',
+			},
+			{
+				name: '_flip',
+				displayName: 'Flip',
+			},
+			{
+				name: '_flipInX',
+				displayName: 'Flip In X',
+			},
+			{
+				name: '_flipInY',
+				displayName: 'Flip In Y',
+			},
+			{
+				name: '_flipOutX',
+				displayName: 'Flip Out X',
+			},
+			{
+				name: '_flipOutY',
+				displayName: 'Flip Out Y',
+			},
+			{
+				name: '_lightSpeedIn',
+				displayName: 'Light Speed In',
+			},
+			{
+				name: '_lightSpeedOut',
+				displayName: 'Light Speed Out',
+			},
+			{
+				name: '_rotateIn',
+				displayName: 'Rotate In',
+			},
+			{
+				name: '_rotateInDownLeft',
+				displayName: 'Rotate In Down Left',
+			},
+			{
+				name: '_rotateInDownRight',
+				displayName: 'Rotate In Down Right',
+			},
+			{
+				name: '_rotateInUpLeft',
+				displayName: 'Rotate In Up Left',
+			},
+			{
+				name: '_rotateInUpRight',
+				displayName: 'Rotate In Up Right',
+			},
+			{
+				name: '_rotateOut',
+				displayName: 'Rotate Out',
+			},
+			{
+				name: '_rotateOutDownLeft',
+				displayName: 'Rotate Out Down Left',
+			},
+			{
+				name: '_rotateOutDownRight',
+				displayName: 'Rotate Out Down Right',
+			},
+			{
+				name: '_rotateOutUpLeft',
+				displayName: 'Rotate Out Up Left',
+			},
+			{
+				name: '_rotateOutUpRight',
+				displayName: 'Rotate Out Up Right',
+			},
+			{
+				name: '_hinge',
+				displayName: 'Hinge',
+			},
+			{
+				name: '_rollIn',
+				displayName: 'Roll In',
+			},
+			{
+				name: '_rollOut',
+				displayName: 'Roll Out',
+			},
+			{
+				name: '_zoomIn',
+				displayName: 'Zoom In',
+			},
+			{
+				name: '_zoomInDown',
+				displayName: 'Zoom In Down',
+			},
+			{
+				name: '_zoomInLeft',
+				displayName: 'Zoom In Left',
+			},
+			{
+				name: '_zoomInRight',
+				displayName: 'Zoom In Right',
+			},
+			{
+				name: '_zoomInUp',
+				displayName: 'Zoom In Up',
+			},
+			{
+				name: '_zoomOut',
+				displayName: 'Zoom Out',
+			},
+			{
+				name: '_zoomOutDown',
+				displayName: 'Zoom Out Down',
+			},
+			{
+				name: '_zoomOutLeft',
+				displayName: 'Zoom Out Left',
+			},
+			{
+				name: '_zoomOutRight',
+				displayName: 'Zoom Out Right',
+			},
+			{
+				name: '_zoomOutUp',
+				displayName: 'Zoom Out Up',
+			},
+		],
+	},
+	{
+		name: 'animationDuration',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Duration (in milliseconds)',
+		description: 'The duration of the animation in Milliseconds',
+		defaultValue: 0,
+	},
+	{
+		name: 'animationDelay',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Delay (in milliseconds)',
+		description: 'The delay of the animation in Milliseconds',
+		defaultValue: 0,
+	},
+	{
+		name: 'animationIterationCount',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Iteration Count',
+		description: 'The number of times the animation should be played',
+		defaultValue: '1',
+	},
+	{
+		name: 'animationDirection',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Direction',
+		description: 'The direction of the animation',
+		defaultValue: 'normal',
+		enumValues: [
+			{ name: 'normal', displayName: 'Normal', description: 'Normal' },
+			{ name: 'reverse', displayName: 'Reverse', description: 'Reverse' },
+			{ name: 'alternate', displayName: 'Alternate', description: 'Alternate' },
+			{
+				name: 'alternate-reverse',
+				displayName: 'Alternate Reverse',
+				description: 'Alternate Reverse',
+			},
+		],
+	},
+	{
+		name: 'animationFillMode',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Fill Mode',
+		description: 'The fill mode of the animation',
+		defaultValue: 'none',
+		enumValues: [
+			{ name: 'none', displayName: 'None', description: 'None' },
+			{ name: 'forwards', displayName: 'Forwards', description: 'Forwards' },
+			{ name: 'backwards', displayName: 'Backwards', description: 'Backwards' },
+			{ name: 'both', displayName: 'Both', description: 'Both' },
+		],
+	},
+	{
+		name: 'animationTimingFunction',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Timing Function',
+		description: 'The timing function of the animation',
+		defaultValue: 'ease',
+		enumValues: [
+			{ name: 'ease', displayName: 'Ease', description: 'Ease' },
+			{ name: 'ease-in', displayName: 'Ease In', description: 'Ease In' },
+			{ name: 'ease-out', displayName: 'Ease Out', description: 'Ease Out' },
+			{ name: 'ease-in-out', displayName: 'Ease In Out', description: 'Ease In Out' },
+			{ name: 'linear', displayName: 'Linear', description: 'Linear' },
+			{ name: 'step-start', displayName: 'Step Start', description: 'Step Start' },
+			{ name: 'step-end', displayName: 'Step End', description: 'Step End' },
+			{ name: 'steps', displayName: 'Steps', description: 'Steps' },
+			{ name: 'cubic-bezier', displayName: 'Cubic Bezier', description: 'Cubic Bezier' },
+		],
+	},
+	{
+		name: 'condition',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Condition',
+		description: 'This animation is applied only if this condition is true',
+		defaultValue: true,
+	},
+];
+
+const TIMING_FUNCTION_EXTRA = {
+	name: 'timingFunctionExtra',
+	schema: SCHEMA_STRING_COMP_PROP,
+	displayName: 'Parameters',
+	description: 'Parameters of the timing function',
+};
+
+const OBESERVATION_PROP = {
+	name: 'observation',
+	schema: SCHEMA_STRING_COMP_PROP,
+	displayName: 'Observation',
+	description: 'The observation to be made',
+	defaultValue: 'none',
+	enumValues: [
+		{ name: 'none', displayName: 'None', description: 'None' },
+		{ name: 'entering', displayName: 'Entering', description: 'When entering the view port' },
+		{ name: 'exiting', displayName: 'Exiting', description: 'When exiting the view port ' },
+	],
+};
+
+const OBESERVATION_ENTERING_THRESHOLD = {
+	name: 'enteringThreshold',
+	schema: SCHEMA_NUM_COMP_PROP,
+	displayName: 'Entering Threshold',
+	description: 'The threshold for entering',
+	defaultValue: 0.25,
+};
+
+const OBESERVATION_EXITING_THRESHOLD = {
+	name: 'exitingThreshold',
+	schema: SCHEMA_NUM_COMP_PROP,
+	displayName: 'Exiting Threshold',
+	description: 'The threshold for exiting',
+	defaultValue: 0.25,
+};
+
+const ANIMATION_PROPERTIES = [
+	...ANIMATION_BASIC_PROPERTIES,
+	TIMING_FUNCTION_EXTRA,
+	OBESERVATION_PROP,
+	OBESERVATION_ENTERING_THRESHOLD,
+	OBESERVATION_EXITING_THRESHOLD,
+];
 
 export {
 	COMMON_COMPONENT_PROPERTIES,
 	COMPONENT_STYLE_GROUP_PROPERTIES,
 	CSS_STYLE_PROPERTY_GROUP_REF,
 	COMPONENT_STYLE_GROUPS,
+	ANIMATION_BASIC_PROPERTIES,
+	ANIMATION_PROPERTIES,
+	TIMING_FUNCTION_EXTRA,
+	OBESERVATION_PROP,
+	OBESERVATION_ENTERING_THRESHOLD,
+	OBESERVATION_EXITING_THRESHOLD,
 };
