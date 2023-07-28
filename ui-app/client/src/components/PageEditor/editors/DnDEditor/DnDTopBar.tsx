@@ -13,7 +13,11 @@ import { duplicate } from '@fincity/kirun-js';
 import Portal from '../../../Portal';
 import { StringValueEditor } from '../../../SchemaForm/components/StringValueEditor';
 import PropertyValueEditor from '../propertyValueEditors/PropertyValueEditor';
-import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../../../constants';
+import {
+	LOCAL_STORE_PREFIX,
+	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_STRING_COMP_PROP,
+} from '../../../../constants';
 import { ComponentPropertyEditor } from '../../../../types/common';
 import { ComponentPropertyDefinition } from '../../../../types/common';
 import PageOperations from '../../functions/PageOperations';
@@ -45,6 +49,27 @@ interface TopBarProps {
 	onSelectedSubComponentChanged: (key: string) => void;
 	onSelectedComponentChanged: (key: string) => void;
 	pageOperations: PageOperations;
+}
+
+function removeExcessPages(pid: string) {
+	let i = 0,
+		key = null;
+	const delKeys = new Array<string>();
+	const allKeys = new Array<string>();
+
+	while ((key = window.localStorage.key(i++))) {
+		if (!key.startsWith('pgdef_')) continue;
+		if (key.indexOf(pid) != -1) delKeys.push(key);
+		else allKeys.push(key);
+	}
+
+	delKeys.forEach(k => window.localStorage.removeItem(k));
+	const remKeys = allKeys.sort((a, b) => {
+		let anum = parseInt(a.split('_')[2]);
+		let bnum = parseInt(b.split('_')[2]);
+		return bnum - anum;
+	});
+	if (remKeys.length > 10) remKeys.slice(10).forEach(k => window.localStorage.removeItem(k));
 }
 
 export default function DnDTopBar({
@@ -122,6 +147,9 @@ export default function DnDTopBar({
 				}
 
 				if (latestVersion.current < v.version) latestVersion.current = v.version;
+
+				removeExcessPages(v.id);
+				window.localStorage.setItem(`pgdef_${v.id}_${Date.now()}`, JSON.stringify(v));
 
 				undoStackRef.current.push(duplicate(v));
 				redoStackRef.current.length = 0;
