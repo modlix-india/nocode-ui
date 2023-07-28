@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
 	addListener,
 	addListenerAndCallImmediately,
@@ -44,7 +44,7 @@ function TextBox(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
 		properties: {
-			updateStoreImmediately,
+			updateStoreImmediately: upStoreImm,
 			removeKeyWhenEmpty,
 			valueType,
 			emptyValue,
@@ -61,6 +61,10 @@ function TextBox(props: ComponentProps) {
 			validation,
 			placeholder,
 			messageDisplay,
+			autoComplete,
+			onClear,
+			onChange,
+			autoFocus,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -98,22 +102,39 @@ function TextBox(props: ComponentProps) {
 		);
 	}, [bindingPathPath]);
 
-	const spinnerPath = onEnter
+	const spinnerPath1 = onEnter
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
 				onEnter,
 		  )}.isRunning`
 		: undefined;
 
+	const spinnerPath2 = onClear
+		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
+				onClear,
+		  )}.isRunning`
+		: undefined;
+
+	const spinnerPath3 = onChange
+		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
+				onChange,
+		  )}.isRunning`
+		: undefined;
+
 	const [isLoading, setIsLoading] = useState(
-		onEnter
-			? getDataFromPath(spinnerPath, props.locationHistory, pageExtractor) ?? false
-			: false,
+		(getDataFromPath(spinnerPath1, props.locationHistory, pageExtractor) ||
+			getDataFromPath(spinnerPath2, props.locationHistory, pageExtractor) ||
+			getDataFromPath(spinnerPath3, props.locationHistory, pageExtractor)) ??
+			false,
 	);
 
 	useEffect(() => {
-		if (spinnerPath) {
-			return addListener((_, value) => setIsLoading(value), pageExtractor, spinnerPath);
-		}
+		let paths = [];
+		if (spinnerPath1) paths.push(spinnerPath1);
+		if (spinnerPath2) paths.push(spinnerPath2);
+		if (spinnerPath3) paths.push(spinnerPath3);
+
+		if (!paths.length) return;
+		return addListener((_, value) => setIsLoading(value), pageExtractor, ...paths);
 	}, []);
 
 	useEffect(() => {
@@ -143,6 +164,20 @@ function TextBox(props: ComponentProps) {
 				true,
 			);
 	}, [value, validation]);
+	const changeEvent = onChange ? props.pageDefinition.eventFunctions[onChange] : undefined;
+	const updateStoreImmediately = upStoreImm || autoComplete === 'on';
+
+	const callChangeEvent = useCallback(() => {
+		if (!changeEvent) return;
+		(async () =>
+			await runEvent(
+				changeEvent,
+				onChange,
+				props.context.pageName,
+				props.locationHistory,
+				props.pageDefinition,
+			))();
+	}, [changeEvent]);
 
 	const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
 		let temp = value === '' && emptyValue ? mapValue[emptyValue] : value;
@@ -161,45 +196,68 @@ function TextBox(props: ComponentProps) {
 			} else {
 				setData(bindingPathPath, temp, context?.pageName);
 			}
+			callChangeEvent();
 		}
 		setFocus(false);
 	};
 	const handleTextChange = (text: string) => {
 		if (removeKeyWhenEmpty && text === '' && bindingPathPath) {
 			setData(bindingPathPath, undefined, context?.pageName, true);
+			callChangeEvent();
 			return;
 		}
 		let temp = text === '' && emptyValue ? mapValue[emptyValue] : text;
-		if (updateStoreImmediately && bindingPathPath)
+		if (updateStoreImmediately && bindingPathPath) {
 			setData(bindingPathPath, temp, context?.pageName);
+			callChangeEvent();
+		}
 		if (!updateStoreImmediately) setValue(text);
 	};
 
 	const handleNumberChange = (text: string) => {
 		if (removeKeyWhenEmpty && text === '' && bindingPathPath) {
 			setData(bindingPathPath, undefined, context?.pageName, true);
+			callChangeEvent();
 			return;
 		}
 		let temp = text === '' && emptyValue ? mapValue[emptyValue] : text;
 		let tempNumber = numberType === 'DECIMAL' ? parseFloat(temp) : parseInt(temp);
 		temp = !isNaN(tempNumber) ? tempNumber : temp;
-		if (updateStoreImmediately && bindingPathPath)
+		if (updateStoreImmediately && bindingPathPath) {
 			setData(bindingPathPath, temp, context?.pageName);
+			callChangeEvent();
+		}
+
 		if (!updateStoreImmediately) setValue(!isNaN(tempNumber) ? temp?.toString() : '');
 	};
-	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+
+	const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
 		if (valueType === 'text') handleTextChange(event.target.value);
 		else handleNumberChange(event.target.value);
 	};
-	const handleClickClose = () => {
+
+	const handleClickClose = async () => {
 		let temp = mapValue[emptyValue];
 		if (removeKeyWhenEmpty && bindingPathPath) {
 			setData(bindingPathPath, undefined, context?.pageName, true);
+			callChangeEvent();
 		} else if (bindingPathPath) {
 			setData(bindingPathPath, temp, context?.pageName);
+			callChangeEvent();
 		}
+		if (!onClear) return;
+		const clearEvent = props.pageDefinition.eventFunctions[onClear];
+		if (!clearEvent) return;
+		await runEvent(
+			clearEvent,
+			onEnter,
+			props.context.pageName,
+			props.locationHistory,
+			props.pageDefinition,
+		);
 	};
 	const clickEvent = onEnter ? props.pageDefinition.eventFunctions[onEnter] : undefined;
+
 	const handleKeyUp = async (e: React.KeyboardEvent<HTMLInputElement>) => {
 		if (!clickEvent || isLoading || e.key !== 'Enter') return;
 		if (!updateStoreImmediately) {
@@ -242,6 +300,8 @@ function TextBox(props: ComponentProps) {
 				messageDisplay={messageDisplay}
 				styles={computedStyles}
 				definition={props.definition}
+				autoComplete={autoComplete}
+				autoFocus={autoFocus}
 			/>
 		</div>
 	);

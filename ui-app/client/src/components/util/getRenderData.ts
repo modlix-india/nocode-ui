@@ -1,27 +1,14 @@
-import { ExpressionEvaluator, TokenValueExtractor } from '@fincity/kirun-js';
-import { getData, getDataFromLocation } from '../../context/StoreContext';
-import { ComponentProperty, DataLocation } from '../../types/common';
+import {
+	ExpressionEvaluator,
+	ObjectValueSetterExtractor,
+	TokenValueExtractor,
+} from '@fincity/kirun-js';
 import UUID from './uuid';
 
-export class ObjectExtractor extends TokenValueExtractor {
-	private store: any;
-	private prefix: string;
-	constructor(store: any, prefix: string) {
-		super();
-		this.store = store;
-		this.prefix = prefix;
-	}
-	protected getValueInternal(token: string) {
-		let parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
-		return this.retrieveElementFrom(token, parts, 1, this.store);
-	}
-	getPrefix(): string {
-		return this.prefix;
-	}
-}
-
 export const getExtractionMap = (data: any) =>
-	new Map<string, TokenValueExtractor>([[`Data.`, new ObjectExtractor(data ?? {}, `Data.`)]]);
+	new Map<string, TokenValueExtractor>([
+		[`Data.`, new ObjectValueSetterExtractor(data ?? {}, `Data.`)],
+	]);
 
 const getSelection = (
 	selectionType: 'KEY' | 'INDEX' | 'OBJECT' | 'RANDOM' | undefined,

@@ -1,5 +1,5 @@
 import { deepEqual, isNullValue } from '@fincity/kirun-js';
-import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
+import React, { ChangeEvent, UIEvent, useCallback, useEffect, useRef, useState } from 'react';
 import CommonInputText from '../../commonComponents/CommonInputText';
 import {
 	PageStoreExtractor,
@@ -69,6 +69,7 @@ function DropdownComponent(props: ComponentProps) {
 			searchLabel,
 			clearSearchTextOnClose,
 			onSearch,
+			onScrollReachedEnd,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -106,15 +107,25 @@ function DropdownComponent(props: ComponentProps) {
 
 	const dropdownData = React.useMemo(
 		() =>
-			getRenderData(
-				data,
-				datatype,
-				uniqueKeyType,
-				uniqueKey,
-				selectionType,
-				selectionKey,
-				labelKeyType,
-				labelKey,
+			Array.from(
+				getRenderData(
+					data,
+					datatype,
+					uniqueKeyType,
+					uniqueKey,
+					selectionType,
+					selectionKey,
+					labelKeyType,
+					labelKey,
+				)
+					.reduce((acc: Map<string, any>, each: any) => {
+						if (!each?.key) return acc;
+
+						acc.set(each.key, each);
+
+						return acc;
+					}, new Map())
+					.values(),
 			),
 		[
 			data,
@@ -127,6 +138,8 @@ function DropdownComponent(props: ComponentProps) {
 			labelKey,
 		],
 	);
+
+	console.log('pressure', data, dropdownData);
 
 	const selectedDataKey: Array<any> | string | undefined = React.useMemo(
 		() => getSelectedKeys(dropdownData, selected, isMultiSelect),
@@ -284,11 +297,30 @@ function DropdownComponent(props: ComponentProps) {
 			);
 	}, [selected, validation]);
 
+	const scrollEndEvent =
+		onScrollReachedEnd && props.pageDefinition.eventFunctions[onScrollReachedEnd]
+			? async (e: UIEvent<HTMLDivElement>) => {
+					const target = e.target as HTMLDivElement;
+
+					if (Math.abs(target.scrollHeight - target.scrollTop - target.clientHeight) > 2)
+						return;
+
+					await runEvent(
+						props.pageDefinition.eventFunctions[onScrollReachedEnd],
+						key,
+						context.pageName,
+						locationHistory,
+						props.pageDefinition,
+					);
+			  }
+			: undefined;
+
 	return (
 		<div
 			className="comp compDropdown"
 			onClick={handleBubbling}
 			onMouseLeave={closeOnMouseLeave ? handleClose : undefined}
+			style={computedStyles?.comp}
 		>
 			<HelperComponent definition={props.definition} />
 
@@ -318,7 +350,11 @@ function DropdownComponent(props: ComponentProps) {
 				definition={props.definition}
 			/>
 			{showDropdown && (
-				<div className="dropdownContainer" style={computedStyles.dropDownContainer ?? {}}>
+				<div
+					className="dropdownContainer"
+					style={computedStyles.dropDownContainer ?? {}}
+					onScroll={scrollEndEvent}
+				>
 					<SubHelperComponent
 						definition={props.definition}
 						subComponentName="dropDownContainer"

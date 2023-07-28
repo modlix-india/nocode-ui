@@ -76,15 +76,15 @@ export function correctStatementNames(def: any) {
 	return def;
 }
 
-export function makeObjectPaths(
+export async function makeObjectPaths(
 	prefix: string,
 	schema: Schema,
 	schemaRepository: Repository<Schema>,
 	set: Set<string>,
-) {
+): Promise<void> {
 	let s: Schema | undefined = schema;
 	if (!isNullValue(schema.getRef()))
-		s = SchemaUtil.getSchemaFromRef(s, schemaRepository, schema.getRef());
+		s = await SchemaUtil.getSchemaFromRef(s, schemaRepository, schema.getRef());
 
 	if (
 		isNullValue(s) ||
@@ -93,9 +93,9 @@ export function makeObjectPaths(
 	)
 		return;
 
-	for (const [propName, subSchema] of s.getProperties()!) {
+	for (const [propName, subSchema] of Array.from(s.getProperties()!)) {
 		const path = prefix + '.' + propName;
 		set.add(path);
-		makeObjectPaths(path, subSchema, schemaRepository, set);
+		await makeObjectPaths(path, subSchema, schemaRepository, set);
 	}
 }

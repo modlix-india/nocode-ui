@@ -99,7 +99,7 @@ function HelperComponentInternal({
 		<div
 			style={style as CSSProperties}
 			draggable="true"
-			className="opacityShowOnHover"
+			className="opacityShowOnHover _helper"
 			onDragStart={e => {
 				if (e.dataTransfer.items.length) return;
 				e.dataTransfer.items.add(`${DRAG_CD_KEY}${definition.key}`, 'text/plain');
@@ -174,7 +174,7 @@ function HelperComponentInternal({
 				<i className={ComponentDefinitions.get(definition.type)?.icon} />
 				{ComponentDefinitions.get(definition.type)?.displayName}
 			</div>
-			{children}
+			<div className="_helperChildren">{children}</div>
 		</div>
 	);
 }

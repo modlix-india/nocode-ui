@@ -19,6 +19,7 @@ interface DnDEditorProps {
 	pageName: string | undefined;
 	onSave: () => void;
 	onPublish?: () => void;
+	onVersions?: () => void;
 	onChangePersonalization: (prop: string, value: any) => void;
 	url: string;
 	pageExtractor: PageStoreExtractor;
@@ -45,6 +46,7 @@ interface DnDEditorProps {
 	storePaths: Set<string>;
 	setStyleSelectorPref: (pref: any) => void;
 	styleSelectorPref: any;
+	appPath: string | undefined;
 }
 
 export default function DnDEditor({
@@ -79,6 +81,8 @@ export default function DnDEditor({
 	storePaths,
 	styleSelectorPref,
 	setStyleSelectorPref,
+	appPath,
+	onVersions,
 }: DnDEditorProps) {
 	const [preview, setPreview] = useState(false);
 
@@ -111,6 +115,7 @@ export default function DnDEditor({
 					locationHistory={locationHistory}
 					url={url}
 					onPublish={onPublish}
+					onVersions={onVersions}
 					personalizationPath={personalizationPath}
 					onChangePersonalization={onChangePersonalization}
 					theme={theme}
@@ -155,6 +160,7 @@ export default function DnDEditor({
 						onChangePersonalization={onChangePersonalization}
 					/>
 					<DnDPropertyBar
+						appPath={appPath}
 						defPath={defPath}
 						locationHistory={locationHistory}
 						url={url}

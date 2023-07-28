@@ -62,6 +62,7 @@ export default function DnDBottomBar({
 	let currentKey: string | undefined = selectedComponent;
 
 	if (defMap && defPath && selectedComponent && currentKey) {
+		let last = true;
 		do {
 			let comp = defMap[currentKey];
 			if (comp) {
@@ -100,12 +101,12 @@ export default function DnDBottomBar({
 							});
 						}}
 					>
-						<i
+						{/* <i
 							className={`fa ${
 								ComponentDefinitions.get(defMap[comp.key].type)?.icon
 							}`}
-						/>
-						{comp.name}
+						/> */}
+						{comp.name} {last ? '' : '/'}
 						<div
 							className="_iconMenuBody _top _clickable"
 							style={{ display: menuForComponent === comp.key ? 'block' : 'none' }}
@@ -171,12 +172,21 @@ export default function DnDBottomBar({
 				);
 			}
 			currentKey = map.get(currentKey);
+			last = false;
 		} while (currentKey);
 	}
 
+	const comps = compPaths.length
+		? compPaths.reverse()
+		: [
+				<div key="nocomp" className="_eachSelectionBar _iconMenu">
+					No component selected
+				</div>,
+		  ];
+
 	return (
 		<div className="_selectionBar" onMouseLeave={() => setMenuForComponent('')}>
-			{compPaths.reverse()}
+			{comps}
 		</div>
 	);
 }

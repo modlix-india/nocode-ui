@@ -36,6 +36,7 @@ interface StatementNodeProps {
 	pageDefinition: PageDefinition;
 	locationHistory: Array<LocationHistory>;
 	context: RenderContext;
+	onRemoveAllDependencies: () => void;
 }
 
 const DEFAULT_POSITION = { left: 0, top: 0 };
@@ -65,6 +66,7 @@ export default function StatementNode({
 	pageDefinition,
 	locationHistory,
 	context,
+	onRemoveAllDependencies,
 }: StatementNodeProps) {
 	const [statementName, setStatementName] = useState(statement.statementName);
 	const [editStatementName, setEditStatementName] = useState(false);
@@ -111,7 +113,12 @@ export default function StatementNode({
 
 	const [editComment, setEditComment] = useState(false);
 
-	const repoFunction = functionRepository.find(statement.namespace, statement.name);
+	const [repoFunction, setRepoFunction] = useState<Function | undefined>(undefined);
+
+	useEffect(() => {
+		(async () =>
+			setRepoFunction(await functionRepository.find(statement.namespace, statement.name)))();
+	}, [statement, functionRepository]);
 	const repoSignature = repoFunction?.getSignature();
 
 	const parameters = repoSignature?.getParameters()
@@ -524,6 +531,7 @@ export default function StatementNode({
 				statement={statement}
 				showEditParameters={!!parameters.length}
 				editParameters={editParameters}
+				onRemoveAllDependencies={onRemoveAllDependencies}
 			/>
 
 			{dependencyNode}

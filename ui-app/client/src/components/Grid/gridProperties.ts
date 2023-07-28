@@ -18,13 +18,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.linkTargetType,
 	COMMON_COMPONENT_PROPERTIES.layout,
 	{
-		name: 'observeChildren',
-		schema: SCHEMA_BOOL_COMP_PROP,
+		name: 'dragData',
+		schema: SCHEMA_STRING_COMP_PROP,
 		group: ComponentPropertyGroup.ADVANCED,
-		displayName: 'Observe Children',
-		description:
-			'Observe children using Intersection observer API, the current grid would act as root.',
-		defaultValue: false,
+		displayName: 'Drag Data',
+		description: 'Drag Data.',
 	},
 	{
 		name: 'onMouseEnter',
@@ -41,23 +39,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		description: 'Event to be triggered when Mouse Leave.',
 		group: ComponentPropertyGroup.EVENTS,
-	},
-	{
-		name: 'observerThresholds',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Observe Children Thresholds',
-		description:
-			'Thresholds for which the observer callback will be called, give as comma separated string.',
-		group: ComponentPropertyGroup.ADVANCED,
-	},
-	{
-		name: 'rootMargin',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Observe Children Thresholds',
-		description:
-			'Margin around the root. Can have values similar to the CSS margin property, e.g. "10px 20px 30px 40px" (top, right, bottom, left). The values can be percentages.',
-		defaultValue: '0px',
-		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
 		name: 'containerType',

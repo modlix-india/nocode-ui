@@ -24,7 +24,7 @@ function toStringList(types: Set<string>) {
 }
 
 export default function SingleSchema({
-	schema = Schema.ofAny('Any'),
+	schema: actualSchema = Schema.ofAny('Any'),
 	value: actualValue,
 	showLabel = false,
 	path,
@@ -38,13 +38,28 @@ export default function SingleSchema({
 	onChange: (path: string, v: any) => void;
 	schemaRepository: Repository<Schema>;
 }) {
-	if (!isNullValue(schema.getRef()))
-		schema = SchemaUtil.getSchemaFromRef(schema, schemaRepository, schema.getRef()) ?? schema;
+	const [schema, setSchema] = useState(actualSchema);
 
-	const defaultValue = useMemo(
-		() => SchemaUtil.getDefaultValue(schema, schemaRepository),
-		[schema, schemaRepository],
-	);
+	useEffect(() => {
+		if (isNullValue(actualSchema.getRef())) {
+			setSchema(actualSchema);
+			return;
+		}
+
+		(async () =>
+			setSchema(
+				(await SchemaUtil.getSchemaFromRef(schema, schemaRepository, schema.getRef())) ??
+					actualSchema,
+			))();
+	}, [actualSchema, schemaRepository]);
+
+	const [defaultValue, setDefaultValue] = useState<any>();
+
+	useEffect(() => {
+		(async () => {
+			setDefaultValue(await SchemaUtil.getDefaultValue(schema, schemaRepository));
+		})();
+	}, [schema, schemaRepository]);
 
 	const [value, setValue] = useState(actualValue);
 	useEffect(() => {

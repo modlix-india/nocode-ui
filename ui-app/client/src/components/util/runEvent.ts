@@ -24,6 +24,7 @@ import { UISchemaRepository } from '../../schemas/common';
 import { LocationHistory, PageDefinition } from '../../types/common';
 import PageDefintionFunctionsRepository from './PageDefinitionFunctionsRepository';
 import UUID, { flattenUUID } from './uuid';
+import { REPO_SERVER, RemoteRepository } from '../../Engine/RemoteRepository';
 
 function addValidationTriggers(
 	flatId: string,
@@ -110,8 +111,34 @@ export const runEvent = async (
 			new HybridRepository(
 				UIFunctionRepository,
 				new PageDefintionFunctionsRepository(pageDefinition),
+				RemoteRepository.getRemoteFunctionRepository(
+					undefined,
+					undefined,
+					false,
+					REPO_SERVER.CORE,
+				),
+				RemoteRepository.getRemoteFunctionRepository(
+					undefined,
+					undefined,
+					false,
+					REPO_SERVER.UI,
+				),
 			),
-			UISchemaRepository,
+			new HybridRepository(
+				UISchemaRepository,
+				RemoteRepository.getRemoteSchemaRepository(
+					undefined,
+					undefined,
+					false,
+					REPO_SERVER.CORE,
+				),
+				RemoteRepository.getRemoteSchemaRepository(
+					undefined,
+					undefined,
+					false,
+					REPO_SERVER.UI,
+				),
+			),
 			key,
 		).setValuesMap(valuesMap);
 		if (args) {

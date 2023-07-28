@@ -11,6 +11,7 @@ interface StatementButtonsProps {
 	statement: any;
 	showEditParameters: boolean;
 	editParameters?: boolean;
+	onRemoveAllDependencies: () => void;
 }
 
 export default function StatementButtons({
@@ -23,6 +24,7 @@ export default function StatementButtons({
 	statement,
 	showEditParameters,
 	editParameters,
+	onRemoveAllDependencies,
 }: StatementButtonsProps) {
 	if (!selected) return <></>;
 
@@ -82,6 +84,17 @@ export default function StatementButtons({
 							}),
 						}),
 					]);
+				}}
+			></i>
+			<div className="_buttonsGap"></div>
+			<i
+				className="fa fa-solid fa-link-slash"
+				title="Remove all dependencies"
+				onMouseDown={e => {
+					e.stopPropagation();
+					e.preventDefault();
+
+					onRemoveAllDependencies?.();
 				}}
 			></i>
 		</div>

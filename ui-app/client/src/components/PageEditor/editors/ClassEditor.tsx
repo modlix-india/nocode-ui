@@ -16,6 +16,7 @@ import { duplicate } from '@fincity/kirun-js';
 import { shortUUID } from '../../../util/shortUUID';
 import PropertyValueEditor from './propertyValueEditors/PropertyValueEditor';
 import { processStyleFromString } from '../../../util/styleProcessor';
+import PageOperations from '../functions/PageOperations';
 
 interface ClassEditorProps {
 	selectedComponent: string;
@@ -29,6 +30,7 @@ interface ClassEditorProps {
 	onShowCodeEditor: (eventName: string) => void;
 	slaveStore: any;
 	editPageName: string | undefined;
+	pageOperations: PageOperations;
 }
 
 function updateDefinition(
@@ -64,6 +66,7 @@ export default function ClassEditor({
 	onShowCodeEditor,
 	slaveStore,
 	editPageName,
+	pageOperations,
 }: ClassEditorProps) {
 	const [classes, setClasses] = useState<{ [key: string]: StyleClassDefinition }>({});
 	const [pageDef, setPageDef] = useState<PageDefinition>();
@@ -159,6 +162,7 @@ export default function ClassEditor({
 									onShowCodeEditor={onShowCodeEditor}
 									editPageName={editPageName}
 									slaveStore={slaveStore}
+									pageOperations={pageOperations}
 								/>
 							</div>
 							<div className="_eachProp" key="style">
@@ -195,6 +199,7 @@ export default function ClassEditor({
 									onShowCodeEditor={onShowCodeEditor}
 									editPageName={editPageName}
 									slaveStore={slaveStore}
+									pageOperations={pageOperations}
 								/>
 							</div>
 						</div>

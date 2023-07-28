@@ -16,6 +16,20 @@
 				}
 			}
 		},
+		"ifVerifyToken": {
+			"statementName": "ifVerifyToken",
+			"namespace": "System",
+			"name": "If",
+			"parameterMap": {
+				"condition": {
+					"one": {
+						"key": "one",
+						"type": "EXPRESSION",
+						"expression": "Steps.verifyToken.output.data != null"
+					}
+				}
+			}
+		},
 		"setLoginData": {
 			"statementName": "setLoginData",
 			"namespace": "UIEngine",
@@ -37,7 +51,7 @@
 				}
 			},
 			"dependentStatements": {
-				"Steps.verifyToken.output": true
+				"Steps.ifVerifyToken.true": true
 			}
 		},
 		"applicationData": {
@@ -54,7 +68,21 @@
 				}
 			},
 			"dependentStatements": {
-				"Steps.setLoginData.output": true
+				"Steps.ifVerifyToken.output": true
+			}
+		},
+		"ifApplicationData": {
+			"statementName": "ifApplicationData",
+			"namespace": "System",
+			"name": "If",
+			"parameterMap": {
+				"condition": {
+					"one": {
+						"key": "one",
+						"type": "EXPRESSION",
+						"expression": "Steps.applicationData.output.data != null"
+					}
+				}
 			}
 		},
 		"setAppData": {
@@ -78,7 +106,7 @@
 				}
 			},
 			"dependentStatements": {
-				"Steps.applicationData.output": true
+				"Steps.ifApplicationData.true": true
 			}
 		},
 		"themeData": {
@@ -95,51 +123,19 @@
 				}
 			},
 			"dependentStatements": {
-				"Steps.setLoginData.output": true
+				"Steps.ifVerifyToken.output": true
 			}
 		},
-		"setDropdownData": {
-			"statementName": "setDropdownData",
-			"namespace": "UIEngine",
-			"name": "SetStore",
+		"ifThemeData": {
+			"statementName": "ifThemeData",
+			"namespace": "System",
+			"name": "If",
 			"parameterMap": {
-				"path": {
-					"setDropdownDataPath": {
-						"key": "setDropdownDataPath",
-						"type": "VALUE",
-						"value": "Store.dropdownData"
-					}
-				},
-				"value": {
-					"dropdownDataValue": {
-						"key": "dropdownDataValue",
-						"type": "VALUE",
-						"value": [
-							{
-								"name": "Himanshu",
-								"id": "1"
-							},
-							{
-								"name": "Tarun",
-								"id": "2"
-							},
-							{
-								"name": "Shagil",
-								"id": "3"
-							},
-							{
-								"name": "Waqas",
-								"id": "4"
-							},
-							{
-								"name": "Biren",
-								"id": "5"
-							},
-							{
-								"name": "Vishwas",
-								"id": "6"
-							}
-						]
+				"condition": {
+					"one": {
+						"key": "one",
+						"type": "EXPRESSION",
+						"expression": "Steps.themeData.output.data != null"
 					}
 				}
 			}
@@ -163,6 +159,9 @@
 						"expression": "Steps.themeData.output.data"
 					}
 				}
+			},
+			"dependentStatements": {
+				"Steps.ifThemeData.true": true
 			}
 		},
 		"setLanguage": {
@@ -208,16 +207,6 @@
 			},
 			"dependentStatements": {
 				"Steps.applicationData.output": true
-			}
-		},
-		"genOutput": {
-			"statementName": "genOutput",
-			"namespace": "System",
-			"name": "GenerateEvent",
-			"dependentStatements": {
-				"Steps.setAppData.output": true,
-				"Steps.setApplicationFailureData.output": true,
-				"Steps.setThemeData.output": true
 			}
 		}
 	}

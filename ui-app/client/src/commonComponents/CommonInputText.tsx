@@ -30,6 +30,7 @@ type CommonInputType = {
 	inputRef?: React.RefObject<HTMLInputElement>;
 	autoComplete?: string;
 	definition: ComponentDefinition;
+	autoFocus?: boolean;
 };
 
 function CommonInputText(props: CommonInputType) {
@@ -60,6 +61,7 @@ function CommonInputText(props: CommonInputType) {
 		inputRef,
 		autoComplete,
 		definition,
+		autoFocus = false,
 	} = props;
 	const [focus, setFocus] = React.useState(false);
 	const [showPassword, setShowPassowrd] = React.useState(false);
@@ -114,7 +116,7 @@ function CommonInputText(props: CommonInputType) {
 		) : null;
 
 	return (
-		<div className="commonInputBox">
+		<div className="commonInputBox" style={computedStyles.inputBox ?? {}}>
 			{noFloat && label && (
 				<label
 					style={computedStyles.noFloatLabel ?? {}}
@@ -175,6 +177,7 @@ function CommonInputText(props: CommonInputType) {
 						id={id}
 						disabled={readOnly}
 						ref={inputRef}
+						autoFocus={autoFocus}
 						autoComplete={autoComplete}
 					/>
 					<SubHelperComponent

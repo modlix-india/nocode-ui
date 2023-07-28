@@ -72,9 +72,7 @@ const component: Component = {
 		key: '',
 		name: 'Iframe',
 		type: 'Iframe',
-		properties: {
-			src: { value: 'https://fincity.ai/marketing' },
-		},
+		properties: {},
 	},
 };
 

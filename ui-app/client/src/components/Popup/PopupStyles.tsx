@@ -5,7 +5,10 @@ import { styleProperties, styleDefaults } from '../Popup/popupStyleProperties';
 
 const PREFIX = '.comp.compPopup';
 export default function PopupStyles({ theme }: { theme: Map<string, Map<string, string>> }) {
-	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
+	const values = new Map<string, string>([
+		...Array.from(theme.get(StyleResolution.ALL) ?? []),
+		...Array.from(styleDefaults),
+	]);
 	const css =
 		`
     ${PREFIX} {
@@ -21,7 +24,10 @@ export default function PopupStyles({ theme }: { theme: Map<string, Map<string, 
       display: flex;
       align-items: center;
       justify-content: center;   
-      backdrop-filter: blur(${processStyleValueWithFunction(values.get('backdropFilter'), values)}) 
+      backdrop-filter: blur(${processStyleValueWithFunction(
+			values.get('backdropFilter') ?? '',
+			values,
+		)}) 
     }
 
     ${PREFIX} .modal{

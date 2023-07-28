@@ -1,8 +1,12 @@
 {
-	"extends": "@tsconfig/recommended/tsconfig.json",
 	"compilerOptions": {
-		"lib": ["es2020", "DOM"],
+		"lib": ["ES2022", "DOM"],
 		"jsx": "react",
-		"resolveJsonModule": true
+		"resolveJsonModule": true,
+		"module": "commonjs",
+		"strict": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true
 	}
 }

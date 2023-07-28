@@ -32,7 +32,16 @@
 			"git add"
 		]
 	},
-	"author": "Raja Avinash Alli",
+	"author": "Kiran Kumar Grandhi",
+	"contributors": [
+		"Kiran Kumar Grandhi",
+		"Raja Avinash Alli",
+		"Akhilesh Alli",
+		"Surendhar Satyavarapu",
+		"Tarun Jangra",
+		"Md Shagil Nizami",
+		"Himanshu"
+	],
 	"license": "MIT",
 	"devDependencies": {
 		"@babel/core": "^7.12.0",
@@ -54,8 +63,8 @@
 		"ts-jest": "^28.0.5"
 	},
 	"dependencies": {
-		"@fincity/kirun-js": "^1.6.17",
-		"@fincity/path-reactive-state-management": "^1.6.4",
+		"@fincity/kirun-js": "^2.0.4",
+		"@fincity/path-reactive-state-management": "^1.7.0",
 		"@monaco-editor/react": "^4.4.6",
 		"@tsconfig/recommended": "^1.0.1",
 		"axios": "^0.27.2",

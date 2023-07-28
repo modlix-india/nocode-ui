@@ -10,6 +10,7 @@ import {
 import axios from 'axios';
 import { LOCAL_STORE_PREFIX, NAMESPACE_UI_ENGINE } from '../constants';
 import { getDataFromPath, setData } from '../context/StoreContext';
+import { shortUUID } from '../util/shortUUID';
 
 const SIGNATURE = new FunctionSignature('Logout').setNamespace(NAMESPACE_UI_ENGINE).setEvents(
 	new Map([
@@ -30,12 +31,6 @@ export class Logout extends AbstractFunction {
 		try {
 			const token = getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []);
 
-			const response = await axios({
-				url: 'api/security/revoke',
-				method: 'GET',
-				headers: { AUTHORIZATION: token },
-			});
-
 			setData('Store.auth', undefined, undefined, true);
 			setData(`${LOCAL_STORE_PREFIX}.AuthToken`, undefined, undefined, true);
 			setData('Store.pageDefinition', {});
@@ -43,10 +38,19 @@ export class Logout extends AbstractFunction {
 			setData('Store.validations', {});
 			setData('Store.validationTriggers', {});
 			setData('Store.pageData', {});
-			setData('Store.application', undefined);
+			setData('Store.application', undefined, undefined, true);
 			setData('Store.functionExecutions', {});
 
-			return new FunctionOutput([EventResult.outputOf(new Map([['data', new Map()]]))]);
+			const headers: any = { AUTHORIZATION: token };
+			if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
+
+			const response = await axios({
+				url: 'api/security/revoke',
+				method: 'GET',
+				headers,
+			});
+
+			return new FunctionOutput([EventResult.outputOf(new Map([['data', {}]]))]);
 		} catch (err: any) {
 			return new FunctionOutput([
 				EventResult.of(

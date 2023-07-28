@@ -32,6 +32,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			'Autocomplete specifies what type or if any assistance that is provided to user while filling forms, uses same values as its html attribute.',
 		defaultValue: 'off',
 		group: ComponentPropertyGroup.ADVANCED,
+		enumValues: [
+			{ name: 'off', displayName: 'Off', description: 'Autocomplete off' },
+			{ name: 'on', displayName: 'On', description: 'Autocomplete on' },
+			{ name: 'none', displayName: 'None', description: 'No autocomplete' },
+		],
 	},
 
 	{
@@ -83,6 +88,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Placeholder to be shown in input box.',
 		schema: SCHEMA_STRING_COMP_PROP,
 		defaultValue: '',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+
+	{
+		name: 'autoFocus',
+		displayName: 'Auto Focus',
+		description: 'Textbox to be focused automatically when page loads.',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		defaultValue: false,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 
@@ -203,6 +217,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	COMMON_COMPONENT_PROPERTIES.onEnter,
+	COMMON_COMPONENT_PROPERTIES.onChange,
+
+	{
+		name: 'onClear',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Clear',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered when clear button is pressed.',
+		group: ComponentPropertyGroup.EVENTS,
+	},
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

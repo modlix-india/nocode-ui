@@ -1,3 +1,5 @@
+import { deepEqual, duplicate, Repository, Schema } from '@fincity/kirun-js';
+import { setStoreData, StoreExtractor } from '@fincity/path-reactive-state-management';
 import React, { useEffect } from 'react';
 import {
 	addListenerAndCallImmediately,
@@ -5,26 +7,15 @@ import {
 	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
+import { UISchemaRepository } from '../../schemas/common';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponent';
+import { AnyValueEditor } from '../PageEditor/editors/propertyValueEditors/AnyValueEditor';
 import useDefinition from '../util/useDefinition';
+import SingleSchema from './components/SingleSchemaForm';
 import { propertiesDefinition, stylePropertiesDefinition } from './schemaFormProperties';
 import SchemaFormStyle from './SchemaFormStyle';
-import {
-	deepEqual,
-	isNullValue,
-	Repository,
-	Schema,
-	SchemaType,
-	SchemaUtil,
-	TypeUtil,
-} from '@fincity/kirun-js';
-import { AnyValueEditor } from '../PageEditor/editors/propertyValueEditors/AnyValueEditor';
-import { UISchemaRepository } from '../../schemas/common';
-import SingleSchema from './components/SingleSchemaForm';
-import { setStoreData, StoreExtractor } from '@fincity/path-reactive-state-management';
-import { duplicate } from '@fincity/kirun-js';
 
 function SchemaForm(
 	props: ComponentProps & {

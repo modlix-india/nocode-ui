@@ -1,3 +1,4 @@
+import { isNullValue } from '@fincity/kirun-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
 	SCHEMA_ANY_COMP_PROP,
@@ -11,14 +12,14 @@ import {
 	DataLocation,
 	PageDefinition,
 } from '../../../../types/common';
+import PageOperations from '../../functions/PageOperations';
 import { AnyValueEditor } from './AnyValueEditor';
 import { BooleanValueEditor } from './BooleanValueEditor';
 import { ExpressionEditor2 } from './ExpressionEditor2';
-import { IconSelectionEditor } from './IconSelectionEditor';
+import { IconSelectionEditor2 } from './IconSelectionEditor2';
 import { ImageEditor } from './ImageEditor';
 import { ValidationEditor } from './ValidationEditor';
-import { isNullValue } from '@fincity/kirun-js';
-import PageOperations from '../../functions/PageOperations';
+import { AnimationValueEditor } from './AnimationValueEditor';
 
 interface PropertyValueEditorProps {
 	propDef: ComponentPropertyDefinition;
@@ -32,6 +33,7 @@ interface PropertyValueEditorProps {
 	slaveStore: any;
 	editPageName: string | undefined;
 	pageOperations: PageOperations;
+	appPath?: string;
 }
 
 export default function PropertyValueEditor({
@@ -46,6 +48,7 @@ export default function PropertyValueEditor({
 	slaveStore,
 	editPageName,
 	pageOperations,
+	appPath,
 }: PropertyValueEditorProps) {
 	const [chngValue, setChngValue] = useState<any>('');
 	const [showAdvanced, setShowAdvanced] = useState<boolean>(false);
@@ -112,6 +115,7 @@ export default function PropertyValueEditor({
 		onShowCodeEditor,
 		pageDefinition,
 		showPlaceholder,
+		appPath,
 	);
 
 	const microToggle = onlyValue ? undefined : (
@@ -148,13 +152,37 @@ function makeValueEditor(
 	onShowCodeEditor?: (eventName: string) => void,
 	pageDef?: PageDefinition,
 	showPlaceholder = true,
+	appPath?: string,
 ) {
-	if (propDef.editor === ComponentPropertyEditor.ICON) {
+	if (
+		propDef.editor === ComponentPropertyEditor.ANIMATION ||
+		propDef.editor === ComponentPropertyEditor.ANIMATIONOBSERVER
+	) {
 		return (
-			<IconSelectionEditor
+			<AnimationValueEditor
 				value={chngValue}
 				propDef={propDef}
 				onChange={e => onChange({ ...value, value: e })}
+				appPath={appPath}
+				storePaths={storePaths}
+				defaultValue={propDef.defaultValue}
+				pageDefinition={pageDef}
+				onShowCodeEditor={onShowCodeEditor}
+				slaveStore={slaveStore}
+				editPageName={editPageName}
+				pageOperations={pageOperations}
+			/>
+		);
+	}
+
+	if (propDef.editor === ComponentPropertyEditor.ICON) {
+		return (
+			<IconSelectionEditor2
+				appPath={appPath}
+				value={chngValue}
+				propDef={propDef}
+				onChange={e => onChange({ ...value, value: e })}
+				pageExtractor={pageOperations.getPageExtractor()}
 			/>
 		);
 	}
@@ -171,7 +199,7 @@ function makeValueEditor(
 			<div className="_smallEditorContainer">
 				<select
 					className="_peSelect"
-					value={chngValue === '' ? propDef.defaultValue ?? '' : chngValue}
+					value={(chngValue === '' ? propDef.defaultValue ?? '' : chngValue) ?? ''}
 					onChange={e => {
 						const newValue: ComponentProperty<any> = {
 							...(value ?? {}),
@@ -186,7 +214,7 @@ function makeValueEditor(
 				>
 					{noneOption}
 					{propDef.enumValues?.map(v => (
-						<option key={v.name} value={v.name} title={v.description}>
+						<option key={v.name} value={v.name} title={v.description ?? v.displayName}>
 							{v.displayName}
 						</option>
 					))}
@@ -200,7 +228,7 @@ function makeValueEditor(
 			<div className="_smallEditorContainer">
 				<select
 					className="_peSelect"
-					value={chngValue === '' ? propDef.defaultValue : chngValue}
+					value={(chngValue === '' ? propDef.defaultValue : chngValue) ?? ''}
 					onChange={e => {
 						const newValue: ComponentProperty<any> = {
 							...(value ?? {}),

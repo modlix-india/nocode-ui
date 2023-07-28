@@ -17,6 +17,8 @@ import { flattenUUID } from '../util/uuid';
 import { isNullValue } from '@fincity/kirun-js';
 import { returnFileSize } from '../util/getFileSize';
 import { SubHelperComponent } from '../SubHelperComponent';
+import { MESSAGE_TYPE, addMessage } from '../../App/Messages/Messages';
+import { ToArray } from '../../util/csvUtil';
 
 function FileUpload(props: ComponentProps) {
 	const [fileValue, setFileValue] = useState<any>();
@@ -46,6 +48,7 @@ function FileUpload(props: ComponentProps) {
 			showFileList,
 			onSelectEvent,
 			validation,
+			uploadType,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -131,7 +134,47 @@ function FileUpload(props: ComponentProps) {
 	const onChangeFile = (event: any) => {
 		if (!event.target.value?.length || !bindingPathPath) return;
 		const files = event.target.files;
-		setData(bindingPathPath, isMultiple ? [...files] : files[0], context?.pageName);
+
+		if (uploadType === 'FILE_OBJECT') {
+			setData(bindingPathPath, isMultiple ? [...files] : files[0], context?.pageName);
+			return;
+		}
+
+		let fReader = new FileReader();
+		fReader.onload = () => {
+			let fileContent: any = fReader.result;
+
+			try {
+				switch (uploadType) {
+					case 'JSON_OBJECT':
+						fileContent = JSON.parse(fileContent);
+						break;
+					case 'JSON_LIST_CSV':
+						fileContent = ToArray(fileContent, false, ',');
+						break;
+					case 'JSON_LIST_CSV_OBJECTS':
+						fileContent = ToArray(fileContent, true, ',');
+						break;
+					case 'JSON_LIST_TSV':
+						fileContent = ToArray(fileContent, false, '\t');
+						break;
+					case 'JSON_LIST_TSV_OBJECTS':
+						fileContent = ToArray(fileContent, true, '\t');
+						break;
+				}
+			} catch (error: any) {
+				addMessage(
+					MESSAGE_TYPE.ERROR,
+					'Invalid JSON file : ' + error.message,
+					true,
+					props.context.pageName,
+				);
+				return;
+			}
+
+			setData(bindingPathPath, fileContent, context?.pageName);
+		};
+		fReader.readAsText(files[0]);
 	};
 
 	const handleDelete = (event: any, content: any) => {

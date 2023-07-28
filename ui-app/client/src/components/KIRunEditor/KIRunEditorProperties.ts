@@ -24,6 +24,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		enumValues: [
 			{ name: 'backend', displayName: 'Backend', description: 'Backend only' },
 			{ name: 'ui', displayName: 'UI', description: 'UI only' },
+			{ name: 'page', displayName: 'Page', description: 'Both Backend & Page' },
 		],
 	},
 	{
@@ -33,13 +34,26 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		description: 'Event to be triggered on personalization changed.',
 	},
-
 	{
 		name: 'onDeletePersonalization',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'On Personalization Delete',
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		description: 'Event to be triggered on personalization cleared.',
+	},
+	{
+		name: 'appCode',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Application Code',
+		description: 'Application Code for Remote Repositories',
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'clientCode',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Client Code',
+		description: 'Client Code for Remote Repositories',
+		group: ComponentPropertyGroup.BASIC,
 	},
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,

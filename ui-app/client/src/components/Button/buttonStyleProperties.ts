@@ -141,7 +141,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		displayName: 'Color for the icon, of icon button',
 		description: 'Icon color inside the icon button.',
-		defaultValue: '<secondaryDisabledBorder>',
+		defaultValue: '<mainFontColor>',
 		noPrefix: true,
 		selector: '.compButton.button.iconButton .leftButtonIcon',
 	},

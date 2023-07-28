@@ -38,6 +38,54 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
+		name: 'uploadType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Upload Value Type',
+		group: ComponentPropertyGroup.ADVANCED,
+		description: 'Value type of the upload component',
+		editor: ComponentPropertyEditor.ENUM,
+		defaultValue: 'FILE_OBJECT',
+		enumValues: [
+			{
+				name: 'FILE_OBJECT',
+				displayName: 'File Object',
+				description: 'The value of the upload component is a file object',
+			},
+			{
+				name: 'JSON_OBJECT',
+				displayName: 'JSON Object',
+				description: 'Reads the file and returns a JSON object from the file',
+			},
+			{
+				name: 'JSON_LIST_CSV',
+				displayName: 'JSON List of Lists from CSV',
+				description: 'Reads the file and returns a JSON list of lists from the CSV file',
+			},
+			{
+				name: 'JSON_LIST_TSV',
+				displayName: 'JSON List of Lists from TSV',
+				description: 'Reads the file and returns a JSON list of lists from the TSV file',
+			},
+			{
+				name: 'JSON_LIST_CSV_OBJECTS',
+				displayName: 'JSON List of Objects from CSV With Headers',
+				description:
+					'Reads the file and returns a JSON list of objects from the CSV file as the keys of the objects',
+			},
+			{
+				name: 'JSON_LIST_TSV_OBJECTS',
+				displayName: 'JSON List of Objects from TSV With Headers',
+				description:
+					'Reads the file and returns a JSON list of objects from the TSV file as the keys of the objects',
+			},
+			{
+				name: 'STRING_TEXT',
+				displayName: 'String Text',
+				description: 'Reads the file and returns a string from the file',
+			},
+		],
+	},
+	{
 		name: 'uploadIcon',
 		schema: SCHEMA_ANY_COMP_PROP,
 		displayName: 'Upload Icon',

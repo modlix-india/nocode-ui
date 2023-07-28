@@ -23,7 +23,7 @@ interface SingleSchemaProps {
 	showRemove?: boolean;
 }
 
-const ALL_SET = [...Schema.ofAny('Any').getType()?.getAllowedSchemaTypes()!];
+const ALL_SET = Array.from(Schema.ofAny('Any').getType()?.getAllowedSchemaTypes()!);
 const TYPE_OPTIONS = [
 	{ label: 'None', value: undefined },
 	...ALL_SET.map(e => ({ label: e, value: e.toUpperCase() })),
@@ -136,7 +136,9 @@ export default function SingleSchema({
 		!schema.constant && !type ? (
 			<ArrayField
 				label="Type"
-				value={Array.from(finType).map(e => e.toUpperCase())}
+				value={Array.from(finType)
+					.filter(e => !isNullValue(e))
+					.map(e => e.toUpperCase())}
 				propPath="type"
 				options={TYPE_OPTIONS}
 				type="SELECT"

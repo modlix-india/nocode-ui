@@ -10,11 +10,12 @@ import {
 	Parameter,
 	Schema,
 } from '@fincity/kirun-js';
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import { LOCAL_STORE_PREFIX, NAMESPACE_UI_ENGINE, STORE_PREFIX } from '../constants';
 import { getData } from '../context/StoreContext';
 import { ComponentProperty } from '../types/common';
 import { pathFromParams, queryParamsSerializer } from './utils';
+import { shortUUID } from '../util/shortUUID';
 
 const SIGNATURE = new FunctionSignature('SendData')
 	.setNamespace(NAMESPACE_UI_ENGINE)
@@ -70,7 +71,7 @@ const FILE_NAME = 'filename=';
 
 export class SendData extends AbstractFunction {
 	protected async internalExecute(context: FunctionExecutionParameters): Promise<FunctionOutput> {
-		const evmap = [...context.getValuesMap().values()];
+		const evmap = Array.from(context.getValuesMap().values());
 		const url: string = context.getArguments()?.get('url');
 		const method: string = context.getArguments()?.get('method');
 		let headers = context.getArguments()?.get('headers');
@@ -100,7 +101,7 @@ export class SendData extends AbstractFunction {
 				return a;
 			}, {});
 
-		let isFormData = false || headers['content-type'] == 'multipart/form-data';
+		let isFormData = headers['content-type'] == 'multipart/form-data';
 		if (!isFormData && typeof payload === 'object' && !Array.isArray(payload)) {
 			const ll = new LinkedList<any>();
 			ll.add(payload);
@@ -132,31 +133,39 @@ export class SendData extends AbstractFunction {
 			headers['content-type'] = 'multipart/form-data';
 		}
 
+		if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
+
 		try {
-			const response = await axios({
+			const options: AxiosRequestConfig<any> = {
 				url: pathFromParams(url, pathParams),
 				method,
 				params: queryParams,
 				paramsSerializer: params => queryParamsSerializer(params)?.[1] ?? '',
+
 				headers,
 				data: payload,
-			});
+			};
+			if (downloadAsAFile) options.responseType = 'arraybuffer';
+
+			const response = await axios(options);
 
 			if (downloadAsAFile) {
-				let name = downloadFileName ?? response.headers['Content-Disposition'];
+				let name = downloadFileName;
+				if (!name) {
+					const key = Object.keys(response.headers).find(
+						key => key.toLowerCase() === 'content-disposition',
+					);
+					if (key) name = response.headers[key];
+				}
+
 				let index = name.indexOf(FILE_NAME);
 				if (index !== -1) {
 					name = name.substring(index + FILE_NAME.length);
-					index = name.indexOf('"');
-					name = name.substring(0, index);
+					name = name.replace(/"/g, '');
 				}
 
-				const data =
-					response.headers['content-type'] === 'application/json' && response.data
-						? JSON.stringify(response.data)
-						: response.data;
 				const url = window.URL.createObjectURL(
-					new Blob([data], { type: 'application/octet-stream' }),
+					new Blob([response.data], { type: 'application/octet-stream' }),
 				);
 
 				const aTag = document.createElement('a');

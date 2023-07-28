@@ -64,6 +64,8 @@ export enum ComponentPropertyEditor {
 	IMAGE,
 	SCHEMA,
 	LARGE_TEXT,
+	ANIMATION,
+	ANIMATIONOBSERVER,
 }
 
 export enum ComponentPropertyGroup {
@@ -79,7 +81,7 @@ export enum ComponentPropertyGroup {
 export interface ComponentENUM {
 	name: string;
 	displayName: string;
-	description: string;
+	description?: string;
 }
 
 export interface ComponentPropertyDefinition {
@@ -112,6 +114,11 @@ export interface ComponentStylePropertyDefinition {
 	[key: string]: Array<string>;
 }
 
+export interface Section {
+	name: string;
+	pageName: string;
+}
+
 export interface Component {
 	name: string;
 	icon: string;
@@ -134,7 +141,12 @@ export interface Component {
 		bindingPath4?: { name: string };
 		bindingPath5?: { name: string };
 		bindingPath6?: { name: string };
+		bindingPath7?: { name: string };
+		bindingPath8?: { name: string };
+		bindingPath9?: { name: string };
+		bindingPath10?: { name: string };
 	};
+	sections?: Array<Section>;
 	needShowInDesginMode?: boolean;
 }
 
@@ -226,6 +238,10 @@ export interface ComponentDefinition {
 	bindingPath4?: DataLocation;
 	bindingPath5?: DataLocation;
 	bindingPath6?: DataLocation;
+	bindingPath7?: DataLocation;
+	bindingPath8?: DataLocation;
+	bindingPath9?: DataLocation;
+	bindingPath10?: DataLocation;
 	type: string;
 	properties?: {
 		[key: string]:
@@ -273,7 +289,7 @@ export interface PageDefinition {
 	properties: {
 		title?: {
 			name?: ComponentProperty<string>;
-			append?: ComponentProperty<boolean>;
+			append?: ComponentProperty<string>;
 		};
 		onLoadEvent?: string;
 		loadStrategy?: string;

@@ -20,6 +20,7 @@ interface PropertyMultiValueEditorProps {
 	editPageName: string | undefined;
 	storePaths: Set<string>;
 	pageOperations: PageOperations;
+	appPath: string | undefined;
 }
 
 export default function PropertyMultiValueEditor({
@@ -32,6 +33,7 @@ export default function PropertyMultiValueEditor({
 	editPageName,
 	storePaths,
 	pageOperations,
+	appPath,
 }: PropertyMultiValueEditorProps) {
 	const [chngValue, setChngValue] = useState<ComponentMultiProperty<any> | undefined>(value);
 	const [newValueKey, setNewValueKey] = useState<string>(shortUUID());
@@ -113,6 +115,7 @@ export default function PropertyMultiValueEditor({
 						}}
 					/>
 					<PropertyValueEditor
+						appPath={appPath}
 						propDef={propDef}
 						value={e.property}
 						onChange={v => {
@@ -137,6 +140,7 @@ export default function PropertyMultiValueEditor({
 			{allValues}
 			<div className="_eachProperty fixed">
 				<PropertyValueEditor
+					appPath={appPath}
 					key={newValueKey}
 					propDef={propDef}
 					onChange={v => {

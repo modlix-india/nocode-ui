@@ -38,7 +38,7 @@ export default function DropdownStyle({ theme }: { theme: Map<string, Map<string
     }
 
     ${PREFIX} .dropdownContainer .dropdownSearchContainer {
-        padding: 20px;
+        padding: 0px 10px 8px 10px;
         position: relative;
     }
     ${PREFIX} .dropdownItemLabel {

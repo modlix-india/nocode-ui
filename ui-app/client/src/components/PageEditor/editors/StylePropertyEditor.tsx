@@ -159,7 +159,7 @@ export default function StylePropertyEditor({
 				pageExtractor,
 				defPath!,
 			),
-		[defPath, selectedComponent],
+		[defPath, selectedComponent, selectorPref],
 	);
 
 	const updateSelectorPref = useCallback(
@@ -223,9 +223,6 @@ export default function StylePropertyEditor({
 					updateSelectorPref('condition', undefined);
 					return;
 				}
-				const state = Object.values(styleProps ?? {}).filter(
-					e => e.conditionName === v.value,
-				)?.[0]?.pseudoState;
 				updateSelectorPref('condition', v);
 			}}
 			storePaths={storePaths}

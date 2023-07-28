@@ -51,18 +51,20 @@ const map = new Map([
 ]);
 
 class _UISchemaRepository implements Repository<Schema> {
-	public find(namespace: string, name: string): Schema | undefined {
-		if (namespace !== NAMESPACE_UI_ENGINE) return undefined;
-		return map.get(name);
+	public find(namespace: string, name: string): Promise<Schema | undefined> {
+		if (namespace !== NAMESPACE_UI_ENGINE) return Promise.resolve(undefined);
+		return Promise.resolve(map.get(name));
 	}
 
-	public filter(name: string): string[] {
+	public filter(name: string): Promise<string[]> {
 		const lowerCaseName = name.toLowerCase();
-		return Array.from(
-			new Set(
-				Array.from(map.values())
-					.map(e => e.getFullName())
-					.filter(e => e.toLowerCase().includes(lowerCaseName)),
+		return Promise.resolve(
+			Array.from(
+				new Set(
+					Array.from(map.values())
+						.map(e => e.getFullName())
+						.filter(e => e.toLowerCase().includes(lowerCaseName)),
+				),
 			),
 		);
 	}

@@ -3,6 +3,7 @@ import {
 	Function,
 	FunctionDefinition,
 	FunctionExecutionParameters,
+	HybridRepository,
 	KIRuntime,
 	LinkedList,
 	Repository,
@@ -38,8 +39,96 @@ import StatementParameters from './components/StatementParameters';
 import FunctionDetialsEditor from './components/FunctionDetailsEditor';
 import { HelperComponent } from '../HelperComponent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import { REPO_SERVER, RemoteRepository } from '../../Engine/RemoteRepository';
 
 const gridSize = 20;
+
+function makePositions(
+	executionPlan: ExecutionGraph<string, StatementExecution> | UIError | undefined | undefined,
+	setPositions: (p: Map<string, { left: number; top: number }>) => void,
+) {
+	if (!executionPlan) return;
+	if ('message' in executionPlan) return;
+
+	const positions: Map<string, { left: number; top: number }> = new Map();
+	const list = new LinkedList(executionPlan.getVerticesWithNoIncomingEdges());
+	const finishedSet = new Set<string>();
+	let firstLeft = 20;
+	let firstTop = 20;
+	while (!list.isEmpty()) {
+		const v = list.removeFirst();
+		const s = v.getData().getStatement();
+		finishedSet.add(s.getStatementName());
+		if (v.getOutVertices().size) {
+			list.addAll(
+				Array.from(v.getOutVertices().values())
+					.flatMap(e => Array.from(e))
+					.filter(e => !finishedSet.has(e.getData().getStatement().getStatementName())),
+			);
+		}
+
+		if (
+			isNullValue(s.getPosition()) ||
+			((s.getPosition()?.getLeft() ?? 0) <= 0 && (s.getPosition()?.getTop() ?? 0) <= 0)
+		) {
+			if (!v.getInVertices() || !v.getInVertices().size) {
+				positions.set(s.getStatementName(), { left: firstLeft, top: firstTop });
+				firstTop += 100;
+			}
+			continue;
+		}
+	}
+
+	setPositions(positions);
+}
+
+function makeUpdates(
+	inFunDef: FunctionDefinition | undefined,
+	setExecutionPlan: (p: ExecutionGraph<string, StatementExecution> | UIError | undefined) => void,
+	setKirunMessages: (p: Map<string, string[]>) => void,
+	functionRepository: Repository<Function>,
+	schemaRepository: Repository<Schema>,
+	key: string,
+	tokenValueExtractors: Map<string, TokenValueExtractor>,
+	setPositions: (p: Map<string, { left: number; top: number }>) => void,
+) {
+	if (isNullValue(inFunDef)) {
+		setExecutionPlan(undefined);
+		return;
+	}
+
+	(async () => {
+		const fep = new FunctionExecutionParameters(functionRepository, schemaRepository, key);
+
+		if (tokenValueExtractors.size) {
+			fep.setValuesMap(tokenValueExtractors);
+		}
+
+		try {
+			const ep = await new KIRuntime(
+				inFunDef!,
+				globalThis.isDesignMode || globalThis.isDebugMode,
+			).getExecutionPlan(functionRepository, schemaRepository);
+			setExecutionPlan(ep);
+			makePositions(ep, setPositions);
+
+			const map = new Map();
+			Array.from(ep.getNodeMap().values()).forEach(e => {
+				map.set(
+					e.getData().getStatement().getStatementName(),
+					e
+						.getData()
+						.getMessages()
+						.map(m => m.getMessage()),
+				);
+			});
+
+			setKirunMessages(map);
+		} catch (err) {
+			setExecutionPlan(toUIError(err));
+		}
+	})();
+}
 
 function KIRunEditor(
 	props: ComponentProps & {
@@ -49,6 +138,7 @@ function KIRunEditor(
 		stores?: Array<string>;
 		storePaths?: Set<string>;
 		hideArguments?: boolean;
+		functionKey?: string;
 	},
 ) {
 	const {
@@ -56,8 +146,8 @@ function KIRunEditor(
 		definition,
 		context,
 		locationHistory,
-		functionRepository = UIFunctionRepository,
-		schemaRepository = UISchemaRepository,
+		functionRepository: actualFunctionRepository = UIFunctionRepository,
+		schemaRepository: actualSchemaRepository = UISchemaRepository,
 		tokenValueExtractors = new Map(),
 		storePaths = new Set(),
 		pageDefinition,
@@ -66,7 +156,14 @@ function KIRunEditor(
 	const {
 		key,
 		stylePropertiesWithPseudoStates,
-		properties: { readOnly, editorType, onDeletePersonalization, onChangePersonalization } = {},
+		properties: {
+			readOnly,
+			editorType,
+			onDeletePersonalization,
+			onChangePersonalization,
+			clientCode,
+			appCode,
+		} = {},
 	} = useDefinition(
 		definition,
 		propertiesDefinition,
@@ -82,15 +179,105 @@ function KIRunEditor(
 
 	// Getting function definition.
 	const [rawDef, setRawDef] = useState<any>();
+	const [name, setName] = useState<string>();
+	const [selectedStatements, setSelectedStatements] = useState<Map<string, boolean>>(new Map());
+	const [editParameters, setEditParameters] = useState<string>('');
+	const [error, setError] = useState<any>();
+	const [funDef, setFunDef] = useState<FunctionDefinition | undefined>();
+
+	const functionRepository: Repository<Function> = useMemo(() => {
+		if (!actualFunctionRepository && appCode && clientCode) {
+			if (editorType != 'ui') {
+				return RemoteRepository.getRemoteFunctionRepository(
+					appCode,
+					clientCode,
+					true,
+					REPO_SERVER.CORE,
+				);
+			}
+			return new HybridRepository(
+				RemoteRepository.getRemoteFunctionRepository(
+					appCode,
+					clientCode,
+					true,
+					REPO_SERVER.UI,
+				),
+				RemoteRepository.getRemoteFunctionRepository(
+					appCode,
+					clientCode,
+					true,
+					REPO_SERVER.CORE,
+				),
+			);
+		}
+
+		return actualFunctionRepository;
+	}, [actualFunctionRepository, appCode, clientCode, editorType]);
+
+	const schemaRepository: Repository<Schema> = useMemo(() => {
+		if (!actualSchemaRepository && appCode && clientCode) {
+			if (editorType != 'ui') {
+				return RemoteRepository.getRemoteSchemaRepository(
+					appCode,
+					clientCode,
+					true,
+					REPO_SERVER.CORE,
+				);
+			}
+			return new HybridRepository(
+				RemoteRepository.getRemoteSchemaRepository(
+					appCode,
+					clientCode,
+					true,
+					REPO_SERVER.UI,
+				),
+				RemoteRepository.getRemoteSchemaRepository(
+					appCode,
+					clientCode,
+					true,
+					REPO_SERVER.CORE,
+				),
+			);
+		}
+		return actualSchemaRepository;
+	}, [actualSchemaRepository, appCode, clientCode, editorType]);
 
 	useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
-			(_, v) => setRawDef(correctStatementNames(v)),
+			(_, v) => {
+				const hereDef = correctStatementNames(v);
+				setRawDef(hereDef);
+				try {
+					const inFunDef = isNullValue(hereDef)
+						? undefined
+						: FunctionDefinition.from(hereDef);
+					setFunDef(inFunDef);
+					makeUpdates(
+						inFunDef,
+						setExecutionPlan,
+						setKirunMessages,
+						functionRepository,
+						schemaRepository,
+						key,
+						tokenValueExtractors,
+						setPositions,
+					);
+					setError(undefined);
+				} catch (error) {
+					setError(error);
+				}
+				const finName = `${hereDef.namespace ?? '_'}.${hereDef.name}`;
+				if (name !== finName) {
+					setName(finName);
+					setEditParameters('');
+					setSelectedStatements(new Map());
+				}
+			},
 			pageExtractor,
 			bindingPathPath,
 		);
-	}, [bindingPathPath, setRawDef, pageExtractor]);
+	}, [bindingPathPath, setRawDef, pageExtractor, name, setName, setSelectedStatements]);
 
 	const personalizationPath = bindingPath2
 		? getPathFromLocation(bindingPath2!, locationHistory, pageExtractor)
@@ -103,106 +290,30 @@ function KIRunEditor(
 			pageExtractor,
 			personalizationPath,
 		);
-	}, [personalizationPath]);
-
-	const [error, setError] = useState<any>();
-	const [funDef, setFunDef] = useState<any>();
-
-	useEffect(() => {
-		try {
-			setFunDef(isNullValue(rawDef) ? undefined : FunctionDefinition.from(rawDef));
-			setError(undefined);
-		} catch (error) {
-			setError(error);
-		}
-	}, [rawDef]);
+	}, [personalizationPath, setPreference, pageExtractor]);
 
 	// Making an executionPlan to show the execution graph.
 	const [executionPlan, setExecutionPlan] = useState<
 		ExecutionGraph<string, StatementExecution> | UIError | undefined
 	>();
 	const [kirunMessages, setKirunMessages] = useState<Map<string, string[]>>(new Map());
-	useEffect(() => {
-		if (isNullValue(funDef)) {
-			setExecutionPlan(undefined);
-			return;
-		}
-
-		(async () => {
-			const fep = new FunctionExecutionParameters(functionRepository, schemaRepository, key);
-
-			if (tokenValueExtractors.size) {
-				fep.setValuesMap(tokenValueExtractors);
-			}
-
-			try {
-				const ep = await new KIRuntime(
-					funDef!,
-					isDesignMode || isDebugMode,
-				).getExecutionPlan(functionRepository, schemaRepository);
-				setExecutionPlan(ep);
-
-				const map = new Map();
-				Array.from(ep.getNodeMap().values()).forEach(e => {
-					map.set(
-						e.getData().getStatement().getStatementName(),
-						e
-							.getData()
-							.getMessages()
-							.map(m => m.getMessage()),
-					);
-				});
-
-				setKirunMessages(map);
-			} catch (err) {
-				setExecutionPlan(toUIError(err));
-			}
-		})();
-	}, [funDef]);
+	useEffect(() => {}, [
+		funDef,
+		functionRepository,
+		schemaRepository,
+		tokenValueExtractors,
+		key,
+		setExecutionPlan,
+		setKirunMessages,
+		isDesignMode,
+		isDebugMode,
+	]);
 
 	// TODO: Calculating the positions of each statement
 	const [positions, setPositions] = useState<Map<string, { left: number; top: number }>>(
 		new Map(),
 	);
-	useEffect(() => {
-		if (!executionPlan) return;
-		if ('message' in executionPlan) return;
 
-		const positions: Map<string, { left: number; top: number }> = new Map();
-		const list = new LinkedList(executionPlan.getVerticesWithNoIncomingEdges());
-		const finishedSet = new Set<string>();
-		let firstLeft = 20;
-		let firstTop = 20;
-		while (!list.isEmpty()) {
-			const v = list.removeFirst();
-			const s = v.getData().getStatement();
-			finishedSet.add(s.getStatementName());
-			if (v.getOutVertices().size) {
-				list.addAll(
-					Array.from(v.getOutVertices().values())
-						.flatMap(e => Array.from(e))
-						.filter(
-							e => !finishedSet.has(e.getData().getStatement().getStatementName()),
-						),
-				);
-			}
-
-			if (
-				isNullValue(s.getPosition()) ||
-				((s.getPosition()?.getLeft() ?? 0) <= 0 && (s.getPosition()?.getTop() ?? 0) <= 0)
-			) {
-				if (!v.getInVertices() || !v.getInVertices().size) {
-					positions.set(s.getStatementName(), { left: firstLeft, top: firstTop });
-					firstTop += 100;
-				}
-				continue;
-			}
-		}
-
-		setPositions(positions);
-	}, [executionPlan]);
-
-	const [selectedStatements, setSelectedStatements] = useState<Map<string, boolean>>(new Map());
 	let statements: Array<ReactNode> = [];
 
 	const selectStatement = useCallback(
@@ -250,7 +361,14 @@ function KIRunEditor(
 		pageDefinition,
 	]);
 
-	const functionNames = useMemo(() => functionRepository.filter(''), [functionRepository]);
+	const [functionNames, setFunctionNames] = useState<string[]>([]);
+
+	useEffect(() => {
+		(async () => {
+			const filterNames = await functionRepository.filter('');
+			setFunctionNames(filterNames);
+		})();
+	}, [functionRepository, setFunctionNames]);
 	const [dragDependencyNode, setDragDependencyNode] = useState<any>();
 	const [dragDependencyTo, setDragDependencyTo] = useState<any>();
 
@@ -277,7 +395,15 @@ function KIRunEditor(
 		[bindingPathPath, rawDef, selectedStatements, isReadonly, setData, context.pageName],
 	);
 
-	const [editParameters, setEditParameters] = useState<string>('');
+	const removeAllDependencies = useCallback(
+		(stmt: string) => {
+			if (isReadonly || !stmt) return;
+			const def = duplicate(rawDef);
+			delete def.steps[stmt].dependentStatements;
+			setData(bindingPathPath, def, context.pageName);
+		},
+		[bindingPathPath, rawDef, isReadonly, setData, context.pageName],
+	);
 
 	if (executionPlan && !('message' in executionPlan) && rawDef?.steps) {
 		statements = Object.keys(rawDef.steps ?? {})
@@ -339,6 +465,7 @@ function KIRunEditor(
 					context={context}
 					pageDefinition={pageDefinition}
 					locationHistory={locationHistory}
+					onRemoveAllDependencies={() => removeAllDependencies(s.statementName)}
 				/>
 			));
 	}
@@ -519,7 +646,7 @@ function KIRunEditor(
 				const { dLeft, dTop } = dragNode;
 				const def = duplicate(rawDef);
 				if (def.steps) {
-					for (const [name] of selectedStatements) {
+					for (const [name] of Array.from(selectedStatements)) {
 						const step = def.steps[name];
 						if (!step) continue;
 						step.position = step.position ?? {};
@@ -566,39 +693,44 @@ function KIRunEditor(
 		);
 	}
 
-	const kirunStorePaths = useMemo(() => {
-		const paths = new Set<string>(storePaths);
+	// const [kirunStorePaths, setKirunStorePaths] = useState<Set<string>>(new Set());
+	// useEffect(() => {
+	// 	const paths = new Set<string>(storePaths);
 
-		if (!rawDef?.steps) return paths;
+	// 	if (!rawDef?.steps) {
+	// 		setKirunStorePaths(paths);
+	// 		return;
+	// 	}
+	// 	(async () => {
+	// 		for (const step of Object.values(rawDef.steps)) {
+	// 			if (isNullValue(step)) continue;
 
-		for (const step of Object.values(rawDef.steps)) {
-			if (isNullValue(step)) continue;
+	// 			const { namespace, name, statementName } = step as any;
+	// 			const func = await functionRepository.find(namespace, name);
+	// 			if (!func) continue;
 
-			const { namespace, name, statementName } = step as any;
-			const func = functionRepository.find(namespace, name);
-			if (!func) continue;
+	// 			const prefix = `Steps.${statementName}`;
 
-			const prefix = `Steps.${statementName}`;
+	// 			const events = func.getSignature().getEvents();
+	// 			if (events.size === 0) {
+	// 				paths.add(`${prefix}.output`);
+	// 				continue;
+	// 			}
 
-			const events = func.getSignature().getEvents();
-			if (events.size === 0) {
-				paths.add(`${prefix}.output`);
-				continue;
-			}
+	// 			for (const event of Array.from(events)) {
+	// 				const eventName = `${prefix}.${event[1].getName()}`;
+	// 				paths.add(eventName);
+	// 				for (const [name, schema] of Array.from(event[1].getParameters())) {
+	// 					const paramName = `${eventName}.${name}`;
+	// 					paths.add(paramName);
+	// 					await makeObjectPaths(paramName, schema, schemaRepository, paths);
+	// 				}
+	// 			}
+	// 		}
 
-			for (const event of events) {
-				const eventName = `${prefix}.${event[1].getName()}`;
-				paths.add(eventName);
-				for (const [name, schema] of event[1].getParameters()) {
-					const paramName = `${eventName}.${name}`;
-					paths.add(paramName);
-					makeObjectPaths(paramName, schema, schemaRepository, paths);
-				}
-			}
-		}
-
-		return paths;
-	}, [storePaths, rawDef]);
+	// 		setKirunStorePaths(paths);
+	// 	})();
+	// }, [storePaths, rawDef, functionRepository, schemaRepository]);
 
 	const designerRef = useRef<HTMLDivElement>(null);
 	const [menu, showMenu] = useState<any>(undefined);
@@ -718,6 +850,7 @@ function KIRunEditor(
 					context={context}
 					pageDefinition={pageDefinition}
 					locationHistory={locationHistory}
+					onRemoveAllDependencies={() => removeAllDependencies(s.statementName)}
 				/>
 			</StatementParameters>
 		);
@@ -727,6 +860,7 @@ function KIRunEditor(
 
 	let functionEditor = editFunction ? (
 		<FunctionDetialsEditor
+			functionKey={props.functionKey}
 			rawDef={rawDef}
 			onChange={(def: any) => {
 				if (isReadonly) return;
@@ -759,7 +893,7 @@ function KIRunEditor(
 					if (isReadonly || !selectedStatements.size || !rawDef.steps) return;
 
 					const def = duplicate(rawDef);
-					for (const [name] of selectedStatements) {
+					for (const [name] of Array.from(selectedStatements)) {
 						delete def.steps[name];
 					}
 

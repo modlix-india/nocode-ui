@@ -35,8 +35,9 @@ export function allPathsFilter(
 		filter = filter.substring(index + 1);
 	}
 
+	const pathArray = Array.from(paths);
 	if (startWith) {
-		for (const path of paths) {
+		for (const path of pathArray) {
 			if (path.startsWith(startWith)) {
 				if (path.includes(filter)) filtered.push(path);
 			} else if (path.includes(filter)) {
@@ -46,7 +47,7 @@ export function allPathsFilter(
 			if (filtered.length === limit) break;
 		}
 	} else {
-		for (const path of paths) {
+		for (const path of pathArray) {
 			if (path.includes(filter)) {
 				filtered.push(path);
 				if (filtered.length === limit) break;

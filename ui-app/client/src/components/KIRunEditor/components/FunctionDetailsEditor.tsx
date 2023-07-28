@@ -4,12 +4,14 @@ interface FunctionDetialsEditorProps {
 	rawDef: any;
 	onChange: (newDef: any) => void;
 	onEditFunctionClose: () => void;
+	functionKey?: string;
 }
 
 const NAME_REGEX = /^[A-Za-z_]{1,1}[_A-Za-z0-9]{0,}$/;
 
 export default function FunctionDetialsEditor({
 	rawDef,
+	functionKey = '',
 	onChange,
 	onEditFunctionClose,
 }: FunctionDetialsEditorProps) {
@@ -38,6 +40,15 @@ export default function FunctionDetialsEditor({
 
 		setErrors(errors);
 	}, [rawDef]);
+
+	const functionKeyComp = functionKey ? (
+		<div className="_field">
+			<label>Key :</label>
+			<input type="text" value={functionKey} />
+		</div>
+	) : (
+		<></>
+	);
 
 	return (
 		<div
@@ -108,6 +119,7 @@ export default function FunctionDetialsEditor({
 						/>
 						<span className="_errors">{errors.namespace}</span>
 					</div>
+					{functionKeyComp}
 				</div>
 				<div className="_formButtons">
 					<button

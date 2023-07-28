@@ -1,31 +1,17 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { HelperComponent } from '../HelperComponent';
-import {
-	ComponentProperty,
-	ComponentPropertyDefinition,
-	ComponentProps,
-	DataLocation,
-	RenderContext,
-} from '../../types/common';
-import {
-	addListener,
-	getData,
-	getDataFromPath,
-	getPathFromLocation,
-	PageStoreExtractor,
-	setData,
-} from '../../context/StoreContext';
-import { Component } from '../../types/common';
-import { propertiesDefinition, stylePropertiesDefinition } from './gridProperties';
-import GridStyle from './GridStyle';
-import useDefinition from '../util/useDefinition';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import Children from '../Children';
-import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
-import { runEvent } from '../util/runEvent';
-import { flattenUUID } from '../util/uuid';
+import { PageStoreExtractor, addListener, getDataFromPath } from '../../context/StoreContext';
+import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
+import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import Children from '../Children';
+import { HelperComponent } from '../HelperComponent';
 import { getHref } from '../util/getHref';
+import { runEvent } from '../util/runEvent';
+import useDefinition from '../util/useDefinition';
+import { flattenUUID } from '../util/uuid';
+import GridStyle from './GridStyle';
+import { propertiesDefinition, stylePropertiesDefinition } from './gridProperties';
 
 function Grid(props: ComponentProps) {
 	const location = useLocation();
@@ -49,11 +35,9 @@ function Grid(props: ComponentProps) {
 			layout,
 			onClick,
 			background,
-			observeChildren,
-			observerThresholds,
-			rootMargin,
 			onMouseEnter,
 			onMouseLeave,
+			dragData,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -62,33 +46,6 @@ function Grid(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	const bindingPathPath = getPathFromLocation(bindingPath!, locationHistory, pageExtractor);
-	const observerrCallback = useCallback(
-		(entries: Array<IntersectionObserverEntry>) => {
-			if (observeChildren && !bindingPath) return;
-			const [entry] = entries;
-			const key = entry.target.getAttribute('data-key');
-			setData(
-				getPathFromLocation(bindingPath!, locationHistory, pageExtractor),
-				key,
-				context.pageName,
-			);
-		},
-		[bindingPathPath],
-	);
-	React.useEffect(() => {
-		if (!observeChildren) return;
-		const threshold = observerThresholds
-			.split(',')
-			.map((e: string) => parseFloat(e))
-			.filter((e: number) => !isNaN(e) && e <= 1 && e >= 0);
-		const options = {
-			root: ref.current,
-			rootMargin: rootMargin,
-			threshold,
-		};
-		setObserver(new IntersectionObserver(observerrCallback, options));
-	}, [ref.current, observerrCallback]);
 
 	const childs = (
 		<Children
@@ -99,6 +56,10 @@ function Grid(props: ComponentProps) {
 			locationHistory={locationHistory}
 		/>
 	);
+
+	const dragstartHandler = (ev: React.DragEvent<HTMLElement>) => {
+		ev.dataTransfer.setData('text/plain', dragData);
+	};
 
 	const resolvedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
@@ -142,7 +103,16 @@ function Grid(props: ComponentProps) {
 	if (linkPath) {
 		return React.createElement(
 			containerType.toLowerCase(),
-			{ className: 'comp compGrid', id: key },
+			{
+				className: 'comp compGrid',
+				id: key,
+				draggable:
+					dragData?.length && dragData?.startsWith('TEMPLATE_DRAG_') ? true : false,
+				onDragStart:
+					dragData?.length && dragData?.startsWith('TEMPLATE_DRAG_')
+						? dragstartHandler
+						: undefined,
+			},
 			[
 				<HelperComponent key={`${key}_hlp`} definition={definition} />,
 				styleComp,
@@ -235,9 +205,14 @@ function Grid(props: ComponentProps) {
 								))();
 					  }
 					: undefined,
+			onDragStart:
+				dragData?.length && dragData?.startsWith('TEMPLATE_DRAG_')
+					? dragstartHandler
+					: undefined,
 			onFocus: stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined,
 			onBlur: stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined,
 			ref: ref,
+			draggable: dragData?.length && dragData?.startsWith('TEMPLATE_DRAG_') ? true : false,
 			className: `comp compGrid _noAnchorGrid _${layout} ${background} ${
 				sepStyle ? `_${key}_grid_css` : ''
 			}`,
@@ -262,9 +237,6 @@ const component: Component = {
 	stylePseudoStates: ['hover', 'focus', 'readonly'],
 	allowedChildrenType: new Map<string, number>([['', -1]]),
 	styleProperties: stylePropertiesDefinition,
-	bindingPaths: {
-		bindingPath: { name: 'Scrolled Component Binding' },
-	},
 	defaultTemplate: {
 		key: '',
 		name: 'Grid',

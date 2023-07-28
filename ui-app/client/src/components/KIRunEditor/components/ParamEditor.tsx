@@ -6,7 +6,7 @@ import {
 	SchemaUtil,
 	isNullValue,
 } from '@fincity/kirun-js';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { shortUUID } from '../../../util/shortUUID';
 import { duplicate } from '@fincity/kirun-js';
 import SchemaForm from '../../SchemaForm/SchemaForm';
@@ -38,54 +38,56 @@ export default function ParamEditor({
 	const [values, setValues] = React.useState<any[]>([]);
 
 	useEffect(() => {
-		let inValue = value;
-		let arr = [];
-		if (isNullValue(inValue)) {
-			if (!isArray) {
-				const defaultValue = SchemaUtil.getDefaultValue(
-					parameter.getSchema(),
-					schemaRepository,
-				);
-				if (!isNullValue(defaultValue)) {
-					arr.push({
-						key: shortUUID(),
-						type: 'VALUE',
-						isNew: true,
-						expression: '',
-						value: defaultValue,
-					});
+		(async () => {
+			let inValue = value;
+			let arr = [];
+			if (isNullValue(inValue)) {
+				if (!isArray) {
+					const defaultValue = await SchemaUtil.getDefaultValue(
+						parameter.getSchema(),
+						schemaRepository,
+					);
+					if (!isNullValue(defaultValue)) {
+						arr.push({
+							key: shortUUID(),
+							type: 'VALUE',
+							isNew: true,
+							expression: '',
+							value: defaultValue,
+						});
+					}
 				}
+			} else {
+				arr = duplicate(Array.from(Object.values(inValue ?? {})));
 			}
-		} else {
-			arr = duplicate(Array.from(Object.values(inValue ?? {})));
-		}
 
-		arr.sort((a: any, b: any) => {
-			let v = a.order ?? 0 - b.order ?? 0;
-			if (v === 0) v = a.key.localeCompare(b.key);
-			return v;
-		});
-
-		if (arr.length === 0 || (isArray && !arr.some((e: any) => e.isNew))) {
-			const order =
-				(arr
-					.map((e: any) => e.order)
-					.reduce((a: number | undefined, c: number | undefined) => {
-						if (isNullValue(a)) return c;
-						if (isNullValue(c)) return a;
-						return a! > c! ? a : c;
-					}, undefined) ?? 0) + 1;
-
-			arr.push({
-				key: shortUUID(),
-				type: onlyValue ? 'VALUE' : 'EXPRESSION',
-				isNew: true,
-				expression: '',
-				order,
+			arr.sort((a: any, b: any) => {
+				let v = a.order ?? 0 - b.order ?? 0;
+				if (v === 0) v = a.key.localeCompare(b.key);
+				return v;
 			});
-		}
 
-		setValues(arr);
+			if (arr.length === 0 || (isArray && !arr.some((e: any) => e.isNew))) {
+				const order =
+					(arr
+						.map((e: any) => e.order)
+						.reduce((a: number | undefined, c: number | undefined) => {
+							if (isNullValue(a)) return c;
+							if (isNullValue(c)) return a;
+							return a! > c! ? a : c;
+						}, undefined) ?? 0) + 1;
+
+				arr.push({
+					key: shortUUID(),
+					type: onlyValue ? 'VALUE' : 'EXPRESSION',
+					isNew: true,
+					expression: '',
+					order,
+				});
+			}
+
+			setValues(arr);
+		})();
 	}, [value, isArray]);
 
 	const updateValue = useCallback(
@@ -116,12 +118,19 @@ export default function ParamEditor({
 		[values, onChange],
 	);
 
-	let schema = parameter.getSchema();
-	if (!isNullValue(schema.getRef())) {
-		schema =
-			SchemaUtil.getSchemaFromRef(schema, schemaRepository, schema.getRef()) ??
-			parameter.getSchema();
-	}
+	let [schema, setSchema] = useState<Schema | undefined>(parameter.getSchema());
+
+	useEffect(() => {
+		if (isNullValue(schema?.getRef())) return;
+		(async () => {
+			const s = await SchemaUtil.getSchemaFromRef(
+				schema!,
+				schemaRepository,
+				schema!.getRef(),
+			);
+			setSchema(s);
+		})();
+	}, [schema, schemaRepository]);
 
 	const moveUpDown = useCallback(
 		(key: string, direction: number) => {
