@@ -107,15 +107,25 @@ function DropdownComponent(props: ComponentProps) {
 
 	const dropdownData = React.useMemo(
 		() =>
-			getRenderData(
-				data,
-				datatype,
-				uniqueKeyType,
-				uniqueKey,
-				selectionType,
-				selectionKey,
-				labelKeyType,
-				labelKey,
+			Array.from(
+				getRenderData(
+					data,
+					datatype,
+					uniqueKeyType,
+					uniqueKey,
+					selectionType,
+					selectionKey,
+					labelKeyType,
+					labelKey,
+				)
+					.reduce((acc: Map<string, any>, each: any) => {
+						if (!each?.key) return acc;
+
+						acc.set(each.key, each);
+
+						return acc;
+					}, new Map())
+					.values(),
 			),
 		[
 			data,
@@ -128,6 +138,8 @@ function DropdownComponent(props: ComponentProps) {
 			labelKey,
 		],
 	);
+
+	console.log('pressure', data, dropdownData);
 
 	const selectedDataKey: Array<any> | string | undefined = React.useMemo(
 		() => getSelectedKeys(dropdownData, selected, isMultiSelect),

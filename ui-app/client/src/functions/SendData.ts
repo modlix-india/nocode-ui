@@ -10,7 +10,7 @@ import {
 	Parameter,
 	Schema,
 } from '@fincity/kirun-js';
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import { LOCAL_STORE_PREFIX, NAMESPACE_UI_ENGINE, STORE_PREFIX } from '../constants';
 import { getData } from '../context/StoreContext';
 import { ComponentProperty } from '../types/common';
@@ -101,7 +101,7 @@ export class SendData extends AbstractFunction {
 				return a;
 			}, {});
 
-		let isFormData = false || headers['content-type'] == 'multipart/form-data';
+		let isFormData = headers['content-type'] == 'multipart/form-data';
 		if (!isFormData && typeof payload === 'object' && !Array.isArray(payload)) {
 			const ll = new LinkedList<any>();
 			ll.add(payload);
@@ -136,30 +136,36 @@ export class SendData extends AbstractFunction {
 		if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
 
 		try {
-			const response = await axios({
+			const options: AxiosRequestConfig<any> = {
 				url: pathFromParams(url, pathParams),
 				method,
 				params: queryParams,
 				paramsSerializer: params => queryParamsSerializer(params)?.[1] ?? '',
+
 				headers,
 				data: payload,
-			});
+			};
+			if (downloadAsAFile) options.responseType = 'arraybuffer';
+
+			const response = await axios(options);
 
 			if (downloadAsAFile) {
-				let name = downloadFileName ?? response.headers['Content-Disposition'];
+				let name = downloadFileName;
+				if (!name) {
+					const key = Object.keys(response.headers).find(
+						key => key.toLowerCase() === 'content-disposition',
+					);
+					if (key) name = response.headers[key];
+				}
+
 				let index = name.indexOf(FILE_NAME);
 				if (index !== -1) {
 					name = name.substring(index + FILE_NAME.length);
-					index = name.indexOf('"');
-					name = name.substring(0, index);
+					name = name.replace(/"/g, '');
 				}
 
-				const data =
-					response.headers['content-type'] === 'application/json' && response.data
-						? JSON.stringify(response.data)
-						: response.data;
 				const url = window.URL.createObjectURL(
-					new Blob([data], { type: 'application/octet-stream' }),
+					new Blob([response.data], { type: 'application/octet-stream' }),
 				);
 
 				const aTag = document.createElement('a');
