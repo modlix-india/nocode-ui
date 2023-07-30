@@ -44,8 +44,8 @@ function Menu(props: ComponentProps) {
 			onMenuOpen,
 			onClick,
 			pathsActiveFor,
-			menuDesignSelectionType,
-			menuColorScheme,
+			designType: menuDesignSelectionType,
+			colorScheme: menuColorScheme,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
