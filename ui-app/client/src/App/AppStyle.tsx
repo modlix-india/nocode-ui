@@ -139,11 +139,13 @@ export default function AppStyle() {
 	}
 
 	._pointer {cursor: pointer;}
-	._validationMessages {position: relative;}
 	._eachValidationMessage {position: relative;}
-	._validationMessages._floatingMessages {
+	._validationMessages {
 		position:absolute;
 		z-index:1;
+		left: 0;
+		top: 100%;
+		margin-top: 5px;
 	}
 
 	.opacityShowOnHover {opacity: 0;}

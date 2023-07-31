@@ -65,6 +65,8 @@ function TextBox(props: ComponentProps) {
 			onClear,
 			onChange,
 			autoFocus,
+			designType,
+			colorScheme,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -75,7 +77,6 @@ function TextBox(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	const effectivePlaceholder = noFloat ? (placeholder ? placeholder : '') : label;
 	const computedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
 		{ focus, readOnly },
@@ -273,37 +274,37 @@ function TextBox(props: ComponentProps) {
 	};
 
 	return (
-		<div className="comp compTextBox" style={computedStyles.comp ?? {}}>
-			<HelperComponent definition={definition} />
-
-			<CommonInputText
-				id={key}
-				noFloat={noFloat}
-				readOnly={readOnly}
-				value={value}
-				label={label}
-				translations={translations}
-				leftIcon={leftIcon}
-				rightIcon={rightIcon}
-				valueType={valueType}
-				isPassword={isPassword}
-				placeholder={effectivePlaceholder}
-				hasFocusStyles={stylePropertiesWithPseudoStates?.focus}
-				validationMessages={validationMessages}
-				context={context}
-				handleChange={handleChange}
-				clearContentHandler={handleClickClose}
-				blurHandler={handleBlur}
-				keyUpHandler={handleKeyUp}
-				focusHandler={() => setFocus(true)}
-				supportingText={supportingText}
-				messageDisplay={messageDisplay}
-				styles={computedStyles}
-				definition={props.definition}
-				autoComplete={autoComplete}
-				autoFocus={autoFocus}
-			/>
-		</div>
+		<CommonInputText
+			cssPrefix="comp compTextBox"
+			id={key}
+			noFloat={noFloat}
+			readOnly={readOnly}
+			value={value}
+			label={label}
+			translations={translations}
+			leftIcon={leftIcon}
+			rightIcon={rightIcon}
+			valueType={valueType}
+			isPassword={isPassword}
+			placeholder={placeholder}
+			hasFocusStyles={stylePropertiesWithPseudoStates?.focus}
+			validationMessages={validationMessages}
+			context={context}
+			handleChange={handleChange}
+			clearContentHandler={handleClickClose}
+			blurHandler={handleBlur}
+			keyUpHandler={handleKeyUp}
+			focusHandler={() => setFocus(true)}
+			supportingText={supportingText}
+			messageDisplay={messageDisplay}
+			styles={computedStyles}
+			designType={designType}
+			colorScheme={colorScheme}
+			definition={props.definition}
+			autoComplete={autoComplete}
+			autoFocus={autoFocus}
+			hasValidationCheck={validation?.length > 0}
+		/>
 	);
 }
 
@@ -330,6 +331,7 @@ const component: Component = {
 			label: { value: 'TextBox' },
 		},
 	},
+	sections: [{ name: 'Text Box', pageName: 'textBox' }],
 };
 
 export default component;
