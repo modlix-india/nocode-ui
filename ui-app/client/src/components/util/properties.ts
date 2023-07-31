@@ -315,6 +315,52 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 		group: ComponentPropertyGroup.COMMON,
 		multiValued: true,
 	},
+	designType: {
+		name: 'designType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Design Type',
+		description: 'Design Type',
+		defaultValue: '_default',
+		group: ComponentPropertyGroup.BASIC,
+		enumValues: [
+			{ name: '_default', displayName: 'Default Menu', description: 'Default Menu type' },
+		],
+	},
+	colorScheme: {
+		name: 'colorScheme',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Color Scheme',
+		description: 'Color Scheme',
+		defaultValue: '_primary',
+		group: ComponentPropertyGroup.BASIC,
+		enumValues: [
+			{
+				name: '_primary',
+				displayName: 'Primary Color Scheme',
+				description: 'Default Color Scheme',
+			},
+			{
+				name: '_secondary',
+				displayName: 'Secondary Color Scheme',
+				description: 'Secondary Color Scheme',
+			},
+			{
+				name: '_tertiary',
+				displayName: 'Tertiary Color Scheme',
+				description: 'Tertiary Color Scheme',
+			},
+			{
+				name: '_quaternary',
+				displayName: 'Quaternary Color Scheme',
+				description: 'Quaternary Color Scheme',
+			},
+			{
+				name: '_quinary',
+				displayName: 'Quinary Color Scheme',
+				description: 'Quinary Color Scheme',
+			},
+		],
+	},
 };
 
 const COMPONENT_STYLE_GROUPS: { [key: string]: Array<string> } = {
