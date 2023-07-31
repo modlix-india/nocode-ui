@@ -127,9 +127,11 @@ function CommonInputText(props: CommonInputType) {
 
 	return (
 		<div
-			className={`${cssPrefix} ${focus ? '_isActive' : ''} ${designType} ${colorScheme} ${
-				leftIcon ? '_hasLeftIcon' : ''
-			} ${value?.length ? '_hasValue' : ''} ${hasErrorMessages ? '_hasError' : ''}`}
+			className={`${cssPrefix} ${
+				focus || value?.length ? '_isActive' : ''
+			} ${designType} ${colorScheme} ${leftIcon ? '_hasLeftIcon' : ''} ${
+				value?.length ? '_hasValue' : ''
+			} ${hasErrorMessages ? '_hasError' : ''}`}
 			style={computedStyles.comp ?? {}}
 		>
 			<HelperComponent definition={definition} />

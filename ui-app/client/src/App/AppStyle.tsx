@@ -148,6 +148,11 @@ export default function AppStyle() {
 		margin-top: 5px;
 	}
 
+	.material-symbols-outlined,
+	.material-icons-round {
+		font-size: inherit;
+	}
+
 	.opacityShowOnHover {opacity: 0;}
 	.opacityShowOnHover:hover {opacity: 1 !important;}
 	.disableChildrenEvents * {pointer-events: none;}

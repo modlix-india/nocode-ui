@@ -57,7 +57,8 @@ export default function TextBoxStyle({ theme }: { theme: Map<string, Map<string,
 	}
 
 	${PREFIX}._bigDesign1._hasValue ._label,
-	${PREFIX}._bigDesign1._isActive ._label {
+	${PREFIX}._bigDesign1._isActive ._label,
+	${PREFIX}._bigDesign1 ._label._noFloat {
 		margin-top: 24px;
 	}
 
