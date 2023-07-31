@@ -109,8 +109,12 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		...COMMON_COMPONENT_PROPERTIES.designType,
 		enumValues: [
 			...COMMON_COMPONENT_PROPERTIES.designType.enumValues!,
-			{ name: '_outlined', displayName: 'Outline Menu', description: 'Outline Menu type' },
-			{ name: '_text', displayName: 'Text Menu', description: 'Outline Menu type' },
+			{
+				name: '_outlined',
+				displayName: 'Outline Type Menu',
+				description: 'Outline type menu',
+			},
+			{ name: '_text', displayName: 'Text Menu', description: 'Text type menu' },
 			{
 				name: '_sides',
 				displayName: 'Side Bordered Menu',

@@ -322,9 +322,7 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 		description: 'Design Type',
 		defaultValue: '_default',
 		group: ComponentPropertyGroup.BASIC,
-		enumValues: [
-			{ name: '_default', displayName: 'Default Menu', description: 'Default Menu type' },
-		],
+		enumValues: [{ name: '_default', displayName: 'Default', description: 'Default' }],
 	},
 	colorScheme: {
 		name: 'colorScheme',
