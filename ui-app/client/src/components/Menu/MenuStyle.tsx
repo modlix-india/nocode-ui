@@ -37,6 +37,20 @@ export default function LinkStyle({ theme }: { theme: Map<string, Map<string, st
 		flex: 1;
 		text-align: right;
  	}
+
+	${PREFIX} + ._right_orientation {
+		position: absolute;
+		left: 100%;
+		z-index: 1;
+	}
+
+	${PREFIX} + ._bottom_orientation {
+		position: absolute;
+		left: 0;
+		z-index: 1;
+		top: 100%;
+	}
+
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="MenuCss">{css}</style>;

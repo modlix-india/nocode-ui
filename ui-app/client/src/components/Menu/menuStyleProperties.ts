@@ -11,6 +11,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '',
 		noPrefix: false,
 	},
+
 	{
 		groupName: 'Default',
 		displayName: 'Default Menu Font',
@@ -61,6 +62,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._topbottom',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Menu Color',
 		displayName: 'Primary Menu Color',
@@ -116,6 +118,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'.comp.compMenu._outlined._quinary, .comp.compMenu._outlined._quinary:visited, .comp.compMenu._text._quinary._isActive, .comp.compMenu._text._quinary:hover, .comp.compMenu._sides._quinary._isActive, .comp.compMenu._sides._quinary:hover, .comp.compMenu._topbottom._quinary._isActive, .comp.compMenu._topbottom._quinary:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Menu Background Color',
 		displayName: 'Primary Menu Background Color',
@@ -171,6 +174,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'.comp.compMenu._default._quinary._isActive, .comp.compMenu._default._quinary:hover, .comp.compMenu._outlined._quinary._isActive, .comp.compMenu._outlined._quinary:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Menu Border Color',
 		displayName: 'Primary Menu Border Color',
@@ -223,6 +227,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._outlined._quinary, .comp.compMenu._outlined._quinary:visited',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Menu Color',
 		displayName: 'Menu Font Color',
@@ -231,7 +236,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description: 'Menu Font Color',
 		cssProperty: 'color',
 		selector:
-			'.comp.compMenu._default._primary, .comp.compMenu._default._primary:visited, .comp.compMenu._default._secondary, .comp.compMenu._default._secondary:visited, .comp.compMenu._default._tertiary, .comp.compMenu._default._tertiary:visited, .comp.compMenu._default._quaternary, .comp.compMenu._default._quaternary:visited, .comp.compMenu._default._quinary, .comp.compMenu._default._quinary:visited,.comp.comp.compMenu._text._primary, .comp.compMenu._text._primary:visited, .comp.compMenu._text._secondary, .comp.compMenu._text._secondary:visited, .comp.compMenu._text._tertiary, .comp.compMenu._text._tertiary:visited, .comp.compMenu._text._quaternary, .comp.compMenu._text._quaternary:visited, .comp.compMenu._text._quinary, .comp.compMenu._text._quinary:visited, .comp.compMenu._sides._primary, .comp.compMenu._sides._primary:visited, .comp.compMenu._sides._secondary, .comp.compMenu._sides._secondary:visited, .comp.compMenu._sides._tertiary, .comp.compMenu._sides._tertiary:visited, .comp.compMenu._sides._quaternary, .comp.compMenu._sides._quaternary:visited, .comp.compMenu._sides._quinary, .comp.compMenu._sides._quinary:visited, .comp.compMenu._topbottom._primary, .comp.compMenu._topbottom._primary:visited, .comp.compMenu._topbottom._secondary, .comp.compMenu._topbottom._secondary:visited, .comp.compMenu._topbottom._tertiary, .comp.compMenu._topbottom._tertiary:visited, .comp.compMenu._topbottom._quaternary, .comp.compMenu._topbottom._quaternary:visited, .comp.compMenu._topbottom._quinary, .comp.compMenu._topbottom._quinary:visited',
+			'.comp.compMenu._default._primary, .comp.compMenu._default._primary:visited, .comp.compMenu._default._secondary, .comp.compMenu._default._secondary:visited, .comp.compMenu._default._tertiary, .comp.compMenu._default._tertiary:visited, .comp.compMenu._default._quaternary, .comp.compMenu._default._quaternary:visited, .comp.compMenu._default._quinary, .comp.compMenu._default._quinary:visited,.comp.compMenu._text._primary, .comp.compMenu._text._primary:visited, .comp.compMenu._text._secondary, .comp.compMenu._text._secondary:visited, .comp.compMenu._text._tertiary, .comp.compMenu._text._tertiary:visited, .comp.compMenu._text._quaternary, .comp.compMenu._text._quaternary:visited, .comp.compMenu._text._quinary, .comp.compMenu._text._quinary:visited, .comp.compMenu._sides._primary, .comp.compMenu._sides._primary:visited, .comp.compMenu._sides._secondary, .comp.compMenu._sides._secondary:visited, .comp.compMenu._sides._tertiary, .comp.compMenu._sides._tertiary:visited, .comp.compMenu._sides._quaternary, .comp.compMenu._sides._quaternary:visited, .comp.compMenu._sides._quinary, .comp.compMenu._sides._quinary:visited, .comp.compMenu._topbottom._primary, .comp.compMenu._topbottom._primary:visited, .comp.compMenu._topbottom._secondary, .comp.compMenu._topbottom._secondary:visited, .comp.compMenu._topbottom._tertiary, .comp.compMenu._topbottom._tertiary:visited, .comp.compMenu._topbottom._quaternary, .comp.compMenu._topbottom._quaternary:visited, .comp.compMenu._topbottom._quinary, .comp.compMenu._topbottom._quinary:visited',
 		noPrefix: true,
 	},
 	{
@@ -242,7 +247,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description: 'Menu Light Font Color',
 		cssProperty: 'color',
 		selector:
-			'.comp.compMenu._default._primary._isActive, .comp.compMenu._default._primary:hover, .comp.compMenu._default._secondary._isActive, .comp.compMenu._default._secondary:hover, .comp.compMenu._default._quaternary._isActive, .comp.compMenu._default._quaternary:hover, .comp.compMenu._default._quinary._isActive, .comp.compMenu._default._quinary:hover, .comp.compMenu._outlined._primary._isActive, .comp.compMenu._outlined._primary:hover, .comp.compMenu._outlined._secondary._isActive, .comp.compMenu._outlined._secondary:hover, .comp.compMenu._outlined._quaternary._isActive, .comp.compMenu._outlined._quaternary:hover, .comp.compMenu._outlined._quinary._isActive, .comp.compMenu._outlined._quinary:hover',
+			'.comp.compMenu._default._primary._isActive, .comp.compMenu._default._primary:hover, .comp.compMenu._default._secondary._isActive, .comp.compMenu._default._secondary:hover, .comp.compMenu._default._quaternary._isActive, .comp.compMenu._default._quaternary:hover, .comp.compMenu._default._quinary._isActive, .comp.compMenu._default._quinary:hover, .comp.compMenu._outlined._primary._isActive, .comp.compMenu._outlined._primary:hover, .comp.compMenu._outlined._secondary._isActive, .comp.compMenu._outlined._secondary:hover, .comp.compMenu._outlined._tertiary._isActive, .comp.compMenu._outlined._tertiary:hover, .comp.compMenu._outlined._quaternary._isActive, .comp.compMenu._outlined._quaternary:hover, .comp.compMenu._outlined._quinary._isActive, .comp.compMenu._outlined._quinary:hover',
 		noPrefix: true,
 	},
 	{
@@ -256,6 +261,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'.comp.compMenu._default._tertiary._isActive, .comp.compMenu._default._tertiary:hover, .comp.compMenu._outlined._tertiary._isActive, .comp.compMenu._outlined._tertiary:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Menu Text Decoration',
 		displayName: 'Menu Text Decoration',
@@ -266,6 +272,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Default',
 		displayName: 'Menu Default Design Padding',
@@ -316,6 +323,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._topbottom',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Default',
 		displayName: 'Menu Default Design Text Alignment',
@@ -366,6 +374,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._topbottom',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Default',
 		displayName: 'Menu Default Design Border Radius',
@@ -416,6 +425,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._topbottom',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Menu Font',
 		displayName: 'Menu Font Weight',
@@ -427,6 +437,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'.comp.compMenu._text._primary._isActive, .comp.compMenu._text._primary:hover, .comp.compMenu._text._secondary._isActive, .comp.compMenu._text._secondary:hover, .comp.compMenu._text._tertiary._isActive, .comp.compMenu._text._tertiary:hover, .comp.compMenu._text._quaternary._isActive, .comp.compMenu._text._quaternary:hover, .comp.compMenu._text._quinary._isActive, .comp.compMenu._text._quinary:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Default',
 		displayName: 'Menu Default Design Active Border',
@@ -441,7 +452,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Outline',
 		displayName: 'Menu Outline Design Active Border',
 		name: 'outlineMenuDesignActiveBorder',
-		defaultValue: '1px solid',
+		defaultValue: '1px solid transparent',
 		description: 'Active Border in Outline Design',
 		cssProperty: 'border',
 		selector: '.comp.compMenu._outlined._isActive, .comp.compMenu._outlined:hover',
@@ -477,6 +488,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._topbottom._isActive, .comp.compMenu._topbottom:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Default',
 		displayName: 'Menu Default Design Border',
@@ -491,7 +503,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Outline',
 		displayName: 'Menu Outline Design Border',
 		name: 'outlineMenuDesignBorder',
-		defaultValue: '',
+		defaultValue: '1px solid',
 		description: 'Border in Outline Design',
 		cssProperty: 'border',
 		selector: '.comp.compMenu._outlined',

@@ -1,4 +1,4 @@
-import React, { MouseEvent } from 'react';
+import React, { MouseEvent, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { PageStoreExtractor } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
@@ -46,6 +46,7 @@ function Menu(props: ComponentProps) {
 			pathsActiveFor,
 			designType: menuDesignSelectionType,
 			colorScheme: menuColorScheme,
+			subMenuOrientation,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -59,6 +60,7 @@ function Menu(props: ComponentProps) {
 	const [isMenuOpenState, setIsMenuOpenState] = React.useState(isMenuOpen);
 	const [isMenuActive, setIsMenuActive] = React.useState(false);
 	const { pathname } = useLocation();
+	const [containerHover, setContainerHover] = useState(false);
 
 	React.useEffect(() => {
 		if (!pathsActiveFor?.length) return;
@@ -217,12 +219,23 @@ function Menu(props: ComponentProps) {
 
 	const children =
 		definition.children && isMenuOpenState ? (
-			<Children
-				pageDefinition={props.pageDefinition}
-				children={definition.children}
-				context={context}
-				locationHistory={locationHistory}
-			/>
+			<div
+				className={`${subMenuOrientation}`}
+				style={(containerHover ? hoverStyle : regularStyle)?.subMenuContainer}
+				onMouseOver={() => setContainerHover(true)}
+				onMouseLeave={() => setContainerHover(false)}
+			>
+				<SubHelperComponent
+					definition={props.definition}
+					subComponentName="subMenuContainer"
+				/>
+				<Children
+					pageDefinition={props.pageDefinition}
+					children={definition.children}
+					context={{ ...context, menuLevel: (context.menuLevel ?? 0) + 1 }}
+					locationHistory={locationHistory}
+				/>
+			</div>
 		) : (
 			<></>
 		);
@@ -233,7 +246,7 @@ function Menu(props: ComponentProps) {
 			<a
 				className={`comp compMenu _${styleKey}menu_css ${menuDesignSelectionType} ${menuColorScheme} ${
 					isMenuActive ? '_isActive' : ''
-				}`}
+				} _level${context.menuLevel ?? 0}`}
 				href={resolvedLink}
 				target={target}
 				onClick={e => {
@@ -287,7 +300,10 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['hover', 'disabled', 'active', 'visited'],
-	allowedChildrenType: new Map([['Menu', -1]]),
+	allowedChildrenType: new Map([
+		['Menu', -1],
+		['Grid', 1],
+	]),
 	defaultTemplate: {
 		key: '',
 		type: 'Menu',

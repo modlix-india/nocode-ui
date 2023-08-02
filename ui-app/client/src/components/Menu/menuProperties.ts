@@ -106,6 +106,32 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: true,
 	},
 	{
+		name: 'subMenuOrientation',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'SubMenu Orientation',
+		description: 'SubMenu Orientation',
+		editor: ComponentPropertyEditor.LAYOUT,
+		defaultValue: '_default_orientation',
+		group: ComponentPropertyGroup.ADVANCED,
+		enumValues: [
+			{
+				name: '_default_orientation',
+				displayName: 'Default Orientation',
+				description: 'Default Orientation',
+			},
+			{
+				name: '_right_orientation',
+				displayName: 'Right Orientation',
+				description: 'Right Orientation',
+			},
+			{
+				name: '_bottom_orientation',
+				displayName: 'Bottom Orientation',
+				description: 'Bottom Orientation',
+			},
+		],
+	},
+	{
 		...COMMON_COMPONENT_PROPERTIES.designType,
 		enumValues: [
 			...COMMON_COMPONENT_PROPERTIES.designType.enumValues!,
@@ -153,6 +179,16 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 	caretIcon: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+	],
+	subMenuContainer: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 };
 
