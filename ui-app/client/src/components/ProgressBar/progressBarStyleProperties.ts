@@ -6,7 +6,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Primary Progress Bar Progress Color',
 		name: 'primaryProgressBGColorProgress',
 		defaultValue: '<backgroundColorOne>',
-		description: 'Progress Bar Primary background color for Progress',
 		cssProperty: 'background',
 		selector: '.comp.compProgressBar._default._primary ._progress',
 		noPrefix: true,
@@ -16,7 +15,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Secondary Progress Bar Progress Color',
 		name: 'secondaryProgressBGColorProgress',
 		defaultValue: '<backgroundColorTwo>',
-		description: 'Progress Bar Secondary background color for Progress',
 		cssProperty: 'background',
 		selector: '.comp.compProgressBar._default._secondary ._progress',
 		noPrefix: true,
@@ -26,7 +24,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Tertiary Progress Bar Progress Color',
 		name: 'tertiaryProgressBGColorProgress',
 		defaultValue: '<backgroundColorThree>',
-		description: 'Progress Bar Tertiary background color for Progress',
 		cssProperty: 'background',
 		selector: '.comp.compProgressBar._default._tertiary ._progress',
 		noPrefix: true,
@@ -36,7 +33,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Quaternary Progress Bar Progress Color',
 		name: 'quaternaryProgressBGColorProgress',
 		defaultValue: '<backgroundColorFour>',
-		description: 'Progress Bar Quaternary background color for Progress',
 		cssProperty: 'background',
 		selector: '.comp.compProgressBar._default._quaternary ._progress',
 		noPrefix: true,
@@ -46,7 +42,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Quinary Progress Bar Progress Color',
 		name: 'quinaryProgressBGColorProgress',
 		defaultValue: '<backgroundColorFive>',
-		description: 'Progress Bar Quinary background color for Progress',
 		cssProperty: 'background',
 		selector: '.comp.compProgressBar._default._quinary ._progress',
 		noPrefix: true,
@@ -57,7 +52,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Default Design Progress Bar Background',
 		name: 'progressBarBackgroundColor',
 		defaultValue: '<fontColorSix>',
-		description: 'Progress Bar Background Color',
 		cssProperty: 'background',
 		selector: '.comp.compProgressBar._default ._track, .comp.compProgressBar._striped  ._track',
 		noPrefix: true,
@@ -68,7 +62,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Default Design Progress Bar Border Radius',
 		name: 'progressBarBorderRadius',
 		defaultValue: '10px',
-		description: 'Default Design Progress Bar Radius',
 		cssProperty: 'border-radius',
 		selector:
 			'.comp.compProgressBar._default  ._track, .comp.compProgressBar._default ._progress',
@@ -79,7 +72,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Striped Design Progress Bar Border Radius',
 		name: 'stripedProgressBarBorderRadius',
 		defaultValue: '2px',
-		description: 'Striped Design Progress Bar Radius',
 		cssProperty: 'border-radius',
 		selector:
 			'.comp.compProgressBar._striped  ._track, .comp.compProgressBar._striped ._progress',
@@ -90,7 +82,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Progress Bar Light Font Color',
 		name: 'progressBarLightFontColor',
 		defaultValue: '<fontColorTwo>',
-		description: 'Progress Bar light font color',
 		cssProperty: 'color',
 		selector:
 			'.comp.compProgressBar._default ._progress, .comp.compProgressBar._striped ._progress',
@@ -101,7 +92,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Progress Bar Dark Font Color',
 		name: 'progressBarDarkFontColor',
 		defaultValue: '<fontColorOne>',
-		description: 'Progress Bar Dark font color',
 		cssProperty: 'color',
 		selector:
 			'.comp.compProgressBar._default ._progress._top, .comp.compProgressBar._default ._progress._bottom, .comp.compProgressBar._striped ._progress._top, .comp.compProgressBar._striped ._progress._bottom',
@@ -113,7 +103,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Progress Bar Text Padding Left',
 		name: 'progressBarTextLeftPadding',
 		defaultValue: '5px',
-		description: 'Left Padding to text label',
 		cssProperty: 'padding-left',
 		selector:
 			'.comp.compProgressBar._default ._progress._left, .comp.compProgressBar._striped ._progress._left',
@@ -124,7 +113,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Progress Bar Text Padding Right',
 		name: 'progressBarTextRightPadding',
 		defaultValue: '5px',
-		description: 'Right Padding to text label',
 		cssProperty: 'padding-right',
 		selector:
 			'.comp.compProgressBar._default ._progress._right, .comp.compProgressBar._striped ._progress._right',
@@ -135,7 +123,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Progress Bar Text Padding Top',
 		name: 'progressBarTextTopPadding',
 		defaultValue: '5px',
-		description: 'Top Padding to text label',
 		cssProperty: 'padding-top',
 		selector:
 			'.comp.compProgressBar._default ._progress._top, .comp.compProgressBar._striped ._progress._top',
@@ -146,7 +133,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Progress Bar Text Padding Bottom',
 		name: 'progressBarTextBottomPadding',
 		defaultValue: '5px',
-		description: 'Bottom Padding to text label',
 		cssProperty: 'padding-bottom',
 		selector:
 			'.comp.compProgressBar._default ._progress._bottom, .comp.compProgressBar._striped ._progress._bottom',
@@ -158,7 +144,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Progress Bar Height Default Design',
 		name: 'progressBarHeightWithoutText',
 		defaultValue: '10px',
-		description: 'Progress bar height without text',
 		cssProperty: 'height',
 		selector:
 			'.comp.compProgressBar._default  ._track, .comp.compProgressBar._striped  ._track',
@@ -169,7 +154,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Progress Bar Height Default Design With Text',
 		name: 'progressBarHeightWithText',
 		defaultValue: '16px',
-		description: 'Progress bar height without text',
 		cssProperty: 'height',
 		selector:
 			'.comp.compProgressBar._default._hasLabel  ._track, .comp.compProgressBar._striped._hasLabel  ._track',
@@ -181,7 +165,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Primary Progress Bar Outside Text Color',
 		name: 'primaryProgressOutsideTextColor',
 		defaultValue: '<backgroundColorOne>',
-		description: 'Primary outiside text color.',
 		cssProperty: 'color',
 		selector:
 			'.comp.compProgressBar._default._primary > ._top, .comp.compProgressBar._default._primary > ._bottom, .comp.compProgressBar._striped._primary > ._top, .comp.compProgressBar._striped._primary > ._bottom',
@@ -192,7 +175,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Secondary Progress Bar Outside Text Color',
 		name: 'secondaryProgressOutsideTextColor',
 		defaultValue: '<backgroundColorTwo>',
-		description: 'Secondary outiside text color.',
 		cssProperty: 'color',
 		selector:
 			'.comp.compProgressBar._default._secondary > ._top, .comp.compProgressBar._default._secondary > ._bottom, .comp.compProgressBar._striped._secondary > ._top, .comp.compProgressBar._striped._secondary > ._bottom',
@@ -203,7 +185,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Tertiary Progress Bar Outside Text Color',
 		name: 'tertiaryProgressOutsideTextColor',
 		defaultValue: '<backgroundColorThree>',
-		description: 'Tertiary outiside text color.',
 		cssProperty: 'color',
 		selector:
 			'.comp.compProgressBar._default._tertiary > ._top, .comp.compProgressBar._default._tertiary > ._bottom, .comp.compProgressBar._striped._tertiary > ._top, .comp.compProgressBar._striped._tertiary > ._bottom',
@@ -214,7 +195,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Quaternary Progress Bar Outside Text Color',
 		name: 'quaternaryProgressOutsideTextColor',
 		defaultValue: '<backgroundColorFour>',
-		description: 'Quaternary outiside text color.',
 		cssProperty: 'color',
 		selector:
 			'.comp.compProgressBar._default._quaternary > ._top, .comp.compProgressBar._default._quaternary > ._bottom, .comp.compProgressBar._striped._quaternary > ._top, .comp.compProgressBar._striped._quaternary > ._bottom',
@@ -225,7 +205,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Quinary Progress Bar Outside Text Color',
 		name: 'quinaryProgressOutsideTextColor',
 		defaultValue: '<backgroundColorFive>',
-		description: 'Quinary outiside text color.',
 		cssProperty: 'color',
 		selector:
 			'.comp.compProgressBar._default._quinary > ._top, .comp.compProgressBar._default._quinary > ._bottom, .comp.compProgressBar._striped._quinary > ._top, .comp.compProgressBar._striped._quinary > ._bottom',
@@ -237,7 +216,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Progress Bar Outside Text Top Padding',
 		name: 'progressOutsideTextTopPadding',
 		defaultValue: '5px',
-		description: 'Progress Bar outiside text top padding.',
 		cssProperty: 'padding-top',
 		selector:
 			'.comp.compProgressBar._default > ._bottom, .comp.compProgressBar._striped > ._bottom',
@@ -248,7 +226,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Progress Bar Outside Text Bottom Padding',
 		name: 'progressOutsideTextBottomPadding',
 		defaultValue: '5px',
-		description: 'Progress Bar outiside text bottom padding.',
 		cssProperty: 'padding-bottom',
 		selector: '.comp.compProgressBar._default > ._top, .comp.compProgressBar._striped > ._top',
 		noPrefix: true,
@@ -258,9 +235,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Progress Bar Outside Text Left Padding',
 		name: 'progressOutsideTextLeftPadding',
 		defaultValue: '5px',
-		description: 'Progress Bar outiside text left padding.',
 		cssProperty: 'padding-left',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -268,9 +243,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Progress Bar Outside Text Right Padding',
 		name: 'progressOutsideTextRightPadding',
 		defaultValue: '5px',
-		description: 'Progress Bar outiside text right padding.',
 		cssProperty: 'padding-right',
-		selector: '',
 		noPrefix: true,
 	},
 
@@ -280,7 +253,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryProgressBarStripedBackground',
 		defaultValue:
 			'repeating-linear-gradient(75deg, <backgroundColorOne>, <backgroundColorOne> 10px, <backgroundColorOne>66 10px, <backgroundColorOne>66 20px)',
-		description: 'Progress Bar Primary Striped',
 		cssProperty: 'background',
 		selector: '.comp.compProgressBar._striped._primary ._progress',
 		noPrefix: true,
@@ -291,7 +263,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryProgressBarStripedBackground',
 		defaultValue:
 			'repeating-linear-gradient(75deg, <backgroundColorTwo>, <backgroundColorTwo> 10px, <backgroundColorTwo>66 10px, <backgroundColorTwo>66 20px)',
-		description: 'Progress Bar Secondary Striped',
 		cssProperty: 'background',
 		selector: '.comp.compProgressBar._striped._secondary ._progress',
 		noPrefix: true,
@@ -302,7 +273,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryProgressBarStripedBackground',
 		defaultValue:
 			'repeating-linear-gradient(75deg, <backgroundColorThree>, <backgroundColorThree> 10px, <backgroundColorThree>66 10px, <backgroundColorThree>66 20px)',
-		description: 'Progress Bar Tertiary Striped',
 		cssProperty: 'background',
 		selector: '.comp.compProgressBar._striped._tertiary ._progress',
 		noPrefix: true,
@@ -313,7 +283,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryProgressBarStripedBackground',
 		defaultValue:
 			'repeating-linear-gradient(75deg, <backgroundColorFour>, <backgroundColorFour> 10px, <backgroundColorFour>66 10px, <backgroundColorFour>66 20px)',
-		description: 'Progress Bar Quaternary Striped',
 		cssProperty: 'background',
 		selector: '.comp.compProgressBar._striped._quaternary ._progress',
 		noPrefix: true,
@@ -324,7 +293,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryProgressBarStripedBackground',
 		defaultValue:
 			'repeating-linear-gradient(75deg, <backgroundColorFive>, <backgroundColorFive> 10px, <backgroundColorFive>66 10px, <backgroundColorFive>66 20px)',
-		description: 'Progress Bar Quinary Striped',
 		cssProperty: 'background',
 		selector: '.comp.compProgressBar._striped._quinary ._progress',
 		noPrefix: true,
@@ -335,7 +303,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Primary Circular Progress Bar Track BG Color',
 		name: 'circularProgressColorPrimary',
 		defaultValue: '<backgroundColorOne>66',
-		description: 'Primary Circular Progress Bar Track BG Color.',
 		cssProperty: 'stroke',
 		selector:
 			'.comp.compProgressBar._circular._primary ._circular_track, .comp.compProgressBar._circular_text_background._primary ._circular_track, .comp.compProgressBar._circular_text_background_outline._primary ._circular_track',
@@ -346,7 +313,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Secondary Circular Progress Bar Track BG Color',
 		name: 'circularProgressColorSecondary',
 		defaultValue: '<backgroundColorTwo>66',
-		description: 'Secondary Circular Progress Bar Track BG Color.',
 		cssProperty: 'stroke',
 		selector:
 			'.comp.compProgressBar._circular._secondary ._circular_track, .comp.compProgressBar._circular_text_background._secondary ._circular_track, .comp.compProgressBar._circular_text_background_outline._secondary ._circular_track',
@@ -357,7 +323,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Tertiary Circular Progress Bar Track BG Color',
 		name: 'circularProgressColorTertiary',
 		defaultValue: '<backgroundColorThree>66',
-		description: 'Tertiary Circular Progress Bar Track BG Color.',
 		cssProperty: 'stroke',
 		selector:
 			'.comp.compProgressBar._circular._tertiary ._circular_track, .comp.compProgressBar._circular_text_background._tertiary ._circular_track, .comp.compProgressBar._circular_text_background_outline._tertiary ._circular_track',
@@ -368,7 +333,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Quaternary Circular Progress Bar Track BG Color',
 		name: 'circularProgressColorQuaternary',
 		defaultValue: '<backgroundColorFour>66',
-		description: 'Quaternary Circular Progress Bar Track BG Color.',
 		cssProperty: 'stroke',
 		selector:
 			'.comp.compProgressBar._circular._quaternary ._circular_track, .comp.compProgressBar._circular_text_background._quaternary ._circular_track, .comp.compProgressBar._circular_text_background_outline._quaternary ._circular_track',
@@ -379,7 +343,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Quinary Circular Progress Bar Track BG Color',
 		name: 'circularProgressColorQuinary',
 		defaultValue: '<backgroundColorFive>66',
-		description: 'Quinary Circular Progress Bar Track BG Color.',
 		cssProperty: 'stroke',
 		selector:
 			'.comp.compProgressBar._circular._quinary ._circular_track, .comp.compProgressBar._circular_text_background._quinary ._circular_track, .comp.compProgressBar._circular_text_background_outline._quinary ._circular_track',
@@ -391,7 +354,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Primary Circular Progress Bar Indicator BG Color',
 		name: 'circularProgressIndicatorColorPrimary',
 		defaultValue: '<backgroundColorOne>',
-		description: 'Primary Circular Progress Bar Indicator BG Color.',
 		cssProperty: 'stroke',
 		selector:
 			'.comp.compProgressBar._circular._primary ._circular_progress_indicator, .comp.compProgressBar._circular_text_background._primary ._circular_progress_indicator, .comp.compProgressBar._circular_text_background_outline._primary ._circular_progress_indicator',
@@ -402,7 +364,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Secondary Circular Progress Bar Indicator BG Color',
 		name: 'circularProgressIndicatorColorSecondary',
 		defaultValue: '<backgroundColorTwo>',
-		description: 'Secondary Circular Progress Bar Indicator BG Color.',
 		cssProperty: 'stroke',
 		selector:
 			'.comp.compProgressBar._circular._secondary ._circular_progress_indicator, .comp.compProgressBar._circular_text_background._secondary ._circular_progress_indicator, .comp.compProgressBar._circular_text_background_outline._secondary ._circular_progress_indicator',
@@ -413,7 +374,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Tertiary Circular Progress Bar Indicator BG Color',
 		name: 'circularProgressIndicatorColorTertiary',
 		defaultValue: '<backgroundColorThree>',
-		description: 'Tertiary Circular Progress Bar Indicator BG Color.',
 		cssProperty: 'stroke',
 		selector:
 			'.comp.compProgressBar._circular._tertiary ._circular_progress_indicator, .comp.compProgressBar._circular_text_background._tertiary ._circular_progress_indicator, .comp.compProgressBar._circular_text_background_outline._tertiary ._circular_progress_indicator',
@@ -424,7 +384,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Quaternary Circular Progress Bar Indicator BG Color',
 		name: 'circularProgressIndicatorColorQuaternary',
 		defaultValue: '<backgroundColorFour>',
-		description: 'Quaternary Circular Progress Bar Indicator BG Color.',
 		cssProperty: 'stroke',
 		selector:
 			'.comp.compProgressBar._circular._quaternary ._circular_progress_indicator, .comp.compProgressBar._circular_text_background._quaternary ._circular_progress_indicator, .comp.compProgressBar._circular_text_background_outline._quaternary ._circular_progress_indicator',
@@ -435,7 +394,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Quinary Circular Progress Bar Indicator BG Color',
 		name: 'circularProgressIndicatorColorQuinary',
 		defaultValue: '<backgroundColorFive>',
-		description: 'Quinary Circular Progress Bar Indicator BG Color.',
 		cssProperty: 'stroke',
 		selector:
 			'.comp.compProgressBar._circular._quinary ._circular_progress_indicator, .comp.compProgressBar._circular_text_background._quinary ._circular_progress_indicator, .comp.compProgressBar._circular_text_background_outline._quinary ._circular_progress_indicator',
@@ -447,7 +405,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Primary Circular Progress Bar Label Color',
 		name: 'circularProgressLabelColorPrimary',
 		defaultValue: '<fontColorThree>',
-		description: 'Primary Circular Progress Bar Label Color.',
 		cssProperty: 'color',
 		selector:
 			'.comp.compProgressBar._circular._primary ._circular_label, .comp.compProgressBar._circular_text_background._primary ._circular_label',
@@ -458,7 +415,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Secondary Circular Progress Bar Label Color',
 		name: 'circularProgressLabelColorSecondary',
 		defaultValue: '<fontColorFour>',
-		description: 'Secondary Circular Progress Bar Label Color.',
 		cssProperty: 'color',
 		selector:
 			'.comp.compProgressBar._circular._secondary ._circular_label, .comp.compProgressBar._circular_text_background._secondary ._circular_label',
@@ -469,7 +425,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Tertiary Circular Progress Bar Label Color',
 		name: 'circularProgressLabelColorTertiary',
 		defaultValue: '<fontColorFive>',
-		description: 'Tertiary Circular Progress Bar Label Color.',
 		cssProperty: 'color',
 		selector:
 			'.comp.compProgressBar._circular._tertiary ._circular_label, .comp.compProgressBar._circular_text_background._tertiary ._circular_label',
@@ -480,7 +435,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Quaternary Circular Progress Bar Label Color',
 		name: 'circularProgressLabelColorQuaternary',
 		defaultValue: '<fontColorNine>',
-		description: 'Quaternary Circular Progress Bar Label Color.',
 		cssProperty: 'color',
 		selector:
 			'.comp.compProgressBar._circular._quaternary ._circular_label, .comp.compProgressBar._circular_text_background._quaternary ._circular_label',
@@ -491,7 +445,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Quinary Circular Progress Bar Label Color',
 		name: 'circularProgressLabelColorQuinary',
 		defaultValue: '<fontColorSeven>',
-		description: 'Quinary Circular Progress Bar Label Color.',
 		cssProperty: 'color',
 		selector:
 			'.comp.compProgressBar._circular._quinary ._circular_label, .comp.compProgressBar._circular_text_background._quinary ._circular_label',
@@ -503,7 +456,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Primary Circular Progress Bar Label Color Outline Style',
 		name: 'circularProgressLabelColorOutlineStylePrimary',
 		defaultValue: '<fontColorTwo>',
-		description: 'Primary Circular Progress Bar Label Color Outline Style.',
 		cssProperty: 'color',
 		selector:
 			'.comp.compProgressBar._circular_text_background_outline._primary ._circular_label',
@@ -514,7 +466,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Secondary Circular Progress Bar Label Color Outline Style',
 		name: 'circularProgressLabelColorOutlineStyleSecondary',
 		defaultValue: '<fontColorTwo>',
-		description: 'Secondary Circular Progress Bar Label Color Outline Style.',
 		cssProperty: 'color',
 		selector:
 			'.comp.compProgressBar._circular_text_background_outline._secondary ._circular_label',
@@ -525,7 +476,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Tertiary Circular Progress Bar Label Color Outline Style',
 		name: 'circularProgressLabelColorOutlineStyleTertiary',
 		defaultValue: '<fontColorTwo>',
-		description: 'Tertiary Circular Progress Bar Label Color Outline Style.',
 		cssProperty: 'color',
 		selector:
 			'.comp.compProgressBar._circular_text_background_outline._tertiary ._circular_label',
@@ -536,7 +486,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Quaternary Circular Progress Bar Label Color Outline Style',
 		name: 'circularProgressLabelColorOutlineStyleQuaternary',
 		defaultValue: '<fontColorTwo>',
-		description: 'Quaternary Circular Progress Bar Label Color Outline Style.',
 		cssProperty: 'color',
 		selector:
 			'.comp.compProgressBar._circular_text_background_outline._quaternary ._circular_label',
@@ -547,7 +496,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Quinary Circular Progress Bar Label Color Outline Style',
 		name: 'circularProgressLabelColorOutlineStyleQuinary',
 		defaultValue: '<fontColorTwo>',
-		description: 'Quinary Circular Progress Bar Label Color Outline Style.',
 		cssProperty: 'color',
 		selector:
 			'.comp.compProgressBar._circular_text_background_outline._quinary ._circular_label',
@@ -559,7 +507,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Primary Circular Progress Bar Label BG Color',
 		name: 'circularProgressLabelBGColorPrimary',
 		defaultValue: '<backgroundColorOne>66',
-		description: 'Primary Circular Progress Bar Label BG Color.',
 		cssProperty: 'fill',
 		selector:
 			'.comp.compProgressBar._circular_text_background._primary ._circular_progres_text_bg',
@@ -570,7 +517,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Secondary Circular Progress Bar Label BG Color',
 		name: 'circularProgressLabelBGColorSecondary',
 		defaultValue: '<backgroundColorTwo>66',
-		description: 'Secondary Circular Progress Bar Label BG Color.',
 		cssProperty: 'fill',
 		selector:
 			'.comp.compProgressBar._circular_text_background._secondary ._circular_progres_text_bg',
@@ -581,7 +527,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Tertiary Circular Progress Bar Label BG Color',
 		name: 'circularProgressLabelBGColorTertiary',
 		defaultValue: '<backgroundColorThree>66',
-		description: 'Tertiary Circular Progress Bar Label BG Color.',
 		cssProperty: 'fill',
 		selector:
 			'.comp.compProgressBar._circular_text_background._tertiary ._circular_progres_text_bg',
@@ -592,7 +537,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Quaternary Circular Progress Bar Label BG Color',
 		name: 'circularProgressLabelBGColorQuaternary',
 		defaultValue: '<backgroundColorFour>66',
-		description: 'Quaternary Circular Progress Bar Label BG Color.',
 		cssProperty: 'fill',
 		selector:
 			'.comp.compProgressBar._circular_text_background._quaternary ._circular_progres_text_bg',
@@ -603,7 +547,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Quinary Circular Progress Bar Label BG Color',
 		name: 'circularProgressLabelBGColorQuinary',
 		defaultValue: '<backgroundColorFive>66',
-		description: 'Quinary Circular Progress Bar Label BG Color.',
 		cssProperty: 'fill',
 		selector:
 			'.comp.compProgressBar._circular_text_background._quinary ._circular_progres_text_bg',
@@ -615,7 +558,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Primary Circular Progress Bar Label BG Color',
 		name: 'Primary Circular Progress Bar Label BG Color Outlined',
 		defaultValue: '<backgroundColorOne>',
-		description: 'Primary Circular Progress Bar Label BG Color Outlined.',
 		cssProperty: 'fill',
 		selector:
 			'.comp.compProgressBar._circular_text_background_outline._primary ._circular_progres_text_bg',
@@ -626,7 +568,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Secondary Circular Progress Bar Label BG Color',
 		name: 'Secondary Circular Progress Bar Label BG Color Outlined',
 		defaultValue: '<backgroundColorTwo>',
-		description: 'Secondary Circular Progress Bar Label BG Color Outlined.',
 		cssProperty: 'fill',
 		selector:
 			'.comp.compProgressBar._circular_text_background_outline._secondary ._circular_progres_text_bg',
@@ -637,7 +578,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Tertiary Circular Progress Bar Label BG Color',
 		name: 'Tertiary Circular Progress Bar Label BG Color Outlined',
 		defaultValue: '<backgroundColorThree>',
-		description: 'Tertiary Circular Progress Bar Label BG Color Outlined.',
 		cssProperty: 'fill',
 		selector:
 			'.comp.compProgressBar._circular_text_background_outline._tertiary ._circular_progres_text_bg',
@@ -648,7 +588,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Quaternary Circular Progress Bar Label BG Color',
 		name: 'Quaternary Circular Progress Bar Label BG Color Outlined',
 		defaultValue: '<backgroundColorFour>',
-		description: 'Quaternary Circular Progress Bar Label BG Color Outlined.',
 		cssProperty: 'fill',
 		selector:
 			'.comp.compProgressBar._circular_text_background_outline._quaternary ._circular_progres_text_bg',
@@ -659,7 +598,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Quinary Circular Progress Bar Label BG Color',
 		name: 'Quinary Circular Progress Bar Label BG Color Outlined',
 		defaultValue: '<backgroundColorFive>',
-		description: 'Quinary Circular Progress Bar Label BG Color Outlined.',
 		cssProperty: 'fill',
 		selector:
 			'.comp.compProgressBar._circular_text_background_outline._quinary ._circular_progres_text_bg',
@@ -671,7 +609,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Circular Progress Label BG Size Width',
 		name: 'circularProgressLabelBGSizeWidth',
 		defaultValue: '30%',
-		description: 'Circular Progress Label BG Size',
 		cssProperty: 'r',
 		selector:
 			'.comp.compProgressBar._circular_text_background_outline ._circular_progress ._circular_progres_text_bg, .comp.compProgressBar._circular_text_background ._circular_progress ._circular_progres_text_bg',
