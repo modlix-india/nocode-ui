@@ -176,7 +176,7 @@ export interface StylePropertyDefinition {
 	name: string;
 	displayName: string;
 	groupName?: string;
-	description: string;
+	description?: string;
 	defaultValue?: string;
 	cssProperty?: string;
 	selector?: string;

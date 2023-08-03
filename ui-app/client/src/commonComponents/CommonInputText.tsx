@@ -36,6 +36,9 @@ type CommonInputType = {
 	designType: string;
 	colorScheme: string;
 	cssPrefix: string;
+	children?: React.ReactNode;
+	onMouseLeave?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+	updDownHandler?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 };
 
 function CommonInputText(props: CommonInputType) {
@@ -71,6 +74,9 @@ function CommonInputText(props: CommonInputType) {
 		designType,
 		colorScheme,
 		cssPrefix,
+		children,
+		onMouseLeave,
+		updDownHandler,
 	} = props;
 	const [focus, setFocus] = React.useState(false);
 	const [showPassword, setShowPassowrd] = React.useState(false);
@@ -125,6 +131,9 @@ function CommonInputText(props: CommonInputType) {
 			</span>
 		);
 
+	let inputStyle = computedStyles.inputBox ?? {};
+	if (!handleChange) inputStyle = { ...inputStyle, caretColor: 'transparent' };
+
 	return (
 		<div
 			className={`${cssPrefix} ${
@@ -133,6 +142,8 @@ function CommonInputText(props: CommonInputType) {
 				value?.length ? '_hasValue' : ''
 			} ${hasErrorMessages ? '_hasError' : ''}`}
 			style={computedStyles.comp ?? {}}
+			onMouseLeave={onMouseLeave}
+			onKeyUp={updDownHandler}
 		>
 			<HelperComponent definition={definition} />
 			{leftIcon ? (
@@ -144,7 +155,7 @@ function CommonInputText(props: CommonInputType) {
 				</i>
 			) : undefined}
 			<input
-				style={computedStyles.inputBox ?? {}}
+				style={inputStyle}
 				className={`_inputBox ${noFloat ? '' : 'float'} ${
 					valueType === 'NUMBER' ? 'remove-spin-button' : ''
 				}`}
@@ -187,7 +198,7 @@ function CommonInputText(props: CommonInputType) {
 					}`}
 					onClick={() => setShowPassowrd(!showPassword)}
 				>
-					<SubHelperComponent definition={definition} subComponentName="rightIcon" />{' '}
+					<SubHelperComponent definition={definition} subComponentName="rightIcon" />
 				</i>
 			) : undefined}
 			{hasErrorMessages ? (
@@ -224,6 +235,7 @@ function CommonInputText(props: CommonInputType) {
 				{getTranslations(label, translations)}
 			</label>
 			{validationsOrSupportText}
+			{children}
 		</div>
 	);
 }

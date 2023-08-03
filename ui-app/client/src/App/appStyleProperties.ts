@@ -287,13 +287,13 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '._quinaryFont',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Font Style',
 		displayName: 'Normal Font Style',
 		name: 'normalFontStyle',
 		defaultValue: 'normal',
 		description: 'Normal Font Style used in application.',
-		cssProperty: '',
 		selector: '._normalFontStyle',
 		noPrefix: true,
 	},
@@ -303,7 +303,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'italicFontStyle',
 		defaultValue: 'italic',
 		description: 'Italic Font Style used in application.',
-		cssProperty: '',
 		selector: '._italicFontStyle',
 		noPrefix: true,
 	},
@@ -313,18 +312,15 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'obliqueFontStyle',
 		defaultValue: 'oblique',
 		description: 'oblique Font Style used in application.',
-		cssProperty: '',
 		selector: '._obliqueFontStyle',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Color',
 		displayName: 'Color One',
 		name: 'colorOne',
 		defaultValue: '#52BD94',
-		description: 'Color one',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -332,9 +328,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Color Two',
 		name: 'colorTwo',
 		defaultValue: '#08705C',
-		description: 'Color two',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -342,9 +335,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Color Three',
 		name: 'colorThree',
 		defaultValue: '#FFC728',
-		description: 'Color Three',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -352,9 +342,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Color Four',
 		name: 'colorFour',
 		defaultValue: '#EC6B5F',
-		description: 'Color Four',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -362,9 +349,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Color Five',
 		name: 'colorFive',
 		defaultValue: '#4D7FEE',
-		description: 'Color Five',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -372,9 +356,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Color Six',
 		name: 'colorSix',
 		defaultValue: '#333333',
-		description: 'Color Six',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -382,9 +363,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Color Seven',
 		name: 'colorSeven',
 		defaultValue: '#FFFFFF',
-		description: 'Color Seven',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -392,9 +370,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Color Eight',
 		name: 'colorEight',
 		defaultValue: '#8E90A4',
-		description: 'Color Eight',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -402,9 +377,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Color Nine',
 		name: 'colorNine',
 		defaultValue: '#E5E5E5',
-		description: 'Color NIne',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -412,9 +384,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Color Ten',
 		name: 'colorTen',
 		defaultValue: '#0085F2',
-		description: 'Color Ten',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -422,9 +391,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Color Eleven',
 		name: 'colorTen',
 		defaultValue: '#61c554',
-		description: 'Color Ten',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -432,9 +398,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Color Twelve',
 		name: 'colorTwelve',
 		defaultValue: '#FE3939',
-		description: 'Color Twelve',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -442,9 +405,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Color Twelve',
 		name: 'colorTwelve',
 		defaultValue: '#A3A3A3',
-		description: 'Color Twelve',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -452,9 +412,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Color Thirteen',
 		name: 'colorThirteen',
 		defaultValue: '#999999',
-		description: 'Color Thirteen',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -462,19 +419,15 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Color Fourteen',
 		name: 'colorFourteen',
 		defaultValue: '#6A7FFF',
-		description: 'Color Fourteen',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Font Color',
 		displayName: 'Font Color One',
 		name: 'fontColorOne',
 		defaultValue: '<colorSix>',
 		description: 'Font Color One used in application',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -483,8 +436,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'fontColorTwo',
 		defaultValue: '<colorSeven>',
 		description: 'Font Color Two used in application',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -493,8 +444,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'fontColorThree',
 		defaultValue: '<colorOne>',
 		description: 'Font Color Three used in application',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -503,8 +452,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'fontColorFour',
 		defaultValue: '<colorTwo>',
 		description: 'Font Color Four used in application',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -513,8 +460,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'fontColorFive',
 		defaultValue: '<colorThree>',
 		description: 'Font Color Five used in application',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -523,8 +468,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'fontColorSix',
 		defaultValue: '<colorNine>',
 		description: 'Font Color Six used in application',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -533,8 +476,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'fontColorSeven',
 		defaultValue: '<colorFive>',
 		description: 'Font Color Seven used in application',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -543,8 +484,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'fontColorEight',
 		defaultValue: '<colorThirteen>',
 		description: 'Font Color Eight used in application',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -553,18 +492,15 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'fontColorNine',
 		defaultValue: '<colorFour>',
 		description: 'Font Color Nine used in application',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Background Color',
 		displayName: 'Background Color One',
 		name: 'backgroundColorOne',
 		defaultValue: '<colorOne>',
 		description: 'Background One used in application',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -573,8 +509,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'backgroundColorTwo',
 		defaultValue: '<colorTwo>',
 		description: 'Background Two used in application',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -583,8 +517,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'backgroundColorThree',
 		defaultValue: '<colorThree>',
 		description: 'Background Three used in application',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -593,8 +525,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'backgroundColorFour',
 		defaultValue: '<colorFour>',
 		description: 'Background Four used in application',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -603,8 +533,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'backgroundColorFive',
 		defaultValue: '<colorFive>',
 		description: 'Background Five used in application',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -613,8 +541,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'backgroundColorSix',
 		defaultValue: '<colorSix>',
 		description: 'Background Six used in application',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -623,8 +549,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'backgroundColorSeven',
 		defaultValue: '<colorSeven>',
 		description: 'Background Seven used in application',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -633,8 +557,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'backgroundColorEight',
 		defaultValue: '<colorThirteen>',
 		description: 'Background Eight used in application',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -643,8 +565,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'backgroundColorNine',
 		defaultValue: '<colorNine>',
 		description: 'Background Nine used in application',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -653,18 +573,15 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'backgroundColorTen',
 		defaultValue: 'transparent',
 		description: 'Background Ten used in application',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Border Color',
 		displayName: 'Border Color One',
 		name: 'borderColorOne',
 		defaultValue: '<colorSix>',
 		description: 'Border Color One used in application.',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -673,8 +590,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'borderColorTwo',
 		defaultValue: '<colorSeven>',
 		description: 'Border Color Two used in application.',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -683,8 +598,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'borderColorThree',
 		defaultValue: '<colorOne>',
 		description: 'Border Color Three used in application.',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -693,8 +606,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'borderColorFour',
 		defaultValue: '<colorTwo>',
 		description: 'Border Color Four used in application.',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -703,8 +614,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'borderColorFive',
 		defaultValue: '<colorThree>',
 		description: 'Border Color Five used in application.',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -713,8 +622,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'borderColorSix',
 		defaultValue: '<colorNine>',
 		description: 'Border Color Six used in application.',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -723,18 +630,15 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'borderColorSeven',
 		defaultValue: '<colorFive>',
 		description: 'Border Color Seven used in application.',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Letter Spacing',
 		displayName: 'Letter Spacing One',
 		name: 'letterSpacingOne',
 		defaultValue: 'normal',
 		description: 'Letter Spacing One used in application.',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -743,18 +647,15 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'letterSpacingTwo',
 		defaultValue: '0.16px',
 		description: 'Letter Spacing Two used in application.',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Gradient Color',
 		displayName: 'Gradient Color One',
 		name: 'gradientColorOne',
 		defaultValue: 'linear-gradient(90deg, <backgroundColorOne>, transparent)',
 		description: 'Gradient One used in application',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -763,8 +664,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'gradientColorTwo',
 		defaultValue: 'linear-gradient(90deg, <backgroundColorTwo>, transparent)',
 		description: 'Gradient Two used in application',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -773,8 +672,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'gradientColorThree',
 		defaultValue: 'linear-gradient(90deg, <backgroundColorThree>, transparent)',
 		description: 'Gradient Three used in application',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -783,8 +680,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'gradientColorFour',
 		defaultValue: 'linear-gradient(90deg, <backgroundColorFour>, transparent)',
 		description: 'Gradient Four used in application',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -793,8 +688,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'gradientColorFive',
 		defaultValue: 'linear-gradient(90deg, <backgroundColorFive>, transparent)',
 		description: 'Gradient Five used in application',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -803,8 +696,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'gradientColorSix',
 		defaultValue: 'linear-gradient(90deg, <backgroundColorSix>, transparent)',
 		description: 'Gradient Six used in application',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -813,8 +704,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'gradientColorSeven',
 		defaultValue: 'linear-gradient(90deg, <backgroundColorSeven>, transparent)',
 		description: 'Gradient Seven used in application',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -823,8 +712,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'gradientColorEight',
 		defaultValue: 'linear-gradient(90deg, <backgroundColorEight, transparent)',
 		description: 'Gradient Eight used in application',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -833,8 +720,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'gradientColorNine',
 		defaultValue: 'linear-gradient(90deg, <backgroundColorNine>, transparent)',
 		description: 'Gradient Nine used in application',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -843,18 +728,14 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'gradientColorTen',
 		defaultValue: 'linear-gradient(90deg, <backgroundColorTen>, transparent)',
 		description: 'Gradient Ten used in application',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Success Color',
 		displayName: 'Success Color',
 		name: 'successColor',
 		defaultValue: '#270',
-		description: 'Success Color',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -862,9 +743,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Information Color',
 		name: 'informationColor',
 		defaultValue: '#059',
-		description: 'Information Color',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -872,9 +750,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Warning Color',
 		name: 'warningColor',
 		defaultValue: '#e5d122',
-		description: 'Warning Color',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
 	{
@@ -882,17 +757,14 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Error Color',
 		name: 'errorColor',
 		defaultValue: '#ed6a5e',
-		description: 'Error Color',
-		cssProperty: '',
-		selector: '',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Validation Message',
 		displayName: 'Validation Message Font',
 		name: 'validationMessageFont',
 		defaultValue: '<quaternaryFont>',
-		description: 'Validation Message Font',
 		cssProperty: 'font',
 		selector: '._validationMessages',
 		noPrefix: true,
@@ -902,9 +774,81 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Validation Message Color',
 		name: 'validationMessageFontColor',
 		defaultValue: '<errorColor>',
-		description: 'Validation Message Color',
 		cssProperty: 'color',
 		selector: '._validationMessages',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'Background Hover Color',
+		displayName: 'Background Hover Color One',
+		name: 'backgroundHoverColorOne',
+		defaultValue: '#A8DEC9',
+		description: 'Background Hover One used in application',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Background Hover Color',
+		displayName: 'Background Hover Color Two',
+		name: 'backgroundHoverColorTwo',
+		defaultValue: '#81B7AB',
+		description: 'Background Hover Two used in application',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Background Hover Color',
+		displayName: 'Background Hover Color Three',
+		name: 'backgroundHoverColorThree',
+		defaultValue: '#FFE193',
+		description: 'Background Hover Three used in application',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Background Hover Color',
+		displayName: 'Background Hover Color Four',
+		name: 'backgroundHoverColorFour',
+		defaultValue: '#F3B4AE',
+		description: 'Background Hover Four used in application',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Background Hover Color',
+		displayName: 'Background Hover Color Five',
+		name: 'backgroundHoverColorFive',
+		defaultValue: '#A5BDF6',
+		description: 'Background Hover Five used in application',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Background Hover Color',
+		displayName: 'Background Hover Color Six',
+		name: 'backgroundHoverColorSix',
+		defaultValue: '#999999',
+		description: 'Background Hover Six used in application',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Background Hover Color',
+		displayName: 'Background Hover Color Seven',
+		name: 'backgroundHoverColorSeven',
+		defaultValue: '#DDDDDD',
+		description: 'Background Hover Seven used in application',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Background Hover Color',
+		displayName: 'Background Hover Color Eight',
+		name: 'backgroundHoverColorEight',
+		defaultValue: '#DDDDDD',
+		description: 'Background Hover Eight used in application',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Background Hover Color',
+		displayName: 'Background Hover Color Nine',
+		name: 'backgroundHoverColorNine',
+		defaultValue: '#FFFFFF',
+		description: 'Background Hover Nine used in application',
 		noPrefix: true,
 	},
 ];

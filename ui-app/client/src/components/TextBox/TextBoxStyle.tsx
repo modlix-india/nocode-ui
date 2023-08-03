@@ -52,8 +52,11 @@ export default function TextBoxStyle({ theme }: { theme: Map<string, Map<string,
 	}
 
 	${PREFIX}._bigDesign1 ._label {
-	  	padding-left: 36px;
     	margin-top: 0px;
+	}
+
+	${PREFIX}._bigDesign1._hasLeftIcon ._label {
+		padding-left: 36px;
 	}
 
 	${PREFIX}._bigDesign1._hasValue ._label,
