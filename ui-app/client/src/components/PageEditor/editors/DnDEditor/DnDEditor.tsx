@@ -24,6 +24,7 @@ interface DnDEditorProps {
 	url: string;
 	pageExtractor: PageStoreExtractor;
 	iframeRef: React.RefObject<HTMLIFrameElement>;
+	templateIframeRef: React.RefObject<HTMLIFrameElement>;
 	selectedComponent: string | undefined;
 	onSelectedComponentChanged: (key: string) => void;
 	locationHistory: Array<LocationHistory>;
@@ -56,6 +57,7 @@ export default function DnDEditor({
 	pageName,
 	pageExtractor,
 	iframeRef,
+	templateIframeRef,
 	onChangePersonalization,
 	selectedComponent,
 	onSelectedComponentChanged,
@@ -108,6 +110,7 @@ export default function DnDEditor({
 				pageOperations={pageOperations}
 				onShowCodeEditor={onShowCodeEditor}
 				previewMode={preview}
+				templateIframeRef={templateIframeRef}
 			/>
 			<div className="_dndGridMain">
 				<DnDTopBar

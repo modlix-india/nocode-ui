@@ -11,7 +11,7 @@ export const isSlave = (() => {
 
 const _parent = window.parent !== window.top ? window.parent : window.top;
 export function messageToMaster(message: { type: string; payload: any | undefined }) {
-	_parent.postMessage(message, '*');
+	_parent.postMessage({ ...message, editorType: window.designMode }, '*');
 }
 
 export const SLAVE_FUNCTIONS = new Map<string, (payload: any) => void>([
@@ -28,6 +28,12 @@ export const SLAVE_FUNCTIONS = new Map<string, (payload: any) => void>([
 	[
 		'EDITOR_PERSONALIZATION',
 		p => (window.pageEditor = { ...window.pageEditor, personalization: p }),
+	],
+	[
+		'EDITOR_APP_DEFINITION',
+		p => {
+			console.log('EDITOR_APP_DEFINITION', p);
+		},
 	],
 ]);
 

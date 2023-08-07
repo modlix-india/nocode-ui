@@ -249,6 +249,7 @@ function PageEditor(props: ComponentProps) {
 	);
 
 	const ref = useRef<HTMLIFrameElement>(null);
+	const templateIframeRef = useRef<HTMLIFrameElement>(null);
 	const [selectedComponent, setSelectedComponentOriginal] = useState<string>('');
 	const [selectedSubComponent, setSelectedSubComponent] = useState<string>('');
 	const [issue, setIssue] = useState<Issue>();
@@ -346,6 +347,22 @@ function PageEditor(props: ComponentProps) {
 		);
 	}, [personalizationPath, ref.current]);
 
+	// On app def change message to component template iframe.
+	useEffect(() => {
+		if (!appPath) return;
+		return addListenerAndCallImmediatelyWithChildrenActivity(
+			(_, payload) => {
+				if (!templateIframeRef.current) return;
+				templateIframeRef.current!.contentWindow?.postMessage({
+					type: 'EDITOR_APP_DEFINITION',
+					payload,
+				});
+			},
+			pageExtractor,
+			appPath,
+		);
+	}, [appPath, templateIframeRef.current]);
+
 	// On changing the selection, this effect sends to the iframe/slave.
 	useEffect(() => {
 		if (!defPath) return;
@@ -375,6 +392,15 @@ function PageEditor(props: ComponentProps) {
 		});
 	}, [ref.current]);
 
+	// The type of the editor should be sent to iframe/slave.
+	useEffect(() => {
+		if (!templateIframeRef.current) return;
+		templateIframeRef.current.contentWindow?.postMessage({
+			type: 'EDITOR_TYPE',
+			payload: 'THEME',
+		});
+	}, [templateIframeRef.current]);
+
 	// This will be used to store slave store.
 	const [slaveStore, setSlaveStore] = useState<any>(undefined);
 
@@ -382,11 +408,13 @@ function PageEditor(props: ComponentProps) {
 	useEffect(() => {
 		function onMessageFromSlave(e: MessageEvent) {
 			const {
-				data: { type, payload },
+				data: { type, payload, editorType },
 			} = e;
 
 			if (!type || !type.startsWith('SLAVE_') || !ref.current) return;
 			if (!MASTER_FUNCTIONS.has(type)) throw Error('Unknown message from Slave : ' + type);
+
+			if (e.source?.document != ref.current?.contentWindow?.document) return;
 
 			MASTER_FUNCTIONS.get(type)?.(
 				{
@@ -518,6 +546,7 @@ function PageEditor(props: ComponentProps) {
 					onPublish={onPublish ? publishFunction : undefined}
 					onChangePersonalization={savePersonalization}
 					iframeRef={ref}
+					templateIframeRef={templateIframeRef}
 					locationHistory={locationHistory}
 					selectedComponent={selectedComponent}
 					onSelectedComponentChanged={(key: string) => setSelectedComponent(key)}

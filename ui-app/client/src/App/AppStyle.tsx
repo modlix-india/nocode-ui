@@ -149,7 +149,13 @@ export default function AppStyle() {
 	}
 
 	.material-symbols-outlined,
-	.material-icons-round {
+	.material-symbols-rounded,
+	.material-symbols-sharp,
+	.material-icons,
+	.material-icons-outlined,
+	.material-icons-round,
+	.material-icons-sharp,
+	.material-icons-two-tone, {
 		font-size: inherit;
 	}
 

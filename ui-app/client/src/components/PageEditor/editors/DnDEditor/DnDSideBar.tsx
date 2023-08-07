@@ -20,6 +20,7 @@ interface DnDSideBarProps {
 	pageOperations: PageOperations;
 	onShowCodeEditor: (eventName: string) => void;
 	previewMode: boolean;
+	templateIframeRef: React.RefObject<HTMLIFrameElement>;
 }
 
 export default function DnDSideBar({
@@ -33,6 +34,7 @@ export default function DnDSideBar({
 	pageOperations,
 	onShowCodeEditor,
 	previewMode,
+	templateIframeRef,
 }: DnDSideBarProps) {
 	const [noSelection, setNoSelection] = useState<boolean>(false);
 	const [componentTree, setComponentTree] = useState<boolean>(false);
@@ -240,6 +242,7 @@ export default function DnDSideBar({
 								</div>
 								{selectedTemplateSection && (
 									<iframe
+										ref={templateIframeRef}
 										style={{ border: 'none' }}
 										src={`/editortemplates/SYSTEM/page/${selectedTemplateSection?.pageName}`}
 									/>
