@@ -39,7 +39,6 @@ function TabsComponent(props: ComponentProps) {
 		? getPathFromLocation(bindingPath, locationHistory)
 		: undefined;
 	const [hover, setHover] = React.useState(null);
-	console.log(hover, 'hoverValue');
 
 	const resolvedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
@@ -94,10 +93,8 @@ function TabsComponent(props: ComponentProps) {
 	const orientationClass = tabsOrientation === 'VERTICAL' ? 'vertical' : '';
 
 	const handleMouseEnter = (each: any) => {
-		console.log(each, 'eachfirst');
 		setHover(each);
 	};
-	console.log(hover, 'hoverAfterSetHover');
 
 	return (
 		<div className={`comp compTabs ${orientationClass}`} style={resolvedStyles.comp ?? {}}>
