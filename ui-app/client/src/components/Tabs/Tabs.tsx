@@ -5,6 +5,7 @@ import {
 	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
+
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
@@ -37,7 +38,8 @@ function TabsComponent(props: ComponentProps) {
 	const bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory)
 		: undefined;
-	const [hover, setHover] = React.useState(false);
+	const [hover, setHover] = React.useState(null);
+	console.log(hover, 'hoverValue');
 
 	const resolvedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
@@ -91,6 +93,12 @@ function TabsComponent(props: ComponentProps) {
 
 	const orientationClass = tabsOrientation === 'VERTICAL' ? 'vertical' : '';
 
+	const handleMouseEnter = (each: any) => {
+		console.log(each, 'eachfirst');
+		setHover(each);
+	};
+	console.log(hover, 'hoverAfterSetHover');
+
 	return (
 		<div className={`comp compTabs ${orientationClass}`} style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />
@@ -108,15 +116,15 @@ function TabsComponent(props: ComponentProps) {
 						className={`tabDiv ${orientationClass} ${
 							activeStyle === 'HIGHLIGHT' ? getActiveStyleHighlight(e) : ''
 						}`}
-						style={resolvedStyles.tabDivContainer ?? {}}
+						style={e === hover ? resolvedStyles.tabDivContainer ?? {} : {}}
 						onMouseEnter={
 							stylePropertiesWithPseudoStates?.hover
-								? () => setHover(true)
+								? () => handleMouseEnter(e)
 								: undefined
 						}
 						onMouseLeave={
 							stylePropertiesWithPseudoStates?.hover
-								? () => setHover(false)
+								? () => setHover(null)
 								: undefined
 						}
 						onClick={() => handleClick(e)}
@@ -125,15 +133,19 @@ function TabsComponent(props: ComponentProps) {
 							definition={props.definition}
 							subComponentName="tabDivContainer"
 						/>
+
 						<button
-							style={resolvedStyles.button ?? {}}
+							style={e === hover ? resolvedStyles.button ?? {} : {}}
 							className={`tabButton ${icon.length === 0 ? 'noIcon' : ''}`}
 						>
 							<SubHelperComponent
 								definition={props.definition}
 								subComponentName="button"
 							/>
-							<i className={`icon ${icon[i]}`} style={resolvedStyles.icon ?? {}}>
+							<i
+								className={`icon ${icon[i]}`}
+								style={e === hover ? resolvedStyles.icon ?? {} : {}}
+							>
 								<SubHelperComponent
 									definition={props.definition}
 									subComponentName="icon"
@@ -144,7 +156,7 @@ function TabsComponent(props: ComponentProps) {
 						{activeStyle === 'BORDER' && (
 							<div
 								className={`border ${getActiveStyleBorder(e)}`}
-								style={resolvedStyles.border ?? {}}
+								style={e === hover ? resolvedStyles.border ?? {} : {}}
 							>
 								<SubHelperComponent
 									definition={props.definition}
