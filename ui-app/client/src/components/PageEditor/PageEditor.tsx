@@ -249,7 +249,10 @@ function PageEditor(props: ComponentProps) {
 	);
 
 	const ref = useRef<HTMLIFrameElement>(null);
-	const templateIframeRef = useRef<HTMLIFrameElement>(null);
+	// To load iframe for the templates
+	const [templateIFrame, setTemplateIFrame] = useState<HTMLIFrameElement | undefined>(undefined);
+	// To use for the paralell design mode
+	const [paralellIFrame, setParalellIFrame] = useState<HTMLIFrameElement | undefined>(undefined);
 	const [selectedComponent, setSelectedComponentOriginal] = useState<string>('');
 	const [selectedSubComponent, setSelectedSubComponent] = useState<string>('');
 	const [issue, setIssue] = useState<Issue>();
@@ -321,15 +324,17 @@ function PageEditor(props: ComponentProps) {
 		return addListenerAndCallImmediatelyWithChildrenActivity(
 			(_, payload) => {
 				if (!ref.current) return;
-				ref.current.contentWindow?.postMessage({
+				const msg = {
 					type: 'EDITOR_DEFINITION',
 					payload,
-				});
+				};
+				ref.current.contentWindow?.postMessage(msg);
+				paralellIFrame?.contentWindow?.postMessage(msg);
 			},
 			pageExtractor,
 			defPath,
 		);
-	}, [defPath, ref.current]);
+	}, [defPath, ref.current, paralellIFrame]);
 
 	// On changing the personalization, this effect sends to the iframe/slave.
 	useEffect(() => {
@@ -337,51 +342,75 @@ function PageEditor(props: ComponentProps) {
 		return addListenerAndCallImmediatelyWithChildrenActivity(
 			(_, payload) => {
 				if (!ref.current) return;
-				ref.current.contentWindow?.postMessage({
+				const msg = {
 					type: 'EDITOR_PERSONALIZATION',
 					payload,
-				});
+				};
+				ref.current.contentWindow?.postMessage(msg);
+				paralellIFrame?.contentWindow?.postMessage(msg);
 			},
 			pageExtractor,
 			personalizationPath,
 		);
-	}, [personalizationPath, ref.current]);
+	}, [personalizationPath, ref.current, paralellIFrame]);
 
 	// On app def change message to component template iframe.
 	useEffect(() => {
 		if (!appPath) return;
-		return addListenerAndCallImmediatelyWithChildrenActivity(
+		const unListen = addListenerAndCallImmediatelyWithChildrenActivity(
 			(_, payload) => {
-				if (!templateIframeRef.current) return;
-				templateIframeRef.current!.contentWindow?.postMessage({
+				if (!templateIFrame) return;
+				const msg = {
 					type: 'EDITOR_APP_DEFINITION',
 					payload,
-				});
+				};
+				templateIFrame.contentWindow?.postMessage(msg);
 			},
 			pageExtractor,
 			appPath,
 		);
-	}, [appPath, templateIframeRef.current]);
+
+		function onMessageFromSlave(e: any) {
+			const {
+				data: { type, payload, editorType },
+			} = e;
+
+			if (!type || !type.startsWith('SLAVE_') || !templateIFrame) return;
+
+			if (type === 'SLAVE_STARTED') {
+				const msg = {
+					type: 'EDITOR_APP_DEFINITION',
+					payload: getDataFromPath(appPath, locationHistory, pageExtractor),
+				};
+				templateIFrame.contentWindow?.postMessage(msg);
+			}
+		}
+
+		if (templateIFrame) window.addEventListener('message', onMessageFromSlave);
+
+		return () => {
+			unListen();
+			window.removeEventListener('message', onMessageFromSlave);
+		};
+	}, [appPath, templateIFrame]);
 
 	// On changing the selection, this effect sends to the iframe/slave.
 	useEffect(() => {
 		if (!defPath) return;
 		if (!ref.current) return;
-		ref.current.contentWindow?.postMessage({
-			type: 'EDITOR_SELECTION',
-			payload: selectedComponent,
-		});
-	}, [selectedComponent, ref.current]);
+		const msg = { type: 'EDITOR_SELECTION', payload: selectedComponent };
+		ref.current.contentWindow?.postMessage(msg);
+		paralellIFrame?.contentWindow?.postMessage(msg);
+	}, [selectedComponent, ref.current, paralellIFrame]);
 
 	// On changing the sub selection, this effect sends to the iframe/slave.
 	useEffect(() => {
 		if (!defPath) return;
 		if (!ref.current) return;
-		ref.current.contentWindow?.postMessage({
-			type: 'EDITOR_SUB_SELECTION',
-			payload: selectedSubComponent,
-		});
-	}, [selectedSubComponent, ref.current]);
+		const msg = { type: 'EDITOR_SUB_SELECTION', payload: selectedSubComponent };
+		ref.current.contentWindow?.postMessage(msg);
+		paralellIFrame?.contentWindow?.postMessage(msg);
+	}, [selectedSubComponent, ref.current, paralellIFrame]);
 
 	// The type of the editor should be sent to iframe/slave.
 	useEffect(() => {
@@ -392,21 +421,29 @@ function PageEditor(props: ComponentProps) {
 		});
 	}, [ref.current]);
 
-	// The type of the editor should be sent to iframe/slave.
+	// The type of the editor should be sent to iframe/slave for the parallel editing.
 	useEffect(() => {
-		if (!templateIframeRef.current) return;
-		templateIframeRef.current.contentWindow?.postMessage({
+		paralellIFrame?.contentWindow?.postMessage({
+			type: 'EDITOR_TYPE',
+			payload: 'PAGE',
+		});
+	}, [paralellIFrame]);
+
+	// The type of the editor should be sent to iframe/slave to make it only theme editing/viewing.
+	useEffect(() => {
+		if (!templateIFrame) return;
+		templateIFrame.contentWindow?.postMessage({
 			type: 'EDITOR_TYPE',
 			payload: 'THEME',
 		});
-	}, [templateIframeRef.current]);
+	}, [templateIFrame]);
 
 	// This will be used to store slave store.
 	const [slaveStore, setSlaveStore] = useState<any>(undefined);
 
-	// Effect to listen to all the messages from the iframe/slave.
+	// Effect to listen to all the messages from the iframe/slave of the page iframes.
 	useEffect(() => {
-		function onMessageFromSlave(e: MessageEvent) {
+		function onMessageFromSlave(e: any) {
 			const {
 				data: { type, payload, editorType },
 			} = e;
@@ -414,11 +451,24 @@ function PageEditor(props: ComponentProps) {
 			if (!type || !type.startsWith('SLAVE_') || !ref.current) return;
 			if (!MASTER_FUNCTIONS.has(type)) throw Error('Unknown message from Slave : ' + type);
 
-			if (e.source?.document != ref.current?.contentWindow?.document) return;
+			if (editorType && editorType !== 'PAGE') return;
+
+			if (!editorType) {
+				if (!paralellIFrame && e.source?.document != ref.current?.contentWindow?.document)
+					return;
+
+				if (
+					paralellIFrame &&
+					(e.source?.document != ref.current?.contentWindow?.document ||
+						e.source?.document != paralellIFrame?.contentWindow?.document)
+				)
+					return;
+			}
 
 			MASTER_FUNCTIONS.get(type)?.(
 				{
 					iframe: ref.current,
+					iframe2: paralellIFrame,
 					editPageDefinition,
 					defPath,
 					personalization,
@@ -546,7 +596,12 @@ function PageEditor(props: ComponentProps) {
 					onPublish={onPublish ? publishFunction : undefined}
 					onChangePersonalization={savePersonalization}
 					iframeRef={ref}
-					templateIframeRef={templateIframeRef}
+					templateIframeRef={(element: HTMLIFrameElement | undefined) =>
+						setTemplateIFrame(element)
+					}
+					paralellIFrameRef={(element: HTMLIFrameElement | undefined) =>
+						setParalellIFrame(element)
+					}
 					locationHistory={locationHistory}
 					selectedComponent={selectedComponent}
 					onSelectedComponentChanged={(key: string) => setSelectedComponent(key)}

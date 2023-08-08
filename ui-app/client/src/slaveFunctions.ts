@@ -1,5 +1,7 @@
 import { duplicate } from '@fincity/kirun-js';
+import { getDataFromPath, setData } from './context/StoreContext';
 import { ComponentDefinition } from './types/common';
+import { STORE_PREFIX } from './constants';
 
 export const isSlave = (() => {
 	try {
@@ -32,7 +34,18 @@ export const SLAVE_FUNCTIONS = new Map<string, (payload: any) => void>([
 	[
 		'EDITOR_APP_DEFINITION',
 		p => {
-			console.log('EDITOR_APP_DEFINITION', p);
+			if (!p) return;
+			const appPath = `${STORE_PREFIX}.application`;
+			const app = duplicate(getDataFromPath(appPath, []));
+			if (!app) return;
+			if (!app.properties) app.properties = {};
+			if (p.properties.iconPacks) {
+				app.properties.iconPacks = p.properties.iconPacks;
+			}
+			if (p.properties.fontPacks) {
+				app.properties.fontPacks = p.properties.fontPacks;
+			}
+			setData(appPath, app);
 		},
 	],
 ]);
