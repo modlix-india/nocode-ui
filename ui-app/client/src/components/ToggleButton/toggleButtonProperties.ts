@@ -15,7 +15,56 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 		translatable: true,
 	},
+	{
+		...COMMON_COMPONENT_PROPERTIES.designType,
+		enumValues: [
+			...COMMON_COMPONENT_PROPERTIES.designType.enumValues!,
+			{ name: '_outlined', displayName: 'Outline type', description: 'Outline type' },
+			{ name: '_squared', displayName: 'Squared type', description: 'Squared type' },
+			{
+				name: '_bigknob',
+				displayName: 'Big Knob type',
+				description: 'Big Knob type',
+			},
+			{
+				name: '_small',
+				displayName: 'Small type',
+				description: 'small type',
+			},
+		],
+	},
 
+	{
+		name: 'toggleButtonLabelAlignment',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Label Position',
+		description: 'Position of Label in toggle button.',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: '_ontrack',
+		enumValues: [
+			{
+				name: '_ontrack',
+				displayName: 'Label position on track',
+				description: 'Label position on track.',
+			},
+			{
+				name: '_onknob',
+				displayName: 'Label position on knob',
+				description: 'Label position on knob.',
+			},
+		],
+	},
+	{
+		...COMMON_COMPONENT_PROPERTIES.colorScheme,
+		enumValues: [
+			...COMMON_COMPONENT_PROPERTIES.colorScheme.enumValues!,
+			{
+				name: '_gradient1',
+				displayName: 'Gradient one Scheme',
+				description: 'Gradient one Scheme',
+			},
+		],
+	},
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];

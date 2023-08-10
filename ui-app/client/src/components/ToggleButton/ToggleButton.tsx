@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import {
-	addListener,
-	getData,
+	addListenerAndCallImmediately,
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
@@ -28,7 +27,7 @@ function ToggleButton(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
 		key,
-		properties: { label } = {},
+		properties: { label, designType, toggleButtonLabelAlignment, colorScheme } = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
 		definition,
@@ -48,7 +47,7 @@ function ToggleButton(props: ComponentProps) {
 	React.useEffect(() => {
 		if (!bindingPathPath) return;
 
-		return addListener(
+		return addListenerAndCallImmediately(
 			(_, value) => {
 				setIsToggled(value);
 			},
@@ -64,26 +63,38 @@ function ToggleButton(props: ComponentProps) {
 		},
 		[bindingPathPath],
 	);
+
+	const labelComp = label?.length ? (
+		<span style={resolvedStyles.label ?? {}} className="_toggleButtonLabel">
+			<SubHelperComponent definition={props.definition} subComponentName="label" />
+			{getTranslations(label, translations)}
+		</span>
+	) : null;
 	return (
-		<div className="comp compToggleButton">
+		<label
+			className={`comp compToggleButton ${designType} ${colorScheme} ${
+				isToggled ? '_on' : '_off'
+			}`}
+			style={resolvedStyles.comp ?? {}}
+		>
 			<HelperComponent definition={definition} />
-			<label style={resolvedStyles.label ?? {}} className="toggleButton">
-				<SubHelperComponent definition={props.definition} subComponentName="label" />
-				<input
-					style={resolvedStyles.input ?? {}}
-					type="checkbox"
-					id={key}
-					onChange={handleChange}
-					checked={isToggled}
-				/>
-				<SubHelperComponent
-					style={resolvedStyles.input ?? {}}
-					definition={props.definition}
-					subComponentName="input"
-				/>
-				{getTranslations(label, translations)}
-			</label>
-		</div>
+
+			<div
+				className={`_knob ${
+					toggleButtonLabelAlignment === '_onknob' && label?.length ? '_withText' : ''
+				}`}
+			>
+				{toggleButtonLabelAlignment === '_onknob' ? labelComp : null}
+			</div>
+			<input
+				style={resolvedStyles.input ?? {}}
+				type="checkbox"
+				id={key}
+				onChange={handleChange}
+				checked={isToggled}
+			/>
+			{toggleButtonLabelAlignment === '_ontrack' ? labelComp : null}
+		</label>
 	);
 }
 
@@ -105,9 +116,10 @@ const component: Component = {
 		type: 'ToggleButton',
 		name: 'ToggleButton',
 		properties: {
-			label: { value: 'ToggleButton' },
+			label: { value: '' },
 		},
 	},
+	sections: [{ name: 'Toggle Buttons', pageName: 'togglebuttons' }],
 };
 
 export default component;

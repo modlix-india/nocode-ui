@@ -11,4 +11,6 @@ export const sample = {
 		'Option 7',
 	],
 	dropdDownValue: 'Option 1',
+	booleanTrue: true,
+	booleanFalse: false,
 };
