@@ -6,8 +6,11 @@ import {
 	SchemaValidator,
 	isNullValue,
 } from '@fincity/kirun-js';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { duplicate } from '@fincity/kirun-js';
+
+let counter = 0;
+let insideCounter = 0;
 
 export function StringValueEditor({
 	value,
@@ -24,27 +27,28 @@ export function StringValueEditor({
 
 	useEffect(() => {
 		(async () => {
-			setInValue(
-				value ??
-					(schema
-						? await SchemaUtil.getDefaultValue(schema, schemaRepository)
-						: undefined) ??
-					'',
-			);
+			const x = await SchemaUtil.getDefaultValue(schema, schemaRepository);
+			if (!isNullValue(value)) {
+				setInValue(value!);
+				return;
+			}
+			setInValue(value ?? x ?? '');
 		})();
-	}, [value, schema]);
+	}, [value, setInValue, schema, schemaRepository]);
 
 	const [msg, setMsg] = useState<string>('');
 
 	useEffect(() => {
-		let message = '';
-		try {
-			SchemaValidator.validate(undefined, schema, schemaRepository, inValue);
-		} catch (e: any) {
-			if (e.message) message = e.message;
-			else message = '' + e;
-		}
-		setMsg(message);
+		(async () => {
+			let message = '';
+			try {
+				SchemaValidator.validate(undefined, schema, schemaRepository, inValue);
+			} catch (e: any) {
+				if (e.message) message = e.message;
+				else message = '' + e;
+			}
+			setMsg(message);
+		})();
 	}, [inValue]);
 
 	const [options, setOptions] = useState<any[]>([]);
