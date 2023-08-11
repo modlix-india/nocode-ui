@@ -6,43 +6,41 @@ import {
 	SchemaValidator,
 	isNullValue,
 } from '@fincity/kirun-js';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { duplicate } from '@fincity/kirun-js';
-
-let counter = 0;
-let insideCounter = 0;
 
 export function StringValueEditor({
 	value,
 	schema,
-	onChange,
+	onChange: actualOnChange,
 	schemaRepository,
+	defaultValue,
 }: {
 	value: string | undefined;
+	defaultValue: string | undefined;
 	schema: Schema;
 	onChange: (v: string | undefined) => void;
 	schemaRepository: Repository<Schema>;
 }) {
-	const [inValue, setInValue] = useState(value ?? '');
+	const [inValue, setInValue] = useState(value ?? defaultValue ?? '');
+
+	const onChange = async (v: string | undefined) => {
+		if (defaultValue === v) actualOnChange(undefined);
+		else actualOnChange(v);
+	};
 
 	useEffect(() => {
-		(async () => {
-			const x = await SchemaUtil.getDefaultValue(schema, schemaRepository);
-			if (!isNullValue(value)) {
-				setInValue(value!);
-				return;
-			}
-			setInValue(value ?? x ?? '');
-		})();
-	}, [value, setInValue, schema, schemaRepository]);
+		setInValue(value ?? defaultValue ?? '');
+	}, [value, defaultValue]);
 
 	const [msg, setMsg] = useState<string>('');
 
 	useEffect(() => {
 		(async () => {
+			if (isNullValue(inValue)) return;
 			let message = '';
 			try {
-				SchemaValidator.validate(undefined, schema, schemaRepository, inValue);
+				await SchemaValidator.validate(undefined, schema, schemaRepository, inValue);
 			} catch (e: any) {
 				if (e.message) message = e.message;
 				else message = '' + e;
