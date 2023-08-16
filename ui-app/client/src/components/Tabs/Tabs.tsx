@@ -15,6 +15,8 @@ import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tabsProperties';
 import TabsStyles from './TabsStyle';
 import { SubHelperComponent } from '../SubHelperComponent';
+import { isEqual } from '../../util/setOperations';
+import { deepEqual } from '@fincity/kirun-js';
 
 function TabsComponent(props: ComponentProps) {
 	const {
@@ -38,9 +40,14 @@ function TabsComponent(props: ComponentProps) {
 	const bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory)
 		: undefined;
-	const [hover, setHover] = React.useState(null);
+	const [hover, setHover] = React.useState([]);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{ hover: false, readOnly: !!readOnly, disabled: !!readOnly },
+		stylePropertiesWithPseudoStates,
+	);
+	const resolvedStylesWithHover = processComponentStylePseudoClasses(
 		props.pageDefinition,
 		{ hover: !!hover, readOnly: !!readOnly, disabled: !!readOnly },
 		stylePropertiesWithPseudoStates,
@@ -97,32 +104,50 @@ function TabsComponent(props: ComponentProps) {
 	};
 
 	return (
-		<div className={`comp compTabs ${orientationClass}`} style={resolvedStyles.comp ?? {}}>
+		<div
+			className={`comp compTabs ${orientationClass}`}
+			style={resolvedStylesWithHover.comp ?? {}}
+		>
 			<HelperComponent definition={definition} />
 			<div
 				className={`tabsContainer ${orientationClass}`}
-				style={resolvedStyles.tabsContainer ?? {}}
+				style={
+					deepEqual('tabsContainer', hover)
+						? resolvedStylesWithHover.tabsContainer ?? {}
+						: resolvedStyles.tabsContainer
+				}
+				onMouseEnter={
+					stylePropertiesWithPseudoStates?.hover
+						? () => handleMouseEnter('tabsContainer')
+						: undefined
+				}
+				onMouseLeave={
+					stylePropertiesWithPseudoStates?.hover ? () => setHover([]) : undefined
+				}
 			>
 				<SubHelperComponent
 					definition={props.definition}
 					subComponentName="tabsContainer"
 				/>
+
 				{tabs.map((e: any, i: number) => (
 					<div
 						key={e}
 						className={`tabDiv ${orientationClass} ${
 							activeStyle === 'HIGHLIGHT' ? getActiveStyleHighlight(e) : ''
 						}`}
-						style={e === hover ? resolvedStyles.tabDivContainer ?? {} : {}}
+						style={
+							deepEqual(e, hover)
+								? resolvedStylesWithHover.tabDivContainer ?? {}
+								: resolvedStyles.tabDivContainer ?? {}
+						}
 						onMouseEnter={
 							stylePropertiesWithPseudoStates?.hover
 								? () => handleMouseEnter(e)
 								: undefined
 						}
 						onMouseLeave={
-							stylePropertiesWithPseudoStates?.hover
-								? () => setHover(null)
-								: undefined
+							stylePropertiesWithPseudoStates?.hover ? () => setHover([]) : undefined
 						}
 						onClick={() => handleClick(e)}
 					>
@@ -132,7 +157,11 @@ function TabsComponent(props: ComponentProps) {
 						/>
 
 						<button
-							style={e === hover ? resolvedStyles.button ?? {} : {}}
+							style={
+								deepEqual(e, hover)
+									? resolvedStylesWithHover.button ?? {}
+									: resolvedStyles.button ?? {}
+							}
 							className={`tabButton ${icon.length === 0 ? 'noIcon' : ''}`}
 						>
 							<SubHelperComponent
@@ -141,7 +170,11 @@ function TabsComponent(props: ComponentProps) {
 							/>
 							<i
 								className={`icon ${icon[i]}`}
-								style={e === hover ? resolvedStyles.icon ?? {} : {}}
+								style={
+									deepEqual(e, hover)
+										? resolvedStylesWithHover.icon ?? {}
+										: resolvedStyles.icon ?? {}
+								}
 							>
 								<SubHelperComponent
 									definition={props.definition}
@@ -153,7 +186,11 @@ function TabsComponent(props: ComponentProps) {
 						{activeStyle === 'BORDER' && (
 							<div
 								className={`border ${getActiveStyleBorder(e)}`}
-								style={e === hover ? resolvedStyles.border ?? {} : {}}
+								style={
+									deepEqual(e, hover)
+										? resolvedStylesWithHover.border ?? {}
+										: resolvedStyles.border ?? {}
+								}
 							>
 								<SubHelperComponent
 									definition={props.definition}
@@ -164,7 +201,22 @@ function TabsComponent(props: ComponentProps) {
 					</div>
 				))}
 			</div>
-			<div className="tabGridDiv" style={resolvedStyles.childContainer ?? {}}>
+			<div
+				className="tabGridDiv"
+				onMouseEnter={
+					stylePropertiesWithPseudoStates?.hover
+						? () => handleMouseEnter('tabsGridDiv')
+						: undefined
+				}
+				onMouseLeave={
+					stylePropertiesWithPseudoStates?.hover ? () => setHover([]) : undefined
+				}
+				style={
+					deepEqual('tabsGridDiv', hover)
+						? resolvedStylesWithHover.childContainer ?? {}
+						: resolvedStyles.childContainer
+				}
+			>
 				<SubHelperComponent definition={props.definition} subComponentName="tabGridDiv" />
 				<Children
 					key={`${activeTab}_chld`}
