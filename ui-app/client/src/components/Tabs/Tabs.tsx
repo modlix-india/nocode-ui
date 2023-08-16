@@ -48,7 +48,7 @@ function TabsComponent(props: ComponentProps) {
 	);
 	const resolvedStylesWithHover = processComponentStylePseudoClasses(
 		props.pageDefinition,
-		{ hover: !!hover, readOnly: !!readOnly, disabled: !!readOnly },
+		{ hover: true, readOnly: !!readOnly, disabled: !!readOnly },
 		stylePropertiesWithPseudoStates,
 	);
 
