@@ -103,26 +103,11 @@ function TabsComponent(props: ComponentProps) {
 	};
 
 	return (
-		<div
-			className={`comp compTabs ${orientationClass}`}
-			style={resolvedStylesWithHover.comp ?? {}}
-		>
+		<div className={`comp compTabs ${orientationClass}`} style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />
 			<div
 				className={`tabsContainer ${orientationClass}`}
-				style={
-					deepEqual('tabsContainer', hover)
-						? resolvedStylesWithHover.tabsContainer ?? {}
-						: resolvedStyles.tabsContainer
-				}
-				onMouseEnter={
-					stylePropertiesWithPseudoStates?.hover
-						? () => handleMouseEnter('tabsContainer')
-						: undefined
-				}
-				onMouseLeave={
-					stylePropertiesWithPseudoStates?.hover ? () => setHover([]) : undefined
-				}
+				style={resolvedStyles.tabsContainer ?? {}}
 			>
 				<SubHelperComponent
 					definition={props.definition}
@@ -136,7 +121,7 @@ function TabsComponent(props: ComponentProps) {
 							activeStyle === 'HIGHLIGHT' ? getActiveStyleHighlight(e) : ''
 						}`}
 						style={
-							deepEqual(e, hover)
+							e === hover
 								? resolvedStylesWithHover.tabDivContainer ?? {}
 								: resolvedStyles.tabDivContainer ?? {}
 						}
@@ -157,7 +142,7 @@ function TabsComponent(props: ComponentProps) {
 
 						<button
 							style={
-								deepEqual(e, hover)
+								e === hover
 									? resolvedStylesWithHover.button ?? {}
 									: resolvedStyles.button ?? {}
 							}
@@ -170,7 +155,7 @@ function TabsComponent(props: ComponentProps) {
 							<i
 								className={`icon ${icon[i]}`}
 								style={
-									deepEqual(e, hover)
+									e === hover
 										? resolvedStylesWithHover.icon ?? {}
 										: resolvedStyles.icon ?? {}
 								}
@@ -186,7 +171,7 @@ function TabsComponent(props: ComponentProps) {
 							<div
 								className={`border ${getActiveStyleBorder(e)}`}
 								style={
-									deepEqual(e, hover)
+									e === hover
 										? resolvedStylesWithHover.border ?? {}
 										: resolvedStyles.border ?? {}
 								}
@@ -210,11 +195,7 @@ function TabsComponent(props: ComponentProps) {
 				onMouseLeave={
 					stylePropertiesWithPseudoStates?.hover ? () => setHover([]) : undefined
 				}
-				style={
-					deepEqual('tabsGridDiv', hover)
-						? resolvedStylesWithHover.childContainer ?? {}
-						: resolvedStyles.childContainer
-				}
+				style={resolvedStyles.childContainer ?? {}}
 			>
 				<SubHelperComponent definition={props.definition} subComponentName="tabGridDiv" />
 				<Children
