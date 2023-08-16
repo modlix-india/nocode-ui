@@ -15,7 +15,6 @@ import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tabsProperties';
 import TabsStyles from './TabsStyle';
 import { SubHelperComponent } from '../SubHelperComponent';
-import { isEqual } from '../../util/setOperations';
 import { deepEqual } from '@fincity/kirun-js';
 
 function TabsComponent(props: ComponentProps) {
