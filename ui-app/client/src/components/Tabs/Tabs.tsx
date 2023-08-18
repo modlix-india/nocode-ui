@@ -10,12 +10,11 @@ import { Component, ComponentPropertyDefinition, ComponentProps } from '../../ty
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
 import { HelperComponent } from '../HelperComponent';
+import { SubHelperComponent } from '../SubHelperComponent';
 import { getTranslations } from '../util/getTranslations';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tabsProperties';
 import TabsStyles from './TabsStyle';
-import { SubHelperComponent } from '../SubHelperComponent';
-import { deepEqual } from '@fincity/kirun-js';
 
 function TabsComponent(props: ComponentProps) {
 	const {
@@ -39,7 +38,7 @@ function TabsComponent(props: ComponentProps) {
 	const bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory)
 		: undefined;
-	const [hover, setHover] = React.useState([]);
+	const [hover, setHover] = React.useState<string>('');
 
 	const resolvedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
@@ -131,7 +130,7 @@ function TabsComponent(props: ComponentProps) {
 								: undefined
 						}
 						onMouseLeave={
-							stylePropertiesWithPseudoStates?.hover ? () => setHover([]) : undefined
+							stylePropertiesWithPseudoStates?.hover ? () => setHover('') : undefined
 						}
 						onClick={() => handleClick(e)}
 					>
@@ -185,18 +184,7 @@ function TabsComponent(props: ComponentProps) {
 					</div>
 				))}
 			</div>
-			<div
-				className="tabGridDiv"
-				onMouseEnter={
-					stylePropertiesWithPseudoStates?.hover
-						? () => handleMouseEnter('tabsGridDiv')
-						: undefined
-				}
-				onMouseLeave={
-					stylePropertiesWithPseudoStates?.hover ? () => setHover([]) : undefined
-				}
-				style={resolvedStyles.childContainer ?? {}}
-			>
+			<div className="tabGridDiv" style={resolvedStyles.childContainer ?? {}}>
 				<SubHelperComponent definition={props.definition} subComponentName="tabGridDiv" />
 				<Children
 					key={`${activeTab}_chld`}
