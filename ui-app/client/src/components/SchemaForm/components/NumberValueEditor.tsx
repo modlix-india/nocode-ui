@@ -11,31 +11,41 @@ import React, { useEffect, useState } from 'react';
 export function NumberValueEditor({
 	value,
 	schema,
-	onChange,
+	onChange: actualOnChange,
 	schemaRepository,
+	defaultValue,
 }: {
 	value: number | undefined;
+	defaultValue: number | undefined;
 	schema: Schema;
 	onChange: (v: number | undefined) => void;
 	schemaRepository: Repository<Schema>;
 }) {
-	const [inValue, setInValue] = useState<number>(isNullValue(value) ? 0 : value!);
+	const [inValue, setInValue] = useState<number | undefined>(value ?? defaultValue);
+
+	const onChange = async (v: number | undefined) => {
+		if (defaultValue === v) actualOnChange(undefined);
+		else actualOnChange(v);
+	};
 
 	useEffect(() => {
-		setInValue(isNullValue(value) ? 0 : value!);
-	}, [value]);
+		setInValue(value ?? defaultValue);
+	}, [value, defaultValue]);
 
 	const [msg, setMsg] = useState<string>('');
 
 	useEffect(() => {
-		let message = '';
-		try {
-			SchemaValidator.validate(undefined, schema, schemaRepository, inValue);
-		} catch (e: any) {
-			if (e.message) message = e.message;
-			else message = '' + e;
-		}
-		setMsg(message);
+		(async () => {
+			if (isNullValue(inValue)) return;
+			let message = '';
+			try {
+				await SchemaValidator.validate(undefined, schema, schemaRepository, inValue);
+			} catch (e: any) {
+				if (e.message) message = e.message;
+				else message = '' + e;
+			}
+			setMsg(message);
+		})();
 	}, [inValue]);
 
 	const [options, setOptions] = useState<any[]>([]);
@@ -66,14 +76,18 @@ export function NumberValueEditor({
 	) : (
 		<input
 			type="number"
-			value={inValue}
+			value={inValue ?? ''}
 			onChange={ev => {
+				if (ev.target.value == '') {
+					setInValue(undefined);
+					return;
+				}
 				const ind = ev.target.value.indexOf('.');
 				setInValue((ind === -1 ? parseInt : parseFloat)(ev.target.value));
 			}}
 			onKeyDown={ev => {
 				if (ev.key === 'Enter') onChange(inValue);
-				else if (ev.key === 'Escape') setInValue(isNullValue(value) ? 0 : value!);
+				else if (ev.key === 'Escape') setInValue(value);
 			}}
 			onBlur={() => onChange(inValue)}
 		/>
