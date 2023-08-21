@@ -38,8 +38,8 @@ export default function SingleSchema({
 	onChange: (path: string, v: any) => void;
 	schemaRepository: Repository<Schema>;
 }) {
+	console.log(actualValue, 'actualValue');
 	const [schema, setSchema] = useState(actualSchema);
-
 	useEffect(() => {
 		if (isNullValue(actualSchema.getRef())) {
 			setSchema(actualSchema);
@@ -54,7 +54,6 @@ export default function SingleSchema({
 	}, [actualSchema, schemaRepository]);
 
 	const [defaultValue, setDefaultValue] = useState<any>();
-
 	useEffect(() => {
 		(async () => {
 			setDefaultValue(await SchemaUtil.getDefaultValue(schema, schemaRepository));
@@ -69,17 +68,20 @@ export default function SingleSchema({
 	}, [actualValue]);
 
 	let types: Set<SchemaType> = schema.getType()?.getAllowedSchemaTypes() ?? ALL_SET;
+	console.log(types, 'typesatbegining');
 
 	useEffect(() => {
-		if (types?.size !== 1 || !types.has(SchemaType.NULL) || isNullValue(value)) return;
+		if (!(types?.size >= 1) || !types.has(SchemaType.NULL) || isNullValue(value)) return;
 		onChange(path, undefined);
 	}, [schema, value]);
 
 	const [currentType, setCurrentType] = React.useState<SchemaType | undefined>();
+	// value === undefined ? Array.from(types.values())[0] : undefined,
 	const [message, setMessage] = useState<string>('');
+	console.log(currentType, 'currentType');
 
 	useEffect(() => {
-		if (types?.size === 1) {
+		if (types?.size >= 1) {
 			setCurrentType(types.values().next().value);
 			return;
 		}
@@ -148,40 +150,72 @@ export default function SingleSchema({
 		else setMessage('');
 	}, [value]);
 
-	if (types?.size === 1) {
-		if (types.has(SchemaType.OBJECT)) {
+	const handleChange = (event: any) => {
+		setCurrentType(event.target.value);
+	};
+	console.log(value, actualValue, 'values');
+
+	const dropdown = (
+		<div className="_selectDiv">
+			<select
+				className="_select"
+				name="types"
+				id="types"
+				onChange={handleChange}
+				value={currentType}
+			>
+				{Array.from(types.values()).map((e: string) => (
+					<option className="_option" value={e} key={e}>
+						{e}
+					</option>
+				))}
+			</select>
+		</div>
+	);
+
+	if (types?.size) {
+		if (currentType === SchemaType.OBJECT) {
 			return <div className="_singleSchema"></div>;
-		} else if (types.has(SchemaType.ARRAY)) {
+		} else if (currentType === SchemaType.ARRAY) {
 			return <div className="_singleSchema"></div>;
-		} else if (types.has(SchemaType.STRING)) {
+		} else if (currentType === SchemaType.STRING) {
 			return (
-				<StringValueEditor
-					value={value}
-					schema={schema}
-					onChange={v => onChange(path, v)}
-					schemaRepository={schemaRepository}
-				/>
+				<div>
+					<StringValueEditor
+						value={value}
+						schema={schema}
+						onChange={v => onChange(path, v)}
+						schemaRepository={schemaRepository}
+					/>
+					{types?.size > 1 ? dropdown : ''}
+				</div>
 			);
-		} else if (types.has(SchemaType.BOOLEAN)) {
+		} else if (currentType === SchemaType.BOOLEAN) {
 			return (
-				<BooleanValueEditor
-					value={value}
-					schema={schema}
-					onChange={v => onChange(path, v)}
-					schemaRepository={schemaRepository}
-				/>
+				<div>
+					<BooleanValueEditor
+						value={value}
+						schema={schema}
+						onChange={v => onChange(path, v)}
+						schemaRepository={schemaRepository}
+					/>
+					{types?.size > 1 ? dropdown : ''}
+				</div>
 			);
-		} else if (isSubset(types, NUMBER_SET)) {
+		} else if (isSubset(new Set([currentType]), NUMBER_SET)) {
 			return (
-				<NumberValueEditor
-					value={value}
-					schema={schema}
-					onChange={v => onChange(path, v)}
-					schemaRepository={schemaRepository}
-				/>
+				<div>
+					<NumberValueEditor
+						value={value}
+						schema={schema}
+						onChange={v => onChange(path, v)}
+						schemaRepository={schemaRepository}
+					/>
+					{types?.size > 1 ? dropdown : ''}
+				</div>
 			);
 		}
-	} else if (isSubset(types, NUMBER_SET)) {
+	} else if (isSubset(new Set([currentType]), NUMBER_SET)) {
 		return (
 			<NumberValueEditor
 				value={value}
@@ -192,5 +226,6 @@ export default function SingleSchema({
 		);
 	}
 
+	return dropdown;
 	return <div className="_singleSchema"></div>;
 }

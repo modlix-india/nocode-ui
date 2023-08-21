@@ -35,7 +35,16 @@ export default function SchemaFormStyle({ theme }: { theme: Map<string, Map<stri
 			align-items: center;
 			gap: 10px;
 		}
-
+		${PREFIX} ._selectDiv{
+			display: flex;
+			
+		}
+		${PREFIX} ._select{
+			margin-left:5px;
+		}
+		${PREFIX} ._typelabel{
+			
+		}
 		${PREFIX} .monacoEditor { flex:1; height: 100%; width: 100%; transition: width 0s, height 0s; }
 
 		${PREFIX} > * { transition: width 0s, height 0s;}
