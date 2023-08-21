@@ -25,7 +25,7 @@ function toStringList(types: Set<string>) {
 
 export default function SingleSchema({
 	schema: actualSchema = Schema.ofAny('Any'),
-	value: actualValue,
+	value,
 	showLabel = false,
 	path,
 	onChange,
@@ -59,13 +59,6 @@ export default function SingleSchema({
 			setDefaultValue(await SchemaUtil.getDefaultValue(schema, schemaRepository));
 		})();
 	}, [schema, schemaRepository]);
-
-	const [value, setValue] = useState(actualValue);
-	useEffect(() => {
-		if (!isNullValue(actualValue)) setValue(actualValue);
-		else if (!isNullValue(defaultValue)) setValue(defaultValue);
-		else setValue(actualValue);
-	}, [actualValue]);
 
 	let types: Set<SchemaType> = schema.getType()?.getAllowedSchemaTypes() ?? ALL_SET;
 	console.log(types, 'typesatbegining');
@@ -180,15 +173,13 @@ export default function SingleSchema({
 			return <div className="_singleSchema"></div>;
 		} else if (currentType === SchemaType.STRING) {
 			return (
-				<div>
-					<StringValueEditor
-						value={value}
-						schema={schema}
-						onChange={v => onChange(path, v)}
-						schemaRepository={schemaRepository}
-					/>
-					{types?.size > 1 ? dropdown : ''}
-				</div>
+				<StringValueEditor
+					value={value}
+					defaultValue={defaultValue}
+					schema={schema}
+					onChange={v => onChange(path, v)}
+					schemaRepository={schemaRepository}
+				/>
 			);
 		} else if (currentType === SchemaType.BOOLEAN) {
 			return (
@@ -204,21 +195,20 @@ export default function SingleSchema({
 			);
 		} else if (isSubset(new Set([currentType]), NUMBER_SET)) {
 			return (
-				<div>
-					<NumberValueEditor
-						value={value}
-						schema={schema}
-						onChange={v => onChange(path, v)}
-						schemaRepository={schemaRepository}
-					/>
-					{types?.size > 1 ? dropdown : ''}
-				</div>
+				<NumberValueEditor
+					value={value}
+					defaultValue={defaultValue}
+					schema={schema}
+					onChange={v => onChange(path, v)}
+					schemaRepository={schemaRepository}
+				/>
 			);
 		}
 	} else if (isSubset(new Set([currentType]), NUMBER_SET)) {
 		return (
 			<NumberValueEditor
 				value={value}
+				defaultValue={defaultValue}
 				schema={schema}
 				onChange={v => onChange(path, v)}
 				schemaRepository={schemaRepository}
