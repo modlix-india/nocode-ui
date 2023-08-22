@@ -139,8 +139,6 @@ function DropdownComponent(props: ComponentProps) {
 		],
 	);
 
-	console.log('pressure', data, dropdownData);
-
 	const selectedDataKey: Array<any> | string | undefined = React.useMemo(
 		() => getSelectedKeys(dropdownData, selected, isMultiSelect),
 		[selected],

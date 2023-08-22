@@ -7,7 +7,7 @@ export default function SchemaFormStyle({ theme }: { theme: Map<string, Map<stri
 	const css =
 		`
 		${PREFIX} { display: flex; flex-direction: column; gap: 5px;}
-		${PREFIX} ._singleSchema { display: flex; flex-direction: column; gap: 5px;}
+		${PREFIX} ._singleSchema { display: flex; flex-direction: column; gap: 5px; flex: 1;}
 		
 		${PREFIX} ._singleSchema input[type="text"],
 		${PREFIX} ._singleSchema input[type="number"] {
@@ -42,8 +42,11 @@ export default function SchemaFormStyle({ theme }: { theme: Map<string, Map<stri
 		${PREFIX} ._select{
 			margin-left:5px;
 		}
-		${PREFIX} ._typelabel{
-			
+		${PREFIX} ._editorChoice{
+			display: flex;
+			gap: 5px;
+			align-items: center;
+			justify-content: center;
 		}
 		${PREFIX} .monacoEditor { flex:1; height: 100%; width: 100%; transition: width 0s, height 0s; }
 

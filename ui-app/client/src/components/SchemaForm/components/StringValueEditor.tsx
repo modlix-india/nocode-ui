@@ -88,13 +88,14 @@ export function StringValueEditor({
 			onBlur={() => onChange(inValue)}
 		/>
 	);
+	const errors = msg ? <div className="_errorMessages">{msg}</div> : undefined;
 	return (
 		<div className="_singleSchema">
 			<div className="_inputElement">
 				{inputElement}
 				<i className="fa fa-regular fa-circle-xmark" onClick={() => onChange(undefined)} />
 			</div>
-			<div className="_errorMessages">{msg}</div>
+			{errors}
 		</div>
 	);
 }

@@ -13,7 +13,7 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponent';
 import { AnyValueEditor } from '../PageEditor/editors/propertyValueEditors/AnyValueEditor';
 import useDefinition from '../util/useDefinition';
-import SingleSchema from './components/SingleSchemaForm';
+import SingleSchemaForm from './components/SingleSchemaForm';
 import { propertiesDefinition, stylePropertiesDefinition } from './schemaFormProperties';
 import SchemaFormStyle from './SchemaFormStyle';
 
@@ -83,7 +83,7 @@ function SchemaForm(
 					isIconButton={true}
 				/>
 			)}
-			<SingleSchema
+			<SingleSchemaForm
 				schema={schema}
 				path=""
 				value={value}
