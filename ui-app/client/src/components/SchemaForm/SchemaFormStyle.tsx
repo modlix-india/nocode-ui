@@ -45,8 +45,31 @@ export default function SchemaFormStyle({ theme }: { theme: Map<string, Map<stri
 		${PREFIX} ._editorChoice{
 			display: flex;
 			gap: 5px;
-			align-items: center;
+			align-items: flex-start;
 			justify-content: center;
+		}
+
+		${PREFIX} ._objectEditor {
+			display: flex;
+			gap: 5px;
+			flex-direction: column;
+			min-width: 250px;
+		}
+
+		${PREFIX} ._objectEditor ._objectProp {
+			display: flex;
+			gap: 2px;
+			border: 1px solid #eee;
+			padding: 2px;
+			align-items: center;
+		}
+
+		${PREFIX} ._objectEditor ._newProp {
+			display: flex;
+			gap: 5px;
+		}
+		${PREFIX} ._objectEditor ._newProp button {
+			white-space: nowrap;
 		}
 		${PREFIX} .monacoEditor { flex:1; height: 100%; width: 100%; transition: width 0s, height 0s; }
 

@@ -59,8 +59,15 @@ export function ObjectValueEditor({
 					schemaRepository={schemaRepository}
 					onChange={onChange}
 				/>
-				<i className="fa fa-regular fa-circle-xmark" onClick={() => {}} />
 			</div>
+			<i
+				className="fa fa-regular fa-trash-can"
+				onClick={() => {
+					const v = duplicate(value);
+					delete v[e[0]];
+					onChange(path, v);
+				}}
+			/>
 		</div>
 	));
 	const errors = msg ? <div className="_errorMessages">{msg}</div> : undefined;
