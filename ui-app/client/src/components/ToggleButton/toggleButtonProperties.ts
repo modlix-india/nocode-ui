@@ -10,8 +10,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'label',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'CheckBox label',
-		description: "CheckBox's display label.",
+		displayName: 'CheckBox Default Label',
+		description: "CheckBox's display in on state or no off label.",
+		group: ComponentPropertyGroup.BASIC,
+		translatable: true,
+	},
+	{
+		name: 'offLabel',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'CheckBox Off Label',
+		description: "CheckBox's display label when it is off.",
 		group: ComponentPropertyGroup.BASIC,
 		translatable: true,
 	},
@@ -71,6 +79,17 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 	'': [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.accentColor.type,
+	],
+	knob: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,

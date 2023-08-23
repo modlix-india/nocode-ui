@@ -9,8 +9,9 @@ export default function ToggleButtonStyle({ theme }: { theme: Map<string, Map<st
     ${PREFIX} {
         position: relative;
         display: inline-flex;
-        transition: 0.4s;
+        transition: all 0.4s ease-in-out;
         align-items: center;
+        cursor: pointer;
     }
     
     ${PREFIX} input[type='checkbox'] {
@@ -18,8 +19,9 @@ export default function ToggleButtonStyle({ theme }: { theme: Map<string, Map<st
     }
 
     ${PREFIX} ._knob {
-        cursor: pointer;
-        transition: 0.4s;
+        transition: all 0.4s ease-in-out;
+        position: absolute;
+        left: 0%;
     }
 
     ${PREFIX} ._knob._withText {
@@ -33,8 +35,20 @@ export default function ToggleButtonStyle({ theme }: { theme: Map<string, Map<st
         justify-content: center;
     }
 
-    ${PREFIX}._on {
-        flex-direction: row-reverse;
+    ${PREFIX} ._toggleButtonLabel._ontrack {
+        transition: all 0.4s ease-in-out;
+        position: absolute;
+        left: 100%;
+        transform: translateX(-100%);
+    }
+    ${PREFIX}._on ._toggleButtonLabel._ontrack {
+        left: 0%;
+        transform: translateX(0%);
+    }
+
+    ${PREFIX}._on ._knob{
+        left: 100%;
+        transform: translateX(-100%);
     }
 
 

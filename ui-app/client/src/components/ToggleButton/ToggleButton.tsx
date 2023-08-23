@@ -24,10 +24,17 @@ function ToggleButton(props: ComponentProps) {
 		context,
 	} = props;
 	const [isToggled, setIsToggled] = React.useState(false);
+	const [hover, setHover] = React.useState(false);
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
 		key,
-		properties: { label, designType, toggleButtonLabelAlignment, colorScheme } = {},
+		properties: {
+			label: onLabel,
+			offLabel,
+			designType,
+			toggleButtonLabelAlignment,
+			colorScheme,
+		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
 		definition,
@@ -38,7 +45,7 @@ function ToggleButton(props: ComponentProps) {
 	);
 	const resolvedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
-		{},
+		{ hover },
 		stylePropertiesWithPseudoStates,
 	);
 	const bindingPathPath = bindingPath
@@ -64,8 +71,13 @@ function ToggleButton(props: ComponentProps) {
 		[bindingPathPath],
 	);
 
-	const labelComp = label?.length ? (
-		<span style={resolvedStyles.label ?? {}} className="_toggleButtonLabel">
+	const label = isToggled ? onLabel : offLabel ?? onLabel;
+
+	const labelComp = label ? (
+		<span
+			style={resolvedStyles.label ?? {}}
+			className={`_toggleButtonLabel ${toggleButtonLabelAlignment}`}
+		>
 			<SubHelperComponent definition={props.definition} subComponentName="label" />
 			{getTranslations(label, translations)}
 		</span>
@@ -76,6 +88,8 @@ function ToggleButton(props: ComponentProps) {
 				isToggled ? '_on' : '_off'
 			}`}
 			style={resolvedStyles.comp ?? {}}
+			onMouseEnter={() => setHover(true)}
+			onMouseLeave={() => setHover(false)}
 		>
 			<HelperComponent definition={definition} />
 
@@ -83,7 +97,9 @@ function ToggleButton(props: ComponentProps) {
 				className={`_knob ${
 					toggleButtonLabelAlignment === '_onknob' && label?.length ? '_withText' : ''
 				}`}
+				style={resolvedStyles.knob ?? {}}
 			>
+				<SubHelperComponent definition={props.definition} subComponentName="knob" />
 				{toggleButtonLabelAlignment === '_onknob' ? labelComp : null}
 			</div>
 			<input
@@ -91,7 +107,7 @@ function ToggleButton(props: ComponentProps) {
 				type="checkbox"
 				id={key}
 				onChange={handleChange}
-				checked={isToggled}
+				checked={!!isToggled}
 			/>
 			{toggleButtonLabelAlignment === '_ontrack' ? labelComp : null}
 		</label>
@@ -119,6 +135,7 @@ const component: Component = {
 			label: { value: '' },
 		},
 	},
+	stylePseudoStates: ['hover'],
 	sections: [{ name: 'Toggle Buttons', pageName: 'togglebuttons' }],
 };
 
