@@ -32,19 +32,40 @@ export default function ArrayValueEditor({
 
 	const singleType = singleSchemaType?.values().next().value;
 
-	<div>
-		<SingleSchemaForm
-			key={'singleSchema_'}
-			schema={schema.getAdditionalProperties()?.getSchemaValue()}
-			path={path}
-			value={Prop}
-			schemaRepository={schemaRepository}
-			onChange={onChange}
-		/>
-	</div>;
+	console.log(Prop);
+
+	const singleForm = singleType ? (
+		<div>
+			<SingleSchemaForm
+				key={'singleSchema_'}
+				schema={schema?.getItems()?.getSingleSchema()}
+				path={path}
+				value={Prop}
+				schemaRepository={schemaRepository}
+				onChange={onChange}
+			/>
+		</div>
+	) : (
+		''
+	);
 
 	const tupleSchema = items?.getTupleSchema();
 	console.log(tupleSchema, 'tupleSchema');
+	//console.log(e.getType()?.getAllowedSchemaTypes().values().next().value);
+
+	// const tupleForm = tupleSchema
+	// 	? tupleSchema?.map(e => {
+	// 		e.getType()?.getAllowedSchemaTypes().values().next().value
+	// 			<SingleSchemaForm
+	// 				key={`${e}`}
+	// 				schema={schema.getAdditionalProperties()?.getSchemaValue()}
+	// 				path={path}
+	// 				value={valueProp}
+	// 				schemaRepository={schemaRepository}
+	// 				onChange={onChange}
+	// 			/>;
+	// 	  })
+	// 	: '';
 
 	const newProp = (
 		<div className="_newProp">
@@ -52,5 +73,10 @@ export default function ArrayValueEditor({
 			<button>Add Element</button>
 		</div>
 	);
-	return <div className=" _singleSchema _arrayEditor">{newProp}</div>;
+	return (
+		<div className=" _singleSchema _arrayEditor">
+			{singleForm}
+			{newProp}
+		</div>
+	);
 }
