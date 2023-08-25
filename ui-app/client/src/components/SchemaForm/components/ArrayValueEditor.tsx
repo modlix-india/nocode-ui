@@ -1,4 +1,11 @@
-import { Repository, Schema, SchemaValidator, duplicate, isNullValue } from '@fincity/kirun-js';
+import {
+	ArraySchemaType,
+	Repository,
+	Schema,
+	SchemaValidator,
+	duplicate,
+	isNullValue,
+} from '@fincity/kirun-js';
 import React, { useEffect, useState } from 'react';
 import SingleSchemaForm from './SingleSchemaForm';
 
@@ -15,34 +22,29 @@ export default function ArrayValueEditor({
 	schemaRepository: Repository<Schema>;
 	path: string;
 }) {
-	const types = schema.getItems();
-	console.log(types, 'types');
-
-	// console.log(value, 'value from array'); // value of that property
-	// console.log(path, 'path from array'); // property name in object
-	// console.log(schema.getItems(), 'getItems');
 	const [valueProp, setValueProp] = useState<any>('');
 	const [Prop, setProp] = useState<any>(value);
+	const items: ArraySchemaType | undefined = schema.getItems();
+	console.log(items, 'items');
 
-	Prop?.map((e: any) => {
-		if (isNullValue(Prop)) return;
-		// console.log(e, 'each');
-		// console.log(schema);
-		// console.log(schema.getProperties());
-		<div>
-			<SingleSchemaForm
-				key={e}
-				schema={
-					schema.getProperties()?.get(e) ??
-					schema.getAdditionalProperties()?.getSchemaValue()
-				}
-				path={path ? `${path}.${e}` : e}
-				value={e}
-				schemaRepository={schemaRepository}
-				onChange={onChange}
-			/>
-		</div>;
-	});
+	const singleSchema = items?.getSingleSchema()?.getType();
+	const singleSchemaType = singleSchema?.getAllowedSchemaTypes();
+
+	const singleType = singleSchemaType?.values().next().value;
+
+	<div>
+		<SingleSchemaForm
+			key={'singleSchema_'}
+			schema={schema.getAdditionalProperties()?.getSchemaValue()}
+			path={path}
+			value={Prop}
+			schemaRepository={schemaRepository}
+			onChange={onChange}
+		/>
+	</div>;
+
+	const tupleSchema = items?.getTupleSchema();
+	console.log(tupleSchema, 'tupleSchema');
 
 	const newProp = (
 		<div className="_newProp">

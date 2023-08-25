@@ -192,7 +192,6 @@ export default function SingleSchemaForm({
 	let editor;
 
 	const whatType = currentType ?? suggestedCurrentType;
-	console.log(whatType, 'called from array method');
 	if (whatType === SchemaType.OBJECT) {
 		editor = (
 			<ObjectValueEditor
