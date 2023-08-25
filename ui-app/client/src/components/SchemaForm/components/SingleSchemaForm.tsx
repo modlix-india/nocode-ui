@@ -12,6 +12,7 @@ import { StringValueEditor } from './StringValueEditor';
 import { BooleanValueEditor } from './BooleanValueEditor';
 import { NumberValueEditor } from './NumberValueEditor';
 import { ObjectValueEditor } from './ObjectValueEditor';
+import ArrayValueEditor from './ArrayValueEditor';
 
 const NUMBER_SET = new Set([
 	SchemaType.FLOAT,
@@ -189,7 +190,9 @@ export default function SingleSchemaForm({
 		) : undefined;
 
 	let editor;
+
 	const whatType = currentType ?? suggestedCurrentType;
+	console.log(whatType, 'called from array method');
 	if (whatType === SchemaType.OBJECT) {
 		editor = (
 			<ObjectValueEditor
@@ -202,7 +205,15 @@ export default function SingleSchemaForm({
 			/>
 		);
 	} else if (whatType === SchemaType.ARRAY) {
-		editor = <div className="_singleSchema"></div>;
+		editor = (
+			<ArrayValueEditor
+				value={value}
+				schema={schema}
+				path={path}
+				onChange={v => onChange(path, v)}
+				schemaRepository={schemaRepository}
+			/>
+		);
 	} else if (whatType === SchemaType.STRING) {
 		editor = (
 			<StringValueEditor

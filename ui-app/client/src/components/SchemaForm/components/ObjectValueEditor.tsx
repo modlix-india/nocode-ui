@@ -70,9 +70,11 @@ export function ObjectValueEditor({
 			/>
 		</div>
 	));
+
 	const errors = msg ? <div className="_errorMessages">{msg}</div> : undefined;
 	const addProperty = () => {
 		if (!propName || value?.hasOwnProperty(propName)) return;
+
 		onChange(path ? `${path}.${propName}` : propName, undefined);
 		setPropName('');
 	};
