@@ -11,6 +11,9 @@ export const sample = {
 		'Option 7',
 	],
 	dropdDownValue: 'Option 1',
+	radioOptions: ['Option 1', 'Option 2', 'Option 3'],
+	radioSingleValue: 'Option 1',
+	radioMultiValue: ['Option 1', 'Option 3'],
 	booleanTrue: true,
 	booleanFalse: false,
 };
