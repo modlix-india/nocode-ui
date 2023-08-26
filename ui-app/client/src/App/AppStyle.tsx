@@ -159,6 +159,27 @@ export default function AppStyle() {
 		font-size: inherit;
 	}
 
+	/* only for demo */
+	.mi.material-icons-outlined.demoicons {
+		font-family: Arial;
+		font-weight: normal;
+		font-style: normal;
+		font-size: 24px;
+		line-height: 1;
+		letter-spacing: normal;
+		text-transform: none;
+		display: inline-block;
+		white-space: nowrap;
+		word-wrap: normal;
+		direction: ltr;
+		-webkit-font-feature-settings: 'liga';
+		-webkit-font-smoothing: antialiased;
+	}
+	.mio-demoicon1::before{ content: "\\2660"; }
+	.mio-demoicon2::before{ content: "\\2663"; }
+	.mio-demoicon3::before{ content: "\\2665"; }
+	.mio-demoicon4::before{ content: "\\2666"; }
+
 	.opacityShowOnHover {opacity: 0;}
 	.opacityShowOnHover:hover {opacity: 1 !important;}
 	.disableChildrenEvents * {pointer-events: none;}
