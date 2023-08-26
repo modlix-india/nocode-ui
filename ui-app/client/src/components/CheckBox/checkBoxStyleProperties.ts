@@ -5,7 +5,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Checkbox Font',
 		name: 'checkboxFont',
 		defaultValue: '<primaryFont>',
-		selector: 'input[type="checkbox"].commonCheckbox',
 		noPrefix: true,
 	},
 
@@ -15,7 +14,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'defaultCheckboxFont',
 		defaultValue: '<checkboxFont>',
 		cssProperty: 'font',
-		selector: '.comp.compCheckbox._default',
+		selector: '.comp.compCheckbox._default label',
 		noPrefix: true,
 	},
 	{
@@ -24,7 +23,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'outlineCheckboxFont',
 		defaultValue: '<checkboxFont>',
 		cssProperty: 'font',
-		selector: '.comp.compCheckbox._outlined',
+		selector: '.comp.compCheckbox._outlined label',
 		noPrefix: true,
 	},
 
@@ -233,6 +232,15 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'background',
 		selector:
 			'.comp.compCheckbox._outlined._primary .commonCheckbox:disabled::before,.comp.compCheckbox._outlined._secondary .commonCheckbox:disabled::before,.comp.compCheckbox._outlined._tertiary .commonCheckbox:disabled::before,.comp.compCheckbox._outlined._quaternary .commonCheckbox:disabled::before,.comp.compCheckbox._outlined._quinary .commonCheckbox:disabled::before',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Font Color',
+		displayName: 'Outline Disabled Checkbox Font Color',
+		name: 'outlineDisabledCheckboxFontColor',
+		defaultValue: '<fontColorEight>',
+		cssProperty: 'color',
+		selector: '.comp.compCheckbox._outlined label._disabled',
 		noPrefix: true,
 	},
 

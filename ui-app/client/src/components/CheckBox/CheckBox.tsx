@@ -87,7 +87,9 @@ function CheckBox(props: ComponentProps) {
 					stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
 				}
 				style={resolvedStyles.label ?? {}}
-				className={`checkbox ${orientation === 'VERTICAL' ? 'vertical' : 'horizontal'}`}
+				className={`checkbox ${orientation === 'VERTICAL' ? 'vertical' : 'horizontal'} ${
+					readOnly ? '_disabled' : ''
+				}`}
 				htmlFor={key}
 			>
 				<SubHelperComponent definition={props.definition} subComponentName="label" />
@@ -130,10 +132,10 @@ const component: Component = {
 		name: 'CheckBox',
 		type: 'CheckBox',
 		properties: {
-			label: { value: 'Check Box' },
+			label: { value: 'Checkbox' },
 		},
 	},
-	sections: [{ name: 'Check Box', pageName: 'checkbox' }],
+	sections: [{ name: 'Checkbox', pageName: 'checkbox' }],
 };
 
 export default component;
