@@ -327,7 +327,6 @@ const component: Component = {
 		type: 'TextBox',
 		name: 'TextBox',
 		properties: {
-			placeholder: { value: 'placeholder' },
 			label: { value: 'TextBox' },
 		},
 	},
