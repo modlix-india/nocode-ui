@@ -180,7 +180,7 @@ function TextBox(props: ComponentProps) {
 			))();
 	}, [changeEvent]);
 
-	const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+	const handleBlur = (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		let temp = value === '' && emptyValue ? mapValue[emptyValue] : value;
 		if (valueType === 'number') {
 			const tempNumber =
@@ -232,7 +232,9 @@ function TextBox(props: ComponentProps) {
 		if (!updateStoreImmediately) setValue(!isNaN(tempNumber) ? temp?.toString() : '');
 	};
 
-	const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+	const handleChange = async (
+		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+	) => {
 		if (valueType === 'text') handleTextChange(event.target.value);
 		else handleNumberChange(event.target.value);
 	};
@@ -251,7 +253,7 @@ function TextBox(props: ComponentProps) {
 		if (!clearEvent) return;
 		await runEvent(
 			clearEvent,
-			onEnter,
+			onClear,
 			props.context.pageName,
 			props.locationHistory,
 			props.pageDefinition,
@@ -259,7 +261,7 @@ function TextBox(props: ComponentProps) {
 	};
 	const clickEvent = onEnter ? props.pageDefinition.eventFunctions[onEnter] : undefined;
 
-	const handleKeyUp = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+	const handleKeyUp = async (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		if (!clickEvent || isLoading || e.key !== 'Enter') return;
 		if (!updateStoreImmediately) {
 			handleBlur(e as unknown as React.FocusEvent<HTMLInputElement>);

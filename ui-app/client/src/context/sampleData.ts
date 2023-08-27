@@ -1,6 +1,7 @@
 export const sample = {
 	number1: 72,
 	textBoxText: 'Sample Value',
+	textAreaText: 'Sample Text Area Value',
 	dropdownOptions: [
 		'Option 1',
 		'Option 2',

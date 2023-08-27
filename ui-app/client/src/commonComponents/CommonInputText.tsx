@@ -6,9 +6,9 @@ import { HelperComponent } from '../components/HelperComponent';
 
 type CommonInputType = {
 	styles?: any;
-	focusHandler?: (event: React.FocusEvent<HTMLInputElement>) => void;
-	blurHandler?: (event: React.FocusEvent<HTMLInputElement>) => void;
-	keyUpHandler?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
+	focusHandler?: (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+	blurHandler?: (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+	keyUpHandler?: (event: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 	clearContentHandler?: () => void;
 	id: string;
 	noFloat?: boolean;
@@ -21,14 +21,14 @@ type CommonInputType = {
 	valueType?: any;
 	isPassword?: any;
 	placeholder?: any;
-	handleChange?: (event: ChangeEvent<HTMLInputElement>) => void;
+	handleChange?: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 	hasFocusStyles?: boolean;
 	validationMessages?: Array<string>;
 	context: RenderContext;
 	supportingText?: string;
 	messageDisplay?: string;
 	hideClearContentIcon?: boolean;
-	inputRef?: React.RefObject<HTMLInputElement>;
+	inputRef?: React.RefObject<any>;
 	autoComplete?: string;
 	definition: ComponentDefinition;
 	autoFocus?: boolean;
@@ -39,6 +39,7 @@ type CommonInputType = {
 	children?: React.ReactNode;
 	onMouseLeave?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 	updDownHandler?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
+	inputType?: string;
 };
 
 function CommonInputText(props: CommonInputType) {
@@ -77,21 +78,24 @@ function CommonInputText(props: CommonInputType) {
 		children,
 		onMouseLeave,
 		updDownHandler,
+		inputType = 'Text',
 	} = props;
 	const [focus, setFocus] = React.useState(false);
 	const [showPassword, setShowPassowrd] = React.useState(false);
 	const [isDirty, setIsDirty] = React.useState(false);
-	const handleBlurEvent = (event: React.FocusEvent<HTMLInputElement>) => {
+	const handleBlurEvent = (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		setFocus(false);
 		setIsDirty(true);
 		if (blurHandler) blurHandler(event);
 	};
-	const handleFocusEvent = (event: React.FocusEvent<HTMLInputElement>) => {
+	const handleFocusEvent = (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		setFocus(true);
 		if (focusHandler) focusHandler(event);
 	};
 
-	const handleChangeEvent = (event: React.ChangeEvent<HTMLInputElement>) => {
+	const handleChangeEvent = (
+		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+	) => {
 		setIsDirty(true);
 		if (handleChange) handleChange(event);
 	};
@@ -134,6 +138,48 @@ function CommonInputText(props: CommonInputType) {
 	let inputStyle = computedStyles.inputBox ?? {};
 	if (!handleChange) inputStyle = { ...inputStyle, caretColor: 'transparent' };
 
+	const inputControl =
+		inputType === 'Text' ? (
+			<input
+				style={inputStyle}
+				className={`_inputBox ${noFloat ? '' : 'float'} ${
+					valueType === 'NUMBER' ? 'remove-spin-button' : ''
+				}`}
+				type={isPassword && !showPassword ? 'password' : valueType ? valueType : 'text'}
+				value={value}
+				onChange={event => handleChangeEvent(event)}
+				placeholder={getTranslations(placeholder, translations)}
+				onFocus={handleFocusEvent}
+				onBlur={event => handleBlurEvent(event)}
+				onKeyUp={keyUpHandler}
+				name={id}
+				id={id}
+				disabled={readOnly}
+				ref={inputRef}
+				autoFocus={autoFocus}
+				autoComplete={autoComplete}
+			/>
+		) : (
+			<textarea
+				style={inputStyle}
+				className={`_inputBox ${noFloat ? '' : 'float'} ${
+					valueType === 'NUMBER' ? 'remove-spin-button' : ''
+				}`}
+				value={value}
+				onChange={event => handleChangeEvent(event)}
+				placeholder={getTranslations(placeholder, translations)}
+				onFocus={handleFocusEvent}
+				onBlur={event => handleBlurEvent(event)}
+				onKeyUp={keyUpHandler}
+				name={id}
+				id={id}
+				disabled={readOnly}
+				ref={inputRef}
+				autoFocus={autoFocus}
+				autoComplete={autoComplete}
+			/>
+		);
+
 	return (
 		<div
 			className={`${cssPrefix} ${
@@ -154,25 +200,7 @@ function CommonInputText(props: CommonInputType) {
 					></SubHelperComponent>
 				</i>
 			) : undefined}
-			<input
-				style={inputStyle}
-				className={`_inputBox ${noFloat ? '' : 'float'} ${
-					valueType === 'NUMBER' ? 'remove-spin-button' : ''
-				}`}
-				type={isPassword && !showPassword ? 'password' : valueType ? valueType : 'text'}
-				value={value}
-				onChange={event => handleChangeEvent(event)}
-				placeholder={getTranslations(placeholder, translations)}
-				onFocus={handleFocusEvent}
-				onBlur={event => handleBlurEvent(event)}
-				onKeyUp={keyUpHandler}
-				name={id}
-				id={id}
-				disabled={readOnly}
-				ref={inputRef}
-				autoFocus={autoFocus}
-				autoComplete={autoComplete}
-			/>
+			{inputControl}
 			{!hideClearContentIcon && value?.length && !readOnly && !isPassword ? (
 				<i
 					style={computedStyles.rightIcon ?? {}}

@@ -40,6 +40,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
+		name: 'autoFocus',
+		displayName: 'Auto Focus',
+		description: 'Textarea to be focused automatically when page loads.',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+
+	{
 		name: 'defaultValue',
 		schema: SCHEMA_ANY_COMP_PROP,
 		displayName: 'Default Value',
@@ -163,6 +172,24 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Event to be triggered when clear button is pressed.',
 		group: ComponentPropertyGroup.EVENTS,
 	},
+
+	{
+		...COMMON_COMPONENT_PROPERTIES.designType,
+		enumValues: [
+			...COMMON_COMPONENT_PROPERTIES.designType.enumValues!,
+			{
+				name: '_outlined',
+				displayName: 'Outline Text Area',
+				description: 'Outline Text Area type',
+			},
+			{
+				name: '_filled',
+				displayName: 'Filled Text Area',
+				description: 'Filled Text Area type',
+			},
+		],
+	},
+	COMMON_COMPONENT_PROPERTIES.colorScheme,
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
