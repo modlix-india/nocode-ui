@@ -22,13 +22,18 @@ export default function PopupStyles({ theme }: { theme: Map<string, Map<string, 
       bottom: 0;
       left: 0;
       display: flex;
-      align-items: center;
-      justify-content: center;   
-      backdrop-filter: blur(${processStyleValueWithFunction(
-			values.get('backdropFilter') ?? '',
-			values,
-		)}) 
     }
+
+    
+    ${PREFIX} ._left_center.backdrop { align-items: center; justify-content: flex-start; }
+    ${PREFIX} ._right_center.backdrop { align-items: center; justify-content: flex-end; }
+    ${PREFIX} ._center_center.backdrop { align-items: center; justify-content: center; }
+    ${PREFIX} ._left_top.backdrop { align-items: flex-start; justify-content: flex-start; }
+    ${PREFIX} ._right_top.backdrop { align-items: flex-start; justify-content: flex-end; }
+    ${PREFIX} ._center_top.backdrop { align-items: flex-start; justify-content: center; }
+    ${PREFIX} ._left_bottom.backdrop { align-items: flex-end; justify-content: flex-start; }
+    ${PREFIX} ._right_bottom.backdrop { align-items: flex-end; justify-content: flex-end; }
+    ${PREFIX} ._center_bottom.backdrop { align-items: flex-end; justify-content: center; }
 
     ${PREFIX} .modal{
       position: relative;
