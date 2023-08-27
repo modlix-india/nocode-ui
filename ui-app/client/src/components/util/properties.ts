@@ -359,6 +359,108 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 			},
 		],
 	},
+	background: {
+		name: 'background',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Background',
+		description: 'Background to be applied',
+		editor: ComponentPropertyEditor.BACKGROUND,
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: '',
+		enumValues: [
+			{ name: '', displayName: 'None', description: 'None' },
+			{
+				name: '_PRIMARYBG',
+				displayName: 'Primary background',
+				description: 'Primary background',
+			},
+			{
+				name: '_SECONDARYBG',
+				displayName: 'Secondary background',
+				description: 'Secondary background',
+			},
+			{
+				name: '_TERTIARYBG',
+				displayName: 'Tertiary background',
+				description: 'Tertiary background',
+			},
+			{
+				name: '_QUATERNARYBG',
+				displayName: 'Quaternary background',
+				description: 'Quaternary background',
+			},
+			{
+				name: '_QUINARYBG',
+				displayName: 'Quinary background',
+				description: 'Quinary background',
+			},
+			{
+				name: '_SENARYBG',
+				displayName: 'Senary background',
+				description: 'Senary background',
+			},
+			{
+				name: '_SEPTENARYBG',
+				displayName: 'Septenary background',
+				description: 'Septenary background',
+			},
+			{
+				name: '_OCTONARYBG',
+				displayName: 'Octonary background',
+				description: 'Octonary background',
+			},
+			{
+				name: '_NONARYBG',
+				displayName: 'Nonary background',
+				description: 'Nonary background',
+			},
+			{
+				name: '_PRIMARYGRADBG',
+				displayName: 'Primary gradient background',
+				description: 'Primary gradient background',
+			},
+			{
+				name: '_SECONDARYGRADBG',
+				displayName: 'Secondary gradient background',
+				description: 'Secondary gradient background',
+			},
+			{
+				name: '_TERTIARYGRADBG',
+				displayName: 'Tertiary gradient background',
+				description: 'Tertiary gradient background',
+			},
+			{
+				name: '_QUATERNARYGRADBG',
+				displayName: 'Quaternary gradient background',
+				description: 'Quaternary gradient background',
+			},
+			{
+				name: '_QUINARYGRADBG',
+				displayName: 'Quinary gradient background',
+				description: 'Quinary gradient background',
+			},
+			{
+				name: '_SENARYGRADBG',
+				displayName: 'Senary gradient background',
+				description: 'Senary gradient background',
+			},
+			{
+				name: '_SEPTENARYGRADBG',
+				displayName: 'Septenary gradient background',
+				description: 'Septenary gradient background',
+			},
+			{
+				name: '_OCTONARYGRADBG',
+				displayName: 'Octonary gradient background',
+				description: 'Octonary gradient background',
+			},
+			{
+				name: '_NONARYGRADBG',
+				displayName: 'Nonary gradient background',
+				description: 'Nonary gradient background',
+			},
+		],
+	},
 };
 
 const COMPONENT_STYLE_GROUPS: { [key: string]: Array<string> } = {

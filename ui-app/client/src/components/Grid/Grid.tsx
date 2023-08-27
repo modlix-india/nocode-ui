@@ -242,6 +242,12 @@ const component: Component = {
 		name: 'Grid',
 		type: 'Grid',
 	},
+	sections: [
+		{
+			name: 'Grid',
+			pageName: 'grid',
+		},
+	],
 };
 
 export default component;

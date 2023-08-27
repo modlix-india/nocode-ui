@@ -501,6 +501,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'backgroundColorOne',
 		defaultValue: '<colorOne>',
 		description: 'Background One used in application',
+		cssProperty: 'background',
+		selector: '._PRIMARYBG',
 		noPrefix: true,
 	},
 	{
@@ -509,6 +511,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'backgroundColorTwo',
 		defaultValue: '<colorTwo>',
 		description: 'Background Two used in application',
+		cssProperty: 'background',
+		selector: '._SECONDARYBG',
 		noPrefix: true,
 	},
 	{
@@ -517,6 +521,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'backgroundColorThree',
 		defaultValue: '<colorThree>',
 		description: 'Background Three used in application',
+		cssProperty: 'background',
+		selector: '._TERTIARYBG',
 		noPrefix: true,
 	},
 	{
@@ -525,6 +531,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'backgroundColorFour',
 		defaultValue: '<colorFour>',
 		description: 'Background Four used in application',
+		cssProperty: 'background',
+		selector: '._QUATERNARYBG',
 		noPrefix: true,
 	},
 	{
@@ -533,6 +541,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'backgroundColorFive',
 		defaultValue: '<colorFive>',
 		description: 'Background Five used in application',
+		cssProperty: 'background',
+		selector: '._QUINARYBG',
 		noPrefix: true,
 	},
 	{
@@ -541,6 +551,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'backgroundColorSix',
 		defaultValue: '<colorSix>',
 		description: 'Background Six used in application',
+		cssProperty: 'background',
+		selector: '._SENARYBG',
 		noPrefix: true,
 	},
 	{
@@ -549,6 +561,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'backgroundColorSeven',
 		defaultValue: '<colorSeven>',
 		description: 'Background Seven used in application',
+		cssProperty: 'background',
+		selector: '._SEPTENARYBG',
 		noPrefix: true,
 	},
 	{
@@ -557,6 +571,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'backgroundColorEight',
 		defaultValue: '<colorThirteen>',
 		description: 'Background Eight used in application',
+		cssProperty: 'background',
+		selector: '._OCTONARYBG',
 		noPrefix: true,
 	},
 	{
@@ -565,6 +581,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'backgroundColorNine',
 		defaultValue: '<colorNine>',
 		description: 'Background Nine used in application',
+		cssProperty: 'background',
+		selector: '._NONARYBG',
 		noPrefix: true,
 	},
 	{
@@ -656,6 +674,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'gradientColorOne',
 		defaultValue: 'linear-gradient(90deg, <backgroundColorOne>, transparent)',
 		description: 'Gradient One used in application',
+		cssProperty: 'background',
+		selector: '._PRIMARYGRADBG',
 		noPrefix: true,
 	},
 	{
@@ -664,6 +684,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'gradientColorTwo',
 		defaultValue: 'linear-gradient(90deg, <backgroundColorTwo>, transparent)',
 		description: 'Gradient Two used in application',
+		cssProperty: 'background',
+		selector: '._SECONDARYGRADBG',
 		noPrefix: true,
 	},
 	{
@@ -672,6 +694,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'gradientColorThree',
 		defaultValue: 'linear-gradient(90deg, <backgroundColorThree>, transparent)',
 		description: 'Gradient Three used in application',
+		cssProperty: 'background',
+		selector: '._TERTIARYGRADBG',
 		noPrefix: true,
 	},
 	{
@@ -680,6 +704,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'gradientColorFour',
 		defaultValue: 'linear-gradient(90deg, <backgroundColorFour>, transparent)',
 		description: 'Gradient Four used in application',
+		cssProperty: 'background',
+		selector: '._QUATERNARYGRADBG',
 		noPrefix: true,
 	},
 	{
@@ -688,6 +714,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'gradientColorFive',
 		defaultValue: 'linear-gradient(90deg, <backgroundColorFive>, transparent)',
 		description: 'Gradient Five used in application',
+		cssProperty: 'background',
+		selector: '._QUINARYGRADBG',
 		noPrefix: true,
 	},
 	{
@@ -696,6 +724,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'gradientColorSix',
 		defaultValue: 'linear-gradient(90deg, <backgroundColorSix>, transparent)',
 		description: 'Gradient Six used in application',
+		cssProperty: 'background',
+		selector: '._SENARYGRADBG',
 		noPrefix: true,
 	},
 	{
@@ -704,14 +734,18 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'gradientColorSeven',
 		defaultValue: 'linear-gradient(90deg, <backgroundColorSeven>, transparent)',
 		description: 'Gradient Seven used in application',
+		cssProperty: 'background',
+		selector: '._SEPTENARYGRADBG',
 		noPrefix: true,
 	},
 	{
 		groupName: 'Gradient Color',
 		displayName: 'Gradient Color Eight',
 		name: 'gradientColorEight',
-		defaultValue: 'linear-gradient(90deg, <backgroundColorEight, transparent)',
+		defaultValue: 'linear-gradient(90deg, <backgroundColorEight>, transparent)',
 		description: 'Gradient Eight used in application',
+		cssProperty: 'background',
+		selector: '._OCTONARYGRADBG',
 		noPrefix: true,
 	},
 	{
@@ -720,6 +754,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'gradientColorNine',
 		defaultValue: 'linear-gradient(90deg, <backgroundColorNine>, transparent)',
 		description: 'Gradient Nine used in application',
+		cssProperty: 'background',
+		selector: '._NONARYGRADBG',
 		noPrefix: true,
 	},
 	{
