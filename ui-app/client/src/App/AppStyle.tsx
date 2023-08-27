@@ -180,6 +180,8 @@ export default function AppStyle() {
 	.mio-demoicon3::before{ content: "\\2665"; }
 	.mio-demoicon4::before{ content: "\\2666"; }
 
+	.mio-demoicon-close::before{ content: "\\2715"; }
+
 	.opacityShowOnHover {opacity: 0;}
 	.opacityShowOnHover:hover {opacity: 1 !important;}
 	.disableChildrenEvents * {pointer-events: none;}
