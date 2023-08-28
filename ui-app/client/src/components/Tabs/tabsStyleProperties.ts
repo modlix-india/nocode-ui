@@ -14,7 +14,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Background',
 		displayName: 'Tab Child Container Background',
 		name: 'tabChildContainerBackground',
-		defaultValue: '<backgroundColorSeven>',
+		defaultValue: '#FCFCFC',
 		cssProperty: 'background',
 		selector: '.tabGridDiv',
 	},
@@ -370,6 +370,15 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector:
 			'.comp.compTabs._line._quinary .tabDiv._active, .comp.compTabs._default._quinary .tabDiv._active',
 		noPrefix: true,
+	},
+
+	{
+		groupName: 'Box shadow',
+		displayName: 'Tab Highlighter box shadow',
+		name: 'tabHighlighterboxshadow',
+		defaultValue: '0px 0px 6px #DDD',
+		cssProperty: 'box-shadow',
+		selector: '.tabHighlighter',
 	},
 ];
 export const styleDefaults = new Map<string, string>(
