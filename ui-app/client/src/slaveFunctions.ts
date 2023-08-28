@@ -1,5 +1,7 @@
 import { duplicate } from '@fincity/kirun-js';
+import { getDataFromPath, setData } from './context/StoreContext';
 import { ComponentDefinition } from './types/common';
+import { STORE_PREFIX } from './constants';
 
 export const isSlave = (() => {
 	try {
@@ -11,7 +13,7 @@ export const isSlave = (() => {
 
 const _parent = window.parent !== window.top ? window.parent : window.top;
 export function messageToMaster(message: { type: string; payload: any | undefined }) {
-	_parent.postMessage(message, '*');
+	_parent.postMessage({ ...message, editorType: window.designMode }, '*');
 }
 
 export const SLAVE_FUNCTIONS = new Map<string, (payload: any) => void>([
@@ -28,6 +30,23 @@ export const SLAVE_FUNCTIONS = new Map<string, (payload: any) => void>([
 	[
 		'EDITOR_PERSONALIZATION',
 		p => (window.pageEditor = { ...window.pageEditor, personalization: p }),
+	],
+	[
+		'EDITOR_APP_DEFINITION',
+		p => {
+			if (!p) return;
+			const appPath = `${STORE_PREFIX}.application`;
+			const app = duplicate(getDataFromPath(appPath, []));
+			if (!app) return;
+			if (!app.properties) app.properties = {};
+			if (p.properties.iconPacks) {
+				app.properties.iconPacks = p.properties.iconPacks;
+			}
+			if (p.properties.fontPacks) {
+				app.properties.fontPacks = p.properties.fontPacks;
+			}
+			setData(appPath, app);
+		},
 	],
 ]);
 

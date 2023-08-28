@@ -242,7 +242,7 @@ export function IconSelectionEditor2({
 											}}
 										>
 											<i
-												className={`${prefixMap.get(selectedPack)} fa-2x ${
+												className={`${prefixMap.get(selectedPack)} _size3 ${
 													i.n
 												}`}
 											/>

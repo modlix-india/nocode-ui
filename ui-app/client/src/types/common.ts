@@ -35,7 +35,10 @@ export interface RenderContext {
 	showValidationMessages?: boolean;
 	observer?: IntersectionObserver;
 	table?: any;
+	// Using to understand if we are in shellpage or not, To stop rendering deeper nested pages
 	level: number;
+	// Menu Level
+	menuLevel?: number;
 	shellPageName: string;
 }
 
@@ -173,7 +176,7 @@ export interface StylePropertyDefinition {
 	name: string;
 	displayName: string;
 	groupName?: string;
-	description: string;
+	description?: string;
 	defaultValue?: string;
 	cssProperty?: string;
 	selector?: string;

@@ -106,95 +106,54 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: true,
 	},
 	{
-		name: 'MenuDesignSelectionType',
+		name: 'subMenuOrientation',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Menu Selection Type',
-		description: 'Type of the selection of a Menu',
-		defaultValue: '_simpleMenuDesign1',
-		group: ComponentPropertyGroup.DATA,
+		displayName: 'SubMenu Orientation',
+		description: 'SubMenu Orientation',
+		editor: ComponentPropertyEditor.LAYOUT,
+		defaultValue: '_default_orientation',
+		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
 			{
-				name: '_simpleMenuDesign1',
-				displayName: 'SimpleMenuDesign1',
-				description: 'simple menu design one',
+				name: '_default_orientation',
+				displayName: 'Default Orientation',
+				description: 'Default Orientation',
 			},
 			{
-				name: '_simpleMenuDesign2',
-				displayName: 'simpleMenuDesign2',
-				description: 'simple menu design two',
+				name: '_right_orientation',
+				displayName: 'Right Orientation',
+				description: 'Right Orientation',
 			},
 			{
-				name: '_simpleMenuDesign3',
-				displayName: 'simpleMenuDesign3',
-				description: 'simple menu design three',
-			},
-			{
-				name: '_colouredMenuDesign1',
-				displayName: 'ColouredMenuDesign1',
-				description: 'coloured menu design one',
-			},
-			{
-				name: '_colouredMenuDesign2',
-				displayName: 'ColouredMenuDesign2',
-				description: 'coloured menu design two',
-			},
-			{
-				name: '_colouredMenuDesign3',
-				displayName: 'ColouredMenuDesign3',
-				description: 'coloured menu design three',
-			},
-			{
-				name: '_filledMenuDesign1',
-				displayName: 'FilledMenuDesign1',
-				description: 'filled menu design one',
-			},
-			{
-				name: '_filledMenuDesign2',
-				displayName: 'FilledMenuDesign2',
-				description: 'filled menu design two',
-			},
-			{
-				name: '_filledMenuDesign3',
-				displayName: 'FilledMenuDesign3',
-				description: 'filled menu design three',
-			},
-			{
-				name: '_filledMenuDesign4',
-				displayName: 'FilledMenuDesign4',
-				description: 'filled menu design four',
-			},
-			{
-				name: '_filledMenuDesign5',
-				displayName: 'FilledMenuDesign5',
-				description: 'filled menu design five',
-			},
-			{
-				name: '_simpleMenuHorizontalDesign1',
-				displayName: 'simpleMenuHorizontalDesign1',
-				description: 'simple menu design one',
-			},
-			{
-				name: '_simpleMenuHorizontalDesign2',
-				displayName: 'simpleMenuHorizontalDesign2',
-				description: 'simple menu design two',
-			},
-			{
-				name: '_simpleMenuHorizontalDesign3',
-				displayName: 'simpleMenuHorizontalDesign3',
-				description: 'simple menu design three',
-			},
-			{
-				name: '_simpleMenuHorizontalDesign4',
-				displayName: 'simpleMenuHorizontalDesign4',
-				description: 'simple menu design four',
-			},
-			{
-				name: '_filledMenuHorizontalDesign1',
-				displayName: 'filledMenuHorizontalDesign1',
-				description: 'filled menu horizontal design one',
+				name: '_bottom_orientation',
+				displayName: 'Bottom Orientation',
+				description: 'Bottom Orientation',
 			},
 		],
 	},
+	{
+		...COMMON_COMPONENT_PROPERTIES.designType,
+		enumValues: [
+			...COMMON_COMPONENT_PROPERTIES.designType.enumValues!,
+			{
+				name: '_outlined',
+				displayName: 'Outline Type Menu',
+				description: 'Outline type menu',
+			},
+			{ name: '_text', displayName: 'Text Menu', description: 'Text type menu' },
+			{
+				name: '_sides',
+				displayName: 'Side Bordered Menu',
+				description: 'Side Bordered Menu type',
+			},
+			{
+				name: '_topbottom',
+				displayName: 'Top and Bottom Bordered Menu',
+				description: 'Top and Bottom Bordered Menu type',
+			},
+		],
+	},
+	COMMON_COMPONENT_PROPERTIES.colorScheme,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
@@ -220,6 +179,16 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 	caretIcon: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+	],
+	subMenuContainer: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 };
 

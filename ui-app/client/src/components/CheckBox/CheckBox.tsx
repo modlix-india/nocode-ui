@@ -1,26 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { Schema } from '@fincity/kirun-js';
-import { NAMESPACE_UI_ENGINE } from '../../constants';
+import CommonCheckbox from '../../commonComponents/CommonCheckbox';
 import {
-	addListener,
-	addListenerAndCallImmediately,
-	getData,
-	getDataFromLocation,
-	getPathFromLocation,
 	PageStoreExtractor,
+	addListenerAndCallImmediately,
+	getPathFromLocation,
 	setData,
 } from '../../context/StoreContext';
-import { HelperComponent } from '../HelperComponent';
-import { getTranslations } from '../util/getTranslations';
-import { ComponentProps, ComponentPropertyDefinition } from '../../types/common';
-import { Component } from '../../types/common';
-import { propertiesDefinition, stylePropertiesDefinition } from './checkBoxProperties';
-import CheckBoxStyle from './CheckBoxStyle';
-import CommonCheckbox from '../../commonComponents/CommonCheckbox';
-import useDefinition from '../util/useDefinition';
+import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import { runEvent } from '../util/runEvent';
+import { HelperComponent } from '../HelperComponent';
 import { SubHelperComponent } from '../SubHelperComponent';
+import { getTranslations } from '../util/getTranslations';
+import { runEvent } from '../util/runEvent';
+import useDefinition from '../util/useDefinition';
+import CheckBoxStyle from './CheckBoxStyle';
+import { propertiesDefinition, stylePropertiesDefinition } from './checkBoxProperties';
 
 function CheckBox(props: ComponentProps) {
 	const [checkBoxdata, setCheckBoxData] = useState(false);
@@ -37,7 +31,7 @@ function CheckBox(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
 		key,
-		properties: { label, readOnly, orientation, onClick } = {},
+		properties: { label, readOnly, orientation, onClick, designType, colorScheme } = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
 		definition,
@@ -80,7 +74,10 @@ function CheckBox(props: ComponentProps) {
 	};
 
 	return (
-		<div className="comp compCheckBox" style={resolvedStyles.comp ?? {}}>
+		<div
+			className={`comp compCheckbox ${designType} ${colorScheme}`}
+			style={resolvedStyles.comp ?? {}}
+		>
 			<HelperComponent definition={definition} />
 			<label
 				onMouseEnter={
@@ -90,7 +87,9 @@ function CheckBox(props: ComponentProps) {
 					stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
 				}
 				style={resolvedStyles.label ?? {}}
-				className={`checkbox ${orientation === 'VERTICAL' ? 'vertical' : 'horizontal'}`}
+				className={`checkbox ${orientation === 'VERTICAL' ? 'vertical' : 'horizontal'} ${
+					readOnly ? '_disabled' : ''
+				}`}
 				htmlFor={key}
 			>
 				<SubHelperComponent definition={props.definition} subComponentName="label" />
@@ -133,9 +132,10 @@ const component: Component = {
 		name: 'CheckBox',
 		type: 'CheckBox',
 		properties: {
-			label: { value: 'Check Box' },
+			label: { value: 'Checkbox' },
 		},
 	},
+	sections: [{ name: 'Checkbox', pageName: 'checkbox' }],
 };
 
 export default component;

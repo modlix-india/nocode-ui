@@ -185,6 +185,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				description: 'P tag',
 			},
 			{
+				name: 'B',
+				displayName: 'B',
+				description: 'B tag',
+			},
+			{
 				name: 'PRE',
 				displayName: 'PRE',
 				description: 'Pre tag',
