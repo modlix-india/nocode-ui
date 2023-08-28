@@ -1,9 +1,15 @@
 import React from 'react';
-import { processStyleDefinition } from '../../util/styleProcessor';
+import { processStyleDefinition, processStyleValueWithFunction } from '../../util/styleProcessor';
 import { styleProperties, styleDefaults } from './menuStyleProperties';
+import { StyleResolution } from '../../types/common';
 
 const PREFIX = '.comp.compMenu';
 export default function LinkStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+	const values = new Map([
+		...Array.from(theme.get(StyleResolution.ALL) ?? []),
+		...Array.from(styleDefaults),
+	]);
+
 	const css =
 		`
 	${PREFIX} {
@@ -11,6 +17,7 @@ export default function LinkStyle({ theme }: { theme: Map<string, Map<string, st
 		flex-direction: row;
 		align-items: center;
 		gap: 3px;
+		text-decoration: none;
 	}
 
 	${PREFIX} ._externalButton {
@@ -29,52 +36,20 @@ export default function LinkStyle({ theme }: { theme: Map<string, Map<string, st
 	${PREFIX} ._caretIconContainer {
 		flex: 1;
 		text-align: right;
- 	} 
+ 	}
 
-	${PREFIX}._simpleMenuDesign2 {
-		border-left: 1px solid transparent;
-		border-right: 1px solid transparent;
-		justify-content: center;
+	${PREFIX} + ._right_orientation {
+		position: absolute;
+		left: 100%;
+		z-index: 1;
 	}
 
-	${PREFIX}._simpleMenuDesign3 {
-		border-top: 1px solid transparent;
-		border-bottom: 1px solid transparent;
-		justify-content: center;
+	${PREFIX} + ._bottom_orientation {
+		position: absolute;
+		left: 0;
+		z-index: 1;
+		top: 100%;
 	}
-
-	${PREFIX}._colouredMenuDesign1 {
-		border-top : 1px solid transparent;
-		border-bottom : 1px solid transparent;
-		border-left : 1px solid transparent;
-		border-right : 1px solid transparent;
-	}
-
-	${PREFIX}._colouredMenuDesign2 {
-		border-top : 1px solid transparent;
-		border-bottom : 1px solid transparent;
-		border-left : 1px solid transparent;
-		border-right : 1px solid transparent;
-	}
-
-
-	${PREFIX}._colouredMenuDesign3 {
-		border-top : 1px solid transparent;
-		border-bottom : 1px solid transparent;
-		border-left : 1px solid transparent;
-		border-right : 1px solid transparent;
-	}
-	${PREFIX}._filledMenuDesign1{
-		border-bottom : 1px solid transparent;
-	}
-	${PREFIX}._filledMenuDesign4:hover, ${PREFIX}._filledMenuDesign4._isActive {
-		border : 1px solid transparent;
-	}
-
-	${PREFIX}._simpleMenuHorizontalDesign4{
-		border-bottom : 1px solid transparent;
-	}
-
 
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

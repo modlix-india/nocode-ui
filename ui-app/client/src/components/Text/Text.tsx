@@ -83,7 +83,9 @@ function Text(props: ComponentProps) {
 		if (processNewLine) {
 			comps = translatedText
 				?.split('\n')
-				.flatMap((e, i, a) => (i + 1 === a.length ? [e] : [e, <br></br>]));
+				.flatMap((e, i, a) =>
+					i + 1 === a.length ? [e] : [e, <br key={e + '_' + i}></br>],
+				);
 		} else {
 			comps = [subcomp, translatedText];
 		}
@@ -131,6 +133,11 @@ const component: Component = {
 		name: 'Text',
 		properties: { text: { value: 'Text' } },
 	},
+	sections: [
+		{ name: 'Main', pageName: 'text' },
+		{ name: 'Decorative', pageName: 'textDecorative' },
+		{ name: 'Paragraph', pageName: 'textParagraph' },
+	],
 };
 
 export default component;

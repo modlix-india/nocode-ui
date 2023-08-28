@@ -10,6 +10,7 @@ interface SubHelperComponentPropsType {
 	subComponentName: string;
 	style?: React.CSSProperties;
 	className?: string;
+	zIndex?: number;
 }
 
 function SubHelperComponentInternal({
@@ -18,6 +19,7 @@ function SubHelperComponentInternal({
 	children,
 	style: upperStyle = {},
 	className,
+	zIndex = 6,
 }: SubHelperComponentPropsType) {
 	const [, setLastChanged] = useState(Date.now());
 	const [hover, setHover] = useState(false);
@@ -57,12 +59,12 @@ function SubHelperComponentInternal({
 				? `2px solid ${highlightColor}`
 				: '',
 		borderRadius: '3px',
-		zIndex: '6',
+		zIndex: zIndex,
 		pointerEvents: 'all',
-		height: '100%',
-		width: '100%',
-		left: '0px',
-		top: '0px',
+		height: '94%',
+		width: '94%',
+		left: '2%',
+		top: '2%',
 		position: 'absolute',
 		cursor: 'pointer',
 		border: 'none',

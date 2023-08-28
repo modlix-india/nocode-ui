@@ -36,11 +36,6 @@ function onMessageFromEditor(event: MessageEvent) {
 	}
 }
 
-if (window.isDesignMode) {
-	window.addEventListener('message', onMessageFromEditor);
-	messageToMaster({ type: 'SLAVE_STARTED', payload: undefined });
-}
-
 function processTagType(headTags: any, tag: string) {
 	if (!headTags) return;
 
@@ -178,6 +173,8 @@ export function App() {
 	const [isApplicationLoadFailed, setIsApplicationFailed] = useState(false);
 	const [applicationLoaded, setApplicationLoaded] = useState(false);
 
+	const [firstTime, setFirstTime] = useState(true);
+
 	useEffect(
 		() =>
 			addListenerAndCallImmediately(
@@ -193,8 +190,16 @@ export function App() {
 						return;
 					}
 
+					if (appDef && firstTime) {
+						setFirstTime(false);
+						if (window.isDesignMode) {
+							window.addEventListener('message', onMessageFromEditor);
+							messageToMaster({ type: 'SLAVE_STARTED', payload: undefined });
+						}
+					}
+
 					const { properties } = appDef;
-					if (!properties || !globalThis.nodeDev) return;
+					if (!properties || (!globalThis.nodeDev && !globalThis.isDesignMode)) return;
 
 					processTagType(properties.links, 'LINK');
 					processTagType(properties.scripts, 'SCRIPT');
@@ -206,7 +211,7 @@ export function App() {
 				undefined,
 				`${STORE_PREFIX}.application`,
 			),
-		[],
+		[firstTime, setFirstTime],
 	);
 
 	useEffect(

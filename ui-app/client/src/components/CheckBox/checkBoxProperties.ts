@@ -43,6 +43,18 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 		],
 	},
+	{
+		...COMMON_COMPONENT_PROPERTIES.designType,
+		enumValues: [
+			...COMMON_COMPONENT_PROPERTIES.designType.enumValues!,
+			{
+				name: '_outlined',
+				displayName: 'Outline Checkbox',
+				description: 'Outline Checkbox type',
+			},
+		],
+	},
+	COMMON_COMPONENT_PROPERTIES.colorScheme,
 	COMMON_COMPONENT_PROPERTIES.onClick,
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,

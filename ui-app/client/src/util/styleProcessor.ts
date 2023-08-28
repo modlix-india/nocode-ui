@@ -253,7 +253,49 @@ export function processStyleValue(
 	if (!variable || !cssStyleProp) return EMPTY_STRING;
 	const v = theme.get(variable);
 	if (!v) return EMPTY_STRING;
-	return cssStyleProp + ': ' + processStyleValueWithFunction(v, theme) + '; ';
+
+	const value = processStyleValueWithFunction(v, theme);
+
+	if (cssStyleProp !== 'border') return cssStyleProp + ': ' + value + '; ';
+
+	const borderValue = value.split(',');
+	if (borderValue.length === 1) return 'border : ' + value + '; ';
+	if (borderValue.length === 2)
+		return (
+			'border-top : ' +
+			borderValue[0] +
+			'; border-bottom : ' +
+			borderValue[0] +
+			'; border-left : ' +
+			borderValue[1] +
+			'; border-right : ' +
+			borderValue[1] +
+			'; '
+		);
+	if (borderValue.length === 3)
+		return (
+			'border-top : ' +
+			borderValue[0] +
+			'; border-bottom : ' +
+			borderValue[2] +
+			'; border-left : ' +
+			borderValue[1] +
+			'; border-right : ' +
+			borderValue[1] +
+			'; '
+		);
+
+	return (
+		'border-top : ' +
+		borderValue[0] +
+		'; border-bottom : ' +
+		borderValue[2] +
+		'; border-left : ' +
+		borderValue[3] +
+		'; border-right : ' +
+		borderValue[1] +
+		'; '
+	);
 }
 
 export function processComponentStylePseudoClasses(

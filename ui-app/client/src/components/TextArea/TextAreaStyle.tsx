@@ -7,72 +7,66 @@ export default function TextAreaStyle({ theme }: { theme: Map<string, Map<string
 	const css =
 		`
 		${PREFIX} {
-			width: 100%;
-			display: flex;
-			flex-direction: column;
-			
-		}
-
-		${PREFIX} .inputContainer {
-			position: relative;
 			flex: 1;
+			display: flex;
+			align-items: center;
 		}
-		
-		${PREFIX} .inputContainer .textArea {
-			border: none;
-			width: 100%;
+	
+		${PREFIX} textarea {
+			flex: 1;
 			height: 100%;
-			border-radius: 4px;
+			border: none;
+			font: inherit;
+			line-height: inherit;
 			outline: none;
+			padding: 0;
+			background: transparent;
+			color: inherit;
+			min-width: 20px;
 			resize: none;
 		}
-		
-		${PREFIX} .inputContainer .textAreaLabel {
+	
+		${PREFIX}._isActive ._label,
+		${PREFIX} ._label._noFloat {
+			transform: translateY(-150%);
+		}
+	
+		${PREFIX}._hasLeftIcon ._label {
+			padding-left: 24px;
+		}
+	
+		${PREFIX} ._label {
 			position: absolute;
-			top: 0;
-			
-			transition: top 100ms, transform 100ms ease-in;
+			user-select: none;
+			pointer-events: none;
+			transform: translateY(0%);
+			transition: transform 0.2s ease-in-out, left 0.2s ease-in-out;
+			top: 5px;
 		}
-		
-		${PREFIX} .inputContainer {
-			display: flex;
-			position: relative;
+	
+		${PREFIX} ._rightIcon,
+		${PREFIX} ._leftIcon {
+			width: 24px;
 		}
-
-		${PREFIX} .supportText {
-			position: relative;
+	
+		${PREFIX} ._rightIcon {
+			padding-right: 5px;
 		}
-
-		${PREFIX} .noFloatTextAreaLabel  {
-			display: inline-block;
-			position: relative;
+	
+		${PREFIX} ._label._float {
+			bottom: 0px;
 		}
-
-		${PREFIX} .inputContainer .textArea.float::placeholder {
-			opacity: 0;
+	
+		${PREFIX} ._clearText {
+			cursor: pointer;
 		}
-		
-		${PREFIX} .inputContainer .textArea:focus + .textAreaLabel,
-		${PREFIX} .inputContainer .textArea:not(:placeholder-shown) + .textAreaLabel {
-			transform: translateY(-55%);
-		}
-		
-		${PREFIX} 
-			.inputContainer
-			.textArea:focus
-			+ .textAreaLabel,
-		${PREFIX} 
-			.inputContainer
-			.textArea:not(:placeholder-shown)
-			+ .textAreaLabel {
-			transform: translateY(-55%);
-		}
-
-		${PREFIX} .textArea .remove-spin-button::-webkit-outer-spin-button, .remove-spin-button::-webkit-inner-spin-button {
-			-webkit-appearance: none;
-			-moz-appearance: none;
-			appearance: none;
-			margin: 0; 
+	
+		${PREFIX} ._supportText {
+			position:absolute;
+			z-index:1;
+			left: 0;
+			top: 100%;
+			margin-top: 5px;
 		}
 
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);

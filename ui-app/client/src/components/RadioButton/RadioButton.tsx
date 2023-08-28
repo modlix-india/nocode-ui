@@ -46,6 +46,8 @@ function RadioButton(props: ComponentProps) {
 			layout,
 			readOnly,
 			isMultiSelect,
+			designType,
+			colorScheme,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -154,13 +156,16 @@ function RadioButton(props: ComponentProps) {
 	};
 
 	return (
-		<div className={`comp compRadioButton _${layout}`} style={resolvedStyles.comp ?? {}}>
+		<div
+			className={`comp compRadioButton _${layout} ${designType} ${colorScheme}`}
+			style={resolvedStyles.comp ?? {}}
+		>
 			<HelperComponent definition={definition} />
 			{radioButtonData?.map((e: any) => (
 				<label
 					className={`radioLabel ${
 						orientation === 'VERTICAL' ? 'vertical' : 'horizontal'
-					}`}
+					} ${readOnly ? '_disabled' : ''}`}
 					key={e.key}
 					htmlFor={e.key}
 					onMouseEnter={
@@ -242,6 +247,7 @@ const component: Component = {
 			},
 		},
 	},
+	sections: [{ name: 'Radio Button', pageName: 'radioButton' }],
 };
 
 export default component;

@@ -35,6 +35,9 @@ function Link(props: ComponentProps) {
 			externalButtonTarget = '_blank',
 			externalButtonFeatures,
 			onClick,
+			designType,
+			colorScheme,
+			showLines,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -134,7 +137,9 @@ function Link(props: ComponentProps) {
 		<>
 			{styleComp}
 			<a
-				className={`comp compLink _${styleKey}link_css`}
+				className={`comp compLink _${styleKey}link_css ${designType} ${colorScheme} ${
+					showLines ? '_showLines' : ''
+				}`}
 				href={resolvedLink}
 				target={target}
 				onClick={e => {
@@ -181,6 +186,7 @@ const component: Component = {
 			label: { value: 'Link' },
 		},
 	},
+	sections: [{ name: 'Links', pageName: 'link' }],
 };
 
 export default component;

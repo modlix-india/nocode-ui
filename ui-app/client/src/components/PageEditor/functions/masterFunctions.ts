@@ -3,6 +3,7 @@ import PageOperations from './PageOperations';
 
 interface MasterFunctionOptions {
 	iframe: HTMLIFrameElement;
+	iframe2?: HTMLIFrameElement;
 	editPageDefinition: any;
 	defPath: string | undefined;
 	personalization: any;

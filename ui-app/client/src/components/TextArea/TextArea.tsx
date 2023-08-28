@@ -1,5 +1,5 @@
 import { isNullValue } from '@fincity/kirun-js';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
 import {
 	PageStoreExtractor,
@@ -20,6 +20,7 @@ import { flattenUUID } from '../util/uuid';
 import TextAreaStyle from './TextAreaStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './textAreaProperties';
 import { SubHelperComponent } from '../SubHelperComponent';
+import CommonInputText from '../../commonComponents/CommonInputText';
 
 interface mapType {
 	[key: string]: any;
@@ -59,6 +60,9 @@ function TextArea(props: ComponentProps) {
 			messageDisplay,
 			autoComplete,
 			onClear,
+			autoFocus,
+			designType,
+			colorScheme,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -69,7 +73,6 @@ function TextArea(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	const effectivePlaceholder = noFloat ? (placeholder ? placeholder : '') : label;
 	const computedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
 		{ focus, readOnly },
@@ -96,20 +99,32 @@ function TextArea(props: ComponentProps) {
 		);
 	}, [bindingPathPath]);
 
-	const spinnerPath1 = onChange
-		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
-				onChange,
-		  )}.isRunning`
-		: undefined;
+	// const spinnerPath1 = onChange
+	// 	? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
+	// 			onChange,
+	// 	  )}.isRunning`
+	// 	: undefined;
 
-	const [isLoading, setIsLoading] = useState(
-		getDataFromPath(spinnerPath1, props.locationHistory, pageExtractor),
-	);
+	// const spinnerPath2 = onClear
+	// 	? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
+	// 			onClear,
+	// 	  )}.isRunning`
+	// 	: undefined;
 
-	useEffect(() => {
-		if (!spinnerPath1?.length) return;
-		return addListener((_, value) => setIsLoading(value), pageExtractor, spinnerPath1);
-	}, []);
+	// const [isLoading, setIsLoading] = useState(
+	// 	(getDataFromPath(spinnerPath1, props.locationHistory, pageExtractor) ||
+	// 		getDataFromPath(spinnerPath2, props.locationHistory, pageExtractor)) ??
+	// 		false,
+	// );
+
+	// useEffect(() => {
+	// 	let paths = [];
+	// 	if (spinnerPath1) paths.push(spinnerPath1);
+	// 	if (spinnerPath2) paths.push(spinnerPath2);
+
+	// 	if (!paths.length) return;
+	// 	return addListener((_, value) => setIsLoading(value), pageExtractor, ...paths);
+	// }, []);
 
 	useEffect(() => {
 		if (!validation?.length) return;
@@ -139,43 +154,44 @@ function TextArea(props: ComponentProps) {
 			);
 	}, [value, validation]);
 
-	const hasErrorMessages =
-		validationMessages?.length && (value || isDirty || context.showValidationMessages);
-	const validationMessagesComp = hasErrorMessages ? (
-		<div
-			className={`_validationMessages ${messageDisplay}`}
-			style={computedStyles.errorTextContainer ?? {}}
-		>
-			<SubHelperComponent definition={definition} subComponentName="errorTextContainer" />
-			{validationMessages.map(msg => (
-				<div
-					className={`_eachValidationMessage`}
-					style={computedStyles.errorText ?? {}}
-					key={msg}
-				>
-					<SubHelperComponent definition={definition} subComponentName="errorText" />
-					{msg}
-				</div>
-			))}
-		</div>
-	) : messageDisplay === '_fixedMessages' ? (
-		<div className={`_validationMessages ${messageDisplay}`}></div>
-	) : null;
-
-	const supportText =
-		supportingText && !hasErrorMessages ? (
-			<span
-				style={computedStyles.supportText ?? {}}
-				className={`supportText ${readOnly ? 'disabled' : ''}`}
-			>
-				<SubHelperComponent definition={definition} subComponentName="supportText" />
-				{supportingText}
-			</span>
-		) : null;
-
 	const updateStoreImmediately = upStoreImm || autoComplete === 'on';
 
-	const handleBlur = (event: React.FocusEvent<HTMLTextAreaElement>) => {
+	const changeEvent = onChange ? props.pageDefinition.eventFunctions[onChange] : undefined;
+
+	const callChangeEvent = useCallback(() => {
+		if (!changeEvent) return;
+		(async () =>
+			await runEvent(
+				changeEvent,
+				onChange,
+				props.context.pageName,
+				props.locationHistory,
+				props.pageDefinition,
+			))();
+	}, [changeEvent]);
+
+	const handleClickClose = async () => {
+		let temp = mapValue[emptyValue];
+		if (removeKeyWhenEmpty && bindingPathPath) {
+			setData(bindingPathPath, undefined, context?.pageName, true);
+			callChangeEvent();
+		} else if (bindingPathPath) {
+			setData(bindingPathPath, temp, context?.pageName);
+			callChangeEvent();
+		}
+		if (!onClear) return;
+		const clearEvent = props.pageDefinition.eventFunctions[onClear];
+		if (!clearEvent) return;
+		await runEvent(
+			clearEvent,
+			onClear,
+			props.context.pageName,
+			props.locationHistory,
+			props.pageDefinition,
+		);
+	};
+
+	const handleBlur = (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		let temp = value === '' && emptyValue ? mapValue[emptyValue] : value;
 		if (!updateStoreImmediately && bindingPathPath) {
 			if (event?.target.value === '' && removeKeyWhenEmpty) {
@@ -187,101 +203,50 @@ function TextArea(props: ComponentProps) {
 		setFocus(false);
 		setIsDirty(true);
 	};
-	const handleTextChange = (text: string) => {
+
+	const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+		const text = event.target.value;
 		if (removeKeyWhenEmpty && text === '' && bindingPathPath) {
 			setData(bindingPathPath, undefined, context?.pageName, true);
+			callChangeEvent();
 			return;
 		}
 		let temp = text === '' && emptyValue ? mapValue[emptyValue] : text;
-		if (updateStoreImmediately && bindingPathPath)
+		if (updateStoreImmediately && bindingPathPath) {
 			setData(bindingPathPath, temp, context?.pageName);
+			callChangeEvent();
+		}
 		if (!updateStoreImmediately) setValue(text);
-	};
-	const changeEvent = onChange ? props.pageDefinition.eventFunctions[onChange] : undefined;
-	const handleChange = async (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-		setIsDirty(true);
-		handleTextChange(event.target.value);
-		if (!changeEvent || isLoading) return;
-		await runEvent(
-			changeEvent,
-			onChange,
-			props.context.pageName,
-			props.locationHistory,
-			props.pageDefinition,
-		);
 	};
 
 	return (
-		<div className="comp compTextArea" style={computedStyles.comp ?? {}}>
-			<HelperComponent definition={definition} />
-
-			{noFloat && label && (
-				<label
-					style={computedStyles.noFloatLabel ?? {}}
-					htmlFor={key}
-					className={`noFloatTextAreaLabel ${readOnly ? 'disabled' : ''}${
-						value?.length ? `hasText` : ``
-					}`}
-				>
-					<SubHelperComponent
-						definition={definition}
-						subComponentName="noFloatLabel"
-					></SubHelperComponent>
-					{getTranslations(label, translations)}
-				</label>
-			)}
-			<div
-				className={`inputContainer ${hasErrorMessages ? 'error' : ''} ${
-					focus && !hasErrorMessages && !value?.length ? 'focussed' : ''
-				} ${value?.length ? 'hasText' : ''} ${
-					readOnly && !hasErrorMessages ? 'disabled' : ''
-				}`}
-				style={computedStyles.inputContainer ?? {}}
-			>
-				<textarea
-					style={computedStyles.inputBox ?? {}}
-					className={`textArea ${noFloat ? '' : 'float'} `}
-					value={value}
-					onChange={event => handleChange(event)}
-					placeholder={getTranslations(effectivePlaceholder, translations)}
-					onFocus={() => setFocus(true)}
-					onBlur={event => handleBlur(event)}
-					name={key}
-					id={key}
-					disabled={readOnly}
-					autoComplete={autoComplete}
-				></textarea>
-				{!noFloat ? (
-					<label
-						style={computedStyles.floatingLabel ?? {}}
-						htmlFor={key}
-						className={`textAreaLabel ${readOnly ? 'disabled' : ''} ${
-							value?.length ? `hasText` : ``
-						}`}
-					>
-						<SubHelperComponent
-							definition={definition}
-							subComponentName="floatingLabel"
-						></SubHelperComponent>
-						{getTranslations(label, translations)}
-					</label>
-				) : null}
-				{hasErrorMessages ? (
-					<i
-						style={computedStyles.rightIcon ?? {}}
-						className={`errorIcon rightIcon ${
-							value?.length ? `hasText` : ``
-						} fa fa-solid fa-circle-exclamation`}
-					>
-						<SubHelperComponent definition={definition} subComponentName="rightIcon" />
-					</i>
-				) : null}
-			</div>
-			<div>
-				{validationMessagesComp}
-				{supportText}
-			</div>
-		</div>
+		<CommonInputText
+			cssPrefix="comp compTextArea"
+			id={key}
+			noFloat={noFloat}
+			readOnly={readOnly}
+			value={value}
+			label={label}
+			translations={translations}
+			placeholder={placeholder}
+			hasFocusStyles={stylePropertiesWithPseudoStates?.focus}
+			validationMessages={validationMessages}
+			context={context}
+			handleChange={handleChange}
+			clearContentHandler={handleClickClose}
+			blurHandler={handleBlur}
+			focusHandler={() => setFocus(true)}
+			supportingText={supportingText}
+			messageDisplay={messageDisplay}
+			styles={computedStyles}
+			designType={designType}
+			colorScheme={colorScheme}
+			definition={props.definition}
+			autoComplete={autoComplete}
+			autoFocus={autoFocus}
+			hasValidationCheck={validation?.length > 0}
+			inputType="TextArea"
+		/>
 	);
 }
 
@@ -304,10 +269,10 @@ const component: Component = {
 		type: 'TextArea',
 		name: 'TextArea',
 		properties: {
-			placeholder: { value: 'placeholder' },
 			label: { value: 'TextArea' },
 		},
 	},
+	sections: [{ name: 'Text Area', pageName: 'textArea' }],
 };
 
 export default component;

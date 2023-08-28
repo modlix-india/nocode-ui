@@ -12,39 +12,41 @@ import { duplicate } from '@fincity/kirun-js';
 export function StringValueEditor({
 	value,
 	schema,
-	onChange,
+	onChange: actualOnChange,
 	schemaRepository,
+	defaultValue,
 }: {
 	value: string | undefined;
+	defaultValue: string | undefined;
 	schema: Schema;
 	onChange: (v: string | undefined) => void;
 	schemaRepository: Repository<Schema>;
 }) {
-	const [inValue, setInValue] = useState(value ?? '');
+	const [inValue, setInValue] = useState(value ?? defaultValue ?? '');
+
+	const onChange = async (v: string | undefined) => {
+		if (defaultValue === v) actualOnChange(undefined);
+		else actualOnChange(v);
+	};
 
 	useEffect(() => {
-		(async () => {
-			setInValue(
-				value ??
-					(schema
-						? await SchemaUtil.getDefaultValue(schema, schemaRepository)
-						: undefined) ??
-					'',
-			);
-		})();
-	}, [value, schema]);
+		setInValue(value ?? defaultValue ?? '');
+	}, [value, defaultValue]);
 
 	const [msg, setMsg] = useState<string>('');
 
 	useEffect(() => {
-		let message = '';
-		try {
-			SchemaValidator.validate(undefined, schema, schemaRepository, inValue);
-		} catch (e: any) {
-			if (e.message) message = e.message;
-			else message = '' + e;
-		}
-		setMsg(message);
+		(async () => {
+			if (isNullValue(inValue)) return;
+			let message = '';
+			try {
+				await SchemaValidator.validate(undefined, schema, schemaRepository, inValue);
+			} catch (e: any) {
+				if (e.message) message = e.message;
+				else message = '' + e;
+			}
+			setMsg(message);
+		})();
 	}, [inValue]);
 
 	const [options, setOptions] = useState<any[]>([]);

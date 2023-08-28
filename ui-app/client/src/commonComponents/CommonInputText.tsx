@@ -2,12 +2,13 @@ import React, { ChangeEvent } from 'react';
 import { getTranslations } from '../components/util/getTranslations';
 import { ComponentDefinition, RenderContext, Translations } from '../types/common';
 import { SubHelperComponent } from '../components/SubHelperComponent';
+import { HelperComponent } from '../components/HelperComponent';
 
 type CommonInputType = {
 	styles?: any;
-	focusHandler?: (event: React.FocusEvent<HTMLInputElement>) => void;
-	blurHandler?: (event: React.FocusEvent<HTMLInputElement>) => void;
-	keyUpHandler?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
+	focusHandler?: (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+	blurHandler?: (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+	keyUpHandler?: (event: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 	clearContentHandler?: () => void;
 	id: string;
 	noFloat?: boolean;
@@ -20,17 +21,25 @@ type CommonInputType = {
 	valueType?: any;
 	isPassword?: any;
 	placeholder?: any;
-	handleChange?: (event: ChangeEvent<HTMLInputElement>) => void;
+	handleChange?: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 	hasFocusStyles?: boolean;
 	validationMessages?: Array<string>;
 	context: RenderContext;
 	supportingText?: string;
 	messageDisplay?: string;
 	hideClearContentIcon?: boolean;
-	inputRef?: React.RefObject<HTMLInputElement>;
+	inputRef?: React.RefObject<any>;
 	autoComplete?: string;
 	definition: ComponentDefinition;
 	autoFocus?: boolean;
+	hasValidationCheck?: boolean;
+	designType: string;
+	colorScheme: string;
+	cssPrefix: string;
+	children?: React.ReactNode;
+	onMouseLeave?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+	updDownHandler?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
+	inputType?: string;
 };
 
 function CommonInputText(props: CommonInputType) {
@@ -62,190 +71,199 @@ function CommonInputText(props: CommonInputType) {
 		autoComplete,
 		definition,
 		autoFocus = false,
+		hasValidationCheck = false,
+		designType,
+		colorScheme,
+		cssPrefix,
+		children,
+		onMouseLeave,
+		updDownHandler,
+		inputType = 'Text',
 	} = props;
 	const [focus, setFocus] = React.useState(false);
 	const [showPassword, setShowPassowrd] = React.useState(false);
 	const [isDirty, setIsDirty] = React.useState(false);
-	const handleBlurEvent = (event: React.FocusEvent<HTMLInputElement>) => {
+	const handleBlurEvent = (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		setFocus(false);
 		setIsDirty(true);
 		if (blurHandler) blurHandler(event);
 	};
-	const handleFocusEvent = (event: React.FocusEvent<HTMLInputElement>) => {
-		if (hasFocusStyles) setFocus(true);
+	const handleFocusEvent = (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+		setFocus(true);
 		if (focusHandler) focusHandler(event);
 	};
 
-	const handleChangeEvent = (event: React.ChangeEvent<HTMLInputElement>) => {
+	const handleChangeEvent = (
+		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+	) => {
 		setIsDirty(true);
 		if (handleChange) handleChange(event);
 	};
 
 	const hasErrorMessages =
 		validationMessages?.length && (value || isDirty || context.showValidationMessages);
-	const validationMessagesComp = hasErrorMessages ? (
-		<div
-			className={`_validationMessages ${messageDisplay}`}
-			style={computedStyles.errorTextContainer ?? {}}
-		>
-			<SubHelperComponent definition={definition} subComponentName="errorTextContainer" />
-			{validationMessages.map(msg => (
-				<div
-					className={`_eachValidationMessage`}
-					style={computedStyles.errorText ?? {}}
-					key={msg}
-				>
-					<SubHelperComponent definition={definition} subComponentName="errorText" />
-					{msg}
-				</div>
-			))}
-		</div>
-	) : messageDisplay === '_fixedMessages' ? (
-		<div className={`_validationMessages ${messageDisplay}`}></div>
-	) : null;
 
-	const supportText =
-		supportingText && !hasErrorMessages ? (
+	let validationsOrSupportText = undefined;
+	if (hasErrorMessages)
+		validationsOrSupportText = (
+			<div
+				className={`_validationMessages ${messageDisplay}`}
+				style={computedStyles.errorTextContainer ?? {}}
+			>
+				<SubHelperComponent definition={definition} subComponentName="errorTextContainer" />
+				{validationMessages.map(msg => (
+					<div
+						className={`_eachValidationMessage`}
+						style={computedStyles.errorText ?? {}}
+						key={msg}
+					>
+						<SubHelperComponent definition={definition} subComponentName="errorText" />
+						{msg}
+					</div>
+				))}
+			</div>
+		);
+
+	if (!validationsOrSupportText && supportingText && !hasErrorMessages)
+		validationsOrSupportText = (
 			<span
 				style={computedStyles.supportText ?? {}}
-				className={`supportText ${readOnly ? 'disabled' : ''}`}
+				className={`_supportText ${readOnly ? 'disabled' : ''}`}
 			>
 				<SubHelperComponent definition={definition} subComponentName="supportText" />
 				{supportingText}
 			</span>
-		) : null;
+		);
+
+	let inputStyle = computedStyles.inputBox ?? {};
+	if (!handleChange) inputStyle = { ...inputStyle, caretColor: 'transparent' };
+
+	const inputControl =
+		inputType === 'Text' ? (
+			<input
+				style={inputStyle}
+				className={`_inputBox ${noFloat ? '' : 'float'} ${
+					valueType === 'NUMBER' ? 'remove-spin-button' : ''
+				}`}
+				type={isPassword && !showPassword ? 'password' : valueType ? valueType : 'text'}
+				value={value}
+				onChange={event => handleChangeEvent(event)}
+				placeholder={getTranslations(placeholder, translations)}
+				onFocus={handleFocusEvent}
+				onBlur={event => handleBlurEvent(event)}
+				onKeyUp={keyUpHandler}
+				name={id}
+				id={id}
+				disabled={readOnly}
+				ref={inputRef}
+				autoFocus={autoFocus}
+				autoComplete={autoComplete}
+			/>
+		) : (
+			<textarea
+				style={inputStyle}
+				className={`_inputBox ${noFloat ? '' : 'float'} ${
+					valueType === 'NUMBER' ? 'remove-spin-button' : ''
+				}`}
+				value={value}
+				onChange={event => handleChangeEvent(event)}
+				placeholder={getTranslations(placeholder, translations)}
+				onFocus={handleFocusEvent}
+				onBlur={event => handleBlurEvent(event)}
+				onKeyUp={keyUpHandler}
+				name={id}
+				id={id}
+				disabled={readOnly}
+				ref={inputRef}
+				autoFocus={autoFocus}
+				autoComplete={autoComplete}
+			/>
+		);
 
 	return (
-		<div className="commonInputBox" style={computedStyles.inputBox ?? {}}>
-			{noFloat && label && (
-				<label
-					style={computedStyles.noFloatLabel ?? {}}
-					htmlFor={id}
-					className={`noFloatTextBoxLabel ${readOnly ? 'disabled' : ''}${
-						value?.length ? `hasText` : ``
-					}`}
-				>
+		<div
+			className={`${cssPrefix} ${
+				focus || value?.length ? '_isActive' : ''
+			} ${designType} ${colorScheme} ${leftIcon ? '_hasLeftIcon' : ''} ${
+				value?.length ? '_hasValue' : ''
+			} ${hasErrorMessages ? '_hasError' : ''}`}
+			style={computedStyles.comp ?? {}}
+			onMouseLeave={onMouseLeave}
+			onKeyUp={updDownHandler}
+		>
+			<HelperComponent definition={definition} />
+			{leftIcon ? (
+				<i style={computedStyles.leftIcon ?? {}} className={`_leftIcon ${leftIcon}`}>
 					<SubHelperComponent
 						definition={definition}
-						subComponentName="noFloatLabel"
+						subComponentName="leftIcon"
 					></SubHelperComponent>
-					{getTranslations(label, translations)}
-				</label>
-			)}
-
-			<div
-				style={computedStyles.textBoxContainer ?? {}}
-				className={`textBoxDiv ${hasErrorMessages ? 'error' : ''} ${
-					focus && !value?.length ? 'focussed' : ''
-				} ${value?.length && !readOnly ? 'hasText' : ''} ${
-					readOnly && !hasErrorMessages ? 'disabled' : ''
-				}`}
+				</i>
+			) : undefined}
+			{inputControl}
+			{!hideClearContentIcon && value?.length && !readOnly && !isPassword ? (
+				<i
+					style={computedStyles.rightIcon ?? {}}
+					onClick={clearContentHandler}
+					className="_clearText _rightIcon fa fa-regular fa-circle-xmark fa-fw"
+				>
+					<SubHelperComponent definition={definition} subComponentName="rightIcon" />
+				</i>
+			) : undefined}
+			{rightIcon ? (
+				<i style={computedStyles.rightIcon ?? {}} className={`_rightIcon ${rightIcon}`}>
+					<SubHelperComponent
+						definition={definition}
+						subComponentName="rightIcon"
+					></SubHelperComponent>
+				</i>
+			) : undefined}
+			{isPassword && !readOnly ? (
+				<i
+					style={computedStyles.rightIcon ?? {}}
+					className={`_passwordIcon _rightIcon ${
+						showPassword ? `fa fa-regular fa-eye` : `fa fa-regular fa-eye-slash`
+					}`}
+					onClick={() => setShowPassowrd(!showPassword)}
+				>
+					<SubHelperComponent definition={definition} subComponentName="rightIcon" />
+				</i>
+			) : undefined}
+			{hasErrorMessages ? (
+				<i
+					style={computedStyles.rightIcon ?? {}}
+					className={`_errorIcon _rightIcon ${
+						value?.length ? `hasText` : ``
+					} fa fa-solid fa-circle-exclamation`}
+				>
+					<SubHelperComponent definition={definition} subComponentName="rightIcon" />
+				</i>
+			) : undefined}
+			{!hasErrorMessages && hasValidationCheck && isDirty ? (
+				<i
+					style={computedStyles.rightIcon ?? {}}
+					className={`_successIcon _rightIcon ${
+						value?.length ? `hasText` : ``
+					} fa fa-solid fa-circle-check`}
+				>
+					<SubHelperComponent definition={definition} subComponentName="rightIcon" />
+				</i>
+			) : undefined}
+			<label
+				style={computedStyles.label ?? {}}
+				htmlFor={id}
+				className={`_label ${noFloat || value?.length ? '_noFloat' : ''} ${
+					readOnly ? 'disabled' : ''
+				}${value?.length ? `hasText` : ``}`}
 			>
 				<SubHelperComponent
 					definition={definition}
-					subComponentName="textBoxContainer"
+					subComponentName="label"
 				></SubHelperComponent>
-				{leftIcon && (
-					<i style={computedStyles.leftIcon ?? {}} className={`leftIcon ${leftIcon}`}>
-						<SubHelperComponent
-							definition={definition}
-							subComponentName="leftIcon"
-						></SubHelperComponent>
-					</i>
-				)}
-
-				<div className={`inputContainer`}>
-					<input
-						style={computedStyles.inputBox ?? {}}
-						className={`textbox ${noFloat ? '' : 'float'} ${
-							valueType === 'NUMBER' ? 'remove-spin-button' : ''
-						}`}
-						type={
-							isPassword && !showPassword
-								? 'password'
-								: valueType
-								? valueType
-								: 'text'
-						}
-						value={value}
-						onChange={event => handleChangeEvent(event)}
-						placeholder={getTranslations(placeholder, translations)}
-						onFocus={handleFocusEvent}
-						onBlur={event => handleBlurEvent(event)}
-						onKeyUp={keyUpHandler}
-						name={id}
-						id={id}
-						disabled={readOnly}
-						ref={inputRef}
-						autoFocus={autoFocus}
-						autoComplete={autoComplete}
-					/>
-					<SubHelperComponent
-						style={computedStyles.inputBox ?? {}}
-						className={`textbox ${noFloat ? '' : 'float'} ${
-							valueType === 'NUMBER' ? 'remove-spin-button' : ''
-						}`}
-						definition={definition}
-						subComponentName="inputBox"
-					></SubHelperComponent>
-					{!noFloat && (
-						<label
-							style={computedStyles.floatingLabel ?? {}}
-							htmlFor={id}
-							className={`textBoxLabel ${readOnly ? 'disabled' : ''}${
-								value?.length ? `hasText` : ``
-							}`}
-						>
-							<SubHelperComponent
-								definition={definition}
-								subComponentName="floatingLabel"
-							></SubHelperComponent>
-							{getTranslations(label, translations)}
-						</label>
-					)}
-				</div>
-
-				{rightIcon && !isPassword && (
-					<i style={computedStyles.rightIcon ?? {}} className={`rightIcon ${rightIcon}`}>
-						<SubHelperComponent
-							definition={definition}
-							subComponentName="rightIcon"
-						></SubHelperComponent>
-					</i>
-				)}
-				{isPassword && !readOnly && (
-					<i
-						style={computedStyles.rightIcon ?? {}}
-						className={`passwordIcon rightIcon ${
-							showPassword ? `fa fa-regular fa-eye` : `fa fa-regular fa-eye-slash`
-						}`}
-						onClick={() => setShowPassowrd(!showPassword)}
-					>
-						<SubHelperComponent definition={definition} subComponentName="rightIcon" />{' '}
-					</i>
-				)}
-				{hasErrorMessages ? (
-					<i
-						style={computedStyles.rightIcon ?? {}}
-						className={`errorIcon rightIcon ${
-							value?.length ? `hasText` : ``
-						} fa fa-solid fa-circle-exclamation`}
-					>
-						<SubHelperComponent definition={definition} subComponentName="rightIcon" />
-					</i>
-				) : !hideClearContentIcon && value?.length && !readOnly && !isPassword ? (
-					<i
-						style={computedStyles.rightIcon ?? {}}
-						onClick={clearContentHandler}
-						className="clearText rightIcon fa fa-regular fa-circle-xmark fa-fw"
-					>
-						<SubHelperComponent definition={definition} subComponentName="rightIcon" />
-					</i>
-				) : null}
-			</div>
-
-			{validationMessagesComp}
-			{supportText}
+				{getTranslations(label, translations)}
+			</label>
+			{validationsOrSupportText}
+			{children}
 		</div>
 	);
 }

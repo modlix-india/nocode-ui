@@ -724,6 +724,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			opacity: 0.1;
 		}
 
+		.commonTriStateCheckbox::before {
+			background: black;
+		}
+
 		._propContainer {
 			width: 100%;
 			padding: 5px;

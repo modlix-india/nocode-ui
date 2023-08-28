@@ -23,7 +23,17 @@ function ButtonComponent(props: ComponentProps) {
 	const navigate = useNavigate();
 	let {
 		key,
-		properties: { label, onClick, type, readOnly, leftIcon, rightIcon, target, linkPath } = {},
+		properties: {
+			label,
+			onClick,
+			colorScheme,
+			designType,
+			readOnly,
+			leftIcon,
+			rightIcon,
+			target,
+			linkPath,
+		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
 		props.definition,
@@ -84,11 +94,13 @@ function ButtonComponent(props: ComponentProps) {
 			);
 	};
 
+	const hasRightIcon = !!rightIcon && !leftIcon;
+
 	const rightIconTag =
-		!type?.startsWith('fabButton') && type !== 'iconButton' && !leftIcon ? (
+		!designType?.startsWith('_fabButton') && designType !== '_iconButton' && !leftIcon ? (
 			<i
 				style={styleProperties.rightIcon ?? {}}
-				className={`rightButtonIcon ${rightIcon ?? 'fa fa-circle-notch hide'}`}
+				className={`_rightButtonIcon _icon ${rightIcon ?? 'fa fa-circle-notch hide'}`}
 			>
 				<SubHelperComponent
 					definition={props.definition}
@@ -97,10 +109,12 @@ function ButtonComponent(props: ComponentProps) {
 			</i>
 		) : undefined;
 
+	const hasLeftIcon = leftIcon || isLoading;
+
 	const leftIconTag = (
 		<i
 			style={styleProperties.leftIcon ?? {}}
-			className={`leftButtonIcon ${
+			className={`_leftButtonIcon _icon ${
 				leftIcon
 					? !isLoading
 						? leftIcon
@@ -120,7 +134,9 @@ function ButtonComponent(props: ComponentProps) {
 	label = getTranslations(label, props.pageDefinition.translations);
 	return (
 		<button
-			className={`comp compButton button ${type}`}
+			className={`comp compButton button ${designType} ${colorScheme} ${
+				hasLeftIcon ? '_withLeftIcon' : ''
+			} ${hasRightIcon ? '_withRightIcon' : ''}`}
 			disabled={isLoading || readOnly}
 			onClick={handleClick}
 			style={styleProperties.comp ?? {}}
@@ -339,7 +355,7 @@ function ButtonComponent(props: ComponentProps) {
 				</div>
 			</HelperComponent>
 			{leftIconTag}
-			{!type?.startsWith('fabButton') && type !== 'iconButton' ? label : ''}
+			{!designType?.startsWith('_fabButton') && designType !== '_iconButton' ? label : ''}
 			{rightIconTag}
 		</button>
 	);
@@ -364,12 +380,7 @@ const component: Component = {
 			label: { value: 'Button' },
 		},
 	},
-	sections: [
-		{ name: 'Text & Icon Buttons', pageName: 'texticonbuttons' },
-		{ name: 'Icon Buttons', pageName: 'texticonbuttons' },
-		{ name: 'Image Buttons', pageName: 'texticonbuttons' },
-		{ name: 'Document Buttons', pageName: 'texticonbuttons' },
-	],
+	sections: [{ name: 'Buttons', pageName: 'buttons' }],
 };
 
 export default component;

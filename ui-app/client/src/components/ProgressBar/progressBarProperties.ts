@@ -8,14 +8,6 @@ import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '.
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
-		name: 'showProgressValue',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Show Progress value',
-		description: 'Show Progress value.',
-		group: ComponentPropertyGroup.BASIC,
-		defaultValue: true,
-	},
-	{
 		name: 'progressValue',
 		schema: SCHEMA_NUM_COMP_PROP,
 		displayName: 'Progress Value',
@@ -23,31 +15,34 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: 0,
 		group: ComponentPropertyGroup.DATA,
 	},
+
 	{
-		name: 'progressValueUnit',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Progress Value Unit',
-		description: 'Progress Value Unit.',
-		group: ComponentPropertyGroup.BASIC,
-		translatable: true,
+		name: 'minprogressValue',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Min Progress Value',
+		description: 'Minimum Progress Value.',
+		defaultValue: 0,
+		group: ComponentPropertyGroup.DATA,
 	},
+
 	{
-		name: 'showProgressLabel',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Show Progress Label',
-		description: 'Show Progress Label.',
-		group: ComponentPropertyGroup.BASIC,
-		defaultValue: true,
+		name: 'circularProgressBarIndicatorWidth',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Circular progress bar indicator width',
+		description: 'Circular progress bar indicator width.',
+		defaultValue: 2.5,
+		group: ComponentPropertyGroup.DATA,
 	},
+
 	{
-		name: 'noProgressLabel',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'No Progress Label',
-		description: 'No Progress Label.',
-		group: ComponentPropertyGroup.BASIC,
-		defaultValue: '',
-		translatable: true,
+		name: 'maxprogressValue',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Max Progress Value',
+		description: 'Maximum Progress Value.',
+		defaultValue: 100,
+		group: ComponentPropertyGroup.DATA,
 	},
+
 	{
 		name: 'progressLabel',
 		schema: SCHEMA_STRING_COMP_PROP,
@@ -57,87 +52,115 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: '',
 		translatable: true,
 	},
-	{
-		name: 'completedProgressLabel',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Completed Progress Label',
-		description: 'Completed Progress Label.',
-		group: ComponentPropertyGroup.BASIC,
-		defaultValue: '',
-		translatable: true,
-	},
 
 	{
-		name: 'progressLabelPosition',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Progress Label Position',
-		description: 'Position of Progress Label with respect to Progress value',
-		group: ComponentPropertyGroup.ADVANCED,
-		defaultValue: 'Right',
-		enumValues: [
-			{
-				name: 'Right',
-				displayName: 'Progress Label Right',
-				description: 'Progress Label is right to Progress Value.',
-			},
-			{
-				name: 'Left',
-				displayName: 'Progress Label Left',
-				description: 'Progress Label is left to Progress Value.',
-			},
-		],
-	},
-	{
-		name: 'labelAndValueContainerPosition',
+		name: 'progressLabelAlignment',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Label and Value Container Position',
 		description: 'Position of Label and Value Container.',
 		group: ComponentPropertyGroup.ADVANCED,
-		defaultValue: 'Left',
+		defaultValue: '_left',
 		enumValues: [
 			{
-				name: 'Left',
+				name: '_left',
 				displayName: 'Label and Value Container Left',
 				description: 'Label and Value Container Left.',
 			},
 			{
-				name: 'Center',
+				name: '_center',
 				displayName: 'Label and Value Container Center',
 				description: 'Label and Value Container Center.',
 			},
 			{
-				name: 'Right',
+				name: '_right',
 				displayName: 'Label and Value Container Right',
 				description: 'Label and Value Container Right.',
+			},
+			{
+				name: '_top',
+				displayName: 'Label and Value Container Top',
+				description: 'Label and Value Container Top.',
+			},
+			{
+				name: '_bottom',
+				displayName: 'Label and Value Container Bottom',
+				description: 'Label and Value Container Bottom.',
 			},
 		],
 	},
 
 	{
-		name: 'progressBarDesignSelection',
+		name: 'progressBarDesign',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Progress Bar Selection Type',
 		description: 'Type of the selection of a Progress Bar',
-		defaultValue: '_progressBarDesignOne',
-		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: '_default',
+		group: ComponentPropertyGroup.BASIC,
 		enumValues: [
 			{
-				name: '_progressBarDesignOne',
-				displayName: 'Progress Bar Design One',
-				description: 'Progress Bar design one.',
+				name: '_default',
+				displayName: 'Progress Bar Deafault Design',
+				description: 'Progress Bar Default Design.',
 			},
 			{
-				name: '_progressBarDesigntwo',
-				displayName: 'Progress Bar Design Two',
-				description: 'Progress Bar design two.',
+				name: '_striped',
+				displayName: 'Progress Bar striped design.',
+				description: 'Progress Bar striped design.',
 			},
 			{
-				name: '_progressBarDesignThree',
-				displayName: 'Progress Bar Design Three',
-				description: 'Progress Bar design three.',
+				name: '_circular',
+				displayName: 'Progress Bar circular design.',
+				description: 'Progress Bar circular design.',
+			},
+			{
+				name: '_circular_text_background',
+				displayName: 'Progress Bar circular design with text background.',
+				description: 'Progress Bar circular design with text background.',
+			},
+
+			{
+				name: '_circular_text_background_outline',
+				displayName: 'Progress Bar circular design with outline style text background.',
+				description: 'Progress Bar circular design with outline style text background.',
 			},
 		],
 	},
+	{
+		name: 'progressBarColorScheme',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Progress Bar Color Scheme',
+		description: 'Type of the color scheme for Progress Bar',
+		defaultValue: '_primary',
+		group: ComponentPropertyGroup.BASIC,
+		enumValues: [
+			{
+				name: '_primary',
+				displayName: 'Primary Color Scheme',
+				description: 'Default Color Scheme',
+			},
+			{
+				name: '_secondary',
+				displayName: 'Secondary Color Scheme',
+				description: 'Secondary Color Scheme',
+			},
+			{
+				name: '_tertiary',
+				displayName: 'Tertiary Color Scheme',
+				description: 'Tertiary Color Scheme',
+			},
+			{
+				name: '_quaternary',
+				displayName: 'Quaternary Color Scheme',
+				description: 'Quaternary Color Scheme',
+			},
+			{
+				name: '_quinary',
+				displayName: 'Quinary Color Scheme',
+				description: 'Quinary Color Scheme',
+			},
+		],
+	},
+
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
@@ -152,7 +175,7 @@ const stylePropertiesDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
-	currentProgress: [
+	progress: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
@@ -162,7 +185,7 @@ const stylePropertiesDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
-	progressBar: [
+	track: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
@@ -172,7 +195,7 @@ const stylePropertiesDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
-	labelAndValueContainer: [
+	label: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
@@ -180,16 +203,6 @@ const stylePropertiesDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
-	],
-	progressValue: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
-	],
-	progressLabel: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 };

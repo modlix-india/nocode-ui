@@ -11,13 +11,14 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 function Icon(props: ComponentProps) {
 	const { definition, locationHistory, context } = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
-	const { properties: { icon, iconPack } = {}, stylePropertiesWithPseudoStates } = useDefinition(
-		definition,
-		propertiesDefinition,
-		stylePropertiesDefinition,
-		locationHistory,
-		pageExtractor,
-	);
+	const { properties: { icon, designType, colorScheme } = {}, stylePropertiesWithPseudoStates } =
+		useDefinition(
+			definition,
+			propertiesDefinition,
+			stylePropertiesDefinition,
+			locationHistory,
+			pageExtractor,
+		);
 
 	const styleProperties = processComponentStylePseudoClasses(
 		props.pageDefinition,
@@ -26,7 +27,10 @@ function Icon(props: ComponentProps) {
 	);
 
 	return (
-		<i className={`comp compIcon _icon ${icon}`} style={styleProperties.comp ?? {}}>
+		<i
+			className={`comp compIcon _icon ${designType} ${colorScheme} ${icon}`}
+			style={styleProperties.comp ?? {}}
+		>
 			<HelperComponent definition={definition} />
 		</i>
 	);
@@ -50,6 +54,7 @@ const component: Component = {
 			icon: { value: 'fa-solid fa-icons' },
 		},
 	},
+	sections: [{ name: 'Icons', pageName: 'icon' }],
 };
 
 export default component;

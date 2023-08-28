@@ -12,49 +12,79 @@ export default function TabsStyles({ theme }: { theme: Map<string, Map<string, s
 			display: flex;
 			flex-direction: column;
 		}
-		${PREFIX}.vertical {
+
+		${PREFIX}._vertical {
 			flex-direction: row;
 		}
+
 		${PREFIX} .tabGridDiv {
 			flex: 1;
 			width: 100%;
 			height: 100%;
-			overflow: auto;
 			position: relative;
 		}
+
 		${PREFIX} .tabsContainer {
 			display: flex;
-			overflow: auto;
-			justify-content: space-between;
+			overflow-x: auto;
 			position: relative;
+			
 		}
-		${PREFIX} .tabsContainer.vertical {
+
+		${PREFIX}._vertical .tabsContainer {
 			flex-direction: column;
-			border-bottom: none;
+			overflow-y: auto;
+			overflow-x: hidden;
 		}
+
 		${PREFIX} .tabDiv {
-			padding: 0 16px 0 16px;
 			cursor: pointer;
 			position: relative;
-		}
-		${PREFIX} .tabButton {
 			display: flex;
-			letter-spacing: 0px;
-			white-space: nowrap;	
-			cursor: pointer;
-			position: relative;
+			justify-content: center;
+			align-items: center;
+			z-index: 2;
 		}
+		
+		${PREFIX} .tabDiv._vertical {
+			flex-direction: column;
+		}
+		
+		${PREFIX} .tabHighlighter {
+			position: absolute;
+			transition: all 0.3s ease-in-out;
+			left: 0;
+			top: 0;
+			z-index: 1;
+		}
+
 		${PREFIX} .icon {
 			position: relative;
 		}
-		${PREFIX} .border {
-			position: relative;
-		}
-		${PREFIX} .tabButton.noIcon {
-			gap: 0;
-		}
 		
-		
+		${PREFIX} .tabsContainer._center {
+			justify-content: center;
+		}
+
+		${PREFIX} .tabsContainer._start {
+			justify-content: flex-start;
+		}
+
+		${PREFIX} .tabsContainer._end {
+			justify-content: flex-end;
+		}
+
+		${PREFIX} .tabsContainer._spaceAround {
+			justify-content: space-around;
+		}
+
+		${PREFIX} .tabsContainer._spaceBetween {
+			justify-content: space-between;
+		}
+
+		${PREFIX} .tabsContainer._spaceEvenly .tabDiv{
+			flex: 1;
+		}
 ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="TabsCss">{css}</style>;

@@ -25,7 +25,7 @@ function toStringList(types: Set<string>) {
 
 export default function SingleSchema({
 	schema: actualSchema = Schema.ofAny('Any'),
-	value: actualValue,
+	value,
 	showLabel = false,
 	path,
 	onChange,
@@ -60,13 +60,6 @@ export default function SingleSchema({
 			setDefaultValue(await SchemaUtil.getDefaultValue(schema, schemaRepository));
 		})();
 	}, [schema, schemaRepository]);
-
-	const [value, setValue] = useState(actualValue);
-	useEffect(() => {
-		if (!isNullValue(actualValue)) setValue(actualValue);
-		else if (!isNullValue(defaultValue)) setValue(defaultValue);
-		else setValue(actualValue);
-	}, [actualValue]);
 
 	let types: Set<SchemaType> = schema.getType()?.getAllowedSchemaTypes() ?? ALL_SET;
 
@@ -157,6 +150,7 @@ export default function SingleSchema({
 			return (
 				<StringValueEditor
 					value={value}
+					defaultValue={defaultValue}
 					schema={schema}
 					onChange={v => onChange(path, v)}
 					schemaRepository={schemaRepository}
@@ -175,6 +169,7 @@ export default function SingleSchema({
 			return (
 				<NumberValueEditor
 					value={value}
+					defaultValue={defaultValue}
 					schema={schema}
 					onChange={v => onChange(path, v)}
 					schemaRepository={schemaRepository}
@@ -185,6 +180,7 @@ export default function SingleSchema({
 		return (
 			<NumberValueEditor
 				value={value}
+				defaultValue={defaultValue}
 				schema={schema}
 				onChange={v => onChange(path, v)}
 				schemaRepository={schemaRepository}

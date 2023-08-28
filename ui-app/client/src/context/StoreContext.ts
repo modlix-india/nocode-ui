@@ -145,7 +145,10 @@ export function getDataFromPath(
 export const innerSetData = _setData;
 
 export function setData(path: string, value: any, context?: string, deleteKey?: boolean) {
-	if (path.startsWith(LOCAL_STORE_PREFIX)) {
+	if (path.startsWith('SampleDataStore.')) {
+		// Sample store is not editable so we are not changing the data
+		return;
+	} else if (path.startsWith(LOCAL_STORE_PREFIX)) {
 		let parts = path.split(TokenValueExtractor.REGEX_DOT);
 
 		const key = window.isDesignMode ? 'designmode_' + parts[1] : parts[1];
