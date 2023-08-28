@@ -40,36 +40,70 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'tabsOrientation',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Tabs Orientation',
-		description: 'Orientation of tabs coponent',
+		description: 'Orientation of tabs',
 		editor: ComponentPropertyEditor.ENUM,
 		group: ComponentPropertyGroup.BASIC,
-		defaultValue: 'HORIZONTAL',
+		defaultValue: '_horizontal',
 		enumValues: [
-			{ name: 'HORIZONTAL', displayName: 'Row Layout', description: 'Default row layout' },
+			{ name: '_horizontal', displayName: 'Horizontal Tabs', description: 'Horizontal Tabs' },
 			{
-				name: 'VERTICAL',
+				name: '_vertical',
+				displayName: 'Vertical Tabs',
+				description: 'Vertical Tabs',
+			},
+		],
+	},
+	{
+		name: 'tabNameOrientation',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Tab Name Orientation',
+		description: 'Orientation of tab and coponent',
+		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: '_horizontal',
+		enumValues: [
+			{ name: '_horizontal', displayName: 'Row Layout', description: 'Default row layout' },
+			{
+				name: '_vertical',
 				displayName: 'Column Layout',
 				description: 'Single Column layout in all resolutions',
 			},
 		],
 	},
 	{
-		name: 'activeStyle',
+		name: 'tabsPosition',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Active tab style',
-		description: 'Orientation of tabs coponent',
+		displayName: 'Tabs Position',
+		description: 'Position of tabs',
 		editor: ComponentPropertyEditor.ENUM,
 		group: ComponentPropertyGroup.ADVANCED,
-		defaultValue: 'BORDER',
+		defaultValue: '_start',
 		enumValues: [
-			{ name: 'BORDER', displayName: 'Border', description: 'Show border as a active style' },
+			{ name: '_start', displayName: 'Start', description: 'Start' },
+			{ name: '_center', displayName: 'Center', description: 'Center' },
+			{ name: '_end', displayName: 'End', description: 'End' },
+			{ name: '_spaceAround', displayName: 'Space Around', description: 'Space Around' },
+			{ name: '_spaceBetween', displayName: 'Space Between', description: 'Space Between' },
+			{ name: '_spaceEvenly', displayName: 'Space Evenly', description: 'Space Evenly' },
+		],
+	},
+	{
+		...COMMON_COMPONENT_PROPERTIES.designType,
+		enumValues: [
+			...COMMON_COMPONENT_PROPERTIES.designType.enumValues!,
 			{
-				name: 'HIGHLIGHT',
-				displayName: 'Highlight',
-				description: 'Show highlight as a active style',
+				name: '_line',
+				displayName: 'Tab with line',
+				description: 'Tab with line',
+			},
+			{
+				name: '_highlight',
+				displayName: 'Tab with highlight',
+				description: 'Tab with highlight',
 			},
 		],
 	},
+	COMMON_COMPONENT_PROPERTIES.colorScheme,
 ];
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 	'': [
@@ -92,7 +126,17 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
-	tabDivContainer: [
+	tab: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	tabHighlighter: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
@@ -112,31 +156,10 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
-	tabGridDiv: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
-	],
-	button: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
-	],
 	icon: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 	],
-	border: [COMPONENT_STYLE_GROUP_PROPERTIES.border.type],
 };
 
 export { propertiesDefinition, stylePropertiesDefinition };

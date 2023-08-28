@@ -1,4 +1,4 @@
-import React, { MouseEvent } from 'react';
+import React, { MouseEvent, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { PageStoreExtractor } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
@@ -44,7 +44,9 @@ function Menu(props: ComponentProps) {
 			onMenuOpen,
 			onClick,
 			pathsActiveFor,
-			MenuDesignSelectionType,
+			designType: menuDesignSelectionType,
+			colorScheme: menuColorScheme,
+			subMenuOrientation,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -58,6 +60,7 @@ function Menu(props: ComponentProps) {
 	const [isMenuOpenState, setIsMenuOpenState] = React.useState(isMenuOpen);
 	const [isMenuActive, setIsMenuActive] = React.useState(false);
 	const { pathname } = useLocation();
+	const [containerHover, setContainerHover] = useState(false);
 
 	React.useEffect(() => {
 		if (!pathsActiveFor?.length) return;
@@ -161,64 +164,78 @@ function Menu(props: ComponentProps) {
 
 	const styleComp = (
 		<style key={`${styleKey}_style`}>
-			{processStyleObjectToCSS(regularStyle?.comp, `.comp.compMenu._${styleKey}menu_css`)}
+			{processStyleObjectToCSS(
+				regularStyle?.comp,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}`,
+			)}
 			{processStyleObjectToCSS(
 				visitedStyle?.comp,
-				`.comp.compMenu._${styleKey}menu_css:visited`,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:visited`,
 			)}
 			{processStyleObjectToCSS(
 				hoverStyle?.comp,
-				`.comp.compMenu._${styleKey}menu_css:hover, .comp.compMenu._${styleKey}menu_css._isActive`,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover, .comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}._isActive`,
 			)}
 			{processStyleObjectToCSS(
 				regularStyle?.externalIcon,
-				`.comp.compMenu._${styleKey}menu_css > ._externalButton`,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme} > ._externalButton`,
 			)}
 			{processStyleObjectToCSS(
 				visitedStyle?.externalIcon,
-				`.comp.compMenu._${styleKey}menu_css:visited > ._externalButton`,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:visited > ._externalButton`,
 			)}
 			{processStyleObjectToCSS(
 				hoverStyle?.externalIcon,
-				`.comp.compMenu._${styleKey}menu_css:hover > ._externalButton, .comp.compMenu._${styleKey}menu_css._isActive > ._externalButton`,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover > ._externalButton, .comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}._isActive > ._externalButton`,
 			)}
 
 			{processStyleObjectToCSS(
 				regularStyle?.icon,
-				`.comp.compMenu._${styleKey}menu_css > ._icon`,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme} > ._icon`,
 			)}
 			{processStyleObjectToCSS(
 				visitedStyle?.icon,
-				`.comp.compMenu._${styleKey}menu_css:visited > ._icon`,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:visited > ._icon`,
 			)}
 			{processStyleObjectToCSS(
 				hoverStyle?.icon,
-				`.comp.compMenu._${styleKey}menu_css:hover > ._icon, .comp.compMenu._${styleKey}menu_css._isActive > ._icon`,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover > ._icon, .comp.compMenu._${styleKey}menu_css._isActive.${menuDesignSelectionType}.${menuColorScheme} > ._icon`,
 			)}
 
 			{processStyleObjectToCSS(
 				regularStyle?.caretIcon,
-				`.comp.compMenu._${styleKey}menu_css > ._caretIcon`,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme} > ._caretIcon`,
 			)}
 			{processStyleObjectToCSS(
 				visitedStyle?.caretIcon,
-				`.comp.compMenu._${styleKey}menu_css:visited > ._caretIcon`,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:visited > ._caretIcon`,
 			)}
 			{processStyleObjectToCSS(
 				hoverStyle?.caretIcon,
-				`.comp.compMenu._${styleKey}menu_css:hover > ._caretIcon, .comp.compMenu._${styleKey}menu_css._isActive > ._caretIcon`,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover > ._caretIcon, .comp.compMenu._${styleKey}menu_css._isActive.${menuDesignSelectionType}.${menuColorScheme} > ._caretIcon`,
 			)}
 		</style>
 	);
 
 	const children =
 		definition.children && isMenuOpenState ? (
-			<Children
-				pageDefinition={props.pageDefinition}
-				children={definition.children}
-				context={context}
-				locationHistory={locationHistory}
-			/>
+			<div
+				className={`${subMenuOrientation}`}
+				style={(containerHover ? hoverStyle : regularStyle)?.subMenuContainer}
+				onMouseOver={() => setContainerHover(true)}
+				onMouseLeave={() => setContainerHover(false)}
+			>
+				<SubHelperComponent
+					definition={props.definition}
+					subComponentName="subMenuContainer"
+				/>
+				<Children
+					pageDefinition={props.pageDefinition}
+					children={definition.children}
+					context={{ ...context, menuLevel: (context.menuLevel ?? 0) + 1 }}
+					locationHistory={locationHistory}
+				/>
+			</div>
 		) : (
 			<></>
 		);
@@ -227,9 +244,9 @@ function Menu(props: ComponentProps) {
 		<>
 			{styleComp}
 			<a
-				className={`comp compMenu _${styleKey}menu_css ${MenuDesignSelectionType} ${
+				className={`comp compMenu _${styleKey}menu_css ${menuDesignSelectionType} ${menuColorScheme} ${
 					isMenuActive ? '_isActive' : ''
-				}`}
+				} _level${context.menuLevel ?? 0}`}
 				href={resolvedLink}
 				target={target}
 				onClick={e => {
@@ -283,7 +300,10 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['hover', 'disabled', 'active', 'visited'],
-	allowedChildrenType: new Map([['Menu', -1]]),
+	allowedChildrenType: new Map([
+		['Menu', -1],
+		['Grid', 1],
+	]),
 	defaultTemplate: {
 		key: '',
 		type: 'Menu',

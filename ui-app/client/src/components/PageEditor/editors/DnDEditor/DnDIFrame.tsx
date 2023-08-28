@@ -12,6 +12,7 @@ interface DnDIFrameProps {
 	iframeRef: React.RefObject<HTMLIFrameElement>;
 	previewMode: boolean;
 	onChangePersonalization: (prop: string, value: any) => void;
+	parallelIframeRef: (element: HTMLIFrameElement | undefined) => void;
 }
 
 export default function DnDIFrame({
@@ -21,6 +22,7 @@ export default function DnDIFrame({
 	iframeRef,
 	previewMode,
 	onChangePersonalization,
+	parallelIframeRef,
 }: DnDIFrameProps) {
 	const [device, setDevice] = useState<string>();
 	const [height, setHeight] = useState('100%');

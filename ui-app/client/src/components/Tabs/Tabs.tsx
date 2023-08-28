@@ -1,19 +1,40 @@
-import React, { useEffect } from 'react';
+import React, { CSSProperties, useEffect, useRef } from 'react';
 import {
 	addListenerAndCallImmediately,
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
+
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
 import { HelperComponent } from '../HelperComponent';
+import { SubHelperComponent } from '../SubHelperComponent';
 import { getTranslations } from '../util/getTranslations';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tabsProperties';
 import TabsStyles from './TabsStyle';
-import { SubHelperComponent } from '../SubHelperComponent';
+
+function setHighlighter(
+	tabsOrientation: string,
+	tabRefs: React.MutableRefObject<any[]>,
+	hover: number,
+	tabs: any,
+	activeTab: any,
+	setHighlighterPosition: React.Dispatch<React.SetStateAction<React.CSSProperties>>,
+) {
+	const currentTab = tabRefs.current[hover === -1 ? tabs.indexOf(activeTab) : hover];
+	const tabRect = currentTab.getBoundingClientRect();
+	const tabsRect = tabRefs.current[0].parentElement.getBoundingClientRect();
+	const hp: CSSProperties = {};
+	hp['left'] = tabRect.left - tabsRect.left;
+	hp['top'] = tabRect.top - tabsRect.top;
+	hp['width'] = tabsOrientation === '_horizontal' ? tabRect.width : '100%';
+	hp['height'] = tabsOrientation === '_vertical' ? tabRect.height : '100%';
+
+	setHighlighterPosition(hp);
+}
 
 function TabsComponent(props: ComponentProps) {
 	const {
@@ -25,7 +46,17 @@ function TabsComponent(props: ComponentProps) {
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
-		properties: { tabs, defaultActive, readOnly, icon, tabsOrientation, activeStyle } = {},
+		properties: {
+			tabs,
+			defaultActive,
+			readOnly,
+			icon,
+			tabsOrientation,
+			tabNameOrientation,
+			tabsPosition,
+			designType,
+			colorScheme,
+		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
 		definition,
@@ -37,11 +68,16 @@ function TabsComponent(props: ComponentProps) {
 	const bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory)
 		: undefined;
-	const [hover, setHover] = React.useState(false);
+	const [hover, setHover] = React.useState<number>(-1);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
-		{ hover: !!hover, readOnly: !!readOnly, disabled: !!readOnly },
+		{ hover: false, readOnly: !!readOnly, disabled: !!readOnly },
+		stylePropertiesWithPseudoStates,
+	);
+	const resolvedStylesWithHover = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{ hover: true, readOnly: !!readOnly, disabled: !!readOnly },
 		stylePropertiesWithPseudoStates,
 	);
 
@@ -58,13 +94,6 @@ function TabsComponent(props: ComponentProps) {
 			bindingPathPath,
 		);
 	}, [bindingPathPath, defaultActive, tabs]);
-
-	const getActiveStyleBorder = function (childKey: any) {
-		if (activeTab === childKey ?? defaultActive === childKey) return 'activeTabBorder';
-	};
-	const getActiveStyleHighlight = function (childKey: any) {
-		if (activeTab === childKey ?? defaultActive === childKey) return 'activeTabHighlight';
-	};
 
 	const handleClick = function (key: string) {
 		if (!bindingPathPath) {
@@ -89,74 +118,111 @@ function TabsComponent(props: ComponentProps) {
 		})[index == -1 ? 0 : index];
 	const selectedChild = entry ? { [entry[0]]: entry[1] } : {};
 
-	const orientationClass = tabsOrientation === 'VERTICAL' ? 'vertical' : '';
+	const tabRefs = useRef<any[]>([]);
+
+	const [highlighterPosition, setHighlighterPosition] = React.useState<CSSProperties>({});
+
+	useEffect(() => {
+		setHighlighter(tabsOrientation, tabRefs, hover, tabs, activeTab, setHighlighterPosition);
+	}, [
+		hover,
+		activeTab,
+		tabs,
+		tabRefs,
+		tabsOrientation,
+		tabNameOrientation,
+		tabsPosition,
+		setHighlighterPosition,
+	]);
+
+	useEffect(() => {
+		tabRefs.current = [...tabRefs.current.slice(0, tabs.length)];
+	}, [tabs]);
 
 	return (
-		<div className={`comp compTabs ${orientationClass}`} style={resolvedStyles.comp ?? {}}>
+		<div
+			className={`comp compTabs ${tabsOrientation} ${designType} ${colorScheme}`}
+			style={resolvedStyles.comp ?? {}}
+			onResize={() =>
+				setTimeout(
+					() =>
+						setHighlighter(
+							tabsOrientation,
+							tabRefs,
+							hover,
+							tabs,
+							activeTab,
+							setHighlighterPosition,
+						),
+					800,
+				)
+			}
+		>
 			<HelperComponent definition={definition} />
 			<div
-				className={`tabsContainer ${orientationClass}`}
+				className={`tabsContainer ${tabsPosition}`}
 				style={resolvedStyles.tabsContainer ?? {}}
 			>
 				<SubHelperComponent
 					definition={props.definition}
 					subComponentName="tabsContainer"
+					zIndex={7}
 				/>
 				{tabs.map((e: any, i: number) => (
 					<div
 						key={e}
-						className={`tabDiv ${orientationClass} ${
-							activeStyle === 'HIGHLIGHT' ? getActiveStyleHighlight(e) : ''
+						ref={el => (tabRefs.current[i] = el)}
+						className={`tabDiv ${tabNameOrientation} ${
+							hover === i || (hover === -1 && activeTab === e) ? '_active' : ''
 						}`}
-						style={resolvedStyles.tabDivContainer ?? {}}
-						onMouseEnter={
-							stylePropertiesWithPseudoStates?.hover
-								? () => setHover(true)
-								: undefined
+						style={
+							i === hover
+								? resolvedStylesWithHover.tab ?? {}
+								: resolvedStyles.tab ?? {}
 						}
-						onMouseLeave={
-							stylePropertiesWithPseudoStates?.hover
-								? () => setHover(false)
-								: undefined
-						}
+						onMouseEnter={() => setHover(i)}
+						onMouseLeave={() => setHover(-1)}
 						onClick={() => handleClick(e)}
 					>
 						<SubHelperComponent
 							definition={props.definition}
-							subComponentName="tabDivContainer"
+							subComponentName="tab"
+							zIndex={8}
 						/>
-						<button
-							style={resolvedStyles.button ?? {}}
-							className={`tabButton ${icon.length === 0 ? 'noIcon' : ''}`}
+
+						<i
+							className={`icon ${icon[i]}`}
+							style={
+								e === hover
+									? resolvedStylesWithHover.icon ?? {}
+									: resolvedStyles.icon ?? {}
+							}
 						>
 							<SubHelperComponent
 								definition={props.definition}
-								subComponentName="button"
+								subComponentName="icon"
+								zIndex={9}
 							/>
-							<i className={`icon ${icon[i]}`} style={resolvedStyles.icon ?? {}}>
-								<SubHelperComponent
-									definition={props.definition}
-									subComponentName="icon"
-								/>
-							</i>
-							{getTranslations(e, pageDefinition.translations)}
-						</button>
-						{activeStyle === 'BORDER' && (
-							<div
-								className={`border ${getActiveStyleBorder(e)}`}
-								style={resolvedStyles.border ?? {}}
-							>
-								<SubHelperComponent
-									definition={props.definition}
-									subComponentName="border"
-								/>
-							</div>
-						)}
+						</i>
+						{getTranslations(e, pageDefinition.translations)}
 					</div>
 				))}
+				<div
+					className={`tabHighlighter`}
+					style={{ ...(resolvedStyles.tabHighlighter ?? {}), ...highlighterPosition }}
+				>
+					<SubHelperComponent
+						definition={props.definition}
+						subComponentName="tabHighlighter"
+						zIndex={8}
+					/>
+				</div>
 			</div>
 			<div className="tabGridDiv" style={resolvedStyles.childContainer ?? {}}>
-				<SubHelperComponent definition={props.definition} subComponentName="tabGridDiv" />
+				<SubHelperComponent
+					definition={props.definition}
+					subComponentName="childContainer"
+				/>
 				<Children
 					key={`${activeTab}_chld`}
 					pageDefinition={pageDefinition}
@@ -212,41 +278,27 @@ const component: Component = {
 						value: 'Tab3',
 					},
 				},
-				'24Aou1fgffDV4hpQMxj4jy': {
-					key: '24Aou1fgffDV4hpQMxj4jy',
-					order: 4,
-					property: {
-						value: 'Tab4',
-					},
-				},
 			},
 			icon: {
 				'1gweTkTDaBOAUFGHDSV77J': {
 					key: '1gweTkTDaBOAUFGHDSV77J',
 					order: 1,
 					property: {
-						value: 'fa-arrows-to-circle fa-solid',
+						value: 'mi material-icons-outlined demoicons mio-demoicon1',
 					},
 				},
 				'2Sr6eN2CeR1tOnODcFuoEB': {
 					key: '2Sr6eN2CeR1tOnODcFuoEB',
 					order: 2,
 					property: {
-						value: 'fa-text-height fa-solid',
+						value: 'mi material-icons-outlined demoicons mio-demoicon2',
 					},
 				},
 				'5oxu4PeICV9XbUM8uaUUGn': {
 					key: '5oxu4PeICV9XbUM8uaUUGn',
 					order: 3,
 					property: {
-						value: 'fa-message fa-solid',
-					},
-				},
-				'7yb3thIp2JDvXMlUy6uTMS': {
-					key: '7yb3thIp2JDvXMlUy6uTMS',
-					order: 4,
-					property: {
-						value: 'fa-file-lines fa-solid',
+						value: 'mi material-icons-outlined demoicons mio-demoicon3',
 					},
 				},
 			},
@@ -255,6 +307,7 @@ const component: Component = {
 			},
 		},
 	},
+	sections: [{ name: 'Tabs', pageName: 'tab' }],
 };
 
 export default component;

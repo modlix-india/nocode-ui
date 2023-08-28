@@ -16,6 +16,7 @@ import { runEvent } from '../util/runEvent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
 import { SubHelperComponent } from '../SubHelperComponent';
+import { getTranslations } from '../util/getTranslations';
 
 function Popup(props: ComponentProps) {
 	const [isActive, setIsActive] = React.useState(false);
@@ -48,6 +49,8 @@ function Popup(props: ComponentProps) {
 			modelTitle,
 			popupDesign,
 			showInDesign,
+			modalPosition,
+			background,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -120,7 +123,7 @@ function Popup(props: ComponentProps) {
 	const closeIcon = (
 		<i
 			style={resolvedStyles.closeButton ?? {}}
-			className="fa-solid fa-xmark iconClass"
+			className="mi material-icons-outlined demoicons mio-demoicon-close"
 			onClick={handleClose}
 		>
 			<SubHelperComponent definition={props.definition} subComponentName="closeButton" />
@@ -132,13 +135,13 @@ function Popup(props: ComponentProps) {
 			<Portal>
 				<div className="comp compPopup">
 					<div
-						className="backdrop"
+						className={`backdrop ${modalPosition}`}
 						onClick={handleCloseOnOutsideClick}
 						style={resolvedStyles.comp ?? {}}
 					>
 						<HelperComponent definition={props.definition} />
 						<div
-							className={`modal ${popupDesign === '_design2' ? 'design2' : ''} `}
+							className={`modal ${popupDesign} ${background}`}
 							style={resolvedStyles?.modal || {}}
 							onClick={handleBubbling}
 						>
@@ -175,7 +178,12 @@ function Popup(props: ComponentProps) {
 											definition={props.definition}
 											subComponentName="modalTitle"
 										/>
-										{modelTitle && modelTitle}
+										{modelTitle
+											? getTranslations(
+													modelTitle,
+													props.pageDefinition.translations,
+											  )
+											: ''}
 									</div>
 									{showClose && closeButtonPosition === 'RIGHT' && (
 										<div
@@ -237,6 +245,7 @@ const component: Component = {
 		name: 'Popup',
 	},
 	needShowInDesginMode: true,
+	sections: [{ name: 'Popup', pageName: 'popup' }],
 };
 
 export default component;
