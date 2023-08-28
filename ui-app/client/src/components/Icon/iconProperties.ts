@@ -18,6 +18,39 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 		editor: ComponentPropertyEditor.ICON,
 	},
+	{
+		...COMMON_COMPONENT_PROPERTIES.designType,
+		enumValues: [
+			...COMMON_COMPONENT_PROPERTIES.designType.enumValues!,
+			{
+				name: '_outlined',
+				displayName: 'Outline',
+				description: 'Outline',
+			},
+			{ name: '_filled', displayName: 'Filled', description: 'Filled' },
+			{
+				name: '_rounded',
+				displayName: 'Rounded',
+				description: 'Rounded',
+			},
+		],
+	},
+	{
+		...COMMON_COMPONENT_PROPERTIES.colorScheme,
+		enumValues: [
+			{
+				name: '_defaultIcon',
+				displayName: 'Default',
+				description: 'Default',
+			},
+			{
+				name: '_lightIcon',
+				displayName: 'Light',
+				description: 'Light',
+			},
+			...COMMON_COMPONENT_PROPERTIES.colorScheme.enumValues!,
+		],
+	},
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 

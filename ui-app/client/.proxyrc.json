@@ -1,6 +1,6 @@
 {
 	"**/api/**": {
-		"target": "https://apps-dev.fincity.ai/",
+		"target": "https://dev.openbracket.in/",
 		"changeOrigin": true,
 		"secure": false
 	}

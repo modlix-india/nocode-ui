@@ -39,6 +39,35 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: "Link Button's target features",
 		description: "Link Button's target features",
 	},
+	{
+		...COMMON_COMPONENT_PROPERTIES.designType,
+		enumValues: [
+			...COMMON_COMPONENT_PROPERTIES.designType.enumValues!,
+			{
+				name: '_underLine',
+				displayName: 'Underline Link',
+				description: 'Underline type',
+			},
+			{
+				name: '_underAboveLine',
+				displayName: 'Line Above Below Link',
+				description: 'Line Above Below type',
+			},
+			{
+				name: '_sideLines',
+				displayName: 'Side Lines Link',
+				description: 'Side Lines type',
+			},
+		],
+	},
+	{
+		name: 'showLines',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Lines not only on hover',
+		description: 'Show Lines not only on hover',
+		group: ComponentPropertyGroup.BASIC,
+	},
+	COMMON_COMPONENT_PROPERTIES.colorScheme,
 	COMMON_COMPONENT_PROPERTIES.onClick,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];

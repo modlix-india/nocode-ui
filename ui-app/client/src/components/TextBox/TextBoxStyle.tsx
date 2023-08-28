@@ -6,66 +6,88 @@ const PREFIX = '.comp.compTextBox';
 export default function TextBoxStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
 	const css =
 		`
-		.commonInputBox .textBoxDiv .inputContainer {
-			position: relative;
-		}
-		
-		.commonInputBox .textBoxDiv .inputContainer .textbox {
-			border: none;
-			width: 100%;
-			height: 100%;
-			border-radius: 4px;
-			outline: none;
-		}
-		
-		.commonInputBox .textBoxDiv .inputContainer .textBoxLabel {
-			position: absolute;
-			top: 50%;
-			transform: translateY(-50%);
-			transition: top 100ms, transform 100ms ease-in;
-			pointer-events: none;
-		}
-		
-		.commonInputBox .textBoxDiv {
-			display: flex;
-			position: relative;
-		}
+	${PREFIX} {
+		display: flex;
+		align-items: center;
+	}
 
-		.commonInputBox .textBoxDiv .leftIcon,
-		.commonInputBox .textBoxDiv .rightIcon,
-		.commonInputBox .supportText {
-			position: relative;
-		}
+	${PREFIX} input {
+		flex: 1;
+		height: 100%;
+		border: none;
+		font: inherit;
+		line-height: inherit;
+		outline: none;
+		padding: 0;
+		background: transparent;
+		color: inherit;
+		min-width: 20px;
+	}
 
-		.commonInputBox .noFloatTextBoxLabel  {
-			display: inline-block;
-			position: relative;
-		}
-		
-		.commonInputBox .textBoxDiv .inputContainer .textbox:focus + .textBoxLabel,
-		.commonInputBox .textBoxDiv .inputContainer .textbox:not(:placeholder-shown) + .textBoxLabel {
-			transform: translateY(-55%);
-		}
-		
-		.commonInputBox 
-			.textBoxDiv.textBoxwithIconContainer
-			.inputContainer
-			.textbox:focus
-			+ .textBoxLabel,
-		.commonInputBox 
-			.textBoxDiv.textBoxwithIconContainer
-			.inputContainer
-			.textbox:not(:placeholder-shown)
-			+ .textBoxLabel {
-			transform: translateY(-55%);
-		}
+	${PREFIX}._isActive ._label,
+	${PREFIX} ._label._noFloat {
+		transform: translateY(-150%);
+	}
 
-		.commonInputBox .textbox .remove-spin-button::-webkit-outer-spin-button, .remove-spin-button::-webkit-inner-spin-button {
-			-webkit-appearance: none;
-			-moz-appearance: none;
-			appearance: none;
-			margin: 0; 
-		}
+	${PREFIX}._hasLeftIcon ._label {
+		padding-left: 24px;
+	}
+
+	${PREFIX} ._label {
+		position: absolute;
+		user-select: none;
+		pointer-events: none;
+		transform: translateY(0%);
+		transition: transform 0.2s ease-in-out, left 0.2s ease-in-out;
+	}
+
+	${PREFIX} ._rightIcon,
+	${PREFIX} ._leftIcon {
+		width: 24px;
+	}
+
+	${PREFIX}._bigDesign1 ._leftIcon {
+		margin-right: 10px;
+		border-right: 1px solid;
+	}
+
+	${PREFIX}._bigDesign1 ._label {
+    	margin-top: 0px;
+	}
+
+	${PREFIX}._bigDesign1._hasLeftIcon ._label {
+		padding-left: 36px;
+	}
+
+	${PREFIX}._bigDesign1._hasValue ._label,
+	${PREFIX}._bigDesign1._isActive ._label,
+	${PREFIX}._bigDesign1 ._label._noFloat {
+		margin-top: 24px;
+	}
+
+	${PREFIX}._bigDesign1 ._inputBox {
+		padding-top: 10px;
+	}
+
+	${PREFIX} ._rightIcon {
+		padding-right: 5px;
+	}
+
+	${PREFIX} ._label._float {
+		bottom: 0px;
+	}
+
+	${PREFIX} ._clearText, ${PREFIX} ._passwordIcon {
+		cursor: pointer;
+	}
+
+	${PREFIX} ._supportText {
+		position:absolute;
+		z-index:1;
+		left: 0;
+		top: 100%;
+		margin-top: 5px;
+	}
 
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

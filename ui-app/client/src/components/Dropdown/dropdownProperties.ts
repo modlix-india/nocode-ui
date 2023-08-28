@@ -16,7 +16,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Dropdown placeholder',
 		description: "Placeholder that's shown when no item is selected in dropdown.",
-		defaultValue: 'Select...',
 		group: ComponentPropertyGroup.BASIC,
 	},
 
@@ -109,7 +108,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.validation,
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
-	COMMON_COMPONENT_PROPERTIES.onClick,
 	COMMON_COMPONENT_PROPERTIES.datatype,
 	COMMON_COMPONENT_PROPERTIES.uniqueKeyType,
 	COMMON_COMPONENT_PROPERTIES.selectionType,
@@ -117,6 +115,32 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.selectionKey,
 	COMMON_COMPONENT_PROPERTIES.uniqueKey,
 	COMMON_COMPONENT_PROPERTIES.labelKey,
+	{
+		name: 'leftIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Left Icon',
+		description: 'Icon to be shown on the left side.',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		...COMMON_COMPONENT_PROPERTIES.designType,
+		enumValues: [
+			...COMMON_COMPONENT_PROPERTIES.designType.enumValues!,
+			{
+				name: '_outlined',
+				displayName: 'Outline Dropdown',
+				description: 'Outline Dropdown type',
+			},
+			{
+				name: '_filled',
+				displayName: 'Filled Dropdown',
+				description: 'Filled Dropdown type',
+			},
+			{ name: '_bigDesign1', displayName: 'Big Design 1', description: 'Big Design 1 type' },
+		],
+	},
+	COMMON_COMPONENT_PROPERTIES.colorScheme,
 ];
 
 const stylePropertiesDefinition = {
