@@ -46,6 +46,18 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 		],
 	},
+	{
+		...COMMON_COMPONENT_PROPERTIES.designType,
+		enumValues: [
+			...COMMON_COMPONENT_PROPERTIES.designType.enumValues!,
+			{
+				name: '_outlined',
+				displayName: 'Outline Radio Button',
+				description: 'Outline Radio Button type',
+			},
+		],
+	},
+	COMMON_COMPONENT_PROPERTIES.colorScheme,
 	COMMON_COMPONENT_PROPERTIES.label,
 	COMMON_COMPONENT_PROPERTIES.layout,
 	COMMON_COMPONENT_PROPERTIES.onClick,

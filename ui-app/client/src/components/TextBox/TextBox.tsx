@@ -65,6 +65,8 @@ function TextBox(props: ComponentProps) {
 			onClear,
 			onChange,
 			autoFocus,
+			designType,
+			colorScheme,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -75,7 +77,6 @@ function TextBox(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	const effectivePlaceholder = noFloat ? (placeholder ? placeholder : '') : label;
 	const computedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
 		{ focus, readOnly },
@@ -179,7 +180,7 @@ function TextBox(props: ComponentProps) {
 			))();
 	}, [changeEvent]);
 
-	const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+	const handleBlur = (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		let temp = value === '' && emptyValue ? mapValue[emptyValue] : value;
 		if (valueType === 'number') {
 			const tempNumber =
@@ -231,7 +232,9 @@ function TextBox(props: ComponentProps) {
 		if (!updateStoreImmediately) setValue(!isNaN(tempNumber) ? temp?.toString() : '');
 	};
 
-	const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+	const handleChange = async (
+		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+	) => {
 		if (valueType === 'text') handleTextChange(event.target.value);
 		else handleNumberChange(event.target.value);
 	};
@@ -250,7 +253,7 @@ function TextBox(props: ComponentProps) {
 		if (!clearEvent) return;
 		await runEvent(
 			clearEvent,
-			onEnter,
+			onClear,
 			props.context.pageName,
 			props.locationHistory,
 			props.pageDefinition,
@@ -258,7 +261,7 @@ function TextBox(props: ComponentProps) {
 	};
 	const clickEvent = onEnter ? props.pageDefinition.eventFunctions[onEnter] : undefined;
 
-	const handleKeyUp = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+	const handleKeyUp = async (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		if (!clickEvent || isLoading || e.key !== 'Enter') return;
 		if (!updateStoreImmediately) {
 			handleBlur(e as unknown as React.FocusEvent<HTMLInputElement>);
@@ -273,37 +276,37 @@ function TextBox(props: ComponentProps) {
 	};
 
 	return (
-		<div className="comp compTextBox" style={computedStyles.comp ?? {}}>
-			<HelperComponent definition={definition} />
-
-			<CommonInputText
-				id={key}
-				noFloat={noFloat}
-				readOnly={readOnly}
-				value={value}
-				label={label}
-				translations={translations}
-				leftIcon={leftIcon}
-				rightIcon={rightIcon}
-				valueType={valueType}
-				isPassword={isPassword}
-				placeholder={effectivePlaceholder}
-				hasFocusStyles={stylePropertiesWithPseudoStates?.focus}
-				validationMessages={validationMessages}
-				context={context}
-				handleChange={handleChange}
-				clearContentHandler={handleClickClose}
-				blurHandler={handleBlur}
-				keyUpHandler={handleKeyUp}
-				focusHandler={() => setFocus(true)}
-				supportingText={supportingText}
-				messageDisplay={messageDisplay}
-				styles={computedStyles}
-				definition={props.definition}
-				autoComplete={autoComplete}
-				autoFocus={autoFocus}
-			/>
-		</div>
+		<CommonInputText
+			cssPrefix="comp compTextBox"
+			id={key}
+			noFloat={noFloat}
+			readOnly={readOnly}
+			value={value}
+			label={label}
+			translations={translations}
+			leftIcon={leftIcon}
+			rightIcon={rightIcon}
+			valueType={valueType}
+			isPassword={isPassword}
+			placeholder={placeholder}
+			hasFocusStyles={stylePropertiesWithPseudoStates?.focus}
+			validationMessages={validationMessages}
+			context={context}
+			handleChange={handleChange}
+			clearContentHandler={handleClickClose}
+			blurHandler={handleBlur}
+			keyUpHandler={handleKeyUp}
+			focusHandler={() => setFocus(true)}
+			supportingText={supportingText}
+			messageDisplay={messageDisplay}
+			styles={computedStyles}
+			designType={designType}
+			colorScheme={colorScheme}
+			definition={props.definition}
+			autoComplete={autoComplete}
+			autoFocus={autoFocus}
+			hasValidationCheck={validation?.length > 0}
+		/>
 	);
 }
 
@@ -326,10 +329,10 @@ const component: Component = {
 		type: 'TextBox',
 		name: 'TextBox',
 		properties: {
-			placeholder: { value: 'placeholder' },
 			label: { value: 'TextBox' },
 		},
 	},
+	sections: [{ name: 'Text Box', pageName: 'textBox' }],
 };
 
 export default component;

@@ -91,6 +91,62 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 		],
 	},
+	{
+		name: 'modalPosition',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Modal Position',
+		description: 'Modal position selection',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: '_center_center',
+		enumValues: [
+			{
+				name: '_left_top',
+				displayName: 'Top Left',
+				description: 'Modal position is top left',
+			},
+			{
+				name: '_center_top',
+				displayName: 'Top Center',
+				description: 'Modal position is top center',
+			},
+			{
+				name: '_right_top',
+				displayName: 'Top Right',
+				description: 'Modal position is top right',
+			},
+			{
+				name: '_left_center',
+				displayName: 'Center Left',
+				description: 'Modal position is center left',
+			},
+			{
+				name: '_center_center',
+				displayName: 'Center',
+				description: 'Modal position is center',
+			},
+			{
+				name: '_right_center',
+				displayName: 'Center Right',
+				description: 'Modal position is center right',
+			},
+			{
+				name: '_left_bottom',
+				displayName: 'Bottom Left',
+				description: 'Modal position is bottom left',
+			},
+			{
+				name: '_center_bottom',
+				displayName: 'Bottom Center',
+				description: 'Modal position is bottom center',
+			},
+			{
+				name: '_right_bottom',
+				displayName: 'Bottom Right',
+				description: 'Modal position is bottom right',
+			},
+		],
+	},
+	{ ...COMMON_COMPONENT_PROPERTIES.background, defaultValue: '_SEPTENARYBG' },
 	COMMON_COMPONENT_PROPERTIES.showInDesign,
 ];
 

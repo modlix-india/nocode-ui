@@ -39,6 +39,7 @@ function DropdownComponent(props: ComponentProps) {
 	const [validationMessages, setValidationMessages] = React.useState<Array<string>>([]);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
+	const [hoverKey, setHoverKey] = useState<string | undefined>();
 	const {
 		definition: { bindingPath, bindingPath2 },
 		locationHistory,
@@ -70,6 +71,9 @@ function DropdownComponent(props: ComponentProps) {
 			clearSearchTextOnClose,
 			onSearch,
 			onScrollReachedEnd,
+			designType,
+			colorScheme,
+			leftIcon,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -210,23 +214,20 @@ function DropdownComponent(props: ComponentProps) {
 				.filter(e => !isNullValue(e?.label))
 				.filter(e => (e?.label + '').search(searchExpression) !== -1),
 		);
-	}, [searchText]);
+	}, [searchText, dropdownData, searchEvent, locationHistory, props.pageDefinition]);
 
-	const handleClose = () => {
+	const handleClose = useCallback(() => {
+		if (!showDropdown) return;
 		setShowDropdown(false);
 		setFocus(false);
 		inputRef?.current?.blur();
 		clearSearchTextOnClose && setSearchText('');
-	};
-
-	const handleBubbling = (event: any) => {
-		event.stopPropagation();
-	};
+	}, [showDropdown, setShowDropdown, setFocus, inputRef, clearSearchTextOnClose, setSearchText]);
 
 	const getLabel = useCallback(() => {
 		let label = '';
 		if (!selected || (Array.isArray(selected) && !selected.length)) {
-			return noFloat ? placeholder : '';
+			return '';
 		}
 		if (!isMultiSelect) {
 			label = dropdownData?.find((each: any) => each?.key === selectedDataKey)?.label;
@@ -236,36 +237,15 @@ function DropdownComponent(props: ComponentProps) {
 			return label;
 		}
 
-		label = `${selectedDataKey?.length} Item${
+		return `${selectedDataKey?.length} Item${
 			(selectedDataKey?.length ?? 0) > 1 ? 's' : ''
 		}  selected`;
-
-		label =
-			!selected ||
-			!selectedDataKey ||
-			(Array.isArray(selectedDataKey) && !selectedDataKey.length)
-				? noFloat
-					? placeholder
-					: ''
-				: !Array.isArray(selectedDataKey)
-				? dropdownData?.find((each: any) => each?.key === selectedDataKey)?.label
-				: `${selectedDataKey.length} Item${
-						selectedDataKey.length > 1 ? 's' : ''
-				  }  selected`;
-		return label;
-	}, [selected, selectedDataKey, dropdownData, noFloat, placeholder, isMultiSelect]);
-	const effectivePlaceholder = noFloat ? (placeholder ? placeholder : label) : label;
+	}, [selected, selectedDataKey, dropdownData, isMultiSelect]);
 	const computedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
 		{ focus, readOnly },
 		stylePropertiesWithPseudoStates,
 	);
-	useEffect(() => {
-		if (showDropdown) {
-			document.addEventListener('click', handleClose);
-		}
-		return () => document.removeEventListener('click', handleClose);
-	}, [showDropdown]);
 
 	useEffect(() => {
 		if (!validation?.length) return;
@@ -295,6 +275,12 @@ function DropdownComponent(props: ComponentProps) {
 			);
 	}, [selected, validation]);
 
+	useEffect(() => {
+		if (!showDropdown || closeOnMouseLeave) return;
+		window.addEventListener('mousedown', handleClose);
+		return () => window.removeEventListener('mousedown', handleClose);
+	}, [showDropdown, searchText, handleClose, closeOnMouseLeave]);
+
 	const scrollEndEvent =
 		onScrollReachedEnd && props.pageDefinition.eventFunctions[onScrollReachedEnd]
 			? async (e: UIEvent<HTMLDivElement>) => {
@@ -314,42 +300,63 @@ function DropdownComponent(props: ComponentProps) {
 			: undefined;
 
 	return (
-		<div
-			className="comp compDropdown"
-			onClick={handleBubbling}
+		<CommonInputText
+			id={key}
+			cssPrefix="comp compDropdown"
+			noFloat={noFloat}
+			readOnly={readOnly}
+			value={getLabel()}
+			label={label}
+			translations={translations}
+			rightIcon={showDropdown ? 'fa-solid fa-angle-up' : 'fa-solid fa-angle-down'}
+			valueType="text"
+			isPassword={false}
+			placeholder={placeholder}
+			hasFocusStyles={stylePropertiesWithPseudoStates?.focus}
+			validationMessages={validationMessages}
+			context={context}
+			hideClearContentIcon={true}
+			blurHandler={() => setFocus(false)}
+			focusHandler={() => {
+				setFocus(true);
+				setShowDropdown(true);
+			}}
+			autoComplete="off"
+			styles={computedStyles}
+			inputRef={inputRef}
+			definition={props.definition}
+			designType={designType}
+			colorScheme={colorScheme}
+			leftIcon={leftIcon}
 			onMouseLeave={closeOnMouseLeave ? handleClose : undefined}
-			style={computedStyles?.comp}
+			updDownHandler={e => {
+				if (e.key.startsWith('Arrow')) {
+					if (!showDropdown) setShowDropdown(true);
+					const data =
+						searchDropdownData?.length || searchText
+							? searchDropdownData
+							: dropdownData;
+					if (!data?.length) {
+						setHoverKey(undefined);
+						return;
+					}
+					let index = data?.findIndex(e => e?.key === hoverKey);
+					if (index === -1) index = e.key.endsWith('Up') ? data.length - 1 : 0;
+					else index = e.key.endsWith('Up') ? index - 1 : index + 1;
+					if (index < 0) index = data.length - 1;
+					if (index >= data.length) index = 0;
+					setHoverKey(data[index]?.key);
+				} else if (e.key === 'Enter' && showDropdown && hoverKey) {
+					handleClick(dropdownData.find(e => e.key === hoverKey));
+				} else if (e.key === 'Escape') {
+					setHoverKey(undefined);
+					setShowDropdown(false);
+				}
+			}}
 		>
-			<HelperComponent definition={props.definition} />
-
-			<CommonInputText
-				id={key}
-				noFloat={noFloat}
-				readOnly={readOnly}
-				value={getLabel()}
-				label={label}
-				translations={translations}
-				rightIcon={focus ? 'fa-solid fa-angle-up' : 'fa-solid fa-angle-down'}
-				valueType="text"
-				isPassword={false}
-				placeholder={effectivePlaceholder}
-				hasFocusStyles={stylePropertiesWithPseudoStates?.focus}
-				validationMessages={validationMessages}
-				context={context}
-				hideClearContentIcon={true}
-				blurHandler={() => setFocus(false)}
-				focusHandler={() => {
-					setFocus(true);
-					setShowDropdown(true);
-				}}
-				autoComplete="off"
-				styles={computedStyles}
-				inputRef={inputRef}
-				definition={props.definition}
-			/>
 			{showDropdown && (
 				<div
-					className="dropdownContainer"
+					className="_dropdownContainer"
 					style={computedStyles.dropDownContainer ?? {}}
 					onScroll={scrollEndEvent}
 				>
@@ -358,43 +365,26 @@ function DropdownComponent(props: ComponentProps) {
 						subComponentName="dropDownContainer"
 					/>
 					{isSearchable && (
-						<div
-							className="dropdownSearchContainer"
-							style={computedStyles.dropdownSearchContainer ?? {}}
-						>
-							<SubHelperComponent
-								definition={props.definition}
-								subComponentName="dropdownSearchContainer"
-							/>
-							<CommonInputText
-								id={key}
-								noFloat={false}
-								readOnly={readOnly}
-								value={searchText}
-								label={searchLabel}
-								translations={translations}
-								rightIcon="fa-solid fa-magnifying-glass"
-								valueType="text"
-								isPassword={false}
-								placeholder={searchLabel}
-								hasFocusStyles={stylePropertiesWithPseudoStates?.focus}
-								validationMessages={validationMessages}
-								context={context}
-								handleChange={e => handleSearch(e)}
-								clearContentHandler={() => setSearchText('')}
-								blurHandler={() => setFocus(false)}
-								focusHandler={() => setFocus(true)}
-								styles={computedStyles}
-								definition={props.definition}
-							/>
-						</div>
+						<input
+							className="_dropdownSearchBox"
+							value={searchText}
+							placeholder={searchLabel}
+							onChange={handleSearch}
+							onMouseDown={e => {
+								e.stopPropagation();
+							}}
+						/>
 					)}
-					{(searchDropdownData?.length ? searchDropdownData : dropdownData)?.map(each => (
+					{(searchDropdownData?.length || searchText
+						? searchDropdownData
+						: dropdownData
+					)?.map(each => (
 						<div
-							onClick={() => handleClick(each)}
-							className="dropdownItem"
+							className={`_dropdownItem ${each.key === hoverKey ? '_hover' : ''}`}
 							style={computedStyles.dropdownItem ?? {}}
 							key={each?.key}
+							onMouseEnter={() => setHoverKey(each?.key)}
+							onMouseDown={() => handleClick(each)}
 						>
 							<SubHelperComponent
 								definition={props.definition}
@@ -402,7 +392,7 @@ function DropdownComponent(props: ComponentProps) {
 							/>
 							<label
 								style={computedStyles.dropdownItemLabel ?? {}}
-								className="dropdownItemLabel"
+								className="_dropdownItemLabel"
 							>
 								<SubHelperComponent
 									definition={props.definition}
@@ -412,7 +402,7 @@ function DropdownComponent(props: ComponentProps) {
 							</label>
 							{getIsSelected(each?.key) && (
 								<i
-									className="dropdownCheckIcon fa fa-solid fa-check checkedIcon"
+									className="_dropdownCheckIcon"
 									style={computedStyles.dropdownCheckIcon ?? {}}
 								>
 									<SubHelperComponent
@@ -425,8 +415,20 @@ function DropdownComponent(props: ComponentProps) {
 					))}
 				</div>
 			)}
-		</div>
+		</CommonInputText>
 	);
+
+	// return (
+	// 	<div
+	// 		className="comp compDropdown"
+	// 		onClick={handleBubbling}
+	// 		onMouseLeave={closeOnMouseLeave ? handleClose : undefined}
+	// 		style={computedStyles?.comp}
+	// 	>
+	// 		<HelperComponent definition={props.definition} />
+
+	// 	</div>
+	// );
 }
 
 const component: Component = {
@@ -452,6 +454,7 @@ const component: Component = {
 			label: { value: 'Dropdown' },
 		},
 	},
+	sections: [{ name: 'Dropdown', pageName: 'dropdown' }],
 };
 
 export default component;
