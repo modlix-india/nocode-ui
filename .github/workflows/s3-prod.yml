@@ -34,6 +34,5 @@ jobs:
       - name: Cache Clear
         uses: fjogeleit/http-request-action@v1
         with:
-          url: https://apps.fincity.ai/api/ui/cache/jsCache
-          method: 'DELETE'
-
+          url: https://openbracket.in/api/ui/cache/jsCache
+          method: "DELETE"
