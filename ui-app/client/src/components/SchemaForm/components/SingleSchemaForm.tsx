@@ -120,7 +120,6 @@ export default function SingleSchemaForm({
 	}, [schema, schemaRepository]);
 
 	const types: Set<SchemaType> = schema.getType()?.getAllowedSchemaTypes() ?? ALL_SET;
-
 	const [currentType, setCurrentType] = React.useState<SchemaType | undefined>();
 	const [suggestedCurrentType, setSuggestedCurrentType] = React.useState<SchemaType | undefined>(
 		SchemaType.STRING,
@@ -209,7 +208,7 @@ export default function SingleSchemaForm({
 				value={value}
 				schema={schema}
 				path={path}
-				onChange={v => onChange(path, v)}
+				onChange={onChange}
 				schemaRepository={schemaRepository}
 			/>
 		);

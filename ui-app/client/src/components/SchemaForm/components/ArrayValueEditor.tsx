@@ -8,6 +8,7 @@ import {
 } from '@fincity/kirun-js';
 import React, { useEffect, useState } from 'react';
 import SingleSchemaForm from './SingleSchemaForm';
+import { shortUUID } from '../../../util/shortUUID';
 
 export default function ArrayValueEditor({
 	value,
@@ -22,60 +23,85 @@ export default function ArrayValueEditor({
 	schemaRepository: Repository<Schema>;
 	path: string;
 }) {
-	const [valueProp, setValueProp] = useState<any>('');
-	const [Prop, setProp] = useState<any>(value);
+	// const [valueProp, setValueProp] = useState<any>('');
+	const [msg, setMsg] = useState<string>('');
+	const [prop, setProp] = useState<Array<any>>([]);
+	const [arrayKeys, setArrayKeys] = useState<Array<string>>([]);
 	const items: ArraySchemaType | undefined = schema.getItems();
-	console.log(items, 'items');
-
+	useEffect(() => {
+		(async () => {
+			if (isNullValue(value)) return;
+			let message = '';
+			try {
+				await SchemaValidator.validate(undefined, schema, schemaRepository, value);
+			} catch (e: any) {
+				if (e.message) message = e.message;
+				else message = '' + e;
+			}
+			setMsg(message);
+		})();
+		const genKeys = (value ?? []).map(() => shortUUID());
+		setArrayKeys(genKeys);
+		setProp(value ?? []);
+		console.log(value, 'picard');
+	}, [value]);
 	const singleSchema = items?.getSingleSchema()?.getType();
 	const singleSchemaType = singleSchema?.getAllowedSchemaTypes();
-
 	const singleType = singleSchemaType?.values().next().value;
+	const singleForm = singleType
+		? prop.map((e, i) => (
+				<div>
+					<SingleSchemaForm
+						key={`${arrayKeys[i]}`}
+						schema={items?.getSingleSchema()}
+						path={path ? `${path}[${i}]` : `[${i}]`}
+						value={e}
+						schemaRepository={schemaRepository}
+						onChange={onChange}
+					/>
+				</div>
+		  ))
+		: null;
 
-	console.log(Prop);
-
-	const singleForm = singleType ? (
-		<div>
-			<SingleSchemaForm
-				key={'singleSchema_'}
-				schema={schema?.getItems()?.getSingleSchema()}
-				path={path}
-				value={Prop}
-				schemaRepository={schemaRepository}
-				onChange={onChange}
-			/>
-		</div>
-	) : (
-		''
-	);
-
-	const tupleSchema = items?.getTupleSchema();
+	const tupleSchema = items?.getTupleSchema() || undefined;
 	console.log(tupleSchema, 'tupleSchema');
-	//console.log(e.getType()?.getAllowedSchemaTypes().values().next().value);
+	console.log(singleSchema, 'singleSchema');
 
 	// const tupleForm = tupleSchema
-	// 	? tupleSchema?.map(e => {
-	// 		e.getType()?.getAllowedSchemaTypes().values().next().value
-	// 			<SingleSchemaForm
-	// 				key={`${e}`}
-	// 				schema={schema.getAdditionalProperties()?.getSchemaValue()}
-	// 				path={path}
-	// 				value={valueProp}
-	// 				schemaRepository={schemaRepository}
-	// 				onChange={onChange}
-	// 			/>;
+	// 	? tupleSchema?.map((e, i) => {
+	// 			console.log(e, 'e');
+	// 			return (
+	// 				<div>
+	// 					<SingleSchemaForm
+	// 						key={`${arrayKeys[i]}`}
+	// 						path={path}
+	// 						value={e}
+	// 						schema={items?.getSingleSchema()}
+	// 						schemaRepository={schemaRepository}
+	// 						onChange={onChange}
+	// 					/>
+	// 				</div>
+	// 			);
 	// 	  })
-	// 	: '';
+	// 	: undefined;
+
+	// console.log(tupleForm, 'tupleForm');
+	// console.log(prop, 'prop');
+
+	const addArrayItem = () => {
+		onChange(path ? `${path}[${prop.length}]` : `[${prop.length}]`, undefined);
+	};
 
 	const newProp = (
 		<div className="_newProp">
-			<input value={valueProp} />
-			<button>Add Element</button>
+			<button onClick={addArrayItem}>Add Element</button>
 		</div>
 	);
+
 	return (
 		<div className=" _singleSchema _arrayEditor">
 			{singleForm}
+			{/* {tupleForm} */}
 			{newProp}
 		</div>
 	);

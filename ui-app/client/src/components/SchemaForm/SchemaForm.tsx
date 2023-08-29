@@ -94,7 +94,7 @@ function SchemaForm(
 					const map = new Map([['Internal.', new StoreExtractor(internal, 'Internal.')]]);
 
 					setStoreData(
-						'Internal.value' + (path ? '.' + path : ''),
+						'Internal.value' + (path ? (path.startsWith('[') ? path : '.' + path) : ''),
 						internal,
 						v,
 						'Internal',
