@@ -10,7 +10,7 @@ import {
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { validate } from '../../util/validationProcessor';
-import { HelperComponent } from '../HelperComponent';
+import { SubHelperComponent } from '../SubHelperComponent';
 import { getRenderData } from '../util/getRenderData';
 import { getSelectedKeys } from '../util/getSelectedKeys';
 import { runEvent } from '../util/runEvent';
@@ -18,7 +18,6 @@ import useDefinition from '../util/useDefinition';
 import { flattenUUID } from '../util/uuid';
 import DropdownStyle from './DropdownStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './dropdownProperties';
-import { SubHelperComponent } from '../SubHelperComponent';
 
 function DropdownComponent(props: ComponentProps) {
 	const [showDropdown, setShowDropdown] = useState(false);
@@ -192,17 +191,19 @@ function DropdownComponent(props: ComponentProps) {
 	};
 
 	React.useEffect(() => {
-		if (searchEvent) {
-			(async () =>
-				await runEvent(
-					searchEvent,
-					key,
-					context.pageName,
-					locationHistory,
-					props.pageDefinition,
-				))();
-			return;
-		}
+		if (!onSearch) return;
+		(async () =>
+			await runEvent(
+				searchEvent,
+				key,
+				context.pageName,
+				locationHistory,
+				props.pageDefinition,
+			))();
+	}, [searchText, searchEvent, locationHistory, props.pageDefinition]);
+
+	React.useEffect(() => {
+		if (onSearch) return;
 		let searchExpression: string | RegExp;
 		try {
 			searchExpression = new RegExp(searchText, 'i');
@@ -214,7 +215,7 @@ function DropdownComponent(props: ComponentProps) {
 				.filter(e => !isNullValue(e?.label))
 				.filter(e => (e?.label + '').search(searchExpression) !== -1),
 		);
-	}, [searchText, dropdownData, searchEvent, locationHistory, props.pageDefinition]);
+	}, [searchText, dropdownData]);
 
 	const handleClose = useCallback(() => {
 		if (!showDropdown) return;
@@ -375,7 +376,7 @@ function DropdownComponent(props: ComponentProps) {
 							}}
 						/>
 					)}
-					{(searchDropdownData?.length || searchText
+					{(searchDropdownData?.length || (searchText && !onSearch)
 						? searchDropdownData
 						: dropdownData
 					)?.map(each => (
@@ -417,18 +418,6 @@ function DropdownComponent(props: ComponentProps) {
 			)}
 		</CommonInputText>
 	);
-
-	// return (
-	// 	<div
-	// 		className="comp compDropdown"
-	// 		onClick={handleBubbling}
-	// 		onMouseLeave={closeOnMouseLeave ? handleClose : undefined}
-	// 		style={computedStyles?.comp}
-	// 	>
-	// 		<HelperComponent definition={props.definition} />
-
-	// 	</div>
-	// );
 }
 
 const component: Component = {
