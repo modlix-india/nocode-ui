@@ -727,6 +727,7 @@ const COMPONENT_STYLE_GROUP_PROPERTIES: { [key: string]: ComponentStylePropertyG
 			'backdropFilter',
 			'cursor',
 			'transformOrigin',
+			'perspective',
 		],
 	},
 	slectorName: {

@@ -185,6 +185,14 @@ export default function ClassEditor({
 									onlyValue={true}
 									storePaths={storePaths}
 									onChange={v => {
+										if (eClass[1].selector?.indexOf('@') != -1) {
+											updateDefCurry(eClass[1].key, {
+												...eClass[1],
+												style: v.value ?? '',
+											});
+											return;
+										}
+
 										let style = Object.entries(
 											processStyleFromString((v.value ?? '').trim()),
 										)
