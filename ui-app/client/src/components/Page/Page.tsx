@@ -96,20 +96,18 @@ function PageComponent(props: ComponentProps) {
 		}
 	}, [pathParts, queryParameters, pageName]);
 
-	// const styleText =
-	// 	'@media all {' +
-	// 	React.useMemo(() => {
-	// 		if (!pageDefinition?.properties?.classes) return '';
+	const styleText = React.useMemo(() => {
+		if (!pageDefinition?.properties?.classes) return '';
 
-	// 		return Object.values(pageDefinition?.properties?.classes)
-	// 			.map(e => {
-	// 				const txt = `${e.selector} { ${e.style} }`;
-	// 				if (!e.mediaQuery) return txt;
-	// 				return `${e.mediaQuery} { ${txt} }`;
-	// 			})
-	// 			.join('\n');
-	// 	}, [pageDefinition?.properties?.classes]);
-	// +' }';
+		return Object.values(pageDefinition?.properties?.classes)
+			.filter(e => e.selector?.indexOf('@') !== -1)
+			.map(e => {
+				const txt = `${e.selector} { ${e.style} }`;
+				if (!e.mediaQuery) return txt;
+				return `${e.mediaQuery} { ${txt} }`;
+			})
+			.join('\n');
+	}, [pageDefinition?.properties?.classes]);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
@@ -121,7 +119,7 @@ function PageComponent(props: ComponentProps) {
 		return (
 			<div className="comp compPage _blockPageRendering" style={resolvedStyles?.comp ?? {}}>
 				<HelperComponent definition={definition} />
-				{/* <style>{styleText}</style> */}
+				<style>{styleText}</style>
 				Design Mode
 			</div>
 		);
@@ -130,7 +128,7 @@ function PageComponent(props: ComponentProps) {
 	return (
 		<div className="comp compPage" style={resolvedStyles?.comp ?? {}}>
 			<HelperComponent definition={definition} />
-			{/* <style>{styleText}</style> */}
+			<style>{styleText}</style>
 			<Children
 				pageDefinition={pageDefinition}
 				children={{
