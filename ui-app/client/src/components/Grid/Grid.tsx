@@ -12,6 +12,7 @@ import useDefinition from '../util/useDefinition';
 import { flattenUUID } from '../util/uuid';
 import GridStyle from './GridStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './gridProperties';
+import { isNullValue } from '@fincity/kirun-js';
 
 function Grid(props: ComponentProps) {
 	const location = useLocation();
@@ -37,6 +38,8 @@ function Grid(props: ComponentProps) {
 			background,
 			onMouseEnter,
 			onMouseLeave,
+			onLeavingViewport,
+			onEnteringViewport,
 			dragData,
 		} = {},
 	} = useDefinition(
@@ -52,7 +55,7 @@ function Grid(props: ComponentProps) {
 			key={`${key}_chld`}
 			pageDefinition={pageDefinition}
 			children={definition.children}
-			context={{ ...context, isReadonly, observer }}
+			context={{ ...context, isReadonly }}
 			locationHistory={locationHistory}
 		/>
 	);
@@ -74,6 +77,13 @@ function Grid(props: ComponentProps) {
 	const onMouseLeaveEvent = onMouseLeave
 		? props.pageDefinition.eventFunctions[onMouseLeave]
 		: undefined;
+	const onEnteringViewportEvent = onEnteringViewport
+		? props.pageDefinition.eventFunctions[onEnteringViewport]
+		: undefined;
+	const onLeavingViewportEvent = onLeavingViewport
+		? props.pageDefinition.eventFunctions[onLeavingViewport]
+		: undefined;
+
 	const spinnerPath = `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
 		key,
 	)}.isRunning`;
@@ -170,6 +180,59 @@ function Grid(props: ComponentProps) {
 			],
 		);
 	}
+
+	useEffect(() => {
+		if (
+			!ref.current ||
+			(isNullValue(onEnteringViewportEvent) && isNullValue(onLeavingViewportEvent))
+		)
+			return;
+
+		const thresholds = [];
+		if (onEnteringViewport) thresholds.push(0.1);
+		if (onLeavingViewport) thresholds.push(0.9);
+
+		let firstTime = true;
+
+		const observer = new IntersectionObserver(
+			(entries, observer) => {
+				if (firstTime) {
+					firstTime = false;
+					return;
+				}
+
+				if (
+					onEnteringViewport &&
+					Math.abs(Math.round(entries[0].intersectionRatio * 100) - 10) < 3
+				) {
+					(async () =>
+						await runEvent(
+							onEnteringViewportEvent,
+							onEnteringViewport,
+							props.context.pageName,
+							props.locationHistory,
+							props.pageDefinition,
+						))();
+				} else if (
+					onLeavingViewport &&
+					Math.abs(Math.round(entries[0].intersectionRatio * 100) - 90) < 3
+				) {
+					(async () =>
+						await runEvent(
+							onLeavingViewportEvent,
+							onLeavingViewport,
+							props.context.pageName,
+							props.locationHistory,
+							props.pageDefinition,
+						))();
+				}
+			},
+			{ root: null, rootMargin: '0px', threshold: thresholds },
+		);
+
+		observer.observe(ref.current);
+		return () => observer.disconnect();
+	}, [ref.current, onEnteringViewport, onLeavingViewport]);
 
 	return React.createElement(
 		containerType.toLowerCase(),

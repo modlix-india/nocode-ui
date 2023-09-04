@@ -41,6 +41,22 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.EVENTS,
 	},
 	{
+		name: 'onEnteringViewport',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Entering Viewport',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered when grid enters view port.',
+		group: ComponentPropertyGroup.EVENTS,
+	},
+	{
+		name: 'onLeavingViewport',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Leaving Viewport',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered when grid leaves view port.',
+		group: ComponentPropertyGroup.EVENTS,
+	},
+	{
 		name: 'containerType',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Container Type (SEO)',
