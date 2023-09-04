@@ -58,7 +58,6 @@ function Children({
 }) {
 	const [visibilityPaths, setVisibilityPaths] = React.useState(Date.now());
 	const location = useLocation();
-	const observerRefs = React.useRef<Array<HTMLElement>>([]);
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const evaluatorMaps = new Map<string, TokenValueExtractor>([
 		[storeExtractor.getPrefix(), storeExtractor],
@@ -103,12 +102,6 @@ function Children({
 			return v === 0 ? (a?.key ?? '').localeCompare(b?.key ?? '') : v;
 		});
 
-	React.useEffect(
-		() => () =>
-			context.observer && observerRefs.current.forEach(e => context.observer?.unobserve(e)),
-		[defs.length],
-	);
-
 	return (
 		<>
 			{defs
@@ -143,26 +136,10 @@ function Children({
 						definition: e,
 						key: e!.key,
 						pageDefinition: pageDefinition,
-						context: { ...ctx, observer: undefined },
+						context: { ...ctx },
 						locationHistory: locationHistory,
 					});
-					if (!context.observer) return rComp;
-					return (
-						<div
-							data-key={e.key}
-							ref={el => {
-								if (!el || el == null) return;
-								if (observerRefs.current[i] === el) return;
-								if (observerRefs.current[i])
-									context.observer?.unobserve(observerRefs.current[i]);
-								observerRefs.current[i] = el;
-								context.observer?.observe(el);
-							}}
-							key={e.key}
-						>
-							{rComp}
-						</div>
-					);
+					return rComp;
 				})
 				.filter(e => !!e)}
 		</>
