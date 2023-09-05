@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
-import { PageStoreExtractor, addListener, getDataFromPath } from '../../context/StoreContext';
+import {
+	PageStoreExtractor,
+	addListener,
+	getDataFromPath,
+	getPathFromLocation,
+	setData,
+} from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
@@ -22,7 +28,7 @@ function Grid(props: ComponentProps) {
 	const ref = React.useRef(null);
 	const { definition, pageDefinition, locationHistory, context } = props;
 	const {
-		definition: { bindingPath },
+		definition: { bindingPath, bindingPath2 },
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
@@ -82,6 +88,14 @@ function Grid(props: ComponentProps) {
 		: undefined;
 	const onLeavingViewportEvent = onLeavingViewport
 		? props.pageDefinition.eventFunctions[onLeavingViewport]
+		: undefined;
+
+	const bindingPathPath = bindingPath
+		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
+		: undefined;
+
+	const bindingPathPath2 = bindingPath2
+		? getPathFromLocation(bindingPath2, locationHistory, pageExtractor)
 		: undefined;
 
 	const spinnerPath = `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
@@ -234,9 +248,32 @@ function Grid(props: ComponentProps) {
 		return () => observer.disconnect();
 	}, [ref.current, onEnteringViewport, onLeavingViewport]);
 
+	const onScrollFunction =
+		bindingPathPath || bindingPathPath2
+			? (e: any) => {
+					if (bindingPathPath) {
+						const w = e.target.scrollWidth - e.target.clientWidth;
+						setData(
+							bindingPathPath,
+							100 - Math.round(((w - e.target.scrollLeft) * 100) / w),
+							context.pageName,
+						);
+					}
+					if (bindingPathPath2) {
+						const h = e.target.scrollHeight - e.target.clientHeight;
+						setData(
+							bindingPathPath2,
+							100 - Math.round(((h - e.target.scrollTop) * 100) / h),
+							context.pageName,
+						);
+					}
+			  }
+			: undefined;
+
 	return React.createElement(
 		containerType.toLowerCase(),
 		{
+			onScroll: onScrollFunction,
 			onMouseEnter:
 				stylePropertiesWithPseudoStates?.hover || onMouseEnterEvent
 					? () => {
@@ -300,6 +337,10 @@ const component: Component = {
 	stylePseudoStates: ['hover', 'focus', 'readonly'],
 	allowedChildrenType: new Map<string, number>([['', -1]]),
 	styleProperties: stylePropertiesDefinition,
+	bindingPaths: {
+		bindingPath: { name: 'Grid X Scroll Percentage Binding' },
+		bindingPath2: { name: 'Grid Y Scroll Percentage Binding' },
+	},
 	defaultTemplate: {
 		key: '',
 		name: 'Grid',
