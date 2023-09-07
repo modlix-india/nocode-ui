@@ -198,16 +198,20 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		select._peSelect {
-			height: 25px;
-			font-size: 11px;
-			padding: 5px;
-			border-radius: 2px;
-			border: 1px solid #ccc;
+			height: 35px;
+			font-family: Inter;
+			font-size: 12px;
+			line-height:12px;
+			font-weight: 500;
+			padding: 5px 15px;
+			border-radius: 6px;
+			border: none;
 			color: #555;
-			background-color: #eee;
+			background-color: #F8FAFB;
 			text-transform: uppercase;
 			outline: none;
 			cursor: pointer;
+			width: 100%;
 		}
 
 		${PREFIX} button, ._popupButtons button {
@@ -757,13 +761,13 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._propContainer {
 			width: 100%;
-			
+			padding-top: 20px;
+			padding-bottom: 20px;
 			flex: 1;
 			overflow: auto;
 		}
 
 		._propertyEditor{
-			gap: 10px;
 			display: flex;
 			flex-direction: column;
 			position: relative;
@@ -777,7 +781,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			gap: 5px;
 			border-radius: 4px;
 			position: relative;
-			margin-bottom: 15px;
+			margin-bottom: 10px;
 		}
 
 		._eachProp svg {
@@ -797,11 +801,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._pvEditor ._microToggle {
 			width: 20px;
-			background-color: #eee;
+			background-color: #F8FAFB;
 			height: 10px;
 			border-radius: 2px;
 			position: relative;
-			border: 1px solid #ddd;
 			cursor: pointer;
 			transition: left 0.5s, background-color 0.5s;
 		}
@@ -815,7 +818,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			content: '';
 			width: 65%;
 			height: 150%;
-			background-color: #ccc;
+			background-color: #E8EAEB;
 			transition: left 0.5s, background-color 0.5s;
 			font-size: 9px;
 			text-align: center;
@@ -825,12 +828,12 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		._pvEditor ._microToggle._on {
-			background-color: #aaa;
+			background-color: #E8EAEB;
 		}
 
 		._pvEditor ._microToggle._on::before {
 			left: 50%;
-			background-color: #777;
+			background-color: #C8CACB;
 			color: #eee;
 		}
 
@@ -847,7 +850,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			align-items: center;
 			text-transform: capitalize;
 			font-family: Inter;
-			margin-bottom:8px;
 		}
 
 		._propLabel i.fa {
@@ -857,6 +859,19 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._tooltip {
 			display: flex;
 			align-items: center;
+		}
+
+		${PREFIX} ._description {
+			font-size: 10px;
+			background-color: #8E90A433;
+			color: #FFF;
+			width: 11px;
+			height: 11px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			border-radius: 50%;
+			text-transform: initial;
 		}
 
 		${PREFIX} ._tooltip:hover::after {
@@ -942,22 +957,28 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._propertyGroup {
 			display: flex;
 			flex-direction: column;
-			gap: 5px;
+			border-bottom: 1px solid rgba(0,0,0,0.05);
 		}
 
 		._propertyGroupHeader {
-			font-size: 13px;
-			font-weight: bold;
-			background-color: #ccc;
+			font-family: Inter;
+			font-size: 13px;			
 			color: #888;
-			padding: 3px;
+			padding: 10px 20px;
 			cursor: pointer;
 			border-radius: 3px;
 			display: flex;
 			align-items: center;
+			flex-direction: row-reverse;
+			justify-content: space-between;
 			gap: 5px;
-			padding-left: 5px;
 			text-transform: uppercase;
+			font-weight: 600;
+			margin-bottom: 15px;
+		}
+
+		._propertyGroup._closed ._propertyGroupHeader {
+			margin-bottom: 0px;
 		}
 
 		._propertyGroupHeader i.fa {
@@ -1510,8 +1531,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		._dark ._propertyGroupHeader {
-			background-color: #444c;
-			color: #222;
+			color: #AAA;
 		}
 		._dark ._propertyGroupHeader i.fa {
 			color: #222;
