@@ -40,31 +40,17 @@ export function PropertyGroup({
 		);
 	}, [personalizationPath, name]);
 
-	if (!state)
-		return (
-			<div className="_propertyGroup _closed">
-				<div
-					className="_propertyGroupHeader"
-					tabIndex={0}
-					onClick={() => onChangePersonalization('propertyEditor.' + name, true)}
-				>
-					<i className="fa fa-caret-down" />
-					{displayName}
-				</div>
-			</div>
-		);
-
 	return (
-		<div className="_propertyGroup">
+		<div className={`_propertyGroup ${state ? '_opened' : '_closed'}`}>
 			<div
 				className="_propertyGroupHeader"
 				tabIndex={0}
-				onClick={() => onChangePersonalization('propertyEditor.' + name, false)}
+				onClick={() => onChangePersonalization('propertyEditor.' + name, !state)}
 			>
-				<i className="fa fa-caret-down" />
+				<span className="_propertyGroupHeaderIcon">{state ? '-' : '+'}</span>
 				{displayName}
 			</div>
-			{children}
+			<div className="_propertyGroupContent">{state ? children : undefined}</div>
 		</div>
 	);
 }

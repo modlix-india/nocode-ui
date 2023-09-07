@@ -160,7 +160,7 @@ export default function PropertyEditor({
 			bps.push(
 				<div className="_eachProp" key={x[i]}>
 					<div className="_propLabel" title="Name">
-						{cd.bindingPaths[x[i]]?.name}
+						{cd.bindingPaths[x[i]]?.name} :
 					</div>
 					<ExpressionEditor2
 						value={def[x[i]]}
@@ -261,7 +261,7 @@ export default function PropertyEditor({
 			<div className="_eachProp" key={`${selectedComponent}-${e.name}`}>
 				<div className="_propLabel" title={e.description ?? e.displayName}>
 					{e.displayName} :
-					<span className="_description" title={e.description ?? e.displayName}>
+					<span className="_description _tooltip" title={e.description ?? e.displayName}>
 						i
 					</span>
 				</div>
@@ -285,7 +285,10 @@ export default function PropertyEditor({
 				<div className="_eachProp">
 					<div className="_propLabel" title="Name">
 						Name :
-						<span className="_description" title="Name to identify the component">
+						<span
+							className="_description _tooltip"
+							title="Name to identify the component"
+						>
 							i
 						</span>
 					</div>
@@ -321,7 +324,7 @@ export default function PropertyEditor({
 				<div className="_eachProp">
 					<div className="_propLabel" title="Key">
 						Key :
-						<span className="_description" title="Key Identifier">
+						<span className="_description _tooltip" title="Key Identifier">
 							i
 						</span>
 					</div>
