@@ -1,16 +1,16 @@
-import React, { CSSProperties, useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { PageStoreExtractor } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
+import { HelperComponent } from '../HelperComponent';
+import { SubHelperComponent } from '../SubHelperComponent';
 import useDefinition from '../util/useDefinition';
 import AnimatorStyle from './AnimatorStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './animatorProperties';
-import { HelperComponent } from '../HelperComponent';
-import { SubHelperComponent } from '../SubHelperComponent';
 
 function makeAnimationString(animations: any[]): string {
-	if (!animations || !animations.length) return '';
+	if (!animations?.length) return '';
 	return animations
 		.filter(a => a.observation === 'none')
 		.map(a => makeOneAnimationString(a))
@@ -36,7 +36,7 @@ function Animator(props: ComponentProps) {
 	const {
 		key,
 		stylePropertiesWithPseudoStates,
-		properties: { animation } = {},
+		properties: { animation = [] } = {},
 	} = useDefinition(
 		definition,
 		propertiesDefinition,
@@ -66,7 +66,7 @@ function Animator(props: ComponentProps) {
 	const ref = React.useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
-		if (!animation || !animation.length || !ref.current) return;
+		if (!animation?.length || !ref.current) return;
 
 		const threshold: number[] = [];
 

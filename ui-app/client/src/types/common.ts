@@ -33,7 +33,6 @@ export interface RenderContext {
 	isReadonly?: boolean;
 	formKey?: Array<string>;
 	showValidationMessages?: boolean;
-	observer?: IntersectionObserver;
 	table?: any;
 	// Using to understand if we are in shellpage or not, To stop rendering deeper nested pages
 	level: number;
