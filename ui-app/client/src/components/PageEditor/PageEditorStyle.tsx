@@ -463,7 +463,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
     		padding: 0px 10px;	
 		}
 
-		${PREFIX} ._buttonBar i.fa{
+		${PREFIX} ._buttonBar i.fa,
+		${PREFIX} ._buttonBar svg{
 		
 			padding: 7px;
 			cursor: pointer;
@@ -474,11 +475,13 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			text-align: center;
 		}
 
-		${PREFIX} ._buttonBar i.fa:not(:last-child) {
+		${PREFIX} ._buttonBar i.fa:not(:last-child),
+		${PREFIX} ._buttonBar svg:not(:last-child) {
 			margin-right: 10px;
 		}
 
-		${PREFIX} ._buttonBar i.fa.active, ${PREFIX} ._buttonBar i.fa:hover{
+		${PREFIX} ._buttonBar i.fa.active, ${PREFIX} ._buttonBar i.fa:hover,
+		${PREFIX} ._buttonBar svg.active, ${PREFIX} ._buttonBar svg:hover{
 			background-color: rgba(77, 127, 238, 0.05);
 			color: #4C7FEE;
 		}
@@ -487,7 +490,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			color: #8E90A44D;
 		}
 
-		${PREFIX} ._buttonBar._screenSizes i.fa {
+		${PREFIX} ._buttonBar._screenSizes i.fa,
+		${PREFIX} ._buttonBar._screenSizes svg {
 			background-color: transparent;
 			border-bottom: 3px solid transparent;
 			border-radius: 0;
@@ -502,8 +506,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			height: 65px;
 		}
 
-		${PREFIX} ._buttonBar._screenSizes i.fa:hover,
-		${PREFIX} ._buttonBar._screenSizes i.fa.active {
+		${PREFIX} ._buttonBar._screenSizes i.fa:hover, ${PREFIX} ._buttonBar._screenSizes svg:hover,
+		${PREFIX} ._buttonBar._screenSizes i.fa.active, ${PREFIX} ._buttonBar._screenSizes svg.active{
 			color: #8E90A4;
 			border-bottom: 3px solid #8E90A4;
 			background: linear-gradient(360deg, rgba(142, 144, 164, 0.1) 0.78%, rgba(142, 144, 164, 0.011) 157.03%);
