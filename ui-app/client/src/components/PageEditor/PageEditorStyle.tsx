@@ -59,7 +59,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._propBar._propBarVisible{
 			display: flex;
 			width: 300px;
-			
 		}
 
 		._propBar._compNavBarVisible{
@@ -225,28 +224,44 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._filterBar input,
 		input._peInput, ._pvExpressionEditor,
 		textarea._peInput, select._peInput {
-			color: #555;
-			background-color: #eee;
-			font-size: 11px;
+			color: #000;
+			background-color: #F8FAFB;
+			font-family: Inter;
+			font-weight: 400;
+			font-size: 12px;
 			padding: 5px 15px;
-			border-radius: 2px;
-			border: 1px solid #ccc;
+			border-radius: 6px;
+			border: none;
 		}
 
 		textarea._peInput {
 			flex: 1;
-			height: 80px;
-			font-size: 12px;
-			padding: 4px;
+			height: 132px;
+			padding: 8px;
+			scroll-bar-width: thin;
+			resize: none;
 		}
 
-		${PREFIX} ._eachStyleClass {
-			border-bottom: 1px solid #ccc;
+		textarea._peInput::-webkit-scrollbar  {
+			width: 2px;
+			background: none;
+			margin-right: 5px;
+		}
+
+		textarea._peInput::-webkit-scrollbar-thumb {
+			background-color: #4C7FEE;
 		}
 
 		${PREFIX} ._overflowContainer {
 			height: calc(100vh - 158px);
 			overflow: auto;
+		}
+
+		${PREFIX} ._addSelector {
+			background: #4C7FEE;
+			color: #fff;
+			border:none;
+			border-radius: 6px;
 		}
 
 		${PREFIX} ._eachStyleClass ._propLabel i.fa {
@@ -259,17 +274,19 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		input._peInput[type='text'], ._pvExpressionEditor, input._peInput[type='number'] {
-			height: 25px;
+			height: 35px;
 			font-size: 12px;
-			border-radius: 12px;
+			line-height:12px;
+			border-radius: 6px;
 			padding-left: 8px;
 			outline: none;
+			flex:1;
 		}
 
 		._pvExpressionEditor {
 			padding-top: 0px;
 			padding-bottom: 0px;
-			border-radius: 2px;
+			border-radius: 6px;
 			display: flex;
 			align-items: center;
 			padding-right: 8px;
@@ -710,20 +727,26 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._tabBar {
 			width: 100%;
 			display: flex;
-			background-color: #eee5;
+			background: #F8FAFB;
+			height: 53px;
+			justify-content: space-around;
+			align-items: center;
 		}
 
-		${PREFIX} ._tabBar i.fa {
-			padding: 10px 6px 10px 6px;
-			cursor: pointer;
-			width: 38px;
-			text-align: center;
+		${PREFIX} ._tabBar svg {
+			cursor: pointer;	
 		}
 
-		${PREFIX} ._tabBar i.fa.active{
-			background-color: #fff;
+		${PREFIX} ._tabBar svg path{
+			transition: fill 0.5s, fill-opacity 0.5s;
+			fill: #8E90A4;
+			fill-opacity: 0.2;
 		}
-		
+
+		${PREFIX} ._tabBar svg:hover path, ${PREFIX} ._tabBar svg.active path{ 
+			fill: #52BD94;
+			fill-opacity: 1;
+		}
 		${PREFIX} i._separator {
 			opacity: 0.1;
 		}
@@ -734,7 +757,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._propContainer {
 			width: 100%;
-			padding: 5px;
+			
 			flex: 1;
 			overflow: auto;
 		}
@@ -748,26 +771,28 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._eachProp {
 			font-size: 12px;
-			padding: 5px;
+			padding: 5px 25px;
 			display: flex;
 			flex-direction: column;
 			gap: 5px;
 			border-radius: 4px;
 			position: relative;
+			margin-bottom: 15px;
 		}
 
+		._eachProp svg {
+			cursor: pointer;
+		}
+
+
 		._eachProp:hover {
-			background-color:#eee;
+			
 		}
 
 		._pvEditor {
 			display: flex;
 			flex-direction: column;
 			gap: 5px;
-		}
-
-		._pvEditor input._peInput[type='text'], ._pvEditor input._peInput[type='number']  {
-			border-radius: 2px;
 		}
 
 		._pvEditor ._microToggle {
@@ -816,33 +841,25 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		._propLabel {
-			color: #555;
+			color: #222222B2;
 			display: flex;
 			gap: 5px;
 			align-items: center;
 			text-transform: capitalize;
+			font-family: Inter;
+			margin-bottom:8px;
 		}
 
 		._propLabel i.fa {
 			cursor: pointer;
 		}
 
-		${PREFIX} span._description {
-			font-weight: bold;
-			font-size: 9px;
-			border-radius: 50%;
-			width: 12px;
-			background-color: #eee;
-			height: 12px;
-			display: inline-flex;
-			justify-content: center;
+		${PREFIX} ._tooltip {
+			display: flex;
 			align-items: center;
-			color: #aaa;
-			border: 1px solid;
-			cursor: pointer;
 		}
 
-		${PREFIX} span._description:hover::after {
+		${PREFIX} ._tooltip:hover::after {
 			content: attr(title);
 			float: left;
 			min-width: 50px;
@@ -1395,8 +1412,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		
 		${PREFIX}._dark ._sideBar, ${PREFIX}._dark ._iconMenuBody,
 		${PREFIX}._dark ._topBarGrid, ._popupBackground._dark ._popupContainer,
-		${PREFIX}._dark ._selectionBar, ._dark ._propBar,${PREFIX}._dark ._tabBar i.fa.active
-		._popupMenuBackground._dark ._popupMenu, ${PREFIX}._dark ._tabBar i.fa.active {
+		${PREFIX}._dark ._selectionBar, ._dark ._propBar,
+		._popupMenuBackground._dark ._popupMenu{
 			background-color:#555;
 		}
 
@@ -1449,7 +1466,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX}._dark ._eachProp:hover {
-			background-color:#444a;
+
 		}
 		
 		._dark ._pvEditor ._microToggle {
@@ -1465,14 +1482,9 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._dark ._pvEditor ._microToggle._on {
 			background-color: #888;
 			border-color: #777;
-		}
-
-		${PREFIX}._dark span._description {
-			background-color: #444;
-			color: #777;
-		}
+		}		
 		
-		${PREFIX}._dark span._description:hover::after {
+		${PREFIX}._dark ._tooltip:hover::after {
 			background-color: #555b;
 			color: #bbb;
 			border-color: #777;
