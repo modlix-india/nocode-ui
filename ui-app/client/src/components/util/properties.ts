@@ -515,7 +515,7 @@ const COMPONENT_STYLE_GROUPS: { [key: string]: Array<string> } = {
 	],
 	accentColor: ['accentColor'],
 	image: ['imageOrientation', 'imageRendering', 'imageResolution'],
-	shape: ['clipPath'],
+	shape: ['clipPath', 'mask'],
 	rotate: ['rotate'],
 	list: ['listStyleImage', 'listStylePosition', 'listStyleType'],
 	scrollbar: ['hideScrollBar'],
