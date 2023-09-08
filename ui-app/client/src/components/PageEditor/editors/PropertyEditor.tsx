@@ -193,6 +193,7 @@ export default function PropertyEditor({
 					locationHistory={locationHistory}
 					onChangePersonalization={onChangePersonalization}
 					personalizationPath={personalizationPath}
+					tabName="compProps"
 				>
 					{bps}
 				</PropertyGroup>
@@ -281,6 +282,7 @@ export default function PropertyEditor({
 				locationHistory={locationHistory}
 				onChangePersonalization={onChangePersonalization}
 				personalizationPath={personalizationPath}
+				tabName="compProps"
 			>
 				<div className="_eachProp">
 					<div className="_propLabel" title="Name">
@@ -353,6 +355,7 @@ export default function PropertyEditor({
 				if (!propGroups?.[e[1]]) return null;
 				return (
 					<PropertyGroup
+						tabName="compProps"
 						key={e[0]}
 						name={e[1]}
 						displayName={e[0]}

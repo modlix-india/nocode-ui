@@ -16,6 +16,7 @@ interface PropertyGroupProps {
 	onChangePersonalization: (prop: string, value: any) => void;
 	pageExtractor: PageStoreExtractor;
 	locationHistory: Array<LocationHistory>;
+	tabName: string;
 }
 
 export function PropertyGroup({
@@ -27,6 +28,7 @@ export function PropertyGroup({
 	onChangePersonalization,
 	pageExtractor,
 	locationHistory,
+	tabName,
 }: PropertyGroupProps) {
 	const [state, setState] = React.useState(defaultStateOpen ?? true);
 
@@ -36,19 +38,22 @@ export function PropertyGroup({
 		return addListenerAndCallImmediately(
 			(_, v) => setState(!isNullValue(v) ? v : defaultStateOpen ?? true),
 			pageExtractor,
-			`${personalizationPath}.propertyEditor.${name}`,
+			`${personalizationPath}.propertyEditor.${tabName}.${name}`,
 		);
 	}, [personalizationPath, name]);
 
 	return (
-		<div className={`_propertyGroup ${state ? '_opened' : '_closed'}`}>
+		<div
+			className={`_propertyGroup ${state ? '_opened' : '_closed'}`}
+			onDoubleClick={() => onChangePersonalization(`propertyEditor.${tabName}`, undefined)}
+		>
 			<div
 				className="_propertyGroupHeader"
 				tabIndex={0}
-				onClick={() => onChangePersonalization('propertyEditor.' + name, !state)}
+				onClick={() => onChangePersonalization(`propertyEditor.${tabName}.${name}`, !state)}
 			>
 				<span className="_propertyGroupHeaderIcon">{state ? '-' : '+'}</span>
-				{displayName}
+				{displayName.substring(0, 1).toUpperCase() + displayName.substring(1).toLowerCase()}
 			</div>
 			<div className="_propertyGroupContent">{state ? children : undefined}</div>
 		</div>

@@ -523,6 +523,44 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			margin: 3px;
 		}
 
+		${PREFIX} ._propLabel._screenSizes {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+		}
+
+		${PREFIX} ._propLabel._screenSizes .svgContainer {
+			background-color: #F8FAFB;
+			width: 30px;
+			height: 30px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			border-radius: 4px;
+			cursor: pointer;
+		}
+
+		${PREFIX} ._propLabel._screenSizes .svgContainer:hover,
+		${PREFIX} ._propLabel._screenSizes .svgContainer.active {
+			background-color: #52BD9490;
+		}
+
+		${PREFIX} ._screenSizes svg path{
+			fill: rgba(150, 161, 180, 0.2);
+			stroke: rgba(142, 144, 164, 0.5);
+		}
+
+		${PREFIX} ._screenSizes svg.active path{
+			fill: rgba(150, 161, 180, 1);
+			stroke: rgba(142, 144, 164, 1);
+		}
+
+		${PREFIX} ._propLabel._screenSizes .svgContainer:hover path,
+		${PREFIX} ._propLabel._screenSizes .svgContainer.active path{
+			fill: #52BD9422;
+			stroke: #FFF;
+		}
+
 		${PREFIX} ._buttonBar._screenSizes {
 			height: 65px;
 		}
@@ -1013,7 +1051,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction: row-reverse;
 			justify-content: space-between;
 			gap: 5px;
-			text-transform: uppercase;
 			font-weight: 600;
 			margin-bottom: 15px;
 		}

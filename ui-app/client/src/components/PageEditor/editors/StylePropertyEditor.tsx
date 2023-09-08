@@ -39,6 +39,7 @@ import { duplicate } from '@fincity/kirun-js';
 import { deepEqual } from '@fincity/kirun-js';
 import { camelCaseToUpperSpaceCase } from '../../../functions/utils';
 import PageOperations from '../functions/PageOperations';
+import { Selector } from './stylePropertyValueEditors/Selector';
 
 interface StylePropertyEditorProps {
 	selectedComponent: string;
@@ -470,11 +471,13 @@ export default function StylePropertyEditor({
 					locationHistory={locationHistory}
 					onChangePersonalization={onChangePersonalization}
 					personalizationPath={personalizationPath}
+					tabName={reverseStyleSections ? 'advancedStyles' : 'styles'}
 				>
 					<div className="_eachProp">
-						<div className="_propLabel" title="Screen Size">
-							Screen Size:
-						</div>
+						<Selector
+							size={size}
+							onChange={v => updateSelectorPref('screenSize', { value: v })}
+						/>
 						<PropertyValueEditor
 							pageDefinition={pageDef}
 							propDef={{
@@ -729,6 +732,7 @@ export default function StylePropertyEditor({
 
 					return (
 						<PropertyGroup
+							tabName={reverseStyleSections ? 'advancedStyles' : 'styles'}
 							key={group.name}
 							name={group.name}
 							displayName={group.displayName + (withValueProps.length ? ' ★' : '')}
