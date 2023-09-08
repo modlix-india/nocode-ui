@@ -735,6 +735,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			height: 53px;
 			justify-content: space-around;
 			align-items: center;
+			flex-shrink: 0;
 		}
 
 		${PREFIX} ._tabBar svg {
@@ -755,6 +756,47 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			opacity: 0.1;
 		}
 
+		${PREFIX} ._styleButtonContainer button{
+			border: none;
+			background-color: transparent;
+			color: #D2D3DB;
+			display: flex;
+			gap: 5px;
+			justify-content: center;
+			align-items: center;
+			height: 30px;
+			border-radius: 6px;
+			z-index: 2;
+			padding: 0;
+			transition: none;
+		}
+
+		${PREFIX} ._styleButtonContainer button:hover {
+			background-color: #52BD94;
+			color: #FFF;
+		}
+		${PREFIX} ._styleButtonContainer button:hover svg path {
+			fill: #FFF;
+		}
+		${PREFIX} ._styleButtonContainer button svg path {
+			fill: #D2D3DB
+		}
+		${PREFIX} ._styleButtonContainer ._seperator {
+			height: 12px;
+			width: 1px;
+			border-right: 1px solid #D2D3DB;
+		}
+
+		${PREFIX} ._styleButtonContainer {
+			background: #F8FAFB;
+			border-radius: 6px;
+			margin-left: 20px;
+			margin-right: 20px;
+			height: 45px;
+			position: relative;		
+			padding: 0px 5px;	
+		}
+
 		.commonTriStateCheckbox::before {
 			background: black;
 		}
@@ -764,7 +806,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			padding-top: 20px;
 			padding-bottom: 20px;
 			flex: 1;
-			overflow: auto;
 		}
 
 		._propertyEditor{

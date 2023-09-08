@@ -636,14 +636,14 @@ function ScreenSizeButtons({
 					d="M19.2074 1H2.5696C1.70273 1 1 1.70273 1 2.5696V15.4992C1 16.3661 1.70273 17.0688 2.5696 17.0688H19.2074C20.0742 17.0688 20.777 16.3661 20.777 15.4992V2.5696C20.777 1.70273 20.0742 1 19.2074 1Z"
 					fill={deviceType === 'WIDE_SCREEN' ? ACTVICE_BG : INACTIVE_BG}
 					stroke={deviceType === 'WIDE_SCREEN' ? ACTIVE_STROKE : INACTIVE_STROKE}
-					stroke-width="1.53"
+					strokeWidth="1.53"
 				/>
 				<path
 					d="M5.5 20.3501H16.3"
 					stroke={deviceType === 'WIDE_SCREEN' ? ACTIVE_STROKE : INACTIVE_STROKE}
-					stroke-width="1.53"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.53"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 			</svg>
 			<svg
@@ -665,7 +665,7 @@ function ScreenSizeButtons({
 						transform="translate(1342.743 236.995)"
 						fill={deviceType === 'DESKTOP_SCREEN' ? ACTVICE_BG : INACTIVE_BG}
 						stroke={deviceType === 'DESKTOP_SCREEN' ? ACTIVE_STROKE : INACTIVE_STROKE}
-						stroke-width="1.53"
+						strokeWidth="1.53"
 					/>
 					<path
 						id="Path_113"
@@ -674,9 +674,9 @@ function ScreenSizeButtons({
 						transform="translate(1336.526 230.719)"
 						fill="none"
 						stroke={deviceType === 'DESKTOP_SCREEN' ? ACTIVE_STROKE : INACTIVE_STROKE}
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="1.53"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						strokeWidth="1.53"
 					/>
 				</g>
 			</svg>
@@ -707,7 +707,7 @@ function ScreenSizeButtons({
 								? ACTIVE_STROKE
 								: INACTIVE_STROKE
 						}
-						stroke-width="1.53"
+						strokeWidth="1.53"
 					/>
 					<path
 						id="Path_107"
@@ -739,7 +739,7 @@ function ScreenSizeButtons({
 					stroke={
 						deviceType === 'TABLET_POTRAIT_SCREEN' ? ACTIVE_STROKE : INACTIVE_STROKE
 					}
-					stroke-width="1.53"
+					strokeWidth="1.53"
 				/>
 				<path
 					d="M13.3359 4H5.53906C4.58551 4 3.8125 4.77301 3.8125 5.72656V20.2734C3.8125 21.227 4.58551 22 5.53906 22H13.3359C14.2895 22 15.0625 21.227 15.0625 20.2734V5.72656C15.0625 4.77301 14.2895 4 13.3359 4Z"
@@ -765,7 +765,7 @@ function ScreenSizeButtons({
 					stroke={
 						deviceType === 'MOBILE_LANDSCAPE_SCREEN' ? ACTIVE_STROKE : INACTIVE_STROKE
 					}
-					stroke-width="1.53"
+					strokeWidth="1.53"
 				/>
 				<path
 					d="M1 2.4375L1 10.4375C1 10.9898 1.44772 11.4375 2 11.4375L16 11.4375C16.5523 11.4375 17 10.9898 17 10.4375V2.4375C17 1.88521 16.5523 1.4375 16 1.4375L2 1.4375C1.44772 1.4375 1 1.88521 1 2.4375Z"
@@ -788,7 +788,7 @@ function ScreenSizeButtons({
 			>
 				<path
 					d="M9.71094 1.28223H3.16406C2.21051 1.28223 1.4375 2.05523 1.4375 3.00879V17.5557C1.4375 18.5092 2.21051 19.2822 3.16406 19.2822H9.71094C10.6645 19.2822 11.4375 18.5092 11.4375 17.5557V3.00879C11.4375 2.05523 10.6645 1.28223 9.71094 1.28223Z"
-					stroke-width="1.53"
+					strokeWidth="1.53"
 					stroke={
 						deviceType === 'MOBILE_POTRAIT_SCREEN' ? ACTIVE_STROKE : INACTIVE_STROKE
 					}
