@@ -523,6 +523,67 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			margin: 3px;
 		}
 
+		${PREFIX} ._propLabel._svgButtons {
+			display: flex;
+			align-items: center;
+			justify-content: flex-start;
+		}
+
+		${PREFIX} ._propLabel ._svgButtonsContainer{
+			background-color: #F8FAFB;
+			border-radius: 6px;
+			padding: 0px 4px;
+			display: flex;
+			align-items: center;
+			flex-direction: row;
+			height: 30px;
+		}
+
+		${PREFIX} ._propLabel._svgButtons .svgContainer {
+			width: 30px;
+			height: 15px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			cursor: pointer;
+			border-right: 1px solid #D2D3DB60;
+		}
+
+		${PREFIX} ._propLabel._svgButtons .svgContainer:last-child {
+			border-right: none;
+		}
+
+		${PREFIX} ._propLabel._svgButtons .svgContainer:hover,
+		${PREFIX} ._propLabel._svgButtons .svgContainer.active {
+			
+		}
+
+		${PREFIX} ._screenSizes svg path,
+		${PREFIX} ._propLabel._svgButtons svg path,
+		${PREFIX} ._propLabel._svgButtons svg circle,
+		${PREFIX} ._propLabel._svgButtons svg rect {
+			fill: rgba(150, 161, 180, 0.2);
+			stroke: rgba(142, 144, 164, 0.5);
+		}
+
+		${PREFIX} ._screenSizes svg.active path,
+		${PREFIX} ._propLabel._svgButtons.active svg path,
+		${PREFIX} ._propLabel._svgButtons.active svg circle,
+		${PREFIX} ._propLabel._svgButtons.active svg rect {
+			fill: rgba(150, 161, 180, 1);
+			stroke: rgba(142, 144, 164, 1);
+		}
+
+		${PREFIX} ._propLabel._svgButtons .svgContainer:hover path,
+		${PREFIX} ._propLabel._svgButtons .svgContainer:hover circle,
+		${PREFIX} ._propLabel._svgButtons .svgContainer:hover rect,
+		${PREFIX} ._propLabel._svgButtons .svgContainer.active path,
+		${PREFIX} ._propLabel._svgButtons .svgContainer.active rect,
+		${PREFIX} ._propLabel._svgButtons .svgContainer.active circle{
+			fill: #52BD94;
+			stroke: #52BD94;
+		}
+
 		${PREFIX} ._buttonBar._screenSizes {
 			height: 65px;
 		}
@@ -735,6 +796,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			height: 53px;
 			justify-content: space-around;
 			align-items: center;
+			flex-shrink: 0;
 		}
 
 		${PREFIX} ._tabBar svg {
@@ -755,6 +817,47 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			opacity: 0.1;
 		}
 
+		${PREFIX} ._styleButtonContainer button{
+			border: none;
+			background-color: transparent;
+			color: #D2D3DB;
+			display: flex;
+			gap: 5px;
+			justify-content: center;
+			align-items: center;
+			height: 30px;
+			border-radius: 6px;
+			z-index: 2;
+			padding: 0;
+			transition: none;
+		}
+
+		${PREFIX} ._styleButtonContainer button:hover {
+			background-color: #52BD94;
+			color: #FFF;
+		}
+		${PREFIX} ._styleButtonContainer button:hover svg path {
+			fill: #FFF;
+		}
+		${PREFIX} ._styleButtonContainer button svg path {
+			fill: #D2D3DB
+		}
+		${PREFIX} ._styleButtonContainer ._seperator {
+			height: 12px;
+			width: 1px;
+			border-right: 1px solid #D2D3DB;
+		}
+
+		${PREFIX} ._styleButtonContainer {
+			background: #F8FAFB;
+			border-radius: 6px;
+			margin-left: 20px;
+			margin-right: 20px;
+			height: 45px;
+			position: relative;		
+			padding: 0px 5px;	
+		}
+
 		.commonTriStateCheckbox::before {
 			background: black;
 		}
@@ -764,7 +867,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			padding-top: 20px;
 			padding-bottom: 20px;
 			flex: 1;
-			overflow: auto;
 		}
 
 		._propertyEditor{
@@ -972,7 +1074,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction: row-reverse;
 			justify-content: space-between;
 			gap: 5px;
-			text-transform: uppercase;
 			font-weight: 600;
 			margin-bottom: 15px;
 		}
