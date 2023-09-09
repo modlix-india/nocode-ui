@@ -39,7 +39,8 @@ import { duplicate } from '@fincity/kirun-js';
 import { deepEqual } from '@fincity/kirun-js';
 import { camelCaseToUpperSpaceCase } from '../../../functions/utils';
 import PageOperations from '../functions/PageOperations';
-import { Selector } from './stylePropertyValueEditors/Selector';
+import { ScreenSizeSelector } from './stylePropertyValueEditors/ScreenSizeSelector';
+import { PseudoStateSelector } from './stylePropertyValueEditors/PseudoStateSelector';
 
 interface StylePropertyEditorProps {
 	selectedComponent: string;
@@ -474,7 +475,7 @@ export default function StylePropertyEditor({
 					tabName={reverseStyleSections ? 'advancedStyles' : 'styles'}
 				>
 					<div className="_eachProp">
-						<Selector
+						<ScreenSizeSelector
 							size={size}
 							onChange={v => updateSelectorPref('screenSize', { value: v })}
 						/>
@@ -558,9 +559,13 @@ export default function StylePropertyEditor({
 					)}
 					{pseudoStates.length ? (
 						<div className="_eachProp">
-							<div className="_propLabel" title="Pseudo State">
-								Pseudo State:
-							</div>
+							<PseudoStateSelector
+								state={selectorPref[selectedComponent]?.stylePseudoState.value}
+								pseudoStates={pseudoStates}
+								onChange={v => {
+									updateSelectorPref('stylePseudoState', { value: v });
+								}}
+							/>
 							<PropertyValueEditor
 								pageDefinition={pageDef}
 								propDef={{

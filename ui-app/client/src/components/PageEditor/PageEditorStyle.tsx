@@ -523,42 +523,65 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			margin: 3px;
 		}
 
-		${PREFIX} ._propLabel._screenSizes {
+		${PREFIX} ._propLabel._svgButtons {
 			display: flex;
 			align-items: center;
-			justify-content: space-between;
+			justify-content: flex-start;
 		}
 
-		${PREFIX} ._propLabel._screenSizes .svgContainer {
+		${PREFIX} ._propLabel ._svgButtonsContainer{
 			background-color: #F8FAFB;
-			width: 30px;
+			border-radius: 6px;
+			padding: 0px 4px;
+			display: flex;
+			align-items: center;
+			flex-direction: row;
 			height: 30px;
+		}
+
+		${PREFIX} ._propLabel._svgButtons .svgContainer {
+			width: 30px;
+			height: 15px;
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			border-radius: 4px;
 			cursor: pointer;
+			border-right: 1px solid #D2D3DB60;
 		}
 
-		${PREFIX} ._propLabel._screenSizes .svgContainer:hover,
-		${PREFIX} ._propLabel._screenSizes .svgContainer.active {
-			background-color: #52BD9490;
+		${PREFIX} ._propLabel._svgButtons .svgContainer:last-child {
+			border-right: none;
 		}
 
-		${PREFIX} ._screenSizes svg path{
+		${PREFIX} ._propLabel._svgButtons .svgContainer:hover,
+		${PREFIX} ._propLabel._svgButtons .svgContainer.active {
+			
+		}
+
+		${PREFIX} ._screenSizes svg path,
+		${PREFIX} ._propLabel._svgButtons svg path,
+		${PREFIX} ._propLabel._svgButtons svg circle,
+		${PREFIX} ._propLabel._svgButtons svg rect {
 			fill: rgba(150, 161, 180, 0.2);
 			stroke: rgba(142, 144, 164, 0.5);
 		}
 
-		${PREFIX} ._screenSizes svg.active path{
+		${PREFIX} ._screenSizes svg.active path,
+		${PREFIX} ._propLabel._svgButtons.active svg path,
+		${PREFIX} ._propLabel._svgButtons.active svg circle,
+		${PREFIX} ._propLabel._svgButtons.active svg rect {
 			fill: rgba(150, 161, 180, 1);
 			stroke: rgba(142, 144, 164, 1);
 		}
 
-		${PREFIX} ._propLabel._screenSizes .svgContainer:hover path,
-		${PREFIX} ._propLabel._screenSizes .svgContainer.active path{
-			fill: #52BD9422;
-			stroke: #FFF;
+		${PREFIX} ._propLabel._svgButtons .svgContainer:hover path,
+		${PREFIX} ._propLabel._svgButtons .svgContainer:hover circle,
+		${PREFIX} ._propLabel._svgButtons .svgContainer:hover rect,
+		${PREFIX} ._propLabel._svgButtons .svgContainer.active path,
+		${PREFIX} ._propLabel._svgButtons .svgContainer.active rect,
+		${PREFIX} ._propLabel._svgButtons .svgContainer.active circle{
+			fill: #52BD94;
+			stroke: #52BD94;
 		}
 
 		${PREFIX} ._buttonBar._screenSizes {
