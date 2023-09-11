@@ -1,4 +1,13 @@
-import React, { Component, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+	CSSProperties,
+	Component,
+	ReactNode,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from 'react';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediatelyWithChildrenActivity,
@@ -30,6 +39,8 @@ import { duplicate } from '@fincity/kirun-js';
 import { deepEqual } from '@fincity/kirun-js';
 import { camelCaseToUpperSpaceCase } from '../../../functions/utils';
 import PageOperations from '../functions/PageOperations';
+import { ScreenSizeSelector } from './stylePropertyValueEditors/ScreenSizeSelector';
+import { PseudoStateSelector } from './stylePropertyValueEditors/PseudoStateSelector';
 
 interface StylePropertyEditorProps {
 	selectedComponent: string;
@@ -327,13 +338,25 @@ export default function StylePropertyEditor({
 	let pseudoState = '';
 	if (selectorPref[selectedComponent]?.stylePseudoState?.value)
 		pseudoState = selectorPref[selectedComponent].stylePseudoState.value;
+
 	return (
 		<div className="_propertyEditor">
 			<div className="_eachStyleClass">
-				<div className="_propLabel">
+				<div className="_propLabel _styleButtonContainer">
 					<button onClick={() => saveStyle({})} title="Clear Styles">
-						<i className="fa fa-regular fa-trash-can" /> Clear
+						<svg
+							width="10"
+							height="12"
+							viewBox="0 0 10 12"
+							fill="none"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path d="M9.29119 1.09029H5.88995V0.983634C5.88995 0.438487 5.45146 0 4.90632 0C4.36117 0 3.92268 0.438487 3.92268 0.983634V1.09029H0.521444C0.23702 1.09029 0 1.32731 0 1.61174C0 1.89616 0.23702 2.13318 0.521444 2.13318H9.29119C9.57561 2.13318 9.81263 1.89616 9.81263 1.61174C9.81263 1.32731 9.57561 1.09029 9.29119 1.09029Z" />
+							<path d="M8.91185 2.84424H0.900574C0.793915 2.84424 0.710958 2.93905 0.722809 3.04571L1.63534 10.3341C1.70644 10.8555 2.14493 11.2585 2.67822 11.2585H7.1342C7.6675 11.2585 8.10599 10.8674 8.17709 10.3341L9.08962 3.04571C9.10147 2.93905 9.01851 2.84424 8.91185 2.84424Z" />
+						</svg>
+						Clear
 					</button>
+					<div className="_seperator" />
 					<button
 						onClick={() => {
 							if (!navigator?.clipboard) return;
@@ -350,8 +373,19 @@ export default function StylePropertyEditor({
 						}}
 						title="Copy Styles"
 					>
-						<i className="fa fa-regular fa-clipboard" /> Copy
+						<svg
+							width="10"
+							height="11"
+							viewBox="0 0 10 11"
+							fill="none"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path d="M7.17391 0.717391V1.43478H2.63043C2.31333 1.43478 2.00921 1.56075 1.78498 1.78498C1.56075 2.00921 1.43478 2.31333 1.43478 2.63043V9.08696H0.717391C0.527127 9.08696 0.344656 9.01137 0.210119 8.87684C0.075582 8.7423 0 8.55983 0 8.36957V0.717391C0 0.527127 0.075582 0.344656 0.210119 0.210119C0.344656 0.075582 0.527127 0 0.717391 0H6.45652C6.64679 0 6.82926 0.075582 6.96379 0.210119C7.09833 0.344656 7.17391 0.527127 7.17391 0.717391Z" />
+							<path d="M8.36961 1.91309H2.63048C2.23427 1.91309 1.91309 2.23427 1.91309 2.63048V10.2827C1.91309 10.6789 2.23427 11 2.63048 11H8.36961C8.76581 11 9.087 10.6789 9.087 10.2827V2.63048C9.087 2.23427 8.76581 1.91309 8.36961 1.91309Z" />
+						</svg>
+						Copy
 					</button>
+					<div className="_seperator" />
 					<button
 						onClick={() => {
 							if (!navigator?.clipboard) return;
@@ -415,7 +449,17 @@ export default function StylePropertyEditor({
 						}}
 						title="Paste Styles"
 					>
-						<i className="fa fa-regular fa-paste" /> Paste
+						<svg
+							width="10"
+							height="11"
+							viewBox="0 0 10 11"
+							fill="none"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path d="M7.17391 0.717391V1.43478H2.63043C2.31333 1.43478 2.00921 1.56075 1.78498 1.78498C1.56075 2.00921 1.43478 2.31333 1.43478 2.63043V9.08696H0.717391C0.527127 9.08696 0.344656 9.01137 0.210119 8.87684C0.075582 8.7423 0 8.55983 0 8.36957V0.717391C0 0.527127 0.075582 0.344656 0.210119 0.210119C0.344656 0.075582 0.527127 0 0.717391 0H6.45652C6.64679 0 6.82926 0.075582 6.96379 0.210119C7.09833 0.344656 7.17391 0.527127 7.17391 0.717391Z" />
+							<path d="M8.36961 1.91309H2.63048C2.23427 1.91309 1.91309 2.23427 1.91309 2.63048V10.2827C1.91309 10.6789 2.23427 11 2.63048 11H8.36961C8.76581 11 9.087 10.6789 9.087 10.2827V2.63048C9.087 2.23427 8.76581 1.91309 8.36961 1.91309Z" />
+						</svg>
+						Paste
 					</button>
 				</div>
 			</div>
@@ -428,11 +472,13 @@ export default function StylePropertyEditor({
 					locationHistory={locationHistory}
 					onChangePersonalization={onChangePersonalization}
 					personalizationPath={personalizationPath}
+					tabName={reverseStyleSections ? 'advancedStyles' : 'styles'}
 				>
 					<div className="_eachProp">
-						<div className="_propLabel" title="Screen Size">
-							Screen Size:
-						</div>
+						<ScreenSizeSelector
+							size={size}
+							onChange={v => updateSelectorPref('screenSize', { value: v })}
+						/>
 						<PropertyValueEditor
 							pageDefinition={pageDef}
 							propDef={{
@@ -513,9 +559,13 @@ export default function StylePropertyEditor({
 					)}
 					{pseudoStates.length ? (
 						<div className="_eachProp">
-							<div className="_propLabel" title="Pseudo State">
-								Pseudo State:
-							</div>
+							<PseudoStateSelector
+								state={selectorPref[selectedComponent]?.stylePseudoState.value}
+								pseudoStates={pseudoStates}
+								onChange={v => {
+									updateSelectorPref('stylePseudoState', { value: v });
+								}}
+							/>
 							<PropertyValueEditor
 								pageDefinition={pageDef}
 								propDef={{
@@ -687,6 +737,7 @@ export default function StylePropertyEditor({
 
 					return (
 						<PropertyGroup
+							tabName={reverseStyleSections ? 'advancedStyles' : 'styles'}
 							key={group.name}
 							name={group.name}
 							displayName={group.displayName + (withValueProps.length ? ' ★' : '')}

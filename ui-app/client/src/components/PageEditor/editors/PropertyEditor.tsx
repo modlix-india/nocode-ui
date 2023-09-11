@@ -160,7 +160,7 @@ export default function PropertyEditor({
 			bps.push(
 				<div className="_eachProp" key={x[i]}>
 					<div className="_propLabel" title="Name">
-						{cd.bindingPaths[x[i]]?.name}
+						{cd.bindingPaths[x[i]]?.name} :
 					</div>
 					<ExpressionEditor2
 						value={def[x[i]]}
@@ -193,6 +193,7 @@ export default function PropertyEditor({
 					locationHistory={locationHistory}
 					onChangePersonalization={onChangePersonalization}
 					personalizationPath={personalizationPath}
+					tabName="compProps"
 				>
 					{bps}
 				</PropertyGroup>
@@ -261,7 +262,7 @@ export default function PropertyEditor({
 			<div className="_eachProp" key={`${selectedComponent}-${e.name}`}>
 				<div className="_propLabel" title={e.description ?? e.displayName}>
 					{e.displayName} :
-					<span className="_description" title={e.description ?? e.displayName}>
+					<span className="_description _tooltip" title={e.description ?? e.displayName}>
 						i
 					</span>
 				</div>
@@ -281,11 +282,15 @@ export default function PropertyEditor({
 				locationHistory={locationHistory}
 				onChangePersonalization={onChangePersonalization}
 				personalizationPath={personalizationPath}
+				tabName="compProps"
 			>
 				<div className="_eachProp">
 					<div className="_propLabel" title="Name">
 						Name :
-						<span className="_description" title="Name to identify the component">
+						<span
+							className="_description _tooltip"
+							title="Name to identify the component"
+						>
 							i
 						</span>
 					</div>
@@ -321,7 +326,7 @@ export default function PropertyEditor({
 				<div className="_eachProp">
 					<div className="_propLabel" title="Key">
 						Key :
-						<span className="_description" title="Key Identifier">
+						<span className="_description _tooltip" title="Key Identifier">
 							i
 						</span>
 					</div>
@@ -350,6 +355,7 @@ export default function PropertyEditor({
 				if (!propGroups?.[e[1]]) return null;
 				return (
 					<PropertyGroup
+						tabName="compProps"
 						key={e[0]}
 						name={e[1]}
 						displayName={e[0]}

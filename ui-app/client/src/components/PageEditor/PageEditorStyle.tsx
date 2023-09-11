@@ -59,7 +59,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._propBar._propBarVisible{
 			display: flex;
 			width: 300px;
-			
 		}
 
 		._propBar._compNavBarVisible{
@@ -199,16 +198,20 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		select._peSelect {
-			height: 25px;
-			font-size: 11px;
-			padding: 5px;
-			border-radius: 2px;
-			border: 1px solid #ccc;
+			height: 35px;
+			font-family: Inter;
+			font-size: 12px;
+			line-height:12px;
+			font-weight: 500;
+			padding: 5px 15px;
+			border-radius: 6px;
+			border: none;
 			color: #555;
-			background-color: #eee;
+			background-color: #F8FAFB;
 			text-transform: uppercase;
 			outline: none;
 			cursor: pointer;
+			width: 100%;
 		}
 
 		${PREFIX} button, ._popupButtons button {
@@ -225,28 +228,44 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._filterBar input,
 		input._peInput, ._pvExpressionEditor,
 		textarea._peInput, select._peInput {
-			color: #555;
-			background-color: #eee;
-			font-size: 11px;
+			color: #000;
+			background-color: #F8FAFB;
+			font-family: Inter;
+			font-weight: 400;
+			font-size: 12px;
 			padding: 5px 15px;
-			border-radius: 2px;
-			border: 1px solid #ccc;
+			border-radius: 6px;
+			border: none;
 		}
 
 		textarea._peInput {
 			flex: 1;
-			height: 80px;
-			font-size: 12px;
-			padding: 4px;
+			height: 132px;
+			padding: 8px;
+			scroll-bar-width: thin;
+			resize: none;
 		}
 
-		${PREFIX} ._eachStyleClass {
-			border-bottom: 1px solid #ccc;
+		textarea._peInput::-webkit-scrollbar  {
+			width: 2px;
+			background: none;
+			margin-right: 5px;
+		}
+
+		textarea._peInput::-webkit-scrollbar-thumb {
+			background-color: #4C7FEE;
 		}
 
 		${PREFIX} ._overflowContainer {
 			height: calc(100vh - 158px);
 			overflow: auto;
+		}
+
+		${PREFIX} ._addSelector {
+			background: #4C7FEE;
+			color: #fff;
+			border:none;
+			border-radius: 6px;
 		}
 
 		${PREFIX} ._eachStyleClass ._propLabel i.fa {
@@ -259,17 +278,19 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		input._peInput[type='text'], ._pvExpressionEditor, input._peInput[type='number'] {
-			height: 25px;
+			height: 35px;
 			font-size: 12px;
-			border-radius: 12px;
+			line-height:12px;
+			border-radius: 6px;
 			padding-left: 8px;
 			outline: none;
+			flex:1;
 		}
 
 		._pvExpressionEditor {
 			padding-top: 0px;
 			padding-bottom: 0px;
-			border-radius: 2px;
+			border-radius: 6px;
 			display: flex;
 			align-items: center;
 			padding-right: 8px;
@@ -463,7 +484,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
     		padding: 0px 10px;	
 		}
 
-		${PREFIX} ._buttonBar i.fa{
+		${PREFIX} ._buttonBar i.fa,
+		${PREFIX} ._buttonBar svg{
 		
 			padding: 7px;
 			cursor: pointer;
@@ -474,11 +496,13 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			text-align: center;
 		}
 
-		${PREFIX} ._buttonBar i.fa:not(:last-child) {
+		${PREFIX} ._buttonBar i.fa:not(:last-child),
+		${PREFIX} ._buttonBar svg:not(:last-child) {
 			margin-right: 10px;
 		}
 
-		${PREFIX} ._buttonBar i.fa.active, ${PREFIX} ._buttonBar i.fa:hover{
+		${PREFIX} ._buttonBar i.fa.active, ${PREFIX} ._buttonBar i.fa:hover,
+		${PREFIX} ._buttonBar svg.active, ${PREFIX} ._buttonBar svg:hover{
 			background-color: rgba(77, 127, 238, 0.05);
 			color: #4C7FEE;
 		}
@@ -487,7 +511,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			color: #8E90A44D;
 		}
 
-		${PREFIX} ._buttonBar._screenSizes i.fa {
+		${PREFIX} ._buttonBar._screenSizes i.fa,
+		${PREFIX} ._buttonBar._screenSizes svg {
 			background-color: transparent;
 			border-bottom: 3px solid transparent;
 			border-radius: 0;
@@ -498,12 +523,73 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			margin: 3px;
 		}
 
+		${PREFIX} ._propLabel._svgButtons {
+			display: flex;
+			align-items: center;
+			justify-content: flex-start;
+		}
+
+		${PREFIX} ._propLabel ._svgButtonsContainer{
+			background-color: #F8FAFB;
+			border-radius: 6px;
+			padding: 0px 4px;
+			display: flex;
+			align-items: center;
+			flex-direction: row;
+			height: 30px;
+		}
+
+		${PREFIX} ._propLabel._svgButtons .svgContainer {
+			width: 30px;
+			height: 15px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			cursor: pointer;
+			border-right: 1px solid #D2D3DB60;
+		}
+
+		${PREFIX} ._propLabel._svgButtons .svgContainer:last-child {
+			border-right: none;
+		}
+
+		${PREFIX} ._propLabel._svgButtons .svgContainer:hover,
+		${PREFIX} ._propLabel._svgButtons .svgContainer.active {
+			
+		}
+
+		${PREFIX} ._screenSizes svg path,
+		${PREFIX} ._propLabel._svgButtons svg path,
+		${PREFIX} ._propLabel._svgButtons svg circle,
+		${PREFIX} ._propLabel._svgButtons svg rect {
+			fill: rgba(150, 161, 180, 0.2);
+			stroke: rgba(142, 144, 164, 0.5);
+		}
+
+		${PREFIX} ._screenSizes svg.active path,
+		${PREFIX} ._propLabel._svgButtons.active svg path,
+		${PREFIX} ._propLabel._svgButtons.active svg circle,
+		${PREFIX} ._propLabel._svgButtons.active svg rect {
+			fill: rgba(150, 161, 180, 1);
+			stroke: rgba(142, 144, 164, 1);
+		}
+
+		${PREFIX} ._propLabel._svgButtons .svgContainer:hover path,
+		${PREFIX} ._propLabel._svgButtons .svgContainer:hover circle,
+		${PREFIX} ._propLabel._svgButtons .svgContainer:hover rect,
+		${PREFIX} ._propLabel._svgButtons .svgContainer.active path,
+		${PREFIX} ._propLabel._svgButtons .svgContainer.active rect,
+		${PREFIX} ._propLabel._svgButtons .svgContainer.active circle{
+			fill: #52BD94;
+			stroke: #52BD94;
+		}
+
 		${PREFIX} ._buttonBar._screenSizes {
 			height: 65px;
 		}
 
-		${PREFIX} ._buttonBar._screenSizes i.fa:hover,
-		${PREFIX} ._buttonBar._screenSizes i.fa.active {
+		${PREFIX} ._buttonBar._screenSizes i.fa:hover, ${PREFIX} ._buttonBar._screenSizes svg:hover,
+		${PREFIX} ._buttonBar._screenSizes i.fa.active, ${PREFIX} ._buttonBar._screenSizes svg.active{
 			color: #8E90A4;
 			border-bottom: 3px solid #8E90A4;
 			background: linear-gradient(360deg, rgba(142, 144, 164, 0.1) 0.78%, rgba(142, 144, 164, 0.011) 157.03%);
@@ -706,22 +792,70 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._tabBar {
 			width: 100%;
 			display: flex;
-			background-color: #eee5;
+			background: #F8FAFB;
+			height: 53px;
+			justify-content: space-around;
+			align-items: center;
+			flex-shrink: 0;
 		}
 
-		${PREFIX} ._tabBar i.fa {
-			padding: 10px 6px 10px 6px;
-			cursor: pointer;
-			width: 38px;
-			text-align: center;
+		${PREFIX} ._tabBar svg {
+			cursor: pointer;	
 		}
 
-		${PREFIX} ._tabBar i.fa.active{
-			background-color: #fff;
+		${PREFIX} ._tabBar svg path{
+			transition: fill 0.5s, fill-opacity 0.5s;
+			fill: #8E90A4;
+			fill-opacity: 0.2;
 		}
-		
+
+		${PREFIX} ._tabBar svg:hover path, ${PREFIX} ._tabBar svg.active path{ 
+			fill: #52BD94;
+			fill-opacity: 1;
+		}
 		${PREFIX} i._separator {
 			opacity: 0.1;
+		}
+
+		${PREFIX} ._styleButtonContainer button{
+			border: none;
+			background-color: transparent;
+			color: #D2D3DB;
+			display: flex;
+			gap: 5px;
+			justify-content: center;
+			align-items: center;
+			height: 30px;
+			border-radius: 6px;
+			z-index: 2;
+			padding: 0;
+			transition: none;
+		}
+
+		${PREFIX} ._styleButtonContainer button:hover {
+			background-color: #52BD94;
+			color: #FFF;
+		}
+		${PREFIX} ._styleButtonContainer button:hover svg path {
+			fill: #FFF;
+		}
+		${PREFIX} ._styleButtonContainer button svg path {
+			fill: #D2D3DB
+		}
+		${PREFIX} ._styleButtonContainer ._seperator {
+			height: 12px;
+			width: 1px;
+			border-right: 1px solid #D2D3DB;
+		}
+
+		${PREFIX} ._styleButtonContainer {
+			background: #F8FAFB;
+			border-radius: 6px;
+			margin-left: 20px;
+			margin-right: 20px;
+			height: 45px;
+			position: relative;		
+			padding: 0px 5px;	
 		}
 
 		.commonTriStateCheckbox::before {
@@ -730,13 +864,12 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._propContainer {
 			width: 100%;
-			padding: 5px;
+			padding-top: 20px;
+			padding-bottom: 20px;
 			flex: 1;
-			overflow: auto;
 		}
 
 		._propertyEditor{
-			gap: 10px;
 			display: flex;
 			flex-direction: column;
 			position: relative;
@@ -744,16 +877,22 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._eachProp {
 			font-size: 12px;
-			padding: 5px;
+			padding: 5px 25px;
 			display: flex;
 			flex-direction: column;
 			gap: 5px;
 			border-radius: 4px;
 			position: relative;
+			margin-bottom: 10px;
 		}
 
+		._eachProp svg {
+			cursor: pointer;
+		}
+
+
 		._eachProp:hover {
-			background-color:#eee;
+			
 		}
 
 		._pvEditor {
@@ -762,17 +901,12 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			gap: 5px;
 		}
 
-		._pvEditor input._peInput[type='text'], ._pvEditor input._peInput[type='number']  {
-			border-radius: 2px;
-		}
-
 		._pvEditor ._microToggle {
 			width: 20px;
-			background-color: #eee;
+			background-color: #F8FAFB;
 			height: 10px;
 			border-radius: 2px;
 			position: relative;
-			border: 1px solid #ddd;
 			cursor: pointer;
 			transition: left 0.5s, background-color 0.5s;
 		}
@@ -786,7 +920,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			content: '';
 			width: 65%;
 			height: 150%;
-			background-color: #ccc;
+			background-color: #E8EAEB;
 			transition: left 0.5s, background-color 0.5s;
 			font-size: 9px;
 			text-align: center;
@@ -796,12 +930,12 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		._pvEditor ._microToggle._on {
-			background-color: #aaa;
+			background-color: #E8EAEB;
 		}
 
 		._pvEditor ._microToggle._on::before {
 			left: 50%;
-			background-color: #777;
+			background-color: #C8CACB;
 			color: #eee;
 		}
 
@@ -812,33 +946,37 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		._propLabel {
-			color: #555;
+			color: #222222B2;
 			display: flex;
 			gap: 5px;
 			align-items: center;
 			text-transform: capitalize;
+			font-family: Inter;
 		}
 
 		._propLabel i.fa {
 			cursor: pointer;
 		}
 
-		${PREFIX} span._description {
-			font-weight: bold;
-			font-size: 9px;
-			border-radius: 50%;
-			width: 12px;
-			background-color: #eee;
-			height: 12px;
-			display: inline-flex;
-			justify-content: center;
+		${PREFIX} ._tooltip {
+			display: flex;
 			align-items: center;
-			color: #aaa;
-			border: 1px solid;
-			cursor: pointer;
 		}
 
-		${PREFIX} span._description:hover::after {
+		${PREFIX} ._description {
+			font-size: 10px;
+			background-color: #8E90A433;
+			color: #FFF;
+			width: 11px;
+			height: 11px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			border-radius: 50%;
+			text-transform: initial;
+		}
+
+		${PREFIX} ._tooltip:hover::after {
 			content: attr(title);
 			float: left;
 			min-width: 50px;
@@ -921,22 +1059,27 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._propertyGroup {
 			display: flex;
 			flex-direction: column;
-			gap: 5px;
+			border-bottom: 1px solid rgba(0,0,0,0.05);
 		}
 
 		._propertyGroupHeader {
-			font-size: 13px;
-			font-weight: bold;
-			background-color: #ccc;
+			font-family: Inter;
+			font-size: 13px;			
 			color: #888;
-			padding: 3px;
+			padding: 10px 20px;
 			cursor: pointer;
 			border-radius: 3px;
 			display: flex;
 			align-items: center;
+			flex-direction: row-reverse;
+			justify-content: space-between;
 			gap: 5px;
-			padding-left: 5px;
-			text-transform: uppercase;
+			font-weight: 600;
+			margin-bottom: 15px;
+		}
+
+		._propertyGroup._closed ._propertyGroupHeader {
+			margin-bottom: 0px;
 		}
 
 		._propertyGroupHeader i.fa {
@@ -1391,8 +1534,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		
 		${PREFIX}._dark ._sideBar, ${PREFIX}._dark ._iconMenuBody,
 		${PREFIX}._dark ._topBarGrid, ._popupBackground._dark ._popupContainer,
-		${PREFIX}._dark ._selectionBar, ._dark ._propBar,${PREFIX}._dark ._tabBar i.fa.active
-		._popupMenuBackground._dark ._popupMenu, ${PREFIX}._dark ._tabBar i.fa.active {
+		${PREFIX}._dark ._selectionBar, ._dark ._propBar,
+		._popupMenuBackground._dark ._popupMenu{
 			background-color:#555;
 		}
 
@@ -1445,7 +1588,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX}._dark ._eachProp:hover {
-			background-color:#444a;
+
 		}
 		
 		._dark ._pvEditor ._microToggle {
@@ -1461,14 +1604,9 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._dark ._pvEditor ._microToggle._on {
 			background-color: #888;
 			border-color: #777;
-		}
-
-		${PREFIX}._dark span._description {
-			background-color: #444;
-			color: #777;
-		}
+		}		
 		
-		${PREFIX}._dark span._description:hover::after {
+		${PREFIX}._dark ._tooltip:hover::after {
 			background-color: #555b;
 			color: #bbb;
 			border-color: #777;
@@ -1494,8 +1632,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		._dark ._propertyGroupHeader {
-			background-color: #444c;
-			color: #222;
+			color: #AAA;
 		}
 		._dark ._propertyGroupHeader i.fa {
 			color: #222;
