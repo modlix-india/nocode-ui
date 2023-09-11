@@ -31,7 +31,7 @@ import PropertyValueEditor from './propertyValueEditors/PropertyValueEditor';
 import { PseudoStateSelector } from './stylePropertyValueEditors/PseudoStateSelector';
 import { ScreenSizeSelector } from './stylePropertyValueEditors/ScreenSizeSelector';
 import { TypographyEditor } from './stylePropertyValueEditors/TypographyEditor';
-import { StyleEditorsProps } from './stylePropertyValueEditors/SimpleEditors';
+import { StyleEditorsProps } from './stylePropertyValueEditors/simpleEditors';
 
 const STYLE_GRP_EDITOR: Map<string, React.ElementType> = new Map([
 	['typography', TypographyEditor],

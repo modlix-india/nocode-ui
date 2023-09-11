@@ -636,7 +636,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			flex-direction: row;
 			align-items: center;
-			gap: 2px;
+			gap: 10px;
 			flex: 1;
 		}
 
@@ -654,22 +654,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex: 1;
 		}
 
-		._peMultiEditor > * {
-			border-radius: 0px;
-			padding: 5px 5px;
-		}
-
-		._peMultiEditor > *:first-child {
-			border-top-left-radius: 6px;
-			border-bottom-left-radius: 6px;
-			padding-left:15px;
-		}
-
-		._peMultiEditor > *:last-child {
-			border-top-right-radius: 6px;
-			border-bottom-right-radius: 6px;			
-			padding-right:15px;
-		}
+		
 
 		._simpleEditorSelect {
 			text-transform: uppercase;
@@ -932,6 +917,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._tabBar svg {
 			cursor: pointer;	
+			outline: none;
 		}
 
 		${PREFIX} ._tabBar svg path{
@@ -1014,7 +1000,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			gap: 5px;
 			border-radius: 4px;
 			position: relative;
-			margin-bottom: 10px;
 		}
 
 		._eachProp svg {
@@ -1194,6 +1179,14 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border-bottom: 1px solid rgba(0,0,0,0.05);
 		}
 
+		._propertyGroup._opened ._propertyGroupContent {
+			padding-bottom: 8px;
+		}
+
+		._propertyGroupContent {
+			transition: padding-bottom 0s;
+		}
+
 		._propertyGroupHeader {
 			font-family: Inter;
 			font-size: 13px;			
@@ -1206,7 +1199,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction: row;			
 			gap: 5px;
 			font-weight: 600;
-			margin-bottom: 15px;
 		}
 
 		._propertyGroupHeaderIcon {

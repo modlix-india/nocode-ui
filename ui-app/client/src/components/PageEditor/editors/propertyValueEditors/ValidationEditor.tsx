@@ -3,7 +3,7 @@ import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../../../cons
 import { VALIDATION_FUNCTIONS } from '../../../../util/validationProcessor';
 import PropertyValueEditor from './PropertyValueEditor';
 import PageOperations from '../../functions/PageOperations';
-import { Dropdown } from '../stylePropertyValueEditors/SimpleEditors';
+import { Dropdown } from '../stylePropertyValueEditors/simpleEditors/Dropdown';
 
 interface ValidationEditorProps {
 	value?: any;
