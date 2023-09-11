@@ -530,32 +530,37 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._propLabel ._svgButtonsContainer{
-			background-color: #F8FAFB;
 			border-radius: 6px;
-			padding: 0px 4px;
 			display: flex;
 			align-items: center;
 			flex-direction: row;
-			height: 30px;
 		}
 
 		${PREFIX} ._propLabel._svgButtons .svgContainer {
 			width: 30px;
-			height: 15px;
+			height: 30px;
 			display: flex;
 			justify-content: center;
 			align-items: center;
 			cursor: pointer;
-			border-right: 1px solid #D2D3DB60;
+			background: #F8FAFB;		
 		}
 
 		${PREFIX} ._propLabel._svgButtons .svgContainer:last-child {
-			border-right: none;
+			padding-right: 5px;
+			border-top-right-radius: 6px;
+			border-bottom-right-radius: 6px;
+		}
+
+		${PREFIX} ._propLabel._svgButtons .svgContainer:first-child {
+			padding-left: 5px;
+			border-top-left-radius: 6px;
+			border-bottom-left-radius: 6px;
 		}
 
 		${PREFIX} ._propLabel._svgButtons .svgContainer:hover,
 		${PREFIX} ._propLabel._svgButtons .svgContainer.active {
-			
+			background: #EEF3FA;
 		}
 
 		${PREFIX} ._screenSizes svg path,
@@ -580,8 +585,134 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._propLabel._svgButtons .svgContainer.active path,
 		${PREFIX} ._propLabel._svgButtons .svgContainer.active rect,
 		${PREFIX} ._propLabel._svgButtons .svgContainer.active circle{
-			fill: #52BD94;
-			stroke: #52BD94;
+			fill: #3A8BED;
+			stroke: #3A8BED;
+		}
+
+		${PREFIX} ._microToggle2 {
+			padding: 2px;
+			border-radius: 10px;
+			background-color: #F8FAFB;
+			color: #555;
+			position: relative;
+			font-weight: 400;
+			text-transform: uppercase;
+			font-size: 10px;
+			letter-spacing: 0.5px;
+			transition: all 0.5s;
+			height: 12px;
+			width: 20px;
+			border: 1px solid #aaa;
+			cursor: pointer;
+			opacity:0.3;
+		}
+
+		${PREFIX} ._microToggle2::before {
+			content: '';
+			width: 8px;
+			height: 8px;
+			position: absolute;
+			background-color: #555;
+			border-radius: 50%;
+			right: 1px;
+			top: 50%;
+			transform: translateY(-50%);
+			transition: all 0.5s;
+		}
+
+		${PREFIX} ._microToggle2._on {
+			color: #F8FAFB;
+			background-color: #555;
+			opacity: 0.8;
+		}
+
+		${PREFIX} ._microToggle2._on::before {
+			right: calc(100% - 9px);
+			transform: translateY(-50%);
+			background-color: #F8FAFB;
+		}
+
+		${PREFIX} ._peMultiEditor {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			gap: 2px;
+			flex: 1;
+		}
+
+		._simpleEditorSelect,
+		._simpleEditorInput{
+			min-height: 35px;
+			font-family: Inter;
+			font-size: 12px;
+			border: none;
+			border-radius: 6px;
+			color: #555;
+			background-color: #F8FAFB;
+			cursor: pointer;
+			padding: 5px 15px;
+			flex: 1;
+		}
+
+		._peMultiEditor > * {
+			border-radius: 0px;
+			padding: 5px 5px;
+		}
+
+		._peMultiEditor > *:first-child {
+			border-top-left-radius: 6px;
+			border-bottom-left-radius: 6px;
+			padding-left:15px;
+		}
+
+		._peMultiEditor > *:last-child {
+			border-top-right-radius: 6px;
+			border-bottom-right-radius: 6px;			
+			padding-right:15px;
+		}
+
+		._simpleEditorSelect {
+			text-transform: uppercase;
+			position: relative;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 4px;
+		}
+		
+		._simpleEditorSelect ._simpleEditorDropdownBody{
+			position: fixed;
+			min-width: 100%;
+			background-color: #FFF;
+			z-index: 1;
+			box-shadow: 0px 1px 4px 0px #00000026;
+			border-radius: 6px;
+			margin-top: 4px;
+			padding: 10px;
+			max-height: 250px;
+			overflow: auto;
+		}
+
+		._simpleEditorSelect ._selectedOption._placeholder {
+			text-transform: capitalize;
+			color: #757575;
+		}
+
+		._simpleEditorSelect ._simpleEditorDropdownBody ._simpleEditorDropdownOption {
+			height: 25px;
+			padding: 5px 10px;
+			color: rgba(0, 0, 0, 0.4); 
+			border-radius: 4px;
+			white-space: nowrap;
+		}
+
+		._simpleEditorSelect ._simpleEditorDropdownBody ._simpleEditorDropdownOption._hovered {
+			background-color: #F8FAFB;
+		}
+
+		._simpleEditorSelect ._simpleEditorDropdownBody ._simpleEditorDropdownOption._selected {
+			color: #333;
+			font-weight: bold;
 		}
 
 		${PREFIX} ._buttonBar._screenSizes {
@@ -877,7 +1008,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._eachProp {
 			font-size: 12px;
-			padding: 5px 25px;
+			padding: 5px 20px;
 			display: flex;
 			flex-direction: column;
 			gap: 5px;
@@ -952,6 +1083,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			align-items: center;
 			text-transform: capitalize;
 			font-family: Inter;
+			white-space: nowrap;
 		}
 
 		._propLabel i.fa {
@@ -1071,11 +1203,17 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border-radius: 3px;
 			display: flex;
 			align-items: center;
-			flex-direction: row-reverse;
-			justify-content: space-between;
+			flex-direction: row;			
 			gap: 5px;
 			font-weight: 600;
 			margin-bottom: 15px;
+		}
+
+		._propertyGroupHeaderIcon {
+			flex: 1;
+			font-size: 20px;
+			font-weight: 200;
+			text-align: right;
 		}
 
 		._propertyGroup._closed ._propertyGroupHeader {
@@ -1101,9 +1239,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			gap: 10px;
 			align-items: center;
-			border: 2px solid #ddd;
+			border-bottom: 1px solid #ddd;
 			padding: 5px;
-			border-radius: 3px;
 			padding-top: 20px;
 			position: relative;
 		}
@@ -1143,6 +1280,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction: column;
 			gap: 5px;
 			flex:1;
+		}
+
+		${PREFIX} ._eachProperty ._eachProp {
+			padding: 5px 0px;
 		}
 
 		${PREFIX} ._codeEditor {
@@ -1260,6 +1401,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._popupContainer ._iconSelectionBrowser ._selectors {
 			display: flex;
 			gap: 5px;
+			align-items: center;
 		}
 
 		._popupContainer ._iconSelectionDisplay {
