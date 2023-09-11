@@ -105,6 +105,7 @@ export default function DnDPropertyBar({
 				editPageName={editPageName}
 				slaveStore={slaveStore}
 				pageOperations={pageOperations}
+				appPath={appPath}
 			/>
 		);
 	} else if (currentTab === 3) {
@@ -126,6 +127,7 @@ export default function DnDPropertyBar({
 				editPageName={editPageName}
 				slaveStore={slaveStore}
 				pageOperations={pageOperations}
+				appPath={appPath}
 			/>
 		);
 	} else if (currentTab === 4) {

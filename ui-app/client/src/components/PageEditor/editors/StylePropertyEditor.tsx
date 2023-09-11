@@ -1,46 +1,41 @@
-import React, {
-	CSSProperties,
-	Component,
-	ReactNode,
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-} from 'react';
+import { deepEqual, duplicate, isNullValue } from '@fincity/kirun-js';
+import React, { ReactNode, useCallback, useEffect, useState } from 'react';
+import ComponentDefinitions from '../../';
+import {
+	COPY_STYLE_PROPS_KEY,
+	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_STRING_COMP_PROP,
+} from '../../../constants';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediatelyWithChildrenActivity,
 	getDataFromPath,
 	setData,
 } from '../../../context/StoreContext';
+import { camelCaseToUpperSpaceCase } from '../../../functions/utils';
 import {
 	ComponentDefinition,
+	ComponentPropertyEditor,
+	ComponentStyle,
+	EachComponentStyle,
 	LocationHistory,
 	PageDefinition,
-	ComponentPropertyEditor,
-	EachComponentStyle,
 	StyleResolution,
-	EachComponentResolutionStyle,
 } from '../../../types/common';
-import ComponentDefinitions from '../../';
-import { COMPONENT_STYLE_GROUP_PROPERTIES, COMPONENT_STYLE_GROUPS } from '../../util/properties';
+import { shortUUID } from '../../../util/shortUUID';
+import { StyleResolutionDefinition, processStyleFromString } from '../../../util/styleProcessor';
+import { COMPONENT_STYLE_GROUPS, COMPONENT_STYLE_GROUP_PROPERTIES } from '../../util/properties';
+import PageOperations from '../functions/PageOperations';
 import { PropertyGroup } from './PropertyGroup';
 import PropertyValueEditor from './propertyValueEditors/PropertyValueEditor';
-import {
-	COPY_STYLE_PROPS_KEY,
-	SCHEMA_BOOL_COMP_PROP,
-	SCHEMA_STRING_COMP_PROP,
-} from '../../../constants';
-import { StyleResolutionDefinition, processStyleFromString } from '../../../util/styleProcessor';
-import { ComponentStyle } from '../../../types/common';
-import { shortUUID } from '../../../util/shortUUID';
-import { duplicate } from '@fincity/kirun-js';
-import { deepEqual } from '@fincity/kirun-js';
-import { camelCaseToUpperSpaceCase } from '../../../functions/utils';
-import PageOperations from '../functions/PageOperations';
-import { ScreenSizeSelector } from './stylePropertyValueEditors/ScreenSizeSelector';
 import { PseudoStateSelector } from './stylePropertyValueEditors/PseudoStateSelector';
+import { ScreenSizeSelector } from './stylePropertyValueEditors/ScreenSizeSelector';
+import { TypographyEditor } from './stylePropertyValueEditors/TypographyEditor';
+import { StyleEditorsProps } from './stylePropertyValueEditors/SimpleEditors';
+
+const STYLE_GRP_EDITOR: Map<string, React.ElementType> = new Map([
+	['typography', TypographyEditor],
+]);
 
 interface StylePropertyEditorProps {
 	selectedComponent: string;
@@ -59,6 +54,7 @@ interface StylePropertyEditorProps {
 	slaveStore: any;
 	editPageName: string | undefined;
 	pageOperations: PageOperations;
+	appPath: string | undefined;
 }
 
 function processOldCondition(styleProps: ComponentStyle | undefined): ComponentStyle {
@@ -140,9 +136,11 @@ export default function StylePropertyEditor({
 	slaveStore,
 	editPageName,
 	pageOperations,
+	appPath,
 }: StylePropertyEditorProps) {
 	const [def, setDef] = useState<ComponentDefinition>();
 	const [pageDef, setPageDef] = useState<PageDefinition>();
+	const [appDef, setAppDef] = useState<any>();
 	const [styleProps, setStyleProps] = useState<ComponentStyle>();
 	const [showAdvanced, setShowAdvanced] = useState<Array<string>>([]);
 
@@ -172,6 +170,16 @@ export default function StylePropertyEditor({
 			),
 		[defPath, selectedComponent, selectorPref],
 	);
+
+	useEffect(() => {
+		if (isNullValue(appPath)) return undefined;
+
+		return addListenerAndCallImmediatelyWithChildrenActivity(
+			(_, v) => setAppDef(v),
+			pageExtractor,
+			appPath!,
+		);
+	}, [appPath, pageExtractor, setAppDef]);
 
 	const updateSelectorPref = useCallback(
 		(pref1: string, value1: any) => {
@@ -474,186 +482,197 @@ export default function StylePropertyEditor({
 					personalizationPath={personalizationPath}
 					tabName={reverseStyleSections ? 'advancedStyles' : 'styles'}
 				>
-					<div className="_eachProp">
-						<ScreenSizeSelector
-							size={size}
-							onChange={v => updateSelectorPref('screenSize', { value: v })}
-						/>
-						<PropertyValueEditor
-							pageDefinition={pageDef}
-							propDef={{
-								name: 'screenSize',
-								displayName: 'Screen Size',
-								schema: SCHEMA_STRING_COMP_PROP,
-								editor: ComponentPropertyEditor.ENUM,
-								defaultValue: 'ALL',
-								enumValues: Array.from(StyleResolutionDefinition.values())
-									.map(e => {
-										if (
-											properties?.[1].resolutions?.[
-												e.name as StyleResolution
-											] &&
-											Object.keys(
+					<div>
+						<div className="_eachProp">
+							<ScreenSizeSelector
+								size={size}
+								onChange={v => updateSelectorPref('screenSize', { value: v })}
+							/>
+							<PropertyValueEditor
+								pageDefinition={pageDef}
+								propDef={{
+									name: 'screenSize',
+									displayName: 'Screen Size',
+									schema: SCHEMA_STRING_COMP_PROP,
+									editor: ComponentPropertyEditor.ENUM,
+									defaultValue: 'ALL',
+									enumValues: Array.from(StyleResolutionDefinition.values())
+										.map(e => {
+											if (
 												properties?.[1].resolutions?.[
 													e.name as StyleResolution
-												] ?? {},
-											).length
-										)
-											return { ...e, displayName: `★ ${e.displayName}` };
-										return e;
-									})
-									.sort((a, b) => a.order - b.order),
-							}}
-							value={selectorPref[selectedComponent]?.screenSize}
-							onlyValue={true}
-							onChange={v => updateSelectorPref('screenSize', v)}
-							storePaths={storePaths}
-							editPageName={editPageName}
-							slaveStore={slaveStore}
-							pageOperations={pageOperations}
-						/>
-					</div>
-					{subComponentsList.length !== 1 ? (
-						<div className="_eachProp">
-							<div className="_propLabel" title="Subcomponent">
-								Sub Component:
-							</div>
-							<PropertyValueEditor
-								pageDefinition={pageDef}
-								propDef={{
-									name: 'subcomponent',
-									displayName: 'Sub Component',
-									schema: SCHEMA_STRING_COMP_PROP,
-									editor: ComponentPropertyEditor.ENUM,
-									defaultValue: '',
-									enumValues: subComponentsList.map(name => ({
-										name,
-										displayName:
-											(hasSubComponents.has(name) ? '★ ' : '') +
-											(name === ''
-												? 'Component'
-												: camelCaseToUpperSpaceCase(name)),
-										description: '',
-									})),
+												] &&
+												Object.keys(
+													properties?.[1].resolutions?.[
+														e.name as StyleResolution
+													] ?? {},
+												).length
+											)
+												return { ...e, displayName: `★ ${e.displayName}` };
+											return e;
+										})
+										.sort((a, b) => a.order - b.order),
 								}}
-								value={{
-									value:
-										selectedSubComponent === ''
-											? selectedSubComponent
-											: selectedSubComponent.split(':')[1],
-								}}
+								value={selectorPref[selectedComponent]?.screenSize}
 								onlyValue={true}
-								onChange={v =>
-									onSelectedSubComponentChanged(
-										!v.value ? '' : `${selectedComponent}:${v.value}`,
-									)
-								}
+								onChange={v => updateSelectorPref('screenSize', v)}
 								storePaths={storePaths}
 								editPageName={editPageName}
 								slaveStore={slaveStore}
 								pageOperations={pageOperations}
 							/>
 						</div>
-					) : (
-						<></>
-					)}
-					{pseudoStates.length ? (
-						<div className="_eachProp">
-							<PseudoStateSelector
-								state={selectorPref[selectedComponent]?.stylePseudoState.value}
-								pseudoStates={pseudoStates}
-								onChange={v => {
-									updateSelectorPref('stylePseudoState', { value: v });
-								}}
-							/>
-							<PropertyValueEditor
-								pageDefinition={pageDef}
-								propDef={{
-									name: 'stylePseudoState',
-									displayName: 'Pseudo State',
-									schema: SCHEMA_STRING_COMP_PROP,
-									editor: ComponentPropertyEditor.ENUM,
-									defaultValue: '',
-									enumValues: [
-										{
-											name: '',
-											displayName: hasPseudoStates.has('')
-												? '★ Default'
-												: 'Default',
-											description: 'No State',
-										},
-										...pseudoStates.map(name => ({
+						{subComponentsList.length !== 1 ? (
+							<div className="_eachProp">
+								<div className="_propLabel" title="Subcomponent">
+									Sub Component:
+								</div>
+								<PropertyValueEditor
+									pageDefinition={pageDef}
+									propDef={{
+										name: 'subcomponent',
+										displayName: 'Sub Component',
+										schema: SCHEMA_STRING_COMP_PROP,
+										editor: ComponentPropertyEditor.ENUM,
+										defaultValue: '',
+										enumValues: subComponentsList.map(name => ({
 											name,
 											displayName:
-												(hasPseudoStates.has(name) ? '★ ' : '') +
-												name.toUpperCase(),
+												(hasSubComponents.has(name) ? '★ ' : '') +
+												(name === ''
+													? 'Component'
+													: camelCaseToUpperSpaceCase(name)),
 											description: '',
 										})),
-									],
-								}}
-								value={selectorPref[selectedComponent]?.stylePseudoState}
-								onlyValue={true}
-								onChange={v => {
-									updateSelectorPref('stylePseudoState', v);
-								}}
-								storePaths={storePaths}
-								editPageName={editPageName}
-								slaveStore={slaveStore}
-								pageOperations={pageOperations}
-							/>
-						</div>
-					) : (
-						<></>
-					)}
-					<div className="_eachProp">
-						<div className="_propLabel" title="Conditional Application">
-							Conditional Application:
-							<i
-								className="fa fa-solid fa-square-plus"
-								onClick={() => {
-									const newStyleProps = duplicate(styleProps) as ComponentStyle;
-									const conditionNames = new Set(
-										Object.values(newStyleProps).map(e => e.conditionName),
-									);
-									let i = 0;
-									while (conditionNames.has(`Condition ${i}`)) i++;
-									const key = shortUUID();
-									newStyleProps[key] = {
-										resolutions: { ALL: {} },
-										conditionName: `Condition ${i}`,
-										condition: { value: true },
-									};
-									if (selectorPref[selectedComponent]?.stylePseudoState?.value)
-										newStyleProps[key].pseudoState =
-											selectorPref[selectedComponent].stylePseudoState.value;
-									saveStyle(newStyleProps);
-									updateSelectorPref('condition', { value: `Condition ${i}` });
-								}}
-							></i>
-							{selectorPref[selectedComponent]?.condition?.value ? (
+									}}
+									value={{
+										value:
+											selectedSubComponent === ''
+												? selectedSubComponent
+												: selectedSubComponent.split(':')[1],
+									}}
+									onlyValue={true}
+									onChange={v =>
+										onSelectedSubComponentChanged(
+											!v.value ? '' : `${selectedComponent}:${v.value}`,
+										)
+									}
+									storePaths={storePaths}
+									editPageName={editPageName}
+									slaveStore={slaveStore}
+									pageOperations={pageOperations}
+								/>
+							</div>
+						) : (
+							<></>
+						)}
+						{pseudoStates.length ? (
+							<div className="_eachProp">
+								<PseudoStateSelector
+									state={selectorPref[selectedComponent]?.stylePseudoState?.value}
+									pseudoStates={pseudoStates}
+									onChange={v => {
+										updateSelectorPref('stylePseudoState', { value: v });
+									}}
+								/>
+								<PropertyValueEditor
+									pageDefinition={pageDef}
+									propDef={{
+										name: 'stylePseudoState',
+										displayName: 'Pseudo State',
+										schema: SCHEMA_STRING_COMP_PROP,
+										editor: ComponentPropertyEditor.ENUM,
+										defaultValue: '',
+										enumValues: [
+											{
+												name: '',
+												displayName: hasPseudoStates.has('')
+													? '★ Default'
+													: 'Default',
+												description: 'No State',
+											},
+											...pseudoStates.map(name => ({
+												name,
+												displayName:
+													(hasPseudoStates.has(name) ? '★ ' : '') +
+													name.toUpperCase(),
+												description: '',
+											})),
+										],
+									}}
+									value={selectorPref[selectedComponent]?.stylePseudoState}
+									onlyValue={true}
+									onChange={v => {
+										updateSelectorPref('stylePseudoState', v);
+									}}
+									storePaths={storePaths}
+									editPageName={editPageName}
+									slaveStore={slaveStore}
+									pageOperations={pageOperations}
+								/>
+							</div>
+						) : (
+							<></>
+						)}
+						<div className="_eachProp">
+							<div className="_propLabel" title="Conditional Application">
+								Conditional Application:
 								<i
-									className="fa fa-regular fa-trash-can"
+									className="fa fa-solid fa-square-plus"
 									onClick={() => {
 										const newStyleProps = duplicate(
 											styleProps,
 										) as ComponentStyle;
-										const conditionKey = Object.entries(newStyleProps).find(
-											([_, e]) =>
-												e.conditionName ===
-												selectorPref[selectedComponent]?.condition?.value,
-										)?.[0];
-										if (conditionKey) delete newStyleProps[conditionKey];
+										const conditionNames = new Set(
+											Object.values(newStyleProps).map(e => e.conditionName),
+										);
+										let i = 0;
+										while (conditionNames.has(`Condition ${i}`)) i++;
+										const key = shortUUID();
+										newStyleProps[key] = {
+											resolutions: { ALL: {} },
+											conditionName: `Condition ${i}`,
+											condition: { value: true },
+										};
+										if (
+											selectorPref[selectedComponent]?.stylePseudoState?.value
+										)
+											newStyleProps[key].pseudoState =
+												selectorPref[
+													selectedComponent
+												].stylePseudoState.value;
 										saveStyle(newStyleProps);
-										updateSelectorPref('condition', undefined);
+										updateSelectorPref('condition', {
+											value: `Condition ${i}`,
+										});
 									}}
-								/>
-							) : (
-								<></>
-							)}
+								></i>
+								{selectorPref[selectedComponent]?.condition?.value ? (
+									<i
+										className="fa fa-regular fa-trash-can"
+										onClick={() => {
+											const newStyleProps = duplicate(
+												styleProps,
+											) as ComponentStyle;
+											const conditionKey = Object.entries(newStyleProps).find(
+												([_, e]) =>
+													e.conditionName ===
+													selectorPref[selectedComponent]?.condition
+														?.value,
+											)?.[0];
+											if (conditionKey) delete newStyleProps[conditionKey];
+											saveStyle(newStyleProps);
+											updateSelectorPref('condition', undefined);
+										}}
+									/>
+								) : (
+									<></>
+								)}
+							</div>
+							{conditionSelector}
+							{conditionNameEditor}
+							{conditionEditor}
 						</div>
-						{conditionSelector}
-						{conditionNameEditor}
-						{conditionEditor}
 					</div>
 				</PropertyGroup>
 
@@ -714,6 +733,7 @@ export default function StylePropertyEditor({
 						for (const prop of eachGroup) {
 							props.push(
 								<EachPropEditor
+									appDef={appDef}
 									key={prop}
 									subComponentName={subComponentName}
 									pseudoState={pseudoState}
@@ -735,19 +755,46 @@ export default function StylePropertyEditor({
 						i++;
 					}
 
+					let editors = [];
+
+					editors.push(<div key="advanedEditor">{props}</div>);
+
+					if (STYLE_GRP_EDITOR.has(group.name)) {
+						const SpecificEditor = STYLE_GRP_EDITOR.get(group.name)!;
+						editors.push(
+							<SpecificEditor
+								key="specificEditor"
+								appDef={appDef}
+								subComponentName={subComponentName}
+								pseudoState={pseudoState}
+								iterateProps={iterateProps}
+								pageDef={pageDef}
+								editPageName={editPageName}
+								slaveStore={slaveStore}
+								storePaths={storePaths}
+								selectorPref={selectorPref}
+								styleProps={styleProps}
+								selectedComponent={selectedComponent}
+								saveStyle={saveStyle}
+								properties={properties}
+								pageOperations={pageOperations}
+							/>,
+						);
+					}
+
 					return (
 						<PropertyGroup
 							tabName={reverseStyleSections ? 'advancedStyles' : 'styles'}
 							key={group.name}
 							name={group.name}
-							displayName={group.displayName + (withValueProps.length ? ' ★' : '')}
+							displayName={(withValueProps.length ? '★ ' : '') + group.displayName}
 							defaultStateOpen={false}
 							pageExtractor={pageExtractor}
 							locationHistory={locationHistory}
 							onChangePersonalization={onChangePersonalization}
 							personalizationPath={personalizationPath}
 						>
-							{props}
+							{editors}
 						</PropertyGroup>
 					);
 				})}
@@ -771,22 +818,7 @@ function EachPropEditor({
 	saveStyle,
 	properties,
 	pageOperations,
-}: {
-	pseudoState: string;
-	subComponentName: string;
-	prop: string;
-	iterateProps: any;
-	pageDef: PageDefinition | undefined;
-	editPageName: string | undefined;
-	slaveStore: any;
-	storePaths: Set<string>;
-	selectorPref: any;
-	styleProps: ComponentStyle | undefined;
-	selectedComponent: string;
-	saveStyle: (newStyleProps: ComponentStyle) => void;
-	properties: [string, EachComponentStyle] | undefined;
-	pageOperations: PageOperations;
-}) {
+}: StyleEditorsProps & { prop: string }) {
 	const compProp = subComponentName ? `${subComponentName}-${prop}` : prop;
 	let value = iterateProps[compProp] ?? {};
 	const actualProp = pseudoState ? `${compProp}:${pseudoState}` : compProp;

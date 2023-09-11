@@ -120,7 +120,7 @@ export default function PropertyValueEditor({
 
 	const microToggle = onlyValue ? undefined : (
 		<div
-			className={`_microToggle ${showAdvanced ? '_on' : '_off'}`}
+			className={`_microToggle2 ${showAdvanced ? '_on' : '_off'}`}
 			tabIndex={0}
 			onKeyDown={e => (e.key === ' ' ? toggleAdvanced() : undefined)}
 			onClick={toggleAdvanced}
