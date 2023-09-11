@@ -35,20 +35,20 @@ import {
 // 			'whiteSpace',
 
 const FONT_FAMILIES = [
-	{ value: 'Arial', displayName: 'Arial' },
-	{ value: 'Arial Black', displayName: 'Arial Black' },
-	{ value: 'Helvetica', displayName: 'Helvetica' },
-	{ value: 'Times New Roman', displayName: 'Times New Roman' },
-	{ value: 'Times', displayName: 'Times' },
-	{ value: 'Courier New', displayName: 'Courier New' },
-	{ value: 'Courier', displayName: 'Courier' },
-	{ value: 'Comic Sans MS', displayName: 'Comic Sans MS' },
-	{ value: 'Impact', displayName: 'Impact' },
-	{ value: 'Verdana', displayName: 'Verdana' },
-	{ value: 'Georgia', displayName: 'Georgia' },
-	{ value: 'Palatino', displayName: 'Palatino' },
-	{ value: 'Garamond', displayName: 'Garamond' },
-	{ value: 'Trebuchet MS', displayName: 'Trebuchet MS' },
+	{ name: 'Arial', displayName: 'Arial' },
+	{ name: 'Arial Black', displayName: 'Arial Black' },
+	{ name: 'Helvetica', displayName: 'Helvetica' },
+	{ name: 'Times New Roman', displayName: 'Times New Roman' },
+	{ name: 'Times', displayName: 'Times' },
+	{ name: 'Courier New', displayName: 'Courier New' },
+	{ name: 'Courier', displayName: 'Courier' },
+	{ name: 'Comic Sans MS', displayName: 'Comic Sans MS' },
+	{ name: 'Impact', displayName: 'Impact' },
+	{ name: 'Verdana', displayName: 'Verdana' },
+	{ name: 'Georgia', displayName: 'Georgia' },
+	{ name: 'Palatino', displayName: 'Palatino' },
+	{ name: 'Garamond', displayName: 'Garamond' },
+	{ name: 'Trebuchet MS', displayName: 'Trebuchet MS' },
 ];
 
 export function TypographyEditor({
@@ -70,7 +70,7 @@ export function TypographyEditor({
 	let fonts: DropdownOptions = [...FONT_FAMILIES];
 	if (appDef?.properties?.fontPacks) {
 		fonts = Object.values(appDef.properties.fontPacks)
-			.map((e: any) => ({ value: e.name, displayName: e.name }))
+			.map((e: any) => ({ name: e.name, displayName: e.name }))
 			.concat(fonts);
 	}
 
@@ -80,7 +80,7 @@ export function TypographyEditor({
 				subComponentName={subComponentName}
 				pseudoState={pseudoState}
 				prop="fontFamily"
-				displayName="Font Family"
+				placeholder="Font Family"
 				iterateProps={iterateProps}
 				pageDef={pageDef}
 				editPageName={editPageName}
@@ -98,7 +98,7 @@ export function TypographyEditor({
 				subComponentName={subComponentName}
 				pseudoState={pseudoState}
 				prop="fontSize"
-				displayName="Font Size"
+				placeholder="Font Size"
 				iterateProps={iterateProps}
 				pageDef={pageDef}
 				editPageName={editPageName}
@@ -111,7 +111,6 @@ export function TypographyEditor({
 				pageOperations={pageOperations}
 				properties={properties}
 				editorDef={{ type: SimpleEditorType.PixelSize }}
-				showTitle={false}
 			/>
 		</>
 	);

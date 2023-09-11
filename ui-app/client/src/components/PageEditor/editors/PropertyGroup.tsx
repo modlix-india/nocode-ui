@@ -54,6 +54,15 @@ export function PropertyGroup({
 	if (state && Array.isArray(children) && (children?.length ?? 0) > 1) {
 		advSwitch = (
 			<span
+				tabIndex={0}
+				role="button"
+				onKeyDown={e => {
+					if (e.key === 'Enter' || e.key === ' ') {
+						e.preventDefault();
+						e.stopPropagation();
+						setAdvancedMode(!advancedMode);
+					}
+				}}
 				className={`_microToggle2 ${advancedMode ? '_on' : '_off'}`}
 				title={advancedMode ? 'Switch to Basic' : 'Switch to Advanced'}
 				onClick={e => {
@@ -70,6 +79,10 @@ export function PropertyGroup({
 			<div
 				className="_propertyGroupHeader"
 				tabIndex={0}
+				onKeyDown={e => {
+					if (e.key === 'Enter' || e.key === ' ')
+						onChangePersonalization(`propertyEditor.${tabName}.${name}`, !state);
+				}}
 				onClick={() => onChangePersonalization(`propertyEditor.${tabName}.${name}`, !state)}
 				onDoubleClick={() =>
 					onChangePersonalization(`propertyEditor.${tabName}`, undefined)

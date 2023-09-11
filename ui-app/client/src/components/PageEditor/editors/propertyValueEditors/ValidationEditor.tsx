@@ -3,6 +3,7 @@ import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../../../cons
 import { VALIDATION_FUNCTIONS } from '../../../../util/validationProcessor';
 import PropertyValueEditor from './PropertyValueEditor';
 import PageOperations from '../../functions/PageOperations';
+import { Dropdown } from '../stylePropertyValueEditors/SimpleEditors';
 
 interface ValidationEditorProps {
 	value?: any;
@@ -27,21 +28,16 @@ export function ValidationEditor({
 		<div className="_validationEditor">
 			<div className="_eachProp">
 				<div className="_propLabel">Validation Type:</div>
-				{
-					<select
-						value={value?.type ?? 'MANDATORY'}
-						onChange={e => onChange({ ...value, type: e.target.value })}
-						className="_peSelect"
-					>
-						{Object.entries(VALIDATION_FUNCTIONS)
-							.sort()
-							.map(e => (
-								<option key={e[0]} value={e[0]}>
-									{e[1].displayName}
-								</option>
-							))}
-					</select>
-				}
+
+				<Dropdown
+					value={value?.type ?? 'MANDATORY'}
+					showNoneLabel={false}
+					onChange={v => onChange({ ...value, type: v })}
+					options={Object.entries(VALIDATION_FUNCTIONS).map(e => ({
+						name: e[0],
+						displayName: e[1].displayName,
+					}))}
+				/>
 			</div>
 			<div className="_eachProp">
 				<div className="_propLabel">Condition:</div>

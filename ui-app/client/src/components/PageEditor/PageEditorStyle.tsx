@@ -640,8 +640,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex: 1;
 		}
 
-		${PREFIX} ._simpleEditorSelect,
-		${PREFIX} ._simpleEditorInput{
+		._simpleEditorSelect,
+		._simpleEditorInput{
 			min-height: 35px;
 			font-family: Inter;
 			font-size: 12px;
@@ -649,33 +649,71 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border-radius: 6px;
 			color: #555;
 			background-color: #F8FAFB;
-			outline: none;
 			cursor: pointer;
 			padding: 5px 15px;
 			flex: 1;
 		}
 
-		${PREFIX} ._peMultiEditor > * {
+		._peMultiEditor > * {
 			border-radius: 0px;
-			padding: 0px;
+			padding: 5px 5px;
 		}
 
-		${PREFIX} ._peMultiEditor > *:first-child {
+		._peMultiEditor > *:first-child {
 			border-top-left-radius: 6px;
 			border-bottom-left-radius: 6px;
 			padding-left:15px;
 		}
 
-		${PREFIX} ._peMultiEditor > *:last-child {
+		._peMultiEditor > *:last-child {
 			border-top-right-radius: 6px;
 			border-bottom-right-radius: 6px;			
 			padding-right:15px;
 		}
 
-		${PREFIX} ._simpleEditorSelect {
+		._simpleEditorSelect {
 			text-transform: uppercase;
+			position: relative;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 4px;
 		}
 		
+		._simpleEditorSelect ._simpleEditorDropdownBody{
+			position: fixed;
+			min-width: 100%;
+			background-color: #FFF;
+			z-index: 1;
+			box-shadow: 0px 1px 4px 0px #00000026;
+			border-radius: 6px;
+			margin-top: 4px;
+			padding: 10px;
+			max-height: 250px;
+			overflow: auto;
+		}
+
+		._simpleEditorSelect ._selectedOption._placeholder {
+			text-transform: capitalize;
+			color: #757575;
+		}
+
+		._simpleEditorSelect ._simpleEditorDropdownBody ._simpleEditorDropdownOption {
+			height: 25px;
+			padding: 5px 10px;
+			color: rgba(0, 0, 0, 0.4); 
+			border-radius: 4px;
+			white-space: nowrap;
+		}
+
+		._simpleEditorSelect ._simpleEditorDropdownBody ._simpleEditorDropdownOption._hovered {
+			background-color: #F8FAFB;
+		}
+
+		._simpleEditorSelect ._simpleEditorDropdownBody ._simpleEditorDropdownOption._selected {
+			color: #333;
+			font-weight: bold;
+		}
 
 		${PREFIX} ._buttonBar._screenSizes {
 			height: 65px;
@@ -1201,9 +1239,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			gap: 10px;
 			align-items: center;
-			border: 2px solid #ddd;
+			border-bottom: 1px solid #ddd;
 			padding: 5px;
-			border-radius: 3px;
 			padding-top: 20px;
 			position: relative;
 		}
@@ -1243,6 +1280,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction: column;
 			gap: 5px;
 			flex:1;
+		}
+
+		${PREFIX} ._eachProperty ._eachProp {
+			padding: 5px 0px;
 		}
 
 		${PREFIX} ._codeEditor {
@@ -1360,6 +1401,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._popupContainer ._iconSelectionBrowser ._selectors {
 			display: flex;
 			gap: 5px;
+			align-items: center;
 		}
 
 		._popupContainer ._iconSelectionDisplay {
