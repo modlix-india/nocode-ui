@@ -9,7 +9,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'spanTextFont',
 		defaultValue: '<primaryFont>',
 		cssProperty: 'font',
-		selector: 'span._textContainer',
+		selector: 'span',
 	},
 	{
 		groupName: 'H1',
@@ -17,7 +17,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h1TextFont',
 		defaultValue: 'bold <quinaryFont>',
 		cssProperty: 'font',
-		selector: 'h1._textContainer',
+		selector: 'h1',
 	},
 	{
 		groupName: 'H2',
@@ -25,7 +25,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h2TextFont',
 		defaultValue: '<quinaryFont>',
 		cssProperty: 'font',
-		selector: 'h2._textContainer',
+		selector: 'h2',
 	},
 	{
 		groupName: 'H3',
@@ -33,7 +33,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h3TextFont',
 		defaultValue: 'bold <secondaryFont>',
 		cssProperty: 'font',
-		selector: 'h3._textContainer',
+		selector: 'h3',
 	},
 	{
 		groupName: 'H4',
@@ -41,7 +41,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h4TextFont',
 		defaultValue: '<secondaryFont>',
 		cssProperty: 'font',
-		selector: 'h4._textContainer',
+		selector: 'h4',
 	},
 	{
 		groupName: 'H5',
@@ -49,7 +49,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h5TextFont',
 		defaultValue: 'bold <tertiaryFont>',
 		cssProperty: 'font',
-		selector: 'h5._textContainer',
+		selector: 'h5',
 	},
 	{
 		groupName: 'H6',
@@ -57,7 +57,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h6TextFont',
 		defaultValue: '<tertiaryFont>',
 		cssProperty: 'font',
-		selector: 'h6._textContainer',
+		selector: 'h6',
 	},
 	{
 		groupName: 'I',
@@ -65,7 +65,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'iTextFont',
 		defaultValue: 'italic <primaryFont>',
 		cssProperty: 'font',
-		selector: 'i._textContainer',
+		selector: 'i',
 	},
 	{
 		groupName: 'P',
@@ -73,7 +73,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'pTextFont',
 		defaultValue: '<primaryFont>',
 		cssProperty: 'font',
-		selector: 'p._textContainer',
+		selector: 'p',
 	},
 	{
 		groupName: 'B',
@@ -81,7 +81,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'bTextFont',
 		defaultValue: 'bold <primaryFont>',
 		cssProperty: 'font',
-		selector: 'b._textContainer',
+		selector: 'b',
 	},
 	{
 		groupName: 'PRE',
@@ -89,7 +89,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'preTextFont',
 		defaultValue: '<primaryFont>',
 		cssProperty: 'font',
-		selector: 'pre._textContainer',
+		selector: 'pre',
 	},
 
 	{
@@ -98,7 +98,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'spanTextFontColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: 'span._textContainer',
+		selector: 'span',
 	},
 	{
 		groupName: 'H1',
@@ -106,7 +106,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h1TextFontColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: 'h1._textContainer',
+		selector: 'h1',
 	},
 	{
 		groupName: 'H2',
@@ -114,7 +114,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h2TextFontColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: 'h2._textContainer',
+		selector: 'h2',
 	},
 	{
 		groupName: 'H3',
@@ -122,7 +122,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h3TextFontColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: 'h3._textContainer',
+		selector: 'h3',
 	},
 	{
 		groupName: 'H4',
@@ -130,7 +130,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h4TextFontColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: 'h4._textContainer',
+		selector: 'h4',
 	},
 	{
 		groupName: 'H5',
@@ -138,7 +138,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h5TextFontColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: 'h5._textContainer',
+		selector: 'h5',
 	},
 	{
 		groupName: 'H6',
@@ -146,7 +146,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h6TextFontColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: 'h6._textContainer',
+		selector: 'h6',
 	},
 	{
 		groupName: 'I',
@@ -154,7 +154,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'iTextFontColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: 'i._textContainer',
+		selector: 'i',
 	},
 	{
 		groupName: 'P',
@@ -162,7 +162,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'pTextFontColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: 'p._textContainer',
+		selector: 'p',
 	},
 	{
 		groupName: 'B',
@@ -170,7 +170,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'bTextFontColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: 'p._textContainer',
+		selector: 'p',
 	},
 	{
 		groupName: 'PRE',
@@ -178,7 +178,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'preTextFontColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: 'pre._textContainer',
+		selector: 'pre',
 	},
 
 	{
@@ -187,7 +187,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'spanTextPadding',
 		defaultValue: '0',
 		cssProperty: 'padding',
-		selector: 'span._textContainer',
+		selector: 'span',
 	},
 	{
 		groupName: 'H1',
@@ -195,7 +195,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h1TextPadding',
 		defaultValue: '5px 0px',
 		cssProperty: 'padding',
-		selector: 'h1._textContainer',
+		selector: 'h1',
 	},
 	{
 		groupName: 'H2',
@@ -203,7 +203,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h2TextPadding',
 		defaultValue: '4px 0px',
 		cssProperty: 'padding',
-		selector: 'h2._textContainer',
+		selector: 'h2',
 	},
 	{
 		groupName: 'H3',
@@ -211,7 +211,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h3TextPadding',
 		defaultValue: '3px 0px',
 		cssProperty: 'padding',
-		selector: 'h3._textContainer',
+		selector: 'h3',
 	},
 	{
 		groupName: 'H4',
@@ -219,7 +219,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h4TextPadding',
 		defaultValue: '2px 0px',
 		cssProperty: 'padding',
-		selector: 'h4._textContainer',
+		selector: 'h4',
 	},
 	{
 		groupName: 'H5',
@@ -227,7 +227,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h5TextPadding',
 		defaultValue: '1px 0px',
 		cssProperty: 'padding',
-		selector: 'h5._textContainer',
+		selector: 'h5',
 	},
 	{
 		groupName: 'H6',
@@ -235,7 +235,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h6TextPadding',
 		defaultValue: '1px 0px',
 		cssProperty: 'padding',
-		selector: 'h6._textContainer',
+		selector: 'h6',
 	},
 	{
 		groupName: 'I',
@@ -243,7 +243,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'iTextPadding',
 		defaultValue: '0',
 		cssProperty: 'padding',
-		selector: 'i._textContainer',
+		selector: 'i',
 	},
 	{
 		groupName: 'P',
@@ -251,7 +251,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'pTextPadding',
 		defaultValue: '0',
 		cssProperty: 'padding',
-		selector: 'p._textContainer',
+		selector: 'p',
 	},
 	{
 		groupName: 'B',
@@ -259,7 +259,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'bTextPadding',
 		defaultValue: '0',
 		cssProperty: 'padding',
-		selector: 'p._textContainer',
+		selector: 'p',
 	},
 	{
 		groupName: 'PRE',
@@ -267,7 +267,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'preTextPadding',
 		defaultValue: '0',
 		cssProperty: 'padding',
-		selector: 'pre._textContainer',
+		selector: 'pre',
 	},
 
 	{
@@ -276,7 +276,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'spanTextMargin',
 		defaultValue: '0',
 		cssProperty: 'margin',
-		selector: 'span._textContainer',
+		selector: 'span',
 	},
 	{
 		groupName: 'H1',
@@ -284,7 +284,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h1TextMargin',
 		defaultValue: '5px 0px',
 		cssProperty: 'margin',
-		selector: 'h1._textContainer',
+		selector: 'h1',
 	},
 	{
 		groupName: 'H2',
@@ -292,7 +292,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h2TextMargin',
 		defaultValue: '4px 0px',
 		cssProperty: 'margin',
-		selector: 'h2._textContainer',
+		selector: 'h2',
 	},
 	{
 		groupName: 'H3',
@@ -300,7 +300,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h3TextMargin',
 		defaultValue: '3px 0px',
 		cssProperty: 'margin',
-		selector: 'h3._textContainer',
+		selector: 'h3',
 	},
 	{
 		groupName: 'H4',
@@ -308,7 +308,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h4TextMargin',
 		defaultValue: '2px 0px',
 		cssProperty: 'margin',
-		selector: 'h4._textContainer',
+		selector: 'h4',
 	},
 	{
 		groupName: 'H5',
@@ -316,7 +316,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h5TextMargin',
 		defaultValue: '1px 0px',
 		cssProperty: 'margin',
-		selector: 'h5._textContainer',
+		selector: 'h5',
 	},
 	{
 		groupName: 'H6',
@@ -324,7 +324,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h6TextMargin',
 		defaultValue: '1px 0px',
 		cssProperty: 'margin',
-		selector: 'h6._textContainer',
+		selector: 'h6',
 	},
 	{
 		groupName: 'I',
@@ -332,7 +332,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'iTextMargin',
 		defaultValue: '0',
 		cssProperty: 'margin',
-		selector: 'i._textContainer',
+		selector: 'i',
 	},
 	{
 		groupName: 'P',
@@ -340,7 +340,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'pTextMargin',
 		defaultValue: '0',
 		cssProperty: 'margin',
-		selector: 'p._textContainer',
+		selector: 'p',
 	},
 	{
 		groupName: 'B',
@@ -348,7 +348,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'bTextMargin',
 		defaultValue: '0',
 		cssProperty: 'margin',
-		selector: 'p._textContainer',
+		selector: 'p',
 	},
 	{
 		groupName: 'PRE',
@@ -356,7 +356,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'preTextMargin',
 		defaultValue: '0',
 		cssProperty: 'margin',
-		selector: 'pre._textContainer',
+		selector: 'pre',
 	},
 
 	{
@@ -364,77 +364,77 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'SPAN Text Decoration',
 		name: 'spanTextDecoration',
 		cssProperty: 'text-decoration',
-		selector: 'span._textContainer',
+		selector: 'span',
 	},
 	{
 		groupName: 'H1',
 		displayName: 'H1 Text Decoration',
 		name: 'h1TextDecoration',
 		cssProperty: 'text-decoration',
-		selector: 'h1._textContainer',
+		selector: 'h1',
 	},
 	{
 		groupName: 'H2',
 		displayName: 'H2 Text Decoration',
 		name: 'h2TextDecoration',
 		cssProperty: 'text-decoration',
-		selector: 'h2._textContainer',
+		selector: 'h2',
 	},
 	{
 		groupName: 'H3',
 		displayName: 'H3 Text Decoration',
 		name: 'h3TextDecoration',
 		cssProperty: 'text-decoration',
-		selector: 'h3._textContainer',
+		selector: 'h3',
 	},
 	{
 		groupName: 'H4',
 		displayName: 'H4 Text Decoration',
 		name: 'h4TextDecoration',
 		cssProperty: 'text-decoration',
-		selector: 'h4._textContainer',
+		selector: 'h4',
 	},
 	{
 		groupName: 'H5',
 		displayName: 'H5 Text Decoration',
 		name: 'h5TextDecoration',
 		cssProperty: 'text-decoration',
-		selector: 'h5._textContainer',
+		selector: 'h5',
 	},
 	{
 		groupName: 'H6',
 		displayName: 'H6 Text Decoration',
 		name: 'h6TextDecoration',
 		cssProperty: 'text-decoration',
-		selector: 'h6._textContainer',
+		selector: 'h6',
 	},
 	{
 		groupName: 'I',
 		displayName: 'I Text Decoration',
 		name: 'iTextDecoration',
 		cssProperty: 'text-decoration',
-		selector: 'i._textContainer',
+		selector: 'i',
 	},
 	{
 		groupName: 'P',
 		displayName: 'P Text Decoration',
 		name: 'pTextDecoration',
 		cssProperty: 'text-decoration',
-		selector: 'p._textContainer',
+		selector: 'p',
 	},
 	{
 		groupName: 'B',
 		displayName: 'B Text Decoration',
 		name: 'bTextDecoration',
 		cssProperty: 'text-decoration',
-		selector: 'p._textContainer',
+		selector: 'p',
 	},
 	{
 		groupName: 'PRE',
 		displayName: 'PRE Text Decoration',
 		name: 'preTextDecoration',
 		cssProperty: 'text-decoration',
-		selector: 'pre._textContainer',
+		selector: 'pre',
 	},
 ];
 
