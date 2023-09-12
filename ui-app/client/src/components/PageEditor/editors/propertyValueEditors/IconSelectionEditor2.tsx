@@ -1,12 +1,11 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ComponentPropertyDefinition } from '../../../../types/common';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediately,
 } from '../../../../context/StoreContext';
-import { isNullValue } from '@fincity/kirun-js';
+import { ComponentPropertyDefinition } from '../../../../types/common';
 import Portal from '../../../Portal';
-import { Dropdown } from '../stylePropertyValueEditors/SimpleEditors';
+import { Dropdown } from '../stylePropertyValueEditors/simpleEditors/Dropdown';
 
 interface IconSelectionEditorProps2 {
 	appPath: string | undefined;

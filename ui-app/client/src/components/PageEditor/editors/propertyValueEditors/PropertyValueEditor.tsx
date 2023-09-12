@@ -20,7 +20,7 @@ import { IconSelectionEditor2 } from './IconSelectionEditor2';
 import { ImageEditor } from './ImageEditor';
 import { ValidationEditor } from './ValidationEditor';
 import { AnimationValueEditor } from './AnimationValueEditor';
-import { Dropdown } from '../stylePropertyValueEditors/SimpleEditors';
+import { Dropdown } from '../stylePropertyValueEditors/simpleEditors/Dropdown';
 
 interface PropertyValueEditorProps {
 	propDef: ComponentPropertyDefinition;

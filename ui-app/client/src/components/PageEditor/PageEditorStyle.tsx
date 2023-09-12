@@ -600,43 +600,45 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			font-size: 10px;
 			letter-spacing: 0.5px;
 			transition: all 0.5s;
-			height: 12px;
+			height: 10px;
 			width: 20px;
-			border: 1px solid #aaa;
+			border: 1px solid #888;
 			cursor: pointer;
 			opacity:0.3;
 		}
 
 		${PREFIX} ._microToggle2::before {
 			content: '';
-			width: 8px;
-			height: 8px;
+			width: 6px;
+			height: 6px;
 			position: absolute;
-			background-color: #555;
+			background-color: #CCC;
 			border-radius: 50%;
 			right: 1px;
 			top: 50%;
 			transform: translateY(-50%);
 			transition: all 0.5s;
+			border: 1px solid #888;
 		}
 
 		${PREFIX} ._microToggle2._on {
-			color: #F8FAFB;
-			background-color: #555;
+			background-color: #52BD94;
 			opacity: 0.8;
+			border: 1px solid #198A61;
 		}
 
 		${PREFIX} ._microToggle2._on::before {
-			right: calc(100% - 9px);
+			right: calc(100% - 7px);
 			transform: translateY(-50%);
-			background-color: #F8FAFB;
+			background-color: #FFF;
+			border: 1px solid #FFF;
 		}
 
 		${PREFIX} ._peMultiEditor {
 			display: flex;
 			flex-direction: row;
 			align-items: center;
-			gap: 2px;
+			gap: 10px;
 			flex: 1;
 		}
 
@@ -654,22 +656,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex: 1;
 		}
 
-		._peMultiEditor > * {
-			border-radius: 0px;
-			padding: 5px 5px;
-		}
-
-		._peMultiEditor > *:first-child {
-			border-top-left-radius: 6px;
-			border-bottom-left-radius: 6px;
-			padding-left:15px;
-		}
-
-		._peMultiEditor > *:last-child {
-			border-top-right-radius: 6px;
-			border-bottom-right-radius: 6px;			
-			padding-right:15px;
-		}
+		
 
 		._simpleEditorSelect {
 			text-transform: uppercase;
@@ -932,6 +919,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._tabBar svg {
 			cursor: pointer;	
+			outline: none;
 		}
 
 		${PREFIX} ._tabBar svg path{
@@ -966,6 +954,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._styleButtonContainer button:hover {
 			background-color: #52BD94;
 			color: #FFF;
+			box-shadow: 0px 1px 3px 0px #0000001A;
 		}
 		${PREFIX} ._styleButtonContainer button:hover svg path {
 			fill: #FFF;
@@ -1014,7 +1003,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			gap: 5px;
 			border-radius: 4px;
 			position: relative;
-			margin-bottom: 10px;
 		}
 
 		._eachProp svg {
@@ -1194,6 +1182,14 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border-bottom: 1px solid rgba(0,0,0,0.05);
 		}
 
+		._propertyGroup._opened ._propertyGroupContent {
+			padding-bottom: 8px;
+		}
+
+		._propertyGroupContent {
+			transition: padding-bottom 0s;
+		}
+
 		._propertyGroupHeader {
 			font-family: Inter;
 			font-size: 13px;			
@@ -1206,7 +1202,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction: row;			
 			gap: 5px;
 			font-weight: 600;
-			margin-bottom: 15px;
+		}
+
+		._propertyGroupHeaderStar {
+			fill: #52BD94;
 		}
 
 		._propertyGroupHeaderIcon {
