@@ -787,7 +787,8 @@ export default function StylePropertyEditor({
 							tabName={reverseStyleSections ? 'advancedStyles' : 'styles'}
 							key={group.name}
 							name={group.name}
-							displayName={(withValueProps.length ? '★ ' : '') + group.displayName}
+							showStar={withValueProps.length ? true : false}
+							displayName={group.displayName}
 							defaultStateOpen={false}
 							pageExtractor={pageExtractor}
 							locationHistory={locationHistory}

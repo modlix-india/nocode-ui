@@ -600,36 +600,38 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			font-size: 10px;
 			letter-spacing: 0.5px;
 			transition: all 0.5s;
-			height: 12px;
+			height: 10px;
 			width: 20px;
-			border: 1px solid #aaa;
+			border: 1px solid #888;
 			cursor: pointer;
 			opacity:0.3;
 		}
 
 		${PREFIX} ._microToggle2::before {
 			content: '';
-			width: 8px;
-			height: 8px;
+			width: 6px;
+			height: 6px;
 			position: absolute;
-			background-color: #555;
+			background-color: #CCC;
 			border-radius: 50%;
 			right: 1px;
 			top: 50%;
 			transform: translateY(-50%);
 			transition: all 0.5s;
+			border: 1px solid #888;
 		}
 
 		${PREFIX} ._microToggle2._on {
-			color: #F8FAFB;
-			background-color: #555;
+			background-color: #52BD94;
 			opacity: 0.8;
+			border: 1px solid #198A61;
 		}
 
 		${PREFIX} ._microToggle2._on::before {
-			right: calc(100% - 9px);
+			right: calc(100% - 7px);
 			transform: translateY(-50%);
-			background-color: #F8FAFB;
+			background-color: #FFF;
+			border: 1px solid #FFF;
 		}
 
 		${PREFIX} ._peMultiEditor {
@@ -952,6 +954,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._styleButtonContainer button:hover {
 			background-color: #52BD94;
 			color: #FFF;
+			box-shadow: 0px 1px 3px 0px #0000001A;
 		}
 		${PREFIX} ._styleButtonContainer button:hover svg path {
 			fill: #FFF;
@@ -1199,6 +1202,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction: row;			
 			gap: 5px;
 			font-weight: 600;
+		}
+
+		._propertyGroupHeaderStar {
+			fill: #52BD94;
 		}
 
 		._propertyGroupHeaderIcon {
