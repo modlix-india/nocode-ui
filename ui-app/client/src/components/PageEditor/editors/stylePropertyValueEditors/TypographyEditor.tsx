@@ -1,15 +1,8 @@
 import React from 'react';
-import {
-	DropdownOptions,
-	EachSimpleEditor,
-	SimpleEditorType,
-	StyleEditorsProps,
-} from './SimpleEditors';
+import { EachSimpleEditor, StyleEditorsProps, SimpleEditorType } from './simpleEditors';
+import { DropdownOptions } from './simpleEditors/Dropdown';
 
-// 		'fontSize',
-// 		'fontWeight',
 // 		'color',
-// 		'textAlign',
 // 		'fontStyle',
 // 		'lineHeight',
 // 		'letterSpacing',
@@ -92,7 +85,7 @@ export function TypographyEditor({
 				saveStyle={saveStyle}
 				pageOperations={pageOperations}
 				properties={properties}
-				editorDef={{ type: SimpleEditorType.Dropdown, options: fonts }}
+				editorDef={{ type: SimpleEditorType.Dropdown, dropdownOptions: fonts }}
 			/>
 			<EachSimpleEditor
 				subComponentName={subComponentName}
@@ -112,6 +105,79 @@ export function TypographyEditor({
 				properties={properties}
 				editorDef={{ type: SimpleEditorType.PixelSize }}
 			/>
+			<EachSimpleEditor
+				subComponentName={subComponentName}
+				pseudoState={pseudoState}
+				prop="fontWeight"
+				placeholder="Font Weight"
+				iterateProps={iterateProps}
+				pageDef={pageDef}
+				editPageName={editPageName}
+				slaveStore={slaveStore}
+				storePaths={storePaths}
+				selectorPref={selectorPref}
+				styleProps={styleProps}
+				selectedComponent={selectedComponent}
+				saveStyle={saveStyle}
+				pageOperations={pageOperations}
+				properties={properties}
+				editorDef={{
+					type: SimpleEditorType.Dropdown,
+					dropdownOptions: [
+						{ name: '100', displayName: '100' },
+						{ name: '200', displayName: '200' },
+						{ name: '300', displayName: '300' },
+						{ name: '400', displayName: '400 - Normal' },
+						{ name: '500', displayName: '500' },
+						{ name: '600', displayName: '600' },
+						{ name: '700', displayName: '700 - Bold' },
+						{ name: '800', displayName: '800' },
+						{ name: '900', displayName: '900' },
+						{ name: 'normal', displayName: 'Normal' },
+						{ name: 'bold', displayName: 'Bold' },
+						{ name: 'lighter', displayName: 'Lighter' },
+						{ name: 'bolder', displayName: 'Bolder' },
+						{ name: 'unset', displayName: 'Un Set' },
+					],
+				}}
+			/>
+			<div className="_combineEditors">
+				<EachSimpleEditor
+					subComponentName={subComponentName}
+					pseudoState={pseudoState}
+					prop="textAlign"
+					iterateProps={iterateProps}
+					pageDef={pageDef}
+					editPageName={editPageName}
+					slaveStore={slaveStore}
+					storePaths={storePaths}
+					selectorPref={selectorPref}
+					styleProps={styleProps}
+					selectedComponent={selectedComponent}
+					saveStyle={saveStyle}
+					pageOperations={pageOperations}
+					properties={properties}
+					editorDef={{
+						type: SimpleEditorType.Icons,
+						dropdownOptions: [
+							{ name: '100', displayName: '100' },
+							{ name: '200', displayName: '200' },
+							{ name: '300', displayName: '300' },
+							{ name: '400', displayName: '400 - Normal' },
+							{ name: '500', displayName: '500' },
+							{ name: '600', displayName: '600' },
+							{ name: '700', displayName: '700 - Bold' },
+							{ name: '800', displayName: '800' },
+							{ name: '900', displayName: '900' },
+							{ name: 'normal', displayName: 'Normal' },
+							{ name: 'bold', displayName: 'Bold' },
+							{ name: 'lighter', displayName: 'Lighter' },
+							{ name: 'bolder', displayName: 'Bolder' },
+							{ name: 'unset', displayName: 'Un Set' },
+						],
+					}}
+				/>
+			</div>
 		</>
 	);
 }

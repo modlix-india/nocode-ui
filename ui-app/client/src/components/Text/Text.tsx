@@ -117,7 +117,7 @@ function MarkDown({ text }: { text: string }) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-heading',
+	icon: 'fa fa-solid fa-heading',
 	name: 'Text',
 	displayName: 'Text',
 	description: 'Text component',
