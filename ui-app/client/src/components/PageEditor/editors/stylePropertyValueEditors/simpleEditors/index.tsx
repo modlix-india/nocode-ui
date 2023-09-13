@@ -11,7 +11,7 @@ import {
 import PageOperations from '../../../functions/PageOperations';
 
 import { DropdownOptions, Dropdown } from './Dropdown';
-import { IconOptions } from './Icons';
+import { IconOptions, IconsSimpleEditor } from './IconsSimpleEditor';
 import { PixelSize } from './PixelSize';
 
 export function EachSimpleEditor({
@@ -34,7 +34,8 @@ export function EachSimpleEditor({
 	showTitle = false,
 	editorInNewLine = false,
 	placeholder,
-}: StyleEditorsProps & { prop: string; editorDef: SimpleEditorDefinition }) {
+	className = '',
+}: StyleEditorsProps & { prop: string; editorDef: SimpleEditorDefinition; className?: string }) {
 	if (!properties) return <></>;
 
 	const { value, actualProp, propName, screenSize, compProp } = extractValue({
@@ -47,7 +48,7 @@ export function EachSimpleEditor({
 	});
 
 	let editor = undefined;
-	const editorOnchange = (v: string) =>
+	const editorOnchange = (v: string | Array<String>) =>
 		valueChanged({
 			styleProps,
 			properties,
@@ -57,7 +58,7 @@ export function EachSimpleEditor({
 			pseudoState,
 			saveStyle,
 			iterateProps,
-			value: { value: !v ? '' : v },
+			value: { value: !v ? '' : v.toString() },
 		});
 
 	switch (editorDef.type) {
@@ -68,6 +69,8 @@ export function EachSimpleEditor({
 					onChange={editorOnchange}
 					options={editorDef.dropdownOptions!}
 					placeholder={placeholder}
+					multipleValueType={editorDef.multipleValueType}
+					multiSelect={editorDef.multiSelect}
 				/>
 			);
 			break;
@@ -77,6 +80,20 @@ export function EachSimpleEditor({
 					value={value.value}
 					onChange={editorOnchange}
 					placeholder={placeholder}
+					min={editorDef.rangeMin ?? 0}
+					max={editorDef.rangeMax ?? 100}
+				/>
+			);
+			break;
+		case SimpleEditorType.Icons:
+			editor = (
+				<IconsSimpleEditor
+					options={editorDef.iconButtonOptions!}
+					selected={value.value}
+					onChange={editorOnchange}
+					withBackground={editorDef.iconButtonsBackground}
+					multipleValueType={editorDef.multipleValueType}
+					multiSelect={editorDef.multiSelect}
 				/>
 			);
 			break;
@@ -102,8 +119,8 @@ export function EachSimpleEditor({
 
 	if (!editorInNewLine) {
 		return (
-			<div className="_eachProp">
-				<div className="_propLabel" title="Name">
+			<div className={`_eachProp _simpleEditor ${className}`}>
+				<div className="_propLabel" title={displayName}>
 					{title}
 					{editor}
 				</div>
@@ -112,7 +129,7 @@ export function EachSimpleEditor({
 	}
 
 	return (
-		<div className="_eachProp">
+		<div className={`_eachProp _simpleEditor ${className}`}>
 			<div className="_propLabel" title="Name">
 				{title}
 			</div>
@@ -135,6 +152,19 @@ export interface SimpleEditorDefinition {
 	type: SimpleEditorType;
 	dropdownOptions?: DropdownOptions;
 	iconButtonOptions?: IconOptions;
+	iconButtonsBackground?: boolean;
+	multiSelect?: boolean;
+	multipleValueType?: SimpleEditorMultipleValueType;
+	rangeMin?: number;
+	rangeMax?: number;
+}
+
+export enum SimpleEditorMultipleValueType {
+	CommaSeparated = ',',
+	NewLineSeparated = '\n',
+	SpaceSeparated = ' ',
+	SemicolonSeparated = ';',
+	Array = 'Array',
 }
 
 export interface StyleEditorsProps {
