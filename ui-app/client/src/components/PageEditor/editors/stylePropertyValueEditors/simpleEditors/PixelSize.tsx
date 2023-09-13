@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { Dropdown } from './Dropdown';
+import { RangeSlider } from './RangeSlider';
 
 export function PixelSize({
 	value = '',
 	onChange,
 	placeholder,
+	min = 0,
+	max = 100,
 }: {
 	value: string;
 	onChange: (v: string) => void;
 	placeholder?: string;
+	min?: number;
+	max?: number;
 }) {
 	let num = '';
 	let unit = 'px';
@@ -25,7 +30,14 @@ export function PixelSize({
 	}, [num]);
 
 	return (
-		<div className="_peMultiEditor">
+		<div className="_simpleEditorPixelSize">
+			<RangeSlider
+				value={Number(inNum)}
+				onChange={v => onChange(String(v) + unit)}
+				min={min}
+				max={max}
+				step={1}
+			/>
 			<input
 				tabIndex={0}
 				className="_simpleEditorInput"
@@ -57,7 +69,6 @@ export function PixelSize({
 					else onChange(inNum + unit);
 				}}
 			/>
-
 			<Dropdown
 				value={unit}
 				onChange={v => onChange(num + v)}

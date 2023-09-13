@@ -547,13 +547,11 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._propLabel._svgButtons .svgContainer:last-child {
-			padding-right: 5px;
 			border-top-right-radius: 6px;
 			border-bottom-right-radius: 6px;
 		}
 
 		${PREFIX} ._propLabel._svgButtons .svgContainer:first-child {
-			padding-left: 5px;
 			border-top-left-radius: 6px;
 			border-bottom-left-radius: 6px;
 		}
@@ -634,17 +632,36 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border: 1px solid #FFF;
 		}
 
-		${PREFIX} ._peMultiEditor {
+		._confineWidth {
+			overflow: hidden;
+		}
+
+		._simpleEditorPixelSize {
 			display: flex;
 			flex-direction: row;
 			align-items: center;
-			gap: 10px;
+			gap: 2px;
 			flex: 1;
+			overflow: hidden;
+		}
+
+		._simpleEditorPixelSize ._simpleEditorInput {
+			flex: 1;
+		}
+
+		._simpleEditorPixelSize ._simpleEditorSelect {
+			flex: 1;
+		}
+
+		._simpleEditorPixelSize ._simpleEditorRange {
+			flex: 1.5;
+			margin-right: 12px;
 		}
 
 		._simpleEditorSelect,
 		._simpleEditorInput{
 			min-height: 35px;
+			min-width: 35px;
 			font-family: Inter;
 			font-size: 12px;
 			border: none;
@@ -656,7 +673,55 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex: 1;
 		}
 
-		
+		._simpleEditorRange {
+			position: relative;
+		}
+
+		._simpleEditorRange ._rangeTrack {
+			width: 100%;
+			min-width: 60px;
+			height: 2px;
+			border-radius: 10px;
+			background-color: #E2E2E7;			
+			left: 0;
+			z-index: 1;
+		}
+
+		._simpleEditorRange ._rangeTrackFill {
+			width: 0%;
+			height: 2px;
+			border-radius: 10px;
+			background-color: #4C7FEE;
+			position: absolute;
+			left: 0;
+			z-index: 1;
+			margin-top: -2px;
+			transition: width 0s;
+		}
+
+		._simpleEditorRange ._rangeThumb {
+			width: 12px;
+			height: 12px;
+			border-radius: 50%;
+			background-color: #FFF;
+			position: absolute;
+			top: -5px;
+			z-index: 1;
+			cursor: pointer;
+			box-shadow: 0px 1px 4px 0px #0000001A;
+			cursor: pointer;
+		}
+
+		._simpleEditorRange ._rangeThumb::before {
+			content: '';
+			position: absolute;
+			width: 60%;
+			height: 60%;
+			left: 20%;
+			top: 20%;
+			border-radius: 50%;
+			background-color: #4C7FEE;
+		}
 
 		._simpleEditorSelect {
 			text-transform: uppercase;
@@ -671,7 +736,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			position: fixed;
 			min-width: 100%;
 			background-color: #FFF;
-			z-index: 1;
+			z-index: 2;
 			box-shadow: 0px 1px 4px 0px #00000026;
 			border-radius: 6px;
 			margin-top: 4px;
@@ -700,6 +765,91 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._simpleEditorSelect ._simpleEditorDropdownBody ._simpleEditorDropdownOption._selected {
 			color: #333;
 			font-weight: bold;
+		}
+
+		._simpleEditorIcons {
+			border-radius: 6px;
+			display: flex;
+			align-items: center;
+			flex-direction: row;		
+		}
+
+		._simpleEditorIcons ._eachIcon {
+			cursor: pointer;
+			
+			height: 30px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			cursor: pointer;
+		}
+
+		._simpleEditorIcons._bground ._eachIcon {
+			background: #F8FAFB;
+		}
+
+		._simpleEditorIcons ._eachIcon:first-child {
+			border-top-left-radius: 6px;
+			border-bottom-left-radius: 6px;
+		}
+
+		._simpleEditorIcons ._eachIcon:last-child {
+			border-top-right-radius: 6px;
+			border-bottom-right-radius: 6px;
+		}
+
+		._simpleEditorIcons._bground ._eachIcon:hover,
+		._simpleEditorIcons._bground ._eachIcon._active {
+			background: #EEF3FA;
+		}
+
+		._simpleEditorIcons ._eachIcon svg path,
+		._simpleEditorIcons ._eachIcon svg circle,
+		._simpleEditorIcons ._eachIcon svg rect,
+		._simpleEditorIcons ._eachIcon svg rect {
+			fill: #333333;
+			stroke: rgba(142, 144, 164, 0.5);
+		}
+
+		._simpleEditorIcons._bground ._eachIcon svg path,
+		._simpleEditorIcons._bground ._eachIcon svg circle,
+		._simpleEditorIcons._bground ._eachIcon svg rect,
+		._simpleEditorIcons._bground ._eachIcon svg line {
+			fill: #E3E5EA;
+			stroke: rgba(142, 144, 164, 0.5);
+		}
+
+		._simpleEditorIcons ._eachIcon:hover svg path,
+		._simpleEditorIcons ._eachIcon:hover svg circle,
+		._simpleEditorIcons ._eachIcon:hover svg rect,
+		._simpleEditorIcons ._eachIcon._active svg path,
+		._simpleEditorIcons ._eachIcon._active svg circle,
+		._simpleEditorIcons ._eachIcon._active svg rect {
+			fill: #3A8BED;
+			stroke: #3A8BED;
+		}
+
+		._combineEditors {
+			display: flex;
+			flex-direction: row;
+			align-items: center;			
+			padding: 5px 20px;
+		}
+
+		._combineEditors ._combineEditors {
+			padding: 0;
+		}
+
+		._combineEditors ._eachProp {
+			padding: 0;
+		}
+
+		._combineEditors ._spacer {
+			width: 10px;
+		}
+
+		._combineEditors._spaceBetween {
+			justify-content: space-between;
 		}
 
 		${PREFIX} ._buttonBar._screenSizes {
