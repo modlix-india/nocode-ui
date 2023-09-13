@@ -1,4 +1,5 @@
-import React, { CSSProperties, useRef, useState } from 'react';
+import React, { CSSProperties, useMemo, useRef, useState } from 'react';
+import { SimpleEditorMultipleValueType } from '.';
 
 export type DropdownOptions = Array<{ name: string; displayName: string; description?: string }>;
 
@@ -9,13 +10,17 @@ export function Dropdown({
 	placeholder,
 	selectNoneLabel = '- None -',
 	showNoneLabel = true,
+	multipleValueType = SimpleEditorMultipleValueType.SpaceSeparated,
+	multiSelect = false,
 }: {
 	value: string;
-	onChange: (v: string) => void;
+	onChange: (v: string | Array<string>) => void;
 	options: DropdownOptions;
 	placeholder?: string;
 	selectNoneLabel?: string;
 	showNoneLabel?: boolean;
+	multipleValueType?: SimpleEditorMultipleValueType;
+	multiSelect?: boolean;
 }) {
 	const options = showNoneLabel
 		? [{ name: '', displayName: selectNoneLabel }, ...orignalOptions]
@@ -23,10 +28,24 @@ export function Dropdown({
 
 	let label = undefined;
 
+	const selection = useMemo(() => {
+		if (!multiSelect) return new Set<string>([value]);
+		if (!value) return new Set<string>();
+		if (multipleValueType === SimpleEditorMultipleValueType.Array)
+			return new Set<string>(value);
+		return new Set<string>(value.split(multipleValueType.toString()));
+	}, [value]);
+
 	if (value) {
 		label = (
 			<span className="_selectedOption">
-				{options.find(e => e.name === value)?.displayName}
+				{Array.from(selection)
+					.map(s => options.find(e => e.name === s)?.displayName)
+					.join(
+						multipleValueType === SimpleEditorMultipleValueType.Array
+							? ', '
+							: multipleValueType.toString(),
+					)}
 			</span>
 		);
 	} else {
@@ -64,11 +83,24 @@ export function Dropdown({
 						key={o.name}
 						className={`_simpleEditorDropdownOption ${
 							i === currentOption ? '_hovered' : ''
-						} ${o.name === value ? '_selected' : ''}`}
+						} ${selection.has(o.name) ? '_selected' : ''}`}
 						onClick={() => {
 							setOpen(false);
-							onChange(o.name);
 							setTimeout(() => dropDown.current?.blur(), 0);
+							if (!multiSelect) {
+								onChange(value === o.name ? '' : o.name);
+								return;
+							}
+
+							let arr = Array.from(selection);
+							if (selection.has(o.name)) arr.splice(arr.indexOf(o.name), 1);
+							else arr.push(o.name);
+
+							onChange(
+								multipleValueType === SimpleEditorMultipleValueType.Array
+									? arr
+									: arr.join(multipleValueType.toString()),
+							);
 						}}
 						onMouseOver={() => setCurrentOption(i)}
 						title={o.description}
