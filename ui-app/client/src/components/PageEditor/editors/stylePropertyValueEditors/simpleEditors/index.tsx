@@ -14,28 +14,41 @@ import { DropdownOptions, Dropdown } from './Dropdown';
 import { IconOptions, IconsSimpleEditor } from './IconsSimpleEditor';
 import { PixelSize } from './PixelSize';
 
+export interface SimpleStyleEditorsProps {
+	pseudoState: string;
+	subComponentName: string;
+	iterateProps: any;
+	placeholder?: string;
+	selectorPref: any;
+	styleProps: ComponentStyle | undefined;
+	selectedComponent: string;
+	saveStyle: (newStyleProps: ComponentStyle) => void;
+	properties: [string, EachComponentStyle] | undefined;
+	displayName?: string;
+	showTitle?: boolean;
+	editorInNewLine?: boolean;
+	prop: string;
+	editorDef: SimpleEditorDefinition;
+	className?: string;
+}
+
 export function EachSimpleEditor({
 	subComponentName,
 	displayName,
 	pseudoState,
 	iterateProps,
 	prop,
-	pageDef,
-	editPageName,
-	slaveStore,
-	storePaths,
 	selectorPref,
 	styleProps,
 	selectedComponent,
 	saveStyle,
-	pageOperations,
 	properties,
 	editorDef,
 	showTitle = false,
 	editorInNewLine = false,
 	placeholder,
 	className = '',
-}: StyleEditorsProps & { prop: string; editorDef: SimpleEditorDefinition; className?: string }) {
+}: SimpleStyleEditorsProps) {
 	if (!properties) return <></>;
 
 	const { value, actualProp, propName, screenSize, compProp } = extractValue({
@@ -257,6 +270,8 @@ export function valueChanged({
 	) {
 		delete newProps[properties[0]].resolutions![screenSize]![actualProp];
 	} else {
+		if (newProps[properties[0]].resolutions![screenSize]![actualProp])
+			value = { ...newProps[properties[0]].resolutions![screenSize]![actualProp], ...value };
 		newProps[properties[0]].resolutions![screenSize]![actualProp] = value;
 	}
 
