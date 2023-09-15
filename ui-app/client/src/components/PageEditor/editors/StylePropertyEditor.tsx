@@ -471,7 +471,7 @@ export default function StylePropertyEditor({
 					</button>
 				</div>
 			</div>
-			<div className="_overflowContainer">
+			<div className="_overflowContainer _withCopyButtons">
 				<PropertyGroup
 					name="selector"
 					displayName="Selector"
@@ -508,7 +508,10 @@ export default function StylePropertyEditor({
 													] ?? {},
 												).length
 											)
-												return { ...e, displayName: `★ ${e.displayName}` };
+												return {
+													...e,
+													displayName: `★ ${e.displayName}`,
+												};
 											return e;
 										})
 										.sort((a, b) => a.order - b.order),
