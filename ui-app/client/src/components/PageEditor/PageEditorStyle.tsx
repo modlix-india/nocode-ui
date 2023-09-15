@@ -257,8 +257,12 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._overflowContainer {
-			height: calc(100vh - 158px);
+			height: calc(100vh - 138px);
 			overflow: auto;
+		}
+
+		${PREFIX} ._overflowContainer._withCopyButtons {
+			height: calc(100vh - 183px);
 		}
 
 		${PREFIX} ._addSelector {
@@ -829,6 +833,75 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			stroke: #3A8BED;
 		}
 
+		._simpleEditorColorSelector {
+			background: linear-gradient(to right,red 0,#ff0 16.66%,#0f0 33.33%,#0ff 50%,#00f 66.66%,#f0f 83.33%,red 100%);
+			width: 20px;
+			height: 20px;
+			border-radius: 50%;
+			cursor: pointer;
+			border: 3px solid #FFF;
+			box-shadow: 0px 0px 5px 3px #00000017;
+			position: relative;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody {
+			position: fixed;
+			background-color: #FFF;
+			z-index: 2;
+			box-shadow: 0px 1px 4px 0px #00000026;
+			border-radius: 6px;
+			padding: 10px;
+			height: 250px;
+			width: 250px;
+			margin-left: -240px;
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._saturation_value_picker{
+			height: 150px;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._hue_picker{
+			background: linear-gradient(to right,red 0,#ff0 16.66%,#0f0 33.33%,#0ff 50%,#00f 66.66%,#f0f 83.33%,red 100%);
+			height: 10px;
+			width: 100%;
+			border-radius: 8px;
+			position: relative;
+			margin-bottom: 10px;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._alpha_picker {
+			cursor: pointer;
+			height: 10px;
+			position: relative;
+		}
+
+		._simpleEditorColorSelector ._thumb {
+			width: 16px;
+			height: 16px;
+			border-radius: 50%;
+			background-color: #FFF;
+			position: absolute;
+			top: -3px;
+			z-index: 1;
+			cursor: pointer;
+			box-shadow: 0px 2px 4px 0px #00000033;
+			cursor: pointer;
+		}
+		
+		._simpleEditorColorSelector ._thumbInner {
+			position: absolute;
+			width: 60%;
+			height: 60%;
+			left: 20%;
+			top: 20%;
+			border-radius: 50%;
+			background-color: #4C7FEE;
+		}
+
+
 		._combineEditors {
 			display: flex;
 			flex-direction: row;
@@ -844,8 +917,9 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			padding: 0;
 		}
 
-		._combineEditors ._spacer {
+		._spacer {
 			width: 10px;
+			height: 15px;
 		}
 
 		._combineEditors._spaceBetween {
