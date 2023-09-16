@@ -262,7 +262,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._overflowContainer._withCopyButtons {
-			height: calc(100vh - 183px);
+			height: calc(100vh - 210px);
 		}
 
 		${PREFIX} ._addSelector {
@@ -851,7 +851,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			box-shadow: 0px 1px 4px 0px #00000026;
 			border-radius: 6px;
 			padding: 10px;
-			height: 250px;
+			min-height: 250px;
 			width: 250px;
 			margin-left: -240px;
 			display: flex;
@@ -860,7 +860,13 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		._simpleEditorColorSelector ._colorPickerBody ._saturation_value_picker{
+			position: relative;
 			height: 150px;
+			border-radius: 6px;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._saturation_value_picker ._thumb {
+			margin-top: -8px;
 		}
 
 		._simpleEditorColorSelector ._colorPickerBody ._hue_picker{
@@ -876,6 +882,23 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			cursor: pointer;
 			height: 10px;
 			position: relative;
+			flex: 3;
+			margin-right: 8px;
+			background-image:
+				linear-gradient(45deg, #EFEFEF 25%, transparent 25%),
+				linear-gradient(-45deg, #EFEFEF 25%, transparent 25%),
+				linear-gradient(45deg, transparent 75%, #EFEFEF 75%),
+				linear-gradient(-45deg, transparent 75%, #EFEFEF 75%);
+  			background-size: 10px 10px;
+  			background-position: 0 0, 0 5px, 5px -5px, -5px 0px;
+			border-radius: 8px;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._alpha_picker_gradient {
+			position: absolute;
+			height: 100%;
+			width: 100%;
+			border-radius: 8px;
 		}
 
 		._simpleEditorColorSelector ._thumb {
@@ -884,11 +907,14 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border-radius: 50%;
 			background-color: #FFF;
 			position: absolute;
-			top: -3px;
+			top: -4px;
 			z-index: 1;
 			cursor: pointer;
 			box-shadow: 0px 2px 4px 0px #00000033;
 			cursor: pointer;
+			margin-left: -8px;
+			border: 3px solid #FFF;
+			pointer-events: none;
 		}
 		
 		._simpleEditorColorSelector ._thumbInner {
@@ -901,12 +927,22 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			background-color: #4C7FEE;
 		}
 
+		._hexInput {
+			flex: 2;
+		}
+
 
 		._combineEditors {
 			display: flex;
 			flex-direction: row;
 			align-items: center;			
 			padding: 5px 20px;
+			gap: 3px;
+		}
+
+		._combineEditors ._simpleEditorInput,
+		._combineEditors ._simpleEditorSelect {
+			padding: 8px;
 		}
 
 		._combineEditors ._combineEditors {

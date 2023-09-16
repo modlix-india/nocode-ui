@@ -19,6 +19,7 @@ import { returnFileSize } from '../util/getFileSize';
 import { SubHelperComponent } from '../SubHelperComponent';
 import { MESSAGE_TYPE, addMessage } from '../../App/Messages/Messages';
 import { ToArray } from '../../util/csvUtil';
+import { styleDefaults } from './fileUploadStyleProperties';
 
 function FileUpload(props: ComponentProps) {
 	const [fileValue, setFileValue] = useState<any>();
@@ -360,6 +361,7 @@ const component: Component = {
 	description: 'FileUpload Component',
 	component: FileUpload,
 	styleComponent: FileUploadStyles,
+	styleDefaults: styleDefaults,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,

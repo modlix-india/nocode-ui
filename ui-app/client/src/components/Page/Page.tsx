@@ -17,6 +17,7 @@ import { propertiesDefinition, stylePropertiesDefinition } from './pagePropertie
 import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import pageHistory from './pageHistory';
+import { styleDefaults } from './pageStyleProperties';
 
 function PageComponent(props: ComponentProps) {
 	const {
@@ -152,6 +153,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: PageStyle,
+	styleDefaults: styleDefaults,
 };
 
 export default component;

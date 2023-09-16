@@ -12,6 +12,7 @@ import useDefinition from '../util/useDefinition';
 import { duplicate } from '@fincity/kirun-js';
 import TableColumns from '../TableColumns/TableColumns';
 import { difference } from '../../util/setOperations';
+import { styleDefaults } from './tableDynamicColumnsStyleProperties';
 
 function fieldToName(field: string): string {
 	return field
@@ -158,6 +159,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TableDynamicColumnsStyle,
+	styleDefaults: styleDefaults,
 	parentType: 'Table',
 	stylePseudoStates: ['hover'],
 };

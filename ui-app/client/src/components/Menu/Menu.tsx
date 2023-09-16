@@ -15,6 +15,7 @@ import useDefinition from '../util/useDefinition';
 import MenuStyle from './MenuStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './menuProperties';
 import Children from '../Children';
+import { styleDefaults } from './menuStyleProperties';
 
 function Menu(props: ComponentProps) {
 	const location = useLocation();
@@ -296,6 +297,7 @@ const component: Component = {
 	description: 'Menu component',
 	component: Menu,
 	styleComponent: MenuStyle,
+	styleDefaults: styleDefaults,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,

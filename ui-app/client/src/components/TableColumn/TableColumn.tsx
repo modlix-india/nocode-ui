@@ -11,6 +11,7 @@ import Children from '../Children';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { deepEqual, ExpressionEvaluator } from '@fincity/kirun-js';
 import { getExtractionMap } from '../util/getRenderData';
+import { styleDefaults } from './tableColumnStyleProperties';
 
 function TableColumnComponent(props: ComponentProps) {
 	const {
@@ -71,6 +72,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TableColumnStyle,
+	styleDefaults: styleDefaults,
 	allowedChildrenType: new Map<string, number>([['', 1]]),
 	parentType: 'TableColumns',
 	stylePseudoStates: ['hover'],

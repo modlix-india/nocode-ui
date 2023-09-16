@@ -10,6 +10,7 @@ import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { getRenderData } from '../util/getRenderData';
 import { SubHelperComponent } from '../SubHelperComponent';
+import { styleDefaults } from './textListStyleProperties';
 
 function TextList(props: ComponentProps) {
 	const {
@@ -179,6 +180,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TextListStyle,
+	styleDefaults: styleDefaults,
 	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['hover'],
 	defaultTemplate: {

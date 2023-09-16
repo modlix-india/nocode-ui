@@ -8,6 +8,7 @@ import { SubHelperComponent } from '../SubHelperComponent';
 import useDefinition from '../util/useDefinition';
 import AnimatorStyle from './AnimatorStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './animatorProperties';
+import { styleDefaults } from './animatorStyleProperties';
 
 function makeAnimationString(animations: any[]): string {
 	if (!animations?.length) return '';
@@ -141,6 +142,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: AnimatorStyle,
+	styleDefaults: styleDefaults,
 	allowedChildrenType: new Map<string, number>([['', 1]]),
 	styleProperties: stylePropertiesDefinition,
 	defaultTemplate: {
