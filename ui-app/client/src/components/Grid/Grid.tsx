@@ -19,6 +19,7 @@ import { flattenUUID } from '../util/uuid';
 import GridStyle from './GridStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './gridProperties';
 import { isNullValue } from '@fincity/kirun-js';
+import { styleDefaults } from './gridStyleProperties';
 
 function Grid(props: ComponentProps) {
 	const location = useLocation();
@@ -334,6 +335,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: GridStyle,
+	styleDefaults: styleDefaults,
 	stylePseudoStates: ['hover', 'focus', 'readonly'],
 	allowedChildrenType: new Map<string, number>([['', -1]]),
 	styleProperties: stylePropertiesDefinition,

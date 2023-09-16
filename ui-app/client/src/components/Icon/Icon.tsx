@@ -7,6 +7,7 @@ import { Component } from '../../types/common';
 import IconStyle from './IconStyle';
 import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import { styleDefaults } from './iconStyleProperies';
 
 function Icon(props: ComponentProps) {
 	const { definition, locationHistory, context } = props;
@@ -45,6 +46,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: IconStyle,
+	styleDefaults: styleDefaults,
 	styleProperties: stylePropertiesDefinition,
 	defaultTemplate: {
 		key: '',

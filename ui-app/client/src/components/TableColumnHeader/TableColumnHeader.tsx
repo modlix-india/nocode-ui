@@ -11,6 +11,7 @@ import Children from '../Children';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { deepEqual, ExpressionEvaluator } from '@fincity/kirun-js';
 import { getExtractionMap } from '../util/getRenderData';
+import { styleDefaults } from './tableColumnHeaderStyleProperties';
 
 function TableColumnHeaderComponent(props: ComponentProps) {
 	const {
@@ -52,6 +53,7 @@ const component: Component = {
 	styleProperties: stylePropertiesDefinition,
 	properties: propertiesDefinition,
 	styleComponent: TableColumnHeaderStyle,
+	styleDefaults: styleDefaults,
 	isHidden: true,
 };
 

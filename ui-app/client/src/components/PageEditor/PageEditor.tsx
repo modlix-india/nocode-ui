@@ -30,6 +30,7 @@ import { allPaths } from '../../util/allPaths';
 import { LOCAL_STORE_PREFIX, PAGE_STORE_PREFIX, STORE_PREFIX } from '../../constants';
 import ComponentDefinitions from '../';
 import { deepEqual, duplicate } from '@fincity/kirun-js';
+import { styleDefaults } from './pageEditorStyleProperties';
 
 function savePersonalizationCurry(
 	personalizationPath: string,
@@ -681,6 +682,7 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	styleComponent: GridStyle,
+	styleDefaults: styleDefaults,
 	bindingPaths: {
 		bindingPath: { name: 'Definition' },
 		bindingPath2: { name: 'Personalization' },

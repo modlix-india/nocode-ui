@@ -132,6 +132,7 @@ export interface Component {
 	properties: Array<ComponentPropertyDefinition>;
 	styleProperties?: ComponentStylePropertyDefinition;
 	stylePseudoStates?: Array<string>;
+	styleDefaults: Map<string, string>;
 	allowedChildrenType?: Map<string, number>;
 	parentType?: string;
 	isHidden?: boolean;

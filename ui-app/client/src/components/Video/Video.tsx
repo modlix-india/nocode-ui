@@ -9,6 +9,7 @@ import { isNullValue } from '@fincity/kirun-js';
 
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { SubHelperComponent } from '../SubHelperComponent';
+import { styleDefaults } from './videoStyleProperties';
 
 function Video(props: ComponentProps) {
 	const { definition, locationHistory, context, pageDefinition } = props;
@@ -406,6 +407,7 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	styleComponent: VideoStyle,
+	styleDefaults: styleDefaults,
 	allowedChildrenType: new Map<string, number>([['', -1]]),
 };
 

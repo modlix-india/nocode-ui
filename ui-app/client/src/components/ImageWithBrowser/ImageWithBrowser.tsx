@@ -23,6 +23,7 @@ import { useLocation } from 'react-router-dom';
 import { SubHelperComponent } from '../SubHelperComponent';
 import { isNullValue } from '@fincity/kirun-js';
 import ImageBrowser from './ImageBrowser';
+import { styleDefaults } from './imageWithBrowserStyleProperties';
 
 function ImageWithBrowser(props: ComponentProps) {
 	const {
@@ -181,6 +182,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: ImageStyle,
+	styleDefaults: styleDefaults,
 	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['hover'],
 	defaultTemplate: {

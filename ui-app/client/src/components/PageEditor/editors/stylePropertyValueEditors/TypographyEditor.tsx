@@ -76,15 +76,10 @@ export function TypographyEditor({
 				prop="fontFamily"
 				placeholder="Font Family"
 				iterateProps={iterateProps}
-				pageDef={pageDef}
-				editPageName={editPageName}
-				slaveStore={slaveStore}
-				storePaths={storePaths}
 				selectorPref={selectorPref}
 				styleProps={styleProps}
 				selectedComponent={selectedComponent}
 				saveStyle={saveStyle}
-				pageOperations={pageOperations}
 				properties={properties}
 				editorDef={{
 					type: SimpleEditorType.Dropdown,
@@ -99,15 +94,10 @@ export function TypographyEditor({
 				prop="fontSize"
 				placeholder="Size"
 				iterateProps={iterateProps}
-				pageDef={pageDef}
-				editPageName={editPageName}
-				slaveStore={slaveStore}
-				storePaths={storePaths}
 				selectorPref={selectorPref}
 				styleProps={styleProps}
 				selectedComponent={selectedComponent}
 				saveStyle={saveStyle}
-				pageOperations={pageOperations}
 				properties={properties}
 				editorDef={{ type: SimpleEditorType.PixelSize, rangeMin: 0, rangeMax: 200 }}
 			/>
@@ -117,15 +107,10 @@ export function TypographyEditor({
 				prop="fontWeight"
 				placeholder="Font Weight"
 				iterateProps={iterateProps}
-				pageDef={pageDef}
-				editPageName={editPageName}
-				slaveStore={slaveStore}
-				storePaths={storePaths}
 				selectorPref={selectorPref}
 				styleProps={styleProps}
 				selectedComponent={selectedComponent}
 				saveStyle={saveStyle}
-				pageOperations={pageOperations}
 				properties={properties}
 				editorDef={{
 					type: SimpleEditorType.Dropdown,
@@ -153,15 +138,10 @@ export function TypographyEditor({
 					pseudoState={pseudoState}
 					prop="textAlign"
 					iterateProps={iterateProps}
-					pageDef={pageDef}
-					editPageName={editPageName}
-					slaveStore={slaveStore}
-					storePaths={storePaths}
 					selectorPref={selectorPref}
 					styleProps={styleProps}
 					selectedComponent={selectedComponent}
 					saveStyle={saveStyle}
-					pageOperations={pageOperations}
 					properties={properties}
 					editorDef={{
 						type: SimpleEditorType.Icons,
@@ -229,15 +209,10 @@ export function TypographyEditor({
 						pseudoState={pseudoState}
 						prop="fontStyle"
 						iterateProps={iterateProps}
-						pageDef={pageDef}
-						editPageName={editPageName}
-						slaveStore={slaveStore}
-						storePaths={storePaths}
 						selectorPref={selectorPref}
 						styleProps={styleProps}
 						selectedComponent={selectedComponent}
 						saveStyle={saveStyle}
-						pageOperations={pageOperations}
 						properties={properties}
 						editorDef={{
 							type: SimpleEditorType.Icons,
@@ -279,15 +254,10 @@ export function TypographyEditor({
 						pseudoState={pseudoState}
 						prop="fontWeight"
 						iterateProps={iterateProps}
-						pageDef={pageDef}
-						editPageName={editPageName}
-						slaveStore={slaveStore}
-						storePaths={storePaths}
 						selectorPref={selectorPref}
 						styleProps={styleProps}
 						selectedComponent={selectedComponent}
 						saveStyle={saveStyle}
-						pageOperations={pageOperations}
 						properties={properties}
 						editorDef={{
 							type: SimpleEditorType.Icons,
@@ -310,22 +280,32 @@ export function TypographyEditor({
 						}}
 					/>
 				</div>
+				<EachSimpleEditor
+					subComponentName={subComponentName}
+					pseudoState={pseudoState}
+					prop="color"
+					iterateProps={iterateProps}
+					selectorPref={selectorPref}
+					styleProps={styleProps}
+					selectedComponent={selectedComponent}
+					saveStyle={saveStyle}
+					properties={properties}
+					editorDef={{
+						type: SimpleEditorType.Color,
+					}}
+				/>
 			</div>
+			<div className="_spacer" />
 			<div className="_combineEditors _spaceBetween">
 				<EachSimpleEditor
 					subComponentName={subComponentName}
 					pseudoState={pseudoState}
 					prop="textDecorationLine"
 					iterateProps={iterateProps}
-					pageDef={pageDef}
-					editPageName={editPageName}
-					slaveStore={slaveStore}
-					storePaths={storePaths}
 					selectorPref={selectorPref}
 					styleProps={styleProps}
 					selectedComponent={selectedComponent}
 					saveStyle={saveStyle}
-					pageOperations={pageOperations}
 					properties={properties}
 					editorDef={{
 						type: SimpleEditorType.Icons,
@@ -397,15 +377,10 @@ export function TypographyEditor({
 					prop="textDecorationThickness"
 					placeholder="Thickness"
 					iterateProps={iterateProps}
-					pageDef={pageDef}
-					editPageName={editPageName}
-					slaveStore={slaveStore}
-					storePaths={storePaths}
 					selectorPref={selectorPref}
 					styleProps={styleProps}
 					selectedComponent={selectedComponent}
 					saveStyle={saveStyle}
-					pageOperations={pageOperations}
 					properties={properties}
 					editorDef={{ type: SimpleEditorType.PixelSize, rangeMin: 0, rangeMax: 30 }}
 					className="_confineWidth"
@@ -417,15 +392,10 @@ export function TypographyEditor({
 					pseudoState={pseudoState}
 					prop="textDecorationStyle"
 					iterateProps={iterateProps}
-					pageDef={pageDef}
-					editPageName={editPageName}
-					slaveStore={slaveStore}
-					storePaths={storePaths}
 					selectorPref={selectorPref}
 					styleProps={styleProps}
 					selectedComponent={selectedComponent}
 					saveStyle={saveStyle}
-					pageOperations={pageOperations}
 					properties={properties}
 					editorDef={{
 						type: SimpleEditorType.Icons,

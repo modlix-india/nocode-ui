@@ -11,6 +11,7 @@ import Portal from '../Portal';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import getPositions from '../util/getPositions';
 import { SubHelperComponent } from '../SubHelperComponent';
+import { styleDefaults } from './popoverStyleProperties';
 export interface PortalCoordinates {
 	left?: number;
 	top?: number;
@@ -181,6 +182,7 @@ const component: Component = {
 	description: 'Popover component',
 	component: Popover,
 	styleComponent: PopoverStyle,
+	styleDefaults: styleDefaults,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,

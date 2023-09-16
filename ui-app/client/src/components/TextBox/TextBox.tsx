@@ -20,6 +20,7 @@ import { flattenUUID } from '../util/uuid';
 import { runEvent } from '../util/runEvent';
 import { validate } from '../../util/validationProcessor';
 import CommonInputText from '../../commonComponents/CommonInputText';
+import { styleDefaults } from './textBoxStyleProperties';
 
 interface mapType {
 	[key: string]: any;
@@ -317,6 +318,7 @@ const component: Component = {
 	description: 'TextBox component',
 	component: TextBox,
 	styleComponent: TextBoxStyle,
+	styleDefaults: styleDefaults,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	stylePseudoStates: ['focus', 'disabled'],

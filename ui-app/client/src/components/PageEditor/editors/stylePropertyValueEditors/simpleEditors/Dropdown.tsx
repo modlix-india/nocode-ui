@@ -1,5 +1,6 @@
 import React, { CSSProperties, useMemo, useRef, useState } from 'react';
 import { SimpleEditorMultipleValueType } from '.';
+import { isNullValue } from '@fincity/kirun-js';
 
 export type DropdownOptions = Array<{ name: string; displayName: string; description?: string }>;
 
@@ -25,7 +26,6 @@ export function Dropdown({
 	const options = showNoneLabel
 		? [{ name: '', displayName: selectNoneLabel }, ...orignalOptions]
 		: orignalOptions;
-
 	let label = undefined;
 
 	const selection = useMemo(() => {
@@ -36,7 +36,7 @@ export function Dropdown({
 		return new Set<string>(value.split(multipleValueType.toString()));
 	}, [value]);
 
-	if (value) {
+	if (!isNullValue(value)) {
 		label = (
 			<span className="_selectedOption">
 				{Array.from(selection)

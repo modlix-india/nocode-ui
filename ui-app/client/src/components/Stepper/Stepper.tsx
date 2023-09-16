@@ -15,6 +15,7 @@ import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { getRoman, getAlphaNumeral } from '../util/numberConverter';
 import { SubHelperComponent } from '../SubHelperComponent';
+import { styleDefaults } from './StepperStyleProperties';
 
 function Stepper(props: ComponentProps) {
 	const {
@@ -250,6 +251,7 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	styleComponent: StepperStyle,
+	styleDefaults: styleDefaults,
 	bindingPaths: {
 		bindingPath: { name: 'Stepper Count' },
 	},

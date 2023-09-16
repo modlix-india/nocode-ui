@@ -13,6 +13,7 @@ import { HelperComponent } from '../HelperComponent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './textEditorProperties';
 import TextEditorStyle from './TextEditorStyle';
+import { styleDefaults } from './textEditorStyleProperies';
 
 function TextEditor(props: ComponentProps) {
 	const {
@@ -115,6 +116,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TextEditorStyle,
+	styleDefaults: styleDefaults,
 	styleProperties: stylePropertiesDefinition,
 	defaultTemplate: {
 		key: '',

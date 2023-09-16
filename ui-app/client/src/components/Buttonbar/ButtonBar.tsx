@@ -17,6 +17,7 @@ import { HelperComponent } from '../HelperComponent';
 import { getTranslations } from '../util/getTranslations';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { SubHelperComponent } from '../SubHelperComponent';
+import { styleDefaults } from './buttonBarStyleProperties';
 
 function ButtonBar(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -183,6 +184,7 @@ const component: Component = {
 	description: 'ButtonBar component',
 	component: ButtonBar,
 	styleComponent: ButtonBarStyle,
+	styleDefaults: styleDefaults,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	stylePseudoStates: ['hover', 'disabled'],

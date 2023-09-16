@@ -18,6 +18,7 @@ import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './radioButtonProperties';
 import RadioButtonStyle from './RadioButtonStyle';
 import { SubHelperComponent } from '../SubHelperComponent';
+import { styleDefaults } from './RadioButtonStyleProperties';
 
 function RadioButton(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -220,6 +221,7 @@ const component: Component = {
 	description: 'RadioButton component',
 	component: RadioButton,
 	styleComponent: RadioButtonStyle,
+	styleDefaults: styleDefaults,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,

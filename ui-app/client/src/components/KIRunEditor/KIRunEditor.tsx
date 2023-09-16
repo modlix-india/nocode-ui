@@ -40,6 +40,7 @@ import FunctionDetialsEditor from './components/FunctionDetailsEditor';
 import { HelperComponent } from '../HelperComponent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { REPO_SERVER, RemoteRepository } from '../../Engine/RemoteRepository';
+import { styleDefaults } from './KIRunEditorStyleProperties';
 
 const gridSize = 20;
 
@@ -1124,6 +1125,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: KIRunEditorStyle,
+	styleDefaults: styleDefaults,
 	styleProperties: stylePropertiesDefinition,
 	bindingPaths: {
 		bindingPath: { name: 'Function Binding' },

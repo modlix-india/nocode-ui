@@ -21,6 +21,7 @@ import TextAreaStyle from './TextAreaStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './textAreaProperties';
 import { SubHelperComponent } from '../SubHelperComponent';
 import CommonInputText from '../../commonComponents/CommonInputText';
+import { styleDefaults } from './textAreaStyleProperties';
 
 interface mapType {
 	[key: string]: any;
@@ -257,6 +258,7 @@ const component: Component = {
 	description: 'TextArea component',
 	component: TextArea,
 	styleComponent: TextAreaStyle,
+	styleDefaults: styleDefaults,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	stylePseudoStates: ['focus', 'disabled'],
