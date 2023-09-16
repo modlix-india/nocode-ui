@@ -13,6 +13,7 @@ import PageOperations from '../../../functions/PageOperations';
 import { DropdownOptions, Dropdown } from './Dropdown';
 import { IconOptions, IconsSimpleEditor } from './IconsSimpleEditor';
 import { PixelSize } from './PixelSize';
+import { ColorSelector } from './ColorSelector';
 
 export interface SimpleStyleEditorsProps {
 	pseudoState: string;
@@ -109,6 +110,9 @@ export function EachSimpleEditor({
 					multiSelect={editorDef.multiSelect}
 				/>
 			);
+			break;
+		case SimpleEditorType.Color:
+			editor = <ColorSelector color={value.value} onChange={editorOnchange} />;
 			break;
 		default:
 			editor = <></>;

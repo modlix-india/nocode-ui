@@ -283,7 +283,7 @@ export function TypographyEditor({
 				<EachSimpleEditor
 					subComponentName={subComponentName}
 					pseudoState={pseudoState}
-					prop="textAlign"
+					prop="color"
 					iterateProps={iterateProps}
 					selectorPref={selectorPref}
 					styleProps={styleProps}
