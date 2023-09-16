@@ -14,6 +14,7 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { getHref } from '../util/getHref';
 import { useLocation } from 'react-router-dom';
 import { SubHelperComponent } from '../SubHelperComponent';
+import { styleDefaults } from './imageStyleProperties';
 
 function ImageComponent(props: ComponentProps) {
 	const { definition, locationHistory, context } = props;
@@ -122,6 +123,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: ImageStyle,
+	styleDefaults: styleDefaults,
 	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['hover'],
 	defaultTemplate: {

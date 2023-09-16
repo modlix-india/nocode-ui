@@ -16,6 +16,7 @@ import { propertiesDefinition, stylePropertiesDefinition } from './arrayRepeater
 import ArrayRepeaterStyle from './ArrayRepeaterStyle';
 import { SubHelperComponent } from '../SubHelperComponent';
 import { runEvent } from '../util/runEvent';
+import { styleDefaults } from './arrayRepeaterStyleProperties';
 
 function ArrayRepeaterComponent(props: ComponentProps) {
 	const [value, setValue] = React.useState([]);
@@ -311,6 +312,7 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	styleComponent: ArrayRepeaterStyle,
+	styleDefaults: styleDefaults,
 	allowedChildrenType: new Map<string, number>([['', 1]]),
 	bindingPaths: {
 		bindingPath: { name: 'Array Binding' },

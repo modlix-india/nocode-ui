@@ -16,6 +16,7 @@ import useDefinition from '../util/useDefinition';
 import SingleSchema from './components/SingleSchemaForm';
 import { propertiesDefinition, stylePropertiesDefinition } from './schemaFormProperties';
 import SchemaFormStyle from './SchemaFormStyle';
+import { styleDefaults } from './schemaFormStyleProperies';
 
 function SchemaForm(
 	props: ComponentProps & {
@@ -120,6 +121,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: SchemaFormStyle,
+	styleDefaults: styleDefaults,
 	styleProperties: stylePropertiesDefinition,
 	defaultTemplate: {
 		key: '',

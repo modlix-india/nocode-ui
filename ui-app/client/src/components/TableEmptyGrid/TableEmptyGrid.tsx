@@ -12,6 +12,7 @@ import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
 import { runEvent } from '../util/runEvent';
 import { flattenUUID } from '../util/uuid';
 import TableEmptyGridStyle from './TableEmptyGridStyle';
+import { styleDefaults } from './tableEmptyGridStyleProperties';
 
 function TableEmptyGrid(props: ComponentProps) {
 	const [hover, setHover] = React.useState(false);
@@ -139,6 +140,7 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	styleComponent: TableEmptyGridStyle,
+	styleDefaults: styleDefaults,
 	stylePseudoStates: ['hover', 'focus', 'readonly'],
 	allowedChildrenType: new Map<string, number>([['', -1]]),
 	parentType: 'Table',

@@ -14,6 +14,7 @@ import { getHref } from '../util/getHref';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { SubHelperComponent } from '../SubHelperComponent';
 import { messageToMaster } from '../../slaveFunctions';
+import { styleDefaults } from './buttonStyleProperties';
 
 function ButtonComponent(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -368,6 +369,7 @@ const component: Component = {
 	description: 'Button component',
 	component: ButtonComponent,
 	styleComponent: ButtonStyle,
+	styleDefaults: styleDefaults,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,

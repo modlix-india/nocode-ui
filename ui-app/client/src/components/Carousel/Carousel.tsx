@@ -9,6 +9,7 @@ import Children from '../Children';
 import { isNullValue } from '@fincity/kirun-js';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { SubHelperComponent } from '../SubHelperComponent';
+import { styleDefaults } from './carouselStyleProperties';
 
 function Carousel(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -323,6 +324,7 @@ const component: Component = {
 	component: Carousel,
 	styleProperties: stylePropertiesDefinition,
 	styleComponent: CarouselStyle,
+	styleDefaults: styleDefaults,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	allowedChildrenType: new Map<string, number>([['', -1]]),

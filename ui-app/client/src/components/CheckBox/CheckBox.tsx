@@ -15,6 +15,7 @@ import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import CheckBoxStyle from './CheckBoxStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './checkBoxProperties';
+import { styleDefaults } from './checkBoxStyleProperties';
 
 function CheckBox(props: ComponentProps) {
 	const [checkBoxdata, setCheckBoxData] = useState(false);
@@ -119,6 +120,7 @@ const component: Component = {
 	displayName: 'CheckBox',
 	description: 'CheckBox component',
 	styleComponent: CheckBoxStyle,
+	styleDefaults: styleDefaults,
 	component: CheckBox,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,

@@ -10,6 +10,7 @@ import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { SubHelperComponent } from '../SubHelperComponent';
 import { formatString } from '../../util/stringFormat';
+import { styleDefaults } from './TextStyleProperties';
 
 function Text(props: ComponentProps) {
 	const {
@@ -125,6 +126,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TextStyle,
+	styleDefaults: styleDefaults,
 	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['hover'],
 	defaultTemplate: {

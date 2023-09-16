@@ -18,6 +18,7 @@ import Children from '../Children';
 import { flattenUUID } from '../util/uuid';
 import { runEvent } from '../util/runEvent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import { styleDefaults } from './tableStyleProperties';
 
 function spinCalculate(
 	spinnerPath1: string | undefined,
@@ -571,6 +572,7 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	styleComponent: TableStyle,
+	styleDefaults: styleDefaults,
 	allowedChildrenType: new Map([
 		['TableEmptyGrid', 1],
 		['TableColumns', -1],

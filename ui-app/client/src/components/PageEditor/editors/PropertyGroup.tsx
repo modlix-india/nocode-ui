@@ -43,7 +43,7 @@ export function PropertyGroup({
 			pageExtractor,
 			`${personalizationPath}.propertyEditor.${tabName}.${name}`,
 		);
-	}, [personalizationPath, name]);
+	}, [personalizationPath, tabName, name]);
 
 	let child = undefined;
 	if (state) {
@@ -92,7 +92,10 @@ export function PropertyGroup({
 		);
 
 	return (
-		<div className={`_propertyGroup ${state ? '_opened' : '_closed'}`}>
+		<div
+			key={`${tabName}_${name}`}
+			className={`_propertyGroup ${state ? '_opened' : '_closed'}`}
+		>
 			<div
 				className="_propertyGroupHeader"
 				tabIndex={0}

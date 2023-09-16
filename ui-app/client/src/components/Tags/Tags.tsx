@@ -17,6 +17,7 @@ import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tagsProperties';
 import TagsStyle from './TagsStyles';
 import { SubHelperComponent } from '../SubHelperComponent';
+import { styleDefaults } from './TagsStyleProperties';
 
 function Tags(props: ComponentProps) {
 	const [hover, setHover] = React.useState('');
@@ -272,6 +273,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TagsStyle,
+	styleDefaults: styleDefaults,
 	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['hover', 'disabled'],
 	bindingPaths: {

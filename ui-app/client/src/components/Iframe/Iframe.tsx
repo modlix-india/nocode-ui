@@ -6,6 +6,7 @@ import { HelperComponent } from '../HelperComponent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './iframeProperties';
 import IframeStyle from './IframeStyle';
+import { styleDefaults } from './iframeStyleProperties';
 
 function Iframe(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -65,6 +66,7 @@ const component: Component = {
 	description: 'Iframe component',
 	component: Iframe,
 	styleComponent: IframeStyle,
+	styleDefaults: styleDefaults,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,

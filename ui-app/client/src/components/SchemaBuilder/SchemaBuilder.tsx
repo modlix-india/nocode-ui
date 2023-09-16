@@ -14,6 +14,7 @@ import SchemaFormStyle from './SchemaBuilderStyle';
 import SingleSchema from './components/SingleSchema';
 import { UISchemaRepository } from '../../schemas/common';
 import { isNullValue } from '@fincity/kirun-js';
+import { styleDefaults } from './schemaBuilderStyleProperies';
 
 function SchemaBuilder(props: ComponentProps) {
 	const {
@@ -85,6 +86,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: SchemaFormStyle,
+	styleDefaults: styleDefaults,
 	styleProperties: stylePropertiesDefinition,
 	defaultTemplate: {
 		key: '',

@@ -14,6 +14,7 @@ import ToggleButtonStyle from './ToggleButtonStyle';
 import useDefinition from '../util/useDefinition';
 import { SubHelperComponent } from '../SubHelperComponent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import { styleDefaults } from './toggleButtonStyleProperties';
 
 function ToggleButton(props: ComponentProps) {
 	const {
@@ -123,6 +124,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: ToggleButtonStyle,
+	styleDefaults: styleDefaults,
 	styleProperties: stylePropertiesDefinition,
 	bindingPaths: {
 		bindingPath: { name: 'Data Binding' },

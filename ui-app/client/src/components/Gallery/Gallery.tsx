@@ -15,6 +15,7 @@ import { HelperComponent } from '../HelperComponent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { SubHelperComponent } from '../SubHelperComponent';
 import { isNullValue } from '@fincity/kirun-js';
+import { styleDefaults } from './galleryStyleProperties';
 
 function Gallery(props: ComponentProps) {
 	const [isActive, setIsActive] = useState(false);
@@ -654,6 +655,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: GalleryStyles,
+	styleDefaults: styleDefaults,
 	styleProperties: stylePropertiesDefinition,
 	allowedChildrenType: new Map<string, number>([['', -1]]),
 	bindingPaths: {
