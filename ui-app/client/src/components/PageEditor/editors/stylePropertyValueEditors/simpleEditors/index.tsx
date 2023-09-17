@@ -3,7 +3,9 @@ import { deepEqual, duplicate } from '@fincity/kirun-js';
 import { editor } from 'monaco-editor';
 import { title } from 'process';
 import {
+	ComponentProperty,
 	ComponentStyle,
+	DataLocation,
 	EachComponentStyle,
 	PageDefinition,
 	StyleResolution,
@@ -62,7 +64,11 @@ export function EachSimpleEditor({
 	});
 
 	let editor = undefined;
-	const editorOnchange = (v: string | Array<String>) =>
+	const editorOnchange = (v: string | Array<String> | ComponentProperty<string>) => {
+		let value;
+		if (Array.isArray(v)) value = { value: v, location: { value: v } };
+		else if (typeof v === 'string') value = { value: v, location: { value: v } };
+		else value = v;
 		valueChanged({
 			styleProps,
 			properties,
@@ -72,8 +78,9 @@ export function EachSimpleEditor({
 			pseudoState,
 			saveStyle,
 			iterateProps,
-			value: { value: !v ? '' : v.toString() },
+			value,
 		});
+	};
 
 	switch (editorDef.type) {
 		case SimpleEditorType.Dropdown:
@@ -112,7 +119,7 @@ export function EachSimpleEditor({
 			);
 			break;
 		case SimpleEditorType.Color:
-			editor = <ColorSelector color={value.value} onChange={editorOnchange} />;
+			editor = <ColorSelector color={value} onChange={editorOnchange} />;
 			break;
 		default:
 			editor = <></>;

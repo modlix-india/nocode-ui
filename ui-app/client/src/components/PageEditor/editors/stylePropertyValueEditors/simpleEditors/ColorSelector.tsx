@@ -10,16 +10,101 @@ import {
 } from '../../../../util/colorUtil';
 import { isNullValue } from '@fincity/kirun-js';
 import { Dropdown } from './Dropdown';
+import { ComponentProperty, DataLocation } from '../../../../../types/common';
+import { getDataFromPath } from '../../../../../context/StoreContext';
+
+enum ColorType {
+	BACKGROUND_COLORS = 'Backgrounds',
+	BORDER_COLORS = 'Borders',
+	FONT_COLORS = 'Fonts',
+	BACKGROUND_HOVER_COLORS = 'Hovers',
+	DARKER_BACKGROUND_COLORS = 'Darks',
+}
+
+const COLOR_TYPE_TO_VARIABLES = new Map([
+	[
+		ColorType.BACKGROUND_COLORS,
+		[
+			'backgroundColorOne',
+			'backgroundColorTwo',
+			'backgroundColorThree',
+			'backgroundColorFour',
+			'backgroundColorFive',
+			'backgroundColorSix',
+			'backgroundColorSeven',
+			'backgroundColorEight',
+			'backgroundColorNine',
+			'backgroundColorTen',
+		],
+	],
+	[
+		ColorType.FONT_COLORS,
+		[
+			'fontColorOne',
+			'fontColorTwo',
+			'fontColorThree',
+			'fontColorFour',
+			'fontColorFive',
+			'fontColorSix',
+			'fontColorSeven',
+			'fontColorEight',
+			'fontColorNine',
+		],
+	],
+	[
+		ColorType.BACKGROUND_HOVER_COLORS,
+		[
+			'backgroundHoverColorOne',
+			'backgroundHoverColorTwo',
+			'backgroundHoverColorThree',
+			'backgroundHoverColorFour',
+			'backgroundHoverColorFive',
+			'backgroundHoverColorSix',
+			'backgroundHoverColorSeven',
+			'backgroundHoverColorEight',
+			'backgroundHoverColorNine',
+		],
+	],
+	[
+		ColorType.DARKER_BACKGROUND_COLORS,
+		[
+			'backgroundDarkerColorOne',
+			'backgroundDarkerColorTwo',
+			'backgroundDarkerColorThree',
+			'backgroundDarkerColorFour',
+			'backgroundDarkerColorFive',
+			'backgroundDarkerColorSix',
+			'backgroundDarkerColorSeven',
+			'backgroundDarkerColorEight',
+			'backgroundDarkerColorNine',
+		],
+	],
+	[
+		ColorType.BORDER_COLORS,
+		[
+			'borderColorOne',
+			'borderColorTwo',
+			'borderColorThree',
+			'borderColorFour',
+			'borderColorFive',
+			'borderColorSix',
+			'borderColorSeven',
+		],
+	],
+]);
 
 export function ColorSelector({
-	color,
+	color: colorProperty,
 	onChange,
 	showGradient = false,
 }: {
-	color: string;
-	onChange: (v: string) => void;
+	color: ComponentProperty<string>;
+	onChange: (v: ComponentProperty<string>) => void;
 	showGradient?: boolean;
 }) {
+	const color = colorProperty.value;
+	const colorLocation = colorProperty.location;
+
 	const [showColorPicker, setShowColorPicker] = useState<boolean>(false);
 	const [hue, setHue] = useState<number>(0);
 	const [saturation, setSaturation] = useState<number>(100);
@@ -40,6 +125,8 @@ export function ColorSelector({
 	const saturationValuePickerRef = useRef<HTMLDivElement>(null);
 	const huePickerRef = useRef<HTMLDivElement>(null);
 	const alphaPickerRef = useRef<HTMLDivElement>(null);
+
+	const [colorType, setColorType] = useState<ColorType>(ColorType.BACKGROUND_COLORS);
 
 	const updateStates = useCallback(
 		(c: string) => {
@@ -129,38 +216,41 @@ export function ColorSelector({
 			const height = rect.height;
 			const newSaturation = Math.round((x * 100) / width);
 			const newValue = Math.round(100 - (y * 100) / height);
-			onChange(
-				HSV_RGBAString({
+			onChange({
+				value: HSV_RGBAString({
 					h: hue,
 					s: newSaturation,
 					v: newValue,
 					a: alpha,
 				}),
-			);
+				location: colorLocation,
+			});
 		};
 
 		const huePickerChange = (e: any) =>
 			onClickSlider(e, huePickerRef.current!, percent =>
-				onChange(
-					HSV_RGBAString({
+				onChange({
+					value: HSV_RGBAString({
 						h: Math.round((percent / 100) * 360),
 						s: saturation,
 						v: value,
 						a: alpha,
 					}),
-				),
+					location: colorLocation,
+				}),
 			);
 
 		const alphaPickerChange = (e: any) =>
 			onClickSlider(e, alphaPickerRef.current!, percent =>
-				onChange(
-					HSV_RGBAString({
+				onChange({
+					value: HSV_RGBAString({
 						h: hue,
 						s: saturation,
 						v: value,
 						a: percent / 100,
 					}),
-				),
+					location: colorLocation,
+				}),
 			);
 
 		const hueRedUpdate = () => {
@@ -168,7 +258,10 @@ export function ColorSelector({
 			if (isNaN(v) || v < 0) v = 0;
 			if (type === 'hsl') {
 				if (v > 360) v = 360;
-				onChange(HSV_RGBAString({ h: v, s: saturation, v: value, a: alpha }));
+				onChange({
+					value: HSV_RGBAString({ h: v, s: saturation, v: value, a: alpha }),
+					location: colorLocation,
+				});
 			} else {
 				if (v > 255) v = 255;
 				const { g, b } = HSV_RGB({
@@ -177,7 +270,7 @@ export function ColorSelector({
 					v: value,
 					a: alpha,
 				});
-				onChange(`rgba(${v},${g},${b},${alpha})`);
+				onChange({ value: `rgba(${v},${g},${b},${alpha})`, location: colorLocation });
 			}
 		};
 
@@ -186,7 +279,10 @@ export function ColorSelector({
 			if (isNaN(v) || v < 0) v = 0;
 			if (type === 'hsl') {
 				if (v > 100) v = 100;
-				onChange(HSV_RGBAString({ h: hue, s: v, v: value, a: alpha }));
+				onChange({
+					value: HSV_RGBAString({ h: hue, s: v, v: value, a: alpha }),
+					location: colorLocation,
+				});
 			} else {
 				if (v > 255) v = 255;
 				const { r, b } = HSV_RGB({
@@ -195,7 +291,7 @@ export function ColorSelector({
 					v: value,
 					a: alpha,
 				});
-				onChange(`rgba(${r},${v},${b},${alpha})`);
+				onChange({ value: `rgba(${r},${v},${b},${alpha})`, location: colorLocation });
 			}
 		};
 
@@ -204,7 +300,10 @@ export function ColorSelector({
 			if (isNaN(v) || v < 0) v = 0;
 			if (type === 'hsl') {
 				if (v > 100) v = 100;
-				onChange(HSV_RGBAString({ h: hue, s: saturation, v: v, a: alpha }));
+				onChange({
+					value: HSV_RGBAString({ h: hue, s: saturation, v: v, a: alpha }),
+					location: colorLocation,
+				});
 			} else {
 				if (v > 255) v = 255;
 				const { r, g } = HSV_RGB({
@@ -213,7 +312,7 @@ export function ColorSelector({
 					v: value,
 					a: alpha,
 				});
-				onChange(`rgba(${r},${g},${v},${alpha})`);
+				onChange({ value: `rgba(${r},${g},${v},${alpha})`, location: colorLocation });
 			}
 		};
 
@@ -264,7 +363,10 @@ export function ColorSelector({
 							if (isNaN(v)) v = 1;
 							if (v < 0) v = 0;
 							if (v > 1) v = 1;
-							onChange(HSV_RGBAString({ h: hue, s: saturation, v: value, a: v }));
+							onChange({
+								value: HSV_RGBAString({ h: hue, s: saturation, v: value, a: v }),
+								location: colorLocation,
+							});
 						}}
 						onKeyDown={e => {
 							if (e.key === 'Enter') {
@@ -272,139 +374,198 @@ export function ColorSelector({
 								if (isNaN(v)) v = 1;
 								if (v < 0) v = 0;
 								if (v > 1) v = 1;
-								onChange(
-									HSV_RGBAString({
+								onChange({
+									value: HSV_RGBAString({
 										h: hue,
 										s: saturation,
 										v: value,
 										a: v,
 									}),
-								);
+									location: colorLocation,
+								});
 							} else if (e.key === 'Escape') {
 								setAlphaEdit('' + alpha);
 							}
 						}}
 					/>
 				</div>
-				<div className="_combineEditors">
-					<input
-						className="_simpleEditorInput _hexInput"
-						value={hexString}
-						onChange={e => setHexString(e.target.value)}
-						onBlur={() => {
-							let hex = hexString.trim();
-							if (!hex.startsWith('#')) hex = '#' + hex;
-							onChange(hex);
-						}}
-						onKeyDown={e => {
-							if (e.key === 'Enter') {
-								let hex = hexString.trim();
-								if (!hex.startsWith('#')) hex = '#' + hex;
-								onChange(hex);
-							} else if (e.key === 'Escape') {
-								setHexString(
-									HSV_HexString({ h: hue, s: saturation, v: value, a: alpha }),
-								);
-							}
-						}}
-						placeholder="Hex color code"
-					/>
-					<Dropdown
-						value={type}
-						onChange={e => {
-							if (e !== 'rgb' && e !== 'hsl') return;
-							setType(e);
-							if (e === 'rgb') {
-								const { r, g, b } = HSV_RGB({
-									h: hue,
-									s: saturation,
-									v: value,
-								});
-								setHrEdit('' + r);
-								setSgEdit('' + g);
-								setLbEdit('' + b);
-							} else {
-								const { h, s, l } = HSV_HSL({
-									h: hue,
-									s: saturation,
-									v: value,
-								});
-								setHrEdit('' + h);
-								setSgEdit('' + s);
-								setLbEdit('' + l);
-							}
-						}}
-						options={[
-							{ name: 'rgb', displayName: 'RGB' },
-							{ name: 'hsl', displayName: 'HSL' },
-						]}
-						showNoneLabel={false}
-					/>
-				</div>
-				<div className="_combineEditors">
-					<input
-						className="_simpleEditorInput"
-						placeholder={type === 'hsl' ? 'Hue' : 'Red'}
-						value={hrEdit}
-						type="number"
-						step="1"
-						onChange={e => setHrEdit(e.target.value)}
-						onBlur={() => hueRedUpdate()}
-						onKeyDown={e => {
-							if (e.key === 'Enter') {
-								hueRedUpdate();
-							} else if (e.key === 'Escape') {
-								setHrEdit(
-									'' +
-										(type === 'hsl'
-											? hue
-											: HSV_RGB({ h: hue, s: saturation, v: value }).r),
-								);
-							}
-						}}
-					/>
-					<input
-						className="_simpleEditorInput"
-						placeholder={type === 'hsl' ? 'Saturation' : 'Green'}
-						value={sgEdit}
-						type="number"
-						step="1"
-						onChange={e => setSgEdit(e.target.value)}
-						onBlur={() => saturationGreenUpdate()}
-						onKeyDown={e => {
-							if (e.key === 'Enter') {
-								saturationGreenUpdate();
-							} else if (e.key === 'Escape') {
-								setSgEdit(
-									'' +
-										(type === 'hsl'
-											? saturation
-											: HSV_RGB({ h: hue, s: saturation, v: value }).g),
-								);
-							}
-						}}
-					/>
-					<input
-						className="_simpleEditorInput"
-						placeholder={type === 'hsl' ? 'Lightness' : 'Blue'}
-						value={lbEdit}
-						type="number"
-						step="1"
-						onChange={e => setLbEdit(e.target.value)}
-						onBlur={() => lightnessBlueUpdate()}
-						onKeyDown={e => {
-							if (e.key === 'Enter') {
-								lightnessBlueUpdate();
-							} else if (e.key === 'Escape') {
-								setLbEdit(
-									'' +
-										(type === 'hsl'
-											? value
-											: HSV_RGB({ h: hue, s: saturation, v: value }).b),
-								);
-							}
-						}}
-					/>
+				<div className="_combineEditors _top">
+					<div className="_combineEditors _vertical _colorValues ">
+						<div className="_colorValueline">
+							<input
+								className="_simpleEditorInput _hexInput"
+								value={hexString}
+								onChange={e => setHexString(e.target.value)}
+								onBlur={() => {
+									let hex = hexString.trim();
+									if (!hex.startsWith('#')) hex = '#' + hex;
+									onChange({ value: hex, location: colorLocation });
+								}}
+								onKeyDown={e => {
+									if (e.key === 'Enter') {
+										let hex = hexString.trim();
+										if (!hex.startsWith('#')) hex = '#' + hex;
+										onChange({ value: hex, location: colorLocation });
+									} else if (e.key === 'Escape') {
+										setHexString(
+											HSV_HexString({
+												h: hue,
+												s: saturation,
+												v: value,
+												a: alpha,
+											}),
+										);
+									}
+								}}
+								placeholder="Hex color code"
+							/>
+						</div>
+						<Dropdown
+							value={type}
+							onChange={e => {
+								if (e !== 'rgb' && e !== 'hsl') return;
+								setType(e);
+								if (e === 'rgb') {
+									const { r, g, b } = HSV_RGB({
+										h: hue,
+										s: saturation,
+										v: value,
+									});
+									setHrEdit('' + r);
+									setSgEdit('' + g);
+									setLbEdit('' + b);
+								} else {
+									const { h, s, l } = HSV_HSL({
+										h: hue,
+										s: saturation,
+										v: value,
+									});
+									setHrEdit('' + h);
+									setSgEdit('' + s);
+									setLbEdit('' + l);
+								}
+							}}
+							options={[
+								{ name: 'rgb', displayName: 'RGB' },
+								{ name: 'hsl', displayName: 'HSL' },
+							]}
+							showNoneLabel={false}
+						/>
+						<div className="_colorValueline">
+							{type === 'hsl' ? 'H' : 'R'} :
+							<input
+								className="_simpleEditorInput"
+								placeholder={type === 'hsl' ? 'Hue' : 'Red'}
+								value={hrEdit}
+								type="number"
+								step="1"
+								onChange={e => setHrEdit(e.target.value)}
+								onBlur={() => hueRedUpdate()}
+								onKeyDown={e => {
+									if (e.key === 'Enter') {
+										hueRedUpdate();
+									} else if (e.key === 'Escape') {
+										setHrEdit(
+											'' +
+												(type === 'hsl'
+													? hue
+													: HSV_RGB({ h: hue, s: saturation, v: value })
+															.r),
+										);
+									}
+								}}
+							/>
+						</div>
+						<div className="_colorValueline">
+							{type === 'hsl' ? 'S' : 'G'} :
+							<input
+								className="_simpleEditorInput"
+								placeholder={type === 'hsl' ? 'Saturation' : 'Green'}
+								value={sgEdit}
+								type="number"
+								step="1"
+								onChange={e => setSgEdit(e.target.value)}
+								onBlur={() => saturationGreenUpdate()}
+								onKeyDown={e => {
+									if (e.key === 'Enter') {
+										saturationGreenUpdate();
+									} else if (e.key === 'Escape') {
+										setSgEdit(
+											'' +
+												(type === 'hsl'
+													? saturation
+													: HSV_RGB({ h: hue, s: saturation, v: value })
+															.g),
+										);
+									}
+								}}
+							/>
+						</div>
+						<div className="_colorValueline">
+							{type === 'hsl' ? 'L' : 'B'} :
+							<input
+								className="_simpleEditorInput"
+								placeholder={type === 'hsl' ? 'Lightness' : 'Blue'}
+								value={lbEdit}
+								type="number"
+								step="1"
+								onChange={e => setLbEdit(e.target.value)}
+								onBlur={() => lightnessBlueUpdate()}
+								onKeyDown={e => {
+									if (e.key === 'Enter') {
+										lightnessBlueUpdate();
+									} else if (e.key === 'Escape') {
+										setLbEdit(
+											'' +
+												(type === 'hsl'
+													? value
+													: HSV_RGB({ h: hue, s: saturation, v: value })
+															.b),
+										);
+									}
+								}}
+							/>
+						</div>
+					</div>
+					<div className="_combineEditors _vertical">
+						<Dropdown
+							value={'' + colorType}
+							onChange={e => setColorType(e as ColorType)}
+							options={Array.from(COLOR_TYPE_TO_VARIABLES.keys()).map(k => ({
+								name: '' + k,
+								displayName: k,
+							}))}
+							showNoneLabel={false}
+						/>
+						<div className="_color_variable_picker">
+							{COLOR_TYPE_TO_VARIABLES.get(colorType)?.map(v => (
+								<div
+									key={v}
+									className={`_color_variable ${
+										'Theme.' + v === colorLocation?.expression
+											? '_selected'
+											: ''
+									}`}
+									onClick={() =>
+										onChange({
+											value: color,
+											location: {
+												type: 'EXPRESSION',
+												expression: `Theme.${v}`,
+											},
+										})
+									}
+								>
+									<div
+										className="_color_variable_name"
+										style={{
+											backgroundColor: getDataFromPath(`Theme.${v}`, []),
+										}}
+									/>
+								</div>
+							))}
+						</div>
+					</div>
 				</div>
 			</div>
 		);
@@ -416,13 +577,27 @@ export function ColorSelector({
 		  }
 		: {};
 
+	const [timeoutHandle, setTimeoutHandle] = useState<NodeJS.Timeout | undefined>(undefined);
+
 	return (
 		<div
 			className="_simpleEditorColorSelector"
 			style={colorStyle}
 			ref={buttonRef}
 			onClick={() => setShowColorPicker(true)}
-			onDoubleClick={() => onChange('')}
+			onDoubleClick={() => onChange({})}
+			onMouseEnter={() => {
+				if (!showColorPicker || timeoutHandle === undefined) return;
+				clearTimeout(timeoutHandle);
+				setTimeoutHandle(undefined);
+			}}
+			onMouseLeave={() => {
+				if (!showColorPicker && timeoutHandle !== undefined) return;
+				const handle = setTimeout(() => {
+					setShowColorPicker(false);
+				}, 500);
+				setTimeoutHandle(handle);
+			}}
 		>
 			{colorPicker}
 		</div>
