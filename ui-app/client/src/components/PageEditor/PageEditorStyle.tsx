@@ -859,6 +859,64 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			gap: 10px;
 		}
 
+		._simpleEditorColorSelector ._colorPickerBody ._color_variable_picker {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: center;
+			gap: 12px;
+			
+			padding: 5px;
+			flex-wrap: wrap;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._color_variable {
+			width: 20px;
+			height: 20px;
+			border-radius: 50%;
+			cursor: pointer;
+			box-shadow: 0px 1px 2px 0px #00000026;
+			position: relative;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._color_variable._selected {
+			border: 2px solid #51BD94;
+			box-shadow: 0px 0px 4px 4px #51BD94;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._color_variable::before {
+			content: '';
+			width: 100%;
+			height: 100%;
+			border-radius: 50%;
+			position: absolute;
+			background-image:
+				linear-gradient(45deg, #EFEFEF 25%, transparent 25%),
+				linear-gradient(-45deg, #EFEFEF 25%, transparent 25%),
+				linear-gradient(45deg, transparent 75%, #EFEFEF 75%),
+				linear-gradient(-45deg, transparent 75%, #EFEFEF 75%);
+  			background-size: 10px 10px;
+  			background-position: 0 0, 0 5px, 5px -5px, -5px 0px;
+			border-radius: 8px;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._color_variable_name {
+			width: 100%;
+			height: 100%;
+			border-radius: 50%;
+			position: absolute;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._simpleEditorInput,
+		._simpleEditorColorSelector ._colorPickerBody ._simpleEditorSelect {
+			min-height: 25px;
+			padding-top: 3px;
+			padding-bottom: 3px;
+			border-radius: 4px;
+			border: 1px solid #EEE;
+			background: transparent;
+		}
+
 		._simpleEditorColorSelector ._colorPickerBody ._saturation_value_picker{
 			position: relative;
 			height: 150px;
@@ -899,6 +957,20 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			height: 100%;
 			width: 100%;
 			border-radius: 8px;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._colorValueline {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			flex: 1;
+			gap: 5px;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._colorValues {
+			margin-right: 2px;
+    		padding-right: 5px;
+    		border-right: 0.5px solid #0000000D;
 		}
 
 		._simpleEditorColorSelector ._thumb {
@@ -943,6 +1015,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._combineEditors ._simpleEditorInput,
 		._combineEditors ._simpleEditorSelect {
 			padding: 8px;
+			width: 100%;
 		}
 
 		._combineEditors ._combineEditors {
@@ -960,6 +1033,14 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._combineEditors._spaceBetween {
 			justify-content: space-between;
+		}
+
+		._combineEditors._vertical {
+			flex-direction: column;
+		}
+
+		._combineEditors._top {
+			align-items: flex-start;
 		}
 
 		${PREFIX} ._buttonBar._screenSizes {
