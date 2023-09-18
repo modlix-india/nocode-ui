@@ -694,6 +694,15 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButtonBar._buttonBarDesign4 ._button',
 		noPrefix: true,
 	},
+	{
+		groupName: 'Design4',
+		displayName: 'Design4 Background color ',
+		name: 'design4backgroundColor',
+		defaultValue: '<backgroundColorTen>',
+		cssProperty: 'background-color',
+		selector: '.comp.compButtonBar._buttonBarDesign4 ._button',
+		noPrefix: true,
+	},
 ];
 export const styleDefaults = new Map<string, string>(
 	styleProperties

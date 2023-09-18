@@ -188,6 +188,12 @@ const component: Component = {
 		type: 'ButtonBar',
 		properties: {
 			label: { value: 'ButtonBar' },
+			data: {
+				location: {
+					type: 'EXPRESSION',
+					expression: 'SampleDataStore.radioOptions',
+				},
+			},
 		},
 	},
 	sections: [{ name: 'ButtonBar', pageName: 'buttonbar' }],

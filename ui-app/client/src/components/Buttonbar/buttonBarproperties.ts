@@ -45,11 +45,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				displayName: 'Button Bar Design 4',
 				description: 'Button Bar Design 4',
 			},
-			{
-				name: '_buttonBarDesign5',
-				displayName: 'Button Bar Design 5',
-				description: 'Button Bar Design 5',
-			},
 		],
 	},
 	{
