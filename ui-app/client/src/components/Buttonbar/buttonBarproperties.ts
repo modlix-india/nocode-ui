@@ -16,6 +16,42 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.onClick,
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
+	COMMON_COMPONENT_PROPERTIES.colorScheme,
+	{
+		name: 'buttonBarDesign',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Button Bar Design',
+		description: 'Color Scheme',
+		defaultValue: '_buttonBarDesign1',
+		group: ComponentPropertyGroup.BASIC,
+		enumValues: [
+			{
+				name: '_buttonBarDesign1',
+				displayName: 'Button Bar Design 1',
+				description: 'Button Bar Design 1',
+			},
+			{
+				name: '_buttonBarDesign2',
+				displayName: 'Button Bar Design 2',
+				description: 'Button Bar Design 2',
+			},
+			{
+				name: '_buttonBarDesign3',
+				displayName: 'Button Bar Design 3',
+				description: 'Button Bar Design 3',
+			},
+			{
+				name: '_buttonBarDesign4',
+				displayName: 'Button Bar Design 4',
+				description: 'Button Bar Design 4',
+			},
+			{
+				name: '_buttonBarDesign5',
+				displayName: 'Button Bar Design 5',
+				description: 'Button Bar Design 5',
+			},
+		],
+	},
 	{
 		name: 'label',
 		schema: SCHEMA_ANY_COMP_PROP,
@@ -50,149 +86,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.labelKey,
 ];
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
-	// '': {
-	// 	[COMPONENT_STYLE_GROUP_PROPERTIES.flex.type]: COMPONENT_STYLE_GROUP_PROPERTIES.flex,
-	// 	[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: COMPONENT_STYLE_GROUP_PROPERTIES.size,
-	// 	[COMPONENT_STYLE_GROUP_PROPERTIES.container.type]:
-	// 		COMPONENT_STYLE_GROUP_PROPERTIES.container,
-	// 	[COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: COMPONENT_STYLE_GROUP_PROPERTIES.border,
-	// 	[COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
-	// 		...COMPONENT_STYLE_GROUP_PROPERTIES.font,
-	// 		target: ['label'],
-	// 	},
-	// 	[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
-	// 		...COMPONENT_STYLE_GROUP_PROPERTIES.color,
-	// 		target: ['label'],
-	// 	},
-	// 	[COMPONENT_STYLE_GROUP_PROPERTIES.transform.type]: {
-	// 		...COMPONENT_STYLE_GROUP_PROPERTIES.transform,
-	// 		target: ['container'],
-	// 	},
-	// 	[COMPONENT_STYLE_GROUP_PROPERTIES.zIndex.type]: {
-	// 		...COMPONENT_STYLE_GROUP_PROPERTIES.zIndex,
-	// 		target: ['container'],
-	// 	},
-	// 	[COMPONENT_STYLE_GROUP_PROPERTIES.rotate.type]: {
-	// 		...COMPONENT_STYLE_GROUP_PROPERTIES.rotate,
-	// 		target: ['container'],
-	// 	},
-	// 	[COMPONENT_STYLE_GROUP_PROPERTIES.position.type]: {
-	// 		...COMPONENT_STYLE_GROUP_PROPERTIES.position,
-	// 		target: ['container'],
-	// 	},
-	// 	[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: {
-	// 		...COMPONENT_STYLE_GROUP_PROPERTIES.padding,
-	// 		target: ['container'],
-	// 	},
-	// 	[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: {
-	// 		...COMPONENT_STYLE_GROUP_PROPERTIES.margin,
-	// 		target: ['container'],
-	// 	},
-	// 	[COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow.type]: {
-	// 		...COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow,
-	// 		target: ['container'],
-	// 	},
-	// 	[COMPONENT_STYLE_GROUP_PROPERTIES.background.type]: {
-	// 		...COMPONENT_STYLE_GROUP_PROPERTIES.background,
-	// 		target: ['button'],
-	// 	},
-	// 	[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: {
-	// 		...COMPONENT_STYLE_GROUP_PROPERTIES.size,
-	// 		target: ['button'],
-	// 	},
-	// 	[COMPONENT_STYLE_GROUP_PROPERTIES.opacity.type]: {
-	// 		...COMPONENT_STYLE_GROUP_PROPERTIES.opacity,
-	// 		target: ['button'],
-	// 	},
-	// 	[COMPONENT_STYLE_GROUP_PROPERTIES.outline.type]: {
-	// 		...COMPONENT_STYLE_GROUP_PROPERTIES.outline,
-	// 		target: ['button'],
-	// 	},
-	// },
-	// container: {
-	// 	[COMPONENT_STYLE_GROUP_PROPERTIES.flex.type]: {
-	// 		...COMPONENT_STYLE_GROUP_PROPERTIES.flex,
-	// 		name: 'containerFlex',
-	// 		description: 'Flex properties for container.',
-	// 		prefix: 'container',
-	// 		displayName: 'Container Flex',
-	// 		target: ['container'],
-	// 	},
-	// 	[COMPONENT_STYLE_GROUP_PROPERTIES.container.type]: {
-	// 		...COMPONENT_STYLE_GROUP_PROPERTIES.container,
-	// 		name: 'buttonContainerProps',
-	// 		description: 'Container properties for button container.',
-	// 		prefix: 'container',
-	// 		displayName: 'Button Container container props',
-	// 		target: ['container'],
-	// 	},
-	// 	[COMPONENT_STYLE_GROUP_PROPERTIES.size.type]: {
-	// 		...COMPONENT_STYLE_GROUP_PROPERTIES.size,
-	// 		name: 'buttonSizeProps',
-	// 		description: 'Size properties for button container.',
-	// 		prefix: 'container',
-	// 		displayName: 'Button Container size props',
-	// 		target: ['container'],
-	// 	},
-	// 	[COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: {
-	// 		...COMPONENT_STYLE_GROUP_PROPERTIES.border,
-	// 		name: 'buttonBorderProps',
-	// 		description: 'Container properties for button border.',
-	// 		prefix: 'container',
-	// 		displayName: 'Button Container border props',
-	// 		target: ['container'],
-	// 	},
-	// },
-	// button: {
-	// 	[COMPONENT_STYLE_GROUP_PROPERTIES.color.type]: {
-	// 		...COMPONENT_STYLE_GROUP_PROPERTIES.color,
-	// 		name: 'buttonColorProps',
-	// 		description: 'Properties for button color.',
-	// 		prefix: 'button',
-	// 		displayName: 'Button color props',
-	// 		target: ['button'],
-	// 	},
-	// 	[COMPONENT_STYLE_GROUP_PROPERTIES.padding.type]: {
-	// 		...COMPONENT_STYLE_GROUP_PROPERTIES.padding,
-	// 		name: 'buttonPaddingProps',
-	// 		description: 'Properties for button padding.',
-	// 		prefix: 'button',
-	// 		displayName: 'Button padding props',
-	// 		target: ['button'],
-	// 	},
-	// 	[COMPONENT_STYLE_GROUP_PROPERTIES.margin.type]: {
-	// 		...COMPONENT_STYLE_GROUP_PROPERTIES.margin,
-	// 		name: 'buttonmarginProps',
-	// 		description: 'Properties for button margin.',
-	// 		prefix: 'button',
-	// 		displayName: 'Button margin props',
-	// 		target: ['button'],
-	// 	},
-	// 	[COMPONENT_STYLE_GROUP_PROPERTIES.border.type]: {
-	// 		...COMPONENT_STYLE_GROUP_PROPERTIES.border,
-	// 		name: 'buttonborderProps',
-	// 		description: 'Properties for button border.',
-	// 		prefix: 'button',
-	// 		displayName: 'Button border props',
-	// 		target: ['button'],
-	// 	},
-	// 	[COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow.type]: {
-	// 		...COMPONENT_STYLE_GROUP_PROPERTIES.boxShadow,
-	// 		name: 'buttonboxShadowProps',
-	// 		description: 'Properties for button boxShadow.',
-	// 		prefix: 'button',
-	// 		displayName: 'Button boxShadow props',
-	// 		target: ['button'],
-	// 	},
-	// 	[COMPONENT_STYLE_GROUP_PROPERTIES.font.type]: {
-	// 		...COMPONENT_STYLE_GROUP_PROPERTIES.font,
-	// 		name: 'buttonfontProps',
-	// 		description: 'Properties for button font.',
-	// 		prefix: 'button',
-	// 		displayName: 'Button font props',
-	// 		target: ['button'],
-	// 	},
-	// },
 	'': [
 		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,

@@ -41,8 +41,9 @@ function ButtonBar(props: ComponentProps) {
 			datatype,
 			readOnly,
 			data,
-			label,
 			isMultiSelect,
+			colorScheme,
+			buttonBarDesign,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -68,7 +69,7 @@ function ButtonBar(props: ComponentProps) {
 	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
 
 	const handleClick = async (each: { key: any; label: any; value: any }) => {
-		if (!each) return;
+		if (!each || !bindingPathPath) return;
 		if (isMultiSelect) {
 			const index = !value ? -1 : value.findIndex((e: any) => deepEqual(e, each.value));
 			let nv = value ? [...value] : [];
@@ -137,41 +138,32 @@ function ButtonBar(props: ComponentProps) {
 	};
 
 	return (
-		<div className="comp compButtonBar" style={resolvedStyles.comp ?? {}}>
+		<div
+			className={`comp compButtonBar ${buttonBarDesign} ${colorScheme}`}
+			style={resolvedStyles.comp ?? {}}
+		>
 			<HelperComponent definition={props.definition} />
-
-			<label style={resolvedStyles.label ?? {}} className="_label">
-				<SubHelperComponent definition={props.definition} subComponentName="label" />
-				{getTranslations(label, translations)}
-			</label>
-
-			<div className="_buttonBarContainer" style={resolvedStyles.container ?? {}}>
-				<SubHelperComponent definition={props.definition} subComponentName="container" />
-				{buttonBarData?.map(each => (
-					<button
-						style={resolvedStyles.button ?? {}}
-						key={each?.key}
-						onMouseEnter={
-							stylePropertiesWithPseudoStates?.hover
-								? () => setHover(each?.key)
-								: undefined
-						}
-						onMouseLeave={
-							stylePropertiesWithPseudoStates?.hover ? () => setHover('') : undefined
-						}
-						onClick={() => (!readOnly && each ? handleClick(each) : undefined)}
-						className={`_button ${getIsSelected(each?.key) ? '_selected' : ''} ${
-							readOnly ? '_disabled' : ''
-						}`}
-					>
-						<SubHelperComponent
-							definition={props.definition}
-							subComponentName="button"
-						/>
-						{getTranslations(each?.label, translations)}
-					</button>
-				))}
-			</div>
+			{buttonBarData?.map(each => (
+				<button
+					style={resolvedStyles.button ?? {}}
+					key={each?.key}
+					onMouseEnter={
+						stylePropertiesWithPseudoStates?.hover
+							? () => setHover(each?.key)
+							: undefined
+					}
+					onMouseLeave={
+						stylePropertiesWithPseudoStates?.hover ? () => setHover('') : undefined
+					}
+					onClick={() => (!readOnly && each ? handleClick(each) : undefined)}
+					className={`_button ${getIsSelected(each?.key) ? '_selected' : ''} ${
+						readOnly ? '_disabled' : ''
+					}`}
+				>
+					<SubHelperComponent definition={props.definition} subComponentName="button" />
+					{getTranslations(each?.label, translations)}
+				</button>
+			))}
 		</div>
 	);
 }
@@ -185,7 +177,7 @@ const component: Component = {
 	styleComponent: ButtonBarStyle,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
-	stylePseudoStates: ['hover', 'disabled'],
+	stylePseudoStates: ['hover', 'disabled', 'active'],
 	styleProperties: stylePropertiesDefinition,
 	bindingPaths: {
 		bindingPath: { name: 'Array Binding' },
@@ -198,6 +190,7 @@ const component: Component = {
 			label: { value: 'ButtonBar' },
 		},
 	},
+	sections: [{ name: 'ButtonBar', pageName: 'buttonbar' }],
 };
 
 export default component;
