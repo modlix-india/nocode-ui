@@ -1087,6 +1087,12 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			justify-content: space-between;
 			align-items: center;
 			width: 100%;
+			color: #222222B2;
+			align-items: center;
+			text-transform: capitalize;
+			font-family: Inter;
+			white-space: nowrap;
+			font-size: 12px;
 		}
 
 		._svgButton {
