@@ -16,6 +16,7 @@ import { DropdownOptions, Dropdown } from './Dropdown';
 import { IconOptions, IconsSimpleEditor } from './IconsSimpleEditor';
 import { PixelSize } from './PixelSize';
 import { ColorSelector } from './ColorSelector';
+import { ShadowEditor, ShadowEditorType } from './ShadowEditor';
 
 export interface SimpleStyleEditorsProps {
 	pseudoState: string;
@@ -47,8 +48,6 @@ export function EachSimpleEditor({
 	saveStyle,
 	properties,
 	editorDef,
-	showTitle = false,
-	editorInNewLine = false,
 	placeholder,
 	className = '',
 }: SimpleStyleEditorsProps) {
@@ -121,45 +120,29 @@ export function EachSimpleEditor({
 		case SimpleEditorType.Color:
 			editor = <ColorSelector color={value} onChange={editorOnchange} />;
 			break;
+		case SimpleEditorType.TextShadow:
+			editor = (
+				<ShadowEditor
+					value={value.value}
+					onChange={editorOnchange}
+					type={ShadowEditorType.TextShadow}
+				/>
+			);
+			break;
+		case SimpleEditorType.BoxShadow:
+			editor = (
+				<ShadowEditor
+					value={value.value}
+					onChange={editorOnchange}
+					type={ShadowEditorType.BoxShadow}
+				/>
+			);
+			break;
 		default:
 			editor = <></>;
 	}
 
-	const title = showTitle ? (
-		<>
-			{`${displayName ?? propName} : `}
-			{(pseudoState && iterateProps[compProp]) ||
-			(screenSize !== 'ALL' &&
-				(properties[1]?.resolutions?.ALL?.[compProp] ||
-					properties[1]?.resolutions?.ALL?.[actualProp])) ? (
-				<span title="Has a default value">★</span>
-			) : (
-				''
-			)}
-		</>
-	) : (
-		<></>
-	);
-
-	if (!editorInNewLine) {
-		return (
-			<div className={`_eachProp _simpleEditor ${className}`}>
-				<div className="_propLabel" title={displayName}>
-					{title}
-					{editor}
-				</div>
-			</div>
-		);
-	}
-
-	return (
-		<div className={`_eachProp _simpleEditor ${className}`}>
-			<div className="_propLabel" title="Name">
-				{title}
-			</div>
-			{editor}
-		</div>
-	);
+	return <div className={`_simpleEditor ${className}`}>{editor}</div>;
 }
 
 export enum SimpleEditorType {
@@ -167,6 +150,8 @@ export enum SimpleEditorType {
 	Icons = 'Icons',
 	PixelSize = 'PixelSize',
 	Color = 'Color',
+	TextShadow = 'TextShadow',
+	BoxShadow = 'BoxShadow',
 	Image = 'Image',
 	Gradient = 'Gradient',
 	ImageGradient = 'ImageGradient',

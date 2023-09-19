@@ -95,12 +95,14 @@ const COLOR_TYPE_TO_VARIABLES = new Map([
 
 export function ColorSelector({
 	color: colorProperty,
+	variableSelection = true,
 	onChange,
 	showGradient = false,
 }: {
 	color: ComponentProperty<string>;
 	onChange: (v: ComponentProperty<string>) => void;
 	showGradient?: boolean;
+	variableSelection?: boolean;
 }) {
 	const color = colorProperty.value;
 	const colorLocation = colorProperty.location;
@@ -316,6 +318,46 @@ export function ColorSelector({
 			}
 		};
 
+		const variablePicker = variableSelection ? (
+			<div className="_combineEditors _vertical">
+				<Dropdown
+					value={'' + colorType}
+					onChange={e => setColorType(e as ColorType)}
+					options={Array.from(COLOR_TYPE_TO_VARIABLES.keys()).map(k => ({
+						name: '' + k,
+						displayName: k,
+					}))}
+					showNoneLabel={false}
+				/>
+				<div className="_color_variable_picker">
+					{COLOR_TYPE_TO_VARIABLES.get(colorType)?.map(v => (
+						<div
+							key={v}
+							className={`_color_variable ${
+								'Theme.' + v === colorLocation?.expression ? '_selected' : ''
+							}`}
+							onClick={() =>
+								onChange({
+									value: color,
+									location: {
+										type: 'EXPRESSION',
+										expression: `Theme.${v}`,
+									},
+								})
+							}
+						>
+							<div
+								className="_color_variable_name"
+								style={{
+									backgroundColor: getDataFromPath(`Theme.${v}`, []),
+								}}
+							/>
+						</div>
+					))}
+				</div>
+			</div>
+		) : undefined;
+
 		colorPicker = (
 			<div className="_colorPickerBody" style={bodyPosition}>
 				<div
@@ -527,45 +569,7 @@ export function ColorSelector({
 							/>
 						</div>
 					</div>
-					<div className="_combineEditors _vertical">
-						<Dropdown
-							value={'' + colorType}
-							onChange={e => setColorType(e as ColorType)}
-							options={Array.from(COLOR_TYPE_TO_VARIABLES.keys()).map(k => ({
-								name: '' + k,
-								displayName: k,
-							}))}
-							showNoneLabel={false}
-						/>
-						<div className="_color_variable_picker">
-							{COLOR_TYPE_TO_VARIABLES.get(colorType)?.map(v => (
-								<div
-									key={v}
-									className={`_color_variable ${
-										'Theme.' + v === colorLocation?.expression
-											? '_selected'
-											: ''
-									}`}
-									onClick={() =>
-										onChange({
-											value: color,
-											location: {
-												type: 'EXPRESSION',
-												expression: `Theme.${v}`,
-											},
-										})
-									}
-								>
-									<div
-										className="_color_variable_name"
-										style={{
-											backgroundColor: getDataFromPath(`Theme.${v}`, []),
-										}}
-									/>
-								</div>
-							))}
-						</div>
-					</div>
+					{variablePicker}
 				</div>
 			</div>
 		);

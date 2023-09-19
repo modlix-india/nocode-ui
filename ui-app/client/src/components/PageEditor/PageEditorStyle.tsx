@@ -640,25 +640,70 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			overflow: hidden;
 		}
 
+		._simpleEditor {
+			padding: 5px 15px;
+		}
+
+		._combineEditors ._simpleEditor {
+			padding: 0px;
+			width: 100%;
+		}
+
 		._simpleEditorPixelSize {
 			display: flex;
-			flex-direction: row;
 			align-items: center;
 			gap: 2px;
-			flex: 1;
+			overflow: hidden;
+			height: 35px;
+		}
+
+		._simpleEditorPixelSize ._inputDropdownContainer {
+			font-family: Inter;
+			font-size: 12px;
+			border: none;
+			border-radius: 6px;
+			color: #555;
+			background-color: #F8FAFB;
+			cursor: pointer;
+			padding: 5px 8px;
+			display: flex;
+			justify-content: flex-start;
+			align-items: center;
+			height: 35px;
 			overflow: hidden;
 		}
 
-		._simpleEditorPixelSize ._simpleEditorInput {
-			flex: 1;
+		._simpleEditorPixelSize ._inputDropdownContainer input {
+			border: none;
+			height: 100%;
+			background-color: transparent;
+			outline: none;
+			font-family: Inter;
+			font-size: 12px;
+			color: #555;
+			max-width: 60px;
+			min-width: 20px;
+		}
+
+		._simpleEditorPixelSize ._inputDropdownContainer ._simpleEditorSelect {
+			min-width: 60px;
+			flex: 0.5;
+			padding-left: 0px;
+			width: 64px;
+		}
+
+		._simpleEditorPixelSize ._inputDropdownContainer ._simpleEditorSelect ._selectedOption {
+			margin-right: 5px;
+			text-align: right;
 		}
 
 		._simpleEditorPixelSize ._simpleEditorSelect {
 			flex: 1;
+			background-color: transparent;
 		}
 
 		._simpleEditorPixelSize ._simpleEditorRange {
-			flex: 1.5;
+			flex: 2;
 			margin-right: 12px;
 		}
 
@@ -675,6 +720,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			cursor: pointer;
 			padding: 5px 15px;
 			flex: 1;
+			outline: none;
 		}
 
 		._simpleEditorRange {
@@ -747,6 +793,14 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			padding: 10px;
 			max-height: 250px;
 			overflow: auto;
+		}
+
+		._simpleEditorSelect svg {
+			min-width: 8px;
+		}
+
+		._simpleEditorSelect ._selectedOption {
+			min-width: calc(100% - 8px);
 		}
 
 		._simpleEditorSelect ._selectedOption._placeholder {
@@ -999,10 +1053,46 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			background-color: #4C7FEE;
 		}
 
-		._hexInput {
-			flex: 2;
+		._simpleEditorShadow {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 5px;
 		}
 
+		._simpleEditorShadow ._eachShadowEditor {
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
+			width: 100%;
+		}
+
+		._simpleEditorShadow ._inset {
+			display: flex;
+			align-items: center;
+			gap: 5px;
+		}
+
+		._simpleEditorShadow ._color_controls {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			gap: 5px;
+			width: 100%;
+		}
+
+		._simpleEditorShadow ._label {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			align-items: center;
+			width: 100%;
+		}
+
+		._svgButton {
+			border: none;
+			background: transparent;
+		}
 
 		._combineEditors {
 			display: flex;
@@ -1010,6 +1100,19 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			align-items: center;			
 			padding: 5px 20px;
 			gap: 3px;
+			width: 100%;
+		}
+
+		._combineEditors ._onePart {
+			flex: 1;
+		}
+
+		._combineEditors ._twoParts {
+			flex: 2;
+		}
+
+		._combineEditors ._oneAndHalfParts {
+			flex: 1.5;
 		}
 
 		._combineEditors ._simpleEditorInput,
@@ -1037,6 +1140,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._combineEditors._vertical {
 			flex-direction: column;
+			align-items: flex-start;
 		}
 
 		._combineEditors._top {
