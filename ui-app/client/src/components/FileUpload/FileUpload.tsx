@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
 	addListenerAndCallImmediately,
 	getPathFromLocation,
@@ -46,10 +46,11 @@ function FileUpload(props: ComponentProps) {
 			isMultiple,
 			readOnly,
 			maxFileSize,
-			showFileList,
 			onSelectEvent,
 			validation,
 			uploadType,
+			colorScheme,
+			buttonText,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -59,10 +60,6 @@ function FileUpload(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-
-	const className = `uploadContainer ${readOnly ? 'disabled' : ''} ${
-		validationMessages.length && !readOnly ? 'error' : ''
-	} ${fileValue !== undefined ? 'selected' : ''}`;
 
 	const computedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
@@ -130,14 +127,9 @@ function FileUpload(props: ComponentProps) {
 		);
 	}, [bindingPathPath]);
 
-	const handleClick = () => inputRef.current?.click();
-
-	const onChangeFile = (event: any) => {
-		if (!event.target.value?.length || !bindingPathPath) return;
-		const files = event.target.files;
-
+	const setFiles = (files: any) => {
 		if (uploadType === 'FILE_OBJECT') {
-			setData(bindingPathPath, isMultiple ? [...files] : files[0], context?.pageName);
+			setData(bindingPathPath!, isMultiple ? [...files] : files[0], context?.pageName);
 			return;
 		}
 
@@ -173,9 +165,15 @@ function FileUpload(props: ComponentProps) {
 				return;
 			}
 
-			setData(bindingPathPath, fileContent, context?.pageName);
+			setData(bindingPathPath!, fileContent, context?.pageName);
 		};
 		fReader.readAsText(files[0]);
+	};
+
+	const onChangeFile = (event: any) => {
+		if (!event.target.value?.length || !bindingPathPath) return;
+		const files = event.target.files;
+		setFiles(files);
 	};
 
 	const handleDelete = (event: any, content: any) => {
@@ -188,12 +186,16 @@ function FileUpload(props: ComponentProps) {
 		setData(bindingPathPath!, deleted, context?.pageName);
 	};
 
-	const comp = (
-		<span className="mainText" style={computedStyles?.mainText ?? {}}>
-			<SubHelperComponent definition={props.definition} subComponentName="mainText" />
-			{mainText}
-		</span>
-	);
+	const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+		event.preventDefault();
+		const file = event.dataTransfer.files || null;
+		setFiles(file);
+	};
+
+	const preventDefault = (event: React.DragEvent<HTMLDivElement>) => {
+		event.preventDefault();
+		event.stopPropagation();
+	};
 
 	const validationMessagesComp =
 		validationMessages?.length && (fileValue || context.showValidationMessages) ? (
@@ -214,37 +216,8 @@ function FileUpload(props: ComponentProps) {
 			</div>
 		) : undefined;
 
-	const selectedComp = (each: any, index = 0) => {
-		return (
-			<div
-				className="selectedDetails"
-				key={index}
-				style={computedStyles?.selectedFiles ?? {}}
-			>
-				<SubHelperComponent
-					definition={props.definition}
-					subComponentName="selectedFiles"
-				/>
-				<span>{each?.name}</span>
-				<span>{`(${returnFileSize(each?.size)})`}</span>
-				{uploadImmediatelyEvent ? null : (
-					<i
-						className="fa fa-solid fa-close closeIcon"
-						style={computedStyles?.closeIcon ?? {}}
-						onClick={e => handleDelete(e, each)}
-					>
-						<SubHelperComponent
-							definition={props.definition}
-							subComponentName="closeIcon"
-						/>
-					</i>
-				)}
-			</div>
-		);
-	};
-
 	const uploadIconComp = (
-		<i className={`uploadIcon ${uploadIcon}`} style={computedStyles?.icon}>
+		<i className={`_uploadIcon ${uploadIcon}`} style={computedStyles?.icon}>
 			<SubHelperComponent definition={props.definition} subComponentName="icon" />
 		</i>
 	);
@@ -263,95 +236,62 @@ function FileUpload(props: ComponentProps) {
 		/>
 	);
 
-	const labelComp =
-		subText && subText.length ? (
-			<label className="labelText" style={computedStyles?.label ?? {}}>
-				<SubHelperComponent definition={props.definition} subComponentName="label" />
-				{subText}
-			</label>
-		) : null;
-
-	const fileContainer = (
-		<div className="selectedFileContainer" style={computedStyles?.selectedFileContainer ?? {}}>
-			<SubHelperComponent
-				definition={props.definition}
-				subComponentName="selectedFileContainer"
-			/>
-			{(isMultiple ? fileValue : [fileValue])?.map((each: any, index: any) =>
-				selectedComp(each, index),
-			)}
-		</div>
-	);
-	const largeView = (
-		<>
-			<div
-				className={`${className}`}
-				onClick={handleClick}
-				style={computedStyles?.uploadContainer ?? {}}
-				onMouseEnter={
-					stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
-				}
-				onMouseLeave={
-					stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
-				}
-			>
-				<SubHelperComponent
-					definition={props.definition}
-					subComponentName="uploadContainer"
-				/>
-				{inputContainer}
-				{uploadIconComp}
-				{comp}
-				{((Array.isArray(fileValue) && fileValue.length > 0) ||
-					fileValue?.constructor?.name === 'File') &&
-				showFileList
-					? fileContainer
-					: labelComp}
-			</div>
-			{validationMessagesComp}
-		</>
-	);
-	const smallView = (
-		<>
-			<div
-				className={`${className} horizontal`}
-				style={computedStyles?.uploadContainer ?? {}}
-				onMouseEnter={
-					stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
-				}
-				onMouseLeave={
-					stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
-				}
-			>
-				<SubHelperComponent
-					definition={props.definition}
-					subComponentName="uploadContainer"
-				/>
-				{inputContainer}
-				<button
-					className="inputContainer"
-					style={computedStyles?.buttonStyles ?? {}}
-					onClick={handleClick}
+	const fileContainer = !!fileValue
+		? (isMultiple ? fileValue : [fileValue])?.map((each: any, index: any) => (
+				<div
+					className="_selectedDetails"
+					key={index}
+					style={computedStyles?.selectedFiles ?? {}}
 				>
 					<SubHelperComponent
 						definition={props.definition}
-						subComponentName="buttonStyles"
+						subComponentName="_selectedFiles"
 					/>
-					{!!uploadIcon ? uploadIconComp : null}
-					{comp}
-				</button>
-				{labelComp}
-			</div>
-			{showFileList ? fileContainer : null}
-		</>
-	);
+					<span>{each?.name}</span>
+					<span>{`(${returnFileSize(each?.size)})`}</span>
+					{uploadImmediatelyEvent ? null : (
+						<i
+							className="fa fa-solid fa-close closeIcon"
+							style={computedStyles?.closeIcon ?? {}}
+							onClick={e => handleDelete(e, each)}
+						>
+							<SubHelperComponent
+								definition={props.definition}
+								subComponentName="closeIcon"
+							/>
+						</i>
+					)}
+				</div>
+		  ))
+		: null;
 
-	return (
-		<div className="comp compFileUpload" style={computedStyles?.comp ?? {}}>
+	return [
+		<div
+			className={`comp compFileUpload ${uploadViewType} ${colorScheme}`}
+			style={computedStyles?.comp ?? {}}
+			onMouseEnter={stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined}
+			onMouseLeave={
+				stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
+			}
+			onDragEnter={preventDefault}
+			onDragOver={preventDefault}
+			onDrop={handleDrop}
+		>
 			<HelperComponent definition={definition} />
-			{uploadViewType === 'LARGE_VIEW' ? largeView : smallView}
-		</div>
-	);
+
+			<div className="_fileUploadText">
+				{!uploadViewType?.startsWith('_inline') ? uploadIconComp : null}
+				{fileContainer ? fileContainer : mainText}
+				<span className="_subtext">{subText}</span>
+			</div>
+			<label className="_fileUploadButton">
+				{uploadViewType?.startsWith('_inline') ? uploadIconComp : null}
+				{uploadViewType !== '_inline_icon_design1' ? buttonText : ''}
+				{inputContainer}
+			</label>
+		</div>,
+		validationMessagesComp,
+	];
 }
 
 const component: Component = {
@@ -375,6 +315,7 @@ const component: Component = {
 		type: 'FileUpload',
 		properties: {},
 	},
+	sections: [{ name: 'File Upload', pageName: 'fileupload' }],
 };
 
 export default component;

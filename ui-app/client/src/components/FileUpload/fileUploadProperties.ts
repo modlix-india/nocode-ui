@@ -18,25 +18,55 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'uploadViewType',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Upload box type',
-		description:
-			'There are two different designs for upload component, you can choose either one.',
-		defaultValue: 'LARGE_VIEW',
+		displayName: 'Upload Component Design',
+		description: 'Upload component design type.',
+		defaultValue: 'inline_design1',
 		editor: ComponentPropertyEditor.ENUM,
 		enumValues: [
 			{
-				name: 'SMALL_VIEW',
-				displayName: 'Small inline upload component',
-				description: 'A small view of the component',
+				name: '_inline_design1',
+				displayName: 'Inline Upload Design 1',
+				description: 'Inline Upload Design 1',
 			},
 			{
-				name: 'LARGE_VIEW',
-				displayName: 'Upload with drag and drop',
-				description: 'A large view of the component',
+				name: '_inline_design2',
+				displayName: 'Inline Upload Design 2',
+				description: 'Inline Upload Design 2',
+			},
+			{
+				name: '_inline_design3',
+				displayName: 'Inline Upload Design 3',
+				description: 'Inline Upload Design 3',
+			},
+			{
+				name: '_inline_design4',
+				displayName: 'Inline Upload Design 4',
+				description: 'Inline Upload Design 4',
+			},
+			{
+				name: '_inline_icon_design1',
+				displayName: 'Inline Icon Design 1',
+				description: 'Inline Icon Design 1',
+			},
+			{
+				name: '_droparea_design1',
+				displayName: 'droparea Upload Design 1',
+				description: 'droparea Upload Design 1',
+			},
+			{
+				name: '_droparea_design2',
+				displayName: 'droparea Upload Design 2',
+				description: 'droparea Upload Design 2',
+			},
+			{
+				name: '_droparea_design3',
+				displayName: 'droparea Upload Design 3',
+				description: 'droparea Upload Design 3',
 			},
 		],
 		group: ComponentPropertyGroup.BASIC,
 	},
+	COMMON_COMPONENT_PROPERTIES.colorScheme,
 	{
 		name: 'uploadType',
 		schema: SCHEMA_STRING_COMP_PROP,
@@ -94,11 +124,19 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		editor: ComponentPropertyEditor.ICON,
 	},
 	{
+		name: 'buttonText',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'button text for upload component',
+		description: 'button text for upload component.',
+		defaultValue: 'Choose a file',
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
 		name: 'mainText',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Main text for upload component',
-		description: 'The text that directly proceeds the upload icon.',
-		defaultValue: 'Upload',
+		description: 'Main text for upload component.',
+		defaultValue: 'No File Chosen',
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
