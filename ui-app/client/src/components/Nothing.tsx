@@ -20,6 +20,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: [],
 	isHidden: true,
+	styleDefaults: new Map<string, string>(),
 };
 
 export default component;
