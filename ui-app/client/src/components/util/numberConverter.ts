@@ -18,7 +18,7 @@ export const getRoman = (num: number, isUpperCase = true) => {
 		return '';
 	}
 	for (let i = 0; i < romanMatrix.length; i++) {
-		if (num >= romanMatrix[i][0]) {
+		if (num >= parseInt('' + romanMatrix[i][0])) {
 			const number: number = romanMatrix[i][0] as number;
 			const temp: string =
 				(isUpperCase ? romanMatrix[i][1] : romanMatrix[i][2]) + getRoman(num - number)!;

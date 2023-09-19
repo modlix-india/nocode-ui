@@ -172,7 +172,8 @@ export function IconSelectionEditor2({
 	useEffect(() => setChngValue(value ?? ''), [value]);
 
 	const updatePackData = useCallback(
-		(pack: string) => {
+		(pack: string | string[]) => {
+			if (Array.isArray(pack)) pack = pack[0];
 			setSelectedPack(pack);
 			getPackData(pack).then(x => setPackJson(x));
 		},

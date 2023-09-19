@@ -7,22 +7,15 @@ import {
 } from './simpleEditors';
 import { DropdownOptions } from './simpleEditors/Dropdown';
 
-// 		'color',
-// 		'lineHeight',
-// 		'letterSpacing',
 // 'textIndent',
+
 // 'textTransform',
-// 'textShadow',
+
 // 'direction',
 // 'textOrientation',
 // 'wordBreak',
 // 'wordSpacing',
 // 'wordWrap',
-
-// 'textAlignLast',
-
-// 'textDecorationColor',
-// 'textDecorationThickness',
 
 // 'textEmphasis',
 // 'textOverflow',
@@ -307,6 +300,7 @@ export function TypographyEditor({
 					selectedComponent={selectedComponent}
 					saveStyle={saveStyle}
 					properties={properties}
+					className="_onePart"
 					editorDef={{
 						type: SimpleEditorType.Icons,
 						multiSelect: true,
@@ -370,7 +364,6 @@ export function TypographyEditor({
 						],
 					}}
 				/>
-				<div className="_spacer" />
 				<EachSimpleEditor
 					subComponentName={subComponentName}
 					pseudoState={pseudoState}
@@ -383,10 +376,10 @@ export function TypographyEditor({
 					saveStyle={saveStyle}
 					properties={properties}
 					editorDef={{ type: SimpleEditorType.PixelSize, rangeMin: 0, rangeMax: 30 }}
-					className="_confineWidth"
+					className="_confineWidth _twoParts"
 				/>
 			</div>
-			<div className="_combineEditors">
+			<div className="_combineEditors _spaceBetween" title="Text Decoration">
 				<EachSimpleEditor
 					subComponentName={subComponentName}
 					pseudoState={pseudoState}
@@ -589,7 +582,99 @@ export function TypographyEditor({
 						],
 					}}
 				/>
+				<div className="_spacer" />
+				<EachSimpleEditor
+					subComponentName={subComponentName}
+					pseudoState={pseudoState}
+					prop="textDecorationColor"
+					placeholder="Color"
+					iterateProps={iterateProps}
+					selectorPref={selectorPref}
+					styleProps={styleProps}
+					selectedComponent={selectedComponent}
+					saveStyle={saveStyle}
+					properties={properties}
+					editorDef={{ type: SimpleEditorType.Color }}
+				/>
 			</div>
+			<div className="_combineEditors" title="Line Height">
+				<svg
+					width="15"
+					height="15"
+					viewBox="0 0 15 15"
+					fill="none"
+					xmlns="http://www.w3.org/2000/svg"
+				>
+					<path
+						d="M1.98153 12H0.294034L3.36648 3.27273H5.31818L8.39489 12H6.70739L4.37642 5.0625H4.30824L1.98153 12ZM2.03693 8.57812H6.6392V9.84801H2.03693V8.57812Z"
+						fill="#333333"
+						fillOpacity="0.7"
+					/>
+					<line x1="12.5" y1="1" x2="12.5" y2="13" stroke="black" />
+					<line x1="10" y1="0.5" x2="15" y2="0.5" stroke="black" />
+					<line x1="10" y1="13.5" x2="15" y2="13.5" stroke="black" />
+				</svg>
+				<EachSimpleEditor
+					subComponentName={subComponentName}
+					pseudoState={pseudoState}
+					prop="lineHeight"
+					placeholder="Line Height"
+					iterateProps={iterateProps}
+					selectorPref={selectorPref}
+					styleProps={styleProps}
+					selectedComponent={selectedComponent}
+					saveStyle={saveStyle}
+					properties={properties}
+					editorDef={{ type: SimpleEditorType.PixelSize, rangeMin: 0, rangeMax: 200 }}
+					className="_confineWidth"
+				/>
+			</div>
+			<div className="_combineEditors" title="Letter Spacing">
+				<svg
+					width="14"
+					height="17"
+					viewBox="0 0 14 17"
+					fill="none"
+					xmlns="http://www.w3.org/2000/svg"
+				>
+					<path
+						d="M3.98153 10H2.29403L5.36648 1.27273H7.31818L10.3949 10H8.70739L6.37642 3.0625H6.30824L3.98153 10ZM4.03693 6.57812H8.6392V7.84801H4.03693V6.57812Z"
+						fill="#333333"
+						fillOpacity="0.7"
+					/>
+					<line x1="13" y1="14.5" x2="1" y2="14.5" stroke="black" />
+					<line x1="13.5" y1="12" x2="13.5" y2="17" stroke="black" />
+					<line x1="0.5" y1="12" x2="0.5" y2="17" stroke="black" />
+				</svg>
+				<EachSimpleEditor
+					subComponentName={subComponentName}
+					pseudoState={pseudoState}
+					prop="letterSpacing"
+					placeholder="Letter Spacing"
+					iterateProps={iterateProps}
+					selectorPref={selectorPref}
+					styleProps={styleProps}
+					selectedComponent={selectedComponent}
+					saveStyle={saveStyle}
+					properties={properties}
+					editorDef={{ type: SimpleEditorType.PixelSize, rangeMin: 0, rangeMax: 30 }}
+					className="_confineWidth"
+				/>
+			</div>
+
+			<EachSimpleEditor
+				subComponentName={subComponentName}
+				pseudoState={pseudoState}
+				prop="textShadow"
+				placeholder="Box Shadow"
+				iterateProps={iterateProps}
+				selectorPref={selectorPref}
+				styleProps={styleProps}
+				selectedComponent={selectedComponent}
+				saveStyle={saveStyle}
+				properties={properties}
+				editorDef={{ type: SimpleEditorType.TextShadow }}
+			/>
 		</>
 	);
 }
