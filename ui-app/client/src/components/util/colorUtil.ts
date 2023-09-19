@@ -135,22 +135,34 @@ export function HSV_RGB({ h, s, v }: HSVA): RGBA {
 	const t = v * (1 - (1 - f) * s);
 	switch (i % 6) {
 		case 0:
-			(r = v), (g = t), (b = p);
+			r = v;
+			g = t;
+			b = p;
 			break;
 		case 1:
-			(r = q), (g = v), (b = p);
+			r = q;
+			g = v;
+			b = p;
 			break;
 		case 2:
-			(r = p), (g = v), (b = t);
+			r = p;
+			g = v;
+			b = t;
 			break;
 		case 3:
-			(r = p), (g = q), (b = v);
+			r = p;
+			g = q;
+			b = v;
 			break;
 		case 4:
-			(r = t), (g = p), (b = v);
+			r = t;
+			g = p;
+			b = v;
 			break;
 		default:
-			(r = v), (g = p), (b = q);
+			r = v;
+			g = p;
+			b = q;
 			break;
 	}
 	return {
@@ -179,7 +191,8 @@ export function SV_SL({ s, v }: SV): SL {
 	s /= 100;
 	v /= 100;
 	const l = v - (s * v) / 2;
-	const sl = v === 0 ? 0 : (v - l) / Math.min(l, 1 - l);
+	const sl = l === 0 || l === 1 ? 0 : (v - l) / Math.min(l, 1 - l);
+
 	return { l: Math.round(l * 100), s: Math.round(sl * 100) };
 }
 

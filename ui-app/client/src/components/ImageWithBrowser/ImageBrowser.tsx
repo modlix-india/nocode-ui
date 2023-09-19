@@ -251,8 +251,6 @@ export default function ImageBrowser({
 		</select>
 	);
 
-	console.log(bindingPaths.get(currentBindingPath)!);
-
 	return (
 		<Portal>
 			<div
