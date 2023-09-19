@@ -62,7 +62,6 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
 			(_, _v) => {
-				console.log('hi', bindingPathPath, _v);
 				setValue(_v);
 				const objKeys: { [key: number]: string } = {};
 				if (_v?.length) {
