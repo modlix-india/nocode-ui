@@ -27,6 +27,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			height: 65px;
 			background-color: #fff;
+			border-bottom: 1px solid rgba(0, 0, 0, 0.10);
+			box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.05);
 		}
 
 		${PREFIX} ._topBarGrid._previewMode{
@@ -66,7 +68,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction: column;
 			gap: 10px;
 			width: auto;
-			
+			min-width: 250px;
 		}
 
 		${PREFIX} ._filterBar {
@@ -92,9 +94,17 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._compsTree ._treeNode {
 			font-size: 12px;
+			font-weight: 300;
+			font-family: ASAP;
+			line-height: 14px;
+			letter-spacing: 0.8px;
 			cursor: pointer;
 			display: flex;
 			align-items: center;
+			height: 30px;
+			flex-shrink: 0;
+			margin:	0px 8px;
+			border-radius: 4px;
 		}
 
 		${PREFIX} ._compsTree ._treeNodeName {
@@ -104,31 +114,33 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._compsTree ._treeNodeLevel {
-			width: 10px;
+			width: 13px;
 			height: 100%;
 		}
 
-		${PREFIX} ._compsTree ._treeNode._selected {
-			background-color: #ddd;
+		${PREFIX} ._compsTree ._treeNode._selected,
+		${PREFIX} ._compsTree ._treeNode:hover {
+			background-color: #4C7FEE0D;
+			color: #4C7FEE;
+		}
+
+		${PREFIX} ._compsTree ._treeNode._selected i.fa,
+		${PREFIX} ._compsTree ._treeNode:hover i.fa {
+			color: #4C7FEE;
 		}
 
 		${PREFIX} ._compsTree:hover ._treeNodeLevel {
-			border-right: 1px solid #ccc;
+			border-right: 0.75px dotted #00000026;
 		} 
 
 		${PREFIX} ._compsTree ._treeNodeLevel._lastOpened {
-
-			border-right: 1px solid #aaa;
-		}
-
-		${PREFIX} ._compsTree ._treeNode:hover {
-			background-color: #eee;
+			border-right: 0.75px dotted #00000026;
 		}
 
 		${PREFIX} ._compsTree ._treeNode i.fa {
-			font-size: 13px;
-			width: 13px;
-			height: 13px;
+			font-size: 11px;
+			width: 11px;
+			height: 11px;
 			display: flex;
 			justify-content: center;
 			margin: 0px 2px;
@@ -138,15 +150,12 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			padding-left: 5px;
 		}
 
-		${PREFIX} ._compsTree:hover ._animateTransform::before {
-			color: #777;	
+		${PREFIX} ._compsTree ._treeNodeName i.fa.fa-caret-right {
+			font-size: 10px;
+			margin-right: 6px;
 		}
 
-		${PREFIX} ._compsTree ._animateTransform::before {
-			color: #ccc;	
-		}
-
-		${PREFIX} ._compsTree ._animateTransform {
+		${PREFIX} ._compsTree ._animateTransform i.fa {
 			transition: transform 0.5s;
 		}
 

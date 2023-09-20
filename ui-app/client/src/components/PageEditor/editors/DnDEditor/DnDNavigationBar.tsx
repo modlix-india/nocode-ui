@@ -335,7 +335,7 @@ function CompTree({
 					<i
 						className={`fa _animateTransform ${
 							children?.length
-								? 'fa-solid fa-angle-right ' + (isOpen ? 'fa-rotate-90' : '')
+								? 'fa-solid fa-caret-right ' + (isOpen ? 'fa-rotate-90' : '')
 								: ''
 						}`}
 						onClick={e => {
