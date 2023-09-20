@@ -242,7 +242,6 @@ function Stepper(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-arrow-down-1-9',
 	name: 'Stepper',
 	displayName: 'Stepper',
 	description: 'Stepper component',
@@ -263,6 +262,45 @@ const component: Component = {
 			titles: { value: 'Step1, Step2, Step3' },
 		},
 	},
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-arrow-down-1-9',
+		},
+		{
+			name: 'list',
+			displayName: 'List',
+			description: 'List',
+			icon: 'fa-solid fa-list',
+		},
+		{
+			name: 'listItem',
+			displayName: 'List Item',
+			description: 'List Item',
+			icon: 'fa-solid fa-list',
+		},
+		{
+			name: 'itemContainer',
+			displayName: 'Item Container',
+			description: 'Item Container',
+			icon: 'fa-solid fa-list',
+		},
+		{
+			name: 'icon',
+			displayName: 'Icon',
+			description: 'Icon',
+			icon: 'fa-solid fa-list',
+		},
+		{
+			name: 'text',
+			displayName: 'Text',
+			description: 'Text',
+			icon: 'fa-solid fa-list',
+		},
+	],
 };
 
 export default component;

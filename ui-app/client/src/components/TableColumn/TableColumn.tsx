@@ -64,7 +64,6 @@ function TableColumnComponent(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-table-columns',
 	name: 'TableColumn',
 	displayName: 'Table Column',
 	description: 'Table Column component',
@@ -77,6 +76,15 @@ const component: Component = {
 	parentType: 'TableColumns',
 	stylePseudoStates: ['hover'],
 	styleProperties: stylePropertiesDefinition,
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-table-columns',
+		},
+	],
 };
 
 export default component;

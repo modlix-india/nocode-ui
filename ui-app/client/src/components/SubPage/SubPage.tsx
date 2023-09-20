@@ -112,7 +112,6 @@ function SubPage(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-note-sticky',
 	name: 'SubPage',
 	displayName: 'SubPage',
 	description: 'SubPage component',
@@ -126,6 +125,15 @@ const component: Component = {
 	bindingPaths: {
 		bindingPath: { name: 'Parent Binding' },
 	},
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-note-sticky',
+		},
+	],
 };
 
 export default component;

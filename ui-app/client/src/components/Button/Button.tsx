@@ -363,7 +363,6 @@ function ButtonComponent(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-rectangle-ad',
 	name: 'Button',
 	displayName: 'Button',
 	description: 'Button component',
@@ -383,6 +382,27 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'Buttons', pageName: 'buttons' }],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: 'fa-solid fa-rectangle-ad',
+			mainComponent: true,
+		},
+		{
+			name: 'leftIcon',
+			displayName: 'Left Icon',
+			description: 'Left Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'rightIcon',
+			displayName: 'Right Icon',
+			description: 'Right Icon',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

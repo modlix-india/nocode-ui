@@ -355,7 +355,6 @@ function FileUpload(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-upload',
 	name: 'FileUpload',
 	displayName: 'FileUpload',
 	description: 'FileUpload Component',
@@ -375,6 +374,75 @@ const component: Component = {
 		type: 'FileUpload',
 		properties: {},
 	},
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: 'fa-solid fa-upload',
+			mainComponent: true,
+		},
+		{
+			name: 'mainText',
+			displayName: 'Main Text',
+			description: 'Main Text',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'label',
+			displayName: 'Label',
+			description: 'Label',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'buttonStyles',
+			displayName: 'Button Styles',
+			description: 'Button Styles',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'selectedFiles',
+			displayName: 'Selected Files',
+			description: 'Selected Files',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'selectedFileContainer',
+			displayName: 'Selected File Container',
+			description: 'Selected File Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'icon',
+			displayName: 'Icon',
+			description: 'Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'uploadContainer',
+			displayName: 'Upload Container',
+			description: 'Upload Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'closeIcon',
+			displayName: 'Close Icon',
+			description: 'Close Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'validationMessagesContainer',
+			displayName: 'Validation Messages Container',
+			description: 'Validation Messages Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'validationMessage',
+			displayName: 'Validation Message',
+			description: 'Validation Message',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

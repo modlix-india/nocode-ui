@@ -78,7 +78,6 @@ function SchemaBuilder(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-shapes',
 	name: 'SchemaBuilder',
 	displayName: 'Schema Builder',
 	description: 'Schema Builder component',
@@ -97,6 +96,15 @@ const component: Component = {
 	bindingPaths: {
 		bindingPath: { name: 'Schema binding' },
 	},
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-shapes',
+		},
+	],
 };
 
 export default component;

@@ -176,7 +176,6 @@ function Popover(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-regular fa-message',
 	name: 'Popover',
 	displayName: 'Popover',
 	description: 'Popover component',
@@ -194,6 +193,27 @@ const component: Component = {
 		name: 'Popover',
 		properties: {},
 	},
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-regular fa-message',
+		},
+		{
+			name: 'popoverParentContainer',
+			displayName: 'Popover Parent Container',
+			description: 'Popover Parent Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'popoverContainer',
+			displayName: 'Popover Container',
+			description: 'Popover Container',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;
