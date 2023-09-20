@@ -115,7 +115,6 @@ function CheckBox(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-square-check',
 	name: 'CheckBox',
 	displayName: 'CheckBox',
 	description: 'CheckBox component',
@@ -138,6 +137,27 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'Checkbox', pageName: 'checkbox' }],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: 'fa-solid fa-square-check',
+			mainComponent: true,
+		},
+		{
+			name: 'checkbox',
+			displayName: 'Checkbox',
+			description: 'Checkbox',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'label',
+			displayName: 'Label',
+			description: 'Label',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

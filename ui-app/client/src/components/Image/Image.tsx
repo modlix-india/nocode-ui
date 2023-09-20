@@ -115,7 +115,6 @@ function ImageComponent(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-image',
 	name: 'Image',
 	displayName: 'Image',
 	description: 'Image Component',
@@ -135,6 +134,21 @@ const component: Component = {
 			alt: { value: 'Placeholder image' },
 		},
 	},
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-image',
+		},
+		{
+			name: 'image',
+			displayName: 'Image',
+			description: 'Image',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

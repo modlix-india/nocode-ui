@@ -215,7 +215,6 @@ function RadioButton(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-circle-dot',
 	name: 'RadioButton',
 	displayName: 'RadioButton',
 	description: 'RadioButton component',
@@ -250,6 +249,27 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'Radio Button', pageName: 'radioButton' }],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-circle-dot',
+		},
+		{
+			name: 'label',
+			displayName: 'Label',
+			description: 'Label',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'radio',
+			displayName: 'Radio',
+			description: 'Radio',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

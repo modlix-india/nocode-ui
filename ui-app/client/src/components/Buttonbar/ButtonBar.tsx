@@ -178,7 +178,6 @@ function ButtonBar(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-grip',
 	name: 'ButtonBar',
 	displayName: 'ButtonBar',
 	description: 'ButtonBar component',
@@ -200,6 +199,33 @@ const component: Component = {
 			label: { value: 'ButtonBar' },
 		},
 	},
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: 'fa-solid fa-grip',
+			mainComponent: true,
+		},
+		{
+			name: 'label',
+			displayName: 'Label',
+			description: 'Label',
+			icon: 'fa-solid fa-font',
+		},
+		{
+			name: 'container',
+			displayName: 'Container',
+			description: 'Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'button',
+			displayName: 'Button',
+			description: 'Button',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

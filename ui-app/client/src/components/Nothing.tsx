@@ -12,7 +12,6 @@ function Nothing({ definition }: { definition: any }) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-skull-crossbones',
 	name: 'Nothing',
 	displayName: 'Nothing',
 	description: 'Nothing component',
@@ -21,6 +20,15 @@ const component: Component = {
 	properties: [],
 	isHidden: true,
 	styleDefaults: new Map<string, string>(),
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: 'fa-solid fa-skull-crossbones',
+			mainComponent: true,
+		},
+	],
 };
 
 export default component;

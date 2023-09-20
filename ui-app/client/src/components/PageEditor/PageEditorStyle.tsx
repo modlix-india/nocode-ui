@@ -1654,7 +1654,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			font-family: Inter;
 			font-size: 13px;			
 			color: #888;
-			padding: 10px 20px;
+			padding: 14px 20px;
 			cursor: pointer;
 			border-radius: 3px;
 			display: flex;
@@ -1666,6 +1666,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._propertyGroupHeaderStar {
 			fill: #52BD94;
+			transform: scale(1.4);
 		}
 
 		._propertyGroupHeaderIcon {

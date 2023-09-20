@@ -265,7 +265,6 @@ function Tags(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-tags',
 	name: 'Tags',
 	displayName: 'Tags',
 	description: 'Tags Component',
@@ -285,6 +284,63 @@ const component: Component = {
 		name: 'Tags',
 		properties: {},
 	},
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-tags',
+		},
+		{
+			name: 'outerContainerWithInputBox',
+			displayName: 'Outer Container With Input Box',
+			description: 'Outer Container With Input Box',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'inputBox',
+			displayName: 'Input Box',
+			description: 'Input Box',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'tagContainer',
+			displayName: 'Tag Container',
+			description: 'Tag Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'container',
+			displayName: 'Container',
+			description: 'Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'icon',
+			displayName: 'Icon',
+			description: 'Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'tagText',
+			displayName: 'Tag Text',
+			description: 'Tag Text',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'tagCloseIcon',
+			displayName: 'Tag Close Icon',
+			description: 'Tag Close Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'titleLabel',
+			displayName: 'Title Label',
+			description: 'Title Label',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

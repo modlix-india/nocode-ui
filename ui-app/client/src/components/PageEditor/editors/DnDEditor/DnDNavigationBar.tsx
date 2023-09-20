@@ -344,7 +344,11 @@ function CompTree({
 							onOpenClose(compKey);
 						}}
 					/>
-					<i className={`fa ${ComponenstDefinition.get(comp.type)?.icon} ?? '`} />
+					<i
+						className={`fa ${
+							ComponenstDefinition.get(comp.type)?.subComponentDefinition?.[0]?.icon
+						} ?? '`}
+					/>
 					{text}
 				</div>
 			</div>
