@@ -50,18 +50,28 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 			{
 				name: '_droparea_design1',
-				displayName: 'droparea Upload Design 1',
-				description: 'droparea Upload Design 1',
+				displayName: 'Droparea Upload Design 1',
+				description: 'Droparea Upload Design 1',
 			},
 			{
 				name: '_droparea_design2',
-				displayName: 'droparea Upload Design 2',
-				description: 'droparea Upload Design 2',
+				displayName: 'Droparea Upload Design 2',
+				description: 'Droparea Upload Design 2',
 			},
 			{
 				name: '_droparea_design3',
-				displayName: 'droparea Upload Design 3',
-				description: 'droparea Upload Design 3',
+				displayName: 'Droparea Upload Design 3',
+				description: 'Droparea Upload Design 3',
+			},
+			{
+				name: '_only_icon_design1',
+				displayName: 'Only icon design 1',
+				description: 'Only icon design 1.',
+			},
+			{
+				name: '_only_icon_design2',
+				displayName: 'Only icon design 2',
+				description: 'Only icon design 2.',
 			},
 		],
 		group: ComponentPropertyGroup.BASIC,
@@ -128,7 +138,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'button text for upload component',
 		description: 'button text for upload component.',
-		defaultValue: 'Choose a file',
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
@@ -136,7 +145,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Main text for upload component',
 		description: 'Main text for upload component.',
-		defaultValue: 'No File Chosen',
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
@@ -171,15 +179,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 		description:
 			'You can send a string of acceptable file types, this string must be according to the HTML standard for options attrubute of the input type file.',
-	},
-	{
-		name: 'showFileList',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Show selected files ?',
-		description:
-			'This option when set to true displays a list of file(s) selected by the user.',
-		group: ComponentPropertyGroup.BASIC,
-		defaultValue: true,
 	},
 	{
 		name: 'onSelectEvent',

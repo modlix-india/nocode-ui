@@ -227,7 +227,7 @@ function FileUpload(props: ComponentProps) {
 			type="file"
 			ref={inputRef}
 			onChange={onChangeFile}
-			className="hidden"
+			className="_hidden"
 			accept={options}
 			multiple={isMultiple}
 			disabled={readOnly}
@@ -279,16 +279,27 @@ function FileUpload(props: ComponentProps) {
 		>
 			<HelperComponent definition={definition} />
 
-			<div className="_fileUploadText">
+			<label className="_fileUploadText">
 				{!uploadViewType?.startsWith('_inline') ? uploadIconComp : null}
-				{fileContainer ? fileContainer : mainText}
-				<span className="_subtext">{subText}</span>
-			</div>
-			<label className="_fileUploadButton">
-				{uploadViewType?.startsWith('_inline') ? uploadIconComp : null}
-				{uploadViewType !== '_inline_icon_design1' ? buttonText : ''}
-				{inputContainer}
+				{uploadViewType !== '_only_icon_design2'
+					? [
+							fileContainer ? (
+								fileContainer
+							) : (
+								<span className="_mainText">{mainText}</span>
+							),
+							<span className="_subtext">{subText}</span>,
+					  ]
+					: null}
+				{uploadViewType?.startsWith('_only_icon') ? inputContainer : null}
 			</label>
+			{!uploadViewType?.startsWith('_only_icon') ? (
+				<label className="_fileUploadButton">
+					{uploadViewType?.startsWith('_inline') ? uploadIconComp : null}
+					{uploadViewType !== '_inline_icon_design1' ? buttonText : ''}
+					{inputContainer}
+				</label>
+			) : null}
 		</div>,
 		validationMessagesComp,
 	];
