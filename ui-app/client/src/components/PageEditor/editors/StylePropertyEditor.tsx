@@ -332,13 +332,12 @@ export default function StylePropertyEditor({
 		else hasSubComponents.add('');
 	});
 
-	console.log(selectedComponent, selectedSubComponent);
 	let subComponentName = '';
 	if (selectedSubComponent) {
 		subComponentName = selectedSubComponent.split(':')[1];
 	}
 	const subComponentSectionsArray = (cd?.styleProperties ?? {})[subComponentName];
-	console.log(cd?.styleProperties, subComponentName);
+
 	const styleSectionsToShow = reverseStyleSections
 		? Object.values(COMPONENT_STYLE_GROUP_PROPERTIES).filter(
 				each => subComponentSectionsArray.findIndex(e => e === each.name) === -1,
