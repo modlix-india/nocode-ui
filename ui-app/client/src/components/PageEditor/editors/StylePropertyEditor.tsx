@@ -332,11 +332,13 @@ export default function StylePropertyEditor({
 		else hasSubComponents.add('');
 	});
 
+	console.log(selectedComponent, selectedSubComponent);
 	let subComponentName = '';
 	if (selectedSubComponent) {
 		subComponentName = selectedSubComponent.split(':')[1];
 	}
 	const subComponentSectionsArray = (cd?.styleProperties ?? {})[subComponentName];
+	console.log(cd?.styleProperties, subComponentName);
 	const styleSectionsToShow = reverseStyleSections
 		? Object.values(COMPONENT_STYLE_GROUP_PROPERTIES).filter(
 				each => subComponentSectionsArray.findIndex(e => e === each.name) === -1,
@@ -525,7 +527,7 @@ export default function StylePropertyEditor({
 								pageOperations={pageOperations}
 							/>
 						</div>
-						{subComponentsList.length !== 1 ? (
+						{(cd?.subComponentDefinition?.length ?? 0) !== 1 ? (
 							<div className="_eachProp">
 								<div className="_propLabel" title="Subcomponent">
 									Sub Component:
@@ -538,14 +540,12 @@ export default function StylePropertyEditor({
 										schema: SCHEMA_STRING_COMP_PROP,
 										editor: ComponentPropertyEditor.ENUM,
 										defaultValue: '',
-										enumValues: subComponentsList.map(name => ({
-											name,
+										enumValues: cd?.subComponentDefinition.map(e => ({
+											name: e.name,
 											displayName:
-												(hasSubComponents.has(name) ? '★ ' : '') +
-												(name === ''
-													? 'Component'
-													: camelCaseToUpperSpaceCase(name)),
-											description: '',
+												(hasSubComponents.has(e.name) ? '★ ' : '') +
+												e.displayName,
+											description: e.description,
 										})),
 									}}
 									value={{

@@ -149,6 +149,8 @@ export default function DnDEditor({
 						onChangePersonalization={onChangePersonalization}
 						selectedComponent={selectedComponent}
 						onSelectedComponentChanged={onSelectedComponentChanged}
+						selectedSubComponent={selectedSubComponent}
+						onSelectedSubComponentChanged={onSelectedSubComponentChanged}
 						pageExtractor={pageExtractor}
 						defPath={defPath}
 						locationHistory={locationHistory}

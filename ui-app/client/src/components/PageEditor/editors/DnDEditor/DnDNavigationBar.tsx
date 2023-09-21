@@ -16,6 +16,8 @@ interface DnDNavigationBarProps {
 	onChangePersonalization: (prop: string, value: any) => void;
 	selectedComponent: string | undefined;
 	onSelectedComponentChanged: (key: string) => void;
+	selectedSubComponent: string | undefined;
+	onSelectedSubComponentChanged: (key: string) => void;
 	pageExtractor: PageStoreExtractor;
 	defPath: string | undefined;
 	locationHistory: Array<LocationHistory>;
@@ -29,6 +31,8 @@ export default function DnDNavigationBar({
 	onChangePersonalization,
 	selectedComponent,
 	onSelectedComponentChanged,
+	selectedSubComponent,
+	onSelectedSubComponentChanged,
 	pageExtractor,
 	defPath,
 	locationHistory,
@@ -154,6 +158,8 @@ export default function DnDNavigationBar({
 					pageDef={pageDef}
 					selectedComponent={selectedComponent}
 					onSelectedComponentChanged={onSelectedComponentChanged}
+					selectedSubComponent={selectedSubComponent}
+					onSelectedSubComponentChanged={onSelectedSubComponentChanged}
 					expandAll={expandAll}
 					openParents={openParents}
 					compKey={pageDef?.rootComponent ?? ''}
@@ -185,6 +191,8 @@ interface CompTreeProps {
 	onOpenClose: (key: string) => void;
 	selectedComponent: string | undefined;
 	onSelectedComponentChanged: (key: string) => void;
+	selectedSubComponent: string | undefined;
+	onSelectedSubComponentChanged: (key: string) => void;
 	lastOpened: string | undefined;
 	pageOperations: PageOperations;
 	onContextMenu: (m: ContextMenuDetails) => void;
@@ -202,6 +210,8 @@ function CompTree({
 	onOpenClose,
 	selectedComponent,
 	onSelectedComponentChanged,
+	selectedSubComponent,
+	onSelectedSubComponentChanged,
 	lastOpened,
 	pageOperations,
 	onContextMenu,
@@ -215,8 +225,11 @@ function CompTree({
 	const children = pageDef?.componentDefinition[compKey]?.children
 		? Object.keys(pageDef.componentDefinition[compKey].children!)
 		: undefined;
+
+	const subCompDef = ComponenstDefinition.get(comp.type)?.subComponentDefinition;
+
 	const isOpen =
-		children?.length &&
+		(children?.length || (subCompDef?.length ?? 0) > 1) &&
 		(parents.length === 0 ||
 			(!expandAll && openParents.has(compKey)) ||
 			(expandAll && !openParents.has(compKey)));
@@ -233,7 +246,7 @@ function CompTree({
 
 	const [changingName, setChangingName] = useState('');
 
-	if (isOpen) {
+	if (isOpen && children?.length) {
 		childrenLevels = children
 			?.sort((a, b) => {
 				const v =
@@ -256,12 +269,33 @@ function CompTree({
 					onOpenClose={onOpenClose}
 					selectedComponent={selectedComponent}
 					onSelectedComponentChanged={onSelectedComponentChanged}
+					selectedSubComponent={selectedSubComponent}
+					onSelectedSubComponentChanged={onSelectedSubComponentChanged}
 					lastOpened={lastOpened}
 					pageOperations={pageOperations}
 					onContextMenu={onContextMenu}
 					dragStart={dragStart}
 					setDragStart={setDragStart}
 					filter={filter}
+				/>
+			));
+	}
+
+	let subComps: ReactNode[] = [];
+	if (isOpen && (subCompDef?.length ?? 0) > 1) {
+		subComps = subCompDef!
+			.filter(e => e.name !== '')
+			.map((e, i) => (
+				<SubCompTree
+					key={`${compKey}_${e.name}`}
+					subComp={e}
+					lastOpened={lastOpened}
+					parents={parents}
+					componentKey={compKey}
+					selectedComponent={selectedComponent}
+					onSelectedComponentChanged={onSelectedComponentChanged}
+					selectedSubComponent={selectedSubComponent}
+					onSelectedSubComponentChanged={onSelectedSubComponentChanged}
 				/>
 			));
 	}
@@ -334,7 +368,7 @@ function CompTree({
 				<div className="_treeNodeName" onClick={() => {}}>
 					<i
 						className={`fa _animateTransform ${
-							children?.length
+							children?.length || (subCompDef?.length ?? 0) > 1
 								? 'fa-solid fa-caret-right ' + (isOpen ? 'fa-rotate-90' : '')
 								: ''
 						}`}
@@ -344,16 +378,68 @@ function CompTree({
 							onOpenClose(compKey);
 						}}
 					/>
-					<i
-						className={`fa ${
-							ComponenstDefinition.get(comp.type)?.subComponentDefinition?.[0]?.icon
-						} ?? '`}
-					/>
+					<i className={`fa ${subCompDef?.[0]?.icon} ?? '`} />
 					{text}
 				</div>
 			</div>
+			{subComps}
 			{childrenLevels}
 		</>
+	);
+}
+
+function SubCompTree({
+	subComp,
+	parents,
+	lastOpened,
+	componentKey,
+	selectedComponent,
+	onSelectedComponentChanged,
+	selectedSubComponent,
+	onSelectedSubComponentChanged,
+}: {
+	subComp: any;
+	parents: string[];
+	lastOpened: string | undefined;
+	componentKey: string;
+	selectedComponent: string | undefined;
+	onSelectedComponentChanged: (key: string) => void;
+	selectedSubComponent: string | undefined;
+	onSelectedSubComponentChanged: (key: string) => void;
+}) {
+	const levels: ReactNode[] = [];
+	for (let i = 0; i < parents.length; i++)
+		levels.push(
+			<span
+				className={`_treeNodeLevel ${parents[i] === lastOpened ? '_lastOpened' : ''}`}
+				key={`num${i}`}
+			></span>,
+		);
+
+	levels.push(
+		<span
+			className={`_treeNodeLevel ${componentKey === lastOpened ? '_lastOpened' : ''}`}
+			key={`num${parents.length}`}
+		/>,
+	);
+
+	return (
+		<div
+			className={`_treeNode _subComponent ${
+				selectedComponent === componentKey &&
+				selectedSubComponent === `${componentKey}:${subComp.name}`
+					? '_selected'
+					: ''
+			}`}
+			onClick={() => onSelectedSubComponentChanged(`${componentKey}:${subComp.name}`)}
+		>
+			{levels}
+			<div className="_treeNodeName" onClick={() => {}}>
+				<i className="fa _animateTransform" />
+				<i className={`fa ${subComp.icon} '`} />
+				{subComp.name}
+			</div>
+		</div>
 	);
 }
 

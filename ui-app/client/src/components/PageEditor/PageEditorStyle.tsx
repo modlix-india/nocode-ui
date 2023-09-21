@@ -118,6 +118,17 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			height: 100%;
 		}
 
+		${PREFIX} ._compsTree ._treeNode._subComponent._selected,
+		${PREFIX} ._compsTree ._treeNode._subComponent:hover {
+			background-color: transparent;
+			color: #52BD94;
+		}
+
+		${PREFIX} ._compsTree ._treeNode._subComponent._selected i.fa,
+		${PREFIX} ._compsTree ._treeNode._subComponent:hover i.fa {
+			color: #52BD94;
+		}
+
 		${PREFIX} ._compsTree ._treeNode._selected,
 		${PREFIX} ._compsTree ._treeNode:hover {
 			background-color: #4C7FEE0D;
@@ -144,6 +155,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			justify-content: center;
 			margin: 0px 2px;
+			color: #CACBCA;
 		}
 
 		${PREFIX} ._compsTree ._treeNode ._treeText {
