@@ -116,7 +116,6 @@ function ToggleButton(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-toggle-off',
 	name: 'ToggleButton',
 	displayName: 'ToggleButton',
 	description: 'ToggleButton component',
@@ -139,6 +138,27 @@ const component: Component = {
 	},
 	stylePseudoStates: ['hover'],
 	sections: [{ name: 'Toggle Buttons', pageName: 'togglebuttons' }],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-toggle-off',
+		},
+		{
+			name: 'knob',
+			displayName: 'Knob',
+			description: 'Knob',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'label',
+			displayName: 'Label',
+			description: 'Label',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

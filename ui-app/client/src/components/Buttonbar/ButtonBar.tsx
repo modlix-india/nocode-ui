@@ -42,8 +42,9 @@ function ButtonBar(props: ComponentProps) {
 			datatype,
 			readOnly,
 			data,
-			label,
 			isMultiSelect,
+			colorScheme,
+			buttonBarDesign,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -69,7 +70,7 @@ function ButtonBar(props: ComponentProps) {
 	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
 
 	const handleClick = async (each: { key: any; label: any; value: any }) => {
-		if (!each) return;
+		if (!each || !bindingPathPath) return;
 		if (isMultiSelect) {
 			const index = !value ? -1 : value.findIndex((e: any) => deepEqual(e, each.value));
 			let nv = value ? [...value] : [];
@@ -77,7 +78,11 @@ function ButtonBar(props: ComponentProps) {
 			else nv.push(each.value);
 			setData(bindingPathPath!, nv.length ? nv : undefined, context?.pageName);
 		} else {
-			setData(bindingPathPath!, each.value, context?.pageName);
+			setData(
+				bindingPathPath!,
+				deepEqual(each.value, value) ? undefined : each.value,
+				context?.pageName,
+			);
 		}
 		if (clickEvent) {
 			await runEvent(
@@ -138,47 +143,37 @@ function ButtonBar(props: ComponentProps) {
 	};
 
 	return (
-		<div className="comp compButtonBar" style={resolvedStyles.comp ?? {}}>
+		<div
+			className={`comp compButtonBar ${buttonBarDesign} ${colorScheme}`}
+			style={resolvedStyles.comp ?? {}}
+		>
 			<HelperComponent definition={props.definition} />
-
-			<label style={resolvedStyles.label ?? {}} className="_label">
-				<SubHelperComponent definition={props.definition} subComponentName="label" />
-				{getTranslations(label, translations)}
-			</label>
-
-			<div className="_buttonBarContainer" style={resolvedStyles.container ?? {}}>
-				<SubHelperComponent definition={props.definition} subComponentName="container" />
-				{buttonBarData?.map(each => (
-					<button
-						style={resolvedStyles.button ?? {}}
-						key={each?.key}
-						onMouseEnter={
-							stylePropertiesWithPseudoStates?.hover
-								? () => setHover(each?.key)
-								: undefined
-						}
-						onMouseLeave={
-							stylePropertiesWithPseudoStates?.hover ? () => setHover('') : undefined
-						}
-						onClick={() => (!readOnly && each ? handleClick(each) : undefined)}
-						className={`_button ${getIsSelected(each?.key) ? '_selected' : ''} ${
-							readOnly ? '_disabled' : ''
-						}`}
-					>
-						<SubHelperComponent
-							definition={props.definition}
-							subComponentName="button"
-						/>
-						{getTranslations(each?.label, translations)}
-					</button>
-				))}
-			</div>
+			{buttonBarData?.map((each, i, arr) => (
+				<button
+					style={resolvedStyles.button ?? {}}
+					key={each?.key}
+					onMouseEnter={
+						stylePropertiesWithPseudoStates?.hover
+							? () => setHover(each?.key)
+							: undefined
+					}
+					onMouseLeave={
+						stylePropertiesWithPseudoStates?.hover ? () => setHover('') : undefined
+					}
+					onClick={() => (!readOnly && each ? handleClick(each) : undefined)}
+					className={`_button ${getIsSelected(each?.key) ? '_selected' : ''} ${
+						readOnly ? '_disabled' : ''
+					} ${i == 0 ? '_firstChild' : ''} ${i + 1 == arr.length ? '_lastChild' : ''}`}
+				>
+					<SubHelperComponent definition={props.definition} subComponentName="button" />
+					{getTranslations(each?.label, translations)}
+				</button>
+			))}
 		</div>
 	);
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-grip',
 	name: 'ButtonBar',
 	displayName: 'ButtonBar',
 	description: 'ButtonBar component',
@@ -187,7 +182,7 @@ const component: Component = {
 	styleDefaults: styleDefaults,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
-	stylePseudoStates: ['hover', 'disabled'],
+	stylePseudoStates: ['hover', 'disabled', 'active'],
 	styleProperties: stylePropertiesDefinition,
 	bindingPaths: {
 		bindingPath: { name: 'Array Binding' },
@@ -198,8 +193,42 @@ const component: Component = {
 		type: 'ButtonBar',
 		properties: {
 			label: { value: 'ButtonBar' },
+			data: {
+				location: {
+					type: 'EXPRESSION',
+					expression: 'SampleDataStore.radioOptions',
+				},
+			},
 		},
 	},
+	sections: [{ name: 'ButtonBar', pageName: 'buttonbar' }],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: 'fa-solid fa-grip',
+			mainComponent: true,
+		},
+		{
+			name: 'label',
+			displayName: 'Label',
+			description: 'Label',
+			icon: 'fa-solid fa-font',
+		},
+		{
+			name: 'container',
+			displayName: 'Container',
+			description: 'Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'button',
+			displayName: 'Button',
+			description: 'Button',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

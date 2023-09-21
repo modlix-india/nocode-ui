@@ -161,7 +161,8 @@ export default function DnDBottomBar({
 									>
 										<i
 											className={`fa ${
-												ComponentDefinitions.get(defMap[f].type)?.icon
+												ComponentDefinitions.get(defMap[f].type)
+													?.subComponentDefinition?.[0].icon
 											}`}
 										/>
 										{defMap[f].name}

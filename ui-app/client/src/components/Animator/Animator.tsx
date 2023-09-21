@@ -134,7 +134,6 @@ function Animator(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-wand-magic-sparkles',
 	name: 'Animator',
 	displayName: 'Animator',
 	description: 'Animator component',
@@ -150,6 +149,21 @@ const component: Component = {
 		name: 'Animator',
 		type: 'Animator',
 	},
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: 'fa-solid fa-wand-magic-sparkles',
+			mainComponent: true,
+		},
+		{
+			name: 'container',
+			displayName: 'Container',
+			description: 'Container',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

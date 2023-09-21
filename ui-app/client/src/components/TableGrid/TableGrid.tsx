@@ -203,7 +203,6 @@ function TableGridComponent(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-table-cells',
 	name: 'TableGrid',
 	displayName: 'Table Grid',
 	description: 'Table Grid component',
@@ -216,6 +215,21 @@ const component: Component = {
 	allowedChildrenType: new Map<string, number>([['', 1]]),
 	parentType: 'Table',
 	stylePseudoStates: ['hover'],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-table-cells',
+		},
+		{
+			name: 'eachGrid',
+			displayName: 'Each Grid',
+			description: 'Each Grid',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

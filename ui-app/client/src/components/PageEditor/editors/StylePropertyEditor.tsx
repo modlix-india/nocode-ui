@@ -336,7 +336,8 @@ export default function StylePropertyEditor({
 	if (selectedSubComponent) {
 		subComponentName = selectedSubComponent.split(':')[1];
 	}
-	const subComponentSectionsArray = (cd?.styleProperties ?? {})[subComponentName];
+	const subComponentSectionsArray = (cd?.styleProperties ?? {})[subComponentName] ?? [];
+
 	const styleSectionsToShow = reverseStyleSections
 		? Object.values(COMPONENT_STYLE_GROUP_PROPERTIES).filter(
 				each => subComponentSectionsArray.findIndex(e => e === each.name) === -1,
@@ -525,50 +526,6 @@ export default function StylePropertyEditor({
 								pageOperations={pageOperations}
 							/>
 						</div>
-						{subComponentsList.length !== 1 ? (
-							<div className="_eachProp">
-								<div className="_propLabel" title="Subcomponent">
-									Sub Component:
-								</div>
-								<PropertyValueEditor
-									pageDefinition={pageDef}
-									propDef={{
-										name: 'subcomponent',
-										displayName: 'Sub Component',
-										schema: SCHEMA_STRING_COMP_PROP,
-										editor: ComponentPropertyEditor.ENUM,
-										defaultValue: '',
-										enumValues: subComponentsList.map(name => ({
-											name,
-											displayName:
-												(hasSubComponents.has(name) ? '★ ' : '') +
-												(name === ''
-													? 'Component'
-													: camelCaseToUpperSpaceCase(name)),
-											description: '',
-										})),
-									}}
-									value={{
-										value:
-											selectedSubComponent === ''
-												? selectedSubComponent
-												: selectedSubComponent.split(':')[1],
-									}}
-									onlyValue={true}
-									onChange={v =>
-										onSelectedSubComponentChanged(
-											!v.value ? '' : `${selectedComponent}:${v.value}`,
-										)
-									}
-									storePaths={storePaths}
-									editPageName={editPageName}
-									slaveStore={slaveStore}
-									pageOperations={pageOperations}
-								/>
-							</div>
-						) : (
-							<></>
-						)}
 						{pseudoStates.length ? (
 							<div className="_eachProp">
 								<PseudoStateSelector

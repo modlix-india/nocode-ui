@@ -118,7 +118,6 @@ function MarkDown({ text }: { text: string }) {
 }
 
 const component: Component = {
-	icon: 'fa fa-solid fa-heading',
 	name: 'Text',
 	displayName: 'Text',
 	description: 'Text component',
@@ -139,6 +138,21 @@ const component: Component = {
 		{ name: 'Main', pageName: 'text' },
 		{ name: 'Decorative', pageName: 'textDecorative' },
 		{ name: 'Paragraph', pageName: 'textParagraph' },
+	],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa fa-solid fa-heading',
+		},
+		{
+			name: 'text',
+			displayName: 'Text',
+			description: 'Text',
+			icon: 'fa fa-solid fa-box',
+		},
 	],
 };
 

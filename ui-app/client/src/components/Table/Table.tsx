@@ -563,7 +563,6 @@ function TableComponent(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-table',
 	name: 'Table',
 	displayName: 'Table',
 	description: 'Table component',
@@ -587,6 +586,15 @@ const component: Component = {
 		bindingPath4: { name: 'Page Size Binding' },
 		bindingPath5: { name: 'Table Display Mode Binding' },
 	},
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-table',
+		},
+	],
 };
 
 export default component;

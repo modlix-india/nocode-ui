@@ -422,7 +422,6 @@ function DropdownComponent(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-square-caret-down',
 	name: 'Dropdown',
 	displayName: 'Dropdown',
 	description: 'Dropdown component',
@@ -446,6 +445,99 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'Dropdown', pageName: 'dropdown' }],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: 'fa-solid fa-square-caret-down',
+			mainComponent: true,
+		},
+		{
+			name: 'dropDownContainer',
+			displayName: 'Dropdown Container',
+			description: 'Dropdown Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'dropdownItem',
+			displayName: 'Dropdown Item',
+			description: 'Dropdown Item',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'dropdownItemLabel',
+			displayName: 'Dropdown Item Label',
+			description: 'Dropdown Item Label',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'dropdownCheckIcon',
+			displayName: 'Dropdown Check Icon',
+			description: 'Dropdown Check Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'dropdownSearchContainer',
+			displayName: 'Dropdown Search Container',
+			description: 'Dropdown Search Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'textBoxContainer',
+			displayName: 'Text Box Container',
+			description: 'Text Box Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'leftIcon',
+			displayName: 'Left Icon',
+			description: 'Left Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'rightIcon',
+			displayName: 'Right Icon',
+			description: 'Right Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'inputBox',
+			displayName: 'Input Box',
+			description: 'Input Box',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'floatingLabel',
+			displayName: 'Floating Label',
+			description: 'Floating Label',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'noFloatLabel',
+			displayName: 'No Float Label',
+			description: 'No Float Label',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'supportText',
+			displayName: 'Support Text',
+			description: 'Support Text',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'errorText',
+			displayName: 'Error Text',
+			description: 'Error Text',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'errorTextContainer',
+			displayName: 'Error Text Container',
+			description: 'Error Text Container',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

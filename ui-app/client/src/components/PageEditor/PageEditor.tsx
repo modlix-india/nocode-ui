@@ -255,7 +255,7 @@ function PageEditor(props: ComponentProps) {
 	// To use for the paralell design mode
 	const [paralellIFrame, setParalellIFrame] = useState<HTMLIFrameElement | undefined>(undefined);
 	const [selectedComponent, setSelectedComponentOriginal] = useState<string>('');
-	const [selectedSubComponent, setSelectedSubComponent] = useState<string>('');
+	const [selectedSubComponent, setSelectedSubComponentOriginal] = useState<string>('');
 	const [issue, setIssue] = useState<Issue>();
 	const [contextMenu, setContextMenu] = useState<ContextMenuDetails>();
 	const [showCodeEditor, setShowCodeEditor] = useState<string | undefined>(undefined);
@@ -263,7 +263,7 @@ function PageEditor(props: ComponentProps) {
 	const setSelectedComponent = useCallback(
 		(v: string) => {
 			setSelectedComponentOriginal(v ?? '');
-			setSelectedSubComponent('');
+			setSelectedSubComponentOriginal('');
 			if (!defPath) return;
 
 			let pageDef = getDataFromPath(
@@ -289,7 +289,23 @@ function PageEditor(props: ComponentProps) {
 
 			setData(defPath, pageDef, pageExtractor.getPageName());
 		},
-		[setSelectedComponentOriginal, setSelectedSubComponent, defPath],
+		[setSelectedComponentOriginal, setSelectedSubComponentOriginal, defPath],
+	);
+
+	const setSelectedSubComponent = useCallback(
+		(key: string) => {
+			if (key === '') {
+				setSelectedComponent('');
+				setSelectedSubComponentOriginal('');
+				return;
+			}
+
+			const [componentKey, subComponentKey] = key.split(':');
+
+			setSelectedComponent(componentKey);
+			setSelectedSubComponentOriginal(key);
+		},
+		[selectedComponent],
 	);
 
 	const [styleSelectorPref, setStyleSelectorPref] = useState<any>({});
@@ -672,7 +688,6 @@ function PageEditor(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-newspaper',
 	name: 'PageEditor',
 	displayName: 'Page Editor',
 	description: 'Page Editor component',
@@ -688,6 +703,15 @@ const component: Component = {
 		bindingPath2: { name: 'Personalization' },
 		bindingPath3: { name: 'Application Definition' },
 	},
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-newspaper',
+		},
+	],
 };
 
 export default component;

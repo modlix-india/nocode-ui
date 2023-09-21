@@ -398,7 +398,6 @@ function Video(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa fa-solid fa-film',
 	name: 'Video',
 	displayName: 'Video',
 	description: 'Video component',
@@ -409,6 +408,63 @@ const component: Component = {
 	styleComponent: VideoStyle,
 	styleDefaults: styleDefaults,
 	allowedChildrenType: new Map<string, number>([['', -1]]),
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			mainComponent: true,
+			description: 'Component',
+			icon: 'fa fa-solid fa-film',
+		},
+		{
+			name: 'player',
+			displayName: 'Player',
+			description: 'Player',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'volumeSlider',
+			displayName: 'Volume Slider',
+			description: 'Volume Slider',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'seekSlider',
+			displayName: 'Seek Slider',
+			description: 'Seek Slider',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'playPauseButton',
+			displayName: 'Play Pause Button',
+			description: 'Play Pause Button',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'pipButton',
+			displayName: 'Pip Button',
+			description: 'Pip Button',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'fullScreenButton',
+			displayName: 'Full Screen Button',
+			description: 'Full Screen Button',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'timeText',
+			displayName: 'Time Text',
+			description: 'Time Text',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'seekTimeTextOnHover',
+			displayName: 'Seek Time Text On Hover',
+			description: 'Seek Time Text On Hover',
+			icon: 'fa fa-solid fa-box',
+		},
+	],
 };
 
 export default component;
