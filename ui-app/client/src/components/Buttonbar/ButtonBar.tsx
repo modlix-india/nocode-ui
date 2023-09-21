@@ -69,10 +69,7 @@ function ButtonBar(props: ComponentProps) {
 
 	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
 
-	const [singleValue, setSingleValue] = React.useState<any>('');
-
 	const handleClick = async (each: { key: any; label: any; value: any }) => {
-		setSingleValue(each.value);
 		if (!each || !bindingPathPath) return;
 		if (isMultiSelect) {
 			const index = !value ? -1 : value.findIndex((e: any) => deepEqual(e, each.value));
@@ -83,10 +80,9 @@ function ButtonBar(props: ComponentProps) {
 		} else {
 			setData(
 				bindingPathPath!,
-				each.value != singleValue ? each.value : undefined,
+				deepEqual(each.value, value) ? undefined : each.value,
 				context?.pageName,
 			);
-			each.value === singleValue ? setSingleValue('') : '';
 		}
 		if (clickEvent) {
 			await runEvent(
