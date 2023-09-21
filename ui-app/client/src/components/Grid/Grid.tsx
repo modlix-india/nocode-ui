@@ -327,7 +327,6 @@ function Grid(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-table-cells',
 	name: 'Grid',
 	displayName: 'Grid',
 	description: 'Grid component',
@@ -352,6 +351,15 @@ const component: Component = {
 		{
 			name: 'Grid',
 			pageName: 'grid',
+		},
+	],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-table-cells',
 		},
 	],
 };

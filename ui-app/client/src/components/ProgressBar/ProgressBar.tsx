@@ -146,7 +146,6 @@ function ProgressBar(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-bars-progress',
 	name: 'ProgressBar',
 	displayName: 'ProgressBar',
 	description: 'ProgressBar component',
@@ -163,6 +162,33 @@ const component: Component = {
 		name: 'ProgressBar',
 	},
 	sections: [{ name: 'Default Progress Bar', pageName: 'progressBar' }],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-bars-progress',
+		},
+		{
+			name: 'track',
+			displayName: 'Track',
+			description: 'Track',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'progress',
+			displayName: 'Progress',
+			description: 'Progress',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'label',
+			displayName: 'Label',
+			description: 'Label',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

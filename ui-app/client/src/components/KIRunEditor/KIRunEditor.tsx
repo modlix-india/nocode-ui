@@ -1117,7 +1117,6 @@ function KIRunEditor(
 }
 
 const component: Component = {
-	icon: 'fa-regular fa-newspaper',
 	name: 'KIRun Editor',
 	displayName: 'KIRun Editor',
 	description: 'KIRun Editor component',
@@ -1131,6 +1130,15 @@ const component: Component = {
 		bindingPath: { name: 'Function Binding' },
 		bindingPath2: { name: 'Personalization' },
 	},
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-regular fa-newspaper',
+		},
+	],
 };
 
 export default component;

@@ -302,7 +302,6 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-layer-group',
 	name: 'ArrayRepeater',
 	displayName: 'Repeater',
 	description: 'Array Repeater component',
@@ -322,6 +321,51 @@ const component: Component = {
 		type: 'ArrayRepeater',
 		properties: {},
 	},
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: 'fa-solid fa-wand-magic-sparkles',
+			mainComponent: true,
+		},
+		{
+			name: 'repeaterProperties',
+			displayName: 'Repeater Properties',
+			description: 'Repeater Properties',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'repeatedComp',
+			displayName: 'Repeated Component',
+			description: 'Repeated Component',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'iconGrid',
+			displayName: 'Icon Grid',
+			description: 'Icon Grid',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'add',
+			displayName: 'Add',
+			description: 'Add',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'remove',
+			displayName: 'Remove',
+			description: 'Remove',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'move',
+			displayName: 'Move',
+			description: 'Move',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

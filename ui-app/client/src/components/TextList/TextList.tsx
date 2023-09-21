@@ -172,7 +172,6 @@ function TextList(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-list-ul',
 	name: 'TextList',
 	displayName: 'TextList',
 	description: 'TextList component',
@@ -191,6 +190,33 @@ const component: Component = {
 			text: { value: 'Text1,Text2,Text3' },
 		},
 	},
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-list-ul',
+		},
+		{
+			name: 'list',
+			displayName: 'List',
+			description: 'List',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'listItem',
+			displayName: 'List Item',
+			description: 'List Item',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'listItemIcon',
+			displayName: 'List Item Icon',
+			description: 'List Item Icon',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

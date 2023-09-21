@@ -131,7 +131,6 @@ function TableEmptyGrid(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-battery-empty',
 	name: 'TableEmptyGrid',
 	displayName: 'Table Empty Grid',
 	description: 'Table Empty Grid component',
@@ -144,6 +143,15 @@ const component: Component = {
 	stylePseudoStates: ['hover', 'focus', 'readonly'],
 	allowedChildrenType: new Map<string, number>([['', -1]]),
 	parentType: 'Table',
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-battery-empty',
+		},
+	],
 };
 
 export default component;

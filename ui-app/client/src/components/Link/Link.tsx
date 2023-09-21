@@ -169,7 +169,6 @@ function Link(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-link',
 	name: 'Link',
 	displayName: 'Link',
 	description: 'Link component',
@@ -189,6 +188,21 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'Links', pageName: 'link' }],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-link',
+		},
+		{
+			name: 'externalIcon',
+			displayName: 'External Icon',
+			description: 'External Icon',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

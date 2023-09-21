@@ -60,7 +60,6 @@ function Iframe(props: ComponentProps) {
 	);
 }
 const component: Component = {
-	icon: 'fa-solid fa-clapperboard',
 	name: 'Iframe',
 	displayName: 'Iframe',
 	description: 'Iframe component',
@@ -76,6 +75,21 @@ const component: Component = {
 		type: 'Iframe',
 		properties: {},
 	},
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-clapperboard',
+		},
+		{
+			name: 'iframe',
+			displayName: 'Iframe',
+			description: 'Iframe',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

@@ -143,7 +143,6 @@ function PageComponent(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-file',
 	name: 'Page',
 	displayName: 'Page',
 	description: 'Page component',
@@ -154,6 +153,15 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleComponent: PageStyle,
 	styleDefaults: styleDefaults,
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-file',
+		},
+	],
 };
 
 export default component;

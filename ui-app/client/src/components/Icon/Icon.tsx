@@ -38,7 +38,6 @@ function Icon(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-icons',
 	name: 'Icon',
 	displayName: 'Icon',
 	description: 'Icon component',
@@ -57,6 +56,15 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'Icons', pageName: 'icon' }],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-icons',
+		},
+	],
 };
 
 export default component;

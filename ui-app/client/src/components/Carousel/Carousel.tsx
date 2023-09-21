@@ -317,7 +317,6 @@ function Carousel(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-tv',
 	name: 'Carousel',
 	displayName: 'Carousel',
 	description: 'Carousel component',
@@ -328,6 +327,39 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	allowedChildrenType: new Map<string, number>([['', -1]]),
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: 'fa-solid fa-tv',
+			mainComponent: true,
+		},
+		{
+			name: 'arrowButtonsContainer',
+			displayName: 'Arrow Buttons Container',
+			description: 'Arrow Buttons Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'arrowButtons',
+			displayName: 'Arrow Buttons',
+			description: 'Arrow Buttons',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'slideButtonsContainer',
+			displayName: 'Slide Buttons Container',
+			description: 'Slide Buttons Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'dotButtons',
+			displayName: 'Dot Buttons',
+			description: 'Dot Buttons',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

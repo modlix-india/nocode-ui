@@ -672,7 +672,6 @@ function PageEditor(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-newspaper',
 	name: 'PageEditor',
 	displayName: 'Page Editor',
 	description: 'Page Editor component',
@@ -688,6 +687,15 @@ const component: Component = {
 		bindingPath2: { name: 'Personalization' },
 		bindingPath3: { name: 'Application Definition' },
 	},
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-newspaper',
+		},
+	],
 };
 
 export default component;

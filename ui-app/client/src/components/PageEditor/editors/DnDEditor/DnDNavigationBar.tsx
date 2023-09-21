@@ -335,7 +335,7 @@ function CompTree({
 					<i
 						className={`fa _animateTransform ${
 							children?.length
-								? 'fa-solid fa-angle-right ' + (isOpen ? 'fa-rotate-90' : '')
+								? 'fa-solid fa-caret-right ' + (isOpen ? 'fa-rotate-90' : '')
 								: ''
 						}`}
 						onClick={e => {
@@ -344,7 +344,11 @@ function CompTree({
 							onOpenClose(compKey);
 						}}
 					/>
-					<i className={`fa ${ComponenstDefinition.get(comp.type)?.icon} ?? '`} />
+					<i
+						className={`fa ${
+							ComponenstDefinition.get(comp.type)?.subComponentDefinition?.[0]?.icon
+						} ?? '`}
+					/>
 					{text}
 				</div>
 			</div>

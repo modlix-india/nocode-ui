@@ -150,7 +150,6 @@ function TableDynamicColumnsComponent(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-table-columns',
 	name: 'TableDynamicColumns',
 	displayName: 'Table Dynamic Columns',
 	description: 'Table Dynamic Columns component',
@@ -162,6 +161,27 @@ const component: Component = {
 	styleDefaults: styleDefaults,
 	parentType: 'Table',
 	stylePseudoStates: ['hover'],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-table-columns',
+		},
+		{
+			name: 'row',
+			displayName: 'Row',
+			description: 'Row',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'header',
+			displayName: 'Header',
+			description: 'Header',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;
