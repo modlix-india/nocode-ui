@@ -526,48 +526,6 @@ export default function StylePropertyEditor({
 								pageOperations={pageOperations}
 							/>
 						</div>
-						{(cd?.subComponentDefinition?.length ?? 0) !== 1 ? (
-							<div className="_eachProp">
-								<div className="_propLabel" title="Subcomponent">
-									Sub Component:
-								</div>
-								<PropertyValueEditor
-									pageDefinition={pageDef}
-									propDef={{
-										name: 'subcomponent',
-										displayName: 'Sub Component',
-										schema: SCHEMA_STRING_COMP_PROP,
-										editor: ComponentPropertyEditor.ENUM,
-										defaultValue: '',
-										enumValues: cd?.subComponentDefinition.map(e => ({
-											name: e.name,
-											displayName:
-												(hasSubComponents.has(e.name) ? '★ ' : '') +
-												e.displayName,
-											description: e.description,
-										})),
-									}}
-									value={{
-										value:
-											selectedSubComponent === ''
-												? selectedSubComponent
-												: selectedSubComponent.split(':')[1],
-									}}
-									onlyValue={true}
-									onChange={v =>
-										onSelectedSubComponentChanged(
-											!v.value ? '' : `${selectedComponent}:${v.value}`,
-										)
-									}
-									storePaths={storePaths}
-									editPageName={editPageName}
-									slaveStore={slaveStore}
-									pageOperations={pageOperations}
-								/>
-							</div>
-						) : (
-							<></>
-						)}
 						{pseudoStates.length ? (
 							<div className="_eachProp">
 								<PseudoStateSelector
