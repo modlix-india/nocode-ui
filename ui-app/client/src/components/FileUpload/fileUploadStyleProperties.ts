@@ -831,6 +831,24 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compFileUpload._inline_icon_design1  ._fileUploadText',
 		noPrefix: true,
 	},
+	{
+		groupName: 'File Upload Icon Height',
+		displayName: 'File Upload Icon Height Icon Only Design One Height',
+		name: 'fileUploadIconHeightIconOnlyDesignOneHeight',
+		defaultValue: '50px',
+		cssProperty: 'height',
+		selector: '.comp.compFileUpload._only_icon_design1 ._uploadIcon._upload_icon_1',
+		noPrefix: true,
+	},
+	{
+		groupName: 'File Upload Icon Height',
+		displayName: 'File Upload Icon Height Icon Only Design Two Height',
+		name: 'fileUploadIconHeightIconOnlyDesignTwoHeight',
+		defaultValue: '84px',
+		cssProperty: 'height',
+		selector: '.comp.compFileUpload._only_icon_design2 ._uploadIcon._upload_icon_2',
+		noPrefix: true,
+	},
 
 	{
 		groupName: 'File Upload Border Color',

@@ -24,6 +24,7 @@ export default function ProgressBarStyles({ theme }: { theme: Map<string, Map<st
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
+		align-items: center;
 	}
 
 	${PREFIX} ._fileUploadButton {
@@ -41,6 +42,18 @@ export default function ProgressBarStyles({ theme }: { theme: Map<string, Map<st
 	}
 	${PREFIX}._droparea_design3 ._subtext {
 		position: absolute;
+	}
+	${PREFIX} ._upload_icon_1 {
+		width: 100%;
+	}
+
+	${PREFIX} ._upload_icon_1 svg, ${PREFIX} ._upload_icon_2 svg {
+		width: 100%;
+		height: 100%;
+	}
+
+	${PREFIX} ._upload_icon_2 {
+		width: 100%;
 	}
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
