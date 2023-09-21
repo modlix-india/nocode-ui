@@ -68,7 +68,10 @@ function ButtonBar(props: ComponentProps) {
 
 	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
 
+	const [singleValue, setSingleValue] = React.useState<any>('');
+
 	const handleClick = async (each: { key: any; label: any; value: any }) => {
+		setSingleValue(each.value);
 		if (!each || !bindingPathPath) return;
 		if (isMultiSelect) {
 			const index = !value ? -1 : value.findIndex((e: any) => deepEqual(e, each.value));
@@ -77,7 +80,12 @@ function ButtonBar(props: ComponentProps) {
 			else nv.push(each.value);
 			setData(bindingPathPath!, nv.length ? nv : undefined, context?.pageName);
 		} else {
-			setData(bindingPathPath!, each.value, context?.pageName);
+			setData(
+				bindingPathPath!,
+				each.value != singleValue ? each.value : undefined,
+				context?.pageName,
+			);
+			each.value === singleValue ? setSingleValue('') : '';
 		}
 		if (clickEvent) {
 			await runEvent(
@@ -143,7 +151,7 @@ function ButtonBar(props: ComponentProps) {
 			style={resolvedStyles.comp ?? {}}
 		>
 			<HelperComponent definition={props.definition} />
-			{buttonBarData?.map(each => (
+			{buttonBarData?.map((each, i, arr) => (
 				<button
 					style={resolvedStyles.button ?? {}}
 					key={each?.key}
@@ -158,7 +166,7 @@ function ButtonBar(props: ComponentProps) {
 					onClick={() => (!readOnly && each ? handleClick(each) : undefined)}
 					className={`_button ${getIsSelected(each?.key) ? '_selected' : ''} ${
 						readOnly ? '_disabled' : ''
-					}`}
+					} ${i == 0 ? '_firstChild' : ''} ${i + 1 == arr.length ? '_lastChild' : ''}`}
 				>
 					<SubHelperComponent definition={props.definition} subComponentName="button" />
 					{getTranslations(each?.label, translations)}
