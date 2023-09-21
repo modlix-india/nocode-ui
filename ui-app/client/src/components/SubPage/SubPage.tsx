@@ -21,6 +21,7 @@ import { isNullValue } from '@fincity/kirun-js';
 import { runEvent } from '../util/runEvent';
 import * as getPageDefinition from './../../definitions/getPageDefinition.json';
 import { flattenUUID } from '../util/uuid';
+import { styleDefaults } from './subPageStyleProperties';
 
 function SubPage(props: ComponentProps) {
 	const {
@@ -111,7 +112,6 @@ function SubPage(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-note-sticky',
 	name: 'SubPage',
 	displayName: 'SubPage',
 	description: 'SubPage component',
@@ -120,10 +120,20 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	styleComponent: SubPageStyle,
+	styleDefaults: styleDefaults,
 	stylePseudoStates: [],
 	bindingPaths: {
 		bindingPath: { name: 'Parent Binding' },
 	},
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-note-sticky',
+		},
+	],
 };
 
 export default component;

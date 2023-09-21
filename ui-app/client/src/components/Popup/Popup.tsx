@@ -17,6 +17,7 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
 import { SubHelperComponent } from '../SubHelperComponent';
 import { getTranslations } from '../util/getTranslations';
+import { styleDefaults } from './popupStyleProperties';
 
 function Popup(props: ComponentProps) {
 	const [isActive, setIsActive] = React.useState(false);
@@ -226,7 +227,6 @@ function Popup(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-window-restore',
 	name: 'Popup',
 	displayName: 'Popup',
 	description: 'Popup component',
@@ -234,6 +234,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: PopupStyles,
+	styleDefaults: styleDefaults,
 	styleProperties: stylePropertiesDefinition,
 	allowedChildrenType: new Map<string, number>([['', -1]]),
 	bindingPaths: {
@@ -246,6 +247,45 @@ const component: Component = {
 	},
 	needShowInDesginMode: true,
 	sections: [{ name: 'Popup', pageName: 'popup' }],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-window-restore',
+		},
+		{
+			name: 'modal',
+			displayName: 'Modal',
+			description: 'Modal',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'titleGrid',
+			displayName: 'Title Grid',
+			description: 'Title Grid',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'closeButton',
+			displayName: 'Close Button',
+			description: 'Close Button',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'modalTitle',
+			displayName: 'Modal Title',
+			description: 'Modal Title',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'closeButtonContainer',
+			displayName: 'Close Button Container',
+			description: 'Close Button Container',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

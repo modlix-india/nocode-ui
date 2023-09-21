@@ -8,6 +8,7 @@ import { SubHelperComponent } from '../SubHelperComponent';
 import useDefinition from '../util/useDefinition';
 import AnimatorStyle from './AnimatorStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './animatorProperties';
+import { styleDefaults } from './animatorStyleProperties';
 
 function makeAnimationString(animations: any[]): string {
 	if (!animations?.length) return '';
@@ -133,7 +134,6 @@ function Animator(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-wand-magic-sparkles',
 	name: 'Animator',
 	displayName: 'Animator',
 	description: 'Animator component',
@@ -141,6 +141,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: AnimatorStyle,
+	styleDefaults: styleDefaults,
 	allowedChildrenType: new Map<string, number>([['', 1]]),
 	styleProperties: stylePropertiesDefinition,
 	defaultTemplate: {
@@ -148,6 +149,21 @@ const component: Component = {
 		name: 'Animator',
 		type: 'Animator',
 	},
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: 'fa-solid fa-wand-magic-sparkles',
+			mainComponent: true,
+		},
+		{
+			name: 'container',
+			displayName: 'Container',
+			description: 'Container',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

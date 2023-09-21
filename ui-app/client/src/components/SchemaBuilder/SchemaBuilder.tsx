@@ -14,6 +14,7 @@ import SchemaFormStyle from './SchemaBuilderStyle';
 import SingleSchema from './components/SingleSchema';
 import { UISchemaRepository } from '../../schemas/common';
 import { isNullValue } from '@fincity/kirun-js';
+import { styleDefaults } from './schemaBuilderStyleProperies';
 
 function SchemaBuilder(props: ComponentProps) {
 	const {
@@ -77,7 +78,6 @@ function SchemaBuilder(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-shapes',
 	name: 'SchemaBuilder',
 	displayName: 'Schema Builder',
 	description: 'Schema Builder component',
@@ -85,6 +85,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: SchemaFormStyle,
+	styleDefaults: styleDefaults,
 	styleProperties: stylePropertiesDefinition,
 	defaultTemplate: {
 		key: '',
@@ -95,6 +96,15 @@ const component: Component = {
 	bindingPaths: {
 		bindingPath: { name: 'Schema binding' },
 	},
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-shapes',
+		},
+	],
 };
 
 export default component;

@@ -15,6 +15,7 @@ import { getTranslations } from '../util/getTranslations';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tabsProperties';
 import TabsStyles from './TabsStyle';
+import { styleDefaults } from './tabsStyleProperties';
 
 function setHighlighter(
 	tabsOrientation: string,
@@ -236,7 +237,6 @@ function TabsComponent(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-diagram-predecessor',
 	name: 'Tabs',
 	displayName: 'Tabs',
 	description: 'Tabs Component',
@@ -244,6 +244,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TabsStyles,
+	styleDefaults: styleDefaults,
 	styleProperties: stylePropertiesDefinition,
 	allowedChildrenType: new Map<string, number>([['', -1]]),
 	stylePseudoStates: ['hover'],
@@ -308,6 +309,45 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'Tabs', pageName: 'tab' }],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-diagram-predecessor',
+		},
+		{
+			name: 'tabsContainer',
+			displayName: 'Tabs Container',
+			description: 'Tabs Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'tab',
+			displayName: 'Tab',
+			description: 'Tab',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'icon',
+			displayName: 'Icon',
+			description: 'Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'tabHighlighter',
+			displayName: 'Tab Highlighter',
+			description: 'Tab Highlighter',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'childContainer',
+			displayName: 'Child Container',
+			description: 'Child Container',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

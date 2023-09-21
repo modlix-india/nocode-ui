@@ -17,6 +17,7 @@ import { HelperComponent } from '../HelperComponent';
 import { getTranslations } from '../util/getTranslations';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { SubHelperComponent } from '../SubHelperComponent';
+import { styleDefaults } from './buttonBarStyleProperties';
 
 function ButtonBar(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -177,12 +178,12 @@ function ButtonBar(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-grip',
 	name: 'ButtonBar',
 	displayName: 'ButtonBar',
 	description: 'ButtonBar component',
 	component: ButtonBar,
 	styleComponent: ButtonBarStyle,
+	styleDefaults: styleDefaults,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	stylePseudoStates: ['hover', 'disabled', 'active'],
@@ -205,6 +206,33 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'ButtonBar', pageName: 'buttonbar' }],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: 'fa-solid fa-grip',
+			mainComponent: true,
+		},
+		{
+			name: 'label',
+			displayName: 'Label',
+			description: 'Label',
+			icon: 'fa-solid fa-font',
+		},
+		{
+			name: 'container',
+			displayName: 'Container',
+			description: 'Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'button',
+			displayName: 'Button',
+			description: 'Button',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

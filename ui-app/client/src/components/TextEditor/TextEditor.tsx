@@ -13,6 +13,7 @@ import { HelperComponent } from '../HelperComponent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './textEditorProperties';
 import TextEditorStyle from './TextEditorStyle';
+import { styleDefaults } from './textEditorStyleProperies';
 
 function TextEditor(props: ComponentProps) {
 	const {
@@ -107,7 +108,6 @@ function TextEditor(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-rectangle-list',
 	name: 'TextEditor',
 	displayName: 'Text Editor',
 	description: 'Text Editor component',
@@ -115,6 +115,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TextEditorStyle,
+	styleDefaults: styleDefaults,
 	styleProperties: stylePropertiesDefinition,
 	defaultTemplate: {
 		key: '',
@@ -125,6 +126,15 @@ const component: Component = {
 	bindingPaths: {
 		bindingPath: { name: 'Text binding' },
 	},
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-rectangle-list',
+		},
+	],
 };
 
 export default component;

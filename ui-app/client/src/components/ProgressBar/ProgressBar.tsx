@@ -8,6 +8,7 @@ import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './progressBarProperties';
 import ProgressBarStyles from './ProgressBarStyles';
 import { SubHelperComponent } from '../SubHelperComponent';
+import { styleDefaults } from './progressBarStyleProperties';
 
 function ProgressBar(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -145,12 +146,12 @@ function ProgressBar(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-bars-progress',
 	name: 'ProgressBar',
 	displayName: 'ProgressBar',
 	description: 'ProgressBar component',
 	component: ProgressBar,
 	styleComponent: ProgressBarStyles,
+	styleDefaults: styleDefaults,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
@@ -161,6 +162,33 @@ const component: Component = {
 		name: 'ProgressBar',
 	},
 	sections: [{ name: 'Default Progress Bar', pageName: 'progressBar' }],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-bars-progress',
+		},
+		{
+			name: 'track',
+			displayName: 'Track',
+			description: 'Track',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'progress',
+			displayName: 'Progress',
+			description: 'Progress',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'label',
+			displayName: 'Label',
+			description: 'Label',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

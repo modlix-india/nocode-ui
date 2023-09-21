@@ -30,6 +30,7 @@ import { allPaths } from '../../util/allPaths';
 import { LOCAL_STORE_PREFIX, PAGE_STORE_PREFIX, STORE_PREFIX } from '../../constants';
 import ComponentDefinitions from '../';
 import { deepEqual, duplicate } from '@fincity/kirun-js';
+import { styleDefaults } from './pageEditorStyleProperties';
 
 function savePersonalizationCurry(
 	personalizationPath: string,
@@ -671,7 +672,6 @@ function PageEditor(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-newspaper',
 	name: 'PageEditor',
 	displayName: 'Page Editor',
 	description: 'Page Editor component',
@@ -681,11 +681,21 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	styleComponent: GridStyle,
+	styleDefaults: styleDefaults,
 	bindingPaths: {
 		bindingPath: { name: 'Definition' },
 		bindingPath2: { name: 'Personalization' },
 		bindingPath3: { name: 'Application Definition' },
 	},
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-newspaper',
+		},
+	],
 };
 
 export default component;

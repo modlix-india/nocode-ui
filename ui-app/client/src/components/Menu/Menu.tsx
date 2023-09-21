@@ -15,6 +15,7 @@ import useDefinition from '../util/useDefinition';
 import MenuStyle from './MenuStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './menuProperties';
 import Children from '../Children';
+import { styleDefaults } from './menuStyleProperties';
 
 function Menu(props: ComponentProps) {
 	const location = useLocation();
@@ -290,12 +291,12 @@ function Menu(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-bars',
 	name: 'Menu',
 	displayName: 'Menu',
 	description: 'Menu component',
 	component: Menu,
 	styleComponent: MenuStyle,
+	styleDefaults: styleDefaults,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
@@ -316,6 +317,39 @@ const component: Component = {
 	sections: [
 		{ name: 'Horizontal Menu', pageName: 'horizontalMenu' },
 		{ name: 'Vertical Menu', pageName: 'verticalMenu' },
+	],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-bars',
+		},
+		{
+			name: 'externalIcon',
+			displayName: 'External Icon',
+			description: 'External Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'icon',
+			displayName: 'Icon',
+			description: 'Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'caretIcon',
+			displayName: 'Caret Icon',
+			description: 'Caret Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'subMenuContainer',
+			displayName: 'Sub Menu Container',
+			description: 'Sub Menu Container',
+			icon: 'fa-solid fa-box',
+		},
 	],
 };
 

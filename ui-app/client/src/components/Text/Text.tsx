@@ -10,6 +10,7 @@ import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { SubHelperComponent } from '../SubHelperComponent';
 import { formatString } from '../../util/stringFormat';
+import { styleDefaults } from './TextStyleProperties';
 
 function Text(props: ComponentProps) {
 	const {
@@ -117,7 +118,6 @@ function MarkDown({ text }: { text: string }) {
 }
 
 const component: Component = {
-	icon: 'fa fa-solid fa-heading',
 	name: 'Text',
 	displayName: 'Text',
 	description: 'Text component',
@@ -125,6 +125,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TextStyle,
+	styleDefaults: styleDefaults,
 	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['hover'],
 	defaultTemplate: {
@@ -137,6 +138,21 @@ const component: Component = {
 		{ name: 'Main', pageName: 'text' },
 		{ name: 'Decorative', pageName: 'textDecorative' },
 		{ name: 'Paragraph', pageName: 'textParagraph' },
+	],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa fa-solid fa-heading',
+		},
+		{
+			name: 'text',
+			displayName: 'Text',
+			description: 'Text',
+			icon: 'fa fa-solid fa-box',
+		},
 	],
 };
 

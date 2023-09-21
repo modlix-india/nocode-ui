@@ -27,6 +27,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			height: 65px;
 			background-color: #fff;
+			border-bottom: 1px solid rgba(0, 0, 0, 0.10);
+			box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.05);
 		}
 
 		${PREFIX} ._topBarGrid._previewMode{
@@ -66,7 +68,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction: column;
 			gap: 10px;
 			width: auto;
-			
+			min-width: 250px;
 		}
 
 		${PREFIX} ._filterBar {
@@ -92,9 +94,17 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._compsTree ._treeNode {
 			font-size: 12px;
+			font-weight: 300;
+			font-family: ASAP;
+			line-height: 14px;
+			letter-spacing: 0.8px;
 			cursor: pointer;
 			display: flex;
 			align-items: center;
+			height: 30px;
+			flex-shrink: 0;
+			margin:	0px 8px;
+			border-radius: 4px;
 		}
 
 		${PREFIX} ._compsTree ._treeNodeName {
@@ -104,31 +114,33 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._compsTree ._treeNodeLevel {
-			width: 10px;
+			width: 13px;
 			height: 100%;
 		}
 
-		${PREFIX} ._compsTree ._treeNode._selected {
-			background-color: #ddd;
+		${PREFIX} ._compsTree ._treeNode._selected,
+		${PREFIX} ._compsTree ._treeNode:hover {
+			background-color: #4C7FEE0D;
+			color: #4C7FEE;
+		}
+
+		${PREFIX} ._compsTree ._treeNode._selected i.fa,
+		${PREFIX} ._compsTree ._treeNode:hover i.fa {
+			color: #4C7FEE;
 		}
 
 		${PREFIX} ._compsTree:hover ._treeNodeLevel {
-			border-right: 1px solid #ccc;
+			border-right: 0.75px dotted #00000026;
 		} 
 
 		${PREFIX} ._compsTree ._treeNodeLevel._lastOpened {
-
-			border-right: 1px solid #aaa;
-		}
-
-		${PREFIX} ._compsTree ._treeNode:hover {
-			background-color: #eee;
+			border-right: 0.75px dotted #00000026;
 		}
 
 		${PREFIX} ._compsTree ._treeNode i.fa {
-			font-size: 13px;
-			width: 13px;
-			height: 13px;
+			font-size: 11px;
+			width: 11px;
+			height: 11px;
 			display: flex;
 			justify-content: center;
 			margin: 0px 2px;
@@ -138,15 +150,12 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			padding-left: 5px;
 		}
 
-		${PREFIX} ._compsTree:hover ._animateTransform::before {
-			color: #777;	
+		${PREFIX} ._compsTree ._treeNodeName i.fa.fa-caret-right {
+			font-size: 10px;
+			margin-right: 6px;
 		}
 
-		${PREFIX} ._compsTree ._animateTransform::before {
-			color: #ccc;	
-		}
-
-		${PREFIX} ._compsTree ._animateTransform {
+		${PREFIX} ._compsTree ._animateTransform i.fa {
 			transition: transform 0.5s;
 		}
 
@@ -257,8 +266,12 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._overflowContainer {
-			height: calc(100vh - 158px);
+			height: calc(100vh - 138px);
 			overflow: auto;
+		}
+
+		${PREFIX} ._overflowContainer._withCopyButtons {
+			height: calc(100vh - 210px);
 		}
 
 		${PREFIX} ._addSelector {
@@ -636,25 +649,70 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			overflow: hidden;
 		}
 
+		._simpleEditor {
+			padding: 5px 15px;
+		}
+
+		._combineEditors ._simpleEditor {
+			padding: 0px;
+			width: 100%;
+		}
+
 		._simpleEditorPixelSize {
 			display: flex;
-			flex-direction: row;
 			align-items: center;
 			gap: 2px;
-			flex: 1;
+			overflow: hidden;
+			height: 35px;
+		}
+
+		._simpleEditorPixelSize ._inputDropdownContainer {
+			font-family: Inter;
+			font-size: 12px;
+			border: none;
+			border-radius: 6px;
+			color: #555;
+			background-color: #F8FAFB;
+			cursor: pointer;
+			padding: 5px 8px;
+			display: flex;
+			justify-content: flex-start;
+			align-items: center;
+			height: 35px;
 			overflow: hidden;
 		}
 
-		._simpleEditorPixelSize ._simpleEditorInput {
-			flex: 1;
+		._simpleEditorPixelSize ._inputDropdownContainer input {
+			border: none;
+			height: 100%;
+			background-color: transparent;
+			outline: none;
+			font-family: Inter;
+			font-size: 12px;
+			color: #555;
+			max-width: 60px;
+			min-width: 20px;
+		}
+
+		._simpleEditorPixelSize ._inputDropdownContainer ._simpleEditorSelect {
+			min-width: 60px;
+			flex: 0.5;
+			padding-left: 0px;
+			width: 64px;
+		}
+
+		._simpleEditorPixelSize ._inputDropdownContainer ._simpleEditorSelect ._selectedOption {
+			margin-right: 5px;
+			text-align: right;
 		}
 
 		._simpleEditorPixelSize ._simpleEditorSelect {
 			flex: 1;
+			background-color: transparent;
 		}
 
 		._simpleEditorPixelSize ._simpleEditorRange {
-			flex: 1.5;
+			flex: 2;
 			margin-right: 12px;
 		}
 
@@ -671,6 +729,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			cursor: pointer;
 			padding: 5px 15px;
 			flex: 1;
+			outline: none;
 		}
 
 		._simpleEditorRange {
@@ -743,6 +802,14 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			padding: 10px;
 			max-height: 250px;
 			overflow: auto;
+		}
+
+		._simpleEditorSelect svg {
+			min-width: 8px;
+		}
+
+		._simpleEditorSelect ._selectedOption {
+			min-width: calc(100% - 8px);
 		}
 
 		._simpleEditorSelect ._selectedOption._placeholder {
@@ -829,11 +896,244 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			stroke: #3A8BED;
 		}
 
+		._simpleEditorColorSelector {
+			background: linear-gradient(to right,red 0,#ff0 16.66%,#0f0 33.33%,#0ff 50%,#00f 66.66%,#f0f 83.33%,red 100%);
+			width: 20px;
+			height: 20px;
+			border-radius: 50%;
+			cursor: pointer;
+			border: 3px solid #FFF;
+			box-shadow: 0px 0px 5px 3px #00000017;
+			position: relative;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody {
+			position: fixed;
+			background-color: #FFF;
+			z-index: 2;
+			box-shadow: 0px 1px 4px 0px #00000026;
+			border-radius: 6px;
+			padding: 10px;
+			min-height: 250px;
+			width: 250px;
+			margin-left: -240px;
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._color_variable_picker {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: center;
+			gap: 12px;
+			
+			padding: 5px;
+			flex-wrap: wrap;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._color_variable {
+			width: 20px;
+			height: 20px;
+			border-radius: 50%;
+			cursor: pointer;
+			box-shadow: 0px 1px 2px 0px #00000026;
+			position: relative;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._color_variable._selected {
+			border: 2px solid #51BD94;
+			box-shadow: 0px 0px 4px 4px #51BD94;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._color_variable::before {
+			content: '';
+			width: 100%;
+			height: 100%;
+			border-radius: 50%;
+			position: absolute;
+			background-image:
+				linear-gradient(45deg, #EFEFEF 25%, transparent 25%),
+				linear-gradient(-45deg, #EFEFEF 25%, transparent 25%),
+				linear-gradient(45deg, transparent 75%, #EFEFEF 75%),
+				linear-gradient(-45deg, transparent 75%, #EFEFEF 75%);
+  			background-size: 10px 10px;
+  			background-position: 0 0, 0 5px, 5px -5px, -5px 0px;
+			border-radius: 8px;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._color_variable_name {
+			width: 100%;
+			height: 100%;
+			border-radius: 50%;
+			position: absolute;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._simpleEditorInput,
+		._simpleEditorColorSelector ._colorPickerBody ._simpleEditorSelect {
+			min-height: 25px;
+			padding-top: 3px;
+			padding-bottom: 3px;
+			border-radius: 4px;
+			border: 1px solid #EEE;
+			background: transparent;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._saturation_value_picker{
+			position: relative;
+			height: 150px;
+			border-radius: 6px;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._saturation_value_picker ._thumb {
+			margin-top: -8px;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._hue_picker{
+			background: linear-gradient(to right,red 0,#ff0 16.66%,#0f0 33.33%,#0ff 50%,#00f 66.66%,#f0f 83.33%,red 100%);
+			height: 10px;
+			width: 100%;
+			border-radius: 8px;
+			position: relative;
+			margin-bottom: 10px;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._alpha_picker {
+			cursor: pointer;
+			height: 10px;
+			position: relative;
+			flex: 3;
+			margin-right: 8px;
+			background-image:
+				linear-gradient(45deg, #EFEFEF 25%, transparent 25%),
+				linear-gradient(-45deg, #EFEFEF 25%, transparent 25%),
+				linear-gradient(45deg, transparent 75%, #EFEFEF 75%),
+				linear-gradient(-45deg, transparent 75%, #EFEFEF 75%);
+  			background-size: 10px 10px;
+  			background-position: 0 0, 0 5px, 5px -5px, -5px 0px;
+			border-radius: 8px;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._alpha_picker_gradient {
+			position: absolute;
+			height: 100%;
+			width: 100%;
+			border-radius: 8px;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._colorValueline {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			flex: 1;
+			gap: 5px;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._colorValues {
+			margin-right: 2px;
+    		padding-right: 5px;
+    		border-right: 0.5px solid #0000000D;
+		}
+
+		._simpleEditorColorSelector ._thumb {
+			width: 16px;
+			height: 16px;
+			border-radius: 50%;
+			background-color: #FFF;
+			position: absolute;
+			top: -4px;
+			z-index: 1;
+			cursor: pointer;
+			box-shadow: 0px 2px 4px 0px #00000033;
+			cursor: pointer;
+			margin-left: -8px;
+			border: 3px solid #FFF;
+			pointer-events: none;
+		}
+		
+		._simpleEditorColorSelector ._thumbInner {
+			position: absolute;
+			width: 60%;
+			height: 60%;
+			left: 20%;
+			top: 20%;
+			border-radius: 50%;
+			background-color: #4C7FEE;
+		}
+
+		._simpleEditorShadow {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 5px;
+		}
+
+		._simpleEditorShadow ._eachShadowEditor {
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
+			width: 100%;
+		}
+
+		._simpleEditorShadow ._inset {
+			display: flex;
+			align-items: center;
+			gap: 5px;
+		}
+
+		._simpleEditorShadow ._color_controls {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			gap: 5px;
+			width: 100%;
+		}
+
+		._simpleEditorShadow ._label {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			align-items: center;
+			width: 100%;
+			color: #222222B2;
+			align-items: center;
+			text-transform: capitalize;
+			font-family: Inter;
+			white-space: nowrap;
+			font-size: 12px;
+		}
+
+		._svgButton {
+			border: none;
+			background: transparent;
+		}
+
 		._combineEditors {
 			display: flex;
 			flex-direction: row;
 			align-items: center;			
 			padding: 5px 20px;
+			gap: 3px;
+			width: 100%;
+		}
+
+		._combineEditors ._onePart {
+			flex: 1;
+		}
+
+		._combineEditors ._twoParts {
+			flex: 2;
+		}
+
+		._combineEditors ._oneAndHalfParts {
+			flex: 1.5;
+		}
+
+		._combineEditors ._simpleEditorInput,
+		._combineEditors ._simpleEditorSelect {
+			padding: 8px;
+			width: 100%;
 		}
 
 		._combineEditors ._combineEditors {
@@ -844,12 +1144,22 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			padding: 0;
 		}
 
-		._combineEditors ._spacer {
+		._spacer {
 			width: 10px;
+			height: 15px;
 		}
 
 		._combineEditors._spaceBetween {
 			justify-content: space-between;
+		}
+
+		._combineEditors._vertical {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+
+		._combineEditors._top {
+			align-items: flex-start;
 		}
 
 		${PREFIX} ._buttonBar._screenSizes {
@@ -1344,7 +1654,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			font-family: Inter;
 			font-size: 13px;			
 			color: #888;
-			padding: 10px 20px;
+			padding: 14px 20px;
 			cursor: pointer;
 			border-radius: 3px;
 			display: flex;
@@ -1356,6 +1666,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._propertyGroupHeaderStar {
 			fill: #52BD94;
+			transform: scale(1.4);
 		}
 
 		._propertyGroupHeaderIcon {

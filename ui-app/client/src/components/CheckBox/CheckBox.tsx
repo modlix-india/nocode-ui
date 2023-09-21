@@ -15,6 +15,7 @@ import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import CheckBoxStyle from './CheckBoxStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './checkBoxProperties';
+import { styleDefaults } from './checkBoxStyleProperties';
 
 function CheckBox(props: ComponentProps) {
 	const [checkBoxdata, setCheckBoxData] = useState(false);
@@ -114,11 +115,11 @@ function CheckBox(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-square-check',
 	name: 'CheckBox',
 	displayName: 'CheckBox',
 	description: 'CheckBox component',
 	styleComponent: CheckBoxStyle,
+	styleDefaults: styleDefaults,
 	component: CheckBox,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
@@ -136,6 +137,27 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'Checkbox', pageName: 'checkbox' }],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: 'fa-solid fa-square-check',
+			mainComponent: true,
+		},
+		{
+			name: 'checkbox',
+			displayName: 'Checkbox',
+			description: 'Checkbox',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'label',
+			displayName: 'Label',
+			description: 'Label',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

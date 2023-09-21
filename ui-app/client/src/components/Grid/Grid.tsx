@@ -19,6 +19,7 @@ import { flattenUUID } from '../util/uuid';
 import GridStyle from './GridStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './gridProperties';
 import { isNullValue } from '@fincity/kirun-js';
+import { styleDefaults } from './gridStyleProperties';
 
 function Grid(props: ComponentProps) {
 	const location = useLocation();
@@ -326,7 +327,6 @@ function Grid(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-table-cells',
 	name: 'Grid',
 	displayName: 'Grid',
 	description: 'Grid component',
@@ -334,6 +334,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: GridStyle,
+	styleDefaults: styleDefaults,
 	stylePseudoStates: ['hover', 'focus', 'readonly'],
 	allowedChildrenType: new Map<string, number>([['', -1]]),
 	styleProperties: stylePropertiesDefinition,
@@ -350,6 +351,15 @@ const component: Component = {
 		{
 			name: 'Grid',
 			pageName: 'grid',
+		},
+	],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-table-cells',
 		},
 	],
 };

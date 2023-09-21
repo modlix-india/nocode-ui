@@ -3,7 +3,9 @@ import { deepEqual, duplicate } from '@fincity/kirun-js';
 import { editor } from 'monaco-editor';
 import { title } from 'process';
 import {
+	ComponentProperty,
 	ComponentStyle,
+	DataLocation,
 	EachComponentStyle,
 	PageDefinition,
 	StyleResolution,
@@ -13,6 +15,26 @@ import PageOperations from '../../../functions/PageOperations';
 import { DropdownOptions, Dropdown } from './Dropdown';
 import { IconOptions, IconsSimpleEditor } from './IconsSimpleEditor';
 import { PixelSize } from './PixelSize';
+import { ColorSelector } from './ColorSelector';
+import { ShadowEditor, ShadowEditorType } from './ShadowEditor';
+
+export interface SimpleStyleEditorsProps {
+	pseudoState: string;
+	subComponentName: string;
+	iterateProps: any;
+	placeholder?: string;
+	selectorPref: any;
+	styleProps: ComponentStyle | undefined;
+	selectedComponent: string;
+	saveStyle: (newStyleProps: ComponentStyle) => void;
+	properties: [string, EachComponentStyle] | undefined;
+	displayName?: string;
+	showTitle?: boolean;
+	editorInNewLine?: boolean;
+	prop: string;
+	editorDef: SimpleEditorDefinition;
+	className?: string;
+}
 
 export function EachSimpleEditor({
 	subComponentName,
@@ -20,22 +42,15 @@ export function EachSimpleEditor({
 	pseudoState,
 	iterateProps,
 	prop,
-	pageDef,
-	editPageName,
-	slaveStore,
-	storePaths,
 	selectorPref,
 	styleProps,
 	selectedComponent,
 	saveStyle,
-	pageOperations,
 	properties,
 	editorDef,
-	showTitle = false,
-	editorInNewLine = false,
 	placeholder,
 	className = '',
-}: StyleEditorsProps & { prop: string; editorDef: SimpleEditorDefinition; className?: string }) {
+}: SimpleStyleEditorsProps) {
 	if (!properties) return <></>;
 
 	const { value, actualProp, propName, screenSize, compProp } = extractValue({
@@ -48,7 +63,11 @@ export function EachSimpleEditor({
 	});
 
 	let editor = undefined;
-	const editorOnchange = (v: string | Array<String>) =>
+	const editorOnchange = (v: string | Array<String> | ComponentProperty<string>) => {
+		let value;
+		if (Array.isArray(v)) value = { value: v, location: { value: v } };
+		else if (typeof v === 'string') value = { value: v, location: { value: v } };
+		else value = v;
 		valueChanged({
 			styleProps,
 			properties,
@@ -58,8 +77,9 @@ export function EachSimpleEditor({
 			pseudoState,
 			saveStyle,
 			iterateProps,
-			value: { value: !v ? '' : v.toString() },
+			value,
 		});
+	};
 
 	switch (editorDef.type) {
 		case SimpleEditorType.Dropdown:
@@ -97,45 +117,32 @@ export function EachSimpleEditor({
 				/>
 			);
 			break;
+		case SimpleEditorType.Color:
+			editor = <ColorSelector color={value} onChange={editorOnchange} />;
+			break;
+		case SimpleEditorType.TextShadow:
+			editor = (
+				<ShadowEditor
+					value={value.value}
+					onChange={editorOnchange}
+					type={ShadowEditorType.TextShadow}
+				/>
+			);
+			break;
+		case SimpleEditorType.BoxShadow:
+			editor = (
+				<ShadowEditor
+					value={value.value}
+					onChange={editorOnchange}
+					type={ShadowEditorType.BoxShadow}
+				/>
+			);
+			break;
 		default:
 			editor = <></>;
 	}
 
-	const title = showTitle ? (
-		<>
-			{`${displayName ?? propName} : `}
-			{(pseudoState && iterateProps[compProp]) ||
-			(screenSize !== 'ALL' &&
-				(properties[1]?.resolutions?.ALL?.[compProp] ||
-					properties[1]?.resolutions?.ALL?.[actualProp])) ? (
-				<span title="Has a default value">★</span>
-			) : (
-				''
-			)}
-		</>
-	) : (
-		<></>
-	);
-
-	if (!editorInNewLine) {
-		return (
-			<div className={`_eachProp _simpleEditor ${className}`}>
-				<div className="_propLabel" title={displayName}>
-					{title}
-					{editor}
-				</div>
-			</div>
-		);
-	}
-
-	return (
-		<div className={`_eachProp _simpleEditor ${className}`}>
-			<div className="_propLabel" title="Name">
-				{title}
-			</div>
-			{editor}
-		</div>
-	);
+	return <div className={`_simpleEditor ${className}`}>{editor}</div>;
 }
 
 export enum SimpleEditorType {
@@ -143,6 +150,8 @@ export enum SimpleEditorType {
 	Icons = 'Icons',
 	PixelSize = 'PixelSize',
 	Color = 'Color',
+	TextShadow = 'TextShadow',
+	BoxShadow = 'BoxShadow',
 	Image = 'Image',
 	Gradient = 'Gradient',
 	ImageGradient = 'ImageGradient',
@@ -257,6 +266,8 @@ export function valueChanged({
 	) {
 		delete newProps[properties[0]].resolutions![screenSize]![actualProp];
 	} else {
+		if (newProps[properties[0]].resolutions![screenSize]![actualProp])
+			value = { ...newProps[properties[0]].resolutions![screenSize]![actualProp], ...value };
 		newProps[properties[0]].resolutions![screenSize]![actualProp] = value;
 	}
 

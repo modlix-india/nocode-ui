@@ -11,6 +11,7 @@ import Portal from '../Portal';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import getPositions from '../util/getPositions';
 import { SubHelperComponent } from '../SubHelperComponent';
+import { styleDefaults } from './popoverStyleProperties';
 export interface PortalCoordinates {
 	left?: number;
 	top?: number;
@@ -175,12 +176,12 @@ function Popover(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-regular fa-message',
 	name: 'Popover',
 	displayName: 'Popover',
 	description: 'Popover component',
 	component: Popover,
 	styleComponent: PopoverStyle,
+	styleDefaults: styleDefaults,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
@@ -192,6 +193,27 @@ const component: Component = {
 		name: 'Popover',
 		properties: {},
 	},
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-regular fa-message',
+		},
+		{
+			name: 'popoverParentContainer',
+			displayName: 'Popover Parent Container',
+			description: 'Popover Parent Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'popoverContainer',
+			displayName: 'Popover Container',
+			description: 'Popover Container',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

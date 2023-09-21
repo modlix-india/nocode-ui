@@ -20,6 +20,7 @@ import { flattenUUID } from '../util/uuid';
 import { runEvent } from '../util/runEvent';
 import { validate } from '../../util/validationProcessor';
 import CommonInputText from '../../commonComponents/CommonInputText';
+import { styleDefaults } from './textBoxStyleProperties';
 
 interface mapType {
 	[key: string]: any;
@@ -311,12 +312,12 @@ function TextBox(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-i-cursor',
 	name: 'TextBox',
 	displayName: 'TextBox',
 	description: 'TextBox component',
 	component: TextBox,
 	styleComponent: TextBoxStyle,
+	styleDefaults: styleDefaults,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	stylePseudoStates: ['focus', 'disabled'],
@@ -333,6 +334,57 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'Text Box', pageName: 'textBox' }],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-i-cursor',
+		},
+		{
+			name: 'leftIcon',
+			displayName: 'Left Icon',
+			description: 'Left Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'rightIcon',
+			displayName: 'Right Icon',
+			description: 'Right Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'inputBox',
+			displayName: 'Input Box',
+			description: 'Input Box',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'label',
+			displayName: 'Label',
+			description: 'Label',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'supportText',
+			displayName: 'Support Text',
+			description: 'Support Text',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'errorText',
+			displayName: 'Error Text',
+			description: 'Error Text',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'errorTextContainer',
+			displayName: 'Error Text Container',
+			description: 'Error Text Container',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

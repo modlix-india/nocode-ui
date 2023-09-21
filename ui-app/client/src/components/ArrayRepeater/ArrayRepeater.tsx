@@ -16,6 +16,7 @@ import { propertiesDefinition, stylePropertiesDefinition } from './arrayRepeater
 import ArrayRepeaterStyle from './ArrayRepeaterStyle';
 import { SubHelperComponent } from '../SubHelperComponent';
 import { runEvent } from '../util/runEvent';
+import { styleDefaults } from './arrayRepeaterStyleProperties';
 
 function ArrayRepeaterComponent(props: ComponentProps) {
 	const [value, setValue] = React.useState([]);
@@ -61,7 +62,6 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
 			(_, _v) => {
-				console.log('hi', bindingPathPath, _v);
 				setValue(_v);
 				const objKeys: { [key: number]: string } = {};
 				if (_v?.length) {
@@ -302,7 +302,6 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-layer-group',
 	name: 'ArrayRepeater',
 	displayName: 'Repeater',
 	description: 'Array Repeater component',
@@ -311,6 +310,7 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	styleComponent: ArrayRepeaterStyle,
+	styleDefaults: styleDefaults,
 	allowedChildrenType: new Map<string, number>([['', 1]]),
 	bindingPaths: {
 		bindingPath: { name: 'Array Binding' },
@@ -321,6 +321,51 @@ const component: Component = {
 		type: 'ArrayRepeater',
 		properties: {},
 	},
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: 'fa-solid fa-wand-magic-sparkles',
+			mainComponent: true,
+		},
+		{
+			name: 'repeaterProperties',
+			displayName: 'Repeater Properties',
+			description: 'Repeater Properties',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'repeatedComp',
+			displayName: 'Repeated Component',
+			description: 'Repeated Component',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'iconGrid',
+			displayName: 'Icon Grid',
+			description: 'Icon Grid',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'add',
+			displayName: 'Add',
+			description: 'Add',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'remove',
+			displayName: 'Remove',
+			description: 'Remove',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'move',
+			displayName: 'Move',
+			description: 'Move',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

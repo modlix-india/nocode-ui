@@ -21,6 +21,7 @@ import TextAreaStyle from './TextAreaStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './textAreaProperties';
 import { SubHelperComponent } from '../SubHelperComponent';
 import CommonInputText from '../../commonComponents/CommonInputText';
+import { styleDefaults } from './textAreaStyleProperties';
 
 interface mapType {
 	[key: string]: any;
@@ -251,12 +252,12 @@ function TextArea(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-i-cursor',
 	name: 'TextArea',
 	displayName: 'TextArea',
 	description: 'TextArea component',
 	component: TextArea,
 	styleComponent: TextAreaStyle,
+	styleDefaults: styleDefaults,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	stylePseudoStates: ['focus', 'disabled'],
@@ -273,6 +274,57 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'Text Area', pageName: 'textArea' }],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-i-cursor',
+		},
+		{
+			name: 'inputContainer',
+			displayName: 'Input Container',
+			description: 'Input Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'inputBox',
+			displayName: 'Input Box',
+			description: 'Input Box',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'floatingLabel',
+			displayName: 'Floating Label',
+			description: 'Floating Label',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'noFloatLabel',
+			displayName: 'No Float Label',
+			description: 'No Float Label',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'supportText',
+			displayName: 'Support Text',
+			description: 'Support Text',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'errorText',
+			displayName: 'Error Text',
+			description: 'Error Text',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'errorTextContainer',
+			displayName: 'Error Text Container',
+			description: 'Error Text Container',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

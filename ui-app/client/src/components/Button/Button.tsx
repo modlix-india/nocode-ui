@@ -14,6 +14,7 @@ import { getHref } from '../util/getHref';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { SubHelperComponent } from '../SubHelperComponent';
 import { messageToMaster } from '../../slaveFunctions';
+import { styleDefaults } from './buttonStyleProperties';
 
 function ButtonComponent(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -362,12 +363,12 @@ function ButtonComponent(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-rectangle-ad',
 	name: 'Button',
 	displayName: 'Button',
 	description: 'Button component',
 	component: ButtonComponent,
 	styleComponent: ButtonStyle,
+	styleDefaults: styleDefaults,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
@@ -381,6 +382,27 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'Buttons', pageName: 'buttons' }],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: 'fa-solid fa-rectangle-ad',
+			mainComponent: true,
+		},
+		{
+			name: 'leftIcon',
+			displayName: 'Left Icon',
+			description: 'Left Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'rightIcon',
+			displayName: 'Right Icon',
+			description: 'Right Icon',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

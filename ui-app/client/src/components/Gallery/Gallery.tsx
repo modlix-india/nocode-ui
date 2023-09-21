@@ -15,6 +15,7 @@ import { HelperComponent } from '../HelperComponent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { SubHelperComponent } from '../SubHelperComponent';
 import { isNullValue } from '@fincity/kirun-js';
+import { styleDefaults } from './galleryStyleProperties';
 
 function Gallery(props: ComponentProps) {
 	const [isActive, setIsActive] = useState(false);
@@ -646,7 +647,6 @@ function Gallery(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-regular fa-images',
 	name: 'Gallery',
 	displayName: 'Gallery',
 	description: 'Gallery component',
@@ -654,6 +654,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: GalleryStyles,
+	styleDefaults: styleDefaults,
 	styleProperties: stylePropertiesDefinition,
 	allowedChildrenType: new Map<string, number>([['', -1]]),
 	bindingPaths: {
@@ -666,6 +667,106 @@ const component: Component = {
 		name: 'Gallery',
 	},
 	needShowInDesginMode: true,
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-regular fa-images',
+		},
+		{
+			name: 'toolbarLeftColumn',
+			displayName: 'Toolbar Left Column',
+			description: 'Toolbar Left Column',
+
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'toolbarRightColumn',
+			displayName: 'Toolbar Right Column',
+			description: 'Toolbar Right Column',
+
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'toolbarButton',
+			displayName: 'Toolbar Button',
+			description: 'Toolbar Button',
+
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'arrowButtons',
+			displayName: 'Arrow Buttons',
+			description: 'Arrow Buttons',
+
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'slideImage',
+			displayName: 'Slide Image',
+			description: 'Slide Image',
+
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'thumbnailContainer',
+			displayName: 'Thumbnail Container',
+			description: 'Thumbnail Container',
+
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'thumbnailImageDiv',
+			displayName: 'Thumbnail Image Div',
+			description: 'Thumbnail Image Div',
+
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'thumbnailImage',
+			displayName: 'Thumbnail Image',
+			description: 'Thumbnail Image',
+
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'previewContainer',
+			displayName: 'Preview Container',
+			description: 'Preview Container',
+
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'previewCloseButton',
+			displayName: 'Preview Close Button',
+			description: 'Preview Close Button',
+
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'previewList',
+			displayName: 'Preview List',
+			description: 'Preview List',
+
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'previewImageDiv',
+			displayName: 'Preview Image Div',
+			description: 'Preview Image Div',
+
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'previewImage',
+			displayName: 'Preview Image',
+			description: 'Preview Image',
+
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

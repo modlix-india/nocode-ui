@@ -12,6 +12,7 @@ import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
 import { runEvent } from '../util/runEvent';
 import { flattenUUID } from '../util/uuid';
 import TablePreviewGridStyle from './TablePreviewGridStyle';
+import { styleDefaults } from './tablePreviewGridStyleProperties';
 
 function TablePreviewGrid(props: ComponentProps) {
 	const [hover, setHover] = React.useState(false);
@@ -130,7 +131,6 @@ function TablePreviewGrid(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-magnifying-glass',
 	name: 'TablePreviewGrid',
 	displayName: 'Table Preview Grid',
 	description: 'Table Preview Grid component',
@@ -138,10 +138,20 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TablePreviewGridStyle,
+	styleDefaults: styleDefaults,
 	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['hover', 'focus', 'readonly'],
 	allowedChildrenType: new Map<string, number>([['', -1]]),
 	parentType: 'Table',
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-magnifying-glass',
+		},
+	],
 };
 
 export default component;

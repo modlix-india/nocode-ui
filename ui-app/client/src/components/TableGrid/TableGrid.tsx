@@ -14,6 +14,7 @@ import { getExtractionMap } from '../util/getRenderData';
 import CommonCheckbox from '../../commonComponents/CommonCheckbox';
 import { duplicate } from '@fincity/kirun-js';
 import { runEvent } from '../util/runEvent';
+import { styleDefaults } from './tableGridStyleProperties';
 
 function TableGridComponent(props: ComponentProps) {
 	const [value, setValue] = useState([]);
@@ -202,7 +203,6 @@ function TableGridComponent(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-table-cells',
 	name: 'TableGrid',
 	displayName: 'Table Grid',
 	description: 'Table Grid component',
@@ -211,9 +211,25 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	styleComponent: TableGridStyle,
+	styleDefaults: styleDefaults,
 	allowedChildrenType: new Map<string, number>([['', 1]]),
 	parentType: 'Table',
 	stylePseudoStates: ['hover'],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-table-cells',
+		},
+		{
+			name: 'eachGrid',
+			displayName: 'Each Grid',
+			description: 'Each Grid',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;
