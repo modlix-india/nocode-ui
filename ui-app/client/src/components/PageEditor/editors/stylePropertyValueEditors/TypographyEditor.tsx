@@ -666,7 +666,7 @@ export function TypographyEditor({
 								transform="translate(1 14.5)"
 								fill="none"
 								stroke="#000"
-								stroke-width="1"
+								strokeWidth="1"
 							/>
 							<line
 								id="Line_2"
@@ -675,7 +675,7 @@ export function TypographyEditor({
 								transform="translate(8.5 12)"
 								fill="none"
 								stroke="#000"
-								stroke-width="1"
+								strokeWidth="1"
 							/>
 							<line
 								id="Line_3"
@@ -684,7 +684,7 @@ export function TypographyEditor({
 								transform="translate(0.5 12)"
 								fill="none"
 								stroke="#000"
-								stroke-width="1"
+								strokeWidth="1"
 							/>
 						</g>
 					</g>

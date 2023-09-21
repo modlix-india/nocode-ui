@@ -127,7 +127,7 @@ export function ContextMenu({
 				}}
 			>
 				<div className="_popupMenuContainer" style={{ left, top, right, bottom }}>
-					<div className="_popupMenu">
+					<div className="_contextMenu">
 						{addGrid}
 						<div
 							className="_popupMenuItem"

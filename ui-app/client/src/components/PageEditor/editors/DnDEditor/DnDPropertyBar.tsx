@@ -150,7 +150,7 @@ export default function DnDPropertyBar({
 	}
 
 	return (
-		<div className="_propBar _propBarVisible">
+		<div className="_propBar _propBarVisible _right">
 			<div className="_tabBar">
 				<svg
 					width="26"
