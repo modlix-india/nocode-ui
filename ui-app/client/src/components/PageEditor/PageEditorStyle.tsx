@@ -68,7 +68,17 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction: column;
 			gap: 10px;
 			width: auto;
-			min-width: 250px;
+			min-width: 250px;			
+		}
+
+		._propBar._left{
+			box-shadow: 0px 3px 4px 0px #00000040;
+			border-right: 1px solid rgba(0, 0, 0, 0.10);
+		}
+
+		._propBar._right{
+			box-shadow: 2px 3px 4px 0px #00000040;
+			border-left: 1px solid rgba(0, 0, 0, 0.10);
 		}
 
 		${PREFIX} ._filterBar {
@@ -76,13 +86,15 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction: row;
 			align-items: center;
 			justify-content: center;
-			padding: 5px;
+			padding: 15px 10px;
 			gap: 5px;
+			width: 100%;
 		}
 
 		${PREFIX} ._filterBar i.fa {
 			font-size: 22px;
 			cursor: pointer;
+			color: #52BD94;
 		}
 
 		${PREFIX} ._compsTree {
@@ -160,6 +172,11 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._compsTree ._treeNode ._treeText {
 			padding-left: 5px;
+		}
+
+		${PREFIX} ._compsTree ._treeNode ._treeText ._filter {
+			color: #52BD94;
+			font-weight: 600;
 		}
 
 		${PREFIX} ._compsTree ._treeNodeName i.fa.fa-caret-right {
@@ -257,6 +274,13 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			padding: 5px 15px;
 			border-radius: 6px;
 			border: none;
+		}
+
+		${PREFIX} ._filterBar input {
+			width: 100%;
+			height: 38px;
+			border: 0.8px solid #E9ECEF;
+			border-radius: 2px;
 		}
 
 		textarea._peInput {
@@ -404,12 +428,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._popupButtons button:hover {
 			background-color: rgba(77, 127, 238, 0.05);
     		color: #96A1B4;
-		}
-
-		._popupMenuBackground ._popupMenuItem:hover, ._popupMenuBackground ._popupMenuItem.active {
-			color: #08705C;
-			background: linear-gradient(90deg, rgba(8, 112, 92, 0.2) 0%, rgba(248, 250, 251, 0) 93.35%);
-			border-radius: 2px;
 		}
 
 		${PREFIX} i.fa {
@@ -2014,7 +2032,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		._popupMenuBackground ._popupMenuContainer {
-			box-shadow: 0px 1px 8px 0px #00000020;
+			box-shadow: 0px 1px 10px 0px #0000001A;
 			display: flex;
 			flex-direction: column;
 			background-color: #fff;
@@ -2081,7 +2099,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			cursor: pointer;
 		}
 
-		._popupMenuBackground ._popupMenuContainer ._compTemplateSections ._eachTemplateSection:hover, ._popupMenuBackground ._popupMenuContainer ._compTemplateSections ._eachTemplateSection._active {
+		._popupMenuBackground ._popupMenuContainer ._compTemplateSections ._eachTemplateSection:hover,
+		._popupMenuBackground ._popupMenuContainer ._compTemplateSections ._eachTemplateSection._active {
 			background: linear-gradient(90deg, rgba(8, 112, 92, 0.2) 0%, rgba(248, 250, 251, 0) 93.35%);
 			color: #08705C;
 		}
@@ -2108,14 +2127,49 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			padding-top: 5px;
 		}
 
+		._popupMenuBackground ._contextMenu { 
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+			overflow: auto;
+			padding-top: 5px;
+			border-left: 1px solid #52BD94;
+			border-radius: 4px;
+		}
+
 		._popupMenuBackground ._popupMenuSeperator {
 			height: 0px;
-			border: 1px solid #aaa;
-			margin: 1px;
 		}
 
 		._popupMenuBackground ._popupMenuItem {
 			border-radius: 2px;
+		}
+
+		._popupMenuBackground ._contextMenu ._popupMenuItem {
+			border-radius: 1px;
+			padding: 8px 13px;
+			color: #333333;
+			cursor: pointer;
+		}
+
+		._popupMenuBackground ._popupMenuItem:hover,
+		._popupMenuBackground ._popupMenuItem.active {
+			color: #08705C;
+			background: linear-gradient(90deg, rgba(8, 112, 92, 0.2) 0%, rgba(248, 250, 251, 0) 93.35%);
+			border-radius: 2px;
+		}
+
+		._popupMenuBackground ._contextMenu ._popupMenuItem:hover {
+			background: #00000005;
+			color: #52BD94;
+		}
+
+		._popupMenuBackground ._contextMenu ._popupMenuItem:hover i.fa {
+			color: #52BD94;
+		}
+
+		._popupMenuBackground ._contextMenu i.fa {
+			color: #CACBCA;
 		}
 
 		._propertyContent {

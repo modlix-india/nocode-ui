@@ -336,7 +336,7 @@ export default function StylePropertyEditor({
 	if (selectedSubComponent) {
 		subComponentName = selectedSubComponent.split(':')[1];
 	}
-	const subComponentSectionsArray = (cd?.styleProperties ?? {})[subComponentName];
+	const subComponentSectionsArray = (cd?.styleProperties ?? {})[subComponentName] ?? [];
 
 	const styleSectionsToShow = reverseStyleSections
 		? Object.values(COMPONENT_STYLE_GROUP_PROPERTIES).filter(

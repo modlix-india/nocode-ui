@@ -44,7 +44,7 @@ export default function DnDNavigationBar({
 	const [pageDef, setPageDef] = useState<PageDefinition>();
 	const [openParents, setOpenParents] = useState<Set<string>>(new Set());
 	const [expandAll, setExpandAll] = useState(false);
-	const [filter, setFilterOriginal] = useState('');
+	const [filter, setFilter] = useState('');
 	const [lastOpened, setLastOpened] = useState<string | undefined>(undefined);
 	const [dragStart, setDragStart] = useState<boolean>(false);
 	const [map, setMap] = useState(new Map<string, string>());
@@ -107,15 +107,11 @@ export default function DnDNavigationBar({
 		setOldSelected(selectedComponent);
 	}, [pageDef, expandAll, selectedComponent, openParents, map, setOpenParents, setOldSelected]);
 
-	const setFilter = useCallback(
+	const applyFilter = useCallback(
 		(f: string) => {
-			if (!f.trim()) {
-				setFilterOriginal(f);
-				return;
-			}
+			if (!f.trim()) return;
 
 			const set = new Set(openParents);
-
 			Object.values(pageDef?.componentDefinition ?? {})
 				.filter(e => (e.name ?? '').toUpperCase().includes(f.toUpperCase()))
 				.map(e => e.key)
@@ -126,27 +122,31 @@ export default function DnDNavigationBar({
 						else set.add(p);
 					}
 				});
-
-			setFilterOriginal(f);
 			setOpenParents(set);
 		},
-		[openParents, setFilterOriginal, setOpenParents, pageDef, expandAll, map],
+		[openParents, setOpenParents, pageDef, expandAll, map],
 	);
+
+	const [filterHandle, setFilterHandle] = useState<NodeJS.Timeout | undefined>();
 
 	if (!componentTree || previewMode || !pageDef?.componentDefinition || !pageDef.rootComponent)
 		return <div className="_propBar"></div>;
 
 	return (
-		<div className="_propBar _compNavBarVisible">
+		<div className="_propBar _compNavBarVisible _left">
 			<div className="_filterBar">
 				<input
 					type="text"
-					placeholder="Filter"
+					placeholder="Search filter"
 					value={filter}
-					onChange={e => setFilter(e.target.value)}
+					onChange={e => {
+						setFilter(e.target.value);
+						if (filterHandle) clearTimeout(filterHandle);
+						setFilterHandle(setTimeout(() => applyFilter(e.target.value), 1000));
+					}}
 				/>
 				<i
-					className={`fa fa-solid ${expandAll ? 'fa-square-minus' : 'fa-square-plus'}`}
+					className={`fa fa-solid ${expandAll ? 'fa-circle-minus' : 'fa-circle-plus'}`}
 					onClick={() => {
 						setExpandAll(!expandAll);
 						setOpenParents(new Set());
