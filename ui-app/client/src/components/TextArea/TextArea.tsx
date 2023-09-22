@@ -22,6 +22,7 @@ import { propertiesDefinition, stylePropertiesDefinition } from './textAreaPrope
 import { SubHelperComponent } from '../SubHelperComponent';
 import CommonInputText from '../../commonComponents/CommonInputText';
 import { styleDefaults } from './textAreaStyleProperties';
+import { IconHelper } from '../util/IconHelper';
 
 interface mapType {
 	[key: string]: any;
@@ -280,7 +281,35 @@ const component: Component = {
 			displayName: 'Component',
 			description: 'Component',
 			mainComponent: true,
-			icon: 'fa-solid fa-i-cursor',
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					<path
+						d="M9.80078 9.7002C9.80078 9.14791 10.2485 8.7002 10.8008 8.7002H19.7008V19.7002H9.80078V9.7002Z"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<rect
+						x="3.94922"
+						y="3.9502"
+						width="16.1"
+						height="16.1"
+						stroke="currentColor"
+						strokeWidth="1.5"
+						fill="transparent"
+					/>
+					<rect x="1" y="1" width="4.4" height="4.4" rx="0.4" fill="currentColor" />
+					<rect x="1" y="18.6001" width="4.4" height="4.4" rx="0.4" fill="currentColor" />
+					<rect x="18.5996" y="1" width="4.4" height="4.4" rx="0.4" fill="currentColor" />
+					<rect
+						x="18.5996"
+						y="18.6001"
+						width="4.4"
+						height="4.4"
+						rx="0.4"
+						fill="currentColor"
+					/>
+				</IconHelper>
+			),
 		},
 		{
 			name: 'inputContainer',

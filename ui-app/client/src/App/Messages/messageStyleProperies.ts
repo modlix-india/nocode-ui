@@ -61,7 +61,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'background',
 		displayName: 'Messages Container Background',
 		description: 'Messages Container background',
-		defaultValue: '<secondaryBackground>',
+		defaultValue: '<backgroundColorSeven>',
 		selector: '._message',
 	},
 	{
@@ -109,7 +109,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		displayName: 'Message error color',
 		description: 'Message error color',
-		defaultValue: '#ed6a5e',
+		defaultValue: '<errorColor>',
 		selector: '._message.ERROR ._msgString, ._message.ERROR i, ._msgStackTrace.ERROR',
 	},
 	{
@@ -117,7 +117,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		displayName: 'Message warning color',
 		description: 'Message warning color',
-		defaultValue: '#e5d122',
+		defaultValue: '<warningColor>',
 		selector: '._message.WARNING ._msgString, ._message.WARNING i, ._msgStackTrace.WARNING',
 	},
 	{
@@ -125,7 +125,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		displayName: 'Message information color',
 		description: 'Message information color',
-		defaultValue: '#059',
+		defaultValue: '<informationColor>',
 		selector:
 			'._message.INFORMATION ._msgString, ._message.INFORMATION i, ._msgStackTrace.INFORMATION ',
 	},
@@ -134,7 +134,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		displayName: 'Message success color',
 		description: 'Message success color',
-		defaultValue: '#270',
+		defaultValue: '<successColor>',
 		selector: '._message.SUCCESS ._msgString, ._message.SUCCESS i, ._msgStackTrace.SUCCESS',
 	},
 	{
@@ -142,7 +142,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'border-color',
 		displayName: 'Message error border color',
 		description: 'Message error border color',
-		defaultValue: '#ed6a5e',
+		defaultValue: '<errorColor>',
 		selector: '._message.ERROR',
 	},
 	{
@@ -150,7 +150,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'border-color',
 		displayName: 'Message warning border color',
 		description: 'Message warning border color',
-		defaultValue: '#e5d122',
+		defaultValue: '<warningColor>',
 		selector: '._message.WARNING',
 	},
 	{
@@ -158,7 +158,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'border-color',
 		displayName: 'Message information border color',
 		description: 'Message information border color',
-		defaultValue: '#059',
+		defaultValue: '<informationColor>',
 		selector: '._message.INFORMATION',
 	},
 	{
@@ -166,7 +166,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'border-color',
 		displayName: 'Message success border color',
 		description: 'Message success border color',
-		defaultValue: '#270',
+		defaultValue: '<successColor>',
 		selector: '._message.SUCCESS',
 	},
 ];

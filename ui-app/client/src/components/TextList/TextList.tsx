@@ -11,6 +11,7 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { getRenderData } from '../util/getRenderData';
 import { SubHelperComponent } from '../SubHelperComponent';
 import { styleDefaults } from './textListStyleProperties';
+import { IconHelper } from '../util/IconHelper';
 
 function TextList(props: ComponentProps) {
 	const {
@@ -196,7 +197,25 @@ const component: Component = {
 			displayName: 'Component',
 			description: 'Component',
 			mainComponent: true,
-			icon: 'fa-solid fa-list-ul',
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					<rect
+						x="1"
+						y="1"
+						width="22"
+						height="22"
+						rx="1"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<rect x="9" y="11" width="11" height="2" rx="0.4" fill="currentColor" />
+					<circle cx="6" cy="6" r="2" fill="currentColor" />
+					<circle cx="6" cy="12" r="2" fill="currentColor" />
+					<circle cx="6" cy="18" r="2" fill="currentColor" />
+					<rect x="9" y="17" width="11" height="2" rx="0.4" fill="currentColor" />
+					<rect x="9" y="5" width="11" height="2" rx="0.4" fill="currentColor" />
+				</IconHelper>
+			),
 		},
 		{
 			name: 'list',

@@ -18,6 +18,7 @@ import Children from '../Children';
 import { SubHelperComponent } from '../SubHelperComponent';
 import { getTranslations } from '../util/getTranslations';
 import { styleDefaults } from './popupStyleProperties';
+import { IconHelper } from '../util/IconHelper';
 
 function Popup(props: ComponentProps) {
 	const [isActive, setIsActive] = React.useState(false);
@@ -253,7 +254,20 @@ const component: Component = {
 			displayName: 'Component',
 			description: 'Component',
 			mainComponent: true,
-			icon: 'fa-solid fa-window-restore',
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					<rect
+						x="1"
+						y="1"
+						width="22"
+						height="22"
+						rx="2"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<rect x="5" y="5" width="14" height="14" rx="1" fill="currentColor" />
+				</IconHelper>
+			),
 		},
 		{
 			name: 'modal',

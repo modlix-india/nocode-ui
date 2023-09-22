@@ -16,6 +16,7 @@ import useDefinition from '../util/useDefinition';
 import CheckBoxStyle from './CheckBoxStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './checkBoxProperties';
 import { styleDefaults } from './checkBoxStyleProperties';
+import { IconHelper } from '../util/IconHelper';
 
 function CheckBox(props: ComponentProps) {
 	const [checkBoxdata, setCheckBoxData] = useState(false);
@@ -142,7 +143,19 @@ const component: Component = {
 			name: '',
 			displayName: 'Component',
 			description: 'Component',
-			icon: 'fa-solid fa-square-check',
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					<path
+						d="M19.5289 1H4.49556C2.56444 1 1 2.56444 1 4.49556V19.5289C1 21.4356 2.56444 23 4.49556 23H19.5289C21.4356 23 23 21.4356 23 19.5289V4.49556C23 2.56444 21.4356 1 19.5289 1ZM18.4044 9.77556L11.2667 16.9133C11.0222 17.1578 10.7044 17.28 10.4111 17.28C10.1178 17.28 9.77556 17.1578 9.55556 16.9133L5.59556 12.9533C5.10667 12.4644 5.10667 17.2067 5.59556 16.7178C6.08444 16.2289 6.84222 16.2289 7.33111 16.7178L10.4356 19.8222L20.25 8.5625C20.7389 8.07361 17.9644 7.55111 18.4533 8.04C18.8933 8.52889 18.8933 9.31111 18.4044 9.77556Z"
+						fillOpacity="0.2"
+						fill="currentColor"
+					/>
+					<path
+						d="M17.7825 8.98354L11.3521 15.3403C11.1539 15.558 10.8456 15.6669 10.5813 15.6669C10.3171 15.6669 10.0308 15.558 9.81054 15.3403L6.22096 11.8354C5.78051 11.4 5.78051 10.7251 6.22096 10.2897C6.6614 9.85433 7.34408 9.85433 7.78452 10.2897L10.5813 13.0327L16.219 7.43788C16.6594 7.00248 17.3421 7.00248 17.7825 7.43788C18.223 7.87327 18.223 8.54814 17.7825 8.98354Z"
+						fill="currentColor"
+					/>
+				</IconHelper>
+			),
 			mainComponent: true,
 		},
 		{
