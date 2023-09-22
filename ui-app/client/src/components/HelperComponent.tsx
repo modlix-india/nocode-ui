@@ -171,7 +171,17 @@ function HelperComponentInternal({
 			title={`${definition.name} - ${definition.key}`}
 		>
 			<div style={labelStyle}>
-				<i className={ComponentDefinitions.get(definition.type)?.icon} />
+				{typeof ComponentDefinitions.get(definition.type)?.subComponentDefinition?.[0]
+					.icon === 'string' ? (
+					<i
+						className={`fa ${
+							ComponentDefinitions.get(definition.type)?.subComponentDefinition?.[0]
+								.icon
+						}`}
+					/>
+				) : (
+					ComponentDefinitions.get(definition.type)?.subComponentDefinition?.[0].icon
+				)}
 				{ComponentDefinitions.get(definition.type)?.displayName}
 			</div>
 			<div className="_helperChildren">{children}</div>

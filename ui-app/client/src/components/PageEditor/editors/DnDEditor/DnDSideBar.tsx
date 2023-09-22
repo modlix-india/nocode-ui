@@ -194,6 +194,11 @@ export default function DnDSideBar({
 						closeMenu();
 					}}
 				>
+					{typeof e.subComponentDefinition?.[0].icon === 'string' ? (
+						<i className={`fa ${e.subComponentDefinition?.[0].icon}`} />
+					) : (
+						e.subComponentDefinition?.[0].icon
+					)}
 					{e.displayName}
 				</div>
 			));

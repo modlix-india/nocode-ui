@@ -9,6 +9,7 @@ import { propertiesDefinition, stylePropertiesDefinition } from './progressBarPr
 import ProgressBarStyles from './ProgressBarStyles';
 import { SubHelperComponent } from '../SubHelperComponent';
 import { styleDefaults } from './progressBarStyleProperties';
+import { IconHelper } from '../util/IconHelper';
 
 function ProgressBar(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -168,7 +169,47 @@ const component: Component = {
 			displayName: 'Component',
 			description: 'Component',
 			mainComponent: true,
-			icon: 'fa-solid fa-bars-progress',
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					<rect
+						x="4.5"
+						y="7"
+						width="10"
+						height="3.75"
+						rx="0.2"
+						transform="rotate(90 4.5 7)"
+						fill="currentColor"
+					/>
+					<rect
+						x="10.75"
+						y="7"
+						width="10"
+						height="3.75"
+						rx="0.2"
+						transform="rotate(90 10.75 7)"
+						fill="currentColor"
+					/>
+					<rect
+						x="17"
+						y="7"
+						width="10"
+						height="3.75"
+						rx="0.2"
+						transform="rotate(90 17 7)"
+						fill="currentColor"
+					/>
+					<rect
+						x="23.25"
+						y="7"
+						width="10"
+						height="3.75"
+						rx="0.2"
+						transform="rotate(90 23.25 7)"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+				</IconHelper>
+			),
 		},
 		{
 			name: 'track',

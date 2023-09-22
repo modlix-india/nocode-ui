@@ -19,6 +19,7 @@ import { flattenUUID } from '../util/uuid';
 import { runEvent } from '../util/runEvent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { styleDefaults } from './tableStyleProperties';
+import { IconHelper } from '../util/IconHelper';
 
 function spinCalculate(
 	spinnerPath1: string | undefined,
@@ -592,7 +593,52 @@ const component: Component = {
 			displayName: 'Component',
 			description: 'Component',
 			mainComponent: true,
-			icon: 'fa-solid fa-table',
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					<path
+						d="M1 4.2998H14.2V22.1998C14.2 22.6416 13.8418 22.9998 13.4 22.9998H1V4.2998Z"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<path
+						d="M1 1.8C1 1.35817 1.35817 1 1.8 1H22.2C22.6418 1 23 1.35817 23 1.8V6.5H1V1.8Z"
+						fill="currentColor"
+					/>
+					<rect x="1" y="9.7998" width="5.5" height="4.4" rx="0.2" fill="currentColor" />
+					<path
+						d="M1 17.5H6.5V23H1.8C1.35817 23 1 22.6418 1 22.2V17.5Z"
+						fill="currentColor"
+					/>
+					<rect
+						x="9.80078"
+						y="9.7998"
+						width="4.4"
+						height="4.4"
+						rx="0.2"
+						fill="currentColor"
+					/>
+					<rect
+						x="9.80078"
+						y="17.5"
+						width="4.4"
+						height="5.5"
+						rx="0.2"
+						fill="currentColor"
+					/>
+					<rect
+						x="17.5"
+						y="9.7998"
+						width="5.5"
+						height="4.4"
+						rx="0.2"
+						fill="currentColor"
+					/>
+					<path
+						d="M17.5 17.5H23V22.2C23 22.6418 22.6418 23 22.2 23H17.5V17.5Z"
+						fill="currentColor"
+					/>
+				</IconHelper>
+			),
 		},
 	],
 };

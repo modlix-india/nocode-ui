@@ -378,7 +378,11 @@ function CompTree({
 							onOpenClose(compKey);
 						}}
 					/>
-					<i className={`fa ${subCompDef?.[0]?.icon} ?? '`} />
+					{typeof subCompDef?.[0].icon === 'string' ? (
+						<i className={`fa ${subCompDef?.[0].icon}`} />
+					) : (
+						subCompDef?.[0].icon
+					)}
 					{text}
 				</div>
 			</div>
@@ -423,6 +427,8 @@ function SubCompTree({
 		/>,
 	);
 
+	console.log(subComp.icon, typeof subComp.icon);
+
 	return (
 		<div
 			className={`_treeNode _subComponent ${
@@ -436,7 +442,11 @@ function SubCompTree({
 			{levels}
 			<div className="_treeNodeName" onClick={() => {}}>
 				<i className="fa _animateTransform" />
-				<i className={`fa ${subComp.icon} '`} />
+				{typeof subComp.icon === 'string' ? (
+					<i className={`fa ${subComp.icon}`} />
+				) : (
+					subComp.icon
+				)}
 				{subComp.name}
 			</div>
 		</div>

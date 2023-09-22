@@ -20,6 +20,7 @@ import GridStyle from './GridStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './gridProperties';
 import { isNullValue } from '@fincity/kirun-js';
 import { styleDefaults } from './gridStyleProperties';
+import { IconHelper } from '../util/IconHelper';
 
 function Grid(props: ComponentProps) {
 	const location = useLocation();
@@ -359,7 +360,43 @@ const component: Component = {
 			displayName: 'Component',
 			description: 'Component',
 			mainComponent: true,
-			icon: 'fa-solid fa-table-cells',
+			icon: (
+				<IconHelper viewBox="0 0 22 22">
+					<path
+						d="M8.77778 1H1V8.77778H8.77778V1Z"
+						strokeWidth="2"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						fillOpacity="0"
+						stroke="currentColor"
+					/>
+					<path
+						d="M21.0004 1H13.2227V8.77778H21.0004V1Z"
+						strokeOpacity="0.2"
+						strokeWidth="2"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						fillOpacity="0"
+						stroke="currentColor"
+					/>
+					<path
+						d="M21.0004 13.2222H13.2227V20.9999H21.0004V13.2222Z"
+						strokeWidth="2"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						fillOpacity="0"
+						stroke="currentColor"
+					/>
+					<path
+						d="M8.77778 13.2222H1V20.9999H8.77778V13.2222Z"
+						strokeWidth="2"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						fillOpacity="0"
+						stroke="currentColor"
+					/>
+				</IconHelper>
+			),
 		},
 	],
 };
