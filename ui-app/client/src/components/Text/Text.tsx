@@ -107,7 +107,11 @@ function Text(props: ComponentProps) {
 		...comps,
 	);
 	return (
-		<div className="comp compText" style={styleProperties.comp ?? {}} title={originalText}>
+		<div
+			className={`comp compText ${textContainer.toLowerCase()}`}
+			style={styleProperties.comp ?? {}}
+			title={originalText}
+		>
 			<HelperComponent definition={definition} />
 			{comp}
 		</div>
