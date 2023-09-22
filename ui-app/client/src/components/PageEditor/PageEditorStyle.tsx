@@ -434,10 +434,16 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 		
 
-		${PREFIX} button:hover, ${PREFIX} select:hover, ${PREFIX} ._iconMenuOption:hover,
+		${PREFIX} button:hover, ${PREFIX} select:hover,
+		${PREFIX} ._iconMenuOption:hover,
 		._popupButtons button:hover {
 			background-color: rgba(77, 127, 238, 0.05);
-    		color: #96A1B4;
+    		color: #4C7FEE;
+		}
+
+		${PREFIX} ._iconMenuBody ._iconMenuOption:hover i.fa,
+		${PREFIX} ._iconMenuBody ._iconMenuOption:hover svg._iconHelperSVG {
+			color: #4C7FEE;
 		}
 
 		${PREFIX} i.fa {
@@ -463,7 +469,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			cursor: pointer;
 		}
 
-		${PREFIX} ._iconMenuBody ._iconMenuOption i.fa{
+		${PREFIX} ._iconMenuBody ._iconMenuOption i.fa,
+		${PREFIX} ._iconMenuBody ._iconMenuOption svg._iconHelperSVG {
 			color: #96A1B4;
 		}
 
@@ -471,9 +478,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			position: absolute;
 			background-color: #fff;
 			font-size: 12px;
-			box-shadow: 2px 2px 5px #ccc;
+			font-family: Inter;
+			box-shadow: 0px 1px 4px 0px #00000026;
 			display: none;
-			border-radius: 2px;
+			border-radius: 4px;
 			z-index: 1;
 			transform: translateX(40px);
 			font-weight: normal;
