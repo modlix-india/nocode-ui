@@ -637,7 +637,7 @@ export default function StylePropertyEditor({
 				</PropertyGroup>
 
 				{styleSectionsToShow.map(group => {
-					const isAdvancedSelected = showAdvanced.findIndex(e => e === group.name) !== -1;
+					const isAdvancedSelected = true; //showAdvanced.findIndex(e => e === group.name) !== -1;
 
 					const withValueProps: string[] = [];
 					const withoutValueProps: string[] = [];
@@ -665,29 +665,29 @@ export default function StylePropertyEditor({
 					let i = 0;
 					for (const eachGroup of [withValueProps, withoutValueProps, advancedProps]) {
 						if (i === 2 && eachGroup.length) {
-							props.push(
-								<div className="_eachProp" key="advancedCheckBox">
-									<label
-										className="_propLabel"
-										htmlFor={`${group.name}_showAdvanced`}
-									>
-										<input
-											className="_peInput"
-											type="checkbox"
-											checked={isAdvancedSelected}
-											onChange={e => {
-												if (isAdvancedSelected)
-													setShowAdvanced(
-														showAdvanced.filter(e => e !== group.name),
-													);
-												else setShowAdvanced([...showAdvanced, group.name]);
-											}}
-											id={`${group.name}_showAdvanced`}
-										/>
-										Show Advanced Properties
-									</label>
-								</div>,
-							);
+							// props.push(
+							// 	<div className="_eachProp" key="advancedCheckBox">
+							// 		<label
+							// 			className="_propLabel"
+							// 			htmlFor={`${group.name}_showAdvanced`}
+							// 		>
+							// 			<input
+							// 				className="_peInput"
+							// 				type="checkbox"
+							// 				checked={isAdvancedSelected}
+							// 				onChange={e => {
+							// 					if (isAdvancedSelected)
+							// 						setShowAdvanced(
+							// 							showAdvanced.filter(e => e !== group.name),
+							// 						);
+							// 					else setShowAdvanced([...showAdvanced, group.name]);
+							// 				}}
+							// 				id={`${group.name}_showAdvanced`}
+							// 			/>
+							// 			Show Advanced Properties
+							// 		</label>
+							// 	</div>,
+							// );
 						}
 						if (i === 2 && !isAdvancedSelected) break;
 						for (const prop of eachGroup) {
