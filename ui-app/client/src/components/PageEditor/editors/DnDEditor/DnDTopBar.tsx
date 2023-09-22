@@ -610,7 +610,7 @@ export default function DnDTopBar({
 								x.forEach(k => localStorage.removeItem(k));
 								addMessage(
 									MESSAGE_TYPE.SUCCESS,
-									'All pages cleared from local storage',
+									'All recovered pages cleared from local storage',
 									false,
 									'',
 								);
