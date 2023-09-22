@@ -20,6 +20,7 @@ import { SubHelperComponent } from '../SubHelperComponent';
 import { MESSAGE_TYPE, addMessage } from '../../App/Messages/Messages';
 import { ToArray } from '../../util/csvUtil';
 import { styleDefaults } from './fileUploadStyleProperties';
+import { IconHelper } from '../util/IconHelper';
 
 const icon1 = (
 	<div className="_uploadIcon _upload_icon_1">
@@ -365,7 +366,28 @@ const component: Component = {
 			name: '',
 			displayName: 'Component',
 			description: 'Component',
-			icon: 'fa-solid fa-upload',
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					<path
+						d="M14.2308 5.22685V0.59668H4.97764C4.09287 0.59668 3.37305 1.3165 3.37305 2.20128V21.7774C3.37305 22.6621 4.09287 23.382 4.97764 23.382H19.3959C20.2806 23.382 21.0005 22.6621 21.0005 21.7774V7.36631H16.3703C15.1906 7.36631 14.2308 6.40655 14.2308 5.22685Z"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<path
+						d="M15.3027 5.227C15.3027 5.81685 15.7826 6.29673 16.3725 6.29673H20.2095L15.3027 1.41309V5.227Z"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<path
+						d="M16.3662 14.042C16.7071 14.042 16.8918 14.4411 16.6711 14.7009L12.4961 19.6175C12.3375 19.8043 12.0496 19.8058 11.889 19.6207L7.62454 14.7041C7.39989 14.4451 7.58386 14.042 7.92671 14.042L16.3662 14.042Z"
+						fill="currentColor"
+					/>
+					<path
+						d="M10.1172 10.6338C10.1172 10.0815 10.5649 9.63379 11.1172 9.63379H13.4098C13.9621 9.63379 14.4098 10.0815 14.4098 10.6338V14.5396H10.1172V10.6338Z"
+						fill="currentColor"
+					/>
+				</IconHelper>
+			),
 			mainComponent: true,
 		},
 		{

@@ -19,6 +19,7 @@ import { propertiesDefinition, stylePropertiesDefinition } from './radioButtonPr
 import RadioButtonStyle from './RadioButtonStyle';
 import { SubHelperComponent } from '../SubHelperComponent';
 import { styleDefaults } from './RadioButtonStyleProperties';
+import { IconHelper } from '../util/IconHelper';
 
 function RadioButton(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -255,7 +256,12 @@ const component: Component = {
 			displayName: 'Component',
 			description: 'Component',
 			mainComponent: true,
-			icon: 'fa-solid fa-circle-dot',
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					<circle cx="12" cy="12" r="10.5" stroke="currentColor" strokeOpacity="0.2" />
+					<circle cx="12" cy="12" r="7" fill="currentColor" />
+				</IconHelper>
+			),
 		},
 		{
 			name: 'label',

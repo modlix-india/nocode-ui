@@ -16,6 +16,7 @@ import MenuStyle from './MenuStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './menuProperties';
 import Children from '../Children';
 import { styleDefaults } from './menuStyleProperties';
+import { IconHelper } from '../util/IconHelper';
 
 function Menu(props: ComponentProps) {
 	const location = useLocation();
@@ -324,7 +325,32 @@ const component: Component = {
 			displayName: 'Component',
 			description: 'Component',
 			mainComponent: true,
-			icon: 'fa-solid fa-bars',
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					<rect
+						x="1"
+						y="1"
+						width="22"
+						height="22"
+						rx="2"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<path d="M3 11H11V3H3.8C3.35817 3 3 3.35817 3 3.8V11Z" fill="currentColor" />
+					<path
+						d="M21 13L13 13L13 21H20.2C20.6418 21 21 20.6418 21 20.2V13Z"
+						fill="currentColor"
+					/>
+					<path
+						d="M3 13L11 13L11 21H3.8C3.35817 21 3 20.6418 3 20.2L3 13Z"
+						fill="currentColor"
+					/>
+					<path
+						d="M21 11L13 11L13 3L20.2 3C20.6418 3 21 3.35817 21 3.8V11Z"
+						fill="currentColor"
+					/>
+				</IconHelper>
+			),
 		},
 		{
 			name: 'externalIcon',

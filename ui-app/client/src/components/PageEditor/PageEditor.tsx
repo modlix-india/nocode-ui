@@ -31,6 +31,7 @@ import { LOCAL_STORE_PREFIX, PAGE_STORE_PREFIX, STORE_PREFIX } from '../../const
 import ComponentDefinitions from '../';
 import { deepEqual, duplicate } from '@fincity/kirun-js';
 import { styleDefaults } from './pageEditorStyleProperties';
+import { IconHelper } from '../util/IconHelper';
 
 function savePersonalizationCurry(
 	personalizationPath: string,
@@ -692,7 +693,7 @@ const component: Component = {
 	displayName: 'Page Editor',
 	description: 'Page Editor component',
 	component: PageEditor,
-	isHidden: true,
+	isHidden: false,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
@@ -709,7 +710,24 @@ const component: Component = {
 			displayName: 'Component',
 			description: 'Component',
 			mainComponent: true,
-			icon: 'fa-solid fa-newspaper',
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					<path
+						d="M12.4836 5.4706V1H3.5493C2.69501 1 2 1.69501 2 2.5493V21.4507C2 22.305 2.69501 23 3.5493 23H17.4706C18.3249 23 19.0199 22.305 19.0199 21.4507V7.53632H14.5493C13.4103 7.53632 12.4836 6.60964 12.4836 5.4706Z"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<path
+						d="M13.5176 5.47056C13.5176 6.04008 13.9809 6.50342 14.5504 6.50342H18.2553L13.5176 1.78809V5.47056Z"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<path
+						d="M14.5542 15.025L19.0139 10.5653C19.7675 9.81158 20.6015 9.81158 21.3552 10.5653C22.1089 11.3189 22.1089 12.1529 21.3552 12.9066L16.8955 17.3663L14.5542 15.025ZM16.2967 17.7041L14.3677 17.9184C14.1568 17.9418 13.9786 17.7636 14.0021 17.5527L14.2164 15.6237L16.2967 17.7041Z"
+						fill="currentColor"
+					/>
+				</IconHelper>
+			),
 		},
 	],
 };

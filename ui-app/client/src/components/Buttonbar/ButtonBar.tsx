@@ -18,6 +18,7 @@ import { getTranslations } from '../util/getTranslations';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { SubHelperComponent } from '../SubHelperComponent';
 import { styleDefaults } from './buttonBarStyleProperties';
+import { IconHelper } from '../util/IconHelper';
 
 function ButtonBar(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -207,7 +208,36 @@ const component: Component = {
 			name: '',
 			displayName: 'Component',
 			description: 'Component',
-			icon: 'fa-solid fa-grip',
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					<rect
+						x="15.0879"
+						y="14.4531"
+						width="7.41176"
+						height="7.41176"
+						rx="2"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<rect
+						x="8.91211"
+						y="9.51172"
+						width="9.88235"
+						height="9.88235"
+						rx="2"
+						fill="currentColor"
+						fillOpacity="0.4"
+					/>
+					<rect
+						x="1.5"
+						y="2.1001"
+						width="14.8235"
+						height="14.8235"
+						rx="2"
+						fill="currentColor"
+					/>
+				</IconHelper>
+			),
 			mainComponent: true,
 		},
 		{

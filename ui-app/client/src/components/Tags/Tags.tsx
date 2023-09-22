@@ -18,6 +18,7 @@ import { propertiesDefinition, stylePropertiesDefinition } from './tagsPropertie
 import TagsStyle from './TagsStyles';
 import { SubHelperComponent } from '../SubHelperComponent';
 import { styleDefaults } from './TagsStyleProperties';
+import { IconHelper } from '../util/IconHelper';
 
 function Tags(props: ComponentProps) {
 	const [hover, setHover] = React.useState('');
@@ -290,7 +291,24 @@ const component: Component = {
 			displayName: 'Component',
 			description: 'Component',
 			mainComponent: true,
-			icon: 'fa-solid fa-tags',
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					<path
+						d="M0.841382 17.9027C0.671885 18.558 1.04846 19.2321 1.68439 19.4087L5.60696 20.4926L2.88754 10.0239L0.841382 17.9027Z"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<path
+						d="M7.40595 21.0886C7.57719 21.7442 8.23004 22.1335 8.86547 21.9584L13.2482 20.7461L5.14648 12.3887L7.40595 21.0886Z"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<path
+						d="M22.8505 10.9495L13.5508 1.35461C13.3313 1.12813 13.0336 1.00103 12.7232 1.00077L6.37119 1C5.49359 1 4.7815 1.73439 4.7815 2.64006L4.78125 9.19438C4.78125 9.51458 4.90445 9.82195 5.12398 10.0484L14.4242 19.643C14.6571 19.8834 14.962 20.0033 15.2669 20.0033C15.5718 20.0033 15.8767 19.8831 16.1097 19.643L22.8505 12.6876C23.3157 12.2074 23.3157 11.4294 22.8505 10.9495ZM8.22446 5.53628C7.53726 5.53628 6.97998 4.96135 6.97998 4.25238C6.97998 3.54341 7.53726 2.96848 8.22446 2.96848C8.91165 2.96848 9.46893 3.54341 9.46893 4.25238C9.46893 4.96161 8.91165 5.53628 8.22446 5.53628Z"
+						fill="currentColor"
+					/>
+				</IconHelper>
+			),
 		},
 		{
 			name: 'outerContainerWithInputBox',

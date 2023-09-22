@@ -106,10 +106,9 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._compsTree ._treeNode {
 			font-size: 12px;
-			font-weight: 300;
-			font-family: ASAP;
+			font-weight: 400;
+			font-family: Inter;
 			line-height: 14px;
-			letter-spacing: 0.8px;
 			cursor: pointer;
 			display: flex;
 			align-items: center;
@@ -190,6 +189,17 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._compsTree ._treeNode._dragStart ._treeNodeLevel {
 			border-right: none;
+		}
+
+		${PREFIX} svg._iconHelperSVG {
+			width: 16px;
+			height: 16px;
+			color: #CACBCA;
+		}
+
+		${PREFIX} ._compsTree ._treeNode:hover ._iconHelperSVG,
+		${PREFIX} ._compsTree ._treeNode._selected ._iconHelperSVG {
+			color: #4C7FEE;
 		}
 		
 
@@ -2072,6 +2082,15 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex: 1;
 		}
 
+		._popupMenuBackground ._popupMenuContainer ._elementsBarContainer i.fa {
+			font-size: 12px;
+		}
+
+		._popupMenuBackground ._popupMenuContainer ._elementsBarContainer ._iconHelperSVG {
+			color: #96A1B4;
+			min-width: 16px;
+		}
+
 		._popupMenuBackground ._popupMenuContainer ._elementsBarContainer ._popupMenu {
 			background-color: #F8FAFB;
 		}
@@ -2159,12 +2178,29 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border-radius: 2px;
 		}
 
+		._popupMenuBackground ._popupMenuItem:hover i.fa,
+		._popupMenuBackground ._popupMenuItem.active i.fa,
+		._popupMenuBackground ._popupMenuItem:hover ._iconHelperSVG ,
+		._popupMenuBackground ._popupMenuItem.active ._iconHelperSVG  {
+			color: #08705C;
+		}
+
 		._popupMenuBackground ._contextMenu ._popupMenuItem:hover {
 			background: #00000005;
 			color: #52BD94;
 		}
 
 		._popupMenuBackground ._contextMenu ._popupMenuItem:hover i.fa {
+			color: #52BD94;
+		}
+
+		._popupMenuBackground ._contextMenu ._iconHelperSVG {
+			color: #CACBCA;
+			width: 16px;
+			height: 16px;
+		}
+
+		._popupMenuBackground ._contextMenu ._popupMenuItem:hover ._iconHelperSVG {
 			color: #52BD94;
 		}
 
