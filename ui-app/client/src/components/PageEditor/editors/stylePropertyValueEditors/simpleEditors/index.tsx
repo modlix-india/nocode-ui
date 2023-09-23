@@ -195,6 +195,7 @@ export interface StyleEditorsProps {
 	displayName?: string;
 	showTitle?: boolean;
 	editorInNewLine?: boolean;
+	isDetailStyleEditor?: boolean;
 }
 
 export function extractValue({
