@@ -427,8 +427,6 @@ function SubCompTree({
 		/>,
 	);
 
-	console.log(subComp.icon, typeof subComp.icon);
-
 	return (
 		<div
 			className={`_treeNode _subComponent ${

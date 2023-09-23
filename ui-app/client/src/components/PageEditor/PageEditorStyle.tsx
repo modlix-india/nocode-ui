@@ -434,10 +434,16 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 		
 
-		${PREFIX} button:hover, ${PREFIX} select:hover, ${PREFIX} ._iconMenuOption:hover,
+		${PREFIX} button:hover, ${PREFIX} select:hover,
+		${PREFIX} ._iconMenuOption:hover,
 		._popupButtons button:hover {
 			background-color: rgba(77, 127, 238, 0.05);
-    		color: #96A1B4;
+    		color: #4C7FEE;
+		}
+
+		${PREFIX} ._iconMenuBody ._iconMenuOption:hover i.fa,
+		${PREFIX} ._iconMenuBody ._iconMenuOption:hover svg._iconHelperSVG {
+			color: #4C7FEE;
 		}
 
 		${PREFIX} i.fa {
@@ -463,7 +469,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			cursor: pointer;
 		}
 
-		${PREFIX} ._iconMenuBody ._iconMenuOption i.fa{
+		${PREFIX} ._iconMenuBody ._iconMenuOption i.fa,
+		${PREFIX} ._iconMenuBody ._iconMenuOption svg._iconHelperSVG {
 			color: #96A1B4;
 		}
 
@@ -471,9 +478,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			position: absolute;
 			background-color: #fff;
 			font-size: 12px;
-			box-shadow: 2px 2px 5px #ccc;
+			font-family: Inter;
+			box-shadow: 0px 1px 4px 0px #00000026;
 			display: none;
-			border-radius: 2px;
+			border-radius: 4px;
 			z-index: 1;
 			transform: translateX(40px);
 			font-weight: normal;
@@ -883,8 +891,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._simpleEditorIcons ._eachIcon {
 			cursor: pointer;
-			
-			height: 30px;
 			display: flex;
 			justify-content: center;
 			align-items: center;
@@ -1153,7 +1159,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			flex-direction: row;
 			align-items: center;			
-			padding: 5px 20px;
+			padding: 5px 15px;
 			gap: 3px;
 			width: 100%;
 		}
@@ -1200,6 +1206,62 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._combineEditors._top {
 			align-items: flex-start;
+		}
+
+		._detailStyleEditor {
+			min-width: 250px;
+			width: 250px;
+			min-height: 400px;
+			background-color: #FFF;
+			box-shadow: 0px 2px 15px 0px #0000001A;
+			border: 1px solid #00000029;
+			position: fixed;
+			z-index: 4;
+			border-radius: 4px;
+			display: flex;
+			flex-direction: column;
+		}
+
+		._detailStyleEditor ._header {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+			padding: 10px;
+			border-bottom: 1px solid #0000000F;
+			background-color: #F8FAFB;
+			font-family: Inter;
+			font-size: 11px;
+			font-weight: 600;
+			line-height: 12px;
+			color: #000000;
+			border-top-left-radius: 4px;
+			border-top-right-radius: 4px;
+			padding-left: 20px;			
+			cursor: move;
+		}
+
+		._detailStyleEditor ._header ._title {
+			flex: 1;
+		}
+
+		._detailStyleEditor ._header ._close {
+			cursor: pointer;
+		}
+
+		._detailStyleEditor ._editorContent {
+			padding-top: 10px;
+			padding-bottom: 10px;
+			white-space: nowrap;
+		}
+
+		._detailStyleEditor ._simpleLabel {
+			font-size: 12px;
+			font-family: Inter;
+			color: #222222B2;
+			white-space: nowrap;
+			padding-left: 15px;
+			padding-right: 15px;
 		}
 
 		${PREFIX} ._buttonBar._screenSizes {
@@ -1711,9 +1773,12 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._propertyGroupHeaderIcon {
 			flex: 1;
+			display: flex;
+			flex-direction: row;
+			gap: 15px;
 			font-size: 20px;
 			font-weight: 200;
-			text-align: right;
+			justify-content: flex-end;
 		}
 
 		._propertyGroup._closed ._propertyGroupHeader {
@@ -1727,6 +1792,18 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._propertyGroup._closed i.fa {
 			transform: rotate(-90deg);
+		}
+
+		._propertyGroup ._detailsSwitchEditor {
+			display: flex;
+			justify-content: flex-end;
+			align-items: center;
+			color: #333333;
+		}
+
+		._propertyGroup ._detailsSwitchEditor._open,
+		._propertyGroup ._detailsSwitchEditor:hover {
+			color: #2680EB;
 		}
 
 		${PREFIX} ._multiValueEditor {
