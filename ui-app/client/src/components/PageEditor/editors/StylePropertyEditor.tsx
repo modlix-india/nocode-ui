@@ -28,14 +28,11 @@ import { COMPONENT_STYLE_GROUPS, COMPONENT_STYLE_GROUP_PROPERTIES } from '../../
 import PageOperations from '../functions/PageOperations';
 import { PropertyGroup } from './PropertyGroup';
 import PropertyValueEditor from './propertyValueEditors/PropertyValueEditor';
-import { PseudoStateSelector } from './stylePropertyValueEditors/PseudoStateSelector';
-import { ScreenSizeSelector } from './stylePropertyValueEditors/ScreenSizeSelector';
-import { TypographyEditor } from './stylePropertyValueEditors/TypographyEditor';
+import { PseudoStateSelector } from './stylePropertyValueEditors/SelectorEditor/PseudoStateSelector';
+import { ScreenSizeSelector } from './stylePropertyValueEditors/SelectorEditor/ScreenSizeSelector';
 import { StyleEditorsProps } from './stylePropertyValueEditors/simpleEditors';
-
-const STYLE_GRP_EDITOR: Map<string, React.ElementType> = new Map([
-	['typography', TypographyEditor],
-]);
+import { Style_Group_Editors } from './stylePropertyValueEditors';
+import { DetailStyleEditor } from './stylePropertyValueEditors/DetailStyleEditor';
 
 interface StylePropertyEditorProps {
 	selectedComponent: string;
@@ -145,6 +142,8 @@ export default function StylePropertyEditor({
 	const [showAdvanced, setShowAdvanced] = useState<Array<string>>([]);
 
 	const [properties, setProperties] = useState<[string, EachComponentStyle]>();
+
+	const [detailStyleEditorGroup, setDetailStyleEditorGroup] = useState<string>('');
 
 	useEffect(
 		() =>
@@ -348,8 +347,33 @@ export default function StylePropertyEditor({
 	if (selectorPref[selectedComponent]?.stylePseudoState?.value)
 		pseudoState = selectorPref[selectedComponent].stylePseudoState.value;
 
+	const detailStyleEditor = (
+		<DetailStyleEditor
+			groupName={detailStyleEditorGroup}
+			appDef={appDef}
+			subComponentName={subComponentName}
+			pseudoState={pseudoState}
+			iterateProps={iterateProps}
+			pageDef={pageDef}
+			editPageName={editPageName}
+			slaveStore={slaveStore}
+			storePaths={storePaths}
+			selectorPref={selectorPref}
+			styleProps={styleProps}
+			selectedComponent={selectedComponent}
+			saveStyle={saveStyle}
+			properties={properties}
+			pageOperations={pageOperations}
+			onClickClose={() => setDetailStyleEditorGroup('')}
+			onChangePersonalization={onChangePersonalization}
+			personalizationPath={personalizationPath}
+			pageExtractor={pageExtractor}
+		/>
+	);
+
 	return (
 		<div className="_propertyEditor">
+			{detailStyleEditor}
 			<div className="_eachStyleClass">
 				<div className="_propLabel _styleButtonContainer">
 					<button onClick={() => saveStyle({})} title="Clear Styles">
@@ -719,8 +743,8 @@ export default function StylePropertyEditor({
 
 					editors.push(<div key="advanedEditor">{props}</div>);
 
-					if (STYLE_GRP_EDITOR.has(group.name)) {
-						const SpecificEditor = STYLE_GRP_EDITOR.get(group.name)!;
+					if (Style_Group_Editors.has(group.name)) {
+						const SpecificEditor = Style_Group_Editors.get(group.name)!.component;
 						editors.push(
 							<SpecificEditor
 								key="specificEditor"
@@ -754,6 +778,13 @@ export default function StylePropertyEditor({
 							locationHistory={locationHistory}
 							onChangePersonalization={onChangePersonalization}
 							personalizationPath={personalizationPath}
+							hasDetailStyleEditor={Style_Group_Editors.get(group.name)?.hasDetails}
+							isDetailsStyleEditorOpen={detailStyleEditorGroup === group.name}
+							onDetailsStyleEditorClicked={() =>
+								setDetailStyleEditorGroup(
+									detailStyleEditorGroup === group.name ? '' : group.name,
+								)
+							}
 						>
 							{editors}
 						</PropertyGroup>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleResolutionDefinition } from '../../../../util/styleProcessor';
+import { StyleResolutionDefinition } from '../../../../../util/styleProcessor';
 
 interface SelectorProps {
 	size: string;
