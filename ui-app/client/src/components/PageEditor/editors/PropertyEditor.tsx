@@ -22,7 +22,7 @@ import { PropertyGroup } from './PropertyGroup';
 import { ExpressionEditor2 } from './propertyValueEditors/ExpressionEditor2';
 import PropertyMultiValueEditor from './propertyValueEditors/PropertyMultiValueEditor';
 import PropertyValueEditor from './propertyValueEditors/PropertyValueEditor';
-import PageOperations from '../functions/PageOperations';
+import { PageOperations } from '../functions/PageOperations';
 
 interface PropertyEditorProps {
 	selectedComponent: string;

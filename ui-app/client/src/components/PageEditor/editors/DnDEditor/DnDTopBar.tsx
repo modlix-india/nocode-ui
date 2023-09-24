@@ -20,7 +20,7 @@ import {
 } from '../../../../constants';
 import { ComponentPropertyEditor } from '../../../../types/common';
 import { ComponentPropertyDefinition } from '../../../../types/common';
-import PageOperations from '../../functions/PageOperations';
+import { PageOperations } from '../../functions/PageOperations';
 import { IconHelper } from '../../../util/IconHelper';
 import { MESSAGE_TYPE, addMessage } from '../../../../App/Messages/Messages';
 

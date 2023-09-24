@@ -12,7 +12,7 @@ import {
 	DataLocation,
 	PageDefinition,
 } from '../../../../types/common';
-import PageOperations from '../../functions/PageOperations';
+import { PageOperations } from '../../functions/PageOperations';
 import { AnyValueEditor } from './AnyValueEditor';
 import { BooleanValueEditor } from './BooleanValueEditor';
 import { ExpressionEditor2 } from './ExpressionEditor2';

@@ -8,7 +8,7 @@ import {
 import { duplicate } from '@fincity/kirun-js';
 import { shortUUID } from '../../../../util/shortUUID';
 import PropertyValueEditor from './PropertyValueEditor';
-import PageOperations from '../../functions/PageOperations';
+import { PageOperations } from '../../functions/PageOperations';
 
 interface PropertyMultiValueEditorProps {
 	propDef: ComponentPropertyDefinition;
