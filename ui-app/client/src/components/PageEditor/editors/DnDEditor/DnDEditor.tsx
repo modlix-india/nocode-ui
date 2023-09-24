@@ -4,7 +4,7 @@ import {
 	addListenerAndCallImmediately,
 } from '../../../../context/StoreContext';
 import { LocationHistory, PageDefinition } from '../../../../types/common';
-import PageOperations from '../../functions/PageOperations';
+import { PageOperations } from '../../functions/PageOperations';
 import DnDIFrame from './DnDIFrame';
 import DnDSideBar from './DnDSideBar';
 import DnDBottomBar from './DnDBottomBar';

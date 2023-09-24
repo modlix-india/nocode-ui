@@ -101,7 +101,7 @@ function ProgressBar(props: ComponentProps) {
 		if (!progressBarDesign.startsWith('_circular')) return null;
 		const radius = 50 - circularProgressBarIndicatorWidth;
 		const strokeDashArray = 2 * 3.14 * radius;
-		console.log(progressElapsed, strokeDashArray);
+
 		const strokeDashOffset = (strokeDashArray * (100 - progressElapsed)) / 100;
 		return [
 			<svg key="svgpart" className="_circular_progress" viewBox="0 0 100 100">

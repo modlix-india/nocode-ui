@@ -6,7 +6,7 @@ import {
 } from '../../../../context/StoreContext';
 import { LocationHistory, PageDefinition } from '../../../../types/common';
 import { ContextMenuDetails } from '../../components/ContextMenu';
-import PageOperations from '../../functions/PageOperations';
+import { PageOperations } from '../../functions/PageOperations';
 import ComponenstDefinition from '../../../';
 import { DRAG_CD_KEY } from '../../../../constants';
 import { LinkedList } from '@fincity/kirun-js';

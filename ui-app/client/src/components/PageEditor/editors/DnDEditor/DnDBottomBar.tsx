@@ -4,7 +4,7 @@ import {
 	PageStoreExtractor,
 } from '../../../../context/StoreContext';
 import { DRAG_CD_KEY } from '../../../../constants';
-import PageOperations from '../../functions/PageOperations';
+import { PageOperations } from '../../functions/PageOperations';
 import { ContextMenuDetails } from '../../components/ContextMenu';
 import ComponentDefinitions from '../../..';
 

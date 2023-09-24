@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { PageStoreExtractor, addListener } from '../../../context/StoreContext';
 import Portal from '../../Portal';
-import PageOperations from '../functions/PageOperations';
+import { PageOperations } from '../functions/PageOperations';
 import Components from '../..';
 import { ComponentDefinition } from '../../../types/common';
 import { IconHelper } from '../../util/IconHelper';

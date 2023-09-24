@@ -11,7 +11,7 @@ import StylePropertyEditor from '../StylePropertyEditor';
 import { allPaths } from '../../../../util/allPaths';
 import { LOCAL_STORE_PREFIX, PAGE_STORE_PREFIX, STORE_PREFIX } from '../../../../constants';
 import { isNullValue } from '@fincity/kirun-js';
-import PageOperations from '../../functions/PageOperations';
+import { PageOperations } from '../../functions/PageOperations';
 
 interface PropertyBarProps {
 	theme: string;

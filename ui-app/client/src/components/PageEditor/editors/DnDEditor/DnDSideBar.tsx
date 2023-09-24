@@ -6,7 +6,7 @@ import {
 } from '../../../../context/StoreContext';
 import { Component, LocationHistory, PageDefinition, Section } from '../../../../types/common';
 import ComponentDefinitions from '../../../';
-import PageOperations from '../../functions/PageOperations';
+import { PageOperations } from '../../functions/PageOperations';
 import { DRAG_CD_KEY, DRAG_COMP_NAME } from '../../../../constants';
 
 interface DnDSideBarProps {
