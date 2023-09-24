@@ -25,7 +25,7 @@ import {
 import { shortUUID } from '../../../util/shortUUID';
 import { StyleResolutionDefinition, processStyleFromString } from '../../../util/styleProcessor';
 import { COMPONENT_STYLE_GROUPS, COMPONENT_STYLE_GROUP_PROPERTIES } from '../../util/properties';
-import PageOperations from '../functions/PageOperations';
+import { PageOperations } from '../functions/PageOperations';
 import { PropertyGroup } from './PropertyGroup';
 import PropertyValueEditor from './propertyValueEditors/PropertyValueEditor';
 import { PseudoStateSelector } from './stylePropertyValueEditors/SelectorEditor/PseudoStateSelector';

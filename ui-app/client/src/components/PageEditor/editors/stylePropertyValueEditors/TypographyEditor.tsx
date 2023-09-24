@@ -49,10 +49,6 @@ export function TypographyEditor({
 	}
 
 	if (isDetailStyleEditor) {
-		const style: CSSProperties = {};
-		console.log(styleProps);
-		console.log(selectorPref);
-
 		return (
 			<>
 				<div className="_simpleLabel">Text Decoration Line :</div>

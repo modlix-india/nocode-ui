@@ -16,7 +16,7 @@ import { duplicate } from '@fincity/kirun-js';
 import { shortUUID } from '../../../util/shortUUID';
 import PropertyValueEditor from './propertyValueEditors/PropertyValueEditor';
 import { processStyleFromString } from '../../../util/styleProcessor';
-import PageOperations from '../functions/PageOperations';
+import { PageOperations } from '../functions/PageOperations';
 
 interface ClassEditorProps {
 	selectedComponent: string;

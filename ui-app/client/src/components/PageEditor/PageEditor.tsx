@@ -23,7 +23,10 @@ import { ContextMenu, ContextMenuDetails } from './components/ContextMenu';
 import IssuePopup, { Issue } from './components/IssuePopup';
 import DnDEditor from './editors/DnDEditor/DnDEditor';
 import { MASTER_FUNCTIONS } from './functions/masterFunctions';
-import PageOperations from './functions/PageOperations';
+import {
+	PageOperations,
+	removeUnreferenecedComponentDefinitions,
+} from './functions/PageOperations';
 import { propertiesDefinition, stylePropertiesDefinition } from './pageEditorProperties';
 import GridStyle from './PageEditorStyle';
 import { allPaths } from '../../util/allPaths';
@@ -133,6 +136,13 @@ function PageEditor(props: ComponentProps) {
 	// Function to save the page
 	const saveFunction = useCallback(() => {
 		if (!onSave || !pageDefinition.eventFunctions?.[onSave]) return;
+
+		let def = getDataFromPath(defPath!, locationHistory, pageExtractor) as PageDefinition;
+		if (!def) return;
+
+		def = removeUnreferenecedComponentDefinitions(def);
+
+		setData(defPath!, def, pageExtractor.getPageName());
 
 		(async () =>
 			await runEvent(
