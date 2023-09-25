@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { useState } from 'react';
 import {
 	addListenerAndCallImmediately,
 	getPathFromLocation,
@@ -36,6 +36,8 @@ function Stepper(props: ComponentProps) {
 			moveToAnyPreviousStep,
 			moveToAnyFutureStep,
 			isStepperVertical,
+			colorScheme,
+			stepperDesign,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -46,8 +48,8 @@ function Stepper(props: ComponentProps) {
 		pageExtractor,
 	);
 
-	const [value, setValue] = React.useState(0);
-	const [hover, setHover] = React.useState(false);
+	const [value, setValue] = useState(0);
+	const [hover, setHover] = useState(false);
 	const bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
 		: undefined;
@@ -105,13 +107,13 @@ function Stepper(props: ComponentProps) {
 		let textStyle;
 		switch (textPosition) {
 			case 'RIGHT':
-				textStyle = 'textRight';
+				textStyle = '_textRight';
 				break;
 			case 'LEFT':
-				textStyle = 'textLeft';
+				textStyle = '_textLeft';
 				break;
 			case 'TOP':
-				textStyle = 'textTop';
+				textStyle = '_textTop';
 				break;
 			case 'BOTTOM':
 				textStyle = '';
@@ -121,12 +123,15 @@ function Stepper(props: ComponentProps) {
 		return textStyle;
 	};
 	return (
-		<div className="comp compStepper" style={resolvedStyles.comp ?? {}}>
+		<div
+			className={`comp compStepper ${stepperDesign} ${colorScheme}`}
+			style={resolvedStyles.comp ?? {}}
+		>
 			<HelperComponent definition={definition} />
 			<ul
 				style={resolvedStyles.list ?? {}}
 				className={`${
-					isStepperVertical ? 'vertical' : 'horizontal'
+					isStepperVertical ? '_vertical' : '_horizontal'
 				} ${getPositionStyle()} `}
 			>
 				<SubHelperComponent definition={props.definition} subComponentName="list" />
@@ -139,16 +144,16 @@ function Stepper(props: ComponentProps) {
 								? () => goToStep(i)
 								: undefined
 						}
-						className={`itemlist ${
-							i < value && moveToAnyPreviousStep ? 'previousStep' : ''
-						} ${i > value && moveToAnyFutureStep ? 'futureStep' : ''}`}
+						className={`_listItem ${
+							i > value && moveToAnyFutureStep ? '_nextItem' : ''
+						} ${i < value && moveToAnyPreviousStep ? '_previousItem' : ''}`}
 						key={i}
 					>
 						<SubHelperComponent
 							definition={props.definition}
 							subComponentName="listItem"
 						/>
-						<div className="itemContainer" style={resolvedStyles.itemContainer ?? {}}>
+						<div className="_itemContainer" style={resolvedStyles.itemContainer ?? {}}>
 							<SubHelperComponent
 								definition={props.definition}
 								subComponentName="itemContainer"
@@ -168,7 +173,9 @@ function Stepper(props: ComponentProps) {
 									style={resolvedStyles.icon ?? {}}
 									className={`${
 										i < value && showCheckOnComplete ? checkIcon : iconList[i]
-									} countingStep ${i <= value ? 'done' : ''} icon`}
+									} _step ${i < value ? '_done' : ''} ${
+										i === value ? '_current' : ''
+									} _icon`}
 								>
 									<SubHelperComponent
 										definition={props.definition}
@@ -190,9 +197,9 @@ function Stepper(props: ComponentProps) {
 													: undefined
 											}
 											style={resolvedStyles.icon ?? {}}
-											className={`${checkIcon} countingStep icon ${
-												i <= value ? 'done' : ''
-											}`}
+											className={`${checkIcon} _step ${
+												i < value ? '_done' : ''
+											} ${i === value ? '_current' : ''} _icon`}
 										>
 											<SubHelperComponent
 												definition={props.definition}
@@ -202,7 +209,9 @@ function Stepper(props: ComponentProps) {
 									) : (
 										<span
 											style={resolvedStyles.text ?? {}}
-											className={`countingStep ${i <= value ? 'done' : ''}`}
+											className={`_step ${i < value ? '_done' : ''} ${
+												i === value ? '_current' : ''
+											}`}
 										>
 											<SubHelperComponent
 												definition={props.definition}
@@ -225,7 +234,7 @@ function Stepper(props: ComponentProps) {
 										: undefined
 								}
 								style={resolvedStyles.text ?? {}}
-								className="title"
+								className="_title"
 							>
 								<SubHelperComponent
 									definition={props.definition}

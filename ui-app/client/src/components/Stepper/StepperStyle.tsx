@@ -17,104 +17,78 @@ export default function StepperStyle({ theme }: { theme: Map<string, Map<string,
 			position: relative;
 		}
 
-		${PREFIX} ul.horizontal {
+		${PREFIX} ul._horizontal {
 			width: 100%;
 			flex-direction: row;
 			overflow: auto;
 		}
 
-		${PREFIX} ul.vertical {
+		${PREFIX} ul._vertical {
 			flex-direction: column;
 		}
 
-		${PREFIX} .itemlist {
-			flex-grow: 1;
+		${PREFIX} ._listItem {
+			flex: 1;
 			display: flex;
-			flex-direction: column;
+			flex-direction: row;
 			align-items: center;
 			position: relative;
 		}
 
-		${PREFIX} .itemlist.futureStep {
+		${PREFIX} ul._vertical ._listItem {
+		    flex-direction: column;
+		}
+
+		${PREFIX} ._listItem._nextItem {
 			cursor: pointer;
 		}
 
-		${PREFIX} .itemlist.previousStep {			
+		${PREFIX} ._listItem._previousItem {			
 			cursor: pointer;
-		}
-
-		${PREFIX} ul.horizontal .itemlist {
-		    flex-direction: row;
 		}
 		
-		${PREFIX} ul.horizontal .itemlist:last-child {
+		${PREFIX}._default ul._horizontal ._listItem:last-child,
+		${PREFIX}._big_circle ul._horizontal ._listItem:last-child {
 		    flex-grow: 0;
 		}
 
-		${PREFIX} ul.horizontal .itemlist:not(:last-child)::after {
+		${PREFIX}._default ul._horizontal ._listItem:not(:last-child)::after,
+		${PREFIX}._big_circle ul._horizontal ._listItem:not(:last-child)::after {
 			content: "";
-			min-height: 0px;
 			min-width: 30px;
-			border-bottom: 1px solid;
-			border-bottom-color: ${
-				theme.get(StyleResolution.ALL)?.get('lineColor') ?? styleDefaults.get('lineColor')
-			};
-			display: block;
-			flex-grow: 1;
-			border-left: none;
+			border-bottom: 2px solid;
 			align-self: flex-start;
-			height: ${
-				theme.get(StyleResolution.ALL)?.get('lineHeightOrWidth') ??
-				styleDefaults.get('lineHeightOrWidth')
-			};
-			
+			flex-grow: 1;
 		}
 
-		${PREFIX} ul.horizontal.textTop .itemlist:not(:last-child)::after {
-			align-self: flex-end;
-			border-top: 1px solid;
-			border-top-color: ${
-				theme.get(StyleResolution.ALL)?.get('lineColor') ?? styleDefaults.get('lineColor')
-			};
+		${PREFIX}._default ul._horizontal._textTop ._listItem:not(:last-child)::after,
+		${PREFIX}._big_circle ul._horizontal._textTop ._listItem:not(:last-child)::after {
 			border-bottom: none;
-		}
-
-		${PREFIX} ul.vertical .itemlist {
-			width: 100%;
+			border-top: 2px solid;
+			align-self: flex-end;
 		}
 		
-		${PREFIX} ul.vertical .itemlist:not(:last-child)::after {
+		${PREFIX}._default ul._vertical ._listItem:not(:last-child)::after,
+		${PREFIX}._big_circle ul._vertical ._listItem:not(:last-child)::after {
 			content: "";
 			min-height: 30px;
-			border-left: 1px solid;
-			border-left-color: ${
-				theme.get(StyleResolution.ALL)?.get('lineColor') ?? styleDefaults.get('lineColor')
-			};
+			border-left: 2px solid;
 			flex-grow: 1;
 		}
 
-		${PREFIX} ul.vertical.textRight .itemlist:not(:last-child)::after {
-			align-self: flex-start;
-			width:  ${
-				theme.get(StyleResolution.ALL)?.get('lineHeightOrWidth') ??
-				styleDefaults.get('lineHeightOrWidth')
-			};
+		${PREFIX}._default ul._vertical._textRight ._listItem:not(:last-child)::after,
+		${PREFIX}._big_circle ul._vertical._textRight ._listItem:not(:last-child)::after {
 			border-left: none;
-			border-right: 1px solid;
-			border-right-color: ${
-				theme.get(StyleResolution.ALL)?.get('lineColor') ?? styleDefaults.get('lineColor')
-			};
+			border-right: 2px solid;
+			align-self: flex-start;
 		}
 
-		${PREFIX} ul.vertical.textLeft .itemlist:not(:last-child)::after {
+		${PREFIX}._default ul._vertical._textLeft ._listItem:not(:last-child)::after,
+		${PREFIX}._big_circle ul._vertical._textLeft ._listItem:not(:last-child)::after {
 			align-self: flex-end;
-			width:  ${
-				theme.get(StyleResolution.ALL)?.get('lineHeightOrWidth') ??
-				styleDefaults.get('lineHeightOrWidth')
-			};
 		}
 		
-		${PREFIX} .itemContainer {
+		${PREFIX} ._itemContainer {
 			display: flex;
 			flex-direction: column;
 			justify-content: center;
@@ -123,32 +97,36 @@ export default function StepperStyle({ theme }: { theme: Map<string, Map<string,
 			position: relative;
 		}
 
-		${PREFIX} ul.vertical .itemContainer {
+		${PREFIX} ul._vertical ._itemContainer {
 			width: 100%;
 			justify-content: flex-start;
 		}
 
-		${PREFIX} ul.textRight .itemContainer {
+		${PREFIX} ul._textRight ._itemContainer {
 			flex-direction: row;
 		}
 		
-		${PREFIX} ul.textLeft .itemContainer {
+		${PREFIX} ul._textLeft ._itemContainer {
 			flex-direction: row-reverse;
 		}
 				
-		${PREFIX} ul.textTop .itemContainer {
+		${PREFIX} ul._textTop ._itemContainer {
 		    flex-direction: column-reverse;
 		}
 		
-		${PREFIX} .title {
+		${PREFIX} ._title {
 		    white-space: nowrap;
 			position: relative;
 		}
-		${PREFIX} .icon {
+		${PREFIX} ._icon {
 			position: relative;
 		}
-		${PREFIX} .countingStep {
+		${PREFIX} ._step {
 			position: relative;
+			border-radius: 50%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
 		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

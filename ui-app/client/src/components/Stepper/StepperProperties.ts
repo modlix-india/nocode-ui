@@ -9,6 +9,55 @@ import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '.
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
+		name: 'titles',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Comma separated titles',
+		description: 'List of titles that are comma separated and should be in order.',
+		defaultValue: '',
+		group: ComponentPropertyGroup.BASIC,
+		translatable: true,
+	},
+
+	{
+		name: 'icons',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Comma separated icons',
+		description: 'List of icon that are comma separated and should be in order of titles.',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: '',
+	},
+	{
+		name: 'textPosition',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Text position',
+		description: 'Text position relative to icon',
+		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: 'RIGHT',
+		enumValues: [
+			{
+				name: 'RIGHT',
+				displayName: 'Right',
+				description: 'Right',
+			},
+			{
+				name: 'LEFT',
+				displayName: 'Left',
+				description: 'Left',
+			},
+			{
+				name: 'TOP',
+				displayName: 'Top',
+				description: 'Top',
+			},
+			{
+				name: 'BOTTOM',
+				displayName: 'Bottom',
+				description: 'Bottom',
+			},
+		],
+	},
+	{
 		name: 'countingType',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Counting type of Stepper',
@@ -46,22 +95,12 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
-		name: 'titles',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Comma separated titles',
-		description: 'List of titles that are comma separated and should be in order.',
-		defaultValue: '',
-		group: ComponentPropertyGroup.BASIC,
-		translatable: true,
-	},
-
-	{
-		name: 'icons',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Comma separated icons',
-		description: 'List of icon that are comma separated and should be in order of titles.',
-		group: ComponentPropertyGroup.BASIC,
-		defaultValue: '',
+		name: 'isStepperVertical',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Make stepper vertical',
+		description: 'Make stepper vertival.',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
 	},
 
 	{
@@ -71,38 +110,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Displays a check icon in complete steps.',
 		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: false,
-	},
-
-	{
-		name: 'textPosition',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Text position',
-		description: 'Text position relative to icon',
-		editor: ComponentPropertyEditor.ENUM,
-		group: ComponentPropertyGroup.ADVANCED,
-		defaultValue: 'RIGHT',
-		enumValues: [
-			{
-				name: 'RIGHT',
-				displayName: 'Right',
-				description: 'Right',
-			},
-			{
-				name: 'LEFT',
-				displayName: 'Left',
-				description: 'Left',
-			},
-			{
-				name: 'TOP',
-				displayName: 'Top',
-				description: 'Top',
-			},
-			{
-				name: 'BOTTOM',
-				displayName: 'Bottom',
-				description: 'Bottom',
-			},
-		],
 	},
 
 	{
@@ -123,13 +130,36 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 	},
 	{
-		name: 'isStepperVertical',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Make stepper vertical',
-		description: 'Make stepper vertival.',
+		name: 'stepperDesign',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Stepper Selection Type',
+		description: 'Type of the selection of a Stepper',
+		defaultValue: '_default',
 		group: ComponentPropertyGroup.BASIC,
-		defaultValue: false,
+		enumValues: [
+			{
+				name: '_default',
+				displayName: 'Stepper Default Design',
+				description: 'Stepper Default Design.',
+			},
+			{
+				name: '_big_circle',
+				displayName: 'Stepper big circular design.',
+				description: 'Stepper big circular design.',
+			},
+			{
+				name: '_pills',
+				displayName: 'Stepper pills design.',
+				description: 'Stepper pills design.',
+			},
+			{
+				name: '_rectangle_arrow',
+				displayName: 'Stepper Rectangle Arrow design.',
+				description: 'Stepper Rectangle Arrow design.',
+			},
+		],
 	},
+	COMMON_COMPONENT_PROPERTIES.colorScheme,
 
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
