@@ -10,7 +10,7 @@ import {
 	PageDefinition,
 	StyleResolution,
 } from '../../../../../types/common';
-import PageOperations from '../../../functions/PageOperations';
+import { PageOperations } from '../../../functions/PageOperations';
 
 import { DropdownOptions, Dropdown } from './Dropdown';
 import { IconOptions, IconsSimpleEditor } from './IconsSimpleEditor';
@@ -195,6 +195,7 @@ export interface StyleEditorsProps {
 	displayName?: string;
 	showTitle?: boolean;
 	editorInNewLine?: boolean;
+	isDetailStyleEditor?: boolean;
 }
 
 export function extractValue({

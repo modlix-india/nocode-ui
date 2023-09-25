@@ -25,17 +25,14 @@ import {
 import { shortUUID } from '../../../util/shortUUID';
 import { StyleResolutionDefinition, processStyleFromString } from '../../../util/styleProcessor';
 import { COMPONENT_STYLE_GROUPS, COMPONENT_STYLE_GROUP_PROPERTIES } from '../../util/properties';
-import PageOperations from '../functions/PageOperations';
+import { PageOperations } from '../functions/PageOperations';
 import { PropertyGroup } from './PropertyGroup';
 import PropertyValueEditor from './propertyValueEditors/PropertyValueEditor';
-import { PseudoStateSelector } from './stylePropertyValueEditors/PseudoStateSelector';
-import { ScreenSizeSelector } from './stylePropertyValueEditors/ScreenSizeSelector';
-import { TypographyEditor } from './stylePropertyValueEditors/TypographyEditor';
+import { PseudoStateSelector } from './stylePropertyValueEditors/SelectorEditor/PseudoStateSelector';
+import { ScreenSizeSelector } from './stylePropertyValueEditors/SelectorEditor/ScreenSizeSelector';
 import { StyleEditorsProps } from './stylePropertyValueEditors/simpleEditors';
-
-const STYLE_GRP_EDITOR: Map<string, React.ElementType> = new Map([
-	['typography', TypographyEditor],
-]);
+import { Style_Group_Editors } from './stylePropertyValueEditors';
+import { DetailStyleEditor } from './stylePropertyValueEditors/DetailStyleEditor';
 
 interface StylePropertyEditorProps {
 	selectedComponent: string;
@@ -145,6 +142,8 @@ export default function StylePropertyEditor({
 	const [showAdvanced, setShowAdvanced] = useState<Array<string>>([]);
 
 	const [properties, setProperties] = useState<[string, EachComponentStyle]>();
+
+	const [detailStyleEditorGroup, setDetailStyleEditorGroup] = useState<string>('');
 
 	useEffect(
 		() =>
@@ -336,7 +335,8 @@ export default function StylePropertyEditor({
 	if (selectedSubComponent) {
 		subComponentName = selectedSubComponent.split(':')[1];
 	}
-	const subComponentSectionsArray = (cd?.styleProperties ?? {})[subComponentName];
+	const subComponentSectionsArray = (cd?.styleProperties ?? {})[subComponentName] ?? [];
+
 	const styleSectionsToShow = reverseStyleSections
 		? Object.values(COMPONENT_STYLE_GROUP_PROPERTIES).filter(
 				each => subComponentSectionsArray.findIndex(e => e === each.name) === -1,
@@ -347,8 +347,33 @@ export default function StylePropertyEditor({
 	if (selectorPref[selectedComponent]?.stylePseudoState?.value)
 		pseudoState = selectorPref[selectedComponent].stylePseudoState.value;
 
+	const detailStyleEditor = (
+		<DetailStyleEditor
+			groupName={detailStyleEditorGroup}
+			appDef={appDef}
+			subComponentName={subComponentName}
+			pseudoState={pseudoState}
+			iterateProps={iterateProps}
+			pageDef={pageDef}
+			editPageName={editPageName}
+			slaveStore={slaveStore}
+			storePaths={storePaths}
+			selectorPref={selectorPref}
+			styleProps={styleProps}
+			selectedComponent={selectedComponent}
+			saveStyle={saveStyle}
+			properties={properties}
+			pageOperations={pageOperations}
+			onClickClose={() => setDetailStyleEditorGroup('')}
+			onChangePersonalization={onChangePersonalization}
+			personalizationPath={personalizationPath}
+			pageExtractor={pageExtractor}
+		/>
+	);
+
 	return (
 		<div className="_propertyEditor">
+			{detailStyleEditor}
 			<div className="_eachStyleClass">
 				<div className="_propLabel _styleButtonContainer">
 					<button onClick={() => saveStyle({})} title="Clear Styles">
@@ -525,50 +550,6 @@ export default function StylePropertyEditor({
 								pageOperations={pageOperations}
 							/>
 						</div>
-						{subComponentsList.length !== 1 ? (
-							<div className="_eachProp">
-								<div className="_propLabel" title="Subcomponent">
-									Sub Component:
-								</div>
-								<PropertyValueEditor
-									pageDefinition={pageDef}
-									propDef={{
-										name: 'subcomponent',
-										displayName: 'Sub Component',
-										schema: SCHEMA_STRING_COMP_PROP,
-										editor: ComponentPropertyEditor.ENUM,
-										defaultValue: '',
-										enumValues: subComponentsList.map(name => ({
-											name,
-											displayName:
-												(hasSubComponents.has(name) ? '★ ' : '') +
-												(name === ''
-													? 'Component'
-													: camelCaseToUpperSpaceCase(name)),
-											description: '',
-										})),
-									}}
-									value={{
-										value:
-											selectedSubComponent === ''
-												? selectedSubComponent
-												: selectedSubComponent.split(':')[1],
-									}}
-									onlyValue={true}
-									onChange={v =>
-										onSelectedSubComponentChanged(
-											!v.value ? '' : `${selectedComponent}:${v.value}`,
-										)
-									}
-									storePaths={storePaths}
-									editPageName={editPageName}
-									slaveStore={slaveStore}
-									pageOperations={pageOperations}
-								/>
-							</div>
-						) : (
-							<></>
-						)}
 						{pseudoStates.length ? (
 							<div className="_eachProp">
 								<PseudoStateSelector
@@ -680,7 +661,7 @@ export default function StylePropertyEditor({
 				</PropertyGroup>
 
 				{styleSectionsToShow.map(group => {
-					const isAdvancedSelected = showAdvanced.findIndex(e => e === group.name) !== -1;
+					const isAdvancedSelected = true; //showAdvanced.findIndex(e => e === group.name) !== -1;
 
 					const withValueProps: string[] = [];
 					const withoutValueProps: string[] = [];
@@ -708,29 +689,29 @@ export default function StylePropertyEditor({
 					let i = 0;
 					for (const eachGroup of [withValueProps, withoutValueProps, advancedProps]) {
 						if (i === 2 && eachGroup.length) {
-							props.push(
-								<div className="_eachProp" key="advancedCheckBox">
-									<label
-										className="_propLabel"
-										htmlFor={`${group.name}_showAdvanced`}
-									>
-										<input
-											className="_peInput"
-											type="checkbox"
-											checked={isAdvancedSelected}
-											onChange={e => {
-												if (isAdvancedSelected)
-													setShowAdvanced(
-														showAdvanced.filter(e => e !== group.name),
-													);
-												else setShowAdvanced([...showAdvanced, group.name]);
-											}}
-											id={`${group.name}_showAdvanced`}
-										/>
-										Show Advanced Properties
-									</label>
-								</div>,
-							);
+							// props.push(
+							// 	<div className="_eachProp" key="advancedCheckBox">
+							// 		<label
+							// 			className="_propLabel"
+							// 			htmlFor={`${group.name}_showAdvanced`}
+							// 		>
+							// 			<input
+							// 				className="_peInput"
+							// 				type="checkbox"
+							// 				checked={isAdvancedSelected}
+							// 				onChange={e => {
+							// 					if (isAdvancedSelected)
+							// 						setShowAdvanced(
+							// 							showAdvanced.filter(e => e !== group.name),
+							// 						);
+							// 					else setShowAdvanced([...showAdvanced, group.name]);
+							// 				}}
+							// 				id={`${group.name}_showAdvanced`}
+							// 			/>
+							// 			Show Advanced Properties
+							// 		</label>
+							// 	</div>,
+							// );
 						}
 						if (i === 2 && !isAdvancedSelected) break;
 						for (const prop of eachGroup) {
@@ -762,8 +743,8 @@ export default function StylePropertyEditor({
 
 					editors.push(<div key="advanedEditor">{props}</div>);
 
-					if (STYLE_GRP_EDITOR.has(group.name)) {
-						const SpecificEditor = STYLE_GRP_EDITOR.get(group.name)!;
+					if (Style_Group_Editors.has(group.name)) {
+						const SpecificEditor = Style_Group_Editors.get(group.name)!.component;
 						editors.push(
 							<SpecificEditor
 								key="specificEditor"
@@ -797,6 +778,13 @@ export default function StylePropertyEditor({
 							locationHistory={locationHistory}
 							onChangePersonalization={onChangePersonalization}
 							personalizationPath={personalizationPath}
+							hasDetailStyleEditor={Style_Group_Editors.get(group.name)?.hasDetails}
+							isDetailsStyleEditorOpen={detailStyleEditorGroup === group.name}
+							onDetailsStyleEditorClicked={() =>
+								setDetailStyleEditorGroup(
+									detailStyleEditorGroup === group.name ? '' : group.name,
+								)
+							}
 						>
 							{editors}
 						</PropertyGroup>

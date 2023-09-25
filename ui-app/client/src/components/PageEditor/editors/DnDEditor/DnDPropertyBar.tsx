@@ -11,7 +11,7 @@ import StylePropertyEditor from '../StylePropertyEditor';
 import { allPaths } from '../../../../util/allPaths';
 import { LOCAL_STORE_PREFIX, PAGE_STORE_PREFIX, STORE_PREFIX } from '../../../../constants';
 import { isNullValue } from '@fincity/kirun-js';
-import PageOperations from '../../functions/PageOperations';
+import { PageOperations } from '../../functions/PageOperations';
 
 interface PropertyBarProps {
 	theme: string;
@@ -150,7 +150,7 @@ export default function DnDPropertyBar({
 	}
 
 	return (
-		<div className="_propBar _propBarVisible">
+		<div className="_propBar _propBarVisible _right">
 			<div className="_tabBar">
 				<svg
 					width="26"

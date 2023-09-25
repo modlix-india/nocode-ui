@@ -2,7 +2,7 @@ import React from 'react';
 import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../../../constants';
 import { VALIDATION_FUNCTIONS } from '../../../../util/validationProcessor';
 import PropertyValueEditor from './PropertyValueEditor';
-import PageOperations from '../../functions/PageOperations';
+import { PageOperations } from '../../functions/PageOperations';
 import { Dropdown } from '../stylePropertyValueEditors/simpleEditors/Dropdown';
 
 interface ValidationEditorProps {

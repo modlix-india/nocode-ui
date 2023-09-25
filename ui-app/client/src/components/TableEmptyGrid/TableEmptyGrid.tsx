@@ -13,6 +13,7 @@ import { runEvent } from '../util/runEvent';
 import { flattenUUID } from '../util/uuid';
 import TableEmptyGridStyle from './TableEmptyGridStyle';
 import { styleDefaults } from './tableEmptyGridStyleProperties';
+import { IconHelper } from '../util/IconHelper';
 
 function TableEmptyGrid(props: ComponentProps) {
 	const [hover, setHover] = React.useState(false);
@@ -131,7 +132,6 @@ function TableEmptyGrid(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-battery-empty',
 	name: 'TableEmptyGrid',
 	displayName: 'Table Empty Grid',
 	description: 'Table Empty Grid component',
@@ -144,6 +144,80 @@ const component: Component = {
 	stylePseudoStates: ['hover', 'focus', 'readonly'],
 	allowedChildrenType: new Map<string, number>([['', -1]]),
 	parentType: 'Table',
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					<path
+						d="M2 5C2 3.89543 2.89543 3 4 3H19.0667C20.1712 3 21.0667 3.89543 21.0667 5V7.56667C21.0667 7.67712 20.9771 7.76667 20.8667 7.76667H2.2C2.08954 7.76667 2 7.67712 2 7.56667V5Z"
+						fill="currentColor"
+					/>
+					<path
+						d="M21.0664 18.875C21.0664 19.9796 20.171 20.875 19.0664 20.875H3.99974C2.89517 20.875 1.99974 19.9796 1.99974 18.875V18.6917C1.99974 18.5812 2.08928 18.4917 2.19974 18.4917H20.8664C20.9769 18.4917 21.0664 18.5812 21.0664 18.6917V18.875Z"
+						fill="currentColor"
+					/>
+					<rect
+						x="2"
+						y="8.9585"
+						width="4.76667"
+						height="3.575"
+						rx="0.2"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<rect
+						x="2"
+						y="13.7251"
+						width="4.76667"
+						height="3.575"
+						rx="0.2"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<rect
+						x="9.15039"
+						y="8.9585"
+						width="4.76667"
+						height="3.575"
+						rx="0.2"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<rect
+						x="9.15039"
+						y="13.7251"
+						width="4.76667"
+						height="3.575"
+						rx="0.2"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<rect
+						x="16.3008"
+						y="8.9585"
+						width="4.76667"
+						height="3.575"
+						rx="0.2"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<rect
+						x="16.3008"
+						y="13.7251"
+						width="4.76667"
+						height="3.575"
+						rx="0.2"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+				</IconHelper>
+			),
+		},
+	],
 };
 
 export default component;

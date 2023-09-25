@@ -4,7 +4,7 @@ import {
 	PageStoreExtractor,
 } from '../../../../context/StoreContext';
 import { DRAG_CD_KEY } from '../../../../constants';
-import PageOperations from '../../functions/PageOperations';
+import { PageOperations } from '../../functions/PageOperations';
 import { ContextMenuDetails } from '../../components/ContextMenu';
 import ComponentDefinitions from '../../..';
 
@@ -159,11 +159,18 @@ export default function DnDBottomBar({
 											});
 										}}
 									>
-										<i
-											className={`fa ${
-												ComponentDefinitions.get(defMap[f].type)?.icon
-											}`}
-										/>
+										{typeof ComponentDefinitions.get(defMap[f].type)
+											?.subComponentDefinition?.[0].icon === 'string' ? (
+											<i
+												className={`fa ${
+													ComponentDefinitions.get(defMap[f].type)
+														?.subComponentDefinition?.[0].icon
+												}`}
+											/>
+										) : (
+											ComponentDefinitions.get(defMap[f].type)
+												?.subComponentDefinition?.[0].icon
+										)}
 										{defMap[f].name}
 									</div>
 								))}

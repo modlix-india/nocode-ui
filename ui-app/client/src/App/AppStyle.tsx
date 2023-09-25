@@ -187,6 +187,12 @@ export default function AppStyle() {
 	.disableChildrenEvents * {pointer-events: none;}
 	._helperChildren {display: none;}
 	._helper:hover ._helperChildren {display: block;}
+	._helper ._iconHelperSVG {
+		color: #fff;
+		width: 12px;
+		height: 12px;
+		margin-right: 5px;
+	}
 
 	.fa._rotate-45::before, .ms._rotate-45::before, .mi._rotate-45::before {transform: rotate(45deg); display:block;}
 	.fa._rotate-90::before, .ms._rotate-90::before, .mi._rotate-90::before {transform: rotate(90deg); display:block;}

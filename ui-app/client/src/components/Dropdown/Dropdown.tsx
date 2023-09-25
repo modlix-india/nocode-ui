@@ -19,6 +19,7 @@ import { flattenUUID } from '../util/uuid';
 import DropdownStyle from './DropdownStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './dropdownProperties';
 import { styleDefaults } from './dropdownStyleProperties';
+import { IconHelper } from '../util/IconHelper';
 
 function DropdownComponent(props: ComponentProps) {
 	const [showDropdown, setShowDropdown] = useState(false);
@@ -422,7 +423,6 @@ function DropdownComponent(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-square-caret-down',
 	name: 'Dropdown',
 	displayName: 'Dropdown',
 	description: 'Dropdown component',
@@ -446,6 +446,127 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'Dropdown', pageName: 'dropdown' }],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					<path
+						d="M19.5289 1H4.49556C2.56444 1 1 2.56444 1 4.49556V19.5289C1 21.4356 2.56444 23 4.49556 23H19.5289C21.4356 23 23 21.4356 23 19.5289V4.49556C23 2.56444 21.4356 1 19.5289 1ZM18.4044 9.77556L11.2667 16.9133C11.0222 17.1578 10.7044 17.28 10.4111 17.28C10.1178 17.28 9.77556 17.1578 9.55556 16.9133L5.59556 12.9533C5.10667 12.4644 5.10667 17.2067 5.59556 16.7178C6.08444 16.2289 6.84222 16.2289 7.33111 16.7178L10.4356 19.8222L20.25 8.5625C20.7389 8.07361 17.9644 7.55111 18.4533 8.04C18.8933 8.52889 18.8933 9.31111 18.4044 9.77556Z"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<path
+						d="M15.9746 6.13324C16.3155 6.13324 16.5002 6.53232 16.2795 6.79215L12.1219 11.6882C11.9633 11.8751 11.6754 11.8766 11.5148 11.6914L7.2681 6.79534C7.04346 6.53634 7.22743 6.13324 7.57027 6.13324L15.9746 6.13324Z"
+						fill="currentColor"
+					/>
+					<rect
+						x="7.10938"
+						y="15.5444"
+						width="9.77778"
+						height="1.22222"
+						rx="0.611111"
+						fill="currentColor"
+					/>
+					<rect
+						x="4.66797"
+						y="18.1113"
+						width="14.6667"
+						height="1.22222"
+						rx="0.611111"
+						fill="currentColor"
+					/>
+				</IconHelper>
+			),
+			mainComponent: true,
+		},
+		{
+			name: 'dropDownContainer',
+			displayName: 'Dropdown Container',
+			description: 'Dropdown Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'dropdownItem',
+			displayName: 'Dropdown Item',
+			description: 'Dropdown Item',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'dropdownItemLabel',
+			displayName: 'Dropdown Item Label',
+			description: 'Dropdown Item Label',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'dropdownCheckIcon',
+			displayName: 'Dropdown Check Icon',
+			description: 'Dropdown Check Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'dropdownSearchContainer',
+			displayName: 'Dropdown Search Container',
+			description: 'Dropdown Search Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'textBoxContainer',
+			displayName: 'Text Box Container',
+			description: 'Text Box Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'leftIcon',
+			displayName: 'Left Icon',
+			description: 'Left Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'rightIcon',
+			displayName: 'Right Icon',
+			description: 'Right Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'inputBox',
+			displayName: 'Input Box',
+			description: 'Input Box',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'floatingLabel',
+			displayName: 'Floating Label',
+			description: 'Floating Label',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'noFloatLabel',
+			displayName: 'No Float Label',
+			description: 'No Float Label',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'supportText',
+			displayName: 'Support Text',
+			description: 'Support Text',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'errorText',
+			displayName: 'Error Text',
+			description: 'Error Text',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'errorTextContainer',
+			displayName: 'Error Text Container',
+			description: 'Error Text Container',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

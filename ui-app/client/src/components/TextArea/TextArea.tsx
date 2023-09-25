@@ -22,6 +22,7 @@ import { propertiesDefinition, stylePropertiesDefinition } from './textAreaPrope
 import { SubHelperComponent } from '../SubHelperComponent';
 import CommonInputText from '../../commonComponents/CommonInputText';
 import { styleDefaults } from './textAreaStyleProperties';
+import { IconHelper } from '../util/IconHelper';
 
 interface mapType {
 	[key: string]: any;
@@ -252,7 +253,6 @@ function TextArea(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-i-cursor',
 	name: 'TextArea',
 	displayName: 'TextArea',
 	description: 'TextArea component',
@@ -275,6 +275,85 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'Text Area', pageName: 'textArea' }],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					<path
+						d="M9.80078 9.7002C9.80078 9.14791 10.2485 8.7002 10.8008 8.7002H19.7008V19.7002H9.80078V9.7002Z"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<rect
+						x="3.94922"
+						y="3.9502"
+						width="16.1"
+						height="16.1"
+						stroke="currentColor"
+						strokeWidth="1.5"
+						fill="transparent"
+					/>
+					<rect x="1" y="1" width="4.4" height="4.4" rx="0.4" fill="currentColor" />
+					<rect x="1" y="18.6001" width="4.4" height="4.4" rx="0.4" fill="currentColor" />
+					<rect x="18.5996" y="1" width="4.4" height="4.4" rx="0.4" fill="currentColor" />
+					<rect
+						x="18.5996"
+						y="18.6001"
+						width="4.4"
+						height="4.4"
+						rx="0.4"
+						fill="currentColor"
+					/>
+				</IconHelper>
+			),
+		},
+		{
+			name: 'inputContainer',
+			displayName: 'Input Container',
+			description: 'Input Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'inputBox',
+			displayName: 'Input Box',
+			description: 'Input Box',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'floatingLabel',
+			displayName: 'Floating Label',
+			description: 'Floating Label',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'noFloatLabel',
+			displayName: 'No Float Label',
+			description: 'No Float Label',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'supportText',
+			displayName: 'Support Text',
+			description: 'Support Text',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'errorText',
+			displayName: 'Error Text',
+			description: 'Error Text',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'errorTextContainer',
+			displayName: 'Error Text Container',
+			description: 'Error Text Container',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

@@ -113,7 +113,6 @@ function SchemaForm(
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-highlighter',
 	name: 'SchemaForm',
 	displayName: 'Schema Form',
 	description: 'Schema Form component',
@@ -132,6 +131,15 @@ const component: Component = {
 	bindingPaths: {
 		bindingPath: { name: 'Schema value binding' },
 	},
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-highlighter',
+		},
+	],
 };
 
 export default component;

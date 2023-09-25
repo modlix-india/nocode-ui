@@ -16,6 +16,7 @@ import MenuStyle from './MenuStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './menuProperties';
 import Children from '../Children';
 import { styleDefaults } from './menuStyleProperties';
+import { IconHelper } from '../util/IconHelper';
 
 function Menu(props: ComponentProps) {
 	const location = useLocation();
@@ -291,7 +292,6 @@ function Menu(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-bars',
 	name: 'Menu',
 	displayName: 'Menu',
 	description: 'Menu component',
@@ -318,6 +318,64 @@ const component: Component = {
 	sections: [
 		{ name: 'Horizontal Menu', pageName: 'horizontalMenu' },
 		{ name: 'Vertical Menu', pageName: 'verticalMenu' },
+	],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					<rect
+						x="1"
+						y="1"
+						width="22"
+						height="22"
+						rx="2"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<path d="M3 11H11V3H3.8C3.35817 3 3 3.35817 3 3.8V11Z" fill="currentColor" />
+					<path
+						d="M21 13L13 13L13 21H20.2C20.6418 21 21 20.6418 21 20.2V13Z"
+						fill="currentColor"
+					/>
+					<path
+						d="M3 13L11 13L11 21H3.8C3.35817 21 3 20.6418 3 20.2L3 13Z"
+						fill="currentColor"
+					/>
+					<path
+						d="M21 11L13 11L13 3L20.2 3C20.6418 3 21 3.35817 21 3.8V11Z"
+						fill="currentColor"
+					/>
+				</IconHelper>
+			),
+		},
+		{
+			name: 'externalIcon',
+			displayName: 'External Icon',
+			description: 'External Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'icon',
+			displayName: 'Icon',
+			description: 'Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'caretIcon',
+			displayName: 'Caret Icon',
+			description: 'Caret Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'subMenuContainer',
+			displayName: 'Sub Menu Container',
+			description: 'Sub Menu Container',
+			icon: 'fa-solid fa-box',
+		},
 	],
 };
 

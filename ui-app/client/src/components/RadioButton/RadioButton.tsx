@@ -19,6 +19,7 @@ import { propertiesDefinition, stylePropertiesDefinition } from './radioButtonPr
 import RadioButtonStyle from './RadioButtonStyle';
 import { SubHelperComponent } from '../SubHelperComponent';
 import { styleDefaults } from './RadioButtonStyleProperties';
+import { IconHelper } from '../util/IconHelper';
 
 function RadioButton(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -215,7 +216,6 @@ function RadioButton(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-circle-dot',
 	name: 'RadioButton',
 	displayName: 'RadioButton',
 	description: 'RadioButton component',
@@ -250,6 +250,32 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'Radio Button', pageName: 'radioButton' }],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					<circle cx="12" cy="12" r="10.5" stroke="currentColor" strokeOpacity="0.2" />
+					<circle cx="12" cy="12" r="7" fill="currentColor" />
+				</IconHelper>
+			),
+		},
+		{
+			name: 'label',
+			displayName: 'Label',
+			description: 'Label',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'radio',
+			displayName: 'Radio',
+			description: 'Radio',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

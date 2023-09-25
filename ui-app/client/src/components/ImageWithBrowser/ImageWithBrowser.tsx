@@ -174,7 +174,6 @@ function ImageWithBrowser(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-panorama',
 	name: 'ImageWithBrowser',
 	displayName: 'Image With Browser',
 	description: 'Image With Browser Component',
@@ -203,6 +202,21 @@ const component: Component = {
 		bindingPath6: { name: 'FallBack Image' },
 		bindingPath7: { name: 'Alt text' },
 	},
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-panorama',
+		},
+		{
+			name: 'image',
+			displayName: 'Image',
+			description: 'Image',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

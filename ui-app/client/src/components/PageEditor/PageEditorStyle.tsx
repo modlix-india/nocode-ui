@@ -27,6 +27,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			height: 65px;
 			background-color: #fff;
+			border-bottom: 1px solid rgba(0, 0, 0, 0.10);
+			box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.05);
 		}
 
 		${PREFIX} ._topBarGrid._previewMode{
@@ -66,7 +68,17 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction: column;
 			gap: 10px;
 			width: auto;
-			
+			min-width: 250px;			
+		}
+
+		._propBar._left{
+			box-shadow: 0px 3px 4px 0px #00000040;
+			border-right: 1px solid rgba(0, 0, 0, 0.10);
+		}
+
+		._propBar._right{
+			box-shadow: 2px 3px 4px 0px #00000040;
+			border-left: 1px solid rgba(0, 0, 0, 0.10);
 		}
 
 		${PREFIX} ._filterBar {
@@ -74,13 +86,15 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction: row;
 			align-items: center;
 			justify-content: center;
-			padding: 5px;
+			padding: 15px 10px;
 			gap: 5px;
+			width: 100%;
 		}
 
 		${PREFIX} ._filterBar i.fa {
 			font-size: 22px;
 			cursor: pointer;
+			color: #52BD94;
 		}
 
 		${PREFIX} ._compsTree {
@@ -92,9 +106,16 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._compsTree ._treeNode {
 			font-size: 12px;
+			font-weight: 400;
+			font-family: Inter;
+			line-height: 14px;
 			cursor: pointer;
 			display: flex;
 			align-items: center;
+			height: 30px;
+			flex-shrink: 0;
+			margin:	0px 8px;
+			border-radius: 4px;
 		}
 
 		${PREFIX} ._compsTree ._treeNodeName {
@@ -104,54 +125,81 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._compsTree ._treeNodeLevel {
-			width: 10px;
+			width: 13px;
 			height: 100%;
 		}
 
-		${PREFIX} ._compsTree ._treeNode._selected {
-			background-color: #ddd;
+		${PREFIX} ._compsTree ._treeNode._subComponent._selected,
+		${PREFIX} ._compsTree ._treeNode._subComponent:hover {
+			background-color: transparent;
+			color: #52BD94;
+		}
+
+		${PREFIX} ._compsTree ._treeNode._subComponent._selected i.fa,
+		${PREFIX} ._compsTree ._treeNode._subComponent:hover i.fa {
+			color: #52BD94;
+		}
+
+		${PREFIX} ._compsTree ._treeNode._selected,
+		${PREFIX} ._compsTree ._treeNode:hover {
+			background-color: #4C7FEE0D;
+			color: #4C7FEE;
+		}
+
+		${PREFIX} ._compsTree ._treeNode._selected i.fa,
+		${PREFIX} ._compsTree ._treeNode:hover i.fa {
+			color: #4C7FEE;
 		}
 
 		${PREFIX} ._compsTree:hover ._treeNodeLevel {
-			border-right: 1px solid #ccc;
+			border-right: 0.75px dotted #00000026;
 		} 
 
 		${PREFIX} ._compsTree ._treeNodeLevel._lastOpened {
-
-			border-right: 1px solid #aaa;
-		}
-
-		${PREFIX} ._compsTree ._treeNode:hover {
-			background-color: #eee;
+			border-right: 0.75px dotted #00000026;
 		}
 
 		${PREFIX} ._compsTree ._treeNode i.fa {
-			font-size: 13px;
-			width: 13px;
-			height: 13px;
+			font-size: 11px;
+			width: 11px;
+			height: 11px;
 			display: flex;
 			justify-content: center;
 			margin: 0px 2px;
+			color: #CACBCA;
 		}
 
 		${PREFIX} ._compsTree ._treeNode ._treeText {
 			padding-left: 5px;
 		}
 
-		${PREFIX} ._compsTree:hover ._animateTransform::before {
-			color: #777;	
+		${PREFIX} ._compsTree ._treeNode ._treeText ._filter {
+			color: #52BD94;
+			font-weight: 600;
 		}
 
-		${PREFIX} ._compsTree ._animateTransform::before {
-			color: #ccc;	
+		${PREFIX} ._compsTree ._treeNodeName i.fa.fa-caret-right {
+			font-size: 10px;
+			margin-right: 6px;
 		}
 
-		${PREFIX} ._compsTree ._animateTransform {
+		${PREFIX} ._compsTree ._animateTransform i.fa {
 			transition: transform 0.5s;
 		}
 
 		${PREFIX} ._compsTree ._treeNode._dragStart ._treeNodeLevel {
 			border-right: none;
+		}
+
+		${PREFIX} svg._iconHelperSVG {
+			width: 16px;
+			height: 16px;
+			color: #CACBCA;
+		}
+
+		${PREFIX} ._compsTree ._treeNode:hover ._iconHelperSVG,
+		${PREFIX} ._compsTree ._treeNode._selected ._iconHelperSVG {
+			color: #4C7FEE;
 		}
 		
 
@@ -236,6 +284,13 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			padding: 5px 15px;
 			border-radius: 6px;
 			border: none;
+		}
+
+		${PREFIX} ._filterBar input {
+			width: 100%;
+			height: 38px;
+			border: 0.8px solid #E9ECEF;
+			border-radius: 2px;
 		}
 
 		textarea._peInput {
@@ -379,16 +434,16 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 		
 
-		${PREFIX} button:hover, ${PREFIX} select:hover, ${PREFIX} ._iconMenuOption:hover,
+		${PREFIX} button:hover, ${PREFIX} select:hover,
+		${PREFIX} ._iconMenuOption:hover,
 		._popupButtons button:hover {
 			background-color: rgba(77, 127, 238, 0.05);
-    		color: #96A1B4;
+    		color: #4C7FEE;
 		}
 
-		._popupMenuBackground ._popupMenuItem:hover, ._popupMenuBackground ._popupMenuItem.active {
-			color: #08705C;
-			background: linear-gradient(90deg, rgba(8, 112, 92, 0.2) 0%, rgba(248, 250, 251, 0) 93.35%);
-			border-radius: 2px;
+		${PREFIX} ._iconMenuBody ._iconMenuOption:hover i.fa,
+		${PREFIX} ._iconMenuBody ._iconMenuOption:hover svg._iconHelperSVG {
+			color: #4C7FEE;
 		}
 
 		${PREFIX} i.fa {
@@ -414,7 +469,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			cursor: pointer;
 		}
 
-		${PREFIX} ._iconMenuBody ._iconMenuOption i.fa{
+		${PREFIX} ._iconMenuBody ._iconMenuOption i.fa,
+		${PREFIX} ._iconMenuBody ._iconMenuOption svg._iconHelperSVG {
 			color: #96A1B4;
 		}
 
@@ -422,9 +478,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			position: absolute;
 			background-color: #fff;
 			font-size: 12px;
-			box-shadow: 2px 2px 5px #ccc;
+			font-family: Inter;
+			box-shadow: 0px 1px 4px 0px #00000026;
 			display: none;
-			border-radius: 2px;
+			border-radius: 4px;
 			z-index: 1;
 			transform: translateX(40px);
 			font-weight: normal;
@@ -834,8 +891,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._simpleEditorIcons ._eachIcon {
 			cursor: pointer;
-			
-			height: 30px;
 			display: flex;
 			justify-content: center;
 			align-items: center;
@@ -1104,7 +1159,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			flex-direction: row;
 			align-items: center;			
-			padding: 5px 20px;
+			padding: 5px 15px;
 			gap: 3px;
 			width: 100%;
 		}
@@ -1151,6 +1206,62 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._combineEditors._top {
 			align-items: flex-start;
+		}
+
+		._detailStyleEditor {
+			min-width: 250px;
+			width: 250px;
+			min-height: 400px;
+			background-color: #FFF;
+			box-shadow: 0px 2px 15px 0px #0000001A;
+			border: 1px solid #00000029;
+			position: fixed;
+			z-index: 4;
+			border-radius: 4px;
+			display: flex;
+			flex-direction: column;
+		}
+
+		._detailStyleEditor ._header {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+			padding: 10px;
+			border-bottom: 1px solid #0000000F;
+			background-color: #F8FAFB;
+			font-family: Inter;
+			font-size: 11px;
+			font-weight: 600;
+			line-height: 12px;
+			color: #000000;
+			border-top-left-radius: 4px;
+			border-top-right-radius: 4px;
+			padding-left: 20px;			
+			cursor: move;
+		}
+
+		._detailStyleEditor ._header ._title {
+			flex: 1;
+		}
+
+		._detailStyleEditor ._header ._close {
+			cursor: pointer;
+		}
+
+		._detailStyleEditor ._editorContent {
+			padding-top: 10px;
+			padding-bottom: 10px;
+			white-space: nowrap;
+		}
+
+		._detailStyleEditor ._simpleLabel {
+			font-size: 12px;
+			font-family: Inter;
+			color: #222222B2;
+			white-space: nowrap;
+			padding-left: 15px;
+			padding-right: 15px;
 		}
 
 		${PREFIX} ._buttonBar._screenSizes {
@@ -1645,7 +1756,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			font-family: Inter;
 			font-size: 13px;			
 			color: #888;
-			padding: 10px 20px;
+			padding: 14px 20px;
 			cursor: pointer;
 			border-radius: 3px;
 			display: flex;
@@ -1657,13 +1768,17 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._propertyGroupHeaderStar {
 			fill: #52BD94;
+			transform: scale(1.4);
 		}
 
 		._propertyGroupHeaderIcon {
 			flex: 1;
+			display: flex;
+			flex-direction: row;
+			gap: 15px;
 			font-size: 20px;
 			font-weight: 200;
-			text-align: right;
+			justify-content: flex-end;
 		}
 
 		._propertyGroup._closed ._propertyGroupHeader {
@@ -1677,6 +1792,18 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._propertyGroup._closed i.fa {
 			transform: rotate(-90deg);
+		}
+
+		._propertyGroup ._detailsSwitchEditor {
+			display: flex;
+			justify-content: flex-end;
+			align-items: center;
+			color: #333333;
+		}
+
+		._propertyGroup ._detailsSwitchEditor._open,
+		._propertyGroup ._detailsSwitchEditor:hover {
+			color: #2680EB;
 		}
 
 		${PREFIX} ._multiValueEditor {
@@ -1992,7 +2119,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		._popupMenuBackground ._popupMenuContainer {
-			box-shadow: 0px 1px 8px 0px #00000020;
+			box-shadow: 0px 1px 10px 0px #0000001A;
 			display: flex;
 			flex-direction: column;
 			background-color: #fff;
@@ -2032,6 +2159,15 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex: 1;
 		}
 
+		._popupMenuBackground ._popupMenuContainer ._elementsBarContainer i.fa {
+			font-size: 12px;
+		}
+
+		._popupMenuBackground ._popupMenuContainer ._elementsBarContainer ._iconHelperSVG {
+			color: #96A1B4;
+			min-width: 16px;
+		}
+
 		._popupMenuBackground ._popupMenuContainer ._elementsBarContainer ._popupMenu {
 			background-color: #F8FAFB;
 		}
@@ -2059,7 +2195,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			cursor: pointer;
 		}
 
-		._popupMenuBackground ._popupMenuContainer ._compTemplateSections ._eachTemplateSection:hover, ._popupMenuBackground ._popupMenuContainer ._compTemplateSections ._eachTemplateSection._active {
+		._popupMenuBackground ._popupMenuContainer ._compTemplateSections ._eachTemplateSection:hover,
+		._popupMenuBackground ._popupMenuContainer ._compTemplateSections ._eachTemplateSection._active {
 			background: linear-gradient(90deg, rgba(8, 112, 92, 0.2) 0%, rgba(248, 250, 251, 0) 93.35%);
 			color: #08705C;
 		}
@@ -2086,14 +2223,66 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			padding-top: 5px;
 		}
 
+		._popupMenuBackground ._contextMenu { 
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+			overflow: auto;
+			padding-top: 5px;
+			border-left: 1px solid #52BD94;
+			border-radius: 4px;
+		}
+
 		._popupMenuBackground ._popupMenuSeperator {
 			height: 0px;
-			border: 1px solid #aaa;
-			margin: 1px;
 		}
 
 		._popupMenuBackground ._popupMenuItem {
 			border-radius: 2px;
+		}
+
+		._popupMenuBackground ._contextMenu ._popupMenuItem {
+			border-radius: 1px;
+			padding: 8px 13px;
+			color: #333333;
+			cursor: pointer;
+		}
+
+		._popupMenuBackground ._popupMenuItem:hover,
+		._popupMenuBackground ._popupMenuItem.active {
+			color: #08705C;
+			background: linear-gradient(90deg, rgba(8, 112, 92, 0.2) 0%, rgba(248, 250, 251, 0) 93.35%);
+			border-radius: 2px;
+		}
+
+		._popupMenuBackground ._popupMenuItem:hover i.fa,
+		._popupMenuBackground ._popupMenuItem.active i.fa,
+		._popupMenuBackground ._popupMenuItem:hover ._iconHelperSVG ,
+		._popupMenuBackground ._popupMenuItem.active ._iconHelperSVG  {
+			color: #08705C;
+		}
+
+		._popupMenuBackground ._contextMenu ._popupMenuItem:hover {
+			background: #00000005;
+			color: #52BD94;
+		}
+
+		._popupMenuBackground ._contextMenu ._popupMenuItem:hover i.fa {
+			color: #52BD94;
+		}
+
+		._popupMenuBackground ._contextMenu ._iconHelperSVG {
+			color: #CACBCA;
+			width: 16px;
+			height: 16px;
+		}
+
+		._popupMenuBackground ._contextMenu ._popupMenuItem:hover ._iconHelperSVG {
+			color: #52BD94;
+		}
+
+		._popupMenuBackground ._contextMenu i.fa {
+			color: #CACBCA;
 		}
 
 		._propertyContent {
