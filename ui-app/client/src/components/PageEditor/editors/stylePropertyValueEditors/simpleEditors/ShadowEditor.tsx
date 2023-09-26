@@ -1,6 +1,6 @@
 import { duplicate, isNullValue } from '@fincity/kirun-js';
 import React, { useMemo } from 'react';
-import { PixelSize } from './PixelSize';
+import { PixelSize } from './SizeSliders';
 import { ColorSelector } from './ColorSelector';
 import { IconsSimpleEditor } from './IconsSimpleEditor';
 
@@ -134,45 +134,6 @@ export function ShadowEditor({
 
 	return (
 		<div className="_simpleEditorShadow">
-			<div className="_label">
-				{type === ShadowEditorType.BoxShadow ? 'Box Shadow :' : 'Text Shadow :'}
-				<IconsSimpleEditor
-					selected={''}
-					onChange={v => {
-						const shadow = createShadowString(shadows, type);
-						if (shadow) {
-							onChange(shadow + ', 0px 0px #000000');
-						}
-					}}
-					withBackground={false}
-					options={[
-						{
-							name: 'Add',
-							description: 'Add a new shadow',
-							width: '10',
-							height: '10',
-							icon: (
-								<>
-									<path
-										id="Path_142"
-										data-name="Path 142"
-										d="M14.614,20v1.234H5V20Z"
-										transform="translate(25.424 -5) rotate(90)"
-										fill="#e9ebef"
-									/>
-									<path
-										id="Path_143"
-										data-name="Path 143"
-										d="M14.614,20v1.234H5V20Z"
-										transform="translate(-5 -15.81)"
-										fill="#e9ebef"
-									/>
-								</>
-							),
-						},
-					]}
-				/>
-			</div>
 			{shadows.map((e, i) => (
 				<div key={makeKey(e, type) + '_' + i} className="_eachShadowEditor">
 					<div className="_color_controls">
@@ -194,6 +155,13 @@ export function ShadowEditor({
 						<IconsSimpleEditor
 							selected={''}
 							onChange={v => {
+								if (v === 'Add') {
+									const shadow = createShadowString(shadows, type);
+									if (shadow) {
+										onChange(shadow + ', 0px 0px #000000');
+									}
+									return;
+								}
 								if (v === 'Delete') {
 									const newShadows = duplicate(shadows);
 									newShadows.splice(i, 1);
@@ -230,29 +198,21 @@ export function ShadowEditor({
 							withBackground={false}
 							options={[
 								{
-									name: 'Move Up',
-									description: 'Move this shadow up',
-									width: '10',
-									height: '11',
+									name: 'Add',
+									description: 'Add a new shadow',
+									width: '20',
+									height: '10',
 									icon: (
 										<>
 											<path
-												id="Path_142"
-												data-name="Path 142"
 												d="M14.614,20v1.234H5V20Z"
-												transform="translate(25.319 -3.84) rotate(90)"
+												transform="translate(30.424 -5) rotate(90)"
+												fillOpacity="0.25"
 											/>
 											<path
-												id="Path_143"
-												data-name="Path 143"
-												d="M8.866,20v1.234l-3.738.017V20.017Z"
-												transform="translate(15.276 -17.711) rotate(45)"
-											/>
-											<path
-												id="Path_144"
-												data-name="Path 144"
-												d="M3.849,1.234V0L.047-.028V1.206Z"
-												transform="translate(5.594 0.839) rotate(135)"
+												d="M14.614,20v1.234H5V20Z"
+												transform="translate(0 -15.81)"
+												fillOpacity="0.25"
 											/>
 										</>
 									),
@@ -260,40 +220,46 @@ export function ShadowEditor({
 								{
 									name: 'Move Down',
 									description: 'Move this shadow down',
-									width: '13',
-									height: '11',
+									width: '20',
+									height: '14',
 									icon: (
 										<>
 											<path
-												id="Path_142"
-												data-name="Path 142"
-												d="M9.614,1.234V0H0V1.234Z"
-												transform="translate(4.085 9.614) rotate(-90)"
-											/>
-											<path
-												id="Path_143"
-												data-name="Path 143"
-												d="M3.737,1.251V.017L0,0V1.234Z"
-												transform="translate(3.876 9.831) rotate(-45)"
-											/>
-											<path
-												id="Path_144"
-												data-name="Path 144"
-												d="M3.8,0V1.234L0,1.262V.028Z"
-												transform="translate(4.688 10.774) rotate(-135)"
+												d="M4.32643 1C4.06219 1 3.84856 1.21363 3.84856 1.47786V11.3753L1.81342 9.35418C1.62509 9.16866 1.32432 9.16866 1.13879 9.35699C0.95327 9.54533 0.95327 9.8461 1.1416 10.0316L3.98911 12.8623C4.08187 12.955 4.20274 13 4.32643 13C4.45011 13 4.57098 12.955 4.66374 12.8623L7.51406 10.0316C7.70239 9.8461 7.70239 9.54252 7.51687 9.35699C7.33134 9.16866 7.02776 9.16866 6.84224 9.35418L4.80429 11.3753V1.47786C4.80429 1.21644 4.59066 1 4.32643 1Z"
+												fillOpacity="0.25"
+												transform="translate(6,0)"
 											/>
 										</>
 									),
 								},
 								{
-									name: 'Delete',
-									description: 'Delete this shadow',
-									width: '10',
-									height: '11',
+									name: 'Move Up',
+									description: 'Move this shadow up',
+									width: '20',
+									height: '14',
 									icon: (
 										<>
-											<path d="M9.29119 1.09029H5.88995V0.983634C5.88995 0.438487 5.45146 0 4.90632 0C4.36117 0 3.92268 0.438487 3.92268 0.983634V1.09029H0.521444C0.23702 1.09029 0 1.32731 0 1.61174C0 1.89616 0.23702 2.13318 0.521444 2.13318H9.29119C9.57561 2.13318 9.81263 1.89616 9.81263 1.61174C9.81263 1.32731 9.57561 1.09029 9.29119 1.09029Z" />
-											<path d="M8.91185 2.84424H0.900574C0.793915 2.84424 0.710958 2.93905 0.722809 3.04571L1.63534 10.3341C1.70644 10.8555 2.14493 11.2585 2.67822 11.2585H7.1342C7.6675 11.2585 8.10599 10.8674 8.17709 10.3341L9.08962 3.04571C9.10147 2.93905 9.01851 2.84424 8.91185 2.84424Z" />
+											<path
+												d="M3.98268 13C3.71844 13 3.50481 12.7864 3.50481 12.5221V2.62474L1.46967 4.64582C1.28134 4.83134 0.980567 4.83134 0.795043 4.64301C0.60952 4.45467 0.60952 4.1539 0.797854 3.96838L3.64536 1.13774C3.73812 1.04497 3.85899 1 3.98268 1C4.10636 1 4.22723 1.04497 4.31999 1.13774L7.17031 3.96838C7.35864 4.1539 7.35864 4.45748 7.17312 4.64301C6.98759 4.83134 6.68401 4.83134 6.49849 4.64582L4.46054 2.62474V12.5221C4.46054 12.7836 4.24691 13 3.98268 13Z"
+												fillOpacity="0.25"
+												transform="translate(2,0)"
+											/>
+										</>
+									),
+								},
+
+								{
+									name: 'Delete',
+									description: 'Delete this shadow',
+									width: '13',
+									height: '14',
+									icon: (
+										<>
+											<path
+												d="M3.93393 0.483984L3.74107 0.875H1.16964C0.695536 0.875 0.3125 1.26602 0.3125 1.75C0.3125 2.23398 0.695536 2.625 1.16964 2.625H11.4554C11.9295 2.625 12.3125 2.23398 12.3125 1.75C12.3125 1.26602 11.9295 0.875 11.4554 0.875H8.88393L8.69107 0.483984C8.54643 0.185938 8.24911 0 7.925 0H4.7C4.37589 0 4.07857 0.185938 3.93393 0.483984ZM11.4554 3.5H1.16964L1.7375 12.7695C1.78036 13.4613 2.34286 14 3.02054 14H9.60446C10.2821 14 10.8446 13.4613 10.8875 12.7695L11.4554 3.5Z"
+												fillOpacity="0.25"
+												strokeWidth="0"
+											/>
 										</>
 									),
 								},

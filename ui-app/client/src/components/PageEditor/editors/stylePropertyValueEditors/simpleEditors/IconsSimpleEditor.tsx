@@ -7,6 +7,7 @@ export type IconOptions = Array<{
 	description?: string;
 	width?: string;
 	height?: string;
+	viewBox?: string;
 }>;
 
 export function IconsSimpleEditor({
@@ -61,7 +62,9 @@ export function IconsSimpleEditor({
 						<svg
 							width={e.width ?? '32'}
 							height={e.height ?? '32'}
-							viewBox={`0 0 ${e.width ?? '32'} ${e.height ?? '32'}`}
+							viewBox={
+								e.viewBox ? e.viewBox : `0 0 ${e.width ?? '32'} ${e.height ?? '32'}`
+							}
 							fill="none"
 							xmlns="http://www.w3.org/2000/svg"
 							className={activeClass}
