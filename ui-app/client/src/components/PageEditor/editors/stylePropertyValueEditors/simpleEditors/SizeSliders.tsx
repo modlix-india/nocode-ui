@@ -15,8 +15,79 @@ export function PixelSize({
 	min?: number;
 	max?: number;
 }) {
+	return (
+		<GenericRangeSlider
+			value={value}
+			onChange={onChange}
+			placeholder={placeholder}
+			min={min}
+			max={max}
+			unitOptions={[
+				{ name: 'px', displayName: 'px' },
+				{ name: 'vw', displayName: 'vw' },
+				{ name: 'vh', displayName: 'vh' },
+				{ name: 'vmin', displayName: 'vmin' },
+				{ name: 'vmax', displayName: 'vmax' },
+				{ name: '%', displayName: '%' },
+				{ name: 'em', displayName: 'em' },
+				{ name: 'rem', displayName: 'rem' },
+				{ name: 'cm', displayName: 'cm' },
+				{ name: 'mm', displayName: 'mm' },
+				{ name: 'in', displayName: 'in' },
+				{ name: 'pt', displayName: 'pt' },
+				{ name: 'pc', displayName: 'pc' },
+				{ name: 'ex', displayName: 'ex' },
+				{ name: 'ch', displayName: 'ch' },
+			]}
+		/>
+	);
+}
+
+export function TimeSize({
+	value = '',
+	onChange,
+	placeholder,
+	min,
+	max,
+}: {
+	value: string;
+	onChange: (v: string) => void;
+	placeholder?: string;
+	min?: number;
+	max?: number;
+}) {
+	return (
+		<GenericRangeSlider
+			value={value}
+			onChange={onChange}
+			placeholder={placeholder}
+			min={min ?? 0}
+			max={max ?? value?.toLowerCase()?.endsWith('ms') ? 10000 : 10}
+			unitOptions={[
+				{ name: 's', displayName: 'Sec' },
+				{ name: 'ms', displayName: 'MS' },
+			]}
+		/>
+	);
+}
+
+function GenericRangeSlider({
+	value = '',
+	onChange,
+	placeholder,
+	min = 0,
+	max = 100,
+	unitOptions,
+}: {
+	value: string;
+	onChange: (v: string) => void;
+	placeholder?: string;
+	min?: number;
+	max?: number;
+	unitOptions: { name: string; displayName: string }[];
+}) {
 	let num = '';
-	let unit = 'px';
+	let unit = unitOptions[0].name;
 
 	if (value) {
 		num = value.replace(/[a-zA-Z% ]/g, '');
@@ -73,23 +144,8 @@ export function PixelSize({
 				<Dropdown
 					value={unit}
 					onChange={v => onChange(num + v)}
-					options={[
-						{ name: 'px', displayName: 'px' },
-						{ name: 'vw', displayName: 'vw' },
-						{ name: 'vh', displayName: 'vh' },
-						{ name: 'vmin', displayName: 'vmin' },
-						{ name: 'vmax', displayName: 'vmax' },
-						{ name: '%', displayName: '%' },
-						{ name: 'em', displayName: 'em' },
-						{ name: 'rem', displayName: 'rem' },
-						{ name: 'cm', displayName: 'cm' },
-						{ name: 'mm', displayName: 'mm' },
-						{ name: 'in', displayName: 'in' },
-						{ name: 'pt', displayName: 'pt' },
-						{ name: 'pc', displayName: 'pc' },
-						{ name: 'ex', displayName: 'ex' },
-						{ name: 'ch', displayName: 'ch' },
-					]}
+					options={unitOptions}
+					showNoneLabel={false}
 				/>
 			</div>
 		</div>
