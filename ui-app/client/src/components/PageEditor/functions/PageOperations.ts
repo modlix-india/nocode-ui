@@ -1043,7 +1043,7 @@ function recursivelyFindNavigableChildren(
 	navigableChildren: Set<string>,
 ) {
 	navigableChildren.add(componentKey);
-	for (let childKey of Object.keys(componentDefinition[componentKey].children ?? {})) {
+	for (let childKey of Object.keys(componentDefinition[componentKey]?.children ?? {})) {
 		recursivelyFindNavigableChildren(childKey, componentDefinition, navigableChildren);
 	}
 }

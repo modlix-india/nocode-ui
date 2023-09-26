@@ -14,7 +14,7 @@ import { PageOperations } from '../../../functions/PageOperations';
 
 import { DropdownOptions, Dropdown } from './Dropdown';
 import { IconOptions, IconsSimpleEditor } from './IconsSimpleEditor';
-import { PixelSize } from './PixelSize';
+import { PixelSize } from './SizeSliders';
 import { ColorSelector } from './ColorSelector';
 import { ShadowEditor, ShadowEditorType } from './ShadowEditor';
 
@@ -250,7 +250,77 @@ export function valueChanged({
 	saveStyle: (newStyleProps: ComponentStyle) => void;
 	iterateProps: any;
 }) {
-	if (!properties) return;
+	const updatedStyle = propUpdate({
+		styleProps,
+		properties,
+		screenSize,
+		actualProp,
+		value,
+		compProp,
+		pseudoState,
+		iterateProps,
+	});
+
+	if (!updatedStyle) return;
+	saveStyle(updatedStyle);
+}
+
+export function valuesChanged({
+	styleProps,
+	properties,
+	screenSize,
+	propValues,
+	pseudoState,
+	saveStyle,
+	iterateProps,
+}: {
+	styleProps: ComponentStyle | undefined;
+	properties: [string, EachComponentStyle] | undefined;
+	screenSize: StyleResolution;
+	pseudoState: string;
+	saveStyle: (newStyleProps: ComponentStyle) => void;
+	iterateProps: any;
+	propValues: { actualProp: string; value: any; compProp: string }[];
+}) {
+	const updatedStyle = propValues.reduce(
+		(updatedStyle, { actualProp, value, compProp }) =>
+			propUpdate({
+				styleProps: updatedStyle,
+				properties,
+				screenSize,
+				actualProp,
+				value,
+				compProp,
+				pseudoState,
+				iterateProps,
+			}),
+		styleProps,
+	);
+
+	if (!updatedStyle) return;
+	saveStyle(updatedStyle);
+}
+
+function propUpdate({
+	styleProps,
+	properties,
+	screenSize,
+	actualProp,
+	value,
+	compProp,
+	pseudoState,
+	iterateProps,
+}: {
+	styleProps: ComponentStyle | undefined;
+	properties: [string, EachComponentStyle] | undefined;
+	screenSize: StyleResolution;
+	actualProp: string;
+	value: any;
+	compProp: string;
+	pseudoState: string;
+	iterateProps: any;
+}): ComponentStyle | undefined {
+	if (!properties) return styleProps;
 
 	const newProps = duplicate(styleProps) as ComponentStyle;
 
@@ -272,5 +342,5 @@ export function valueChanged({
 		newProps[properties[0]].resolutions![screenSize]![actualProp] = value;
 	}
 
-	saveStyle(newProps);
+	return newProps;
 }
