@@ -268,7 +268,6 @@ export function valueChanged({
 export function valuesChanged({
 	styleProps,
 	properties,
-	screenSize,
 	propValues,
 	pseudoState,
 	saveStyle,
@@ -276,14 +275,13 @@ export function valuesChanged({
 }: {
 	styleProps: ComponentStyle | undefined;
 	properties: [string, EachComponentStyle] | undefined;
-	screenSize: StyleResolution;
 	pseudoState: string;
 	saveStyle: (newStyleProps: ComponentStyle) => void;
 	iterateProps: any;
-	propValues: { actualProp: string; value: any; compProp: string }[];
+	propValues: { actualProp: string; screenSize: StyleResolution; value: any; compProp: string }[];
 }) {
 	const updatedStyle = propValues.reduce(
-		(updatedStyle, { actualProp, value, compProp }) =>
+		(updatedStyle, { actualProp, value, screenSize, compProp }) =>
 			propUpdate({
 				styleProps: updatedStyle,
 				properties,

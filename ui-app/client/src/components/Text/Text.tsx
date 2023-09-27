@@ -29,6 +29,7 @@ function Text(props: ComponentProps) {
 			processNewLine,
 			stringFormat,
 			textLength,
+			textColor,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -108,7 +109,7 @@ function Text(props: ComponentProps) {
 	);
 	return (
 		<div
-			className={`comp compText ${textContainer.toLowerCase()}`}
+			className={`comp compText ${textContainer.toLowerCase()} ${textColor}`}
 			style={styleProperties.comp ?? {}}
 			title={originalText}
 		>
