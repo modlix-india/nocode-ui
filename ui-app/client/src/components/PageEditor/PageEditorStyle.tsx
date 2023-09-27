@@ -944,9 +944,11 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._simpleEditorIcons ._eachIcon:hover svg path,
 		._simpleEditorIcons ._eachIcon:hover svg circle,
 		._simpleEditorIcons ._eachIcon:hover svg rect,
+		._simpleEditorIcons ._eachIcon:hover svg line,
 		._simpleEditorIcons ._eachIcon._active svg path,
 		._simpleEditorIcons ._eachIcon._active svg circle,
-		._simpleEditorIcons ._eachIcon._active svg rect {
+		._simpleEditorIcons ._eachIcon._active svg rect,
+		._simpleEditorIcons ._eachIcon._active svg line {
 			fill: #3A8BED;
 			stroke: #3A8BED;
 		}
@@ -1265,6 +1267,33 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border-radius: 4px 4px 0px 0px;
 			color: #FFF;
 			background: linear-gradient(90deg, rgba(67, 178, 255, 0.90) 0%, rgba(82, 189, 148, 0.90) 100%);
+		}
+
+		._simpleEditorGroupTitle ._controls {
+			flex: 1;
+			height: 100%;
+			display: flex;
+			justify-content: flex-end;
+		}
+
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon svg path,
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon svg circle,
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon svg rect,
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon svg line{
+			fill: #FFF;
+			stroke: #FFF
+		}
+
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon:hover svg path,
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon:hover svg circle,
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon:hover svg rect,
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon:hover svg line,
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon._active svg path,
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon._active svg circle,
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon._active svg rect,
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon._active svg line {
+			fill-opacity: 0.5;
+			stroke-opacity: 0.5;
 		}
 
 		._simpleEditorGroup ._simpleEditorGroupContent {

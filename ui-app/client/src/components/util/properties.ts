@@ -790,6 +790,10 @@ export const ANIMATIONS_LIST = [
 		displayName: 'Shake',
 	},
 	{
+		name: '_spin',
+		displayName: 'Spin',
+	},
+	{
 		name: '_swing',
 		displayName: 'Swing',
 	},
@@ -1032,6 +1036,10 @@ export const ANIMATIONS_LIST = [
 	{
 		name: '_zoomOutUp',
 		displayName: 'Zoom Out Up',
+	},
+	{
+		name: '_waitOpacity',
+		displayName: 'Zero Opacity',
 	},
 ];
 
