@@ -363,37 +363,34 @@ const component: Component = {
 			icon: (
 				<IconHelper viewBox="0 0 22 22">
 					<path
-						d="M8.77778 1H1V8.77778H8.77778V1Z"
-						strokeWidth="2"
+						d="M8 1H2C1.44772 1 1 1.44772 1 2V12C1 12.5523 1.44772 13 2 13H8C8.55229 13 9 12.5523 9 12V2C9 1.44772 8.55229 1 8 1Z"
+						fill="currentColor"
+						strokeWidth="0"
 						strokeLinecap="round"
 						strokeLinejoin="round"
-						fillOpacity="0"
-						stroke="currentColor"
+						fillOpacity="0.5"
 					/>
 					<path
-						d="M21.0004 1H13.2227V8.77778H21.0004V1Z"
-						strokeOpacity="0.2"
-						strokeWidth="2"
+						d="M20 9H14C13.4477 9 13 9.44772 13 10V20C13 20.5523 13.4477 21 14 21H20C20.5523 21 21 20.5523 21 20V10C21 9.44772 20.5523 9 20 9Z"
+						fill="currentColor"
+						strokeWidth="0"
 						strokeLinecap="round"
 						strokeLinejoin="round"
-						fillOpacity="0"
-						stroke="currentColor"
 					/>
 					<path
-						d="M21.0004 13.2222H13.2227V20.9999H21.0004V13.2222Z"
-						strokeWidth="2"
+						d="M8 17H2C1.44772 17 1 17.4477 1 18V20C1 20.5523 1.44772 21 2 21H8C8.55229 21 9 20.5523 9 20V18C9 17.4477 8.55229 17 8 17Z"
+						fill="currentColor"
+						strokeWidth="0"
 						strokeLinecap="round"
 						strokeLinejoin="round"
-						fillOpacity="0"
-						stroke="currentColor"
+						fillOpacity="0.5"
 					/>
 					<path
-						d="M8.77778 13.2222H1V20.9999H8.77778V13.2222Z"
-						strokeWidth="2"
+						d="M20 1H14C13.4477 1 13 1.44772 13 2V4C13 4.55228 13.4477 5 14 5H20C20.5523 5 21 4.55228 21 4V2C21 1.44772 20.5523 1 20 1Z"
+						fill="currentColor"
+						strokeWidth="0"
 						strokeLinecap="round"
 						strokeLinejoin="round"
-						fillOpacity="0"
-						stroke="currentColor"
 					/>
 				</IconHelper>
 			),
