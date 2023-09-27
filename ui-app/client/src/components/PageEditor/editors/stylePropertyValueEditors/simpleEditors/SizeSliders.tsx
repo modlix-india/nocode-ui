@@ -8,12 +8,14 @@ export function PixelSize({
 	placeholder,
 	min = 0,
 	max = 100,
+	autofocus = false,
 }: {
 	value: string;
 	onChange: (v: string) => void;
 	placeholder?: string;
 	min?: number;
 	max?: number;
+	autofocus?: boolean;
 }) {
 	return (
 		<GenericRangeSlider
@@ -22,6 +24,7 @@ export function PixelSize({
 			placeholder={placeholder}
 			min={min}
 			max={max}
+			autofocus={autofocus}
 			unitOptions={[
 				{ name: 'px', displayName: 'px' },
 				{ name: 'vw', displayName: 'vw' },
@@ -49,12 +52,14 @@ export function TimeSize({
 	placeholder,
 	min,
 	max,
+	autofocus = false,
 }: {
 	value: string;
 	onChange: (v: string) => void;
 	placeholder?: string;
 	min?: number;
 	max?: number;
+	autofocus?: boolean;
 }) {
 	return (
 		<GenericRangeSlider
@@ -63,6 +68,7 @@ export function TimeSize({
 			placeholder={placeholder}
 			min={min ?? 0}
 			max={max ?? value?.toLowerCase()?.endsWith('ms') ? 10000 : 10}
+			autofocus={autofocus}
 			unitOptions={[
 				{ name: 's', displayName: 'Sec' },
 				{ name: 'ms', displayName: 'MS' },
@@ -78,6 +84,7 @@ function GenericRangeSlider({
 	min = 0,
 	max = 100,
 	unitOptions,
+	autofocus = false,
 }: {
 	value: string;
 	onChange: (v: string) => void;
@@ -85,6 +92,7 @@ function GenericRangeSlider({
 	min?: number;
 	max?: number;
 	unitOptions: { name: string; displayName: string }[];
+	autofocus?: boolean;
 }) {
 	let num = '';
 	let unit = unitOptions[0].name;
@@ -116,6 +124,7 @@ function GenericRangeSlider({
 					value={inNum}
 					placeholder={placeholder}
 					onChange={e => setInNum(e.target.value)}
+					autoFocus={autofocus}
 					onKeyDown={e => {
 						if (e.key === 'Enter') {
 							if (isNaN(Number(inNum)) || inNum == '') onChange(inNum);
