@@ -276,7 +276,7 @@ export function ShadowEditor({
 						}}
 						min={0}
 						max={50}
-						placeholder="hOffset"
+						placeholder="H-Offset"
 					/>
 					<PixelSize
 						value={e.vOffset ?? ''}
@@ -288,7 +288,7 @@ export function ShadowEditor({
 						}}
 						min={0}
 						max={50}
-						placeholder="vOffset"
+						placeholder="V-Offset"
 					/>
 					<PixelSize
 						value={e.blur ?? ''}
@@ -301,7 +301,7 @@ export function ShadowEditor({
 						}}
 						min={0}
 						max={50}
-						placeholder="blur"
+						placeholder="Blur"
 					/>
 					{type === ShadowEditorType.BoxShadow && (
 						<PixelSize
@@ -316,7 +316,7 @@ export function ShadowEditor({
 							}}
 							min={0}
 							max={50}
-							placeholder="spread"
+							placeholder="Spread"
 						/>
 					)}
 					{type === ShadowEditorType.BoxShadow && (
