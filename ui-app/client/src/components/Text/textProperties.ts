@@ -129,7 +129,78 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Process text to show new line characters',
 		defaultValue: false,
 	},
-
+	{
+		name: 'textColor',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Text Color Scheme',
+		description: 'Text Color Scheme',
+		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: '_primaryText',
+		enumValues: [
+			{
+				name: '_primaryText',
+				displayName: 'Primary Text Color',
+				description: 'Primary Text Color.',
+			},
+			{ name: '_subText', displayName: 'SubText Color', description: 'SubText Color.' },
+			{
+				name: '_labelText',
+				displayName: 'Label Text Color',
+				description: 'Label Text color.',
+			},
+			{
+				name: '_paragraphText',
+				displayName: 'Paragraph Text Color',
+				description: 'Paragraph Text Color.',
+			},
+			{
+				name: '_lightPrimaryText',
+				displayName: 'Light Primary Text Color',
+				description: 'Light Primary Text Color',
+			},
+			{
+				name: '_lightSubText',
+				displayName: 'Light SubText Color',
+				description: 'Light SubText Color',
+			},
+			{
+				name: '_lightLabelText',
+				displayName: 'Light Label Text Color',
+				description: 'Light Label Text Color',
+			},
+			{
+				name: '_lightParagraphText',
+				displayName: 'Light Paragraph Text Color',
+				description: 'Light Paragraph Text Color',
+			},
+			{
+				name: '_coloredText1',
+				displayName: 'Coloured Text Color 1',
+				description: 'Coloured Text Color 1',
+			},
+			{
+				name: '_coloredText2',
+				displayName: 'Coloured Text Color 2',
+				description: 'Coloured Text Color 2',
+			},
+			{
+				name: '_coloredText3',
+				displayName: 'Coloured Text Color 3',
+				description: 'Coloured Text Color 3',
+			},
+			{
+				name: '_coloredText4',
+				displayName: 'Coloured Text Color 4',
+				description: 'Coloured Text Color 4',
+			},
+			{
+				name: '_coloredText5',
+				displayName: 'Coloured Text Color 5',
+				description: 'Coloured Text Color 5',
+			},
+		],
+	},
 	{
 		name: 'textContainer',
 		schema: SCHEMA_STRING_COMP_PROP,

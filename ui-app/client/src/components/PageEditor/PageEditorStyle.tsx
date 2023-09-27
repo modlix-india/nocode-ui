@@ -943,7 +943,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		._simpleEditorColorSelector {
-			background: linear-gradient(to right,red 0,#ff0 16.66%,#0f0 33.33%,#0ff 50%,#00f 66.66%,#f0f 83.33%,red 100%);
+			background: linear-gradient(90deg, #35F803 -26.56%, #4D7FEE 26.55%, #F9A71E 69.94%, #35F803 126.56%);
 			width: 20px;
 			height: 20px;
 			border-radius: 50%;
@@ -1136,18 +1136,152 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			width: 100%;
 		}
 
-		._simpleEditorShadow ._label {
+		._simpleEditor._warning{
+			font-size: 11px;
+			font-family: Inter;
+			color: #FFCC00;
+			padding: 5px 15px;
+			
+		}
+
+		._simpleEditorBigSelector {
+			padding: 5px 15px;
+		}
+
+		._simpleEditorBigSelector ._searchBox {
+			height: 35px;
+			display: flex;
+			align-items: center;
+			border: 0.5px solid #DFE1E2;
+			background-color: #F8FAFB;
+			border-radius: 6px;
+			padding: 0px 10px;
+		}
+
+		._simpleEditorBigSelector input {
+			border: none;
+			height: 100%;
+			font-family: Inter;
+			font-size: 12px;
+			border: none;
+			background: transparent;
+			flex: 1;
+			outline: none;
+		}
+
+		._simpleEditorControls {
 			display: flex;
 			flex-direction: row;
-			justify-content: space-between;
 			align-items: center;
+			gap: 5px;
 			width: 100%;
-			color: #222222B2;
+		}
+
+		._simpleEditorBigSelector ._searchResult {
+			display: grid;
+			grid-template-columns: 1fr 1fr 1fr;
+			padding: 5px 0px;
+			flex-direction: row;
+			gap: 10px;
+			flex-wrap: wrap;
+			max-height: 400px;
+			overflow: auto;
+			margin-top: 15px;
+		}
+
+		._simpleEditorBigSelector ._searchResult ._searchResultItem {
+			display: flex;
+			flex-direction: column;
+			cursor: pointer;
+		}
+
+		._simpleEditorBigSelector ._searchResult ._searchResultItem ._animationIcon {
+			width: 66px;
+			height: 66px;
+			border-radius: 4px;
+			background: #CFCFD81A;
+			border-radius: 4px;
+			display: flex;
+			justify-content: center;
 			align-items: center;
-			text-transform: capitalize;
+		}
+
+		._searchResultItem ._animationIcon ._hovered {
+			display: none;
+		}
+
+		._searchResultItem:hover ._animationIcon ._default,
+		._searchResultItem._selected ._animationIcon ._default {
+			display: none;
+		}
+
+		._searchResultItem ._animationIcon ._default {
+			display: block;
+		}
+
+		._searchResultItem:hover ._animationIcon ._hovered,
+		._searchResultItem._selected ._animationIcon ._hovered {
+			display: block;
+		}
+
+		._simpleEditorBigSelector ._searchResult ._searchResultItem ._animationName {
+			font-size: 11px;
+			font-weight: 500;
+			font-family: Asap;
+			text-align: center;
+		}
+
+		._simpleEditorBigSelector ._searchResult ._searchResultItem:hover ._animationName {
+			color: #4FBBB2;
+		}
+
+		._simpleEditorGroup {
+			padding: 15px;
+		}
+
+		._simpleEditorGroupTitle {
 			font-family: Inter;
-			white-space: nowrap;
 			font-size: 12px;
+			font-weight: 600;
+			line-height: 14px;
+			padding: 5px 10px;
+			border-radius: 4px 4px 0px 0px;
+			background: #F8FAFB;
+			height: 30px;
+			display: flex;
+			align-items: center;
+		}
+
+		._simpleEditorGroupTitle._gradient {
+			border-radius: 4px 4px 0px 0px;
+			color: #FFF;
+			background: linear-gradient(90deg, rgba(67, 178, 255, 0.90) 0%, rgba(82, 189, 148, 0.90) 100%);
+		}
+
+		._simpleEditorGroup ._simpleEditorGroupContent {
+			padding: 10px;
+			border-radius: 0px 0px 4px 4px;
+			background: rgba(248, 250, 251, 0.60);
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+			justify-content: center;
+			align-items: center;
+		}
+
+		._simpleEditorGroupContent ._editorLine {
+			width: 100%;
+			display: flex;
+			justify-content: flex-start;
+			align-items: center;
+			gap: 5px;
+		}
+
+		._simpleEditorGroupContent ._editorLine ._label {
+			color: #33333399;
+			font-family: Inter;
+			font-size: 12px;
+			font-weight: 500;
 		}
 
 		._svgButton {
@@ -1162,6 +1296,16 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			padding: 5px 15px;
 			gap: 3px;
 			width: 100%;
+		}
+
+		._detailStyleEditor ._combineEditors ._simpleLabel {
+			padding: 0px;
+			padding-right: 5px;
+			flex: 1;
+		}
+
+		._detailStyleEditor ._combineEditors ._simpleEditor {
+			width: auto;
 		}
 
 		._combineEditors ._onePart {
@@ -1253,15 +1397,19 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			padding-top: 10px;
 			padding-bottom: 10px;
 			white-space: nowrap;
+			gap: 10px;
+			display: flex;
+			flex-direction: column;
 		}
 
 		._detailStyleEditor ._simpleLabel {
 			font-size: 12px;
 			font-family: Inter;
-			color: #222222B2;
+			color: #000000;
 			white-space: nowrap;
 			padding-left: 15px;
 			padding-right: 15px;
+			font-weight: 500;
 		}
 
 		${PREFIX} ._buttonBar._screenSizes {
