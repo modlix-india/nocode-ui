@@ -85,12 +85,14 @@ export function EachSimpleEditor({
 		case SimpleEditorType.Dropdown:
 			editor = (
 				<Dropdown
-					value={value.value}
+					value={value.value ?? editorDef.dropDownDefaultValue}
 					onChange={editorOnchange}
 					options={editorDef.dropdownOptions!}
 					placeholder={placeholder}
 					multipleValueType={editorDef.multipleValueType}
 					multiSelect={editorDef.multiSelect}
+					showNoneLabel={editorDef.dropDownShowNoneLabel}
+					selectNoneLabel={editorDef.dropdDownSelectNoneLabel}
 				/>
 			);
 			break;
@@ -160,6 +162,9 @@ export enum SimpleEditorType {
 export interface SimpleEditorDefinition {
 	type: SimpleEditorType;
 	dropdownOptions?: DropdownOptions;
+	dropdDownSelectNoneLabel?: string;
+	dropDownShowNoneLabel?: boolean;
+	dropDownDefaultValue?: string | Array<string>;
 	iconButtonOptions?: IconOptions;
 	iconButtonsBackground?: boolean;
 	multiSelect?: boolean;

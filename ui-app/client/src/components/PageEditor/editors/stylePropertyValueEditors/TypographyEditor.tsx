@@ -29,15 +29,10 @@ export function TypographyEditor({
 	pseudoState,
 	iterateProps,
 	appDef,
-	pageDef,
-	editPageName,
-	slaveStore,
-	storePaths,
 	selectorPref,
 	styleProps,
 	selectedComponent,
 	saveStyle,
-	pageOperations,
 	properties,
 	isDetailStyleEditor,
 }: StyleEditorsProps) {
@@ -52,7 +47,7 @@ export function TypographyEditor({
 		return (
 			<>
 				<div className="_simpleLabel">Text Decoration Line :</div>
-				<div className="_combineEditors _spaceBetween" title="Text Decoration">
+				<div className="_combineEditors _alignEnd" title="Text Decoration">
 					<EachSimpleEditor
 						subComponentName={subComponentName}
 						pseudoState={pseudoState}

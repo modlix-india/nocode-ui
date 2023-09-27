@@ -1332,7 +1332,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction: row;
 			align-items: center;			
 			padding: 5px 15px;
-			gap: 3px;
+			gap: 5px;
 			width: 100%;
 		}
 
@@ -1379,6 +1379,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._combineEditors._spaceBetween {
 			justify-content: space-between;
+		}
+
+		._combineEditors._alignEnd {
+			justify-content: flex-end;
 		}
 
 		._combineEditors._vertical {
@@ -1443,14 +1447,17 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			margin-bottom: 5px;
 		}
 
-		._detailStyleEditor ._simpleLabel {
+		._simpleLabel {
 			font-size: 12px;
 			font-family: Inter;
 			color: #000000;
 			white-space: nowrap;
+			font-weight: 500;
+		}
+
+		._detailStyleEditor ._simpleLabel {
 			padding-left: 15px;
 			padding-right: 15px;
-			font-weight: 500;
 		}
 
 		${PREFIX} ._buttonBar._screenSizes {
@@ -1722,8 +1729,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._styleButtonContainer {
 			background: #F8FAFB;
 			border-radius: 6px;
-			margin-left: 20px;
-			margin-right: 20px;
+			margin-left: 15px;
+			margin-right: 15px;
 			height: 45px;
 			position: relative;		
 			padding: 0px 5px;	
@@ -1945,7 +1952,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			font-family: Inter;
 			font-size: 13px;			
 			color: #888;
-			padding: 14px 20px;
+			padding: 14px 15px;
 			cursor: pointer;
 			border-radius: 3px;
 			display: flex;
