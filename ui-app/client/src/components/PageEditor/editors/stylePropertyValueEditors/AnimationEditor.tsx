@@ -1,11 +1,10 @@
-import React, { useCallback } from 'react';
-import { StyleEditorsProps, extractValue, valueChanged, valuesChanged } from './simpleEditors';
-import { IconsSimpleEditor } from './simpleEditors/IconsSimpleEditor';
 import { duplicate } from '@fincity/kirun-js';
+import React from 'react';
 import { ANIMATIONS_LIST } from '../../../util/properties';
+import { StyleEditorsProps, extractValue, valueChanged, valuesChanged } from './simpleEditors';
 import { Dropdown } from './simpleEditors/Dropdown';
+import { IconsSimpleEditor } from './simpleEditors/IconsSimpleEditor';
 import { TimeSize } from './simpleEditors/SizeSliders';
-import { moveDown, moveUp } from '../../../util/arrayUtil';
 
 const ANIMATION_PROPS = [
 	'animationName',
@@ -779,6 +778,7 @@ export function AnimationEditor({
 							value={props.animationDuration[i]}
 							onChange={e => saveAnimation(i, 'animationDuration', e)}
 							placeholder="Duration"
+							autofocus={true}
 						/>
 					</div>
 					<div className="_editorLine">
