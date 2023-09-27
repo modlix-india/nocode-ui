@@ -112,7 +112,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			cursor: pointer;
 			display: flex;
 			align-items: center;
-			height: 30px;
+			height: 34px;
 			flex-shrink: 0;
 			margin:	0px 8px;
 			border-radius: 4px;
@@ -152,11 +152,20 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._compsTree:hover ._treeNodeLevel {
-			border-right: 0.75px dotted #00000026;
+			border-right: 0.75px dotted #00000020;
+		} 
+		${PREFIX} ._compsTree:hover ._treeNode._subComponent:hover ._treeNodeLevel,
+		${PREFIX} ._compsTree:hover ._treeNode._subComponent._selected ._treeNodeLevel {
+			border-right: 0.75px dotted #00000020;
+		}
+
+		${PREFIX} ._compsTree:hover ._treeNode:hover ._treeNodeLevel,
+		${PREFIX} ._compsTree:hover ._treeNode._selected ._treeNodeLevel {
+			border-right: none;
 		} 
 
 		${PREFIX} ._compsTree ._treeNodeLevel._lastOpened {
-			border-right: 0.75px dotted #00000026;
+			border-right: 0.75px dotted #00000020;
 		}
 
 		${PREFIX} ._compsTree ._treeNode i.fa {
@@ -1400,6 +1409,9 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			gap: 10px;
 			display: flex;
 			flex-direction: column;
+			max-height: 500px;
+			overflow: auto;
+			margin-bottom: 5px;
 		}
 
 		._detailStyleEditor ._simpleLabel {
