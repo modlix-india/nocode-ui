@@ -1330,29 +1330,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			background: transparent;
 		}
 
-		._positionKnob #background{
-			fill: #F8FAFB;
-		}
-
-		._positionKnob #knob {
-			fill: #FFF;
-			filter: drop-shadow(0px 0px 3px #0000000D)
-		}
-
-		._positionKnob #left,
-		._positionKnob #top,
-		._positionKnob #right,
-		._positionKnob #bottom {
-			fill: #E3E5EA;
-		}
-
-		._positionKnob._left #left,
-		._positionKnob._top #top,
-		._positionKnob._right #right,
-		._positionKnob._bottom #bottom {
-			fill: #4C7FEE;
-		}
-
 		._combineEditors {
 			display: flex;
 			flex-direction: row;
@@ -1493,6 +1470,143 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			padding-left: 15px;
 			padding-right: 15px;
 		}
+
+		._positionKnob #background{
+			fill: #F8FAFB;
+		}
+
+		._positionKnob #knob {
+			fill: #FFF;
+			filter: drop-shadow(0px 0px 3px #0000000D)
+		}
+
+		._positionKnob #left,
+		._positionKnob #top,
+		._positionKnob #right,
+		._positionKnob #bottom {
+			fill: #E3E5EA;
+		}
+
+		._positionKnob._left #left,
+		._positionKnob._top #top,
+		._positionKnob._right #right,
+		._positionKnob._bottom #bottom {
+			fill: #4C7FEE;
+		}
+
+		._spacingEditor._margin {
+			margin: 0px 15px;
+			position: relative;
+			border-radius: 6px;
+			border: 2px solid #E3E5EA;
+			height: 160px;
+		}
+
+		._spacingEditor._margin._hasValue,
+		._spacingEditor ._padding._hasValue {
+			border-color: #52BD94
+		}
+
+		._spacingEditor ._padding {
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%, -50%);
+			border: 2px solid #E3E5EA;
+			height: 90px;
+			min-width: 60%;
+			border-radius: 6px;
+		}
+
+		._spacingEditor ._label {
+			font-size: 8px;
+			font-family: Inter;
+			color: #D2D3DB;
+			position: absolute;
+			bottom: 2px;
+			right: 6px;
+			text-transform: uppercase;
+			user-select: none;
+		}
+
+		._spacingEditor ._label._hasValue{
+			color: #52BD94;
+		}
+
+		._spacingEditor ._value {
+			height: 25px;
+			min-width: 45px;
+			background: #F8FAFB;
+			border-radius: 4px;
+			font-family: Inter;
+			font-size: 12px;
+			line-height: 12px;
+			color: #000000;
+			position: absolute;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			padding: 4px;
+			cursor: pointer;
+		}
+
+		._spacingEditor ._value._default {
+			color: #D2D3DB;
+		}
+
+		._spacingEditor ._padding ._value {
+			font-size: 10px;
+		}
+
+		._spacingEditor ._square {
+			position: absolute;
+			width: 8px;
+			height: 8px;
+			border-radius: 1px;
+			background-color: #E3E5EA;
+		}
+
+		._spacingEditor ._circle {
+			position: absolute;
+			width: 8px;
+			height: 8px;
+			border-radius: 50%;
+			background-color: #E3E5EA;
+		}
+
+		._spacingEditor ._square._hasValue,
+		._spacingEditor ._circle._hasValue {
+			background-color: #52BD94;
+		}
+
+		._spacingEditor ._top {
+			top: -5px;
+			left: 50%;
+			transform: translateX(-50%);
+		}
+
+		._spacingEditor ._bottom {
+			bottom: -5px;
+			left: 50%;
+			transform: translateX(-50%);
+		}
+
+		._spacingEditor ._left {
+			left: -5px;
+			top: 50%;
+			transform: translateY(-50%);
+		}
+
+		._spacingEditor ._right {
+			right: -5px;
+			top: 50%;
+			transform: translateY(-50%);
+		}
+
+		._spacingEditor ._value._top { top: 5px; }
+		._spacingEditor ._value._bottom { bottom: 5px; }
+		._spacingEditor ._value._left { left: 5px; }
+		._spacingEditor ._value._right { right: 5px; }
 
 		${PREFIX} ._buttonBar._screenSizes {
 			height: 65px;
