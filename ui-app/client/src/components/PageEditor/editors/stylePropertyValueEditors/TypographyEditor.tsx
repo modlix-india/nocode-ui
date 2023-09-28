@@ -29,15 +29,10 @@ export function TypographyEditor({
 	pseudoState,
 	iterateProps,
 	appDef,
-	pageDef,
-	editPageName,
-	slaveStore,
-	storePaths,
 	selectorPref,
 	styleProps,
 	selectedComponent,
 	saveStyle,
-	pageOperations,
 	properties,
 	isDetailStyleEditor,
 }: StyleEditorsProps) {
@@ -52,7 +47,7 @@ export function TypographyEditor({
 		return (
 			<>
 				<div className="_simpleLabel">Text Decoration Line :</div>
-				<div className="_combineEditors _spaceBetween" title="Text Decoration">
+				<div className="_combineEditors _alignEnd" title="Text Decoration">
 					<EachSimpleEditor
 						subComponentName={subComponentName}
 						pseudoState={pseudoState}
@@ -935,7 +930,7 @@ export function TypographyEditor({
 					saveStyle={saveStyle}
 					properties={properties}
 					editorDef={{ type: SimpleEditorType.PixelSize, rangeMin: 0, rangeMax: 200 }}
-					className="_confineWidth"
+					className="_expandWidth"
 				/>
 			</div>
 			<div className="_combineEditors" title="Letter Spacing">
@@ -967,7 +962,7 @@ export function TypographyEditor({
 					saveStyle={saveStyle}
 					properties={properties}
 					editorDef={{ type: SimpleEditorType.PixelSize, rangeMin: 0, rangeMax: 30 }}
-					className="_confineWidth"
+					className="_expandWidth"
 				/>
 			</div>
 		</>
