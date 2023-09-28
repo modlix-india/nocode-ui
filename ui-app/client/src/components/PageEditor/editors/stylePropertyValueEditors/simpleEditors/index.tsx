@@ -64,10 +64,10 @@ export function EachSimpleEditor({
 
 	let editor = undefined;
 	const editorOnchange = (v: string | Array<String> | ComponentProperty<string>) => {
-		let value;
-		if (Array.isArray(v)) value = { value: v, location: { value: v } };
-		else if (typeof v === 'string') value = { value: v, location: { value: v } };
-		else value = v;
+		let newValue;
+		if (Array.isArray(v)) newValue = { value: v, location: value.location };
+		else if (typeof v === 'string') newValue = { value: v, location: value.location };
+		else newValue = v;
 		valueChanged({
 			styleProps,
 			properties,
@@ -77,7 +77,7 @@ export function EachSimpleEditor({
 			pseudoState,
 			saveStyle,
 			iterateProps,
-			value,
+			value: newValue,
 		});
 	};
 
@@ -85,12 +85,14 @@ export function EachSimpleEditor({
 		case SimpleEditorType.Dropdown:
 			editor = (
 				<Dropdown
-					value={value.value}
+					value={value.value ?? editorDef.dropDownDefaultValue}
 					onChange={editorOnchange}
 					options={editorDef.dropdownOptions!}
 					placeholder={placeholder}
 					multipleValueType={editorDef.multipleValueType}
 					multiSelect={editorDef.multiSelect}
+					showNoneLabel={editorDef.dropDownShowNoneLabel}
+					selectNoneLabel={editorDef.dropdDownSelectNoneLabel}
 				/>
 			);
 			break;
@@ -102,6 +104,7 @@ export function EachSimpleEditor({
 					placeholder={placeholder}
 					min={editorDef.rangeMin ?? 0}
 					max={editorDef.rangeMax ?? 100}
+					hideSlider={editorDef.hideSlider}
 				/>
 			);
 			break;
@@ -160,12 +163,16 @@ export enum SimpleEditorType {
 export interface SimpleEditorDefinition {
 	type: SimpleEditorType;
 	dropdownOptions?: DropdownOptions;
+	dropdDownSelectNoneLabel?: string;
+	dropDownShowNoneLabel?: boolean;
+	dropDownDefaultValue?: string | Array<string>;
 	iconButtonOptions?: IconOptions;
 	iconButtonsBackground?: boolean;
 	multiSelect?: boolean;
 	multipleValueType?: SimpleEditorMultipleValueType;
 	rangeMin?: number;
 	rangeMax?: number;
+	hideSlider?: boolean;
 }
 
 export enum SimpleEditorMultipleValueType {

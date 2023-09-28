@@ -9,6 +9,7 @@ export function PixelSize({
 	min = 0,
 	max = 100,
 	autofocus = false,
+	hideSlider = false,
 }: {
 	value: string;
 	onChange: (v: string) => void;
@@ -16,6 +17,7 @@ export function PixelSize({
 	min?: number;
 	max?: number;
 	autofocus?: boolean;
+	hideSlider?: boolean;
 }) {
 	return (
 		<GenericRangeSlider
@@ -25,6 +27,7 @@ export function PixelSize({
 			min={min}
 			max={max}
 			autofocus={autofocus}
+			hideSlider={hideSlider}
 			unitOptions={[
 				{ name: 'px', displayName: 'px' },
 				{ name: 'vw', displayName: 'vw' },
@@ -53,6 +56,7 @@ export function TimeSize({
 	min,
 	max,
 	autofocus = false,
+	hideSlider = false,
 }: {
 	value: string;
 	onChange: (v: string) => void;
@@ -60,6 +64,7 @@ export function TimeSize({
 	min?: number;
 	max?: number;
 	autofocus?: boolean;
+	hideSlider?: boolean;
 }) {
 	return (
 		<GenericRangeSlider
@@ -69,6 +74,7 @@ export function TimeSize({
 			min={min ?? 0}
 			max={max ?? value?.toLowerCase()?.endsWith('ms') ? 10000 : 10}
 			autofocus={autofocus}
+			hideSlider={hideSlider}
 			unitOptions={[
 				{ name: 's', displayName: 'Sec' },
 				{ name: 'ms', displayName: 'MS' },
@@ -85,6 +91,7 @@ function GenericRangeSlider({
 	max = 100,
 	unitOptions,
 	autofocus = false,
+	hideSlider = false,
 }: {
 	value: string;
 	onChange: (v: string) => void;
@@ -93,6 +100,7 @@ function GenericRangeSlider({
 	max?: number;
 	unitOptions: { name: string; displayName: string }[];
 	autofocus?: boolean;
+	hideSlider?: boolean;
 }) {
 	let num = '';
 	let unit = unitOptions[0].name;
@@ -108,8 +116,9 @@ function GenericRangeSlider({
 		setInNum(num);
 	}, [num]);
 
-	return (
-		<div className="_simpleEditorPixelSize">
+	let slider = undefined;
+	if (!hideSlider) {
+		slider = (
 			<RangeSlider
 				value={Number(inNum)}
 				onChange={v => onChange(String(v) + unit)}
@@ -117,6 +126,12 @@ function GenericRangeSlider({
 				max={max}
 				step={1}
 			/>
+		);
+	}
+
+	return (
+		<div className="_simpleEditorPixelSize">
+			{slider}
 			<div className="_inputDropdownContainer">
 				<input
 					tabIndex={0}
