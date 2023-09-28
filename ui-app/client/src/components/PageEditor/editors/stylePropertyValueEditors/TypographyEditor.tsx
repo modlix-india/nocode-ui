@@ -930,7 +930,7 @@ export function TypographyEditor({
 					saveStyle={saveStyle}
 					properties={properties}
 					editorDef={{ type: SimpleEditorType.PixelSize, rangeMin: 0, rangeMax: 200 }}
-					className="_confineWidth"
+					className="_expandWidth"
 				/>
 			</div>
 			<div className="_combineEditors" title="Letter Spacing">
@@ -962,7 +962,7 @@ export function TypographyEditor({
 					saveStyle={saveStyle}
 					properties={properties}
 					editorDef={{ type: SimpleEditorType.PixelSize, rangeMin: 0, rangeMax: 30 }}
-					className="_confineWidth"
+					className="_expandWidth"
 				/>
 			</div>
 		</>

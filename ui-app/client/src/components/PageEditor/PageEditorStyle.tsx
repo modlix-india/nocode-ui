@@ -712,7 +712,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._combineEditors ._simpleEditor {
 			padding: 0px;
-			width: 100%;
+		}
+
+		._combineEditors ._simpleEditor._expandWidth {
+			width: 100%
 		}
 
 		._simpleEditorPixelSize {
@@ -1327,6 +1330,29 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			background: transparent;
 		}
 
+		._positionKnob #background{
+			fill: #F8FAFB;
+		}
+
+		._positionKnob #knob {
+			fill: #FFF;
+			filter: drop-shadow(0px 0px 3px #0000000D)
+		}
+
+		._positionKnob #left,
+		._positionKnob #top,
+		._positionKnob #right,
+		._positionKnob #bottom {
+			fill: #E3E5EA;
+		}
+
+		._positionKnob._left #left,
+		._positionKnob._top #top,
+		._positionKnob._right #right,
+		._positionKnob._bottom #bottom {
+			fill: #4C7FEE;
+		}
+
 		._combineEditors {
 			display: flex;
 			flex-direction: row;
@@ -1379,6 +1405,14 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._combineEditors._spaceBetween {
 			justify-content: space-between;
+		}
+
+		._combineEditors._spaceAround {
+			justify-content: space-around;
+		}
+
+		._combineEditors._centered {
+			justify-content: center;
 		}
 
 		._combineEditors._alignEnd {

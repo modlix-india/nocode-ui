@@ -64,10 +64,10 @@ export function EachSimpleEditor({
 
 	let editor = undefined;
 	const editorOnchange = (v: string | Array<String> | ComponentProperty<string>) => {
-		let value;
-		if (Array.isArray(v)) value = { value: v, location: { value: v } };
-		else if (typeof v === 'string') value = { value: v, location: { value: v } };
-		else value = v;
+		let newValue;
+		if (Array.isArray(v)) newValue = { value: v, location: value.location };
+		else if (typeof v === 'string') newValue = { value: v, location: value.location };
+		else newValue = v;
 		valueChanged({
 			styleProps,
 			properties,
@@ -77,7 +77,7 @@ export function EachSimpleEditor({
 			pseudoState,
 			saveStyle,
 			iterateProps,
-			value,
+			value: newValue,
 		});
 	};
 
@@ -104,6 +104,7 @@ export function EachSimpleEditor({
 					placeholder={placeholder}
 					min={editorDef.rangeMin ?? 0}
 					max={editorDef.rangeMax ?? 100}
+					hideSlider={editorDef.hideSlider}
 				/>
 			);
 			break;
@@ -171,6 +172,7 @@ export interface SimpleEditorDefinition {
 	multipleValueType?: SimpleEditorMultipleValueType;
 	rangeMin?: number;
 	rangeMax?: number;
+	hideSlider?: boolean;
 }
 
 export enum SimpleEditorMultipleValueType {
