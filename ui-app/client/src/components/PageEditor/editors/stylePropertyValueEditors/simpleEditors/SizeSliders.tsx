@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Dropdown } from './Dropdown';
 import { RangeSlider } from './RangeSlider';
+import { on } from 'process';
 
 export function PixelSize({
 	value = '',
@@ -22,7 +23,7 @@ export function PixelSize({
 	return (
 		<GenericRangeSlider
 			value={value}
-			onChange={onChange}
+			onChange={e => onChange(e.endsWith('auto') ? 'auto' : e)}
 			placeholder={placeholder}
 			min={min}
 			max={max}
@@ -35,6 +36,7 @@ export function PixelSize({
 				{ name: 'vmin', displayName: 'vmin' },
 				{ name: 'vmax', displayName: 'vmax' },
 				{ name: '%', displayName: '%' },
+				{ name: 'auto', displayName: 'auto' },
 				{ name: 'em', displayName: 'em' },
 				{ name: 'rem', displayName: 'rem' },
 				{ name: 'cm', displayName: 'cm' },
@@ -107,7 +109,7 @@ function GenericRangeSlider({
 
 	if (value) {
 		num = value.replace(/[a-zA-Z% ]/g, '');
-		unit = value.replace(/[0-9. ]/g, '').toLowerCase();
+		unit = value.replace(/[0-9\-. ]/g, '').toLowerCase();
 	}
 
 	const [inNum, setInNum] = useState(num);

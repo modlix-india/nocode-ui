@@ -1,7 +1,13 @@
 import { duplicate } from '@fincity/kirun-js';
 import React from 'react';
 import { ANIMATIONS_LIST } from '../../../util/properties';
-import { StyleEditorsProps, extractValue, valueChanged, valuesChanged } from './simpleEditors';
+import {
+	StyleEditorsProps,
+	extractValue,
+	valueChanged,
+	valuesChanged,
+	valuesChangedOnlyValues,
+} from './simpleEditors';
 import { Dropdown } from './simpleEditors/Dropdown';
 import { IconsSimpleEditor } from './simpleEditors/IconsSimpleEditor';
 import { TimeSize } from './simpleEditors/SizeSliders';
@@ -940,30 +946,37 @@ export function AnimationEditor({
 									className="_searchResultItem"
 									key={e.name}
 									onClick={() => {
-										const { screenSize, actualProp, compProp } = extractValue({
-											subComponentName,
-											prop: 'animationName',
-											iterateProps,
-											pseudoState,
-											selectorPref,
-											selectedComponent,
-										});
-
-										valueChanged({
+										valuesChangedOnlyValues({
 											styleProps,
 											properties,
-											screenSize,
-											actualProp,
-											value: {
-												value: (props.animationName.length
-													? [...props.animationName, e.name]
-													: [e.name]
-												).join(','),
-											},
-											compProp,
 											pseudoState,
 											saveStyle,
 											iterateProps,
+											propValues: [
+												{
+													prop: 'animationName',
+													value: props.animationName.length
+														? [...props.animationName, e.name].join(',')
+														: e.name,
+												},
+												{
+													prop: 'animationDuration',
+													value: props.animationDuration.length
+														? [...props.animationDuration, '1s'].join(
+																',',
+														  )
+														: '1s',
+												},
+												{
+													prop: 'animationIterationCount',
+													value: props.animationIterationCount.length
+														? [
+																...props.animationIterationCount,
+																'1',
+														  ].join(',')
+														: '1',
+												},
+											],
 										});
 									}}
 								>

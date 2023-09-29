@@ -212,7 +212,7 @@ export function TypographyEditor({
 								fill="none"
 								stroke="#000"
 								stroke-linecap="round"
-								stroke-width="1.5"
+								strokeWidth="1.5"
 							/>
 							<path
 								id="Path_176"
@@ -221,7 +221,7 @@ export function TypographyEditor({
 								fill="none"
 								stroke="#000"
 								stroke-linecap="round"
-								stroke-width="1.5"
+								strokeWidth="1.5"
 							/>
 							<path
 								id="Path_177"
@@ -230,7 +230,7 @@ export function TypographyEditor({
 								fill="none"
 								stroke="#000"
 								stroke-linecap="round"
-								stroke-width="1.5"
+								strokeWidth="1.5"
 							/>
 						</g>
 					</svg>
@@ -262,25 +262,20 @@ export function TypographyEditor({
 						<path
 							d="M6 1L13 1"
 							stroke="#8E90A4"
-							stroke-width="2"
+							strokeWidth="2"
 							stroke-linecap="round"
 						/>
-						<path
-							d="M1 5H13"
-							stroke="#8E90A4"
-							stroke-width="2"
-							stroke-linecap="round"
-						/>
+						<path d="M1 5H13" stroke="#8E90A4" strokeWidth="2" stroke-linecap="round" />
 						<path
 							d="M1 9L13 9"
 							stroke="#8E90A4"
-							stroke-width="2"
+							strokeWidth="2"
 							stroke-linecap="round"
 						/>
 						<path
 							d="M1 13H13"
 							stroke="#8E90A4"
-							stroke-width="2"
+							strokeWidth="2"
 							stroke-linecap="round"
 						/>
 					</svg>

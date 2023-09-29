@@ -272,6 +272,56 @@ export function valueChanged({
 	saveStyle(updatedStyle);
 }
 
+export function valuesChangedOnlyValues({
+	styleProps,
+	properties,
+	propValues,
+	pseudoState,
+	saveStyle,
+	iterateProps,
+}: {
+	styleProps: ComponentStyle | undefined;
+	properties: [string, EachComponentStyle] | undefined;
+	pseudoState: string;
+	saveStyle: (newStyleProps: ComponentStyle) => void;
+	iterateProps: any;
+	propValues: { prop: string; value: string }[];
+}) {
+	const updatedStyle = propValues.reduce((updatedStyle, { prop, value }) => {
+		const {
+			value: oldValue,
+			actualProp,
+			screenSize,
+			compProp,
+		} = extractValue({
+			subComponentName: '',
+			prop,
+			iterateProps,
+			pseudoState,
+			selectorPref: {},
+			selectedComponent: '',
+		});
+
+		const newValue: any = { value };
+
+		if (oldValue.location) newValue.location = oldValue.location;
+
+		return propUpdate({
+			styleProps: updatedStyle,
+			properties,
+			screenSize,
+			actualProp,
+			value: newValue,
+			compProp,
+			pseudoState,
+			iterateProps,
+		});
+	}, styleProps);
+
+	if (!updatedStyle) return;
+	saveStyle(updatedStyle);
+}
+
 export function valuesChanged({
 	styleProps,
 	properties,
