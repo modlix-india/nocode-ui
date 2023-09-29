@@ -1499,7 +1499,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			position: relative;
 			border-radius: 6px;
 			border: 2px solid #E3E5EA;
-			height: 160px;
+			height: 166px;
 		}
 
 		._spacingEditor._margin._hasValue,
@@ -1514,7 +1514,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			transform: translate(-50%, -50%);
 			border: 2px solid #E3E5EA;
 			height: 90px;
-			min-width: 60%;
+			min-width: 58%;
 			border-radius: 6px;
 		}
 
@@ -1531,6 +1531,43 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._spacingEditor ._label._hasValue{
 			color: #52BD94;
+		}
+
+		._spacingEditor ._changer {
+			position: absolute;
+			width: 110%;
+			margin-left: -5%;
+			top: 0;
+			left: 0;
+			cursor: pointer;
+			background-color: #FFFFFF;
+			box-shadow: 2px 2px 4px 0px #0000001A;
+			border-radius: 4px;
+			z-index: 1;
+		}
+
+		._spacingEditor ._changer ._header {
+			font-size: 11px;
+			font-family: Inter;
+			font-weight: 600;
+			color: #000000;
+			user-select: none;
+			padding: 5px;
+			background-color: #F8FAFB;
+			border-top-left-radius: 4px;
+			border-top-right-radius: 4px;
+			border-bottom: 1px solid #0000000F;
+			padding-left: 20px;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			height: 35px;
+		}
+
+		._spacingEditor ._changer ._body {
+			padding: 10px 15px;
+			display: flex;
+			flex-direction: column;
 		}
 
 		._spacingEditor ._value {
@@ -1564,6 +1601,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			height: 8px;
 			border-radius: 1px;
 			background-color: #E3E5EA;
+			opacity: 0.5;
 		}
 
 		._spacingEditor ._circle {
@@ -1572,11 +1610,13 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			height: 8px;
 			border-radius: 50%;
 			background-color: #E3E5EA;
+			opacity: 0.5;
 		}
 
 		._spacingEditor ._square._hasValue,
 		._spacingEditor ._circle._hasValue {
 			background-color: #52BD94;
+			opacity: 1;
 		}
 
 		._spacingEditor ._top {
