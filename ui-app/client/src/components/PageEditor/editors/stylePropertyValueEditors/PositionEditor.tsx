@@ -10,13 +10,11 @@ export function PositionEditor({
 	subComponentName,
 	pseudoState,
 	iterateProps,
-	appDef,
 	selectorPref,
 	styleProps,
 	selectedComponent,
 	saveStyle,
 	properties,
-	isDetailStyleEditor,
 }: StyleEditorsProps) {
 	const { value: { value: position } = {} } =
 		extractValue({
