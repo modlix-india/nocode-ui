@@ -1,7 +1,40 @@
 import React, { useEffect, useState } from 'react';
 import { Dropdown } from './Dropdown';
 import { RangeSlider } from './RangeSlider';
-import { on } from 'process';
+
+export function RangeWithoutUnit({
+	value = '',
+	onChange,
+	placeholder,
+	min = 0,
+	max = 100,
+	step,
+	autofocus = false,
+	hideSlider = false,
+}: {
+	value: string;
+	onChange: (v: string) => void;
+	placeholder?: string;
+	min?: number;
+	max?: number;
+	step?: number;
+	autofocus?: boolean;
+	hideSlider?: boolean;
+}) {
+	return (
+		<GenericRangeSlider
+			value={value}
+			onChange={onChange}
+			placeholder={placeholder}
+			min={min}
+			max={max}
+			step={step}
+			autofocus={autofocus}
+			hideSlider={hideSlider}
+			unitOptions={[]}
+		/>
+	);
+}
 
 export function PixelSize({
 	value = '',
@@ -11,14 +44,18 @@ export function PixelSize({
 	max = 100,
 	autofocus = false,
 	hideSlider = false,
+	step,
+	extraOptions = [],
 }: {
 	value: string;
 	onChange: (v: string) => void;
 	placeholder?: string;
 	min?: number;
 	max?: number;
+	step?: number;
 	autofocus?: boolean;
 	hideSlider?: boolean;
+	extraOptions?: { name: string; displayName: string }[];
 }) {
 	return (
 		<GenericRangeSlider
@@ -27,6 +64,7 @@ export function PixelSize({
 			placeholder={placeholder}
 			min={min}
 			max={max}
+			step={step}
 			autofocus={autofocus}
 			hideSlider={hideSlider}
 			unitOptions={[
@@ -37,6 +75,7 @@ export function PixelSize({
 				{ name: 'vmax', displayName: 'vmax' },
 				{ name: '%', displayName: '%' },
 				{ name: 'auto', displayName: 'auto' },
+				...extraOptions,
 				{ name: 'em', displayName: 'em' },
 				{ name: 'rem', displayName: 'rem' },
 				{ name: 'cm', displayName: 'cm' },
@@ -57,6 +96,7 @@ export function TimeSize({
 	placeholder,
 	min,
 	max,
+	step,
 	autofocus = false,
 	hideSlider = false,
 }: {
@@ -65,6 +105,7 @@ export function TimeSize({
 	placeholder?: string;
 	min?: number;
 	max?: number;
+	step?: number;
 	autofocus?: boolean;
 	hideSlider?: boolean;
 }) {
@@ -75,6 +116,7 @@ export function TimeSize({
 			placeholder={placeholder}
 			min={min ?? 0}
 			max={max ?? value?.toLowerCase()?.endsWith('ms') ? 10000 : 10}
+			step={step}
 			autofocus={autofocus}
 			hideSlider={hideSlider}
 			unitOptions={[
@@ -91,6 +133,7 @@ function GenericRangeSlider({
 	placeholder,
 	min = 0,
 	max = 100,
+	step = 1,
 	unitOptions,
 	autofocus = false,
 	hideSlider = false,
@@ -100,12 +143,13 @@ function GenericRangeSlider({
 	placeholder?: string;
 	min?: number;
 	max?: number;
+	step?: number;
 	unitOptions: { name: string; displayName: string }[];
 	autofocus?: boolean;
 	hideSlider?: boolean;
 }) {
 	let num = '';
-	let unit = unitOptions[0].name;
+	let unit = unitOptions[0]?.name ?? '';
 
 	if (value) {
 		num = value.replace(/[a-zA-Z% ]/g, '');
@@ -126,10 +170,21 @@ function GenericRangeSlider({
 				onChange={v => onChange(String(v) + unit)}
 				min={min}
 				max={max}
-				step={1}
+				step={step}
 			/>
 		);
 	}
+
+	let dropdown = undefined;
+	if (unitOptions.length > 0)
+		dropdown = (
+			<Dropdown
+				value={unit}
+				onChange={v => onChange(num + v)}
+				options={unitOptions}
+				showNoneLabel={false}
+			/>
+		);
 
 	return (
 		<div className="_simpleEditorPixelSize">
@@ -167,12 +222,7 @@ function GenericRangeSlider({
 						else onChange(inNum + unit);
 					}}
 				/>
-				<Dropdown
-					value={unit}
-					onChange={v => onChange(num + v)}
-					options={unitOptions}
-					showNoneLabel={false}
-				/>
+				{dropdown}
 			</div>
 		</div>
 	);

@@ -1466,6 +1466,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			font-weight: 500;
 		}
 
+		._simpleLabel._withPadding {
+			padding: 5px 15px;
+		}
+
 		._detailStyleEditor ._simpleLabel {
 			padding-left: 15px;
 			padding-right: 15px;
