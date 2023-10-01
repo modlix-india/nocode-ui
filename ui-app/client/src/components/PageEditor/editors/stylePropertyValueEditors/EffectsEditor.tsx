@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
 	EachSimpleEditor,
 	SimpleEditorType,
 	StyleEditorsProps,
 	extractValue,
-	valuesChanged,
 	valuesChangedOnlyValues,
 } from './simpleEditors';
 import { PixelSize } from './simpleEditors/SizeSliders';
@@ -24,7 +23,136 @@ import { PixelSize } from './simpleEditors/SizeSliders';
 
 // 'perspective',
 
-export function EffectsEditor({
+export function EffectsEditor(props: StyleEditorsProps) {
+	const {
+		subComponentName,
+		pseudoState,
+		iterateProps,
+		selectorPref,
+		styleProps,
+		selectedComponent,
+		saveStyle,
+		properties,
+		pageDef,
+		editPageName,
+		slaveStore,
+		storePaths,
+		pageOperations,
+	} = props;
+
+	return (
+		<>
+			<OpacityEditor
+				subComponentName={subComponentName}
+				pseudoState={pseudoState}
+				iterateProps={iterateProps}
+				selectorPref={selectorPref}
+				styleProps={styleProps}
+				selectedComponent={selectedComponent}
+				saveStyle={saveStyle}
+				properties={properties}
+				pageDef={pageDef}
+				editPageName={editPageName}
+				slaveStore={slaveStore}
+				storePaths={storePaths}
+				pageOperations={pageOperations}
+			/>
+
+			<OutlineEditor
+				subComponentName={subComponentName}
+				pseudoState={pseudoState}
+				iterateProps={iterateProps}
+				selectorPref={selectorPref}
+				styleProps={styleProps}
+				selectedComponent={selectedComponent}
+				saveStyle={saveStyle}
+				properties={properties}
+				pageDef={pageDef}
+				editPageName={editPageName}
+				slaveStore={slaveStore}
+				storePaths={storePaths}
+				pageOperations={pageOperations}
+			/>
+
+			<TransformEditor
+				subComponentName={subComponentName}
+				pseudoState={pseudoState}
+				iterateProps={iterateProps}
+				selectorPref={selectorPref}
+				styleProps={styleProps}
+				selectedComponent={selectedComponent}
+				saveStyle={saveStyle}
+				properties={properties}
+				pageDef={pageDef}
+				editPageName={editPageName}
+				slaveStore={slaveStore}
+				storePaths={storePaths}
+				pageOperations={pageOperations}
+			/>
+		</>
+	);
+}
+
+// Function	param	param def	type	min	max	step
+// matrix		Matrix Translation, Scale and Skew in 2D Space
+// 	a	Linear Transformation - Scale X	number	-10	10	0.1
+// 	b	Linear Transformation - Skew Y	number	-10	10	0.1
+// 	c	Linear Transformation - Skew X	number	-10	10	0.1
+// 	d	Linear Transformation - Scale Y	number	-10	10	0.1
+// 	tx	Translation - X	number	-100	100	1
+// 	ty	Translation - Y	number	-100	100	1
+// matrix3d		Matrix Translation, Scale and Skew in 3D Space
+// 	text	12 Parameters for Transformation and 4 Parameters for Translation	text area
+// perspective		Distance from user to the Z-Plane
+// 	length	Length from Z axis origin	pixel size	0	100	1
+// rotate		Rotate in 2D Space
+// 	angle	Degree, Turn, gradians or radians	angle size
+// rotate3d		Rotation in 3D Space
+// 	x	X Co-ordinate	number	-10	10	0.1
+// 	y	Y Co-ordinate	number	-10	10	0.1
+// 	z	Z Co-ordinate	number	-10	10	0.1
+// 	angle	Degree, Turn, gradians or radians	angle size
+// rotateX		Rotation on X - Axis
+// 	angle	Degree, Turn, gradians or radians	angle size
+// rotateY		Rotation on Y - Axis
+// 	angle	Degree, Turn, gradians or radians	angle size
+// rotateZ		Rotation on Z - Axis
+// 	angle	Degree, Turn, gradians or radians	angle size
+// scale		Scale up or down
+// 	x	Scale X	number	-10	10	0.1
+// 	y	Scale Y	number	-10	10	0.1
+// scale3d		Scale up or down in 3D Space
+// 	x	Scale X	number	-10	10	0.1
+// 	y	Scale Y	number	-10	10	0.1
+// 	z	Scale Z	number	-10	10	0.1
+// scaleX		Scaling on X - Axis
+// 	number	Scale Factor	number	-10	10	0.1
+// scaleY		Scaling on Y - Axis
+// 	number	Scale Factor	number	-10	10	0.1
+// scaleZ		Scaling on Z - Axis
+// 	number	Scale Factor	number	-10	10	0.1
+// skew		Skew
+// 	angleX	Degree, Turn, gradians or radians	angle size
+// 	angleY	Degree, Turn, gradians or radians	angle size
+// skewX		Skew on X - Axis
+// 	angle	Degree, Turn, gradians or radians	angle size
+// skewY		Skew on Y - Axis
+// 	angle	Degree, Turn, gradians or radians	angle size
+// translate		Moves to a position in 2D Space
+// 	x	Position from X	pixel size	-100	100	1
+// 	y	Position from Y	pixel size	-100	100	1
+// translate3d		Moves to a position in 3D Space
+// 	x	Length from X axis origin	pixel size	-100	100	1
+// 	y	Length from Y axis origin	pixel size	-100	100	1
+// 	z	Length from Z axis origin	pixel size	-100	100	1
+// translateX		Moves on X - Axis
+// 	x	Position from X	pixel size	-100	100	1
+// translateY		Moves on Y - Axis
+// 	y	Position from Y	pixel size	-100	100	1
+// translateZ		Moves on Z - Axis
+// 	z	Position from Z	pixel size	-100	100	1
+
+function TransformEditor({
 	subComponentName,
 	pseudoState,
 	iterateProps,
@@ -50,266 +178,34 @@ export function EffectsEditor({
 		.map((e: string) => e.trim())
 		.filter((e: string) => !!e);
 
+	const transform =
+		(
+			extractValue({
+				subComponentName,
+				prop: 'transform',
+				iterateProps,
+				pseudoState,
+				selectorPref,
+				selectedComponent,
+			}) ?? ({} as any)
+		).value?.value ?? '';
+
+	const transformFunctions = transform
+		.split(')')
+		.map((e: string) => e.trim())
+		.filter((e: string) => !!e)
+		.map((e: string) => {
+			const split = e.split('(');
+			return {
+				name: split[0],
+				value: split[1],
+			};
+		});
+
+	console.log(transformFunctions);
+
 	return (
 		<>
-			<div className="_combineEditors">
-				<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-					<g id="Group_86" data-name="Group 86" transform="translate(-1036.905 -329)">
-						<path
-							id="Subtraction_1"
-							data-name="Subtraction 1"
-							d="M8.18,16.36A8.182,8.182,0,0,1,5,.643a8.188,8.188,0,0,1,9.55,2.4h-5.8V4.566H15.52a8.139,8.139,0,0,1,.57,1.522H8.751V7.609H16.34c.013.191.02.382.02.57a8.3,8.3,0,0,1-.055.951H8.751v1.522h7.229a8.151,8.151,0,0,1-.66,1.522H8.751V13.7h5.469A8.159,8.159,0,0,1,8.18,16.36Z"
-							transform="translate(1040.905 337.245)"
-							fill="currentColor"
-							strokeWidth={0}
-						/>
-						<path
-							id="Subtraction_3"
-							data-name="Subtraction 3"
-							d="M4.449,15.942A7.931,7.931,0,0,1,0,14.586a8.031,8.031,0,0,0,1.071-.864,6.492,6.492,0,0,0,7.594-1.163A6.488,6.488,0,0,0,4.078,1.483a6.505,6.505,0,0,0-3.007.737A8.029,8.029,0,0,0,0,1.356,7.977,7.977,0,0,1,11.793,4.868,7.968,7.968,0,0,1,4.449,15.942Z"
-							transform="translate(1052.484 337)"
-							fill="currentColor"
-							strokeWidth={0}
-						/>
-					</g>
-				</svg>
-
-				<EachSimpleEditor
-					subComponentName={subComponentName}
-					pseudoState={pseudoState}
-					prop="opacity"
-					placeholder="Opacity"
-					iterateProps={iterateProps}
-					selectorPref={selectorPref}
-					styleProps={styleProps}
-					selectedComponent={selectedComponent}
-					saveStyle={saveStyle}
-					properties={properties}
-					editorDef={{
-						type: SimpleEditorType.Range,
-						rangeMin: 0,
-						rangeMax: 1,
-						rangeStep: 0.01,
-					}}
-					className="_expandWidth"
-				/>
-			</div>
-			<div className="_simpleLabel _withPadding">Outline : </div>
-			<div className="_combineEditors">
-				<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-					<rect
-						width="20"
-						height="16"
-						transform="translate(6 8)"
-						rx="2"
-						fill="currentColor"
-						fillOpacity={0.2}
-					/>
-					<rect
-						width="16"
-						height="12"
-						transform="translate(8 10)"
-						rx="2"
-						fill="currentColor"
-					/>
-				</svg>
-				<EachSimpleEditor
-					subComponentName={subComponentName}
-					pseudoState={pseudoState}
-					prop="outlineOffset"
-					placeholder="Offset"
-					iterateProps={iterateProps}
-					selectorPref={selectorPref}
-					styleProps={styleProps}
-					selectedComponent={selectedComponent}
-					saveStyle={saveStyle}
-					properties={properties}
-					editorDef={{
-						type: SimpleEditorType.PixelSize,
-					}}
-					className="_expandWidth"
-				/>
-			</div>
-			<div className="_combineEditors _spaceBetween">
-				<EachSimpleEditor
-					subComponentName={subComponentName}
-					pseudoState={pseudoState}
-					prop="outlineStyle"
-					iterateProps={iterateProps}
-					selectorPref={selectorPref}
-					styleProps={styleProps}
-					selectedComponent={selectedComponent}
-					saveStyle={saveStyle}
-					properties={properties}
-					editorDef={{
-						type: SimpleEditorType.Icons,
-						iconButtonsBackground: true,
-						iconButtonOptions: [
-							{
-								name: 'solid',
-								description: 'Outline Style : Solid',
-								icon: (
-									<path
-										id="Path_162"
-										data-name="Path 162"
-										d="M1,1H20.013"
-										transform="translate(5.5 15)"
-										fill="none"
-										strokeLinecap="square"
-										strokeWidth="2"
-									/>
-								),
-							},
-							{
-								name: 'double',
-								description: 'Outline Style : Double',
-								icon: (
-									<>
-										<g
-											id="Group_76"
-											data-name="Group 76"
-											transform="translate(4.727 13)"
-										>
-											<path
-												id="Path_163"
-												data-name="Path 163"
-												d="M1.273,6H20.286"
-												fill="none"
-												strokeLinecap="square"
-												strokeWidth="2"
-											/>
-											<path
-												id="Path_164"
-												data-name="Path 164"
-												d="M1.273,1H20.286"
-												fill="none"
-												strokeLinecap="square"
-												strokeWidth="2"
-											/>
-										</g>
-									</>
-								),
-							},
-							{
-								name: 'dotted',
-								description: 'Outline Style : Dotted',
-								icon: (
-									<path
-										id="Path_167"
-										data-name="Path 167"
-										d="M1,1H22"
-										transform="translate(4.5 15.5)"
-										fill="none"
-										strokeLinecap="round"
-										strokeMiterlimit="3.999"
-										strokeWidth="2"
-										strokeDasharray="0 4"
-									/>
-								),
-							},
-							{
-								name: 'dashed',
-								description: 'Outline Style : Dashed',
-								icon: (
-									<path
-										id="Path_165"
-										data-name="Path 165"
-										d="M1,1H20.013"
-										transform="translate(5.5 15.5)"
-										strokeLinecap="square"
-										strokeMiterlimit="3.999"
-										strokeWidth="2"
-										strokeDasharray="4 4"
-									/>
-								),
-							},
-							{
-								name: 'wavy',
-								description: 'Outline Style : Wavy',
-								icon: (
-									<path
-										id="Path_166"
-										data-name="Path 166"
-										d="M20.859,3.5q-2.482,5-4.965,0t-4.965,0q-2.482,5-4.965,0T1,3.5"
-										transform="translate(5.5 12.5)"
-										strokeWidth="2"
-										fill="none"
-									/>
-								),
-							},
-						],
-					}}
-				/>
-
-				<EachSimpleEditor
-					subComponentName={subComponentName}
-					pseudoState={pseudoState}
-					prop="outlineColor"
-					placeholder="Color"
-					iterateProps={iterateProps}
-					selectorPref={selectorPref}
-					styleProps={styleProps}
-					selectedComponent={selectedComponent}
-					saveStyle={saveStyle}
-					properties={properties}
-					editorDef={{ type: SimpleEditorType.Color }}
-				/>
-			</div>
-			<div className="_combineEditors">
-				<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-					<path
-						id="Path_189"
-						data-name="Path 189"
-						d="M0,0H5.412V2.255H2.368V5.093H0Z"
-						transform="translate(15.887 17.765) rotate(45)"
-						fill="currentColor"
-					/>
-					<path
-						id="Path_190"
-						data-name="Path 190"
-						d="M0,5.094H5.412V2.839H2.368V0H0Z"
-						transform="translate(12.286 10.163) rotate(-45)"
-						fill="currentColor"
-					/>
-					<rect
-						id="Rectangle_24"
-						data-name="Rectangle 24"
-						width="26"
-						height="4"
-						transform="translate(3 13.765)"
-						fill="currentColor"
-						fillOpacity={0.2}
-					/>
-					<path
-						id="Path_191"
-						data-name="Path 191"
-						d="M13.274,20v2.166H5V20Z"
-						transform="translate(37 -1.33) rotate(90)"
-						fill="currentColor"
-					/>
-					<path
-						id="Path_192"
-						data-name="Path 192"
-						d="M13.274,20v2.166H5V20Z"
-						transform="translate(37 15.056) rotate(90)"
-						fill="currentColor"
-					/>
-				</svg>
-
-				<EachSimpleEditor
-					subComponentName={subComponentName}
-					pseudoState={pseudoState}
-					prop="outlineWidth"
-					placeholder="Width"
-					iterateProps={iterateProps}
-					selectorPref={selectorPref}
-					styleProps={styleProps}
-					selectedComponent={selectedComponent}
-					saveStyle={saveStyle}
-					properties={properties}
-					editorDef={{ type: SimpleEditorType.PixelSize, rangeMin: 0, rangeMax: 30 }}
-				/>
-			</div>
 			<div className="_simpleLabel _withPadding">Transform : </div>
 			<div className="_combineEditors _spaceBetween">
 				<div className="_combineEditors">
@@ -679,6 +575,295 @@ export function EffectsEditor({
 					max={100}
 				/>
 			</div>
+			{transformFunctions.map((e: any) => {})}
 		</>
+	);
+}
+
+function OutlineEditor({
+	subComponentName,
+	pseudoState,
+	iterateProps,
+	selectorPref,
+	styleProps,
+	selectedComponent,
+	saveStyle,
+	properties,
+}: StyleEditorsProps) {
+	return (
+		<>
+			<div className="_simpleLabel _withPadding">Outline : </div>
+			<div className="_combineEditors">
+				<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+					<rect
+						width="20"
+						height="16"
+						transform="translate(6 8)"
+						rx="2"
+						fill="currentColor"
+						fillOpacity={0.2}
+					/>
+					<rect
+						width="16"
+						height="12"
+						transform="translate(8 10)"
+						rx="2"
+						fill="currentColor"
+					/>
+				</svg>
+				<EachSimpleEditor
+					subComponentName={subComponentName}
+					pseudoState={pseudoState}
+					prop="outlineOffset"
+					placeholder="Offset"
+					iterateProps={iterateProps}
+					selectorPref={selectorPref}
+					styleProps={styleProps}
+					selectedComponent={selectedComponent}
+					saveStyle={saveStyle}
+					properties={properties}
+					editorDef={{
+						type: SimpleEditorType.PixelSize,
+					}}
+					className="_expandWidth"
+				/>
+			</div>
+			<div className="_combineEditors _spaceBetween">
+				<EachSimpleEditor
+					subComponentName={subComponentName}
+					pseudoState={pseudoState}
+					prop="outlineStyle"
+					iterateProps={iterateProps}
+					selectorPref={selectorPref}
+					styleProps={styleProps}
+					selectedComponent={selectedComponent}
+					saveStyle={saveStyle}
+					properties={properties}
+					editorDef={{
+						type: SimpleEditorType.Icons,
+						iconButtonsBackground: true,
+						iconButtonOptions: [
+							{
+								name: 'solid',
+								description: 'Outline Style : Solid',
+								icon: (
+									<path
+										id="Path_162"
+										data-name="Path 162"
+										d="M1,1H20.013"
+										transform="translate(5.5 15)"
+										fill="none"
+										strokeLinecap="square"
+										strokeWidth="2"
+									/>
+								),
+							},
+							{
+								name: 'double',
+								description: 'Outline Style : Double',
+								icon: (
+									<>
+										<g
+											id="Group_76"
+											data-name="Group 76"
+											transform="translate(4.727 13)"
+										>
+											<path
+												id="Path_163"
+												data-name="Path 163"
+												d="M1.273,6H20.286"
+												fill="none"
+												strokeLinecap="square"
+												strokeWidth="2"
+											/>
+											<path
+												id="Path_164"
+												data-name="Path 164"
+												d="M1.273,1H20.286"
+												fill="none"
+												strokeLinecap="square"
+												strokeWidth="2"
+											/>
+										</g>
+									</>
+								),
+							},
+							{
+								name: 'dotted',
+								description: 'Outline Style : Dotted',
+								icon: (
+									<path
+										id="Path_167"
+										data-name="Path 167"
+										d="M1,1H22"
+										transform="translate(4.5 15.5)"
+										fill="none"
+										strokeLinecap="round"
+										strokeMiterlimit="3.999"
+										strokeWidth="2"
+										strokeDasharray="0 4"
+									/>
+								),
+							},
+							{
+								name: 'dashed',
+								description: 'Outline Style : Dashed',
+								icon: (
+									<path
+										id="Path_165"
+										data-name="Path 165"
+										d="M1,1H20.013"
+										transform="translate(5.5 15.5)"
+										strokeLinecap="square"
+										strokeMiterlimit="3.999"
+										strokeWidth="2"
+										strokeDasharray="4 4"
+									/>
+								),
+							},
+							{
+								name: 'wavy',
+								description: 'Outline Style : Wavy',
+								icon: (
+									<path
+										id="Path_166"
+										data-name="Path 166"
+										d="M20.859,3.5q-2.482,5-4.965,0t-4.965,0q-2.482,5-4.965,0T1,3.5"
+										transform="translate(5.5 12.5)"
+										strokeWidth="2"
+										fill="none"
+									/>
+								),
+							},
+						],
+					}}
+				/>
+
+				<EachSimpleEditor
+					subComponentName={subComponentName}
+					pseudoState={pseudoState}
+					prop="outlineColor"
+					placeholder="Color"
+					iterateProps={iterateProps}
+					selectorPref={selectorPref}
+					styleProps={styleProps}
+					selectedComponent={selectedComponent}
+					saveStyle={saveStyle}
+					properties={properties}
+					editorDef={{ type: SimpleEditorType.Color }}
+				/>
+			</div>
+			<div className="_combineEditors">
+				<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+					<path
+						id="Path_189"
+						data-name="Path 189"
+						d="M0,0H5.412V2.255H2.368V5.093H0Z"
+						transform="translate(15.887 17.765) rotate(45)"
+						fill="currentColor"
+					/>
+					<path
+						id="Path_190"
+						data-name="Path 190"
+						d="M0,5.094H5.412V2.839H2.368V0H0Z"
+						transform="translate(12.286 10.163) rotate(-45)"
+						fill="currentColor"
+					/>
+					<rect
+						id="Rectangle_24"
+						data-name="Rectangle 24"
+						width="26"
+						height="4"
+						transform="translate(3 13.765)"
+						fill="currentColor"
+						fillOpacity={0.2}
+					/>
+					<path
+						id="Path_191"
+						data-name="Path 191"
+						d="M13.274,20v2.166H5V20Z"
+						transform="translate(37 -1.33) rotate(90)"
+						fill="currentColor"
+					/>
+					<path
+						id="Path_192"
+						data-name="Path 192"
+						d="M13.274,20v2.166H5V20Z"
+						transform="translate(37 15.056) rotate(90)"
+						fill="currentColor"
+					/>
+				</svg>
+
+				<EachSimpleEditor
+					subComponentName={subComponentName}
+					pseudoState={pseudoState}
+					prop="outlineWidth"
+					placeholder="Width"
+					iterateProps={iterateProps}
+					selectorPref={selectorPref}
+					styleProps={styleProps}
+					selectedComponent={selectedComponent}
+					saveStyle={saveStyle}
+					properties={properties}
+					editorDef={{ type: SimpleEditorType.PixelSize, rangeMin: 0, rangeMax: 30 }}
+				/>
+			</div>
+		</>
+	);
+}
+
+function OpacityEditor({
+	subComponentName,
+	pseudoState,
+	iterateProps,
+	selectorPref,
+	styleProps,
+	selectedComponent,
+	saveStyle,
+	properties,
+}: StyleEditorsProps) {
+	return (
+		<div className="_combineEditors">
+			<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+				<g id="Group_86" data-name="Group 86" transform="translate(-1036.905 -329)">
+					<path
+						id="Subtraction_1"
+						data-name="Subtraction 1"
+						d="M8.18,16.36A8.182,8.182,0,0,1,5,.643a8.188,8.188,0,0,1,9.55,2.4h-5.8V4.566H15.52a8.139,8.139,0,0,1,.57,1.522H8.751V7.609H16.34c.013.191.02.382.02.57a8.3,8.3,0,0,1-.055.951H8.751v1.522h7.229a8.151,8.151,0,0,1-.66,1.522H8.751V13.7h5.469A8.159,8.159,0,0,1,8.18,16.36Z"
+						transform="translate(1040.905 337.245)"
+						fill="currentColor"
+						strokeWidth={0}
+					/>
+					<path
+						id="Subtraction_3"
+						data-name="Subtraction 3"
+						d="M4.449,15.942A7.931,7.931,0,0,1,0,14.586a8.031,8.031,0,0,0,1.071-.864,6.492,6.492,0,0,0,7.594-1.163A6.488,6.488,0,0,0,4.078,1.483a6.505,6.505,0,0,0-3.007.737A8.029,8.029,0,0,0,0,1.356,7.977,7.977,0,0,1,11.793,4.868,7.968,7.968,0,0,1,4.449,15.942Z"
+						transform="translate(1052.484 337)"
+						fill="currentColor"
+						strokeWidth={0}
+					/>
+				</g>
+			</svg>
+
+			<EachSimpleEditor
+				subComponentName={subComponentName}
+				pseudoState={pseudoState}
+				prop="opacity"
+				placeholder="Opacity"
+				iterateProps={iterateProps}
+				selectorPref={selectorPref}
+				styleProps={styleProps}
+				selectedComponent={selectedComponent}
+				saveStyle={saveStyle}
+				properties={properties}
+				editorDef={{
+					type: SimpleEditorType.Range,
+					rangeMin: 0,
+					rangeMax: 1,
+					rangeStep: 0.01,
+				}}
+				className="_expandWidth"
+			/>
+		</div>
 	);
 }
