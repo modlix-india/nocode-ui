@@ -1461,7 +1461,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._simpleLabel {
 			font-size: 12px;
 			font-family: Inter;
-			color: #000000;
+			color: #222222B2;
 			white-space: nowrap;
 			font-weight: 500;
 		}
