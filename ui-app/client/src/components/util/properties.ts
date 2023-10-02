@@ -505,7 +505,6 @@ const COMPONENT_STYLE_GROUPS: { [key: string]: Array<string> } = {
 		'borderBottomRightRadius',
 	],
 	effects: [
-		'backgroundBlendMode',
 		'opacity',
 		'outlineColor',
 		'outlineOffset',
@@ -663,7 +662,7 @@ const COMPONENT_STYLE_GROUP_PROPERTIES: { [key: string]: ComponentStylePropertyG
 		displayName: 'Background',
 		description: 'Background',
 		target: ['comp'],
-		advanced: ['backgroundAttachment', 'backgroundOrigin'],
+		advanced: ['backgroundAttachment', 'backgroundOrigin', 'backgroundBlendMode'],
 	},
 	border: {
 		name: 'border',

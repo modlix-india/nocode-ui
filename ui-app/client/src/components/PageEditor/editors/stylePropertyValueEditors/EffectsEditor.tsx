@@ -23,7 +23,6 @@ import { IconsSimpleEditor } from './simpleEditors/IconsSimpleEditor';
 // 'backdropFilter',
 
 // 'cursor',
-// 'perspective',
 
 export function EffectsEditor(props: StyleEditorsProps) {
 	const {
@@ -106,6 +105,42 @@ export function EffectsEditor(props: StyleEditorsProps) {
 				properties={properties}
 				editorDef={{
 					type: SimpleEditorType.BoxShadow,
+				}}
+			/>
+
+			<div className="_simpleLabel _withPadding">Mix Blend Mode : </div>
+			<EachSimpleEditor
+				subComponentName={subComponentName}
+				pseudoState={pseudoState}
+				prop="mixBlendMode"
+				placeholder="Mix Blend Mode"
+				iterateProps={iterateProps}
+				selectorPref={selectorPref}
+				styleProps={styleProps}
+				selectedComponent={selectedComponent}
+				saveStyle={saveStyle}
+				properties={properties}
+				editorDef={{
+					type: SimpleEditorType.Dropdown,
+					dropDownShowNoneLabel: true,
+					dropdownOptions: [
+						{ name: 'normal', displayName: 'Normal' },
+						{ name: 'multiply', displayName: 'Multiply' },
+						{ name: 'screen', displayName: 'Screen' },
+						{ name: 'overlay', displayName: 'Overlay' },
+						{ name: 'darken', displayName: 'Darken' },
+						{ name: 'lighten', displayName: 'Lighten' },
+						{ name: 'color-dodge', displayName: 'Color Dodge' },
+						{ name: 'color-burn', displayName: 'Color Burn' },
+						{ name: 'hard-light', displayName: 'Hard Light' },
+						{ name: 'soft-light', displayName: 'Soft Light' },
+						{ name: 'difference', displayName: 'Difference' },
+						{ name: 'exclusion', displayName: 'Exclusion' },
+						{ name: 'hue', displayName: 'Hue' },
+						{ name: 'saturation', displayName: 'Saturation' },
+						{ name: 'color', displayName: 'Color' },
+						{ name: 'luminosity', displayName: 'Luminosity' },
+					],
 				}}
 			/>
 		</>
