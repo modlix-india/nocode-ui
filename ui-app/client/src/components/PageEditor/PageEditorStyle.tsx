@@ -1368,6 +1368,36 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			cursor: pointer;
 		}
 
+		._simpleEditorButtonBar {
+			height: 35px;
+			display: flex;
+			flex-direction: row;
+			padding: 5px;
+			font-family: Inter;
+			font-size: 12px;
+			gap: 5px;
+			background-color: #F8FAFB;
+			border-radius: 6px;
+			justify-content: center;
+			align-items: center;
+		}
+
+		._simpleEditorButtonBar ._simpleButtonBarButton {
+			height: 100%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			padding: 0px 10px;
+			border-radius: 4px;
+			cursor: pointer;
+		}
+
+		._simpleEditorButtonBar ._simpleButtonBarButton._selected {
+			background-color: #4C7FEE;
+			color: #FFF;
+			box-shadow: 0px 1px 3px 0px #0000001A;
+		}
+
 		._svgButton {
 			border: none;
 			background: transparent;

@@ -1,6 +1,4 @@
-import React, { CSSProperties, useMemo, useRef, useState } from 'react';
-import { SimpleEditorMultipleValueType } from '.';
-import { isNullValue } from '@fincity/kirun-js';
+import React from 'react';
 
 export type ButtonBarOptions = Array<{ name: string; displayName: string; description?: string }>;
 
@@ -13,5 +11,21 @@ export function ButtonBar({
 	onChange: (v: string | Array<string>) => void;
 	options: ButtonBarOptions;
 }) {
-	return <div tabIndex={0} className="_simpleEditorButtonBar" role="menubar"></div>;
+	return (
+		<div tabIndex={0} className="_simpleEditorButtonBar" role="menubar">
+			{orignalOptions.map(option => {
+				return (
+					<div
+						key={option.name}
+						className={`_simpleButtonBarButton ${
+							value === option.name ? '_selected' : ''
+						}`}
+						onClick={() => onChange(option.name)}
+					>
+						{option.displayName}
+					</div>
+				);
+			})}
+		</div>
+	);
 }

@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 import { PixelSize } from './SizeSliders';
 import { ColorSelector } from './ColorSelector';
 import { IconsSimpleEditor } from './IconsSimpleEditor';
+import { ButtonBar } from './ButtonBar';
 
 export enum ShadowEditorType {
 	BoxShadow = 'boxShadow',
@@ -321,19 +322,30 @@ export function ShadowEditor({
 					)}
 					{type === ShadowEditorType.BoxShadow && (
 						<div className="_inset">
-							<label>Inset</label>
-							<input
-								type="checkbox"
-								checked={e.inset}
-								onChange={e => {
+							<div className="_simpleLabel">Position : </div>
+							<ButtonBar
+								value={e.inset ? 'inset' : ''}
+								onChange={v => {
 									const newShadows = duplicate(shadows);
-									newShadows[i].inset = e.target.checked;
+									newShadows[i].inset = v === 'inset';
 									if (!newShadows[i].hOffset) newShadows[i].hOffset = '0px';
 									if (!newShadows[i].vOffset) newShadows[i].vOffset = '0px';
 									if (!newShadows[i].blur) newShadows[i].blur = '0px';
 									if (!newShadows[i].spread) newShadows[i].spread = '0px';
 									onChange(createShadowString(newShadows, type));
 								}}
+								options={[
+									{
+										name: '',
+										displayName: 'Outer',
+										description: 'Outset',
+									},
+									{
+										name: 'inset',
+										displayName: 'Inner',
+										description: 'Inset',
+									},
+								]}
 							/>
 						</div>
 					)}
