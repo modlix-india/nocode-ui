@@ -662,7 +662,12 @@ const COMPONENT_STYLE_GROUP_PROPERTIES: { [key: string]: ComponentStylePropertyG
 		displayName: 'Background',
 		description: 'Background',
 		target: ['comp'],
-		advanced: ['backgroundAttachment', 'backgroundOrigin', 'backgroundBlendMode'],
+		advanced: [
+			'backgroundAttachment',
+			'backgroundOrigin',
+			'backdropFilter',
+			'backgroundBlendMode',
+		],
 	},
 	border: {
 		name: 'border',
@@ -751,7 +756,6 @@ const COMPONENT_STYLE_GROUP_PROPERTIES: { [key: string]: ComponentStylePropertyG
 			'transitionTiming-function',
 			'transitionDelay',
 			'filter',
-			'backdropFilter',
 			'cursor',
 			'perspective',
 		],
