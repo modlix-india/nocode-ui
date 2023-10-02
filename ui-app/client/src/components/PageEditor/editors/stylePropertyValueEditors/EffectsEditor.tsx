@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
 	EachSimpleEditor,
 	SimpleEditorType,
@@ -6,21 +6,23 @@ import {
 	extractValue,
 	valuesChangedOnlyValues,
 } from './simpleEditors';
-import { PixelSize } from './simpleEditors/SizeSliders';
+import { AngleSize, PixelSize, RangeWithoutUnit } from './simpleEditors/SizeSliders';
+import { Dropdown } from './simpleEditors/Dropdown';
+import { duplicate } from '@fincity/kirun-js';
+import { IconsSimpleEditor } from './simpleEditors/IconsSimpleEditor';
 
-// 'backgroundBlendMode',
-
-// 		'boxShadow',
 // 'mixBlendMode',
+// 'backgroundBlendMode',
 
 // 'transitionProperty',
 // 'transitionDuration',
 // 'transitionTiming-function',
 // 'transitionDelay',
+
 // 'filter',
 // 'backdropFilter',
-// 'cursor',
 
+// 'cursor',
 // 'perspective',
 
 export function EffectsEditor(props: StyleEditorsProps) {
@@ -89,68 +91,430 @@ export function EffectsEditor(props: StyleEditorsProps) {
 				storePaths={storePaths}
 				pageOperations={pageOperations}
 			/>
+
+			<div className="_simpleLabel _withPadding">Box Shadow : </div>
+			<EachSimpleEditor
+				subComponentName={subComponentName}
+				pseudoState={pseudoState}
+				prop="boxShadow"
+				placeholder="Box Shadow"
+				iterateProps={iterateProps}
+				selectorPref={selectorPref}
+				styleProps={styleProps}
+				selectedComponent={selectedComponent}
+				saveStyle={saveStyle}
+				properties={properties}
+				editorDef={{
+					type: SimpleEditorType.BoxShadow,
+				}}
+			/>
 		</>
 	);
 }
 
-// Function	param	param def	type	min	max	step
-// matrix		Matrix Translation, Scale and Skew in 2D Space
-// 	a	Linear Transformation - Scale X	number	-10	10	0.1
-// 	b	Linear Transformation - Skew Y	number	-10	10	0.1
-// 	c	Linear Transformation - Skew X	number	-10	10	0.1
-// 	d	Linear Transformation - Scale Y	number	-10	10	0.1
-// 	tx	Translation - X	number	-100	100	1
-// 	ty	Translation - Y	number	-100	100	1
-// matrix3d		Matrix Translation, Scale and Skew in 3D Space
-// 	text	12 Parameters for Transformation and 4 Parameters for Translation	text area
-// perspective		Distance from user to the Z-Plane
-// 	length	Length from Z axis origin	pixel size	0	100	1
-// rotate		Rotate in 2D Space
-// 	angle	Degree, Turn, gradians or radians	angle size
-// rotate3d		Rotation in 3D Space
-// 	x	X Co-ordinate	number	-10	10	0.1
-// 	y	Y Co-ordinate	number	-10	10	0.1
-// 	z	Z Co-ordinate	number	-10	10	0.1
-// 	angle	Degree, Turn, gradians or radians	angle size
-// rotateX		Rotation on X - Axis
-// 	angle	Degree, Turn, gradians or radians	angle size
-// rotateY		Rotation on Y - Axis
-// 	angle	Degree, Turn, gradians or radians	angle size
-// rotateZ		Rotation on Z - Axis
-// 	angle	Degree, Turn, gradians or radians	angle size
-// scale		Scale up or down
-// 	x	Scale X	number	-10	10	0.1
-// 	y	Scale Y	number	-10	10	0.1
-// scale3d		Scale up or down in 3D Space
-// 	x	Scale X	number	-10	10	0.1
-// 	y	Scale Y	number	-10	10	0.1
-// 	z	Scale Z	number	-10	10	0.1
-// scaleX		Scaling on X - Axis
-// 	number	Scale Factor	number	-10	10	0.1
-// scaleY		Scaling on Y - Axis
-// 	number	Scale Factor	number	-10	10	0.1
-// scaleZ		Scaling on Z - Axis
-// 	number	Scale Factor	number	-10	10	0.1
-// skew		Skew
-// 	angleX	Degree, Turn, gradians or radians	angle size
-// 	angleY	Degree, Turn, gradians or radians	angle size
-// skewX		Skew on X - Axis
-// 	angle	Degree, Turn, gradians or radians	angle size
-// skewY		Skew on Y - Axis
-// 	angle	Degree, Turn, gradians or radians	angle size
-// translate		Moves to a position in 2D Space
-// 	x	Position from X	pixel size	-100	100	1
-// 	y	Position from Y	pixel size	-100	100	1
-// translate3d		Moves to a position in 3D Space
-// 	x	Length from X axis origin	pixel size	-100	100	1
-// 	y	Length from Y axis origin	pixel size	-100	100	1
-// 	z	Length from Z axis origin	pixel size	-100	100	1
-// translateX		Moves on X - Axis
-// 	x	Position from X	pixel size	-100	100	1
-// translateY		Moves on Y - Axis
-// 	y	Position from Y	pixel size	-100	100	1
-// translateZ		Moves on Z - Axis
-// 	z	Position from Z	pixel size	-100	100	1
+interface ParamDetail {
+	name: string;
+	displayName: string;
+	type: 'number' | 'pixel size' | 'angle size' | 'text area';
+	min?: number;
+	max?: number;
+	step?: number;
+	default?: string;
+}
+
+interface FunctionDetail {
+	name: string;
+	displayName: string;
+	params: Array<ParamDetail>;
+}
+
+const TRANSFORM_FUNCTIONS: Array<FunctionDetail> = [
+	{
+		name: 'matrix',
+		displayName: 'Matrix',
+		params: [
+			{
+				name: 'a',
+				displayName: 'Scale X',
+				type: 'number',
+				min: -10,
+				max: 10,
+				step: 0.1,
+				default: '1',
+			},
+			{
+				name: 'b',
+				displayName: 'Skew Y',
+				type: 'number',
+				min: -10,
+				max: 10,
+				step: 0.1,
+				default: '0',
+			},
+			{
+				name: 'c',
+				displayName: 'Skew X',
+				type: 'number',
+				min: -10,
+				max: 10,
+				step: 0.1,
+				default: '0',
+			},
+			{
+				name: 'd',
+				displayName: 'Scale Y',
+				type: 'number',
+				min: -10,
+				max: 10,
+				step: 0.1,
+				default: '1',
+			},
+			{
+				name: 'tx',
+				displayName: 'Translation - X',
+				type: 'number',
+				min: -100,
+				max: 100,
+				step: 1,
+				default: '0',
+			},
+			{
+				name: 'ty',
+				displayName: 'Translation - Y',
+				type: 'number',
+				min: -100,
+				max: 100,
+				step: 1,
+				default: '0',
+			},
+		],
+	},
+
+	{
+		name: 'matrix3d',
+		displayName: 'Matrix 3D',
+		params: [
+			{
+				name: 'text',
+				displayName: 'Parameters',
+				type: 'text area',
+			},
+		],
+	},
+
+	{
+		name: 'perspective',
+		displayName: 'Perspective',
+		params: [
+			{
+				name: 'length',
+				displayName: 'Length',
+				type: 'pixel size',
+				min: 0,
+				max: 100,
+				step: 1,
+			},
+		],
+	},
+
+	{
+		name: 'rotate',
+		displayName: 'Rotate',
+		params: [{ name: 'angle', displayName: 'Angle', type: 'angle size' }],
+	},
+
+	{
+		name: 'rotate3d',
+		displayName: 'Rotate 3D',
+		params: [
+			{
+				name: 'x',
+				displayName: 'X Co-ordinate',
+				type: 'number',
+				min: -10,
+				max: 10,
+				step: 0.1,
+				default: '0',
+			},
+			{
+				name: 'y',
+				displayName: 'Y Co-ordinate',
+				type: 'number',
+				min: -10,
+				max: 10,
+				step: 0.1,
+				default: '0',
+			},
+			{
+				name: 'z',
+				displayName: 'Z Co-ordinate',
+				type: 'number',
+				min: -10,
+				max: 10,
+				step: 0.1,
+				default: '0',
+			},
+			{ name: 'angle', displayName: 'Angle', type: 'angle size', default: '0deg' },
+		],
+	},
+
+	{
+		name: 'rotateX',
+		displayName: 'Rotate X',
+		params: [{ name: 'angle', displayName: 'Angle', type: 'angle size' }],
+	},
+
+	{
+		name: 'rotateY',
+		displayName: 'Rotate Y',
+		params: [{ name: 'angle', displayName: 'Angle', type: 'angle size' }],
+	},
+
+	{
+		name: 'rotateZ',
+		displayName: 'Rotate Z',
+		params: [{ name: 'angle', displayName: 'Angle', type: 'angle size' }],
+	},
+
+	{
+		name: 'scale',
+		displayName: 'Scale',
+		params: [
+			{
+				name: 'x',
+				displayName: 'Scale X',
+				type: 'number',
+				min: -10,
+				max: 10,
+				step: 0.1,
+				default: '1',
+			},
+			{
+				name: 'y',
+				displayName: 'Scale Y',
+				type: 'number',
+				min: -10,
+				max: 10,
+				step: 0.1,
+				default: '1',
+			},
+		],
+	},
+
+	{
+		name: 'scale3d',
+		displayName: 'Scale 3D',
+		params: [
+			{
+				name: 'x',
+				displayName: 'Scale X',
+				type: 'number',
+				min: -10,
+				max: 10,
+				step: 0.1,
+				default: '1',
+			},
+			{
+				name: 'y',
+				displayName: 'Scale Y',
+				type: 'number',
+				min: -10,
+				max: 10,
+				step: 0.1,
+				default: '1',
+			},
+			{
+				name: 'z',
+				displayName: 'Scale Z',
+				type: 'number',
+				min: -10,
+				max: 10,
+				step: 0.1,
+				default: '1',
+			},
+		],
+	},
+
+	{
+		name: 'scaleX',
+		displayName: 'Scale X',
+		params: [
+			{
+				name: 'number',
+				displayName: 'Scale Factor',
+				type: 'number',
+				min: -10,
+				max: 10,
+				step: 0.1,
+			},
+		],
+	},
+
+	{
+		name: 'scaleY',
+		displayName: 'Scale Y',
+		params: [
+			{
+				name: 'number',
+				displayName: 'Scale Factor',
+				type: 'number',
+				min: -10,
+				max: 10,
+				step: 0.1,
+			},
+		],
+	},
+
+	{
+		name: 'scaleZ',
+		displayName: 'Scale Z',
+		params: [
+			{
+				name: 'number',
+				displayName: 'Scale Factor',
+				type: 'number',
+				min: -10,
+				max: 10,
+				step: 0.1,
+			},
+		],
+	},
+
+	{
+		name: 'skew',
+		displayName: 'Skew',
+		params: [
+			{
+				name: 'angleX',
+				displayName: 'Angle',
+				type: 'angle size',
+				default: '0deg',
+			},
+			{
+				name: 'angleY',
+				displayName: 'Angle',
+				type: 'angle size',
+				default: '0deg',
+			},
+		],
+	},
+
+	{
+		name: 'skewX',
+		displayName: 'Skew X',
+		params: [{ name: 'angle', displayName: 'Angle', type: 'angle size' }],
+	},
+
+	{
+		name: 'skewY',
+		displayName: 'Skew Y',
+		params: [{ name: 'angle', displayName: 'Angle', type: 'angle size' }],
+	},
+
+	{
+		name: 'translate',
+		displayName: 'Translate',
+		params: [
+			{
+				name: 'x',
+				displayName: 'Position from X',
+				type: 'pixel size',
+				min: -100,
+				max: 100,
+				step: 1,
+				default: '0px',
+			},
+			{
+				name: 'y',
+				displayName: 'Position from Y',
+				type: 'pixel size',
+				min: -100,
+				max: 100,
+				step: 1,
+				default: '0px',
+			},
+		],
+	},
+
+	{
+		name: 'translate3d',
+		displayName: 'Translate 3D',
+		params: [
+			{
+				name: 'x',
+				displayName: 'Length from X axis origin',
+				type: 'pixel size',
+				min: -100,
+				max: 100,
+				step: 1,
+				default: '0px',
+			},
+			{
+				name: 'y',
+				displayName: 'Length from Y axis origin',
+				type: 'pixel size',
+				min: -100,
+				max: 100,
+				step: 1,
+				default: '0px',
+			},
+			{
+				name: 'z',
+				displayName: 'Length from Z axis origin',
+				type: 'pixel size',
+				min: -100,
+				max: 100,
+				step: 1,
+				default: '0px',
+			},
+		],
+	},
+
+	{
+		name: 'translateX',
+		displayName: 'Translate X',
+		params: [
+			{
+				name: 'x',
+				displayName: 'Position from X',
+				type: 'pixel size',
+				min: -100,
+				max: 100,
+				step: 1,
+			},
+		],
+	},
+
+	{
+		name: 'translateY',
+		displayName: 'Translate Y',
+		params: [
+			{
+				name: 'y',
+				displayName: 'Position from Y',
+				type: 'pixel size',
+				min: -100,
+				max: 100,
+				step: 1,
+			},
+		],
+	},
+
+	{
+		name: 'translateZ',
+		displayName: 'Translate Z',
+		params: [
+			{
+				name: 'z',
+				displayName: 'Position from Z',
+				type: 'pixel size',
+				min: -100,
+				max: 100,
+				step: 1,
+			},
+		],
+	},
+];
 
 function TransformEditor({
 	subComponentName,
@@ -202,11 +566,194 @@ function TransformEditor({
 			};
 		});
 
-	console.log(transformFunctions);
+	let transforms = undefined;
+
+	const functionNameOptions = TRANSFORM_FUNCTIONS.map(e => ({
+		name: e.name,
+		displayName: e.displayName,
+	}));
+
+	const newTransformer = (
+		<div className="_simpleEditorGroup">
+			<div className="_simpleEditorGroupTitle _gradient">New Transform Function</div>
+			<div className="_simpleEditorGroupContent">
+				<div className="_editorLine">
+					<span className="_label">Function : </span>
+					<Dropdown
+						value=""
+						options={functionNameOptions}
+						onChange={e =>
+							valuesChangedOnlyValues({
+								styleProps,
+								properties,
+								pseudoState,
+								saveStyle,
+								iterateProps,
+								propValues: [
+									{
+										prop: 'transform',
+										value: (transform ? transform + ' ' : '') + e + '()',
+									},
+								],
+							})
+						}
+					/>
+				</div>
+			</div>
+		</div>
+	);
+
+	const changeFunctionValue = (
+		functionIndex: number,
+		valueIndex: number,
+		value: string,
+		functionDetail: FunctionDetail,
+	) => {
+		const newTransformFunctions = duplicate(transformFunctions);
+		if (functionDetail.params.length === 1) {
+			newTransformFunctions[functionIndex].value = value;
+		} else {
+			let values = newTransformFunctions[functionIndex].value.split(',');
+			let i = 0;
+			while (functionDetail.params.length !== values.length) {
+				if (values.length <= i) values.push(functionDetail.params[i].default ?? '');
+				i++;
+			}
+			values[valueIndex] = value;
+			newTransformFunctions[functionIndex].value = values.join(',');
+		}
+		valuesChangedOnlyValues({
+			styleProps,
+			properties,
+			pseudoState,
+			saveStyle,
+			iterateProps,
+			propValues: [
+				{
+					prop: 'transform',
+					value: newTransformFunctions.map((e: any) => `${e.name}(${e.value})`).join(' '),
+				},
+			],
+		});
+	};
+	transforms = transformFunctions.map((e: any, i: number) => {
+		const fun = TRANSFORM_FUNCTIONS.find(f => f.name.toLowerCase() === e.name.toLowerCase());
+		let paramValue = [e.value];
+		if ((fun?.params?.length ?? 0) > 1) {
+			paramValue = (e.value ?? '').split(',').map((e: string) => e.trim());
+		}
+		return (
+			<div className="_simpleEditorGroup" key={`${e.name}_${i}`}>
+				<div className="_simpleEditorGroupTitle _gradient">
+					{fun?.displayName}
+					<span className="_controls">
+						<IconsSimpleEditor
+							selected={''}
+							onChange={v => {
+								if (v !== 'Delete') return;
+								const newTransformFunctions = duplicate(transformFunctions);
+								newTransformFunctions.splice(i, 1);
+								valuesChangedOnlyValues({
+									styleProps,
+									properties,
+									pseudoState,
+									saveStyle,
+									iterateProps,
+									propValues: [
+										{
+											prop: 'transform',
+											value: newTransformFunctions
+												.map((e: any) => `${e.name}(${e.value})`)
+												.join(' '),
+										},
+									],
+								});
+							}}
+							withBackground={false}
+							options={[
+								{
+									name: 'Delete',
+									description: 'Delete this animation',
+									width: '13',
+									height: '14',
+									icon: (
+										<>
+											<path
+												d="M3.93393 0.483984L3.74107 0.875H1.16964C0.695536 0.875 0.3125 1.26602 0.3125 1.75C0.3125 2.23398 0.695536 2.625 1.16964 2.625H11.4554C11.9295 2.625 12.3125 2.23398 12.3125 1.75C12.3125 1.26602 11.9295 0.875 11.4554 0.875H8.88393L8.69107 0.483984C8.54643 0.185938 8.24911 0 7.925 0H4.7C4.37589 0 4.07857 0.185938 3.93393 0.483984ZM11.4554 3.5H1.16964L1.7375 12.7695C1.78036 13.4613 2.34286 14 3.02054 14H9.60446C10.2821 14 10.8446 13.4613 10.8875 12.7695L11.4554 3.5Z"
+												strokeWidth="0"
+											/>
+										</>
+									),
+								},
+							]}
+						/>
+					</span>
+				</div>
+				<div className="_simpleEditorGroupContent">
+					{fun?.params.map((paramDetail, ip) => {
+						let paramEditor = undefined;
+
+						if (paramDetail.type === 'number') {
+							paramEditor = (
+								<RangeWithoutUnit
+									value={paramValue[ip]}
+									onChange={v => changeFunctionValue(i, ip, v, fun)}
+									min={paramDetail.min}
+									max={paramDetail.max}
+									step={paramDetail.step}
+								/>
+							);
+						} else if (paramDetail.type === 'pixel size') {
+							paramEditor = (
+								<PixelSize
+									value={paramValue[ip]}
+									onChange={v => changeFunctionValue(i, ip, v, fun)}
+									placeholder={paramDetail.displayName}
+									min={paramDetail.min}
+									max={paramDetail.max}
+									step={paramDetail.step}
+								/>
+							);
+						} else if (paramDetail.type === 'angle size') {
+							paramEditor = (
+								<AngleSize
+									onChange={v => changeFunctionValue(i, ip, v, fun)}
+									value={paramValue[ip]}
+									placeholder={paramDetail.displayName}
+								/>
+							);
+						} else if (paramDetail.type === 'text area') {
+							paramEditor = (
+								<textarea
+									className="_peInput"
+									placeholder="Comma Seperated Parameters"
+									value={paramValue[ip]}
+									onChange={v => changeFunctionValue(i, ip, v.target.value, fun)}
+								/>
+							);
+						}
+
+						return (
+							<>
+								<div className="_editorLine" key={`${paramDetail.name}_label_${i}`}>
+									<span className="_label">{paramDetail.displayName} : </span>
+								</div>
+								<div className="_editorLine" key={`${paramDetail.name}_${i}`}>
+									{paramEditor}
+								</div>
+							</>
+						);
+					})}
+				</div>
+			</div>
+		);
+	});
 
 	return (
 		<>
 			<div className="_simpleLabel _withPadding">Transform : </div>
+			{transforms}
+			{newTransformer}
 			<div className="_combineEditors _spaceBetween">
 				<div className="_combineEditors">
 					<svg
@@ -575,7 +1122,6 @@ function TransformEditor({
 					max={100}
 				/>
 			</div>
-			{transformFunctions.map((e: any) => {})}
 		</>
 	);
 }

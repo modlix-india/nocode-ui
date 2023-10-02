@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Dropdown } from './Dropdown';
 import { RangeSlider } from './RangeSlider';
+import { AngleSlider } from './AngleSlider';
 
 export function RangeWithoutUnit({
 	value = '',
@@ -90,6 +91,64 @@ export function PixelSize({
 	);
 }
 
+export function AngleSize({
+	value = '',
+	onChange,
+	placeholder,
+	autofocus = false,
+	hideSlider = false,
+}: {
+	value: string;
+	onChange: (v: string) => void;
+	placeholder?: string;
+	autofocus?: boolean;
+	hideSlider?: boolean;
+}) {
+	let min = 0;
+	let max = 360;
+	let step = 1;
+	if (value?.toLowerCase()?.endsWith('grad')) {
+		max = 400;
+	} else if (value?.toLowerCase()?.endsWith('turn')) {
+		max = 1;
+		step = 0.01;
+	} else if (value?.toLowerCase()?.endsWith('rad')) {
+		max = 2 * Math.PI;
+		step = 0.01;
+	}
+
+	let unit = value.replace(/[0-9\-. ]/g, '').toLowerCase();
+	if (!unit) unit = 'deg';
+
+	return (
+		<div className="_simpleEditorAngleSize">
+			<AngleSlider
+				value={Number(value.replace(/[a-zA-Z ]/g, ''))}
+				onChange={v => onChange(v + unit)}
+				min={min}
+				max={max}
+				step={step}
+			/>
+			<GenericRangeSlider
+				value={value}
+				onChange={onChange}
+				placeholder={placeholder}
+				min={min ?? 0}
+				max={max ?? 360}
+				step={step}
+				autofocus={autofocus}
+				hideSlider={hideSlider}
+				unitOptions={[
+					{ name: 'deg', displayName: 'Deg' },
+					{ name: 'rad', displayName: 'Rad' },
+					{ name: 'grad', displayName: 'Grad' },
+					{ name: 'turn', displayName: 'Turn' },
+				]}
+			></GenericRangeSlider>
+		</div>
+	);
+}
+
 export function TimeSize({
 	value = '',
 	onChange,
@@ -137,6 +196,7 @@ function GenericRangeSlider({
 	unitOptions,
 	autofocus = false,
 	hideSlider = false,
+	children,
 }: {
 	value: string;
 	onChange: (v: string) => void;
@@ -147,6 +207,7 @@ function GenericRangeSlider({
 	unitOptions: { name: string; displayName: string }[];
 	autofocus?: boolean;
 	hideSlider?: boolean;
+	children?: React.ReactNode | React.ReactNode[];
 }) {
 	let num = '';
 	let unit = unitOptions[0]?.name ?? '';
@@ -188,6 +249,7 @@ function GenericRangeSlider({
 
 	return (
 		<div className="_simpleEditorPixelSize">
+			{children}
 			{slider}
 			<div className="_inputDropdownContainer">
 				<input

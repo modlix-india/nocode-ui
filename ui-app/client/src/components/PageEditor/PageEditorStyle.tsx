@@ -718,6 +718,13 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			width: 100%
 		}
 
+		._simpleEditorAngleSize {
+			display: flex;
+			align-items: center;
+			gap: 2px;
+			overflow: hidden;
+		}
+
 		._simpleEditorPixelSize {
 			display: flex;
 			align-items: center;
@@ -1269,7 +1276,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._simpleEditorGroupTitle._gradient {
 			border-radius: 4px 4px 0px 0px;
 			color: #FFF;
-			background: linear-gradient(90deg, rgba(67, 178, 255, 0.90) 0%, rgba(82, 189, 148, 0.90) 100%);
+			background: linear-gradient(90deg, rgba(67, 178, 255) 0%, rgba(82, 189, 148) 100%);
 		}
 
 		._simpleEditorGroupTitle ._controls {
@@ -1318,11 +1325,47 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			gap: 5px;
 		}
 
+		._simpleEditorGroupContent ._editorLine ._simpleEditorPixelSize {
+			width: 100%;
+		}
+
 		._simpleEditorGroupContent ._editorLine ._label {
 			color: #33333399;
 			font-family: Inter;
 			font-size: 12px;
 			font-weight: 500;
+			white-space: nowrap;
+		}
+
+		._simpleEditorAngle {
+			min-height: 60px;
+			min-width: 60px;
+			border-radius: 50%;
+			background-color: #F8FAFB;
+			position: relative;
+		}
+
+		._simpleEditorGroupContent ._simpleEditorAngle{
+			border: 1px solid rgba(67, 178, 255);
+		}
+
+		._simpleEditorAngle ._angleTrack {
+			height: 100%;
+			position: absolute;
+			left: 50%;
+			transform-origin: center center;
+			margin-left: -4px;
+		}
+
+		._simpleEditorAngle ._angleTrack::before {
+			content: '';
+			display: block;
+			width: 10px;
+			height: 10px;
+			background: linear-gradient(150deg, #43B2FF 13.39%, #52BD94 86.61%);
+			border-radius: 50%;
+			margin-top: 2px;
+			cursor: pointer;
 		}
 
 		._svgButton {
@@ -1531,6 +1574,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			right: 6px;
 			text-transform: uppercase;
 			user-select: none;
+			white-space: nowrap;
 		}
 
 		._spacingEditor ._label._hasValue{
