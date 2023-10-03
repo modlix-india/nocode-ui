@@ -457,28 +457,66 @@ export function PositionEditor({
 								name: 'left',
 								description: 'Clear: Left',
 								icon: (
-									<g
-										id="Group_83"
-										data-name="Group 83"
-										transform="translate(-1211.82 -296)"
-									>
+									<>
 										<path
-											id="Path_157"
-											data-name="Path 157"
-											d="M13.34,14.862l-9-9a6.451,6.451,0,0,0,9,9Zm1.522-1.522a6.451,6.451,0,0,0-9-9ZM1,9.6a8.6,8.6,0,1,1,2.52,6.083A8.6,8.6,0,0,1,1,9.6Z"
-											transform="translate(1220.975 299)"
+											id="Path_213"
+											data-name="Path 213"
+											d="M14,13a1,1,0,0,1-1,1H1a1,1,0,0,1-1-1V1A1,1,0,0,1,1,0H13a1,1,0,0,1,1,1Z"
+											transform="translate(3 9)"
 											fill="currentColor"
 											strokeWidth="0"
 										/>
 										<path
-											id="Union_2"
-											data-name="Union 2"
-											d="M-127.813,198.6l-3.171-3.291a.683.683,0,0,1,0-.94l3.171-3.291a.625.625,0,0,1,.906,0c.6.622-2.884,3.73-2.9,3.747,0,.02,3.518,3.137,2.9,3.776a.627.627,0,0,1-.453.195A.627.627,0,0,1-127.813,198.6Zm3.2-.056-3.171-3.291a.683.683,0,0,1,0-.94l3.171-3.291a.625.625,0,0,1,.906,0c.6.622-2.884,3.73-2.9,3.747,0,.02,3.518,3.137,2.9,3.776a.627.627,0,0,1-.453.195A.627.627,0,0,1-124.61,198.546Z"
-											transform="translate(1347.991 125.171)"
+											id="Path_214"
+											data-name="Path 214"
+											d="M25,13c-.552,0-1-.269-1-.6V1.6c0-.331.448-.6,1-.6s1,.269,1,.6V12.4C26,12.731,25.552,13,25,13Z"
+											transform="translate(3 9)"
 											fill="currentColor"
 											strokeWidth="0"
 										/>
-									</g>
+										<rect
+											id="Rectangle_29"
+											data-name="Rectangle 29"
+											width="6"
+											height="7"
+											rx="1"
+											transform="translate(19 12)"
+											fill="currentColor"
+											strokeWidth="0"
+										/>
+										<g
+											id="Group_97"
+											data-name="Group 97"
+											transform="translate(-564.171 -976.778) rotate(45)"
+										>
+											<g id="Group_96" data-name="Group 96">
+												<g id="Group_95" data-name="Group 95">
+													<rect
+														id="Rectangle_30"
+														data-name="Rectangle 30"
+														width="8"
+														height="2"
+														rx="1"
+														transform="translate(1104 295)"
+														fill="#fff"
+														style={{ fill: '#FFF' }}
+														strokeWidth="0"
+													/>
+												</g>
+												<rect
+													id="Rectangle_31"
+													data-name="Rectangle 31"
+													width="8"
+													height="2"
+													rx="1"
+													transform="translate(1109 292) rotate(90)"
+													fill="#fff"
+													style={{ fill: '#FFF' }}
+													strokeWidth="0"
+												/>
+											</g>
+										</g>
+									</>
 								),
 							},
 							{
@@ -486,26 +524,69 @@ export function PositionEditor({
 								description: 'Clear: Right',
 								icon: (
 									<g
-										id="Group_83"
-										data-name="Group 83"
-										transform="translate(5 4)"
+										style={{
+											transform: 'rotate(180deg)',
+											transformOrigin: 'center',
+										}}
 									>
 										<path
-											id="Path_157"
-											data-name="Path 157"
-											d="M5.866,14.862l9-9a6.451,6.451,0,0,1-9,9ZM4.344,13.34a6.451,6.451,0,0,1,9-9ZM18.206,9.6a8.6,8.6,0,1,0-2.52,6.083A8.6,8.6,0,0,0,18.206,9.6Z"
-											transform="translate(-1 -1)"
+											id="Path_213"
+											data-name="Path 213"
+											d="M14,13a1,1,0,0,1-1,1H1a1,1,0,0,1-1-1V1A1,1,0,0,1,1,0H13a1,1,0,0,1,1,1Z"
+											transform="translate(3 9)"
 											fill="currentColor"
 											strokeWidth="0"
 										/>
 										<path
-											id="Union_2"
-											data-name="Union 2"
-											d="M3.358.195.188,3.486a.683.683,0,0,0,0,.94L3.358,7.717a.625.625,0,0,0,.906,0c.6-.622-2.884-3.73-2.9-3.747,0-.02,3.518-3.137,2.9-3.776a.624.624,0,0,0-.906,0Zm3.2.056L3.391,3.542a.683.683,0,0,0,0,.94L6.561,7.774a.625.625,0,0,0,.906,0c.6-.622-2.884-3.73-2.9-3.747,0-.02,3.518-3.137,2.9-3.776a.624.624,0,0,0-.906,0Z"
-											transform="translate(22.361 23.968) rotate(180)"
+											id="Path_214"
+											data-name="Path 214"
+											d="M25,13c-.552,0-1-.269-1-.6V1.6c0-.331.448-.6,1-.6s1,.269,1,.6V12.4C26,12.731,25.552,13,25,13Z"
+											transform="translate(3 9)"
 											fill="currentColor"
 											strokeWidth="0"
 										/>
+										<rect
+											id="Rectangle_29"
+											data-name="Rectangle 29"
+											width="6"
+											height="7"
+											rx="1"
+											transform="translate(19 12)"
+											fill="currentColor"
+											strokeWidth="0"
+										/>
+										<g
+											id="Group_97"
+											data-name="Group 97"
+											transform="translate(-564.171 -976.778) rotate(45)"
+										>
+											<g id="Group_96" data-name="Group 96">
+												<g id="Group_95" data-name="Group 95">
+													<rect
+														id="Rectangle_30"
+														data-name="Rectangle 30"
+														width="8"
+														height="2"
+														rx="1"
+														transform="translate(1104 295)"
+														fill="#fff"
+														style={{ fill: '#FFF' }}
+														strokeWidth="0"
+													/>
+												</g>
+												<rect
+													id="Rectangle_31"
+													data-name="Rectangle 31"
+													width="8"
+													height="2"
+													rx="1"
+													transform="translate(1109 292) rotate(90)"
+													fill="#fff"
+													style={{ fill: '#FFF' }}
+													strokeWidth="0"
+												/>
+											</g>
+										</g>
 									</g>
 								),
 							},
@@ -513,36 +594,56 @@ export function PositionEditor({
 								name: 'both',
 								description: 'Clear: Both',
 								icon: (
-									<g
-										id="Group_83"
-										data-name="Group 83"
-										transform="translate(-1212.242 -296)"
-									>
+									<>
 										<path
-											id="Path_157"
-											data-name="Path 157"
-											d="M5.866,14.862l9-9a6.451,6.451,0,0,1-9,9ZM4.344,13.34a6.451,6.451,0,0,1,9-9ZM18.206,9.6a8.6,8.6,0,1,0-2.52,6.083A8.6,8.6,0,0,0,18.206,9.6Z"
-											transform="translate(1218.397 299)"
+											id="Path_213"
+											data-name="Path 213"
+											d="M0,13a1,1,0,0,0,1,1H13a1,1,0,0,0,1-1V1a1,1,0,0,0-1-1H1A1,1,0,0,0,0,1Z"
+											transform="translate(9 9)"
 											fill="currentColor"
 											strokeWidth="0"
 										/>
-										<path
-											id="Union_2"
-											data-name="Union 2"
-											d="M3.358.195.188,3.486a.683.683,0,0,0,0,.94L3.358,7.717a.625.625,0,0,0,.906,0c.6-.622-2.884-3.73-2.9-3.747,0-.02,3.518-3.137,2.9-3.776a.624.624,0,0,0-.906,0Zm3.2.056L3.391,3.542a.683.683,0,0,0,0,.94L6.561,7.774a.625.625,0,0,0,.906,0c.6-.622-2.884-3.73-2.9-3.747,0-.02,3.518-3.137,2.9-3.776a.624.624,0,0,0-.906,0Z"
-											transform="translate(1240.373 324.968) rotate(180)"
-											fill="currentColor"
-											strokeWidth="0"
-										/>
-										<path
-											id="Union_3"
-											data-name="Union 3"
-											d="M3.358,7.773.188,4.482a.683.683,0,0,1,0-.94L3.358.251a.625.625,0,0,1,.906,0C4.864.873,1.38,3.98,1.362,4c0,.02,3.518,3.137,2.9,3.776a.624.624,0,0,1-.906,0Zm3.2-.056L3.391,4.426a.683.683,0,0,1,0-.94L6.561.195a.625.625,0,0,1,.906,0c.6.622-2.884,3.73-2.9,3.747,0,.02,3.518,3.137,2.9,3.776a.624.624,0,0,1-.906,0Z"
-											transform="translate(1216.242 317)"
-											fill="currentColor"
-											strokeWidth="0"
-										/>
-									</g>
+										<g
+											id="Group_97"
+											data-name="Group 97"
+											transform="translate(21.314 16) rotate(135)"
+										>
+											<g
+												id="Group_96"
+												data-name="Group 96"
+												transform="translate(0 0)"
+											>
+												<g
+													id="Group_95"
+													data-name="Group 95"
+													transform="translate(0 3)"
+												>
+													<rect
+														id="Rectangle_30"
+														data-name="Rectangle 30"
+														width="8"
+														height="2"
+														rx="1"
+														transform="translate(0 0)"
+														fill="#fff"
+														style={{ fill: '#FFF' }}
+														strokeWidth="0"
+													/>
+												</g>
+												<rect
+													id="Rectangle_31"
+													data-name="Rectangle 31"
+													width="8"
+													height="2"
+													rx="1"
+													transform="translate(3 8) rotate(-90)"
+													fill="#fff"
+													style={{ fill: '#FFF' }}
+													strokeWidth="0"
+												/>
+											</g>
+										</g>
+									</>
 								),
 							},
 						],
