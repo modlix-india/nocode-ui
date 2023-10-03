@@ -14,7 +14,7 @@ import { PageOperations } from '../../../functions/PageOperations';
 
 import { DropdownOptions, Dropdown } from './Dropdown';
 import { IconOptions, IconsSimpleEditor } from './IconsSimpleEditor';
-import { PixelSize } from './SizeSliders';
+import { PixelSize, RangeWithoutUnit } from './SizeSliders';
 import { ColorSelector } from './ColorSelector';
 import { ShadowEditor, ShadowEditorType } from './ShadowEditor';
 
@@ -105,6 +105,7 @@ export function EachSimpleEditor({
 					min={editorDef.rangeMin ?? 0}
 					max={editorDef.rangeMax ?? 100}
 					hideSlider={editorDef.hideSlider}
+					step={editorDef.rangeStep}
 				/>
 			);
 			break;
@@ -141,6 +142,20 @@ export function EachSimpleEditor({
 				/>
 			);
 			break;
+
+		case SimpleEditorType.Range:
+			editor = (
+				<RangeWithoutUnit
+					value={value.value}
+					onChange={editorOnchange}
+					placeholder={placeholder}
+					min={editorDef.rangeMin ?? 0}
+					max={editorDef.rangeMax ?? 100}
+					hideSlider={editorDef.hideSlider}
+					step={editorDef.rangeStep}
+				/>
+			);
+			break;
 		default:
 			editor = <></>;
 	}
@@ -158,6 +173,7 @@ export enum SimpleEditorType {
 	Image = 'Image',
 	Gradient = 'Gradient',
 	ImageGradient = 'ImageGradient',
+	Range = 'Range',
 }
 
 export interface SimpleEditorDefinition {
@@ -172,6 +188,7 @@ export interface SimpleEditorDefinition {
 	multipleValueType?: SimpleEditorMultipleValueType;
 	rangeMin?: number;
 	rangeMax?: number;
+	rangeStep?: number;
 	hideSlider?: boolean;
 }
 
@@ -287,6 +304,8 @@ export function valuesChangedOnlyValues({
 	iterateProps: any;
 	propValues: { prop: string; value: string }[];
 }) {
+	if (propValues.length === 0) return;
+
 	const updatedStyle = propValues.reduce((updatedStyle, { prop, value }) => {
 		const {
 			value: oldValue,

@@ -718,6 +718,13 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			width: 100%
 		}
 
+		._simpleEditorAngleSize {
+			display: flex;
+			align-items: center;
+			gap: 2px;
+			overflow: hidden;
+		}
+
 		._simpleEditorPixelSize {
 			display: flex;
 			align-items: center;
@@ -1269,7 +1276,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._simpleEditorGroupTitle._gradient {
 			border-radius: 4px 4px 0px 0px;
 			color: #FFF;
-			background: linear-gradient(90deg, rgba(67, 178, 255, 0.90) 0%, rgba(82, 189, 148, 0.90) 100%);
+			background: linear-gradient(90deg, rgba(67, 178, 255) 0%, rgba(82, 189, 148) 100%);
 		}
 
 		._simpleEditorGroupTitle ._controls {
@@ -1318,11 +1325,77 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			gap: 5px;
 		}
 
+		._simpleEditorGroupContent ._editorLine ._simpleEditorPixelSize {
+			width: 100%;
+		}
+
 		._simpleEditorGroupContent ._editorLine ._label {
 			color: #33333399;
 			font-family: Inter;
 			font-size: 12px;
 			font-weight: 500;
+			white-space: nowrap;
+		}
+
+		._simpleEditorAngle {
+			min-height: 60px;
+			min-width: 60px;
+			border-radius: 50%;
+			background-color: #F8FAFB;
+			position: relative;
+		}
+
+		._simpleEditorGroupContent ._simpleEditorAngle{
+			border: 1px solid rgba(67, 178, 255);
+		}
+
+		._simpleEditorAngle ._angleTrack {
+			height: 100%;
+			position: absolute;
+			left: 50%;
+			transform-origin: center center;
+			margin-left: -4px;
+		}
+
+		._simpleEditorAngle ._angleTrack::before {
+			content: '';
+			display: block;
+			width: 10px;
+			height: 10px;
+			background: linear-gradient(150deg, #43B2FF 13.39%, #52BD94 86.61%);
+			border-radius: 50%;
+			margin-top: 2px;
+			cursor: pointer;
+		}
+
+		._simpleEditorButtonBar {
+			height: 35px;
+			display: flex;
+			flex-direction: row;
+			padding: 5px;
+			font-family: Inter;
+			font-size: 12px;
+			gap: 5px;
+			background-color: #F8FAFB;
+			border-radius: 6px;
+			justify-content: center;
+			align-items: center;
+		}
+
+		._simpleEditorButtonBar ._simpleButtonBarButton {
+			height: 100%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			padding: 0px 10px;
+			border-radius: 4px;
+			cursor: pointer;
+		}
+
+		._simpleEditorButtonBar ._simpleButtonBarButton._selected {
+			background-color: #4C7FEE;
+			color: #FFF;
+			box-shadow: 0px 1px 3px 0px #0000001A;
 		}
 
 		._svgButton {
@@ -1461,9 +1534,13 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._simpleLabel {
 			font-size: 12px;
 			font-family: Inter;
-			color: #000000;
+			color: #222222B2;
 			white-space: nowrap;
 			font-weight: 500;
+		}
+
+		._simpleLabel._withPadding {
+			padding: 5px 15px;
 		}
 
 		._detailStyleEditor ._simpleLabel {
@@ -1527,6 +1604,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			right: 6px;
 			text-transform: uppercase;
 			user-select: none;
+			white-space: nowrap;
 		}
 
 		._spacingEditor ._label._hasValue{

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 export function RangeSlider({
 	value,
@@ -21,6 +21,12 @@ export function RangeSlider({
 		width: `${percent < 0 ? 0 : percent > 100 ? 50 : percent}%`,
 	};
 	const ref = React.useRef<HTMLDivElement>(null);
+	const fixedPoint = useMemo(() => {
+		const stepString = step.toString();
+		const decimalIndex = stepString.indexOf('.');
+		if (decimalIndex === -1) return 0;
+		return stepString.length - decimalIndex - 1;
+	}, [step]);
 	return (
 		<div className="_simpleEditorRange" role="slider" ref={ref}>
 			<div className="_rangeTrack"></div>
@@ -47,7 +53,10 @@ export function RangeSlider({
 						}
 
 						const diff = e.clientX - startX;
-						const newValue = Math.round(startValue + (diff / width) * (max - min));
+						let newValue = !step
+							? Math.round(startValue + (diff / width) * (max - min))
+							: Math.round((startValue + (diff / width) * (max - min)) / step) * step;
+						if (fixedPoint > 0) newValue = Number(newValue.toFixed(fixedPoint));
 						if (newValue < min) onChange(min);
 						else if (newValue > max) onChange(max);
 						else onChange(newValue);

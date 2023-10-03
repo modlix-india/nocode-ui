@@ -114,15 +114,23 @@ export function SpacingEditor({
 			directionOptions.push({
 				name: '',
 				description: 'Top',
-				width: '24',
-				height: '24',
-				viewBox: '0 0 32 32',
 				icon: (
 					<>
 						<rect
+							id="Rectangle_28"
+							data-name="Rectangle 28"
 							width="8"
 							height="8"
-							transform="translate(12 3)"
+							rx="1"
+							transform="translate(12 12)"
+							fill="currentColor"
+							strokeWidth="0"
+						/>
+						<path
+							id="Path_203"
+							data-name="Path 203"
+							d="M3,1c0-.552.269-1,.6-1H14.4c.331,0,.6.448.6,1s-.269,1-.6,1H3.6C3.269,2,3,1.552,3,1Z"
+							transform="translate(7 7)"
 							fill="currentColor"
 							strokeWidth="0"
 						/>
@@ -133,51 +141,82 @@ export function SpacingEditor({
 			directionOptions.push({
 				name: '',
 				description: 'Bottom',
-				width: '24',
-				height: '24',
-				viewBox: '0 0 32 32',
 				icon: (
-					<rect
-						width="8"
-						height="8"
-						transform="translate(12 21)"
-						fill="currentColor"
-						strokeWidth="0"
-					/>
+					<>
+						<rect
+							id="Rectangle_28"
+							data-name="Rectangle 28"
+							width="8"
+							height="8"
+							rx="1"
+							transform="translate(12 12)"
+							fill="currentColor"
+							strokeWidth="0"
+						/>
+						<path
+							id="Path_206"
+							data-name="Path 206"
+							d="M3,17c0-.552.269-1,.6-1H14.4c.331,0,.6.448.6,1s-.269,1-.6,1H3.6C3.269,18,3,17.552,3,17Z"
+							transform="translate(7 7)"
+							fill="currentColor"
+							strokeWidth="0"
+						/>
+					</>
 				),
 			});
 		} else if (whatDirection === 'Left') {
 			directionOptions.push({
 				name: '',
 				description: 'Left',
-				width: '24',
-				height: '24',
-				viewBox: '0 0 32 32',
 				icon: (
-					<rect
-						width="8"
-						height="8"
-						transform="translate(2 12)"
-						fill="currentColor"
-						strokeWidth="0"
-					/>
+					<>
+						<rect
+							id="Rectangle_28"
+							data-name="Rectangle 28"
+							width="8"
+							height="8"
+							rx="1"
+							transform="translate(12 12)"
+							fill="currentColor"
+							strokeWidth="0"
+						/>
+						<path
+							id="Path_204"
+							data-name="Path 204"
+							d="M1,3c.552,0,1,.269,1,.6V14.4c0,.331-.448.6-1,.6s-1-.269-1-.6V3.6C0,3.269.448,3,1,3Z"
+							transform="translate(7 7)"
+							fill="currentColor"
+							strokeWidth="0"
+						/>
+					</>
 				),
 			});
 		} else if (whatDirection === 'Right') {
 			directionOptions.push({
 				name: '',
 				description: 'Right',
-				width: '24',
-				height: '24',
-				viewBox: '0 0 32 32',
 				icon: (
-					<rect
-						width="8"
-						height="8"
-						transform="translate(22 12)"
-						fill="currentColor"
-						strokeWidth="0"
-					/>
+					<>
+						<rect
+							id="Rectangle_28"
+							data-name="Rectangle 28"
+							width="8"
+							height="8"
+							rx="1"
+							transform="translate(12 12)"
+							fill="currentColor"
+							strokeWidth="0"
+						/>
+
+						<path
+							id="Path_205"
+							data-name="Path 205"
+							d="M17,3c.552,0,1,.269,1,.6V14.4c0,.331-.448.6-1,.6s-1-.269-1-.6V3.6C16,3.269,16.448,3,17,3Z"
+							transform="translate(7 7)"
+							fill="currentColor"
+							strokeWidth="0"
+						/>
+					</>
 				),
 			});
 		}
@@ -186,22 +225,31 @@ export function SpacingEditor({
 			directionOptions.push({
 				name: 'topBottom',
 				description: 'Top/Bottom',
-				width: '24',
-				height: '24',
-				viewBox: '0 0 32 32',
 				icon: (
 					<>
 						<rect
+							id="Rectangle_28"
+							data-name="Rectangle 28"
 							width="8"
 							height="8"
-							transform="translate(12 3)"
+							rx="1"
+							transform="translate(12 12)"
 							fill="currentColor"
 							strokeWidth="0"
 						/>
-						<rect
-							width="8"
-							height="8"
-							transform="translate(12 21)"
+						<path
+							id="Path_203"
+							data-name="Path 203"
+							d="M3,1c0-.552.269-1,.6-1H14.4c.331,0,.6.448.6,1s-.269,1-.6,1H3.6C3.269,2,3,1.552,3,1Z"
+							transform="translate(7 7)"
+							fill="currentColor"
+							strokeWidth="0"
+						/>
+						<path
+							id="Path_206"
+							data-name="Path 206"
+							d="M3,17c0-.552.269-1,.6-1H14.4c.331,0,.6.448.6,1s-.269,1-.6,1H3.6C3.269,18,3,17.552,3,17Z"
+							transform="translate(7 7)"
 							fill="currentColor"
 							strokeWidth="0"
 						/>
@@ -212,22 +260,31 @@ export function SpacingEditor({
 			directionOptions.push({
 				name: 'leftRight',
 				description: 'Left/Right',
-				width: '24',
-				height: '24',
-				viewBox: '0 0 32 32',
 				icon: (
 					<>
 						<rect
+							id="Rectangle_28"
+							data-name="Rectangle 28"
 							width="8"
 							height="8"
-							transform="translate(22 12)"
+							rx="1"
+							transform="translate(12 12)"
 							fill="currentColor"
 							strokeWidth="0"
 						/>
-						<rect
-							width="8"
-							height="8"
-							transform="translate(2 12)"
+						<path
+							id="Path_205"
+							data-name="Path 205"
+							d="M17,3c.552,0,1,.269,1,.6V14.4c0,.331-.448.6-1,.6s-1-.269-1-.6V3.6C16,3.269,16.448,3,17,3Z"
+							transform="translate(7 7)"
+							fill="currentColor"
+							strokeWidth="0"
+						/>
+						<path
+							id="Path_204"
+							data-name="Path 204"
+							d="M1,3c.552,0,1,.269,1,.6V14.4c0,.331-.448.6-1,.6s-1-.269-1-.6V3.6C0,3.269.448,3,1,3Z"
+							transform="translate(7 7)"
 							fill="currentColor"
 							strokeWidth="0"
 						/>
@@ -239,36 +296,47 @@ export function SpacingEditor({
 		directionOptions.push({
 			name: 'all',
 			description: 'All',
-			width: '24',
-			height: '24',
-			viewBox: '0 0 32 32',
 			icon: (
 				<>
 					<rect
+						id="Rectangle_28"
+						data-name="Rectangle 28"
 						width="8"
 						height="8"
-						transform="translate(12 3)"
+						rx="1"
+						transform="translate(12 12)"
 						fill="currentColor"
 						strokeWidth="0"
 					/>
-					<rect
-						width="8"
-						height="8"
-						transform="translate(12 21)"
+					<path
+						id="Path_203"
+						data-name="Path 203"
+						d="M3,1c0-.552.269-1,.6-1H14.4c.331,0,.6.448.6,1s-.269,1-.6,1H3.6C3.269,2,3,1.552,3,1Z"
+						transform="translate(7 7)"
 						fill="currentColor"
 						strokeWidth="0"
 					/>
-					<rect
-						width="8"
-						height="8"
-						transform="translate(22 12)"
+					<path
+						id="Path_204"
+						data-name="Path 204"
+						d="M1,3c.552,0,1,.269,1,.6V14.4c0,.331-.448.6-1,.6s-1-.269-1-.6V3.6C0,3.269.448,3,1,3Z"
+						transform="translate(7 7)"
 						fill="currentColor"
 						strokeWidth="0"
 					/>
-					<rect
-						width="8"
-						height="8"
-						transform="translate(2 12)"
+					<path
+						id="Path_205"
+						data-name="Path 205"
+						d="M17,3c.552,0,1,.269,1,.6V14.4c0,.331-.448.6-1,.6s-1-.269-1-.6V3.6C16,3.269,16.448,3,17,3Z"
+						transform="translate(7 7)"
+						fill="currentColor"
+						strokeWidth="0"
+					/>
+					<path
+						id="Path_206"
+						data-name="Path 206"
+						d="M3,17c0-.552.269-1,.6-1H14.4c.331,0,.6.448.6,1s-.269,1-.6,1H3.6C3.269,18,3,17.552,3,17Z"
+						transform="translate(7 7)"
 						fill="currentColor"
 						strokeWidth="0"
 					/>
