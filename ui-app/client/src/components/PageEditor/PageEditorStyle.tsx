@@ -112,7 +112,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			cursor: pointer;
 			display: flex;
 			align-items: center;
-			height: 30px;
+			height: 34px;
 			flex-shrink: 0;
 			margin:	0px 8px;
 			border-radius: 4px;
@@ -152,11 +152,20 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._compsTree:hover ._treeNodeLevel {
-			border-right: 0.75px dotted #00000026;
+			border-right: 0.75px dotted #00000020;
+		} 
+		${PREFIX} ._compsTree:hover ._treeNode._subComponent:hover ._treeNodeLevel,
+		${PREFIX} ._compsTree:hover ._treeNode._subComponent._selected ._treeNodeLevel {
+			border-right: 0.75px dotted #00000020;
+		}
+
+		${PREFIX} ._compsTree:hover ._treeNode:hover ._treeNodeLevel,
+		${PREFIX} ._compsTree:hover ._treeNode._selected ._treeNodeLevel {
+			border-right: none;
 		} 
 
 		${PREFIX} ._compsTree ._treeNodeLevel._lastOpened {
-			border-right: 0.75px dotted #00000026;
+			border-right: 0.75px dotted #00000020;
 		}
 
 		${PREFIX} ._compsTree ._treeNode i.fa {
@@ -703,7 +712,17 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._combineEditors ._simpleEditor {
 			padding: 0px;
-			width: 100%;
+		}
+
+		._combineEditors ._simpleEditor._expandWidth {
+			width: 100%
+		}
+
+		._simpleEditorAngleSize {
+			display: flex;
+			align-items: center;
+			gap: 2px;
+			overflow: hidden;
 		}
 
 		._simpleEditorPixelSize {
@@ -935,9 +954,11 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._simpleEditorIcons ._eachIcon:hover svg path,
 		._simpleEditorIcons ._eachIcon:hover svg circle,
 		._simpleEditorIcons ._eachIcon:hover svg rect,
+		._simpleEditorIcons ._eachIcon:hover svg line,
 		._simpleEditorIcons ._eachIcon._active svg path,
 		._simpleEditorIcons ._eachIcon._active svg circle,
-		._simpleEditorIcons ._eachIcon._active svg rect {
+		._simpleEditorIcons ._eachIcon._active svg rect,
+		._simpleEditorIcons ._eachIcon._active svg line {
 			fill: #3A8BED;
 			stroke: #3A8BED;
 		}
@@ -1255,7 +1276,34 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._simpleEditorGroupTitle._gradient {
 			border-radius: 4px 4px 0px 0px;
 			color: #FFF;
-			background: linear-gradient(90deg, rgba(67, 178, 255, 0.90) 0%, rgba(82, 189, 148, 0.90) 100%);
+			background: linear-gradient(90deg, rgba(67, 178, 255) 0%, rgba(82, 189, 148) 100%);
+		}
+
+		._simpleEditorGroupTitle ._controls {
+			flex: 1;
+			height: 100%;
+			display: flex;
+			justify-content: flex-end;
+		}
+
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon svg path,
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon svg circle,
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon svg rect,
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon svg line{
+			fill: #FFF;
+			stroke: #FFF
+		}
+
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon:hover svg path,
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon:hover svg circle,
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon:hover svg rect,
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon:hover svg line,
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon._active svg path,
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon._active svg circle,
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon._active svg rect,
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon._active svg line {
+			fill-opacity: 0.5;
+			stroke-opacity: 0.5;
 		}
 
 		._simpleEditorGroup ._simpleEditorGroupContent {
@@ -1277,11 +1325,77 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			gap: 5px;
 		}
 
+		._simpleEditorGroupContent ._editorLine ._simpleEditorPixelSize {
+			width: 100%;
+		}
+
 		._simpleEditorGroupContent ._editorLine ._label {
 			color: #33333399;
 			font-family: Inter;
 			font-size: 12px;
 			font-weight: 500;
+			white-space: nowrap;
+		}
+
+		._simpleEditorAngle {
+			min-height: 60px;
+			min-width: 60px;
+			border-radius: 50%;
+			background-color: #F8FAFB;
+			position: relative;
+		}
+
+		._simpleEditorGroupContent ._simpleEditorAngle{
+			border: 1px solid rgba(67, 178, 255);
+		}
+
+		._simpleEditorAngle ._angleTrack {
+			height: 100%;
+			position: absolute;
+			left: 50%;
+			transform-origin: center center;
+			margin-left: -4px;
+		}
+
+		._simpleEditorAngle ._angleTrack::before {
+			content: '';
+			display: block;
+			width: 10px;
+			height: 10px;
+			background: linear-gradient(150deg, #43B2FF 13.39%, #52BD94 86.61%);
+			border-radius: 50%;
+			margin-top: 2px;
+			cursor: pointer;
+		}
+
+		._simpleEditorButtonBar {
+			height: 35px;
+			display: flex;
+			flex-direction: row;
+			padding: 5px;
+			font-family: Inter;
+			font-size: 12px;
+			gap: 5px;
+			background-color: #F8FAFB;
+			border-radius: 6px;
+			justify-content: center;
+			align-items: center;
+		}
+
+		._simpleEditorButtonBar ._simpleButtonBarButton {
+			height: 100%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			padding: 0px 10px;
+			border-radius: 4px;
+			cursor: pointer;
+		}
+
+		._simpleEditorButtonBar ._simpleButtonBarButton._selected {
+			background-color: #4C7FEE;
+			color: #FFF;
+			box-shadow: 0px 1px 3px 0px #0000001A;
 		}
 
 		._svgButton {
@@ -1294,7 +1408,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction: row;
 			align-items: center;			
 			padding: 5px 15px;
-			gap: 3px;
+			gap: 5px;
 			width: 100%;
 		}
 
@@ -1341,6 +1455,18 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._combineEditors._spaceBetween {
 			justify-content: space-between;
+		}
+
+		._combineEditors._spaceAround {
+			justify-content: space-around;
+		}
+
+		._combineEditors._centered {
+			justify-content: center;
+		}
+
+		._combineEditors._alignEnd {
+			justify-content: flex-end;
 		}
 
 		._combineEditors._vertical {
@@ -1400,17 +1526,205 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			gap: 10px;
 			display: flex;
 			flex-direction: column;
+			max-height: 500px;
+			overflow: auto;
+			margin-bottom: 5px;
+		}
+
+		._simpleLabel {
+			font-size: 12px;
+			font-family: Inter;
+			color: #222222B2;
+			white-space: nowrap;
+			font-weight: 500;
+		}
+
+		._simpleLabel._withPadding {
+			padding: 5px 15px;
 		}
 
 		._detailStyleEditor ._simpleLabel {
-			font-size: 12px;
-			font-family: Inter;
-			color: #000000;
-			white-space: nowrap;
 			padding-left: 15px;
 			padding-right: 15px;
-			font-weight: 500;
 		}
+
+		._positionKnob #background{
+			fill: #F8FAFB;
+		}
+
+		._positionKnob #knob {
+			fill: #FFF;
+			filter: drop-shadow(0px 0px 3px #0000000D)
+		}
+
+		._positionKnob #left,
+		._positionKnob #top,
+		._positionKnob #right,
+		._positionKnob #bottom {
+			fill: #E3E5EA;
+		}
+
+		._positionKnob._left #left,
+		._positionKnob._top #top,
+		._positionKnob._right #right,
+		._positionKnob._bottom #bottom {
+			fill: #4C7FEE;
+		}
+
+		._spacingEditor._margin {
+			margin: 0px 15px;
+			position: relative;
+			border-radius: 6px;
+			border: 2px solid #E3E5EA;
+			height: 166px;
+		}
+
+		._spacingEditor._margin._hasValue,
+		._spacingEditor ._padding._hasValue {
+			border-color: #52BD94
+		}
+
+		._spacingEditor ._padding {
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%, -50%);
+			border: 2px solid #E3E5EA;
+			height: 90px;
+			min-width: 58%;
+			border-radius: 6px;
+		}
+
+		._spacingEditor ._label {
+			font-size: 8px;
+			font-family: Inter;
+			color: #D2D3DB;
+			position: absolute;
+			bottom: 2px;
+			right: 6px;
+			text-transform: uppercase;
+			user-select: none;
+			white-space: nowrap;
+		}
+
+		._spacingEditor ._label._hasValue{
+			color: #52BD94;
+		}
+
+		._spacingEditor ._changer {
+			position: absolute;
+			width: 110%;
+			margin-left: -5%;
+			top: 0;
+			left: 0;
+			cursor: pointer;
+			background-color: #FFFFFF;
+			box-shadow: 2px 2px 4px 0px #0000001A;
+			border-radius: 4px;
+			z-index: 1;
+		}
+
+		._spacingEditor ._changer ._header {
+			font-size: 11px;
+			font-family: Inter;
+			font-weight: 600;
+			color: #000000;
+			user-select: none;
+			padding: 5px;
+			background-color: #F8FAFB;
+			border-top-left-radius: 4px;
+			border-top-right-radius: 4px;
+			border-bottom: 1px solid #0000000F;
+			padding-left: 20px;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			height: 35px;
+		}
+
+		._spacingEditor ._changer ._body {
+			padding: 10px 15px;
+			display: flex;
+			flex-direction: column;
+		}
+
+		._spacingEditor ._value {
+			height: 25px;
+			min-width: 45px;
+			background: #F8FAFB;
+			border-radius: 4px;
+			font-family: Inter;
+			font-size: 12px;
+			line-height: 12px;
+			color: #000000;
+			position: absolute;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			padding: 4px;
+			cursor: pointer;
+		}
+
+		._spacingEditor ._value._default {
+			color: #D2D3DB;
+		}
+
+		._spacingEditor ._padding ._value {
+			font-size: 10px;
+		}
+
+		._spacingEditor ._square {
+			position: absolute;
+			width: 8px;
+			height: 8px;
+			border-radius: 1px;
+			background-color: #E3E5EA;
+			opacity: 0.5;
+		}
+
+		._spacingEditor ._circle {
+			position: absolute;
+			width: 8px;
+			height: 8px;
+			border-radius: 50%;
+			background-color: #E3E5EA;
+			opacity: 0.5;
+		}
+
+		._spacingEditor ._square._hasValue,
+		._spacingEditor ._circle._hasValue {
+			background-color: #52BD94;
+			opacity: 1;
+		}
+
+		._spacingEditor ._top {
+			top: -5px;
+			left: 50%;
+			transform: translateX(-50%);
+		}
+
+		._spacingEditor ._bottom {
+			bottom: -5px;
+			left: 50%;
+			transform: translateX(-50%);
+		}
+
+		._spacingEditor ._left {
+			left: -5px;
+			top: 50%;
+			transform: translateY(-50%);
+		}
+
+		._spacingEditor ._right {
+			right: -5px;
+			top: 50%;
+			transform: translateY(-50%);
+		}
+
+		._spacingEditor ._value._top { top: 5px; }
+		._spacingEditor ._value._bottom { bottom: 5px; }
+		._spacingEditor ._value._left { left: 5px; }
+		._spacingEditor ._value._right { right: 5px; }
 
 		${PREFIX} ._buttonBar._screenSizes {
 			height: 65px;
@@ -1681,8 +1995,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._styleButtonContainer {
 			background: #F8FAFB;
 			border-radius: 6px;
-			margin-left: 20px;
-			margin-right: 20px;
+			margin-left: 15px;
+			margin-right: 15px;
 			height: 45px;
 			position: relative;		
 			padding: 0px 5px;	
@@ -1904,7 +2218,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			font-family: Inter;
 			font-size: 13px;			
 			color: #888;
-			padding: 14px 20px;
+			padding: 14px 15px;
 			cursor: pointer;
 			border-radius: 3px;
 			display: flex;

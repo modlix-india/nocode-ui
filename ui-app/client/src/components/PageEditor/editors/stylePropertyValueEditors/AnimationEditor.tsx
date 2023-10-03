@@ -1,9 +1,15 @@
-import React, { useCallback } from 'react';
-import { StyleEditorsProps, extractValue, valueChanged } from './simpleEditors';
-import { IconsSimpleEditor } from './simpleEditors/IconsSimpleEditor';
 import { duplicate } from '@fincity/kirun-js';
+import React from 'react';
 import { ANIMATIONS_LIST } from '../../../util/properties';
+import {
+	StyleEditorsProps,
+	extractValue,
+	valueChanged,
+	valuesChanged,
+	valuesChangedOnlyValues,
+} from './simpleEditors';
 import { Dropdown } from './simpleEditors/Dropdown';
+import { IconsSimpleEditor } from './simpleEditors/IconsSimpleEditor';
 import { TimeSize } from './simpleEditors/SizeSliders';
 
 const ANIMATION_PROPS = [
@@ -53,6 +59,21 @@ const ICONS = [
 
 	{
 		name: '_swing',
+		icon: (
+			<svg
+				width="38"
+				height="38"
+				viewBox="0 0 38 38"
+				fill="none"
+				xmlns="http://www.w3.org/2000/svg"
+			>
+				<rect x="2" y="12" width="36" height="18" rx="2" fill="url(#no_color_gradient)" />
+			</svg>
+		),
+	},
+
+	{
+		name: '_spin',
 		icon: (
 			<svg
 				width="38"
@@ -594,18 +615,11 @@ export function AnimationEditor({
 	subComponentName,
 	pseudoState,
 	iterateProps,
-	appDef,
-	pageDef,
-	editPageName,
-	slaveStore,
-	storePaths,
 	selectorPref,
 	styleProps,
 	selectedComponent,
 	saveStyle,
-	pageOperations,
 	properties,
-	isDetailStyleEditor,
 }: StyleEditorsProps) {
 	const propValues = ANIMATION_PROPS.map(prop =>
 		extractValue({
@@ -656,7 +670,7 @@ export function AnimationEditor({
 	}
 
 	const props = propValues.reduce((a, e) => {
-		a[e.actualProp] = (e.value?.value ?? '')
+		a[e.actualProp.substring(e.actualProp.indexOf('-') + 1)] = (e.value?.value ?? '')
 			.split(',')
 			.map((x: string) => x.trim())
 			.filter((x: string) => x !== '')
@@ -675,7 +689,7 @@ export function AnimationEditor({
 		const propValue = v.map((x: string) => (x ? x : ANIMATION_PROPS_DEFAULTS[prop])).join(',');
 
 		const { screenSize, actualProp, compProp } =
-			propValues.find(e => e.actualProp === prop) ?? {};
+			propValues.find(e => e.actualProp.endsWith(prop)) ?? {};
 
 		if (!actualProp || !compProp || !screenSize) return;
 
@@ -700,7 +714,58 @@ export function AnimationEditor({
 			<div className="_simpleEditorGroup" key={`${props.animationName[i]}_group_${i}`}>
 				<div className="_simpleEditorGroupTitle _gradient">
 					<span>Customize Animation</span>
-					<span className="_controls"></span>
+					<span className="_controls">
+						<IconsSimpleEditor
+							selected={''}
+							onChange={v => {
+								if (v === 'Delete') {
+									valuesChanged({
+										styleProps,
+										properties,
+										pseudoState,
+										saveStyle,
+										iterateProps,
+										propValues: propValues
+											.filter(e => e.value.value)
+											.map(e => ({
+												actualProp: e.actualProp,
+												compProp: e.compProp,
+												screenSize: e.screenSize,
+												value: {
+													value: e.value.value
+														.trim()
+														.split(',')
+														.map((x: string) => x.trim())
+														.filter(
+															(_: string, ind: number) => ind !== i,
+														)
+														.join(','),
+													location: e.value.location,
+												},
+											})),
+									});
+									return;
+								}
+							}}
+							withBackground={false}
+							options={[
+								{
+									name: 'Delete',
+									description: 'Delete this animation',
+									width: '13',
+									height: '14',
+									icon: (
+										<>
+											<path
+												d="M3.93393 0.483984L3.74107 0.875H1.16964C0.695536 0.875 0.3125 1.26602 0.3125 1.75C0.3125 2.23398 0.695536 2.625 1.16964 2.625H11.4554C11.9295 2.625 12.3125 2.23398 12.3125 1.75C12.3125 1.26602 11.9295 0.875 11.4554 0.875H8.88393L8.69107 0.483984C8.54643 0.185938 8.24911 0 7.925 0H4.7C4.37589 0 4.07857 0.185938 3.93393 0.483984ZM11.4554 3.5H1.16964L1.7375 12.7695C1.78036 13.4613 2.34286 14 3.02054 14H9.60446C10.2821 14 10.8446 13.4613 10.8875 12.7695L11.4554 3.5Z"
+												strokeWidth="0"
+											/>
+										</>
+									),
+								},
+							]}
+						/>
+					</span>
 				</div>
 				<div className="_simpleEditorGroupContent">
 					<div className="_editorLine">
@@ -719,6 +784,7 @@ export function AnimationEditor({
 							value={props.animationDuration[i]}
 							onChange={e => saveAnimation(i, 'animationDuration', e)}
 							placeholder="Duration"
+							autofocus={true}
 						/>
 					</div>
 					<div className="_editorLine">
@@ -809,8 +875,6 @@ export function AnimationEditor({
 		);
 	}
 
-	console.log(propValues);
-
 	return (
 		<>
 			<svg
@@ -874,91 +938,99 @@ export function AnimationEditor({
 									.includes(searchFilter.toLowerCase().trim()),
 						  )
 						: ANIMATIONS_LIST
-					).map(e => {
-						return (
-							<div
-								className="_searchResultItem"
-								key={e.name}
-								onClick={() => {
-									const { screenSize, actualProp, compProp } = extractValue({
-										subComponentName,
-										prop: 'animationName',
-										iterateProps,
-										pseudoState,
-										selectorPref,
-										selectedComponent,
-									});
-
-									console.log(screenSize, actualProp, compProp, props);
-
-									valueChanged({
-										styleProps,
-										properties,
-										screenSize,
-										actualProp,
-										value: {
-											value: (props.animationName.length
-												? [...props.animationName, e.name]
-												: [e.name]
-											).join(','),
-										},
-										compProp,
-										pseudoState,
-										saveStyle,
-										iterateProps,
-									});
-								}}
-							>
-								<div className="_animationIcon">
-									<div className="_default">
-										{React.cloneElement(
-											ICONS.find(x => e.name.startsWith(x.name))?.icon ??
-												OTHER,
-										)}
+					)
+						.filter(e => e.name !== '_waitOpacity')
+						.map(e => {
+							return (
+								<div
+									className="_searchResultItem"
+									key={e.name}
+									onClick={() => {
+										valuesChangedOnlyValues({
+											styleProps,
+											properties,
+											pseudoState,
+											saveStyle,
+											iterateProps,
+											propValues: [
+												{
+													prop: 'animationName',
+													value: props.animationName.length
+														? [...props.animationName, e.name].join(',')
+														: e.name,
+												},
+												{
+													prop: 'animationDuration',
+													value: props.animationDuration.length
+														? [...props.animationDuration, '1s'].join(
+																',',
+														  )
+														: '1s',
+												},
+												{
+													prop: 'animationIterationCount',
+													value: props.animationIterationCount.length
+														? [
+																...props.animationIterationCount,
+																'1',
+														  ].join(',')
+														: '1',
+												},
+											],
+										});
+									}}
+								>
+									<div className="_animationIcon">
+										<div className="_default">
+											{React.cloneElement(
+												ICONS.find(x => e.name.startsWith(x.name))?.icon ??
+													OTHER,
+											)}
+										</div>
+										<div
+											className="_hovered"
+											style={{ animation: `${e.name} 2s linear infinite` }}
+										>
+											{e.name.startsWith('_swing') ||
+											e.name.startsWith('_spin') ? (
+												<svg
+													width="38"
+													height="38"
+													viewBox="0 0 38 38"
+													fill="none"
+													xmlns="http://www.w3.org/2000/svg"
+												>
+													<rect
+														x="2"
+														y="12"
+														width="36"
+														height="18"
+														rx="2"
+														fill="url(#color_gradient)"
+													/>
+												</svg>
+											) : (
+												<svg
+													width="30"
+													height="30"
+													viewBox="0 0 30 30"
+													fill="none"
+													xmlns="http://www.w3.org/2000/svg"
+												>
+													<path
+														d="M15 30C23.2843 30 30 23.2843 30 15C30 6.71574 23.2843 0 15 0C6.71573 0 0 6.71574 0 15C0 23.2843 6.71573 30 15 30Z"
+														fill={`url(#color_gradient)`}
+													/>
+												</svg>
+											)}
+										</div>
 									</div>
-									<div
-										className="_hovered"
-										style={{ animation: `${e.name} 2s linear infinite` }}
-									>
-										{e.name.startsWith('_swing') ? (
-											<svg
-												width="38"
-												height="38"
-												viewBox="0 0 38 38"
-												fill="none"
-												xmlns="http://www.w3.org/2000/svg"
-											>
-												<rect
-													x="2"
-													y="12"
-													width="36"
-													height="18"
-													rx="2"
-													fill="url(#color_gradient)"
-												/>
-											</svg>
-										) : (
-											<svg
-												width="30"
-												height="30"
-												viewBox="0 0 30 30"
-												fill="none"
-												xmlns="http://www.w3.org/2000/svg"
-											>
-												<path
-													d="M15 30C23.2843 30 30 23.2843 30 15C30 6.71574 23.2843 0 15 0C6.71573 0 0 6.71574 0 15C0 23.2843 6.71573 30 15 30Z"
-													fill={`url(#color_gradient)`}
-												/>
-											</svg>
-										)}
+									<div className="_animationName">
+										{e.displayName.replace(' ', '\n')}
 									</div>
 								</div>
-								<div className="_animationName">
-									{e.displayName.replace(' ', '\n')}
-								</div>
-							</div>
-						);
-					})}
+							);
+						})}
 				</div>
 			</div>
 			{animations}

@@ -505,7 +505,6 @@ const COMPONENT_STYLE_GROUPS: { [key: string]: Array<string> } = {
 		'borderBottomRightRadius',
 	],
 	effects: [
-		'backgroundBlendMode',
 		'opacity',
 		'outlineColor',
 		'outlineOffset',
@@ -663,7 +662,12 @@ const COMPONENT_STYLE_GROUP_PROPERTIES: { [key: string]: ComponentStylePropertyG
 		displayName: 'Background',
 		description: 'Background',
 		target: ['comp'],
-		advanced: ['backgroundAttachment', 'backgroundOrigin'],
+		advanced: [
+			'backgroundAttachment',
+			'backgroundOrigin',
+			'backdropFilter',
+			'backgroundBlendMode',
+		],
 	},
 	border: {
 		name: 'border',
@@ -745,14 +749,14 @@ const COMPONENT_STYLE_GROUP_PROPERTIES: { [key: string]: ComponentStylePropertyG
 			'mixBlendMode',
 			'transform',
 			'transformStyle',
+			'transformOrigin',
+			'transformBox',
 			'transitionProperty',
 			'transitionDuration',
 			'transitionTiming-function',
 			'transitionDelay',
 			'filter',
-			'backdropFilter',
 			'cursor',
-			'transformOrigin',
 			'perspective',
 		],
 	},
@@ -788,6 +792,10 @@ export const ANIMATIONS_LIST = [
 	{
 		name: '_shake',
 		displayName: 'Shake',
+	},
+	{
+		name: '_spin',
+		displayName: 'Spin',
 	},
 	{
 		name: '_swing',
@@ -1032,6 +1040,10 @@ export const ANIMATIONS_LIST = [
 	{
 		name: '_zoomOutUp',
 		displayName: 'Zoom Out Up',
+	},
+	{
+		name: '_waitOpacity',
+		displayName: 'Zero Opacity',
 	},
 ];
 
