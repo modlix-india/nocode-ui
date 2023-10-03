@@ -174,8 +174,8 @@ function Stepper(props: ComponentProps) {
 									className={`${
 										i < value && showCheckOnComplete ? checkIcon : iconList[i]
 									} _step ${i < value ? '_done' : ''} ${
-										i === value ? '_current' : ''
-									} _icon`}
+										i === value ? '_active' : ''
+									}`}
 								>
 									<SubHelperComponent
 										definition={props.definition}
@@ -199,7 +199,7 @@ function Stepper(props: ComponentProps) {
 											style={resolvedStyles.icon ?? {}}
 											className={`${checkIcon} _step ${
 												i < value ? '_done' : ''
-											} ${i === value ? '_current' : ''} _icon`}
+											} ${i === value ? '_active' : ''}`}
 										>
 											<SubHelperComponent
 												definition={props.definition}
@@ -210,7 +210,7 @@ function Stepper(props: ComponentProps) {
 										<span
 											style={resolvedStyles.text ?? {}}
 											className={`_step ${i < value ? '_done' : ''} ${
-												i === value ? '_current' : ''
+												i === value ? '_active' : ''
 											}`}
 										>
 											<SubHelperComponent
@@ -222,26 +222,28 @@ function Stepper(props: ComponentProps) {
 									)}
 								</>
 							)}
-							<span
-								onMouseEnter={
-									stylePropertiesWithPseudoStates?.hover
-										? () => setHover(true)
-										: undefined
-								}
-								onMouseLeave={
-									stylePropertiesWithPseudoStates?.hover
-										? () => setHover(false)
-										: undefined
-								}
-								style={resolvedStyles.text ?? {}}
-								className="_title"
-							>
-								<SubHelperComponent
-									definition={props.definition}
-									subComponentName="text"
-								/>
-								{getTranslations(e, translations)}
-							</span>
+							{stepperDesign !== '_pills' && (
+								<span
+									onMouseEnter={
+										stylePropertiesWithPseudoStates?.hover
+											? () => setHover(true)
+											: undefined
+									}
+									onMouseLeave={
+										stylePropertiesWithPseudoStates?.hover
+											? () => setHover(false)
+											: undefined
+									}
+									style={resolvedStyles.text ?? {}}
+									className="_title"
+								>
+									<SubHelperComponent
+										definition={props.definition}
+										subComponentName="text"
+									/>
+									{getTranslations(e, translations)}
+								</span>
+							)}
 						</div>
 					</li>
 				))}
