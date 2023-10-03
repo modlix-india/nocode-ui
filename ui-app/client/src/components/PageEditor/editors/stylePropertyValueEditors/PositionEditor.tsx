@@ -332,27 +332,82 @@ export function PositionEditor({
 							{
 								name: 'left',
 								description: 'Float: Left',
+
 								icon: (
-									<path
-										id="Union_1"
-										data-name="Union 1"
-										d="M-124.25,206.406l-6.535-6.6a1.341,1.341,0,0,1,0-1.885l6.535-6.6a1.313,1.313,0,0,1,1.867,0c1.235,1.247-5.944,7.474-5.982,7.509,0,.04,7.251,6.286,5.982,7.566a1.31,1.31,0,0,1-.934.39A1.31,1.31,0,0,1-124.25,206.406Zm6.6-.113-6.535-6.6a1.341,1.341,0,0,1,0-1.885l6.535-6.6a1.313,1.313,0,0,1,1.867,0c1.236,1.247-5.944,7.474-5.982,7.509,0,.04,7.251,6.286,5.982,7.566a1.31,1.31,0,0,1-.934.39A1.31,1.31,0,0,1-117.648,206.294Z"
-										transform="translate(139.272 -182.897)"
-										strokeWidth={0}
-									/>
+									<g
+										id="Group_92"
+										data-name="Group 92"
+										transform="translate(7 8.286)"
+									>
+										<rect
+											id="Rectangle_26"
+											data-name="Rectangle 26"
+											width="8"
+											height="16"
+											rx="1"
+											transform="translate(10 -0.286)"
+											fill="currentColor"
+											strokeWidth={0}
+										/>
+										<path
+											id="Path_199"
+											data-name="Path 199"
+											d="M1.286,1c.71,0,1.286.288,1.286.643V13.214c0,.355-.576.643-1.286.643S0,13.569,0,13.214V1.643C0,1.288.576,1,1.286,1Z"
+											transform="translate(0 0.286)"
+											fill="currentColor"
+											strokeWidth={0}
+										/>
+										<rect
+											id="Rectangle_27"
+											data-name="Rectangle 27"
+											width="5"
+											height="7"
+											rx="1"
+											transform="translate(9 11.714) rotate(180)"
+											fill="currentColor"
+											strokeWidth={0}
+										/>
+									</g>
 								),
 							},
 							{
 								name: 'right',
 								description: 'Float: Right',
 								icon: (
-									<path
-										id="Union_1"
-										data-name="Union 1"
-										d="M6.922.39.387,6.985a1.341,1.341,0,0,0,0,1.885l6.535,6.6a1.313,1.313,0,0,0,1.867,0c1.235-1.247-5.944-7.474-5.982-7.509,0-.04,7.251-6.286,5.982-7.566a1.312,1.312,0,0,0-1.867,0Zm6.6.113L6.988,7.1a1.341,1.341,0,0,0,0,1.885l6.535,6.6a1.313,1.313,0,0,0,1.867,0C16.626,14.331,9.446,8.1,9.409,8.069c0-.04,7.251-6.286,5.982-7.566a1.312,1.312,0,0,0-1.867,0Z"
-										transform="translate(23.64 23.9) rotate(180)"
-										strokeWidth={0}
-									/>
+									<g
+										id="Group_92"
+										data-name="Group 92"
+										transform="translate(7 8)"
+									>
+										<rect
+											id="Rectangle_26"
+											data-name="Rectangle 26"
+											width="8"
+											height="16"
+											rx="1"
+											transform="translate(0)"
+											fill="currentColor"
+											strokeWidth={0}
+										/>
+										<path
+											id="Path_199"
+											data-name="Path 199"
+											d="M1.286,1C.576,1,0,1.288,0,1.643V13.214c0,.355.576.643,1.286.643s1.286-.288,1.286-.643V1.643C2.571,1.288,2,1,1.286,1Z"
+											transform="translate(15.429 0.571)"
+											fill="currentColor"
+											strokeWidth={0}
+										/>
+										<rect
+											id="Rectangle_27"
+											data-name="Rectangle 27"
+											width="5"
+											height="7"
+											rx="1"
+											transform="translate(9 5)"
+											fill="currentColor"
+											strokeWidth={0}
+										/>
+									</g>
 								),
 							},
 						],
