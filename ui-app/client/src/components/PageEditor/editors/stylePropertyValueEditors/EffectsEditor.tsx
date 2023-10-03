@@ -14,9 +14,6 @@ import { PixelSize } from './simpleEditors/SizeSliders';
 // 'transitionTiming-function',
 // 'transitionDelay',
 
-// 'filter',
-// 'backdropFilter',
-
 // 'cursor',
 
 export function EffectsEditor(props: StyleEditorsProps) {
@@ -147,6 +144,62 @@ export function EffectsEditor(props: StyleEditorsProps) {
 						{ name: 'saturation', displayName: 'Saturation' },
 						{ name: 'color', displayName: 'Color' },
 						{ name: 'luminosity', displayName: 'Luminosity' },
+					],
+				}}
+			/>
+
+			<div className="_simpleLabel _withPadding">Cursor : </div>
+			<EachSimpleEditor
+				subComponentName={subComponentName}
+				pseudoState={pseudoState}
+				prop="cursor"
+				placeholder="Cursor"
+				iterateProps={iterateProps}
+				selectorPref={selectorPref}
+				styleProps={styleProps}
+				selectedComponent={selectedComponent}
+				saveStyle={saveStyle}
+				properties={properties}
+				editorDef={{
+					type: SimpleEditorType.Dropdown,
+					dropDownShowNoneLabel: true,
+					dropdownOptions: [
+						{ name: 'auto', displayName: 'Auto' },
+						{ name: 'defualt', displayName: 'Default' },
+						{ name: 'pointer', displayName: 'Pointer' },
+						{ name: 'all-scroll', displayName: 'All-scroll' },
+						{ name: 'cell', displayName: 'Cell' },
+						{ name: 'col-resize', displayName: 'Column Resize' },
+						{ name: 'context-menu', displayName: 'Context Menu' },
+						{ name: 'copy', displayName: 'Copy' },
+						{ name: 'crosshair', displayName: 'Crosshair' },
+						{ name: 'default', displayName: 'Default' },
+						{ name: 'e-resize', displayName: 'E Resize' },
+						{ name: 'ew-resize', displayName: 'EW Resize' },
+						{ name: 'grab', displayName: 'Grab' },
+						{ name: 'grabbing', displayName: 'Grabbing' },
+						{ name: 'help', displayName: 'Help' },
+						{ name: 'move', displayName: 'Move' },
+						{ name: 'n-resize', displayName: 'N Resize' },
+						{ name: 'ne-resize', displayName: 'NE Resize' },
+						{ name: 'nesw-resize', displayName: 'NESW Resize' },
+						{ name: 'ns-resize', displayName: 'NS Resize' },
+						{ name: 'nw-resize', displayName: 'NW Resize' },
+						{ name: 'nwse-resize', displayName: 'NWSE Resize' },
+						{ name: 'no-drop', displayName: 'No Drop' },
+						{ name: 'none', displayName: 'None' },
+						{ name: 'not-allowed', displayName: 'Not Allowed' },
+						{ name: 'progress', displayName: 'Progress' },
+						{ name: 'row-resize', displayName: 'Row Resize' },
+						{ name: 's-resize', displayName: 'S Resize' },
+						{ name: 'se-resize', displayName: 'SE Resize' },
+						{ name: 'sw-resize', displayName: 'SW Resize' },
+						{ name: 'text', displayName: 'Text' },
+						{ name: 'vertical-text', displayName: 'Vertical Text' },
+						{ name: 'w-resize', displayName: 'W Resize' },
+						{ name: 'wait', displayName: 'Wait' },
+						{ name: 'zoom-in', displayName: 'Zoom-in' },
+						{ name: 'zoom-out', displayName: 'Zoom-out' },
 					],
 				}}
 			/>
