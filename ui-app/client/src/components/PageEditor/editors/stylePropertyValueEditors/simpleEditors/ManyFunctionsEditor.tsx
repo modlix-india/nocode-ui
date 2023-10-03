@@ -2,16 +2,21 @@ import React from 'react';
 import { Dropdown } from './Dropdown';
 import { duplicate } from '@fincity/kirun-js';
 import { IconsSimpleEditor } from './IconsSimpleEditor';
-import { AngleSize, PixelSize, RangeWithoutUnit } from './SizeSliders';
+import {
+	AngleSize,
+	NumberPercentageSize,
+	PixelSize,
+	RangeWithoutUnit,
+	UnitOption,
+} from './SizeSliders';
 
 export interface ParamDetail {
 	name: string;
 	displayName: string;
-	type: 'number' | 'pixel size' | 'angle size' | 'text area';
-	min?: number;
-	max?: number;
-	step?: number;
+	type: 'number' | 'pixel size' | 'angle size' | 'text area' | 'number percentage';
 	default?: string;
+	optionOverride?: Array<UnitOption>;
+	numberOptions?: { min: number; max: number; step: number };
 }
 
 export interface FunctionDetail {
@@ -137,9 +142,9 @@ export function ManyFunctionsEditor({
 								<RangeWithoutUnit
 									value={paramValue[ip]}
 									onChange={v => changeFunctionValue(i, ip, v, fun)}
-									min={paramDetail.min}
-									max={paramDetail.max}
-									step={paramDetail.step}
+									min={paramDetail.numberOptions?.min}
+									max={paramDetail.numberOptions?.max}
+									step={paramDetail.numberOptions?.step}
 								/>
 							);
 						} else if (paramDetail.type === 'pixel size') {
@@ -148,9 +153,7 @@ export function ManyFunctionsEditor({
 									value={paramValue[ip]}
 									onChange={v => changeFunctionValue(i, ip, v, fun)}
 									placeholder={paramDetail.displayName}
-									min={paramDetail.min}
-									max={paramDetail.max}
-									step={paramDetail.step}
+									extraOptions={paramDetail.optionOverride}
 								/>
 							);
 						} else if (paramDetail.type === 'angle size') {
@@ -168,6 +171,15 @@ export function ManyFunctionsEditor({
 									placeholder="Comma Seperated Parameters"
 									value={paramValue[ip]}
 									onChange={v => changeFunctionValue(i, ip, v.target.value, fun)}
+								/>
+							);
+						} else if (paramDetail.type === 'number percentage') {
+							paramEditor = (
+								<NumberPercentageSize
+									value={paramValue[ip]}
+									onChange={v => changeFunctionValue(i, ip, v, fun)}
+									placeholder={paramDetail.displayName}
+									extraOptions={paramDetail.optionOverride}
 								/>
 							);
 						}

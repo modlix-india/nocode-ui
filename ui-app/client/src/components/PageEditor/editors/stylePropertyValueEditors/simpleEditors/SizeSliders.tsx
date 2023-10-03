@@ -3,15 +3,23 @@ import { Dropdown } from './Dropdown';
 import { RangeSlider } from './RangeSlider';
 import { AngleSlider } from './AngleSlider';
 
+export interface UnitOption {
+	name: string;
+	displayName: string;
+	min?: number;
+	max?: number;
+	step?: number;
+}
+
 export function RangeWithoutUnit({
 	value = '',
 	onChange,
 	placeholder,
-	min = 0,
-	max = 100,
-	step,
 	autofocus = false,
 	hideSlider = false,
+	min,
+	max,
+	step,
 }: {
 	value: string;
 	onChange: (v: string) => void;
@@ -25,71 +33,160 @@ export function RangeWithoutUnit({
 	return (
 		<GenericRangeSlider
 			value={value}
-			onChange={onChange}
+			onChange={e => (e.endsWith('number') ? onChange(e.replace('number', '')) : onChange(e))}
 			placeholder={placeholder}
-			min={min}
-			max={max}
-			step={step}
 			autofocus={autofocus}
 			hideSlider={hideSlider}
-			unitOptions={[]}
+			hideUnits={true}
+			unitOptions={[{ name: 'number', displayName: 'Number', min, max, step }]}
 		/>
 	);
 }
 
-export function PixelSize({
+const NUMBER_PERCENTAGE_OPTIONS: UnitOption[] = [
+	{ name: '', displayName: 'Num', min: 0, max: 100, step: 1 },
+	{ name: '%', displayName: '%', min: 0, max: 100, step: 0.1 },
+];
+
+export function NumberPercentageSize({
 	value = '',
 	onChange,
 	placeholder,
-	min = 0,
-	max = 100,
 	autofocus = false,
 	hideSlider = false,
-	step,
 	extraOptions = [],
 }: {
 	value: string;
 	onChange: (v: string) => void;
 	placeholder?: string;
-	min?: number;
-	max?: number;
-	step?: number;
 	autofocus?: boolean;
 	hideSlider?: boolean;
-	extraOptions?: { name: string; displayName: string }[];
+	extraOptions?: UnitOption[];
 }) {
+	const options = [...NUMBER_PERCENTAGE_OPTIONS];
+
+	if (extraOptions.length > 0) {
+		const extras = extraOptions.reduce((acc, cur) => {
+			acc[cur.name] = cur;
+			return acc;
+		}, {} as { [key: string]: UnitOption });
+
+		for (let i = 0; i < options.length; i++) {
+			const option = options[i];
+			if (!(option.name in extras)) continue;
+			options[i] = { ...option, ...extras[option.name] };
+			delete extras[option.name];
+		}
+
+		for (let i = 0; i < extraOptions.length; i++) {
+			const option = extraOptions[i];
+			if (option.name in extras) {
+				options.push(option);
+				delete extras[option.name];
+			}
+		}
+	}
+
+	return (
+		<GenericRangeSlider
+			value={value}
+			onChange={e => {
+				onChange(e);
+			}}
+			placeholder={placeholder}
+			autofocus={autofocus}
+			hideSlider={hideSlider}
+			unitOptions={options}
+		/>
+	);
+}
+
+const BEFORE_OPTIONS: UnitOption[] = [
+	{ name: 'px', displayName: 'px', min: 0, max: 100, step: 1 },
+	{ name: 'vw', displayName: 'vw', min: 0, max: 100, step: 1 },
+	{ name: 'vh', displayName: 'vh', min: 0, max: 100, step: 1 },
+	{ name: 'vmin', displayName: 'vmin', min: 0, max: 100, step: 1 },
+	{ name: 'vmax', displayName: 'vmax', min: 0, max: 100, step: 1 },
+	{ name: '%', displayName: '%', min: 0, max: 100, step: 0.1 },
+	{ name: 'auto', displayName: 'auto' },
+];
+
+const AFTER_OPTIONS: UnitOption[] = [
+	{ name: 'em', displayName: 'em', min: 0, max: 100, step: 1 },
+	{ name: 'rem', displayName: 'rem', min: 0, max: 100, step: 1 },
+	{ name: 'cm', displayName: 'cm', min: 0, max: 100, step: 1 },
+	{ name: 'mm', displayName: 'mm', min: 0, max: 100, step: 1 },
+	{ name: 'in', displayName: 'in', min: 0, max: 100, step: 1 },
+	{ name: 'pt', displayName: 'pt', min: 0, max: 100, step: 1 },
+	{ name: 'pc', displayName: 'pc', min: 0, max: 100, step: 1 },
+	{ name: 'ex', displayName: 'ex', min: 0, max: 100, step: 1 },
+	{ name: 'ch', displayName: 'ch', min: 0, max: 100, step: 1 },
+];
+export function PixelSize({
+	value = '',
+	onChange,
+	placeholder,
+	autofocus = false,
+	hideSlider = false,
+	extraOptions = [],
+}: {
+	value: string;
+	onChange: (v: string) => void;
+	placeholder?: string;
+	autofocus?: boolean;
+	hideSlider?: boolean;
+	extraOptions?: UnitOption[];
+}) {
+	const extras: { [key: string]: UnitOption } = extraOptions.length
+		? extraOptions.reduce((acc, cur) => {
+				acc[cur.name] = cur;
+				return acc;
+		  }, {} as { [key: string]: UnitOption })
+		: {};
+
+	const options: UnitOption[] = [...BEFORE_OPTIONS];
+
+	if (extraOptions.length) {
+		const usedKeys = new Set<string>();
+		for (let i = 0; i < options.length; i++) {
+			const option = options[i];
+			if (!(option.name in extras)) continue;
+			usedKeys.add(option.name);
+			options[i] = { ...option, ...extras[option.name] };
+			delete extras[option.name];
+		}
+
+		for (let i = 0; i < extraOptions.length; i++) {
+			const option = extraOptions[i];
+			if (option.name in extras) {
+				options.push(option);
+				delete extras[option.name];
+			}
+		}
+
+		options.push(...AFTER_OPTIONS.filter(e => !(e.name in usedKeys)));
+	} else {
+		options.push(...AFTER_OPTIONS);
+	}
+
 	return (
 		<GenericRangeSlider
 			value={value}
 			onChange={e => onChange(e.endsWith('auto') ? 'auto' : e)}
 			placeholder={placeholder}
-			min={min}
-			max={max}
-			step={step}
 			autofocus={autofocus}
 			hideSlider={hideSlider}
-			unitOptions={[
-				{ name: 'px', displayName: 'px' },
-				{ name: 'vw', displayName: 'vw' },
-				{ name: 'vh', displayName: 'vh' },
-				{ name: 'vmin', displayName: 'vmin' },
-				{ name: 'vmax', displayName: 'vmax' },
-				{ name: '%', displayName: '%' },
-				{ name: 'auto', displayName: 'auto' },
-				...extraOptions,
-				{ name: 'em', displayName: 'em' },
-				{ name: 'rem', displayName: 'rem' },
-				{ name: 'cm', displayName: 'cm' },
-				{ name: 'mm', displayName: 'mm' },
-				{ name: 'in', displayName: 'in' },
-				{ name: 'pt', displayName: 'pt' },
-				{ name: 'pc', displayName: 'pc' },
-				{ name: 'ex', displayName: 'ex' },
-				{ name: 'ch', displayName: 'ch' },
-			]}
+			unitOptions={options}
 		/>
 	);
 }
+
+const ANGLE_UNITS = [
+	{ name: 'deg', displayName: 'Deg', min: 0, max: 360, step: 1 },
+	{ name: 'rad', displayName: 'Rad', min: 0, max: 2 * Math.PI, step: 0.01 },
+	{ name: 'grad', displayName: 'Grad', min: 0, max: 400, step: 1 },
+	{ name: 'turn', displayName: 'Turn', min: 0, max: 1, step: 0.01 },
+];
 
 export function AngleSize({
 	value = '',
@@ -104,21 +201,10 @@ export function AngleSize({
 	autofocus?: boolean;
 	hideSlider?: boolean;
 }) {
-	let min = 0;
-	let max = 360;
-	let step = 1;
-	if (value?.toLowerCase()?.endsWith('grad')) {
-		max = 400;
-	} else if (value?.toLowerCase()?.endsWith('turn')) {
-		max = 1;
-		step = 0.01;
-	} else if (value?.toLowerCase()?.endsWith('rad')) {
-		max = 2 * Math.PI;
-		step = 0.01;
-	}
-
 	let unit = value.replace(/[0-9\-. ]/g, '').toLowerCase();
 	if (!unit) unit = 'deg';
+
+	const { min, max, step } = ANGLE_UNITS.find(e => e.name === unit) ?? {};
 
 	return (
 		<div className="_simpleEditorAngleSize">
@@ -133,17 +219,9 @@ export function AngleSize({
 				value={value}
 				onChange={onChange}
 				placeholder={placeholder}
-				min={min ?? 0}
-				max={max ?? 360}
-				step={step}
 				autofocus={autofocus}
 				hideSlider={hideSlider}
-				unitOptions={[
-					{ name: 'deg', displayName: 'Deg' },
-					{ name: 'rad', displayName: 'Rad' },
-					{ name: 'grad', displayName: 'Grad' },
-					{ name: 'turn', displayName: 'Turn' },
-				]}
+				unitOptions={ANGLE_UNITS}
 			></GenericRangeSlider>
 		</div>
 	);
@@ -153,9 +231,6 @@ export function TimeSize({
 	value = '',
 	onChange,
 	placeholder,
-	min,
-	max,
-	step,
 	autofocus = false,
 	hideSlider = false,
 }: {
@@ -173,14 +248,11 @@ export function TimeSize({
 			value={value}
 			onChange={onChange}
 			placeholder={placeholder}
-			min={min ?? 0}
-			max={max ?? value?.toLowerCase()?.endsWith('ms') ? 10000 : 10}
-			step={step}
 			autofocus={autofocus}
 			hideSlider={hideSlider}
 			unitOptions={[
-				{ name: 's', displayName: 'Sec' },
-				{ name: 'ms', displayName: 'MS' },
+				{ name: 's', displayName: 'Sec', min: 0, max: 100, step: 1 },
+				{ name: 'ms', displayName: 'MS', min: 0, max: 10000, step: 100 },
 			]}
 		/>
 	);
@@ -190,23 +262,19 @@ function GenericRangeSlider({
 	value = '',
 	onChange,
 	placeholder,
-	min = 0,
-	max = 100,
-	step = 1,
 	unitOptions,
 	autofocus = false,
 	hideSlider = false,
 	children,
+	hideUnits = false,
 }: {
 	value: string;
 	onChange: (v: string) => void;
 	placeholder?: string;
-	min?: number;
-	max?: number;
-	step?: number;
-	unitOptions: { name: string; displayName: string }[];
+	unitOptions: UnitOption[];
 	autofocus?: boolean;
 	hideSlider?: boolean;
+	hideUnits?: boolean;
 	children?: React.ReactNode | React.ReactNode[];
 }) {
 	let num = '';
@@ -225,19 +293,20 @@ function GenericRangeSlider({
 
 	let slider = undefined;
 	if (!hideSlider) {
+		const { min, max, step } = unitOptions.find(e => e.name === unit) ?? {};
 		slider = (
 			<RangeSlider
 				value={Number(inNum)}
 				onChange={v => onChange(String(v) + unit)}
 				min={min}
-				max={max}
+				max={max ?? 100}
 				step={step}
 			/>
 		);
 	}
 
 	let dropdown = undefined;
-	if (unitOptions.length > 0)
+	if (unitOptions.length > 0 && !hideUnits)
 		dropdown = (
 			<Dropdown
 				value={unit}

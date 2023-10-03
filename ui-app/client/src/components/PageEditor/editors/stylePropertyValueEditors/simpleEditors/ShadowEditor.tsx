@@ -275,9 +275,15 @@ export function ShadowEditor({
 							if (!newShadows[i].vOffset) newShadows[i].vOffset = '0px';
 							onChange(createShadowString(newShadows, type));
 						}}
-						min={0}
-						max={50}
 						placeholder="H-Offset"
+						extraOptions={[
+							{ name: 'px', displayName: 'PX', min: -100, max: 100, step: 1 },
+							{ name: 'vw', displayName: 'VW', min: -100, max: 100, step: 1 },
+							{ name: 'vh', displayName: 'VH', min: -100, max: 100, step: 1 },
+							{ name: 'vmin', displayName: 'VMIN', min: -100, max: 100, step: 1 },
+							{ name: 'vmax', displayName: 'VMAX', min: -100, max: 100, step: 1 },
+							{ name: '%', displayName: '%', min: -100, max: 100, step: 0.1 },
+						]}
 					/>
 					<PixelSize
 						value={e.vOffset ?? ''}
@@ -287,9 +293,15 @@ export function ShadowEditor({
 							if (!newShadows[i].hOffset) newShadows[i].hOffset = '0px';
 							onChange(createShadowString(newShadows, type));
 						}}
-						min={0}
-						max={50}
 						placeholder="V-Offset"
+						extraOptions={[
+							{ name: 'px', displayName: 'PX', min: -100, max: 100, step: 1 },
+							{ name: 'vw', displayName: 'VW', min: -100, max: 100, step: 1 },
+							{ name: 'vh', displayName: 'VH', min: -100, max: 100, step: 1 },
+							{ name: 'vmin', displayName: 'VMIN', min: -100, max: 100, step: 1 },
+							{ name: 'vmax', displayName: 'VMAX', min: -100, max: 100, step: 1 },
+							{ name: '%', displayName: '%', min: -100, max: 100, step: 0.1 },
+						]}
 					/>
 					<PixelSize
 						value={e.blur ?? ''}
@@ -300,8 +312,6 @@ export function ShadowEditor({
 							if (!newShadows[i].vOffset) newShadows[i].vOffset = '0px';
 							onChange(createShadowString(newShadows, type));
 						}}
-						min={0}
-						max={50}
 						placeholder="Blur"
 					/>
 					{type === ShadowEditorType.BoxShadow && (
@@ -315,8 +325,6 @@ export function ShadowEditor({
 								if (!newShadows[i].blur) newShadows[i].blur = '0px';
 								onChange(createShadowString(newShadows, type));
 							}}
-							min={0}
-							max={50}
 							placeholder="Spread"
 						/>
 					)}

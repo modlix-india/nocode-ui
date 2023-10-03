@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
 	EachSimpleEditor,
 	SimpleEditorType,
@@ -6,11 +6,8 @@ import {
 	extractValue,
 	valuesChangedOnlyValues,
 } from './simpleEditors';
-import { AngleSize, PixelSize, RangeWithoutUnit } from './simpleEditors/SizeSliders';
-import { Dropdown } from './simpleEditors/Dropdown';
-import { duplicate } from '@fincity/kirun-js';
-import { IconsSimpleEditor } from './simpleEditors/IconsSimpleEditor';
 import { FunctionDetail, ManyFunctionsEditor } from './simpleEditors/ManyFunctionsEditor';
+import { PixelSize } from './simpleEditors/SizeSliders';
 
 // 'transitionProperty',
 // 'transitionDuration',
@@ -38,6 +35,18 @@ export function EffectsEditor(props: StyleEditorsProps) {
 		storePaths,
 		pageOperations,
 	} = props;
+
+	const filterValue =
+		(
+			extractValue({
+				subComponentName,
+				prop: 'filter',
+				iterateProps,
+				pseudoState,
+				selectorPref,
+				selectedComponent,
+			}) ?? ({} as any)
+		).value?.value ?? '';
 
 	return (
 		<>
@@ -141,9 +150,150 @@ export function EffectsEditor(props: StyleEditorsProps) {
 					],
 				}}
 			/>
+
+			<div className="_simpleLabel _withPadding">Filter : </div>
+			<ManyFunctionsEditor
+				newFunctionTitle="New Filter Function"
+				value={filterValue}
+				functionDetails={FILTER_FUNCTIONS}
+				onChange={v =>
+					valuesChangedOnlyValues({
+						styleProps,
+						properties,
+						propValues: [{ prop: 'filter', value: v }],
+						pseudoState,
+						saveStyle,
+						iterateProps,
+					})
+				}
+			/>
 		</>
 	);
 }
+
+const FILTER_FUNCTIONS: Array<FunctionDetail> = [
+	{
+		name: 'blur',
+		displayName: 'Blur',
+		params: [{ name: 'length', displayName: 'Length', type: 'pixel size' }],
+	},
+	{
+		name: 'brightness',
+		displayName: 'Brightness',
+		params: [
+			{
+				name: 'percentage',
+				displayName: 'Value',
+				type: 'number percentage',
+				optionOverride: [
+					{ name: '', displayName: 'Number', min: 0, max: 3, step: 0.01 },
+					{ name: 'percentage', displayName: 'Percentage', min: 0, max: 200, step: 1 },
+				],
+			},
+		],
+	},
+	{
+		name: 'contrast',
+		displayName: 'Contrast',
+		params: [
+			{
+				name: 'percentage',
+				displayName: 'Value',
+				type: 'number percentage',
+				optionOverride: [
+					{ name: '', displayName: 'Number', min: 0, max: 3, step: 0.01 },
+					{ name: 'percentage', displayName: 'Percentage', min: 0, max: 200, step: 1 },
+				],
+			},
+		],
+	},
+	{
+		name: 'grayScale',
+		displayName: 'Gray Scale',
+		params: [
+			{
+				name: 'percentage',
+				displayName: 'Value',
+				type: 'number percentage',
+				optionOverride: [
+					{ name: '', displayName: 'Number', min: 0, max: 1, step: 0.01 },
+					{ name: 'percentage', displayName: 'Percentage', min: 0, max: 100, step: 1 },
+				],
+			},
+		],
+	},
+	{
+		name: 'hueRotate',
+		displayName: 'Hue Rotate',
+		params: [
+			{
+				name: 'angle',
+				displayName: 'Angle',
+				type: 'angle size',
+			},
+		],
+	},
+	{
+		name: 'invert',
+		displayName: 'Invert',
+		params: [
+			{
+				name: 'percentage',
+				displayName: 'Value',
+				type: 'number percentage',
+				optionOverride: [
+					{ name: '', displayName: 'Number', min: 0, max: 1, step: 0.01 },
+					{ name: 'percentage', displayName: 'Percentage', min: 0, max: 100, step: 1 },
+				],
+			},
+		],
+	},
+	{
+		name: 'opacity',
+		displayName: 'Opacity',
+		params: [
+			{
+				name: 'percentage',
+				displayName: 'Value',
+				type: 'number percentage',
+				optionOverride: [
+					{ name: '', displayName: 'Number', min: 0, max: 1, step: 0.01 },
+					{ name: 'percentage', displayName: 'Percentage', min: 0, max: 100, step: 1 },
+				],
+			},
+		],
+	},
+	{
+		name: 'saturate',
+		displayName: 'Saturate',
+		params: [
+			{
+				name: 'percentage',
+				displayName: 'Value',
+				type: 'number percentage',
+				optionOverride: [
+					{ name: '', displayName: 'Number', min: 0, max: 3, step: 0.01 },
+					{ name: 'percentage', displayName: 'Percentage', min: 0, max: 200, step: 1 },
+				],
+			},
+		],
+	},
+	{
+		name: 'sepia',
+		displayName: 'Sepia',
+		params: [
+			{
+				name: 'percentage',
+				displayName: 'Value',
+				type: 'number percentage',
+				optionOverride: [
+					{ name: '', displayName: 'Number', min: 0, max: 1, step: 0.01 },
+					{ name: 'percentage', displayName: 'Percentage', min: 0, max: 100, step: 1 },
+				],
+			},
+		],
+	},
+];
 
 const TRANSFORM_FUNCTIONS: Array<FunctionDetail> = [
 	{
@@ -154,54 +304,66 @@ const TRANSFORM_FUNCTIONS: Array<FunctionDetail> = [
 				name: 'a',
 				displayName: 'Scale X',
 				type: 'number',
-				min: -10,
-				max: 10,
-				step: 0.1,
+				numberOptions: {
+					min: -10,
+					max: 10,
+					step: 0.1,
+				},
 				default: '1',
 			},
 			{
 				name: 'b',
 				displayName: 'Skew Y',
 				type: 'number',
-				min: -10,
-				max: 10,
-				step: 0.1,
+				numberOptions: {
+					min: -10,
+					max: 10,
+					step: 0.1,
+				},
 				default: '0',
 			},
 			{
 				name: 'c',
 				displayName: 'Skew X',
 				type: 'number',
-				min: -10,
-				max: 10,
-				step: 0.1,
+				numberOptions: {
+					min: -10,
+					max: 10,
+					step: 0.1,
+				},
 				default: '0',
 			},
 			{
 				name: 'd',
 				displayName: 'Scale Y',
 				type: 'number',
-				min: -10,
-				max: 10,
-				step: 0.1,
+				numberOptions: {
+					min: -10,
+					max: 10,
+					step: 0.1,
+				},
 				default: '1',
 			},
 			{
 				name: 'tx',
 				displayName: 'Translation - X',
 				type: 'number',
-				min: -100,
-				max: 100,
-				step: 1,
+				numberOptions: {
+					min: -100,
+					max: 100,
+					step: 1,
+				},
 				default: '0',
 			},
 			{
 				name: 'ty',
 				displayName: 'Translation - Y',
 				type: 'number',
-				min: -100,
-				max: 100,
-				step: 1,
+				numberOptions: {
+					min: -100,
+					max: 100,
+					step: 1,
+				},
 				default: '0',
 			},
 		],
@@ -227,9 +389,6 @@ const TRANSFORM_FUNCTIONS: Array<FunctionDetail> = [
 				name: 'length',
 				displayName: 'Length',
 				type: 'pixel size',
-				min: 0,
-				max: 100,
-				step: 1,
 			},
 		],
 	},
@@ -248,27 +407,33 @@ const TRANSFORM_FUNCTIONS: Array<FunctionDetail> = [
 				name: 'x',
 				displayName: 'X Co-ordinate',
 				type: 'number',
-				min: -10,
-				max: 10,
-				step: 0.1,
+				numberOptions: {
+					min: -10,
+					max: 10,
+					step: 0.1,
+				},
 				default: '0',
 			},
 			{
 				name: 'y',
 				displayName: 'Y Co-ordinate',
 				type: 'number',
-				min: -10,
-				max: 10,
-				step: 0.1,
+				numberOptions: {
+					min: -10,
+					max: 10,
+					step: 0.1,
+				},
 				default: '0',
 			},
 			{
 				name: 'z',
 				displayName: 'Z Co-ordinate',
 				type: 'number',
-				min: -10,
-				max: 10,
-				step: 0.1,
+				numberOptions: {
+					min: -10,
+					max: 10,
+					step: 0.1,
+				},
 				default: '0',
 			},
 			{ name: 'angle', displayName: 'Angle', type: 'angle size', default: '0deg' },
@@ -301,18 +466,22 @@ const TRANSFORM_FUNCTIONS: Array<FunctionDetail> = [
 				name: 'x',
 				displayName: 'Scale X',
 				type: 'number',
-				min: -10,
-				max: 10,
-				step: 0.1,
+				numberOptions: {
+					min: -10,
+					max: 10,
+					step: 0.1,
+				},
 				default: '1',
 			},
 			{
 				name: 'y',
 				displayName: 'Scale Y',
 				type: 'number',
-				min: -10,
-				max: 10,
-				step: 0.1,
+				numberOptions: {
+					min: -10,
+					max: 10,
+					step: 0.1,
+				},
 				default: '1',
 			},
 		],
@@ -326,27 +495,33 @@ const TRANSFORM_FUNCTIONS: Array<FunctionDetail> = [
 				name: 'x',
 				displayName: 'Scale X',
 				type: 'number',
-				min: -10,
-				max: 10,
-				step: 0.1,
+				numberOptions: {
+					min: -10,
+					max: 10,
+					step: 0.1,
+				},
 				default: '1',
 			},
 			{
 				name: 'y',
 				displayName: 'Scale Y',
 				type: 'number',
-				min: -10,
-				max: 10,
-				step: 0.1,
+				numberOptions: {
+					min: -10,
+					max: 10,
+					step: 0.1,
+				},
 				default: '1',
 			},
 			{
 				name: 'z',
 				displayName: 'Scale Z',
 				type: 'number',
-				min: -10,
-				max: 10,
-				step: 0.1,
+				numberOptions: {
+					min: -10,
+					max: 10,
+					step: 0.1,
+				},
 				default: '1',
 			},
 		],
@@ -360,9 +535,11 @@ const TRANSFORM_FUNCTIONS: Array<FunctionDetail> = [
 				name: 'number',
 				displayName: 'Scale Factor',
 				type: 'number',
-				min: -10,
-				max: 10,
-				step: 0.1,
+				numberOptions: {
+					min: -10,
+					max: 10,
+					step: 0.1,
+				},
 			},
 		],
 	},
@@ -375,9 +552,11 @@ const TRANSFORM_FUNCTIONS: Array<FunctionDetail> = [
 				name: 'number',
 				displayName: 'Scale Factor',
 				type: 'number',
-				min: -10,
-				max: 10,
-				step: 0.1,
+				numberOptions: {
+					min: -10,
+					max: 10,
+					step: 0.1,
+				},
 			},
 		],
 	},
@@ -390,9 +569,11 @@ const TRANSFORM_FUNCTIONS: Array<FunctionDetail> = [
 				name: 'number',
 				displayName: 'Scale Factor',
 				type: 'number',
-				min: -10,
-				max: 10,
-				step: 0.1,
+				numberOptions: {
+					min: -10,
+					max: 10,
+					step: 0.1,
+				},
 			},
 		],
 	},
@@ -436,19 +617,29 @@ const TRANSFORM_FUNCTIONS: Array<FunctionDetail> = [
 				name: 'x',
 				displayName: 'Position from X',
 				type: 'pixel size',
-				min: -100,
-				max: 100,
-				step: 1,
 				default: '0px',
+				optionOverride: [
+					{ name: 'px', displayName: 'PX', min: -100, max: 100, step: 1 },
+					{ name: 'vw', displayName: 'VW', min: -100, max: 100, step: 1 },
+					{ name: 'vh', displayName: 'VH', min: -100, max: 100, step: 1 },
+					{ name: 'vmin', displayName: 'VMIN', min: -100, max: 100, step: 1 },
+					{ name: 'vmax', displayName: 'VMAX', min: -100, max: 100, step: 1 },
+					{ name: '%', displayName: '%', min: -100, max: 100, step: 0.1 },
+				],
 			},
 			{
 				name: 'y',
 				displayName: 'Position from Y',
 				type: 'pixel size',
-				min: -100,
-				max: 100,
-				step: 1,
 				default: '0px',
+				optionOverride: [
+					{ name: 'px', displayName: 'PX', min: -100, max: 100, step: 1 },
+					{ name: 'vw', displayName: 'VW', min: -100, max: 100, step: 1 },
+					{ name: 'vh', displayName: 'VH', min: -100, max: 100, step: 1 },
+					{ name: 'vmin', displayName: 'VMIN', min: -100, max: 100, step: 1 },
+					{ name: 'vmax', displayName: 'VMAX', min: -100, max: 100, step: 1 },
+					{ name: '%', displayName: '%', min: -100, max: 100, step: 0.1 },
+				],
 			},
 		],
 	},
@@ -461,27 +652,42 @@ const TRANSFORM_FUNCTIONS: Array<FunctionDetail> = [
 				name: 'x',
 				displayName: 'Length from X axis origin',
 				type: 'pixel size',
-				min: -100,
-				max: 100,
-				step: 1,
+				optionOverride: [
+					{ name: 'px', displayName: 'PX', min: -100, max: 100, step: 1 },
+					{ name: 'vw', displayName: 'VW', min: -100, max: 100, step: 1 },
+					{ name: 'vh', displayName: 'VH', min: -100, max: 100, step: 1 },
+					{ name: 'vmin', displayName: 'VMIN', min: -100, max: 100, step: 1 },
+					{ name: 'vmax', displayName: 'VMAX', min: -100, max: 100, step: 1 },
+					{ name: '%', displayName: '%', min: -100, max: 100, step: 0.1 },
+				],
 				default: '0px',
 			},
 			{
 				name: 'y',
 				displayName: 'Length from Y axis origin',
 				type: 'pixel size',
-				min: -100,
-				max: 100,
-				step: 1,
+				optionOverride: [
+					{ name: 'px', displayName: 'PX', min: -100, max: 100, step: 1 },
+					{ name: 'vw', displayName: 'VW', min: -100, max: 100, step: 1 },
+					{ name: 'vh', displayName: 'VH', min: -100, max: 100, step: 1 },
+					{ name: 'vmin', displayName: 'VMIN', min: -100, max: 100, step: 1 },
+					{ name: 'vmax', displayName: 'VMAX', min: -100, max: 100, step: 1 },
+					{ name: '%', displayName: '%', min: -100, max: 100, step: 0.1 },
+				],
 				default: '0px',
 			},
 			{
 				name: 'z',
 				displayName: 'Length from Z axis origin',
 				type: 'pixel size',
-				min: -100,
-				max: 100,
-				step: 1,
+				optionOverride: [
+					{ name: 'px', displayName: 'PX', min: -100, max: 100, step: 1 },
+					{ name: 'vw', displayName: 'VW', min: -100, max: 100, step: 1 },
+					{ name: 'vh', displayName: 'VH', min: -100, max: 100, step: 1 },
+					{ name: 'vmin', displayName: 'VMIN', min: -100, max: 100, step: 1 },
+					{ name: 'vmax', displayName: 'VMAX', min: -100, max: 100, step: 1 },
+					{ name: '%', displayName: '%', min: -100, max: 100, step: 0.1 },
+				],
 				default: '0px',
 			},
 		],
@@ -495,9 +701,14 @@ const TRANSFORM_FUNCTIONS: Array<FunctionDetail> = [
 				name: 'x',
 				displayName: 'Position from X',
 				type: 'pixel size',
-				min: -100,
-				max: 100,
-				step: 1,
+				optionOverride: [
+					{ name: 'px', displayName: 'PX', min: -100, max: 100, step: 1 },
+					{ name: 'vw', displayName: 'VW', min: -100, max: 100, step: 1 },
+					{ name: 'vh', displayName: 'VH', min: -100, max: 100, step: 1 },
+					{ name: 'vmin', displayName: 'VMIN', min: -100, max: 100, step: 1 },
+					{ name: 'vmax', displayName: 'VMAX', min: -100, max: 100, step: 1 },
+					{ name: '%', displayName: '%', min: -100, max: 100, step: 0.1 },
+				],
 			},
 		],
 	},
@@ -510,9 +721,14 @@ const TRANSFORM_FUNCTIONS: Array<FunctionDetail> = [
 				name: 'y',
 				displayName: 'Position from Y',
 				type: 'pixel size',
-				min: -100,
-				max: 100,
-				step: 1,
+				optionOverride: [
+					{ name: 'px', displayName: 'PX', min: -100, max: 100, step: 1 },
+					{ name: 'vw', displayName: 'VW', min: -100, max: 100, step: 1 },
+					{ name: 'vh', displayName: 'VH', min: -100, max: 100, step: 1 },
+					{ name: 'vmin', displayName: 'VMIN', min: -100, max: 100, step: 1 },
+					{ name: 'vmax', displayName: 'VMAX', min: -100, max: 100, step: 1 },
+					{ name: '%', displayName: '%', min: -100, max: 100, step: 0.1 },
+				],
 			},
 		],
 	},
@@ -525,9 +741,14 @@ const TRANSFORM_FUNCTIONS: Array<FunctionDetail> = [
 				name: 'z',
 				displayName: 'Position from Z',
 				type: 'pixel size',
-				min: -100,
-				max: 100,
-				step: 1,
+				optionOverride: [
+					{ name: 'px', displayName: 'PX', min: -100, max: 100, step: 1 },
+					{ name: 'vw', displayName: 'VW', min: -100, max: 100, step: 1 },
+					{ name: 'vh', displayName: 'VH', min: -100, max: 100, step: 1 },
+					{ name: 'vmin', displayName: 'VMIN', min: -100, max: 100, step: 1 },
+					{ name: 'vmax', displayName: 'VMAX', min: -100, max: 100, step: 1 },
+					{ name: '%', displayName: '%', min: -100, max: 100, step: 0.1 },
+				],
 			},
 		],
 	},
@@ -792,8 +1013,6 @@ function TransformEditor({
 						});
 					}}
 					placeholder="X Offset"
-					min={0}
-					max={100}
 					extraOptions={[
 						{ name: 'left', displayName: 'Left' },
 						{ name: 'right', displayName: 'Right' },
@@ -872,8 +1091,6 @@ function TransformEditor({
 						});
 					}}
 					placeholder="Y Offset"
-					min={0}
-					max={100}
 					extraOptions={[
 						{ name: 'top', displayName: 'Top' },
 						{ name: 'bottom', displayName: 'Bottom' },
@@ -953,8 +1170,6 @@ function TransformEditor({
 						});
 					}}
 					placeholder="Z Offset"
-					min={0}
-					max={100}
 				/>
 			</div>
 		</>
