@@ -469,13 +469,14 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._iconMenuOption, ._popupMenuBackground ._popupMenuItem  {
-			padding: 5px 10px;
+			padding: 10px 15px;
 			color: #96A1B4;
 			display: flex;
 			align-items: center;
 			gap: 8px;
 			white-space: nowrap;
 			cursor: pointer;
+			margin-bottom: 2px;
 		}
 
 		${PREFIX} ._iconMenuBody ._iconMenuOption i.fa,
@@ -2581,13 +2582,11 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		._popupMenuBackground ._popupMenuContainer {
-			box-shadow: 0px 1px 10px 0px #0000001A;
 			display: flex;
 			flex-direction: column;
 			background-color: #fff;
 			position: absolute;
-			border-radius: 4px;
-			border-left: 1px solid #eee;
+			border: 1px solid #eee;
 			font-size: 13px;
 		}
 
@@ -2635,7 +2634,12 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		._popupMenuBackground ._popupMenuContainer ._elementsBarContainer ._popupMenu::-webkit-scrollbar {
-			width: 3px;
+			width: 2px;
+			height: 2px;
+		}
+
+		._popupMenuBackground ._popupMenuContainer ._elementsBarContainer ._popupMenu::-webkit-scrollbar-thumb {
+			background-color: #E9ECEF;
 		}
 
 		._popupMenuBackground ._popupMenuContainer ._compTemplates {
@@ -2665,7 +2669,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._compMenu {
 			left: 48px;
-			top: 48px;
+			top: 64px;
 			height: calc(100% - 68px);
 			width: 0px;
 			overflow: hidden;
@@ -2673,7 +2677,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		._compMenu._show {
-			width: 415px;
+			width: 480px;
 		}
 
 		._popupMenuBackground ._popupMenu {

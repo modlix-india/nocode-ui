@@ -258,7 +258,7 @@ const component: Component = {
 			mainComponent: true,
 			icon: (
 				<IconHelper viewBox="0 0 24 24">
-					<circle cx="12" cy="12" r="10.5" stroke="currentColor" strokeOpacity="0.2" />
+					<circle cx="12" cy="12" r="10.5" fill="currentColor" fillOpacity="0.2" />
 					<circle cx="12" cy="12" r="7" fill="currentColor" />
 				</IconHelper>
 			),
