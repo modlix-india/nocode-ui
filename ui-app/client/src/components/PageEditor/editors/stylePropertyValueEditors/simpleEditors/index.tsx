@@ -102,10 +102,7 @@ export function EachSimpleEditor({
 					value={value.value}
 					onChange={editorOnchange}
 					placeholder={placeholder}
-					min={editorDef.rangeMin ?? 0}
-					max={editorDef.rangeMax ?? 100}
 					hideSlider={editorDef.hideSlider}
-					step={editorDef.rangeStep}
 				/>
 			);
 			break;
