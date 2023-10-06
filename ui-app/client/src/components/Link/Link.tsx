@@ -114,23 +114,23 @@ function Link(props: ComponentProps) {
 
 	const styleComp = (
 		<style key={`${styleKey}_style`}>
-			{processStyleObjectToCSS(regularStyle?.comp, `.comp.compLink._${styleKey}link_css`)}
+			{processStyleObjectToCSS(regularStyle?.comp, `.comp.compLink#_${styleKey}link_css`)}
 			{processStyleObjectToCSS(
 				visitedStyle?.comp,
 				`.comp.compLink._${styleKey}link_css:visited`,
 			)}
-			{processStyleObjectToCSS(hoverStyle?.comp, `.comp.compLink._${styleKey}link_css:hover`)}
+			{processStyleObjectToCSS(hoverStyle?.comp, `.comp.compLink#_${styleKey}link_css:hover`)}
 			{processStyleObjectToCSS(
 				regularStyle?.externalIcon,
-				`.comp.compLink._${styleKey}link_css > ._externalButton`,
+				`.comp.compLink#_${styleKey}link_css > ._externalButton`,
 			)}
 			{processStyleObjectToCSS(
 				visitedStyle?.externalIcon,
-				`.comp.compLink._${styleKey}link_css:visited > ._externalButton`,
+				`.comp.compLink#_${styleKey}link_css:visited > ._externalButton`,
 			)}
 			{processStyleObjectToCSS(
 				hoverStyle?.externalIcon,
-				`.comp.compLink._${styleKey}link_css:hover > ._externalButton`,
+				`.comp.compLink#_${styleKey}link_css:hover > ._externalButton`,
 			)}
 		</style>
 	);
@@ -139,7 +139,8 @@ function Link(props: ComponentProps) {
 		<>
 			{styleComp}
 			<a
-				className={`comp compLink _${styleKey}link_css ${designType} ${colorScheme} ${
+				id={`_${styleKey}link_css`}
+				className={`comp compLink ${designType} ${colorScheme} ${
 					showLines ? '_showLines' : ''
 				}`}
 				href={resolvedLink}

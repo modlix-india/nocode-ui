@@ -71,8 +71,6 @@ export function ManyValuesEditor({
 		);
 	};
 
-	console.log(props, max);
-
 	let eachComp = [];
 	for (let i = 0; i < max; i++) {
 		const key = newValueProps.map(e => props[e][i]).join('_') + '_group_' + i;
