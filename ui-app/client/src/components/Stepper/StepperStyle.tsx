@@ -15,6 +15,7 @@ export default function StepperStyle({ theme }: { theme: Map<string, Map<string,
 			display: flex;
 			list-style-type: none;
 			position: relative;
+			padding-inline-start: 0px;
 		}
 
 		${PREFIX} ul._horizontal {
@@ -36,10 +37,6 @@ export default function StepperStyle({ theme }: { theme: Map<string, Map<string,
 			position: relative;
 		}
 
-		${PREFIX}._pills ._listItem {
-			flex-grow: 0;
-		}
-
 		${PREFIX} ul._vertical ._listItem {
 		    flex-direction: column;
 		}
@@ -50,6 +47,20 @@ export default function StepperStyle({ theme }: { theme: Map<string, Map<string,
 
 		${PREFIX} ._listItem._previousItem {			
 			cursor: pointer;
+		}
+
+		${PREFIX}._pills ._listItem {
+			flex-grow: 0;
+		}
+
+		${PREFIX}._rectangle_arrow ._listItem:not(:last-child)::after {
+			content: "";
+			width: 0;
+			height: 0;
+			position: absolute;
+			top: 0;
+			left: 100%;
+			z-index: 1;
 		}
 		
 		${PREFIX}._default ._listItem:last-child,
@@ -122,10 +133,6 @@ export default function StepperStyle({ theme }: { theme: Map<string, Map<string,
 		${PREFIX} ._title {
 		    white-space: nowrap;
 			position: relative;
-		}
-		${PREFIX}._default ._title,
-		${PREFIX}._big_circle ._title {
-		 
 		}
 
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import {
 	addListenerAndCallImmediately,
 	getPathFromLocation,
@@ -131,7 +131,9 @@ function Stepper(props: ComponentProps) {
 			<ul
 				style={resolvedStyles.list ?? {}}
 				className={`${
-					isStepperVertical ? '_vertical' : '_horizontal'
+					stepperDesign !== '_rectangle_arrow' && isStepperVertical
+						? '_vertical'
+						: '_horizontal'
 				} ${getPositionStyle()} `}
 			>
 				<SubHelperComponent definition={props.definition} subComponentName="list" />
@@ -144,9 +146,11 @@ function Stepper(props: ComponentProps) {
 								? () => goToStep(i)
 								: undefined
 						}
-						className={`_listItem ${
-							i > value && moveToAnyFutureStep ? '_nextItem' : ''
-						} ${i < value && moveToAnyPreviousStep ? '_previousItem' : ''}`}
+						className={`_listItem ${i < value ? '_done' : ''} ${
+							i === value ? '_active' : ''
+						} ${i > value && moveToAnyFutureStep ? '_nextItem' : ''} ${
+							i < value && moveToAnyPreviousStep ? '_previousItem' : ''
+						}`}
 						key={i}
 					>
 						<SubHelperComponent
@@ -158,33 +162,9 @@ function Stepper(props: ComponentProps) {
 								definition={props.definition}
 								subComponentName="itemContainer"
 							/>
-							{icons ? (
-								<i
-									onMouseEnter={
-										stylePropertiesWithPseudoStates?.hover
-											? () => setHover(true)
-											: undefined
-									}
-									onMouseLeave={
-										stylePropertiesWithPseudoStates?.hover
-											? () => setHover(false)
-											: undefined
-									}
-									style={resolvedStyles.icon ?? {}}
-									className={`${
-										i < value && showCheckOnComplete ? checkIcon : iconList[i]
-									} _step ${i < value ? '_done' : ''} ${
-										i === value ? '_active' : ''
-									}`}
-								>
-									<SubHelperComponent
-										definition={props.definition}
-										subComponentName="icon"
-									/>
-								</i>
-							) : (
-								<>
-									{i < value && showCheckOnComplete ? (
+							{stepperDesign !== '_rectangle_arrow' && (
+								<Fragment>
+									{icons ? (
 										<i
 											onMouseEnter={
 												stylePropertiesWithPseudoStates?.hover
@@ -197,9 +177,13 @@ function Stepper(props: ComponentProps) {
 													: undefined
 											}
 											style={resolvedStyles.icon ?? {}}
-											className={`${checkIcon} _step ${
-												i < value ? '_done' : ''
-											} ${i === value ? '_active' : ''}`}
+											className={`${
+												i < value && showCheckOnComplete
+													? checkIcon
+													: iconList[i]
+											} _step ${i < value ? '_done' : ''} ${
+												i === value ? '_active' : ''
+											}`}
 										>
 											<SubHelperComponent
 												definition={props.definition}
@@ -207,20 +191,46 @@ function Stepper(props: ComponentProps) {
 											/>
 										</i>
 									) : (
-										<span
-											style={resolvedStyles.text ?? {}}
-											className={`_step ${i < value ? '_done' : ''} ${
-												i === value ? '_active' : ''
-											}`}
-										>
-											<SubHelperComponent
-												definition={props.definition}
-												subComponentName="text"
-											/>
-											{getCount(i + 1)}
-										</span>
+										<>
+											{i < value && showCheckOnComplete ? (
+												<i
+													onMouseEnter={
+														stylePropertiesWithPseudoStates?.hover
+															? () => setHover(true)
+															: undefined
+													}
+													onMouseLeave={
+														stylePropertiesWithPseudoStates?.hover
+															? () => setHover(false)
+															: undefined
+													}
+													style={resolvedStyles.icon ?? {}}
+													className={`${checkIcon} _step ${
+														i < value ? '_done' : ''
+													} ${i === value ? '_active' : ''}`}
+												>
+													<SubHelperComponent
+														definition={props.definition}
+														subComponentName="icon"
+													/>
+												</i>
+											) : (
+												<span
+													style={resolvedStyles.text ?? {}}
+													className={`_step ${i < value ? '_done' : ''} ${
+														i === value ? '_active' : ''
+													}`}
+												>
+													<SubHelperComponent
+														definition={props.definition}
+														subComponentName="text"
+													/>
+													{getCount(i + 1)}
+												</span>
+											)}
+										</>
 									)}
-								</>
+								</Fragment>
 							)}
 							{stepperDesign !== '_pills' && (
 								<span
@@ -235,7 +245,9 @@ function Stepper(props: ComponentProps) {
 											: undefined
 									}
 									style={resolvedStyles.text ?? {}}
-									className="_title"
+									className={`_title ${i < value ? '_done' : ''} ${
+										i === value ? '_active' : ''
+									}`}
 								>
 									<SubHelperComponent
 										definition={props.definition}
