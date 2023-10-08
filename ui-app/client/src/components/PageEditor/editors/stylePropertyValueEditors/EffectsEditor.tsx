@@ -205,6 +205,8 @@ export function EffectsEditor(props: StyleEditorsProps) {
 				functionDetails={FILTER_FUNCTIONS}
 				onChange={v =>
 					valuesChangedOnlyValues({
+						subComponentName,
+						selectedComponent,
 						styleProps,
 						properties,
 						propValues: [{ prop: 'filter', value: v }],
@@ -218,6 +220,8 @@ export function EffectsEditor(props: StyleEditorsProps) {
 			<ManyValuesEditor
 				onChange={v =>
 					valuesChangedOnlyValues({
+						subComponentName,
+						selectedComponent,
 						styleProps,
 						properties,
 						pseudoState,
@@ -1063,6 +1067,19 @@ function TransformEditor({
 			}) ?? ({} as any)
 		).value?.value ?? '';
 
+	console.log(transform);
+	console.log(subComponentName);
+	console.log(
+		extractValue({
+			subComponentName,
+			prop: 'transform',
+			iterateProps,
+			pseudoState,
+			selectorPref,
+			selectedComponent,
+		}),
+	);
+
 	return (
 		<>
 			<div className="_simpleLabel _withPadding">Transform : </div>
@@ -1070,16 +1087,19 @@ function TransformEditor({
 				newFunctionTitle="New Transform Function"
 				value={transform}
 				functionDetails={TRANSFORM_FUNCTIONS}
-				onChange={v =>
+				onChange={v => {
+					console.log(styleProps, v);
 					valuesChangedOnlyValues({
+						subComponentName,
+						selectedComponent,
 						styleProps,
 						properties,
 						propValues: [{ prop: 'transform', value: v }],
 						pseudoState,
 						saveStyle,
 						iterateProps,
-					})
-				}
+					});
+				}}
 			/>
 			<div className="_combineEditors _spaceBetween">
 				<div className="_combineEditors">
@@ -1275,6 +1295,8 @@ function TransformEditor({
 						else value[0] = e;
 
 						valuesChangedOnlyValues({
+							subComponentName,
+							selectedComponent,
 							styleProps,
 							properties,
 							propValues: [{ prop: 'transformOrigin', value: value.join(' ') }],
@@ -1353,6 +1375,8 @@ function TransformEditor({
 						} else value[1] = e;
 
 						valuesChangedOnlyValues({
+							subComponentName,
+							selectedComponent,
 							styleProps,
 							properties,
 							propValues: [{ prop: 'transformOrigin', value: value.join(' ') }],
@@ -1432,6 +1456,8 @@ function TransformEditor({
 						} else value[2] = e;
 
 						valuesChangedOnlyValues({
+							subComponentName,
+							selectedComponent,
 							styleProps,
 							properties,
 							propValues: [{ prop: 'transformOrigin', value: value.join(' ') }],

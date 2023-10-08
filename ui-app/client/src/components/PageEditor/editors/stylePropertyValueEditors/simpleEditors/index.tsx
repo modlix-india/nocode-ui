@@ -287,6 +287,8 @@ export function valueChanged({
 }
 
 export function valuesChangedOnlyValues({
+	subComponentName,
+	selectedComponent,
 	styleProps,
 	properties,
 	propValues,
@@ -300,6 +302,8 @@ export function valuesChangedOnlyValues({
 	saveStyle: (newStyleProps: ComponentStyle) => void;
 	iterateProps: any;
 	propValues: { prop: string; value: string }[];
+	selectedComponent: string;
+	subComponentName: string;
 }) {
 	if (propValues.length === 0) return;
 
@@ -310,17 +314,18 @@ export function valuesChangedOnlyValues({
 			screenSize,
 			compProp,
 		} = extractValue({
-			subComponentName: '',
+			subComponentName,
 			prop,
 			iterateProps,
 			pseudoState,
 			selectorPref: {},
-			selectedComponent: '',
+			selectedComponent,
 		});
 
 		const newValue: any = { value };
 
 		if (oldValue.location) newValue.location = oldValue.location;
+		console.log('newValue', updatedStyle);
 
 		return propUpdate({
 			styleProps: updatedStyle,
@@ -333,6 +338,8 @@ export function valuesChangedOnlyValues({
 			iterateProps,
 		});
 	}, styleProps);
+
+	console.log('updatedStyle', updatedStyle);
 
 	if (!updatedStyle) return;
 	saveStyle(updatedStyle);

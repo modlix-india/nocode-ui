@@ -738,6 +738,8 @@ export function AnimationEditor({
 									key={e.name}
 									onClick={() => {
 										valuesChangedOnlyValues({
+											subComponentName,
+											selectedComponent,
 											styleProps,
 											properties,
 											pseudoState,
@@ -827,6 +829,8 @@ export function AnimationEditor({
 			<ManyValuesEditor
 				onChange={v =>
 					valuesChangedOnlyValues({
+						subComponentName,
+						selectedComponent,
 						styleProps,
 						properties,
 						pseudoState,
