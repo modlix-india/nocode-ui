@@ -416,6 +416,8 @@ export function SpacingEditor({
 							}
 
 							valuesChangedOnlyValues({
+								subComponentName,
+								selectedComponent,
 								styleProps,
 								properties,
 								propValues: newValues,
@@ -424,8 +426,6 @@ export function SpacingEditor({
 								iterateProps,
 							});
 						}}
-						min={0}
-						max={100}
 					/>
 				</div>
 			</div>
