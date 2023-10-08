@@ -491,7 +491,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			box-shadow: 0px 1px 4px 0px #00000026;
 			display: none;
 			border-radius: 4px;
-			z-index: 1;
+			z-index: 3;
 			transform: translateX(40px);
 			font-weight: normal;
 			text-transform: initial;
