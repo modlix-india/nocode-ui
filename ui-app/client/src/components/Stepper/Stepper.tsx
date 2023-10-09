@@ -176,7 +176,7 @@ function Stepper(props: ComponentProps) {
 													? () => setHover(false)
 													: undefined
 											}
-											style={resolvedStyles.icon ?? {}}
+											style={resolvedStyles.step ?? {}}
 											className={`${
 												i < value && showCheckOnComplete
 													? checkIcon
@@ -187,7 +187,7 @@ function Stepper(props: ComponentProps) {
 										>
 											<SubHelperComponent
 												definition={props.definition}
-												subComponentName="icon"
+												subComponentName="step"
 											/>
 										</i>
 									) : (
@@ -204,26 +204,26 @@ function Stepper(props: ComponentProps) {
 															? () => setHover(false)
 															: undefined
 													}
-													style={resolvedStyles.icon ?? {}}
+													style={resolvedStyles.step ?? {}}
 													className={`${checkIcon} _step ${
 														i < value ? '_done' : ''
 													} ${i === value ? '_active' : ''}`}
 												>
 													<SubHelperComponent
 														definition={props.definition}
-														subComponentName="icon"
+														subComponentName="step"
 													/>
 												</i>
 											) : (
 												<span
-													style={resolvedStyles.text ?? {}}
+													style={resolvedStyles.step ?? {}}
 													className={`_step ${i < value ? '_done' : ''} ${
 														i === value ? '_active' : ''
 													}`}
 												>
 													<SubHelperComponent
 														definition={props.definition}
-														subComponentName="text"
+														subComponentName="step"
 													/>
 													{getCount(i + 1)}
 												</span>
@@ -244,14 +244,14 @@ function Stepper(props: ComponentProps) {
 											? () => setHover(false)
 											: undefined
 									}
-									style={resolvedStyles.text ?? {}}
+									style={resolvedStyles.title ?? {}}
 									className={`_title ${i < value ? '_done' : ''} ${
 										i === value ? '_active' : ''
 									}`}
 								>
 									<SubHelperComponent
 										definition={props.definition}
-										subComponentName="text"
+										subComponentName="title"
 									/>
 									{getTranslations(e, translations)}
 								</span>
@@ -312,13 +312,13 @@ const component: Component = {
 			icon: 'fa-solid fa-list',
 		},
 		{
-			name: 'icon',
+			name: 'step',
 			displayName: 'Icon',
 			description: 'Icon',
 			icon: 'fa-solid fa-list',
 		},
 		{
-			name: 'text',
+			name: 'title',
 			displayName: 'Text',
 			description: 'Text',
 			icon: 'fa-solid fa-list',
