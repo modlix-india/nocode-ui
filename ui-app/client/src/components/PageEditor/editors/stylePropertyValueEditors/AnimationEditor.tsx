@@ -1,16 +1,7 @@
-import { duplicate } from '@fincity/kirun-js';
 import React from 'react';
 import { ANIMATIONS_LIST } from '../../../util/properties';
-import {
-	StyleEditorsProps,
-	extractValue,
-	valueChanged,
-	valuesChanged,
-	valuesChangedOnlyValues,
-} from './simpleEditors';
-import { Dropdown } from './simpleEditors/Dropdown';
-import { IconsSimpleEditor } from './simpleEditors/IconsSimpleEditor';
-import { TimeSize } from './simpleEditors/SizeSliders';
+import { StyleEditorsProps, extractValue, valuesChangedOnlyValues } from './simpleEditors';
+import { ManyValuesEditor } from './simpleEditors/ManyValuesEditor';
 
 const ANIMATION_PROPS = [
 	'animationName',
@@ -22,17 +13,6 @@ const ANIMATION_PROPS = [
 	'animationFillMode', //none
 	'animationPlayState', //running
 ];
-
-const ANIMATION_PROPS_DEFAULTS: any = {
-	animationName: '_none',
-	animationDuration: '0s',
-	animationTimingFunction: 'ease',
-	animationDelay: '0s',
-	animationIterationCount: '1',
-	animationDirection: 'normal',
-	animationFillMode: 'none',
-	animationPlayState: 'running',
-};
 
 const ICONS = [
 	{
@@ -621,15 +601,23 @@ export function AnimationEditor({
 	saveStyle,
 	properties,
 }: StyleEditorsProps) {
-	const propValues = ANIMATION_PROPS.map(prop =>
-		extractValue({
-			subComponentName,
-			prop,
-			iterateProps,
-			pseudoState,
-			selectorPref,
-			selectedComponent,
-		}),
+	const { propValues, propAndValue } = ANIMATION_PROPS.reduce(
+		(a, c) => {
+			const value = extractValue({
+				subComponentName,
+				prop: c,
+				iterateProps,
+				pseudoState,
+				selectorPref,
+				selectedComponent,
+			});
+
+			a.propValues.push(value);
+			a.propAndValue.push({ prop: c, value: value.value?.value ?? '' });
+
+			return a;
+		},
+		{ propValues: [] as any[], propAndValue: [] as { prop: string; value: string }[] },
 	);
 
 	const isAdvanced = propValues.map(e => e.value).some(e => !!e.location);
@@ -677,203 +665,6 @@ export function AnimationEditor({
 			.map((x: string) => (x === '' ? undefined : x));
 		return a;
 	}, {} as any);
-
-	const animations = [];
-
-	const saveAnimation = (index: number, prop: string, value: string) => {
-		const v = duplicate(props[prop]);
-
-		while (v.length <= index) v.push(undefined);
-
-		v[index] = value;
-		const propValue = v.map((x: string) => (x ? x : ANIMATION_PROPS_DEFAULTS[prop])).join(',');
-
-		const { screenSize, actualProp, compProp } =
-			propValues.find(e => e.actualProp.endsWith(prop)) ?? {};
-
-		if (!actualProp || !compProp || !screenSize) return;
-
-		valueChanged({
-			styleProps,
-			properties,
-			screenSize,
-			actualProp,
-			value: {
-				value: propValue,
-			},
-			compProp,
-			pseudoState,
-			saveStyle,
-			iterateProps,
-		});
-	};
-
-	for (let i = 0; i < props.animationName.length; i++) {
-		if (!props.animationName[i]) continue;
-		animations.push(
-			<div className="_simpleEditorGroup" key={`${props.animationName[i]}_group_${i}`}>
-				<div className="_simpleEditorGroupTitle _gradient">
-					<span>Customize Animation</span>
-					<span className="_controls">
-						<IconsSimpleEditor
-							selected={''}
-							onChange={v => {
-								if (v === 'Delete') {
-									valuesChanged({
-										styleProps,
-										properties,
-										pseudoState,
-										saveStyle,
-										iterateProps,
-										propValues: propValues
-											.filter(e => e.value.value)
-											.map(e => ({
-												actualProp: e.actualProp,
-												compProp: e.compProp,
-												screenSize: e.screenSize,
-												value: {
-													value: e.value.value
-														.trim()
-														.split(',')
-														.map((x: string) => x.trim())
-														.filter(
-															(_: string, ind: number) => ind !== i,
-														)
-														.join(','),
-													location: e.value.location,
-												},
-											})),
-									});
-									return;
-								}
-							}}
-							withBackground={false}
-							options={[
-								{
-									name: 'Delete',
-									description: 'Delete this animation',
-									width: '13',
-									height: '14',
-									icon: (
-										<>
-											<path
-												d="M3.93393 0.483984L3.74107 0.875H1.16964C0.695536 0.875 0.3125 1.26602 0.3125 1.75C0.3125 2.23398 0.695536 2.625 1.16964 2.625H11.4554C11.9295 2.625 12.3125 2.23398 12.3125 1.75C12.3125 1.26602 11.9295 0.875 11.4554 0.875H8.88393L8.69107 0.483984C8.54643 0.185938 8.24911 0 7.925 0H4.7C4.37589 0 4.07857 0.185938 3.93393 0.483984ZM11.4554 3.5H1.16964L1.7375 12.7695C1.78036 13.4613 2.34286 14 3.02054 14H9.60446C10.2821 14 10.8446 13.4613 10.8875 12.7695L11.4554 3.5Z"
-												strokeWidth="0"
-											/>
-										</>
-									),
-								},
-							]}
-						/>
-					</span>
-				</div>
-				<div className="_simpleEditorGroupContent">
-					<div className="_editorLine">
-						<span className="_label">Animation </span>
-						<Dropdown
-							value={props.animationName[i]}
-							onChange={e => saveAnimation(i, 'animationName', e as string)}
-							placeholder="Animation Name"
-							options={ANIMATIONS_LIST}
-							showNoneLabel={false}
-						/>
-					</div>
-					<div className="_editorLine">
-						<span className="_label">Duration </span>
-						<TimeSize
-							value={props.animationDuration[i]}
-							onChange={e => saveAnimation(i, 'animationDuration', e)}
-							placeholder="Duration"
-							autofocus={true}
-						/>
-					</div>
-					<div className="_editorLine">
-						<span className="_label">Timing Function </span>
-						<Dropdown
-							value={props.animationTimingFunction[i]}
-							onChange={e => saveAnimation(i, 'animationTimingFunction', e as string)}
-							placeholder="Timing Function"
-							options={[
-								{ name: 'ease', displayName: 'Ease' },
-								{ name: 'ease-in', displayName: 'Ease In' },
-								{ name: 'ease-out', displayName: 'Ease Out' },
-								{ name: 'ease-in-out', displayName: 'Ease In Out' },
-								{ name: 'linear', displayName: 'Linear' },
-								{ name: 'step-start', displayName: 'Step Start' },
-								{ name: 'step-end', displayName: 'Step End' },
-							]}
-							showNoneLabel={false}
-						/>
-					</div>
-					<div className="_editorLine">
-						<span className="_label">Delay </span>
-						<TimeSize
-							value={props.animationDelay[i]}
-							onChange={e => saveAnimation(i, 'animationDelay', e)}
-							placeholder="Delay"
-						/>
-					</div>
-					<div className="_editorLine">
-						<span className="_label">Iteration Count </span>
-						<Dropdown
-							value={props.animationIterationCount[i]}
-							onChange={e => saveAnimation(i, 'animationIterationCount', e as string)}
-							placeholder="Iteration Count"
-							options={[
-								{ name: '1', displayName: '1' },
-								{ name: '2', displayName: '2' },
-								{ name: '3', displayName: '3' },
-								{ name: '4', displayName: '4' },
-								{ name: '5', displayName: '5' },
-								{ name: '6', displayName: '6' },
-								{ name: '7', displayName: '7' },
-								{ name: '8', displayName: '8' },
-								{ name: '9', displayName: '9' },
-								{ name: '10', displayName: '10' },
-								{ name: '11', displayName: '11' },
-								{ name: '12', displayName: '12' },
-								{ name: '13', displayName: '13' },
-								{ name: '14', displayName: '14' },
-								{ name: '15', displayName: '15' },
-								{ name: 'infinite', displayName: 'Infinite' },
-							]}
-							showNoneLabel={false}
-						/>
-					</div>
-					<div className="_editorLine">
-						<span className="_label">Direction </span>
-						<Dropdown
-							value={props.animationDirection[i]}
-							onChange={e => saveAnimation(i, 'animationDirection', e as string)}
-							placeholder="Direction"
-							options={[
-								{ name: 'normal', displayName: 'Normal' },
-								{ name: 'reverse', displayName: 'Reverse' },
-								{ name: 'alternate', displayName: 'Alternate' },
-								{ name: 'alternate-reverse', displayName: 'Alternate Reverse' },
-							]}
-							showNoneLabel={false}
-						/>
-					</div>
-					<div className="_editorLine">
-						<span className="_label">Fill Mode </span>
-						<Dropdown
-							value={props.animationFillMode[i]}
-							onChange={e => saveAnimation(i, 'animationFillMode', e as string)}
-							placeholder="Fill Mode"
-							options={[
-								{ name: 'none', displayName: 'None' },
-								{ name: 'forwards', displayName: 'Forwards' },
-								{ name: 'backwards', displayName: 'Backwards' },
-								{ name: 'both', displayName: 'Both' },
-							]}
-							showNoneLabel={false}
-						/>
-					</div>
-				</div>
-			</div>,
-		);
-	}
 
 	return (
 		<>
@@ -947,6 +738,8 @@ export function AnimationEditor({
 									key={e.name}
 									onClick={() => {
 										valuesChangedOnlyValues({
+											subComponentName,
+											selectedComponent,
 											styleProps,
 											properties,
 											pseudoState,
@@ -1033,7 +826,118 @@ export function AnimationEditor({
 						})}
 				</div>
 			</div>
-			{animations}
+			<ManyValuesEditor
+				onChange={v =>
+					valuesChangedOnlyValues({
+						subComponentName,
+						selectedComponent,
+						styleProps,
+						properties,
+						pseudoState,
+						saveStyle,
+						iterateProps,
+						propValues: v,
+					})
+				}
+				values={propAndValue}
+				groupTitle="Customize Animation"
+				newValueProps={['animationName']}
+				showNewGroup={false}
+				propDefinitions={[
+					{
+						name: 'animationName',
+						displayName: 'Animation',
+						type: 'dropdown',
+						dropdownOptions: ANIMATIONS_LIST,
+						default: '',
+					},
+					{
+						name: 'animationDuration',
+						displayName: 'Duration',
+						type: 'time',
+						default: '1s',
+					},
+					{
+						name: 'animationTimingFunction',
+						displayName: 'Timing Function',
+						type: 'dropdown',
+						dropdownOptions: [
+							{ name: 'ease', displayName: 'Ease' },
+							{ name: 'ease-in', displayName: 'Ease In' },
+							{ name: 'ease-out', displayName: 'Ease Out' },
+							{ name: 'ease-in-out', displayName: 'Ease In Out' },
+							{ name: 'linear', displayName: 'Linear' },
+							{ name: 'step-start', displayName: 'Step Start' },
+							{ name: 'step-end', displayName: 'Step End' },
+						],
+						default: 'ease',
+					},
+					{
+						name: 'animationDelay',
+						displayName: 'Delay',
+						type: 'time',
+						default: '0s',
+					},
+					{
+						name: 'animationIterationCount',
+						displayName: 'Iteration Count',
+						type: 'dropdown',
+						dropdownOptions: [
+							{ name: '1', displayName: '1' },
+							{ name: '2', displayName: '2' },
+							{ name: '3', displayName: '3' },
+							{ name: '4', displayName: '4' },
+							{ name: '5', displayName: '5' },
+							{ name: '6', displayName: '6' },
+							{ name: '7', displayName: '7' },
+							{ name: '8', displayName: '8' },
+							{ name: '9', displayName: '9' },
+							{ name: '10', displayName: '10' },
+							{ name: '11', displayName: '11' },
+							{ name: '12', displayName: '12' },
+							{ name: '13', displayName: '13' },
+							{ name: '14', displayName: '14' },
+							{ name: '15', displayName: '15' },
+							{ name: 'infinite', displayName: 'Infinite' },
+						],
+						default: '1',
+					},
+					{
+						name: 'animationDirection',
+						displayName: 'Direction',
+						type: 'dropdown',
+						dropdownOptions: [
+							{ name: 'normal', displayName: 'Normal' },
+							{ name: 'reverse', displayName: 'Reverse' },
+							{ name: 'alternate', displayName: 'Alternate' },
+							{ name: 'alternate-reverse', displayName: 'Alternate Reverse' },
+						],
+						default: 'normal',
+					},
+					{
+						name: 'animationFillMode',
+						displayName: 'Fill Mode',
+						type: 'dropdown',
+						dropdownOptions: [
+							{ name: 'none', displayName: 'None' },
+							{ name: 'forwards', displayName: 'Forwards' },
+							{ name: 'backwards', displayName: 'Backwards' },
+							{ name: 'both', displayName: 'Both' },
+						],
+						default: 'none',
+					},
+					{
+						name: 'animationPlayState',
+						displayName: 'Play State',
+						type: 'dropdown',
+						dropdownOptions: [
+							{ name: 'running', displayName: 'Running' },
+							{ name: 'paused', displayName: 'Paused' },
+						],
+						default: 'running',
+					},
+				]}
+			/>
 		</>
 	);
 }

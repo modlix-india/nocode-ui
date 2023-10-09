@@ -8,13 +8,7 @@ import {
 } from './simpleEditors';
 import { FunctionDetail, ManyFunctionsEditor } from './simpleEditors/ManyFunctionsEditor';
 import { PixelSize } from './simpleEditors/SizeSliders';
-
-// 'transitionProperty',
-// 'transitionDuration',
-// 'transitionTiming-function',
-// 'transitionDelay',
-
-// 'cursor',
+import { ManyValuesEditor, PropertyDetail } from './simpleEditors/ManyValuesEditor';
 
 export function EffectsEditor(props: StyleEditorsProps) {
 	const {
@@ -211,6 +205,8 @@ export function EffectsEditor(props: StyleEditorsProps) {
 				functionDetails={FILTER_FUNCTIONS}
 				onChange={v =>
 					valuesChangedOnlyValues({
+						subComponentName,
+						selectedComponent,
 						styleProps,
 						properties,
 						propValues: [{ prop: 'filter', value: v }],
@@ -220,9 +216,235 @@ export function EffectsEditor(props: StyleEditorsProps) {
 					})
 				}
 			/>
+
+			<ManyValuesEditor
+				onChange={v =>
+					valuesChangedOnlyValues({
+						subComponentName,
+						selectedComponent,
+						styleProps,
+						properties,
+						pseudoState,
+						saveStyle,
+						iterateProps,
+						propValues: v,
+					})
+				}
+				values={TRANSITION_PROPERTIES.map(e => e.name).map(e => ({
+					prop: e,
+					value:
+						extractValue({
+							subComponentName,
+							prop: e,
+							iterateProps,
+							pseudoState,
+							selectorPref,
+							selectedComponent,
+						}).value?.value ?? '',
+				}))}
+				groupTitle="Customize Transition"
+				newValueProps={['transitionProperty']}
+				showNewGroup={true}
+				newValueGroupTitle="New Transition"
+				propDefinitions={TRANSITION_PROPERTIES}
+			/>
 		</>
 	);
 }
+
+const TRANSITION_PROPERTIES: Array<PropertyDetail> = [
+	{
+		name: 'transitionProperty',
+		displayName: 'Property',
+		default: 'all',
+		type: 'dropdown',
+		dropdownOptions: [
+			{ name: 'all', displayName: 'All' },
+			{ name: 'none', displayName: 'None' },
+			{ name: 'aspect-ratio', displayName: 'Aspect Ratio' },
+			{ name: 'background', displayName: 'Background' },
+			{ name: 'background-color', displayName: 'Background Color' },
+			{ name: 'background-position', displayName: 'Background Position' },
+			{ name: 'background-position-x', displayName: 'Background Position X' },
+			{ name: 'background-position-y', displayName: 'Background Position Y' },
+			{ name: 'background-size', displayName: 'Background Size' },
+			{ name: 'block-size', displayName: 'Block Size' },
+			{ name: 'border', displayName: 'Border' },
+			{ name: 'border-bottom', displayName: 'Border Bottom' },
+			{ name: 'border-bottom-color', displayName: 'Border Bottom Color' },
+			{ name: 'border-end-end-radius', displayName: 'Border End End Radius' },
+			{ name: 'border-end-start-radius', displayName: 'Border End Start Radius' },
+			{ name: 'border-block', displayName: 'Border Block' },
+			{ name: 'border-block-color', displayName: 'Border Block Color' },
+			{ name: 'border-block-end-color', displayName: 'Border Block End Color' },
+			{ name: 'border-block-end-width', displayName: 'Border Block End Width' },
+			{ name: 'border-block-start-color', displayName: 'Border Block Start Color' },
+			{ name: 'border-block-start-width', displayName: 'Border Block Start Width' },
+			{ name: 'border-block-width', displayName: 'Border Block Width' },
+			{ name: 'border-bottom-left-radius', displayName: 'Border Bottom Left Radius' },
+			{ name: 'border-bottom-right-radius', displayName: 'Border Bottom Right Radius' },
+			{ name: 'border-inline', displayName: 'Border Inline' },
+			{ name: 'border-inline-color', displayName: 'Border Inline Color' },
+			{ name: 'border-inline-end-color', displayName: 'Border Inline End Color' },
+			{ name: 'border-inline-end-width', displayName: 'Border Inline End Width' },
+			{ name: 'border-inline-start-color', displayName: 'Border Inline Start Color' },
+			{ name: 'border-inline-start-width', displayName: 'Border Inline Start Width' },
+			{ name: 'border-inline-width', displayName: 'Border Inline Width' },
+			{ name: 'border-start-end-radius', displayName: 'Border Start End Radius' },
+			{ name: 'border-start-start-radius', displayName: 'Border Start Start Radius' },
+			{ name: 'border-bottom-width', displayName: 'Border Bottom Width' },
+			{ name: 'border-color', displayName: 'Border Color' },
+			{ name: 'border-left', displayName: 'Border Left' },
+			{ name: 'border-left-color', displayName: 'Border Left Color' },
+			{ name: 'border-left-width', displayName: 'Border Left Width' },
+			{ name: 'border-right', displayName: 'Border Right' },
+			{ name: 'border-right-color', displayName: 'Border Right Color' },
+			{ name: 'border-right-width', displayName: 'Border Right Width' },
+			{ name: 'border-spacing', displayName: 'Border Spacing' },
+			{ name: 'border-top', displayName: 'Border Top' },
+			{ name: 'border-top-color', displayName: 'Border Top Color' },
+			{ name: 'border-top-left-radius', displayName: 'Border Top Left Radius' },
+			{ name: 'border-top-right-radius', displayName: 'Border Top Right Radius' },
+			{ name: 'border-top-width', displayName: 'Border Top Width' },
+			{ name: 'bottom', displayName: 'Bottom' },
+			{ name: 'box-shadow', displayName: 'Box Shadow' },
+			{ name: 'clip', displayName: 'Clip' },
+			{ name: 'color', displayName: 'Color' },
+			{ name: 'column-count', displayName: 'Column Count' },
+			{ name: 'column-gap', displayName: 'Column Gap' },
+			{ name: 'column-rule', displayName: 'Column Rule' },
+			{ name: 'column-rule-color', displayName: 'Column Rule Color' },
+			{ name: 'column-rule-width', displayName: 'Column Rule Width' },
+			{ name: 'column-width', displayName: 'Column Width' },
+			{ name: 'columns', displayName: 'Columns' },
+			{ name: 'filter', displayName: 'Filter' },
+			{ name: 'flex', displayName: 'Flex' },
+			{ name: 'flex-basis', displayName: 'Flex Basis' },
+			{ name: 'flex-grow', displayName: 'Flex Grow' },
+			{ name: 'flex-shrink', displayName: 'Flex Shrink' },
+			{ name: 'font', displayName: 'Font' },
+			{ name: 'font-size', displayName: 'Font Size' },
+			{ name: 'font-size-adjust', displayName: 'Font Size Adjust' },
+			{ name: 'font-stretch', displayName: 'Font Stretch' },
+			{ name: 'font-weight', displayName: 'Font Weight' },
+			{ name: 'grid', displayName: 'Grid' },
+			{ name: 'grid-area', displayName: 'Grid Area' },
+			{ name: 'grid-auto-columns', displayName: 'Grid Auto Columns' },
+			{ name: 'grid-auto-flow', displayName: 'Grid Auto Flow' },
+			{ name: 'grid-auto-rows', displayName: 'Grid Auto Rows' },
+			{ name: 'grid-column', displayName: 'Grid Column' },
+			{ name: 'grid-column-end', displayName: 'Grid Column End' },
+			{ name: 'grid-column-gap', displayName: 'Grid Column Gap' },
+			{ name: 'grid-column-start', displayName: 'Grid Column Start' },
+			{ name: 'grid-gap', displayName: 'Grid Gap' },
+			{ name: 'grid-row', displayName: 'Grid Row' },
+			{ name: 'grid-row-end', displayName: 'Grid Row End' },
+			{ name: 'grid-row-gap', displayName: 'Grid Row Gap' },
+			{ name: 'grid-row-start', displayName: 'Grid Row Start' },
+			{ name: 'grid-template', displayName: 'Grid Template' },
+			{ name: 'grid-template-areas', displayName: 'Grid Template Areas' },
+			{ name: 'grid-template-columns', displayName: 'Grid Template Columns' },
+			{ name: 'grid-template-rows', displayName: 'Grid Template Rows' },
+			{ name: 'height', displayName: 'Height' },
+			{ name: 'inline-size', displayName: 'Inline Size' },
+			{ name: 'inset', displayName: 'Inset' },
+			{ name: 'inset-block', displayName: 'Inset Block' },
+			{ name: 'inset-block-end', displayName: 'Inset Block End' },
+			{ name: 'inset-block-start', displayName: 'Inset Block Start' },
+			{ name: 'inset-inline', displayName: 'Inset Inline' },
+			{ name: 'inset-inline-end', displayName: 'Inset Inline End' },
+			{ name: 'inset-inline-start', displayName: 'Inset Inline Start' },
+			{ name: 'left', displayName: 'Left' },
+			{ name: 'letter-spacing', displayName: 'Letter Spacing' },
+			{ name: 'line-height', displayName: 'Line Height' },
+			{ name: 'margin', displayName: 'Margin' },
+			{ name: 'margin-block', displayName: 'Margin Block' },
+			{ name: 'margin-block-end', displayName: 'Margin Block End' },
+			{ name: 'margin-block-start', displayName: 'Margin Block Start' },
+			{ name: 'margin-bottom', displayName: 'Margin Bottom' },
+			{ name: 'margin-inline', displayName: 'Margin Inline' },
+			{ name: 'margin-inline-end', displayName: 'Margin Inline End' },
+			{ name: 'margin-inline-start', displayName: 'Margin Inline Start' },
+			{ name: 'margin-left', displayName: 'Margin Left' },
+			{ name: 'margin-right', displayName: 'Margin Right' },
+			{ name: 'margin-top', displayName: 'Margin Top' },
+			{ name: 'max-height', displayName: 'Max Height' },
+			{ name: 'max-width', displayName: 'Max Width' },
+			{ name: 'max-block-size', displayName: 'Max Block Size' },
+			{ name: 'max-inline-size', displayName: 'Max Inline Size' },
+			{ name: 'min-block-size', displayName: 'Min Block Size' },
+			{ name: 'min-inline-size', displayName: 'Min Inline Size' },
+			{ name: 'min-height', displayName: 'Min Height' },
+			{ name: 'min-width', displayName: 'Min Width' },
+			{ name: 'object-position', displayName: 'Object Position' },
+			{ name: 'offset-anchor', displayName: 'Offset Anchor' },
+			{ name: 'offset-distance', displayName: 'Offset Distance' },
+			{ name: 'offset-path', displayName: 'Offset Path' },
+			{ name: 'offset-rotate', displayName: 'Offset Rotate' },
+			{ name: 'opacity', displayName: 'Opacity' },
+			{ name: 'order', displayName: 'Order' },
+			{ name: 'outline', displayName: 'Outline' },
+			{ name: 'outline-color', displayName: 'Outline Color' },
+			{ name: 'outline-offset', displayName: 'Outline Offset' },
+			{ name: 'outline-width', displayName: 'Outline Width' },
+			{ name: 'padding', displayName: 'Padding' },
+			{ name: 'padding-block', displayName: 'Padding Block' },
+			{ name: 'padding-block-end', displayName: 'Padding Block End' },
+			{ name: 'padding-block-start', displayName: 'Padding Block Start' },
+			{ name: 'padding-bottom', displayName: 'Padding Bottom' },
+			{ name: 'padding-inline', displayName: 'Padding Inline' },
+			{ name: 'padding-inline-end', displayName: 'Padding Inline End' },
+			{ name: 'padding-inline-start', displayName: 'Padding Inline Start' },
+			{ name: 'padding-left', displayName: 'Padding Left' },
+			{ name: 'padding-right', displayName: 'Padding Right' },
+			{ name: 'padding-top', displayName: 'Padding Top' },
+			{ name: 'perspective', displayName: 'Perspective' },
+			{ name: 'perspective-origin', displayName: 'Perspective Origin' },
+			{ name: 'right', displayName: 'Right' },
+			{ name: 'rotate', displayName: 'Rotate' },
+			{ name: 'scale', displayName: 'Scale' },
+			{ name: 'text-decoration-color', displayName: 'Text Decoration Color' },
+			{ name: 'text-indent', displayName: 'Text Indent' },
+			{ name: 'text-shadow', displayName: 'Text Shadow' },
+			{ name: 'top', displayName: 'Top' },
+			{ name: 'transform', displayName: 'Transform' },
+			{ name: 'transform-origin', displayName: 'Transform Origin' },
+			{ name: 'translate', displayName: 'Translate' },
+			{ name: 'vertical-align', displayName: 'Vertical Align' },
+			{ name: 'visibility', displayName: 'Visibility' },
+			{ name: 'width', displayName: 'Width' },
+			{ name: 'word-spacing', displayName: 'Word Spacing' },
+			{ name: 'z-index', displayName: 'Z Index' },
+		],
+	},
+	{
+		name: 'transitionDuration',
+		displayName: 'Duration',
+		default: '1s',
+		type: 'time',
+	},
+	{
+		name: 'transitionDelay',
+		displayName: 'Delay',
+		default: '0s',
+		type: 'time',
+	},
+	{
+		name: 'transitionTimingFunction',
+		displayName: 'Timing Function',
+		default: 'ease',
+		type: 'dropdown',
+		dropdownOptions: [
+			{ name: 'ease', displayName: 'Ease' },
+			{ name: 'ease-in', displayName: 'Ease In' },
+			{ name: 'ease-out', displayName: 'Ease Out' },
+			{ name: 'ease-in-out', displayName: 'Ease In Out' },
+			{ name: 'linear', displayName: 'Linear' },
+			{ name: 'step-start', displayName: 'Step Start' },
+			{ name: 'step-end', displayName: 'Step End' },
+		],
+	},
+];
 
 const FILTER_FUNCTIONS: Array<FunctionDetail> = [
 	{
@@ -845,6 +1067,19 @@ function TransformEditor({
 			}) ?? ({} as any)
 		).value?.value ?? '';
 
+	console.log(transform);
+	console.log(subComponentName);
+	console.log(
+		extractValue({
+			subComponentName,
+			prop: 'transform',
+			iterateProps,
+			pseudoState,
+			selectorPref,
+			selectedComponent,
+		}),
+	);
+
 	return (
 		<>
 			<div className="_simpleLabel _withPadding">Transform : </div>
@@ -852,16 +1087,19 @@ function TransformEditor({
 				newFunctionTitle="New Transform Function"
 				value={transform}
 				functionDetails={TRANSFORM_FUNCTIONS}
-				onChange={v =>
+				onChange={v => {
+					console.log(styleProps, v);
 					valuesChangedOnlyValues({
+						subComponentName,
+						selectedComponent,
 						styleProps,
 						properties,
 						propValues: [{ prop: 'transform', value: v }],
 						pseudoState,
 						saveStyle,
 						iterateProps,
-					})
-				}
+					});
+				}}
 			/>
 			<div className="_combineEditors _spaceBetween">
 				<div className="_combineEditors">
@@ -1057,6 +1295,8 @@ function TransformEditor({
 						else value[0] = e;
 
 						valuesChangedOnlyValues({
+							subComponentName,
+							selectedComponent,
 							styleProps,
 							properties,
 							propValues: [{ prop: 'transformOrigin', value: value.join(' ') }],
@@ -1135,6 +1375,8 @@ function TransformEditor({
 						} else value[1] = e;
 
 						valuesChangedOnlyValues({
+							subComponentName,
+							selectedComponent,
 							styleProps,
 							properties,
 							propValues: [{ prop: 'transformOrigin', value: value.join(' ') }],
@@ -1214,6 +1456,8 @@ function TransformEditor({
 						} else value[2] = e;
 
 						valuesChangedOnlyValues({
+							subComponentName,
+							selectedComponent,
 							styleProps,
 							properties,
 							propValues: [{ prop: 'transformOrigin', value: value.join(' ') }],
