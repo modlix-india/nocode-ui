@@ -53,6 +53,10 @@ export default function StepperStyle({ theme }: { theme: Map<string, Map<string,
 			flex-grow: 0;
 		}
 
+		${PREFIX}._rectangle_arrow ._listItem {
+			justify-content: center;
+		}
+
 		${PREFIX}._rectangle_arrow ._listItem:not(:last-child)::after {
 			content: "";
 			width: 0;

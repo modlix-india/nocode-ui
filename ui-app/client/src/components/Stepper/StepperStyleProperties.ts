@@ -1775,15 +1775,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 
 	{
-		groupName: 'Stepper Step Padding',
-		displayName: 'Stepper Step Padding Design Rectangle Arrow',
-		name: 'stepperStepPaddingDesignRectangleArrow',
-		defaultValue: '30px',
-		cssProperty: 'padding-left',
-		selector: '.comp.compStepper._rectangle_arrow ._listItem',
-		noPrefix: true,
-	},
-	{
 		groupName: 'Stepper Step Height',
 		displayName: 'Stepper Step Height Design Rectangle Arrow',
 		name: 'stepperStepHeightDesignRectangleArrow',
