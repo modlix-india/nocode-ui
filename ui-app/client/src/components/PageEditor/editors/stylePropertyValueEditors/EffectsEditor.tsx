@@ -1067,19 +1067,6 @@ function TransformEditor({
 			}) ?? ({} as any)
 		).value?.value ?? '';
 
-	console.log(transform);
-	console.log(subComponentName);
-	console.log(
-		extractValue({
-			subComponentName,
-			prop: 'transform',
-			iterateProps,
-			pseudoState,
-			selectorPref,
-			selectedComponent,
-		}),
-	);
-
 	return (
 		<>
 			<div className="_simpleLabel _withPadding">Transform : </div>
@@ -1087,8 +1074,7 @@ function TransformEditor({
 				newFunctionTitle="New Transform Function"
 				value={transform}
 				functionDetails={TRANSFORM_FUNCTIONS}
-				onChange={v => {
-					console.log(styleProps, v);
+				onChange={v =>
 					valuesChangedOnlyValues({
 						subComponentName,
 						selectedComponent,
@@ -1098,8 +1084,8 @@ function TransformEditor({
 						pseudoState,
 						saveStyle,
 						iterateProps,
-					});
-				}}
+					})
+				}
 			/>
 			<div className="_combineEditors _spaceBetween">
 				<div className="_combineEditors">
