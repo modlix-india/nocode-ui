@@ -25,6 +25,7 @@ export function EffectsEditor(props: StyleEditorsProps) {
 		slaveStore,
 		storePaths,
 		pageOperations,
+		isDetailStyleEditor,
 	} = props;
 
 	const filterValue =
@@ -39,6 +40,108 @@ export function EffectsEditor(props: StyleEditorsProps) {
 			}) ?? ({} as any)
 		).value?.value ?? '';
 
+	if (isDetailStyleEditor) {
+		return (
+			<>
+				<OutlineEditor
+					subComponentName={subComponentName}
+					pseudoState={pseudoState}
+					iterateProps={iterateProps}
+					selectorPref={selectorPref}
+					styleProps={styleProps}
+					selectedComponent={selectedComponent}
+					saveStyle={saveStyle}
+					properties={properties}
+					pageDef={pageDef}
+					editPageName={editPageName}
+					slaveStore={slaveStore}
+					storePaths={storePaths}
+					pageOperations={pageOperations}
+				/>
+
+				<TransformEditor
+					subComponentName={subComponentName}
+					pseudoState={pseudoState}
+					iterateProps={iterateProps}
+					selectorPref={selectorPref}
+					styleProps={styleProps}
+					selectedComponent={selectedComponent}
+					saveStyle={saveStyle}
+					properties={properties}
+					pageDef={pageDef}
+					editPageName={editPageName}
+					slaveStore={slaveStore}
+					storePaths={storePaths}
+					pageOperations={pageOperations}
+				/>
+				<div className="_simpleLabel _withPadding">Mix Blend Mode : </div>
+				<EachSimpleEditor
+					subComponentName={subComponentName}
+					pseudoState={pseudoState}
+					prop="mixBlendMode"
+					placeholder="Mix Blend Mode"
+					iterateProps={iterateProps}
+					selectorPref={selectorPref}
+					styleProps={styleProps}
+					selectedComponent={selectedComponent}
+					saveStyle={saveStyle}
+					properties={properties}
+					editorDef={{
+						type: SimpleEditorType.Dropdown,
+						dropDownShowNoneLabel: true,
+						dropdownOptions: [
+							{ name: 'normal', displayName: 'Normal' },
+							{ name: 'multiply', displayName: 'Multiply' },
+							{ name: 'screen', displayName: 'Screen' },
+							{ name: 'overlay', displayName: 'Overlay' },
+							{ name: 'darken', displayName: 'Darken' },
+							{ name: 'lighten', displayName: 'Lighten' },
+							{ name: 'color-dodge', displayName: 'Color Dodge' },
+							{ name: 'color-burn', displayName: 'Color Burn' },
+							{ name: 'hard-light', displayName: 'Hard Light' },
+							{ name: 'soft-light', displayName: 'Soft Light' },
+							{ name: 'difference', displayName: 'Difference' },
+							{ name: 'exclusion', displayName: 'Exclusion' },
+							{ name: 'hue', displayName: 'Hue' },
+							{ name: 'saturation', displayName: 'Saturation' },
+							{ name: 'color', displayName: 'Color' },
+							{ name: 'luminosity', displayName: 'Luminosity' },
+						],
+					}}
+				/>
+
+				<div className="_simpleLabel _withPadding">Filter : </div>
+				<ManyFunctionsEditor
+					newFunctionTitle="New Filter Function"
+					value={filterValue}
+					functionDetails={FILTER_FUNCTIONS}
+					onChange={v =>
+						valuesChangedOnlyValues({
+							subComponentName,
+							selectedComponent,
+							styleProps,
+							properties,
+							propValues: [{ prop: 'filter', value: v }],
+							pseudoState,
+							saveStyle,
+							iterateProps,
+						})
+					}
+				/>
+			</>
+		);
+	}
+	const transform =
+		(
+			extractValue({
+				subComponentName,
+				prop: 'transform',
+				iterateProps,
+				pseudoState,
+				selectorPref,
+				selectedComponent,
+			}) ?? ({} as any)
+		).value?.value ?? '';
 	return (
 		<>
 			<OpacityEditor
@@ -56,39 +159,24 @@ export function EffectsEditor(props: StyleEditorsProps) {
 				storePaths={storePaths}
 				pageOperations={pageOperations}
 			/>
-
-			<OutlineEditor
-				subComponentName={subComponentName}
-				pseudoState={pseudoState}
-				iterateProps={iterateProps}
-				selectorPref={selectorPref}
-				styleProps={styleProps}
-				selectedComponent={selectedComponent}
-				saveStyle={saveStyle}
-				properties={properties}
-				pageDef={pageDef}
-				editPageName={editPageName}
-				slaveStore={slaveStore}
-				storePaths={storePaths}
-				pageOperations={pageOperations}
+			<div className="_simpleLabel _withPadding">Transform : </div>
+			<ManyFunctionsEditor
+				newFunctionTitle="New Transform Function"
+				value={transform}
+				functionDetails={TRANSFORM_FUNCTIONS}
+				onChange={v =>
+					valuesChangedOnlyValues({
+						subComponentName,
+						selectedComponent,
+						styleProps,
+						properties,
+						propValues: [{ prop: 'transform', value: v }],
+						pseudoState,
+						saveStyle,
+						iterateProps,
+					})
+				}
 			/>
-
-			<TransformEditor
-				subComponentName={subComponentName}
-				pseudoState={pseudoState}
-				iterateProps={iterateProps}
-				selectorPref={selectorPref}
-				styleProps={styleProps}
-				selectedComponent={selectedComponent}
-				saveStyle={saveStyle}
-				properties={properties}
-				pageDef={pageDef}
-				editPageName={editPageName}
-				slaveStore={slaveStore}
-				storePaths={storePaths}
-				pageOperations={pageOperations}
-			/>
-
 			<div className="_simpleLabel _withPadding">Box Shadow : </div>
 			<EachSimpleEditor
 				subComponentName={subComponentName}
@@ -103,42 +191,6 @@ export function EffectsEditor(props: StyleEditorsProps) {
 				properties={properties}
 				editorDef={{
 					type: SimpleEditorType.BoxShadow,
-				}}
-			/>
-
-			<div className="_simpleLabel _withPadding">Mix Blend Mode : </div>
-			<EachSimpleEditor
-				subComponentName={subComponentName}
-				pseudoState={pseudoState}
-				prop="mixBlendMode"
-				placeholder="Mix Blend Mode"
-				iterateProps={iterateProps}
-				selectorPref={selectorPref}
-				styleProps={styleProps}
-				selectedComponent={selectedComponent}
-				saveStyle={saveStyle}
-				properties={properties}
-				editorDef={{
-					type: SimpleEditorType.Dropdown,
-					dropDownShowNoneLabel: true,
-					dropdownOptions: [
-						{ name: 'normal', displayName: 'Normal' },
-						{ name: 'multiply', displayName: 'Multiply' },
-						{ name: 'screen', displayName: 'Screen' },
-						{ name: 'overlay', displayName: 'Overlay' },
-						{ name: 'darken', displayName: 'Darken' },
-						{ name: 'lighten', displayName: 'Lighten' },
-						{ name: 'color-dodge', displayName: 'Color Dodge' },
-						{ name: 'color-burn', displayName: 'Color Burn' },
-						{ name: 'hard-light', displayName: 'Hard Light' },
-						{ name: 'soft-light', displayName: 'Soft Light' },
-						{ name: 'difference', displayName: 'Difference' },
-						{ name: 'exclusion', displayName: 'Exclusion' },
-						{ name: 'hue', displayName: 'Hue' },
-						{ name: 'saturation', displayName: 'Saturation' },
-						{ name: 'color', displayName: 'Color' },
-						{ name: 'luminosity', displayName: 'Luminosity' },
-					],
 				}}
 			/>
 
@@ -197,26 +249,6 @@ export function EffectsEditor(props: StyleEditorsProps) {
 					],
 				}}
 			/>
-
-			<div className="_simpleLabel _withPadding">Filter : </div>
-			<ManyFunctionsEditor
-				newFunctionTitle="New Filter Function"
-				value={filterValue}
-				functionDetails={FILTER_FUNCTIONS}
-				onChange={v =>
-					valuesChangedOnlyValues({
-						subComponentName,
-						selectedComponent,
-						styleProps,
-						properties,
-						propValues: [{ prop: 'filter', value: v }],
-						pseudoState,
-						saveStyle,
-						iterateProps,
-					})
-				}
-			/>
-
 			<ManyValuesEditor
 				onChange={v =>
 					valuesChangedOnlyValues({
@@ -1055,38 +1087,9 @@ function TransformEditor({
 		.map((e: string) => e.trim())
 		.filter((e: string) => !!e);
 
-	const transform =
-		(
-			extractValue({
-				subComponentName,
-				prop: 'transform',
-				iterateProps,
-				pseudoState,
-				selectorPref,
-				selectedComponent,
-			}) ?? ({} as any)
-		).value?.value ?? '';
-
 	return (
 		<>
 			<div className="_simpleLabel _withPadding">Transform : </div>
-			<ManyFunctionsEditor
-				newFunctionTitle="New Transform Function"
-				value={transform}
-				functionDetails={TRANSFORM_FUNCTIONS}
-				onChange={v =>
-					valuesChangedOnlyValues({
-						subComponentName,
-						selectedComponent,
-						styleProps,
-						properties,
-						propValues: [{ prop: 'transform', value: v }],
-						pseudoState,
-						saveStyle,
-						iterateProps,
-					})
-				}
-			/>
 			<div className="_combineEditors _spaceBetween">
 				<div className="_combineEditors">
 					<svg

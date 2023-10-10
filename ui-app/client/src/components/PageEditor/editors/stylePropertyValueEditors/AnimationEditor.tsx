@@ -669,8 +669,6 @@ export function AnimationEditor({
 		return a;
 	}, {} as any);
 
-	console.log(props);
-
 	return (
 		<>
 			<svg
