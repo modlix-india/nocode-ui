@@ -325,7 +325,6 @@ export function valuesChangedOnlyValues({
 		const newValue: any = { value };
 
 		if (oldValue.location) newValue.location = oldValue.location;
-		console.log('newValue', updatedStyle);
 
 		return propUpdate({
 			styleProps: updatedStyle,
@@ -338,8 +337,6 @@ export function valuesChangedOnlyValues({
 			iterateProps,
 		});
 	}, styleProps);
-
-	console.log('updatedStyle', updatedStyle);
 
 	if (!updatedStyle) return;
 	saveStyle(updatedStyle);
