@@ -9,5 +9,5 @@ export const Style_Group_Editors = new Map([
 	['animation', { component: AnimationEditor, hasDetails: false, displayName: 'Animation' }],
 	['position', { component: PositionEditor, hasDetails: false, displayName: 'Position' }],
 	['spacing', { component: SpacingEditor, hasDetails: false, displayName: 'Sapcing' }],
-	['effects', { component: EffectsEditor, hasDetails: false, displayName: 'Effects' }],
+	['effects', { component: EffectsEditor, hasDetails: true, displayName: 'Effects' }],
 ]);

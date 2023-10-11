@@ -183,7 +183,7 @@ export function ManyValuesEditor({
 							}
 
 							return (
-								<div className="_editorLine">
+								<div className="_editorLine" key={def.name}>
 									<span className="_label">{def.displayName} </span>
 									{editor}
 								</div>
