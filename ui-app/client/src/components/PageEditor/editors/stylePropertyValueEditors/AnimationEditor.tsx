@@ -658,7 +658,10 @@ export function AnimationEditor({
 	}
 
 	const props = propValues.reduce((a, e) => {
-		a[e.actualProp.substring(e.actualProp.indexOf('-') + 1)] = (e.value?.value ?? '')
+		let curProp = e.actualProp.substring(e.actualProp.indexOf('-') + 1);
+		const ind = curProp.indexOf(':');
+		if (ind !== -1) curProp = curProp.substring(0, ind);
+		a[curProp] = (e.value?.value ?? '')
 			.split(',')
 			.map((x: string) => x.trim())
 			.filter((x: string) => x !== '')
