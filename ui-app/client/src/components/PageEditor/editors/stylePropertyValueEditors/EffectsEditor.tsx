@@ -159,41 +159,6 @@ export function EffectsEditor(props: StyleEditorsProps) {
 				storePaths={storePaths}
 				pageOperations={pageOperations}
 			/>
-			<div className="_simpleLabel _withPadding">Transform : </div>
-			<ManyFunctionsEditor
-				newFunctionTitle="New Transform Function"
-				value={transform}
-				functionDetails={TRANSFORM_FUNCTIONS}
-				onChange={v =>
-					valuesChangedOnlyValues({
-						subComponentName,
-						selectedComponent,
-						styleProps,
-						properties,
-						propValues: [{ prop: 'transform', value: v }],
-						pseudoState,
-						saveStyle,
-						iterateProps,
-					})
-				}
-			/>
-			<div className="_simpleLabel _withPadding">Box Shadow : </div>
-			<EachSimpleEditor
-				subComponentName={subComponentName}
-				pseudoState={pseudoState}
-				prop="boxShadow"
-				placeholder="Box Shadow"
-				iterateProps={iterateProps}
-				selectorPref={selectorPref}
-				styleProps={styleProps}
-				selectedComponent={selectedComponent}
-				saveStyle={saveStyle}
-				properties={properties}
-				editorDef={{
-					type: SimpleEditorType.BoxShadow,
-				}}
-			/>
-
 			<div className="_simpleLabel _withPadding">Cursor : </div>
 			<EachSimpleEditor
 				subComponentName={subComponentName}
@@ -249,6 +214,41 @@ export function EffectsEditor(props: StyleEditorsProps) {
 					],
 				}}
 			/>
+			<div className="_simpleLabel _withPadding">Transform : </div>
+			<ManyFunctionsEditor
+				newFunctionTitle="New Transform Function"
+				value={transform}
+				functionDetails={TRANSFORM_FUNCTIONS}
+				onChange={v =>
+					valuesChangedOnlyValues({
+						subComponentName,
+						selectedComponent,
+						styleProps,
+						properties,
+						propValues: [{ prop: 'transform', value: v }],
+						pseudoState,
+						saveStyle,
+						iterateProps,
+					})
+				}
+			/>
+			<div className="_simpleLabel _withPadding">Box Shadow : </div>
+			<EachSimpleEditor
+				subComponentName={subComponentName}
+				pseudoState={pseudoState}
+				prop="boxShadow"
+				placeholder="Box Shadow"
+				iterateProps={iterateProps}
+				selectorPref={selectorPref}
+				styleProps={styleProps}
+				selectedComponent={selectedComponent}
+				saveStyle={saveStyle}
+				properties={properties}
+				editorDef={{
+					type: SimpleEditorType.BoxShadow,
+				}}
+			/>
+
 			<ManyValuesEditor
 				onChange={v =>
 					valuesChangedOnlyValues({
