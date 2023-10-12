@@ -40,7 +40,7 @@ export default function TextBoxStyle({ theme }: { theme: Map<string, Map<string,
 		pointer-events: none;
 		bottom: 50%;
 		transform: translateY(50%);
-		transition: transform 0.2s ease-in-out, left 0.2s ease-in-out;
+		transition: transform 0.2s ease-in-out, left 0.2s ease-in-out, bottom 0.2s ease-in-out;
 	}
 
 	${PREFIX} ._rightIcon,
