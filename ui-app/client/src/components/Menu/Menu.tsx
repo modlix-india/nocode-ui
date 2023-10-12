@@ -49,6 +49,7 @@ function Menu(props: ComponentProps) {
 			designType: menuDesignSelectionType,
 			colorScheme: menuColorScheme,
 			subMenuOrientation,
+			readOnly,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -99,21 +100,25 @@ function Menu(props: ComponentProps) {
 	const externalButton = showButton ? (
 		<i
 			className="_externalButton fa fa-solid fa-up-right-from-square"
-			onClick={e => {
-				e.stopPropagation();
-				e.preventDefault();
-				if (externalButtonTarget === '_self') {
-					window.history.pushState(undefined, '', resolvedLink);
-					window.history.back();
-					setTimeout(() => window.history.forward(), 100);
-				} else {
-					window.open(
-						resolvedLink,
-						externalButtonTarget,
-						externalButtonFeatures ?? features,
-					);
-				}
-			}}
+			onClick={
+				readOnly
+					? undefined
+					: e => {
+							e.stopPropagation();
+							e.preventDefault();
+							if (externalButtonTarget === '_self') {
+								window.history.pushState(undefined, '', resolvedLink);
+								window.history.back();
+								setTimeout(() => window.history.forward(), 100);
+							} else {
+								window.open(
+									resolvedLink,
+									externalButtonTarget,
+									externalButtonFeatures ?? features,
+								);
+							}
+					  }
+			}
 		>
 			<SubHelperComponent definition={definition} subComponentName="externalIcon" />
 		</i>
@@ -132,6 +137,7 @@ function Menu(props: ComponentProps) {
 	const menuToggle = (e: MouseEvent<HTMLElement>) => {
 		e.stopPropagation();
 		e.preventDefault();
+		if (readOnly) return;
 		const func =
 			props.pageDefinition?.eventFunctions?.[isMenuOpenState ? onMenuClose : onMenuOpen];
 		if (func) {
@@ -248,8 +254,8 @@ function Menu(props: ComponentProps) {
 			<a
 				className={`comp compMenu _${styleKey}menu_css ${menuDesignSelectionType} ${menuColorScheme} ${
 					isMenuActive ? '_isActive' : ''
-				} _level${context.menuLevel ?? 0}`}
-				href={resolvedLink}
+				} ${readOnly ? '_disabled' : ''} _level${context.menuLevel ?? 0}`}
+				href={readOnly ? 'javascript:void(0)' : resolvedLink}
 				target={target}
 				onClick={e => {
 					if ((!target || target === '_self') && linkPath) {
