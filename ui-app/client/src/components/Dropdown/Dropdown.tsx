@@ -383,7 +383,9 @@ function DropdownComponent(props: ComponentProps) {
 						: dropdownData
 					)?.map(each => (
 						<div
-							className={`_dropdownItem ${each.key === hoverKey ? '_hover' : ''}`}
+							className={`_dropdownItem ${
+								getIsSelected(each?.key) ? '_selected' : ''
+							} ${each.key === hoverKey ? '_hover' : ''}`}
 							style={computedStyles.dropdownItem ?? {}}
 							key={each?.key}
 							onMouseEnter={() => setHoverKey(each?.key)}
