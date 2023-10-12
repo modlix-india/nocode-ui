@@ -26,7 +26,8 @@ export default function TextBoxStyle({ theme }: { theme: Map<string, Map<string,
 
 	${PREFIX}._isActive ._label,
 	${PREFIX} ._label._noFloat {
-		transform: translateY(-150%);
+		transform: translateY(-50%);
+		bottom: 100%;
 	}
 
 	${PREFIX}._hasLeftIcon ._label {
@@ -37,8 +38,9 @@ export default function TextBoxStyle({ theme }: { theme: Map<string, Map<string,
 		position: absolute;
 		user-select: none;
 		pointer-events: none;
-		transform: translateY(0%);
-		transition: transform 0.2s ease-in-out, left 0.2s ease-in-out;
+		bottom: 50%;
+		transform: translateY(50%);
+		transition: transform 0.2s ease-in-out, left 0.2s ease-in-out, bottom 0.2s ease-in-out;
 	}
 
 	${PREFIX} ._rightIcon,
