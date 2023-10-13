@@ -142,6 +142,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		],
 	},
 	COMMON_COMPONENT_PROPERTIES.colorScheme,
+	COMMON_COMPONENT_PROPERTIES.onClick,
 ];
 
 const stylePropertiesDefinition = {
