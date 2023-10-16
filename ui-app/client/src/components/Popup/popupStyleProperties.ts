@@ -2,14 +2,6 @@ import { StylePropertyDefinition } from '../../types/common';
 
 export const styleProperties: Array<StylePropertyDefinition> = [
 	{
-		displayName: 'Poup Title',
-		name: 'popupTitleFont',
-		defaultValue: '<tertiaryFont>',
-		cssProperty: 'font',
-		selector: '.modelTitleStyle',
-	},
-
-	{
 		groupName: 'Close Icon',
 		displayName: 'Popup Close Icon Size',
 		name: 'popupCloseIconSize',
@@ -74,6 +66,23 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '20px',
 		cssProperty: 'padding',
 		selector: '.backdrop',
+	},
+
+	{
+		groupName: 'Popup title icon grid top left border',
+		displayName: 'popup title icon grid',
+		name: 'popuptitleicongridleftBorder',
+		defaultValue: '2px',
+		cssProperty: 'border-top-left-radius',
+		selector: '.TitleIconGrid',
+	},
+	{
+		groupName: 'Popup title icon grid top right border',
+		displayName: 'Popup title icon grid ',
+		name: 'popuptitleicongridrightBorder',
+		defaultValue: '2px',
+		cssProperty: 'border-top-right-radius',
+		selector: '.TitleIconGrid',
 	},
 ];
 
