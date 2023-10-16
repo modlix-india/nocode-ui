@@ -2,6 +2,15 @@ import { StylePropertyDefinition } from '../../types/common';
 
 export const styleProperties: Array<StylePropertyDefinition> = [
 	{
+		groupName: 'popup title',
+		displayName: 'Poup Title',
+		name: 'popupTitleFont',
+		defaultValue: '<tertiaryFont>',
+		cssProperty: 'font',
+		selector: '.modelTitleStyle',
+	},
+
+	{
 		groupName: 'Close Icon',
 		displayName: 'Popup Close Icon Size',
 		name: 'popupCloseIconSize',
