@@ -146,7 +146,7 @@ function DropdownComponent(props: ComponentProps) {
 
 	const selectedDataKey: Array<any> | string | undefined = React.useMemo(
 		() => getSelectedKeys(dropdownData, selected, isMultiSelect),
-		[selected],
+		[selected, dropdownData, isMultiSelect],
 	);
 
 	const getIsSelected = (key: any) => {
