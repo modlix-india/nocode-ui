@@ -19,6 +19,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{ ...COMMON_COMPONENT_PROPERTIES.linkPath, group: ComponentPropertyGroup.BASIC },
 	{ ...COMMON_COMPONENT_PROPERTIES.linkTargetType, group: ComponentPropertyGroup.BASIC },
 	{ ...COMMON_COMPONENT_PROPERTIES.linkTargetFeatures, group: ComponentPropertyGroup.BASIC },
+	COMMON_COMPONENT_PROPERTIES.readOnly,
 	{
 		name: 'showButton',
 		schema: SCHEMA_BOOL_COMP_PROP,
