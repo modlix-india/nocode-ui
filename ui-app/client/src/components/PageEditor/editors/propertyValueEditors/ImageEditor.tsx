@@ -4,7 +4,7 @@ import { LOCAL_STORE_PREFIX } from '../../../../constants';
 import { getDataFromPath } from '../../../../context/StoreContext';
 import { ComponentPropertyDefinition } from '../../../../types/common';
 import Portal from '../../../Portal';
-import PageOperations from '../../functions/PageOperations';
+import { PageOperations } from '../../functions/PageOperations';
 import { shortUUID } from '../../../../util/shortUUID';
 import PathParts from '../../../../commonComponents/PathParts';
 

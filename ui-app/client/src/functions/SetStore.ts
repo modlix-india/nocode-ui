@@ -21,6 +21,7 @@ const SIGNATURE = new FunctionSignature('SetStore')
 		new Map([
 			Parameter.ofEntry('path', Schema.ofString('path')),
 			Parameter.ofEntry('value', Schema.ofAny('value')),
+			Parameter.ofEntry('deleteKey', Schema.ofBoolean('deleteKey').setDefaultValue(false)),
 		]),
 	)
 	.setEvents(new Map([Event.eventMapEntry(Event.OUTPUT, new Map())]));
@@ -29,6 +30,7 @@ export class SetStore extends AbstractFunction {
 	protected async internalExecute(context: FunctionExecutionParameters): Promise<FunctionOutput> {
 		let path: string = context.getArguments()?.get('path');
 		const value = context.getArguments()?.get('value');
+		const deleteKey: boolean = context.getArguments()?.get('deleteKey');
 
 		const tve = context.getValuesMap().get('Page.') as PageStoreExtractor;
 
@@ -43,6 +45,7 @@ export class SetStore extends AbstractFunction {
 				path,
 				isNullValue(value) ? value : duplicate(value),
 				tve?.getPageName() ?? GLOBAL_CONTEXT_NAME,
+				deleteKey,
 			);
 		}
 		return new FunctionOutput([EventResult.outputOf(new Map())]);

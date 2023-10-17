@@ -88,8 +88,8 @@ export class ParentExtractorForRunEvent extends TokenValueExtractor {
 		let lastHistory;
 
 		lastHistory = this.history[this.history.length - pNum];
-		if (typeof lastHistory.location === 'string') path = `${lastHistory.location}.${path}`;
-		else
+		if (typeof lastHistory?.location === 'string') path = `${lastHistory.location}.${path}`;
+		else if (lastHistory?.location)
 			path = `${
 				lastHistory.location.type === 'VALUE'
 					? lastHistory.location.value

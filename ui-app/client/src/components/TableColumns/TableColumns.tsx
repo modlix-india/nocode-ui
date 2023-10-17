@@ -14,6 +14,7 @@ import { getExtractionMap } from '../util/getRenderData';
 import CommonCheckbox from '../../commonComponents/CommonCheckbox';
 import { duplicate } from '@fincity/kirun-js';
 import { runEvent } from '../util/runEvent';
+import { styleDefaults } from './tableColumnsStyleProperties';
 
 function TableColumnsComponent(props: ComponentProps) {
 	const [value, setValue] = useState([]);
@@ -260,7 +261,6 @@ function TableColumnsComponent(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-table-columns',
 	name: 'TableColumns',
 	displayName: 'Table Columns',
 	description: 'Table Columns component',
@@ -269,9 +269,31 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TableColumnsStyle,
+	styleDefaults: styleDefaults,
 	allowedChildrenType: new Map([['TableColumn', -1]]),
 	parentType: 'Table',
 	stylePseudoStates: ['hover'],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-table-columns',
+		},
+		{
+			name: 'row',
+			displayName: 'Row',
+			description: 'Row',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'header',
+			displayName: 'Header',
+			description: 'Header',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

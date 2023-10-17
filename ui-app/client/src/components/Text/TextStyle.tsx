@@ -9,11 +9,35 @@ export default function LabelStyle({ theme }: { theme: Map<string, Map<string, s
 	${PREFIX} ._textContainer {
 		width: 100%;
 		display: block;
-		font-family: inherit;
-		color: inherit;
-		font-size: inherit;
-		font-weight: inherit;
 		position: relative;
+		font-family: inherit;
+		font-Size: inherit;
+		font-Weight: inherit;
+		color: inherit;
+		text-Align: inherit;
+		font-Style: inherit;
+		line-Height: inherit;
+		letter-Spacing: inherit;
+		text-Indent: inherit;
+		text-Transform: inherit;
+		text-Shadow: inherit;
+		direction: inherit;
+		text-Decoration: inherit;
+		text-Orientation: inherit;
+		word-Break: inherit;
+		word-Spacing: inherit;
+		word-Wrap: inherit;
+		font-Feature-Settings: inherit;
+		font-Kerning: inherit;
+		font-Variant: inherit;
+		font-Variant-Caps: inherit;
+		text-Align-Last: inherit;
+		text-Decoration-Color: inherit;
+		text-Decoration-Line: inherit;
+		text-Decoration-Style: inherit;
+		text-Emphasis: inherit;
+		text-Overflow: inherit;
+		white-Space: inherit;
 	}
 	
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);

@@ -9,7 +9,7 @@ export default function ProgressBarStyles({ theme }: { theme: Map<string, Map<st
 		...Array.from(theme.get(StyleResolution.ALL) ?? []),
 		...Array.from(styleDefaults),
 	]);
-	console.log();
+
 	const css =
 		`
         ${PREFIX}._circular, ${PREFIX}._circular_text_background_outline, ${PREFIX}._circular_text_background {

@@ -9,6 +9,8 @@ import { isNullValue } from '@fincity/kirun-js';
 
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { SubHelperComponent } from '../SubHelperComponent';
+import { styleDefaults } from './videoStyleProperties';
+import { IconHelper } from '../util/IconHelper';
 
 function Video(props: ComponentProps) {
 	const { definition, locationHistory, context, pageDefinition } = props;
@@ -397,7 +399,6 @@ function Video(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa fa-solid fa-film',
 	name: 'Video',
 	displayName: 'Video',
 	description: 'Video component',
@@ -406,7 +407,82 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	styleComponent: VideoStyle,
+	styleDefaults: styleDefaults,
 	allowedChildrenType: new Map<string, number>([['', -1]]),
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			mainComponent: true,
+			description: 'Component',
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					<path
+						d="M21.23 10.7446C22.2567 11.3373 22.2567 12.8192 21.23 13.4119L5.06 22.7477C4.03333 23.3404 2.75 22.5995 2.75 21.414L2.75 2.74249C2.75 1.557 4.03333 0.816067 5.06 1.40881L21.23 10.7446Z"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<path
+						d="M21.23 10.7446C22.2567 11.3373 22.2567 12.8192 21.23 13.4119L5.06 22.7477C4.03333 23.3404 2.75 22.5995 2.75 21.414L2.75 2.74249C2.75 1.557 4.03333 0.816067 5.06 1.40881L21.23 10.7446Z"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<path
+						d="M13.5508 11.6455C13.8841 11.8379 13.8841 12.3191 13.5508 12.5115L8.12078 15.6465C7.78745 15.839 7.37078 15.5984 7.37078 15.2135L7.37078 8.94348C7.37078 8.55858 7.78745 8.31802 8.12078 8.51047L13.5508 11.6455Z"
+						fill="currentColor"
+					/>
+				</IconHelper>
+			),
+		},
+		{
+			name: 'player',
+			displayName: 'Player',
+			description: 'Player',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'volumeSlider',
+			displayName: 'Volume Slider',
+			description: 'Volume Slider',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'seekSlider',
+			displayName: 'Seek Slider',
+			description: 'Seek Slider',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'playPauseButton',
+			displayName: 'Play Pause Button',
+			description: 'Play Pause Button',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'pipButton',
+			displayName: 'Pip Button',
+			description: 'Pip Button',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'fullScreenButton',
+			displayName: 'Full Screen Button',
+			description: 'Full Screen Button',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'timeText',
+			displayName: 'Time Text',
+			description: 'Time Text',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'seekTimeTextOnHover',
+			displayName: 'Seek Time Text On Hover',
+			description: 'Seek Time Text On Hover',
+			icon: 'fa fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

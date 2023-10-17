@@ -40,6 +40,7 @@ import FunctionDetialsEditor from './components/FunctionDetailsEditor';
 import { HelperComponent } from '../HelperComponent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { REPO_SERVER, RemoteRepository } from '../../Engine/RemoteRepository';
+import { styleDefaults } from './KIRunEditorStyleProperties';
 
 const gridSize = 20;
 
@@ -1116,7 +1117,6 @@ function KIRunEditor(
 }
 
 const component: Component = {
-	icon: 'fa-regular fa-newspaper',
 	name: 'KIRun Editor',
 	displayName: 'KIRun Editor',
 	description: 'KIRun Editor component',
@@ -1124,11 +1124,21 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: KIRunEditorStyle,
+	styleDefaults: styleDefaults,
 	styleProperties: stylePropertiesDefinition,
 	bindingPaths: {
 		bindingPath: { name: 'Function Binding' },
 		bindingPath2: { name: 'Personalization' },
 	},
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-regular fa-newspaper',
+		},
+	],
 };
 
 export default component;

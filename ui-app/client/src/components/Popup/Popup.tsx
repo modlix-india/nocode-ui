@@ -17,6 +17,8 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
 import { SubHelperComponent } from '../SubHelperComponent';
 import { getTranslations } from '../util/getTranslations';
+import { styleDefaults } from './popupStyleProperties';
+import { IconHelper } from '../util/IconHelper';
 
 function Popup(props: ComponentProps) {
 	const [isActive, setIsActive] = React.useState(false);
@@ -226,7 +228,6 @@ function Popup(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-window-restore',
 	name: 'Popup',
 	displayName: 'Popup',
 	description: 'Popup component',
@@ -234,6 +235,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: PopupStyles,
+	styleDefaults: styleDefaults,
 	styleProperties: stylePropertiesDefinition,
 	allowedChildrenType: new Map<string, number>([['', -1]]),
 	bindingPaths: {
@@ -246,6 +248,58 @@ const component: Component = {
 	},
 	needShowInDesginMode: true,
 	sections: [{ name: 'Popup', pageName: 'popup' }],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					<rect
+						x="1"
+						y="1"
+						width="22"
+						height="22"
+						rx="2"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<rect x="5" y="5" width="14" height="14" rx="1" fill="currentColor" />
+				</IconHelper>
+			),
+		},
+		{
+			name: 'modal',
+			displayName: 'Modal',
+			description: 'Modal',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'titleGrid',
+			displayName: 'Title Grid',
+			description: 'Title Grid',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'closeButton',
+			displayName: 'Close Button',
+			description: 'Close Button',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'modalTitle',
+			displayName: 'Modal Title',
+			description: 'Modal Title',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'closeButtonContainer',
+			displayName: 'Close Button Container',
+			description: 'Close Button Container',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

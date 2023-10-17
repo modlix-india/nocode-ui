@@ -1,5 +1,5 @@
 import { ContextMenuDetails } from '../components/ContextMenu';
-import PageOperations from './PageOperations';
+import { PageOperations } from './PageOperations';
 
 interface MasterFunctionOptions {
 	iframe: HTMLIFrameElement;

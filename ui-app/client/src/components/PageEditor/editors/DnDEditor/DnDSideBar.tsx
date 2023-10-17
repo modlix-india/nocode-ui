@@ -6,7 +6,7 @@ import {
 } from '../../../../context/StoreContext';
 import { Component, LocationHistory, PageDefinition, Section } from '../../../../types/common';
 import ComponentDefinitions from '../../../';
-import PageOperations from '../../functions/PageOperations';
+import { PageOperations } from '../../functions/PageOperations';
 import { DRAG_CD_KEY, DRAG_COMP_NAME } from '../../../../constants';
 
 interface DnDSideBarProps {
@@ -194,6 +194,11 @@ export default function DnDSideBar({
 						closeMenu();
 					}}
 				>
+					{typeof e.subComponentDefinition?.[0].icon === 'string' ? (
+						<i className={`fa ${e.subComponentDefinition?.[0].icon}`} />
+					) : (
+						e.subComponentDefinition?.[0].icon
+					)}
 					{e.displayName}
 				</div>
 			));

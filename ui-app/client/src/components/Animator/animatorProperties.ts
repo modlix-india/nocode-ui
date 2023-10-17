@@ -14,7 +14,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	COMMON_COMPONENT_PROPERTIES.visibility,
-	COMMON_COMPONENT_PROPERTIES.animation,
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

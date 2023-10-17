@@ -14,6 +14,8 @@ import { getHref } from '../util/getHref';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { SubHelperComponent } from '../SubHelperComponent';
 import { messageToMaster } from '../../slaveFunctions';
+import { styleDefaults } from './buttonStyleProperties';
+import { IconHelper } from '../util/IconHelper';
 
 function ButtonComponent(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -362,12 +364,12 @@ function ButtonComponent(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-rectangle-ad',
 	name: 'Button',
 	displayName: 'Button',
 	description: 'Button component',
 	component: ButtonComponent,
 	styleComponent: ButtonStyle,
+	styleDefaults: styleDefaults,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
@@ -381,6 +383,40 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'Buttons', pageName: 'buttons' }],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					<rect
+						x="3.25"
+						y="3.25"
+						width="19.25"
+						height="19.25"
+						rx="2"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<rect x="1.5" y="1.5" width="17" height="17" rx="2" fill="currentColor" />
+				</IconHelper>
+			),
+			mainComponent: true,
+		},
+		{
+			name: 'leftIcon',
+			displayName: 'Left Icon',
+			description: 'Left Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'rightIcon',
+			displayName: 'Right Icon',
+			description: 'Right Icon',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

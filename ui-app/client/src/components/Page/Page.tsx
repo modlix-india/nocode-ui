@@ -17,6 +17,8 @@ import { propertiesDefinition, stylePropertiesDefinition } from './pagePropertie
 import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import pageHistory from './pageHistory';
+import { styleDefaults } from './pageStyleProperties';
+import { IconHelper } from '../util/IconHelper';
 
 function PageComponent(props: ComponentProps) {
 	const {
@@ -96,20 +98,18 @@ function PageComponent(props: ComponentProps) {
 		}
 	}, [pathParts, queryParameters, pageName]);
 
-	// const styleText =
-	// 	'@media all {' +
-	// 	React.useMemo(() => {
-	// 		if (!pageDefinition?.properties?.classes) return '';
+	const styleText = React.useMemo(() => {
+		if (!pageDefinition?.properties?.classes) return '';
 
-	// 		return Object.values(pageDefinition?.properties?.classes)
-	// 			.map(e => {
-	// 				const txt = `${e.selector} { ${e.style} }`;
-	// 				if (!e.mediaQuery) return txt;
-	// 				return `${e.mediaQuery} { ${txt} }`;
-	// 			})
-	// 			.join('\n');
-	// 	}, [pageDefinition?.properties?.classes]);
-	// +' }';
+		return Object.values(pageDefinition?.properties?.classes)
+			.filter(e => e.selector?.indexOf('@') !== -1)
+			.map(e => {
+				const txt = `${e.selector} { ${e.style} }`;
+				if (!e.mediaQuery) return txt;
+				return `${e.mediaQuery} { ${txt} }`;
+			})
+			.join('\n');
+	}, [pageDefinition?.properties?.classes]);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
@@ -121,7 +121,7 @@ function PageComponent(props: ComponentProps) {
 		return (
 			<div className="comp compPage _blockPageRendering" style={resolvedStyles?.comp ?? {}}>
 				<HelperComponent definition={definition} />
-				{/* <style>{styleText}</style> */}
+				<style>{styleText}</style>
 				Design Mode
 			</div>
 		);
@@ -130,7 +130,7 @@ function PageComponent(props: ComponentProps) {
 	return (
 		<div className="comp compPage" style={resolvedStyles?.comp ?? {}}>
 			<HelperComponent definition={definition} />
-			{/* <style>{styleText}</style> */}
+			<style>{styleText}</style>
 			<Children
 				pageDefinition={pageDefinition}
 				children={{
@@ -144,7 +144,6 @@ function PageComponent(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-file',
 	name: 'Page',
 	displayName: 'Page',
 	description: 'Page component',
@@ -154,6 +153,29 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: PageStyle,
+	styleDefaults: styleDefaults,
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					<path
+						d="M12.4836 5.4706V1H3.5493C2.69501 1 2 1.69501 2 2.5493V21.4507C2 22.305 2.69501 23 3.5493 23H17.4706C18.3249 23 19.0199 22.305 19.0199 21.4507V7.53632H14.5493C13.4103 7.53632 12.4836 6.60964 12.4836 5.4706Z"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<path
+						d="M13.5176 5.47056C13.5176 6.04008 13.9809 6.50342 14.5504 6.50342H18.2553L13.5176 1.78809V5.47056Z"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+				</IconHelper>
+			),
+		},
+	],
 };
 
 export default component;

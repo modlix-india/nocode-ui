@@ -11,7 +11,7 @@ import {
 	OBESERVATION_PROP,
 	TIMING_FUNCTION_EXTRA,
 } from '../../../util/properties';
-import PageOperations from '../../functions/PageOperations';
+import { PageOperations } from '../../functions/PageOperations';
 import PropertyValueEditor from './PropertyValueEditor';
 
 interface AnimationValueEditorProps {

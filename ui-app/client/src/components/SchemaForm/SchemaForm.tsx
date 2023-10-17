@@ -16,6 +16,7 @@ import useDefinition from '../util/useDefinition';
 import SingleSchema from './components/SingleSchemaForm';
 import { propertiesDefinition, stylePropertiesDefinition } from './schemaFormProperties';
 import SchemaFormStyle from './SchemaFormStyle';
+import { styleDefaults } from './schemaFormStyleProperies';
 
 function SchemaForm(
 	props: ComponentProps & {
@@ -112,7 +113,6 @@ function SchemaForm(
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-highlighter',
 	name: 'SchemaForm',
 	displayName: 'Schema Form',
 	description: 'Schema Form component',
@@ -120,6 +120,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: SchemaFormStyle,
+	styleDefaults: styleDefaults,
 	styleProperties: stylePropertiesDefinition,
 	defaultTemplate: {
 		key: '',
@@ -130,6 +131,15 @@ const component: Component = {
 	bindingPaths: {
 		bindingPath: { name: 'Schema value binding' },
 	},
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-highlighter',
+		},
+	],
 };
 
 export default component;

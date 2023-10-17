@@ -7,6 +7,7 @@ import { Component } from '../../types/common';
 import IconStyle from './IconStyle';
 import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import { styleDefaults } from './iconStyleProperies';
 
 function Icon(props: ComponentProps) {
 	const { definition, locationHistory, context } = props;
@@ -37,7 +38,6 @@ function Icon(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-icons',
 	name: 'Icon',
 	displayName: 'Icon',
 	description: 'Icon component',
@@ -45,6 +45,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: IconStyle,
+	styleDefaults: styleDefaults,
 	styleProperties: stylePropertiesDefinition,
 	defaultTemplate: {
 		key: '',
@@ -55,6 +56,15 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'Icons', pageName: 'icon' }],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-icons',
+		},
+	],
 };
 
 export default component;

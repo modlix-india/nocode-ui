@@ -84,7 +84,11 @@ export default function FunctionDetialsEditor({
 										...errors,
 										name: 'Name contains only letter, numbers and underscore and should not start with number',
 									});
-									return;
+								} else {
+									setErrors({
+										...errors,
+										name: undefined,
+									});
 								}
 							}}
 						/>
@@ -99,6 +103,10 @@ export default function FunctionDetialsEditor({
 							onBlur={() => {
 								if (namespace === '') {
 									setNamespace('');
+									setErrors({
+										...errors,
+										namespace: undefined,
+									});
 									return;
 								}
 

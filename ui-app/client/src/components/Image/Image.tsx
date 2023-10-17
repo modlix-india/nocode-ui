@@ -14,6 +14,7 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { getHref } from '../util/getHref';
 import { useLocation } from 'react-router-dom';
 import { SubHelperComponent } from '../SubHelperComponent';
+import { styleDefaults } from './imageStyleProperties';
 
 function ImageComponent(props: ComponentProps) {
 	const { definition, locationHistory, context } = props;
@@ -114,7 +115,6 @@ function ImageComponent(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-image',
 	name: 'Image',
 	displayName: 'Image',
 	description: 'Image Component',
@@ -122,6 +122,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: ImageStyle,
+	styleDefaults: styleDefaults,
 	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['hover'],
 	defaultTemplate: {
@@ -133,6 +134,21 @@ const component: Component = {
 			alt: { value: 'Placeholder image' },
 		},
 	},
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-image',
+		},
+		{
+			name: 'image',
+			displayName: 'Image',
+			description: 'Image',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

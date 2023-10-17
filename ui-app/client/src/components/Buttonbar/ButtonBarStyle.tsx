@@ -8,22 +8,13 @@ const PREFIX = '.comp.compButtonBar';
 export default function ButtonBarStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
 	const css =
 		`
-    ${PREFIX} ._label{
-        font-size: 24px;
-        font-weight: 500;
-        color: black;
-        position: relative;
-    }
+        ${PREFIX} {
+            display: flex;
+        }
 
-    ${PREFIX} ._buttonBarContainer {
-        display: flex;
-        position: relative;
-    }
-
-    ${PREFIX} ._button {
-        position: relative;
-    }
-
+        ${PREFIX} ._button {
+            flex: 1;
+        }
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 	return <style id="ButtonBarcss">{css}</style>;
 }

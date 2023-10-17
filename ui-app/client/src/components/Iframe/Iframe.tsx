@@ -6,6 +6,7 @@ import { HelperComponent } from '../HelperComponent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './iframeProperties';
 import IframeStyle from './IframeStyle';
+import { styleDefaults } from './iframeStyleProperties';
 
 function Iframe(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -59,12 +60,12 @@ function Iframe(props: ComponentProps) {
 	);
 }
 const component: Component = {
-	icon: 'fa-solid fa-clapperboard',
 	name: 'Iframe',
 	displayName: 'Iframe',
 	description: 'Iframe component',
 	component: Iframe,
 	styleComponent: IframeStyle,
+	styleDefaults: styleDefaults,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
@@ -74,6 +75,21 @@ const component: Component = {
 		type: 'Iframe',
 		properties: {},
 	},
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-clapperboard',
+		},
+		{
+			name: 'iframe',
+			displayName: 'Iframe',
+			description: 'Iframe',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

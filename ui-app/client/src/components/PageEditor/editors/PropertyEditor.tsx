@@ -22,7 +22,7 @@ import { PropertyGroup } from './PropertyGroup';
 import { ExpressionEditor2 } from './propertyValueEditors/ExpressionEditor2';
 import PropertyMultiValueEditor from './propertyValueEditors/PropertyMultiValueEditor';
 import PropertyValueEditor from './propertyValueEditors/PropertyValueEditor';
-import PageOperations from '../functions/PageOperations';
+import { PageOperations } from '../functions/PageOperations';
 
 interface PropertyEditorProps {
 	selectedComponent: string;
@@ -160,7 +160,7 @@ export default function PropertyEditor({
 			bps.push(
 				<div className="_eachProp" key={x[i]}>
 					<div className="_propLabel" title="Name">
-						{cd.bindingPaths[x[i]]?.name}
+						{cd.bindingPaths[x[i]]?.name} :
 					</div>
 					<ExpressionEditor2
 						value={def[x[i]]}
@@ -193,8 +193,9 @@ export default function PropertyEditor({
 					locationHistory={locationHistory}
 					onChangePersonalization={onChangePersonalization}
 					personalizationPath={personalizationPath}
+					tabName="compProps"
 				>
-					{bps}
+					<div>{bps}</div>
 				</PropertyGroup>
 			);
 		}
@@ -261,7 +262,7 @@ export default function PropertyEditor({
 			<div className="_eachProp" key={`${selectedComponent}-${e.name}`}>
 				<div className="_propLabel" title={e.description ?? e.displayName}>
 					{e.displayName} :
-					<span className="_description" title={e.description ?? e.displayName}>
+					<span className="_description _tooltip" title={e.description ?? e.displayName}>
 						i
 					</span>
 				</div>
@@ -273,96 +274,105 @@ export default function PropertyEditor({
 
 	return (
 		<div className="_propertyEditor">
-			<PropertyGroup
-				name="first"
-				displayName="General"
-				defaultStateOpen={true}
-				pageExtractor={pageExtractor}
-				locationHistory={locationHistory}
-				onChangePersonalization={onChangePersonalization}
-				personalizationPath={personalizationPath}
-			>
-				<div className="_eachProp">
-					<div className="_propLabel" title="Name">
-						Name :
-						<span className="_description" title="Name to identify the component">
-							i
-						</span>
+			<div className="_overflowContainer">
+				<PropertyGroup
+					name="first"
+					displayName="General"
+					defaultStateOpen={true}
+					pageExtractor={pageExtractor}
+					locationHistory={locationHistory}
+					onChangePersonalization={onChangePersonalization}
+					personalizationPath={personalizationPath}
+					tabName="compProps"
+				>
+					<div>
+						<div className="_eachProp">
+							<div className="_propLabel" title="Name">
+								Name :
+								<span
+									className="_description _tooltip"
+									title="Name to identify the component"
+								>
+									i
+								</span>
+							</div>
+							<PropertyValueEditor
+								appPath={appPath}
+								pageDefinition={pageDef}
+								propDef={{
+									name: 'name',
+									displayName: 'Name',
+									description: 'Name to identify the component',
+									schema: SCHEMA_STRING_COMP_PROP,
+								}}
+								value={{ value: def.name }}
+								onlyValue={true}
+								storePaths={storePaths}
+								onChange={v => {
+									const newDef = duplicate(def);
+									newDef.name = v.value;
+									updateDefinition(
+										defPath!,
+										locationHistory,
+										pageExtractor,
+										selectedComponent,
+										newDef,
+									);
+								}}
+								onShowCodeEditor={onShowCodeEditor}
+								editPageName={editPageName}
+								slaveStore={slaveStore}
+								pageOperations={pageOperations}
+							/>
+						</div>
+						<div className="_eachProp">
+							<div className="_propLabel" title="Key">
+								Key :
+								<span className="_description _tooltip" title="Key Identifier">
+									i
+								</span>
+							</div>
+							<PropertyValueEditor
+								appPath={appPath}
+								pageDefinition={pageDef}
+								propDef={{
+									name: 'key',
+									displayName: 'Key',
+									description: 'Key Identifier',
+									schema: SCHEMA_STRING_COMP_PROP,
+								}}
+								value={{ value: def.key }}
+								onlyValue={true}
+								storePaths={storePaths}
+								onChange={v => {}}
+								onShowCodeEditor={onShowCodeEditor}
+								editPageName={editPageName}
+								slaveStore={slaveStore}
+								pageOperations={pageOperations}
+							/>
+						</div>
 					</div>
-					<PropertyValueEditor
-						appPath={appPath}
-						pageDefinition={pageDef}
-						propDef={{
-							name: 'name',
-							displayName: 'Name',
-							description: 'Name to identify the component',
-							schema: SCHEMA_STRING_COMP_PROP,
-						}}
-						value={{ value: def.name }}
-						onlyValue={true}
-						storePaths={storePaths}
-						onChange={v => {
-							const newDef = duplicate(def);
-							newDef.name = v.value;
-							updateDefinition(
-								defPath!,
-								locationHistory,
-								pageExtractor,
-								selectedComponent,
-								newDef,
-							);
-						}}
-						onShowCodeEditor={onShowCodeEditor}
-						editPageName={editPageName}
-						slaveStore={slaveStore}
-						pageOperations={pageOperations}
-					/>
-				</div>
-				<div className="_eachProp">
-					<div className="_propLabel" title="Key">
-						Key :
-						<span className="_description" title="Key Identifier">
-							i
-						</span>
-					</div>
-					<PropertyValueEditor
-						appPath={appPath}
-						pageDefinition={pageDef}
-						propDef={{
-							name: 'key',
-							displayName: 'Key',
-							description: 'Key Identifier',
-							schema: SCHEMA_STRING_COMP_PROP,
-						}}
-						value={{ value: def.key }}
-						onlyValue={true}
-						storePaths={storePaths}
-						onChange={v => {}}
-						onShowCodeEditor={onShowCodeEditor}
-						editPageName={editPageName}
-						slaveStore={slaveStore}
-						pageOperations={pageOperations}
-					/>
-				</div>
-			</PropertyGroup>
-			{bpGroup}
-			{Object.entries(ComponentPropertyGroup).map((e, i) => {
-				if (!propGroups?.[e[1]]) return null;
-				return (
-					<PropertyGroup
-						key={e[0]}
-						name={e[1]}
-						displayName={e[0]}
-						defaultStateOpen={e[1] === ComponentPropertyGroup.BASIC}
-						pageExtractor={pageExtractor}
-						locationHistory={locationHistory}
-						onChangePersonalization={onChangePersonalization}
-						personalizationPath={personalizationPath}
-					>
-						{propGroups[e[1]]}
-					</PropertyGroup>
-				);
-			})}
+				</PropertyGroup>
+				{bpGroup}
+				{Object.entries(ComponentPropertyGroup).map((e, i) => {
+					if (!propGroups?.[e[1]]) return null;
+					return (
+						<PropertyGroup
+							tabName="compProps"
+							key={e[0]}
+							name={e[1]}
+							displayName={e[0]}
+							defaultStateOpen={e[1] === ComponentPropertyGroup.BASIC}
+							pageExtractor={pageExtractor}
+							locationHistory={locationHistory}
+							onChangePersonalization={onChangePersonalization}
+							personalizationPath={personalizationPath}
+						>
+							<div>{propGroups[e[1]]}</div>
+						</PropertyGroup>
+					);
+				})}
+			</div>
 		</div>
 	);
 }
