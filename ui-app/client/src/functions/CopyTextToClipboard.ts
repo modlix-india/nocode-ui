@@ -5,18 +5,12 @@ import {
     FunctionExecutionParameters,
     FunctionOutput,
     FunctionSignature,
-    isNullValue,
     Parameter,
-    Schema,
+    Schema
 } from '@fincity/kirun-js';
-import axios from 'axios';
-import { LOCAL_STORE_PREFIX, NAMESPACE_UI_ENGINE, STORE_PREFIX } from '../constants';
-import { getData } from '../context/StoreContext';
-import { ComponentProperty } from '../types/common';
-import { pathFromParams, queryParamsSerializer } from './utils';
-import { shortUUID } from '../util/shortUUID';
+import { NAMESPACE_UI_ENGINE } from '../constants';
 
-const SIGNATURE = new FunctionSignature('CopyToClipboard')
+const SIGNATURE = new FunctionSignature('CopyTextToClipboard')
     .setNamespace(NAMESPACE_UI_ENGINE)
     .setParameters(
         new Map([
@@ -35,7 +29,7 @@ const SIGNATURE = new FunctionSignature('CopyToClipboard')
         ]),
     );
 
-export class CopyToClipboard extends AbstractFunction {
+export class CopyTextToClipboard extends AbstractFunction {
     protected async internalExecute(context: FunctionExecutionParameters): Promise<FunctionOutput> {
         const text: string = context.getArguments()?.get('text');
         try {
