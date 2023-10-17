@@ -15,6 +15,8 @@ import useDefinition from '../util/useDefinition';
 import MenuStyle from './MenuStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './menuProperties';
 import Children from '../Children';
+import { styleDefaults } from './menuStyleProperties';
+import { IconHelper } from '../util/IconHelper';
 
 function Menu(props: ComponentProps) {
 	const location = useLocation();
@@ -47,6 +49,7 @@ function Menu(props: ComponentProps) {
 			designType: menuDesignSelectionType,
 			colorScheme: menuColorScheme,
 			subMenuOrientation,
+			readOnly,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -97,21 +100,25 @@ function Menu(props: ComponentProps) {
 	const externalButton = showButton ? (
 		<i
 			className="_externalButton fa fa-solid fa-up-right-from-square"
-			onClick={e => {
-				e.stopPropagation();
-				e.preventDefault();
-				if (externalButtonTarget === '_self') {
-					window.history.pushState(undefined, '', resolvedLink);
-					window.history.back();
-					setTimeout(() => window.history.forward(), 100);
-				} else {
-					window.open(
-						resolvedLink,
-						externalButtonTarget,
-						externalButtonFeatures ?? features,
-					);
-				}
-			}}
+			onClick={
+				readOnly
+					? undefined
+					: e => {
+							e.stopPropagation();
+							e.preventDefault();
+							if (externalButtonTarget === '_self') {
+								window.history.pushState(undefined, '', resolvedLink);
+								window.history.back();
+								setTimeout(() => window.history.forward(), 100);
+							} else {
+								window.open(
+									resolvedLink,
+									externalButtonTarget,
+									externalButtonFeatures ?? features,
+								);
+							}
+					  }
+			}
 		>
 			<SubHelperComponent definition={definition} subComponentName="externalIcon" />
 		</i>
@@ -130,6 +137,7 @@ function Menu(props: ComponentProps) {
 	const menuToggle = (e: MouseEvent<HTMLElement>) => {
 		e.stopPropagation();
 		e.preventDefault();
+		if (readOnly) return;
 		const func =
 			props.pageDefinition?.eventFunctions?.[isMenuOpenState ? onMenuClose : onMenuOpen];
 		if (func) {
@@ -246,8 +254,8 @@ function Menu(props: ComponentProps) {
 			<a
 				className={`comp compMenu _${styleKey}menu_css ${menuDesignSelectionType} ${menuColorScheme} ${
 					isMenuActive ? '_isActive' : ''
-				} _level${context.menuLevel ?? 0}`}
-				href={resolvedLink}
+				} ${readOnly ? '_disabled' : ''} _level${context.menuLevel ?? 0}`}
+				href={readOnly ? 'javascript:void(0)' : resolvedLink}
 				target={target}
 				onClick={e => {
 					if ((!target || target === '_self') && linkPath) {
@@ -290,12 +298,12 @@ function Menu(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-bars',
 	name: 'Menu',
 	displayName: 'Menu',
 	description: 'Menu component',
 	component: Menu,
 	styleComponent: MenuStyle,
+	styleDefaults: styleDefaults,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
@@ -316,6 +324,64 @@ const component: Component = {
 	sections: [
 		{ name: 'Horizontal Menu', pageName: 'horizontalMenu' },
 		{ name: 'Vertical Menu', pageName: 'verticalMenu' },
+	],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					<rect
+						x="1"
+						y="1"
+						width="22"
+						height="22"
+						rx="2"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<path d="M3 11H11V3H3.8C3.35817 3 3 3.35817 3 3.8V11Z" fill="currentColor" />
+					<path
+						d="M21 13L13 13L13 21H20.2C20.6418 21 21 20.6418 21 20.2V13Z"
+						fill="currentColor"
+					/>
+					<path
+						d="M3 13L11 13L11 21H3.8C3.35817 21 3 20.6418 3 20.2L3 13Z"
+						fill="currentColor"
+					/>
+					<path
+						d="M21 11L13 11L13 3L20.2 3C20.6418 3 21 3.35817 21 3.8V11Z"
+						fill="currentColor"
+					/>
+				</IconHelper>
+			),
+		},
+		{
+			name: 'externalIcon',
+			displayName: 'External Icon',
+			description: 'External Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'icon',
+			displayName: 'Icon',
+			description: 'Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'caretIcon',
+			displayName: 'Caret Icon',
+			description: 'Caret Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'subMenuContainer',
+			displayName: 'Sub Menu Container',
+			description: 'Sub Menu Container',
+			icon: 'fa-solid fa-box',
+		},
 	],
 };
 

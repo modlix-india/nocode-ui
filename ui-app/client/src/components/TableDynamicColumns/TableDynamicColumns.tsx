@@ -12,6 +12,7 @@ import useDefinition from '../util/useDefinition';
 import { duplicate } from '@fincity/kirun-js';
 import TableColumns from '../TableColumns/TableColumns';
 import { difference } from '../../util/setOperations';
+import { styleDefaults } from './tableDynamicColumnsStyleProperties';
 
 function fieldToName(field: string): string {
 	return field
@@ -149,7 +150,6 @@ function TableDynamicColumnsComponent(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-table-columns',
 	name: 'TableDynamicColumns',
 	displayName: 'Table Dynamic Columns',
 	description: 'Table Dynamic Columns component',
@@ -158,8 +158,30 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TableDynamicColumnsStyle,
+	styleDefaults: styleDefaults,
 	parentType: 'Table',
 	stylePseudoStates: ['hover'],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-table-columns',
+		},
+		{
+			name: 'row',
+			displayName: 'Row',
+			description: 'Row',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'header',
+			displayName: 'Header',
+			description: 'Header',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

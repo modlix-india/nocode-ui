@@ -26,7 +26,7 @@ interface ClipboardObject {
 	objects: { [key: string]: ComponentDefinition };
 }
 
-export default class PageOperations {
+export class PageOperations {
 	private defPath: string | undefined;
 	private locationHistory: Array<LocationHistory>;
 	private pageExtractor: PageStoreExtractor;
@@ -1018,5 +1018,32 @@ export default class PageOperations {
 
 	public getPageExtractor(): PageStoreExtractor {
 		return this.pageExtractor;
+	}
+}
+
+export function removeUnreferenecedComponentDefinitions(pageDef: PageDefinition): PageDefinition {
+	let def = duplicate(pageDef) as PageDefinition;
+
+	let navigableChildren = new Set<string>();
+	recursivelyFindNavigableChildren(def.rootComponent, def.componentDefinition, navigableChildren);
+
+	for (let key of Object.keys(def.componentDefinition)) {
+		if (navigableChildren.has(key)) continue;
+		delete def.componentDefinition[key];
+	}
+
+	return def;
+}
+
+function recursivelyFindNavigableChildren(
+	componentKey: string,
+	componentDefinition: {
+		[key: string]: ComponentDefinition;
+	},
+	navigableChildren: Set<string>,
+) {
+	navigableChildren.add(componentKey);
+	for (let childKey of Object.keys(componentDefinition[componentKey]?.children ?? {})) {
+		recursivelyFindNavigableChildren(childKey, componentDefinition, navigableChildren);
 	}
 }

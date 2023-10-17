@@ -12,7 +12,7 @@ import {
 	DataLocation,
 	PageDefinition,
 } from '../../../../types/common';
-import PageOperations from '../../functions/PageOperations';
+import { PageOperations } from '../../functions/PageOperations';
 import { AnyValueEditor } from './AnyValueEditor';
 import { BooleanValueEditor } from './BooleanValueEditor';
 import { ExpressionEditor2 } from './ExpressionEditor2';
@@ -20,6 +20,7 @@ import { IconSelectionEditor2 } from './IconSelectionEditor2';
 import { ImageEditor } from './ImageEditor';
 import { ValidationEditor } from './ValidationEditor';
 import { AnimationValueEditor } from './AnimationValueEditor';
+import { Dropdown } from '../stylePropertyValueEditors/simpleEditors/Dropdown';
 
 interface PropertyValueEditorProps {
 	propDef: ComponentPropertyDefinition;
@@ -120,7 +121,7 @@ export default function PropertyValueEditor({
 
 	const microToggle = onlyValue ? undefined : (
 		<div
-			className={`_microToggle ${showAdvanced ? '_on' : '_off'}`}
+			className={`_microToggle2 ${showAdvanced ? '_on' : '_off'}`}
 			tabIndex={0}
 			onKeyDown={e => (e.key === ' ' ? toggleAdvanced() : undefined)}
 			onClick={toggleAdvanced}
@@ -188,65 +189,48 @@ function makeValueEditor(
 	}
 
 	if (propDef.editor === ComponentPropertyEditor.ENUM || propDef.enumValues?.length) {
-		let noneOption = !isNullValue(propDef.defaultValue) ? (
-			<></>
-		) : (
-			<option key="" value="">
-				--NONE--
-			</option>
-		);
 		return (
-			<div className="_smallEditorContainer">
-				<select
-					className="_peSelect"
-					value={(chngValue === '' ? propDef.defaultValue ?? '' : chngValue) ?? ''}
-					onChange={e => {
-						const newValue: ComponentProperty<any> = {
-							...(value ?? {}),
-							value: e.target.value,
-						};
+			<Dropdown
+				showNoneLabel={isNullValue(propDef.defaultValue)}
+				selectNoneLabel="--NONE--"
+				value={(chngValue === '' ? propDef.defaultValue ?? '' : chngValue) ?? ''}
+				onChange={v => {
+					const newValue: ComponentProperty<any> = {
+						...(value ?? {}),
+						value: v,
+					};
 
-						if (newValue.value === propDef.defaultValue || newValue.value === '')
-							delete newValue.value;
+					if (newValue.value === propDef.defaultValue || newValue.value === '')
+						delete newValue.value;
 
-						onChange(newValue);
-					}}
-				>
-					{noneOption}
-					{propDef.enumValues?.map(v => (
-						<option key={v.name} value={v.name} title={v.description ?? v.displayName}>
-							{v.displayName}
-						</option>
-					))}
-				</select>
-			</div>
+					onChange(newValue);
+				}}
+				options={propDef.enumValues ?? []}
+			/>
 		);
 	}
 
 	if (propDef.editor === ComponentPropertyEditor.EVENT_SELECTOR) {
 		return (
 			<div className="_smallEditorContainer">
-				<select
-					className="_peSelect"
+				<Dropdown
+					showNoneLabel={true}
+					selectNoneLabel="-- No Event --"
+					placeholder="Select Event"
 					value={(chngValue === '' ? propDef.defaultValue : chngValue) ?? ''}
-					onChange={e => {
+					onChange={v => {
 						const newValue: ComponentProperty<any> = {
 							...(value ?? {}),
-							value: e.target.value,
+							value: v,
 						};
 						if (newValue.value === propDef.defaultValue) delete newValue.value;
 						onChange(newValue);
 					}}
-				>
-					<option value="" title="No event">
-						-- No event --
-					</option>
-					{Object.entries(pageDef?.eventFunctions ?? {}).map(v => (
-						<option key={v[0]} value={v[0]} title={v[0]}>
-							{v[1].name}
-						</option>
-					))}
-				</select>
+					options={Object.entries(pageDef?.eventFunctions ?? {}).map(v => ({
+						name: v[0],
+						displayName: v[1].name,
+					}))}
+				/>
 				<i
 					className="fa fa-solid fa-up-right-from-square"
 					onClick={() =>

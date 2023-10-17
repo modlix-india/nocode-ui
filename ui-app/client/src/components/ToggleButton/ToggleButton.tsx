@@ -14,6 +14,8 @@ import ToggleButtonStyle from './ToggleButtonStyle';
 import useDefinition from '../util/useDefinition';
 import { SubHelperComponent } from '../SubHelperComponent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import { styleDefaults } from './toggleButtonStyleProperties';
+import { IconHelper } from '../util/IconHelper';
 
 function ToggleButton(props: ComponentProps) {
 	const {
@@ -115,7 +117,6 @@ function ToggleButton(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-toggle-off',
 	name: 'ToggleButton',
 	displayName: 'ToggleButton',
 	description: 'ToggleButton component',
@@ -123,6 +124,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: ToggleButtonStyle,
+	styleDefaults: styleDefaults,
 	styleProperties: stylePropertiesDefinition,
 	bindingPaths: {
 		bindingPath: { name: 'Data Binding' },
@@ -137,6 +139,48 @@ const component: Component = {
 	},
 	stylePseudoStates: ['hover'],
 	sections: [{ name: 'Toggle Buttons', pageName: 'togglebuttons' }],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					<svg
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<rect
+							x="1"
+							y="6.5"
+							width="22"
+							height="11"
+							rx="5.5"
+							fill="currentColor"
+							fillOpacity="0.2"
+						/>
+						<circle cx="17.4992" cy="12.0002" r="3.3" fill="currentColor" />
+					</svg>
+				</IconHelper>
+			),
+		},
+		{
+			name: 'knob',
+			displayName: 'Knob',
+			description: 'Knob',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'label',
+			displayName: 'Label',
+			description: 'Label',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

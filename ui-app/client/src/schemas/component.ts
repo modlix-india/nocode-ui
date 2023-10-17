@@ -8,7 +8,7 @@ const componentSchemas: Array<[string, Schema]> = [
 			.setNamespace(NAMESPACE_UI_ENGINE)
 			.setProperties(
 				new Map<string, Schema>([
-					['location', Schema.ofRef(SCHEMA_DATA_LOCATION)],
+					['location', SCHEMA_DATA_LOCATION],
 					['value', Schema.ofString('value')],
 				]),
 			),
@@ -19,7 +19,7 @@ const componentSchemas: Array<[string, Schema]> = [
 			.setNamespace(NAMESPACE_UI_ENGINE)
 			.setProperties(
 				new Map<string, Schema>([
-					['location', Schema.ofRef(SCHEMA_DATA_LOCATION)],
+					['location', SCHEMA_DATA_LOCATION],
 					['value', Schema.ofBoolean('value')],
 				]),
 			),
@@ -30,7 +30,7 @@ const componentSchemas: Array<[string, Schema]> = [
 			.setNamespace(NAMESPACE_UI_ENGINE)
 			.setProperties(
 				new Map<string, Schema>([
-					['location', Schema.ofRef(SCHEMA_DATA_LOCATION)],
+					['location', SCHEMA_DATA_LOCATION],
 					['value', Schema.ofAny('value')],
 				]),
 			),
@@ -41,7 +41,7 @@ const componentSchemas: Array<[string, Schema]> = [
 			.setNamespace(NAMESPACE_UI_ENGINE)
 			.setProperties(
 				new Map<string, Schema>([
-					['location', Schema.ofRef(SCHEMA_DATA_LOCATION)],
+					['location', SCHEMA_DATA_LOCATION],
 					['value', Schema.ofRef(`${Namespaces.SYSTEM}.Schema`)],
 				]),
 			),
@@ -52,7 +52,7 @@ const componentSchemas: Array<[string, Schema]> = [
 			.setNamespace(NAMESPACE_UI_ENGINE)
 			.setProperties(
 				new Map<string, Schema>([
-					['location', Schema.ofRef(SCHEMA_DATA_LOCATION)],
+					['location', SCHEMA_DATA_LOCATION],
 					['value', Schema.ofNumber('value')],
 				]),
 			),

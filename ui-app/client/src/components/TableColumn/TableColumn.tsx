@@ -11,6 +11,8 @@ import Children from '../Children';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { deepEqual, ExpressionEvaluator } from '@fincity/kirun-js';
 import { getExtractionMap } from '../util/getRenderData';
+import { styleDefaults } from './tableColumnStyleProperties';
+import { IconHelper } from '../util/IconHelper';
 
 function TableColumnComponent(props: ComponentProps) {
 	const {
@@ -63,7 +65,6 @@ function TableColumnComponent(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-table-columns',
 	name: 'TableColumn',
 	displayName: 'Table Column',
 	description: 'Table Column component',
@@ -71,10 +72,80 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: TableColumnStyle,
+	styleDefaults: styleDefaults,
 	allowedChildrenType: new Map<string, number>([['', 1]]),
 	parentType: 'TableColumns',
 	stylePseudoStates: ['hover'],
 	styleProperties: stylePropertiesDefinition,
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					<rect
+						x="2"
+						y="5"
+						width="9"
+						height="14"
+						rx="2"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<rect
+						x="1.00195"
+						y="1.84766"
+						width="21.9967"
+						height="3.38411"
+						rx="1"
+						fill="currentColor"
+					/>
+					<rect
+						x="1.00195"
+						y="10.3076"
+						width="21.9967"
+						height="3.38411"
+						rx="0.4"
+						fill="currentColor"
+					/>
+					<rect
+						x="1.00195"
+						y="18.769"
+						width="21.9967"
+						height="3.38411"
+						rx="1"
+						fill="currentColor"
+					/>
+					<rect
+						x="4.38672"
+						y="3.53955"
+						width="16.9205"
+						height="3.38411"
+						transform="rotate(90 4.38672 3.53955)"
+						fill="currentColor"
+					/>
+					<rect
+						x="13.8594"
+						y="3.53955"
+						width="18.6126"
+						height="3.38411"
+						transform="rotate(90 13.8594 3.53955)"
+						fill="currentColor"
+					/>
+					<rect
+						x="23"
+						y="3.53955"
+						width="16.9205"
+						height="3.38411"
+						transform="rotate(90 23 3.53955)"
+						fill="currentColor"
+					/>
+				</IconHelper>
+			),
+		},
+	],
 };
 
 export default component;

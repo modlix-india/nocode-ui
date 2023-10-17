@@ -15,6 +15,8 @@ import { HelperComponent } from '../HelperComponent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { SubHelperComponent } from '../SubHelperComponent';
 import { isNullValue } from '@fincity/kirun-js';
+import { styleDefaults } from './galleryStyleProperties';
+import { IconHelper } from '../util/IconHelper';
 
 function Gallery(props: ComponentProps) {
 	const [isActive, setIsActive] = useState(false);
@@ -646,7 +648,6 @@ function Gallery(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-regular fa-images',
 	name: 'Gallery',
 	displayName: 'Gallery',
 	description: 'Gallery component',
@@ -654,6 +655,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: GalleryStyles,
+	styleDefaults: styleDefaults,
 	styleProperties: stylePropertiesDefinition,
 	allowedChildrenType: new Map<string, number>([['', -1]]),
 	bindingPaths: {
@@ -666,6 +668,128 @@ const component: Component = {
 		name: 'Gallery',
 	},
 	needShowInDesginMode: true,
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					<path
+						d="M16.1953 3.45215C17.8452 3.45215 19.1953 4.79961 19.1953 6.45215C19.1953 8.10268 17.8458 9.45215 16.1953 9.45215C14.5448 9.45215 13.1953 8.10268 13.1953 6.45215C13.1953 4.79961 14.5454 3.45215 16.1953 3.45215Z"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<path
+						d="M6.03544 9.37851L4.17973 10.1906C4.07055 10.2384 4 10.3462 4 10.4654V19.4C4 19.7314 4.26863 20 4.6 20H19.4C19.7314 20 20 19.7314 20 19.4V16.3432C20 16.2501 19.9568 16.1624 19.8832 16.1056L17.2524 14.0774C16.8427 13.7615 16.2846 13.7186 15.8315 13.9682L13.0133 15.5205C12.8906 15.588 12.7375 15.5617 12.6444 15.4571L7.52791 9.70542C7.1537 9.28476 6.55123 9.15279 6.03544 9.37851Z"
+						fill="currentColor"
+					/>
+					<rect
+						x="1.5"
+						y="1.5"
+						width="21"
+						height="21"
+						rx="1.5"
+						fill="none"
+						stroke="currentColor"
+						strokeOpacity="0.2"
+					/>
+				</IconHelper>
+			),
+		},
+		{
+			name: 'toolbarLeftColumn',
+			displayName: 'Toolbar Left Column',
+			description: 'Toolbar Left Column',
+
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'toolbarRightColumn',
+			displayName: 'Toolbar Right Column',
+			description: 'Toolbar Right Column',
+
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'toolbarButton',
+			displayName: 'Toolbar Button',
+			description: 'Toolbar Button',
+
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'arrowButtons',
+			displayName: 'Arrow Buttons',
+			description: 'Arrow Buttons',
+
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'slideImage',
+			displayName: 'Slide Image',
+			description: 'Slide Image',
+
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'thumbnailContainer',
+			displayName: 'Thumbnail Container',
+			description: 'Thumbnail Container',
+
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'thumbnailImageDiv',
+			displayName: 'Thumbnail Image Div',
+			description: 'Thumbnail Image Div',
+
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'thumbnailImage',
+			displayName: 'Thumbnail Image',
+			description: 'Thumbnail Image',
+
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'previewContainer',
+			displayName: 'Preview Container',
+			description: 'Preview Container',
+
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'previewCloseButton',
+			displayName: 'Preview Close Button',
+			description: 'Preview Close Button',
+
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'previewList',
+			displayName: 'Preview List',
+			description: 'Preview List',
+
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'previewImageDiv',
+			displayName: 'Preview Image Div',
+			description: 'Preview Image Div',
+
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'previewImage',
+			displayName: 'Preview Image',
+			description: 'Preview Image',
+
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

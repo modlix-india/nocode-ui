@@ -8,6 +8,8 @@ import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './progressBarProperties';
 import ProgressBarStyles from './ProgressBarStyles';
 import { SubHelperComponent } from '../SubHelperComponent';
+import { styleDefaults } from './progressBarStyleProperties';
+import { IconHelper } from '../util/IconHelper';
 
 function ProgressBar(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -99,7 +101,7 @@ function ProgressBar(props: ComponentProps) {
 		if (!progressBarDesign.startsWith('_circular')) return null;
 		const radius = 50 - circularProgressBarIndicatorWidth;
 		const strokeDashArray = 2 * 3.14 * radius;
-		console.log(progressElapsed, strokeDashArray);
+
 		const strokeDashOffset = (strokeDashArray * (100 - progressElapsed)) / 100;
 		return [
 			<svg key="svgpart" className="_circular_progress" viewBox="0 0 100 100">
@@ -145,12 +147,12 @@ function ProgressBar(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-bars-progress',
 	name: 'ProgressBar',
 	displayName: 'ProgressBar',
 	description: 'ProgressBar component',
 	component: ProgressBar,
 	styleComponent: ProgressBarStyles,
+	styleDefaults: styleDefaults,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
@@ -161,6 +163,73 @@ const component: Component = {
 		name: 'ProgressBar',
 	},
 	sections: [{ name: 'Default Progress Bar', pageName: 'progressBar' }],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					<rect
+						x="4.5"
+						y="7"
+						width="10"
+						height="3.75"
+						rx="0.2"
+						transform="rotate(90 4.5 7)"
+						fill="currentColor"
+					/>
+					<rect
+						x="10.75"
+						y="7"
+						width="10"
+						height="3.75"
+						rx="0.2"
+						transform="rotate(90 10.75 7)"
+						fill="currentColor"
+					/>
+					<rect
+						x="17"
+						y="7"
+						width="10"
+						height="3.75"
+						rx="0.2"
+						transform="rotate(90 17 7)"
+						fill="currentColor"
+					/>
+					<rect
+						x="23.25"
+						y="7"
+						width="10"
+						height="3.75"
+						rx="0.2"
+						transform="rotate(90 23.25 7)"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+				</IconHelper>
+			),
+		},
+		{
+			name: 'track',
+			displayName: 'Track',
+			description: 'Track',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'progress',
+			displayName: 'Progress',
+			description: 'Progress',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'label',
+			displayName: 'Label',
+			description: 'Label',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;

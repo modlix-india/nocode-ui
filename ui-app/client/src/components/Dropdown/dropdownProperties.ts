@@ -138,9 +138,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				description: 'Filled Dropdown type',
 			},
 			{ name: '_bigDesign1', displayName: 'Big Design 1', description: 'Big Design 1 type' },
+			{ name: '_text', displayName: 'Text Dropdown', description: 'Text Dropdown' },
 		],
 	},
 	COMMON_COMPONENT_PROPERTIES.colorScheme,
+	COMMON_COMPONENT_PROPERTIES.onClick,
 ];
 
 const stylePropertiesDefinition = {

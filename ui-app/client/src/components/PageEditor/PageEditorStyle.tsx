@@ -1,7 +1,6 @@
 import React from 'react';
-import { StyleResolution } from '../../types/common';
 import { processStyleDefinition, StyleResolutionDefinition } from '../../util/styleProcessor';
-import { styleProperties, styleDefaults } from './pageEditorStyleProperties';
+import { styleDefaults, styleProperties } from './pageEditorStyleProperties';
 
 const PREFIX = '.comp.compPageEditor';
 export default function GridStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
@@ -27,6 +26,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			height: 65px;
 			background-color: #fff;
+			border-bottom: 1px solid rgba(0, 0, 0, 0.10);
+			box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.05);
 		}
 
 		${PREFIX} ._topBarGrid._previewMode{
@@ -59,7 +60,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._propBar._propBarVisible{
 			display: flex;
 			width: 300px;
-			
 		}
 
 		._propBar._compNavBarVisible{
@@ -67,7 +67,17 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction: column;
 			gap: 10px;
 			width: auto;
-			
+			min-width: 250px;			
+		}
+
+		._propBar._left{
+			box-shadow: 0px 3px 4px 0px #00000040;
+			border-right: 1px solid rgba(0, 0, 0, 0.10);
+		}
+
+		._propBar._right{
+			box-shadow: 2px 3px 4px 0px #00000040;
+			border-left: 1px solid rgba(0, 0, 0, 0.10);
 		}
 
 		${PREFIX} ._filterBar {
@@ -75,13 +85,15 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction: row;
 			align-items: center;
 			justify-content: center;
-			padding: 5px;
+			padding: 15px 10px;
 			gap: 5px;
+			width: 100%;
 		}
 
 		${PREFIX} ._filterBar i.fa {
 			font-size: 22px;
 			cursor: pointer;
+			color: #52BD94;
 		}
 
 		${PREFIX} ._compsTree {
@@ -93,9 +105,16 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._compsTree ._treeNode {
 			font-size: 12px;
+			font-weight: 400;
+			font-family: Inter;
+			line-height: 14px;
 			cursor: pointer;
 			display: flex;
 			align-items: center;
+			height: 34px;
+			flex-shrink: 0;
+			margin:	0px 8px;
+			border-radius: 4px;
 		}
 
 		${PREFIX} ._compsTree ._treeNodeName {
@@ -105,54 +124,90 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._compsTree ._treeNodeLevel {
-			width: 10px;
+			width: 13px;
 			height: 100%;
 		}
 
-		${PREFIX} ._compsTree ._treeNode._selected {
-			background-color: #ddd;
+		${PREFIX} ._compsTree ._treeNode._subComponent._selected,
+		${PREFIX} ._compsTree ._treeNode._subComponent:hover {
+			background-color: transparent;
+			color: #52BD94;
+		}
+
+		${PREFIX} ._compsTree ._treeNode._subComponent._selected i.fa,
+		${PREFIX} ._compsTree ._treeNode._subComponent:hover i.fa {
+			color: #52BD94;
+		}
+
+		${PREFIX} ._compsTree ._treeNode._selected,
+		${PREFIX} ._compsTree ._treeNode:hover {
+			background-color: #4C7FEE0D;
+			color: #4C7FEE;
+		}
+
+		${PREFIX} ._compsTree ._treeNode._selected i.fa,
+		${PREFIX} ._compsTree ._treeNode:hover i.fa {
+			color: #4C7FEE;
 		}
 
 		${PREFIX} ._compsTree:hover ._treeNodeLevel {
-			border-right: 1px solid #ccc;
+			border-right: 0.75px dotted #00000020;
+		} 
+		${PREFIX} ._compsTree:hover ._treeNode._subComponent:hover ._treeNodeLevel,
+		${PREFIX} ._compsTree:hover ._treeNode._subComponent._selected ._treeNodeLevel {
+			border-right: 0.75px dotted #00000020;
+		}
+
+		${PREFIX} ._compsTree:hover ._treeNode:hover ._treeNodeLevel,
+		${PREFIX} ._compsTree:hover ._treeNode._selected ._treeNodeLevel {
+			border-right: none;
 		} 
 
 		${PREFIX} ._compsTree ._treeNodeLevel._lastOpened {
-
-			border-right: 1px solid #aaa;
-		}
-
-		${PREFIX} ._compsTree ._treeNode:hover {
-			background-color: #eee;
+			border-right: 0.75px dotted #00000020;
 		}
 
 		${PREFIX} ._compsTree ._treeNode i.fa {
-			font-size: 13px;
-			width: 13px;
-			height: 13px;
+			font-size: 11px;
+			width: 11px;
+			height: 11px;
 			display: flex;
 			justify-content: center;
 			margin: 0px 2px;
+			color: #CACBCA;
 		}
 
 		${PREFIX} ._compsTree ._treeNode ._treeText {
 			padding-left: 5px;
 		}
 
-		${PREFIX} ._compsTree:hover ._animateTransform::before {
-			color: #777;	
+		${PREFIX} ._compsTree ._treeNode ._treeText ._filter {
+			color: #52BD94;
+			font-weight: 600;
 		}
 
-		${PREFIX} ._compsTree ._animateTransform::before {
-			color: #ccc;	
+		${PREFIX} ._compsTree ._treeNodeName i.fa.fa-caret-right {
+			font-size: 10px;
+			margin-right: 6px;
 		}
 
-		${PREFIX} ._compsTree ._animateTransform {
+		${PREFIX} ._compsTree ._animateTransform i.fa {
 			transition: transform 0.5s;
 		}
 
 		${PREFIX} ._compsTree ._treeNode._dragStart ._treeNodeLevel {
 			border-right: none;
+		}
+
+		${PREFIX} svg._iconHelperSVG {
+			width: 16px;
+			height: 16px;
+			color: #CACBCA;
+		}
+
+		${PREFIX} ._compsTree ._treeNode:hover ._iconHelperSVG,
+		${PREFIX} ._compsTree ._treeNode._selected ._iconHelperSVG {
+			color: #4C7FEE;
 		}
 		
 
@@ -199,16 +254,20 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		select._peSelect {
-			height: 25px;
-			font-size: 11px;
-			padding: 5px;
-			border-radius: 2px;
-			border: 1px solid #ccc;
+			height: 35px;
+			font-family: Inter;
+			font-size: 12px;
+			line-height:12px;
+			font-weight: 500;
+			padding: 5px 15px;
+			border-radius: 6px;
+			border: none;
 			color: #555;
-			background-color: #eee;
+			background-color: #F8FAFB;
 			text-transform: uppercase;
 			outline: none;
 			cursor: pointer;
+			width: 100%;
 		}
 
 		${PREFIX} button, ._popupButtons button {
@@ -225,28 +284,55 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._filterBar input,
 		input._peInput, ._pvExpressionEditor,
 		textarea._peInput, select._peInput {
-			color: #555;
-			background-color: #eee;
-			font-size: 11px;
+			color: #000;
+			background-color: #F8FAFB;
+			font-family: Inter;
+			font-weight: 400;
+			font-size: 12px;
 			padding: 5px 15px;
+			border-radius: 6px;
+			border: none;
+		}
+
+		${PREFIX} ._filterBar input {
+			width: 100%;
+			height: 38px;
+			border: 0.8px solid #E9ECEF;
 			border-radius: 2px;
-			border: 1px solid #ccc;
 		}
 
 		textarea._peInput {
 			flex: 1;
-			height: 80px;
-			font-size: 12px;
-			padding: 4px;
+			height: 132px;
+			padding: 8px;
+			scroll-bar-width: thin;
+			resize: none;
 		}
 
-		${PREFIX} ._eachStyleClass {
-			border-bottom: 1px solid #ccc;
+		textarea._peInput::-webkit-scrollbar  {
+			width: 2px;
+			background: none;
+			margin-right: 5px;
+		}
+
+		textarea._peInput::-webkit-scrollbar-thumb {
+			background-color: #4C7FEE;
 		}
 
 		${PREFIX} ._overflowContainer {
-			height: calc(100vh - 158px);
+			height: calc(100vh - 138px);
 			overflow: auto;
+		}
+
+		${PREFIX} ._overflowContainer._withCopyButtons {
+			height: calc(100vh - 210px);
+		}
+
+		${PREFIX} ._addSelector {
+			background: #4C7FEE;
+			color: #fff;
+			border:none;
+			border-radius: 6px;
 		}
 
 		${PREFIX} ._eachStyleClass ._propLabel i.fa {
@@ -259,17 +345,19 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		input._peInput[type='text'], ._pvExpressionEditor, input._peInput[type='number'] {
-			height: 25px;
+			height: 35px;
 			font-size: 12px;
-			border-radius: 12px;
+			line-height:12px;
+			border-radius: 6px;
 			padding-left: 8px;
 			outline: none;
+			flex:1;
 		}
 
 		._pvExpressionEditor {
 			padding-top: 0px;
 			padding-bottom: 0px;
-			border-radius: 2px;
+			border-radius: 6px;
 			display: flex;
 			align-items: center;
 			padding-right: 8px;
@@ -354,16 +442,16 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 		
 
-		${PREFIX} button:hover, ${PREFIX} select:hover, ${PREFIX} ._iconMenuOption:hover,
+		${PREFIX} button:hover, ${PREFIX} select:hover,
+		${PREFIX} ._iconMenuOption:hover,
 		._popupButtons button:hover {
 			background-color: rgba(77, 127, 238, 0.05);
-    		color: #96A1B4;
+    		color: #4C7FEE;
 		}
 
-		._popupMenuBackground ._popupMenuItem:hover, ._popupMenuBackground ._popupMenuItem.active {
-			color: #08705C;
-			background: linear-gradient(90deg, rgba(8, 112, 92, 0.2) 0%, rgba(248, 250, 251, 0) 93.35%);
-			border-radius: 2px;
+		${PREFIX} ._iconMenuBody ._iconMenuOption:hover i.fa,
+		${PREFIX} ._iconMenuBody ._iconMenuOption:hover svg._iconHelperSVG {
+			color: #4C7FEE;
 		}
 
 		${PREFIX} i.fa {
@@ -380,16 +468,18 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._iconMenuOption, ._popupMenuBackground ._popupMenuItem  {
-			padding: 5px 10px;
+			padding: 10px 15px;
 			color: #96A1B4;
 			display: flex;
 			align-items: center;
 			gap: 8px;
 			white-space: nowrap;
 			cursor: pointer;
+			margin-bottom: 2px;
 		}
 
-		${PREFIX} ._iconMenuBody ._iconMenuOption i.fa{
+		${PREFIX} ._iconMenuBody ._iconMenuOption i.fa,
+		${PREFIX} ._iconMenuBody ._iconMenuOption svg._iconHelperSVG {
 			color: #96A1B4;
 		}
 
@@ -397,10 +487,11 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			position: absolute;
 			background-color: #fff;
 			font-size: 12px;
-			box-shadow: 2px 2px 5px #ccc;
+			font-family: Inter;
+			box-shadow: 0px 1px 4px 0px #00000026;
 			display: none;
-			border-radius: 2px;
-			z-index: 1;
+			border-radius: 4px;
+			z-index: 3;
 			transform: translateX(40px);
 			font-weight: normal;
 			text-transform: initial;
@@ -463,7 +554,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
     		padding: 0px 10px;	
 		}
 
-		${PREFIX} ._buttonBar i.fa{
+		${PREFIX} ._buttonBar i.fa,
+		${PREFIX} ._buttonBar svg{
 		
 			padding: 7px;
 			cursor: pointer;
@@ -474,11 +566,13 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			text-align: center;
 		}
 
-		${PREFIX} ._buttonBar i.fa:not(:last-child) {
+		${PREFIX} ._buttonBar i.fa:not(:last-child),
+		${PREFIX} ._buttonBar svg:not(:last-child) {
 			margin-right: 10px;
 		}
 
-		${PREFIX} ._buttonBar i.fa.active, ${PREFIX} ._buttonBar i.fa:hover{
+		${PREFIX} ._buttonBar i.fa.active, ${PREFIX} ._buttonBar i.fa:hover,
+		${PREFIX} ._buttonBar svg.active, ${PREFIX} ._buttonBar svg:hover{
 			background-color: rgba(77, 127, 238, 0.05);
 			color: #4C7FEE;
 		}
@@ -487,7 +581,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			color: #8E90A44D;
 		}
 
-		${PREFIX} ._buttonBar._screenSizes i.fa {
+		${PREFIX} ._buttonBar._screenSizes i.fa,
+		${PREFIX} ._buttonBar._screenSizes svg {
 			background-color: transparent;
 			border-bottom: 3px solid transparent;
 			border-radius: 0;
@@ -498,12 +593,1145 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			margin: 3px;
 		}
 
+		${PREFIX} ._propLabel._svgButtons {
+			display: flex;
+			align-items: center;
+			justify-content: flex-start;
+		}
+
+		${PREFIX} ._propLabel ._svgButtonsContainer{
+			border-radius: 6px;
+			display: flex;
+			align-items: center;
+			flex-direction: row;
+		}
+
+		${PREFIX} ._propLabel._svgButtons .svgContainer {
+			width: 30px;
+			height: 30px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			cursor: pointer;
+			background: #F8FAFB;		
+		}
+
+		${PREFIX} ._propLabel._svgButtons .svgContainer:last-child {
+			border-top-right-radius: 6px;
+			border-bottom-right-radius: 6px;
+		}
+
+		${PREFIX} ._propLabel._svgButtons .svgContainer:first-child {
+			border-top-left-radius: 6px;
+			border-bottom-left-radius: 6px;
+		}
+
+		${PREFIX} ._propLabel._svgButtons .svgContainer:hover,
+		${PREFIX} ._propLabel._svgButtons .svgContainer.active {
+			background: #EEF3FA;
+		}
+
+		${PREFIX} ._screenSizes svg path,
+		${PREFIX} ._propLabel._svgButtons svg path,
+		${PREFIX} ._propLabel._svgButtons svg circle,
+		${PREFIX} ._propLabel._svgButtons svg rect {
+			fill: rgba(150, 161, 180, 0.2);
+			stroke: rgba(142, 144, 164, 0.5);
+		}
+
+		${PREFIX} ._screenSizes svg.active path,
+		${PREFIX} ._propLabel._svgButtons.active svg path,
+		${PREFIX} ._propLabel._svgButtons.active svg circle,
+		${PREFIX} ._propLabel._svgButtons.active svg rect {
+			fill: rgba(150, 161, 180, 1);
+			stroke: rgba(142, 144, 164, 1);
+		}
+
+		${PREFIX} ._propLabel._svgButtons .svgContainer:hover path,
+		${PREFIX} ._propLabel._svgButtons .svgContainer:hover circle,
+		${PREFIX} ._propLabel._svgButtons .svgContainer:hover rect,
+		${PREFIX} ._propLabel._svgButtons .svgContainer.active path,
+		${PREFIX} ._propLabel._svgButtons .svgContainer.active rect,
+		${PREFIX} ._propLabel._svgButtons .svgContainer.active circle{
+			fill: #3A8BED;
+			stroke: #3A8BED;
+		}
+
+		${PREFIX} ._microToggle2 {
+			padding: 2px;
+			border-radius: 10px;
+			background-color: #F8FAFB;
+			color: #555;
+			position: relative;
+			font-weight: 400;
+			text-transform: uppercase;
+			font-size: 10px;
+			letter-spacing: 0.5px;
+			transition: all 0.5s;
+			height: 10px;
+			width: 20px;
+			border: 1px solid #888;
+			cursor: pointer;
+			opacity:0.3;
+		}
+
+		${PREFIX} ._microToggle2::before {
+			content: '';
+			width: 6px;
+			height: 6px;
+			position: absolute;
+			background-color: #CCC;
+			border-radius: 50%;
+			right: 1px;
+			top: 50%;
+			transform: translateY(-50%);
+			transition: all 0.5s;
+			border: 1px solid #888;
+		}
+
+		${PREFIX} ._microToggle2._on {
+			background-color: #52BD94;
+			opacity: 0.8;
+			border: 1px solid #198A61;
+		}
+
+		${PREFIX} ._microToggle2._on::before {
+			right: calc(100% - 7px);
+			transform: translateY(-50%);
+			background-color: #FFF;
+			border: 1px solid #FFF;
+		}
+
+		._confineWidth {
+			overflow: hidden;
+		}
+
+		._simpleEditor {
+			padding: 5px 15px;
+		}
+
+		._combineEditors ._simpleEditor {
+			padding: 0px;
+		}
+
+		._combineEditors ._simpleEditor._expandWidth {
+			width: 100%
+		}
+
+		._simpleEditorAngleSize {
+			display: flex;
+			align-items: center;
+			gap: 2px;
+			overflow: hidden;
+		}
+
+		._simpleEditorPixelSize {
+			display: flex;
+			align-items: center;
+			gap: 2px;
+			overflow: hidden;
+			height: 35px;
+		}
+
+		._simpleEditorPixelSize ._inputDropdownContainer {
+			font-family: Inter;
+			font-size: 12px;
+			border: none;
+			border-radius: 6px;
+			color: #555;
+			background-color: #F8FAFB;
+			cursor: pointer;
+			padding: 5px 8px;
+			display: flex;
+			justify-content: flex-start;
+			align-items: center;
+			height: 35px;
+			overflow: hidden;
+		}
+
+		._simpleEditorPixelSize ._inputDropdownContainer input {
+			border: none;
+			height: 100%;
+			background-color: transparent;
+			outline: none;
+			font-family: Inter;
+			font-size: 12px;
+			color: #555;
+			max-width: 60px;
+			min-width: 20px;
+		}
+
+		._simpleEditorPixelSize ._inputDropdownContainer ._simpleEditorSelect {
+			min-width: 60px;
+			flex: 0.5;
+			padding-left: 0px;
+			width: 64px;
+		}
+
+		._simpleEditorPixelSize ._inputDropdownContainer ._simpleEditorSelect ._selectedOption {
+			margin-right: 5px;
+			text-align: right;
+		}
+
+		._simpleEditorPixelSize ._simpleEditorSelect {
+			flex: 1;
+			background-color: transparent;
+		}
+
+		._simpleEditorPixelSize ._simpleEditorRange {
+			flex: 2;
+			margin-right: 12px;
+		}
+
+		._simpleEditorSelect,
+		._simpleEditorInput{
+			min-height: 35px;
+			min-width: 35px;
+			font-family: Inter;
+			font-size: 12px;
+			border: none;
+			border-radius: 6px;
+			color: #555;
+			background-color: #F8FAFB;
+			cursor: pointer;
+			padding: 5px 15px;
+			flex: 1;
+			outline: none;
+		}
+
+		._simpleEditorRange {
+			position: relative;
+		}
+
+		._simpleEditorRange ._rangeTrack {
+			width: 100%;
+			min-width: 60px;
+			height: 2px;
+			border-radius: 10px;
+			background-color: #E2E2E7;			
+			left: 0;
+			z-index: 1;
+		}
+
+		._simpleEditorRange ._rangeTrackFill {
+			width: 0%;
+			height: 2px;
+			border-radius: 10px;
+			background-color: #4C7FEE;
+			position: absolute;
+			left: 0;
+			z-index: 1;
+			margin-top: -2px;
+			transition: width 0s;
+		}
+
+		._simpleEditorRange ._rangeThumb {
+			width: 12px;
+			height: 12px;
+			border-radius: 50%;
+			background-color: #FFF;
+			position: absolute;
+			top: -5px;
+			z-index: 1;
+			cursor: pointer;
+			box-shadow: 0px 1px 4px 0px #0000001A;
+			cursor: pointer;
+		}
+
+		._simpleEditorRange ._rangeThumb::before {
+			content: '';
+			position: absolute;
+			width: 60%;
+			height: 60%;
+			left: 20%;
+			top: 20%;
+			border-radius: 50%;
+			background-color: #4C7FEE;
+		}
+
+		._simpleEditorSelect {
+			text-transform: uppercase;
+			position: relative;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 4px;
+		}
+		
+		._simpleEditorSelect ._simpleEditorDropdownBody{
+			position: fixed;
+			min-width: 100%;
+			background-color: #FFF;
+			z-index: 2;
+			box-shadow: 0px 1px 4px 0px #00000026;
+			border-radius: 6px;
+			margin-top: 4px;
+			padding: 10px;
+			max-height: 250px;
+			overflow: auto;
+		}
+
+		._simpleEditorSelect svg {
+			min-width: 8px;
+		}
+
+		._simpleEditorSelect ._selectedOption {
+			min-width: calc(100% - 8px);
+		}
+
+		._simpleEditorSelect ._selectedOption._placeholder {
+			text-transform: capitalize;
+			color: #757575;
+		}
+
+		._simpleEditorSelect ._simpleEditorDropdownBody ._simpleEditorDropdownOption {
+			height: 25px;
+			padding: 5px 10px;
+			color: rgba(0, 0, 0, 0.4); 
+			border-radius: 4px;
+			white-space: nowrap;
+		}
+
+		._simpleEditorSelect ._simpleEditorDropdownBody ._simpleEditorDropdownOption._hovered {
+			background-color: #F8FAFB;
+		}
+
+		._simpleEditorSelect ._simpleEditorDropdownBody ._simpleEditorDropdownOption._selected {
+			color: #333;
+			font-weight: bold;
+		}
+
+		._simpleEditorIcons {
+			border-radius: 6px;
+			display: flex;
+			align-items: center;
+			flex-direction: row;		
+		}
+
+		._simpleEditorIcons ._eachIcon {
+			cursor: pointer;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			cursor: pointer;
+		}
+
+		._simpleEditorIcons._bground ._eachIcon {
+			background: #F8FAFB;
+		}
+
+		._simpleEditorIcons ._eachIcon:first-child {
+			border-top-left-radius: 6px;
+			border-bottom-left-radius: 6px;
+		}
+
+		._simpleEditorIcons ._eachIcon:last-child {
+			border-top-right-radius: 6px;
+			border-bottom-right-radius: 6px;
+		}
+
+		._simpleEditorIcons._bground ._eachIcon:hover,
+		._simpleEditorIcons._bground ._eachIcon._active {
+			background: #EEF3FA;
+		}
+
+		._simpleEditorIcons ._eachIcon svg path,
+		._simpleEditorIcons ._eachIcon svg circle,
+		._simpleEditorIcons ._eachIcon svg rect,
+		._simpleEditorIcons ._eachIcon svg rect {
+			fill: #333333;
+			stroke: rgba(142, 144, 164, 0.5);
+		}
+
+		._simpleEditorIcons._bground ._eachIcon svg path,
+		._simpleEditorIcons._bground ._eachIcon svg circle,
+		._simpleEditorIcons._bground ._eachIcon svg rect,
+		._simpleEditorIcons._bground ._eachIcon svg line {
+			fill: #E3E5EA;
+			stroke: rgba(142, 144, 164, 0.5);
+		}
+
+		._simpleEditorIcons ._eachIcon:hover svg path,
+		._simpleEditorIcons ._eachIcon:hover svg circle,
+		._simpleEditorIcons ._eachIcon:hover svg rect,
+		._simpleEditorIcons ._eachIcon:hover svg line,
+		._simpleEditorIcons ._eachIcon._active svg path,
+		._simpleEditorIcons ._eachIcon._active svg circle,
+		._simpleEditorIcons ._eachIcon._active svg rect,
+		._simpleEditorIcons ._eachIcon._active svg line {
+			fill: #3A8BED;
+			stroke: #3A8BED;
+		}
+
+		._simpleEditorColorSelector {
+			background: linear-gradient(90deg, #35F803 -26.56%, #4D7FEE 26.55%, #F9A71E 69.94%, #35F803 126.56%);
+			width: 20px;
+			height: 20px;
+			border-radius: 50%;
+			cursor: pointer;
+			border: 3px solid #FFF;
+			box-shadow: 0px 0px 5px 3px #00000017;
+			position: relative;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody {
+			position: fixed;
+			background-color: #FFF;
+			z-index: 2;
+			box-shadow: 0px 1px 4px 0px #00000026;
+			border-radius: 6px;
+			padding: 10px;
+			min-height: 250px;
+			width: 250px;
+			margin-left: -240px;
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._color_variable_picker {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: center;
+			gap: 12px;
+			
+			padding: 5px;
+			flex-wrap: wrap;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._color_variable {
+			width: 20px;
+			height: 20px;
+			border-radius: 50%;
+			cursor: pointer;
+			box-shadow: 0px 1px 2px 0px #00000026;
+			position: relative;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._color_variable._selected {
+			border: 2px solid #51BD94;
+			box-shadow: 0px 0px 4px 4px #51BD94;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._color_variable::before {
+			content: '';
+			width: 100%;
+			height: 100%;
+			border-radius: 50%;
+			position: absolute;
+			background-image:
+				linear-gradient(45deg, #EFEFEF 25%, transparent 25%),
+				linear-gradient(-45deg, #EFEFEF 25%, transparent 25%),
+				linear-gradient(45deg, transparent 75%, #EFEFEF 75%),
+				linear-gradient(-45deg, transparent 75%, #EFEFEF 75%);
+  			background-size: 10px 10px;
+  			background-position: 0 0, 0 5px, 5px -5px, -5px 0px;
+			border-radius: 8px;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._color_variable_name {
+			width: 100%;
+			height: 100%;
+			border-radius: 50%;
+			position: absolute;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._simpleEditorInput,
+		._simpleEditorColorSelector ._colorPickerBody ._simpleEditorSelect {
+			min-height: 25px;
+			padding-top: 3px;
+			padding-bottom: 3px;
+			border-radius: 4px;
+			border: 1px solid #EEE;
+			background: transparent;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._saturation_value_picker{
+			position: relative;
+			height: 150px;
+			border-radius: 6px;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._saturation_value_picker ._thumb {
+			margin-top: -8px;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._hue_picker{
+			background: linear-gradient(to right,red 0,#ff0 16.66%,#0f0 33.33%,#0ff 50%,#00f 66.66%,#f0f 83.33%,red 100%);
+			height: 10px;
+			width: 100%;
+			border-radius: 8px;
+			position: relative;
+			margin-bottom: 10px;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._alpha_picker {
+			cursor: pointer;
+			height: 10px;
+			position: relative;
+			flex: 3;
+			margin-right: 8px;
+			background-image:
+				linear-gradient(45deg, #EFEFEF 25%, transparent 25%),
+				linear-gradient(-45deg, #EFEFEF 25%, transparent 25%),
+				linear-gradient(45deg, transparent 75%, #EFEFEF 75%),
+				linear-gradient(-45deg, transparent 75%, #EFEFEF 75%);
+  			background-size: 10px 10px;
+  			background-position: 0 0, 0 5px, 5px -5px, -5px 0px;
+			border-radius: 8px;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._alpha_picker_gradient {
+			position: absolute;
+			height: 100%;
+			width: 100%;
+			border-radius: 8px;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._colorValueline {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			flex: 1;
+			gap: 5px;
+		}
+
+		._simpleEditorColorSelector ._colorPickerBody ._colorValues {
+			margin-right: 2px;
+    		padding-right: 5px;
+    		border-right: 0.5px solid #0000000D;
+		}
+
+		._simpleEditorColorSelector ._thumb {
+			width: 16px;
+			height: 16px;
+			border-radius: 50%;
+			background-color: #FFF;
+			position: absolute;
+			top: -4px;
+			z-index: 1;
+			cursor: pointer;
+			box-shadow: 0px 2px 4px 0px #00000033;
+			cursor: pointer;
+			margin-left: -8px;
+			border: 3px solid #FFF;
+			pointer-events: none;
+		}
+		
+		._simpleEditorColorSelector ._thumbInner {
+			position: absolute;
+			width: 60%;
+			height: 60%;
+			left: 20%;
+			top: 20%;
+			border-radius: 50%;
+			background-color: #4C7FEE;
+		}
+
+		._simpleEditorShadow {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 5px;
+		}
+
+		._simpleEditorShadow ._eachShadowEditor {
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
+			width: 100%;
+		}
+
+		._simpleEditorShadow ._inset {
+			display: flex;
+			align-items: center;
+			gap: 5px;
+		}
+
+		._simpleEditorShadow ._color_controls {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			gap: 5px;
+			width: 100%;
+		}
+
+		._simpleEditor._warning{
+			font-size: 11px;
+			font-family: Inter;
+			color: #FFCC00;
+			padding: 5px 15px;
+			
+		}
+
+		._simpleEditorBigSelector {
+			padding: 5px 15px;
+		}
+
+		._simpleEditorBigSelector ._searchBox {
+			height: 35px;
+			display: flex;
+			align-items: center;
+			border: 0.5px solid #DFE1E2;
+			background-color: #F8FAFB;
+			border-radius: 6px;
+			padding: 0px 10px;
+		}
+
+		._simpleEditorBigSelector input {
+			border: none;
+			height: 100%;
+			font-family: Inter;
+			font-size: 12px;
+			border: none;
+			background: transparent;
+			flex: 1;
+			outline: none;
+		}
+
+		._simpleEditorControls {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			gap: 5px;
+			width: 100%;
+		}
+
+		._simpleEditorBigSelector ._searchResult {
+			display: grid;
+			grid-template-columns: 1fr 1fr 1fr;
+			padding: 5px 0px;
+			flex-direction: row;
+			gap: 10px;
+			flex-wrap: wrap;
+			max-height: 400px;
+			overflow: auto;
+			margin-top: 15px;
+		}
+
+		._simpleEditorBigSelector ._searchResult ._searchResultItem {
+			display: flex;
+			flex-direction: column;
+			cursor: pointer;
+		}
+
+		._simpleEditorBigSelector ._searchResult ._searchResultItem ._animationIcon {
+			width: 66px;
+			height: 66px;
+			border-radius: 4px;
+			background: #CFCFD81A;
+			border-radius: 4px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		._searchResultItem ._animationIcon ._hovered {
+			display: none;
+		}
+
+		._searchResultItem:hover ._animationIcon ._default,
+		._searchResultItem._selected ._animationIcon ._default {
+			display: none;
+		}
+
+		._searchResultItem ._animationIcon ._default {
+			display: block;
+		}
+
+		._searchResultItem:hover ._animationIcon ._hovered,
+		._searchResultItem._selected ._animationIcon ._hovered {
+			display: block;
+		}
+
+		._simpleEditorBigSelector ._searchResult ._searchResultItem ._animationName {
+			font-size: 11px;
+			font-weight: 500;
+			font-family: Asap;
+			text-align: center;
+		}
+
+		._simpleEditorBigSelector ._searchResult ._searchResultItem:hover ._animationName {
+			color: #4FBBB2;
+		}
+
+		._simpleEditorGroup {
+			padding: 15px;
+		}
+
+		._simpleEditorGroupTitle {
+			font-family: Inter;
+			font-size: 12px;
+			font-weight: 600;
+			line-height: 14px;
+			padding: 5px 10px;
+			border-radius: 4px 4px 0px 0px;
+			background: #F8FAFB;
+			height: 30px;
+			display: flex;
+			align-items: center;
+		}
+
+		._simpleEditorGroupTitle._gradient {
+			border-radius: 4px 4px 0px 0px;
+			color: #FFF;
+			background: linear-gradient(90deg, rgba(67, 178, 255) 0%, rgba(82, 189, 148) 100%);
+		}
+
+		._simpleEditorGroupTitle ._controls {
+			flex: 1;
+			height: 100%;
+			display: flex;
+			justify-content: flex-end;
+		}
+
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon svg path,
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon svg circle,
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon svg rect,
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon svg line{
+			fill: #FFF;
+			stroke: #FFF
+		}
+
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon:hover svg path,
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon:hover svg circle,
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon:hover svg rect,
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon:hover svg line,
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon._active svg path,
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon._active svg circle,
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon._active svg rect,
+		._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon._active svg line {
+			fill-opacity: 0.5;
+			stroke-opacity: 0.5;
+		}
+
+		._simpleEditorGroup ._simpleEditorGroupContent {
+			padding: 10px;
+			border-radius: 0px 0px 4px 4px;
+			background: rgba(248, 250, 251, 0.60);
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+			justify-content: center;
+			align-items: center;
+		}
+
+		._simpleEditorGroupContent ._editorLine {
+			width: 100%;
+			display: flex;
+			justify-content: flex-start;
+			align-items: center;
+			gap: 5px;
+		}
+
+		._simpleEditorGroupContent ._editorLine ._simpleEditorPixelSize {
+			width: 100%;
+		}
+
+		._simpleEditorGroupContent ._editorLine ._label {
+			color: #33333399;
+			font-family: Inter;
+			font-size: 12px;
+			font-weight: 500;
+			white-space: nowrap;
+		}
+
+		._simpleEditorAngle {
+			min-height: 60px;
+			min-width: 60px;
+			border-radius: 50%;
+			background-color: #F8FAFB;
+			position: relative;
+		}
+
+		._simpleEditorGroupContent ._simpleEditorAngle{
+			border: 1px solid rgba(67, 178, 255);
+		}
+
+		._simpleEditorAngle ._angleTrack {
+			height: 100%;
+			position: absolute;
+			left: 50%;
+			transform-origin: center center;
+			margin-left: -4px;
+		}
+
+		._simpleEditorAngle ._angleTrack::before {
+			content: '';
+			display: block;
+			width: 10px;
+			height: 10px;
+			background: linear-gradient(150deg, #43B2FF 13.39%, #52BD94 86.61%);
+			border-radius: 50%;
+			margin-top: 2px;
+			cursor: pointer;
+		}
+
+		._simpleEditorButtonBar {
+			height: 35px;
+			display: flex;
+			flex-direction: row;
+			padding: 5px;
+			font-family: Inter;
+			font-size: 12px;
+			gap: 5px;
+			background-color: #F8FAFB;
+			border-radius: 6px;
+			justify-content: center;
+			align-items: center;
+		}
+
+		._simpleEditorButtonBar ._simpleButtonBarButton {
+			height: 100%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			padding: 0px 10px;
+			border-radius: 4px;
+			cursor: pointer;
+		}
+
+		._simpleEditorButtonBar ._simpleButtonBarButton._selected {
+			background-color: #4C7FEE;
+			color: #FFF;
+			box-shadow: 0px 1px 3px 0px #0000001A;
+		}
+
+		._svgButton {
+			border: none;
+			background: transparent;
+		}
+
+		._combineEditors {
+			display: flex;
+			flex-direction: row;
+			align-items: center;			
+			padding: 5px 15px;
+			gap: 5px;
+			width: 100%;
+		}
+
+		._detailStyleEditor ._combineEditors ._simpleLabel {
+			padding: 0px;
+			padding-right: 5px;
+			flex: 1;
+		}
+
+		._detailStyleEditor ._combineEditors ._simpleEditor {
+			width: auto;
+		}
+
+		._combineEditors ._onePart {
+			flex: 1;
+		}
+
+		._combineEditors ._twoParts {
+			flex: 2;
+		}
+
+		._combineEditors ._oneAndHalfParts {
+			flex: 1.5;
+		}
+
+		._combineEditors ._simpleEditorInput,
+		._combineEditors ._simpleEditorSelect {
+			padding: 8px;
+			width: 100%;
+		}
+
+		._combineEditors ._combineEditors {
+			padding: 0;
+		}
+
+		._combineEditors ._eachProp {
+			padding: 0;
+		}
+
+		._spacer {
+			width: 10px;
+			height: 15px;
+		}
+
+		._combineEditors._spaceBetween {
+			justify-content: space-between;
+		}
+
+		._combineEditors._spaceAround {
+			justify-content: space-around;
+		}
+
+		._combineEditors._centered {
+			justify-content: center;
+		}
+
+		._combineEditors._alignEnd {
+			justify-content: flex-end;
+		}
+
+		._combineEditors._vertical {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+
+		._combineEditors._top {
+			align-items: flex-start;
+		}
+
+		._detailStyleEditor {
+			min-width: 250px;
+			width: 250px;
+			min-height: 400px;
+			background-color: #FFF;
+			box-shadow: 0px 2px 15px 0px #0000001A;
+			border: 1px solid #00000029;
+			position: fixed;
+			z-index: 4;
+			border-radius: 4px;
+			display: flex;
+			flex-direction: column;
+		}
+
+		._detailStyleEditor ._header {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+			padding: 10px;
+			border-bottom: 1px solid #0000000F;
+			background-color: #F8FAFB;
+			font-family: Inter;
+			font-size: 11px;
+			font-weight: 600;
+			line-height: 12px;
+			color: #000000;
+			border-top-left-radius: 4px;
+			border-top-right-radius: 4px;
+			padding-left: 20px;			
+			cursor: move;
+		}
+
+		._detailStyleEditor ._header ._title {
+			flex: 1;
+		}
+
+		._detailStyleEditor ._header ._close {
+			cursor: pointer;
+		}
+
+		._detailStyleEditor ._editorContent {
+			padding-top: 10px;
+			padding-bottom: 10px;
+			white-space: nowrap;
+			gap: 10px;
+			display: flex;
+			flex-direction: column;
+			max-height: 500px;
+			overflow: auto;
+			margin-bottom: 5px;
+		}
+
+		._simpleLabel {
+			font-size: 12px;
+			font-family: Inter;
+			color: #222222B2;
+			white-space: nowrap;
+			font-weight: 500;
+		}
+
+		._simpleLabel._withPadding {
+			padding: 5px 15px;
+		}
+
+		._detailStyleEditor ._simpleLabel {
+			padding-left: 15px;
+			padding-right: 15px;
+		}
+
+		._positionKnob #background{
+			fill: #F8FAFB;
+		}
+
+		._positionKnob #knob {
+			fill: #FFF;
+			filter: drop-shadow(0px 0px 3px #0000000D)
+		}
+
+		._positionKnob #left,
+		._positionKnob #top,
+		._positionKnob #right,
+		._positionKnob #bottom {
+			fill: #E3E5EA;
+		}
+
+		._positionKnob._left #left,
+		._positionKnob._top #top,
+		._positionKnob._right #right,
+		._positionKnob._bottom #bottom {
+			fill: #4C7FEE;
+		}
+
+		._spacingEditor._margin {
+			margin: 0px 15px;
+			position: relative;
+			border-radius: 6px;
+			border: 2px solid #E3E5EA;
+			height: 166px;
+		}
+
+		._spacingEditor._margin._hasValue,
+		._spacingEditor ._padding._hasValue {
+			border-color: #52BD94
+		}
+
+		._spacingEditor ._padding {
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%, -50%);
+			border: 2px solid #E3E5EA;
+			height: 90px;
+			min-width: 58%;
+			border-radius: 6px;
+		}
+
+		._spacingEditor ._label {
+			font-size: 8px;
+			font-family: Inter;
+			color: #D2D3DB;
+			position: absolute;
+			bottom: 2px;
+			right: 6px;
+			text-transform: uppercase;
+			user-select: none;
+			white-space: nowrap;
+		}
+
+		._spacingEditor ._label._hasValue{
+			color: #52BD94;
+		}
+
+		._spacingEditor ._changer {
+			position: absolute;
+			width: 110%;
+			margin-left: -5%;
+			top: 0;
+			left: 0;
+			cursor: pointer;
+			background-color: #FFFFFF;
+			box-shadow: 2px 2px 4px 0px #0000001A;
+			border-radius: 4px;
+			z-index: 1;
+		}
+
+		._spacingEditor ._changer ._header {
+			font-size: 11px;
+			font-family: Inter;
+			font-weight: 600;
+			color: #000000;
+			user-select: none;
+			padding: 5px;
+			background-color: #F8FAFB;
+			border-top-left-radius: 4px;
+			border-top-right-radius: 4px;
+			border-bottom: 1px solid #0000000F;
+			padding-left: 20px;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			height: 35px;
+		}
+
+		._spacingEditor ._changer ._body {
+			padding: 10px 15px;
+			display: flex;
+			flex-direction: column;
+		}
+
+		._spacingEditor ._value {
+			height: 25px;
+			min-width: 45px;
+			background: #F8FAFB;
+			border-radius: 4px;
+			font-family: Inter;
+			font-size: 12px;
+			line-height: 12px;
+			color: #000000;
+			position: absolute;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			padding: 4px;
+			cursor: pointer;
+		}
+
+		._spacingEditor ._value._default {
+			color: #D2D3DB;
+		}
+
+		._spacingEditor ._padding ._value {
+			font-size: 10px;
+		}
+
+		._spacingEditor ._square {
+			position: absolute;
+			width: 8px;
+			height: 8px;
+			border-radius: 1px;
+			background-color: #E3E5EA;
+			opacity: 0.5;
+		}
+
+		._spacingEditor ._circle {
+			position: absolute;
+			width: 8px;
+			height: 8px;
+			border-radius: 50%;
+			background-color: #E3E5EA;
+			opacity: 0.5;
+		}
+
+		._spacingEditor ._square._hasValue,
+		._spacingEditor ._circle._hasValue {
+			background-color: #52BD94;
+			opacity: 1;
+		}
+
+		._spacingEditor ._top {
+			top: -5px;
+			left: 50%;
+			transform: translateX(-50%);
+		}
+
+		._spacingEditor ._bottom {
+			bottom: -5px;
+			left: 50%;
+			transform: translateX(-50%);
+		}
+
+		._spacingEditor ._left {
+			left: -5px;
+			top: 50%;
+			transform: translateY(-50%);
+		}
+
+		._spacingEditor ._right {
+			right: -5px;
+			top: 50%;
+			transform: translateY(-50%);
+		}
+
+		._spacingEditor ._value._top { top: 5px; }
+		._spacingEditor ._value._bottom { bottom: 5px; }
+		._spacingEditor ._value._left { left: 5px; }
+		._spacingEditor ._value._right { right: 5px; }
+
 		${PREFIX} ._buttonBar._screenSizes {
 			height: 65px;
 		}
 
-		${PREFIX} ._buttonBar._screenSizes i.fa:hover,
-		${PREFIX} ._buttonBar._screenSizes i.fa.active {
+		${PREFIX} ._buttonBar._screenSizes i.fa:hover, ${PREFIX} ._buttonBar._screenSizes svg:hover,
+		${PREFIX} ._buttonBar._screenSizes i.fa.active, ${PREFIX} ._buttonBar._screenSizes svg.active{
 			color: #8E90A4;
 			border-bottom: 3px solid #8E90A4;
 			background: linear-gradient(360deg, rgba(142, 144, 164, 0.1) 0.78%, rgba(142, 144, 164, 0.011) 157.03%);
@@ -706,22 +1934,72 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._tabBar {
 			width: 100%;
 			display: flex;
-			background-color: #eee5;
+			background: #F8FAFB;
+			height: 53px;
+			justify-content: space-around;
+			align-items: center;
+			flex-shrink: 0;
 		}
 
-		${PREFIX} ._tabBar i.fa {
-			padding: 10px 6px 10px 6px;
-			cursor: pointer;
-			width: 38px;
-			text-align: center;
+		${PREFIX} ._tabBar svg {
+			cursor: pointer;	
+			outline: none;
 		}
 
-		${PREFIX} ._tabBar i.fa.active{
-			background-color: #fff;
+		${PREFIX} ._tabBar svg path{
+			transition: fill 0.5s, fill-opacity 0.5s;
+			fill: #8E90A4;
+			fill-opacity: 0.2;
 		}
-		
+
+		${PREFIX} ._tabBar svg:hover path, ${PREFIX} ._tabBar svg.active path{ 
+			fill: #52BD94;
+			fill-opacity: 1;
+		}
 		${PREFIX} i._separator {
 			opacity: 0.1;
+		}
+
+		${PREFIX} ._styleButtonContainer button{
+			border: none;
+			background-color: transparent;
+			color: #D2D3DB;
+			display: flex;
+			gap: 5px;
+			justify-content: center;
+			align-items: center;
+			height: 30px;
+			border-radius: 6px;
+			z-index: 2;
+			padding: 0;
+			transition: none;
+		}
+
+		${PREFIX} ._styleButtonContainer button:hover {
+			background-color: #52BD94;
+			color: #FFF;
+			box-shadow: 0px 1px 3px 0px #0000001A;
+		}
+		${PREFIX} ._styleButtonContainer button:hover svg path {
+			fill: #FFF;
+		}
+		${PREFIX} ._styleButtonContainer button svg path {
+			fill: #D2D3DB
+		}
+		${PREFIX} ._styleButtonContainer ._seperator {
+			height: 12px;
+			width: 1px;
+			border-right: 1px solid #D2D3DB;
+		}
+
+		${PREFIX} ._styleButtonContainer {
+			background: #F8FAFB;
+			border-radius: 6px;
+			margin-left: 15px;
+			margin-right: 15px;
+			height: 45px;
+			position: relative;		
+			padding: 0px 5px;	
 		}
 
 		.commonTriStateCheckbox::before {
@@ -730,13 +2008,12 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._propContainer {
 			width: 100%;
-			padding: 5px;
+			padding-top: 20px;
+			padding-bottom: 20px;
 			flex: 1;
-			overflow: auto;
 		}
 
 		._propertyEditor{
-			gap: 10px;
 			display: flex;
 			flex-direction: column;
 			position: relative;
@@ -744,7 +2021,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._eachProp {
 			font-size: 12px;
-			padding: 5px;
+			padding: 5px 20px;
 			display: flex;
 			flex-direction: column;
 			gap: 5px;
@@ -752,8 +2029,13 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			position: relative;
 		}
 
+		._eachProp svg {
+			cursor: pointer;
+		}
+
+
 		._eachProp:hover {
-			background-color:#eee;
+			
 		}
 
 		._pvEditor {
@@ -762,17 +2044,12 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			gap: 5px;
 		}
 
-		._pvEditor input._peInput[type='text'], ._pvEditor input._peInput[type='number']  {
-			border-radius: 2px;
-		}
-
 		._pvEditor ._microToggle {
 			width: 20px;
-			background-color: #eee;
+			background-color: #F8FAFB;
 			height: 10px;
 			border-radius: 2px;
 			position: relative;
-			border: 1px solid #ddd;
 			cursor: pointer;
 			transition: left 0.5s, background-color 0.5s;
 		}
@@ -786,7 +2063,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			content: '';
 			width: 65%;
 			height: 150%;
-			background-color: #ccc;
+			background-color: #E8EAEB;
 			transition: left 0.5s, background-color 0.5s;
 			font-size: 9px;
 			text-align: center;
@@ -796,12 +2073,12 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		._pvEditor ._microToggle._on {
-			background-color: #aaa;
+			background-color: #E8EAEB;
 		}
 
 		._pvEditor ._microToggle._on::before {
 			left: 50%;
-			background-color: #777;
+			background-color: #C8CACB;
 			color: #eee;
 		}
 
@@ -812,33 +2089,38 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		._propLabel {
-			color: #555;
+			color: #222222B2;
 			display: flex;
 			gap: 5px;
 			align-items: center;
 			text-transform: capitalize;
+			font-family: Inter;
+			white-space: nowrap;
 		}
 
 		._propLabel i.fa {
 			cursor: pointer;
 		}
 
-		${PREFIX} span._description {
-			font-weight: bold;
-			font-size: 9px;
-			border-radius: 50%;
-			width: 12px;
-			background-color: #eee;
-			height: 12px;
-			display: inline-flex;
-			justify-content: center;
+		${PREFIX} ._tooltip {
+			display: flex;
 			align-items: center;
-			color: #aaa;
-			border: 1px solid;
-			cursor: pointer;
 		}
 
-		${PREFIX} span._description:hover::after {
+		${PREFIX} ._description {
+			font-size: 10px;
+			background-color: #8E90A433;
+			color: #FFF;
+			width: 11px;
+			height: 11px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			border-radius: 50%;
+			text-transform: initial;
+		}
+
+		${PREFIX} ._tooltip:hover::after {
 			content: attr(title);
 			float: left;
 			min-width: 50px;
@@ -921,22 +2203,48 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._propertyGroup {
 			display: flex;
 			flex-direction: column;
-			gap: 5px;
+			border-bottom: 1px solid rgba(0,0,0,0.05);
+		}
+
+		._propertyGroup._opened ._propertyGroupContent {
+			padding-bottom: 8px;
+		}
+
+		._propertyGroupContent {
+			transition: padding-bottom 0s;
 		}
 
 		._propertyGroupHeader {
-			font-size: 13px;
-			font-weight: bold;
-			background-color: #ccc;
+			font-family: Inter;
+			font-size: 13px;			
 			color: #888;
-			padding: 3px;
+			padding: 14px 15px;
 			cursor: pointer;
 			border-radius: 3px;
 			display: flex;
 			align-items: center;
+			flex-direction: row;			
 			gap: 5px;
-			padding-left: 5px;
-			text-transform: uppercase;
+			font-weight: 600;
+		}
+
+		._propertyGroupHeaderStar {
+			fill: #52BD94;
+			transform: scale(1.4);
+		}
+
+		._propertyGroupHeaderIcon {
+			flex: 1;
+			display: flex;
+			flex-direction: row;
+			gap: 15px;
+			font-size: 20px;
+			font-weight: 200;
+			justify-content: flex-end;
+		}
+
+		._propertyGroup._closed ._propertyGroupHeader {
+			margin-bottom: 0px;
 		}
 
 		._propertyGroupHeader i.fa {
@@ -946,6 +2254,18 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._propertyGroup._closed i.fa {
 			transform: rotate(-90deg);
+		}
+
+		._propertyGroup ._detailsSwitchEditor {
+			display: flex;
+			justify-content: flex-end;
+			align-items: center;
+			color: #333333;
+		}
+
+		._propertyGroup ._detailsSwitchEditor._open,
+		._propertyGroup ._detailsSwitchEditor:hover {
+			color: #2680EB;
 		}
 
 		${PREFIX} ._multiValueEditor {
@@ -958,9 +2278,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			gap: 10px;
 			align-items: center;
-			border: 2px solid #ddd;
+			border-bottom: 1px solid #ddd;
 			padding: 5px;
-			border-radius: 3px;
 			padding-top: 20px;
 			position: relative;
 		}
@@ -1000,6 +2319,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction: column;
 			gap: 5px;
 			flex:1;
+		}
+
+		${PREFIX} ._eachProperty ._eachProp {
+			padding: 5px 0px;
 		}
 
 		${PREFIX} ._codeEditor {
@@ -1117,6 +2440,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._popupContainer ._iconSelectionBrowser ._selectors {
 			display: flex;
 			gap: 5px;
+			align-items: center;
 		}
 
 		._popupContainer ._iconSelectionDisplay {
@@ -1257,13 +2581,11 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		._popupMenuBackground ._popupMenuContainer {
-			box-shadow: 0px 1px 8px 0px #00000020;
 			display: flex;
 			flex-direction: column;
 			background-color: #fff;
 			position: absolute;
-			border-radius: 4px;
-			border-left: 1px solid #eee;
+			border: 1px solid #eee;
 			font-size: 13px;
 		}
 
@@ -1297,12 +2619,26 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex: 1;
 		}
 
+		._popupMenuBackground ._popupMenuContainer ._elementsBarContainer i.fa {
+			font-size: 12px;
+		}
+
+		._popupMenuBackground ._popupMenuContainer ._elementsBarContainer ._iconHelperSVG {
+			color: #96A1B4;
+			min-width: 16px;
+		}
+
 		._popupMenuBackground ._popupMenuContainer ._elementsBarContainer ._popupMenu {
 			background-color: #F8FAFB;
 		}
 
 		._popupMenuBackground ._popupMenuContainer ._elementsBarContainer ._popupMenu::-webkit-scrollbar {
-			width: 3px;
+			width: 2px;
+			height: 2px;
+		}
+
+		._popupMenuBackground ._popupMenuContainer ._elementsBarContainer ._popupMenu::-webkit-scrollbar-thumb {
+			background-color: #E9ECEF;
 		}
 
 		._popupMenuBackground ._popupMenuContainer ._compTemplates {
@@ -1324,14 +2660,15 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			cursor: pointer;
 		}
 
-		._popupMenuBackground ._popupMenuContainer ._compTemplateSections ._eachTemplateSection:hover, ._popupMenuBackground ._popupMenuContainer ._compTemplateSections ._eachTemplateSection._active {
+		._popupMenuBackground ._popupMenuContainer ._compTemplateSections ._eachTemplateSection:hover,
+		._popupMenuBackground ._popupMenuContainer ._compTemplateSections ._eachTemplateSection._active {
 			background: linear-gradient(90deg, rgba(8, 112, 92, 0.2) 0%, rgba(248, 250, 251, 0) 93.35%);
 			color: #08705C;
 		}
 
 		._compMenu {
 			left: 48px;
-			top: 48px;
+			top: 64px;
 			height: calc(100% - 68px);
 			width: 0px;
 			overflow: hidden;
@@ -1339,7 +2676,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		._compMenu._show {
-			width: 415px;
+			width: 480px;
 		}
 
 		._popupMenuBackground ._popupMenu {
@@ -1351,14 +2688,66 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			padding-top: 5px;
 		}
 
+		._popupMenuBackground ._contextMenu { 
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+			overflow: auto;
+			padding-top: 5px;
+			border-left: 1px solid #52BD94;
+			border-radius: 4px;
+		}
+
 		._popupMenuBackground ._popupMenuSeperator {
 			height: 0px;
-			border: 1px solid #aaa;
-			margin: 1px;
 		}
 
 		._popupMenuBackground ._popupMenuItem {
 			border-radius: 2px;
+		}
+
+		._popupMenuBackground ._contextMenu ._popupMenuItem {
+			border-radius: 1px;
+			padding: 8px 13px;
+			color: #333333;
+			cursor: pointer;
+		}
+
+		._popupMenuBackground ._popupMenuItem:hover,
+		._popupMenuBackground ._popupMenuItem.active {
+			color: #08705C;
+			background: linear-gradient(90deg, rgba(8, 112, 92, 0.2) 0%, rgba(248, 250, 251, 0) 93.35%);
+			border-radius: 2px;
+		}
+
+		._popupMenuBackground ._popupMenuItem:hover i.fa,
+		._popupMenuBackground ._popupMenuItem.active i.fa,
+		._popupMenuBackground ._popupMenuItem:hover ._iconHelperSVG ,
+		._popupMenuBackground ._popupMenuItem.active ._iconHelperSVG  {
+			color: #08705C;
+		}
+
+		._popupMenuBackground ._contextMenu ._popupMenuItem:hover {
+			background: #00000005;
+			color: #52BD94;
+		}
+
+		._popupMenuBackground ._contextMenu ._popupMenuItem:hover i.fa {
+			color: #52BD94;
+		}
+
+		._popupMenuBackground ._contextMenu ._iconHelperSVG {
+			color: #CACBCA;
+			width: 16px;
+			height: 16px;
+		}
+
+		._popupMenuBackground ._contextMenu ._popupMenuItem:hover ._iconHelperSVG {
+			color: #52BD94;
+		}
+
+		._popupMenuBackground ._contextMenu i.fa {
+			color: #CACBCA;
 		}
 
 		._propertyContent {
@@ -1391,8 +2780,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		
 		${PREFIX}._dark ._sideBar, ${PREFIX}._dark ._iconMenuBody,
 		${PREFIX}._dark ._topBarGrid, ._popupBackground._dark ._popupContainer,
-		${PREFIX}._dark ._selectionBar, ._dark ._propBar,${PREFIX}._dark ._tabBar i.fa.active
-		._popupMenuBackground._dark ._popupMenu, ${PREFIX}._dark ._tabBar i.fa.active {
+		${PREFIX}._dark ._selectionBar, ._dark ._propBar,
+		._popupMenuBackground._dark ._popupMenu{
 			background-color:#555;
 		}
 
@@ -1445,7 +2834,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX}._dark ._eachProp:hover {
-			background-color:#444a;
+
 		}
 		
 		._dark ._pvEditor ._microToggle {
@@ -1461,14 +2850,9 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._dark ._pvEditor ._microToggle._on {
 			background-color: #888;
 			border-color: #777;
-		}
-
-		${PREFIX}._dark span._description {
-			background-color: #444;
-			color: #777;
-		}
+		}		
 		
-		${PREFIX}._dark span._description:hover::after {
+		${PREFIX}._dark ._tooltip:hover::after {
 			background-color: #555b;
 			color: #bbb;
 			border-color: #777;
@@ -1494,8 +2878,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		._dark ._propertyGroupHeader {
-			background-color: #444c;
-			color: #222;
+			color: #AAA;
 		}
 		._dark ._propertyGroupHeader i.fa {
 			color: #222;

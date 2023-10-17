@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ComponentPropertyDefinition } from '../../../../types/common';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediately,
 } from '../../../../context/StoreContext';
-import { isNullValue } from '@fincity/kirun-js';
+import { ComponentPropertyDefinition } from '../../../../types/common';
 import Portal from '../../../Portal';
+import { Dropdown } from '../stylePropertyValueEditors/simpleEditors/Dropdown';
 
 interface IconSelectionEditorProps2 {
 	appPath: string | undefined;
@@ -172,8 +172,8 @@ export function IconSelectionEditor2({
 	useEffect(() => setChngValue(value ?? ''), [value]);
 
 	const updatePackData = useCallback(
-		(e: React.ChangeEvent<HTMLSelectElement>) => {
-			const pack = e.target.value;
+		(pack: string | string[]) => {
+			if (Array.isArray(pack)) pack = pack[0];
 			setSelectedPack(pack);
 			getPackData(pack).then(x => setPackJson(x));
 		},
@@ -190,17 +190,14 @@ export function IconSelectionEditor2({
 						<div className="_iconSelectionBrowser">
 							<div className="_selectors">
 								Icon Pack :
-								<select
-									className="_peInput"
+								<Dropdown
 									value={selectedPack}
 									onChange={updatePackData}
-								>
-									{packs.map(p => (
-										<option key={p} value={p}>
-											{p}
-										</option>
-									))}
-								</select>
+									options={packs.map(p => ({
+										name: p,
+										displayName: p,
+									}))}
+								/>
 								Search :
 								<input
 									className="_peInput"

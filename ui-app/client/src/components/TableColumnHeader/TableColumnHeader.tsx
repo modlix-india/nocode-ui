@@ -11,6 +11,7 @@ import Children from '../Children';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { deepEqual, ExpressionEvaluator } from '@fincity/kirun-js';
 import { getExtractionMap } from '../util/getRenderData';
+import { styleDefaults } from './tableColumnHeaderStyleProperties';
 
 function TableColumnHeaderComponent(props: ComponentProps) {
 	const {
@@ -43,7 +44,6 @@ function TableColumnHeaderComponent(props: ComponentProps) {
 }
 
 const component: Component = {
-	icon: 'fa-solid fa-diagram-next',
 	name: 'TableColumnHeader',
 	displayName: 'Table Header',
 	description: 'Table Header component',
@@ -52,7 +52,17 @@ const component: Component = {
 	styleProperties: stylePropertiesDefinition,
 	properties: propertiesDefinition,
 	styleComponent: TableColumnHeaderStyle,
+	styleDefaults: styleDefaults,
 	isHidden: true,
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-diagram-next',
+		},
+	],
 };
 
 export default component;
