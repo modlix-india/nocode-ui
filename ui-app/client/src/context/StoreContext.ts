@@ -1,11 +1,5 @@
-import {
-	ExpressionEvaluator,
-	TokenValueExtractor,
-	duplicate,
-	isNullValue,
-} from '@fincity/kirun-js';
+import { TokenValueExtractor, duplicate, isNullValue } from '@fincity/kirun-js';
 import { setStoreData, useStore } from '@fincity/path-reactive-state-management';
-import { PathExtractor } from '../components/util/getPaths';
 import {
 	LOCAL_STORE_PREFIX,
 	PAGE_STORE_PREFIX,
@@ -15,7 +9,7 @@ import {
 import { messageToMaster } from '../slaveFunctions';
 import { ComponentProperty, DataLocation, LocationHistory } from '../types/common';
 import { LocalStoreExtractor } from './LocalStoreExtractor';
-import { ParentExtractor, ParentExtractorForRunEvent } from './ParentExtractor';
+import { ParentExtractorForRunEvent } from './ParentExtractor';
 import { SpecialTokenValueExtractor } from './SpecialTokenValueExtractor';
 import { ThemeExtractor } from './ThemeExtractor';
 import { sample } from './sampleData';

@@ -1,25 +1,24 @@
+import { TokenValueExtractor, isNullValue } from '@fincity/kirun-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
+import ComponentDefinitions from '../components';
+import { getPathsFrom } from '../components/util/getPaths';
+import { runEvent } from '../components/util/runEvent';
 import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../constants';
 import {
 	PageStoreExtractor,
 	addListener,
 	addListenerAndCallImmediately,
-	getDataFromLocation,
+	getData,
 	getDataFromPath,
 	localStoreExtractor,
 	setData,
 	storeExtractor,
 } from '../context/StoreContext';
-import * as getPageDefinition from './../definitions/getPageDefinition.json';
-import { runEvent } from '../components/util/runEvent';
-import ComponentDefinitions from '../components';
-import { processLocation } from '../util/locationProcessor';
-import { TokenValueExtractor, isNullValue } from '@fincity/kirun-js';
 import { ComponentProperty, PageDefinition } from '../types/common';
+import { processLocation } from '../util/locationProcessor';
 import { processClassesForPageDefinition } from '../util/styleProcessor';
-import { getData } from '../context/StoreContext';
-import { getPathsFrom } from '../components/util/getPaths';
+import * as getPageDefinition from './../definitions/getPageDefinition.json';
 
 export const RenderEngineContainer = () => {
 	const location = useLocation();
