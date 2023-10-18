@@ -23,21 +23,24 @@ const ORDER_OF_RESOLUTION = [
 	StyleResolution.MOBILE_POTRAIT_SCREEN_ONLY,
 ].reverse();
 
-const DEFAULTS = new Map<string, string>(
-	Array.from(ComponentDefinitions.values())
-		.map(e => e.styleDefaults)
-		.concat(styleDefaults)
-		.flatMap(e => Array.from(e.entries())),
-);
-
 export class ThemeExtractor extends SpecialTokenValueExtractor {
 	private store: any;
+	private defaults: Map<string, string> | undefined = undefined;
 
 	public setStore(store: any) {
 		this.store = store;
 	}
 
 	protected getValueInternal(token: string) {
+		if (!this.defaults) {
+			this.defaults = new Map<string, string>(
+				Array.from(ComponentDefinitions.values())
+					.map(e => e.styleDefaults)
+					.concat(styleDefaults)
+					.flatMap(e => Array.from(e.entries())),
+			);
+		}
+
 		const allTheme = this.store.theme?.[StyleResolution.ALL] ?? {};
 
 		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
@@ -52,7 +55,7 @@ export class ThemeExtractor extends SpecialTokenValueExtractor {
 			}
 		}
 
-		return allTheme[parts[1]] ?? processStyleValueWithFunction(`<${parts[1]}>`, DEFAULTS);
+		return allTheme[parts[1]] ?? processStyleValueWithFunction(`<${parts[1]}>`, this.defaults);
 	}
 
 	getPrefix(): string {
