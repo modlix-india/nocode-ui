@@ -178,6 +178,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		enumValues: [
 			...COMMON_COMPONENT_PROPERTIES.designType.enumValues!,
 			{
+				name: '_outlined',
+				displayName: 'Outline Text Area',
+				description: 'Outline Text Area type',
+			},
+			{
 				name: '_filled',
 				displayName: 'Filled Text Area',
 				description: 'Filled Text Area type',
