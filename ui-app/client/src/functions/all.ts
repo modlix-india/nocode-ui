@@ -10,4 +10,4 @@ export * from './Navigate';
 export * from './ShortUniqueId';
 export * from './NavigateBack';
 export * from './NavigateForward';
-export * from './CopyToClipboard';
+export * from './CopyTextToClipboard';
