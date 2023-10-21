@@ -11,3 +11,4 @@ export * from './ShortUniqueId';
 export * from './NavigateBack';
 export * from './NavigateForward';
 export * from './CopyTextToClipboard';
+export * from './ExecuteJSFunction';

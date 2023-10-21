@@ -20,7 +20,7 @@ const SIGNATURE = new FunctionSignature('GetStoreData')
 
 export class GetStoreData extends AbstractFunction {
 	protected async internalExecute(context: FunctionExecutionParameters): Promise<FunctionOutput> {
-		const evmap = [...context.getValuesMap().values()];
+		const evmap = [...Array.from(context.getValuesMap().values())];
 		const data = getData(context.getArguments()?.get('path'), [], ...evmap);
 		return new FunctionOutput([EventResult.outputOf(new Map([['data', data]]))]);
 	}
