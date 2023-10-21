@@ -433,14 +433,60 @@ export function SpacingEditor({
 				className={`_spacingEditor _margin ${marginHasValue ? '_hasValue' : ''}`}
 				ref={parentRef}
 			>
-				<div className={`_label ${marginHasValue ? '_hasValue' : ''}`}>Margin</div>
+				<div
+					className={`_label ${marginHasValue ? '_hasValue' : ''}`}
+					title="Double click to clear"
+					onDoubleClick={() =>
+						valuesChangedOnlyValues({
+							subComponentName,
+							selectedComponent,
+							styleProps,
+							selectorPref,
+							properties,
+							propValues: [
+								{ prop: 'marginTop', value: '' },
+								{ prop: 'marginBottom', value: '' },
+								{ prop: 'marginLeft', value: '' },
+								{ prop: 'marginRight', value: '' },
+							],
+							pseudoState,
+							saveStyle,
+							iterateProps,
+						})
+					}
+				>
+					Margin
+				</div>
 				<div className={`_square _top ${propValues.marginTop ? '_hasValue' : ''}`} />
 				<div className={`_square _left ${propValues.marginLeft ? '_hasValue' : ''}`} />
 				<div className={`_square _right ${propValues.marginRight ? '_hasValue' : ''}`} />
 				<div className={`_square _bottom ${propValues.marginBottom ? '_hasValue' : ''}`} />
 				{marginValues}
 				<div className={`_padding ${paddingHasValue ? '_hasValue' : ''}`}>
-					<div className={`_label ${paddingHasValue ? '_hasValue' : ''}`}>Padding</div>
+					<div
+						className={`_label ${paddingHasValue ? '_hasValue' : ''}`}
+						title="Double click to clear"
+						onDoubleClick={() =>
+							valuesChangedOnlyValues({
+								subComponentName,
+								selectedComponent,
+								styleProps,
+								selectorPref,
+								properties,
+								propValues: [
+									{ prop: 'paddingTop', value: '' },
+									{ prop: 'paddingBottom', value: '' },
+									{ prop: 'paddingLeft', value: '' },
+									{ prop: 'paddingRight', value: '' },
+								],
+								pseudoState,
+								saveStyle,
+								iterateProps,
+							})
+						}
+					>
+						Padding
+					</div>
 					<div className={`_circle _top ${propValues.paddingTop ? '_hasValue' : ''}`} />
 					<div className={`_circle _left ${propValues.paddingLeft ? '_hasValue' : ''}`} />
 					<div
