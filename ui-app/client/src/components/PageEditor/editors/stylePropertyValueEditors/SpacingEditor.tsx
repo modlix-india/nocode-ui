@@ -1,13 +1,7 @@
 import React, { ReactNode, useRef, useState } from 'react';
-import {
-	StyleEditorsProps,
-	extractValue,
-	valuesChanged,
-	valuesChangedOnlyValues,
-} from './simpleEditors';
-import { RangeSlider } from './simpleEditors/RangeSlider';
-import { PixelSize } from './simpleEditors/SizeSliders';
+import { StyleEditorsProps, extractValue, valuesChangedOnlyValues } from './simpleEditors';
 import { IconOptions, IconsSimpleEditor } from './simpleEditors/IconsSimpleEditor';
+import { PixelSize } from './simpleEditors/SizeSliders';
 
 export function SpacingEditor({
 	subComponentName,
@@ -419,6 +413,7 @@ export function SpacingEditor({
 								subComponentName,
 								selectedComponent,
 								styleProps,
+								selectorPref,
 								properties,
 								propValues: newValues,
 								pseudoState,

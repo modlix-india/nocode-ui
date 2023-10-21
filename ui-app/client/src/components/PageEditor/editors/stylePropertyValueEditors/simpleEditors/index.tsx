@@ -295,6 +295,7 @@ export function valuesChangedOnlyValues({
 	pseudoState,
 	saveStyle,
 	iterateProps,
+	selectorPref,
 }: {
 	styleProps: ComponentStyle | undefined;
 	properties: [string, EachComponentStyle] | undefined;
@@ -304,6 +305,7 @@ export function valuesChangedOnlyValues({
 	propValues: { prop: string; value: string }[];
 	selectedComponent: string;
 	subComponentName: string;
+	selectorPref: any;
 }) {
 	if (propValues.length === 0) return;
 
@@ -318,7 +320,7 @@ export function valuesChangedOnlyValues({
 			prop,
 			iterateProps,
 			pseudoState,
-			selectorPref: {},
+			selectorPref,
 			selectedComponent,
 		});
 
