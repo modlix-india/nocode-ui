@@ -5,9 +5,10 @@ import {
 	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
-import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
+import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
+	COMMON_COMPONENT_PROPERTIES.colorScheme,
 	{
 		name: 'src',
 		schema: SCHEMA_STRING_COMP_PROP,
@@ -79,6 +80,36 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Show Time ',
 		defaultValue: true,
 		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'videoDesign',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'video Player Design',
+		description: 'Color Scheme',
+		defaultValue: '_videoDesign1',
+		group: ComponentPropertyGroup.BASIC,
+		enumValues: [
+			{
+				name: '_videoDesign1',
+				displayName: 'video Player Design 1',
+				description: 'video Player Design 1',
+			},
+			{
+				name: '_videoDesign2',
+				displayName: 'video Player Design 2',
+				description: 'video Player Design 2',
+			},
+			{
+				name: '_videoDesign3',
+				displayName: 'video Player Design 3',
+				description: 'video Player Design 3',
+			},
+			{
+				name: '_videoDesign4',
+				displayName: 'video Player Design 4',
+				description: 'video Player Design 4',
+			},
+		],
 	},
 ];
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

@@ -17,4 +17,5 @@ export const sample = {
 	radioMultiValue: ['Option 1', 'Option 3'],
 	booleanTrue: true,
 	booleanFalse: false,
+	sampleInteger: 1,
 };

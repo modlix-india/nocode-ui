@@ -27,9 +27,10 @@ function setHighlighter(
 	setHighlighterPosition: React.Dispatch<React.SetStateAction<React.CSSProperties>>,
 ) {
 	const currentTab = tabRefs.current[hover === -1 ? tabs.indexOf(activeTab) : hover];
-	const tabRect = currentTab.getBoundingClientRect();
+	const tabRect = currentTab?.getBoundingClientRect();
 	const tabsRect = tabRefs.current[0].parentElement.getBoundingClientRect();
 	const hp: CSSProperties = {};
+	if (!tabRect) return;
 	hp['left'] = tabRect.left - tabsRect.left;
 	hp['top'] = tabRect.top - tabsRect.top;
 	hp['width'] = tabsOrientation === '_horizontal' ? tabRect.width : '100%';
@@ -68,7 +69,7 @@ function TabsComponent(props: ComponentProps) {
 		pageExtractor,
 	);
 	const bindingPathPath = bindingPath
-		? getPathFromLocation(bindingPath, locationHistory)
+		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
 		: undefined;
 	const [hover, setHover] = React.useState<number>(-1);
 
@@ -87,7 +88,6 @@ function TabsComponent(props: ComponentProps) {
 
 	useEffect(() => {
 		if (!bindingPathPath) return;
-
 		return addListenerAndCallImmediately(
 			(_, value) => {
 				setActiveTab(value ?? defaultActive ?? tabs[0]);
@@ -95,7 +95,7 @@ function TabsComponent(props: ComponentProps) {
 			pageExtractor,
 			bindingPathPath,
 		);
-	}, [bindingPathPath, defaultActive, tabs]);
+	}, [bindingPathPath, defaultActive, tabs?.[0]]);
 
 	const handleClick = function (key: string) {
 		if (!bindingPathPath) {

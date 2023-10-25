@@ -7,77 +7,72 @@ export default function VideoStyle({ theme }: { theme: Map<string, Map<string, s
 	const css =
 		` 
     ${PREFIX} {
-       position:relative;
-    }
+      position:relative;
+   }
+   ${PREFIX} video {
+    width: 100%;
+    height: 100%;
+  }
+  ${PREFIX} ._videoControlsContainer{
+    position:absolute;
+    bottom:1%;
+    width:100%;
+    display:flex;
+    flex-direction:column;
+  }
+  ${PREFIX} ._progressBarContainer {
+    width:100%;
+    position: relative;
+   }
+   ${PREFIX} ._progressBar {
+    width:100%;
+    cursor:pointer;
+   }
 
-    ${PREFIX} video {
-      width: 100%;
-      height: 100%;
-    }
+   ${PREFIX} ._toolTip{
+    position: absolute;
+    bottom:84%;
+  }
+  ${PREFIX} ._volumeControls {
+    display: flex;
+    align-items: center;
+    gap:4px;
+   }
 
-    ${PREFIX} .videoControlsContainer{
-      position:absolute;
-      bottom:1%;
-      width:100%;
-      display:flex;
-      flex-direction:column;
-    }
+   ${PREFIX} ._volumeHighIcon{
+    width: 100%;
+   }
 
-    ${PREFIX} .playBackIcon {
-        padding-left:10px;
-      }
+   ${PREFIX} ._volumeMuteIcon{
+    width:  100%;
+   }
 
-      ${PREFIX} .progressBarContainer {
-        width:100%;
-        position: relative;
-       }
+  ${PREFIX} ._fullScreenIcon{
+  width:  100%;
+  }
 
-      ${PREFIX} .progressBar {
-       width:100%;
-       cursor:pointer;
-      }
+  ${PREFIX} ._playIconIcon{
+  width:  100%;
+  }
 
-      ${PREFIX} input[type="range"] {
-        background-size: 70% 100%;
-        background-repeat: no-repeat;
-        width: 100%;
-      }
-      
-      ${PREFIX} .volumeButton{
-        color:#ffffff;
-      }
+  ${PREFIX} ._pauseIconIcon{
+  width:  100%; 
+  }
 
-      ${PREFIX} .toolTip{
-        position: absolute;
-        bottom:84%;
-      }
+  ${PREFIX} ._pipIcon{
+  width:  100%;
+  }
 
-      ${PREFIX} .playAndVolumeGrid{
-        display: flex;
-        align-items: center;
-        gap: 22px;
-      }
+  ${PREFIX} ._volumeHighIcon svg , ${PREFIX} ._volumeMuteIcon svg,  ${PREFIX} ._pipIcon svg , ${PREFIX} ._fullScreenIcon svg, ${PREFIX} ._playIconIcon svg, ${PREFIX} ._pauseIconIcon svg {
+    width:100%;
+    height:100%;
+   }
 
-       ${PREFIX} .playAndFullscreenGrid{
-        display:flex;
-       }
-
-       ${PREFIX} .pipAndFullScreenGrid {
-        justify-content: flex-end;
-        display: flex;
-        width: 100%;
-        gap: 42px;
-        align-items: center;
-       }
-
-       ${PREFIX} .volumeControls {
-        display: flex;
-        align-items: center;
-        width:110px;
-        gap:4px;
-       }
-
-
+  ${PREFIX} ._pip{
+    padding: 0;
+    background-color: transparent;
+    border: none;
+  }
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 	return <style id="VideoStyle">{css}</style>;
 }

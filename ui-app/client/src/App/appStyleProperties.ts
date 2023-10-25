@@ -771,7 +771,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Success Color',
 		displayName: 'Success Color',
 		name: 'successColor',
-		defaultValue: '#270',
+		defaultValue: '#227700',
 		noPrefix: true,
 	},
 	{
