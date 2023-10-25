@@ -201,6 +201,7 @@ function TextArea(props: ComponentProps) {
 			} else {
 				setData(bindingPathPath, temp, context?.pageName);
 			}
+			callChangeEvent();
 		}
 		setFocus(false);
 		setIsDirty(true);

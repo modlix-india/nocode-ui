@@ -236,7 +236,6 @@ function Video(props: ComponentProps) {
 	const handleMouseLeaveInput = (event: any) => {
 		setToggleToolTip(false);
 	};
-	console.log(videoDesign, 'videoDesign');
 	const playIcon1 = (
 		<div
 			className="_playIcon _playIconIcon"
