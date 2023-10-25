@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import {
 	addListenerAndCallImmediately,
 	getPathFromLocation,
@@ -36,6 +36,8 @@ function Stepper(props: ComponentProps) {
 			moveToAnyPreviousStep,
 			moveToAnyFutureStep,
 			isStepperVertical,
+			colorScheme,
+			stepperDesign,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -46,8 +48,8 @@ function Stepper(props: ComponentProps) {
 		pageExtractor,
 	);
 
-	const [value, setValue] = React.useState(0);
-	const [hover, setHover] = React.useState(false);
+	const [value, setValue] = useState(0);
+	const [hover, setHover] = useState(false);
 	const bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
 		: undefined;
@@ -105,13 +107,13 @@ function Stepper(props: ComponentProps) {
 		let textStyle;
 		switch (textPosition) {
 			case 'RIGHT':
-				textStyle = 'textRight';
+				textStyle = '_textRight';
 				break;
 			case 'LEFT':
-				textStyle = 'textLeft';
+				textStyle = '_textLeft';
 				break;
 			case 'TOP':
-				textStyle = 'textTop';
+				textStyle = '_textTop';
 				break;
 			case 'BOTTOM':
 				textStyle = '';
@@ -121,12 +123,17 @@ function Stepper(props: ComponentProps) {
 		return textStyle;
 	};
 	return (
-		<div className="comp compStepper" style={resolvedStyles.comp ?? {}}>
+		<div
+			className={`comp compStepper ${stepperDesign} ${colorScheme}`}
+			style={resolvedStyles.comp ?? {}}
+		>
 			<HelperComponent definition={definition} />
 			<ul
 				style={resolvedStyles.list ?? {}}
 				className={`${
-					isStepperVertical ? 'vertical' : 'horizontal'
+					stepperDesign !== '_rectangle_arrow' && isStepperVertical
+						? '_vertical'
+						: '_horizontal'
 				} ${getPositionStyle()} `}
 			>
 				<SubHelperComponent definition={props.definition} subComponentName="list" />
@@ -139,45 +146,25 @@ function Stepper(props: ComponentProps) {
 								? () => goToStep(i)
 								: undefined
 						}
-						className={`itemlist ${
-							i < value && moveToAnyPreviousStep ? 'previousStep' : ''
-						} ${i > value && moveToAnyFutureStep ? 'futureStep' : ''}`}
+						className={`_listItem ${i < value ? '_done' : ''} ${
+							i === value ? '_active' : ''
+						} ${i > value && moveToAnyFutureStep ? '_nextItem' : ''} ${
+							i < value && moveToAnyPreviousStep ? '_previousItem' : ''
+						}`}
 						key={i}
 					>
 						<SubHelperComponent
 							definition={props.definition}
 							subComponentName="listItem"
 						/>
-						<div className="itemContainer" style={resolvedStyles.itemContainer ?? {}}>
+						<div className="_itemContainer" style={resolvedStyles.itemContainer ?? {}}>
 							<SubHelperComponent
 								definition={props.definition}
 								subComponentName="itemContainer"
 							/>
-							{icons ? (
-								<i
-									onMouseEnter={
-										stylePropertiesWithPseudoStates?.hover
-											? () => setHover(true)
-											: undefined
-									}
-									onMouseLeave={
-										stylePropertiesWithPseudoStates?.hover
-											? () => setHover(false)
-											: undefined
-									}
-									style={resolvedStyles.icon ?? {}}
-									className={`${
-										i < value && showCheckOnComplete ? checkIcon : iconList[i]
-									} countingStep ${i <= value ? 'done' : ''} icon`}
-								>
-									<SubHelperComponent
-										definition={props.definition}
-										subComponentName="icon"
-									/>
-								</i>
-							) : (
-								<>
-									{i < value && showCheckOnComplete ? (
+							{stepperDesign !== '_rectangle_arrow' && (
+								<Fragment>
+									{icons ? (
 										<i
 											onMouseEnter={
 												stylePropertiesWithPseudoStates?.hover
@@ -189,50 +176,86 @@ function Stepper(props: ComponentProps) {
 													? () => setHover(false)
 													: undefined
 											}
-											style={resolvedStyles.icon ?? {}}
-											className={`${checkIcon} countingStep icon ${
-												i <= value ? 'done' : ''
+											style={resolvedStyles.step ?? {}}
+											className={`${
+												i < value && showCheckOnComplete
+													? checkIcon
+													: iconList[i]
+											} _step ${i < value ? '_done' : ''} ${
+												i === value ? '_active' : ''
 											}`}
 										>
 											<SubHelperComponent
 												definition={props.definition}
-												subComponentName="icon"
+												subComponentName="step"
 											/>
 										</i>
 									) : (
-										<span
-											style={resolvedStyles.text ?? {}}
-											className={`countingStep ${i <= value ? 'done' : ''}`}
-										>
-											<SubHelperComponent
-												definition={props.definition}
-												subComponentName="text"
-											/>
-											{getCount(i + 1)}
-										</span>
+										<>
+											{i < value && showCheckOnComplete ? (
+												<i
+													onMouseEnter={
+														stylePropertiesWithPseudoStates?.hover
+															? () => setHover(true)
+															: undefined
+													}
+													onMouseLeave={
+														stylePropertiesWithPseudoStates?.hover
+															? () => setHover(false)
+															: undefined
+													}
+													style={resolvedStyles.step ?? {}}
+													className={`${checkIcon} _step ${
+														i < value ? '_done' : ''
+													} ${i === value ? '_active' : ''}`}
+												>
+													<SubHelperComponent
+														definition={props.definition}
+														subComponentName="step"
+													/>
+												</i>
+											) : (
+												<span
+													style={resolvedStyles.step ?? {}}
+													className={`_step ${i < value ? '_done' : ''} ${
+														i === value ? '_active' : ''
+													}`}
+												>
+													<SubHelperComponent
+														definition={props.definition}
+														subComponentName="step"
+													/>
+													{getCount(i + 1)}
+												</span>
+											)}
+										</>
 									)}
-								</>
+								</Fragment>
 							)}
-							<span
-								onMouseEnter={
-									stylePropertiesWithPseudoStates?.hover
-										? () => setHover(true)
-										: undefined
-								}
-								onMouseLeave={
-									stylePropertiesWithPseudoStates?.hover
-										? () => setHover(false)
-										: undefined
-								}
-								style={resolvedStyles.text ?? {}}
-								className="title"
-							>
-								<SubHelperComponent
-									definition={props.definition}
-									subComponentName="text"
-								/>
-								{getTranslations(e, translations)}
-							</span>
+							{stepperDesign !== '_pills' && (
+								<span
+									onMouseEnter={
+										stylePropertiesWithPseudoStates?.hover
+											? () => setHover(true)
+											: undefined
+									}
+									onMouseLeave={
+										stylePropertiesWithPseudoStates?.hover
+											? () => setHover(false)
+											: undefined
+									}
+									style={resolvedStyles.title ?? {}}
+									className={`_title ${i < value ? '_done' : ''} ${
+										i === value ? '_active' : ''
+									}`}
+								>
+									<SubHelperComponent
+										definition={props.definition}
+										subComponentName="title"
+									/>
+									{getTranslations(e, translations)}
+								</span>
+							)}
 						</div>
 					</li>
 				))}
@@ -289,13 +312,13 @@ const component: Component = {
 			icon: 'fa-solid fa-list',
 		},
 		{
-			name: 'icon',
+			name: 'step',
 			displayName: 'Icon',
 			description: 'Icon',
 			icon: 'fa-solid fa-list',
 		},
 		{
-			name: 'text',
+			name: 'title',
 			displayName: 'Text',
 			description: 'Text',
 			icon: 'fa-solid fa-list',
