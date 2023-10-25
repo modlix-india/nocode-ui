@@ -182,10 +182,10 @@ function CommonInputText(props: CommonInputType) {
 
 	return (
 		<div
-			className={`${cssPrefix} ${
-				focus || value?.length ? '_isActive' : ''
-			} ${designType} ${colorScheme} ${leftIcon ? '_hasLeftIcon' : ''} ${
-				value?.length ? '_hasValue' : ''
+			className={`${cssPrefix} ${focus ? '_isActive' : ''} ${designType} ${colorScheme} ${
+				leftIcon ? '_hasLeftIcon' : ''
+			} ${!focus && value?.length ? '_hasValue' : ''} ${
+				!hasErrorMessages && hasValidationCheck && isDirty ? '_validationSuccess' : ''
 			} ${hasErrorMessages ? '_hasError' : ''}`}
 			style={computedStyles.comp ?? {}}
 			onMouseLeave={onMouseLeave}
