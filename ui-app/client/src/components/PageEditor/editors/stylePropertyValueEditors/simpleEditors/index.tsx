@@ -244,7 +244,7 @@ export function extractValue({
 	let propName = prop.replace(/([A-Z])/g, ' $1');
 	propName = propName[0].toUpperCase() + propName.slice(1);
 
-	const screenSize = ((selectorPref[selectedComponent]?.screenSize?.value as string) ??
+	const screenSize = ((selectorPref?.[selectedComponent]?.screenSize?.value as string) ??
 		'ALL') as StyleResolution;
 
 	return { value, actualProp, propName, screenSize, compProp };
