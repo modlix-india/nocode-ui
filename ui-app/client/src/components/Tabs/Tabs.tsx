@@ -95,7 +95,7 @@ function TabsComponent(props: ComponentProps) {
 			pageExtractor,
 			bindingPathPath,
 		);
-	}, [bindingPathPath]);
+	}, [bindingPathPath, defaultActive, tabs?.[0]]);
 
 	const handleClick = function (key: string) {
 		if (!bindingPathPath) {
