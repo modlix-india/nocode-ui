@@ -27,6 +27,8 @@ function Video(props: ComponentProps) {
 			showSeekBar,
 			showPlaypause,
 			showTime,
+			colorScheme,
+			videoDesign,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -36,6 +38,17 @@ function Video(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
+
+	const volumeIconHandle = (event: any) => {
+		if (!video.current) return;
+		video.current.muted = !video.current.muted;
+		setMuted(!muted);
+		if (muted === false) {
+			setVolume('0');
+		} else {
+			setVolume(`${vol}`);
+		}
+	};
 
 	//to check wheater browser supports html5 video
 	const [videoControls, setVideoControl] = useState<boolean>(true);
@@ -86,9 +99,9 @@ function Video(props: ComponentProps) {
 	//VolumeInput ref
 	const [volume, setVolume] = useState<string>('1');
 	//
-	const volumeButton = createRef<HTMLButtonElement>();
+	const volumeButton = createRef<HTMLDivElement>();
 	//fullScreen
-	const fullScreen = createRef<HTMLButtonElement>();
+	const fullScreen = createRef<HTMLDivElement>();
 	//containerRef
 	const videoContainer = createRef<HTMLDivElement>();
 	//Pip ref
@@ -184,16 +197,6 @@ function Video(props: ComponentProps) {
 		video.current.volume = vol;
 		setMuted(false);
 	};
-	const volumeIconHandle = (event: any) => {
-		if (!video.current) return;
-		video.current.muted = !video.current.muted;
-		setMuted(!muted);
-		if (muted === false) {
-			setVolume('0');
-		} else {
-			setVolume(`${vol}`);
-		}
-	};
 
 	const handleFullScreen = (event: any) => {
 		if (!videoContainer.current) return;
@@ -233,9 +236,164 @@ function Video(props: ComponentProps) {
 	const handleMouseLeaveInput = (event: any) => {
 		setToggleToolTip(false);
 	};
+	console.log(videoDesign, 'videoDesign');
+	const playIcon1 = (
+		<div
+			className="_playIcon _playIconIcon"
+			onClick={handlePlayPause}
+			style={resolvedStyles.playPauseButton ?? {}}
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+				<path
+					d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"
+					fill="currentColor"
+				/>
+			</svg>
+		</div>
+	);
+
+	const playIcon2 = (
+		<div className="_playIcon _playIconIcon">
+			<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512">
+				<path
+					d="M0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zM188.3 147.1c-7.6 4.2-12.3 12.3-12.3 20.9V344c0 8.7 4.7 16.7 12.3 20.9s16.8 4.1 24.3-.5l144-88c7.1-4.4 11.5-12.1 11.5-20.5s-4.4-16.1-11.5-20.5l-144-88c-7.4-4.5-16.7-4.7-24.3-.5z"
+					fill="currentColor"
+				/>
+			</svg>
+		</div>
+	);
+
+	const pauseIcon1 = (
+		<div
+			className="_pauseIcon _pauseIconIcon"
+			onClick={handlePlayPause}
+			style={resolvedStyles.playPauseButton ?? {}}
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 320 512">
+				<path
+					d="M48 64C21.5 64 0 85.5 0 112V400c0 26.5 21.5 48 48 48H80c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48H48zm192 0c-26.5 0-48 21.5-48 48V400c0 26.5 21.5 48 48 48h32c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48H240z"
+					fill="currentColor"
+				/>
+			</svg>
+		</div>
+	);
+
+	const pauseIcon2 = (
+		<div
+			className="_pauseIcon _pauseIconIcon"
+			onClick={handlePlayPause}
+			style={resolvedStyles.playPauseButton ?? {}}
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512">
+				<path
+					d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM224 192V320c0 17.7-14.3 32-32 32s-32-14.3-32-32V192c0-17.7 14.3-32 32-32s32 14.3 32 32zm128 0V320c0 17.7-14.3 32-32 32s-32-14.3-32-32V192c0-17.7 14.3-32 32-32s32 14.3 32 32z"
+					fill="currentColor"
+				/>
+			</svg>
+		</div>
+	);
+
+	const volumeHighIcon1 = (
+		<div
+			className="_volumeButton _volumeHighIcon"
+			onClick={volumeIconHandle}
+			id="volume-button"
+			ref={volumeButton}
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512 ">
+				<path
+					d="M533.6 32.5C598.5 85.3 640 165.8 640 256s-41.5 170.8-106.4 223.5c-10.3 8.4-25.4 6.8-33.8-3.5s-6.8-25.4 3.5-33.8C557.5 398.2 592 331.2 592 256s-34.5-142.2-88.7-186.3c-10.3-8.4-11.8-23.5-3.5-33.8s23.5-11.8 33.8-3.5zM473.1 107c43.2 35.2 70.9 88.9 70.9 149s-27.7 113.8-70.9 149c-10.3 8.4-25.4 6.8-33.8-3.5s-6.8-25.4 3.5-33.8C475.3 341.3 496 301.1 496 256s-20.7-85.3-53.2-111.8c-10.3-8.4-11.8-23.5-3.5-33.8s23.5-11.8 33.8-3.5zm-60.5 74.5C434.1 199.1 448 225.9 448 256s-13.9 56.9-35.4 74.5c-10.3 8.4-25.4 6.8-33.8-3.5s-6.8-25.4 3.5-33.8C393.1 284.4 400 271 400 256s-6.9-28.4-17.7-37.3c-10.3-8.4-11.8-23.5-3.5-33.8s23.5-11.8 33.8-3.5zM301.1 34.8C312.6 40 320 51.4 320 64V448c0 12.6-7.4 24-18.9 29.2s-25 3.1-34.4-5.3L131.8 352H64c-35.3 0-64-28.7-64-64V224c0-35.3 28.7-64 64-64h67.8L266.7 40.1c9.4-8.4 22.9-10.4 34.4-5.3z"
+					fill="currentColor"
+				/>
+			</svg>
+		</div>
+	);
+
+	const volumeMuteIcon1 = (
+		<div
+			className="_volumeButton _volumeMuteIcon"
+			onClick={volumeIconHandle}
+			id="volume-button"
+			ref={volumeButton}
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+				<path
+					d="M301.1 34.8C312.6 40 320 51.4 320 64V448c0 12.6-7.4 24-18.9 29.2s-25 3.1-34.4-5.3L131.8 352H64c-35.3 0-64-28.7-64-64V224c0-35.3 28.7-64 64-64h67.8L266.7 40.1c9.4-8.4 22.9-10.4 34.4-5.3zM425 167l55 55 55-55c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-55 55 55 55c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-55-55-55 55c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l55-55-55-55c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0z"
+					fill="currentColor"
+				/>
+			</svg>
+		</div>
+	);
+
+	const pipIcon1 = (
+		<button
+			className="_pip _pipIcon "
+			onClick={handlePictureInPicture}
+			ref={pipRef}
+			style={resolvedStyles.pipButton ?? {}}
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+				<path
+					d="M432 64H208c-8.8 0-16 7.2-16 16V96H128V80c0-44.2 35.8-80 80-80H432c44.2 0 80 35.8 80 80V304c0 44.2-35.8 80-80 80H416V320h16c8.8 0 16-7.2 16-16V80c0-8.8-7.2-16-16-16zM0 192c0-35.3 28.7-64 64-64H320c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V192zm64 32c0 17.7 14.3 32 32 32H288c17.7 0 32-14.3 32-32s-14.3-32-32-32H96c-17.7 0-32 14.3-32 32z"
+					fill="currentColor"
+				/>
+			</svg>
+		</button>
+	);
+
+	const pipIcon2 = (
+		<button
+			className="_pip _pipIcon "
+			onClick={handlePictureInPicture}
+			ref={pipRef}
+			style={resolvedStyles.pipButton ?? {}}
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512">
+				<path
+					d="M256 0H576c35.3 0 64 28.7 64 64V288c0 35.3-28.7 64-64 64H256c-35.3 0-64-28.7-64-64V64c0-35.3 28.7-64 64-64zM476 106.7C471.5 100 464 96 456 96s-15.5 4-20 10.7l-56 84L362.7 169c-4.6-5.7-11.5-9-18.7-9s-14.2 3.3-18.7 9l-64 80c-5.8 7.2-6.9 17.1-2.9 25.4s12.4 13.6 21.6 13.6h80 48H552c8.9 0 17-4.9 21.2-12.7s3.7-17.3-1.2-24.6l-96-144zM336 96a32 32 0 1 0 -64 0 32 32 0 1 0 64 0zM64 128h96V384v32c0 17.7 14.3 32 32 32H320c17.7 0 32-14.3 32-32V384H512v64c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V192c0-35.3 28.7-64 64-64zm8 64c-8.8 0-16 7.2-16 16v16c0 8.8 7.2 16 16 16H88c8.8 0 16-7.2 16-16V208c0-8.8-7.2-16-16-16H72zm0 104c-8.8 0-16 7.2-16 16v16c0 8.8 7.2 16 16 16H88c8.8 0 16-7.2 16-16V312c0-8.8-7.2-16-16-16H72zm0 104c-8.8 0-16 7.2-16 16v16c0 8.8 7.2 16 16 16H88c8.8 0 16-7.2 16-16V416c0-8.8-7.2-16-16-16H72zm336 16v16c0 8.8 7.2 16 16 16h16c8.8 0 16-7.2 16-16V416c0-8.8-7.2-16-16-16H424c-8.8 0-16 7.2-16 16z"
+					fill="currentColor"
+				/>
+			</svg>
+		</button>
+	);
+
+	const fullScreenIcon1 = (
+		<div
+			className="_fullScreen _fullScreenIcon"
+			ref={fullScreen}
+			id="fullscreen-button"
+			onClick={handleFullScreen}
+			style={resolvedStyles.fullScreenButton ?? {}}
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+				<path
+					d="M32 32C14.3 32 0 46.3 0 64v96c0 17.7 14.3 32 32 32s32-14.3 32-32V96h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H32zM64 352c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7 14.3 32 32 32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H64V352zM320 32c-17.7 0-32 14.3-32 32s14.3 32 32 32h64v64c0 17.7 14.3 32 32 32s32-14.3 32-32V64c0-17.7-14.3-32-32-32H320zM448 352c0-17.7-14.3-32-32-32s-32 14.3-32 32v64H320c-17.7 0-32 14.3-32 32s14.3 32 32 32h96c17.7 0 32-14.3 32-32V352z"
+					fill="currentColor"
+				/>
+			</svg>
+		</div>
+	);
+
+	const fullScreenIcon2 = (
+		<div
+			className="_fullScreen _fullScreenIcon"
+			ref={fullScreen}
+			id="fullscreen-button"
+			onClick={handleFullScreen}
+			style={resolvedStyles.fullScreenButton ?? {}}
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512">
+				<path
+					d="M344 0H488c13.3 0 24 10.7 24 24V168c0 9.7-5.8 18.5-14.8 22.2s-19.3 1.7-26.2-5.2l-39-39-87 87c-9.4 9.4-24.6 9.4-33.9 0l-32-32c-9.4-9.4-9.4-24.6 0-33.9l87-87L327 41c-6.9-6.9-8.9-17.2-5.2-26.2S334.3 0 344 0zM168 512H24c-13.3 0-24-10.7-24-24V344c0-9.7 5.8-18.5 14.8-22.2s19.3-1.7 26.2 5.2l39 39 87-87c9.4-9.4 24.6-9.4 33.9 0l32 32c9.4 9.4 9.4 24.6 0 33.9l-87 87 39 39c6.9 6.9 8.9 17.2 5.2 26.2s-12.5 14.8-22.2 14.8z"
+					fill="currentColor"
+				/>
+			</svg>
+		</div>
+	);
+
 	return (
 		<div
-			className="comp compVideo"
+			className={`comp compVideo ${videoDesign} ${colorScheme}`}
 			ref={videoContainer}
 			onMouseEnter={handleMouseEnterVideo}
 			onMouseLeave={handleMouseLeaveVideo}
@@ -259,19 +417,19 @@ function Video(props: ComponentProps) {
 			</video>
 			<SubHelperComponent
 				definition={props.definition}
-				subComponentName="player"
+				subComponentName="_player"
 				style={resolvedStyles.player ?? {}}
 			/>
-			{controlsOnHover && (
-				<div className={`videoControlsContainer ${videoControls ? 'hidden' : ''} `}>
+			{
+				<div className={`_videoControlsContainer ${videoControls ? '_hidden' : ''} `}>
 					{showSeekBar && (
 						<div
-							className="progressBarContainer"
+							className="_progressBarContainer"
 							onMouseEnter={handleMouseEnterInput}
 							onMouseLeave={handleMouseLeaveInput}
 						>
 							<input
-								className="progressBar progress"
+								className="_progressBar _progress"
 								id="seek"
 								value={manualSeek === undefined ? progressbarCurr : manualSeek}
 								min="0"
@@ -295,15 +453,15 @@ function Video(props: ComponentProps) {
 							/>
 							<SubHelperComponent
 								definition={props.definition}
-								subComponentName="seekSlider"
+								subComponentName="_seekSlider"
 							/>
-							{toogleToolTip && (
+							{controlsOnHover && (
 								<div
 									style={{
 										left: `${toolTipX}px`,
 										...(resolvedStyles.seekTimeTextOnHover ?? {}),
 									}}
-									className="toolTip"
+									className="_toolTip"
 								>{`${seekToolTip.hours != '00' ? seekToolTip.hours + ':' : ''}${
 									seekToolTip.minutes
 								}:${seekToolTip.seconds}`}</div>
@@ -311,19 +469,20 @@ function Video(props: ComponentProps) {
 						</div>
 					)}
 
-					<div className="playAndFullscreenGrid">
-						<div className="playAndVolumeGrid">
-							{showPlaypause && (
-								<i
-									className={`playBackIcon  fa-solid fa-${playPauseEnd}`}
-									onClick={handlePlayPause}
-									style={resolvedStyles.playPauseButton ?? {}}
-								></i>
-							)}
+					<div className="_playAndFullscreenGrid">
+						<div className="_playAndVolumeGrid">
+							{showPlaypause &&
+								(playPauseEnd === 'play'
+									? videoDesign === '_videoDesign1'
+										? playIcon1
+										: playIcon2
+									: videoDesign === '_videoDesign1'
+									? pauseIcon1
+									: pauseIcon2)}
 							{showTime && (
-								<div className="time">
+								<div className="_time">
 									<time
-										className="timeElapsed"
+										className="_timeElapsed"
 										id="time-elapsed"
 										dateTime={`${
 											timElapsed.hours != '00' ? timElapsed.hours : ''
@@ -334,9 +493,9 @@ function Video(props: ComponentProps) {
 									>{`${timElapsed.hours != '00' ? timElapsed.hours + ':' : ''}${
 										timElapsed.minutes
 									}:${timElapsed.seconds}`}</time>
-									<span className="timeSplitter">/</span>
+									<span className="_timeSplitter">/</span>
 									<time
-										className="duration"
+										className="_duration"
 										id="duration"
 										dateTime={`${
 											duration.hours != '00' ? duration.hours : ''
@@ -350,15 +509,8 @@ function Video(props: ComponentProps) {
 								</div>
 							)}
 							{showAudioControls && (
-								<div className="volumeControls">
-									<i
-										id="volume-button"
-										ref={volumeButton}
-										className={`volumeButton fa-solid fa-volume-${
-											volume == '0' || muted ? 'xmark' : 'high'
-										}`}
-										onClick={volumeIconHandle}
-									></i>
+								<div className="_volumeControls">
+									{volume == '0' || muted ? volumeMuteIcon1 : volumeHighIcon1}
 									<input
 										id="volume"
 										value={volume}
@@ -372,28 +524,21 @@ function Video(props: ComponentProps) {
 								</div>
 							)}
 						</div>
-						<div className="pipAndFullScreenGrid">
-							{showPipButton && (
-								<i
-									className="fa-solid fa-window-restore pip"
-									onClick={handlePictureInPicture}
-									ref={pipRef}
-									style={resolvedStyles.pipButton ?? {}}
-								></i>
-							)}
-							{showFullScreenButton && (
-								<i
-									className="fa-solid fa-expand fullScreen"
-									ref={fullScreen}
-									id="fullscreen-button"
-									onClick={handleFullScreen}
-									style={resolvedStyles.fullScreenButton ?? {}}
-								></i>
-							)}
+						<div className="_pipAndFullScreenGrid">
+							{showPipButton
+								? videoDesign === '_videoDesign1'
+									? pipIcon1
+									: pipIcon2
+								: null}
+							{showFullScreenButton
+								? videoDesign === '_videoDesign1'
+									? fullScreenIcon1
+									: fullScreenIcon2
+								: null}
 						</div>
 					</div>
 				</div>
-			)}
+			}
 		</div>
 	);
 }
