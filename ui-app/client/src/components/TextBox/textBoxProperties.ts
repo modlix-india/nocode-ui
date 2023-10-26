@@ -1,6 +1,7 @@
 import {
 	SCHEMA_ANY_COMP_PROP,
 	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_NUM_COMP_PROP,
 	SCHEMA_STRING_COMP_PROP,
 	SCHEMA_VALIDATION,
 } from '../../constants';
@@ -241,6 +242,33 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		],
 	},
 	COMMON_COMPONENT_PROPERTIES.colorScheme,
+
+	{
+		name: 'hideClearButton',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Hide Clear Button',
+		description: 'Hide Clear Button',
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+
+	{
+		name: 'showNumberSpinners',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Number Spinners',
+		description: 'Show Number Spinners',
+		defaultValue: true,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+
+	{
+		name: 'maxChars',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Max Characters Allowed',
+		description: 'Max Characters Allowed to type',
+		defaultValue: undefined,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

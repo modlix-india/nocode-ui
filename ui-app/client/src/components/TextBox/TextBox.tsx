@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
 	addListener,
 	addListenerAndCallImmediately,
@@ -69,6 +69,9 @@ function TextBox(props: ComponentProps) {
 			autoFocus,
 			designType,
 			colorScheme,
+			showNumberSpinners,
+			hideClearButton,
+			maxChars,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -277,38 +280,52 @@ function TextBox(props: ComponentProps) {
 		);
 	};
 
+	const finKey: string = 't_' + key;
+
+	let style = undefined;
+	if (valueType === 'number' && !showNumberSpinners) {
+		style = (
+			<style>{`.comp.compTextBox #${finKey}::-webkit-inner-spin-button, .comp.compTextBox #${finKey}::-webkit-outer-spin-button {-webkit-appearance: none;margin: 0;}`}</style>
+		);
+	}
+
 	return (
-		<CommonInputText
-			cssPrefix="comp compTextBox"
-			id={key}
-			noFloat={noFloat}
-			readOnly={readOnly}
-			value={value}
-			label={label}
-			translations={translations}
-			leftIcon={leftIcon}
-			rightIcon={rightIcon}
-			valueType={valueType}
-			isPassword={isPassword}
-			placeholder={placeholder}
-			hasFocusStyles={stylePropertiesWithPseudoStates?.focus}
-			validationMessages={validationMessages}
-			context={context}
-			handleChange={handleChange}
-			clearContentHandler={handleClickClose}
-			blurHandler={handleBlur}
-			keyUpHandler={handleKeyUp}
-			focusHandler={() => setFocus(true)}
-			supportingText={supportingText}
-			messageDisplay={messageDisplay}
-			styles={computedStyles}
-			designType={designType}
-			colorScheme={colorScheme}
-			definition={props.definition}
-			autoComplete={autoComplete}
-			autoFocus={autoFocus}
-			hasValidationCheck={validation?.length > 0}
-		/>
+		<>
+			{style}
+			<CommonInputText
+				cssPrefix="comp compTextBox"
+				id={finKey}
+				noFloat={noFloat}
+				readOnly={readOnly}
+				value={value}
+				label={label}
+				translations={translations}
+				leftIcon={leftIcon}
+				rightIcon={rightIcon}
+				valueType={valueType}
+				isPassword={isPassword}
+				placeholder={placeholder}
+				hasFocusStyles={stylePropertiesWithPseudoStates?.focus}
+				validationMessages={validationMessages}
+				context={context}
+				handleChange={handleChange}
+				clearContentHandler={handleClickClose}
+				blurHandler={handleBlur}
+				keyUpHandler={handleKeyUp}
+				focusHandler={() => setFocus(true)}
+				supportingText={supportingText}
+				messageDisplay={messageDisplay}
+				styles={computedStyles}
+				designType={designType}
+				colorScheme={colorScheme}
+				definition={props.definition}
+				autoComplete={autoComplete}
+				autoFocus={autoFocus}
+				hasValidationCheck={validation?.length > 0}
+				hideClearContentIcon={hideClearButton}
+				maxChars={maxChars}
+			/>
+		</>
 	);
 }
 
