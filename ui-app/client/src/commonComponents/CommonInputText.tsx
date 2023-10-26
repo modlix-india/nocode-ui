@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, KeyboardEvent } from 'react';
 import { getTranslations } from '../components/util/getTranslations';
 import { ComponentDefinition, RenderContext, Translations } from '../types/common';
 import { SubHelperComponent } from '../components/SubHelperComponent';
@@ -40,6 +40,7 @@ type CommonInputType = {
 	onMouseLeave?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 	updDownHandler?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 	inputType?: string;
+	maxChars?: number;
 };
 
 function CommonInputText(props: CommonInputType) {
@@ -79,6 +80,7 @@ function CommonInputText(props: CommonInputType) {
 		onMouseLeave,
 		updDownHandler,
 		inputType = 'Text',
+		maxChars,
 	} = props;
 	const [focus, setFocus] = React.useState(false);
 	const [showPassword, setShowPassowrd] = React.useState(false);
@@ -138,6 +140,14 @@ function CommonInputText(props: CommonInputType) {
 	let inputStyle = computedStyles.inputBox ?? {};
 	if (!handleChange) inputStyle = { ...inputStyle, caretColor: 'transparent' };
 
+	const keyDownEvent = maxChars
+		? (e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+				if (e.currentTarget.value.length < maxChars) return;
+				if (e.metaKey || e.shiftKey || e.ctrlKey || e.key.length > 2) return;
+				e.preventDefault();
+		  }
+		: undefined;
+
 	const inputControl =
 		inputType === 'Text' ? (
 			<input
@@ -158,6 +168,7 @@ function CommonInputText(props: CommonInputType) {
 				ref={inputRef}
 				autoFocus={autoFocus}
 				autoComplete={autoComplete}
+				onKeyDown={keyDownEvent}
 			/>
 		) : (
 			<textarea
@@ -177,6 +188,7 @@ function CommonInputText(props: CommonInputType) {
 				ref={inputRef}
 				autoFocus={autoFocus}
 				autoComplete={autoComplete}
+				onKeyDown={keyDownEvent}
 			/>
 		);
 
@@ -184,7 +196,7 @@ function CommonInputText(props: CommonInputType) {
 		<div
 			className={`${cssPrefix} ${focus ? '_isActive' : ''} ${designType} ${colorScheme} ${
 				leftIcon ? '_hasLeftIcon' : ''
-			} ${!focus && value?.length ? '_hasValue' : ''} ${
+			} ${!focus && value?.toString()?.length ? '_hasValue' : ''} ${
 				!hasErrorMessages && hasValidationCheck && isDirty ? '_validationSuccess' : ''
 			} ${hasErrorMessages ? '_hasError' : ''}`}
 			style={computedStyles.comp ?? {}}
@@ -201,7 +213,7 @@ function CommonInputText(props: CommonInputType) {
 				</i>
 			) : undefined}
 			{inputControl}
-			{!hideClearContentIcon && value?.length && !readOnly && !isPassword ? (
+			{!hideClearContentIcon && value?.toString()?.length && !readOnly && !isPassword ? (
 				<i
 					style={computedStyles.rightIcon ?? {}}
 					onClick={clearContentHandler}
@@ -233,7 +245,7 @@ function CommonInputText(props: CommonInputType) {
 				<i
 					style={computedStyles.rightIcon ?? {}}
 					className={`_errorIcon _rightIcon ${
-						value?.length ? `hasText` : ``
+						value?.toString()?.length ? `hasText` : ``
 					} fa fa-solid fa-circle-exclamation`}
 				>
 					<SubHelperComponent definition={definition} subComponentName="rightIcon" />
@@ -243,7 +255,7 @@ function CommonInputText(props: CommonInputType) {
 				<i
 					style={computedStyles.rightIcon ?? {}}
 					className={`_successIcon _rightIcon ${
-						value?.length ? `hasText` : ``
+						value?.toString()?.length ? `hasText` : ``
 					} fa fa-solid fa-circle-check`}
 				>
 					<SubHelperComponent definition={definition} subComponentName="rightIcon" />
@@ -252,9 +264,9 @@ function CommonInputText(props: CommonInputType) {
 			<label
 				style={computedStyles.label ?? {}}
 				htmlFor={id}
-				className={`_label ${noFloat || value?.length ? '_noFloat' : ''} ${
+				className={`_label ${noFloat || value?.toString()?.length ? '_noFloat' : ''} ${
 					readOnly ? 'disabled' : ''
-				}${value?.length ? `hasText` : ``}`}
+				}${value?.toString()?.length ? `hasText` : ``}`}
 			>
 				<SubHelperComponent
 					definition={definition}
