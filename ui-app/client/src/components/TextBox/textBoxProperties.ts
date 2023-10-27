@@ -219,6 +219,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	COMMON_COMPONENT_PROPERTIES.onEnter,
 	COMMON_COMPONENT_PROPERTIES.onChange,
+	COMMON_COMPONENT_PROPERTIES.onBlur,
+	COMMON_COMPONENT_PROPERTIES.onFocus,
 
 	{
 		name: 'onClear',
