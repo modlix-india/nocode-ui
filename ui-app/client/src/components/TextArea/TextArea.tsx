@@ -65,6 +65,8 @@ function TextArea(props: ComponentProps) {
 			autoFocus,
 			designType,
 			colorScheme,
+			onFocus,
+			onBlur,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -159,6 +161,8 @@ function TextArea(props: ComponentProps) {
 	const updateStoreImmediately = upStoreImm || autoComplete === 'on';
 
 	const changeEvent = onChange ? props.pageDefinition.eventFunctions[onChange] : undefined;
+	const blurEvent = onBlur ? props.pageDefinition.eventFunctions[onBlur] : undefined;
+	const focusEvent = onFocus ? props.pageDefinition.eventFunctions[onFocus] : undefined;
 
 	const callChangeEvent = useCallback(() => {
 		if (!changeEvent) return;
@@ -171,6 +175,30 @@ function TextArea(props: ComponentProps) {
 				props.pageDefinition,
 			))();
 	}, [changeEvent]);
+
+	const callBlurEvent = useCallback(() => {
+		if (!blurEvent) return;
+		(async () =>
+			await runEvent(
+				blurEvent,
+				onBlur,
+				props.context.pageName,
+				props.locationHistory,
+				props.pageDefinition,
+			))();
+	}, [blurEvent]);
+
+	const callFocusEvent = useCallback(() => {
+		if (!focusEvent) return;
+		(async () =>
+			await runEvent(
+				focusEvent,
+				onFocus,
+				props.context.pageName,
+				props.locationHistory,
+				props.pageDefinition,
+			))();
+	}, [focusEvent]);
 
 	const handleClickClose = async () => {
 		let temp = mapValue[emptyValue];
@@ -203,8 +231,14 @@ function TextArea(props: ComponentProps) {
 			}
 			callChangeEvent();
 		}
+		callBlurEvent();
 		setFocus(false);
 		setIsDirty(true);
+	};
+
+	const handleInputFocus = () => {
+		setFocus(true);
+		callFocusEvent();
 	};
 
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -238,7 +272,7 @@ function TextArea(props: ComponentProps) {
 			handleChange={handleChange}
 			clearContentHandler={handleClickClose}
 			blurHandler={handleBlur}
-			focusHandler={() => setFocus(true)}
+			focusHandler={() => handleInputFocus()}
 			supportingText={supportingText}
 			messageDisplay={messageDisplay}
 			styles={computedStyles}

@@ -61,6 +61,30 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.moveOne',
 		defaultValue: '<mainFontColor>',
 	},
+	{
+		name: 'addOneSize',
+		cssProperty: 'font-size',
+		displayName: 'Change Icon Size',
+		description: 'Change Icons Size of add one',
+		selector: '.addOne',
+		defaultValue: '14px',
+	},
+	{
+		name: 'reduceOneSize',
+		cssProperty: 'font-size',
+		displayName: 'Change Icon Size',
+		description: 'Change Icons Size of reduce one',
+		selector: '.reduceOne',
+		defaultValue: '14px',
+	},
+	{
+		name: 'moveOneSize',
+		cssProperty: 'font-size',
+		displayName: 'Change Icon Size',
+		description: 'Change Icons Size of Move one',
+		selector: '.moveOne',
+		defaultValue: '14px',
+	},
 ];
 
 export const styleDefaults = new Map<string, string>(
