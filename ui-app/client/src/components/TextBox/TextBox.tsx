@@ -72,6 +72,8 @@ function TextBox(props: ComponentProps) {
 			showNumberSpinners,
 			hideClearButton,
 			maxChars,
+			onFocus,
+			onBlur,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -171,6 +173,8 @@ function TextBox(props: ComponentProps) {
 			);
 	}, [value, validation]);
 	const changeEvent = onChange ? props.pageDefinition.eventFunctions[onChange] : undefined;
+	const blurEvent = onBlur ? props.pageDefinition.eventFunctions[onBlur] : undefined;
+	const focusEvent = onFocus ? props.pageDefinition.eventFunctions[onFocus] : undefined;
 	const updateStoreImmediately = upStoreImm || autoComplete === 'on';
 
 	const callChangeEvent = useCallback(() => {
@@ -184,6 +188,30 @@ function TextBox(props: ComponentProps) {
 				props.pageDefinition,
 			))();
 	}, [changeEvent]);
+
+	const callBlurEvent = useCallback(() => {
+		if (!blurEvent) return;
+		(async () =>
+			await runEvent(
+				blurEvent,
+				onBlur,
+				props.context.pageName,
+				props.locationHistory,
+				props.pageDefinition,
+			))();
+	}, [blurEvent]);
+
+	const callFocusEvent = useCallback(() => {
+		if (!focusEvent) return;
+		(async () =>
+			await runEvent(
+				focusEvent,
+				onFocus,
+				props.context.pageName,
+				props.locationHistory,
+				props.pageDefinition,
+			))();
+	}, [focusEvent]);
 
 	const handleBlur = (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		let temp = value === '' && emptyValue ? mapValue[emptyValue] : value;
@@ -204,8 +232,15 @@ function TextBox(props: ComponentProps) {
 			}
 			callChangeEvent();
 		}
+		callBlurEvent();
 		setFocus(false);
 	};
+
+	const handleInputFocus = () => {
+		setFocus(true);
+		callFocusEvent();
+	};
+
 	const handleTextChange = (text: string) => {
 		if (removeKeyWhenEmpty && text === '' && bindingPathPath) {
 			setData(bindingPathPath, undefined, context?.pageName, true);
@@ -312,7 +347,7 @@ function TextBox(props: ComponentProps) {
 				clearContentHandler={handleClickClose}
 				blurHandler={handleBlur}
 				keyUpHandler={handleKeyUp}
-				focusHandler={() => setFocus(true)}
+				focusHandler={() => handleInputFocus()}
 				supportingText={supportingText}
 				messageDisplay={messageDisplay}
 				styles={computedStyles}
