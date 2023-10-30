@@ -140,25 +140,29 @@ function makePropertiesObject(
 
 			if (e.multiValued) {
 				if (!isNullValue(propertyValues[e.name])) {
-					const sortedMultiValues = Object.values(
-						propertyValues[e.name] as ComponentMultiProperty<any>,
-					).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 					if (
 						e.editor === ComponentPropertyEditor.ANIMATION ||
 						e.editor === ComponentPropertyEditor.ANIMATIONOBSERVER
 					) {
-						value = sortedMultiValues.map(each => {
-							return makePropertiesObject(
-								ANIMATION_PROPERTIES,
-								each.property.value,
-								locationHistory,
-								pageExtractor,
-							);
-						});
+						value = Object.entries(
+							propertyValues[e.name] as ComponentMultiProperty<any>,
+						)
+							.sort((a, b) => (a[1].order ?? 0) - (b[1].order ?? 0))
+							.map(([key, each]) => {
+								return {
+									...makePropertiesObject(
+										ANIMATION_PROPERTIES,
+										each.property.value,
+										locationHistory,
+										pageExtractor,
+									),
+									key,
+								};
+							});
 					} else
-						value = sortedMultiValues.map(each =>
-							getData(each.property, locationHistory, pageExtractor),
-						);
+						value = Object.values(propertyValues[e.name] as ComponentMultiProperty<any>)
+							.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+							.map(each => getData(each.property, locationHistory, pageExtractor));
 				}
 			} else {
 				value = getData(propertyValues[e.name], locationHistory, pageExtractor) ?? value;

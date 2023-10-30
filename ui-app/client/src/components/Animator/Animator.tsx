@@ -67,6 +67,8 @@ function Animator(props: ComponentProps) {
 
 	const ref = React.useRef<HTMLDivElement>(null);
 
+	const animationCount = React.useRef<{ [key: string]: number }>({});
+
 	useEffect(() => {
 		if (!animation?.length || !ref.current) return;
 
@@ -89,25 +91,47 @@ function Animator(props: ComponentProps) {
 			}
 		}
 
-		const io = new IntersectionObserver(
-			entries => {
-				if (entries.length !== 1) return;
-				const entry = entries[0];
+		try {
+			const io = new IntersectionObserver(
+				entries => {
+					if (entries.length !== 1) return;
+					const entry = entries[0];
 
-				const th = entry.intersectionRatio;
-				const closest = Array.from(
-					(entry.isIntersecting ? entering : exiting).keys(),
-				).filter(e => Math.abs(e - th) < 0.08);
-				const currentAnimations = closest.flatMap(e =>
-					(entry.isIntersecting ? entering : exiting).get(e),
-				);
-				setObservations(currentAnimations);
-			},
-			{ threshold: Array.from(new Set(threshold)) },
-		);
-		io.observe(ref.current);
+					let isEntering =
+						entry.boundingClientRect.top > 0 &&
+						entry.boundingClientRect.left > 0 &&
+						entry.isIntersecting;
 
-		return () => io.unobserve(ref.current!);
+					const th = entry.intersectionRatio;
+					const closest = Array.from((isEntering ? entering : exiting).keys()).filter(
+						e => Math.abs(e - th) < 0.08,
+					);
+					const currentAnimations: any[] = [];
+
+					for (let each of closest) {
+						const animations = (isEntering ? entering : exiting).get(each)!;
+						for (let animation of animations) {
+							const key = animation.key;
+							if (animation.numOfObservations < 1) currentAnimations.push(animation);
+							else {
+								if (!animationCount.current[key]) animationCount.current[key] = 1;
+								if (animationCount.current[key] <= animation.numOfObservations) {
+									currentAnimations.push(animation);
+									animationCount.current[key]++;
+								}
+							}
+						}
+					}
+
+					closest.flatMap(e => (isEntering ? entering : exiting).get(e));
+
+					setObservations(currentAnimations);
+				},
+				{ threshold: Array.from(new Set(threshold)) },
+			);
+			io.observe(ref.current);
+			return () => io.unobserve(ref.current!);
+		} catch (e) {}
 	}, [animation, ref.current, setObservations]);
 
 	return (

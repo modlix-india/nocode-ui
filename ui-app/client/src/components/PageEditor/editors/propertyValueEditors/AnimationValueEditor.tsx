@@ -6,6 +6,7 @@ import {
 } from '../../../../types/common';
 import {
 	ANIMATION_BASIC_PROPERTIES,
+	NUM_OF_OBSERVATIONS,
 	OBESERVATION_ENTERING_THRESHOLD,
 	OBESERVATION_EXITING_THRESHOLD,
 	OBESERVATION_PROP,
@@ -89,6 +90,7 @@ export function AnimationValueEditor({
 			</div>,
 		);
 
+		let show = false;
 		if (
 			value?.observation?.value === 'entering' ||
 			value?.observation?.value === 'entering-exiting'
@@ -115,6 +117,7 @@ export function AnimationValueEditor({
 					/>
 				</div>,
 			);
+			show = true;
 		}
 		if (
 			value?.observation?.value === 'exiting' ||
@@ -134,6 +137,29 @@ export function AnimationValueEditor({
 								...(value ?? {}),
 								[OBESERVATION_EXITING_THRESHOLD.name]: v,
 							})
+						}
+						onShowCodeEditor={onShowCodeEditor}
+						editPageName={editPageName}
+						slaveStore={slaveStore}
+						pageOperations={pageOperations}
+					/>
+				</div>,
+			);
+			show = true;
+		}
+
+		if (show) {
+			observerSelection.push(
+				<div className="_eachProp" key="numberOfObservations">
+					<div className="_propLabel">{NUM_OF_OBSERVATIONS.displayName}:</div>
+					<PropertyValueEditor
+						appPath={appPath}
+						pageDefinition={pageDefinition}
+						propDef={NUM_OF_OBSERVATIONS}
+						value={value?.[NUM_OF_OBSERVATIONS.name]}
+						storePaths={storePaths}
+						onChange={v =>
+							onChange?.({ ...(value ?? {}), [NUM_OF_OBSERVATIONS.name]: v })
 						}
 						onShowCodeEditor={onShowCodeEditor}
 						editPageName={editPageName}
