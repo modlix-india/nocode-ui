@@ -2,6 +2,20 @@
 	"name": "getAppDefinition",
 	"namespace": "UIApp",
 	"steps": {
+		"ifTokenAvailable": {
+			"statementName": "ifTokenAvailable",
+			"namespace": "System",
+			"name": "If",
+			"parameterMap": {
+				"condition": {
+					"one": {
+						"key": "one",
+						"type": "EXPRESSION",
+						"expression": "LocalStore.token != null"
+					}
+				}
+			}
+		},
 		"verifyToken": {
 			"statementName": "verifyToken",
 			"namespace": "UIEngine",
@@ -14,6 +28,9 @@
 						"value": "api/security/verifyToken"
 					}
 				}
+			},
+			"dependentStatements": {
+				"Steps.ifTokenAvailable.true": true
 			}
 		},
 		"ifVerifyToken": {
@@ -68,7 +85,7 @@
 				}
 			},
 			"dependentStatements": {
-				"Steps.ifVerifyToken.output": true
+				"Steps.ifTokenAvailable.output": true
 			}
 		},
 		"ifApplicationData": {
@@ -123,7 +140,7 @@
 				}
 			},
 			"dependentStatements": {
-				"Steps.ifVerifyToken.output": true
+				"Steps.ifTokenAvailable.output": true
 			}
 		},
 		"ifThemeData": {
