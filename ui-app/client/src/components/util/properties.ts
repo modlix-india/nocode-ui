@@ -29,6 +29,22 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 		description: 'Event to be triggered on input change.',
 		group: ComponentPropertyGroup.EVENTS,
 	},
+	onBlur: {
+		name: 'onBlur',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Blur',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered on input blur.',
+		group: ComponentPropertyGroup.EVENTS,
+	},
+	onFocus: {
+		name: 'onFocus',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Foucs',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered on input focus.',
+		group: ComponentPropertyGroup.EVENTS,
+	},
 	onSelect: {
 		name: 'onSelect',
 		schema: SCHEMA_STRING_COMP_PROP,
