@@ -1170,12 +1170,22 @@ const OBESERVATION_EXITING_THRESHOLD = {
 	defaultValue: 0.25,
 };
 
+const NUM_OF_OBSERVATIONS = {
+	name: 'numOfObservations',
+	schema: SCHEMA_NUM_COMP_PROP,
+	displayName: 'Number of Observations',
+	description:
+		'The number of observations to be made. Any values less than 0 will be considered as infinite.',
+	defaultValue: -1,
+};
+
 const ANIMATION_PROPERTIES = [
 	...ANIMATION_BASIC_PROPERTIES,
 	TIMING_FUNCTION_EXTRA,
 	OBESERVATION_PROP,
 	OBESERVATION_ENTERING_THRESHOLD,
 	OBESERVATION_EXITING_THRESHOLD,
+	NUM_OF_OBSERVATIONS,
 ];
 
 export {
@@ -1188,5 +1198,6 @@ export {
 	OBESERVATION_ENTERING_THRESHOLD,
 	OBESERVATION_EXITING_THRESHOLD,
 	OBESERVATION_PROP,
+	NUM_OF_OBSERVATIONS,
 	TIMING_FUNCTION_EXTRA,
 };
