@@ -11,7 +11,7 @@
 					"one": {
 						"key": "one",
 						"type": "EXPRESSION",
-						"expression": "LocalStore.token != null"
+						"expression": "LocalStore.AuthToken != null"
 					}
 				}
 			}
