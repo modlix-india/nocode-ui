@@ -174,7 +174,6 @@ export function App() {
 	const [applicationLoaded, setApplicationLoaded] = useState(false);
 
 	const [firstTime, setFirstTime] = useState(true);
-
 	useEffect(
 		() =>
 			addListenerAndCallImmediately(
@@ -325,5 +324,5 @@ function setDeviceType() {
 	setData('Store.devices', newDevices);
 }
 
-window.addEventListener('load', setDeviceType);
+setDeviceType();
 window.addEventListener('resize', setDeviceType);
