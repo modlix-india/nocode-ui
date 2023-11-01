@@ -1,32 +1,30 @@
-import { deepEqual, isNullValue } from '@fincity/kirun-js';
+import { deepEqual, duplicate, isNullValue } from '@fincity/kirun-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { MESSAGE_TYPE, addMessage } from '../../../../App/Messages/Messages';
+import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../../../constants';
 import {
-	addListenerWithChildrenActivity,
-	getData,
-	getDataFromPath,
 	PageStoreExtractor,
+	addListenerWithChildrenActivity,
+	getDataFromPath,
 	setData,
 } from '../../../../context/StoreContext';
-import { ComponentProperty, LocationHistory, PageDefinition } from '../../../../types/common';
-import { propertiesDefinition } from '../../pageEditorProperties';
-import { duplicate } from '@fincity/kirun-js';
-import Portal from '../../../Portal';
-import { StringValueEditor } from '../../../SchemaForm/components/StringValueEditor';
-import PropertyValueEditor from '../propertyValueEditors/PropertyValueEditor';
 import {
-	LOCAL_STORE_PREFIX,
-	SCHEMA_BOOL_COMP_PROP,
-	SCHEMA_STRING_COMP_PROP,
-} from '../../../../constants';
-import { ComponentPropertyEditor } from '../../../../types/common';
-import { ComponentPropertyDefinition } from '../../../../types/common';
-import { PageOperations } from '../../functions/PageOperations';
+	ComponentProperty,
+	ComponentPropertyDefinition,
+	ComponentPropertyEditor,
+	LocationHistory,
+	PageDefinition,
+} from '../../../../types/common';
+import Portal from '../../../Portal';
 import { IconHelper } from '../../../util/IconHelper';
-import { MESSAGE_TYPE, addMessage } from '../../../../App/Messages/Messages';
+import { PageOperations } from '../../functions/PageOperations';
+import PropertyValueEditor from '../propertyValueEditors/PropertyValueEditor';
+import { Dropdown } from '../stylePropertyValueEditors/simpleEditors/Dropdown';
 
 interface TopBarProps {
 	theme: string;
 	personalizationPath: string | undefined;
+	pagesData: any;
 	onSave: () => void;
 	onPublish?: () => void;
 	onVersions?: () => void;
@@ -101,6 +99,7 @@ export default function DnDTopBar({
 	onSelectedSubComponentChanged,
 	pageOperations,
 	onVersions,
+	pagesData,
 }: TopBarProps) {
 	const [localUrl, setLocalUrl] = useState(url);
 	const [deviceType, setDeviceType] = useState<string | undefined>();
@@ -180,7 +179,7 @@ export default function DnDTopBar({
 			onChangePersonalization('deviceType', device === deviceType ? undefined : device),
 		[onChangePersonalization, deviceType],
 	);
-
+	console.log(pagesData, 'picard');
 	const updatePageProperties = useCallback(
 		(
 			propType: 'title' | 'simple' | 'compprop' | 'seo' | 'permission',
@@ -455,7 +454,7 @@ export default function DnDTopBar({
 			</Portal>
 		);
 	}
-
+	const [selectedPage, setSelectedPage] = React.useState('');
 	return (
 		<div className="_topBarGrid">
 			<div className="_topLeftBarGrid">
@@ -477,6 +476,21 @@ export default function DnDTopBar({
 							}}
 						/>
 					</div>
+				</div>
+				<div className="_page_Selector">
+					<Dropdown
+						showNoneLabel={isNullValue(pagesData)}
+						selectNoneLabel="--NONE--"
+						value={selectedPage}
+						onChange={v => {
+							console.log('picard', v);
+							setSelectedPage(typeof v === 'string' ? v : '');
+						}}
+						options={pagesData ?? []}
+						placeholder="Pages"
+					>
+						<button>Add Page</button>
+					</Dropdown>
 				</div>
 				<div className="_topLeftCenterBarGrid">
 					<ScreenSizeButtons

@@ -83,6 +83,7 @@ function PageEditor(props: ComponentProps) {
 			onVersions,
 			onChangePersonalization,
 			onDeletePersonalization,
+			pagesData,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -91,7 +92,7 @@ function PageEditor(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-
+	console.log(pagesData, 'kirk');
 	// binding path for the page definition to load
 	const defPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
@@ -658,6 +659,7 @@ function PageEditor(props: ComponentProps) {
 					styleSelectorPref={styleSelectorPref}
 					appPath={appPath}
 					onVersions={onVersions ? versionsFunction : undefined}
+					pagesData={pagesData}
 				/>
 				<CodeEditor
 					showCodeEditor={showCodeEditor}

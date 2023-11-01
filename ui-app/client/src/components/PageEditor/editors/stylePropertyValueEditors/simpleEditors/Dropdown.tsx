@@ -1,4 +1,4 @@
-import React, { CSSProperties, useMemo, useRef, useState } from 'react';
+import React, { CSSProperties, ReactNode, useMemo, useRef, useState } from 'react';
 import { SimpleEditorMultipleValueType } from '.';
 import { isNullValue } from '@fincity/kirun-js';
 
@@ -13,6 +13,7 @@ export function Dropdown({
 	showNoneLabel = true,
 	multipleValueType = SimpleEditorMultipleValueType.SpaceSeparated,
 	multiSelect = false,
+	children,
 }: {
 	value: string;
 	onChange: (v: string | Array<string>) => void;
@@ -22,6 +23,7 @@ export function Dropdown({
 	showNoneLabel?: boolean;
 	multipleValueType?: SimpleEditorMultipleValueType;
 	multiSelect?: boolean;
+	children?: ReactNode;
 }) {
 	const options = showNoneLabel
 		? [{ name: '', displayName: selectNoneLabel }, ...orignalOptions]
@@ -78,6 +80,7 @@ export function Dropdown({
 		}
 		body = (
 			<div className="_simpleEditorDropdownBody" ref={ddBody} style={dropdownBodyStyle}>
+				{children}
 				{options.map((o, i) => (
 					<div
 						key={o.name}

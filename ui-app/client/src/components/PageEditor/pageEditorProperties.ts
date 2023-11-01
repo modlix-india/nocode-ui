@@ -1,4 +1,4 @@
-import { SCHEMA_STRING_COMP_PROP } from '../../constants';
+import { SCHEMA_ANY_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
@@ -54,6 +54,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		group: ComponentPropertyGroup.EVENTS,
 		description: 'Event to be triggered on page publish.',
+	},
+
+	{
+		name: 'pagesData',
+		schema: SCHEMA_ANY_COMP_PROP,
+		displayName: 'Pages Data',
+		group: ComponentPropertyGroup.DATA,
+		description: 'Data of pages list.',
 	},
 
 	{

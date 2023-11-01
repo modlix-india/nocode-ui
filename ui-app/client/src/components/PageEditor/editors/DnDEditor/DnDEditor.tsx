@@ -15,6 +15,7 @@ import DnDNavigationBar from './DnDNavigationBar';
 
 interface DnDEditorProps {
 	defPath: string | undefined;
+	pagesData: any;
 	personalizationPath: string | undefined;
 	pageName: string | undefined;
 	onSave: () => void;
@@ -87,6 +88,7 @@ export default function DnDEditor({
 	setStyleSelectorPref,
 	appPath,
 	onVersions,
+	pagesData,
 }: DnDEditorProps) {
 	const [preview, setPreview] = useState(false);
 
@@ -142,6 +144,7 @@ export default function DnDEditor({
 					onSelectedComponentChanged={onSelectedComponentChanged}
 					onSelectedSubComponentChanged={onSelectedSubComponentChanged}
 					pageOperations={pageOperations}
+					pagesData={pagesData}
 				/>
 				<div className={`_iframeContainer ${preview ? '_previewMode' : ''}`}>
 					<DnDNavigationBar
