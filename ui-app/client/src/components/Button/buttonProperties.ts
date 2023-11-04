@@ -62,6 +62,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
+	{
+		name: 'stopPropagation',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'Stop propagation',
+		description:
+			'Stop propagation of click event which will not trigger the container click event.',
+		defaultValue: 'false',
+	},
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
