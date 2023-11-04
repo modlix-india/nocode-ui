@@ -189,6 +189,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description:
 			'This event is usually triggered after selection by user, used for upload immediately on selection instead of delegating the control to a button',
 	},
+	{
+		name: 'hideSelectedFileName',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Hide selected file name.',
+		description: 'Hide selected file name.',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
+	},
 	COMMON_COMPONENT_PROPERTIES.validation,
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
