@@ -1,5 +1,5 @@
 import { Schema } from '@fincity/kirun-js';
-import { SCHEMA_STRING_COMP_PROP } from '../../constants';
+import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyEditor,
 	ComponentPropertyDefinition,
@@ -64,12 +64,12 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.visibility,
 	{
 		name: 'stopPropagation',
-		schema: SCHEMA_STRING_COMP_PROP,
+		schema: SCHEMA_BOOL_COMP_PROP,
 		group: ComponentPropertyGroup.ADVANCED,
 		displayName: 'Stop propagation',
 		description:
 			'Stop propagation of click event which will not trigger the container click event.',
-		defaultValue: 'false',
+		defaultValue: false,
 	},
 ];
 
