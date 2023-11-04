@@ -71,6 +71,7 @@ function ButtonComponent(props: ComponentProps) {
 	);
 
 	const handleClick = async (e: any) => {
+		e.stopPropagation();
 		if (linkPath) {
 			if (target) {
 				window.open(getHref(linkPath, location), target);
