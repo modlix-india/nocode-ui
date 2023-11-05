@@ -413,21 +413,9 @@ const component: Component = {
 			mainComponent: true,
 		},
 		{
-			name: 'mainText',
-			displayName: 'Main Text',
-			description: 'Main Text',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'label',
-			displayName: 'Label',
-			description: 'Label',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'buttonStyles',
-			displayName: 'Button Styles',
-			description: 'Button Styles',
+			name: 'uploadButton',
+			displayName: 'Upload Button',
+			description: 'Uplaod Button',
 			icon: 'fa-solid fa-box',
 		},
 		{
@@ -437,21 +425,9 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'selectedFileContainer',
-			displayName: 'Selected File Container',
-			description: 'Selected File Container',
-			icon: 'fa-solid fa-box',
-		},
-		{
 			name: 'icon',
 			displayName: 'Icon',
 			description: 'Icon',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'uploadContainer',
-			displayName: 'Upload Container',
-			description: 'Upload Container',
 			icon: 'fa-solid fa-box',
 		},
 		{
