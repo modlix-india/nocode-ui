@@ -351,7 +351,7 @@ function FileUpload(props: ComponentProps) {
 
 			{fileText}
 			{!uploadViewType?.startsWith('_only_icon') ? (
-				<label className="_fileUploadButton">
+				<label className="_fileUploadButton" style={computedStyles?.uploadButton}>
 					{uploadViewType?.startsWith('_inline') ? uploadIconComp : null}
 					{uploadViewType !== '_inline_icon_design1' ? buttonText : ''}
 					{inputContainer}
