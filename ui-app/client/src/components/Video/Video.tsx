@@ -5,7 +5,6 @@ import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './videoProperties';
 import VideoStyle from './VideoStyle';
 import { HelperComponent } from '../HelperComponent';
-import { isNullValue } from '@fincity/kirun-js';
 
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { SubHelperComponent } from '../SubHelperComponent';
@@ -252,12 +251,28 @@ function Video(props: ComponentProps) {
 	);
 
 	const playIcon2 = (
-		<div className="_playIcon _playIconIcon">
+		<div
+			className="_playIcon _playIconIcon"
+			onClick={handlePlayPause}
+			style={resolvedStyles.playPauseButton ?? {}}
+		>
 			<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512">
 				<path
 					d="M0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zM188.3 147.1c-7.6 4.2-12.3 12.3-12.3 20.9V344c0 8.7 4.7 16.7 12.3 20.9s16.8 4.1 24.3-.5l144-88c7.1-4.4 11.5-12.1 11.5-20.5s-4.4-16.1-11.5-20.5l-144-88c-7.4-4.5-16.7-4.7-24.3-.5z"
 					fill="currentColor"
 				/>
+			</svg>
+		</div>
+	);
+
+	const playIconBig = (
+		<div
+			className="_playIcon _playIconIcon"
+			onClick={handlePlayPause}
+			style={resolvedStyles.playPauseButton ?? {}}
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512">
+				<path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z" />
 			</svg>
 		</div>
 	);
@@ -390,6 +405,47 @@ function Video(props: ComponentProps) {
 		</div>
 	);
 
+	const playIcon: { [key: string]: React.JSX.Element } = {
+		_videoDesign1: playIcon1,
+		_videoDesign2: playIcon2,
+		_videoDesign3: playIconBig,
+	};
+	const pauseIcon: { [key: string]: React.JSX.Element } = {
+		_videoDesign1: pauseIcon1,
+		_videoDesign2: pauseIcon2,
+		_videoDesign3: pauseIcon2,
+	};
+
+	const pipIcons: {
+		[key: string]: React.JSX.Element;
+	} = {
+		_videoDesign1: pipIcon1,
+		_videoDesign2: pipIcon2,
+		_videoDesign3: pipIcon2,
+	};
+
+	const fullScreenIcon: {
+		[key: string]: React.JSX.Element;
+	} = {
+		_videoDesign1: fullScreenIcon1,
+		_videoDesign2: fullScreenIcon2,
+		_videoDesign3: fullScreenIcon2,
+	};
+
+	const volumeIcon: { [key: string]: React.JSX.Element } = {
+		_videoDesign1: volumeHighIcon1,
+		_videoDesign2: volumeHighIcon1,
+		_videoDesign3: volumeHighIcon1,
+	};
+
+	const muteIcon: {
+		[key: string]: React.JSX.Element;
+	} = {
+		_videoDesign1: volumeMuteIcon1,
+		_videoDesign2: volumeMuteIcon1,
+		_videoDesign3: volumeMuteIcon1,
+	};
+
 	return (
 		<div
 			className={`comp compVideo ${videoDesign} ${colorScheme}`}
@@ -399,6 +455,30 @@ function Video(props: ComponentProps) {
 			style={resolvedStyles.comp ?? {}}
 		>
 			<HelperComponent definition={definition} />
+			{controlsOnHover && videoDesign === '_videoDesign3' ? (
+				<div className="_playAndVolumeGridDesign3">
+					{showPlaypause &&
+						(playPauseEnd === 'play' ? playIcon[videoDesign] : pauseIcon[videoDesign])}
+
+					{showAudioControls && (
+						<div className="_volumeControls">
+							{volume == '0' || muted
+								? muteIcon[videoDesign]
+								: volumeIcon[videoDesign]}
+							<input
+								id="volume"
+								value={volume}
+								max={'1'}
+								min={'0'}
+								step={'0.01'}
+								type="range"
+								onChange={updateVolume}
+								style={resolvedStyles.volumeSlider ?? {}}
+							/>
+						</div>
+					)}
+				</div>
+			) : null}
 			<video
 				controls={videoControls}
 				poster={poster}
@@ -419,7 +499,8 @@ function Video(props: ComponentProps) {
 				subComponentName="_player"
 				style={resolvedStyles.player ?? {}}
 			/>
-			{
+
+			{controlsOnHover && (
 				<div className={`_videoControlsContainer ${videoControls ? '_hidden' : ''} `}>
 					{showSeekBar && (
 						<div
@@ -467,77 +548,93 @@ function Video(props: ComponentProps) {
 							)}
 						</div>
 					)}
-
 					<div className="_playAndFullscreenGrid">
-						<div className="_playAndVolumeGrid">
-							{showPlaypause &&
-								(playPauseEnd === 'play'
-									? videoDesign === '_videoDesign1'
-										? playIcon1
-										: playIcon2
-									: videoDesign === '_videoDesign1'
-									? pauseIcon1
-									: pauseIcon2)}
-							{showTime && (
-								<div className="_time">
-									<time
-										className="_timeElapsed"
-										id="time-elapsed"
-										dateTime={`${
-											timElapsed.hours != '00' ? timElapsed.hours : ''
-										}${timElapsed.minutes != '00' ? timElapsed.minutes : ''}${
-											timElapsed.seconds
-										}`}
-										style={resolvedStyles.timeText ?? {}}
-									>{`${timElapsed.hours != '00' ? timElapsed.hours + ':' : ''}${
-										timElapsed.minutes
-									}:${timElapsed.seconds}`}</time>
-									<span className="_timeSplitter">/</span>
-									<time
-										className="_duration"
-										id="duration"
-										dateTime={`${
-											duration.hours != '00' ? duration.hours : ''
-										}:${duration.minutes != '00' ? duration.minutes : ''}:${
-											duration.seconds
-										}`}
-										style={resolvedStyles.timeText ?? {}}
-									>{`${duration.hours != '00' ? duration.hours + ':' : ''}${
-										duration.minutes
-									}:${duration.seconds}`}</time>
-								</div>
-							)}
-							{showAudioControls && (
-								<div className="_volumeControls">
-									{volume == '0' || muted ? volumeMuteIcon1 : volumeHighIcon1}
-									<input
-										id="volume"
-										value={volume}
-										max={'1'}
-										min={'0'}
-										step={'0.01'}
-										type="range"
-										onChange={updateVolume}
-										style={resolvedStyles.volumeSlider ?? {}}
-									/>
-								</div>
-							)}
-						</div>
+						{showTime && videoDesign === '_videoDesign3' && (
+							<div className="_time">
+								<time
+									className="_timeElapsed"
+									id="time-elapsed"
+									dateTime={`${timElapsed.hours != '00' ? timElapsed.hours : ''}${
+										timElapsed.minutes != '00' ? timElapsed.minutes : ''
+									}${timElapsed.seconds}`}
+									style={resolvedStyles.timeText ?? {}}
+								>{`${timElapsed.hours != '00' ? timElapsed.hours + ':' : ''}${
+									timElapsed.minutes
+								}:${timElapsed.seconds}`}</time>
+								<span className="_timeSplitter">/</span>
+								<time
+									className="_duration"
+									id="duration"
+									dateTime={`${duration.hours != '00' ? duration.hours : ''}:${
+										duration.minutes != '00' ? duration.minutes : ''
+									}:${duration.seconds}`}
+									style={resolvedStyles.timeText ?? {}}
+								>{`${duration.hours != '00' ? duration.hours + ':' : ''}${
+									duration.minutes
+								}:${duration.seconds}`}</time>
+							</div>
+						)}
+						{videoDesign != '_videoDesign3' ? (
+							<div className="_playAndVolumeGrid">
+								{showPlaypause &&
+									(playPauseEnd === 'play'
+										? playIcon[videoDesign]
+										: pauseIcon[videoDesign])}
+								{showTime && (
+									<div className="_time">
+										<time
+											className="_timeElapsed"
+											id="time-elapsed"
+											dateTime={`${
+												timElapsed.hours != '00' ? timElapsed.hours : ''
+											}${
+												timElapsed.minutes != '00' ? timElapsed.minutes : ''
+											}${timElapsed.seconds}`}
+											style={resolvedStyles.timeText ?? {}}
+										>{`${
+											timElapsed.hours != '00' ? timElapsed.hours + ':' : ''
+										}${timElapsed.minutes}:${timElapsed.seconds}`}</time>
+										<span className="_timeSplitter">/</span>
+										<time
+											className="_duration"
+											id="duration"
+											dateTime={`${
+												duration.hours != '00' ? duration.hours : ''
+											}:${duration.minutes != '00' ? duration.minutes : ''}:${
+												duration.seconds
+											}`}
+											style={resolvedStyles.timeText ?? {}}
+										>{`${duration.hours != '00' ? duration.hours + ':' : ''}${
+											duration.minutes
+										}:${duration.seconds}`}</time>
+									</div>
+								)}
+								{showAudioControls && (
+									<div className="_volumeControls">
+										{volume == '0' || muted
+											? muteIcon[videoDesign]
+											: volumeIcon[videoDesign]}
+										<input
+											id="volume"
+											value={volume}
+											max={'1'}
+											min={'0'}
+											step={'0.01'}
+											type="range"
+											onChange={updateVolume}
+											style={resolvedStyles.volumeSlider ?? {}}
+										/>
+									</div>
+								)}
+							</div>
+						) : null}
 						<div className="_pipAndFullScreenGrid">
-							{showPipButton
-								? videoDesign === '_videoDesign1'
-									? pipIcon1
-									: pipIcon2
-								: null}
-							{showFullScreenButton
-								? videoDesign === '_videoDesign1'
-									? fullScreenIcon1
-									: fullScreenIcon2
-								: null}
+							{showPipButton ? pipIcons[videoDesign] : null}
+							{showFullScreenButton ? fullScreenIcon[videoDesign] : null}
 						</div>
 					</div>
 				</div>
-			}
+			)}
 		</div>
 	);
 }
