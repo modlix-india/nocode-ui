@@ -73,10 +73,6 @@ export default function VideoStyle({ theme }: { theme: Map<string, Map<string, s
     background-color: transparent;
     border: none;
   }
-
-  ${PREFIX} ._centerPlayIcon{
- 
-  }
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 	return <style id="VideoStyle">{css}</style>;
 }

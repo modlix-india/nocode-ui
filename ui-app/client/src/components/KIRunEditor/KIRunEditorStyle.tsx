@@ -79,7 +79,7 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 			outline: none;
 			transform-origin: left top;
 			transition: transform 1s ease-in;
-			overflow: hidden;
+			overflow:scroll;
 		}
 
 		${PREFIX} ._designer._moving {
