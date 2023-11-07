@@ -35,6 +35,7 @@ function ButtonComponent(props: ComponentProps) {
 			rightIcon,
 			target,
 			linkPath,
+			stopPropagation,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -71,6 +72,7 @@ function ButtonComponent(props: ComponentProps) {
 	);
 
 	const handleClick = async (e: any) => {
+		if (stopPropagation) e.stopPropagation();
 		if (linkPath) {
 			if (target) {
 				window.open(getHref(linkPath, location), target);
