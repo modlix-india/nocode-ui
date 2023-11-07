@@ -44,6 +44,7 @@ import ToggleButton from './ToggleButton/ToggleButton';
 import Video from './Video/Video';
 import ImageWithBrowser from './ImageWithBrowser/ImageWithBrowser';
 import ColorPicker from './ColorPicker/ColorPicker';
+import TemplateEditor from './TemplateEditor/TemplateEditor';
 
 export default new Map<string, Component>([
 	[Button.name, Button],
@@ -91,4 +92,5 @@ export default new Map<string, Component>([
 	[Animator.name, Animator],
 	[ImageWithBrowser.name, ImageWithBrowser],
 	[ColorPicker.name, ColorPicker],
+	[TemplateEditor.name, TemplateEditor],
 ]);
