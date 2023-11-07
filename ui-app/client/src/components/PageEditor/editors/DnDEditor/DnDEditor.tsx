@@ -15,7 +15,11 @@ import DnDNavigationBar from './DnDNavigationBar';
 
 interface DnDEditorProps {
 	defPath: string | undefined;
+	addnewPageName: string | undefined;
+	dashboardPageName: string | undefined;
+	settingsPageName: string | undefined;
 	pagesData: any;
+	currentPageId: string;
 	personalizationPath: string | undefined;
 	pageName: string | undefined;
 	onSave: () => void;
@@ -89,6 +93,10 @@ export default function DnDEditor({
 	appPath,
 	onVersions,
 	pagesData,
+	currentPageId,
+	settingsPageName,
+	dashboardPageName,
+	addnewPageName,
 }: DnDEditorProps) {
 	const [preview, setPreview] = useState(false);
 
@@ -103,19 +111,6 @@ export default function DnDEditor({
 
 	return (
 		<div className="_dndGrid">
-			<DnDSideBar
-				personalizationPath={personalizationPath}
-				logo={logo}
-				selectedComponent={selectedComponent}
-				pageExtractor={pageExtractor}
-				onChangePersonalization={onChangePersonalization}
-				defPath={defPath}
-				locationHistory={locationHistory}
-				pageOperations={pageOperations}
-				onShowCodeEditor={onShowCodeEditor}
-				previewMode={preview}
-				templateIframeRef={templateIframeRef}
-			/>
 			<div className="_dndGridMain">
 				<DnDTopBar
 					defPath={defPath}
@@ -145,62 +140,83 @@ export default function DnDEditor({
 					onSelectedSubComponentChanged={onSelectedSubComponentChanged}
 					pageOperations={pageOperations}
 					pagesData={pagesData}
+					currentPageId={currentPageId}
+					logo={logo}
+					settingsPageName={settingsPageName}
+					dashboardPageName={dashboardPageName}
+					addnewPageName={addnewPageName}
 				/>
-				<div className={`_iframeContainer ${preview ? '_previewMode' : ''}`}>
-					<DnDNavigationBar
+				<div className="_dndContentContainer">
+					<DnDSideBar
 						personalizationPath={personalizationPath}
-						onChangePersonalization={onChangePersonalization}
 						selectedComponent={selectedComponent}
-						onSelectedComponentChanged={onSelectedComponentChanged}
-						selectedSubComponent={selectedSubComponent}
-						onSelectedSubComponentChanged={onSelectedSubComponentChanged}
 						pageExtractor={pageExtractor}
+						onChangePersonalization={onChangePersonalization}
 						defPath={defPath}
 						locationHistory={locationHistory}
 						pageOperations={pageOperations}
-						onContextMenu={onContextMenu}
-						previewMode={preview}
-					/>
-					<DnDIFrame
-						url={url}
-						personalizationPath={personalizationPath}
-						pageExtractor={pageExtractor}
-						iframeRef={iframeRef}
-						parallelIframeRef={paralellIFrameRef}
-						previewMode={preview}
-						onChangePersonalization={onChangePersonalization}
-					/>
-					<DnDPropertyBar
-						appPath={appPath}
-						defPath={defPath}
-						locationHistory={locationHistory}
-						url={url}
-						selectedComponent={selectedComponent}
-						personalizationPath={personalizationPath}
-						onChangePersonalization={onChangePersonalization}
-						theme={theme}
-						pageExtractor={pageExtractor}
 						onShowCodeEditor={onShowCodeEditor}
-						slaveStore={slaveStore}
-						editPageName={editPageName}
-						selectedSubComponent={selectedSubComponent}
-						onSelectedSubComponentChanged={onSelectedSubComponentChanged}
-						storePaths={storePaths}
-						styleSelectorPref={styleSelectorPref}
-						setStyleSelectorPref={setStyleSelectorPref}
 						previewMode={preview}
-						pageOperations={pageOperations}
+						templateIframeRef={templateIframeRef}
 					/>
+					<div className="_dndIframeContentContainer">
+						<div className={`_iframeContainer ${preview ? '_previewMode' : ''}`}>
+							<DnDNavigationBar
+								personalizationPath={personalizationPath}
+								onChangePersonalization={onChangePersonalization}
+								selectedComponent={selectedComponent}
+								onSelectedComponentChanged={onSelectedComponentChanged}
+								selectedSubComponent={selectedSubComponent}
+								onSelectedSubComponentChanged={onSelectedSubComponentChanged}
+								pageExtractor={pageExtractor}
+								defPath={defPath}
+								locationHistory={locationHistory}
+								pageOperations={pageOperations}
+								onContextMenu={onContextMenu}
+								previewMode={preview}
+							/>
+							<DnDIFrame
+								url={url}
+								personalizationPath={personalizationPath}
+								pageExtractor={pageExtractor}
+								iframeRef={iframeRef}
+								parallelIframeRef={paralellIFrameRef}
+								previewMode={preview}
+								onChangePersonalization={onChangePersonalization}
+							/>
+							<DnDPropertyBar
+								appPath={appPath}
+								defPath={defPath}
+								locationHistory={locationHistory}
+								url={url}
+								selectedComponent={selectedComponent}
+								personalizationPath={personalizationPath}
+								onChangePersonalization={onChangePersonalization}
+								theme={theme}
+								pageExtractor={pageExtractor}
+								onShowCodeEditor={onShowCodeEditor}
+								slaveStore={slaveStore}
+								editPageName={editPageName}
+								selectedSubComponent={selectedSubComponent}
+								onSelectedSubComponentChanged={onSelectedSubComponentChanged}
+								storePaths={storePaths}
+								styleSelectorPref={styleSelectorPref}
+								setStyleSelectorPref={setStyleSelectorPref}
+								previewMode={preview}
+								pageOperations={pageOperations}
+							/>
+						</div>
+						<DnDBottomBar
+							defPath={defPath}
+							pageExtractor={pageExtractor}
+							selectedComponent={selectedComponent}
+							onSelectedComponentChanged={onSelectedComponentChanged}
+							pageOperations={pageOperations}
+							onContextMenu={onContextMenu}
+							previewMode={preview}
+						/>
+					</div>
 				</div>
-				<DnDBottomBar
-					defPath={defPath}
-					pageExtractor={pageExtractor}
-					selectedComponent={selectedComponent}
-					onSelectedComponentChanged={onSelectedComponentChanged}
-					pageOperations={pageOperations}
-					onContextMenu={onContextMenu}
-					previewMode={preview}
-				/>
 			</div>
 		</div>
 	);

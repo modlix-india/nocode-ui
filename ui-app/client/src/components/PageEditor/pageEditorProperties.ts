@@ -65,6 +65,38 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
+		name: 'currentPageId',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Current Page ID',
+		group: ComponentPropertyGroup.DATA,
+		description: 'Current Page ID.',
+	},
+
+	{
+		name: 'dashboardPageName',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Name of dashboard page',
+		group: ComponentPropertyGroup.DATA,
+		description: 'Name of dashboard page.',
+	},
+
+	{
+		name: 'settingsPageName',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Name of site settings page',
+		group: ComponentPropertyGroup.DATA,
+		description: 'Name of site settings page.',
+	},
+
+	{
+		name: 'addnewPageName',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Name of add new page page',
+		group: ComponentPropertyGroup.DATA,
+		description: 'Name of add new page page.',
+	},
+
+	{
 		name: 'onVersions',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'On Versions',

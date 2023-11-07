@@ -238,12 +238,12 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			flex-direction: row;
 			align-items: center;
-			padding-left: 10px;
+			padding-left: 15px;
 		}
 
 		${PREFIX} ._logo {
-			height: 30px;
-			width: 30px;
+			height: 20px;
+			width: 150px;
 		}
 
 		${PREFIX} ._topRightBarGrid {
@@ -857,18 +857,58 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			justify-content: space-between;
 			gap: 4px;
 		}
+
+		._page_Selector {
+			width: 186px;
+		}
+		._add_page_btn_container {
+			padding: 10px 10px;
+		}
+
+		._add_page_btn_container button._add_page_btn {
+			border-radius: 2px;
+			background: #4C7FEE;
+			color: #fff;
+			width: 100%;
+			height: 30px;
+		}
+
+		._main_editor_dropdown { 
+			position: relative;
+		}
 		
 		._simpleEditorSelect ._simpleEditorDropdownBody{
 			position: fixed;
 			min-width: 100%;
 			background-color: #FFF;
+			border: 1px solid rgba(0, 0, 0, 0.10);
 			z-index: 2;
 			box-shadow: 0px 1px 4px 0px #00000026;
 			border-radius: 6px;
 			margin-top: 4px;
-			padding: 10px;
+			
 			max-height: 250px;
 			overflow: auto;
+		}
+
+		._main_editor_dropdown ._simpleEditorDropdownBody{
+			position: absolute;
+			min-width: 100%;
+			background-color: #FFF;
+			border: 1px solid rgba(0, 0, 0, 0.10);
+			z-index: 2;
+			box-shadow: 0px 1px 4px 0px #00000026;
+			border-radius: 6px;
+			max-height: 300px;
+			overflow: auto;
+			padding: 10px;
+		}
+
+		._simpleEditorSelect ._simpleEditorDropdownBody {
+		}
+
+		._simpleEditorSelect ._simpleEditorDropdownBody ._options_divider {
+			border-bottom: 1px solid rgba(0, 0, 0, 0.10);
 		}
 
 		._simpleEditorSelect svg {
@@ -885,8 +925,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		._simpleEditorSelect ._simpleEditorDropdownBody ._simpleEditorDropdownOption {
-			height: 25px;
-			padding: 5px 10px;
+			padding: 10px;
 			color: rgba(0, 0, 0, 0.4); 
 			border-radius: 4px;
 			white-space: nowrap;
@@ -894,11 +933,28 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._simpleEditorSelect ._simpleEditorDropdownBody ._simpleEditorDropdownOption._hovered {
 			background-color: #F8FAFB;
+			border-radius: 4px;
+			font-weight: bold;
+			color: #0085F2;
 		}
 
 		._simpleEditorSelect ._simpleEditorDropdownBody ._simpleEditorDropdownOption._selected {
-			color: #333;
-			font-weight: bold;
+			color: #0085F2;
+		}
+
+		._main_editor_dropdown ._simpleEditorDropdownBody ._simpleEditorDropdownOption {
+			height: 25px;
+			padding: 5px 10px 5px 0px;
+			color: rgba(0, 0, 0, 0.4); 
+			border-radius: 4px;
+			white-space: nowrap;
+		}
+
+		._main_editor_dropdown ._simpleEditorDropdownBody ._simpleEditorDropdownOption:hover {
+			background-color: #F8FAFB;
+			border-radius: 4px;
+			color: #0085F2;
+			cursor: pointer;
 		}
 
 		._simpleEditorIcons {
@@ -1856,6 +1912,18 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			overflow: hidden;
 		}
 
+		${PREFIX} ._dndContentContainer {
+			display: flex;
+			flex: 1;
+			height: calc(100% - 65px);
+		}
+
+		${PREFIX} ._dndIframeContentContainer {
+			display: flex;
+			flex: 1;
+			flex-direction: column;
+		}
+
 		${PREFIX} ._selectionBar {
 			display: flex;
 			background-color: #fff;
@@ -1896,7 +1964,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._iframeContainer {
 			display: flex;
     		flex: 1;
-			max-height: calc(100% - 65px - 29px);
+			max-height: calc(100% - 29px);
 		}
 
 		${PREFIX} ._iframeContainer._previewMode {

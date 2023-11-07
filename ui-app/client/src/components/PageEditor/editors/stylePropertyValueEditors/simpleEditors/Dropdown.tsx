@@ -1,4 +1,4 @@
-import React, { CSSProperties, ReactNode, useMemo, useRef, useState } from 'react';
+import React, { CSSProperties, ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { SimpleEditorMultipleValueType } from '.';
 import { isNullValue } from '@fincity/kirun-js';
 
@@ -55,7 +55,7 @@ export function Dropdown({
 	}
 
 	const [open, setOpen] = useState(false);
-	const [currentOption, setOriginalCurrentOption] = useState(0);
+	const [currentOption, setOriginalCurrentOption] = useState(-1);
 
 	const dropDown = useRef<HTMLDivElement>(null);
 	const ddBody = useRef<HTMLDivElement>(null);
@@ -66,6 +66,10 @@ export function Dropdown({
 		const options = ddBody.current.querySelectorAll('._simpleEditorDropdownOption');
 		if (options[num]) options[num].scrollIntoView({ block: 'nearest' });
 	};
+
+	useEffect(() => {
+		if (!open && currentOption != -1) setOriginalCurrentOption(-1);
+	}, [open]);
 
 	let body;
 	if (open) {
@@ -81,6 +85,10 @@ export function Dropdown({
 		body = (
 			<div className="_simpleEditorDropdownBody" ref={ddBody} style={dropdownBodyStyle}>
 				{children}
+				{React.Children.count(children) > 0 ? (
+					<div className="_options_divider"></div>
+				) : null}
+
 				{options.map((o, i) => (
 					<div
 						key={o.name}
