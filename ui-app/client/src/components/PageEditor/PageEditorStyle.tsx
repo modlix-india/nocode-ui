@@ -1922,6 +1922,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			flex: 1;
 			flex-direction: column;
+			width: calc(100% - 48px);
 		}
 
 		${PREFIX} ._selectionBar {
