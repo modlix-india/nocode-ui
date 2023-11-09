@@ -8,7 +8,7 @@ export default function PopoverStyle({ theme }: { theme: Map<string, Map<string,
 		`
 		.popoverTip {
 			position: absolute;
-			width: 23px;
+			width: 16px;
 			height: 16px;
 			overflow: hidden;
 			z-index: 2;
