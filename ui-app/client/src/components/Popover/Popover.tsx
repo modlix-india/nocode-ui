@@ -38,6 +38,7 @@ function Popover(props: ComponentProps) {
 			closeOnLeave,
 			showInDesign,
 			closeOnOutsideClick,
+			showOnHover,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -114,6 +115,7 @@ function Popover(props: ComponentProps) {
 					}}
 					ref={boxRef}
 					onClick={showPopover}
+					onMouseEnter={showOnHover ? showPopover : undefined}
 					onMouseLeave={
 						!(isDesignMode && showInDesign === true) && closeOnLeave
 							? handleMouseLeave
