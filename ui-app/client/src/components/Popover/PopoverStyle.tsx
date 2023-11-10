@@ -15,7 +15,6 @@ export default function PopoverStyle({ theme }: { theme: Map<string, Map<string,
 		}
 
 		.topTip{
-			top: -2px;
 			transform: translateX(-50%);
 		}
 		.bottomTip{
