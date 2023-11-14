@@ -41,10 +41,6 @@ type CommonInputType = {
 	updDownHandler?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 	inputType?: string;
 	maxChars?: number;
-	divRef?: React.RefObject<any>;
-	onMouseEnter?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-	onClickHandler?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-	customStyles?: any;
 };
 
 function CommonInputText(props: CommonInputType) {
@@ -85,10 +81,6 @@ function CommonInputText(props: CommonInputType) {
 		updDownHandler,
 		inputType = 'Text',
 		maxChars,
-		divRef,
-		onMouseEnter,
-		onClickHandler,
-		customStyles,
 	} = props;
 	const [focus, setFocus] = React.useState(false);
 	const [showPassword, setShowPassowrd] = React.useState(false);
@@ -207,12 +199,9 @@ function CommonInputText(props: CommonInputType) {
 			} ${!focus && value?.toString()?.length ? '_hasValue' : ''} ${
 				!hasErrorMessages && hasValidationCheck && isDirty ? '_validationSuccess' : ''
 			} ${hasErrorMessages ? '_hasError' : ''}`}
-			style={customStyles ?? computedStyles.comp ?? {}}
+			style={computedStyles.comp ?? {}}
 			onMouseLeave={onMouseLeave}
 			onKeyUp={updDownHandler}
-			onMouseEnter={onMouseEnter}
-			onClick={onClickHandler}
-			ref={divRef}
 		>
 			<HelperComponent definition={definition} />
 			{leftIcon ? (
