@@ -226,7 +226,7 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 								definition={props.definition}
 								subComponentName="iconGrid"
 							></SubHelperComponent>
-							{showAdd && (
+							{showAdd && index === value.length - 1 && (
 								<i
 									className="addOne fa fa-circle-plus fa-solid"
 									onClick={showAdd ? () => handleAdd(index) : undefined}
@@ -238,7 +238,7 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 									></SubHelperComponent>
 								</i>
 							)}
-							{showDelete && (
+							{showDelete && index !== value.length - 1 && (
 								<i
 									className="reduceOne fa fa-circle-minus fa-solid"
 									onClick={showDelete ? () => handleDelete(index) : undefined}
@@ -341,13 +341,13 @@ const component: Component = {
 					/>
 					<path
 						fillRule="evenodd"
-						clip-rule="evenodd"
+						clipRule="evenodd"
 						d="M8.81991 5.62444C8.81267 5.81538 9.05171 5.9297 9.18675 5.79451L11.9786 2.99962C12.0875 2.89054 12.0373 2.7044 11.8883 2.66494L8.06798 1.65333C7.88342 1.60446 7.73446 1.82302 7.83661 1.98432C8.52656 3.0737 8.86859 4.33994 8.81991 5.62444Z"
 						fill="currentColor"
 					/>
 					<path
 						fillRule="evenodd"
-						clip-rule="evenodd"
+						clipRule="evenodd"
 						d="M14.4365 19.3763C14.5052 19.198 14.3161 19.0124 14.1445 19.0965L10.5977 20.836C10.4593 20.9038 10.4465 21.0962 10.5747 21.1818L13.861 23.3768C14.0198 23.4828 14.2315 23.3243 14.1871 23.1386C13.8874 21.8845 13.9742 20.5757 14.4365 19.3763Z"
 						fill="currentColor"
 					/>
