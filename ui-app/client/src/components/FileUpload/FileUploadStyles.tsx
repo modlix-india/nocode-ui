@@ -35,6 +35,10 @@ export default function ProgressBarStyles({ theme }: { theme: Map<string, Map<st
 		gap: 5px;
 	}
 
+	${PREFIX}._onlyButton ._fileUploadButton {
+		width: 100% !important;
+	}
+
 	${PREFIX} ._subtext {
 		text-overflow: ellipsis;
     	overflow: hidden;

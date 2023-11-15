@@ -10,6 +10,8 @@ export default function PopoverStyle({ theme }: { theme: Map<string, Map<string,
 			position: absolute;
 			width: 16px;
 			height: 16px;
+			overflow: hidden;
+			z-index: 2;
 		}
 
 		.topTip{
@@ -28,28 +30,31 @@ export default function PopoverStyle({ theme }: { theme: Map<string, Map<string,
 		}
 
 		.popoverTip.topTip::before {
-			clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+			transform: translateX(-50%) translateY(50%) rotate(45deg);
+			left: 50%;
 		}
 		.popoverTip.bottomTip::before {
-			clip-path: polygon(100% 0, 0 0, 50% 100%);
+			transform: translateX(-50%) translateY(-50%) rotate(45deg);
+			left: 50%;
 		}
 		.popoverTip.leftTip::before {
-			clip-path: polygon(0 50%, 100% 100%, 100% 0);
+			transform: translateX(50%) rotate(45deg);
 		}
 		.popoverTip.rightTip::before {
-			clip-path: polygon(0 0, 0 100%, 100% 50%);
+			transform: translateX(-50%) rotate(45deg);
 		}
 
 		.popoverTip::before {
 			content: ' ';
-			width: 100%;
-			height: 100%;
+			width: 16px;
+			height: 16px;
 			position: absolute;
 			top: 0;
 			display: block;
 		}
 		.popoverContainer {
 			position: relative;
+			z-index:1;
 		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

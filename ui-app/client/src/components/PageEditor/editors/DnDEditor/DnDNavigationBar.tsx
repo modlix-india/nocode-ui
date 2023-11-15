@@ -445,7 +445,7 @@ function SubCompTree({
 				) : (
 					subComp.icon
 				)}
-				{subComp.name}
+				{subComp.displayName ?? subComp.name}
 			</div>
 		</div>
 	);

@@ -82,6 +82,7 @@ function FileUpload(props: ComponentProps) {
 			uploadType,
 			colorScheme,
 			buttonText,
+			hideSelectedFileName,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -230,7 +231,7 @@ function FileUpload(props: ComponentProps) {
 
 	const validationMessagesComp =
 		validationMessages?.length && (fileValue || context.showValidationMessages) ? (
-			<div className="_validationMessages">
+			<div className="_validationMessages" key="validationMessage">
 				<SubHelperComponent
 					definition={props.definition}
 					subComponentName="validationMessagesContainer"
@@ -247,15 +248,16 @@ function FileUpload(props: ComponentProps) {
 			</div>
 		) : undefined;
 
-	const uploadIconComp = uploadIcon ? (
-		<i className={`_uploadIcon ${uploadIcon}`} style={computedStyles?.icon}>
-			<SubHelperComponent definition={props.definition} subComponentName="icon" />
-		</i>
-	) : uploadViewType === '_only_icon_design1' ? (
-		icon1
-	) : uploadViewType === '_only_icon_design2' ? (
-		icon2
-	) : null;
+	let uploadIconComp = null;
+
+	if (uploadIcon)
+		uploadIconComp = (
+			<i className={`_uploadIcon ${uploadIcon}`} style={computedStyles?.icon}>
+				<SubHelperComponent definition={props.definition} subComponentName="icon" />
+			</i>
+		);
+	else if (uploadViewType === '_only_icon_design1') uploadIconComp = icon1;
+	else if (uploadViewType === '_only_icon_design2') uploadIconComp = icon2;
 
 	const inputContainer = (
 		<input
@@ -271,49 +273,41 @@ function FileUpload(props: ComponentProps) {
 		/>
 	);
 
-	const fileContainer = !!fileValue
-		? (isMultiple ? fileValue : [fileValue])?.map((each: any, index: any) => (
-				<div
-					className="_selectedDetails"
-					key={index}
-					style={computedStyles?.selectedFiles ?? {}}
+	let fileArray = [];
+
+	if (fileValue) {
+		fileArray = isMultiple ? fileValue : [fileValue];
+	}
+
+	const fileContainer = fileArray.map((each: any, index: any) => (
+		<div
+			className="_selectedDetails"
+			key={`st_${each?.name ?? index}`}
+			style={computedStyles?.selectedFiles ?? {}}
+		>
+			<SubHelperComponent definition={props.definition} subComponentName="_selectedFiles" />
+			<span>{each?.name}</span>
+			<span>{`(${returnFileSize(each?.size)})`}</span>
+			{uploadImmediatelyEvent ? null : (
+				<i
+					className="fa fa-solid fa-close closeIcon"
+					style={computedStyles?.closeIcon ?? {}}
+					onClick={e => handleDelete(e, each)}
+					onKeyUp={e => e.key === 'Enter' && handleDelete(e, each)}
 				>
 					<SubHelperComponent
 						definition={props.definition}
-						subComponentName="_selectedFiles"
+						subComponentName="closeIcon"
 					/>
-					<span>{each?.name}</span>
-					<span>{`(${returnFileSize(each?.size)})`}</span>
-					{uploadImmediatelyEvent ? null : (
-						<i
-							className="fa fa-solid fa-close closeIcon"
-							style={computedStyles?.closeIcon ?? {}}
-							onClick={e => handleDelete(e, each)}
-						>
-							<SubHelperComponent
-								definition={props.definition}
-								subComponentName="closeIcon"
-							/>
-						</i>
-					)}
-				</div>
-		  ))
-		: null;
+				</i>
+			)}
+		</div>
+	));
 
-	return [
-		<div
-			className={`comp compFileUpload ${uploadViewType} ${colorScheme}`}
-			style={computedStyles?.comp ?? {}}
-			onMouseEnter={stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined}
-			onMouseLeave={
-				stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
-			}
-			onDragEnter={preventDefault}
-			onDragOver={preventDefault}
-			onDrop={handleDrop}
-		>
-			<HelperComponent definition={definition} />
+	let fileText = undefined;
 
+	if (!hideSelectedFileName) {
+		fileText = (
 			<label className="_fileUploadText">
 				{!uploadViewType?.startsWith('_inline') ? uploadIconComp : null}
 				{uploadViewType !== '_only_icon_design2'
@@ -328,8 +322,36 @@ function FileUpload(props: ComponentProps) {
 					: null}
 				{uploadViewType?.startsWith('_only_icon') ? inputContainer : null}
 			</label>
+		);
+	} else if (uploadViewType?.startsWith('_only_icon')) {
+		fileText = (
+			<label className="_fileUploadText">
+				{!uploadViewType?.startsWith('_inline') ? uploadIconComp : null}
+				{inputContainer}
+			</label>
+		);
+	}
+
+	return [
+		<div
+			key={'fileUpload'}
+			className={`comp compFileUpload ${
+				hideSelectedFileName ? '_onlyButton' : ''
+			} ${uploadViewType} ${colorScheme}`}
+			style={computedStyles?.comp ?? {}}
+			onMouseEnter={stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined}
+			onMouseLeave={
+				stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
+			}
+			onDragEnter={preventDefault}
+			onDragOver={preventDefault}
+			onDrop={handleDrop}
+		>
+			<HelperComponent definition={definition} />
+
+			{fileText}
 			{!uploadViewType?.startsWith('_only_icon') ? (
-				<label className="_fileUploadButton">
+				<label className="_fileUploadButton" style={computedStyles?.uploadButton}>
 					{uploadViewType?.startsWith('_inline') ? uploadIconComp : null}
 					{uploadViewType !== '_inline_icon_design1' ? buttonText : ''}
 					{inputContainer}
@@ -371,12 +393,12 @@ const component: Component = {
 					<path
 						d="M14.2308 5.22685V0.59668H4.97764C4.09287 0.59668 3.37305 1.3165 3.37305 2.20128V21.7774C3.37305 22.6621 4.09287 23.382 4.97764 23.382H19.3959C20.2806 23.382 21.0005 22.6621 21.0005 21.7774V7.36631H16.3703C15.1906 7.36631 14.2308 6.40655 14.2308 5.22685Z"
 						fill="currentColor"
-						fill-opacity="0.2"
+						fillOpacity="0.2"
 					/>
 					<path
 						d="M15.3027 5.227C15.3027 5.81685 15.7826 6.29673 16.3725 6.29673H20.2095L15.3027 1.41309V5.227Z"
 						fill="currentColor"
-						fill-opacity="0.2"
+						fillOpacity="0.2"
 					/>
 					<path
 						d="M8.643 15.2027C8.30213 15.2027 8.11746 14.8036 8.3381 14.5438L12.0388 10.1858C12.1975 9.99894 12.4853 9.99743 12.6459 10.1826L16.4259 14.5406C16.6506 14.7996 16.4666 15.2027 16.1238 15.2027L8.643 15.2027Z"
@@ -391,21 +413,9 @@ const component: Component = {
 			mainComponent: true,
 		},
 		{
-			name: 'mainText',
-			displayName: 'Main Text',
-			description: 'Main Text',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'label',
-			displayName: 'Label',
-			description: 'Label',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'buttonStyles',
-			displayName: 'Button Styles',
-			description: 'Button Styles',
+			name: 'uploadButton',
+			displayName: 'Upload Button',
+			description: 'Uplaod Button',
 			icon: 'fa-solid fa-box',
 		},
 		{
@@ -415,21 +425,9 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'selectedFileContainer',
-			displayName: 'Selected File Container',
-			description: 'Selected File Container',
-			icon: 'fa-solid fa-box',
-		},
-		{
 			name: 'icon',
 			displayName: 'Icon',
 			description: 'Icon',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'uploadContainer',
-			displayName: 'Upload Container',
-			description: 'Upload Container',
 			icon: 'fa-solid fa-box',
 		},
 		{

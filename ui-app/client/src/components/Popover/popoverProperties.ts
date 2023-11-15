@@ -55,6 +55,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		],
 	},
 	{
+		name: 'showOnHover',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Popover on hover',
+		description: 'Show Popover on hover.',
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
 		name: 'showTip',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show Popover tip',

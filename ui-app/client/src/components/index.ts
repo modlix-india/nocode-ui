@@ -43,6 +43,8 @@ import TextList from './TextList/TextList';
 import ToggleButton from './ToggleButton/ToggleButton';
 import Video from './Video/Video';
 import ImageWithBrowser from './ImageWithBrowser/ImageWithBrowser';
+import FillerValueEditor from './FillerValueEditor/FillerValueEditor';
+import ColorPicker from './ColorPicker/ColorPicker';
 
 export default new Map<string, Component>([
 	[Button.name, Button],
@@ -89,4 +91,6 @@ export default new Map<string, Component>([
 	[TableDynamicColumns.name, TableDynamicColumns],
 	[Animator.name, Animator],
 	[ImageWithBrowser.name, ImageWithBrowser],
+	[FillerValueEditor.name, FillerValueEditor],
+	[ColorPicker.name, ColorPicker],
 ]);
