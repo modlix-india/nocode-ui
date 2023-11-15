@@ -26,6 +26,7 @@ const SIGNATURE = new FunctionSignature('Login')
 				Schema.ofString('identifierType').setDefaultValue(''),
 			),
 			Parameter.ofEntry('cookie', Schema.ofBoolean('cookie').setDefaultValue(false)),
+			Parameter.ofEntry('userId', Schema.ofAny('userId').setDefaultValue(null)),
 		]),
 	)
 	.setEvents(
@@ -49,9 +50,12 @@ export class Login extends AbstractFunction {
 		const rememberMe: string = context.getArguments()?.get('rememberMe');
 		const cookie: boolean = context.getArguments()?.get('cookie');
 		const identifierType: string = context.getArguments()?.get('identifierType');
+		const userId: any = context.getArguments()?.get('userId');
 
 		const data: any = { userName, password, rememberMe, cookie };
 		if (identifierType) data.indentifierType = identifierType;
+
+		if (userId) data.userId = userId;
 
 		const headers: any = {};
 		if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
