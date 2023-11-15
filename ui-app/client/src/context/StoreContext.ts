@@ -46,7 +46,7 @@ const {
 	addListenerAndCallImmediately: _addListenerAndCallImmediately,
 	addListenerWithChildrenActivity: _addListenerWithChildrenActivity,
 	addListenerAndCallImmediatelyWithChildrenActivity:
-		_addListenerAndCallImmediatelyWithChildrenActivity,
+	_addListenerAndCallImmediatelyWithChildrenActivity,
 } = useStore(
 	{},
 	STORE_PREFIX,
