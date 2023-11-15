@@ -38,6 +38,7 @@ function Popover(props: ComponentProps) {
 			closeOnLeave,
 			showInDesign,
 			closeOnOutsideClick,
+			showOnHover,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -79,7 +80,7 @@ function Popover(props: ComponentProps) {
 		setTipPosition(positions.tipPosition);
 		setMargin(positions.marginContainer);
 		setTipStyle(positions.tipStyle!);
-	}, [show]);
+	}, [show, boxRef.current, popoverRef.current, position]);
 
 	const showPopover = (e: React.MouseEvent<HTMLElement>) => {
 		setShow(!show);
@@ -96,7 +97,7 @@ function Popover(props: ComponentProps) {
 			document.body.addEventListener('click', closePopover);
 		}
 		return () => document.body.removeEventListener('click', closePopover);
-	}, [show]);
+	}, [show, closeOnOutsideClick, isDesignMode, showInDesign]);
 
 	return (
 		<div
@@ -114,6 +115,7 @@ function Popover(props: ComponentProps) {
 					}}
 					ref={boxRef}
 					onClick={showPopover}
+					onMouseEnter={showOnHover ? showPopover : undefined}
 					onMouseLeave={
 						!(isDesignMode && showInDesign === true) && closeOnLeave
 							? handleMouseLeave
@@ -194,6 +196,7 @@ const component: Component = {
 		name: 'Popover',
 		properties: {},
 	},
+	needShowInDesginMode: true,
 	subComponentDefinition: [
 		{
 			name: '',
