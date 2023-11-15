@@ -1,28 +1,15 @@
-import { isNullValue } from '@fincity/kirun-js';
-import React, { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
-import {
-	PageStoreExtractor,
-	addListener,
-	getDataFromPath,
-	getPathFromLocation,
-	setData,
-} from '../../context/StoreContext';
+import React from 'react';
+import { PageStoreExtractor } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import Children from '../Children';
 import { HelperComponent } from '../HelperComponent';
-import { getHref } from '../util/getHref';
-import { runEvent } from '../util/runEvent';
-import useDefinition from '../util/useDefinition';
-import { flattenUUID } from '../util/uuid';
-import GridStyle from './TemplateEditorStyle';
-import { styleDefaults } from './templateEditorStyleProperties';
-import { propertiesDefinition, stylePropertiesDefinition } from './TemplateEditorProperties';
 import { IconHelper } from '../util/IconHelper';
+import useDefinition from '../util/useDefinition';
+import GridStyle from './FillerValueEditorStyle';
+import { propertiesDefinition, stylePropertiesDefinition } from './fillerValueEditorProperties';
+import { styleDefaults } from './fillerValueEditorStyleProperties';
 
-function TemplateEditor(props: ComponentProps) {
+function FillerValueEditor(props: ComponentProps) {
 	const { definition, pageDefinition, locationHistory, context } = props;
 	const {
 		definition: { bindingPath },
@@ -47,17 +34,17 @@ function TemplateEditor(props: ComponentProps) {
 	);
 
 	return (
-		<div className={`comp compTemplateEditor`} style={resolvedStyles.comp ?? {}}>
+		<div className={`comp compFillerValueEditor`} style={resolvedStyles.comp ?? {}}>
 			<HelperComponent key={`${key}_hlp`} definition={definition} />
 		</div>
 	);
 }
 
 const component: Component = {
-	name: 'TemplateEditor',
-	displayName: 'Template Editor',
-	description: 'Template Editor Component',
-	component: TemplateEditor,
+	name: 'FillerValueEditor',
+	displayName: 'Filler Editor',
+	description: 'Filler Editor Component',
+	component: FillerValueEditor,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: GridStyle,
@@ -65,12 +52,12 @@ const component: Component = {
 	stylePseudoStates: [],
 	styleProperties: stylePropertiesDefinition,
 	bindingPaths: {
-		bindingPath: { name: 'Template' },
+		bindingPath: { name: 'Filler Values' },
 	},
 	defaultTemplate: {
 		key: '',
-		name: 'Template Editor',
-		type: 'TemplateEditor',
+		name: 'Fillter Value Editor',
+		type: 'FillerValueEditor',
 	},
 	subComponentDefinition: [
 		{
