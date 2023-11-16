@@ -24,12 +24,6 @@ export function ValidationEditor({
 	editPageName,
 	pageOperations,
 }: ValidationEditorProps) {
-	console.log(
-		VALIDATION_FUNCTIONS,
-		value,
-		'picard',
-		VALIDATION_FUNCTIONS[value?.type ?? 'MANDATORY'],
-	);
 	return (
 		<div className="_validationEditor">
 			<div className="_eachProp">
