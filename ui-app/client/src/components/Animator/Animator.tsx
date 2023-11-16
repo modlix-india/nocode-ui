@@ -130,7 +130,7 @@ function Animator(props: ComponentProps) {
 				{ threshold: Array.from(new Set(threshold)) },
 			);
 			io.observe(ref.current);
-			return () => io.unobserve(ref.current!);
+			return () => (ref.current ? io.unobserve(ref.current!) : undefined);
 		} catch (e) {}
 	}, [animation, ref.current, setObservations]);
 
