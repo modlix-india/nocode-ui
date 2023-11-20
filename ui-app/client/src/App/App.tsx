@@ -59,6 +59,7 @@ function processCodeParts(codeParts: any) {
 	if (!codeParts) return;
 
 	Object.entries(codeParts)
+		.filter((e: any[]) => !!e[1].part)
 		.sort(
 			(a: any[], b: any[]) =>
 				((b[1]?.order ?? 0) - (a[1]?.order ?? 0)) *
