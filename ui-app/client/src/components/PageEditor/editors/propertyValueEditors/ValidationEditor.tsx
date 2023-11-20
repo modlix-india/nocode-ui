@@ -32,7 +32,9 @@ export function ValidationEditor({
 				<Dropdown
 					value={value?.type ?? 'MANDATORY'}
 					showNoneLabel={false}
-					onChange={v => onChange({ ...value, type: v })}
+					onChange={v => {
+						onChange({ ...value, type: v === '' || !v ? 'MANDATORY' : v });
+					}}
 					options={Object.entries(VALIDATION_FUNCTIONS).map(e => ({
 						name: e[0],
 						displayName: e[1].displayName,
@@ -57,6 +59,7 @@ export function ValidationEditor({
 					pageOperations={pageOperations}
 				/>
 			</div>
+
 			{(VALIDATION_FUNCTIONS[value?.type ?? 'MANDATORY'].fields ?? []).map(propDef => (
 				<div className="_eachProp" key={propDef.name}>
 					<div className="_propLabel">{propDef.displayName}</div>
