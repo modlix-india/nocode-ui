@@ -1,32 +1,34 @@
-import { deepEqual, isNullValue } from '@fincity/kirun-js';
+import { deepEqual, duplicate, isNullValue } from '@fincity/kirun-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { MESSAGE_TYPE, addMessage } from '../../../../App/Messages/Messages';
+import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../../../constants';
 import {
-	addListenerWithChildrenActivity,
-	getData,
-	getDataFromPath,
 	PageStoreExtractor,
+	addListenerWithChildrenActivity,
+	getDataFromPath,
 	setData,
 } from '../../../../context/StoreContext';
-import { ComponentProperty, LocationHistory, PageDefinition } from '../../../../types/common';
-import { propertiesDefinition } from '../../pageEditorProperties';
-import { duplicate } from '@fincity/kirun-js';
-import Portal from '../../../Portal';
-import { StringValueEditor } from '../../../SchemaForm/components/StringValueEditor';
-import PropertyValueEditor from '../propertyValueEditors/PropertyValueEditor';
 import {
-	LOCAL_STORE_PREFIX,
-	SCHEMA_BOOL_COMP_PROP,
-	SCHEMA_STRING_COMP_PROP,
-} from '../../../../constants';
-import { ComponentPropertyEditor } from '../../../../types/common';
-import { ComponentPropertyDefinition } from '../../../../types/common';
-import { PageOperations } from '../../functions/PageOperations';
+	ComponentProperty,
+	ComponentPropertyDefinition,
+	ComponentPropertyEditor,
+	LocationHistory,
+	PageDefinition,
+} from '../../../../types/common';
+import Portal from '../../../Portal';
 import { IconHelper } from '../../../util/IconHelper';
-import { MESSAGE_TYPE, addMessage } from '../../../../App/Messages/Messages';
+import { PageOperations } from '../../functions/PageOperations';
+import PropertyValueEditor from '../propertyValueEditors/PropertyValueEditor';
+import { Dropdown } from '../stylePropertyValueEditors/simpleEditors/Dropdown';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { getHref } from '../../../util/getHref';
 
 interface TopBarProps {
 	theme: string;
 	personalizationPath: string | undefined;
+	logo: string | undefined;
+	pagesData: any;
+	currentPageId: string;
 	onSave: () => void;
 	onPublish?: () => void;
 	onVersions?: () => void;
@@ -51,6 +53,9 @@ interface TopBarProps {
 	onSelectedSubComponentChanged: (key: string) => void;
 	onSelectedComponentChanged: (key: string) => void;
 	pageOperations: PageOperations;
+	dashboardPageName: string | undefined;
+	settingsPageName: string | undefined;
+	addnewPageName: string | undefined;
 }
 
 function removeExcessPages(pid: string) {
@@ -101,6 +106,12 @@ export default function DnDTopBar({
 	onSelectedSubComponentChanged,
 	pageOperations,
 	onVersions,
+	pagesData,
+	currentPageId,
+	logo,
+	dashboardPageName,
+	settingsPageName,
+	addnewPageName,
 }: TopBarProps) {
 	const [localUrl, setLocalUrl] = useState(url);
 	const [deviceType, setDeviceType] = useState<string | undefined>();
@@ -109,6 +120,10 @@ export default function DnDTopBar({
 	const [page, setPage] = useState<PageDefinition>();
 	const [changed, setChanged] = useState(Date.now());
 	const [permission, setPermission] = useState<string>('');
+	const [selectedPage, setSelectedPage] = React.useState('');
+	const navigate = useNavigate();
+	const location = useLocation();
+	const svgLogo = logo ? <img className="_logo" src={logo} /> : undefined;
 	useEffect(() => setLocalUrl(url), [url]);
 	useEffect(
 		() =>
@@ -123,12 +138,13 @@ export default function DnDTopBar({
 				: undefined,
 		[personalizationPath],
 	);
+
 	useEffect(() => {
 		if (!defPath) return;
 
 		return addListenerWithChildrenActivity(
 			(_, v) => {
-				if (v?.isFromUndoRedoStack) return;
+				if (!v || v?.isFromUndoRedoStack) return;
 				if (
 					deepEqual(
 						v,
@@ -142,7 +158,6 @@ export default function DnDTopBar({
 				setProperties(v?.properties ?? {});
 				setPage(v as PageDefinition);
 				setPermission(v?.permission ?? '');
-
 				if (!firstTimeRef.current.length) {
 					firstTimeRef.current.push(duplicate(v));
 					return;
@@ -180,7 +195,6 @@ export default function DnDTopBar({
 			onChangePersonalization('deviceType', device === deviceType ? undefined : device),
 		[onChangePersonalization, deviceType],
 	);
-
 	const updatePageProperties = useCallback(
 		(
 			propType: 'title' | 'simple' | 'compprop' | 'seo' | 'permission',
@@ -455,10 +469,42 @@ export default function DnDTopBar({
 			</Portal>
 		);
 	}
-
+	const [showLogoDropdown, setShowLogoDropdown] = React.useState(false);
+	React.useEffect(() => {
+		if (!selectedPage) return;
+		const furl = getHref(`/${pageExtractor.getPageName()}/${selectedPage}`, location);
+		navigate(furl);
+	}, [selectedPage]);
 	return (
 		<div className="_topBarGrid">
 			<div className="_topLeftBarGrid">
+				<div
+					className="_main_editor_dropdown"
+					onMouseLeave={() => setShowLogoDropdown(false)}
+					onClick={() => setShowLogoDropdown(true)}
+				>
+					{svgLogo}
+					{showLogoDropdown ? (
+						<div className="_simpleEditorDropdownBody">
+							{dashboardPageName ? (
+								<div
+									onClick={() => navigate(getHref(dashboardPageName, location))}
+									className="_simpleEditorDropdownOption"
+								>
+									View dashboard
+								</div>
+							) : null}
+							{settingsPageName ? (
+								<div
+									onClick={() => navigate(getHref(settingsPageName, location))}
+									className="_simpleEditorDropdownOption"
+								>
+									Site settings
+								</div>
+							) : null}
+						</div>
+					) : null}
+				</div>
 				<div className="_inputBar">
 					<div className="_urlInput _peInput">
 						<i className="fa fa-solid fa-globe" title="Current Address."></i>
@@ -466,6 +512,7 @@ export default function DnDTopBar({
 							ref={inputRef}
 							type="text"
 							value={localUrl}
+							name="localUrl"
 							onChange={e => setLocalUrl(e.target.value)}
 							onBlur={changeUrl}
 							onKeyUp={e => {
@@ -477,6 +524,32 @@ export default function DnDTopBar({
 							}}
 						/>
 					</div>
+				</div>
+				<div className="_page_Selector">
+					<Dropdown
+						showNoneLabel={isNullValue(pagesData)}
+						selectNoneLabel="--NONE--"
+						value={selectedPage || currentPageId}
+						onChange={v => {
+							setSelectedPage(typeof v === 'string' ? v : '');
+						}}
+						options={pagesData ?? []}
+						placeholder="Pages"
+					>
+						<div className="_add_page_btn_container">
+							<button
+								type="button"
+								onMouseDown={e => {
+									e.stopPropagation();
+									console.log(addnewPageName);
+									navigate(getHref(addnewPageName, location));
+								}}
+								className="_add_page_btn"
+							>
+								+ Add new page
+							</button>
+						</div>
+					</Dropdown>
 				</div>
 				<div className="_topLeftCenterBarGrid">
 					<ScreenSizeButtons

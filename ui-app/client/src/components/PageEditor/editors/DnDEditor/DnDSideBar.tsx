@@ -12,7 +12,6 @@ import { DRAG_CD_KEY, DRAG_COMP_NAME } from '../../../../constants';
 interface DnDSideBarProps {
 	personalizationPath: string | undefined;
 	defPath: string | undefined;
-	logo: string | undefined;
 	pageExtractor: PageStoreExtractor;
 	onChangePersonalization: (prop: string, value: any) => void;
 	selectedComponent: string | undefined;
@@ -26,7 +25,6 @@ interface DnDSideBarProps {
 export default function DnDSideBar({
 	personalizationPath,
 	defPath,
-	logo,
 	pageExtractor,
 	locationHistory,
 	selectedComponent,
@@ -44,7 +42,6 @@ export default function DnDSideBar({
 	const [query, setQuery] = useState('');
 	const [theme, setTheme] = useState('light');
 	const [selectedTemplateSection, setSelectedTemplateSection] = useState<Section>();
-	const svgLogo = logo ? <img className="_logo" src={logo} /> : undefined;
 	const [openCompMenu, setOpenCompMenu] = useState(false);
 	const compMenuRef = useRef<HTMLDivElement>(null);
 
@@ -269,7 +266,6 @@ export default function DnDSideBar({
 	return (
 		<>
 			<div className="_sideBar">
-				{svgLogo}
 				<div className="_top">
 					<div
 						className={`_iconMenu ${showCompMenu ? '_active' : ''}`}
