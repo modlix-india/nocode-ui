@@ -30,6 +30,7 @@ function onMessageFromEditor(event: MessageEvent) {
 
 	SLAVE_FUNCTIONS.get(type)?.(payload);
 	if (type === 'EDITOR_DEFINITION') {
+		if (!payload || !payload.name) return;
 		const storePage = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${payload.name}`, []);
 		if (storePage?.name !== payload.name) return;
 		innerSetData(`${STORE_PREFIX}.pageDefinition.${payload.name}`, payload);
