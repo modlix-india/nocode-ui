@@ -30,6 +30,7 @@ function onMessageFromEditor(event: MessageEvent) {
 
 	SLAVE_FUNCTIONS.get(type)?.(payload);
 	if (type === 'EDITOR_DEFINITION') {
+		if (!payload || !payload.name) return;
 		const storePage = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${payload.name}`, []);
 		if (storePage?.name !== payload.name) return;
 		innerSetData(`${STORE_PREFIX}.pageDefinition.${payload.name}`, payload);
@@ -59,6 +60,7 @@ function processCodeParts(codeParts: any) {
 	if (!codeParts) return;
 
 	Object.entries(codeParts)
+		.filter((e: any[]) => !!e[1].part)
 		.sort(
 			(a: any[], b: any[]) =>
 				((b[1]?.order ?? 0) - (a[1]?.order ?? 0)) *

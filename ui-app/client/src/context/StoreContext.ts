@@ -198,8 +198,6 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 	if (window.designMode !== 'PAGE') return;
 
 	messageToMaster({ type: 'SLAVE_STORE', payload: _store });
-
-	// console.log(duplicate(_store));
 }
 
 export class PageStoreExtractor extends SpecialTokenValueExtractor {
