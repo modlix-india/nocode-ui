@@ -68,6 +68,7 @@ export enum ComponentPropertyEditor {
 	LARGE_TEXT,
 	ANIMATION,
 	ANIMATIONOBSERVER,
+	COLOR_PICKER,
 }
 
 export enum ComponentPropertyGroup {

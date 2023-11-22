@@ -126,6 +126,60 @@ function Grid(props: ComponentProps) {
 			key={`${key}_style`}
 		>{`._${key}_grid_css::-webkit-scrollbar { display: none }`}</style>
 	) : undefined;
+
+	useEffect(() => {
+		if (
+			!ref.current ||
+			(isNullValue(onEnteringViewportEvent) && isNullValue(onLeavingViewportEvent))
+		)
+			return;
+
+		const thresholds = [];
+		if (onEnteringViewport) thresholds.push(0.1);
+		if (onLeavingViewport) thresholds.push(0.9);
+
+		let firstTime = true;
+
+		const observer = new IntersectionObserver(
+			(entries, observer) => {
+				if (firstTime) {
+					firstTime = false;
+					return;
+				}
+
+				if (
+					onEnteringViewport &&
+					Math.abs(Math.round(entries[0].intersectionRatio * 100) - 10) < 3
+				) {
+					(async () =>
+						await runEvent(
+							onEnteringViewportEvent,
+							onEnteringViewport,
+							props.context.pageName,
+							props.locationHistory,
+							props.pageDefinition,
+						))();
+				} else if (
+					onLeavingViewport &&
+					Math.abs(Math.round(entries[0].intersectionRatio * 100) - 90) < 3
+				) {
+					(async () =>
+						await runEvent(
+							onLeavingViewportEvent,
+							onLeavingViewport,
+							props.context.pageName,
+							props.locationHistory,
+							props.pageDefinition,
+						))();
+				}
+			},
+			{ root: null, rootMargin: '0px', threshold: thresholds },
+		);
+
+		observer.observe(ref.current);
+		return () => observer.disconnect();
+	}, [ref.current, onEnteringViewport, onLeavingViewport]);
+
 	if (linkPath) {
 		return React.createElement(
 			containerType.toLowerCase(),
@@ -196,59 +250,6 @@ function Grid(props: ComponentProps) {
 			],
 		);
 	}
-
-	useEffect(() => {
-		if (
-			!ref.current ||
-			(isNullValue(onEnteringViewportEvent) && isNullValue(onLeavingViewportEvent))
-		)
-			return;
-
-		const thresholds = [];
-		if (onEnteringViewport) thresholds.push(0.1);
-		if (onLeavingViewport) thresholds.push(0.9);
-
-		let firstTime = true;
-
-		const observer = new IntersectionObserver(
-			(entries, observer) => {
-				if (firstTime) {
-					firstTime = false;
-					return;
-				}
-
-				if (
-					onEnteringViewport &&
-					Math.abs(Math.round(entries[0].intersectionRatio * 100) - 10) < 3
-				) {
-					(async () =>
-						await runEvent(
-							onEnteringViewportEvent,
-							onEnteringViewport,
-							props.context.pageName,
-							props.locationHistory,
-							props.pageDefinition,
-						))();
-				} else if (
-					onLeavingViewport &&
-					Math.abs(Math.round(entries[0].intersectionRatio * 100) - 90) < 3
-				) {
-					(async () =>
-						await runEvent(
-							onLeavingViewportEvent,
-							onLeavingViewport,
-							props.context.pageName,
-							props.locationHistory,
-							props.pageDefinition,
-						))();
-				}
-			},
-			{ root: null, rootMargin: '0px', threshold: thresholds },
-		);
-
-		observer.observe(ref.current);
-		return () => observer.disconnect();
-	}, [ref.current, onEnteringViewport, onLeavingViewport]);
 
 	const onScrollFunction =
 		bindingPathPath || bindingPathPath2

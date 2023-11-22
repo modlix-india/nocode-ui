@@ -45,6 +45,7 @@ import Video from './Video/Video';
 import ImageWithBrowser from './ImageWithBrowser/ImageWithBrowser';
 import FillerValueEditor from './FillerValueEditor/FillerValueEditor';
 import ColorPicker from './ColorPicker/ColorPicker';
+import Jot from './Jot/Jot';
 
 export default new Map<string, Component>([
 	[Button.name, Button],
@@ -93,4 +94,5 @@ export default new Map<string, Component>([
 	[ImageWithBrowser.name, ImageWithBrowser],
 	[FillerValueEditor.name, FillerValueEditor],
 	[ColorPicker.name, ColorPicker],
+	[Jot.name, Jot],
 ]);

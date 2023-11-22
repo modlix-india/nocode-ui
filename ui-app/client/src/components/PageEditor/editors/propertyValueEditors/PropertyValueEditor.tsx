@@ -21,6 +21,7 @@ import { ImageEditor } from './ImageEditor';
 import { ValidationEditor } from './ValidationEditor';
 import { AnimationValueEditor } from './AnimationValueEditor';
 import { Dropdown } from '../stylePropertyValueEditors/simpleEditors/Dropdown';
+import { ColorSelector } from '../stylePropertyValueEditors/simpleEditors/ColorSelector';
 
 interface PropertyValueEditorProps {
 	propDef: ComponentPropertyDefinition;
@@ -298,6 +299,47 @@ function makeValueEditor(
 					})
 				}
 			/>
+		);
+	}
+
+	if (propDef.editor === ComponentPropertyEditor.COLOR_PICKER) {
+		return (
+			<div className="_smallEditorContainer">
+				<input
+					className="_peInput"
+					type="text"
+					value={chngValue}
+					placeholder={showPlaceholder ? propDef.defaultValue : undefined}
+					onChange={e => setChngValue(e.target.value)}
+					onKeyDown={e => {
+						if (e.key === 'Enter') {
+							onChange({
+								...value,
+								value:
+									chngValue === '' || chngValue === propDef.defaultValue
+										? undefined
+										: chngValue,
+							});
+						} else if (e.key === 'Escape') {
+							setChngValue(value?.value ?? '');
+						}
+					}}
+					onBlur={() =>
+						onChange({
+							...value,
+							value:
+								chngValue === '' || chngValue === propDef.defaultValue
+									? undefined
+									: chngValue,
+						})
+					}
+				/>
+				<ColorSelector
+					color={{ value: chngValue }}
+					variableSelection={false}
+					onChange={e => onChange({ ...value, value: e.value })}
+				/>
+			</div>
 		);
 	}
 
