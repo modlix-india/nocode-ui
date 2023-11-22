@@ -233,6 +233,15 @@ export default function DnDTopBar({
 		},
 		[],
 	);
+	
+	const [showLogoDropdown, setShowLogoDropdown] = React.useState(false);
+
+
+	React.useEffect(() => {
+		if (!selectedPage) return;
+		const furl = getHref(`/${pageExtractor.getPageName()}/${selectedPage}`, location);
+		navigate(furl);
+	}, [selectedPage]);
 
 	if (previewMode) return <div className="_topBarGrid _previewMode"> </div>;
 
@@ -469,12 +478,7 @@ export default function DnDTopBar({
 			</Portal>
 		);
 	}
-	const [showLogoDropdown, setShowLogoDropdown] = React.useState(false);
-	React.useEffect(() => {
-		if (!selectedPage) return;
-		const furl = getHref(`/${pageExtractor.getPageName()}/${selectedPage}`, location);
-		navigate(furl);
-	}, [selectedPage]);
+
 	return (
 		<div className="_topBarGrid">
 			<div className="_topLeftBarGrid">
