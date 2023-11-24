@@ -315,9 +315,13 @@ function FileUpload(props: ComponentProps) {
 							fileContainer ? (
 								fileContainer
 							) : (
-								<span className="_mainText">{mainText}</span>
+								<span className="_mainText" key="_mainText">
+									{mainText}
+								</span>
 							),
-							<span className="_subtext">{subText}</span>,
+							<span className="_subtext" key="_subText">
+								{subText}
+							</span>,
 					  ]
 					: null}
 				{uploadViewType?.startsWith('_only_icon') ? inputContainer : null}
