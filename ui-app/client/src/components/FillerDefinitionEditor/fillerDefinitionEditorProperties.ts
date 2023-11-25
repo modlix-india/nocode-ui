@@ -8,14 +8,6 @@ import {
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
-	{
-		name: 'onSave',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'On Save',
-		editor: ComponentPropertyEditor.EVENT_SELECTOR,
-		group: ComponentPropertyGroup.EVENTS,
-		description: 'Event to be triggered on page save.',
-	},
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 

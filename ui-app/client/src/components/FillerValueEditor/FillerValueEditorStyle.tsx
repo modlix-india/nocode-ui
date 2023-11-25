@@ -16,5 +16,5 @@ export default function FillerValueEditorStyle({
 		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
-	return <style id="FillterEditorCSS">{css}</style>;
+	return <style id="FillterValueEditorCSS">{css}</style>;
 }
