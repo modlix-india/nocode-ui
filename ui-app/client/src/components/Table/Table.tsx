@@ -162,7 +162,7 @@ function TableComponent(props: ComponentProps) {
 		: undefined;
 
 	const paginationEvent = onPagination
-		? props.pageDefinition.eventFunctions[onPagination]
+		? props.pageDefinition.eventFunctions?.[onPagination]
 		: undefined;
 
 	const spinnerPath2 = onPagination
