@@ -50,9 +50,11 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 		pageExtractor,
 	);
 
-	const clickMove = moveEvent ? props.pageDefinition.eventFunctions[moveEvent] : undefined;
-	const clickRemove = removeEvent ? props.pageDefinition.eventFunctions[removeEvent] : undefined;
-	const clickAdd = addEvent ? props.pageDefinition.eventFunctions[addEvent] : undefined;
+	const clickMove = moveEvent ? props.pageDefinition.eventFunctions?.[moveEvent] : undefined;
+	const clickRemove = removeEvent
+		? props.pageDefinition.eventFunctions?.[removeEvent]
+		: undefined;
+	const clickAdd = addEvent ? props.pageDefinition.eventFunctions?.[addEvent] : undefined;
 
 	const bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
