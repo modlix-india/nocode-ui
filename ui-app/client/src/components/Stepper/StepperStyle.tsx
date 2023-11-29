@@ -57,7 +57,7 @@ export default function StepperStyle({ theme }: { theme: Map<string, Map<string,
 			justify-content: center;
 		}
 
-		${PREFIX}._rectangle_arrow ._listItem:not(:last-child)::after {
+		${PREFIX}._rectangle_arrow ._listItem._withLines:not(:last-child)::after {
 			content: "";
 			width: 0;
 			height: 0;
@@ -67,38 +67,38 @@ export default function StepperStyle({ theme }: { theme: Map<string, Map<string,
 			z-index: 1;
 		}
 		
-		${PREFIX}._default ._listItem:last-child,
-		${PREFIX}._big_circle ._listItem:last-child {
+		${PREFIX}._default ._listItem._withLines:last-child,
+		${PREFIX}._big_circle ._listItem._withLines:last-child {
 		    flex-grow: 0;
 		}
 
-		${PREFIX}._default ul._horizontal ._listItem:not(:last-child)::after,
-		${PREFIX}._big_circle ul._horizontal ._listItem:not(:last-child)::after {
+		${PREFIX}._default ul._horizontal ._listItem._withLines:not(:last-child)::after,
+		${PREFIX}._big_circle ul._horizontal ._listItem._withLines:not(:last-child)::after {
 			content: "";
 			align-self: flex-start;
 			flex-grow: 1;
 		}
 
-		${PREFIX}._default ul._horizontal._textTop ._listItem:not(:last-child)::after,
-		${PREFIX}._big_circle ul._horizontal._textTop ._listItem:not(:last-child)::after {
+		${PREFIX}._default ul._horizontal._textTop ._listItem._withLines:not(:last-child)::after,
+		${PREFIX}._big_circle ul._horizontal._textTop ._listItem._withLines:not(:last-child)::after {
 			border-bottom: none;
 			align-self: flex-end;
 		}
 		
-		${PREFIX}._default ul._vertical ._listItem:not(:last-child)::after,
-		${PREFIX}._big_circle ul._vertical ._listItem:not(:last-child)::after {
+		${PREFIX}._default ul._vertical ._listItem._withLines:not(:last-child)::after,
+		${PREFIX}._big_circle ul._vertical ._listItem._withLines:not(:last-child)::after {
 			content: "";
 			flex-grow: 1;
 		}
 
-		${PREFIX}._default ul._vertical._textRight ._listItem:not(:last-child)::after,
-		${PREFIX}._big_circle ul._vertical._textRight ._listItem:not(:last-child)::after {
+		${PREFIX}._default ul._vertical._textRight ._listItem._withLines:not(:last-child)::after,
+		${PREFIX}._big_circle ul._vertical._textRight ._listItem._withLines:not(:last-child)::after {
 			border-left: none;
 			align-self: flex-start;
 		}
 
-		${PREFIX}._default ul._vertical._textLeft ._listItem:not(:last-child)::after,
-		${PREFIX}._big_circle ul._vertical._textLeft ._listItem:not(:last-child)::after {
+		${PREFIX}._default ul._vertical._textLeft ._listItem._withLines:not(:last-child)::after,
+		${PREFIX}._big_circle ul._vertical._textLeft ._listItem._withLines:not(:last-child)::after {
 			align-self: flex-end;
 		}
 		
