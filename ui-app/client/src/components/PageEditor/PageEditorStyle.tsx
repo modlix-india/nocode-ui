@@ -80,6 +80,14 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border-left: 1px solid rgba(0, 0, 0, 0.10);
 		}
 
+		._propBar._right._isDrag {
+			position: absolute;
+		}
+
+		._propBar._right._isDragged {
+			opacity: 0.6;
+		}
+
 		${PREFIX} ._filterBar {
 			display: flex;
 			flex-direction: row;
@@ -326,6 +334,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._overflowContainer._withCopyButtons {
 			height: calc(100vh - 210px);
+		}
+
+		${PREFIX} ._withDragProperty {
+			height: 45vh;
 		}
 
 		${PREFIX} ._addSelector {
@@ -1923,6 +1935,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex: 1;
 			flex-direction: column;
 			width: calc(100% - 48px);
+			position: relative;
 		}
 
 		${PREFIX} ._selectionBar {
@@ -1966,6 +1979,31 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
     		flex: 1;
 			max-height: calc(100% - 29px);
+		}
+
+		${PREFIX} ._dragBar {
+			position: relative;
+			width: 100%;
+			color: #8E90A4;
+		}
+
+		${PREFIX} ._dragBar._unbuckled {
+			display: flex;
+			justify-content: space-between;
+			padding: 8px 6px 8px 6px;
+		}
+
+		${PREFIX} ._dragBar ._buckle {
+			cursor: pointer;	
+			outline: none;
+			position: absolute;
+			left: -20px;
+			top: 8px;
+		}
+
+		${PREFIX} ._dragBar ._leftIcon, ._dragBar ._rightIcon {
+			outline: none;
+			cursor: pointer;
 		}
 
 		${PREFIX} ._iframeContainer._previewMode {
