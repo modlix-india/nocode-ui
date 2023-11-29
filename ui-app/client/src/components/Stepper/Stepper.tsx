@@ -56,9 +56,9 @@ function Stepper(props: ComponentProps) {
 	const resolvedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
 		{ hover },
-		stylePropertiesDefinition,
+		stylePropertiesWithPseudoStates,
 	);
-
+	console.log(resolvedStyles, props.pageDefinition);
 	React.useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
