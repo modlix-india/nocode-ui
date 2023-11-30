@@ -102,7 +102,7 @@ function FileUpload(props: ComponentProps) {
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
 		: undefined;
 	const uploadImmediatelyEvent = onSelectEvent
-		? props.pageDefinition.eventFunctions[onSelectEvent]
+		? props.pageDefinition.eventFunctions?.[onSelectEvent]
 		: undefined;
 	useEffect(() => {
 		const msgs = validation?.length
