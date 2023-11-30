@@ -1,6 +1,12 @@
-import React from 'react';
-import { PageStoreExtractor } from '../../context/StoreContext';
-import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
+import React, { useMemo, useRef } from 'react';
+import { PageStoreExtractor, getPathFromLocation, setData } from '../../context/StoreContext';
+import {
+	Component,
+	ComponentPropertyDefinition,
+	ComponentProps,
+	LocationHistory,
+	PageDefinition,
+} from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponent';
 import { IconHelper } from '../util/IconHelper';
@@ -8,17 +14,55 @@ import useDefinition from '../util/useDefinition';
 import GridStyle from './FillerValueEditorStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './fillerValueEditorProperties';
 import { styleDefaults } from './fillerValueEditorStyleProperties';
+import ValueEditor from './components/ValueEditor';
+import { PageViewer } from './components/PageViewer';
+import { runEvent } from '../util/runEvent';
+import TopBar from './components/TopBar';
+import { Filler } from '../FillerDefinitionEditor/components/fillerCommons';
+
+function savePersonalizationCurry(
+	personalizationPath: string,
+	pageName: string,
+	onChangePersonalization: any,
+	locationHistory: Array<LocationHistory>,
+	pageDefinition: PageDefinition,
+) {
+	if (!onChangePersonalization) return (key: string, value: any) => {};
+	let handle: any = -1;
+
+	return (key: string, value: any) => {
+		if (handle !== -1) clearTimeout(handle);
+
+		setData(`${personalizationPath}.${key}`, value, pageName);
+		handle = setTimeout(() => {
+			(async () =>
+				await runEvent(
+					onChangePersonalization,
+					'pageEditorSave',
+					pageName,
+					locationHistory,
+					pageDefinition,
+				))();
+		}, 2000);
+	};
+}
 
 function FillerValueEditor(props: ComponentProps) {
 	const { definition, pageDefinition, locationHistory, context } = props;
 	const {
-		definition: { bindingPath },
+		definition: { bindingPath, bindingPath3, bindingPath2 },
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
 		key,
 		stylePropertiesWithPseudoStates,
-		properties: { onSave } = {},
+		properties: {
+			onSave,
+			onChangePersonalization,
+			logo,
+			dashboardPageName,
+			settingsPageName,
+		} = {},
 	} = useDefinition(
 		definition,
 		propertiesDefinition,
@@ -33,9 +77,62 @@ function FillerValueEditor(props: ComponentProps) {
 		stylePropertiesWithPseudoStates,
 	);
 
+	const uiDefPath = bindingPath
+		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
+		: undefined;
+
+	const coreDefPath = bindingPath2
+		? getPathFromLocation(bindingPath2, locationHistory, pageExtractor)
+		: undefined;
+
+	// binding path for the editor's personalization.
+	const personalizationPath = bindingPath3
+		? getPathFromLocation(bindingPath3, locationHistory, pageExtractor)
+		: undefined;
+
+	// Function to save the personalization
+	const savePersonalization = useMemo(() => {
+		if (!personalizationPath) return (key: string, value: any) => {};
+
+		return savePersonalizationCurry(
+			personalizationPath,
+			context.pageName,
+			pageDefinition.eventFunctions?.[onChangePersonalization],
+			locationHistory,
+			pageDefinition,
+		);
+	}, [
+		personalizationPath,
+		context.pageName,
+		onChangePersonalization,
+		locationHistory,
+		pageDefinition,
+	]);
+
+	const unodStack = useRef<Array<Filler>>([]);
+	const redoStack = useRef<Array<Filler>>([]);
+
 	return (
 		<div className={`comp compFillerValueEditor`} style={resolvedStyles.comp ?? {}}>
 			<HelperComponent key={`${key}_hlp`} definition={definition} />
+			<TopBar
+				logo={logo}
+				dashboardPageName={dashboardPageName}
+				settingsPageName={settingsPageName}
+				onSave={() => {}}
+				onUndo={() => {}}
+				onRedo={() => {}}
+				hasUndo={unodStack?.current?.length > 1}
+				hasRedo={redoStack?.current?.length > 0}
+				pageExtractor={pageExtractor}
+				locationHistory={locationHistory}
+				personalizationPath={personalizationPath}
+				onPersonalizationChange={(k: string, v: any) => savePersonalization(k, v)}
+			/>
+			<div className="_body">
+				<ValueEditor />
+				<PageViewer />
+			</div>
 		</div>
 	);
 }
@@ -52,7 +149,9 @@ const component: Component = {
 	stylePseudoStates: [],
 	styleProperties: stylePropertiesDefinition,
 	bindingPaths: {
-		bindingPath: { name: 'Filler Values' },
+		bindingPath: { name: 'UI Filler' },
+		bindingPath2: { name: 'Server Filler' },
+		bindingPath3: { name: 'Personalization' },
 	},
 	defaultTemplate: {
 		key: '',

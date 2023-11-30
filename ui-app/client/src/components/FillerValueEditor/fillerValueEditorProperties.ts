@@ -16,6 +16,36 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.EVENTS,
 		description: 'Event to be triggered on page save.',
 	},
+	{
+		name: 'onChangePersonalization',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Personalization Change',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		group: ComponentPropertyGroup.EVENTS,
+		description: 'Event to be triggered on personalization changed.',
+	},
+	{
+		name: 'logo',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'SVG logo',
+		group: ComponentPropertyGroup.BASIC,
+		description: 'SVG Logo with no fill to match the theme',
+	},
+	{
+		name: 'dashboardPageName',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Name of dashboard page',
+		group: ComponentPropertyGroup.DATA,
+		description: 'Name of dashboard page.',
+	},
+
+	{
+		name: 'settingsPageName',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Name of site settings page',
+		group: ComponentPropertyGroup.DATA,
+		description: 'Name of site settings page.',
+	},
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
