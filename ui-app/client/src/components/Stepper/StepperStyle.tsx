@@ -28,13 +28,16 @@ export default function StepperStyle({ theme }: { theme: Map<string, Map<string,
 			flex-direction: column;
 		}
 
-		${PREFIX} ._listItem {
-			flex-grow: 1;
-			flex-shrink: 0;
+		${PREFIX} ._listItem {	
 			display: flex;
 			flex-direction: row;
 			align-items: center;
 			position: relative;
+		}
+
+		${PREFIX} ._listItem._withLines {	
+			flex-grow: 1;
+			flex-shrink: 0;
 		}
 
 		${PREFIX} ul._vertical ._listItem {
