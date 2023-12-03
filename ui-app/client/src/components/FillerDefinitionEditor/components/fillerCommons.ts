@@ -51,6 +51,8 @@ export interface SectionDefinition {
 }
 
 export interface Filler {
+	appCode?: string;
+	clientCode?: string;
 	values?: { [key: string]: any };
 	definition?: {
 		[key: string]: SectionDefinition;

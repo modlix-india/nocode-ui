@@ -1,5 +1,11 @@
-import React, { useMemo, useRef } from 'react';
-import { PageStoreExtractor, getPathFromLocation, setData } from '../../context/StoreContext';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import {
+	PageStoreExtractor,
+	addListenerAndCallImmediately,
+	getDataFromPath,
+	getPathFromLocation,
+	setData,
+} from '../../context/StoreContext';
 import {
 	Component,
 	ComponentPropertyDefinition,
@@ -15,10 +21,12 @@ import GridStyle from './FillerValueEditorStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './fillerValueEditorProperties';
 import { styleDefaults } from './fillerValueEditorStyleProperties';
 import ValueEditor from './components/ValueEditor';
-import { PageViewer } from './components/PageViewer';
+import PageViewer from './components/PageViewer';
 import { runEvent } from '../util/runEvent';
 import TopBar from './components/TopBar';
 import { Filler } from '../FillerDefinitionEditor/components/fillerCommons';
+import { isNullValue } from '@fincity/kirun-js';
+import { MASTER_FUNCTIONS } from './components/masterFunctions';
 
 function savePersonalizationCurry(
 	personalizationPath: string,
@@ -109,8 +117,101 @@ function FillerValueEditor(props: ComponentProps) {
 		pageDefinition,
 	]);
 
-	const unodStack = useRef<Array<Filler>>([]);
-	const redoStack = useRef<Array<Filler>>([]);
+	const [uiFiller, setUIFiller] = useState<Filler>({});
+	const [coreFiller, setCoreFiller] = useState<Filler>({});
+
+	const [firstUIFiller, setFirstUIFiller] = useState<Filler | undefined>(undefined);
+	const [firstCoreFiller, setFirstCoreFiller] = useState<Filler | undefined>(undefined);
+
+	const clientCode = getDataFromPath('Store.auth.client.code', locationHistory, pageExtractor);
+
+	useEffect(() => {
+		if (!uiDefPath) return;
+		return addListenerAndCallImmediately(
+			(_, value) => {
+				const isNull = isNullValue(value);
+				setUIFiller(isNull ? {} : value);
+				if (!isNull && !firstUIFiller) setFirstUIFiller(value);
+			},
+			pageExtractor,
+			uiDefPath,
+		);
+	}, [firstUIFiller, setFirstUIFiller, uiDefPath]);
+
+	useEffect(() => {
+		if (!coreDefPath) return;
+		return addListenerAndCallImmediately(
+			(_, value) => {
+				const isNull = isNullValue(value);
+				setCoreFiller(isNull ? {} : value);
+				if (!isNull && !firstCoreFiller) setFirstCoreFiller(value);
+			},
+			pageExtractor,
+			coreDefPath,
+		);
+	}, [firstCoreFiller, setFirstCoreFiller, coreDefPath]);
+
+	const unodStack = useRef<Array<Filler[]>>([]);
+	const redoStack = useRef<Array<Filler[]>>([]);
+
+	const iframeRef = useRef<HTMLIFrameElement>(null);
+
+	useEffect(() => {
+		function onMessageFromSlave(e: any) {
+			const {
+				data: { type, payload, editorType },
+			} = e;
+
+			if (!type || !type.startsWith('SLAVE_') || !iframeRef.current) return;
+
+			if (!MASTER_FUNCTIONS.has(type)) throw Error('Unknown message from Slave : ' + type);
+
+			if (editorType && editorType !== 'PAGE') return;
+
+			MASTER_FUNCTIONS.get(type)!({ iframe: iframeRef.current }, payload);
+		}
+
+		window.addEventListener('message', onMessageFromSlave);
+		return () => window.removeEventListener('message', onMessageFromSlave);
+	}, [iframeRef.current]);
+
+	const [selection, setSelection] = useState<
+		{ isUiFiller: boolean; sectionKey: string; sectionNumber: number } | undefined
+	>();
+
+	useEffect(() => {
+		if (!selection || !iframeRef.current) return;
+
+		const { isUiFiller, sectionKey } = selection;
+
+		const filler = isUiFiller ? uiFiller : coreFiller;
+
+		if (!filler) return;
+
+		const section = filler.definition?.[sectionKey];
+
+		if (!section) return;
+
+		iframeRef.current.contentWindow?.postMessage(
+			{
+				type: 'EDITOR_FILLER_SECTION_SELECTION',
+				payload: { sectionKey, section, sectionNumber: selection.sectionNumber },
+			},
+			'*',
+		);
+	}),
+		[selection, iframeRef.current];
+
+	let filler = uiFiller;
+	if (!selection?.isUiFiller && Object.keys(coreFiller).length > 0) filler = coreFiller;
+
+	let url = `/${filler.appCode}/${filler.clientCode}/page`;
+
+	if (filler.definition?.[selection?.sectionKey ?? '']) {
+		url += filler.definition?.[selection?.sectionKey!].pagePath;
+		if (filler.definition?.[selection?.sectionKey!].gridKey)
+			url += `#${filler.definition?.[selection?.sectionKey!].gridKey}`;
+	} else url += '/';
 
 	return (
 		<div className={`comp compFillerValueEditor`} style={resolvedStyles.comp ?? {}}>
@@ -122,7 +223,7 @@ function FillerValueEditor(props: ComponentProps) {
 				onSave={() => {}}
 				onUndo={() => {}}
 				onRedo={() => {}}
-				hasUndo={unodStack?.current?.length > 1}
+				hasUndo={unodStack?.current?.length > 0}
 				hasRedo={redoStack?.current?.length > 0}
 				pageExtractor={pageExtractor}
 				locationHistory={locationHistory}
@@ -130,8 +231,26 @@ function FillerValueEditor(props: ComponentProps) {
 				onPersonalizationChange={(k: string, v: any) => savePersonalization(k, v)}
 			/>
 			<div className="_body">
-				<ValueEditor />
-				<PageViewer />
+				<ValueEditor
+					uiFiller={uiFiller}
+					coreFiller={coreFiller}
+					pageExtractor={pageExtractor}
+					personalizationPath={personalizationPath}
+					onPersonalizationChange={(k: string, v: any) => savePersonalization(k, v)}
+					onSectionSelection={(isUiFiller: boolean, sectionKey: string, index: number) =>
+						setSelection({ isUiFiller, sectionKey, sectionNumber: index })
+					}
+					onValueChanged={(isUiFiller: boolean, filler: Filler) => {
+						if (!(isUiFiller ? uiDefPath : coreDefPath)) return;
+						setData(isUiFiller ? uiDefPath! : coreDefPath!, filler, context.pageName);
+					}}
+				/>
+				<PageViewer
+					url={url}
+					iframeRef={iframeRef}
+					pageExtractor={pageExtractor}
+					personalizationPath={personalizationPath}
+				/>
 			</div>
 		</div>
 	);

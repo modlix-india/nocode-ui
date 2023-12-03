@@ -2,6 +2,7 @@ import { duplicate } from '@fincity/kirun-js';
 import { getDataFromPath, setData } from './context/StoreContext';
 import { ComponentDefinition } from './types/common';
 import { STORE_PREFIX } from './constants';
+import { SetStore } from './functions/SetStore';
 
 export const isSlave = (() => {
 	try {
@@ -18,6 +19,14 @@ export function messageToMaster(message: { type: string; payload: any | undefine
 
 export const SLAVE_FUNCTIONS = new Map<string, (payload: any) => void>([
 	['EDITOR_TYPE', p => (window.designMode = p)],
+	[
+		'EDITOR_FILLER_SECTION_SELECTION',
+		p => {
+			if (!window.fillerValueEditor) window.fillerValueEditor = {};
+			window.fillerValueEditor.selectedComponent = p?.section.gridKey;
+			window.fillerValueEditor.selectedSectionNumber = p?.sectionNumber;
+		},
+	],
 	[
 		'EDITOR_DEFINITION',
 		p => (window.pageEditor = { ...window.pageEditor, editingPageDefinition: p }),
