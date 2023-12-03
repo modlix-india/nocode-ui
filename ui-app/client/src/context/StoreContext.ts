@@ -13,6 +13,7 @@ import { ParentExtractorForRunEvent } from './ParentExtractor';
 import { SpecialTokenValueExtractor } from './SpecialTokenValueExtractor';
 import { ThemeExtractor } from './ThemeExtractor';
 import { sample } from './sampleData';
+import { FillerExtractor } from './FillerExtractor';
 
 export class StoreExtractor extends SpecialTokenValueExtractor {
 	private store: any;
@@ -37,6 +38,7 @@ if (typeof window !== 'undefined') {
 }
 export const localStoreExtractor = new LocalStoreExtractor(localStore, `${LOCAL_STORE_PREFIX}.`);
 export const themeExtractor = new ThemeExtractor();
+export const fillerExtractor = new FillerExtractor();
 
 const {
 	getData: _getData,
@@ -46,15 +48,17 @@ const {
 	addListenerAndCallImmediately: _addListenerAndCallImmediately,
 	addListenerWithChildrenActivity: _addListenerWithChildrenActivity,
 	addListenerAndCallImmediatelyWithChildrenActivity:
-	_addListenerAndCallImmediatelyWithChildrenActivity,
+		_addListenerAndCallImmediatelyWithChildrenActivity,
 } = useStore(
 	{},
 	STORE_PREFIX,
 	localStoreExtractor,
 	themeExtractor,
+	fillerExtractor,
 	new StoreExtractor(sample, `${SAMPLE_STORE_PREFIX}.`),
 );
 themeExtractor.setStore(_store);
+fillerExtractor.setStore(_store);
 
 globalThis.getStore = () => duplicate(_store);
 
@@ -139,7 +143,7 @@ export function getDataFromPath(
 export const innerSetData = _setData;
 
 export function setData(path: string, value: any, context?: string, deleteKey?: boolean) {
-	if (path.startsWith('SampleDataStore.')) {
+	if (path.startsWith('SampleDataStore.') || path.startsWith('Filler.')) {
 		// Sample store is not editable so we are not changing the data
 		return;
 	} else if (path.startsWith(LOCAL_STORE_PREFIX)) {
