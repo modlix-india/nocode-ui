@@ -234,7 +234,7 @@ export const RenderEngineContainer = () => {
 	const [, setLastChanged] = useState(Date.now());
 
 	useEffect(() => {
-		if (window.designMode !== 'PAGE') return;
+		if (window.designMode !== 'PAGE' && window.designMode !== 'FILLER_VALUE_EDITOR') return;
 
 		function onMessageRecieved(e: MessageEvent) {
 			const { data: { type } = {} } = e;
@@ -244,19 +244,17 @@ export const RenderEngineContainer = () => {
 		}
 		window.addEventListener('message', onMessageRecieved);
 		return () => window.removeEventListener('message', onMessageRecieved);
-	}, [setLastChanged]);
+	}, [window.designMode, setLastChanged]);
 
 	useEffect(() => {
-		if (window.designMode !== 'PAGE') return;
+		if (window.designMode !== 'PAGE' && window.designMode !== 'FILLER_VALUE_EDITOR') return;
 
 		return addListener(
 			(_, v) => setPageDefinition(processClassesForPageDefinition(v)),
 			undefined,
 			`${STORE_PREFIX}.pageDefinition.${currentPageName}`,
 		);
-	}, [currentPageName]);
-
-	useEffect(() => {}, []);
+	}, [window.designMode, currentPageName]);
 
 	const Page = ComponentDefinitions.get('Page')!.component;
 

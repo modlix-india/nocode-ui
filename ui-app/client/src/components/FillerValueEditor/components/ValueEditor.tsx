@@ -3,7 +3,7 @@ import {
 	PageStoreExtractor,
 	addListenerAndCallImmediatelyWithChildrenActivity,
 } from '../../../context/StoreContext';
-import { Filler } from '../../FillerDefinitionEditor/components/fillerCommons';
+import { Filler } from '.././components/fillerCommons';
 import { CollapseIcon } from './FillerValueEditorIcons';
 import { Section } from './Section';
 import { StoreExtractor } from '@fincity/path-reactive-state-management';

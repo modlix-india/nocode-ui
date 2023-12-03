@@ -24,8 +24,8 @@ import ValueEditor from './components/ValueEditor';
 import PageViewer from './components/PageViewer';
 import { runEvent } from '../util/runEvent';
 import TopBar from './components/TopBar';
-import { Filler } from '../FillerDefinitionEditor/components/fillerCommons';
-import { isNullValue } from '@fincity/kirun-js';
+import { Filler } from './components/fillerCommons';
+import { duplicate, isNullValue } from '@fincity/kirun-js';
 import { MASTER_FUNCTIONS } from './components/masterFunctions';
 
 function savePersonalizationCurry(
@@ -151,7 +151,7 @@ function FillerValueEditor(props: ComponentProps) {
 		);
 	}, [firstCoreFiller, setFirstCoreFiller, coreDefPath]);
 
-	const unodStack = useRef<Array<Filler[]>>([]);
+	const undoStack = useRef<Array<Filler[]>>([]);
 	const redoStack = useRef<Array<Filler[]>>([]);
 
 	const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -205,7 +205,7 @@ function FillerValueEditor(props: ComponentProps) {
 	let filler = uiFiller;
 	if (!selection?.isUiFiller && Object.keys(coreFiller).length > 0) filler = coreFiller;
 
-	let url = `/${filler.appCode}/${filler.clientCode}/page`;
+	let url = filler.appCode ? `/${filler.appCode}/${filler.clientCode}/page` : '';
 
 	if (filler.definition?.[selection?.sectionKey ?? '']) {
 		url += filler.definition?.[selection?.sectionKey!].pagePath;
@@ -220,10 +220,46 @@ function FillerValueEditor(props: ComponentProps) {
 				logo={logo}
 				dashboardPageName={dashboardPageName}
 				settingsPageName={settingsPageName}
-				onSave={() => {}}
-				onUndo={() => {}}
-				onRedo={() => {}}
-				hasUndo={unodStack?.current?.length > 0}
+				onSave={() => {
+					console.log(onSave);
+					if (!onSave || !pageDefinition.eventFunctions?.[onSave]) return;
+					runEvent(
+						pageDefinition.eventFunctions?.[onSave],
+						'pageEditorSave',
+						context.pageName,
+						locationHistory,
+						pageDefinition,
+					);
+				}}
+				onUndo={() => {
+					if (undoStack.current.length === 0) return;
+					const [f1, f2] = duplicate(undoStack.current.pop()!);
+					setData(uiDefPath!, f1, context.pageName);
+					iframeRef.current?.contentWindow?.postMessage(
+						{
+							type: 'EDITOR_FILLER_VALUE_CHANGE',
+							payload: { values: f1.values ?? {} },
+						},
+						'*',
+					);
+					if (Object.keys(f2).length > 0) setData(coreDefPath!, f2, context.pageName);
+					redoStack.current.push(duplicate([uiFiller, coreFiller]));
+				}}
+				onRedo={() => {
+					if (redoStack.current.length === 0) return;
+					const [f1, f2] = duplicate(redoStack.current.pop()!);
+					setData(uiDefPath!, f1, context.pageName);
+					iframeRef.current?.contentWindow?.postMessage(
+						{
+							type: 'EDITOR_FILLER_VALUE_CHANGE',
+							payload: { values: f1.values ?? {} },
+						},
+						'*',
+					);
+					if (Object.keys(f2).length > 0) setData(coreDefPath!, f2, context.pageName);
+					undoStack.current.push(duplicate([uiFiller, coreFiller]));
+				}}
+				hasUndo={undoStack?.current?.length > 0}
 				hasRedo={redoStack?.current?.length > 0}
 				pageExtractor={pageExtractor}
 				locationHistory={locationHistory}
@@ -242,7 +278,17 @@ function FillerValueEditor(props: ComponentProps) {
 					}
 					onValueChanged={(isUiFiller: boolean, filler: Filler) => {
 						if (!(isUiFiller ? uiDefPath : coreDefPath)) return;
+						undoStack.current.push(duplicate([uiFiller, coreFiller]));
+
 						setData(isUiFiller ? uiDefPath! : coreDefPath!, filler, context.pageName);
+						if (!isUiFiller || !iframeRef.current) return;
+						iframeRef.current.contentWindow?.postMessage(
+							{
+								type: 'EDITOR_FILLER_VALUE_CHANGE',
+								payload: { values: filler.values ?? {} },
+							},
+							'*',
+						);
 					}}
 				/>
 				<PageViewer

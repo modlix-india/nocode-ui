@@ -1,7 +1,8 @@
 import { StoreExtractor, setStoreData } from '@fincity/path-reactive-state-management';
 import React, { useState } from 'react';
-import ToggleButton from '../../FillerDefinitionEditor/components/ToggleButton';
-import { Filler, SectionDefinition } from '../../FillerDefinitionEditor/components/fillerCommons';
+import { Filler, SectionDefinition } from '.././components/fillerCommons';
+import { Editor } from './Editor';
+import ToggleButton from './ToggleButton';
 
 export function Section({
 	filler,
@@ -54,7 +55,18 @@ export function Section({
 				<div className="_sectionName">{section.name}</div>
 				{sectionToggle}
 			</div>
-			<div className="_sectionBody"></div>
+			<div className={`_sectionBody _${section.layout ?? 'HORIZONTAL'}`}>
+				{Object.values(section.editors ?? {}).map(editor => (
+					<Editor
+						key={editor.key}
+						editor={editor}
+						sectionValueKey={section.valueKey}
+						filler={filler}
+						onValueChanged={onValueChanged}
+						storeExtractor={storeExtractor}
+					/>
+				))}
+			</div>
 		</div>
 	);
 }

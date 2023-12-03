@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
 	PageStoreExtractor,
-	addListenerAndCallImmediately,
 	addListenerAndCallImmediatelyWithChildrenActivity,
 } from '../../../context/StoreContext';
 import { LocationHistory } from '../../../types/common';
@@ -101,7 +100,9 @@ export default function TopBar({
 				<div className={`_button ${hasRedo ? '' : '_disabled'}`} onClick={onRedo}>
 					<RedoIcon />
 				</div>
-				<div className="_saveButton">Publish</div>
+				<div className="_saveButton" onClick={onSave}>
+					Publish
+				</div>
 			</div>
 		</div>
 	);

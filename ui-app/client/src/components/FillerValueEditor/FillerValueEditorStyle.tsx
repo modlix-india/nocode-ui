@@ -359,6 +359,18 @@ export default function FillerValueEditorStyle({
 			align-items: center;
 			gap:8px;
 		} 
+
+		${PREFIX} ._sectionBody {
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
+			padding-top: 10px;
+			align-items: center;
+		}
+
+		${PREFIX} ._sectionBody._HORIZONTAL {
+			flex-direction: row;
+		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="FillterValueEditorCSS">{css}</style>;
