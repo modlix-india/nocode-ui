@@ -748,6 +748,7 @@ export function AnimationEditor({
 											pseudoState,
 											saveStyle,
 											iterateProps,
+											selectorPref,
 											propValues: [
 												{
 													prop: 'animationName',
@@ -840,6 +841,7 @@ export function AnimationEditor({
 						saveStyle,
 						iterateProps,
 						propValues: v,
+						selectorPref,
 					})
 				}
 				values={propAndValue}

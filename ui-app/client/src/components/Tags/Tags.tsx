@@ -116,7 +116,7 @@ function Tags(props: ComponentProps) {
 		}
 	};
 
-	const onCloseEvent = closeEvent ? props.pageDefinition.eventFunctions[closeEvent] : undefined;
+	const onCloseEvent = closeEvent ? props.pageDefinition.eventFunctions?.[closeEvent] : undefined;
 
 	const handleClose = (originalKey: string | number) => {
 		if ((datatype.startsWith('LIST') && Array.isArray(value)) || showInputBox) {

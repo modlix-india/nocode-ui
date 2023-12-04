@@ -172,9 +172,9 @@ function TextBox(props: ComponentProps) {
 				true,
 			);
 	}, [value, validation]);
-	const changeEvent = onChange ? props.pageDefinition.eventFunctions[onChange] : undefined;
-	const blurEvent = onBlur ? props.pageDefinition.eventFunctions[onBlur] : undefined;
-	const focusEvent = onFocus ? props.pageDefinition.eventFunctions[onFocus] : undefined;
+	const changeEvent = onChange ? props.pageDefinition.eventFunctions?.[onChange] : undefined;
+	const blurEvent = onBlur ? props.pageDefinition.eventFunctions?.[onBlur] : undefined;
+	const focusEvent = onFocus ? props.pageDefinition.eventFunctions?.[onFocus] : undefined;
 	const updateStoreImmediately = upStoreImm || autoComplete === 'on';
 
 	const callChangeEvent = useCallback(() => {
@@ -289,7 +289,7 @@ function TextBox(props: ComponentProps) {
 			callChangeEvent();
 		}
 		if (!onClear) return;
-		const clearEvent = props.pageDefinition.eventFunctions[onClear];
+		const clearEvent = props.pageDefinition.eventFunctions?.[onClear];
 		if (!clearEvent) return;
 		await runEvent(
 			clearEvent,
@@ -299,7 +299,7 @@ function TextBox(props: ComponentProps) {
 			props.pageDefinition,
 		);
 	};
-	const clickEvent = onEnter ? props.pageDefinition.eventFunctions[onEnter] : undefined;
+	const clickEvent = onEnter ? props.pageDefinition.eventFunctions?.[onEnter] : undefined;
 
 	const handleKeyUp = async (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		if (!clickEvent || isLoading || e.key !== 'Enter') return;

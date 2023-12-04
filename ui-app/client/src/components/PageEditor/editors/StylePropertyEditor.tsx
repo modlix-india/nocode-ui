@@ -8,6 +8,7 @@ import {
 } from '../../../constants';
 import {
 	PageStoreExtractor,
+	addListenerAndCallImmediately,
 	addListenerAndCallImmediatelyWithChildrenActivity,
 	getDataFromPath,
 	setData,
@@ -140,6 +141,7 @@ export default function StylePropertyEditor({
 	const [appDef, setAppDef] = useState<any>();
 	const [styleProps, setStyleProps] = useState<ComponentStyle>();
 	const [showAdvanced, setShowAdvanced] = useState<Array<string>>([]);
+	const [isDragging, setIsDragging] = useState<boolean>(false);
 
 	const [properties, setProperties] = useState<[string, EachComponentStyle]>();
 
@@ -179,6 +181,16 @@ export default function StylePropertyEditor({
 			appPath!,
 		);
 	}, [appPath, pageExtractor, setAppDef]);
+
+	useEffect(() => {
+		if (!personalizationPath) return;
+
+		return addListenerAndCallImmediately(
+			(_, v) => setIsDragging(v ?? false),
+			pageExtractor,
+			`${personalizationPath}.propertyTabCurrentState`,
+		);
+	}, [personalizationPath]);
 
 	const updateSelectorPref = useCallback(
 		(pref1: string, value1: any) => {
@@ -372,7 +384,7 @@ export default function StylePropertyEditor({
 	);
 
 	return (
-		<div className="_propertyEditor">
+		<div className={`_propertyEditor ${isDragging ? '_withDragProperty' : ''}`}>
 			{detailStyleEditor}
 			<div className="_eachStyleClass">
 				<div className="_propLabel _styleButtonContainer">

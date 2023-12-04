@@ -56,7 +56,7 @@ function TablePreviewGrid(props: ComponentProps) {
 		stylePropertiesWithPseudoStates,
 	);
 
-	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
+	const clickEvent = onClick ? props.pageDefinition.eventFunctions?.[onClick] : undefined;
 	const spinnerPath = `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
 		key,
 	)}.isRunning`;

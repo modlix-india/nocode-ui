@@ -160,9 +160,9 @@ function TextArea(props: ComponentProps) {
 
 	const updateStoreImmediately = upStoreImm || autoComplete === 'on';
 
-	const changeEvent = onChange ? props.pageDefinition.eventFunctions[onChange] : undefined;
-	const blurEvent = onBlur ? props.pageDefinition.eventFunctions[onBlur] : undefined;
-	const focusEvent = onFocus ? props.pageDefinition.eventFunctions[onFocus] : undefined;
+	const changeEvent = onChange ? props.pageDefinition.eventFunctions?.[onChange] : undefined;
+	const blurEvent = onBlur ? props.pageDefinition.eventFunctions?.[onBlur] : undefined;
+	const focusEvent = onFocus ? props.pageDefinition.eventFunctions?.[onFocus] : undefined;
 
 	const callChangeEvent = useCallback(() => {
 		if (!changeEvent) return;
@@ -210,7 +210,7 @@ function TextArea(props: ComponentProps) {
 			callChangeEvent();
 		}
 		if (!onClear) return;
-		const clearEvent = props.pageDefinition.eventFunctions[onClear];
+		const clearEvent = props.pageDefinition.eventFunctions?.[onClear];
 		if (!clearEvent) return;
 		await runEvent(
 			clearEvent,

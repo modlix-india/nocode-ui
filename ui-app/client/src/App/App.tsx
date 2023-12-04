@@ -16,6 +16,7 @@ import { StyleResolutionDefinition } from '../util/styleProcessor';
 import { Messages } from './Messages/Messages';
 import { isSlave, messageToMaster, SLAVE_FUNCTIONS } from '../slaveFunctions';
 import { isNullValue } from '@fincity/kirun-js';
+import GlobalLoader from './GlobalLoader';
 
 // In design mode we are listening to the messages from editor
 
@@ -228,7 +229,7 @@ export function App() {
 	if (isApplicationLoadFailed)
 		return <>Application Load failed, Please contact your administrator</>;
 
-	if (!applicationLoaded) return <>...</>;
+	if (!applicationLoaded) return <GlobalLoader noSpin={true} />;
 	return (
 		<>
 			<BrowserRouter>

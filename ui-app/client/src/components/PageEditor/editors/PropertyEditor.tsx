@@ -4,6 +4,7 @@ import ComponentDefinitions from '../../';
 import { SCHEMA_STRING_COMP_PROP } from '../../../constants';
 import {
 	PageStoreExtractor,
+	addListenerAndCallImmediately,
 	addListenerAndCallImmediatelyWithChildrenActivity,
 	getDataFromPath,
 	setData,
@@ -111,6 +112,7 @@ export default function PropertyEditor({
 }: PropertyEditorProps) {
 	const [def, setDef] = useState<ComponentDefinition>();
 	const [pageDef, setPageDef] = useState<PageDefinition>();
+	const [isDragging, setIsDragging] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (!defPath) return;
@@ -124,6 +126,16 @@ export default function PropertyEditor({
 			defPath,
 		);
 	}, [defPath, selectedComponent]);
+
+	useEffect(() => {
+		if (!personalizationPath) return;
+
+		return addListenerAndCallImmediately(
+			(_, v) => setIsDragging(v ?? false),
+			pageExtractor,
+			`${personalizationPath}.propertyTabCurrentState`,
+		);
+	}, [personalizationPath]);
 
 	if (!def) return <></>;
 
@@ -273,7 +285,7 @@ export default function PropertyEditor({
 	}, {});
 
 	return (
-		<div className="_propertyEditor">
+		<div className={`_propertyEditor ${isDragging ? '_withDragProperty' : ''}`}>
 			<div className="_overflowContainer">
 				<PropertyGroup
 					name="first"

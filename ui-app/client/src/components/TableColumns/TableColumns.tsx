@@ -130,7 +130,7 @@ function TableColumnsComponent(props: ComponentProps) {
 			setData(selectionBindingPath, putObj, context.pageName);
 		}
 
-		const selectEvent = onSelect ? props.pageDefinition.eventFunctions[onSelect] : undefined;
+		const selectEvent = onSelect ? props.pageDefinition.eventFunctions?.[onSelect] : undefined;
 
 		if (!selectEvent) return;
 

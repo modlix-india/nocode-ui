@@ -13,7 +13,7 @@ export class LocalStoreExtractor extends SpecialTokenValueExtractor {
 		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
 		// Add isSlave_ as prefix for preview mode
 		const key = window.isDesignMode ? 'designmode_' + parts[1] : parts[1];
-		let localStorageValue = this.store.getItem(key);
+		let localStorageValue = this.store?.getItem(key);
 		if (!localStorageValue) return localStorageValue;
 		try {
 			localStorageValue = JSON.parse(localStorageValue);

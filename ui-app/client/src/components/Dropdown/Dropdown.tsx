@@ -75,6 +75,7 @@ function DropdownComponent(props: ComponentProps) {
 			designType,
 			colorScheme,
 			leftIcon,
+			clearOnSelectingSameValue,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -84,8 +85,8 @@ function DropdownComponent(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
-	const searchEvent = onSearch ? props.pageDefinition.eventFunctions[onSearch] : undefined;
+	const clickEvent = onClick ? props.pageDefinition.eventFunctions?.[onClick] : undefined;
+	const searchEvent = onSearch ? props.pageDefinition.eventFunctions?.[onSearch] : undefined;
 	const bindingPathPath = getPathFromLocation(bindingPath!, locationHistory, pageExtractor);
 	const searchBindingPath = getPathFromLocation(bindingPath2!, locationHistory, pageExtractor);
 	useEffect(() => {
@@ -172,7 +173,9 @@ function DropdownComponent(props: ComponentProps) {
 		} else {
 			setData(
 				bindingPathPath,
-				deepEqual(selected, each.value) ? undefined : each.value,
+				deepEqual(selected, each.value) && clearOnSelectingSameValue
+					? undefined
+					: each.value,
 				context?.pageName,
 			);
 		}
@@ -285,7 +288,7 @@ function DropdownComponent(props: ComponentProps) {
 	}, [showDropdown, searchText, handleClose, closeOnMouseLeave]);
 
 	const scrollEndEvent =
-		onScrollReachedEnd && props.pageDefinition.eventFunctions[onScrollReachedEnd]
+		onScrollReachedEnd && props.pageDefinition.eventFunctions?.[onScrollReachedEnd]
 			? async (e: UIEvent<HTMLDivElement>) => {
 					const target = e.target as HTMLDivElement;
 
@@ -293,7 +296,7 @@ function DropdownComponent(props: ComponentProps) {
 						return;
 
 					await runEvent(
-						props.pageDefinition.eventFunctions[onScrollReachedEnd],
+						props.pageDefinition.eventFunctions?.[onScrollReachedEnd],
 						key,
 						context.pageName,
 						locationHistory,

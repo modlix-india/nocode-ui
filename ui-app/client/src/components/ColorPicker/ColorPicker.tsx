@@ -143,7 +143,7 @@ function ColorPickerComponent(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	const ChangeEvent = onChange ? props.pageDefinition.eventFunctions[onChange] : undefined;
+	const ChangeEvent = onChange ? props.pageDefinition.eventFunctions?.[onChange] : undefined;
 	const bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath!, locationHistory, pageExtractor)
 		: undefined;

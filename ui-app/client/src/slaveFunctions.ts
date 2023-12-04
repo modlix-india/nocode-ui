@@ -19,6 +19,14 @@ export function messageToMaster(message: { type: string; payload: any | undefine
 export const SLAVE_FUNCTIONS = new Map<string, (payload: any) => void>([
 	['EDITOR_TYPE', p => (window.designMode = p)],
 	[
+		'EDITOR_FILLER_SECTION_SELECTION',
+		p => {
+			if (!window.fillerValueEditor) window.fillerValueEditor = {};
+			window.fillerValueEditor.selectedComponent = p?.section.gridKey;
+			window.fillerValueEditor.selectedSectionNumber = p?.sectionNumber;
+		},
+	],
+	[
 		'EDITOR_DEFINITION',
 		p => (window.pageEditor = { ...window.pageEditor, editingPageDefinition: p }),
 	],
@@ -45,6 +53,19 @@ export const SLAVE_FUNCTIONS = new Map<string, (payload: any) => void>([
 			if (p.properties.fontPacks) {
 				app.properties.fontPacks = p.properties.fontPacks;
 			}
+			setData(appPath, app);
+		},
+	],
+	[
+		'EDITOR_FILLER_VALUE_CHANGE',
+		p => {
+			if (!p) return;
+			const appPath = `${STORE_PREFIX}.application`;
+			const app = duplicate(getDataFromPath(appPath, []));
+			if (!app) return;
+			if (!app.properties) app.properties = {};
+
+			app.properties.fillerValues = p.values;
 			setData(appPath, app);
 		},
 	],

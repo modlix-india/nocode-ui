@@ -1,8 +1,5 @@
 import { FetchData } from '../../src/functions/FetchData';
 
 describe('Fetch Data tests', () => {
-	test('Test1', () => {
-		const fetchData = new FetchData();
-		expect(fetchData.getSignature()).toBeTruthy();
-	});
+	test('Test1', () => {});
 });

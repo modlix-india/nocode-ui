@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { SCHEMA_STRING_COMP_PROP } from '../../../constants';
 import {
 	PageStoreExtractor,
+	addListenerAndCallImmediately,
 	addListenerAndCallImmediatelyWithChildrenActivity,
 	getDataFromPath,
 	setData,
@@ -71,6 +72,7 @@ export default function ClassEditor({
 	const [classes, setClasses] = useState<{ [key: string]: StyleClassDefinition }>({});
 	const [pageDef, setPageDef] = useState<PageDefinition>();
 	const [filter, setFilter] = useState<string>('');
+	const [isDragging, setIsDragging] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (!defPath) return;
@@ -93,13 +95,23 @@ export default function ClassEditor({
 		);
 	}, [personalizationPath]);
 
+	useEffect(() => {
+		if (!personalizationPath) return;
+
+		return addListenerAndCallImmediately(
+			(_, v) => setIsDragging(v ?? false),
+			pageExtractor,
+			`${personalizationPath}.propertyTabCurrentState`,
+		);
+	}, [personalizationPath]);
+
 	const updateDefCurry = (key: string, styleClassDefinition: StyleClassDefinition | undefined) =>
 		updateDefinition(defPath, locationHistory, pageExtractor, key, styleClassDefinition);
 
 	const filterUpper = filter.toUpperCase();
 
 	return (
-		<div className="_propertyEditor">
+		<div className={`_propertyEditor ${isDragging ? '_withDragProperty' : ''}`}>
 			<div className="_overflowContainer">
 				<div className="_eachProp">
 					<div className="_propLabel">FILTER:</div>

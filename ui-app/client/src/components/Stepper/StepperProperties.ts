@@ -130,6 +130,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 	},
 	{
+		name: 'showLines',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Lines',
+		description: 'Show Lines.',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: true,
+	},
+	{
 		name: 'stepperDesign',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Stepper Selection Type',

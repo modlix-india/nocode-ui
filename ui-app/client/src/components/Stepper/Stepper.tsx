@@ -38,6 +38,7 @@ function Stepper(props: ComponentProps) {
 			isStepperVertical,
 			colorScheme,
 			stepperDesign,
+			showLines,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -56,9 +57,8 @@ function Stepper(props: ComponentProps) {
 	const resolvedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
 		{ hover },
-		stylePropertiesDefinition,
+		stylePropertiesWithPseudoStates,
 	);
-
 	React.useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
@@ -146,11 +146,11 @@ function Stepper(props: ComponentProps) {
 								? () => goToStep(i)
 								: undefined
 						}
-						className={`_listItem ${i < value ? '_done' : ''} ${
-							i === value ? '_active' : ''
-						} ${i > value && moveToAnyFutureStep ? '_nextItem' : ''} ${
-							i < value && moveToAnyPreviousStep ? '_previousItem' : ''
-						}`}
+						className={`_listItem ${showLines ? '_withLines' : ''} ${
+							i < value ? '_done' : ''
+						} ${i === value ? '_active' : ''} ${
+							i > value && moveToAnyFutureStep ? '_nextItem' : ''
+						} ${i < value && moveToAnyPreviousStep ? '_previousItem' : ''}`}
 						key={i}
 					>
 						<SubHelperComponent

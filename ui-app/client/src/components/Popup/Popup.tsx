@@ -67,8 +67,10 @@ function Popup(props: ComponentProps) {
 		{},
 		stylePropertiesWithPseudoStates,
 	);
-	const openEvent = eventOnOpen ? props.pageDefinition.eventFunctions[eventOnOpen] : undefined;
-	const closeEvent = eventOnClose ? props.pageDefinition.eventFunctions[eventOnClose] : undefined;
+	const openEvent = eventOnOpen ? props.pageDefinition.eventFunctions?.[eventOnOpen] : undefined;
+	const closeEvent = eventOnClose
+		? props.pageDefinition.eventFunctions?.[eventOnClose]
+		: undefined;
 
 	const refObj = useRef({ first: true });
 

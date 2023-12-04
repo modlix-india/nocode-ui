@@ -68,7 +68,7 @@ function ButtonBar(props: ComponentProps) {
 
 	const [value, setvalue] = React.useState<any>();
 
-	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
+	const clickEvent = onClick ? props.pageDefinition.eventFunctions?.[onClick] : undefined;
 
 	const handleClick = async (each: { key: any; label: any; value: any }) => {
 		if (!each || !bindingPathPath) return;

@@ -73,7 +73,7 @@ export function Messages() {
 		}
 
 		return (
-			<>
+			<React.Fragment key={e.id}>
 				<div key={e.id} data-custom={e.id} className={`_message ${e.type}`}>
 					<i className={`fa-xl ${ICONS[e.type]}`} />
 					<div className="_msgStringContainer">
@@ -91,7 +91,7 @@ export function Messages() {
 					/>
 				</div>
 				{stackTrace}
-			</>
+			</React.Fragment>
 		);
 	});
 

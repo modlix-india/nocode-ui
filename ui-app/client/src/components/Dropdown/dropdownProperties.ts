@@ -116,6 +116,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.uniqueKey,
 	COMMON_COMPONENT_PROPERTIES.labelKey,
 	{
+		name: 'clearOnSelectingSameValue',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Clear On Selecting Same Value',
+		description: 'Clear on selecting same value.',
+		defaultValue: true,
+	},
+	{
 		name: 'leftIcon',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Left Icon',

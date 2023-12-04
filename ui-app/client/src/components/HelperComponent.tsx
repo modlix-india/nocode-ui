@@ -14,7 +14,7 @@ interface HelperComponentPropsType {
 	onDoubleClick?: (e: MouseEvent) => void;
 }
 
-function HelperComponentInternal({
+function PageEditorHelperComponent({
 	definition,
 	children,
 	showNameLabel = true,
@@ -189,6 +189,67 @@ function HelperComponentInternal({
 	);
 }
 
+function FillerValueEditorHelperComponent({ definition: { key } }: HelperComponentPropsType) {
+	const { selectedSectionNumber, selectedComponent } = window.fillerValueEditor ?? {};
+	const [, setLastChanged] = useState(Date.now());
+
+	useEffect(() => {
+		function onMessageRecieved(e: MessageEvent) {
+			const { data: { type } = {} } = e;
+
+			if (!type || !type.startsWith('EDITOR_')) return;
+			setLastChanged(Date.now());
+		}
+		window.addEventListener('message', onMessageRecieved);
+		return () => window.removeEventListener('message', onMessageRecieved);
+	}, [setLastChanged]);
+
+	if (!selectedComponent || key != selectedComponent) return <></>;
+
+	const style = {
+		all: 'initial',
+		fontFamily: 'Arial',
+		position: 'absolute',
+		border: `2px dashed #FDAB3D`,
+		height: 'calc( 100% + 8px)',
+		width: 'calc( 100% + 8px)',
+		top: '-4px',
+		left: '-4px',
+		zIndex: '6',
+		minWidth: '10px',
+		boxSizing: 'border-box',
+		WebkitUserDrag: 'element',
+		borderRadius: '6px',
+	};
+
+	const numberBlobStyle = {
+		fontFamily: 'Arial',
+		position: 'absolute',
+		backgroundColor: '#FDAB3D',
+		fontSize: '14px',
+		fontWeight: '700',
+		color: '#FFFFFF',
+		height: '24px',
+		width: '24px',
+		borderRadius: '100%',
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'center',
+		top: '-12px',
+		left: '-12px',
+		boxShadow: '0px 1px 4px 0px #00000025',
+	};
+
+	return (
+		<div style={style as CSSProperties} className="_helper">
+			<div style={numberBlobStyle as CSSProperties}>{(selectedSectionNumber ?? 0) + 1}</div>
+		</div>
+	);
+}
+
 export function HelperComponent(props: HelperComponentPropsType) {
-	return window.designMode === 'PAGE' ? <HelperComponentInternal {...props} /> : <></>;
+	if (window.designMode === 'PAGE') return <PageEditorHelperComponent {...props} />;
+	else if (window.designMode === 'FILLER_VALUE_EDITOR')
+		return <FillerValueEditorHelperComponent {...props} />;
+	return <></>;
 }

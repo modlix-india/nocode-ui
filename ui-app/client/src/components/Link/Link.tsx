@@ -49,7 +49,7 @@ function Link(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
+	const clickEvent = onClick ? props.pageDefinition.eventFunctions?.[onClick] : undefined;
 	const resolvedLink = getHref(linkPath, location);
 	const hoverStyle = processComponentStylePseudoClasses(
 		props.pageDefinition,

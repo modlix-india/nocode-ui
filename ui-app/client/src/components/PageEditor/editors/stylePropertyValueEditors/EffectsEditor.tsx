@@ -125,6 +125,7 @@ export function EffectsEditor(props: StyleEditorsProps) {
 							pseudoState,
 							saveStyle,
 							iterateProps,
+							selectorPref,
 						})
 					}
 				/>
@@ -229,6 +230,7 @@ export function EffectsEditor(props: StyleEditorsProps) {
 						pseudoState,
 						saveStyle,
 						iterateProps,
+						selectorPref,
 					})
 				}
 			/>
@@ -260,6 +262,7 @@ export function EffectsEditor(props: StyleEditorsProps) {
 						saveStyle,
 						iterateProps,
 						propValues: v,
+						selectorPref,
 					})
 				}
 				values={TRANSITION_PROPERTIES.map(e => e.name).map(e => ({
@@ -1292,6 +1295,7 @@ function TransformEditor({
 							pseudoState,
 							saveStyle,
 							iterateProps,
+							selectorPref,
 						});
 					}}
 					placeholder="X Offset"
@@ -1372,6 +1376,7 @@ function TransformEditor({
 							pseudoState,
 							saveStyle,
 							iterateProps,
+							selectorPref,
 						});
 					}}
 					placeholder="Y Offset"
@@ -1453,6 +1458,7 @@ function TransformEditor({
 							pseudoState,
 							saveStyle,
 							iterateProps,
+							selectorPref,
 						});
 					}}
 					placeholder="Z Offset"

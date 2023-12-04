@@ -403,10 +403,10 @@ describe('Testing data with different structures for iteration', () => {
 		expect(
 			getRenderData(testList, dataType, uniqueKeyType, '', selectionType, '', labelKeyType),
 		).toStrictEqual([
-			{ key: 0, label: 0, value: 0, originalObjectKey: 'a' },
-			{ key: 1, label: 1, value: 1, originalObjectKey: 'c' },
-			{ key: 2, label: 2, value: 2, originalObjectKey: 'e' },
-			{ key: 3, label: 3, value: 3, originalObjectKey: 'g' },
+			{ key: 'a', label: 'a', value: 'a', originalObjectKey: 'a' },
+			{ key: 'c', label: 'c', value: 'c', originalObjectKey: 'c' },
+			{ key: 'e', label: 'e', value: 'e', originalObjectKey: 'e' },
+			{ key: 'g', label: 'g', value: 'g', originalObjectKey: 'g' },
 		]);
 	});
 

@@ -18,6 +18,11 @@ declare global {
 		editingPageDefinition: PageDefinition;
 		personalization: any;
 	};
+	var fillerValueEditor: {
+		selectedComponent?: string;
+		selectedSectionNumber?: number;
+		personalization?: any;
+	};
 	var getRemoteFunctionRepository: (
 		appCode: string | undefined,
 		clientCode: string | undefined,

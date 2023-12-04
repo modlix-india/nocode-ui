@@ -58,7 +58,9 @@ function ImageWithBrowser(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	const clickEvent = onClickEvent ? props.pageDefinition.eventFunctions[onClickEvent] : undefined;
+	const clickEvent = onClickEvent
+		? props.pageDefinition.eventFunctions?.[onClickEvent]
+		: undefined;
 
 	useEffect(() => {
 		const bps = [
