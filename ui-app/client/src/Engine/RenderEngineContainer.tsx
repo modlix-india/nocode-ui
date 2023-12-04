@@ -19,6 +19,7 @@ import { ComponentProperty, PageDefinition } from '../types/common';
 import { processLocation } from '../util/locationProcessor';
 import { processClassesForPageDefinition } from '../util/styleProcessor';
 import * as getPageDefinition from './../definitions/getPageDefinition.json';
+import GlobalLoader from '../App/GlobalLoader';
 
 export const RenderEngineContainer = () => {
 	const location = useLocation();
@@ -233,7 +234,7 @@ export const RenderEngineContainer = () => {
 	const [, setLastChanged] = useState(Date.now());
 
 	useEffect(() => {
-		if (window.designMode !== 'PAGE') return;
+		if (window.designMode !== 'PAGE' && window.designMode !== 'FILLER_VALUE_EDITOR') return;
 
 		function onMessageRecieved(e: MessageEvent) {
 			const { data: { type } = {} } = e;
@@ -243,23 +244,21 @@ export const RenderEngineContainer = () => {
 		}
 		window.addEventListener('message', onMessageRecieved);
 		return () => window.removeEventListener('message', onMessageRecieved);
-	}, [setLastChanged]);
+	}, [window.designMode, setLastChanged]);
 
 	useEffect(() => {
-		if (window.designMode !== 'PAGE') return;
+		if (window.designMode !== 'PAGE' && window.designMode !== 'FILLER_VALUE_EDITOR') return;
 
 		return addListener(
 			(_, v) => setPageDefinition(processClassesForPageDefinition(v)),
 			undefined,
 			`${STORE_PREFIX}.pageDefinition.${currentPageName}`,
 		);
-	}, [currentPageName]);
-
-	useEffect(() => {}, []);
+	}, [window.designMode, currentPageName]);
 
 	const Page = ComponentDefinitions.get('Page')!.component;
 
-	if (isNullValue(pageDefinition)) return <>...</>;
+	if (isNullValue(pageDefinition)) return <GlobalLoader />;
 
 	if (currentPageName && pageDefinition) {
 		const { properties: { wrapShell = true } = {} } = pageDefinition;
@@ -295,7 +294,7 @@ export const RenderEngineContainer = () => {
 	} else if (pageDefinition) {
 		const definitions = getDataFromPath(`${STORE_PREFIX}.pageDefinition`, []) ?? {};
 		const hasDefinitions = !!Object.keys(definitions).length;
-		if (!hasDefinitions) return <>...</>;
+		if (!hasDefinitions) return <GlobalLoader />;
 
 		return (
 			<Page
@@ -310,6 +309,6 @@ export const RenderEngineContainer = () => {
 		);
 	} else {
 		//TODO: Need to throw an error that there is not page definition found.
-		return <>...</>;
+		return <GlobalLoader />;
 	}
 };

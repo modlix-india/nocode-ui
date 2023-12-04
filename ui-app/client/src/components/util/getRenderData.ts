@@ -108,9 +108,9 @@ export function getRenderData<T>(
 		const res = Object.entries(data).map(([k, v], index: number) => {
 			if (typeof v !== 'object') {
 				return {
-					label: getSelection(labelKeyType, '', v, index),
-					value: getSelection(selectionType, '', v, index),
-					key: getSelection(uniqueKeyType, '', v, index),
+					label: getSelection(labelKeyType, '', v, k),
+					value: getSelection(selectionType, '', v, k),
+					key: getSelection(uniqueKeyType, '', v, k),
 					originalObjectKey: k,
 				};
 			}

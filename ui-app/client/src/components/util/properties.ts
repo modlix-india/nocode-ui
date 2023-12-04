@@ -265,7 +265,7 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Label type.',
 		description:
-			'This is the label that user sees on the scree, OBJECT works when value is primitive.',
+			'This is the label that user sees on the screen, OBJECT works when value is primitive.',
 		defaultValue: 'OBJECT',
 		editor: ComponentPropertyEditor.ENUM,
 		group: ComponentPropertyGroup.DATA,
