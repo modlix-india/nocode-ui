@@ -75,6 +75,7 @@ function DropdownComponent(props: ComponentProps) {
 			designType,
 			colorScheme,
 			leftIcon,
+			clearOnSelectingSameValue,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -172,7 +173,9 @@ function DropdownComponent(props: ComponentProps) {
 		} else {
 			setData(
 				bindingPathPath,
-				deepEqual(selected, each.value) ? undefined : each.value,
+				deepEqual(selected, each.value) && clearOnSelectingSameValue
+					? undefined
+					: each.value,
 				context?.pageName,
 			);
 		}

@@ -251,7 +251,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._logo {
 			height: 20px;
-			width: 150px;
 		}
 
 		${PREFIX} ._topRightBarGrid {
