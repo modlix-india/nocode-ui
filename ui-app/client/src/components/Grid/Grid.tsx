@@ -78,18 +78,18 @@ function Grid(props: ComponentProps) {
 		stylePropertiesWithPseudoStates,
 	);
 
-	const clickEvent = onClick ? props.pageDefinition.eventFunctions[onClick] : undefined;
+	const clickEvent = onClick ? props.pageDefinition.eventFunctions?.[onClick] : undefined;
 	const onMouseEnterEvent = onMouseEnter
-		? props.pageDefinition.eventFunctions[onMouseEnter]
+		? props.pageDefinition.eventFunctions?.[onMouseEnter]
 		: undefined;
 	const onMouseLeaveEvent = onMouseLeave
-		? props.pageDefinition.eventFunctions[onMouseLeave]
+		? props.pageDefinition.eventFunctions?.[onMouseLeave]
 		: undefined;
 	const onEnteringViewportEvent = onEnteringViewport
-		? props.pageDefinition.eventFunctions[onEnteringViewport]
+		? props.pageDefinition.eventFunctions?.[onEnteringViewport]
 		: undefined;
 	const onLeavingViewportEvent = onLeavingViewport
-		? props.pageDefinition.eventFunctions[onLeavingViewport]
+		? props.pageDefinition.eventFunctions?.[onLeavingViewport]
 		: undefined;
 
 	const bindingPathPath = bindingPath

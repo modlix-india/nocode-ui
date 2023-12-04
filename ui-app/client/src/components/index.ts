@@ -46,6 +46,7 @@ import ImageWithBrowser from './ImageWithBrowser/ImageWithBrowser';
 import FillerValueEditor from './FillerValueEditor/FillerValueEditor';
 import ColorPicker from './ColorPicker/ColorPicker';
 import Jot from './Jot/Jot';
+import FillerDefinitionEditor from './FillerDefinitionEditor/FillerDefinitionEditor';
 
 export default new Map<string, Component>([
 	[Button.name, Button],
@@ -95,4 +96,5 @@ export default new Map<string, Component>([
 	[FillerValueEditor.name, FillerValueEditor],
 	[ColorPicker.name, ColorPicker],
 	[Jot.name, Jot],
+	[FillerDefinitionEditor.name, FillerDefinitionEditor],
 ]);

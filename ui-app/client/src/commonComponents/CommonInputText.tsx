@@ -49,7 +49,7 @@ function CommonInputText(props: CommonInputType) {
 		id,
 		noFloat,
 		readOnly,
-		value,
+		value = '',
 		label,
 		translations,
 		leftIcon,
