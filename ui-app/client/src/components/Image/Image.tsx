@@ -61,7 +61,6 @@ function ImageComponent(props: ComponentProps) {
 				} else {
 					setSrc(defaultSrc);
 				}
-				console.log('Changed : ', value);
 			},
 			pageExtractor,
 			'Store.devices',
@@ -90,7 +89,6 @@ function ImageComponent(props: ComponentProps) {
 		stylePropertiesWithPseudoStates,
 	);
 
-	console.log('Src : ', src, getHref(src ?? defaultSrc, location));
 	return (
 		<div className="comp compImage" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent definition={definition} />
