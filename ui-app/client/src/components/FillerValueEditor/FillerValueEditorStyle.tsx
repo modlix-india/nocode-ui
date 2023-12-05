@@ -128,7 +128,7 @@ export default function FillerValueEditorStyle({
 		}
 
 		${PREFIX} ._simpleFillerPickerSelect:focus {
-			border: 2px solid #000088;
+			border: 2px solid #015ECC;
 		}
 
 		${PREFIX} ._simpleFillerPickerSelect ._simpleFillerPickerDropdownBody ._simpleFillerPickerDropdownOption {
@@ -148,7 +148,7 @@ export default function FillerValueEditorStyle({
 			z-index: 2;
 			box-shadow: 0px 1px 4px 0px #00000026;
 			border-radius: 6px;
-			margin-top: 4px;
+			margin-top: 0px;
 			padding: 10px;
 			max-height: 250px;
 			overflow: auto;
@@ -273,11 +273,13 @@ export default function FillerValueEditorStyle({
 			background: #FFF;
 			flex-direction: column;
 			padding: 20px;
+			gap: 20px;
 		}
 
 		${PREFIX} ._toggleButton {
 			position: relative;
-			width: 40px;
+			min-width: 40px;
+			max-width: 40px;
 			height: 20px;
 			border-radius: 10px;
 			background-color: #0000001D;
@@ -305,12 +307,13 @@ export default function FillerValueEditorStyle({
 			left: 24px;
 		}
 
-		${PREFIX}  input[type="text"]._textBox {
+		${PREFIX}  input[type="text"]._textBox,
+		${PREFIX}  textarea._textEditor {
 			border-radius: 6px;
-			border: 1px solid rgba(0, 0, 0, 0.10);
-			background: #FFF;
+			background: #F8FAFB;
 			height: 35px;
 			padding: 0 8px;
+			border: none;
 		}
 
 		${PREFIX} ._sectionHeader ._sectionNumber {
@@ -331,7 +334,7 @@ export default function FillerValueEditorStyle({
 		${PREFIX} ._sectionHeader ._sectionName {
 			border: 1px solid transparent;
 			padding: 5px 2px;
-			font: Inter;
+			font-family: Inter;
 			font-size: 12px;
 			font-weight: 500;
 			color: #33333366;
@@ -365,12 +368,78 @@ export default function FillerValueEditorStyle({
 			flex-direction: column;
 			gap: 5px;
 			padding-top: 10px;
-			align-items: center;
 		}
 
 		${PREFIX} ._sectionBody._HORIZONTAL {
 			flex-direction: row;
+			align-items: center;
 		}
+
+		${PREFIX} ._editor {
+			display: flex;
+			flex-direction: column;
+			gap: 10px;	
+			flex: 1;		
+		}
+
+		${PREFIX} ._sectionBody._HORIZONTAL ._editor {
+			height: 100%;
+		}
+
+		${PREFIX} ._editor ._editorLabel {
+			font-size: 12px;
+			font-weight: 500;
+			color: #33333366;
+			font-family: Inter;
+		}
+
+		${PREFIX} ._imageEditor {
+			width: 100%;
+			height: 70px;
+			background-size: contain;
+			background-position: center;
+			background-repeat: no-repeat;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background-color: #F8FAFB;
+			border-radius: 6px;
+			border: 1px solid #F8FAFB99;
+		}
+
+		${PREFIX} ._imageEditor ._imageControls {
+			display: none;
+			flex-direction: column;
+			gap: 10px;
+			justify-content: center;
+			align-items: center;
+			background-color: #00000014;
+			flex: 1;
+			border-radius: 6px;
+			height: 100%;
+		}
+
+		${PREFIX} ._imageEditor:hover ._imageControls {
+			display: flex;
+		}
+
+		${PREFIX} ._imageControls button {
+			height: 22px;
+			padding: 0 10px;
+			border-radius: 18px;
+			border: 0.4px solid #FFF;
+			background: #000000B2;
+			color: #FFFFFF;
+			font-size: 10px;
+			font-weight: 500;
+			font-family: Inter;
+			cursor: pointer;
+		}
+		${PREFIX} ._imageControls button:hover {
+			box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.20);
+		}
+
+
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="FillterValueEditorCSS">{css}</style>;
