@@ -251,18 +251,20 @@ export class PageStoreExtractor extends SpecialTokenValueExtractor {
 	}
 }
 
+const pathTransformer = (e: string, pageExtractor?: PageStoreExtractor) => {
+	if (pageExtractor && e.startsWith(pageExtractor.getPrefix()))
+		return 'Store.pageData.' + pageExtractor.getPageName() + e.substring(4);
+	else if (e.startsWith(fillerExtractor.getPrefix()))
+		return 'Store.application.properties.fillerValues.' + e.substring(7);
+	return e;
+};
+
 export const addListener = (
 	callback: (path: string, value: any) => void,
 	pageExtractor?: PageStoreExtractor,
 	...path: Array<string>
 ): (() => void) => {
-	if (!pageExtractor) return _addListener(callback, ...path);
-	const nPaths = path.map(e => {
-		if (!e.startsWith(pageExtractor.getPrefix())) return e;
-		return 'Store.pageData.' + pageExtractor.getPageName() + e.substring(4);
-	});
-
-	return _addListener(callback, ...nPaths);
+	return _addListener(callback, ...path.map(e => pathTransformer(e, pageExtractor)));
 };
 
 export const addListenerAndCallImmediately = (
@@ -270,13 +272,11 @@ export const addListenerAndCallImmediately = (
 	pageExtractor?: PageStoreExtractor,
 	...path: Array<string>
 ): (() => void) => {
-	if (!pageExtractor) return _addListenerAndCallImmediately(true, callback, ...path);
-	const nPaths = path.map(e => {
-		if (!e.startsWith(pageExtractor.getPrefix())) return e;
-		return 'Store.pageData.' + pageExtractor.getPageName() + e.substring(4);
-	});
-
-	return _addListenerAndCallImmediately(true, callback, ...nPaths);
+	return _addListenerAndCallImmediately(
+		true,
+		callback,
+		...path.map(e => pathTransformer(e, pageExtractor)),
+	);
 };
 
 export const addListenerWithChildrenActivity = (
@@ -284,13 +284,10 @@ export const addListenerWithChildrenActivity = (
 	pageExtractor?: PageStoreExtractor,
 	...path: Array<string>
 ): (() => void) => {
-	if (!pageExtractor) return _addListenerWithChildrenActivity(callback, ...path);
-	const nPaths = path.map(e => {
-		if (!e.startsWith(pageExtractor.getPrefix())) return e;
-		return 'Store.pageData.' + pageExtractor.getPageName() + e.substring(4);
-	});
-
-	return _addListenerWithChildrenActivity(callback, ...nPaths);
+	return _addListenerWithChildrenActivity(
+		callback,
+		...path.map(e => pathTransformer(e, pageExtractor)),
+	);
 };
 
 export const addListenerAndCallImmediatelyWithChildrenActivity = (
@@ -298,14 +295,11 @@ export const addListenerAndCallImmediatelyWithChildrenActivity = (
 	pageExtractor?: PageStoreExtractor,
 	...path: Array<string>
 ): (() => void) => {
-	if (!pageExtractor)
-		return _addListenerAndCallImmediatelyWithChildrenActivity(true, callback, ...path);
-	const nPaths = path.map(e => {
-		if (!e.startsWith(pageExtractor.getPrefix())) return e;
-		return 'Store.pageData.' + pageExtractor.getPageName() + e.substring(4);
-	});
-
-	return _addListenerAndCallImmediatelyWithChildrenActivity(true, callback, ...nPaths);
+	return _addListenerAndCallImmediatelyWithChildrenActivity(
+		true,
+		callback,
+		...path.map(e => pathTransformer(e, pageExtractor)),
+	);
 };
 
 export const store = _store;

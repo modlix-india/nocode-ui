@@ -30,6 +30,9 @@ export interface EditorDefinition {
 	hideLabel?: boolean;
 	description?: string;
 	type: EditorType;
+	maxLength?: number;
+	regex?: string;
+	enumOptions?: { displayName: string; name: string }[];
 }
 
 export enum SectionLayout {
