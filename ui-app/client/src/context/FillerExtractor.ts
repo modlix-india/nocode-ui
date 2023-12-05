@@ -9,10 +9,7 @@ export class FillerExtractor extends SpecialTokenValueExtractor {
 	}
 
 	protected getValueInternal(token: string) {
-		const newToken = `Store.application.properties.fillerValues.${token.replace(
-			'Filler.',
-			'',
-		)}`;
+		const newToken = `Store.application.properties.fillerValues.${token.substring(7)}`;
 
 		return this.retrieveElementFrom(
 			newToken,
