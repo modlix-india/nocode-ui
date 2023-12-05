@@ -17,7 +17,7 @@ export default function ValueEditor({
 	personalizationPath,
 	onSectionSelection,
 	onValueChanged,
-}: {
+}: Readonly<{
 	uiFiller: Filler;
 	coreFiller: Filler;
 	pageExtractor: PageStoreExtractor;
@@ -25,7 +25,7 @@ export default function ValueEditor({
 	personalizationPath?: string;
 	onSectionSelection: (isUIFiller: boolean, sectionKey: string, index: number) => void;
 	onValueChanged: (isUIFiller: boolean, filler: Filler) => void;
-}) {
+}>) {
 	const [collapsed, setCollapsed] = useState<boolean>(false);
 
 	useEffect(() => {
@@ -57,8 +57,14 @@ export default function ValueEditor({
 	return (
 		<div className={`_valueEditor ${collapsed ? '_collapsed' : ''}`}>
 			<div
+				role="button"
+				tabIndex={0}
 				className="_collapseButton"
 				onClick={() => onPersonalizationChange('collapsed', !collapsed)}
+				onKeyDown={e =>
+					e.key === 'Enter' ||
+					(e.key === ' ' && onPersonalizationChange('collapsed', !collapsed))
+				}
 			>
 				<CollapseIcon />
 			</div>

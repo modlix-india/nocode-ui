@@ -194,7 +194,7 @@ export default function FillerDefinitionEditorStyle({
 		}
 
 		${PREFIX} ._simpleFillerPickerSelect:focus {
-			border: 2px solid #000088;
+			border: 2px solid #015ECC;
 		}
 
 		${PREFIX} ._simpleFillerPickerSelect ._simpleFillerPickerDropdownBody ._simpleFillerPickerDropdownOption {
@@ -221,7 +221,7 @@ export default function FillerDefinitionEditorStyle({
 			z-index: 2;
 			box-shadow: 0px 1px 4px 0px #00000026;
 			border-radius: 6px;
-			margin-top: 4px;
+			margin-top: 0px;
 			padding: 10px;
 			max-height: 250px;
 			overflow: auto;
@@ -242,19 +242,6 @@ export default function FillerDefinitionEditorStyle({
 		${PREFIX} ._simpleFillerPickerSelect ._simpleFillerPickerDropdownBody ._simpleFillerPickerDropdownOption._selected {
 			color: #333;
 			font-weight: bold;
-		}
-
-		${PREFIX} ._simpleFillerPickerSelect ._simpleFillerPickerDropdownBody {
-			position: fixed;
-			min-width: 100%;
-			background-color: #FFF;
-			z-index: 2;
-			box-shadow: 0px 1px 4px 0px #00000026;
-			border-radius: 6px;
-			margin-top: 4px;
-			padding: 10px;
-			max-height: 250px;
-			overflow: auto;
 		}
 
 		${PREFIX} ._simpleFillerPickerSelect svg {

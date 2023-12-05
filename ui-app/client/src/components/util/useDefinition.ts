@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { STORE_PREFIX } from '../../constants';
 import {
 	addListener,
+	fillerExtractor,
 	getData,
 	getDataFromPath,
 	localStoreExtractor,
@@ -233,6 +234,7 @@ export default function useDefinition(
 
 	const evaluatorMaps = new Map<string, TokenValueExtractor>([
 		[storeExtractor.getPrefix(), storeExtractor],
+		[fillerExtractor.getPrefix(), fillerExtractor],
 		[localStoreExtractor.getPrefix(), localStoreExtractor],
 	]);
 

@@ -221,7 +221,6 @@ function FillerValueEditor(props: ComponentProps) {
 				dashboardPageName={dashboardPageName}
 				settingsPageName={settingsPageName}
 				onSave={() => {
-					console.log(onSave);
 					if (!onSave || !pageDefinition.eventFunctions?.[onSave]) return;
 					runEvent(
 						pageDefinition.eventFunctions?.[onSave],
