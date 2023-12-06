@@ -21,15 +21,17 @@ export default function FillerValueEditorStyle({
 			display: flex;
 			height: 65px;
 			background-color: #fff;
-  		border-bottom: 1px solid rgba(0, 0, 0, 0.10);
-  		box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.05);
+  			border-bottom: 1px solid rgba(0, 0, 0, 0.10);
+  			box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.05);
 			align-items: center;
 			padding: 0 15px;
+			flex-shrink : 0;
 		}
 
 		${PREFIX} ._body {
 			flex:1;
 			display: flex;
+			overflow: hidden;
 		}
 
 		${PREFIX} ._body ._pageViewer {
@@ -75,7 +77,6 @@ export default function FillerValueEditorStyle({
 			background-color: #F8FAFB;
 			box-shadow: 0px 3px 4px 0px rgba(0, 0, 0, 0.25);
 			position: relative;
-			overflow: auto;	
 			transition: width 0.5s;
 			display: flex;
 			flex-direction: column;
@@ -236,7 +237,7 @@ export default function FillerValueEditorStyle({
 			box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.10);
 			padding: 6px 15px;
 			color: #FFF;
-			font-family: Inter;
+			
 			font-size: 12px;
 			font-weight: 600;
 			cursor: pointer;
@@ -328,13 +329,13 @@ export default function FillerValueEditorStyle({
 			justify-content: center;
 			font-size: 14px;
 			font-weight: 700;
-			font-family: Inter;
+			
 		}
 
 		${PREFIX} ._sectionHeader ._sectionName {
 			border: 1px solid transparent;
 			padding: 5px 2px;
-			font-family: Inter;
+			
 			font-size: 12px;
 			font-weight: 500;
 			color: #33333366;
@@ -390,7 +391,7 @@ export default function FillerValueEditorStyle({
 			font-size: 12px;
 			font-weight: 500;
 			color: #33333366;
-			font-family: Inter;
+			
 		}
 
 		${PREFIX} ._imageEditor {
@@ -432,14 +433,47 @@ export default function FillerValueEditorStyle({
 			color: #FFFFFF;
 			font-size: 10px;
 			font-weight: 500;
-			font-family: Inter;
+			
 			cursor: pointer;
 		}
+
 		${PREFIX} ._imageControls button:hover {
 			box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.20);
 		}
 
+		${PREFIX} ._popupContainer {
+			position: fixed;
+			width: calc(100vw - 350px);
+			height: calc(100vh - 65px);
+			z-index: 6;
+			background-color: #0000002D;
+			left: 350px;
+			top: 65px;
+			display: flex;
+			align-items: center;
+			justify-content: left;
+		}
 
+		${PREFIX} ._popup {
+			width: 500px;
+			height: 400px;
+			background-color: #FFF;
+			border-radius: 6px;
+			display: flex;
+			flex-direction: column;
+			padding: 10px;
+			margin-left: 20px;
+		}
+
+		${PREFIX} ._popupContainer ._iconSelectionBrowser {
+			width: auto;
+			height: 325px;
+			gap: 20px;
+		}
+
+		${PREFIX} ._browserBack {
+			gap: 20px;
+		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="FillterValueEditorCSS">{css}</style>;

@@ -1,11 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import {
-	EditorDefinition,
-	EditorType,
-	EditorValueType,
-	Filler,
-	SectionDefinition,
-} from './fillerCommons';
+import { EditorDefinition, EditorType, Filler, SectionDefinition } from './fillerCommons';
 import { duplicate } from '@fincity/kirun-js';
 import TextBox from './TextBox';
 import { Dropdown } from './Dropdown';

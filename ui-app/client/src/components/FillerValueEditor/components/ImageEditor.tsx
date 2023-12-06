@@ -1,9 +1,50 @@
-import React, { CSSProperties, useCallback, useEffect, useState } from 'react';
+import React, { CSSProperties, Fragment, useCallback, useEffect, useState } from 'react';
 import { Popup } from './Popup';
 import axios from 'axios';
 import { getDataFromPath } from '../../../context/StoreContext';
 import { shortUUID } from '../../../util/shortUUID';
 import { LOCAL_STORE_PREFIX } from '../../../constants';
+
+function PathParts({ path, setPath }: { path: string; setPath: (p: string) => void }) {
+	const parts = path.split('\\');
+	return (
+		<div className="_pathParts">
+			<span>
+				<b>Path:</b>
+			</span>
+			<span
+				className={path === '' ? '' : '_clickable'}
+				onClick={() => (path !== '' ? setPath('') : undefined)}
+			>
+				\
+			</span>
+			{parts
+				.filter(e => e !== '')
+				.map((p, i, arr) => {
+					const slash = i === 0 ? <></> : <span>\</span>;
+					if (i === arr.length - 1)
+						return (
+							<Fragment key={i}>
+								{slash}
+								<span key={i}>{p}</span>
+							</Fragment>
+						);
+					return (
+						<Fragment key={i}>
+							{slash}
+							<span
+								className="_clickable"
+								key={i}
+								onClick={() => setPath('\\' + arr.slice(0, i + 1).join('\\'))}
+							>
+								{p}
+							</span>
+						</Fragment>
+					);
+				})}
+		</div>
+	);
+}
 
 export function ImageEditor({
 	value,
@@ -197,7 +238,38 @@ export function ImageEditor({
 			</div>
 		);
 
-		popup = <Popup onClose={() => setShowImageBrowser(false)}>{content}</Popup>;
+		popup = (
+			<Popup onClose={() => setShowImageBrowser(false)}>
+				<div className="_flexBox _column _browserBack" onClick={e => e.stopPropagation()}>
+					<i
+						className="_closeIcon fa fa-solid fa-times"
+						onClick={() => setShowImageBrowser(false)}
+					/>
+					<input
+						className="_searchBar"
+						placeholder="Search for images..."
+						type="text"
+						value={filter}
+						onChange={e => setFilter(e.target.value)}
+					/>
+					<div className="_iconSelectionBrowser">
+						<div className="_pathContainer">
+							<PathParts path={path} setPath={p => setPath(p)} />
+							<i
+								title="Create New Folder"
+								className="fa fa-solid fa-square-plus"
+								tabIndex={0}
+								onClick={() => {
+									if (inProgress) return;
+									setNewFolder(true);
+								}}
+							/>
+						</div>
+						{content}
+					</div>
+				</div>
+			</Popup>
+		);
 	}
 
 	const style: CSSProperties = {};

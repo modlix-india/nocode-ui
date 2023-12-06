@@ -7,7 +7,6 @@ import ToggleButton from './ToggleButton';
 import {
 	EditorDefinition,
 	EditorType,
-	EditorValueType,
 	Filler,
 	SectionDefinition,
 	SectionLayout,
@@ -172,7 +171,6 @@ function addNewEditor({
 		key,
 		name: 'New Editor',
 		valueKey,
-		valueType: EditorValueType.STRING,
 		type: EditorType.TEXT_BOX,
 	};
 

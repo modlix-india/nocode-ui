@@ -1,13 +1,3 @@
-export enum EditorValueType {
-	STRING = 'STRING',
-	NUMBER = 'NUMBER',
-	BOOLEAN = 'BOOLEAN',
-	OBJECT = 'OBJECT',
-	DATE = 'DATE',
-	ENUM = 'ENUM',
-	IMAGE = 'IMAGE',
-}
-
 export enum EditorType {
 	TEXT_BOX = 'TEXT_BOX',
 	TEXT_AREA = 'TEXT_AREA',
@@ -25,7 +15,6 @@ export enum EditorType {
 export interface EditorDefinition {
 	key: string;
 	valueKey: string;
-	valueType: EditorValueType;
 	name: string;
 	hideLabel?: boolean;
 	description?: string;
