@@ -56,6 +56,57 @@ export default function ValueEditor({
 		(a, b) => a.order - b.order,
 	);
 
+	let sections: JSX.Element = <></>;
+	if (!collapsed) {
+		sections = (
+			<>
+				<div className="_sectionContainerHeader">
+					<span className="_headerTitle">Site Creator</span>
+					<span className="_headerSubTitle">Edit by changing values of any fields</span>
+				</div>
+				<div className="_sectionContainer">
+					{uiSections.map((section, index) => (
+						<Section
+							filler={uiFiller}
+							selected={
+								(selection?.isUIFiller && selection?.sectionKey === section.key) ??
+								false
+							}
+							key={section.key}
+							index={index}
+							isUIFiller={true}
+							section={section}
+							onSectionSelection={index =>
+								onSectionSelection(true, section.key, index)
+							}
+							onValueChanged={(f: Filler) => onValueChanged(true, f)}
+							storeExtractor={uiSTE}
+						/>
+					))}
+
+					{coreSections.map((section, index) => (
+						<Section
+							filler={coreFiller}
+							key={section.key}
+							index={uiSections.length + index}
+							selected={
+								(!selection?.isUIFiller && selection?.sectionKey === section.key) ??
+								false
+							}
+							isUIFiller={false}
+							section={section}
+							onSectionSelection={index =>
+								onSectionSelection(false, section.key, index)
+							}
+							onValueChanged={(f: Filler) => onValueChanged(false, f)}
+							storeExtractor={coreSTE}
+						/>
+					))}
+				</div>
+			</>
+		);
+	}
+
 	return (
 		<div className={`_valueEditor ${collapsed ? '_collapsed' : ''}`}>
 			<div
@@ -70,45 +121,7 @@ export default function ValueEditor({
 			>
 				<CollapseIcon />
 			</div>
-			<div className="_sectionContainerHeader">
-				<span className="_headerTitle">Site Creator</span>
-				<span className="_headerSubTitle">Edit by changing values of any fields</span>
-			</div>
-			<div className="_sectionContainer">
-				{uiSections.map((section, index) => (
-					<Section
-						filler={uiFiller}
-						selected={
-							(selection?.isUIFiller && selection?.sectionKey === section.key) ??
-							false
-						}
-						key={section.key}
-						index={index}
-						isUIFiller={true}
-						section={section}
-						onSectionSelection={index => onSectionSelection(true, section.key, index)}
-						onValueChanged={(f: Filler) => onValueChanged(true, f)}
-						storeExtractor={uiSTE}
-					/>
-				))}
-
-				{coreSections.map((section, index) => (
-					<Section
-						filler={coreFiller}
-						key={section.key}
-						index={uiSections.length + index}
-						selected={
-							(!selection?.isUIFiller && selection?.sectionKey === section.key) ??
-							false
-						}
-						isUIFiller={false}
-						section={section}
-						onSectionSelection={index => onSectionSelection(false, section.key, index)}
-						onValueChanged={(f: Filler) => onValueChanged(false, f)}
-						storeExtractor={coreSTE}
-					/>
-				))}
-			</div>
+			{sections}
 		</div>
 	);
 }
