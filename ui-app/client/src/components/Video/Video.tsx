@@ -487,6 +487,7 @@ function Video(props: ComponentProps) {
 				poster={poster}
 				preload="metadata"
 				ref={video}
+				muted
 				onLoadedMetadata={initializeVideo}
 				onTimeUpdate={updateTimeElapsed}
 				data-seek
