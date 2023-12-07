@@ -11,6 +11,7 @@ export enum EditorType {
 	ARRAY_OF_OBJECTS = 'ARRAY_OF_OBJECTS',
 	PALLETTE = 'PALLETTE',
 	LABEL = 'LABEL',
+	FONT_PICKER = 'FONT_PICKER',
 }
 
 export interface EditorDefinition {

@@ -351,6 +351,42 @@ export function EditorBody({
 				{previewList}
 			</>
 		);
+	} else if (editor.type === EditorType.PALLETTE) {
+		specificFields = (
+			<>
+				<div className="_label">Number of Colors</div>
+				<TextBox
+					value={(editor.numColors ?? '') + ''}
+					onChange={numColors =>
+						updateDefinition(
+							s =>
+								(s.numColors =
+									numColors?.trim().length === 0
+										? undefined
+										: parseInt(numColors ?? '')),
+						)
+					}
+				/>
+			</>
+		);
+	} else if (editor.type === EditorType.FONT_PICKER) {
+		specificFields = (
+			<>
+				<div className="_label">Number of Fonts</div>
+				<TextBox
+					value={(editor.numFonts ?? '') + ''}
+					onChange={numFonts =>
+						updateDefinition(
+							s =>
+								(s.numFonts =
+									numFonts?.trim().length === 0
+										? undefined
+										: parseInt(numFonts ?? '')),
+						)
+					}
+				/>
+			</>
+		);
 	}
 
 	let addValue = <></>;
