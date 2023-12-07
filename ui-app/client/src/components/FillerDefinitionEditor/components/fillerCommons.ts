@@ -23,6 +23,13 @@ export interface EditorDefinition {
 	maxLength?: number;
 	regex?: string;
 	enumOptions?: { displayName: string; name: string }[];
+	numColors?: number;
+	numFonts?: number;
+	sampleObjects?: any[];
+	showEnumNone?: boolean;
+	objectEditors?: EditorDefinition[];
+	showInList?: boolean;
+	arrayPreviewList?: string[];
 }
 
 export enum SectionLayout {

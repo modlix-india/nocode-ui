@@ -26,6 +26,10 @@ export interface EditorDefinition {
 	numColors?: number;
 	numFonts?: number;
 	sampleObjects?: any[];
+	showEnumNone?: boolean;
+	objectEditors?: EditorDefinition[];
+	showInList?: boolean;
+	arrayPreviewList?: string[];
 }
 
 export enum SectionLayout {

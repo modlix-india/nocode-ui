@@ -92,6 +92,14 @@ export default function AppStyle() {
 		display: flex;
 	}
 
+	._flexBox._gap5{
+		gap: 5px;
+	}
+
+	._flexBox._gap10{
+		gap: 10px;
+	}
+
 	._flexBox._column {
 		flex-direction: column;
 	}
@@ -102,6 +110,10 @@ export default function AppStyle() {
 
 	._flexBox._horizonatalCenter {
 		justify-content: center;
+	}
+
+	._flex1 {
+		flex: 1;
 	}
 
 	._ROWLAYOUT, ._SINGLECOLUMNLAYOUT, ._ROWCOLUMNLAYOUT {

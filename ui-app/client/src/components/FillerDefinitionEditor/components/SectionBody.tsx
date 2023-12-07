@@ -1,5 +1,5 @@
 import { duplicate, isNullValue } from '@fincity/kirun-js';
-import React, { useCallback } from 'react';
+import React, { Fragment, useCallback } from 'react';
 import { shortUUID } from '../../../util/shortUUID';
 import { Dots } from './FillerDefinitionEditorIcons';
 import TextBox from './TextBox';
@@ -39,6 +39,23 @@ export function SectionBody({
 	);
 
 	const editors = (section.editors ?? []).map(editor => {
+		let children: React.ReactNode = null;
+		if (editor.type === EditorType.ARRAY_OF_OBJECTS) {
+			children = (
+				<>
+					{Object.values(editor.objectEditors ?? {}).map(ed => (
+						<Editor
+							key={ed.key}
+							editor={ed}
+							section={section}
+							filler={filler}
+							setFiller={setFiller}
+							parentEditor={editor}
+						/>
+					))}
+				</>
+			);
+		}
 		return (
 			<Editor
 				key={editor.key}
@@ -46,7 +63,9 @@ export function SectionBody({
 				section={section}
 				filler={filler}
 				setFiller={setFiller}
-			/>
+			>
+				{children}
+			</Editor>
 		);
 	});
 
@@ -87,7 +106,7 @@ export function SectionBody({
 					['two_per_row', SectionLayout.TWO_PER_ROW, 'Two per Row'],
 					['three_per_row', SectionLayout.THREE_PER_ROW, 'Three per Row'],
 				].map(([label, value, title]) => (
-					<>
+					<Fragment key={label}>
 						<input
 							type="radio"
 							id={`${section.key}_${label}`}
@@ -98,8 +117,8 @@ export function SectionBody({
 								updateDefinition(s => (s.layout = value as SectionLayout))
 							}
 						/>
-						<label htmlFor={`${section.key}_horizontal`}>{title}</label>
-					</>
+						<label htmlFor={`${section.key}_${label}`}>{title}</label>
+					</Fragment>
 				))}
 			</div>
 			<div className="_row _gap _alignBottom">

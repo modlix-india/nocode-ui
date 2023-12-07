@@ -136,10 +136,14 @@ export default function FillerDefinitionEditorStyle({
 			margin-top: 20px;
 		}
 
+		${PREFIX} ._editorContainer ._editorContainer {
+			margin-top: 0px;
+		}
+
 		${PREFIX} ._label {
-			font-size: 10px;
-			line-height: 10px;
-			padding-left: 15px;
+			font-size: 11px;
+			line-height: 11px;
+			padding-left: 8px;
 			margin-top: 8px;
 		}
 
@@ -289,6 +293,69 @@ export default function FillerDefinitionEditorStyle({
 
 		${PREFIX}._colorProfile1 ._label {
 			color: #00000066;
+		}
+
+		${PREFIX} ._enumOption {
+			background: rgba(0, 0, 0, 0.02);
+			border-top-left-radius: 2px;
+			border-top-right-radius: 2px;
+			padding: 5px;
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
+		}
+
+		${PREFIX} ._enumOption ._name {
+			font-size: 12px;
+			line-height: 12px;
+			font-weight: bold;
+			opacity: 0.8;
+		}
+
+		${PREFIX} ._enumOption ._displayName {
+			font-size: 14px;
+		}
+
+		${PREFIX} ._enumOptionsContainer {
+			display: flex;
+    		flex-direction: column;
+    		gap: 10px;
+		}
+
+		${PREFIX} ._previewList {
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
+		}
+
+		${PREFIX} ._previewItem {
+			display: flex;
+			padding: 10px;
+			gap: 10px;
+			background-color: rgba(0, 0, 0, 0.02);
+			border-radius: 2px;
+			cursor: pointer;
+			align-items: center;
+		}
+
+		${PREFIX} ._previewNumber {
+			font-weight: bold;
+			font-size: 14px;
+			line-height: 14px;
+			color: #00000066;
+			height: 25px;
+			width: 25px;
+			background-color: #0000001D;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: 3px;
+			border-radius: 20px;
+		}
+
+		${PREFIX} ._previewNumber._selected {
+			background-color: #52BD94;
+			color: #FFF;
 		}
 
 		._popupBackground._fillerDefEditor ._jsonEditorContainer{
