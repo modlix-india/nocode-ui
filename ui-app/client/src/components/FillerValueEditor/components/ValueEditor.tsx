@@ -17,6 +17,7 @@ export default function ValueEditor({
 	personalizationPath,
 	onSectionSelection,
 	onValueChanged,
+	selection,
 }: Readonly<{
 	uiFiller: Filler;
 	coreFiller: Filler;
@@ -25,6 +26,7 @@ export default function ValueEditor({
 	personalizationPath?: string;
 	onSectionSelection: (isUIFiller: boolean, sectionKey: string, index: number) => void;
 	onValueChanged: (isUIFiller: boolean, filler: Filler) => void;
+	selection?: { isUIFiller: boolean; sectionKey: string; sectionNumber: number };
 }>) {
 	const [collapsed, setCollapsed] = useState<boolean>(false);
 
@@ -76,6 +78,10 @@ export default function ValueEditor({
 				{uiSections.map((section, index) => (
 					<Section
 						filler={uiFiller}
+						selected={
+							(selection?.isUIFiller && selection?.sectionKey === section.key) ??
+							false
+						}
 						key={section.key}
 						index={index}
 						isUIFiller={true}
@@ -91,6 +97,10 @@ export default function ValueEditor({
 						filler={coreFiller}
 						key={section.key}
 						index={uiSections.length + index}
+						selected={
+							(!selection?.isUIFiller && selection?.sectionKey === section.key) ??
+							false
+						}
 						isUIFiller={false}
 						section={section}
 						onSectionSelection={index => onSectionSelection(false, section.key, index)}

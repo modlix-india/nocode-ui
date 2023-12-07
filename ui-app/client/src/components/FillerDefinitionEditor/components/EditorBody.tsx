@@ -122,14 +122,6 @@ export function EditorBody({
 				mandatory={true}
 				onChange={valueKey => updateDefinition(s => (s.valueKey = valueKey ?? ''))}
 			/>
-			<div className="_label">Value Type</div>
-			<Dropdown
-				value={editor.valueType}
-				onChange={valueType =>
-					updateDefinition(s => (s.valueType = valueType as EditorValueType))
-				}
-				options={Object.keys(EditorValueType).map(key => ({ name: key, displayName: key }))}
-			/>
 			<div className="_label">Type</div>
 			<Dropdown
 				value={editor.type}

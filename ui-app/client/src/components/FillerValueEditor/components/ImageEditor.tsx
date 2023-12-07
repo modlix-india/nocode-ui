@@ -190,6 +190,7 @@ export function ImageEditor({
 								return;
 							}
 							onChange(e.url);
+							setShowImageBrowser(false);
 						}}
 						onClick={() => {
 							if (e.directory) {
@@ -197,6 +198,7 @@ export function ImageEditor({
 								return;
 							}
 							onChange(e.url);
+							setShowImageBrowser(false);
 						}}
 					>
 						{e.directory ? (
@@ -279,18 +281,22 @@ export function ImageEditor({
 	if (value) {
 		style.backgroundImage = 'url(' + value + ')';
 		controls = (
-			<>
+			<div className="_imageControls">
 				<button onClick={() => setShowImageBrowser(true)}>Replace</button>
 				<button onClick={() => onChange(undefined)}>Remove</button>
-			</>
+			</div>
 		);
 	} else {
-		controls = <button onClick={() => setShowImageBrowser(true)}>Add</button>;
+		controls = (
+			<div className="_imageControls _show">
+				<button onClick={() => setShowImageBrowser(true)}>Add</button>
+			</div>
+		);
 	}
 
 	return (
 		<div className="_imageEditor" style={style}>
-			<div className="_imageControls">{controls}</div>
+			{controls}
 			{popup}
 		</div>
 	);

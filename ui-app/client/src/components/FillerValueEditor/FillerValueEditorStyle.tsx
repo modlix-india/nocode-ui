@@ -315,6 +315,14 @@ export default function FillerValueEditorStyle({
 			height: 35px;
 			padding: 0 8px;
 			border: none;
+			font-family: inherit;
+		}
+
+		${PREFIX}  textarea._textEditor {
+			height: 150px;
+			resize: none;
+			padding: 10px;
+			
 		}
 
 		${PREFIX} ._sectionHeader ._sectionNumber {
@@ -328,8 +336,11 @@ export default function FillerValueEditorStyle({
 			align-items: center;
 			justify-content: center;
 			font-size: 14px;
-			font-weight: 700;
-			
+			font-weight: 700;	
+		}
+
+		${PREFIX} ._section._selected ._sectionNumber {
+			background-color: #427EE4;
 		}
 
 		${PREFIX} ._sectionHeader ._sectionName {
@@ -376,6 +387,18 @@ export default function FillerValueEditorStyle({
 			align-items: center;
 		}
 
+		${PREFIX} ._sectionBody._TWO_PER_ROW {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			align-items: center;
+		}
+
+		${PREFIX} ._sectionBody._THREE_PER_ROW {
+			display: grid;
+			grid-template-columns: 1fr 1fr 1fr;
+			align-items: center;
+		}
+
 		${PREFIX} ._editor {
 			display: flex;
 			flex-direction: column;
@@ -391,7 +414,7 @@ export default function FillerValueEditorStyle({
 			font-size: 12px;
 			font-weight: 500;
 			color: #33333366;
-			
+			white-space: nowrap;
 		}
 
 		${PREFIX} ._imageEditor {
@@ -420,7 +443,8 @@ export default function FillerValueEditorStyle({
 			height: 100%;
 		}
 
-		${PREFIX} ._imageEditor:hover ._imageControls {
+		${PREFIX} ._imageEditor:hover ._imageControls,
+		${PREFIX} ._imageControls._show {
 			display: flex;
 		}
 
@@ -473,6 +497,18 @@ export default function FillerValueEditorStyle({
 
 		${PREFIX} ._browserBack {
 			gap: 20px;
+		}
+
+		${PREFIX} ._arrayOfImages{ 
+			display: grid;
+			grid-template-columns: 1fr 1fr 1fr 1fr;
+			grid-gap: 5px;
+			row-gap: 8px;
+		}
+
+		${PREFIX} ._arrayOfImages ._imageEditor {
+			width: 70px;
+			height: 70px;
 		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

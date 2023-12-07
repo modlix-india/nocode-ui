@@ -10,6 +10,7 @@ export enum EditorType {
 	ARRAY_OF_IMAGES = 'ARRAY_OF_IMAGES',
 	ARRAY_OF_OBJECTS = 'ARRAY_OF_OBJECTS',
 	PALLETTE = 'PALLETTE',
+	LABEL = 'LABEL',
 }
 
 export interface EditorDefinition {
@@ -30,6 +31,8 @@ export interface EditorDefinition {
 export enum SectionLayout {
 	VERTICAL = 'VERTICAL',
 	HORIZONTAL = 'HORIZONTAL',
+	TWO_PER_ROW = 'TWO_PER_ROW',
+	THREE_PER_ROW = 'THREE_PER_ROW',
 }
 
 export interface SectionDefinition {

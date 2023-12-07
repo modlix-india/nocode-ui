@@ -176,15 +176,15 @@ function FillerValueEditor(props: ComponentProps) {
 	}, [iframeRef.current]);
 
 	const [selection, setSelection] = useState<
-		{ isUiFiller: boolean; sectionKey: string; sectionNumber: number } | undefined
+		{ isUIFiller: boolean; sectionKey: string; sectionNumber: number } | undefined
 	>();
 
 	useEffect(() => {
 		if (!selection || !iframeRef.current) return;
 
-		const { isUiFiller, sectionKey } = selection;
+		const { isUIFiller, sectionKey } = selection;
 
-		const filler = isUiFiller ? uiFiller : coreFiller;
+		const filler = isUIFiller ? uiFiller : coreFiller;
 
 		if (!filler) return;
 
@@ -203,7 +203,7 @@ function FillerValueEditor(props: ComponentProps) {
 		[selection, iframeRef.current];
 
 	let filler = uiFiller;
-	if (!selection?.isUiFiller && Object.keys(coreFiller).length > 0) filler = coreFiller;
+	if (!selection?.isUIFiller && Object.keys(coreFiller).length > 0) filler = coreFiller;
 
 	let url = filler.appCode ? `/${filler.appCode}/${filler.clientCode}/page` : '';
 
@@ -213,6 +213,7 @@ function FillerValueEditor(props: ComponentProps) {
 			url += `#${filler.definition?.[selection?.sectionKey!].gridKey}`;
 	} else url += '/';
 
+	if (!url.endsWith('/')) url += '/';
 	return (
 		<div className={`comp compFillerValueEditor`} style={resolvedStyles.comp ?? {}}>
 			<HelperComponent key={`${key}_hlp`} definition={definition} />
@@ -272,15 +273,16 @@ function FillerValueEditor(props: ComponentProps) {
 					pageExtractor={pageExtractor}
 					personalizationPath={personalizationPath}
 					onPersonalizationChange={(k: string, v: any) => savePersonalization(k, v)}
-					onSectionSelection={(isUiFiller: boolean, sectionKey: string, index: number) =>
-						setSelection({ isUiFiller, sectionKey, sectionNumber: index })
+					selection={selection}
+					onSectionSelection={(isUIFiller: boolean, sectionKey: string, index: number) =>
+						setSelection({ isUIFiller, sectionKey, sectionNumber: index })
 					}
-					onValueChanged={(isUiFiller: boolean, filler: Filler) => {
-						if (!(isUiFiller ? uiDefPath : coreDefPath)) return;
+					onValueChanged={(isUIFiller: boolean, filler: Filler) => {
+						if (!(isUIFiller ? uiDefPath : coreDefPath)) return;
 						undoStack.current.push(duplicate([uiFiller, coreFiller]));
 
-						setData(isUiFiller ? uiDefPath! : coreDefPath!, filler, context.pageName);
-						if (!isUiFiller || !iframeRef.current) return;
+						setData(isUIFiller ? uiDefPath! : coreDefPath!, filler, context.pageName);
+						if (!isUIFiller || !iframeRef.current) return;
 						iframeRef.current.contentWindow?.postMessage(
 							{
 								type: 'EDITOR_FILLER_VALUE_CHANGE',

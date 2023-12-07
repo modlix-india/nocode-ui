@@ -82,15 +82,25 @@ export function SectionBody({
 					onChange={() => updateDefinition(s => (s.layout = SectionLayout.VERTICAL))}
 				/>
 				<label htmlFor={`${section.key}_vertical`}>Vertical</label>
-				<input
-					type="radio"
-					id={`${section.key}_horizontal`}
-					name={section.key}
-					value={SectionLayout.HORIZONTAL}
-					checked={section.layout === SectionLayout.HORIZONTAL}
-					onChange={() => updateDefinition(s => (s.layout = SectionLayout.HORIZONTAL))}
-				/>
-				<label htmlFor={`${section.key}_horizontal`}>Horizontal</label>
+				{[
+					['horizonatal', SectionLayout.HORIZONTAL, 'Horizontal'],
+					['two_per_row', SectionLayout.TWO_PER_ROW, 'Two per Row'],
+					['three_per_row', SectionLayout.THREE_PER_ROW, 'Three per Row'],
+				].map(([label, value, title]) => (
+					<>
+						<input
+							type="radio"
+							id={`${section.key}_${label}`}
+							name={section.key}
+							value={value}
+							checked={section.layout === value}
+							onChange={() =>
+								updateDefinition(s => (s.layout = value as SectionLayout))
+							}
+						/>
+						<label htmlFor={`${section.key}_horizontal`}>{title}</label>
+					</>
+				))}
 			</div>
 			<div className="_row _gap _alignBottom">
 				<div className="_row">
