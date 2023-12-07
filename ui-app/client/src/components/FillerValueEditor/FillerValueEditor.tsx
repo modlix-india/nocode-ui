@@ -1,6 +1,18 @@
-import React from 'react';
-import { PageStoreExtractor } from '../../context/StoreContext';
-import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import {
+	PageStoreExtractor,
+	addListenerAndCallImmediately,
+	getDataFromPath,
+	getPathFromLocation,
+	setData,
+} from '../../context/StoreContext';
+import {
+	Component,
+	ComponentPropertyDefinition,
+	ComponentProps,
+	LocationHistory,
+	PageDefinition,
+} from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponent';
 import { IconHelper } from '../util/IconHelper';
@@ -8,17 +20,57 @@ import useDefinition from '../util/useDefinition';
 import GridStyle from './FillerValueEditorStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './fillerValueEditorProperties';
 import { styleDefaults } from './fillerValueEditorStyleProperties';
+import ValueEditor from './components/ValueEditor';
+import PageViewer from './components/PageViewer';
+import { runEvent } from '../util/runEvent';
+import TopBar from './components/TopBar';
+import { Filler } from './components/fillerCommons';
+import { duplicate, isNullValue } from '@fincity/kirun-js';
+import { MASTER_FUNCTIONS } from './components/masterFunctions';
+
+function savePersonalizationCurry(
+	personalizationPath: string,
+	pageName: string,
+	onChangePersonalization: any,
+	locationHistory: Array<LocationHistory>,
+	pageDefinition: PageDefinition,
+) {
+	if (!onChangePersonalization) return (key: string, value: any) => {};
+	let handle: any = -1;
+
+	return (key: string, value: any) => {
+		if (handle !== -1) clearTimeout(handle);
+
+		setData(`${personalizationPath}.${key}`, value, pageName);
+		handle = setTimeout(() => {
+			(async () =>
+				await runEvent(
+					onChangePersonalization,
+					'pageEditorSave',
+					pageName,
+					locationHistory,
+					pageDefinition,
+				))();
+		}, 2000);
+	};
+}
 
 function FillerValueEditor(props: ComponentProps) {
 	const { definition, pageDefinition, locationHistory, context } = props;
 	const {
-		definition: { bindingPath },
+		definition: { bindingPath, bindingPath3, bindingPath2 },
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
 		key,
 		stylePropertiesWithPseudoStates,
-		properties: { onSave } = {},
+		properties: {
+			onSave,
+			onChangePersonalization,
+			logo,
+			dashboardPageName,
+			settingsPageName,
+		} = {},
 	} = useDefinition(
 		definition,
 		propertiesDefinition,
@@ -33,17 +85,226 @@ function FillerValueEditor(props: ComponentProps) {
 		stylePropertiesWithPseudoStates,
 	);
 
+	const uiDefPath = bindingPath
+		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
+		: undefined;
+
+	const coreDefPath = bindingPath2
+		? getPathFromLocation(bindingPath2, locationHistory, pageExtractor)
+		: undefined;
+
+	// binding path for the editor's personalization.
+	const personalizationPath = bindingPath3
+		? getPathFromLocation(bindingPath3, locationHistory, pageExtractor)
+		: undefined;
+
+	// Function to save the personalization
+	const savePersonalization = useMemo(() => {
+		if (!personalizationPath) return (key: string, value: any) => {};
+
+		return savePersonalizationCurry(
+			personalizationPath,
+			context.pageName,
+			pageDefinition.eventFunctions?.[onChangePersonalization],
+			locationHistory,
+			pageDefinition,
+		);
+	}, [
+		personalizationPath,
+		context.pageName,
+		onChangePersonalization,
+		locationHistory,
+		pageDefinition,
+	]);
+
+	const [uiFiller, setUIFiller] = useState<Filler>({});
+	const [coreFiller, setCoreFiller] = useState<Filler>({});
+
+	const [firstUIFiller, setFirstUIFiller] = useState<Filler | undefined>(undefined);
+	const [firstCoreFiller, setFirstCoreFiller] = useState<Filler | undefined>(undefined);
+
+	const clientCode = getDataFromPath('Store.auth.client.code', locationHistory, pageExtractor);
+
+	useEffect(() => {
+		if (!uiDefPath) return;
+		return addListenerAndCallImmediately(
+			(_, value) => {
+				const isNull = isNullValue(value);
+				setUIFiller(isNull ? {} : value);
+				if (!isNull && !firstUIFiller) setFirstUIFiller(value);
+			},
+			pageExtractor,
+			uiDefPath,
+		);
+	}, [firstUIFiller, setFirstUIFiller, uiDefPath]);
+
+	useEffect(() => {
+		if (!coreDefPath) return;
+		return addListenerAndCallImmediately(
+			(_, value) => {
+				const isNull = isNullValue(value);
+				setCoreFiller(isNull ? {} : value);
+				if (!isNull && !firstCoreFiller) setFirstCoreFiller(value);
+			},
+			pageExtractor,
+			coreDefPath,
+		);
+	}, [firstCoreFiller, setFirstCoreFiller, coreDefPath]);
+
+	const undoStack = useRef<Array<Filler[]>>([]);
+	const redoStack = useRef<Array<Filler[]>>([]);
+
+	const iframeRef = useRef<HTMLIFrameElement>(null);
+
+	useEffect(() => {
+		function onMessageFromSlave(e: any) {
+			const {
+				data: { type, payload, editorType },
+			} = e;
+
+			if (!type || !type.startsWith('SLAVE_') || !iframeRef.current) return;
+
+			if (!MASTER_FUNCTIONS.has(type)) throw Error('Unknown message from Slave : ' + type);
+
+			if (editorType && editorType !== 'PAGE') return;
+
+			MASTER_FUNCTIONS.get(type)!({ iframe: iframeRef.current }, payload);
+		}
+
+		window.addEventListener('message', onMessageFromSlave);
+		return () => window.removeEventListener('message', onMessageFromSlave);
+	}, [iframeRef.current]);
+
+	const [selection, setSelection] = useState<
+		{ isUiFiller: boolean; sectionKey: string; sectionNumber: number } | undefined
+	>();
+
+	useEffect(() => {
+		if (!selection || !iframeRef.current) return;
+
+		const { isUiFiller, sectionKey } = selection;
+
+		const filler = isUiFiller ? uiFiller : coreFiller;
+
+		if (!filler) return;
+
+		const section = filler.definition?.[sectionKey];
+
+		if (!section) return;
+
+		iframeRef.current.contentWindow?.postMessage(
+			{
+				type: 'EDITOR_FILLER_SECTION_SELECTION',
+				payload: { sectionKey, section, sectionNumber: selection.sectionNumber },
+			},
+			'*',
+		);
+	}),
+		[selection, iframeRef.current];
+
+	let filler = uiFiller;
+	if (!selection?.isUiFiller && Object.keys(coreFiller).length > 0) filler = coreFiller;
+
+	let url = filler.appCode ? `/${filler.appCode}/${filler.clientCode}/page` : '';
+
+	if (filler.definition?.[selection?.sectionKey ?? '']) {
+		url += filler.definition?.[selection?.sectionKey!].pagePath;
+		if (filler.definition?.[selection?.sectionKey!].gridKey)
+			url += `#${filler.definition?.[selection?.sectionKey!].gridKey}`;
+	} else url += '/';
+
 	return (
 		<div className={`comp compFillerValueEditor`} style={resolvedStyles.comp ?? {}}>
 			<HelperComponent key={`${key}_hlp`} definition={definition} />
+			<TopBar
+				logo={logo}
+				dashboardPageName={dashboardPageName}
+				settingsPageName={settingsPageName}
+				onSave={() => {
+					if (!onSave || !pageDefinition.eventFunctions?.[onSave]) return;
+					runEvent(
+						pageDefinition.eventFunctions?.[onSave],
+						'pageEditorSave',
+						context.pageName,
+						locationHistory,
+						pageDefinition,
+					);
+				}}
+				onUndo={() => {
+					if (undoStack.current.length === 0) return;
+					const [f1, f2] = duplicate(undoStack.current.pop()!);
+					setData(uiDefPath!, f1, context.pageName);
+					iframeRef.current?.contentWindow?.postMessage(
+						{
+							type: 'EDITOR_FILLER_VALUE_CHANGE',
+							payload: { values: f1.values ?? {} },
+						},
+						'*',
+					);
+					if (Object.keys(f2).length > 0) setData(coreDefPath!, f2, context.pageName);
+					redoStack.current.push(duplicate([uiFiller, coreFiller]));
+				}}
+				onRedo={() => {
+					if (redoStack.current.length === 0) return;
+					const [f1, f2] = duplicate(redoStack.current.pop()!);
+					setData(uiDefPath!, f1, context.pageName);
+					iframeRef.current?.contentWindow?.postMessage(
+						{
+							type: 'EDITOR_FILLER_VALUE_CHANGE',
+							payload: { values: f1.values ?? {} },
+						},
+						'*',
+					);
+					if (Object.keys(f2).length > 0) setData(coreDefPath!, f2, context.pageName);
+					undoStack.current.push(duplicate([uiFiller, coreFiller]));
+				}}
+				hasUndo={undoStack?.current?.length > 0}
+				hasRedo={redoStack?.current?.length > 0}
+				pageExtractor={pageExtractor}
+				locationHistory={locationHistory}
+				personalizationPath={personalizationPath}
+				onPersonalizationChange={(k: string, v: any) => savePersonalization(k, v)}
+			/>
+			<div className="_body">
+				<ValueEditor
+					uiFiller={uiFiller}
+					coreFiller={coreFiller}
+					pageExtractor={pageExtractor}
+					personalizationPath={personalizationPath}
+					onPersonalizationChange={(k: string, v: any) => savePersonalization(k, v)}
+					onSectionSelection={(isUiFiller: boolean, sectionKey: string, index: number) =>
+						setSelection({ isUiFiller, sectionKey, sectionNumber: index })
+					}
+					onValueChanged={(isUiFiller: boolean, filler: Filler) => {
+						if (!(isUiFiller ? uiDefPath : coreDefPath)) return;
+						undoStack.current.push(duplicate([uiFiller, coreFiller]));
+
+						setData(isUiFiller ? uiDefPath! : coreDefPath!, filler, context.pageName);
+						if (!isUiFiller || !iframeRef.current) return;
+						iframeRef.current.contentWindow?.postMessage(
+							{
+								type: 'EDITOR_FILLER_VALUE_CHANGE',
+								payload: { values: filler.values ?? {} },
+							},
+							'*',
+						);
+					}}
+				/>
+				<PageViewer
+					url={url}
+					iframeRef={iframeRef}
+					pageExtractor={pageExtractor}
+					personalizationPath={personalizationPath}
+				/>
+			</div>
 		</div>
 	);
 }
 
 const component: Component = {
 	name: 'FillerValueEditor',
-	displayName: 'Filler Editor',
-	description: 'Filler Editor Component',
+	displayName: 'Filler Value Editor',
+	description: 'Filler Value Editor Component',
 	component: FillerValueEditor,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
@@ -52,7 +313,9 @@ const component: Component = {
 	stylePseudoStates: [],
 	styleProperties: stylePropertiesDefinition,
 	bindingPaths: {
-		bindingPath: { name: 'Filler Values' },
+		bindingPath: { name: 'UI Filler' },
+		bindingPath2: { name: 'Server Filler' },
+		bindingPath3: { name: 'Personalization' },
 	},
 	defaultTemplate: {
 		key: '',

@@ -233,9 +233,8 @@ export default function DnDTopBar({
 		},
 		[],
 	);
-	
-	const [showLogoDropdown, setShowLogoDropdown] = React.useState(false);
 
+	const [showLogoDropdown, setShowLogoDropdown] = React.useState(false);
 
 	React.useEffect(() => {
 		if (!selectedPage) return;
@@ -545,7 +544,6 @@ export default function DnDTopBar({
 								type="button"
 								onMouseDown={e => {
 									e.stopPropagation();
-									console.log(addnewPageName);
 									navigate(getHref(addnewPageName, location));
 								}}
 								className="_add_page_btn"
