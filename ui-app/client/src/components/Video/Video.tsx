@@ -20,6 +20,7 @@ function Video(props: ComponentProps) {
 			type,
 			poster,
 			autoPlay,
+			loop,
 			showPipButton,
 			showFullScreenButton,
 			showAudioControls,
@@ -488,6 +489,7 @@ function Video(props: ComponentProps) {
 				preload="metadata"
 				ref={video}
 				muted
+				loop={loop}
 				onLoadedMetadata={initializeVideo}
 				onTimeUpdate={updateTimeElapsed}
 				data-seek
