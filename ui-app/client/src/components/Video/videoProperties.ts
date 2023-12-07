@@ -40,6 +40,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
+		name: 'loop',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Loop',
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
 		name: 'showSeekBar',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show seek bar',
