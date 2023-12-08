@@ -1,5 +1,5 @@
 import { duplicate, isNullValue } from '@fincity/kirun-js';
-import React, { useCallback } from 'react';
+import React, { Fragment, useCallback } from 'react';
 import { shortUUID } from '../../../util/shortUUID';
 import { Dots } from './FillerDefinitionEditorIcons';
 import TextBox from './TextBox';
@@ -7,7 +7,6 @@ import ToggleButton from './ToggleButton';
 import {
 	EditorDefinition,
 	EditorType,
-	EditorValueType,
 	Filler,
 	SectionDefinition,
 	SectionLayout,
@@ -40,6 +39,23 @@ export function SectionBody({
 	);
 
 	const editors = (section.editors ?? []).map(editor => {
+		let children: React.ReactNode = null;
+		if (editor.type === EditorType.ARRAY_OF_OBJECTS) {
+			children = (
+				<>
+					{Object.values(editor.objectEditors ?? {}).map(ed => (
+						<Editor
+							key={ed.key}
+							editor={ed}
+							section={section}
+							filler={filler}
+							setFiller={setFiller}
+							parentEditor={editor}
+						/>
+					))}
+				</>
+			);
+		}
 		return (
 			<Editor
 				key={editor.key}
@@ -47,7 +63,9 @@ export function SectionBody({
 				section={section}
 				filler={filler}
 				setFiller={setFiller}
-			/>
+			>
+				{children}
+			</Editor>
 		);
 	});
 
@@ -83,15 +101,25 @@ export function SectionBody({
 					onChange={() => updateDefinition(s => (s.layout = SectionLayout.VERTICAL))}
 				/>
 				<label htmlFor={`${section.key}_vertical`}>Vertical</label>
-				<input
-					type="radio"
-					id={`${section.key}_horizontal`}
-					name={section.key}
-					value={SectionLayout.HORIZONTAL}
-					checked={section.layout === SectionLayout.HORIZONTAL}
-					onChange={() => updateDefinition(s => (s.layout = SectionLayout.HORIZONTAL))}
-				/>
-				<label htmlFor={`${section.key}_horizontal`}>Horizontal</label>
+				{[
+					['horizonatal', SectionLayout.HORIZONTAL, 'Horizontal'],
+					['two_per_row', SectionLayout.TWO_PER_ROW, 'Two per Row'],
+					['three_per_row', SectionLayout.THREE_PER_ROW, 'Three per Row'],
+				].map(([label, value, title]) => (
+					<Fragment key={label}>
+						<input
+							type="radio"
+							id={`${section.key}_${label}`}
+							name={section.key}
+							value={value}
+							checked={section.layout === value}
+							onChange={() =>
+								updateDefinition(s => (s.layout = value as SectionLayout))
+							}
+						/>
+						<label htmlFor={`${section.key}_${label}`}>{title}</label>
+					</Fragment>
+				))}
 			</div>
 			<div className="_row _gap _alignBottom">
 				<div className="_row">
@@ -172,7 +200,6 @@ function addNewEditor({
 		key,
 		name: 'New Editor',
 		valueKey,
-		valueType: EditorValueType.STRING,
 		type: EditorType.TEXT_BOX,
 	};
 

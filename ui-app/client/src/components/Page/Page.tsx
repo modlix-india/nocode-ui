@@ -50,7 +50,6 @@ function PageComponent(props: Readonly<ComponentProps>) {
 	}, [location.pathname, location.search, setPathParts, setQueryParameters]);
 
 	useEffect(() => {
-		console.log(pageName, 'InEffect : ', pathParts);
 		if (pathParts === undefined) return;
 		const {
 			eventFunctions = {},

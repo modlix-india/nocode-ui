@@ -12,6 +12,7 @@ export function Section({
 	onSectionSelection,
 	onValueChanged,
 	index,
+	selected,
 }: {
 	filler: Filler;
 	storeExtractor: StoreExtractor;
@@ -20,6 +21,7 @@ export function Section({
 	onSectionSelection: (index: number) => void;
 	onValueChanged: (f: Filler) => void;
 	index: number;
+	selected: boolean;
 }) {
 	const [collapsed, setCollapsed] = useState<boolean>(false);
 
@@ -47,7 +49,7 @@ export function Section({
 
 	return (
 		<div
-			className={`_section ${collapsed ? '_collapsed' : ''}`}
+			className={`_section ${collapsed ? '_collapsed' : ''} ${selected ? '_selected' : ''}`}
 			onMouseDown={() => onSectionSelection(index)}
 		>
 			<div className="_sectionHeader">
@@ -55,7 +57,7 @@ export function Section({
 				<div className="_sectionName">{section.name}</div>
 				{sectionToggle}
 			</div>
-			<div className={`_sectionBody _${section.layout ?? 'HORIZONTAL'}`}>
+			<div className={`_sectionBody _${section.layout ?? 'VERTICAL'}`}>
 				{Object.values(section.editors ?? {}).map(editor => (
 					<Editor
 						key={editor.key}
