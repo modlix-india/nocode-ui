@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { EditorDefinition, Filler, SectionDefinition } from './fillerCommons';
-import { duplicate } from '@fincity/kirun-js';
+import { duplicate, isNullValue } from '@fincity/kirun-js';
 import { Dots, DustBin, Gear } from './FillerDefinitionEditorIcons';
 import { EditorBody } from './EditorBody';
 
@@ -9,11 +9,15 @@ export default function Editor({
 	section,
 	filler,
 	setFiller,
+	parentEditor,
+	children,
 }: {
 	editor: EditorDefinition;
 	section: SectionDefinition;
 	filler: Filler;
 	setFiller: (filler: Filler) => void;
+	parentEditor?: EditorDefinition;
+	children?: React.ReactNode;
 }) {
 	const sectionKey = section.key;
 	const [collapsed, setCollapsed] = useState<boolean>(true);
@@ -29,7 +33,12 @@ export default function Editor({
 			}
 			const newFiller = duplicate(filler) as Filler;
 			const editors = newFiller.definition![sectionKey].editors!;
-			editors.find(e => e.key == editor.key)!.name = name;
+			if (isNullValue(parentEditor)) {
+				editors.find(e => e.key == editor.key)!.name = name;
+			} else {
+				const pe = editors.find(e => e.key == parentEditor!.key)!;
+				pe.objectEditors!.find(e => e.key == editor.key)!.name = name;
+			}
 			setFiller(newFiller);
 			setEditorName(undefined);
 		};
@@ -50,7 +59,15 @@ export default function Editor({
 	}
 
 	const editorBody = collapsed ? null : (
-		<EditorBody editor={editor} section={section} filler={filler} setFiller={setFiller} />
+		<EditorBody
+			editor={editor}
+			section={section}
+			filler={filler}
+			setFiller={setFiller}
+			parentEditor={parentEditor}
+		>
+			{children}
+		</EditorBody>
 	);
 
 	return (
@@ -63,20 +80,33 @@ export default function Editor({
 			onDrop={e => {
 				const key = e.dataTransfer.getData('editorKey');
 				if (!key && !key.startsWith('Editor')) return;
-				const [, inSectionKey, dgin] = key.split('_');
+				const keyParts = key.split('_');
+
+				const inSectionKey = keyParts[1];
 				if (inSectionKey != sectionKey) return;
+
+				const isParentEditor = !isNullValue(parentEditor);
+				if (isParentEditor && keyParts.length != 4) return;
+
+				if (isParentEditor && keyParts[2] != parentEditor!.key) return;
+
+				const dgin = keyParts[isParentEditor ? 3 : 2];
 				const dgon = editor.key;
 				if (dgin == dgon) return;
 
 				const newFiller = duplicate(filler) as Filler;
-				const sections = newFiller.definition![sectionKey].editors!;
-				const dgiIndex = sections.findIndex(s => s.key == dgin);
-				const dgoIndex = sections.findIndex(s => s.key == dgon);
+				let editors = isParentEditor
+					? newFiller.definition![sectionKey].editors!.find(
+							ed => ed.key == parentEditor?.key,
+					  )?.objectEditors!
+					: newFiller.definition![sectionKey].editors!;
+				const dgiIndex = editors.findIndex(s => s.key == dgin);
+				const dgoIndex = editors.findIndex(s => s.key == dgon);
 
-				const targetSection = sections.splice(dgiIndex, 1);
-				sections.splice(dgoIndex, 0, targetSection[0]);
+				const targetSection = editors.splice(dgiIndex, 1);
+				editors.splice(dgoIndex, 0, targetSection[0]);
 
-				newFiller.definition![sectionKey].editors = sections;
+				newFiller.definition![sectionKey].editors = editors;
 
 				setFiller(newFiller);
 			}}
@@ -87,7 +117,12 @@ export default function Editor({
 					draggable
 					onDoubleClick={() => setEditorName(editor.name)}
 					onDragStart={e =>
-						e.dataTransfer.setData('editorKey', `Editor_${sectionKey}_${editor.key}`)
+						e.dataTransfer.setData(
+							'editorKey',
+							isNullValue(parentEditor)
+								? `Editor_${sectionKey}_${editor.key}`
+								: `Editor_${sectionKey}_${parentEditor!.key}_${editor.key}`,
+						)
 					}
 				>
 					<Dots />
@@ -101,10 +136,17 @@ export default function Editor({
 							onClick={() => {
 								const newFiller = duplicate(filler) as Filler;
 								const editors = newFiller.definition![sectionKey].editors!;
-								editors.splice(
-									editors.findIndex(s => s.key == editor.key),
-									1,
-								);
+								if (isNullValue(parentEditor)) {
+									editors.splice(
+										editors.findIndex(s => s.key == editor.key),
+										1,
+									);
+								} else {
+									const pe = editors.find(e => e.key == parentEditor!.key)!;
+									pe.objectEditors = pe.objectEditors!.filter(
+										e => e.key !== editor.key,
+									);
+								}
 								setFiller(newFiller);
 							}}
 						>
