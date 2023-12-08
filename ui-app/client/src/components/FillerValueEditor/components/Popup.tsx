@@ -9,7 +9,15 @@ export function Popup({
 }>) {
 	return (
 		<div className="_popupContainer" onClick={onClose} onKeyDown={() => {}}>
-			<div className="_popup">{children}</div>
+			<div
+				className="_popup"
+				onClick={e => {
+					e.stopPropagation();
+					e.preventDefault();
+				}}
+			>
+				{children}
+			</div>
 		</div>
 	);
 }

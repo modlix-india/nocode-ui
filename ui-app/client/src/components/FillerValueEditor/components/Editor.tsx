@@ -45,7 +45,9 @@ export function Editor({
 	);
 
 	let editorControl = <></>;
-	if (editor.type === EditorType.BOOLEAN) {
+	if (editor.type === EditorType.LABEL) {
+		editorControl = <div className="_editorLabel">{value ?? editor.name}</div>;
+	} else if (editor.type === EditorType.BOOLEAN) {
 		editorControl = <ToggleButton value={!!value} onChange={onChange} />;
 	} else if (editor.type === EditorType.IMAGE) {
 		editorControl = <ImageEditor value={value} onChange={onChange} />;
@@ -87,12 +89,13 @@ export function Editor({
 		);
 	} else if (editor.type === EditorType.ARRAY_OF_IMAGES) {
 		editorControl = (
-			<>
+			<div className="_arrayOfImages">
 				{(value ?? []).map((v: string, i: number) => (
 					<ImageEditor
 						key={v}
 						value={v}
 						onChange={e => {
+							if (!e) return onChange(value.filter((_: any, j: number) => j !== i));
 							const x = [...value];
 							x[i] = e;
 							onChange(x);
@@ -100,7 +103,7 @@ export function Editor({
 					/>
 				))}
 				<ImageEditor value={''} onChange={e => onChange([...(value ?? []), e])} />
-			</>
+			</div>
 		);
 	} else if (editor.type === EditorType.ARRAY_OF_OBJECTS) {
 		editorControl = <ObjectEditor />;
