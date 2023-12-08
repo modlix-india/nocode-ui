@@ -292,54 +292,7 @@ export default function DnDPropertyBar({
 		</svg>
 	);
 
-	const gripIcon = (
-		<svg
-			xmlns="http://www.w3.org/2000/svg"
-			width="9"
-			height="9"
-			viewBox="0 0 9 9"
-			fill="none"
-			className="_leftIcon _grip"
-			tabIndex={0}
-		>
-			<circle cx="7.5" cy="1.5" r="1.5" fill="#8E90A4" />
-			<circle
-				cx="7.5"
-				cy="1.5"
-				r="1.1"
-				stroke="black"
-				strokeOpacity="0.15"
-				strokeWidth="0.8"
-			/>
-			<circle cx="1.5" cy="1.5" r="1.5" fill="#8E90A4" />
-			<circle
-				cx="1.5"
-				cy="1.5"
-				r="1.1"
-				stroke="black"
-				strokeOpacity="0.15"
-				strokeWidth="0.8"
-			/>
-			<circle cx="7.5" cy="7.5" r="1.5" fill="#8E90A4" />
-			<circle
-				cx="7.5"
-				cy="7.5"
-				r="1.1"
-				stroke="black"
-				strokeOpacity="0.15"
-				strokeWidth="0.8"
-			/>
-			<circle cx="1.5" cy="7.5" r="1.5" fill="#8E90A4" />
-			<circle
-				cx="1.5"
-				cy="7.5"
-				r="1.1"
-				stroke="black"
-				strokeOpacity="0.15"
-				strokeWidth="0.8"
-			/>
-		</svg>
-	);
+	const gripIcon = <i className="_leftIcon _grip fa-solid fa-grip-vertical" />;
 
 	return (
 		<div
