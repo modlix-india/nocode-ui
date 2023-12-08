@@ -1,13 +1,3 @@
-export enum EditorValueType {
-	STRING = 'STRING',
-	NUMBER = 'NUMBER',
-	BOOLEAN = 'BOOLEAN',
-	OBJECT = 'OBJECT',
-	DATE = 'DATE',
-	ENUM = 'ENUM',
-	IMAGE = 'IMAGE',
-}
-
 export enum EditorType {
 	TEXT_BOX = 'TEXT_BOX',
 	TEXT_AREA = 'TEXT_AREA',
@@ -20,12 +10,13 @@ export enum EditorType {
 	ARRAY_OF_IMAGES = 'ARRAY_OF_IMAGES',
 	ARRAY_OF_OBJECTS = 'ARRAY_OF_OBJECTS',
 	PALLETTE = 'PALLETTE',
+	LABEL = 'LABEL',
+	FONT_PICKER = 'FONT_PICKER',
 }
 
 export interface EditorDefinition {
 	key: string;
 	valueKey: string;
-	valueType: EditorValueType;
 	name: string;
 	hideLabel?: boolean;
 	description?: string;
@@ -33,11 +24,20 @@ export interface EditorDefinition {
 	maxLength?: number;
 	regex?: string;
 	enumOptions?: { displayName: string; name: string }[];
+	numColors?: number;
+	numFonts?: number;
+	sampleObjects?: any[];
+	showEnumNone?: boolean;
+	objectEditors?: EditorDefinition[];
+	showInList?: boolean;
+	arrayPreviewList?: string[];
 }
 
 export enum SectionLayout {
 	VERTICAL = 'VERTICAL',
 	HORIZONTAL = 'HORIZONTAL',
+	TWO_PER_ROW = 'TWO_PER_ROW',
+	THREE_PER_ROW = 'THREE_PER_ROW',
 }
 
 export interface SectionDefinition {
