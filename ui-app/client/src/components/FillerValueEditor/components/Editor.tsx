@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { EditorDefinition, EditorType, Filler } from '.././components/fillerCommons';
+import { EditorDefinition, EditorType, Filler, PopupType } from '.././components/fillerCommons';
 import { StoreExtractor, setStoreData } from '@fincity/path-reactive-state-management';
 import ToggleButton from './ToggleButton';
 import { ImageEditor } from './ImageEditor';
@@ -7,19 +7,26 @@ import Text from './Text';
 import { Dropdown } from './Dropdown';
 import Pallette from './Pallette';
 import ObjectEditor from './ObjectEditor';
+import { isNullValue } from '@fincity/kirun-js';
 
 export function Editor({
 	editor,
+	parentEditor,
 	sectionValueKey,
 	filler,
 	onValueChanged,
 	storeExtractor,
+	onPopup,
+	index,
 }: Readonly<{
 	editor: EditorDefinition;
 	sectionValueKey: string;
 	filler: Filler;
 	onValueChanged: (f: Filler) => void;
 	storeExtractor: StoreExtractor;
+	onPopup: (newPopup: PopupType, clear: boolean) => void;
+	parentEditor?: EditorDefinition;
+	index?: number;
 }>) {
 	const [value, setValue] = useState<any>();
 
@@ -50,7 +57,23 @@ export function Editor({
 	} else if (editor.type === EditorType.BOOLEAN) {
 		editorControl = <ToggleButton value={!!value} onChange={onChange} />;
 	} else if (editor.type === EditorType.IMAGE) {
-		editorControl = <ImageEditor value={value} onChange={onChange} />;
+		editorControl = (
+			<ImageEditor
+				onPopup={() => {
+					const newPopup: PopupType = {
+						path: `Filler.values.${sectionValueKey}.${editor.valueKey}`,
+						type: 'IMAGE',
+					};
+					if (!isNullValue(parentEditor))
+						newPopup.path = `Filler.values.${sectionValueKey}.${
+							parentEditor!.valueKey
+						}[${index}].${editor.valueKey}`;
+					onPopup(newPopup, !isNullValue(parentEditor));
+				}}
+				value={value}
+				onDelete={onChange}
+			/>
+		);
 	} else if (editor.type === EditorType.TEXT_BOX) {
 		editorControl = (
 			<Text
@@ -94,15 +117,38 @@ export function Editor({
 					<ImageEditor
 						key={v}
 						value={v}
-						onChange={e => {
+						onDelete={e => {
 							if (!e) return onChange(value.filter((_: any, j: number) => j !== i));
 							const x = [...value];
 							x[i] = e;
 							onChange(x);
 						}}
+						onPopup={() =>
+							onPopup(
+								{
+									path: `Filler.values.${sectionValueKey}.${editor.valueKey}[${i}]`,
+									type: 'IMAGE',
+								},
+								!isNullValue(parentEditor),
+							)
+						}
 					/>
 				))}
-				<ImageEditor value={''} onChange={e => onChange([...(value ?? []), e])} />
+				<ImageEditor
+					value={''}
+					onPopup={() =>
+						onPopup(
+							{
+								path: `Filler.values.${sectionValueKey}.${editor.valueKey}[${
+									value?.length ?? 0
+								}]`,
+								type: 'IMAGE',
+							},
+							!isNullValue(parentEditor),
+						)
+					}
+					onDelete={e => onChange([...(value ?? []), e])}
+				/>
 			</div>
 		);
 	} else if (editor.type === EditorType.ARRAY_OF_OBJECTS) {

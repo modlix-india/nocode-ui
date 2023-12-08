@@ -60,3 +60,9 @@ export interface Filler {
 		[key: string]: SectionDefinition;
 	};
 }
+
+export interface PopupType {
+	type: 'IMAGE' | 'OBJECT';
+	path: string;
+	isUIFiller?: boolean;
+}
