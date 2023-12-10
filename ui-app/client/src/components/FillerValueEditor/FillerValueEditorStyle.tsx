@@ -479,7 +479,7 @@ export default function FillerValueEditorStyle({
 		}
 
 		${PREFIX} ._popup {
-			width: 500px;
+			width: 650px;
 			height: 400px;
 			background-color: #FFF;
 			border-radius: 6px;
@@ -522,14 +522,28 @@ export default function FillerValueEditorStyle({
 			padding: 13px;
 		}
 
-		${PREFIX} ._objectEditor ._eachObject {
+		${PREFIX} ._objectEditor ._eachObject,
+		${PREFIX} ._tab ._eachObject {
 			display: flex;
 			flex-direction: row;
 			gap: 10px;
 			align-items: center;
 		}
 
-		${PREFIX} ._objectEditor._LIST img {
+		${PREFIX} ._tab ._eachObject {
+			background: #F8FAFB;
+			padding: 5px;
+			border-radius: 4px;
+			align-items: center;
+			cursor: pointer;
+		}
+
+		${PREFIX} ._tab ._eachObject span {
+			white-space: nowrap;
+		}
+
+		${PREFIX} ._objectEditor._LIST img,
+		${PREFIX} ._tab ._eachObject img {
 			width: 24px;
 		}
 
@@ -549,6 +563,90 @@ export default function FillerValueEditorStyle({
 		${PREFIX} ._objectEditor._GRID {
 			display: grid;
 			grid-template-columns: 1fr 1fr ;
+		}
+
+		${PREFIX} ._tabContainer {
+			display: flex;
+			flex-direction: column;
+			flex: 1;
+			gap: 5px;
+			padding: 10px;
+		}
+
+		${PREFIX} ._tabContainer ._tabHeader {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+		}
+
+		${PREFIX} ._tabContainer ._tabHeader ._tabTitle {
+			flex: 1;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 14px;
+			color: rgba(0, 0, 0, 0.20);
+			border-bottom: 2px solid #F1F1F1;
+			cursor: pointer;
+			padding-bottom: 10px;
+		}
+
+		${PREFIX} ._tabContainer ._tabHeader ._tabTitle._selected {
+			color: #427EE4;
+			border-color: #427EE4;
+		}
+
+		${PREFIX} ._tabContainer ._tabDivider {
+			height: 0px;
+			border: 1px solid #F1F1F1;
+			width: 175px;
+			margin-top: 10px;
+		}
+
+		${PREFIX} ._tabContainer ._tab {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+			padding: 10px;
+		}
+
+		${PREFIX} ._tabContainer ._tab {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			overflow: auto;
+			grid-auto-rows: max-content;
+			gap: 10px;
+		}
+
+		${PREFIX} ._tabContainer ._tab._newObject {
+			display: flex;
+			flex-direction: column;
+			overflow: auto;
+		}
+
+		${PREFIX} ._tabContainer ._tabFooter {
+			display: flex;
+			flex-direction: row;
+			gap: 10px;
+			padding-top: 10px;
+		}
+
+		${PREFIX} ._tabContainer ._tabFooter ._button {			
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 14px;
+			background-color: #427EE4;
+			color: #FFF;
+			cursor: pointer;
+			padding: 10px;
+			border-radius: 6px;
+			border: none;
+			font-size: 12px;
+		}
+
+		${PREFIX} ._tabContainer ._sectionBody {
+			height: 250px;
 		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

@@ -24,7 +24,7 @@ export function Editor({
 	filler: Filler;
 	onValueChanged: (f: Filler) => void;
 	storeExtractor: StoreExtractor;
-	onPopup: (newPopup: PopupType, clear: boolean) => void;
+	onPopup: (newPopup: PopupType, clear: boolean, editorDefinition: EditorDefinition) => void;
 	parentEditor?: EditorDefinition;
 	index?: number;
 }>) {
@@ -68,7 +68,7 @@ export function Editor({
 						newPopup.path = `Filler.values.${sectionValueKey}.${
 							parentEditor!.valueKey
 						}[${index}].${editor.valueKey}`;
-					onPopup(newPopup, !isNullValue(parentEditor));
+					onPopup(newPopup, !isNullValue(parentEditor), editor);
 				}}
 				value={value}
 				onDelete={onChange}
@@ -126,6 +126,7 @@ export function Editor({
 									type: 'IMAGE',
 								},
 								!isNullValue(parentEditor),
+								editor,
 							)
 						}
 					/>
@@ -141,6 +142,7 @@ export function Editor({
 								type: 'IMAGE',
 							},
 							!isNullValue(parentEditor),
+							editor,
 						)
 					}
 					onDelete={e => onChange([...(value ?? []), e])}
@@ -159,6 +161,7 @@ export function Editor({
 							type: 'OBJECT',
 						},
 						true,
+						editor,
 					)
 				}
 			/>

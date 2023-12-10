@@ -83,7 +83,9 @@ export default function ValueEditor({
 							}
 							onValueChanged={(f: Filler) => onValueChanged(true, f)}
 							storeExtractor={uiSTE}
-							onPopup={(x, clear) => onPopup({ ...x, isUIFiller: true }, clear)}
+							onPopup={(x, clear, editorDefinition) =>
+								onPopup({ ...x, isUIFiller: true, editorDefinition }, clear)
+							}
 						/>
 					))}
 
@@ -103,7 +105,9 @@ export default function ValueEditor({
 							}
 							onValueChanged={(f: Filler) => onValueChanged(false, f)}
 							storeExtractor={coreSTE}
-							onPopup={(x, clear) => onPopup({ ...x, isUIFiller: false }, clear)}
+							onPopup={(x, clear, editorDefinition) =>
+								onPopup({ ...x, isUIFiller: false, editorDefinition }, clear)
+							}
 						/>
 					))}
 				</div>

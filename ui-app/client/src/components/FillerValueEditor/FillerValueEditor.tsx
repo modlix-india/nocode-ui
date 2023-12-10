@@ -28,6 +28,7 @@ import { Filler, PopupType } from './components/fillerCommons';
 import { duplicate, isNullValue } from '@fincity/kirun-js';
 import { MASTER_FUNCTIONS } from './components/masterFunctions';
 import ImagePopup from './components/ImagePoup';
+import ObjectPopup from './components/ObjectPopup';
 
 function savePersonalizationCurry(
 	personalizationPath: string,
@@ -205,6 +206,8 @@ function FillerValueEditor(props: ComponentProps) {
 	}),
 		[selection, iframeRef.current];
 
+	useEffect(() => setPopups([]), [selection?.sectionNumber]);
+
 	let filler = uiFiller;
 	if (!selection?.isUIFiller && Object.keys(coreFiller).length > 0) filler = coreFiller;
 
@@ -255,6 +258,17 @@ function FillerValueEditor(props: ComponentProps) {
 					/>,
 				);
 			} else if (p.type === 'OBJECT') {
+				popupList.push(
+					<ObjectPopup
+						editor={p.editorDefinition}
+						dataPath={p.path}
+						isUIFiller={p.isUIFiller ?? false}
+						uiFiller={uiFiller}
+						coreFiller={coreFiller}
+						onValueChanged={valueChanged}
+						onClose={() => setPopups([])}
+					/>,
+				);
 			}
 		}
 

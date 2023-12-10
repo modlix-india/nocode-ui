@@ -16,13 +16,15 @@ export default function ImagePopup({
 	coreFiller,
 	onClose,
 	onValueChanged,
+	onSimpleValueChanged,
 }: Readonly<{
-	dataPath: string;
-	isUIFiller: boolean;
-	uiFiller: Filler;
-	coreFiller: Filler;
+	dataPath?: string;
+	isUIFiller?: boolean;
+	uiFiller?: Filler;
+	coreFiller?: Filler;
 	onClose: () => void;
-	onValueChanged: (isUIFiller: boolean, filler: Filler) => void;
+	onValueChanged?: (isUIFiller: boolean, filler: Filler) => void;
+	onSimpleValueChanged?: (x: string) => void;
 }>) {
 	const [filter, setFilter] = useState('');
 	const [path, setPath] = useState('');
@@ -32,17 +34,19 @@ export default function ImagePopup({
 	const [newFolderName, setNewFolderName] = useState('');
 
 	const onChange = useCallback(
-		(v: string) => {
-			const newFiller = duplicate(isUIFiller ? uiFiller : coreFiller);
-			setStoreData(
-				dataPath,
-				newFiller,
-				v,
-				'Filler',
-				new Map([['Filler.', new StoreExtractor(newFiller, 'Filler.')]]),
-			);
-			onValueChanged(isUIFiller, newFiller);
-		},
+		onSimpleValueChanged
+			? onSimpleValueChanged
+			: (v: string) => {
+					const newFiller = duplicate(isUIFiller ? uiFiller : coreFiller);
+					setStoreData(
+						dataPath,
+						newFiller,
+						v,
+						'Filler',
+						new Map([['Filler.', new StoreExtractor(newFiller, 'Filler.')]]),
+					);
+					onValueChanged?.(isUIFiller, newFiller);
+			  },
 		[isUIFiller, uiFiller, coreFiller, onValueChanged, dataPath],
 	);
 

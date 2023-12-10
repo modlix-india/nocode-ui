@@ -1,6 +1,11 @@
 import { StoreExtractor, setStoreData } from '@fincity/path-reactive-state-management';
 import React, { useState } from 'react';
-import { Filler, PopupType, SectionDefinition } from '.././components/fillerCommons';
+import {
+	EditorDefinition,
+	Filler,
+	PopupType,
+	SectionDefinition,
+} from '.././components/fillerCommons';
 import { Editor } from './Editor';
 import ToggleButton from './ToggleButton';
 
@@ -23,7 +28,7 @@ export function Section({
 	onValueChanged: (f: Filler) => void;
 	index: number;
 	selected: boolean;
-	onPopup: (newPopup: PopupType, clear: boolean) => void;
+	onPopup: (newPopup: PopupType, clear: boolean, editorDefinition: EditorDefinition) => void;
 }) {
 	const [collapsed, setCollapsed] = useState<boolean>(false);
 
