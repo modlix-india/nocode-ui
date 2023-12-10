@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { EditorDefinition, EditorType, Filler } from '.././components/fillerCommons';
+import { EditorDefinition, EditorType, Filler, PopupType } from '.././components/fillerCommons';
 import { StoreExtractor, setStoreData } from '@fincity/path-reactive-state-management';
 import ToggleButton from './ToggleButton';
 import { ImageEditor } from './ImageEditor';
@@ -7,19 +7,26 @@ import Text from './Text';
 import { Dropdown } from './Dropdown';
 import Pallette from './Pallette';
 import ObjectEditor from './ObjectEditor';
+import { isNullValue } from '@fincity/kirun-js';
 
 export function Editor({
 	editor,
+	parentEditor,
 	sectionValueKey,
 	filler,
 	onValueChanged,
 	storeExtractor,
+	onPopup,
+	index,
 }: Readonly<{
 	editor: EditorDefinition;
 	sectionValueKey: string;
 	filler: Filler;
 	onValueChanged: (f: Filler) => void;
 	storeExtractor: StoreExtractor;
+	onPopup: (newPopup: PopupType, clear: boolean, editorDefinition: EditorDefinition) => void;
+	parentEditor?: EditorDefinition;
+	index?: number;
 }>) {
 	const [value, setValue] = useState<any>();
 
@@ -50,7 +57,23 @@ export function Editor({
 	} else if (editor.type === EditorType.BOOLEAN) {
 		editorControl = <ToggleButton value={!!value} onChange={onChange} />;
 	} else if (editor.type === EditorType.IMAGE) {
-		editorControl = <ImageEditor value={value} onChange={onChange} />;
+		editorControl = (
+			<ImageEditor
+				onPopup={() => {
+					const newPopup: PopupType = {
+						path: `Filler.values.${sectionValueKey}.${editor.valueKey}`,
+						type: 'IMAGE',
+					};
+					if (!isNullValue(parentEditor))
+						newPopup.path = `Filler.values.${sectionValueKey}.${
+							parentEditor!.valueKey
+						}[${index}].${editor.valueKey}`;
+					onPopup(newPopup, !isNullValue(parentEditor), editor);
+				}}
+				value={value}
+				onDelete={onChange}
+			/>
+		);
 	} else if (editor.type === EditorType.TEXT_BOX) {
 		editorControl = (
 			<Text
@@ -70,18 +93,14 @@ export function Editor({
 				isTextArea={true}
 			/>
 		);
-	} else if (editor.type === EditorType.NUMBER) {
-		editorControl = (
-			<Text
-				value={value}
-				onChange={onChange}
-				maxChars={editor.maxLength}
-				allowedRegex={editor.regex ?? '[0-9]+'}
-			/>
-		);
 	} else if (editor.type === EditorType.ENUM) {
 		editorControl = (
-			<Dropdown value={value} onChange={onChange} options={editor.enumOptions ?? []} />
+			<Dropdown
+				hideNone={editor.enumHideNone ?? false}
+				value={value}
+				onChange={onChange}
+				options={editor.enumOptions ?? []}
+			/>
 		);
 	} else if (editor.type === EditorType.PALLETTE) {
 		editorControl = (
@@ -94,19 +113,59 @@ export function Editor({
 					<ImageEditor
 						key={v}
 						value={v}
-						onChange={e => {
+						onDelete={e => {
 							if (!e) return onChange(value.filter((_: any, j: number) => j !== i));
 							const x = [...value];
 							x[i] = e;
 							onChange(x);
 						}}
+						onPopup={() =>
+							onPopup(
+								{
+									path: `Filler.values.${sectionValueKey}.${editor.valueKey}[${i}]`,
+									type: 'IMAGE',
+								},
+								!isNullValue(parentEditor),
+								editor,
+							)
+						}
 					/>
 				))}
-				<ImageEditor value={''} onChange={e => onChange([...(value ?? []), e])} />
+				<ImageEditor
+					value={''}
+					onPopup={() =>
+						onPopup(
+							{
+								path: `Filler.values.${sectionValueKey}.${editor.valueKey}[${
+									value?.length ?? 0
+								}]`,
+								type: 'IMAGE',
+							},
+							!isNullValue(parentEditor),
+							editor,
+						)
+					}
+					onDelete={e => onChange([...(value ?? []), e])}
+				/>
 			</div>
 		);
 	} else if (editor.type === EditorType.ARRAY_OF_OBJECTS) {
-		editorControl = <ObjectEditor />;
+		editorControl = (
+			<ObjectEditor
+				editor={editor}
+				value={value}
+				onPopup={() =>
+					onPopup(
+						{
+							path: `Filler.values.${sectionValueKey}.${editor.valueKey}`,
+							type: 'OBJECT',
+						},
+						true,
+						editor,
+					)
+				}
+			/>
+		);
 	}
 
 	const label = editor.hideLabel ? <></> : <div className="_editorLabel">{editor.name}</div>;

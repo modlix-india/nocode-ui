@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediately,
@@ -24,9 +24,11 @@ import ValueEditor from './components/ValueEditor';
 import PageViewer from './components/PageViewer';
 import { runEvent } from '../util/runEvent';
 import TopBar from './components/TopBar';
-import { Filler } from './components/fillerCommons';
+import { Filler, PopupType } from './components/fillerCommons';
 import { duplicate, isNullValue } from '@fincity/kirun-js';
 import { MASTER_FUNCTIONS } from './components/masterFunctions';
+import ImagePopup from './components/ImagePoup';
+import ObjectPopup from './components/ObjectPopup';
 
 function savePersonalizationCurry(
 	personalizationPath: string,
@@ -154,6 +156,8 @@ function FillerValueEditor(props: ComponentProps) {
 	const undoStack = useRef<Array<Filler[]>>([]);
 	const redoStack = useRef<Array<Filler[]>>([]);
 
+	const [popups, setPopups] = useState<PopupType[]>([]);
+
 	const iframeRef = useRef<HTMLIFrameElement>(null);
 
 	useEffect(() => {
@@ -202,18 +206,75 @@ function FillerValueEditor(props: ComponentProps) {
 	}),
 		[selection, iframeRef.current];
 
+	useEffect(() => setPopups([]), [selection?.sectionNumber]);
+
 	let filler = uiFiller;
 	if (!selection?.isUIFiller && Object.keys(coreFiller).length > 0) filler = coreFiller;
 
 	let url = filler.appCode ? `/${filler.appCode}/${filler.clientCode}/page` : '';
 
+	let hasGKey = false;
 	if (filler.definition?.[selection?.sectionKey ?? '']) {
 		url += filler.definition?.[selection?.sectionKey!].pagePath;
-		if (filler.definition?.[selection?.sectionKey!].gridKey)
-			url += `#${filler.definition?.[selection?.sectionKey!].gridKey}`;
+		let gkey = filler.definition?.[selection?.sectionKey!].gridKey ?? '';
+		const commaIndex = gkey.indexOf(',');
+		if (commaIndex > 0) gkey = gkey.substring(0, commaIndex);
+		gkey = gkey.trim();
+		url += `#${gkey}`;
+		hasGKey = true;
 	} else url += '/';
 
-	if (!url.endsWith('/')) url += '/';
+	if (!hasGKey && !url.endsWith('/')) url += '/';
+
+	const valueChanged = (isUIFiller: boolean, filler: Filler) => {
+		if (!(isUIFiller ? uiDefPath : coreDefPath)) return;
+		undoStack.current.push(duplicate([uiFiller, coreFiller]));
+
+		setData(isUIFiller ? uiDefPath! : coreDefPath!, filler, context.pageName);
+		if (!isUIFiller || !iframeRef.current) return;
+		iframeRef.current.contentWindow?.postMessage(
+			{
+				type: 'EDITOR_FILLER_VALUE_CHANGE',
+				payload: { values: filler.values ?? {} },
+			},
+			'*',
+		);
+	};
+
+	let popupContorl = <></>;
+	if (popups.length) {
+		let popupList: ReactNode[] = [];
+
+		for (const p of popups) {
+			if (p.type === 'IMAGE') {
+				popupList.push(
+					<ImagePopup
+						dataPath={p.path}
+						isUIFiller={p.isUIFiller ?? false}
+						uiFiller={uiFiller}
+						coreFiller={coreFiller}
+						onValueChanged={valueChanged}
+						onClose={() => setPopups([])}
+					/>,
+				);
+			} else if (p.type === 'OBJECT') {
+				popupList.push(
+					<ObjectPopup
+						editor={p.editorDefinition}
+						dataPath={p.path}
+						isUIFiller={p.isUIFiller ?? false}
+						uiFiller={uiFiller}
+						coreFiller={coreFiller}
+						onValueChanged={valueChanged}
+						onClose={() => setPopups([])}
+					/>,
+				);
+			}
+		}
+
+		if (popupList.length) popupContorl = <>{popupList}</>;
+	}
+
 	return (
 		<div className={`comp compFillerValueEditor`} style={resolvedStyles.comp ?? {}}>
 			<HelperComponent key={`${key}_hlp`} definition={definition} />
@@ -277,19 +338,10 @@ function FillerValueEditor(props: ComponentProps) {
 					onSectionSelection={(isUIFiller: boolean, sectionKey: string, index: number) =>
 						setSelection({ isUIFiller, sectionKey, sectionNumber: index })
 					}
-					onValueChanged={(isUIFiller: boolean, filler: Filler) => {
-						if (!(isUIFiller ? uiDefPath : coreDefPath)) return;
-						undoStack.current.push(duplicate([uiFiller, coreFiller]));
-
-						setData(isUIFiller ? uiDefPath! : coreDefPath!, filler, context.pageName);
-						if (!isUIFiller || !iframeRef.current) return;
-						iframeRef.current.contentWindow?.postMessage(
-							{
-								type: 'EDITOR_FILLER_VALUE_CHANGE',
-								payload: { values: filler.values ?? {} },
-							},
-							'*',
-						);
+					onValueChanged={valueChanged}
+					onPopup={(newPopup: PopupType, clear: boolean) => {
+						if (clear) setPopups([newPopup]);
+						else setPopups([...popups, newPopup]);
 					}}
 				/>
 				<PageViewer
@@ -299,6 +351,7 @@ function FillerValueEditor(props: ComponentProps) {
 					personalizationPath={personalizationPath}
 				/>
 			</div>
+			{popupContorl}
 		</div>
 	);
 }

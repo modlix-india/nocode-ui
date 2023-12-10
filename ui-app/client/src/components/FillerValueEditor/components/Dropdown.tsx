@@ -9,14 +9,18 @@ export function Dropdown({
 	options: orignalOptions,
 	NoneLabel = '- None -',
 	placeholder,
+	hideNone = false,
 }: {
 	value: string;
 	onChange: (v: string) => void;
 	options: DropdownOptions;
 	NoneLabel?: string;
+	hideNone?: boolean;
 	placeholder?: string;
 }) {
-	const options = [{ name: '', displayName: NoneLabel }, ...orignalOptions];
+	const options = hideNone
+		? [...orignalOptions]
+		: [{ name: '', displayName: NoneLabel }, ...orignalOptions];
 
 	let label = undefined;
 
@@ -74,7 +78,8 @@ export function Dropdown({
 	const handleClick = (o: any) => {
 		setOpen(false);
 		setTimeout(() => dropDown.current?.blur(), 0);
-		onChange(value === o.name ? '' : o.name);
+		if (hideNone) onChange(o.name);
+		else onChange(value === o.name ? '' : o.name);
 	};
 
 	let body;

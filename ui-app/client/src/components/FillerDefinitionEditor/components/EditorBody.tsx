@@ -180,6 +180,13 @@ export function EditorBody({
 	} else if (editor.type === EditorType.ENUM) {
 		specificFields = (
 			<>
+				<div className="_label">Hide None Option</div>
+				<ToggleButton
+					value={editor.enumHideNone ?? false}
+					onChange={enumHideNone =>
+						updateDefinition(s => (s.enumHideNone = enumHideNone))
+					}
+				/>
 				<div className="_label">Enum Options</div>
 				<div className="_enumOptionsContainer">
 					{(editor.enumOptions ?? []).map((eo, i) => (
@@ -250,6 +257,16 @@ export function EditorBody({
 		if (editor.objectEditors?.length) {
 			previewList = (
 				<>
+					<div className="_label">Preview Display Type</div>
+					<Dropdown
+						hideNone={true}
+						value={editor.arrayPreviewType ?? 'LIST'}
+						onChange={type => updateDefinition(s => (s.arrayPreviewType = type as any))}
+						options={[
+							{ name: 'LIST', displayName: 'List' },
+							{ name: 'GRID', displayName: 'Grid' },
+						]}
+					/>
 					<div className="_label">Preview List</div>
 					<div className="_previewList">
 						{[...editor.objectEditors]

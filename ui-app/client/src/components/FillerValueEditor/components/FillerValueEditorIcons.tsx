@@ -123,3 +123,104 @@ export function CollapseIcon() {
 		</svg>
 	);
 }
+
+export function Dots() {
+	return (
+		<svg
+			width="9"
+			height="15"
+			viewBox="0 0 9 15"
+			fill="none"
+			xmlns="http://www.w3.org/2000/svg"
+		>
+			<circle
+				cx="7.5"
+				cy="1.5"
+				r="1.1"
+				stroke="currentColor"
+				strokeOpacity="0.15"
+				strokeWidth="0.8"
+			/>
+			<circle
+				cx="1.5"
+				cy="1.5"
+				r="1.1"
+				stroke="currentColor"
+				strokeOpacity="0.15"
+				strokeWidth="0.8"
+			/>
+			<circle
+				cx="7.5"
+				cy="7.5"
+				r="1.1"
+				stroke="currentColor"
+				strokeOpacity="0.15"
+				strokeWidth="0.8"
+			/>
+			<circle
+				cx="1.5"
+				cy="7.5"
+				r="1.1"
+				stroke="currentColor"
+				strokeOpacity="0.15"
+				strokeWidth="0.8"
+			/>
+			<circle
+				cx="7.5"
+				cy="13.5"
+				r="1.1"
+				stroke="currentColor"
+				strokeOpacity="0.15"
+				strokeWidth="0.8"
+			/>
+			<circle
+				cx="1.5"
+				cy="13.5"
+				r="1.1"
+				stroke="currentColor"
+				strokeOpacity="0.15"
+				strokeWidth="0.8"
+			/>
+		</svg>
+	);
+}
+
+export function Pencil() {
+	return (
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			width="14"
+			height="14"
+			viewBox="0 0 14 14"
+			fill="none"
+		>
+			<path
+				d="M9.92819 0.513214L8.60331 1.83799L12.1619 5.39627L13.4867 4.07149C14.1711 3.38721 14.1711 2.27867 13.4867 1.59438L12.4082 0.513214C11.7239 -0.171071 10.6153 -0.171071 9.93092 0.513214H9.92819ZM7.98467 2.45658L1.6039 8.83959C1.31921 9.12425 1.11118 9.47735 0.996207 9.86328L0.0271838 13.1561C-0.04125 13.3887 0.0217091 13.6378 0.191425 13.8075C0.361141 13.9772 0.61024 14.0402 0.840177 13.9745L4.13321 13.0055C4.51918 12.8906 4.8723 12.6825 5.15698 12.3979L11.5432 6.01486L7.98467 2.45658Z"
+				fill="#CED0D8"
+			/>
+		</svg>
+	);
+}
+
+export function Trash() {
+	return (
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			width="13"
+			height="14"
+			viewBox="0 0 13 14"
+			fill="none"
+		>
+			<g opacity="0.4">
+				<path
+					d="M12.164 1.35579H7.93456V1.22316C7.93456 0.545263 7.3893 0 6.7114 0C6.03351 0 5.48825 0.545263 5.48825 1.22316V1.35579H1.25877C0.905088 1.35579 0.610352 1.65053 0.610352 2.00421C0.610352 2.35789 0.905088 2.65263 1.25877 2.65263H12.164C12.5177 2.65263 12.8125 2.35789 12.8125 2.00421C12.8125 1.65053 12.5177 1.35579 12.164 1.35579Z"
+					fill="#8E90A4"
+				/>
+				<path
+					d="M11.6934 3.53662H1.73125C1.59861 3.53662 1.49546 3.65452 1.51019 3.78715L2.64493 12.8503C2.73335 13.4987 3.27861 13.9998 3.94177 13.9998H9.48283C10.146 13.9998 10.6912 13.5135 10.7797 12.8503L11.9144 3.78715C11.9291 3.65452 11.826 3.53662 11.6934 3.53662Z"
+					fill="#8E90A4"
+				/>
+			</g>
+		</svg>
+	);
+}
