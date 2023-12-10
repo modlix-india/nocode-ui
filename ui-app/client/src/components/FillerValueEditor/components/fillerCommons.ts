@@ -21,6 +21,7 @@ export interface EditorDefinition {
 	maxLength?: number;
 	regex?: string;
 	enumOptions?: { displayName: string; name: string }[];
+	enumHideNone?: boolean;
 	numColors?: number;
 	numFonts?: number;
 	sampleObjects?: any[];

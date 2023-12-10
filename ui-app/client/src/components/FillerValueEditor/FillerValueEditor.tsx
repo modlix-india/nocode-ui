@@ -210,6 +210,7 @@ function FillerValueEditor(props: ComponentProps) {
 
 	let url = filler.appCode ? `/${filler.appCode}/${filler.clientCode}/page` : '';
 
+	let hasGKey = false;
 	if (filler.definition?.[selection?.sectionKey ?? '']) {
 		url += filler.definition?.[selection?.sectionKey!].pagePath;
 		let gkey = filler.definition?.[selection?.sectionKey!].gridKey ?? '';
@@ -217,10 +218,10 @@ function FillerValueEditor(props: ComponentProps) {
 		if (commaIndex > 0) gkey = gkey.substring(0, commaIndex);
 		gkey = gkey.trim();
 		url += `#${gkey}`;
+		hasGKey = true;
 	} else url += '/';
 
-	if (!url.endsWith('/')) url += '/';
-	console.log(url);
+	if (!hasGKey && !url.endsWith('/')) url += '/';
 
 	const valueChanged = (isUIFiller: boolean, filler: Filler) => {
 		if (!(isUIFiller ? uiDefPath : coreDefPath)) return;

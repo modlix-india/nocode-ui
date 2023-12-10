@@ -95,7 +95,12 @@ export function Editor({
 		);
 	} else if (editor.type === EditorType.ENUM) {
 		editorControl = (
-			<Dropdown value={value} onChange={onChange} options={editor.enumOptions ?? []} />
+			<Dropdown
+				hideNone={editor.enumHideNone ?? false}
+				value={value}
+				onChange={onChange}
+				options={editor.enumOptions ?? []}
+			/>
 		);
 	} else if (editor.type === EditorType.PALLETTE) {
 		editorControl = (
