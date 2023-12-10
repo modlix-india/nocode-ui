@@ -510,6 +510,46 @@ export default function FillerValueEditorStyle({
 			width: 70px;
 			height: 70px;
 		}
+
+		${PREFIX} ._objectEditor {
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+			overflow-y: auto;
+			height: 280px;
+			border-radius: 6px;
+			background-color: #F8FAFB;
+			padding: 13px;
+		}
+
+		${PREFIX} ._objectEditor ._eachObject {
+			display: flex;
+			flex-direction: row;
+			gap: 10px;
+			align-items: center;
+		}
+
+		${PREFIX} ._objectEditor._LIST img {
+			width: 24px;
+		}
+
+		${PREFIX} ._objectEditor._GRID img {
+			width: 70px;
+		}
+
+		${PREFIX} ._objectEditor::-webkit-scrollbar {
+			width: 3px;
+		}
+
+		${PREFIX} ._objectEditor._GRID ._eachObject {
+			flex-direction: column;
+			align-items: center;	
+		}
+
+		${PREFIX} ._objectEditor._GRID {
+			display: grid;
+			grid-template-columns: 1fr 1fr ;
+		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="FillterValueEditorCSS">{css}</style>;

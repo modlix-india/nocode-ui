@@ -93,15 +93,6 @@ export function Editor({
 				isTextArea={true}
 			/>
 		);
-	} else if (editor.type === EditorType.NUMBER) {
-		editorControl = (
-			<Text
-				value={value}
-				onChange={onChange}
-				maxChars={editor.maxLength}
-				allowedRegex={editor.regex ?? '[0-9]+'}
-			/>
-		);
 	} else if (editor.type === EditorType.ENUM) {
 		editorControl = (
 			<Dropdown value={value} onChange={onChange} options={editor.enumOptions ?? []} />
@@ -152,7 +143,21 @@ export function Editor({
 			</div>
 		);
 	} else if (editor.type === EditorType.ARRAY_OF_OBJECTS) {
-		editorControl = <ObjectEditor />;
+		editorControl = (
+			<ObjectEditor
+				editor={editor}
+				value={value}
+				onPopup={() =>
+					onPopup(
+						{
+							path: `Filler.values.${sectionValueKey}.${editor.valueKey}`,
+							type: 'OBJECT',
+						},
+						true,
+					)
+				}
+			/>
+		);
 	}
 
 	const label = editor.hideLabel ? <></> : <div className="_editorLabel">{editor.name}</div>;

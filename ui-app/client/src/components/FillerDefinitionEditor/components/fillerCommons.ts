@@ -1,11 +1,8 @@
 export enum EditorType {
 	TEXT_BOX = 'TEXT_BOX',
 	TEXT_AREA = 'TEXT_AREA',
-	NUMBER = 'NUMBER',
 	BOOLEAN = 'BOOLEAN',
-	DATE = 'DATE',
 	ENUM = 'ENUM',
-	COLOR_PICKER = 'COLOR_PICKER',
 	IMAGE = 'IMAGE',
 	ARRAY_OF_IMAGES = 'ARRAY_OF_IMAGES',
 	ARRAY_OF_OBJECTS = 'ARRAY_OF_OBJECTS',
@@ -27,10 +24,9 @@ export interface EditorDefinition {
 	numColors?: number;
 	numFonts?: number;
 	sampleObjects?: any[];
-	showEnumNone?: boolean;
 	objectEditors?: EditorDefinition[];
-	showInList?: boolean;
 	arrayPreviewList?: string[];
+	arrayPreviewType?: 'LIST' | 'GRID';
 }
 
 export enum SectionLayout {

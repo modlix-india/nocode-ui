@@ -212,11 +212,15 @@ function FillerValueEditor(props: ComponentProps) {
 
 	if (filler.definition?.[selection?.sectionKey ?? '']) {
 		url += filler.definition?.[selection?.sectionKey!].pagePath;
-		if (filler.definition?.[selection?.sectionKey!].gridKey)
-			url += `#${filler.definition?.[selection?.sectionKey!].gridKey}`;
+		let gkey = filler.definition?.[selection?.sectionKey!].gridKey ?? '';
+		const commaIndex = gkey.indexOf(',');
+		if (commaIndex > 0) gkey = gkey.substring(0, commaIndex);
+		gkey = gkey.trim();
+		url += `#${gkey}`;
 	} else url += '/';
 
 	if (!url.endsWith('/')) url += '/';
+	console.log(url);
 
 	const valueChanged = (isUIFiller: boolean, filler: Filler) => {
 		if (!(isUIFiller ? uiDefPath : coreDefPath)) return;
