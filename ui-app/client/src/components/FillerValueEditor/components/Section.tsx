@@ -19,6 +19,7 @@ export function Section({
 	index,
 	selected,
 	onPopup,
+	appDefinition,
 }: {
 	filler: Filler;
 	storeExtractor: StoreExtractor;
@@ -29,6 +30,7 @@ export function Section({
 	index: number;
 	selected: boolean;
 	onPopup: (newPopup: PopupType, clear: boolean, editorDefinition: EditorDefinition) => void;
+	appDefinition?: any;
 }) {
 	const [collapsed, setCollapsed] = useState<boolean>(false);
 
@@ -75,6 +77,7 @@ export function Section({
 						onValueChanged={onValueChanged}
 						storeExtractor={storeExtractor}
 						onPopup={onPopup}
+						appDefinition={appDefinition}
 					/>
 				))}
 			</div>

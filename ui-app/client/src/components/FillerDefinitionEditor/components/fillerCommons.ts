@@ -23,7 +23,7 @@ export interface EditorDefinition {
 	enumOptions?: { displayName: string; name: string }[];
 	enumHideNone?: boolean;
 	numColors?: number;
-	numFonts?: number;
+	fontNames?: string[];
 	sampleObjects?: any[];
 	objectEditors?: EditorDefinition[];
 	arrayPreviewList?: string[];
