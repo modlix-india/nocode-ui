@@ -3,7 +3,7 @@ import {
 	PageStoreExtractor,
 	addListenerAndCallImmediatelyWithChildrenActivity,
 } from '../../../context/StoreContext';
-import { Filler } from '.././components/fillerCommons';
+import { Filler, PopupType } from '.././components/fillerCommons';
 import { CollapseIcon } from './FillerValueEditorIcons';
 import { Section } from './Section';
 import { StoreExtractor } from '@fincity/path-reactive-state-management';
@@ -18,6 +18,8 @@ export default function ValueEditor({
 	onSectionSelection,
 	onValueChanged,
 	selection,
+	onPopup,
+	appDefinition,
 }: Readonly<{
 	uiFiller: Filler;
 	coreFiller: Filler;
@@ -27,6 +29,8 @@ export default function ValueEditor({
 	onSectionSelection: (isUIFiller: boolean, sectionKey: string, index: number) => void;
 	onValueChanged: (isUIFiller: boolean, filler: Filler) => void;
 	selection?: { isUIFiller: boolean; sectionKey: string; sectionNumber: number };
+	onPopup: (newPopup: PopupType, clear: boolean) => void;
+	appDefinition?: any;
 }>) {
 	const [collapsed, setCollapsed] = useState<boolean>(false);
 
@@ -81,6 +85,10 @@ export default function ValueEditor({
 							}
 							onValueChanged={(f: Filler) => onValueChanged(true, f)}
 							storeExtractor={uiSTE}
+							onPopup={(x, clear, editorDefinition) =>
+								onPopup({ ...x, isUIFiller: true, editorDefinition }, clear)
+							}
+							appDefinition={appDefinition}
 						/>
 					))}
 
@@ -100,8 +108,13 @@ export default function ValueEditor({
 							}
 							onValueChanged={(f: Filler) => onValueChanged(false, f)}
 							storeExtractor={coreSTE}
+							onPopup={(x, clear, editorDefinition) =>
+								onPopup({ ...x, isUIFiller: false, editorDefinition }, clear)
+							}
+							appDefinition={appDefinition}
 						/>
 					))}
+					<div className="_sectionEnd"></div>
 				</div>
 			</>
 		);

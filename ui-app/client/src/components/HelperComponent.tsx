@@ -1,4 +1,4 @@
-import React, { CSSProperties, MouseEvent, ReactNode, useEffect, useState } from 'react';
+import React, { CSSProperties, MouseEvent, ReactNode, useEffect, useRef, useState } from 'react';
 import { DRAG_CD_KEY } from '../constants';
 import { getDataFromPath } from '../context/StoreContext';
 import { messageToMaster } from '../slaveFunctions';
@@ -204,22 +204,54 @@ function FillerValueEditorHelperComponent({ definition: { key } }: HelperCompone
 		return () => window.removeEventListener('message', onMessageRecieved);
 	}, [setLastChanged]);
 
-	if (!selectedComponent || key != selectedComponent) return <></>;
+	const [borderRef, setBorderRef] = useState<HTMLDivElement | null>();
+
+	useEffect(() => {
+		if (!borderRef) return;
+
+		function onScroll() {
+			setLastChanged(Date.now());
+		}
+
+		window.addEventListener('scroll', onScroll);
+		return () => window.removeEventListener('scroll', onScroll);
+	}, [borderRef]);
+
+	if (!selectedComponent || selectedComponent.indexOf(key) == -1) return <></>;
+
+	const rect = borderRef?.getBoundingClientRect();
+	let left = -4;
+	let top = -4;
+	let width = 8;
+	let height = 8;
+
+	if (rect) {
+		if (rect.left < 8) {
+			left += 8;
+			width -= 8;
+		}
+		if (rect.top < 8) {
+			top += 8;
+			height -= 8;
+		}
+		if (rect.right > window.innerWidth - 16) width -= 8;
+	}
 
 	const style = {
 		all: 'initial',
 		fontFamily: 'Arial',
 		position: 'absolute',
 		border: `2px dashed #FDAB3D`,
-		height: 'calc( 100% + 8px)',
-		width: 'calc( 100% + 8px)',
-		top: '-4px',
-		left: '-4px',
+		height: `calc( 100% + ${height}px)`,
+		width: `calc( 100% + ${width}px)`,
+		top: top + 'px',
+		left: left + 'px',
 		zIndex: '6',
 		minWidth: '10px',
 		boxSizing: 'border-box',
 		WebkitUserDrag: 'element',
 		borderRadius: '6px',
+		pointerEvents: 'none',
 	};
 
 	const numberBlobStyle = {
@@ -241,7 +273,7 @@ function FillerValueEditorHelperComponent({ definition: { key } }: HelperCompone
 	};
 
 	return (
-		<div style={style as CSSProperties} className="_helper">
+		<div style={style as CSSProperties} className="_helper" ref={r => setBorderRef(r)}>
 			<div style={numberBlobStyle as CSSProperties}>{(selectedSectionNumber ?? 0) + 1}</div>
 		</div>
 	);

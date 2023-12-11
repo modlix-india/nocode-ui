@@ -108,6 +108,18 @@ export default function AppStyle() {
 		align-items: center;
 	}
 
+	._flexBox ._flexChildren1 > *{
+		flex: 1;
+	}
+
+	._flexBox ._flexChildren21 > *{
+		flex: 1;
+	}
+
+	._flexBox ._flexChildren21 > *:first-child {
+		flex: 2;
+	}
+
 	._flexBox._horizonatalCenter {
 		justify-content: center;
 	}

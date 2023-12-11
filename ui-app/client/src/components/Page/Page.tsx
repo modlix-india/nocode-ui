@@ -39,13 +39,13 @@ function PageComponent(props: Readonly<ComponentProps>) {
 		locationHistory,
 		pageExtractor,
 	);
-	const [pathParts, setPathParts] = useState();
+	const [pathParts, setPathParts] = useState<string | undefined>();
 	const [queryParameters, setQueryParameters] = useState();
 	const location = useLocation();
 
 	useEffect(() => {
 		const value = getDataFromPath(`${STORE_PREFIX}.urlDetails`, []);
-		setPathParts(value.pathParts.join('/'));
+		setPathParts(value.pathParts.join('/') + '?' + location.search);
 		setQueryParameters(value.queryParameters);
 	}, [location.pathname, location.search, setPathParts, setQueryParameters]);
 
