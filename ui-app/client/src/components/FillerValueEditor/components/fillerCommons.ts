@@ -1,16 +1,14 @@
 export enum EditorType {
 	TEXT_BOX = 'TEXT_BOX',
 	TEXT_AREA = 'TEXT_AREA',
-	NUMBER = 'NUMBER',
 	BOOLEAN = 'BOOLEAN',
-	DATE = 'DATE',
 	ENUM = 'ENUM',
-	COLOR_PICKER = 'COLOR_PICKER',
 	IMAGE = 'IMAGE',
 	ARRAY_OF_IMAGES = 'ARRAY_OF_IMAGES',
 	ARRAY_OF_OBJECTS = 'ARRAY_OF_OBJECTS',
 	PALLETTE = 'PALLETTE',
 	LABEL = 'LABEL',
+	FONT_PICKER = 'FONT_PICKER',
 }
 
 export interface EditorDefinition {
@@ -23,13 +21,13 @@ export interface EditorDefinition {
 	maxLength?: number;
 	regex?: string;
 	enumOptions?: { displayName: string; name: string }[];
+	enumHideNone?: boolean;
 	numColors?: number;
-	numFonts?: number;
+	fontNames?: string[];
 	sampleObjects?: any[];
-	showEnumNone?: boolean;
 	objectEditors?: EditorDefinition[];
-	showInList?: boolean;
 	arrayPreviewList?: string[];
+	arrayPreviewType?: 'LIST' | 'GRID';
 }
 
 export enum SectionLayout {
@@ -59,4 +57,11 @@ export interface Filler {
 	definition?: {
 		[key: string]: SectionDefinition;
 	};
+}
+
+export interface PopupType {
+	type: 'IMAGE' | 'OBJECT';
+	path: string;
+	isUIFiller?: boolean;
+	editorDefinition?: EditorDefinition;
 }
