@@ -7,6 +7,7 @@ import { runEvent } from '../util/runEvent';
 import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../../constants';
 import {
 	addListenerAndCallImmediately,
+	addListenerAndCallImmediatelyWithChildrenActivity,
 	addListenerWithChildrenActivity,
 	getDataFromPath,
 	PageStoreExtractor,
@@ -19,8 +20,9 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import pageHistory from './pageHistory';
 import { styleDefaults } from './pageStyleProperties';
 import { IconHelper } from '../util/IconHelper';
+import { useLocation } from 'react-router-dom';
 
-function PageComponent(props: ComponentProps) {
+function PageComponent(props: Readonly<ComponentProps>) {
 	const {
 		context,
 		pageDefinition,
@@ -37,22 +39,15 @@ function PageComponent(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	const [pathParts, setPathParts] = useState();
+	const [pathParts, setPathParts] = useState<string | undefined>();
 	const [queryParameters, setQueryParameters] = useState();
+	const location = useLocation();
 
-	useEffect(
-		() =>
-			addListenerAndCallImmediately(
-				(_, value) => {
-					if (pageName === GLOBAL_CONTEXT_NAME) return;
-					setPathParts(value.pathParts.join('/'));
-					setQueryParameters(value.queryParameters);
-				},
-				pageExtractor,
-				`${STORE_PREFIX}.urlDetails`,
-			),
-		[setPathParts, setQueryParameters],
-	);
+	useEffect(() => {
+		const value = getDataFromPath(`${STORE_PREFIX}.urlDetails`, []);
+		setPathParts(value.pathParts.join('/') + '?' + location.search);
+		setQueryParameters(value.queryParameters);
+	}, [location.pathname, location.search, setPathParts, setQueryParameters]);
 
 	useEffect(() => {
 		if (pathParts === undefined) return;

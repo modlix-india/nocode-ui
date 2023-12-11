@@ -4,6 +4,7 @@ import ComponentDefinitions from '../../';
 import { SCHEMA_STRING_COMP_PROP } from '../../../constants';
 import {
 	PageStoreExtractor,
+	addListenerAndCallImmediately,
 	addListenerAndCallImmediatelyWithChildrenActivity,
 	getDataFromPath,
 	setData,
@@ -118,6 +119,7 @@ export default function PropertyEditor({
 	const [def, setDef] = useState<ComponentDefinition>();
 	const [pageDef, setPageDef] = useState<PageDefinition>();
 	const [allCommonProperties, setAllCommonProperties] = useState<ComponentPropertyDefinition[]>(); // cd.properties
+	const [isDragging, setIsDragging] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (!defPath) return;
@@ -162,6 +164,16 @@ export default function PropertyEditor({
 			defPath,
 		);
 	}, [defPath, selectednComponentsList]);
+
+	useEffect(() => {
+		if (!personalizationPath) return;
+
+		return addListenerAndCallImmediately(
+			(_, v) => setIsDragging(v ?? false),
+			pageExtractor,
+			`${personalizationPath}.propertyTabCurrentState`,
+		);
+	}, [personalizationPath]);
 
 	if (!def) return <></>;
 
@@ -317,7 +329,7 @@ export default function PropertyEditor({
 	}, {});
 
 	return (
-		<div className="_propertyEditor">
+		<div className={`_propertyEditor ${isDragging ? '_withDragProperty' : ''}`}>
 			<div className="_overflowContainer">
 				{selectednComponentsList.length === 1 && (
 					<PropertyGroup // general property container

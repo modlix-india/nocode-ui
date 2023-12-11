@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediately,
@@ -58,6 +58,9 @@ export default function DnDPropertyBar({
 	appPath,
 }: PropertyBarProps) {
 	const [currentTab, setCurrentTab] = React.useState(1);
+	const [isDragging, setIsDragging] = useState<boolean>(false);
+	const [position, setPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+	const [isDragged, setIsDragged] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (!personalizationPath) return;
@@ -70,6 +73,79 @@ export default function DnDPropertyBar({
 	}, [personalizationPath]);
 
 	if (!selectedComponent || previewMode) return <div className="_propBar"></div>; // if no component is selected then returning empty div.
+	useEffect(() => {
+		if (!personalizationPath) return;
+
+		return addListenerAndCallImmediately(
+			(_, v) => setIsDragging(v ?? false),
+			pageExtractor,
+			`${personalizationPath}.propertyTabCurrentState`,
+		);
+	}, [personalizationPath]);
+
+	useEffect(() => {
+		if (!personalizationPath) return;
+
+		return addListenerAndCallImmediately(
+			(_, v) => setPosition(v ?? { x: 0, y: 0 }),
+			pageExtractor,
+			`${personalizationPath}.propertyTabPosition`,
+		);
+	}, [personalizationPath]);
+
+	const onMouseDown = useCallback(
+		(e: React.MouseEvent<HTMLDivElement>) => {
+			const current = e.currentTarget?.getBoundingClientRect();
+
+			const outerContainer = e.currentTarget.parentElement?.getBoundingClientRect();
+
+			let startX = e.clientX - position.x;
+			let startY = e.clientY - position.y;
+
+			const onMouseMove = (e: MouseEvent) => {
+				if (isDragging) {
+					const newX = e.clientX - startX;
+					const newY = e.clientY - startY;
+
+					const maxX = outerContainer?.width! - (current.width ?? 0);
+					const maxY = outerContainer?.height! - (current.height ?? 0);
+
+					const constrainedX = Math.max(Math.min(newX, 0), -maxX);
+					const constrainedY = Math.max(Math.min(newY, maxY), 0);
+
+					onChangePersonalization('propertyTabPosition', {
+						x: constrainedX,
+						y: constrainedY,
+					});
+					setIsDragged(true);
+				}
+			};
+
+			const onMouseUp = () => {
+				document?.removeEventListener('mousemove', onMouseMove as EventListener);
+				document?.removeEventListener('mouseup', onMouseUp as EventListener);
+				setIsDragged(false);
+			};
+
+			const onMouseLeave = () => {
+				document?.removeEventListener('mousemove', onMouseMove as EventListener);
+				setIsDragged(false);
+			};
+
+			document?.addEventListener('mousemove', onMouseMove as EventListener);
+			e.currentTarget?.addEventListener('mouseleave', onMouseLeave as EventListener);
+			document?.addEventListener('mouseup', onMouseUp as EventListener);
+
+			return () => {
+				document?.removeEventListener('mousemove', onMouseMove as EventListener);
+				e.currentTarget?.removeEventListener('mouseleave', onMouseLeave as EventListener);
+				document?.removeEventListener('mouseup', onMouseUp as EventListener);
+			};
+		},
+		[isDragging, position, onChangePersonalization],
+	);
+
+	if (!selectedComponent || previewMode) return <div className="_propBar"></div>;
 	let tab = <></>;
 	if (currentTab === 1) {
 		tab = (
@@ -154,8 +230,143 @@ export default function DnDPropertyBar({
 		);
 	}
 
+	const grabIcon = (
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			width="36"
+			height="36"
+			viewBox="0 0 36 36"
+			fill="none"
+			className="_leftIcon _buckle"
+			tabIndex={0}
+			onClick={() => onChangePersonalization('propertyTabCurrentState', true)}
+		>
+			<g filter="url(#filter0_d_2404_3359)">
+				<circle cx="18" cy="17" r="16" fill="white" />
+				<circle
+					cx="18"
+					cy="17"
+					r="15.8"
+					stroke="black"
+					strokeOpacity="0.05"
+					strokeWidth="0.4"
+				/>
+			</g>
+			<path
+				fillRule="evenodd"
+				clipRule="evenodd"
+				d="M25.1978 24.1988C25.0789 24.3177 24.9176 24.3845 24.7494 24.3845C24.5813 24.3845 24.42 24.3177 24.3011 24.1988L10.8014 10.6989C10.7424 10.64 10.6957 10.5701 10.6637 10.4931C10.6318 10.4161 10.6153 10.3336 10.6152 10.2503C10.6152 10.1669 10.6315 10.0844 10.6634 10.0074C10.6952 9.93038 10.7419 9.86039 10.8008 9.80142C10.8597 9.74245 10.9296 9.69566 11.0065 9.66371C11.0835 9.63177 11.166 9.61529 11.2493 9.61523C11.3327 9.61518 11.4152 9.63153 11.4922 9.66337C11.5692 9.69521 11.6392 9.7419 11.6982 9.80079L15.5066 13.6101L17.6825 11.434C18.4626 10.6538 19.5207 10.2155 20.624 10.2155C21.7272 10.2155 22.7853 10.6538 23.5654 11.434C24.3455 12.2141 24.7838 13.2723 24.7838 14.3756C24.7838 15.4789 24.3455 16.537 23.5654 17.3172L21.3901 19.4927L25.1985 23.3019C25.2574 23.3609 25.3042 23.4308 25.3361 23.5078C25.368 23.5848 25.3845 23.6673 25.3845 23.7507C25.3845 23.834 25.368 23.9166 25.3361 23.9936C25.3042 24.0705 25.2574 24.1405 25.1985 24.1994L25.1978 24.1988ZM20.492 18.5965L22.6686 16.4204C23.2109 15.8782 23.5156 15.1427 23.5156 14.3758C23.5157 13.6089 23.2111 12.8734 22.6689 12.3311C22.1267 11.7888 21.3913 11.4841 20.6245 11.484C19.8577 11.484 19.1222 11.7886 18.5799 12.3308L16.4033 14.5075L20.4927 18.5971L20.492 18.5965ZM14.3231 16.5878L13.3312 17.5798C12.7892 18.1221 12.4848 18.8575 12.4848 19.6243C12.4848 20.391 12.7892 21.1264 13.3312 21.6688C14.4126 22.7502 16.4636 22.6258 17.6438 21.4461L18.4099 20.6787C18.529 20.5598 18.6903 20.493 18.8586 20.4931C19.0268 20.4931 19.1881 20.56 19.307 20.679C19.4259 20.798 19.4927 20.9594 19.4927 21.1277C19.4926 21.2959 19.4257 21.4572 19.3067 21.5762L18.54 22.343C16.9659 23.9172 14.1069 24.2381 12.4345 22.5656C11.6545 21.7853 11.2163 20.7272 11.2163 19.624C11.2163 18.5207 11.6545 17.4626 12.4345 16.6823L13.4257 15.691C13.5447 15.572 13.706 15.5051 13.8742 15.5051C14.0425 15.505 14.2038 15.5718 14.3228 15.6907C14.4418 15.8096 14.5087 15.971 14.5088 16.1392C14.5088 16.3074 14.4421 16.4688 14.3231 16.5878Z"
+				fill="#C8C8C8"
+			/>
+			<defs>
+				<filter
+					id="filter0_d_2404_3359"
+					x="0"
+					y="0"
+					width="36"
+					height="36"
+					filterUnits="userSpaceOnUse"
+					colorInterpolationFilters="sRGB"
+				>
+					<feFlood floodOpacity="0" result="BackgroundImageFix" />
+					<feColorMatrix
+						in="SourceAlpha"
+						type="matrix"
+						values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+						result="hardAlpha"
+					/>
+					<feOffset dy="1" />
+					<feGaussianBlur stdDeviation="1" />
+					<feComposite in2="hardAlpha" operator="out" />
+					<feColorMatrix
+						type="matrix"
+						values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0"
+					/>
+					<feBlend
+						mode="normal"
+						in2="BackgroundImageFix"
+						result="effect1_dropShadow_2404_3359"
+					/>
+					<feBlend
+						mode="normal"
+						in="SourceGraphic"
+						in2="effect1_dropShadow_2404_3359"
+						result="shape"
+					/>
+				</filter>
+			</defs>
+		</svg>
+	);
+
+	const gripIcon = (
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			width="9"
+			height="9"
+			viewBox="0 0 9 9"
+			fill="none"
+			className="_leftIcon _grip"
+			tabIndex={0}
+		>
+			<circle cx="7.5" cy="1.5" r="1.5" fill="#8E90A4" />
+			<circle
+				cx="7.5"
+				cy="1.5"
+				r="1.1"
+				stroke="black"
+				strokeOpacity="0.15"
+				strokeWidth="0.8"
+			/>
+			<circle cx="1.5" cy="1.5" r="1.5" fill="#8E90A4" />
+			<circle
+				cx="1.5"
+				cy="1.5"
+				r="1.1"
+				stroke="black"
+				strokeOpacity="0.15"
+				strokeWidth="0.8"
+			/>
+			<circle cx="7.5" cy="7.5" r="1.5" fill="#8E90A4" />
+			<circle
+				cx="7.5"
+				cy="7.5"
+				r="1.1"
+				stroke="black"
+				strokeOpacity="0.15"
+				strokeWidth="0.8"
+			/>
+			<circle cx="1.5" cy="7.5" r="1.5" fill="#8E90A4" />
+			<circle
+				cx="1.5"
+				cy="7.5"
+				r="1.1"
+				stroke="black"
+				strokeOpacity="0.15"
+				strokeWidth="0.8"
+			/>
+		</svg>
+	);
+
 	return (
-		<div className="_propBar _propBarVisible _right">
+		<div
+			className={`_propBar _propBarVisible _right ${isDragging ? '_isDrag' : ''} ${
+				isDragged ? '_isDragged' : ''
+			}`}
+			onMouseDown={onMouseDown}
+			style={{
+				right: isDragging ? -position.x : '',
+				top: isDragging ? position.y : '',
+			}}
+		>
+			<div className={`_dragBar ${isDragging ? '_unbuckled' : '_buckled'}`}>
+				{isDragging ? gripIcon : grabIcon}
+				{isDragging ? (
+					<i
+						className="_rightIcon fa-sharp fa-solid fa-xmark"
+						onClick={() => onChangePersonalization('propertyTabCurrentState', false)}
+					/>
+				) : undefined}
+			</div>
 			<div className="_tabBar">
 				<svg
 					width="26"
