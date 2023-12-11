@@ -228,6 +228,10 @@ function PageEditor(props: ComponentProps) {
 		? undefined
 		: (getDataFromPath(`${defPath}`, locationHistory, pageExtractor) as PageDefinition);
 
+	const appDefinition = !appPath
+		? undefined
+		: (getDataFromPath(appPath, locationHistory, pageExtractor) as any);
+
 	useEffect(() => {
 		if (!editPageDefinition || !personalization) {
 			setUrl('');
@@ -241,14 +245,16 @@ function PageEditor(props: ComponentProps) {
 			return;
 		}
 
-		setClientCode(editPageDefinition.clientCode);
+		setClientCode(appDefinition?.clientCode ?? editPageDefinition.clientCode);
 		setUrl(
 			`/${editPageDefinition.appCode}/${
-				clientCode === '' ? editPageDefinition.clientCode : clientCode
+				clientCode === ''
+					? appDefinition?.clientCode ?? editPageDefinition.clientCode
+					: clientCode
 			}/page/${editPageDefinition.name}`,
 		);
-		setClientCode(editPageDefinition.clientCode);
-	}, [personalization, editPageDefinition]);
+		setClientCode(appDefinition?.clientCode ?? editPageDefinition.clientCode);
+	}, [personalization, editPageDefinition, appDefinition]);
 
 	// Function to remember url for a client.
 	const urlChange = useCallback(
@@ -258,10 +264,12 @@ function PageEditor(props: ComponentProps) {
 			savePersonalization(`pageLeftAt.${editPageDefinition!.name}.url`, v);
 			savePersonalization(
 				`pageLeftAt.${editPageDefinition!.name}.clientCode`,
-				clientCode === '' ? editPageDefinition!.clientCode : clientCode,
+				clientCode === ''
+					? appDefinition?.clientCode ?? editPageDefinition!.clientCode
+					: clientCode,
 			);
 		},
-		[setUrl, savePersonalization, editPageDefinition?.name],
+		[setUrl, savePersonalization, editPageDefinition?.name, appDefinition?.clientCode],
 	);
 
 	const ref = useRef<HTMLIFrameElement>(null);
