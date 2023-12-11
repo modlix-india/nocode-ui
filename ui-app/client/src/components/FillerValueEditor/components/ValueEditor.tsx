@@ -19,6 +19,7 @@ export default function ValueEditor({
 	onValueChanged,
 	selection,
 	onPopup,
+	appDefinition,
 }: Readonly<{
 	uiFiller: Filler;
 	coreFiller: Filler;
@@ -29,6 +30,7 @@ export default function ValueEditor({
 	onValueChanged: (isUIFiller: boolean, filler: Filler) => void;
 	selection?: { isUIFiller: boolean; sectionKey: string; sectionNumber: number };
 	onPopup: (newPopup: PopupType, clear: boolean) => void;
+	appDefinition?: any;
 }>) {
 	const [collapsed, setCollapsed] = useState<boolean>(false);
 
@@ -86,6 +88,7 @@ export default function ValueEditor({
 							onPopup={(x, clear, editorDefinition) =>
 								onPopup({ ...x, isUIFiller: true, editorDefinition }, clear)
 							}
+							appDefinition={appDefinition}
 						/>
 					))}
 
@@ -108,6 +111,7 @@ export default function ValueEditor({
 							onPopup={(x, clear, editorDefinition) =>
 								onPopup({ ...x, isUIFiller: false, editorDefinition }, clear)
 							}
+							appDefinition={appDefinition}
 						/>
 					))}
 				</div>

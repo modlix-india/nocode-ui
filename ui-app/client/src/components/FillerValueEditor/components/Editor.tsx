@@ -8,6 +8,7 @@ import { Dropdown } from './Dropdown';
 import Pallette from './Pallette';
 import ObjectEditor from './ObjectEditor';
 import { isNullValue } from '@fincity/kirun-js';
+import FontPicker from './FontPicker';
 
 export function Editor({
 	editor,
@@ -18,6 +19,7 @@ export function Editor({
 	storeExtractor,
 	onPopup,
 	index,
+	appDefinition,
 }: Readonly<{
 	editor: EditorDefinition;
 	sectionValueKey: string;
@@ -27,6 +29,7 @@ export function Editor({
 	onPopup: (newPopup: PopupType, clear: boolean, editorDefinition: EditorDefinition) => void;
 	parentEditor?: EditorDefinition;
 	index?: number;
+	appDefinition?: any;
 }>) {
 	const [value, setValue] = useState<any>();
 
@@ -164,6 +167,15 @@ export function Editor({
 						editor,
 					)
 				}
+			/>
+		);
+	} else if (editor.type === EditorType.FONT_PICKER) {
+		editorControl = (
+			<FontPicker
+				editor={editor}
+				value={value ?? []}
+				onChange={onChange}
+				appDefinition={appDefinition}
 			/>
 		);
 	}

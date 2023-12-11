@@ -60,7 +60,7 @@ function savePersonalizationCurry(
 function FillerValueEditor(props: ComponentProps) {
 	const { definition, pageDefinition, locationHistory, context } = props;
 	const {
-		definition: { bindingPath, bindingPath3, bindingPath2 },
+		definition: { bindingPath, bindingPath3, bindingPath2, bindingPath4 },
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
@@ -98,6 +98,10 @@ function FillerValueEditor(props: ComponentProps) {
 	// binding path for the editor's personalization.
 	const personalizationPath = bindingPath3
 		? getPathFromLocation(bindingPath3, locationHistory, pageExtractor)
+		: undefined;
+
+	const appDefPath = bindingPath4
+		? getPathFromLocation(bindingPath4, locationHistory, pageExtractor)
 		: undefined;
 
 	// Function to save the personalization
@@ -217,14 +221,17 @@ function FillerValueEditor(props: ComponentProps) {
 	if (filler.definition?.[selection?.sectionKey ?? '']) {
 		url += filler.definition?.[selection?.sectionKey!].pagePath;
 		let gkey = filler.definition?.[selection?.sectionKey!].gridKey ?? '';
-		const commaIndex = gkey.indexOf(',');
-		if (commaIndex > 0) gkey = gkey.substring(0, commaIndex);
-		gkey = gkey.trim();
-		url += `#${gkey}`;
-		hasGKey = true;
+		if (gkey) {
+			const commaIndex = gkey.indexOf(',');
+			if (commaIndex > 0) gkey = gkey.substring(0, commaIndex);
+			gkey = gkey.trim();
+			url += `#${gkey}`;
+			hasGKey = true;
+		}
 	} else url += '/';
 
 	if (!hasGKey && !url.endsWith('/')) url += '/';
+	if (url === '/') url = '';
 
 	const valueChanged = (isUIFiller: boolean, filler: Filler) => {
 		if (!(isUIFiller ? uiDefPath : coreDefPath)) return;
@@ -274,6 +281,19 @@ function FillerValueEditor(props: ComponentProps) {
 
 		if (popupList.length) popupContorl = <>{popupList}</>;
 	}
+
+	const [appDefinition, setAppDefinition] = useState<any>(undefined);
+
+	useEffect(() => {
+		if (!appDefPath) return;
+		return addListenerAndCallImmediately(
+			(_, value) => {
+				setAppDefinition(value);
+			},
+			pageExtractor,
+			appDefPath,
+		);
+	}, [appDefPath]);
 
 	return (
 		<div className={`comp compFillerValueEditor`} style={resolvedStyles.comp ?? {}}>
@@ -343,6 +363,7 @@ function FillerValueEditor(props: ComponentProps) {
 						if (clear) setPopups([newPopup]);
 						else setPopups([...popups, newPopup]);
 					}}
+					appDefinition={appDefinition}
 				/>
 				<PageViewer
 					url={url}
@@ -371,6 +392,7 @@ const component: Component = {
 		bindingPath: { name: 'UI Filler' },
 		bindingPath2: { name: 'Server Filler' },
 		bindingPath3: { name: 'Personalization' },
+		bindingPath4: { name: 'Application' },
 	},
 	defaultTemplate: {
 		key: '',

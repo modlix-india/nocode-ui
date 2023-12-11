@@ -117,7 +117,7 @@ export default function FillerValueEditorStyle({
 			padding-top: 3px;
 			padding-bottom: 3px;
 			border-radius: 6px;
-			border: 1px solid #EEE;
+			border: none;
 			background: transparent;
 			position: relative;
 			display: flex;
@@ -126,6 +126,7 @@ export default function FillerValueEditorStyle({
 			gap: 4px;
 			height: 35px;
 			padding: 0 8px;
+			background-color: #F8FAFB;
 		}
 
 		${PREFIX} ._simpleFillerPickerSelect:focus {

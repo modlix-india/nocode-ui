@@ -390,19 +390,35 @@ export function EditorBody({
 	} else if (editor.type === EditorType.FONT_PICKER) {
 		specificFields = (
 			<>
-				<div className="_label">Number of Fonts</div>
-				<TextBox
-					value={(editor.numFonts ?? '') + ''}
-					onChange={numFonts =>
-						updateDefinition(
-							s =>
-								(s.numFonts =
-									numFonts?.trim().length === 0
-										? undefined
-										: parseInt(numFonts ?? '')),
-						)
-					}
-				/>
+				<div className="_label">Font Names</div>
+				<div className="_flexBox _gap10 _column">
+					{(editor.fontNames ?? []).map((fn, i) => (
+						<TextBox
+							key={fn}
+							value={(fn ?? '') + ''}
+							onChange={numFonts =>
+								updateDefinition(s => {
+									const newFontNames = [...(editor.fontNames ?? [])];
+									newFontNames[i] = numFonts ?? '';
+									s.fontNames = newFontNames;
+								})
+							}
+						/>
+					))}
+					<div>
+						<button
+							onClick={() =>
+								updateDefinition(s => {
+									const newFontNames = [...(editor.fontNames ?? [])];
+									newFontNames.push('');
+									s.fontNames = newFontNames;
+								})
+							}
+						>
+							Add Font
+						</button>
+					</div>
+				</div>
 			</>
 		);
 	}
