@@ -5,7 +5,7 @@ import ToggleButton from './ToggleButton';
 import { ImageEditor } from './ImageEditor';
 import Text from './Text';
 import { Dropdown } from './Dropdown';
-import Pallette from './Pallette';
+import Palette from './Palette';
 import ObjectEditor from './ObjectEditor';
 import { isNullValue } from '@fincity/kirun-js';
 import FontPicker from './FontPicker';
@@ -107,7 +107,7 @@ export function Editor({
 		);
 	} else if (editor.type === EditorType.PALLETTE) {
 		editorControl = (
-			<Pallette value={value} onChange={onChange} numOfColors={editor.numColors ?? 5} />
+			<Palette value={value ?? []} onChange={onChange} numOfColors={editor.numColors ?? 5} />
 		);
 	} else if (editor.type === EditorType.ARRAY_OF_IMAGES) {
 		editorControl = (

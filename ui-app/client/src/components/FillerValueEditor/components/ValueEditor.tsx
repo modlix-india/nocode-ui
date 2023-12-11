@@ -114,6 +114,7 @@ export default function ValueEditor({
 							appDefinition={appDefinition}
 						/>
 					))}
+					<div className="_sectionEnd"></div>
 				</div>
 			</>
 		);
