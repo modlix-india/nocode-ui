@@ -265,6 +265,7 @@ export function EditorBody({
 						options={[
 							{ name: 'LIST', displayName: 'List' },
 							{ name: 'GRID', displayName: 'Grid' },
+							{ name: 'LIST HORIZONTAL', displayName: 'List Horizontal' },
 						]}
 					/>
 					<div className="_label">Preview List</div>

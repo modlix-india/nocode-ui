@@ -250,23 +250,25 @@ export default function ObjectPopup({
 									setArrayObject(newArrayObject);
 								}}
 							>
-								<Dots />
-								<div
-									onClick={() => {
-										setUpdateObject(duplicate(e));
-										setUpdateObjectIndex(i);
-									}}
-								>
-									<Pencil />
-								</div>
-								<div
-									onClick={() => {
-										const newArrayObject = duplicate(arrayObject);
-										newArrayObject.splice(i, 1);
-										setArrayObject(newArrayObject);
-									}}
-								>
-									<Trash />
+								<div className="_controlGrid">
+									<Dots />
+									<div
+										onClick={() => {
+											setUpdateObject(duplicate(e));
+											setUpdateObjectIndex(i);
+										}}
+									>
+										<Pencil />
+									</div>
+									<div
+										onClick={() => {
+											const newArrayObject = duplicate(arrayObject);
+											newArrayObject.splice(i, 1);
+											setArrayObject(newArrayObject);
+										}}
+									>
+										<Trash />
+									</div>
 								</div>
 								{editor?.arrayPreviewList?.map(key => {
 									let control = <></>;
@@ -524,7 +526,14 @@ export default function ObjectPopup({
 							</div>
 						))}
 					</div>
-					<div className={`_tab ${tabNum === tabs.length + 1}`}>{tabContent}</div>
+					<div
+						className={`_tab _${(editor?.arrayPreviewType ?? 'LIST').replace(
+							/\s/,
+							'_',
+						)}`}
+					>
+						{tabContent}
+					</div>
 					<div className="_tabDivider"></div>
 					<div className="_tabFooter">{tabButtons}</div>
 				</div>

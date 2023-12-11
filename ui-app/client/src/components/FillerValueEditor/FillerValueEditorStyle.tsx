@@ -522,6 +522,10 @@ export default function FillerValueEditorStyle({
 			padding: 13px;
 		}
 
+		${PREFIX} ._objectEditor._LIST_HORIZONTAL {
+			background-color: transparent;
+		}
+
 		${PREFIX} ._objectEditor ._eachObject,
 		${PREFIX} ._tab ._eachObject {
 			display: flex;
@@ -538,6 +542,12 @@ export default function FillerValueEditorStyle({
 			cursor: pointer;
 		}
 
+		${PREFIX} ._tab ._eachObject ._controlGrid {
+			display: flex;
+			flex-direction: direction;
+			gap: 5px;
+		}
+
 		${PREFIX} ._tab ._eachObject span {
 			white-space: nowrap;
 		}
@@ -547,17 +557,33 @@ export default function FillerValueEditorStyle({
 			width: 24px;
 		}
 
-		${PREFIX} ._objectEditor._GRID img {
+		${PREFIX} ._objectEditor._GRID img,
+		${PREFIX} ._tab._GRID ._eachObject img {
 			width: 70px;
+		}
+
+		${PREFIX} ._objectEditor._LIST_HORIZONTAL img,
+		${PREFIX} ._tab._LIST_HORIZONTAL ._eachObject img {
+			width: auto;
+			height: 70px;
 		}
 
 		${PREFIX} ._objectEditor::-webkit-scrollbar {
 			width: 3px;
 		}
 
-		${PREFIX} ._objectEditor._GRID ._eachObject {
+		${PREFIX} ._objectEditor._GRID ._eachObject,
+		${PREFIX} ._tab._GRID ._eachObject {
 			flex-direction: column;
 			align-items: center;	
+		}
+
+		${PREFIX} ._objectEditor._LIST_HORIZONTAL ._eachField,
+		${PREFIX} ._tab._LIST_HORIZONTAL ._eachField {
+			flex-direction: row;
+			display: flex;
+			justify-content: center;
+			flex: 1;	
 		}
 
 		${PREFIX} ._objectEditor._GRID {
@@ -608,6 +634,7 @@ export default function FillerValueEditorStyle({
 			display: flex;
 			flex-direction: column;
 			padding: 10px;
+			max-height: 250px;
 		}
 
 		${PREFIX} ._tabContainer ._tab {
@@ -646,7 +673,7 @@ export default function FillerValueEditorStyle({
 		}
 
 		${PREFIX} ._tabContainer ._sectionBody {
-			height: 250px;
+			
 		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

@@ -18,7 +18,10 @@ export default function ObjectEditor({
 	}, {} as { [key: string]: EditorDefinition });
 
 	return (
-		<div className={`_objectEditor _${editor.arrayPreviewType ?? 'LIST'}`} onClick={onPopup}>
+		<div
+			className={`_objectEditor _${(editor.arrayPreviewType ?? 'LIST').replace(/\s/, '_')}`}
+			onClick={onPopup}
+		>
 			{value?.length ? (
 				value.map(v => {
 					const storeExtractor = new StoreExtractor(v, 'Value.');
