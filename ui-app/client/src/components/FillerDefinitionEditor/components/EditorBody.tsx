@@ -180,6 +180,13 @@ export function EditorBody({
 	} else if (editor.type === EditorType.ENUM) {
 		specificFields = (
 			<>
+				<div className="_label">Hide None Option</div>
+				<ToggleButton
+					value={editor.enumHideNone ?? false}
+					onChange={enumHideNone =>
+						updateDefinition(s => (s.enumHideNone = enumHideNone))
+					}
+				/>
 				<div className="_label">Enum Options</div>
 				<div className="_enumOptionsContainer">
 					{(editor.enumOptions ?? []).map((eo, i) => (
@@ -250,6 +257,17 @@ export function EditorBody({
 		if (editor.objectEditors?.length) {
 			previewList = (
 				<>
+					<div className="_label">Preview Display Type</div>
+					<Dropdown
+						hideNone={true}
+						value={editor.arrayPreviewType ?? 'LIST'}
+						onChange={type => updateDefinition(s => (s.arrayPreviewType = type as any))}
+						options={[
+							{ name: 'LIST', displayName: 'List' },
+							{ name: 'GRID', displayName: 'Grid' },
+							{ name: 'LIST HORIZONTAL', displayName: 'List Horizontal' },
+						]}
+					/>
 					<div className="_label">Preview List</div>
 					<div className="_previewList">
 						{[...editor.objectEditors]
@@ -372,19 +390,35 @@ export function EditorBody({
 	} else if (editor.type === EditorType.FONT_PICKER) {
 		specificFields = (
 			<>
-				<div className="_label">Number of Fonts</div>
-				<TextBox
-					value={(editor.numFonts ?? '') + ''}
-					onChange={numFonts =>
-						updateDefinition(
-							s =>
-								(s.numFonts =
-									numFonts?.trim().length === 0
-										? undefined
-										: parseInt(numFonts ?? '')),
-						)
-					}
-				/>
+				<div className="_label">Font Names</div>
+				<div className="_flexBox _gap10 _column">
+					{(editor.fontNames ?? []).map((fn, i) => (
+						<TextBox
+							key={fn}
+							value={(fn ?? '') + ''}
+							onChange={numFonts =>
+								updateDefinition(s => {
+									const newFontNames = [...(editor.fontNames ?? [])];
+									newFontNames[i] = numFonts ?? '';
+									s.fontNames = newFontNames;
+								})
+							}
+						/>
+					))}
+					<div>
+						<button
+							onClick={() =>
+								updateDefinition(s => {
+									const newFontNames = [...(editor.fontNames ?? [])];
+									newFontNames.push('');
+									s.fontNames = newFontNames;
+								})
+							}
+						>
+							Add Font
+						</button>
+					</div>
+				</div>
 			</>
 		);
 	}
