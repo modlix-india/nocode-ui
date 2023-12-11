@@ -32,7 +32,9 @@ interface DnDEditorProps {
 	templateIframeRef: (element: HTMLIFrameElement | undefined) => void;
 	paralellIFrameRef: (element: HTMLIFrameElement | undefined) => void;
 	selectedComponent: string | undefined;
+	selectednComponentsList: string[] | [];
 	onSelectedComponentChanged: (key: string) => void;
+	onSelectedComponentListChanged: (key:string) => void;
 	locationHistory: Array<LocationHistory>;
 	pageOperations: PageOperations;
 	onPageReload: () => void;
@@ -67,7 +69,9 @@ export default function DnDEditor({
 	paralellIFrameRef,
 	onChangePersonalization,
 	selectedComponent,
+	selectednComponentsList,
 	onSelectedComponentChanged,
+	onSelectedComponentListChanged,
 	locationHistory,
 	pageOperations,
 	theme,
@@ -165,7 +169,9 @@ export default function DnDEditor({
 								personalizationPath={personalizationPath}
 								onChangePersonalization={onChangePersonalization}
 								selectedComponent={selectedComponent}
+								selectednComponentsList={selectednComponentsList}
 								onSelectedComponentChanged={onSelectedComponentChanged}
+								onSelectedComponentListChanged={onSelectedComponentListChanged}
 								selectedSubComponent={selectedSubComponent}
 								onSelectedSubComponentChanged={onSelectedSubComponentChanged}
 								pageExtractor={pageExtractor}
@@ -190,6 +196,7 @@ export default function DnDEditor({
 								locationHistory={locationHistory}
 								url={url}
 								selectedComponent={selectedComponent}
+								selectednComponentsList={selectednComponentsList}
 								personalizationPath={personalizationPath}
 								onChangePersonalization={onChangePersonalization}
 								theme={theme}

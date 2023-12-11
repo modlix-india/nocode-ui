@@ -22,6 +22,7 @@ interface PropertyBarProps {
 	defPath: string | undefined;
 	locationHistory: Array<LocationHistory>;
 	selectedComponent?: string;
+	selectednComponentsList: string[];
 	onShowCodeEditor: (eventName: string) => void;
 	slaveStore: any;
 	editPageName: string | undefined;
@@ -37,6 +38,7 @@ interface PropertyBarProps {
 
 export default function DnDPropertyBar({
 	selectedComponent,
+	selectednComponentsList,
 	defPath,
 	locationHistory,
 	pageExtractor,
@@ -67,7 +69,7 @@ export default function DnDPropertyBar({
 		);
 	}, [personalizationPath]);
 
-	if (!selectedComponent || previewMode) return <div className="_propBar"></div>;
+	if (!selectedComponent || previewMode) return <div className="_propBar"></div>; // if no component is selected then returning empty div.
 	let tab = <></>;
 	if (currentTab === 1) {
 		tab = (
@@ -76,6 +78,7 @@ export default function DnDPropertyBar({
 				personalizationPath={personalizationPath}
 				onChangePersonalization={onChangePersonalization}
 				selectedComponent={selectedComponent}
+				selectednComponentsList={selectednComponentsList}
 				defPath={defPath}
 				locationHistory={locationHistory}
 				pageExtractor={pageExtractor}
@@ -94,6 +97,7 @@ export default function DnDPropertyBar({
 				personalizationPath={personalizationPath}
 				onChangePersonalization={onChangePersonalization}
 				selectedComponent={selectedComponent}
+				selectedComponentsList={selectednComponentsList}
 				defPath={defPath}
 				locationHistory={locationHistory}
 				pageExtractor={pageExtractor}
@@ -115,6 +119,7 @@ export default function DnDPropertyBar({
 				personalizationPath={personalizationPath}
 				onChangePersonalization={onChangePersonalization}
 				selectedComponent={selectedComponent}
+				selectedComponentsList={selectednComponentsList}
 				defPath={defPath}
 				locationHistory={locationHistory}
 				pageExtractor={pageExtractor}

@@ -598,8 +598,12 @@ export function AnimationEditor({
 	selectorPref,
 	styleProps,
 	selectedComponent,
+	selectedComponentsList,
 	saveStyle,
 	properties,
+	defPath,
+	locationHistory,
+	pageExtractor,
 }: StyleEditorsProps) {
 	const { propValues, propAndValue } = ANIMATION_PROPS.reduce(
 		(a, c) => {
@@ -739,15 +743,11 @@ export function AnimationEditor({
 								<div
 									className="_searchResultItem"
 									key={e.name}
-									onClick={() => {
+									onClick={v => {
 										valuesChangedOnlyValues({
 											subComponentName,
 											selectedComponent,
-											styleProps,
-											properties,
-											pseudoState,
-											saveStyle,
-											iterateProps,
+											selectedComponentsList,
 											propValues: [
 												{
 													prop: 'animationName',
@@ -773,6 +773,10 @@ export function AnimationEditor({
 														: '1',
 												},
 											],
+											selectorPref,
+											defPath,
+											locationHistory,
+											pageExtractor,
 										});
 									}}
 								>
@@ -834,12 +838,17 @@ export function AnimationEditor({
 					valuesChangedOnlyValues({
 						subComponentName,
 						selectedComponent,
-						styleProps,
-						properties,
-						pseudoState,
-						saveStyle,
-						iterateProps,
-						propValues: v,
+						selectedComponentsList,
+						selectorPref,
+						defPath,
+						locationHistory,
+						pageExtractor,
+						// propValues: [{ prop: 'animation', value: v[0].value }],
+						propValues: [
+							...v.map(item => {
+								return { prop: item.prop, value: item.value };
+							}),
+						],
 					})
 				}
 				values={propAndValue}
