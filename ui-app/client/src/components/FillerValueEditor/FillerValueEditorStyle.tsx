@@ -526,6 +526,11 @@ export default function FillerValueEditorStyle({
 			background-color: transparent;
 		}
 
+		${PREFIX} ._objectEditor._LIST_HORIZONTAL ._eachObject {
+			background-color: #F8FAFB;
+			border-radius: 6px;
+		}
+
 		${PREFIX} ._objectEditor ._eachObject,
 		${PREFIX} ._tab ._eachObject {
 			display: flex;
