@@ -4,10 +4,18 @@ export function ImageEditor({
 	value,
 	onDelete,
 	onPopup,
+	draggable,
+	onDragStart,
+	onDragOver,
+	onDrop,
 }: Readonly<{
 	value: string | undefined;
 	onDelete: (v: string | undefined) => void;
 	onPopup: () => void;
+	draggable?: boolean;
+	onDragStart?: (e: React.DragEvent<HTMLDivElement>) => void;
+	onDragOver?: (e: React.DragEvent<HTMLDivElement>) => void;
+	onDrop?: (e: React.DragEvent<HTMLDivElement>) => void;
 }>) {
 	const style: CSSProperties = {};
 
@@ -30,7 +38,14 @@ export function ImageEditor({
 	}
 
 	return (
-		<div className="_imageEditor" style={style}>
+		<div
+			className="_imageEditor"
+			style={style}
+			draggable={draggable}
+			onDragStart={onDragStart}
+			onDragOver={onDragOver}
+			onDrop={onDrop}
+		>
 			{controls}
 		</div>
 	);

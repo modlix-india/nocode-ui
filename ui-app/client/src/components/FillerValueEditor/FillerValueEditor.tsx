@@ -228,9 +228,12 @@ function FillerValueEditor(props: ComponentProps) {
 			url += `#${gkey}`;
 			hasGKey = true;
 		}
-	} else url += '/';
+	} else url += '/#';
 
-	if (!hasGKey && !url.endsWith('/')) url += '/';
+	if (!hasGKey && !url.endsWith('/#')) {
+		if (url.endsWith('/')) url += '#';
+		else url += '/#';
+	}
 	if (url === '/') url = '';
 
 	const valueChanged = (isUIFiller: boolean, filler: Filler) => {
