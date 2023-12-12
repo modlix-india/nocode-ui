@@ -9,6 +9,7 @@ import Palette from './Palette';
 import ObjectEditor from './ObjectEditor';
 import { isNullValue } from '@fincity/kirun-js';
 import FontPicker from './FontPicker';
+import MapChoice from './MapChoice';
 
 export function Editor({
 	editor,
@@ -107,7 +108,13 @@ export function Editor({
 		);
 	} else if (editor.type === EditorType.PALLETTE) {
 		editorControl = (
-			<Palette value={value ?? []} onChange={onChange} numOfColors={editor.numColors ?? 5} />
+			<Palette
+				value={value ?? []}
+				onChange={onChange}
+				numOfColors={editor.numColors ?? 5}
+				samplePalettes={editor.samplePalettes}
+				hideGeneratePalette={editor.hideGeneratePalette}
+			/>
 		);
 	} else if (editor.type === EditorType.ARRAY_OF_IMAGES) {
 		editorControl = (
@@ -132,6 +139,21 @@ export function Editor({
 								editor,
 							)
 						}
+						draggable={true}
+						onDragOver={e => e.preventDefault()}
+						onDragStart={e =>
+							e.dataTransfer.setData('text/plain', `Image_${editor.key}_${i}`)
+						}
+						onDrop={e => {
+							e.preventDefault();
+
+							if (!e.dataTransfer.getData('text/plain').startsWith('Image_')) return;
+							const [, key, index] = e.dataTransfer.getData('text/plain').split('_');
+							if (key !== editor.key) return;
+							const x = [...value];
+							x.splice(i, 0, x.splice(parseInt(index), 1)[0]);
+							onChange(x);
+						}}
 					/>
 				))}
 				<ImageEditor
@@ -176,6 +198,24 @@ export function Editor({
 				value={value ?? []}
 				onChange={onChange}
 				appDefinition={appDefinition}
+			/>
+		);
+	} else if (editor.type === EditorType.MAP) {
+		editorControl = (
+			<MapChoice
+				prefix={editor.mapURLPrefix}
+				onPopup={() =>
+					onPopup(
+						{
+							path: `Filler.values.${sectionValueKey}.${editor.valueKey}.image`,
+							type: 'IMAGE',
+						},
+						true,
+						editor,
+					)
+				}
+				value={value}
+				onChange={onChange}
 			/>
 		);
 	}
