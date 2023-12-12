@@ -515,6 +515,7 @@ export default function ObjectPopup({
 					className="_flexBox _column _browserBack _tabContainer"
 					onClick={e => e.stopPropagation()}
 				>
+					<i className="_closeIcon fa fa-solid fa-times" onClick={() => onClose()} />
 					<div className="_tabHeader">
 						{tabs.map((e, i) => (
 							<div
