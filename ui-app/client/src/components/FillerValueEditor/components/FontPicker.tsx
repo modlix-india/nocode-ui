@@ -53,7 +53,6 @@ export default function FontPicker({
 	appDefinition: any;
 }) {
 	const [fontsList, setFontsList] = useState<DropdownOptions>(FONT_FAMILIES);
-
 	const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
 	useEffect(() => {

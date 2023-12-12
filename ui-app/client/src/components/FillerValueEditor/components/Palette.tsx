@@ -4,38 +4,45 @@ import { ColorSelector } from './ColorSelector';
 
 const PALLETTE_NAMES = [
 	{
-		name: 'Summer',
+		displayName: 'Summer',
 		colors: ['#96ceb4', '#ffeead', '#ffcc5c', '#ff6f69'],
 	},
 	{
-		name: 'Candy',
+		displayName: 'Candy',
 		colors: ['#ff9ff3', '#feca57', '#ff6b6b', '#48dbfb'],
 	},
 	{
-		name: 'Nature',
+		displayName: 'Nature',
 		colors: ['#ffbe76', '#ff7979', '#badc58', '#dff9fb'],
 	},
 	{
-		name: 'Coral',
+		displayName: 'Coral',
 		colors: ['#f8a5c2', '#f78fb3', '#f5cd79', '#f19066'],
 	},
 	{
-		name: 'Blue',
+		displayName: 'Blue',
 		colors: ['#bccad6', '#8d9db6', '#667292', '#f1e3dd'],
 	},
 	{
-		name: 'Grey',
+		displayName: 'Grey',
 		colors: ['#f0f0f0', '#c5d5c5', '#9fa9a3', '#e3e0cc'],
 	},
 ];
+
+// 				samplePalettes={editor.samplePalettes}
+// 				hideGeneratePalette={editor.hideGeneratePalette}
 export default function Palette({
 	value,
 	onChange,
 	numOfColors,
+	samplePalettes,
+	hideGeneratePalette,
 }: {
 	value: string[];
 	onChange: (colors: string[]) => void;
 	numOfColors: number;
+	samplePalettes?: { displayName: string; colors: string[] }[];
+	hideGeneratePalette?: boolean;
 }) {
 	const [bodyOpen, setBodyOpen] = React.useState(false);
 
@@ -43,9 +50,9 @@ export default function Palette({
 	if (bodyOpen) {
 		body = (
 			<div className="_simpleFillerPickerDropdownBody _colorDropdown">
-				{PALLETTE_NAMES.map((palette, index) => (
+				{(samplePalettes ?? PALLETTE_NAMES).map((palette, index) => (
 					<div
-						key={`${palette.name}_${index}`}
+						key={`${palette.displayName}_${index}`}
 						className="_simpleFillerPickerDropdownOption"
 						onClick={() => {
 							const colors = [...palette.colors];
@@ -66,46 +73,15 @@ export default function Palette({
 								/>
 							))}
 						</div>
-						{palette.name}
+						{palette.displayName}
 					</div>
 				))}
 			</div>
 		);
 	}
-
-	return (
-		<div className="_palette">
-			<div className="_currentPalette">
-				{(value.length ? value : new Array(numOfColors).fill('')).map((color, index) => (
-					<ColorSelector
-						key={`${index}`}
-						color={color ?? ''}
-						onChange={color => {
-							const colors = [
-								...(value.length ? value : new Array(numOfColors).fill('')),
-							];
-							colors[index] = color;
-							onChange(colors);
-						}}
-					/>
-				))}
-				<div className="_generateButtonContainer">
-					<div
-						className="_generateButton"
-						onClick={() => {
-							const colors = [];
-							for (let i = 0; i < numOfColors; i++) {
-								colors.push(
-									`#${Math.floor(Math.random() * 16777215).toString(16)}`,
-								);
-							}
-							onChange(colors);
-						}}
-					>
-						<Generate />
-					</div>
-				</div>
-			</div>
+	let combo = <></>;
+	if ((samplePalettes ?? PALLETTE_NAMES)?.length) {
+		combo = (
 			<div
 				className="_simpleFillerPickerSelect"
 				onClick={() => setBodyOpen(true)}
@@ -127,6 +103,48 @@ export default function Palette({
 				</svg>
 				{body}
 			</div>
+		);
+	}
+
+	let generateButton = <></>;
+	if (!hideGeneratePalette) {
+		generateButton = (
+			<div className="_generateButtonContainer">
+				<div
+					className="_generateButton"
+					onClick={() => {
+						const colors = [];
+						for (let i = 0; i < numOfColors; i++) {
+							colors.push(`#${Math.floor(Math.random() * 16777215).toString(16)}`);
+						}
+						onChange(colors);
+					}}
+				>
+					<Generate />
+				</div>
+			</div>
+		);
+	}
+
+	return (
+		<div className="_palette">
+			<div className="_currentPalette">
+				{(value.length ? value : new Array(numOfColors).fill('')).map((color, index) => (
+					<ColorSelector
+						key={`${index}`}
+						color={color ?? ''}
+						onChange={color => {
+							const colors = [
+								...(value.length ? value : new Array(numOfColors).fill('')),
+							];
+							colors[index] = color;
+							onChange(colors);
+						}}
+					/>
+				))}
+				{generateButton}
+			</div>
+			{combo}
 		</div>
 	);
 }

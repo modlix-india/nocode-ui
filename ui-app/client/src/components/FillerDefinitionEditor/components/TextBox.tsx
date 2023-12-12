@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 export default function TextBox({
 	value,
@@ -10,6 +10,8 @@ export default function TextBox({
 	mandatory?: boolean;
 }) {
 	const [textValue, setTextValue] = useState<string>(value ?? '');
+
+	useEffect(() => setTextValue(value ?? ''), [value]);
 
 	return (
 		<input
