@@ -43,7 +43,7 @@ export function EditorBody({
 	);
 
 	const [showValueEditor, setShowValueEditor] = React.useState<
-		'value' | 'sampleValue' | undefined
+		'value' | 'sampleValue' | 'samplePalette' | undefined
 	>(undefined);
 
 	const [editorValue, setEditorValue] = React.useState('');
@@ -55,7 +55,7 @@ export function EditorBody({
 			const value = st.getValue(`Filler.values.${section.valueKey}.${editor.valueKey}`);
 			const txt = value ? JSON.stringify(value, undefined, 2) : '';
 			setEditorValue(txt);
-		} else {
+		} else if (showValueEditor == 'sampleValue') {
 			let editors: Array<EditorDefinition> | undefined = st.getValue(
 				`Filler.definition.${section.key}.editors`,
 			);
@@ -63,6 +63,16 @@ export function EditorBody({
 			let editorObject = editors.find(e => e.key == editor.key);
 			const txt = editorObject?.sampleObjects
 				? JSON.stringify(editorObject.sampleObjects, undefined, 2)
+				: '[]';
+			setEditorValue(txt);
+		} else if (showValueEditor == 'samplePalette') {
+			let editors: Array<EditorDefinition> | undefined = st.getValue(
+				`Filler.definition.${section.key}.editors`,
+			);
+			if (!editors) editors = [];
+			let editorObject = editors.find(e => e.key == editor.key);
+			const txt = editorObject?.samplePalettes
+				? JSON.stringify(editorObject.samplePalettes, undefined, 2)
 				: '[]';
 			setEditorValue(txt);
 		}
@@ -118,7 +128,7 @@ export function EditorBody({
 											'Filler',
 											new Map([['Filler', st]]),
 										);
-									} else {
+									} else if (showValueEditor == 'sampleValue') {
 										let objs = st.getValue(
 											`Filler.definition.${section.key}.editors`,
 										);
@@ -126,6 +136,14 @@ export function EditorBody({
 											(e: EditorDefinition) => e.key == editor.key,
 										);
 										if (ed) ed.sampleObjects = v;
+									} else if (showValueEditor == 'samplePalette') {
+										let objs = st.getValue(
+											`Filler.definition.${section.key}.editors`,
+										);
+										let ed = objs.find(
+											(e: EditorDefinition) => e.key == editor.key,
+										);
+										if (ed) ed.samplePalettes = v;
 									}
 
 									setFiller(newFiller);
@@ -385,6 +403,13 @@ export function EditorBody({
 						)
 					}
 				/>
+				<div
+					onClick={() => {
+						setShowValueEditor('samplePalette');
+					}}
+				>
+					<button>Add Sample Palette</button>
+				</div>
 			</>
 		);
 	} else if (editor.type === EditorType.FONT_PICKER) {
@@ -419,6 +444,19 @@ export function EditorBody({
 						</button>
 					</div>
 				</div>
+			</>
+		);
+	} else if (editor.type === EditorType.MAP) {
+		specificFields = (
+			<>
+				<div className="_label">Map URL Prefix</div>
+				<TextBox
+					value={editor.mapURLPrefix}
+					mandatory={false}
+					onChange={mapUrlPrefix =>
+						updateDefinition(s => (s.mapURLPrefix = mapUrlPrefix ?? ''))
+					}
+				/>
 			</>
 		);
 	}

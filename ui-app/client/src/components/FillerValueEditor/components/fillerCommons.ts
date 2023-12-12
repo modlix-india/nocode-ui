@@ -9,6 +9,7 @@ export enum EditorType {
 	PALLETTE = 'PALLETTE',
 	LABEL = 'LABEL',
 	FONT_PICKER = 'FONT_PICKER',
+	MAP = 'MAP',
 }
 
 export interface EditorDefinition {
@@ -28,6 +29,9 @@ export interface EditorDefinition {
 	objectEditors?: EditorDefinition[];
 	arrayPreviewList?: string[];
 	arrayPreviewType?: 'LIST' | 'GRID';
+	samplePalettes?: { displayName: string; colors: string[] }[];
+	hideGeneratePalette?: boolean;
+	mapURLPrefix?: string;
 }
 
 export enum SectionLayout {

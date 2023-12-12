@@ -11,7 +11,7 @@ import { StoreExtractor, setStoreData } from '@fincity/path-reactive-state-manag
 
 export default function ImagePopup({
 	dataPath,
-	isUIFiller,
+	isUIFiller = false,
 	uiFiller,
 	coreFiller,
 	onClose,
@@ -39,7 +39,7 @@ export default function ImagePopup({
 			: (v: string) => {
 					const newFiller = duplicate(isUIFiller ? uiFiller : coreFiller);
 					setStoreData(
-						dataPath,
+						dataPath!,
 						newFiller,
 						v,
 						'Filler',

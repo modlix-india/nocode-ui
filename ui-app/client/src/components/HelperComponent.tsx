@@ -241,7 +241,7 @@ function FillerValueEditorHelperComponent({ definition: { key } }: HelperCompone
 		all: 'initial',
 		fontFamily: 'Arial',
 		position: 'absolute',
-		border: `2px dashed #FDAB3D`,
+		border: `2px dashed #427EE4`,
 		height: `calc( 100% + ${height}px)`,
 		width: `calc( 100% + ${width}px)`,
 		top: top + 'px',
@@ -257,7 +257,7 @@ function FillerValueEditorHelperComponent({ definition: { key } }: HelperCompone
 	const numberBlobStyle = {
 		fontFamily: 'Arial',
 		position: 'absolute',
-		backgroundColor: '#FDAB3D',
+		backgroundColor: '#427EE4',
 		fontSize: '14px',
 		fontWeight: '700',
 		color: '#FFFFFF',

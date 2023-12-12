@@ -556,6 +556,15 @@ export default function FillerValueEditorStyle({
 			flex-direction: column;
 			padding: 10px;
 			margin-left: 20px;
+			position: relative;
+		}
+
+		${PREFIX} ._popupClose {
+			font-family: monospace;
+			position: absolute;
+			right: 10px;
+			top: 7px;
+			cursor: pointer;
 		}
 
 		${PREFIX} ._popupContainer ._iconSelectionBrowser {
