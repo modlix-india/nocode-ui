@@ -38,7 +38,6 @@ export default function FillerValueEditorStyle({
 			flex: 1;
 			padding-left: 5px;
 			display: flex;
-			justify-content: center;
 			align-items: center;
 			background-color: #FFF;
 			background: repeating-conic-gradient(#FAFAFA 0% 25%, transparent 0% 50%) 50% / 20px 20px;
@@ -59,6 +58,10 @@ export default function FillerValueEditorStyle({
 			max-width: 3024px;
 		}
 
+		${PREFIX} ._body ._pageViewer._TABLET {
+			justify-content: center;
+		}
+
 		${PREFIX} ._body ._pageViewer._TABLET iframe {
 			width: 0%;
 			max-width: 961px;
@@ -68,7 +71,11 @@ export default function FillerValueEditorStyle({
 		${PREFIX} ._body ._pageViewer._MOBILE iframe {
 			width: 0%;
 			max-width: 481px;
-  		min-width: 481px;
+  			min-width: 481px;
+		}
+
+		${PREFIX} ._body ._pageViewer._MOBILE {
+			justify-content: center;
 		}
 
 		${PREFIX} ._body ._valueEditor {
@@ -302,6 +309,19 @@ export default function FillerValueEditorStyle({
 			box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.10);
 			padding: 6px 15px;
 			color: #FFF;
+			
+			font-size: 12px;
+			font-weight: 600;
+			cursor: pointer;
+		}
+
+		${PREFIX} ._rightButtonBar ._outlineButton{
+			border-radius: 6px;
+			background: transparent;
+			border: 1px solid #52BD94;
+			box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.10);
+			padding: 6px 15px;
+			color: #52BD94;
 			
 			font-size: 12px;
 			font-weight: 600;

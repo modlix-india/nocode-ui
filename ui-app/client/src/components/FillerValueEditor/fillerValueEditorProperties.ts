@@ -25,6 +25,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Event to be triggered on personalization changed.',
 	},
 	{
+		name: 'onReset',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Reset',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		group: ComponentPropertyGroup.EVENTS,
+		description: 'Event to be triggered on page reset.',
+	},
+	{
 		name: 'logo',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'SVG logo',
