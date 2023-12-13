@@ -57,7 +57,7 @@ function savePersonalizationCurry(
 	};
 }
 
-function FillerValueEditor(props: ComponentProps) {
+function FillerValueEditor(props: Readonly<ComponentProps>) {
 	const { definition, pageDefinition, locationHistory, context } = props;
 	const {
 		definition: { bindingPath, bindingPath3, bindingPath2, bindingPath4 },
@@ -68,6 +68,7 @@ function FillerValueEditor(props: ComponentProps) {
 		stylePropertiesWithPseudoStates,
 		properties: {
 			onSave,
+			onReset,
 			onChangePersonalization,
 			logo,
 			dashboardPageName,
@@ -239,6 +240,7 @@ function FillerValueEditor(props: ComponentProps) {
 	const valueChanged = (isUIFiller: boolean, filler: Filler) => {
 		if (!(isUIFiller ? uiDefPath : coreDefPath)) return;
 		undoStack.current.push(duplicate([uiFiller, coreFiller]));
+		redoStack.current.splice(0, redoStack.current.length);
 
 		setData(isUIFiller ? uiDefPath! : coreDefPath!, filler, context.pageName);
 		if (!isUIFiller || !iframeRef.current) return;
@@ -315,6 +317,16 @@ function FillerValueEditor(props: ComponentProps) {
 						pageDefinition,
 					);
 				}}
+				onReset={() => {
+					if (!onSave || !pageDefinition.eventFunctions?.[onReset]) return;
+					runEvent(
+						pageDefinition.eventFunctions?.[onReset],
+						'pageEditorSave',
+						context.pageName,
+						locationHistory,
+						pageDefinition,
+					);
+				}}
 				onUndo={() => {
 					if (undoStack.current.length === 0) return;
 					const [f1, f2] = duplicate(undoStack.current.pop()!);
@@ -349,6 +361,7 @@ function FillerValueEditor(props: ComponentProps) {
 				locationHistory={locationHistory}
 				personalizationPath={personalizationPath}
 				onPersonalizationChange={(k: string, v: any) => savePersonalization(k, v)}
+				url={`/${filler.appCode}/${filler.clientCode}/page/`}
 			/>
 			<div className="_body">
 				<ValueEditor
