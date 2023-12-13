@@ -132,7 +132,7 @@ export default function TopBar({
 						if (e.key === ' ' || e.key === 'Enter') window.open(url, '_blank');
 					}}
 				>
-					Live Site
+					View Site
 				</div>
 				<div
 					className="_outlineButton"
