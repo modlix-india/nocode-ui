@@ -361,7 +361,7 @@ function FillerValueEditor(props: Readonly<ComponentProps>) {
 				locationHistory={locationHistory}
 				personalizationPath={personalizationPath}
 				onPersonalizationChange={(k: string, v: any) => savePersonalization(k, v)}
-				url={`https://live.${window.location.hostname}/${filler.appCode}/${filler.clientCode}/page/`}
+				url={`https://live.${window.location.hostname}/${filler.appCode}/${clientCode}/page/`}
 			/>
 			<div className="_body">
 				<ValueEditor
