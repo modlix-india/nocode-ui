@@ -24,6 +24,7 @@ import { SubHelperComponent } from '../SubHelperComponent';
 import { isNullValue } from '@fincity/kirun-js';
 import ImageBrowser from './ImageBrowser';
 import { styleDefaults } from './imageWithBrowserStyleProperties';
+import getSrcUrl from '../util/getSrcUrl';
 
 function ImageWithBrowser(props: ComponentProps) {
 	const {
@@ -134,7 +135,7 @@ function ImageWithBrowser(props: ComponentProps) {
 			onClick={onClickEvent ? handleClick : undefined}
 			className={onClickEvent ? '_onclicktrue' : ''}
 			style={resolvedStyles.image ?? {}}
-			src={getHref(src, location)}
+			src={getSrcUrl(getHref(src, location))}
 			alt={altText}
 		/>
 	) : (

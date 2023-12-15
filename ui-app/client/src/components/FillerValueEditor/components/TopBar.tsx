@@ -6,6 +6,7 @@ import {
 import { LocationHistory } from '../../../types/common';
 import { getHref } from '../../util/getHref';
 import { DesktopIcon, MobileIcon, RedoIcon, TabletIcon, UndoIcon } from './FillerValueEditorIcons';
+import getSrcUrl from '../../util/getSrcUrl';
 
 export default function TopBar({
 	logo,
@@ -74,7 +75,7 @@ export default function TopBar({
 				onClick={() => setShowMenu(true)}
 				onMouseLeave={() => setShowMenu(false)}
 			>
-				<img className="_logo" src={logo} />
+				<img className="_logo" src={getSrcUrl(logo)} />
 				{menuBody}
 			</div>
 			<div className="_resoultionBar">

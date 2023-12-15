@@ -15,6 +15,7 @@ import { getHref } from '../util/getHref';
 import { useLocation } from 'react-router-dom';
 import { SubHelperComponent } from '../SubHelperComponent';
 import { styleDefaults } from './imageStyleProperties';
+import getSrcUrl from '../util/getSrcUrl';
 
 function ImageComponent(props: ComponentProps) {
 	const { definition, locationHistory, context } = props;
@@ -102,7 +103,7 @@ function ImageComponent(props: ComponentProps) {
 				onClick={onClickEvent ? handleClick : undefined}
 				className={onClickEvent ? '_onclicktrue' : ''}
 				style={resolvedStyles.image ?? {}}
-				src={getHref(src ?? defaultSrc, location)}
+				src={getSrcUrl(getHref(src ?? defaultSrc, location))}
 				alt={alt}
 				onError={fallBackImg ? handleError : undefined}
 			/>

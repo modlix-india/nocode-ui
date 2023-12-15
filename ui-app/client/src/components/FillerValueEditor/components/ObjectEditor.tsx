@@ -2,6 +2,7 @@ import React from 'react';
 import { EditorDefinition, EditorType } from './fillerCommons';
 import ToggleButton from './ToggleButton';
 import { StoreExtractor } from '@fincity/path-reactive-state-management';
+import getSrcUrl from '../../util/getSrcUrl';
 
 export default function ObjectEditor({
 	editor,
@@ -34,7 +35,11 @@ export default function ObjectEditor({
 								);
 								if (previewFields?.[key]?.type === EditorType.IMAGE) {
 									control = (
-										<img src={value} className="_eachObjectImage" key={key} />
+										<img
+											src={getSrcUrl(value)}
+											className="_eachObjectImage"
+											key={key}
+										/>
 									);
 								} else if (previewFields?.[key]?.type === EditorType.BOOLEAN) {
 									control = (

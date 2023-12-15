@@ -10,6 +10,7 @@ import { Dropdown } from './Dropdown';
 import Text from './Text';
 import { ImageEditor } from './ImageEditor';
 import ImagePopup from './ImagePoup';
+import getSrcUrl from '../../util/getSrcUrl';
 
 export default function ObjectPopup({
 	editor,
@@ -179,7 +180,11 @@ export default function ObjectPopup({
 								);
 								if (previewFields?.[key]?.type === EditorType.IMAGE) {
 									control = (
-										<img src={value} className="_eachObjectImage" key={key} />
+										<img
+											src={getSrcUrl(value)}
+											className="_eachObjectImage"
+											key={key}
+										/>
 									);
 								} else if (previewFields?.[key]?.type === EditorType.BOOLEAN) {
 									control = (
@@ -278,7 +283,7 @@ export default function ObjectPopup({
 									if (previewFields?.[key]?.type === EditorType.IMAGE) {
 										control = (
 											<img
-												src={value}
+												src={getSrcUrl(value)}
 												className="_eachObjectImage"
 												key={key}
 											/>
