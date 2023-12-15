@@ -17,6 +17,7 @@ import { SubHelperComponent } from '../SubHelperComponent';
 import { isNullValue } from '@fincity/kirun-js';
 import { styleDefaults } from './galleryStyleProperties';
 import { IconHelper } from '../util/IconHelper';
+import getSrcUrl from '../util/getSrcUrl';
 
 function Gallery(props: ComponentProps) {
 	const [isActive, setIsActive] = useState(false);
@@ -219,7 +220,7 @@ function Gallery(props: ComponentProps) {
 					<img
 						className="slideImage"
 						style={resolvedStyles?.slideImage ?? {}}
-						src={galleryData[transitionFrom!].src}
+						src={getSrcUrl(galleryData[transitionFrom!].src)}
 						alt="previousSlide"
 					/>
 					<SubHelperComponent
@@ -244,7 +245,7 @@ function Gallery(props: ComponentProps) {
 					<img
 						className="slideImage"
 						style={resolvedStyles?.slideImage ?? {}}
-						src={galleryData[slideNum!].src}
+						src={getSrcUrl(galleryData[slideNum!].src)}
 						alt="CurrentSlide"
 					/>
 					<SubHelperComponent
@@ -265,7 +266,7 @@ function Gallery(props: ComponentProps) {
 					<img
 						className="slideImage"
 						style={resolvedStyles?.slideImage ?? {}}
-						src={galleryData[slideNum!].src}
+						src={getSrcUrl(galleryData[slideNum!].src)}
 						alt="displayedImage"
 						ref={imageRef}
 						onClick={event => {
@@ -568,7 +569,7 @@ function Gallery(props: ComponentProps) {
 												subComponentName="thumbnailImageDiv"
 											/>
 											<img
-												src={each?.src}
+												src={getSrcUrl(each?.src)}
 												alt={`${each?.name}}`}
 												className="thumbnailImage"
 												style={resolvedStyles?.thumbnailImage ?? {}}
@@ -623,7 +624,7 @@ function Gallery(props: ComponentProps) {
 												subComponentName="previewImageDiv"
 											/>
 											<img
-												src={each?.src}
+												src={getSrcUrl(each?.src)}
 												alt={`${each?.name}}`}
 												className="previewImage"
 												style={resolvedStyles.previewImage ?? {}}

@@ -10,6 +10,7 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { SubHelperComponent } from '../SubHelperComponent';
 import { styleDefaults } from './videoStyleProperties';
 import { IconHelper } from '../util/IconHelper';
+import getSrcUrl from '../util/getSrcUrl';
 
 function Video(props: ComponentProps) {
 	const { definition, locationHistory, context, pageDefinition } = props;
@@ -497,7 +498,7 @@ function Video(props: ComponentProps) {
 				onClick={handlePlayPause}
 				style={resolvedStyles.player ?? {}}
 			>
-				<source src={src} type={type} />
+				<source src={getSrcUrl(src)} type={type} />
 				Your browser does not support HTML5 video.
 			</video>
 			<SubHelperComponent
