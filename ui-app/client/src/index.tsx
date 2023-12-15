@@ -35,7 +35,7 @@ declare global {
 		includeRemoteKIRunSchemas: boolean,
 		repoServer: REPO_SERVER,
 	) => RemoteRepository<Schema>;
-	var cdnHostName: string;
+	var cdnPrefix: string;
 }
 
 globalThis.getRemoteFunctionRepository = RemoteRepository.getRemoteFunctionRepository;
