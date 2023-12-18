@@ -10,7 +10,7 @@ export function ImageEditor({
 	onDrop,
 }: Readonly<{
 	value: string | undefined;
-	onDelete: (v: string | undefined) => void;
+	onDelete: () => void;
 	onPopup: () => void;
 	draggable?: boolean;
 	onDragStart?: (e: React.DragEvent<HTMLDivElement>) => void;
@@ -26,7 +26,7 @@ export function ImageEditor({
 		controls = (
 			<div className="_imageControls">
 				<button onClick={() => onPopup()}>Replace</button>
-				<button onClick={() => onDelete(undefined)}>Remove</button>
+				<button onClick={() => onDelete()}>Remove</button>
 			</div>
 		);
 	} else {
