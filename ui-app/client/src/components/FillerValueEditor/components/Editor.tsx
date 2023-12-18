@@ -75,7 +75,7 @@ export function Editor({
 					onPopup(newPopup, !isNullValue(parentEditor), editor);
 				}}
 				value={value}
-				onDelete={onChange}
+				onDelete={() => onChange(undefined)}
 			/>
 		);
 	} else if (editor.type === EditorType.TEXT_BOX) {
@@ -119,20 +119,15 @@ export function Editor({
 	} else if (editor.type === EditorType.ARRAY_OF_IMAGES) {
 		editorControl = (
 			<div className="_arrayOfImages">
-				{(value ?? []).map((v: string, i: number) => (
+				{(value ?? []).map((v: { image: string }, i: number) => (
 					<ImageEditor
-						key={v}
-						value={v}
-						onDelete={e => {
-							if (!e) return onChange(value.filter((_: any, j: number) => j !== i));
-							const x = [...value];
-							x[i] = e;
-							onChange(x);
-						}}
+						key={v.image}
+						value={v.image}
+						onDelete={() => onChange(value.filter((_: any, j: number) => j !== i))}
 						onPopup={() =>
 							onPopup(
 								{
-									path: `Filler.values.${sectionValueKey}.${editor.valueKey}[${i}]`,
+									path: `Filler.values.${sectionValueKey}.${editor.valueKey}[${i}].image`,
 									type: 'IMAGE',
 								},
 								!isNullValue(parentEditor),
@@ -163,14 +158,14 @@ export function Editor({
 							{
 								path: `Filler.values.${sectionValueKey}.${editor.valueKey}[${
 									value?.length ?? 0
-								}]`,
+								}].image`,
 								type: 'IMAGE',
 							},
 							!isNullValue(parentEditor),
 							editor,
 						)
 					}
-					onDelete={e => onChange([...(value ?? []), e])}
+					onDelete={() => onChange([...(value ?? []), undefined])}
 				/>
 			</div>
 		);
