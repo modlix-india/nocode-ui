@@ -179,11 +179,10 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 		if (!fromData?.startsWith(`${key}_`)) return;
 
 		const from = Number(fromData.split('_')[1]);
-		console.log(from, to);
+		if (from === to) return;
+
 		const newData = value.slice();
-		const temp = newData[from];
-		to === newData.length - 1 ? newData.push(temp) : newData.splice(to, 0, temp);
-		newData.splice(from > to ? from + 1 : from, 1);
+		newData.splice(to, 0, newData.splice(from, 1)[0]);
 		setData(bindingPathPath!, newData, context?.pageName);
 	};
 
