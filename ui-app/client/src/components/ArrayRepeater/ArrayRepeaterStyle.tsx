@@ -31,6 +31,9 @@ export default function ArrayRepeaterStyle({ theme }: { theme: Map<string, Map<s
 		margin-top: 20px;
 		opacity: 50%;
 	}
+	${PREFIX} .iconGrid {
+		display: flex;
+	}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="ArrayRepeaterCss">{css}</style>;
