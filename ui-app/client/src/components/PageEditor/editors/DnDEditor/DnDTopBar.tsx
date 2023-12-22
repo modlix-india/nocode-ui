@@ -22,6 +22,7 @@ import PropertyValueEditor from '../propertyValueEditors/PropertyValueEditor';
 import { Dropdown } from '../stylePropertyValueEditors/simpleEditors/Dropdown';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getHref } from '../../../util/getHref';
+import getSrcUrl from '../../../util/getSrcUrl';
 
 interface TopBarProps {
 	theme: string;
@@ -123,7 +124,7 @@ export default function DnDTopBar({
 	const [selectedPage, setSelectedPage] = React.useState('');
 	const navigate = useNavigate();
 	const location = useLocation();
-	const svgLogo = logo ? <img className="_logo" src={logo} /> : undefined;
+	const svgLogo = logo ? <img className="_logo" src={getSrcUrl(logo)} /> : undefined;
 	useEffect(() => setLocalUrl(url), [url]);
 	useEffect(
 		() =>

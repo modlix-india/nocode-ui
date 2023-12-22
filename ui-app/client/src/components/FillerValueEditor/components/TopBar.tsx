@@ -6,11 +6,13 @@ import {
 import { LocationHistory } from '../../../types/common';
 import { getHref } from '../../util/getHref';
 import { DesktopIcon, MobileIcon, RedoIcon, TabletIcon, UndoIcon } from './FillerValueEditorIcons';
+import getSrcUrl from '../../util/getSrcUrl';
 
 export default function TopBar({
 	logo,
 	dashboardPageName,
 	settingsPageName,
+	onReset,
 	onSave,
 	onUndo,
 	onRedo,
@@ -19,20 +21,23 @@ export default function TopBar({
 	onPersonalizationChange,
 	pageExtractor,
 	personalizationPath,
-}: {
+	url,
+}: Readonly<{
 	logo: string;
 	dashboardPageName: string;
 	settingsPageName: string;
 	onSave: () => void;
 	onUndo: () => void;
 	onRedo: () => void;
+	onReset: () => void;
 	hasUndo: boolean;
 	hasRedo: boolean;
 	pageExtractor: PageStoreExtractor;
 	locationHistory: Array<LocationHistory>;
 	onPersonalizationChange: (k: string, v: any) => void;
 	personalizationPath?: string;
-}) {
+	url: string;
+}>) {
 	const [pageMode, setPageMode] = useState<string>('DESKTOP');
 	const [showMenu, setShowMenu] = useState<boolean>(false);
 
@@ -70,7 +75,7 @@ export default function TopBar({
 				onClick={() => setShowMenu(true)}
 				onMouseLeave={() => setShowMenu(false)}
 			>
-				<img className="_logo" src={logo} />
+				<img className="_logo" src={getSrcUrl(logo)} />
 				{menuBody}
 			</div>
 			<div className="_resoultionBar">
@@ -94,14 +99,50 @@ export default function TopBar({
 				</div>
 			</div>
 			<div className="_rightButtonBar">
-				<div className={`_button ${hasUndo ? '' : '_disabled'}`} onClick={onUndo}>
+				<div
+					className={`_button ${hasUndo ? '' : '_disabled'}`}
+					onClick={onUndo}
+					onKeyDown={e => {
+						if (e.key === ' ' || e.key === 'Enter') onUndo();
+					}}
+				>
 					<UndoIcon />
 				</div>
-				<div className={`_button ${hasRedo ? '' : '_disabled'}`} onClick={onRedo}>
+				<div
+					className={`_button ${hasRedo ? '' : '_disabled'}`}
+					onClick={onRedo}
+					onKeyDown={e => {
+						if (e.key === ' ' || e.key === 'Enter') onRedo();
+					}}
+				>
 					<RedoIcon />
 				</div>
-				<div className="_saveButton" onClick={onSave}>
+				<div
+					className="_saveButton"
+					onClick={onSave}
+					onKeyDown={e => {
+						if (e.key === ' ' || e.key === 'Enter') onSave();
+					}}
+				>
 					Publish
+				</div>
+				<div
+					className="_outlineButton"
+					onClick={() => window.open(url, '_blank')}
+					onKeyDown={e => {
+						if (e.key === ' ' || e.key === 'Enter') window.open(url, '_blank');
+					}}
+				>
+					View Site
+				</div>
+				<div
+					className="_outlineButton"
+					onClick={onReset}
+					onKeyDown={e => {
+						if (e.key === ' ' || e.key === 'Enter') onReset();
+					}}
+				>
+					Reset
 				</div>
 			</div>
 		</div>

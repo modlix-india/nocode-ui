@@ -21,6 +21,13 @@ import { processClassesForPageDefinition } from '../util/styleProcessor';
 import * as getPageDefinition from './../definitions/getPageDefinition.json';
 import GlobalLoader from '../App/GlobalLoader';
 
+const POSITIONS: { [key: string]: boolean } = {
+	center: true,
+	end: true,
+	nearest: true,
+	start: true,
+};
+
 export const RenderEngineContainer = () => {
 	const location = useLocation();
 	const pathParams = useParams();
@@ -47,7 +54,7 @@ export const RenderEngineContainer = () => {
 			setPageDefinition(processClassesForPageDefinition(pDef));
 			setCurrentPageName(pageName);
 		}
-	}, [location]);
+	}, [location, location.pathname, location.search, location.hash]);
 
 	useEffect(() => {
 		loadDefinition();
@@ -55,13 +62,34 @@ export const RenderEngineContainer = () => {
 
 	useEffect(() => {
 		if (!location.hash) return;
-		setTimeout(() => {
-			const id = location.hash.replace('#', '');
+		const handle = setInterval(() => {
+			const [id, block, inline] = location.hash.replace('#', '').split(':');
 			const element = document.getElementById(id);
 			if (!element) return;
-			element.scrollIntoView();
-		}, 0);
-	}, [location]);
+			let options: ScrollIntoViewOptions = { block: 'start' };
+			if (block && POSITIONS[block])
+				options = { ...options, block: block as ScrollLogicalPosition };
+			if (inline && POSITIONS[inline])
+				options = { ...options, inline: inline as ScrollLogicalPosition };
+			element.scrollIntoView(options);
+			setTimeout(() => {
+				let position = { top: 0, left: 0 };
+				if (block && !POSITIONS[block]) position = { ...position, top: parseInt(block) };
+				if (inline && !POSITIONS[inline])
+					position = { ...position, left: parseInt(inline) };
+				let pElement: HTMLElement | null = element;
+				while (
+					pElement &&
+					pElement.parentElement?.scrollHeight === pElement.parentElement?.clientHeight
+				)
+					pElement = pElement.parentElement;
+				window.requestAnimationFrame(() => {
+					if (position.top || position.left) pElement?.parentElement?.scrollBy(position);
+				});
+			}, 1000);
+			clearInterval(handle);
+		}, 100);
+	}, [location?.hash]);
 
 	useEffect(() => {
 		return addListener(

@@ -57,10 +57,10 @@ function savePersonalizationCurry(
 	};
 }
 
-function FillerValueEditor(props: ComponentProps) {
+function FillerValueEditor(props: Readonly<ComponentProps>) {
 	const { definition, pageDefinition, locationHistory, context } = props;
 	const {
-		definition: { bindingPath, bindingPath3, bindingPath2 },
+		definition: { bindingPath, bindingPath3, bindingPath2, bindingPath4 },
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
@@ -68,6 +68,7 @@ function FillerValueEditor(props: ComponentProps) {
 		stylePropertiesWithPseudoStates,
 		properties: {
 			onSave,
+			onReset,
 			onChangePersonalization,
 			logo,
 			dashboardPageName,
@@ -98,6 +99,10 @@ function FillerValueEditor(props: ComponentProps) {
 	// binding path for the editor's personalization.
 	const personalizationPath = bindingPath3
 		? getPathFromLocation(bindingPath3, locationHistory, pageExtractor)
+		: undefined;
+
+	const appDefPath = bindingPath4
+		? getPathFromLocation(bindingPath4, locationHistory, pageExtractor)
 		: undefined;
 
 	// Function to save the personalization
@@ -217,18 +222,25 @@ function FillerValueEditor(props: ComponentProps) {
 	if (filler.definition?.[selection?.sectionKey ?? '']) {
 		url += filler.definition?.[selection?.sectionKey!].pagePath;
 		let gkey = filler.definition?.[selection?.sectionKey!].gridKey ?? '';
-		const commaIndex = gkey.indexOf(',');
-		if (commaIndex > 0) gkey = gkey.substring(0, commaIndex);
-		gkey = gkey.trim();
-		url += `#${gkey}`;
-		hasGKey = true;
-	} else url += '/';
+		if (gkey) {
+			const commaIndex = gkey.indexOf(',');
+			if (commaIndex > 0) gkey = gkey.substring(0, commaIndex);
+			gkey = gkey.trim();
+			url += `#${gkey}`;
+			hasGKey = true;
+		}
+	} else url += '/#';
 
-	if (!hasGKey && !url.endsWith('/')) url += '/';
+	if (!hasGKey && !url.endsWith('/#')) {
+		if (url.endsWith('/')) url += '#';
+		else url += '/#';
+	}
+	if (url === '/') url = '';
 
 	const valueChanged = (isUIFiller: boolean, filler: Filler) => {
 		if (!(isUIFiller ? uiDefPath : coreDefPath)) return;
 		undoStack.current.push(duplicate([uiFiller, coreFiller]));
+		redoStack.current.splice(0, redoStack.current.length);
 
 		setData(isUIFiller ? uiDefPath! : coreDefPath!, filler, context.pageName);
 		if (!isUIFiller || !iframeRef.current) return;
@@ -275,6 +287,19 @@ function FillerValueEditor(props: ComponentProps) {
 		if (popupList.length) popupContorl = <>{popupList}</>;
 	}
 
+	const [appDefinition, setAppDefinition] = useState<any>(undefined);
+
+	useEffect(() => {
+		if (!appDefPath) return;
+		return addListenerAndCallImmediately(
+			(_, value) => {
+				setAppDefinition(value);
+			},
+			pageExtractor,
+			appDefPath,
+		);
+	}, [appDefPath]);
+
 	return (
 		<div className={`comp compFillerValueEditor`} style={resolvedStyles.comp ?? {}}>
 			<HelperComponent key={`${key}_hlp`} definition={definition} />
@@ -286,6 +311,16 @@ function FillerValueEditor(props: ComponentProps) {
 					if (!onSave || !pageDefinition.eventFunctions?.[onSave]) return;
 					runEvent(
 						pageDefinition.eventFunctions?.[onSave],
+						'pageEditorSave',
+						context.pageName,
+						locationHistory,
+						pageDefinition,
+					);
+				}}
+				onReset={() => {
+					if (!onSave || !pageDefinition.eventFunctions?.[onReset]) return;
+					runEvent(
+						pageDefinition.eventFunctions?.[onReset],
 						'pageEditorSave',
 						context.pageName,
 						locationHistory,
@@ -326,6 +361,7 @@ function FillerValueEditor(props: ComponentProps) {
 				locationHistory={locationHistory}
 				personalizationPath={personalizationPath}
 				onPersonalizationChange={(k: string, v: any) => savePersonalization(k, v)}
+				url={`https://live.${window.location.hostname}/${filler.appCode}/${clientCode}/page/`}
 			/>
 			<div className="_body">
 				<ValueEditor
@@ -343,6 +379,7 @@ function FillerValueEditor(props: ComponentProps) {
 						if (clear) setPopups([newPopup]);
 						else setPopups([...popups, newPopup]);
 					}}
+					appDefinition={appDefinition}
 				/>
 				<PageViewer
 					url={url}
@@ -371,6 +408,7 @@ const component: Component = {
 		bindingPath: { name: 'UI Filler' },
 		bindingPath2: { name: 'Server Filler' },
 		bindingPath3: { name: 'Personalization' },
+		bindingPath4: { name: 'Application' },
 	},
 	defaultTemplate: {
 		key: '',

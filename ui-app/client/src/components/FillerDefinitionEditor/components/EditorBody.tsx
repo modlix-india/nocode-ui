@@ -43,7 +43,7 @@ export function EditorBody({
 	);
 
 	const [showValueEditor, setShowValueEditor] = React.useState<
-		'value' | 'sampleValue' | undefined
+		'value' | 'sampleValue' | 'samplePalette' | undefined
 	>(undefined);
 
 	const [editorValue, setEditorValue] = React.useState('');
@@ -55,7 +55,7 @@ export function EditorBody({
 			const value = st.getValue(`Filler.values.${section.valueKey}.${editor.valueKey}`);
 			const txt = value ? JSON.stringify(value, undefined, 2) : '';
 			setEditorValue(txt);
-		} else {
+		} else if (showValueEditor == 'sampleValue') {
 			let editors: Array<EditorDefinition> | undefined = st.getValue(
 				`Filler.definition.${section.key}.editors`,
 			);
@@ -63,6 +63,16 @@ export function EditorBody({
 			let editorObject = editors.find(e => e.key == editor.key);
 			const txt = editorObject?.sampleObjects
 				? JSON.stringify(editorObject.sampleObjects, undefined, 2)
+				: '[]';
+			setEditorValue(txt);
+		} else if (showValueEditor == 'samplePalette') {
+			let editors: Array<EditorDefinition> | undefined = st.getValue(
+				`Filler.definition.${section.key}.editors`,
+			);
+			if (!editors) editors = [];
+			let editorObject = editors.find(e => e.key == editor.key);
+			const txt = editorObject?.samplePalettes
+				? JSON.stringify(editorObject.samplePalettes, undefined, 2)
 				: '[]';
 			setEditorValue(txt);
 		}
@@ -118,7 +128,7 @@ export function EditorBody({
 											'Filler',
 											new Map([['Filler', st]]),
 										);
-									} else {
+									} else if (showValueEditor == 'sampleValue') {
 										let objs = st.getValue(
 											`Filler.definition.${section.key}.editors`,
 										);
@@ -126,6 +136,14 @@ export function EditorBody({
 											(e: EditorDefinition) => e.key == editor.key,
 										);
 										if (ed) ed.sampleObjects = v;
+									} else if (showValueEditor == 'samplePalette') {
+										let objs = st.getValue(
+											`Filler.definition.${section.key}.editors`,
+										);
+										let ed = objs.find(
+											(e: EditorDefinition) => e.key == editor.key,
+										);
+										if (ed) ed.samplePalettes = v;
 									}
 
 									setFiller(newFiller);
@@ -265,6 +283,7 @@ export function EditorBody({
 						options={[
 							{ name: 'LIST', displayName: 'List' },
 							{ name: 'GRID', displayName: 'Grid' },
+							{ name: 'LIST HORIZONTAL', displayName: 'List Horizontal' },
 						]}
 					/>
 					<div className="_label">Preview List</div>
@@ -384,22 +403,58 @@ export function EditorBody({
 						)
 					}
 				/>
+				<div
+					onClick={() => {
+						setShowValueEditor('samplePalette');
+					}}
+				>
+					<button>Add Sample Palette</button>
+				</div>
 			</>
 		);
 	} else if (editor.type === EditorType.FONT_PICKER) {
 		specificFields = (
 			<>
-				<div className="_label">Number of Fonts</div>
+				<div className="_label">Font Names</div>
+				<div className="_flexBox _gap10 _column">
+					{(editor.fontNames ?? []).map((fn, i) => (
+						<TextBox
+							key={fn}
+							value={(fn ?? '') + ''}
+							onChange={numFonts =>
+								updateDefinition(s => {
+									const newFontNames = [...(editor.fontNames ?? [])];
+									newFontNames[i] = numFonts ?? '';
+									s.fontNames = newFontNames;
+								})
+							}
+						/>
+					))}
+					<div>
+						<button
+							onClick={() =>
+								updateDefinition(s => {
+									const newFontNames = [...(editor.fontNames ?? [])];
+									newFontNames.push('');
+									s.fontNames = newFontNames;
+								})
+							}
+						>
+							Add Font
+						</button>
+					</div>
+				</div>
+			</>
+		);
+	} else if (editor.type === EditorType.MAP) {
+		specificFields = (
+			<>
+				<div className="_label">Map URL Prefix</div>
 				<TextBox
-					value={(editor.numFonts ?? '') + ''}
-					onChange={numFonts =>
-						updateDefinition(
-							s =>
-								(s.numFonts =
-									numFonts?.trim().length === 0
-										? undefined
-										: parseInt(numFonts ?? '')),
-						)
+					value={editor.mapURLPrefix}
+					mandatory={false}
+					onChange={mapUrlPrefix =>
+						updateDefinition(s => (s.mapURLPrefix = mapUrlPrefix ?? ''))
 					}
 				/>
 			</>

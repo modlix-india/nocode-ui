@@ -38,7 +38,6 @@ export default function FillerValueEditorStyle({
 			flex: 1;
 			padding-left: 5px;
 			display: flex;
-			justify-content: center;
 			align-items: center;
 			background-color: #FFF;
 			background: repeating-conic-gradient(#FAFAFA 0% 25%, transparent 0% 50%) 50% / 20px 20px;
@@ -59,6 +58,10 @@ export default function FillerValueEditorStyle({
 			max-width: 3024px;
 		}
 
+		${PREFIX} ._body ._pageViewer._TABLET {
+			justify-content: center;
+		}
+
 		${PREFIX} ._body ._pageViewer._TABLET iframe {
 			width: 0%;
 			max-width: 961px;
@@ -68,7 +71,11 @@ export default function FillerValueEditorStyle({
 		${PREFIX} ._body ._pageViewer._MOBILE iframe {
 			width: 0%;
 			max-width: 481px;
-  		min-width: 481px;
+  			min-width: 481px;
+		}
+
+		${PREFIX} ._body ._pageViewer._MOBILE {
+			justify-content: center;
 		}
 
 		${PREFIX} ._body ._valueEditor {
@@ -117,7 +124,7 @@ export default function FillerValueEditorStyle({
 			padding-top: 3px;
 			padding-bottom: 3px;
 			border-radius: 6px;
-			border: 1px solid #EEE;
+			border: none;
 			background: transparent;
 			position: relative;
 			display: flex;
@@ -126,6 +133,7 @@ export default function FillerValueEditorStyle({
 			gap: 4px;
 			height: 35px;
 			padding: 0 8px;
+			background-color: #F8FAFB;
 		}
 
 		${PREFIX} ._simpleFillerPickerSelect:focus {
@@ -139,6 +147,58 @@ export default function FillerValueEditorStyle({
 			border-radius: 4px;
 			white-space: nowrap;
 			cursor: pointer;
+			display: flex;
+		}
+
+		${PREFIX} ._simpleFillerPickerSelect ._simpleFillerPickerDropdownBody ._simpleFillerPickerDropdownOptionColors {
+			display: flex;
+			flex: 1;
+			height: 20px;
+			gap: 5px;
+		}
+
+		${PREFIX} ._eachColor {
+			width: 24px;
+			height: 24px;
+			border-radius: 100%;
+			border: 2px solid #FFF;
+			box-shadow: 0px 1px 4px 0px #00000026;
+		}
+
+		${PREFIX} ._simpleEditorColorSelector {
+			border-width: 2px;
+		}
+
+		${PREFIX} ._eachColor:hover {
+			z-index: 5;
+		}
+
+		${PREFIX} ._currentPalette {
+			display: flex;
+			flex-direction: row;
+			gap: 5px;
+		}
+
+		${PREFIX} ._generateButtonContainer {
+			display: flex;
+			align-items: center;
+			justify-content: flex-end;
+			gap: 10px;
+			flex: 1;
+		}
+
+		${PREFIX} ._generateButton {
+			width: 50px;
+			height: 25px;
+			border-radius: 100px;
+			background: #FFFFFF;
+			border: 0.5px solid #0000001A;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			cursor: pointer;
+			box-shadow: 0px 1px 2px 0px #0000000D;
+
 		}
 
 		${PREFIX} ._main_editor_dropdown ._simpleFillerPickerDropdownBody,
@@ -173,6 +233,13 @@ export default function FillerValueEditorStyle({
 			font-weight: bold;
 		}
 
+		${PREFIX} ._simpleFillerPickerDropdownBody._colorDropdown {
+			position: absolute;
+			top: 100%;
+			left: 0;
+			margin-top: 0px;
+		}
+
 		${PREFIX} ._simpleFillerPickerSelect svg {
 			min-width: 8px;
 		}
@@ -184,6 +251,11 @@ export default function FillerValueEditorStyle({
 		${PREFIX} ._simpleFillerPickerSelect ._selectedOption._placeholder {
 			text-transform: capitalize;
 			color: #757575;
+		}
+
+		${PREFIX} ._simpleFillerPickerDropdownBody._colorDropdown ._simpleFillerPickerDropdownOption {
+			height: 34px;
+			align-items: center;
 		}
 
 		${PREFIX} ._main_editor_dropdown {
@@ -237,6 +309,19 @@ export default function FillerValueEditorStyle({
 			box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.10);
 			padding: 6px 15px;
 			color: #FFF;
+			
+			font-size: 12px;
+			font-weight: 600;
+			cursor: pointer;
+		}
+
+		${PREFIX} ._rightButtonBar ._outlineButton{
+			border-radius: 6px;
+			background: transparent;
+			border: 1px solid #52BD94;
+			box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.10);
+			padding: 6px 15px;
+			color: #52BD94;
 			
 			font-size: 12px;
 			font-weight: 600;
@@ -382,6 +467,10 @@ export default function FillerValueEditorStyle({
 			padding-top: 10px;
 		}
 
+		${PREFIX} ._sectionEnd {
+			min-height:200px;
+		}
+
 		${PREFIX} ._sectionBody._HORIZONTAL {
 			flex-direction: row;
 			align-items: center;
@@ -487,6 +576,15 @@ export default function FillerValueEditorStyle({
 			flex-direction: column;
 			padding: 10px;
 			margin-left: 20px;
+			position: relative;
+		}
+
+		${PREFIX} ._popupClose {
+			font-family: monospace;
+			position: absolute;
+			right: 10px;
+			top: 7px;
+			cursor: pointer;
 		}
 
 		${PREFIX} ._popupContainer ._iconSelectionBrowser {
@@ -522,6 +620,15 @@ export default function FillerValueEditorStyle({
 			padding: 13px;
 		}
 
+		${PREFIX} ._objectEditor._LIST_HORIZONTAL {
+			background-color: transparent;
+		}
+
+		${PREFIX} ._objectEditor._LIST_HORIZONTAL ._eachObject {
+			background-color: #F8FAFB;
+			border-radius: 6px;
+		}
+
 		${PREFIX} ._objectEditor ._eachObject,
 		${PREFIX} ._tab ._eachObject {
 			display: flex;
@@ -538,6 +645,12 @@ export default function FillerValueEditorStyle({
 			cursor: pointer;
 		}
 
+		${PREFIX} ._tab ._eachObject ._controlGrid {
+			display: flex;
+			flex-direction: direction;
+			gap: 5px;
+		}
+
 		${PREFIX} ._tab ._eachObject span {
 			white-space: nowrap;
 		}
@@ -547,17 +660,33 @@ export default function FillerValueEditorStyle({
 			width: 24px;
 		}
 
-		${PREFIX} ._objectEditor._GRID img {
+		${PREFIX} ._objectEditor._GRID img,
+		${PREFIX} ._tab._GRID ._eachObject img {
 			width: 70px;
+		}
+
+		${PREFIX} ._objectEditor._LIST_HORIZONTAL img,
+		${PREFIX} ._tab._LIST_HORIZONTAL ._eachObject img {
+			width: auto;
+			height: 70px;
 		}
 
 		${PREFIX} ._objectEditor::-webkit-scrollbar {
 			width: 3px;
 		}
 
-		${PREFIX} ._objectEditor._GRID ._eachObject {
+		${PREFIX} ._objectEditor._GRID ._eachObject,
+		${PREFIX} ._tab._GRID ._eachObject {
 			flex-direction: column;
 			align-items: center;	
+		}
+
+		${PREFIX} ._objectEditor._LIST_HORIZONTAL ._eachField,
+		${PREFIX} ._tab._LIST_HORIZONTAL ._eachField {
+			flex-direction: row;
+			display: flex;
+			justify-content: center;
+			flex: 1;	
 		}
 
 		${PREFIX} ._objectEditor._GRID {
@@ -608,6 +737,7 @@ export default function FillerValueEditorStyle({
 			display: flex;
 			flex-direction: column;
 			padding: 10px;
+			max-height: 250px;
 		}
 
 		${PREFIX} ._tabContainer ._tab {
@@ -645,8 +775,25 @@ export default function FillerValueEditorStyle({
 			font-size: 12px;
 		}
 
-		${PREFIX} ._tabContainer ._sectionBody {
-			height: 250px;
+		${PREFIX} ._palette {
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+		}
+
+		${PREFIX} ._colorPickerBody {
+			position: fixed;
+			background-color: #FFF;
+			z-index: 2;
+			box-shadow: 0px 1px 4px 0px #00000026;
+			border-radius: 6px;
+			padding: 10px;
+			min-height: 250px;
+			width: 250px;
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+			margin-left: 0px;
 		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
