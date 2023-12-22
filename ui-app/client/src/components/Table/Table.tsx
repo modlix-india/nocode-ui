@@ -375,11 +375,11 @@ function TableComponent(props: ComponentProps) {
 								if (pageSizeBindingPath) {
 									setStoreData(
 										pageSizeBindingPath,
-										e.target.value,
+										parseInt(e.target.value),
 										context.pageName,
 									);
 								} else {
-									setPageSize(e.target.value);
+									setPageSize(parseInt(e.target.value));
 								}
 
 								if (pageNumberBindingPath) {
