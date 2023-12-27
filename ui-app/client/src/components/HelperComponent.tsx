@@ -57,11 +57,11 @@ function PageEditorHelperComponent({
 		fontFamily: 'Arial',
 		position: 'absolute',
 		border: `2px solid ${highlightColor}`,
-		height: 'calc( 100% - 2px)',
-		width: 'calc( 100% - 4px)',
-		top: '1px',
-		left: '1px',
-		zIndex: '6',
+		height: 'calc( 100% + 0px)',
+		width: 'calc( 100% + 0px)',
+		top: '0px',
+		left: '0px',
+		// zIndex: '6',
 		minWidth: '10px',
 		opacity: '0',
 		boxSizing: 'border-box',
@@ -170,7 +170,18 @@ function PageEditorHelperComponent({
 			onMouseLeave={() => setHover(false)}
 			title={`${definition.name} - ${definition.key}`}
 		>
-			<div style={labelStyle}>
+			<div
+				style={labelStyle}
+				onClick={e => {
+					e.stopPropagation();
+					e.preventDefault();
+				}}
+				onMouseUp={e => {
+					e.stopPropagation();
+					e.preventDefault();
+					messageToMaster({ type: 'SLAVE_SELECTED', payload: definition.key });
+				}}
+			>
 				{typeof ComponentDefinitions.get(definition.type)?.subComponentDefinition?.[0]
 					.icon === 'string' ? (
 					<i
@@ -246,7 +257,7 @@ function FillerValueEditorHelperComponent({ definition: { key } }: HelperCompone
 		width: `calc( 100% + ${width}px)`,
 		top: top + 'px',
 		left: left + 'px',
-		zIndex: '6',
+		// zIndex: '6',
 		minWidth: '10px',
 		boxSizing: 'border-box',
 		WebkitUserDrag: 'element',
