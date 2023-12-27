@@ -18,11 +18,12 @@ import { SubHelperComponent } from '../SubHelperComponent';
 import { runEvent } from '../util/runEvent';
 import { styleDefaults } from './arrayRepeaterStyleProperties';
 import { IconHelper } from '../util/IconHelper';
+import { deepEqual } from '@fincity/kirun-js';
 
-function ArrayRepeaterComponent(props: ComponentProps) {
-	const [value, setValue] = React.useState([]);
+function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
+	const [value, setValue] = React.useState<any[]>([]);
 	const {
-		definition: { children, bindingPath },
+		definition: { children, bindingPath, key },
 		pageDefinition,
 		locationHistory = [],
 		context,
@@ -59,27 +60,58 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 	const bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
 		: undefined;
-	const [indexKeys, setIndexKeys] = useState<{ [key: number]: string; object?: any }>({});
+
+	const indKeys = React.useRef<{
+		array: Array<string>;
+		oldKeys: Array<{ object: any; key: string }>;
+	}>({ array: [], oldKeys: [] });
 
 	React.useEffect(() => {
-		if (!bindingPathPath) return;
+		if (!bindingPathPath || !indKeys.current) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
 			(_, _v) => {
-				setValue(_v);
-				const objKeys: { [key: number]: string } = {};
-				if (_v?.length) {
-					for (let i = 0; i < _v.length; i++) {
-						objKeys[i] = shortUUID();
+				setValue(_v ?? []);
+				if (!_v?.length) return;
+
+				const duplicateCheck = new Array<{ object: any; occurance: number }>();
+				for (let i = 0; i < _v.length; i++) {
+					let oldIndex = -1;
+
+					let duplicate = duplicateCheck.find(e => deepEqual(e.object, _v[i]));
+
+					if (!duplicate) {
+						duplicate = { object: _v[i], occurance: 1 };
+						duplicateCheck.push(duplicate);
+					} else {
+						duplicate.occurance++;
+					}
+
+					let occurance = duplicate.occurance;
+					let count = -1;
+					for (let oldIndexObject of indKeys.current.oldKeys) {
+						count++;
+						if (!deepEqual(oldIndexObject.object, _v[i])) continue;
+						occurance--;
+						if (occurance !== 0) continue;
+						oldIndex = count;
+						break;
+					}
+
+					if (oldIndex === -1) {
+						indKeys.current.array[i] = shortUUID();
+						indKeys.current.oldKeys.push({
+							object: _v[i],
+							key: indKeys.current.array[i],
+						});
+					} else {
+						indKeys.current.array[i] = indKeys.current.oldKeys[oldIndex].key;
 					}
 				}
-				setIndexKeys(objKeys);
 			},
 			pageExtractor,
 			bindingPathPath,
 		);
-	}, [bindingPathPath]);
-
-	if (!Array.isArray(value)) return <></>;
+	}, [bindingPathPath, indKeys.current]);
 
 	let entry = Object.entries(children ?? {}).find(([, v]) => v);
 
@@ -87,7 +119,7 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 	if (entry) firstchild[entry[0]] = true;
 
 	const handleAdd = async (index: any) => {
-		const newData = [...value];
+		const newData = [...(value ?? [])];
 		newData.splice(index + 1, 0, undefined as unknown as never);
 		setData(bindingPathPath!, newData, context?.pageName);
 
@@ -134,32 +166,24 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 	};
 
 	const handleDragStart = async (e: any, index: any) => {
-		e.dataTransfer.setData('application/my-app', index);
+		e.dataTransfer.setData('_array_repeater_drag', `${key}_${index}`);
 	};
 
-	const handleDragOver = (e: any) => {
-		e.preventDefault();
-	};
+	const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => e.preventDefault();
+	const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => e.preventDefault();
+	const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => e.preventDefault();
 
-	const handleDragEnter = async (e: any) => {
+	const handleDrop = (e: React.DragEvent<HTMLDivElement>, to: number) => {
 		e.preventDefault();
-		e.target.classList.add('dragging');
-	};
+		const fromData = e.dataTransfer.getData('_array_repeater_drag');
+		if (!fromData?.startsWith(`${key}_`)) return;
 
-	const handleDragLeave = (e: any) => {
-		e.preventDefault();
-		e.target.classList.remove('dragging');
-	};
+		const from = Number(fromData.split('_')[1]);
+		if (from === to) return;
 
-	const handleDrop = (e: any, to: any) => {
-		e.preventDefault();
-		const from = parseInt(e.dataTransfer.getData('application/my-app'));
 		const newData = value.slice();
-		const temp = newData[from];
-		to === newData.length - 1 ? newData.push(temp) : newData.splice(to, 0, temp);
-		newData.splice(from > to ? from + 1 : from, 1);
+		newData.splice(to, 0, newData.splice(from, 1)[0]);
 		setData(bindingPathPath!, newData, context?.pageName);
-		e.target.classList.remove('dragging');
 	};
 
 	const styleProperties = processComponentStylePseudoClasses(
@@ -168,138 +192,175 @@ function ArrayRepeaterComponent(props: ComponentProps) {
 		stylePropertiesWithPseudoStates,
 	);
 
-	return (
-		<div
-			key={Object.values(indexKeys)
-				.map(e => e.key)
-				.join('_')}
-			className={`comp compArrayRepeater _${layout}`}
-			style={styleProperties.comp}
-		>
-			<HelperComponent definition={definition} />
-			{value.map((e: any, index) => {
-				const comp = (
-					<Children
-						pageDefinition={pageDefinition}
-						children={firstchild}
-						context={context}
-						locationHistory={[
-							...locationHistory,
-							updateLocationForChild(
-								bindingPath!,
-								index,
-								locationHistory,
-								context.pageName,
-								pageExtractor,
-							),
-						]}
-					/>
-				);
-				return (
-					<div
-						key={`${indexKeys[index]}`}
-						data-key={`${indexKeys[index]}`}
-						className={`repeaterProperties ${readOnly ? 'disabled' : ''}`}
-						onDragStart={e => handleDragStart(e, index)}
-						onDragOver={handleDragOver}
-						onDrop={e => handleDrop(e, index)}
-						onDragEnter={handleDragEnter}
-						onDragLeave={handleDragLeave}
-						draggable={isItemDraggable && !readOnly}
-						style={styleProperties.repeaterProperties ?? {}}
-					>
-						<SubHelperComponent
-							definition={props.definition}
-							subComponentName="repeaterProperties"
-						></SubHelperComponent>
+	let items = <></>;
+
+	if (Array.isArray(value) && value.length) {
+		items = (
+			<>
+				{value.map((e: any, index) => {
+					const comp = (
+						<Children
+							pageDefinition={pageDefinition}
+							children={firstchild}
+							context={context}
+							locationHistory={[
+								...locationHistory,
+								updateLocationForChild(
+									bindingPath!,
+									index,
+									locationHistory,
+									context.pageName,
+									pageExtractor,
+								),
+							]}
+						/>
+					);
+					return (
 						<div
-							className="repeatedComp comp"
-							style={styleProperties.repeatedComp ?? {}}
+							tabIndex={0}
+							role="button"
+							key={`${indKeys.current.array[index]}`}
+							data-key={`${indKeys.current.array[index]}`}
+							className={`repeaterProperties ${readOnly ? 'disabled' : ''}`}
+							onDragStart={e => handleDragStart(e, index)}
+							onDragOver={handleDragOver}
+							onDrop={e => handleDrop(e, index)}
+							onDragEnter={handleDragEnter}
+							onDragLeave={handleDragLeave}
+							draggable={isItemDraggable && !readOnly}
+							style={styleProperties.repeaterProperties ?? {}}
+							onKeyDown={() => {}}
 						>
 							<SubHelperComponent
 								definition={props.definition}
-								subComponentName="repeatedComp"
+								subComponentName="repeaterProperties"
 							></SubHelperComponent>
-							{comp}
-						</div>
+							<div
+								className="repeatedComp comp"
+								style={styleProperties.repeatedComp ?? {}}
+							>
+								<SubHelperComponent
+									definition={props.definition}
+									subComponentName="repeatedComp"
+								></SubHelperComponent>
+								{comp}
+							</div>
 
-						<div className="iconGrid" style={styleProperties.iconGrid ?? {}}>
-							<SubHelperComponent
-								definition={props.definition}
-								subComponentName="iconGrid"
-							></SubHelperComponent>
-							{showAdd && index === value.length - 1 && (
-								<i
-									className="addOne fa fa-circle-plus fa-solid"
-									onClick={showAdd ? () => handleAdd(index) : undefined}
-									style={styleProperties.add ?? {}}
-								>
-									<SubHelperComponent
-										definition={props.definition}
-										subComponentName="add"
-									></SubHelperComponent>
-								</i>
-							)}
-							{showDelete && index !== value.length - 1 && (
-								<i
-									className="reduceOne fa fa-circle-minus fa-solid"
-									onClick={showDelete ? () => handleDelete(index) : undefined}
-									style={styleProperties.remove ?? {}}
-								>
-									<SubHelperComponent
-										definition={props.definition}
-										subComponentName="remove"
-									></SubHelperComponent>
-								</i>
-							)}
-							{showMove && (
-								<i
-									className={`moveOne ${
-										index == value?.length - 1
-											? 'fa fa-circle-arrow-up fa-solid'
-											: 'fa fa-circle-arrow-down fa-solid'
-									}`}
-									style={styleProperties.move ?? {}}
-									onClick={
-										showMove
-											? () =>
-													handleMove(
-														index,
-														index == value?.length - 1
-															? index - 1
-															: index + 1,
-													)
-											: undefined
-									}
-								>
-									<SubHelperComponent
-										definition={props.definition}
-										subComponentName="move"
-									></SubHelperComponent>
-								</i>
-							)}
-							{showMove && (
-								<i
-									className={`moveOne ${
-										index == 0 || index == value?.length - 1
-											? ''
-											: 'fa fa-circle-arrow-up fa-solid'
-									}`}
-									onClick={
-										showMove ? () => handleMove(index, index - 1) : undefined
-									}
-									style={styleProperties.move ?? {}}
-								>
-									<SubHelperComponent
-										definition={props.definition}
-										subComponentName="move"
-									></SubHelperComponent>
-								</i>
-							)}
+							<div className="iconGrid" style={styleProperties.iconGrid ?? {}}>
+								<SubHelperComponent
+									definition={props.definition}
+									subComponentName="iconGrid"
+								></SubHelperComponent>
+								{showAdd && (
+									<i
+										tabIndex={0}
+										className="addOne fa fa-circle-plus fa-solid"
+										onClick={showAdd ? () => handleAdd(index) : undefined}
+										style={styleProperties.add ?? {}}
+										onKeyDown={e =>
+											e.key === 'Enter' || e.key == ' '
+												? handleAdd(index)
+												: undefined
+										}
+									>
+										<SubHelperComponent
+											definition={props.definition}
+											subComponentName="add"
+										></SubHelperComponent>
+									</i>
+								)}
+								{showDelete && (
+									<i
+										tabIndex={0}
+										className="reduceOne fa fa-circle-minus fa-solid"
+										onClick={showDelete ? () => handleDelete(index) : undefined}
+										style={styleProperties.remove ?? {}}
+									>
+										<SubHelperComponent
+											definition={props.definition}
+											subComponentName="remove"
+										></SubHelperComponent>
+									</i>
+								)}
+								{showMove && (
+									<i
+										tabIndex={0}
+										className={`moveOne ${
+											index == value?.length - 1
+												? 'fa fa-circle-arrow-up fa-solid'
+												: 'fa fa-circle-arrow-down fa-solid'
+										}`}
+										style={styleProperties.move ?? {}}
+										onClick={
+											showMove
+												? () =>
+														handleMove(
+															index,
+															index == value?.length - 1
+																? index - 1
+																: index + 1,
+														)
+												: undefined
+										}
+									>
+										<SubHelperComponent
+											definition={props.definition}
+											subComponentName="move"
+										></SubHelperComponent>
+									</i>
+								)}
+								{showMove && (
+									<i
+										tabIndex={0}
+										className={`moveOne ${
+											index == 0 || index == value?.length - 1
+												? ''
+												: 'fa fa-circle-arrow-up fa-solid'
+										}`}
+										onClick={
+											showMove
+												? () => handleMove(index, index - 1)
+												: undefined
+										}
+										style={styleProperties.move ?? {}}
+									>
+										<SubHelperComponent
+											definition={props.definition}
+											subComponentName="move"
+										></SubHelperComponent>
+									</i>
+								)}
+							</div>
 						</div>
-					</div>
-				);
-			})}
+					);
+				})}
+			</>
+		);
+	} else if (!value?.length && showAdd) {
+		items = (
+			<div className="iconGrid" style={styleProperties.iconGrid ?? {}}>
+				<SubHelperComponent
+					definition={props.definition}
+					subComponentName="iconGrid"
+				></SubHelperComponent>
+				<i
+					className="addOne fa fa-circle-plus fa-solid"
+					onClick={() => handleAdd(0)}
+					style={styleProperties.add ?? {}}
+				>
+					<SubHelperComponent
+						definition={props.definition}
+						subComponentName="add"
+					></SubHelperComponent>
+				</i>
+			</div>
+		);
+	}
+
+	return (
+		<div className={`comp compArrayRepeater _${layout}`} style={styleProperties.comp}>
+			<HelperComponent definition={definition} />
+			{items}
 		</div>
 	);
 }
