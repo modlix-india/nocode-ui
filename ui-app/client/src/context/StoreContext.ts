@@ -143,6 +143,8 @@ export function getDataFromPath(
 export const innerSetData = _setData;
 
 export function setData(path: string, value: any, context?: string, deleteKey?: boolean) {
+	if (path.endsWith('.')) path = path.substring(0, path.length - 1);
+
 	if (path.startsWith('SampleDataStore.') || path.startsWith('Filler.')) {
 		// Sample store is not editable so we are not changing the data
 		return;

@@ -54,7 +54,7 @@ export const RenderEngineContainer = () => {
 			setPageDefinition(processClassesForPageDefinition(pDef));
 			setCurrentPageName(pageName);
 		}
-	}, [location]);
+	}, [location, location.pathname, location.search, location.hash]);
 
 	useEffect(() => {
 		loadDefinition();
