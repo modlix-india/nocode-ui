@@ -165,6 +165,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 	},
 	{
+		name: 'convertToBase64',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Converts binary to base64 encoded string.',
+		description: 'Converts binary to base64 encoded string.',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
+	},
+	{
 		name: 'maxFileSize',
 		schema: SCHEMA_NUM_COMP_PROP,
 		displayName: 'Maximum file size (In bytes)',
