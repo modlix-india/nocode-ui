@@ -36,7 +36,9 @@ function CommonCheckbox({
 	return (
 		<>
 			<input
-				className={`commonCheckbox ${showAsRadio ? 'radio' : ''}`}
+				className={`commonCheckbox ${showAsRadio ? 'radio' : ''} ${
+					isChecked ? '_checked' : ''
+				}`}
 				disabled={isReadOnly}
 				type="checkbox"
 				id={id}
