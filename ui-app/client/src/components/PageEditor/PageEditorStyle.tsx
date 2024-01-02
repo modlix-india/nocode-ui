@@ -200,6 +200,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			margin-right: 6px;
 		}
 
+		${PREFIX} ._compsTree ._treeNodeName i.fa._nothing {
+			margin-right: 6px;
+		}
+
 		${PREFIX} ._compsTree ._animateTransform i.fa {
 			transition: transform 0.5s;
 		}
@@ -465,13 +469,17 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._iconMenuBody ._iconMenuOption:hover svg._iconHelperSVG,
 		${PREFIX} ._sideBar ._iconMenu._active  svg._iconHelperSVG,
 		${PREFIX} ._sideBar ._iconMenu:hover  svg._iconHelperSVG,
-		${PREFIX} ._topBarGrid ._iconMenu._active  svg._iconHelperSVG,
-		${PREFIX} ._topBarGrid ._iconMenu:hover  svg._iconHelperSVG {
+		${PREFIX} ._topBarGrid ._iconMenu._active svg._iconHelperSVG,
+		${PREFIX} ._topBarGrid ._iconMenu:hover svg._iconHelperSVG,
+		${PREFIX} ._topBarGrid ._iconMenu._active ._iconMenuOption:hover svg._iconHelperSVG,
+		${PREFIX} ._topBarGrid ._iconMenu:hover ._iconMenuOption:hover svg._iconHelperSVG {
 			color: #4C7FEE;
 		}
 
 		${PREFIX} ._sideBar ._iconMenu  svg._iconHelperSVG,
-		${PREFIX} ._topBarGrid ._iconMenu  svg._iconHelperSVG {
+		${PREFIX} ._topBarGrid ._iconMenu  svg._iconHelperSVG,
+		${PREFIX} ._topBarGrid ._iconMenu._active ._iconMenuOption svg._iconHelperSVG,
+		${PREFIX} ._topBarGrid ._iconMenu:hover ._iconMenuOption svg._iconHelperSVG {
 			color: #96A1B4;
 			width: 20px;
 			height: 20px;
@@ -680,7 +688,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			stroke: #3A8BED;
 		}
 
-		${PREFIX} ._microToggle2 {
+		._microToggle2 {
 			padding: 2px;
 			border-radius: 10px;
 			background-color: #F8FAFB;
@@ -698,7 +706,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			opacity:0.3;
 		}
 
-		${PREFIX} ._microToggle2::before {
+		._microToggle2::before {
 			content: '';
 			width: 6px;
 			height: 6px;
@@ -712,13 +720,13 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border: 1px solid #888;
 		}
 
-		${PREFIX} ._microToggle2._on {
+		._microToggle2._on {
 			background-color: #52BD94;
 			opacity: 0.8;
 			border: 1px solid #198A61;
 		}
 
-		${PREFIX} ._microToggle2._on::before {
+		._microToggle2._on::before {
 			right: calc(100% - 7px);
 			transform: translateY(-50%);
 			background-color: #FFF;

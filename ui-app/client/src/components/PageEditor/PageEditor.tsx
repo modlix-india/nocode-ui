@@ -320,6 +320,10 @@ function PageEditor(props: ComponentProps) {
 
 	const setSelectedComponentList = useCallback(
 		(v: string) => {
+			setSelectedComponentOriginal(prev => {
+				if (prev === '') return v;
+				return prev;
+			});
 			setSelectednComponentsListOriginal(prevList => {
 				const updatedList = [...prevList, v];
 				return updatedList;
@@ -452,10 +456,10 @@ function PageEditor(props: ComponentProps) {
 	useEffect(() => {
 		if (!defPath) return;
 		if (!ref.current) return;
-		const msg = { type: 'EDITOR_SELECTION', payload: selectedComponent };
+		const msg = { type: 'EDITOR_SELECTION', payload: selectednComponentsList };
 		ref.current.contentWindow?.postMessage(msg);
 		paralellIFrame?.contentWindow?.postMessage(msg);
-	}, [selectedComponent, ref.current, paralellIFrame]);
+	}, [selectednComponentsList, ref.current, paralellIFrame]);
 
 	// On changing the sub selection, this effect sends to the iframe/slave.
 	useEffect(() => {
@@ -527,7 +531,8 @@ function PageEditor(props: ComponentProps) {
 					defPath,
 					personalization,
 					personalizationPath,
-					onSelectedComponentChange: key => setSelectedComponent(key),
+					onSelectedComponentChange: (key, multi) =>
+						multi ? setSelectedComponentList(key) : setSelectedComponent(key),
 					onSelectedSubComponentChange: key => setSelectedSubComponent(key),
 					operations,
 					onContextMenu: (m: ContextMenuDetails) => setContextMenu(m),

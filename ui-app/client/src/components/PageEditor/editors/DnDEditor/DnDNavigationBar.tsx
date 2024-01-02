@@ -133,6 +133,24 @@ export default function DnDNavigationBar({
 		[openParents, setOpenParents, pageDef, expandAll, map],
 	);
 
+	useEffect(() => {
+		if (!selectedComponent || selectednComponentsList?.length != 1) return;
+		const element = document.getElementById(`treeNode_${selectedComponent}`);
+		if (element) {
+			const rect = element.getBoundingClientRect();
+			if (rect.top < 0 || rect.bottom > window.innerHeight)
+				element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+		} else {
+			setTimeout(() => {
+				const element = document.getElementById(`treeNode_${selectedComponent}`);
+				if (!element) return;
+				const rect = element.getBoundingClientRect();
+				if (rect.top < 0 || rect.bottom > window.innerHeight)
+					element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+			}, 500);
+		}
+	}, [selectedComponent]);
+
 	const [filterHandle, setFilterHandle] = useState<NodeJS.Timeout | undefined>();
 
 	if (!componentTree || previewMode || !pageDef?.componentDefinition || !pageDef.rootComponent)
@@ -346,6 +364,7 @@ function CompTree({
 	return (
 		<>
 			<div
+				id={`treeNode_${compKey}`}
 				className={`_treeNode ${
 					selectedComponent === compKey ||
 					(Array.isArray(selectednComponentsList) &&
@@ -394,7 +413,7 @@ function CompTree({
 						className={`fa _animateTransform ${
 							children?.length || (subCompDef?.length ?? 0) > 1
 								? 'fa-solid fa-caret-right ' + (isOpen ? 'fa-rotate-90' : '')
-								: ''
+								: '_nothing'
 						}`}
 						onClick={e => {
 							e.preventDefault();
