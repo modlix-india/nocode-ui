@@ -56,6 +56,7 @@ interface DnDEditorProps {
 	setStyleSelectorPref: (pref: any) => void;
 	styleSelectorPref: any;
 	appPath: string | undefined;
+	editorType: string | undefined;
 }
 
 export default function DnDEditor({
@@ -101,6 +102,7 @@ export default function DnDEditor({
 	settingsPageName,
 	dashboardPageName,
 	addnewPageName,
+	editorType,
 }: DnDEditorProps) {
 	const [preview, setPreview] = useState(false);
 
@@ -149,6 +151,7 @@ export default function DnDEditor({
 					settingsPageName={settingsPageName}
 					dashboardPageName={dashboardPageName}
 					addnewPageName={addnewPageName}
+					editorType={editorType}
 				/>
 				<div className="_dndContentContainer">
 					<DnDSideBar
@@ -162,6 +165,7 @@ export default function DnDEditor({
 						onShowCodeEditor={onShowCodeEditor}
 						previewMode={preview}
 						templateIframeRef={templateIframeRef}
+						editorType={editorType}
 					/>
 					<div className="_dndIframeContentContainer">
 						<div className={`_iframeContainer ${preview ? '_previewMode' : ''}`}>
@@ -180,6 +184,7 @@ export default function DnDEditor({
 								pageOperations={pageOperations}
 								onContextMenu={onContextMenu}
 								previewMode={preview}
+								editorType={editorType}
 							/>
 							<DnDIFrame
 								url={url}
