@@ -18,6 +18,7 @@ export function EffectsEditor(props: StyleEditorsProps) {
 		selectorPref,
 		styleProps,
 		selectedComponent,
+		selectedComponentsList,
 		saveStyle,
 		properties,
 		pageDef,
@@ -26,6 +27,9 @@ export function EffectsEditor(props: StyleEditorsProps) {
 		storePaths,
 		pageOperations,
 		isDetailStyleEditor,
+		defPath,
+		locationHistory,
+		pageExtractor,
 	} = props;
 
 	const filterValue =
@@ -44,6 +48,10 @@ export function EffectsEditor(props: StyleEditorsProps) {
 		return (
 			<>
 				<OutlineEditor
+					selectedComponentsList={selectedComponentsList}
+					defPath={defPath}
+					locationHistory={locationHistory}
+					pageExtractor={pageExtractor}
 					subComponentName={subComponentName}
 					pseudoState={pseudoState}
 					iterateProps={iterateProps}
@@ -60,6 +68,10 @@ export function EffectsEditor(props: StyleEditorsProps) {
 				/>
 
 				<TransformEditor
+					selectedComponentsList={selectedComponentsList}
+					defPath={defPath}
+					locationHistory={locationHistory}
+					pageExtractor={pageExtractor}
 					subComponentName={subComponentName}
 					pseudoState={pseudoState}
 					iterateProps={iterateProps}
@@ -76,6 +88,10 @@ export function EffectsEditor(props: StyleEditorsProps) {
 				/>
 				<div className="_simpleLabel _withPadding">Mix Blend Mode : </div>
 				<EachSimpleEditor
+					selectedComponentsList={selectedComponentsList}
+					defPath={defPath}
+					locationHistory={locationHistory}
+					pageExtractor={pageExtractor}
 					subComponentName={subComponentName}
 					pseudoState={pseudoState}
 					prop="mixBlendMode"
@@ -119,13 +135,12 @@ export function EffectsEditor(props: StyleEditorsProps) {
 						valuesChangedOnlyValues({
 							subComponentName,
 							selectedComponent,
-							styleProps,
-							properties,
+							selectedComponentsList,
 							propValues: [{ prop: 'filter', value: v }],
-							pseudoState,
-							saveStyle,
-							iterateProps,
 							selectorPref,
+							defPath,
+							locationHistory,
+							pageExtractor,
 						})
 					}
 				/>
@@ -146,6 +161,10 @@ export function EffectsEditor(props: StyleEditorsProps) {
 	return (
 		<>
 			<OpacityEditor
+				selectedComponentsList={selectedComponentsList}
+				defPath={defPath}
+				locationHistory={locationHistory}
+				pageExtractor={pageExtractor}
 				subComponentName={subComponentName}
 				pseudoState={pseudoState}
 				iterateProps={iterateProps}
@@ -162,6 +181,10 @@ export function EffectsEditor(props: StyleEditorsProps) {
 			/>
 			<div className="_simpleLabel _withPadding">Cursor : </div>
 			<EachSimpleEditor
+				selectedComponentsList={selectedComponentsList}
+				defPath={defPath}
+				locationHistory={locationHistory}
+				pageExtractor={pageExtractor}
 				subComponentName={subComponentName}
 				pseudoState={pseudoState}
 				prop="cursor"
@@ -224,18 +247,21 @@ export function EffectsEditor(props: StyleEditorsProps) {
 					valuesChangedOnlyValues({
 						subComponentName,
 						selectedComponent,
-						styleProps,
-						properties,
+						selectedComponentsList,
 						propValues: [{ prop: 'transform', value: v }],
-						pseudoState,
-						saveStyle,
-						iterateProps,
 						selectorPref,
+						defPath,
+						locationHistory,
+						pageExtractor,
 					})
 				}
 			/>
 			<div className="_simpleLabel _withPadding">Box Shadow : </div>
 			<EachSimpleEditor
+				selectedComponentsList={selectedComponentsList}
+				defPath={defPath}
+				locationHistory={locationHistory}
+				pageExtractor={pageExtractor}
 				subComponentName={subComponentName}
 				pseudoState={pseudoState}
 				prop="boxShadow"
@@ -256,13 +282,12 @@ export function EffectsEditor(props: StyleEditorsProps) {
 					valuesChangedOnlyValues({
 						subComponentName,
 						selectedComponent,
-						styleProps,
-						properties,
-						pseudoState,
-						saveStyle,
-						iterateProps,
-						propValues: v,
+						selectedComponentsList,
 						selectorPref,
+						defPath,
+						locationHistory,
+						pageExtractor,
+						propValues: v,
 					})
 				}
 				values={TRANSITION_PROPERTIES.map(e => e.name).map(e => ({
@@ -1071,8 +1096,12 @@ function TransformEditor({
 	selectorPref,
 	styleProps,
 	selectedComponent,
+	selectedComponentsList,
 	saveStyle,
 	properties,
+	defPath,
+	locationHistory,
+	pageExtractor,
 }: StyleEditorsProps) {
 	const transformOrigin = (
 		(
@@ -1133,6 +1162,10 @@ function TransformEditor({
 						</g>
 					</svg>
 					<EachSimpleEditor
+						selectedComponentsList={selectedComponentsList}
+						defPath={defPath}
+						locationHistory={locationHistory}
+						pageExtractor={pageExtractor}
 						subComponentName={subComponentName}
 						pseudoState={pseudoState}
 						prop="transformBox"
@@ -1156,6 +1189,10 @@ function TransformEditor({
 					/>
 				</div>
 				<EachSimpleEditor
+					selectedComponentsList={selectedComponentsList}
+					defPath={defPath}
+					locationHistory={locationHistory}
+					pageExtractor={pageExtractor}
 					subComponentName={subComponentName}
 					pseudoState={pseudoState}
 					prop="transformStyle"
@@ -1289,13 +1326,12 @@ function TransformEditor({
 						valuesChangedOnlyValues({
 							subComponentName,
 							selectedComponent,
-							styleProps,
-							properties,
-							propValues: [{ prop: 'transformOrigin', value: value.join(' ') }],
-							pseudoState,
-							saveStyle,
-							iterateProps,
+							selectedComponentsList,
 							selectorPref,
+							defPath,
+							locationHistory,
+							pageExtractor,
+							propValues: [{ prop: 'transformOrigin', value: value.join(' ') }],
 						});
 					}}
 					placeholder="X Offset"
@@ -1370,13 +1406,12 @@ function TransformEditor({
 						valuesChangedOnlyValues({
 							subComponentName,
 							selectedComponent,
-							styleProps,
-							properties,
-							propValues: [{ prop: 'transformOrigin', value: value.join(' ') }],
-							pseudoState,
-							saveStyle,
-							iterateProps,
+							selectedComponentsList,
 							selectorPref,
+							defPath,
+							locationHistory,
+							pageExtractor,
+							propValues: [{ prop: 'transformOrigin', value: value.join(' ') }],
 						});
 					}}
 					placeholder="Y Offset"
@@ -1452,13 +1487,12 @@ function TransformEditor({
 						valuesChangedOnlyValues({
 							subComponentName,
 							selectedComponent,
-							styleProps,
-							properties,
-							propValues: [{ prop: 'transformOrigin', value: value.join(' ') }],
-							pseudoState,
-							saveStyle,
-							iterateProps,
+							selectedComponentsList,
 							selectorPref,
+							defPath,
+							locationHistory,
+							pageExtractor,
+							propValues: [{ prop: 'transformOrigin', value: value.join(' ') }],
 						});
 					}}
 					placeholder="Z Offset"
@@ -1475,8 +1509,12 @@ function OutlineEditor({
 	selectorPref,
 	styleProps,
 	selectedComponent,
+	selectedComponentsList,
 	saveStyle,
 	properties,
+	defPath,
+	locationHistory,
+	pageExtractor,
 }: StyleEditorsProps) {
 	return (
 		<>
@@ -1500,6 +1538,10 @@ function OutlineEditor({
 					/>
 				</svg>
 				<EachSimpleEditor
+					selectedComponentsList={selectedComponentsList}
+					defPath={defPath}
+					locationHistory={locationHistory}
+					pageExtractor={pageExtractor}
 					subComponentName={subComponentName}
 					pseudoState={pseudoState}
 					prop="outlineOffset"
@@ -1518,6 +1560,10 @@ function OutlineEditor({
 			</div>
 			<div className="_combineEditors _spaceBetween">
 				<EachSimpleEditor
+					selectedComponentsList={selectedComponentsList}
+					defPath={defPath}
+					locationHistory={locationHistory}
+					pageExtractor={pageExtractor}
 					subComponentName={subComponentName}
 					pseudoState={pseudoState}
 					prop="outlineStyle"
@@ -1628,6 +1674,10 @@ function OutlineEditor({
 				/>
 
 				<EachSimpleEditor
+					selectedComponentsList={selectedComponentsList}
+					defPath={defPath}
+					locationHistory={locationHistory}
+					pageExtractor={pageExtractor}
 					subComponentName={subComponentName}
 					pseudoState={pseudoState}
 					prop="outlineColor"
@@ -1683,6 +1733,10 @@ function OutlineEditor({
 				</svg>
 
 				<EachSimpleEditor
+					selectedComponentsList={selectedComponentsList}
+					defPath={defPath}
+					locationHistory={locationHistory}
+					pageExtractor={pageExtractor}
 					subComponentName={subComponentName}
 					pseudoState={pseudoState}
 					prop="outlineWidth"
@@ -1707,8 +1761,12 @@ function OpacityEditor({
 	selectorPref,
 	styleProps,
 	selectedComponent,
+	selectedComponentsList,
 	saveStyle,
 	properties,
+	defPath,
+	locationHistory,
+	pageExtractor,
 }: StyleEditorsProps) {
 	return (
 		<div className="_combineEditors">
@@ -1734,6 +1792,10 @@ function OpacityEditor({
 			</svg>
 
 			<EachSimpleEditor
+				selectedComponentsList={selectedComponentsList}
+				defPath={defPath}
+				locationHistory={locationHistory}
+				pageExtractor={pageExtractor}
 				subComponentName={subComponentName}
 				pseudoState={pseudoState}
 				prop="opacity"

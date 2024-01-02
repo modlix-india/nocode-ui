@@ -10,8 +10,12 @@ export function SpacingEditor({
 	selectorPref,
 	styleProps,
 	selectedComponent,
+	selectedComponentsList,
 	saveStyle,
 	properties,
+	defPath,
+	locationHistory,
+	pageExtractor,
 }: StyleEditorsProps) {
 	const [top, setTop] = useState('');
 	const [changeType, setChangeType] = useState('');
@@ -412,13 +416,12 @@ export function SpacingEditor({
 							valuesChangedOnlyValues({
 								subComponentName,
 								selectedComponent,
-								styleProps,
+								selectedComponentsList,
+								propValues: [{ prop: changeType, value }],
 								selectorPref,
-								properties,
-								propValues: newValues,
-								pseudoState,
-								saveStyle,
-								iterateProps,
+								defPath,
+								locationHistory,
+								pageExtractor,
 							});
 						}}
 					/>
@@ -440,18 +443,17 @@ export function SpacingEditor({
 						valuesChangedOnlyValues({
 							subComponentName,
 							selectedComponent,
-							styleProps,
-							selectorPref,
-							properties,
+							selectedComponentsList,
 							propValues: [
 								{ prop: 'marginTop', value: '' },
 								{ prop: 'marginBottom', value: '' },
 								{ prop: 'marginLeft', value: '' },
 								{ prop: 'marginRight', value: '' },
 							],
-							pseudoState,
-							saveStyle,
-							iterateProps,
+							selectorPref,
+							defPath,
+							locationHistory,
+							pageExtractor,
 						})
 					}
 				>
@@ -470,18 +472,17 @@ export function SpacingEditor({
 							valuesChangedOnlyValues({
 								subComponentName,
 								selectedComponent,
-								styleProps,
-								selectorPref,
-								properties,
+								selectedComponentsList,
 								propValues: [
 									{ prop: 'paddingTop', value: '' },
 									{ prop: 'paddingBottom', value: '' },
 									{ prop: 'paddingLeft', value: '' },
 									{ prop: 'paddingRight', value: '' },
 								],
-								pseudoState,
-								saveStyle,
-								iterateProps,
+								selectorPref,
+								defPath,
+								locationHistory,
+								pageExtractor,
 							})
 						}
 					>

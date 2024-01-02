@@ -32,7 +32,9 @@ interface DnDEditorProps {
 	templateIframeRef: (element: HTMLIFrameElement | undefined) => void;
 	paralellIFrameRef: (element: HTMLIFrameElement | undefined) => void;
 	selectedComponent: string | undefined;
+	selectednComponentsList: string[] | [];
 	onSelectedComponentChanged: (key: string) => void;
+	onSelectedComponentListChanged: (key:string) => void;
 	locationHistory: Array<LocationHistory>;
 	pageOperations: PageOperations;
 	onPageReload: () => void;
@@ -54,6 +56,7 @@ interface DnDEditorProps {
 	setStyleSelectorPref: (pref: any) => void;
 	styleSelectorPref: any;
 	appPath: string | undefined;
+	editorType: string | undefined;
 }
 
 export default function DnDEditor({
@@ -67,7 +70,9 @@ export default function DnDEditor({
 	paralellIFrameRef,
 	onChangePersonalization,
 	selectedComponent,
+	selectednComponentsList,
 	onSelectedComponentChanged,
+	onSelectedComponentListChanged,
 	locationHistory,
 	pageOperations,
 	theme,
@@ -97,6 +102,7 @@ export default function DnDEditor({
 	settingsPageName,
 	dashboardPageName,
 	addnewPageName,
+	editorType,
 }: DnDEditorProps) {
 	const [preview, setPreview] = useState(false);
 
@@ -145,6 +151,7 @@ export default function DnDEditor({
 					settingsPageName={settingsPageName}
 					dashboardPageName={dashboardPageName}
 					addnewPageName={addnewPageName}
+					editorType={editorType}
 				/>
 				<div className="_dndContentContainer">
 					<DnDSideBar
@@ -158,6 +165,7 @@ export default function DnDEditor({
 						onShowCodeEditor={onShowCodeEditor}
 						previewMode={preview}
 						templateIframeRef={templateIframeRef}
+						editorType={editorType}
 					/>
 					<div className="_dndIframeContentContainer">
 						<div className={`_iframeContainer ${preview ? '_previewMode' : ''}`}>
@@ -165,7 +173,9 @@ export default function DnDEditor({
 								personalizationPath={personalizationPath}
 								onChangePersonalization={onChangePersonalization}
 								selectedComponent={selectedComponent}
+								selectednComponentsList={selectednComponentsList}
 								onSelectedComponentChanged={onSelectedComponentChanged}
+								onSelectedComponentListChanged={onSelectedComponentListChanged}
 								selectedSubComponent={selectedSubComponent}
 								onSelectedSubComponentChanged={onSelectedSubComponentChanged}
 								pageExtractor={pageExtractor}
@@ -174,6 +184,7 @@ export default function DnDEditor({
 								pageOperations={pageOperations}
 								onContextMenu={onContextMenu}
 								previewMode={preview}
+								editorType={editorType}
 							/>
 							<DnDIFrame
 								url={url}
@@ -190,6 +201,7 @@ export default function DnDEditor({
 								locationHistory={locationHistory}
 								url={url}
 								selectedComponent={selectedComponent}
+								selectednComponentsList={selectednComponentsList}
 								personalizationPath={personalizationPath}
 								onChangePersonalization={onChangePersonalization}
 								theme={theme}

@@ -13,7 +13,7 @@ declare global {
 	var getStore: () => any;
 	var isDebugMode: boolean;
 	var pageEditor: {
-		selectedComponent: string;
+		selectedComponents: string[];
 		selectedSubComponent: string;
 		editingPageDefinition: PageDefinition;
 		personalization: any;

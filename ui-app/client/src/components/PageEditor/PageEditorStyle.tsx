@@ -42,6 +42,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			align-items: center;
 			padding-top: 10px;
 			background-color: #F8FAFB;
+			border-right: 1px solid rgba(0, 0, 0, 0.10)
 		}
 
 		${PREFIX} ._sideBar._previewMode {
@@ -199,6 +200,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			margin-right: 6px;
 		}
 
+		${PREFIX} ._compsTree ._treeNodeName i.fa._nothing {
+			margin-right: 6px;
+		}
+
 		${PREFIX} ._compsTree ._animateTransform i.fa {
 			transition: transform 0.5s;
 		}
@@ -257,7 +262,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			align-items: center;
 			padding-right: 10px;
-			gap: 10px;
+			gap: 15px;
 		}
 
 		select._peSelect {
@@ -461,8 +466,23 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._iconMenuBody ._iconMenuOption:hover i.fa,
-		${PREFIX} ._iconMenuBody ._iconMenuOption:hover svg._iconHelperSVG {
+		${PREFIX} ._iconMenuBody ._iconMenuOption:hover svg._iconHelperSVG,
+		${PREFIX} ._sideBar ._iconMenu._active  svg._iconHelperSVG,
+		${PREFIX} ._sideBar ._iconMenu:hover  svg._iconHelperSVG,
+		${PREFIX} ._topBarGrid ._iconMenu._active svg._iconHelperSVG,
+		${PREFIX} ._topBarGrid ._iconMenu:hover svg._iconHelperSVG,
+		${PREFIX} ._topBarGrid ._iconMenu._active ._iconMenuOption:hover svg._iconHelperSVG,
+		${PREFIX} ._topBarGrid ._iconMenu:hover ._iconMenuOption:hover svg._iconHelperSVG {
 			color: #4C7FEE;
+		}
+
+		${PREFIX} ._sideBar ._iconMenu  svg._iconHelperSVG,
+		${PREFIX} ._topBarGrid ._iconMenu  svg._iconHelperSVG,
+		${PREFIX} ._topBarGrid ._iconMenu._active ._iconMenuOption svg._iconHelperSVG,
+		${PREFIX} ._topBarGrid ._iconMenu:hover ._iconMenuOption svg._iconHelperSVG {
+			color: #96A1B4;
+			width: 20px;
+			height: 20px;
 		}
 
 		${PREFIX} i.fa {
@@ -526,12 +546,12 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._iconMenu {
 			cursor: pointer;
 			position: relative;
-			min-height: 32px;
+			min-height: 35px;
 			display: flex;
 			align-items: center;
 			justify-content: center;
 			padding: 0 5px;
-			width: 32px;
+			width: 35px;
 		}
 
 		${PREFIX} ._iconMenu:hover ._iconMenuBody{
@@ -668,7 +688,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			stroke: #3A8BED;
 		}
 
-		${PREFIX} ._microToggle2 {
+		._microToggle2 {
 			padding: 2px;
 			border-radius: 10px;
 			background-color: #F8FAFB;
@@ -686,7 +706,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			opacity:0.3;
 		}
 
-		${PREFIX} ._microToggle2::before {
+		._microToggle2::before {
 			content: '';
 			width: 6px;
 			height: 6px;
@@ -700,13 +720,13 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border: 1px solid #888;
 		}
 
-		${PREFIX} ._microToggle2._on {
+		._microToggle2._on {
 			background-color: #52BD94;
 			opacity: 0.8;
 			border: 1px solid #198A61;
 		}
 
-		${PREFIX} ._microToggle2._on::before {
+		._microToggle2._on::before {
 			right: calc(100% - 7px);
 			transform: translateY(-50%);
 			background-color: #FFF;

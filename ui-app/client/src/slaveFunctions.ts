@@ -30,7 +30,10 @@ export const SLAVE_FUNCTIONS = new Map<string, (payload: any) => void>([
 		'EDITOR_DEFINITION',
 		p => (window.pageEditor = { ...window.pageEditor, editingPageDefinition: p }),
 	],
-	['EDITOR_SELECTION', p => (window.pageEditor = { ...window.pageEditor, selectedComponent: p })],
+	[
+		'EDITOR_SELECTION',
+		p => (window.pageEditor = { ...window.pageEditor, selectedComponents: p as string[] }),
+	],
 	[
 		'EDITOR_SUB_SELECTION',
 		p => (window.pageEditor = { ...window.pageEditor, selectedSubComponent: p }),
