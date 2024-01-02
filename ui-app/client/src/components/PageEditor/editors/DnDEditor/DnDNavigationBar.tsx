@@ -26,6 +26,7 @@ interface DnDNavigationBarProps {
 	pageOperations: PageOperations;
 	onContextMenu: (m: ContextMenuDetails) => void;
 	previewMode: boolean;
+	editorType: string | undefined;
 }
 
 export default function DnDNavigationBar({
@@ -43,6 +44,7 @@ export default function DnDNavigationBar({
 	pageOperations,
 	onContextMenu,
 	previewMode,
+	editorType,
 }: DnDNavigationBarProps) {
 	const [componentTree, setComponentTree] = React.useState(false); // component tree is open or not
 	const [pageDef, setPageDef] = useState<PageDefinition>(); // page def object
