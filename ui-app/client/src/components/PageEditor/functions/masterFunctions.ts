@@ -8,7 +8,7 @@ interface MasterFunctionOptions {
 	defPath: string | undefined;
 	personalization: any;
 	personalizationPath: string | undefined;
-	onSelectedComponentChange: (key: string) => void;
+	onSelectedComponentChange: (key: string, multi: boolean) => void;
 	onSelectedSubComponentChange: (key: string) => void;
 	operations: PageOperations;
 	onContextMenu: (m: ContextMenuDetails) => void;
@@ -37,7 +37,11 @@ export const MASTER_FUNCTIONS = new Map<
 			});
 		},
 	],
-	['SLAVE_SELECTED', (options, payload) => options?.onSelectedComponentChange(payload)],
+	['SLAVE_SELECTED', (options, payload) => options?.onSelectedComponentChange(payload, false)],
+	[
+		'SLAVE_SELECTED_MULTI',
+		(options, payload) => options?.onSelectedComponentChange(payload, true),
+	],
 	['SLAVE_SELECTED_SUB', (options, payload) => options?.onSelectedSubComponentChange(payload)],
 	[
 		'SLAVE_DROPPED_SOMETHING',
