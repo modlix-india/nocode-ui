@@ -186,7 +186,10 @@ function PageEditorHelperComponent({
 				onMouseUp={e => {
 					e.stopPropagation();
 					e.preventDefault();
-					messageToMaster({ type: 'SLAVE_SELECTED', payload: definition.key });
+					messageToMaster({
+						type: e.metaKey || e.ctrlKey ? 'SLAVE_SELECTED_MULTI' : 'SLAVE_SELECTED',
+						payload: definition.key,
+					});
 				}}
 			>
 				{typeof ComponentDefinitions.get(definition.type)?.subComponentDefinition?.[0]
