@@ -40,7 +40,7 @@ function PageEditorHelperComponent({
 
 	const {
 		editingPageDefinition: { name = '', componentDefinition = {} } = {},
-		selectedComponent,
+		selectedComponents,
 		personalization: {
 			preview = false,
 			slave: { highlightColor = '#b2d33f', noSelection = false } = {},
@@ -87,13 +87,17 @@ function PageEditorHelperComponent({
 		labelStyle.right = '0px';
 	}
 
-	if (selectedComponent?.endsWith(definition.key) || dragOver)
-		style.opacity = children ? '1' : '0.6';
+	const middle = selectedComponents?.some(x => x.endsWith(definition.key));
 
-	if (children || selectedComponent?.endsWith(definition.key)) {
+	if (middle || dragOver) style.opacity = children ? '1' : '0.6';
+
+	if (children || middle) {
 		labelStyle.top = '0px';
 		labelStyle.transform = 'translateY(-100%)';
 	}
+
+	let shownChildren = children;
+	if (selectedComponents?.length != 1) shownChildren = undefined;
 
 	return (
 		<div
@@ -122,7 +126,10 @@ function PageEditorHelperComponent({
 			onMouseUp={e => {
 				e.stopPropagation();
 				e.preventDefault();
-				messageToMaster({ type: 'SLAVE_SELECTED', payload: definition.key });
+				messageToMaster({
+					type: e.metaKey || e.ctrlKey ? 'SLAVE_SELECTED_MULTI' : 'SLAVE_SELECTED',
+					payload: definition.key,
+				});
 			}}
 			onClick={e => {
 				if (e.target === e.currentTarget) {
@@ -134,7 +141,7 @@ function PageEditorHelperComponent({
 			onDoubleClick={e => {
 				e.stopPropagation();
 				e.preventDefault();
-				if (!onDoubleClick && definition.key === selectedComponent)
+				if (!onDoubleClick && selectedComponents?.indexOf(definition.key) != -1)
 					messageToMaster({ type: 'SLAVE_SELECTED', payload: '' });
 				else onDoubleClick?.(e);
 			}}
@@ -195,7 +202,7 @@ function PageEditorHelperComponent({
 				)}
 				{ComponentDefinitions.get(definition.type)?.displayName}
 			</div>
-			<div className="_helperChildren">{children}</div>
+			<div className="_helperChildren">{shownChildren}</div>
 		</div>
 	);
 }

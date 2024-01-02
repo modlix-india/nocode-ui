@@ -88,6 +88,7 @@ function PageEditor(props: ComponentProps) {
 			dashboardPageName,
 			settingsPageName,
 			addnewPageName,
+			editorType,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -282,9 +283,11 @@ function PageEditor(props: ComponentProps) {
 	const [issue, setIssue] = useState<Issue>();
 	const [contextMenu, setContextMenu] = useState<ContextMenuDetails>();
 	const [showCodeEditor, setShowCodeEditor] = useState<string | undefined>(undefined);
+	const [selectednComponentsList, setSelectednComponentsListOriginal] = useState<string[]>([]);
 
 	const setSelectedComponent = useCallback(
 		(v: string) => {
+			setSelectednComponentsListOriginal([v]);
 			setSelectedComponentOriginal(v ?? '');
 			setSelectedSubComponentOriginal('');
 			if (!defPath) return;
@@ -315,6 +318,21 @@ function PageEditor(props: ComponentProps) {
 		[setSelectedComponentOriginal, setSelectedSubComponentOriginal, defPath],
 	);
 
+	const setSelectedComponentList = useCallback(
+		(v: string) => {
+			setSelectedComponentOriginal(prev => {
+				if (prev === '') return v;
+				return prev;
+			});
+			setSelectednComponentsListOriginal(prevList => {
+				const updatedList = [...prevList, v];
+				return updatedList;
+			});
+		},
+		[setSelectednComponentsListOriginal],
+	);
+
+	// it will get called when we select sub component inside a component like 'text' inside 'Text' component
 	const setSelectedSubComponent = useCallback(
 		(key: string) => {
 			if (key === '') {
@@ -438,10 +456,10 @@ function PageEditor(props: ComponentProps) {
 	useEffect(() => {
 		if (!defPath) return;
 		if (!ref.current) return;
-		const msg = { type: 'EDITOR_SELECTION', payload: selectedComponent };
+		const msg = { type: 'EDITOR_SELECTION', payload: selectednComponentsList };
 		ref.current.contentWindow?.postMessage(msg);
 		paralellIFrame?.contentWindow?.postMessage(msg);
-	}, [selectedComponent, ref.current, paralellIFrame]);
+	}, [selectednComponentsList, ref.current, paralellIFrame]);
 
 	// On changing the sub selection, this effect sends to the iframe/slave.
 	useEffect(() => {
@@ -513,7 +531,8 @@ function PageEditor(props: ComponentProps) {
 					defPath,
 					personalization,
 					personalizationPath,
-					onSelectedComponentChange: key => setSelectedComponent(key),
+					onSelectedComponentChange: (key, multi) =>
+						multi ? setSelectedComponentList(key) : setSelectedComponent(key),
 					onSelectedSubComponentChange: key => setSelectedSubComponent(key),
 					operations,
 					onContextMenu: (m: ContextMenuDetails) => setContextMenu(m),
@@ -644,7 +663,9 @@ function PageEditor(props: ComponentProps) {
 					}
 					locationHistory={locationHistory}
 					selectedComponent={selectedComponent}
+					selectednComponentsList={selectednComponentsList}
 					onSelectedComponentChanged={(key: string) => setSelectedComponent(key)}
+					onSelectedComponentListChanged={(key: string) => setSelectedComponentList(key)}
 					pageOperations={operations}
 					onPageReload={() => {
 						ref.current?.contentWindow?.location.reload();
@@ -675,6 +696,7 @@ function PageEditor(props: ComponentProps) {
 					settingsPageName={settingsPageName}
 					dashboardPageName={dashboardPageName}
 					addnewPageName={addnewPageName}
+					editorType={editorType}
 				/>
 				<CodeEditor
 					showCodeEditor={showCodeEditor}
