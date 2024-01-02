@@ -282,9 +282,11 @@ function PageEditor(props: ComponentProps) {
 	const [issue, setIssue] = useState<Issue>();
 	const [contextMenu, setContextMenu] = useState<ContextMenuDetails>();
 	const [showCodeEditor, setShowCodeEditor] = useState<string | undefined>(undefined);
+	const [selectednComponentsList, setSelectednComponentsListOriginal] = useState<string[]>([]);
 
 	const setSelectedComponent = useCallback(
 		(v: string) => {
+			setSelectednComponentsListOriginal([v]);
 			setSelectedComponentOriginal(v ?? '');
 			setSelectedSubComponentOriginal('');
 			if (!defPath) return;
@@ -315,6 +317,17 @@ function PageEditor(props: ComponentProps) {
 		[setSelectedComponentOriginal, setSelectedSubComponentOriginal, defPath],
 	);
 
+	const setSelectedComponentList = useCallback(
+		(v: string) => {
+			setSelectednComponentsListOriginal(prevList => {
+				const updatedList = [...prevList, v];
+				return updatedList;
+			});
+		},
+		[setSelectednComponentsListOriginal],
+	);
+
+	// it will get called when we select sub component inside a component like 'text' inside 'Text' component
 	const setSelectedSubComponent = useCallback(
 		(key: string) => {
 			if (key === '') {
@@ -644,7 +657,9 @@ function PageEditor(props: ComponentProps) {
 					}
 					locationHistory={locationHistory}
 					selectedComponent={selectedComponent}
+					selectednComponentsList={selectednComponentsList}
 					onSelectedComponentChanged={(key: string) => setSelectedComponent(key)}
+					onSelectedComponentListChanged={(key: string) => setSelectedComponentList(key)}
 					pageOperations={operations}
 					onPageReload={() => {
 						ref.current?.contentWindow?.location.reload();
