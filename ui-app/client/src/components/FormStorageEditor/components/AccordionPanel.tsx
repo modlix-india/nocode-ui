@@ -1,5 +1,5 @@
 import React, { DragEvent, ReactNode, useState } from 'react';
-import { FormCompDefinition } from './formDefinitions';
+import { FormCompDefinition } from './formCommons';
 
 interface AccordionPanelProps {
 	data: FormCompDefinition;

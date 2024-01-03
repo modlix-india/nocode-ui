@@ -1,5 +1,5 @@
 import React, { DragEvent } from 'react';
-import { FormCompDefinition } from './formDefinitions';
+import { FormCompDefinition } from './formCommons';
 import AccordionPanel from './AccordionPanel';
 import SmartElementEditor from '../editors/SmartElementEditor';
 import TextTypeEditor from '../editors/TextTypeEditor';

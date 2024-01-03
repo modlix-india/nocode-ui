@@ -5,7 +5,7 @@ import {
 	FormCompValidation,
 	compValidationMap,
 	compValidations,
-} from '../components/formDefinitions';
+} from '../components/formCommons';
 import { duplicate } from '@fincity/kirun-js';
 
 interface SmartElementEditorProps {
