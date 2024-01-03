@@ -81,7 +81,7 @@ function FormStorageEditor(props: ComponentProps) {
 	}, [defPath]);
 
 	const [saveChanges, setSaveChanges] = useState<boolean>(false);
-
+	// console.log('value', value);
 	// Function to call save eventFunction
 	const saveFunction = useCallback(() => {
 		if (!onSave || !pageDefinition.eventFunctions?.[onSave]) return;
