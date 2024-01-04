@@ -84,7 +84,6 @@ function FileUpload(props: ComponentProps) {
 			colorScheme,
 			buttonText,
 			hideSelectedFileName,
-			convertToBase64,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -163,17 +162,20 @@ function FileUpload(props: ComponentProps) {
 
 	const setFiles = async (files: any) => {
 		if (uploadType === 'FILE_OBJECT') {
+			setData(bindingPathPath!, isMultiple ? [...files] : files[0], context?.pageName);
+			return;
+		}
+
+		if (uploadType === 'FILE_OBJECT_BASE_64') {
 			let stringFiles = [];
-			if (convertToBase64) {
-				if (isMultiple) {
-					if (!files.length) return;
-					for (let i = 0; i < files.length; i++) {
-						let str = await binaryToBase64Encode(files[i]);
-						stringFiles.push(str);
-					}
-				} else {
-					stringFiles[0] = await binaryToBase64Encode(files[0]);
+			if (isMultiple) {
+				if (!files.length) return;
+				for (let i = 0; i < files.length; i++) {
+					let str = await binaryToBase64Encode(files[i]);
+					stringFiles.push(str);
 				}
+			} else {
+				stringFiles[0] = await binaryToBase64Encode(files[0]);
 			}
 			setData(
 				bindingPathPath!,
