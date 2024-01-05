@@ -160,33 +160,35 @@ function FileUpload(props: ComponentProps) {
 		);
 	}, [bindingPathPath]);
 
+	const filesToBase64 = async (files: any, isMultiple: boolean) => {
+		let stringFiles = [];
+		if (isMultiple) {
+			if (!files.length) return;
+			for (let i = 0; i < files.length; i++) {
+				let str = await binaryToBase64Encode(files[i]);
+				stringFiles.push(str);
+			}
+		} else {
+			stringFiles[0] = await binaryToBase64Encode(files[0]);
+		}
+
+		return isMultiple ? [...stringFiles] : stringFiles[0];
+	};
+
 	const setFiles = async (files: any) => {
 		if (uploadType === 'FILE_OBJECT') {
 			setData(bindingPathPath!, isMultiple ? [...files] : files[0], context?.pageName);
 			return;
 		}
 
-		if (uploadType === 'FILE_OBJECT_BASE_64') {
-			let stringFiles = [];
-			if (isMultiple) {
-				if (!files.length) return;
-				for (let i = 0; i < files.length; i++) {
-					let str = await binaryToBase64Encode(files[i]);
-					stringFiles.push(str);
-				}
-			} else {
-				stringFiles[0] = await binaryToBase64Encode(files[0]);
-			}
-			setData(
-				bindingPathPath!,
-				isMultiple ? [...stringFiles] : stringFiles[0],
-				context?.pageName,
-			);
+		if (uploadType === 'BINARY_TO_BASE_64') {
+			const fileObjects = await filesToBase64(files, isMultiple);
+			setData(bindingPathPath!, fileObjects, context?.pageName);
 			return;
 		}
 
 		let fReader = new FileReader();
-		fReader.onload = () => {
+		fReader.onload = async () => {
 			let fileContent: any = fReader.result;
 
 			try {

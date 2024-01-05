@@ -92,7 +92,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				description: 'The value of the upload component is a file object',
 			},
 			{
-				name: 'FILE_OBJECT_BASE_64',
+				name: 'BINARY_TO_BASE_64',
 				displayName: 'File Objects as base64 strings',
 				description: 'The value of the upload component is a file objects as base64',
 			},
