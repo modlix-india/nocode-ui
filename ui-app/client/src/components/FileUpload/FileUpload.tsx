@@ -21,6 +21,7 @@ import { MESSAGE_TYPE, addMessage } from '../../App/Messages/Messages';
 import { ToArray } from '../../util/csvUtil';
 import { styleDefaults } from './fileUploadStyleProperties';
 import { IconHelper } from '../util/IconHelper';
+import binaryToBase64Encode from '../../util/binaryToBase64Encode';
 
 const icon1 = (
 	<div className="_uploadIcon _upload_icon_1">
@@ -159,9 +160,30 @@ function FileUpload(props: ComponentProps) {
 		);
 	}, [bindingPathPath]);
 
-	const setFiles = (files: any) => {
+	const filesToBase64 = async (files: any, isMultiple: boolean) => {
+		let stringFiles = [];
+		if (isMultiple) {
+			if (!files.length) return;
+			for (let i = 0; i < files.length; i++) {
+				let str = await binaryToBase64Encode(files[i]);
+				stringFiles.push(str);
+			}
+		} else {
+			stringFiles[0] = await binaryToBase64Encode(files[0]);
+		}
+
+		return isMultiple ? [...stringFiles] : stringFiles[0];
+	};
+
+	const setFiles = async (files: any) => {
 		if (uploadType === 'FILE_OBJECT') {
 			setData(bindingPathPath!, isMultiple ? [...files] : files[0], context?.pageName);
+			return;
+		}
+
+		if (uploadType === 'BINARY_TO_BASE_64') {
+			const fileObjects = await filesToBase64(files, isMultiple);
+			setData(bindingPathPath!, fileObjects, context?.pageName);
 			return;
 		}
 
