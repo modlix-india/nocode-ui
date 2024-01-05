@@ -188,7 +188,7 @@ function FileUpload(props: ComponentProps) {
 		}
 
 		let fReader = new FileReader();
-		fReader.onload = async () => {
+		fReader.onload = () => {
 			let fileContent: any = fReader.result;
 
 			try {
