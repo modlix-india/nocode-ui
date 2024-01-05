@@ -20,6 +20,8 @@ function Video(props: ComponentProps) {
 			src,
 			type,
 			poster,
+			playsInline,
+			muted: mutedProperty,
 			autoPlay,
 			loop,
 			showPipButton,
@@ -90,7 +92,7 @@ function Video(props: ComponentProps) {
 	//To toggle tool tip
 	const [toogleToolTip, setToggleToolTip] = useState<boolean>(false);
 	const [controlsOnHover, setControlsOnHover] = useState<boolean>(false);
-	const [muted, setMuted] = useState<boolean>(false);
+	const [muted, setMuted] = useState<boolean>(mutedProperty);
 	const [fullScreenState, setFullScreenState] = useState<String>('expand');
 
 	//videoRef
@@ -487,9 +489,10 @@ function Video(props: ComponentProps) {
 			<video
 				controls={videoControls}
 				poster={poster}
+				playsInline={playsInline}
 				preload="metadata"
 				ref={video}
-				muted
+				muted={muted}
 				loop={loop}
 				onLoadedMetadata={initializeVideo}
 				onTimeUpdate={updateTimeElapsed}
