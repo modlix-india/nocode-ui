@@ -113,8 +113,8 @@ function Text(props: ComponentProps) {
 			style={styleProperties.comp ?? {}}
 			title={originalText}
 		>
-			<HelperComponent definition={definition} />
 			{comp}
+			<HelperComponent definition={definition} />
 		</div>
 	);
 }

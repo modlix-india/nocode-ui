@@ -19,9 +19,18 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'poster',
-		schema: SCHEMA_STRING_COMP_PROP,
+		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Poster',
 		description: 'Image to load before the video comes up.',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
+	},
+	{
+		name: 'playsInline',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Plays inline',
+		description: 'Plays the video inline.',
+		defaultValue: false,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
@@ -86,6 +95,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show Time ',
 		defaultValue: true,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'muted',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Muted',
+		defaultValue: false,
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{

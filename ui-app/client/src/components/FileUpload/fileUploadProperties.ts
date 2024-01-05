@@ -92,6 +92,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				description: 'The value of the upload component is a file object',
 			},
 			{
+				name: 'BINARY_TO_BASE_64',
+				displayName: 'File Objects as base64 strings',
+				description: 'The value of the upload component is a file objects as base64',
+			},
+			{
 				name: 'JSON_OBJECT',
 				displayName: 'JSON Object',
 				description: 'Reads the file and returns a JSON object from the file',
