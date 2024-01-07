@@ -196,8 +196,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 	);
 
 	let items = <></>;
-	console.log(indKeys);
-	console.log(value);
+
 	if (Array.isArray(value) && value.length) {
 		items = (
 			<>
