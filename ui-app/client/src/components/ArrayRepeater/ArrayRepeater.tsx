@@ -21,7 +21,6 @@ import { IconHelper } from '../util/IconHelper';
 import { deepEqual } from '@fincity/kirun-js';
 
 function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
-	const [value, setValue] = React.useState<any[]>([]);
 	const {
 		definition: { children, bindingPath, key },
 		pageDefinition,
@@ -41,6 +40,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 			addEvent,
 			removeEvent,
 			moveEvent,
+			defaultData,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -50,6 +50,8 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 		locationHistory,
 		pageExtractor,
 	);
+
+	const [value, setValue] = React.useState<any[]>(defaultData ?? []);
 
 	const clickMove = moveEvent ? props.pageDefinition.eventFunctions?.[moveEvent] : undefined;
 	const clickRemove = removeEvent
@@ -70,7 +72,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 		if (!bindingPathPath || !indKeys.current) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
 			(_, _v) => {
-				setValue(_v ?? []);
+				setValue(_v ?? defaultData ?? []);
 				if (!_v?.length) return;
 
 				const duplicateCheck = new Array<{ object: any; occurance: number }>();
@@ -99,10 +101,11 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 
 					if (oldIndex === -1) {
 						indKeys.current.array[i] = shortUUID();
-						indKeys.current.oldKeys.push({
-							object: _v[i],
-							key: indKeys.current.array[i],
-						});
+						if (_v[i] !== undefined && _v[i] !== null)
+							indKeys.current.oldKeys.push({
+								object: _v[i],
+								key: indKeys.current.array[i],
+							});
 					} else {
 						indKeys.current.array[i] = indKeys.current.oldKeys[oldIndex].key;
 					}
@@ -193,7 +196,8 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 	);
 
 	let items = <></>;
-
+	console.log(indKeys);
+	console.log(value);
 	if (Array.isArray(value) && value.length) {
 		items = (
 			<>
