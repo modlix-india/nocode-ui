@@ -5,6 +5,79 @@ import SmartElementEditor from '../editors/SmartElementEditor';
 import TextTypeEditor from '../editors/TextTypeEditor';
 import OptionTypeEditor from '../editors/OptionTypeEditor';
 
+const getCompEditor = (
+	data: FormCompDefinition,
+	handleCompDefChanges: (key: string, data: FormCompDefinition) => void,
+) => {
+	const COMP_EDITORS: { [key: string]: any } = {
+		NameEditor: (
+			<SmartElementEditor
+				data={data}
+				key={data.key}
+				handleCompDefChanges={handleCompDefChanges}
+				editorType="name"
+			/>
+		),
+		EmailEditor: (
+			<SmartElementEditor
+				data={data}
+				key={data.key}
+				handleCompDefChanges={handleCompDefChanges}
+				editorType="email"
+			/>
+		),
+		PhoneEditor: (
+			<SmartElementEditor
+				data={data}
+				key={data.key}
+				handleCompDefChanges={handleCompDefChanges}
+				editorType="phone"
+			/>
+		),
+		TextBoxEditor: (
+			<TextTypeEditor
+				data={data}
+				key={data.key}
+				handleCompDefChanges={handleCompDefChanges}
+				editerType="textBox"
+			/>
+		),
+		TextAreaEditor: (
+			<TextTypeEditor
+				data={data}
+				key={data.key}
+				handleCompDefChanges={handleCompDefChanges}
+				editerType="textArea"
+			/>
+		),
+		DropdownEditor: (
+			<OptionTypeEditor
+				data={data}
+				key={data.key}
+				handleCompDefChanges={handleCompDefChanges}
+				editerType="dropdown"
+			/>
+		),
+		RadioButtonEditor: (
+			<OptionTypeEditor
+				data={data}
+				key={data.key}
+				handleCompDefChanges={handleCompDefChanges}
+				editerType="radioButton"
+			/>
+		),
+		CheckBoxEditor: (
+			<OptionTypeEditor
+				data={data}
+				key={data.key}
+				handleCompDefChanges={handleCompDefChanges}
+				editerType="checkBox"
+			/>
+		),
+	};
+	return COMP_EDITORS[data.editorType];
+};
+
 interface AccordionProps {
 	data: Array<FormCompDefinition>;
 	handleDrop: (e: DragEvent<HTMLDivElement>, key: string) => void;
@@ -20,92 +93,6 @@ export default function Accordion({
 	handleDragStart,
 	handleCompDefChanges,
 }: AccordionProps) {
-	const getCompEditor = (data: FormCompDefinition) => {
-		let editor = <></>;
-		switch (data.editorType) {
-			case 'NameEditor':
-				editor = (
-					<SmartElementEditor
-						data={data}
-						key={data.key}
-						handleCompDefChanges={handleCompDefChanges}
-						editorType="name"
-					/>
-				);
-				break;
-			case 'EmailEditor':
-				editor = (
-					<SmartElementEditor
-						data={data}
-						key={data.key}
-						handleCompDefChanges={handleCompDefChanges}
-						editorType="email"
-					/>
-				);
-				break;
-			case 'PhoneEditor':
-				editor = (
-					<SmartElementEditor
-						data={data}
-						key={data.key}
-						handleCompDefChanges={handleCompDefChanges}
-						editorType="phone"
-					/>
-				);
-				break;
-			case 'TextBoxEditor':
-				editor = (
-					<TextTypeEditor
-						data={data}
-						key={data.key}
-						handleCompDefChanges={handleCompDefChanges}
-						editerType="textBox"
-					/>
-				);
-				break;
-			case 'TextAreaEditor':
-				editor = (
-					<TextTypeEditor
-						data={data}
-						key={data.key}
-						handleCompDefChanges={handleCompDefChanges}
-						editerType="textArea"
-					/>
-				);
-				break;
-			case 'DropdownEditor':
-				editor = (
-					<OptionTypeEditor
-						data={data}
-						key={data.key}
-						handleCompDefChanges={handleCompDefChanges}
-						editerType="dropdown"
-					/>
-				);
-				break;
-			case 'RadioButtonEditor':
-				editor = (
-					<OptionTypeEditor
-						data={data}
-						key={data.key}
-						handleCompDefChanges={handleCompDefChanges}
-						editerType="radioButton"
-					/>
-				);
-				break;
-			case 'CheckBoxEditor':
-				editor = (
-					<OptionTypeEditor
-						data={data}
-						key={data.key}
-						handleCompDefChanges={handleCompDefChanges}
-						editerType="checkBox"
-					/>
-				);
-				break;
-		}
-		return editor;
-	};
 	return (
 		<div className="_accordion">
 			{data.map((each: FormCompDefinition) => {
@@ -117,7 +104,7 @@ export default function Accordion({
 						handleDelete={handleDelete}
 						handleDragStart={handleDragStart}
 					>
-						{getCompEditor(each)}
+						{getCompEditor(each, handleCompDefChanges)}
 					</AccordionPanel>
 				);
 			})}

@@ -38,6 +38,7 @@ export interface Option {
 
 export interface FormCompDefinition {
 	key: string;
+	uuid: string;
 	order: number | undefined;
 	label: string;
 	placeholder?: string;
@@ -55,8 +56,12 @@ export interface formDefinition {
 	[key: string]: FormCompDefinition;
 }
 export interface FormStorageEditorDefinition {
-	formSchema: FormSchema;
-	formDefinition: formDefinition;
+	name: string;
+	schema: FormSchema;
+	fieldDefinitionMap: formDefinition;
+	readAuth: string;
+	updateAuth: string;
+	deleteAuth: string;
 }
 
 export const compDefinitionMap = new Map<string, FormCompDefinition>([
@@ -64,13 +69,14 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 		'name',
 		{
 			key: 'name',
+			uuid: '',
 			order: undefined,
 			label: 'Name',
 			placeholder: 'Enter your name',
 			maxChars: 24, //maxChar = maxLength
 			validation: {
 				STRING_LENGTH: {
-					key: '',
+					uuid: '',
 					order: 0,
 					type: 'STRING_LENGTH',
 					minLength: 0,
@@ -97,13 +103,14 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 		'email',
 		{
 			key: 'email',
+			uuid: '',
 			order: undefined,
 			label: 'Email',
 			placeholder: 'Enter your email address',
 			maxChars: 50, //maxChar = maxLength
 			validation: {
 				STRING_LENGTH: {
-					key: '',
+					uuid: '',
 					order: 0,
 					type: 'STRING_LENGTH',
 					minLength: 0,
@@ -140,13 +147,14 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 		'phone',
 		{
 			key: 'phone',
+			uuid: '',
 			order: undefined,
 			label: 'Phone',
 			placeholder: 'Enter your phone number',
 			maxChars: 10, //maxChar = maxLength
 			validation: {
 				STRING_LENGTH: {
-					key: '',
+					uuid: '',
 					order: 0,
 					type: 'STRING_LENGTH',
 					minLength: 10,
@@ -185,6 +193,7 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 		'textBox',
 		{
 			key: 'textBox',
+			uuid: '',
 			order: undefined,
 			label: 'Text box',
 			placeholder: 'Type something',
@@ -202,7 +211,7 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 				// },
 				// validation when inputType = text
 				STRING_LENGTH: {
-					key: '',
+					uuid: '',
 					order: 0,
 					type: 'STRING_LENGTH',
 					minLength: '',
@@ -249,6 +258,7 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 		'textArea',
 		{
 			key: 'textArea',
+			uuid: '',
 			order: undefined,
 			label: 'Text area',
 			placeholder: 'Type description',
@@ -264,7 +274,7 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 				// 	message: 'Mandatory',
 				// },
 				STRING_LENGTH: {
-					key: '',
+					uuid: '',
 					order: 0,
 					type: 'STRING_LENGTH',
 					minLength: 0,
@@ -284,6 +294,7 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 		'dropdown',
 		{
 			key: 'dropdown',
+			uuid: '',
 			order: undefined,
 			label: 'Drop down',
 			placeholder: 'Select an option',
@@ -329,6 +340,7 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 		'radioButton',
 		{
 			key: 'radioButton',
+			uuid: '',
 			order: undefined,
 			label: 'Radio Button',
 			validation: {
@@ -363,6 +375,7 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 		'checkBox',
 		{
 			key: 'checkBox',
+			uuid: '',
 			order: undefined,
 			label: 'Check box',
 			isMultiSelect: true,
@@ -399,7 +412,7 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 ]);
 
 export interface FormCompValidation {
-	key: string;
+	uuid: string;
 	type: string;
 	order: number | undefined;
 	message?: string;
@@ -415,7 +428,7 @@ export const compValidationMap = new Map<string, FormCompValidation>([
 	[
 		'MANDATORY',
 		{
-			key: '',
+			uuid: '',
 			order: undefined,
 			type: 'MANDATORY',
 			message: 'Mandatory field',
@@ -424,7 +437,7 @@ export const compValidationMap = new Map<string, FormCompValidation>([
 	[
 		'EMAIL',
 		{
-			key: '',
+			uuid: '',
 			order: undefined,
 			type: 'EMAIL',
 			message: 'Not a valid email',
@@ -433,7 +446,7 @@ export const compValidationMap = new Map<string, FormCompValidation>([
 	[
 		'PHONE',
 		{
-			key: '',
+			uuid: '',
 			order: undefined,
 			type: 'REGEX',
 			pattern: '/^(\\+\\d{1,3}\\s?)?\\(?\\d{3}\\)?\\d{4,15}$/',
@@ -444,7 +457,7 @@ export const compValidationMap = new Map<string, FormCompValidation>([
 	[
 		'STRING_LENGTH',
 		{
-			key: '',
+			uuid: '',
 			order: undefined,
 			type: 'STRING_LENGTH',
 			maxLength: '',
@@ -455,7 +468,7 @@ export const compValidationMap = new Map<string, FormCompValidation>([
 	[
 		'NUMBER_VALUE',
 		{
-			key: '',
+			uuid: '',
 			order: undefined,
 			type: 'NUMBER_VALUE',
 			minValue: '',
@@ -466,7 +479,7 @@ export const compValidationMap = new Map<string, FormCompValidation>([
 	[
 		'ALPHABETIC',
 		{
-			key: '',
+			uuid: '',
 			order: undefined,
 			type: 'REGEX',
 			pattern: '^[a-zA-Z]+$',
@@ -477,7 +490,7 @@ export const compValidationMap = new Map<string, FormCompValidation>([
 	[
 		'ALPHANUMERIC',
 		{
-			key: '',
+			uuid: '',
 			order: undefined,
 			type: 'REGEX',
 			pattern: '^[a-zA-Z0-9]+$',
@@ -488,7 +501,7 @@ export const compValidationMap = new Map<string, FormCompValidation>([
 	[
 		'URL',
 		{
-			key: '',
+			uuid: '',
 			order: undefined,
 			type: 'REGEX',
 			pattern:
@@ -500,7 +513,7 @@ export const compValidationMap = new Map<string, FormCompValidation>([
 	[
 		'CURRENCY',
 		{
-			key: '',
+			uuid: '',
 			order: undefined,
 			type: 'REGEX',
 			pattern: '^₹?\\s?\\d{1,3}(?:,?\\d{3})*(?:\\.\\d{1,2})?$',
@@ -511,7 +524,7 @@ export const compValidationMap = new Map<string, FormCompValidation>([
 	[
 		'CHARACTERS_ONLY',
 		{
-			key: '',
+			uuid: '',
 			order: undefined,
 			type: 'REGEX',
 			pattern: '^[^\\d]*$', // A/a to Z/z + all spacial character
@@ -522,7 +535,7 @@ export const compValidationMap = new Map<string, FormCompValidation>([
 	[
 		'REGEX',
 		{
-			key: '',
+			uuid: '',
 			order: undefined,
 			type: 'REGEX',
 			pattern: '',
@@ -543,11 +556,11 @@ export const previewCompDefinitionMap = new Map<string, ComponentDefinition>([
 				showNumberSpinners: {
 					value: false,
 				},
-				maxChars: {
-					// value: 10,
-				},
+				// maxChars: {
+				// 	value: 10,
+				// },
 				placeholder: {
-					value: 'Value',
+					value: '',
 				},
 			},
 			displayOrder: undefined,
@@ -564,7 +577,7 @@ export const previewCompDefinitionMap = new Map<string, ComponentDefinition>([
 			name: 'TextArea',
 			type: 'TextArea',
 			properties: {
-				label: {
+				placeholder: {
 					value: 'TextArea',
 				},
 			},
@@ -582,8 +595,8 @@ export const previewCompDefinitionMap = new Map<string, ComponentDefinition>([
 			name: 'Dropdown',
 			type: 'Dropdown',
 			properties: {
-				label: {
-					value: 'Dropdown',
+				placeholder: {
+					value: '',
 				},
 				selectionType: {
 					value: 'OBJECT',
@@ -591,12 +604,12 @@ export const previewCompDefinitionMap = new Map<string, ComponentDefinition>([
 				uniqueKeyType: {
 					value: 'RANDOM',
 				},
-				data: {
-					value: ['option1', 'option2'],
-				},
-				isMultiSelect: {
-					// value: true,
-				},
+				// data: {
+				// 	value: ['option1', 'option2'],
+				// },
+				// isMultiSelect: {
+				// 	value: true,
+				// },
 			},
 			displayOrder: undefined,
 			bindingPath: {
@@ -615,18 +628,18 @@ export const previewCompDefinitionMap = new Map<string, ComponentDefinition>([
 				selectionType: {
 					value: 'OBJECT',
 				},
-				data: {
-					value: ['Option 1', 'Option 2', 'Option 3'],
-				},
+				// data: {
+				// 	value: ['Option 1', 'Option 2', 'Option 3'],
+				// },
 				layout: {
 					value: 'ROWLAYOUT',
 				},
 				uniqueKeyType: {
 					value: 'OBJECT',
 				},
-				isMultiSelect: {
-					// value: false,
-				},
+				// isMultiSelect: {
+				// 	value: false,
+				// },
 			},
 			styleProperties: {
 				'6UMN33DqOzIFIsrc7ZNIrN': {
@@ -650,7 +663,7 @@ export const previewCompDefinitionMap = new Map<string, ComponentDefinition>([
 
 export interface previewCompValidationProperties {
 	type: string;
-	message: { value?: string };
+	message?: { value?: string };
 	pattern?: { value?: string };
 	maxValue?: { value?: number };
 	minValue?: { value?: number };
@@ -661,7 +674,7 @@ export interface previewCompValidationProperties {
 export interface FormPreviewCompValidation {
 	key: string;
 	order?: number;
-	property?: { value: previewCompValidationProperties };
+	property: { value: previewCompValidationProperties };
 }
 
 export const previewCompValidationMap = new Map<string, FormPreviewCompValidation>([

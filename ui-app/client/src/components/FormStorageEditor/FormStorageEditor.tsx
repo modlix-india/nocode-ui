@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
 	addListenerAndCallImmediately,
 	getPathFromLocation,
@@ -17,21 +17,21 @@ import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './formStorageEditorProperties';
 import StorageEditorStyle from './FormStorageEditorStyle';
-import { allPaths } from '../../util/allPaths';
-import { LOCAL_STORE_PREFIX, PAGE_STORE_PREFIX, STORE_PREFIX } from '../../constants';
-import ComponentDefinitions from '..';
-import { deepEqual, duplicate } from '@fincity/kirun-js';
 import { styleDefaults } from './formStorageEditorStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import FormComponents from './components/FormComponents';
 import FormEditor from './components/FormEditor';
-import { FormStorageEditorDefinition } from './components/formDefinitions';
+import { FormStorageEditorDefinition } from './components/formCommons';
 import FormPreview from './components/FormPreview';
 
 function FormStorageEditor(props: ComponentProps) {
 	const [value, setValue] = useState<FormStorageEditorDefinition>({
-		formDefinition: {},
-		formSchema: { type: 'OBJECT', additionalProperties: false },
+		name: 'xyz',
+		fieldDefinitionMap: {},
+		schema: { type: 'OBJECT', additionalProperties: false },
+		readAuth: 'Authorities.Logged_IN',
+		deleteAuth: 'Authorities.Logged_IN',
+		updateAuth: 'Authorities.Logged_IN',
 	});
 	const {
 		definition,
@@ -70,8 +70,12 @@ function FormStorageEditor(props: ComponentProps) {
 			(_, value) => {
 				setValue(
 					value || {
-						formDefinition: {},
-						formSchema: { type: 'OBJECT', additionalProperties: false },
+						name: 'xyz',
+						fieldDefinitionMap: {},
+						schema: { type: 'OBJECT', additionalProperties: false },
+						readAuth: 'Authorities.Logged_IN',
+						deleteAuth: 'Authorities.Logged_IN',
+						updateAuth: 'Authorities.Logged_IN',
 					},
 				);
 			},
@@ -80,8 +84,8 @@ function FormStorageEditor(props: ComponentProps) {
 		);
 	}, [defPath]);
 
-	const [saveChanges, setSaveChanges] = useState<boolean>(false);
-	// console.log('value', value);
+	console.log('formData', value);
+
 	// Function to call save eventFunction
 	const saveFunction = useCallback(() => {
 		if (!onSave || !pageDefinition.eventFunctions?.[onSave]) return;
@@ -111,7 +115,12 @@ function FormStorageEditor(props: ComponentProps) {
 						<span>Editor</span>
 						<p>Click on any field to edit</p>
 					</div>
-					<FormEditor value={value} defPath={defPath} pageExtractor={pageExtractor} />
+					<FormEditor
+						value={value}
+						defPath={defPath}
+						pageExtractor={pageExtractor}
+						locationHistory={locationHistory}
+					/>
 				</div>
 				<div className="_previewSection">
 					<div className="_section_header">
@@ -119,9 +128,8 @@ function FormStorageEditor(props: ComponentProps) {
 						<p>You can view a basic form and make edits in the editor</p>
 					</div>
 					<FormPreview
-						formDefinition={value.formDefinition}
-						bindingPath={defPath}
-						pageDefinition={pageDefinition}
+						fieldDefinitionMap={value.fieldDefinitionMap}
+						formName={value.name}
 						context={context}
 						locationHistory={locationHistory}
 					/>

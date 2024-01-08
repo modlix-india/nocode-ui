@@ -1,37 +1,37 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
 	compDefinitionMap,
 	CustomSchema,
 	FormCompDefinition,
+	FormCompValidation,
 	formDefinition,
 	FormSchema,
 	FormStorageEditorDefinition,
-} from './formDefinitions';
+} from './formCommons';
 import Accordion from './Accordion';
 import { duplicate } from '@fincity/kirun-js';
 import { PageStoreExtractor, setData } from '../../../context/StoreContext';
+import { LocationHistory } from '../../../types/common';
+import { shortUUID } from '../../../util/shortUUID';
 
 export default function FormEditor({
 	value,
 	defPath,
 	pageExtractor,
+	locationHistory,
 }: {
 	value: FormStorageEditorDefinition;
 	defPath: string | undefined;
 	pageExtractor: PageStoreExtractor;
+	locationHistory: Array<LocationHistory>;
 }) {
-	const [compDefData, setCompDefData] = useState<formDefinition>({});
-	const [formSchema, setFormSchema] = useState<FormSchema>();
+	const { fieldDefinitionMap } = value;
+	console.log('fieldDefinitionMap', fieldDefinitionMap);
 
-	useEffect(() => {
-		setCompDefData(value!.formDefinition);
-		setFormSchema(value!.formSchema);
-	}, [value]);
-
-	const generateFormSchema = (compDefData: formDefinition) => {
+	const generateFormSchema = (fieldDefinitionMap: formDefinition) => {
 		const schemaProps: { [key: string]: CustomSchema } = {};
 		const required: Array<string> = [];
-		Object.entries(compDefData).forEach(([key, value]) => {
+		Object.entries(fieldDefinitionMap).forEach(([key, value]) => {
 			if (Object.keys(value.schema).length > 0) {
 				schemaProps[key] = value.schema;
 			}
@@ -48,10 +48,32 @@ export default function FormEditor({
 		return tempSchema;
 	};
 
-	const setFormData = (tempObj: formDefinition) => {
+	const generateValidationUUID = (fieldDefinitionMap: formDefinition) => {
+		let tempData = duplicate(fieldDefinitionMap);
+
+		Object.entries(tempData).forEach(([k, v]) => {
+			//add uuid to validation
+			let tempCompDef = duplicate(v) as FormCompDefinition;
+			Object.entries(tempCompDef.validation).forEach(([k1, v1]) => {
+				let tempVal = duplicate(v1) as FormCompValidation;
+				let key = k1 as string;
+				if (!tempVal.uuid) {
+					console.log('new validation');
+					let uuid = shortUUID();
+					tempVal['uuid'] = uuid;
+					tempCompDef.validation[key] = tempVal;
+				}
+			});
+			tempData[k] = tempCompDef;
+		});
+		return tempData;
+	};
+
+	const setFormData = (fieldDefinitionMap: formDefinition) => {
 		let tempData: FormStorageEditorDefinition = {
-			formDefinition: tempObj,
-			formSchema: generateFormSchema(tempObj)!,
+			...value,
+			fieldDefinitionMap: fieldDefinitionMap,
+			schema: generateFormSchema(fieldDefinitionMap)!,
 		};
 		setData(defPath!, tempData, pageExtractor.getPageName());
 	};
@@ -76,53 +98,56 @@ export default function FormEditor({
 				e.dataTransfer.getData('editor/text'),
 			);
 			if (dragData.dropType === 'Inside_Drop') {
-				let newData = duplicate(compDefData);
+				let newData = duplicate(fieldDefinitionMap);
 				let temp = newData[key!].order;
 				newData[key!].order = newData[dragData.key].order;
 				newData[dragData.key].order = temp;
 				setFormData(newData);
 			} else {
-				let tempObj = duplicate(compDefData);
+				// adding form component to fieldDefinitionMap/editor
+				let tempObj = duplicate(fieldDefinitionMap);
 
 				if (compDefinitionMap.has(dragData.key)) {
-					if (compDefData[dragData.key]) {
+					if (fieldDefinitionMap[dragData.key]) {
 						let flag = true;
 						let i = 1;
 						let newKey: string = dragData.key;
 						while (flag) {
 							newKey = dragData.key + i;
-							if (!!compDefData[newKey]) {
+							if (!!fieldDefinitionMap[newKey]) {
 								i++;
 							} else {
 								flag = false;
 							}
 						}
 						tempObj[newKey] = {
-							...compDefinitionMap.get(dragData.key)!,
-							order: Object.entries(compDefData).length,
+							...duplicate(compDefinitionMap.get(dragData.key)!),
+							order: Object.entries(fieldDefinitionMap).length,
 							key: newKey,
+							uuid: shortUUID(),
 						};
 					} else {
 						tempObj[dragData.key] = {
-							...compDefinitionMap.get(dragData.key)!,
-							order: Object.entries(compDefData).length,
+							...duplicate(compDefinitionMap.get(dragData.key)!),
+							order: Object.entries(fieldDefinitionMap).length,
 							key: dragData.key,
+							uuid: shortUUID(),
 						};
 					}
 				}
-				setFormData(tempObj);
+				setFormData(generateValidationUUID(tempObj));
 			}
 		} catch (error) {}
 	};
 
 	const handleCompDefChanges = (key: string, data: FormCompDefinition) => {
-		let tempObj = duplicate(compDefData);
+		let tempObj = duplicate(fieldDefinitionMap);
 		tempObj[key] = data;
-		setFormData(tempObj);
+		setFormData(generateValidationUUID(tempObj));
 	};
 
 	const handleDelete = (key: string) => {
-		let tempObj: formDefinition = duplicate(compDefData);
+		let tempObj: formDefinition = duplicate(fieldDefinitionMap);
 		delete tempObj[key];
 		Object.entries(tempObj)
 			.sort(
@@ -138,7 +163,7 @@ export default function FormEditor({
 	return (
 		<div className="_editor" onDrop={e => handleDrop(e)} onDragOver={handleDragOver}>
 			<Accordion
-				data={Object.values(compDefData).sort(
+				data={Object.values(fieldDefinitionMap).sort(
 					(a: FormCompDefinition, b: FormCompDefinition) =>
 						(a.order ?? 0) - (b.order ?? 0),
 				)}
