@@ -160,6 +160,7 @@ export default function FormStorageEditorStyle({
             padding-left: 10px; 
             border-radius: 4px;
             border: 1px solid rgba(0, 0, 0, 0.15);
+            cursor: pointer;
         }
         ${PREFIX} ._comp ._item span {
             color: rgba(0, 0, 0, 0.80);

@@ -63,7 +63,7 @@ const compDefinitionGenerator = (data: FormCompDefinition, compType: string, for
 	} = {
 		...compDef.properties,
 		...(data?.placeholder ? { placeholder: { value: data?.placeholder } } : {}),
-		...(data?.maxChars ? { maxChar: { value: data?.maxChars } } : {}),
+		...(data?.maxChars ? { maxChars: { value: data?.maxChars } } : {}),
 		...(data?.inputType ? { valueType: { value: data?.inputType } } : {}),
 		...(data?.numberType ? { numberType: { value: data?.numberType } } : {}),
 		...(data?.isMultiSelect ? { isMultiSelect: { value: data?.isMultiSelect } } : {}),
@@ -106,7 +106,6 @@ export const generateFormPreview = (fieldDefinitionMap: formDefinition, formName
 		let tempCompDef = compDefinitionGenerator(v, COMP_TYPE[v.editorType], formName);
 		pageDef.componentDefinition[tempCompDef.key] = tempCompDef;
 		children[tempCompDef.key] = true;
-		// console.log('tempCompDef', tempCompDef);
 	}
 	console.log('compDef', pageDef.componentDefinition);
 
