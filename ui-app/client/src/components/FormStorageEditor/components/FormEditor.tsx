@@ -26,7 +26,7 @@ export default function FormEditor({
 	locationHistory: Array<LocationHistory>;
 }) {
 	const { fieldDefinitionMap } = value;
-	console.log('fieldDefinitionMap', fieldDefinitionMap);
+	// console.log('fieldDefinitionMap', fieldDefinitionMap);
 
 	const generateFormSchema = (fieldDefinitionMap: formDefinition) => {
 		const schemaProps: { [key: string]: CustomSchema } = {};
@@ -58,7 +58,6 @@ export default function FormEditor({
 				let tempVal = duplicate(v1) as FormCompValidation;
 				let key = k1 as string;
 				if (!tempVal.uuid) {
-					console.log('new validation');
 					let uuid = shortUUID();
 					tempVal['uuid'] = uuid;
 					tempCompDef.validation[key] = tempVal;

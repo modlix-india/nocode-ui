@@ -84,7 +84,7 @@ function FormStorageEditor(props: ComponentProps) {
 		);
 	}, [defPath]);
 
-	console.log('formData', value);
+	// console.log('formData', value);
 
 	// Function to call save eventFunction
 	const saveFunction = useCallback(() => {

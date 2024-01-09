@@ -107,7 +107,7 @@ export const generateFormPreview = (fieldDefinitionMap: formDefinition, formName
 		pageDef.componentDefinition[tempCompDef.key] = tempCompDef;
 		children[tempCompDef.key] = true;
 	}
-	console.log('compDef', pageDef.componentDefinition);
+	// console.log('compDef', pageDef.componentDefinition);
 
 	return { children: children, pageDef: pageDef };
 };
