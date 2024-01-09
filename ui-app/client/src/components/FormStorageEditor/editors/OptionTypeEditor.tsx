@@ -77,8 +77,9 @@ export default function OptionTypeEditor({
 }: {
 	data: FormCompDefinition;
 	editerType: string;
-	handleCompDefChanges: (key: string, data: any) => void;
+	handleCompDefChanges: (key: string, data: any, newKey?: string) => void;
 }) {
+	const [key, setKey] = useState<string>('');
 	const [label, setLabel] = useState<string>('');
 	const [placeholder, setPlaceholder] = useState<string>('');
 	const [listOfOption, setListOfOption] = useState<Array<Option>>([]);
@@ -88,6 +89,7 @@ export default function OptionTypeEditor({
 	const [message1, setMessage1] = useState<string>('');
 
 	useEffect(() => {
+		setKey(data.key);
 		setLabel(data.label);
 		setPlaceholder(data?.placeholder || '');
 		setListOfOption(data?.optionList || []);
@@ -109,6 +111,13 @@ export default function OptionTypeEditor({
 		return tempObj;
 	};
 
+	const handleKeyChange = () => {
+		let tempData = {
+			...data,
+			key: key,
+		};
+		handleCompDefChanges(data.key, tempData, key);
+	};
 	const handleLabelChange = () => {
 		let tempData = {
 			...data,
@@ -247,7 +256,23 @@ export default function OptionTypeEditor({
 	return (
 		<Fragment>
 			<div className="_item">
-				<span>{`Label  (key: ${data.key})`}</span>
+				<span>Key</span>
+				<input
+					type="text"
+					value={key}
+					onChange={e => setKey(e.target.value)}
+					onBlur={() => handleKeyChange()}
+					onKeyDown={e => {
+						if (e.key === 'Enter') {
+							e.preventDefault();
+							e.stopPropagation();
+							handleKeyChange();
+						}
+					}}
+				/>
+			</div>
+			<div className="_item">
+				<span>Label</span>
 				<input
 					type="text"
 					value={label}

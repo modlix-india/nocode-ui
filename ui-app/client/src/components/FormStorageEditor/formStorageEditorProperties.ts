@@ -9,28 +9,6 @@ import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
-		name: 'theme',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Theme',
-		editor: ComponentPropertyEditor.ENUM,
-		group: ComponentPropertyGroup.BASIC,
-		description: 'Editor color schemes',
-		defaultValue: '_light',
-		enumValues: [
-			{
-				name: '_light',
-				displayName: 'Light Theme',
-				description: 'Light colors look and feel',
-			},
-			{
-				name: '_dark',
-				displayName: 'Dark Theme',
-				description: 'Dark colors look and feel',
-			},
-		],
-	},
-
-	{
 		name: 'onSave',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'On Save',

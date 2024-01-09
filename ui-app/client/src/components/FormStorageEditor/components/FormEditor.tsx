@@ -140,9 +140,13 @@ export default function FormEditor({
 		} catch (error) {}
 	};
 
-	const handleCompDefChanges = (key: string, data: FormCompDefinition) => {
+	const handleCompDefChanges = (key: string, data: FormCompDefinition, newKey?: string) => {
 		let tempObj = duplicate(fieldDefinitionMap);
-		tempObj[key] = data;
+		// when changing key
+		if (newKey && newKey != key) {
+			tempObj[newKey] = data;
+			delete tempObj[key];
+		} else tempObj[key] = data;
 		setFormData(generateValidationUUID(tempObj));
 	};
 

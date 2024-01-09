@@ -11,7 +11,7 @@ import { duplicate } from '@fincity/kirun-js';
 interface SmartElementEditorProps {
 	data: FormCompDefinition;
 	editorType: string;
-	handleCompDefChanges: (key: string, data: any) => void;
+	handleCompDefChanges: (key: string, data: any, newKey?: string) => void;
 }
 
 export default function SmartElementEditor({
@@ -19,6 +19,7 @@ export default function SmartElementEditor({
 	editorType,
 	handleCompDefChanges,
 }: SmartElementEditorProps) {
+	const [key, setKey] = useState<string>('');
 	const [label, setLabel] = useState<string>('');
 	const [placeholder, setPlaceholder] = useState<string>('');
 
@@ -34,6 +35,7 @@ export default function SmartElementEditor({
 	const [regex, setRegex] = useState<string>('');
 
 	useEffect(() => {
+		setKey(data.key);
 		setLabel(data.label);
 		setPlaceholder(data?.placeholder || '');
 		setMinChar('' + data.validation['STRING_LENGTH']?.minLength);
@@ -61,6 +63,13 @@ export default function SmartElementEditor({
 				tempObj[key] = { ...obj, order: index };
 			});
 		return tempObj;
+	};
+	const handleKeyChange = () => {
+		let tempData = {
+			...data,
+			key: key,
+		};
+		handleCompDefChanges(data.key, tempData, key);
 	};
 
 	const handleLabelChange = () => {
@@ -197,7 +206,23 @@ export default function SmartElementEditor({
 	return (
 		<Fragment>
 			<div className="_item">
-				<span>{`Label  (key: ${data.key})`}</span>
+				<span>Key</span>
+				<input
+					type="text"
+					value={key}
+					onChange={e => setKey(e.target.value)}
+					onBlur={() => handleKeyChange()}
+					onKeyDown={e => {
+						if (e.key === 'Enter') {
+							e.preventDefault();
+							e.stopPropagation();
+							handleKeyChange();
+						}
+					}}
+				/>
+			</div>
+			<div className="_item">
+				<span>Label</span>
 				<input
 					type="text"
 					value={label}

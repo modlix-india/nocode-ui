@@ -33,8 +33,9 @@ export default function TextTypeEditor({
 }: {
 	data: FormCompDefinition;
 	editerType: string;
-	handleCompDefChanges: (key: string, data: any) => void;
+	handleCompDefChanges: (key: string, data: any, newKey?: string) => void;
 }) {
+	const [key, setKey] = useState<string>('');
 	const [label, setLabel] = useState<string>('');
 	const [placeholder, setPlaceholder] = useState<string>('');
 
@@ -54,6 +55,7 @@ export default function TextTypeEditor({
 	const [regex, setRegex] = useState<string>('');
 
 	useEffect(() => {
+		setKey(data.key);
 		setLabel(data.label);
 		setPlaceholder(data?.placeholder || '');
 		setInputType(data?.inputType || '');
@@ -103,6 +105,14 @@ export default function TextTypeEditor({
 				tempObj[key] = { ...obj, order: index };
 			});
 		return tempObj;
+	};
+
+	const handleKeyChange = () => {
+		let tempData = {
+			...data,
+			key: key,
+		};
+		handleCompDefChanges(data.key, tempData, key);
 	};
 
 	const handleLabelChange = () => {
@@ -343,7 +353,23 @@ export default function TextTypeEditor({
 	return (
 		<Fragment>
 			<div className="_item">
-				<span>{`Label  (key: ${data.key})`}</span>
+				<span>Key</span>
+				<input
+					type="text"
+					value={key}
+					onChange={e => setKey(e.target.value)}
+					onBlur={() => handleKeyChange()}
+					onKeyDown={e => {
+						if (e.key === 'Enter') {
+							e.preventDefault();
+							e.stopPropagation();
+							handleKeyChange();
+						}
+					}}
+				/>
+			</div>
+			<div className="_item">
+				<span>Label</span>
 				<input
 					type="text"
 					value={label}

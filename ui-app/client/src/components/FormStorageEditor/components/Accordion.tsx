@@ -7,7 +7,7 @@ import OptionTypeEditor from '../editors/OptionTypeEditor';
 
 const getCompEditor = (
 	data: FormCompDefinition,
-	handleCompDefChanges: (key: string, data: FormCompDefinition) => void,
+	handleCompDefChanges: (key: string, data: FormCompDefinition, newKey?: string) => void,
 ) => {
 	const COMP_EDITORS: { [key: string]: any } = {
 		NameEditor: (
@@ -83,7 +83,7 @@ interface AccordionProps {
 	handleDrop: (e: DragEvent<HTMLDivElement>, key: string) => void;
 	handleDelete: (key: string) => void;
 	handleDragStart: (e: DragEvent<HTMLDivElement>, key: string, dropType: string) => void;
-	handleCompDefChanges: (key: string, data: FormCompDefinition) => void;
+	handleCompDefChanges: (key: string, data: FormCompDefinition, newKey?: string) => void;
 }
 
 export default function Accordion({
@@ -99,7 +99,7 @@ export default function Accordion({
 				return (
 					<AccordionPanel
 						data={each}
-						key={each.key}
+						key={each.uuid}
 						handleDrop={handleDrop}
 						handleDelete={handleDelete}
 						handleDragStart={handleDragStart}

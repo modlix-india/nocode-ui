@@ -70,7 +70,7 @@ function FormStorageEditor(props: ComponentProps) {
 			(_, value) => {
 				setValue(
 					value || {
-						name: 'xyz',
+						name: 'form',
 						fieldDefinitionMap: {},
 						schema: { type: 'OBJECT', additionalProperties: false },
 						readAuth: 'Authorities.Logged_IN',
@@ -157,7 +157,7 @@ const component: Component = {
 	styleComponent: StorageEditorStyle,
 	styleDefaults: styleDefaults,
 	bindingPaths: {
-		bindingPath: { name: 'Definition' },
+		bindingPath: { name: 'Storage Binding' },
 	},
 	subComponentDefinition: [
 		{
