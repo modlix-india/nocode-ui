@@ -612,16 +612,30 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			color: #8E90A44D;
 		}
 
-		${PREFIX} ._buttonBar._screenSizes i.fa,
-		${PREFIX} ._buttonBar._screenSizes svg {
+		${PREFIX} ._screenSizes i.fa,
+		${PREFIX} ._screenSizes svg {
 			background-color: transparent;
-			border-bottom: 3px solid transparent;
 			border-radius: 0;
 			height: 100%;
 			display: flex;
 			justify-content: center;
 			align-items: center;
 			margin: 3px;
+		}
+		
+		${PREFIX} ._buttonBar._screenSizes i.fa,
+		${PREFIX} ._buttonBar._screenSizes svg{
+			border-bottom: 3px solid transparent;
+		}
+
+		${PREFIX} ._iframeHeader._screenSizes svg {
+			margin: 0;
+			width: 28px;
+			height: 28px;
+			background: #0000001a;
+			padding: 4px 6px;
+			border-top-left-radius: 3px;
+			border-bottom-left-radius: 3px;
 		}
 
 		${PREFIX} ._propLabel._svgButtons {
@@ -686,6 +700,58 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._propLabel._svgButtons .svgContainer.active circle{
 			fill: #3A8BED;
 			stroke: #3A8BED;
+		}
+
+		${PREFIX} ._scaleControlContainer {
+			position: relative;	
+			margin-left: -20px;
+		}
+
+		${PREFIX} ._scaleControlContainer ._scaleControl {
+			display: inline-flex;
+			position: sticky;
+			left: -20px;
+			top: 0;
+			background: #FFFFFF;
+			margin-bottom: 50px;
+			border-radius: 4px;
+			padding: 0px 5px;
+			box-shadow: 0px 1px 4px 0px #00000012;
+			align-items: stretch;
+		}
+
+		${PREFIX} ._scaleControlContainer ._scaleControl ._control {
+			min-width: 20px;
+			display: flex;
+			cursor: pointer;
+			font-family: Asap;
+			font-size: 16px;
+			font-weight: 600;
+			padding: 8px 5px;
+			align-items: center;
+			border-radius: 3px;
+			border-bottom-left-radius: 0px;
+			border-bottom-right-radius: 0px;
+			margin: 2px;
+			border-bottom: 2px solid transparent;
+			margin-bottom: 0px;
+			white-space: nowrap;
+		}
+
+		${PREFIX} ._scaleControlContainer ._scaleControl ._control._text {
+			user-select: none;
+		}
+
+		${PREFIX} ._scaleControlContainer ._scaleControl ._control:hover,
+		${PREFIX} ._scaleControlContainer ._scaleControl ._control._active {
+
+			background-color: #F8FAFB;
+		}
+
+		${PREFIX} ._scaleControlContainer ._scaleControl ._control._device:hover,
+		${PREFIX} ._scaleControlContainer ._scaleControl ._control._device._active {
+
+			border-bottom: 2px solid #4D7FEE;
 		}
 
 		._microToggle2 {
@@ -1813,6 +1879,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._spacingEditor ._value._left { left: 5px; }
 		._spacingEditor ._value._right { right: 5px; }
 
+		${PREFIX} ._screenSizes {
+			height: 30px;
+		}
+
 		${PREFIX} ._buttonBar._screenSizes {
 			height: 65px;
 		}
@@ -1824,7 +1894,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			background: linear-gradient(360deg, rgba(142, 144, 164, 0.1) 0.78%, rgba(142, 144, 164, 0.011) 157.03%);
 		}
 
-		${PREFIX} ._buttonBar._screenSizes i.fa {
+		${PREFIX} ._screenSizes i.fa {
 			color: #8E90A480;
 		}
 
@@ -1857,12 +1927,42 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			justify-content: center;
 		}
 
-		${PREFIX} ._iframe {
-			flex: 1;
+		${PREFIX} ._iframeHolder {
+			flex: 1;			
+			position: relative;
 			display: flex;
-			justify-content: center;
+			gap: 20px;
+			transform-origin: left top;
+		}
+
+		${PREFIX} ._iframeHeader {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: flex-start;
+			gap: 10px;
+			background-color: #0000000a;
+			border-radius: 4px;
+			font-size: 12px;
+			color: #000000a0;
+			cursor: pointer;
+		}
+
+		${PREFIX} ._iframeCenter {
+			display: table-cell;
+			flex: 1;
+			padding: 70px;
+			padding-top: 10px;
+			overflow: auto;
+		}
+
+		${PREFIX} ._iframe {
+			display: flex;
 			overflow: auto;
 			transform-origin: top left;
+			flex-direction: column;
+			gap: 10px;
+			overflow: hidden;
 		}
 
 		${PREFIX} ._iframe.MOBILE_POTRAIT_SCREEN iframe{
@@ -1928,7 +2028,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._iframe iframe {
 			border: none;
 			width: 100%;
-			min-height: 100%;
+			min-height: 100vh;
 			overflow: hidden;
 		}
 
@@ -2027,13 +2127,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._iframeContainer._previewMode {
 			max-height: 100%;
-		}
-
-		${PREFIX} ._iframeHolder {
-			flex: 1;
-			display: flex;
-			overflow: auto;
-			position: relative;
 		}
 
 		${PREFIX}  ._previewModeCloser {

@@ -41,6 +41,7 @@ import { HelperComponent } from '../HelperComponent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { REPO_SERVER, RemoteRepository } from '../../Engine/RemoteRepository';
 import { styleDefaults } from './KIRunEditorStyleProperties';
+import { editor } from 'monaco-editor';
 
 const gridSize = 20;
 
@@ -147,8 +148,8 @@ function KIRunEditor(
 		definition,
 		context,
 		locationHistory,
-		functionRepository: actualFunctionRepository = UIFunctionRepository,
-		schemaRepository: actualSchemaRepository = UISchemaRepository,
+		functionRepository: actualFunctionRepository,
+		schemaRepository: actualSchemaRepository,
 		tokenValueExtractors = new Map(),
 		storePaths = new Set(),
 		pageDefinition,
@@ -187,60 +188,64 @@ function KIRunEditor(
 	const [funDef, setFunDef] = useState<FunctionDefinition | undefined>();
 
 	const functionRepository: Repository<Function> = useMemo(() => {
-		if (!actualFunctionRepository && appCode && clientCode) {
-			if (editorType != 'ui') {
-				return RemoteRepository.getRemoteFunctionRepository(
-					appCode,
-					clientCode,
-					true,
-					REPO_SERVER.CORE,
-				);
-			}
-			return new HybridRepository(
+		if (actualFunctionRepository) return actualFunctionRepository;
+
+		if (editorType === 'ui') {
+			return new HybridRepository<Function>(
+				UIFunctionRepository,
 				RemoteRepository.getRemoteFunctionRepository(
 					appCode,
 					clientCode,
-					true,
+					false,
 					REPO_SERVER.UI,
 				),
 				RemoteRepository.getRemoteFunctionRepository(
 					appCode,
 					clientCode,
-					true,
+					false,
 					REPO_SERVER.CORE,
 				),
 			);
+		} else if (editorType === 'core') {
+			return RemoteRepository.getRemoteFunctionRepository(
+				appCode,
+				clientCode,
+				true,
+				REPO_SERVER.CORE,
+			);
 		}
 
-		return actualFunctionRepository;
+		return UIFunctionRepository;
 	}, [actualFunctionRepository, appCode, clientCode, editorType]);
 
 	const schemaRepository: Repository<Schema> = useMemo(() => {
-		if (!actualSchemaRepository && appCode && clientCode) {
-			if (editorType != 'ui') {
-				return RemoteRepository.getRemoteSchemaRepository(
-					appCode,
-					clientCode,
-					true,
-					REPO_SERVER.CORE,
-				);
-			}
-			return new HybridRepository(
+		if (actualSchemaRepository) return actualSchemaRepository;
+
+		if (editorType === 'ui') {
+			return new HybridRepository<Schema>(
+				UISchemaRepository,
 				RemoteRepository.getRemoteSchemaRepository(
 					appCode,
 					clientCode,
-					true,
+					false,
 					REPO_SERVER.UI,
 				),
 				RemoteRepository.getRemoteSchemaRepository(
 					appCode,
 					clientCode,
-					true,
+					false,
 					REPO_SERVER.CORE,
 				),
 			);
+		} else if (editorType === 'core') {
+			return RemoteRepository.getRemoteSchemaRepository(
+				appCode,
+				clientCode,
+				true,
+				REPO_SERVER.CORE,
+			);
 		}
-		return actualSchemaRepository;
+		return UISchemaRepository;
 	}, [actualSchemaRepository, appCode, clientCode, editorType]);
 
 	useEffect(() => {

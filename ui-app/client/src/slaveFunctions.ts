@@ -13,11 +13,20 @@ export const isSlave = (() => {
 
 const _parent = window.parent !== window.top ? window.parent : window.top;
 export function messageToMaster(message: { type: string; payload: any | undefined }) {
-	_parent.postMessage({ ...message, editorType: window.designMode }, '*');
+	_parent.postMessage(
+		{ ...message, editorType: window.designMode, screenType: window.screenType },
+		'*',
+	);
 }
 
 export const SLAVE_FUNCTIONS = new Map<string, (payload: any) => void>([
-	['EDITOR_TYPE', p => (window.designMode = p)],
+	[
+		'EDITOR_TYPE',
+		p => {
+			window.designMode = p.type;
+			window.screenType = p.screenType;
+		},
+	],
 	[
 		'EDITOR_FILLER_SECTION_SELECTION',
 		p => {
