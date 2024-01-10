@@ -61,6 +61,7 @@ export function SpacingEditor({
 					setChangeType(prop);
 					let d = '';
 					const typ = prop.startsWith('margin') ? 'margin' : 'padding';
+
 					if (
 						propValues[typ + 'Top'] === propValues[typ + 'Bottom'] &&
 						propValues[typ + 'Top'] === propValues[typ + 'Left'] &&
@@ -417,7 +418,7 @@ export function SpacingEditor({
 								subComponentName,
 								selectedComponent,
 								selectedComponentsList,
-								propValues: [{ prop: changeType, value }],
+								propValues: newValues,
 								selectorPref,
 								defPath,
 								locationHistory,
