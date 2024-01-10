@@ -502,8 +502,10 @@ function Video(props: ComponentProps) {
 				style={resolvedStyles.player ?? {}}
 				onPlay={() => {
 					if (!isFirstTimePlay || !autoPlay || !autoUnMuteAfterPlaying) return;
-					setMuted(false);
-					setFirstTimePlay(false);
+					setTimeout(() => {
+						setMuted(false);
+						setFirstTimePlay(false);
+					}, 500);
 				}}
 			>
 				<source src={getSrcUrl(src)} type={type} />
