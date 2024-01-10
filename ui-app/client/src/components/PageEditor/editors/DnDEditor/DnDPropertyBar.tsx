@@ -22,7 +22,7 @@ interface PropertyBarProps {
 	defPath: string | undefined;
 	locationHistory: Array<LocationHistory>;
 	selectedComponent?: string;
-	selectednComponentsList: string[];
+	selectedComponentsList: string[];
 	onShowCodeEditor: (eventName: string) => void;
 	slaveStore: any;
 	editPageName: string | undefined;
@@ -34,11 +34,12 @@ interface PropertyBarProps {
 	previewMode: boolean;
 	pageOperations: PageOperations;
 	appPath: string | undefined;
+	editorType: string | undefined;
 }
 
 export default function DnDPropertyBar({
 	selectedComponent,
-	selectednComponentsList,
+	selectedComponentsList,
 	defPath,
 	locationHistory,
 	pageExtractor,
@@ -56,6 +57,7 @@ export default function DnDPropertyBar({
 	previewMode,
 	pageOperations,
 	appPath,
+	editorType,
 }: PropertyBarProps) {
 	const [currentTab, setCurrentTab] = React.useState(1);
 	const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -153,7 +155,7 @@ export default function DnDPropertyBar({
 				personalizationPath={personalizationPath}
 				onChangePersonalization={onChangePersonalization}
 				selectedComponent={selectedComponent}
-				selectednComponentsList={selectednComponentsList}
+				selectedComponentsList={selectedComponentsList}
 				defPath={defPath}
 				locationHistory={locationHistory}
 				pageExtractor={pageExtractor}
@@ -163,6 +165,7 @@ export default function DnDPropertyBar({
 				slaveStore={slaveStore}
 				pageOperations={pageOperations}
 				appPath={appPath}
+				editorType={editorType}
 			/>
 		);
 	} else if (currentTab === 2) {
@@ -172,7 +175,7 @@ export default function DnDPropertyBar({
 				personalizationPath={personalizationPath}
 				onChangePersonalization={onChangePersonalization}
 				selectedComponent={selectedComponent}
-				selectedComponentsList={selectednComponentsList}
+				selectedComponentsList={selectedComponentsList}
 				defPath={defPath}
 				locationHistory={locationHistory}
 				pageExtractor={pageExtractor}
@@ -194,7 +197,7 @@ export default function DnDPropertyBar({
 				personalizationPath={personalizationPath}
 				onChangePersonalization={onChangePersonalization}
 				selectedComponent={selectedComponent}
-				selectedComponentsList={selectednComponentsList}
+				selectedComponentsList={selectedComponentsList}
 				defPath={defPath}
 				locationHistory={locationHistory}
 				pageExtractor={pageExtractor}

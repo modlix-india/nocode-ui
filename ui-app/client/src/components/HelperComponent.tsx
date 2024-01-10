@@ -43,7 +43,7 @@ function PageEditorHelperComponent({
 		selectedComponents,
 		personalization: {
 			preview = false,
-			slave: { highlightColor = '#b2d33f', noSelection = false } = {},
+			slave: { highlightColor = '#52BD94', noSelection = false } = {},
 		} = {},
 	} = window.pageEditor ?? {};
 

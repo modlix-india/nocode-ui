@@ -62,13 +62,15 @@ function PageComponent(props: Readonly<ComponentProps>) {
 					}
 				}
 
-				pageHistory[pageName] = v;
 				let makeCall = true;
 
 				const {
+					name,
 					eventFunctions = {},
 					properties: { onLoadEvent = undefined, loadStrategy = 'default' } = {},
 				} = pageDefinition;
+
+				pageHistory[name] = v;
 
 				if (!firstTime) {
 					makeCall = false;
@@ -96,7 +98,12 @@ function PageComponent(props: Readonly<ComponentProps>) {
 			pageExtractor,
 			`${STORE_PREFIX}.urlDetails`,
 		);
-	}, [pageDefinition, pageExtractor, pageName, locationHistory]);
+	}, [
+		pageDefinition === undefined,
+		pageExtractor.getPageName(),
+		pageName,
+		locationHistory.length,
+	]);
 
 	const styleText = React.useMemo(() => {
 		if (!pageDefinition?.properties?.classes) return '';

@@ -10,6 +10,7 @@ declare global {
 	var nodeDev: boolean;
 	var isDesignMode: boolean;
 	var designMode: string;
+	var screenType: string;
 	var getStore: () => any;
 	var isDebugMode: boolean;
 	var pageEditor: {

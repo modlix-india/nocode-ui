@@ -124,7 +124,6 @@ export default function DnDTopBar({
 	const [changed, setChanged] = useState(Date.now());
 	const [permission, setPermission] = useState<string>('');
 	const [selectedPage, setSelectedPage] = React.useState('');
-	const navigate = useNavigate();
 	const location = useLocation();
 	const svgLogo = logo ? <img className="_logo" src={getSrcUrl(logo)} /> : undefined;
 	useEffect(() => setLocalUrl(url), [url]);
@@ -242,7 +241,7 @@ export default function DnDTopBar({
 	React.useEffect(() => {
 		if (!selectedPage) return;
 		const furl = getHref(`/${pageExtractor.getPageName()}/${selectedPage}`, location);
-		navigate(furl);
+		window.open(furl, '_self');
 	}, [selectedPage]);
 
 	if (previewMode) return <div className="_topBarGrid _previewMode"> </div>;
@@ -488,7 +487,7 @@ export default function DnDTopBar({
 			<div className="_simpleEditorDropdownBody">
 				{dashboardPageName ? (
 					<div
-						onClick={() => navigate(getHref(dashboardPageName, location))}
+						onClick={() => window.open(getHref(dashboardPageName, location), '_self')}
 						className="_simpleEditorDropdownOption"
 					>
 						View dashboard
@@ -496,7 +495,7 @@ export default function DnDTopBar({
 				) : null}
 				{settingsPageName ? (
 					<div
-						onClick={() => navigate(getHref(settingsPageName, location))}
+						onClick={() => window.open(getHref(settingsPageName, location), '_self')}
 						className="_simpleEditorDropdownOption"
 					>
 						Site settings
@@ -517,7 +516,7 @@ export default function DnDTopBar({
 						type="button"
 						onMouseDown={e => {
 							e.stopPropagation();
-							navigate(getHref(addnewPageName, location));
+							window.open(getHref(addnewPageName, location), '_self');
 						}}
 						className="_add_page_btn"
 					>
@@ -600,12 +599,7 @@ export default function DnDTopBar({
 				</div>
 				{urlBar}
 				{pageSelector}
-				<div className="_topLeftCenterBarGrid">
-					<ScreenSizeButtons
-						deviceType={deviceType}
-						changeDeviceType={changeDeviceType}
-					/>
-				</div>
+				<div className="_topLeftCenterBarGrid"></div>
 			</div>
 			<div className="_topRightBarGrid">
 				<div className="_buttonBar">
