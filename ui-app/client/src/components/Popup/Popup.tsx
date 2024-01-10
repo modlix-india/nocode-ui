@@ -39,6 +39,7 @@ function Popup(props: ComponentProps) {
 			bindingPathPath,
 		);
 	}, []);
+
 	const {
 		key,
 		properties: {
