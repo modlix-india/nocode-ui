@@ -264,7 +264,8 @@ export default function ImageBrowser({
 						<input
 							className="_searchBar"
 							type="text"
-							value={
+							readOnly={true}
+							defaultValue={
 								getDataFromPath(
 									bindingPaths.get(currentBindingPath)!,
 									locationHistory,

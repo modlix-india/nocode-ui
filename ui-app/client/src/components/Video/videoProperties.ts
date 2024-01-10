@@ -19,11 +19,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'poster',
-		schema: SCHEMA_BOOL_COMP_PROP,
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Poster',
 		description: 'Image to load before the video comes up.',
 		group: ComponentPropertyGroup.ADVANCED,
-		defaultValue: false,
+		editor: ComponentPropertyEditor.IMAGE,
 	},
 	{
 		name: 'playsInline',

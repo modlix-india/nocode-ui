@@ -122,10 +122,12 @@ function Video(props: ComponentProps) {
 		if (typeof video.current.canPlayType === 'function') {
 			setVideoControl(false);
 		}
-		if (autoPlay) {
-			video.current.play();
-		}
-	}, []);
+		setTimeout(() => {
+			if (autoPlay && video.current && video.current.paused) {
+				video.current.play();
+			}
+		}, 200);
+	}, [video.current, autoPlay]);
 
 	const handlePlayPause = () => {
 		if (!video.current) return;

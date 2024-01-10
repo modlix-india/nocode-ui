@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { HelperComponent } from '../HelperComponent';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import Children from '../Children';
-import { deepEqual, isNullValue } from '@fincity/kirun-js';
+import { deepEqual, duplicate, isNullValue } from '@fincity/kirun-js';
 import { runEvent } from '../util/runEvent';
 import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../../constants';
 import {
@@ -30,7 +30,7 @@ function PageComponent(props: Readonly<ComponentProps>) {
 		locationHistory,
 	} = props;
 	const { pageName } = context;
-	const [, setValidationChangedAt] = useState(Date.now());
+
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const { stylePropertiesWithPseudoStates } = useDefinition(
 		definition,
@@ -39,59 +39,64 @@ function PageComponent(props: Readonly<ComponentProps>) {
 		locationHistory,
 		pageExtractor,
 	);
-	const [pathParts, setPathParts] = useState<string | undefined>();
-	const [queryParameters, setQueryParameters] = useState();
-	const location = useLocation();
 
 	useEffect(() => {
-		const value = getDataFromPath(`${STORE_PREFIX}.urlDetails`, []);
-		setPathParts(value.pathParts.join('/') + '?' + location.search);
-		setQueryParameters(value.queryParameters);
-	}, [location.pathname, location.search, setPathParts, setQueryParameters]);
+		return addListenerAndCallImmediately(
+			(_, value) => {
+				const v = duplicate(value);
+				if (isNullValue(v.pageName)) {
+					v.pageName = getDataFromPath(
+						`${STORE_PREFIX}.application.properties.defaultPage`,
+						[],
+					);
+				}
 
-	useEffect(() => {
-		if (pathParts === undefined) return;
-		const {
-			eventFunctions = {},
-			name,
-			properties: { onLoadEvent = undefined, loadStrategy = 'default' } = {},
-		} = pageDefinition;
-		const v = { ...(getDataFromPath(`${STORE_PREFIX}.urlDetails`, []) ?? {}), origName: name };
-		if (isNullValue(v.pageName)) {
-			v.pageName = getDataFromPath(`${STORE_PREFIX}.application.properties.defaultPage`, []);
-		}
-		let firstTime = true;
-		let sameAsExisting = false;
+				if (v.pageName !== pageName) return;
 
-		if (v.pageName !== pageName) return;
-		if (pageHistory[pageName]) {
-			firstTime = false;
-			if (deepEqual(v, pageHistory[pageName])) {
-				sameAsExisting = true;
-			}
-		}
+				let firstTime = true;
+				let sameAsExisting = false;
+				if (pageHistory[pageName]) {
+					firstTime = false;
+					if (deepEqual(v, pageHistory[pageName])) {
+						sameAsExisting = true;
+					}
+				}
 
-		pageHistory[pageName] = v;
-		let makeCall = true;
-		if (!firstTime) {
-			makeCall = false;
-			if (loadStrategy !== 'default' || !sameAsExisting) {
-				setData(`${STORE_PREFIX}.pageData.${pageName}`, {});
-				makeCall = true;
-			}
-		}
+				pageHistory[pageName] = v;
+				let makeCall = true;
 
-		if (makeCall && !isNullValue(onLoadEvent) && !isNullValue(eventFunctions[onLoadEvent!])) {
-			(async () =>
-				await runEvent(
-					eventFunctions[onLoadEvent!],
-					'pageOnLoad',
-					pageName,
-					locationHistory,
-					pageDefinition,
-				))();
-		}
-	}, [pathParts, queryParameters, pageName]);
+				const {
+					eventFunctions = {},
+					properties: { onLoadEvent = undefined, loadStrategy = 'default' } = {},
+				} = pageDefinition;
+
+				if (!firstTime) {
+					makeCall = false;
+					if (loadStrategy !== 'default' || !sameAsExisting) {
+						setData(`${STORE_PREFIX}.pageData.${pageName}`, {});
+						makeCall = true;
+					}
+				}
+
+				if (
+					makeCall &&
+					!isNullValue(onLoadEvent) &&
+					!isNullValue(eventFunctions[onLoadEvent!])
+				) {
+					(async () =>
+						await runEvent(
+							eventFunctions[onLoadEvent!],
+							'pageOnLoad',
+							pageName,
+							locationHistory,
+							pageDefinition,
+						))();
+				}
+			},
+			pageExtractor,
+			`${STORE_PREFIX}.urlDetails`,
+		);
+	}, [pageDefinition, pageExtractor, pageName, locationHistory]);
 
 	const styleText = React.useMemo(() => {
 		if (!pageDefinition?.properties?.classes) return '';

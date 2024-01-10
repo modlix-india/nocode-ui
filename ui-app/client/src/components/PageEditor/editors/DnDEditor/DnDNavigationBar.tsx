@@ -250,6 +250,7 @@ function CompTree({
 	filter,
 }: CompTreeProps) {
 	const comp = pageDef?.componentDefinition[compKey];
+	const hoverLonger = useRef<NodeJS.Timeout | null>();
 	if (!comp) return <></>;
 
 	const children = pageDef?.componentDefinition[compKey]?.children
@@ -388,8 +389,16 @@ function CompTree({
 				onDragOver={e => {
 					e.preventDefault();
 					e.stopPropagation();
-					if (!dragStart || !children?.length || isOpen) return;
-					onOpenClose(compKey);
+					if (!dragStart || !children?.length || isOpen || hoverLonger.current) return;
+					hoverLonger.current = setTimeout(() => {
+						onOpenClose(compKey);
+						hoverLonger.current = null;
+					}, 3000);
+				}}
+				onDragLeave={e => {
+					if (!hoverLonger.current) return;
+					clearTimeout(hoverLonger.current);
+					hoverLonger.current = null;
 				}}
 				onDragEnd={e => setDragStart(false)}
 				onDrop={e =>
