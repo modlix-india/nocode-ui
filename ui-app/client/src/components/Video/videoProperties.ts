@@ -134,6 +134,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 		],
 	},
+	{
+		name: 'autoUnMuteAfterPlaying',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Auto Unmute After Playing',
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
+	},
 ];
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 	'': [
