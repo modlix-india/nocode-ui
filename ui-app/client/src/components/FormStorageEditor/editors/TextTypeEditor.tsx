@@ -29,11 +29,11 @@ const numberValidatiopnOption: DropdownOptions = [];
 export default function TextTypeEditor({
 	data,
 	editerType,
-	handleCompDefChanges,
+	handleFieldDefMapChanges,
 }: {
 	data: FormCompDefinition;
 	editerType: string;
-	handleCompDefChanges: (key: string, data: any, newKey?: string) => void;
+	handleFieldDefMapChanges: (key: string, data: any, newKey?: string) => void;
 }) {
 	const [key, setKey] = useState<string>('');
 	const [label, setLabel] = useState<string>('');
@@ -113,7 +113,7 @@ export default function TextTypeEditor({
 			...data,
 			key: key,
 		};
-		handleCompDefChanges(data.key, tempData, key);
+		handleFieldDefMapChanges(data.key, tempData, key);
 	};
 
 	const handleLabelChange = () => {
@@ -123,7 +123,7 @@ export default function TextTypeEditor({
 			label: label,
 		};
 
-		handleCompDefChanges(data.key, tempData);
+		handleFieldDefMapChanges(data.key, tempData);
 	};
 
 	const handlePlaceholderChange = () => {
@@ -133,7 +133,7 @@ export default function TextTypeEditor({
 			placeholder: placeholder,
 		};
 
-		handleCompDefChanges(data.key, tempData);
+		handleFieldDefMapChanges(data.key, tempData);
 	};
 
 	const handleMinMaxChange = () => {
@@ -183,7 +183,7 @@ export default function TextTypeEditor({
 		if (inputType === 'text' && max) tempData['maxChars'] = parseInt(max);
 		else delete tempData['maxChars'];
 
-		handleCompDefChanges(data.key, tempData);
+		handleFieldDefMapChanges(data.key, tempData);
 	};
 
 	const handleInputTypeChanges = (v: string) => {
@@ -230,7 +230,7 @@ export default function TextTypeEditor({
 			validation: reEvaluateOrder(tempValidation),
 		};
 
-		handleCompDefChanges(data.key, tempData);
+		handleFieldDefMapChanges(data.key, tempData);
 	};
 
 	const handleNumberypeChanges = (v: string) => {
@@ -266,7 +266,7 @@ export default function TextTypeEditor({
 			schema: tempSchema,
 		};
 
-		handleCompDefChanges(data.key, tempData);
+		handleFieldDefMapChanges(data.key, tempData);
 	};
 
 	const handleValidationDropdownChanges = (v: string) => {
@@ -296,7 +296,7 @@ export default function TextTypeEditor({
 			schema: tempSchema,
 		};
 
-		handleCompDefChanges(data.key, tempData);
+		handleFieldDefMapChanges(data.key, tempData);
 	};
 
 	const handleValidationMessageChange = () => {
@@ -311,7 +311,7 @@ export default function TextTypeEditor({
 			validation: tempValidation,
 		};
 
-		handleCompDefChanges(data.key, tempData);
+		handleFieldDefMapChanges(data.key, tempData);
 	};
 
 	const handlePatternChange = () => {
@@ -328,7 +328,7 @@ export default function TextTypeEditor({
 			schema: tempSchema,
 		};
 
-		handleCompDefChanges(data.key, tempData);
+		handleFieldDefMapChanges(data.key, tempData);
 	};
 
 	const handleMandatoryChange = (checked: boolean) => {
@@ -347,7 +347,7 @@ export default function TextTypeEditor({
 			validation: reEvaluateOrder(tempValidation),
 		};
 
-		handleCompDefChanges(data.key, tempData);
+		handleFieldDefMapChanges(data.key, tempData);
 	};
 
 	const handleMandatoryMessageChange = () => {
@@ -359,7 +359,7 @@ export default function TextTypeEditor({
 			validation: tempValidation,
 		};
 
-		handleCompDefChanges(data.key, tempData);
+		handleFieldDefMapChanges(data.key, tempData);
 	};
 
 	return (

@@ -7,14 +7,14 @@ import OptionTypeEditor from '../editors/OptionTypeEditor';
 
 const getCompEditor = (
 	data: FormCompDefinition,
-	handleCompDefChanges: (key: string, data: FormCompDefinition, newKey?: string) => void,
+	handleFieldDefMapChanges: (key: string, data: FormCompDefinition, newKey?: string) => void,
 ) => {
 	const COMP_EDITORS: { [key: string]: any } = {
 		NameEditor: (
 			<SmartElementEditor
 				data={data}
 				key={data.key}
-				handleCompDefChanges={handleCompDefChanges}
+				handleFieldDefMapChanges={handleFieldDefMapChanges}
 				editorType="name"
 			/>
 		),
@@ -22,7 +22,7 @@ const getCompEditor = (
 			<SmartElementEditor
 				data={data}
 				key={data.key}
-				handleCompDefChanges={handleCompDefChanges}
+				handleFieldDefMapChanges={handleFieldDefMapChanges}
 				editorType="email"
 			/>
 		),
@@ -30,7 +30,7 @@ const getCompEditor = (
 			<SmartElementEditor
 				data={data}
 				key={data.key}
-				handleCompDefChanges={handleCompDefChanges}
+				handleFieldDefMapChanges={handleFieldDefMapChanges}
 				editorType="phone"
 			/>
 		),
@@ -38,7 +38,7 @@ const getCompEditor = (
 			<TextTypeEditor
 				data={data}
 				key={data.key}
-				handleCompDefChanges={handleCompDefChanges}
+				handleFieldDefMapChanges={handleFieldDefMapChanges}
 				editerType="textBox"
 			/>
 		),
@@ -46,7 +46,7 @@ const getCompEditor = (
 			<TextTypeEditor
 				data={data}
 				key={data.key}
-				handleCompDefChanges={handleCompDefChanges}
+				handleFieldDefMapChanges={handleFieldDefMapChanges}
 				editerType="textArea"
 			/>
 		),
@@ -54,7 +54,7 @@ const getCompEditor = (
 			<OptionTypeEditor
 				data={data}
 				key={data.key}
-				handleCompDefChanges={handleCompDefChanges}
+				handleFieldDefMapChanges={handleFieldDefMapChanges}
 				editerType="dropdown"
 			/>
 		),
@@ -62,7 +62,7 @@ const getCompEditor = (
 			<OptionTypeEditor
 				data={data}
 				key={data.key}
-				handleCompDefChanges={handleCompDefChanges}
+				handleFieldDefMapChanges={handleFieldDefMapChanges}
 				editerType="radioButton"
 			/>
 		),
@@ -70,7 +70,7 @@ const getCompEditor = (
 			<OptionTypeEditor
 				data={data}
 				key={data.key}
-				handleCompDefChanges={handleCompDefChanges}
+				handleFieldDefMapChanges={handleFieldDefMapChanges}
 				editerType="checkBox"
 			/>
 		),
@@ -83,7 +83,7 @@ interface AccordionProps {
 	handleDrop: (e: DragEvent<HTMLDivElement>, key: string) => void;
 	handleDelete: (key: string) => void;
 	handleDragStart: (e: DragEvent<HTMLDivElement>, key: string, dropType: string) => void;
-	handleCompDefChanges: (key: string, data: FormCompDefinition, newKey?: string) => void;
+	handleFieldDefMapChanges: (key: string, data: FormCompDefinition, newKey?: string) => void;
 }
 
 export default function Accordion({
@@ -91,7 +91,7 @@ export default function Accordion({
 	handleDrop,
 	handleDelete,
 	handleDragStart,
-	handleCompDefChanges,
+	handleFieldDefMapChanges,
 }: AccordionProps) {
 	return (
 		<div className="_accordion">
@@ -104,7 +104,7 @@ export default function Accordion({
 						handleDelete={handleDelete}
 						handleDragStart={handleDragStart}
 					>
-						{getCompEditor(each, handleCompDefChanges)}
+						{getCompEditor(each, handleFieldDefMapChanges)}
 					</AccordionPanel>
 				);
 			})}

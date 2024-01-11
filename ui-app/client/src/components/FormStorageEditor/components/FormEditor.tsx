@@ -139,7 +139,7 @@ export default function FormEditor({
 		} catch (error) {}
 	};
 
-	const handleCompDefChanges = (key: string, data: FormCompDefinition, newKey?: string) => {
+	const handleFieldDefMapChanges = (key: string, data: FormCompDefinition, newKey?: string) => {
 		let tempObj = duplicate(fieldDefinitionMap);
 		// when changing key
 		if (newKey && newKey != key) {
@@ -173,7 +173,7 @@ export default function FormEditor({
 				handleDrop={handleDrop}
 				handleDelete={handleDelete}
 				handleDragStart={handleDragStart}
-				handleCompDefChanges={handleCompDefChanges}
+				handleFieldDefMapChanges={handleFieldDefMapChanges}
 			/>
 		</div>
 	);

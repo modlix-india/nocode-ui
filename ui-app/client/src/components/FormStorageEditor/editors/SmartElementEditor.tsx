@@ -11,13 +11,13 @@ import { duplicate } from '@fincity/kirun-js';
 interface SmartElementEditorProps {
 	data: FormCompDefinition;
 	editorType: string;
-	handleCompDefChanges: (key: string, data: any, newKey?: string) => void;
+	handleFieldDefMapChanges: (key: string, data: any, newKey?: string) => void;
 }
 
 export default function SmartElementEditor({
 	data,
 	editorType,
-	handleCompDefChanges,
+	handleFieldDefMapChanges,
 }: SmartElementEditorProps) {
 	const [key, setKey] = useState<string>('');
 	const [label, setLabel] = useState<string>('');
@@ -72,7 +72,7 @@ export default function SmartElementEditor({
 			...data,
 			key: key,
 		};
-		handleCompDefChanges(data.key, tempData, key);
+		handleFieldDefMapChanges(data.key, tempData, key);
 	};
 
 	const handleLabelChange = () => {
@@ -81,7 +81,7 @@ export default function SmartElementEditor({
 			...data,
 			label: label,
 		};
-		handleCompDefChanges(data.key, tempData);
+		handleFieldDefMapChanges(data.key, tempData);
 	};
 
 	const handlePlaceholderChange = () => {
@@ -90,7 +90,7 @@ export default function SmartElementEditor({
 			...data,
 			placeholder: placeholder,
 		};
-		handleCompDefChanges(data.key, tempData);
+		handleFieldDefMapChanges(data.key, tempData);
 	};
 
 	const handleCharLimitChange = () => {
@@ -120,7 +120,7 @@ export default function SmartElementEditor({
 		if (maxChar) tempData['maxChars'] = parseInt(maxChar);
 		else delete tempData['maxChars'];
 
-		handleCompDefChanges(data.key, tempData);
+		handleFieldDefMapChanges(data.key, tempData);
 	};
 
 	const handleMandatoryChange = (checked: boolean) => {
@@ -138,7 +138,7 @@ export default function SmartElementEditor({
 			validation: reEvaluateOrder(tempValidation),
 		};
 
-		handleCompDefChanges(data.key, tempData);
+		handleFieldDefMapChanges(data.key, tempData);
 	};
 
 	const handleMandatoryMessageChange = () => {
@@ -150,7 +150,7 @@ export default function SmartElementEditor({
 			validation: tempValidation,
 		};
 
-		handleCompDefChanges(data.key, tempData);
+		handleFieldDefMapChanges(data.key, tempData);
 	};
 
 	const handleValidationCheckChange = (checked: boolean) => {
@@ -182,7 +182,7 @@ export default function SmartElementEditor({
 			schema: tempSchema,
 		};
 
-		handleCompDefChanges(data.key, tempData);
+		handleFieldDefMapChanges(data.key, tempData);
 	};
 
 	const handleValidationCheckMessageChange = () => {
@@ -198,7 +198,7 @@ export default function SmartElementEditor({
 			validation: tempValidation,
 		};
 
-		handleCompDefChanges(data.key, tempData);
+		handleFieldDefMapChanges(data.key, tempData);
 	};
 
 	const handlePhonePatternChange = () => {
@@ -212,7 +212,7 @@ export default function SmartElementEditor({
 			schema: tempSchema,
 		};
 
-		handleCompDefChanges(data.key, tempData);
+		handleFieldDefMapChanges(data.key, tempData);
 	};
 
 	return (

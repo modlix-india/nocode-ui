@@ -73,11 +73,11 @@ const OptionComp = ({
 export default function OptionTypeEditor({
 	data,
 	editerType,
-	handleCompDefChanges,
+	handleFieldDefMapChanges,
 }: {
 	data: FormCompDefinition;
 	editerType: string;
-	handleCompDefChanges: (key: string, data: any, newKey?: string) => void;
+	handleFieldDefMapChanges: (key: string, data: any, newKey?: string) => void;
 }) {
 	const [key, setKey] = useState<string>('');
 	const [label, setLabel] = useState<string>('');
@@ -117,7 +117,7 @@ export default function OptionTypeEditor({
 			...data,
 			key: key,
 		};
-		handleCompDefChanges(data.key, tempData, key);
+		handleFieldDefMapChanges(data.key, tempData, key);
 	};
 	const handleLabelChange = () => {
 		if (label === data.label) return;
@@ -126,7 +126,7 @@ export default function OptionTypeEditor({
 			label: label,
 		};
 
-		handleCompDefChanges(data.key, tempData);
+		handleFieldDefMapChanges(data.key, tempData);
 	};
 
 	const handlePlaceholderChange = () => {
@@ -136,7 +136,7 @@ export default function OptionTypeEditor({
 			placeholder: placeholder,
 		};
 
-		handleCompDefChanges(data.key, tempData);
+		handleFieldDefMapChanges(data.key, tempData);
 	};
 	const handleOptionChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
 		let temp = duplicate(listOfOption);
@@ -159,7 +159,7 @@ export default function OptionTypeEditor({
 			schema: tempSchema,
 		};
 
-		handleCompDefChanges(data.key, tempData);
+		handleFieldDefMapChanges(data.key, tempData);
 	};
 	const handleAddOption = () => {
 		let tempList: Array<Option> = duplicate(data?.optionList);
@@ -178,7 +178,7 @@ export default function OptionTypeEditor({
 			schema: tempSchema,
 		};
 
-		handleCompDefChanges(data.key, tempData);
+		handleFieldDefMapChanges(data.key, tempData);
 	};
 	const handleDeleteOption = (key: string) => {
 		let tempList: Array<Option> = [];
@@ -199,7 +199,7 @@ export default function OptionTypeEditor({
 			schema: tempSchema,
 		};
 
-		handleCompDefChanges(data.key, tempData);
+		handleFieldDefMapChanges(data.key, tempData);
 	};
 
 	const handleMultiSelectChanges = (checked: boolean) => {
@@ -225,7 +225,7 @@ export default function OptionTypeEditor({
 			schema: tempSchema,
 		};
 
-		handleCompDefChanges(data.key, tempData);
+		handleFieldDefMapChanges(data.key, tempData);
 	};
 
 	const handleMandatoryChange = (checked: boolean) => {
@@ -244,7 +244,7 @@ export default function OptionTypeEditor({
 			validation: reEvaluateOrder(tempValidation),
 		};
 
-		handleCompDefChanges(data.key, tempData);
+		handleFieldDefMapChanges(data.key, tempData);
 	};
 
 	const handleMandatoryMessageChange = () => {
@@ -256,7 +256,7 @@ export default function OptionTypeEditor({
 			validation: tempValidation,
 		};
 
-		handleCompDefChanges(data.key, tempData);
+		handleFieldDefMapChanges(data.key, tempData);
 	};
 
 	return (
