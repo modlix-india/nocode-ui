@@ -57,18 +57,18 @@ export default function TextTypeEditor({
 	useEffect(() => {
 		setKey(data.key);
 		setLabel(data.label);
-		setPlaceholder(data?.placeholder || '');
-		setInputType(data?.inputType || '');
-		setNumberType(data?.numberType || '');
+		setPlaceholder(data?.placeholder ?? '');
+		setInputType(data?.inputType ?? '');
+		setNumberType(data?.numberType ?? '');
 		let min =
 			data?.inputType === 'text'
-				? data.validation['STRING_LENGTH']?.minLength
-				: data.validation['NUMBER_VALUE']?.minValue;
+				? data.validation['STRING_LENGTH']?.minLength ?? ''
+				: data.validation['NUMBER_VALUE']?.minValue ?? '';
 
 		let max =
 			data?.inputType === 'text'
-				? data.validation['STRING_LENGTH']?.maxLength
-				: data.validation['NUMBER_VALUE']?.maxValue;
+				? data.validation['STRING_LENGTH']?.maxLength ?? ''
+				: data.validation['NUMBER_VALUE']?.maxValue ?? '';
 
 		let msg =
 			data?.inputType === 'text'
@@ -84,7 +84,7 @@ export default function TextTypeEditor({
 		setValidationOption(tempOption);
 
 		setIsMandatory(data.validation['MANDATORY'] ? true : false);
-		setMessage1(data.validation['MANDATORY']?.message || '');
+		setMessage1(data.validation['MANDATORY']?.message ?? '');
 
 		let tempVal = Object.entries(data.validation).find(
 			([_, value]) => value.pattern !== undefined,
@@ -108,6 +108,7 @@ export default function TextTypeEditor({
 	};
 
 	const handleKeyChange = () => {
+		if (key === data.key) return;
 		let tempData = {
 			...data,
 			key: key,
@@ -116,6 +117,7 @@ export default function TextTypeEditor({
 	};
 
 	const handleLabelChange = () => {
+		if (label === data.label) return;
 		let tempData = {
 			...data,
 			label: label,
@@ -125,6 +127,7 @@ export default function TextTypeEditor({
 	};
 
 	const handlePlaceholderChange = () => {
+		if (placeholder === data.placeholder) return;
 		let tempData = {
 			...data,
 			placeholder: placeholder,
@@ -137,36 +140,39 @@ export default function TextTypeEditor({
 		let tempValidation: compValidations = data?.validation;
 		let tempSchema: CustomSchema;
 		if (inputType === 'text') {
-			tempValidation['STRING_LENGTH'] = {
-				...tempValidation['STRING_LENGTH'],
-				maxLength: max ? parseInt(max) : '',
-				minLength: min ? parseInt(min) : '',
-				message: message,
-			};
+			let tempLenVal: FormCompValidation = duplicate(tempValidation['STRING_LENGTH']);
 
-			tempSchema = {
-				...data.schema,
-				maxLength: max ? parseInt(max) : '',
-				minLength: min ? parseInt(min) : '',
-			};
+			if (max) tempLenVal['maxLength'] = parseInt(max);
+			else delete tempLenVal['maxLength'];
+			if (min) tempLenVal['minLength'] = parseInt(min);
+			else delete tempLenVal['minLength'];
+			if (message) tempLenVal['message'] = message;
+			else delete tempLenVal['message'];
+
+			tempValidation['STRING_LENGTH'] = tempLenVal;
+
+			tempSchema = duplicate(data.schema);
+			if (max) tempSchema['maxLength'] = parseInt(max);
+			else delete tempSchema['maxLength'];
+			if (min) tempSchema['minLength'] = parseInt(min);
+			else delete tempSchema['minLength'];
 		} else {
-			tempValidation['NUMBER_VALUE'] = {
-				...tempValidation['NUMBER_VALUE'],
-				maxValue: max ? parseInt(max) : '',
-				minValue: min ? parseInt(min) : '',
-				message: message,
-			};
+			let tempNumVal: FormCompValidation = duplicate(tempValidation['NUMBER_VALUE']);
 
-			tempSchema = {
-				...data.schema,
-				oneOf: [
-					{
-						...data.schema.oneOf![0],
-						maximum: max ? parseInt(max) : '',
-						minimum: min ? parseInt(min) : '',
-					},
-				],
-			};
+			if (max) tempNumVal['maxValue'] = parseInt(max);
+			else delete tempNumVal['maxValue'];
+			if (min) tempNumVal['minValue'] = parseInt(min);
+			else delete tempNumVal['minValue'];
+			if (message) tempNumVal['message'] = message;
+			else delete tempNumVal['message'];
+
+			tempValidation['NUMBER_VALUE'] = tempNumVal;
+
+			tempSchema = duplicate(data.schema);
+			if (max) tempSchema.oneOf![0]['maximum'] = parseInt(max);
+			else delete tempSchema.oneOf![0]['maximum'];
+			if (min) tempSchema.oneOf![0]['minimum'] = parseInt(min);
+			else delete tempSchema.oneOf![0]['minimum'];
 		}
 		let tempData: FormCompDefinition = {
 			...data,
@@ -174,6 +180,8 @@ export default function TextTypeEditor({
 			validation: tempValidation,
 			schema: tempSchema,
 		};
+		if (inputType === 'text' && max) tempData['maxChars'] = parseInt(max);
+		else delete tempData['maxChars'];
 
 		handleCompDefChanges(data.key, tempData);
 	};
@@ -234,8 +242,6 @@ export default function TextTypeEditor({
 				oneOf: [
 					{
 						type: ['INTEGER', 'LONG'],
-						maximum: max ? parseInt(max) : '',
-						minimum: min ? parseInt(min) : '',
 					},
 				],
 			};
@@ -244,12 +250,15 @@ export default function TextTypeEditor({
 				oneOf: [
 					{
 						type: ['INTEGER', 'LONG', 'FLOAT', 'DOUBLE'],
-						maximum: max ? parseInt(max) : '',
-						minimum: min ? parseInt(min) : '',
 					},
 				],
 			};
 		}
+
+		if (max) tempSchema.oneOf![0]['maximum'] = parseInt(max);
+		else delete tempSchema.oneOf![0]['maximum'];
+		if (min) tempSchema.oneOf![0]['minimum'] = parseInt(min);
+		else delete tempSchema.oneOf![0]['minimum'];
 
 		let tempData: FormCompDefinition = {
 			...data,
@@ -291,6 +300,7 @@ export default function TextTypeEditor({
 	};
 
 	const handleValidationMessageChange = () => {
+		if (message2 === data.validation[validationSelected]?.message) return;
 		let tempValidation: compValidations = duplicate(data?.validation);
 		tempValidation[validationSelected] = {
 			...tempValidation[validationSelected],
@@ -305,6 +315,7 @@ export default function TextTypeEditor({
 	};
 
 	const handlePatternChange = () => {
+		if (regex === data.validation[validationSelected]?.pattern) return;
 		let tempValidation: compValidations = duplicate(data?.validation);
 		tempValidation[validationSelected] = {
 			...tempValidation[validationSelected],
@@ -340,6 +351,7 @@ export default function TextTypeEditor({
 	};
 
 	const handleMandatoryMessageChange = () => {
+		if (message1 === data.validation['MANDATORY']?.message) return;
 		let tempValidation: compValidations = duplicate(data?.validation);
 		tempValidation['MANDATORY'] = { ...tempValidation['MANDATORY'], message: message1 };
 		let tempData = {

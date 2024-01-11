@@ -462,7 +462,7 @@ export const compValidationMap = new Map<string, FormCompValidation>([
 			type: 'STRING_LENGTH',
 			maxLength: '',
 			minLength: '',
-			message: 'not valid length',
+			message: 'Not valid length',
 		},
 	],
 	[
@@ -473,7 +473,7 @@ export const compValidationMap = new Map<string, FormCompValidation>([
 			type: 'NUMBER_VALUE',
 			minValue: '',
 			maxValue: '',
-			message: '',
+			message: 'Not Valid Number',
 		},
 	],
 	[
@@ -640,17 +640,6 @@ export const previewCompDefinitionMap = new Map<string, ComponentDefinition>([
 				// isMultiSelect: {
 				// 	value: false,
 				// },
-			},
-			styleProperties: {
-				'6UMN33DqOzIFIsrc7ZNIrN': {
-					resolutions: {
-						ALL: {
-							flexDirection: {
-								value: 'row',
-							},
-						},
-					},
-				},
 			},
 			displayOrder: undefined,
 			bindingPath: {

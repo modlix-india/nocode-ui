@@ -37,18 +37,20 @@ export default function SmartElementEditor({
 	useEffect(() => {
 		setKey(data.key);
 		setLabel(data.label);
-		setPlaceholder(data?.placeholder || '');
-		setMinChar('' + data.validation['STRING_LENGTH']?.minLength);
-		setMaxChar('' + data.validation['STRING_LENGTH']?.maxLength);
+		setPlaceholder(data?.placeholder ?? '');
+		let min = data.validation['STRING_LENGTH']?.minLength ?? '';
+		let max = data.validation['STRING_LENGTH']?.maxLength ?? '';
+		setMinChar('' + min);
+		setMaxChar('' + max);
 		setIsMandatory(data.validation['MANDATORY'] ? true : false);
 		setIsValidationCheck(data.validation['EMAIL'] || data.validation['PHONE'] ? true : false);
-		setRegex(data.validation['PHONE']?.pattern || '');
-		setMessage(data.validation['STRING_LENGTH']?.message || '');
-		setMessage1(data.validation['MANDATORY']?.message || '');
+		setRegex(data.validation['PHONE']?.pattern ?? '');
+		setMessage(data.validation['STRING_LENGTH']?.message ?? '');
+		setMessage1(data.validation['MANDATORY']?.message ?? '');
 		setMessage2(
 			editorType === 'email'
-				? data.validation['EMAIL']?.message || ''
-				: data.validation['PHONE']?.message || '',
+				? data.validation['EMAIL']?.message ?? ''
+				: data.validation['PHONE']?.message ?? '',
 		);
 	}, [data]);
 
@@ -65,6 +67,7 @@ export default function SmartElementEditor({
 		return tempObj;
 	};
 	const handleKeyChange = () => {
+		if (key === data.key) return;
 		let tempData = {
 			...data,
 			key: key,
@@ -73,6 +76,7 @@ export default function SmartElementEditor({
 	};
 
 	const handleLabelChange = () => {
+		if (label === data.label) return;
 		let tempData = {
 			...data,
 			label: label,
@@ -81,6 +85,7 @@ export default function SmartElementEditor({
 	};
 
 	const handlePlaceholderChange = () => {
+		if (placeholder === data?.placeholder) return;
 		let tempData = {
 			...data,
 			placeholder: placeholder,
@@ -89,27 +94,31 @@ export default function SmartElementEditor({
 	};
 
 	const handleCharLimitChange = () => {
-		let tempValidation: compValidations = data?.validation;
+		let tempValidation: compValidations = duplicate(data?.validation);
 
-		tempValidation['STRING_LENGTH'] = {
-			...tempValidation['STRING_LENGTH'],
-			maxLength: maxChar ? parseInt(maxChar) : '',
-			minLength: minChar ? parseInt(minChar) : '',
-			message: message,
-		};
+		let tempLenVal: FormCompValidation = duplicate(tempValidation['STRING_LENGTH']);
+		if (maxChar) tempLenVal['maxLength'] = parseInt(maxChar);
+		else delete tempLenVal['maxLength'];
+		if (minChar) tempLenVal['minLength'] = parseInt(minChar);
+		else delete tempLenVal['minLength'];
+		if (message) tempLenVal['message'] = message;
+		else delete tempLenVal['message'];
 
-		let tempSchema: CustomSchema = {
-			...data.schema,
-			maxLength: maxChar ? parseInt(maxChar) : '',
-			minLength: minChar ? parseInt(minChar) : '',
-		};
+		tempValidation['STRING_LENGTH'] = tempLenVal;
+
+		let tempSchema: CustomSchema = duplicate(data.schema);
+		if (maxChar) tempSchema['maxLength'] = parseInt(maxChar);
+		else delete tempSchema['maxLength'];
+		if (minChar) tempSchema['minLength'] = parseInt(minChar);
+		else delete tempSchema['minLength'];
 
 		let tempData: FormCompDefinition = {
-			...data,
-			maxChars: maxChar ? parseInt(maxChar) : '',
+			...duplicate(data),
 			validation: tempValidation,
 			schema: tempSchema,
 		};
+		if (maxChar) tempData['maxChars'] = parseInt(maxChar);
+		else delete tempData['maxChars'];
 
 		handleCompDefChanges(data.key, tempData);
 	};
@@ -133,6 +142,7 @@ export default function SmartElementEditor({
 	};
 
 	const handleMandatoryMessageChange = () => {
+		if (message1 === data.validation['MANDATORY']?.message) return;
 		let tempValidation: compValidations = duplicate(data?.validation);
 		tempValidation['MANDATORY'] = { ...tempValidation['MANDATORY'], message: message1 };
 		let tempData = {
@@ -177,9 +187,10 @@ export default function SmartElementEditor({
 
 	const handleValidationCheckMessageChange = () => {
 		let tempValidation: compValidations = duplicate(data?.validation);
-		let newValidationKey = editorType === 'email' ? 'EMAIL' : 'PHONE';
-		tempValidation[newValidationKey] = {
-			...tempValidation[newValidationKey],
+		let validationKey = editorType === 'email' ? 'EMAIL' : 'PHONE';
+		if (message2 === data.validation[validationKey]?.message) return;
+		tempValidation[validationKey] = {
+			...tempValidation[validationKey],
 			message: message2,
 		};
 		let tempData = {
@@ -191,6 +202,7 @@ export default function SmartElementEditor({
 	};
 
 	const handlePhonePatternChange = () => {
+		if (regex === data.validation['PHONE']?.pattern) return;
 		let tempValidation: compValidations = duplicate(data?.validation);
 		tempValidation['PHONE'] = { ...tempValidation['PHONE'], pattern: regex };
 		let tempSchema: CustomSchema = { ...data.schema, pattern: regex };

@@ -7,7 +7,7 @@ import {
 	compValidationMap,
 	compValidations,
 } from '../components/formCommons';
-import { duplicate } from '@fincity/kirun-js';
+import { deepEqual, duplicate } from '@fincity/kirun-js';
 
 const OptionComp = ({
 	data,
@@ -91,11 +91,11 @@ export default function OptionTypeEditor({
 	useEffect(() => {
 		setKey(data.key);
 		setLabel(data.label);
-		setPlaceholder(data?.placeholder || '');
-		setListOfOption(data?.optionList || []);
+		setPlaceholder(data?.placeholder ?? '');
+		setListOfOption(data?.optionList ?? []);
 		setIsMandatory(data.validation['MANDATORY'] ? true : false);
 		setIsMultiSelect(data?.isMultiSelect ? true : false);
-		setMessage1(data.validation['MANDATORY']?.message || '');
+		setMessage1(data.validation['MANDATORY']?.message ?? '');
 	}, [data]);
 
 	const reEvaluateOrder = (tempObj: compValidations) => {
@@ -112,6 +112,7 @@ export default function OptionTypeEditor({
 	};
 
 	const handleKeyChange = () => {
+		if (key === data.key) return;
 		let tempData = {
 			...data,
 			key: key,
@@ -119,6 +120,7 @@ export default function OptionTypeEditor({
 		handleCompDefChanges(data.key, tempData, key);
 	};
 	const handleLabelChange = () => {
+		if (label === data.label) return;
 		let tempData = {
 			...data,
 			label: label,
@@ -128,6 +130,7 @@ export default function OptionTypeEditor({
 	};
 
 	const handlePlaceholderChange = () => {
+		if (placeholder === data.placeholder) return;
 		let tempData = {
 			...data,
 			placeholder: placeholder,
@@ -146,6 +149,8 @@ export default function OptionTypeEditor({
 		listOfOption.forEach((el: Option) => {
 			tempEnums.push(el.value);
 		});
+		if (deepEqual(data.schema?.enums, tempEnums)) return;
+
 		tempSchema = { ...data.schema, enums: tempEnums };
 
 		let tempData = {
@@ -243,6 +248,7 @@ export default function OptionTypeEditor({
 	};
 
 	const handleMandatoryMessageChange = () => {
+		if (message1 === data.validation['MANDATORY']?.message) return;
 		let tempValidation: compValidations = duplicate(data?.validation);
 		tempValidation['MANDATORY'] = { ...tempValidation['MANDATORY'], message: message1 };
 		let tempData = {
