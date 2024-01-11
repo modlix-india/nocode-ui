@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import {
 	addListenerAndCallImmediately,
 	getPathFromLocation,
@@ -59,7 +59,7 @@ function FileUpload(props: ComponentProps) {
 	const [hover, setHover] = useState<boolean>(false);
 	const [validationMessages, setValidationMessages] = useState<Array<string>>([]);
 	const {
-		definition: { bindingPath },
+		definition: { bindingPath, bindingPath2, bindingPath3, bindingPath4, bindingPath5 },
 		definition,
 		pageDefinition: {},
 		locationHistory,
@@ -102,6 +102,23 @@ function FileUpload(props: ComponentProps) {
 	const bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
 		: undefined;
+
+	const bindingPath2Path = bindingPath2
+		? getPathFromLocation(bindingPath2, locationHistory, pageExtractor)
+		: undefined;
+
+	const bindingPath3Path = bindingPath3
+		? getPathFromLocation(bindingPath3, locationHistory, pageExtractor)
+		: undefined;
+
+	const bindingPath4Path = bindingPath4
+		? getPathFromLocation(bindingPath4, locationHistory, pageExtractor)
+		: undefined;
+
+	const bindingPath5Path = bindingPath5
+		? getPathFromLocation(bindingPath5, locationHistory, pageExtractor)
+		: undefined;
+
 	const uploadImmediatelyEvent = onSelectEvent
 		? props.pageDefinition.eventFunctions?.[onSelectEvent]
 		: undefined;
@@ -175,11 +192,18 @@ function FileUpload(props: ComponentProps) {
 		return isMultiple ? [...stringFiles] : stringFiles[0];
 	};
 
-	const setFiles = async (files: any) => {
+	const setFiles = async (files: FileList | null) => {
 		if (uploadType === 'FILE_OBJECT') {
-			setData(bindingPathPath!, isMultiple ? [...files] : files[0], context?.pageName);
+			if (files)
+				setData(
+					bindingPathPath!,
+					isMultiple ? Array.from(files) : files[0],
+					context?.pageName,
+				);
 			return;
 		}
+
+		if (!files?.length || isMultiple) return;
 
 		if (uploadType === 'BINARY_TO_BASE_64') {
 			const fileObjects = await filesToBase64(files, isMultiple);
@@ -224,10 +248,27 @@ function FileUpload(props: ComponentProps) {
 		fReader.readAsText(files[0]);
 	};
 
-	const onChangeFile = (event: any) => {
+	const setOtherBindingPaths = (files: FileList | null) => {
+		if (isMultiple || !files?.length) return;
+		if (bindingPath2Path) {
+			setData(bindingPath2Path, files[0].name, context?.pageName);
+		}
+		const fileName = files[0].name.split('.');
+		if (bindingPath3Path) {
+			setData(bindingPath3Path, fileName[0], context?.pageName);
+		}
+		if (bindingPath4Path && fileName.length > 1) {
+			setData(bindingPath4Path, files[0].name.split('.')[1], context?.pageName);
+		}
+		if (bindingPath5Path) {
+			setData(bindingPath5Path, returnFileSize(files[0].size), context?.pageName);
+		}
+	};
+
+	const onChangeFile = (event: ChangeEvent<HTMLInputElement>) => {
+		setOtherBindingPaths(event.target.files);
 		if (!event.target.value?.length || !bindingPathPath) return;
-		const files = event.target.files;
-		setFiles(files);
+		setFiles(event.target.files);
 	};
 
 	const handleDelete = (event: any, content: any) => {
@@ -242,8 +283,7 @@ function FileUpload(props: ComponentProps) {
 
 	const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
 		event.preventDefault();
-		const file = event.dataTransfer.files || null;
-		setFiles(file);
+		setFiles(event.dataTransfer.files);
 	};
 
 	const preventDefault = (event: React.DragEvent<HTMLDivElement>) => {
@@ -401,6 +441,10 @@ const component: Component = {
 	stylePseudoStates: ['hover', 'disabled'],
 	bindingPaths: {
 		bindingPath: { name: 'File binding' },
+		bindingPath2: { name: 'File full name binding' },
+		bindingPath3: { name: 'File name binding' },
+		bindingPath4: { name: 'File extension binding' },
+		bindingPath5: { name: 'File size binding' },
 	},
 	defaultTemplate: {
 		key: '',
