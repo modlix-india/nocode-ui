@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback, useEffect, useState } from 'react';
+import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediately,
@@ -18,7 +18,7 @@ interface DnDNavigationBarProps {
 	onSelectedComponentChanged: (key: string) => void;
 	onSelectedComponentListChanged: (key: string) => void;
 	selectedSubComponent: string | undefined;
-	selectednComponentsList: string[];
+	selectedComponentsList: string[];
 	onSelectedSubComponentChanged: (key: string) => void;
 	pageExtractor: PageStoreExtractor;
 	defPath: string | undefined;
@@ -33,7 +33,7 @@ export default function DnDNavigationBar({
 	personalizationPath, // Page.personalization.editor
 	onChangePersonalization,
 	selectedComponent,
-	selectednComponentsList,
+	selectedComponentsList,
 	onSelectedComponentChanged,
 	onSelectedComponentListChanged,
 	selectedSubComponent,
@@ -134,7 +134,7 @@ export default function DnDNavigationBar({
 	);
 
 	useEffect(() => {
-		if (!selectedComponent || selectednComponentsList?.length != 1) return;
+		if (!selectedComponent || selectedComponentsList?.length != 1) return;
 		const element = document.getElementById(`treeNode_${selectedComponent}`);
 		if (element) {
 			const rect = element.getBoundingClientRect();
@@ -181,7 +181,7 @@ export default function DnDNavigationBar({
 				<CompTree
 					pageDef={pageDef}
 					selectedComponent={selectedComponent}
-					selectednComponentsList={selectednComponentsList}
+					selectedComponentsList={selectedComponentsList}
 					onSelectedComponentChanged={onSelectedComponentChanged}
 					onSelectedComponentListChanged={onSelectedComponentListChanged}
 					selectedSubComponent={selectedSubComponent}
@@ -216,7 +216,7 @@ interface CompTreeProps {
 	parents?: string[];
 	onOpenClose: (key: string) => void;
 	selectedComponent: string | undefined;
-	selectednComponentsList: string[];
+	selectedComponentsList: string[];
 	onSelectedComponentChanged: (key: string) => void;
 	onSelectedComponentListChanged: (key: string) => void;
 	selectedSubComponent: string | undefined;
@@ -237,7 +237,7 @@ function CompTree({
 	openParents,
 	onOpenClose,
 	selectedComponent,
-	selectednComponentsList,
+	selectedComponentsList,
 	onSelectedComponentChanged,
 	onSelectedComponentListChanged,
 	selectedSubComponent,
@@ -250,6 +250,7 @@ function CompTree({
 	filter,
 }: CompTreeProps) {
 	const comp = pageDef?.componentDefinition[compKey];
+	const hoverLonger = useRef<NodeJS.Timeout | null>();
 	if (!comp) return <></>;
 
 	const children = pageDef?.componentDefinition[compKey]?.children
@@ -298,7 +299,7 @@ function CompTree({
 					openParents={openParents}
 					onOpenClose={onOpenClose}
 					selectedComponent={selectedComponent}
-					selectednComponentsList={selectednComponentsList}
+					selectedComponentsList={selectedComponentsList}
 					onSelectedComponentChanged={onSelectedComponentChanged}
 					onSelectedComponentListChanged={onSelectedComponentListChanged}
 					selectedSubComponent={selectedSubComponent}
@@ -367,8 +368,8 @@ function CompTree({
 				id={`treeNode_${compKey}`}
 				className={`_treeNode ${
 					selectedComponent === compKey ||
-					(Array.isArray(selectednComponentsList) &&
-						selectednComponentsList.includes(compKey))
+					(Array.isArray(selectedComponentsList) &&
+						selectedComponentsList.includes(compKey))
 						? '_selected'
 						: ''
 				} ${dragStart ? '_dragStart' : ''}`}
@@ -388,8 +389,16 @@ function CompTree({
 				onDragOver={e => {
 					e.preventDefault();
 					e.stopPropagation();
-					if (!dragStart || !children?.length || isOpen) return;
-					onOpenClose(compKey);
+					if (!dragStart || !children?.length || isOpen || hoverLonger.current) return;
+					hoverLonger.current = setTimeout(() => {
+						onOpenClose(compKey);
+						hoverLonger.current = null;
+					}, 3000);
+				}}
+				onDragLeave={e => {
+					if (!hoverLonger.current) return;
+					clearTimeout(hoverLonger.current);
+					hoverLonger.current = null;
 				}}
 				onDragEnd={e => setDragStart(false)}
 				onDrop={e =>

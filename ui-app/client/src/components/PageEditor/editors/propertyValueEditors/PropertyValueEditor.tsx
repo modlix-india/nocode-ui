@@ -22,6 +22,7 @@ import { ValidationEditor } from './ValidationEditor';
 import { AnimationValueEditor } from './AnimationValueEditor';
 import { Dropdown } from '../stylePropertyValueEditors/simpleEditors/Dropdown';
 import { ColorSelector } from '../stylePropertyValueEditors/simpleEditors/ColorSelector';
+import SectionPropertyValueEditor from './SectionPropertyValueEditor';
 
 interface PropertyValueEditorProps {
 	propDef: ComponentPropertyDefinition;
@@ -340,6 +341,15 @@ function makeValueEditor(
 					onChange={e => onChange({ ...value, value: e.value })}
 				/>
 			</div>
+		);
+	}
+
+	if (propDef.editor === ComponentPropertyEditor.SECTION_PROPERTIES_EDITOR) {
+		return (
+			<SectionPropertyValueEditor
+				value={chngValue === '' ? undefined : chngValue}
+				onChange={e => onChange({ ...value, value: e })}
+			/>
 		);
 	}
 

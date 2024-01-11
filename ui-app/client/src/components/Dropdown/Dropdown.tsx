@@ -158,7 +158,8 @@ function DropdownComponent(props: ComponentProps) {
 	};
 
 	const handleClick = async (each: { key: any; label: any; value: any } | undefined) => {
-		if (!each) return;
+		if (!each || !bindingPathPath) return;
+
 		if (isMultiSelect) {
 			let newSelectionIndex = (selected ?? []).findIndex((e: any) =>
 				deepEqual(e, each.value),

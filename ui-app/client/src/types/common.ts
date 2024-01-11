@@ -69,6 +69,7 @@ export enum ComponentPropertyEditor {
 	ANIMATION,
 	ANIMATIONOBSERVER,
 	COLOR_PICKER,
+	SECTION_PROPERTIES_EDITOR,
 }
 
 export enum ComponentPropertyGroup {
@@ -79,6 +80,7 @@ export enum ComponentPropertyGroup {
 	COMMON = 'COMMON',
 	VALIDATION = 'VALIDATION',
 	SEO = 'SEO',
+	SECTION_GROUP = 'SECTION_GROUP',
 }
 
 export interface ComponentENUM {
