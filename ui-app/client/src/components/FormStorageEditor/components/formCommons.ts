@@ -81,7 +81,7 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 					type: 'STRING_LENGTH',
 					minLength: 0,
 					maxLength: 24,
-					message: 'not valid length',
+					message: 'Not valid length',
 				},
 				// if mandatory check = true
 				// MANDATORY: {
@@ -449,7 +449,7 @@ export const compValidationMap = new Map<string, FormCompValidation>([
 			uuid: '',
 			order: undefined,
 			type: 'REGEX',
-			pattern: '/^(\\+\\d{1,3}\\s?)?\\(?\\d{3}\\)?\\d{4,15}$/',
+			pattern: '^(\\+\\d{1,3}\\s?)?\\(?\\d{3}?\\)?\\d{4,15}$',
 			ignoreCase: false,
 			message: 'Not a valid phone number',
 		},

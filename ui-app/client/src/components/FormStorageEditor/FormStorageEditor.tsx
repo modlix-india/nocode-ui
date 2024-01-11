@@ -3,6 +3,7 @@ import {
 	addListenerAndCallImmediately,
 	getPathFromLocation,
 	PageStoreExtractor,
+	setData,
 } from '../../context/StoreContext';
 import {
 	Component,
@@ -23,10 +24,11 @@ import FormComponents from './components/FormComponents';
 import FormEditor from './components/FormEditor';
 import { FormStorageEditorDefinition } from './components/formCommons';
 import FormPreview from './components/FormPreview';
+import { duplicate } from '@fincity/kirun-js';
 
 function FormStorageEditor(props: ComponentProps) {
 	const [value, setValue] = useState<FormStorageEditorDefinition>({
-		name: 'xyz',
+		name: 'form',
 		fieldDefinitionMap: {},
 		schema: { type: 'OBJECT', additionalProperties: false },
 		readAuth: 'Authorities.Logged_IN',
@@ -53,8 +55,8 @@ function FormStorageEditor(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	// binding path for the page definition to load
-	const defPath = bindingPath
+	// binding path for the Storage definition
+	const storagePath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
 		: undefined;
 
@@ -65,7 +67,7 @@ function FormStorageEditor(props: ComponentProps) {
 	);
 
 	useEffect(() => {
-		if (!defPath) return;
+		if (!storagePath) return;
 		addListenerAndCallImmediately(
 			(_, value) => {
 				setValue(
@@ -80,9 +82,9 @@ function FormStorageEditor(props: ComponentProps) {
 				);
 			},
 			pageExtractor,
-			defPath,
+			storagePath,
 		);
-	}, [defPath]);
+	}, [storagePath]);
 
 	// console.log('formData', value);
 
@@ -98,6 +100,14 @@ function FormStorageEditor(props: ComponentProps) {
 				pageDefinition,
 			))();
 	}, [onSave]);
+	const onCancel = () => {
+		let temp = {
+			...duplicate(value),
+			fieldDefinitionMap: {},
+			schema: { type: 'OBJECT', additionalProperties: false },
+		};
+		setData(storagePath!, temp, pageExtractor.getPageName());
+	};
 
 	return (
 		<div className={`comp compFormStorageEditor`} style={resolvedStyles.comp ?? {}}>
@@ -117,7 +127,7 @@ function FormStorageEditor(props: ComponentProps) {
 					</div>
 					<FormEditor
 						value={value}
-						defPath={defPath}
+						storagePath={storagePath!}
 						pageExtractor={pageExtractor}
 						locationHistory={locationHistory}
 					/>
@@ -136,8 +146,10 @@ function FormStorageEditor(props: ComponentProps) {
 				</div>
 			</div>
 			<div className="_footer">
-				<button className="_cancel">Cancel</button>
-				<button className="_save" onClick={() => saveFunction()}>
+				<button className="_cancel" onClick={onCancel}>
+					Cancel
+				</button>
+				<button className="_save" onClick={saveFunction}>
 					Save changes
 				</button>
 			</div>

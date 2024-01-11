@@ -16,12 +16,12 @@ import { shortUUID } from '../../../util/shortUUID';
 
 export default function FormEditor({
 	value,
-	defPath,
+	storagePath,
 	pageExtractor,
 	locationHistory,
 }: {
 	value: FormStorageEditorDefinition;
-	defPath: string | undefined;
+	storagePath: string;
 	pageExtractor: PageStoreExtractor;
 	locationHistory: Array<LocationHistory>;
 }) {
@@ -74,7 +74,7 @@ export default function FormEditor({
 			fieldDefinitionMap: fieldDefinitionMap,
 			schema: generateFormSchema(fieldDefinitionMap)!,
 		};
-		setData(defPath!, tempData, pageExtractor.getPageName());
+		setData(storagePath!, tempData, pageExtractor.getPageName());
 	};
 
 	const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -166,7 +166,7 @@ export default function FormEditor({
 	return (
 		<div className="_editor" onDrop={e => handleDrop(e)} onDragOver={handleDragOver}>
 			<Accordion
-				data={Object.values(fieldDefinitionMap).sort(
+				data={Object.values(fieldDefinitionMap ?? {}).sort(
 					(a: FormCompDefinition, b: FormCompDefinition) =>
 						(a.order ?? 0) - (b.order ?? 0),
 				)}
