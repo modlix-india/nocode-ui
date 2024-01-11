@@ -1,8 +1,6 @@
 import { StyleGroupDefinition, StylePropertyDefinition } from '../../types/common';
 
 export const styleProperties: Array<StylePropertyDefinition> = [
-	{ displayName: 'Text Box Font', name: 'textBoxFont', defaultValue: '<primaryFont>' },
-
 	{
 		groupName: 'Text Box Font',
 		displayName: 'Text Box Font Design Default',
@@ -1424,7 +1422,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Text Box Background Default',
 		displayName: 'Primary Text Box Background Default Design Filled',
 		name: 'primaryTextBoxBackgroundDefaultDesignFilled',
-		defaultValue: '<backgroundColorNine>',
+		defaultValue: '<backgroundColorOne>',
 		cssProperty: 'background',
 		selector: '.comp.compTextBox._filled._primary',
 		noPrefix: true,
@@ -1433,7 +1431,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Text Box Background Default',
 		displayName: 'Secondary Text Box Background Default Design Filled',
 		name: 'secondaryTextBoxBackgroundDefaultDesignFilled',
-		defaultValue: '<backgroundColorNine>',
+		defaultValue: '<backgroundColorTwo>',
 		cssProperty: 'background',
 		selector: '.comp.compTextBox._filled._secondary',
 		noPrefix: true,
@@ -1442,7 +1440,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Text Box Background Default',
 		displayName: 'Tertiary Text Box Background Default Design Filled',
 		name: 'tertiaryTextBoxBackgroundDefaultDesignFilled',
-		defaultValue: '<backgroundColorNine>',
+		defaultValue: '<backgroundColorThree>',
 		cssProperty: 'background',
 		selector: '.comp.compTextBox._filled._tertiary',
 		noPrefix: true,
@@ -1451,7 +1449,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Text Box Background Default',
 		displayName: 'Quaternary Text Box Background Default Design Filled',
 		name: 'quaternaryTextBoxBackgroundDefaultDesignFilled',
-		defaultValue: '<backgroundColorNine>',
+		defaultValue: '<backgroundColorFour>',
 		cssProperty: 'background',
 		selector: '.comp.compTextBox._filled._quaternary',
 		noPrefix: true,
@@ -1460,7 +1458,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Text Box Background Default',
 		displayName: 'Quinary Text Box Background Default Design Filled',
 		name: 'quinaryTextBoxBackgroundDefaultDesignFilled',
-		defaultValue: '<backgroundColorNine>',
+		defaultValue: '<backgroundColorFive>',
 		cssProperty: 'background',
 		selector: '.comp.compTextBox._filled._quinary',
 		noPrefix: true,

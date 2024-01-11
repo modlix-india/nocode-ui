@@ -41,6 +41,7 @@ type CommonInputType = {
 	updDownHandler?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 	inputType?: string;
 	maxChars?: number;
+	showDropdown?: boolean;
 };
 
 function CommonInputText(props: CommonInputType) {
@@ -81,6 +82,7 @@ function CommonInputText(props: CommonInputType) {
 		updDownHandler,
 		inputType = 'Text',
 		maxChars,
+		showDropdown,
 	} = props;
 	const [focus, setFocus] = React.useState(false);
 	const [showPassword, setShowPassowrd] = React.useState(false);
@@ -194,11 +196,13 @@ function CommonInputText(props: CommonInputType) {
 
 	return (
 		<div
-			className={`${cssPrefix} ${focus ? '_isActive' : ''} ${designType} ${colorScheme} ${
-				leftIcon ? '_hasLeftIcon' : ''
-			} ${!focus && value?.toString()?.length ? '_hasValue' : ''} ${
-				!hasErrorMessages && hasValidationCheck && isDirty ? '_validationSuccess' : ''
-			} ${hasErrorMessages ? '_hasError' : ''}`}
+			className={`${cssPrefix} ${
+				focus || showDropdown ? '_isActive' : ''
+			} ${designType} ${colorScheme} ${leftIcon ? '_hasLeftIcon' : ''} ${
+				!focus && value?.toString()?.length ? '_hasValue' : ''
+			} ${!hasErrorMessages && hasValidationCheck && isDirty ? '_validationSuccess' : ''} ${
+				hasErrorMessages ? '_hasError' : ''
+			}`}
 			style={computedStyles.comp ?? {}}
 			onMouseLeave={onMouseLeave}
 			onKeyUp={updDownHandler}
