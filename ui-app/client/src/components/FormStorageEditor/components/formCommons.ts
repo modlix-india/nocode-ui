@@ -85,7 +85,7 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 				},
 				// if mandatory check = true
 				// MANDATORY: {
-				// 	key: '',
+				// 	uuid: '',
 				// 	order: undefined,
 				// 	type: 'MANDATORY',
 				// 	message: 'Mandatory',
@@ -119,7 +119,7 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 				},
 				// if mandatory check = true
 				// MANDATORY: {
-				// 	key: '',
+				// 	uuid: '',
 				// 	order: undefined,
 				// 	type: 'MANDATORY',
 				// 	message: 'Mandatory',
@@ -127,7 +127,7 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 
 				// if validation check = true
 				// EMAIL: {
-				// 	key: '',
+				// 	uuid: '',
 				// 	order: undefined,
 				// 	type: 'EMAIL',
 				// 	message: 'Not an valid email',
@@ -163,7 +163,7 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 				},
 				// if mandatory check = true
 				// MANDATORY: {
-				// 	key: '',
+				// 	uuid: '',
 				// 	order: undefined,
 				// 	type: 'MANDATORY',
 				// 	message: 'Mandatory',
@@ -171,7 +171,7 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 
 				// if validation check = true
 				// PHONE: {
-				// 	key: '',
+				// 	uuid: '',
 				// 	order: undefined,
 				// 	type: 'REGEX',
 				// 	pattern: `^(\+\d{1,3}\s?)?\(?\d{3}\)?\d{4,15}$`,
@@ -197,14 +197,14 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 			order: undefined,
 			label: 'Text box',
 			placeholder: 'Type something',
-			maxChars: '',
+			// maxChars: '',
 			inputType: 'text', // ['text','number']
 			numberType: '', // ['INTEGER','DECIMAL']
 			//it will have validation editor
 			validation: {
 				// if mandatory check = true
 				// MANDATORY: {
-				// 	key: '',
+				// 	uuid: '',
 				// 	order: undefined,
 				// 	type: 'MANDATORY',
 				// 	message: 'Mandatory',
@@ -214,42 +214,25 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 					uuid: '',
 					order: 0,
 					type: 'STRING_LENGTH',
-					minLength: '',
-					maxLength: '',
-					message: 'not valid length',
 				},
 				// validation when inputType = number
 				// NUMBER_VALUE: {
-				// 	key: '',
+				// 	uuid: '',
 				// 	order: undefined,
 				// 	type: 'NUMBER_VALUE',
-				// 	minimum: '',
-				// 	maximum: '',
-				// 	message: '',
 				// },
 			},
 			// schema for inputType = text
 			schema: {
 				type: ['STRING'],
-				minLength: '',
-				maxLength: '',
 			},
-
 			// if inputType = number and numberType Integer
 			// schema: {
-			// 	oneOf: [
-			// 		{
-			// 			type: ['INTEGER', 'LONG'],
-			// 		},
-			// 	],
+			// 	type: ['INTEGER', 'LONG'],
 			// },
 			// if inputType = number and numberType Decimal
 			// schema: {
-			// 	oneOf: [
-			// 		{
-			// 			type: ['INTEGER', 'LONG', 'FLOAT', 'DOUBLE'],
-			// 		},
-			// 	],
+			// 	type: ['INTEGER', 'LONG', 'FLOAT', 'DOUBLE'],
 			// },
 			editorType: 'TextBoxEditor',
 		},
@@ -268,7 +251,7 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 			validation: {
 				// if mandatory check = true
 				// MANDATORY: {
-				// 	key: '',
+				// 	uuid: '',
 				// 	order: undefined,
 				// 	type: 'MANDATORY',
 				// 	message: 'Mandatory',
@@ -278,7 +261,7 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 					order: 0,
 					type: 'STRING_LENGTH',
 					minLength: 0,
-					maxLength: 50,
+					maxLength: 2000,
 					message: 'not valid length',
 				},
 			},
@@ -303,7 +286,7 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 				// mandatory validation only
 				// if mandatory check = true
 				// MANDATORY: {
-				// 	key: '',
+				// 	uuid: '',
 				// 	order: undefined,
 				// 	type: 'MANDATORY',
 				// 	message: 'Mandatory',
@@ -347,7 +330,7 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 				// mandatory validation only
 				// if mandatory check = true
 				// MANDATORY: {
-				// 	key: '',
+				// 	uuid: '',
 				// 	order: undefined,
 				// 	type: 'MANDATORY',
 				// 	message: 'Mandatory',
@@ -383,7 +366,7 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 				// mandatory validation only
 				// if mandatory check = true
 				// MANDATORY: {
-				// 	key: '',
+				// 	uuid: '',
 				// 	order: undefined,
 				// 	type: 'MANDATORY',
 				// 	message: 'Mandatory',
@@ -450,7 +433,6 @@ export const compValidationMap = new Map<string, FormCompValidation>([
 			order: undefined,
 			type: 'REGEX',
 			pattern: '^(\\+\\d{1,3}\\s?)?\\(?\\d{3}?\\)?\\d{4,15}$',
-			ignoreCase: false,
 			message: 'Not a valid phone number',
 		},
 	],
@@ -460,9 +442,9 @@ export const compValidationMap = new Map<string, FormCompValidation>([
 			uuid: '',
 			order: undefined,
 			type: 'STRING_LENGTH',
-			maxLength: '',
-			minLength: '',
-			message: 'Not valid length',
+			// maxLength: '',
+			// minLength: '',
+			// message: '',
 		},
 	],
 	[
@@ -471,9 +453,9 @@ export const compValidationMap = new Map<string, FormCompValidation>([
 			uuid: '',
 			order: undefined,
 			type: 'NUMBER_VALUE',
-			minValue: '',
-			maxValue: '',
-			message: 'Not Valid Number',
+			// minValue: '',
+			// maxValue: '',
+			// message: '',
 		},
 	],
 	[
@@ -483,7 +465,6 @@ export const compValidationMap = new Map<string, FormCompValidation>([
 			order: undefined,
 			type: 'REGEX',
 			pattern: '^[a-zA-Z]+$',
-			ignoreCase: false,
 			message: '',
 		},
 	],
@@ -494,7 +475,6 @@ export const compValidationMap = new Map<string, FormCompValidation>([
 			order: undefined,
 			type: 'REGEX',
 			pattern: '^[a-zA-Z0-9]+$',
-			ignoreCase: false,
 			message: '',
 		},
 	],
@@ -506,7 +486,6 @@ export const compValidationMap = new Map<string, FormCompValidation>([
 			type: 'REGEX',
 			pattern:
 				'\\b(?:https?|ftp):\\/\\/[-A-Za-z0-9+&@#\\/%?=~_|!:,.;]*[-A-Za-z0-9+&@#\\/%=~_|]',
-			ignoreCase: false,
 			message: '',
 		},
 	],
@@ -517,7 +496,6 @@ export const compValidationMap = new Map<string, FormCompValidation>([
 			order: undefined,
 			type: 'REGEX',
 			pattern: '^₹?\\s?\\d{1,3}(?:,?\\d{3})*(?:\\.\\d{1,2})?$',
-			ignoreCase: false,
 			message: '',
 		},
 	],
@@ -528,7 +506,6 @@ export const compValidationMap = new Map<string, FormCompValidation>([
 			order: undefined,
 			type: 'REGEX',
 			pattern: '^[^\\d]*$', // A/a to Z/z + all spacial character
-			ignoreCase: false,
 			message: '',
 		},
 	],
@@ -539,7 +516,6 @@ export const compValidationMap = new Map<string, FormCompValidation>([
 			order: undefined,
 			type: 'REGEX',
 			pattern: '',
-			ignoreCase: false,
 			message: '',
 		},
 	],

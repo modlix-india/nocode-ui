@@ -169,14 +169,13 @@ export default function TextTypeEditor({
 			tempValidation['NUMBER_VALUE'] = tempNumVal;
 
 			tempSchema = duplicate(data.schema);
-			if (max) tempSchema.oneOf![0]['maximum'] = parseInt(max);
-			else delete tempSchema.oneOf![0]['maximum'];
-			if (min) tempSchema.oneOf![0]['minimum'] = parseInt(min);
-			else delete tempSchema.oneOf![0]['minimum'];
+			if (max) tempSchema['maximum'] = parseInt(max);
+			else delete tempSchema['maximum'];
+			if (min) tempSchema['minimum'] = parseInt(min);
+			else delete tempSchema['minimum'];
 		}
 		let tempData: FormCompDefinition = {
 			...data,
-			maxChars: inputType === 'text' && max ? parseInt(max) : '',
 			validation: tempValidation,
 			schema: tempSchema,
 		};
@@ -192,7 +191,7 @@ export default function TextTypeEditor({
 		let tempValidation: compValidations = data?.validation;
 
 		if (v === 'text') {
-			tempSchema = { type: ['STRING'], minLength: '', maxLength: '' };
+			tempSchema = { type: ['STRING'] };
 			tempValidation['STRING_LENGTH'] = {
 				...compValidationMap.get('STRING_LENGTH')!,
 				order: Object.entries(tempValidation).length,
@@ -200,13 +199,7 @@ export default function TextTypeEditor({
 			delete tempValidation['NUMBER_VALUE'];
 		} else {
 			tempSchema = {
-				oneOf: [
-					{
-						type: ['INTEGER', 'LONG', 'FLOAT', 'DOUBLE'],
-						minimum: '',
-						maximum: '',
-					},
-				],
+				type: ['INTEGER', 'LONG', 'FLOAT', 'DOUBLE'],
 			};
 			tempValidation['NUMBER_VALUE'] = {
 				...compValidationMap.get('NUMBER_VALUE')!,
@@ -225,40 +218,32 @@ export default function TextTypeEditor({
 			...data,
 			inputType: v,
 			numberType: v === 'text' ? '' : 'DECIMAL',
-			maxChars: v === 'text' ? data.maxChars : '',
 			schema: tempSchema,
 			validation: reEvaluateOrder(tempValidation),
 		};
+		if (tempData['maxChars']) delete tempData['maxChars'];
 
 		handleFieldDefMapChanges(data.key, tempData);
 	};
 
-	const handleNumberypeChanges = (v: string) => {
+	const handleNumberTypeChanges = (v: string) => {
 		if (v === data.numberType) return;
 
 		let tempSchema: CustomSchema;
 		if (v === 'INTEGER') {
 			tempSchema = {
-				oneOf: [
-					{
-						type: ['INTEGER', 'LONG'],
-					},
-				],
+				type: ['INTEGER', 'LONG'],
 			};
 		} else {
 			tempSchema = {
-				oneOf: [
-					{
-						type: ['INTEGER', 'LONG', 'FLOAT', 'DOUBLE'],
-					},
-				],
+				type: ['INTEGER', 'LONG', 'FLOAT', 'DOUBLE'],
 			};
 		}
 
-		if (max) tempSchema.oneOf![0]['maximum'] = parseInt(max);
-		else delete tempSchema.oneOf![0]['maximum'];
-		if (min) tempSchema.oneOf![0]['minimum'] = parseInt(min);
-		else delete tempSchema.oneOf![0]['minimum'];
+		if (max) tempSchema['maximum'] = parseInt(max);
+		else delete tempSchema['maximum'];
+		if (min) tempSchema['minimum'] = parseInt(min);
+		else delete tempSchema['minimum'];
 
 		let tempData: FormCompDefinition = {
 			...data,
@@ -424,7 +409,7 @@ export default function TextTypeEditor({
 			{inputType === 'number' && (
 				<Dropdown
 					value={numberType}
-					onChange={handleNumberypeChanges}
+					onChange={handleNumberTypeChanges}
 					options={numberTypeOption}
 					placeholder="Number type"
 					showNoneLabel={false}
