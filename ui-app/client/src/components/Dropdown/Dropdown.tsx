@@ -335,6 +335,7 @@ function DropdownComponent(props: ComponentProps) {
 			designType={designType}
 			colorScheme={colorScheme}
 			leftIcon={leftIcon}
+			showDropdown={showDropdown}
 			onMouseLeave={closeOnMouseLeave ? handleClose : undefined}
 			updDownHandler={e => {
 				if (e.key.startsWith('Arrow')) {
