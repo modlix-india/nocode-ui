@@ -415,7 +415,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._urlInput {
 			position: absolute;
-			width: 200px;
+			width: 240px;
 			left: 22px;
 			z-index: 1;
 		}
@@ -431,14 +431,26 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._urlInput._peInput {
 			background: #F8FAFB;
-			border: 0.8px solid #E9ECEF;
-			box-shadow: inset 0px 0px 2px rgba(0, 0, 0, 0.05);
 			border-radius: 4px;
 			position: static;
 			height: 38px;
 			display: flex;
     		align-items: center;
 			padding: 8px;
+			border-radius: 20px;
+			border: none;
+			gap: 8px;
+		}
+
+		${PREFIX} ._urlInput ._urlInputIcon {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		${PREFIX} ._urlInput._peInput svg {
+			min-width: 20px;
+			cursor: pointer;
 		}
 
 		${PREFIX} ._iconMenu._personalize {
@@ -957,6 +969,11 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._page_Selector {
 			width: 186px;
+		}
+
+		._page_Selector ._simpleEditorSelect {	
+			height: 38px;
+			border-radius: 20px;
 		}
 		._add_page_btn_container {
 			padding: 10px 10px;
@@ -2809,6 +2826,11 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			font-size: 13px;
 		}
 
+		._popupMenuBackground ._popupMenuContainer._plain {
+			border: none;
+			background-color: transparent;
+		}
+
 		._popupMenuBackground ._popupMenuContainer ._elementBarSearchContainer{
 			padding: 20px 50px 20px 20px;
 			background: #FFFFFF;
@@ -2916,6 +2938,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			padding-top: 5px;
 			border-left: 1px solid #52BD94;
 			border-radius: 4px;
+			background-color: #fff;
+			box-shadow: 0px 1px 10px 0px #0000001A;
 		}
 
 		._popupMenuBackground ._popupMenuSeperator {

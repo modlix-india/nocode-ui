@@ -148,16 +148,20 @@ function PageEditorHelperComponent({
 			onContextMenu={e => {
 				e.stopPropagation();
 				e.preventDefault();
+				// mouse position javascript with respective to the parent iframe
 				messageToMaster({
 					type: 'SLAVE_CONTEXT_MENU',
 					payload: {
 						componentKey: definition.key,
 						menuPosition: {
-							x: e.screenX - window.screenX,
+							x:
+								e.screenX -
+								parent.window.screenLeft -
+								(parent.window.outerWidth - parent.window.innerWidth),
 							y:
 								e.screenY -
-								window.screenY -
-								((window.top?.outerHeight ?? 0) - (window.top?.innerHeight ?? 0)),
+								parent.window.screenTop -
+								(parent.window.outerHeight - parent.window.innerHeight),
 						},
 					},
 				});
