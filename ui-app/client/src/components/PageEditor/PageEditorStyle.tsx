@@ -1946,6 +1946,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			font-size: 12px;
 			color: #000000a0;
 			cursor: pointer;
+    		transform-origin: top left;
 		}
 
 		${PREFIX} ._iframeCenter {
