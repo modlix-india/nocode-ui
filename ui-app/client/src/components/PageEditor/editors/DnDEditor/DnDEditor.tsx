@@ -39,6 +39,8 @@ interface DnDEditorProps {
 	locationHistory: Array<LocationHistory>;
 	pageOperations: PageOperations;
 	onPageReload: () => void;
+	onPageBack: () => void;
+	onPageForward: () => void;
 	theme: string;
 	onUrlChange: (url: string) => void;
 	onDeletePersonalization: () => void;
@@ -83,6 +85,8 @@ export default function DnDEditor({
 	onUrlChange,
 	onDeletePersonalization,
 	onPageReload,
+	onPageBack,
+	onPageForward,
 	logo,
 	onContextMenu,
 	onShowCodeEditor,
@@ -134,6 +138,8 @@ export default function DnDEditor({
 					onDeletePersonalization={onDeletePersonalization}
 					pageExtractor={pageExtractor}
 					onPageReload={onPageReload}
+					onPageBack={onPageBack}
+					onPageForward={onPageForward}
 					undoStackRef={undoStackRef}
 					redoStackRef={redoStackRef}
 					firstTimeRef={firstTimeRef}

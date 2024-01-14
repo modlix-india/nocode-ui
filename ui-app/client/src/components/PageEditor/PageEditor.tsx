@@ -678,6 +678,16 @@ function PageEditor(props: ComponentProps) {
 						setSelectedComponent('');
 						setSelectedSubComponent('');
 					}}
+					onPageBack={() => {
+						desktopRef?.current?.contentWindow?.history.back();
+						tabletRef?.current?.contentWindow?.history.back();
+						mobileRef?.current?.contentWindow?.history.back();
+					}}
+					onPageForward={() => {
+						desktopRef?.current?.contentWindow?.history.forward();
+						tabletRef?.current?.contentWindow?.history.forward();
+						mobileRef?.current?.contentWindow?.history.forward();
+					}}
 					theme={localTheme}
 					logo={logo}
 					onUrlChange={urlChange}
