@@ -117,9 +117,13 @@ export default function DnDIFrame({
 				style={{
 					minWidth: desktopWidth + 'px',
 					maxWidth: desktopWidth + 'px',
+					gap: `${20 / scale}px`,
 				}}
 			>
-				<div className="_iframeHeader _screenSizes">
+				<div
+					className="_iframeHeader _screenSizes"
+					style={{ width: `${scale * 100}%`, transform: `scale(${1 / scale})` }}
+				>
 					<DesktopIcon />
 					DESKTOP
 				</div>
@@ -145,9 +149,13 @@ export default function DnDIFrame({
 				style={{
 					minWidth: tabletWidth + 'px',
 					maxWidth: tabletWidth + 'px',
+					gap: `${20 / scale}px`,
 				}}
 			>
-				<div className="_iframeHeader _screenSizes">
+				<div
+					className="_iframeHeader _screenSizes"
+					style={{ width: `${scale * 100}%`, transform: `scale(${1 / scale})` }}
+				>
 					<TabletIcon />
 					TABLET
 				</div>
@@ -173,9 +181,13 @@ export default function DnDIFrame({
 				style={{
 					minWidth: mobileWidth + 'px',
 					maxWidth: mobileWidth + 'px',
+					gap: `${20 / scale}px`,
 				}}
 			>
-				<div className="_iframeHeader _screenSizes">
+				<div
+					className="_iframeHeader _screenSizes"
+					style={{ width: `${scale * 100}%`, transform: `scale(${1 / scale})` }}
+				>
 					<MobileIcon />
 					MOBILE
 				</div>
