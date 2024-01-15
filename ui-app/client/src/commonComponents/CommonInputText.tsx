@@ -1,8 +1,8 @@
 import React, { ChangeEvent, KeyboardEvent } from 'react';
 import { getTranslations } from '../components/util/getTranslations';
 import { ComponentDefinition, RenderContext, Translations } from '../types/common';
-import { SubHelperComponent } from '../components/SubHelperComponent';
-import { HelperComponent } from '../components/HelperComponent';
+import { SubHelperComponent } from '../components/HelperComponents/SubHelperComponent';
+import { HelperComponent } from '../components/HelperComponents/HelperComponent';
 
 type CommonInputType = {
 	styles?: any;

@@ -10,7 +10,7 @@ import {
 import { UISchemaRepository } from '../../schemas/common';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { AnyValueEditor } from '../PageEditor/editors/propertyValueEditors/AnyValueEditor';
 import useDefinition from '../util/useDefinition';
 import SingleSchema from './components/SingleSchemaForm';

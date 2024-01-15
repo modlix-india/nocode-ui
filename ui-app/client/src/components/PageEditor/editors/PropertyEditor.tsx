@@ -262,6 +262,8 @@ export default function PropertyEditor({
 		if (!a[grp]) a[grp] = [];
 		let valueEditor;
 
+		if (e.hide) return a;
+
 		if (e.multiValued) {
 			valueEditor = (
 				<PropertyMultiValueEditor
@@ -415,31 +417,25 @@ export default function PropertyEditor({
 				)}
 
 				{selectedComponentsList?.length === 1 && bpGroup}
-				{Object.entries(ComponentPropertyGroup)
-					.filter(
-						e =>
-							editorType === 'SECTION' ||
-							e[0] !== ComponentPropertyGroup.SECTION_GROUP,
-					)
-					.map((e, i) => {
-						// contains rest of the properties
-						if (!propGroups?.[e[1]]) return null;
-						return (
-							<PropertyGroup
-								tabName="compProps"
-								key={e[0]}
-								name={e[1]}
-								displayName={e[0]}
-								defaultStateOpen={e[1] === ComponentPropertyGroup.BASIC}
-								pageExtractor={pageExtractor}
-								locationHistory={locationHistory}
-								onChangePersonalization={onChangePersonalization}
-								personalizationPath={personalizationPath}
-							>
-								<div>{propGroups[e[1]]}</div>
-							</PropertyGroup>
-						);
-					})}
+				{Object.entries(ComponentPropertyGroup).map((e, i) => {
+					// contains rest of the properties
+					if (!propGroups?.[e[1]]) return null;
+					return (
+						<PropertyGroup
+							tabName="compProps"
+							key={e[0]}
+							name={e[1]}
+							displayName={e[0]}
+							defaultStateOpen={e[1] === ComponentPropertyGroup.BASIC}
+							pageExtractor={pageExtractor}
+							locationHistory={locationHistory}
+							onChangePersonalization={onChangePersonalization}
+							personalizationPath={personalizationPath}
+						>
+							<div>{propGroups[e[1]]}</div>
+						</PropertyGroup>
+					);
+				})}
 			</div>
 		</div>
 	);

@@ -11,7 +11,7 @@ import {
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { getHref } from '../util/getHref';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';

@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { PageStoreExtractor } from '../../context/StoreContext';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { getTranslations } from '../util/getTranslations';
 import { propertiesDefinition, stylePropertiesDefinition } from './textListProperties';
@@ -9,7 +9,7 @@ import TextListStyle from './TextListStyle';
 import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { getRenderData } from '../util/getRenderData';
-import { SubHelperComponent } from '../SubHelperComponent';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { styleDefaults } from './textListStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 

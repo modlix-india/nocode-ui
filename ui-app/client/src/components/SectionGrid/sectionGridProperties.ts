@@ -1,10 +1,4 @@
-import { Schema } from '@fincity/kirun-js';
-import {
-	SCHEMA_ANY_COMP_PROP,
-	SCHEMA_BOOL_COMP_PROP,
-	SCHEMA_DATA_LOCATION,
-	SCHEMA_STRING_COMP_PROP,
-} from '../../constants';
+import { SCHEMA_ANY_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
@@ -42,7 +36,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Section Properties',
 		editor: ComponentPropertyEditor.SECTION_PROPERTIES_EDITOR,
 		defaultValue: {},
-		group: ComponentPropertyGroup.SECTION_GROUP,
+		group: ComponentPropertyGroup.ADVANCED,
+		hide: true,
 		multiValued: true,
 	},
 ];
