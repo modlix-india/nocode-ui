@@ -7,7 +7,7 @@ import {
 } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './fileUploadProperties';
@@ -16,7 +16,7 @@ import { validate } from '../../util/validationProcessor';
 import { flattenUUID } from '../util/uuid';
 import { isNullValue } from '@fincity/kirun-js';
 import { returnFileSize } from '../util/getFileSize';
-import { SubHelperComponent } from '../SubHelperComponent';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { MESSAGE_TYPE, addMessage } from '../../App/Messages/Messages';
 import { ToArray } from '../../util/csvUtil';
 import { styleDefaults } from './fileUploadStyleProperties';

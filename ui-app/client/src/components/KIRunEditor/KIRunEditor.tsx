@@ -37,7 +37,7 @@ import { StoreNode } from './components/StoreNode';
 import { correctStatementNames, makeObjectPaths, savePersonalizationCurry } from './utils';
 import StatementParameters from './components/StatementParameters';
 import FunctionDetialsEditor from './components/FunctionDetailsEditor';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { REPO_SERVER, RemoteRepository } from '../../Engine/RemoteRepository';
 import { styleDefaults } from './KIRunEditorStyleProperties';

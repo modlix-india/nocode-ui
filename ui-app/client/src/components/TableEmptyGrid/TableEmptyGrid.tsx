@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { addListener, getDataFromPath, PageStoreExtractor } from '../../context/StoreContext';
 import { Component } from '../../types/common';

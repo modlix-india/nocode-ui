@@ -6,8 +6,8 @@ import {
 	processComponentStylePseudoClasses,
 	processStyleObjectToCSS,
 } from '../../util/styleProcessor';
-import { HelperComponent } from '../HelperComponent';
-import { SubHelperComponent } from '../SubHelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { getHref } from '../util/getHref';
 import { getTranslations } from '../util/getTranslations';
 import { runEvent } from '../util/runEvent';

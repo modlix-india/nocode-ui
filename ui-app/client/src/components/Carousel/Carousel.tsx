@@ -1,14 +1,14 @@
 import React, { CSSProperties, ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { PageStoreExtractor } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './carouselProperties';
 import CarouselStyle from './CarouselStyle';
 import Children from '../Children';
 import { isNullValue } from '@fincity/kirun-js';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import { SubHelperComponent } from '../SubHelperComponent';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { styleDefaults } from './carouselStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
