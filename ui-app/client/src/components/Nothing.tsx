@@ -1,6 +1,6 @@
 import React from 'react';
 import { Component, ComponentPropertyDefinition } from '../types/common';
-import { HelperComponent } from './HelperComponent';
+import { HelperComponent } from './HelperComponents/HelperComponent';
 
 function Nothing({ definition }: { definition: any }) {
 	return (

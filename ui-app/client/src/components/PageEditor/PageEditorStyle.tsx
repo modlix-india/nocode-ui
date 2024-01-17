@@ -784,6 +784,15 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			opacity:0.3;
 		}
 
+		._microToggle2._withText {
+			height: auto;
+			width: auto;
+			padding-left: 16px;
+			padding-right: 15px;
+			color: #333;
+			border-radius: 20px;
+		}
+
 		._microToggle2::before {
 			content: '';
 			width: 6px;
@@ -798,10 +807,17 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border: 1px solid #888;
 		}
 
+		._microToggle2._withText::before {
+			width: 10px;
+			height: 10px;
+			right: 3px;
+		}
+
 		._microToggle2._on {
 			background-color: #52BD94;
 			opacity: 0.8;
 			border: 1px solid #198A61;
+			color: #FFF;	
 		}
 
 		._microToggle2._on::before {
@@ -809,6 +825,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			transform: translateY(-50%);
 			background-color: #FFF;
 			border: 1px solid #FFF;
+		}
+
+		._microToggle2._withText._on::before {
+			right: calc(100% - 13px);
 		}
 
 		._confineWidth {
@@ -2183,13 +2203,17 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			outline: none;
 		}
 
-		${PREFIX} ._tabBar svg path{
+		${PREFIX} ._tabBar svg path,
+		${PREFIX} ._tabBar svg rect {
 			transition: fill 0.5s, fill-opacity 0.5s;
 			fill: #8E90A4;
 			fill-opacity: 0.2;
 		}
 
-		${PREFIX} ._tabBar svg:hover path, ${PREFIX} ._tabBar svg.active path{ 
+		${PREFIX} ._tabBar svg:hover path,
+		${PREFIX} ._tabBar svg.active path,
+		${PREFIX} ._tabBar svg:hover rect,
+		${PREFIX} ._tabBar svg.active rect {
 			fill: #52BD94;
 			fill-opacity: 1;
 		}
@@ -2237,6 +2261,15 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			height: 45px;
 			position: relative;		
 			padding: 0px 5px;	
+		}
+
+		${PREFIX} ._addArrayItemButton {
+			color: #FFFFFF;
+			background: #52BD94;
+			border-radius: 2px;
+			padding: 3px 8px;
+			border: none;
+			box-shadow: 0px 1px 6px 2px #0000001A;
 		}
 
 		.commonTriStateCheckbox::before {
@@ -2337,6 +2370,22 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._propLabel i.fa {
 			cursor: pointer;
+		}
+
+		._propValue ._peInput {
+			width: 20px;
+		}
+
+		._propValue._padding {
+			background-color: #F8FAFB77;
+			border: 1px solid #F8FAFB;
+			border-radius: 4px;
+			min-width: 300px;
+		}
+
+		._propValue ._propertyGroup {
+			min-width: 300px;
+			overflow: auto;
 		}
 
 		${PREFIX} ._tooltip {
@@ -2478,6 +2527,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			font-size: 20px;
 			font-weight: 200;
 			justify-content: flex-end;
+			font-family: monospace;
 		}
 
 		._propertyGroup._closed ._propertyGroupHeader {
@@ -2641,6 +2691,26 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			margin-right: 5px;
 			border-radius: 4px;
 			margin-left: 5px;
+		}
+
+		${PREFIX} ._addPropertyButtonContainer {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			padding: 10px;
+		}
+
+		${PREFIX} ._addPropertyButtonContainer button {
+			color: #FFFFFF;
+			background-color: #52BD94;
+			border-radius: 4px;
+			border: none;
+			padding: 8px 10px;		
+			box-shadow: 0 15px 30px 0 rgba(0,0,0,.10), 0 5px 15px 0 rgba(0,0,0,.10);
+		}
+
+		${PREFIX} ._addPropertyButtonContainer button:hover {
+			background-color: #52BD94CC;
 		}
 
 		._popupContainer ._progressBar {

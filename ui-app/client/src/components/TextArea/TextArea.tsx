@@ -12,14 +12,14 @@ import {
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { validate } from '../../util/validationProcessor';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { getTranslations } from '../util/getTranslations';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { flattenUUID } from '../util/uuid';
 import TextAreaStyle from './TextAreaStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './textAreaProperties';
-import { SubHelperComponent } from '../SubHelperComponent';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import CommonInputText from '../../commonComponents/CommonInputText';
 import { styleDefaults } from './textAreaStyleProperties';
 import { IconHelper } from '../util/IconHelper';

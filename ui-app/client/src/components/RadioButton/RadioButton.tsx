@@ -9,7 +9,7 @@ import {
 } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { getRenderData } from '../util/getRenderData';
 import { getSelectedKeys } from '../util/getSelectedKeys';
 import { getTranslations } from '../util/getTranslations';
@@ -17,7 +17,7 @@ import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './radioButtonProperties';
 import RadioButtonStyle from './RadioButtonStyle';
-import { SubHelperComponent } from '../SubHelperComponent';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { styleDefaults } from './RadioButtonStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 

@@ -80,7 +80,6 @@ export enum ComponentPropertyGroup {
 	COMMON = 'COMMON',
 	VALIDATION = 'VALIDATION',
 	SEO = 'SEO',
-	SECTION_GROUP = 'SECTION_GROUP',
 }
 
 export interface ComponentENUM {
@@ -102,6 +101,7 @@ export interface ComponentPropertyDefinition {
 	notImplemented?: boolean;
 	defaultValue?: any;
 	displayOrder?: number;
+	hide?: boolean;
 }
 
 export interface ComponentStylePropertyGroupDefinition {

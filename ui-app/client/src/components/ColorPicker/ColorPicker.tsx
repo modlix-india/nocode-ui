@@ -11,7 +11,7 @@ import {
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { validate } from '../../util/validationProcessor';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { IconHelper } from '../util/IconHelper';
 import {
 	HSV_HSL,
@@ -27,7 +27,7 @@ import { flattenUUID } from '../util/uuid';
 import ColorPickerStyle from './ColorPickerStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './colorPickerProperties';
 import { styleDefaults } from './colorPickerStyleProperties';
-import { SubHelperComponent } from '../SubHelperComponent';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { Dropdown } from './DropdownSubComponent';
 
 enum ColorType {

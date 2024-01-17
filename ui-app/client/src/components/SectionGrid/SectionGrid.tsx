@@ -11,7 +11,7 @@ import {
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { getHref } from '../util/getHref';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
@@ -94,12 +94,6 @@ const component: Component = {
 		name: 'Section Grid',
 		type: 'SectionGrid',
 	},
-	sections: [
-		{
-			name: 'Grid',
-			pageName: 'grid',
-		},
-	],
 	subComponentDefinition: [
 		{
 			name: '',
@@ -107,37 +101,42 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 22 22">
-					<path
-						d="M8 1H2C1.44772 1 1 1.44772 1 2V12C1 12.5523 1.44772 13 2 13H8C8.55229 13 9 12.5523 9 12V2C9 1.44772 8.55229 1 8 1Z"
-						fill="currentColor"
-						strokeWidth="0"
-						strokeLinecap="round"
-						strokeLinejoin="round"
-						fillOpacity="0.5"
-					/>
-					<path
-						d="M20 9H14C13.4477 9 13 9.44772 13 10V20C13 20.5523 13.4477 21 14 21H20C20.5523 21 21 20.5523 21 20V10C21 9.44772 20.5523 9 20 9Z"
-						fill="currentColor"
-						strokeWidth="0"
-						strokeLinecap="round"
-						strokeLinejoin="round"
-					/>
-					<path
-						d="M8 17H2C1.44772 17 1 17.4477 1 18V20C1 20.5523 1.44772 21 2 21H8C8.55229 21 9 20.5523 9 20V18C9 17.4477 8.55229 17 8 17Z"
-						fill="currentColor"
-						strokeWidth="0"
-						strokeLinecap="round"
-						strokeLinejoin="round"
-						fillOpacity="0.5"
-					/>
-					<path
-						d="M20 1H14C13.4477 1 13 1.44772 13 2V4C13 4.55228 13.4477 5 14 5H20C20.5523 5 21 4.55228 21 4V2C21 1.44772 20.5523 1 20 1Z"
-						fill="currentColor"
-						strokeWidth="0"
-						strokeLinecap="round"
-						strokeLinejoin="round"
-					/>
+				<IconHelper viewBox="0 0 22 19">
+					<g
+						id="Group_108"
+						data-name="Group 108"
+						transform="translate(-1468.055 -277.818)"
+					>
+						<rect
+							id="Rectangle_35"
+							data-name="Rectangle 35"
+							width="13"
+							height="9"
+							rx="2"
+							transform="translate(1468.055 277.818)"
+							opacity="0.5"
+							fill="currentColor"
+						/>
+						<rect
+							id="Rectangle_37"
+							data-name="Rectangle 37"
+							width="22"
+							height="8"
+							rx="2"
+							transform="translate(1468.055 288.818)"
+							fill="currentColor"
+						/>
+						<rect
+							id="Rectangle_36"
+							data-name="Rectangle 36"
+							width="7"
+							height="9"
+							rx="2"
+							transform="translate(1483.055 277.818)"
+							opacity="0.5"
+							fill="currentColor"
+						/>
+					</g>
 				</IconHelper>
 			),
 		},

@@ -1,6 +1,6 @@
 import React from 'react';
 import { PageStoreExtractor } from '../../context/StoreContext';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './iconProperties';
 import { Component } from '../../types/common';

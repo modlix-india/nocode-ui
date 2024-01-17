@@ -8,8 +8,8 @@ import {
 } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import { HelperComponent } from '../HelperComponent';
-import { SubHelperComponent } from '../SubHelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { getTranslations } from '../util/getTranslations';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
