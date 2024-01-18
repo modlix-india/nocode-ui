@@ -71,7 +71,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 
 	useEffect(() => {
 		if (!defaultData) return;
-		console.log('Hi test ' + Date.now());
+
 		setData(bindingPathPath!, defaultData, context?.pageName);
 	}, [defaultData]);
 
