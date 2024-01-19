@@ -149,11 +149,11 @@ export function PageEditorHelperComponent({
 			onContextMenu={e => {
 				e.stopPropagation();
 				e.preventDefault();
+
 				// mouse position javascript with respective to the parent iframe
 				console.log(e.screenX, e.screenY);
-				console.log(parent.window.screenLeft, parent.window.screenTop);
-				console.log(parent.window.outerWidth, parent.window.innerWidth);
-				console.log(parent.window.outerHeight, parent.window.innerHeight);
+				console.log(window.screen);
+				console.log(window.top?.screen);
 
 				messageToMaster({
 					type: 'SLAVE_CONTEXT_MENU',
