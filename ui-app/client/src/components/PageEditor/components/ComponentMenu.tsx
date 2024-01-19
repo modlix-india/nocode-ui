@@ -19,6 +19,8 @@ export default function ComponentMenu({
 	onCloseMenu,
 	templateIframeRef,
 	pageOperations,
+	sectionItemsURL,
+	sectionsCategoryList,
 }: {
 	personalizationPath: string | undefined;
 	selectedComponent: string | undefined;
@@ -29,6 +31,8 @@ export default function ComponentMenu({
 	onCloseMenu: () => void;
 	templateIframeRef: (element: HTMLIFrameElement | undefined) => void;
 	pageOperations: PageOperations;
+	sectionItemsURL: string | undefined;
+	sectionsCategoryList: any;
 }) {
 	const [query, setQuery] = useState('');
 	const [selectedComponentType, setSelectedComponentType] = useState('');
