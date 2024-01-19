@@ -2909,6 +2909,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			transition: width 0.5s ease-in-out;
 			display: flex;
 			flex-direction: row;
+			box-shadow: 0px 1px 10px 0px #0000001A;
 		}
 
 		._compMenu ._left {
@@ -2926,14 +2927,22 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction: column;
 		}
 
+		._compMenu._compMenuRight {
+			width: 0px;
+			left: 250px;
+			border: none;
+		}
+
+		._compMenu._show._compMenuRight {
+			display: flex;
+			flex-direction: column;
+			width: 320px;
+			border-right: 1px solid #F2F4F8;
+		}
+
 		._compMenu ._compList {
 			flex: 1;
 			overflow-y: auto;
-		}
-
-		._compMenu ._compList._twoColumn {
-			display: grid;
-			grid-template-columns: auto 1fr;
 		}
 
 		._compMenu ._compList::-webkit-scrollbar {
@@ -2945,7 +2954,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		._compMenu._show {
-			width: 480px;
+			width: 200px;
 		}
 
 		._compMenu ._tabContainerContainer {
@@ -3030,7 +3039,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			font-weight: 500;
 			font-family: Inter;
 			border: 1.5px solid transparent;
-			width: 164px;
+			width: 170px;
 		}
 
 		._compList ._compMenuItem:hover,

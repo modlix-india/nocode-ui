@@ -192,7 +192,11 @@ export default function ComponentMenu({
 	if (compType === 'SECTIONS') {
 	} else if (selectedComponentType && tempSections.length) {
 		rightPart = (
-			<div className="_right">
+			<div
+				className={`_popupMenuContainer _compMenu ${
+					openCompMenu ? '_show' : ''
+				} _compMenuRight`}
+			>
 				<div className="_compTemplateSections">
 					{tempSections.map((e: Section) => (
 						<div
@@ -220,6 +224,8 @@ export default function ComponentMenu({
 				)}
 			</div>
 		);
+	} else {
+		rightPart = <div className={`_popupMenuContainer _compMenu _compMenuRight`}></div>;
 	}
 
 	return (
@@ -256,12 +262,10 @@ export default function ComponentMenu({
 							</div>
 						</div>
 					</div>
-					<div className={`_compList ${!selectedTemplateSection ? '_twoColumn' : ''} `}>
-						{compList}
-					</div>
+					<div className="_compList">{compList}</div>
 				</div>
-				{rightPart}
 			</div>
+			{rightPart}
 		</div>
 	);
 }
