@@ -152,6 +152,7 @@ export function PageEditorHelperComponent({
 
 				// mouse position javascript with respective to the parent iframe
 				console.log(e.screenX, e.screenY);
+				console.log(e.nativeEvent.view?.screen);
 				console.log(window.screen);
 				console.log(window.top?.screen);
 

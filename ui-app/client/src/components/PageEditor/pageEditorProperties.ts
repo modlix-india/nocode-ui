@@ -144,6 +144,20 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 		],
 	},
+
+	{
+		name: 'sectionsCategoryList',
+		schema: SCHEMA_ANY_COMP_PROP,
+		displayName: 'Sections Category List',
+		group: ComponentPropertyGroup.DATA,
+	},
+
+	{
+		name: 'sectionItemsURL',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Section Items URL',
+		group: ComponentPropertyGroup.DATA,
+	},
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
