@@ -60,6 +60,8 @@ interface DnDEditorProps {
 	styleSelectorPref: any;
 	appPath: string | undefined;
 	editorType: string | undefined;
+	sectionItemsURL: string | undefined;
+	sectionsCategoryList: any;
 }
 
 export default function DnDEditor({
@@ -109,6 +111,8 @@ export default function DnDEditor({
 	dashboardPageName,
 	addnewPageName,
 	editorType,
+	sectionItemsURL,
+	sectionsCategoryList,
 }: DnDEditorProps) {
 	const [preview, setPreview] = useState(false);
 
@@ -174,6 +178,8 @@ export default function DnDEditor({
 						previewMode={preview}
 						templateIframeRef={templateIframeRef}
 						editorType={editorType}
+						sectionItemsURL={sectionItemsURL}
+						sectionsCategoryList={sectionsCategoryList}
 					/>
 					<div className="_dndIframeContentContainer">
 						<div className={`_iframeContainer ${preview ? '_previewMode' : ''}`}>

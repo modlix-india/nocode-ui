@@ -89,6 +89,8 @@ function PageEditor(props: ComponentProps) {
 			settingsPageName,
 			addnewPageName,
 			editorType,
+			sectionItemsURL,
+			sectionsCategoryList,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -713,6 +715,8 @@ function PageEditor(props: ComponentProps) {
 					dashboardPageName={dashboardPageName}
 					addnewPageName={addnewPageName}
 					editorType={editorType}
+					sectionItemsURL={sectionItemsURL}
+					sectionsCategoryList={sectionsCategoryList}
 				/>
 				<CodeEditor
 					showCodeEditor={showCodeEditor}
