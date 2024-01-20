@@ -23,7 +23,7 @@ export function PageEditorHelperComponent({
 	onDoubleClick?: (e: MouseEvent) => void;
 }>) {
 	const [dragOver, setDragOver] = useState(false);
-	const [lastChanged, setLastChanged] = useState(Date.now());
+	const [, setLastChanged] = useState(Date.now());
 	const [hover, setHover] = useState(false);
 
 	useEffect(() => {
@@ -102,6 +102,7 @@ export function PageEditorHelperComponent({
 
 	return (
 		<div
+			id={`helper_component_key_${definition.key}`}
 			style={style as CSSProperties}
 			draggable="true"
 			className="opacityShowOnHover _helper"
@@ -125,7 +126,6 @@ export function PageEditorHelperComponent({
 				setDragOver(false);
 			}}
 			onMouseUp={e => {
-				e.stopPropagation();
 				e.preventDefault();
 				messageToMaster({
 					type: e.metaKey || e.ctrlKey ? 'SLAVE_SELECTED_MULTI' : 'SLAVE_SELECTED',
@@ -149,30 +149,10 @@ export function PageEditorHelperComponent({
 			onContextMenu={e => {
 				e.stopPropagation();
 				e.preventDefault();
-
-				// mouse position javascript with respective to the parent iframe
-				console.log(e.screenX, e.screenY);
-				console.log(e.nativeEvent.view?.screen);
-				console.log(window.screen);
-				console.log(window.top?.screen);
-
-				messageToMaster({
-					type: 'SLAVE_CONTEXT_MENU',
-					payload: {
-						componentKey: definition.key,
-						menuPosition: {
-							x:
-								e.screenX -
-								parent.window.screenLeft -
-								(parent.window.outerWidth - parent.window.innerWidth),
-							y:
-								e.screenY -
-								parent.window.screenTop -
-								(parent.window.outerHeight - parent.window.innerHeight),
-						},
-					},
-				});
 			}}
+			onKeyDown={() => {}}
+			onFocus={() => {}}
+			onBlur={() => {}}
 			onMouseOver={e => onMouseOver?.(e)}
 			onMouseOut={e => onMouseOut?.(e)}
 			onMouseMove={e => {
@@ -181,8 +161,8 @@ export function PageEditorHelperComponent({
 
 				if (x < 50 && y < 20) {
 					if (!hover) setHover(true);
-				} else {
-					if (hover) setHover(false);
+				} else if (hover) {
+					setHover(false);
 				}
 			}}
 			onMouseLeave={() => setHover(false)}
@@ -194,6 +174,7 @@ export function PageEditorHelperComponent({
 					e.stopPropagation();
 					e.preventDefault();
 				}}
+				onKeyDown={() => {}}
 				onMouseUp={e => {
 					e.stopPropagation();
 					e.preventDefault();
