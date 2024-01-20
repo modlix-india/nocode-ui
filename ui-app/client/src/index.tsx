@@ -37,6 +37,7 @@ declare global {
 		repoServer: REPO_SERVER,
 	) => RemoteRepository<Schema>;
 	var cdnPrefix: string;
+	var determineRightClickPosition: (e: MouseEvent) => { x: number; y: number };
 }
 
 globalThis.getRemoteFunctionRepository = RemoteRepository.getRemoteFunctionRepository;

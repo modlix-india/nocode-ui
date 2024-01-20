@@ -149,6 +149,13 @@ export function PageEditorHelperComponent({
 			onContextMenu={e => {
 				e.stopPropagation();
 				e.preventDefault();
+				messageToMaster({
+					type: 'SLAVE_CONTEXT_MENU',
+					payload: {
+						componentKey: definition.key,
+						menuPosition: window.determineRightClickPosition(e.nativeEvent),
+					},
+				});
 			}}
 			onKeyDown={() => {}}
 			onFocus={() => {}}
