@@ -744,6 +744,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border-bottom-left-radius: 0px;
 			border-bottom-right-radius: 0px;
 			margin: 2px;
+			border: none;
+			background-color: transparent;
 			border-bottom: 2px solid transparent;
 			margin-bottom: 0px;
 			white-space: nowrap;
@@ -2972,18 +2974,29 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			padding: 10px;
 			cursor: pointer;
 			background-color: #F8FAFB;
-			border-radius: 4px;
+			border-radius: 6px;
 			gap: 10px;
 			font-size: 12px;
 			font-weight: 600;
-			color: #333333;
 			font-family: Inter;
 			padding: 5px 8px;
 		}
 
 		._compMenu ._tabContainer ._tab {
-			padding: 5px 10px;
+			padding: 6px 10px;
 			transition: background-color 0.5s;
+			border: none;
+			background: none;
+			font-family: 'Inter';
+			font-weight: 500;
+			font-size: 12px;
+			text-transform: none;
+			color: #333333;
+		}
+
+		._compMenu ._tabContainer ._tab:hover {
+			background: none;
+			color: #333333;
 		}
 
 		._compMenu ._tabContainer ._tab._selected {
@@ -3044,7 +3057,16 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._compList ._compMenuItem:hover,
 		._compList ._compMenuItem.active {
-			border: 1.5px solid rgba(0, 0, 0, 0.10);
+			border: 1.5px solid #4C7FEE;
+			color: #4C7FEE;
+			background-color: #4C7FEE0E;
+		}
+
+		._compList ._compMenuItem.active svg,
+		._compList ._compMenuItem:hover svg,
+		._compList ._compMenuItem.active i.fa,
+		._compList ._compMenuItem:hover i.fa {
+			color: #4C7FEE;
 		}
 
 		._popupMenuBackground ._contextMenu ._popupMenuItem:hover {

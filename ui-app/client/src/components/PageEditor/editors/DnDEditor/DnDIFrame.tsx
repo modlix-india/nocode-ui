@@ -1,10 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-	addListenerAndCallImmediately,
-	addListenerAndCallImmediatelyWithChildrenActivity,
 	PageStoreExtractor,
+	addListenerAndCallImmediatelyWithChildrenActivity,
 } from '../../../../context/StoreContext';
-import { StyleResolutionDefinition } from '../../../../util/styleProcessor';
 import { IconHelper } from '../../../util/IconHelper';
 
 interface DnDIFrameProps {
@@ -27,7 +25,7 @@ export default function DnDIFrame({
 	mobileIframe,
 	previewMode,
 	onChangePersonalization,
-}: DnDIFrameProps) {
+}: Readonly<DnDIFrameProps>) {
 	const [desktop, setDesktop] = useState<boolean>(true);
 	const [tablet, setTablet] = useState<boolean>(true);
 	const [mobile, setMobile] = useState<boolean>(true);
@@ -210,6 +208,7 @@ export default function DnDIFrame({
 		previewButton = (
 			<div
 				className="_control"
+				onKeyDown={() => {}}
 				onClick={() => onChangePersonalization('preview', !previewMode)}
 			>
 				<IconHelper viewBox="0 0 20 16">
@@ -227,10 +226,10 @@ export default function DnDIFrame({
 	}
 
 	return (
-		<div className="_iframeCenter">
+		<div className="_iframeCenter" id="iframeContainer">
 			<div className="_scaleControlContainer" style={{ width: left + 'px' }}>
 				<div className="_scaleControl">
-					<div
+					<button
 						className="_control"
 						onClick={() =>
 							onChangePersonalization(
@@ -253,14 +252,15 @@ export default function DnDIFrame({
 								strokeWidth="0.4"
 							/>
 						</svg>
-					</div>
+					</button>
 					<div
 						className="_control _text"
+						onKeyDown={() => {}}
 						onClick={() => onChangePersonalization('devices.scale', 1)}
 					>
 						{Math.round(scale * 100)} %{' '}
 					</div>
-					<div
+					<button
 						className="_control"
 						onClick={() =>
 							onChangePersonalization(
@@ -283,25 +283,25 @@ export default function DnDIFrame({
 								strokeWidth="0.4"
 							/>
 						</svg>
-					</div>
-					<div
+					</button>
+					<button
 						className={`_control _device ${desktop ? '_active' : ''}`}
 						onClick={() => onChangePersonalization('devices.desktop', !desktop)}
 					>
 						<DesktopIcon />
-					</div>
-					<div
+					</button>
+					<button
 						className={`_control _device ${tablet ? '_active' : ''}`}
 						onClick={() => onChangePersonalization('devices.tablet', !tablet)}
 					>
 						<TabletIcon />
-					</div>
-					<div
+					</button>
+					<button
 						className={`_control _device ${mobile ? '_active' : ''}`}
 						onClick={() => onChangePersonalization('devices.mobile', !mobile)}
 					>
 						<MobileIcon />
-					</div>
+					</button>
 					{previewButton}
 				</div>
 			</div>

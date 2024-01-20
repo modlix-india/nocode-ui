@@ -21,7 +21,7 @@ export default function ComponentMenu({
 	pageOperations,
 	sectionItemsURL,
 	sectionsCategoryList,
-}: {
+}: Readonly<{
 	personalizationPath: string | undefined;
 	selectedComponent: string | undefined;
 	defPath: string | undefined;
@@ -33,19 +33,20 @@ export default function ComponentMenu({
 	pageOperations: PageOperations;
 	sectionItemsURL: string | undefined;
 	sectionsCategoryList: any;
-}) {
+}>) {
 	const [query, setQuery] = useState('');
 	const [selectedComponentType, setSelectedComponentType] = useState('');
 	const [selectedTemplateSection, setSelectedTemplateSection] = useState<Section>();
 	const [openCompMenu, setOpenCompMenu] = useState(false);
 	const compMenuRef = useRef<HTMLDivElement>(null);
 	const [theme, setTheme] = useState('light');
-	const [compType, setCompType] = useState('SECTIONS');
+	const [originalCompType, setOriginalCompType] = useState('SECTIONS');
+	let compType = sectionItemsURL ? originalCompType : 'COMPONENTS';
 
 	useEffect(() => {
 		if (!personalizationPath) return;
 		return addListenerAndCallImmediately(
-			(_, v) => setCompType(v ?? 'SECTIONS'),
+			(_, v) => setOriginalCompType(v ?? 'SECTIONS'),
 			pageExtractor,
 			`${personalizationPath}.compMenuType`,
 		);
@@ -54,7 +55,7 @@ export default function ComponentMenu({
 	const iframeRef = useRef<HTMLIFrameElement>(null);
 	useEffect(() => {
 		templateIframeRef(iframeRef.current ?? undefined);
-		() => templateIframeRef(undefined);
+		return () => templateIframeRef(undefined);
 	}, [iframeRef.current]);
 
 	useEffect(() => {
@@ -139,8 +140,8 @@ export default function ComponentMenu({
 					.sort((a, b) => a.displayName.localeCompare(b.displayName))
 					.filter(
 						f =>
-							f.displayName.toLowerCase().match(regex) ||
-							f.name.toLowerCase().match(regex),
+							regex.exec(f.displayName.toLowerCase()) ||
+							regex.exec(f.name.toLowerCase()),
 					)
 					.map(e => (
 						<div
@@ -203,7 +204,7 @@ export default function ComponentMenu({
 			>
 				<div className="_compTemplateSections">
 					{tempSections.map((e: Section) => (
-						<div
+						<button
 							key={e.name}
 							onClick={() => {
 								onChangePersonalization('selectedComponent', {
@@ -216,11 +217,13 @@ export default function ComponentMenu({
 							}`}
 						>
 							{e.name}
-						</div>
+						</button>
 					))}
 				</div>
 				{selectedTemplateSection && (
 					<iframe
+						name="templateIframe"
+						title="Template"
 						ref={iframeRef}
 						style={{ border: 'none' }}
 						src={`/editortemplates/SYSTEM/page/${selectedTemplateSection?.pageName}`}
@@ -231,6 +234,20 @@ export default function ComponentMenu({
 	} else {
 		rightPart = <div className={`_popupMenuContainer _compMenu _compMenuRight`}></div>;
 	}
+
+	const sectionsTab = sectionItemsURL ? (
+		<button
+			className={`_tab ${compType === 'SECTIONS' ? '_selected' : ''}`}
+			onClick={() => {
+				setOriginalCompType('SECTIONS');
+				onChangePersonalization('compMenuType', 'SECTIONS');
+			}}
+		>
+			Sections
+		</button>
+	) : (
+		<></>
+	);
 
 	return (
 		<div
@@ -246,24 +263,16 @@ export default function ComponentMenu({
 				<div className="_left">
 					<div className="_tabContainerContainer">
 						<div className="_tabContainer">
-							<div
-								className={`_tab ${compType === 'SECTIONS' ? '_selected' : ''}`}
-								onClick={() => {
-									setCompType('SECTIONS');
-									onChangePersonalization('compMenuType', 'SECTIONS');
-								}}
-							>
-								Sections
-							</div>
-							<div
+							{sectionsTab}
+							<button
 								className={`_tab ${compType !== 'SECTIONS' ? '_selected' : ''}`}
 								onClick={() => {
-									setCompType('COMPONENTS');
+									setOriginalCompType('COMPONENTS');
 									onChangePersonalization('compMenuType', 'COMPONENTS');
 								}}
 							>
 								Elements
-							</div>
+							</button>
 						</div>
 					</div>
 					<div className="_compList">{compList}</div>
