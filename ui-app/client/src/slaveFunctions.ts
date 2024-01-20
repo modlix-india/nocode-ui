@@ -83,17 +83,20 @@ export const SLAVE_FUNCTIONS = new Map<string, (payload: any) => void>([
 	],
 ]);
 
-window.determineClickPosition = (e: MouseEvent): { x: number; y: number } => {
-	return {
-		x:
-			e.screenX -
-			(parent.window.outerWidth - parent.window.innerWidth) -
-			parent.window.screenLeft,
-		y:
-			e.screenY -
-			(parent.window.outerHeight - parent.window.innerHeight) -
-			parent.window.screenTop,
+window.determineClickPosition = e => {
+	const iframe = parent.window.document.getElementById(window.screenType);
+
+	if (!iframe) return { x: 0, y: 0 };
+
+	const iframeRect = iframe.getBoundingClientRect();
+	console.log(iframeRect, iframe.dataset.scaleFactor);
+
+	const point = {
+		x: e.clientX * Number(iframe.dataset.scaleFactor ?? 1) + iframeRect.x,
+		y: e.clientY * Number(iframe.dataset.scaleFactor ?? 1) + iframeRect.y,
 	};
+	console.log(point);
+	return point;
 };
 
 if (isSlave) {
@@ -101,7 +104,6 @@ if (isSlave) {
 		e.preventDefault();
 
 		if (e.button !== 2) return;
-		console.log(e.screenX, e.screenY);
 
 		let key = e.currentTarget?.id || e.target?.id;
 		if (!key) return;
