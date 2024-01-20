@@ -111,7 +111,6 @@ export default function DnDIFrame({
 		desktopComponent = (
 			<div
 				className="_iframe"
-				id="desktop"
 				style={{
 					minWidth: desktopWidth + 'px',
 					maxWidth: desktopWidth + 'px',
@@ -126,6 +125,8 @@ export default function DnDIFrame({
 					DESKTOP
 				</div>
 				<iframe
+					id="desktop"
+					data-scale-factor={scale}
 					allow="display-capture"
 					title="Desktop"
 					ref={desktopIframe}
@@ -158,6 +159,8 @@ export default function DnDIFrame({
 					TABLET
 				</div>
 				<iframe
+					id="tablet"
+					data-scale-factor={scale}
 					allow="display-capture"
 					title="Tablet"
 					ref={tabletIframe}
@@ -190,6 +193,8 @@ export default function DnDIFrame({
 					MOBILE
 				</div>
 				<iframe
+					id="mobile"
+					data-scale-factor={scale}
 					allow="display-capture"
 					title="Mobile"
 					ref={mobileIframe}
