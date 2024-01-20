@@ -144,7 +144,6 @@ export default function DnDIFrame({
 		tabletComponent = (
 			<div
 				className="_iframe"
-				id="tablet"
 				style={{
 					minWidth: tabletWidth + 'px',
 					maxWidth: tabletWidth + 'px',
@@ -178,7 +177,6 @@ export default function DnDIFrame({
 		mobileComponent = (
 			<div
 				className="_iframe"
-				id="mobile"
 				style={{
 					minWidth: mobileWidth + 'px',
 					maxWidth: mobileWidth + 'px',
