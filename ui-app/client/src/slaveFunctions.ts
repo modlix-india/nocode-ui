@@ -83,20 +83,34 @@ export const SLAVE_FUNCTIONS = new Map<string, (payload: any) => void>([
 	],
 ]);
 
-export function componentDefinitionPropertyUpdate(
-	compDef: ComponentDefinition,
-	...kvPairs: string[]
-) {
-	const def = duplicate(compDef) as ComponentDefinition;
-	if (!def.properties) def.properties = {};
-	if (!def.styleProperties) def.styleProperties = {};
+if (isSlave) {
+	window.addEventListener('mousedown', (e: MouseEvent) => {
+		e.preventDefault();
 
-	if (kvPairs.length % 2 !== 0) throw new Error('Invalid number of arguments');
+		if (e.button !== 2) return;
+		console.log(e.screenX, e.screenY);
 
-	for (let i = 0; i < kvPairs.length; i += 2) {
-		const key = kvPairs[i];
-		const value = kvPairs[i + 1];
-	}
+		let key = e.currentTarget?.id || e.target?.id;
+		if (!key) return;
+		if (!key.startsWith('helper_component_key_')) return;
+		key = key.substring(21);
+		e.stopPropagation();
 
-	return compDef;
+		messageToMaster({
+			type: 'SLAVE_CONTEXT_MENU',
+			payload: {
+				componentKey: key,
+				menuPosition: {
+					x:
+						e.screenX -
+						(parent.window.outerWidth - parent.window.innerWidth) -
+						parent.window.screenLeft,
+					y:
+						e.screenY -
+						(parent.window.outerHeight - parent.window.innerHeight) -
+						parent.window.screenTop,
+				},
+			},
+		});
+	});
 }
