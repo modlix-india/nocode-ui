@@ -83,6 +83,19 @@ export const SLAVE_FUNCTIONS = new Map<string, (payload: any) => void>([
 	],
 ]);
 
+window.determineClickPosition = (e: MouseEvent): { x: number; y: number } => {
+	return {
+		x:
+			e.screenX -
+			(parent.window.outerWidth - parent.window.innerWidth) -
+			parent.window.screenLeft,
+		y:
+			e.screenY -
+			(parent.window.outerHeight - parent.window.innerHeight) -
+			parent.window.screenTop,
+	};
+};
+
 if (isSlave) {
 	window.addEventListener('mousedown', (e: MouseEvent) => {
 		e.preventDefault();
@@ -100,16 +113,7 @@ if (isSlave) {
 			type: 'SLAVE_CONTEXT_MENU',
 			payload: {
 				componentKey: key,
-				menuPosition: {
-					x:
-						e.screenX -
-						(parent.window.outerWidth - parent.window.innerWidth) -
-						parent.window.screenLeft,
-					y:
-						e.screenY -
-						(parent.window.outerHeight - parent.window.innerHeight) -
-						parent.window.screenTop,
-				},
+				menuPosition: window.determineClickPosition(e),
 			},
 		});
 	});
