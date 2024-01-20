@@ -83,40 +83,21 @@ export const SLAVE_FUNCTIONS = new Map<string, (payload: any) => void>([
 	],
 ]);
 
-window.determineClickPosition = e => {
-	const iframe = parent.window.document.getElementById(window.screenType);
-
-	if (!iframe) return { x: 0, y: 0 };
-
-	const iframeRect = iframe.getBoundingClientRect();
-	console.log(iframeRect, iframe.dataset.scaleFactor);
-
-	const point = {
-		x: e.clientX * Number(iframe.dataset.scaleFactor ?? 1) + iframeRect.x,
-		y: e.clientY * Number(iframe.dataset.scaleFactor ?? 1) + iframeRect.y,
-	};
-	console.log(point);
-	return point;
-};
-
 if (isSlave) {
-	window.addEventListener('mousedown', (e: MouseEvent) => {
-		e.preventDefault();
+	window.determineRightClickPosition = e => {
+		const iframe = parent.window.document.getElementById(window.screenType);
+		if (!iframe) return { x: 0, y: 0 };
 
-		if (e.button !== 2) return;
+		const iframeRect = iframe.getBoundingClientRect();
+		const sf = Number(iframe!.dataset.scaleFactor ?? 1);
 
-		let key = e.currentTarget?.id || e.target?.id;
-		if (!key) return;
-		if (!key.startsWith('helper_component_key_')) return;
-		key = key.substring(21);
-		e.stopPropagation();
+		let top = iframeRect.top;
+		let left = iframeRect.left;
 
-		messageToMaster({
-			type: 'SLAVE_CONTEXT_MENU',
-			payload: {
-				componentKey: key,
-				menuPosition: window.determineClickPosition(e),
-			},
-		});
-	});
+		const point = {
+			x: e.clientX * sf + left,
+			y: e.clientY * sf + top,
+		};
+		return point;
+	};
 }
