@@ -153,9 +153,9 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
-		name: 'sectionItemsURL',
+		name: 'sectionsListConnectionName',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Section Items URL',
+		displayName: 'Section Items Connection Name',
 		group: ComponentPropertyGroup.DATA,
 	},
 ];
