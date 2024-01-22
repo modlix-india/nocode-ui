@@ -214,7 +214,7 @@ function Carousel(props: ComponentProps) {
 			onMouseEnter={handleMouse}
 			onMouseLeave={handleMouseLeave}
 		>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			{showArrowButtons && (
 				<div
 					className={`arrowButtonsContainer ${

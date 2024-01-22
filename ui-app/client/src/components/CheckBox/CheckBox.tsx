@@ -80,7 +80,7 @@ function CheckBox(props: ComponentProps) {
 			className={`comp compCheckbox ${designType} ${colorScheme}`}
 			style={resolvedStyles.comp ?? {}}
 		>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			<label
 				onMouseEnter={
 					stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
@@ -117,7 +117,7 @@ function CheckBox(props: ComponentProps) {
 
 const component: Component = {
 	name: 'CheckBox',
-	displayName: 'CheckBox',
+	displayName: 'Check Box',
 	description: 'CheckBox component',
 	styleComponent: CheckBoxStyle,
 	styleDefaults: styleDefaults,

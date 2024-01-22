@@ -413,7 +413,7 @@ function FileUpload(props: ComponentProps) {
 			onDragOver={preventDefault}
 			onDrop={handleDrop}
 		>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 
 			{fileText}
 			{!uploadViewType?.startsWith('_only_icon') ? (
@@ -430,7 +430,7 @@ function FileUpload(props: ComponentProps) {
 
 const component: Component = {
 	name: 'FileUpload',
-	displayName: 'FileUpload',
+	displayName: 'File Upload',
 	description: 'FileUpload Component',
 	component: FileUpload,
 	styleComponent: FileUploadStyles,

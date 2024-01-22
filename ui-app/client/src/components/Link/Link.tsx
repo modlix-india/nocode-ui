@@ -162,7 +162,7 @@ function Link(props: ComponentProps) {
 					handleClick?.();
 				}}
 			>
-				<HelperComponent definition={definition} />
+				<HelperComponent context={props.context} definition={definition} />
 				{getTranslations(label, translations)}
 				{externalButton}
 			</a>

@@ -223,7 +223,7 @@ export default function ComponentMenu({
 					))}
 			</>
 		) : (
-			sectionsCategoryList.map((e: any) => (
+			sectionsCategoryList?.map((e: any) => (
 				<div
 					key={e.name}
 					className={`_compMenuItem ${selectedSectionCategory === e._id ? 'active' : ''}`}
@@ -270,6 +270,17 @@ export default function ComponentMenu({
 								'text/plain',
 							)
 						}
+						onDoubleClick={() => {
+							if (!selectedComponent) return;
+							pageOperations.droppedOn(
+								selectedComponent,
+								`${TEMPLATE_DRAG}${JSON.stringify({
+									mainKey: e.version.definition.rootComponent,
+									objects: e.version.definition.componentDefinition,
+								})}`,
+							);
+							closeMenu();
+						}}
 					/>
 				))}
 			</div>

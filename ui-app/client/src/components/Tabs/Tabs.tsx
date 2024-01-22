@@ -160,7 +160,7 @@ function TabsComponent(props: ComponentProps) {
 				)
 			}
 		>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			<div
 				className={`tabsContainer ${tabsPosition}`}
 				style={resolvedStyles.tabsContainer ?? {}}

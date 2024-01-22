@@ -106,7 +106,7 @@ function SubPage(props: ComponentProps) {
 
 	return (
 		<div className="comp compSubPage" style={resolvedStyles.comp ?? {}}>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			{childs}
 		</div>
 	);

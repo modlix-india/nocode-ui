@@ -141,7 +141,7 @@ function Tags(props: ComponentProps) {
 	};
 	return (
 		<div className="comp compTags">
-			<HelperComponent definition={props.definition} />
+			<HelperComponent context={props.context} definition={props.definition} />
 			<div className="label" style={resolvedStyles.titleLabel ?? {}}>
 				<SubHelperComponent definition={props.definition} subComponentName="titleLabel" />
 				{label}

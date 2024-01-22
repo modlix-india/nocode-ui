@@ -207,7 +207,7 @@ function CommonInputText(props: CommonInputType) {
 			onMouseLeave={onMouseLeave}
 			onKeyUp={updDownHandler}
 		>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			{leftIcon ? (
 				<i style={computedStyles.leftIcon ?? {}} className={`_leftIcon ${leftIcon}`}>
 					<SubHelperComponent

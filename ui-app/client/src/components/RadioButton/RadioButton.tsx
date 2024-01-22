@@ -162,7 +162,7 @@ function RadioButton(props: ComponentProps) {
 			className={`comp compRadioButton _${layout} ${designType} ${colorScheme}`}
 			style={resolvedStyles.comp ?? {}}
 		>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			{radioButtonData?.map((e: any) => (
 				<label
 					className={`radioLabel ${
@@ -217,7 +217,7 @@ function RadioButton(props: ComponentProps) {
 
 const component: Component = {
 	name: 'RadioButton',
-	displayName: 'RadioButton',
+	displayName: 'Radio Button',
 	description: 'RadioButton component',
 	component: RadioButton,
 	styleComponent: RadioButtonStyle,

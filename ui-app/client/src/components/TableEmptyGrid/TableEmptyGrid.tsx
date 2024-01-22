@@ -86,7 +86,7 @@ function TableEmptyGrid(props: ComponentProps) {
 			containerType.toLowerCase(),
 			{ className: 'comp compTableEmptyGrid' },
 			[
-				<HelperComponent definition={definition} />,
+				<HelperComponent context={props.context} definition={definition} />,
 				styleComp,
 				<Link
 					className={`_anchorGrid _${layout} ${background} _${key}_grid_css`}
@@ -127,7 +127,11 @@ function TableEmptyGrid(props: ComponentProps) {
 
 			onClick: handleClick,
 		},
-		[<HelperComponent key={`${key}_hlp`} definition={definition} />, styleComp, childs],
+		[
+			<HelperComponent context={props.context} key={`${key}_hlp`} definition={definition} />,
+			styleComp,
+			childs,
+		],
 	);
 }
 

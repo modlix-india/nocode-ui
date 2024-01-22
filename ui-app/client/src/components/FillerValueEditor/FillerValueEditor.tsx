@@ -302,7 +302,7 @@ function FillerValueEditor(props: Readonly<ComponentProps>) {
 
 	return (
 		<div className={`comp compFillerValueEditor`} style={resolvedStyles.comp ?? {}}>
-			<HelperComponent key={`${key}_hlp`} definition={definition} />
+			<HelperComponent context={props.context} key={`${key}_hlp`} definition={definition} />
 			<TopBar
 				logo={logo}
 				dashboardPageName={dashboardPageName}

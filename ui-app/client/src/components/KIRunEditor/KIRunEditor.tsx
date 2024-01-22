@@ -1033,7 +1033,7 @@ function KIRunEditor(
 
 	return (
 		<div className="comp compKIRunEditor" style={resolvedStyles?.comp ?? {}}>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			<div className="_header">
 				<div className="_left">
 					<i

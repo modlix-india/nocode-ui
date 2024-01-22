@@ -651,7 +651,11 @@ function PageEditor(props: ComponentProps) {
 	return (
 		<>
 			<div className={`comp compPageEditor ${localTheme}`} style={resolvedStyles.comp ?? {}}>
-				<HelperComponent key={`${key}_hlp`} definition={definition} />
+				<HelperComponent
+					context={props.context}
+					key={`${key}_hlp`}
+					definition={definition}
+				/>
 				<DnDEditor
 					personalizationPath={personalizationPath}
 					defPath={defPath}

@@ -136,7 +136,7 @@ function Animator(props: ComponentProps) {
 
 	return (
 		<div className="comp compAnimator" style={resolvedStyles.comp ?? {}} ref={ref}>
-			<HelperComponent key={`${key}_hlp`} definition={definition} />
+			<HelperComponent context={props.context} key={`${key}_hlp`} definition={definition} />
 			<div
 				className="_childContainer"
 				style={{
