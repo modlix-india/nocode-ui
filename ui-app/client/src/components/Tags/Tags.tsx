@@ -10,13 +10,13 @@ import {
 import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { Component } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { getRenderData } from '../util/getRenderData';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tagsProperties';
 import TagsStyle from './TagsStyles';
-import { SubHelperComponent } from '../SubHelperComponent';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { styleDefaults } from './TagsStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
@@ -141,7 +141,7 @@ function Tags(props: ComponentProps) {
 	};
 	return (
 		<div className="comp compTags">
-			<HelperComponent definition={props.definition} />
+			<HelperComponent context={props.context} definition={props.definition} />
 			<div className="label" style={resolvedStyles.titleLabel ?? {}}>
 				<SubHelperComponent definition={props.definition} subComponentName="titleLabel" />
 				{label}

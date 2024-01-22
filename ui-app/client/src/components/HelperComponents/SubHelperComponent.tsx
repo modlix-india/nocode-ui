@@ -1,8 +1,8 @@
 import React, { Children, CSSProperties, useEffect, useState } from 'react';
-import { getDataFromPath } from '../context/StoreContext';
-import { messageToMaster } from '../slaveFunctions';
-import { ComponentDefinition } from '../types/common';
-import { camelCaseToUpperSpaceCase } from '../functions/utils';
+import { getDataFromPath } from '../../context/StoreContext';
+import { messageToMaster } from '../../slaveFunctions';
+import { ComponentDefinition } from '../../types/common';
+import { camelCaseToUpperSpaceCase } from '../../functions/utils';
 
 interface SubHelperComponentPropsType {
 	definition: ComponentDefinition;
@@ -37,7 +37,7 @@ function SubHelperComponentInternal({
 
 	const {
 		editingPageDefinition: { name = '', componentDefinition = {} } = {},
-		selectedComponent,
+		selectedComponents,
 		selectedSubComponent = '',
 		personalization: { slave: { highlightColor = '#3fa4d3', noSelection = false } = {} } = {},
 	} = window.pageEditor ?? {};
@@ -48,7 +48,7 @@ function SubHelperComponentInternal({
 		noSelection ||
 		!componentDefinition?.[definition.key] ||
 		name !== currentPage ||
-		selectedComponent !== definition.key
+		selectedComponents?.[0] !== definition.key
 	)
 		return <>{children}</>;
 
@@ -92,13 +92,7 @@ function SubHelperComponentInternal({
 					type: 'SLAVE_CONTEXT_MENU',
 					payload: {
 						componentKey: definition.key,
-						menuPosition: {
-							x: e.screenX - window.screenX,
-							y:
-								e.screenY -
-								window.screenY -
-								((window.top?.outerHeight ?? 0) - (window.top?.innerHeight ?? 0)),
-						},
+						menuPosition: window.determineRightClickPosition(e.nativeEvent),
 					},
 				});
 			}}

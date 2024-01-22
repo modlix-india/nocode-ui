@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
 import { addListener, getDataFromPath, PageStoreExtractor } from '../../context/StoreContext';
 import { runEvent } from '../util/runEvent';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { getTranslations } from '../util/getTranslations';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './buttonProperties';
@@ -12,7 +12,7 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { flattenUUID } from '../util/uuid';
 import { getHref } from '../util/getHref';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { SubHelperComponent } from '../SubHelperComponent';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { messageToMaster } from '../../slaveFunctions';
 import { styleDefaults } from './buttonStyleProperties';
 import { IconHelper } from '../util/IconHelper';
@@ -98,10 +98,12 @@ function ButtonComponent(props: ComponentProps) {
 			);
 	};
 
-	const hasRightIcon = !!rightIcon && !leftIcon;
+	const hasRightIcon = !!rightIcon && !leftIcon && designType !== '_fabButton' && designType !== '_iconButton' && designType !== '_iconPrimaryButton';
+
+	const hasLabel = designType !== '_fabButton' && designType !== '_iconButton' && designType !== '_iconPrimaryButton';
 
 	const rightIconTag =
-		!designType?.startsWith('_fabButton') && designType !== '_iconButton' && !leftIcon ? (
+		hasRightIcon ? (
 			<i
 				style={styleProperties.rightIcon ?? {}}
 				className={`_rightButtonIcon _icon ${rightIcon ?? 'fa fa-circle-notch hide'}`}
@@ -152,7 +154,11 @@ function ButtonComponent(props: ComponentProps) {
 			onBlur={stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined}
 			title={label ?? ''}
 		>
-			<HelperComponent definition={props.definition} onDoubleClick={() => setEditName(true)}>
+			<HelperComponent
+				context={props.context}
+				definition={props.definition}
+				onDoubleClick={() => setEditName(true)}
+			>
 				{editName && (
 					<>
 						<input
@@ -359,7 +365,7 @@ function ButtonComponent(props: ComponentProps) {
 				</div>
 			</HelperComponent>
 			{leftIconTag}
-			{!designType?.startsWith('_fabButton') && designType !== '_iconButton' ? label : ''}
+			{hasLabel ? label : ''}
 			{rightIconTag}
 		</button>
 	);

@@ -11,7 +11,7 @@ import {
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { getHref } from '../util/getHref';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
@@ -194,7 +194,11 @@ function Grid(props: ComponentProps) {
 						: undefined,
 			},
 			[
-				<HelperComponent key={`${key}_hlp`} definition={definition} />,
+				<HelperComponent
+					context={props.context}
+					key={`${key}_hlp`}
+					definition={definition}
+				/>,
 				styleComp,
 				<Link
 					key={`${key}_Link`}
@@ -324,7 +328,11 @@ function Grid(props: ComponentProps) {
 			onClick: handleClick,
 			id: key,
 		},
-		[<HelperComponent key={`${key}_hlp`} definition={definition} />, styleComp, childs],
+		[
+			<HelperComponent context={props.context} key={`${key}_hlp`} definition={definition} />,
+			styleComp,
+			childs,
+		],
 	);
 }
 

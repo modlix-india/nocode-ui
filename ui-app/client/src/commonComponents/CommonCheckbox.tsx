@@ -1,5 +1,5 @@
 import React from 'react';
-import { SubHelperComponent } from '../components/SubHelperComponent';
+import { SubHelperComponent } from '../components/HelperComponents/SubHelperComponent';
 import { ComponentDefinition } from '../types/common';
 
 type CommonCheckboxType = {

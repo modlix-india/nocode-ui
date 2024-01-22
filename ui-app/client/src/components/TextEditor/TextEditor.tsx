@@ -9,7 +9,7 @@ import {
 } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './textEditorProperties';
 import TextEditorStyle from './TextEditorStyle';
@@ -93,7 +93,7 @@ function TextEditor(props: ComponentProps) {
 
 	return (
 		<div className="comp compTextEditor" style={resolvedStyles.comp ?? {}}>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			<Editor
 				language={documentType}
 				height="100%"

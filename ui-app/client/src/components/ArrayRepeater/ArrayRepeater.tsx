@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
 	addListenerAndCallImmediatelyWithChildrenActivity,
 	getPathFromLocation,
@@ -9,19 +9,19 @@ import { Component, ComponentPropertyDefinition, ComponentProps } from '../../ty
 import { shortUUID } from '../../util/shortUUID';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { updateLocationForChild } from '../util/updateLoactionForChild';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './arrayRepeaterProperties';
 import ArrayRepeaterStyle from './ArrayRepeaterStyle';
-import { SubHelperComponent } from '../SubHelperComponent';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { runEvent } from '../util/runEvent';
 import { styleDefaults } from './arrayRepeaterStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import { deepEqual } from '@fincity/kirun-js';
+import { flattenUUID } from '../util/uuid';
 
 function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
-	const [value, setValue] = React.useState<any[]>([]);
 	const {
 		definition: { children, bindingPath, key },
 		pageDefinition,
@@ -41,6 +41,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 			addEvent,
 			removeEvent,
 			moveEvent,
+			defaultData,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -51,6 +52,8 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 		pageExtractor,
 	);
 
+	const [value, setValue] = React.useState<any[]>([]);
+
 	const clickMove = moveEvent ? props.pageDefinition.eventFunctions?.[moveEvent] : undefined;
 	const clickRemove = removeEvent
 		? props.pageDefinition.eventFunctions?.[removeEvent]
@@ -59,12 +62,18 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 
 	const bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
-		: undefined;
+		: `Store.defaultData.${pageExtractor?.getPageName() ?? '_global'}.${flattenUUID(key)}`;
 
 	const indKeys = React.useRef<{
 		array: Array<string>;
 		oldKeys: Array<{ object: any; key: string }>;
 	}>({ array: [], oldKeys: [] });
+
+	useEffect(() => {
+		if (!defaultData) return;
+
+		setData(bindingPathPath!, defaultData, context?.pageName);
+	}, [defaultData]);
 
 	React.useEffect(() => {
 		if (!bindingPathPath || !indKeys.current) return;
@@ -99,10 +108,11 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 
 					if (oldIndex === -1) {
 						indKeys.current.array[i] = shortUUID();
-						indKeys.current.oldKeys.push({
-							object: _v[i],
-							key: indKeys.current.array[i],
-						});
+						if (_v[i] !== undefined && _v[i] !== null)
+							indKeys.current.oldKeys.push({
+								object: _v[i],
+								key: indKeys.current.array[i],
+							});
 					} else {
 						indKeys.current.array[i] = indKeys.current.oldKeys[oldIndex].key;
 					}
@@ -195,6 +205,15 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 	let items = <></>;
 
 	if (Array.isArray(value) && value.length) {
+		let updatableBindingPath = bindingPath;
+		if (!updatableBindingPath && defaultData) {
+			updatableBindingPath = {
+				type: 'VALUE',
+				value: `Store.defaultData.${
+					pageExtractor?.getPageName() ?? '_global'
+				}.${flattenUUID(key)}`,
+			};
+		}
 		items = (
 			<>
 				{value.map((e: any, index) => {
@@ -206,7 +225,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 							locationHistory={[
 								...locationHistory,
 								updateLocationForChild(
-									bindingPath!,
+									updatableBindingPath!,
 									index,
 									locationHistory,
 									context.pageName,
@@ -359,7 +378,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 
 	return (
 		<div className={`comp compArrayRepeater _${layout}`} style={styleProperties.comp}>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			{items}
 		</div>
 	);

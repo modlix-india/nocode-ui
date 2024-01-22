@@ -729,6 +729,21 @@ export class PageOperations {
 		});
 	}
 
+	private _changeKeysForSectionProperties(sectionProp: any, index: { [key: string]: string }) {
+		if (sectionProp.componentProperties?.length)
+			sectionProp.componentProperties.forEach(
+				(compProp: any) =>
+					(compProp.componentKey = index[compProp.componentKey] ?? compProp.componentKey),
+			);
+
+		if (sectionProp.arrayItemProperty)
+			this._changeKeysForSectionProperties(sectionProp.arrayItemProperty, index);
+		else if (sectionProp.objectProperties?.length)
+			sectionProp.objectProperties.forEach((objProp: any) =>
+				this._changeKeysForSectionProperties(objProp, index),
+			);
+	}
+
 	private _changeKeys(clipObj: ClipboardObject): ClipboardObject {
 		const newObj: ClipboardObject = { mainKey: '', objects: {} };
 		const index: { [key: string]: string } = {};
@@ -755,6 +770,12 @@ export class PageOperations {
 					a[c.key] = c.value;
 					return a;
 				}, {} as { [key: string]: boolean });
+
+			if (e.type === 'SectionGrid' && e.properties?.sectionProperties?.value) {
+				Object.values(e.properties.sectionProperties.value).forEach((sectionProp: any) =>
+					this._changeKeysForSectionProperties(sectionProp, index),
+				);
+			}
 		});
 
 		return newObj;
@@ -808,7 +829,11 @@ export class PageOperations {
 		let droppedOnPosition = -1;
 		let sameParent = false;
 
-		if (!doCompComponent.allowedChildrenType) {
+		const allowChildrenTobeAdded =
+			!!doCompComponent.allowedChildrenType &&
+			(doComp.type !== 'SectionGrid' || doComp.properties?.enableChildrenSelection?.value);
+
+		if (!allowChildrenTobeAdded) {
 			// If the component that is being dropped on is not a component which can have children.
 			droppedOnPosition = doComp.displayOrder ?? -1;
 			// Finding the parent of the droppped on component so the dropped component can
@@ -831,7 +856,7 @@ export class PageOperations {
 
 		doCompComponent = ComponentDefinitions.get(doComp!.type);
 
-		if (doCompComponent?.allowedChildrenType) {
+		if (allowChildrenTobeAdded && doCompComponent?.allowedChildrenType) {
 			if (!doComp.children) doComp.children = {};
 
 			let allowedChildCount = doCompComponent.allowedChildrenType.get('');

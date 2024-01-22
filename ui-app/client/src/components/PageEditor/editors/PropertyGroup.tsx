@@ -143,7 +143,7 @@ export function PropertyGroup({
 			>
 				{star}
 				{displayName
-					.split(' ')
+					.split(/[ _]/)
 					.map(e => e.substring(0, 1).toUpperCase() + e.substring(1).toLowerCase())
 					.join(' ')}
 				{advSwitch}

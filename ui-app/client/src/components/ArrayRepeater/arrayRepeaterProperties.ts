@@ -1,4 +1,8 @@
-import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
+import {
+	SCHEMA_ANY_COMP_PROP,
+	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_STRING_COMP_PROP,
+} from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
@@ -66,6 +70,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		description: 'Event to be triggered when clicked on move button.',
 		group: ComponentPropertyGroup.EVENTS,
+	},
+	{
+		name: 'defaultData',
+		schema: SCHEMA_ANY_COMP_PROP,
+		displayName: 'Default Data',
+		description: 'Default data for repeater',
+		group: ComponentPropertyGroup.ADVANCED,
 	},
 
 	COMMON_COMPONENT_PROPERTIES.layout,

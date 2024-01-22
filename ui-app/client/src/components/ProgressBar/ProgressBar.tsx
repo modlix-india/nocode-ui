@@ -2,12 +2,12 @@ import React from 'react';
 import { PageStoreExtractor } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { getTranslations } from '../util/getTranslations';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './progressBarProperties';
 import ProgressBarStyles from './ProgressBarStyles';
-import { SubHelperComponent } from '../SubHelperComponent';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { styleDefaults } from './progressBarStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
@@ -139,7 +139,7 @@ function ProgressBar(props: ComponentProps) {
 			}
 			style={resolvedStyles.comp ?? {}}
 		>
-			<HelperComponent definition={props.definition} />
+			<HelperComponent context={props.context} definition={props.definition} />
 			{hProgressBar}
 			{cProgressBar()}
 		</div>
@@ -148,7 +148,7 @@ function ProgressBar(props: ComponentProps) {
 
 const component: Component = {
 	name: 'ProgressBar',
-	displayName: 'ProgressBar',
+	displayName: 'Progress Bar',
 	description: 'ProgressBar component',
 	component: ProgressBar,
 	styleComponent: ProgressBarStyles,

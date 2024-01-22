@@ -1,13 +1,13 @@
-import React, { createRef, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { PageStoreExtractor } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './videoProperties';
 import VideoStyle from './VideoStyle';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import { SubHelperComponent } from '../SubHelperComponent';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { styleDefaults } from './videoStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import getSrcUrl from '../util/getSrcUrl';
@@ -32,6 +32,7 @@ function Video(props: ComponentProps) {
 			showTime,
 			colorScheme,
 			videoDesign,
+			autoUnMuteAfterPlaying,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -94,21 +95,22 @@ function Video(props: ComponentProps) {
 	const [controlsOnHover, setControlsOnHover] = useState<boolean>(false);
 	const [muted, setMuted] = useState<boolean>(mutedProperty);
 	const [fullScreenState, setFullScreenState] = useState<String>('expand');
+	const [isFirstTimePlay, setFirstTimePlay] = useState<boolean>(true);
 
 	//videoRef
-	const video = createRef<HTMLVideoElement>();
+	const video = useRef<any>();
 	//InputProgressBarRef
-	const progressBarRef = createRef<HTMLInputElement>();
+	const progressBarRef = useRef<any>();
 	//VolumeInput ref
 	const [volume, setVolume] = useState<string>('1');
 	//
-	const volumeButton = createRef<HTMLDivElement>();
+	const volumeButton = useRef<any>();
 	//fullScreen
-	const fullScreen = createRef<HTMLDivElement>();
+	const fullScreen = useRef<any>();
 	//containerRef
-	const videoContainer = createRef<HTMLDivElement>();
+	const videoContainer = useRef<any>();
 	//Pip ref
-	const pipRef = createRef<HTMLButtonElement>();
+	const pipRef = useRef<any>();
 
 	const resolvedStyles = processComponentStylePseudoClasses(
 		pageDefinition,
@@ -122,10 +124,7 @@ function Video(props: ComponentProps) {
 		if (typeof video.current.canPlayType === 'function') {
 			setVideoControl(false);
 		}
-		if (autoPlay) {
-			video.current.play();
-		}
-	}, []);
+	}, [video.current]);
 
 	const handlePlayPause = () => {
 		if (!video.current) return;
@@ -461,7 +460,7 @@ function Video(props: ComponentProps) {
 			onMouseLeave={handleMouseLeaveVideo}
 			style={resolvedStyles.comp ?? {}}
 		>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			{controlsOnHover && videoDesign === '_videoDesign3' ? (
 				<div className="_playAndVolumeGridDesign3">
 					{showPlaypause &&
@@ -494,12 +493,20 @@ function Video(props: ComponentProps) {
 				ref={video}
 				muted={muted}
 				loop={loop}
+				autoPlay={autoPlay}
 				onLoadedMetadata={initializeVideo}
 				onTimeUpdate={updateTimeElapsed}
 				data-seek
 				onChange={volumeIconHandle}
 				onClick={handlePlayPause}
 				style={resolvedStyles.player ?? {}}
+				onPlay={() => {
+					if (!isFirstTimePlay || !autoPlay || !autoUnMuteAfterPlaying) return;
+					setTimeout(() => {
+						setMuted(false);
+						setFirstTimePlay(false);
+					}, 500);
+				}}
 			>
 				<source src={getSrcUrl(src)} type={type} />
 				Your browser does not support HTML5 video.

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getData, getDataFromPath, PageStoreExtractor, setData } from '../../context/StoreContext';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { updateLocationForChild } from '../util/updateLoactionForChild';
 import { Component } from '../../types/common';
@@ -37,7 +37,7 @@ function TableColumnHeaderComponent(props: ComponentProps) {
 
 	return (
 		<div className="comp compTableHeaderColumn" style={styleProperties.comp}>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			<div className="">{label}</div>
 		</div>
 	);

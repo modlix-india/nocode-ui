@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { getDataFromPath, PageStoreExtractor, setData } from '../../context/StoreContext';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { updateLocationForChild } from '../util/updateLoactionForChild';
 import { Component } from '../../types/common';
@@ -252,7 +252,7 @@ function TableColumnsComponent(props: ComponentProps) {
 			}
 			style={(hover ? styleHoverProperties : styleNormalProperties).comp}
 		>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			{headers}
 			{rows}
 			{emptyRows}

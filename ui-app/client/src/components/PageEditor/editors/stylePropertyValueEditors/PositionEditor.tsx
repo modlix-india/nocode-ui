@@ -15,6 +15,10 @@ export function PositionEditor({
 	selectedComponent,
 	saveStyle,
 	properties,
+	defPath,
+	locationHistory,
+	pageExtractor,
+	selectedComponentsList,
 }: StyleEditorsProps) {
 	const { value: { value: position } = {} } =
 		extractValue({
@@ -50,6 +54,10 @@ export function PositionEditor({
 			<>
 				<div className="_combineEditors _centered">
 					<EachSimpleEditor
+						defPath={defPath}
+						locationHistory={locationHistory}
+						pageExtractor={pageExtractor}
+						selectedComponentsList={selectedComponentsList}
 						subComponentName={subComponentName}
 						pseudoState={pseudoState}
 						prop="top"
@@ -71,6 +79,10 @@ export function PositionEditor({
 				</div>
 				<div className="_combineEditors _centered">
 					<EachSimpleEditor
+						defPath={defPath}
+						locationHistory={locationHistory}
+						pageExtractor={pageExtractor}
+						selectedComponentsList={selectedComponentsList}
 						subComponentName={subComponentName}
 						pseudoState={pseudoState}
 						prop="left"
@@ -152,6 +164,10 @@ export function PositionEditor({
 					</svg>
 
 					<EachSimpleEditor
+						defPath={defPath}
+						locationHistory={locationHistory}
+						pageExtractor={pageExtractor}
+						selectedComponentsList={selectedComponentsList}
 						subComponentName={subComponentName}
 						pseudoState={pseudoState}
 						prop="right"
@@ -173,6 +189,10 @@ export function PositionEditor({
 				</div>
 				<div className="_combineEditors _centered">
 					<EachSimpleEditor
+						defPath={defPath}
+						locationHistory={locationHistory}
+						pageExtractor={pageExtractor}
+						selectedComponentsList={selectedComponentsList}
 						subComponentName={subComponentName}
 						pseudoState={pseudoState}
 						prop="bottom"
@@ -197,6 +217,10 @@ export function PositionEditor({
 				<div className="_combineEditors">
 					<div className="_simpleLabel">Z-Index : </div>
 					<EachSimpleEditor
+						defPath={defPath}
+						locationHistory={locationHistory}
+						pageExtractor={pageExtractor}
+						selectedComponentsList={selectedComponentsList}
 						subComponentName={subComponentName}
 						pseudoState={pseudoState}
 						prop="zIndex"
@@ -239,6 +263,10 @@ export function PositionEditor({
 			<div className="_combineEditors">
 				<div className="_simpleLabel">Type : </div>
 				<EachSimpleEditor
+					defPath={defPath}
+					locationHistory={locationHistory}
+					pageExtractor={pageExtractor}
+					selectedComponentsList={selectedComponentsList}
 					subComponentName={subComponentName}
 					pseudoState={pseudoState}
 					prop="position"
@@ -293,6 +321,10 @@ export function PositionEditor({
 			<div className="_combineEditors _spaceBetween">
 				<div className="_simpleLabel">Float :</div>
 				<EachSimpleEditor
+					defPath={defPath}
+					locationHistory={locationHistory}
+					pageExtractor={pageExtractor}
+					selectedComponentsList={selectedComponentsList}
 					subComponentName={subComponentName}
 					pseudoState={pseudoState}
 					prop="float"
@@ -417,6 +449,10 @@ export function PositionEditor({
 			<div className="_combineEditors _spaceBetween">
 				<div className="_simpleLabel">Clear :</div>
 				<EachSimpleEditor
+					defPath={defPath}
+					locationHistory={locationHistory}
+					pageExtractor={pageExtractor}
+					selectedComponentsList={selectedComponentsList}
 					subComponentName={subComponentName}
 					pseudoState={pseudoState}
 					prop="clear"

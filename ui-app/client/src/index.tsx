@@ -10,6 +10,7 @@ declare global {
 	var nodeDev: boolean;
 	var isDesignMode: boolean;
 	var designMode: string;
+	var screenType: string;
 	var getStore: () => any;
 	var isDebugMode: boolean;
 	var pageEditor: {
@@ -36,6 +37,7 @@ declare global {
 		repoServer: REPO_SERVER,
 	) => RemoteRepository<Schema>;
 	var cdnPrefix: string;
+	var determineRightClickPosition: (e: MouseEvent) => { x: number; y: number };
 }
 
 globalThis.getRemoteFunctionRepository = RemoteRepository.getRemoteFunctionRepository;

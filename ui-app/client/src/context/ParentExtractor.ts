@@ -31,12 +31,26 @@ export class ParentExtractor extends SpecialTokenValueExtractor {
 	}
 
 	public getPath(token: string): { path: string; lastHistory: LocationHistory } {
+		let currentHistory = this.history;
+
+		do {
+			let { path, lastHistory } = this.getPathInternal(token, currentHistory);
+			if (!path.startsWith('Parent.')) return { path, lastHistory };
+			token = path;
+			currentHistory = currentHistory.slice(0, currentHistory.length - 1);
+		} while (true);
+	}
+
+	public getPathInternal(
+		token: string,
+		locationHistory: LocationHistory[],
+	): { path: string; lastHistory: LocationHistory } {
 		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
 
 		let pNum: number = 0;
 		while (parts[pNum] === 'Parent') pNum++;
 
-		const lastHistory = this.history[this.history.length - pNum];
+		const lastHistory = locationHistory[locationHistory.length - pNum];
 		let path = '';
 
 		if (typeof lastHistory.location === 'string')
@@ -47,6 +61,7 @@ export class ParentExtractor extends SpecialTokenValueExtractor {
 					? lastHistory.location.value
 					: lastHistory.location.expression
 			}.${parts.slice(pNum).join('.')}`;
+
 		return { path, lastHistory };
 	}
 }
@@ -78,6 +93,17 @@ export class ParentExtractorForRunEvent extends TokenValueExtractor {
 	}
 
 	public computeParentPath(token: string): string {
+		let currentHistory = this.history;
+
+		do {
+			let path = this.computeParentPathInternal(token, currentHistory);
+			if (!path.startsWith('Parent.')) return path;
+			token = path;
+			currentHistory = currentHistory.slice(0, currentHistory.length - 1);
+		} while (true);
+	}
+
+	public computeParentPathInternal(token: string, history: LocationHistory[]): string {
 		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
 
 		let pNum: number = 0;
@@ -87,7 +113,7 @@ export class ParentExtractorForRunEvent extends TokenValueExtractor {
 
 		let lastHistory;
 
-		lastHistory = this.history[this.history.length - pNum];
+		lastHistory = history[history.length - pNum];
 		if (typeof lastHistory?.location === 'string') path = `${lastHistory.location}.${path}`;
 		else if (lastHistory?.location)
 			path = `${

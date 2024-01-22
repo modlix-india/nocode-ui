@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { addListenerAndCallImmediately, PageStoreExtractor } from '../../context/StoreContext';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './popoverProperties';
 import { Component } from '../../types/common';
@@ -10,7 +10,7 @@ import Children from '../Children';
 import Portal from '../Portal';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import getPositions from '../util/getPositions';
-import { SubHelperComponent } from '../SubHelperComponent';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { styleDefaults } from './popoverStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 export interface PortalCoordinates {
@@ -105,7 +105,7 @@ function Popover(props: ComponentProps) {
 			style={resolvedStyles.comp ?? {}}
 			onClick={e => e.stopPropagation()}
 		>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			{popChildren.length ? (
 				<div
 					style={{

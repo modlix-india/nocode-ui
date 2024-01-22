@@ -5,14 +5,14 @@ import {
 	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { getTranslations } from '../util/getTranslations';
 import { Component } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './toggleButtonProperties';
 import ToggleButtonStyle from './ToggleButtonStyle';
 import useDefinition from '../util/useDefinition';
-import { SubHelperComponent } from '../SubHelperComponent';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { styleDefaults } from './toggleButtonStyleProperties';
 import { IconHelper } from '../util/IconHelper';
@@ -93,7 +93,7 @@ function ToggleButton(props: ComponentProps) {
 			onMouseEnter={() => setHover(true)}
 			onMouseLeave={() => setHover(false)}
 		>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 
 			<div
 				className={`_knob ${
@@ -118,7 +118,7 @@ function ToggleButton(props: ComponentProps) {
 
 const component: Component = {
 	name: 'ToggleButton',
-	displayName: 'ToggleButton',
+	displayName: 'Toggle Button',
 	description: 'ToggleButton component',
 	component: ToggleButton,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],

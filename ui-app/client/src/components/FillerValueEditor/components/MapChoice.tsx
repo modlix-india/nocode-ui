@@ -19,8 +19,6 @@ export default function MapChoice({
 	if (!url) url = '';
 	else if (prefix && url.startsWith(prefix)) url = url.substring(prefix.length);
 
-	console.log(url);
-
 	return (
 		<div className="_flexBox _column _gap10">
 			<Dropdown

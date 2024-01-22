@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { addListener, getDataFromPath, PageStoreExtractor } from '../../context/StoreContext';
 import { Component } from '../../types/common';
@@ -86,7 +86,7 @@ function TablePreviewGrid(props: ComponentProps) {
 			containerType.toLowerCase(),
 			{ className: 'comp compTablePreviewGrid' },
 			[
-				<HelperComponent definition={definition} />,
+				<HelperComponent context={props.context} definition={definition} />,
 				styleComp,
 				<Link
 					className={`_anchorGrid _${layout} ${background} _${key}_grid_css`}
@@ -127,7 +127,11 @@ function TablePreviewGrid(props: ComponentProps) {
 
 			onClick: handleClick,
 		},
-		[<HelperComponent key={`${key}_hlp`} definition={definition} />, styleComp, childs],
+		[
+			<HelperComponent context={props.context} key={`${key}_hlp`} definition={definition} />,
+			styleComp,
+			childs,
+		],
 	);
 }
 

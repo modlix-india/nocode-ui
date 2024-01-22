@@ -43,13 +43,13 @@ export class RemoteRepository<T> implements Repository<T> {
 	private jsonConversion: (json: any) => T | undefined;
 	private appCode: string | undefined;
 	private clientCode: string | undefined;
-	private includeRemoteKIRunRepos: boolean;
+	private includeKIRunRepos: boolean;
 
 	constructor(
 		appCode: string | undefined,
 		clientCode: string | undefined,
 		jsonConversion: (json: any) => T | undefined,
-		includeRemoteKIRunRepos = false,
+		includeKIRunRepos = false,
 		repoType = REPO_TYPE.FUNCTION,
 		repoServer = REPO_SERVER.CORE,
 	) {
@@ -57,7 +57,7 @@ export class RemoteRepository<T> implements Repository<T> {
 		this.jsonConversion = jsonConversion;
 		this.appCode = appCode;
 		this.clientCode = clientCode;
-		this.includeRemoteKIRunRepos = includeRemoteKIRunRepos;
+		this.includeKIRunRepos = includeKIRunRepos;
 	}
 
 	public emptyCache() {
@@ -79,7 +79,7 @@ export class RemoteRepository<T> implements Repository<T> {
 					params: {
 						appCode: this.appCode,
 						clientCode: this.clientCode,
-						includeRemoteKIRunRepos: this.includeRemoteKIRunRepos,
+						includeKIRunRepos: this.includeKIRunRepos,
 						namespace,
 						name,
 					},
@@ -128,7 +128,7 @@ export class RemoteRepository<T> implements Repository<T> {
 					params: {
 						appCode: this.appCode,
 						clientCode: this.clientCode,
-						includeRemoteKIRunRepos: this.includeRemoteKIRunRepos,
+						includeKIRunRepos: this.includeKIRunRepos,
 					},
 					headers,
 				})
@@ -158,10 +158,10 @@ export class RemoteRepository<T> implements Repository<T> {
 	public static getRemoteFunctionRepository(
 		appCode: string | undefined,
 		clientCode: string | undefined,
-		includeRemoteKIRunRepos = false,
+		includeKIRunRepos = false,
 		repoServer = REPO_SERVER.CORE,
 	): RemoteRepository<Function> {
-		const key = `${appCode}_${clientCode}_${includeRemoteKIRunRepos}_${repoServer}`;
+		const key = `${appCode}_${clientCode}_${includeKIRunRepos}_${repoServer}`;
 
 		if (functionRepoCache.has(key)) return functionRepoCache.get(key)!;
 
@@ -175,7 +175,7 @@ export class RemoteRepository<T> implements Repository<T> {
 					return new RemoteFunction(appCode, clientCode, fd, repoServer);
 				else return new KIRuntime(fd, isDesignMode || isDebugMode);
 			},
-			includeRemoteKIRunRepos,
+			includeKIRunRepos,
 			REPO_TYPE.FUNCTION,
 			repoServer,
 		);

@@ -34,6 +34,9 @@ export function DetailStyleEditor({
 	saveStyle,
 	properties,
 	pageOperations,
+	selectedComponentsList,
+	defPath,
+	locationHistory,
 }: StyleEditorsProps & DetailStyleEditorProps) {
 	const [position, setPosition] = React.useState<CSSProperties>({ right: 300, top: 300 });
 
@@ -52,6 +55,10 @@ export function DetailStyleEditor({
 
 	const editor = (
 		<SpecificEditor
+			selectedComponentsList={selectedComponentsList}
+			defPath={defPath}
+			locationHistory={locationHistory}
+			pageExtractor={pageExtractor}
 			key="specificEditor"
 			appDef={appDef}
 			subComponentName={subComponentName}

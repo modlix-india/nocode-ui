@@ -1,9 +1,12 @@
+import { duplicate } from '@fincity/kirun-js';
 import { ContextMenuDetails } from '../components/ContextMenu';
 import { PageOperations } from './PageOperations';
 
 interface MasterFunctionOptions {
-	iframe: HTMLIFrameElement;
-	iframe2?: HTMLIFrameElement;
+	screenType: 'desktop' | 'tablet' | 'mobile';
+	desktopIframe: HTMLIFrameElement | null;
+	tabletIframe: HTMLIFrameElement | null;
+	mobileIframe: HTMLIFrameElement | null;
 	editPageDefinition: any;
 	defPath: string | undefined;
 	personalization: any;
@@ -13,6 +16,9 @@ interface MasterFunctionOptions {
 	operations: PageOperations;
 	onContextMenu: (m: ContextMenuDetails) => void;
 	onSlaveStore: (payload: any) => void;
+	selectedComponent: string;
+	styleSelectorPref: any;
+	setStyleSelectorPref: (pref: any) => void;
 }
 export const MASTER_FUNCTIONS = new Map<
 	string,
@@ -21,26 +27,43 @@ export const MASTER_FUNCTIONS = new Map<
 	[
 		'SLAVE_STARTED',
 		options => {
-			options.iframe.contentWindow?.postMessage({
-				type: 'EDITOR_TYPE',
-				payload: 'PAGE',
-			});
+			[
+				{ frame: options.desktopIframe, screenType: 'desktop' },
+				{ frame: options.tabletIframe, screenType: 'tablet' },
+				{ frame: options.mobileIframe, screenType: 'mobile' },
+			]
+				.filter(obj => obj.frame != undefined || obj.frame != null)
+				.forEach(({ frame, screenType }) => {
+					frame!.contentWindow?.postMessage({
+						type: 'EDITOR_TYPE',
+						payload: { type: 'PAGE', screenType },
+					});
 
-			options.iframe.contentWindow?.postMessage({
-				type: 'EDITOR_DEFINITION',
-				payload: options.editPageDefinition,
-			});
+					frame!.contentWindow?.postMessage({
+						type: 'EDITOR_DEFINITION',
+						payload: options.editPageDefinition,
+					});
 
-			options.iframe.contentWindow?.postMessage({
-				type: 'EDITOR_PERSONALIZATION',
-				payload: options.personalization,
-			});
+					frame!.contentWindow?.postMessage({
+						type: 'EDITOR_PERSONALIZATION',
+						payload: options.personalization,
+					});
+				});
 		},
 	],
-	['SLAVE_SELECTED', (options, payload) => options?.onSelectedComponentChange(payload, false)],
+	[
+		'SLAVE_SELECTED',
+		(options, payload) => {
+			options?.onSelectedComponentChange(payload, false);
+			udpateDeviceSelection(payload, options);
+		},
+	],
 	[
 		'SLAVE_SELECTED_MULTI',
-		(options, payload) => options?.onSelectedComponentChange(payload, true),
+		(options, payload) => {
+			options?.onSelectedComponentChange(payload, true);
+			udpateDeviceSelection(options.selectedComponent, options);
+		},
 	],
 	['SLAVE_SELECTED_SUB', (options, payload) => options?.onSelectedSubComponentChange(payload)],
 	[
@@ -56,3 +79,25 @@ export const MASTER_FUNCTIONS = new Map<
 		(options, payload) => options.operations.componentPropChanged(payload),
 	],
 ]);
+
+function udpateDeviceSelection(key: string, options: MasterFunctionOptions) {
+	if (!key) return;
+
+	const newPrefs = duplicate(options.styleSelectorPref ?? {});
+	if (!newPrefs[key]) newPrefs[key] = {};
+	if (options.screenType === 'desktop' && !newPrefs[key].screenSize) {
+		return;
+	}
+
+	if (options.screenType === 'desktop') {
+		delete newPrefs[key].screenSize;
+	} else {
+		newPrefs[key].screenSize = {
+			value:
+				options.screenType === 'tablet'
+					? 'TABLET_LANDSCAPE_SCREEN_SMALL'
+					: 'MOBILE_LANDSCAPE_SCREEN_SMALL',
+		};
+	}
+	options.setStyleSelectorPref(newPrefs);
+}

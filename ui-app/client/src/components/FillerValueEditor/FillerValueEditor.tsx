@@ -14,7 +14,7 @@ import {
 	PageDefinition,
 } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { IconHelper } from '../util/IconHelper';
 import useDefinition from '../util/useDefinition';
 import GridStyle from './FillerValueEditorStyle';
@@ -302,7 +302,7 @@ function FillerValueEditor(props: Readonly<ComponentProps>) {
 
 	return (
 		<div className={`comp compFillerValueEditor`} style={resolvedStyles.comp ?? {}}>
-			<HelperComponent key={`${key}_hlp`} definition={definition} />
+			<HelperComponent context={props.context} key={`${key}_hlp`} definition={definition} />
 			<TopBar
 				logo={logo}
 				dashboardPageName={dashboardPageName}
