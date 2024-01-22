@@ -63,7 +63,7 @@
 		"ts-jest": "^28.0.5"
 	},
 	"dependencies": {
-		"@fincity/kirun-js": "^2.1.6",
+		"@fincity/kirun-js": "^2.1.7",
 		"@fincity/path-reactive-state-management": "^1.7.1",
 		"@monaco-editor/react": "^4.4.6",
 		"@tsconfig/recommended": "^1.0.1",

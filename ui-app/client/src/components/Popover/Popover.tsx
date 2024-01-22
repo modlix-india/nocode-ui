@@ -105,7 +105,7 @@ function Popover(props: ComponentProps) {
 			style={resolvedStyles.comp ?? {}}
 			onClick={e => e.stopPropagation()}
 		>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			{popChildren.length ? (
 				<div
 					style={{

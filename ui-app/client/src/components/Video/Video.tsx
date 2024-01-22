@@ -460,7 +460,7 @@ function Video(props: ComponentProps) {
 			onMouseLeave={handleMouseLeaveVideo}
 			style={resolvedStyles.comp ?? {}}
 		>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			{controlsOnHover && videoDesign === '_videoDesign3' ? (
 				<div className="_playAndVolumeGridDesign3">
 					{showPlaypause &&

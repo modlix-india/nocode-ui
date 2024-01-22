@@ -53,7 +53,7 @@ function TableColumnComponent(props: ComponentProps) {
 				stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
 			}
 		>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			<Children
 				pageDefinition={pageDefinition}
 				children={firstchild}

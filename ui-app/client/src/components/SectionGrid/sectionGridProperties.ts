@@ -1,4 +1,8 @@
-import { SCHEMA_ANY_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
+import {
+	SCHEMA_ANY_COMP_PROP,
+	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_STRING_COMP_PROP,
+} from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
@@ -33,12 +37,17 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'sectionProperties',
 		schema: SCHEMA_ANY_COMP_PROP,
 		displayName: 'Section Properties',
-		description: 'Section Properties',
 		editor: ComponentPropertyEditor.SECTION_PROPERTIES_EDITOR,
 		defaultValue: {},
 		group: ComponentPropertyGroup.ADVANCED,
 		hide: true,
 		multiValued: true,
+	},
+	{
+		name: 'enableChildrenSelection',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Enable Children Selection',
+		defaultValue: false,
 	},
 ];
 

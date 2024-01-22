@@ -194,7 +194,11 @@ function Grid(props: ComponentProps) {
 						: undefined,
 			},
 			[
-				<HelperComponent key={`${key}_hlp`} definition={definition} />,
+				<HelperComponent
+					context={props.context}
+					key={`${key}_hlp`}
+					definition={definition}
+				/>,
 				styleComp,
 				<Link
 					key={`${key}_Link`}
@@ -324,7 +328,11 @@ function Grid(props: ComponentProps) {
 			onClick: handleClick,
 			id: key,
 		},
-		[<HelperComponent key={`${key}_hlp`} definition={definition} />, styleComp, childs],
+		[
+			<HelperComponent context={props.context} key={`${key}_hlp`} definition={definition} />,
+			styleComp,
+			childs,
+		],
 	);
 }
 

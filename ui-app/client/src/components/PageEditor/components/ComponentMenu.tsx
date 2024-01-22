@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { DRAG_COMP_NAME } from '../../../constants';
+import { DRAG_COMP_NAME, TEMPLATE_DRAG } from '../../../constants';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediately,
@@ -8,6 +8,7 @@ import {
 import { LocationHistory, PageDefinition, Section, Component } from '../../../types/common';
 import ComponentDefinitions from '../../index';
 import { PageOperations } from '../functions/PageOperations';
+import axios from 'axios';
 
 export default function ComponentMenu({
 	selectedComponent,
@@ -19,7 +20,7 @@ export default function ComponentMenu({
 	onCloseMenu,
 	templateIframeRef,
 	pageOperations,
-	sectionItemsURL,
+	sectionsListConnectionName,
 	sectionsCategoryList,
 }: Readonly<{
 	personalizationPath: string | undefined;
@@ -31,17 +32,19 @@ export default function ComponentMenu({
 	onCloseMenu: () => void;
 	templateIframeRef: (element: HTMLIFrameElement | undefined) => void;
 	pageOperations: PageOperations;
-	sectionItemsURL: string | undefined;
+	sectionsListConnectionName: string | undefined;
 	sectionsCategoryList: any;
 }>) {
 	const [query, setQuery] = useState('');
 	const [selectedComponentType, setSelectedComponentType] = useState('');
+	const [selectedSectionCategory, setSelectedSectionCategory] = useState('');
 	const [selectedTemplateSection, setSelectedTemplateSection] = useState<Section>();
 	const [openCompMenu, setOpenCompMenu] = useState(false);
 	const compMenuRef = useRef<HTMLDivElement>(null);
 	const [theme, setTheme] = useState('light');
 	const [originalCompType, setOriginalCompType] = useState('SECTIONS');
-	let compType = sectionItemsURL ? originalCompType : 'COMPONENTS';
+	const [sectionsList, setSectionsList] = useState<any>(null);
+	let compType = sectionsListConnectionName ? originalCompType : 'COMPONENTS';
 
 	useEffect(() => {
 		if (!personalizationPath) return;
@@ -108,6 +111,33 @@ export default function ComponentMenu({
 		);
 	}, [personalizationPath]);
 
+	useEffect(() => {
+		if (!personalizationPath) return;
+		return addListenerAndCallImmediately(
+			(_, v) => setSelectedSectionCategory(v ?? ''),
+			pageExtractor,
+			`${personalizationPath}.selectedSectionCategory`,
+		);
+	}, [personalizationPath]);
+
+	useEffect(() => {
+		if (!selectedSectionCategory) {
+			setSectionsList(null);
+			return;
+		}
+
+		(async () => {
+			const sections = await axios(`api/core/function/execute/CoreServices.REST/GetRequest`, {
+				method: 'POST',
+				data: {
+					connectionName: sectionsListConnectionName,
+					url: `/api/core/function/execute/Items/ReadPageWithLatestVersion?type=Section&category=${selectedSectionCategory}`,
+				},
+			});
+			setSectionsList(sections.data?.[0]?.result?.data?.[0]?.result?.list);
+		})();
+	}, [selectedSectionCategory]);
+
 	if (!selectedComponent) {
 		compsList = Array.from(ComponentDefinitions.values()).filter(
 			e => !e.parentType && !e.isHidden,
@@ -127,16 +157,23 @@ export default function ComponentMenu({
 		}
 	}
 	let pattern = query
-		.toLowerCase()
 		.split('')
 		.map(x => {
 			return `(?=.*${x})`;
 		})
 		.join('');
-	let regex = new RegExp(`${pattern}`, 'g');
+	let regex = new RegExp(`${pattern}`, 'gi');
 	const compList =
-		compType === 'COMPONENTS'
-			? compsList
+		compType === 'COMPONENTS' ? (
+			<>
+				<input
+					className="_compMenuSearch"
+					type="text"
+					placeholder="Search"
+					onChange={e => setQuery(e.target.value)}
+					value={query}
+				/>
+				{compsList
 					.sort((a, b) => a.displayName.localeCompare(b.displayName))
 					.filter(
 						f =>
@@ -183,8 +220,25 @@ export default function ComponentMenu({
 							)}
 							{e.displayName}
 						</div>
-					))
-			: [];
+					))}
+			</>
+		) : (
+			sectionsCategoryList?.map((e: any) => (
+				<div
+					key={e.name}
+					className={`_compMenuItem ${selectedSectionCategory === e._id ? 'active' : ''}`}
+					title={e.name}
+					onClick={() => onChangePersonalization('selectedSectionCategory', e._id)}
+					onDragStart={ev =>
+						ev.dataTransfer.items.add(`${DRAG_COMP_NAME}${e.name}`, 'text/plain')
+					}
+				>
+					<img className="actual" src={e.image} />
+					<img className="hover" src={e.hoverImage} />
+					{e.name}
+				</div>
+			))
+		);
 
 	let tempSections: any =
 		(selectedComponentType && compType === 'COMPONENTS'
@@ -194,7 +248,43 @@ export default function ComponentMenu({
 
 	let rightPart = <></>;
 
-	if (compType === 'SECTIONS') {
+	if (compType === 'SECTIONS' && sectionsList?.content?.length) {
+		console.log(sectionsList.content);
+		rightPart = (
+			<div
+				className={`_popupMenuContainer _compMenu ${
+					openCompMenu ? '_show' : ''
+				} _compMenuRight _sections`}
+			>
+				{sectionsList.content.map((e: any) => (
+					<div
+						className="_sectionThumb"
+						style={{ backgroundImage: `url('${e.thumbnail}')` }}
+						draggable={true}
+						onDragStart={ev =>
+							ev.dataTransfer.items.add(
+								`${TEMPLATE_DRAG}${JSON.stringify({
+									mainKey: e.version.definition.rootComponent,
+									objects: e.version.definition.componentDefinition,
+								})}`,
+								'text/plain',
+							)
+						}
+						onDoubleClick={() => {
+							if (!selectedComponent) return;
+							pageOperations.droppedOn(
+								selectedComponent,
+								`${TEMPLATE_DRAG}${JSON.stringify({
+									mainKey: e.version.definition.rootComponent,
+									objects: e.version.definition.componentDefinition,
+								})}`,
+							);
+							closeMenu();
+						}}
+					/>
+				))}
+			</div>
+		);
 	} else if (selectedComponentType && tempSections.length) {
 		rightPart = (
 			<div
@@ -235,7 +325,7 @@ export default function ComponentMenu({
 		rightPart = <div className={`_popupMenuContainer _compMenu _compMenuRight`}></div>;
 	}
 
-	const sectionsTab = sectionItemsURL ? (
+	const sectionsTab = sectionsListConnectionName ? (
 		<button
 			className={`_tab ${compType === 'SECTIONS' ? '_selected' : ''}`}
 			onClick={() => {

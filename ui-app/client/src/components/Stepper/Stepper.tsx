@@ -127,7 +127,7 @@ function Stepper(props: ComponentProps) {
 			className={`comp compStepper ${stepperDesign} ${colorScheme}`}
 			style={resolvedStyles.comp ?? {}}
 		>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			<ul
 				style={resolvedStyles.list ?? {}}
 				className={`${

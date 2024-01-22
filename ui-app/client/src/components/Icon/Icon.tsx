@@ -32,7 +32,7 @@ function Icon(props: ComponentProps) {
 			className={`comp compIcon _icon ${designType} ${colorScheme} ${icon}`}
 			style={styleProperties.comp ?? {}}
 		>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 		</i>
 	);
 }

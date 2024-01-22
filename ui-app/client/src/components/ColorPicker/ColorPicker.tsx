@@ -733,7 +733,7 @@ function ColorPickerComponent(props: ComponentProps) {
 							setTimeoutHandle(handle);
 						}}
 					>
-						<HelperComponent definition={props.definition} />
+						<HelperComponent context={props.context} definition={props.definition} />
 						{colorPicker}
 					</div>
 					{validationsText}
@@ -777,7 +777,7 @@ function ColorPickerComponent(props: ComponentProps) {
 					autoComplete="off"
 					styles={computedStyles ?? {}}
 				>
-					<HelperComponent definition={props.definition} />
+					<HelperComponent context={props.context} definition={props.definition} />
 					{colorPicker}
 				</CommonInputText>
 			)}
@@ -787,7 +787,7 @@ function ColorPickerComponent(props: ComponentProps) {
 
 const component: Component = {
 	name: 'ColorPicker',
-	displayName: 'ColorPicker',
+	displayName: 'Color Picker',
 	description: 'ColorPicker component',
 	component: ColorPickerComponent,
 	styleComponent: ColorPickerStyle,

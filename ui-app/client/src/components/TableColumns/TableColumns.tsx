@@ -252,7 +252,7 @@ function TableColumnsComponent(props: ComponentProps) {
 			}
 			style={(hover ? styleHoverProperties : styleNormalProperties).comp}
 		>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			{headers}
 			{rows}
 			{emptyRows}

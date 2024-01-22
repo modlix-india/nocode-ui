@@ -136,7 +136,7 @@ function TableGridComponent(props: ComponentProps) {
 
 	return (
 		<div className={`comp compTableGrid _${layout}`} style={styleProperties.comp}>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			{value.map((e: any, index) => {
 				if (index < from || index >= to) return undefined;
 

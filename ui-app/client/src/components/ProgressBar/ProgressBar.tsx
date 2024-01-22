@@ -139,7 +139,7 @@ function ProgressBar(props: ComponentProps) {
 			}
 			style={resolvedStyles.comp ?? {}}
 		>
-			<HelperComponent definition={props.definition} />
+			<HelperComponent context={props.context} definition={props.definition} />
 			{hProgressBar}
 			{cProgressBar()}
 		</div>
@@ -148,7 +148,7 @@ function ProgressBar(props: ComponentProps) {
 
 const component: Component = {
 	name: 'ProgressBar',
-	displayName: 'ProgressBar',
+	displayName: 'Progress Bar',
 	description: 'ProgressBar component',
 	component: ProgressBar,
 	styleComponent: ProgressBarStyles,

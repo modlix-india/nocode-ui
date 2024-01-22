@@ -5,7 +5,7 @@ import { HelperComponent } from './HelperComponents/HelperComponent';
 function Nothing({ definition }: { definition: any }) {
 	return (
 		<div className="comp compNothing">
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			No component with type {definition.type} found.
 		</div>
 	);

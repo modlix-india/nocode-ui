@@ -92,7 +92,7 @@ function ImageComponent(props: ComponentProps) {
 
 	return (
 		<div className="comp compImage" style={resolvedStyles.comp ?? {}}>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			<img
 				onMouseEnter={
 					stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined

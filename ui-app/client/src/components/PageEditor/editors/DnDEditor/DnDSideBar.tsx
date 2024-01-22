@@ -23,7 +23,7 @@ interface DnDSideBarProps {
 	previewMode: boolean;
 	templateIframeRef: (element: HTMLIFrameElement | undefined) => void;
 	editorType: string | undefined;
-	sectionItemsURL: string | undefined;
+	sectionsListConnectionName: string | undefined;
 	sectionsCategoryList: any;
 }
 
@@ -39,7 +39,7 @@ export default function DnDSideBar({
 	previewMode,
 	templateIframeRef,
 	editorType,
-	sectionItemsURL,
+	sectionsListConnectionName,
 	sectionsCategoryList,
 }: DnDSideBarProps) {
 	const [noSelection, setNoSelection] = useState<boolean>(false);
@@ -91,7 +91,7 @@ export default function DnDSideBar({
 				onCloseMenu={() => setShowCompMenu(false)}
 				templateIframeRef={templateIframeRef}
 				pageOperations={pageOperations}
-				sectionItemsURL={sectionItemsURL}
+				sectionsListConnectionName={sectionsListConnectionName}
 				sectionsCategoryList={sectionsCategoryList}
 			/>
 		);

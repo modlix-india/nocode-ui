@@ -85,7 +85,7 @@ function TextList(props: ComponentProps) {
 
 	return (
 		<div className="comp compTextList" style={styleProperties.comp ?? {}}>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			{listType === 'ol' ? (
 				<ol
 					style={{
@@ -174,7 +174,7 @@ function TextList(props: ComponentProps) {
 
 const component: Component = {
 	name: 'TextList',
-	displayName: 'TextList',
+	displayName: 'Text List',
 	description: 'TextList component',
 	component: TextList,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],

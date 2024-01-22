@@ -154,7 +154,11 @@ function ButtonComponent(props: ComponentProps) {
 			onBlur={stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined}
 			title={label ?? ''}
 		>
-			<HelperComponent definition={props.definition} onDoubleClick={() => setEditName(true)}>
+			<HelperComponent
+				context={props.context}
+				definition={props.definition}
+				onDoubleClick={() => setEditName(true)}
+			>
 				{editName && (
 					<>
 						<input

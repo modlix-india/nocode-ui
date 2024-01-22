@@ -162,7 +162,7 @@ function ImageWithBrowser(props: ComponentProps) {
 
 	return (
 		<div className="comp compImageWithBrowser" style={resolvedStyles.comp ?? {}}>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			{img}
 			<SubHelperComponent
 				style={resolvedStyles.image ?? {}}

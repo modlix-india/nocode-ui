@@ -93,7 +93,7 @@ function ToggleButton(props: ComponentProps) {
 			onMouseEnter={() => setHover(true)}
 			onMouseLeave={() => setHover(false)}
 		>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 
 			<div
 				className={`_knob ${
@@ -118,7 +118,7 @@ function ToggleButton(props: ComponentProps) {
 
 const component: Component = {
 	name: 'ToggleButton',
-	displayName: 'ToggleButton',
+	displayName: 'Toggle Button',
 	description: 'ToggleButton component',
 	component: ToggleButton,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],

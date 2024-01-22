@@ -89,7 +89,7 @@ function PageEditor(props: ComponentProps) {
 			settingsPageName,
 			addnewPageName,
 			editorType,
-			sectionItemsURL,
+			sectionsListConnectionName,
 			sectionsCategoryList,
 		} = {},
 	} = useDefinition(
@@ -651,7 +651,11 @@ function PageEditor(props: ComponentProps) {
 	return (
 		<>
 			<div className={`comp compPageEditor ${localTheme}`} style={resolvedStyles.comp ?? {}}>
-				<HelperComponent key={`${key}_hlp`} definition={definition} />
+				<HelperComponent
+					context={props.context}
+					key={`${key}_hlp`}
+					definition={definition}
+				/>
 				<DnDEditor
 					personalizationPath={personalizationPath}
 					defPath={defPath}
@@ -715,7 +719,7 @@ function PageEditor(props: ComponentProps) {
 					dashboardPageName={dashboardPageName}
 					addnewPageName={addnewPageName}
 					editorType={editorType}
-					sectionItemsURL={sectionItemsURL}
+					sectionsListConnectionName={sectionsListConnectionName}
 					sectionsCategoryList={sectionsCategoryList}
 				/>
 				<CodeEditor

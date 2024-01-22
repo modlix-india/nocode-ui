@@ -286,7 +286,7 @@ function Menu(props: ComponentProps) {
 						))();
 				}}
 			>
-				<HelperComponent definition={definition} />
+				<HelperComponent context={props.context} definition={definition} />
 				{leftIconButton}
 				{onlyIconMenu ? '' : getTranslations(label, translations)}
 				{externalButton}

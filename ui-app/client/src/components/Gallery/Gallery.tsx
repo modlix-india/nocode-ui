@@ -484,7 +484,7 @@ function Gallery(props: ComponentProps) {
 					style={resolvedStyles.comp ?? {}}
 					ref={galleryRef}
 				>
-					<HelperComponent definition={props.definition} />
+					<HelperComponent context={props.context} definition={props.definition} />
 					<div className={`mainContainer preview${position}`}>
 						<div className={`galleryContainer thumbnail${position}`}>
 							<div className={`galleryToolbar`} onClick={handleBubbling}>
