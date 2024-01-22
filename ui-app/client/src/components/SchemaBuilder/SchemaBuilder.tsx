@@ -57,7 +57,7 @@ function SchemaBuilder(props: ComponentProps) {
 
 	return (
 		<div className="comp compSchemaBuilder" style={resolvedStyles.comp ?? {}}>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			<SingleSchema
 				schema={value}
 				type={rootSchemaType}

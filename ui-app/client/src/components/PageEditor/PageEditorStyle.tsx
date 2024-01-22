@@ -2942,6 +2942,12 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border-right: 1px solid #F2F4F8;
 		}
 
+		._compMenu._compMenuRight._sections {
+			padding: 10px;
+			gap: 10px;
+			overflow: auto;
+		}
+
 		._compMenu ._compList {
 			flex: 1;
 			overflow-y: auto;
@@ -3003,6 +3009,56 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			background-color: #52BD94;
 			color: #fff;
 			border-radius: 4px;
+		}
+
+		._compMenu ._compMenuSearch {
+			font-family: 'Inter';
+			font-size: 12px;
+			font-weight: 600;
+			padding: 10px 11px;
+			border: 1.5px solid transparent;
+			border-radius: 6px;
+			outline: none;
+			width: 170px;
+			background-color: #F8FAFB;
+			color: #52BD94;
+		}
+
+		._compMenu ._compMenuSearch:focus {
+			border-color:#52BD94;
+		}
+
+		._compMenu ._compMenuSearch::placeholder {
+			color: #52BD9488;
+		}
+
+		._compMenu ._compMenuItem img.hover {
+			display: none;
+		}
+
+		._compMenu ._compMenuItem:hover img.hover,
+		._compMenu ._compMenuItem.active img.hover {
+			display: inline;
+		}
+
+		._compMenu ._compMenuItem:hover img.actual,
+		._compMenu ._compMenuItem.active img.actual {
+			display: none;
+		}
+
+		._compMenu ._sectionThumb {
+			width: 100%;
+			height: 200px;
+			background-size: contain;
+			background-repeat: no-repeat;
+			background-position: center center;
+			cursor: pointer;
+			border-radius: 4px;
+			border: 1.5px solid #F2F4F8;
+		}
+
+		._compMenu ._sectionThumb:hover {
+			background-color: #F2F4F8;
 		}
 
 		._popupMenuBackground ._popupMenu {

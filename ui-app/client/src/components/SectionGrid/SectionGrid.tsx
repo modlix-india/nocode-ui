@@ -1,26 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
-import {
-	PageStoreExtractor,
-	addListener,
-	getDataFromPath,
-	getPathFromLocation,
-	setData,
-} from '../../context/StoreContext';
+import React from 'react';
+import { PageStoreExtractor } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
-import { getHref } from '../util/getHref';
-import { runEvent } from '../util/runEvent';
+import { IconHelper } from '../util/IconHelper';
 import useDefinition from '../util/useDefinition';
-import { flattenUUID } from '../util/uuid';
 import SectionGridStyle from './SectionGridStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './sectionGridProperties';
-import { isNullValue } from '@fincity/kirun-js';
 import { styleDefaults } from './sectionGridStyleProperties';
-import { IconHelper } from '../util/IconHelper';
 
 function SectionGrid(props: ComponentProps) {
 	const [hover, setHover] = React.useState(false);
@@ -31,7 +19,7 @@ function SectionGrid(props: ComponentProps) {
 	const {
 		key,
 		stylePropertiesWithPseudoStates,
-		properties: { containerType, layout } = {},
+		properties: { containerType, layout, enableChildrenSelection } = {},
 	} = useDefinition(
 		definition,
 		propertiesDefinition,
@@ -45,7 +33,7 @@ function SectionGrid(props: ComponentProps) {
 			key={`${key}_chld`}
 			pageDefinition={pageDefinition}
 			children={definition.children}
-			context={{ ...context }}
+			context={{ ...context, disableSelection: !enableChildrenSelection }}
 			locationHistory={locationHistory}
 		/>
 	);
@@ -73,7 +61,10 @@ function SectionGrid(props: ComponentProps) {
 			style: resolvedStyles.comp ?? {},
 			id: key,
 		},
-		[<HelperComponent key={`${key}_hlp`} definition={definition} />, childs],
+		[
+			<HelperComponent context={props.context} key={`${key}_hlp`} definition={definition} />,
+			childs,
+		],
 	);
 }
 

@@ -37,7 +37,7 @@ function TableColumnHeaderComponent(props: ComponentProps) {
 
 	return (
 		<div className="comp compTableHeaderColumn" style={styleProperties.comp}>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			<div className="">{label}</div>
 		</div>
 	);

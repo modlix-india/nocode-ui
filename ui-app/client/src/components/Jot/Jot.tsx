@@ -126,7 +126,7 @@ function Jot(props: ComponentProps) {
 
 	return (
 		<div className={`comp compJot`} style={styleProperties.comp ?? {}}>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 
 			<div className="_canvas"></div>
 		</div>

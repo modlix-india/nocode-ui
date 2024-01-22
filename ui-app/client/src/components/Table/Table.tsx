@@ -556,7 +556,7 @@ function TableComponent(props: ComponentProps) {
 			className={`comp compTable ${tableDesign} ${previewGridPosition}`}
 			style={resolvedStyles?.comp ?? {}}
 		>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			{body}
 			{spinner}
 		</div>

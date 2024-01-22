@@ -378,7 +378,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 
 	return (
 		<div className={`comp compArrayRepeater _${layout}`} style={styleProperties.comp}>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			{items}
 		</div>
 	);

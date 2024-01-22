@@ -74,7 +74,7 @@ function FillerDefinitionEditor(props: ComponentProps) {
 			className={`comp compFillerDefinitionEditor _colorProfile1`}
 			style={resolvedStyles.comp ?? {}}
 		>
-			<HelperComponent key={`${key}_hlp`} definition={definition} />
+			<HelperComponent context={props.context} key={`${key}_hlp`} definition={definition} />
 			{Object.values(filler.definition ?? {})
 				.sort((a, b) => a.order - b.order)
 				.map((section: SectionDefinition) => (

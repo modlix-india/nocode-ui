@@ -93,7 +93,7 @@ function TextEditor(props: ComponentProps) {
 
 	return (
 		<div className="comp compTextEditor" style={resolvedStyles.comp ?? {}}>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			<Editor
 				language={documentType}
 				height="100%"

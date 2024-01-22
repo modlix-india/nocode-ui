@@ -71,7 +71,7 @@ function SchemaForm(
 
 	return (
 		<div className="comp compSchemaForm" style={resolvedStyles.comp ?? {}}>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			{showJSONEditorButton && (
 				<AnyValueEditor
 					value={value === undefined ? null : value}

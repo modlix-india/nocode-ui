@@ -253,9 +253,13 @@ function CompTree({
 	const hoverLonger = useRef<NodeJS.Timeout | null>();
 	if (!comp) return <></>;
 
-	const children = pageDef?.componentDefinition[compKey]?.children
-		? Object.keys(pageDef.componentDefinition[compKey].children!)
-		: undefined;
+	const children =
+		(comp?.type !== 'SectionGrid' && comp?.children) ||
+		(comp?.type === 'SectionGrid' &&
+			comp?.children &&
+			comp?.properties?.enableChildrenSelection?.value)
+			? Object.keys(comp.children!)
+			: undefined;
 
 	const subCompDef = ComponenstDefinition.get(comp.type)?.subComponentDefinition;
 

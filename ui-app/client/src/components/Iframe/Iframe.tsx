@@ -41,7 +41,7 @@ function Iframe(props: ComponentProps) {
 	);
 	return (
 		<div className="comp compIframe" style={resolvedStyles.comp ?? {}}>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			<iframe
 				className="iframe"
 				style={resolvedStyles.iframe ?? {}}

@@ -1,11 +1,12 @@
 import React, { MouseEvent, ReactNode } from 'react';
-import { ComponentDefinition } from '../../types/common';
+import { ComponentDefinition, RenderContext } from '../../types/common';
 import { PageEditorHelperComponent } from './PageEditorHelperComponent';
 import { FillerValueEditorHelperComponent } from './FillerValueEditorHelperComponent';
 
 export function HelperComponent(
 	props: Readonly<{
 		definition: ComponentDefinition;
+		context: RenderContext;
 		children?: ReactNode;
 		showNameLabel?: boolean;
 		onMouseOver?: (e: MouseEvent) => void;
@@ -14,6 +15,7 @@ export function HelperComponent(
 		onDoubleClick?: (e: MouseEvent) => void;
 	}>,
 ) {
+	if (props.context.disableSelection) return <></>;
 	if (window.designMode === 'PAGE') return <PageEditorHelperComponent {...props} />;
 	else if (window.designMode === 'FILLER_VALUE_EDITOR')
 		return <FillerValueEditorHelperComponent {...props} />;

@@ -127,7 +127,7 @@ function PageComponent(props: Readonly<ComponentProps>) {
 	if (context.level >= 2 || (context.level > 0 && pageName === context.shellPageName)) {
 		return (
 			<div className="comp compPage _blockPageRendering" style={resolvedStyles?.comp ?? {}}>
-				<HelperComponent definition={definition} />
+				<HelperComponent context={props.context} definition={definition} />
 				<style>{styleText}</style>
 				Design Mode
 			</div>
@@ -136,7 +136,7 @@ function PageComponent(props: Readonly<ComponentProps>) {
 
 	return (
 		<div className="comp compPage" style={resolvedStyles?.comp ?? {}}>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			<style>{styleText}</style>
 			<Children
 				pageDefinition={pageDefinition}

@@ -366,7 +366,7 @@ function TextBox(props: ComponentProps) {
 
 const component: Component = {
 	name: 'TextBox',
-	displayName: 'TextBox',
+	displayName: 'Text Box',
 	description: 'TextBox component',
 	component: TextBox,
 	styleComponent: TextBoxStyle,

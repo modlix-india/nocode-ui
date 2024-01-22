@@ -148,7 +148,7 @@ function ButtonBar(props: ComponentProps) {
 			className={`comp compButtonBar ${buttonBarDesign} ${colorScheme}`}
 			style={resolvedStyles.comp ?? {}}
 		>
-			<HelperComponent definition={props.definition} />
+			<HelperComponent context={props.context} definition={props.definition} />
 			{buttonBarData?.map((each, i, arr) => (
 				<button
 					style={resolvedStyles.button ?? {}}
@@ -176,7 +176,7 @@ function ButtonBar(props: ComponentProps) {
 
 const component: Component = {
 	name: 'ButtonBar',
-	displayName: 'ButtonBar',
+	displayName: 'Button Bar',
 	description: 'ButtonBar component',
 	component: ButtonBar,
 	styleComponent: ButtonBarStyle,

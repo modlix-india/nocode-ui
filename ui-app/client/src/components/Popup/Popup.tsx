@@ -144,7 +144,7 @@ function Popup(props: ComponentProps) {
 						onClick={handleCloseOnOutsideClick}
 						style={resolvedStyles.comp ?? {}}
 					>
-						<HelperComponent definition={props.definition} />
+						<HelperComponent context={props.context} definition={props.definition} />
 						<div
 							className={`modal ${popupDesign} ${background}`}
 							style={resolvedStyles?.modal || {}}

@@ -289,7 +289,7 @@ function TextArea(props: ComponentProps) {
 
 const component: Component = {
 	name: 'TextArea',
-	displayName: 'TextArea',
+	displayName: 'Text Area',
 	description: 'TextArea component',
 	component: TextArea,
 	styleComponent: TextAreaStyle,
