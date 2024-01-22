@@ -98,12 +98,10 @@ function ButtonComponent(props: ComponentProps) {
 			);
 	};
 
-	const hasRightIcon = !!rightIcon && !leftIcon && designType !== '_fabButton' && designType !== '_iconButton' && designType !== '_iconPrimaryButton';
-
-	const hasLabel = designType !== '_fabButton' && designType !== '_iconButton' && designType !== '_iconPrimaryButton';
+	const hasRightIcon = !!rightIcon && !leftIcon;
 
 	const rightIconTag =
-		hasRightIcon ? (
+		!designType?.startsWith('_fabButton') && designType !== '_iconButton' && !leftIcon ? (
 			<i
 				style={styleProperties.rightIcon ?? {}}
 				className={`_rightButtonIcon _icon ${rightIcon ?? 'fa fa-circle-notch hide'}`}
@@ -365,7 +363,7 @@ function ButtonComponent(props: ComponentProps) {
 				</div>
 			</HelperComponent>
 			{leftIconTag}
-			{hasLabel ? label : ''}
+			{!designType?.startsWith('_fabButton') && designType !== '_iconButton' ? label : ''}
 			{rightIconTag}
 		</button>
 	);
