@@ -9,8 +9,8 @@ import {
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
-import { HelperComponent } from '../HelperComponent';
-import { SubHelperComponent } from '../SubHelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { getTranslations } from '../util/getTranslations';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tabsProperties';
@@ -160,7 +160,7 @@ function TabsComponent(props: ComponentProps) {
 				)
 			}
 		>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			<div
 				className={`tabsContainer ${tabsPosition}`}
 				style={resolvedStyles.tabsContainer ?? {}}

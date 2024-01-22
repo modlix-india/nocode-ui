@@ -5,7 +5,7 @@ import {
 	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { getTranslations } from '../util/getTranslations';
 import { propertiesDefinition, stylePropertiesDefinition } from './StepperProperties';
@@ -14,7 +14,7 @@ import StepperStyle from './StepperStyle';
 import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { getRoman, getAlphaNumeral } from '../util/numberConverter';
-import { SubHelperComponent } from '../SubHelperComponent';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { styleDefaults } from './StepperStyleProperties';
 
 function Stepper(props: ComponentProps) {
@@ -127,7 +127,7 @@ function Stepper(props: ComponentProps) {
 			className={`comp compStepper ${stepperDesign} ${colorScheme}`}
 			style={resolvedStyles.comp ?? {}}
 		>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			<ul
 				style={resolvedStyles.list ?? {}}
 				className={`${

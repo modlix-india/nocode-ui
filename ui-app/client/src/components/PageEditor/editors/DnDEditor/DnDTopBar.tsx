@@ -39,6 +39,8 @@ interface TopBarProps {
 	onDeletePersonalization: () => void;
 	pageExtractor: PageStoreExtractor;
 	onPageReload: () => void;
+	onPageBack: () => void;
+	onPageForward: () => void;
 	defPath: string | undefined;
 	locationHistory: Array<LocationHistory>;
 	firstTimeRef: React.MutableRefObject<PageDefinition[]>;
@@ -92,6 +94,8 @@ export default function DnDTopBar({
 	onDeletePersonalization,
 	pageExtractor,
 	onPageReload,
+	onPageBack,
+	onPageForward,
 	defPath,
 	firstTimeRef,
 	undoStackRef,
@@ -124,7 +128,6 @@ export default function DnDTopBar({
 	const [changed, setChanged] = useState(Date.now());
 	const [permission, setPermission] = useState<string>('');
 	const [selectedPage, setSelectedPage] = React.useState('');
-	const navigate = useNavigate();
 	const location = useLocation();
 	const svgLogo = logo ? <img className="_logo" src={getSrcUrl(logo)} /> : undefined;
 	useEffect(() => setLocalUrl(url), [url]);
@@ -242,7 +245,7 @@ export default function DnDTopBar({
 	React.useEffect(() => {
 		if (!selectedPage) return;
 		const furl = getHref(`/${pageExtractor.getPageName()}/${selectedPage}`, location);
-		navigate(furl);
+		window.open(furl, '_self');
 	}, [selectedPage]);
 
 	if (previewMode) return <div className="_topBarGrid _previewMode"> </div>;
@@ -488,7 +491,7 @@ export default function DnDTopBar({
 			<div className="_simpleEditorDropdownBody">
 				{dashboardPageName ? (
 					<div
-						onClick={() => navigate(getHref(dashboardPageName, location))}
+						onClick={() => window.open(getHref(dashboardPageName, location), '_self')}
 						className="_simpleEditorDropdownOption"
 					>
 						View dashboard
@@ -496,7 +499,7 @@ export default function DnDTopBar({
 				) : null}
 				{settingsPageName ? (
 					<div
-						onClick={() => navigate(getHref(settingsPageName, location))}
+						onClick={() => window.open(getHref(settingsPageName, location), '_self')}
 						className="_simpleEditorDropdownOption"
 					>
 						Site settings
@@ -517,7 +520,7 @@ export default function DnDTopBar({
 						type="button"
 						onMouseDown={e => {
 							e.stopPropagation();
-							navigate(getHref(addnewPageName, location));
+							window.open(getHref(addnewPageName, location), '_self');
 						}}
 						className="_add_page_btn"
 					>
@@ -550,7 +553,6 @@ export default function DnDTopBar({
 		urlBar = (
 			<div className="_inputBar">
 				<div className="_urlInput _peInput">
-					<i className="fa fa-solid fa-globe" title="Current Address."></i>
 					<input
 						ref={inputRef}
 						type="text"
@@ -566,6 +568,36 @@ export default function DnDTopBar({
 							}
 						}}
 					/>
+					<div className="_urlInputIcon" onClick={onPageBack}>
+						<svg
+							width="18"
+							height="18"
+							viewBox="0 0 18 18"
+							fill="none"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path
+								d="M9 18C13.9703 18 18 13.9703 18 9C18 4.02975 13.9703 -1.90735e-06 9 -1.90735e-06C4.02975 -1.90735e-06 -1.90735e-06 4.02975 -1.90735e-06 9C-1.90735e-06 13.9703 4.02943 18 9 18ZM9.96252 13.4171L6.14073 9.59528C5.9824 9.43708 5.89363 9.22249 5.89363 8.99875C5.89363 8.775 5.9824 8.56028 6.14073 8.40211L9.95963 4.58322C10.1728 4.37002 10.4836 4.2869 10.7747 4.36487C11.0659 4.44297 11.2934 4.67048 11.3714 4.96163C11.4493 5.25293 11.366 5.56357 11.1528 5.77675L7.93077 9.00035L11.1557 12.2243C11.3659 12.438 11.447 12.7472 11.3686 13.0366C11.2901 13.326 11.0641 13.552 10.7747 13.6304C10.4853 13.7088 10.1762 13.6278 9.96236 13.4175L9.96252 13.4171Z"
+								fill="black"
+								fillOpacity="0.3"
+							/>
+						</svg>
+					</div>
+					<div className="_urlInputIcon" onClick={onPageForward}>
+						<svg
+							width="18"
+							height="18"
+							viewBox="0 0 18 18"
+							fill="none"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path
+								d="M9 0C4.02975 0 0 4.02975 0 9C0 13.9703 4.02975 18 9 18C13.9703 18 18 13.9703 18 9C18 4.02975 13.9706 0 9 0ZM8.03748 4.58293L11.8593 8.40472C12.0176 8.56292 12.1064 8.77751 12.1064 9.00125C12.1064 9.225 12.0176 9.43972 11.8593 9.59789L8.04037 13.4168C7.82718 13.63 7.51642 13.7131 7.22527 13.6351C6.9341 13.557 6.70658 13.3295 6.62863 13.0384C6.55066 12.7471 6.63403 12.4364 6.84723 12.2233L10.0692 8.99965L6.84433 5.77572C6.63415 5.56202 6.55304 5.25275 6.63139 4.96337C6.70986 4.67396 6.93587 4.44796 7.22529 4.3696C7.51471 4.29123 7.82382 4.37223 8.03764 4.58254L8.03748 4.58293Z"
+								fill="black"
+								fillOpacity="0.3"
+							/>
+						</svg>
+					</div>
 				</div>
 			</div>
 		);
@@ -600,12 +632,7 @@ export default function DnDTopBar({
 				</div>
 				{urlBar}
 				{pageSelector}
-				<div className="_topLeftCenterBarGrid">
-					<ScreenSizeButtons
-						deviceType={deviceType}
-						changeDeviceType={changeDeviceType}
-					/>
-				</div>
+				<div className="_topLeftCenterBarGrid"></div>
 			</div>
 			<div className="_topRightBarGrid">
 				<div className="_buttonBar">

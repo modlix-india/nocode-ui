@@ -15,7 +15,7 @@ import {
 	PageDefinition,
 } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import CodeEditor from './components/CodeEditor';
@@ -89,6 +89,8 @@ function PageEditor(props: ComponentProps) {
 			settingsPageName,
 			addnewPageName,
 			editorType,
+			sectionsListConnectionName,
+			sectionsCategoryList,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -273,21 +275,22 @@ function PageEditor(props: ComponentProps) {
 		[setUrl, savePersonalization, editPageDefinition?.name, appDefinition?.clientCode],
 	);
 
-	const ref = useRef<HTMLIFrameElement>(null);
+	const desktopRef = useRef<HTMLIFrameElement>(null);
+	const tabletRef = useRef<HTMLIFrameElement>(null);
+	const mobileRef = useRef<HTMLIFrameElement>(null);
+
 	// To load iframe for the templates
 	const [templateIFrame, setTemplateIFrame] = useState<HTMLIFrameElement | undefined>(undefined);
-	// To use for the paralell design mode
-	const [paralellIFrame, setParalellIFrame] = useState<HTMLIFrameElement | undefined>(undefined);
 	const [selectedComponent, setSelectedComponentOriginal] = useState<string>('');
 	const [selectedSubComponent, setSelectedSubComponentOriginal] = useState<string>('');
 	const [issue, setIssue] = useState<Issue>();
 	const [contextMenu, setContextMenu] = useState<ContextMenuDetails>();
 	const [showCodeEditor, setShowCodeEditor] = useState<string | undefined>(undefined);
-	const [selectednComponentsList, setSelectednComponentsListOriginal] = useState<string[]>([]);
+	const [selectedComponentsList, setSelectedComponentsListOriginal] = useState<string[]>([]);
 
 	const setSelectedComponent = useCallback(
 		(v: string) => {
-			setSelectednComponentsListOriginal([v]);
+			setSelectedComponentsListOriginal([v]);
 			setSelectedComponentOriginal(v ?? '');
 			setSelectedSubComponentOriginal('');
 			if (!defPath) return;
@@ -324,12 +327,13 @@ function PageEditor(props: ComponentProps) {
 				if (prev === '') return v;
 				return prev;
 			});
-			setSelectednComponentsListOriginal(prevList => {
-				const updatedList = [...prevList, v];
+			setSelectedComponentsListOriginal(prevList => {
+				const updatedList =
+					prevList.indexOf(v) !== -1 ? prevList.filter(e => e !== v) : [...prevList, v];
 				return updatedList;
 			});
 		},
-		[setSelectednComponentsListOriginal],
+		[setSelectedComponentsListOriginal],
 	);
 
 	// it will get called when we select sub component inside a component like 'text' inside 'Text' component
@@ -381,36 +385,37 @@ function PageEditor(props: ComponentProps) {
 		if (!defPath) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
 			(_, payload) => {
-				if (!ref.current) return;
 				const msg = {
 					type: 'EDITOR_DEFINITION',
 					payload,
 				};
-				ref.current.contentWindow?.postMessage(msg);
-				paralellIFrame?.contentWindow?.postMessage(msg);
+				desktopRef.current?.contentWindow?.postMessage(msg);
+				tabletRef.current?.contentWindow?.postMessage(msg);
+				mobileRef.current?.contentWindow?.postMessage(msg);
 			},
 			pageExtractor,
 			defPath,
 		);
-	}, [defPath, ref.current, paralellIFrame]);
+	}, [defPath, desktopRef.current, tabletRef.current, mobileRef.current]);
 
 	// On changing the personalization, this effect sends to the iframe/slave.
 	useEffect(() => {
 		if (!personalizationPath) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
 			(_, payload) => {
-				if (!ref.current) return;
 				const msg = {
 					type: 'EDITOR_PERSONALIZATION',
 					payload,
 				};
-				ref.current.contentWindow?.postMessage(msg);
-				paralellIFrame?.contentWindow?.postMessage(msg);
+
+				desktopRef.current?.contentWindow?.postMessage(msg);
+				tabletRef.current?.contentWindow?.postMessage(msg);
+				mobileRef.current?.contentWindow?.postMessage(msg);
 			},
 			pageExtractor,
 			personalizationPath,
 		);
-	}, [personalizationPath, ref.current, paralellIFrame]);
+	}, [personalizationPath, desktopRef.current, tabletRef.current, mobileRef.current]);
 
 	// On app def change message to component template iframe.
 	useEffect(() => {
@@ -455,44 +460,51 @@ function PageEditor(props: ComponentProps) {
 	// On changing the selection, this effect sends to the iframe/slave.
 	useEffect(() => {
 		if (!defPath) return;
-		if (!ref.current) return;
-		const msg = { type: 'EDITOR_SELECTION', payload: selectednComponentsList };
-		ref.current.contentWindow?.postMessage(msg);
-		paralellIFrame?.contentWindow?.postMessage(msg);
-	}, [selectednComponentsList, ref.current, paralellIFrame]);
+
+		const msg = { type: 'EDITOR_SELECTION', payload: selectedComponentsList };
+		desktopRef.current?.contentWindow?.postMessage(msg);
+		tabletRef.current?.contentWindow?.postMessage(msg);
+		mobileRef.current?.contentWindow?.postMessage(msg);
+	}, [selectedComponentsList, desktopRef.current, tabletRef.current, mobileRef.current]);
 
 	// On changing the sub selection, this effect sends to the iframe/slave.
 	useEffect(() => {
 		if (!defPath) return;
-		if (!ref.current) return;
+
 		const msg = { type: 'EDITOR_SUB_SELECTION', payload: selectedSubComponent };
-		ref.current.contentWindow?.postMessage(msg);
-		paralellIFrame?.contentWindow?.postMessage(msg);
-	}, [selectedSubComponent, ref.current, paralellIFrame]);
+		desktopRef.current?.contentWindow?.postMessage(msg);
+		tabletRef.current?.contentWindow?.postMessage(msg);
+		mobileRef.current?.contentWindow?.postMessage(msg);
+	}, [selectedSubComponent, desktopRef.current, tabletRef.current, mobileRef.current]);
 
 	// The type of the editor should be sent to iframe/slave.
 	useEffect(() => {
-		if (!ref.current) return;
-		ref.current.contentWindow?.postMessage({
+		desktopRef.current?.contentWindow?.postMessage({
 			type: 'EDITOR_TYPE',
-			payload: 'PAGE',
+			payload: { type: 'PAGE', screenType: 'desktop' },
 		});
-	}, [ref.current]);
+	}, [desktopRef.current]);
 
-	// The type of the editor should be sent to iframe/slave for the parallel editing.
 	useEffect(() => {
-		paralellIFrame?.contentWindow?.postMessage({
+		tabletRef.current?.contentWindow?.postMessage({
 			type: 'EDITOR_TYPE',
-			payload: 'PAGE',
+			payload: { type: 'PAGE', screenType: 'tablet' },
 		});
-	}, [paralellIFrame]);
+	}, [tabletRef.current]);
+
+	useEffect(() => {
+		mobileRef.current?.contentWindow?.postMessage({
+			type: 'EDITOR_TYPE',
+			payload: { type: 'PAGE', screenType: 'mobile' },
+		});
+	}, [mobileRef.current]);
 
 	// The type of the editor should be sent to iframe/slave to make it only theme editing/viewing.
 	useEffect(() => {
 		if (!templateIFrame) return;
 		templateIFrame.contentWindow?.postMessage({
 			type: 'EDITOR_TYPE',
-			payload: 'THEME',
+			payload: { type: 'THEME' },
 		});
 	}, [templateIFrame]);
 
@@ -503,34 +515,27 @@ function PageEditor(props: ComponentProps) {
 	useEffect(() => {
 		function onMessageFromSlave(e: any) {
 			const {
-				data: { type, payload, editorType },
+				data: { type, payload, editorType, screenType },
 			} = e;
 
-			if (!type || !type.startsWith('SLAVE_') || !ref.current) return;
+			if (!type || !type.startsWith('SLAVE_')) return;
 			if (!MASTER_FUNCTIONS.has(type)) throw Error('Unknown message from Slave : ' + type);
 
 			if (editorType && editorType !== 'PAGE') return;
 
-			if (!editorType) {
-				if (!paralellIFrame && e.source?.document != ref.current?.contentWindow?.document)
-					return;
-
-				if (
-					paralellIFrame &&
-					(e.source?.document != ref.current?.contentWindow?.document ||
-						e.source?.document != paralellIFrame?.contentWindow?.document)
-				)
-					return;
-			}
-
 			MASTER_FUNCTIONS.get(type)?.(
 				{
-					iframe: ref.current,
-					iframe2: paralellIFrame,
+					screenType,
+					desktopIframe: desktopRef.current,
+					tabletIframe: tabletRef.current,
+					mobileIframe: mobileRef.current,
 					editPageDefinition,
 					defPath,
 					personalization,
 					personalizationPath,
+					selectedComponent,
+					styleSelectorPref,
+					setStyleSelectorPref: setStyleSelectorPref,
 					onSelectedComponentChange: (key, multi) =>
 						multi ? setSelectedComponentList(key) : setSelectedComponent(key),
 					onSelectedSubComponentChange: key => setSelectedSubComponent(key),
@@ -564,7 +569,9 @@ function PageEditor(props: ComponentProps) {
 		window.addEventListener('message', onMessageFromSlave);
 		return () => window.removeEventListener('message', onMessageFromSlave);
 	}, [
-		ref.current,
+		desktopRef.current,
+		tabletRef.current,
+		mobileRef.current,
 		editPageDefinition,
 		defPath,
 		personalization,
@@ -644,7 +651,11 @@ function PageEditor(props: ComponentProps) {
 	return (
 		<>
 			<div className={`comp compPageEditor ${localTheme}`} style={resolvedStyles.comp ?? {}}>
-				<HelperComponent key={`${key}_hlp`} definition={definition} />
+				<HelperComponent
+					context={props.context}
+					key={`${key}_hlp`}
+					definition={definition}
+				/>
 				<DnDEditor
 					personalizationPath={personalizationPath}
 					defPath={defPath}
@@ -654,23 +665,34 @@ function PageEditor(props: ComponentProps) {
 					onSave={saveFunction}
 					onPublish={onPublish ? publishFunction : undefined}
 					onChangePersonalization={savePersonalization}
-					iframeRef={ref}
+					desktopIframe={desktopRef}
+					tabletIframe={tabletRef}
+					mobileIframe={mobileRef}
 					templateIframeRef={(element: HTMLIFrameElement | undefined) =>
 						setTemplateIFrame(element)
 					}
-					paralellIFrameRef={(element: HTMLIFrameElement | undefined) =>
-						setParalellIFrame(element)
-					}
 					locationHistory={locationHistory}
 					selectedComponent={selectedComponent}
-					selectednComponentsList={selectednComponentsList}
+					selectedComponentsList={selectedComponentsList}
 					onSelectedComponentChanged={(key: string) => setSelectedComponent(key)}
 					onSelectedComponentListChanged={(key: string) => setSelectedComponentList(key)}
 					pageOperations={operations}
 					onPageReload={() => {
-						ref.current?.contentWindow?.location.reload();
+						desktopRef?.current?.contentWindow?.location.reload();
+						tabletRef?.current?.contentWindow?.location.reload();
+						mobileRef?.current?.contentWindow?.location.reload();
 						setSelectedComponent('');
 						setSelectedSubComponent('');
+					}}
+					onPageBack={() => {
+						desktopRef?.current?.contentWindow?.history.back();
+						tabletRef?.current?.contentWindow?.history.back();
+						mobileRef?.current?.contentWindow?.history.back();
+					}}
+					onPageForward={() => {
+						desktopRef?.current?.contentWindow?.history.forward();
+						tabletRef?.current?.contentWindow?.history.forward();
+						mobileRef?.current?.contentWindow?.history.forward();
 					}}
 					theme={localTheme}
 					logo={logo}
@@ -697,6 +719,8 @@ function PageEditor(props: ComponentProps) {
 					dashboardPageName={dashboardPageName}
 					addnewPageName={addnewPageName}
 					editorType={editorType}
+					sectionsListConnectionName={sectionsListConnectionName}
+					sectionsCategoryList={sectionsCategoryList}
 				/>
 				<CodeEditor
 					showCodeEditor={showCodeEditor}

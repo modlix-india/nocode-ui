@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import {
 	addListenerAndCallImmediately,
@@ -106,7 +106,7 @@ function SubPage(props: ComponentProps) {
 
 	return (
 		<div className="comp compSubPage" style={resolvedStyles.comp ?? {}}>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			{childs}
 		</div>
 	);

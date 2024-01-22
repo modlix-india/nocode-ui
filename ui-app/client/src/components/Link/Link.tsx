@@ -6,13 +6,13 @@ import {
 	processComponentStylePseudoClasses,
 	processStyleObjectToCSS,
 } from '../../util/styleProcessor';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { getHref } from '../util/getHref';
 import { getTranslations } from '../util/getTranslations';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './linkProperties';
 import LinkStyle from './LinkStyle';
-import { SubHelperComponent } from '../SubHelperComponent';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { runEvent } from '../util/runEvent';
 import { styleDefaults } from './linkStyleProperties';
 import { IconHelper } from '../util/IconHelper';
@@ -162,7 +162,7 @@ function Link(props: ComponentProps) {
 					handleClick?.();
 				}}
 			>
-				<HelperComponent definition={definition} />
+				<HelperComponent context={props.context} definition={definition} />
 				{getTranslations(label, translations)}
 				{externalButton}
 			</a>

@@ -10,7 +10,7 @@ import {
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { validate } from '../../util/validationProcessor';
-import { SubHelperComponent } from '../SubHelperComponent';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { getRenderData } from '../util/getRenderData';
 import { getSelectedKeys } from '../util/getSelectedKeys';
 import { runEvent } from '../util/runEvent';
@@ -158,7 +158,8 @@ function DropdownComponent(props: ComponentProps) {
 	};
 
 	const handleClick = async (each: { key: any; label: any; value: any } | undefined) => {
-		if (!each) return;
+		if (!each || !bindingPathPath) return;
+
 		if (isMultiSelect) {
 			let newSelectionIndex = (selected ?? []).findIndex((e: any) =>
 				deepEqual(e, each.value),
@@ -334,6 +335,7 @@ function DropdownComponent(props: ComponentProps) {
 			designType={designType}
 			colorScheme={colorScheme}
 			leftIcon={leftIcon}
+			showDropdown={showDropdown}
 			onMouseLeave={closeOnMouseLeave ? handleClose : undefined}
 			updDownHandler={e => {
 				if (e.key.startsWith('Arrow')) {

@@ -19,11 +19,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'poster',
-		schema: SCHEMA_BOOL_COMP_PROP,
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Poster',
 		description: 'Image to load before the video comes up.',
 		group: ComponentPropertyGroup.ADVANCED,
-		defaultValue: false,
+		editor: ComponentPropertyEditor.IMAGE,
 	},
 	{
 		name: 'playsInline',
@@ -133,6 +133,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				description: 'video Player Design 4',
 			},
 		],
+	},
+	{
+		name: 'autoUnMuteAfterPlaying',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Auto Unmute After Playing',
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
 	},
 ];
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
