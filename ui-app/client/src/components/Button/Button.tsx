@@ -98,22 +98,28 @@ function ButtonComponent(props: ComponentProps) {
 			);
 	};
 
-	const hasRightIcon = !!rightIcon && !leftIcon && designType !== '_fabButton' && designType !== '_iconButton' && designType !== '_iconPrimaryButton';
+	const hasRightIcon =
+		!leftIcon &&
+		!designType.startsWith('_fabButton') &&
+		designType !== '_iconButton' &&
+		designType !== '_iconPrimaryButton';
+	const hasRightIconClass = !!rightIcon && !leftIcon;
+	const hasLabel =
+		!designType.startsWith('_fabButton') &&
+		designType !== '_iconButton' &&
+		designType !== '_iconPrimaryButton';
 
-	const hasLabel = designType !== '_fabButton' && designType !== '_iconButton' && designType !== '_iconPrimaryButton';
-
-	const rightIconTag =
-		hasRightIcon ? (
-			<i
-				style={styleProperties.rightIcon ?? {}}
-				className={`_rightButtonIcon _icon ${rightIcon ?? 'fa fa-circle-notch hide'}`}
-			>
-				<SubHelperComponent
-					definition={props.definition}
-					subComponentName="rightIcon"
-				></SubHelperComponent>
-			</i>
-		) : undefined;
+	const rightIconTag = hasRightIcon ? (
+		<i
+			style={styleProperties.rightIcon ?? {}}
+			className={`_rightButtonIcon _icon ${rightIcon ?? 'fa fa-circle-notch hide'}`}
+		>
+			<SubHelperComponent
+				definition={props.definition}
+				subComponentName="rightIcon"
+			></SubHelperComponent>
+		</i>
+	) : undefined;
 
 	const hasLeftIcon = leftIcon || isLoading;
 
@@ -142,7 +148,7 @@ function ButtonComponent(props: ComponentProps) {
 		<button
 			className={`comp compButton button ${designType} ${colorScheme} ${
 				hasLeftIcon ? '_withLeftIcon' : ''
-			} ${hasRightIcon ? '_withRightIcon' : ''}`}
+			} ${hasRightIconClass ? '_withRightIcon' : ''}`}
 			disabled={isLoading || readOnly}
 			onClick={handleClick}
 			style={styleProperties.comp ?? {}}
