@@ -365,6 +365,37 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex:1;
 		}
 
+		input._peInput._searchInput[type='text'] {
+			width: 200px;
+			height: 48px;
+			border-radius: 70px;
+			border: 1px solid rgba(0, 0, 0, 0.10);
+			background-color: #fff;
+			padding-left: 42px;
+			font-size: 14px;
+		}
+
+		._searchUploadContainer ._searchInputContainer i {
+			position: absolute;
+			top: 50%;
+			left: 18px;
+			color: rgba(0, 0, 0, 0.40);
+			transform: translateY(-50%);
+		}
+
+		._searchUploadContainer ._createFolderBtn {
+			display: inline-block;
+			width: 120px;
+			height: 36px;
+			border-radius: 4px;
+			border: 1px solid #0085F2;
+			background-color: #fff;
+			color: #0085F2;
+			font-weight: 600;
+			cursor: pointer;
+			font-size: 14px;
+		}
+
 		._pvExpressionEditor {
 			padding-top: 0px;
 			padding-bottom: 0px;
@@ -836,6 +867,159 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			transition: width 0s;
 		}
 
+		._scaleSliderContainer {
+			display: flex;
+			flex-direction: row;
+			gap: 60px;
+		}
+
+		._scaleSliderContainer ._scaleSlider {
+			position: relative;
+			display: flex;
+			width: fit-content;
+			align-items: center;
+			gap: 15px;
+		}
+
+		._scaleSliderContainer ._scaleSlider .sliderInput {
+			width: 58px;
+			height: 35px;
+			background-color: #F8FAFB;
+			border-radius: 6px;
+			border: none;
+			text-align: center;
+			font-family: Inter;
+			outline: none;
+			padding-right: 12px;
+		}
+
+		._scaleSlider .sliderInputLabel {
+			position: absolute;
+			right: 10px;
+		}
+
+		.imageScaleSlider {
+			width: 120px;
+		}
+
+		._sizeInputBoxContainer {
+			display: flex;
+			gap: 20px;
+		}
+
+		._sizeInputBoxContainer ._sizeInputBox {
+			position: relative;
+		}
+
+		._sizeInputBoxContainer ._sizeInputBox input[type="number"] {
+			width: 100px;
+			height: 35px;
+			background-color: #F8FAFB;
+			border-radius: 6px;
+			border: none;
+			font-family: Inter;
+			outline: none;
+			padding: 0 13px;
+		}
+
+		._sizeInputBoxContainer ._sizeInputBox label {
+			position: absolute;
+			right: 12px;
+			top: 50%;
+			transform: translateY(-50%);
+			color: rgba(0, 0, 0, 0.30);
+		}
+
+		.imageScaleSlider ._simpleEditorRange ._rangeTrackFill {
+			display: none;
+		}
+
+		._scaleSliderContainer ._scaleSlider ._rotateFlipBtnContainer {
+			display: flex;
+			gap: 10px;
+			align-items: center;
+			padding: 10px;
+			border: 1px solid rgba(0, 0, 0, 0.1);
+			border-radius: 6px;
+			box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.1);
+			background-color: #F8FAFB;
+			cursor: pointer;
+		}
+
+		._scaleSliderContainer ._scaleSlider ._rotateFlipBtnContainer:hover {
+			background-color: rgb(228, 230, 231, 1);
+		}
+
+		._scaleSliderContainer ._scaleSlider ._rotateFlipBtnContainer ._rotateBtnIcon {
+			color: #2680EB;
+			font-size: 16px;
+		}
+	
+		._scaleSliderContainer ._scaleSlider ._rotateFlipBtnContainer ._rotateFlipBtnLabel {
+			position: relative;
+			font-size: 12px;
+			margin: 0;
+		}
+
+		._scaleSliderContainer ._scaleSlider .sliderInput.sizeSliderInput {
+			position: relative;
+			text-align: center;
+			font-size: 12px;
+		}
+
+		._scaleSliderContainer ._scaleSlider .sliderInputLabel.sizeSliderInputLabel {
+			content: '°';
+			position: absolute;
+			right: 17px;
+		}
+
+		._scaleSliderContainer ._scaleSlider ._rotateFlipBtnContainer ._flipIconContainer { 
+			display: flex;
+			gap: 2px;
+		}
+
+		._scaleSliderContainer ._scaleSlider ._rotateFlipBtnContainer ._flipIconContainer._flipVerticalContainer{
+			transform: rotate(-90deg);
+		}
+
+		._scaleSliderContainer ._scaleSlider ._rotateFlipBtnContainer ._flipIconContainer ._flipIconPart1 {
+			width: 6px;
+			height: 14px;
+			background-color: #2680EB;
+			border-top-left-radius: 2px;
+			border-bottom-left-radius: 2px;
+		}
+
+		._scaleSliderContainer ._scaleSlider ._rotateFlipBtnContainer ._flipIconContainer ._flipIconPart2 {
+			position: relative;
+			width: 7px;
+			height: 14px;
+			border: 1.5px dashed #2680EB;
+			border-left: none;
+			border-top-right-radius: 2px;
+			border-bottom-right-radius: 2px;
+		}
+
+		._scaleSliderContainer ._scaleSlider ._rotateFlipBtnContainer ._flipIconContainer ._flipIconPart2:before {
+			content: '';
+			position: absolute;
+			height: 16px;
+			width: 1.5px;
+			top: 50%;
+			transform: translateY(-50%);
+			background-color: #2680EB;
+		}
+
+		input[type=number]::-webkit-inner-spin-button,
+		input[type=number]::-webkit-outer-spin-button {
+			-webkit-appearance: none;
+			margin: 0;
+		}
+
+		input[type=number] {
+			-moz-appearance: textfield;
+		}
+
 		._simpleEditorRange ._rangeThumb {
 			width: 12px;
 			height: 12px;
@@ -849,6 +1033,13 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			cursor: pointer;
 		}
 
+		.imageScaleSlider ._simpleEditorRange ._rangeThumb {
+			top: -7px;
+			width: 15px;
+			height: 15px;
+			background: linear-gradient(#43B2FF, #52BD94);
+		}
+
 		._simpleEditorRange ._rangeThumb::before {
 			content: '';
 			position: absolute;
@@ -858,6 +1049,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			top: 20%;
 			border-radius: 50%;
 			background-color: #4C7FEE;
+		}
+
+		.imageScaleSlider ._simpleEditorRange ._rangeThumb::before{
+			display: none;
 		}
 
 		._simpleEditorSelect {
@@ -2512,6 +2707,115 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			margin-left: 5px;
 		}
 
+		._popupContainer .imageResizerHeader {
+			width: 100%;
+			height: 34px;
+			display: flex;
+			align-items: center;
+			background-color: #427EE4;
+			border-radius: 2px 2px 0 0;
+			padding-left: 20px;
+			color: #fff;
+			gap: 8px;
+			font-family: 'Inter';
+		}
+
+		._popupContainer ._popupEditorContainer {
+			width: 100%;
+			border: 1px solid rgba(0, 0, 0, 0.10);
+		}
+
+		._popupContainer ._popupEditorContainer .imagePopupEditorBackground {
+			position: relative;
+			width: 100%;
+			height: 230px;
+			overflow: auto;
+			background-color: lightblue;
+		}
+
+		._popupContainer ._popupEditorContainer .imagePopupEditorBackground .imageWrapper {
+			position: relative;
+			display: flex;
+			transition: transform 0.3s ease;
+			background-color: gray;
+		}
+
+		._popupContainer ._popupEditorContainer .imagePopupEditorBackground .imageWrapper .uploadingImage {
+			object-fit: contain;
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			background-color: black;
+			transform-origin: left top;
+			transform: translate(-50%, -50%);
+		}
+
+		._popupContainer ._popupEditorContainer .imagePopupEditorBackground ._cropArea {
+			position: absolute;
+			width: 100px;
+			height: 100px;
+			border: 1px dashed white;
+		}
+
+		._popupContainer ._popupEditorContainer ._tabButtonsContainer {
+			width: 100%;
+			display: flex;
+			padding: 10px 15px;
+		}
+
+		._popupContainer ._popupEditorContainer ._tabButtonsContainer .tabBtn {
+			width: 50%;
+			color: rgba(0, 0, 0, 0.40);
+			cursor: pointer;
+			border-bottom: 3px solid #F1F1F1;
+			text-align: center;
+			padding: 10px 0;
+			font-weight: 500;
+		}
+
+		._popupContainer ._popupEditorContainer ._tabButtonsContainer .tabBtn.selected {
+			color: #427EE4;
+			border-bottom: 3px solid #427EE4;
+		}
+
+		._popupContainer ._popupEditorContainer ._tabButtonsContainer .tabBtn i {
+			margin-right: 7px;
+		}
+
+		._popupContainer._imageResize ._popupEditorContainer ._editCrop {
+			display: flex;
+			flex-direction: column;
+			gap: 15px;
+			padding: 10px 15px;
+		}
+
+		._popupContainer._imageResize ._popupEditorContainer ._editCrop .resizeLabel {
+			color: rgba(34, 34, 34, 0.70);
+			margin: 0;
+			cursor: default;
+			gap: 5px;
+		}
+
+		._popupContainer._imageResize ._popupEditorContainer ._editCrop .resizeLabelInfo {
+			display: inline-block;
+			width: 14px;
+			height: 14px;
+			color: #fff;
+			font-size: 10px;
+			font-weight: 600;
+			font-family: 'Inter';
+			background-color: #8E90A4;
+			text-align: center;
+			border-radius: 8px;
+			margin-left: 5px;
+		}
+
+		._popupContainer._imageResize ._popupEditorContainer ._editCrop .checkboxContainer {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
+
 		._popupContainer ._progressBar {
 			flex: 1;
 			text-align: center;
@@ -2543,6 +2847,62 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			gap: 10px;
 		}
 
+		._popupContainer._imagePopupContainer ._searchUploadContainer {
+			position: relative;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		._popupContainer._imagePopupContainer ._iconSelectionBrowser {
+			height: 400px;
+		}
+
+		._popupContainer._imagePopupContainer ._editBtnContainer {
+			width: 100%;
+			height: 50px;
+			display: flex;
+			justify-content: end;
+			gap: 10px;
+		}
+
+		._popupContainer._imagePopupContainer ._editBtnContainer ._deleteBtn {
+			display: inline-block;
+			width: 90px;
+			height: 36px;
+			border-radius: 4px;
+			border: 1px solid #FF614D;
+			background-color: #fff;
+			color: #FF614D;
+			font-weight: 600;
+			cursor: pointer;
+			font-size: 14px;
+		}
+
+		._popupContainer._imagePopupContainer ._editBtnContainer ._selectBtnContainer {
+			width: 100px;
+			height: 36px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			border-radius: 4px;
+			background-color: #52BD94;
+			cursor: pointer;
+		}
+
+		._popupContainer._imagePopupContainer ._editBtnContainer ._selectBtnContainer i {
+			color: #fff;
+		}
+
+		._popupContainer._imagePopupContainer ._editBtnContainer ._selectBtnContainer ._selectBtn {
+			height: fit-content;
+			color: #fff;
+			font-weight: 600;
+			font-size: 14px;
+			background: none;
+			border: none;
+		}
+
 		._popupContainer ._iconSelectionBrowser ._selectors {
 			display: flex;
 			gap: 5px;
@@ -2564,8 +2924,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 		
 		._popupContainer ._iconSelectionDisplay ._eachIcon {
-			width: 90px;
-			height: 90px;
+			width: 115px;
+			height: 115px;
 			display: flex;
 			flex-direction: column;
 			font-size: 11px;
@@ -2573,7 +2933,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			align-items: center;
 			padding: 5px;
 			border-radius: 5px;
-			background-color: #fafafa;
+			border: 1px solid rgba(0, 0, 0, 0.10);
 			justify-content: center;
 			gap: 15px;
 			text-align: center;
@@ -2585,10 +2945,14 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			background-color: #ddd;
 		}
 
+		._popupContainer ._iconSelectionDisplay ._eachIcon .folderIcon {
+			color: #FFC728;
+			font-size: 44px;
+		}
+
 		._popupContainer ._pathParts {
 			display: flex;
 			flex-direction: row;
-			gap: 5px;
 			flex:1;
 		}
 
@@ -2604,7 +2968,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._popupContainer ._eachIcon input{
 			font-size: 11px;
 			border: none;
-			width: 80px;
+			width: 100px;
+			max-height: 30px;
 			background-color: #eee;
 			padding:0px 5px;
 		}
@@ -2620,15 +2985,27 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		._popupContainer ._pathParts span {
-			padding: 0px 5px;
+			padding: 5px;
 		}
 
 		._popupContainer ._eachIcon._upload {
-			border: 2px dashed #ccc;
+			position: relative;
+			height: 36px;
+			width: fit-content;
+			display: inline-block;
+			background-color: #0085F2;
+			border-radius: 4px;
+			padding: 9.5px 28px;
+			font-size: 12px;
+			text-align: center;
+			color: #fff;
+			cursor: pointer;
 		}
 
 		._popupContainer ._eachIcon input._peInput[type="file"] {
 			position: absolute;
+			top: 0;
+			left: 0;
 			opacity: 0;
 			width: 100%;
     		height: 100%;
@@ -2636,11 +3013,23 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		._popupContainer ._image {
-			width: 48px;
-			height: 48px;
+			width: 90px;
+			height: 64px;
 			background-repeat: no-repeat;
 			background-size: contain;
 			background-position: center center;
+			margin-top: -20px
+		}
+
+		._popupContainer ._imageLabel {
+			position: absolute;
+			bottom: 0;
+			width: 100%;
+			margin: 0;
+			background-color: #F8F8F8;
+			color: rgba(51, 51, 51, 0.90);
+			padding: 3px 0;
+			border-radius: 0 0 4px 4px;
 		}
 
 		._popupContainer ._pathParts span._clickable {
@@ -2658,8 +3047,9 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			left: 0px;
 			top: 0px;
 			width: 100vw;
-			height: 100vh;
+			min-height: 100vh;
 			z-index: 3;
+			padding: 20px 0;
 		}
 
 		._popupBackground {
@@ -2678,6 +3068,47 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			flex-direction: column;
 			gap: 15px;
+		}
+		
+		._popupBackground ._popupContainer._imageResize {
+			backgroundColor: #fafafa;
+			min-height: 550px;
+			width: 600px;
+			justifyContent: center;
+			align-items: flex-start;
+			touchAction: none;
+			gap: 0;
+		}
+
+		._popupBackground ._popupContainer._imageResize ._editBtnContainer {
+			width: 100%;
+			height: 50px;
+			display: flex;
+			justify-content: end;
+			align-items: flex-end;
+		}
+
+		._popupBackground ._popupContainer._imageResize ._editBtnContainer ._cancelBtn {
+			width: 100px;
+			height: 36px;
+			background-color: transparent;
+			border: none;
+			color: rgba(0, 0, 0, 0.40);
+			cursor: pointer;
+			font-size: 14px;
+		}
+
+		._popupBackground ._popupContainer._imageResize ._editBtnContainer ._saveBtn {
+			display: inline-block;
+			width: 120px;
+			height: 36px;
+			border-radius: 4px;
+			border: 1px solid #0085F2;
+			background-color: #0085F2;
+			color: #fff;
+			font-weight: 600;
+			cursor: pointer;
+			font-size: 14px;
 		}
 
 		._popupBackground ._popupButtons {

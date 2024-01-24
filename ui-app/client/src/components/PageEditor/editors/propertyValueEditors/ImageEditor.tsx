@@ -1,5 +1,11 @@
 import axios from 'axios';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {
+	MouseEventHandler,
+	WheelEventHandler,
+	useCallback,
+	useEffect,
+	useState,
+} from 'react';
 import { LOCAL_STORE_PREFIX } from '../../../../constants';
 import { getDataFromPath } from '../../../../context/StoreContext';
 import { ComponentPropertyDefinition } from '../../../../types/common';
@@ -7,6 +13,8 @@ import Portal from '../../../Portal';
 import { PageOperations } from '../../functions/PageOperations';
 import { shortUUID } from '../../../../util/shortUUID';
 import PathParts from '../../../../commonComponents/PathParts';
+import { RangeSlider } from '../stylePropertyValueEditors/simpleEditors/RangeSlider';
+import ImageResizer from './ImageResizer';
 
 interface ImageSelectionEditorProps {
 	value?: string;
@@ -67,6 +75,9 @@ export function ImageEditor({
 	const [inProgress, setInProgress] = useState(false);
 	const [newFolder, setNewFolder] = useState(false);
 	const [newFolderName, setNewFolderName] = useState('');
+	const [showImageResizerPopup, setShowImageResizerPopup] = useState(false);
+	const [formData, setFormData] = useState<FormData>();
+	const [image, setImage] = useState<string>('');
 
 	useEffect(() => setChngValue(value ?? ''), [value]);
 
@@ -105,11 +116,13 @@ export function ImageEditor({
 		[callForFiles, path, showImageBrowser],
 	);
 
+	console.log('showImageResizerPopup ', showImageResizerPopup);
+
 	let popup = <></>;
 	if (showImageBrowser) {
 		const newFolderDiv = newFolder ? (
 			<div className="_eachIcon">
-				<i className={`fa fa-2x fa-solid fa-folder`} />
+				<i className={`fa fa-2x fa-solid fa-folder folderIcon`} />
 				<input
 					type="text"
 					className="_peInput"
@@ -152,27 +165,23 @@ export function ImageEditor({
 
 		const uploadDiv = (
 			<div className="_eachIcon _upload">
-				<i className={`fa fa-2x fa-solid fa-upload`} />
-				Upload / Add a new file
+				<i
+					className={`fa fa-2x fa-solid fa-upload`}
+					style={{ color: '#fff', fontSize: '12px', marginRight: '8px' }}
+				/>
+				Upload from device
 				<input
 					className="_peInput"
 					type="file"
 					onChange={async e => {
 						if (e.target.files?.length === 0) return;
-						const formData = new FormData();
-						formData.append('file', e.target.files![0]);
+						const currFormData = new FormData();
+						currFormData.append('file', e.target.files![0]);
+						setFormData(currFormData);
 						setInProgress(true);
-						try {
-							await axios.post(
-								`/api/files/static${path === '' ? '/' : path}`,
-								formData,
-								{
-									headers,
-								},
-							);
-						} catch (e) {}
-						setInProgress(false);
-						callForFiles();
+						setShowImageResizerPopup(true);
+						const imageUrl = URL.createObjectURL(e.target.files![0]);
+						setImage(imageUrl);
 					}}
 				/>
 			</div>
@@ -184,12 +193,12 @@ export function ImageEditor({
 			</div>
 		) : (
 			<div className="_iconSelectionDisplay">
-				{uploadDiv}
 				{newFolderDiv}
 				{files?.content?.map((e: any) => {
 					return (
 						<div
 							key={e.name}
+							title={`${e.name}`}
 							className="_eachIcon"
 							onClick={() => {
 								if (e.directory) {
@@ -204,6 +213,11 @@ export function ImageEditor({
 						>
 							{!isImage(e.name) ? (
 								<i
+									style={{
+										color: e.directory ? '#FFC728' : '',
+										fontSize: '44px',
+										marginTop: '-15px',
+									}}
 									className={`fa fa-2x fa-solid ${
 										e.directory ? 'fa-folder' : 'fa-file'
 									}`}
@@ -216,7 +230,11 @@ export function ImageEditor({
 									}}
 								/>
 							)}
-							{e.name}
+							<p className="_imageLabel" style={{}}>
+								{e.name && e.name.length < 19
+									? e.name
+									: e.name.substring(0, 17) + '...'}
+							</p>
 							<div
 								className="_deleteButton"
 								onClick={ev => {
@@ -256,32 +274,74 @@ export function ImageEditor({
 
 		popup = (
 			<Portal>
-				<div className={`_popupBackground`} onClick={() => setShowImageBrowser(false)}>
-					<div className="_popupContainer" onClick={e => e.stopPropagation()}>
-						<input
-							className="_peInput"
-							placeholder="Search for images..."
-							type="text"
-							value={filter}
-							onChange={e => setFilter(e.target.value)}
-						/>
-						<div className="_iconSelectionBrowser">
-							<div className="_pathContainer">
-								<PathParts path={path} setPath={p => setPath(p)} />
-								<i
+				{showImageBrowser && (
+					<div className={`_popupBackground`} onClick={() => setShowImageBrowser(false)}>
+						<div
+							className="_popupContainer _imagePopupContainer"
+							onClick={e => e.stopPropagation()}
+						>
+							<div className="_searchUploadContainer">
+								<div className="_searchInputContainer">
+									<input
+										className="_peInput _searchInput"
+										placeholder="Search Images"
+										type="text"
+										value={filter}
+										onChange={e => setFilter(e.target.value)}
+									/>
+									<i
+										title="Search Images"
+										className="fa fa-solid fa-search"
+										tabIndex={0}
+									/>
+								</div>
+								<button
 									title="Create New Folder"
-									className="fa fa-solid fa-square-plus"
+									className="_createFolderBtn"
 									tabIndex={0}
 									onClick={() => {
 										if (inProgress) return;
 										setNewFolder(true);
 									}}
-								/>
+								>
+									Create folder
+								</button>
+								{uploadDiv}
 							</div>
-							{content}
+							<div className="_iconSelectionBrowser">
+								<div className="_pathContainer">
+									<PathParts path={path} setPath={p => setPath(p)} />
+								</div>
+								{content}
+							</div>
+							<div className="_editBtnContainer">
+								<button className="_deleteBtn" title="Delete" tabIndex={0}>
+									Delete
+								</button>
+								<div className="_selectBtnContainer">
+									<i className="fa-regular fa-image"></i>
+									<button className="_selectBtn" title="Select" tabIndex={0}>
+										Select
+									</button>
+								</div>
+							</div>
 						</div>
 					</div>
-				</div>
+				)}
+				{showImageResizerPopup && (
+					<>
+						<ImageResizer
+							path={path}
+							headers={headers}
+							formData={formData}
+							image={image}
+							setImage={setImage}
+							setInProgress={setInProgress}
+							setShowImageResizerPopup={setShowImageResizerPopup}
+							callForFiles={callForFiles}
+						/>
+					</>
+				)}
 			</Portal>
 		);
 	}

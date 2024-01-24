@@ -72,7 +72,6 @@ export default function DnDPropertyBar({
 		);
 	}, [personalizationPath]);
 
-	if (!selectedComponent || previewMode) return <div className="_propBar"></div>; // if no component is selected then returning empty div.
 	useEffect(() => {
 		if (!personalizationPath) return;
 
@@ -144,6 +143,8 @@ export default function DnDPropertyBar({
 		},
 		[isDragging, position, onChangePersonalization],
 	);
+
+	if (!selectedComponent || previewMode) return <div className="_propBar"></div>; // if no component is selected then returning empty div.
 
 	if (!selectedComponent || previewMode) return <div className="_propBar"></div>;
 	let tab = <></>;
