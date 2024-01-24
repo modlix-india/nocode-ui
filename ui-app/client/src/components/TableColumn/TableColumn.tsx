@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getData, getDataFromPath, PageStoreExtractor, setData } from '../../context/StoreContext';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { updateLocationForChild } from '../util/updateLoactionForChild';
 import { Component } from '../../types/common';
@@ -53,7 +53,7 @@ function TableColumnComponent(props: ComponentProps) {
 				stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
 			}
 		>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			<Children
 				pageDefinition={pageDefinition}
 				children={firstchild}

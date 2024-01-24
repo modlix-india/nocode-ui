@@ -209,8 +209,7 @@ export default function AppStyle() {
 	.opacityShowOnHover {opacity: 0;}
 	.opacityShowOnHover:hover {opacity: 1 !important;}
 	.disableChildrenEvents * {pointer-events: none;}
-	._helperChildren {display: none;}
-	._helper:hover ._helperChildren {display: block;}
+	._helperChildren {z-index: 6; position: absolute; top: 100%}
 	._helper ._iconHelperSVG {
 		color: #fff;
 		width: 12px;

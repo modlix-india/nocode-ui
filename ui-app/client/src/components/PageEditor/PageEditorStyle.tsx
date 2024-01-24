@@ -42,6 +42,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			align-items: center;
 			padding-top: 10px;
 			background-color: #F8FAFB;
+			border-right: 1px solid rgba(0, 0, 0, 0.10)
 		}
 
 		${PREFIX} ._sideBar._previewMode {
@@ -199,6 +200,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			margin-right: 6px;
 		}
 
+		${PREFIX} ._compsTree ._treeNodeName i.fa._nothing {
+			margin-right: 6px;
+		}
+
 		${PREFIX} ._compsTree ._animateTransform i.fa {
 			transition: transform 0.5s;
 		}
@@ -210,14 +215,13 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} svg._iconHelperSVG {
 			width: 16px;
 			height: 16px;
-			color: #CACBCA;
+			color: #96A1B4;
 		}
 
 		${PREFIX} ._compsTree ._treeNode:hover ._iconHelperSVG,
 		${PREFIX} ._compsTree ._treeNode._selected ._iconHelperSVG {
 			color: #4C7FEE;
 		}
-		
 
 		${PREFIX} ._sideBar ._top {
 			flex: 1;
@@ -257,7 +261,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			align-items: center;
 			padding-right: 10px;
-			gap: 10px;
+			gap: 15px;
 		}
 
 		select._peSelect {
@@ -441,7 +445,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._urlInput {
 			position: absolute;
-			width: 200px;
+			width: 240px;
 			left: 22px;
 			z-index: 1;
 		}
@@ -457,14 +461,26 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._urlInput._peInput {
 			background: #F8FAFB;
-			border: 0.8px solid #E9ECEF;
-			box-shadow: inset 0px 0px 2px rgba(0, 0, 0, 0.05);
 			border-radius: 4px;
 			position: static;
 			height: 38px;
 			display: flex;
     		align-items: center;
 			padding: 8px;
+			border-radius: 20px;
+			border: none;
+			gap: 8px;
+		}
+
+		${PREFIX} ._urlInput ._urlInputIcon {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		${PREFIX} ._urlInput._peInput svg {
+			min-width: 20px;
+			cursor: pointer;
 		}
 
 		${PREFIX} ._iconMenu._personalize {
@@ -492,8 +508,23 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._iconMenuBody ._iconMenuOption:hover i.fa,
-		${PREFIX} ._iconMenuBody ._iconMenuOption:hover svg._iconHelperSVG {
+		${PREFIX} ._iconMenuBody ._iconMenuOption:hover svg._iconHelperSVG,
+		${PREFIX} ._sideBar ._iconMenu._active  svg._iconHelperSVG,
+		${PREFIX} ._sideBar ._iconMenu:hover  svg._iconHelperSVG,
+		${PREFIX} ._topBarGrid ._iconMenu._active svg._iconHelperSVG,
+		${PREFIX} ._topBarGrid ._iconMenu:hover svg._iconHelperSVG,
+		${PREFIX} ._topBarGrid ._iconMenu._active ._iconMenuOption:hover svg._iconHelperSVG,
+		${PREFIX} ._topBarGrid ._iconMenu:hover ._iconMenuOption:hover svg._iconHelperSVG {
 			color: #4C7FEE;
+		}
+
+		${PREFIX} ._sideBar ._iconMenu  svg._iconHelperSVG,
+		${PREFIX} ._topBarGrid ._iconMenu  svg._iconHelperSVG,
+		${PREFIX} ._topBarGrid ._iconMenu._active ._iconMenuOption svg._iconHelperSVG,
+		${PREFIX} ._topBarGrid ._iconMenu:hover ._iconMenuOption svg._iconHelperSVG {
+			color: #96A1B4;
+			width: 20px;
+			height: 20px;
 		}
 
 		${PREFIX} i.fa {
@@ -557,12 +588,12 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._iconMenu {
 			cursor: pointer;
 			position: relative;
-			min-height: 32px;
+			min-height: 35px;
 			display: flex;
 			align-items: center;
 			justify-content: center;
 			padding: 0 5px;
-			width: 32px;
+			width: 35px;
 		}
 
 		${PREFIX} ._iconMenu:hover ._iconMenuBody{
@@ -623,16 +654,30 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			color: #8E90A44D;
 		}
 
-		${PREFIX} ._buttonBar._screenSizes i.fa,
-		${PREFIX} ._buttonBar._screenSizes svg {
+		${PREFIX} ._screenSizes i.fa,
+		${PREFIX} ._screenSizes svg {
 			background-color: transparent;
-			border-bottom: 3px solid transparent;
 			border-radius: 0;
 			height: 100%;
 			display: flex;
 			justify-content: center;
 			align-items: center;
 			margin: 3px;
+		}
+		
+		${PREFIX} ._buttonBar._screenSizes i.fa,
+		${PREFIX} ._buttonBar._screenSizes svg{
+			border-bottom: 3px solid transparent;
+		}
+
+		${PREFIX} ._iframeHeader._screenSizes svg {
+			margin: 0;
+			width: 28px;
+			height: 28px;
+			background: #0000001a;
+			padding: 4px 6px;
+			border-top-left-radius: 3px;
+			border-bottom-left-radius: 3px;
 		}
 
 		${PREFIX} ._propLabel._svgButtons {
@@ -699,7 +744,61 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			stroke: #3A8BED;
 		}
 
-		${PREFIX} ._microToggle2 {
+		${PREFIX} ._scaleControlContainer {
+			position: relative;	
+			margin-left: -20px;
+		}
+
+		${PREFIX} ._scaleControlContainer ._scaleControl {
+			display: inline-flex;
+			position: sticky;
+			left: -20px;
+			top: 0;
+			background: #FFFFFF;
+			margin-bottom: 50px;
+			border-radius: 4px;
+			padding: 0px 5px;
+			box-shadow: 0px 1px 4px 0px #00000012;
+			align-items: stretch;
+		}
+
+		${PREFIX} ._scaleControlContainer ._scaleControl ._control {
+			min-width: 20px;
+			display: flex;
+			cursor: pointer;
+			font-family: Asap;
+			font-size: 16px;
+			font-weight: 600;
+			padding: 8px 5px;
+			align-items: center;
+			border-radius: 3px;
+			border-bottom-left-radius: 0px;
+			border-bottom-right-radius: 0px;
+			margin: 2px;
+			border: none;
+			background-color: transparent;
+			border-bottom: 2px solid transparent;
+			margin-bottom: 0px;
+			white-space: nowrap;
+		}
+
+		${PREFIX} ._scaleControlContainer ._scaleControl ._control._text {
+			user-select: none;
+		}
+
+		${PREFIX} ._scaleControlContainer ._scaleControl ._control:hover,
+		${PREFIX} ._scaleControlContainer ._scaleControl ._control._active {
+
+			background-color: #F8FAFB;
+		}
+
+		${PREFIX} ._scaleControlContainer ._scaleControl ._control._device:hover,
+		${PREFIX} ._scaleControlContainer ._scaleControl ._control._device._active {
+
+			border-bottom: 2px solid #4D7FEE;
+		}
+
+		._microToggle2 {
 			padding: 2px;
 			border-radius: 10px;
 			background-color: #F8FAFB;
@@ -717,7 +816,16 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			opacity:0.3;
 		}
 
-		${PREFIX} ._microToggle2::before {
+		._microToggle2._withText {
+			height: auto;
+			width: auto;
+			padding-left: 16px;
+			padding-right: 15px;
+			color: #333;
+			border-radius: 20px;
+		}
+
+		._microToggle2::before {
 			content: '';
 			width: 6px;
 			height: 6px;
@@ -731,17 +839,28 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border: 1px solid #888;
 		}
 
-		${PREFIX} ._microToggle2._on {
+		._microToggle2._withText::before {
+			width: 10px;
+			height: 10px;
+			right: 3px;
+		}
+
+		._microToggle2._on {
 			background-color: #52BD94;
 			opacity: 0.8;
 			border: 1px solid #198A61;
+			color: #FFF;	
 		}
 
-		${PREFIX} ._microToggle2._on::before {
+		._microToggle2._on::before {
 			right: calc(100% - 7px);
 			transform: translateY(-50%);
 			background-color: #FFF;
 			border: 1px solid #FFF;
+		}
+
+		._microToggle2._withText._on::before {
+			right: calc(100% - 13px);
 		}
 
 		._confineWidth {
@@ -1066,6 +1185,11 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._page_Selector {
 			width: 186px;
+		}
+
+		._page_Selector ._simpleEditorSelect {	
+			height: 38px;
+			border-radius: 20px;
 		}
 		._add_page_btn_container {
 			padding: 10px 10px;
@@ -1988,6 +2112,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._spacingEditor ._value._left { left: 5px; }
 		._spacingEditor ._value._right { right: 5px; }
 
+		${PREFIX} ._screenSizes {
+			height: 30px;
+		}
+
 		${PREFIX} ._buttonBar._screenSizes {
 			height: 65px;
 		}
@@ -1999,7 +2127,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			background: linear-gradient(360deg, rgba(142, 144, 164, 0.1) 0.78%, rgba(142, 144, 164, 0.011) 157.03%);
 		}
 
-		${PREFIX} ._buttonBar._screenSizes i.fa {
+		${PREFIX} ._screenSizes i.fa {
 			color: #8E90A480;
 		}
 
@@ -2032,12 +2160,43 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			justify-content: center;
 		}
 
-		${PREFIX} ._iframe {
-			flex: 1;
+		${PREFIX} ._iframeHolder {
+			flex: 1;			
+			position: relative;
 			display: flex;
-			justify-content: center;
+			gap: 20px;
+			transform-origin: left top;
+		}
+
+		${PREFIX} ._iframeHeader {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: flex-start;
+			gap: 10px;
+			background-color: #0000000a;
+			border-radius: 4px;
+			font-size: 12px;
+			color: #000000a0;
+			cursor: pointer;
+    		transform-origin: top left;
+		}
+
+		${PREFIX} ._iframeCenter {
+			display: table-cell;
+			flex: 1;
+			padding: 70px;
+			padding-top: 10px;
+			overflow: auto;
+		}
+
+		${PREFIX} ._iframe {
+			display: flex;
 			overflow: auto;
 			transform-origin: top left;
+			flex-direction: column;
+			gap: 10px;
+			overflow: hidden;
 		}
 
 		${PREFIX} ._iframe.MOBILE_POTRAIT_SCREEN iframe{
@@ -2103,7 +2262,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._iframe iframe {
 			border: none;
 			width: 100%;
-			min-height: 100%;
+			min-height: 100vh;
 			overflow: hidden;
 		}
 
@@ -2204,13 +2363,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			max-height: 100%;
 		}
 
-		${PREFIX} ._iframeHolder {
-			flex: 1;
-			display: flex;
-			overflow: auto;
-			position: relative;
-		}
-
 		${PREFIX}  ._previewModeCloser {
 			position: fixed;
 			bottom: 20px;
@@ -2247,13 +2399,17 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			outline: none;
 		}
 
-		${PREFIX} ._tabBar svg path{
+		${PREFIX} ._tabBar svg path,
+		${PREFIX} ._tabBar svg rect {
 			transition: fill 0.5s, fill-opacity 0.5s;
 			fill: #8E90A4;
 			fill-opacity: 0.2;
 		}
 
-		${PREFIX} ._tabBar svg:hover path, ${PREFIX} ._tabBar svg.active path{ 
+		${PREFIX} ._tabBar svg:hover path,
+		${PREFIX} ._tabBar svg.active path,
+		${PREFIX} ._tabBar svg:hover rect,
+		${PREFIX} ._tabBar svg.active rect {
 			fill: #52BD94;
 			fill-opacity: 1;
 		}
@@ -2301,6 +2457,15 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			height: 45px;
 			position: relative;		
 			padding: 0px 5px;	
+		}
+
+		${PREFIX} ._addArrayItemButton {
+			color: #FFFFFF;
+			background: #52BD94;
+			border-radius: 2px;
+			padding: 3px 8px;
+			border: none;
+			box-shadow: 0px 1px 6px 2px #0000001A;
 		}
 
 		.commonTriStateCheckbox::before {
@@ -2401,6 +2566,22 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._propLabel i.fa {
 			cursor: pointer;
+		}
+
+		._propValue ._peInput {
+			width: 20px;
+		}
+
+		._propValue._padding {
+			background-color: #F8FAFB77;
+			border: 1px solid #F8FAFB;
+			border-radius: 4px;
+			min-width: 300px;
+		}
+
+		._propValue ._propertyGroup {
+			min-width: 300px;
+			overflow: auto;
 		}
 
 		${PREFIX} ._tooltip {
@@ -2542,6 +2723,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			font-size: 20px;
 			font-weight: 200;
 			justify-content: flex-end;
+			font-family: monospace;
 		}
 
 		._propertyGroup._closed ._propertyGroupHeader {
@@ -2814,6 +2996,24 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			align-items: center;
 			gap: 10px;
+		${PREFIX} ._addPropertyButtonContainer {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			padding: 10px;
+		}
+
+		${PREFIX} ._addPropertyButtonContainer button {
+			color: #FFFFFF;
+			background-color: #52BD94;
+			border-radius: 4px;
+			border: none;
+			padding: 8px 10px;		
+			box-shadow: 0 15px 30px 0 rgba(0,0,0,.10), 0 5px 15px 0 rgba(0,0,0,.10);
+		}
+
+		${PREFIX} ._addPropertyButtonContainer button:hover {
+			background-color: #52BD94CC;
 		}
 
 		._popupContainer ._progressBar {
@@ -3126,56 +3326,255 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			font-size: 13px;
 		}
 
-		._popupMenuBackground ._popupMenuContainer ._elementBarSearchContainer{
-			padding: 20px 50px 20px 20px;
-			background: #FFFFFF;
-			border-bottom: 1px solid rgba(150, 161, 180, 0.4);
-		}
-		._popupMenuBackground ._popupMenuContainer ._elementBarSearchContainer p{
-			color: #4C7FEE;
-			font-weight: 600;
-			font-size: 14px;
-			line-height: 16px;
-			margin-top: 0;
+		._popupMenuBackground ._popupMenuContainer._plain {
+			border: none;
+			background-color: transparent;
 		}
 
-		._popupMenuBackground ._popupMenuContainer ._elementBarSearchContainer input{
-			width: 345px;
-			height: 38px;
-			background: #F8FAFB;
-			border: 0.8px solid #E9ECEF;
-			box-shadow: inset 0px 0px 2px rgba(0, 0, 0, 0.05);
-			border-radius: 4px;
+		._popupMenuContainer._compMenu {
+			left: 48px;
+			top: 64px;
+			height: calc(100% - 68px);
+			width: 0px;
+			overflow: hidden;
+			transition: width 0.5s ease-in-out;
+			display: flex;
+			flex-direction: row;
+			box-shadow: 0px 1px 10px 0px #0000001A;
+		}
+
+		._compMenu ._left {
+			flex: 100px;
+			border-right: 1px solid #F2F4F8;
+			display: flex;
+			flex-direction: column;
+			padding: 10px 0px 0px 10px;
 			
 		}
 
-		._popupMenuBackground ._popupMenuContainer ._elementsBarContainer {
-			overflow: auto;
+		._compMenu ._right {
+			flex: 1;
 			display: flex;
-			flex-direction: row;
+			flex-direction: column;
+		}
+
+		._compMenu._compMenuRight {
+			width: 0px;
+			left: 250px;
+			border: none;
+		}
+
+		._compMenu._show._compMenuRight {
+			display: flex;
+			flex-direction: column;
+			width: 320px;
+			border-right: 1px solid #F2F4F8;
+		}
+
+		._compMenu._compMenuRight._sections {
+			padding: 10px;
+			gap: 10px;
+			overflow: auto;
+		}
+
+		._compMenu ._compList {
+			flex: 1;
+			overflow-y: auto;
+		}
+
+		._compMenu ._compList::-webkit-scrollbar {
+			width: 4px;
+		}
+
+		._compMenu iframe {
 			flex: 1;
 		}
 
-		._popupMenuBackground ._popupMenuContainer ._elementsBarContainer i.fa {
-			font-size: 12px;
+		._compMenu._show {
+			width: 200px;
 		}
 
-		._popupMenuBackground ._popupMenuContainer ._elementsBarContainer ._iconHelperSVG {
-			color: #96A1B4;
-			min-width: 16px;
+		._compMenu ._tabContainerContainer {
+			display: flex;
+			flex-direction: row;
+			margin-bottom: 10px;
+			margin-right: 10px;
+			width: 170px;
 		}
 
-		._popupMenuBackground ._popupMenuContainer ._elementsBarContainer ._popupMenu {
+		._compMenu ._tabContainer {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			padding: 10px;
+			cursor: pointer;
 			background-color: #F8FAFB;
+			border-radius: 6px;
+			gap: 10px;
+			font-size: 12px;
+			font-weight: 600;
+			font-family: Inter;
+			padding: 5px 8px;
 		}
 
-		._popupMenuBackground ._popupMenuContainer ._elementsBarContainer ._popupMenu::-webkit-scrollbar {
-			width: 2px;
-			height: 2px;
+		._compMenu ._tabContainer ._tab {
+			padding: 6px 10px;
+			transition: background-color 0.5s;
+			border: none;
+			background: none;
+			font-family: 'Inter';
+			font-weight: 500;
+			font-size: 12px;
+			text-transform: none;
+			color: #333333;
 		}
 
-		._popupMenuBackground ._popupMenuContainer ._elementsBarContainer ._popupMenu::-webkit-scrollbar-thumb {
-			background-color: #E9ECEF;
+		._compMenu ._tabContainer ._tab:hover {
+			background: none;
+			color: #333333;
+		}
+
+		._compMenu ._tabContainer ._tab._selected {
+			background-color: #52BD94;
+			color: #fff;
+			border-radius: 4px;
+		}
+
+		._compMenu ._compMenuSearch {
+			font-family: 'Inter';
+			font-size: 12px;
+			font-weight: 600;
+			padding: 10px 11px;
+			border: 1.5px solid transparent;
+			border-radius: 6px;
+			outline: none;
+			width: 170px;
+			background-color: #F8FAFB;
+			color: #52BD94;
+		}
+
+		._compMenu ._compMenuSearch:focus {
+			border-color:#52BD94;
+		}
+
+		._compMenu ._compMenuSearch::placeholder {
+			color: #52BD9488;
+		}
+
+		._compMenu ._compMenuItem img.hover {
+			display: none;
+		}
+
+		._compMenu ._compMenuItem:hover img.hover,
+		._compMenu ._compMenuItem.active img.hover {
+			display: inline;
+		}
+
+		._compMenu ._compMenuItem:hover img.actual,
+		._compMenu ._compMenuItem.active img.actual {
+			display: none;
+		}
+
+		._compMenu ._sectionThumb {
+			width: 100%;
+			height: 200px;
+			background-size: contain;
+			background-repeat: no-repeat;
+			background-position: center center;
+			cursor: pointer;
+			border-radius: 4px;
+			border: 1.5px solid #F2F4F8;
+		}
+
+		._compMenu ._sectionThumb:hover {
+			background-color: #F2F4F8;
+		}
+
+		._popupMenuBackground ._popupMenu {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+			overflow: auto;
+			padding-left: 5px;
+			padding-top: 5px;
+		}
+
+		._popupMenuBackground ._contextMenu { 
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+			overflow: auto;
+			padding-top: 5px;
+			border-left: 1px solid #52BD94;
+			border-radius: 4px;
+			background-color: #fff;
+			box-shadow: 0px 1px 10px 0px #0000001A;
+		}
+
+		._popupMenuBackground ._popupMenuSeperator {
+			height: 0px;
+		}
+
+		._compList {
+			padding-right: 10px;
+			display: flex;
+			flex-direction: column;
+			gap: 15px;
+			padding-bottom: 10px;
+		}
+
+		._compList ._compMenuItem {
+			padding: 10px;
+			cursor: pointer;
+			background-color: #F8FAFB;
+			border-radius: 6px;
+			color: #333333E5;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			gap: 10px;
+			font-size: 12px;
+			font-weight: 500;
+			font-family: Inter;
+			border: 1.5px solid transparent;
+			width: 170px;
+		}
+
+		._compList ._compMenuItem:hover,
+		._compList ._compMenuItem.active {
+			border: 1.5px solid #4C7FEE;
+			color: #4C7FEE;
+			background-color: #4C7FEE0E;
+		}
+
+		._compList ._compMenuItem.active svg,
+		._compList ._compMenuItem:hover svg,
+		._compList ._compMenuItem.active i.fa,
+		._compList ._compMenuItem:hover i.fa {
+			color: #4C7FEE;
+		}
+
+		._popupMenuBackground ._contextMenu ._popupMenuItem:hover {
+			background: #00000005;
+			color: #52BD94;
+		}
+
+		._popupMenuBackground ._contextMenu ._popupMenuItem:hover i.fa {
+			color: #52BD94;
+		}
+
+		._popupMenuBackground ._contextMenu ._iconHelperSVG {
+			color: #CACBCA;
+			width: 16px;
+			height: 16px;
+		}
+
+		._popupMenuBackground ._contextMenu ._popupMenuItem:hover ._iconHelperSVG {
+			color: #52BD94;
+		}
+
+		._popupMenuBackground ._contextMenu i.fa {
+			color: #CACBCA;
 		}
 
 		._popupMenuBackground ._popupMenuContainer ._compTemplates {
@@ -3201,90 +3600,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._popupMenuBackground ._popupMenuContainer ._compTemplateSections ._eachTemplateSection._active {
 			background: linear-gradient(90deg, rgba(8, 112, 92, 0.2) 0%, rgba(248, 250, 251, 0) 93.35%);
 			color: #08705C;
-		}
-
-		._compMenu {
-			left: 48px;
-			top: 64px;
-			height: calc(100% - 68px);
-			width: 0px;
-			overflow: hidden;
-			transition: width 0.5s ease-in-out;
-		}
-
-		._compMenu._show {
-			width: 480px;
-		}
-
-		._popupMenuBackground ._popupMenu {
-			flex: 1;
-			display: flex;
-			flex-direction: column;
-			overflow: auto;
-			padding-left: 5px;
-			padding-top: 5px;
-		}
-
-		._popupMenuBackground ._contextMenu { 
-			flex: 1;
-			display: flex;
-			flex-direction: column;
-			overflow: auto;
-			padding-top: 5px;
-			border-left: 1px solid #52BD94;
-			border-radius: 4px;
-		}
-
-		._popupMenuBackground ._popupMenuSeperator {
-			height: 0px;
-		}
-
-		._popupMenuBackground ._popupMenuItem {
-			border-radius: 2px;
-		}
-
-		._popupMenuBackground ._contextMenu ._popupMenuItem {
-			border-radius: 1px;
-			padding: 8px 13px;
-			color: #333333;
-			cursor: pointer;
-		}
-
-		._popupMenuBackground ._popupMenuItem:hover,
-		._popupMenuBackground ._popupMenuItem.active {
-			color: #08705C;
-			background: linear-gradient(90deg, rgba(8, 112, 92, 0.2) 0%, rgba(248, 250, 251, 0) 93.35%);
-			border-radius: 2px;
-		}
-
-		._popupMenuBackground ._popupMenuItem:hover i.fa,
-		._popupMenuBackground ._popupMenuItem.active i.fa,
-		._popupMenuBackground ._popupMenuItem:hover ._iconHelperSVG ,
-		._popupMenuBackground ._popupMenuItem.active ._iconHelperSVG  {
-			color: #08705C;
-		}
-
-		._popupMenuBackground ._contextMenu ._popupMenuItem:hover {
-			background: #00000005;
-			color: #52BD94;
-		}
-
-		._popupMenuBackground ._contextMenu ._popupMenuItem:hover i.fa {
-			color: #52BD94;
-		}
-
-		._popupMenuBackground ._contextMenu ._iconHelperSVG {
-			color: #CACBCA;
-			width: 16px;
-			height: 16px;
-		}
-
-		._popupMenuBackground ._contextMenu ._popupMenuItem:hover ._iconHelperSVG {
-			color: #52BD94;
-		}
-
-		._popupMenuBackground ._contextMenu i.fa {
-			color: #CACBCA;
 		}
 
 		._propertyContent {

@@ -13,11 +13,20 @@ export const isSlave = (() => {
 
 const _parent = window.parent !== window.top ? window.parent : window.top;
 export function messageToMaster(message: { type: string; payload: any | undefined }) {
-	_parent.postMessage({ ...message, editorType: window.designMode }, '*');
+	_parent.postMessage(
+		{ ...message, editorType: window.designMode, screenType: window.screenType },
+		'*',
+	);
 }
 
 export const SLAVE_FUNCTIONS = new Map<string, (payload: any) => void>([
-	['EDITOR_TYPE', p => (window.designMode = p)],
+	[
+		'EDITOR_TYPE',
+		p => {
+			window.designMode = p.type;
+			window.screenType = p.screenType;
+		},
+	],
 	[
 		'EDITOR_FILLER_SECTION_SELECTION',
 		p => {
@@ -30,7 +39,10 @@ export const SLAVE_FUNCTIONS = new Map<string, (payload: any) => void>([
 		'EDITOR_DEFINITION',
 		p => (window.pageEditor = { ...window.pageEditor, editingPageDefinition: p }),
 	],
-	['EDITOR_SELECTION', p => (window.pageEditor = { ...window.pageEditor, selectedComponent: p })],
+	[
+		'EDITOR_SELECTION',
+		p => (window.pageEditor = { ...window.pageEditor, selectedComponents: p as string[] }),
+	],
 	[
 		'EDITOR_SUB_SELECTION',
 		p => (window.pageEditor = { ...window.pageEditor, selectedSubComponent: p }),
@@ -71,20 +83,21 @@ export const SLAVE_FUNCTIONS = new Map<string, (payload: any) => void>([
 	],
 ]);
 
-export function componentDefinitionPropertyUpdate(
-	compDef: ComponentDefinition,
-	...kvPairs: string[]
-) {
-	const def = duplicate(compDef) as ComponentDefinition;
-	if (!def.properties) def.properties = {};
-	if (!def.styleProperties) def.styleProperties = {};
+if (isSlave) {
+	window.determineRightClickPosition = e => {
+		const iframe = parent.window.document.getElementById(window.screenType);
+		if (!iframe) return { x: 0, y: 0 };
 
-	if (kvPairs.length % 2 !== 0) throw new Error('Invalid number of arguments');
+		const iframeRect = iframe.getBoundingClientRect();
+		const sf = Number(iframe!.dataset.scaleFactor ?? 1);
 
-	for (let i = 0; i < kvPairs.length; i += 2) {
-		const key = kvPairs[i];
-		const value = kvPairs[i + 1];
-	}
+		let top = iframeRect.top;
+		let left = iframeRect.left;
 
-	return compDef;
+		const point = {
+			x: e.clientX * sf + left,
+			y: e.clientY * sf + top,
+		};
+		return point;
+	};
 }

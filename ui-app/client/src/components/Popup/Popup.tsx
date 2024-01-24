@@ -11,11 +11,11 @@ import useDefinition from '../util/useDefinition';
 import PopupStyles from './PopupStyles';
 import { propertiesDefinition, stylePropertiesDefinition } from './popupProperties';
 import Portal from '../Portal';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { runEvent } from '../util/runEvent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
-import { SubHelperComponent } from '../SubHelperComponent';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { getTranslations } from '../util/getTranslations';
 import { styleDefaults } from './popupStyleProperties';
 import { IconHelper } from '../util/IconHelper';
@@ -39,6 +39,7 @@ function Popup(props: ComponentProps) {
 			bindingPathPath,
 		);
 	}, []);
+
 	const {
 		key,
 		properties: {
@@ -143,7 +144,7 @@ function Popup(props: ComponentProps) {
 						onClick={handleCloseOnOutsideClick}
 						style={resolvedStyles.comp ?? {}}
 					>
-						<HelperComponent definition={props.definition} />
+						<HelperComponent context={props.context} definition={props.definition} />
 						<div
 							className={`modal ${popupDesign} ${background}`}
 							style={resolvedStyles?.modal || {}}

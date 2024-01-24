@@ -27,7 +27,7 @@ import { PageOperations } from '../functions/PageOperations';
 
 interface PropertyEditorProps {
 	selectedComponent: string;
-	selectednComponentsList: string[];
+	selectedComponentsList: string[];
 	pageExtractor: PageStoreExtractor;
 	defPath: string | undefined;
 	locationHistory: Array<LocationHistory>;
@@ -40,6 +40,7 @@ interface PropertyEditorProps {
 	editPageName: string | undefined;
 	pageOperations: PageOperations;
 	appPath: string | undefined;
+	editorType: string | undefined;
 }
 
 function updatePropertyDefinition(
@@ -102,7 +103,7 @@ function updateDefinition(
 
 export default function PropertyEditor({
 	selectedComponent,
-	selectednComponentsList,
+	selectedComponentsList,
 	defPath,
 	locationHistory,
 	pageExtractor,
@@ -115,6 +116,7 @@ export default function PropertyEditor({
 	editPageName,
 	pageOperations,
 	appPath,
+	editorType,
 }: PropertyEditorProps) {
 	const [def, setDef] = useState<ComponentDefinition>();
 	const [pageDef, setPageDef] = useState<PageDefinition>();
@@ -140,7 +142,7 @@ export default function PropertyEditor({
 		return addListenerAndCallImmediatelyWithChildrenActivity(
 			(_, v: PageDefinition) => {
 				// sets of sets of property names
-				const propertyNamesSets = selectednComponentsList.map(currentComponent => {
+				const propertyNamesSets = selectedComponentsList.map(currentComponent => {
 					let properties =
 						ComponentDefinitions?.get(v?.componentDefinition[currentComponent]?.type)
 							?.properties ?? [];
@@ -154,7 +156,7 @@ export default function PropertyEditor({
 
 				let properties =
 					ComponentDefinitions?.get(
-						v?.componentDefinition[selectednComponentsList[0]]?.type,
+						v?.componentDefinition[selectedComponentsList[0]]?.type,
 					)?.properties ?? [];
 				const commonProps = properties.filter(obj => commonPropertyNames.has(obj.name));
 
@@ -163,7 +165,7 @@ export default function PropertyEditor({
 			pageExtractor,
 			defPath,
 		);
-	}, [defPath, selectednComponentsList]);
+	}, [defPath, selectedComponentsList]);
 
 	useEffect(() => {
 		if (!personalizationPath) return;
@@ -254,11 +256,13 @@ export default function PropertyEditor({
 
 	// how we are converting a to Array<React.ReactNode>.
 	const propGroups = (
-		selectednComponentsList.length === 1 ? cd?.properties : allCommonProperties
+		selectedComponentsList.length === 1 ? cd?.properties : allCommonProperties
 	)?.reduce((a: { [key: string]: Array<React.ReactNode> }, e) => {
 		let grp = '' + (e.group ?? ComponentPropertyGroup.ADVANCED);
 		if (!a[grp]) a[grp] = [];
 		let valueEditor;
+
+		if (e.hide) return a;
 
 		if (e.multiValued) {
 			valueEditor = (
@@ -274,7 +278,7 @@ export default function PropertyEditor({
 							locationHistory,
 							pageExtractor,
 							selectedComponent,
-							selectednComponentsList,
+							selectedComponentsList,
 							e.name,
 							v,
 						)
@@ -301,7 +305,7 @@ export default function PropertyEditor({
 							locationHistory,
 							pageExtractor,
 							selectedComponent,
-							selectednComponentsList,
+							selectedComponentsList,
 							e.name,
 							v,
 						)
@@ -331,7 +335,7 @@ export default function PropertyEditor({
 	return (
 		<div className={`_propertyEditor ${isDragging ? '_withDragProperty' : ''}`}>
 			<div className="_overflowContainer">
-				{selectednComponentsList.length === 1 && (
+				{selectedComponentsList.length === 1 && (
 					<PropertyGroup // general property container
 						name="first"
 						displayName="General"
@@ -412,7 +416,7 @@ export default function PropertyEditor({
 					</PropertyGroup>
 				)}
 
-				{selectednComponentsList?.length === 1 && bpGroup}
+				{selectedComponentsList?.length === 1 && bpGroup}
 				{Object.entries(ComponentPropertyGroup).map((e, i) => {
 					// contains rest of the properties
 					if (!propGroups?.[e[1]]) return null;
@@ -422,7 +426,7 @@ export default function PropertyEditor({
 							key={e[0]}
 							name={e[1]}
 							displayName={e[0]}
-							defaultStateOpen={e[1] === ComponentPropertyGroup.BASIC} // how this working ?
+							defaultStateOpen={e[1] === ComponentPropertyGroup.BASIC}
 							pageExtractor={pageExtractor}
 							locationHistory={locationHistory}
 							onChangePersonalization={onChangePersonalization}

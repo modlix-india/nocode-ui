@@ -122,6 +122,42 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.EVENTS,
 		description: 'Event to be triggered on personalization cleared.',
 	},
+
+	{
+		name: 'editorType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Editor Type',
+		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.BASIC,
+		description: 'Editor type',
+		defaultValue: 'PAGE',
+		enumValues: [
+			{
+				name: 'PAGE',
+				displayName: 'Page Editor',
+				description: 'Page Editor',
+			},
+			{
+				name: 'SECTION',
+				displayName: 'Section Editor',
+				description: 'Section Editor',
+			},
+		],
+	},
+
+	{
+		name: 'sectionsCategoryList',
+		schema: SCHEMA_ANY_COMP_PROP,
+		displayName: 'Sections Category List',
+		group: ComponentPropertyGroup.DATA,
+	},
+
+	{
+		name: 'sectionsListConnectionName',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Section Items Connection Name',
+		group: ComponentPropertyGroup.DATA,
+	},
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

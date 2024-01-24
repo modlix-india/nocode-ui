@@ -1,6 +1,6 @@
 import React from 'react';
 import { PageStoreExtractor } from '../../context/StoreContext';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './iconProperties';
 import { Component } from '../../types/common';
@@ -32,7 +32,7 @@ function Icon(props: ComponentProps) {
 			className={`comp compIcon _icon ${designType} ${colorScheme} ${icon}`}
 			style={styleProperties.comp ?? {}}
 		>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 		</i>
 	);
 }

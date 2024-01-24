@@ -23,6 +23,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Poster',
 		description: 'Image to load before the video comes up.',
 		group: ComponentPropertyGroup.ADVANCED,
+		editor: ComponentPropertyEditor.IMAGE,
+	},
+	{
+		name: 'playsInline',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Plays inline',
+		description: 'Plays the video inline.',
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
 		name: 'type',
@@ -89,6 +98,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
+		name: 'muted',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Muted',
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
 		name: 'videoDesign',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'video Player Design',
@@ -117,6 +133,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				description: 'video Player Design 4',
 			},
 		],
+	},
+	{
+		name: 'autoUnMuteAfterPlaying',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Auto Unmute After Playing',
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
 	},
 ];
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

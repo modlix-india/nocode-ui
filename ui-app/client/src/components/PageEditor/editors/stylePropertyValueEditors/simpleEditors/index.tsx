@@ -74,11 +74,13 @@ export function EachSimpleEditor({
 	});
 
 	let editor = undefined;
+
 	const editorOnchange = (v: string | Array<String> | ComponentProperty<string>) => {
 		let newValue;
 		if (Array.isArray(v)) newValue = { value: v, location: value.location };
 		else if (typeof v === 'string') newValue = { value: v, location: value.location };
 		else newValue = v;
+
 		valuesChangedOnlyValues({
 			subComponentName,
 			selectedComponent,
