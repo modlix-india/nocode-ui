@@ -9,6 +9,7 @@ import {
 } from '../../context/StoreContext';
 import {
 	Component,
+	ComponentDefinition,
 	ComponentPropertyDefinition,
 	ComponentProps,
 	LocationHistory,
@@ -35,6 +36,10 @@ import ComponentDefinitions from '../';
 import { deepEqual, duplicate } from '@fincity/kirun-js';
 import { styleDefaults } from './pageEditorStyleProperties';
 import { IconHelper } from '../util/IconHelper';
+import FormEditor from './components/FormEditor';
+import { shortUUID } from '../../util/shortUUID';
+import axios from 'axios';
+import { getHref } from '../util/getHref';
 
 function savePersonalizationCurry(
 	personalizationPath: string,
@@ -63,6 +68,13 @@ function savePersonalizationCurry(
 	};
 }
 
+interface FormName {
+	appCode: string;
+	clientCode: string;
+	id: number;
+	name: string;
+}
+
 function PageEditor(props: ComponentProps) {
 	const {
 		definition,
@@ -86,6 +98,7 @@ function PageEditor(props: ComponentProps) {
 			pagesData,
 			currentPageId,
 			dashboardPageName,
+			formStorageUrl,
 			settingsPageName,
 			addnewPageName,
 		} = {},
@@ -282,6 +295,9 @@ function PageEditor(props: ComponentProps) {
 	const [issue, setIssue] = useState<Issue>();
 	const [contextMenu, setContextMenu] = useState<ContextMenuDetails>();
 	const [showCodeEditor, setShowCodeEditor] = useState<string | undefined>(undefined);
+	const [showFormEditor, setShowFormEditor] = useState(0);
+	const [showFormEditorOption, setShowFormEditorOption] = useState(false);
+	const [formDefs, setFormDefs] = useState<FormName[]>();
 
 	const setSelectedComponent = useCallback(
 		(v: string) => {
@@ -622,6 +638,54 @@ function PageEditor(props: ComponentProps) {
 	// If the personalization is not loaded, we don't load the view.
 	if (personalizationPath && !personalization) return <></>;
 
+	useEffect(() => {
+		let pageDef = getDataFromPath(defPath, locationHistory, pageExtractor);
+
+		if (!contextMenu?.componentKey) return;
+
+		setShowFormEditorOption(
+			pageDef.componentDefinition[contextMenu?.componentKey]?.type == 'Grid',
+		);
+	}, [contextMenu]);
+
+	const headers: any = {
+		Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
+	};
+	if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
+
+	const callForFormDef = useCallback(() => {
+		let pageDef = getDataFromPath(defPath, locationHistory, pageExtractor);
+
+		if (showFormEditor == 1) {
+			(async () => {
+				let appCode = `?appCode=${pageDef.appCode}`;
+				let clientCode = `&clientCode=${pageDef.clientCode}`;
+				let url = getHref(formStorageUrl, location) + appCode + clientCode;
+				await axios
+					.get(url, {
+						headers,
+					})
+					.then(res => {
+						let helperArray: FormName[] = [];
+						res.data.content.map((each: any) => {
+							helperArray.push({
+								appCode: each.appCode,
+								clientCode: each.clientCode,
+								id: each.id,
+								name: each.name,
+							});
+						});
+						setFormDefs(helperArray);
+					})
+					.finally();
+			})();
+		}
+	}, [showFormEditor]);
+
+	useEffect(() => {
+		callForFormDef();
+	}, [callForFormDef, showFormEditor]);
+
 	return (
 		<>
 			<div className={`comp compPageEditor ${localTheme}`} style={resolvedStyles.comp ?? {}}>
@@ -697,6 +761,17 @@ function PageEditor(props: ComponentProps) {
 					onSelectedSubComponentChanged={(key: string) => setSelectedSubComponent(key)}
 					onSelectedComponentChanged={(key: string) => setSelectedComponent(key)}
 				/>
+				{showFormEditor != 0 && (
+					<FormEditor
+						showFormEditor={showFormEditor}
+						setShowFormEditor={setShowFormEditor}
+						formDefs={formDefs}
+						formStorageUrl={formStorageUrl}
+						defPath={defPath}
+						pageExtractor={pageExtractor}
+						locationHistory={locationHistory}
+					/>
+				)}
 			</div>
 			<IssuePopup
 				issue={issue}
@@ -708,8 +783,14 @@ function PageEditor(props: ComponentProps) {
 				menuDetails={contextMenu}
 				personalizationPath={personalizationPath}
 				pageExtractor={pageExtractor}
-				onCloseContextmenu={() => setContextMenu(undefined)}
+				onCloseContextmenu={() => {
+					setContextMenu(undefined);
+					setShowFormEditorOption(false);
+				}}
 				pageOperations={operations}
+				setShowFormEditor={setShowFormEditor}
+				formStorageUrl={formStorageUrl}
+				showFormEditorOption={showFormEditorOption}
 			/>
 		</>
 	);

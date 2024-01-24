@@ -2512,6 +2512,211 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			margin-left: 5px;
 		}
 
+		._formEditor {
+			width: 600px;
+			height: fit-content;
+		}
+
+		._formEditorContent{
+			height: 100%;
+			width: 100%;
+			padding: 5%;
+		}
+
+		._formButton {
+			display: flex;
+			justify-content: space-between;
+		}
+
+		.fa-close {
+			margin-top: 10px;
+			margin-right: 10px;
+			transition: transform 0.2s ease-in-out;
+		}
+		.fa-close:hover {
+			transform: rotate(90deg) scale(1.2);
+			cursor:pointer;
+		}
+
+		._backButton {
+			display: flex;
+			margin-top: 10px;
+			margin-left: 10px;
+			color: rgba(0, 0, 0, 0.40);
+			font-family: Inter;
+			font-size: 14px;
+			font-style: normal;
+			font-weight: 600;
+			line-height: 14px;
+		}
+
+		._generateButton {
+			width: fit-content;
+			padding: 12px;
+			border-radius: 4px;
+			background: #0085F2;
+			box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.10);
+			color: #FFF;
+			font-family: Inter;
+			font-size: 14px;
+			font-style: normal;
+			font-weight: 600;
+			line-height: 14px;
+			transition: transform 0.2s ease-in-out;
+		}
+
+		._generateButton:hover {
+			cursor: pointer;
+			transform: scale(1.05);
+		}
+
+		._backButton:hover {
+			cursor: pointer;
+		}
+
+		._formEditorBottomBorder {
+			margin-top: 4%;
+			margin-bottom: 4%;
+			background: rgba(0, 0, 0, 0.10);
+			height: 1px;
+			margin-left: 5px;
+			margin-right: 5px;
+		}
+
+		._formEditorHeader {
+			color: rgba(0, 0, 0, 0.80);
+			font-family: Inter;
+			font-size: 16px;
+			font-style: normal;
+			font-weight: 600;
+			line-height: 16px;
+			letter-spacing: 0.16px;
+			text-transform: uppercase;
+			padding: 5px;
+		}
+
+		._formEditorSubHeader {
+			color: rgba(0, 0, 0, 0.40);
+			font-family: Inter;
+			font-size: 12px;
+			font-style: normal;
+			font-weight: 400;
+			line-height: 12px;
+			letter-spacing: 0.12px;
+			padding: 5px;
+		}
+
+		._formEditorFilesTitle {
+			color: rgba(0, 0, 0, 0.40);
+			font-family: Inter;
+			font-size: 12px;
+			font-style: normal;
+			font-weight: 500;
+			line-height: 12px;
+			letter-spacing: 0.12px;
+			padding: 5px;
+		}
+
+		._formEditorOptions {
+			padding: 5px;
+			width: 100%;
+			height: 42vh;
+			display: flex;
+			flex-wrap: wrap;
+			margin-top: 10px;
+			overflow-y: scroll;
+		}
+
+		._formEditorEachOption {
+			width: 161px;
+			height: 201px;
+			display: flex;
+			flex-direction: column;
+			padding: 10px;
+		}
+
+		._formEditorEachOption:hover {
+			cursor: pointer;
+		}
+
+		._formEditorEachOption:hover ._formEditorEachOptionPreview {
+			box-shadow: 0px 3px 8px 0px rgba(0, 0, 0, 0.10);
+			border: 1px solid rgba(66, 126, 228, 0.80);
+		}
+
+		._formEditorEachOptionPreview {
+			height: 80%;
+			border-radius: 4px;
+			background: #F9F9F9;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		._formEditorEachOptionName {
+			margin-top: 15px;
+			color: rgba(0, 0, 0, 0.80);
+			font-family: Inter;
+			font-size: 12px;
+			font-style: normal;
+			font-weight: 600;
+			line-height: 12px;
+			letter-spacing: 0.12px;
+		}
+
+		._formElements {
+			height: 400px;
+			width: 100%;
+			margin-bottom: 20px;
+			display: flex;
+			overflow-y: scroll;
+		}
+
+		._formFieldsAndButtons {
+			width: 50%;
+		}
+
+		._formFieldsAndButtonsTitle {
+			color: rgba(0, 0, 0, 0.40);
+			font-family: Inter;
+			font-size: 12px;
+			font-style: normal;
+			font-weight: 500;
+			line-height: 12px;
+			letter-spacing: 0.12px;
+			margin-left: 15px;
+		}
+
+		._formFieldAndButton {
+			height: 44px;
+			border-radius: 4px;
+			background: #F8FAFB;
+			margin: 15px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		._formFieldAndButtonTitle {
+			color: rgba(0, 0, 0, 0.80);
+			font-family: Inter;
+			font-size: 14px;
+			font-style: normal;
+			font-weight: 500;
+			line-height: 14px;
+			padding-left: 20px;
+		}
+
+		._formFieldAndButtonCheckbox {
+			padding-right: 20px;
+			width: 18px;
+			height: 18px;
+		}
+
+		._formFieldAndButtonCheckbox:hover {
+			cursor: pointer;
+		}
+
 		._popupContainer ._progressBar {
 			flex: 1;
 			text-align: center;
