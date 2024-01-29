@@ -28,11 +28,11 @@ const textValidatiopnOption: DropdownOptions = [
 const numberValidatiopnOption: DropdownOptions = [];
 export default function TextTypeEditor({
 	data,
-	editerType,
+	editorType,
 	handleFieldDefMapChanges,
 }: {
 	data: FormCompDefinition;
-	editerType: string;
+	editorType: string;
 	handleFieldDefMapChanges: (key: string, data: any, newKey?: string) => void;
 }) {
 	const [key, setKey] = useState<string>('');
@@ -397,7 +397,7 @@ export default function TextTypeEditor({
 					}}
 				/>
 			</div>
-			{editerType === 'textBox' && (
+			{editorType === 'textBox' && (
 				<Dropdown
 					value={inputType}
 					onChange={handleInputTypeChanges}

@@ -72,11 +72,11 @@ const OptionComp = ({
 
 export default function OptionTypeEditor({
 	data,
-	editerType,
+	editorType,
 	handleFieldDefMapChanges,
 }: {
 	data: FormCompDefinition;
-	editerType: string;
+	editorType: string;
 	handleFieldDefMapChanges: (key: string, data: any, newKey?: string) => void;
 }) {
 	const [key, setKey] = useState<string>('');
@@ -293,7 +293,7 @@ export default function OptionTypeEditor({
 					}}
 				/>
 			</div>
-			{editerType === 'dropdown' && (
+			{editorType === 'dropdown' && (
 				<div className="_item">
 					<span>Placeholder</span>
 					<input
@@ -336,7 +336,7 @@ export default function OptionTypeEditor({
 					/>
 					<span>Mandatory field</span>
 				</div>
-				{editerType === 'dropdown' && (
+				{editorType === 'dropdown' && (
 					<div className="_checkBoxItem">
 						<input
 							type="checkbox"
