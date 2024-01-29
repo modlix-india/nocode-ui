@@ -117,8 +117,7 @@ export default function FormStorageEditorStyle({
             overflow: auto;
         }
 
-        ${PREFIX} ._comp ._type_based, 
-        ${PREFIX} ._comp ._option_based {
+        ${PREFIX} ._comp ._each_section {
             display: flex;
             flex-direction: column;
             gap: 30px;

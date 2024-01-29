@@ -1,6 +1,11 @@
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
+interface CompDef {
+	label: string;
+	key: string;
+	icon: React.SVGProps<SVGSVGElement>;
+}
 
-export const typeBasedComponent = [
+export const typeBasedComponent: Array<CompDef> = [
 	{
 		label: 'Text box',
 		key: 'textBox',
@@ -180,7 +185,7 @@ export const typeBasedComponent = [
 	},
 ];
 
-export const optionBasedComponent = [
+export const optionBasedComponent: Array<CompDef> = [
 	{
 		label: 'Drop down',
 		key: 'dropdown',
@@ -283,58 +288,67 @@ const icon = {
 	),
 };
 
-export default function FormComponents() {
-	const [showTypeBased, setShowTypeBased] = useState<boolean>(true);
-	const [showOptionBased, setShowOptionBased] = useState<boolean>(true);
+const compData: Array<{
+	key: string;
+	sectionHeader: string;
+	sectionData: Array<CompDef>;
+}> = [
+	{
+		key: 'type',
+		sectionHeader: 'Type based elements',
+		sectionData: typeBasedComponent,
+	},
+	{
+		key: 'option',
+		sectionHeader: 'Option based elements',
+		sectionData: optionBasedComponent,
+	},
+];
 
+const CompSection = ({
+	data,
+	handleDragStart,
+}: {
+	data: { key: string; sectionHeader: string; sectionData: Array<CompDef> };
+	handleDragStart: (e: React.DragEvent<HTMLDivElement>, key: string) => void;
+}) => {
+	const [show, setShow] = useState<boolean>(true);
+
+	return (
+		<div className="_each_section">
+			<div className="_heading" onClick={() => setShow(!show)}>
+				<span>{data.sectionHeader}</span>
+				{show ? icon.angleUp : icon.angleDown}
+			</div>
+			{show && (
+				<div className="_container">
+					{data.sectionData.map(each => (
+						<div
+							className="_item"
+							key={each?.label}
+							draggable={true}
+							onDragStart={e => handleDragStart(e, each?.key)}
+						>
+							{each?.icon as ReactNode}
+							<span>{each?.label}</span>
+						</div>
+					))}
+				</div>
+			)}
+		</div>
+	);
+};
+
+export default function FormComponents() {
 	const handleDragStart = (e: React.DragEvent<HTMLDivElement>, key: string) => {
-		e.dataTransfer.setData('editor/text', `{ "key": "${key}"}`);
+		e.dataTransfer.setData('editor/text', `FORM_STORAGE_COMPONENT_{ "key": "${key}"}`);
 	};
 
 	return (
 		<div className="_comp">
-			<div className="_type_based">
-				<div className="_heading" onClick={() => setShowTypeBased(!showTypeBased)}>
-					<span>Type based elements</span>
-					{showTypeBased ? icon.angleUp : icon.angleDown}
-				</div>
-				{showTypeBased && (
-					<div className="_container">
-						{typeBasedComponent.map(each => (
-							<div
-								className="_item"
-								key={each?.label}
-								draggable={true}
-								onDragStart={e => handleDragStart(e, each?.key)}
-							>
-								{each?.icon}
-								<span>{each?.label}</span>
-							</div>
-						))}
-					</div>
-				)}
-			</div>
-			<div className="_option_based">
-				<div className="_heading" onClick={() => setShowOptionBased(!showOptionBased)}>
-					<span>Option based elements</span>
-					{showOptionBased ? icon.angleUp : icon.angleDown}
-				</div>
-				{showOptionBased && (
-					<div className="_container">
-						{optionBasedComponent.map(each => (
-							<div
-								className="_item"
-								key={each?.label}
-								draggable={true}
-								onDragStart={e => handleDragStart(e, each?.key)}
-							>
-								{each?.icon}
-								<span>{each?.label}</span>
-							</div>
-						))}
-					</div>
-				)}
-			</div>
+			{compData.map(each => (
+				<CompSection key={each.key} data={each} handleDragStart={handleDragStart} />
+			))}
 		</div>
 	);
 }
