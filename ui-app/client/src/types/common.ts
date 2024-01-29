@@ -34,6 +34,8 @@ export interface RenderContext {
 	formKey?: Array<string>;
 	showValidationMessages?: boolean;
 	table?: any;
+	//In Section grid when in page editor edit mode we need to stop selecting children.
+	disableSelection?: boolean;
 	// Using to understand if we are in shellpage or not, To stop rendering deeper nested pages
 	level: number;
 	// Menu Level
@@ -69,6 +71,7 @@ export enum ComponentPropertyEditor {
 	ANIMATION,
 	ANIMATIONOBSERVER,
 	COLOR_PICKER,
+	SECTION_PROPERTIES_EDITOR,
 }
 
 export enum ComponentPropertyGroup {
@@ -100,6 +103,7 @@ export interface ComponentPropertyDefinition {
 	notImplemented?: boolean;
 	defaultValue?: any;
 	displayOrder?: number;
+	hide?: boolean;
 }
 
 export interface ComponentStylePropertyGroupDefinition {

@@ -8,7 +8,7 @@ import {
 	PageStoreExtractor,
 	setData as setStoreData,
 } from '../../context/StoreContext';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { Component } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './tableProperties';
@@ -556,7 +556,7 @@ function TableComponent(props: ComponentProps) {
 			className={`comp compTable ${tableDesign} ${previewGridPosition}`}
 			style={resolvedStyles?.comp ?? {}}
 		>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			{body}
 			{spinner}
 		</div>

@@ -9,7 +9,7 @@ import {
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { shortUUID } from '../../util/shortUUID';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { IconHelper } from '../util/IconHelper';
 import useDefinition from '../util/useDefinition';
 import { Dots } from './components/FillerDefinitionEditorIcons';
@@ -74,7 +74,7 @@ function FillerDefinitionEditor(props: ComponentProps) {
 			className={`comp compFillerDefinitionEditor _colorProfile1`}
 			style={resolvedStyles.comp ?? {}}
 		>
-			<HelperComponent key={`${key}_hlp`} definition={definition} />
+			<HelperComponent context={props.context} key={`${key}_hlp`} definition={definition} />
 			{Object.values(filler.definition ?? {})
 				.sort((a, b) => a.order - b.order)
 				.map((section: SectionDefinition) => (
