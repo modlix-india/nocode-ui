@@ -338,6 +338,14 @@ export default function FormStorageEditorStyle({
             cursor: pointer;
         }
 
+        ${PREFIX} ._content ._optionContainer svg._delete {
+            color: #C8C8C8;
+        }
+
+        ${PREFIX} ._content ._optionContainer svg._delete:hover {
+            color: #FF614D;
+        }
+
         ${PREFIX} ._content ._addMore {
             background: none;
             border: none;

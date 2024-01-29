@@ -8,6 +8,8 @@ import {
 } from '../components/formCommons';
 import { duplicate } from '@fincity/kirun-js';
 import { Dropdown, DropdownOptions } from '../components/Dropdown';
+import CommonCheckBox from '../components/CommonCheckBox';
+import CommonTextBox from '../components/CommonTextBox';
 
 const inputTypeOption: DropdownOptions = [
 	{ name: 'text', displayName: 'Text' },
@@ -35,29 +37,17 @@ export default function TextTypeEditor({
 	editorType: string;
 	handleFieldDefMapChanges: (key: string, data: any, newKey?: string) => void;
 }) {
-	const [key, setKey] = useState<string>('');
-	const [label, setLabel] = useState<string>('');
-	const [placeholder, setPlaceholder] = useState<string>('');
-
 	const [min, setMin] = useState<string>('');
 	const [max, setMax] = useState<string>('');
+	const [message, setMessage] = useState<string>('');
 
 	const [inputType, setInputType] = useState<string>('');
 	const [numberType, setNumberType] = useState<string>('');
 
 	const [validationOption, setValidationOption] = useState<DropdownOptions>([]);
 	const [validationSelected, setValidationSelected] = useState<string>('');
-	const [isMandatory, setIsMandatory] = useState<boolean>(false);
-
-	const [message, setMessage] = useState<string>('');
-	const [message1, setMessage1] = useState<string>('');
-	const [message2, setMessage2] = useState<string>('');
-	const [regex, setRegex] = useState<string>('');
 
 	useEffect(() => {
-		setKey(data.key);
-		setLabel(data.label);
-		setPlaceholder(data?.placeholder ?? '');
 		setInputType(data?.inputType ?? '');
 		setNumberType(data?.numberType ?? '');
 		let min =
@@ -78,36 +68,26 @@ export default function TextTypeEditor({
 		let tempOption =
 			data?.inputType === 'text' ? textValidatiopnOption : numberValidatiopnOption;
 
+		let selectedDropdownVal = Object.entries(data.validation).find(
+			([_, value]) => value.pattern !== undefined,
+		);
+
 		setMin('' + min);
 		setMax('' + max);
 		setMessage(msg || '');
 		setValidationOption(tempOption);
-
-		setIsMandatory(data.validation['MANDATORY'] ? true : false);
-		setMessage1(data.validation['MANDATORY']?.message ?? '');
-
-		let tempVal = Object.entries(data.validation).find(
-			([_, value]) => value.pattern !== undefined,
-		);
-		setValidationSelected(tempVal ? tempVal[0] : '');
-		setRegex(tempVal ? tempVal[1]?.pattern! : '');
-		setMessage2(tempVal ? tempVal[1]?.message! : '');
+		setValidationSelected(selectedDropdownVal ? selectedDropdownVal[0] : '');
 	}, [data]);
 
 	const reEvaluateOrder = (tempObj: compValidations) => {
 		// re-arrange order
 		Object.entries(tempObj)
-			.sort(
-				(a: [string, FormCompValidation], b: [string, FormCompValidation]) =>
-					(a[1].order ?? 0) - (b[1].order ?? 0),
-			)
-			.map(([key, obj], index) => {
-				tempObj[key] = { ...obj, order: index };
-			});
+			.sort((a, b) => (a[1].order ?? 0) - (b[1].order ?? 0))
+			.map(([key, val], index) => (tempObj[key].order = index));
 		return tempObj;
 	};
 
-	const handleKeyChange = () => {
+	const handleKeyChange = (key: string | undefined) => {
 		if (key === data.key) return;
 		let tempData = {
 			...data,
@@ -116,7 +96,7 @@ export default function TextTypeEditor({
 		handleFieldDefMapChanges(data.key, tempData, key);
 	};
 
-	const handleLabelChange = () => {
+	const handleLabelChange = (label: string | undefined) => {
 		if (label === data.label) return;
 		let tempData = {
 			...data,
@@ -126,7 +106,7 @@ export default function TextTypeEditor({
 		handleFieldDefMapChanges(data.key, tempData);
 	};
 
-	const handlePlaceholderChange = () => {
+	const handlePlaceholderChange = (placeholder: string | undefined) => {
 		if (placeholder === data.placeholder) return;
 		let tempData = {
 			...data,
@@ -284,12 +264,12 @@ export default function TextTypeEditor({
 		handleFieldDefMapChanges(data.key, tempData);
 	};
 
-	const handleValidationMessageChange = () => {
-		if (message2 === data.validation[validationSelected]?.message) return;
+	const handleValidationMessageChange = (message: string | undefined) => {
+		if (message === data.validation[validationSelected]?.message) return;
 		let tempValidation: compValidations = duplicate(data?.validation);
 		tempValidation[validationSelected] = {
 			...tempValidation[validationSelected],
-			message: message2,
+			message: message,
 		};
 		let tempData = {
 			...data,
@@ -299,7 +279,7 @@ export default function TextTypeEditor({
 		handleFieldDefMapChanges(data.key, tempData);
 	};
 
-	const handlePatternChange = () => {
+	const handlePatternChange = (regex: string | undefined) => {
 		if (regex === data.validation[validationSelected]?.pattern) return;
 		let tempValidation: compValidations = duplicate(data?.validation);
 		tempValidation[validationSelected] = {
@@ -335,10 +315,10 @@ export default function TextTypeEditor({
 		handleFieldDefMapChanges(data.key, tempData);
 	};
 
-	const handleMandatoryMessageChange = () => {
-		if (message1 === data.validation['MANDATORY']?.message) return;
+	const handleMandatoryMessageChange = (message: string | undefined) => {
+		if (message === data.validation['MANDATORY']?.message) return;
 		let tempValidation: compValidations = duplicate(data?.validation);
-		tempValidation['MANDATORY'] = { ...tempValidation['MANDATORY'], message: message1 };
+		tempValidation['MANDATORY'] = { ...tempValidation['MANDATORY'], message: message };
 		let tempData = {
 			...data,
 			validation: tempValidation,
@@ -351,50 +331,17 @@ export default function TextTypeEditor({
 		<Fragment>
 			<div className="_item">
 				<span>Key</span>
-				<input
-					type="text"
-					value={key}
-					onChange={e => setKey(e.target.value)}
-					onBlur={() => handleKeyChange()}
-					onKeyDown={e => {
-						if (e.key === 'Enter') {
-							e.preventDefault();
-							e.stopPropagation();
-							handleKeyChange();
-						}
-					}}
-				/>
+				<CommonTextBox value={data.key} onChange={v => handleKeyChange(v)} />
 			</div>
 			<div className="_item">
 				<span>Label</span>
-				<input
-					type="text"
-					value={label}
-					onChange={e => setLabel(e.target.value)}
-					onBlur={() => handleLabelChange()}
-					onKeyDown={e => {
-						if (e.key === 'Enter') {
-							e.preventDefault();
-							e.stopPropagation();
-							handleLabelChange();
-						}
-					}}
-				/>
+				<CommonTextBox value={data.label} onChange={v => handleLabelChange(v)} />
 			</div>
 			<div className="_item">
 				<span>Placeholder</span>
-				<input
-					type="text"
-					value={placeholder}
-					onChange={e => setPlaceholder(e.target.value)}
-					onBlur={() => handlePlaceholderChange()}
-					onKeyDown={e => {
-						if (e.key === 'Enter') {
-							e.preventDefault();
-							e.stopPropagation();
-							handlePlaceholderChange();
-						}
-					}}
+				<CommonTextBox
+					value={data?.placeholder}
+					onChange={v => handlePlaceholderChange(v)}
 				/>
 			</div>
 			{editorType === 'textBox' && (
@@ -488,64 +435,44 @@ export default function TextTypeEditor({
 						validationSelected === 'REGEX') && (
 						<div className="_item">
 							<span>Regular Expression</span>
-							<input
-								type="text"
-								value={regex}
-								onChange={e => setRegex(e.target.value)}
-								onBlur={() => handlePatternChange()}
-								onKeyDown={e => {
-									if (e.key === 'Enter') {
-										e.preventDefault();
-										e.stopPropagation();
-										handlePatternChange();
-									}
-								}}
+							<CommonTextBox
+								value={
+									validationSelected
+										? data.validation[validationSelected]?.pattern
+										: undefined
+								}
+								onChange={v => handlePatternChange(v)}
 							/>
 						</div>
 					)}
 					<div className="_item">
 						<span>Validation check message</span>
-						<input
-							type="text"
-							value={message2}
-							onChange={e => setMessage2(e.target.value)}
-							onBlur={() => handleValidationMessageChange()}
-							onKeyDown={e => {
-								if (e.key === 'Enter') {
-									e.preventDefault();
-									e.stopPropagation();
-									handleValidationMessageChange();
-								}
-							}}
+						<CommonTextBox
+							value={
+								validationSelected
+									? data.validation[validationSelected]?.message
+									: undefined
+							}
+							onChange={v => handleValidationMessageChange(v)}
 						/>
 					</div>
 				</>
 			)}
 			<div className="_checkBoxValidationsGrid">
 				<div className="_checkBoxItem">
-					<input
-						type="checkbox"
-						checked={isMandatory}
-						onChange={e => handleMandatoryChange(e.target.checked)}
+					<CommonCheckBox
+						checked={data.validation['MANDATORY'] ? true : false}
+						onChange={checked => handleMandatoryChange(checked)}
 					/>
 					<span>Mandatory field</span>
 				</div>
 			</div>
-			{isMandatory && (
+			{data.validation['MANDATORY'] && (
 				<div className="_item">
 					<span>Mandatory validation message</span>
-					<input
-						type="text"
-						value={message1}
-						onChange={e => setMessage1(e.target.value)}
-						onBlur={() => handleMandatoryMessageChange()}
-						onKeyDown={e => {
-							if (e.key === 'Enter') {
-								e.preventDefault();
-								e.stopPropagation();
-								handleMandatoryMessageChange();
-							}
-						}}
+					<CommonTextBox
+						value={data.validation['MANDATORY']?.message}
+						onChange={v => handleMandatoryMessageChange(v)}
 					/>
 				</div>
 			)}

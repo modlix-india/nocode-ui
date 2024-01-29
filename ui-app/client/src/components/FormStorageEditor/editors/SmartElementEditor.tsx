@@ -7,6 +7,8 @@ import {
 	compValidations,
 } from '../components/formCommons';
 import { duplicate } from '@fincity/kirun-js';
+import CommonTextBox from '../components/CommonTextBox';
+import CommonCheckBox from '../components/CommonCheckBox';
 
 interface SmartElementEditorProps {
 	data: FormCompDefinition;
@@ -19,54 +21,27 @@ export default function SmartElementEditor({
 	editorType,
 	handleFieldDefMapChanges,
 }: SmartElementEditorProps) {
-	const [key, setKey] = useState<string>('');
-	const [label, setLabel] = useState<string>('');
-	const [placeholder, setPlaceholder] = useState<string>('');
-
 	const [minChar, setMinChar] = useState<string>('');
 	const [maxChar, setMaxChar] = useState<string>('');
-
-	const [isMandatory, setIsMandatory] = useState<boolean>(false);
-	const [isValidationCheck, setIsValidationCheck] = useState<boolean>(false);
-
 	const [message, setMessage] = useState<string>('');
-	const [message1, setMessage1] = useState<string>('');
-	const [message2, setMessage2] = useState<string>('');
-	const [regex, setRegex] = useState<string>('');
 
 	useEffect(() => {
-		setKey(data.key);
-		setLabel(data.label);
-		setPlaceholder(data?.placeholder ?? '');
 		let min = data.validation['STRING_LENGTH']?.minLength ?? '';
 		let max = data.validation['STRING_LENGTH']?.maxLength ?? '';
 		setMinChar('' + min);
 		setMaxChar('' + max);
-		setIsMandatory(data.validation['MANDATORY'] ? true : false);
-		setIsValidationCheck(data.validation['EMAIL'] || data.validation['PHONE'] ? true : false);
-		setRegex(data.validation['PHONE']?.pattern ?? '');
 		setMessage(data.validation['STRING_LENGTH']?.message ?? '');
-		setMessage1(data.validation['MANDATORY']?.message ?? '');
-		setMessage2(
-			editorType === 'email'
-				? data.validation['EMAIL']?.message ?? ''
-				: data.validation['PHONE']?.message ?? '',
-		);
 	}, [data]);
 
 	const reEvaluateOrder = (tempObj: compValidations) => {
 		// re-arrange order
 		Object.entries(tempObj)
-			.sort(
-				(a: [string, FormCompValidation], b: [string, FormCompValidation]) =>
-					(a[1].order ?? 0) - (b[1].order ?? 0),
-			)
-			.map(([key, obj], index) => {
-				tempObj[key] = { ...obj, order: index };
-			});
+			.sort((a, b) => (a[1].order ?? 0) - (b[1].order ?? 0))
+			.map(([key, val], index) => (tempObj[key].order = index));
 		return tempObj;
 	};
-	const handleKeyChange = () => {
+
+	const handleKeyChange = (key: string | undefined) => {
 		if (key === data.key) return;
 		let tempData = {
 			...data,
@@ -75,7 +50,7 @@ export default function SmartElementEditor({
 		handleFieldDefMapChanges(data.key, tempData, key);
 	};
 
-	const handleLabelChange = () => {
+	const handleLabelChange = (label: string | undefined) => {
 		if (label === data.label) return;
 		let tempData = {
 			...data,
@@ -84,7 +59,7 @@ export default function SmartElementEditor({
 		handleFieldDefMapChanges(data.key, tempData);
 	};
 
-	const handlePlaceholderChange = () => {
+	const handlePlaceholderChange = (placeholder: string | undefined) => {
 		if (placeholder === data?.placeholder) return;
 		let tempData = {
 			...data,
@@ -141,10 +116,10 @@ export default function SmartElementEditor({
 		handleFieldDefMapChanges(data.key, tempData);
 	};
 
-	const handleMandatoryMessageChange = () => {
-		if (message1 === data.validation['MANDATORY']?.message) return;
+	const handleMandatoryMessageChange = (message: string | undefined) => {
+		if (message === data.validation['MANDATORY']?.message) return;
 		let tempValidation: compValidations = duplicate(data?.validation);
-		tempValidation['MANDATORY'] = { ...tempValidation['MANDATORY'], message: message1 };
+		tempValidation['MANDATORY'] = { ...tempValidation['MANDATORY'], message: message };
 		let tempData = {
 			...data,
 			validation: tempValidation,
@@ -185,13 +160,16 @@ export default function SmartElementEditor({
 		handleFieldDefMapChanges(data.key, tempData);
 	};
 
-	const handleValidationCheckMessageChange = () => {
+	const handleValidationCheckMessageChange = (
+		validationKey: string,
+		value: string | undefined,
+	) => {
+		if (value === data.validation[validationKey]?.message) return;
+
 		let tempValidation: compValidations = duplicate(data?.validation);
-		let validationKey = editorType === 'email' ? 'EMAIL' : 'PHONE';
-		if (message2 === data.validation[validationKey]?.message) return;
 		tempValidation[validationKey] = {
 			...tempValidation[validationKey],
-			message: message2,
+			message: value,
 		};
 		let tempData = {
 			...data,
@@ -201,7 +179,7 @@ export default function SmartElementEditor({
 		handleFieldDefMapChanges(data.key, tempData);
 	};
 
-	const handlePhonePatternChange = () => {
+	const handlePhonePatternChange = (regex: string | undefined) => {
 		if (regex === data.validation['PHONE']?.pattern) return;
 		let tempValidation: compValidations = duplicate(data?.validation);
 		tempValidation['PHONE'] = { ...tempValidation['PHONE'], pattern: regex };
@@ -219,50 +197,17 @@ export default function SmartElementEditor({
 		<Fragment>
 			<div className="_item">
 				<span>Key</span>
-				<input
-					type="text"
-					value={key}
-					onChange={e => setKey(e.target.value)}
-					onBlur={() => handleKeyChange()}
-					onKeyDown={e => {
-						if (e.key === 'Enter') {
-							e.preventDefault();
-							e.stopPropagation();
-							handleKeyChange();
-						}
-					}}
-				/>
+				<CommonTextBox value={data.key} onChange={v => handleKeyChange(v)} />
 			</div>
 			<div className="_item">
 				<span>Label</span>
-				<input
-					type="text"
-					value={label}
-					onChange={e => setLabel(e.target.value)}
-					onBlur={() => handleLabelChange()}
-					onKeyDown={e => {
-						if (e.key === 'Enter') {
-							e.preventDefault();
-							e.stopPropagation();
-							handleLabelChange();
-						}
-					}}
-				/>
+				<CommonTextBox value={data.label} onChange={v => handleLabelChange(v)} />
 			</div>
 			<div className="_item">
 				<span>Placeholder</span>
-				<input
-					type="text"
-					value={placeholder}
-					onChange={e => setPlaceholder(e.target.value)}
-					onBlur={() => handlePlaceholderChange()}
-					onKeyDown={e => {
-						if (e.key === 'Enter') {
-							e.preventDefault();
-							e.stopPropagation();
-							handlePlaceholderChange();
-						}
-					}}
+				<CommonTextBox
+					value={data?.placeholder}
+					onChange={v => handlePlaceholderChange(v)}
 				/>
 			</div>
 			<div className="_lengthValidationGrid">
@@ -321,76 +266,58 @@ export default function SmartElementEditor({
 			</div>
 			<div className="_checkBoxValidationsGrid">
 				<div className="_checkBoxItem">
-					<input
-						type="checkbox"
-						checked={isMandatory}
-						onChange={e => handleMandatoryChange(e.target.checked)}
+					<CommonCheckBox
+						checked={data.validation['MANDATORY'] ? true : false}
+						onChange={checked => handleMandatoryChange(checked)}
 					/>
 					<span>Mandatory field</span>
 				</div>
 				{editorType !== 'name' && (
 					<div className="_checkBoxItem">
-						<input
-							type="checkbox"
-							checked={isValidationCheck}
-							onChange={e => handleValidationCheckChange(e.target.checked)}
+						<CommonCheckBox
+							checked={
+								data.validation['EMAIL'] || data.validation['PHONE'] ? true : false
+							}
+							onChange={checked => handleValidationCheckChange(checked)}
 						/>
 						<span>Validation check</span>
 					</div>
 				)}
 			</div>
-			{isMandatory && (
+			{data.validation['MANDATORY'] && (
 				<div className="_item">
 					<span>Mandatory validation message</span>
-					<input
-						type="text"
-						value={message1}
-						onChange={e => setMessage1(e.target.value)}
-						onBlur={() => handleMandatoryMessageChange()}
-						onKeyDown={e => {
-							if (e.key === 'Enter') {
-								e.preventDefault();
-								e.stopPropagation();
-								handleMandatoryMessageChange();
-							}
-						}}
+					<CommonTextBox
+						value={data.validation['MANDATORY']?.message}
+						onChange={v => handleMandatoryMessageChange(v)}
 					/>
 				</div>
 			)}
-			{isValidationCheck && (
+			{(data.validation['EMAIL'] || data.validation['PHONE']) && (
 				<>
 					{editorType === 'phone' && (
 						<div className="_item">
 							<span>Regular Expression</span>
-							<input
-								type="text"
-								value={regex}
-								onChange={e => setRegex(e.target.value)}
-								onBlur={() => handlePhonePatternChange()}
-								onKeyDown={e => {
-									if (e.key === 'Enter') {
-										e.preventDefault();
-										e.stopPropagation();
-										handlePhonePatternChange();
-									}
-								}}
+							<CommonTextBox
+								value={data.validation['PHONE']?.pattern}
+								onChange={v => handlePhonePatternChange(v)}
 							/>
 						</div>
 					)}
 					<div className="_item">
 						<span>Validation check message</span>
-						<input
-							type="text"
-							value={message2}
-							onChange={e => setMessage2(e.target.value)}
-							onBlur={() => handleValidationCheckMessageChange()}
-							onKeyDown={e => {
-								if (e.key === 'Enter') {
-									e.preventDefault();
-									e.stopPropagation();
-									handleValidationCheckMessageChange();
-								}
-							}}
+						<CommonTextBox
+							value={
+								editorType === 'email'
+									? data.validation['EMAIL']?.message
+									: data.validation['PHONE']?.message
+							}
+							onChange={v =>
+								handleValidationCheckMessageChange(
+									editorType === 'email' ? 'EMAIL' : 'PHONE',
+									v,
+								)
+							}
 						/>
 					</div>
 				</>
