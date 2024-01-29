@@ -4,7 +4,7 @@ import {
 	CustomSchema,
 	FormCompDefinition,
 	FormCompValidation,
-	formDefinition,
+	FormDefinition,
 	FormSchema,
 	FormStorageEditorDefinition,
 } from './formCommons';
@@ -15,20 +15,19 @@ import { LocationHistory } from '../../../types/common';
 import { shortUUID } from '../../../util/shortUUID';
 
 export default function FormEditor({
-	value,
+	formStorage,
 	storagePath,
 	pageExtractor,
 	locationHistory,
 }: {
-	value: FormStorageEditorDefinition;
+	formStorage: FormStorageEditorDefinition;
 	storagePath: string;
 	pageExtractor: PageStoreExtractor;
 	locationHistory: Array<LocationHistory>;
 }) {
-	const { fieldDefinitionMap } = value;
-	// console.log('fieldDefinitionMap', fieldDefinitionMap);
+	const { fieldDefinitionMap } = formStorage;
 
-	const generateFormSchema = (fieldDefinitionMap: formDefinition) => {
+	const generateFormSchema = (fieldDefinitionMap: FormDefinition) => {
 		const schemaProps: { [key: string]: CustomSchema } = {};
 		const required: Array<string> = [];
 		Object.entries(fieldDefinitionMap).forEach(([key, value]) => {
@@ -48,7 +47,7 @@ export default function FormEditor({
 		return tempSchema;
 	};
 
-	const generateValidationUUID = (fieldDefinitionMap: formDefinition) => {
+	const generateValidationUUID = (fieldDefinitionMap: FormDefinition) => {
 		let tempData = duplicate(fieldDefinitionMap);
 
 		Object.entries(tempData).forEach(([k, v]) => {
@@ -68,9 +67,9 @@ export default function FormEditor({
 		return tempData;
 	};
 
-	const setFormData = (fieldDefinitionMap: formDefinition) => {
+	const setFormData = (fieldDefinitionMap: FormDefinition) => {
 		let tempData: FormStorageEditorDefinition = {
-			...value,
+			...formStorage,
 			fieldDefinitionMap: fieldDefinitionMap,
 			schema: generateFormSchema(fieldDefinitionMap)!,
 		};
@@ -150,16 +149,11 @@ export default function FormEditor({
 	};
 
 	const handleDelete = (key: string) => {
-		let tempObj: formDefinition = duplicate(fieldDefinitionMap);
+		let tempObj: FormDefinition = duplicate(fieldDefinitionMap);
 		delete tempObj[key];
 		Object.entries(tempObj)
-			.sort(
-				(a: [string, FormCompDefinition], b: [string, FormCompDefinition]) =>
-					(a[1].order ?? 0) - (b[1].order ?? 0),
-			)
-			.map(([key, obj], index) => {
-				tempObj[key] = { ...obj, order: index };
-			});
+			.sort((a, b) => (a[1].order ?? 0) - (b[1].order ?? 0))
+			.map(([key, obj], index) => (tempObj[key].order = index));
 		setFormData(tempObj);
 	};
 
@@ -167,8 +161,7 @@ export default function FormEditor({
 		<div className="_editor" onDrop={e => handleDrop(e)} onDragOver={handleDragOver}>
 			<Accordion
 				data={Object.values(fieldDefinitionMap ?? {}).sort(
-					(a: FormCompDefinition, b: FormCompDefinition) =>
-						(a.order ?? 0) - (b.order ?? 0),
+					(a, b) => (a.order ?? 0) - (b.order ?? 0),
 				)}
 				handleDrop={handleDrop}
 				handleDelete={handleDelete}

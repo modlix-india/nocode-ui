@@ -1,11 +1,11 @@
 import React from 'react';
-import { formDefinition } from './formCommons';
+import { FormDefinition } from './formCommons';
 import Children from '../../Children';
 import { LocationHistory, RenderContext } from '../../../types/common';
 import { generateFormPreview } from './formPreviewGeneration';
 
 interface FormPreview {
-	fieldDefinitionMap: formDefinition;
+	fieldDefinitionMap: FormDefinition;
 	formName: string;
 	context: RenderContext;
 	locationHistory?: Array<LocationHistory>;

@@ -225,6 +225,16 @@ export default function FormStorageEditorStyle({
         ${PREFIX} ._accordion_panel ._header svg {
             cursor: pointer;
         }
+        ${PREFIX} ._accordion_panel ._header svg._delete,
+        ${PREFIX} ._accordion_panel ._header svg._settings {
+            color: #C8C8C8;
+        }
+        ${PREFIX} ._accordion_panel ._header svg._delete:hover{
+            color: #FF614D;
+        }
+        ${PREFIX} ._accordion_panel ._header svg._settings:hover {
+            color: #427EE4;
+        }
 
         ${PREFIX} ._accordion_panel ._content {
             display: none;

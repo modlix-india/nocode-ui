@@ -13,7 +13,7 @@ import {
 	PageDefinition,
 } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './formStorageEditorProperties';
@@ -27,7 +27,7 @@ import FormPreview from './components/FormPreview';
 import { duplicate } from '@fincity/kirun-js';
 
 function FormStorageEditor(props: ComponentProps) {
-	const [value, setValue] = useState<FormStorageEditorDefinition>({
+	const [formStorage, setFormStorage] = useState<FormStorageEditorDefinition>({
 		name: 'form',
 		fieldDefinitionMap: {},
 		schema: { type: 'OBJECT', additionalProperties: false },
@@ -70,8 +70,8 @@ function FormStorageEditor(props: ComponentProps) {
 		if (!storagePath) return;
 		addListenerAndCallImmediately(
 			(_, value) => {
-				setValue(
-					value || {
+				setFormStorage(
+					value ?? {
 						name: 'form',
 						fieldDefinitionMap: {},
 						schema: { type: 'OBJECT', additionalProperties: false },
@@ -86,7 +86,7 @@ function FormStorageEditor(props: ComponentProps) {
 		);
 	}, [storagePath]);
 
-	// console.log('formData', value);
+	// console.log('formData', formStorage);
 
 	// Function to call save eventFunction
 	const saveFunction = useCallback(() => {
@@ -102,7 +102,7 @@ function FormStorageEditor(props: ComponentProps) {
 	}, [onSave]);
 	const onCancel = () => {
 		let temp = {
-			...duplicate(value),
+			...duplicate(formStorage),
 			fieldDefinitionMap: {},
 			schema: { type: 'OBJECT', additionalProperties: false },
 		};
@@ -111,7 +111,7 @@ function FormStorageEditor(props: ComponentProps) {
 
 	return (
 		<div className={`comp compFormStorageEditor`} style={resolvedStyles.comp ?? {}}>
-			<HelperComponent key={`${key}_hlp`} definition={definition} />
+			<HelperComponent key={`${key}_hlp`} definition={definition} context={context} />
 			<div className="_main">
 				<div className="_compSection">
 					<div className="_section_header">
@@ -126,7 +126,7 @@ function FormStorageEditor(props: ComponentProps) {
 						<p>Click on any field to edit</p>
 					</div>
 					<FormEditor
-						value={value}
+						formStorage={formStorage}
 						storagePath={storagePath!}
 						pageExtractor={pageExtractor}
 						locationHistory={locationHistory}
@@ -138,8 +138,8 @@ function FormStorageEditor(props: ComponentProps) {
 						<p>You can view a basic form and make edits in the editor</p>
 					</div>
 					<FormPreview
-						fieldDefinitionMap={value.fieldDefinitionMap}
-						formName={value.name}
+						fieldDefinitionMap={formStorage.fieldDefinitionMap}
+						formName={formStorage.name}
 						context={context}
 						locationHistory={locationHistory}
 					/>

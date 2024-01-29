@@ -52,13 +52,13 @@ export interface FormCompDefinition {
 	editorType: string;
 }
 
-export interface formDefinition {
+export interface FormDefinition {
 	[key: string]: FormCompDefinition;
 }
 export interface FormStorageEditorDefinition {
 	name: string;
 	schema: FormSchema;
-	fieldDefinitionMap: formDefinition;
+	fieldDefinitionMap: FormDefinition;
 	readAuth: string;
 	updateAuth: string;
 	deleteAuth: string;

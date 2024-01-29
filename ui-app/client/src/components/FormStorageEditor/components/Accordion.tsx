@@ -5,77 +5,30 @@ import SmartElementEditor from '../editors/SmartElementEditor';
 import TextTypeEditor from '../editors/TextTypeEditor';
 import OptionTypeEditor from '../editors/OptionTypeEditor';
 
+const COMP_EDITORS_DEF: { [key: string]: [React.ElementType, string] } = {
+	NameEditor: [SmartElementEditor, 'name'],
+	EmailEditor: [SmartElementEditor, 'email'],
+	PhoneEditor: [SmartElementEditor, 'phone'],
+	TextBoxEditor: [TextTypeEditor, 'textBox'],
+	TextAreaEditor: [TextTypeEditor, 'textArea'],
+	DropdownEditor: [OptionTypeEditor, 'dropdown'],
+	RadioButtonEditor: [OptionTypeEditor, 'radioButton'],
+	CheckBoxEditor: [OptionTypeEditor, 'checkBox'],
+};
+
 const getCompEditor = (
 	data: FormCompDefinition,
 	handleFieldDefMapChanges: (key: string, data: FormCompDefinition, newKey?: string) => void,
 ) => {
-	const COMP_EDITORS: { [key: string]: any } = {
-		NameEditor: (
-			<SmartElementEditor
-				data={data}
-				key={data.key}
-				handleFieldDefMapChanges={handleFieldDefMapChanges}
-				editorType="name"
-			/>
-		),
-		EmailEditor: (
-			<SmartElementEditor
-				data={data}
-				key={data.key}
-				handleFieldDefMapChanges={handleFieldDefMapChanges}
-				editorType="email"
-			/>
-		),
-		PhoneEditor: (
-			<SmartElementEditor
-				data={data}
-				key={data.key}
-				handleFieldDefMapChanges={handleFieldDefMapChanges}
-				editorType="phone"
-			/>
-		),
-		TextBoxEditor: (
-			<TextTypeEditor
-				data={data}
-				key={data.key}
-				handleFieldDefMapChanges={handleFieldDefMapChanges}
-				editerType="textBox"
-			/>
-		),
-		TextAreaEditor: (
-			<TextTypeEditor
-				data={data}
-				key={data.key}
-				handleFieldDefMapChanges={handleFieldDefMapChanges}
-				editerType="textArea"
-			/>
-		),
-		DropdownEditor: (
-			<OptionTypeEditor
-				data={data}
-				key={data.key}
-				handleFieldDefMapChanges={handleFieldDefMapChanges}
-				editerType="dropdown"
-			/>
-		),
-		RadioButtonEditor: (
-			<OptionTypeEditor
-				data={data}
-				key={data.key}
-				handleFieldDefMapChanges={handleFieldDefMapChanges}
-				editerType="radioButton"
-			/>
-		),
-		CheckBoxEditor: (
-			<OptionTypeEditor
-				data={data}
-				key={data.key}
-				handleFieldDefMapChanges={handleFieldDefMapChanges}
-				editerType="checkBox"
-			/>
-		),
-	};
-	return COMP_EDITORS[data.editorType];
+	let Editor = COMP_EDITORS_DEF[data.editorType][0];
+	return (
+		<Editor
+			key={data.uuid}
+			data={data}
+			handleFieldDefMapChanges={handleFieldDefMapChanges}
+			editorType={COMP_EDITORS_DEF[data.editorType][1]}
+		/>
+	);
 };
 
 interface AccordionProps {

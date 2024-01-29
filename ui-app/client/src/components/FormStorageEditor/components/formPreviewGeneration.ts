@@ -8,7 +8,7 @@ import {
 	FormCompDefinition,
 	FormCompValidation,
 	FormPreviewCompValidation,
-	formDefinition,
+	FormDefinition,
 	previewCompDefinitionMap,
 	previewCompValidationMap,
 	previewCompValidationProperties,
@@ -34,14 +34,16 @@ const compValidationGenerator = (val: FormCompValidation) => {
 	};
 	let valProps: previewCompValidationProperties = {
 		...tempVal.property.value,
-		...(val.type ? { type: val.type } : {}),
-		...(val?.message ? { message: { value: val?.message } } : {}),
-		...(val?.pattern ? { pattern: { value: val?.pattern } } : {}),
-		...(val?.minLength ? { minLength: { value: val?.minLength } } : {}),
-		...(val?.maxLength ? { maxLength: { value: val?.maxLength } } : {}),
-		...(val?.minValue ? { minValue: { value: val?.minValue } } : {}),
-		...(val?.maxValue ? { maxValue: { value: val?.maxValue } } : {}),
 	};
+
+	if (val?.type) valProps['type'] = val?.type;
+	if (val?.message) valProps['message'] = { value: val?.message };
+	if (val?.pattern) valProps['pattern'] = { value: val?.pattern };
+	if (val?.minLength) valProps['minLength'] = { value: val?.minLength };
+	if (val?.maxLength) valProps['maxLength'] = { value: val?.maxLength };
+	if (val?.minValue) valProps['minValue'] = { value: val?.minValue };
+	if (val?.maxValue) valProps['maxValue'] = { value: val?.maxValue };
+
 	tempVal['property']['value'] = valProps;
 	return tempVal;
 };
@@ -62,13 +64,14 @@ const compDefinitionGenerator = (data: FormCompDefinition, compType: string, for
 		[key: string]: ComponentProperty<any>;
 	} = {
 		...compDef.properties,
-		...(data?.placeholder ? { placeholder: { value: data?.placeholder } } : {}),
-		...(data?.maxChars ? { maxChars: { value: data?.maxChars } } : {}),
-		...(data?.inputType ? { valueType: { value: data?.inputType } } : {}),
-		...(data?.numberType ? { numberType: { value: data?.numberType } } : {}),
-		...(data?.isMultiSelect ? { isMultiSelect: { value: data?.isMultiSelect } } : {}),
-		...(data.schema?.enums!?.length > 0 ? { data: { value: data.schema?.enums } } : {}),
 	};
+
+	if (data?.placeholder) tempProps['placeholder'] = { value: data?.placeholder };
+	if (data?.maxChars) tempProps['maxChars'] = { value: data?.maxChars };
+	if (data?.inputType) tempProps['valueType'] = { value: data?.inputType };
+	if (data?.numberType) tempProps['numberType'] = { value: data?.numberType };
+	if (data?.isMultiSelect) tempProps['isMultiSelect'] = { value: data?.isMultiSelect };
+	if (data.schema?.enums!?.length > 0) tempProps['data'] = { value: data.schema?.enums };
 
 	if (Object.entries(data.validation).length > 0) {
 		let tempValidation: { [key: string]: FormPreviewCompValidation } = {};
@@ -85,7 +88,7 @@ const compDefinitionGenerator = (data: FormCompDefinition, compType: string, for
 	return compDef;
 };
 
-export const generateFormPreview = (fieldDefinitionMap: formDefinition, formName: string) => {
+export const generateFormPreview = (fieldDefinitionMap: FormDefinition, formName: string) => {
 	let pageDef: PageDefinition = {
 		name: 'formStoragePreview',
 		baseClientCode: '',
