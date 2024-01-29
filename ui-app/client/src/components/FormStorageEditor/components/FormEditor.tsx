@@ -85,15 +85,20 @@ export default function FormEditor({
 		key: string,
 		dropType: string,
 	) => {
-		e.dataTransfer.setData('editor/text', `{ "key" : "${key}", "dropType": "${dropType}"}`);
+		e.dataTransfer.setData(
+			'editor/text',
+			`FORM_STORAGE_COMPONENT_{ "key" : "${key}", "dropType": "${dropType}"}`,
+		);
 	};
 
 	const handleDrop = (e: React.DragEvent<HTMLDivElement>, key?: string) => {
 		e.preventDefault();
 		e.stopPropagation();
 		try {
+			let dropData: string = e.dataTransfer.getData('editor/text');
+			if (!dropData.includes('FORM_STORAGE_COMPONENT_')) return;
 			const dragData: { key: string; dropType?: string } = JSON.parse(
-				e.dataTransfer.getData('editor/text'),
+				dropData.substring(dropData.indexOf('{')),
 			);
 			if (dragData.dropType === 'Inside_Drop') {
 				let newData = duplicate(fieldDefinitionMap);
