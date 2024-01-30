@@ -5,7 +5,7 @@ import {
 	FormCompValidation,
 	Option,
 	compValidationMap,
-	compValidations,
+	CompValidations,
 } from '../components/formCommons';
 import { deepEqual, duplicate } from '@fincity/kirun-js';
 import CommonTextBox from '../components/CommonTextBox';
@@ -59,23 +59,24 @@ const OptionComp = ({
 	);
 };
 
+interface OptionTypeEditorProps {
+	data: FormCompDefinition;
+	editorType: string;
+	handleFieldDefMapChanges: (key: string, data: any, newKey?: string) => void;
+}
+
 export default function OptionTypeEditor({
 	data,
 	editorType,
 	handleFieldDefMapChanges,
-}: {
-	data: FormCompDefinition;
-	editorType: string;
-	handleFieldDefMapChanges: (key: string, data: any, newKey?: string) => void;
-}) {
+}: OptionTypeEditorProps) {
 	const [listOfOption, setListOfOption] = useState<Array<Option>>([]);
 
 	useEffect(() => {
 		setListOfOption(data?.optionList ?? []);
 	}, [data]);
 
-	const reEvaluateOrder = (tempObj: compValidations) => {
-		// re-arrange order
+	const reEvaluateOrder = (tempObj: CompValidations) => {
 		Object.entries(tempObj)
 			.sort((a, b) => (a[1].order ?? 0) - (b[1].order ?? 0))
 			.map(([key, val], index) => (tempObj[key].order = index));
@@ -200,7 +201,7 @@ export default function OptionTypeEditor({
 	};
 
 	const handleMandatoryChange = (checked: boolean) => {
-		let tempValidation: compValidations = duplicate(data?.validation);
+		let tempValidation: CompValidations = duplicate(data?.validation);
 		if (checked) {
 			tempValidation['MANDATORY'] = {
 				...compValidationMap.get('MANDATORY')!,
@@ -220,7 +221,7 @@ export default function OptionTypeEditor({
 
 	const handleMandatoryMessageChange = (message: string | undefined) => {
 		if (message === data.validation['MANDATORY']?.message) return;
-		let tempValidation: compValidations = duplicate(data?.validation);
+		let tempValidation: CompValidations = duplicate(data?.validation);
 		tempValidation['MANDATORY'] = { ...tempValidation['MANDATORY'], message: message };
 		let tempData = {
 			...data,
@@ -234,16 +235,21 @@ export default function OptionTypeEditor({
 		<Fragment>
 			<div className="_item">
 				<span>Key</span>
-				<CommonTextBox value={data.key} onChange={v => handleKeyChange(v)} />
+				<CommonTextBox type="text" value={data.key} onChange={v => handleKeyChange(v)} />
 			</div>
 			<div className="_item">
 				<span>Label</span>
-				<CommonTextBox value={data.label} onChange={v => handleLabelChange(v)} />
+				<CommonTextBox
+					type="text"
+					value={data.label}
+					onChange={v => handleLabelChange(v)}
+				/>
 			</div>
 			{editorType === 'dropdown' && (
 				<div className="_item">
 					<span>Placeholder</span>
 					<CommonTextBox
+						type="text"
 						value={data?.placeholder}
 						onChange={v => handlePlaceholderChange(v)}
 					/>
@@ -287,6 +293,7 @@ export default function OptionTypeEditor({
 				<div className="_item">
 					<span>Mandatory validation message</span>
 					<CommonTextBox
+						type="text"
 						value={data.validation['MANDATORY']?.message}
 						onChange={v => handleMandatoryMessageChange(v)}
 					/>

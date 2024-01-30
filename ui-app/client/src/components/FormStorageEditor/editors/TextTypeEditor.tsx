@@ -4,7 +4,7 @@ import {
 	FormCompDefinition,
 	FormCompValidation,
 	compValidationMap,
-	compValidations,
+	CompValidations,
 } from '../components/formCommons';
 import { duplicate } from '@fincity/kirun-js';
 import { Dropdown, DropdownOptions } from '../components/Dropdown';
@@ -28,59 +28,37 @@ const textValidatiopnOption: DropdownOptions = [
 	{ name: 'REGEX', displayName: 'Regular Expression' },
 ];
 const numberValidatiopnOption: DropdownOptions = [];
+
+interface TextTypeEditorProps {
+	data: FormCompDefinition;
+	editorType: string;
+	handleFieldDefMapChanges: (key: string, data: any, newKey?: string) => void;
+}
+
 export default function TextTypeEditor({
 	data,
 	editorType,
 	handleFieldDefMapChanges,
-}: {
-	data: FormCompDefinition;
-	editorType: string;
-	handleFieldDefMapChanges: (key: string, data: any, newKey?: string) => void;
-}) {
-	const [min, setMin] = useState<string>('');
-	const [max, setMax] = useState<string>('');
-	const [message, setMessage] = useState<string>('');
-
+}: TextTypeEditorProps) {
 	const [inputType, setInputType] = useState<string>('');
 	const [numberType, setNumberType] = useState<string>('');
-
 	const [validationOption, setValidationOption] = useState<DropdownOptions>([]);
 	const [validationSelected, setValidationSelected] = useState<string>('');
 
 	useEffect(() => {
 		setInputType(data?.inputType ?? '');
 		setNumberType(data?.numberType ?? '');
-		let min =
-			data?.inputType === 'text'
-				? data.validation['STRING_LENGTH']?.minLength ?? ''
-				: data.validation['NUMBER_VALUE']?.minValue ?? '';
-
-		let max =
-			data?.inputType === 'text'
-				? data.validation['STRING_LENGTH']?.maxLength ?? ''
-				: data.validation['NUMBER_VALUE']?.maxValue ?? '';
-
-		let msg =
-			data?.inputType === 'text'
-				? data.validation['STRING_LENGTH']?.message
-				: data.validation['NUMBER_VALUE']?.message;
-
 		let tempOption =
 			data?.inputType === 'text' ? textValidatiopnOption : numberValidatiopnOption;
 
 		let selectedDropdownVal = Object.entries(data.validation).find(
 			([_, value]) => value.pattern !== undefined,
 		);
-
-		setMin('' + min);
-		setMax('' + max);
-		setMessage(msg || '');
 		setValidationOption(tempOption);
 		setValidationSelected(selectedDropdownVal ? selectedDropdownVal[0] : '');
 	}, [data]);
 
-	const reEvaluateOrder = (tempObj: compValidations) => {
-		// re-arrange order
+	const reEvaluateOrder = (tempObj: CompValidations) => {
 		Object.entries(tempObj)
 			.sort((a, b) => (a[1].order ?? 0) - (b[1].order ?? 0))
 			.map(([key, val], index) => (tempObj[key].order = index));
@@ -116,51 +94,71 @@ export default function TextTypeEditor({
 		handleFieldDefMapChanges(data.key, tempData);
 	};
 
-	const handleMinMaxChange = () => {
-		let tempValidation: compValidations = data?.validation;
-		let tempSchema: CustomSchema;
+	const handleMinLimitChange = (min: string | undefined) => {
+		let tempValidation: CompValidations = duplicate(data?.validation);
+		let tempSchema: CustomSchema = duplicate(data.schema);
+
 		if (inputType === 'text') {
-			let tempLenVal: FormCompValidation = duplicate(tempValidation['STRING_LENGTH']);
-
-			if (max) tempLenVal['maxLength'] = parseInt(max);
-			else delete tempLenVal['maxLength'];
-			if (min) tempLenVal['minLength'] = parseInt(min);
-			else delete tempLenVal['minLength'];
-			if (message) tempLenVal['message'] = message;
-			else delete tempLenVal['message'];
-
-			tempValidation['STRING_LENGTH'] = tempLenVal;
-
-			tempSchema = duplicate(data.schema);
-			if (max) tempSchema['maxLength'] = parseInt(max);
-			else delete tempSchema['maxLength'];
+			if (min) tempValidation['STRING_LENGTH']['minLength'] = parseInt(min);
+			else delete tempValidation['STRING_LENGTH']['minLength'];
 			if (min) tempSchema['minLength'] = parseInt(min);
 			else delete tempSchema['minLength'];
 		} else {
-			let tempNumVal: FormCompValidation = duplicate(tempValidation['NUMBER_VALUE']);
-
-			if (max) tempNumVal['maxValue'] = parseInt(max);
-			else delete tempNumVal['maxValue'];
-			if (min) tempNumVal['minValue'] = parseInt(min);
-			else delete tempNumVal['minValue'];
-			if (message) tempNumVal['message'] = message;
-			else delete tempNumVal['message'];
-
-			tempValidation['NUMBER_VALUE'] = tempNumVal;
-
-			tempSchema = duplicate(data.schema);
-			if (max) tempSchema['maximum'] = parseInt(max);
-			else delete tempSchema['maximum'];
+			if (min) tempValidation['NUMBER_VALUE']['minValue'] = parseInt(min);
+			else delete tempValidation['NUMBER_VALUE']['minValue'];
 			if (min) tempSchema['minimum'] = parseInt(min);
 			else delete tempSchema['minimum'];
 		}
+
 		let tempData: FormCompDefinition = {
 			...data,
 			validation: tempValidation,
 			schema: tempSchema,
 		};
+
+		handleFieldDefMapChanges(data.key, tempData);
+	};
+	const handleMaxLimitChange = (max: string | undefined) => {
+		let tempValidation: CompValidations = duplicate(data?.validation);
+		let tempSchema: CustomSchema = duplicate(data.schema);
+
+		if (inputType === 'text') {
+			if (max) tempValidation['STRING_LENGTH']['maxLength'] = parseInt(max);
+			else delete tempValidation['STRING_LENGTH']['maxLength'];
+			if (max) tempSchema['maxLength'] = parseInt(max);
+			else delete tempSchema['maxLength'];
+		} else {
+			if (max) tempValidation['NUMBER_VALUE']['maxValue'] = parseInt(max);
+			else delete tempValidation['NUMBER_VALUE']['maxValue'];
+			if (max) tempSchema['maximum'] = parseInt(max);
+			else delete tempSchema['maximum'];
+		}
+
+		let tempData: FormCompDefinition = {
+			...data,
+			validation: tempValidation,
+			schema: tempSchema,
+		};
+
 		if (inputType === 'text' && max) tempData['maxChars'] = parseInt(max);
 		else delete tempData['maxChars'];
+
+		handleFieldDefMapChanges(data.key, tempData);
+	};
+	const handleMinMaxLimitMessageChange = (message: string | undefined) => {
+		let tempValidation: CompValidations = duplicate(data?.validation);
+
+		if (inputType === 'text') {
+			if (message) tempValidation['STRING_LENGTH']['message'] = message;
+			else delete tempValidation['STRING_LENGTH']['message'];
+		} else {
+			if (message) tempValidation['NUMBER_VALUE']['message'] = message;
+			else delete tempValidation['NUMBER_VALUE']['message'];
+		}
+		let tempData: FormCompDefinition = {
+			...data,
+			validation: tempValidation,
+		};
 
 		handleFieldDefMapChanges(data.key, tempData);
 	};
@@ -168,7 +166,7 @@ export default function TextTypeEditor({
 	const handleInputTypeChanges = (v: string) => {
 		if (v === data.inputType) return;
 		let tempSchema: CustomSchema;
-		let tempValidation: compValidations = data?.validation;
+		let tempValidation: CompValidations = data?.validation;
 
 		if (v === 'text') {
 			tempSchema = { type: ['STRING'] };
@@ -219,10 +217,19 @@ export default function TextTypeEditor({
 				type: ['INTEGER', 'LONG', 'FLOAT', 'DOUBLE'],
 			};
 		}
+		let min =
+			data?.inputType === 'text'
+				? data.validation['STRING_LENGTH']['minLength']
+				: data.validation['NUMBER_VALUE']['minValue'];
 
-		if (max) tempSchema['maximum'] = parseInt(max);
+		let max =
+			data?.inputType === 'text'
+				? data.validation['STRING_LENGTH']['maxLength']
+				: data.validation['NUMBER_VALUE']['maxValue'];
+
+		if (max) tempSchema['maximum'] = parseInt('' + max);
 		else delete tempSchema['maximum'];
-		if (min) tempSchema['minimum'] = parseInt(min);
+		if (min) tempSchema['minimum'] = parseInt('' + min);
 		else delete tempSchema['minimum'];
 
 		let tempData: FormCompDefinition = {
@@ -240,7 +247,7 @@ export default function TextTypeEditor({
 		);
 		if (deleteVal && v === deleteVal[0]) return;
 
-		let tempValidation: compValidations = duplicate(data?.validation);
+		let tempValidation: CompValidations = duplicate(data?.validation);
 		let tempSchema: CustomSchema = duplicate(data.schema);
 
 		if (deleteVal) {
@@ -266,7 +273,7 @@ export default function TextTypeEditor({
 
 	const handleValidationMessageChange = (message: string | undefined) => {
 		if (message === data.validation[validationSelected]?.message) return;
-		let tempValidation: compValidations = duplicate(data?.validation);
+		let tempValidation: CompValidations = duplicate(data?.validation);
 		tempValidation[validationSelected] = {
 			...tempValidation[validationSelected],
 			message: message,
@@ -281,7 +288,7 @@ export default function TextTypeEditor({
 
 	const handlePatternChange = (regex: string | undefined) => {
 		if (regex === data.validation[validationSelected]?.pattern) return;
-		let tempValidation: compValidations = duplicate(data?.validation);
+		let tempValidation: CompValidations = duplicate(data?.validation);
 		tempValidation[validationSelected] = {
 			...tempValidation[validationSelected],
 			pattern: regex,
@@ -297,7 +304,7 @@ export default function TextTypeEditor({
 	};
 
 	const handleMandatoryChange = (checked: boolean) => {
-		let tempValidation: compValidations = duplicate(data?.validation);
+		let tempValidation: CompValidations = duplicate(data?.validation);
 		if (checked) {
 			tempValidation['MANDATORY'] = {
 				...compValidationMap.get('MANDATORY')!,
@@ -317,7 +324,7 @@ export default function TextTypeEditor({
 
 	const handleMandatoryMessageChange = (message: string | undefined) => {
 		if (message === data.validation['MANDATORY']?.message) return;
-		let tempValidation: compValidations = duplicate(data?.validation);
+		let tempValidation: CompValidations = duplicate(data?.validation);
 		tempValidation['MANDATORY'] = { ...tempValidation['MANDATORY'], message: message };
 		let tempData = {
 			...data,
@@ -331,15 +338,20 @@ export default function TextTypeEditor({
 		<Fragment>
 			<div className="_item">
 				<span>Key</span>
-				<CommonTextBox value={data.key} onChange={v => handleKeyChange(v)} />
+				<CommonTextBox type="text" value={data.key} onChange={v => handleKeyChange(v)} />
 			</div>
 			<div className="_item">
 				<span>Label</span>
-				<CommonTextBox value={data.label} onChange={v => handleLabelChange(v)} />
+				<CommonTextBox
+					type="text"
+					value={data.label}
+					onChange={v => handleLabelChange(v)}
+				/>
 			</div>
 			<div className="_item">
 				<span>Placeholder</span>
 				<CommonTextBox
+					type="text"
 					value={data?.placeholder}
 					onChange={v => handlePlaceholderChange(v)}
 				/>
@@ -366,35 +378,35 @@ export default function TextTypeEditor({
 				<div className="_item">
 					<span>{inputType === 'text' ? 'Character limit' : 'Number Range'}</span>
 					<div className="_inputContainer">
-						<input
+						<CommonTextBox
 							type="number"
-							value={min}
+							value={
+								data?.inputType === 'text'
+									? data.validation['STRING_LENGTH']?.minLength != undefined
+										? '' + data.validation['STRING_LENGTH']?.minLength
+										: undefined
+									: data.validation['NUMBER_VALUE']?.minValue != undefined
+									? '' + data.validation['NUMBER_VALUE']?.minValue
+									: undefined
+							}
+							min={0}
 							placeholder="min"
-							min={inputType === 'text' ? 0 : undefined}
-							onChange={e => setMin(e.target.value)}
-							onBlur={() => handleMinMaxChange()}
-							onKeyDown={e => {
-								if (e.key === 'Enter') {
-									e.preventDefault();
-									e.stopPropagation();
-									handleMinMaxChange();
-								}
-							}}
+							onChange={v => handleMinLimitChange(v)}
 						/>
-						<input
+						<CommonTextBox
 							type="number"
-							value={max}
+							value={
+								data?.inputType === 'text'
+									? data.validation['STRING_LENGTH']?.maxLength != undefined
+										? '' + data.validation['STRING_LENGTH']?.maxLength
+										: undefined
+									: data.validation['NUMBER_VALUE']?.maxValue != undefined
+									? '' + data.validation['NUMBER_VALUE']?.maxValue
+									: undefined
+							}
+							min={0}
 							placeholder="max"
-							min={inputType === 'text' ? 0 : undefined}
-							onChange={e => setMax(e.target.value)}
-							onBlur={() => handleMinMaxChange()}
-							onKeyDown={e => {
-								if (e.key === 'Enter') {
-									e.preventDefault();
-									e.stopPropagation();
-									handleMinMaxChange();
-								}
-							}}
+							onChange={v => handleMaxLimitChange(v)}
 						/>
 					</div>
 				</div>
@@ -404,19 +416,14 @@ export default function TextTypeEditor({
 							? 'Char limit validation message'
 							: 'Number range validation message'}
 					</span>
-					<input
+					<CommonTextBox
 						type="text"
-						value={message}
-						placeholder="message"
-						onChange={e => setMessage(e.target.value)}
-						onBlur={() => handleMinMaxChange()}
-						onKeyDown={e => {
-							if (e.key === 'Enter') {
-								e.preventDefault();
-								e.stopPropagation();
-								handleMinMaxChange();
-							}
-						}}
+						value={
+							data?.inputType === 'text'
+								? data.validation['STRING_LENGTH']?.message
+								: data.validation['NUMBER_VALUE']?.message
+						}
+						onChange={v => handleMinMaxLimitMessageChange(v)}
 					/>
 				</div>
 			</div>
@@ -436,6 +443,7 @@ export default function TextTypeEditor({
 						<div className="_item">
 							<span>Regular Expression</span>
 							<CommonTextBox
+								type="text"
 								value={
 									validationSelected
 										? data.validation[validationSelected]?.pattern
@@ -448,6 +456,7 @@ export default function TextTypeEditor({
 					<div className="_item">
 						<span>Validation check message</span>
 						<CommonTextBox
+							type="text"
 							value={
 								validationSelected
 									? data.validation[validationSelected]?.message
@@ -471,6 +480,7 @@ export default function TextTypeEditor({
 				<div className="_item">
 					<span>Mandatory validation message</span>
 					<CommonTextBox
+						type="text"
 						value={data.validation['MANDATORY']?.message}
 						onChange={v => handleMandatoryMessageChange(v)}
 					/>

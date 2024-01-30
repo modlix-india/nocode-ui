@@ -4,7 +4,7 @@ import {
 	FormCompDefinition,
 	FormCompValidation,
 	compValidationMap,
-	compValidations,
+	CompValidations,
 } from '../components/formCommons';
 import { duplicate } from '@fincity/kirun-js';
 import CommonTextBox from '../components/CommonTextBox';
@@ -21,20 +21,7 @@ export default function SmartElementEditor({
 	editorType,
 	handleFieldDefMapChanges,
 }: SmartElementEditorProps) {
-	const [minChar, setMinChar] = useState<string>('');
-	const [maxChar, setMaxChar] = useState<string>('');
-	const [message, setMessage] = useState<string>('');
-
-	useEffect(() => {
-		let min = data.validation['STRING_LENGTH']?.minLength ?? '';
-		let max = data.validation['STRING_LENGTH']?.maxLength ?? '';
-		setMinChar('' + min);
-		setMaxChar('' + max);
-		setMessage(data.validation['STRING_LENGTH']?.message ?? '');
-	}, [data]);
-
-	const reEvaluateOrder = (tempObj: compValidations) => {
-		// re-arrange order
+	const reEvaluateOrder = (tempObj: CompValidations) => {
 		Object.entries(tempObj)
 			.sort((a, b) => (a[1].order ?? 0) - (b[1].order ?? 0))
 			.map(([key, val], index) => (tempObj[key].order = index));
@@ -68,22 +55,12 @@ export default function SmartElementEditor({
 		handleFieldDefMapChanges(data.key, tempData);
 	};
 
-	const handleCharLimitChange = () => {
-		let tempValidation: compValidations = duplicate(data?.validation);
-
-		let tempLenVal: FormCompValidation = duplicate(tempValidation['STRING_LENGTH']);
-		if (maxChar) tempLenVal['maxLength'] = parseInt(maxChar);
-		else delete tempLenVal['maxLength'];
-		if (minChar) tempLenVal['minLength'] = parseInt(minChar);
-		else delete tempLenVal['minLength'];
-		if (message) tempLenVal['message'] = message;
-		else delete tempLenVal['message'];
-
-		tempValidation['STRING_LENGTH'] = tempLenVal;
-
+	const handleMinCharLimitChange = (minChar: string | undefined) => {
+		let tempValidation: CompValidations = duplicate(data.validation);
 		let tempSchema: CustomSchema = duplicate(data.schema);
-		if (maxChar) tempSchema['maxLength'] = parseInt(maxChar);
-		else delete tempSchema['maxLength'];
+
+		if (minChar) tempValidation['STRING_LENGTH']['minLength'] = parseInt(minChar);
+		else delete tempValidation['STRING_LENGTH']['minLength'];
 		if (minChar) tempSchema['minLength'] = parseInt(minChar);
 		else delete tempSchema['minLength'];
 
@@ -92,14 +69,47 @@ export default function SmartElementEditor({
 			validation: tempValidation,
 			schema: tempSchema,
 		};
+
+		handleFieldDefMapChanges(data.key, tempData);
+	};
+
+	const handleMaxCharLimitChange = (maxChar: string | undefined) => {
+		let tempValidation: CompValidations = duplicate(data?.validation);
+		let tempSchema: CustomSchema = duplicate(data.schema);
+
+		if (maxChar) tempValidation['STRING_LENGTH']['maxLength'] = parseInt(maxChar);
+		else delete tempValidation['STRING_LENGTH']['maxLength'];
+		if (maxChar) tempSchema['maxLength'] = parseInt(maxChar);
+		else delete tempSchema['maxLength'];
+
+		let tempData: FormCompDefinition = {
+			...duplicate(data),
+			validation: tempValidation,
+			schema: tempSchema,
+		};
+
 		if (maxChar) tempData['maxChars'] = parseInt(maxChar);
 		else delete tempData['maxChars'];
 
 		handleFieldDefMapChanges(data.key, tempData);
 	};
 
+	const handleCharLimitMessageChange = (message: string | undefined) => {
+		if (message === data.validation['STRING_LENGTH']['message']) return;
+		let tempValidation: CompValidations = duplicate(data?.validation);
+
+		if (message) tempValidation['STRING_LENGTH']['message'] = message;
+		else delete tempValidation['STRING_LENGTH']['message'];
+
+		let tempData: FormCompDefinition = {
+			...duplicate(data),
+			validation: tempValidation,
+		};
+		handleFieldDefMapChanges(data.key, tempData);
+	};
+
 	const handleMandatoryChange = (checked: boolean) => {
-		let tempValidation: compValidations = duplicate(data?.validation);
+		let tempValidation: CompValidations = duplicate(data?.validation);
 		if (checked) {
 			tempValidation['MANDATORY'] = {
 				...compValidationMap.get('MANDATORY')!,
@@ -118,7 +128,7 @@ export default function SmartElementEditor({
 
 	const handleMandatoryMessageChange = (message: string | undefined) => {
 		if (message === data.validation['MANDATORY']?.message) return;
-		let tempValidation: compValidations = duplicate(data?.validation);
+		let tempValidation: CompValidations = duplicate(data?.validation);
 		tempValidation['MANDATORY'] = { ...tempValidation['MANDATORY'], message: message };
 		let tempData = {
 			...data,
@@ -129,7 +139,7 @@ export default function SmartElementEditor({
 	};
 
 	const handleValidationCheckChange = (checked: boolean) => {
-		let tempValidation: compValidations = duplicate(data?.validation);
+		let tempValidation: CompValidations = duplicate(data?.validation);
 		const newValidationKey = editorType === 'email' ? 'EMAIL' : 'PHONE';
 		let tempSchema: CustomSchema;
 
@@ -166,7 +176,7 @@ export default function SmartElementEditor({
 	) => {
 		if (value === data.validation[validationKey]?.message) return;
 
-		let tempValidation: compValidations = duplicate(data?.validation);
+		let tempValidation: CompValidations = duplicate(data?.validation);
 		tempValidation[validationKey] = {
 			...tempValidation[validationKey],
 			message: value,
@@ -181,7 +191,7 @@ export default function SmartElementEditor({
 
 	const handlePhonePatternChange = (regex: string | undefined) => {
 		if (regex === data.validation['PHONE']?.pattern) return;
-		let tempValidation: compValidations = duplicate(data?.validation);
+		let tempValidation: CompValidations = duplicate(data?.validation);
 		tempValidation['PHONE'] = { ...tempValidation['PHONE'], pattern: regex };
 		let tempSchema: CustomSchema = { ...data.schema, pattern: regex };
 		let tempData = {
@@ -197,15 +207,20 @@ export default function SmartElementEditor({
 		<Fragment>
 			<div className="_item">
 				<span>Key</span>
-				<CommonTextBox value={data.key} onChange={v => handleKeyChange(v)} />
+				<CommonTextBox type="text" value={data.key} onChange={v => handleKeyChange(v)} />
 			</div>
 			<div className="_item">
 				<span>Label</span>
-				<CommonTextBox value={data.label} onChange={v => handleLabelChange(v)} />
+				<CommonTextBox
+					type="text"
+					value={data.label}
+					onChange={v => handleLabelChange(v)}
+				/>
 			</div>
 			<div className="_item">
 				<span>Placeholder</span>
 				<CommonTextBox
+					type="text"
 					value={data?.placeholder}
 					onChange={v => handlePlaceholderChange(v)}
 				/>
@@ -214,53 +229,36 @@ export default function SmartElementEditor({
 				<div className="_item">
 					<span>Character limit</span>
 					<div className="_inputContainer">
-						<input
+						<CommonTextBox
 							type="number"
-							value={minChar}
+							value={
+								data.validation['STRING_LENGTH']?.minLength != undefined
+									? '' + data.validation['STRING_LENGTH']?.minLength
+									: undefined
+							}
+							min={0}
 							placeholder="min"
-							min={0}
-							onChange={e => setMinChar(e.target.value)}
-							onBlur={() => handleCharLimitChange()}
-							onKeyDown={e => {
-								if (e.key === 'Enter') {
-									e.preventDefault();
-									e.stopPropagation();
-									handleCharLimitChange();
-								}
-							}}
+							onChange={v => handleMinCharLimitChange(v)}
 						/>
-						<input
+						<CommonTextBox
 							type="number"
-							value={maxChar}
-							placeholder="max"
+							value={
+								data.validation['STRING_LENGTH']?.maxLength != undefined
+									? '' + data.validation['STRING_LENGTH']?.maxLength
+									: undefined
+							}
 							min={0}
-							onChange={e => setMaxChar(e.target.value)}
-							onBlur={() => handleCharLimitChange()}
-							onKeyDown={e => {
-								if (e.key === 'Enter') {
-									e.preventDefault();
-									e.stopPropagation();
-									handleCharLimitChange();
-								}
-							}}
+							placeholder="max"
+							onChange={v => handleMaxCharLimitChange(v)}
 						/>
 					</div>
 				</div>
 				<div className="_item">
 					<span>Char limit validation message </span>
-					<input
+					<CommonTextBox
 						type="text"
-						value={message}
-						placeholder="message"
-						onChange={e => setMessage(e.target.value)}
-						onBlur={() => handleCharLimitChange()}
-						onKeyDown={e => {
-							if (e.key === 'Enter') {
-								e.preventDefault();
-								e.stopPropagation();
-								handleCharLimitChange();
-							}
-						}}
+						value={data.validation['STRING_LENGTH']?.message}
+						onChange={v => handleCharLimitMessageChange(v)}
 					/>
 				</div>
 			</div>
@@ -288,6 +286,7 @@ export default function SmartElementEditor({
 				<div className="_item">
 					<span>Mandatory validation message</span>
 					<CommonTextBox
+						type="text"
 						value={data.validation['MANDATORY']?.message}
 						onChange={v => handleMandatoryMessageChange(v)}
 					/>
@@ -299,6 +298,7 @@ export default function SmartElementEditor({
 						<div className="_item">
 							<span>Regular Expression</span>
 							<CommonTextBox
+								type="text"
 								value={data.validation['PHONE']?.pattern}
 								onChange={v => handlePhonePatternChange(v)}
 							/>
@@ -307,6 +307,7 @@ export default function SmartElementEditor({
 					<div className="_item">
 						<span>Validation check message</span>
 						<CommonTextBox
+							type="text"
 							value={
 								editorType === 'email'
 									? data.validation['EMAIL']?.message
