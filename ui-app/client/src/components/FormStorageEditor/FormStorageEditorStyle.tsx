@@ -56,7 +56,7 @@ export default function FormStorageEditorStyle({
             background: #FFF;
         }
 
-        ${PREFIX} ._section_header {
+        ${PREFIX} ._sectionHeader {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -65,40 +65,40 @@ export default function FormStorageEditorStyle({
             gap: 8px;
         }
 
-        ${PREFIX} ._compSection ._section_header {
+        ${PREFIX} ._compSection ._sectionHeader {
             border-bottom: 2px solid rgba(66, 126, 228, 0.20);
             background: rgba(66, 126, 228, 0.05);
         }
         
-        ${PREFIX} ._editorSection ._section_header {
+        ${PREFIX} ._editorSection ._sectionHeader {
             border-bottom: 2px solid rgba(28, 186, 121, 0.20);
             background: rgba(28, 186, 121, 0.05);
         }
         
-        ${PREFIX} ._previewSection ._section_header {
+        ${PREFIX} ._previewSection ._sectionHeader {
             border-bottom: 2px solid rgba(255, 97, 77, 0.20);
             background: rgba(255, 97, 77, 0.05);
         }
-        ${PREFIX} ._section_header > span {
+        ${PREFIX} ._sectionHeader > span {
             font-family: Inter;
             font-size: 16px;
             font-style: normal;
             font-weight: 600;
             line-height: 16px;
         }
-        ${PREFIX} ._compSection ._section_header > span {
+        ${PREFIX} ._compSection ._sectionHeader > span {
             color: #427EE4;
         }
         
-        ${PREFIX} ._editorSection ._section_header > span {
+        ${PREFIX} ._editorSection ._sectionHeader > span {
             color: #1CBA79;
         }
         
-        ${PREFIX} ._previewSection ._section_header > span {
+        ${PREFIX} ._previewSection ._sectionHeader > span {
             color: #FF614D;
         }
 
-        ${PREFIX} ._section_header > p {
+        ${PREFIX} ._sectionHeader > p {
             margin: 0;
             color: rgba(0, 0, 0, 0.40);
             font-family: Inter;
@@ -117,7 +117,7 @@ export default function FormStorageEditorStyle({
             overflow: auto;
         }
 
-        ${PREFIX} ._comp ._each_section {
+        ${PREFIX} ._comp ._eachSection {
             display: flex;
             flex-direction: column;
             gap: 30px;
@@ -182,14 +182,14 @@ export default function FormStorageEditorStyle({
             gap: 10px;
         }
 
-        ${PREFIX} ._editor ._accordion_panel {
+        ${PREFIX} ._editor ._accordionPanel {
             display: flex;
             flex-direction: column;
             border-radius: 2px;
             border: 1px solid rgba(0, 0, 0, 0.05);
         }
 
-        ${PREFIX} ._accordion_panel ._header {
+        ${PREFIX} ._accordionPanel ._header {
             width: 100%;
             height: 45px;
             display: flex;
@@ -201,12 +201,12 @@ export default function FormStorageEditorStyle({
             background: rgba(0, 0, 0, 0.02);
         }
 
-        ${PREFIX} ._accordion_panel ._header ._left {
+        ${PREFIX} ._accordionPanel ._header ._left {
             display: flex;
             align-items: center;
             gap: 20px;
         }
-        ${PREFIX} ._accordion_panel ._header ._left span {
+        ${PREFIX} ._accordionPanel ._header ._left span {
             color: rgba(0, 0, 0, 0.80);
             font-family: Inter;
             font-size: 14px;
@@ -215,27 +215,27 @@ export default function FormStorageEditorStyle({
             line-height: 14px;
         }
 
-        ${PREFIX} ._accordion_panel ._header ._right {
+        ${PREFIX} ._accordionPanel ._header ._right {
             display: flex;
             align-items: center;
             gap: 15px;
         }
 
-        ${PREFIX} ._accordion_panel ._header svg {
+        ${PREFIX} ._accordionPanel ._header svg {
             cursor: pointer;
         }
-        ${PREFIX} ._accordion_panel ._header svg._delete,
-        ${PREFIX} ._accordion_panel ._header svg._settings {
+        ${PREFIX} ._accordionPanel ._header svg._delete,
+        ${PREFIX} ._accordionPanel ._header svg._settings {
             color: #C8C8C8;
         }
-        ${PREFIX} ._accordion_panel ._header svg._delete:hover{
+        ${PREFIX} ._accordionPanel ._header svg._delete:hover{
             color: #FF614D;
         }
-        ${PREFIX} ._accordion_panel ._header svg._settings:hover {
+        ${PREFIX} ._accordionPanel ._header svg._settings:hover {
             color: #427EE4;
         }
 
-        ${PREFIX} ._accordion_panel ._content {
+        ${PREFIX} ._accordionPanel ._content {
             display: none;
             padding: 0px;
             flex-direction: column;
@@ -243,7 +243,7 @@ export default function FormStorageEditorStyle({
             padding-bottom: 10px;
         }
 
-        ${PREFIX} ._accordion_panel ._content._show {
+        ${PREFIX} ._accordionPanel ._content._show {
             display: flex;
             padding: 20px;
         }

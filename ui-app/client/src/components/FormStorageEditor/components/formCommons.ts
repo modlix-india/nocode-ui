@@ -1,34 +1,34 @@
 import { ComponentDefinition } from '../../../types/common';
 
-interface itemSchema {
+interface ItemSchema {
 	type: Array<string>;
 }
 export interface CustomSchema {
 	type?: Array<string>;
 	enums?: Array<string>;
 	pattern?: string;
-	maxLength?: number | '';
-	minLength?: number | '';
-	minimum?: number | '';
-	maximum?: number | '';
-	items?: itemSchema;
+	maxLength?: number | undefined;
+	minLength?: number | undefined;
+	minimum?: number | undefined;
+	maximum?: number | undefined;
+	items?: ItemSchema;
 	oneOf?: Array<CustomSchema>;
 	format?: string;
 }
 
-export interface formSchemaProperties {
+export interface FormSchemaProperties {
 	[key: string]: CustomSchema;
 }
 
 export interface FormSchema {
 	type: 'OBJECT';
 	name?: string;
-	properties?: formSchemaProperties;
+	properties?: FormSchemaProperties;
 	required?: Array<string>;
 	additionalProperties: false;
 }
 
-export interface compValidations {
+export interface CompValidations {
 	[key: string]: FormCompValidation;
 }
 export interface Option {
@@ -42,11 +42,11 @@ export interface FormCompDefinition {
 	order: number | undefined;
 	label: string;
 	placeholder?: string;
-	maxChars?: number | '';
+	maxChars?: number | undefined;
 	inputType?: string;
-	numberType?: string | '';
+	numberType?: string;
 	isMultiSelect?: boolean;
-	validation: compValidations;
+	validation: CompValidations;
 	optionList?: Array<Option>;
 	schema: CustomSchema;
 	editorType: string;
@@ -73,7 +73,7 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 			order: undefined,
 			label: 'Name',
 			placeholder: 'Enter your name',
-			maxChars: 24, //maxChar = maxLength
+			maxChars: 24,
 			validation: {
 				STRING_LENGTH: {
 					uuid: '',
@@ -83,13 +83,6 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 					maxLength: 24,
 					message: 'Not valid length',
 				},
-				// if mandatory check = true
-				// MANDATORY: {
-				// 	uuid: '',
-				// 	order: undefined,
-				// 	type: 'MANDATORY',
-				// 	message: 'Mandatory',
-				// },
 			},
 			schema: {
 				type: ['STRING'],
@@ -107,7 +100,7 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 			order: undefined,
 			label: 'Email',
 			placeholder: 'Enter your email address',
-			maxChars: 50, //maxChar = maxLength
+			maxChars: 50,
 			validation: {
 				STRING_LENGTH: {
 					uuid: '',
@@ -117,28 +110,11 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 					maxLength: 50,
 					message: 'not valid length',
 				},
-				// if mandatory check = true
-				// MANDATORY: {
-				// 	uuid: '',
-				// 	order: undefined,
-				// 	type: 'MANDATORY',
-				// 	message: 'Mandatory',
-				// },
-
-				// if validation check = true
-				// EMAIL: {
-				// 	uuid: '',
-				// 	order: undefined,
-				// 	type: 'EMAIL',
-				// 	message: 'Not an valid email',
-				// },
 			},
 			schema: {
 				type: ['STRING'],
 				minLength: 0,
 				maxLength: 50,
-				// if validation check = true
-				// format: 'EMAIL',
 			},
 			editorType: 'EmailEditor',
 		},
@@ -151,7 +127,7 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 			order: undefined,
 			label: 'Phone',
 			placeholder: 'Enter your phone number',
-			maxChars: 10, //maxChar = maxLength
+			maxChars: 10,
 			validation: {
 				STRING_LENGTH: {
 					uuid: '',
@@ -161,30 +137,11 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 					maxLength: 10,
 					message: 'not valid length',
 				},
-				// if mandatory check = true
-				// MANDATORY: {
-				// 	uuid: '',
-				// 	order: undefined,
-				// 	type: 'MANDATORY',
-				// 	message: 'Mandatory',
-				// },
-
-				// if validation check = true
-				// PHONE: {
-				// 	uuid: '',
-				// 	order: undefined,
-				// 	type: 'REGEX',
-				// 	pattern: `^(\+\d{1,3}\s?)?\(?\d{3}\)?\d{4,15}$`,
-				// 	ignoreCase: false,
-				// 	message: 'Not an valid phone',
-				// },
 			},
 			schema: {
 				type: ['STRING'],
 				minLength: 10,
 				maxLength: 10,
-				// if validation check = true
-				// pattern: `^(\+\d{1,3}\s?)?\(?\d{3}\)?\d{4,15}$`,
 			},
 			editorType: 'PhoneEditor',
 		},
@@ -197,43 +154,18 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 			order: undefined,
 			label: 'Text box',
 			placeholder: 'Type something',
-			// maxChars: '',
-			inputType: 'text', // ['text','number']
-			numberType: '', // ['INTEGER','DECIMAL']
-			//it will have validation editor
+			inputType: 'text',
+			numberType: '',
 			validation: {
-				// if mandatory check = true
-				// MANDATORY: {
-				// 	uuid: '',
-				// 	order: undefined,
-				// 	type: 'MANDATORY',
-				// 	message: 'Mandatory',
-				// },
-				// validation when inputType = text
 				STRING_LENGTH: {
 					uuid: '',
 					order: 0,
 					type: 'STRING_LENGTH',
 				},
-				// validation when inputType = number
-				// NUMBER_VALUE: {
-				// 	uuid: '',
-				// 	order: undefined,
-				// 	type: 'NUMBER_VALUE',
-				// },
 			},
-			// schema for inputType = text
 			schema: {
 				type: ['STRING'],
 			},
-			// if inputType = number and numberType Integer
-			// schema: {
-			// 	type: ['INTEGER', 'LONG'],
-			// },
-			// if inputType = number and numberType Decimal
-			// schema: {
-			// 	type: ['INTEGER', 'LONG', 'FLOAT', 'DOUBLE'],
-			// },
 			editorType: 'TextBoxEditor',
 		},
 	],
@@ -245,17 +177,9 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 			order: undefined,
 			label: 'Text area',
 			placeholder: 'Type description',
-			maxChars: 2000, //maxChar = maxLength
-			inputType: 'text', // will not change
-			//it will have validation editor
+			maxChars: 2000,
+			inputType: 'text',
 			validation: {
-				// if mandatory check = true
-				// MANDATORY: {
-				// 	uuid: '',
-				// 	order: undefined,
-				// 	type: 'MANDATORY',
-				// 	message: 'Mandatory',
-				// },
 				STRING_LENGTH: {
 					uuid: '',
 					order: 0,
@@ -282,16 +206,7 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 			label: 'Drop down',
 			placeholder: 'Select an option',
 			isMultiSelect: false,
-			validation: {
-				// mandatory validation only
-				// if mandatory check = true
-				// MANDATORY: {
-				// 	uuid: '',
-				// 	order: undefined,
-				// 	type: 'MANDATORY',
-				// 	message: 'Mandatory',
-				// },
-			},
+			validation: {},
 			optionList: [
 				{
 					key: 'option 1',
@@ -302,19 +217,11 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 					value: 'Option 2',
 				},
 			],
-			//this schema is for single selection dropdown
+
 			schema: {
 				type: ['STRING'],
 				enums: ['option1', 'option2'],
 			},
-			// //this schema is for multiselection dropdown
-			// schema:{
-			// 	type: ['ARRAY'],
-			// 	enums: ['option1', 'option2', 'option3'],
-			// 	items: {
-			// 		type: ['STRING'],
-			// 	},
-			// },
 
 			editorType: 'DropdownEditor',
 		},
@@ -326,16 +233,7 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 			uuid: '',
 			order: undefined,
 			label: 'Radio Button',
-			validation: {
-				// mandatory validation only
-				// if mandatory check = true
-				// MANDATORY: {
-				// 	uuid: '',
-				// 	order: undefined,
-				// 	type: 'MANDATORY',
-				// 	message: 'Mandatory',
-				// },
-			},
+			validation: {},
 			optionList: [
 				{
 					key: 'option 1',
@@ -362,16 +260,7 @@ export const compDefinitionMap = new Map<string, FormCompDefinition>([
 			order: undefined,
 			label: 'Check box',
 			isMultiSelect: true,
-			validation: {
-				// mandatory validation only
-				// if mandatory check = true
-				// MANDATORY: {
-				// 	uuid: '',
-				// 	order: undefined,
-				// 	type: 'MANDATORY',
-				// 	message: 'Mandatory',
-				// },
-			},
+			validation: {},
 			optionList: [
 				{
 					key: 'option 1',
@@ -401,10 +290,10 @@ export interface FormCompValidation {
 	message?: string;
 	pattern?: string;
 	ignoreCase?: boolean;
-	minLength?: number | '';
-	maxLength?: number | '';
-	minValue?: number | '';
-	maxValue?: number | '';
+	minLength?: number | undefined;
+	maxLength?: number | undefined;
+	minValue?: number | undefined;
+	maxValue?: number | undefined;
 }
 
 export const compValidationMap = new Map<string, FormCompValidation>([
@@ -442,9 +331,6 @@ export const compValidationMap = new Map<string, FormCompValidation>([
 			uuid: '',
 			order: undefined,
 			type: 'STRING_LENGTH',
-			// maxLength: '',
-			// minLength: '',
-			// message: '',
 		},
 	],
 	[
@@ -453,9 +339,6 @@ export const compValidationMap = new Map<string, FormCompValidation>([
 			uuid: '',
 			order: undefined,
 			type: 'NUMBER_VALUE',
-			// minValue: '',
-			// maxValue: '',
-			// message: '',
 		},
 	],
 	[
@@ -505,7 +388,7 @@ export const compValidationMap = new Map<string, FormCompValidation>([
 			uuid: '',
 			order: undefined,
 			type: 'REGEX',
-			pattern: '^[^\\d]*$', // A/a to Z/z + all spacial character
+			pattern: '^[^\\d]*$',
 			message: '',
 		},
 	],
@@ -532,9 +415,7 @@ export const previewCompDefinitionMap = new Map<string, ComponentDefinition>([
 				showNumberSpinners: {
 					value: false,
 				},
-				// maxChars: {
-				// 	value: 10,
-				// },
+
 				placeholder: {
 					value: '',
 				},
@@ -580,12 +461,6 @@ export const previewCompDefinitionMap = new Map<string, ComponentDefinition>([
 				uniqueKeyType: {
 					value: 'RANDOM',
 				},
-				// data: {
-				// 	value: ['option1', 'option2'],
-				// },
-				// isMultiSelect: {
-				// 	value: true,
-				// },
 			},
 			displayOrder: undefined,
 			bindingPath: {
@@ -604,18 +479,13 @@ export const previewCompDefinitionMap = new Map<string, ComponentDefinition>([
 				selectionType: {
 					value: 'OBJECT',
 				},
-				// data: {
-				// 	value: ['Option 1', 'Option 2', 'Option 3'],
-				// },
+
 				layout: {
 					value: 'ROWLAYOUT',
 				},
 				uniqueKeyType: {
 					value: 'OBJECT',
 				},
-				// isMultiSelect: {
-				// 	value: false,
-				// },
 			},
 			displayOrder: undefined,
 			bindingPath: {
@@ -626,7 +496,7 @@ export const previewCompDefinitionMap = new Map<string, ComponentDefinition>([
 	],
 ]);
 
-export interface previewCompValidationProperties {
+export interface PreviewCompValidationProperties {
 	type: string;
 	message?: { value?: string };
 	pattern?: { value?: string };
@@ -639,7 +509,7 @@ export interface previewCompValidationProperties {
 export interface FormPreviewCompValidation {
 	key: string;
 	order?: number;
-	property: { value: previewCompValidationProperties };
+	property: { value: PreviewCompValidationProperties };
 }
 
 export const previewCompValidationMap = new Map<string, FormPreviewCompValidation>([
@@ -651,9 +521,7 @@ export const previewCompValidationMap = new Map<string, FormPreviewCompValidatio
 			property: {
 				value: {
 					type: 'MANDATORY',
-					message: {
-						// value: '',
-					},
+					message: {},
 				},
 			},
 		},
@@ -666,9 +534,7 @@ export const previewCompValidationMap = new Map<string, FormPreviewCompValidatio
 			property: {
 				value: {
 					type: 'EMAIL',
-					message: {
-						// value: '',
-					},
+					message: {},
 				},
 			},
 		},
@@ -681,12 +547,8 @@ export const previewCompValidationMap = new Map<string, FormPreviewCompValidatio
 			property: {
 				value: {
 					type: 'REGEX',
-					pattern: {
-						// value: '',
-					},
-					message: {
-						// value: '',
-					},
+					pattern: {},
+					message: {},
 				},
 			},
 		},
@@ -699,15 +561,9 @@ export const previewCompValidationMap = new Map<string, FormPreviewCompValidatio
 			property: {
 				value: {
 					type: 'STRING_LENGTH',
-					maxLength: {
-						// value: 0,
-					},
-					minLength: {
-						// value: 0,
-					},
-					message: {
-						// value: '',
-					},
+					maxLength: {},
+					minLength: {},
+					message: {},
 				},
 			},
 		},
@@ -720,15 +576,9 @@ export const previewCompValidationMap = new Map<string, FormPreviewCompValidatio
 			property: {
 				value: {
 					type: 'NUMBER_VALUE',
-					maxValue: {
-						// value: 0,
-					},
-					minValue: {
-						// value: 0,
-					},
-					message: {
-						// value: '',
-					},
+					maxValue: {},
+					minValue: {},
+					message: {},
 				},
 			},
 		},

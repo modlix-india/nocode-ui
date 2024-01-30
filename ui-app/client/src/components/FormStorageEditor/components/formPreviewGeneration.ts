@@ -11,7 +11,7 @@ import {
 	FormDefinition,
 	previewCompDefinitionMap,
 	previewCompValidationMap,
-	previewCompValidationProperties,
+	PreviewCompValidationProperties,
 } from './formCommons';
 import { duplicate } from '@fincity/kirun-js';
 
@@ -32,7 +32,7 @@ const compValidationGenerator = (val: FormCompValidation) => {
 		key: val.uuid,
 		order: val.order,
 	};
-	let valProps: previewCompValidationProperties = {
+	let valProps: PreviewCompValidationProperties = {
 		...tempVal.property.value,
 	};
 
@@ -110,7 +110,6 @@ export const generateFormPreview = (fieldDefinitionMap: FormDefinition, formName
 		pageDef.componentDefinition[tempCompDef.key] = tempCompDef;
 		children[tempCompDef.key] = true;
 	}
-	// console.log('compDef', pageDef.componentDefinition);
 
 	return { children: children, pageDef: pageDef };
 };

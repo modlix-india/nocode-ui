@@ -96,7 +96,7 @@ export default function FormEditor({
 		e.stopPropagation();
 		try {
 			let dropData: string = e.dataTransfer.getData('editor/text');
-			if (!dropData.includes('FORM_STORAGE_COMPONENT_')) return;
+			if (!dropData.startsWith('FORM_STORAGE_COMPONENT_')) return;
 			const dragData: { key: string; dropType?: string } = JSON.parse(
 				dropData.substring(dropData.indexOf('{')),
 			);

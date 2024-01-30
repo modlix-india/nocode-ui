@@ -55,7 +55,6 @@ function FormStorageEditor(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	// binding path for the Storage definition
 	const storagePath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
 		: undefined;
@@ -86,9 +85,6 @@ function FormStorageEditor(props: ComponentProps) {
 		);
 	}, [storagePath]);
 
-	// console.log('formData', formStorage);
-
-	// Function to call save eventFunction
 	const saveFunction = useCallback(() => {
 		if (!onSave || !pageDefinition.eventFunctions?.[onSave]) return;
 		(async () =>
@@ -114,14 +110,14 @@ function FormStorageEditor(props: ComponentProps) {
 			<HelperComponent key={`${key}_hlp`} definition={definition} context={context} />
 			<div className="_main">
 				<div className="_compSection">
-					<div className="_section_header">
+					<div className="_sectionHeader">
 						<span>Components</span>
 						<p>Edit by dragging any component</p>
 					</div>
 					<FormComponents />
 				</div>
 				<div className="_editorSection">
-					<div className="_section_header">
+					<div className="_sectionHeader">
 						<span>Editor</span>
 						<p>Click on any field to edit</p>
 					</div>
@@ -133,7 +129,7 @@ function FormStorageEditor(props: ComponentProps) {
 					/>
 				</div>
 				<div className="_previewSection">
-					<div className="_section_header">
+					<div className="_sectionHeader">
 						<span>Preview</span>
 						<p>You can view a basic form and make edits in the editor</p>
 					</div>

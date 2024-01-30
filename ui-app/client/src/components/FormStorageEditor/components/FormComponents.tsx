@@ -315,7 +315,7 @@ const CompSection = ({
 	const [show, setShow] = useState<boolean>(true);
 
 	return (
-		<div className="_each_section">
+		<div className="_eachSection">
 			<div className="_heading" onClick={() => setShow(!show)}>
 				<span>{data.sectionHeader}</span>
 				{show ? icon.angleUp : icon.angleDown}

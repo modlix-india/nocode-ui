@@ -24,7 +24,7 @@ export default function AccordionPanel({
 
 	return (
 		<div
-			className="_accordion_panel"
+			className="_accordionPanel"
 			onDragStart={e => handleDragStart(e, data.key, 'Inside_Drop')}
 			onDragOver={handleDragOver}
 			onDrop={e => handleDrop(e, data.key)}
