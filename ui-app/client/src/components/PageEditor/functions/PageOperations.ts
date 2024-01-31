@@ -35,6 +35,7 @@ export class PageOperations {
 	private onSelectedComponentChanged: (key: string) => void;
 	private styleSelectorPref: any;
 	private selectedSubComponent: string | undefined;
+	private editorType: string;
 
 	constructor(
 		defPath: string | undefined,
@@ -45,6 +46,7 @@ export class PageOperations {
 		selectedSubComponent: string | undefined,
 		onSelectedComponentChanged: (key: string) => void,
 		styleSelectorPref: any,
+		editorType: string,
 	) {
 		this.defPath = defPath;
 		this.locationHistory = locationHistory;
@@ -54,6 +56,7 @@ export class PageOperations {
 		this.onSelectedComponentChanged = onSelectedComponentChanged;
 		this.styleSelectorPref = styleSelectorPref;
 		this.selectedSubComponent = selectedSubComponent;
+		this.editorType = editorType;
 	}
 
 	public setIssuePopup(issue: Issue): void {
@@ -831,7 +834,9 @@ export class PageOperations {
 
 		const allowChildrenTobeAdded =
 			!!doCompComponent.allowedChildrenType &&
-			(doComp.type !== 'SectionGrid' || doComp.properties?.enableChildrenSelection?.value);
+			(doComp.type !== 'SectionGrid' ||
+				this.editorType === 'SECTION' ||
+				doComp.properties?.enableChildrenSelection?.value);
 
 		if (!allowChildrenTobeAdded) {
 			// If the component that is being dropped on is not a component which can have children.

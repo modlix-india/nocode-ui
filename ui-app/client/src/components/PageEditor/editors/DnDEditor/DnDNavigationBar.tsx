@@ -1,4 +1,6 @@
 import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import ComponenstDefinition from '../../../';
+import { DRAG_CD_KEY } from '../../../../constants';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediately,
@@ -7,9 +9,6 @@ import {
 import { LocationHistory, PageDefinition } from '../../../../types/common';
 import { ContextMenuDetails } from '../../components/ContextMenu';
 import { PageOperations } from '../../functions/PageOperations';
-import ComponenstDefinition from '../../../';
-import { DRAG_CD_KEY } from '../../../../constants';
-import { LinkedList } from '@fincity/kirun-js';
 
 interface DnDNavigationBarProps {
 	personalizationPath: string | undefined;
@@ -202,6 +201,7 @@ export default function DnDNavigationBar({
 					dragStart={dragStart}
 					setDragStart={setDragStart}
 					filter={filter}
+					editorType={editorType}
 				/>
 			</div>
 		</div>
@@ -227,6 +227,7 @@ interface CompTreeProps {
 	dragStart: boolean;
 	setDragStart: (v: boolean) => void;
 	filter: string;
+	editorType: string | undefined;
 }
 
 function CompTree({
@@ -248,6 +249,7 @@ function CompTree({
 	dragStart,
 	setDragStart,
 	filter,
+	editorType,
 }: CompTreeProps) {
 	const comp = pageDef?.componentDefinition[compKey];
 	const hoverLonger = useRef<NodeJS.Timeout | null>();
@@ -257,7 +259,7 @@ function CompTree({
 		(comp?.type !== 'SectionGrid' && comp?.children) ||
 		(comp?.type === 'SectionGrid' &&
 			comp?.children &&
-			comp?.properties?.enableChildrenSelection?.value)
+			(editorType === 'SECTION' || comp?.properties?.enableChildrenSelection?.value))
 			? Object.keys(comp.children!)
 			: undefined;
 
@@ -314,6 +316,7 @@ function CompTree({
 					dragStart={dragStart}
 					setDragStart={setDragStart}
 					filter={filter}
+					editorType={editorType}
 				/>
 			));
 	}

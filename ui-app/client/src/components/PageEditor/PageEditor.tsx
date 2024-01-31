@@ -367,6 +367,7 @@ function PageEditor(props: ComponentProps) {
 				selectedSubComponent,
 				key => setSelectedComponent(key),
 				styleSelectorPref,
+				editorType,
 			),
 		[
 			defPath,

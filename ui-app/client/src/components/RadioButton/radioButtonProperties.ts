@@ -25,6 +25,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_ANY_COMP_PROP,
 		displayName: 'Data',
 		description: 'Data that is used to render radio buttons.',
+		group: ComponentPropertyGroup.DATA,
 	},
 	{
 		name: 'orientation',
