@@ -25,7 +25,7 @@ export interface FormSchema {
 	name?: string;
 	properties?: FormSchemaProperties;
 	required?: Array<string>;
-	additionalProperties: false;
+	additionalProperties: boolean;
 }
 
 export interface CompValidations {
@@ -64,7 +64,7 @@ export interface FormStorageEditorDefinition {
 	deleteAuth: string;
 }
 
-export const compDefinitionMap = new Map<string, FormCompDefinition>([
+export const COMP_DEFINITION_MAP = new Map<string, FormCompDefinition>([
 	[
 		'name',
 		{
@@ -296,7 +296,7 @@ export interface FormCompValidation {
 	maxValue?: number | undefined;
 }
 
-export const compValidationMap = new Map<string, FormCompValidation>([
+export const COMP_VALIDATION_MAP = new Map<string, FormCompValidation>([
 	[
 		'MANDATORY',
 		{
@@ -404,7 +404,7 @@ export const compValidationMap = new Map<string, FormCompValidation>([
 	],
 ]);
 
-export const previewCompDefinitionMap = new Map<string, ComponentDefinition>([
+export const PREVIEW_COMP_DEFINITION_MAP = new Map<string, ComponentDefinition>([
 	[
 		'TextBox',
 		{
@@ -498,12 +498,12 @@ export const previewCompDefinitionMap = new Map<string, ComponentDefinition>([
 
 export interface PreviewCompValidationProperties {
 	type: string;
-	message?: { value?: string };
-	pattern?: { value?: string };
-	maxValue?: { value?: number };
-	minValue?: { value?: number };
-	maxLength?: { value?: number };
-	minLength?: { value?: number };
+	message?: { value: string };
+	pattern?: { value: string };
+	maxValue?: { value: number };
+	minValue?: { value: number };
+	maxLength?: { value: number };
+	minLength?: { value: number };
 }
 
 export interface FormPreviewCompValidation {
@@ -512,7 +512,7 @@ export interface FormPreviewCompValidation {
 	property: { value: PreviewCompValidationProperties };
 }
 
-export const previewCompValidationMap = new Map<string, FormPreviewCompValidation>([
+export const PREVIEW_COMP_VALIDATION_MAP = new Map<string, FormPreviewCompValidation>([
 	[
 		'MANDATORY',
 		{
@@ -521,7 +521,6 @@ export const previewCompValidationMap = new Map<string, FormPreviewCompValidatio
 			property: {
 				value: {
 					type: 'MANDATORY',
-					message: {},
 				},
 			},
 		},
@@ -534,7 +533,6 @@ export const previewCompValidationMap = new Map<string, FormPreviewCompValidatio
 			property: {
 				value: {
 					type: 'EMAIL',
-					message: {},
 				},
 			},
 		},
@@ -547,8 +545,6 @@ export const previewCompValidationMap = new Map<string, FormPreviewCompValidatio
 			property: {
 				value: {
 					type: 'REGEX',
-					pattern: {},
-					message: {},
 				},
 			},
 		},
@@ -561,9 +557,6 @@ export const previewCompValidationMap = new Map<string, FormPreviewCompValidatio
 			property: {
 				value: {
 					type: 'STRING_LENGTH',
-					maxLength: {},
-					minLength: {},
-					message: {},
 				},
 			},
 		},
@@ -576,9 +569,6 @@ export const previewCompValidationMap = new Map<string, FormPreviewCompValidatio
 			property: {
 				value: {
 					type: 'NUMBER_VALUE',
-					maxValue: {},
-					minValue: {},
-					message: {},
 				},
 			},
 		},

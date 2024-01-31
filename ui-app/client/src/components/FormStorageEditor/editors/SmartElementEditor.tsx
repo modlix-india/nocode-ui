@@ -3,7 +3,7 @@ import {
 	CustomSchema,
 	FormCompDefinition,
 	FormCompValidation,
-	compValidationMap,
+	COMP_VALIDATION_MAP,
 	CompValidations,
 } from '../components/formCommons';
 import { duplicate } from '@fincity/kirun-js';
@@ -112,7 +112,7 @@ export default function SmartElementEditor({
 		let tempValidation: CompValidations = duplicate(data?.validation);
 		if (checked) {
 			tempValidation['MANDATORY'] = {
-				...compValidationMap.get('MANDATORY')!,
+				...COMP_VALIDATION_MAP.get('MANDATORY')!,
 				order: Object.entries(data?.validation).length,
 			};
 		} else {
@@ -145,7 +145,7 @@ export default function SmartElementEditor({
 
 		if (checked) {
 			tempValidation[newValidationKey] = {
-				...compValidationMap.get(newValidationKey)!,
+				...COMP_VALIDATION_MAP.get(newValidationKey)!,
 				order: Object.entries(data?.validation).length,
 			};
 			tempSchema = {

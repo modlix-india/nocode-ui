@@ -3,7 +3,7 @@ import {
 	CustomSchema,
 	FormCompDefinition,
 	FormCompValidation,
-	compValidationMap,
+	COMP_VALIDATION_MAP,
 	CompValidations,
 } from '../components/formCommons';
 import { duplicate } from '@fincity/kirun-js';
@@ -11,15 +11,15 @@ import { Dropdown, DropdownOptions } from '../components/Dropdown';
 import CommonCheckBox from '../components/CommonCheckBox';
 import CommonTextBox from '../components/CommonTextBox';
 
-const inputTypeOption: DropdownOptions = [
+const INPUT_TYPE_OPTION: DropdownOptions = [
 	{ name: 'text', displayName: 'Text' },
 	{ name: 'number', displayName: 'Number' },
 ];
-const numberTypeOption: DropdownOptions = [
+const NUMBER_TYPE_OPTION: DropdownOptions = [
 	{ name: 'INTEGER', displayName: 'Integer' },
 	{ name: 'DECIMAL', displayName: 'Decimal' },
 ];
-const textValidatiopnOption: DropdownOptions = [
+const TEXT_VALIDATIOPN_OPTION: DropdownOptions = [
 	{ name: 'ALPHABETIC', displayName: 'Alphabetic' },
 	{ name: 'ALPHANUMERIC', displayName: 'Alphanumeric' },
 	{ name: 'CHARACTERS_ONLY', displayName: 'Characters Only' },
@@ -27,7 +27,7 @@ const textValidatiopnOption: DropdownOptions = [
 	{ name: 'CURRENCY', displayName: 'Currency' },
 	{ name: 'REGEX', displayName: 'Regular Expression' },
 ];
-const numberValidatiopnOption: DropdownOptions = [];
+const NUMBER_VALIDATIOPN_OPTION: DropdownOptions = [];
 
 interface TextTypeEditorProps {
 	data: FormCompDefinition;
@@ -49,7 +49,7 @@ export default function TextTypeEditor({
 		setInputType(data?.inputType ?? '');
 		setNumberType(data?.numberType ?? '');
 		let tempOption =
-			data?.inputType === 'text' ? textValidatiopnOption : numberValidatiopnOption;
+			data?.inputType === 'text' ? TEXT_VALIDATIOPN_OPTION : NUMBER_VALIDATIOPN_OPTION;
 
 		let selectedDropdownVal = Object.entries(data.validation).find(
 			([_, value]) => value.pattern !== undefined,
@@ -171,7 +171,7 @@ export default function TextTypeEditor({
 		if (v === 'text') {
 			tempSchema = { type: ['STRING'] };
 			tempValidation['STRING_LENGTH'] = {
-				...compValidationMap.get('STRING_LENGTH')!,
+				...COMP_VALIDATION_MAP.get('STRING_LENGTH')!,
 				order: Object.entries(tempValidation).length,
 			};
 			delete tempValidation['NUMBER_VALUE'];
@@ -180,7 +180,7 @@ export default function TextTypeEditor({
 				type: ['INTEGER', 'LONG', 'FLOAT', 'DOUBLE'],
 			};
 			tempValidation['NUMBER_VALUE'] = {
-				...compValidationMap.get('NUMBER_VALUE')!,
+				...COMP_VALIDATION_MAP.get('NUMBER_VALUE')!,
 				order: Object.entries(tempValidation).length,
 			};
 			delete tempValidation['STRING_LENGTH'];
@@ -256,7 +256,7 @@ export default function TextTypeEditor({
 		}
 		if (v) {
 			tempValidation[v] = {
-				...compValidationMap.get(v)!,
+				...COMP_VALIDATION_MAP.get(v)!,
 				order: Object.keys(data?.validation).length,
 			};
 			tempSchema['pattern'] = tempValidation[v]?.pattern;
@@ -307,7 +307,7 @@ export default function TextTypeEditor({
 		let tempValidation: CompValidations = duplicate(data?.validation);
 		if (checked) {
 			tempValidation['MANDATORY'] = {
-				...compValidationMap.get('MANDATORY')!,
+				...COMP_VALIDATION_MAP.get('MANDATORY')!,
 				order: Object.entries(data?.validation).length,
 			};
 		} else {
@@ -360,7 +360,7 @@ export default function TextTypeEditor({
 				<Dropdown
 					value={inputType}
 					onChange={handleInputTypeChanges}
-					options={inputTypeOption}
+					options={INPUT_TYPE_OPTION}
 					placeholder="Input type"
 					showNoneLabel={false}
 				/>
@@ -369,7 +369,7 @@ export default function TextTypeEditor({
 				<Dropdown
 					value={numberType}
 					onChange={handleNumberTypeChanges}
-					options={numberTypeOption}
+					options={NUMBER_TYPE_OPTION}
 					placeholder="Number type"
 					showNoneLabel={false}
 				/>

@@ -4,14 +4,14 @@ import {
 	FormCompDefinition,
 	FormCompValidation,
 	Option,
-	compValidationMap,
+	COMP_VALIDATION_MAP,
 	CompValidations,
 } from '../components/formCommons';
 import { deepEqual, duplicate } from '@fincity/kirun-js';
 import CommonTextBox from '../components/CommonTextBox';
 import CommonCheckBox from '../components/CommonCheckBox';
 
-const OptionComp = ({
+function OptionComp({
 	data,
 	index,
 	handleDeleteOption,
@@ -23,7 +23,7 @@ const OptionComp = ({
 	handleDeleteOption: (key: string) => void;
 	handleOptionChange: (e: ChangeEvent<HTMLInputElement>, index: number) => void;
 	handleOptionListChange: () => void;
-}) => {
+}) {
 	return (
 		<>
 			<div className="_item" key={data.key}>
@@ -57,7 +57,7 @@ const OptionComp = ({
 			</div>
 		</>
 	);
-};
+}
 
 interface OptionTypeEditorProps {
 	data: FormCompDefinition;
@@ -204,7 +204,7 @@ export default function OptionTypeEditor({
 		let tempValidation: CompValidations = duplicate(data?.validation);
 		if (checked) {
 			tempValidation['MANDATORY'] = {
-				...compValidationMap.get('MANDATORY')!,
+				...COMP_VALIDATION_MAP.get('MANDATORY')!,
 				order: Object.entries(data?.validation).length,
 			};
 		} else {

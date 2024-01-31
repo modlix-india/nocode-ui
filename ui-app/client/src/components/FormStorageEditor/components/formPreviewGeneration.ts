@@ -9,8 +9,8 @@ import {
 	FormCompValidation,
 	FormPreviewCompValidation,
 	FormDefinition,
-	previewCompDefinitionMap,
-	previewCompValidationMap,
+	PREVIEW_COMP_DEFINITION_MAP,
+	PREVIEW_COMP_VALIDATION_MAP,
 	PreviewCompValidationProperties,
 } from './formCommons';
 import { duplicate } from '@fincity/kirun-js';
@@ -26,9 +26,9 @@ const COMP_TYPE: { [key: string]: string } = {
 	CheckBoxEditor: 'RadioButton',
 };
 
-const compValidationGenerator = (val: FormCompValidation) => {
+function compValidationGenerator(val: FormCompValidation) {
 	let tempVal: FormPreviewCompValidation = {
-		...(duplicate(previewCompValidationMap.get(val.type)!) as FormPreviewCompValidation),
+		...(duplicate(PREVIEW_COMP_VALIDATION_MAP.get(val.type)!) as FormPreviewCompValidation),
 		key: val.uuid,
 		order: val.order,
 	};
@@ -36,7 +36,7 @@ const compValidationGenerator = (val: FormCompValidation) => {
 		...tempVal.property.value,
 	};
 
-	if (val?.type) valProps['type'] = val?.type;
+	valProps['type'] = val.type;
 	if (val?.message) valProps['message'] = { value: val?.message };
 	if (val?.pattern) valProps['pattern'] = { value: val?.pattern };
 	if (val?.minLength) valProps['minLength'] = { value: val?.minLength };
@@ -46,11 +46,11 @@ const compValidationGenerator = (val: FormCompValidation) => {
 
 	tempVal['property']['value'] = valProps;
 	return tempVal;
-};
+}
 
-const compDefinitionGenerator = (data: FormCompDefinition, compType: string, formName: string) => {
+function compDefinitionGenerator(data: FormCompDefinition, compType: string, formName: string) {
 	let compDef: ComponentDefinition = {
-		...(duplicate(previewCompDefinitionMap.get(compType)) as ComponentDefinition),
+		...(duplicate(PREVIEW_COMP_DEFINITION_MAP.get(compType)) as ComponentDefinition),
 		key: data.uuid,
 		displayOrder: data.order,
 		name: data.label,
@@ -86,9 +86,9 @@ const compDefinitionGenerator = (data: FormCompDefinition, compType: string, for
 	compDef['bindingPath'] = tempBindingPath;
 
 	return compDef;
-};
+}
 
-export const generateFormPreview = (fieldDefinitionMap: FormDefinition, formName: string) => {
+export function generateFormPreview(fieldDefinitionMap: FormDefinition, formName: string) {
 	let pageDef: PageDefinition = {
 		name: 'formStoragePreview',
 		baseClientCode: '',
@@ -111,5 +111,5 @@ export const generateFormPreview = (fieldDefinitionMap: FormDefinition, formName
 		children[tempCompDef.key] = true;
 	}
 
-	return { children: children, pageDef: pageDef };
+	return { children, pageDef };
 };

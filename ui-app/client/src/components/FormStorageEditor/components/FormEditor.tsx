@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-	compDefinitionMap,
+	COMP_DEFINITION_MAP,
 	CustomSchema,
 	FormCompDefinition,
 	FormCompValidation,
@@ -110,7 +110,7 @@ export default function FormEditor({
 				// adding form component to fieldDefinitionMap/editor
 				let tempObj = duplicate(fieldDefinitionMap);
 
-				if (compDefinitionMap.has(dragData.key)) {
+				if (COMP_DEFINITION_MAP.has(dragData.key)) {
 					if (fieldDefinitionMap[dragData.key]) {
 						let flag = true;
 						let i = 1;
@@ -124,14 +124,14 @@ export default function FormEditor({
 							}
 						}
 						tempObj[newKey] = {
-							...duplicate(compDefinitionMap.get(dragData.key)!),
+							...duplicate(COMP_DEFINITION_MAP.get(dragData.key)!),
 							order: Object.entries(fieldDefinitionMap).length,
 							key: newKey,
 							uuid: shortUUID(),
 						};
 					} else {
 						tempObj[dragData.key] = {
-							...duplicate(compDefinitionMap.get(dragData.key)!),
+							...duplicate(COMP_DEFINITION_MAP.get(dragData.key)!),
 							order: Object.entries(fieldDefinitionMap).length,
 							key: dragData.key,
 							uuid: shortUUID(),
