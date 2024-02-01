@@ -298,6 +298,7 @@ function PageEditor(props: ComponentProps) {
 	const [showFormEditor, setShowFormEditor] = useState(0);
 	const [showFormEditorOption, setShowFormEditorOption] = useState(false);
 	const [formDefs, setFormDefs] = useState<FormName[]>();
+	const [clickedComponent, setClickedComponent] = useState<string>('');
 
 	const setSelectedComponent = useCallback(
 		(v: string) => {
@@ -763,6 +764,7 @@ function PageEditor(props: ComponentProps) {
 				/>
 				{showFormEditor != 0 && (
 					<FormEditor
+						componentKey={contextMenu?.componentKey}
 						showFormEditor={showFormEditor}
 						setShowFormEditor={setShowFormEditor}
 						formDefs={formDefs}
@@ -770,6 +772,7 @@ function PageEditor(props: ComponentProps) {
 						defPath={defPath}
 						pageExtractor={pageExtractor}
 						locationHistory={locationHistory}
+						clickedComponent={clickedComponent}
 					/>
 				)}
 			</div>
@@ -791,6 +794,7 @@ function PageEditor(props: ComponentProps) {
 				setShowFormEditor={setShowFormEditor}
 				formStorageUrl={formStorageUrl}
 				showFormEditorOption={showFormEditorOption}
+				setClickedComponent={setClickedComponent}
 			/>
 		</>
 	);

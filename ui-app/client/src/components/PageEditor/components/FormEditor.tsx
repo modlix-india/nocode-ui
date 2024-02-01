@@ -10,6 +10,7 @@ import axios from 'axios';
 import { shortUUID } from '../../../util/shortUUID';
 import { LOCAL_STORE_PREFIX } from '../../../constants';
 import { compDefinitionGenerator, generateFormPreview } from '../functions/CompDefgenerator';
+import { generateFormEvents } from '../functions/EventDefGenerator';
 
 interface FormName {
 	appCode: string;
@@ -19,6 +20,7 @@ interface FormName {
 }
 
 interface FormEditorProps {
+	componentKey: string | undefined;
 	showFormEditor: number | undefined;
 	setShowFormEditor: (pref: any) => void;
 	formDefs: FormName[] | undefined;
@@ -26,8 +28,10 @@ interface FormEditorProps {
 	defPath: string | undefined;
 	pageExtractor: PageStoreExtractor;
 	locationHistory: Array<LocationHistory>;
+	clickedComponent: string;
 }
 export default function FormEditor({
+	componentKey,
 	showFormEditor,
 	setShowFormEditor,
 	formDefs,
@@ -35,16 +39,23 @@ export default function FormEditor({
 	defPath,
 	pageExtractor,
 	locationHistory,
+	clickedComponent,
 }: FormEditorProps) {
 	const [currentForm, setCurrentForm] = useState<any>();
 	const [eachFormDef, setEachFormDef] = useState<any>({});
 	const [selectedFormComponent, setSelectedFormComponent] = useState<Array<string>>([]);
 	const [addForm, setAddForm] = useState<boolean>(false);
+	const [formName, setFormName] = useState<string>('');
+	const [buttonName, setButtonName] = useState<Array<number>>([]);
 
 	const headers: any = {
 		Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
 	};
 	if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
+
+	const submitButtonKey = shortUUID();
+
+	const clearButtonKey = shortUUID();
 
 	const eachFormDefinition = useCallback(() => {
 		if (currentForm?.id) {
@@ -55,7 +66,7 @@ export default function FormEditor({
 						headers,
 					})
 					.then(res => {
-						console.log(res.data.fieldDefinitionMap);
+						setFormName(res.data.name);
 						setEachFormDef(
 							generateFormPreview(res.data.fieldDefinitionMap, currentForm?.name),
 						);
@@ -70,22 +81,27 @@ export default function FormEditor({
 	}, [eachFormDefinition]);
 
 	useEffect(() => {
-		console.log(eachFormDef);
-	}, [eachFormDef]);
-
-	useEffect(() => {
-		if (!addForm) {
+		if (addForm) {
+			setShowFormEditor(0);
 			const pageDef = getDataFromPath(defPath, locationHistory, pageExtractor);
-			let newPageDef = duplicate(pageDef) as PageDefinition;
-			selectedFormComponent.forEach(each => {
-				newPageDef.componentDefinition[each] = eachFormDef[each];
-			});
-			if (!defPath) return;
-			console.log(newPageDef);
-			// setData(defPath, newPageDef, pageExtractor.getPageName());
-		}
-	}, [selectedFormComponent]);
 
+			if (!defPath) return;
+
+			let newPageDef = generateFormEvents(
+				pageDef,
+				componentKey,
+				formName,
+				eachFormDef,
+				submitButtonKey,
+				clearButtonKey,
+				selectedFormComponent,
+				buttonName,
+				clickedComponent,
+			);
+			setData(defPath, newPageDef, pageExtractor.getPageName());
+			setAddForm(false);
+		}
+	}, [addForm]);
 
 	return (
 		<Portal>
@@ -197,19 +213,52 @@ export default function FormEditor({
 								</div>
 								<div className="_formFieldsAndButtons">
 									<p className="_formFieldsAndButtonsTitle">Buttons</p>
-									{formDefs?.map((each, index) => {
-										return (
-											<div className="_formFieldAndButton" key={index}>
-												<p className="_formFieldAndButtonTitle">
-													{each?.name}
-												</p>
-												<input
-													className="_formFieldAndButtonCheckbox"
-													type="checkbox"
-												></input>
-											</div>
-										);
-									})}
+									<div className="_formFieldAndButton">
+										<p className="_formFieldAndButtonTitle">Submit</p>
+										<input
+											className="_formFieldAndButtonCheckbox"
+											type="checkbox"
+											id="0"
+											onClick={e => {
+												const elem = e.target as HTMLInputElement;
+												elem.checked
+													? setButtonName(prevSelectedButtonName => [
+															...prevSelectedButtonName,
+															parseInt(
+																(e.target as HTMLInputElement).id,
+															),
+													  ])
+													: setButtonName(prevSelectedButtonName =>
+															prevSelectedButtonName.filter(
+																each => each != parseInt(elem.id),
+															),
+													  );
+											}}
+										></input>
+									</div>
+									<div className="_formFieldAndButton">
+										<p className="_formFieldAndButtonTitle">Clear</p>
+										<input
+											className="_formFieldAndButtonCheckbox"
+											type="checkbox"
+											id="1"
+											onClick={e => {
+												const elem = e.target as HTMLInputElement;
+												elem.checked
+													? setButtonName(prevSelectedButtonName => [
+															...prevSelectedButtonName,
+															parseInt(
+																(e.target as HTMLInputElement).id,
+															),
+													  ])
+													: setButtonName(prevSelectedButtonName =>
+															prevSelectedButtonName.filter(
+																each => each != parseInt(elem.id),
+															),
+													  );
+											}}
+										></input>
+									</div>
 								</div>
 							</div>
 							<div className="_generateButton" onClick={() => setAddForm(true)}>

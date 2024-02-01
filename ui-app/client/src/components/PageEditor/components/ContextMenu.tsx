@@ -20,6 +20,7 @@ interface ContextMenuProps {
 	setShowFormEditor: (pref: any) => void;
 	formStorageUrl: string | undefined;
 	showFormEditorOption: boolean;
+	setClickedComponent: (pref: any) => void;
 }
 
 export function ContextMenu({
@@ -31,6 +32,7 @@ export function ContextMenu({
 	setShowFormEditor,
 	formStorageUrl,
 	showFormEditorOption,
+	setClickedComponent,
 }: ContextMenuProps) {
 	const [theme, setTheme] = useState('_light');
 
@@ -44,12 +46,15 @@ export function ContextMenu({
 		);
 	}, [personalizationPath]);
 
+	useEffect(() => {
+		if (!menuDetails) return;
+		setClickedComponent(menuDetails.componentKey);
+	}, [menuDetails]);
+
 	if (!menuDetails) return <></>;
 
 	let left: number | string = menuDetails.menuPosition.x;
 	let top: number | string = menuDetails.menuPosition.y;
-
-	console.log(showFormEditorOption, formStorageUrl);
 
 	let right: number | string = 'auto';
 	let bottom: number | string = 'auto';
