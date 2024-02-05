@@ -1,8 +1,8 @@
 import React, { ChangeEvent, KeyboardEvent } from 'react';
 import { getTranslations } from '../components/util/getTranslations';
 import { ComponentDefinition, RenderContext, Translations } from '../types/common';
-import { SubHelperComponent } from '../components/SubHelperComponent';
-import { HelperComponent } from '../components/HelperComponent';
+import { SubHelperComponent } from '../components/HelperComponents/SubHelperComponent';
+import { HelperComponent } from '../components/HelperComponents/HelperComponent';
 
 type CommonInputType = {
 	styles?: any;
@@ -41,6 +41,7 @@ type CommonInputType = {
 	updDownHandler?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 	inputType?: string;
 	maxChars?: number;
+	showDropdown?: boolean;
 };
 
 function CommonInputText(props: CommonInputType) {
@@ -81,6 +82,7 @@ function CommonInputText(props: CommonInputType) {
 		updDownHandler,
 		inputType = 'Text',
 		maxChars,
+		showDropdown,
 	} = props;
 	const [focus, setFocus] = React.useState(false);
 	const [showPassword, setShowPassowrd] = React.useState(false);
@@ -194,16 +196,18 @@ function CommonInputText(props: CommonInputType) {
 
 	return (
 		<div
-			className={`${cssPrefix} ${focus ? '_isActive' : ''} ${designType} ${colorScheme} ${
-				leftIcon ? '_hasLeftIcon' : ''
-			} ${!focus && value?.toString()?.length ? '_hasValue' : ''} ${
-				!hasErrorMessages && hasValidationCheck && isDirty ? '_validationSuccess' : ''
-			} ${hasErrorMessages ? '_hasError' : ''}`}
+			className={`${cssPrefix} ${
+				focus || showDropdown ? '_isActive' : ''
+			} ${designType} ${colorScheme} ${leftIcon ? '_hasLeftIcon' : ''} ${
+				!focus && value?.toString()?.length ? '_hasValue' : ''
+			} ${!hasErrorMessages && hasValidationCheck && isDirty ? '_validationSuccess' : ''} ${
+				hasErrorMessages ? '_hasError' : ''
+			}`}
 			style={computedStyles.comp ?? {}}
 			onMouseLeave={onMouseLeave}
 			onKeyUp={updDownHandler}
 		>
-			<HelperComponent definition={definition} />
+			<HelperComponent context={props.context} definition={definition} />
 			{leftIcon ? (
 				<i style={computedStyles.leftIcon ?? {}} className={`_leftIcon ${leftIcon}`}>
 					<SubHelperComponent

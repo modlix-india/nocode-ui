@@ -62,7 +62,8 @@ export const RenderEngineContainer = () => {
 
 	useEffect(() => {
 		if (!location.hash) return;
-		const handle = setInterval(() => {
+		let handle: NodeJS.Timeout | undefined = undefined;
+		handle = setInterval(() => {
 			const [id, block, inline] = location.hash.replace('#', '').split(':');
 			const element = document.getElementById(id);
 			if (!element) return;
@@ -88,7 +89,11 @@ export const RenderEngineContainer = () => {
 				});
 			}, 1000);
 			clearInterval(handle);
+			handle = undefined;
 		}, 100);
+		return () => {
+			if (handle) clearInterval(handle);
+		};
 	}, [location?.hash]);
 
 	useEffect(() => {

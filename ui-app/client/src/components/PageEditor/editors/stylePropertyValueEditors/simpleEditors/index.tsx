@@ -7,6 +7,7 @@ import {
 	ComponentStyle,
 	DataLocation,
 	EachComponentStyle,
+	LocationHistory,
 	PageDefinition,
 	StyleResolution,
 } from '../../../../../types/common';
@@ -17,6 +18,8 @@ import { IconOptions, IconsSimpleEditor } from './IconsSimpleEditor';
 import { PixelSize, RangeWithoutUnit } from './SizeSliders';
 import { ColorSelector } from './ColorSelector';
 import { ShadowEditor, ShadowEditorType } from './ShadowEditor';
+import { PageStoreExtractor, getDataFromPath, setData } from '../../../../../context/StoreContext';
+import { shortUUID } from '../../../../../util/shortUUID';
 
 export interface SimpleStyleEditorsProps {
 	pseudoState: string;
@@ -26,6 +29,7 @@ export interface SimpleStyleEditorsProps {
 	selectorPref: any;
 	styleProps: ComponentStyle | undefined;
 	selectedComponent: string;
+	selectedComponentsList: string[];
 	saveStyle: (newStyleProps: ComponentStyle) => void;
 	properties: [string, EachComponentStyle] | undefined;
 	displayName?: string;
@@ -34,6 +38,9 @@ export interface SimpleStyleEditorsProps {
 	prop: string;
 	editorDef: SimpleEditorDefinition;
 	className?: string;
+	defPath: string;
+	locationHistory: Array<LocationHistory>;
+	pageExtractor: PageStoreExtractor;
 }
 
 export function EachSimpleEditor({
@@ -45,11 +52,15 @@ export function EachSimpleEditor({
 	selectorPref,
 	styleProps,
 	selectedComponent,
+	selectedComponentsList,
 	saveStyle,
 	properties,
 	editorDef,
 	placeholder,
 	className = '',
+	defPath,
+	locationHistory,
+	pageExtractor,
 }: SimpleStyleEditorsProps) {
 	if (!properties) return <></>;
 
@@ -63,21 +74,22 @@ export function EachSimpleEditor({
 	});
 
 	let editor = undefined;
+
 	const editorOnchange = (v: string | Array<String> | ComponentProperty<string>) => {
 		let newValue;
 		if (Array.isArray(v)) newValue = { value: v, location: value.location };
 		else if (typeof v === 'string') newValue = { value: v, location: value.location };
 		else newValue = v;
-		valueChanged({
-			styleProps,
-			properties,
-			screenSize,
-			actualProp,
-			compProp,
-			pseudoState,
-			saveStyle,
-			iterateProps,
-			value: newValue,
+
+		valuesChangedOnlyValues({
+			subComponentName,
+			selectedComponent,
+			selectedComponentsList,
+			propValues: [{ prop, value: newValue }],
+			selectorPref,
+			defPath,
+			locationHistory,
+			pageExtractor,
 		});
 	};
 
@@ -209,6 +221,7 @@ export interface StyleEditorsProps {
 	selectorPref: any;
 	styleProps: ComponentStyle | undefined;
 	selectedComponent: string;
+	selectedComponentsList: string[];
 	saveStyle: (newStyleProps: ComponentStyle) => void;
 	pageOperations: PageOperations;
 	appDef?: any;
@@ -217,6 +230,9 @@ export interface StyleEditorsProps {
 	showTitle?: boolean;
 	editorInNewLine?: boolean;
 	isDetailStyleEditor?: boolean;
+	defPath: string;
+	locationHistory: Array<LocationHistory>;
+	pageExtractor: PageStoreExtractor;
 }
 
 export function extractValue({
@@ -250,132 +266,109 @@ export function extractValue({
 	return { value, actualProp, propName, screenSize, compProp };
 }
 
-export function valueChanged({
-	styleProps,
-	properties,
-	screenSize,
-	actualProp,
-	value,
-	compProp,
-	pseudoState,
-	saveStyle,
-	iterateProps,
-}: {
-	styleProps: ComponentStyle | undefined;
-	properties: [string, EachComponentStyle] | undefined;
-	screenSize: StyleResolution;
-	actualProp: string;
-	value: any;
-	compProp: string;
-	pseudoState: string;
-	saveStyle: (newStyleProps: ComponentStyle) => void;
-	iterateProps: any;
-}) {
-	const updatedStyle = propUpdate({
-		styleProps,
-		properties,
-		screenSize,
-		actualProp,
-		value,
-		compProp,
-		pseudoState,
-		iterateProps,
-	});
-
-	if (!updatedStyle) return;
-	saveStyle(updatedStyle);
-}
-
 export function valuesChangedOnlyValues({
 	subComponentName,
 	selectedComponent,
-	styleProps,
-	properties,
-	propValues,
-	pseudoState,
-	saveStyle,
-	iterateProps,
+	selectedComponentsList,
+	propValues, // only new updated style prop
 	selectorPref,
+	defPath,
+	locationHistory,
+	pageExtractor,
 }: {
-	styleProps: ComponentStyle | undefined;
-	properties: [string, EachComponentStyle] | undefined;
-	pseudoState: string;
-	saveStyle: (newStyleProps: ComponentStyle) => void;
-	iterateProps: any;
-	propValues: { prop: string; value: string }[];
+	propValues: { prop: string; value: ComponentProperty<any> | string }[];
 	selectedComponent: string;
+	selectedComponentsList: string[];
 	subComponentName: string;
-	selectorPref: any;
+	selectorPref?: any;
+	defPath: string;
+	locationHistory: Array<LocationHistory>;
+	pageExtractor: PageStoreExtractor;
 }) {
 	if (propValues.length === 0) return;
 
-	const updatedStyle = propValues.reduce((updatedStyle, { prop, value }) => {
-		const {
-			value: oldValue,
-			actualProp,
-			screenSize,
-			compProp,
-		} = extractValue({
-			subComponentName,
-			prop,
-			iterateProps,
-			pseudoState,
-			selectorPref,
+	const pageDef = duplicate(
+		getDataFromPath(defPath, locationHistory, pageExtractor),
+	) as PageDefinition;
+
+	for (const compKey of selectedComponentsList?.length
+		? selectedComponentsList
+		: [selectedComponent]) {
+		const compDef = pageDef.componentDefinition[compKey];
+		if (!compDef.styleProperties) compDef.styleProperties = {};
+
+		let updatedStyle: ComponentStyle | undefined;
+
+		const styleProps = processOldCondition(compDef.styleProperties);
+		const properties = getProperties(
+			getDefaultStyles(styleProps),
+			styleProps,
 			selectedComponent,
+			selectorPref,
+		);
+
+		const size = (selectorPref[selectedComponent]?.screenSize?.value as string) ?? 'ALL';
+		let iterateProps = properties?.[1].resolutions?.ALL ?? {};
+		if (size !== 'ALL') {
+			const sizedProps = properties?.[1].resolutions?.[size as StyleResolution] ?? {};
+			iterateProps = { ...iterateProps, ...sizedProps };
+		}
+		const screenSize = ((selectorPref[selectedComponent]?.screenSize?.value as string) ??
+			'ALL') as StyleResolution;
+
+		let pseudoState = '';
+		if (selectorPref[selectedComponent]?.stylePseudoState?.value)
+			pseudoState = selectorPref[selectedComponent].stylePseudoState.value;
+
+		const hasSubComponents = new Set<string>();
+		const hasPseudoStates = new Set<string>();
+		Object.keys(iterateProps).forEach(e => {
+			let splits = e.split(':');
+			if (splits.length > 1) hasPseudoStates.add(splits[1]);
+			else hasPseudoStates.add('');
+			splits = e.split('-');
+			if (splits.length > 1) hasSubComponents.add(splits[0]);
+			else hasSubComponents.add('');
 		});
 
-		const newValue: any = { value };
+		updatedStyle = propValues.reduce((updatedStyle, { prop, value }) => {
+			const {
+				value: oldValue,
+				actualProp,
+				screenSize,
+				compProp,
+			} = extractValue({
+				subComponentName,
+				prop,
+				iterateProps,
+				pseudoState,
+				selectorPref,
+				selectedComponent,
+			});
 
-		if (oldValue.location) newValue.location = oldValue.location;
+			let newValue: any = undefined;
 
-		return propUpdate({
-			styleProps: updatedStyle,
-			properties,
-			screenSize,
-			actualProp,
-			value: newValue,
-			compProp,
-			pseudoState,
-			iterateProps,
-		});
-	}, styleProps);
-
-	if (!updatedStyle) return;
-	saveStyle(updatedStyle);
-}
-
-export function valuesChanged({
-	styleProps,
-	properties,
-	propValues,
-	pseudoState,
-	saveStyle,
-	iterateProps,
-}: {
-	styleProps: ComponentStyle | undefined;
-	properties: [string, EachComponentStyle] | undefined;
-	pseudoState: string;
-	saveStyle: (newStyleProps: ComponentStyle) => void;
-	iterateProps: any;
-	propValues: { actualProp: string; screenSize: StyleResolution; value: any; compProp: string }[];
-}) {
-	const updatedStyle = propValues.reduce(
-		(updatedStyle, { actualProp, value, screenSize, compProp }) =>
-			propUpdate({
+			if (typeof value === 'string') {
+				newValue = { value };
+				if (oldValue.location) newValue.location = oldValue.location;
+			} else newValue = value;
+			return propUpdate({
 				styleProps: updatedStyle,
 				properties,
 				screenSize,
 				actualProp,
-				value,
+				value: newValue,
 				compProp,
 				pseudoState,
 				iterateProps,
-			}),
-		styleProps,
-	);
+			});
+		}, styleProps);
 
-	if (!updatedStyle) return;
-	saveStyle(updatedStyle);
+		if (!updatedStyle) continue;
+		compDef.styleProperties = updatedStyle;
+	}
+
+	setData(defPath, pageDef, pageExtractor.getPageName());
 }
 
 function propUpdate({
@@ -388,7 +381,7 @@ function propUpdate({
 	pseudoState,
 	iterateProps,
 }: {
-	styleProps: ComponentStyle | undefined;
+	styleProps: ComponentStyle;
 	properties: [string, EachComponentStyle] | undefined;
 	screenSize: StyleResolution;
 	actualProp: string;
@@ -396,7 +389,7 @@ function propUpdate({
 	compProp: string;
 	pseudoState: string;
 	iterateProps: any;
-}): ComponentStyle | undefined {
+}): ComponentStyle {
 	if (!properties) return styleProps;
 
 	const newProps = duplicate(styleProps) as ComponentStyle;
@@ -420,4 +413,66 @@ function propUpdate({
 	}
 
 	return newProps;
+}
+
+function processOldCondition(styleProps: ComponentStyle | undefined): ComponentStyle {
+	if (!styleProps) return { [shortUUID()]: { resolutions: { ALL: {} } } };
+
+	styleProps = duplicate(styleProps);
+	let i = 1;
+	Object.values(styleProps!)
+		.filter(e => !e.conditionName && e.condition)
+		.forEach(e => (e.conditionName = `Condition ${i++}`));
+
+	return styleProps!;
+}
+// it will return the current applied styles
+function getDefaultStyles(styleProps: ComponentStyle | undefined) {
+	const inStyles = Object.entries(styleProps ?? {}).filter(e => !e[1].condition);
+	if (inStyles.length !== 1) {
+		if (inStyles.length === 0) {
+			const key = shortUUID();
+			const newStyleProps = duplicate(styleProps ?? {}) as ComponentStyle;
+			newStyleProps[key] = { resolutions: { ALL: {} } };
+			return [key, {}];
+		} else {
+			let styles = duplicate(inStyles);
+			const first = styles[0];
+			const newStyleProps = duplicate(styleProps) as ComponentStyle;
+			for (let i = 1; i < styles.length; i++) {
+				delete newStyleProps[styles[i][0]];
+				Object.entries(styles[i][1].resolutions).forEach(e => {
+					if (!first[1].resolutions[e[0]]) first[1].resolutions[e[0]] = {};
+					Object.assign(first[1].resolutions[e[0]], e[1]);
+				});
+			}
+			newStyleProps[first[0]] = first[1];
+			return first;
+		}
+	}
+	return inStyles[0];
+}
+
+function getProperties(
+	defaultStyles: [string, EachComponentStyle],
+	styleProps: ComponentStyle | undefined,
+	selectedComponent: string,
+	selectorPref: any,
+) {
+	if (!selectorPref[selectedComponent]?.condition?.value) return duplicate(defaultStyles);
+
+	const conditionStyles = Object.entries(styleProps ?? {}).filter(
+		e => e[1].conditionName === selectorPref[selectedComponent]?.condition?.value,
+	)?.[0];
+	if (!conditionStyles) return duplicate(defaultStyles);
+
+	let styles = duplicate(conditionStyles);
+	const first = duplicate(defaultStyles);
+
+	Object.entries(styles[1].resolutions).forEach(e => {
+		if (!first[1].resolutions[e[0]]) first[1].resolutions[e[0]] = {};
+		Object.assign(first[1].resolutions[e[0]], e[1]);
+	});
+
+	return [styles[0], first[1]];
 }

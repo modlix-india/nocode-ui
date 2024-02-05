@@ -1,4 +1,6 @@
-import React, { ReactNode, useCallback, useEffect, useState } from 'react';
+import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import ComponenstDefinition from '../../../';
+import { DRAG_CD_KEY } from '../../../../constants';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediately,
@@ -7,16 +9,15 @@ import {
 import { LocationHistory, PageDefinition } from '../../../../types/common';
 import { ContextMenuDetails } from '../../components/ContextMenu';
 import { PageOperations } from '../../functions/PageOperations';
-import ComponenstDefinition from '../../../';
-import { DRAG_CD_KEY } from '../../../../constants';
-import { LinkedList } from '@fincity/kirun-js';
 
 interface DnDNavigationBarProps {
 	personalizationPath: string | undefined;
 	onChangePersonalization: (prop: string, value: any) => void;
 	selectedComponent: string | undefined;
 	onSelectedComponentChanged: (key: string) => void;
+	onSelectedComponentListChanged: (key: string) => void;
 	selectedSubComponent: string | undefined;
+	selectedComponentsList: string[];
 	onSelectedSubComponentChanged: (key: string) => void;
 	pageExtractor: PageStoreExtractor;
 	defPath: string | undefined;
@@ -24,13 +25,16 @@ interface DnDNavigationBarProps {
 	pageOperations: PageOperations;
 	onContextMenu: (m: ContextMenuDetails) => void;
 	previewMode: boolean;
+	editorType: string | undefined;
 }
 
 export default function DnDNavigationBar({
-	personalizationPath,
+	personalizationPath, // Page.personalization.editor
 	onChangePersonalization,
 	selectedComponent,
+	selectedComponentsList,
 	onSelectedComponentChanged,
+	onSelectedComponentListChanged,
 	selectedSubComponent,
 	onSelectedSubComponentChanged,
 	pageExtractor,
@@ -39,15 +43,16 @@ export default function DnDNavigationBar({
 	pageOperations,
 	onContextMenu,
 	previewMode,
+	editorType,
 }: DnDNavigationBarProps) {
-	const [componentTree, setComponentTree] = React.useState(false);
-	const [pageDef, setPageDef] = useState<PageDefinition>();
-	const [openParents, setOpenParents] = useState<Set<string>>(new Set());
-	const [expandAll, setExpandAll] = useState(false);
-	const [filter, setFilter] = useState('');
-	const [lastOpened, setLastOpened] = useState<string | undefined>(undefined);
-	const [dragStart, setDragStart] = useState<boolean>(false);
-	const [map, setMap] = useState(new Map<string, string>());
+	const [componentTree, setComponentTree] = React.useState(false); // component tree is open or not
+	const [pageDef, setPageDef] = useState<PageDefinition>(); // page def object
+	const [openParents, setOpenParents] = useState<Set<string>>(new Set()); // set object contains ids of all the parent components those are expand.
+	const [expandAll, setExpandAll] = useState(false); // to expand all our componets
+	const [filter, setFilter] = useState(''); // filter for components search in our page
+	const [lastOpened, setLastOpened] = useState<string | undefined>(undefined); // which component expand last
+	const [dragStart, setDragStart] = useState<boolean>(false); // dragging any component or not
+	const [map, setMap] = useState(new Map<string, string>()); // contains all the components object ids
 
 	useEffect(() => {
 		if (!personalizationPath) return;
@@ -127,6 +132,24 @@ export default function DnDNavigationBar({
 		[openParents, setOpenParents, pageDef, expandAll, map],
 	);
 
+	useEffect(() => {
+		if (!selectedComponent || selectedComponentsList?.length != 1) return;
+		const element = document.getElementById(`treeNode_${selectedComponent}`);
+		if (element) {
+			const rect = element.getBoundingClientRect();
+			if (rect.top < 0 || rect.bottom > window.innerHeight)
+				element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+		} else {
+			setTimeout(() => {
+				const element = document.getElementById(`treeNode_${selectedComponent}`);
+				if (!element) return;
+				const rect = element.getBoundingClientRect();
+				if (rect.top < 0 || rect.bottom > window.innerHeight)
+					element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+			}, 500);
+		}
+	}, [selectedComponent]);
+
 	const [filterHandle, setFilterHandle] = useState<NodeJS.Timeout | undefined>();
 
 	if (!componentTree || previewMode || !pageDef?.componentDefinition || !pageDef.rootComponent)
@@ -157,7 +180,9 @@ export default function DnDNavigationBar({
 				<CompTree
 					pageDef={pageDef}
 					selectedComponent={selectedComponent}
+					selectedComponentsList={selectedComponentsList}
 					onSelectedComponentChanged={onSelectedComponentChanged}
+					onSelectedComponentListChanged={onSelectedComponentListChanged}
 					selectedSubComponent={selectedSubComponent}
 					onSelectedSubComponentChanged={onSelectedSubComponentChanged}
 					expandAll={expandAll}
@@ -176,6 +201,7 @@ export default function DnDNavigationBar({
 					dragStart={dragStart}
 					setDragStart={setDragStart}
 					filter={filter}
+					editorType={editorType}
 				/>
 			</div>
 		</div>
@@ -190,7 +216,9 @@ interface CompTreeProps {
 	parents?: string[];
 	onOpenClose: (key: string) => void;
 	selectedComponent: string | undefined;
+	selectedComponentsList: string[];
 	onSelectedComponentChanged: (key: string) => void;
+	onSelectedComponentListChanged: (key: string) => void;
 	selectedSubComponent: string | undefined;
 	onSelectedSubComponentChanged: (key: string) => void;
 	lastOpened: string | undefined;
@@ -199,6 +227,7 @@ interface CompTreeProps {
 	dragStart: boolean;
 	setDragStart: (v: boolean) => void;
 	filter: string;
+	editorType: string | undefined;
 }
 
 function CompTree({
@@ -209,7 +238,9 @@ function CompTree({
 	openParents,
 	onOpenClose,
 	selectedComponent,
+	selectedComponentsList,
 	onSelectedComponentChanged,
+	onSelectedComponentListChanged,
 	selectedSubComponent,
 	onSelectedSubComponentChanged,
 	lastOpened,
@@ -218,13 +249,19 @@ function CompTree({
 	dragStart,
 	setDragStart,
 	filter,
+	editorType,
 }: CompTreeProps) {
 	const comp = pageDef?.componentDefinition[compKey];
+	const hoverLonger = useRef<NodeJS.Timeout | null>();
 	if (!comp) return <></>;
 
-	const children = pageDef?.componentDefinition[compKey]?.children
-		? Object.keys(pageDef.componentDefinition[compKey].children!)
-		: undefined;
+	const children =
+		(comp?.type !== 'SectionGrid' && comp?.children) ||
+		(comp?.type === 'SectionGrid' &&
+			comp?.children &&
+			(editorType === 'SECTION' || comp?.properties?.enableChildrenSelection?.value))
+			? Object.keys(comp.children!)
+			: undefined;
 
 	const subCompDef = ComponenstDefinition.get(comp.type)?.subComponentDefinition;
 
@@ -268,7 +305,9 @@ function CompTree({
 					openParents={openParents}
 					onOpenClose={onOpenClose}
 					selectedComponent={selectedComponent}
+					selectedComponentsList={selectedComponentsList}
 					onSelectedComponentChanged={onSelectedComponentChanged}
+					onSelectedComponentListChanged={onSelectedComponentListChanged}
 					selectedSubComponent={selectedSubComponent}
 					onSelectedSubComponentChanged={onSelectedSubComponentChanged}
 					lastOpened={lastOpened}
@@ -277,6 +316,7 @@ function CompTree({
 					dragStart={dragStart}
 					setDragStart={setDragStart}
 					filter={filter}
+					editorType={editorType}
 				/>
 			));
 	}
@@ -332,11 +372,22 @@ function CompTree({
 	return (
 		<>
 			<div
-				className={`_treeNode ${selectedComponent === compKey ? '_selected' : ''} ${
-					dragStart ? '_dragStart' : ''
-				}`}
-				title={`${comp.name ?? ''} - ${compKey}`}
-				onClick={() => onSelectedComponentChanged(compKey)}
+				id={`treeNode_${compKey}`}
+				className={`_treeNode ${
+					selectedComponent === compKey ||
+					(Array.isArray(selectedComponentsList) &&
+						selectedComponentsList.includes(compKey))
+						? '_selected'
+						: ''
+				} ${dragStart ? '_dragStart' : ''}`}
+				title={`${comp.name ?? ''} - ${compKey}`} // it will be visible when we hover to the component tab in the tree
+				onClick={e => {
+					// selecting multiple components by clicking ctrl or meta keys(ios).
+					if (e.metaKey || e.ctrlKey) {
+						return onSelectedComponentListChanged(compKey);
+					}
+					return onSelectedComponentChanged(compKey);
+				}}
 				draggable="true"
 				onDragStart={e => {
 					setDragStart(true);
@@ -345,8 +396,16 @@ function CompTree({
 				onDragOver={e => {
 					e.preventDefault();
 					e.stopPropagation();
-					if (!dragStart || !children?.length || isOpen) return;
-					onOpenClose(compKey);
+					if (!dragStart || !children?.length || isOpen || hoverLonger.current) return;
+					hoverLonger.current = setTimeout(() => {
+						onOpenClose(compKey);
+						hoverLonger.current = null;
+					}, 3000);
+				}}
+				onDragLeave={e => {
+					if (!hoverLonger.current) return;
+					clearTimeout(hoverLonger.current);
+					hoverLonger.current = null;
 				}}
 				onDragEnd={e => setDragStart(false)}
 				onDrop={e =>
@@ -370,7 +429,7 @@ function CompTree({
 						className={`fa _animateTransform ${
 							children?.length || (subCompDef?.length ?? 0) > 1
 								? 'fa-solid fa-caret-right ' + (isOpen ? 'fa-rotate-90' : '')
-								: ''
+								: '_nothing'
 						}`}
 						onClick={e => {
 							e.preventDefault();
@@ -435,10 +494,14 @@ function SubCompTree({
 					? '_selected'
 					: ''
 			}`}
+			// it gets called when sub component gets selected
 			onClick={() => onSelectedSubComponentChanged(`${componentKey}:${subComp.name}`)}
 		>
 			{levels}
-			<div className="_treeNodeName" onClick={() => {}}>
+			<div
+				className="_treeNodeName"
+				onClick={() => {}} // why we need this on click function ?
+			>
 				<i className="fa _animateTransform" />
 				{typeof subComp.icon === 'string' ? (
 					<i className={`fa ${subComp.icon}`} />

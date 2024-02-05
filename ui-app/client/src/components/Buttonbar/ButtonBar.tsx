@@ -13,10 +13,10 @@ import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './buttonBarproperties';
 import ButtonBarStyle from './ButtonBarStyle';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { getTranslations } from '../util/getTranslations';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import { SubHelperComponent } from '../SubHelperComponent';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { styleDefaults } from './buttonBarStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
@@ -148,7 +148,7 @@ function ButtonBar(props: ComponentProps) {
 			className={`comp compButtonBar ${buttonBarDesign} ${colorScheme}`}
 			style={resolvedStyles.comp ?? {}}
 		>
-			<HelperComponent definition={props.definition} />
+			<HelperComponent context={props.context} definition={props.definition} />
 			{buttonBarData?.map((each, i, arr) => (
 				<button
 					style={resolvedStyles.button ?? {}}
@@ -176,7 +176,7 @@ function ButtonBar(props: ComponentProps) {
 
 const component: Component = {
 	name: 'ButtonBar',
-	displayName: 'ButtonBar',
+	displayName: 'Button Bar',
 	description: 'ButtonBar component',
 	component: ButtonBar,
 	styleComponent: ButtonBarStyle,

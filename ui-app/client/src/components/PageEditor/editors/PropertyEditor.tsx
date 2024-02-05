@@ -27,6 +27,7 @@ import { PageOperations } from '../functions/PageOperations';
 
 interface PropertyEditorProps {
 	selectedComponent: string;
+	selectedComponentsList: string[];
 	pageExtractor: PageStoreExtractor;
 	defPath: string | undefined;
 	locationHistory: Array<LocationHistory>;
@@ -39,6 +40,7 @@ interface PropertyEditorProps {
 	editPageName: string | undefined;
 	pageOperations: PageOperations;
 	appPath: string | undefined;
+	editorType: string | undefined;
 }
 
 function updatePropertyDefinition(
@@ -46,36 +48,40 @@ function updatePropertyDefinition(
 	defPath: string,
 	locationHistory: Array<LocationHistory>,
 	pageExtractor: PageStoreExtractor,
-	component: string,
+	componentKey: string,
+	componentList: string[],
 	propertyName: string,
 	value: ComponentProperty<any> | ComponentMultiProperty<any>,
 ) {
 	const pageDef = duplicate(
 		getDataFromPath(defPath, locationHistory, pageExtractor),
 	) as PageDefinition;
-	if (!pageDef.componentDefinition[component].properties)
-		pageDef.componentDefinition[component].properties = {};
 
-	if (propDef.multiValued) {
-		const newVal = Object.values(value)
-			.filter(
-				e =>
-					!(
-						!e.property.location &&
-						isNullValue(e.property.value) &&
-						isNullValue(e.property.overrideValue)
-					),
-			)
-			.reduce((a, b) => ({ ...a, [b.key]: b }), {});
+	for (let component of componentList?.length > 0 ? componentList : [componentKey]) {
+		if (!pageDef.componentDefinition[component].properties)
+			pageDef.componentDefinition[component].properties = {};
 
-		if (Object.keys(newVal).length)
-			pageDef.componentDefinition[component].properties![propertyName] = newVal;
-		else delete pageDef.componentDefinition[component].properties![propertyName];
-	} else {
-		if (!value.location && isNullValue(value.value) && isNullValue(value.overrideValue)) {
-			delete pageDef.componentDefinition[component].properties![propertyName];
+		if (propDef.multiValued) {
+			const newVal = Object.values(value)
+				.filter(
+					e =>
+						!(
+							!e.property.location &&
+							isNullValue(e.property.value) &&
+							isNullValue(e.property.overrideValue)
+						),
+				)
+				.reduce((a, b) => ({ ...a, [b.key]: b }), {});
+
+			if (Object.keys(newVal).length)
+				pageDef.componentDefinition[component].properties![propertyName] = newVal;
+			else delete pageDef.componentDefinition[component].properties![propertyName];
 		} else {
-			pageDef.componentDefinition[component].properties![propertyName] = value;
+			if (!value.location && isNullValue(value.value) && isNullValue(value.overrideValue)) {
+				delete pageDef.componentDefinition[component].properties![propertyName];
+			} else {
+				pageDef.componentDefinition[component].properties![propertyName] = value;
+			}
 		}
 	}
 	setData(defPath, pageDef, pageExtractor.getPageName());
@@ -97,6 +103,7 @@ function updateDefinition(
 
 export default function PropertyEditor({
 	selectedComponent,
+	selectedComponentsList,
 	defPath,
 	locationHistory,
 	pageExtractor,
@@ -109,9 +116,11 @@ export default function PropertyEditor({
 	editPageName,
 	pageOperations,
 	appPath,
+	editorType,
 }: PropertyEditorProps) {
 	const [def, setDef] = useState<ComponentDefinition>();
 	const [pageDef, setPageDef] = useState<PageDefinition>();
+	const [allCommonProperties, setAllCommonProperties] = useState<ComponentPropertyDefinition[]>(); // cd.properties
 	const [isDragging, setIsDragging] = useState<boolean>(false);
 
 	useEffect(() => {
@@ -126,6 +135,37 @@ export default function PropertyEditor({
 			defPath,
 		);
 	}, [defPath, selectedComponent]);
+
+	useEffect(() => {
+		if (!defPath) return; // Page.pageDefinition
+
+		return addListenerAndCallImmediatelyWithChildrenActivity(
+			(_, v: PageDefinition) => {
+				// sets of sets of property names
+				const propertyNamesSets = selectedComponentsList.map(currentComponent => {
+					let properties =
+						ComponentDefinitions?.get(v?.componentDefinition[currentComponent]?.type)
+							?.properties ?? [];
+					return new Set(properties.map(obj => obj.name));
+				});
+				// set of all common names
+				const commonPropertyNames = propertyNamesSets.reduce((accumulator, currentSet) => {
+					let accArr = Array.from(accumulator);
+					return new Set(accArr.filter(name => currentSet.has(name)));
+				});
+
+				let properties =
+					ComponentDefinitions?.get(
+						v?.componentDefinition[selectedComponentsList[0]]?.type,
+					)?.properties ?? [];
+				const commonProps = properties.filter(obj => commonPropertyNames.has(obj.name));
+
+				setAllCommonProperties(commonProps);
+			},
+			pageExtractor,
+			defPath,
+		);
+	}, [defPath, selectedComponentsList]);
 
 	useEffect(() => {
 		if (!personalizationPath) return;
@@ -167,6 +207,7 @@ export default function PropertyEditor({
 			'bindingPath9',
 			'bindingPath10',
 		];
+		// loop through all the binding paths
 		for (let i = 0; i < x.length; i++) {
 			if (!cd.bindingPaths[x[i]]) continue;
 			bps.push(
@@ -197,7 +238,7 @@ export default function PropertyEditor({
 		}
 		if (bps.length) {
 			bpGroup = (
-				<PropertyGroup
+				<PropertyGroup // container for binding section which contains list of bindings
 					name="bindings"
 					displayName="Bindings"
 					defaultStateOpen={false}
@@ -213,10 +254,15 @@ export default function PropertyEditor({
 		}
 	}
 
-	const propGroups = cd?.properties?.reduce((a: { [key: string]: Array<React.ReactNode> }, e) => {
+	// how we are converting a to Array<React.ReactNode>.
+	const propGroups = (
+		selectedComponentsList.length === 1 ? cd?.properties : allCommonProperties
+	)?.reduce((a: { [key: string]: Array<React.ReactNode> }, e) => {
 		let grp = '' + (e.group ?? ComponentPropertyGroup.ADVANCED);
 		if (!a[grp]) a[grp] = [];
 		let valueEditor;
+
+		if (e.hide) return a;
 
 		if (e.multiValued) {
 			valueEditor = (
@@ -232,6 +278,7 @@ export default function PropertyEditor({
 							locationHistory,
 							pageExtractor,
 							selectedComponent,
+							selectedComponentsList,
 							e.name,
 							v,
 						)
@@ -258,6 +305,7 @@ export default function PropertyEditor({
 							locationHistory,
 							pageExtractor,
 							selectedComponent,
+							selectedComponentsList,
 							e.name,
 							v,
 						)
@@ -287,86 +335,90 @@ export default function PropertyEditor({
 	return (
 		<div className={`_propertyEditor ${isDragging ? '_withDragProperty' : ''}`}>
 			<div className="_overflowContainer">
-				<PropertyGroup
-					name="first"
-					displayName="General"
-					defaultStateOpen={true}
-					pageExtractor={pageExtractor}
-					locationHistory={locationHistory}
-					onChangePersonalization={onChangePersonalization}
-					personalizationPath={personalizationPath}
-					tabName="compProps"
-				>
-					<div>
-						<div className="_eachProp">
-							<div className="_propLabel" title="Name">
-								Name :
-								<span
-									className="_description _tooltip"
-									title="Name to identify the component"
-								>
-									i
-								</span>
+				{selectedComponentsList.length === 1 && (
+					<PropertyGroup // general property container
+						name="first"
+						displayName="General"
+						defaultStateOpen={true}
+						pageExtractor={pageExtractor}
+						locationHistory={locationHistory}
+						onChangePersonalization={onChangePersonalization}
+						personalizationPath={personalizationPath}
+						tabName="compProps"
+					>
+						<div>
+							<div className="_eachProp">
+								<div className="_propLabel" title="Name">
+									Name :
+									<span
+										className="_description _tooltip"
+										title="Name to identify the component"
+									>
+										i
+									</span>
+								</div>
+								<PropertyValueEditor
+									appPath={appPath}
+									pageDefinition={pageDef}
+									propDef={{
+										name: 'name',
+										displayName: 'Name',
+										description: 'Name to identify the component',
+										schema: SCHEMA_STRING_COMP_PROP,
+									}}
+									value={{ value: def.name }}
+									onlyValue={true}
+									storePaths={storePaths}
+									onChange={v => {
+										const newDef = duplicate(def);
+										newDef.name = v.value;
+										updateDefinition(
+											defPath!,
+											locationHistory,
+											pageExtractor,
+											selectedComponent,
+											newDef,
+										);
+									}}
+									onShowCodeEditor={onShowCodeEditor}
+									editPageName={editPageName}
+									slaveStore={slaveStore}
+									pageOperations={pageOperations}
+								/>
 							</div>
-							<PropertyValueEditor
-								appPath={appPath}
-								pageDefinition={pageDef}
-								propDef={{
-									name: 'name',
-									displayName: 'Name',
-									description: 'Name to identify the component',
-									schema: SCHEMA_STRING_COMP_PROP,
-								}}
-								value={{ value: def.name }}
-								onlyValue={true}
-								storePaths={storePaths}
-								onChange={v => {
-									const newDef = duplicate(def);
-									newDef.name = v.value;
-									updateDefinition(
-										defPath!,
-										locationHistory,
-										pageExtractor,
-										selectedComponent,
-										newDef,
-									);
-								}}
-								onShowCodeEditor={onShowCodeEditor}
-								editPageName={editPageName}
-								slaveStore={slaveStore}
-								pageOperations={pageOperations}
-							/>
-						</div>
-						<div className="_eachProp">
-							<div className="_propLabel" title="Key">
-								Key :
-								<span className="_description _tooltip" title="Key Identifier">
-									i
-								</span>
+							<div className="_eachProp">
+								<div className="_propLabel" title="Key">
+									Key :
+									<span className="_description _tooltip" title="Key Identifier">
+										i
+									</span>
+								</div>
+								<PropertyValueEditor
+									appPath={appPath}
+									pageDefinition={pageDef}
+									propDef={{
+										name: 'key',
+										displayName: 'Key',
+										description: 'Key Identifier',
+										schema: SCHEMA_STRING_COMP_PROP,
+									}}
+									value={{ value: def.key }}
+									onlyValue={true}
+									storePaths={storePaths}
+									onChange={v => {}}
+									onShowCodeEditor={onShowCodeEditor}
+									editPageName={editPageName}
+									slaveStore={slaveStore}
+									pageOperations={pageOperations}
+								/>
 							</div>
-							<PropertyValueEditor
-								appPath={appPath}
-								pageDefinition={pageDef}
-								propDef={{
-									name: 'key',
-									displayName: 'Key',
-									description: 'Key Identifier',
-									schema: SCHEMA_STRING_COMP_PROP,
-								}}
-								value={{ value: def.key }}
-								onlyValue={true}
-								storePaths={storePaths}
-								onChange={v => {}}
-								onShowCodeEditor={onShowCodeEditor}
-								editPageName={editPageName}
-								slaveStore={slaveStore}
-								pageOperations={pageOperations}
-							/>
 						</div>
-					</div>
-				</PropertyGroup>
-				{bpGroup}
+					</PropertyGroup>
+				)}
+
+				{selectedComponentsList?.length === 1 && bpGroup}
 				{Object.entries(ComponentPropertyGroup).map((e, i) => {
+					// contains rest of the properties
 					if (!propGroups?.[e[1]]) return null;
 					return (
 						<PropertyGroup

@@ -3,8 +3,8 @@ import { PageStoreExtractor } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
-import { HelperComponent } from '../HelperComponent';
-import { SubHelperComponent } from '../SubHelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import useDefinition from '../util/useDefinition';
 import AnimatorStyle from './AnimatorStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './animatorProperties';
@@ -136,7 +136,7 @@ function Animator(props: ComponentProps) {
 
 	return (
 		<div className="comp compAnimator" style={resolvedStyles.comp ?? {}} ref={ref}>
-			<HelperComponent key={`${key}_hlp`} definition={definition} />
+			<HelperComponent context={props.context} key={`${key}_hlp`} definition={definition} />
 			<div
 				className="_childContainer"
 				style={{

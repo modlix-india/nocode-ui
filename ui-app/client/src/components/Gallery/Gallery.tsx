@@ -11,9 +11,9 @@ import useDefinition from '../util/useDefinition';
 import GalleryStyles from './GalleryStyles';
 import { propertiesDefinition, stylePropertiesDefinition } from './galleryProperties';
 import Portal from '../Portal';
-import { HelperComponent } from '../HelperComponent';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import { SubHelperComponent } from '../SubHelperComponent';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { isNullValue } from '@fincity/kirun-js';
 import { styleDefaults } from './galleryStyleProperties';
 import { IconHelper } from '../util/IconHelper';
@@ -484,7 +484,7 @@ function Gallery(props: ComponentProps) {
 					style={resolvedStyles.comp ?? {}}
 					ref={galleryRef}
 				>
-					<HelperComponent definition={props.definition} />
+					<HelperComponent context={props.context} definition={props.definition} />
 					<div className={`mainContainer preview${position}`}>
 						<div className={`galleryContainer thumbnail${position}`}>
 							<div className={`galleryToolbar`} onClick={handleBubbling}>

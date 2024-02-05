@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediately,
+	getDataFromPath,
 	store,
 } from '../../../../context/StoreContext';
 import { LocationHistory } from '../../../../types/common';
@@ -12,6 +13,7 @@ import { allPaths } from '../../../../util/allPaths';
 import { LOCAL_STORE_PREFIX, PAGE_STORE_PREFIX, STORE_PREFIX } from '../../../../constants';
 import { isNullValue } from '@fincity/kirun-js';
 import { PageOperations } from '../../functions/PageOperations';
+import SectionGridPropertyEditor from '../sectionGridEditors/SectionGridPropertyEditor';
 
 interface PropertyBarProps {
 	theme: string;
@@ -22,6 +24,7 @@ interface PropertyBarProps {
 	defPath: string | undefined;
 	locationHistory: Array<LocationHistory>;
 	selectedComponent?: string;
+	selectedComponentsList: string[];
 	onShowCodeEditor: (eventName: string) => void;
 	slaveStore: any;
 	editPageName: string | undefined;
@@ -33,10 +36,12 @@ interface PropertyBarProps {
 	previewMode: boolean;
 	pageOperations: PageOperations;
 	appPath: string | undefined;
+	editorType: string | undefined;
 }
 
 export default function DnDPropertyBar({
 	selectedComponent,
+	selectedComponentsList,
 	defPath,
 	locationHistory,
 	pageExtractor,
@@ -54,8 +59,9 @@ export default function DnDPropertyBar({
 	previewMode,
 	pageOperations,
 	appPath,
-}: PropertyBarProps) {
-	const [currentTab, setCurrentTab] = React.useState(1);
+	editorType,
+}: Readonly<PropertyBarProps>) {
+	const [originalCurrentTab, setOriginalCurrentTab] = React.useState(1);
 	const [isDragging, setIsDragging] = useState<boolean>(false);
 	const [position, setPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 	const [isDragged, setIsDragged] = useState<boolean>(false);
@@ -64,7 +70,7 @@ export default function DnDPropertyBar({
 		if (!personalizationPath) return;
 
 		return addListenerAndCallImmediately(
-			(_, v) => setCurrentTab(!isNullValue(v) ? v : 1),
+			(_, v) => setOriginalCurrentTab(!isNullValue(v) ? v : 1),
 			pageExtractor,
 			`${personalizationPath}.currentPropertyTab`,
 		);
@@ -143,6 +149,12 @@ export default function DnDPropertyBar({
 	);
 
 	if (!selectedComponent || previewMode) return <div className="_propBar"></div>;
+
+	const pageDef = defPath ? getDataFromPath(defPath, locationHistory, pageExtractor) : undefined;
+	const isSectionGrid = pageDef?.componentDefinition?.[selectedComponent]?.type === 'SectionGrid';
+
+	const currentTab = !isSectionGrid && originalCurrentTab === 5 ? 1 : originalCurrentTab;
+
 	let tab = <></>;
 	if (currentTab === 1) {
 		tab = (
@@ -151,6 +163,7 @@ export default function DnDPropertyBar({
 				personalizationPath={personalizationPath}
 				onChangePersonalization={onChangePersonalization}
 				selectedComponent={selectedComponent}
+				selectedComponentsList={selectedComponentsList}
 				defPath={defPath}
 				locationHistory={locationHistory}
 				pageExtractor={pageExtractor}
@@ -160,6 +173,7 @@ export default function DnDPropertyBar({
 				slaveStore={slaveStore}
 				pageOperations={pageOperations}
 				appPath={appPath}
+				editorType={editorType}
 			/>
 		);
 	} else if (currentTab === 2) {
@@ -169,6 +183,7 @@ export default function DnDPropertyBar({
 				personalizationPath={personalizationPath}
 				onChangePersonalization={onChangePersonalization}
 				selectedComponent={selectedComponent}
+				selectedComponentsList={selectedComponentsList}
 				defPath={defPath}
 				locationHistory={locationHistory}
 				pageExtractor={pageExtractor}
@@ -190,6 +205,7 @@ export default function DnDPropertyBar({
 				personalizationPath={personalizationPath}
 				onChangePersonalization={onChangePersonalization}
 				selectedComponent={selectedComponent}
+				selectedComponentsList={selectedComponentsList}
 				defPath={defPath}
 				locationHistory={locationHistory}
 				pageExtractor={pageExtractor}
@@ -220,6 +236,26 @@ export default function DnDPropertyBar({
 				editPageName={editPageName}
 				slaveStore={slaveStore}
 				pageOperations={pageOperations}
+			/>
+		);
+	} else if (currentTab === 5) {
+		tab = (
+			<SectionGridPropertyEditor
+				theme={theme}
+				personalizationPath={personalizationPath}
+				onChangePersonalization={onChangePersonalization}
+				selectedComponent={selectedComponent}
+				selectedComponentsList={selectedComponentsList}
+				defPath={defPath}
+				locationHistory={locationHistory}
+				pageExtractor={pageExtractor}
+				storePaths={storePaths}
+				onShowCodeEditor={onShowCodeEditor}
+				editPageName={editPageName}
+				slaveStore={slaveStore}
+				pageOperations={pageOperations}
+				appPath={appPath}
+				editorType={editorType}
 			/>
 		);
 	}
@@ -341,6 +377,54 @@ export default function DnDPropertyBar({
 		</svg>
 	);
 
+	const sectionGridIcon = isSectionGrid ? (
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			width="22"
+			height="19"
+			viewBox="0 0 22 19"
+			className={currentTab === 5 ? 'active' : ''}
+			tabIndex={0}
+			role="button"
+			onClick={() => onChangePersonalization('currentPropertyTab', 5)}
+			onKeyDown={e =>
+				(e.key === 'Enter' || e.key === ' ') &&
+				onChangePersonalization('currentPropertyTab', 5)
+			}
+		>
+			<g id="Group_108" data-name="Group 108" transform="translate(-1468.055 -277.818)">
+				<rect
+					id="Rectangle_35"
+					data-name="Rectangle 35"
+					width="13"
+					height="9"
+					rx="2"
+					transform="translate(1468.055 277.818)"
+					opacity="0.5"
+				/>
+				<rect
+					id="Rectangle_37"
+					data-name="Rectangle 37"
+					width="22"
+					height="8"
+					rx="2"
+					transform="translate(1468.055 288.818)"
+				/>
+				<rect
+					id="Rectangle_36"
+					data-name="Rectangle 36"
+					width="7"
+					height="9"
+					rx="2"
+					transform="translate(1483.055 277.818)"
+					opacity="0.5"
+				/>
+			</g>
+		</svg>
+	) : (
+		<></>
+	);
+
 	return (
 		<div
 			className={`_propBar _propBarVisible _right ${isDragging ? '_isDrag' : ''} ${
@@ -362,6 +446,7 @@ export default function DnDPropertyBar({
 				) : undefined}
 			</div>
 			<div className="_tabBar">
+				{sectionGridIcon}
 				<svg
 					width="26"
 					height="20"

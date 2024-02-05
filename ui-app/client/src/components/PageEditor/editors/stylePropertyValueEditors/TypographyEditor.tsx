@@ -32,9 +32,13 @@ export function TypographyEditor({
 	selectorPref,
 	styleProps,
 	selectedComponent,
+	selectedComponentsList,
 	saveStyle,
 	properties,
 	isDetailStyleEditor,
+	defPath,
+	locationHistory,
+	pageExtractor,
 }: StyleEditorsProps) {
 	let fonts: DropdownOptions = [...FONT_FAMILIES];
 	if (appDef?.properties?.fontPacks) {
@@ -49,6 +53,10 @@ export function TypographyEditor({
 				<div className="_simpleLabel">Text Decoration Line :</div>
 				<div className="_combineEditors _alignEnd" title="Text Decoration">
 					<EachSimpleEditor
+						selectedComponentsList={selectedComponentsList}
+						defPath={defPath}
+						locationHistory={locationHistory}
+						pageExtractor={pageExtractor}
 						subComponentName={subComponentName}
 						pseudoState={pseudoState}
 						prop="textDecorationStyle"
@@ -159,6 +167,10 @@ export function TypographyEditor({
 					/>
 
 					<EachSimpleEditor
+						selectedComponentsList={selectedComponentsList}
+						defPath={defPath}
+						locationHistory={locationHistory}
+						pageExtractor={pageExtractor}
 						subComponentName={subComponentName}
 						pseudoState={pseudoState}
 						prop="textDecorationColor"
@@ -236,6 +248,10 @@ export function TypographyEditor({
 					</svg>
 
 					<EachSimpleEditor
+						selectedComponentsList={selectedComponentsList}
+						defPath={defPath}
+						locationHistory={locationHistory}
+						pageExtractor={pageExtractor}
 						subComponentName={subComponentName}
 						pseudoState={pseudoState}
 						prop="wordSpacing"
@@ -281,6 +297,10 @@ export function TypographyEditor({
 					</svg>
 
 					<EachSimpleEditor
+						selectedComponentsList={selectedComponentsList}
+						defPath={defPath}
+						locationHistory={locationHistory}
+						pageExtractor={pageExtractor}
 						subComponentName={subComponentName}
 						pseudoState={pseudoState}
 						prop="textIndent"
@@ -298,6 +318,10 @@ export function TypographyEditor({
 				<div className="_combineEditors">
 					<div className="_simpleLabel">Transform :</div>
 					<EachSimpleEditor
+						selectedComponentsList={selectedComponentsList}
+						defPath={defPath}
+						locationHistory={locationHistory}
+						pageExtractor={pageExtractor}
 						subComponentName={subComponentName}
 						pseudoState={pseudoState}
 						prop="textTransform"
@@ -381,6 +405,10 @@ export function TypographyEditor({
 				<div className="_combineEditors">
 					<div className="_simpleLabel">Word Break :</div>
 					<EachSimpleEditor
+						selectedComponentsList={selectedComponentsList}
+						defPath={defPath}
+						locationHistory={locationHistory}
+						pageExtractor={pageExtractor}
 						subComponentName={subComponentName}
 						pseudoState={pseudoState}
 						prop="wordBreak"
@@ -465,6 +493,10 @@ export function TypographyEditor({
 				<div className="_combineEditors">
 					<div className="_simpleLabel">Whitespace :</div>
 					<EachSimpleEditor
+						selectedComponentsList={selectedComponentsList}
+						defPath={defPath}
+						locationHistory={locationHistory}
+						pageExtractor={pageExtractor}
 						subComponentName={subComponentName}
 						pseudoState={pseudoState}
 						prop="whiteSpace"
@@ -562,6 +594,10 @@ export function TypographyEditor({
 				</div>
 				<div className="_simpleLabel">Text Shadow :</div>
 				<EachSimpleEditor
+					selectedComponentsList={selectedComponentsList}
+					defPath={defPath}
+					locationHistory={locationHistory}
+					pageExtractor={pageExtractor}
 					subComponentName={subComponentName}
 					pseudoState={pseudoState}
 					prop="textShadow"
@@ -581,6 +617,10 @@ export function TypographyEditor({
 	return (
 		<>
 			<EachSimpleEditor
+				selectedComponentsList={selectedComponentsList}
+				defPath={defPath}
+				locationHistory={locationHistory}
+				pageExtractor={pageExtractor}
 				subComponentName={subComponentName}
 				pseudoState={pseudoState}
 				prop="fontFamily"
@@ -599,6 +639,10 @@ export function TypographyEditor({
 				}}
 			/>
 			<EachSimpleEditor
+				selectedComponentsList={selectedComponentsList}
+				defPath={defPath}
+				locationHistory={locationHistory}
+				pageExtractor={pageExtractor}
 				subComponentName={subComponentName}
 				pseudoState={pseudoState}
 				prop="fontSize"
@@ -612,6 +656,10 @@ export function TypographyEditor({
 				editorDef={{ type: SimpleEditorType.PixelSize, rangeMin: 0, rangeMax: 200 }}
 			/>
 			<EachSimpleEditor
+				selectedComponentsList={selectedComponentsList}
+				defPath={defPath}
+				locationHistory={locationHistory}
+				pageExtractor={pageExtractor}
 				subComponentName={subComponentName}
 				pseudoState={pseudoState}
 				prop="fontWeight"
@@ -644,6 +692,10 @@ export function TypographyEditor({
 			/>
 			<div className="_combineEditors _spaceBetween">
 				<EachSimpleEditor
+					selectedComponentsList={selectedComponentsList}
+					defPath={defPath}
+					locationHistory={locationHistory}
+					pageExtractor={pageExtractor}
 					subComponentName={subComponentName}
 					pseudoState={pseudoState}
 					prop="textAlign"
@@ -715,6 +767,10 @@ export function TypographyEditor({
 				/>
 				<div className="_combineEditors">
 					<EachSimpleEditor
+						selectedComponentsList={selectedComponentsList}
+						defPath={defPath}
+						locationHistory={locationHistory}
+						pageExtractor={pageExtractor}
 						subComponentName={subComponentName}
 						pseudoState={pseudoState}
 						prop="fontStyle"
@@ -760,6 +816,10 @@ export function TypographyEditor({
 						}}
 					/>
 					<EachSimpleEditor
+						selectedComponentsList={selectedComponentsList}
+						defPath={defPath}
+						locationHistory={locationHistory}
+						pageExtractor={pageExtractor}
 						subComponentName={subComponentName}
 						pseudoState={pseudoState}
 						prop="fontWeight"
@@ -791,6 +851,10 @@ export function TypographyEditor({
 					/>
 				</div>
 				<EachSimpleEditor
+					selectedComponentsList={selectedComponentsList}
+					defPath={defPath}
+					locationHistory={locationHistory}
+					pageExtractor={pageExtractor}
 					subComponentName={subComponentName}
 					pseudoState={pseudoState}
 					prop="color"
@@ -808,6 +872,10 @@ export function TypographyEditor({
 			<div className="_spacer" />
 			<div className="_combineEditors _spaceBetween">
 				<EachSimpleEditor
+					selectedComponentsList={selectedComponentsList}
+					defPath={defPath}
+					locationHistory={locationHistory}
+					pageExtractor={pageExtractor}
 					subComponentName={subComponentName}
 					pseudoState={pseudoState}
 					prop="textDecorationLine"
@@ -882,6 +950,10 @@ export function TypographyEditor({
 					}}
 				/>
 				<EachSimpleEditor
+					selectedComponentsList={selectedComponentsList}
+					defPath={defPath}
+					locationHistory={locationHistory}
+					pageExtractor={pageExtractor}
 					subComponentName={subComponentName}
 					pseudoState={pseudoState}
 					prop="textDecorationThickness"
@@ -914,6 +986,10 @@ export function TypographyEditor({
 					<line x1="10" y1="13.5" x2="15" y2="13.5" stroke="black" />
 				</svg>
 				<EachSimpleEditor
+					selectedComponentsList={selectedComponentsList}
+					defPath={defPath}
+					locationHistory={locationHistory}
+					pageExtractor={pageExtractor}
 					subComponentName={subComponentName}
 					pseudoState={pseudoState}
 					prop="lineHeight"
@@ -946,6 +1022,10 @@ export function TypographyEditor({
 					<line x1="0.5" y1="12" x2="0.5" y2="17" stroke="black" />
 				</svg>
 				<EachSimpleEditor
+					selectedComponentsList={selectedComponentsList}
+					defPath={defPath}
+					locationHistory={locationHistory}
+					pageExtractor={pageExtractor}
 					subComponentName={subComponentName}
 					pseudoState={pseudoState}
 					prop="letterSpacing"

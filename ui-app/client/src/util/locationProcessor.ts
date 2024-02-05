@@ -22,7 +22,10 @@ export function processLocation(location: ReactLocation | Location) {
 	}
 
 	if (location.pathname) {
-		const pathParts = location.pathname.split('/').filter(e => e !== '');
+		const pathParts = location.pathname
+			.split('/')
+			.filter(e => e !== '')
+			.map(e => decodeURIComponent(e));
 
 		const ind = pathParts.indexOf('page');
 		if (ind === -1) {
