@@ -42,6 +42,7 @@ type CommonInputType = {
 	inputType?: string;
 	maxChars?: number;
 	showDropdown?: boolean;
+	leftChildren?: React.ReactNode;
 };
 
 function CommonInputText(props: CommonInputType) {
@@ -83,6 +84,7 @@ function CommonInputText(props: CommonInputType) {
 		inputType = 'Text',
 		maxChars,
 		showDropdown,
+		leftChildren,
 	} = props;
 	const [focus, setFocus] = React.useState(false);
 	const [showPassword, setShowPassowrd] = React.useState(false);
@@ -208,6 +210,7 @@ function CommonInputText(props: CommonInputType) {
 			onKeyUp={updDownHandler}
 		>
 			<HelperComponent context={props.context} definition={definition} />
+			{leftChildren}
 			{leftIcon ? (
 				<i style={computedStyles.leftIcon ?? {}} className={`_leftIcon ${leftIcon}`}>
 					<SubHelperComponent
