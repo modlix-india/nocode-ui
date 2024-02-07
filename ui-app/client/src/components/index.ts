@@ -47,6 +47,7 @@ import FillerValueEditor from './FillerValueEditor/FillerValueEditor';
 import ColorPicker from './ColorPicker/ColorPicker';
 import Jot from './Jot/Jot';
 import FillerDefinitionEditor from './FillerDefinitionEditor/FillerDefinitionEditor';
+import FormStorageEditor from './FormStorageEditor/FormStorageEditor';
 import SectionGrid from './SectionGrid/SectionGrid';
 
 export default new Map<string, Component>([
@@ -98,5 +99,6 @@ export default new Map<string, Component>([
 	[ColorPicker.name, ColorPicker],
 	[Jot.name, Jot],
 	[FillerDefinitionEditor.name, FillerDefinitionEditor],
+	[FormStorageEditor.name, FormStorageEditor],
 	[SectionGrid.name, SectionGrid],
 ]);
