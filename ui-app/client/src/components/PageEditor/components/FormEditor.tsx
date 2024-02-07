@@ -20,42 +20,76 @@ interface FormName {
 }
 
 interface FormEditorProps {
-	componentKey: string | undefined;
-	showFormEditor: number | undefined;
-	setShowFormEditor: (pref: any) => void;
-	formDefs: FormName[] | undefined;
 	formStorageUrl: string;
 	defPath: string | undefined;
 	pageExtractor: PageStoreExtractor;
 	locationHistory: Array<LocationHistory>;
 	clickedComponent: string;
+	setClickedComponent: (pref: any) => void;
 }
 export default function FormEditor({
-	componentKey,
-	showFormEditor,
-	setShowFormEditor,
-	formDefs,
 	formStorageUrl,
 	defPath,
 	pageExtractor,
 	locationHistory,
 	clickedComponent,
+	setClickedComponent,
 }: FormEditorProps) {
 	const [currentForm, setCurrentForm] = useState<any>();
 	const [eachFormDef, setEachFormDef] = useState<any>({});
 	const [selectedFormComponent, setSelectedFormComponent] = useState<Array<string>>([]);
 	const [addForm, setAddForm] = useState<boolean>(false);
 	const [formName, setFormName] = useState<string>('');
-	const [buttonName, setButtonName] = useState<Array<number>>([]);
+	const [formDefs, setFormDefs] = useState<FormName[]>();
+	const [showFormFields, setShowFormFields] = useState<boolean>(false);
+	const [addSubmitButton, setAddSubmitButton] = useState<boolean>(false);
+	const [addClearButton, setAddClearButton] = useState<boolean>(false);
+
+	const submitButtonKey = shortUUID();
+
+	const clearButtonKey = shortUUID();
 
 	const headers: any = {
 		Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
 	};
 	if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
 
-	const submitButtonKey = shortUUID();
+	const callForFormDef = useCallback(() => {
+		let pageDef = getDataFromPath(defPath, locationHistory, pageExtractor);
 
-	const clearButtonKey = shortUUID();
+		if (clickedComponent != '') {
+			(async () => {
+				let appCode = `?appCode=${pageDef.appCode}`;
+				let clientCode = `&clientCode=${pageDef.clientCode}`;
+				let url = getHref(formStorageUrl, location) + appCode + clientCode;
+				await axios
+					.get(url, {
+						headers,
+					})
+					.then(res => {
+						let helperArray: FormName[] = [];
+						res.data.content.map((each: any) => {
+							helperArray.push({
+								appCode: each.appCode,
+								clientCode: each.clientCode,
+								id: each.id,
+								name: each.name,
+							});
+						});
+						setFormDefs(helperArray);
+					})
+					.finally();
+			})();
+		}
+	}, [clickedComponent]);
+
+	useEffect(() => {
+		callForFormDef();
+	}, [callForFormDef, clickedComponent]);
+
+	const handleCloseForm = () => {
+		setClickedComponent('');
+	};
 
 	const eachFormDefinition = useCallback(() => {
 		if (currentForm?.id) {
@@ -82,20 +116,20 @@ export default function FormEditor({
 
 	useEffect(() => {
 		if (addForm) {
-			setShowFormEditor(0);
+			setClickedComponent('');
 			const pageDef = getDataFromPath(defPath, locationHistory, pageExtractor);
 
 			if (!defPath) return;
 
 			let newPageDef = generateFormEvents(
 				pageDef,
-				componentKey,
 				formName,
 				eachFormDef,
 				submitButtonKey,
 				clearButtonKey,
 				selectedFormComponent,
-				buttonName,
+				addSubmitButton,
+				addClearButton,
 				clickedComponent,
 			);
 			setData(defPath, newPageDef, pageExtractor.getPageName());
@@ -105,12 +139,12 @@ export default function FormEditor({
 
 	return (
 		<Portal>
-			<div className={`_popupBackground`} onClick={() => setShowFormEditor(0)}>
-				{showFormEditor == 1 && (
+			<div className={`_popupBackground`} onClick={handleCloseForm}>
+				{clickedComponent != '' && !showFormFields && (
 					<div className="_popupContainer _formEditor" onClick={e => e.stopPropagation()}>
 						<div className="_formButton">
 							<div></div>
-							<div className="_iconMenu" onClick={() => setShowFormEditor(0)}>
+							<div className="_iconMenu" onClick={handleCloseForm}>
 								<i className="fa fa-solid fa-close"></i>
 							</div>
 						</div>
@@ -129,7 +163,7 @@ export default function FormEditor({
 											className="_formEditorEachOption"
 											onClick={() => {
 												setCurrentForm(each);
-												setShowFormEditor(2);
+												setShowFormFields(true);
 											}}
 											key={index}
 										>
@@ -146,10 +180,10 @@ export default function FormEditor({
 						</div>
 					</div>
 				)}
-				{showFormEditor == 2 && (
+				{showFormFields && (
 					<div className="_popupContainer _formEditor" onClick={e => e.stopPropagation()}>
 						<div className="_formButton">
-							<div className="_backButton" onClick={() => setShowFormEditor(1)}>
+							<div className="_backButton" onClick={() => setShowFormFields(false)}>
 								<IconHelper viewBox="0 0 7 12">
 									<path
 										d="M1.18307 5.4957C0.938977 5.77463 0.938977 6.2276 1.18307 6.50653L4.93234 10.7908C5.17643 11.0697 5.57284 11.0697 5.81693 10.7908C6.06102 10.5119 6.06102 10.0589 5.81693 9.77998L2.50898 6L5.81498 2.22002C6.05907 1.94109 6.05907 1.48812 5.81498 1.20919C5.57089 0.930269 5.17448 0.930269 4.93039 1.20919L1.18112 5.49347L1.18307 5.4957Z"
@@ -165,7 +199,7 @@ export default function FormEditor({
 								</IconHelper>
 								Back
 							</div>
-							<div className="_iconMenu" onClick={() => setShowFormEditor(0)}>
+							<div className="_iconMenu" onClick={handleCloseForm}>
 								<i className="fa fa-solid fa-close"></i>
 							</div>
 						</div>
@@ -222,17 +256,8 @@ export default function FormEditor({
 											onClick={e => {
 												const elem = e.target as HTMLInputElement;
 												elem.checked
-													? setButtonName(prevSelectedButtonName => [
-															...prevSelectedButtonName,
-															parseInt(
-																(e.target as HTMLInputElement).id,
-															),
-													  ])
-													: setButtonName(prevSelectedButtonName =>
-															prevSelectedButtonName.filter(
-																each => each != parseInt(elem.id),
-															),
-													  );
+													? setAddSubmitButton(true)
+													: setAddSubmitButton(false);
 											}}
 										></input>
 									</div>
@@ -245,17 +270,8 @@ export default function FormEditor({
 											onClick={e => {
 												const elem = e.target as HTMLInputElement;
 												elem.checked
-													? setButtonName(prevSelectedButtonName => [
-															...prevSelectedButtonName,
-															parseInt(
-																(e.target as HTMLInputElement).id,
-															),
-													  ])
-													: setButtonName(prevSelectedButtonName =>
-															prevSelectedButtonName.filter(
-																each => each != parseInt(elem.id),
-															),
-													  );
+													? setAddClearButton(true)
+													: setAddClearButton(false);
 											}}
 										></input>
 									</div>

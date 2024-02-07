@@ -2716,31 +2716,28 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._formEditor {
 			width: 600px;
-			height: fit-content;
+			height: 650px;
 		}
 
-		._formEditorContent{
+		._formEditor ._formEditorContent{
 			height: 100%;
 			width: 100%;
-			padding: 5%;
+			padding: 20px;
 		}
 
-		._formButton {
+		._formEditor ._formButton {
 			display: flex;
 			justify-content: space-between;
 		}
 
-		.fa-close {
+		._formButton .fa-close {
 			margin-top: 10px;
 			margin-right: 10px;
+			cursor:pointer;
 			transition: transform 0.2s ease-in-out;
 		}
-		.fa-close:hover {
-			transform: rotate(90deg) scale(1.2);
-			cursor:pointer;
-		}
 
-		._backButton {
+		._formButton ._backButton {
 			display: flex;
 			margin-top: 10px;
 			margin-left: 10px;
@@ -2750,10 +2747,11 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			font-style: normal;
 			font-weight: 600;
 			line-height: 14px;
+			cursor: pointer;
 		}
 
-		._generateButton {
-			width: fit-content;
+		._formEditorContent ._generateButton {
+			width: 125px;
 			padding: 12px;
 			border-radius: 4px;
 			background: #0085F2;
@@ -2764,28 +2762,20 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			font-style: normal;
 			font-weight: 600;
 			line-height: 14px;
+			cursor: pointer;
 			transition: transform 0.2s ease-in-out;
 		}
 
-		._generateButton:hover {
-			cursor: pointer;
-			transform: scale(1.05);
-		}
-
-		._backButton:hover {
-			cursor: pointer;
-		}
-
-		._formEditorBottomBorder {
-			margin-top: 4%;
-			margin-bottom: 4%;
+		._formEditorContent ._formEditorBottomBorder {
+			margin-top: 15px;
+			margin-bottom: 10px;
 			background: rgba(0, 0, 0, 0.10);
 			height: 1px;
 			margin-left: 5px;
 			margin-right: 5px;
 		}
 
-		._formEditorHeader {
+		._formEditorContent ._formEditorHeader {
 			color: rgba(0, 0, 0, 0.80);
 			font-family: Inter;
 			font-size: 16px;
@@ -2797,7 +2787,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			padding: 5px;
 		}
 
-		._formEditorSubHeader {
+		._formEditorContent ._formEditorSubHeader {
 			color: rgba(0, 0, 0, 0.40);
 			font-family: Inter;
 			font-size: 12px;
@@ -2808,7 +2798,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			padding: 5px;
 		}
 
-		._formEditorFilesTitle {
+		._formEditorContent ._formEditorFilesTitle {
 			color: rgba(0, 0, 0, 0.40);
 			font-family: Inter;
 			font-size: 12px;
@@ -2819,7 +2809,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			padding: 5px;
 		}
 
-		._formEditorOptions {
+		._formEditorContent ._formEditorOptions {
 			padding: 5px;
 			width: 100%;
 			height: 42vh;
@@ -2829,15 +2819,12 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			overflow-y: scroll;
 		}
 
-		._formEditorEachOption {
+		._formEditorOptions ._formEditorEachOption {
 			width: 161px;
 			height: 201px;
 			display: flex;
 			flex-direction: column;
 			padding: 10px;
-		}
-
-		._formEditorEachOption:hover {
 			cursor: pointer;
 		}
 
@@ -2846,7 +2833,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border: 1px solid rgba(66, 126, 228, 0.80);
 		}
 
-		._formEditorEachOptionPreview {
+		._formEditorEachOption ._formEditorEachOptionPreview {
 			height: 80%;
 			border-radius: 4px;
 			background: #F9F9F9;
@@ -2855,7 +2842,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			align-items: center;
 		}
 
-		._formEditorEachOptionName {
+		._formEditorEachOption ._formEditorEachOptionName {
 			margin-top: 15px;
 			color: rgba(0, 0, 0, 0.80);
 			font-family: Inter;
@@ -2866,7 +2853,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			letter-spacing: 0.12px;
 		}
 
-		._formElements {
+		._formEditorContent ._formElements {
 			height: 400px;
 			width: 100%;
 			margin-bottom: 20px;
@@ -2874,11 +2861,11 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			overflow-y: scroll;
 		}
 
-		._formFieldsAndButtons {
-			width: 50%;
+		._formElements ._formFieldsAndButtons {
+			flex: 1;
 		}
 
-		._formFieldsAndButtonsTitle {
+		._formFieldsAndButtons ._formFieldsAndButtonsTitle {
 			color: rgba(0, 0, 0, 0.40);
 			font-family: Inter;
 			font-size: 12px;
@@ -2889,7 +2876,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			margin-left: 15px;
 		}
 
-		._formFieldAndButton {
+		._formFieldsAndButtons ._formFieldAndButton {
 			height: 44px;
 			border-radius: 4px;
 			background: #F8FAFB;
@@ -2899,7 +2886,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			align-items: center;
 		}
 
-		._formFieldAndButtonTitle {
+		._formFieldAndButton ._formFieldAndButtonTitle {
 			color: rgba(0, 0, 0, 0.80);
 			font-family: Inter;
 			font-size: 14px;
@@ -2909,13 +2896,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			padding-left: 20px;
 		}
 
-		._formFieldAndButtonCheckbox {
+		._formFieldAndButton ._formFieldAndButtonCheckbox {
 			padding-right: 20px;
 			width: 18px;
 			height: 18px;
-		}
-
-		._formFieldAndButtonCheckbox:hover {
 			cursor: pointer;
 		}
 

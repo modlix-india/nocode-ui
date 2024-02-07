@@ -26,74 +26,150 @@ interface buttonDef {
 
 export const generateFormEvents = (
 	pageDefinition: PageDefinition,
-	componentKey: string | undefined,
 	formName: string,
 	eachFormDef: any,
 	submitButtonKey: string,
 	clearButtonKey: string,
 	selectedFormComponent: Array<string>,
-	buttonName: Array<number>,
+	addSubmitButton: boolean,
+	addClearButton: boolean,
 	clickedComponent: string,
 ) => {
 	let newPageDef = duplicate(pageDefinition) as PageDefinition;
 
-	let submitEventKey = shortUUID();
-	let clearEventKey = shortUUID();
-
-	let submitStylePropertiesKey = shortUUID();
-	let clearStylePropertiesKey = shortUUID();
-
-	let dataObjectKey = shortUUID();
-	let storageNameKey = shortUUID();
-	let eagerFieldsKey = shortUUID();
-	let pathParmKey = shortUUID();
-	let valueParmKey = shortUUID();
 	let pathName = 'Page.' + formName;
 
-	let submitEventDefString = `{
-		"name": "save",
-		"steps": {
-		  "create": {
-			"statementName": "create",
-			"name": "Create",
-			"namespace": "CoreServices.Storage",
-			"position": {
-			  "left": 409.953125,
-			  "top": 55.59375
-			},
-			"parameterMap": {
-			  "dataObject": {
-				"${dataObjectKey}": {
-				  "key": "${dataObjectKey}",
-				  "type": "EXPRESSION",
-				  "expression": "${pathName}",
-				  "order": 1
-				}
-			  },
-			  "storageName": {
-				"${storageNameKey}": {
-				  "key": "${storageNameKey}",
-				  "type": "EXPRESSION",
-				  "expression": "${formName}",
-				  "order": 1
-				}
-			  },
-			  "eagerFields": {
-				"${eagerFieldsKey}": {
-				  "key": "${eagerFieldsKey}",
-				  "type": "EXPRESSION",
-				  "order": 1
+	let eventFunctions: any = newPageDef?.eventFunctions ?? {};
+
+	let eachChildrenObject: any = newPageDef.componentDefinition[clickedComponent]?.children ?? {};
+
+	selectedFormComponent.forEach(each => {
+		const newComponentKey = shortUUID();
+		eachFormDef[each].key = newComponentKey;
+		newPageDef.componentDefinition[newComponentKey] = eachFormDef[each];
+		eachChildrenObject[newComponentKey] = true;
+	});
+
+	const eventFunctionsKeys = Object.keys(eventFunctions);
+
+	if (addSubmitButton) {
+		let saveEventCount = 0;
+
+		eventFunctionsKeys.forEach(each => {
+			const functionName: string = newPageDef.eventFunctions[each].name;
+			if (functionName.length > 3 && functionName.substring(0, 4) == 'save') {
+				saveEventCount += 1;
+			}
+		});
+
+		let submitFunctionName = 'save' + (saveEventCount > 0 ? `_${saveEventCount}` : '');
+
+		let submitEventKey = shortUUID();
+		let submitStylePropertiesKey = shortUUID();
+
+		let dataObjectKey = shortUUID();
+		let storageNameKey = shortUUID();
+		let eagerFieldsKey = shortUUID();
+
+		let submitEventDefString = `{
+			"name": "${submitFunctionName}",
+			"steps": {
+			  "create": {
+				"statementName": "create",
+				"name": "Create",
+				"namespace": "CoreServices.Storage",
+				"position": {
+				  "left": 409.953125,
+				  "top": 55.59375
+				},
+				"parameterMap": {
+				  "dataObject": {
+					"${dataObjectKey}": {
+					  "key": "${dataObjectKey}",
+					  "type": "EXPRESSION",
+					  "expression": "${pathName}",
+					  "order": 1
+					}
+				  },
+				  "storageName": {
+					"${storageNameKey}": {
+					  "key": "${storageNameKey}",
+					  "type": "EXPRESSION",
+					  "expression": "${formName}",
+					  "order": 1
+					}
+				  },
+				  "eagerFields": {
+					"${eagerFieldsKey}": {
+					  "key": "${eagerFieldsKey}",
+					  "type": "EXPRESSION",
+					  "order": 1
+					}
+				  }
 				}
 			  }
-			}
+			},
+			"namespace": ""
 		  }
-		},
-		"namespace": ""
-	  }
-	`;
+		`;
 
-	let clearEventDefString = `{
-			"name": "clear",
+		let submitButtonDef: buttonDef = {
+			key: submitButtonKey,
+			name: 'button',
+			type: 'Button',
+			properties: {
+				label: {
+					value: 'Submit',
+				},
+				colorScheme: {
+					value: '_quinary',
+				},
+				onClick: {
+					value: submitEventKey,
+				},
+			},
+			styleProperties: {
+				[submitStylePropertiesKey]: {
+					resolutions: {
+						ALL: {
+							width: {
+								value: '100px',
+							},
+						},
+					},
+				},
+			},
+			override: false,
+			displayOrder: selectedFormComponent.length,
+		};
+
+		eachChildrenObject[submitButtonKey] = true;
+
+		eventFunctions[submitEventKey] = JSON.parse(submitEventDefString);
+
+		newPageDef.componentDefinition[submitButtonKey] = submitButtonDef;
+	}
+
+	if (addClearButton) {
+		let clearEventCount = 0;
+
+		eventFunctionsKeys.forEach(each => {
+			const functionName: string = newPageDef.eventFunctions[each].name;
+			if (functionName.length > 3 && functionName.substring(0, 5) == 'clear') {
+				clearEventCount += 1;
+			}
+		});
+
+		let clearFunctionName = 'clear' + (clearEventCount > 0 ? `_${clearEventCount}` : '');
+
+		let clearEventKey = shortUUID();
+		let clearStylePropertiesKey = shortUUID();
+
+		let pathParmKey = shortUUID();
+		let valueParmKey = shortUUID();
+
+		let clearEventDefString = `{
+			"name": "${clearFunctionName}",
 			"steps": {
 			  "setStore": {
 				"statementName": "setStore",
@@ -128,95 +204,42 @@ export const generateFormEvents = (
 		  }
 		`;
 
-	let submitButtonDef: buttonDef = {
-		key: submitButtonKey,
-		name: 'button',
-		type: 'Button',
-		properties: {
-			label: {
-				value: 'Submit',
+		let clearButtonDef: buttonDef = {
+			key: clearButtonKey,
+			name: 'button',
+			type: 'Button',
+			properties: {
+				label: {
+					value: 'Clear',
+				},
+				onClick: {
+					value: clearEventKey,
+				},
 			},
-			colorScheme: {
-				value: '_quinary',
-			},
-			onClick: {
-				value: submitEventKey,
-			},
-		},
-		styleProperties: {
-			[submitStylePropertiesKey]: {
-				resolutions: {
-					ALL: {
-						width: {
-							value: '100px',
+			styleProperties: {
+				[clearStylePropertiesKey]: {
+					resolutions: {
+						ALL: {
+							width: {
+								value: '100px',
+							},
 						},
 					},
 				},
 			},
-		},
-		override: false,
-		displayOrder: selectedFormComponent.length,
-	};
+			override: false,
+			displayOrder: selectedFormComponent.length,
+		};
 
-	let clearButtonDef: buttonDef = {
-		key: clearButtonKey,
-		name: 'button',
-		type: 'Button',
-		properties: {
-			label: {
-				value: 'Clear',
-			},
-			onClick: {
-				value: clearEventKey,
-			},
-		},
-		styleProperties: {
-			[clearStylePropertiesKey]: {
-				resolutions: {
-					ALL: {
-						width: {
-							value: '100px',
-						},
-					},
-				},
-			},
-		},
-		override: false,
-		displayOrder: selectedFormComponent.length,
-	};
-
-	let eventFunctions: any = {};
-
-	let helperObject: any = {};
-	selectedFormComponent.forEach(each => {
-		newPageDef.componentDefinition[each] = eachFormDef[each];
-		helperObject[each] = true;
-	});
-
-	if (buttonName.length == 2) {
-		helperObject[submitButtonKey] = true;
-		helperObject[clearButtonKey] = true;
-
-		eventFunctions[submitEventKey] = JSON.parse(submitEventDefString);
+		eachChildrenObject[clearButtonKey] = true;
 		eventFunctions[clearEventKey] = JSON.parse(clearEventDefString);
-
-		newPageDef.componentDefinition[submitButtonKey] = submitButtonDef;
 		newPageDef.componentDefinition[clearButtonKey] = clearButtonDef;
-	} else if (buttonName.length == 1) {
-		if (buttonName[0] == 1) {
-			helperObject[clearButtonKey] = true;
-			eventFunctions[clearEventKey] = JSON.parse(clearEventDefString);
-			newPageDef.componentDefinition[clearButtonKey] = clearButtonDef;
-		} else {
-			helperObject[submitButtonKey] = true;
-			eventFunctions[submitEventKey] = JSON.parse(submitEventDefString);
-			newPageDef.componentDefinition[submitButtonKey] = submitButtonDef;
-		}
 	}
 
-	newPageDef.componentDefinition[clickedComponent]['children'] = helperObject;
+	newPageDef.componentDefinition[clickedComponent].children = { ...eachChildrenObject };
 
-	newPageDef['eventFunctions'] = eventFunctions;
+	newPageDef.eventFunctions = { ...newPageDef.eventFunctions, ...eventFunctions };
 
 	return newPageDef;
 };
+
