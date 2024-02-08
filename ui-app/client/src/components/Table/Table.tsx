@@ -200,6 +200,10 @@ function TableComponent(props: ComponentProps) {
 
 	const [pageSize, setPageSize] = useState(defaultSize);
 
+	useEffect(() => {
+		setPageSize(defaultSize);
+	});
+
 	useEffect(
 		() =>
 			pageSizeBindingPath
@@ -307,7 +311,7 @@ function TableComponent(props: ComponentProps) {
 		let to = data?.length ?? 0;
 		if (offlineData) {
 			to = (pageNumber + 1) * pageSize;
-			if (to >= data.length) to = data.length - 1;
+			if (to >= data?.length) to = (data?.length ?? 0) - 1;
 		}
 
 		let pagination = undefined;
@@ -320,7 +324,7 @@ function TableComponent(props: ComponentProps) {
 			if (offlineData) {
 				size = defaultSize;
 				currentPage = pageNumber;
-				pages = Math.ceil(data.length / size);
+				pages = size > 0 ? Math.ceil(data.length / size) : 0;
 			}
 
 			let numbers: Array<number> = [];
