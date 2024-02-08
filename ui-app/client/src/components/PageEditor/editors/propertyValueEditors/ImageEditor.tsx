@@ -78,6 +78,7 @@ export function ImageEditor({
 	const [showImageResizerPopup, setShowImageResizerPopup] = useState(false);
 	const [formData, setFormData] = useState<FormData>();
 	const [image, setImage] = useState<string>('');
+	const [imageName, setImageName] = useState('');
 
 	useEffect(() => setChngValue(value ?? ''), [value]);
 
@@ -98,7 +99,7 @@ export function ImageEditor({
 		setInProgress(true);
 
 		(async () => {
-			let url = `/api/files/static/${path}?size=200`; // for now hardcoding size with value 200 in future update with infinite scrolling
+			let url = `api/files/static/${path}?size=200`; // for now hardcoding size with value 200 in future update with infinite scrolling
 			if (filter.trim() !== '') url += `&filter=${filter}`;
 			await axios
 				.get(url, {
@@ -115,8 +116,6 @@ export function ImageEditor({
 		() => (showImageBrowser ? callForFiles() : undefined),
 		[callForFiles, path, showImageBrowser],
 	);
-
-	console.log('showImageResizerPopup ', showImageResizerPopup);
 
 	let popup = <></>;
 	if (showImageBrowser) {
@@ -200,6 +199,10 @@ export function ImageEditor({
 							key={e.name}
 							title={`${e.name}`}
 							className="_eachIcon"
+							style={{
+								borderColor:
+									imageName === e.name ? '#4D7FEE' : 'rgba(0, 0, 0, 0.10)',
+							}}
 							onClick={() => {
 								if (e.directory) {
 									setPath(path + '\\' + e.name);
@@ -207,8 +210,8 @@ export function ImageEditor({
 								}
 
 								setChngValue(e.url);
-								setShowImageBrowser(false);
-								onChange(e.url);
+								setImage(e.url);
+								setImageName(e.name);
 							}}
 						>
 							{!isImage(e.name) ? (
@@ -249,7 +252,7 @@ export function ImageEditor({
 												try {
 													(async () =>
 														await axios.delete(
-															`/api/files/static/${path}${
+															`api/files/static/${path}${
 																path === '' ? '' : '/'
 															}${e.name}`,
 															{
@@ -315,12 +318,71 @@ export function ImageEditor({
 								{content}
 							</div>
 							<div className="_editBtnContainer">
-								<button className="_deleteBtn" title="Delete" tabIndex={0}>
+								<button
+									className="_deleteBtn"
+									title="Delete"
+									tabIndex={0}
+									disabled={image === ''}
+									style={{ cursor: image === '' ? 'not-allowed' : 'pointer' }}
+									onClick={() => {
+										pageOperations?.setIssuePopup({
+											message: `Confirm deletion of file : ${imageName} ?`,
+											options: ['Yes', 'No'],
+											callbackOnOption: {
+												Yes: () => {
+													setInProgress(true);
+													try {
+														(async () =>
+															await axios.delete(
+																`api/files/static/${path}${
+																	path === '' ? '' : '/'
+																}${imageName}`,
+																{
+																	headers,
+																},
+															))();
+													} catch (e) {}
+													setInProgress(false);
+													callForFiles();
+												},
+											},
+										});
+									}}
+								>
 									Delete
 								</button>
-								<div className="_selectBtnContainer">
+								<button
+									className="_EditBtn"
+									title="Edit"
+									tabIndex={0}
+									disabled={image === ''}
+									style={{
+										cursor: image === '' ? 'not-allowed' : 'pointer',
+									}}
+									onClick={() => setShowImageResizerPopup(true)}
+								>
+									Edit
+								</button>
+								<div
+									className="_selectBtnContainer"
+									style={{
+										cursor: image === '' ? 'not-allowed' : 'pointer',
+									}}
+									onClick={() => {
+										onChange(image);
+										setShowImageBrowser(false);
+									}}
+								>
 									<i className="fa-regular fa-image"></i>
-									<button className="_selectBtn" title="Select" tabIndex={0}>
+									<button
+										className="_selectBtn"
+										title="Select"
+										tabIndex={0}
+										disabled={image === ''}
+										style={{
+											cursor: image === '' ? 'not-allowed' : 'pointer',
+										}}
+									>
 										Select
 									</button>
 								</div>

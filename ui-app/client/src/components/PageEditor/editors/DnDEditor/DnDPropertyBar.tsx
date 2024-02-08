@@ -150,8 +150,6 @@ export default function DnDPropertyBar({
 
 	if (!selectedComponent || previewMode) return <div className="_propBar"></div>; // if no component is selected then returning empty div.
 
-	if (!selectedComponent || previewMode) return <div className="_propBar"></div>;
-
 	const pageDef = defPath ? getDataFromPath(defPath, locationHistory, pageExtractor) : undefined;
 	const isSectionGrid = pageDef?.componentDefinition?.[selectedComponent]?.type === 'SectionGrid';
 

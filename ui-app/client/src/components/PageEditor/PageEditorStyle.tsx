@@ -988,8 +988,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._scaleSliderContainer {
 			display: flex;
-			flex-direction: row;
-			gap: 60px;
+			flex-direction: column;
+			gap: 10px
 		}
 
 		._scaleSliderContainer ._scaleSlider {
@@ -2889,37 +2889,25 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			margin-left: 5px;
 		}
 
-		._popupContainer .imageResizerHeader {
-			width: 100%;
-			height: 34px;
-			display: flex;
-			align-items: center;
-			background-color: #427EE4;
-			border-radius: 2px 2px 0 0;
-			padding-left: 20px;
-			color: #fff;
-			gap: 8px;
-			font-family: 'Inter';
-		}
-
 		._popupContainer ._popupEditorContainer {
 			width: 100%;
-			border: 1px solid rgba(0, 0, 0, 0.10);
+			height: 100%;
+			display: flex;
 		}
 
 		._popupContainer ._popupEditorContainer .imagePopupEditorBackground {
 			position: relative;
-			width: 100%;
-			height: 230px;
+			width: calc(100% - 350px);
+			height: calc(100vh - 70px);
 			overflow: auto;
-			background-color: lightblue;
+			background: repeating-conic-gradient(#EDEDED 0% 25%, transparent 0% 50%) 50% / 20px 20px;
 		}
 
 		._popupContainer ._popupEditorContainer .imagePopupEditorBackground .imageWrapper {
 			position: relative;
 			display: flex;
 			transition: transform 0.3s ease;
-			background-color: gray;
+			transition: all 0s;
 		}
 
 		._popupContainer ._popupEditorContainer .imagePopupEditorBackground .imageWrapper .uploadingImage {
@@ -2927,58 +2915,150 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			position: absolute;
 			left: 50%;
 			top: 50%;
-			background-color: black;
 			transform-origin: left top;
 			transform: translate(-50%, -50%);
+			user-select: none;
+			transition: all 0s;
 		}
 
 		._popupContainer ._popupEditorContainer .imagePopupEditorBackground ._cropArea {
 			position: absolute;
-			width: 100px;
-			height: 100px;
-			border: 1px dashed white;
+			border: 1px solid white;
+			background-color: transparent;
+			cursor: move;
+			z-index: 2;
+			transition: all 0s;
 		}
 
-		._popupContainer ._popupEditorContainer ._tabButtonsContainer {
+		._popupContainer ._popupEditorContainer .imagePopupEditorBackground ._innerCropArea {
 			width: 100%;
-			display: flex;
-			padding: 10px 15px;
+			height: 100%;
+			cursor: default;
 		}
 
-		._popupContainer ._popupEditorContainer ._tabButtonsContainer .tabBtn {
-			width: 50%;
-			color: rgba(0, 0, 0, 0.40);
-			cursor: pointer;
-			border-bottom: 3px solid #F1F1F1;
-			text-align: center;
-			padding: 10px 0;
-			font-weight: 500;
+		._popupContainer ._popupEditorContainer .imagePopupEditorBackground ._cropTopLeft {
+			position: absolute;
+			top: -4px;
+			left: -4px;
+			width: 20px;
+			height: 20px;
+			border-left: 4px solid white;
+			border-top: 4px solid white;
+			z-index: 1;
+			cursor: nwse-resize;
 		}
 
-		._popupContainer ._popupEditorContainer ._tabButtonsContainer .tabBtn.selected {
+		._popupContainer ._popupEditorContainer .imagePopupEditorBackground ._cropTopRight {
+			position: absolute;
+			top: -4px;
+			right: -4px;
+			width: 20px;
+			height: 20px;
+			border-right: 4px solid white;
+			border-top: 4px solid white;
+			cursor: nesw-resize;
+		}
+
+		._popupContainer ._popupEditorContainer .imagePopupEditorBackground ._cropBottomLeft {
+			position: absolute;
+			bottom: -4px;
+			left: -4px;
+			width: 20px;
+			height: 20px;
+			border-left: 4px solid white;
+			border-bottom: 4px solid white;
+			cursor: nesw-resize;
+		}
+
+		._popupContainer ._popupEditorContainer .imagePopupEditorBackground ._cropBottomRight {
+			position: absolute;
+			bottom: -4px;
+			right: -4px;
+			width: 20px;
+			height: 20px;
+			border-bottom: 4px solid white;
+			border-right: 4px solid white;
+			cursor: nwse-resize;
+		}
+
+		._popupContainer ._popupEditorContainer .imagePopupEditorBackground ._cropLeft {
+			position: absolute;
+			top: 50%;
+			left: -4px;
+			width: 20px;
+			height: 20px;
+			transform: translateY(-50%);
+			border-left: 4px solid white;
+			cursor: ew-resize;
+		}
+
+		._popupContainer ._popupEditorContainer .imagePopupEditorBackground ._cropTop {
+			position: absolute;
+			top: -4px;
+			left: 50%;
+			width: 20px;
+			height: 20px;
+			transform: translateX(-50%);
+			border-top: 4px solid white;
+			cursor: ns-resize;
+		}
+
+		._popupContainer ._popupEditorContainer .imagePopupEditorBackground ._cropRight {
+			position: absolute;
+			top: 50%;
+			right: -4px;
+			width: 20px;
+			height: 20px;
+			transform: translateY(-50%);
+			border-right: 4px solid white;
+			cursor: ew-resize;
+		}
+
+		._popupContainer ._popupEditorContainer .imagePopupEditorBackground ._cropBottom {
+			position: absolute;
+			bottom: -4px;
+			left: 50%;
+			width: 20px;
+			height: 20px;
+			transform: translateX(-50%);
+			border-bottom: 4px solid white;
+			cursor: ns-resize;
+		}
+
+		._popupContainer ._popupEditorContainer .tabBtn.selected {
 			color: #427EE4;
-			border-bottom: 3px solid #427EE4;
+			border-bottom: 2px solid #427EE4;
+			padding: 10px;
 		}
 
-		._popupContainer ._popupEditorContainer ._tabButtonsContainer .tabBtn i {
+		._popupContainer ._popupEditorContainer .tabBtn i {
 			margin-right: 7px;
 		}
 
-		._popupContainer._imageResize ._popupEditorContainer ._editCrop {
+		._popupContainer._imageResize ._popupEditorContainer ._editOptions {
+			position: relative;
+			box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.4);
+		}
+
+		._popupContainer._imageResize ._popupEditorContainer ._editOptions ._editCrop {
 			display: flex;
 			flex-direction: column;
 			gap: 15px;
 			padding: 10px 15px;
 		}
 
-		._popupContainer._imageResize ._popupEditorContainer ._editCrop .resizeLabel {
+		._popupContainer._imageResize ._popupEditorContainer ._editOptions ._editCrop:nth-child(2) {
+			margin-top: 15px;
+		}
+
+		._popupContainer._imageResize ._popupEditorContainer ._editOptions ._editCrop .resizeLabel {
 			color: rgba(34, 34, 34, 0.70);
 			margin: 0;
 			cursor: default;
 			gap: 5px;
 		}
 
-		._popupContainer._imageResize ._popupEditorContainer ._editCrop .resizeLabelInfo {
+		._popupContainer._imageResize ._popupEditorContainer ._editOptions ._editCrop .resizeLabelInfo {
 			display: inline-block;
 			width: 14px;
 			height: 14px;
@@ -2992,10 +3072,12 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			margin-left: 5px;
 		}
 
-		._popupContainer._imageResize ._popupEditorContainer ._editCrop .checkboxContainer {
+		._popupContainer._imageResize ._popupEditorContainer ._editOptions ._editCrop .checkboxContainer {
 			display: flex;
 			align-items: center;
 			gap: 10px;
+		}
+
 		${PREFIX} ._addPropertyButtonContainer {
 			display: flex;
 			justify-content: center;
@@ -3075,7 +3157,18 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			background-color: #fff;
 			color: #FF614D;
 			font-weight: 600;
-			cursor: pointer;
+			font-size: 14px;
+		}
+
+		._popupContainer._imagePopupContainer ._editBtnContainer ._EditBtn {
+			display: inline-block;
+			width: 90px;
+			height: 36px;
+			border-radius: 4px;
+			border: 1px solid #0085F2;
+			background-color: #fff;
+			color: #0085F2;
+			font-weight: 600;
 			font-size: 14px;
 		}
 
@@ -3087,7 +3180,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			align-items: center;
 			border-radius: 4px;
 			background-color: #52BD94;
-			cursor: pointer;
 		}
 
 		._popupContainer._imagePopupContainer ._editBtnContainer ._selectBtnContainer i {
@@ -3101,6 +3193,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			font-size: 14px;
 			background: none;
 			border: none;
+			cursor: pointer;
 		}
 
 		._popupContainer ._iconSelectionBrowser ._selectors {
@@ -3273,22 +3366,25 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._popupBackground ._popupContainer._imageResize {
 			backgroundColor: #fafafa;
 			min-height: 550px;
-			width: 600px;
+			width: 100%;
+			max-width: 100vw;
 			justifyContent: center;
 			align-items: flex-start;
 			touchAction: none;
 			gap: 0;
 		}
 
-		._popupBackground ._popupContainer._imageResize ._editBtnContainer {
-			width: 100%;
+		._popupBackground ._popupContainer._imageResize ._popupEditorContainer ._editOptions ._editBtnContainer {
+			position: absolute;
+			bottom: 30px;
+			right: 20px;
 			height: 50px;
 			display: flex;
 			justify-content: end;
 			align-items: flex-end;
 		}
 
-		._popupBackground ._popupContainer._imageResize ._editBtnContainer ._cancelBtn {
+		._popupBackground ._popupContainer._imageResize ._popupEditorContainer ._editOptions ._editBtnContainer ._cancelBtn {
 			width: 100px;
 			height: 36px;
 			background-color: transparent;
@@ -3298,7 +3394,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			font-size: 14px;
 		}
 
-		._popupBackground ._popupContainer._imageResize ._editBtnContainer ._saveBtn {
+		._popupBackground ._popupContainer._imageResize ._popupEditorContainer ._editOptions ._editBtnContainer ._saveBtn {
 			display: inline-block;
 			width: 120px;
 			height: 36px;

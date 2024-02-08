@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { RangeSlider } from '../stylePropertyValueEditors/simpleEditors/RangeSlider';
 import axios from 'axios';
+import { ColorSelector } from '../stylePropertyValueEditors/simpleEditors/ColorSelector';
 
 interface ImageResizerProps {
 	path?: string;
@@ -23,26 +24,45 @@ const ImageResizer = ({
 	setShowImageResizerPopup,
 	callForFiles,
 }: ImageResizerProps) => {
+	const containerRef = useRef<HTMLDivElement>(null);
 	const imageWrapperRef = useRef<HTMLDivElement>(null);
 	const imageRef = useRef<HTMLImageElement>(null);
-	const [imageInitialSize, setImageInitialSize] = useState<any>({ width: 0, height: 0 });
-	const [sliderVal, setSliderVal] = useState<{ x: number; y: number }>({ x: 50, y: 50 });
-	const [scale, setScale] = useState<{ x: number; y: number }>({ x: 1, y: 1 });
-	const [allowScroll, setAllowScroll] = useState<boolean>(false);
-	const [selectedTab, setSelectedTab] = useState<number>(1);
-	const [sliderRotationVal, setSliderRotationVal] = useState<number>(0);
-	const [containerSize, setContainerSize] = useState<any>();
-	const [imageWrapperUpdatedSize, setImageWrapperUpdatedSize] = useState<any>({
+	const [imageInitialSize, setImageInitialSize] = useState<{ width: number; height: number }>({
 		width: 0,
 		height: 0,
 	});
-	const [imageUpdatedSize, setImageUpdatedSize] = useState<any>({ width: 0, height: 0 });
+	const [sliderVal, setSliderVal] = useState<{ x: number; y: number }>({ x: 50, y: 50 });
+	const [scale, setScale] = useState<{ x: number; y: number }>({ x: 1, y: 1 });
+	const [sliderRotationVal, setSliderRotationVal] = useState<number>(0);
+	const [imageWrapperUpdatedSize, setImageWrapperUpdatedSize] = useState<{
+		width: number;
+		height: number;
+	}>({ width: 0, height: 0 });
+	const [imageUpdatedSize, setImageUpdatedSize] = useState<{ width: number; height: number }>({
+		width: 0,
+		height: 0,
+	});
 	const [fixAspectRatio, setFixAspectRatio] = useState<boolean>(true);
+	const [showCropArea, setShowCropArea] = useState<boolean>(false);
 	const cropRectRef = React.useRef<HTMLDivElement>(null);
-	const [cropAreaLeftTopBounding, setcropAreaLeftTopBounding] = useState<any>({
+	const [cropAreaSize, setCropAreaSize] = useState<{ width: number; height: number }>({
+		width: 100,
+		height: 100,
+	});
+	const [cropAreaPosition, setCropAreaPosition] = useState<{ top: number; left: number }>({
 		top: 0,
 		left: 0,
 	});
+	const [dragging, setDragging] = useState<boolean>(false);
+	const topLeftRef = useRef<HTMLDivElement>(null);
+	const topRightRef = useRef<HTMLDivElement>(null);
+	const bottomLeftRef = useRef<HTMLDivElement>(null);
+	const bottomRightRef = useRef<HTMLDivElement>(null);
+	const leftRef = useRef<HTMLDivElement>(null);
+	const topRef = useRef<HTMLDivElement>(null);
+	const rightRef = useRef<HTMLDivElement>(null);
+	const bottomRef = useRef<HTMLDivElement>(null);
+	const [chngValue, setChngValue] = useState<any>('');
 
 	let scaleSlider = undefined;
 	const min = 0;
@@ -51,7 +71,7 @@ const ImageResizer = ({
 		<RangeSlider
 			value={sliderVal.x * 2}
 			onChange={v => {
-				let val = v ?? 0;
+				let val = v / 2 ?? 0;
 				setSliderVal({ x: val, y: val });
 			}}
 			min={min}
@@ -62,9 +82,9 @@ const ImageResizer = ({
 	let scaleSliderX = undefined;
 	scaleSliderX = (
 		<RangeSlider
-			value={sliderVal.x}
+			value={sliderVal.x * 2}
 			onChange={v => {
-				setSliderVal({ ...sliderVal, x: v ?? 0 });
+				setSliderVal({ ...sliderVal, x: v / 2 ?? 0 });
 			}}
 			min={min}
 			max={max ?? 100}
@@ -74,7 +94,7 @@ const ImageResizer = ({
 	let scaleSliderY = undefined;
 	scaleSliderY = (
 		<RangeSlider
-			value={sliderVal.y}
+			value={sliderVal.y * 2}
 			onChange={v => {
 				setSliderVal({ ...sliderVal, y: v ?? 0 });
 			}}
@@ -222,8 +242,12 @@ const ImageResizer = ({
 			r4 * parseFloat(Math.sin(newTheta4).toFixed(4)),
 		];
 
-		const width = calcWidthHeight(nTopLeft[0], nTopRight[0], nBottomLeft[0], nBottomRight[0]);
-		const height = calcWidthHeight(nTopLeft[1], nTopRight[1], nBottomLeft[1], nBottomRight[1]);
+		const width = Math.round(
+			calcWidthHeight(nTopLeft[0], nTopRight[0], nBottomLeft[0], nBottomRight[0]),
+		);
+		const height = Math.round(
+			calcWidthHeight(nTopLeft[1], nTopRight[1], nBottomLeft[1], nBottomRight[1]),
+		);
 
 		return { width, height };
 	}
@@ -258,45 +282,554 @@ const ImageResizer = ({
 		setImageWrapperUpdatedSize({ width, height });
 	}
 
-	// useEffect(() => {
-	// 	setImageUpdatedSize(imageInitialSize);
-	// }, [imageInitialSize]);
+	useEffect(() => {
+		setImageUpdatedSize(imageInitialSize);
+	}, [imageInitialSize]);
 
 	useEffect(() => {
 		handleRotation(sliderRotationVal);
 	}, [sliderRotationVal]);
 
+	useEffect(() => {
+		let left = (imageWrapperUpdatedSize.width - cropAreaSize.width) / 2;
+		let top = (imageWrapperUpdatedSize.height - cropAreaSize.height) / 2;
+		setCropAreaPosition({ left, top });
+	}, [imageWrapperUpdatedSize]);
+
+	const handleMouseDown = (e: any) => {
+		if (e.target == cropRectRef.current) {
+			// compute crop area dragging
+			if (!cropRectRef.current) return;
+
+			cropRectRef.current.style.left = `${cropAreaPosition.left}px`;
+			cropRectRef.current.style.top = `${cropAreaPosition.top}px`;
+
+			setDragging(true);
+			const initX = e.screenX;
+			const initY = e.screenY;
+			const initScrollLeft = containerRef?.current?.scrollLeft ?? 0;
+			const initScrollTop = containerRef?.current?.scrollTop ?? 0;
+
+			const handleMouseMove = (ie: any) => {
+				const rightMost = containerRef?.current?.getBoundingClientRect().right ?? 0 - 20;
+				const topMost = containerRef?.current?.getBoundingClientRect().bottom ?? 0 - 20;
+
+				let offsetLeft = 0;
+				let offsetTop = 0;
+				// to scroll the container
+				if (containerRef.current) {
+					if (ie.screenX >= rightMost) {
+						containerRef.current.scrollLeft = 5;
+						offsetLeft = 5;
+					} else if (ie.screenY >= topMost) {
+						containerRef.current.scrollTop = 5;
+						offsetTop = 5;
+					} else if (ie.screenX >= rightMost && ie.screenY >= topMost) {
+						containerRef.current.scrollLeft = 5;
+						containerRef.current.scrollTop = 5;
+						offsetLeft = 5;
+						offsetTop = 5;
+					}
+				}
+				// to drag the crop area
+				if (cropRectRef.current) {
+					let left = Math.min(
+						imageWrapperUpdatedSize.width - cropAreaSize.width,
+						Math.max(
+							0,
+							cropAreaPosition.left +
+								ie.screenX -
+								initX +
+								(containerRef?.current?.scrollLeft ?? 0) -
+								initScrollLeft,
+						),
+					);
+					let top = Math.min(
+						imageWrapperUpdatedSize.height - cropAreaSize.height,
+						Math.max(
+							0,
+							cropAreaPosition.top +
+								ie.screenY -
+								initY +
+								(containerRef?.current?.scrollTop ?? 0) -
+								initScrollTop,
+						),
+					);
+
+					setCropAreaPosition({
+						left: left + offsetLeft,
+						top: top + offsetTop,
+					});
+				}
+			};
+
+			const handleMouseUp = () => {
+				setDragging(false);
+				document.removeEventListener('mousemove', handleMouseMove);
+				document.removeEventListener('mouseup', handleMouseUp);
+			};
+
+			document.addEventListener('mousemove', handleMouseMove);
+			document.addEventListener('mouseup', handleMouseUp);
+		} else if (e.target == topLeftRef.current && showCropArea) {
+			if (!cropRectRef.current) return;
+
+			cropRectRef.current.style.left = `${cropAreaPosition.left}px`;
+			cropRectRef.current.style.top = `${cropAreaPosition.top}px`;
+
+			const initX = e.screenX;
+			const initY = e.screenY;
+			const initScrollLeft = containerRef?.current?.scrollLeft ?? 0;
+			const initScrollTop = containerRef?.current?.scrollTop ?? 0;
+
+			const initCropSize = cropAreaSize;
+
+			const handleMouseMove = (ie: any) => {
+				if (cropRectRef.current) {
+					let scrolledX = initX - ie.screenX;
+					let scrolledY = initY - ie.screenY;
+					let scrolled = Math.max(scrolledX, scrolledY);
+
+					let left = Math.min(
+						imageWrapperUpdatedSize.width - cropAreaSize.width,
+						Math.max(0, cropAreaPosition.left + initScrollLeft - scrolled / 2),
+					);
+					let top = Math.min(
+						imageWrapperUpdatedSize.height - cropAreaSize.height,
+						Math.max(0, cropAreaPosition.top + initScrollTop - scrolled / 2),
+					);
+
+					let updateSize = {
+						width: Math.round(
+							Math.min(
+								imageWrapperUpdatedSize.width,
+								Math.max(60, initCropSize.width + scrolled),
+							),
+						),
+						height: Math.round(
+							Math.min(
+								imageWrapperUpdatedSize.height,
+								Math.max(60, initCropSize.height + scrolled),
+							),
+						),
+					};
+
+					if (
+						(scrolled < 0 && (updateSize.width === 60 || updateSize.height === 60)) ||
+						(scrolled > 0 &&
+							(updateSize.width === imageWrapperUpdatedSize.width ||
+								updateSize.height === imageWrapperUpdatedSize.height))
+					) {
+						return;
+					}
+
+					if (
+						left <= 0 ||
+						left + updateSize.width >= imageWrapperUpdatedSize.width ||
+						top <= 0 ||
+						top + updateSize.height >= imageWrapperUpdatedSize.height
+					)
+						return;
+
+					setCropAreaPosition({ left, top });
+					setCropAreaSize(updateSize);
+				}
+			};
+
+			const handleMouseUp = () => {
+				document.removeEventListener('mousemove', handleMouseMove);
+				document.removeEventListener('mouseup', handleMouseUp);
+			};
+
+			document.addEventListener('mousemove', handleMouseMove);
+			document.addEventListener('mouseup', handleMouseUp);
+		} else if (e.target == topRightRef.current && showCropArea) {
+			if (!cropRectRef.current) return;
+
+			cropRectRef.current.style.left = `${cropAreaPosition.left}px`;
+			cropRectRef.current.style.top = `${cropAreaPosition.top}px`;
+
+			const initX = e.screenX;
+			const initY = e.screenY;
+			const initScrollTop = containerRef?.current?.scrollTop ?? 0;
+
+			const initCropSize = cropAreaSize;
+
+			const handleMouseMove = (ie: any) => {
+				if (cropRectRef.current) {
+					let scrolledX = ie.screenX - initX;
+					let scrolledY = ie.screenY - initY;
+					let scrolled =
+						scrolledX > scrolledY
+							? Math.max(scrolledX, scrolledY)
+							: Math.min(scrolledX, scrolledY);
+
+					let top = Math.min(
+						imageWrapperUpdatedSize.height - cropAreaSize.height,
+						Math.max(0, cropAreaPosition.top + initScrollTop - scrolled / 2),
+					);
+
+					const updatedSize = {
+						width: Math.round(
+							Math.min(
+								imageWrapperUpdatedSize.width,
+								Math.max(60, initCropSize.width + scrolled),
+							),
+						),
+						height: Math.round(
+							Math.min(
+								imageWrapperUpdatedSize.height,
+								Math.max(60, initCropSize.height + scrolled),
+							),
+						),
+					};
+
+					if (
+						(scrolled < 0 && (updatedSize.width === 60 || updatedSize.height === 60)) ||
+						(scrolled > 0 &&
+							(updatedSize.width === imageWrapperUpdatedSize.width ||
+								updatedSize.height === imageWrapperUpdatedSize.height))
+					) {
+						return;
+					}
+
+					if (
+						cropAreaPosition.left <= 0 ||
+						cropAreaPosition.left + updatedSize.width >=
+							imageWrapperUpdatedSize.width ||
+						top <= 0 ||
+						top + updatedSize.height >= imageWrapperUpdatedSize.height
+					)
+						return;
+
+					setCropAreaPosition({ ...cropAreaPosition, top });
+					setCropAreaSize(updatedSize);
+				}
+			};
+
+			const handleMouseUp = () => {
+				document.removeEventListener('mousemove', handleMouseMove);
+				document.removeEventListener('mouseup', handleMouseUp);
+			};
+
+			document.addEventListener('mousemove', handleMouseMove);
+			document.addEventListener('mouseup', handleMouseUp);
+		} else if (e.target == bottomLeftRef.current && showCropArea) {
+			if (!cropRectRef.current) return;
+
+			cropRectRef.current.style.left = `${cropAreaPosition.left}px`;
+			cropRectRef.current.style.top = `${cropAreaPosition.top}px`;
+
+			const initX = e.screenX;
+			const initY = e.screenY;
+			const initScrollLeft = containerRef?.current?.scrollLeft ?? 0;
+
+			const initCropSize = cropAreaSize;
+
+			const handleMouseMove = (ie: any) => {
+				if (cropRectRef.current) {
+					let scrolledX = ie.screenX - initX;
+					let scrolledY = ie.screenY - initY;
+					let scrolled =
+						scrolledX < scrolledY
+							? Math.max(scrolledX, scrolledY)
+							: Math.min(scrolledX, scrolledY);
+
+					let left = Math.min(
+						imageWrapperUpdatedSize.width - cropAreaSize.width,
+						Math.max(0, cropAreaPosition.left + initScrollLeft - scrolled / 2),
+					);
+
+					let updatedSize = {
+						width: Math.round(
+							Math.min(
+								imageWrapperUpdatedSize.width,
+								Math.max(60, initCropSize.width + scrolled),
+							),
+						),
+						height: Math.round(
+							Math.min(
+								imageWrapperUpdatedSize.height,
+								Math.max(60, initCropSize.height + scrolled),
+							),
+						),
+					};
+
+					if (
+						(scrolled < 0 && (updatedSize.width === 60 || updatedSize.height === 60)) ||
+						(scrolled > 0 &&
+							(updatedSize.width === imageWrapperUpdatedSize.width ||
+								updatedSize.height === imageWrapperUpdatedSize.height))
+					) {
+						return;
+					}
+
+					if (
+						left <= 0 ||
+						left + updatedSize.width >= imageWrapperUpdatedSize.width ||
+						cropAreaPosition.top <= 0 ||
+						cropAreaPosition.top + updatedSize.height >= imageWrapperUpdatedSize.height
+					)
+						return;
+
+					setCropAreaPosition({ ...cropAreaPosition, left });
+					setCropAreaSize(updatedSize);
+				}
+			};
+
+			const handleMouseUp = () => {
+				document.removeEventListener('mousemove', handleMouseMove);
+				document.removeEventListener('mouseup', handleMouseUp);
+			};
+
+			document.addEventListener('mousemove', handleMouseMove);
+			document.addEventListener('mouseup', handleMouseUp);
+		} else if (e.target == bottomRightRef.current && showCropArea) {
+			if (!cropRectRef.current) return;
+
+			cropRectRef.current.style.left = `${cropAreaPosition.left}px`;
+			cropRectRef.current.style.top = `${cropAreaPosition.top}px`;
+
+			const initX = e.screenX;
+			const initY = e.screenY;
+
+			const initCropSize = cropAreaSize;
+
+			const handleMouseMove = (ie: any) => {
+				if (cropRectRef.current) {
+					let scrolledX = ie.screenX - initX;
+					let scrolledY = ie.screenY - initY;
+					let scrolled = Math.max(scrolledX, scrolledY);
+
+					let updatedSize = {
+						width: Math.round(
+							Math.min(
+								imageWrapperUpdatedSize.width,
+								Math.max(60, initCropSize.width + scrolled),
+							),
+						),
+						height: Math.round(
+							Math.min(
+								imageWrapperUpdatedSize.height,
+								Math.max(60, initCropSize.height + scrolled),
+							),
+						),
+					};
+
+					if (
+						(scrolled < 0 && (updatedSize.width === 60 || updatedSize.height === 60)) ||
+						(scrolled > 0 &&
+							(updatedSize.width === imageWrapperUpdatedSize.width ||
+								updatedSize.height === imageWrapperUpdatedSize.height))
+					) {
+						return;
+					}
+
+					if (
+						cropAreaPosition.left <= 0 ||
+						cropAreaPosition.left + updatedSize.width >=
+							imageWrapperUpdatedSize.width ||
+						cropAreaPosition.top <= 0 ||
+						cropAreaPosition.top + updatedSize.height >= imageWrapperUpdatedSize.height
+					)
+						return;
+
+					setCropAreaSize(updatedSize);
+				}
+			};
+
+			const handleMouseUp = () => {
+				document.removeEventListener('mousemove', handleMouseMove);
+				document.removeEventListener('mouseup', handleMouseUp);
+			};
+
+			document.addEventListener('mousemove', handleMouseMove);
+			document.addEventListener('mouseup', handleMouseUp);
+		} else if (e.target == leftRef.current && showCropArea) {
+			if (!cropRectRef.current) return;
+
+			cropRectRef.current.style.left = `${cropAreaPosition.left}px`;
+			cropRectRef.current.style.top = `${cropAreaPosition.top}px`;
+
+			const initX = e.screenX;
+			const initScrollLeft = containerRef?.current?.scrollLeft ?? 0;
+
+			const initCropSize = cropAreaSize;
+
+			const handleMouseMove = (ie: any) => {
+				if (cropRectRef.current) {
+					let scrolled = initX - ie.screenX;
+					let left = Math.min(
+						imageUpdatedSize.width - cropAreaSize.width,
+						Math.max(0, cropAreaPosition.left + initScrollLeft - scrolled / 2),
+					);
+
+					let width = Math.min(
+						imageUpdatedSize.width,
+						Math.max(60, initCropSize.width + scrolled),
+					);
+
+					if (left <= 0 || left + width >= imageWrapperUpdatedSize.width) return;
+
+					setCropAreaSize({
+						...cropAreaSize,
+						width,
+					});
+
+					setCropAreaPosition({
+						...cropAreaPosition,
+						left,
+					});
+				}
+			};
+
+			const handleMouseUp = () => {
+				document.removeEventListener('mousemove', handleMouseMove);
+				document.removeEventListener('mouseup', handleMouseUp);
+			};
+
+			document.addEventListener('mousemove', handleMouseMove);
+			document.addEventListener('mouseup', handleMouseUp);
+		} else if (e.target == topRef.current && showCropArea) {
+			if (!cropRectRef.current) return;
+
+			cropRectRef.current.style.left = `${cropAreaPosition.left}px`;
+			cropRectRef.current.style.top = `${cropAreaPosition.top}px`;
+
+			const initY = e.screenY;
+			const initScrollTop = containerRef?.current?.scrollTop ?? 0;
+
+			const initCropSize = cropAreaSize;
+
+			const handleMouseMove = (ie: any) => {
+				if (cropRectRef.current) {
+					let scrolled = initY - ie.screenY;
+					let top = Math.min(
+						imageUpdatedSize.width - cropAreaSize.width,
+						Math.max(0, cropAreaPosition.top + initScrollTop - scrolled / 2),
+					);
+
+					let height = Math.min(
+						imageWrapperUpdatedSize.height,
+						Math.max(60, initCropSize.height + scrolled),
+					);
+
+					if (top <= 0 || top + height >= imageWrapperUpdatedSize.height) return;
+
+					setCropAreaPosition({
+						...cropAreaPosition,
+						top,
+					});
+
+					setCropAreaSize({
+						...cropAreaSize,
+						height,
+					});
+				}
+			};
+
+			const handleMouseUp = () => {
+				document.removeEventListener('mousemove', handleMouseMove);
+				document.removeEventListener('mouseup', handleMouseUp);
+			};
+
+			document.addEventListener('mousemove', handleMouseMove);
+			document.addEventListener('mouseup', handleMouseUp);
+		} else if (e.target == rightRef.current && showCropArea) {
+			if (!cropRectRef.current) return;
+
+			cropRectRef.current.style.left = `${cropAreaPosition.left}px`;
+			cropRectRef.current.style.top = `${cropAreaPosition.top}px`;
+
+			const initX = e.screenX;
+
+			const initCropSize = cropAreaSize;
+
+			const handleMouseMove = (ie: any) => {
+				if (cropRectRef.current) {
+					let scrolled = ie.screenX - initX;
+
+					let width = Math.min(
+						imageWrapperUpdatedSize.width,
+						Math.max(60, initCropSize.width + scrolled),
+					);
+
+					if (cropAreaPosition.left + width >= imageWrapperUpdatedSize.width) return;
+
+					setCropAreaSize({
+						...cropAreaSize,
+						width,
+					});
+				}
+			};
+
+			const handleMouseUp = () => {
+				document.removeEventListener('mousemove', handleMouseMove);
+				document.removeEventListener('mouseup', handleMouseUp);
+			};
+
+			document.addEventListener('mousemove', handleMouseMove);
+			document.addEventListener('mouseup', handleMouseUp);
+		} else if (e.target == bottomRef.current && showCropArea) {
+			if (!cropRectRef.current) return;
+
+			cropRectRef.current.style.left = `${cropAreaPosition.left}px`;
+			cropRectRef.current.style.top = `${cropAreaPosition.top}px`;
+
+			const initY = e.screenY;
+
+			const initCropSize = cropAreaSize;
+
+			const handleMouseMove = (ie: any) => {
+				if (cropRectRef.current) {
+					let scrolled = ie.screenY - initY;
+
+					let height = Math.min(
+						imageWrapperUpdatedSize.height,
+						Math.max(60, initCropSize.height + scrolled),
+					);
+
+					if (cropAreaPosition.top + height >= imageWrapperUpdatedSize.height) return;
+
+					setCropAreaSize({
+						...cropAreaSize,
+						height,
+					});
+				}
+			};
+
+			const handleMouseUp = () => {
+				document.removeEventListener('mousemove', handleMouseMove);
+				document.removeEventListener('mouseup', handleMouseUp);
+			};
+
+			document.addEventListener('mousemove', handleMouseMove);
+			document.addEventListener('mouseup', handleMouseUp);
+		}
+	};
+
 	return (
-		<div>
+		<>
 			<div
 				className={`_popupBackground`}
+				style={{ alignItems: 'stretch' }}
 				onClick={() => {
 					setShowImageResizerPopup(false);
 					setImage('');
 				}}
 			>
 				<div className="_popupContainer _imageResize" onClick={e => e.stopPropagation()}>
-					<div className="imageResizerHeader">
-						<i style={{ color: '#fff' }} className="fa-solid fa-pen-to-square" />
-						<span>Edit</span>
-					</div>
 					<div className="_popupEditorContainer">
-						<div
-							className="imagePopupEditorBackground"
-							style={{
-								height:
-									(sliderRotationVal / 90) % 2 === 1
-										? `${containerSize?.height}px`
-										: '',
-							}}
-						>
+						<div ref={containerRef} className="imagePopupEditorBackground">
 							<div
 								ref={imageWrapperRef}
 								className="imageWrapper"
 								style={{
 									width: `${imageWrapperUpdatedSize?.width}px`,
 									height: `${imageWrapperUpdatedSize?.height}px`,
+									backgroundColor: `${chngValue}`,
 								}}
+								draggable={false}
 							>
 								<img
 									className="uploadingImage"
@@ -304,9 +837,6 @@ const ImageResizer = ({
 									src={image}
 									draggable={false}
 									onLoad={e => handleImageLoad(e)}
-									// onMouseDown={handleMouseDown}
-									// onMouseUp={handleMouseUp}
-									// onWheel={e => allowScroll && handleMouseWheel(e)}
 									alt=""
 									style={{
 										width:
@@ -316,47 +846,51 @@ const ImageResizer = ({
 										height:
 											imageUpdatedSize && imageUpdatedSize?.height
 												? `${imageUpdatedSize?.height}px`
-												: '223px',
+												: 'fit-content',
 										transform: `rotate(${sliderRotationVal}deg) translate(${
 											-50 * scale.x
 										}%, ${-50 * scale.y}%) scale(${scale.x}, ${scale.y})`,
 									}}
 								/>
-							</div>
-							{/* <div
-                        ref={cropRectRef}
-                        className="_cropArea"
-                        draggable
-                        style={{
-                            top: `${cropAreaLeftTopBounding.top}px`,
-                            left: `${cropAreaLeftTopBounding.left}px`,
-                        }}
-                    ></div> */}
-						</div>
-						{/** Tabs button */}
-						<div className="_tabButtonsContainer">
-							{/** Tab1 button */}
-							<div
-								onClick={() => setSelectedTab(1)}
-								className={`tabBtn ${selectedTab === 1 ? 'selected' : ''}`}
-							>
-								<i className="fa-solid fa-crop-simple"></i>
-								<span>Crop & Edit</span>
-							</div>
-							{/** Tab2 button */}
-							<div
-								onClick={() => setSelectedTab(2)}
-								className={`tabBtn ${selectedTab === 2 ? 'selected' : ''}`}
-							>
-								<i className="fa-solid fa-expand"></i>
-								<span>Resize Image</span>
+								{showCropArea && (
+									<div
+										ref={cropRectRef}
+										className="_cropArea"
+										style={{
+											top: `${cropAreaPosition.top}px`,
+											left: `${cropAreaPosition.left}px`,
+											width: `${cropAreaSize.width}px`,
+											height: `${cropAreaSize.height}px`,
+										}}
+										onMouseDown={handleMouseDown}
+									>
+										<div ref={topLeftRef} className="_cropTopLeft"></div>
+										<div ref={topRightRef} className="_cropTopRight"></div>
+										<div ref={bottomLeftRef} className="_cropBottomLeft"></div>
+										<div
+											ref={bottomRightRef}
+											className="_cropBottomRight"
+										></div>
+										<div ref={leftRef} className="_cropLeft"></div>
+										<div ref={topRef} className="_cropTop"></div>
+										<div ref={rightRef} className="_cropRight"></div>
+										<div ref={bottomRef} className="_cropBottom"></div>
+									</div>
+								)}
 							</div>
 						</div>
 						{/** Crop and Edit Tab */}
-						{selectedTab === 1 ? (
+						<div className="_editOptions">
 							<div className="_editCrop">
+								<div className={`tabBtn selected`}>
+									<i className="fa-solid fa-crop-simple"></i>
+									<span>Crop & Edit</span>
+								</div>
 								<p className="resizeLabel">
-									Rotate <span className="resizeLabelInfo">i</span>
+									Rotate{' '}
+									<span title="Rotate" className="resizeLabelInfo">
+										i
+									</span>
 								</p>
 								<div className="_scaleSliderContainer">
 									<div className="_scaleSlider">
@@ -396,7 +930,10 @@ const ImageResizer = ({
 									</div>
 								</div>
 								<p className="resizeLabel">
-									Flip <span className="resizeLabelInfo">i</span>
+									Flip{' '}
+									<span title="Flip" className="resizeLabelInfo">
+										i
+									</span>
 								</p>
 								<div className="_scaleSliderContainer">
 									<div className="_scaleSlider">
@@ -433,11 +970,40 @@ const ImageResizer = ({
 										</div>
 									</div>
 								</div>
-							</div>
-						) : (
-							<div className="_editCrop">
 								<p className="resizeLabel">
-									Resize <span className="resizeLabelInfo">i</span>
+									Image Background Color
+									<span
+										title="Image Background Color"
+										className="resizeLabelInfo"
+									>
+										i
+									</span>
+								</p>
+								<ColorSelector
+									color={{ value: chngValue }}
+									variableSelection={false}
+									onChange={e => setChngValue(e.value)}
+								/>
+								<div className="checkboxContainer">
+									<input
+										id="showCropArea"
+										type="checkbox"
+										checked={showCropArea}
+										onChange={() => setShowCropArea(!showCropArea)}
+									/>
+									<label htmlFor="showCropArea">Show Crop Area</label>
+								</div>
+							</div>
+							<div className="_editCrop">
+								<div className={`tabBtn selected`}>
+									<i className="fa-solid fa-expand"></i>
+									<span>Resize Image</span>
+								</div>
+								<p className="resizeLabel">
+									Resize{' '}
+									<span title="Resize" className="resizeLabelInfo">
+										i
+									</span>
 								</p>
 								{fixAspectRatio ? (
 									<div className="_scaleSliderContainer">
@@ -586,48 +1152,48 @@ const ImageResizer = ({
 									<label htmlFor="aspectRatio">Lock aspect ratio</label>
 								</div>
 							</div>
-						)}
-					</div>
-					<div className="_editBtnContainer">
-						<button
-							className="_cancelBtn"
-							title="Cancel"
-							tabIndex={0}
-							onClick={() => {
-								setInProgress(false);
-								setShowImageResizerPopup(false);
-								setImage('');
-								// setShowImageBrowser(false);
-							}}
-						>
-							Cancel
-						</button>
-						<button
-							className="_saveBtn"
-							title="Save Changes"
-							tabIndex={0}
-							onClick={async () => {
-								try {
-									await axios.post(
-										`/api/files/static${path === '' ? '/' : path}`,
-										formData,
-										{
-											headers,
-										},
-									);
-								} catch (e) {}
-								setInProgress(false);
-								setShowImageResizerPopup(false);
-								setImage('');
-								callForFiles();
-							}}
-						>
-							Save Changes
-						</button>
+							<div className="_editBtnContainer">
+								<button
+									className="_cancelBtn"
+									title="Cancel"
+									tabIndex={0}
+									onClick={() => {
+										setInProgress(false);
+										setShowImageResizerPopup(false);
+										setImage('');
+										// setShowImageBrowser(false);
+									}}
+								>
+									Cancel
+								</button>
+								<button
+									className="_saveBtn"
+									title="Save Changes"
+									tabIndex={0}
+									onClick={async () => {
+										try {
+											await axios.post(
+												`api/files/static${path === '' ? '/' : path}`,
+												formData,
+												{
+													headers,
+												},
+											);
+										} catch (e) {}
+										setInProgress(false);
+										setShowImageResizerPopup(false);
+										setImage('');
+										callForFiles();
+									}}
+								>
+									Save Changes
+								</button>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+		</>
 	);
 };
 
