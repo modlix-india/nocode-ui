@@ -1,10 +1,9 @@
-import React, { CSSProperties, useEffect, useMemo, useRef, useState } from 'react';
+import React, { CSSProperties, useEffect, useRef, useState } from 'react';
 
 export type DropdownOptions = Array<{
-	name: string;
-	displayName: string;
-	countryCode: string;
-	description?: string | undefined;
+	D: string;
+	N: string;
+	C: string;
 }>;
 
 export function Dropdown({
@@ -17,22 +16,11 @@ export function Dropdown({
 	onChange: (v: string) => void;
 	options: DropdownOptions;
 	placeholder?: string;
-	selectNoneLabel?: string;
-	showNoneLabel?: boolean;
 }) {
 	let label = undefined;
-
-	const selection = useMemo(() => {
-		if (!value) return new Set<string>();
-		return new Set<string>([value]);
-	}, [value]);
-
 	if (value.length > 0) {
-		label = (
-			<span className="_selectedOption">
-				{getFlagEmoji(options.find(e => e.name === value)!.countryCode)}
-			</span>
-		);
+		const x = options.find(e => e.D === value);
+		label = <span className="_selectedOption">{getFlagEmoji(x!.C)}</span>;
 	} else {
 		label = <span className="_selectedOption _placeholder">{placeholder ?? ''}</span>;
 	}
@@ -40,7 +28,7 @@ export function Dropdown({
 	const [open, setOpen] = useState(false);
 	const [currentOption, setOriginalCurrentOption] = useState(-1);
 
-	const dropDownRef = useRef<HTMLDivElement>(null);
+	const dropDown = useRef<HTMLDivElement>(null);
 	const ddBody = useRef<HTMLDivElement>(null);
 
 	const setCurrentOption = (num: number) => {
@@ -55,11 +43,52 @@ export function Dropdown({
 	}, [open]);
 
 	const handleClick = (o: any) => {
+		onChange(o.D);
 		setOpen(false);
-		// setTimeout(() => dropDownRef.current?.blur(), 0);
-		onChange(o.name);
 	};
 
+	function getFlagEmoji(C: string) {
+		const OFFSET = 127397;
+		const codePoints = C.toUpperCase()
+			.split('')
+			.map(char => OFFSET + char.charCodeAt(0));
+		return String.fromCodePoint(...codePoints);
+	}
+
+	let body;
+	if (open) {
+		const dropdownBodyStyle: CSSProperties = {};
+		if (dropDown.current) {
+			const rect = dropDown.current.getBoundingClientRect();
+			if (rect.top + 300 > document.body.clientHeight)
+				dropdownBodyStyle.bottom = document.body.clientHeight - rect.top;
+			else dropdownBodyStyle.top = rect.top + rect.height;
+			const parentRect = dropDown.current.parentElement?.getBoundingClientRect();
+			dropdownBodyStyle.right = document.body.clientWidth - (parentRect?.right ?? 0);
+			dropdownBodyStyle.minWidth = rect.width;
+			dropdownBodyStyle.maxWidth = parentRect?.width ?? '100%';
+		}
+		body = (
+			<div className="_dropdownBody" ref={ddBody} style={dropdownBodyStyle}>
+				{options.map((o, i) => (
+					<div
+						key={o.C}
+						className={`_dropdownOption ${i === currentOption ? '_hovered' : ''} ${
+							value === o.D ? '_selected' : ''
+						}`}
+						onClick={e => {
+							e.preventDefault();
+							e.stopPropagation();
+							handleClick(o);
+						}}
+						onMouseOver={() => setCurrentOption(i)}
+					>
+						<span>{getFlagEmoji(o.C) + ' ' + o.N + ' ' + o.D}</span>
+					</div>
+				))}
+			</div>
+		);
+	}
 	const handleKeyDown = (e: any) => {
 		if (e.key === 'ArrowUp') {
 			e.preventDefault();
@@ -74,7 +103,7 @@ export function Dropdown({
 		} else if (e.key === 'Enter') {
 			e.preventDefault();
 			e.stopPropagation();
-			onChange(options[currentOption].name);
+			onChange(options[currentOption].D);
 			setOpen(false);
 		} else if (e.key === 'Escape') {
 			e.preventDefault();
@@ -82,55 +111,6 @@ export function Dropdown({
 			setOpen(false);
 		}
 	};
-	function dialCodeToFlag(dialCode: string) {
-		const OFFSET = 127397;
-		const flag = dialCode
-			.replace('+', '')
-			.toUpperCase()
-			.split('')
-			.map(char => String.fromCodePoint(char.charCodeAt(0) + OFFSET))
-			.join('');
-		console.log('flag', flag);
-		return flag;
-	}
-	function getFlagEmoji(countryCode: string) {
-		const OFFSET = 127397;
-		const codePoints = countryCode
-			.toUpperCase()
-			.split('')
-			.map(char => OFFSET + char.charCodeAt(0));
-		return String.fromCodePoint(...codePoints);
-	}
-
-	let body;
-	if (open) {
-		const dropdownBodyStyle: CSSProperties = {};
-		if (dropDownRef.current) {
-			const rect = dropDownRef.current.getBoundingClientRect();
-			if (rect.top + 300 > document.body.clientHeight)
-				dropdownBodyStyle.bottom = document.body.clientHeight - rect.top;
-			else dropdownBodyStyle.top = rect.top + rect.height - 4;
-			dropdownBodyStyle.right = document.body.clientWidth - rect.right;
-			dropdownBodyStyle.minWidth = rect.width;
-		}
-		body = (
-			<div className="_dropdownBody" ref={ddBody} style={dropdownBodyStyle}>
-				{options.map((o, i) => (
-					<div
-						key={o.name}
-						className={`_dropdownOption ${i === currentOption ? '_hovered' : ''} ${
-							selection.has(o.name) ? '_selected' : ''
-						}`}
-						onClick={() => handleClick(o)}
-						onMouseOver={() => setCurrentOption(i)}
-						title={o.description}
-					>
-						<span>{getFlagEmoji(o.countryCode) + ' ' + o.displayName}</span>
-					</div>
-				))}
-			</div>
-		);
-	}
 
 	return (
 		<>
@@ -141,8 +121,9 @@ export function Dropdown({
 				onClick={() => setOpen(true)}
 				onFocus={() => setOpen(true)}
 				onBlur={() => setOpen(false)}
-				// onMouseLeave={() => setOpen(false)}
+				onMouseLeave={() => setOpen(false)}
 				onKeyDown={e => handleKeyDown(e)}
+				ref={dropDown}
 			>
 				{label}
 				<svg

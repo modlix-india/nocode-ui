@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
 	addListener,
 	addListenerAndCallImmediately,
@@ -7,7 +7,6 @@ import {
 	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
-import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { Component } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './phoneNumberProperties';
@@ -23,6 +22,7 @@ import CommonInputText from '../../commonComponents/CommonInputText';
 import { styleDefaults } from './phoneNumberStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import { Dropdown, DropdownOptions } from './components/Dropdown';
+import { COUNTRY_LIST } from './components/listOfCountries';
 
 interface mapType {
 	[key: string]: any;
@@ -49,14 +49,12 @@ function PhoneNumber(props: ComponentProps) {
 		properties: {
 			updateStoreImmediately: upStoreImm,
 			removeKeyWhenEmpty,
-			valueType,
 			emptyValue,
 			supportingText,
 			readOnly,
 			defaultValue,
 			label,
 			noFloat,
-			numberType,
 			onEnter,
 			validation,
 			placeholder,
@@ -67,7 +65,6 @@ function PhoneNumber(props: ComponentProps) {
 			autoFocus,
 			designType,
 			colorScheme,
-			showNumberSpinners,
 			hideClearButton,
 			maxChars,
 			onFocus,
@@ -213,15 +210,6 @@ function PhoneNumber(props: ComponentProps) {
 
 	const handleBlur = (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		let temp = value === '' && emptyValue ? mapValue[emptyValue] : value;
-		if (valueType === 'number') {
-			const tempNumber =
-				value !== ''
-					? numberType === 'DECIMAL'
-						? parseFloat(value)
-						: parseInt(value)
-					: temp;
-			temp = isNaN(tempNumber) ? temp : tempNumber;
-		}
 		if (!updateStoreImmediately && bindingPathPath) {
 			if (event?.target.value === '' && removeKeyWhenEmpty) {
 				setData(bindingPathPath, undefined, context?.pageName, true);
@@ -253,28 +241,10 @@ function PhoneNumber(props: ComponentProps) {
 		if (!updateStoreImmediately) setValue(text);
 	};
 
-	const handleNumberChange = (text: string) => {
-		if (removeKeyWhenEmpty && text === '' && bindingPathPath) {
-			setData(bindingPathPath, undefined, context?.pageName, true);
-			callChangeEvent();
-			return;
-		}
-		let temp = text === '' && emptyValue ? mapValue[emptyValue] : text;
-		let tempNumber = numberType === 'DECIMAL' ? parseFloat(temp) : parseInt(temp);
-		temp = !isNaN(tempNumber) ? tempNumber : temp;
-		if (updateStoreImmediately && bindingPathPath) {
-			setData(bindingPathPath, temp, context?.pageName);
-			callChangeEvent();
-		}
-
-		if (!updateStoreImmediately) setValue(!isNaN(tempNumber) ? temp?.toString() : '');
-	};
-
 	const handleChange = async (
 		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
 	) => {
-		if (valueType === 'text') handleTextChange(event.target.value);
-		else handleNumberChange(event.target.value);
+		handleTextChange(event.target.value);
 	};
 
 	const handleClickClose = async () => {
@@ -312,77 +282,53 @@ function PhoneNumber(props: ComponentProps) {
 			props.pageDefinition,
 		);
 	};
-
 	const finKey: string = 't_' + key;
-
-	let style = undefined;
-	if (valueType === 'number' && !showNumberSpinners) {
-		style = (
-			<style>{`.comp.compTextBox #${finKey}::-webkit-inner-spin-button, .comp.compTextBox #${finKey}::-webkit-outer-spin-button {-webkit-appearance: none;margin: 0;}`}</style>
-		);
-	}
-	const [selectedCountryCode, setSelectedCountryCode] = useState<string>('');
-	const [countryCodeList, setCountryCodeList] = useState<DropdownOptions>([
-		{ name: '+1', displayName: 'United States', countryCode: 'US' },
-		{ name: '+44', displayName: 'United Kingdom', countryCode: 'GB' },
-		{ name: '+86', displayName: 'China', countryCode: 'CN' },
-		{ name: '+91', displayName: 'India', countryCode: 'IN' },
-		{ name: '+81', displayName: 'Japan', countryCode: 'JP' },
-		{ name: '+49', displayName: 'Germany', countryCode: 'DE' },
-		{ name: '+33', displayName: 'France', countryCode: 'FR' },
-		{ name: '+7', displayName: 'Russia', countryCode: 'RU' },
-		{ name: '+61', displayName: 'Australia', countryCode: 'AU' },
-		{ name: '+55', displayName: 'Brazil', countryCode: 'BR' },
-	]);
-	const inputRef = useRef<HTMLDivElement>(null);
+	const countryList: DropdownOptions = COUNTRY_LIST;
+	const [selectedCode, setSelectedCode] = useState<string>(countryList[0].D);
+	console.log('selectedCode', selectedCode);
+	const leftChildren = (
+		<Dropdown
+			value={selectedCode}
+			onChange={(v: string) => {
+				setSelectedCode(v);
+			}}
+			options={countryList}
+		/>
+	);
 
 	return (
-		<>
-			{/* {style} */}
-			<CommonInputText
-				inputRef={inputRef}
-				cssPrefix="comp compPhoneNumber"
-				id={finKey}
-				noFloat={noFloat}
-				readOnly={readOnly}
-				value={value}
-				label={label}
-				translations={translations}
-				// leftIcon={}
-				// rightIcon={}
-				valueType={valueType}
-				// isPassword={isPassword}
-				placeholder={placeholder}
-				hasFocusStyles={stylePropertiesWithPseudoStates?.focus}
-				validationMessages={validationMessages}
-				context={context}
-				handleChange={handleChange}
-				clearContentHandler={handleClickClose}
-				blurHandler={handleBlur}
-				keyUpHandler={handleKeyUp}
-				focusHandler={() => handleInputFocus()}
-				supportingText={supportingText}
-				messageDisplay={messageDisplay}
-				styles={computedStyles}
-				designType={designType}
-				colorScheme={colorScheme}
-				definition={props.definition}
-				autoComplete={autoComplete}
-				autoFocus={autoFocus}
-				hasValidationCheck={validation?.length > 0}
-				hideClearContentIcon={hideClearButton}
-				maxChars={maxChars}
-				leftChildren={
-					<Dropdown
-						value={selectedCountryCode}
-						onChange={(v: string) => {
-							setSelectedCountryCode(v);
-						}}
-						options={countryCodeList}
-					/>
-				}
-			></CommonInputText>
-		</>
+		<CommonInputText
+			cssPrefix="comp compPhoneNumber"
+			id={finKey}
+			noFloat={noFloat}
+			readOnly={readOnly}
+			value={value}
+			label={label}
+			translations={translations}
+			valueType={'tel'}
+			placeholder={placeholder}
+			hasFocusStyles={stylePropertiesWithPseudoStates?.focus}
+			validationMessages={validationMessages}
+			context={context}
+			handleChange={handleChange}
+			clearContentHandler={handleClickClose}
+			blurHandler={handleBlur}
+			keyUpHandler={handleKeyUp}
+			focusHandler={() => handleInputFocus()}
+			supportingText={supportingText}
+			messageDisplay={messageDisplay}
+			styles={computedStyles}
+			designType={designType}
+			colorScheme={colorScheme}
+			definition={props.definition}
+			autoComplete={autoComplete}
+			autoFocus={autoFocus}
+			hasValidationCheck={validation?.length > 0}
+			hideClearContentIcon={hideClearButton}
+			maxChars={maxChars}
+			leftChildren={leftChildren}
+			dialCodeLength={selectedCode.length}
+		/>
 	);
 }
 

@@ -10,6 +10,7 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 		display: flex;
 		align-items: center;
 		position: relative;
+		gap: 8px;
 	}
 
 	${PREFIX} input {
@@ -31,8 +32,8 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 		bottom: 100%;
 	}
 
-	${PREFIX}._hasLeftIcon ._label {
-		padding-left: 24px;
+	${PREFIX}._hasDialCode ._label {
+		padding-left: 40px;
 	}
 
 	${PREFIX} ._label {
@@ -44,21 +45,11 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 		transition: transform 0.2s ease-in-out, left 0.2s ease-in-out, bottom 0.2s ease-in-out;
 	}
 
-	${PREFIX} ._rightIcon,
-	${PREFIX} ._leftIcon {
-		width: 24px;
-	}
-
-	${PREFIX}._bigDesign1 ._leftIcon {
-		margin-right: 10px;
-		border-right: 1px solid;
-	}
-
 	${PREFIX}._bigDesign1 ._label {
     	margin-top: 0px;
 	}
 
-	${PREFIX}._bigDesign1._hasLeftIcon ._label {
+	${PREFIX}._bigDesign1._hasDialCode ._label {
 		padding-left: 36px;
 	}
 
@@ -72,10 +63,6 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 
 	${PREFIX}._bigDesign1 ._inputBox {
 		padding-top: 10px;
-	}
-
-	${PREFIX} ._rightIcon {
-		padding-right: 5px;
 	}
 
 	${PREFIX} ._label._float {
@@ -94,6 +81,22 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 		margin-top: 5px;
 	}
 
+	${PREFIX} ._dropdown {
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: start;
+		gap: 8px;
+	}
+
+	${PREFIX} ._dropdownSelect span {
+		font-family: Inter;
+		font-size: 14px;
+		font-style: normal;
+		font-weight: 500;
+		line-height: 14px;
+	}
+
 	${PREFIX} ._dropdownSelect {
 		height: 100%;
 		cursor: pointer;
@@ -101,13 +104,11 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 		border: none;
 		outline: none;
 
-		position: absolute;
-		top: 0;
-		left: 5px;
+		position: relative;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: 4px;
+		gap: 8px;
 
 		font-family: Inter;
 		font-size: 14px;
@@ -121,8 +122,8 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 	}
 
 	${PREFIX} ._dropdownSelect ._selectedOption {
-		min-width: calc(100% - 8px);
 		color: rgba(0, 0, 0, 0.80);
+		font-size: 16px;
 	}
 
 	${PREFIX} ._dropdownSelect ._selectedOption._placeholder {
@@ -130,34 +131,35 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 		color: rgba(0, 0, 0, 0.40);
 	}
 
-	${PREFIX} ._dropdownSelect ._dropdownBody{
+	${PREFIX} ._dropdownBody{
 		position: fixed;
-		min-width: 100%;
+		width: 100%;
 		background-color: #FFF;
 		border: 1px solid rgba(0, 0, 0, 0.10);
 		box-shadow: 0px 1px 4px 0px #00000026;
 		border-radius: 6px;
-		margin-top: 4px;
+		margin-top: 2px;
 		z-index: 2;
 		max-height: 250px;
 		overflow: auto;
 	}
 
-	${PREFIX} ._dropdownSelect ._dropdownBody ._dropdownOption {
+	${PREFIX} ._dropdownBody ._dropdownOption {
 		padding: 10px;
 		color: rgba(0, 0, 0, 0.40); 
 		border-radius: 4px;
 		white-space: nowrap;
+		cursor: pointer;
+		font-size: 16px;
 	}
 
-	${PREFIX} ._dropdownSelect ._dropdownBody ._dropdownOption._hovered {
+	${PREFIX} ._dropdownBody ._dropdownOption._hovered {
 		background-color: #F8FAFB;
 		border-radius: 4px;
-		font-weight: bold;
 		color: #0085F2;
 	}
 
-	${PREFIX} ._dropdownSelect ._dropdownBody ._dropdownOption._selected {
+	${PREFIX} ._dropdownBody ._dropdownOption._selected {
 		color: #0085F2;
 	}
 

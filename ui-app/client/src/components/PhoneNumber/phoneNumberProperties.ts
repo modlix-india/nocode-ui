@@ -148,34 +148,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
-		name: 'valueType',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Value Type',
-		description: 'Type of the Value',
-		defaultValue: 'text',
-		editor: ComponentPropertyEditor.ENUM,
-		group: ComponentPropertyGroup.DATA,
-		enumValues: [
-			{ name: 'text', displayName: 'Text', description: 'Javascript String type' },
-			{ name: 'number', displayName: 'Number', description: 'Javascript Number type' },
-		],
-	},
-
-	{
-		name: 'numberType',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Number Type',
-		description: 'Choose whether number can be decimal or integer',
-		defaultValue: 'DECIMAL',
-		editor: ComponentPropertyEditor.ENUM,
-		group: ComponentPropertyGroup.DATA,
-		enumValues: [
-			{ name: 'DECIMAL', displayName: 'Decimal', description: 'Javascript Float type' },
-			{ name: 'INTEGER', displayName: 'Integer', description: 'Javascript Integer type' },
-		],
-	},
-
-	{
 		name: 'removeKeyWhenEmpty',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Delete Key on Empty',
