@@ -202,7 +202,7 @@ function TableComponent(props: ComponentProps) {
 
 	useEffect(() => {
 		setPageSize(defaultSize);
-	});
+	}, [defaultSize]);
 
 	useEffect(
 		() =>
