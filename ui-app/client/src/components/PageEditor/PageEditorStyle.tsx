@@ -2714,6 +2714,264 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			background-color: #52BD94CC;
 		}
 
+		._formEditor {
+			width: 600px;
+			height: 650px;
+		}
+
+		._formEditor ._formEditorContent{
+			height: 100%;
+			width: 100%;
+			padding: 20px;
+		}
+
+		._formEditor ._formButton {
+			display: flex;
+			justify-content: space-between;
+		}
+
+		._formButton .fa-close {
+			margin-top: 10px;
+			margin-right: 10px;
+			cursor:pointer;
+			transition: transform 0.2s ease-in-out;
+		}
+
+		._formButton ._backButton {
+			display: flex;
+			margin-top: 10px;
+			margin-left: 10px;
+			color: rgba(0, 0, 0, 0.40);
+			font-family: Inter;
+			font-size: 14px;
+			font-style: normal;
+			font-weight: 600;
+			line-height: 14px;
+			cursor: pointer;
+		}
+
+		._formEditorContent ._generateButton {
+			width: 125px;
+			padding: 12px;
+			border-radius: 4px;
+			background: #0085F2;
+			box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.10);
+			color: #FFF;
+			font-family: Inter;
+			font-size: 14px;
+			font-style: normal;
+			font-weight: 600;
+			line-height: 14px;
+			cursor: pointer;
+			transition: transform 0.2s ease-in-out;
+		}
+
+		._formEditorContent ._formEditorBottomBorder {
+			margin-top: 15px;
+			margin-bottom: 10px;
+			background: rgba(0, 0, 0, 0.10);
+			height: 1px;
+			margin-left: 5px;
+			margin-right: 5px;
+		}
+
+		._formEditorContent ._formEditorHeader {
+			color: rgba(0, 0, 0, 0.80);
+			font-family: Inter;
+			font-size: 16px;
+			font-style: normal;
+			font-weight: 600;
+			line-height: 16px;
+			letter-spacing: 0.16px;
+			text-transform: uppercase;
+			padding: 5px;
+		}
+
+		._formEditorContent ._formEditorSubHeader {
+			color: rgba(0, 0, 0, 0.40);
+			font-family: Inter;
+			font-size: 12px;
+			font-style: normal;
+			font-weight: 400;
+			line-height: 12px;
+			letter-spacing: 0.12px;
+			padding: 5px;
+		}
+
+		._formEditorContent ._formEditorFilesTitle {
+			color: rgba(0, 0, 0, 0.40);
+			font-family: Inter;
+			font-size: 12px;
+			font-style: normal;
+			font-weight: 500;
+			line-height: 12px;
+			letter-spacing: 0.12px;
+			padding: 5px;
+		}
+
+		._formEditorContent ._formEditorOptions {
+			padding: 5px;
+			width: 100%;
+			height: 42vh;
+			display: flex;
+			flex-wrap: wrap;
+			margin-top: 10px;
+			overflow-y: scroll;
+		}
+
+		._formEditorContent ._formEditorOptionsPagination {
+			width: 100%;
+			height: 40px;
+			display: flex;
+			justify-content: space-between;
+			align-items: end;
+		}
+
+		._formEditorOptionsPagination ._paginationPrev {
+			width: 100px;
+			text-align: left;
+			color: rgba(0, 0, 0, 0.40);
+			font-family: Inter;
+			font-size: 14px;
+			font-style: normal;
+			font-weight: 600;
+			line-height: 14px;
+			cursor: pointer;
+		}
+
+		._formEditorOptionsPagination ._paginationPages {
+			width: 100px;
+			text-align: center;
+			color: rgba(0, 0, 0, 0.40);
+			font-family: Inter;
+			font-size: 14px;
+			font-style: normal;
+			font-weight: 600;
+			line-height: 14px;
+		}
+
+		._formEditorOptionsPagination ._paginationNext {
+			width: 100px;
+			text-align: right;
+			color: rgba(0, 0, 0, 0.40);
+			font-family: Inter;
+			font-size: 14px;
+			font-style: normal;
+			font-weight: 600;
+			line-height: 14px;
+			cursor: pointer;
+		}
+
+		._paginationContainer ._prevButton {
+			cursor: pointer;
+			color: rgba(0, 0, 0, 0.6);
+		}
+
+		._paginationContainer ._nextButton {
+			cursor: pointer;
+			color: rgba(0, 0, 0, 0.6);
+		}
+
+		._paginationContainer ._pageButton {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			border-radius: 50%;
+			width: 40px;
+			height: 40px;
+			background: rgba(0, 0, 0, 0.05);
+			cursor: pointer;
+		}
+
+		._paginationContainer ._pageButtonActive {
+			color: #fff;
+			background: #0085F2;
+		}
+
+		._formEditorOptions ._formEditorEachOption {
+			width: 161px;
+			height: 201px;
+			display: flex;
+			flex-direction: column;
+			padding: 10px;
+			cursor: pointer;
+		}
+
+		._formEditorEachOption:hover ._formEditorEachOptionPreview {
+			box-shadow: 0px 3px 8px 0px rgba(0, 0, 0, 0.10);
+			border: 1px solid rgba(66, 126, 228, 0.80);
+		}
+
+		._formEditorEachOption ._formEditorEachOptionPreview {
+			height: 80%;
+			border-radius: 4px;
+			background: #F9F9F9;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		._formEditorEachOption ._formEditorEachOptionName {
+			margin-top: 15px;
+			color: rgba(0, 0, 0, 0.80);
+			font-family: Inter;
+			font-size: 12px;
+			font-style: normal;
+			font-weight: 600;
+			line-height: 12px;
+			letter-spacing: 0.12px;
+		}
+
+		._formEditorContent ._formElements {
+			height: 400px;
+			width: 100%;
+			margin-bottom: 20px;
+			display: flex;
+			overflow-y: scroll;
+		}
+
+		._formElements ._formFieldsAndButtons {
+			flex: 1;
+		}
+
+		._formFieldsAndButtons ._formFieldsAndButtonsTitle {
+			color: rgba(0, 0, 0, 0.40);
+			font-family: Inter;
+			font-size: 12px;
+			font-style: normal;
+			font-weight: 500;
+			line-height: 12px;
+			letter-spacing: 0.12px;
+			margin-left: 15px;
+		}
+
+		._formFieldsAndButtons ._formFieldAndButton {
+			height: 44px;
+			border-radius: 4px;
+			background: #F8FAFB;
+			margin: 15px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		._formFieldAndButton ._formFieldAndButtonTitle {
+			color: rgba(0, 0, 0, 0.80);
+			font-family: Inter;
+			font-size: 14px;
+			font-style: normal;
+			font-weight: 500;
+			line-height: 14px;
+			padding-left: 20px;
+		}
+
+		._formFieldAndButton ._formFieldAndButtonCheckbox {
+			padding-right: 20px;
+			width: 18px;
+			height: 18px;
+			cursor: pointer;
+		}
+
 		._popupContainer ._progressBar {
 			flex: 1;
 			text-align: center;
