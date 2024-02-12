@@ -2819,6 +2819,75 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			overflow-y: scroll;
 		}
 
+		._formEditorContent ._formEditorOptionsPagination {
+			width: 100%;
+			height: 40px;
+			display: flex;
+			justify-content: space-between;
+			align-items: end;
+		}
+
+		._formEditorOptionsPagination ._paginationPrev {
+			width: 100px;
+			text-align: left;
+			color: rgba(0, 0, 0, 0.40);
+			font-family: Inter;
+			font-size: 14px;
+			font-style: normal;
+			font-weight: 600;
+			line-height: 14px;
+			cursor: pointer;
+		}
+
+		._formEditorOptionsPagination ._paginationPages {
+			width: 100px;
+			text-align: center;
+			color: rgba(0, 0, 0, 0.40);
+			font-family: Inter;
+			font-size: 14px;
+			font-style: normal;
+			font-weight: 600;
+			line-height: 14px;
+		}
+
+		._formEditorOptionsPagination ._paginationNext {
+			width: 100px;
+			text-align: right;
+			color: rgba(0, 0, 0, 0.40);
+			font-family: Inter;
+			font-size: 14px;
+			font-style: normal;
+			font-weight: 600;
+			line-height: 14px;
+			cursor: pointer;
+		}
+
+		._paginationContainer ._prevButton {
+			cursor: pointer;
+			color: rgba(0, 0, 0, 0.6);
+		}
+
+		._paginationContainer ._nextButton {
+			cursor: pointer;
+			color: rgba(0, 0, 0, 0.6);
+		}
+
+		._paginationContainer ._pageButton {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			border-radius: 50%;
+			width: 40px;
+			height: 40px;
+			background: rgba(0, 0, 0, 0.05);
+			cursor: pointer;
+		}
+
+		._paginationContainer ._pageButtonActive {
+			color: #fff;
+			background: #0085F2;
+		}
+
 		._formEditorOptions ._formEditorEachOption {
 			width: 161px;
 			height: 201px;

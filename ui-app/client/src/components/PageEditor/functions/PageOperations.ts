@@ -74,7 +74,7 @@ export class PageOperations {
 		return pageDef.componentDefinition[componentKey];
 	}
 
-	public getComponentDefinitionAndIfNotRoot(
+	public getComponentDefinitionAndIfRoot(
 		componentKey: string,
 	): [ComponentDefinition, boolean] {
 		const pageDef: PageDefinition = getDataFromPath(

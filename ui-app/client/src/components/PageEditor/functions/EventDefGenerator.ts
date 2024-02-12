@@ -1,36 +1,12 @@
 import { duplicate } from '@fincity/kirun-js';
-import { PageDefinition } from '../../../types/common';
+import { ComponentDefinition, PageDefinition } from '../../../types/common';
 import { shortUUID } from '../../../util/shortUUID';
-
-interface buttonDef {
-	key: string;
-	name: string;
-	type: string;
-	properties: {
-		[key: string]: any;
-	};
-	styleProperties: {
-		[key: string]: {
-			resolutions: {
-				ALL: {
-					width: {
-						value: string;
-					};
-				};
-			};
-		};
-	};
-	override: boolean;
-	displayOrder: number;
-}
 
 export const generateFormEvents = (
 	pageDefinition: PageDefinition,
 	formName: string,
 	eachFormDef: any,
-	submitButtonKey: string,
-	clearButtonKey: string,
-	selectedFormComponent: Array<string>,
+	fieldChecked: Set<string> | undefined,
 	addSubmitButton: boolean,
 	addClearButton: boolean,
 	clickedComponent: string,
@@ -43,7 +19,9 @@ export const generateFormEvents = (
 
 	let eachChildrenObject: any = newPageDef.componentDefinition[clickedComponent]?.children ?? {};
 
-	selectedFormComponent.forEach(each => {
+	if (!fieldChecked) return;
+
+	fieldChecked.forEach(each => {
 		const newComponentKey = shortUUID();
 		eachFormDef[each].key = newComponentKey;
 		newPageDef.componentDefinition[newComponentKey] = eachFormDef[each];
@@ -55,10 +33,16 @@ export const generateFormEvents = (
 	if (addSubmitButton) {
 		let saveEventCount = 0;
 
+		const submitButtonKey = shortUUID();
+
 		eventFunctionsKeys.forEach(each => {
 			const functionName: string = newPageDef.eventFunctions[each].name;
-			if (functionName.length > 3 && functionName.substring(0, 4) == 'save') {
-				saveEventCount += 1;
+			const parts: Array<string> = functionName.split('_');
+			if (parts[0] == 'save') {
+				saveEventCount = Math.max(
+					saveEventCount,
+					parts[1] == undefined ? 1 : parseInt(parts[1]) + 1,
+				);
 			}
 		});
 
@@ -113,7 +97,7 @@ export const generateFormEvents = (
 		  }
 		`;
 
-		let submitButtonDef: buttonDef = {
+		let submitButtonDef: ComponentDefinition = {
 			key: submitButtonKey,
 			name: 'button',
 			type: 'Button',
@@ -139,8 +123,7 @@ export const generateFormEvents = (
 					},
 				},
 			},
-			override: false,
-			displayOrder: selectedFormComponent.length,
+			displayOrder: fieldChecked.size,
 		};
 
 		eachChildrenObject[submitButtonKey] = true;
@@ -153,10 +136,16 @@ export const generateFormEvents = (
 	if (addClearButton) {
 		let clearEventCount = 0;
 
+		const clearButtonKey = shortUUID();
+
 		eventFunctionsKeys.forEach(each => {
 			const functionName: string = newPageDef.eventFunctions[each].name;
-			if (functionName.length > 3 && functionName.substring(0, 5) == 'clear') {
-				clearEventCount += 1;
+			const parts: Array<string> = functionName.split('_');
+			if (parts[0] == 'clear') {
+				clearEventCount = Math.max(
+					clearEventCount,
+					parts[1] == undefined ? 1 : parseInt(parts[1]) + 1,
+				);
 			}
 		});
 
@@ -204,7 +193,7 @@ export const generateFormEvents = (
 		  }
 		`;
 
-		let clearButtonDef: buttonDef = {
+		let clearButtonDef: ComponentDefinition = {
 			key: clearButtonKey,
 			name: 'button',
 			type: 'Button',
@@ -227,8 +216,7 @@ export const generateFormEvents = (
 					},
 				},
 			},
-			override: false,
-			displayOrder: selectedFormComponent.length,
+			displayOrder: fieldChecked.size,
 		};
 
 		eachChildrenObject[clearButtonKey] = true;
@@ -236,10 +224,9 @@ export const generateFormEvents = (
 		newPageDef.componentDefinition[clearButtonKey] = clearButtonDef;
 	}
 
-	newPageDef.componentDefinition[clickedComponent].children = { ...eachChildrenObject };
+	newPageDef.componentDefinition[clickedComponent].children = eachChildrenObject;
 
 	newPageDef.eventFunctions = { ...newPageDef.eventFunctions, ...eventFunctions };
 
 	return newPageDef;
 };
-
