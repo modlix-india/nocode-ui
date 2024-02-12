@@ -183,64 +183,7 @@ export default function FormEditor({
 		}
 	};
 
-	const pagination = (
-		<>
-			<div className="_paginationPrev" onClick={prevPage}>
-				Prev
-			</div>
-			<div className="_paginationPages">{`${activePage}/${totalPages}`}</div>
-			<div className="_paginationNext" onClick={nextPage}>
-				Next
-			</div>
-		</>
-	);
-
-	const formNameOptions = (
-		<div className="_popupContainer _formEditor" onClick={e => e.stopPropagation()}>
-			<div className="_formButton">
-				<div></div>
-				<div className="_iconMenu" onClick={handleCloseForm}>
-					<i className="fa fa-solid fa-close"></i>
-				</div>
-			</div>
-			<div className="_formEditorContent">
-				<div className="_formEditorHeader">Form Storage</div>
-				<div className="_formEditorSubHeader">
-					Choose the storage system you made and design a form for your website here
-				</div>
-				<div className="_formEditorBottomBorder"></div>
-				<div className="_formEditorFilesTitle">Files</div>
-				<div className="_formEditorOptions">
-					{formDefs?.map((each, index) => {
-						return (
-							<div
-								className="_formEditorEachOption"
-								onClick={() => {
-									eachFormDefinition(
-										each.id,
-										each.name,
-										formStorageUrl,
-										setFormName,
-										setEachFormDef,
-									);
-									setShowFormFields(true);
-								}}
-								key={index}
-							>
-								<div className="_formEditorEachOptionPreview">
-									{each?.clientCode}
-								</div>
-								<div className="_formEditorEachOptionName">{each?.name}</div>
-							</div>
-						);
-					})}
-				</div>
-				<div className="_formEditorOptionsPagination">{pagination}</div>
-			</div>
-		</div>
-	);
-
-	const eachFieldAndButtonOption = (
+	const formBuilderContent = showFormFields ? (
 		<div className="_popupContainer _formEditor" onClick={e => e.stopPropagation()}>
 			<div className="_formButton">
 				<div className="_backButton" onClick={() => setShowFormFields(false)}>
@@ -323,12 +266,63 @@ export default function FormEditor({
 				</div>
 			</div>
 		</div>
+	) : (
+		<div className="_popupContainer _formEditor" onClick={e => e.stopPropagation()}>
+			<div className="_formButton">
+				<div></div>
+				<div className="_iconMenu" onClick={handleCloseForm}>
+					<i className="fa fa-solid fa-close"></i>
+				</div>
+			</div>
+			<div className="_formEditorContent">
+				<div className="_formEditorHeader">Form Storage</div>
+				<div className="_formEditorSubHeader">
+					Choose the storage system you made and design a form for your website here
+				</div>
+				<div className="_formEditorBottomBorder"></div>
+				<div className="_formEditorFilesTitle">Files</div>
+				<div className="_formEditorOptions">
+					{formDefs?.map((each, index) => {
+						return (
+							<div
+								className="_formEditorEachOption"
+								onClick={() => {
+									eachFormDefinition(
+										each.id,
+										each.name,
+										formStorageUrl,
+										setFormName,
+										setEachFormDef,
+									);
+									setShowFormFields(true);
+								}}
+								key={index}
+							>
+								<div className="_formEditorEachOptionPreview">
+									{each?.clientCode}
+								</div>
+								<div className="_formEditorEachOptionName">{each?.name}</div>
+							</div>
+						);
+					})}
+				</div>
+				<div className="_formEditorOptionsPagination">
+					<div className="_paginationPrev" onClick={prevPage}>
+						Prev
+					</div>
+					<div className="_paginationPages">{`${activePage}/${totalPages}`}</div>
+					<div className="_paginationNext" onClick={nextPage}>
+						Next
+					</div>
+				</div>
+			</div>
+		</div>
 	);
 
 	return (
 		<Portal>
 			<div className={`_popupBackground`} onClick={handleCloseForm}>
-				{!showFormFields ? formNameOptions : eachFieldAndButtonOption}
+				{formBuilderContent}
 			</div>
 		</Portal>
 	);
