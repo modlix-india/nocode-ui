@@ -20,6 +20,7 @@ import { duplicate } from '@fincity/kirun-js';
 import { shortUUID } from '../../../util/shortUUID';
 import Grid from '../../Grid/Grid';
 import { Issue } from '../components/IssuePopup';
+import components from '../../';
 
 interface ClipboardObject {
 	mainKey: string;
@@ -74,9 +75,7 @@ export class PageOperations {
 		return pageDef.componentDefinition[componentKey];
 	}
 
-	public getComponentDefinitionAndIfRoot(
-		componentKey: string,
-	): [ComponentDefinition, boolean] {
+	public getComponentDefinitionAndIfRoot(componentKey: string): [ComponentDefinition, boolean] {
 		const pageDef: PageDefinition = getDataFromPath(
 			this.defPath,
 			this.locationHistory,
@@ -263,6 +262,108 @@ export class PageOperations {
 				delete x.children[componentKey];
 				def.componentDefinition[x.key] = x;
 			}
+			if (this.selectedComponent === componentKey) this.onSelectedComponentChanged('');
+			setData(this.defPath, def, this.pageExtractor.getPageName());
+		}
+	}
+
+	private getCurrentCompEventKeys(componentKey: string, def: PageDefinition): Array<string> {
+		const cdDef = components.get(def.componentDefinition[componentKey].type ?? '');
+
+		const eventNames =
+			cdDef?.properties.filter(each => each.group == 'EVENTS').map(each => each.name) || [];
+
+		//clicked component event keys
+		const currentCompProperties: any = def.componentDefinition[componentKey].properties;
+
+		const currentCompEventKeys = eventNames
+			.filter(each => each in currentCompProperties)
+			.map(each => currentCompProperties[each].value);
+
+		return currentCompEventKeys;
+	}
+
+	public deleteComponentWithEvents(componentKey: string | undefined) {
+		if (!componentKey || !this.defPath) return;
+
+		const pageDef: PageDefinition = getDataFromPath(
+			this.defPath,
+			this.locationHistory,
+			this.pageExtractor,
+		);
+		if (!pageDef) return;
+
+		if (pageDef.rootComponent === componentKey) {
+			// When a root component is delete we need to add a new grid so people can add components to it.
+			// It requires a confirmation if we can delete a grid that is root.
+			this.setIssue({
+				message:
+					'Deleting the root component will delete the entire screen. Do you want to delete?',
+				defaultOption: 'No',
+				options: ['Yes', 'No'],
+				callbackOnOption: {
+					Yes: () => {
+						if (!this.defPath) return;
+						let def: PageDefinition = getDataFromPath(
+							this.defPath,
+							this.locationHistory,
+							this.pageExtractor,
+						);
+						const key = this.genId();
+						def = {
+							...def,
+							rootComponent: key,
+							componentDefinition: {
+								[key]: { key, name: 'Page Grid', type: 'Grid' },
+							},
+						};
+						this.onSelectedComponentChanged('');
+						setData(this.defPath, def, this.pageExtractor.getPageName());
+					},
+				},
+			});
+		} else {
+			let def = {
+				...pageDef,
+				componentDefinition: { ...(pageDef.componentDefinition ?? {}) },
+			};
+
+			const clickedCompEventKeys = this.getCurrentCompEventKeys(componentKey, def);
+
+			delete def.componentDefinition[componentKey];
+
+			if (clickedCompEventKeys.length > 0) {
+				const componentProperties = Object.values(def.componentDefinition).filter(
+					e => e.properties,
+				);
+
+				const allEventKeys = componentProperties.reduce((acc, elem) => {
+					const currentCompEventKeys = this.getCurrentCompEventKeys(elem.key, def);
+					return [...acc, ...currentCompEventKeys];
+				}, [] as string[]);
+
+				const toDeleteEventKeys = clickedCompEventKeys.filter(
+					element => !allEventKeys.includes(element),
+				);
+
+				toDeleteEventKeys.map(each => {
+					if (each in def.eventFunctions) {
+						delete def.eventFunctions[each];
+					}
+				});
+			}
+
+			// Finding the parent component of the deleting component and removing it from its children.
+			let keys = Object.values(def.componentDefinition)
+				.filter(e => e.children?.[componentKey])
+				.map(e => e.key);
+			for (let i = 0; i < keys.length; i++) {
+				const x = duplicate(def.componentDefinition[keys[i]]);
+
+				delete x.children[componentKey];
+				def.componentDefinition[x.key] = x;
+			}
+
 			if (this.selectedComponent === componentKey) this.onSelectedComponentChanged('');
 			setData(this.defPath, def, this.pageExtractor.getPageName());
 		}
