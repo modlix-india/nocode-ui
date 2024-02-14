@@ -32,8 +32,20 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 		bottom: 100%;
 	}
 
-	${PREFIX}._hasDialCode ._label {
-		padding-left: 40px;
+	${PREFIX} ._label._dialCodeLength2 {
+		padding-left: 64px;
+	}
+
+	${PREFIX} ._label._dialCodeLength3 {
+		padding-left: 70px;
+	}
+
+	${PREFIX} ._label._dialCodeLength4 {
+		padding-left: 78px;
+	}
+
+	${PREFIX} ._label._dialCodeLength5 {
+		padding-left: 86px;
 	}
 
 	${PREFIX} ._label {
@@ -62,7 +74,7 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 	}
 
 	${PREFIX}._bigDesign1 ._inputBox {
-		padding-top: 10px;
+		// padding-top: 10px;
 	}
 
 	${PREFIX} ._label._float {
@@ -90,11 +102,7 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 	}
 
 	${PREFIX} ._dropdownSelect span {
-		font-family: Inter;
 		font-size: 14px;
-		font-style: normal;
-		font-weight: 500;
-		line-height: 14px;
 	}
 
 	${PREFIX} ._dropdownSelect {
@@ -109,26 +117,15 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 		align-items: center;
 		justify-content: space-between;
 		gap: 8px;
-
-		font-family: Inter;
-		font-size: 14px;
-		font-style: normal;
-		font-weight: 500;
-		line-height: 14px;
 	}
 
 	${PREFIX} ._dropdownSelect svg {
-		min-width: 8px;
+		width: 8px;
+		color: rgb(0,0,0,1);
 	}
 
 	${PREFIX} ._dropdownSelect ._selectedOption {
-		color: rgba(0, 0, 0, 0.80);
-		font-size: 16px;
-	}
-
-	${PREFIX} ._dropdownSelect ._selectedOption._placeholder {
-		text-transform: capitalize;
-		color: rgba(0, 0, 0, 0.40);
+		font-size: 14px;
 	}
 
 	${PREFIX} ._dropdownBody{
@@ -138,29 +135,28 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 		border: 1px solid rgba(0, 0, 0, 0.10);
 		box-shadow: 0px 1px 4px 0px #00000026;
 		border-radius: 6px;
-		margin-top: 2px;
+		padding: 5px 0 0px 7px;
 		z-index: 2;
 		max-height: 250px;
-		overflow: auto;
+		overflow: scroll;
 	}
 
 	${PREFIX} ._dropdownBody ._dropdownOption {
-		padding: 10px;
-		color: rgba(0, 0, 0, 0.40); 
+		display: flex;
+		gap: 4px;
+		padding: 10px 0;
 		border-radius: 4px;
-		white-space: nowrap;
+		white-space: wrap;
 		cursor: pointer;
-		font-size: 16px;
+		font-size: 14px;
 	}
 
 	${PREFIX} ._dropdownBody ._dropdownOption._hovered {
-		background-color: #F8FAFB;
-		border-radius: 4px;
-		color: #0085F2;
+		background-color: rgb(0,0,0,.04);
 	}
 
 	${PREFIX} ._dropdownBody ._dropdownOption._selected {
-		color: #0085F2;
+		background-color: rgb(0,0,0,.04);
 	}
 
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);

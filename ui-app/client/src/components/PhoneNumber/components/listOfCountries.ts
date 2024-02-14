@@ -107,7 +107,7 @@ export const COUNTRY_LIST = [
 	{ N: 'Japan', D: '+81', C: 'JP' },
 	{ N: 'Jersey', D: '+44', C: 'JE' },
 	{ N: 'Jordan', D: '+962', C: 'JO' },
-	{ N: 'Kazakhstan', D: '+7 7', C: 'KZ' },
+	{ N: 'Kazakhstan', D: '+77', C: 'KZ' },
 	{ N: 'Kenya', D: '+254', C: 'KE' },
 	{ N: 'Kiribati', D: '+686', C: 'KI' },
 	{ N: "Korea, Democratic People's Republic of", D: '+850', C: 'KP' },

@@ -6,16 +6,67 @@ import {
 	SCHEMA_VALIDATION,
 } from '../../constants';
 import {
+	ComponentENUM,
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
 	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
-
+import { COUNTRY_LIST } from './components/listOfCountries';
+const ENUM_OPTION: Array<ComponentENUM> = COUNTRY_LIST.map(each => {
+	return { name: each.C, displayName: `${each.N} ${each.D}` };
+});
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.label,
-
+	{
+		name: 'placeholder',
+		displayName: 'Placeholder',
+		description: 'Placeholder to be shown in input box.',
+		schema: SCHEMA_STRING_COMP_PROP,
+		defaultValue: '',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'countries',
+		displayName: 'Countries',
+		description: 'Countries to appear in list.',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.BASIC,
+		multiValued: true,
+		enumValues: ENUM_OPTION,
+	},
+	{
+		name: 'topCountries',
+		displayName: 'Top Countries',
+		description: 'Top Countries to appear in list.',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.BASIC,
+		multiValued: true,
+		enumValues: ENUM_OPTION,
+	},
+	{
+		name: 'orderBy',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Order By',
+		description: 'Order of dropdown option by',
+		defaultValue: 'countryname',
+		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.BASIC,
+		enumValues: [
+			{ name: 'countryname', displayName: 'Country Name', description: 'Country Name' },
+			{ name: 'countrycode', displayName: 'Country Code', description: 'Country Code' },
+			{ name: 'dialcode', displayName: 'Dial Code', description: 'Dial Code' },
+		],
+	},
+	{
+		name: 'isSearchable',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Is Searchable',
+		description: 'Allows the users search options.',
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
 	{
 		name: 'noFloat',
 		schema: SCHEMA_BOOL_COMP_PROP,
@@ -54,15 +105,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Supporting Text',
 		description: 'Text to be shown to help fill the textbox.',
 		translatable: true,
-		group: ComponentPropertyGroup.ADVANCED,
-	},
-
-	{
-		name: 'placeholder',
-		displayName: 'Placeholder',
-		description: 'Placeholder to be shown in input box.',
-		schema: SCHEMA_STRING_COMP_PROP,
-		defaultValue: '',
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 
@@ -197,15 +239,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Hide Clear Button',
 		description: 'Hide Clear Button',
 		defaultValue: false,
-		group: ComponentPropertyGroup.ADVANCED,
-	},
-
-	{
-		name: 'showNumberSpinners',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Show Number Spinners',
-		description: 'Show Number Spinners',
-		defaultValue: true,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 
