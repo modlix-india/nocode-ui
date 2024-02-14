@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
 	addListener,
 	addListenerAndCallImmediately,
@@ -7,7 +7,7 @@ import {
 	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
-import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
+import { ComponentENUM, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { Component } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './phoneNumberProperties';
 import PhoneNumberStyle from './PhoneNumberStyle';
@@ -69,6 +69,10 @@ function PhoneNumber(props: ComponentProps) {
 			maxChars,
 			onFocus,
 			onBlur,
+			countries,
+			topCountries,
+			orderBy,
+			isSearchable,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -84,7 +88,7 @@ function PhoneNumber(props: ComponentProps) {
 		{ focus, readOnly },
 		stylePropertiesWithPseudoStates,
 	);
-	const [value, setValue] = React.useState(defaultValue ?? '');
+	const [value, setValue] = React.useState<string>(defaultValue ?? '');
 
 	const bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
@@ -167,9 +171,12 @@ function PhoneNumber(props: ComponentProps) {
 				true,
 			);
 	}, [value, validation]);
+
 	const changeEvent = onChange ? props.pageDefinition.eventFunctions?.[onChange] : undefined;
 	const blurEvent = onBlur ? props.pageDefinition.eventFunctions?.[onBlur] : undefined;
 	const focusEvent = onFocus ? props.pageDefinition.eventFunctions?.[onFocus] : undefined;
+	const clickEvent = onEnter ? props.pageDefinition.eventFunctions?.[onEnter] : undefined;
+	const clearEvent = onClear ? props.pageDefinition.eventFunctions?.[onClear] : undefined;
 	const updateStoreImmediately = upStoreImm || autoComplete === 'on';
 
 	const callChangeEvent = useCallback(() => {
@@ -208,7 +215,47 @@ function PhoneNumber(props: ComponentProps) {
 			))();
 	}, [focusEvent]);
 
+	const handleInputFocus = () => {
+		setFocus(true);
+		callFocusEvent();
+	};
+
+	const handleKeyUp = async (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+		console.log('key up handler');
+		if (!clickEvent || isLoading || e.key !== 'Enter') return;
+		if (!updateStoreImmediately) {
+			handleBlur(e as unknown as React.FocusEvent<HTMLInputElement>);
+		}
+		await runEvent(
+			clickEvent,
+			onEnter,
+			props.context.pageName,
+			props.locationHistory,
+			props.pageDefinition,
+		);
+	};
+
+	const handleClickClose = async () => {
+		let temp = mapValue[emptyValue];
+		if (removeKeyWhenEmpty && bindingPathPath) {
+			setData(bindingPathPath, undefined, context?.pageName, true);
+			callChangeEvent();
+		} else if (bindingPathPath) {
+			setData(bindingPathPath, temp, context?.pageName);
+			callChangeEvent();
+		}
+		if (!clearEvent) return;
+		await runEvent(
+			clearEvent,
+			onClear,
+			props.context.pageName,
+			props.locationHistory,
+			props.pageDefinition,
+		);
+	};
+
 	const handleBlur = (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+		console.log('hadleblur value:', event.target.value);
 		let temp = value === '' && emptyValue ? mapValue[emptyValue] : value;
 		if (!updateStoreImmediately && bindingPathPath) {
 			if (event?.target.value === '' && removeKeyWhenEmpty) {
@@ -222,78 +269,84 @@ function PhoneNumber(props: ComponentProps) {
 		setFocus(false);
 	};
 
-	const handleInputFocus = () => {
-		setFocus(true);
-		callFocusEvent();
-	};
-
-	const handleTextChange = (text: string) => {
+	const handleNumberChange = async (
+		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+	) => {
+		let text = event.target.value;
 		if (removeKeyWhenEmpty && text === '' && bindingPathPath) {
 			setData(bindingPathPath, undefined, context?.pageName, true);
 			callChangeEvent();
 			return;
 		}
-		let temp = text === '' && emptyValue ? mapValue[emptyValue] : text;
+		let temp = text === '' && emptyValue ? mapValue[emptyValue] : selectedCode + text;
 		if (updateStoreImmediately && bindingPathPath) {
 			setData(bindingPathPath, temp, context?.pageName);
 			callChangeEvent();
 		}
-		if (!updateStoreImmediately) setValue(text);
+		console.log('selectedCode', selectedCode);
+
+		if (!updateStoreImmediately) setValue(selectedCode + text);
 	};
 
-	const handleChange = async (
-		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-	) => {
-		handleTextChange(event.target.value);
-	};
+	const SORTED_COUNTRY_LIST = useMemo<DropdownOptions>(() => {
+		return COUNTRY_LIST.sort((a, b) => {
+			if (orderBy === 'countrycode') return a.C <= b.C ? -1 : 1;
+			else if (orderBy === 'dialcode') return parseInt(a.D.slice(1)) - parseInt(b.D.slice(1));
+			else return a.N <= b.N ? -1 : 1;
+		});
+	}, [orderBy]);
 
-	const handleClickClose = async () => {
-		let temp = mapValue[emptyValue];
-		if (removeKeyWhenEmpty && bindingPathPath) {
-			setData(bindingPathPath, undefined, context?.pageName, true);
-			callChangeEvent();
-		} else if (bindingPathPath) {
-			setData(bindingPathPath, temp, context?.pageName);
-			callChangeEvent();
-		}
-		if (!onClear) return;
-		const clearEvent = props.pageDefinition.eventFunctions?.[onClear];
-		if (!clearEvent) return;
-		await runEvent(
-			clearEvent,
-			onClear,
-			props.context.pageName,
-			props.locationHistory,
-			props.pageDefinition,
-		);
-	};
-	const clickEvent = onEnter ? props.pageDefinition.eventFunctions?.[onEnter] : undefined;
-
-	const handleKeyUp = async (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-		if (!clickEvent || isLoading || e.key !== 'Enter') return;
-		if (!updateStoreImmediately) {
-			handleBlur(e as unknown as React.FocusEvent<HTMLInputElement>);
-		}
-		await runEvent(
-			clickEvent,
-			onEnter,
-			props.context.pageName,
-			props.locationHistory,
-			props.pageDefinition,
-		);
-	};
 	const finKey: string = 't_' + key;
-	const countryList: DropdownOptions = COUNTRY_LIST;
-	const [selectedCode, setSelectedCode] = useState<string>(countryList[0].D);
-	console.log('selectedCode', selectedCode);
+	const [countryList, setCountryList] = useState<DropdownOptions>(SORTED_COUNTRY_LIST);
+	const [selectedCode, setSelectedCode] = useState<string>(SORTED_COUNTRY_LIST[0].D);
+	const [phoneNumber, setPhoneNumber] = useState<string>('');
+
+	useEffect(() => {
+		if (Array.isArray(countries)) {
+			let tempList = SORTED_COUNTRY_LIST.filter(e => countries.includes(e.C));
+			setCountryList(tempList);
+		} else if (Array.isArray(topCountries)) {
+			let tempList = [
+				...SORTED_COUNTRY_LIST.filter(e => topCountries.includes(e.C)),
+				...SORTED_COUNTRY_LIST.filter(e => !topCountries.includes(e.C)),
+			];
+			setCountryList(tempList);
+		} else {
+			setCountryList(SORTED_COUNTRY_LIST);
+		}
+	}, [countries, topCountries]);
+
+	useEffect(() => {
+		let dc = '';
+		if (value !== '' && value.startsWith('+')) {
+			// console.log('value', value);
+			dc = value.length > 5 ? value.substring(0, 5) : value;
+			while (dc.length > 0) {
+				// console.log(dc);
+				if (!countryList.find(e => e.D === dc)) {
+					dc = dc.slice(0, dc.length - 1);
+				} else break;
+			}
+			// console.log('dc', dc);
+		}
+		if (dc) setSelectedCode(dc);
+		else setSelectedCode(countryList[0].D);
+		setPhoneNumber(value.slice(dc.length));
+	}, [value, countryList]);
+
+	// console.log('selectedCode', selectedCode);
+	// console.log('countryList', countryList);
 	const leftChildren = (
-		<Dropdown
-			value={selectedCode}
-			onChange={(v: string) => {
-				setSelectedCode(v);
-			}}
-			options={countryList}
-		/>
+		<>
+			<Dropdown
+				value={selectedCode}
+				onChange={(v: string) => {
+					setSelectedCode(v);
+				}}
+				options={countryList}
+			/>
+			<span className="_dialCodeLabel">{selectedCode}</span>
+		</>
 	);
 
 	return (
@@ -302,7 +355,7 @@ function PhoneNumber(props: ComponentProps) {
 			id={finKey}
 			noFloat={noFloat}
 			readOnly={readOnly}
-			value={value}
+			value={phoneNumber}
 			label={label}
 			translations={translations}
 			valueType={'tel'}
@@ -310,7 +363,7 @@ function PhoneNumber(props: ComponentProps) {
 			hasFocusStyles={stylePropertiesWithPseudoStates?.focus}
 			validationMessages={validationMessages}
 			context={context}
-			handleChange={handleChange}
+			handleChange={handleNumberChange}
 			clearContentHandler={handleClickClose}
 			blurHandler={handleBlur}
 			keyUpHandler={handleKeyUp}
@@ -327,7 +380,7 @@ function PhoneNumber(props: ComponentProps) {
 			hideClearContentIcon={hideClearButton}
 			maxChars={maxChars}
 			leftChildren={leftChildren}
-			dialCodeLength={selectedCode.length}
+			dialCodeLength={selectedCode.length ?? 0}
 		/>
 	);
 }
@@ -335,7 +388,7 @@ function PhoneNumber(props: ComponentProps) {
 const component: Component = {
 	name: 'PhoneNumber',
 	displayName: 'Phone Number',
-	description: 'PhoneNumber component',
+	description: 'Phone Number component',
 	component: PhoneNumber,
 	styleComponent: PhoneNumberStyle,
 	styleDefaults: styleDefaults,
@@ -384,18 +437,6 @@ const component: Component = {
 					/>
 				</IconHelper>
 			),
-		},
-		{
-			name: 'leftIcon',
-			displayName: 'Left Icon',
-			description: 'Left Icon',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'rightIcon',
-			displayName: 'Right Icon',
-			description: 'Right Icon',
-			icon: 'fa-solid fa-box',
 		},
 		{
 			name: 'inputBox',
