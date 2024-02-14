@@ -1,6 +1,7 @@
 import React, { CSSProperties, useEffect, useRef, useState } from 'react';
 
 export type DropdownOptions = Array<{
+	nextSeperator?: boolean;
 	D: string;
 	N: string;
 	C: string;
@@ -142,7 +143,6 @@ export function Dropdown({
 				onClick={() => setOpen(true)}
 				onFocus={() => setOpen(true)}
 				onBlur={() => setOpen(false)}
-				onMouseLeave={() => setOpen(false)}
 				onKeyDown={e => handleKeyDown(e)}
 				ref={dropDown}
 			>

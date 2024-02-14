@@ -68,6 +68,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
+		name: 'noCodeForFirstCountry',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: "Don't add dial code for first country",
+		defaultValue: false,
+		group: ComponentPropertyGroup.DATA,
+	},
+	{
 		name: 'noFloat',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Do not float Label',
