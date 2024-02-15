@@ -312,10 +312,17 @@ const getHeaderComp = (line: string) => {
 		);
 	}
 	const HeaderComponent = `h${i}` as keyof JSX.IntrinsicElements;
+	let id = '';
+	line = line.slice(1);
+	const idIndex = line.indexOf('{#');
+	if (idIndex != -1 && line.indexOf('}', idIndex) !== -1) {
+		id = line.slice(idIndex + 2, line.indexOf('}', idIndex));
+		line = line.slice(0, idIndex) + line.slice(line.indexOf('}', idIndex) + 1);
+	}
 	return React.createElement(
 		HeaderComponent,
-		{ key: line },
-		parseText(line.slice(i)).filter(e => !!e),
+		{ key: line, id },
+		parseText(line).filter(e => !!e),
 	);
 };
 
