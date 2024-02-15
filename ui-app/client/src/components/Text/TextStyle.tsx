@@ -39,6 +39,10 @@ export default function LabelStyle({ theme }: { theme: Map<string, Map<string, s
 		text-Overflow: inherit;
 		white-Space: inherit;
 	}
+
+	${PREFIX}._markdown img {
+		max-width: 100%;
+	}
 	
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

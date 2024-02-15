@@ -1,11 +1,12 @@
 import React from 'react';
-import { Component, ComponentPropertyDefinition } from '../types/common';
+import { Component, ComponentPropertyDefinition, ComponentProps } from '../types/common';
 import { HelperComponent } from './HelperComponents/HelperComponent';
 
-function Nothing({ definition }: { definition: any }) {
+function Nothing(props: ComponentProps) {
+	const { definition, context } = props;
 	return (
 		<div className="comp compNothing">
-			<HelperComponent context={props.context} definition={definition} />
+			<HelperComponent context={context} definition={definition} />
 			No component with type {definition.type} found.
 		</div>
 	);

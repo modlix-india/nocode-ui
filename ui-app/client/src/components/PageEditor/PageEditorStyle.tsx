@@ -452,6 +452,27 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			cursor: pointer;
 		}
 
+		${PREFIX} ._textValueEditorContainer {
+			color: #000;
+			background-color: #F8FAFB;
+			font-family: Inter;
+			font-weight: 400;
+			padding-top: 0px;
+			padding-bottom: 0px;
+			border-radius: 6px;
+			display: flex;
+			align-items: center;
+			padding-right: 8px;
+			gap: 5px;
+			flex:1;
+		}
+
+		${PREFIX} ._textValueEditorContainer ._peInput {
+			border: none;
+			background-color: transparent;
+			flex: 1;
+		}
+
 		${PREFIX} ._iconMenu._personalize {
 			background: #F8FAFB;
 			border-radius: 10px;
@@ -2722,6 +2743,18 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._popupContainer ._progressBar i.fa {
 			font-size: 50px;
+		}
+
+		._popupBackground ._popupContainer._popupContainerWithPreview {
+			flex-direction: row;
+		}
+
+		._popupContainer._popupContainerWithPreview ._mdPreviewContainer {
+			overflow:auto;
+		}
+
+		._popupContainer._popupContainerWithPreview ._mdPreviewContainer ._markDownContent {
+			height: 400px;
 		}
 
 		._popupContainer ._jsonEditorContainer{
