@@ -262,6 +262,9 @@ export class PageOperations {
 				delete x.children[componentKey];
 				def.componentDefinition[x.key] = x;
 			}
+
+			console.log(def);
+			
 			if (this.selectedComponent === componentKey) this.onSelectedComponentChanged('');
 			setData(this.defPath, def, this.pageExtractor.getPageName());
 		}
@@ -281,6 +284,19 @@ export class PageOperations {
 			.map(each => currentCompProperties[each].value);
 
 		return currentCompEventKeys;
+	}
+
+	private getEventOfAllChildren(componentKey: string, def: PageDefinition): Array<string> {
+		let helperArray: Array<string> = [];
+
+		if (def.componentDefinition[componentKey].children) {
+			Object.keys(def.componentDefinition[componentKey].children || {}).forEach(each => {
+				helperArray = helperArray.concat(this.getEventOfAllChildren(each, def));
+			});
+		} else {
+			return this.getCurrentCompEventKeys(componentKey, def);
+		}
+		return helperArray;
 	}
 
 	public deleteComponentWithEvents(componentKey: string | undefined) {
@@ -328,7 +344,10 @@ export class PageOperations {
 				componentDefinition: { ...(pageDef.componentDefinition ?? {}) },
 			};
 
-			const clickedCompEventKeys = this.getCurrentCompEventKeys(componentKey, def);
+			const clickedCompEventKeys: Array<string> = this.getEventOfAllChildren(
+				componentKey,
+				def,
+			);
 
 			delete def.componentDefinition[componentKey];
 
@@ -342,8 +361,8 @@ export class PageOperations {
 					return [...acc, ...currentCompEventKeys];
 				}, [] as string[]);
 
-				const toDeleteEventKeys = clickedCompEventKeys.filter(
-					element => !allEventKeys.includes(element),
+				const toDeleteEventKeys = clickedCompEventKeys.filter(element =>
+					allEventKeys.includes(element),
 				);
 
 				toDeleteEventKeys.map(each => {
@@ -363,6 +382,8 @@ export class PageOperations {
 				delete x.children[componentKey];
 				def.componentDefinition[x.key] = x;
 			}
+
+			console.log(def);
 
 			if (this.selectedComponent === componentKey) this.onSelectedComponentChanged('');
 			setData(this.defPath, def, this.pageExtractor.getPageName());
