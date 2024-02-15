@@ -104,6 +104,8 @@ export interface ComponentPropertyDefinition {
 	defaultValue?: any;
 	displayOrder?: number;
 	hide?: boolean;
+	validationTypes?:Array<string>;
+	
 }
 
 export interface ComponentStylePropertyGroupDefinition {
@@ -329,6 +331,7 @@ export interface PageDefinition {
 }
 
 export interface ComponentProps {
+	[x: string]: any;
 	definition: ComponentDefinition;
 	pageDefinition: PageDefinition;
 	locationHistory: Array<LocationHistory>;

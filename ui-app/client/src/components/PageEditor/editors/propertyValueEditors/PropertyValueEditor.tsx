@@ -24,6 +24,7 @@ import { Dropdown } from '../stylePropertyValueEditors/simpleEditors/Dropdown';
 import { ColorSelector } from '../stylePropertyValueEditors/simpleEditors/ColorSelector';
 import SectionPropertyValueEditor from './SectionPropertyValueEditor';
 
+
 interface PropertyValueEditorProps {
 	propDef: ComponentPropertyDefinition;
 	value?: ComponentProperty<any>;
@@ -244,6 +245,8 @@ function makeValueEditor(
 			</div>
 		);
 	}
+	if (propDef.editor === ComponentPropertyEditor.VALIDATION) {
+        const validationTypes = propDef.validationTypes || [];
 
 	if (propDef.editor === ComponentPropertyEditor.VALIDATION) {
 		return (
@@ -255,9 +258,10 @@ function makeValueEditor(
 				editPageName={editPageName}
 				slaveStore={slaveStore}
 				pageOperations={pageOperations}
+				validationTypes={validationTypes}
 			/>
 		);
-	}
+	}}
 
 	if (propDef.editor === ComponentPropertyEditor.IMAGE) {
 		return (

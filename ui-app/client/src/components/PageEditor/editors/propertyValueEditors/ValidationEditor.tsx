@@ -4,6 +4,7 @@ import { VALIDATION_FUNCTIONS } from '../../../../util/validationProcessor';
 import PropertyValueEditor from './PropertyValueEditor';
 import { PageOperations } from '../../functions/PageOperations';
 import { Dropdown } from '../stylePropertyValueEditors/simpleEditors/Dropdown';
+import { ComponentPropertyDefinition } from '../../../../types/common';
 
 interface ValidationEditorProps {
 	value?: any;
@@ -13,6 +14,7 @@ interface ValidationEditorProps {
 	slaveStore: any;
 	editPageName: string | undefined;
 	pageOperations: PageOperations;
+	validationTypes:any;
 }
 
 export function ValidationEditor({
@@ -23,7 +25,19 @@ export function ValidationEditor({
 	slaveStore,
 	editPageName,
 	pageOperations,
+	validationTypes,
 }: ValidationEditorProps) {
+    
+
+	const filteredValidationFunctions = validationTypes && validationTypes.length > 0
+    ? Object.keys(VALIDATION_FUNCTIONS)
+        .filter(name => validationTypes.includes(name))
+        .reduce((acc, name) => {
+            acc[name] = VALIDATION_FUNCTIONS[name];
+            return acc;
+        }, {} as { [key: string]: any })
+    : VALIDATION_FUNCTIONS;
+
 	return (
 		<div className="_validationEditor">
 			<div className="_eachProp">
@@ -35,7 +49,7 @@ export function ValidationEditor({
 					onChange={v => {
 						onChange({ ...value, type: v === '' || !v ? 'MANDATORY' : v });
 					}}
-					options={Object.entries(VALIDATION_FUNCTIONS).map(e => ({
+					options={Object.entries(filteredValidationFunctions).map(e => ({
 						name: e[0],
 						displayName: e[1].displayName,
 					}))}
@@ -60,7 +74,7 @@ export function ValidationEditor({
 				/>
 			</div>
 
-			{(VALIDATION_FUNCTIONS[value?.type ?? 'MANDATORY'].fields ?? []).map(propDef => (
+			{(filteredValidationFunctions[value?.type ?? 'MANDATORY'].fields ?? []).map((propDef: ComponentPropertyDefinition) => (
 				<div className="_eachProp" key={propDef.name}>
 					<div className="_propLabel">{propDef.displayName}</div>
 					<PropertyValueEditor
