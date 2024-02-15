@@ -74,15 +74,15 @@ export class PageOperations {
 		return pageDef.componentDefinition[componentKey];
 	}
 
-	public getComponentDefinitionIfNotRoot(componentKey: string): ComponentDefinition | undefined {
+	public getComponentDefinitionAndIfRoot(
+		componentKey: string,
+	): [ComponentDefinition, boolean] {
 		const pageDef: PageDefinition = getDataFromPath(
 			this.defPath,
 			this.locationHistory,
 			this.pageExtractor,
 		);
-		if (!pageDef || pageDef.rootComponent === componentKey) return;
-
-		return pageDef.componentDefinition[componentKey];
+		return [pageDef.componentDefinition[componentKey], pageDef.rootComponent === componentKey];
 	}
 
 	public componentChanged(componentDef: ComponentDefinition | undefined) {

@@ -81,6 +81,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
+		name: 'formStorageUrl',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Url of Form storage',
+		group: ComponentPropertyGroup.DATA,
+		description: 'Url of Form storage. ',
+	},
+
+	{
 		name: 'settingsPageName',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Name of site settings page',
