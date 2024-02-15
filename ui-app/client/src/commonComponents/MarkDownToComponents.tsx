@@ -298,14 +298,24 @@ const parseText = (text: string, wholeText?: string) => {
 	return tokens;
 };
 
-const getHeaderComp = (headerMatch: RegExpMatchArray, line: string) => {
-	const headerLevel = headerMatch[1].length;
-	const headerText = headerMatch[2];
-	const HeaderComponent = `h${headerLevel}` as keyof JSX.IntrinsicElements;
+const getHeaderComp = (line: string) => {
+	let i = 0;
+
+	while (line[i] === '#') {
+		i++;
+	}
+	if (i > 6) {
+		return React.createElement(
+			'p',
+			{ key: line },
+			parseText(line).filter(e => !!e),
+		);
+	}
+	const HeaderComponent = `h${i}` as keyof JSX.IntrinsicElements;
 	return React.createElement(
 		HeaderComponent,
 		{ key: line },
-		parseText(headerText).filter(e => !!e),
+		parseText(line.slice(i)).filter(e => !!e),
 	);
 };
 
@@ -334,14 +344,13 @@ function MarkDownToComponent({ text }: { text: string }) {
 	let elements: React.ReactNode[] = [];
 	for (let i = 0; i < lines.length; i++) {
 		let line = lines[i];
-		const headerMatch = line.match(/^(#+)\s(.+)$/);
 		if (line.startsWith('\\')) {
 			// \ escape next character
 			const elements: React.ReactNode[] = [line[1]];
 			elements.push(parseText(line.slice(2)));
-		} else if (headerMatch) {
+		} else if (line.startsWith('#')) {
 			// Headings
-			elements.push(getHeaderComp(headerMatch, line));
+			elements.push(getHeaderComp(line));
 		} else if (line.startsWith('>')) {
 			// Blockquote
 			let j = i + 1;
