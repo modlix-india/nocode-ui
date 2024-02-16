@@ -3,10 +3,10 @@ import { Component, ComponentPropertyDefinition, ComponentProps } from '../types
 import { HelperComponent } from './HelperComponents/HelperComponent';
 
 function Nothing(props: ComponentProps) {
-	const { definition } = props;
+	const { definition, context } = props;
 	return (
 		<div className="comp compNothing">
-			<HelperComponent context={props.context} definition={definition} />
+			<HelperComponent context={context} definition={definition} />
 			No component with type {definition.type} found.
 		</div>
 	);
