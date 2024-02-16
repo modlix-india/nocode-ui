@@ -2422,6 +2422,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border: 1px solid #eee;
 			color: #777;
 			margin-top: 10px;
+			white-space: break-spaces;
 		}
 		
 		._pvExpressionEditor {
