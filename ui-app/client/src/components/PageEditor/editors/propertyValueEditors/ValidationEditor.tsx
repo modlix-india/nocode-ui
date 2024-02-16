@@ -29,7 +29,7 @@ export function ValidationEditor({
 }: ValidationEditorProps) {
     
 
-	const filteredValidationFunctions = validationTypes && validationTypes.length > 0
+	const FILTERED_VALIDATION_FUNCTIONS = validationTypes && validationTypes.length > 0
     ? Object.keys(VALIDATION_FUNCTIONS)
         .filter(name => validationTypes.includes(name))
         .reduce((acc, name) => {
@@ -49,7 +49,7 @@ export function ValidationEditor({
 					onChange={v => {
 						onChange({ ...value, type: v === '' || !v ? 'MANDATORY' : v });
 					}}
-					options={Object.entries(filteredValidationFunctions).map(e => ({
+					options={Object.entries(FILTERED_VALIDATION_FUNCTIONS).map(e => ({
 						name: e[0],
 						displayName: e[1].displayName,
 					}))}
@@ -74,7 +74,7 @@ export function ValidationEditor({
 				/>
 			</div>
 
-			{(filteredValidationFunctions[value?.type ?? 'MANDATORY'].fields ?? []).map((propDef: ComponentPropertyDefinition) => (
+			{(FILTERED_VALIDATION_FUNCTIONS[value?.type ?? 'MANDATORY'].fields ?? []).map((propDef: ComponentPropertyDefinition) => (
 				<div className="_eachProp" key={propDef.name}>
 					<div className="_propLabel">{propDef.displayName}</div>
 					<PropertyValueEditor

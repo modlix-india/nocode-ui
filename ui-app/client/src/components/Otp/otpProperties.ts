@@ -6,7 +6,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'autoFocus',
 		displayName: 'Auto Focus',
-		description: 'Textarea to be focused automatically when page loads.',
+		description: 'Otp to be focused automatically when page loads.',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		defaultValue: false,
 		group: ComponentPropertyGroup.ADVANCED,
@@ -23,14 +23,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Validation Rule',
 		editor: ComponentPropertyEditor.VALIDATION,
 		group: ComponentPropertyGroup.VALIDATION,
-		validationTypes:['MANDATORY', 'REGEX']
+		validationTypes:['MANDATORY']
 		
 	},
 	{
 		name: 'supportingText',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Supporting Text',
-		description: 'Text to be shown to help fill the textbox.',
+		description: 'Text to be shown to help fill the otp.',
 		translatable: true,
 		group: ComponentPropertyGroup.ADVANCED,
 	},

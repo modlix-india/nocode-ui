@@ -331,7 +331,6 @@ export interface PageDefinition {
 }
 
 export interface ComponentProps {
-	[x: string]: any;
 	definition: ComponentDefinition;
 	pageDefinition: PageDefinition;
 	locationHistory: Array<LocationHistory>;

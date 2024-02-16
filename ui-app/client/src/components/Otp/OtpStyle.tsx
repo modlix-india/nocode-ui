@@ -8,17 +8,11 @@ export default function OtpStyle({ theme }: { theme: Map<string, Map<string, str
 		`
 		${PREFIX} {
 			display: flex;
-			
 		}
 
 		${PREFIX} ._inputBox {
-			width: 30px; 
-			height: 30px; 
-			margin: 8px;
-			font-size: 16px; 
 			text-align: center;
 			outline: none; 
-			border-style:solid;
 		}
 
 		${PREFIX} ._supportText {
