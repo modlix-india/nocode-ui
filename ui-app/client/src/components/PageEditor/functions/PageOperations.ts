@@ -12,6 +12,7 @@ import {
 import { getDataFromPath, PageStoreExtractor, setData } from '../../../context/StoreContext';
 import {
 	ComponentDefinition,
+	ComponentPropertyEditor,
 	LocationHistory,
 	PageDefinition,
 	StyleResolution,
@@ -262,9 +263,6 @@ export class PageOperations {
 				delete x.children[componentKey];
 				def.componentDefinition[x.key] = x;
 			}
-
-			console.log(def);
-			
 			if (this.selectedComponent === componentKey) this.onSelectedComponentChanged('');
 			setData(this.defPath, def, this.pageExtractor.getPageName());
 		}
@@ -273,30 +271,30 @@ export class PageOperations {
 	private getCurrentCompEventKeys(componentKey: string, def: PageDefinition): Array<string> {
 		const cdDef = components.get(def.componentDefinition[componentKey].type ?? '');
 
-		const eventNames =
-			cdDef?.properties.filter(each => each.group == 'EVENTS').map(each => each.name) || [];
+		if (!cdDef) {
+			return [];
+		}
+
+		const eventNames = cdDef?.properties
+			.filter(each => each.editor == ComponentPropertyEditor.EVENT_SELECTOR)
+			.map(each => each.name);
 
 		//clicked component event keys
 		const currentCompProperties: any = def.componentDefinition[componentKey].properties;
 
-		const currentCompEventKeys = eventNames
+		return eventNames
 			.filter(each => each in currentCompProperties)
 			.map(each => currentCompProperties[each].value);
-
-		return currentCompEventKeys;
 	}
 
-	private getEventOfAllChildren(componentKey: string, def: PageDefinition): Array<string> {
-		let helperArray: Array<string> = [];
+	private getEventOfAllChildren(componentKey: string, def: PageDefinition): string[] {
+		const children = def.componentDefinition[componentKey].children;
+		if (!children) return this.getCurrentCompEventKeys(componentKey, def);
 
-		if (def.componentDefinition[componentKey].children) {
-			Object.keys(def.componentDefinition[componentKey].children || {}).forEach(each => {
-				helperArray = helperArray.concat(this.getEventOfAllChildren(each, def));
-			});
-		} else {
-			return this.getCurrentCompEventKeys(componentKey, def);
-		}
-		return helperArray;
+		return Object.keys(children).reduce((acc: string[], childKey: string) => {
+			acc.push(...this.getEventOfAllChildren(childKey, def));
+			return acc;
+		}, []);
 	}
 
 	public deleteComponentWithEvents(componentKey: string | undefined) {
@@ -349,27 +347,28 @@ export class PageOperations {
 				def,
 			);
 
+			const eventCounts: { [key: string]: number } = {};
+
+			clickedCompEventKeys.forEach(key => (eventCounts[key] = (eventCounts[key] || 0) + 1));
+
 			delete def.componentDefinition[componentKey];
 
 			if (clickedCompEventKeys.length > 0) {
-				const componentProperties = Object.values(def.componentDefinition).filter(
-					e => e.properties,
+				const allEventCounts: { [key: string]: number } = Object.values(
+					def.componentDefinition,
+				)
+					.filter(component => component.properties)
+					.flatMap(component => this.getCurrentCompEventKeys(component.key, def))
+					.reduce<{ [key: string]: number }>((counts, key) => {
+						counts[key] = (counts[key] ??= 0) + 1;
+						return counts;
+					}, {});
+
+				const toDeleteEventKeys = Object.keys(eventCounts).filter(
+					each => eventCounts[each] === allEventCounts[each],
 				);
 
-				const allEventKeys = componentProperties.reduce((acc, elem) => {
-					const currentCompEventKeys = this.getCurrentCompEventKeys(elem.key, def);
-					return [...acc, ...currentCompEventKeys];
-				}, [] as string[]);
-
-				const toDeleteEventKeys = clickedCompEventKeys.filter(element =>
-					allEventKeys.includes(element),
-				);
-
-				toDeleteEventKeys.map(each => {
-					if (each in def.eventFunctions) {
-						delete def.eventFunctions[each];
-					}
-				});
+				toDeleteEventKeys.forEach(eventKey => delete def.eventFunctions[eventKey]);
 			}
 
 			// Finding the parent component of the deleting component and removing it from its children.
