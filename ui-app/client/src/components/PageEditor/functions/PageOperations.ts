@@ -288,13 +288,29 @@ export class PageOperations {
 	}
 
 	private getEventOfAllChildren(componentKey: string, def: PageDefinition): string[] {
-		const children = def.componentDefinition[componentKey].children;
-		if (!children) return this.getCurrentCompEventKeys(componentKey, def);
+		let eventKeys: Array<string> = [];
+		
+		const que = new LinkedList<ComponentDefinition>();
 
-		return Object.keys(children).reduce((acc: string[], childKey: string) => {
-			acc.push(...this.getEventOfAllChildren(childKey, def));
-			return acc;
-		}, []);
+		que.add(def.componentDefinition[componentKey]);
+
+		while (que.size() > 0) {
+			const x = que.pop();
+			console.log(x);
+
+			if (!x.children) {
+				eventKeys = eventKeys.concat(this.getCurrentCompEventKeys(x.key, def));
+				continue;
+			}
+			Object.keys(x.children).forEach(k => {
+				const e = def.componentDefinition[k];
+				que.add(e);
+			});
+		}
+
+		console.log(eventKeys);
+
+		return eventKeys;
 	}
 
 	public deleteComponentWithEvents(componentKey: string | undefined) {
@@ -347,45 +363,45 @@ export class PageOperations {
 				def,
 			);
 
-			const eventCounts: { [key: string]: number } = {};
+			// const eventCounts: { [key: string]: number } = {};
 
-			clickedCompEventKeys.forEach(key => (eventCounts[key] = (eventCounts[key] || 0) + 1));
+			// clickedCompEventKeys.forEach(key => (eventCounts[key] = (eventCounts[key] || 0) + 1));
 
-			delete def.componentDefinition[componentKey];
+			// if (clickedCompEventKeys.length > 0) {
+			// 	const allEventCounts: { [key: string]: number } = Object.values(
+			// 		def.componentDefinition,
+			// 	)
+			// 		.filter(component => component.properties)
+			// 		.flatMap(component => this.getCurrentCompEventKeys(component.key, def))
+			// 		.reduce<{ [key: string]: number }>((counts, key) => {
+			// 			counts[key] = (counts[key] ??= 0) + 1;
+			// 			return counts;
+			// 		}, {});
 
-			if (clickedCompEventKeys.length > 0) {
-				const allEventCounts: { [key: string]: number } = Object.values(
-					def.componentDefinition,
-				)
-					.filter(component => component.properties)
-					.flatMap(component => this.getCurrentCompEventKeys(component.key, def))
-					.reduce<{ [key: string]: number }>((counts, key) => {
-						counts[key] = (counts[key] ??= 0) + 1;
-						return counts;
-					}, {});
+			// 	const toDeleteEventKeys = Object.keys(eventCounts).filter(
+			// 		each => eventCounts[each] === allEventCounts[each],
+			// 	);
 
-				const toDeleteEventKeys = Object.keys(eventCounts).filter(
-					each => eventCounts[each] === allEventCounts[each],
-				);
+			// 	toDeleteEventKeys.forEach(eventKey => delete def.eventFunctions[eventKey]);
+			// }
 
-				toDeleteEventKeys.forEach(eventKey => delete def.eventFunctions[eventKey]);
-			}
+			// delete def.componentDefinition[componentKey];
 
-			// Finding the parent component of the deleting component and removing it from its children.
-			let keys = Object.values(def.componentDefinition)
-				.filter(e => e.children?.[componentKey])
-				.map(e => e.key);
-			for (let i = 0; i < keys.length; i++) {
-				const x = duplicate(def.componentDefinition[keys[i]]);
+			// // Finding the parent component of the deleting component and removing it from its children.
+			// let keys = Object.values(def.componentDefinition)
+			// 	.filter(e => e.children?.[componentKey])
+			// 	.map(e => e.key);
+			// for (let i = 0; i < keys.length; i++) {
+			// 	const x = duplicate(def.componentDefinition[keys[i]]);
 
-				delete x.children[componentKey];
-				def.componentDefinition[x.key] = x;
-			}
+			// 	delete x.children[componentKey];
+			// 	def.componentDefinition[x.key] = x;
+			// }
 
-			console.log(def);
+			// console.log(def);
 
-			if (this.selectedComponent === componentKey) this.onSelectedComponentChanged('');
-			setData(this.defPath, def, this.pageExtractor.getPageName());
+			// if (this.selectedComponent === componentKey) this.onSelectedComponentChanged('');
+			// setData(this.defPath, def, this.pageExtractor.getPageName());
 		}
 	}
 
