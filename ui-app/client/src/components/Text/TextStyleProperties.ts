@@ -951,7 +951,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'MD Multi Code Padding',
 		displayName: 'MD Multi Code Padding Default Design',
 		name: 'mDMultiCodePaddingDefaultDesign',
-		defaultValue: '16px',
+		defaultValue: '8px',
 		cssProperty: 'padding',
 		selector: '.comp.compText._markdown pre, ._markDownContent pre',
 		noPrefix: true,

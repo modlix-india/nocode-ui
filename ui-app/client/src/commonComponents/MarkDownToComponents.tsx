@@ -455,6 +455,7 @@ function MarkDownToComponent({ text }: { text: string }) {
 			elements.push(processList(listItems, currentListType === 'ordered'));
 			i = j - 1;
 		} else if (line.startsWith('```')) {
+			// code blocks
 			let endIndex = line.indexOf('```', 3);
 			if (endIndex !== -1) {
 				elements.push(
@@ -477,9 +478,10 @@ function MarkDownToComponent({ text }: { text: string }) {
 				let code = line.slice(3);
 				let j = i + 1;
 				while (j < lines.length && !lines[j].startsWith('```')) {
-					code += '\n' + lines[j];
+					code += lines[j] + '\n';
 					j++;
 				}
+
 				elements.push(
 					React.createElement(
 						'pre',
@@ -490,6 +492,7 @@ function MarkDownToComponent({ text }: { text: string }) {
 				i = j;
 			}
 		} else if (line.startsWith('`')) {
+			// single line code
 			const tokens = parseText(line);
 			elements.push(tokens);
 		} else if (line.startsWith('!')) {
@@ -504,6 +507,7 @@ function MarkDownToComponent({ text }: { text: string }) {
 			// Horizontal line
 			elements.push(React.createElement('hr', { key: `hr${i}${line}` }));
 		} else if (line.trim() === '') {
+			// creating line breaks on return or enter
 			elements.push(React.createElement('br', { key: `br_${line}_${i}` }));
 		} else {
 			// Paragraph
