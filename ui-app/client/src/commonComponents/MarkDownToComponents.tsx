@@ -20,39 +20,52 @@ const findLevel = (text: string) => {
 
 const processList = (listItems: string[], isOrdered: boolean, level = 1) => {
 	const finalList = [];
-	const subList: Array<{ line: Array<string>; type: 'ordered' | 'unordered' }> = [];
+	let subList: Array<{ line: Array<string>; type: 'ordered' | 'unordered' }> = [];
 	let currentIndex = 0;
 	let prevType: 'ordered' | 'unordered' = isOrdered == true ? 'ordered' : 'unordered';
+	console.log('picard', listItems);
 	for (let i = 0; i < listItems.length; i++) {
+		// looping throught list items
 		if (listItems[i + 1]?.startsWith('    '.repeat(level))) {
+			// if next has sublist
+			console.log(listItems[i + 1], 'picard', i);
 			let j = i + 1;
 			while (listItems[j]?.startsWith('    ')) {
+				// k holds the sliced string removing current levels indentation
+				console.log(listItems[j], 'picard');
 				let k = '';
 				k = listItems[j].slice('    '.repeat(level).length);
-
+				console.log('picard -k', k);
 				if (unorderedCondition(k)) {
+					// unordered list is next sublist
 					subList[currentIndex] = subList[currentIndex]?.line
 						? subList[currentIndex]
 						: { line: [], type: 'unordered' };
 					if (prevType === 'unordered') {
+						// if prev type is unordered we push to prev array
 						subList[currentIndex].line.push(k);
 					} else {
+						// if prev type is ordered we create new sublist in next index
 						subList[currentIndex + 1] = { line: [k], type: 'unordered' };
 						currentIndex += 1;
 						prevType = 'unordered';
 					}
 				} else if (k.match(/^\d+\.\s/)) {
+					// ordered list is next sublist
 					subList[currentIndex] = subList[currentIndex]?.line
 						? subList[currentIndex]
 						: { line: [], type: 'ordered' };
 					if (prevType === 'ordered') {
+						// if prev type is ordered we push to prev array
 						subList[currentIndex].line.push(k);
 					} else {
+						// if prev type is unordered we create new sublist in next index
 						subList[currentIndex + 1] = { line: [k], type: 'ordered' };
 						currentIndex += 1;
 						prevType = 'ordered';
 					}
 				} else {
+					// its sub sub level, so push to sublist and wait for next iteration
 					subList[currentIndex] = subList[currentIndex]?.line
 						? subList[currentIndex]
 						: { line: [], type: prevType };
@@ -61,6 +74,7 @@ const processList = (listItems: string[], isOrdered: boolean, level = 1) => {
 				}
 				j++;
 			}
+			// render current item plus any sublists through recursion
 			finalList.push(
 				<li key={listItems[i]}>
 					{renderLine(listItems[i].slice(isOrdered ? 3 : 2))}
@@ -68,29 +82,24 @@ const processList = (listItems: string[], isOrdered: boolean, level = 1) => {
 				</li>,
 			);
 			i = j - 1;
+			// empty sublist so items dont repeat when we have multiple sublists
+			subList = [];
 		} else {
+			// normal list rendering when next item does not have sub list
 			let k = listItems[i];
-			if (
-				listItems[i]?.startsWith('    '.repeat(level)) ||
-				listItems[i]?.startsWith('\t'.repeat(level))
-			) {
-				if (listItems[i].startsWith('    '.repeat(level))) {
-					k = listItems[i].slice('    '.repeat(level).length);
-				}
-				if (listItems[i].startsWith('\t'.repeat(level))) {
-					k = listItems[i].slice('\t'.repeat(level).length);
-				}
+			if (listItems[i]?.startsWith('    '.repeat(level))) {
+				k = listItems[i].slice('    '.repeat(level).length);
 			}
 			finalList.push(<li key={k}>{renderLine(k.slice(isOrdered ? 3 : 2))}</li>);
 		}
 	}
-
+	// final return
 	if (isOrdered) {
 		return <ol key={listItems.join('_')}>{finalList}</ol>;
 	} else return <ul key={listItems.join('_')}>{finalList}</ul>;
 };
 
-const parseText = (text: string, wholeText?: string) => {
+const parseText = (text: string) => {
 	let tokens: Array<React.ReactNode> = [];
 	let tokenCount = 0;
 	for (let i = 0; i < text.length; i++) {
