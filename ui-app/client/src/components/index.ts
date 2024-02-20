@@ -48,6 +48,8 @@ import ColorPicker from './ColorPicker/ColorPicker';
 import Jot from './Jot/Jot';
 import FillerDefinitionEditor from './FillerDefinitionEditor/FillerDefinitionEditor';
 import SectionGrid from './SectionGrid/SectionGrid';
+import SmallCarousel from './SmallCarousel/SmallCarousel';
+
 
 export default new Map<string, Component>([
 	[Button.name, Button],
@@ -99,4 +101,5 @@ export default new Map<string, Component>([
 	[Jot.name, Jot],
 	[FillerDefinitionEditor.name, FillerDefinitionEditor],
 	[SectionGrid.name, SectionGrid],
+	[SmallCarousel.name, SmallCarousel]
 ]);
