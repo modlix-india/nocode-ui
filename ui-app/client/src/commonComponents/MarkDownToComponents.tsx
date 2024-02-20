@@ -100,6 +100,7 @@ const processList = (listItems: string[], isOrdered: boolean, level = 1) => {
 };
 
 const parseText = (text: string) => {
+	// parsing line one character at a time
 	let tokens: Array<React.ReactNode> = [];
 	let tokenCount = 0;
 	for (let i = 0; i < text.length; i++) {
@@ -197,8 +198,10 @@ const parseText = (text: string) => {
 				}
 			}
 		} else if (text[i] === '`') {
+			// single code line
 			let endIndex = -1;
 			if (text[i + 1] === '`') {
+				// using double `` to escape single backtick
 				endIndex = text.indexOf('``', i + 2);
 				if (endIndex === -1) {
 					tokens[tokenCount] = (tokens[tokenCount] ?? '') + text[i];
@@ -220,6 +223,7 @@ const parseText = (text: string) => {
 				tokenCount += 2;
 				i = endIndex + 1;
 			} else {
+				// single tick code line
 				endIndex = text.indexOf('`', i + 1);
 				if (endIndex === -1) {
 					tokens[tokenCount] = (tokens[tokenCount] ?? '') + text[i];
@@ -242,6 +246,7 @@ const parseText = (text: string) => {
 				i = endIndex;
 			}
 		} else if (text[i] === '!') {
+			// image line
 			if (text[i + 1] !== '[') {
 				tokens[tokenCount] = (tokens[tokenCount] ?? '') + text[i];
 				continue;
@@ -280,6 +285,7 @@ const parseText = (text: string) => {
 			tokenCount += 2;
 			i = linkEndIndex;
 		} else if (text[i] === '[') {
+			// link line
 			const endIndex = text.indexOf(']', i + 1);
 			if (endIndex === -1 || text[endIndex + 1] !== '(') {
 				tokens[tokenCount] = (tokens[tokenCount] ?? '') + text[i];
@@ -312,10 +318,12 @@ const parseText = (text: string) => {
 			tokenCount += 2;
 			i = linkEndIndex;
 		} else if (text[i] === '\\') {
+			// escape escape
 			tokens[tokenCount] = (tokens[tokenCount] ?? '') + text[i + 1];
 			i = i + 1;
 			continue;
 		} else {
+			// normal text
 			tokens[tokenCount] = (tokens[tokenCount] ?? '') + text[i];
 		}
 	}
