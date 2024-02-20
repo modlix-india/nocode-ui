@@ -9,6 +9,7 @@ import {
 } from '../../context/StoreContext';
 import {
 	Component,
+	ComponentDefinition,
 	ComponentPropertyDefinition,
 	ComponentProps,
 	LocationHistory,
@@ -35,6 +36,10 @@ import ComponentDefinitions from '../';
 import { deepEqual, duplicate } from '@fincity/kirun-js';
 import { styleDefaults } from './pageEditorStyleProperties';
 import { IconHelper } from '../util/IconHelper';
+import FormEditor from './components/FormEditor';
+import { shortUUID } from '../../util/shortUUID';
+import axios from 'axios';
+import { getHref } from '../util/getHref';
 
 function savePersonalizationCurry(
 	personalizationPath: string,
@@ -86,6 +91,7 @@ function PageEditor(props: ComponentProps) {
 			pagesData,
 			currentPageId,
 			dashboardPageName,
+			formStorageUrl,
 			settingsPageName,
 			addnewPageName,
 			editorType,
@@ -286,6 +292,7 @@ function PageEditor(props: ComponentProps) {
 	const [issue, setIssue] = useState<Issue>();
 	const [contextMenu, setContextMenu] = useState<ContextMenuDetails>();
 	const [showCodeEditor, setShowCodeEditor] = useState<string | undefined>(undefined);
+	const [generateFormOnComponentKey, setGenerateFormOnComponentKey] = useState<string>('');
 	const [selectedComponentsList, setSelectedComponentsListOriginal] = useState<string[]>([]);
 
 	const setSelectedComponent = useCallback(
@@ -744,6 +751,16 @@ function PageEditor(props: ComponentProps) {
 					onSelectedSubComponentChanged={(key: string) => setSelectedSubComponent(key)}
 					onSelectedComponentChanged={(key: string) => setSelectedComponent(key)}
 				/>
+				{generateFormOnComponentKey && (
+					<FormEditor
+						formStorageUrl={formStorageUrl}
+						defPath={defPath}
+						pageExtractor={pageExtractor}
+						locationHistory={locationHistory}
+						clickedComponent={generateFormOnComponentKey}
+						setClickedComponent={setGenerateFormOnComponentKey}
+					/>
+				)}
 			</div>
 			<IssuePopup
 				issue={issue}
@@ -755,8 +772,12 @@ function PageEditor(props: ComponentProps) {
 				menuDetails={contextMenu}
 				personalizationPath={personalizationPath}
 				pageExtractor={pageExtractor}
-				onCloseContextmenu={() => setContextMenu(undefined)}
+				onCloseContextmenu={() => {
+					setContextMenu(undefined);
+				}}
 				pageOperations={operations}
+				formStorageUrl={formStorageUrl}
+				setClickedComponent={setGenerateFormOnComponentKey}
 			/>
 		</>
 	);
