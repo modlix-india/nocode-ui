@@ -494,7 +494,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDHeading1FontDefaultDesign',
 		defaultValue: 'bold <quinaryFont>',
 		cssProperty: 'font',
-		selector: '.comp.compText._markdown h1',
+		selector: '.comp.compText._markdown h1, ._markDownContent h1',
 		noPrefix: true,
 	},
 	{
@@ -503,7 +503,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDHeading2FontDefaultDesign',
 		defaultValue: '<quinaryFont>',
 		cssProperty: 'font',
-		selector: '.comp.compText._markdown h2',
+		selector: '.comp.compText._markdown h2, ._markDownContent h2',
 		noPrefix: true,
 	},
 	{
@@ -512,7 +512,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDHeading3FontDefaultDesign',
 		defaultValue: 'bold <secondaryFont>',
 		cssProperty: 'font',
-		selector: '.comp.compText._markdown h3',
+		selector: '.comp.compText._markdown h3, ._markDownContent h3',
 		noPrefix: true,
 	},
 	{
@@ -521,7 +521,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDHeading4FontDefaultDesign',
 		defaultValue: '<secondaryFont>',
 		cssProperty: 'font',
-		selector: '.comp.compText._markdown h4',
+		selector: '.comp.compText._markdown h4, ._markDownContent h4',
 		noPrefix: true,
 	},
 	{
@@ -530,7 +530,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDHeading5FontDefaultDesign',
 		defaultValue: 'bold <tertiaryFont>',
 		cssProperty: 'font',
-		selector: '.comp.compText._markdown h5',
+		selector: '.comp.compText._markdown h5, ._markDownContent h5',
 		noPrefix: true,
 	},
 	{
@@ -539,7 +539,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDHeading6FontDefaultDesign',
 		defaultValue: '<tertiaryFont>',
 		cssProperty: 'font',
-		selector: '.comp.compText._markdown h6',
+		selector: '.comp.compText._markdown h6, ._markDownContent h6',
 		noPrefix: true,
 	},
 	{
@@ -548,7 +548,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDParagraphFontDefaultDesign',
 		defaultValue: '<primaryFont>',
 		cssProperty: 'font',
-		selector: '.comp.compText._markdown p',
+		selector: '.comp.compText._markdown p, ._markDownContent p',
 		noPrefix: true,
 	},
 	{
@@ -557,7 +557,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDLinkFontDefaultDesign',
 		defaultValue: '<primaryFont>',
 		cssProperty: 'font',
-		selector: '.comp.compText._markdown a',
+		selector: '.comp.compText._markdown a, ._markDownContent a',
 		noPrefix: true,
 	},
 
@@ -567,7 +567,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDHeading1PaddingDefaultDesign',
 		defaultValue: '5px 0px',
 		cssProperty: 'padding',
-		selector: '.comp.compText._markdown h1',
+		selector: '.comp.compText._markdown h1, ._markDownContent h1',
 		noPrefix: true,
 	},
 	{
@@ -576,7 +576,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDHeading2PaddingDefaultDesign',
 		defaultValue: '4px 0px',
 		cssProperty: 'padding',
-		selector: '.comp.compText._markdown h2',
+		selector: '.comp.compText._markdown h2, ._markDownContent h2',
 		noPrefix: true,
 	},
 	{
@@ -585,7 +585,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDHeading3PaddingDefaultDesign',
 		defaultValue: '3px 0px',
 		cssProperty: 'padding',
-		selector: '.comp.compText._markdown h3',
+		selector: '.comp.compText._markdown h3, ._markDownContent h3',
 		noPrefix: true,
 	},
 	{
@@ -594,7 +594,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDHeading4PaddingDefaultDesign',
 		defaultValue: '2px 0px',
 		cssProperty: 'padding',
-		selector: '.comp.compText._markdown h4',
+		selector: '.comp.compText._markdown h4, ._markDownContent h4',
 		noPrefix: true,
 	},
 	{
@@ -603,7 +603,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDHeading5PaddingDefaultDesign',
 		defaultValue: '1px 0px',
 		cssProperty: 'padding',
-		selector: '.comp.compText._markdown h5',
+		selector: '.comp.compText._markdown h5, ._markDownContent h5',
 		noPrefix: true,
 	},
 	{
@@ -612,7 +612,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDHeading6PaddingDefaultDesign',
 		defaultValue: '1px 0px',
 		cssProperty: 'padding',
-		selector: '.comp.compText._markdown h6',
+		selector: '.comp.compText._markdown h6, ._markDownContent h6',
 		noPrefix: true,
 	},
 	{
@@ -621,7 +621,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDParagraphPaddingDefaultDesign',
 		defaultValue: '0',
 		cssProperty: 'padding',
-		selector: '.comp.compText._markdown p',
+		selector: '.comp.compText._markdown p, ._markDownContent p',
 		noPrefix: true,
 	},
 	{
@@ -630,7 +630,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDLinkPaddingDefaultDesign',
 		defaultValue: '0',
 		cssProperty: 'padding',
-		selector: '.comp.compText._markdown a',
+		selector: '.comp.compText._markdown a, ._markDownContent a',
 		noPrefix: true,
 	},
 
@@ -640,7 +640,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDHeading1MarginDefaultDesign',
 		defaultValue: '5px 0px',
 		cssProperty: 'margin',
-		selector: '.comp.compText._markdown h1',
+		selector: '.comp.compText._markdown h1, ._markDownContent h1',
 		noPrefix: true,
 	},
 	{
@@ -649,7 +649,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDHeading2MarginDefaultDesign',
 		defaultValue: '4px 0px',
 		cssProperty: 'margin',
-		selector: '.comp.compText._markdown h2',
+		selector: '.comp.compText._markdown h2, ._markDownContent h2',
 		noPrefix: true,
 	},
 	{
@@ -658,7 +658,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDHeading3MarginDefaultDesign',
 		defaultValue: '3px 0px',
 		cssProperty: 'margin',
-		selector: '.comp.compText._markdown h3',
+		selector: '.comp.compText._markdown h3, ._markDownContent h3',
 		noPrefix: true,
 	},
 	{
@@ -667,7 +667,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDHeading4MarginDefaultDesign',
 		defaultValue: '2px 0px',
 		cssProperty: 'margin',
-		selector: '.comp.compText._markdown h4',
+		selector: '.comp.compText._markdown h4, ._markDownContent h4',
 		noPrefix: true,
 	},
 	{
@@ -676,7 +676,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDHeading5MarginDefaultDesign',
 		defaultValue: '1px 0px',
 		cssProperty: 'margin',
-		selector: '.comp.compText._markdown h5',
+		selector: '.comp.compText._markdown h5, ._markDownContent h5',
 		noPrefix: true,
 	},
 	{
@@ -685,7 +685,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDHeading6MarginDefaultDesign',
 		defaultValue: '1px 0px',
 		cssProperty: 'margin',
-		selector: '.comp.compText._markdown h6',
+		selector: '.comp.compText._markdown h6, ._markDownContent h6',
 		noPrefix: true,
 	},
 	{
@@ -694,7 +694,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDParagraphMarginDefaultDesign',
 		defaultValue: '0',
 		cssProperty: 'margin',
-		selector: '.comp.compText._markdown p',
+		selector: '.comp.compText._markdown p, ._markDownContent p',
 		noPrefix: true,
 	},
 	{
@@ -703,7 +703,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDLinkMarginDefaultDesign',
 		defaultValue: '0',
 		cssProperty: 'margin',
-		selector: '.comp.compText._markdown a',
+		selector: '.comp.compText._markdown a, ._markDownContent a',
 		noPrefix: true,
 	},
 
@@ -712,7 +712,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'MD Heading1 Text Decoration Default Design',
 		name: 'mDHeading1TextDecorationDefaultDesign',
 		cssProperty: 'text-decoration',
-		selector: '.comp.compText._markdown h1',
+		selector: '.comp.compText._markdown h1, ._markDownContent h1',
 		noPrefix: true,
 	},
 	{
@@ -720,7 +720,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'MD Heading2 Text Decoration Default Design',
 		name: 'mDHeading2TextDecorationDefaultDesign',
 		cssProperty: 'text-decoration',
-		selector: '.comp.compText._markdown h2',
+		selector: '.comp.compText._markdown h2, ._markDownContent h2',
 		noPrefix: true,
 	},
 	{
@@ -728,7 +728,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'MD Heading3 Text Decoration Default Design',
 		name: 'mDHeading3TextDecorationDefaultDesign',
 		cssProperty: 'text-decoration',
-		selector: '.comp.compText._markdown h3',
+		selector: '.comp.compText._markdown h3, ._markDownContent h3',
 		noPrefix: true,
 	},
 	{
@@ -736,7 +736,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'MD Heading4 Text Decoration Default Design',
 		name: 'mDHeading4TextDecorationDefaultDesign',
 		cssProperty: 'text-decoration',
-		selector: '.comp.compText._markdown h4',
+		selector: '.comp.compText._markdown h4, ._markDownContent h4',
 		noPrefix: true,
 	},
 	{
@@ -744,7 +744,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'MD Heading5 Text Decoration Default Design',
 		name: 'mDHeading5TextDecorationDefaultDesign',
 		cssProperty: 'text-decoration',
-		selector: '.comp.compText._markdown h5',
+		selector: '.comp.compText._markdown h5, ._markDownContent h5',
 		noPrefix: true,
 	},
 	{
@@ -752,7 +752,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'MD Heading6 Text Decoration Default Design',
 		name: 'mDHeading6TextDecorationDefaultDesign',
 		cssProperty: 'text-decoration',
-		selector: '.comp.compText._markdown h6',
+		selector: '.comp.compText._markdown h6, ._markDownContent h6',
 		noPrefix: true,
 	},
 	{
@@ -760,7 +760,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'MD Paragraph Text Decoration Default Design',
 		name: 'mDParagraphTextDecorationDefaultDesign',
 		cssProperty: 'text-decoration',
-		selector: '.comp.compText._markdown p',
+		selector: '.comp.compText._markdown p, ._markDownContent p',
 		noPrefix: true,
 	},
 	{
@@ -769,7 +769,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDLinkTextDecorationDefaultDesign',
 		defaultValue: 'none',
 		cssProperty: 'text-decoration',
-		selector: '.comp.compText._markdown a',
+		selector: '.comp.compText._markdown a, ._markDownContent a',
 		noPrefix: true,
 	},
 
@@ -779,7 +779,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDHeading1ColorDefaultDesign',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compText._markdown h1',
+		selector: '.comp.compText._markdown h1, ._markDownContent h1',
 		noPrefix: true,
 	},
 	{
@@ -788,7 +788,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDHeading2ColorDefaultDesign',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compText._markdown h2',
+		selector: '.comp.compText._markdown h2, ._markDownContent h2',
 		noPrefix: true,
 	},
 	{
@@ -797,7 +797,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDHeading3ColorDefaultDesign',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compText._markdown h3',
+		selector: '.comp.compText._markdown h3, ._markDownContent h3',
 		noPrefix: true,
 	},
 	{
@@ -806,7 +806,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDHeading4ColorDefaultDesign',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compText._markdown h4',
+		selector: '.comp.compText._markdown h4, ._markDownContent h4',
 		noPrefix: true,
 	},
 	{
@@ -815,7 +815,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDHeading5ColorDefaultDesign',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compText._markdown h5',
+		selector: '.comp.compText._markdown h5, ._markDownContent h5',
 		noPrefix: true,
 	},
 	{
@@ -824,7 +824,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDHeading6ColorDefaultDesign',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compText._markdown h6',
+		selector: '.comp.compText._markdown h6, ._markDownContent h6',
 		noPrefix: true,
 	},
 	{
@@ -833,7 +833,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDParagraphColorDefaultDesign',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compText._markdown p',
+		selector: '.comp.compText._markdown p, ._markDownContent p',
 		noPrefix: true,
 	},
 	{
@@ -842,7 +842,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDLinkColorDefaultDesign',
 		defaultValue: '<fontColorSeven>',
 		cssProperty: 'color',
-		selector: '.comp.compText._markdown a',
+		selector: '.comp.compText._markdown a, ._markDownContent a',
 		noPrefix: true,
 	},
 	{
@@ -851,7 +851,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDLinkColorOnVisitedDefaultDesign',
 		defaultValue: '<fontColorSeven>',
 		cssProperty: 'color',
-		selector: '.comp.compText._markdown a:visited',
+		selector: '.comp.compText._markdown a:visited, ._markDownContent a:visited',
 		noPrefix: true,
 	},
 	{
@@ -860,7 +860,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDLinkColorOnHoverDefaultDesign',
 		defaultValue: 'underline',
 		cssProperty: 'text-decoration',
-		selector: '.comp.compText._markdown a:hover',
+		selector: '.comp.compText._markdown a:hover, ._markDownContent a:hover',
 		noPrefix: true,
 	},
 
@@ -870,7 +870,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDBlockquoteBorderDefaultDesign',
 		defaultValue: '5px solid <fontColorEight>',
 		cssProperty: 'border-left',
-		selector: '.comp.compText._markdown blockquote',
+		selector: '.comp.compText._markdown blockquote, ._markDownContent blockquote',
 		noPrefix: true,
 	},
 	{
@@ -879,7 +879,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDBlockquotePaddingDefaultDesign',
 		defaultValue: '0 16px',
 		cssProperty: 'padding',
-		selector: '.comp.compText._markdown blockquote',
+		selector: '.comp.compText._markdown blockquote, ._markDownContent blockquote',
 		noPrefix: true,
 	},
 	{
@@ -888,7 +888,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDBlockquoteMarginDefaultDesign',
 		defaultValue: '0 0 16px 0',
 		cssProperty: 'margin',
-		selector: '.comp.compText._markdown blockquote',
+		selector: '.comp.compText._markdown blockquote, ._markDownContent blockquote',
 		noPrefix: true,
 	},
 	{
@@ -897,7 +897,63 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'mDBlockquoteParagraphMarginDefaultDesign',
 		defaultValue: '0 16px',
 		cssProperty: 'margin',
-		selector: '.comp.compText._markdown blockquote p',
+		selector: '.comp.compText._markdown blockquote p, ._markDownContent blockquote p',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'MD Single Code Background ',
+		displayName: 'MD Single Code Background  Default Design',
+		name: 'mDSingleCodeBackgroundDefaultDesign',
+		defaultValue: '<backgroundColorNine>',
+		cssProperty: 'background-color',
+		selector: '.comp.compText._markdown code, ._markDownContent code',
+		noPrefix: true,
+	},
+	{
+		groupName: 'MD Single Code Border Radius ',
+		displayName: 'MD Single Code Border Radius  Default Design',
+		name: 'mDSingleCodeBorderRadiusDefaultDesign',
+		defaultValue: '6px',
+		cssProperty: 'border-radius',
+		selector: '.comp.compText._markdown code, ._markDownContent code',
+		noPrefix: true,
+	},
+	{
+		groupName: 'MD Single Code Padding',
+		displayName: 'MD Single Code Padding Default Design',
+		name: 'mDSingleCodePaddingDefaultDesign',
+		defaultValue: '3px',
+		cssProperty: 'padding',
+		selector: '.comp.compText._markdown code, ._markDownContent code',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'MD Multi Code Background ',
+		displayName: 'MD Multi Code Background  Default Design',
+		name: 'mDMultiCodeBackgroundDefaultDesign',
+		defaultValue: '<backgroundColorNine>',
+		cssProperty: 'background-color',
+		selector: '.comp.compText._markdown pre, ._markDownContent pre',
+		noPrefix: true,
+	},
+	{
+		groupName: 'MD Multi Code Border Radius ',
+		displayName: 'MD Multi Code Border Radius  Default Design',
+		name: 'mDMultiCodeBorderRadiusDefaultDesign',
+		defaultValue: '6px',
+		cssProperty: 'border-radius',
+		selector: '.comp.compText._markdown pre, ._markDownContent pre',
+		noPrefix: true,
+	},
+	{
+		groupName: 'MD Multi Code Padding',
+		displayName: 'MD Multi Code Padding Default Design',
+		name: 'mDMultiCodePaddingDefaultDesign',
+		defaultValue: '16px',
+		cssProperty: 'padding',
+		selector: '.comp.compText._markdown pre, ._markDownContent pre',
 		noPrefix: true,
 	},
 ];

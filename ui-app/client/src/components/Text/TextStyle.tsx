@@ -43,6 +43,17 @@ export default function LabelStyle({ theme }: { theme: Map<string, Map<string, s
 	${PREFIX}._markdown img {
 		max-width: 100%;
 	}
+
+	${PREFIX}._markdown pre, ._markDownContent pre {
+		overflow: auto;
+	}
+
+	${PREFIX}._markdown pre code, ._markDownContent pre code {
+		background-color: transparent;
+		padding: 0;
+		margin: 0;
+		border: 0;
+	}
 	
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

@@ -49,7 +49,6 @@ export function TextValueEditor({ value, defaultValue, onChange }: AnyValueEdito
 								<button
 									disabled={!enableOk}
 									onClick={() => {
-										console.log(editorValue, localValue, 'picard');
 										let v = undefined;
 										let ev = (editorValue ?? '').trim();
 										if (ev === 'undefined' || ev === '') v = undefined;
@@ -100,7 +99,6 @@ export function TextValueEditor({ value, defaultValue, onChange }: AnyValueEdito
 				value={value ?? ''}
 				placeholder={defaultValue ?? undefined}
 				onChange={e => {
-					console.log(e.target.value, 'kirk');
 					onChange?.(e.target.value);
 				}}
 				onKeyDown={e => {

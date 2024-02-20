@@ -1,46 +1,33 @@
 import React from 'react';
 
-const allowedTags = [
-	'a',
-	'b',
-	'strong',
-	'blockquote',
-	'br',
-	'code',
-	'del',
-	'em',
-	'h1',
-	'h2',
-	'h3',
-	'h4',
-	'h5',
-	'h6',
-	'hr',
-	'i',
-	'img',
-	'kbd',
-	'li',
-	'ol',
-	'p',
-	'pre',
-	's',
-	'sub',
-	'sup',
-	'ul',
-];
+const unorderedCondition = (text: string) =>
+	text.startsWith('* ') ||
+	text.startsWith('+ ') ||
+	text.startsWith('- ') ||
+	text.startsWith('_ ');
+
+const findLevel = (text: string) => {
+	let level = 1;
+	if (!text.startsWith('    ')) return -1;
+	while (text.startsWith('    ')) {
+		level++;
+		text = text.slice(4);
+	}
+	if (unorderedCondition(text) || text.match(/^\d+\.\s/)) {
+		return level;
+	} else return -1;
+};
 
 const processList = (listItems: string[], isOrdered: boolean, level = 1) => {
 	const finalList = [];
 	const subList: Array<{ line: Array<string>; type: 'ordered' | 'unordered' }> = [];
 	let currentIndex = 0;
 	let prevType: 'ordered' | 'unordered' = isOrdered == true ? 'ordered' : 'unordered';
-	console.log('picard', listItems, isOrdered, level);
 	for (let i = 0; i < listItems.length; i++) {
 		if (
 			listItems[i + 1]?.startsWith('    '.repeat(level)) ||
 			listItems[i + 1]?.startsWith('\t'.repeat(level))
 		) {
-			console.log('picard - kirk');
 			let j = i + 1;
 			while (listItems[j]?.startsWith('    ') || listItems[j]?.startsWith('\t')) {
 				let k = '';
@@ -51,12 +38,7 @@ const processList = (listItems: string[], isOrdered: boolean, level = 1) => {
 					k = listItems[j].slice('\t'.repeat(level).length);
 				}
 
-				if (
-					k.startsWith('* ') ||
-					k.startsWith('+ ') ||
-					k.startsWith('- ') ||
-					k.startsWith('_ ')
-				) {
+				if (unorderedCondition(k)) {
 					subList[currentIndex] = subList[currentIndex]?.line
 						? subList[currentIndex]
 						: { line: [], type: 'unordered' };
@@ -67,9 +49,7 @@ const processList = (listItems: string[], isOrdered: boolean, level = 1) => {
 						currentIndex += 1;
 						prevType = 'unordered';
 					}
-				}
-
-				if (k.match(/^\d+\.\s/)) {
+				} else if (k.match(/^\d+\.\s/)) {
 					subList[currentIndex] = subList[currentIndex]?.line
 						? subList[currentIndex]
 						: { line: [], type: 'ordered' };
@@ -80,8 +60,7 @@ const processList = (listItems: string[], isOrdered: boolean, level = 1) => {
 						currentIndex += 1;
 						prevType = 'ordered';
 					}
-				}
-				if (k.startsWith('    ') || k.startsWith('\t')) {
+				} else {
 					subList[currentIndex] = subList[currentIndex]?.line
 						? subList[currentIndex]
 						: { line: [], type: prevType };
@@ -216,6 +195,51 @@ const parseText = (text: string, wholeText?: string) => {
 					continue;
 				}
 			}
+		} else if (text[i] === '`') {
+			let endIndex = -1;
+			if (text[i + 1] === '`') {
+				endIndex = text.indexOf('``', i + 2);
+				if (endIndex === -1) {
+					tokens[tokenCount] = (tokens[tokenCount] ?? '') + text[i];
+					continue;
+				}
+				tokens.push(
+					React.createElement(
+						'code',
+						{ key: `code_${text.slice(i + 2, endIndex)}` },
+						text
+							?.slice(i + 2, endIndex)
+							.split('')
+							.map((e, i) => {
+								if (e === ' ') return <>&nbsp;</>;
+								else return e;
+							}),
+					),
+				);
+				tokenCount += 2;
+				i = endIndex + 1;
+			} else {
+				endIndex = text.indexOf('`', i + 1);
+				if (endIndex === -1) {
+					tokens[tokenCount] = (tokens[tokenCount] ?? '') + text[i];
+					continue;
+				}
+				tokens.push(
+					React.createElement(
+						'code',
+						{ key: text },
+						text
+							?.slice(i + 1, endIndex)
+							.split('')
+							.map((e, i) => {
+								if (e === ' ') return <>&nbsp;</>;
+								else return e;
+							}),
+					),
+				);
+				tokenCount += 2;
+				i = endIndex;
+			}
 		} else if (text[i] === '!') {
 			if (text[i + 1] !== '[') {
 				tokens[tokenCount] = (tokens[tokenCount] ?? '') + text[i];
@@ -304,7 +328,7 @@ const getHeaderComp = (line: string) => {
 	while (line[i] === '#') {
 		i++;
 	}
-	if (i > 6) {
+	if (i > 6 || line[i] !== ' ') {
 		return React.createElement(
 			'p',
 			{ key: line },
@@ -313,7 +337,7 @@ const getHeaderComp = (line: string) => {
 	}
 	const HeaderComponent = `h${i}` as keyof JSX.IntrinsicElements;
 	let id = '';
-	line = line.slice(1);
+	line = line.slice(i);
 	const idIndex = line.indexOf('{#');
 	if (idIndex != -1 && line.indexOf('}', idIndex) !== -1) {
 		id = line.slice(idIndex + 2, line.indexOf('}', idIndex));
@@ -329,9 +353,8 @@ const getHeaderComp = (line: string) => {
 const renderLine = (line: string) => {
 	line = line.trim();
 	const elements: React.ReactNode[] = [];
-	const headerMatch = line.match(/^(#+)\s(.+)$/);
-	if (headerMatch) {
-		elements.push(getHeaderComp(headerMatch, line));
+	if (line.startsWith('#')) {
+		elements.push(getHeaderComp(line));
 	} else if (line.startsWith('>')) {
 		elements.push(
 			React.createElement('blockquote', { key: line.slice(1) }, renderLine(line.slice(1))),
@@ -347,7 +370,7 @@ const renderLine = (line: string) => {
 };
 
 function MarkDownToComponent({ text }: { text: string }) {
-	const lines = text?.split('\n');
+	const lines = text?.replaceAll('\t', '    ').split('\n');
 	let elements: React.ReactNode[] = [];
 	for (let i = 0; i < lines.length; i++) {
 		let line = lines[i];
@@ -377,42 +400,98 @@ function MarkDownToComponent({ text }: { text: string }) {
 			i = i + blockLines.length;
 		} else if (line.match(/^\d+\.\s/)) {
 			// Ordered list
+			let currentLevel = 1;
 			const currentListType: string = 'ordered';
 			const listItems: string[] = [];
 			let j = i;
 			while (
-				lines[j].match(/^\d+\.\s/) ||
-				lines[j].startsWith('    ') ||
-				lines[j].startsWith('\t')
+				j < lines.length &&
+				(lines[j].match(/^\d+\.\s/) || lines[j].startsWith('    '))
 			) {
-				listItems.push(lines[j]);
+				if (lines[j].match(/^\d+\.\s/)) listItems.push(lines[j]);
+
+				if (lines[j].startsWith('    ')) {
+					let level = findLevel(lines[j]);
+
+					if (level === -1) {
+						listItems[listItems.length - 1] += lines[j];
+					} else if (level <= currentLevel + 1) {
+						listItems.push(lines[j]);
+						currentLevel = level;
+					} else {
+						listItems[listItems.length - 1] += lines[j];
+					}
+				}
+
 				j++;
 			}
 			elements.push(processList(listItems, currentListType === 'ordered'));
 			i = j - 1;
-		} else if (
-			line.startsWith('* ') ||
-			line.startsWith('+ ') ||
-			line.startsWith('- ') ||
-			line.startsWith('_ ')
-		) {
+		} else if (unorderedCondition(line)) {
 			// Unordered list
+			let currentLevel = 1;
 			const currentListType: string = 'unordered';
 			const listItems: string[] = [];
 			let j = i;
 			while (
-				lines[j]?.startsWith('* ') ||
-				lines[j]?.startsWith('+ ') ||
-				lines[j]?.startsWith('- ') ||
-				lines[j]?.startsWith('_ ') ||
-				lines[j]?.startsWith('    ') ||
-				lines[j]?.startsWith('\t')
+				j < lines.length &&
+				(unorderedCondition(lines[j]) || lines[j]?.startsWith('    '))
 			) {
-				listItems.push(lines[j]);
+				if (unorderedCondition(lines[j])) listItems.push(lines[j]);
+				if (lines[j].startsWith('    ')) {
+					let level = findLevel(lines[j]);
+
+					if (level === -1) {
+						listItems[listItems.length - 1] += lines[j];
+					} else if (level <= currentLevel + 1) {
+						listItems.push(lines[j]);
+						currentLevel = level;
+					} else {
+						listItems[listItems.length - 1] += lines[j];
+					}
+				}
 				j++;
 			}
 			elements.push(processList(listItems, currentListType === 'ordered'));
 			i = j - 1;
+		} else if (line.startsWith('```')) {
+			let endIndex = line.indexOf('```', 3);
+			if (endIndex !== -1) {
+				elements.push(
+					React.createElement(
+						'code',
+						{ key: `code_${line.slice(3, endIndex)}` },
+						line
+							.slice(3, endIndex)
+							.split('')
+							.map((e, i) => {
+								if (e === ' ') return <>&nbsp;</>;
+								else return e;
+							}),
+					),
+				);
+				if (line.slice(endIndex + 3).trim() !== '') {
+					elements.push(parseText(line.slice(endIndex + 3)));
+				}
+			} else {
+				let code = line.slice(3);
+				let j = i + 1;
+				while (j < lines.length && !lines[j].startsWith('```')) {
+					code += '\n' + lines[j];
+					j++;
+				}
+				elements.push(
+					React.createElement(
+						'pre',
+						{ key: `pre_${code}` },
+						React.createElement('code', { key: `code_${code}` }, code),
+					),
+				);
+				i = j;
+			}
+		} else if (line.startsWith('`')) {
+			const tokens = parseText(line);
+			elements.push(tokens);
 		} else if (line.startsWith('!')) {
 			// Image
 			const tokens = parseText(line);
@@ -424,6 +503,8 @@ function MarkDownToComponent({ text }: { text: string }) {
 		} else if (line.startsWith('***') || line.startsWith('---') || line.startsWith('___')) {
 			// Horizontal line
 			elements.push(React.createElement('hr', { key: `hr${i}${line}` }));
+		} else if (line.trim() === '') {
+			elements.push(React.createElement('br', { key: `br_${line}_${i}` }));
 		} else {
 			// Paragraph
 			if (line === '') continue;
