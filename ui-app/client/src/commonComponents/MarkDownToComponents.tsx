@@ -24,19 +24,11 @@ const processList = (listItems: string[], isOrdered: boolean, level = 1) => {
 	let currentIndex = 0;
 	let prevType: 'ordered' | 'unordered' = isOrdered == true ? 'ordered' : 'unordered';
 	for (let i = 0; i < listItems.length; i++) {
-		if (
-			listItems[i + 1]?.startsWith('    '.repeat(level)) ||
-			listItems[i + 1]?.startsWith('\t'.repeat(level))
-		) {
+		if (listItems[i + 1]?.startsWith('    '.repeat(level))) {
 			let j = i + 1;
-			while (listItems[j]?.startsWith('    ') || listItems[j]?.startsWith('\t')) {
+			while (listItems[j]?.startsWith('    ')) {
 				let k = '';
-				if (listItems[j].startsWith('    '.repeat(level))) {
-					k = listItems[j].slice('    '.repeat(level).length);
-				}
-				if (listItems[j].startsWith('\t'.repeat(level))) {
-					k = listItems[j].slice('\t'.repeat(level).length);
-				}
+				k = listItems[j].slice('    '.repeat(level).length);
 
 				if (unorderedCondition(k)) {
 					subList[currentIndex] = subList[currentIndex]?.line
