@@ -66,7 +66,7 @@ function Text(props: ComponentProps) {
 				style={styleProperties.comp ?? {}}
 			>
 				<HelperComponent context={props.context} definition={definition} />
-				<MarkDown text={translatedText ?? ''} />
+				return <MarkDownToComponent text={translatedText ?? ''} />;
 			</div>
 		);
 	}
@@ -122,10 +122,6 @@ function Text(props: ComponentProps) {
 			<HelperComponent context={props.context} definition={definition} />
 		</div>
 	);
-}
-
-function MarkDown({ text }: { text: string }) {
-	return <MarkDownToComponent text={text} />;
 }
 
 const component: Component = {
