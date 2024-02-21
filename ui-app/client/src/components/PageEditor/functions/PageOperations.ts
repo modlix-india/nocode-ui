@@ -296,7 +296,6 @@ export class PageOperations {
 
 		while (que.size() > 0) {
 			const x = que.pop();
-			console.log(x);
 
 			if (!x.children) {
 				eventKeys = eventKeys.concat(this.getCurrentCompEventKeys(x.key, def));
@@ -306,9 +305,8 @@ export class PageOperations {
 				const e = def.componentDefinition[k];
 				que.add(e);
 			});
+			eventKeys = eventKeys.concat(this.getCurrentCompEventKeys(x.key, def));
 		}
-
-		console.log(eventKeys);
 
 		return eventKeys;
 	}
@@ -340,13 +338,19 @@ export class PageOperations {
 							this.pageExtractor,
 						);
 						const key = this.genId();
+						const eventKey: string | undefined = def.properties?.['onLoadEvent'];
+
 						def = {
 							...def,
 							rootComponent: key,
 							componentDefinition: {
 								[key]: { key, name: 'Page Grid', type: 'Grid' },
 							},
+							eventFunctions: eventKey
+								? { [eventKey]: def.eventFunctions?.[eventKey] }
+								: {},
 						};
+
 						this.onSelectedComponentChanged('');
 						setData(this.defPath, def, this.pageExtractor.getPageName());
 					},
@@ -385,6 +389,8 @@ export class PageOperations {
 				toDeleteEventKeys.forEach(eventKey => delete def.eventFunctions[eventKey]);
 			}
 
+			def = this.deleteChildrenOnly(componentKey, def);
+
 			delete def.componentDefinition[componentKey];
 
 			// Finding the parent component of the deleting component and removing it from its children.
@@ -397,8 +403,6 @@ export class PageOperations {
 				delete x.children[componentKey];
 				def.componentDefinition[x.key] = x;
 			}
-
-			console.log(def);
 
 			if (this.selectedComponent === componentKey) this.onSelectedComponentChanged('');
 			setData(this.defPath, def, this.pageExtractor.getPageName());
@@ -433,17 +437,8 @@ export class PageOperations {
 		setData(this.defPath, def, this.pageExtractor.getPageName());
 	}
 
-	public clearChildrenOnly(componentKey: string) {
-		if (!componentKey || !this.defPath) return;
-
-		const pageDef: PageDefinition = getDataFromPath(
-			this.defPath,
-			this.locationHistory,
-			this.pageExtractor,
-		);
-		if (!pageDef) return;
-
-		let def = duplicate(pageDef) as PageDefinition;
+	private deleteChildrenOnly(componentKey: string, pageDef: PageDefinition) {
+		let def = duplicate(pageDef);
 		let delKeys = new Set<string>();
 		let currentKeys = new LinkedList<string>(
 			Object.keys(def.componentDefinition[componentKey].children ?? {}),
@@ -463,6 +458,22 @@ export class PageOperations {
 		}
 		if (this.selectedComponent && delKeys.has(this.selectedComponent))
 			this.onSelectedComponentChanged('');
+
+		return def;
+	}
+
+	public clearChildrenOnly(componentKey: string) {
+		if (!componentKey || !this.defPath) return;
+
+		const pageDef: PageDefinition = getDataFromPath(
+			this.defPath,
+			this.locationHistory,
+			this.pageExtractor,
+		);
+		if (!pageDef) return;
+
+		const def: PageDefinition = this.deleteChildrenOnly(componentKey, pageDef);
+
 		setData(this.defPath, def, this.pageExtractor.getPageName());
 	}
 
