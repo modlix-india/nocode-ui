@@ -76,7 +76,7 @@ const processList = (listItems: string[], isOrdered: boolean, level = 1) => {
 			}
 			// render current item plus any sublists through recursion
 			finalList.push(
-				<li key={listItems[i]}>
+				<li key={`${listItems[i]}_${subList.map(e => e.line).join('_')}`}>
 					{renderLine(listItems[i].slice(isOrdered ? 3 : 2))}
 					{subList.map(e => processList(e.line, e.type === 'ordered', level + 1))}
 				</li>,
