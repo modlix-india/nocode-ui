@@ -3,6 +3,7 @@ import {
 	SCHEMA_NUM_COMP_PROP,
 	SCHEMA_BOOL_COMP_PROP,
 	SCHEMA_STRING_COMP_PROP,
+	SCHEMA_ANY_COMP_PROP,
 } from '../../constants';
 import {
 	ComponentPropertyDefinition,
@@ -35,22 +36,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: `Adjust the slide speed by giving the time in milliseconds.`,
 		group: ComponentPropertyGroup.BASIC,
 		defaultValue: 2000,
-	},
-	{
-		name: 'animationType',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Animation Type',
-		description: 'Animation Type',
-		editor: ComponentPropertyEditor.ENUM,
-		group: ComponentPropertyGroup.ADVANCED,
-		defaultValue: 'fadeover',
-		enumValues: [
-			{ name: 'slide', displayName: 'Slide', description: 'Slide' },
-			{ name: 'slideover', displayName: 'Slide Over', description: 'Slide Over' },
-			{ name: 'fadeover', displayName: 'Fade Over', description: 'Fade Over' },
-			{ name: 'fadeoutin', displayName: 'Fade Out In', description: 'Fade Out In' },
-			{ name: 'crossover', displayName: 'Cross Over', description: 'Cross Over' },
-		],
 	},
 	{
 		name: 'animationDuration',
@@ -262,7 +247,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		],
 	},
 	{
-		name: 'sliderToScroll',
+		name: 'slidesToScroll',
 		schema: SCHEMA_NUM_COMP_PROP,
 		displayName: 'Number of slides to scroll',
 		description: 'Add the number of slides you want to scroll at once',
@@ -294,8 +279,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: 3,
 	},
 	COMMON_COMPONENT_PROPERTIES.visibility,
-	COMMON_COMPONENT_PROPERTIES.readOnly
-
+	COMMON_COMPONENT_PROPERTIES.readOnly,
+	{
+		name: 'defaultData',
+		schema: SCHEMA_ANY_COMP_PROP,
+		displayName: 'Default Data',
+		description: 'Default data for repeater',
+		group: ComponentPropertyGroup.ADVANCED,
+	}
 ];
 
 const stylePropertiesDefinition = {
