@@ -12,7 +12,7 @@ import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { formatString } from '../../util/stringFormat';
 import { styleDefaults } from './TextStyleProperties';
 import { IconHelper } from '../util/IconHelper';
-import MarkDownToComponent from '../../commonComponents/MarkDownToComponents';
+import MarkDownToComponents from '../../commonComponents/MarkDownToComponents';
 
 function Text(props: ComponentProps) {
 	const {
@@ -66,7 +66,7 @@ function Text(props: ComponentProps) {
 				style={styleProperties.comp ?? {}}
 			>
 				<HelperComponent context={props.context} definition={definition} />
-				return <MarkDownToComponent text={translatedText ?? ''} />;
+				return <MarkDownToComponents text={translatedText ?? ''} />;
 			</div>
 		);
 	}

@@ -378,7 +378,7 @@ const renderLine = (line: string) => {
 	return elements;
 };
 
-function MarkDownToComponent({ text }: { text: string }) {
+function MarkDownToComponents({ text }: { text: string }) {
 	const lines = text?.replaceAll('\t', '    ').split('\n');
 	let elements: React.ReactNode[] = [];
 	for (let i = 0; i < lines.length; i++) {
@@ -528,4 +528,4 @@ function MarkDownToComponent({ text }: { text: string }) {
 	return <div className="_markDownContent">{elements}</div>;
 }
 
-export default MarkDownToComponent;
+export default MarkDownToComponents;

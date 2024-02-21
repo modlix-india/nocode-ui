@@ -2,7 +2,7 @@ import Editor from '@monaco-editor/react';
 import React, { useEffect } from 'react';
 import Portal from '../../../Portal';
 import { ComponentPropertyDefinition } from '../../../../types/common';
-import MarkDownToComponent from '../../../../commonComponents/MarkDownToComponents';
+import MarkDownToComponents from '../../../../commonComponents/MarkDownToComponents';
 
 interface AnyValueEditorProps {
 	value?: any;
@@ -71,7 +71,7 @@ export function TextValueEditor({ value, defaultValue, onChange }: AnyValueEdito
 							</div>
 						</div>
 						<div className="_mdPreviewContainer">
-							<MarkDownToComponent text={editorValue} />
+							<MarkDownToComponents text={editorValue} />
 						</div>
 					</div>
 				</div>
