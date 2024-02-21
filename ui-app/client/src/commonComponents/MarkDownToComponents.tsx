@@ -405,17 +405,19 @@ function MarkDownToComponents({ text }: { text: string }) {
 			let blockLines = [];
 			blockLines.push(line.slice(1));
 			while (lines[j] && lines[j]?.trim() !== '') {
-				blockLines.push(lines[j].slice(1));
+				if (lines[j].startsWith('>')) blockLines.push(lines[j].slice(1));
+				else blockLines[(blockLines.length ?? 1) - 1] += ' ' + lines[j];
+
 				j++;
 			}
 			elements.push(
 				React.createElement(
 					'blockquote',
-					{ key: blockLines.join('_') },
+					{ key: blockLines.join('_'), className: '_topLevel_blockquote' },
 					blockLines.map(e => renderLine(e)),
 				),
 			);
-			i = i + blockLines.length;
+			i = j;
 		} else if (line.match(/^\d+\.\s/)) {
 			// Ordered list
 			let currentLevel = 1;
