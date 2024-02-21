@@ -1,7 +1,7 @@
-import { LiteralTokenValueExtractor, TokenValueExtractor, isNullValue } from '@fincity/kirun-js';
+import { TokenValueExtractor, isNullValue } from '@fincity/kirun-js';
 import { PageStoreExtractor, getDataFromPath } from '../../../context/StoreContext';
-import RepetetiveArray from '../../../util/RepetetiveArray';
 import { LocationHistory } from '../../../types/common';
+import RepetetiveArray from '../../../util/RepetetiveArray';
 
 export enum PointType {
 	Circle = 'circle',
@@ -415,10 +415,10 @@ export function makeChartDataFromProperties(
 	);
 
 	return {
-		xAxisLabels: properties.invertAxis ? yAxisLabels : xAxisLabels,
-		yAxisLabels: properties.invertAxis ? xAxisLabels : yAxisLabels,
-		xAxisData: properties.invertAxis ? yAxisData : xAxisData,
-		yAxisData: properties.invertAxis ? xAxisData : yAxisData,
+		xAxisLabels,
+		yAxisLabels,
+		xAxisData,
+		yAxisData,
 		xAxisType,
 		yAxisType,
 		xAxisMin,
