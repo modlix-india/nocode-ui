@@ -252,6 +252,8 @@ export class PageOperations {
 				...pageDef,
 				componentDefinition: { ...(pageDef.componentDefinition ?? {}) },
 			};
+
+			def = this.deleteChildrenOnly(componentKey, def);
 			// Delete the component that is selected or delete triggered on.
 			delete def.componentDefinition[componentKey];
 			// Finding the parent component of the deleting component and removing it from its children.
