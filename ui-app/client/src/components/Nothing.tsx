@@ -1,8 +1,9 @@
 import React from 'react';
-import { Component, ComponentPropertyDefinition, RenderContext } from '../types/common';
+import { Component, ComponentPropertyDefinition, ComponentProps } from '../types/common';
 import { HelperComponent } from './HelperComponents/HelperComponent';
 
-function Nothing({ definition, context }: { definition: any; context: RenderContext }) {
+function Nothing(props: ComponentProps) {
+	const { definition, context } = props;
 	return (
 		<div className="comp compNothing">
 			<HelperComponent context={context} definition={definition} />

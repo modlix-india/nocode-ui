@@ -19,6 +19,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Text',
 		description: 'Text to display',
 		group: ComponentPropertyGroup.BASIC,
+		editor: ComponentPropertyEditor.TEXT_EDITOR,
 		translatable: true,
 	},
 
@@ -42,6 +43,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				description: 'Markdown Format',
 			},
 		],
+	},
+
+	{
+		...COMMON_COMPONENT_PROPERTIES.designType,
+		enumValues: [...COMMON_COMPONENT_PROPERTIES.designType.enumValues!],
 	},
 
 	{
