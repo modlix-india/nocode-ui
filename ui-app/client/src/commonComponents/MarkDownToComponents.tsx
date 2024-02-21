@@ -23,19 +23,19 @@ const processList = (listItems: string[], isOrdered: boolean, level = 1) => {
 	let subList: Array<{ line: Array<string>; type: 'ordered' | 'unordered' }> = [];
 	let currentIndex = 0;
 	let prevType: 'ordered' | 'unordered' = isOrdered == true ? 'ordered' : 'unordered';
-	console.log('picard', listItems);
+
 	for (let i = 0; i < listItems.length; i++) {
 		// looping throught list items
 		if (listItems[i + 1]?.startsWith('    '.repeat(level))) {
 			// if next has sublist
-			console.log(listItems[i + 1], 'picard', i);
+
 			let j = i + 1;
 			while (listItems[j]?.startsWith('    ')) {
 				// k holds the sliced string removing current levels indentation
-				console.log(listItems[j], 'picard');
+
 				let k = '';
 				k = listItems[j].slice('    '.repeat(level).length);
-				console.log('picard -k', k);
+
 				if (unorderedCondition(k)) {
 					// unordered list is next sublist
 					subList[currentIndex] = subList[currentIndex]?.line
