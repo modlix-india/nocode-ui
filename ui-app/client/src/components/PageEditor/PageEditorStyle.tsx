@@ -3013,6 +3013,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._popupContainer._popupContainerWithPreview ._mdPreviewContainer ._markDownContent {
 			height: 400px;
+			width: 400px;
 		}
 
 		._popupContainer ._jsonEditorContainer{
