@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediately,
@@ -13,6 +13,11 @@ import SubPageStyle from './ChartStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './chartProperties';
 import { styleDefaults } from './chartStyleProperties';
 import { isNullValue } from '@fincity/kirun-js';
+import Regular from './types/Regular';
+import Radial from './types/Radial';
+import Waffle from './types/Waffle';
+import Dot from './types/Dot';
+import Radar from './types/Radar';
 
 function Chart(props: Readonly<ComponentProps>) {
 	const {
@@ -57,9 +62,42 @@ function Chart(props: Readonly<ComponentProps>) {
 		stylePropertiesWithPseudoStates,
 	);
 
+	const containerRef = useRef<HTMLDivElement>(null);
+	const [, setLastChanged] = React.useState(Date.now());
+
+	let chart = <></>;
+
+	if (properties?.type === 'waffle') {
+		chart = <Waffle properties={properties} containerRef={containerRef.current} />;
+	} else if (properties?.type === 'radial') {
+		chart = <Radial properties={properties} containerRef={containerRef.current} />;
+	} else if (properties?.type === 'dot') {
+		chart = <Dot properties={properties} containerRef={containerRef.current} />;
+	} else if (properties?.type === 'radar') {
+		chart = <Radar properties={properties} containerRef={containerRef.current} />;
+	} else {
+		chart = (
+			<Regular
+				properties={properties}
+				containerRef={containerRef.current}
+				locationHistory={locationHistory}
+				pageExtractor={pageExtractor}
+			/>
+		);
+	}
+
+	useEffect(() => {
+		if (isNullValue(containerRef.current)) return;
+
+		const resizeObserver = new ResizeObserver(() => setLastChanged(Date.now()));
+		resizeObserver.observe(containerRef.current!);
+		return () => resizeObserver.disconnect();
+	}, [containerRef.current]);
+
 	return (
-		<div className="comp compChart" style={resolvedStyles.comp ?? {}}>
+		<div className={`comp compChart `} style={resolvedStyles.comp ?? {}} ref={containerRef}>
 			<HelperComponent context={props.context} definition={definition} />
+			{chart}
 		</div>
 	);
 }

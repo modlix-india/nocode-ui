@@ -24,7 +24,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{
 				name: '_primary',
 				displayName: 'Primary Color Scheme',
-				description: 'Default Color Scheme',
+				description: 'Primary Color Scheme',
 			},
 		],
 	},
@@ -33,9 +33,9 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Chart Type',
 		group: ComponentPropertyGroup.BASIC,
-		defaultValue: 'ordinary',
+		defaultValue: 'regular',
 		enumValues: [
-			{ name: 'ordinary', displayName: 'Regular (Line or Bar)' },
+			{ name: 'regular', displayName: 'Regular (Line or Bar)' },
 			{ name: 'radial', displayName: 'Radial (Pie or Doughnut or Polar Area)' },
 			{ name: 'radar', displayName: 'Radar' },
 			{ name: 'dot', displayName: 'Dot (Bubble or Scatter)' },
@@ -46,7 +46,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'data',
 		schema: SCHEMA_ANY_COMP_PROP,
-		defaultValue: [10, 20, 30, 40, 50],
 		displayName: 'Data',
 		group: ComponentPropertyGroup.DATA,
 	},
@@ -63,6 +62,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Data Colors Expr. in Object',
 		description: 'Use "Data." prefix to access data object in expression',
 		group: ComponentPropertyGroup.ADVANCED,
+		multiValued: true,
 	},
 	{
 		name: 'dataSetFillOpacity',
@@ -77,6 +77,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Data Fill Opacity Expr. in Object',
 		description: 'Use "Data." prefix to access data object in expression',
 		group: ComponentPropertyGroup.ADVANCED,
+		multiValued: true,
 	},
 	{
 		name: 'dataSetStrokeOpacity',
@@ -91,6 +92,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Data Stroke Opacity Expr. in Object',
 		description: 'Use "Data." prefix to access data object in expression',
 		group: ComponentPropertyGroup.ADVANCED,
+		multiValued: true,
 	},
 	{
 		name: 'xAxisType',
@@ -128,7 +130,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'xAxisLabelsSort',
 		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Sort X Axis Labels for Ordinal Axis',
+		displayName: 'Sort X Axis Labels',
 		group: ComponentPropertyGroup.DATA,
 	},
 	{
@@ -196,14 +198,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'yAxisType',
 		schema: SCHEMA_STRING_COMP_PROP,
-		defaultValue: 'oridnal',
+		defaultValue: 'derived',
 		displayName: 'Y Axis Type',
 		group: ComponentPropertyGroup.DATA,
 		enumValues: [
 			{ name: 'oridnal', displayName: 'Oridnal' },
 			{ name: 'value', displayName: 'Value' },
 			{ name: 'log', displayName: 'Logirthamic' },
-			{ name: 'derivied', displayName: 'Derivied' },
+			{ name: 'derived', displayName: 'Derived' },
 		],
 	},
 	{
@@ -325,22 +327,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		],
 	},
 	{
-		name: 'yAxisDataStylePath',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Y Axis Data Style Expr. in Object',
-		description: 'Use "Data." prefix to access data object in expression',
-		group: ComponentPropertyGroup.ADVANCED,
-	},
-	{
 		name: 'hideYAxis',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Hide Y Axis',
 		group: ComponentPropertyGroup.DATA,
 	},
 	{
-		name: 'xAxisTitle',
+		name: 'yAxisTitle',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'X Axis Title',
+		displayName: 'Y Axis Title',
 		group: ComponentPropertyGroup.DATA,
 	},
 
@@ -374,12 +369,12 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
-		name: 'pointType',
+		name: 'dataSetPointType',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Point Type',
 		group: ComponentPropertyGroup.BASIC,
 		multiValued: true,
-		defaultValue: 'circle',
+		defaultValue: ['circle'],
 		enumValues: [
 			{ name: 'circle', displayName: 'Circle' },
 			{ name: 'filledCircle', displayName: 'Filled Circle' },
@@ -404,25 +399,28 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		],
 	},
 	{
-		name: 'pointTypeDataPath',
+		name: 'dataPointTypePath',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Point Type Data Expr. in Object',
 		description: 'Use "Data." prefix to access data object in expression',
 		group: ComponentPropertyGroup.ADVANCED,
+		multiValued: true,
 	},
 	{
-		name: 'pointSize',
+		name: 'dataSetPointSize',
 		schema: SCHEMA_NUM_COMP_PROP,
 		displayName: 'Point Size',
 		group: ComponentPropertyGroup.ADVANCED,
+		multiValued: true,
 	},
 
 	{
-		name: 'pointSizeDataPath',
+		name: 'dataPointSizePath',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Point Size Data Expr. in Object',
 		description: 'Use "Data." prefix to access data object in expression',
 		group: ComponentPropertyGroup.ADVANCED,
+		multiValued: true,
 	},
 	{
 		name: 'invertAxis',

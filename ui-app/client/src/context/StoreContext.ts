@@ -251,6 +251,15 @@ export class PageStoreExtractor extends SpecialTokenValueExtractor {
 	public getPageName(): string {
 		return this.pageName;
 	}
+
+	public getStore(): any {
+		return this.retrieveElementFrom(
+			`Store.pageData.${this.pageName}`,
+			['pageData', this.pageName],
+			0,
+			_store,
+		);
+	}
 }
 
 const pathTransformer = (e: string, pageExtractor?: PageStoreExtractor) => {
