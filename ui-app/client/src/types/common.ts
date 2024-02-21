@@ -72,6 +72,7 @@ export enum ComponentPropertyEditor {
 	ANIMATIONOBSERVER,
 	COLOR_PICKER,
 	SECTION_PROPERTIES_EDITOR,
+	TEXT_EDITOR,
 }
 
 export enum ComponentPropertyGroup {
