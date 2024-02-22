@@ -490,7 +490,8 @@ function SmallCarousel(props: ComponentProps) {
 		const c = currentRef.current.number;
 		const increment = direction === 'left' ? -1 : 1;
 		currentRef.current.number =
-			(c + increment + innerSlides?.current?.length) % innerSlides?.current?.length;
+			(c + increment * slidesToScroll + innerSlides?.current?.length) %
+			innerSlides?.current?.length;
 
 		setTransitionFrom(c);
 		setCurrent(c);
@@ -575,59 +576,62 @@ function SmallCarousel(props: ComponentProps) {
 				subComponentName="slideButtonsContainer"
 			></SubHelperComponent>
 			{showDotsButtons &&
-				(Array.isArray(value) && value?.length > 0 ? value : updatedDef ?? []).map(
-					(e: any, key: any) => (
-						<button
-							key={`${key}_${currentRef?.current?.number}_${e?.key}`}
-							className={`slideNav ${
-								dotsButtonType !== 'none' && hasNumbersInSlideNav === false
-									? `fa-${dotsButtonIconType} fa-${dotsButtonType}`
-									: ` `
-							} ${hasNumbersInSlideNav ? `${dotsButtonType}WithNumbers` : ''} ${
-								key === currentRef?.current?.number ? 'active' : ''
-							}`}
-							style={resolvedStyles.dotButtons ?? {}}
-							onClick={() => {
-								if (!isNullValue(transitionFrom)) return;
-								if (key == currentRef.current.number) return;
+				(innerSlides?.current ?? []).map((e: any, key: any) => (
+					<button
+						key={`${key}_${currentRef?.current?.number}_${e?.key}`}
+						className={`slideNav ${
+							dotsButtonType !== 'none' && hasNumbersInSlideNav === false
+								? `fa-${dotsButtonIconType} fa-${dotsButtonType}`
+								: ` `
+						} ${hasNumbersInSlideNav ? `${dotsButtonType}WithNumbers` : ''} ${
+							key === currentRef?.current?.number ? 'active' : ''
+						}`}
+						style={resolvedStyles.dotButtons ?? {}}
+						onClick={() => {
+							if (!isNullValue(transitionFrom)) return;
+							if (key == currentRef.current.number) return;
 
-								const c = currentRef?.current.number;
-								currentRef.current.number = key;
+							const c = currentRef?.current.number;
+							currentRef.current.number = key;
 
-								const toScroll =
-									currentRef.current.number > c
-										? currentRef.current.number - c
-										: c - currentRef.current.number;
-								const dir = currentRef.current.number - c > slidesToScroll ? 1 : -1;
-								setTransitionFrom(toScroll);
-								setCurrent(c);
-								if (isCenterMode()) {
-									setCenter(
-										currentRef.current.number > c
-											? (center + toScroll) % innerSlides?.current?.length
-											: (center - toScroll + innerSlides?.current?.length) %
-													innerSlides?.current?.length,
-									);
-								}
-								applyTransform(
-									innerSlides.current,
-									innerSlides?.current?.length,
-									c,
-									currentRef.current.number,
-									dir,
-									toScroll,
+							const forwardScroll =
+								(currentRef?.current?.number - c + innerSlides?.current?.length) %
+								innerSlides?.current?.length;
+							const backwardScroll =
+								(c - currentRef?.current?.number + innerSlides?.current?.length) %
+								innerSlides?.current?.length;
+
+							const toScroll = Math.min(forwardScroll, backwardScroll);
+
+							const dir = forwardScroll > backwardScroll ? -1 : 1;
+							setTransitionFrom(toScroll);
+							setCurrent(c);
+							if (isCenterMode()) {
+								setCenter(
+									backwardScroll > forwardScroll
+										? (center + toScroll) % innerSlides?.current?.length
+										: (center - toScroll + innerSlides?.current?.length) %
+												innerSlides?.current?.length,
 								);
-							}}
-						>
-							<SubHelperComponent
-								definition={props.definition}
-								subComponentName="dotButtons"
-								key={key}
-							></SubHelperComponent>
-							{hasNumbersInSlideNav ? key + 1 : ''}
-						</button>
-					),
-				)}
+							}
+							applyTransform(
+								innerSlides.current,
+								innerSlides?.current?.length,
+								c,
+								currentRef.current.number,
+								dir,
+								toScroll,
+							);
+						}}
+					>
+						<SubHelperComponent
+							definition={props.definition}
+							subComponentName="dotButtons"
+							key={key}
+						></SubHelperComponent>
+						{hasNumbersInSlideNav ? key + 1 : ''}
+					</button>
+				))}
 		</div>
 	);
 
