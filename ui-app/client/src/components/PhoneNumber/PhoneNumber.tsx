@@ -73,6 +73,9 @@ function PhoneNumber(props: ComponentProps) {
 			topCountries,
 			orderBy,
 			isSearchable,
+			searchLabel,
+			clearSearchTextOnClose,
+			noCodeForFirstCountry,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -146,7 +149,6 @@ function PhoneNumber(props: ComponentProps) {
 
 	useEffect(() => {
 		if (!validation?.length) return;
-
 		const msgs = validate(
 			props.definition,
 			props.pageDefinition,
@@ -155,7 +157,10 @@ function PhoneNumber(props: ComponentProps) {
 			locationHistory,
 			pageExtractor,
 		);
-		setValidationMessages(msgs);
+		setValidationMessages([
+			...(validationMessages.filter(e => e === dialCodeValidationMessage) ?? []),
+			...msgs,
+		]);
 
 		setData(
 			`Store.validations.${context.pageName}.${flattenUUID(definition.key)}`,
@@ -221,7 +226,6 @@ function PhoneNumber(props: ComponentProps) {
 	};
 
 	const handleKeyUp = async (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-		console.log('key up handler');
 		if (!clickEvent || isLoading || e.key !== 'Enter') return;
 		if (!updateStoreImmediately) {
 			handleBlur(e as unknown as React.FocusEvent<HTMLInputElement>);
@@ -254,13 +258,85 @@ function PhoneNumber(props: ComponentProps) {
 		);
 	};
 
+	const SORTED_COUNTRY_LIST = useMemo<DropdownOptions>(() => {
+		return COUNTRY_LIST.sort((a, b) => {
+			if (orderBy === 'countrycode') return a.C <= b.C ? -1 : 1;
+			else if (orderBy === 'dialcode') return parseInt(a.D.slice(1)) - parseInt(b.D.slice(1));
+			else return a.N <= b.N ? -1 : 1;
+		});
+	}, [orderBy]);
+
+	const [countryList, setCountryList] = useState<DropdownOptions>(SORTED_COUNTRY_LIST);
+	const [selectedCode, setSelectedCode] = useState<string>(SORTED_COUNTRY_LIST[0].D);
+	const [phoneNumber, setPhoneNumber] = useState<string>('');
+	const dialCodeValidationMessage = 'dial code is not valid or not available in option list';
+
+	const getDialCode = (value: string) => {
+		let dc = '';
+		if (value !== '' && value.startsWith('+')) {
+			dc = value.length > 5 ? value.substring(0, 5) : value;
+			while (dc.length > 0) {
+				if (!countryList.find(e => e.D === dc)) {
+					dc = dc.slice(0, dc.length - 1);
+				} else break;
+			}
+		}
+		return dc;
+	};
+
+	useEffect(() => {
+		let tempList = [];
+		if (Array.isArray(countries) && Array.isArray(topCountries)) {
+			tempList = SORTED_COUNTRY_LIST.filter(e => topCountries.includes(e.C));
+			tempList[tempList.length - 1].nextSeperator = true;
+			tempList = [...tempList, ...SORTED_COUNTRY_LIST.filter(e => countries.includes(e.C))];
+		} else if (Array.isArray(topCountries)) {
+			tempList = SORTED_COUNTRY_LIST.filter(e => topCountries.includes(e.C));
+			tempList[tempList.length - 1].nextSeperator = true;
+			tempList = [
+				...tempList,
+				...SORTED_COUNTRY_LIST.filter(e => !topCountries.includes(e.C)),
+			];
+		} else {
+			tempList = SORTED_COUNTRY_LIST;
+		}
+		setCountryList(tempList);
+	}, [countries, topCountries]);
+
+	useEffect(() => {
+		let dc = getDialCode(value);
+		if (dc) setSelectedCode(dc);
+		else setSelectedCode(countryList[0].D);
+		setPhoneNumber(value.slice(dc.length));
+	}, [value, countryList]);
+
 	const handleBlur = (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-		console.log('hadleblur value:', event.target.value);
-		let temp = value === '' && emptyValue ? mapValue[emptyValue] : value;
-		if (!updateStoreImmediately && bindingPathPath) {
+		let text = phoneNumber === '' && emptyValue ? mapValue[emptyValue] : phoneNumber;
+		if (text && text.startsWith('+')) {
+			let dc = getDialCode(text);
+			if (dc.length > 1) {
+				text = text.slice(dc.length);
+				setValidationMessages([]);
+			} else {
+				dc = selectedCode;
+				if (
+					(validationMessages.length > 0 &&
+						validationMessages[0] !== dialCodeValidationMessage) ||
+					validationMessages.length === 0
+				)
+					setValidationMessages([dialCodeValidationMessage]);
+			}
+			let temp = dc + text;
+			if (bindingPathPath) {
+				setData(bindingPathPath, temp, context?.pageName);
+				callChangeEvent();
+			}
+		} else if (!updateStoreImmediately && bindingPathPath) {
+			setValidationMessages([]);
 			if (event?.target.value === '' && removeKeyWhenEmpty) {
 				setData(bindingPathPath, undefined, context?.pageName, true);
 			} else {
+				let temp = text ? selectedCode + text : text;
 				setData(bindingPathPath, temp, context?.pageName);
 			}
 			callChangeEvent();
@@ -279,75 +355,38 @@ function PhoneNumber(props: ComponentProps) {
 			return;
 		}
 		let temp = text === '' && emptyValue ? mapValue[emptyValue] : selectedCode + text;
-		if (updateStoreImmediately && bindingPathPath) {
+		if (!text.startsWith('+') && updateStoreImmediately && bindingPathPath) {
+			setValidationMessages([]);
 			setData(bindingPathPath, temp, context?.pageName);
 			callChangeEvent();
-		}
-		console.log('selectedCode', selectedCode);
-
-		if (!updateStoreImmediately) setValue(selectedCode + text);
+		} else setPhoneNumber(text);
 	};
 
-	const SORTED_COUNTRY_LIST = useMemo<DropdownOptions>(() => {
-		return COUNTRY_LIST.sort((a, b) => {
-			if (orderBy === 'countrycode') return a.C <= b.C ? -1 : 1;
-			else if (orderBy === 'dialcode') return parseInt(a.D.slice(1)) - parseInt(b.D.slice(1));
-			else return a.N <= b.N ? -1 : 1;
-		});
-	}, [orderBy]);
-
-	const finKey: string = 't_' + key;
-	const [countryList, setCountryList] = useState<DropdownOptions>(SORTED_COUNTRY_LIST);
-	const [selectedCode, setSelectedCode] = useState<string>(SORTED_COUNTRY_LIST[0].D);
-	const [phoneNumber, setPhoneNumber] = useState<string>('');
-
-	useEffect(() => {
-		if (Array.isArray(countries)) {
-			let tempList = SORTED_COUNTRY_LIST.filter(e => countries.includes(e.C));
-			setCountryList(tempList);
-		} else if (Array.isArray(topCountries)) {
-			let tempList = [
-				...SORTED_COUNTRY_LIST.filter(e => topCountries.includes(e.C)),
-				...SORTED_COUNTRY_LIST.filter(e => !topCountries.includes(e.C)),
-			];
-			setCountryList(tempList);
-		} else {
-			setCountryList(SORTED_COUNTRY_LIST);
+	const handleCountryChange = async (dc: string) => {
+		if (bindingPathPath) {
+			setData(bindingPathPath, dc + phoneNumber, context?.pageName);
+			callChangeEvent();
 		}
-	}, [countries, topCountries]);
+	};
 
-	useEffect(() => {
-		let dc = '';
-		if (value !== '' && value.startsWith('+')) {
-			// console.log('value', value);
-			dc = value.length > 5 ? value.substring(0, 5) : value;
-			while (dc.length > 0) {
-				// console.log(dc);
-				if (!countryList.find(e => e.D === dc)) {
-					dc = dc.slice(0, dc.length - 1);
-				} else break;
-			}
-			// console.log('dc', dc);
-		}
-		if (dc) setSelectedCode(dc);
-		else setSelectedCode(countryList[0].D);
-		setPhoneNumber(value.slice(dc.length));
-	}, [value, countryList]);
-
-	// console.log('selectedCode', selectedCode);
-	// console.log('countryList', countryList);
+	const dialCodeLabel =
+		noCodeForFirstCountry && selectedCode === countryList[0].D ? undefined : (
+			<span className="_dialCodeLabel">{selectedCode}</span>
+		);
 	const leftChildren = (
 		<>
 			<Dropdown
 				value={selectedCode}
-				onChange={(v: string) => {
-					setSelectedCode(v);
-				}}
+				onChange={handleCountryChange}
 				options={countryList}
+				isSearchable={isSearchable}
+				searchLabel={searchLabel}
+				clearSearchTextOnClose={clearSearchTextOnClose}
 			/>
-			<span className="_dialCodeLabel">{selectedCode}</span>
+			{dialCodeLabel}
 		</>
 	);
+	const finKey: string = 't_' + key;
 
 	return (
 		<CommonInputText
@@ -380,7 +419,11 @@ function PhoneNumber(props: ComponentProps) {
 			hideClearContentIcon={hideClearButton}
 			maxChars={maxChars}
 			leftChildren={leftChildren}
-			dialCodeLength={selectedCode.length ?? 0}
+			dialCodeLength={
+				noCodeForFirstCountry && selectedCode === countryList[0].D
+					? 1
+					: selectedCode.length ?? 1
+			}
 		/>
 	);
 }
@@ -416,25 +459,23 @@ const component: Component = {
 			mainComponent: true,
 			icon: (
 				<IconHelper viewBox="0 0 24 24">
-					<rect width="24" height="24" fill="#D9D9D9" fillOpacity="0.1" />
-					<path
-						d="M15.832 7.73047V10.2393H15.5859C15.4401 9.66048 15.2783 9.24577 15.1006 8.99512C14.9229 8.73991 14.679 8.53711 14.3691 8.38672C14.196 8.30469 13.8929 8.26367 13.46 8.26367H12.7695V15.4141C12.7695 15.888 12.7946 16.1842 12.8447 16.3027C12.8994 16.4212 13.002 16.526 13.1523 16.6172C13.3073 16.7038 13.5169 16.7471 13.7812 16.7471H14.0889V17H9.23535V16.7471H9.54297C9.81185 16.7471 10.0283 16.6992 10.1924 16.6035C10.3109 16.5397 10.4043 16.4303 10.4727 16.2754C10.5228 16.166 10.5479 15.8789 10.5479 15.4141V8.26367H9.87793C9.25358 8.26367 8.80013 8.39583 8.51758 8.66016C8.12109 9.0293 7.87044 9.55566 7.76562 10.2393H7.50586V7.73047H15.832Z"
-						fill="currentColor"
-					/>
-					<mask id="path-3-inside-1_433_993" fill="white">
-						<rect x="1" y="1" width="22" height="22" rx="1" />
-					</mask>
-					<rect
-						x="1"
-						y="1"
-						width="22"
-						height="22"
-						rx="1"
-						stroke="currentColor"
-						strokeWidth="3"
-						mask="url(#path-3-inside-1_433_993)"
-						fill="transparent"
-					/>
+					<svg
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<path
+							opacity="0.4"
+							d="M4.14286 1C2.40938 1 1 2.40938 1 4.14286V19.8571C1 21.5906 2.40938 23 4.14286 23H19.8571C21.5906 23 23 21.5906 23 19.8571V4.14286C23 2.40938 21.5906 1 19.8571 1H4.14286ZM8.59687 5.74866C9.07321 5.62098 9.57411 5.86161 9.76071 6.3183L10.7429 8.67545C10.9098 9.07812 10.792 9.53973 10.458 9.81473L9.25 10.8067C10.0652 12.5353 11.4647 13.9348 13.1933 14.75L14.1853 13.5371C14.4603 13.2031 14.9219 13.0853 15.3246 13.2522L17.6817 14.2344C18.1384 14.4259 18.379 14.9219 18.2513 15.3982L17.6621 17.5589C17.5442 17.9911 17.1562 18.2857 16.7143 18.2857C10.6397 18.2857 5.71429 13.3603 5.71429 7.28571C5.71429 6.84375 6.00893 6.4558 6.43616 6.33795L8.59687 5.74866Z"
+							fill="#E7E9ED"
+						/>
+						<path
+							d="M9.75107 6.27922C9.55824 5.81938 9.05885 5.5771 8.57923 5.70566L6.40366 6.29899C5.96854 6.41766 5.67188 6.80828 5.67188 7.25328C5.67188 13.3696 10.6312 18.3289 16.7475 18.3289C17.1925 18.3289 17.5831 18.0323 17.7018 17.6021L18.2951 15.4265C18.4237 14.9469 18.1814 14.4426 17.7216 14.2547L15.3482 13.2658C14.9428 13.0977 14.478 13.2163 14.2011 13.5526L13.2023 14.7689C11.4619 13.9481 10.0527 12.5389 9.2319 10.7985L10.4532 9.79969C10.7894 9.5228 10.9081 9.05802 10.74 8.65257L9.75107 6.27922Z"
+							fill="#96A1B4"
+						/>
+					</svg>
 				</IconHelper>
 			),
 		},

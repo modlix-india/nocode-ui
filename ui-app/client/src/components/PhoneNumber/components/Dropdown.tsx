@@ -35,16 +35,24 @@ export function Dropdown({
 	value,
 	onChange,
 	options,
+	isSearchable,
+	searchLabel,
+	clearSearchTextOnClose,
 }: {
 	value: string;
 	onChange: (v: string) => void;
 	options: DropdownOptions;
+	isSearchable?: boolean;
+	searchLabel?: string;
+	clearSearchTextOnClose?: boolean;
 }) {
-	let flag = undefined;
+	let label = undefined;
 	if (value.length > 0) {
 		const x = options.find(e => e.D === value);
-		if (x) flag = <span className="_selectedOption">{getFlagEmoji(x!.C)}</span>;
+		if (x) label = <span className="_selectedOption">{getFlagEmoji(x!.C)}</span>;
 	}
+	const [searchOptions, setSearchOptions] = useState<DropdownOptions>();
+	const [searchText, setSearchText] = useState('');
 
 	const [open, setOpen] = useState(false);
 	const [currentOption, setOriginalCurrentOption] = useState(-1);
@@ -63,10 +71,31 @@ export function Dropdown({
 		if (!open && currentOption != -1) setOriginalCurrentOption(-1);
 	}, [open]);
 
-	const handleClick = (o: any) => {
-		onChange(o.D);
+	useEffect(() => {
+		let searchExpression: string | RegExp;
+		try {
+			searchExpression = new RegExp(searchText, 'i');
+		} catch (error) {
+			searchExpression = '';
+		}
+		setSearchOptions(options.filter(e => (e.N + e.D + '').search(searchExpression) !== -1));
+	}, [searchText, options]);
+
+	const handleClose = () => {
+		clearSearchTextOnClose && setSearchText('');
 		setOpen(false);
 	};
+
+	const handleClick = (o: any) => {
+		onChange(o.D);
+		handleClose();
+	};
+
+	useEffect(() => {
+		if (!open) return;
+		document.addEventListener('mousedown', handleClose);
+		return () => window.removeEventListener('mousedown', handleClose);
+	}, [open, searchText, handleClose]);
 
 	function getFlagEmoji(C: string) {
 		const OFFSET = 127397;
@@ -90,25 +119,43 @@ export function Dropdown({
 			dropdownBodyStyle.maxWidth = parentRect?.width ?? '100%';
 		}
 		body = (
-			<div className="_dropdownBody" ref={ddBody} style={dropdownBodyStyle}>
-				{options.map((o, i) => (
-					<div
-						key={o.C}
-						className={`_dropdownOption ${i === currentOption ? '_hovered' : ''} ${
-							value === o.D ? '_selected' : ''
-						}`}
-						onClick={e => {
-							e.preventDefault();
-							e.stopPropagation();
-							handleClick(o);
-						}}
-						onMouseOver={() => setCurrentOption(i)}
-					>
-						<span>{getFlagEmoji(o.C) + ' '}</span>
-						<span>{o.N + ' ' + o.D}</span>
-					</div>
-				))}
-			</div>
+			<>
+				<div
+					className="_dropdownBody"
+					ref={ddBody}
+					style={dropdownBodyStyle}
+					onMouseDown={e => e.stopPropagation()}
+				>
+					{isSearchable && (
+						<input
+							className="_dropdownSearchBox"
+							value={searchText}
+							placeholder={searchLabel}
+							onChange={e => setSearchText(e.target.value)}
+						/>
+					)}
+					{(searchOptions?.length || searchText ? searchOptions : options)?.map(
+						(o, i) => (
+							<div
+								key={o.C}
+								className={`_dropdownOption ${
+									i === currentOption ? '_hovered' : ''
+								} ${value === o.D ? '_selected' : ''} ${
+									o.nextSeperator ? '_nextSeperator' : ''
+								}`}
+								onClick={e => {
+									e.stopPropagation();
+									handleClick(o);
+								}}
+								onMouseOver={() => setCurrentOption(i)}
+							>
+								<span>{getFlagEmoji(o.C) + ' '}</span>
+								<span>{o.N + ' ' + o.D}</span>
+							</div>
+						),
+					)}
+				</div>
+			</>
 		);
 	}
 	const handleKeyDown = (e: any) => {
@@ -126,11 +173,11 @@ export function Dropdown({
 			e.preventDefault();
 			e.stopPropagation();
 			onChange(options[currentOption].D);
-			setOpen(false);
+			handleClose();
 		} else if (e.key === 'Escape') {
 			e.preventDefault();
 			e.stopPropagation();
-			setOpen(false);
+			handleClose();
 		}
 	};
 
@@ -141,12 +188,10 @@ export function Dropdown({
 				className="_dropdownSelect"
 				role="combobox"
 				onClick={() => setOpen(true)}
-				onFocus={() => setOpen(true)}
-				onBlur={() => setOpen(false)}
 				onKeyDown={e => handleKeyDown(e)}
 				ref={dropDown}
 			>
-				{flag}
+				{label}
 				{open ? arrowIcon.up : arrowIcon.down}
 				{body}
 			</div>

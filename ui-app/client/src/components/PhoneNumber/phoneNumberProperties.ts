@@ -68,6 +68,22 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
+		name: 'searchLabel',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Search Label ',
+		description: 'Label for searchbox.',
+		translatable: true,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'clearSearchTextOnClose',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Clear Search on close',
+		description: 'Clear Search on close.',
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
 		name: 'noCodeForFirstCountry',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: "Don't add dial code for first country",

@@ -32,6 +32,10 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 		bottom: 100%;
 	}
 
+	${PREFIX} ._label._dialCodeLength1 {
+		padding-left: 38px;
+	}
+
 	${PREFIX} ._label._dialCodeLength2 {
 		padding-left: 64px;
 	}
@@ -128,7 +132,7 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 		font-size: 14px;
 	}
 
-	${PREFIX} ._dropdownBody{
+	${PREFIX} ._dropdownBody {
 		position: fixed;
 		width: 100%;
 		background-color: #FFF;
@@ -139,6 +143,17 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 		z-index: 2;
 		max-height: 250px;
 		overflow: scroll;
+	}
+	${PREFIX} ._dropdownBody ._dropdownSearchBox {
+		width: 100%;
+		min-height: 38px;
+		background: #FFF;
+		padding: 0 0 0 7px;
+		margin: 6px 0;
+		border-radius: 4px;
+		cursor: pointer;
+		font-size: 14px;
+		border: 2px solid rgb(0,0,0,.08);
 	}
 
 	${PREFIX} ._dropdownBody ._dropdownOption {
@@ -157,6 +172,11 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 
 	${PREFIX} ._dropdownBody ._dropdownOption._selected {
 		background-color: rgb(0,0,0,.04);
+	}
+
+	${PREFIX} ._dropdownBody ._dropdownOption._nextSeperator {
+		border-radius: 0px;
+		border-bottom: 2px solid rgb(0,0,0,.08);
 	}
 
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
