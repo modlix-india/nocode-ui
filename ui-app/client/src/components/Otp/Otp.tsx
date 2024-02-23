@@ -130,7 +130,6 @@ function Otp(props: ComponentProps) {
 
 		let target = e.target;
 		let inputValue =target.value;
-		
 		if (isValidInputValue(inputValue, valueType)) {
 			let newValueArray = value?.split('');
 			newValueArray[index] = inputValue === '' ? ' ' : inputValue;
@@ -255,7 +254,6 @@ function Otp(props: ComponentProps) {
 }
 
 function OTP_VALIDATION(validation: any, value: any): Array<string> {
-	console.log("validationfields",validation)
 	if (value.includes(' ')) return [validation.message];
 	return [];
 }
