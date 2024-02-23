@@ -63,7 +63,28 @@ function Chart(props: Readonly<ComponentProps>) {
 	);
 
 	const containerRef = useRef<HTMLDivElement>(null);
-	const [, setLastChanged] = React.useState(Date.now());
+	const [dimension, setDimension] = React.useState({ width: 0, height: 0 });
+	useEffect(() => {
+		if (isNullValue(containerRef.current)) return;
+
+		let rect = containerRef.current!.getBoundingClientRect();
+		const resizeObserver = new ResizeObserver(() => {
+			setTimeout(() => {
+				const newRect = containerRef.current?.getBoundingClientRect();
+				if (!newRect) return;
+
+				if (
+					Math.abs(newRect.width - rect.width) < 8 &&
+					Math.abs(newRect.height - rect.height) < 8
+				)
+					return;
+				rect = newRect;
+				setDimension({ width: newRect.width, height: newRect.height });
+			}, 2000);
+		});
+		resizeObserver.observe(containerRef.current!);
+		return () => resizeObserver.disconnect();
+	}, [containerRef.current]);
 
 	let chart = <></>;
 
@@ -79,20 +100,13 @@ function Chart(props: Readonly<ComponentProps>) {
 		chart = (
 			<Regular
 				properties={properties}
-				containerRef={containerRef.current}
+				width={dimension.width}
+				height={dimension.height}
 				locationHistory={locationHistory}
 				pageExtractor={pageExtractor}
 			/>
 		);
 	}
-
-	useEffect(() => {
-		if (isNullValue(containerRef.current)) return;
-
-		const resizeObserver = new ResizeObserver(() => setLastChanged(Date.now()));
-		resizeObserver.observe(containerRef.current!);
-		return () => resizeObserver.disconnect();
-	}, [containerRef.current]);
 
 	return (
 		<div className={`comp compChart `} style={resolvedStyles.comp ?? {}} ref={containerRef}>

@@ -39,11 +39,14 @@ export enum DataSetStyle {
 	Bar = 'bar',
 	RoundedBar = 'roundedBar',
 	Lollipop = 'lollipop',
+
 	Pie = 'pie',
 	Doughnut = 'doughnut',
 	PolarArea = 'polarArea',
 	Radar = 'radar',
+
 	Dot = 'dot',
+
 	Waffle = 'waffle',
 }
 
