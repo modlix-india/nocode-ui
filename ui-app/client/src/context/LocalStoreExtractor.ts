@@ -25,4 +25,8 @@ export class LocalStoreExtractor extends SpecialTokenValueExtractor {
 	getPrefix(): string {
 		return this.prefix;
 	}
+
+	public getStore(): any {
+		return this.store;
+	}
 }

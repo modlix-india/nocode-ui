@@ -160,10 +160,22 @@ function makePropertiesObject(
 									key,
 								};
 							});
-					} else
-						value = Object.values(propertyValues[e.name] as ComponentMultiProperty<any>)
-							.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-							.map(each => getData(each.property, locationHistory, pageExtractor));
+					} else {
+						if (propertyValues[e.name].fullValue)
+							value = getData(
+								propertyValues[e.name].fullValue.property,
+								locationHistory,
+								pageExtractor,
+							);
+						else
+							value = Object.values(
+								propertyValues[e.name] as ComponentMultiProperty<any>,
+							)
+								.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+								.map(each =>
+									getData(each.property, locationHistory, pageExtractor),
+								);
+					}
 				}
 			} else {
 				value = getData(propertyValues[e.name], locationHistory, pageExtractor) ?? value;
