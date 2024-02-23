@@ -67,12 +67,15 @@ function Otp(props: ComponentProps) {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
 			(_, value) => {
-				if (isNullValue(value)) {
+				if (
+					isNullValue(value) ||
+					!isValidInputValue(value, valueType) ||
+					value.length > otpLength
+				) {
 					setValue(Array.from({ length: otpLength }, () => ' ').join(''));
 					return;
 				}
-				if (isValidInputValue(value, valueType)&&(value.length==otpLength)){
-				setValue(value);}
+				setValue(value)
 			},
 			pageExtractor,
 			bindingPathPath,
@@ -127,11 +130,7 @@ function Otp(props: ComponentProps) {
 
 		let target = e.target;
 		let inputValue =target.value;
-
-		if (index >= otpLength) {
-			e.preventDefault();
-			return;
-		}
+		
 		if (isValidInputValue(inputValue, valueType)) {
 			let newValueArray = value?.split('');
 			newValueArray[index] = inputValue === '' ? ' ' : inputValue;
@@ -285,8 +284,7 @@ const component: Component = {
 	},
 	validations: {
 		OTP_VALIDATION: {
-			
-			functionCode:OTP_VALIDATION
+			functionCode: OTP_VALIDATION,
 		},
 	},
 	sections: [{ name: 'Otp', pageName: 'otp' }],

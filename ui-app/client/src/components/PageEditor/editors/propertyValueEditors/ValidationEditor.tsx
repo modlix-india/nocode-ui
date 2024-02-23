@@ -29,29 +29,23 @@ export function ValidationEditor({
 }: ValidationEditorProps) {
     
 	const FILTERED_VALIDATION_FUNCTIONS: { [key: string]: { displayName: string, fields?:Array<ComponentPropertyDefinition> }}  = validationList && validationList.length > 0
-    ? validationList.reduce((acc: { [x: string]: { displayName: string; fields?:Array<ComponentPropertyDefinition> }; }, { name, displayName,fields}: any) => {
-        const existingValidation = VALIDATION_FUNCTIONS[name];
-        if (existingValidation) {
-            acc[name] = existingValidation;
-			if(fields){
-				acc[name.fields]=fields;
-			}
-        } else {
-            acc[name] = {
-                displayName: displayName ?? name,
-				fields:fields??undefined,
-            };
-        }
-		console.log(acc);
-        return acc;
-    }, {})
+    ? validationList.reduce((acc:any, { name, displayName,fields}: any) => {
+		if (VALIDATION_FUNCTIONS[name]) {
+			acc[name] = VALIDATION_FUNCTIONS[name];
+		} else {
+			acc[name] = {
+				displayName: displayName ?? name,
+				fields: fields ?? undefined,
+			};
+		}
+		return acc;
+	}, {})
     : VALIDATION_FUNCTIONS;
 
 	return (
 		<div className="_validationEditor">
 			<div className="_eachProp">
 				<div className="_propLabel">Validation Type:</div>
-
 				<Dropdown
 					value={value?.type ?? 'MANDATORY'}
 					showNoneLabel={false}
