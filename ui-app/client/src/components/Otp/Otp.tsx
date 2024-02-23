@@ -71,7 +71,8 @@ function Otp(props: ComponentProps) {
 					setValue(Array.from({ length: otpLength }, () => ' ').join(''));
 					return;
 				}
-				setValue(value);
+				if (isValidInputValue(value, valueType)&&(value.length==otpLength)){
+				setValue(value);}
 			},
 			pageExtractor,
 			bindingPathPath,
@@ -79,14 +80,14 @@ function Otp(props: ComponentProps) {
 	}, [bindingPathPath]);
 	useEffect(() => {
 		if (!validation) return;
-		let arrayValidation = [validation];
 		const msgs = validate(
 			props.definition,
 			props.pageDefinition,
-			arrayValidation,
-			value.trim(),
+			validation,
+			value,
 			locationHistory,
 			pageExtractor,
+		
 		);
 
 		setValidationMessages(msgs);
@@ -106,25 +107,35 @@ function Otp(props: ComponentProps) {
 			);
 	}, [value, validation]);
 
+		const isValidInputValue = (value: string, valueType: string) => {
+			
+			if (valueType === 'NUMERIC') {
+				return /^(\d| )*$/.test(value);
+			} else if (valueType === 'ALPHABETICAL') {
+				return /^[a-zA-Z ]*$/.test(value);
+			} else if (valueType === 'ALPHANUMERIC') {
+				return /^[a-zA-Z0-9 ]*$/.test(value);
+			} else if (valueType === 'ANY') {
+				return true;
+			}
+			return false;
+		};
+
+
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>, index: any) => {
 		setIsDirty(true);
-		let isValidInput = true;
-		let target = e.target;
-		let inputValue = target.value;
 
-		if (valueType === 'NUMERIC') {
-			isValidInput = /^\d*$/.test(inputValue);
-		} else if (valueType === 'ALPHABETICAL') {
-			isValidInput = /^[a-zA-Z]*$/.test(inputValue);
-		} else if (valueType === 'ALPHANUMERIC') {
-			isValidInput = /^[a-zA-Z0-9]*$/.test(inputValue);
-		} else if (valueType === 'ANY') {
-			isValidInput = true;
+		let target = e.target;
+		let inputValue =target.value;
+
+		if (index >= otpLength) {
+			e.preventDefault();
+			return;
 		}
-		if (isValidInput) {
-			let newValueArray = value.split('');
+		if (isValidInputValue(inputValue, valueType)) {
+			let newValueArray = value?.split('');
 			newValueArray[index] = inputValue === '' ? ' ' : inputValue;
-			bindingPathPath !== undefined
+			(bindingPathPath !== undefined)
 				? setData(bindingPathPath, newValueArray.join(''), context?.pageName)
 				: setValue(newValueArray.join(''));
 			if (inputValue === '' && index > 0 && target.previousSibling !== null) {
@@ -141,8 +152,8 @@ function Otp(props: ComponentProps) {
 		setFocus(false);
 		setIsDirty(true);
 		setFocusBoxIndex(-1);
-	};
-
+		
+	}
 	const handleFocus = (index: number) => {
 		setFocus(true);
 		setFocusBoxIndex(index);
@@ -243,6 +254,13 @@ function Otp(props: ComponentProps) {
 		</div>
 	);
 }
+
+function OTP_VALIDATION(validation: any, value: any): Array<string> {
+	console.log("validationfields",validation)
+	if (value.includes(' ')) return [validation.message];
+	return [];
+}
+
 const component: Component = {
 	name: 'Otp',
 	displayName: 'Otp',
@@ -265,6 +283,12 @@ const component: Component = {
 			label: { value: 'Otp' },
 		},
 	},
+	validations: {
+		OTP_VALIDATION: {
+			
+			functionCode:OTP_VALIDATION
+		},
+	},
 	sections: [{ name: 'Otp', pageName: 'otp' }],
 	subComponentDefinition: [
 		{
@@ -273,15 +297,21 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper  viewBox="0 0 24 24">
-                   <rect x="3.94922" y="3.9502" width="16.1" height="16.1" stroke="currentColor" stroke-width="1.5" fill="transparent"/>
-                   <circle cx="12" cy="12" r="1.5" fill="currentColor" />
-                   <circle cx="7" cy="12" r="1.5" fill="currentColor" />
-                   <circle cx="17" cy="12" r="1.5" fill="currentColor" />
-                   <circle cx="12" cy="7" r="1.5" fill="currentColor" />
-                   <circle cx="12" cy="17" r="1.5" fill="currentColor" />
-
-				
+				<IconHelper viewBox="0 0 24 24">
+					<rect
+						x="3.94922"
+						y="3.9502"
+						width="16.1"
+						height="16.1"
+						stroke="currentColor"
+						stroke-width="1.5"
+						fill="transparent"
+					/>
+					<circle cx="12" cy="12" r="1.5" fill="currentColor" />
+					<circle cx="7" cy="12" r="1.5" fill="currentColor" />
+					<circle cx="17" cy="12" r="1.5" fill="currentColor" />
+					<circle cx="12" cy="7" r="1.5" fill="currentColor" />
+					<circle cx="12" cy="17" r="1.5" fill="currentColor" />
 				</IconHelper>
 			),
 		},

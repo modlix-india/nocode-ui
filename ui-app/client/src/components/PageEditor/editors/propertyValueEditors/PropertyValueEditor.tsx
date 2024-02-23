@@ -246,7 +246,7 @@ function makeValueEditor(
 		);
 	}
 	if (propDef.editor === ComponentPropertyEditor.VALIDATION) {
-        const validationTypes = propDef.validationTypes || [];
+        const validationList = propDef.validationList || [];
 
 	if (propDef.editor === ComponentPropertyEditor.VALIDATION) {
 		return (
@@ -258,7 +258,7 @@ function makeValueEditor(
 				editPageName={editPageName}
 				slaveStore={slaveStore}
 				pageOperations={pageOperations}
-				validationTypes={validationTypes}
+				validationList={validationList}
 			/>
 		);
 	}}

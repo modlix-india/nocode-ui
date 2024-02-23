@@ -14,7 +14,7 @@ interface ValidationEditorProps {
 	slaveStore: any;
 	editPageName: string | undefined;
 	pageOperations: PageOperations;
-	validationTypes:any;
+	validationList:any;
 }
 
 export function ValidationEditor({
@@ -25,17 +25,26 @@ export function ValidationEditor({
 	slaveStore,
 	editPageName,
 	pageOperations,
-	validationTypes,
+	validationList,
 }: ValidationEditorProps) {
     
-
-	const FILTERED_VALIDATION_FUNCTIONS = validationTypes && validationTypes.length > 0
-    ? Object.keys(VALIDATION_FUNCTIONS)
-        .filter(name => validationTypes.includes(name))
-        .reduce((acc, name) => {
-            acc[name] = VALIDATION_FUNCTIONS[name];
-            return acc;
-        }, {} as { [key: string]: any })
+	const FILTERED_VALIDATION_FUNCTIONS: { [key: string]: { displayName: string, fields?:Array<ComponentPropertyDefinition> }}  = validationList && validationList.length > 0
+    ? validationList.reduce((acc: { [x: string]: { displayName: string; fields?:Array<ComponentPropertyDefinition> }; }, { name, displayName,fields}: any) => {
+        const existingValidation = VALIDATION_FUNCTIONS[name];
+        if (existingValidation) {
+            acc[name] = existingValidation;
+			if(fields){
+				acc[name.fields]=fields;
+			}
+        } else {
+            acc[name] = {
+                displayName: displayName ?? name,
+				fields:fields??undefined,
+            };
+        }
+		console.log(acc);
+        return acc;
+    }, {})
     : VALIDATION_FUNCTIONS;
 
 	return (
@@ -74,7 +83,7 @@ export function ValidationEditor({
 				/>
 			</div>
 
-			{(FILTERED_VALIDATION_FUNCTIONS[value?.type ?? 'MANDATORY'].fields ?? []).map((propDef: ComponentPropertyDefinition) => (
+			{(FILTERED_VALIDATION_FUNCTIONS[value?.type ?? 'MANDATORY']?.fields ?? []).map((propDef: ComponentPropertyDefinition) => (
 				<div className="_eachProp" key={propDef.name}>
 					<div className="_propLabel">{propDef.displayName}</div>
 					<PropertyValueEditor

@@ -15,6 +15,8 @@ import {
 	LocationHistory,
 	PageDefinition,
 } from '../types/common';
+import CD from "../components"
+import { Validation } from '../types/validation';
 
 // function EVENT_FUNCTION(validation: any, value: any): Array<string> {
 // 	return [];
@@ -212,7 +214,10 @@ export function validate(
 	value: any,
 	locationHistory: Array<LocationHistory>,
 	pageExtractor: PageStoreExtractor,
+	
 ): Array<string> {
+	let validationfunc =  CD.get(def.type)?.validations;
+
 	if (!validation?.length) return [];
 	return validation
 		.map((e: any) => {
@@ -225,9 +230,17 @@ export function validate(
 						: v;
 			}
 			return vals;
-		})
+		})	
 		.filter((e: any) => e.condition !== false)
-		.flatMap((e: any) => VALIDATION_FUNCTIONS[e.type ?? 'MANDATORY'].functionCode(e, value))
+		.flatMap((e: any) => {
+			if (validationfunc && validationfunc[e.type]){
+				let x = validationfunc[e.type]?.functionCode(e, value);
+				return x
+			}
+				
+			else return VALIDATION_FUNCTIONS[e.type ?? 'MANDATORY']?.functionCode(e, value);
+		})
 		.map((e: string) => getTranslations(e, pageDefinition.translations))
 		.filter((e: string) => !!e);
+		
 }

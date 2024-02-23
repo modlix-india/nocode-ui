@@ -2726,24 +2726,109 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 
 	{
-		groupName: 'Error Border Color',
-		displayName: 'Error Active Border Color',
-		name: 'errorActiveBorderColor',
+		groupName: 'Otp Error Border Color',
+		displayName: 'Otp Error Border Color Design Default',
+		name: 'otpErrorBorderColorDesignDefault',
 		defaultValue: '<errorColor>',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compOtp._default._hasError ._inputBox, .comp.compOtp._dashed._hasError ._inputBox, .comp.compOtp._filled._hasError ._inputBox, .comp.compOtp._round._hasError ._inputBox, .comp.compOtp._default._hasError ._inputBox._isActive, .comp.compOtp._filled._hasError ._inputBox._isActive, .comp.compOtp._round._hasError ._inputBox._isActive,.comp.compOtp._dashed._hasError ._inputBox._isActive',
+			'.comp.compOtp._default._hasError ._inputBox,.comp.compOtp._default._hasError ._inputBox._isActive, .comp.compOtp._default._hasError ._inputBox._hasValue',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Otp Error Border Color',
+		displayName: 'Otp Error Border Color Design Dashed',
+		name: 'otpErrorBorderColorDesignDashed',
+		defaultValue: '<errorColor>',
+		cssProperty: 'border-color',
+		selector:
+			'.comp.compOtp._dashed._hasError ._inputBox,.comp.compOtp._dashed._hasError ._inputBox._isActive, .comp.compOtp._dashed._hasError ._inputBox._hasValue',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Otp Error Border Color',
+		displayName: 'Otp Error Border Color Design Filled',
+		name: 'otpErrorBorderColorDesignFilled',
+		cssProperty: 'border-color',
+		selector:
+			'.comp.compOtp._filled._hasError ._inputBox,.comp.compOtp._filled._hasError ._inputBox._isActive, .comp.compOtp._filled._hasError ._inputBox._hasValue',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Otp Error Border Color',
+		displayName: 'Otp Error Border Color Design Round',
+		name: 'otpErrorBorderColorDesignRound',
+		defaultValue: '<errorColor>',
+		cssProperty: 'border-color',
+		selector:
+			'.comp.compOtp._round._hasError ._inputBox,.comp.compOtp._round._hasError ._inputBox._isActive, .comp.compOtp._round._hasError ._inputBox._hasValue',
 		noPrefix: true,
 	},
 
 	{
-		groupName: 'Error Filled',
-		displayName: 'Error Filled Otp Background',
-		name: 'errorFilledOtpBackground',
+		groupName: 'Otp Error Background',
+		displayName: 'Otp Error Background Design Default',
+		name: 'otpErrorBackgroundDesignDefault',
+		cssProperty: 'background',
+		selector:
+			'.comp.compOtp._default._hasError ._inputBox,.comp.compOtp._default._hasError ._inputBox._isActive, .comp.compOtp._default._hasError ._inputBox._hasValue',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Otp Error Background',
+		displayName: 'Otp Error Background Design Dashed',
+		name: 'otpErrorBackgroundDesignDashed',
+		cssProperty: 'background',
+		selector:
+			'.comp.compOtp._dashed._hasError ._inputBox,.comp.compOtp._dashed._hasError ._inputBox._isActive, .comp.compOtp._dashed._hasError ._inputBox._hasValue',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Otp Error Background',
+		displayName: 'Otp Error Background Design Filled',
+		name: 'otpErrorBackgroundDesignFilled',
 		defaultValue: '<errorColor>',
 		cssProperty: 'background',
 		selector:
-			'.comp.compOtp._filled._hasError ._inputBox, .comp.compOtp._filled._hasError ._inputBox._isActive',
+			'.comp.compOtp._filled._hasError ._inputBox,.comp.compOtp._filled._hasError ._inputBox._isActive, .comp.compOtp._filled._hasError ._inputBox._hasValue',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Otp Error Background',
+		displayName: 'Otp Error Background Design Round',
+		name: 'otpErrorBackgroundDesignRound',
+		defaultValue: 'linear-gradient(90deg, <errorColor>19 0%, <backgroundColorSix>00 64.33%)',
+		cssProperty: 'background',
+		selector:
+			'.comp.compOtp._round._hasError ._inputBox,.comp.compOtp._round._hasError ._inputBox._isActive, .comp.compOtp._round._hasError ._inputBox._hasValue',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'Otp Error Color',
+		displayName: 'Otp Error Color Design Filled',
+		name: 'otpErrorColorDesignFilled',
+		defaultValue: '<fontColorTwo>',
+		cssProperty: 'color',
+		selector: '.comp.compTextBox._filled._hasError ._inputBox',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Otp Error Color Active',
+		displayName: 'Otp Error Color Active Design Filled',
+		name: 'otpErrorColorActiveDesignFilled',
+		defaultValue: '<fontColorTwo>',
+		cssProperty: 'color',
+		selector: '.comp.compOtp._filled._hasError ._inputBox._isActive',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Otp Error Color Has Value',
+		displayName: 'Otp Error Color Has Value Design Filled',
+		name: 'otpErrorColorHasValueDesignFilled',
+		defaultValue: '<fontColorTwo>',
+		cssProperty: 'color',
+		selector: '.comp.compOtp._filled._hasError ._inputBox._hasValue',
 		noPrefix: true,
 	},
 ];

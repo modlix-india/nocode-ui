@@ -104,8 +104,7 @@ export interface ComponentPropertyDefinition {
 	defaultValue?: any;
 	displayOrder?: number;
 	hide?: boolean;
-	validationTypes?:Array<string>;
-	
+	validationList?: Array<{ name: string; displayName?:string; fields?: Array<ComponentPropertyDefinition> }>;
 }
 
 export interface ComponentStylePropertyGroupDefinition {
@@ -166,6 +165,9 @@ export interface Component {
 	};
 	sections?: Array<Section>;
 	needShowInDesginMode?: boolean;
+	validations?: {
+		[name: string]:{functionCode: (validation: any, value: any) => Array<string>};
+	};
 }
 
 export enum StyleResolution {

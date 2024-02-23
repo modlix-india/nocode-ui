@@ -23,8 +23,10 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Validation Rule',
 		editor: ComponentPropertyEditor.VALIDATION,
 		group: ComponentPropertyGroup.VALIDATION,
-		validationTypes:['MANDATORY']
+		validationList:[{name:'OTP_VALIDATION',displayName:'Otp Validation',}],
+		multiValued:true,
 		
+
 	},
 	{
 		name: 'supportingText',
@@ -34,7 +36,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		translatable: true,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
-
 	{
 		name: 'otpLength',
 		schema: SCHEMA_NUM_COMP_PROP,
