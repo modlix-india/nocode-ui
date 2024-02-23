@@ -2016,6 +2016,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			overflow: auto;
 		}
 
+		${PREFIX} ._dummyDevice {
+			min-width: 70px;
+		}
+
 		${PREFIX} ._iframe {
 			display: flex;
 			overflow: auto;
@@ -2088,8 +2092,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._iframe iframe {
 			border: none;
 			width: 100%;
-			min-height: 100vh;
-			overflow: hidden;
 		}
 
 		${PREFIX} ._urlInput._peInput:focus-within {
@@ -3484,6 +3486,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._popupContainer ._right {
 			text-align: right;
 			padding: 5px;
+		}
+
+		._popupBackground._transparent {
+			background: none;
 		}
 		/* Dark theme values  */
 		${PREFIX}._dark ._dndGrid{
