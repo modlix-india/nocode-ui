@@ -64,6 +64,18 @@ export class ParentExtractor extends SpecialTokenValueExtractor {
 
 		return { path, lastHistory };
 	}
+
+	public getStore(): any {
+		const { path, lastHistory } = this.getPath('Parent.test');
+
+		const parentPath = path.split('.').slice(0, -1).join('.');
+
+		return getDataFromPath(
+			parentPath,
+			this.history.length === 1 ? [] : this.history.slice(0, this.history.length - 1),
+			PageStoreExtractor.getForContext(lastHistory.pageName ?? GLOBAL_CONTEXT_NAME),
+		);
+	}
 }
 
 export class ParentExtractorForRunEvent extends TokenValueExtractor {
@@ -123,5 +135,9 @@ export class ParentExtractorForRunEvent extends TokenValueExtractor {
 			}.${path}`;
 
 		return path;
+	}
+
+	public getStore(): any {
+		return undefined;
 	}
 }

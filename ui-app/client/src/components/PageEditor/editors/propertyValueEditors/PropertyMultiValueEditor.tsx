@@ -3,12 +3,14 @@ import { DRAG_PROP_MV_KEY } from '../../../../constants';
 import {
 	ComponentMultiProperty,
 	ComponentPropertyDefinition,
+	DataLocation,
 	PageDefinition,
 } from '../../../../types/common';
 import { duplicate } from '@fincity/kirun-js';
 import { shortUUID } from '../../../../util/shortUUID';
 import PropertyValueEditor from './PropertyValueEditor';
 import { PageOperations } from '../../functions/PageOperations';
+import { ExpressionEditor2 } from './ExpressionEditor2';
 
 interface PropertyMultiValueEditorProps {
 	propDef: ComponentPropertyDefinition;
@@ -34,9 +36,10 @@ export default function PropertyMultiValueEditor({
 	storePaths,
 	pageOperations,
 	appPath,
-}: PropertyMultiValueEditorProps) {
+}: Readonly<PropertyMultiValueEditorProps>) {
 	const [chngValue, setChngValue] = useState<ComponentMultiProperty<any> | undefined>(value);
 	const [newValueKey, setNewValueKey] = useState<string>(shortUUID());
+	const [showFullValue, setShowFullValue] = useState(false);
 
 	useEffect(() => {
 		let v: any = value;
@@ -44,12 +47,14 @@ export default function PropertyMultiValueEditor({
 			v = (v.value as string)
 				.split(',')
 				.map((e, i) => ({ key: shortUUID(), order: i, property: { value: e } }));
+
+		setShowFullValue(!!v?.fullValue);
 		setChngValue(v);
 	}, [value]);
 
 	let allValues: Array<ReactNode> = [];
 
-	if (chngValue) {
+	if (!showFullValue && chngValue) {
 		allValues = Object.values(chngValue)
 			.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
 			.map(e => (
@@ -135,34 +140,75 @@ export default function PropertyMultiValueEditor({
 			));
 	}
 
+	let nonFullValue = undefined;
+	if (showFullValue) {
+		nonFullValue = (
+			<ExpressionEditor2
+				value={chngValue?.fullValue?.property?.location}
+				onChange={(v: DataLocation | undefined) => {
+					const newValue = duplicate(chngValue ?? {}) as ComponentMultiProperty<any>;
+					if (v) newValue.fullValue = { key: 'fullValue', property: { location: v } };
+					else delete newValue.fullValue;
+					onChange(newValue);
+				}}
+				storePaths={storePaths}
+			/>
+		);
+	} else {
+		nonFullValue = (
+			<>
+				{allValues}
+				<div className="_eachProperty fixed">
+					<PropertyValueEditor
+						appPath={appPath}
+						key={newValueKey}
+						propDef={propDef}
+						onChange={v => {
+							const newValue = { ...chngValue };
+							let key = shortUUID();
+							let order =
+								Object.values(chngValue ?? {})
+									.map(e => e.order ?? 0)
+									.reduce((a, b) => Math.max(a, b), 0) + 1;
+							newValue[key] = { key, order, property: v };
+							onChange(newValue);
+							setNewValueKey(shortUUID());
+						}}
+						pageDefinition={pageDefinition}
+						showPlaceholder={false}
+						onShowCodeEditor={onShowCodeEditor}
+						editPageName={editPageName}
+						slaveStore={slaveStore}
+						storePaths={storePaths}
+						pageOperations={pageOperations}
+					/>
+				</div>
+			</>
+		);
+	}
+
+	const toggleAdvanced = () => {
+		const newValue = duplicate(chngValue ?? {}) as ComponentMultiProperty<any>;
+		if (newValue.fullValue) delete newValue.fullValue;
+		else
+			newValue.fullValue = {
+				key: 'fullValue',
+				property: { location: { type: 'EXPRESSION', expression: '' } },
+			};
+		onChange(newValue);
+		setShowFullValue(!showFullValue);
+	};
+
 	return (
 		<div className="_multiValueEditor">
-			{allValues}
-			<div className="_eachProperty fixed">
-				<PropertyValueEditor
-					appPath={appPath}
-					key={newValueKey}
-					propDef={propDef}
-					onChange={v => {
-						const newValue = { ...chngValue };
-						let key = shortUUID();
-						let order =
-							Object.values(chngValue ?? {})
-								.map(e => e.order ?? 0)
-								.reduce((a, b) => Math.max(a, b), 0) + 1;
-						newValue[key] = { key, order, property: v };
-						onChange(newValue);
-						setNewValueKey(shortUUID());
-					}}
-					pageDefinition={pageDefinition}
-					showPlaceholder={false}
-					onShowCodeEditor={onShowCodeEditor}
-					editPageName={editPageName}
-					slaveStore={slaveStore}
-					storePaths={storePaths}
-					pageOperations={pageOperations}
-				/>
-			</div>
+			<div
+				className={`_microToggle2 ${showFullValue ? '_on' : '_off'}`}
+				tabIndex={0}
+				onKeyDown={e => (e.key === ' ' ? toggleAdvanced() : undefined)}
+				onClick={toggleAdvanced}
+				title="Full value expression"
+			/>
+			{nonFullValue}
 		</div>
 	);
 }

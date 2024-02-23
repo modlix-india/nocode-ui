@@ -892,10 +892,20 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		noPrefix: true,
 	},
 	{
+		groupName: 'MD Top Level Blockquote Margin',
+		displayName: 'MD Top Level Blockquote Margin Default Design',
+		name: 'mDTopLevelBlockquoteMarginDefaultDesign',
+		defaultValue: '0 0 16px 0',
+		cssProperty: 'margin',
+		selector:
+			'.comp.compText._markdown blockquote._topLevel_blockquote, ._markDownContent blockquote._topLevel_blockquote',
+		noPrefix: true,
+	},
+	{
 		groupName: 'MD Blockquote Margin',
 		displayName: 'MD Blockquote Margin Default Design',
 		name: 'mDBlockquoteMarginDefaultDesign',
-		defaultValue: '0 0 16px 0',
+		defaultValue: '0',
 		cssProperty: 'margin',
 		selector: '.comp.compText._markdown blockquote, ._markDownContent blockquote',
 		noPrefix: true,

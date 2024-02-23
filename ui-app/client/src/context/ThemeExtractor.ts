@@ -61,4 +61,8 @@ export class ThemeExtractor extends SpecialTokenValueExtractor {
 	getPrefix(): string {
 		return 'Theme.';
 	}
+
+	public getStore(): any {
+		return this.store;
+	}
 }

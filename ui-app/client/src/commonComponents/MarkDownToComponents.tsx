@@ -23,7 +23,7 @@ const processList = (listItems: string[], isOrdered: boolean, level = 1) => {
 	let subList: Array<{ line: Array<string>; type: 'ordered' | 'unordered' }> = [];
 	let currentIndex = 0;
 	let prevType: 'ordered' | 'unordered' = isOrdered == true ? 'ordered' : 'unordered';
-
+	let start = isOrdered ? listItems[0]?.slice(0, 1) : '1';
 	for (let i = 0; i < listItems.length; i++) {
 		// looping throught list items
 		if (listItems[i + 1]?.startsWith('    '.repeat(level))) {
@@ -76,7 +76,7 @@ const processList = (listItems: string[], isOrdered: boolean, level = 1) => {
 			}
 			// render current item plus any sublists through recursion
 			finalList.push(
-				<li key={listItems[i]}>
+				<li key={`${listItems[i]}_${subList.map(e => e.line).join('_')}`}>
 					{renderLine(listItems[i].slice(isOrdered ? 3 : 2))}
 					{subList.map(e => processList(e.line, e.type === 'ordered', level + 1))}
 				</li>,
@@ -95,7 +95,11 @@ const processList = (listItems: string[], isOrdered: boolean, level = 1) => {
 	}
 	// final return
 	if (isOrdered) {
-		return <ol key={listItems.join('_')}>{finalList}</ol>;
+		return (
+			<ol start={isNaN(parseInt(start)) ? 1 : parseInt(start)} key={listItems.join('_')}>
+				{finalList}
+			</ol>
+		);
 	} else return <ul key={listItems.join('_')}>{finalList}</ul>;
 };
 
@@ -370,6 +374,11 @@ const renderLine = (line: string) => {
 		);
 	} else if (line.startsWith('***') || line.startsWith('---') || line.startsWith('___')) {
 		elements.push(React.createElement('hr', { key: `hr${line}` }));
+	} else if (line.trim() === '') {
+		// creating line breaks on return or enter
+		elements.push(
+			React.createElement('br', { key: `br_${line}_${Math.random().toString(36)}` }),
+		);
 	} else {
 		const paragraphTokens = parseText(line);
 		elements.push(React.createElement('p', { key: line }, paragraphTokens));
@@ -395,18 +404,20 @@ function MarkDownToComponents({ text }: { text: string }) {
 			let j = i + 1;
 			let blockLines = [];
 			blockLines.push(line.slice(1));
-			while (lines[j] && lines[j].startsWith('>')) {
-				blockLines.push(lines[j].slice(1));
+			while (lines[j] && lines[j]?.trim() !== '') {
+				if (lines[j].startsWith('>')) blockLines.push(lines[j].slice(1));
+				else blockLines[(blockLines.length ?? 1) - 1] += ' ' + lines[j];
+
 				j++;
 			}
 			elements.push(
 				React.createElement(
 					'blockquote',
-					{ key: blockLines.join('_') },
+					{ key: blockLines.join('_'), className: '_topLevel_blockquote' },
 					blockLines.map(e => renderLine(e)),
 				),
 			);
-			i = i + blockLines.length;
+			i = j;
 		} else if (line.match(/^\d+\.\s/)) {
 			// Ordered list
 			let currentLevel = 1;
@@ -514,7 +525,9 @@ function MarkDownToComponents({ text }: { text: string }) {
 			elements.push(tokens);
 		} else if (line.startsWith('***') || line.startsWith('---') || line.startsWith('___')) {
 			// Horizontal line
-			elements.push(React.createElement('hr', { key: `hr${i}${line}` }));
+			if (line.slice(3).trim() !== '') {
+				elements.push(parseText(line));
+			} else elements.push(React.createElement('hr', { key: `hr${i}${line}` }));
 		} else if (line.trim() === '') {
 			// creating line breaks on return or enter
 			elements.push(React.createElement('br', { key: `br_${line}_${i}` }));

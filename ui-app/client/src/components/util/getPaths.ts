@@ -1,13 +1,13 @@
 import { ExpressionEvaluator, isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
-import { SCHEMA_VALIDATION } from '../../constants';
 import {
 	ComponentDefinition,
 	ComponentProperty,
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
+	ComponentStyle,
 	DataLocation,
+	StyleResolution,
 } from '../../types/common';
-import { ComponentStyle, StyleResolution } from '../../types/common';
 import { Validation } from '../../types/validation';
 
 export class PathExtractor extends TokenValueExtractor {
@@ -31,8 +31,12 @@ export class PathExtractor extends TokenValueExtractor {
 		return this.paths;
 	}
 
-	getPrefix(): string {
+	public getPrefix(): string {
 		return this.prefix;
+	}
+
+	public getStore(): any {
+		return undefined;
 	}
 }
 

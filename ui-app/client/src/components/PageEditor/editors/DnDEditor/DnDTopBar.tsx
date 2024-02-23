@@ -256,7 +256,6 @@ export default function DnDTopBar({
 		description: v.description ?? v.name,
 	}));
 
-	console.log('WTF', page);
 	let popup = <></>;
 	if (showProperties) {
 		const seoNames = [
