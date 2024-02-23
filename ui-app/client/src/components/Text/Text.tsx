@@ -66,7 +66,7 @@ function Text(props: ComponentProps) {
 				style={styleProperties.comp ?? {}}
 			>
 				<HelperComponent context={props.context} definition={definition} />
-				<MarkDownToComponents text={translatedText ?? ''} />;
+				<MarkDownToComponents text={translatedText ?? ''} />
 			</div>
 		);
 	}
