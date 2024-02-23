@@ -158,7 +158,7 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 
 		if (!parts.length) {
 			if (isNullValue(value)) localStore.removeItem(key);
-			else localStore.setItem(key, value);
+			else localStore.setItem(key, JSON.stringify(value));
 			return;
 		}
 		if (!store && parts.length) {
@@ -250,6 +250,15 @@ export class PageStoreExtractor extends SpecialTokenValueExtractor {
 
 	public getPageName(): string {
 		return this.pageName;
+	}
+
+	public getStore(): any {
+		return this.retrieveElementFrom(
+			`Store.pageData.${this.pageName}`,
+			['pageData', this.pageName],
+			0,
+			_store,
+		);
 	}
 }
 
