@@ -31,14 +31,14 @@ function createNewState(
 	properties: Array<ComponentPropertyDefinition>,
 	stylePropertiesDefinition: ComponentStylePropertyDefinition,
 	locationHistory: Array<LocationHistory>,
-	pageExtractor: TokenValueExtractor,
+	tokenExtractors: TokenValueExtractor[],
 ) {
 	const def: ComponentDefinitionValues = { key: definition.key };
 	def.properties = makePropertiesObject(
 		properties,
 		definition.properties,
 		locationHistory,
-		pageExtractor,
+		tokenExtractors,
 	);
 
 	if (definition.styleProperties) {
@@ -47,19 +47,18 @@ function createNewState(
 		for (const ecs of Object.values(definition.styleProperties)) {
 			if (ecs.condition) {
 				let value = false;
-				if (pageExtractor)
-					value = getData(ecs.condition, locationHistory, pageExtractor) as boolean;
-				else value = getData(ecs.condition, locationHistory) as boolean;
+
+				value = getData(ecs.condition, locationHistory, ...tokenExtractors) as boolean;
 
 				if (!value) continue;
 			}
 
 			const pTargets = processTargets(
-				ecs.resolutions || {},
+				ecs.resolutions ?? {},
 				devices,
 				stylePropertiesDefinition,
 				locationHistory,
-				pageExtractor,
+				tokenExtractors,
 			);
 			if (!pTargets) continue;
 
@@ -131,7 +130,7 @@ function makePropertiesObject(
 	properties: ComponentPropertyDefinition[],
 	propertyValues: any,
 	locationHistory: LocationHistory[],
-	pageExtractor: TokenValueExtractor,
+	tokenExtractors: TokenValueExtractor[],
 ): any {
 	return properties
 		.map(e => {
@@ -155,7 +154,7 @@ function makePropertiesObject(
 										ANIMATION_PROPERTIES,
 										each.property.value,
 										locationHistory,
-										pageExtractor,
+										tokenExtractors,
 									),
 									key,
 								};
@@ -165,7 +164,7 @@ function makePropertiesObject(
 							value = getData(
 								propertyValues[e.name].fullValue.property,
 								locationHistory,
-								pageExtractor,
+								...tokenExtractors,
 							);
 						else
 							value = Object.values(
@@ -173,12 +172,13 @@ function makePropertiesObject(
 							)
 								.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
 								.map(each =>
-									getData(each.property, locationHistory, pageExtractor),
+									getData(each.property, locationHistory, ...tokenExtractors),
 								);
 					}
 				}
 			} else {
-				value = getData(propertyValues[e.name], locationHistory, pageExtractor) ?? value;
+				value =
+					getData(propertyValues[e.name], locationHistory, ...tokenExtractors) ?? value;
 			}
 
 			return [e.name, value];
@@ -195,7 +195,7 @@ function processTargets(
 	devices: any,
 	stylePropertiesDefinition: ComponentStylePropertyDefinition,
 	locationHistory: Array<LocationHistory>,
-	pageExtractor: TokenValueExtractor,
+	tokenExtractors: TokenValueExtractor[],
 ): any {
 	let style = resolutions.ALL ? { ...resolutions.ALL } : {};
 
@@ -207,9 +207,7 @@ function processTargets(
 	const finStyle: any = {};
 
 	for (let [prop, value] of Object.entries(style)) {
-		const v = pageExtractor
-			? getData(value, locationHistory, pageExtractor)
-			: getData(value, locationHistory);
+		const v = getData(value, locationHistory, ...tokenExtractors);
 
 		if (!v) continue;
 
@@ -233,31 +231,36 @@ export default function useDefinition(
 	locationHistory: Array<LocationHistory>,
 	pageExtractor: PageStoreExtractor,
 ): ComponentDefinitionValues {
-	const [compState, setCompState] = useState<ComponentDefinitionValues>(
-		createNewState(
-			definition,
-			properties,
-			stylePropertiesDefinition,
-			locationHistory,
-			pageExtractor,
-		),
-	);
-	const [pathsChanged, setPathsChangedAt] = useState(Date.now());
-
 	const evaluatorMaps = new Map<string, TokenValueExtractor>([
 		[storeExtractor.getPrefix(), storeExtractor],
 		[fillerExtractor.getPrefix(), fillerExtractor],
 		[localStoreExtractor.getPrefix(), localStoreExtractor],
 	]);
+	let tokenExtractors: TokenValueExtractor[] = [];
 
-	if (pageExtractor) evaluatorMaps.set(pageExtractor.getPrefix(), pageExtractor);
+	if (pageExtractor) {
+		evaluatorMaps.set(pageExtractor.getPrefix(), pageExtractor);
+		tokenExtractors.push(pageExtractor);
+	}
 
 	let parentExtractor: ParentExtractor | undefined;
 
 	if (locationHistory.length) {
 		parentExtractor = new ParentExtractor(locationHistory);
 		evaluatorMaps.set(parentExtractor.getPrefix(), parentExtractor);
+		tokenExtractors.push(parentExtractor);
 	}
+
+	const [compState, setCompState] = useState<ComponentDefinitionValues>(
+		createNewState(
+			definition,
+			properties,
+			stylePropertiesDefinition,
+			locationHistory,
+			tokenExtractors,
+		),
+	);
+	const [pathsChanged, setPathsChangedAt] = useState(Date.now());
 
 	const propDefMap = properties.reduce((a: any, c) => {
 		a[c.name] = c;
@@ -276,7 +279,7 @@ export default function useDefinition(
 			properties,
 			stylePropertiesDefinition,
 			locationHistory,
-			pageExtractor,
+			tokenExtractors,
 		);
 
 		if (!deepEqual(x, compState)) setCompState(x);
@@ -287,7 +290,7 @@ export default function useDefinition(
 
 		if (parentExtractor) {
 			paths = paths.map(p => {
-				if (!p.startsWith(parentExtractor!.getPrefix())) return p;
+				if (p.indexOf('Parent') === -1) return p;
 
 				return parentExtractor?.getPath(p).path ?? p;
 			});
@@ -300,7 +303,7 @@ export default function useDefinition(
 					properties,
 					stylePropertiesDefinition,
 					locationHistory,
-					pageExtractor,
+					tokenExtractors,
 				);
 
 				if (pageExtractor.getPageName() === '_global') {
