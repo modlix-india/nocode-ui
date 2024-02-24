@@ -2,7 +2,7 @@ import { TokenValueExtractor } from '@fincity/kirun-js';
 import { GLOBAL_CONTEXT_NAME } from '../constants';
 import { LocationHistory } from '../types/common';
 import { SpecialTokenValueExtractor } from './SpecialTokenValueExtractor';
-import { getDataFromPath, PageStoreExtractor } from './StoreContext';
+import { getData, getDataFromPath, PageStoreExtractor } from './StoreContext';
 
 export class ParentExtractor extends SpecialTokenValueExtractor {
 	private history: Array<LocationHistory>;
@@ -137,7 +137,50 @@ export class ParentExtractorForRunEvent extends TokenValueExtractor {
 		return path;
 	}
 
+	public getPath(token: string): { path: string; lastHistory: LocationHistory } {
+		let currentHistory = this.history;
+
+		do {
+			let { path, lastHistory } = this.getPathInternal(token, currentHistory);
+			if (!path.startsWith('Parent.')) return { path, lastHistory };
+			token = path;
+			currentHistory = currentHistory.slice(0, currentHistory.length - 1);
+		} while (true);
+	}
+
+	public getPathInternal(
+		token: string,
+		locationHistory: LocationHistory[],
+	): { path: string; lastHistory: LocationHistory } {
+		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
+
+		let pNum: number = 0;
+		while (parts[pNum] === 'Parent') pNum++;
+
+		const lastHistory = locationHistory[locationHistory.length - pNum];
+		let path = '';
+
+		if (typeof lastHistory.location === 'string')
+			path = `${lastHistory.location}.${parts.slice(pNum).join('.')}`;
+		else
+			path = `${
+				lastHistory.location.type === 'VALUE'
+					? lastHistory.location.value
+					: lastHistory.location.expression
+			}.${parts.slice(pNum).join('.')}`;
+
+		return { path, lastHistory };
+	}
+
 	public getStore(): any {
-		return undefined;
+		const { path, lastHistory } = this.getPath('Parent.test');
+
+		const parentPath = path.split('.').slice(0, -1).join('.');
+
+		return getDataFromPath(
+			parentPath,
+			this.history.length === 1 ? [] : this.history.slice(0, this.history.length - 1),
+			PageStoreExtractor.getForContext(lastHistory.pageName ?? GLOBAL_CONTEXT_NAME),
+		);
 	}
 }
