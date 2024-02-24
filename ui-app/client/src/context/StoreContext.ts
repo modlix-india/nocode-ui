@@ -1,4 +1,9 @@
-import { TokenValueExtractor, duplicate, isNullValue } from '@fincity/kirun-js';
+import {
+	ExpressionEvaluator,
+	TokenValueExtractor,
+	duplicate,
+	isNullValue,
+} from '@fincity/kirun-js';
 import { setStoreData, useStore } from '@fincity/path-reactive-state-management';
 import {
 	LOCAL_STORE_PREFIX,
@@ -8,12 +13,12 @@ import {
 } from '../constants';
 import { messageToMaster } from '../slaveFunctions';
 import { ComponentProperty, DataLocation, LocationHistory } from '../types/common';
+import { FillerExtractor } from './FillerExtractor';
 import { LocalStoreExtractor } from './LocalStoreExtractor';
-import { ParentExtractorForRunEvent } from './ParentExtractor';
+import { ParentExtractor, ParentExtractorForRunEvent } from './ParentExtractor';
 import { SpecialTokenValueExtractor } from './SpecialTokenValueExtractor';
 import { ThemeExtractor } from './ThemeExtractor';
 import { sample } from './sampleData';
-import { FillerExtractor } from './FillerExtractor';
 
 export class StoreExtractor extends SpecialTokenValueExtractor {
 	private store: any;
@@ -29,6 +34,10 @@ export class StoreExtractor extends SpecialTokenValueExtractor {
 	}
 	getPrefix(): string {
 		return this.prefix;
+	}
+
+	public getStore(): any {
+		return this.store;
 	}
 }
 
@@ -129,7 +138,7 @@ export function getDataFromPath(
 	...tve: Array<TokenValueExtractor>
 ) {
 	if (!path) return undefined;
-	if (locationHistory?.length)
+	if (locationHistory?.length && !tve.some(e => e.getPrefix() === 'Parent.'))
 		tve = [
 			...tve,
 			new ParentExtractorForRunEvent(
