@@ -249,7 +249,6 @@ export default function ComponentMenu({
 	let rightPart = <></>;
 
 	if (compType === 'SECTIONS' && sectionsList?.content?.length) {
-		console.log(sectionsList.content);
 		rightPart = (
 			<div
 				className={`_popupMenuContainer _compMenu ${

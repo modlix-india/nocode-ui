@@ -36,6 +36,7 @@ export class PathExtractor extends TokenValueExtractor {
 	}
 
 	public getStore(): any {
+		this.paths.add(this.prefix.substring(0, this.prefix.length - 1));
 		return undefined;
 	}
 }
