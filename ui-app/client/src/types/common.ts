@@ -1,4 +1,4 @@
-import { Schema, SchemaType, Type } from '@fincity/kirun-js';
+import { Schema } from '@fincity/kirun-js';
 import { Validation } from './validation';
 
 export interface ComponentProperty<T> {
@@ -9,6 +9,10 @@ export interface ComponentProperty<T> {
 }
 
 export interface ComponentMultiProperty<T> {
+	fullValue?: {
+		key: string;
+		property: ComponentProperty<T>;
+	};
 	[key: string]: {
 		key: string;
 		order?: number;
