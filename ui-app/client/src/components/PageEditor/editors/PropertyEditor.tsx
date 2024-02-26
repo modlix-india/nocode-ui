@@ -117,7 +117,7 @@ export default function PropertyEditor({
 	pageOperations,
 	appPath,
 	editorType,
-}: PropertyEditorProps) {
+}: Readonly<PropertyEditorProps>) {
 	const [def, setDef] = useState<ComponentDefinition>();
 	const [pageDef, setPageDef] = useState<PageDefinition>();
 	const [allCommonProperties, setAllCommonProperties] = useState<ComponentPropertyDefinition[]>(); // cd.properties
