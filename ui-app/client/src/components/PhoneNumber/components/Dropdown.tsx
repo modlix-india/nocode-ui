@@ -2,6 +2,7 @@ import React, { CSSProperties, useEffect, useRef, useState } from 'react';
 
 export type DropdownOptions = Array<{
 	nextSeperator?: boolean;
+	format?: Array<number>;
 	D: string;
 	N: string;
 	C: string;
