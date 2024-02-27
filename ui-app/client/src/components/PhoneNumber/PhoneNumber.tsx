@@ -23,6 +23,7 @@ import { styleDefaults } from './phoneNumberStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import { Dropdown, DropdownOptions } from './components/Dropdown';
 import { COUNTRY_LIST } from './components/listOfCountries';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 
 interface mapType {
 	[key: string]: any;
@@ -307,105 +308,67 @@ function PhoneNumber(props: ComponentProps) {
 	}, [countries, topCountries]);
 
 	useEffect(() => {
-		if (format) {
-			let unformattedText = getUnformattedNumber(value);
-			let dc = getDialCode(unformattedText);
-			if (dc) {
-				setSelectedCode(dc);
-				setPhoneNumber(getFormattedNumber(unformattedText.slice(dc.length)));
-			} else {
-				setSelectedCode(countryList[0].D);
-				setPhoneNumber(getFormattedNumber(unformattedText));
-			}
-		} else {
-			let dc = getDialCode(value);
-			if (dc) setSelectedCode(dc);
-			else setSelectedCode(countryList[0].D);
-			setPhoneNumber(value.slice(dc.length));
-		}
+		let unformattedText = getUnformattedNumber(value);
+		// console.log('value', value);
+		// console.log('unformattedText', unformattedText);
+		let dc = getDialCode(unformattedText);
+		if (dc) setSelectedCode(dc);
+		else setSelectedCode(countryList[0].D);
+		if (format) setPhoneNumber(getFormattedNumber(unformattedText.slice(dc.length)));
+		else setPhoneNumber(unformattedText.slice(dc.length));
 	}, [value, countryList]);
 
 	const handleBlur = (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-		let text = phoneNumber === '' && emptyValue ? mapValue[emptyValue] : phoneNumber;
-		if (format) {
-			//code for  format
-			if (text && text.startsWith('+')) {
-				let phone = text;
-				let dc = getDialCode(phone);
-				if (dc) {
-					phone = phone.slice(dc.length);
-					setValidationMessages([]);
-				} else {
-					dc = selectedCode;
-					if (
-						(validationMessages.length > 0 &&
-							validationMessages[0] !== dialCodeValidationMessage) ||
-						validationMessages.length === 0
-					)
-						setValidationMessages([dialCodeValidationMessage]);
-				}
+		let text =
+			phoneNumber === '' && emptyValue
+				? mapValue[emptyValue]
+				: getUnformattedNumber(phoneNumber);
+		if (text && text.startsWith('+')) {
+			let phone = text;
+			let dc = getDialCode(phone);
+			if (dc) {
+				phone = phone.slice(dc.length);
+				setValidationMessages([]);
+			} else {
+				dc = selectedCode;
+				if (
+					(validationMessages.length > 0 &&
+						validationMessages[0] !== dialCodeValidationMessage) ||
+					validationMessages.length === 0
+				)
+					setValidationMessages([dialCodeValidationMessage]);
+			}
+			let temp = '';
+			if (format && text !== phone) {
+				let formattedText = getFormattedNumber(phone);
+				temp = dc + (storeFormatted ? seperator + formattedText : phone);
+			} else {
+				temp = dc + phone;
+			}
+			// console.log('with + temp', temp);
+			if (bindingPathPath) {
+				setData(bindingPathPath, temp, context?.pageName);
+				callChangeEvent();
+			}
+		} else if (!updateStoreImmediately && bindingPathPath) {
+			setValidationMessages([]);
+			if (event?.target.value === '' && removeKeyWhenEmpty) {
+				setData(bindingPathPath, undefined, context?.pageName, true);
+			} else {
+				// console.log('format blur');
+				let formattedText = getFormattedNumber(text);
 				let temp = '';
-				if (text === phone) {
-					temp = dc + text;
-				} else {
-					let unformattedText = getUnformattedNumber(phone);
-					let formattedText = getFormattedNumber(unformattedText);
-					temp = dc + (storeFormatted ? seperator + formattedText : unformattedText);
-				}
-				console.log('temp', temp);
-				if (bindingPathPath) {
-					setData(bindingPathPath, temp, context?.pageName);
-					callChangeEvent();
-				}
-			} else if (!updateStoreImmediately && bindingPathPath) {
-				setValidationMessages([]);
-				if (event?.target.value === '' && removeKeyWhenEmpty) {
-					setData(bindingPathPath, undefined, context?.pageName, true);
-				} else {
-					console.log('format blur');
-					let unformattedText = getUnformattedNumber(text);
-					let formattedText = getFormattedNumber(unformattedText);
-					let temp = text
-						? selectedCode +
-						  (storeFormatted ? seperator + formattedText : unformattedText)
+				if (format) {
+					temp = text
+						? selectedCode + (storeFormatted ? seperator + formattedText : text)
 						: text;
-					// console.log(unformattedText, '-', formattedText);
-					// console.log('temp', temp);
-					setData(bindingPathPath, temp, context?.pageName);
-				}
-				callChangeEvent();
-			}
-		} else {
-			if (text && text.startsWith('+')) {
-				let dc = getDialCode(text);
-				if (dc) {
-					text = text.slice(dc.length);
-					setValidationMessages([]);
 				} else {
-					dc = selectedCode;
-					if (
-						(validationMessages.length > 0 &&
-							validationMessages[0] !== dialCodeValidationMessage) ||
-						validationMessages.length === 0
-					)
-						setValidationMessages([dialCodeValidationMessage]);
+					temp = text ? selectedCode + text : text;
 				}
-				let temp = dc + text;
-				if (bindingPathPath) {
-					setData(bindingPathPath, temp, context?.pageName);
-					callChangeEvent();
-				}
-			} else if (!updateStoreImmediately && bindingPathPath) {
-				setValidationMessages([]);
-				if (event?.target.value === '' && removeKeyWhenEmpty) {
-					setData(bindingPathPath, undefined, context?.pageName, true);
-				} else {
-					let temp = text ? selectedCode + text : text;
-					console.log('temp', temp);
-					setData(bindingPathPath, temp, context?.pageName);
-				}
-				callChangeEvent();
+				// console.log('without + temp', temp);
+				setData(bindingPathPath, temp, context?.pageName);
 			}
+			callChangeEvent();
 		}
 		callBlurEvent();
 		setFocus(false);
@@ -420,42 +383,40 @@ function PhoneNumber(props: ComponentProps) {
 			callChangeEvent();
 			return;
 		}
-		if (format) {
-			if (!text.startsWith('+')) {
-				let unformattedText = getUnformattedNumber(text);
-				let formattedtext = getFormattedNumber(unformattedText);
-				if (updateStoreImmediately && bindingPathPath) {
-					let temp =
+		if (!text.startsWith('+')) {
+			let unformattedText = getUnformattedNumber(text);
+			let formattedText = getFormattedNumber(unformattedText);
+			if (updateStoreImmediately && bindingPathPath) {
+				let temp = '';
+				if (format) {
+					temp =
 						text === '' && emptyValue
 							? mapValue[emptyValue]
 							: selectedCode +
-							  (storeFormatted ? seperator + formattedtext : unformattedText);
-					setValidationMessages([]);
-					setData(bindingPathPath, temp, context?.pageName);
-					callChangeEvent();
+							  (storeFormatted ? seperator + formattedText : unformattedText);
 				} else {
-					console.log('formattedtext', formattedtext);
-					setPhoneNumber(formattedtext);
+					temp = text === '' && emptyValue ? mapValue[emptyValue] : selectedCode + text;
 				}
-			} else setPhoneNumber(text);
-		} else {
-			let temp = text === '' && emptyValue ? mapValue[emptyValue] : selectedCode + text;
-			if (!text.startsWith('+') && updateStoreImmediately && bindingPathPath) {
 				setValidationMessages([]);
 				setData(bindingPathPath, temp, context?.pageName);
 				callChangeEvent();
-			} else setPhoneNumber(text);
-		}
+			} else {
+				let temp = '';
+				if (format) temp = formattedText;
+				else temp = text;
+				console.log('not update im', temp);
+				setPhoneNumber(temp);
+			}
+		} else setPhoneNumber(text);
 	};
 
 	const getFormattedNumber = (text: string) => {
-		let format = SORTED_COUNTRY_LIST.find(e => e.D == selectedCode)?.format ?? [3, 3, 4];
+		let format = SORTED_COUNTRY_LIST.find(e => e.D == selectedCode)?.F ?? [];
+		if (format?.length == 0) format = [5, 5];
 		let formatLength = format.reduce((acc, e) => acc + e, 0);
 		text = getUnformattedNumber(text);
-		console.log('text', text);
-		if (text.length > formatLength) {
-			return text;
-		}
+		// console.log('text', text);
+		if (text.length > formatLength) return text;
 		let formattedText = '';
 		let startInd = 0;
 		format.forEach(e => {
@@ -490,7 +451,10 @@ function PhoneNumber(props: ComponentProps) {
 
 	const dialCodeLabel =
 		noCodeForFirstCountry && selectedCode === countryList[0].D ? undefined : (
-			<span className="_dialCodeLabel">{selectedCode}</span>
+			<span style={computedStyles.dialCodeLabel ?? {}} className="_dialCodeLabel">
+				<SubHelperComponent definition={definition} subComponentName="dialCodeLabel" />
+				{selectedCode}
+			</span>
 		);
 	const leftChildren = (
 		<>
@@ -501,6 +465,8 @@ function PhoneNumber(props: ComponentProps) {
 				isSearchable={isSearchable}
 				searchLabel={searchLabel}
 				clearSearchTextOnClose={clearSearchTextOnClose}
+				computedStyles={computedStyles}
+				definition={definition}
 			/>
 			{dialCodeLabel}
 		</>
@@ -597,6 +563,48 @@ const component: Component = {
 					</svg>
 				</IconHelper>
 			),
+		},
+		{
+			name: 'dropdownSelect',
+			displayName: 'Dropdown Select',
+			description: 'Dropdown Select',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'selectedOption',
+			displayName: 'Selected Option',
+			description: 'Selected Option',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'arrowIcon',
+			displayName: 'Arrow Icon',
+			description: 'Arrow Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'dialCodeLabel',
+			displayName: 'Dial Code Label',
+			description: 'Dial Code Label',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'dropdownBody',
+			displayName: 'Dropdown Body',
+			description: 'Dropdown Body',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'dropdownSearchBox',
+			displayName: 'Dropdown Search Box',
+			description: 'Dropdown Search Box',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'dropdownOption',
+			displayName: 'Dropdown Option',
+			description: 'Dropdown Option',
+			icon: 'fa-solid fa-box',
 		},
 		{
 			name: 'inputBox',
