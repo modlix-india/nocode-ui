@@ -171,15 +171,15 @@ function Otp(props: ComponentProps) {
 				e.preventDefault();
 				if (!(target.nextSibling instanceof HTMLElement)) return;
 				const nextSibling = target.nextSibling as HTMLElement;
-				if (nextSibling && 'focus' in nextSibling) {
-					nextSibling.focus();
+				if (nextSibling) {
+					nextSibling?.focus();
 				}
 			} else if (e.key === 'Backspace' && (value === '' || value[index] === ' ')) {
 				e.preventDefault();
 				if (!(target.previousSibling instanceof HTMLElement)) return;
 				const prevSibling = target.previousSibling as HTMLInputElement;
-				if (prevSibling && 'focus' in prevSibling) {
-					prevSibling.focus();
+				if (prevSibling) {
+					prevSibling?.focus();
 				}
 			}
 		};
