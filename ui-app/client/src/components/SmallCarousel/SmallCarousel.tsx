@@ -1,4 +1,4 @@
-import { deepEqual, isNullValue } from '@fincity/kirun-js';
+import { deepEqual } from '@fincity/kirun-js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
 	PageStoreExtractor,
@@ -7,18 +7,18 @@ import {
 	setData,
 } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
+import { shortUUID } from '../../util/shortUUID';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { IconHelper } from '../util/IconHelper';
+import { updateLocationForChild } from '../util/updateLoactionForChild';
 import useDefinition from '../util/useDefinition';
+import { flattenUUID } from '../util/uuid';
 import SmallCarouselStyle from './SmallCarouselStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './smallCarouselProperties';
 import { styleDefaults } from './smallCarouselStyleProperties';
-import { flattenUUID } from '../util/uuid';
-import { shortUUID } from '../../util/shortUUID';
-import { updateLocationForChild } from '../util/updateLoactionForChild';
 
 // css Class Props for different position of the navbar and arrow buttons
 const cssProp = [
@@ -111,44 +111,25 @@ function SmallCarousel(props: ComponentProps) {
 	// checking if we have objects values which are duplicate so, we don't assign the unique key to that again.
 	useEffect(() => {
 		if (!bindingPathPath || !indKeys.current) return;
+
 		return addListenerAndCallImmediatelyWithChildrenActivity(
 			(_, _v) => {
 				setValue(_v ?? []);
 				if (!_v?.length) return;
 
-				const duplicateCheck = new Array<{ object: any; occurance: number }>();
-				for (let i = 0; i < _v.length; i++) {
-					let oldIndex = -1;
+				const keyMap = new Map();
 
-					let duplicate = duplicateCheck.find(e => deepEqual(e.object, _v[i]));
-
-					if (!duplicate) {
-						duplicate = { object: _v[i], occurance: 1 };
-						duplicateCheck.push(duplicate);
+				for (const item of _v) {
+					const key = keyMap.get(item);
+					if (key) {
+						indKeys.current.array[key.index] = key.key; // Assign existing key
 					} else {
-						duplicate.occurance++;
-					}
-
-					let occurance = duplicate.occurance;
-					let count = -1;
-					for (let oldIndexObject of indKeys.current.oldKeys) {
-						count++;
-						if (!deepEqual(oldIndexObject.object, _v[i])) continue;
-						occurance--;
-						if (occurance !== 0) continue;
-						oldIndex = count;
-						break;
-					}
-
-					if (oldIndex === -1) {
-						indKeys.current.array[i] = shortUUID();
-						if (_v[i] !== undefined && _v[i] !== null)
-							indKeys.current.oldKeys.push({
-								object: _v[i],
-								key: indKeys.current.array[i],
-							});
-					} else {
-						indKeys.current.array[i] = indKeys.current.oldKeys[oldIndex].key;
+						const newKey = shortUUID();
+						indKeys.current.array.push(newKey); // Add new key
+						keyMap.set(item, { key: newKey, index: indKeys.current.array.length - 1 });
+						if (item !== undefined && item !== null) {
+							indKeys.current.oldKeys.push({ object: item, key: newKey });
+						}
 					}
 				}
 			},
@@ -228,22 +209,18 @@ function SmallCarousel(props: ComponentProps) {
 				height = 0;
 
 			//initilizing the width if we have center mode, we need to adjust the children sizes, as the middle one is scaled in to 1.1.
-			width =
-				(isCenterMode()
-					? 100 -
-					  (innerSlides?.current?.length - noOfChilds == 0
-							? noOfChilds * 1.1
-							: innerSlides?.current?.length - noOfChilds + 1) /
-							1.1
-					: 100) / (noOfChilds == 0 ? 1 : noOfChilds);
-			height =
-				(isCenterMode()
-					? 100 -
-					  (innerSlides?.current?.length - noOfChilds == 0
-							? noOfChilds * 1.1
-							: innerSlides?.current?.length - noOfChilds + 1) /
-							1.1
-					: 100) / (noOfChilds == 0 ? 1 : noOfChilds);
+			let isCenter = isCenterMode()
+				? 100 -
+				  (innerSlides?.current?.length - noOfChilds == 0
+						? noOfChilds * 1.1
+						: innerSlides?.current?.length - noOfChilds + 1) /
+						1.1
+				: 100;
+
+			let childs = noOfChilds == 0 ? 1 : noOfChilds;
+
+			width = isCenter / childs;
+			height = isCenter / childs;
 
 			//lopping and displaying the childrens whenever the applytransform is called first.
 			for (let i = 0; i < size; i++) {
@@ -318,22 +295,22 @@ function SmallCarousel(props: ComponentProps) {
 					list[curr].style.left = `${ref.current?.getBoundingClientRect().width}px`;
 				}
 
-				setTimeout(() => {
-					for (let i = 0; i < size; i++) {
-						let curr = (from + i) % size;
-						const cr = list[curr].getBoundingClientRect();
+				for (let i = 0; i < size; i++) {
+					let curr = (from + i) % size;
+					const cr = list[curr].getBoundingClientRect();
 
-						if (isVertical()) {
-							list[curr].style.top = `${top}px`;
-							list[curr].style.transition = `top ${animationDuration}ms ${easing}`;
-							top += cr.height;
-						} else {
-							list[curr].style.left = `${left}px`;
-							list[curr].style.transition = `left ${animationDuration}ms ${easing}`;
-							left += cr.width;
-						}
+					if (isVertical()) {
+						list[curr].style.top = `${top}px`;
+						list[curr].style.transition = `top ${animationDuration}ms ${easing}`;
+						top += cr.height;
+					} else {
+						list[curr].style.left = `${left}px`;
+						list[curr].style.transition = `left ${animationDuration}ms ${easing}`;
+						left += cr.width;
 					}
-				}, 0);
+				}
+
+				// this adds the removed elem from the right
 
 				setTimeout(() => {
 					for (let i = 0; i < removedComponent?.length; i++) {
