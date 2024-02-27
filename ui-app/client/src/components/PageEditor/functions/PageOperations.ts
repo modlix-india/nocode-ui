@@ -26,6 +26,8 @@ import components from '../../';
 interface ClipboardObject {
 	mainKey: string;
 	objects: { [key: string]: ComponentDefinition };
+	eventObjects?: { [key: string]: any };
+	pageId?: string | undefined;
 }
 
 export class PageOperations {
@@ -284,6 +286,8 @@ export class PageOperations {
 		//clicked component event keys
 		const currentCompProperties: any = def.componentDefinition[componentKey].properties;
 
+		if (!currentCompProperties) return [];
+
 		return eventNames
 			.filter(each => each in currentCompProperties)
 			.map(each => currentCompProperties[each].value);
@@ -299,14 +303,19 @@ export class PageOperations {
 		while (que.size() > 0) {
 			const x = que.pop();
 
+			console.log('curr compdef', x);
+
 			if (!x.children) {
 				eventKeys = eventKeys.concat(this.getCurrentCompEventKeys(x.key, def));
 				continue;
 			}
-			Object.keys(x.children).forEach(k => {
-				const e = def.componentDefinition[k];
+
+			for (let key of Object.keys(x.children)) {
+				console.log(key);
+				const e = def.componentDefinition[key];
 				que.add(e);
-			});
+			}
+
 			eventKeys = eventKeys.concat(this.getCurrentCompEventKeys(x.key, def));
 		}
 
@@ -359,10 +368,7 @@ export class PageOperations {
 				},
 			});
 		} else {
-			let def = {
-				...pageDef,
-				componentDefinition: { ...(pageDef.componentDefinition ?? {}) },
-			};
+			let def: PageDefinition = duplicate(pageDef);
 
 			const clickedCompEventKeys: Array<string> = this.getEventOfAllChildren(
 				componentKey,
@@ -400,9 +406,9 @@ export class PageOperations {
 				.filter(e => e.children?.[componentKey])
 				.map(e => e.key);
 			for (let i = 0; i < keys.length; i++) {
-				const x = duplicate(def.componentDefinition[keys[i]]);
+				const x = def.componentDefinition[keys[i]];
 
-				delete x.children[componentKey];
+				delete x.children?.[componentKey];
 				def.componentDefinition[x.key] = x;
 			}
 
@@ -716,6 +722,17 @@ export class PageOperations {
 			false,
 		);
 
+		const eventFunctionObj: { [key: string]: any } = Object.keys(cutObject.objects)
+			.flatMap(each => {
+				const eventKey = this.getCurrentCompEventKeys(each, def);
+				return eventKey.map(key => ({ [key]: def.eventFunctions[key] }));
+			})
+			.reduce((acc, curr) => ({ ...acc, ...curr }), {});
+
+		cutObject.eventObjects = eventFunctionObj;
+
+		cutObject.pageId = (pageDef as any)['id'];
+
 		navigator.clipboard.write([
 			new ClipboardItem({
 				'text/plain': new Blob([COPY_CD_KEY + JSON.stringify(cutObject)], {
@@ -872,13 +889,95 @@ export class PageOperations {
 			// Since we can paste from copy, the keys will already there in the definition.
 			// We need to change keys. If we cut there won't these keys and can continue with pasting.
 			// If we paste twice from a cut, there will be already there in the definition.
+
 			if (this._hasAtleastOneKey(pageDef, clipObj)) {
-				clipObj = this._changeKeys(clipObj);
+				clipObj = this._changeKeys(clipObj, pageDef);
 			}
 
+			if ((pageDef as any)['id'] !== clipObj.pageId) {
+				if (this._hasAtleastOneEvent(pageDef, clipObj)) {
+					this.setIssue({
+						message: 'Do you want to Ignore the incoming event functions?',
+						options: ['Ignore', 'Duplicate', 'Override'],
+						defaultOption: 'Ignore',
+						callbackOnOption: {
+							Ignore: () => {
+								if (clipObj) {
+									this._dropOn(
+										pageDef,
+										componentKey,
+										clipObj.mainKey,
+										clipObj.objects,
+										undefined,
+										undefined,
+										clipObj.eventObjects,
+									);
+								}
+							},
+							Duplicate: () => {
+								clipObj = this._changeEventKeys(clipObj!)[0];
+								this._dropOn(
+									pageDef,
+									componentKey,
+									clipObj.mainKey,
+									clipObj.objects,
+									undefined,
+									undefined,
+									clipObj.eventObjects,
+								);
+							},
+							Override: () => {
+								let indexMap;
+								[clipObj, indexMap] = this._changeEventKeys(clipObj!);
+								const allEventKeys: Array<string> = Object.values(
+									pageDef.componentDefinition,
+								)
+									.filter(component => component.properties)
+									.flatMap(component =>
+										this.getCurrentCompEventKeys(component.key, pageDef),
+									);
+								const eventKeysSet: Set<string> = new Set(allEventKeys);
+								Object.keys(indexMap).forEach(each => {
+									if (!eventKeysSet.has(each)) {
+										delete pageDef.eventFunctions[each];
+									}
+								});
+								this._dropOn(
+									pageDef,
+									componentKey,
+									clipObj.mainKey,
+									clipObj.objects,
+									undefined,
+									undefined,
+									clipObj.eventObjects,
+								);
+							},
+						},
+					});
+				} else {
+					this._dropOn(
+						pageDef,
+						componentKey,
+						clipObj.mainKey,
+						clipObj.objects,
+						undefined,
+						undefined,
+						clipObj.eventObjects,
+					);
+				}
+			} else {
+				this._dropOn(
+					pageDef,
+					componentKey,
+					clipObj.mainKey,
+					clipObj.objects,
+					undefined,
+					undefined,
+					clipObj.eventObjects,
+				);
+			}
 			// Once the clipboard object is sorted and keys are changed if required we move ahead with
 			// pasting / dropping.
-			this._dropOn(pageDef, componentKey, clipObj.mainKey, clipObj.objects);
 		});
 	}
 
@@ -897,7 +996,7 @@ export class PageOperations {
 			);
 	}
 
-	private _changeKeys(clipObj: ClipboardObject): ClipboardObject {
+	private _changeKeys(clipObj: ClipboardObject, pageDef?: PageDefinition): ClipboardObject {
 		const newObj: ClipboardObject = { mainKey: '', objects: {} };
 		const index: { [key: string]: string } = {};
 
@@ -914,6 +1013,7 @@ export class PageOperations {
 		// Change the main key from the set of the new keys generated.
 		newObj.mainKey = index[clipObj.mainKey];
 
+		newObj.pageId = clipObj.pageId;
 		// Reset all children keys from the index that is generated earlier.
 		Object.values(newObj.objects).forEach(e => {
 			if (!e.children) return;
@@ -931,7 +1031,54 @@ export class PageOperations {
 			}
 		});
 
+		newObj.eventObjects = clipObj.eventObjects;
+
 		return newObj;
+	}
+
+	private _changeEventKeys(
+		clipObj: ClipboardObject,
+	): [ClipboardObject, { [key: string]: string }] {
+		const newObj: { [key: string]: any } = {};
+		const index: { [key: string]: string } = {};
+
+		if (!clipObj.eventObjects) return [clipObj, {}];
+
+		let eventObj: { [key: string]: any } = clipObj.eventObjects;
+
+		Object.entries(eventObj).forEach(each => {
+			const x = duplicate(each[1]);
+			const newKey = this.genId();
+			newObj[newKey] = x;
+			index[each[0]] = newKey;
+		});
+
+		Object.values(clipObj.objects).forEach(e => {
+			const cdDef = components.get(e.type ?? '');
+
+			if (!cdDef) {
+				return [];
+			}
+
+			const eventNames = cdDef?.properties
+				.filter(each => each.editor == ComponentPropertyEditor.EVENT_SELECTOR)
+				.map(each => each.name);
+
+			//clicked component event keys
+			const currentCompProperties: any = e.properties;
+
+			if (!currentCompProperties) return;
+
+			eventNames
+				.filter(each => each in currentCompProperties)
+				.forEach(each => {
+					currentCompProperties[each].value = index[currentCompProperties[each].value];
+				});
+		});
+
+		clipObj.eventObjects = newObj;
+
+		return [clipObj, index];
 	}
 
 	private _hasAtleastOneKey(pageDef: PageDefinition, clipObj: ClipboardObject): boolean {
@@ -943,6 +1090,16 @@ export class PageOperations {
 		return false;
 	}
 
+	private _hasAtleastOneEvent(pageDef: PageDefinition, clipObj: ClipboardObject) {
+		if (!pageDef.eventFunctions) return false;
+
+		if (!clipObj.eventObjects) return false;
+
+		for (let str of Object.keys(clipObj.eventObjects))
+			if (pageDef.eventFunctions[str]) return true;
+		return false;
+	}
+
 	private _dropOn(
 		pageDef: PageDefinition,
 		onKey: string,
@@ -950,11 +1107,14 @@ export class PageOperations {
 		comps: { [key: string]: ComponentDefinition },
 		sourceParent?: string,
 		sourceDisplayOrder?: number,
+		events?: { [key: string]: any } | undefined,
 	) {
 		//Dropped On component
 		let doComp: ComponentDefinition | undefined = pageDef.componentDefinition[onKey];
 		//Dropping component
 		const dpComp: ComponentDefinition | undefined = comps[mainKey];
+
+		const eventFunc: { [key: string]: any } | undefined = events;
 
 		let doCompComponent = ComponentDefinitions.get(doComp.type);
 		const dpCompComponent = ComponentDefinitions.get(dpComp.type);
@@ -1102,6 +1262,11 @@ export class PageOperations {
 									delete inPgDef.componentDefinition[doComp!.key]?.children?.[e];
 								});
 
+								inPgDef.eventFunctions = {
+									...inPgDef.eventFunctions,
+									...eventFunc,
+								};
+
 								this._updateDisplayOrder(
 									inPgDef.componentDefinition[doComp.key],
 									inPgDef,
@@ -1136,6 +1301,7 @@ export class PageOperations {
 			return;
 		}
 
+		pageDef.eventFunctions = { ...pageDef.eventFunctions, ...eventFunc };
 		setData(this.defPath!, pageDef, this.pageExtractor.getPageName());
 	}
 
