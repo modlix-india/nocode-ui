@@ -1,4 +1,9 @@
-import { TokenValueExtractor, duplicate, isNullValue } from '@fincity/kirun-js';
+import {
+	ExpressionEvaluator,
+	TokenValueExtractor,
+	duplicate,
+	isNullValue,
+} from '@fincity/kirun-js';
 import { setStoreData, useStore } from '@fincity/path-reactive-state-management';
 import {
 	LOCAL_STORE_PREFIX,
@@ -8,12 +13,12 @@ import {
 } from '../constants';
 import { messageToMaster } from '../slaveFunctions';
 import { ComponentProperty, DataLocation, LocationHistory } from '../types/common';
+import { FillerExtractor } from './FillerExtractor';
 import { LocalStoreExtractor } from './LocalStoreExtractor';
-import { ParentExtractorForRunEvent } from './ParentExtractor';
+import { ParentExtractor, ParentExtractorForRunEvent } from './ParentExtractor';
 import { SpecialTokenValueExtractor } from './SpecialTokenValueExtractor';
 import { ThemeExtractor } from './ThemeExtractor';
 import { sample } from './sampleData';
-import { FillerExtractor } from './FillerExtractor';
 
 export class StoreExtractor extends SpecialTokenValueExtractor {
 	private store: any;
@@ -29,6 +34,10 @@ export class StoreExtractor extends SpecialTokenValueExtractor {
 	}
 	getPrefix(): string {
 		return this.prefix;
+	}
+
+	public getStore(): any {
+		return this.store;
 	}
 }
 
@@ -129,7 +138,7 @@ export function getDataFromPath(
 	...tve: Array<TokenValueExtractor>
 ) {
 	if (!path) return undefined;
-	if (locationHistory?.length)
+	if (locationHistory?.length && !tve.some(e => e.getPrefix() === 'Parent.'))
 		tve = [
 			...tve,
 			new ParentExtractorForRunEvent(
@@ -158,7 +167,7 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 
 		if (!parts.length) {
 			if (isNullValue(value)) localStore.removeItem(key);
-			else localStore.setItem(key, value);
+			else localStore.setItem(key, JSON.stringify(value));
 			return;
 		}
 		if (!store && parts.length) {
@@ -250,6 +259,15 @@ export class PageStoreExtractor extends SpecialTokenValueExtractor {
 
 	public getPageName(): string {
 		return this.pageName;
+	}
+
+	public getStore(): any {
+		return this.retrieveElementFrom(
+			`Store.pageData.${this.pageName}`,
+			['pageData', this.pageName],
+			0,
+			_store,
+		);
 	}
 }
 

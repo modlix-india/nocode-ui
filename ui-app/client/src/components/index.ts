@@ -51,6 +51,7 @@ import FormStorageEditor from './FormStorageEditor/FormStorageEditor';
 import SectionGrid from './SectionGrid/SectionGrid';
 import SmallCarousel from './SmallCarousel/SmallCarousel';
 
+import Chart from './Chart/Chart';
 
 export default new Map<string, Component>([
 	[Button.name, Button],
@@ -104,4 +105,5 @@ export default new Map<string, Component>([
 	[FormStorageEditor.name, FormStorageEditor],
 	[SectionGrid.name, SectionGrid],
 	[SmallCarousel.name, SmallCarousel]
+	[Chart.name, Chart],
 ]);

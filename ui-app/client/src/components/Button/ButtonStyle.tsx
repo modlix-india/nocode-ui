@@ -44,7 +44,6 @@ export default function ButtonStyle({ theme }: { theme: Map<string, Map<string, 
 		}
 
 		${PREFIX} .textToolBar {
-			position: absolute;
 			top: 100%;
 			margin-top: 6px;
 			display: flex;

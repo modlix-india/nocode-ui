@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import {
 	PageStoreExtractor,
+	addListener,
 	addListenerAndCallImmediatelyWithChildrenActivity,
 } from '../../../../context/StoreContext';
 import { IconHelper } from '../../../util/IconHelper';
+import Portal from '../../../Portal';
 
 interface DnDIFrameProps {
 	personalizationPath: string | undefined;
@@ -16,6 +18,157 @@ interface DnDIFrameProps {
 	onChangePersonalization: (prop: string, value: any) => void;
 }
 
+const DEVICES = {
+	desktop: [
+		{
+			name: 'Desktop',
+			width: 1280,
+			height: 1024,
+		},
+		{
+			name: 'HD Desktop',
+			width: 1366,
+			height: 768,
+		},
+		{
+			name: 'WXGA+ Desktop',
+			width: 1440,
+			height: 900,
+		},
+		{
+			name: 'WXGA Desktop',
+			width: 1600,
+			height: 900,
+		},
+		{
+			name: 'FHD Desktop',
+			width: 1920,
+			height: 1080,
+		},
+		{
+			name: 'QHD Desktop',
+			width: 2560,
+			height: 1440,
+		},
+		{
+			name: '4K Desktop',
+			width: 3840,
+			height: 2160,
+		},
+	],
+
+	tablet: [
+		{
+			name: 'Tablet',
+			width: 960,
+			height: 768,
+		},
+		{
+			name: 'iPad Mini',
+			width: 1024,
+			height: 768,
+		},
+		{
+			name: 'iPad Air',
+			width: 1180,
+			height: 820,
+		},
+		{
+			name: 'iPad Pro',
+			width: 1366,
+			height: 1024,
+		},
+		{
+			name: 'Surface Pro 7',
+			width: 1368,
+			height: 912,
+		},
+		{
+			name: 'Samsung Galaxy Fold (open)',
+			width: 717,
+			height: 512,
+		},
+		{
+			name: 'Samsung Galaxy Ultra (Landscape)',
+			width: 915,
+			height: 412,
+		},
+		{
+			name: 'Nest Hub',
+			width: 1024,
+			height: 600,
+		},
+		{
+			name: 'Nest Hub Max',
+			width: 1280,
+			height: 800,
+		},
+	],
+
+	mobile: [
+		{
+			name: 'Mobile',
+			width: 480,
+			height: 667,
+		},
+		{
+			name: 'iPhone SE',
+			width: 375,
+			height: 667,
+		},
+		{
+			name: 'iPhone 6/7/8 Plus',
+			width: 414,
+			height: 736,
+		},
+		{
+			name: 'iPhone XS Max',
+			width: 414,
+			height: 896,
+		},
+		{
+			name: 'iPhone 15 Pro',
+			width: 390,
+			height: 844,
+		},
+		{
+			name: 'iPhone 15 Pro Max',
+			width: 428,
+			height: 926,
+		},
+		{
+			name: 'Samsung Galaxy S20',
+			width: 360,
+			height: 800,
+		},
+		{
+			name: 'Samsung Galaxy S20+',
+			width: 412,
+			height: 870,
+		},
+		{
+			name: 'Samsung Galaxy S20 Ultra',
+			width: 412,
+			height: 908,
+		},
+		{
+			name: 'Google Pixel 8 XL',
+			width: 411,
+			height: 823,
+		},
+		{
+			name: 'Google Pixel 8',
+			width: 411,
+			height: 731,
+		},
+		{
+			name: 'Nothing',
+			width: 360,
+			height: 740,
+		},
+	],
+};
+
 export default function DnDIFrame({
 	url,
 	personalizationPath,
@@ -26,19 +179,27 @@ export default function DnDIFrame({
 	previewMode,
 	onChangePersonalization,
 }: Readonly<DnDIFrameProps>) {
+	const [theme, setTheme] = useState('_light');
+
+	useEffect(() => {
+		if (!personalizationPath) return;
+
+		return addListener(
+			(_, v: string) => setTheme(v ?? '_light'),
+			pageExtractor,
+			`${personalizationPath}.theme`,
+		);
+	}, [personalizationPath]);
+
 	const [desktop, setDesktop] = useState<boolean>(true);
 	const [tablet, setTablet] = useState<boolean>(true);
 	const [mobile, setMobile] = useState<boolean>(true);
 
-	const [desktopHeight, setDesktopHeight] = useState('100%');
-	const [tabletHeight, setTabletHeight] = useState('100%');
-	const [mobileHeight, setMobileHeight] = useState('100%');
-
 	const [scale, setScale] = useState<number>(1);
 
-	const [mobileWidth, setMobileWidth] = useState<number>(480);
-	const [tabletWidth, setTabletWidth] = useState<number>(960);
-	const [desktopWidth, setDesktopWidth] = useState<number>(1280);
+	const [desktopDevice, setDesktopDevice] = useState(DEVICES.desktop[0]);
+	const [tabletDevice, setTabletDevice] = useState(DEVICES.tablet[0]);
+	const [mobileDevice, setMobileDevice] = useState(DEVICES.mobile[0]);
 
 	useEffect(() => {
 		if (!personalizationPath) return;
@@ -48,63 +209,37 @@ export default function DnDIFrame({
 				setTablet(v?.devices?.tablet ?? true);
 				setMobile(v?.devices?.mobile ?? true);
 				setScale(v?.devices?.scale ?? 1);
+				if (v?.devices?.desktopDevice) {
+					setDesktopDevice(
+						DEVICES.desktop.find(d => d.name === v.devices.desktopDevice) ??
+							DEVICES.desktop[0],
+					);
+				}
+				if (v?.devices?.tabletDevice) {
+					setTabletDevice(
+						DEVICES.tablet.find(d => d.name === v.devices.tabletDevice) ??
+							DEVICES.tablet[0],
+					);
+				}
+				if (v?.devices?.mobileDevice) {
+					setMobileDevice(
+						DEVICES.mobile.find(d => d.name === v.devices.mobileDevice) ??
+							DEVICES.mobile[0],
+					);
+				}
 			},
 			pageExtractor,
 			`${personalizationPath}`,
 		);
 	}, [personalizationPath]);
 
-	useEffect(() => {
-		if (!desktopIframe.current) return;
-		const handle = setInterval(() => {
-			const hgt = desktopIframe.current?.contentWindow?.document.body?.scrollHeight + 'px';
-			if (
-				(desktopIframe.current?.contentWindow?.document.body?.scrollHeight ?? 0) -
-					Number.parseInt(desktopHeight) <
-				50
-			)
-				return;
-			setDesktopHeight(hgt);
-		}, 100);
-
-		return () => clearInterval(handle);
-	}, [desktopIframe.current, desktopHeight]);
-
-	useEffect(() => {
-		if (!tabletIframe.current) return;
-		const handle = setInterval(() => {
-			const hgt = tabletIframe.current?.contentWindow?.document.body?.scrollHeight + 'px';
-			if (
-				(tabletIframe.current?.contentWindow?.document.body?.scrollHeight ?? 0) -
-					Number.parseInt(tabletHeight) <
-				50
-			)
-				return;
-			setTabletHeight(hgt);
-		}, 100);
-
-		return () => clearInterval(handle);
-	}, [tabletIframe.current, tabletHeight]);
-
-	useEffect(() => {
-		if (!mobileIframe.current) return;
-		const handle = setInterval(() => {
-			const hgt = mobileIframe.current?.contentWindow?.document.body?.scrollHeight + 'px';
-			if (
-				(mobileIframe.current?.contentWindow?.document.body?.scrollHeight ?? 0) -
-					Number.parseInt(mobileHeight) <
-				50
-			)
-				return;
-			setMobileHeight(hgt);
-		}, 100);
-
-		return () => clearInterval(handle);
-	}, [mobileIframe.current, mobileHeight]);
-
 	let desktopComponent = <></>;
 	let tabletComponent = <></>;
 	let mobileComponent = <></>;
+
+	const [showDevices, setShowDevices] = useState<
+		{ left: number; top: number; name: 'desktop' | 'tablet' | 'mobile' } | undefined
+	>();
 
 	let left = 0;
 	if (desktop) {
@@ -112,17 +247,20 @@ export default function DnDIFrame({
 			<div
 				className="_iframe"
 				style={{
-					minWidth: desktopWidth + 'px',
-					maxWidth: desktopWidth + 'px',
+					minWidth: desktopDevice.width + 'px',
+					maxWidth: desktopDevice.width + 'px',
 					gap: `${20 / scale}px`,
 				}}
 			>
 				<div
 					className="_iframeHeader _screenSizes"
 					style={{ width: `${scale * 100}%`, transform: `scale(${1 / scale})` }}
+					onClick={e =>
+						setShowDevices({ left: e.clientX, top: e.clientY, name: 'desktop' })
+					}
 				>
 					<DesktopIcon />
-					DESKTOP
+					{desktopDevice.name} ({desktopDevice.width} x {desktopDevice.height})
 				</div>
 				<iframe
 					id="desktop"
@@ -131,13 +269,15 @@ export default function DnDIFrame({
 					title="Desktop"
 					ref={desktopIframe}
 					src={url}
-					height={desktopHeight}
-					width={desktopWidth}
+					height={desktopDevice.height}
+					width={desktopDevice.width}
 				/>
 			</div>
 		);
+	}
 
-		left += desktopWidth + 20;
+	if (desktop && (tablet || mobile)) {
+		left += desktopDevice.width + 20;
 	}
 
 	if (tablet) {
@@ -145,17 +285,20 @@ export default function DnDIFrame({
 			<div
 				className="_iframe"
 				style={{
-					minWidth: tabletWidth + 'px',
-					maxWidth: tabletWidth + 'px',
+					minWidth: tabletDevice.width + 'px',
+					maxWidth: tabletDevice.width + 'px',
 					gap: `${20 / scale}px`,
 				}}
 			>
 				<div
 					className="_iframeHeader _screenSizes"
 					style={{ width: `${scale * 100}%`, transform: `scale(${1 / scale})` }}
+					onClick={e =>
+						setShowDevices({ left: e.clientX, top: e.clientY, name: 'tablet' })
+					}
 				>
 					<TabletIcon />
-					TABLET
+					{tabletDevice.name} ({tabletDevice.width} x {tabletDevice.height})
 				</div>
 				<iframe
 					id="tablet"
@@ -164,13 +307,15 @@ export default function DnDIFrame({
 					title="Tablet"
 					ref={tabletIframe}
 					src={url}
-					height={tabletHeight}
-					width={tabletWidth}
+					height={tabletDevice.height}
+					width={tabletDevice.width}
 				/>
 			</div>
 		);
+	}
 
-		left += tabletWidth + 20;
+	if (tablet && mobile) {
+		left += tabletDevice.width + 20;
 	}
 
 	if (mobile) {
@@ -178,17 +323,20 @@ export default function DnDIFrame({
 			<div
 				className="_iframe"
 				style={{
-					minWidth: mobileWidth + 'px',
-					maxWidth: mobileWidth + 'px',
+					minWidth: mobileDevice.width + 'px',
+					maxWidth: mobileDevice.width + 'px',
 					gap: `${20 / scale}px`,
 				}}
 			>
 				<div
 					className="_iframeHeader _screenSizes"
 					style={{ width: `${scale * 100}%`, transform: `scale(${1 / scale})` }}
+					onClick={e =>
+						setShowDevices({ left: e.clientX, top: e.clientY, name: 'mobile' })
+					}
 				>
 					<MobileIcon />
-					MOBILE
+					{mobileDevice.name} ({mobileDevice.width} x {mobileDevice.height})
 				</div>
 				<iframe
 					id="mobile"
@@ -197,13 +345,11 @@ export default function DnDIFrame({
 					title="Mobile"
 					ref={mobileIframe}
 					src={url}
-					height={mobileHeight}
-					width={mobileWidth}
+					height={mobileDevice.height}
+					width={mobileDevice.width}
 				/>
 			</div>
 		);
-
-		left += mobileWidth + 20;
 	}
 
 	let previewButton = <></>;
@@ -225,6 +371,42 @@ export default function DnDIFrame({
 					/>
 				</IconHelper>
 			</div>
+		);
+	}
+
+	let deviceMenu = <></>;
+	if (showDevices) {
+		let devices = DEVICES[showDevices.name];
+		deviceMenu = (
+			<Portal>
+				<div
+					className={`_popupMenuBackground ${theme}`}
+					onClick={() => setShowDevices(undefined)}
+				>
+					<div
+						className="_popupMenuContainer _plain"
+						style={{ left: showDevices.left, top: showDevices.top }}
+					>
+						<div className="_contextMenu">
+							{devices.map((d: { name: string; width: number; height: number }) => (
+								<div
+									key={d.name}
+									className="_popupMenuItem"
+									onClick={() => {
+										onChangePersonalization(
+											`devices.${showDevices.name}Device`,
+											d.name,
+										);
+										setShowDevices(undefined);
+									}}
+								>
+									{d.name} ({d.width} x {d.height})
+								</div>
+							))}
+						</div>
+					</div>
+				</div>
+			</Portal>
 		);
 	}
 
@@ -315,7 +497,9 @@ export default function DnDIFrame({
 				{desktopComponent}
 				{tabletComponent}
 				{mobileComponent}
+				<div className="_dummyDevice" style={{ transform: `scale(${1 / scale})` }} />
 			</div>
+			{deviceMenu}
 		</div>
 	);
 }
