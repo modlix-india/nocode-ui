@@ -158,22 +158,25 @@ function Otp(props: ComponentProps) {
 
 	const handleKeyDown = (index: number) => {
 		return (e: React.KeyboardEvent<HTMLInputElement>) => {
-			e.target instanceof HTMLInputElement;
+			if (!(e.target instanceof HTMLInputElement)) return;
 			const target = e.target as HTMLInputElement;
 			if (e.key === 'ArrowLeft') {
 				e.preventDefault();
+				if (!(target.previousSibling instanceof HTMLElement)) return;
 				const prevSibling = target.previousSibling as HTMLElement;
 				if (prevSibling) {
 					prevSibling?.focus();
 				}
 			} else if (e.key === 'ArrowRight') {
 				e.preventDefault();
+				if (!(target.nextSibling instanceof HTMLElement)) return;
 				const nextSibling = target.nextSibling as HTMLElement;
 				if (nextSibling && 'focus' in nextSibling) {
 					nextSibling.focus();
 				}
 			} else if (e.key === 'Backspace' && (value === '' || value[index] === ' ')) {
 				e.preventDefault();
+				if (!(target.previousSibling instanceof HTMLElement)) return;
 				const prevSibling = target.previousSibling as HTMLInputElement;
 				if (prevSibling && 'focus' in prevSibling) {
 					prevSibling.focus();
