@@ -303,15 +303,12 @@ export class PageOperations {
 		while (que.size() > 0) {
 			const x = que.pop();
 
-			console.log('curr compdef', x);
-
 			if (!x.children) {
 				eventKeys = eventKeys.concat(this.getCurrentCompEventKeys(x.key, def));
 				continue;
 			}
 
 			for (let key of Object.keys(x.children)) {
-				console.log(key);
 				const e = def.componentDefinition[key];
 				que.add(e);
 			}
