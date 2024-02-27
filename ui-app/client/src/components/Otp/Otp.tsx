@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
+import { Component, ComponentDefinition, ComponentPropertyDefinition, ComponentProps, LocationHistory } from '../../types/common';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediately,
@@ -17,6 +17,7 @@ import { styleDefaults } from './otpStyleProperties';
 import OtpInputStyle from './OtpStyle';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
+import { makePropertiesObject } from '../util/make';
 
 function Otp(props: ComponentProps) {
 	const [focus, setFocus] = React.useState(false);
@@ -80,7 +81,8 @@ function Otp(props: ComponentProps) {
 			pageExtractor,
 			bindingPathPath,
 		);
-	}, [bindingPathPath]);
+	}, [bindingPathPath,valueType]);
+	
 	useEffect(() => {
 		if (!validation) return;
 		const msgs = validate(
@@ -253,8 +255,15 @@ function Otp(props: ComponentProps) {
 	);
 }
 
-function OTP_VALIDATION(validation: any, value: any): Array<string> {
-	if (value.includes(' ')) return [validation.message];
+function MANDATORY
+(validation: any, value: any, def: ComponentDefinition, locationHistory: Array<LocationHistory>,
+	pageExtractor: PageStoreExtractor): Array<string> {
+
+	const {otpLength} = makePropertiesObject(
+		[propertiesDefinition.find(e => e.name == 'otpLength')!]
+	, def.properties?.otpLength, locationHistory,pageExtractor ? [pageExtractor] : []);
+
+	if (value.includes(' ') || (otpLength && value.length != otpLength)) return [validation.message];
 	return [];
 }
 
@@ -281,9 +290,7 @@ const component: Component = {
 		},
 	},
 	validations: {
-		OTP_VALIDATION: {
-			functionCode: OTP_VALIDATION,
-		},
+		MANDATORY,
 	},
 	sections: [{ name: 'Otp', pageName: 'otp' }],
 	subComponentDefinition: [
@@ -300,7 +307,7 @@ const component: Component = {
 						width="16.1"
 						height="16.1"
 						stroke="currentColor"
-						stroke-width="1.5"
+						strokeWidth="1.5"
 						fill="transparent"
 					/>
 					<circle cx="12" cy="12" r="1.5" fill="currentColor" />

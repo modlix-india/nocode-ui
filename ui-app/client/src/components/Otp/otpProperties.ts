@@ -23,7 +23,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Validation Rule',
 		editor: ComponentPropertyEditor.VALIDATION,
 		group: ComponentPropertyGroup.VALIDATION,
-		validationList:[{name:'OTP_VALIDATION',displayName:'Otp Validation',}],
+		validationList:[{name:'MANDATORY'}],
 		multiValued:true,
 		
 

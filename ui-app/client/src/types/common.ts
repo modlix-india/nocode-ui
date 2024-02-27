@@ -1,5 +1,6 @@
 import { Schema } from '@fincity/kirun-js';
 import { Validation } from './validation';
+import { PageStoreExtractor } from '../context/StoreContext';
 
 export interface ComponentProperty<T> {
 	value?: T;
@@ -171,7 +172,8 @@ export interface Component {
 	sections?: Array<Section>;
 	needShowInDesginMode?: boolean;
 	validations?: {
-		[name: string]:{functionCode: (validation: any, value: any) => Array<string>};
+		[name: string]: (validation: any, value: any, def: ComponentDefinition, locationHistory: Array<LocationHistory>,
+			pageExtractor: PageStoreExtractor) => Array<string>;
 	};
 }
 

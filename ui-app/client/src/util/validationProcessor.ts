@@ -100,7 +100,7 @@ function FILE_SIZE(validation: any, value: FileList): Array<string> {
 
 export const VALIDATION_FUNCTIONS: {
 	[key: string]: {
-		functionCode: (validation: any, value: any) => Array<string>;
+		functionCode: (validation: any, value: any, def: ComponentDefinition) => Array<string>;
 		displayName: string;
 		fields?: Array<ComponentPropertyDefinition>;
 	};
@@ -213,9 +213,9 @@ export function validate(
 	value: any,
 	locationHistory: Array<LocationHistory>,
 	pageExtractor: PageStoreExtractor,
-	
 ): Array<string> {
 	const CUSTOM_VAL_FUNC =  CD.get(def.type)?.validations;
+	
 	if (!validation?.length) return [];
 	return validation
 		.map((e: any) => {
@@ -231,9 +231,10 @@ export function validate(
 		})	
 		.filter((e: any) => e.condition !== false)
 		.flatMap((e: any) => {
-			if (CUSTOM_VAL_FUNC && CUSTOM_VAL_FUNC[e.type])
-				return CUSTOM_VAL_FUNC[e.type]?.functionCode(e, value);
-			else return VALIDATION_FUNCTIONS[e.type ?? 'MANDATORY']?.functionCode(e, value);
+			const type = e.type ?? 'MANDATORY';
+			if (CUSTOM_VAL_FUNC && CUSTOM_VAL_FUNC[type])
+				return CUSTOM_VAL_FUNC[type](e, value, def, locationHistory, pageExtractor);
+			else return VALIDATION_FUNCTIONS[type ?? 'MANDATORY']?.functionCode(e, value, def);
 		})
 		.map((e: string) => getTranslations(e, pageDefinition.translations))
 		.filter((e: string) => !!e);
