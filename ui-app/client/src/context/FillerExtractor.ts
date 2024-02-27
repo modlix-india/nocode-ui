@@ -22,4 +22,8 @@ export class FillerExtractor extends SpecialTokenValueExtractor {
 	getPrefix(): string {
 		return 'Filler.';
 	}
+
+	public getStore(): any {
+		return this.store;
+	}
 }
