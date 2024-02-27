@@ -70,7 +70,6 @@ function SmallCarousel(props: ComponentProps) {
 	);
 	const ref = useRef<HTMLDivElement>(null);
 	const [updatedDef, setUpdatedDef] = useState<any>();
-	const [transitionFrom, setTransitionFrom] = useState<number | undefined>(undefined);
 	const [hover, setHover] = useState<boolean>(false);
 	const innerSlides = useRef<any>([]);
 	const observableList = useRef<any>([]);
@@ -224,8 +223,6 @@ function SmallCarousel(props: ComponentProps) {
 			// left for horizontal mode and top for vertical.
 			let left = 0,
 				top = 0;
-			let h = 0,
-				w = 0;
 
 			let width = 0,
 				height = 0;
@@ -233,11 +230,19 @@ function SmallCarousel(props: ComponentProps) {
 			//initilizing the width if we have center mode, we need to adjust the children sizes, as the middle one is scaled in to 1.1.
 			width =
 				(isCenterMode()
-					? 100 - (innerSlides?.current?.length - noOfChilds + 1) / 1.1
+					? 100 -
+					  (innerSlides?.current?.length - noOfChilds == 0
+							? noOfChilds * 1.1
+							: innerSlides?.current?.length - noOfChilds + 1) /
+							1.1
 					: 100) / (noOfChilds == 0 ? 1 : noOfChilds);
 			height =
 				(isCenterMode()
-					? 100 - (innerSlides?.current?.length - noOfChilds + 1) / 1.1
+					? 100 -
+					  (innerSlides?.current?.length - noOfChilds == 0
+							? noOfChilds * 1.1
+							: innerSlides?.current?.length - noOfChilds + 1) /
+							1.1
 					: 100) / (noOfChilds == 0 ? 1 : noOfChilds);
 
 			//lopping and displaying the childrens whenever the applytransform is called first.
@@ -255,12 +260,10 @@ function SmallCarousel(props: ComponentProps) {
 					list[curr].style.top = `${top}px`;
 					list[curr].style.height = fixedChild ? `${height}%` : ``;
 					top += cr.height;
-					if (w < cr.width) w = cr.width;
 				} else {
 					list[curr].style.left = `${left}px`;
 					list[curr].style.width = fixedChild ? `${width}%` : ``;
 					left += cr.width;
-					if (h < cr.height) h = cr.height;
 				}
 			}
 
@@ -299,7 +302,9 @@ function SmallCarousel(props: ComponentProps) {
 				// when we move to the next slide.
 			} else if (direction == 1) {
 				let left = 0,
-					top = 0;
+					top = 0,
+					removedComponent: Array<any> = [];
+
 				for (let i = 0; i < (slidesToScroll ?? 1); i++) {
 					let curr = (from + i) % size;
 					const cr = list[curr].getBoundingClientRect();
@@ -308,13 +313,30 @@ function SmallCarousel(props: ComponentProps) {
 					} else {
 						left -= cr.width;
 					}
+
+					removedComponent.push(curr);
+					list[curr].style.left = `${ref.current?.getBoundingClientRect().width}px`;
 				}
+
 				setTimeout(() => {
-					let right = 0,
-						bottom = 0;
 					for (let i = 0; i < size; i++) {
-						if (left < 0) right++;
-						if (top < 0) bottom++;
+						let curr = (from + i) % size;
+						const cr = list[curr].getBoundingClientRect();
+
+						if (isVertical()) {
+							list[curr].style.top = `${top}px`;
+							list[curr].style.transition = `top ${animationDuration}ms ${easing}`;
+							top += cr.height;
+						} else {
+							list[curr].style.left = `${left}px`;
+							list[curr].style.transition = `left ${animationDuration}ms ${easing}`;
+							left += cr.width;
+						}
+					}
+				}, 0);
+
+				setTimeout(() => {
+					for (let i = 0; i < removedComponent?.length; i++) {
 						let curr = (from + i) % size;
 						const cr = list[curr].getBoundingClientRect();
 						if (isVertical()) {
@@ -329,7 +351,6 @@ function SmallCarousel(props: ComponentProps) {
 					}
 				}, 100);
 			}
-			setTransitionFrom(undefined);
 		},
 		[
 			currentRef.current,
@@ -448,12 +469,10 @@ function SmallCarousel(props: ComponentProps) {
 		// for autoplay
 		const handle = setInterval(
 			() => {
-				if (!isNullValue(transitionFrom)) return;
 				const c = currentRef.current.number;
 				currentRef.current.number = c + (slidesToScroll ?? 1);
 				if (currentRef.current.number >= innerSlides.current.length)
 					currentRef.current.number = 0;
-				setTransitionFrom(c);
 				applyTransform(
 					innerSlides.current,
 					innerSlides?.current?.length,
@@ -486,14 +505,12 @@ function SmallCarousel(props: ComponentProps) {
 	]);
 
 	const handleArrowButtonClick = (direction: any) => {
-		if (!isNullValue(transitionFrom)) return;
 		const c = currentRef.current.number;
 		const increment = direction === 'left' ? -1 : 1;
 		currentRef.current.number =
 			(c + increment * slidesToScroll + innerSlides?.current?.length) %
 			innerSlides?.current?.length;
 
-		setTransitionFrom(c);
 		setCurrent(c);
 		if (isCenterMode()) {
 			setCenter((center + increment) % innerSlides?.current?.length);
@@ -576,7 +593,7 @@ function SmallCarousel(props: ComponentProps) {
 				subComponentName="slideButtonsContainer"
 			></SubHelperComponent>
 			{showDotsButtons &&
-				(innerSlides?.current ?? []).map((e: any, key: any) => (
+				(value?.length > 0 ? value : updatedDef)?.map((e: any, key: any) => (
 					<button
 						key={`${key}_${currentRef?.current?.number}_${e?.key}`}
 						className={`slideNav ${
@@ -588,27 +605,18 @@ function SmallCarousel(props: ComponentProps) {
 						}`}
 						style={resolvedStyles.dotButtons ?? {}}
 						onClick={() => {
-							if (!isNullValue(transitionFrom)) return;
 							if (key == currentRef.current.number) return;
 
 							const c = currentRef?.current.number;
 							currentRef.current.number = key;
 
-							const forwardScroll =
-								(currentRef?.current?.number - c + innerSlides?.current?.length) %
-								innerSlides?.current?.length;
-							const backwardScroll =
-								(c - currentRef?.current?.number + innerSlides?.current?.length) %
-								innerSlides?.current?.length;
+							const toScroll = Math.abs(currentRef.current.number - c);
+							const dir = c > currentRef.current.number ? -1 : 1;
 
-							const toScroll = Math.min(forwardScroll, backwardScroll);
-
-							const dir = forwardScroll > backwardScroll ? -1 : 1;
-							setTransitionFrom(toScroll);
 							setCurrent(c);
 							if (isCenterMode()) {
 								setCenter(
-									backwardScroll > forwardScroll
+									c <= currentRef.current.number
 										? (center + toScroll) % innerSlides?.current?.length
 										: (center - toScroll + innerSlides?.current?.length) %
 												innerSlides?.current?.length,
