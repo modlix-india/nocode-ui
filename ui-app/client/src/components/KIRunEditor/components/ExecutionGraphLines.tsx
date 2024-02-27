@@ -222,7 +222,7 @@ export default function ExecutionGraphLines({
 								v = ll.pop();
 								if (Array.isArray(v)) {
 									ll.addAll(v);
-								} else if (typeof v === 'object') {
+								} else if (typeof v === 'object' && v !== null) {
 									ll.addAll(Array.from(Object.values(v)));
 								} else if (typeof v === 'string' && !set.has(v)) {
 									set.add(v);

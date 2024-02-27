@@ -50,6 +50,7 @@ import FillerDefinitionEditor from './FillerDefinitionEditor/FillerDefinitionEdi
 import FormStorageEditor from './FormStorageEditor/FormStorageEditor';
 import SectionGrid from './SectionGrid/SectionGrid';
 import PhoneNumber from './PhoneNumber/PhoneNumber';
+import Chart from './Chart/Chart';
 
 export default new Map<string, Component>([
 	[Button.name, Button],
@@ -103,4 +104,5 @@ export default new Map<string, Component>([
 	[FormStorageEditor.name, FormStorageEditor],
 	[SectionGrid.name, SectionGrid],
 	[PhoneNumber.name, PhoneNumber],
+	[Chart.name, Chart],
 ]);

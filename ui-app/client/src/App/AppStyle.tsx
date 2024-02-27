@@ -72,7 +72,7 @@ export default function AppStyle() {
 		box-sizing: border-box;
 	}
 
-	${window.isDesignMode ? 'html { overflow-y: hidden; }' : ''}
+	${window.isDesignMode ? 'html { width: calc(100% - 6px) }' : ''}
 
 	.hide{opacity:0;}
 	.show{opacity:1;}
