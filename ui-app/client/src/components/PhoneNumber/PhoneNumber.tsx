@@ -288,6 +288,32 @@ function PhoneNumber(props: ComponentProps) {
 		return dc;
 	};
 
+	const getUnformattedNumber = (text: string | undefined) => {
+		if (!text) return '';
+		return text.replace(/[^+\d]/g, '');
+	};
+
+	const getFormattedNumber = (text: string) => {
+		let format = SORTED_COUNTRY_LIST.find(e => e.D == selectedCode)?.F ?? [];
+		if (format?.length == 0) format = [5, 5];
+		let formatLength = format.reduce((acc, e) => acc + e, 0);
+		text = getUnformattedNumber(text);
+		if (text.length > formatLength) return text;
+		let formattedText = '';
+		let startInd = 0;
+		format.forEach(e => {
+			let endInd = startInd + e;
+			let stext = text.slice(startInd, endInd);
+			if (stext.length < text.slice(startInd, endInd + 1).length) {
+				formattedText += stext + seperator;
+			} else {
+				formattedText += stext;
+			}
+			startInd = endInd;
+		});
+		return formattedText;
+	};
+
 	useEffect(() => {
 		let tempList = [];
 		if (Array.isArray(countries) && Array.isArray(topCountries)) {
@@ -301,6 +327,8 @@ function PhoneNumber(props: ComponentProps) {
 				...tempList,
 				...SORTED_COUNTRY_LIST.filter(e => !topCountries.includes(e.C)),
 			];
+		} else if (Array.isArray(countries)) {
+			tempList = SORTED_COUNTRY_LIST.filter(e => countries.includes(e.C));
 		} else {
 			tempList = SORTED_COUNTRY_LIST;
 		}
@@ -309,8 +337,6 @@ function PhoneNumber(props: ComponentProps) {
 
 	useEffect(() => {
 		let unformattedText = getUnformattedNumber(value);
-		// console.log('value', value);
-		// console.log('unformattedText', unformattedText);
 		let dc = getDialCode(unformattedText);
 		if (dc) setSelectedCode(dc);
 		else setSelectedCode(countryList[0].D);
@@ -345,7 +371,6 @@ function PhoneNumber(props: ComponentProps) {
 			} else {
 				temp = dc + phone;
 			}
-			// console.log('with + temp', temp);
 			if (bindingPathPath) {
 				setData(bindingPathPath, temp, context?.pageName);
 				callChangeEvent();
@@ -355,7 +380,6 @@ function PhoneNumber(props: ComponentProps) {
 			if (event?.target.value === '' && removeKeyWhenEmpty) {
 				setData(bindingPathPath, undefined, context?.pageName, true);
 			} else {
-				// console.log('format blur');
 				let formattedText = getFormattedNumber(text);
 				let temp = '';
 				if (format) {
@@ -365,7 +389,6 @@ function PhoneNumber(props: ComponentProps) {
 				} else {
 					temp = text ? selectedCode + text : text;
 				}
-				// console.log('without + temp', temp);
 				setData(bindingPathPath, temp, context?.pageName);
 			}
 			callChangeEvent();
@@ -373,7 +396,6 @@ function PhoneNumber(props: ComponentProps) {
 		callBlurEvent();
 		setFocus(false);
 	};
-	// console.log('storeFormatted', storeFormatted);
 	const handleNumberChange = async (
 		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
 	) => {
@@ -404,37 +426,9 @@ function PhoneNumber(props: ComponentProps) {
 				let temp = '';
 				if (format) temp = formattedText;
 				else temp = text;
-				console.log('not update im', temp);
 				setPhoneNumber(temp);
 			}
 		} else setPhoneNumber(text);
-	};
-
-	const getFormattedNumber = (text: string) => {
-		let format = SORTED_COUNTRY_LIST.find(e => e.D == selectedCode)?.F ?? [];
-		if (format?.length == 0) format = [5, 5];
-		let formatLength = format.reduce((acc, e) => acc + e, 0);
-		text = getUnformattedNumber(text);
-		// console.log('text', text);
-		if (text.length > formatLength) return text;
-		let formattedText = '';
-		let startInd = 0;
-		format.forEach(e => {
-			let endInd = startInd + e;
-			let stext = text.slice(startInd, endInd);
-			if (stext.length < text.slice(startInd, endInd + 1).length) {
-				formattedText += stext + seperator;
-			} else {
-				formattedText += stext;
-			}
-			startInd = endInd;
-			// console.log('formattedText', formattedText);
-		});
-		return formattedText;
-	};
-	const getUnformattedNumber = (text: string | undefined) => {
-		if (!text) return '';
-		return text.replace(/[^+\d]/g, '');
 	};
 
 	const handleCountryChange = async (dc: string) => {
