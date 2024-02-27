@@ -35,7 +35,6 @@ export function ValidationEditor({
 					acc[name] = { ...VALIDATION_FUNCTIONS[name] };
 					if (displayName != undefined) acc[name].displayName = displayName;
 					if (fields != undefined) acc[name].fields = fields;
-					npm;
 				} else {
 					acc[name] = {
 						displayName: displayName ?? name,

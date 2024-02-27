@@ -26,7 +26,6 @@ import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { makePropertiesObject } from '../util/make';
 
 function Otp(props: ComponentProps) {
-	const [focus, setFocus] = React.useState(false);
 	const [focusBoxIndex, setFocusBoxIndex] = React.useState(0);
 	const [validationMessages, setValidationMessages] = React.useState<Array<string>>([]);
 	const {
@@ -60,7 +59,7 @@ function Otp(props: ComponentProps) {
 	);
 	const computedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
-		{ focus, readOnly },
+		{ focus: focusBoxIndex != -1, readOnly },
 		stylePropertiesWithPseudoStates,
 	);
 	const [isDirty, setIsDirty] = React.useState(false);
@@ -142,33 +141,30 @@ function Otp(props: ComponentProps) {
 				? setData(bindingPathPath, newValueArray.join(''), context?.pageName)
 				: setValue(newValueArray.join(''));
 			if (inputValue === '' && index > 0 && target.previousSibling !== null) {
-				const prevSibling = target.previousSibling as HTMLInputElement;
-				prevSibling.focus();
+				if (target.previousSibling instanceof HTMLInputElement)
+					(target.previousSibling as HTMLInputElement).focus();
 			} else if (target.nextSibling && inputValue !== '' && index < otpLength - 1) {
-				const nxtSibling = target.nextSibling as HTMLInputElement;
-				nxtSibling.focus();
+				if (target.nextSibling instanceof HTMLInputElement)
+					(target.nextSibling as HTMLInputElement).focus();
 			}
 		}
 	};
 
 	const handleBlur = () => {
-		setFocus(false);
 		setIsDirty(true);
 		setFocusBoxIndex(-1);
 	};
-	const handleFocus = (index: number) => {
-		setFocus(true);
-		setFocusBoxIndex(index);
-	};
+	const handleFocus = (index: number) => setFocusBoxIndex(index);
 
 	const handleKeyDown = (index: number) => {
 		return (e: React.KeyboardEvent<HTMLInputElement>) => {
+			e.target instanceof HTMLInputElement;
 			const target = e.target as HTMLInputElement;
 			if (e.key === 'ArrowLeft') {
 				e.preventDefault();
 				const prevSibling = target.previousSibling as HTMLElement;
-				if (prevSibling && 'focus' in prevSibling) {
-					prevSibling.focus();
+				if (prevSibling) {
+					prevSibling?.focus();
 				}
 			} else if (e.key === 'ArrowRight') {
 				e.preventDefault();
@@ -221,7 +217,7 @@ function Otp(props: ComponentProps) {
 			<span
 				style={computedStyles.supportText ?? {}}
 				className={`_supportText ${readOnly ? 'disabled' : ''} ${
-					focus ? '_supportTextActive' : ''
+					focusBoxIndex != -1 ? '_supportTextActive' : ''
 				}`}
 			>
 				<SubHelperComponent definition={definition} subComponentName="supportText" />
@@ -237,6 +233,7 @@ function Otp(props: ComponentProps) {
 			}`}
 			style={computedStyles.comp ?? {}}
 		>
+			<HelperComponent context={props.context} definition={definition} />
 			{Array.from({ length: otpLength }).map((_, index) => (
 				<input
 					autoFocus={autoFocus === true && index === 0}
@@ -251,7 +248,9 @@ function Otp(props: ComponentProps) {
 					onBlur={handleBlur}
 					onKeyDown={handleKeyDown(index)}
 					style={inputStyle}
-					className={`_inputBox ${focusBoxIndex === index && focus ? '_isActive' : ''}${
+					className={`_inputBox ${
+						focusBoxIndex === index && focusBoxIndex != -1 ? '_isActive' : ''
+					}${
 						!(focusBoxIndex === index && focus) && value[index]?.trim()?.length
 							? '_hasValue'
 							: ''
@@ -260,8 +259,6 @@ function Otp(props: ComponentProps) {
 			))}
 
 			{validationsOrSupportText}
-
-			<HelperComponent context={props.context} definition={definition} />
 		</div>
 	);
 }
