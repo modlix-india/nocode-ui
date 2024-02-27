@@ -15,7 +15,7 @@ import {
 	LocationHistory,
 	PageDefinition,
 } from '../types/common';
-import CD from "../components"
+import CD from '../components';
 
 // function EVENT_FUNCTION(validation: any, value: any): Array<string> {
 // 	return [];
@@ -214,8 +214,8 @@ export function validate(
 	locationHistory: Array<LocationHistory>,
 	pageExtractor: PageStoreExtractor,
 ): Array<string> {
-	const CUSTOM_VAL_FUNC =  CD.get(def.type)?.validations;
-	
+	const CUSTOM_VAL_FUNC = CD.get(def.type)?.validations;
+
 	if (!validation?.length) return [];
 	return validation
 		.map((e: any) => {
@@ -228,7 +228,7 @@ export function validate(
 						: v;
 			}
 			return vals;
-		})	
+		})
 		.filter((e: any) => e.condition !== false)
 		.flatMap((e: any) => {
 			const type = e.type ?? 'MANDATORY';
@@ -238,5 +238,4 @@ export function validate(
 		})
 		.map((e: string) => getTranslations(e, pageDefinition.translations))
 		.filter((e: string) => !!e);
-		
 }

@@ -42,7 +42,15 @@ function PageComponent(props: Readonly<ComponentProps>) {
 
 	const [_, setLastChanged] = useState<number>(Date.now());
 
-	useEffect(() => addListenerWithChildrenActivity(() => setLastChanged(Date.now()), pageExtractor, `Store.validationTriggers.${pageName}`), []);
+	useEffect(
+		() =>
+			addListenerWithChildrenActivity(
+				() => setLastChanged(Date.now()),
+				pageExtractor,
+				`Store.validationTriggers.${pageName}`,
+			),
+		[],
+	);
 
 	useEffect(() => {
 		return addListenerAndCallImmediately(

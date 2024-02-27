@@ -808,7 +808,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Otp Border ',
 		displayName: 'Otp Border  Design Filled',
 		name: 'otpBorderDesignFilled',
-		defaultValue:'none',
+		defaultValue: 'none',
 		cssProperty: 'border',
 		selector: '.comp.compOtp._filled ._inputBox',
 		noPrefix: true,

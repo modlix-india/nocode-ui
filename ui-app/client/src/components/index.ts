@@ -103,6 +103,6 @@ export default new Map<string, Component>([
 	[FillerDefinitionEditor.name, FillerDefinitionEditor],
 	[FormStorageEditor.name, FormStorageEditor],
 	[SectionGrid.name, SectionGrid],
-	[Otp.name,Otp],
+	[Otp.name, Otp],
 	[Chart.name, Chart],
 ]);

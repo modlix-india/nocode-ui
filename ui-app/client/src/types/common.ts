@@ -110,7 +110,11 @@ export interface ComponentPropertyDefinition {
 	defaultValue?: any;
 	displayOrder?: number;
 	hide?: boolean;
-	validationList?: Array<{ name: string; displayName?:string; fields?: Array<ComponentPropertyDefinition> }>;
+	validationList?: Array<{
+		name: string;
+		displayName?: string;
+		fields?: Array<ComponentPropertyDefinition>;
+	}>;
 }
 
 export interface ComponentStylePropertyGroupDefinition {
@@ -172,8 +176,13 @@ export interface Component {
 	sections?: Array<Section>;
 	needShowInDesginMode?: boolean;
 	validations?: {
-		[name: string]: (validation: any, value: any, def: ComponentDefinition, locationHistory: Array<LocationHistory>,
-			pageExtractor: PageStoreExtractor) => Array<string>;
+		[name: string]: (
+			validation: any,
+			value: any,
+			def: ComponentDefinition,
+			locationHistory: Array<LocationHistory>,
+			pageExtractor: PageStoreExtractor,
+		) => Array<string>;
 	};
 }
 

@@ -90,7 +90,7 @@ export const runEvent = async (
 					false,
 					page,
 				);
-				
+
 				return;
 			}
 		}

@@ -1,5 +1,11 @@
 import React, { useEffect } from 'react';
-import { Component, ComponentDefinition, ComponentPropertyDefinition, ComponentProps, LocationHistory } from '../../types/common';
+import {
+	Component,
+	ComponentDefinition,
+	ComponentPropertyDefinition,
+	ComponentProps,
+	LocationHistory,
+} from '../../types/common';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediately,
@@ -76,13 +82,13 @@ function Otp(props: ComponentProps) {
 					setValue(Array.from({ length: otpLength }, () => ' ').join(''));
 					return;
 				}
-				setValue(value)
+				setValue(value);
 			},
 			pageExtractor,
 			bindingPathPath,
 		);
-	}, [bindingPathPath,valueType]);
-	
+	}, [bindingPathPath, valueType]);
+
 	useEffect(() => {
 		if (!validation) return;
 		const msgs = validate(
@@ -92,7 +98,6 @@ function Otp(props: ComponentProps) {
 			value,
 			locationHistory,
 			pageExtractor,
-		
 		);
 
 		setValidationMessages(msgs);
@@ -112,30 +117,28 @@ function Otp(props: ComponentProps) {
 			);
 	}, [value, validation]);
 
-		const isValidInputValue = (value: string, valueType: string) => {
-			
-			if (valueType === 'NUMERIC') {
-				return /^(\d| )*$/.test(value);
-			} else if (valueType === 'ALPHABETICAL') {
-				return /^[a-zA-Z ]*$/.test(value);
-			} else if (valueType === 'ALPHANUMERIC') {
-				return /^[a-zA-Z0-9 ]*$/.test(value);
-			} else if (valueType === 'ANY') {
-				return true;
-			}
-			return false;
-		};
-
+	const isValidInputValue = (value: string, valueType: string) => {
+		if (valueType === 'NUMERIC') {
+			return /^(\d| )*$/.test(value);
+		} else if (valueType === 'ALPHABETICAL') {
+			return /^[a-zA-Z ]*$/.test(value);
+		} else if (valueType === 'ALPHANUMERIC') {
+			return /^[a-zA-Z0-9 ]*$/.test(value);
+		} else if (valueType === 'ANY') {
+			return true;
+		}
+		return false;
+	};
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>, index: any) => {
 		setIsDirty(true);
 
 		let target = e.target;
-		let inputValue =target.value;
+		let inputValue = target.value;
 		if (isValidInputValue(inputValue, valueType)) {
 			let newValueArray = value?.split('');
 			newValueArray[index] = inputValue === '' ? ' ' : inputValue;
-			(bindingPathPath !== undefined)
+			bindingPathPath !== undefined
 				? setData(bindingPathPath, newValueArray.join(''), context?.pageName)
 				: setValue(newValueArray.join(''));
 			if (inputValue === '' && index > 0 && target.previousSibling !== null) {
@@ -152,8 +155,7 @@ function Otp(props: ComponentProps) {
 		setFocus(false);
 		setIsDirty(true);
 		setFocusBoxIndex(-1);
-		
-	}
+	};
 	const handleFocus = (index: number) => {
 		setFocus(true);
 		setFocusBoxIndex(index);
@@ -189,7 +191,8 @@ function Otp(props: ComponentProps) {
 	if (!handleChange) inputStyle = { ...inputStyle, caretColor: 'transparent' };
 	const hasErrorMessages =
 		validationMessages?.length &&
-		(value.trim() == null || isDirty || context.showValidationMessages)&& !readOnly;
+		(value.trim() == null || isDirty || context.showValidationMessages) &&
+		!readOnly;
 
 	let validationsOrSupportText = undefined;
 	if (hasErrorMessages) {
@@ -217,7 +220,9 @@ function Otp(props: ComponentProps) {
 		validationsOrSupportText = (
 			<span
 				style={computedStyles.supportText ?? {}}
-				className={`_supportText ${readOnly ? 'disabled' : ''} ${focus ? '_supportTextActive' : ''}`}
+				className={`_supportText ${readOnly ? 'disabled' : ''} ${
+					focus ? '_supportTextActive' : ''
+				}`}
 			>
 				<SubHelperComponent definition={definition} subComponentName="supportText" />
 				{supportingText}
@@ -227,7 +232,9 @@ function Otp(props: ComponentProps) {
 
 	return (
 		<div
-			className={`comp compOtp ${designType} ${colorScheme} ${readOnly ? '_disabled' : ''} ${(hasErrorMessages) ? '_hasError' : ''}`}
+			className={`comp compOtp ${designType} ${colorScheme} ${readOnly ? '_disabled' : ''} ${
+				hasErrorMessages ? '_hasError' : ''
+			}`}
 			style={computedStyles.comp ?? {}}
 		>
 			{Array.from({ length: otpLength }).map((_, index) => (
@@ -244,7 +251,11 @@ function Otp(props: ComponentProps) {
 					onBlur={handleBlur}
 					onKeyDown={handleKeyDown(index)}
 					style={inputStyle}
-					className={`_inputBox ${focusBoxIndex === index && focus ? '_isActive' : ''}${!(focusBoxIndex === index && focus) && value[index]?.trim()?.length ? '_hasValue' : ''}`}
+					className={`_inputBox ${focusBoxIndex === index && focus ? '_isActive' : ''}${
+						!(focusBoxIndex === index && focus) && value[index]?.trim()?.length
+							? '_hasValue'
+							: ''
+					}`}
 				/>
 			))}
 
@@ -255,15 +266,22 @@ function Otp(props: ComponentProps) {
 	);
 }
 
-function MANDATORY
-(validation: any, value: any, def: ComponentDefinition, locationHistory: Array<LocationHistory>,
-	pageExtractor: PageStoreExtractor): Array<string> {
+function MANDATORY(
+	validation: any,
+	value: any,
+	def: ComponentDefinition,
+	locationHistory: Array<LocationHistory>,
+	pageExtractor: PageStoreExtractor,
+): Array<string> {
+	const { otpLength } = makePropertiesObject(
+		[propertiesDefinition.find(e => e.name == 'otpLength')!],
+		def.properties?.otpLength,
+		locationHistory,
+		pageExtractor ? [pageExtractor] : [],
+	);
 
-	const {otpLength} = makePropertiesObject(
-		[propertiesDefinition.find(e => e.name == 'otpLength')!]
-	, def.properties?.otpLength, locationHistory,pageExtractor ? [pageExtractor] : []);
-
-	if (value.includes(' ') || (otpLength && value.length != otpLength)) return [validation.message];
+	if (value.includes(' ') || (otpLength && value.length != otpLength))
+		return [validation.message];
 	return [];
 }
 

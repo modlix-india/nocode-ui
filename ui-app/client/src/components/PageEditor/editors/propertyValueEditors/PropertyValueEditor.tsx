@@ -25,7 +25,6 @@ import { Dropdown } from '../stylePropertyValueEditors/simpleEditors/Dropdown';
 import { ColorSelector } from '../stylePropertyValueEditors/simpleEditors/ColorSelector';
 import SectionPropertyValueEditor from './SectionPropertyValueEditor';
 
-
 interface PropertyValueEditorProps {
 	propDef: ComponentPropertyDefinition;
 	value?: ComponentProperty<any>;
@@ -258,22 +257,23 @@ function makeValueEditor(
 		);
 	}
 	if (propDef.editor === ComponentPropertyEditor.VALIDATION) {
-        const validationList = propDef.validationList || [];
+		const validationList = propDef.validationList || [];
 
-	if (propDef.editor === ComponentPropertyEditor.VALIDATION) {
-		return (
-			<ValidationEditor
-				value={chngValue === '' ? undefined : chngValue}
-				onChange={e => onChange({ ...value, value: e })}
-				storePaths={storePaths}
-				onShowCodeEditor={onShowCodeEditor}
-				editPageName={editPageName}
-				slaveStore={slaveStore}
-				pageOperations={pageOperations}
-				validationList={validationList}
-			/>
-		);
-	}}
+		if (propDef.editor === ComponentPropertyEditor.VALIDATION) {
+			return (
+				<ValidationEditor
+					value={chngValue === '' ? undefined : chngValue}
+					onChange={e => onChange({ ...value, value: e })}
+					storePaths={storePaths}
+					onShowCodeEditor={onShowCodeEditor}
+					editPageName={editPageName}
+					slaveStore={slaveStore}
+					pageOperations={pageOperations}
+					validationList={validationList}
+				/>
+			);
+		}
+	}
 
 	if (propDef.editor === ComponentPropertyEditor.IMAGE) {
 		return (

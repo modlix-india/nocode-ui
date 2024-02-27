@@ -1,6 +1,17 @@
-import { SCHEMA_ANY_COMP_PROP, SCHEMA_BOOL_COMP_PROP, SCHEMA_NUM_COMP_PROP, SCHEMA_STRING_COMP_PROP, SCHEMA_VALIDATION } from "../../constants";
-import { ComponentPropertyDefinition, ComponentPropertyEditor, ComponentPropertyGroup, ComponentStylePropertyDefinition } from "../../types/common";
-import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from "../util/properties";
+import {
+	SCHEMA_ANY_COMP_PROP,
+	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_NUM_COMP_PROP,
+	SCHEMA_STRING_COMP_PROP,
+	SCHEMA_VALIDATION,
+} from '../../constants';
+import {
+	ComponentPropertyDefinition,
+	ComponentPropertyEditor,
+	ComponentPropertyGroup,
+	ComponentStylePropertyDefinition,
+} from '../../types/common';
+import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
@@ -16,17 +27,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.visibility,
 
 	{
-
 		name: 'validation',
 		schema: SCHEMA_VALIDATION,
 		displayName: 'Validation',
 		description: 'Validation Rule',
 		editor: ComponentPropertyEditor.VALIDATION,
 		group: ComponentPropertyGroup.VALIDATION,
-		validationList:[{name:'MANDATORY'}],
-		multiValued:true,
-		
-
+		validationList: [{ name: 'MANDATORY', displayName: 'OTP Validation' }],
+		multiValued: true,
 	},
 	{
 		name: 'supportingText',
@@ -70,11 +78,10 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				description: 'alphanumeric values',
 			},
 			{
-				
 				name: 'ANY',
 				displayName: 'Any',
 				description: 'any values',
-			}
+			},
 		],
 	},
 	{
@@ -88,23 +95,22 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				description: 'Dashed Otp type',
 			},
 			{
-			    name: '_round',
+				name: '_round',
 				displayName: 'Round Otp',
 				description: 'Round Otp type',
 			},
 			{
-			    name: '_filled',
+				name: '_filled',
 				displayName: 'Filled Otp',
 				description: 'Filled Otp type',
 			},
-
 		],
 	},
 	COMMON_COMPONENT_PROPERTIES.colorScheme,
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
-    '': [
+	'': [
 		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
@@ -114,7 +120,7 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
-	inputBox:[
+	inputBox: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
@@ -144,9 +150,6 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
-   
-
-
 };
 
-export {propertiesDefinition,stylePropertiesDefinition};
+export { propertiesDefinition, stylePropertiesDefinition };

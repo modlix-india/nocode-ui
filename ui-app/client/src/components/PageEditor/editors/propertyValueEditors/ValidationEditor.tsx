@@ -14,7 +14,7 @@ interface ValidationEditorProps {
 	slaveStore: any;
 	editPageName: string | undefined;
 	pageOperations: PageOperations;
-	validationList:any;
+	validationList: any;
 }
 
 export function ValidationEditor({
@@ -27,20 +27,24 @@ export function ValidationEditor({
 	pageOperations,
 	validationList,
 }: ValidationEditorProps) {
-    
-	const FILTERED_VALIDATION_FUNCTIONS: { [key: string]: { displayName: string, fields?:Array<ComponentPropertyDefinition> }}  = validationList && validationList.length > 0
-    ? validationList.reduce((acc:any, { name, displayName,fields}: any) => {
-		if (VALIDATION_FUNCTIONS[name]) {
-			acc[name] = VALIDATION_FUNCTIONS[name];
-		} else {
-			acc[name] = {
-				displayName: displayName ?? name,
-				fields: fields ?? undefined,
-			};
-		}
-		return acc;
-	}, {})
-    : VALIDATION_FUNCTIONS;
+	const FILTERED_VALIDATION_FUNCTIONS: {
+		[key: string]: { displayName: string; fields?: Array<ComponentPropertyDefinition> };
+	} = validationList?.length
+		? validationList.reduce((acc: any, { name, displayName, fields }: any) => {
+				if (VALIDATION_FUNCTIONS[name]) {
+					acc[name] = { ...VALIDATION_FUNCTIONS[name] };
+					if (displayName != undefined) acc[name].displayName = displayName;
+					if (fields != undefined) acc[name].fields = fields;
+					npm;
+				} else {
+					acc[name] = {
+						displayName: displayName ?? name,
+						fields: fields ?? undefined,
+					};
+				}
+				return acc;
+		  }, {})
+		: VALIDATION_FUNCTIONS;
 
 	return (
 		<div className="_validationEditor">
@@ -77,21 +81,23 @@ export function ValidationEditor({
 				/>
 			</div>
 
-			{(FILTERED_VALIDATION_FUNCTIONS[value?.type ?? 'MANDATORY']?.fields ?? []).map((propDef: ComponentPropertyDefinition) => (
-				<div className="_eachProp" key={propDef.name}>
-					<div className="_propLabel">{propDef.displayName}</div>
-					<PropertyValueEditor
-						propDef={propDef}
-						value={value?.[propDef.name]}
-						onChange={v => onChange({ ...value, [propDef.name]: v })}
-						storePaths={storePaths}
-						onShowCodeEditor={onShowCodeEditor}
-						editPageName={editPageName}
-						slaveStore={slaveStore}
-						pageOperations={pageOperations}
-					/>
-				</div>
-			))}
+			{(FILTERED_VALIDATION_FUNCTIONS[value?.type ?? 'MANDATORY']?.fields ?? []).map(
+				(propDef: ComponentPropertyDefinition) => (
+					<div className="_eachProp" key={propDef.name}>
+						<div className="_propLabel">{propDef.displayName}</div>
+						<PropertyValueEditor
+							propDef={propDef}
+							value={value?.[propDef.name]}
+							onChange={v => onChange({ ...value, [propDef.name]: v })}
+							storePaths={storePaths}
+							onShowCodeEditor={onShowCodeEditor}
+							editPageName={editPageName}
+							slaveStore={slaveStore}
+							pageOperations={pageOperations}
+						/>
+					</div>
+				),
+			)}
 			<div className="_eachProp">
 				<div className="_propLabel">Message:</div>
 				<PropertyValueEditor

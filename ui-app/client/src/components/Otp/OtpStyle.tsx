@@ -1,6 +1,6 @@
 import React from 'react';
 import { processStyleDefinition } from '../../util/styleProcessor';
-import { styleProperties, styleDefaults } from './otpStyleProperties'
+import { styleProperties, styleDefaults } from './otpStyleProperties';
 
 const PREFIX = '.comp.compOtp';
 export default function OtpStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
