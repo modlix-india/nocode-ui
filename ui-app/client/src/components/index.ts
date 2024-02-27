@@ -104,6 +104,6 @@ export default new Map<string, Component>([
 	[FillerDefinitionEditor.name, FillerDefinitionEditor],
 	[FormStorageEditor.name, FormStorageEditor],
 	[SectionGrid.name, SectionGrid],
-	[SmallCarousel.name, SmallCarousel]
+	[SmallCarousel.name, SmallCarousel],
 	[Chart.name, Chart],
 ]);
