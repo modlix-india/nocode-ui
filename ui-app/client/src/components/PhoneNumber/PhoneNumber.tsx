@@ -273,7 +273,7 @@ function PhoneNumber(props: ComponentProps) {
 	const [countryList, setCountryList] = useState<DropdownOptions>(SORTED_COUNTRY_LIST);
 	const [selectedCode, setSelectedCode] = useState<string>(SORTED_COUNTRY_LIST[0].D);
 	const [phoneNumber, setPhoneNumber] = useState<string>('');
-	const dialCodeValidationMessage = 'dial code is not valid or not available in option list';
+	const dialCodeValidationMessage = 'Dial code is not valid or not available in option list';
 
 	const getDialCode = (value: string) => {
 		let dc = '';
@@ -295,14 +295,14 @@ function PhoneNumber(props: ComponentProps) {
 
 	const getFormattedNumber = (text: string) => {
 		let format = SORTED_COUNTRY_LIST.find(e => e.D == selectedCode)?.F ?? [];
-		if (format?.length == 0) format = [5, 5];
+		if (format.length == 0) format = [5, 5];
 		let formatLength = format.reduce((acc, e) => acc + e, 0);
 		text = getUnformattedNumber(text);
 		if (text.length > formatLength) return text;
 		let formattedText = '';
 		let startInd = 0;
-		format.forEach(e => {
-			let endInd = startInd + e;
+		for (let i = 0; i < format.length; i++) {
+			let endInd = startInd + format[i];
 			let stext = text.slice(startInd, endInd);
 			if (stext.length < text.slice(startInd, endInd + 1).length) {
 				formattedText += stext + seperator;
@@ -310,7 +310,7 @@ function PhoneNumber(props: ComponentProps) {
 				formattedText += stext;
 			}
 			startInd = endInd;
-		});
+		}
 		return formattedText;
 	};
 
@@ -344,54 +344,59 @@ function PhoneNumber(props: ComponentProps) {
 		else setPhoneNumber(unformattedText.slice(dc.length));
 	}, [value, countryList]);
 
+	const extractDCAndPhone = (text: string) => {
+		let phone = text;
+		let dc = getDialCode(phone);
+		if (dc) {
+			phone = phone.slice(dc.length);
+			setValidationMessages([]);
+		} else {
+			dc = selectedCode;
+			if (
+				(validationMessages.length > 0 &&
+					validationMessages[0] !== dialCodeValidationMessage) ||
+				validationMessages.length === 0
+			)
+				setValidationMessages([dialCodeValidationMessage]);
+		}
+		return { dc, phone };
+	};
+
+	const updateBindingPathData = (text: string | undefined | null | 0, removeKey?: boolean) => {
+		if (bindingPathPath && removeKey) {
+			setValidationMessages([]);
+			setData(bindingPathPath, text, context?.pageName, true);
+			callChangeEvent();
+		} else if (bindingPathPath) {
+			setValidationMessages([]);
+			setData(bindingPathPath, text, context?.pageName);
+			callChangeEvent();
+		}
+	};
+
 	const handleBlur = (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		let text =
 			phoneNumber === '' && emptyValue
 				? mapValue[emptyValue]
 				: getUnformattedNumber(phoneNumber);
-		if (text && text.startsWith('+')) {
-			let phone = text;
-			let dc = getDialCode(phone);
-			if (dc) {
-				phone = phone.slice(dc.length);
-				setValidationMessages([]);
-			} else {
-				dc = selectedCode;
-				if (
-					(validationMessages.length > 0 &&
-						validationMessages[0] !== dialCodeValidationMessage) ||
-					validationMessages.length === 0
-				)
-					setValidationMessages([dialCodeValidationMessage]);
-			}
-			let temp = '';
-			if (format && text !== phone) {
-				let formattedText = getFormattedNumber(phone);
-				temp = dc + (storeFormatted ? seperator + formattedText : phone);
-			} else {
-				temp = dc + phone;
-			}
-			if (bindingPathPath) {
-				setData(bindingPathPath, temp, context?.pageName);
-				callChangeEvent();
-			}
-		} else if (!updateStoreImmediately && bindingPathPath) {
-			setValidationMessages([]);
-			if (event?.target.value === '' && removeKeyWhenEmpty) {
-				setData(bindingPathPath, undefined, context?.pageName, true);
-			} else {
-				let formattedText = getFormattedNumber(text);
-				let temp = '';
-				if (format) {
-					temp = text
-						? selectedCode + (storeFormatted ? seperator + formattedText : text)
-						: text;
-				} else {
-					temp = text ? selectedCode + text : text;
-				}
-				setData(bindingPathPath, temp, context?.pageName);
-			}
+
+		if (event?.target.value === '' && removeKeyWhenEmpty) {
+			updateBindingPathData(undefined, true);
+		} else if (!text && !updateStoreImmediately) {
+			updateBindingPathData(text);
+		} else if (text && text.startsWith('+')) {
+			let { dc, phone } = extractDCAndPhone(text);
+			let temp =
+				format && text !== phone
+					? dc + (storeFormatted ? seperator + getFormattedNumber(phone) : phone)
+					: dc + phone;
+			bindingPathPath && setData(bindingPathPath, temp, context?.pageName);
 			callChangeEvent();
+		} else if (!updateStoreImmediately) {
+			let temp = format
+				? selectedCode + (storeFormatted ? seperator + getFormattedNumber(text) : text)
+				: selectedCode + text;
+			updateBindingPathData(temp);
 		}
 		callBlurEvent();
 		setFocus(false);
@@ -400,35 +405,28 @@ function PhoneNumber(props: ComponentProps) {
 		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
 	) => {
 		let text = event.target.value;
-		if (removeKeyWhenEmpty && text === '' && bindingPathPath) {
-			setData(bindingPathPath, undefined, context?.pageName, true);
-			callChangeEvent();
+		if (removeKeyWhenEmpty && text === '') {
+			updateBindingPathData(undefined, true);
 			return;
 		}
-		if (!text.startsWith('+')) {
-			let unformattedText = getUnformattedNumber(text);
-			let formattedText = getFormattedNumber(unformattedText);
-			if (updateStoreImmediately && bindingPathPath) {
-				let temp = '';
-				if (format) {
-					temp =
-						text === '' && emptyValue
-							? mapValue[emptyValue]
-							: selectedCode +
-							  (storeFormatted ? seperator + formattedText : unformattedText);
-				} else {
-					temp = text === '' && emptyValue ? mapValue[emptyValue] : selectedCode + text;
-				}
-				setValidationMessages([]);
-				setData(bindingPathPath, temp, context?.pageName);
-				callChangeEvent();
-			} else {
-				let temp = '';
-				if (format) temp = formattedText;
-				else temp = text;
-				setPhoneNumber(temp);
-			}
-		} else setPhoneNumber(text);
+		text = text === '' && emptyValue ? mapValue[emptyValue] : getUnformattedNumber(text);
+		let formattedText = getFormattedNumber(text);
+
+		if (!text && updateStoreImmediately) {
+			updateBindingPathData(text);
+		} else if (!text && !updateStoreImmediately) {
+			setPhoneNumber('');
+		} else if (!text.startsWith('+') && updateStoreImmediately) {
+			let temp = format
+				? selectedCode + (storeFormatted ? seperator + formattedText : text)
+				: selectedCode + text;
+			updateBindingPathData(temp);
+		} else if (!text.startsWith('+') && !updateStoreImmediately) {
+			let temp = format ? formattedText : text;
+			setPhoneNumber(temp);
+		} else {
+			setPhoneNumber(text);
+		}
 	};
 
 	const handleCountryChange = async (dc: string) => {
@@ -466,10 +464,12 @@ function PhoneNumber(props: ComponentProps) {
 		</>
 	);
 	const finKey: string = 't_' + key;
+	const x =
+		noCodeForFirstCountry && selectedCode === countryList[0].D ? 1 : selectedCode.length ?? 1;
 
 	return (
 		<CommonInputText
-			cssPrefix="comp compPhoneNumber"
+			cssPrefix={`comp compPhoneNumber _dialCodeLength${x}`}
 			id={finKey}
 			noFloat={noFloat}
 			readOnly={readOnly}
@@ -498,11 +498,6 @@ function PhoneNumber(props: ComponentProps) {
 			hideClearContentIcon={hideClearButton}
 			maxChars={maxChars}
 			leftChildren={leftChildren}
-			dialCodeLength={
-				noCodeForFirstCountry && selectedCode === countryList[0].D
-					? 1
-					: selectedCode.length ?? 1
-			}
 		/>
 	);
 }
@@ -529,7 +524,7 @@ const component: Component = {
 			label: { value: 'Phone Number' },
 		},
 	},
-	sections: [{ name: 'Text Box', pageName: '' }],
+	sections: [{ name: 'Phone Number', pageName: '' }],
 	subComponentDefinition: [
 		{
 			name: '',

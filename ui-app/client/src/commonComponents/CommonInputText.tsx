@@ -43,7 +43,6 @@ type CommonInputType = {
 	maxChars?: number;
 	showDropdown?: boolean;
 	leftChildren?: React.ReactNode;
-	dialCodeLength?: number;
 };
 
 function CommonInputText(props: CommonInputType) {
@@ -86,7 +85,6 @@ function CommonInputText(props: CommonInputType) {
 		maxChars,
 		showDropdown,
 		leftChildren,
-		dialCodeLength,
 	} = props;
 	const [focus, setFocus] = React.useState(false);
 	const [showPassword, setShowPassowrd] = React.useState(false);
@@ -275,9 +273,7 @@ function CommonInputText(props: CommonInputType) {
 				htmlFor={id}
 				className={`_label ${noFloat || value?.toString()?.length ? '_noFloat' : ''} ${
 					readOnly ? 'disabled' : ''
-				}${value?.toString()?.length ? `hasText` : ``} ${
-					dialCodeLength ? `_dialCodeLength${dialCodeLength}` : ''
-				}`}
+				}${value?.toString()?.length ? `hasText` : ``}`}
 			>
 				<SubHelperComponent
 					definition={definition}

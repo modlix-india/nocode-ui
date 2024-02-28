@@ -32,23 +32,23 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 		bottom: 100%;
 	}
 
-	${PREFIX} ._label._dialCodeLength1 {
+	${PREFIX}._dialCodeLength1 ._label {
 		padding-left: 38px;
 	}
 
-	${PREFIX} ._label._dialCodeLength2 {
+	${PREFIX}._dialCodeLength2 ._label {
 		padding-left: 64px;
 	}
 
-	${PREFIX} ._label._dialCodeLength3 {
+	${PREFIX}._dialCodeLength3 ._label {
 		padding-left: 70px;
 	}
 
-	${PREFIX} ._label._dialCodeLength4 {
+	${PREFIX}._dialCodeLength4 ._label {
 		padding-left: 78px;
 	}
 
-	${PREFIX} ._label._dialCodeLength5 {
+	${PREFIX}._dialCodeLength5 ._label {
 		padding-left: 86px;
 	}
 
