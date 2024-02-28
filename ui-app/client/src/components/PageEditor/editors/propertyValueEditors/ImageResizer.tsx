@@ -858,7 +858,7 @@ const ImageResizer = ({
 
 		newFormData.append('path', image);
 		newFormData.append('name', imageName);
-		newFormData.append('override', `${override}`);
+		newFormData.append('overrideImage', `${override}`);
 
 		if (formData) {
 			formData.forEach((value, key) => {
