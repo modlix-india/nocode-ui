@@ -182,6 +182,7 @@ export function ImageEditor({
 						setShowImageResizerPopup(true);
 						const imageUrl = URL.createObjectURL(e.target.files![0]);
 						setImage(imageUrl);
+						setImageName(e.target.files![0].name);
 					}}
 				/>
 			</div>
@@ -410,6 +411,7 @@ export function ImageEditor({
 							callForFiles={callForFiles}
 							override={override}
 							setOverride={setOverride}
+							name={imageName}
 						/>
 					</>
 				)}

@@ -14,6 +14,7 @@ interface ImageResizerProps {
 	callForFiles: Function;
 	override: boolean;
 	setOverride: React.Dispatch<React.SetStateAction<boolean>>;
+	name: string;
 }
 
 const ImageResizer = ({
@@ -27,6 +28,7 @@ const ImageResizer = ({
 	callForFiles,
 	override,
 	setOverride,
+	name,
 }: ImageResizerProps) => {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const imageWrapperRef = useRef<HTMLDivElement>(null);
@@ -67,6 +69,7 @@ const ImageResizer = ({
 	const rightRef = useRef<HTMLDivElement>(null);
 	const bottomRef = useRef<HTMLDivElement>(null);
 	const [chngValue, setChngValue] = useState<any>('');
+	const [imageName, setImageName] = useState<string>(name);
 
 	let scaleSlider = undefined;
 	const min = 0;
@@ -191,6 +194,11 @@ const ImageResizer = ({
 			width: Math.round(imageRef.current.clientWidth),
 			height: Math.round(imageRef.current.clientHeight),
 		};
+
+		let lastIndexOf = name?.lastIndexOf('.');
+		let newName = name?.substring(0, lastIndexOf) || '';
+		setImageName(newName);
+
 		setImageInitialSize(imgSize);
 		setImageWrapperUpdatedSize(imgSize);
 
@@ -849,6 +857,7 @@ const ImageResizer = ({
 		const newFormData = new FormData();
 
 		newFormData.append('path', image);
+		newFormData.append('name', imageName);
 
 		if (formData) {
 			formData.forEach((value, key) => {
@@ -1200,13 +1209,6 @@ const ImageResizer = ({
 														: imageInitialSize?.width,
 												) ?? 0
 											}
-											// onChange={v =>
-											// 	// also add functionality to update container size
-											// 	setImageUpdatedSize({
-											// 		...imageUpdatedSize,
-											// 		width: v.target.value,
-											// 	})
-											// }
 										/>
 										<label htmlFor="widthInput">W</label>
 									</div>
@@ -1222,13 +1224,6 @@ const ImageResizer = ({
 														: imageInitialSize?.height,
 												) ?? 0
 											}
-											// onChange={v =>
-											// 	// also add functionality to update container size
-											// 	setImageUpdatedSize({
-											// 		...imageUpdatedSize,
-											// 		height: v.target.value,
-											// 	})
-											// }
 										/>
 										<label htmlFor="heightInput">H</label>
 									</div>
@@ -1242,6 +1237,19 @@ const ImageResizer = ({
 									/>
 									<label htmlFor="aspectRatio">Lock aspect ratio</label>
 								</div>
+								<p className="resizeLabel">
+									Image Name{' '}
+									<span title="Image Name" className="resizeLabelInfo">
+										i
+									</span>
+								</p>
+								<input
+									className="_updateImgName"
+									id="heightInput"
+									type="text"
+									value={imageName}
+									onChange={e => setImageName(e.target.value)}
+								/>
 							</div>
 							<div className="_editBtnContainer">
 								<button

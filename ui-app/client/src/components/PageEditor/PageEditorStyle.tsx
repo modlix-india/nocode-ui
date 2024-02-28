@@ -3102,6 +3102,17 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			gap: 10px;
 		}
 
+		._popupContainer._imageResize ._popupEditorContainer ._editOptions ._editCrop ._updateImgName {
+			width: 250px;
+			height: 35px;
+			background-color: #F8FAFB;
+			border-radius: 2px;
+			border: 0.5px solid black;
+			font-family: Inter;
+			outline: none;
+			padding: 0 13px;
+		}
+
 		${PREFIX} ._addPropertyButtonContainer {
 			display: flex;
 			justify-content: center;
