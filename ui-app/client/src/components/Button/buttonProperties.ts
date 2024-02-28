@@ -22,7 +22,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 			{ name: '_text', displayName: 'Text Button', description: 'Outline Button type' },
 			{ name: '_iconButton', displayName: 'Icon Button', description: 'Icon Button type' },
-			{ name: '_iconPrimaryButton', displayName: 'Primary Icon Button', description: 'Primary Icon Button type' },
+			{
+				name: '_iconPrimaryButton',
+				displayName: 'Primary Icon Button',
+				description: 'Primary Icon Button type',
+			},
 			{
 				name: '_fabButton',
 				displayName: 'Floating Action Button',
