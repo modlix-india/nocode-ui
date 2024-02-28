@@ -319,20 +319,13 @@ const component: Component = {
 			mainComponent: true,
 			icon: (
 				<IconHelper viewBox="0 0 24 24">
-					<rect
-						x="3.94922"
-						y="3.9502"
-						width="16.1"
-						height="16.1"
-						stroke="currentColor"
-						strokeWidth="1.5"
-						fill="transparent"
+					<path
+						d="M8.78571 7.1875C8.78571 5.28828 10.2241 3.75 12 3.75C13.2817 3.75 14.3866 4.54922 14.9049 5.71367C15.2103 6.40117 15.9777 6.69336 16.6165 6.3668C17.2554 6.04023 17.5326 5.21953 17.2272 4.53633C16.2991 2.44805 14.3103 1 12 1C8.8058 1 6.21429 3.77148 6.21429 7.1875V9.25H5.57143C4.15313 9.25 3 10.4832 3 12V20.25C3 21.7668 4.15313 23 5.57143 23H18.4286C19.8469 23 21 21.7668 21 20.25V12C21 10.4832 19.8469 9.25 18.4286 9.25H8.78571V7.1875Z"
+						fill="#96A1B4"
 					/>
-					<circle cx="12" cy="12" r="1.5" fill="currentColor" />
-					<circle cx="7" cy="12" r="1.5" fill="currentColor" />
-					<circle cx="17" cy="12" r="1.5" fill="currentColor" />
-					<circle cx="12" cy="7" r="1.5" fill="currentColor" />
-					<circle cx="12" cy="17" r="1.5" fill="currentColor" />
+					<rect x="5" y="16" width="4" height="2" rx="1" fill="#F5F6F8" />
+					<rect x="10" y="16" width="4" height="2" rx="1" fill="#F5F6F8" />
+					<rect x="15" y="16" width="4" height="2" rx="1" fill="#F5F6F8" />
 				</IconHelper>
 			),
 		},
