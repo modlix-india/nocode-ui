@@ -858,6 +858,7 @@ const ImageResizer = ({
 
 		newFormData.append('path', image);
 		newFormData.append('name', imageName);
+		newFormData.append('override', `${override}`);
 
 		if (formData) {
 			formData.forEach((value, key) => {
@@ -1250,6 +1251,15 @@ const ImageResizer = ({
 									value={imageName}
 									onChange={e => setImageName(e.target.value)}
 								/>
+								<div className="checkboxContainer">
+									<input
+										id="overrideImage"
+										type="checkbox"
+										checked={override}
+										onChange={() => setOverride(!override)}
+									/>
+									<label htmlFor="overrideImage">Override Existing Image</label>
+								</div>
 							</div>
 							<div className="_editBtnContainer">
 								<button

@@ -3072,7 +3072,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		._popupContainer._imageResize ._popupEditorContainer ._editOptions ._editCrop:nth-child(2) {
-			margin-top: 15px;
+			margin-top: 10px;
 		}
 
 		._popupContainer._imageResize ._popupEditorContainer ._editOptions ._editCrop .resizeLabel {
@@ -3681,9 +3681,9 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		._popupBackground ._popupContainer._imageResize ._popupEditorContainer ._editOptions ._editBtnContainer {
-			position: absolute;
-			bottom: 30px;
-			right: 20px;
+			position: fixed;
+			bottom: 45px;
+			right: 35px;
 			height: 50px;
 			display: flex;
 			justify-content: end;
