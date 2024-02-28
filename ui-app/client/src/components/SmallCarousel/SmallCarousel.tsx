@@ -295,20 +295,22 @@ function SmallCarousel(props: ComponentProps) {
 					list[curr].style.left = `${ref.current?.getBoundingClientRect().width}px`;
 				}
 
-				for (let i = 0; i < size; i++) {
-					let curr = (from + i) % size;
-					const cr = list[curr].getBoundingClientRect();
+				setTimeout(() => {
+					for (let i = 0; i < size; i++) {
+						let curr = (from + i) % size;
+						const cr = list[curr].getBoundingClientRect();
 
-					if (isVertical()) {
-						list[curr].style.top = `${top}px`;
-						list[curr].style.transition = `top ${animationDuration}ms ${easing}`;
-						top += cr.height;
-					} else {
-						list[curr].style.left = `${left}px`;
-						list[curr].style.transition = `left ${animationDuration}ms ${easing}`;
-						left += cr.width;
+						if (isVertical()) {
+							list[curr].style.top = `${top}px`;
+							list[curr].style.transition = `top ${animationDuration}ms ${easing}`;
+							top += cr.height;
+						} else {
+							list[curr].style.left = `${left}px`;
+							list[curr].style.transition = `left ${animationDuration}ms ${easing}`;
+							left += cr.width;
+						}
 					}
-				}
+				}, 0);
 
 				// this adds the removed elem from the right
 
