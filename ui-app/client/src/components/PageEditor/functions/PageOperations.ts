@@ -74,9 +74,7 @@ export class PageOperations {
 		return pageDef.componentDefinition[componentKey];
 	}
 
-	public getComponentDefinitionAndIfRoot(
-		componentKey: string,
-	): [ComponentDefinition, boolean] {
+	public getComponentDefinitionAndIfRoot(componentKey: string): [ComponentDefinition, boolean] {
 		const pageDef: PageDefinition = getDataFromPath(
 			this.defPath,
 			this.locationHistory,
