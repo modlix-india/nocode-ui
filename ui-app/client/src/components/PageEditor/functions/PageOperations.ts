@@ -274,20 +274,18 @@ export class PageOperations {
 
 	private getCurrentCompEventKeys(componentKey: string, def: PageDefinition): Array<string> {
 		const cdDef = components.get(def.componentDefinition[componentKey].type ?? '');
+		const currentCompProperties: any = def.componentDefinition[componentKey].properties;
 
-		if (!cdDef) {
+		if (!cdDef || !currentCompProperties) {
 			return [];
 		}
 
+		//event names of current component
 		const eventNames = cdDef?.properties
 			.filter(each => each.editor == ComponentPropertyEditor.EVENT_SELECTOR)
 			.map(each => each.name);
 
-		//clicked component event keys
-		const currentCompProperties: any = def.componentDefinition[componentKey].properties;
-
-		if (!currentCompProperties) return [];
-
+		//clicked component event keys based on event names
 		return eventNames
 			.filter(each => each in currentCompProperties)
 			.map(each => currentCompProperties[each].value);
@@ -298,6 +296,7 @@ export class PageOperations {
 
 		const que = new LinkedList<ComponentDefinition>();
 
+		//getting events in an array for all children as well as the current component
 		que.add(def.componentDefinition[componentKey]);
 
 		while (que.size() > 0) {
@@ -313,7 +312,10 @@ export class PageOperations {
 				que.add(e);
 			}
 
-			eventKeys = eventKeys.concat(this.getCurrentCompEventKeys(x.key, def));
+			//this returns an array so using loop to put each elem in the eventKeys array one by one
+			this.getCurrentCompEventKeys(x.key, def).forEach(each => {
+				eventKeys.push(each);
+			});
 		}
 
 		return eventKeys;
@@ -354,6 +356,7 @@ export class PageOperations {
 							componentDefinition: {
 								[key]: { key, name: 'Page Grid', type: 'Grid' },
 							},
+							//adding empty eventFunctions object if no onLoadEvent
 							eventFunctions: eventKey
 								? { [eventKey]: def.eventFunctions?.[eventKey] }
 								: {},
@@ -374,9 +377,12 @@ export class PageOperations {
 
 			const eventCounts: { [key: string]: number } = {};
 
+			//creating map from keys array to get the count
 			clickedCompEventKeys.forEach(key => (eventCounts[key] = (eventCounts[key] || 0) + 1));
 
+			//if no eventKey check
 			if (clickedCompEventKeys.length > 0) {
+				//getting all the event keys in the page def
 				const allEventCounts: { [key: string]: number } = Object.values(
 					def.componentDefinition,
 				)
@@ -387,6 +393,8 @@ export class PageOperations {
 						return counts;
 					}, {});
 
+				//if the count of eventkey is same delete it, if greater in allEventCounts dont delete.
+				//some other component is using that event if count is greater.
 				const toDeleteEventKeys = Object.keys(eventCounts).filter(
 					each => eventCounts[each] === allEventCounts[each],
 				);
@@ -442,8 +450,7 @@ export class PageOperations {
 		setData(this.defPath, def, this.pageExtractor.getPageName());
 	}
 
-	private deleteChildrenOnly(componentKey: string, pageDef: PageDefinition) {
-		let def = duplicate(pageDef);
+	private deleteChildrenOnly(componentKey: string, def: PageDefinition) {
 		let delKeys = new Set<string>();
 		let currentKeys = new LinkedList<string>(
 			Object.keys(def.componentDefinition[componentKey].children ?? {}),
@@ -477,7 +484,9 @@ export class PageOperations {
 		);
 		if (!pageDef) return;
 
-		const def: PageDefinition = this.deleteChildrenOnly(componentKey, pageDef);
+		let def: PageDefinition = duplicate(pageDef);
+
+		def = this.deleteChildrenOnly(componentKey, pageDef);
 
 		setData(this.defPath, def, this.pageExtractor.getPageName());
 	}
@@ -715,20 +724,20 @@ export class PageOperations {
 		const cutObject: ClipboardObject = this._makeCutOrCopyObject(
 			pageDef,
 			componentKey,
-			true,
+			false,
 			false,
 		);
 
 		const eventFunctionObj: { [key: string]: any } = Object.keys(cutObject.objects)
 			.flatMap(each => {
-				const eventKey = this.getCurrentCompEventKeys(each, def);
-				return eventKey.map(key => ({ [key]: def.eventFunctions[key] }));
+				const eventKeys = this.getCurrentCompEventKeys(each, def);
+				return eventKeys.map(key => ({ [key]: def.eventFunctions[key] }));
 			})
 			.reduce((acc, curr) => ({ ...acc, ...curr }), {});
 
 		cutObject.eventObjects = eventFunctionObj;
 
-		cutObject.pageId = (pageDef as any)['id'];
+		cutObject.pageId = pageDef.id;
 
 		navigator.clipboard.write([
 			new ClipboardItem({
@@ -888,13 +897,23 @@ export class PageOperations {
 			// If we paste twice from a cut, there will be already there in the definition.
 
 			if (this._hasAtleastOneKey(pageDef, clipObj)) {
-				clipObj = this._changeKeys(clipObj, pageDef);
+				clipObj = this._changeKeys(clipObj);
 			}
 
-			if ((pageDef as any)['id'] !== clipObj.pageId) {
+			if (pageDef.id === clipObj.pageId) {
+				this._dropOn(
+					pageDef,
+					componentKey,
+					clipObj.mainKey,
+					clipObj.objects,
+					undefined,
+					undefined,
+					{},
+				);
+			} else {
 				if (this._hasAtleastOneEvent(pageDef, clipObj)) {
 					this.setIssue({
-						message: 'Do you want to Ignore the incoming event functions?',
+						message: 'Select an operation to handle existing functions?',
 						options: ['Ignore', 'Duplicate', 'Override'],
 						defaultOption: 'Ignore',
 						callbackOnOption: {
@@ -907,12 +926,12 @@ export class PageOperations {
 										clipObj.objects,
 										undefined,
 										undefined,
-										clipObj.eventObjects,
+										{},
 									);
 								}
 							},
 							Duplicate: () => {
-								clipObj = this._changeEventKeys(clipObj!)[0];
+								clipObj = this._changeEventKeys(clipObj!);
 								this._dropOn(
 									pageDef,
 									componentKey,
@@ -924,8 +943,7 @@ export class PageOperations {
 								);
 							},
 							Override: () => {
-								let indexMap;
-								[clipObj, indexMap] = this._changeEventKeys(clipObj!);
+								if (!clipObj) return;
 								const allEventKeys: Array<string> = Object.values(
 									pageDef.componentDefinition,
 								)
@@ -934,11 +952,13 @@ export class PageOperations {
 										this.getCurrentCompEventKeys(component.key, pageDef),
 									);
 								const eventKeysSet: Set<string> = new Set(allEventKeys);
-								Object.keys(indexMap).forEach(each => {
-									if (!eventKeysSet.has(each)) {
-										delete pageDef.eventFunctions[each];
-									}
-								});
+								if (clipObj.eventObjects) {
+									Object.keys(clipObj.eventObjects).forEach(each => {
+										if (eventKeysSet.has(each)) {
+											delete pageDef.eventFunctions[each];
+										}
+									});
+								}
 								this._dropOn(
 									pageDef,
 									componentKey,
@@ -962,19 +982,7 @@ export class PageOperations {
 						clipObj.eventObjects,
 					);
 				}
-			} else {
-				this._dropOn(
-					pageDef,
-					componentKey,
-					clipObj.mainKey,
-					clipObj.objects,
-					undefined,
-					undefined,
-					clipObj.eventObjects,
-				);
 			}
-			// Once the clipboard object is sorted and keys are changed if required we move ahead with
-			// pasting / dropping.
 		});
 	}
 
@@ -993,7 +1001,7 @@ export class PageOperations {
 			);
 	}
 
-	private _changeKeys(clipObj: ClipboardObject, pageDef?: PageDefinition): ClipboardObject {
+	private _changeKeys(clipObj: ClipboardObject): ClipboardObject {
 		const newObj: ClipboardObject = { mainKey: '', objects: {} };
 		const index: { [key: string]: string } = {};
 
@@ -1033,13 +1041,11 @@ export class PageOperations {
 		return newObj;
 	}
 
-	private _changeEventKeys(
-		clipObj: ClipboardObject,
-	): [ClipboardObject, { [key: string]: string }] {
+	private _changeEventKeys(clipObj: ClipboardObject): ClipboardObject {
+		if (!clipObj.eventObjects) return clipObj;
+
 		const newObj: { [key: string]: any } = {};
 		const index: { [key: string]: string } = {};
-
-		if (!clipObj.eventObjects) return [clipObj, {}];
 
 		let eventObj: { [key: string]: any } = clipObj.eventObjects;
 
@@ -1052,8 +1058,9 @@ export class PageOperations {
 
 		Object.values(clipObj.objects).forEach(e => {
 			const cdDef = components.get(e.type ?? '');
+			const currentCompProperties: any = e.properties;
 
-			if (!cdDef) {
+			if (!cdDef && !currentCompProperties) {
 				return [];
 			}
 
@@ -1061,10 +1068,7 @@ export class PageOperations {
 				.filter(each => each.editor == ComponentPropertyEditor.EVENT_SELECTOR)
 				.map(each => each.name);
 
-			//clicked component event keys
-			const currentCompProperties: any = e.properties;
-
-			if (!currentCompProperties) return;
+			if (!eventNames) return [];
 
 			eventNames
 				.filter(each => each in currentCompProperties)
@@ -1075,7 +1079,7 @@ export class PageOperations {
 
 		clipObj.eventObjects = newObj;
 
-		return [clipObj, index];
+		return clipObj;
 	}
 
 	private _hasAtleastOneKey(pageDef: PageDefinition, clipObj: ClipboardObject): boolean {
@@ -1299,6 +1303,7 @@ export class PageOperations {
 		}
 
 		pageDef.eventFunctions = { ...pageDef.eventFunctions, ...eventFunc };
+		console.log(pageDef, eventFunc);
 		setData(this.defPath!, pageDef, this.pageExtractor.getPageName());
 	}
 
