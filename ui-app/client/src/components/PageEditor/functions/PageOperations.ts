@@ -1303,7 +1303,6 @@ export class PageOperations {
 		}
 
 		pageDef.eventFunctions = { ...pageDef.eventFunctions, ...eventFunc };
-		console.log(pageDef, eventFunc);
 		setData(this.defPath!, pageDef, this.pageExtractor.getPageName());
 	}
 
