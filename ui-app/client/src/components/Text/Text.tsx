@@ -12,6 +12,7 @@ import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { formatString } from '../../util/stringFormat';
 import { styleDefaults } from './TextStyleProperties';
 import { IconHelper } from '../util/IconHelper';
+import MarkDownToComponents from '../../commonComponents/MarkDownToComponents';
 
 function Text(props: ComponentProps) {
 	const {
@@ -30,6 +31,7 @@ function Text(props: ComponentProps) {
 			stringFormat,
 			textLength,
 			textColor,
+			designType,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -59,9 +61,12 @@ function Text(props: ComponentProps) {
 
 	if (textType === 'MD') {
 		return (
-			<div className="comp compText" style={styleProperties.comp ?? {}}>
+			<div
+				className={`comp compText _markdown ${designType}`}
+				style={styleProperties.comp ?? {}}
+			>
 				<HelperComponent context={props.context} definition={definition} />
-				<MarkDown text={translatedText ?? ''} />
+				<MarkDownToComponents text={translatedText ?? ''} />
 			</div>
 		);
 	}
@@ -117,10 +122,6 @@ function Text(props: ComponentProps) {
 			<HelperComponent context={props.context} definition={definition} />
 		</div>
 	);
-}
-
-function MarkDown({ text }: { text: string }) {
-	return <>{text}</>;
 }
 
 const component: Component = {

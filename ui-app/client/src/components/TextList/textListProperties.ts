@@ -32,7 +32,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 		enumValues: [
 			{ name: ',', displayName: 'Comma', description: 'Comma' },
-			{ name: ':', displayName: 'SemiColon', description: 'SemiColon' },
+			{ name: ';', displayName: 'SemiColon', description: 'SemiColon' },
+			{ name: ':', displayName: 'Colon', description: 'Colon' },
 			{ name: ' ', displayName: 'Space', description: 'Space' },
 			{ name: '\n', displayName: 'New Line', description: 'New Line' },
 		],

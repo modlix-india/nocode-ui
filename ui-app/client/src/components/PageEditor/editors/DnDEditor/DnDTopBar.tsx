@@ -150,6 +150,9 @@ export default function DnDTopBar({
 
 		return addListenerWithChildrenActivity(
 			(_, v) => {
+				setPage(v as PageDefinition);
+				setProperties(v?.properties ?? {});
+				setPermission(v?.permission ?? '');
 				if (!v || v?.isFromUndoRedoStack) return;
 				if (
 					deepEqual(
@@ -161,9 +164,6 @@ export default function DnDTopBar({
 				)
 					return;
 
-				setProperties(v?.properties ?? {});
-				setPage(v as PageDefinition);
-				setPermission(v?.permission ?? '');
 				if (!firstTimeRef.current.length) {
 					firstTimeRef.current.push(duplicate(v));
 					return;
@@ -255,6 +255,7 @@ export default function DnDTopBar({
 		displayName: v.name,
 		description: v.description ?? v.name,
 	}));
+
 	let popup = <></>;
 	if (showProperties) {
 		const seoNames = [

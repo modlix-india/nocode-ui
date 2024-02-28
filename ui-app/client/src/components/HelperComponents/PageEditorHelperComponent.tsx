@@ -97,8 +97,21 @@ export function PageEditorHelperComponent({
 		labelStyle.transform = 'translateY(-100%)';
 	}
 
-	let shownChildren = children;
-	if (selectedComponents?.length != 1) shownChildren = undefined;
+	let shownChildren = undefined;
+	if (selectedComponents?.length)
+		shownChildren = (
+			<div
+				className="_helperChildren"
+				ref={elem => {
+					if (!elem) return;
+					const rect = elem.getBoundingClientRect();
+					if (rect.x + rect.width > window.innerWidth) elem.style.right = '0px';
+					if (rect.y + rect.height > window.innerHeight) elem.style.bottom = '0px';
+				}}
+			>
+				{children}
+			</div>
+		);
 
 	return (
 		<div
@@ -204,7 +217,7 @@ export function PageEditorHelperComponent({
 				)}
 				{ComponentDefinitions.get(definition.type)?.displayName}
 			</div>
-			<div className="_helperChildren">{shownChildren}</div>
+			{shownChildren}
 		</div>
 	);
 }

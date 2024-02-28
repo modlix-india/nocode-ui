@@ -14,6 +14,7 @@ import {
 } from '../../../../types/common';
 import { PageOperations } from '../../functions/PageOperations';
 import { AnyValueEditor } from './AnyValueEditor';
+import { TextValueEditor } from './TextValueEditor';
 import { BooleanValueEditor } from './BooleanValueEditor';
 import { ExpressionEditor2 } from './ExpressionEditor2';
 import { IconSelectionEditor2 } from './IconSelectionEditor2';
@@ -157,6 +158,17 @@ function makeValueEditor(
 	showPlaceholder = true,
 	appPath?: string,
 ) {
+	if (propDef.editor === ComponentPropertyEditor.TEXT_EDITOR)
+		return (
+			<TextValueEditor
+				isIconButton={true}
+				value={chngValue === '' ? undefined : chngValue}
+				defaultValue={propDef.defaultValue}
+				onChange={e => onChange({ ...value, value: e })}
+				propDef={propDef}
+			/>
+		);
+
 	if (
 		propDef.editor === ComponentPropertyEditor.ANIMATION ||
 		propDef.editor === ComponentPropertyEditor.ANIMATIONOBSERVER
@@ -244,19 +256,23 @@ function makeValueEditor(
 			</div>
 		);
 	}
-
 	if (propDef.editor === ComponentPropertyEditor.VALIDATION) {
-		return (
-			<ValidationEditor
-				value={chngValue === '' ? undefined : chngValue}
-				onChange={e => onChange({ ...value, value: e })}
-				storePaths={storePaths}
-				onShowCodeEditor={onShowCodeEditor}
-				editPageName={editPageName}
-				slaveStore={slaveStore}
-				pageOperations={pageOperations}
-			/>
-		);
+		const validationList = propDef.validationList || [];
+
+		if (propDef.editor === ComponentPropertyEditor.VALIDATION) {
+			return (
+				<ValidationEditor
+					value={chngValue === '' ? undefined : chngValue}
+					onChange={e => onChange({ ...value, value: e })}
+					storePaths={storePaths}
+					onShowCodeEditor={onShowCodeEditor}
+					editPageName={editPageName}
+					slaveStore={slaveStore}
+					pageOperations={pageOperations}
+					validationList={validationList}
+				/>
+			);
+		}
 	}
 
 	if (propDef.editor === ComponentPropertyEditor.IMAGE) {

@@ -1,5 +1,6 @@
-import { Schema, SchemaType, Type } from '@fincity/kirun-js';
+import { Schema } from '@fincity/kirun-js';
 import { Validation } from './validation';
+import { PageStoreExtractor } from '../context/StoreContext';
 
 export interface ComponentProperty<T> {
 	value?: T;
@@ -9,6 +10,10 @@ export interface ComponentProperty<T> {
 }
 
 export interface ComponentMultiProperty<T> {
+	fullValue?: {
+		key: string;
+		property: ComponentProperty<T>;
+	};
 	[key: string]: {
 		key: string;
 		order?: number;
@@ -72,6 +77,7 @@ export enum ComponentPropertyEditor {
 	ANIMATIONOBSERVER,
 	COLOR_PICKER,
 	SECTION_PROPERTIES_EDITOR,
+	TEXT_EDITOR,
 }
 
 export enum ComponentPropertyGroup {
@@ -104,6 +110,11 @@ export interface ComponentPropertyDefinition {
 	defaultValue?: any;
 	displayOrder?: number;
 	hide?: boolean;
+	validationList?: Array<{
+		name: string;
+		displayName?: string;
+		fields?: Array<ComponentPropertyDefinition>;
+	}>;
 }
 
 export interface ComponentStylePropertyGroupDefinition {
@@ -164,6 +175,15 @@ export interface Component {
 	};
 	sections?: Array<Section>;
 	needShowInDesginMode?: boolean;
+	validations?: {
+		[name: string]: (
+			validation: any,
+			value: any,
+			def: ComponentDefinition,
+			locationHistory: Array<LocationHistory>,
+			pageExtractor: PageStoreExtractor,
+		) => Array<string>;
+	};
 }
 
 export enum StyleResolution {
