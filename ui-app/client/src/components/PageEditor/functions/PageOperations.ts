@@ -776,15 +776,38 @@ export class PageOperations {
 						);
 						def = duplicate(def);
 						// Here making the copy of the object to move it to clipboard.
-						const cutObject: {
-							mainKey: string;
-							objects: { [key: string]: ComponentDefinition };
-						} = this._makeCutOrCopyObject(def, componentKey, true);
+						const cutObject: ClipboardObject = this._makeCutOrCopyObject(
+							def,
+							componentKey,
+							true,
+						);
+
+						const eventKey: string | undefined = def.properties?.['onLoadEvent'];
 
 						const key = this.genId();
+
+						const eventFunctionObj: { [key: string]: any } = Object.keys(
+							cutObject.objects,
+						)
+							.filter(key => key != eventKey)
+							.flatMap(each => {
+								const eventKeys = this.getCurrentCompEventKeys(each, def);
+								return eventKeys.map(key => ({ [key]: def.eventFunctions[key] }));
+							})
+							.reduce((acc, curr) => ({ ...acc, ...curr }), {});
+
 						// Similar to delete we created a new root component.
 						def.rootComponent = key;
 						def.componentDefinition[key] = { key, name: 'Page Grid', type: 'Grid' };
+						if (eventKey) {
+							def.eventFunctions[eventKey] = {
+								[eventKey]: def.eventFunctions?.[eventKey],
+							};
+						}
+
+						cutObject.eventObjects = eventFunctionObj;
+
+						cutObject.pageId = def.id;
 
 						// Also, if something is selected remove it from the selection.
 						this.onSelectedComponentChanged('');
@@ -807,6 +830,29 @@ export class PageOperations {
 		const pageDef: PageDefinition = duplicate(def);
 		// Just prepare the Clipboard object and no more fuss if it is not root component.
 		const cutObject: ClipboardObject = this._makeCutOrCopyObject(pageDef, componentKey, true);
+
+		const eventFunctionObj: { [key: string]: any } = Object.keys(cutObject.objects)
+			.flatMap(each => {
+				const eventKeys = this.getCurrentCompEventKeys(each, def);
+				return eventKeys.map(key => ({ [key]: def.eventFunctions[key] }));
+			})
+			.reduce((acc, curr) => ({ ...acc, ...curr }), {});
+
+		cutObject.eventObjects = eventFunctionObj;
+
+		cutObject.pageId = pageDef.id;
+
+		const allEventKeys: Array<string> = Object.values(pageDef.componentDefinition)
+			.filter(component => component.properties)
+			.flatMap(component => this.getCurrentCompEventKeys(component.key, pageDef));
+		const eventKeysSet: Set<string> = new Set(allEventKeys);
+		if (cutObject.eventObjects) {
+			Object.keys(cutObject.eventObjects).forEach(each => {
+				if (!eventKeysSet.has(each)) {
+					delete pageDef.eventFunctions[each];
+				}
+			});
+		}
 
 		setData(this.defPath, pageDef, this.pageExtractor.getPageName());
 
