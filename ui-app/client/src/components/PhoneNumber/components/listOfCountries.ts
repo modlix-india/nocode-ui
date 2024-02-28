@@ -1,14 +1,14 @@
 export const COUNTRY_LIST = [
 	{
-		N: 'Canada',
-		D: '+1',
-		C: 'CA',
-		F: [3, 3, 4],
-	},
-	{
 		N: 'United States',
 		D: '+1',
 		C: 'US',
+		F: [3, 3, 4],
+	},
+	{
+		N: 'Canada',
+		D: '+1',
+		C: 'CA',
 		F: [3, 3, 4],
 	},
 	{

@@ -2,6 +2,14 @@ import React, { CSSProperties, useEffect, useRef, useState } from 'react';
 import { ComponentDefinition } from '../../../types/common';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
 
+function getFlagEmoji(C: string) {
+	const OFFSET = 127397;
+	const codePoints = C.toUpperCase()
+		.split('')
+		.map(char => OFFSET + char.charCodeAt(0));
+	return String.fromCodePoint(...codePoints);
+}
+
 export type DropdownOptions = Array<{
 	nextSeperator?: boolean;
 	F: Array<number>;
@@ -56,10 +64,6 @@ export function Dropdown({
 	};
 
 	useEffect(() => {
-		if (!open && currentOption != -1) setOriginalCurrentOption(-1);
-	}, [open]);
-
-	useEffect(() => {
 		let searchExpression: string | RegExp;
 		try {
 			searchExpression = new RegExp(searchText, 'i');
@@ -72,26 +76,16 @@ export function Dropdown({
 	const handleClose = () => {
 		clearSearchTextOnClose && setSearchText('');
 		setOpen(false);
+		setTimeout(() => {
+			if (dropDown.current?.nextSibling?.nextSibling instanceof HTMLElement)
+				dropDown.current.nextSibling.nextSibling.focus();
+		}, 100);
 	};
 
 	const handleClick = (o: any) => {
 		onChange(o.D);
 		handleClose();
 	};
-
-	useEffect(() => {
-		if (!open) return;
-		document.addEventListener('mousedown', handleClose);
-		return () => window.removeEventListener('mousedown', handleClose);
-	}, [open, searchText, handleClose]);
-
-	function getFlagEmoji(C: string) {
-		const OFFSET = 127397;
-		const codePoints = C.toUpperCase()
-			.split('')
-			.map(char => OFFSET + char.charCodeAt(0));
-		return String.fromCodePoint(...codePoints);
-	}
 
 	let body;
 	if (open) {
@@ -183,6 +177,8 @@ export function Dropdown({
 			className="_dropdownSelect"
 			role="combobox"
 			onClick={() => setOpen(true)}
+			onFocus={() => setOpen(true)}
+			onBlur={() => setOpen(false)}
 			onKeyDown={e => handleKeyDown(e)}
 			ref={dropDown}
 		>
