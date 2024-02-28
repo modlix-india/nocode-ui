@@ -12,6 +12,8 @@ interface ImageResizerProps {
 	setInProgress: React.Dispatch<React.SetStateAction<boolean>>;
 	setShowImageResizerPopup: React.Dispatch<React.SetStateAction<boolean>>;
 	callForFiles: Function;
+	override: boolean;
+	setOverride: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const ImageResizer = ({
@@ -23,6 +25,8 @@ const ImageResizer = ({
 	setInProgress,
 	setShowImageResizerPopup,
 	callForFiles,
+	override,
+	setOverride,
 }: ImageResizerProps) => {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const imageWrapperRef = useRef<HTMLDivElement>(null);
@@ -124,8 +128,8 @@ const ImageResizer = ({
 
 			if (imageRef.current && imageUpdatedSize) {
 				setImageUpdatedSize({
-					width: imageInitialSize.width * val,
-					height: imageInitialSize.height * val,
+					width: Math.round(imageInitialSize.width * val),
+					height: Math.round(imageInitialSize.height * val),
 				});
 			}
 
@@ -152,8 +156,8 @@ const ImageResizer = ({
 
 			if (imageRef.current && imageUpdatedSize) {
 				setImageUpdatedSize({
-					width: imageInitialSize.width * xVal,
-					height: imageInitialSize.height * yVal,
+					width: Math.round(imageInitialSize.width * xVal),
+					height: Math.round(imageInitialSize.height * yVal),
 				});
 			}
 
@@ -184,8 +188,8 @@ const ImageResizer = ({
 		}
 
 		const imgSize = {
-			width: imageRef.current.clientWidth,
-			height: imageRef.current.clientHeight,
+			width: Math.round(imageRef.current.clientWidth),
+			height: Math.round(imageRef.current.clientHeight),
 		};
 		setImageInitialSize(imgSize);
 		setImageWrapperUpdatedSize(imgSize);
@@ -291,8 +295,8 @@ const ImageResizer = ({
 	}, [sliderRotationVal]);
 
 	useEffect(() => {
-		let left = (imageWrapperUpdatedSize.width - cropAreaSize.width) / 2;
-		let top = (imageWrapperUpdatedSize.height - cropAreaSize.height) / 2;
+		let left = Math.round((imageWrapperUpdatedSize.width - cropAreaSize.width) / 2);
+		let top = Math.round((imageWrapperUpdatedSize.height - cropAreaSize.height) / 2);
 		setCropAreaPosition({ left, top });
 	}, [imageWrapperUpdatedSize]);
 
@@ -357,8 +361,8 @@ const ImageResizer = ({
 					);
 
 					setCropAreaPosition({
-						left: left + offsetLeft,
-						top: top + offsetTop,
+						left: Math.round(left + offsetLeft),
+						top: Math.round(top + offsetTop),
 					});
 				}
 			};
@@ -431,7 +435,7 @@ const ImageResizer = ({
 					)
 						return;
 
-					setCropAreaPosition({ left, top });
+					setCropAreaPosition({ left: Math.round(left), top: Math.round(top) });
 					setCropAreaSize(updateSize);
 				}
 			};
@@ -502,7 +506,7 @@ const ImageResizer = ({
 					)
 						return;
 
-					setCropAreaPosition({ ...cropAreaPosition, top });
+					setCropAreaPosition({ ...cropAreaPosition, top: Math.round(top) });
 					setCropAreaSize(updatedSize);
 				}
 			};
@@ -572,7 +576,7 @@ const ImageResizer = ({
 					)
 						return;
 
-					setCropAreaPosition({ ...cropAreaPosition, left });
+					setCropAreaPosition({ ...cropAreaPosition, left: Math.round(left) });
 					setCropAreaSize(updatedSize);
 				}
 			};
@@ -678,7 +682,7 @@ const ImageResizer = ({
 
 					setCropAreaPosition({
 						...cropAreaPosition,
-						left,
+						left: Math.round(left),
 					});
 				}
 			};
@@ -718,7 +722,7 @@ const ImageResizer = ({
 
 					setCropAreaPosition({
 						...cropAreaPosition,
-						top,
+						top: Math.round(top),
 					});
 
 					setCropAreaSize({
@@ -806,6 +810,93 @@ const ImageResizer = ({
 			document.addEventListener('mousemove', handleMouseMove);
 			document.addEventListener('mouseup', handleMouseUp);
 		}
+	};
+
+	function rgbToHex(rgb: string) {
+		if (rgb.startsWith('rgb(')) {
+			rgb = rgb.substring(4, rgb.length - 1);
+			const rgbaVals = rgb.split(',').map(val => val.trim());
+			const r = parseInt(rgbaVals[0]);
+			const g = parseInt(rgbaVals[1]);
+			const b = parseInt(rgbaVals[2]);
+
+			const toHex = (value: number) => {
+				const hex = Math.round(value).toString(16);
+				return hex.length === 1 ? '0' + hex : hex;
+			};
+
+			return '#' + toHex(r) + toHex(g) + toHex(b);
+		} else if (rgb.startsWith('rgba(')) {
+			rgb = rgb.substring(5, rgb.length - 1);
+			const rgbaVals = rgb.split(',').map(val => val.trim());
+			const r = parseInt(rgbaVals[0]);
+			const g = parseInt(rgbaVals[1]);
+			const b = parseInt(rgbaVals[2]);
+			const a = parseFloat(rgbaVals[3]);
+
+			const toHex = (value: number) => {
+				const hex = Math.round(value).toString(16);
+				return hex.length === 1 ? '0' + hex : hex;
+			};
+
+			const alphaHex = Math.round(a * 255).toString(16);
+
+			return '#' + toHex(r) + toHex(g) + toHex(b) + alphaHex;
+		}
+	}
+
+	const handleSave = async () => {
+		const newFormData = new FormData();
+
+		newFormData.append('path', image);
+
+		if (formData) {
+			formData.forEach((value, key) => {
+				newFormData.append(key, value);
+			});
+		}
+		const width = imageUpdatedSize?.width;
+		const height = imageUpdatedSize?.height;
+		newFormData?.append('width', width ? String(width) : '');
+		newFormData?.append('height', height ? String(height) : '');
+
+		if (showCropArea) {
+			const xAxis = cropAreaPosition?.left;
+			const yAxis = cropAreaPosition?.top;
+			newFormData?.append('xAxis', xAxis ? String(xAxis) : '0');
+			newFormData?.append('yAxis', yAxis ? String(yAxis) : '0');
+
+			const caWidth = cropAreaSize?.width;
+			const caHeight = cropAreaSize?.height;
+			newFormData?.append('cropAreaWidth', caWidth ? String(caWidth) : '0');
+			newFormData?.append('cropAreaHeight', caHeight ? String(caHeight) : '0');
+		} else {
+			newFormData?.append('xAxis', '0');
+			newFormData?.append('yAxis', '0');
+			newFormData?.append('cropAreaWidth', '0');
+			newFormData?.append('cropAreaHeight', '0');
+		}
+
+		newFormData?.append('rotation', sliderRotationVal ? String(sliderRotationVal) : '0');
+
+		newFormData?.append('backgroundColor', chngValue ? String(rgbToHex(chngValue)) : '');
+
+		const flipHorizontal = scale?.x;
+		const flipVertical = scale?.y;
+		newFormData?.append('flipHorizontal', flipHorizontal == -1 ? 'true' : 'false');
+		newFormData?.append('flipVertical', flipVertical == -1 ? 'true' : 'false');
+		// setFormData(newFormData);
+
+		try {
+			await axios.post(`api/files/transform/static${path === '' ? '/' : path}`, newFormData, {
+				headers,
+			});
+		} catch (e) {}
+		setInProgress(false);
+		setShowImageResizerPopup(false);
+		setImage('');
+		setOverride(!override);
+		callForFiles();
 	};
 
 	return (
@@ -1170,21 +1261,7 @@ const ImageResizer = ({
 									className="_saveBtn"
 									title="Save Changes"
 									tabIndex={0}
-									onClick={async () => {
-										try {
-											await axios.post(
-												`api/files/static${path === '' ? '/' : path}`,
-												formData,
-												{
-													headers,
-												},
-											);
-										} catch (e) {}
-										setInProgress(false);
-										setShowImageResizerPopup(false);
-										setImage('');
-										callForFiles();
-									}}
+									onClick={handleSave}
 								>
 									Save Changes
 								</button>

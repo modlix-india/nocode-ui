@@ -79,6 +79,7 @@ export function ImageEditor({
 	const [formData, setFormData] = useState<FormData>();
 	const [image, setImage] = useState<string>('');
 	const [imageName, setImageName] = useState('');
+	const [override, setOverride] = useState<boolean>(false);
 
 	useEffect(() => setChngValue(value ?? ''), [value]);
 
@@ -203,12 +204,15 @@ export function ImageEditor({
 								borderColor:
 									imageName === e.name ? '#4D7FEE' : 'rgba(0, 0, 0, 0.10)',
 							}}
-							onClick={() => {
+							onClick={async () => {
 								if (e.directory) {
 									setPath(path + '\\' + e.name);
 									return;
 								}
 
+								if (e.target?.files?.length === 0) return;
+								const currFormData = new FormData();
+								setFormData(currFormData);
 								setChngValue(e.url);
 								setImage(e.url);
 								setImageName(e.name);
@@ -359,7 +363,10 @@ export function ImageEditor({
 									style={{
 										cursor: image === '' ? 'not-allowed' : 'pointer',
 									}}
-									onClick={() => setShowImageResizerPopup(true)}
+									onClick={() => {
+										setOverride(true);
+										setShowImageResizerPopup(true);
+									}}
 								>
 									Edit
 								</button>
@@ -401,6 +408,8 @@ export function ImageEditor({
 							setInProgress={setInProgress}
 							setShowImageResizerPopup={setShowImageResizerPopup}
 							callForFiles={callForFiles}
+							override={override}
+							setOverride={setOverride}
 						/>
 					</>
 				)}
