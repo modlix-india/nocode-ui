@@ -748,6 +748,33 @@ export class PageOperations {
 		]);
 	}
 
+	public copyWithOutEvents(componentKey: any) {
+		if (!ClipboardItem || !this.defPath || !componentKey) return;
+
+		let def: PageDefinition = getDataFromPath(
+			this.defPath,
+			this.locationHistory,
+			this.pageExtractor,
+		);
+
+		const pageDef: PageDefinition = duplicate(def);
+		// Prepare the copy object and write to the clipboard.
+		const cutObject: ClipboardObject = this._makeCutOrCopyObject(
+			pageDef,
+			componentKey,
+			false,
+			false,
+		);
+
+		navigator.clipboard.write([
+			new ClipboardItem({
+				'text/plain': new Blob([COPY_CD_KEY + JSON.stringify(cutObject)], {
+					type: 'text/plain',
+				}),
+			}),
+		]);
+	}
+
 	public cut(componentKey: any) {
 		if (!ClipboardItem || !this.defPath || !componentKey) return;
 
@@ -853,6 +880,84 @@ export class PageOperations {
 				}
 			});
 		}
+
+		setData(this.defPath, pageDef, this.pageExtractor.getPageName());
+
+		// Set the clipboard
+		navigator.clipboard.write([
+			new ClipboardItem({
+				'text/plain': new Blob([CUT_CD_KEY + JSON.stringify(cutObject)], {
+					type: 'text/plain',
+				}),
+			}),
+		]);
+	}
+
+	public cutWithOutEvents(componentKey: any) {
+		if (!ClipboardItem || !this.defPath || !componentKey) return;
+
+		let def: PageDefinition = getDataFromPath(
+			this.defPath,
+			this.locationHistory,
+			this.pageExtractor,
+		);
+		if (!def) return;
+
+		if (componentKey === def.rootComponent) {
+			// If the root component is the one that get's cut, similar to delete we need a new
+			// root component to hold the components which requires a confirmation.
+			this.setIssue({
+				message:
+					'Cutting the root component will delete the entire screen. Do you want to cut?',
+				defaultOption: 'No',
+				options: ['Yes', 'No'],
+				callbackOnOption: {
+					Yes: () => {
+						if (!this.defPath) return;
+						let def: PageDefinition = getDataFromPath(
+							this.defPath,
+							this.locationHistory,
+							this.pageExtractor,
+						);
+						def = duplicate(def);
+						// Here making the copy of the object to move it to clipboard.
+						const cutObject: ClipboardObject = this._makeCutOrCopyObject(
+							def,
+							componentKey,
+							true,
+						);
+
+						const key = this.genId();
+
+						// Similar to delete we created a new root component.
+						def.rootComponent = key;
+						def.componentDefinition[key] = { key, name: 'Page Grid', type: 'Grid' };
+
+						cutObject.pageId = def.id;
+
+						// Also, if something is selected remove it from the selection.
+						this.onSelectedComponentChanged('');
+						setData(this.defPath, def, this.pageExtractor.getPageName());
+
+						// Copy to clipboard.
+						navigator.clipboard.write([
+							new ClipboardItem({
+								'text/plain': new Blob([CUT_CD_KEY + JSON.stringify(cutObject)], {
+									type: 'text/plain',
+								}),
+							}),
+						]);
+					},
+				},
+			});
+			return;
+		}
+
+		const pageDef: PageDefinition = duplicate(def);
+		// Just prepare the Clipboard object and no more fuss if it is not root component.
+		const cutObject: ClipboardObject = this._makeCutOrCopyObject(pageDef, componentKey, true);
+
+		cutObject.pageId = pageDef.id;
 
 		setData(this.defPath, pageDef, this.pageExtractor.getPageName());
 
