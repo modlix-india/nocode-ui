@@ -774,9 +774,7 @@ export class PageOperations {
 			// This function called on pasting the component.
 			let clipObj: ClipboardObject | undefined;
 			try {
-				if (data.startsWith(CUT_CD_KEY)) {
-					clipObj = JSON.parse(data.substring(COPY_CD_KEY.length));
-				}
+				clipObj = JSON.parse(data.substring(COPY_CD_KEY.length));
 			} catch (err) {}
 
 			if (!clipObj) return;
