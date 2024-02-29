@@ -1053,7 +1053,7 @@ export class PageOperations {
 
 		doCompComponent = ComponentDefinitions.get(doComp!.type);
 
-		if (allowChildrenTobeAdded && doCompComponent?.allowedChildrenType) {
+		if (doCompComponent?.allowedChildrenType) {
 			if (!doComp.children) doComp.children = {};
 
 			let allowedChildCount = doCompComponent.allowedChildrenType.get('');
