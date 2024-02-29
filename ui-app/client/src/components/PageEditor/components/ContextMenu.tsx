@@ -222,7 +222,9 @@ export function ContextMenu({
 						<div
 							className="_popupMenuItem"
 							title="Delete"
-							onClick={() => pageOperations.deleteComponent(menuDetails.componentKey)}
+							onClick={() =>
+								pageOperations.deleteComponent(menuDetails.componentKey, false)
+							}
 						>
 							<IconHelper viewBox="0 0 15 16">
 								<path
@@ -234,9 +236,9 @@ export function ContextMenu({
 						</div>
 						<div
 							className="_popupMenuItem"
-							title="Delete"
+							title="Delete with events"
 							onClick={() =>
-								pageOperations.deleteComponentWithEvents(menuDetails.componentKey)
+								pageOperations.deleteComponent(menuDetails.componentKey, true)
 							}
 						>
 							<IconHelper viewBox="0 0 15 16">
@@ -294,7 +296,7 @@ export function ContextMenu({
 						<div
 							className="_popupMenuItem"
 							title="Cut"
-							onClick={() => pageOperations.cut(menuDetails.componentKey)}
+							onClick={() => pageOperations.cut(menuDetails.componentKey, true)}
 						>
 							<IconHelper viewBox="0 0 16 16">
 								<path
@@ -309,9 +311,7 @@ export function ContextMenu({
 						<div
 							className="_popupMenuItem"
 							title="Cut"
-							onClick={() =>
-								pageOperations.cutWithOutEvents(menuDetails.componentKey)
-							}
+							onClick={() => pageOperations.cut(menuDetails.componentKey, false)}
 						>
 							<IconHelper viewBox="0 0 16 16">
 								<path
