@@ -26,6 +26,8 @@ export function Dropdown({
 	clearSearchTextOnClose,
 	computedStyles,
 	definition,
+	handleInputFocus,
+	handleInputBlur,
 }: {
 	value: string;
 	onChange: (v: string) => void;
@@ -35,6 +37,8 @@ export function Dropdown({
 	clearSearchTextOnClose?: boolean;
 	computedStyles: any;
 	definition: ComponentDefinition;
+	handleInputFocus: () => void;
+	handleInputBlur: () => void;
 }) {
 	let label = undefined;
 	if (value.length > 0) {
@@ -76,16 +80,23 @@ export function Dropdown({
 	const handleClose = () => {
 		clearSearchTextOnClose && setSearchText('');
 		setOpen(false);
-		setTimeout(() => {
-			if (dropDown.current?.nextSibling?.nextSibling instanceof HTMLElement)
-				dropDown.current.nextSibling.nextSibling.focus();
-		}, 100);
+		handleInputBlur();
 	};
 
 	const handleClick = (o: any) => {
 		onChange(o.D);
+		setTimeout(() => {
+			if (dropDown.current?.nextSibling?.nextSibling instanceof HTMLElement)
+				dropDown.current.nextSibling.nextSibling.focus();
+		}, 100);
 		handleClose();
 	};
+
+	useEffect(() => {
+		if (!open) return;
+		document.addEventListener('mousedown', handleClose);
+		return () => window.removeEventListener('mousedown', handleClose);
+	}, [open, searchText, handleClose]);
 
 	let body;
 	if (open) {
@@ -170,8 +181,7 @@ export function Dropdown({
 		} else if (e.key === 'Enter') {
 			e.preventDefault();
 			e.stopPropagation();
-			onChange(options[currentOption].D);
-			handleClose();
+			handleClick(options[currentOption]);
 		} else if (e.key === 'Escape') {
 			e.preventDefault();
 			e.stopPropagation();
@@ -185,9 +195,10 @@ export function Dropdown({
 			tabIndex={0}
 			className="_dropdownSelect"
 			role="combobox"
-			onClick={() => setOpen(true)}
-			onFocus={() => setOpen(true)}
-			onBlur={() => setOpen(false)}
+			onClick={() => {
+				setOpen(true);
+				handleInputFocus();
+			}}
 			onKeyDown={e => handleKeyDown(e)}
 			ref={dropDown}
 		>
