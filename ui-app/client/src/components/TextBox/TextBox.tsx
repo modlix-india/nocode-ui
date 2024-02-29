@@ -84,11 +84,6 @@ function TextBox(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	const computedStyles = processComponentStylePseudoClasses(
-		props.pageDefinition,
-		{ focus, readOnly },
-		stylePropertiesWithPseudoStates,
-	);
 	const [value, setValue] = React.useState(defaultValue ?? '');
 
 	const bindingPathPath = bindingPath
@@ -144,6 +139,12 @@ function TextBox(props: ComponentProps) {
 		if (!paths.length) return;
 		return addListener((_, value) => setIsLoading(value), pageExtractor, ...paths);
 	}, []);
+
+	const computedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{ focus, disabled: isLoading || readOnly },
+		stylePropertiesWithPseudoStates,
+	);
 
 	useEffect(() => {
 		if (!validation?.length) return;
