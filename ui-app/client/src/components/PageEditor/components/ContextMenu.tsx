@@ -94,7 +94,9 @@ export function ContextMenu({
 				<div
 					className="_popupMenuItem"
 					title="Delete"
-					onClick={() => pageOperations.clearChildrenOnly(menuDetails.componentKey)}
+					onClick={() =>
+						pageOperations.deleteChildrenOnlyAndSetStore(menuDetails.componentKey)
+					}
 				>
 					<IconHelper viewBox="0 0 15 16">
 						<path
@@ -250,7 +252,7 @@ export function ContextMenu({
 						<div
 							className="_popupMenuItem"
 							title="Copy"
-							onClick={() => pageOperations.copy(menuDetails.componentKey)}
+							onClick={() => pageOperations.copy(menuDetails.componentKey, true)}
 						>
 							<IconHelper viewBox="0 0 17 17">
 								<path
@@ -271,9 +273,7 @@ export function ContextMenu({
 						<div
 							className="_popupMenuItem"
 							title="copyWithOutEvents"
-							onClick={() =>
-								pageOperations.copyWithOutEvents(menuDetails.componentKey)
-							}
+							onClick={() => pageOperations.copy(menuDetails.componentKey, false)}
 						>
 							<IconHelper viewBox="0 0 17 17">
 								<path

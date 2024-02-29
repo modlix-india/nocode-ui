@@ -272,7 +272,7 @@ export class PageOperations {
 		}
 	}
 
-	private getCurrentCompEventKeys(componentKey: string, def: PageDefinition): Array<string> {
+	private getEventsOf(componentKey: string, def: PageDefinition): Array<string> {
 		const cdDef = components.get(def.componentDefinition[componentKey].type ?? '');
 		const currentCompProperties: any = def.componentDefinition[componentKey].properties;
 
@@ -281,17 +281,17 @@ export class PageOperations {
 		}
 
 		//event names of current component
-		const eventNames = cdDef?.properties
+		const eventPropertyNames = cdDef?.properties
 			.filter(each => each.editor == ComponentPropertyEditor.EVENT_SELECTOR)
 			.map(each => each.name);
 
 		//clicked component event keys based on event names
-		return eventNames
+		return eventPropertyNames
 			.filter(each => each in currentCompProperties)
 			.map(each => currentCompProperties[each].value);
 	}
 
-	private getEventOfAllChildren(componentKey: string, def: PageDefinition): string[] {
+	private getEventOfAllChildren(componentKey: string, def: PageDefinition): Array<string> {
 		let eventKeys: Array<string> = [];
 
 		const que = new LinkedList<ComponentDefinition>();
@@ -303,7 +303,9 @@ export class PageOperations {
 			const x = que.pop();
 
 			if (!x.children) {
-				eventKeys = eventKeys.concat(this.getCurrentCompEventKeys(x.key, def));
+				this.getEventsOf(x.key, def).forEach(each => {
+					eventKeys.push(each);
+				});
 				continue;
 			}
 
@@ -313,7 +315,7 @@ export class PageOperations {
 			}
 
 			//this returns an array so using loop to put each elem in the eventKeys array one by one
-			this.getCurrentCompEventKeys(x.key, def).forEach(each => {
+			this.getEventsOf(x.key, def).forEach(each => {
 				eventKeys.push(each);
 			});
 		}
@@ -375,19 +377,20 @@ export class PageOperations {
 				def,
 			);
 
-			const eventCounts: { [key: string]: number } = {};
-
-			//creating map from keys array to get the count
-			clickedCompEventKeys.forEach(key => (eventCounts[key] = (eventCounts[key] || 0) + 1));
-
 			//if no eventKey check
 			if (clickedCompEventKeys.length > 0) {
+				const eventCounts: { [key: string]: number } = {};
+
+				//creating map from keys array to get the count
+				clickedCompEventKeys.forEach(
+					key => (eventCounts[key] = (eventCounts[key] ?? 0) + 1),
+				);
 				//getting all the event keys in the page def
 				const allEventCounts: { [key: string]: number } = Object.values(
 					def.componentDefinition,
 				)
 					.filter(component => component.properties)
-					.flatMap(component => this.getCurrentCompEventKeys(component.key, def))
+					.flatMap(component => this.getEventsOf(component.key, def))
 					.reduce<{ [key: string]: number }>((counts, key) => {
 						counts[key] = (counts[key] ??= 0) + 1;
 						return counts;
@@ -414,7 +417,6 @@ export class PageOperations {
 				const x = def.componentDefinition[keys[i]];
 
 				delete x.children?.[componentKey];
-				def.componentDefinition[x.key] = x;
 			}
 
 			if (this.selectedComponent === componentKey) this.onSelectedComponentChanged('');
@@ -460,7 +462,10 @@ export class PageOperations {
 			let key = currentKeys.pop();
 			if (!key) continue;
 			delKeys.add(key);
-			currentKeys.addAll([...Object.keys(def.componentDefinition[key].children ?? {})]);
+
+			currentKeys.addAll(
+				Array.from(Object.keys(def.componentDefinition[key].children ?? {})),
+			);
 		}
 
 		const iterator = delKeys.values();
@@ -474,7 +479,7 @@ export class PageOperations {
 		return def;
 	}
 
-	public clearChildrenOnly(componentKey: string) {
+	public deleteChildrenOnlyAndSetStore(componentKey: string) {
 		if (!componentKey || !this.defPath) return;
 
 		const pageDef: PageDefinition = getDataFromPath(
@@ -710,7 +715,7 @@ export class PageOperations {
 		}
 	}
 
-	public copy(componentKey: any) {
+	public copy(componentKey: any, withEvents: boolean = false) {
 		if (!ClipboardItem || !this.defPath || !componentKey) return;
 
 		let def: PageDefinition = getDataFromPath(
@@ -718,53 +723,26 @@ export class PageOperations {
 			this.locationHistory,
 			this.pageExtractor,
 		);
-
-		const pageDef: PageDefinition = duplicate(def);
 		// Prepare the copy object and write to the clipboard.
 		const cutObject: ClipboardObject = this._makeCutOrCopyObject(
-			pageDef,
+			def,
 			componentKey,
 			false,
 			false,
 		);
 
-		const eventFunctionObj: { [key: string]: any } = Object.keys(cutObject.objects)
-			.flatMap(each => {
-				const eventKeys = this.getCurrentCompEventKeys(each, def);
-				return eventKeys.map(key => ({ [key]: def.eventFunctions[key] }));
-			})
-			.reduce((acc, curr) => ({ ...acc, ...curr }), {});
+		if (withEvents) {
+			const eventFunctionObj: { [key: string]: any } = Object.keys(cutObject.objects)
+				.flatMap(each => {
+					const eventKeys = this.getEventsOf(each, def);
+					return eventKeys.map(key => ({ [key]: duplicate(def.eventFunctions[key]) }));
+				})
+				.reduce((acc, curr) => ({ ...acc, ...curr }), {});
 
-		cutObject.eventObjects = eventFunctionObj;
+			cutObject.eventObjects = eventFunctionObj;
+		}
 
-		cutObject.pageId = pageDef.id;
-
-		navigator.clipboard.write([
-			new ClipboardItem({
-				'text/plain': new Blob([COPY_CD_KEY + JSON.stringify(cutObject)], {
-					type: 'text/plain',
-				}),
-			}),
-		]);
-	}
-
-	public copyWithOutEvents(componentKey: any) {
-		if (!ClipboardItem || !this.defPath || !componentKey) return;
-
-		let def: PageDefinition = getDataFromPath(
-			this.defPath,
-			this.locationHistory,
-			this.pageExtractor,
-		);
-
-		const pageDef: PageDefinition = duplicate(def);
-		// Prepare the copy object and write to the clipboard.
-		const cutObject: ClipboardObject = this._makeCutOrCopyObject(
-			pageDef,
-			componentKey,
-			false,
-			false,
-		);
+		cutObject.pageId = def.id;
 
 		navigator.clipboard.write([
 			new ClipboardItem({
@@ -818,7 +796,7 @@ export class PageOperations {
 						)
 							.filter(key => key != eventKey)
 							.flatMap(each => {
-								const eventKeys = this.getCurrentCompEventKeys(each, def);
+								const eventKeys = this.getEventsOf(each, def);
 								return eventKeys.map(key => ({ [key]: def.eventFunctions[key] }));
 							})
 							.reduce((acc, curr) => ({ ...acc, ...curr }), {});
@@ -860,7 +838,7 @@ export class PageOperations {
 
 		const eventFunctionObj: { [key: string]: any } = Object.keys(cutObject.objects)
 			.flatMap(each => {
-				const eventKeys = this.getCurrentCompEventKeys(each, def);
+				const eventKeys = this.getEventsOf(each, def);
 				return eventKeys.map(key => ({ [key]: def.eventFunctions[key] }));
 			})
 			.reduce((acc, curr) => ({ ...acc, ...curr }), {});
@@ -871,7 +849,7 @@ export class PageOperations {
 
 		const allEventKeys: Array<string> = Object.values(pageDef.componentDefinition)
 			.filter(component => component.properties)
-			.flatMap(component => this.getCurrentCompEventKeys(component.key, pageDef));
+			.flatMap(component => this.getEventsOf(component.key, pageDef));
 		const eventKeysSet: Set<string> = new Set(allEventKeys);
 		if (cutObject.eventObjects) {
 			Object.keys(cutObject.eventObjects).forEach(each => {
@@ -1099,9 +1077,7 @@ export class PageOperations {
 									pageDef.componentDefinition,
 								)
 									.filter(component => component.properties)
-									.flatMap(component =>
-										this.getCurrentCompEventKeys(component.key, pageDef),
-									);
+									.flatMap(component => this.getEventsOf(component.key, pageDef));
 								const eventKeysSet: Set<string> = new Set(allEventKeys);
 								if (clipObj.eventObjects) {
 									Object.keys(clipObj.eventObjects).forEach(each => {
