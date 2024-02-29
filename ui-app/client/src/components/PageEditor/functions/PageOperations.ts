@@ -229,7 +229,7 @@ export class PageOperations {
 			.map(each => currentCompProperties[each].value);
 	}
 
-	private getEventOfAllChildren(componentKey: string, def: PageDefinition): Array<string> {
+	private getEventsOfAllChildren(componentKey: string, def: PageDefinition): Array<string> {
 		let eventKeys: Array<string> = [];
 
 		const que = new LinkedList<ComponentDefinition>();
@@ -326,7 +326,7 @@ export class PageOperations {
 			let def: PageDefinition = duplicate(pageDef);
 
 			if (withEvents) {
-				const clickedCompEventKeys: Array<string> = this.getEventOfAllChildren(
+				const clickedCompEventKeys: Array<string> = this.getEventsOfAllChildren(
 					componentKey,
 					def,
 				);
@@ -998,8 +998,6 @@ export class PageOperations {
 		//Dropping component
 		const dpComp: ComponentDefinition | undefined = comps[mainKey];
 
-		const eventFunc: { [key: string]: any } | undefined = events;
-
 		let doCompComponent = ComponentDefinitions.get(doComp.type);
 		const dpCompComponent = ComponentDefinitions.get(dpComp.type);
 
@@ -1148,7 +1146,7 @@ export class PageOperations {
 
 								inPgDef.eventFunctions = {
 									...inPgDef.eventFunctions,
-									...eventFunc,
+									...events,
 								};
 
 								this._updateDisplayOrder(
@@ -1185,7 +1183,7 @@ export class PageOperations {
 			return;
 		}
 
-		pageDef.eventFunctions = { ...pageDef.eventFunctions, ...eventFunc };
+		pageDef.eventFunctions = { ...pageDef.eventFunctions, ...events };
 		setData(this.defPath!, pageDef, this.pageExtractor.getPageName());
 	}
 
