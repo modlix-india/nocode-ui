@@ -112,4 +112,4 @@ export function generateFormPreview(fieldDefinitionMap: FormDefinition, formName
 	}
 
 	return { children, pageDef };
-};
+}
