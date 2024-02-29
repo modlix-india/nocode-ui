@@ -135,25 +135,32 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 	${PREFIX} ._dropdownBody {
 		position: fixed;
 		width: 100%;
-		background-color: #FFF;
+		background: #FFF;
 		border: 1px solid rgba(0, 0, 0, 0.10);
 		box-shadow: 0px 1px 4px 0px #00000026;
 		border-radius: 6px;
-		padding: 5px 0 0px 7px;
+		padding: 5px 0 0 0;
 		z-index: 2;
 		max-height: 250px;
-		overflow: scroll;
+		display: flex;
+		flex-direction: column;
 	}
 	${PREFIX} ._dropdownBody ._dropdownSearchBox {
-		width: 100%;
+		max-width: 100%;
 		min-height: 38px;
 		background: #FFF;
-		padding: 0 0 0 7px;
-		margin: 6px 0;
+		padding: 0 6px;
+		margin: 6px 7px;
 		border-radius: 4px;
-		cursor: pointer;
 		font-size: 14px;
 		border: 2px solid rgb(0,0,0,.08);
+	}
+	${PREFIX} ._dropdownBody ._dropdownOptionList {
+		flex: 1;
+		width: 100%;
+		padding: 0 0 5px 7px;
+		background: #FFF;
+		overflow: scroll;
 	}
 
 	${PREFIX} ._dropdownBody ._dropdownOption {

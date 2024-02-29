@@ -590,6 +590,12 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
+			name: 'dropdownOptionList',
+			displayName: 'Dropdown Option List',
+			description: 'Dropdown Option List',
+			icon: 'fa-solid fa-box',
+		},
+		{
 			name: 'dropdownOption',
 			displayName: 'Dropdown Option',
 			description: 'Dropdown Option',

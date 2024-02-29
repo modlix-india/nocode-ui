@@ -96,7 +96,7 @@ export function Dropdown({
 				dropdownBodyStyle.bottom = document.body.clientHeight - rect.top;
 			else dropdownBodyStyle.top = rect.top + rect.height;
 			const parentRect = dropDown.current.parentElement?.getBoundingClientRect();
-			dropdownBodyStyle.right = document.body.clientWidth - (parentRect?.right ?? 0);
+			dropdownBodyStyle.right = document.body.clientWidth - (parentRect?.right ?? 0) + 6;
 			dropdownBodyStyle.minWidth = rect.width;
 			dropdownBodyStyle.maxWidth = parentRect?.width ?? '100%';
 		}
@@ -118,31 +118,40 @@ export function Dropdown({
 							onChange={e => setSearchText(e.target.value)}
 						/>
 					)}
-					{(searchOptions?.length || searchText ? searchOptions : options)?.map(
-						(o, i) => (
-							<div
-								style={computedStyles.dropdownOption ?? {}}
-								key={o.C}
-								className={`_dropdownOption ${
-									i === currentOption ? '_hovered' : ''
-								} ${value === o.D ? '_selected' : ''} ${
-									o.nextSeperator ? '_nextSeperator' : ''
-								}`}
-								onClick={e => {
-									e.stopPropagation();
-									handleClick(o);
-								}}
-								onMouseOver={() => setCurrentOption(i)}
-							>
-								<SubHelperComponent
-									definition={definition}
-									subComponentName="dropdownOption"
-								/>
-								<span>{getFlagEmoji(o.C) + ' '}</span>
-								<span>{o.N + ' ' + o.D}</span>
-							</div>
-						),
-					)}
+					<div
+						style={computedStyles.dropdownOptionList ?? {}}
+						className="_dropdownOptionList"
+					>
+						<SubHelperComponent
+							definition={definition}
+							subComponentName="dropdownOptionList"
+						/>
+						{(searchOptions?.length || searchText ? searchOptions : options)?.map(
+							(o, i) => (
+								<div
+									style={computedStyles.dropdownOption ?? {}}
+									key={o.C}
+									className={`_dropdownOption ${
+										i === currentOption ? '_hovered' : ''
+									} ${value === o.D ? '_selected' : ''} ${
+										o.nextSeperator ? '_nextSeperator' : ''
+									}`}
+									onClick={e => {
+										e.stopPropagation();
+										handleClick(o);
+									}}
+									onMouseOver={() => setCurrentOption(i)}
+								>
+									<SubHelperComponent
+										definition={definition}
+										subComponentName="dropdownOption"
+									/>
+									<span>{getFlagEmoji(o.C) + ' '}</span>
+									<span>{o.N + ' ' + o.D}</span>
+								</div>
+							),
+						)}
+					</div>
 				</div>
 			</>
 		);
