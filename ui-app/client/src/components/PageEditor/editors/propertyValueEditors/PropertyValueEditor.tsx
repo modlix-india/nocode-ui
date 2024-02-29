@@ -256,19 +256,23 @@ function makeValueEditor(
 			</div>
 		);
 	}
-
 	if (propDef.editor === ComponentPropertyEditor.VALIDATION) {
-		return (
-			<ValidationEditor
-				value={chngValue === '' ? undefined : chngValue}
-				onChange={e => onChange({ ...value, value: e })}
-				storePaths={storePaths}
-				onShowCodeEditor={onShowCodeEditor}
-				editPageName={editPageName}
-				slaveStore={slaveStore}
-				pageOperations={pageOperations}
-			/>
-		);
+		const validationList = propDef.validationList || [];
+
+		if (propDef.editor === ComponentPropertyEditor.VALIDATION) {
+			return (
+				<ValidationEditor
+					value={chngValue === '' ? undefined : chngValue}
+					onChange={e => onChange({ ...value, value: e })}
+					storePaths={storePaths}
+					onShowCodeEditor={onShowCodeEditor}
+					editPageName={editPageName}
+					slaveStore={slaveStore}
+					pageOperations={pageOperations}
+					validationList={validationList}
+				/>
+			);
+		}
 	}
 
 	if (propDef.editor === ComponentPropertyEditor.IMAGE) {

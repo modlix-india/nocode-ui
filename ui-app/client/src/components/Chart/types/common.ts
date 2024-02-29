@@ -3,6 +3,17 @@ import { PageStoreExtractor, getDataFromPath } from '../../../context/StoreConte
 import { LocationHistory } from '../../../types/common';
 import RepetetiveArray from '../../../util/RepetetiveArray';
 
+export interface Dimension {
+	x?: number;
+	y?: number;
+	from?: {
+		x: number;
+		y: number;
+	};
+	width: number;
+	height: number;
+}
+
 export enum PointType {
 	Circle = 'circle',
 	FilledCircle = 'filledCircle',
@@ -36,9 +47,10 @@ export enum DataSetStyle {
 	SmoothDottedLine = 'smoothDottedLine',
 	SmoothDashedLine = 'smoothDashedLine',
 	SmoothLongDashedLine = 'smoothLongDashedLine',
+	Lollipop = 'lollipop',
+
 	Bar = 'bar',
 	RoundedBar = 'roundedBar',
-	Lollipop = 'lollipop',
 
 	Pie = 'pie',
 	Doughnut = 'doughnut',
@@ -84,7 +96,7 @@ export interface ChartProperties {
 	xAxisTitle?: string;
 	yAxisType: 'ordinal' | 'value' | 'log' | 'derived'; // Done.
 	yAxisStartPosition: 'left' | 'right' | 'center';
-	dataSetLabels?: string[];
+	dataSetLabels?: string[]; //Done.
 	yAxisLabels?: string[]; // Done.
 	yAxisLabelsSort?: boolean; // Done.
 	yAxisMin?: number; // Done.
@@ -172,6 +184,7 @@ export interface ChartData {
 	strokeOpacity: RepetetiveArray<any>[];
 	pointType: RepetetiveArray<any>[];
 	pointSize: RepetetiveArray<any>[];
+	dataSetStyles: RepetetiveArray<any>[];
 }
 
 export function makeChartDataFromProperties(
@@ -417,6 +430,15 @@ export function makeChartDataFromProperties(
 		pageExtractor,
 	);
 
+	const dataSetStyles: RepetetiveArray<any>[] = getPathBasedValues(
+		properties.data,
+		[],
+		properties.yAxisDataSetStyle,
+		yAxisData.length,
+		locationHistory,
+		pageExtractor,
+	);
+
 	return {
 		xAxisLabels,
 		yAxisLabels,
@@ -433,6 +455,7 @@ export function makeChartDataFromProperties(
 		strokeOpacity,
 		pointType,
 		pointSize,
+		dataSetStyles,
 	};
 }
 

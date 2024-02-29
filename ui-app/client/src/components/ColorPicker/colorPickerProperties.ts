@@ -1,11 +1,8 @@
-import {
-	SCHEMA_BOOL_COMP_PROP,
-	SCHEMA_STRING_COMP_PROP
-} from '../../constants';
+import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
-	ComponentPropertyGroup
+	ComponentPropertyGroup,
 } from '../../types/common';
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
@@ -14,8 +11,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'defaultColor',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Color Picker default color',
-		description: "Default color for color picker.",
-		group: ComponentPropertyGroup.BASIC
+		description: 'Default color for color picker.',
+		group: ComponentPropertyGroup.BASIC,
 	},
 	{
 		name: 'showColorSelector',
@@ -108,7 +105,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 	COMMON_COMPONENT_PROPERTIES.onChange,
-	COMMON_COMPONENT_PROPERTIES.colorScheme
+	COMMON_COMPONENT_PROPERTIES.colorScheme,
 ];
 
 const stylePropertiesDefinition = {
@@ -181,7 +178,6 @@ const stylePropertiesDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
-
 };
 
 export { propertiesDefinition, stylePropertiesDefinition };

@@ -12,12 +12,14 @@ import useDefinition from '../util/useDefinition';
 import SubPageStyle from './ChartStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './chartProperties';
 import { styleDefaults } from './chartStyleProperties';
-import { isNullValue } from '@fincity/kirun-js';
+import { deepEqual, isNullValue } from '@fincity/kirun-js';
 import Regular from './types/Regular';
 import Radial from './types/Radial';
 import Waffle from './types/Waffle';
 import Dot from './types/Dot';
 import Radar from './types/Radar';
+import { ChartData, Dimension, makeChartDataFromProperties } from './types/common';
+import Legends from './types/chartComponents/Legends';
 
 function Chart(props: Readonly<ComponentProps>) {
 	const {
@@ -63,28 +65,40 @@ function Chart(props: Readonly<ComponentProps>) {
 	);
 
 	const containerRef = useRef<HTMLDivElement>(null);
-	const [dimension, setDimension] = React.useState({ width: 0, height: 0 });
+	const [chartDimension, setChartDimension] = React.useState<Dimension>({ width: 0, height: 0 });
+	const [legendDimesion, setLegendDimension] = React.useState<Dimension>({ width: 0, height: 0 });
+
+	const [oldProperties, setOldProperties] = React.useState<any>(undefined);
+	const [chartData, setChartData] = React.useState<ChartData | undefined>(undefined);
+
+	useEffect(() => {
+		if (deepEqual(properties, oldProperties)) return;
+		console.log('Setting props', properties);
+		setOldProperties(properties);
+		setChartData(makeChartDataFromProperties(properties, locationHistory, pageExtractor));
+	}, [oldProperties, properties, locationHistory, pageExtractor]);
+
 	useEffect(() => {
 		if (isNullValue(containerRef.current)) return;
 
 		let rect = containerRef.current!.getBoundingClientRect();
+		setChartDimension({ width: rect.width, height: rect.height });
 		const resizeObserver = new ResizeObserver(() => {
 			setTimeout(() => {
 				const newRect = containerRef.current?.getBoundingClientRect();
 				if (!newRect) return;
-
 				if (
 					Math.abs(newRect.width - rect.width) < 8 &&
 					Math.abs(newRect.height - rect.height) < 8
 				)
 					return;
 				rect = newRect;
-				setDimension({ width: newRect.width, height: newRect.height });
+				setChartDimension({ width: newRect.width, height: newRect.height });
 			}, 2000);
 		});
 		resizeObserver.observe(containerRef.current!);
 		return () => resizeObserver.disconnect();
-	}, [containerRef.current]);
+	}, [containerRef.current, setChartDimension]);
 
 	let chart = <></>;
 
@@ -100,18 +114,32 @@ function Chart(props: Readonly<ComponentProps>) {
 		chart = (
 			<Regular
 				properties={properties}
-				width={dimension.width}
-				height={dimension.height}
+				chartDimension={chartDimension}
+				legendDimension={legendDimesion}
 				locationHistory={locationHistory}
 				pageExtractor={pageExtractor}
 			/>
 		);
 	}
 
+	console.log(resolvedStyles);
+
 	return (
 		<div className={`comp compChart `} style={resolvedStyles.comp ?? {}} ref={containerRef}>
 			<HelperComponent context={props.context} definition={definition} />
-			{chart}
+			<svg
+				viewBox={`0 0 ${chartDimension.width} ${chartDimension.height}`}
+				xmlns="http://www.w3.org/2000/svg"
+			>
+				<Legends
+					chartData={chartData}
+					properties={properties}
+					chartDimension={chartDimension}
+					legendDimension={legendDimesion}
+					styles={resolvedStyles.legendLabel ?? {}}
+					onLegendDimensionChange={d => setLegendDimension(d)}
+				/>
+			</svg>
 		</div>
 	);
 }
@@ -207,6 +235,30 @@ const component: Component = {
 					</g>
 				</IconHelper>
 			),
+		},
+		{
+			name: 'xAxisLabel',
+			displayName: 'X Axis Label',
+			description: 'X Axis Label',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'yAxisLabel',
+			displayName: 'Y Axis Label',
+			description: 'Y Axis Label',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'legendLabel',
+			displayName: 'Legend Label',
+			description: 'Legend Label',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'tooltip',
+			displayName: 'Tooltip',
+			description: 'Tooltip',
+			icon: 'fa fa-solid fa-box',
 		},
 	],
 };

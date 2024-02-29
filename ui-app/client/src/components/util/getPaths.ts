@@ -1,6 +1,7 @@
 import { ExpressionEvaluator, isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
 import {
 	ComponentDefinition,
+	ComponentMultiProperty,
 	ComponentProperty,
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
@@ -86,6 +87,7 @@ export function getPathsFromComponentProperties(
 		| {
 				[key: string]:
 					| ComponentProperty<any>
+					| ComponentMultiProperty<any>
 					| { [key: string]: ComponentProperty<any> }
 					| { [key: string]: Validation };
 		  }

@@ -109,17 +109,17 @@ function ButtonComponent(props: ComponentProps) {
 		designType !== '_iconButton' &&
 		designType !== '_iconPrimaryButton';
 
-		const rightIconTag = hasRightIcon ? (
-			<i
-				style={styleProperties.rightIcon ?? {}}
-				className={`_rightButtonIcon _icon ${rightIcon ?? 'fa fa-circle-notch hide'}`}
-			>
-				<SubHelperComponent
-					definition={props.definition}
-					subComponentName="rightIcon"
-				></SubHelperComponent>
-			</i>
-		) : undefined;
+	const rightIconTag = hasRightIcon ? (
+		<i
+			style={styleProperties.rightIcon ?? {}}
+			className={`_rightButtonIcon _icon ${rightIcon ?? 'fa fa-circle-notch hide'}`}
+		>
+			<SubHelperComponent
+				definition={props.definition}
+				subComponentName="rightIcon"
+			></SubHelperComponent>
+		</i>
+	) : undefined;
 
 	const hasLeftIcon = leftIcon || isLoading;
 
