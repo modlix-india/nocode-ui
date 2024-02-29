@@ -119,6 +119,10 @@ export default class RepetetiveArray<T> implements Iterable<T> {
 		throw new Error('Index out of bounds');
 	}
 
+	public safeGet(index: number): T | undefined {
+		return index < this._length ? this.inMap.get(index) ?? this.defaultValue : undefined;
+	}
+
 	public set(index: number, value: T): void {
 		if (index < this._length) {
 			if (index === this._length) {

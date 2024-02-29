@@ -122,8 +122,6 @@ function Chart(props: Readonly<ComponentProps>) {
 		);
 	}
 
-	console.log(resolvedStyles);
-
 	return (
 		<div className={`comp compChart `} style={resolvedStyles.comp ?? {}} ref={containerRef}>
 			<HelperComponent context={props.context} definition={definition} />

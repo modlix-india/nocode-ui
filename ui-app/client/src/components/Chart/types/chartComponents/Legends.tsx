@@ -1,8 +1,20 @@
 import React, { CSSProperties, useEffect, useRef, useState } from 'react';
 import { ChartData, ChartProperties, Dimension } from '../common';
+import { shortUUID } from '../../../../util/shortUUID';
 
 const RECT_WIDTH = 20;
 const RECT_HEIGHT = 10;
+const SPACE = 10;
+
+interface LegendItem {
+	label: string;
+	textDimension: Dimension;
+	dimension: Dimension;
+	color: string;
+	fillOpacity: number;
+	strokeOpacity: number;
+	id?: string;
+}
 
 export default function Legends({
 	chartDimension,
@@ -21,11 +33,14 @@ export default function Legends({
 }>) {
 	const labelWidthRef = useRef<SVGTextElement>(null);
 
-	const [labels, setLabels] = useState<string[]>([]);
-	const [labelDimensions, setLabelDimensions] = useState<Dimension[]>([]);
+	const [legends, setLegends] = useState<LegendItem[]>([]);
 
 	useEffect(() => {
-		if (properties.legendPosition === 'none') {
+		if (
+			properties.legendPosition === 'none' ||
+			chartDimension.width <= 0 ||
+			chartDimension.height <= 0
+		) {
 			if (legendDimension.width !== 0 || legendDimension.height !== 0)
 				onLegendDimensionChange({ width: 0, height: 0 });
 			return;
@@ -33,18 +48,38 @@ export default function Legends({
 
 		if (!labelWidthRef?.current) return;
 
-		const dataSetLabels = [];
-		const dataSetLabelDimensions: Dimension[] = [];
+		const labelGroups: Array<LegendItem> = [];
 
 		for (let i = 0; i < (chartData?.yAxisData?.length ?? 0); i++) {
-			dataSetLabels.push(properties?.dataSetLabels?.[i] ?? `Data set ${i}`);
-			labelWidthRef.current.innerHTML = dataSetLabels[i];
+			const label = properties?.dataSetLabels?.[i] ?? `Data set ${i}`;
+			labelWidthRef.current.innerHTML = label;
 			const { width, height } = labelWidthRef.current.getBoundingClientRect();
-			dataSetLabelDimensions.push({ width, height });
+			const textDimension = { width, height };
+
+			labelGroups.push({
+				label,
+				textDimension,
+				dimension: { width: width + RECT_WIDTH + SPACE, height: height },
+				color: chartData?.dataColors?.[i]?.safeGet(0) ?? 'black',
+				fillOpacity: chartData?.fillOpacity?.[i]?.safeGet(0) ?? 1,
+				strokeOpacity: chartData?.strokeOpacity?.[i]?.safeGet(0) ?? 1,
+			});
 		}
 
-		setLabels(dataSetLabels);
-		setLabelDimensions(dataSetLabelDimensions);
+		for (let i = 0; i < labelGroups.length; i++) {}
+
+		setLegends(old => {
+			for (let i = 0; i < labelGroups.length; i++) {
+				const hasOldObj = !!old[i];
+				labelGroups[i].id = hasOldObj ? old[i].id : shortUUID();
+				if (!labelGroups[i].dimension.from) labelGroups[i].dimension.from = { x: 0, y: 0 };
+				if (hasOldObj) {
+					labelGroups[i].dimension.from!.x = old[i].dimension.x ?? 0;
+					labelGroups[i].dimension.from!.y = old[i].dimension.y ?? 0;
+				}
+			}
+			return labelGroups;
+		});
 	}, [
 		labelWidthRef?.current,
 		chartDimension,
@@ -52,9 +87,8 @@ export default function Legends({
 		properties.legendPosition,
 		properties.disableLegendInteraction,
 		styles,
+		setLegends,
 	]);
-
-	console.log(labels, labelDimensions);
 
 	if (chartDimension.width <= 0 || chartDimension.height <= 0) return <></>;
 
