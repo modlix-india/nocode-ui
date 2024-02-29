@@ -90,11 +90,6 @@ function PhoneNumber(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	const computedStyles = processComponentStylePseudoClasses(
-		props.pageDefinition,
-		{ focus, readOnly },
-		stylePropertiesWithPseudoStates,
-	);
 	const [value, setValue] = React.useState<string>(defaultValue ?? '');
 
 	const bindingPathPath = bindingPath
@@ -150,6 +145,12 @@ function PhoneNumber(props: ComponentProps) {
 		if (!paths.length) return;
 		return addListener((_, value) => setIsLoading(value), pageExtractor, ...paths);
 	}, []);
+
+	const computedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{ focus, disabled: isLoading || readOnly },
+		stylePropertiesWithPseudoStates,
+	);
 
 	useEffect(() => {
 		if (!validation?.length) return;
@@ -228,6 +229,10 @@ function PhoneNumber(props: ComponentProps) {
 		setFocus(true);
 		callFocusEvent();
 	};
+	const handleInputBlur = () => {
+		setFocus(false);
+		callBlurEvent();
+	};
 
 	const handleKeyUp = async (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		if (!clickEvent || isLoading || e.key !== 'Enter') return;
@@ -293,8 +298,8 @@ function PhoneNumber(props: ComponentProps) {
 		return text.replace(/[^+\d]/g, '');
 	};
 
-	const getFormattedNumber = (text: string) => {
-		let format = SORTED_COUNTRY_LIST.find(e => e.D == selectedCode)?.F ?? [];
+	const getFormattedNumber = (text: string, dc: string) => {
+		let format = SORTED_COUNTRY_LIST.find(e => e.D == dc)?.F ?? [];
 		if (format.length == 0) format = [5, 5];
 		let formatLength = format.reduce((acc, e) => acc + e, 0);
 		text = getUnformattedNumber(text);
@@ -340,7 +345,7 @@ function PhoneNumber(props: ComponentProps) {
 		let dc = getDialCode(unformattedText);
 		if (dc) setSelectedCode(dc);
 		else setSelectedCode(countryList[0].D);
-		if (format) setPhoneNumber(getFormattedNumber(unformattedText.slice(dc.length)));
+		if (format) setPhoneNumber(getFormattedNumber(unformattedText.slice(dc.length), dc));
 		else setPhoneNumber(unformattedText.slice(dc.length));
 	}, [value, countryList]);
 
@@ -388,13 +393,14 @@ function PhoneNumber(props: ComponentProps) {
 			let { dc, phone } = extractDCAndPhone(text);
 			let temp =
 				format && text !== phone
-					? dc + (storeFormatted ? seperator + getFormattedNumber(phone) : phone)
+					? dc + (storeFormatted ? seperator + getFormattedNumber(phone, dc) : phone)
 					: dc + phone;
 			bindingPathPath && setData(bindingPathPath, temp, context?.pageName);
 			callChangeEvent();
 		} else if (!updateStoreImmediately) {
 			let temp = format
-				? selectedCode + (storeFormatted ? seperator + getFormattedNumber(text) : text)
+				? selectedCode +
+				  (storeFormatted ? seperator + getFormattedNumber(text, selectedCode) : text)
 				: selectedCode + text;
 			updateBindingPathData(temp);
 		}
@@ -410,7 +416,7 @@ function PhoneNumber(props: ComponentProps) {
 			return;
 		}
 		text = text === '' && emptyValue ? mapValue[emptyValue] : getUnformattedNumber(text);
-		let formattedText = getFormattedNumber(text);
+		let formattedText = getFormattedNumber(text, selectedCode);
 
 		if (!text && updateStoreImmediately) {
 			updateBindingPathData(text);
@@ -430,12 +436,12 @@ function PhoneNumber(props: ComponentProps) {
 	};
 
 	const handleCountryChange = async (dc: string) => {
+		let unformattedText = getUnformattedNumber(phoneNumber);
+		let formattedText = getFormattedNumber(unformattedText, dc);
+		let text = format
+			? dc + (storeFormatted ? seperator + formattedText : unformattedText)
+			: dc + phoneNumber;
 		if (bindingPathPath) {
-			let unformattedText = getUnformattedNumber(phoneNumber);
-			let formattedText = getFormattedNumber(unformattedText);
-			let text = format
-				? dc + (storeFormatted ? seperator + formattedText : unformattedText)
-				: dc + phoneNumber;
 			setData(bindingPathPath, text, context?.pageName);
 			callChangeEvent();
 		}
@@ -459,6 +465,8 @@ function PhoneNumber(props: ComponentProps) {
 				clearSearchTextOnClose={clearSearchTextOnClose}
 				computedStyles={computedStyles}
 				definition={definition}
+				handleInputFocus={handleInputFocus}
+				handleInputBlur={handleInputBlur}
 			/>
 			{dialCodeLabel}
 		</>
