@@ -250,7 +250,7 @@ function DropdownComponent(props: ComponentProps) {
 	}, [selected, selectedDataKey, dropdownData, isMultiSelect]);
 	const computedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
-		{ focus, readOnly },
+		{ focus, disabled: readOnly },
 		stylePropertiesWithPseudoStates,
 	);
 
