@@ -21,7 +21,7 @@ import { validate } from '../../util/validationProcessor';
 import CommonInputText from '../../commonComponents/CommonInputText';
 import { styleDefaults } from './phoneNumberStyleProperties';
 import { IconHelper } from '../util/IconHelper';
-import { Dropdown, DropdownOptions } from './components/Dropdown';
+import { Dropdown, DropdownOption, DropdownOptions } from './components/Dropdown';
 import { COUNTRY_LIST } from './components/listOfCountries';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 
@@ -163,7 +163,7 @@ function PhoneNumber(props: ComponentProps) {
 			pageExtractor,
 		);
 		setValidationMessages([
-			...(validationMessages.filter(e => e === dialCodeValidationMessage) ?? []),
+			...(validationMessages.filter(e => e === VALIDATION_MSG) ?? []),
 			...msgs,
 		]);
 
@@ -266,6 +266,7 @@ function PhoneNumber(props: ComponentProps) {
 			props.pageDefinition,
 		);
 	};
+	console.log(COUNTRY_LIST.length);
 
 	const SORTED_COUNTRY_LIST = useMemo<DropdownOptions>(() => {
 		return COUNTRY_LIST.sort((a, b) => {
@@ -276,9 +277,9 @@ function PhoneNumber(props: ComponentProps) {
 	}, [orderBy]);
 
 	const [countryList, setCountryList] = useState<DropdownOptions>(SORTED_COUNTRY_LIST);
-	const [selectedCode, setSelectedCode] = useState<string>(SORTED_COUNTRY_LIST[0].D);
+	const [selected, setSelectedCode] = useState<DropdownOption>(SORTED_COUNTRY_LIST[0]);
 	const [phoneNumber, setPhoneNumber] = useState<string>('');
-	const dialCodeValidationMessage = 'Dial code is not valid or not available in option list';
+	const VALIDATION_MSG = 'Dial code is not valid or not available in option list';
 
 	const getDialCode = (value: string) => {
 		let dc = '';
@@ -343,11 +344,13 @@ function PhoneNumber(props: ComponentProps) {
 	useEffect(() => {
 		let unformattedText = getUnformattedNumber(value);
 		let dc = getDialCode(unformattedText);
-		if (dc) setSelectedCode(dc);
-		else setSelectedCode(countryList[0].D);
+		if (dc) setSelectedCode(countryList.find(e => e.D === dc)!);
+		else setSelectedCode(countryList[0]);
 		if (format) setPhoneNumber(getFormattedNumber(unformattedText.slice(dc.length), dc));
 		else setPhoneNumber(unformattedText.slice(dc.length));
 	}, [value, countryList]);
+
+	console.log('selected', selected);
 
 	const extractDCAndPhone = (text: string) => {
 		let phone = text;
@@ -356,13 +359,12 @@ function PhoneNumber(props: ComponentProps) {
 			phone = phone.slice(dc.length);
 			setValidationMessages([]);
 		} else {
-			dc = selectedCode;
+			dc = selected.D;
 			if (
-				(validationMessages.length > 0 &&
-					validationMessages[0] !== dialCodeValidationMessage) ||
+				(validationMessages.length > 0 && validationMessages[0] !== VALIDATION_MSG) ||
 				validationMessages.length === 0
 			)
-				setValidationMessages([dialCodeValidationMessage]);
+				setValidationMessages([VALIDATION_MSG]);
 		}
 		return { dc, phone };
 	};
@@ -399,9 +401,9 @@ function PhoneNumber(props: ComponentProps) {
 			callChangeEvent();
 		} else if (!updateStoreImmediately) {
 			let temp = format
-				? selectedCode +
-				  (storeFormatted ? seperator + getFormattedNumber(text, selectedCode) : text)
-				: selectedCode + text;
+				? selected.D +
+				  (storeFormatted ? seperator + getFormattedNumber(text, selected.D) : text)
+				: selected.D + text;
 			updateBindingPathData(temp);
 		}
 		callBlurEvent();
@@ -416,7 +418,7 @@ function PhoneNumber(props: ComponentProps) {
 			return;
 		}
 		text = text === '' && emptyValue ? mapValue[emptyValue] : getUnformattedNumber(text);
-		let formattedText = getFormattedNumber(text, selectedCode);
+		let formattedText = getFormattedNumber(text, selected.D);
 
 		if (!text && updateStoreImmediately) {
 			updateBindingPathData(text);
@@ -424,8 +426,8 @@ function PhoneNumber(props: ComponentProps) {
 			setPhoneNumber('');
 		} else if (!text.startsWith('+') && updateStoreImmediately) {
 			let temp = format
-				? selectedCode + (storeFormatted ? seperator + formattedText : text)
-				: selectedCode + text;
+				? selected.D + (storeFormatted ? seperator + formattedText : text)
+				: selected.D + text;
 			updateBindingPathData(temp);
 		} else if (!text.startsWith('+') && !updateStoreImmediately) {
 			let temp = format ? formattedText : text;
@@ -435,12 +437,12 @@ function PhoneNumber(props: ComponentProps) {
 		}
 	};
 
-	const handleCountryChange = async (dc: string) => {
+	const handleCountryChange = async (v: DropdownOption) => {
 		let unformattedText = getUnformattedNumber(phoneNumber);
-		let formattedText = getFormattedNumber(unformattedText, dc);
+		let formattedText = getFormattedNumber(unformattedText, v.D);
 		let text = format
-			? dc + (storeFormatted ? seperator + formattedText : unformattedText)
-			: dc + phoneNumber;
+			? v.D + (storeFormatted ? seperator + formattedText : unformattedText)
+			: v.D + phoneNumber;
 		if (bindingPathPath) {
 			setData(bindingPathPath, text, context?.pageName);
 			callChangeEvent();
@@ -448,16 +450,16 @@ function PhoneNumber(props: ComponentProps) {
 	};
 
 	const dialCodeLabel =
-		noCodeForFirstCountry && selectedCode === countryList[0].D ? undefined : (
+		noCodeForFirstCountry && selected.C === countryList[0].C ? undefined : (
 			<span style={computedStyles.dialCodeLabel ?? {}} className="_dialCodeLabel">
 				<SubHelperComponent definition={definition} subComponentName="dialCodeLabel" />
-				{selectedCode}
+				{selected.D}
 			</span>
 		);
 	const leftChildren = (
 		<>
 			<Dropdown
-				value={selectedCode}
+				value={selected}
 				onChange={handleCountryChange}
 				options={countryList}
 				isSearchable={isSearchable}
@@ -472,8 +474,7 @@ function PhoneNumber(props: ComponentProps) {
 		</>
 	);
 	const finKey: string = 't_' + key;
-	const x =
-		noCodeForFirstCountry && selectedCode === countryList[0].D ? 1 : selectedCode.length ?? 1;
+	const x = noCodeForFirstCountry && selected.C === countryList[0].C ? 1 : selected.D.length ?? 1;
 
 	return (
 		<CommonInputText

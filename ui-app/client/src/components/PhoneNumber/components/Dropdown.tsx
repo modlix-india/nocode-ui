@@ -10,13 +10,15 @@ function getFlagEmoji(C: string) {
 	return String.fromCodePoint(...codePoints);
 }
 
-export type DropdownOptions = Array<{
+export interface DropdownOption {
 	nextSeperator?: boolean;
+	A?: Array<number>;
 	F: Array<number>;
 	D: string;
 	N: string;
 	C: string;
-}>;
+}
+export type DropdownOptions = Array<DropdownOption>;
 export function Dropdown({
 	value,
 	onChange,
@@ -29,8 +31,8 @@ export function Dropdown({
 	handleInputFocus,
 	handleInputBlur,
 }: {
-	value: string;
-	onChange: (v: string) => void;
+	value: DropdownOption;
+	onChange: (v: DropdownOption) => void;
 	options: DropdownOptions;
 	isSearchable?: boolean;
 	searchLabel?: string;
@@ -41,15 +43,13 @@ export function Dropdown({
 	handleInputBlur: () => void;
 }) {
 	let label = undefined;
-	if (value.length > 0) {
-		const x = options.find(e => e.D === value);
-		if (x)
-			label = (
-				<span style={computedStyles.selectedOption ?? {}} className="_selectedOption">
-					<SubHelperComponent definition={definition} subComponentName="selectedOption" />
-					{getFlagEmoji(x!.C)}
-				</span>
-			);
+	if (value) {
+		label = (
+			<span style={computedStyles.selectedOption ?? {}} className="_selectedOption">
+				<SubHelperComponent definition={definition} subComponentName="selectedOption" />
+				{getFlagEmoji(value!.C)}
+			</span>
+		);
 	}
 	const [searchOptions, setSearchOptions] = useState<DropdownOptions>();
 	const [searchText, setSearchText] = useState('');
@@ -84,7 +84,7 @@ export function Dropdown({
 	};
 
 	const handleClick = (o: any) => {
-		onChange(o.D);
+		onChange(o);
 		setTimeout(() => {
 			if (dropDown.current?.nextSibling?.nextSibling instanceof HTMLElement)
 				dropDown.current.nextSibling.nextSibling.focus();
@@ -144,7 +144,7 @@ export function Dropdown({
 									key={o.C}
 									className={`_dropdownOption ${
 										i === currentOption ? '_hovered' : ''
-									} ${value === o.D ? '_selected' : ''} ${
+									} ${value.C === o.C ? '_selected' : ''} ${
 										o.nextSeperator ? '_nextSeperator' : ''
 									}`}
 									onClick={e => {
