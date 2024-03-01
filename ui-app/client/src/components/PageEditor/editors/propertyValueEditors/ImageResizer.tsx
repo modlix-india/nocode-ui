@@ -858,7 +858,7 @@ const ImageResizer = ({
 
 		newFormData.append('path', image);
 		newFormData.append('name', imageName);
-		newFormData.append('overrideImage', `${override}`);
+		newFormData.append('override', `${override}`);
 
 		if (formData) {
 			formData.forEach((value, key) => {
@@ -873,16 +873,16 @@ const ImageResizer = ({
 		if (showCropArea) {
 			const xAxis = cropAreaPosition?.left;
 			const yAxis = cropAreaPosition?.top;
-			newFormData?.append('xAxis', xAxis ? String(xAxis) : '0');
-			newFormData?.append('yAxis', yAxis ? String(yAxis) : '0');
+			newFormData?.append('cropAreaX', xAxis ? String(xAxis) : '0');
+			newFormData?.append('cropAreaY', yAxis ? String(yAxis) : '0');
 
 			const caWidth = cropAreaSize?.width;
 			const caHeight = cropAreaSize?.height;
 			newFormData?.append('cropAreaWidth', caWidth ? String(caWidth) : '0');
 			newFormData?.append('cropAreaHeight', caHeight ? String(caHeight) : '0');
 		} else {
-			newFormData?.append('xAxis', '0');
-			newFormData?.append('yAxis', '0');
+			newFormData?.append('cropAreaX', '0');
+			newFormData?.append('cropAreaY', '0');
 			newFormData?.append('cropAreaWidth', '0');
 			newFormData?.append('cropAreaHeight', '0');
 		}
