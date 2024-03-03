@@ -432,18 +432,25 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'animationTime',
 		schema: SCHEMA_NUM_COMP_PROP,
 		displayName: 'Animation Time (ms)',
+		defaultValue: 1000,
 		description:
 			'Animation Time in Milliseconds with values less than or equal to 0 for no animation',
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 
 	{
-		name: 'animationEasing',
+		name: 'animationTimingFunction',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Animation Easing',
+		displayName: 'Animation Timing Function',
 		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: 'linear',
-		enumValues: [{ name: 'linear', displayName: 'Linear' }],
+		enumValues: [
+			{ name: 'linear', displayName: 'Linear' },
+			{ name: 'ease', displayName: 'Ease' },
+			{ name: 'ease-in', displayName: 'Ease In' },
+			{ name: 'ease-out', displayName: 'Ease Out' },
+			{ name: 'ease-in-out', displayName: 'Ease In Out' },
+		],
 	},
 
 	{
@@ -518,22 +525,26 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 	],
 	xAxisLabel: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
 	],
 	yAxisLabel: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
 	],
 	legendLabel: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
+	],
+	legendRectangle: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
 	],
 	tooltip: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 	],

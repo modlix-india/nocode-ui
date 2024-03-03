@@ -73,7 +73,7 @@ function Chart(props: Readonly<ComponentProps>) {
 
 	useEffect(() => {
 		if (deepEqual(properties, oldProperties)) return;
-		console.log('Setting props', properties);
+		// console.log('Setting props', properties);
 		setOldProperties(properties);
 		setChartData(makeChartDataFromProperties(properties, locationHistory, pageExtractor));
 	}, [oldProperties, properties, locationHistory, pageExtractor]);
@@ -93,7 +93,10 @@ function Chart(props: Readonly<ComponentProps>) {
 				)
 					return;
 				rect = newRect;
-				setChartDimension({ width: newRect.width, height: newRect.height });
+				setChartDimension({
+					width: Math.round(newRect.width),
+					height: Math.round(newRect.height),
+				});
 			}, 2000);
 		});
 		resizeObserver.observe(containerRef.current!);
@@ -134,7 +137,8 @@ function Chart(props: Readonly<ComponentProps>) {
 					properties={properties}
 					chartDimension={chartDimension}
 					legendDimension={legendDimesion}
-					styles={resolvedStyles.legendLabel ?? {}}
+					labelStyles={resolvedStyles.legendLabel ?? {}}
+					rectangleStyles={resolvedStyles.legendRectangle ?? {}}
 					onLegendDimensionChange={d => setLegendDimension(d)}
 				/>
 			</svg>
@@ -250,6 +254,12 @@ const component: Component = {
 			name: 'legendLabel',
 			displayName: 'Legend Label',
 			description: 'Legend Label',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'legendRectangle',
+			displayName: 'Legend Rectangle',
+			description: 'Legend Rectangle',
 			icon: 'fa fa-solid fa-box',
 		},
 		{

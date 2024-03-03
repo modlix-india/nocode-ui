@@ -115,8 +115,8 @@ export interface ChartProperties {
 	legendPosition?: 'top' | 'bottom' | 'left' | 'right' | 'none';
 
 	invertAxis?: boolean;
-	animationTime?: number;
-	animationEasing: 'linear';
+	animationTime: number;
+	animationTimingFunction: 'linear' | 'ease' | 'ease-in' | 'ease-out' | 'ease-in-out';
 	preNormalization: 'none' | '100' | '1' | '-100' | '-1';
 	tooltipPosition: 'top' | 'bottom' | 'left' | 'right';
 	tooltipData: 'allDataSets' | 'currentDataSet';
