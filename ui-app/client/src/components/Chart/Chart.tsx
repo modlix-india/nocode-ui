@@ -73,7 +73,6 @@ function Chart(props: Readonly<ComponentProps>) {
 
 	useEffect(() => {
 		if (deepEqual(properties, oldProperties)) return;
-		// console.log('Setting props', properties);
 		setOldProperties(properties);
 		setChartData(makeChartDataFromProperties(properties, locationHistory, pageExtractor));
 	}, [oldProperties, properties, locationHistory, pageExtractor]);
@@ -82,7 +81,10 @@ function Chart(props: Readonly<ComponentProps>) {
 		if (isNullValue(containerRef.current)) return;
 
 		let rect = containerRef.current!.getBoundingClientRect();
-		setChartDimension({ width: rect.width, height: rect.height });
+		setChartDimension({
+			width: Math.floor(rect.width),
+			height: Math.floor(rect.height),
+		});
 		const resizeObserver = new ResizeObserver(() => {
 			setTimeout(() => {
 				const newRect = containerRef.current?.getBoundingClientRect();
@@ -94,8 +96,8 @@ function Chart(props: Readonly<ComponentProps>) {
 					return;
 				rect = newRect;
 				setChartDimension({
-					width: Math.round(newRect.width),
-					height: Math.round(newRect.height),
+					width: Math.floor(newRect.width),
+					height: Math.floor(newRect.height),
 				});
 			}, 2000);
 		});

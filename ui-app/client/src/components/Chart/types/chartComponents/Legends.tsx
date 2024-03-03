@@ -16,6 +16,8 @@ interface LegendGroupItem {
 	strokeOpacity: number;
 	id?: string;
 	animationId?: string;
+	labelRef?: React.RefObject<SVGTextElement>;
+	rectRef?: React.RefObject<SVGRectElement>;
 }
 
 interface LegendRowColumn {
@@ -44,13 +46,6 @@ export default function Legends({
 	const labelWidthRef = useRef<SVGTextElement>(null);
 
 	const [legends, setLegends] = useState<LegendGroupItem[]>([]);
-
-	const refs = useRef<{ labels: (SVGTextElement | null)[]; rects: (SVGElement | null)[] }>({
-		labels: [],
-		rects: [],
-	});
-
-	const [somethingChanged, setSomethingChanged] = useState(Date.now());
 
 	useEffect(() => {
 		if (
@@ -97,7 +92,11 @@ export default function Legends({
 				if (!legendGroups[i].labelDimension.from)
 					legendGroups[i].labelDimension.from = { x: 0, y: 0 };
 
-				if (!hasOldObj) continue;
+				if (!hasOldObj) {
+					legendGroups[i].labelRef = React.createRef();
+					legendGroups[i].rectRef = React.createRef();
+					continue;
+				}
 				legendGroups[i].rectDimension.from!.x =
 					(old[i].rectDimension.x === legendGroups[i].rectDimension.x
 						? old[i].rectDimension.from!.x
@@ -117,13 +116,21 @@ export default function Legends({
 						: old[i].labelDimension.y) ?? 0;
 
 				legendGroups[i].animationId = old[i].animationId;
+				legendGroups[i].labelRef = old[i].labelRef;
+				legendGroups[i].rectRef = old[i].rectRef;
 			}
 
 			const horizontal =
 				properties.legendPosition === 'top' || properties.legendPosition === 'bottom';
 
 			for (; i < old.length; i++) {
+				let l = old[i].labelRef;
+				let r = old[i].rectRef;
+				old[i].labelRef = undefined;
+				old[i].rectRef = undefined;
 				legendGroups.push(duplicate(old[i]));
+				legendGroups[i].labelRef = l;
+				legendGroups[i].rectRef = r;
 				if (!legendGroups[i].rectDimension.from)
 					legendGroups[i].rectDimension.from = { x: 0, y: 0 };
 				if (!legendGroups[i].labelDimension.from)
@@ -143,8 +150,23 @@ export default function Legends({
 				legendGroups[i].animationId = old[i].animationId;
 			}
 
-			if (deepEqual(old, legendGroups)) return old;
-			console.log(`Setting...`, duplicate(old), duplicate(legendGroups));
+			let changed = false;
+			for (i = 0; i < legendGroups.length; i++) {
+				if (
+					!deepEqual(old[i]?.animationId, legendGroups[i].animationId) ||
+					!deepEqual(old[i]?.labelDimension, legendGroups[i].labelDimension) ||
+					!deepEqual(old[i]?.rectDimension, legendGroups[i].rectDimension) ||
+					!deepEqual(old[i]?.color, legendGroups[i].color) ||
+					!deepEqual(old[i]?.fillOpacity, legendGroups[i].fillOpacity) ||
+					!deepEqual(old[i]?.strokeOpacity, legendGroups[i].strokeOpacity)
+				) {
+					changed = true;
+					break;
+				}
+			}
+			if (!changed) return old;
+
+			console.log('changed');
 			legendGroups.forEach(e => (e.animationId = shortUUID()));
 			return legendGroups;
 		});
@@ -155,28 +177,31 @@ export default function Legends({
 		properties.legendPosition,
 		properties.disableLegendInteraction,
 		labelStyles,
+		rectangleStyles,
 		setLegends,
 	]);
 
 	useEffect(() => {
-		if (!legends.length || !refs.current.labels.length || !refs.current.rects.length) return;
+		if (!legends.length) return;
 
 		for (let i = 0; i < legends.length; i++) {
 			const legend = legends[i];
-			const label = refs.current.labels[i];
-			const rect = refs.current.rects[i];
 
-			if (label) {
-				window.requestAnimationFrame(() =>
-					label.animate(
+			if (legend.labelRef?.current) {
+				window.requestAnimationFrame(() => {
+					let ani = legend.labelRef?.current?.animate(
 						[
 							{
-								x: legend.labelDimension.from?.x ?? 0,
-								y: legend.labelDimension.from?.y ?? 0,
+								transform: 'translate(0,0)',
 							},
 							{
-								x: legend.labelDimension.x,
-								y: legend.labelDimension.y,
+								transform: `translate(${
+									(legend.labelDimension.x ?? 0) -
+									(legend.labelDimension.from?.x ?? 0)
+								}px, ${
+									(legend.labelDimension.y ?? 0) -
+									(legend.labelDimension.from?.y ?? 0)
+								}px)`,
 							},
 						],
 						{
@@ -184,21 +209,25 @@ export default function Legends({
 							easing: properties.animationTimingFunction,
 							fill: 'forwards',
 						},
-					),
-				);
+					);
+				});
 			}
 
-			if (rect) {
+			if (legend.rectRef?.current) {
 				window.requestAnimationFrame(() =>
-					rect.animate(
+					legend.rectRef!.current!.animate(
 						[
 							{
-								x: legend.rectDimension.from?.x ?? 0,
-								y: legend.rectDimension.from?.y ?? 0,
+								transform: 'translate(0,0)',
 							},
 							{
-								x: legend.rectDimension.x,
-								y: legend.rectDimension.y,
+								transform: `translate(${
+									(legend.rectDimension.x ?? 0) -
+									(legend.rectDimension.from?.x ?? 0)
+								}px, ${
+									(legend.rectDimension.y ?? 0) -
+									(legend.rectDimension.from?.y ?? 0)
+								}px)`,
 							},
 						],
 						{
@@ -210,7 +239,7 @@ export default function Legends({
 				);
 			}
 		}
-	}, [somethingChanged, legends, properties.animationTime, properties.animationTimingFunction]);
+	}, [legends, properties.animationTime, properties.animationTimingFunction]);
 
 	if (
 		chartDimension.width <= 0 ||
@@ -230,10 +259,8 @@ export default function Legends({
 				ref={labelWidthRef}
 			></text>
 			{legends.map((legend, index) => (
-				<>
+				<g key={legend.id}>
 					<rect
-						key={`${legend.id}_rect`}
-						className={`${legend.animationId}_rect`}
 						width={legend.rectDimension.width}
 						height={legend.rectDimension.height}
 						fill={legend.color}
@@ -242,12 +269,9 @@ export default function Legends({
 						style={rectangleStyles}
 						x={legend.rectDimension.from?.x ?? 0}
 						y={legend.rectDimension.from?.y ?? 0}
-						ref={e => {
-							refs.current.rects[index] = e;
-						}}
+						ref={legend.rectRef}
 					/>
 					<text
-						key={`${legend.id}_text`}
 						className="legendText"
 						width={legend.labelDimension.width}
 						height={legend.labelDimension.height}
@@ -256,13 +280,11 @@ export default function Legends({
 						alignmentBaseline="before-edge"
 						x={legend.labelDimension.from?.x ?? 0}
 						y={legend.labelDimension.from?.y ?? 0}
-						ref={e => {
-							refs.current.labels[index] = e;
-						}}
+						ref={legend.labelRef}
 					>
 						{legend.label}
 					</text>
-				</>
+				</g>
 			))}
 		</>
 	);
