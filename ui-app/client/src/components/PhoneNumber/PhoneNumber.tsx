@@ -366,8 +366,6 @@ function PhoneNumber(props: ComponentProps) {
 		else setPhoneNumber(unformattedText.slice(dc.length));
 	}, [value, countryList, seperator]);
 
-	console.log('selected', selected);
-
 	const extractDCAndPhone = (text: string) => {
 		let phone = text;
 		let dc = getDialCode(phone);
