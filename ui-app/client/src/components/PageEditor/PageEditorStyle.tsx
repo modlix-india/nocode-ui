@@ -1791,8 +1791,17 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			height: 166px;
 		}
 
+		._spacingEditor._border {
+			margin: 0px 15px;
+			position: relative;
+			border-radius: 6px;
+			border: 2px solid #E3E5EA;
+			height: 166px;
+		}
+
 		._spacingEditor._margin._hasValue,
-		._spacingEditor ._padding._hasValue {
+		._spacingEditor._padding._hasValue,
+		._spacingEditor._border._hasValue {
 			border-color: #52BD94
 		}
 
