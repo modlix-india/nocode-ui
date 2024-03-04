@@ -52,6 +52,18 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 		padding-left: 86px;
 	}
 
+	${PREFIX}._dialCodeLength6 ._label {
+		padding-left: 92px;
+	}
+
+	${PREFIX}._dialCodeLength7 ._label {
+		padding-left: 100px;
+	}
+
+	${PREFIX}._dialCodeLength8 ._label {
+		padding-left: 108px;
+	}
+
 	${PREFIX} ._label {
 		position: absolute;
 		user-select: none;
@@ -75,10 +87,6 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 		margin-top: -30px;
 		bottom: auto;
 		transform: none;
-	}
-
-	${PREFIX}._bigDesign1 ._inputBox {
-		// padding-top: 10px;
 	}
 
 	${PREFIX} ._label._float {
@@ -105,14 +113,9 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 		gap: 8px;
 	}
 
-	${PREFIX} ._dropdownSelect span {
-		font-size: 14px;
-	}
-
 	${PREFIX} ._dropdownSelect {
 		height: 100%;
 		cursor: pointer;
-		background: inherit;
 		border: none;
 		outline: none;
 
@@ -128,14 +131,9 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 		color: rgb(0,0,0,1);
 	}
 
-	${PREFIX} ._dropdownSelect ._selectedOption {
-		font-size: 14px;
-	}
-
 	${PREFIX} ._dropdownBody {
 		position: fixed;
 		width: 100%;
-		background: inherit;
 		border: 1px solid rgba(0, 0, 0, 0.10);
 		box-shadow: 0px 1px 4px 0px #00000026;
 		border-radius: 6px;
@@ -151,7 +149,6 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 		padding: 0 6px;
 		margin: 6px 7px;
 		border-radius: 4px;
-		font-size: 14px;
 		border: 2px solid rgb(0,0,0,.08);
 	}
 	${PREFIX} ._dropdownBody ._dropdownOptionList {
@@ -168,7 +165,6 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 		border-radius: 4px;
 		white-space: wrap;
 		cursor: pointer;
-		font-size: 14px;
 	}
 
 	${PREFIX} ._dropdownBody ._dropdownOption._hovered {

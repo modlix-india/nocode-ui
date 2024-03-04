@@ -618,6 +618,12 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
+			name: 'rightIcon',
+			displayName: 'Right Icon',
+			description: 'Right Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
 			name: 'label',
 			displayName: 'Label',
 			description: 'Label',

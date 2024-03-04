@@ -86,7 +86,7 @@ export const COUNTRY_LIST = [
 		N: 'Cayman Islands',
 		D: '+1345',
 		C: 'KY',
-		F: [],
+		F: [3, 3, 4],
 	},
 	{
 		N: 'Bermuda',
@@ -1071,7 +1071,8 @@ export const COUNTRY_LIST = [
 		N: 'Cocos (Keeling) Islands',
 		D: '+61',
 		C: 'CC',
-		F: [89162],
+		F: [],
+		A: [89162],
 	},
 	{
 		N: 'Indonesia',
@@ -1331,7 +1332,7 @@ export const COUNTRY_LIST = [
 		N: 'India',
 		D: '+91',
 		C: 'IN',
-		F: [],
+		F: [5, 5],
 	},
 	{
 		N: 'Pakistan',
