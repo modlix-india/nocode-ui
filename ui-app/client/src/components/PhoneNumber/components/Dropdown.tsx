@@ -141,7 +141,7 @@ export function Dropdown({
 							(o, i) => (
 								<div
 									style={computedStyles.dropdownOption ?? {}}
-									key={o.C}
+									key={o.C + i}
 									className={`_dropdownOption ${
 										i === currentOption ? '_hovered' : ''
 									} ${value.C === o.C ? '_selected' : ''} ${

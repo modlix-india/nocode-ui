@@ -5,7 +5,6 @@ export const COUNTRY_LIST = [
 		D: '+1',
 		C: 'US',
 		F: [3, 3, 4],
-		A: [],
 	},
 	// United States territories
 	{
@@ -614,7 +613,7 @@ export const COUNTRY_LIST = [
 	{
 		N: 'Cyprus',
 		D: '+357',
-		C: 'FI',
+		C: 'CY',
 		F: [],
 	},
 	{
@@ -626,7 +625,7 @@ export const COUNTRY_LIST = [
 	{
 		N: 'Åland',
 		D: '+35818',
-		C: 'FI',
+		C: 'AX',
 		F: [],
 	},
 	{
@@ -697,7 +696,7 @@ export const COUNTRY_LIST = [
 	},
 	{
 		N: 'Holy See (Vatican City State)',
-		D: '3906698', //'+379' assign but not in used,
+		D: '+3906698', //'+379' assign but not in used,
 		C: 'VA',
 		F: [],
 	},
@@ -841,7 +840,6 @@ export const COUNTRY_LIST = [
 		D: '+47',
 		C: 'NO',
 		F: [2, 2, 2, 2],
-		A: [],
 	},
 	{
 		N: 'Svalbard',
