@@ -163,139 +163,7 @@ export const COUNTRY_LIST = [
 		C: 'KN',
 		F: [3, 3, 4],
 	},
-	// ends
-	{
-		N: 'Russia',
-		D: '+7',
-		C: 'RU',
-		F: [3, 3, 2, 2],
-	},
-	{
-		N: 'Malaysia',
-		D: '+60',
-		C: 'MY',
-		F: [],
-	},
-	{
-		N: 'Australia',
-		D: '+61',
-		C: 'AU',
-		F: [],
-	},
-	{
-		N: 'Christmas Island',
-		D: '+61',
-		C: 'CX',
-		F: [],
-	},
-	{
-		N: 'Cocos (Keeling) Islands',
-		D: '+61',
-		C: 'CC',
-		F: [],
-	},
-	{
-		N: 'Indonesia',
-		D: '+62',
-		C: 'ID',
-		F: [],
-	},
-	{
-		N: 'Philippines',
-		D: '+63',
-		C: 'PH',
-		F: [],
-	},
-	{
-		N: 'New Zealand',
-		D: '+64',
-		C: 'NZ',
-		F: [],
-	},
-	{
-		N: 'Singapore',
-		D: '+65',
-		C: 'SG',
-		F: [],
-	},
-	{
-		N: 'Thailand',
-		D: '+66',
-		C: 'TH',
-		F: [],
-	},
-	{
-		N: 'Kazakhstan',
-		D: '+77',
-		C: 'KZ',
-		F: [],
-	},
-	{
-		N: 'Japan',
-		D: '+81',
-		C: 'JP',
-		F: [],
-	},
-	{
-		N: 'Korea, Republic of',
-		D: '+82',
-		C: 'KR',
-		F: [],
-	},
-	{
-		N: 'Viet Nam',
-		D: '+84',
-		C: 'VN',
-		F: [],
-	},
-	{
-		N: 'China',
-		D: '+86',
-		C: 'CN',
-		F: [],
-	},
-	{
-		N: 'Turkey',
-		D: '+90',
-		C: 'TR',
-		F: [],
-	},
-	{
-		N: 'India',
-		D: '+91',
-		C: 'IN',
-		F: [],
-	},
-	{
-		N: 'Pakistan',
-		D: '+92',
-		C: 'PK',
-		F: [],
-	},
-	{
-		N: 'Afghanistan',
-		D: '+93',
-		C: 'AF',
-		F: [],
-	},
-	{
-		N: 'Sri Lanka',
-		D: '+94',
-		C: 'LK',
-		F: [],
-	},
-	{
-		N: 'Myanmar',
-		D: '+95',
-		C: 'MM',
-		F: [],
-	},
-	{
-		N: 'Iran, Islamic Republic of',
-		D: '+98',
-		C: 'IR',
-		F: [],
-	},
+	// end
 	// Zone 2: Mostly Africa
 	// (but also Aruba, Faroe Islands, Greenland and British Indian Ocean Territory)
 	{
@@ -937,21 +805,24 @@ export const COUNTRY_LIST = [
 	},
 	{
 		N: 'Guernsey',
-		D: '+441481',
+		D: '+44',
 		C: 'GG',
 		F: [],
+		A: [1481],
 	},
 	{
 		N: 'Isle of Man',
-		D: '+441534',
+		D: '+44',
 		C: 'IM',
 		F: [],
+		A: [1534],
 	},
 	{
 		N: 'Jersey',
-		D: '+441624',
+		D: '+44',
 		C: 'JE',
 		F: [],
+		A: [1624],
 	},
 	{
 		N: 'Denmark',
@@ -969,13 +840,15 @@ export const COUNTRY_LIST = [
 		N: 'Norway',
 		D: '+47',
 		C: 'NO',
-		F: [],
+		F: [2, 2, 2, 2],
+		A: [],
 	},
 	{
-		N: 'Svalbard and Jan Mayen',
-		D: '+4779',
+		N: 'Svalbard',
+		D: '+47',
 		C: 'SJ',
-		F: [],
+		F: [2, 2, 2, 2],
+		A: [79],
 	},
 	{
 		N: 'Poland',
@@ -1180,8 +1053,60 @@ export const COUNTRY_LIST = [
 		C: 'AN',
 		F: [],
 	},
+
+	//  Zone 6: Southeast Asia and Oceania
+	{ N: 'Malaysia', D: '+60', C: 'MY', F: [2, 4, 4] },
 	{
-		N: 'Timor-Leste',
+		N: 'Australia',
+		D: '+61',
+		C: 'AU',
+		F: [],
+	},
+	{
+		N: 'Christmas Island',
+		D: '+61',
+		C: 'CX',
+		F: [],
+		A: [89164],
+	},
+	{
+		N: 'Cocos (Keeling) Islands',
+		D: '+61',
+		C: 'CC',
+		F: [89162],
+	},
+	{
+		N: 'Indonesia',
+		D: '+62',
+		C: 'ID',
+		F: [],
+	},
+	{
+		N: 'Philippines',
+		D: '+63',
+		C: 'PH',
+		F: [],
+	},
+	{
+		N: 'New Zealand',
+		D: '+64',
+		C: 'NZ',
+		F: [],
+	},
+	{
+		N: 'Singapore',
+		D: '+65',
+		C: 'SG',
+		F: [],
+	},
+	{
+		N: 'Thailand',
+		D: '+66',
+		C: 'TH',
+		F: [],
+	},
+	{
+		N: 'East Timor',
 		D: '+670',
 		C: 'TL',
 		F: [],
@@ -1190,16 +1115,18 @@ export const COUNTRY_LIST = [
 		N: 'Antarctica',
 		D: '+672',
 		C: 'AQ',
-		F: [],
+		F: [1, 2, 3],
+		A: [1],
 	},
 	{
 		N: 'Norfolk Island',
 		D: '+672',
 		C: 'NF',
-		F: [],
+		F: [2, 4],
+		A: [3],
 	},
 	{
-		N: 'Brunei Darussalam',
+		N: 'Brunei',
 		D: '+673',
 		C: 'BN',
 		F: [],
@@ -1312,8 +1239,42 @@ export const COUNTRY_LIST = [
 		C: 'MH',
 		F: [],
 	},
+	// Zone 7: Russia and neighboring regions
+
 	{
-		N: "Korea, Democratic People's Republic of",
+		N: 'Russia',
+		D: '+7',
+		C: 'RU',
+		F: [3, 3, 2, 2],
+	},
+	{
+		N: 'Kazakhstan',
+		D: '+7',
+		C: 'KZ',
+		F: [3, 3, 2, 2],
+		A: [7, 6],
+	},
+	// Zone 8: East Asia, South Asia and special services
+	{
+		N: 'Japan',
+		D: '+81',
+		C: 'JP',
+		F: [],
+	},
+	{
+		N: 'South Korea',
+		D: '+82',
+		C: 'KR',
+		F: [],
+	},
+	{
+		N: 'Vietnam',
+		D: '+84',
+		C: 'VN',
+		F: [],
+	},
+	{
+		N: 'North Korea',
 		D: '+850',
 		C: 'KP',
 		F: [],
@@ -1337,15 +1298,15 @@ export const COUNTRY_LIST = [
 		F: [],
 	},
 	{
-		N: "Lao People's Democratic Republic",
+		N: 'Laos',
 		D: '+856',
 		C: 'LA',
 		F: [],
 	},
 	{
-		N: 'Pitcairn',
-		D: '+872',
-		C: 'PN',
+		N: 'China',
+		D: '+86',
+		C: 'CN',
 		F: [],
 	},
 	{
@@ -1358,6 +1319,44 @@ export const COUNTRY_LIST = [
 		N: 'Taiwan',
 		D: '+886',
 		C: 'TW',
+		F: [],
+	},
+
+	// Zone 9: Mostly Middle East, West Asia, Central Asia, parts of South Asia and Eastern Europe
+	{
+		N: 'Turkey',
+		D: '+90',
+		C: 'TR',
+		F: [],
+	},
+	{
+		N: 'India',
+		D: '+91',
+		C: 'IN',
+		F: [],
+	},
+	{
+		N: 'Pakistan',
+		D: '+92',
+		C: 'PK',
+		F: [],
+	},
+	{
+		N: 'Afghanistan',
+		D: '+93',
+		C: 'AF',
+		F: [],
+	},
+	{
+		N: 'Sri Lanka',
+		D: '+94',
+		C: 'LK',
+		F: [],
+	},
+	{
+		N: 'Myanmar',
+		D: '+95',
+		C: 'MM',
 		F: [],
 	},
 	{
@@ -1379,7 +1378,7 @@ export const COUNTRY_LIST = [
 		F: [],
 	},
 	{
-		N: 'Syrian Arab Republic',
+		N: 'Syria',
 		D: '+963',
 		C: 'SY',
 		F: [],
@@ -1460,6 +1459,12 @@ export const COUNTRY_LIST = [
 		N: 'Nepal',
 		D: '+977',
 		C: 'NP',
+		F: [],
+	},
+	{
+		N: 'Iran',
+		D: '+98',
+		C: 'IR',
 		F: [],
 	},
 	{
