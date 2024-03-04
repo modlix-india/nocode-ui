@@ -15,7 +15,6 @@ interface LegendGroupItem {
 	fillOpacity: number;
 	strokeOpacity: number;
 	id?: string;
-	animationId?: string;
 	labelRef?: React.RefObject<SVGTextElement>;
 	rectRef?: React.RefObject<SVGRectElement>;
 }
@@ -85,39 +84,38 @@ export default function Legends({
 			let i = 0;
 
 			for (; i < legendGroups.length; i++) {
-				const hasOldObj = !!old[i];
-				legendGroups[i].id = hasOldObj ? old[i].id : shortUUID();
-				if (!legendGroups[i].rectDimension.from)
-					legendGroups[i].rectDimension.from = { x: 0, y: 0 };
-				if (!legendGroups[i].labelDimension.from)
-					legendGroups[i].labelDimension.from = { x: 0, y: 0 };
+				legendGroups[i].id = old[i]?.id ?? shortUUID();
 
-				if (!hasOldObj) {
+				const rectFrom = {
+					x: old[i]?.rectDimension.x ?? 0,
+					y: old[i]?.rectDimension.y ?? 0,
+				};
+
+				const labelFrom = {
+					x: old[i]?.labelDimension.x ?? 0,
+					y: old[i]?.labelDimension.y ?? 0,
+				};
+
+				legendGroups[i].rectDimension.from =
+					old[i]?.rectDimension.x === legendGroups[i].rectDimension.x &&
+					old[i]?.rectDimension.y === legendGroups[i].rectDimension.y &&
+					old[i]?.rectDimension.from
+						? old[i].rectDimension.from
+						: rectFrom;
+				legendGroups[i].labelDimension.from =
+					old[i]?.labelDimension.x === legendGroups[i].labelDimension.x &&
+					old[i]?.labelDimension.y === legendGroups[i].labelDimension.y &&
+					old[i]?.labelDimension.from
+						? old[i].labelDimension.from
+						: labelFrom;
+
+				if (!old[i]) {
 					legendGroups[i].labelRef = React.createRef();
 					legendGroups[i].rectRef = React.createRef();
-					continue;
+				} else {
+					legendGroups[i].labelRef = old[i].labelRef;
+					legendGroups[i].rectRef = old[i].rectRef;
 				}
-				legendGroups[i].rectDimension.from!.x =
-					(old[i].rectDimension.x === legendGroups[i].rectDimension.x
-						? old[i].rectDimension.from!.x
-						: old[i].rectDimension.x) ?? 0;
-				legendGroups[i].rectDimension.from!.y =
-					(old[i].rectDimension.y === legendGroups[i].rectDimension.y
-						? old[i].rectDimension.from!.y
-						: old[i].rectDimension.y) ?? 0;
-
-				legendGroups[i].labelDimension.from!.x =
-					(old[i].labelDimension.x === legendGroups[i].labelDimension.x
-						? old[i].labelDimension.from!.x
-						: old[i].labelDimension.x) ?? 0;
-				legendGroups[i].labelDimension.from!.y =
-					(old[i].labelDimension.y === legendGroups[i].labelDimension.y
-						? old[i].labelDimension.from!.y
-						: old[i].labelDimension.y) ?? 0;
-
-				legendGroups[i].animationId = old[i].animationId;
-				legendGroups[i].labelRef = old[i].labelRef;
-				legendGroups[i].rectRef = old[i].rectRef;
 			}
 
 			const horizontal =
@@ -147,13 +145,11 @@ export default function Legends({
 
 				legendGroups[i].labelDimension.x = horizontal ? -100 : old[i].labelDimension.x ?? 0;
 				legendGroups[i].labelDimension.y = horizontal ? old[i].labelDimension.y ?? 0 : -100;
-				legendGroups[i].animationId = old[i].animationId;
 			}
 
 			let changed = false;
 			for (i = 0; i < legendGroups.length; i++) {
 				if (
-					!deepEqual(old[i]?.animationId, legendGroups[i].animationId) ||
 					!deepEqual(old[i]?.labelDimension, legendGroups[i].labelDimension) ||
 					!deepEqual(old[i]?.rectDimension, legendGroups[i].rectDimension) ||
 					!deepEqual(old[i]?.color, legendGroups[i].color) ||
@@ -167,7 +163,7 @@ export default function Legends({
 			if (!changed) return old;
 
 			console.log('changed');
-			legendGroups.forEach(e => (e.animationId = shortUUID()));
+			console.log(old[0]?.labelDimension, legendGroups[0].labelDimension);
 			return legendGroups;
 		});
 	}, [
@@ -215,7 +211,7 @@ export default function Legends({
 
 			if (legend.rectRef?.current) {
 				window.requestAnimationFrame(() =>
-					legend.rectRef!.current!.animate(
+					legend.rectRef?.current?.animate(
 						[
 							{
 								transform: 'translate(0,0)',
@@ -430,7 +426,7 @@ function makeLegendItems(
 	if (!labelWidthRef.current) return labelGroups;
 
 	for (let i = 0; i < (chartData?.yAxisData?.length ?? 0); i++) {
-		const label = properties?.dataSetLabels?.[i] ?? `Data set ${i}`;
+		const label = properties?.dataSetLabels?.[i] ?? `Data set ${i + 1}`;
 		labelWidthRef.current.innerHTML = label;
 		const { width, height } = labelWidthRef.current.getBoundingClientRect();
 		const labelDimension = { width: Math.round(width), height: Math.round(height) };
