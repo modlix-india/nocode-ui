@@ -6,10 +6,6 @@ import RepetetiveArray from '../../../util/RepetetiveArray';
 export interface Dimension {
 	x?: number;
 	y?: number;
-	from?: {
-		x: number;
-		y: number;
-	};
 	width: number;
 	height: number;
 }

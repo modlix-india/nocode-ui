@@ -2,6 +2,7 @@ import React, { CSSProperties, useCallback, useEffect, useRef, useState } from '
 import { ChartData, ChartProperties, Dimension } from '../common';
 import { shortUUID } from '../../../../util/shortUUID';
 import { deepEqual, duplicate } from '@fincity/kirun-js';
+import Animate from './Animate';
 
 const RECT_WIDTH = 20;
 const RECT_HEIGHT = 10;
@@ -15,8 +16,6 @@ interface LegendGroupItem {
 	fillOpacity: number;
 	strokeOpacity: number;
 	id?: string;
-	labelRef?: React.RefObject<SVGTextElement>;
-	rectRef?: React.RefObject<SVGRectElement>;
 }
 
 interface LegendRowColumn {
@@ -85,85 +84,16 @@ export default function Legends({
 
 			for (; i < legendGroups.length; i++) {
 				legendGroups[i].id = old[i]?.id ?? shortUUID();
-
-				const rectFrom = {
-					x: old[i]?.rectDimension.x ?? 0,
-					y: old[i]?.rectDimension.y ?? 0,
-				};
-
-				const labelFrom = {
-					x: old[i]?.labelDimension.x ?? 0,
-					y: old[i]?.labelDimension.y ?? 0,
-				};
-
-				legendGroups[i].rectDimension.from =
-					old[i]?.rectDimension.x === legendGroups[i].rectDimension.x &&
-					old[i]?.rectDimension.y === legendGroups[i].rectDimension.y &&
-					old[i]?.rectDimension.from
-						? old[i].rectDimension.from
-						: rectFrom;
-				legendGroups[i].labelDimension.from =
-					old[i]?.labelDimension.x === legendGroups[i].labelDimension.x &&
-					old[i]?.labelDimension.y === legendGroups[i].labelDimension.y &&
-					old[i]?.labelDimension.from
-						? old[i].labelDimension.from
-						: labelFrom;
-
-				if (!old[i]) {
-					legendGroups[i].labelRef = React.createRef();
-					legendGroups[i].rectRef = React.createRef();
-				} else {
-					legendGroups[i].labelRef = old[i].labelRef;
-					legendGroups[i].rectRef = old[i].rectRef;
-				}
 			}
-
-			const horizontal =
-				properties.legendPosition === 'top' || properties.legendPosition === 'bottom';
 
 			for (; i < old.length; i++) {
-				let l = old[i].labelRef;
-				let r = old[i].rectRef;
-				old[i].labelRef = undefined;
-				old[i].rectRef = undefined;
-				legendGroups.push(duplicate(old[i]));
-				legendGroups[i].labelRef = l;
-				legendGroups[i].rectRef = r;
-				if (!legendGroups[i].rectDimension.from)
-					legendGroups[i].rectDimension.from = { x: 0, y: 0 };
-				if (!legendGroups[i].labelDimension.from)
-					legendGroups[i].labelDimension.from = { x: 0, y: 0 };
-
-				legendGroups[i].rectDimension.from!.x = old[i].rectDimension.x ?? 0;
-				legendGroups[i].rectDimension.from!.y = old[i].rectDimension.y ?? 0;
-
-				legendGroups[i].labelDimension.from!.x = old[i].labelDimension.x ?? 0;
-				legendGroups[i].labelDimension.from!.y = old[i].labelDimension.y ?? 0;
-
-				legendGroups[i].rectDimension.x = horizontal ? -100 : old[i].rectDimension.x ?? 0;
-				legendGroups[i].rectDimension.y = horizontal ? old[i].rectDimension.y ?? 0 : -100;
-
-				legendGroups[i].labelDimension.x = horizontal ? -100 : old[i].labelDimension.x ?? 0;
-				legendGroups[i].labelDimension.y = horizontal ? old[i].labelDimension.y ?? 0 : -100;
+				const older = { ...old[i] };
+				if (properties.legendPosition === 'left' || properties.legendPosition === 'right')
+					older.labelDimension.x = older.rectDimension.x = -100;
+				else older.labelDimension.y = older.rectDimension.y = -100;
+				legendGroups.push(older);
 			}
 
-			let changed = false;
-			for (i = 0; i < legendGroups.length; i++) {
-				if (
-					!deepEqual(old[i]?.labelDimension, legendGroups[i].labelDimension) ||
-					!deepEqual(old[i]?.rectDimension, legendGroups[i].rectDimension) ||
-					!deepEqual(old[i]?.color, legendGroups[i].color) ||
-					!deepEqual(old[i]?.fillOpacity, legendGroups[i].fillOpacity) ||
-					!deepEqual(old[i]?.strokeOpacity, legendGroups[i].strokeOpacity)
-				) {
-					changed = true;
-					break;
-				}
-			}
-			if (!changed) return old;
-
-			console.log('changed');
-			console.log(old[0]?.labelDimension, legendGroups[0].labelDimension);
 			return legendGroups;
 		});
 	}, [
@@ -176,66 +106,6 @@ export default function Legends({
 		rectangleStyles,
 		setLegends,
 	]);
-
-	useEffect(() => {
-		if (!legends.length) return;
-
-		for (let i = 0; i < legends.length; i++) {
-			const legend = legends[i];
-
-			if (legend.labelRef?.current) {
-				window.requestAnimationFrame(() => {
-					let ani = legend.labelRef?.current?.animate(
-						[
-							{
-								transform: 'translate(0,0)',
-							},
-							{
-								transform: `translate(${
-									(legend.labelDimension.x ?? 0) -
-									(legend.labelDimension.from?.x ?? 0)
-								}px, ${
-									(legend.labelDimension.y ?? 0) -
-									(legend.labelDimension.from?.y ?? 0)
-								}px)`,
-							},
-						],
-						{
-							duration: properties.animationTime,
-							easing: properties.animationTimingFunction,
-							fill: 'forwards',
-						},
-					);
-				});
-			}
-
-			if (legend.rectRef?.current) {
-				window.requestAnimationFrame(() =>
-					legend.rectRef?.current?.animate(
-						[
-							{
-								transform: 'translate(0,0)',
-							},
-							{
-								transform: `translate(${
-									(legend.rectDimension.x ?? 0) -
-									(legend.rectDimension.from?.x ?? 0)
-								}px, ${
-									(legend.rectDimension.y ?? 0) -
-									(legend.rectDimension.from?.y ?? 0)
-								}px)`,
-							},
-						],
-						{
-							duration: properties.animationTime,
-							easing: properties.animationTimingFunction,
-							fill: 'forwards',
-						},
-					),
-				);
-			}
-		}
-	}, [legends, properties.animationTime, properties.animationTimingFunction]);
 
 	if (
 		chartDimension.width <= 0 ||
@@ -256,30 +126,37 @@ export default function Legends({
 			></text>
 			{legends.map((legend, index) => (
 				<g key={legend.id}>
-					<rect
+					<Animate.Rect
+						key={`${legend.id}-rect`}
+						id={`${legend.id}-rect`}
+						data-legend={JSON.stringify({ index, legend })}
 						width={legend.rectDimension.width}
 						height={legend.rectDimension.height}
 						fill={legend.color}
 						fillOpacity={legend.fillOpacity}
 						strokeOpacity={legend.strokeOpacity}
 						style={rectangleStyles}
-						x={legend.rectDimension.from?.x ?? 0}
-						y={legend.rectDimension.from?.y ?? 0}
-						ref={legend.rectRef}
+						x={legend.rectDimension.x ?? 0}
+						y={legend.rectDimension.y ?? 0}
+						duration={properties.animationTime}
+						easing={properties.animationTimingFunction}
 					/>
-					<text
+					<Animate.Text
+						key={`${legend.id}-text`}
+						id={`${legend.id}-text`}
 						className="legendText"
 						width={legend.labelDimension.width}
 						height={legend.labelDimension.height}
 						style={labelStyles}
 						fill="currentColor"
 						alignmentBaseline="before-edge"
-						x={legend.labelDimension.from?.x ?? 0}
-						y={legend.labelDimension.from?.y ?? 0}
-						ref={legend.labelRef}
+						x={legend.labelDimension.x ?? 0}
+						y={legend.labelDimension.y ?? 0}
+						duration={properties.animationTime}
+						easing={properties.animationTimingFunction}
 					>
 						{legend.label}
-					</text>
+					</Animate.Text>
 				</g>
 			))}
 		</>
