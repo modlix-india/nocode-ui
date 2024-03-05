@@ -5,7 +5,7 @@ import { deepEqual, duplicate } from '@fincity/kirun-js';
 import Animate from './Animate';
 
 const RECT_WIDTH = 20;
-const RECT_HEIGHT = 10;
+const RECT_HEIGHT = 20;
 const SPACE = 10;
 
 interface LegendGroupItem {
@@ -32,6 +32,8 @@ export default function Legends({
 	onLegendDimensionChange,
 	labelStyles,
 	rectangleStyles,
+	hiddenDataSets,
+	onToggleDataSet,
 }: Readonly<{
 	chartDimension: Dimension;
 	legendDimension: Dimension;
@@ -40,6 +42,8 @@ export default function Legends({
 	onLegendDimensionChange: (d: Dimension) => void;
 	labelStyles: CSSProperties;
 	rectangleStyles: CSSProperties;
+	hiddenDataSets: Set<number>;
+	onToggleDataSet: (index: number) => void;
 }>) {
 	const labelWidthRef = useRef<SVGTextElement>(null);
 
@@ -62,6 +66,7 @@ export default function Legends({
 			chartData,
 			properties,
 			labelWidthRef,
+			rectangleStyles,
 		);
 
 		const legendRowsColumnns: Array<LegendRowColumn> = arrangeInRowsOrColumns(
@@ -125,11 +130,10 @@ export default function Legends({
 				ref={labelWidthRef}
 			></text>
 			{legends.map((legend, index) => (
-				<g key={legend.id}>
+				<g key={legend.id} opacity={hiddenDataSets.has(index) ? '0.5' : ''}>
 					<Animate.Rect
 						key={`${legend.id}-rect`}
 						id={`${legend.id}-rect`}
-						data-legend={JSON.stringify({ index, legend })}
 						width={legend.rectDimension.width}
 						height={legend.rectDimension.height}
 						fill={legend.color}
@@ -140,6 +144,11 @@ export default function Legends({
 						y={legend.rectDimension.y ?? 0}
 						duration={properties.animationTime}
 						easing={properties.animationTimingFunction}
+						onClick={
+							properties.disableLegendInteraction
+								? undefined
+								: () => onToggleDataSet(index)
+						}
 					/>
 					<Animate.Text
 						key={`${legend.id}-text`}
@@ -154,9 +163,62 @@ export default function Legends({
 						y={legend.labelDimension.y ?? 0}
 						duration={properties.animationTime}
 						easing={properties.animationTimingFunction}
+						onClick={
+							properties.disableLegendInteraction
+								? undefined
+								: () => onToggleDataSet(index)
+						}
 					>
 						{legend.label}
 					</Animate.Text>
+
+					{hiddenDataSets.has(index) ? (
+						<Animate.Line
+							key={`${legend.id}-strike`}
+							x1={legend.rectDimension.x}
+							y1={
+								(legend.rectDimension.y ?? 0) +
+								(legend.rectDimension.height > legend.labelDimension.height
+									? legend.rectDimension.height
+									: legend.labelDimension.height) /
+									2
+							}
+							x2={(legend.labelDimension.x ?? 0) + legend.labelDimension.width}
+							y2={
+								(legend.rectDimension.y ?? 0) +
+								(legend.rectDimension.height > legend.labelDimension.height
+									? legend.rectDimension.height
+									: legend.labelDimension.height) /
+									2
+							}
+							oldX1={legend.rectDimension.x}
+							oldY1={
+								(legend.rectDimension.y ?? 0) +
+								(legend.rectDimension.height > legend.labelDimension.height
+									? legend.rectDimension.height
+									: legend.labelDimension.height) /
+									2
+							}
+							oldX2={(legend.labelDimension.x ?? 0) + legend.labelDimension.width}
+							oldY2={
+								(legend.rectDimension.y ?? 0) +
+								(legend.rectDimension.height > legend.labelDimension.height
+									? legend.rectDimension.height
+									: legend.labelDimension.height) /
+									2
+							}
+							easing={properties.animationTimingFunction}
+							duration={properties.animationTime}
+							stroke="currentColor"
+							onClick={
+								properties.disableLegendInteraction
+									? undefined
+									: () => onToggleDataSet(index)
+							}
+						/>
+					) : (
+						<></>
+					)}
 				</g>
 			))}
 		</>
@@ -221,7 +283,7 @@ function positionLegends(
 			legend.rectDimension.x = x;
 			legend.rectDimension.y =
 				y + Math.round((maxLegenedHeight - legend.rectDimension.height) / 2);
-			legend.labelDimension.x = x + RECT_WIDTH + SPACE;
+			legend.labelDimension.x = x + legend.rectDimension.width + SPACE;
 			legend.labelDimension.y =
 				y + Math.round((maxLegenedHeight - legend.labelDimension.height) / 2);
 			if (horizontal) {
@@ -298,6 +360,7 @@ function makeLegendItems(
 	chartData: ChartData | undefined,
 	properties: ChartProperties,
 	labelWidthRef: React.RefObject<SVGTextElement>,
+	rectStyles: CSSProperties,
 ) {
 	const labelGroups: Array<LegendGroupItem> = [];
 	if (!labelWidthRef.current) return labelGroups;
@@ -307,7 +370,13 @@ function makeLegendItems(
 		labelWidthRef.current.innerHTML = label;
 		const { width, height } = labelWidthRef.current.getBoundingClientRect();
 		const labelDimension = { width: Math.round(width), height: Math.round(height) };
-		const rectDimension = { width: RECT_WIDTH, height: RECT_HEIGHT };
+		const rW: number = rectStyles.width ? parseInt('' + rectStyles.width) : RECT_WIDTH;
+		const rh: number = rectStyles.height ? parseInt('' + rectStyles.height) : RECT_HEIGHT;
+
+		const rectDimension = {
+			width: isNaN(rW) ? RECT_WIDTH : rW,
+			height: isNaN(rh) ? RECT_HEIGHT : rh,
+		};
 
 		labelGroups.push({
 			label,

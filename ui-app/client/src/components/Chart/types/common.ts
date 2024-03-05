@@ -187,6 +187,7 @@ export function makeChartDataFromProperties(
 	properties: ChartProperties,
 	locationHistory: Array<LocationHistory>,
 	pageExtractor: PageStoreExtractor,
+	hiddenDataSets: Set<number>,
 ): ChartData {
 	let xAxisLabels: string[] = [];
 	let yAxisLabels: string[] = [];

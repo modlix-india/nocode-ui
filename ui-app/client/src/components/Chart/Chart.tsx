@@ -71,11 +71,15 @@ function Chart(props: Readonly<ComponentProps>) {
 	const [oldProperties, setOldProperties] = React.useState<any>(undefined);
 	const [chartData, setChartData] = React.useState<ChartData | undefined>(undefined);
 
+	const [hiddenDataSets, setHiddenDataSets] = React.useState<Set<number>>(new Set<number>());
+
 	useEffect(() => {
 		if (deepEqual(properties, oldProperties)) return;
 		setOldProperties(properties);
-		setChartData(makeChartDataFromProperties(properties, locationHistory, pageExtractor));
-	}, [oldProperties, properties, locationHistory, pageExtractor]);
+		setChartData(
+			makeChartDataFromProperties(properties, locationHistory, pageExtractor, hiddenDataSets),
+		);
+	}, [oldProperties, properties, locationHistory, pageExtractor, hiddenDataSets]);
 
 	useEffect(() => {
 		if (isNullValue(containerRef.current)) return;
@@ -104,6 +108,8 @@ function Chart(props: Readonly<ComponentProps>) {
 		resizeObserver.observe(containerRef.current!);
 		return () => resizeObserver.disconnect();
 	}, [containerRef.current, setChartDimension]);
+
+	useEffect(() => setHiddenDataSets(new Set()), [chartData?.yAxisData?.length]);
 
 	let chart = <></>;
 
@@ -142,6 +148,13 @@ function Chart(props: Readonly<ComponentProps>) {
 					labelStyles={resolvedStyles.legendLabel ?? {}}
 					rectangleStyles={resolvedStyles.legendRectangle ?? {}}
 					onLegendDimensionChange={d => setLegendDimension(d)}
+					hiddenDataSets={hiddenDataSets}
+					onToggleDataSet={d => {
+						const nSet = new Set(hiddenDataSets);
+						if (nSet.has(d)) nSet.delete(d);
+						else nSet.add(d);
+						setHiddenDataSets(nSet);
+					}}
 				/>
 			</svg>
 		</div>
