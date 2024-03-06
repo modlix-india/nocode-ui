@@ -43,9 +43,13 @@ function Rect(
 		return () => animate.cancel();
 	}, [props.x, props.y, ref.current, props.duration]);
 
+	const newProps = { ...props };
+	delete newProps.oldX;
+	delete newProps.oldY;
+
 	return (
 		<rect
-			{...props}
+			{...newProps}
 			x={!props.duration ? props.x : oldCord.current.x}
 			y={!props.duration ? props.y : oldCord.current.y}
 			ref={ref}
@@ -96,9 +100,13 @@ function Text(
 		return () => animate.cancel();
 	}, [props.x, props.y, ref.current, props.duration]);
 
+	const newProps = { ...props };
+	delete newProps.oldX;
+	delete newProps.oldY;
+
 	return (
 		<text
-			{...props}
+			{...newProps}
 			x={!props.duration ? props.x : oldCord.current.x}
 			y={!props.duration ? props.y : oldCord.current.y}
 			ref={ref}
@@ -166,9 +174,15 @@ function Line(
 		return () => animate.cancel();
 	}, [props.x1, props.y1, props.x2, props.y2, ref.current, props.duration]);
 
+	const newProps = { ...props };
+	delete newProps.oldX1;
+	delete newProps.oldY1;
+	delete newProps.oldX2;
+	delete newProps.oldY2;
+
 	return (
 		<path
-			{...props}
+			{...newProps}
 			d={`M${!props.duration ? props.x1 : oldCord.current.x1} ${
 				!props.duration ? props.y1 : oldCord.current.y1
 			} L${!props.duration ? props.x2 : oldCord.current.x2} ${

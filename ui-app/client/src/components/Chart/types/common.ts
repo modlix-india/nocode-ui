@@ -77,7 +77,8 @@ export interface ChartProperties {
 	dataPointSizePath?: string[]; // Done.
 
 	xAxisType: 'ordinal' | 'value' | 'time' | 'log' | 'derived'; // Done only time is not done yet
-	xAxisStartPosition: 'bottom' | 'top' | 'center';
+	xAxisStartPosition: 'bottom' | 'top' | 'center' | 'y0' | 'custom';
+	xAxisStartCustomValue?: string;
 	xAxisLabels?: string[]; // Done.
 	xAxisLabelsSort?: boolean; // Done.
 	xAxisMin?: number; // Done.
@@ -89,9 +90,11 @@ export interface ChartProperties {
 	xAxisHideLabels?: boolean;
 	xAxisDataPath?: string; // Done.
 	hideXAxis?: boolean;
+	hideXLines?: boolean;
 	xAxisTitle?: string;
 	yAxisType: 'ordinal' | 'value' | 'log' | 'derived'; // Done.
-	yAxisStartPosition: 'left' | 'right' | 'center';
+	yAxisStartPosition: 'left' | 'right' | 'center' | 'x0' | 'custom';
+	yAxisStartCustomValue?: string;
 	dataSetLabels?: string[]; //Done.
 	yAxisLabels?: string[]; // Done.
 	yAxisLabelsSort?: boolean; // Done.
@@ -106,6 +109,7 @@ export interface ChartProperties {
 	yAxisRangeDataSetPath?: string[]; // Done.
 	yAxisDataSetStyle?: DataSetStyle[];
 	hideYAxis?: boolean;
+	hideYLines?: boolean;
 	yAxisTitle?: string;
 	stackedAxis: 'none' | 'x' | 'y' | 'z';
 	legendPosition?: 'top' | 'bottom' | 'left' | 'right' | 'none';
@@ -118,6 +122,8 @@ export interface ChartProperties {
 	tooltipData: 'allDataSets' | 'currentDataSet';
 	tooltipTrigger: 'hoverOnAxis' | 'hoverOnData' | 'clickOnData';
 	disableLegendInteraction?: boolean;
+	radarType: 'polygon' | 'circle';
+	radialType: 'circle' | 'line';
 }
 
 class DataValueExtractor extends TokenValueExtractor {

@@ -65,8 +65,14 @@ function Chart(props: Readonly<ComponentProps>) {
 	);
 
 	const containerRef = useRef<HTMLDivElement>(null);
-	const [chartDimension, setChartDimension] = React.useState<Dimension>({ width: 0, height: 0 });
-	const [legendDimesion, setLegendDimension] = React.useState<Dimension>({ width: 0, height: 0 });
+	const [containerDimension, setContainerDimension] = React.useState<Dimension>({
+		width: 0,
+		height: 0,
+	});
+	const [legendDimension, setLegendDimension] = React.useState<Dimension>({
+		width: 0,
+		height: 0,
+	});
 
 	const [oldProperties, setOldProperties] = React.useState<any>(undefined);
 	const [chartData, setChartData] = React.useState<ChartData | undefined>(undefined);
@@ -85,7 +91,7 @@ function Chart(props: Readonly<ComponentProps>) {
 		if (isNullValue(containerRef.current)) return;
 
 		let rect = containerRef.current!.getBoundingClientRect();
-		setChartDimension({
+		setContainerDimension({
 			width: Math.floor(rect.width),
 			height: Math.floor(rect.height),
 		});
@@ -99,7 +105,7 @@ function Chart(props: Readonly<ComponentProps>) {
 				)
 					return;
 				rect = newRect;
-				setChartDimension({
+				setContainerDimension({
 					width: Math.floor(newRect.width),
 					height: Math.floor(newRect.height),
 				});
@@ -107,11 +113,18 @@ function Chart(props: Readonly<ComponentProps>) {
 		});
 		resizeObserver.observe(containerRef.current!);
 		return () => resizeObserver.disconnect();
-	}, [containerRef.current, setChartDimension]);
+	}, [containerRef.current, setContainerDimension]);
 
 	useEffect(() => setHiddenDataSets(new Set()), [chartData?.yAxisData?.length]);
 
 	let chart = <></>;
+
+	const x = properties.legendPosition === 'left' ? legendDimension.width : 0;
+	const y = properties.legendPosition === 'top' ? legendDimension.height : 0;
+	const width = containerDimension.width - legendDimension.width;
+	const height = containerDimension.height - legendDimension.height;
+
+	const chartDimension: Dimension = { x, y, width, height };
 
 	if (properties?.type === 'waffle') {
 		chart = <Waffle properties={properties} containerRef={containerRef.current} />;
@@ -125,10 +138,13 @@ function Chart(props: Readonly<ComponentProps>) {
 		chart = (
 			<Regular
 				properties={properties}
+				containerDimension={containerDimension}
+				legendDimension={legendDimension}
 				chartDimension={chartDimension}
-				legendDimension={legendDimesion}
-				locationHistory={locationHistory}
-				pageExtractor={pageExtractor}
+				hiddenDataSets={hiddenDataSets}
+				chartData={chartData}
+				xAxisLabelStyle={resolvedStyles.xAxisLabel ?? {}}
+				yAxisLabelStyle={resolvedStyles.yAxisLabel ?? {}}
 			/>
 		);
 	}
@@ -137,14 +153,14 @@ function Chart(props: Readonly<ComponentProps>) {
 		<div className={`comp compChart `} style={resolvedStyles.comp ?? {}} ref={containerRef}>
 			<HelperComponent context={props.context} definition={definition} />
 			<svg
-				viewBox={`0 0 ${chartDimension.width} ${chartDimension.height}`}
+				viewBox={`0 0 ${containerDimension.width} ${containerDimension.height}`}
 				xmlns="http://www.w3.org/2000/svg"
 			>
 				<Legends
 					chartData={chartData}
 					properties={properties}
-					chartDimension={chartDimension}
-					legendDimension={legendDimesion}
+					containerDimension={containerDimension}
+					legendDimension={legendDimension}
 					labelStyles={resolvedStyles.legendLabel ?? {}}
 					rectangleStyles={resolvedStyles.legendRectangle ?? {}}
 					onLegendDimensionChange={d => setLegendDimension(d)}
@@ -156,6 +172,7 @@ function Chart(props: Readonly<ComponentProps>) {
 						setHiddenDataSets(nSet);
 					}}
 				/>
+				{chart}
 			</svg>
 		</div>
 	);

@@ -1,7 +1,6 @@
-import React, { CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
-import { ChartData, ChartProperties, Dimension } from '../common';
+import React, { CSSProperties, useEffect, useRef, useState } from 'react';
 import { shortUUID } from '../../../../util/shortUUID';
-import { deepEqual, duplicate } from '@fincity/kirun-js';
+import { ChartData, ChartProperties, Dimension } from '../common';
 import Animate from './Animate';
 
 const RECT_WIDTH = 20;
@@ -25,7 +24,7 @@ interface LegendRowColumn {
 }
 
 export default function Legends({
-	chartDimension,
+	containerDimension,
 	legendDimension,
 	properties,
 	chartData,
@@ -35,7 +34,7 @@ export default function Legends({
 	hiddenDataSets,
 	onToggleDataSet,
 }: Readonly<{
-	chartDimension: Dimension;
+	containerDimension: Dimension;
 	legendDimension: Dimension;
 	properties: ChartProperties;
 	chartData: ChartData | undefined;
@@ -52,8 +51,8 @@ export default function Legends({
 	useEffect(() => {
 		if (
 			properties.legendPosition === 'none' ||
-			chartDimension.width <= 0 ||
-			chartDimension.height <= 0
+			containerDimension.width <= 0 ||
+			containerDimension.height <= 0
 		) {
 			if (legendDimension.width !== 0 || legendDimension.height !== 0)
 				onLegendDimensionChange({ width: 0, height: 0 });
@@ -71,11 +70,11 @@ export default function Legends({
 
 		const legendRowsColumnns: Array<LegendRowColumn> = arrangeInRowsOrColumns(
 			properties,
-			chartDimension,
+			containerDimension,
 			legendGroups,
 		);
 
-		const newDimension = positionLegends(legendRowsColumnns, chartDimension, properties);
+		const newDimension = positionLegends(legendRowsColumnns, containerDimension, properties);
 
 		if (
 			legendDimension.width !== newDimension.width ||
@@ -103,7 +102,7 @@ export default function Legends({
 		});
 	}, [
 		labelWidthRef?.current,
-		chartDimension,
+		containerDimension,
 		chartData,
 		properties.legendPosition,
 		properties.disableLegendInteraction,
@@ -113,8 +112,8 @@ export default function Legends({
 	]);
 
 	if (
-		chartDimension.width <= 0 ||
-		chartDimension.height <= 0 ||
+		containerDimension.width <= 0 ||
+		containerDimension.height <= 0 ||
 		properties.legendPosition === 'none'
 	)
 		return <></>;
@@ -268,8 +267,8 @@ function positionLegends(
 			) -
 			(legendRowsColumnns.length - 1) * SPACE;
 
-	for (let i = 0; i < legendRowsColumnns.length; i++) {
-		const rowColumn = legendRowsColumnns[i];
+	for (const element of legendRowsColumnns) {
+		const rowColumn = element;
 		if (horizontal) x = Math.round((chartDimension.width - rowColumn.size) / 2);
 		else y = Math.round((chartDimension.height - rowColumn.size) / 2);
 
