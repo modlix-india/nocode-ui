@@ -73,6 +73,14 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 		transition: transform 0.2s ease-in-out, left 0.2s ease-in-out, bottom 0.2s ease-in-out;
 	}
 
+	${PREFIX}._bigDesign1 ._label {
+    	margin-top: 0px;
+	}
+
+	${PREFIX}._bigDesign1._hasDialCode ._label {
+		padding-left: 36px;
+	}
+
 	${PREFIX}._bigDesign1._hasValue ._label,
 	${PREFIX}._bigDesign1._isActive ._label,
 	${PREFIX}._bigDesign1 ._label._noFloat {
@@ -119,35 +127,57 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 	}
 
 	${PREFIX} ._dropdownSelect svg {
-		color: inherit;
+		width: 8px;
+		color: rgb(0,0,0,1);
 	}
 
 	${PREFIX} ._dropdownBody {
 		position: fixed;
 		width: 100%;
-
+		border: 1px solid rgba(0, 0, 0, 0.10);
+		box-shadow: 0px 1px 4px 0px #00000026;
+		border-radius: 6px;
+		padding: 5px 0 0 0;
 		z-index: 2;
 		max-height: 250px;
 		display: flex;
 		flex-direction: column;
 	}
-
 	${PREFIX} ._dropdownBody ._dropdownSearchBox {
 		max-width: 100%;
 		min-height: 38px;
+		padding: 0 6px;
+		margin: 6px 7px;
+		border-radius: 4px;
+		border: 2px solid rgb(0,0,0,.08);
 	}
-
 	${PREFIX} ._dropdownBody ._dropdownOptionList {
 		flex: 1;
 		width: 100%;
+		padding: 0 0 5px 7px;
 		overflow: scroll;
 	}
 
 	${PREFIX} ._dropdownBody ._dropdownOption {
 		display: flex;
 		gap: 4px;
+		padding: 10px 0;
+		border-radius: 4px;
 		white-space: wrap;
 		cursor: pointer;
+	}
+
+	${PREFIX} ._dropdownBody ._dropdownOption._hovered {
+		background-color: rgb(0,0,0,.04);
+	}
+
+	${PREFIX} ._dropdownBody ._dropdownOption._selected {
+		background-color: rgb(0,0,0,.04);
+	}
+
+	${PREFIX} ._dropdownBody ._dropdownOption._nextSeperator {
+		border-radius: 0px;
+		border-bottom: 2px solid rgb(0,0,0,.08);
 	}
 
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
