@@ -267,7 +267,7 @@ function FileUpload(props: ComponentProps) {
 
 	const onChangeFile = (event: ChangeEvent<HTMLInputElement>) => {
 		setOtherBindingPaths(event.target.files);
-		if (!event.target.value?.length || !bindingPathPath) return;
+		if (!event.target.files?.length || !bindingPathPath) return;
 		setFiles(event.target.files);
 	};
 

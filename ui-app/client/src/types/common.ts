@@ -346,6 +346,7 @@ export interface PageDefinition {
 	processedClasses?: {
 		[key: string]: { [key: string]: string };
 	};
+	id?: string;
 }
 
 export interface ComponentProps {
