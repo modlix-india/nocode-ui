@@ -80,6 +80,7 @@ export function ImageEditor({
 	const [image, setImage] = useState<string>('');
 	const [imageName, setImageName] = useState('');
 	const [override, setOverride] = useState<boolean>(false);
+	const [showOverrideCheckbox, setShowOverrideCheckbox] = useState<boolean>(false);
 
 	useEffect(() => setChngValue(value ?? ''), [value]);
 
@@ -183,6 +184,8 @@ export function ImageEditor({
 						const imageUrl = URL.createObjectURL(e.target.files![0]);
 						setImage(imageUrl);
 						setImageName(e.target.files![0].name);
+						setShowOverrideCheckbox(false);
+						setOverride(true);
 					}}
 				/>
 			</div>
@@ -217,6 +220,7 @@ export function ImageEditor({
 								setChngValue(e.url);
 								setImage(e.url);
 								setImageName(e.name);
+								setShowOverrideCheckbox(true);
 							}}
 						>
 							{!isImage(e.name) ? (
@@ -412,6 +416,8 @@ export function ImageEditor({
 							override={override}
 							setOverride={setOverride}
 							name={imageName}
+							setShowOverrideCheckbox={setShowOverrideCheckbox}
+							showOverrideCheckbox={showOverrideCheckbox}
 						/>
 					</>
 				)}

@@ -15,6 +15,8 @@ interface ImageResizerProps {
 	override: boolean;
 	setOverride: React.Dispatch<React.SetStateAction<boolean>>;
 	name: string;
+	setShowOverrideCheckbox: React.Dispatch<React.SetStateAction<boolean>>;
+	showOverrideCheckbox: boolean;
 }
 
 const ImageResizer = ({
@@ -29,6 +31,8 @@ const ImageResizer = ({
 	override,
 	setOverride,
 	name,
+	setShowOverrideCheckbox,
+	showOverrideCheckbox,
 }: ImageResizerProps) => {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const imageWrapperRef = useRef<HTMLDivElement>(null);
@@ -905,7 +909,8 @@ const ImageResizer = ({
 		setInProgress(false);
 		setShowImageResizerPopup(false);
 		setImage('');
-		setOverride(!override);
+		setOverride(false);
+		setShowOverrideCheckbox(false);
 		callForFiles();
 	};
 
@@ -1238,28 +1243,36 @@ const ImageResizer = ({
 									/>
 									<label htmlFor="aspectRatio">Lock aspect ratio</label>
 								</div>
-								<p className="resizeLabel">
-									Image Name{' '}
-									<span title="Image Name" className="resizeLabelInfo">
-										i
-									</span>
-								</p>
-								<input
-									className="_updateImgName"
-									id="heightInput"
-									type="text"
-									value={imageName}
-									onChange={e => setImageName(e.target.value)}
-								/>
-								<div className="checkboxContainer">
-									<input
-										id="overrideImage"
-										type="checkbox"
-										checked={override}
-										onChange={() => setOverride(!override)}
-									/>
-									<label htmlFor="overrideImage">Override Existing Image</label>
-								</div>
+								{showOverrideCheckbox && (
+									<div className="checkboxContainer">
+										<input
+											id="overrideImage"
+											type="checkbox"
+											checked={override}
+											onChange={() => setOverride(!override)}
+										/>
+										<label htmlFor="overrideImage">
+											Override Existing Image
+										</label>
+									</div>
+								)}
+								{showOverrideCheckbox && !override && (
+									<>
+										<p className="resizeLabel">
+											Image Name{' '}
+											<span title="Image Name" className="resizeLabelInfo">
+												i
+											</span>
+										</p>
+										<input
+											className="_updateImgName"
+											id="heightInput"
+											type="text"
+											value={imageName}
+											onChange={e => setImageName(e.target.value)}
+										/>
+									</>
+								)}
 							</div>
 							<div className="_editBtnContainer">
 								<button
