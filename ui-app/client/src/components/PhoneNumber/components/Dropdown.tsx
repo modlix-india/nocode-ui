@@ -28,8 +28,9 @@ export function Dropdown({
 	clearSearchTextOnClose,
 	computedStyles,
 	definition,
-	handleInputFocus,
-	handleInputBlur,
+	handleFocusOnDropdownOpen,
+	handleBlurOnDropdownClose,
+	showDialCode,
 }: {
 	value: DropdownOption;
 	onChange: (v: DropdownOption) => void;
@@ -39,16 +40,18 @@ export function Dropdown({
 	clearSearchTextOnClose?: boolean;
 	computedStyles: any;
 	definition: ComponentDefinition;
-	handleInputFocus: () => void;
-	handleInputBlur: () => void;
+	handleFocusOnDropdownOpen: () => void;
+	handleBlurOnDropdownClose: () => void;
+	showDialCode: boolean;
 }) {
 	let label = undefined;
 	if (value) {
 		label = (
-			<span style={computedStyles.selectedOption ?? {}} className="_selectedOption">
+			<div style={computedStyles.selectedOption ?? {}} className="_selectedOption">
 				<SubHelperComponent definition={definition} subComponentName="selectedOption" />
-				{getFlagEmoji(value!.C)}
-			</span>
+				<span>{getFlagEmoji(value!.C)}</span>
+				{showDialCode && <span>{value.D}</span>}
+			</div>
 		);
 	}
 	const [searchOptions, setSearchOptions] = useState<DropdownOptions>();
@@ -80,14 +83,14 @@ export function Dropdown({
 	const handleClose = () => {
 		clearSearchTextOnClose && setSearchText('');
 		setOpen(false);
-		handleInputBlur();
+		handleBlurOnDropdownClose();
 	};
 
 	const handleClick = (o: any) => {
 		onChange(o);
 		setTimeout(() => {
-			if (dropDown.current?.nextSibling?.nextSibling instanceof HTMLElement)
-				dropDown.current.nextSibling.nextSibling.focus();
+			if (dropDown.current?.nextSibling instanceof HTMLElement)
+				dropDown.current.nextSibling.focus();
 		}, 100);
 		handleClose();
 	};
@@ -121,13 +124,29 @@ export function Dropdown({
 				>
 					<SubHelperComponent definition={definition} subComponentName="dropdownBody" />
 					{isSearchable && (
-						<input
-							style={computedStyles.dropdownSearchBox}
-							className="_dropdownSearchBox"
-							value={searchText}
-							placeholder={searchLabel}
-							onChange={e => setSearchText(e.target.value)}
-						/>
+						<div className="_searchBoxContainer">
+							<svg
+								className="_searchIcon"
+								width="16"
+								height="16"
+								viewBox="0 0 16 16"
+								fill="none"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<path
+									d="M13.0006 6.49905C13.0006 7.93321 12.535 9.25802 11.7506 10.3329L15.707 14.2917C16.0977 14.6822 16.0977 15.3165 15.707 15.7071C15.3164 16.0976 14.682 16.0976 14.2913 15.7071L10.3349 11.7483C9.25983 12.5357 7.93476 12.9981 6.50032 12.9981C2.90952 12.9981 0 10.0891 0 6.49905C0 2.90895 2.90952 0 6.50032 0C10.0911 0 13.0006 2.90895 13.0006 6.49905ZM6.50032 10.9984C7.09129 10.9984 7.67649 10.882 8.22248 10.6559C8.76847 10.4298 9.26457 10.0984 9.68245 9.68056C10.1003 9.26276 10.4318 8.76676 10.658 8.22087C10.8841 7.67499 11.0005 7.08991 11.0005 6.49905C11.0005 5.90819 10.8841 5.32311 10.658 4.77722C10.4318 4.23134 10.1003 3.73534 9.68245 3.31753C9.26457 2.89973 8.76847 2.56831 8.22248 2.3422C7.67649 2.11609 7.09129 1.99971 6.50032 1.99971C5.90934 1.99971 5.32415 2.11609 4.77816 2.3422C4.23217 2.56831 3.73607 2.89973 3.31818 3.31753C2.9003 3.73534 2.56881 4.23134 2.34266 4.77722C2.1165 5.32311 2.0001 5.90819 2.0001 6.49905C2.0001 7.08991 2.1165 7.67499 2.34266 8.22087C2.56881 8.76676 2.9003 9.26276 3.31818 9.68056C3.73607 10.0984 4.23217 10.4298 4.77816 10.6559C5.32415 10.882 5.90934 10.9984 6.50032 10.9984Z"
+									fill="currentColor"
+									fillOpacity="1"
+								/>
+							</svg>
+							<input
+								style={computedStyles.dropdownSearchBox}
+								className="_searchBox"
+								value={searchText}
+								placeholder={searchLabel}
+								onChange={e => setSearchText(e.target.value)}
+							/>
+						</div>
 					)}
 					<div
 						style={computedStyles.dropdownOptionList ?? {}}
@@ -158,7 +177,7 @@ export function Dropdown({
 										subComponentName="dropdownOption"
 									/>
 									<span>{getFlagEmoji(o.C) + ' '}</span>
-									<span>{o.N + ' ' + o.D}</span>
+									<span>{`${o.N} (${o.D})`}</span>
 								</div>
 							),
 						)}
@@ -197,7 +216,7 @@ export function Dropdown({
 			role="combobox"
 			onClick={() => {
 				setOpen(true);
-				handleInputFocus();
+				handleFocusOnDropdownOpen();
 			}}
 			onKeyDown={e => handleKeyDown(e)}
 			ref={dropDown}
@@ -207,6 +226,7 @@ export function Dropdown({
 			{open ? (
 				<svg
 					style={computedStyles.arrowIcon ?? {}}
+					className="_arrowIcon"
 					width="10"
 					height="6"
 					viewBox="0 0 10 6"
@@ -222,6 +242,7 @@ export function Dropdown({
 			) : (
 				<svg
 					style={computedStyles.arrowIcon ?? {}}
+					className="_arrowIcon"
 					width="8"
 					height="4"
 					viewBox="0 0 8 4"

@@ -31,6 +31,7 @@ interface mapType {
 
 function PhoneNumber(props: ComponentProps) {
 	const [focus, setFocus] = React.useState(false);
+	const [dropdownOpen, setDropdownOpen] = React.useState(false);
 	const [validationMessages, setValidationMessages] = React.useState<Array<string>>([]);
 	const mapValue: mapType = {
 		UNDEFINED: undefined,
@@ -53,7 +54,6 @@ function PhoneNumber(props: ComponentProps) {
 			emptyValue,
 			supportingText,
 			readOnly,
-			defaultValue,
 			label,
 			noFloat,
 			onEnter,
@@ -90,7 +90,7 @@ function PhoneNumber(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	const [value, setValue] = React.useState<string>(defaultValue ?? '');
+	const [value, setValue] = React.useState<string>('');
 
 	const bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
@@ -229,7 +229,12 @@ function PhoneNumber(props: ComponentProps) {
 		setFocus(true);
 		callFocusEvent();
 	};
-	const handleInputBlur = () => {
+	const handleFocusOnDropdownOpen = () => {
+		setDropdownOpen(true);
+		handleInputFocus();
+	};
+	const handleBlurOnDropdownClose = () => {
+		setDropdownOpen(false);
 		setFocus(false);
 		callBlurEvent();
 	};
@@ -450,29 +455,20 @@ function PhoneNumber(props: ComponentProps) {
 		}
 	};
 
-	const dialCodeLabel =
-		noCodeForFirstCountry && selected.C === countryList[0].C ? undefined : (
-			<span style={computedStyles.dialCodeLabel ?? {}} className="_dialCodeLabel">
-				<SubHelperComponent definition={definition} subComponentName="dialCodeLabel" />
-				{selected.D}
-			</span>
-		);
 	const leftChildren = (
-		<>
-			<Dropdown
-				value={selected}
-				onChange={v => setSelected(v)}
-				options={countryList}
-				isSearchable={isSearchable}
-				searchLabel={searchLabel}
-				clearSearchTextOnClose={clearSearchTextOnClose}
-				computedStyles={computedStyles}
-				definition={definition}
-				handleInputFocus={handleInputFocus}
-				handleInputBlur={handleInputBlur}
-			/>
-			{dialCodeLabel}
-		</>
+		<Dropdown
+			value={selected}
+			onChange={v => setSelected(v)}
+			options={countryList}
+			isSearchable={isSearchable}
+			searchLabel={searchLabel}
+			clearSearchTextOnClose={clearSearchTextOnClose}
+			computedStyles={computedStyles}
+			definition={definition}
+			handleFocusOnDropdownOpen={handleFocusOnDropdownOpen}
+			handleBlurOnDropdownClose={handleBlurOnDropdownClose}
+			showDialCode={noCodeForFirstCountry && selected.C === countryList[0].C ? false : true}
+		/>
 	);
 	const finKey: string = 't_' + key;
 	const x = noCodeForFirstCountry && selected.C === countryList[0].C ? 1 : selected.D.length ?? 1;
@@ -507,6 +503,7 @@ function PhoneNumber(props: ComponentProps) {
 			hasValidationCheck={validation?.length > 0}
 			hideClearContentIcon={hideClearButton}
 			maxChars={maxChars}
+			showDropdown={dropdownOpen}
 			leftChildren={leftChildren}
 		/>
 	);
