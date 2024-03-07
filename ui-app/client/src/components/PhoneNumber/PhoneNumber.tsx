@@ -185,7 +185,7 @@ function PhoneNumber(props: ComponentProps) {
 	const changeEvent = onChange ? props.pageDefinition.eventFunctions?.[onChange] : undefined;
 	const blurEvent = onBlur ? props.pageDefinition.eventFunctions?.[onBlur] : undefined;
 	const focusEvent = onFocus ? props.pageDefinition.eventFunctions?.[onFocus] : undefined;
-	const clickEvent = onEnter ? props.pageDefinition.eventFunctions?.[onEnter] : undefined;
+	const enterEvent = onEnter ? props.pageDefinition.eventFunctions?.[onEnter] : undefined;
 	const clearEvent = onClear ? props.pageDefinition.eventFunctions?.[onClear] : undefined;
 	const updateStoreImmediately = upStoreImm || autoComplete === 'on';
 
@@ -235,12 +235,12 @@ function PhoneNumber(props: ComponentProps) {
 	};
 
 	const handleKeyUp = async (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-		if (!clickEvent || isLoading || e.key !== 'Enter') return;
+		if (!enterEvent || isLoading || e.key !== 'Enter') return;
 		if (!updateStoreImmediately) {
 			handleBlur(e as unknown as React.FocusEvent<HTMLInputElement>);
 		}
 		await runEvent(
-			clickEvent,
+			enterEvent,
 			onEnter,
 			props.context.pageName,
 			props.locationHistory,

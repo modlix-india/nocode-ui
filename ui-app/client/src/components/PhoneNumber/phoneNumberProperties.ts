@@ -146,10 +146,10 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		name: 'defaultValue',
-		schema: SCHEMA_ANY_COMP_PROP,
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Default Value',
 		description: 'This value is use when the data entered is empty or not entered.',
-		group: ComponentPropertyGroup.DATA,
+		group: ComponentPropertyGroup.BASIC,
 	},
 
 	{
