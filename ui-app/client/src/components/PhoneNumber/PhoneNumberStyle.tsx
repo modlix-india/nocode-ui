@@ -73,14 +73,6 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 		transition: transform 0.2s ease-in-out, left 0.2s ease-in-out, bottom 0.2s ease-in-out;
 	}
 
-	${PREFIX}._bigDesign1 ._label {
-    	margin-top: 0px;
-	}
-
-	${PREFIX}._bigDesign1._hasDialCode ._label {
-		padding-left: 36px;
-	}
-
 	${PREFIX}._bigDesign1._hasValue ._label,
 	${PREFIX}._bigDesign1._isActive ._label,
 	${PREFIX}._bigDesign1 ._label._noFloat {
@@ -116,8 +108,7 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 		align-items: center;
 		justify-content: space-between;
 		gap: 8px;
-		padding: 0 12px 0 7px;
-		border-right: 1px solid rgba(0,0,0, .20);
+		// padding: 0 12px 0 7px;
 	}
 
 	${PREFIX} ._dropdownSelect ._selectedOption {
@@ -126,17 +117,17 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 	}
 
 	${PREFIX} ._dropdownSelect ._arrowIcon {
-		width: 8px;
-		color: #A3A3A3;
+		// width: 8px;
+		// color: #A3A3A3;
 	}
 
 	${PREFIX} ._dropdownBody {
 		position: fixed;
 		width: 100%;
-		border: 1px solid rgba(0, 0, 0, 0.10);
-		box-shadow: 0px 1px 4px 0px #00000026;
-		border-radius: 6px;
-		padding: 5px 6px 0 6px;
+		// border: 1px solid rgba(0, 0, 0, 0.10);
+		// box-shadow: 0px 1px 4px 0px #00000026;
+		// border-radius: 6px;
+		// padding: 5px 6px 0px 6px;
 		z-index: 2;
 		max-height: 250px;
 		display: flex;
@@ -149,15 +140,15 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 		justify-content: center;
 		align-items: center;
 		gap: 8px;
-		padding: 0 6px;
+		// padding: 0 6px;
 		max-width: 100%;
 		min-height: 38px;
-		border-bottom: 1px solid;
-		border-color: rgb(0,0,0,.07);
+		// border-bottom: 1px solid;
+		// border-color: rgb(0,0,0,.07);
 	}
 
 	${PREFIX} ._dropdownBody ._searchIcon {
-		color: rgba(0,0,0,.4);
+		// color: rgba(0,0,0,.4);
 	}
 	${PREFIX} ._dropdownBody ._searchBox {
 		max-width: 100%;
@@ -172,23 +163,23 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 	${PREFIX} ._dropdownBody ._dropdownOption {
 		display: flex;
 		gap: 10px;
-		padding: 10px 8px;
-		border-radius: 6px;
+		// padding: 10px 8px;
+		// border-radius: 6px;
 		white-space: wrap;
 		cursor: pointer;
 	}
 
 	${PREFIX} ._dropdownBody ._dropdownOption._hovered {
-		background-color: rgba(51, 51, 51, 0.05)
+		// background-color: rgba(51, 51, 51, 0.05)
 	}
 
 	${PREFIX} ._dropdownBody ._dropdownOption._selected {
-		background-color: rgba(51, 51, 51, 0.05)
+		// background-color: rgba(51, 51, 51, 0.05)
 	}
 
 	${PREFIX} ._dropdownBody ._dropdownOption._nextSeperator {
-		border-radius: 0px;
-		border-bottom: 1px solid rgb(0,0,0,.07);
+		// border-radius: 0px;
+		// border-bottom: 1px solid rgb(0,0,0,.07);
 	}
 
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);

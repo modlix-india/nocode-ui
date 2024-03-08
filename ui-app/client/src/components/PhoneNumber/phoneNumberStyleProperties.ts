@@ -836,9 +836,47 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 
 	{
+		groupName: 'Phone Number Dropdown Padding',
+		displayName: 'Phone Number Dropdown Padding Design Default',
+		name: 'phoneNumberDropdownPaddingDesignDefault',
+		defaultValue: '0px 12px 0px 7px',
+		cssProperty: 'padding',
+		selector: '.comp.compPhoneNumber._default ._dropdownSelect',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Phone Number Dropdown Padding',
+		displayName: 'Phone Number Dropdown Padding Design Outline',
+		name: 'phoneNumberDropdownPaddingDesignOutline',
+		defaultValue: '0px 12px 0px 7px',
+		cssProperty: 'padding',
+		selector: '.comp.compPhoneNumber._outlined ._dropdownSelect',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Phone Number Dropdown Padding',
+		displayName: 'Phone Number Dropdown Padding Design Filled',
+		name: 'phoneNumberDropdownPaddingDesignFilled',
+		defaultValue: '0px 12px 0px 7px',
+		cssProperty: 'padding',
+		selector: '.comp.compPhoneNumber._filled ._dropdownSelect',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Phone Number Dropdown Padding',
+		displayName: 'Phone Number Dropdown Padding Design Big 1',
+		name: 'phoneNumberDropdownPaddingDesignBig1',
+		defaultValue: '0px 12px 0px 7px',
+		cssProperty: 'padding',
+		selector: '.comp.compPhoneNumber._bigDesign1 ._dropdownSelect',
+		noPrefix: true,
+	},
+
+	{
 		groupName: 'Phone Number Dropdown Body Padding',
 		displayName: 'Phone Number Dropdown Body Padding Design Default',
 		name: 'phoneNumberDropdownBodyPaddingDesignDefault',
+		defaultValue: '5px 6px 0px 6px',
 		cssProperty: 'padding',
 		selector: '.comp.compPhoneNumber._default ._dropdownBody',
 		noPrefix: true,
@@ -847,6 +885,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Body Padding',
 		displayName: 'Phone Number Dropdown Body Padding Design Outline',
 		name: 'phoneNumberDropdownBodyPaddingDesignOutline',
+		defaultValue: '5px 6px 0px 6px',
 		cssProperty: 'padding',
 		selector: '.comp.compPhoneNumber._outlined ._dropdownBody',
 		noPrefix: true,
@@ -855,6 +894,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Body Padding',
 		displayName: 'Phone Number Dropdown Body Padding Design Filled',
 		name: 'phoneNumberDropdownBodyPaddingDesignFilled',
+		defaultValue: '5px 6px 0px 6px',
 		cssProperty: 'padding',
 		selector: '.comp.compPhoneNumber._filled ._dropdownBody',
 		noPrefix: true,
@@ -863,41 +903,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Body Padding',
 		displayName: 'Phone Number Dropdown Body Padding Design Big 1',
 		name: 'phoneNumberDropdownBodyPaddingDesignBig1',
+		defaultValue: '5px 6px 0px 6px',
 		cssProperty: 'padding',
 		selector: '.comp.compPhoneNumber._bigDesign1 ._dropdownBody',
-		noPrefix: true,
-	},
-
-	{
-		groupName: 'Phone Number Dropdown Option list Padding',
-		displayName: 'Phone Number Dropdown Option list Padding Design Default',
-		name: 'phoneNumberDropdownOptionlistPaddingDesignDefault',
-		cssProperty: 'padding',
-		selector: '.comp.compPhoneNumber._default ._dropdownBody ._dropdownOptionList',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Phone Number Dropdown Option list Padding',
-		displayName: 'Phone Number Dropdown Option list Padding Design Outline',
-		name: 'phoneNumberDropdownOptionlistPaddingDesignOutline',
-		cssProperty: 'padding',
-		selector: '.comp.compPhoneNumber._outlined ._dropdownBody ._dropdownOptionList',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Phone Number Dropdown Option list Padding',
-		displayName: 'Phone Number Dropdown Option list Padding Design Filled',
-		name: 'phoneNumberDropdownOptionlistPaddingDesignFilled',
-		cssProperty: 'padding',
-		selector: '.comp.compPhoneNumber._filled ._dropdownBody ._dropdownOptionList',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Phone Number Dropdown Option list Padding',
-		displayName: 'Phone Number Dropdown Option list Padding Design Big 1',
-		name: 'phoneNumberDropdownOptionlistPaddingDesignBig1',
-		cssProperty: 'padding',
-		selector: '.comp.compPhoneNumber._bigDesign1 ._dropdownBody ._dropdownOptionList',
 		noPrefix: true,
 	},
 
@@ -905,6 +913,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Padding',
 		displayName: 'Phone Number Dropdown Option Padding Design Default',
 		name: 'phoneNumberDropdownOptionPaddingDesignDefault',
+		defaultValue: '10px 8px 10px 8px',
 		cssProperty: 'padding',
 		selector: '.comp.compPhoneNumber._default ._dropdownBody ._dropdownOption',
 		noPrefix: true,
@@ -913,6 +922,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Padding',
 		displayName: 'Phone Number Dropdown Option Padding Design Outline',
 		name: 'phoneNumberDropdownOptionPaddingDesignOutline',
+		defaultValue: '10px 8px 10px 8px',
 		cssProperty: 'padding',
 		selector: '.comp.compPhoneNumber._outlined ._dropdownBody ._dropdownOption',
 		noPrefix: true,
@@ -921,6 +931,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Padding',
 		displayName: 'Phone Number Dropdown Option Padding Design Filled',
 		name: 'phoneNumberDropdownOptionPaddingDesignFilled',
+		defaultValue: '10px 8px 10px 8px',
 		cssProperty: 'padding',
 		selector: '.comp.compPhoneNumber._filled ._dropdownBody ._dropdownOption',
 		noPrefix: true,
@@ -929,74 +940,46 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Padding',
 		displayName: 'Phone Number Dropdown Option Padding Design Big 1',
 		name: 'phoneNumberDropdownOptionPaddingDesignBig1',
+		defaultValue: '10px 8px 10px 8px',
 		cssProperty: 'padding',
 		selector: '.comp.compPhoneNumber._bigDesign1 ._dropdownBody ._dropdownOption',
 		noPrefix: true,
 	},
 
 	{
-		groupName: 'Phone Number Dropdown Seach Box Padding',
-		displayName: 'Phone Number Dropdown Seach Box Padding Design Default',
-		name: 'phoneNumberDropdownSeachBoxPaddingDesignDefault',
+		groupName: 'Phone Number Dropdown Seach Box Container Padding',
+		displayName: 'Phone Number Dropdown Seach Box Container Padding Design Default',
+		name: 'phoneNumberDropdownSeachBoxContainerPaddingDesignDefault',
+		defaultValue: '0px 6px 0px 6px',
 		cssProperty: 'padding',
-		selector: '.comp.compPhoneNumber._default ._dropdownBody ._dropdownSearchBox',
+		selector: '.comp.compPhoneNumber._default ._dropdownBody ._searchBoxContainer',
 		noPrefix: true,
 	},
 	{
-		groupName: 'Phone Number Dropdown Seach Box Padding',
-		displayName: 'Phone Number Dropdown Seach Box Padding Design Outline',
-		name: 'phoneNumberDropdownSeachBoxPaddingDesignOutline',
+		groupName: 'Phone Number Dropdown Seach Box Container Padding',
+		displayName: 'Phone Number Dropdown Seach Box Container Padding Design Outline',
+		name: 'phoneNumberDropdownSeachBoxContainerPaddingDesignOutline',
+		defaultValue: '0px 6px 0px 6px',
 		cssProperty: 'padding',
-		selector: '.comp.compPhoneNumber._outlined ._dropdownBody ._dropdownSearchBox',
+		selector: '.comp.compPhoneNumber._outlined ._dropdownBody ._searchBoxContainer',
 		noPrefix: true,
 	},
 	{
-		groupName: 'Phone Number Dropdown Seach Box Padding',
-		displayName: 'Phone Number Dropdown Seach Box Padding Design Filled',
-		name: 'phoneNumberDropdownSeachBoxPaddingDesignFilled',
+		groupName: 'Phone Number Dropdown Seach Box Container Padding',
+		displayName: 'Phone Number Dropdown Seach Box Container Padding Design Filled',
+		name: 'phoneNumberDropdownSeachBoxContainerPaddingDesignFilled',
+		defaultValue: '0px 6px 0px 6px',
 		cssProperty: 'padding',
-		selector: '.comp.compPhoneNumber._filled ._dropdownBody ._dropdownSearchBox',
+		selector: '.comp.compPhoneNumber._filled ._dropdownBody ._searchBoxContainer',
 		noPrefix: true,
 	},
 	{
-		groupName: 'Phone Number Dropdown Seach Box Padding',
-		displayName: 'Phone Number Dropdown Seach Box Padding Design Big 1',
-		name: 'phoneNumberDropdownSeachBoxPaddingDesignBig1',
+		groupName: 'Phone Number Dropdown Seach Box Container Padding',
+		displayName: 'Phone Number Dropdown Seach Box Container Padding Design Big 1',
+		name: 'phoneNumberDropdownSeachBoxContainerPaddingDesignBig1',
+		defaultValue: '0px 6px 0px 6px',
 		cssProperty: 'padding',
-		selector: '.comp.compPhoneNumber._bigDesign1 ._dropdownBody ._dropdownSearchBox',
-		noPrefix: true,
-	},
-
-	{
-		groupName: 'Phone Number Dropdown Search Box Margin',
-		displayName: 'Phone Number Dropdown Search Box Margin Design Default',
-		name: 'phoneNumberDropdownSearchBoxMarginDesignDefault',
-		cssProperty: 'margin',
-		selector: '.comp.compPhoneNumber._default ._dropdownBody ._dropdownSearchBox',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Phone Number Dropdown Search Box Margin',
-		displayName: 'Phone Number Dropdown Search Box Margin Design Outline',
-		name: 'phoneNumberDropdownSearchBoxMarginDesignOutline',
-		cssProperty: 'margin',
-		selector: '.comp.compPhoneNumber._outlined ._dropdownBody ._dropdownSearchBox',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Phone Number Dropdown Search Box Margin',
-		displayName: 'Phone Number Dropdown Search Box Margin Design Filled',
-		name: 'phoneNumberDropdownSearchBoxMarginDesignFilled',
-		cssProperty: 'margin',
-		selector: '.comp.compPhoneNumber._filled ._dropdownBody ._dropdownSearchBox',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Phone Number Dropdown Search Box Margin',
-		displayName: 'Phone Number Dropdown Search Box Margin Design Big 1',
-		name: 'phoneNumberDropdownSearchBoxMarginDesignBig1',
-		cssProperty: 'margin',
-		selector: '.comp.compPhoneNumber._bigDesign1 ._dropdownBody ._dropdownSearchBox',
+		selector: '.comp.compPhoneNumber._bigDesign1 ._dropdownBody ._searchBoxContainer',
 		noPrefix: true,
 	},
 
@@ -1041,6 +1024,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Body Border Radius',
 		displayName: 'Phone Number Dropdown Body Border Radius Design Default',
 		name: 'phoneNumberDropdownBodyBorderRadiusDesignDefault',
+		defaultValue: '6px',
 		cssProperty: 'border-radius',
 		selector: '.comp.compPhoneNumber._default ._dropdownBody',
 		noPrefix: true,
@@ -1049,6 +1033,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Body Border Radius',
 		displayName: 'Phone Number Dropdown Body Border Radius Design Outline',
 		name: 'phoneNumberDropdownBodyBorderRadiusDesignOutline',
+		defaultValue: '6px',
 		cssProperty: 'border-radius',
 		selector: '.comp.compPhoneNumber._outlined ._dropdownBody',
 		noPrefix: true,
@@ -1057,6 +1042,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Body Border Radius',
 		displayName: 'Phone Number Dropdown Body Border Radius Design Filled',
 		name: 'phoneNumberDropdownBodyBorderRadiusDesignFilled',
+		defaultValue: '6px',
 		cssProperty: 'border-radius',
 		selector: '.comp.compPhoneNumber._filled ._dropdownBody',
 		noPrefix: true,
@@ -1065,6 +1051,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Body Border Radius',
 		displayName: 'Phone Number Dropdown Body Border Radius Design Big 1',
 		name: 'phoneNumberDropdownBodyBorderRadiusDesignBig1',
+		defaultValue: '6px',
 		cssProperty: 'border-radius',
 		selector: '.comp.compPhoneNumber._bigDesign1 ._dropdownBody',
 		noPrefix: true,
@@ -1074,6 +1061,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Border Radius',
 		displayName: 'Phone Number Dropdown Option Border Radius Design Default',
 		name: 'phoneNumberDropdownOptionBorderRadiusDesignDefault',
+		defaultValue: '6px',
 		cssProperty: 'border-radius',
 		selector: '.comp.compPhoneNumber._default ._dropdownBody ._dropdownOption',
 		noPrefix: true,
@@ -1082,6 +1070,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Border Radius',
 		displayName: 'Phone Number Dropdown Option Border Radius Design Outline',
 		name: 'phoneNumberDropdownOptionBorderRadiusDesignOutline',
+		defaultValue: '6px',
 		cssProperty: 'border-radius',
 		selector: '.comp.compPhoneNumber._outlined ._dropdownBody ._dropdownOption',
 		noPrefix: true,
@@ -1090,6 +1079,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Border Radius',
 		displayName: 'Phone Number Dropdown Option Border Radius Design Filled',
 		name: 'phoneNumberDropdownOptionBorderRadiusDesignFilled',
+		defaultValue: '6px',
 		cssProperty: 'border-radius',
 		selector: '.comp.compPhoneNumber._filled ._dropdownBody ._dropdownOption',
 		noPrefix: true,
@@ -1098,6 +1088,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Border Radius',
 		displayName: 'Phone Number Dropdown Option Border Radius Design Big 1',
 		name: 'phoneNumberDropdownOptionBorderRadiusDesignBig1',
+		defaultValue: '6px',
 		cssProperty: 'border-radius',
 		selector: '.comp.compPhoneNumber._bigDesign1 ._dropdownBody ._dropdownOption',
 		noPrefix: true,
@@ -1107,6 +1098,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Seperator Border Radius',
 		displayName: 'Phone Number Dropdown Option Seperator Border Radius Design Default',
 		name: 'phoneNumberDropdownOptionSeperatorBorderRadiusDesignDefault',
+		defaultValue: '0px',
 		cssProperty: 'border-radius',
 		selector: '.comp.compPhoneNumber._default ._dropdownBody ._dropdownOption._nextSeperator',
 		noPrefix: true,
@@ -1115,6 +1107,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Seperator Border Radius',
 		displayName: 'Phone Number Dropdown Option Seperator Border Radius Design Outline',
 		name: 'phoneNumberDropdownOptionSeperatorBorderRadiusDesignOutline',
+		defaultValue: '0px',
 		cssProperty: 'border-radius',
 		selector: '.comp.compPhoneNumber._outlined ._dropdownBody ._dropdownOption._nextSeperator',
 		noPrefix: true,
@@ -1123,6 +1116,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Seperator Border Radius',
 		displayName: 'Phone Number Dropdown Option Seperator Border Radius Design Filled',
 		name: 'phoneNumberDropdownOptionSeperatorBorderRadiusDesignFilled',
+		defaultValue: '0px',
 		cssProperty: 'border-radius',
 		selector: '.comp.compPhoneNumber._filled ._dropdownBody ._dropdownOption._nextSeperator',
 		noPrefix: true,
@@ -1131,42 +1125,10 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Seperator Border Radius',
 		displayName: 'Phone Number Dropdown Option Seperator Border Radius Design Big 1',
 		name: 'phoneNumberDropdownOptionSeperatorBorderRadiusDesignBig1',
+		defaultValue: '0px',
 		cssProperty: 'border-radius',
 		selector:
 			'.comp.compPhoneNumber._bigDesign1 ._dropdownBody ._dropdownOption._nextSeperator',
-		noPrefix: true,
-	},
-
-	{
-		groupName: 'Phone Number Dropdown Search Box Border Radius',
-		displayName: 'Phone Number Dropdown Search Box Border Radius Design Default',
-		name: 'phoneNumberDropdownSearchBoxBorderRadiusDesignDefault',
-		cssProperty: 'border-radius',
-		selector: '.comp.compPhoneNumber._default ._dropdownBody ._dropdownSearchBox',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Phone Number Dropdown Search Box Border Radius',
-		displayName: 'Phone Number Dropdown Search Box Border Radius Design Outline',
-		name: 'phoneNumberDropdownSearchBoxBorderRadiusDesignOutline',
-		cssProperty: 'border-radius',
-		selector: '.comp.compPhoneNumber._outlined ._dropdownBody ._dropdownSearchBox',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Phone Number Dropdown Search Box Border Radius',
-		displayName: 'Phone Number Dropdown Search Box Border Radius Design Filled',
-		name: 'phoneNumberDropdownSearchBoxBorderRadiusDesignFilled',
-		cssProperty: 'border-radius',
-		selector: '.comp.compPhoneNumber._filled ._dropdownBody ._dropdownSearchBox',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Phone Number Dropdown Search Box Border Radius',
-		displayName: 'Phone Number Dropdown Search Box Border Radius Design Big 1',
-		name: 'phoneNumberDropdownSearchBoxBorderRadiusDesignBig1',
-		cssProperty: 'border-radius',
-		selector: '.comp.compPhoneNumber._bigDesign1 ._dropdownBody ._dropdownSearchBox',
 		noPrefix: true,
 	},
 
@@ -1279,9 +1241,121 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 
 	{
+		groupName: 'Phone Number Input Box Border',
+		displayName: 'Phone Number Input Box Border Design Default',
+		name: 'phoneNumberInputBoxBorderDesignDefault',
+		defaultValue: '1px solid',
+		cssProperty: 'border-left',
+		selector: '.comp.compPhoneNumber._default ._inputBox',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Phone Number Input Box Border',
+		displayName: 'Phone Number Input Box Border Design Outline',
+		name: 'phoneNumberInputBoxBorderDesignOutline',
+		defaultValue: '1px solid',
+		cssProperty: 'border-left',
+		selector: '.comp.compPhoneNumber._outlined ._inputBox',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Phone Number Input Box Border',
+		displayName: 'Phone Number Input Box Border Design Filled',
+		name: 'phoneNumberInputBoxBorderDesignFilled',
+		defaultValue: '1px solid',
+		cssProperty: 'border-left',
+		selector: '.comp.compPhoneNumber._filled ._inputBox',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Phone Number Input Box Border',
+		displayName: 'Phone Number Input Box Border Design Big 1',
+		name: 'phoneNumberInputBoxBorderDesignBig1',
+		defaultValue: '1px solid',
+		cssProperty: 'border-left',
+		selector: '.comp.compPhoneNumber._bigDesign1 ._inputBox',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'Phone Number Input Box Border Active',
+		displayName: 'Phone Number Input Box Border Active Design Default',
+		name: 'phoneNumberInputBoxBorderActiveDesignDefault',
+		defaultValue: '1px solid',
+		cssProperty: 'border-left',
+		selector: '.comp.compPhoneNumber._default._isActive ._inputBox',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Phone Number Input Box Border Active',
+		displayName: 'Phone Number Input Box Border Active Design Outline',
+		name: 'phoneNumberInputBoxBorderActiveDesignOutline',
+		defaultValue: '1px solid',
+		cssProperty: 'border-left',
+		selector: '.comp.compPhoneNumber._outlined._isActive ._inputBox',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Phone Number Input Box Border Active',
+		displayName: 'Phone Number Input Box Border Active Design Filled',
+		name: 'phoneNumberInputBoxBorderActiveDesignFilled',
+		defaultValue: '1px solid',
+		cssProperty: 'border-left',
+		selector: '.comp.compPhoneNumber._filled._isActive ._inputBox',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Phone Number Input Box Border Active',
+		displayName: 'Phone Number Input Box Border Active Design Big 1',
+		name: 'phoneNumberInputBoxBorderActiveDesignBig1',
+		defaultValue: '1px solid',
+		cssProperty: 'border-left',
+		selector: '.comp.compPhoneNumber._bigDesign1._isActive ._inputBox',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'Phone Number Input Box Border Has Value',
+		displayName: 'Phone Number Input Box Border Has Value Design Default',
+		name: 'phoneNumberInputBoxBorderHasValueDesignDefault',
+		defaultValue: '1px solid',
+		cssProperty: 'border-left',
+		selector: '.comp.compPhoneNumber._default._hasValue ._inputBox',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Phone Number Input Box Border Has Value',
+		displayName: 'Phone Number Input Box Border Has Value Design Outline',
+		name: 'phoneNumberInputBoxBorderHasValueDesignOutline',
+		defaultValue: '1px solid',
+		cssProperty: 'border-left',
+		selector: '.comp.compPhoneNumber._outlined._hasValue ._inputBox',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Phone Number Input Box Border Has Value',
+		displayName: 'Phone Number Input Box Border Has Value Design Filled',
+		name: 'phoneNumberInputBoxBorderHasValueDesignFilled',
+		defaultValue: '1px solid',
+		cssProperty: 'border-left',
+		selector: '.comp.compPhoneNumber._filled._hasValue ._inputBox',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Phone Number Input Box Border Has Value',
+		displayName: 'Phone Number Input Box Border Has Value Design Big 1',
+		name: 'phoneNumberInputBoxBorderHasValueDesignBig1',
+		defaultValue: '1px solid',
+		cssProperty: 'border-left',
+		selector: '.comp.compPhoneNumber._bigDesign1._hasValue ._inputBox',
+		noPrefix: true,
+	},
+
+	{
 		groupName: 'Phone Number Dropdown Body Border',
 		displayName: 'Phone Number Dropdown Body Border Design Default',
 		name: 'phoneNumberDropdownBodyBorderDesignDefault',
+		defaultValue: '1px solid',
 		cssProperty: 'border',
 		selector: '.comp.compPhoneNumber._default ._dropdownBody',
 		noPrefix: true,
@@ -1290,6 +1364,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Body Border',
 		displayName: 'Phone Number Dropdown Body Border Design Outline',
 		name: 'phoneNumberDropdownBodyBorderDesignOutline',
+		defaultValue: '1px solid',
 		cssProperty: 'border',
 		selector: '.comp.compPhoneNumber._outlined ._dropdownBody',
 		noPrefix: true,
@@ -1306,41 +1381,46 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Body Border',
 		displayName: 'Phone Number Dropdown Body Border Design Big 1',
 		name: 'phoneNumberDropdownBodyBorderDesignBig1',
+		defaultValue: '1px solid',
 		cssProperty: 'border',
 		selector: '.comp.compPhoneNumber._bigDesign1 ._dropdownBody',
 		noPrefix: true,
 	},
 
 	{
-		groupName: 'Phone Number Dropdown Search Box Border',
-		displayName: 'Phone Number Dropdown Search Box Border Design Default',
-		name: 'phoneNumberDropdownSearchBoxBorderDesignDefault',
+		groupName: 'Phone Number Dropdown Search Box Container Border',
+		displayName: 'Phone Number Dropdown Search Box Container Border Design Default',
+		name: 'phoneNumberDropdownSearchBoxContainerBorderDesignDefault',
+		defaultValue: '1px solid',
 		cssProperty: 'border-bottom',
-		selector: '.comp.compPhoneNumber._default ._dropdownBody ._dropdownSearchBox',
+		selector: '.comp.compPhoneNumber._default ._dropdownBody ._searchBoxContainer',
 		noPrefix: true,
 	},
 	{
-		groupName: 'Phone Number Dropdown Search Box Border',
-		displayName: 'Phone Number Dropdown Search Box Border Design Outline',
-		name: 'phoneNumberDropdownSearchBoxBorderDesignOutline',
+		groupName: 'Phone Number Dropdown Search Box Container Border',
+		displayName: 'Phone Number Dropdown Search Box Container Border Design Outline',
+		name: 'phoneNumberDropdownSearchBoxContainerBorderDesignOutline',
+		defaultValue: '1px solid',
 		cssProperty: 'border-bottom',
-		selector: '.comp.compPhoneNumber._outlined ._dropdownBody ._dropdownSearchBox',
+		selector: '.comp.compPhoneNumber._outlined ._dropdownBody ._searchBoxContainer',
 		noPrefix: true,
 	},
 	{
-		groupName: 'Phone Number Dropdown Search Box Border',
-		displayName: 'Phone Number Dropdown Search Box Border Design Filled',
-		name: 'phoneNumberDropdownSearchBoxBorderDesignFilled',
+		groupName: 'Phone Number Dropdown Search Box Container Border',
+		displayName: 'Phone Number Dropdown Search Box Container Border Design Filled',
+		name: 'phoneNumberDropdownSearchBoxContainerBorderDesignFilled',
+		defaultValue: '1px solid',
 		cssProperty: 'border-bottom',
-		selector: '.comp.compPhoneNumber._filled ._dropdownBody ._dropdownSearchBox',
+		selector: '.comp.compPhoneNumber._filled ._dropdownBody ._searchBoxContainer',
 		noPrefix: true,
 	},
 	{
-		groupName: 'Phone Number Dropdown Search Box Border',
-		displayName: 'Phone Number Dropdown Search Box Border Design Big 1',
-		name: 'phoneNumberDropdownSearchBoxBorderDesignBig1',
+		groupName: 'Phone Number Dropdown Search Box Container Border',
+		displayName: 'Phone Number Dropdown Search Box Container Border Design Big 1',
+		name: 'phoneNumberDropdownSearchBoxContainerBorderDesignBig1',
+		defaultValue: '1px solid',
 		cssProperty: 'border-bottom',
-		selector: '.comp.compPhoneNumber._bigDesign1 ._dropdownBody ._dropdownSearchBox',
+		selector: '.comp.compPhoneNumber._bigDesign1 ._dropdownBody ._searchBoxContainer',
 		noPrefix: true,
 	},
 
@@ -1348,6 +1428,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Seperator Border',
 		displayName: 'Phone Number Dropdown Option Seperator Border Design Default',
 		name: 'phoneNumberDropdownOptionSeperatorBorderDesignDefault',
+		defaultValue: '1px solid',
 		cssProperty: 'border-bottom',
 		selector: '.comp.compPhoneNumber._default ._dropdownBody ._dropdownOption._nextSeperator',
 		noPrefix: true,
@@ -1356,6 +1437,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Seperator Border',
 		displayName: 'Phone Number Dropdown Option Seperator Border Design Outline',
 		name: 'phoneNumberDropdownOptionSeperatorBorderDesignOutline',
+		defaultValue: '1px solid',
 		cssProperty: 'border-bottom',
 		selector: '.comp.compPhoneNumber._outlined ._dropdownBody ._dropdownOption._nextSeperator',
 		noPrefix: true,
@@ -1364,6 +1446,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Seperator Border',
 		displayName: 'Phone Number Dropdown Option Seperator Border Design Filled',
 		name: 'phoneNumberDropdownOptionSeperatorBorderDesignFilled',
+		defaultValue: '1px solid',
 		cssProperty: 'border-bottom',
 		selector: '.comp.compPhoneNumber._filled ._dropdownBody ._dropdownOption._nextSeperator',
 		noPrefix: true,
@@ -1372,6 +1455,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Seperator Border',
 		displayName: 'Phone Number Dropdown Option Seperator Border Design Big 1',
 		name: 'phoneNumberDropdownOptionSeperatorBorderDesignBig1',
+		defaultValue: '1px solid',
 		cssProperty: 'border-bottom',
 		selector:
 			'.comp.compPhoneNumber._bigDesign1 ._dropdownBody ._dropdownOption._nextSeperator',
@@ -1382,6 +1466,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Body Box Shadow',
 		displayName: 'Phone Number Dropdown Body Box Shadow Design Default',
 		name: 'phoneNumberDropdownBodyBoxShadowDesignDefault',
+		defaultValue: ' 0px 1px 4px 0px #00000026',
 		cssProperty: 'box-shadow',
 		selector: '.comp.compPhoneNumber._default ._dropdownBody',
 		noPrefix: true,
@@ -1390,6 +1475,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Body Box Shadow',
 		displayName: 'Phone Number Dropdown Body Box Shadow Design Outline',
 		name: 'phoneNumberDropdownBodyBoxShadowDesignOutline',
+		defaultValue: ' 0px 1px 4px 0px #00000027',
 		cssProperty: 'box-shadow',
 		selector: '.comp.compPhoneNumber._outlined ._dropdownBody',
 		noPrefix: true,
@@ -1398,6 +1484,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Body Box Shadow',
 		displayName: 'Phone Number Dropdown Body Box Shadow Design Filled',
 		name: 'phoneNumberDropdownBodyBoxShadowDesignFilled',
+		defaultValue: ' 0px 1px 4px 0px #00000028',
 		cssProperty: 'box-shadow',
 		selector: '.comp.compPhoneNumber._filled ._dropdownBody',
 		noPrefix: true,
@@ -1406,74 +1493,120 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Body Box Shadow',
 		displayName: 'Phone Number Dropdown Body Box Shadow Design Big 1',
 		name: 'phoneNumberDropdownBodyBoxShadowDesignBig1',
+		defaultValue: ' 0px 1px 4px 0px #00000029',
 		cssProperty: 'box-shadow',
 		selector: '.comp.compPhoneNumber._bigDesign1 ._dropdownBody',
 		noPrefix: true,
 	},
 
 	{
-		groupName: 'Phone Number Dropdown Icon Width',
-		displayName: 'Phone Number Dropdown Icon Width Design Default',
-		name: 'phoneNumberDropdownIconWidthDesignDefault',
+		groupName: 'Phone Number Dropdown Arrow Icon Width',
+		displayName: 'Phone Number Dropdown Arrow Icon Width Design Default',
+		name: 'phoneNumberDropdownArrowIconWidthDesignDefault',
+		defaultValue: '8px',
 		cssProperty: 'width',
 		selector: '.comp.compPhoneNumber._default ._dropdownSelect ._arrowIcon',
 		noPrefix: true,
 	},
 	{
-		groupName: 'Phone Number Dropdown Icon Width',
-		displayName: 'Phone Number Dropdown Icon Width Design Outline',
-		name: 'phoneNumberDropdownIconWidthDesignOutline',
+		groupName: 'Phone Number Dropdown Arrow Icon Width',
+		displayName: 'Phone Number Dropdown Arrow Icon Width Design Outline',
+		name: 'phoneNumberDropdownArrowIconWidthDesignOutline',
+		defaultValue: '8px',
 		cssProperty: 'width',
-		selector: '.comp.compPhoneNumber._default ._dropdownSelect ._arrowIcon',
+		selector: '.comp.compPhoneNumber._outlined ._dropdownSelect ._arrowIcon',
 		noPrefix: true,
 	},
 	{
-		groupName: 'Phone Number Dropdown Icon Width',
-		displayName: 'Phone Number Dropdown Icon Width Design Filled',
-		name: 'phoneNumberDropdownIconWidthDesignFilled',
+		groupName: 'Phone Number Dropdown Arrow Icon Width',
+		displayName: 'Phone Number Dropdown Arrow Icon Width Design Filled',
+		name: 'phoneNumberDropdownArrowIconWidthDesignFilled',
+		defaultValue: '8px',
 		cssProperty: 'width',
-		selector: '.comp.compPhoneNumber._default ._dropdownSelect ._arrowIcon',
+		selector: '.comp.compPhoneNumber._filled ._dropdownSelect ._arrowIcon',
 		noPrefix: true,
 	},
 	{
-		groupName: 'Phone Number Dropdown Icon Width',
-		displayName: 'Phone Number Dropdown Icon Width Design Big 1',
-		name: 'phoneNumberDropdownIconWidthDesignBig1',
+		groupName: 'Phone Number Dropdown Arrow Icon Width',
+		displayName: 'Phone Number Dropdown Arrow Icon Width Design Big 1',
+		name: 'phoneNumberDropdownArrowIconWidthDesignBig1',
+		defaultValue: '8px',
 		cssProperty: 'width',
-		selector: '.comp.compPhoneNumber._default ._dropdownSelect ._arrowIcon',
+		selector: '.comp.compPhoneNumber._bigDesign1 ._dropdownSelect ._arrowIcon',
 		noPrefix: true,
 	},
 
 	{
-		groupName: 'Phone Number Dropdown Icon Color',
-		displayName: 'Phone Number Dropdown Icon Color Design Default',
-		name: 'phoneNumberDropdownIconColorDesignDefault',
+		groupName: 'Phone Number Dropdown Arrow Icon Color',
+		displayName: 'Phone Number Dropdown Arrow Icon Color Design Default',
+		name: 'phoneNumberDropdownArrowIconColorDesignDefault',
+		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
 		selector: '.comp.compPhoneNumber._default ._dropdownSelect ._arrowIcon',
 		noPrefix: true,
 	},
 	{
-		groupName: 'Phone Number Dropdown Icon Color',
-		displayName: 'Phone Number Dropdown Icon Color Design Outline',
-		name: 'phoneNumberDropdownIconColorDesignOutline',
+		groupName: 'Phone Number Dropdown Arrow Icon Color',
+		displayName: 'Phone Number Dropdown Arrow Icon Color Design Outline',
+		name: 'phoneNumberDropdownArrowIconColorDesignOutline',
+		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
-		selector: '.comp.compPhoneNumber._default ._dropdownSelect ._arrowIcon',
+		selector: '.comp.compPhoneNumber._outlined ._dropdownSelect ._arrowIcon',
 		noPrefix: true,
 	},
 	{
-		groupName: 'Phone Number Dropdown Icon Color',
-		displayName: 'Phone Number Dropdown Icon Color Design Filled',
-		name: 'phoneNumberDropdownIconColorDesignFilled',
+		groupName: 'Phone Number Dropdown Arrow Icon Color',
+		displayName: 'Phone Number Dropdown Arrow Icon Color Design Filled',
+		name: 'phoneNumberDropdownArrowIconColorDesignFilled',
+		defaultValue: '<fontColorTwo>',
 		cssProperty: 'color',
-		selector: '.comp.compPhoneNumber._default ._dropdownSelect ._arrowIcon',
+		selector: '.comp.compPhoneNumber._filled ._dropdownSelect ._arrowIcon',
 		noPrefix: true,
 	},
 	{
-		groupName: 'Phone Number Dropdown Icon Color',
-		displayName: 'Phone Number Dropdown Icon Color Design Big 1',
-		name: 'phoneNumberDropdownIconColorDesignBig1',
+		groupName: 'Phone Number Dropdown Arrow Icon Color',
+		displayName: 'Phone Number Dropdown Arrow Icon Color Design Big 1',
+		name: 'phoneNumberDropdownArrowIconColorDesignBig1',
+		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
-		selector: '.comp.compPhoneNumber._default ._dropdownSelect ._arrowIcon',
+		selector: '.comp.compPhoneNumber._bigDesign1 ._dropdownSelect ._arrowIcon',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'Phone Number Dropdown Search Icon Color',
+		displayName: 'Phone Number Dropdown Search Icon Color Design Default',
+		name: 'phoneNumberDropdownSearchIconColorDesignDefault',
+		defaultValue: 'rgba(0,0,0,.4)',
+		cssProperty: 'color',
+		selector: '.comp.compPhoneNumber._default ._dropdownSelect ._searchIcon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Phone Number Dropdown Search Icon Color',
+		displayName: 'Phone Number Dropdown Search Icon Color Design Outline',
+		name: 'phoneNumberDropdownSearchIconColorDesignOutline',
+		defaultValue: 'rgba(0,0,0,.4)',
+		cssProperty: 'color',
+		selector: '.comp.compPhoneNumber._outlined ._dropdownSelect ._searchIcon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Phone Number Dropdown Search Icon Color',
+		displayName: 'Phone Number Dropdown Search Icon Color Design Filled',
+		name: 'phoneNumberDropdownSearchIconColorDesignFilled',
+		defaultValue: '<fontColorTwo>',
+		cssProperty: 'color',
+		selector: '.comp.compPhoneNumber._filled ._dropdownSelect ._searchIcon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Phone Number Dropdown Search Icon Color',
+		displayName: 'Phone Number Dropdown Search Icon Color Design Big 1',
+		name: 'phoneNumberDropdownSearchIconColorDesignBig1',
+		defaultValue: 'rgba(0,0,0,.4)',
+		cssProperty: 'color',
+		selector: '.comp.compPhoneNumber._bigDesign1 ._dropdownSelect ._searchIcon',
 		noPrefix: true,
 	},
 
@@ -1483,7 +1616,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryPhoneNumberBorderColorDefaultDesignDefault',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._default._primary',
+		selector:
+			'.comp.compPhoneNumber._default._primary, .comp.compPhoneNumber._default._primary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1492,7 +1626,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryPhoneNumberBorderColorDefaultDesignDefault',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._default._secondary',
+		selector:
+			'.comp.compPhoneNumber._default._secondary, .comp.compPhoneNumber._default._secondary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1501,7 +1636,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryPhoneNumberBorderColorDefaultDesignDefault',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._default._tertiary',
+		selector:
+			'.comp.compPhoneNumber._default._quaternary, .comp.compPhoneNumber._default._quaternary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1510,7 +1646,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryPhoneNumberBorderColorDefaultDesignDefault',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._default._quaternary',
+		selector:
+			'.comp.compPhoneNumber._default._tertiary, .comp.compPhoneNumber._default._tertiary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1519,7 +1656,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryPhoneNumberBorderColorDefaultDesignDefault',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._default._quinary',
+		selector:
+			'.comp.compPhoneNumber._default._quinary, .comp.compPhoneNumber._default._quinary ._inputBox',
 		noPrefix: true,
 	},
 
@@ -1529,7 +1667,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryPhoneNumberBorderColorDefaultDesignOutline',
 		defaultValue: '<fontColorThree>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._outlined._primary',
+		selector:
+			'.comp.compPhoneNumber._outlined._primary, .comp.compPhoneNumber._outlined._primary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1538,7 +1677,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryPhoneNumberBorderColorDefaultDesignOutline',
 		defaultValue: '<fontColorFour>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._outlined._secondary',
+		selector:
+			'.comp.compPhoneNumber._outlined._secondary, .comp.compPhoneNumber._outlined._secondary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1547,7 +1687,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryPhoneNumberBorderColorDefaultDesignOutline',
 		defaultValue: '<fontColorFive>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._outlined._tertiary',
+		selector:
+			'.comp.compPhoneNumber._outlined._quaternary, .comp.compPhoneNumber._outlined._quaternary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1556,7 +1697,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryPhoneNumberBorderColorDefaultDesignOutline',
 		defaultValue: '<fontColorNine>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._outlined._quaternary',
+		selector:
+			'.comp.compPhoneNumber._outlined._tertiary, .comp.compPhoneNumber._outlined._tertiary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1565,7 +1707,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryPhoneNumberBorderColorDefaultDesignOutline',
 		defaultValue: '<fontColorSeven>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._outlined._quinary',
+		selector:
+			'.comp.compPhoneNumber._outlined._quinary, .comp.compPhoneNumber._outlined._quinary ._inputBox',
 		noPrefix: true,
 	},
 
@@ -1574,7 +1717,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Primary Phone Number Border Color Default Design Filled',
 		name: 'primaryPhoneNumberBorderColorDefaultDesignFilled',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._filled._primary',
+		selector:
+			'.comp.compPhoneNumber._filled._primary, .comp.compPhoneNumber._filled._primary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1582,7 +1726,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Secondary Phone Number Border Color Default Design Filled',
 		name: 'secondaryPhoneNumberBorderColorDefaultDesignFilled',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._filled._secondary',
+		selector:
+			'.comp.compPhoneNumber._filled._secondary, .comp.compPhoneNumber._filled._secondary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1590,7 +1735,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Tertiary Phone Number Border Color Default Design Filled',
 		name: 'tertiaryPhoneNumberBorderColorDefaultDesignFilled',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._filled._tertiary',
+		selector:
+			'.comp.compPhoneNumber._filled._quaternary, .comp.compPhoneNumber._filled._quaternary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1598,7 +1744,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Quaternary Phone Number Border Color Default Design Filled',
 		name: 'quaternaryPhoneNumberBorderColorDefaultDesignFilled',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._filled._quaternary',
+		selector:
+			'.comp.compPhoneNumber._filled._tertiary, .comp.compPhoneNumber._filled._tertiary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1606,7 +1753,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Quinary Phone Number Border Color Default Design Filled',
 		name: 'quinaryPhoneNumberBorderColorDefaultDesignFilled',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._filled._quinary',
+		selector:
+			'.comp.compPhoneNumber._filled._quinary, .comp.compPhoneNumber._filled._quinary ._inputBox',
 		noPrefix: true,
 	},
 
@@ -1616,7 +1764,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryPhoneNumberBorderColorDefaultDesignBig1',
 		defaultValue: '<fontColorEight>22',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._bigDesign1._primary',
+		selector:
+			'.comp.compPhoneNumber._bigDesign1._primary, .comp.compPhoneNumber._bigDesign1._primary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1625,7 +1774,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryPhoneNumberBorderColorDefaultDesignBig1',
 		defaultValue: '<fontColorEight>22',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._bigDesign1._secondary',
+		selector:
+			'.comp.compPhoneNumber._bigDesign1._secondary, .comp.compPhoneNumber._bigDesign1._secondary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1634,7 +1784,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryPhoneNumberBorderColorDefaultDesignBig1',
 		defaultValue: '<fontColorEight>22',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._bigDesign1._tertiary',
+		selector:
+			'.comp.compPhoneNumber._bigDesign1._quaternary, .comp.compPhoneNumber._bigDesign1._quaternary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1643,7 +1794,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryPhoneNumberBorderColorDefaultDesignBig1',
 		defaultValue: '<fontColorEight>22',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._bigDesign1._quaternary',
+		selector:
+			'.comp.compPhoneNumber._bigDesign1._tertiary, .comp.compPhoneNumber._bigDesign1._tertiary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1652,7 +1804,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryPhoneNumberBorderColorDefaultDesignBig1',
 		defaultValue: '<fontColorEight>22',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._bigDesign1._quinary',
+		selector:
+			'.comp.compPhoneNumber._bigDesign1._quinary, .comp.compPhoneNumber._bigDesign1._quinary ._inputBox',
 		noPrefix: true,
 	},
 
@@ -1662,7 +1815,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryPhoneNumberBorderColorActiveDesignDefault',
 		defaultValue: '<fontColorThree>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._default._isActive._primary',
+		selector:
+			'.comp.compPhoneNumber._default._isActive._primary, .comp.compPhoneNumber._default._isActive._primary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1671,7 +1825,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryPhoneNumberBorderColorActiveDesignDefault',
 		defaultValue: '<fontColorFour>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._default._isActive._secondary',
+		selector:
+			'.comp.compPhoneNumber._default._isActive._secondary, .comp.compPhoneNumber._default._isActive._secondary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1680,7 +1835,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryPhoneNumberBorderColorActiveDesignDefault',
 		defaultValue: '<fontColorFive>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._default._isActive._tertiary',
+		selector:
+			'.comp.compPhoneNumber._default._isActive._quaternary, .comp.compPhoneNumber._default._isActive._quaternary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1689,7 +1845,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryPhoneNumberBorderColorActiveDesignDefault',
 		defaultValue: '<fontColorNine>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._default._isActive._quaternary',
+		selector:
+			'.comp.compPhoneNumber._default._isActive._tertiary, .comp.compPhoneNumber._default._isActive._tertiary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1698,7 +1855,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryPhoneNumberBorderColorActiveDesignDefault',
 		defaultValue: '<fontColorSeven>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._default._isActive._quinary',
+		selector:
+			'.comp.compPhoneNumber._default._isActive._quinary, .comp.compPhoneNumber._default._isActive._quinary ._inputBox',
 		noPrefix: true,
 	},
 
@@ -1708,7 +1866,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryPhoneNumberBorderColorActiveDesignOutline',
 		defaultValue: '<fontColorThree>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._outlined._isActive._primary',
+		selector:
+			'.comp.compPhoneNumber._outlined._isActive._primary, .comp.compPhoneNumber._outlined._isActive._primary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1717,7 +1876,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryPhoneNumberBorderColorActiveDesignOutline',
 		defaultValue: '<fontColorFour>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._outlined._isActive._secondary',
+		selector:
+			'.comp.compPhoneNumber._outlined._isActive._secondary, .comp.compPhoneNumber._outlined._isActive._secondary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1726,7 +1886,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryPhoneNumberBorderColorActiveDesignOutline',
 		defaultValue: '<fontColorFive>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._outlined._isActive._tertiary',
+		selector:
+			'.comp.compPhoneNumber._outlined._isActive._quaternary, .comp.compPhoneNumber._outlined._isActive._quaternary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1735,7 +1896,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryPhoneNumberBorderColorActiveDesignOutline',
 		defaultValue: '<fontColorNine>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._outlined._isActive._quaternary',
+		selector:
+			'.comp.compPhoneNumber._outlined._isActive._tertiary, .comp.compPhoneNumber._outlined._isActive._tertiary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1744,7 +1906,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryPhoneNumberBorderColorActiveDesignOutline',
 		defaultValue: '<fontColorSeven>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._outlined._isActive._quinary',
+		selector:
+			'.comp.compPhoneNumber._outlined._isActive._quinary, .comp.compPhoneNumber._outlined._isActive._quinary ._inputBox',
 		noPrefix: true,
 	},
 
@@ -1753,7 +1916,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Primary Phone Number Border Color Active Design Filled',
 		name: 'primaryPhoneNumberBorderColorActiveDesignFilled',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._filled._isActive._primary',
+		selector:
+			'.comp.compPhoneNumber._filled._isActive._primary, .comp.compPhoneNumber._filled._isActive._primary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1761,7 +1925,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Secondary Phone Number Border Color Active Design Filled',
 		name: 'secondaryPhoneNumberBorderColorActiveDesignFilled',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._filled._isActive._secondary',
+		selector:
+			'.comp.compPhoneNumber._filled._isActive._secondary, .comp.compPhoneNumber._filled._isActive._secondary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1769,7 +1934,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Tertiary Phone Number Border Color Active Design Filled',
 		name: 'tertiaryPhoneNumberBorderColorActiveDesignFilled',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._filled._isActive._tertiary',
+		selector:
+			'.comp.compPhoneNumber._filled._isActive._quaternary, .comp.compPhoneNumber._filled._isActive._quaternary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1777,7 +1943,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Quaternary Phone Number Border Color Active Design Filled',
 		name: 'quaternaryPhoneNumberBorderColorActiveDesignFilled',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._filled._isActive._quaternary',
+		selector:
+			'.comp.compPhoneNumber._filled._isActive._tertiary, .comp.compPhoneNumber._filled._isActive._tertiary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1785,7 +1952,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Quinary Phone Number Border Color Active Design Filled',
 		name: 'quinaryPhoneNumberBorderColorActiveDesignFilled',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._filled._isActive._quinary',
+		selector:
+			'.comp.compPhoneNumber._filled._isActive._quinary, .comp.compPhoneNumber._filled._isActive._quinary ._inputBox',
 		noPrefix: true,
 	},
 
@@ -1795,7 +1963,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryPhoneNumberBorderColorActiveDesignBig1',
 		defaultValue: '<fontColorThree>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._bigDesign1._isActive._primary',
+		selector:
+			'.comp.compPhoneNumber._bigDesign1._isActive._primary, .comp.compPhoneNumber._bigDesign1._isActive._primary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1804,7 +1973,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryPhoneNumberBorderColorActiveDesignBig1',
 		defaultValue: '<fontColorFour>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._bigDesign1._isActive._secondary',
+		selector:
+			'.comp.compPhoneNumber._bigDesign1._isActive._secondary, .comp.compPhoneNumber._bigDesign1._isActive._secondary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1813,7 +1983,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryPhoneNumberBorderColorActiveDesignBig1',
 		defaultValue: '<fontColorFive>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._bigDesign1._isActive._tertiary',
+		selector:
+			'.comp.compPhoneNumber._bigDesign1._isActive._quaternary, .comp.compPhoneNumber._bigDesign1._isActive._quaternary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1822,7 +1993,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryPhoneNumberBorderColorActiveDesignBig1',
 		defaultValue: '<fontColorNine>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._bigDesign1._isActive._quaternary',
+		selector:
+			'.comp.compPhoneNumber._bigDesign1._isActive._tertiary, .comp.compPhoneNumber._bigDesign1._isActive._tertiary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1831,7 +2003,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryPhoneNumberBorderColorActiveDesignBig1',
 		defaultValue: '<fontColorSeven>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._bigDesign1._isActive._quinary',
+		selector:
+			'.comp.compPhoneNumber._bigDesign1._isActive._quinary, .comp.compPhoneNumber._bigDesign1._isActive._quinary ._inputBox',
 		noPrefix: true,
 	},
 
@@ -1841,7 +2014,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryPhoneNumberBorderColorHasValueDesignDefault',
 		defaultValue: '<fontColorThree>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._default._hasValue._primary',
+		selector:
+			'.comp.compPhoneNumber._default._hasValue._primary, .comp.compPhoneNumber._default._hasValue._primary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1850,7 +2024,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryPhoneNumberBorderColorHasValueDesignDefault',
 		defaultValue: '<fontColorFour>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._default._hasValue._secondary',
+		selector:
+			'.comp.compPhoneNumber._default._hasValue._secondary, .comp.compPhoneNumber._default._hasValue._secondary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1859,7 +2034,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryPhoneNumberBorderColorHasValueDesignDefault',
 		defaultValue: '<fontColorFive>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._default._hasValue._tertiary',
+		selector:
+			'.comp.compPhoneNumber._default._hasValue._quaternary, .comp.compPhoneNumber._default._hasValue._quaternary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1868,7 +2044,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryPhoneNumberBorderColorHasValueDesignDefault',
 		defaultValue: '<fontColorNine>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._default._hasValue._quaternary',
+		selector:
+			'.comp.compPhoneNumber._default._hasValue._tertiary, .comp.compPhoneNumber._default._hasValue._tertiary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1877,7 +2054,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryPhoneNumberBorderColorHasValueDesignDefault',
 		defaultValue: '<fontColorSeven>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._default._hasValue._quinary',
+		selector:
+			'.comp.compPhoneNumber._default._hasValue._quinary, .comp.compPhoneNumber._default._hasValue._quinary ._inputBox',
 		noPrefix: true,
 	},
 
@@ -1887,7 +2065,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryPhoneNumberBorderColorHasValueDesignOutline',
 		defaultValue: '<fontColorThree>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._outlined._hasValue._primary',
+		selector:
+			'.comp.compPhoneNumber._outlined._hasValue._primary, .comp.compPhoneNumber._outlined._hasValue._primary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1896,7 +2075,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryPhoneNumberBorderColorHasValueDesignOutline',
 		defaultValue: '<fontColorFour>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._outlined._hasValue._secondary',
+		selector:
+			'.comp.compPhoneNumber._outlined._hasValue._secondary, .comp.compPhoneNumber._outlined._hasValue._secondary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1905,7 +2085,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryPhoneNumberBorderColorHasValueDesignOutline',
 		defaultValue: '<fontColorFive>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._outlined._hasValue._tertiary',
+		selector:
+			'.comp.compPhoneNumber._outlined._hasValue._quaternary, .comp.compPhoneNumber._outlined._hasValue._quaternary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1914,7 +2095,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryPhoneNumberBorderColorHasValueDesignOutline',
 		defaultValue: '<fontColorNine>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._outlined._hasValue._quaternary',
+		selector:
+			'.comp.compPhoneNumber._outlined._hasValue._tertiary, .comp.compPhoneNumber._outlined._hasValue._tertiary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1923,7 +2105,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryPhoneNumberBorderColorHasValueDesignOutline',
 		defaultValue: '<fontColorSeven>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._outlined._hasValue._quinary',
+		selector:
+			'.comp.compPhoneNumber._outlined._hasValue._quinary, .comp.compPhoneNumber._outlined._hasValue._quinary ._inputBox',
 		noPrefix: true,
 	},
 
@@ -1932,7 +2115,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Primary Phone Number Border Color Has Value Design Filled',
 		name: 'primaryPhoneNumberBorderColorHasValueDesignFilled',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._filled._hasValue._primary',
+		selector:
+			'.comp.compPhoneNumber._filled._hasValue._primary, .comp.compPhoneNumber._filled._hasValue._primary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1940,7 +2124,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Secondary Phone Number Border Color Has Value Design Filled',
 		name: 'secondaryPhoneNumberBorderColorHasValueDesignFilled',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._filled._hasValue._secondary',
+		selector:
+			'.comp.compPhoneNumber._filled._hasValue._secondary, .comp.compPhoneNumber._filled._hasValue._secondary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1948,7 +2133,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Tertiary Phone Number Border Color Has Value Design Filled',
 		name: 'tertiaryPhoneNumberBorderColorHasValueDesignFilled',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._filled._hasValue._tertiary',
+		selector:
+			'.comp.compPhoneNumber._filled._hasValue._quaternary, .comp.compPhoneNumber._filled._hasValue._quaternary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1956,7 +2142,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Quaternary Phone Number Border Color Has Value Design Filled',
 		name: 'quaternaryPhoneNumberBorderColorHasValueDesignFilled',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._filled._hasValue._quaternary',
+		selector:
+			'.comp.compPhoneNumber._filled._hasValue._tertiary, .comp.compPhoneNumber._filled._hasValue._tertiary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1964,7 +2151,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Quinary Phone Number Border Color Has Value Design Filled',
 		name: 'quinaryPhoneNumberBorderColorHasValueDesignFilled',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._filled._hasValue._quinary',
+		selector:
+			'.comp.compPhoneNumber._filled._hasValue._quinary, .comp.compPhoneNumber._filled._hasValue._quinary ._inputBox',
 		noPrefix: true,
 	},
 
@@ -1974,7 +2162,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryPhoneNumberBorderColorHasValueDesignBig1',
 		defaultValue: '<fontColorThree>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._bigDesign1._hasValue._primary',
+		selector:
+			'.comp.compPhoneNumber._bigDesign1._hasValue._primary, .comp.compPhoneNumber._bigDesign1._hasValue._primary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1983,7 +2172,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryPhoneNumberBorderColorHasValueDesignBig1',
 		defaultValue: '<fontColorFour>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._bigDesign1._hasValue._secondary',
+		selector:
+			'.comp.compPhoneNumber._bigDesign1._hasValue._secondary, .comp.compPhoneNumber._bigDesign1._hasValue._secondary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -1992,7 +2182,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryPhoneNumberBorderColorHasValueDesignBig1',
 		defaultValue: '<fontColorFive>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._bigDesign1._hasValue._tertiary',
+		selector:
+			'.comp.compPhoneNumber._bigDesign1._hasValue._quaternary, .comp.compPhoneNumber._bigDesign1._hasValue._quaternary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -2001,7 +2192,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryPhoneNumberBorderColorHasValueDesignBig1',
 		defaultValue: '<fontColorNine>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._bigDesign1._hasValue._quaternary',
+		selector:
+			'.comp.compPhoneNumber._bigDesign1._hasValue._tertiary, .comp.compPhoneNumber._bigDesign1._hasValue._tertiary ._inputBox',
 		noPrefix: true,
 	},
 	{
@@ -2010,7 +2202,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryPhoneNumberBorderColorHasValueDesignBig1',
 		defaultValue: '<fontColorSeven>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._bigDesign1._hasValue._quinary',
+		selector:
+			'.comp.compPhoneNumber._bigDesign1._hasValue._quinary, .comp.compPhoneNumber._bigDesign1._hasValue._quinary ._inputBox',
 		noPrefix: true,
 	},
 
@@ -2194,167 +2387,206 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 
 	{
-		groupName: 'Phone Number Dropdown Search Box Border Color',
-		displayName: 'Primary Phone Number Dropdown Search Box Border Color Design Default',
-		name: 'primaryPhoneNumberDropdownSearchBoxBorderColorDesignDefault',
+		groupName: 'Phone Number Dropdown Search Box Container Border Color',
+		displayName:
+			'Primary Phone Number Dropdown Search Box Container Border Color Design Default',
+		name: 'primaryPhoneNumberDropdownSearchBoxContainerBorderColorDesignDefault',
+		defaultValue: 'rgb(0,0,0,.07)',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._default._primary ._dropdownBody ._dropdownSearchBox',
+		selector: '.comp.compPhoneNumber._default._primary ._dropdownBody ._searchBoxContainer',
 		noPrefix: true,
 	},
 	{
-		groupName: 'Phone Number Dropdown Search Box Border Color',
-		displayName: 'Secondary Phone Number Dropdown Search Box Border Color Design Default',
-		name: 'secondaryPhoneNumberDropdownSearchBoxBorderColorDesignDefault',
+		groupName: 'Phone Number Dropdown Search Box Container Border Color',
+		displayName:
+			'Secondary Phone Number Dropdown Search Box Container Border Color Design Default',
+		name: 'secondaryPhoneNumberDropdownSearchBoxContainerBorderColorDesignDefault',
+		defaultValue: 'rgb(0,0,0,.07)',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._default._secondary ._dropdownBody ._dropdownSearchBox',
+		selector: '.comp.compPhoneNumber._default._secondary ._dropdownBody ._searchBoxContainer',
 		noPrefix: true,
 	},
 	{
-		groupName: 'Phone Number Dropdown Search Box Border Color',
-		displayName: 'Tertiary Phone Number Dropdown Search Box Border Color Design Default',
-		name: 'tertiaryPhoneNumberDropdownSearchBoxBorderColorDesignDefault',
+		groupName: 'Phone Number Dropdown Search Box Container Border Color',
+		displayName:
+			'Tertiary Phone Number Dropdown Search Box Container Border Color Design Default',
+		name: 'tertiaryPhoneNumberDropdownSearchBoxContainerBorderColorDesignDefault',
+		defaultValue: 'rgb(0,0,0,.07)',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._default._tertiary ._dropdownBody ._dropdownSearchBox',
+		selector: '.comp.compPhoneNumber._default._tertiary ._dropdownBody ._searchBoxContainer',
 		noPrefix: true,
 	},
 	{
-		groupName: 'Phone Number Dropdown Search Box Border Color',
-		displayName: 'Quaternary Phone Number Dropdown Search Box Border Color Design Default',
-		name: 'quaternaryPhoneNumberDropdownSearchBoxBorderColorDesignDefault',
+		groupName: 'Phone Number Dropdown Search Box Container Border Color',
+		displayName:
+			'Quaternary Phone Number Dropdown Search Box Container Border Color Design Default',
+		name: 'quaternaryPhoneNumberDropdownSearchBoxContainerBorderColorDesignDefault',
+		defaultValue: 'rgb(0,0,0,.07)',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._default._quaternary ._dropdownBody ._dropdownSearchBox',
+		selector: '.comp.compPhoneNumber._default._quaternary ._dropdownBody ._searchBoxContainer',
 		noPrefix: true,
 	},
 	{
-		groupName: 'Phone Number Dropdown Search Box Border Color',
-		displayName: 'Quinary Phone Number Dropdown Search Box Border Color Design Default',
-		name: 'quinaryPhoneNumberDropdownSearchBoxBorderColorDesignDefault',
+		groupName: 'Phone Number Dropdown Search Box Container Border Color',
+		displayName:
+			'Quinary Phone Number Dropdown Search Box Container Border Color Design Default',
+		name: 'quinaryPhoneNumberDropdownSearchBoxContainerBorderColorDesignDefault',
+		defaultValue: 'rgb(0,0,0,.07)',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._default._quinary ._dropdownBody ._dropdownSearchBox',
-		noPrefix: true,
-	},
-
-	{
-		groupName: 'Phone Number Dropdown Search Box Border Color',
-		displayName: 'Primary Phone Number Dropdown Search Box Border Color Design Outline',
-		name: 'primaryPhoneNumberDropdownSearchBoxBorderColorDesignOutline',
-		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._outlined._primary ._dropdownBody ._dropdownSearchBox',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Phone Number Dropdown Search Box Border Color',
-		displayName: 'Secondary Phone Number Dropdown Search Box Border Color Design Outline',
-		name: 'secondaryPhoneNumberDropdownSearchBoxBorderColorDesignOutline',
-		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._outlined._secondary ._dropdownBody ._dropdownSearchBox',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Phone Number Dropdown Search Box Border Color',
-		displayName: 'Tertiary Phone Number Dropdown Search Box Border Color Design Outline',
-		name: 'tertiaryPhoneNumberDropdownSearchBoxBorderColorDesignOutline',
-		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._outlined._tertiary ._dropdownBody ._dropdownSearchBox',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Phone Number Dropdown Search Box Border Color',
-		displayName: 'Quaternary Phone Number Dropdown Search Box Border Color Design Outline',
-		name: 'quaternaryPhoneNumberDropdownSearchBoxBorderColorDesignOutline',
-		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._outlined._quaternary ._dropdownBody ._dropdownSearchBox',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Phone Number Dropdown Search Box Border Color',
-		displayName: 'Quinary Phone Number Dropdown Search Box Border Color Design Outline',
-		name: 'quinaryPhoneNumberDropdownSearchBoxBorderColorDesignOutline',
-		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._outlined._quinary ._dropdownBody ._dropdownSearchBox',
+		selector: '.comp.compPhoneNumber._default._quinary ._dropdownBody ._searchBoxContainer',
 		noPrefix: true,
 	},
 
 	{
-		groupName: 'Phone Number Dropdown Search Box Border Color',
-		displayName: 'Primary Phone Number Dropdown Search Box Border Color Design Filled',
-		name: 'primaryPhoneNumberDropdownSearchBoxBorderColorDesignFilled',
+		groupName: 'Phone Number Dropdown Search Box Container Border Color',
+		displayName:
+			'Primary Phone Number Dropdown Search Box Container Border Color Design Outline',
+		name: 'primaryPhoneNumberDropdownSearchBoxContainerBorderColorDesignOutline',
+		defaultValue: 'rgb(0,0,0,.07)',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._filled._primary ._dropdownBody ._dropdownSearchBox',
+		selector: '.comp.compPhoneNumber._outlined._primary ._dropdownBody ._searchBoxContainer',
 		noPrefix: true,
 	},
 	{
-		groupName: 'Phone Number Dropdown Search Box Border Color',
-		displayName: 'Secondary Phone Number Dropdown Search Box Border Color Design Filled',
-		name: 'secondaryPhoneNumberDropdownSearchBoxBorderColorDesignFilled',
+		groupName: 'Phone Number Dropdown Search Box Container Border Color',
+		displayName:
+			'Secondary Phone Number Dropdown Search Box Container Border Color Design Outline',
+		name: 'secondaryPhoneNumberDropdownSearchBoxContainerBorderColorDesignOutline',
+		defaultValue: 'rgb(0,0,0,.07)',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._filled._secondary ._dropdownBody ._dropdownSearchBox',
+		selector: '.comp.compPhoneNumber._outlined._secondary ._dropdownBody ._searchBoxContainer',
 		noPrefix: true,
 	},
 	{
-		groupName: 'Phone Number Dropdown Search Box Border Color',
-		displayName: 'Tertiary Phone Number Dropdown Search Box Border Color Design Filled',
-		name: 'tertiaryPhoneNumberDropdownSearchBoxBorderColorDesignFilled',
+		groupName: 'Phone Number Dropdown Search Box Container Border Color',
+		displayName:
+			'Tertiary Phone Number Dropdown Search Box Container Border Color Design Outline',
+		name: 'tertiaryPhoneNumberDropdownSearchBoxContainerBorderColorDesignOutline',
+		defaultValue: 'rgb(0,0,0,.07)',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._filled._tertiary ._dropdownBody ._dropdownSearchBox',
+		selector: '.comp.compPhoneNumber._outlined._tertiary ._dropdownBody ._searchBoxContainer',
 		noPrefix: true,
 	},
 	{
-		groupName: 'Phone Number Dropdown Search Box Border Color',
-		displayName: 'Quaternary Phone Number Dropdown Search Box Border Color Design Filled',
-		name: 'quaternaryPhoneNumberDropdownSearchBoxBorderColorDesignFilled',
+		groupName: 'Phone Number Dropdown Search Box Container Border Color',
+		displayName:
+			'Quaternary Phone Number Dropdown Search Box Container Border Color Design Outline',
+		name: 'quaternaryPhoneNumberDropdownSearchBoxContainerBorderColorDesignOutline',
+		defaultValue: 'rgb(0,0,0,.07)',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._filled._quaternary ._dropdownBody ._dropdownSearchBox',
+		selector: '.comp.compPhoneNumber._outlined._quaternary ._dropdownBody ._searchBoxContainer',
 		noPrefix: true,
 	},
 	{
-		groupName: 'Phone Number Dropdown Search Box Border Color',
-		displayName: 'Quinary Phone Number Dropdown Search Box Border Color Design Filled',
-		name: 'quinaryPhoneNumberDropdownSearchBoxBorderColorDesignFilled',
+		groupName: 'Phone Number Dropdown Search Box Container Border Color',
+		displayName:
+			'Quinary Phone Number Dropdown Search Box Container Border Color Design Outline',
+		name: 'quinaryPhoneNumberDropdownSearchBoxContainerBorderColorDesignOutline',
+		defaultValue: 'rgb(0,0,0,.07)',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._filled._quinary ._dropdownBody ._dropdownSearchBox',
+		selector: '.comp.compPhoneNumber._outlined._quinary ._dropdownBody ._searchBoxContainer',
 		noPrefix: true,
 	},
 
 	{
-		groupName: 'Phone Number Dropdown Search Box Border Color',
-		displayName: 'Primary Phone Number Dropdown Search Box Border Color Design Big 1',
-		name: 'primaryPhoneNumberDropdownSearchBoxBorderColorDesignBig1',
+		groupName: 'Phone Number Dropdown Search Box Container Border Color',
+		displayName:
+			'Primary Phone Number Dropdown Search Box Container Border Color Design Filled',
+		name: 'primaryPhoneNumberDropdownSearchBoxContainerBorderColorDesignFilled',
+		defaultValue: '<fontColorTwo>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._bigDesign1._primary ._dropdownBody ._dropdownSearchBox',
+		selector: '.comp.compPhoneNumber._filled._primary ._dropdownBody ._searchBoxContainer',
 		noPrefix: true,
 	},
 	{
-		groupName: 'Phone Number Dropdown Search Box Border Color',
-		displayName: 'Secondary Phone Number Dropdown Search Box Border Color Design Big 1',
-		name: 'secondaryPhoneNumberDropdownSearchBoxBorderColorDesignBig1',
+		groupName: 'Phone Number Dropdown Search Box Container Border Color',
+		displayName:
+			'Secondary Phone Number Dropdown Search Box Container Border Color Design Filled',
+		name: 'secondaryPhoneNumberDropdownSearchBoxContainerBorderColorDesignFilled',
+		defaultValue: '<fontColorTwo>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._bigDesign1._secondary ._dropdownBody ._dropdownSearchBox',
+		selector: '.comp.compPhoneNumber._filled._secondary ._dropdownBody ._searchBoxContainer',
 		noPrefix: true,
 	},
 	{
-		groupName: 'Phone Number Dropdown Search Box Border Color',
-		displayName: 'Tertiary Phone Number Dropdown Search Box Border Color Design Big 1',
-		name: 'tertiaryPhoneNumberDropdownSearchBoxBorderColorDesignBig1',
+		groupName: 'Phone Number Dropdown Search Box Container Border Color',
+		displayName:
+			'Tertiary Phone Number Dropdown Search Box Container Border Color Design Filled',
+		name: 'tertiaryPhoneNumberDropdownSearchBoxContainerBorderColorDesignFilled',
+		defaultValue: '<fontColorTwo>',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._bigDesign1._tertiary ._dropdownBody ._dropdownSearchBox',
+		selector: '.comp.compPhoneNumber._filled._tertiary ._dropdownBody ._searchBoxContainer',
 		noPrefix: true,
 	},
 	{
-		groupName: 'Phone Number Dropdown Search Box Border Color',
-		displayName: 'Quaternary Phone Number Dropdown Search Box Border Color Design Big 1',
-		name: 'quaternaryPhoneNumberDropdownSearchBoxBorderColorDesignBig1',
+		groupName: 'Phone Number Dropdown Search Box Container Border Color',
+		displayName:
+			'Quaternary Phone Number Dropdown Search Box Container Border Color Design Filled',
+		name: 'quaternaryPhoneNumberDropdownSearchBoxContainerBorderColorDesignFilled',
+		defaultValue: '<fontColorTwo>',
+		cssProperty: 'border-color',
+		selector: '.comp.compPhoneNumber._filled._quaternary ._dropdownBody ._searchBoxContainer',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Phone Number Dropdown Search Box Container Border Color',
+		displayName:
+			'Quinary Phone Number Dropdown Search Box Container Border Color Design Filled',
+		name: 'quinaryPhoneNumberDropdownSearchBoxContainerBorderColorDesignFilled',
+		defaultValue: '<fontColorTwo>',
+		cssProperty: 'border-color',
+		selector: '.comp.compPhoneNumber._filled._quinary ._dropdownBody ._searchBoxContainer',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'Phone Number Dropdown Search Box Container Border Color',
+		displayName: 'Primary Phone Number Dropdown Search Box Container Border Color Design Big 1',
+		name: 'primaryPhoneNumberDropdownSearchBoxContainerBorderColorDesignBig1',
+		defaultValue: 'rgb(0,0,0,.07)',
+		cssProperty: 'border-color',
+		selector: '.comp.compPhoneNumber._bigDesign1._primary ._dropdownBody ._searchBoxContainer',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Phone Number Dropdown Search Box Container Border Color',
+		displayName:
+			'Secondary Phone Number Dropdown Search Box Container Border Color Design Big 1',
+		name: 'secondaryPhoneNumberDropdownSearchBoxContainerBorderColorDesignBig1',
+		defaultValue: 'rgb(0,0,0,.07)',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compPhoneNumber._bigDesign1._quaternary ._dropdownBody ._dropdownSearchBox',
+			'.comp.compPhoneNumber._bigDesign1._secondary ._dropdownBody ._searchBoxContainer',
 		noPrefix: true,
 	},
 	{
-		groupName: 'Phone Number Dropdown Search Box Border Color',
-		displayName: 'Quinary Phone Number Dropdown Search Box Border Color Design Big 1',
-		name: 'quinaryPhoneNumberDropdownSearchBoxBorderColorDesignBig1',
+		groupName: 'Phone Number Dropdown Search Box Container Border Color',
+		displayName:
+			'Tertiary Phone Number Dropdown Search Box Container Border Color Design Big 1',
+		name: 'tertiaryPhoneNumberDropdownSearchBoxContainerBorderColorDesignBig1',
+		defaultValue: 'rgb(0,0,0,.07)',
 		cssProperty: 'border-color',
-		selector: '.comp.compPhoneNumber._bigDesign1._quinary ._dropdownBody ._dropdownSearchBox',
+		selector: '.comp.compPhoneNumber._bigDesign1._tertiary ._dropdownBody ._searchBoxContainer',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Phone Number Dropdown Search Box Container Border Color',
+		displayName:
+			'Quaternary Phone Number Dropdown Search Box Container Border Color Design Big 1',
+		name: 'quaternaryPhoneNumberDropdownSearchBoxContainerBorderColorDesignBig1',
+		defaultValue: 'rgb(0,0,0,.07)',
+		cssProperty: 'border-color',
+		selector:
+			'.comp.compPhoneNumber._bigDesign1._quaternary ._dropdownBody ._searchBoxContainer',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Phone Number Dropdown Search Box Container Border Color',
+		displayName: 'Quinary Phone Number Dropdown Search Box Container Border Color Design Big 1',
+		name: 'quinaryPhoneNumberDropdownSearchBoxContainerBorderColorDesignBig1',
+		defaultValue: 'rgb(0,0,0,.07)',
+		cssProperty: 'border-color',
+		selector: '.comp.compPhoneNumber._bigDesign1._quinary ._dropdownBody ._searchBoxContainer',
 		noPrefix: true,
 	},
 
@@ -2362,6 +2594,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Seperator Border Color',
 		displayName: 'Primary Phone Number Dropdown Option Seperator Border Color Design Default',
 		name: 'primaryPhoneNumberDropdownOptionSeperatorBorderColorDesignDefault',
+		defaultValue: 'rgb(0,0,0,.07)',
 		cssProperty: 'border-color',
 		selector:
 			'.comp.compPhoneNumber._default._primary ._dropdownBody ._dropdownOption._nextSeperator',
@@ -2371,6 +2604,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Seperator Border Color',
 		displayName: 'Secondary Phone Number Dropdown Option Seperator Border Color Design Default',
 		name: 'secondaryPhoneNumberDropdownOptionSeperatorBorderColorDesignDefault',
+		defaultValue: 'rgb(0,0,0,.07)',
 		cssProperty: 'border-color',
 		selector:
 			'.comp.compPhoneNumber._default._secondary ._dropdownBody ._dropdownOption._nextSeperator',
@@ -2380,6 +2614,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Seperator Border Color',
 		displayName: 'Tertiary Phone Number Dropdown Option Seperator Border Color Design Default',
 		name: 'tertiaryPhoneNumberDropdownOptionSeperatorBorderColorDesignDefault',
+		defaultValue: 'rgb(0,0,0,.07)',
 		cssProperty: 'border-color',
 		selector:
 			'.comp.compPhoneNumber._default._tertiary ._dropdownBody ._dropdownOption._nextSeperator',
@@ -2390,6 +2625,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName:
 			'Quaternary Phone Number Dropdown Option Seperator Border Color Design Default',
 		name: 'quaternaryPhoneNumberDropdownOptionSeperatorBorderColorDesignDefault',
+		defaultValue: 'rgb(0,0,0,.07)',
 		cssProperty: 'border-color',
 		selector:
 			'.comp.compPhoneNumber._default._quaternary ._dropdownBody ._dropdownOption._nextSeperator',
@@ -2399,6 +2635,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Seperator Border Color',
 		displayName: 'Quinary Phone Number Dropdown Option Seperator Border Color Design Default',
 		name: 'quinaryPhoneNumberDropdownOptionSeperatorBorderColorDesignDefault',
+		defaultValue: 'rgb(0,0,0,.07)',
 		cssProperty: 'border-color',
 		selector:
 			'.comp.compPhoneNumber._default._quinary ._dropdownBody ._dropdownOption._nextSeperator',
@@ -2409,6 +2646,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Seperator Border Color',
 		displayName: 'Primary Phone Number Dropdown Option Seperator Border Color Design Outline',
 		name: 'primaryPhoneNumberDropdownOptionSeperatorBorderColorDesignOutline',
+		defaultValue: 'rgb(0,0,0,.07)',
 		cssProperty: 'border-color',
 		selector:
 			'.comp.compPhoneNumber._outlined._primary ._dropdownBody ._dropdownOption._nextSeperator',
@@ -2418,6 +2656,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Seperator Border Color',
 		displayName: 'Secondary Phone Number Dropdown Option Seperator Border Color Design Outline',
 		name: 'secondaryPhoneNumberDropdownOptionSeperatorBorderColorDesignOutline',
+		defaultValue: 'rgb(0,0,0,.07)',
 		cssProperty: 'border-color',
 		selector:
 			'.comp.compPhoneNumber._outlined._secondary ._dropdownBody ._dropdownOption._nextSeperator',
@@ -2427,6 +2666,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Seperator Border Color',
 		displayName: 'Tertiary Phone Number Dropdown Option Seperator Border Color Design Outline',
 		name: 'tertiaryPhoneNumberDropdownOptionSeperatorBorderColorDesignOutline',
+		defaultValue: 'rgb(0,0,0,.07)',
 		cssProperty: 'border-color',
 		selector:
 			'.comp.compPhoneNumber._outlined._tertiary ._dropdownBody ._dropdownOption._nextSeperator',
@@ -2437,6 +2677,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName:
 			'Quaternary Phone Number Dropdown Option Seperator Border Color Design Outline',
 		name: 'quaternaryPhoneNumberDropdownOptionSeperatorBorderColorDesignOutline',
+		defaultValue: 'rgb(0,0,0,.07)',
 		cssProperty: 'border-color',
 		selector:
 			'.comp.compPhoneNumber._outlined._quaternary ._dropdownBody ._dropdownOption._nextSeperator',
@@ -2446,6 +2687,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Seperator Border Color',
 		displayName: 'Quinary Phone Number Dropdown Option Seperator Border Color Design Outline',
 		name: 'quinaryPhoneNumberDropdownOptionSeperatorBorderColorDesignOutline',
+		defaultValue: 'rgb(0,0,0,.07)',
 		cssProperty: 'border-color',
 		selector:
 			'.comp.compPhoneNumber._outlined._quinary ._dropdownBody ._dropdownOption._nextSeperator',
@@ -2456,6 +2698,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Seperator Border Color',
 		displayName: 'Primary Phone Number Dropdown Option Seperator Border Color Design Filled',
 		name: 'primaryPhoneNumberDropdownOptionSeperatorBorderColorDesignFilled',
+		defaultValue: '<fontColorTwo>',
 		cssProperty: 'border-color',
 		selector:
 			'.comp.compPhoneNumber._filled._primary ._dropdownBody ._dropdownOption._nextSeperator',
@@ -2465,6 +2708,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Seperator Border Color',
 		displayName: 'Secondary Phone Number Dropdown Option Seperator Border Color Design Filled',
 		name: 'secondaryPhoneNumberDropdownOptionSeperatorBorderColorDesignFilled',
+		defaultValue: '<fontColorTwo>',
 		cssProperty: 'border-color',
 		selector:
 			'.comp.compPhoneNumber._filled._secondary ._dropdownBody ._dropdownOption._nextSeperator',
@@ -2474,6 +2718,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Seperator Border Color',
 		displayName: 'Tertiary Phone Number Dropdown Option Seperator Border Color Design Filled',
 		name: 'tertiaryPhoneNumberDropdownOptionSeperatorBorderColorDesignFilled',
+		defaultValue: '<fontColorTwo>',
 		cssProperty: 'border-color',
 		selector:
 			'.comp.compPhoneNumber._filled._tertiary ._dropdownBody ._dropdownOption._nextSeperator',
@@ -2483,6 +2728,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Seperator Border Color',
 		displayName: 'Quaternary Phone Number Dropdown Option Seperator Border Color Design Filled',
 		name: 'quaternaryPhoneNumberDropdownOptionSeperatorBorderColorDesignFilled',
+		defaultValue: '<fontColorTwo>',
 		cssProperty: 'border-color',
 		selector:
 			'.comp.compPhoneNumber._filled._quaternary ._dropdownBody ._dropdownOption._nextSeperator',
@@ -2492,6 +2738,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Seperator Border Color',
 		displayName: 'Quinary Phone Number Dropdown Option Seperator Border Color Design Filled',
 		name: 'quinaryPhoneNumberDropdownOptionSeperatorBorderColorDesignFilled',
+		defaultValue: '<fontColorTwo>',
 		cssProperty: 'border-color',
 		selector:
 			'.comp.compPhoneNumber._filled._quinary ._dropdownBody ._dropdownOption._nextSeperator',
@@ -2502,6 +2749,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Seperator Border Color',
 		displayName: 'Primary Phone Number Dropdown Option Seperator Border Color Design Big 1',
 		name: 'primaryPhoneNumberDropdownOptionSeperatorBorderColorDesignBig1',
+		defaultValue: 'rgb(0,0,0,.07)',
 		cssProperty: 'border-color',
 		selector:
 			'.comp.compPhoneNumber._bigDesign1._primary ._dropdownBody ._dropdownOption._nextSeperator',
@@ -2511,6 +2759,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Seperator Border Color',
 		displayName: 'Secondary Phone Number Dropdown Option Seperator Border Color Design Big 1',
 		name: 'secondaryPhoneNumberDropdownOptionSeperatorBorderColorDesignBig1',
+		defaultValue: 'rgb(0,0,0,.07)',
 		cssProperty: 'border-color',
 		selector:
 			'.comp.compPhoneNumber._bigDesign1._secondary ._dropdownBody ._dropdownOption._nextSeperator',
@@ -2520,6 +2769,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Seperator Border Color',
 		displayName: 'Tertiary Phone Number Dropdown Option Seperator Border Color Design Big 1',
 		name: 'tertiaryPhoneNumberDropdownOptionSeperatorBorderColorDesignBig1',
+		defaultValue: 'rgb(0,0,0,.07)',
 		cssProperty: 'border-color',
 		selector:
 			'.comp.compPhoneNumber._bigDesign1._tertiary ._dropdownBody ._dropdownOption._nextSeperator',
@@ -2529,6 +2779,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Seperator Border Color',
 		displayName: 'Quaternary Phone Number Dropdown Option Seperator Border Color Design Big 1',
 		name: 'quaternaryPhoneNumberDropdownOptionSeperatorBorderColorDesignBig1',
+		defaultValue: 'rgb(0,0,0,.07)',
 		cssProperty: 'border-color',
 		selector:
 			'.comp.compPhoneNumber._bigDesign1._quaternary ._dropdownBody ._dropdownOption._nextSeperator',
@@ -2538,6 +2789,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Seperator Border Color',
 		displayName: 'Quinary Phone Number Dropdown Option Seperator Border Color Design Big 1',
 		name: 'quinaryPhoneNumberDropdownOptionSeperatorBorderColorDesignBig1',
+		defaultValue: 'rgb(0,0,0,.07)',
 		cssProperty: 'border-color',
 		selector:
 			'.comp.compPhoneNumber._bigDesign1._quinary ._dropdownBody ._dropdownOption._nextSeperator',
@@ -3279,6 +3531,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Hovered Background',
 		displayName: 'Primary Phone Number Dropdown Option Hovered Background Design Default',
 		name: 'primaryPhoneNumberDropdownOptionHoveredBackgroundDesignDefault',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._default._primary ._dropdownBody ._dropdownOption._hovered',
@@ -3288,6 +3541,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Hovered Background',
 		displayName: 'Secondary Phone Number Dropdown Option Hovered Background Design Default',
 		name: 'secondaryPhoneNumberDropdownOptionHoveredBackgroundDesignDefault',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._default._secondary ._dropdownBody ._dropdownOption._hovered',
@@ -3297,6 +3551,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Hovered Background',
 		displayName: 'Tertiary Phone Number Dropdown Option Hovered Background Design Default',
 		name: 'tertiaryPhoneNumberDropdownOptionHoveredBackgroundDesignDefault',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._default._tertiary ._dropdownBody ._dropdownOption._hovered',
@@ -3306,6 +3561,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Hovered Background',
 		displayName: 'Quaternary Phone Number Dropdown Option Hovered Background Design Default',
 		name: 'quaternaryPhoneNumberDropdownOptionHoveredBackgroundDesignDefault',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._default._quaternary ._dropdownBody ._dropdownOption._hovered',
@@ -3315,6 +3571,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Hovered Background',
 		displayName: 'Quinary Phone Number Dropdown Option Hovered Background Design Default',
 		name: 'quinaryPhoneNumberDropdownOptionHoveredBackgroundDesignDefault',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._default._quinary ._dropdownBody ._dropdownOption._hovered',
@@ -3325,6 +3582,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Hovered Background',
 		displayName: 'Primary Phone Number Dropdown Option Hovered Background Design Outline',
 		name: 'primaryPhoneNumberDropdownOptionHoveredBackgroundDesignOutline',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._outlined._primary ._dropdownBody ._dropdownOption._hovered',
@@ -3334,6 +3592,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Hovered Background',
 		displayName: 'Secondary Phone Number Dropdown Option Hovered Background Design Outline',
 		name: 'secondaryPhoneNumberDropdownOptionHoveredBackgroundDesignOutline',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._outlined._secondary ._dropdownBody ._dropdownOption._hovered',
@@ -3343,6 +3602,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Hovered Background',
 		displayName: 'Tertiary Phone Number Dropdown Option Hovered Background Design Outline',
 		name: 'tertiaryPhoneNumberDropdownOptionHoveredBackgroundDesignOutline',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._outlined._tertiary ._dropdownBody ._dropdownOption._hovered',
@@ -3352,6 +3612,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Hovered Background',
 		displayName: 'Quaternary Phone Number Dropdown Option Hovered Background Design Outline',
 		name: 'quaternaryPhoneNumberDropdownOptionHoveredBackgroundDesignOutline',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._outlined._quaternary ._dropdownBody ._dropdownOption._hovered',
@@ -3361,6 +3622,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Hovered Background',
 		displayName: 'Quinary Phone Number Dropdown Option Hovered Background Design Outline',
 		name: 'quinaryPhoneNumberDropdownOptionHoveredBackgroundDesignOutline',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._outlined._quinary ._dropdownBody ._dropdownOption._hovered',
@@ -3371,6 +3633,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Hovered Background',
 		displayName: 'Primary Phone Number Dropdown Option Hovered Background Design Filled',
 		name: 'primaryPhoneNumberDropdownOptionHoveredBackgroundDesignFilled',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector: '.comp.compPhoneNumber._filled._primary ._dropdownBody ._dropdownOption._hovered',
 		noPrefix: true,
@@ -3379,6 +3642,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Hovered Background',
 		displayName: 'Secondary Phone Number Dropdown Option Hovered Background Design Filled',
 		name: 'secondaryPhoneNumberDropdownOptionHoveredBackgroundDesignFilled',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._filled._secondary ._dropdownBody ._dropdownOption._hovered',
@@ -3388,6 +3652,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Hovered Background',
 		displayName: 'Tertiary Phone Number Dropdown Option Hovered Background Design Filled',
 		name: 'tertiaryPhoneNumberDropdownOptionHoveredBackgroundDesignFilled',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._filled._tertiary ._dropdownBody ._dropdownOption._hovered',
@@ -3397,6 +3662,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Hovered Background',
 		displayName: 'Quaternary Phone Number Dropdown Option Hovered Background Design Filled',
 		name: 'quaternaryPhoneNumberDropdownOptionHoveredBackgroundDesignFilled',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._filled._quaternary ._dropdownBody ._dropdownOption._hovered',
@@ -3406,6 +3672,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Hovered Background',
 		displayName: 'Quinary Phone Number Dropdown Option Hovered Background Design Filled',
 		name: 'quinaryPhoneNumberDropdownOptionHoveredBackgroundDesignFilled',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector: '.comp.compPhoneNumber._filled._quinary ._dropdownBody ._dropdownOption._hovered',
 		noPrefix: true,
@@ -3415,6 +3682,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Hovered Background',
 		displayName: 'Primary Phone Number Dropdown Option Hovered Background Design Big 1',
 		name: 'primaryPhoneNumberDropdownOptionHoveredBackgroundDesignBig1',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._bigDesign1._primary ._dropdownBody ._dropdownOption._hovered',
@@ -3424,6 +3692,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Hovered Background',
 		displayName: 'Secondary Phone Number Dropdown Option Hovered Background Design Big 1',
 		name: 'secondaryPhoneNumberDropdownOptionHoveredBackgroundDesignBig1',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._bigDesign1._secondary ._dropdownBody ._dropdownOption._hovered',
@@ -3433,6 +3702,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Hovered Background',
 		displayName: 'Tertiary Phone Number Dropdown Option Hovered Background Design Big 1',
 		name: 'tertiaryPhoneNumberDropdownOptionHoveredBackgroundDesignBig1',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._bigDesign1._tertiary ._dropdownBody ._dropdownOption._hovered',
@@ -3442,6 +3712,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Hovered Background',
 		displayName: 'Quaternary Phone Number Dropdown Option Hovered Background Design Big 1',
 		name: 'quaternaryPhoneNumberDropdownOptionHoveredBackgroundDesignBig1',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._bigDesign1._quaternary ._dropdownBody ._dropdownOption._hovered',
@@ -3451,6 +3722,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Phone Number Dropdown Option Hovered Background',
 		displayName: 'Quinary Phone Number Dropdown Option Hovered Background Design Big 1',
 		name: 'quinaryPhoneNumberDropdownOptionHoveredBackgroundDesignBig1',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._bigDesign1._quinary ._dropdownBody ._dropdownOption._hovered',
@@ -3459,8 +3731,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 
 	{
 		groupName: 'Phone Number Dropdown Option Selected Background',
-		displayName: ' Phone Number Dropdown Option Selected Background Design Default',
-		name: ' PhoneNumberDropdownOptionSelectedBackgroundDesignDefault',
+		displayName: 'Primary Phone Number Dropdown Option Selected Background Design Default',
+		name: 'primaryPhoneNumberDropdownOptionSelectedBackgroundDesignDefault',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._default._primary ._dropdownBody ._dropdownOption._selected',
@@ -3468,8 +3741,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Phone Number Dropdown Option Selected Background',
-		displayName: ' Phone Number Dropdown Option Selected Background Design Default',
-		name: ' PhoneNumberDropdownOptionSelectedBackgroundDesignDefault',
+		displayName: 'Secondary Phone Number Dropdown Option Selected Background Design Default',
+		name: 'secondaryPhoneNumberDropdownOptionSelectedBackgroundDesignDefault',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._default._secondary ._dropdownBody ._dropdownOption._selected',
@@ -3477,8 +3751,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Phone Number Dropdown Option Selected Background',
-		displayName: ' Phone Number Dropdown Option Selected Background Design Default',
-		name: ' PhoneNumberDropdownOptionSelectedBackgroundDesignDefault',
+		displayName: 'Tertiary Phone Number Dropdown Option Selected Background Design Default',
+		name: 'tertiaryPhoneNumberDropdownOptionSelectedBackgroundDesignDefault',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._default._tertiary ._dropdownBody ._dropdownOption._selected',
@@ -3486,8 +3761,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Phone Number Dropdown Option Selected Background',
-		displayName: ' Phone Number Dropdown Option Selected Background Design Default',
-		name: ' PhoneNumberDropdownOptionSelectedBackgroundDesignDefault',
+		displayName: 'Quaternary Phone Number Dropdown Option Selected Background Design Default',
+		name: 'quaternaryPhoneNumberDropdownOptionSelectedBackgroundDesignDefault',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._default._quaternary ._dropdownBody ._dropdownOption._selected',
@@ -3495,8 +3771,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Phone Number Dropdown Option Selected Background',
-		displayName: ' Phone Number Dropdown Option Selected Background Design Default',
-		name: ' PhoneNumberDropdownOptionSelectedBackgroundDesignDefault',
+		displayName: 'Quinary Phone Number Dropdown Option Selected Background Design Default',
+		name: 'quinaryPhoneNumberDropdownOptionSelectedBackgroundDesignDefault',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._default._quinary ._dropdownBody ._dropdownOption._selected',
@@ -3505,8 +3782,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 
 	{
 		groupName: 'Phone Number Dropdown Option Selected Background',
-		displayName: ' Phone Number Dropdown Option Selected Background Design Outline',
-		name: ' PhoneNumberDropdownOptionSelectedBackgroundDesignOutline',
+		displayName: 'Primary Phone Number Dropdown Option Selected Background Design Outline',
+		name: 'primaryPhoneNumberDropdownOptionSelectedBackgroundDesignOutline',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._outlined._primary ._dropdownBody ._dropdownOption._selected',
@@ -3514,8 +3792,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Phone Number Dropdown Option Selected Background',
-		displayName: ' Phone Number Dropdown Option Selected Background Design Outline',
-		name: ' PhoneNumberDropdownOptionSelectedBackgroundDesignOutline',
+		displayName: 'Secondary Phone Number Dropdown Option Selected Background Design Outline',
+		name: 'secondaryPhoneNumberDropdownOptionSelectedBackgroundDesignOutline',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._outlined._secondary ._dropdownBody ._dropdownOption._selected',
@@ -3523,8 +3802,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Phone Number Dropdown Option Selected Background',
-		displayName: ' Phone Number Dropdown Option Selected Background Design Outline',
-		name: ' PhoneNumberDropdownOptionSelectedBackgroundDesignOutline',
+		displayName: 'Tertiary Phone Number Dropdown Option Selected Background Design Outline',
+		name: 'tertiaryPhoneNumberDropdownOptionSelectedBackgroundDesignOutline',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._outlined._tertiary ._dropdownBody ._dropdownOption._selected',
@@ -3532,8 +3812,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Phone Number Dropdown Option Selected Background',
-		displayName: ' Phone Number Dropdown Option Selected Background Design Outline',
-		name: ' PhoneNumberDropdownOptionSelectedBackgroundDesignOutline',
+		displayName: 'Quaternary Phone Number Dropdown Option Selected Background Design Outline',
+		name: 'quaternaryPhoneNumberDropdownOptionSelectedBackgroundDesignOutline',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._outlined._quaternary ._dropdownBody ._dropdownOption._selected',
@@ -3541,8 +3822,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Phone Number Dropdown Option Selected Background',
-		displayName: ' Phone Number Dropdown Option Selected Background Design Outline',
-		name: ' PhoneNumberDropdownOptionSelectedBackgroundDesignOutline',
+		displayName: 'Quinary Phone Number Dropdown Option Selected Background Design Outline',
+		name: 'quinaryPhoneNumberDropdownOptionSelectedBackgroundDesignOutline',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._outlined._quinary ._dropdownBody ._dropdownOption._selected',
@@ -3551,8 +3833,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 
 	{
 		groupName: 'Phone Number Dropdown Option Selected Background',
-		displayName: ' Phone Number Dropdown Option Selected Background Design Filled',
-		name: ' PhoneNumberDropdownOptionSelectedBackgroundDesignFilled',
+		displayName: 'Primary Phone Number Dropdown Option Selected Background Design Filled',
+		name: 'primaryPhoneNumberDropdownOptionSelectedBackgroundDesignFilled',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._filled._primary ._dropdownBody ._dropdownOption._selected',
@@ -3560,8 +3843,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Phone Number Dropdown Option Selected Background',
-		displayName: ' Phone Number Dropdown Option Selected Background Design Filled',
-		name: ' PhoneNumberDropdownOptionSelectedBackgroundDesignFilled',
+		displayName: 'Secondary Phone Number Dropdown Option Selected Background Design Filled',
+		name: 'secondaryPhoneNumberDropdownOptionSelectedBackgroundDesignFilled',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._filled._secondary ._dropdownBody ._dropdownOption._selected',
@@ -3569,8 +3853,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Phone Number Dropdown Option Selected Background',
-		displayName: ' Phone Number Dropdown Option Selected Background Design Filled',
-		name: ' PhoneNumberDropdownOptionSelectedBackgroundDesignFilled',
+		displayName: 'Tertiary Phone Number Dropdown Option Selected Background Design Filled',
+		name: 'tertiaryPhoneNumberDropdownOptionSelectedBackgroundDesignFilled',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._filled._tertiary ._dropdownBody ._dropdownOption._selected',
@@ -3578,8 +3863,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Phone Number Dropdown Option Selected Background',
-		displayName: ' Phone Number Dropdown Option Selected Background Design Filled',
-		name: ' PhoneNumberDropdownOptionSelectedBackgroundDesignFilled',
+		displayName: 'Quaternary Phone Number Dropdown Option Selected Background Design Filled',
+		name: 'quaternaryPhoneNumberDropdownOptionSelectedBackgroundDesignFilled',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._filled._quaternary ._dropdownBody ._dropdownOption._selected',
@@ -3587,8 +3873,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Phone Number Dropdown Option Selected Background',
-		displayName: ' Phone Number Dropdown Option Selected Background Design Filled',
-		name: ' PhoneNumberDropdownOptionSelectedBackgroundDesignFilled',
+		displayName: 'Quinary Phone Number Dropdown Option Selected Background Design Filled',
+		name: 'quinaryPhoneNumberDropdownOptionSelectedBackgroundDesignFilled',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._filled._quinary ._dropdownBody ._dropdownOption._selected',
@@ -3597,8 +3884,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 
 	{
 		groupName: 'Phone Number Dropdown Option Selected Background',
-		displayName: ' Phone Number Dropdown Option Selected Background Design Big 1',
-		name: ' PhoneNumberDropdownOptionSelectedBackgroundDesignBig1',
+		displayName: 'Primary Phone Number Dropdown Option Selected Background Design Big 1',
+		name: 'primaryPhoneNumberDropdownOptionSelectedBackgroundDesignBig1',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._bigDesign1._primary ._dropdownBody ._dropdownOption._selected',
@@ -3606,8 +3894,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Phone Number Dropdown Option Selected Background',
-		displayName: ' Phone Number Dropdown Option Selected Background Design Big 1',
-		name: ' PhoneNumberDropdownOptionSelectedBackgroundDesignBig1',
+		displayName: 'Secondary Phone Number Dropdown Option Selected Background Design Big 1',
+		name: 'secondaryPhoneNumberDropdownOptionSelectedBackgroundDesignBig1',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._bigDesign1._secondary ._dropdownBody ._dropdownOption._selected',
@@ -3615,8 +3904,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Phone Number Dropdown Option Selected Background',
-		displayName: ' Phone Number Dropdown Option Selected Background Design Big 1',
-		name: ' PhoneNumberDropdownOptionSelectedBackgroundDesignBig1',
+		displayName: 'Tertiary Phone Number Dropdown Option Selected Background Design Big 1',
+		name: 'tertiaryPhoneNumberDropdownOptionSelectedBackgroundDesignBig1',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._bigDesign1._tertiary ._dropdownBody ._dropdownOption._selected',
@@ -3624,8 +3914,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Phone Number Dropdown Option Selected Background',
-		displayName: ' Phone Number Dropdown Option Selected Background Design Big 1',
-		name: ' PhoneNumberDropdownOptionSelectedBackgroundDesignBig1',
+		displayName: 'Quaternary Phone Number Dropdown Option Selected Background Design Big 1',
+		name: 'quaternaryPhoneNumberDropdownOptionSelectedBackgroundDesignBig1',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._bigDesign1._quaternary ._dropdownBody ._dropdownOption._selected',
@@ -3633,8 +3924,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Phone Number Dropdown Option Selected Background',
-		displayName: ' Phone Number Dropdown Option Selected Background Design Big 1',
-		name: ' PhoneNumberDropdownOptionSelectedBackgroundDesignBig1',
+		displayName: 'Quinary Phone Number Dropdown Option Selected Background Design Big 1',
+		name: 'quinaryPhoneNumberDropdownOptionSelectedBackgroundDesignBig1',
+		defaultValue: 'rgba(51, 51, 51, 0.05)',
 		cssProperty: 'background',
 		selector:
 			'.comp.compPhoneNumber._bigDesign1._quinary ._dropdownBody ._dropdownOption._selected',
