@@ -12,7 +12,7 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 		position: relative;
 	}
 
-	${PREFIX} input {
+	${PREFIX} input._inputBox {
 		flex: 1;
 		height: 100%;
 		border: none;
@@ -85,7 +85,7 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 		bottom: 0px;
 	}
 
-	${PREFIX} ._clearText, ${PREFIX} ._passwordIcon {
+	${PREFIX} ._clearText {
 		cursor: pointer;
 	}
 
@@ -150,10 +150,19 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 	${PREFIX} ._dropdownBody ._searchIcon {
 		// color: rgba(0,0,0,.4);
 	}
-	${PREFIX} ._dropdownBody ._searchBox {
-		max-width: 100%;
+	${PREFIX} ._dropdownBody input._searchBox {
+		flex: 1;
 		height: 100%;
+		border: none;
+		font: inherit;
+		line-height: inherit;
+		outline: none;
+		padding: 0;
+		background: transparent;
+		color: inherit;
+		min-width: 20px;
 	}
+	
 	${PREFIX} ._dropdownBody ._dropdownOptionList {
 		flex: 1;
 		width: 100%;

@@ -343,20 +343,33 @@ function PhoneNumber(props: ComponentProps) {
 	useEffect(() => {
 		let tempList = [];
 		if (Array.isArray(countries) && Array.isArray(topCountries)) {
-			tempList = SORTED_COUNTRY_LIST.filter(e => topCountries.includes(e.C));
-			tempList[tempList.length - 1].nextSeperator = true;
-			tempList = [...tempList, ...SORTED_COUNTRY_LIST.filter(e => countries.includes(e.C))];
-		} else if (Array.isArray(topCountries)) {
-			tempList = SORTED_COUNTRY_LIST.filter(e => topCountries.includes(e.C));
+			tempList = duplicate(SORTED_COUNTRY_LIST).filter((e: DropdownOption) =>
+				topCountries.includes(e.C),
+			);
 			tempList[tempList.length - 1].nextSeperator = true;
 			tempList = [
 				...tempList,
-				...SORTED_COUNTRY_LIST.filter(e => !topCountries.includes(e.C)),
+				...duplicate(SORTED_COUNTRY_LIST).filter((e: DropdownOption) =>
+					countries.includes(e.C),
+				),
+			];
+		} else if (Array.isArray(topCountries)) {
+			tempList = duplicate(SORTED_COUNTRY_LIST).filter((e: DropdownOption) =>
+				topCountries.includes(e.C),
+			);
+			tempList[tempList.length - 1].nextSeperator = true;
+			tempList = [
+				...tempList,
+				...duplicate(SORTED_COUNTRY_LIST).filter(
+					(e: DropdownOption) => !topCountries.includes(e.C),
+				),
 			];
 		} else if (Array.isArray(countries)) {
-			tempList = SORTED_COUNTRY_LIST.filter(e => countries.includes(e.C));
+			tempList = duplicate(SORTED_COUNTRY_LIST).filter((e: DropdownOption) =>
+				countries.includes(e.C),
+			);
 		} else {
-			tempList = SORTED_COUNTRY_LIST;
+			tempList = duplicate(SORTED_COUNTRY_LIST);
 		}
 		setCountryList(tempList);
 	}, [countries, topCountries, SORTED_COUNTRY_LIST]);
@@ -427,7 +440,7 @@ function PhoneNumber(props: ComponentProps) {
 		callBlurEvent();
 		setFocus(false);
 	};
-	const handleNumberChange = async (
+	const handleChange = async (
 		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
 	) => {
 		let text = event.target.value;
@@ -487,7 +500,7 @@ function PhoneNumber(props: ComponentProps) {
 			hasFocusStyles={stylePropertiesWithPseudoStates?.focus}
 			validationMessages={validationMessages}
 			context={context}
-			handleChange={handleNumberChange}
+			handleChange={handleChange}
 			clearContentHandler={handleClickClose}
 			blurHandler={handleBlur}
 			keyUpHandler={handleKeyUp}
@@ -579,19 +592,25 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'dialCodeLabel',
-			displayName: 'Dial Code Label',
-			description: 'Dial Code Label',
-			icon: 'fa-solid fa-box',
-		},
-		{
 			name: 'dropdownBody',
 			displayName: 'Dropdown Body',
 			description: 'Dropdown Body',
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'dropdownSearchBox',
+			name: 'searchBoxContainer',
+			displayName: 'Dropdown Search Box Container',
+			description: 'Dropdown Search Box Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'searchIcon',
+			displayName: 'Dropdown Search Icon',
+			description: 'Dropdown Search Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'searchBox',
 			displayName: 'Dropdown Search Box',
 			description: 'Dropdown Search Box',
 			icon: 'fa-solid fa-box',

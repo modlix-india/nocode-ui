@@ -124,9 +124,17 @@ export function Dropdown({
 				>
 					<SubHelperComponent definition={definition} subComponentName="dropdownBody" />
 					{isSearchable && (
-						<div className="_searchBoxContainer">
+						<div
+							className="_searchBoxContainer"
+							style={computedStyles.searchBoxContainer}
+						>
+							<SubHelperComponent
+								definition={definition}
+								subComponentName="searchBoxContainer"
+							/>
 							<svg
 								className="_searchIcon"
+								style={computedStyles.searchIcon}
 								width="16"
 								height="16"
 								viewBox="0 0 16 16"
@@ -138,9 +146,13 @@ export function Dropdown({
 									fill="currentColor"
 									fillOpacity="1"
 								/>
+								<SubHelperComponent
+									definition={definition}
+									subComponentName="searchIcon"
+								/>
 							</svg>
 							<input
-								style={computedStyles.dropdownSearchBox}
+								style={computedStyles.searchBox}
 								className="_searchBox"
 								value={searchText}
 								placeholder={searchLabel}
@@ -160,7 +172,7 @@ export function Dropdown({
 							(o, i) => (
 								<div
 									style={computedStyles.dropdownOption ?? {}}
-									key={o.C + i}
+									key={o.D + '_' + o.C}
 									className={`_dropdownOption ${
 										i === currentOption ? '_hovered' : ''
 									} ${value.C === o.C ? '_selected' : ''} ${

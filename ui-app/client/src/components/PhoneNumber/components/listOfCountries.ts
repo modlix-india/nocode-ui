@@ -754,12 +754,12 @@ export const COUNTRY_LIST = [
 		C: 'IT',
 		F: [],
 	},
-	{
-		N: 'San Marino',
-		D: '+390549',
-		C: 'SM',
-		F: [],
-	},
+	// {
+	// 	N: 'San Marino',
+	// 	D: '+390549',
+	// 	C: 'SM',
+	// 	F: [],
+	// },
 	{
 		N: 'Romania',
 		D: '+40',
@@ -1503,3 +1503,14 @@ export const COUNTRY_LIST = [
 		F: [],
 	},
 ];
+
+// console.log(
+// 	'country with repeated dail code',
+// 	COUNTRY_LIST.filter(e => {
+// 		let cnt = COUNTRY_LIST.reduce((acc, e1) => {
+// 			if (e1.D === e.D && !e1.A) acc++;
+// 			return acc;
+// 		}, 0);
+// 		if (cnt > 1) return true;
+// 	}),
+// );
