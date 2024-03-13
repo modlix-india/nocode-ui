@@ -338,11 +338,6 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 	],
-	dialCodeLabel: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
-	],
 	dropdownBody: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,

@@ -23,7 +23,6 @@ import { styleDefaults } from './phoneNumberStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import { Dropdown, DropdownOption, DropdownOptions } from './components/Dropdown';
 import { COUNTRY_LIST } from './components/listOfCountries';
-import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 
 interface mapType {
 	[key: string]: any;

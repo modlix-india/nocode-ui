@@ -453,18 +453,19 @@ export const COUNTRY_LIST = [
 		C: 'MG',
 		F: [],
 	},
+	// problemetic
 	{
-		N: 'Mayotte/Réunion',
+		N: 'Mayotte',
 		D: '+262',
 		C: 'YT',
 		F: [3, 2, 2, 2],
 	},
-	// {
-	// 	N: 'Reunion',
-	// 	D: '+262',
-	// 	C: 'RE',
-	// 	F: [],
-	// },
+	{
+		N: 'Reunion',
+		D: '+262',
+		C: 'RE',
+		F: [3, 2, 2, 2],
+	},
 	{
 		N: 'Zimbabwe',
 		D: '+263',
@@ -864,18 +865,18 @@ export const COUNTRY_LIST = [
 	// Zone 5: South and Central Americas
 
 	// problemetic
-	// {
-	// 	N: 'Falkland Islands (Malvinas)',
-	// 	D: '+500',
-	// 	C: 'FK',
-	// 	F: [],
-	// },
-	// {
-	// 	N: 'South Georgia and the South Sandwich Islands',
-	// 	D: '+500',
-	// 	C: 'GS',
-	// 	F: [],
-	// },
+	{
+		N: 'Falkland Islands (Malvinas)',
+		D: '+500',
+		C: 'FK',
+		F: [],
+	},
+	{
+		N: 'South Georgia and the South Sandwich Islands',
+		D: '+500',
+		C: 'GS',
+		F: [],
+	},
 	{
 		N: 'Belize',
 		D: '+501',
@@ -978,25 +979,25 @@ export const COUNTRY_LIST = [
 		C: 'VE',
 		F: [],
 	},
-	//-----//
+	// problemetic
 	{
-		N: 'Guadeloupe, Saint Barthelemy and Saint Martin',
+		N: 'Guadeloupe',
 		D: '+590',
 		C: 'GP',
 		F: [],
 	},
-	// {
-	// 	N: 'Saint Barthelemy',
-	// 	D: '+590',
-	// 	C: 'BL',
-	// 	F: [],
-	// },
-	// {
-	// 	N: 'Saint Martin',
-	// 	D: '+590',
-	// 	C: 'MF',
-	// 	F: [],
-	// },
+	{
+		N: 'Saint Barthelemy',
+		D: '+590',
+		C: 'BL',
+		F: [],
+	},
+	{
+		N: 'Saint Martin',
+		D: '+590',
+		C: 'MF',
+		F: [],
+	},
 	{
 		N: 'Bolivia',
 		D: '+591',
@@ -1503,14 +1504,3 @@ export const COUNTRY_LIST = [
 		F: [],
 	},
 ];
-
-// console.log(
-// 	'country with repeated dail code',
-// 	COUNTRY_LIST.filter(e => {
-// 		let cnt = COUNTRY_LIST.reduce((acc, e1) => {
-// 			if (e1.D === e.D && !e1.A) acc++;
-// 			return acc;
-// 		}, 0);
-// 		if (cnt > 1) return true;
-// 	}),
-// );
