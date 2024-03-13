@@ -325,7 +325,39 @@ function setDeviceType() {
 	if (currentDevices === devicesString) return;
 	currentDevices = devicesString;
 	setData('Store.devices', newDevices);
+	setData('Store.window.innerWidth', window.innerWidth);
+	setData('Store.window.innerHeight', window.innerHeight);
+	setData('Store.window.outerWidth', window.outerWidth);
+	setData('Store.window.outerHeight', window.outerHeight);
+	setData('Store.window.screenWidth', window.screen.width);
+	setData('Store.window.screenHeight', window.screen.height);
+	setData('Store.window.devicePixelRatio', window.devicePixelRatio);
+	setData('Store.window.isLandscape', window.innerWidth > window.innerHeight);
+	setData('Store.window.isPortrait', window.innerWidth < window.innerHeight);
+	setData('Store.window.isMaximized', window.outerWidth === window.screen.width);
+	setData('Store.window.isMinimized', window.outerWidth === 0);
+	setData('Store.window.screenLeft', window.screenLeft);
+	setData('Store.window.screenTop', window.screenTop);
+	setScrollDetails();
+}
+
+function setScrollDetails() {
+	let size = document.body.scrollHeight - window.innerHeight;
+	setData(
+		'Store.window.scrollYPercentage',
+		size <= 0 ? 0 : 100 - (Math.round(((size - window.scrollY) * 100) / size) || 0),
+	);
+	setData('Store.window.scrollY', window.scrollY);
+
+	size = document.body.scrollWidth - window.innerWidth;
+	setData(
+		'Store.window.scrollXPercentage',
+		size <= 0 ? 0 : 100 - (Math.round(((size - window.scrollX) * 100) / size) || 0),
+	);
+
+	setData('Store.window.scrollX', window.scrollX);
 }
 
 setDeviceType();
 window.addEventListener('resize', setDeviceType);
+window.addEventListener('scroll', setScrollDetails);

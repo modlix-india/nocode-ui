@@ -119,6 +119,10 @@ export default class RepetetiveArray<T> implements Iterable<T> {
 		throw new Error('Index out of bounds');
 	}
 
+	public safeGet(index: number): T | undefined {
+		return index < this._length ? this.inMap.get(index) ?? this.defaultValue : undefined;
+	}
+
 	public set(index: number, value: T): void {
 		if (index < this._length) {
 			if (index === this._length) {
@@ -238,5 +242,14 @@ export default class RepetetiveArray<T> implements Iterable<T> {
 
 	public toJSON(): T[] {
 		return this.toArray();
+	}
+
+	public some(callbackfn: (value: T, index: number, array: T[]) => boolean): boolean {
+		for (let i = 0; i < this._length; i++) {
+			if (callbackfn(this.get(i) ?? this.defaultValue!, i, this.toArray())) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

@@ -37,7 +37,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		enumValues: [
 			{ name: 'regular', displayName: 'Regular (Line or Bar)' },
 			{ name: 'radial', displayName: 'Radial (Pie or Doughnut or Polar Area)' },
-			{ name: 'radar', displayName: 'Radar' },
+			{ name: 'radar', displayName: 'Radar (Circular or Polygon)' },
 			{ name: 'dot', displayName: 'Dot (Bubble or Scatter)' },
 			{ name: 'waffle', displayName: 'Waffle' },
 		],
@@ -113,12 +113,20 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		defaultValue: 'bottom',
 		displayName: 'X Axis Start Position',
-		group: ComponentPropertyGroup.DATA,
+		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
 			{ name: 'bottom', displayName: 'Bottom' },
 			{ name: 'top', displayName: 'Top' },
 			{ name: 'center', displayName: 'Center' },
+			{ name: 'y0', displayName: 'Y = 0' },
+			{ name: 'custom', displayName: 'Custom' },
 		],
+	},
+	{
+		name: 'xAxisStartCustomValue',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'X Axis Start Custom Value',
+		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
 		name: 'xAxisLabels',
@@ -186,7 +194,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'hideXAxis',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Hide X Axis',
-		group: ComponentPropertyGroup.DATA,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'hideXLines',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Hide X Lines',
+		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
 		name: 'xAxisTitle',
@@ -213,12 +227,20 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		defaultValue: 'left',
 		displayName: 'Y Axis Start Position',
-		group: ComponentPropertyGroup.DATA,
+		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
 			{ name: 'left', displayName: 'Left' },
 			{ name: 'right', displayName: 'Right' },
 			{ name: 'center', displayName: 'Center' },
+			{ name: 'x0', displayName: 'X = 0' },
+			{ name: 'custom', displayName: 'Custom' },
 		],
+	},
+	{
+		name: 'yAxisStartCustomValue',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Y Axsis Start Custom Value',
+		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
 		name: 'dataSetLabels',
@@ -310,7 +332,9 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{ name: 'dottedLine', displayName: 'Dotted Line - Regular' },
 			{ name: 'dashedLine', displayName: 'Dashed Line - Regular' },
 			{ name: 'longDashedLine', displayName: 'Long Dashed Line - Regular' },
-			{ name: 'steppedLine', displayName: 'Stepped Line - Regular' },
+			{ name: 'steppedLineBefore', displayName: 'Stepped Line - Regular' },
+			{ name: 'steppedLineAfter', displayName: 'Stepped Line After  - Regular' },
+			{ name: 'steppedLineMiddle', displayName: 'Stepped Line Middle - Regular' },
 			{ name: 'smoothLine', displayName: 'Smooth Line - Regular' },
 			{ name: 'smoothDottedLine', displayName: 'Smooth Dotted Line - Regular' },
 			{ name: 'smoothDashedLine', displayName: 'Smooth Dashed Line - Regular' },
@@ -330,7 +354,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'hideYAxis',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Hide Y Axis',
-		group: ComponentPropertyGroup.DATA,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'hideYLines',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Hide Y Lines',
+		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
 		name: 'yAxisTitle',
@@ -372,7 +402,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'dataSetPointType',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Point Type',
-		group: ComponentPropertyGroup.BASIC,
+		group: ComponentPropertyGroup.ADVANCED,
 		multiValued: true,
 		defaultValue: ['circle'],
 		enumValues: [
@@ -432,18 +462,25 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'animationTime',
 		schema: SCHEMA_NUM_COMP_PROP,
 		displayName: 'Animation Time (ms)',
+		defaultValue: 1000,
 		description:
 			'Animation Time in Milliseconds with values less than or equal to 0 for no animation',
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 
 	{
-		name: 'animationEasing',
+		name: 'animationTimingFunction',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Animation Easing',
+		displayName: 'Animation Timing Function',
 		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: 'linear',
-		enumValues: [{ name: 'linear', displayName: 'Linear' }],
+		enumValues: [
+			{ name: 'linear', displayName: 'Linear' },
+			{ name: 'ease', displayName: 'Ease' },
+			{ name: 'ease-in', displayName: 'Ease In' },
+			{ name: 'ease-out', displayName: 'Ease Out' },
+			{ name: 'ease-in-out', displayName: 'Ease In Out' },
+		],
 	},
 
 	{
@@ -507,6 +544,30 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 
+	{
+		name: 'radarType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Radar Type',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 'polygon',
+		enumValues: [
+			{ name: 'polygon', displayName: 'Polygon' },
+			{ name: 'circular', displayName: 'Circular' },
+		],
+	},
+
+	{
+		name: 'radialType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Radial Type',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 'stack',
+		enumValues: [
+			{ name: 'stack', displayName: 'Stacked' },
+			{ name: 'group', displayName: 'Grouped' },
+		],
+	},
+
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
@@ -518,24 +579,38 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 	],
 	xAxisLabel: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
 	],
 	yAxisLabel: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
 	],
 	legendLabel: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
+	],
+	legendRectangle: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
+	],
+	tooltip: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 	],
-	tooltip: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+	horizontalLines: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
+	],
+	verticalLines: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
 	],
 };
 

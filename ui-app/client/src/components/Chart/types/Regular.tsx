@@ -1,35 +1,57 @@
-import React, { useEffect, useMemo } from 'react';
-import { ChartData, ChartProperties, Dimension, makeChartDataFromProperties } from './common';
-import { PageStoreExtractor } from '../../../context/StoreContext';
-import { LocationHistory } from '../../../types/common';
 import { deepEqual } from '@fincity/kirun-js';
-import Grid from './chartComponents/Grid';
+import React from 'react';
+import { ChartData, ChartProperties, Dimension } from './common';
+import RegularDotChartGrid from './chartComponents/RegularDotChartGrid';
 
 export default function Regular({
 	properties,
-	chartDimension: { width, height },
+	containerDimension,
 	legendDimension,
-	locationHistory,
-	pageExtractor,
+	chartDimension,
+	hiddenDataSets,
+	chartData,
+	xAxisLabelStyle,
+	yAxisLabelStyle,
+	horizontalLinesStyle,
+	verticalLinesStyle,
 }: Readonly<{
 	properties: ChartProperties;
-	chartDimension: Dimension;
+	containerDimension: Dimension;
 	legendDimension: Dimension;
-	locationHistory: Array<LocationHistory>;
-	pageExtractor: PageStoreExtractor;
+	chartDimension: Dimension;
+	hiddenDataSets: Set<number>;
+	chartData?: ChartData;
+	xAxisLabelStyle: React.CSSProperties;
+	yAxisLabelStyle: React.CSSProperties;
+	horizontalLinesStyle: React.CSSProperties;
+	verticalLinesStyle: React.CSSProperties;
 }>) {
-	const [props, setProps] = React.useState<ChartProperties | undefined>();
-	const [chartData, setChartData] = React.useState<ChartData | undefined>(undefined);
+	const [drawAreaDimension, setDrawAreaDimension] = React.useState<Dimension>({
+		x: 0,
+		y: 0,
+		width: 0,
+		height: 0,
+	});
 
 	if (!chartData) return <></>;
 
-	if (width < 0 || height < 0) return <></>;
+	if (containerDimension.width < 0 || containerDimension.height < 0) return <></>;
 
-	return <> </>;
-
-	// return (
-	// 	<svg viewBox={`0 0 ${width} ${height}`} xmlns="http://www.w3.org/2000/svg">
-	// 		<Grid chartData={chartData} properties={properties} width={width} height={height} />
-	// 	</svg>
-	// );
+	return (
+		<>
+			<RegularDotChartGrid
+				properties={properties}
+				chartDimension={chartDimension}
+				hiddenDataSets={hiddenDataSets}
+				chartData={chartData}
+				onDrawAreaDimensionChange={d =>
+					setDrawAreaDimension(o => (deepEqual(d, o) ? o : d))
+				}
+				xAxisLabelStyle={xAxisLabelStyle}
+				yAxisLabelStyle={yAxisLabelStyle}
+				horizontalLinesStyle={horizontalLinesStyle}
+				verticalLinesStyle={verticalLinesStyle}
+			/>
+		</>
+	);
 }
