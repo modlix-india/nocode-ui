@@ -243,4 +243,13 @@ export default class RepetetiveArray<T> implements Iterable<T> {
 	public toJSON(): T[] {
 		return this.toArray();
 	}
+
+	public some(callbackfn: (value: T, index: number, array: T[]) => boolean): boolean {
+		for (let i = 0; i < this._length; i++) {
+			if (callbackfn(this.get(i) ?? this.defaultValue!, i, this.toArray())) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

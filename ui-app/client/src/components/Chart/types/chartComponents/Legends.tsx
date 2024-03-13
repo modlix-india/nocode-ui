@@ -3,9 +3,10 @@ import { shortUUID } from '../../../../util/shortUUID';
 import { ChartData, ChartProperties, Dimension } from '../common';
 import Animate from './Animate';
 
-const RECT_WIDTH = 20;
-const RECT_HEIGHT = 20;
+const RECT_WIDTH = 15;
+const RECT_HEIGHT = 15;
 const SPACE = 10;
+const NO_ANIMATION = 0;
 
 interface LegendGroupItem {
 	label: string;
@@ -15,6 +16,7 @@ interface LegendGroupItem {
 	fillOpacity: number;
 	strokeOpacity: number;
 	id?: string;
+	alreadyHidden?: boolean;
 }
 
 interface LegendRowColumn {
@@ -91,10 +93,25 @@ export default function Legends({
 			}
 
 			for (; i < old.length; i++) {
-				const older = { ...old[i] };
-				if (properties.legendPosition === 'left' || properties.legendPosition === 'right')
-					older.labelDimension.x = older.rectDimension.x = -100;
-				else older.labelDimension.y = older.rectDimension.y = -100;
+				const older = { ...old[i], alreadyHidden: true };
+				if (!old[i].alreadyHidden) {
+					switch (properties.legendPosition) {
+						case 'top':
+							older.labelDimension.y = older.rectDimension.y = -100;
+							break;
+						case 'bottom':
+							older.labelDimension.y = older.rectDimension.y =
+								containerDimension.height + 100;
+							break;
+						case 'left':
+							older.labelDimension.x = older.rectDimension.x = -100;
+							break;
+						case 'right':
+							older.labelDimension.x = older.rectDimension.x =
+								containerDimension.width + 100;
+							break;
+					}
+				}
 				legendGroups.push(older);
 			}
 
@@ -141,7 +158,7 @@ export default function Legends({
 						style={rectangleStyles}
 						x={legend.rectDimension.x ?? 0}
 						y={legend.rectDimension.y ?? 0}
-						duration={properties.animationTime}
+						duration={NO_ANIMATION ?? properties.animationTime}
 						easing={properties.animationTimingFunction}
 						onClick={
 							properties.disableLegendInteraction
@@ -160,7 +177,7 @@ export default function Legends({
 						alignmentBaseline="before-edge"
 						x={legend.labelDimension.x ?? 0}
 						y={legend.labelDimension.y ?? 0}
-						duration={properties.animationTime}
+						duration={NO_ANIMATION ?? properties.animationTime}
 						easing={properties.animationTimingFunction}
 						onClick={
 							properties.disableLegendInteraction
@@ -207,7 +224,7 @@ export default function Legends({
 									2
 							}
 							easing={properties.animationTimingFunction}
-							duration={properties.animationTime}
+							duration={NO_ANIMATION ?? properties.animationTime}
 							stroke="currentColor"
 							onClick={
 								properties.disableLegendInteraction

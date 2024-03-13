@@ -121,8 +121,16 @@ function Chart(props: Readonly<ComponentProps>) {
 
 	const x = properties.legendPosition === 'left' ? legendDimension.width : 0;
 	const y = properties.legendPosition === 'top' ? legendDimension.height : 0;
-	const width = containerDimension.width - legendDimension.width;
-	const height = containerDimension.height - legendDimension.height;
+	const width =
+		containerDimension.width -
+		(properties.legendPosition === 'left' || properties.legendPosition === 'right'
+			? legendDimension.width
+			: 0);
+	const height =
+		containerDimension.height -
+		(properties.legendPosition === 'top' || properties.legendPosition === 'bottom'
+			? legendDimension.height
+			: 0);
 
 	const chartDimension: Dimension = { x, y, width, height };
 

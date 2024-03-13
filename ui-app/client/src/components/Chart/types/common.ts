@@ -38,7 +38,9 @@ export enum DataSetStyle {
 	DottedLine = 'dottedLine',
 	DashedLine = 'dashedLine',
 	LongDashedLine = 'longDashedLine',
-	SteppedLine = 'steppedLine',
+	SteppedLineBefore = 'steppedLineBefore',
+	SteppedLineMiddle = 'steppedLineMiddle',
+	SteppedLineAfter = 'steppedLineAfter',
 	SmoothLine = 'smoothLine',
 	SmoothDottedLine = 'smoothDottedLine',
 	SmoothDashedLine = 'smoothDashedLine',
@@ -181,12 +183,14 @@ export interface ChartData {
 	xAxisMax?: number;
 	yAxisMin?: number;
 	yAxisMax?: number;
-	dataColors: RepetetiveArray<any>[];
-	fillOpacity: RepetetiveArray<any>[];
-	strokeOpacity: RepetetiveArray<any>[];
-	pointType: RepetetiveArray<any>[];
-	pointSize: RepetetiveArray<any>[];
-	dataSetStyles: RepetetiveArray<any>[];
+	dataColors: RepetetiveArray<string>[];
+	fillOpacity: RepetetiveArray<number>[];
+	strokeOpacity: RepetetiveArray<number>[];
+	pointType: RepetetiveArray<PointType>[];
+	pointSize: RepetetiveArray<number>[];
+	dataSetStyles: RepetetiveArray<DataSetStyle>[];
+	axisInverted: boolean;
+	hasBar?: boolean;
 }
 
 export function makeChartDataFromProperties(
@@ -207,18 +211,16 @@ export function makeChartDataFromProperties(
 	let xAxisMax: number | undefined;
 
 	if (properties.xAxisLabels) xAxisLabels = properties.xAxisLabels;
-	else {
-		if (Array.isArray(properties.data) && typeof properties.xAxisDataPath == 'string') {
-			xAxisLabels = properties.data.map(
-				simpleExtractor(properties.xAxisDataPath!, locationHistory, pageExtractor),
+	else if (Array.isArray(properties.data) && typeof properties.xAxisDataPath == 'string') {
+		xAxisLabels = properties.data.map(
+			simpleExtractor(properties.xAxisDataPath, locationHistory, pageExtractor),
+		);
+	} else if (properties.data && typeof properties.data === 'object') {
+		if (typeof properties.xAxisDataPath == 'string') {
+			xAxisLabels = Object.values(properties.data).map(
+				simpleExtractor(properties.xAxisDataPath, locationHistory, pageExtractor),
 			);
-		} else if (properties.data && typeof properties.data === 'object') {
-			if (typeof properties.xAxisDataPath == 'string') {
-				xAxisLabels = Object.values(properties.data).map(
-					simpleExtractor(properties.xAxisDataPath!, locationHistory, pageExtractor),
-				);
-			} else xAxisLabels = Object.keys(properties.data);
-		}
+		} else xAxisLabels = Object.keys(properties.data);
 	}
 	xAxisData = [...xAxisLabels];
 
@@ -271,19 +273,14 @@ export function makeChartDataFromProperties(
 				if (isNullValue(rangeData)) continue;
 				if (!yAxisData[i]?.length) yAxisData[i] = rangeData;
 				else
-					yAxisData[i] = yAxisData[i]
-						.map((val: any) =>
-							isNullValue(val) ? [] : Array.isArray(val) ? val : [val],
-						)
-						.map((val: any, index: number) =>
-							val.concat(
-								isNullValue(rangeData[index])
-									? []
-									: Array.isArray(rangeData[index])
-									? rangeData[index]
-									: [rangeData[index]],
-							),
-						);
+					yAxisData[i] = yAxisData[i].map((val: any, index: number) => {
+						if (isNullValue(val)) val = [];
+						else if (!Array.isArray(val)) val = [val];
+
+						if (isNullValue(rangeData[index])) return val;
+						if (Array.isArray(rangeData[index])) return val.concat(rangeData[index]);
+						return val.concat(rangeData[index]);
+					});
 			}
 		}
 
@@ -388,7 +385,7 @@ export function makeChartDataFromProperties(
 		}
 	}
 
-	const dataColors: RepetetiveArray<any>[] = getPathBasedValues(
+	const dataColors = getPathBasedValues(
 		properties.data,
 		dataSetColors,
 		properties.dataColorsPath,
@@ -397,7 +394,7 @@ export function makeChartDataFromProperties(
 		pageExtractor,
 	);
 
-	const fillOpacity: RepetetiveArray<any>[] = getPathBasedValues(
+	const fillOpacity = getPathBasedValues(
 		properties.data,
 		properties.dataSetFillOpacity ?? [],
 		properties.dataFillOpacityPath,
@@ -406,7 +403,7 @@ export function makeChartDataFromProperties(
 		pageExtractor,
 	);
 
-	const strokeOpacity: RepetetiveArray<any>[] = getPathBasedValues(
+	const strokeOpacity = getPathBasedValues(
 		properties.data,
 		properties.dataSetStrokeOpacity ?? [],
 		properties.dataStrokeOpacityPath,
@@ -415,7 +412,7 @@ export function makeChartDataFromProperties(
 		pageExtractor,
 	);
 
-	const pointType: RepetetiveArray<any>[] = getPathBasedValues(
+	const pointType = getPathBasedValues(
 		properties.data,
 		properties.dataSetPointType,
 		properties.dataPointTypePath,
@@ -424,7 +421,7 @@ export function makeChartDataFromProperties(
 		pageExtractor,
 	);
 
-	const pointSize: RepetetiveArray<any>[] = getPathBasedValues(
+	const pointSize = getPathBasedValues(
 		properties.data,
 		properties.dataSetPointSize ?? [],
 		properties.dataPointSizePath,
@@ -433,9 +430,9 @@ export function makeChartDataFromProperties(
 		pageExtractor,
 	);
 
-	const dataSetStyles: RepetetiveArray<any>[] = getPathBasedValues(
+	const dataSetStyles = getPathBasedValues(
 		properties.data,
-		[],
+		[] as DataSetStyle[],
 		properties.yAxisDataSetStyle,
 		yAxisData.length,
 		locationHistory,
@@ -459,17 +456,22 @@ export function makeChartDataFromProperties(
 		pointType,
 		pointSize,
 		dataSetStyles,
+		axisInverted: !!properties.invertAxis && properties.stackedAxis !== 'x',
+		hasBar:
+			properties.chartType === 'regular' &&
+			(dataSetStyles.length == 0 ||
+				dataSetStyles.some(styles => styles.some(style => style === 'bar'))),
 	};
 }
 
-function getPathBasedValues(
+function getPathBasedValues<T>(
 	data: any,
-	set: any[],
+	set: T[],
 	dataPaths: any[] | undefined,
 	numberOfDataSets: number,
 	locationHistory: Array<LocationHistory>,
 	pageExtractor: PageStoreExtractor,
-): RepetetiveArray<any>[] {
+): RepetetiveArray<T>[] {
 	if (!data) return [];
 	if (!Array.isArray(data) && typeof data !== 'object') return [];
 	const dataList = Array.isArray(data) ? data : Object.values(data);
@@ -479,7 +481,7 @@ function getPathBasedValues(
 		const result: RepetetiveArray<any>[] = [];
 		for (let i = 0; i < numberOfDataSets; i++) {
 			const temp = new RepetetiveArray<any>();
-			for (let j = 0; j < dataList.length; j++) {
+			for (const _ of dataList) {
 				temp.push(set[i % set.length]);
 			}
 			result.push(temp);
@@ -494,8 +496,8 @@ function getPathBasedValues(
 		const temp = new RepetetiveArray<any>();
 		const extractor = simpleExtractor(path, locationHistory, pageExtractor);
 
-		for (let i = 0; i < dataList.length; i++) {
-			let value = extractor(dataList[i]);
+		for (const element of dataList) {
+			let value = extractor(element);
 			if (isNullValue(value) && set?.length) temp.push(set[dataSetNum % set.length]);
 			else temp.push(value);
 		}

@@ -19,8 +19,8 @@ export default function Regular({
 	chartDimension: Dimension;
 	hiddenDataSets: Set<number>;
 	chartData?: ChartData;
-	xAxisLabelStyle?: React.CSSProperties;
-	yAxisLabelStyle?: React.CSSProperties;
+	xAxisLabelStyle: React.CSSProperties;
+	yAxisLabelStyle: React.CSSProperties;
 }>) {
 	const [drawAreaDimension, setDrawAreaDimension] = React.useState<Dimension>({
 		x: 0,
