@@ -153,6 +153,8 @@ function Chart(props: Readonly<ComponentProps>) {
 				chartData={chartData}
 				xAxisLabelStyle={resolvedStyles.xAxisLabel ?? {}}
 				yAxisLabelStyle={resolvedStyles.yAxisLabel ?? {}}
+				horizontalLinesStyle={resolvedStyles.horizontalLines ?? {}}
+				verticalLinesStyle={resolvedStyles.verticalLines ?? {}}
 			/>
 		);
 	}
@@ -306,6 +308,18 @@ const component: Component = {
 			name: 'tooltip',
 			displayName: 'Tooltip',
 			description: 'Tooltip',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'horizontalLines',
+			displayName: 'Horizontal Lines',
+			description: 'Horizontal Lines',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'verticalLines',
+			displayName: 'Vertical Lines',
+			description: 'Vertical Lines',
 			icon: 'fa fa-solid fa-box',
 		},
 	],

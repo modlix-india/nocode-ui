@@ -12,6 +12,8 @@ export default function Regular({
 	chartData,
 	xAxisLabelStyle,
 	yAxisLabelStyle,
+	horizontalLinesStyle,
+	verticalLinesStyle,
 }: Readonly<{
 	properties: ChartProperties;
 	containerDimension: Dimension;
@@ -21,6 +23,8 @@ export default function Regular({
 	chartData?: ChartData;
 	xAxisLabelStyle: React.CSSProperties;
 	yAxisLabelStyle: React.CSSProperties;
+	horizontalLinesStyle: React.CSSProperties;
+	verticalLinesStyle: React.CSSProperties;
 }>) {
 	const [drawAreaDimension, setDrawAreaDimension] = React.useState<Dimension>({
 		x: 0,
@@ -45,6 +49,8 @@ export default function Regular({
 				}
 				xAxisLabelStyle={xAxisLabelStyle}
 				yAxisLabelStyle={yAxisLabelStyle}
+				horizontalLinesStyle={horizontalLinesStyle}
+				verticalLinesStyle={verticalLinesStyle}
 			/>
 		</>
 	);

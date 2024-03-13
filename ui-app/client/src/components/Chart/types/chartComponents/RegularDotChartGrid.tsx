@@ -37,6 +37,8 @@ export default function RegularDotChartGrid({
 	chartData,
 	xAxisLabelStyle,
 	yAxisLabelStyle,
+	horizontalLinesStyle,
+	verticalLinesStyle,
 	onDrawAreaDimensionChange,
 }: Readonly<{
 	properties: ChartProperties;
@@ -46,6 +48,8 @@ export default function RegularDotChartGrid({
 	onDrawAreaDimensionChange: (dimension: Dimension) => void;
 	xAxisLabelStyle: React.CSSProperties;
 	yAxisLabelStyle: React.CSSProperties;
+	horizontalLinesStyle: React.CSSProperties;
+	verticalLinesStyle: React.CSSProperties;
 }>) {
 	const xAxisLabelRef = React.useRef<SVGTextElement>(null);
 	const yAxisLabelRef = React.useRef<SVGTextElement>(null);
@@ -112,30 +116,39 @@ export default function RegularDotChartGrid({
 	)
 		return <></>;
 
-	// console.log(chartData.xAxisLabels, xLabelData);
-
 	const labelCreator = useCallback(
-		(className: string, styles: CSSProperties) =>
-			({ dimension: { x, y, width }, label, id, oldX, oldY }: LabelItem) =>
+		(className: string, styles: CSSProperties, alignmentBaseline: 'middle' | 'hanging') =>
+			({ dimension: { x, y, width, height }, label, id, oldX, oldY }: LabelItem) =>
 				(
-					<Animate.Text
-						key={id}
-						duration={NO_ANIMATION ?? properties.animationTime}
-						easing={properties.animationTimingFunction}
-						x={x}
-						y={y}
-						oldX={oldX}
-						oldY={oldY}
-						className={className}
-						style={{
-							...styles,
-							transformOrigin: `${(x ?? 0) + width}px ${y}px`,
-						}}
-						fill="currentColor"
-						alignmentBaseline="before-edge"
-					>
-						{label}
-					</Animate.Text>
+					<>
+						<Animate.Text
+							key={id}
+							duration={NO_ANIMATION ?? properties.animationTime}
+							easing={properties.animationTimingFunction}
+							x={x}
+							y={y}
+							oldX={oldX}
+							oldY={oldY}
+							className={className}
+							style={{
+								...styles,
+								transformOrigin: `${(x ?? 0) + width}px ${y}px`,
+							}}
+							fill="currentColor"
+							alignmentBaseline={alignmentBaseline}
+						>
+							{label}
+						</Animate.Text>
+						<rect
+							x={x}
+							y={y}
+							width={width}
+							height={height}
+							fill="transparent"
+							stroke="black"
+							strokeWidth="1"
+						/>
+					</>
 				),
 		[NO_ANIMATION ?? properties.animationTime, properties.animationTimingFunction],
 	);
@@ -160,6 +173,7 @@ export default function RegularDotChartGrid({
 						style={styles}
 						stroke="currentColor"
 						strokeWidth={1}
+						strokeOpacity={0.5}
 					/>
 				),
 		[NO_ANIMATION ?? properties.animationTime, properties.animationTimingFunction],
@@ -187,16 +201,18 @@ export default function RegularDotChartGrid({
 				labelCreator(
 					(chartData.axisInverted ? 'y' : 'x') + 'LabelText',
 					chartData.axisInverted ? yAxisLabelStyle : xAxisLabelStyle,
+					'hanging',
 				),
 			)}
 			{yLabelData.map(
 				labelCreator(
 					(chartData.axisInverted ? 'x' : 'y') + 'LabelText',
 					chartData.axisInverted ? xAxisLabelStyle : yAxisLabelStyle,
+					'hanging',
 				),
 			)}
-			{horizontalLines.map(lineCreator('horizontalLine', {}))}
-			{verticalLines.map(lineCreator('verticalLine', {}))}
+			{horizontalLines.map(lineCreator('horizontalLine', horizontalLinesStyle))}
+			{verticalLines.map(lineCreator('verticalLine', verticalLinesStyle))}
 		</>
 	);
 }
@@ -225,12 +241,17 @@ function curryForLinesData(
 				newLines.push(older);
 				continue;
 			}
-			if (chartData.axisInverted)
-				old[i].x1 =
-					properties.xAxisStartPosition === 'bottom' ? -100 : chartDimension.width + 100;
-			else
-				old[i].y1 =
-					properties.xAxisStartPosition === 'bottom' ? -100 : chartDimension.height + 100;
+
+			if (old[i].x1 == old[i].x2) {
+				old[i].x2 = old[i].x1 = chartData.axisInverted
+					? chartDimension.height + 100
+					: chartDimension.height - 100;
+			} else {
+				old[i].y2 = old[i].y1 = chartData.axisInverted
+					? chartDimension.width + 100
+					: chartDimension.width - 100;
+			}
+
 			newLines.push(old[i]);
 		}
 
@@ -329,7 +350,7 @@ function makeYAxisLabels(
 	});
 }
 
-function addLocationToLabels(
+function addLocationToLabelsnMakeLines(
 	xLabels: LabelItem[],
 	yLabels: LabelItem[],
 	chartData: ChartData,
@@ -339,7 +360,10 @@ function addLocationToLabels(
 	maxHeight: number,
 	xAxisLabelRef: SVGTextElement,
 	yAxisLabelRef: SVGTextElement,
-): [LabelItem[], LabelItem[], number, number] {
+): [LabelItem[], LabelItem[], number, number, LineItem[], LineItem[]] {
+	const xLines: LineItem[] = [];
+	const yLines: LineItem[] = [];
+
 	if (properties.stackedAxis === 'x') {
 	} else {
 		let xAxisX: number = 0,
@@ -379,6 +403,33 @@ function addLocationToLabels(
 		let xAxisIncrement = (chartDimension.width - maxWidth) / xLabels.length;
 		let yAxisIncrement = (chartDimension.height - maxHeight) / yLabels.length;
 
+		if (!properties.hideXAxis) {
+			xLines.push({
+				x1:
+					(chartDimension.x ?? 0) +
+					(properties.yAxisStartPosition === 'left'
+						? maxWidth - (properties.yAxisHideTicks ? 0 : TICK_SIZE)
+						: 0),
+				y1:
+					(chartDimension.y ?? 0) +
+					(properties.xAxisStartPosition === 'top'
+						? maxHeight
+						: chartDimension.height - maxHeight),
+				x2:
+					(chartDimension.x ?? 0) +
+					(properties.yAxisStartPosition === 'right'
+						? chartDimension.width -
+						  maxWidth +
+						  (properties.yAxisHideTicks ? 0 : TICK_SIZE)
+						: chartDimension.width),
+				y2:
+					(chartDimension.y ?? 0) +
+					(properties.xAxisStartPosition === 'top'
+						? maxHeight
+						: chartDimension.height - maxHeight),
+			});
+		}
+
 		for (let i = 0; i < xLabels.length; i++) {
 			if (xLabels[i].dimension.width > xAxisIncrement) {
 				const label = xLabels[i].label.substring(0, xLabels[i].label.length / 2) + '...';
@@ -394,8 +445,8 @@ function addLocationToLabels(
 			xLabels[i].dimension.y =
 				xAxisY +
 				(properties.xAxisStartPosition === 'top'
-					? maxHeight - xLabels[i].dimension.height
-					: 0);
+					? maxHeight - xLabels[i].dimension.height - TICK_SIZE
+					: TICK_SIZE);
 		}
 
 		for (let i = 0; i < yLabels.length; i++) {
@@ -404,36 +455,30 @@ function addLocationToLabels(
 				(properties.yAxisStartPosition === 'right'
 					? 0
 					: maxWidth - yLabels[i].dimension.width);
-			yLabels[i].dimension.y =
-				yAxisY + yAxisIncrement * i + (yAxisIncrement - yLabels[i].dimension.height) / 2;
+			yLabels[i].dimension.y = yAxisY + yAxisIncrement * i;
+
+			if (!properties.hideYLines && i != 0) {
+				xLines.push({
+					x1:
+						(chartDimension.x ?? 0) +
+						(properties.yAxisStartPosition === 'left'
+							? maxWidth - (properties.yAxisHideTicks ? 0 : TICK_SIZE)
+							: 0),
+					y1: yAxisY + yAxisIncrement * i + yAxisIncrement / 2,
+					x2:
+						(chartDimension.x ?? 0) +
+						(properties.yAxisStartPosition === 'right'
+							? chartDimension.width -
+							  maxWidth +
+							  (properties.yAxisHideTicks ? 0 : TICK_SIZE)
+							: chartDimension.width),
+					y2: yAxisY + yAxisIncrement * i + yAxisIncrement / 2,
+				});
+			}
 		}
 	}
 
-	return [xLabels, yLabels, maxWidth, maxHeight];
-}
-
-function makeLines(
-	xLabels: LabelItem[],
-	yLabels: LabelItem[],
-	chartDimension: Dimension,
-	properties: ChartProperties,
-	maxWidth: number,
-	maxHeight: number,
-): [LineItem[], LineItem[]] {
-	if (properties.hideGrid) return [[], []];
-
-	const xLines: LineItem[] = [];
-
-	if (!properties.hideXAxis) {
-		for (let i = 0; i < xLabels.length; i++) {}
-	}
-
-	const yLines: LineItem[] = [];
-
-	if (!properties.hideYLines) {
-	}
-
-	return [xLines, yLines];
+	return [xLabels, yLabels, maxWidth, maxHeight, xLines, yLines];
 }
 
 function makeLabelsnLines(
@@ -451,29 +496,17 @@ function makeLabelsnLines(
 		chartDimension,
 	);
 
-	const labelDetails = addLocationToLabels(
+	return addLocationToLabelsnMakeLines(
 		xLabels,
 		yLabels,
 		chartData,
 		chartDimension,
 		properties,
-
 		maxWidth,
 		maxHeight,
 		xAxisLabelRef,
 		yAxisLabelRef,
 	);
-
-	const [xLines, yLines] = makeLines(
-		xLabels,
-		yLabels,
-		chartDimension,
-		properties,
-		maxWidth,
-		maxHeight,
-	);
-
-	return [...labelDetails, xLines, yLines];
 }
 function makeLabels(
 	properties: ChartProperties,
@@ -534,8 +567,8 @@ function makeLabels(
 		}
 	}
 
-	maxWidth += 5 + (properties.yAxisHideTicks ? 0 : TICK_SIZE);
-	maxHeight += 5 + (properties.xAxisHideTicks ? 0 : TICK_SIZE);
+	maxWidth += 5 + TICK_SIZE;
+	maxHeight += 5 + TICK_SIZE;
 
 	return [xLabels, yLabels, maxWidth, maxHeight];
 }
