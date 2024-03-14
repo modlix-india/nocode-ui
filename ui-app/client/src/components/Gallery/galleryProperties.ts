@@ -99,27 +99,27 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
 			{
-				name: 'Middle',
+				name: '_Middle',
 				displayName: 'Center',
 				description: 'arrow navigations button positioned on middle',
 			},
 			{
-				name: 'LeftTop',
+				name: '_LeftTop',
 				displayName: 'top left',
 				description: 'arrow navigations button positioned on top-Left',
 			},
 			{
-				name: 'RightTop',
+				name: '_RightTop',
 				displayName: 'top right',
 				description: 'arrow navigations button positioned on top-right ',
 			},
 			{
-				name: 'LeftBottom',
+				name: '_LeftBottom',
 				displayName: 'bottom left',
 				description: 'arrow navigations button positioned on bottom-left',
 			},
 			{
-				name: 'RightBottom',
+				name: '_RightBottom',
 				displayName: 'bottom right',
 				description: 'arrow navigations button positioned on  Bottom-right',
 			},
@@ -156,22 +156,22 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: 'Right',
 		enumValues: [
 			{
-				name: 'Top',
+				name: '_Top',
 				displayName: 'top',
 				description: 'slide navigations button positioned on top',
 			},
 			{
-				name: 'Right',
+				name: '_Right',
 				displayName: 'right',
 				description: 'slide navigations button positioned on right',
 			},
 			{
-				name: 'Bottom',
+				name: '_Bottom',
 				displayName: 'bottom',
 				description: 'slide navigations button positioned on bottom',
 			},
 			{
-				name: 'Left',
+				name: '_Left',
 				displayName: 'left',
 				description: 'slide navigations button positioned on left',
 			},

@@ -8,7 +8,7 @@ import {
 import { ComponentProps, ComponentPropertyDefinition } from '../../types/common';
 import { Component } from '../../types/common';
 import useDefinition from '../util/useDefinition';
-import GalleryStyles from './GalleryStyles';
+import GalleryStyle from './GalleryStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './galleryProperties';
 import Portal from '../Portal';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
@@ -218,14 +218,14 @@ function Gallery(props: ComponentProps) {
 					ref={previousSlide}
 				>
 					<img
-						className="slideImage"
+						className="_slideImage"
 						style={resolvedStyles?.slideImage ?? {}}
 						src={getSrcUrl(galleryData[transitionFrom!].src)}
 						alt="previousSlide"
 					/>
 					<SubHelperComponent
 						style={resolvedStyles.slideImage ?? {}}
-						className="slideImage"
+						className="_slideImage"
 						definition={props.definition}
 						subComponentName="slideImage"
 					/>
@@ -243,14 +243,14 @@ function Gallery(props: ComponentProps) {
 					ref={currentSlide}
 				>
 					<img
-						className="slideImage"
+						className="_slideImage"
 						style={resolvedStyles?.slideImage ?? {}}
 						src={getSrcUrl(galleryData[slideNum!].src)}
 						alt="CurrentSlide"
 					/>
 					<SubHelperComponent
 						style={resolvedStyles.slideImage ?? {}}
-						className="slideImage"
+						className="_slideImage"
 						definition={props.definition}
 						subComponentName="slideImage"
 					/>
@@ -264,7 +264,7 @@ function Gallery(props: ComponentProps) {
 					onClick={handleBubbling}
 				>
 					<img
-						className="slideImage"
+						className="_slideImage"
 						style={resolvedStyles?.slideImage ?? {}}
 						src={getSrcUrl(galleryData[slideNum!].src)}
 						alt="displayedImage"
@@ -275,7 +275,7 @@ function Gallery(props: ComponentProps) {
 					/>
 					<SubHelperComponent
 						style={resolvedStyles.slideImage ?? {}}
-						className="slideImage"
+						className="_slideImage"
 						definition={props.definition}
 						subComponentName="slideImage"
 					/>
@@ -477,10 +477,10 @@ function Gallery(props: ComponentProps) {
 		</>
 	);
 
-	const preview =
+	const previewComp =
 		previewMode === 'Preview' ? (
 			<div
-				className={`previewContainer ${position} ${showPreivew ? `show${position}` : ''}`}
+				className={`_previewContainer ${position} ${showPreivew ? `_show${position}` : ''}`}
 				style={resolvedStyles.previewContainer ?? {}}
 				onClick={handleBubbling}
 			>
@@ -488,11 +488,11 @@ function Gallery(props: ComponentProps) {
 					definition={props.definition}
 					subComponentName="previewContainer"
 				/>
-				<div className={`previewCloseIcon ${!showPreivew ? 'hide' : ''}`}>
+				<div className={`_previewCloseIcon ${!showPreivew ? '_hide' : ''}`}>
 					{previewCloseIcon}
 				</div>
 				<div
-					className={`previewList ${position} ${!showPreivew ? `hide${position}` : ''}`}
+					className={`_previewList ${position} ${!showPreivew ? `_hide${position}` : ''}`}
 					style={resolvedStyles.previewList ?? {}}
 				>
 					<SubHelperComponent
@@ -501,8 +501,8 @@ function Gallery(props: ComponentProps) {
 					/>
 					{galleryData?.map((each: any, index: number) => (
 						<div
-							className={`previewImageDiv ${position} ${
-								slideNum === index ? 'selected' : ''
+							className={`_previewImageDiv ${position} ${
+								slideNum === index ? '_selected' : ''
 							}`}
 							style={resolvedStyles.previewImageDiv ?? {}}
 							onClick={() => selectedImage(index)}
@@ -515,12 +515,12 @@ function Gallery(props: ComponentProps) {
 							<img
 								src={getSrcUrl(each?.src)}
 								alt={`${each?.name}}`}
-								className="previewImage"
+								className="_previewImage"
 								style={resolvedStyles.previewImage ?? {}}
 							/>
 							<SubHelperComponent
 								style={resolvedStyles.previewImage ?? {}}
-								className="previewImage"
+								className="_previewImage"
 								definition={props.definition}
 								subComponentName="previewImage"
 							/>
@@ -530,39 +530,39 @@ function Gallery(props: ComponentProps) {
 			</div>
 		) : null;
 
-	const thumbnail =
+	const thumbnailComp =
 		previewMode === 'Thumbnail' ? (
 			<div
-				className={`thumbnailContainer thumbnail${position} ${
+				className={`_thumbnailContainer _thumbnail${position} ${
 					!showThumbnail ? `hide${position}` : ''
-				} ${isZoomed ? 'imageZoomed' : ''}`}
+				} ${isZoomed ? '_imageZoomed' : ''}`}
 				style={resolvedStyles?.thumbnailContainer ?? {}}
 				onClick={handleBubbling}
 			>
 				<SubHelperComponent
 					definition={props.definition}
-					subComponentName="thumbnailContainer"
+					subComponentName="_thumbnailContainer"
 				/>
 				{galleryData?.map((each: any, index: number) => (
 					<div
-						className={`thumbnailImageDiv ${slideNum === index ? 'selected' : ''}`}
+						className={`_thumbnailImageDiv ${slideNum === index ? '_selected' : ''}`}
 						style={resolvedStyles?.thumbnailImageDiv ?? {}}
 						onClick={() => selectedImage(index)}
 						key={each[`${startingImage?.keyName}`]}
 					>
 						<SubHelperComponent
 							definition={props.definition}
-							subComponentName="thumbnailImageDiv"
+							subComponentName="_thumbnailImageDiv"
 						/>
 						<img
 							src={getSrcUrl(each?.src)}
 							alt={`${each?.name}}`}
-							className="thumbnailImage"
+							className="_thumbnailImage"
 							style={resolvedStyles?.thumbnailImage ?? {}}
 						/>
 						<SubHelperComponent
 							style={resolvedStyles.thumbnailImage ?? {}}
-							className="thumbnailImage"
+							className="_thumbnailImage"
 							definition={props.definition}
 							subComponentName="thumbnailImage"
 						/>
@@ -581,11 +581,11 @@ function Gallery(props: ComponentProps) {
 					ref={galleryRef}
 				>
 					<HelperComponent context={props.context} definition={props.definition} />
-					<div className={`mainContainer preview${position}`}>
-						<div className={`galleryContainer thumbnail${position}`}>
-							<div className={`galleryToolbar`} onClick={handleBubbling}>
+					<div className={`_mainContainer _preview${position}`}>
+						<div className={`_galleryContainer _thumbnail${position}`}>
+							<div className={`_galleryToolbar`} onClick={handleBubbling}>
 								<div
-									className="leftColumn"
+									className="_leftColumn"
 									style={resolvedStyles.toolbarLeftColumn ?? {}}
 								>
 									{`${slideNum + 1} / ${galleryData?.length}`}
@@ -595,7 +595,7 @@ function Gallery(props: ComponentProps) {
 									/>
 								</div>
 								<div
-									className="rightColumn"
+									className="_rightColumn"
 									style={resolvedStyles.toolbarRightColumn ?? {}}
 								>
 									{galleryTools}
@@ -606,17 +606,19 @@ function Gallery(props: ComponentProps) {
 								</div>
 							</div>
 							<div
-								className={`imageSliderContainer ${isZoomed ? 'imageZoomed' : ''}`}
+								className={`_imageSliderContainer ${
+									isZoomed ? '_imageZoomed' : ''
+								}`}
 								style={resolvedStyles?.imageSliderContainer ?? {}}
 							>
 								{showArrowButtons && (
 									<div
-										className={`arrowButtonsContainer ${arrowButtons}`}
+										className={`_arrowButtonsContainer ${arrowButtons}`}
 										style={resolvedStyles.arrowButtonsContainer ?? {}}
 										onClick={handleBubbling}
 									>
 										<i
-											className={`fa-solid fa-chevron-left button`}
+											className={`fa-solid fa-chevron-left _button`}
 											style={resolvedStyles.arrowButtons ?? {}}
 											onClick={() => prevImage()}
 										>
@@ -626,7 +628,7 @@ function Gallery(props: ComponentProps) {
 											/>
 										</i>
 										<i
-											className={` fa-solid fa-chevron-right button`}
+											className={` fa-solid fa-chevron-right _button`}
 											style={resolvedStyles.arrowButtons ?? {}}
 											onClick={() => nextImage()}
 										>
@@ -639,9 +641,9 @@ function Gallery(props: ComponentProps) {
 								)}
 								{showChildren}
 							</div>
-							{thumbnail}
+							{thumbnailComp}
 						</div>
-						{preview}
+						{previewComp}
 					</div>
 				</div>
 			</Portal>
@@ -657,7 +659,7 @@ const component: Component = {
 	component: Gallery,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
-	styleComponent: GalleryStyles,
+	styleComponent: GalleryStyle,
 	styleDefaults: styleDefaults,
 	styleProperties: stylePropertiesDefinition,
 	allowedChildrenType: new Map<string, number>([['', -1]]),

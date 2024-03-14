@@ -20,45 +20,45 @@ export default function GalleryStyle({ theme }: { theme: Map<string, Map<string,
       left: 0;  
       backdrop-filter: blur(${processStyleValueWithFunction(values.get('backdropFilter'), values)}) 
     }
-    ${PREFIX} .mainContainer {
+    ${PREFIX} ._mainContainer {
       width: 100%;
       height: 100vh;
       display: flex;
       flex-direction: row;
     }
-    ${PREFIX} .mainContainer.previewLeft {
+    ${PREFIX} ._mainContainer._previewLeft {
       flex-direction: row-reverse;
     }
-    ${PREFIX} .mainContainer.previewBottom {
+    ${PREFIX} ._mainContainer._previewBottom {
       flex-direction: column;
     }
-    ${PREFIX} .mainContainer.previewTop {
+    ${PREFIX} ._mainContainer._previewTop {
       flex-direction: column-reverse;
     }
-    ${PREFIX} .previewContainer {
+    ${PREFIX} ._previewContainer {
       position: relative;
       height: 100vh;
       max-width: 0px;
       max-height: none;
       transition: max-width .3s, max-height .3s;
     }
-    ${PREFIX} .previewContainer.Top , ${PREFIX} .previewContainer.Bottom {
+    ${PREFIX} ._previewContainer._Top , ${PREFIX} ._previewContainer._Bottom {
       height: auto;
       max-width: none;
       max-height: 0px;
     }
-    ${PREFIX} .previewContainer.showRight,  ${PREFIX} .previewContainer.showLeft {
+    ${PREFIX} ._previewContainer._showRight,  ${PREFIX} ._previewContainer._showLeft {
       max-width: 200px;
     }
-    ${PREFIX} .previewContainer.showTop,  ${PREFIX} .previewContainer.showBottom {
+    ${PREFIX} ._previewContainer._showTop,  ${PREFIX} ._previewContainer._showBottom {
       max-height: 140px;
     }
-    ${PREFIX} .previewList {
+    ${PREFIX} ._previewList {
       display: grid;
       grid-template-columns: auto auto;
       position: relative;
     }
-    ${PREFIX} .previewList.Top , ${PREFIX} .previewList.Bottom {
+    ${PREFIX} ._previewList._Top , ${PREFIX} ._previewList._Bottom {
       display: flex;
       justify-content: start;
       align-items:center;
@@ -68,49 +68,49 @@ export default function GalleryStyle({ theme }: { theme: Map<string, Map<string,
       height: 80px;
 
     }
-    ${PREFIX} .previewList.hideLeft, ${PREFIX} .previewList.Top.hideTop {
+    ${PREFIX} ._previewList._hideLeft, ${PREFIX} ._previewList._Top._hideTop {
       display: none;
     }
-    ${PREFIX} .previewImageDiv {
+    ${PREFIX} ._previewImageDiv {
       cursor: pointer;
       position: relative;
     }
-    ${PREFIX} .previewImageDiv.Top , ${PREFIX} .previewImageDiv.Bottom {
+    ${PREFIX} ._previewImageDiv._Top , ${PREFIX} ._previewImageDiv._Bottom {
       flex-shrink: 0;
     }
-    ${PREFIX} .previewImage {
+    ${PREFIX} ._previewImage {
       width: 100%;
       height: 100%;
       position: relative;
     }
-    ${PREFIX} .previewCloseIcon {
+    ${PREFIX} ._previewCloseIcon {
       display: flex;
       justify-content: end;
       cursor: pointer;
     }
-    ${PREFIX} .previewCloseIcon i {
+    ${PREFIX} ._previewCloseIcon i {
       position: relative;
     }
-    ${PREFIX} .previewCloseIcon.hideLeft, ${PREFIX} .previewCloseIcon.hideTop {
+    ${PREFIX} ._previewCloseIcon._hideLeft, ${PREFIX} ._previewCloseIcon._hideTop {
       display: none
     }
-    ${PREFIX} .galleryContainer {
+    ${PREFIX} ._galleryContainer {
       display: flex;
       flex: 1;
       flex-direction: column;
       align-items: center;
       position: relative;
     }
-    ${PREFIX} .galleryContainer.thumbnailTop {
+    ${PREFIX} ._galleryContainer._thumbnailTop {
       flex-direction: column-reverse;
     }
-    ${PREFIX} .galleryContainer.thumbnailRight {
+    ${PREFIX} ._galleryContainer._thumbnailRight {
       flex-direction: row;
     }
-    ${PREFIX} .galleryContainer.thumbnailLeft {
+    ${PREFIX} ._galleryContainer._thumbnailLeft {
       flex-direction: row-reverse;
     }
-    ${PREFIX} .galleryToolbar {
+    ${PREFIX} ._galleryToolbar {
       position: absolute;
       top: 0;
       right: 0;
@@ -119,23 +119,23 @@ export default function GalleryStyle({ theme }: { theme: Map<string, Map<string,
       justify-content: space-between;
       align-items: center;
     }
-    ${PREFIX} .galleryToolbar .rightColumn {
+    ${PREFIX} ._galleryToolbar ._rightColumn {
       display: flex;
       justify-content: flex-end;
       cursor: pointer;
       z-index: 9;
       position: relative;
     }
-    ${PREFIX} .galleryToolbar .rightColumn i {
+    ${PREFIX} ._galleryToolbar ._rightColumn i {
       cursor: pointer;
       position: relative;
       z-index: 10;
     }
-    ${PREFIX} .galleryToolbar .leftColumn {
+    ${PREFIX} ._galleryToolbar ._leftColumn {
       z-index: 9;
       position: relative;
     }
-    ${PREFIX} .thumbnailContainer {
+    ${PREFIX} ._thumbnailContainer {
       display: flex;
       justify-content: start;
       align-items: center;
@@ -145,51 +145,51 @@ export default function GalleryStyle({ theme }: { theme: Map<string, Map<string,
       transition: max-width .3s, max-height .3s, margin .3s;
       position: relative;
     }
-    ${PREFIX} .thumbnailContainer.imageZoomed {
+    ${PREFIX} ._thumbnailContainer._imageZoomed {
       z-index: -1;
     }
    
-    ${PREFIX} .thumbnailContainer.thumbnailRight, ${PREFIX} .thumbnailContainer.thumbnailLeft {
+    ${PREFIX} ._thumbnailContainer._thumbnailRight, ${PREFIX} ._thumbnailContainer._thumbnailLeft {
       flex-direction: column;
       width: auto;
       max-height: none;
       overflow-y: auto;
     }
-    ${PREFIX} .thumbnailContainer.thumbnailBottom.hideBottom,
-    ${PREFIX} .thumbnailContainer.thumbnailTop.hideTop {
+    ${PREFIX} ._thumbnailContainer._thumbnailBottom._hideBottom,
+    ${PREFIX} ._thumbnailContainer._thumbnailTop._hideTop {
       max-height: 0;
       margin: 0 auto;
     }
-    ${PREFIX} .thumbnailContainer.thumbnailRight.hideRight,
-    ${PREFIX} .thumbnailContainer.thumbnailLeft.hideLeft {
+    ${PREFIX} ._thumbnailContainer._thumbnailRight._hideRight,
+    ${PREFIX} ._thumbnailContainer._thumbnailLeft._hideLeft {
       max-width: 0;
       margin: 0;
     }
-    ${PREFIX} .thumbnailImageDiv {
+    ${PREFIX} ._thumbnailImageDiv {
       flex-shrink: 0;
       cursor: pointer;
       opacity: .5;
       position: relative;
     }
-    ${PREFIX} .thumbnailImageDiv.selected {
+    ${PREFIX} ._thumbnailImageDiv._selected {
       opacity: 1;
     }
-    ${PREFIX} .thumbnailImage {
+    ${PREFIX} ._thumbnailImage {
       width: 100%;
       height: 100%;
       position: relative;
     }
-    ${PREFIX} .imageSliderContainer {
+    ${PREFIX} ._imageSliderContainer {
       flex: 1;
       position: relative;
       width: 100%;
       height: 100%;
       overflow: hidden;
     }
-    ${PREFIX} .imageSliderContainer.imageZoomed {
+    ${PREFIX} ._imageSliderContainer._imageZoomed {
       overflow: visible;
     }
-    ${PREFIX} .imageSliderContainer ._eachSlide{
+    ${PREFIX} ._imageSliderContainer ._eachSlide{
       display: flex;
       justify-content: center;
       align-items: center;
@@ -199,12 +199,12 @@ export default function GalleryStyle({ theme }: { theme: Map<string, Map<string,
       width: 100%;
       transform: translateY(-50%);
     }
-    ${PREFIX} .slideImage {
+    ${PREFIX} ._slideImage {
       width: 100%;
       transition: transform .3s;
       position: relative;
     }
-    ${PREFIX} .arrowButtonsContainer {
+    ${PREFIX} ._arrowButtonsContainer {
       position: absolute;
       top: 50%;
       width: 100%;
@@ -214,31 +214,31 @@ export default function GalleryStyle({ theme }: { theme: Map<string, Map<string,
       align-items: center;
       z-index: 9;
     }
-    ${PREFIX} .arrowButtonsContainer.LeftTop {
+    ${PREFIX} ._arrowButtonsContainer._LeftTop {
       top: 10%;
       left: 0;
       width: auto;
 
     }
-    ${PREFIX} .arrowButtonsContainer.RightTop {
+    ${PREFIX} ._arrowButtonsContainer._RightTop {
       top: 10%;
       right: 0;
       width: auto;
     }
-    ${PREFIX} .arrowButtonsContainer.LeftBottom {
+    ${PREFIX} ._arrowButtonsContainer._LeftBottom {
       top: auto;
       bottom: 0;
       left: 0;
       width: auto;
     }
-    ${PREFIX} .arrowButtonsContainer.RightBottom {
+    ${PREFIX} ._arrowButtonsContainer._RightBottom {
       top: auto;
       bottom: 0;
       right: 0;
       width: auto;
     }
-    ${PREFIX} .button {
-      cursor:pointer;
+    ${PREFIX} ._button {
+      cursor: pointer;
       position: relative;
     }
 
