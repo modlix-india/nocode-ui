@@ -5,7 +5,10 @@ import { styleProperties, styleDefaults } from './galleryStyleProperties';
 
 const PREFIX = '.comp.compGallery';
 export default function GalleryStyles({ theme }: { theme: Map<string, Map<string, string>> }) {
-	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
+	const values = new Map<string, string>([
+		...Array.from(theme.get(StyleResolution.ALL) ?? []),
+		...Array.from(styleDefaults),
+	]);
 	const css =
 		`
     ${PREFIX} {

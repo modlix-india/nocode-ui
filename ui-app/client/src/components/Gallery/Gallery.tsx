@@ -238,9 +238,9 @@ function Gallery(props: ComponentProps) {
 							? '_reverse'
 							: ''
 					}`}
-					ref={currentSlide}
 					key={galleryData[slideNum][`${startingImage?.keyName}`]}
 					style={style}
+					ref={currentSlide}
 				>
 					<img
 						className="slideImage"
@@ -466,14 +466,110 @@ function Gallery(props: ComponentProps) {
 			<SubHelperComponent definition={props.definition} subComponentName="toolbarButton" />
 		</i>
 	) : null;
-	const galleryTools = [
-		zoomIcon,
-		autoPlayIcon,
-		fullScreenIcon,
-		thumbnailIcon,
-		previewIcon,
-		closeIcon,
-	];
+	const galleryTools = (
+		<>
+			{zoomIcon}
+			{autoPlayIcon}
+			{fullScreenIcon}
+			{thumbnailIcon}
+			{previewIcon}
+			{closeIcon}
+		</>
+	);
+
+	const preview =
+		previewMode === 'Preview' ? (
+			<div
+				className={`previewContainer ${position} ${showPreivew ? `show${position}` : ''}`}
+				style={resolvedStyles.previewContainer ?? {}}
+				onClick={handleBubbling}
+			>
+				<SubHelperComponent
+					definition={props.definition}
+					subComponentName="previewContainer"
+				/>
+				<div className={`previewCloseIcon ${!showPreivew ? 'hide' : ''}`}>
+					{previewCloseIcon}
+				</div>
+				<div
+					className={`previewList ${position} ${!showPreivew ? `hide${position}` : ''}`}
+					style={resolvedStyles.previewList ?? {}}
+				>
+					<SubHelperComponent
+						definition={props.definition}
+						subComponentName="previewList"
+					/>
+					{galleryData?.map((each: any, index: number) => (
+						<div
+							className={`previewImageDiv ${position} ${
+								slideNum === index ? 'selected' : ''
+							}`}
+							style={resolvedStyles.previewImageDiv ?? {}}
+							onClick={() => selectedImage(index)}
+							key={each[`${startingImage?.keyName}`]}
+						>
+							<SubHelperComponent
+								definition={props.definition}
+								subComponentName="previewImageDiv"
+							/>
+							<img
+								src={getSrcUrl(each?.src)}
+								alt={`${each?.name}}`}
+								className="previewImage"
+								style={resolvedStyles.previewImage ?? {}}
+							/>
+							<SubHelperComponent
+								style={resolvedStyles.previewImage ?? {}}
+								className="previewImage"
+								definition={props.definition}
+								subComponentName="previewImage"
+							/>
+						</div>
+					))}
+				</div>
+			</div>
+		) : null;
+
+	const thumbnail =
+		previewMode === 'Thumbnail' ? (
+			<div
+				className={`thumbnailContainer thumbnail${position} ${
+					!showThumbnail ? `hide${position}` : ''
+				} ${isZoomed ? 'imageZoomed' : ''}`}
+				style={resolvedStyles?.thumbnailContainer ?? {}}
+				onClick={handleBubbling}
+			>
+				<SubHelperComponent
+					definition={props.definition}
+					subComponentName="thumbnailContainer"
+				/>
+				{galleryData?.map((each: any, index: number) => (
+					<div
+						className={`thumbnailImageDiv ${slideNum === index ? 'selected' : ''}`}
+						style={resolvedStyles?.thumbnailImageDiv ?? {}}
+						onClick={() => selectedImage(index)}
+						key={each[`${startingImage?.keyName}`]}
+					>
+						<SubHelperComponent
+							definition={props.definition}
+							subComponentName="thumbnailImageDiv"
+						/>
+						<img
+							src={getSrcUrl(each?.src)}
+							alt={`${each?.name}}`}
+							className="thumbnailImage"
+							style={resolvedStyles?.thumbnailImage ?? {}}
+						/>
+						<SubHelperComponent
+							style={resolvedStyles.thumbnailImage ?? {}}
+							className="thumbnailImage"
+							definition={props.definition}
+							subComponentName="thumbnailImage"
+						/>
+					</div>
+				))}
+			</div>
+		) : null;
 
 	if (isActive || (isDesignMode && showInDesign === true)) {
 		return (
@@ -543,103 +639,9 @@ function Gallery(props: ComponentProps) {
 								)}
 								{showChildren}
 							</div>
-							{previewMode === 'Thumbnail' && (
-								<div
-									className={`thumbnailContainer thumbnail${position} ${
-										!showThumbnail ? `hide${position}` : ''
-									} ${isZoomed ? 'imageZoomed' : ''}`}
-									style={resolvedStyles?.thumbnailContainer ?? {}}
-									onClick={handleBubbling}
-								>
-									<SubHelperComponent
-										definition={props.definition}
-										subComponentName="thumbnailContainer"
-									/>
-									{galleryData?.map((each: any, index: number) => (
-										<div
-											className={`thumbnailImageDiv ${
-												slideNum === index ? 'selected' : ''
-											}`}
-											style={resolvedStyles?.thumbnailImageDiv ?? {}}
-											onClick={() => selectedImage(index)}
-											key={each[`${startingImage?.keyName}`]}
-										>
-											<SubHelperComponent
-												definition={props.definition}
-												subComponentName="thumbnailImageDiv"
-											/>
-											<img
-												src={getSrcUrl(each?.src)}
-												alt={`${each?.name}}`}
-												className="thumbnailImage"
-												style={resolvedStyles?.thumbnailImage ?? {}}
-											/>
-											<SubHelperComponent
-												style={resolvedStyles.thumbnailImage ?? {}}
-												className="thumbnailImage"
-												definition={props.definition}
-												subComponentName="thumbnailImage"
-											/>
-										</div>
-									))}
-								</div>
-							)}
+							{thumbnail}
 						</div>
-						{previewMode === 'Preview' && (
-							<div
-								className={`previewContainer ${position} ${
-									showPreivew ? `show${position}` : ''
-								}`}
-								style={resolvedStyles.previewContainer ?? {}}
-								onClick={handleBubbling}
-							>
-								<SubHelperComponent
-									definition={props.definition}
-									subComponentName="previewContainer"
-								/>
-								<div className={`previewCloseIcon ${!showPreivew ? 'hide' : ''}`}>
-									{previewCloseIcon}
-								</div>
-								<div
-									className={`previewList ${position} ${
-										!showPreivew ? `hide${position}` : ''
-									}`}
-									style={resolvedStyles.previewList ?? {}}
-								>
-									<SubHelperComponent
-										definition={props.definition}
-										subComponentName="previewList"
-									/>
-									{galleryData?.map((each: any, index: number) => (
-										<div
-											className={`previewImageDiv ${position} ${
-												slideNum === index ? 'selected' : ''
-											}`}
-											style={resolvedStyles.previewImageDiv ?? {}}
-											onClick={() => selectedImage(index)}
-											key={each[`${startingImage?.keyName}`]}
-										>
-											<SubHelperComponent
-												definition={props.definition}
-												subComponentName="previewImageDiv"
-											/>
-											<img
-												src={getSrcUrl(each?.src)}
-												alt={`${each?.name}}`}
-												className="previewImage"
-												style={resolvedStyles.previewImage ?? {}}
-											/>
-											<SubHelperComponent
-												style={resolvedStyles.previewImage ?? {}}
-												className="previewImage"
-												definition={props.definition}
-												subComponentName="previewImage"
-											/>
-										</div>
-									))}
-								</div>
-							</div>
-						)}
+						{preview}
 					</div>
 				</div>
 			</Portal>
@@ -703,91 +705,78 @@ const component: Component = {
 			name: 'toolbarLeftColumn',
 			displayName: 'Toolbar Left Column',
 			description: 'Toolbar Left Column',
-
 			icon: 'fa-solid fa-box',
 		},
 		{
 			name: 'toolbarRightColumn',
 			displayName: 'Toolbar Right Column',
 			description: 'Toolbar Right Column',
-
 			icon: 'fa-solid fa-box',
 		},
 		{
 			name: 'toolbarButton',
 			displayName: 'Toolbar Button',
 			description: 'Toolbar Button',
-
 			icon: 'fa-solid fa-box',
 		},
 		{
 			name: 'arrowButtons',
 			displayName: 'Arrow Buttons',
 			description: 'Arrow Buttons',
-
 			icon: 'fa-solid fa-box',
 		},
 		{
 			name: 'slideImage',
 			displayName: 'Slide Image',
 			description: 'Slide Image',
-
 			icon: 'fa-solid fa-box',
 		},
 		{
 			name: 'thumbnailContainer',
 			displayName: 'Thumbnail Container',
 			description: 'Thumbnail Container',
-
 			icon: 'fa-solid fa-box',
 		},
 		{
 			name: 'thumbnailImageDiv',
 			displayName: 'Thumbnail Image Div',
 			description: 'Thumbnail Image Div',
-
 			icon: 'fa-solid fa-box',
 		},
 		{
 			name: 'thumbnailImage',
 			displayName: 'Thumbnail Image',
 			description: 'Thumbnail Image',
-
 			icon: 'fa-solid fa-box',
 		},
 		{
 			name: 'previewContainer',
 			displayName: 'Preview Container',
 			description: 'Preview Container',
-
 			icon: 'fa-solid fa-box',
 		},
 		{
 			name: 'previewCloseButton',
 			displayName: 'Preview Close Button',
 			description: 'Preview Close Button',
-
 			icon: 'fa-solid fa-box',
 		},
 		{
 			name: 'previewList',
 			displayName: 'Preview List',
 			description: 'Preview List',
-
 			icon: 'fa-solid fa-box',
 		},
 		{
 			name: 'previewImageDiv',
 			displayName: 'Preview Image Div',
 			description: 'Preview Image Div',
-
 			icon: 'fa-solid fa-box',
 		},
 		{
 			name: 'previewImage',
 			displayName: 'Preview Image',
 			description: 'Preview Image',
-
 			icon: 'fa-solid fa-box',
 		},
 	],
