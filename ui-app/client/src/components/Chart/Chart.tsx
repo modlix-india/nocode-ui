@@ -88,6 +88,12 @@ function Chart(props: Readonly<ComponentProps>) {
 	}, [oldProperties, properties, locationHistory, pageExtractor, hiddenDataSets]);
 
 	useEffect(() => {
+		setChartData(
+			makeChartDataFromProperties(properties, locationHistory, pageExtractor, hiddenDataSets),
+		);
+	}, [hiddenDataSets]);
+
+	useEffect(() => {
 		if (isNullValue(containerRef.current)) return;
 
 		let rect = containerRef.current!.getBoundingClientRect();

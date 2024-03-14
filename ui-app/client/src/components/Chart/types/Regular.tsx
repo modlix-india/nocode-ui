@@ -44,6 +44,7 @@ export default function Regular({
 				chartDimension={chartDimension}
 				hiddenDataSets={hiddenDataSets}
 				chartData={chartData}
+				drawAreaDimension={drawAreaDimension}
 				onDrawAreaDimensionChange={d =>
 					setDrawAreaDimension(o => (deepEqual(d, o) ? o : d))
 				}

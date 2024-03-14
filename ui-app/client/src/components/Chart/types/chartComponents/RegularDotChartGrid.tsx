@@ -33,6 +33,7 @@ interface LineItem {
 export default function RegularDotChartGrid({
 	properties,
 	chartDimension,
+	drawAreaDimension,
 	hiddenDataSets,
 	chartData,
 	xAxisLabelStyle,
@@ -43,6 +44,7 @@ export default function RegularDotChartGrid({
 }: Readonly<{
 	properties: ChartProperties;
 	chartDimension: Dimension;
+	drawAreaDimension: Dimension;
 	hiddenDataSets: Set<number>;
 	chartData?: ChartData;
 	onDrawAreaDimensionChange: (dimension: Dimension) => void;
@@ -90,6 +92,16 @@ export default function RegularDotChartGrid({
 		setVerticalLines(curryForLinesData(verticalLines, properties, chartData, chartDimension));
 
 		onDrawAreaDimensionChange({
+			x:
+				(chartDimension.x ?? 0) +
+				(properties.yAxisStartPosition === 'right'
+					? 0
+					: chartDimension.width - drawAreaDimension.width),
+			y:
+				(chartDimension.y ?? 0) +
+				(properties.xAxisStartPosition === 'bottom'
+					? 0
+					: chartDimension.height - drawAreaDimension.height),
 			height: chartDimension.height - maxXAxisHeight,
 			width: chartDimension.width - maxYAxisWidth,
 		});
@@ -213,6 +225,15 @@ export default function RegularDotChartGrid({
 			)}
 			{horizontalLines.map(lineCreator('horizontalLine', horizontalLinesStyle))}
 			{verticalLines.map(lineCreator('verticalLine', verticalLinesStyle))}
+			<rect
+				x={drawAreaDimension.x ?? 0}
+				y={drawAreaDimension.y ?? 0}
+				width={drawAreaDimension.width}
+				height={drawAreaDimension.height}
+				fill="transparent"
+				stroke="blue"
+				strokeWidth="1"
+			/>
 		</>
 	);
 }
@@ -315,39 +336,6 @@ function dimesionsOfLabels(
 	}
 
 	return [{ width: totalWidth, height: totalHeight }, labelSizes];
-}
-
-function makeYAxisLabels(
-	chartData: ChartData,
-	yAxisLabelRef: SVGTextElement,
-	chartDimension: Dimension,
-): string[] {
-	if (chartData.yAxisLabels.length) return chartData.yAxisLabels;
-
-	const uniqueElements = new Set(chartData.yAxisData.flat());
-	yAxisLabelRef.innerHTML = Array.from(uniqueElements).reduce((a, c) => {
-		const x = c.toString();
-		return a.length > x.length ? a : x;
-	}, '');
-	const { width, height } = yAxisLabelRef.getBoundingClientRect();
-	let i = 1,
-		eachSize;
-	while (
-		(eachSize =
-			(chartData.axisInverted ? chartDimension.width : chartDimension.height) /
-			(uniqueElements.size * i)) < (chartData.axisInverted ? width : height)
-	)
-		i++;
-
-	const labelCount = Math.floor(
-		(chartData.axisInverted ? chartDimension.width : chartDimension.height) / eachSize,
-	);
-	const incrementer = ((chartData.yAxisMax ?? 0) - (chartData.yAxisMin ?? 0)) / labelCount;
-	return Array.from({ length: labelCount }, (_, i) => {
-		let x = (chartData.yAxisMin ?? 0) + i * incrementer;
-		if (incrementer > 1) return Math.floor(x).toString();
-		else return Math.floor(x).toFixed(incrementer < 0.1 ? 3 : 2);
-	});
 }
 
 function addLocationToLabelsnMakeLines(
@@ -519,7 +507,7 @@ function makeLabels(
 		? [{ width: 0, height: 0 }, []]
 		: dimesionsOfLabels(chartData.xAxisLabels, xAxisLabelRef);
 
-	const yAxisLabels = makeYAxisLabels(chartData, yAxisLabelRef, chartDimension);
+	const yAxisLabels = chartData.yAxisLabels;
 
 	const [yTotal, yLabelSizes] = properties.hideYAxis
 		? [{ width: 0, height: 0 }, []]
@@ -550,9 +538,13 @@ function makeLabels(
 			}
 		}
 
+		if (properties.xAxisReverse) xLabels.reverse();
+		if (properties.yAxisStartPosition === 'right') xLabels.reverse();
+
 		increment = Math.ceil(
 			(chartData.axisInverted ? yTotal.height : xTotal.height) / chartDimension.height,
 		);
+		if (increment <= 0) increment = 1;
 		labels = chartData.axisInverted ? chartData.xAxisLabels : yAxisLabels;
 		labelSizes = chartData.axisInverted ? xLabelSizes : yLabelSizes;
 
@@ -565,6 +557,9 @@ function makeLabels(
 				maxWidth = Math.max(maxWidth, labelSizes[i].width);
 			}
 		}
+
+		if (properties.yAxisReverse) yLabels.reverse();
+		if (properties.xAxisStartPosition === 'bottom') yLabels.reverse();
 	}
 
 	maxWidth += 5 + TICK_SIZE;
