@@ -466,16 +466,6 @@ function Gallery(props: ComponentProps) {
 			<SubHelperComponent definition={props.definition} subComponentName="toolbarButton" />
 		</i>
 	) : null;
-	const galleryTools = (
-		<>
-			{zoomIcon}
-			{autoPlayIcon}
-			{fullScreenIcon}
-			{thumbnailIcon}
-			{previewIcon}
-			{closeIcon}
-		</>
-	);
 
 	const previewComp =
 		previewMode === 'Preview' ? (
@@ -534,7 +524,7 @@ function Gallery(props: ComponentProps) {
 		previewMode === 'Thumbnail' ? (
 			<div
 				className={`_thumbnailContainer _thumbnail${position} ${
-					!showThumbnail ? `hide${position}` : ''
+					!showThumbnail ? `_hide${position}` : ''
 				} ${isZoomed ? '_imageZoomed' : ''}`}
 				style={resolvedStyles?.thumbnailContainer ?? {}}
 				onClick={handleBubbling}
@@ -570,6 +560,17 @@ function Gallery(props: ComponentProps) {
 				))}
 			</div>
 		) : null;
+
+	const galleryTools = (
+		<>
+			{zoomIcon}
+			{autoPlayIcon}
+			{fullScreenIcon}
+			{thumbnailIcon}
+			{previewIcon}
+			{closeIcon}
+		</>
+	);
 
 	if (isActive || (isDesignMode && showInDesign === true)) {
 		return (
