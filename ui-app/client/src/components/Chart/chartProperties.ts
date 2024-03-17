@@ -17,6 +17,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Hide Grid',
 		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
 	},
 	{
 		...COMMON_COMPONENT_PROPERTIES.colorScheme,
@@ -97,11 +98,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'xAxisType',
 		schema: SCHEMA_STRING_COMP_PROP,
-		defaultValue: 'oridnal',
+		defaultValue: 'ordinal',
 		displayName: 'X Axis Type',
 		group: ComponentPropertyGroup.DATA,
 		enumValues: [
-			{ name: 'oridnal', displayName: 'Oridnal' },
+			{ name: 'ordinal', displayName: 'Ordinal' },
 			{ name: 'value', displayName: 'Value' },
 			{ name: 'time', displayName: 'Time' },
 			{ name: 'log', displayName: 'Logirthamic' },
@@ -137,9 +138,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'xAxisLabelsSort',
-		schema: SCHEMA_BOOL_COMP_PROP,
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Sort X Axis Labels',
 		group: ComponentPropertyGroup.DATA,
+		defaultValue: 'none',
+		enumValues: [
+			{ name: 'none', displayName: 'None' },
+			{ name: 'ascending', displayName: 'Ascending' },
+			{ name: 'descending', displayName: 'Descending' },
+		],
 	},
 	{
 		name: 'xAxisMin',
@@ -169,6 +176,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'xAxisReverse',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'X Axis Reverse',
+		defaultValue: false,
 		group: ComponentPropertyGroup.DATA,
 	},
 	{
@@ -176,12 +184,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Hide X Axis Ticks',
 		group: ComponentPropertyGroup.DATA,
+		defaultValue: false,
 	},
 	{
 		name: 'xAxisHideLabels',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Hide X Axis Labels',
 		group: ComponentPropertyGroup.DATA,
+		defaultValue: false,
 	},
 	{
 		name: 'xAxisDataPath',
@@ -195,12 +205,21 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Hide X Axis',
 		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
+	},
+	{
+		name: 'hideXAxisLine',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Hide X Axis Line',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
 	},
 	{
 		name: 'hideXLines',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Hide X Lines',
 		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
 	},
 	{
 		name: 'xAxisTitle',
@@ -257,9 +276,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'yAxisLabelsSort',
-		schema: SCHEMA_BOOL_COMP_PROP,
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Sort Y Axis Labels for Ordinal Axis',
 		group: ComponentPropertyGroup.DATA,
+		defaultValue: 'none',
+		enumValues: [
+			{ name: 'none', displayName: 'None' },
+			{ name: 'ascending', displayName: 'Ascending' },
+			{ name: 'descending', displayName: 'Descending' },
+		],
 	},
 	{
 		name: 'yAxisMin',
@@ -289,6 +314,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'yAxisReverse',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Y Axis Reverse',
+		defaultValue: false,
 		group: ComponentPropertyGroup.DATA,
 	},
 	{
@@ -296,12 +322,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Hide Y Axis Ticks',
 		group: ComponentPropertyGroup.DATA,
+		defaultValue: false,
 	},
 	{
 		name: 'yAxisHideLabels',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Hide Y Axis Labels',
 		group: ComponentPropertyGroup.DATA,
+		defaultValue: false,
 	},
 	{
 		name: 'yAxisDataSetPath',
@@ -340,7 +368,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{ name: 'smoothDashedLine', displayName: 'Smooth Dashed Line - Regular' },
 			{ name: 'smoothLongDashedLine', displayName: 'Smooth Long Dashed Line - Regular' },
 			{ name: 'bar', displayName: 'Bar - Regular' },
-			{ name: 'roundedBar', displayName: 'Rounded Bar - Regular' },
+			{ name: 'horizontalBar', displayName: 'Horizontal Bar - Regular' },
 			{ name: 'lollipop', displayName: 'Lollipop - Regular' },
 			{ name: 'pie', displayName: 'Pie - Radial' },
 			{ name: 'doughnut', displayName: 'Doughnut - Radial' },
@@ -355,12 +383,21 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Hide Y Axis',
 		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
+	},
+	{
+		name: 'hideYAxisLine',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Hide Y Axis Line',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
 	},
 	{
 		name: 'hideYLines',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Hide Y Lines',
 		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
 	},
 	{
 		name: 'yAxisTitle',
@@ -456,6 +493,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'invertAxis',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Invert Axis',
+		defaultValue: false,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{

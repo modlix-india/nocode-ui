@@ -48,7 +48,7 @@ export enum DataSetStyle {
 	Lollipop = 'lollipop',
 
 	Bar = 'bar',
-	RoundedBar = 'roundedBar',
+	horizontalBar = 'horizontalBar',
 
 	Pie = 'pie',
 	Doughnut = 'doughnut',
@@ -61,6 +61,8 @@ export enum DataSetStyle {
 }
 
 // Properties of the chart component
+
+export type AxisType = 'ordinal' | 'value' | 'log';
 export interface ChartProperties {
 	hideGrid: boolean;
 	colorScheme: string;
@@ -78,11 +80,11 @@ export interface ChartProperties {
 	dataSetPointSize?: number[]; // Done.
 	dataPointSizePath?: string[]; // Done.
 
-	xAxisType: 'ordinal' | 'value' | 'time' | 'log' | 'derived'; // Done only time is not done yet
+	xAxisType: AxisType | 'time' | 'derived'; // Done only time is not done yet
 	xAxisStartPosition: 'bottom' | 'top' | 'center' | 'y0' | 'custom';
 	xAxisStartCustomValue?: string;
 	xAxisLabels?: string[]; // Done.
-	xAxisLabelsSort?: boolean; // Done.
+	xAxisLabelsSort: 'none' | 'ascending' | 'descending'; // Done.
 	xAxisMin?: number; // Done.
 	xAxisSuggestedMin?: number; // Done.
 	xAxisMax?: number; // Done.
@@ -92,14 +94,15 @@ export interface ChartProperties {
 	xAxisHideLabels?: boolean;
 	xAxisDataPath?: string; // Done.
 	hideXAxis?: boolean;
+	hideXAxisLine: boolean;
 	hideXLines?: boolean;
 	xAxisTitle?: string;
-	yAxisType: 'ordinal' | 'value' | 'log' | 'derived'; // Done.
+	yAxisType: AxisType | 'derived'; // Done.
 	yAxisStartPosition: 'left' | 'right' | 'center' | 'x0' | 'custom';
 	yAxisStartCustomValue?: string;
 	dataSetLabels?: string[]; //Done.
 	yAxisLabels?: string[]; // Done.
-	yAxisLabelsSort?: boolean; // Done.
+	yAxisLabelsSort: 'none' | 'ascending' | 'descending'; // Done.
 	yAxisMin?: number; // Done.
 	yAxisSuggestedMin?: number; // Done.
 	yAxisMax?: number; // Done.
@@ -111,6 +114,7 @@ export interface ChartProperties {
 	yAxisRangeDataSetPath?: string[]; // Done.
 	yAxisDataSetStyle?: DataSetStyle[];
 	hideYAxis?: boolean;
+	hideYAxisLine: boolean;
 	hideYLines?: boolean;
 	yAxisTitle?: string;
 	stackedAxis: 'none' | 'x' | 'y' | 'z';
@@ -173,16 +177,10 @@ function simpleExtractor(
 const colorScheme: Map<string, string[]> = new Map();
 
 export interface ChartData {
-	xAxisLabels: string[];
-	yAxisLabels: string[];
 	yAxisData: any[][];
 	xAxisData: any[];
-	xAxisType: 'ordinal' | 'value' | 'time' | 'log';
-	yAxisType: 'ordinal' | 'value' | 'time' | 'log';
-	xAxisMin?: number;
-	xAxisMax?: number;
-	yAxisMin?: number;
-	yAxisMax?: number;
+	xAxisType: AxisType | 'time';
+	yAxisType: AxisType;
 	dataColors: RepetetiveArray<string>[];
 	fillOpacity: RepetetiveArray<number>[];
 	strokeOpacity: RepetetiveArray<number>[];
@@ -190,7 +188,7 @@ export interface ChartData {
 	pointSize: RepetetiveArray<number>[];
 	dataSetStyles: RepetetiveArray<DataSetStyle>[];
 	axisInverted: boolean;
-	hasBar?: boolean;
+	hasBar: boolean;
 }
 
 export function makeChartDataFromProperties(
@@ -199,26 +197,25 @@ export function makeChartDataFromProperties(
 	pageExtractor: PageStoreExtractor,
 	hiddenDataSets: Set<number>,
 ): ChartData {
-	console.log('Making without : ' + hiddenDataSets);
-	let { xAxisLabels, xAxisData, xAxisType, xAxisMin, xAxisMax } = makeXAxisData(
+	const hasBar =
+		properties.chartType === 'regular' &&
+		(properties.yAxisDataSetStyle?.some(
+			style => style === 'bar' || style === 'horizontalBar',
+		) ??
+			true);
+
+	let xAxisData = makeXAxisData(properties, locationHistory, pageExtractor);
+	let yAxisData = makeYAxisData(
 		properties,
 		locationHistory,
 		pageExtractor,
-	);
-	let { yAxisData, yAxisLabels, yAxisType, yAxisMin, yAxisMax } = makeYAxisData(
-		properties,
-		locationHistory,
-		pageExtractor,
+		hasBar,
 		hiddenDataSets,
 	);
 
-	if (properties.xAxisType === 'time') {
-		// need to process time differently.
-
-		xAxisType = 'time';
-		yAxisType = 'value';
-	} else {
-	}
+	const xAxisType: AxisType | 'time' =
+		properties.xAxisType === 'time' ? 'time' : findDerivedType(xAxisData, properties.xAxisType);
+	const yAxisType = findDerivedType(yAxisData, properties.yAxisType);
 
 	let dataSetColors: string[] = [];
 	if (!properties.dataSetColors) {
@@ -280,24 +277,18 @@ export function makeChartDataFromProperties(
 
 	const dataSetStyles = getPathBasedValues(
 		properties.data,
-		[] as DataSetStyle[],
-		properties.yAxisDataSetStyle,
+		properties.yAxisDataSetStyle ?? [],
+		[],
 		yAxisData.length,
 		locationHistory,
 		pageExtractor,
 	);
 
 	return {
-		xAxisLabels,
-		yAxisLabels,
 		xAxisData,
 		yAxisData,
 		xAxisType,
 		yAxisType,
-		xAxisMin,
-		xAxisMax,
-		yAxisMin,
-		yAxisMax,
 		dataColors,
 		fillOpacity,
 		strokeOpacity,
@@ -305,10 +296,7 @@ export function makeChartDataFromProperties(
 		pointSize,
 		dataSetStyles,
 		axisInverted: !!properties.invertAxis && properties.stackedAxis !== 'x',
-		hasBar:
-			properties.chartType === 'regular' &&
-			(dataSetStyles.length == 0 ||
-				dataSetStyles.some(styles => styles.some(style => style === 'bar'))),
+		hasBar,
 	};
 }
 
@@ -316,8 +304,11 @@ function makeYAxisData(
 	properties: ChartProperties,
 	locationHistory: LocationHistory[],
 	pageExtractor: PageStoreExtractor,
+	hasBar: boolean,
 	hiddenDataSets: Set<number>,
 ) {
+	if (properties.yAxisLabels) return [properties.yAxisLabels];
+
 	let yAxisData: any[][] | undefined = [];
 	if (properties.yAxisDataSetPath) {
 		yAxisData = (
@@ -367,58 +358,7 @@ function makeYAxisData(
 		}
 	}
 
-	let yAxisMin: number | undefined;
-	let yAxisMax: number | undefined;
-	let yAxisLabels: string[] = [];
-
-	if (properties.yAxisLabels) yAxisLabels = properties.yAxisLabels;
-
-	const flatYData = yAxisData?.flat(Infinity);
-
-	let yAxisType = findDerivedType(flatYData, properties.yAxisType);
-
-	if (yAxisType !== 'ordinal' && flatYData?.length) {
-		let min = Infinity,
-			max = -Infinity;
-		for (let val of flatYData) {
-			if (isNullValue(val)) continue;
-			if (val < min) min = val;
-			if (val > max) max = val;
-		}
-		yAxisMin = min;
-		if (!isNullValue(properties.yAxisSuggestedMin) && yAxisMin > properties.yAxisSuggestedMin!)
-			yAxisMin = properties.yAxisSuggestedMin!;
-		if (!isNullValue(properties.yAxisMin) && yAxisMin < properties.yAxisMin!)
-			yAxisMin = properties.yAxisMin!;
-		yAxisMax = max;
-		if (!isNullValue(properties.yAxisSuggestedMax) && yAxisMax < properties.yAxisSuggestedMax!)
-			yAxisMax = properties.yAxisSuggestedMax!;
-		if (!isNullValue(properties.yAxisMax) && yAxisMax > properties.yAxisMax!)
-			yAxisMax = properties.yAxisMax!;
-	}
-
-	if (!yAxisLabels.length && flatYData?.length) {
-		const labels = Array.from(new Set(flatYData));
-		if (!isNullValue(yAxisMin)) {
-			const index = labels.findIndex(val => val > yAxisMin!);
-			if (index !== -1) labels.splice(0, index, yAxisMin!);
-			if (yAxisMin! > labels[0]) labels.unshift(yAxisMin!);
-		}
-		if (!isNullValue(yAxisMax)) {
-			const index = labels.findIndex(val => val > yAxisMax!);
-			if (index !== -1) labels.splice(index);
-			if (yAxisMax! < labels[labels.length - 1]) labels.push(yAxisMax!);
-		}
-		labels.sort((a, b) => a - b);
-		yAxisLabels = labels.map(String);
-	} else if (properties.yAxisLabelsSort) {
-		yAxisLabels = [...yAxisLabels];
-		yAxisLabels.sort((a, b) => {
-			if (yAxisType === 'ordinal') return a.localeCompare(b);
-			return parseFloat(a) - parseFloat(b);
-		});
-	}
-	return { yAxisData, yAxisLabels, yAxisType, yAxisMin, yAxisMax };
+	return yAxisData;
 }
 
 function makeXAxisData(
@@ -427,51 +367,22 @@ function makeXAxisData(
 	locationHistory: LocationHistory[],
 	pageExtractor: PageStoreExtractor,
 ) {
-	let xAxisLabels: string[] = [];
 	let xAxisData: any[] = [];
-	let xAxisMin: number | undefined;
-	let xAxisMax: number | undefined;
 
-	if (properties.xAxisLabels) xAxisLabels = properties.xAxisLabels;
+	if (properties.xAxisLabels) xAxisData = properties.xAxisLabels;
 	else if (Array.isArray(properties.data) && typeof properties.xAxisDataPath == 'string') {
-		xAxisData = xAxisLabels = properties.data.map(
+		xAxisData = properties.data.map(
 			simpleExtractor(properties.xAxisDataPath, locationHistory, pageExtractor),
 		);
 	} else if (properties.data && typeof properties.data === 'object') {
 		if (typeof properties.xAxisDataPath == 'string') {
-			xAxisData = xAxisLabels = Object.values(properties.data).map(
+			xAxisData = Object.values(properties.data).map(
 				simpleExtractor(properties.xAxisDataPath, locationHistory, pageExtractor),
 			);
-		} else xAxisData = xAxisLabels = Object.keys(properties.data);
+		} else xAxisData = Object.keys(properties.data);
 	}
 
-	if (properties.xAxisLabelsSort) {
-		xAxisLabels = [...xAxisLabels];
-		xAxisLabels.sort();
-	}
-
-	let xAxisType = findDerivedType(xAxisData, properties.xAxisType);
-
-	if (xAxisType !== 'ordinal' && xAxisData?.length) {
-		let min = Infinity,
-			max = -Infinity;
-		for (let val of xAxisData) {
-			if (isNullValue(val)) continue;
-			if (val < min) min = val;
-			if (val > max) max = val;
-		}
-		xAxisMin = min;
-		if (!isNullValue(properties.xAxisSuggestedMin) && xAxisMin > properties.xAxisSuggestedMin!)
-			xAxisMin = properties.xAxisSuggestedMin!;
-		if (!isNullValue(properties.xAxisMin) && xAxisMin < properties.xAxisMin!)
-			xAxisMin = properties.xAxisMin!;
-		xAxisMax = max;
-		if (!isNullValue(properties.xAxisSuggestedMax) && xAxisMax < properties.xAxisSuggestedMax!)
-			xAxisMax = properties.xAxisSuggestedMax!;
-		if (!isNullValue(properties.xAxisMax) && xAxisMax > properties.xAxisMax!)
-			xAxisMax = properties.xAxisMax!;
-	}
-	return { xAxisLabels, xAxisData, xAxisType, xAxisMin, xAxisMax };
+	return xAxisData;
 }
 
 function coefficientOfVariation(data: any[]) {
@@ -482,10 +393,7 @@ function coefficientOfVariation(data: any[]) {
 	return standardDeviation / mean;
 }
 
-function findDerivedType(
-	data: any[],
-	axisType: 'ordinal' | 'value' | 'time' | 'log' | 'derived',
-): 'ordinal' | 'value' | 'time' | 'log' {
+function findDerivedType(data: any[], axisType: AxisType | 'derived'): AxisType {
 	if (axisType != 'derived') return axisType;
 
 	if (!data?.length) return 'ordinal';
@@ -532,6 +440,7 @@ function getPathBasedValues<T>(
 	const result: RepetetiveArray<any>[] = [];
 
 	let dataSetNum = 0;
+
 	for (let path of dataPaths) {
 		const temp = new RepetetiveArray<any>();
 		const extractor = simpleExtractor(path, locationHistory, pageExtractor);
@@ -554,4 +463,27 @@ function getPathBasedValues<T>(
 	}
 
 	return [...result, ...filler];
+}
+
+export function labelDimensions(data: any[], labelElement: any): Dimension[] {
+	const dimensions = [];
+	for (const element of data) {
+		labelElement.innerHTML = element;
+		const rect = labelElement.getBoundingClientRect();
+		dimensions.push({ width: rect.width, height: rect.height });
+	}
+
+	return dimensions;
+}
+
+export function maxDimensions(dimensions: Dimension[]): Dimension {
+	return dimensions.reduce(
+		(acc, curr) => {
+			return {
+				width: Math.max(acc.width, curr.width),
+				height: Math.max(acc.height, curr.height),
+			};
+		},
+		{ width: 0, height: 0 },
+	);
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediately,
@@ -9,17 +9,15 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { IconHelper } from '../util/IconHelper';
 import useDefinition from '../util/useDefinition';
-import SubPageStyle from './ChartStyle';
+import ChartStyle from './ChartStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './chartProperties';
 import { styleDefaults } from './chartStyleProperties';
 import { deepEqual, isNullValue } from '@fincity/kirun-js';
-import Regular from './types/Regular';
-import Radial from './types/Radial';
-import Waffle from './types/Waffle';
-import Dot from './types/Dot';
-import Radar from './types/Radar';
 import { ChartData, Dimension, makeChartDataFromProperties } from './types/common';
+import { makeChart } from './d3Chart';
 import Legends from './types/chartComponents/Legends';
+
+const CHART_PADDING = 10;
 
 function Chart(props: Readonly<ComponentProps>) {
 	const {
@@ -58,52 +56,109 @@ function Chart(props: Readonly<ComponentProps>) {
 		);
 	}, [bindingPathPath]);
 
-	const resolvedStyles = processComponentStylePseudoClasses(
+	const [render, setRender] = React.useState(Date.now());
+
+	React.useEffect(() => {
+		const element = document.getElementById('d3-7.9.0');
+		if (element) {
+			element.addEventListener('load', () => setRender(Date.now()));
+			return;
+		}
+		const script = document.createElement('script');
+		script.id = 'd3-7.9.0';
+		script.src = '/api/files/static/file/SYSTEM/jslib/d3/d3%407.9.0.min.js';
+		script.async = true;
+		script.addEventListener('load', () => setRender(Date.now()));
+		document.body.appendChild(script);
+	}, [setRender]);
+
+	const processedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
 		{},
 		stylePropertiesWithPseudoStates,
 	);
 
-	const containerRef = useRef<HTMLDivElement>(null);
-	const [containerDimension, setContainerDimension] = React.useState<Dimension>({
-		width: 0,
-		height: 0,
-	});
-	const [legendDimension, setLegendDimension] = React.useState<Dimension>({
-		width: 0,
-		height: 0,
-	});
+	const [resolvedStyles, setResolvedStyles] = useState<any>({});
+
+	useEffect(() => {
+		setResolvedStyles((old: any) => (deepEqual(old, processedStyles) ? old : processedStyles));
+	}, [processedStyles]);
 
 	const [oldProperties, setOldProperties] = React.useState<any>(undefined);
 	const [chartData, setChartData] = React.useState<ChartData | undefined>(undefined);
 
 	const [hiddenDataSets, setHiddenDataSets] = React.useState<Set<number>>(new Set<number>());
 
+	const svgRef = useRef<SVGSVGElement | null>(null);
+
+	const [svgDimension, setSvgDimension] = React.useState<Dimension>({ width: 0, height: 0 });
+	const [legendDimension, setLegendDimension] = React.useState<Dimension>({
+		width: 0,
+		height: 0,
+	});
+
+	const chartWidth = Math.floor(
+		svgDimension.width -
+			(properties.legendPosition === 'left' || properties.legendPosition === 'right'
+				? legendDimension.width
+				: 0),
+	);
+	const chartHeight = Math.floor(
+		svgDimension.height -
+			(properties.legendPosition === 'top' || properties.legendPosition === 'bottom'
+				? legendDimension.height
+				: 0),
+	);
+
 	useEffect(() => {
 		if (deepEqual(properties, oldProperties)) return;
 		setOldProperties(properties);
-		setChartData(
-			makeChartDataFromProperties(properties, locationHistory, pageExtractor, hiddenDataSets),
+		const cd = makeChartDataFromProperties(
+			properties,
+			locationHistory,
+			pageExtractor,
+			hiddenDataSets,
 		);
+		setChartData(cd);
 	}, [oldProperties, properties, locationHistory, pageExtractor, hiddenDataSets]);
 
 	useEffect(() => {
-		setChartData(
-			makeChartDataFromProperties(properties, locationHistory, pageExtractor, hiddenDataSets),
+		const cd = makeChartDataFromProperties(
+			properties,
+			locationHistory,
+			pageExtractor,
+			hiddenDataSets,
 		);
+		setChartData(cd);
 	}, [hiddenDataSets]);
 
 	useEffect(() => {
-		if (isNullValue(containerRef.current)) return;
+		if (!globalThis.d3 || !svgRef.current || !chartData) return;
 
-		let rect = containerRef.current!.getBoundingClientRect();
-		setContainerDimension({
+		makeChart(
+			properties,
+			chartData,
+			svgRef.current,
+			resolvedStyles,
+			{
+				width: chartWidth - CHART_PADDING * 2,
+				height: chartHeight - CHART_PADDING * 2,
+			},
+			hiddenDataSets,
+		);
+	}, [svgRef.current, globalThis.d3, chartData, legendDimension, render, resolvedStyles]);
+
+	useEffect(() => {
+		if (isNullValue(svgRef.current)) return;
+
+		let rect = svgRef.current!.getBoundingClientRect();
+		setSvgDimension({
 			width: Math.floor(rect.width),
 			height: Math.floor(rect.height),
 		});
 		const resizeObserver = new ResizeObserver(() => {
 			setTimeout(() => {
-				const newRect = containerRef.current?.getBoundingClientRect();
+				const newRect = svgRef.current?.getBoundingClientRect();
 				if (!newRect) return;
 				if (
 					Math.abs(newRect.width - rect.width) < 8 &&
@@ -111,84 +166,69 @@ function Chart(props: Readonly<ComponentProps>) {
 				)
 					return;
 				rect = newRect;
-				setContainerDimension({
+				setSvgDimension({
 					width: Math.floor(newRect.width),
 					height: Math.floor(newRect.height),
 				});
 			}, 2000);
 		});
-		resizeObserver.observe(containerRef.current!);
+		resizeObserver.observe(svgRef.current!);
 		return () => resizeObserver.disconnect();
-	}, [containerRef.current, setContainerDimension]);
+	}, [svgRef.current, setSvgDimension]);
 
 	useEffect(() => setHiddenDataSets(new Set()), [chartData?.yAxisData?.length]);
 
-	let chart = <></>;
-
-	const x = properties.legendPosition === 'left' ? legendDimension.width : 0;
-	const y = properties.legendPosition === 'top' ? legendDimension.height : 0;
-	const width =
-		containerDimension.width -
-		(properties.legendPosition === 'left' || properties.legendPosition === 'right'
-			? legendDimension.width
-			: 0);
-	const height =
-		containerDimension.height -
-		(properties.legendPosition === 'top' || properties.legendPosition === 'bottom'
-			? legendDimension.height
-			: 0);
-
-	const chartDimension: Dimension = { x, y, width, height };
-
-	if (properties?.type === 'waffle') {
-		chart = <Waffle properties={properties} containerRef={containerRef.current} />;
-	} else if (properties?.type === 'radial') {
-		chart = <Radial properties={properties} containerRef={containerRef.current} />;
-	} else if (properties?.type === 'dot') {
-		chart = <Dot properties={properties} containerRef={containerRef.current} />;
-	} else if (properties?.type === 'radar') {
-		chart = <Radar properties={properties} containerRef={containerRef.current} />;
-	} else {
-		chart = (
-			<Regular
-				properties={properties}
-				containerDimension={containerDimension}
-				legendDimension={legendDimension}
-				chartDimension={chartDimension}
-				hiddenDataSets={hiddenDataSets}
-				chartData={chartData}
-				xAxisLabelStyle={resolvedStyles.xAxisLabel ?? {}}
-				yAxisLabelStyle={resolvedStyles.yAxisLabel ?? {}}
-				horizontalLinesStyle={resolvedStyles.horizontalLines ?? {}}
-				verticalLinesStyle={resolvedStyles.verticalLines ?? {}}
-			/>
-		);
-	}
-
 	return (
-		<div className={`comp compChart `} style={resolvedStyles.comp ?? {}} ref={containerRef}>
+		<div className={`comp compChart `} style={resolvedStyles.comp ?? {}}>
 			<HelperComponent context={props.context} definition={definition} />
 			<svg
-				viewBox={`0 0 ${containerDimension.width} ${containerDimension.height}`}
+				className="chart"
+				ref={svgRef}
+				viewBox={`0 0 ${svgDimension.width} ${svgDimension.height}`}
 				xmlns="http://www.w3.org/2000/svg"
 			>
+				<text
+					className="xAxisLabelSampler"
+					x={0}
+					y={0}
+					style={{ ...resolvedStyles.xAxisLabel, transition: 'none' }}
+					fillOpacity={0}
+					strokeOpacity={0}
+				></text>
+				<text
+					x={0}
+					y={0}
+					className="yAxisLabelSampler"
+					style={{ ...resolvedStyles.yAxisLabel, transition: 'none' }}
+					fillOpacity={0}
+					strokeOpacity={0}
+				></text>
+				<g
+					className="chartGroup"
+					transform={`translate(${
+						(properties.legendPosition === 'left' ? legendDimension.width : 0) +
+						CHART_PADDING
+					}, ${
+						(properties.legendPosition === 'top' ? legendDimension.height : 0) +
+						CHART_PADDING
+					})`}
+				/>
 				<Legends
-					chartData={chartData}
-					properties={properties}
-					containerDimension={containerDimension}
+					containerDimension={{ width: svgDimension.width, height: svgDimension.height }}
 					legendDimension={legendDimension}
+					properties={properties}
+					chartData={chartData}
+					onLegendDimensionChange={setLegendDimension}
 					labelStyles={resolvedStyles.legendLabel ?? {}}
 					rectangleStyles={resolvedStyles.legendRectangle ?? {}}
-					onLegendDimensionChange={d => setLegendDimension(d)}
 					hiddenDataSets={hiddenDataSets}
-					onToggleDataSet={d => {
-						const nSet = new Set(hiddenDataSets);
-						if (nSet.has(d)) nSet.delete(d);
-						else nSet.add(d);
-						setHiddenDataSets(nSet);
+					onToggleDataSet={(index: number) => {
+						const newSet = new Set(hiddenDataSets);
+						if (newSet.has(index)) newSet.delete(index);
+						else newSet.add(index);
+						setHiddenDataSets(newSet);
 					}}
 				/>
-				{chart}
 			</svg>
 		</div>
 	);
@@ -202,7 +242,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
-	styleComponent: SubPageStyle,
+	styleComponent: ChartStyle,
 	styleDefaults: styleDefaults,
 	stylePseudoStates: [],
 	allowedChildrenType: new Map([['Grid', 1]]),

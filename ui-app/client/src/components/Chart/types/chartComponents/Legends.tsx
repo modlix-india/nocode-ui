@@ -136,7 +136,7 @@ export default function Legends({
 		return <></>;
 
 	return (
-		<>
+		<g className="legendGroup">
 			<text
 				x={0}
 				y={0}
@@ -237,7 +237,7 @@ export default function Legends({
 					)}
 				</g>
 			))}
-		</>
+		</g>
 	);
 }
 
@@ -321,7 +321,7 @@ function positionLegends(
 	const width = horizontal ? chartDimension.width : x - legendRowsColumnns.length * SPACE - start;
 	const height = horizontal ? y - SPACE - start : chartDimension.height;
 
-	return { width, height };
+	return { width: width, height: height };
 }
 
 function arrangeInRowsOrColumns(
