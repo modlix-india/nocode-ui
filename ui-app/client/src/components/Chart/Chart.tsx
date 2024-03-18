@@ -204,6 +204,37 @@ function Chart(props: Readonly<ComponentProps>) {
 					strokeOpacity={0}
 				></text>
 				<g
+					className="titleGroup"
+					transform={`translate(${
+						(properties.legendPosition === 'left' ? legendDimension.width : 0) +
+						CHART_PADDING
+					}, ${
+						(properties.legendPosition === 'top' ? legendDimension.height : 0) +
+						CHART_PADDING
+					})`}
+				>
+					<text
+						x={0}
+						y={0}
+						className="xAxisTitle"
+						style={resolvedStyles.xAxisTitle ?? {}}
+						fill="currentColor"
+					>
+						{chartData?.xAxisTitle ?? ''}
+					</text>
+					<text
+						x={0}
+						y={0}
+						className="yAxisTitle"
+						style={resolvedStyles.yAxisTitle ?? {}}
+						fill="currentColor"
+						textAnchor="end"
+					>
+						{chartData?.yAxisTitle ?? ''}
+					</text>
+				</g>
+
+				<g
 					className="chartGroup"
 					transform={`translate(${
 						(properties.legendPosition === 'left' ? legendDimension.width : 0) +
@@ -366,6 +397,18 @@ const component: Component = {
 			name: 'verticalLines',
 			displayName: 'Vertical Lines',
 			description: 'Vertical Lines',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'xAxisTitle',
+			displayName: 'X Axis Title',
+			description: 'X Axis Title',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'yAxisTitle',
+			displayName: 'Y Axis Title',
+			description: 'Y Axis Title',
 			icon: 'fa fa-solid fa-box',
 		},
 	],

@@ -189,6 +189,8 @@ export interface ChartData {
 	dataSetStyles: RepetetiveArray<DataSetStyle>[];
 	axisInverted: boolean;
 	hasBar: boolean;
+	xAxisTitle?: string;
+	yAxisTitle?: string;
 }
 
 export function makeChartDataFromProperties(
@@ -284,6 +286,8 @@ export function makeChartDataFromProperties(
 		pageExtractor,
 	);
 
+	const axisInverted = !!properties.invertAxis && properties.stackedAxis !== 'x';
+
 	return {
 		xAxisData,
 		yAxisData,
@@ -295,8 +299,10 @@ export function makeChartDataFromProperties(
 		pointType,
 		pointSize,
 		dataSetStyles,
-		axisInverted: !!properties.invertAxis && properties.stackedAxis !== 'x',
+		axisInverted,
 		hasBar,
+		xAxisTitle: axisInverted ? properties.yAxisTitle : properties.xAxisTitle,
+		yAxisTitle: axisInverted ? properties.xAxisTitle : properties.yAxisTitle,
 	};
 }
 

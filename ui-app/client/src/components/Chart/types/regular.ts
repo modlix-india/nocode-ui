@@ -2,6 +2,8 @@ import { isNullValue } from '@fincity/kirun-js';
 import { processStyleObjectToString } from '../../../util/styleProcessor';
 import { ChartData, ChartProperties, Dimension, labelDimensions, maxDimensions } from './common';
 
+const CHART_PADDING = 10;
+
 export function makeRegularChart(
 	properties: ChartProperties,
 	chartData: ChartData,
@@ -130,7 +132,13 @@ function renderGrid(
 
 	if (!properties.hideXLines) {
 		grid.selectAll('line.horizontalGrid').remove();
-		const ys = (yScale.ticks ? yScale.ticks() : yAxisTickValues).map((d: any) => yScale(d));
+		const ys = (
+			yScale.ticks
+				? yScale.ticks()
+				: chartData.axisInverted
+				? xAxisTickValues
+				: yAxisTickValues
+		).map((d: any) => yScale(d));
 		ys.indexOf(chartHeight) === -1 && ys.push(chartHeight);
 		ys.indexOf(0) === -1 && ys.push(0);
 		grid.selectAll('line.horizontalGrid')
@@ -149,7 +157,13 @@ function renderGrid(
 	}
 	if (!properties.hideYLines) {
 		grid.selectAll('line.verticalGrid').remove();
-		const xs = (xScale.ticks ? xScale.ticks() : xAxisTickValues).map((d: any) => xScale(d));
+		const xs = (
+			xScale.ticks
+				? xScale.ticks()
+				: chartData.axisInverted
+				? yAxisTickValues
+				: xAxisTickValues
+		).map((d: any) => xScale(d));
 		xs.indexOf(chartWidth) === -1 && xs.push(chartWidth);
 		xs.indexOf(0) === -1 && xs.push(0);
 		grid.selectAll('line.verticalGrid')
@@ -548,6 +562,32 @@ function computeChartDimensions(
 			chartWidth -= 10;
 			yAxisMaxDimensions.width += 10;
 		}
+	}
+
+	if (chartData.xAxisTitle) {
+		const node = svg.select('.xAxisTitle').node();
+		const [{ width, height }] = labelDimensions([chartData.xAxisTitle], node);
+		let y = 0;
+		if (properties.xAxisStartPosition !== 'top') {
+			y = chartDimension.height + height - CHART_PADDING;
+		}
+		const x = (chartWidth - width) / 2;
+		svg.select('.xAxisTitle').attr('transform', `translate(${x}, ${y})`);
+		chartHeight -= height;
+	}
+
+	if (chartData.yAxisTitle) {
+		const node = svg.select('.yAxisTitle').node();
+		svg.select('.yAxisTitle').attr('transform', '');
+		const [{ width, height }] = labelDimensions([chartData.yAxisTitle], node);
+		console.log(width, height, chartWidth, chartHeight);
+		let x = 0;
+		if (properties.yAxisStartPosition !== 'left') {
+			x = chartDimension.width + height - CHART_PADDING;
+		}
+		const y = (chartDimension.height - width) / 2;
+		svg.select('.yAxisTitle').attr('transform', `translate(${x}, ${y}) rotate(-90)`);
+		chartWidth -= height;
 	}
 
 	return {

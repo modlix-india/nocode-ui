@@ -650,6 +650,16 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
 	],
+	xAxisTitle: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
+	],
+	yAxisTitle: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
+	],
 };
 
 export { propertiesDefinition, stylePropertiesDefinition };
