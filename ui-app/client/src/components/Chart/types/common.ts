@@ -234,7 +234,7 @@ export function makeChartDataFromProperties(
 
 	const dataColors = getPathBasedValues(
 		properties.data,
-		dataSetColors,
+		properties.dataSetColors ?? dataSetColors,
 		properties.dataColorsPath,
 		yAxisData.length,
 		locationHistory,

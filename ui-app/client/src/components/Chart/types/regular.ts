@@ -580,7 +580,7 @@ function computeChartDimensions(
 		const node = svg.select('.yAxisTitle').node();
 		svg.select('.yAxisTitle').attr('transform', '');
 		const [{ width, height }] = labelDimensions([chartData.yAxisTitle], node);
-		console.log(width, height, chartWidth, chartHeight);
+
 		let x = 0;
 		if (properties.yAxisStartPosition !== 'left') {
 			x = chartDimension.width + height - CHART_PADDING;
