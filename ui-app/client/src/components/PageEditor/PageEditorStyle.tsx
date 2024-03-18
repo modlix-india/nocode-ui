@@ -2738,6 +2738,27 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			background-color: #52BD94CC;
 		}
 
+		._popupContainer._schemaFormEditor ._schemaFormEditorContainer {
+			display: flex;
+			flex-direction: column;
+			flex: 1;
+			gap: 20px;
+		}
+
+		._popupContainer._schemaFormEditor ._jsonEditorContainer{
+			border: 1px solid #eee;
+			border-radius: 4px;
+			padding: 2px;
+			flex: 1;
+			width: 100%;
+			transition: width 0s, height 0s;
+		}
+
+		._schemaFormEditor {
+			width: 600px;
+			height: 650px;
+		}
+
 		._formEditor {
 			width: 600px;
 			height: 650px;

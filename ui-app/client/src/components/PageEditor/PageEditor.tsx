@@ -40,6 +40,7 @@ import FormEditor from './components/FormEditor';
 import { shortUUID } from '../../util/shortUUID';
 import axios from 'axios';
 import { getHref } from '../util/getHref';
+import SchemaFormEditor from './components/SchemaFormEditor';
 
 function savePersonalizationCurry(
 	personalizationPath: string,
@@ -293,6 +294,7 @@ function PageEditor(props: ComponentProps) {
 	const [contextMenu, setContextMenu] = useState<ContextMenuDetails>();
 	const [showCodeEditor, setShowCodeEditor] = useState<string | undefined>(undefined);
 	const [generateFormOnComponentKey, setGenerateFormOnComponentKey] = useState<string>('');
+	const [showSchemaFormEditor, setShowSchemaFormEditor] = useState<string>('');
 	const [selectedComponentsList, setSelectedComponentsListOriginal] = useState<string[]>([]);
 
 	const setSelectedComponent = useCallback(
@@ -761,6 +763,15 @@ function PageEditor(props: ComponentProps) {
 						setClickedComponent={setGenerateFormOnComponentKey}
 					/>
 				)}
+				{showSchemaFormEditor && (
+					<SchemaFormEditor
+						setShowSchemaFormEditor={setShowSchemaFormEditor}
+						clickedComponent={showSchemaFormEditor}
+						defPath={defPath}
+						locationHistory={locationHistory}
+						pageExtractor={pageExtractor}
+					/>
+				)}
 			</div>
 			<IssuePopup
 				issue={issue}
@@ -778,6 +789,7 @@ function PageEditor(props: ComponentProps) {
 				pageOperations={operations}
 				formStorageUrl={formStorageUrl}
 				setClickedComponent={setGenerateFormOnComponentKey}
+				setShowSchemaFormEditor={setShowSchemaFormEditor}
 			/>
 		</>
 	);
