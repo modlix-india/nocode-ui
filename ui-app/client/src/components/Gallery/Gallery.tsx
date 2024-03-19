@@ -18,12 +18,11 @@ import { isNullValue } from '@fincity/kirun-js';
 import { styleDefaults } from './galleryStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import getSrcUrl from '../util/getSrcUrl';
+import { getRenderData } from '../util/getRenderData';
 
 function Gallery(props: ComponentProps) {
 	const [isActive, setIsActive] = useState(false);
-	const [startingImage, setStartingImage] = useState<
-		{ keyName: string; value: string } | undefined
-	>(undefined);
+	const [startingImageSrc, setStartingImageSrc] = useState();
 	const {
 		definition: { bindingPath, bindingPath2 },
 		context,
@@ -32,7 +31,9 @@ function Gallery(props: ComponentProps) {
 	const {
 		key,
 		properties: {
-			galleryData,
+			selectionKey,
+			datatype,
+			data,
 			showClose,
 			closeOnEscape,
 			closeOnOutsideClick,
@@ -83,12 +84,28 @@ function Gallery(props: ComponentProps) {
 		if (!bindingPathPath2) return;
 		return addListenerAndCallImmediately(
 			(_, value) => {
-				setStartingImage(value);
+				setStartingImageSrc(value);
 			},
 			pageExtractor,
 			bindingPathPath2,
 		);
 	}, []);
+
+	const galleryData = React.useMemo(
+		() =>
+			Array.from(
+				getRenderData(data, datatype, 'RANDOM', '', 'KEY', selectionKey)
+					.reduce((acc: Map<string, any>, each: any) => {
+						if (isNullValue(each?.key)) return acc;
+
+						acc.set(each.key, { key: each.key, src: each.value });
+
+						return acc;
+					}, new Map())
+					.values(),
+			),
+		[data, datatype, selectionKey],
+	);
 
 	const [showPreivew, setShowPreview] = useState(false);
 	const [showThumbnail, setShowThumbnail] = useState(true);
@@ -124,18 +141,13 @@ function Gallery(props: ComponentProps) {
 	}, [isActive, handleClose]);
 
 	const getStartingImageIndex = () => {
-		let ind = 0;
-		if (startingImage) {
-			galleryData?.forEach((el: any, index: number) => {
-				if (el[`${startingImage?.keyName}`] === startingImage?.value) ind = index;
-			});
-		}
+		let ind = galleryData.findIndex((e: any) => e.src === startingImageSrc);
+		if (ind === -1) return 0;
 		return ind;
 	};
-
 	useEffect(() => {
 		setSlideNum(getStartingImageIndex());
-	}, [startingImage]);
+	}, [startingImageSrc]);
 
 	useEffect(() => {
 		if (!slideShow) return;
@@ -213,7 +225,7 @@ function Gallery(props: ComponentProps) {
 							? '_reverse'
 							: ''
 					}`}
-					key={galleryData[transitionFrom!][`${startingImage?.keyName}`]}
+					key={galleryData[transitionFrom!].key}
 					style={prevStyle}
 					ref={previousSlide}
 				>
@@ -238,7 +250,7 @@ function Gallery(props: ComponentProps) {
 							? '_reverse'
 							: ''
 					}`}
-					key={galleryData[slideNum][`${startingImage?.keyName}`]}
+					key={galleryData[slideNum].key}
 					style={style}
 					ref={currentSlide}
 				>
@@ -260,7 +272,7 @@ function Gallery(props: ComponentProps) {
 			showChildren = [
 				<div
 					className="_eachSlide _previous"
-					key={galleryData[slideNum!][`${startingImage?.keyName}`]}
+					key={galleryData[slideNum!].key}
 					onClick={handleBubbling}
 				>
 					<img
@@ -470,7 +482,9 @@ function Gallery(props: ComponentProps) {
 	const previewComp =
 		previewMode === 'Preview' ? (
 			<div
-				className={`_previewContainer ${position} ${showPreivew ? `_show${position}` : ''}`}
+				className={`_previewContainer _${position} ${
+					showPreivew ? `_show${position}` : ''
+				}`}
 				style={resolvedStyles.previewContainer ?? {}}
 				onClick={handleBubbling}
 			>
@@ -478,11 +492,13 @@ function Gallery(props: ComponentProps) {
 					definition={props.definition}
 					subComponentName="previewContainer"
 				/>
-				<div className={`_previewCloseIcon ${!showPreivew ? '_hide' : ''}`}>
+				<div className={`_previewCloseIcon ${!showPreivew ? `_hide${position}` : ''}`}>
 					{previewCloseIcon}
 				</div>
 				<div
-					className={`_previewList ${position} ${!showPreivew ? `_hide${position}` : ''}`}
+					className={`_previewList _${position} ${
+						!showPreivew ? `_hide${position}` : ''
+					}`}
 					style={resolvedStyles.previewList ?? {}}
 				>
 					<SubHelperComponent
@@ -491,12 +507,12 @@ function Gallery(props: ComponentProps) {
 					/>
 					{galleryData?.map((each: any, index: number) => (
 						<div
-							className={`_previewImageDiv ${position} ${
+							className={`_previewImageDiv _${position} ${
 								slideNum === index ? '_selected' : ''
 							}`}
 							style={resolvedStyles.previewImageDiv ?? {}}
 							onClick={() => selectedImage(index)}
-							key={each[`${startingImage?.keyName}`]}
+							key={each.key}
 						>
 							<SubHelperComponent
 								definition={props.definition}
@@ -538,7 +554,7 @@ function Gallery(props: ComponentProps) {
 						className={`_thumbnailImageDiv ${slideNum === index ? '_selected' : ''}`}
 						style={resolvedStyles?.thumbnailImageDiv ?? {}}
 						onClick={() => selectedImage(index)}
-						key={each[`${startingImage?.keyName}`]}
+						key={each.key}
 					>
 						<SubHelperComponent
 							definition={props.definition}
@@ -666,7 +682,7 @@ const component: Component = {
 	allowedChildrenType: new Map<string, number>([['', -1]]),
 	bindingPaths: {
 		bindingPath: { name: 'Toggle Binding' },
-		bindingPath2: { name: 'Starting Image Binding' },
+		bindingPath2: { name: 'Starting Image Source Binding' },
 	},
 	defaultTemplate: {
 		key: '',

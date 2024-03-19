@@ -15,7 +15,7 @@ import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '.
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
-		name: 'galleryData',
+		name: 'data',
 		schema: SCHEMA_ANY_COMP_PROP,
 		displayName: 'Gallery Data',
 		description: 'Gallery data to be displayed on the component.',
@@ -95,7 +95,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Arrow Buttons',
 		description: 'Position of arrow buttons',
 		editor: ComponentPropertyEditor.ENUM,
-		defaultValue: 'Middle',
+		defaultValue: '_Middle',
 		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
 			{
@@ -156,22 +156,22 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: 'Right',
 		enumValues: [
 			{
-				name: '_Top',
+				name: 'Top',
 				displayName: 'top',
 				description: 'slide navigations button positioned on top',
 			},
 			{
-				name: '_Right',
+				name: 'Right',
 				displayName: 'right',
 				description: 'slide navigations button positioned on right',
 			},
 			{
-				name: '_Bottom',
+				name: 'Bottom',
 				displayName: 'bottom',
 				description: 'slide navigations button positioned on bottom',
 			},
 			{
-				name: '_Left',
+				name: 'Left',
 				displayName: 'left',
 				description: 'slide navigations button positioned on left',
 			},
@@ -240,7 +240,29 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		],
 	},
 
+	{
+		...COMMON_COMPONENT_PROPERTIES.datatype,
+		enumValues: [
+			{
+				name: 'LIST_OF_STRINGS',
+				displayName: 'List of strings',
+				description: 'data has an array of strings',
+			},
+			{
+				name: 'LIST_OF_OBJECTS',
+				displayName: 'List of objects',
+				description: 'data has an array of objects',
+			},
+		],
+	},
+	{
+		...COMMON_COMPONENT_PROPERTIES.selectionKey,
+		displayName: "Source key's value",
+		description: 'Key value that is used to generate src for Gallery.',
+	},
 	COMMON_COMPONENT_PROPERTIES.showInDesign,
+	COMMON_COMPONENT_PROPERTIES.visibility,
+	COMMON_COMPONENT_PROPERTIES.readOnly,
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

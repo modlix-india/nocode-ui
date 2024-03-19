@@ -125,7 +125,7 @@ function DropdownComponent(props: ComponentProps) {
 					labelKey,
 				)
 					.reduce((acc: Map<string, any>, each: any) => {
-						if (!each?.key) return acc;
+						if (isNullValue(each?.key)) return acc;
 
 						acc.set(each.key, each);
 
