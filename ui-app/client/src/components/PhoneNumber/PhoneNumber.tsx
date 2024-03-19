@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
 	addListener,
 	addListenerAndCallImmediately,
@@ -38,6 +38,8 @@ function PhoneNumber(props: ComponentProps) {
 		ENMPTYSTRING: '',
 		ZERO: 0,
 	};
+	const countryMap = useRef(new Map<string, DropdownOption>());
+
 	const {
 		definition: { bindingPath },
 		definition,
@@ -311,6 +313,7 @@ function PhoneNumber(props: ComponentProps) {
 				}
 			}
 		}
+		if (countryMap.current.has(dc)) return countryMap.current.get(dc);
 		return temp[0];
 	};
 	const getUnformattedNumber = (text: string | undefined) => {
@@ -466,11 +469,16 @@ function PhoneNumber(props: ComponentProps) {
 			setPhoneNumber(text);
 		}
 	};
+	const handleCountryChange = (v: DropdownOption) => {
+		setSelected(v);
+		countryMap.current.clear();
+		countryMap.current.set(v.D, v);
+	};
 
 	const leftChildren = (
 		<Dropdown
 			value={selected}
-			onChange={v => setSelected(v)}
+			onChange={handleCountryChange}
 			options={countryList}
 			isSearchable={isSearchable}
 			searchLabel={searchLabel}
