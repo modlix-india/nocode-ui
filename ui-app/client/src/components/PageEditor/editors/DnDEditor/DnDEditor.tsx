@@ -62,6 +62,7 @@ interface DnDEditorProps {
 	editorType: string | undefined;
 	sectionsListConnectionName: string | undefined;
 	sectionsCategoryList: any;
+	searchOptions: string[];
 }
 
 export default function DnDEditor({
@@ -113,6 +114,7 @@ export default function DnDEditor({
 	editorType,
 	sectionsListConnectionName,
 	sectionsCategoryList,
+	searchOptions,
 }: DnDEditorProps) {
 	const [preview, setPreview] = useState(false);
 
@@ -199,6 +201,7 @@ export default function DnDEditor({
 								onContextMenu={onContextMenu}
 								previewMode={preview}
 								editorType={editorType}
+								searchOptions={searchOptions}
 							/>
 							<DnDIFrame
 								url={url}

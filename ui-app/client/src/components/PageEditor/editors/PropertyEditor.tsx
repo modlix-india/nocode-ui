@@ -412,6 +412,97 @@ export default function PropertyEditor({
 									pageOperations={pageOperations}
 								/>
 							</div>
+							<div className="_eachProp">
+								<div className="_propLabel" title="Tags">
+									Tags :
+									<span className="_description _tooltip" title="Tags">
+										i
+									</span>
+								</div>
+								<div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+									{Array.isArray(def?.properties?._tags) &&
+										def?.properties?._tags?.map((tag, index) => (
+											<div
+												key={`${tag}_${index}`}
+												style={{
+													display: 'flex',
+													alignItems: 'center',
+													padding: '2px 8px',
+													border: '1px solid #8EADF4',
+													borderRadius: '15px',
+													backgroundColor: '#EDF2FD',
+													gap: '5px',
+												}}
+											>
+												{tag}
+												<i
+													style={{
+														cursor: 'pointer',
+														color: '#B8B8B8',
+														fontSize: '16px',
+													}}
+													className="fa-solid fa-xmark"
+													onClick={() => {
+														if (!tag) return;
+														let newDef = duplicate(def);
+														if (!newDef.properties._tags) return;
+
+														newDef.properties._tags =
+															newDef.properties._tags.filter(
+																(item: string) => item !== tag,
+															);
+														updateDefinition(
+															defPath!,
+															locationHistory,
+															pageExtractor,
+															selectedComponent,
+															newDef,
+														);
+													}}
+												></i>
+											</div>
+										))}
+								</div>
+								<PropertyValueEditor
+									appPath={appPath}
+									pageDefinition={pageDef}
+									propDef={{
+										name: 'Tags',
+										displayName: 'Tags',
+										description: 'Tags Identifier',
+										schema: SCHEMA_STRING_COMP_PROP,
+									}}
+									value={{ value: '' }}
+									onlyValue={true}
+									storePaths={storePaths}
+									onChange={v => {
+										if (!v.value?.trim()) return;
+										const newDef = duplicate(def);
+										let val = v.value;
+
+										if (!newDef.properties) {
+											newDef.properties = {};
+										}
+
+										newDef?.properties?._tags
+											? !newDef?.properties?._tags.includes(val) &&
+											  newDef?.properties?._tags.push(val)
+											: (newDef.properties._tags = [val]);
+
+										updateDefinition(
+											defPath!,
+											locationHistory,
+											pageExtractor,
+											selectedComponent,
+											newDef,
+										);
+									}}
+									onShowCodeEditor={onShowCodeEditor}
+									editPageName={editPageName}
+									slaveStore={slaveStore}
+									pageOperations={pageOperations}
+								/>
+							</div>
 						</div>
 					</PropertyGroup>
 				)}

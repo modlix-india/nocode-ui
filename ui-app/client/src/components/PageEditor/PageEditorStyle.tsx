@@ -89,19 +89,110 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			opacity: 0.6;
 		}
 
-		${PREFIX} ._filterBar {
+		${PREFIX} ._filterBarContainer {
+			display: flex;
+			align-items: center;
+			padding: 15px 10px;
+			gap: 8px;
+		}
+
+		${PREFIX} ._filterBarContainer ._filterBar {
+			position: relative;
 			display: flex;
 			flex-direction: row;
 			align-items: center;
 			justify-content: center;
-			padding: 15px 10px;
 			gap: 5px;
-			width: 100%;
+			width: auto;
+			background-color: #F8FAFB;
+			padding: 5px;
+			margin: 10px 0px;
+			border: 1.2px solid #E9ECEF;
+			border-radius: 5px;
 		}
 
-		${PREFIX} ._filterBar i.fa {
+		${PREFIX} ._filterBarContainer ._filterBar ._selectionContainer {
+			position: relative;
+		}
+
+		${PREFIX} ._filterBarContainer ._filterBar ._selectionContainer ._selectedOptionBtn {
+			width: 65px;
+			height: 38px;
+			display: flex;
+			align-items: center;
+			justify-content: space-evenly;
+			background-color: #fff;
+			box-sizing: border-box;
+			border-radius: 5px 0 0 5px;
+			padding: 0 4px;
+			cursor: pointer;
+			gap: 2px;
+		}
+
+		${PREFIX} ._filterBarContainer ._filterBar ._selectionContainer ._selectedOptionBtn ._selectedOption {
+			width: 48px;
+			display: flex;
+			justify-content: center;
+			color: rgba(0, 0, 0, 0.7);
+		}
+
+		${PREFIX} ._filterBarContainer ._filterBar ._selectionContainer ._selectedOptionBtn i {
+			color: #ADADAD;
+		}
+
+		${PREFIX} ._filterBarContainer ._filterBar ._selectionContainer ._dropdownOptions {
+			width: 80px;
+			position: absolute;
+			top: calc(100% + 5px);
+			left: -5px;
+			display: flex;
+			flex-direction: column;
+			cursor: pointer;
+			border: 1px solid rgba(0, 0, 0, 0.1);
+			border-radius: 5px;
+			background-color: #fff;
+			z-index: 1;
+			box-shadow: 0px 1px 4px 0px #00000026;
+		}
+
+		${PREFIX} ._filterBarContainer ._filterBar ._selectionContainer ._dropdownOptions ._dropdownOption {
+			padding: 7px 13px;
+		}
+
+		${PREFIX} ._filterBarContainer ._filterBar ._regExIconContainer {
+			position: absolute;
+			right: 5px;
+			width: 20px;
+			height: 20px;
+			cursor: pointer;
+		}
+
+		${PREFIX} ._filterBarContainer ._filterBar ._regExIconContainer i {
+			position: absolute;
+			color: rgba(51, 51, 51, 0.6);
+		}
+
+		${PREFIX} ._filterBarContainer ._filterBar ._regExIconContainer i:nth-child(1) {
+			right: 0px;
+			top: 1px;
+			font-size: 11px;
+		}
+
+		${PREFIX} ._filterBarContainer ._filterBar ._regExIconContainer i:nth-child(2) {
+			bottom: 0;
+			font-size: 7px;
+		}
+
+		${PREFIX} ._filterBarContainer i.fa {
 			font-size: 22px;
 			cursor: pointer;
+		}
+
+		${PREFIX} ._filterBarContainer i.fa:nth-child(2) {
+			color: #4C7FEE;
+		}
+
+		${PREFIX} ._filterBarContainer i:nth-child(3) {
 			color: #52BD94;
 		}
 
@@ -191,8 +282,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._compsTree ._treeNode ._treeText ._filter {
-			color: #52BD94;
-			font-weight: 600;
+			color: #4C7FEE;
+			margin-right: 5px;
 		}
 
 		${PREFIX} ._compsTree ._treeNodeName i.fa.fa-caret-right {
@@ -306,10 +397,11 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._filterBar input {
-			width: 100%;
+			width: auto;
 			height: 38px;
-			border: 0.8px solid #E9ECEF;
-			border-radius: 2px;
+			border: none;
+			outline: none;
+			padding: 5px 20px 5px 5px;
 		}
 
 		textarea._peInput {

@@ -6,9 +6,10 @@ import {
 	addListenerAndCallImmediately,
 	addListenerAndCallImmediatelyWithChildrenActivity,
 } from '../../../../context/StoreContext';
-import { LocationHistory, PageDefinition } from '../../../../types/common';
+import { ComponentDefinition, LocationHistory, PageDefinition } from '../../../../types/common';
 import { ContextMenuDetails } from '../../components/ContextMenu';
 import { PageOperations } from '../../functions/PageOperations';
+import DnDEditorSearchInput from './DnDEditorSearchInput';
 
 interface DnDNavigationBarProps {
 	personalizationPath: string | undefined;
@@ -26,6 +27,7 @@ interface DnDNavigationBarProps {
 	onContextMenu: (m: ContextMenuDetails) => void;
 	previewMode: boolean;
 	editorType: string | undefined;
+	searchOptions: string[];
 }
 
 export default function DnDNavigationBar({
@@ -44,6 +46,7 @@ export default function DnDNavigationBar({
 	onContextMenu,
 	previewMode,
 	editorType,
+	searchOptions,
 }: DnDNavigationBarProps) {
 	const [componentTree, setComponentTree] = React.useState(false); // component tree is open or not
 	const [pageDef, setPageDef] = useState<PageDefinition>(); // page def object
@@ -52,7 +55,11 @@ export default function DnDNavigationBar({
 	const [filter, setFilter] = useState(''); // filter for components search in our page
 	const [lastOpened, setLastOpened] = useState<string | undefined>(undefined); // which component expand last
 	const [dragStart, setDragStart] = useState<boolean>(false); // dragging any component or not
-	const [map, setMap] = useState(new Map<string, string>()); // contains all the components object ids
+	const [map, setMap] = useState(new Map<string, string>()); // setMap will contain a map with key as children and value as parentKey
+	const [filterHandle, setFilterHandle] = useState<NodeJS.Timeout | undefined>();
+	const [showOptions, setShowOptions] = useState<boolean>();
+	const [selectedOption, setSelectedOption] = useState<string>('All');
+	const [filteredComponentList, setFilteredComponentList] = useState<string[]>();
 
 	useEffect(() => {
 		if (!personalizationPath) return;
@@ -79,8 +86,8 @@ export default function DnDNavigationBar({
 			addListenerAndCallImmediatelyWithChildrenActivity(
 				(_, v) => {
 					setPageDef(v);
-					setMap(
-						new Map<string, string>(
+					setMap(() => {
+						let newData = new Map<string, string>(
 							Object.values(v?.componentDefinition ?? {})
 								.map((e: any) => ({
 									parentKey: e.key as string,
@@ -88,8 +95,9 @@ export default function DnDNavigationBar({
 								}))
 								.filter(e => !!e.children.length)
 								.flatMap(e => e.children.map(f => [f, e.parentKey])),
-						),
-					);
+						);
+						return newData;
+					});
 				},
 				pageExtractor,
 				`${defPath}`,
@@ -112,24 +120,54 @@ export default function DnDNavigationBar({
 		setOldSelected(selectedComponent);
 	}, [pageDef, expandAll, selectedComponent, openParents, map, setOpenParents, setOldSelected]);
 
+	// here we are just opening the parents of the filtered components
 	const applyFilter = useCallback(
 		(f: string) => {
 			if (!f.trim()) return;
 
 			const set = new Set(openParents);
+			let filteredComponents: string[] = [];
 			Object.values(pageDef?.componentDefinition ?? {})
-				.filter(e => (e.name ?? '').toUpperCase().includes(f.toUpperCase()))
+				.filter(e => {
+					if (selectedOption.includes('Name')) {
+						return (e.name ?? '').toUpperCase().includes(f.toUpperCase());
+					} else if (selectedOption.includes('Type')) {
+						return (e.type ?? '').toUpperCase().includes(f.toUpperCase());
+					} else if (selectedOption.includes('Key')) {
+						return (e.key ?? '').includes(f);
+					} else if (selectedOption.includes('Tag')) {
+						let tags = e.properties?._tags ?? ([] as string[]);
+						if (Array.isArray(tags)) return tags.includes(f);
+					} else if (selectedOption.includes('All')) {
+						const nameUpper = (e.name ?? '').toUpperCase();
+						const typeUpper = (e.type ?? '').toUpperCase();
+						const key = e.key ?? '';
+						const tags = e.properties?._tags ?? ([] as string[]);
+						return (
+							selectedOption.includes('All') &&
+							(nameUpper.includes(f.toUpperCase()) ||
+								typeUpper.includes(f.toUpperCase()) ||
+								key.includes(f) ||
+								(Array.isArray(tags) && tags.includes(f)))
+						);
+					}
+				})
 				.map(e => e.key)
 				.forEach(e => {
+					filteredComponents.push(e);
 					let p: string | undefined = e;
 					while ((p = map.get(p))) {
-						if (expandAll) set.delete(p);
-						else set.add(p);
+						if (expandAll) {
+							set.delete(p);
+						} else {
+							set.add(p);
+						}
 					}
 				});
+			setFilteredComponentList(filteredComponents);
 			setOpenParents(set);
 		},
-		[openParents, setOpenParents, pageDef, expandAll, map],
+		[openParents, setOpenParents, pageDef, expandAll, map, selectedOption],
 	);
 
 	useEffect(() => {
@@ -150,32 +188,28 @@ export default function DnDNavigationBar({
 		}
 	}, [selectedComponent]);
 
-	const [filterHandle, setFilterHandle] = useState<NodeJS.Timeout | undefined>();
-
 	if (!componentTree || previewMode || !pageDef?.componentDefinition || !pageDef.rootComponent)
 		return <div className="_propBar"></div>;
 
 	return (
 		<div className="_propBar _compNavBarVisible _left">
-			<div className="_filterBar">
-				<input
-					type="text"
-					placeholder="Search filter"
-					value={filter}
-					onChange={e => {
-						setFilter(e.target.value);
-						if (filterHandle) clearTimeout(filterHandle);
-						setFilterHandle(setTimeout(() => applyFilter(e.target.value), 1000));
-					}}
-				/>
-				<i
-					className={`fa fa-solid ${expandAll ? 'fa-circle-minus' : 'fa-circle-plus'}`}
-					onClick={() => {
-						setExpandAll(!expandAll);
-						setOpenParents(new Set());
-					}}
-				></i>
-			</div>
+			<DnDEditorSearchInput
+				filter={filter}
+				setFilter={setFilter}
+				filterHandle={filterHandle}
+				setFilterHandle={setFilterHandle}
+				applyFilter={applyFilter}
+				expandAll={expandAll}
+				setExpandAll={setExpandAll}
+				setOpenParents={setOpenParents}
+				showOptions={showOptions}
+				setShowOptions={setShowOptions}
+				selectedOption={selectedOption}
+				setSelectedOption={setSelectedOption}
+				searchOptions={searchOptions}
+				filteredComponentList={filteredComponentList}
+				onSelectedComponentListChanged={onSelectedComponentListChanged}
+			/>
 			<div className="_compsTree">
 				<CompTree
 					pageDef={pageDef}
@@ -202,6 +236,7 @@ export default function DnDNavigationBar({
 					setDragStart={setDragStart}
 					filter={filter}
 					editorType={editorType}
+					selectedOption={selectedOption}
 				/>
 			</div>
 		</div>
@@ -228,6 +263,7 @@ interface CompTreeProps {
 	setDragStart: (v: boolean) => void;
 	filter: string;
 	editorType: string | undefined;
+	selectedOption: string;
 }
 
 function CompTree({
@@ -250,6 +286,7 @@ function CompTree({
 	setDragStart,
 	filter,
 	editorType,
+	selectedOption,
 }: CompTreeProps) {
 	const comp = pageDef?.componentDefinition[compKey];
 	const hoverLonger = useRef<NodeJS.Timeout | null>();
@@ -317,6 +354,7 @@ function CompTree({
 					setDragStart={setDragStart}
 					filter={filter}
 					editorType={editorType}
+					selectedOption={selectedOption}
 				/>
 			));
 	}
@@ -365,7 +403,16 @@ function CompTree({
 		</>
 	) : (
 		<span className="_treeText">
-			{filter ? <Filter name={comp.name ?? compKey} filter={filter} /> : comp.name ?? compKey}
+			{filter ? (
+				<Filter
+					name={comp.name ?? compKey}
+					filterString={filter}
+					filterBy={selectedOption}
+					comp={comp}
+				/>
+			) : (
+				comp.name ?? compKey
+			)}
 		</span>
 	);
 
@@ -514,26 +561,37 @@ function SubCompTree({
 	);
 }
 
-function Filter({ name, filter }: { name: string; filter: string }) {
-	const parts = name.toUpperCase().split(filter.toUpperCase());
-	if (parts.length === 1) return <>{name}</>;
+function Filter({
+	name,
+	filterString,
+	filterBy,
+	comp,
+}: {
+	name: string;
+	filterString: string;
+	filterBy: string;
+	comp: ComponentDefinition;
+}) {
+	const key = comp.key;
+	const type = comp.type;
+	const tags = comp?.properties?._tags ?? ([] as string[]);
 
-	const result: ReactNode[] = [];
-	let start = 0;
-	for (let i = 0; i < parts.length; i++) {
-		if (i !== 0 && parts[i].length === 0) continue;
-		result.push(<span key={`part${i}`}>{name.substring(start, start + parts[i].length)}</span>);
-
-		start += parts[i].length;
-		if (i < parts.length - 1) {
-			result.push(
-				<span key={`filter${i}`} className="_filter">
-					{name.substring(start, start + filter.length)}
-				</span>,
-			);
-
-			start += filter.length;
-		}
+	const newResult: ReactNode[] = [];
+	const cond1 = name.toUpperCase().includes(filterString.toUpperCase());
+	const cond2 = key.toUpperCase().includes(filterString.toUpperCase());
+	const cond3 = type.toUpperCase().includes(filterString.toUpperCase());
+	const cond4 = Array.isArray(tags) && tags.includes(filterString);
+	if (
+		(filterBy === 'Name' && cond1) ||
+		(filterBy === 'Key' && cond2) ||
+		(filterBy === 'Type' && cond3) ||
+		(filterBy === 'Tags' && cond4) ||
+		(filterBy === 'All' && (cond1 || cond2 || cond3 || cond4))
+	) {
+		newResult.push(<i className="fa-solid fa-check _filter"></i>);
 	}
-	return <>{result}</>;
+
+	newResult.push(<span>{name}</span>);
+
+	return newResult;
 }

@@ -24,6 +24,7 @@ import { AnimationValueEditor } from './AnimationValueEditor';
 import { Dropdown } from '../stylePropertyValueEditors/simpleEditors/Dropdown';
 import { ColorSelector } from '../stylePropertyValueEditors/simpleEditors/ColorSelector';
 import SectionPropertyValueEditor from './SectionPropertyValueEditor';
+import TagEditor from './TagEditor';
 
 interface PropertyValueEditorProps {
 	propDef: ComponentPropertyDefinition;
@@ -406,6 +407,20 @@ function makeValueEditor(
 								: Number(chngValue),
 					})
 				}
+			/>
+		);
+	}
+
+	if (propDef.name === 'Tags') {
+		return (
+			<TagEditor
+				propDef={propDef}
+				showPlaceholder={showPlaceholder}
+				chngValue={chngValue}
+				setChngValue={setChngValue}
+				onChange={onChange}
+				value={value}
+				pageDefinition={pageDef}
 			/>
 		);
 	}

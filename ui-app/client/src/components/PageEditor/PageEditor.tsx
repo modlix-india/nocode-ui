@@ -294,6 +294,7 @@ function PageEditor(props: ComponentProps) {
 	const [showCodeEditor, setShowCodeEditor] = useState<string | undefined>(undefined);
 	const [generateFormOnComponentKey, setGenerateFormOnComponentKey] = useState<string>('');
 	const [selectedComponentsList, setSelectedComponentsListOriginal] = useState<string[]>([]);
+	const [searchOptions, setSearchOptions] = useState(['All', 'Tags', 'Key', 'Name', 'Type']);
 
 	const setSelectedComponent = useCallback(
 		(v: string) => {
@@ -729,6 +730,8 @@ function PageEditor(props: ComponentProps) {
 					editorType={editorType}
 					sectionsListConnectionName={sectionsListConnectionName}
 					sectionsCategoryList={sectionsCategoryList}
+					searchOptions={searchOptions}
+					setSearchOptions={setSearchOptions}
 				/>
 				<CodeEditor
 					showCodeEditor={showCodeEditor}
