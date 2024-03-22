@@ -47,7 +47,7 @@ export default function TagEditor({
 
 	return (
 		<>
-			<div style={{ width: '100%', display: 'flex' }}>
+			<div className="_tagInputContainer">
 				<input
 					className="_peInput"
 					type="text"
@@ -71,33 +71,19 @@ export default function TagEditor({
 					}}
 				/>
 				{tagsList && tagsList.length > 0 && (
-					<div
-						style={{
-							position: 'absolute',
-							top: 'calc(100% - 10px)',
-							width: '259px',
-							backgroundColor: '#FFF',
-							border: '1px solid rgba(0, 0, 0, 0.10)',
-							zIndex: '2',
-							boxShadow: '0px 1px 4px 0px #00000026',
-							borderRadius: '6px',
-							marginTop: '4px',
-							maxHeight: '250px',
-							overflow: 'auto',
-						}}
-					>
+					<div className="_tagOptionContainer">
 						{tagsList.map(tag => (
 							<div
 								key={tag}
-								style={{
-									width: '100%',
-									padding: '10px',
-									fontSize: '14px',
-									color: 'rgba(0,0,0,0.7)',
-									cursor: 'pointer',
-								}}
+								className="_tagOption"
 								onClick={e => {
-									setChngValue(tag);
+									onChange({
+										...value,
+										value:
+											tag === '' || tag === propDef.defaultValue
+												? undefined
+												: tag,
+									});
 								}}
 							>
 								{tag}

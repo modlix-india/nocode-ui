@@ -471,6 +471,33 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			font-size: 14px;
 		}
 
+		._tagInputContainer {
+			width: 100%;
+			display: flex;
+		}
+
+		._tagInputContainer ._tagOptionContainer {
+			position: absolute;
+			top: calc(100% - 10px);
+			width: 259px;
+			background-color: #FFF;
+			border: 1px solid rgba(0, 0, 0, 0.10);
+			zIndex: 2;
+			box-shadow: 0px 1px 4px 0px #00000026;
+			border-radius: 6px;
+			margin-top: 4px;
+			max-height: 250px;
+			overflow: auto;
+		}
+
+		._tagInputContainer ._tagOptionContainer ._tagOption {
+			width: 100%;
+			padding: 10px;
+			font-size: 14px;
+			color: rgba(0,0,0,0.7);
+			cursor: pointer;
+		}
+
 		._searchUploadContainer ._searchInputContainer i {
 			position: absolute;
 			top: 50%;
