@@ -65,24 +65,36 @@ function Chart(props: Readonly<ComponentProps>) {
 	);
 
 	const containerRef = useRef<HTMLDivElement>(null);
-	const [chartDimension, setChartDimension] = React.useState<Dimension>({ width: 0, height: 0 });
-	const [legendDimesion, setLegendDimension] = React.useState<Dimension>({ width: 0, height: 0 });
+	const [containerDimension, setContainerDimension] = React.useState<Dimension>({
+		width: 0,
+		height: 0,
+	});
+	const [legendDimension, setLegendDimension] = React.useState<Dimension>({
+		width: 0,
+		height: 0,
+	});
 
 	const [oldProperties, setOldProperties] = React.useState<any>(undefined);
 	const [chartData, setChartData] = React.useState<ChartData | undefined>(undefined);
 
+	const [hiddenDataSets, setHiddenDataSets] = React.useState<Set<number>>(new Set<number>());
+
 	useEffect(() => {
 		if (deepEqual(properties, oldProperties)) return;
-		console.log('Setting props', properties);
 		setOldProperties(properties);
-		setChartData(makeChartDataFromProperties(properties, locationHistory, pageExtractor));
-	}, [oldProperties, properties, locationHistory, pageExtractor]);
+		setChartData(
+			makeChartDataFromProperties(properties, locationHistory, pageExtractor, hiddenDataSets),
+		);
+	}, [oldProperties, properties, locationHistory, pageExtractor, hiddenDataSets]);
 
 	useEffect(() => {
 		if (isNullValue(containerRef.current)) return;
 
 		let rect = containerRef.current!.getBoundingClientRect();
-		setChartDimension({ width: rect.width, height: rect.height });
+		setContainerDimension({
+			width: Math.floor(rect.width),
+			height: Math.floor(rect.height),
+		});
 		const resizeObserver = new ResizeObserver(() => {
 			setTimeout(() => {
 				const newRect = containerRef.current?.getBoundingClientRect();
@@ -93,14 +105,34 @@ function Chart(props: Readonly<ComponentProps>) {
 				)
 					return;
 				rect = newRect;
-				setChartDimension({ width: newRect.width, height: newRect.height });
+				setContainerDimension({
+					width: Math.floor(newRect.width),
+					height: Math.floor(newRect.height),
+				});
 			}, 2000);
 		});
 		resizeObserver.observe(containerRef.current!);
 		return () => resizeObserver.disconnect();
-	}, [containerRef.current, setChartDimension]);
+	}, [containerRef.current, setContainerDimension]);
+
+	useEffect(() => setHiddenDataSets(new Set()), [chartData?.yAxisData?.length]);
 
 	let chart = <></>;
+
+	const x = properties.legendPosition === 'left' ? legendDimension.width : 0;
+	const y = properties.legendPosition === 'top' ? legendDimension.height : 0;
+	const width =
+		containerDimension.width -
+		(properties.legendPosition === 'left' || properties.legendPosition === 'right'
+			? legendDimension.width
+			: 0);
+	const height =
+		containerDimension.height -
+		(properties.legendPosition === 'top' || properties.legendPosition === 'bottom'
+			? legendDimension.height
+			: 0);
+
+	const chartDimension: Dimension = { x, y, width, height };
 
 	if (properties?.type === 'waffle') {
 		chart = <Waffle properties={properties} containerRef={containerRef.current} />;
@@ -114,31 +146,43 @@ function Chart(props: Readonly<ComponentProps>) {
 		chart = (
 			<Regular
 				properties={properties}
+				containerDimension={containerDimension}
+				legendDimension={legendDimension}
 				chartDimension={chartDimension}
-				legendDimension={legendDimesion}
-				locationHistory={locationHistory}
-				pageExtractor={pageExtractor}
+				hiddenDataSets={hiddenDataSets}
+				chartData={chartData}
+				xAxisLabelStyle={resolvedStyles.xAxisLabel ?? {}}
+				yAxisLabelStyle={resolvedStyles.yAxisLabel ?? {}}
+				horizontalLinesStyle={resolvedStyles.horizontalLines ?? {}}
+				verticalLinesStyle={resolvedStyles.verticalLines ?? {}}
 			/>
 		);
 	}
-
-	console.log(resolvedStyles);
 
 	return (
 		<div className={`comp compChart `} style={resolvedStyles.comp ?? {}} ref={containerRef}>
 			<HelperComponent context={props.context} definition={definition} />
 			<svg
-				viewBox={`0 0 ${chartDimension.width} ${chartDimension.height}`}
+				viewBox={`0 0 ${containerDimension.width} ${containerDimension.height}`}
 				xmlns="http://www.w3.org/2000/svg"
 			>
 				<Legends
 					chartData={chartData}
 					properties={properties}
-					chartDimension={chartDimension}
-					legendDimension={legendDimesion}
-					styles={resolvedStyles.legendLabel ?? {}}
+					containerDimension={containerDimension}
+					legendDimension={legendDimension}
+					labelStyles={resolvedStyles.legendLabel ?? {}}
+					rectangleStyles={resolvedStyles.legendRectangle ?? {}}
 					onLegendDimensionChange={d => setLegendDimension(d)}
+					hiddenDataSets={hiddenDataSets}
+					onToggleDataSet={d => {
+						const nSet = new Set(hiddenDataSets);
+						if (nSet.has(d)) nSet.delete(d);
+						else nSet.add(d);
+						setHiddenDataSets(nSet);
+					}}
 				/>
+				{chart}
 			</svg>
 		</div>
 	);
@@ -255,9 +299,27 @@ const component: Component = {
 			icon: 'fa fa-solid fa-box',
 		},
 		{
+			name: 'legendRectangle',
+			displayName: 'Legend Rectangle',
+			description: 'Legend Rectangle',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
 			name: 'tooltip',
 			displayName: 'Tooltip',
 			description: 'Tooltip',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'horizontalLines',
+			displayName: 'Horizontal Lines',
+			description: 'Horizontal Lines',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'verticalLines',
+			displayName: 'Vertical Lines',
+			description: 'Vertical Lines',
 			icon: 'fa fa-solid fa-box',
 		},
 	],
