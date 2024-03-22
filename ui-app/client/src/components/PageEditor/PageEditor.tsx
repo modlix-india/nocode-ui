@@ -731,7 +731,6 @@ function PageEditor(props: ComponentProps) {
 					sectionsListConnectionName={sectionsListConnectionName}
 					sectionsCategoryList={sectionsCategoryList}
 					searchOptions={searchOptions}
-					setSearchOptions={setSearchOptions}
 				/>
 				<CodeEditor
 					showCodeEditor={showCodeEditor}
