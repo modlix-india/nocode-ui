@@ -194,11 +194,12 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 	},
 	{
-		name: 'xAxisDataPath',
+		name: 'xAxisDataSetPath',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'X Axis Data Expr. in Object',
 		description: 'Use "Data." prefix to access data object in expression',
 		group: ComponentPropertyGroup.DATA,
+		multiValued: true,
 	},
 	{
 		name: 'hideXAxis',
@@ -265,13 +266,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'dataSetLabels',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Data Set Labels',
-		multiValued: true,
-	},
-	{
-		name: 'yAxisLabels',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Y Axis Labels for Ordinal Axis',
-		group: ComponentPropertyGroup.DATA,
 		multiValued: true,
 	},
 	{
@@ -351,7 +345,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'yAxisDataSetStyle',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Y Axis Data Set Style',
+		displayName: 'Data Set Style',
 		description: 'Style for the data set, make sure the style is supported by the chart type.',
 		group: ComponentPropertyGroup.DATA,
 		multiValued: true,

@@ -252,4 +252,15 @@ export default class RepetetiveArray<T> implements Iterable<T> {
 		}
 		return false;
 	}
+
+	public static from<T>(arr: ArrayLike<T> | Iterable<T>): RepetetiveArray<T> {
+		const repArray = new RepetetiveArray<T>();
+		for (const element of Array.from(arr)) repArray.push(element);
+
+		return repArray;
+	}
+
+	public join(separator?: string): string {
+		return this.toArray().join(separator);
+	}
 }

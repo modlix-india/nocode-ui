@@ -176,7 +176,7 @@ function Chart(props: Readonly<ComponentProps>) {
 		return () => resizeObserver.disconnect();
 	}, [svgRef.current, setSvgDimension]);
 
-	useEffect(() => setHiddenDataSets(new Set()), [chartData?.yAxisData?.length]);
+	useEffect(() => setHiddenDataSets(new Set()), [chartData?.dataSetData?.length]);
 
 	return (
 		<div className={`comp compChart `} style={resolvedStyles.comp ?? {}}>

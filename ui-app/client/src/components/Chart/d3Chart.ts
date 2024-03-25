@@ -11,9 +11,9 @@ export function makeChart(
 ) {
 	const type = `${properties.chartType}-${chartData.hasBar}`;
 
-	if (d3.select(svgRef).attr('data-chart-type') !== type) {
-		d3.select(svgRef).attr('data-chart-type', type);
-		d3.select(svgRef).select('g.chartGroup').selectAll('*').remove();
+	if (globalThis.d3.select(svgRef).attr('data-chart-type') !== type) {
+		globalThis.d3.select(svgRef).attr('data-chart-type', type);
+		globalThis.d3.select(svgRef).select('g.chartGroup').selectAll('*').remove();
 	}
 
 	if (properties.chartType === 'regular') {

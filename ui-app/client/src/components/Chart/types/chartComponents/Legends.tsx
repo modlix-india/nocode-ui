@@ -381,7 +381,7 @@ function makeLegendItems(
 	const labelGroups: Array<LegendGroupItem> = [];
 	if (!labelWidthRef.current) return labelGroups;
 
-	for (let i = 0; i < (chartData?.yAxisData?.length ?? 0); i++) {
+	for (let i = 0; i < (chartData?.dataSetData?.length ?? 0); i++) {
 		const label = properties?.dataSetLabels?.[i] ?? `Data set ${i + 1}`;
 		labelWidthRef.current.innerHTML = label;
 		const { width, height } = labelWidthRef.current.getBoundingClientRect();
@@ -398,9 +398,9 @@ function makeLegendItems(
 			label,
 			labelDimension,
 			rectDimension,
-			color: chartData?.dataColors?.[i]?.safeGet(0) ?? 'black',
-			fillOpacity: chartData?.fillOpacity?.[i]?.safeGet(0) ?? 1,
-			strokeOpacity: chartData?.strokeOpacity?.[i]?.safeGet(0) ?? 1,
+			color: chartData?.dataSetData?.[i]?.dataColors?.safeGet(0) ?? 'black',
+			fillOpacity: chartData?.dataSetData?.[i]?.fillOpacity?.safeGet(0) ?? 1,
+			strokeOpacity: chartData?.dataSetData?.[i]?.strokeOpacity?.safeGet(0) ?? 1,
 		});
 	}
 	return labelGroups;

@@ -48,7 +48,6 @@ export enum DataSetStyle {
 	Lollipop = 'lollipop',
 
 	Bar = 'bar',
-	horizontalBar = 'horizontalBar',
 
 	Pie = 'pie',
 	Doughnut = 'doughnut',
@@ -92,7 +91,7 @@ export interface ChartProperties {
 	xAxisReverse?: boolean;
 	xAxisHideTicks?: boolean;
 	xAxisHideLabels?: boolean;
-	xAxisDataPath?: string; // Done.
+	xAxisDataSetPath?: string[]; // Done.
 	hideXAxis?: boolean;
 	hideXAxisLine: boolean;
 	hideXLines?: boolean;
@@ -101,7 +100,6 @@ export interface ChartProperties {
 	yAxisStartPosition: 'left' | 'right' | 'center' | 'x0' | 'custom';
 	yAxisStartCustomValue?: string;
 	dataSetLabels?: string[]; //Done.
-	yAxisLabels?: string[]; // Done.
 	yAxisLabelsSort: 'none' | 'ascending' | 'descending'; // Done.
 	yAxisMin?: number; // Done.
 	yAxisSuggestedMin?: number; // Done.
@@ -119,7 +117,6 @@ export interface ChartProperties {
 	yAxisTitle?: string;
 	stackedAxis: 'none' | 'x' | 'y' | 'z';
 	legendPosition?: 'top' | 'bottom' | 'left' | 'right' | 'none';
-
 	invertAxis?: boolean;
 	animationTime: number;
 	animationTimingFunction: 'linear' | 'ease' | 'ease-in' | 'ease-out' | 'ease-in-out';
@@ -176,17 +173,22 @@ function simpleExtractor(
 
 const colorScheme: Map<string, string[]> = new Map();
 
+export interface DataSetData {
+	data: { x: any; y: any }[];
+	isHidden: boolean;
+	dataColors: RepetetiveArray<string>;
+	fillOpacity: RepetetiveArray<number>;
+	strokeOpacity: RepetetiveArray<number>;
+	pointType: RepetetiveArray<PointType>;
+	pointSize: RepetetiveArray<number>;
+	dataSetStyle: DataSetStyle;
+}
 export interface ChartData {
-	yAxisData: any[][];
-	xAxisData: any[];
+	dataSetData: DataSetData[];
+	xUniqueData: any[];
+	yUniqueData: any[];
 	xAxisType: AxisType | 'time';
 	yAxisType: AxisType;
-	dataColors: RepetetiveArray<string>[];
-	fillOpacity: RepetetiveArray<number>[];
-	strokeOpacity: RepetetiveArray<number>[];
-	pointType: RepetetiveArray<PointType>[];
-	pointSize: RepetetiveArray<number>[];
-	dataSetStyles: RepetetiveArray<DataSetStyle>[];
 	axisInverted: boolean;
 	hasBar: boolean;
 	xAxisTitle?: string;
@@ -199,25 +201,23 @@ export function makeChartDataFromProperties(
 	pageExtractor: PageStoreExtractor,
 	hiddenDataSets: Set<number>,
 ): ChartData {
-	const hasBar =
-		properties.chartType === 'regular' &&
-		(properties.yAxisDataSetStyle?.some(
-			style => style === 'bar' || style === 'horizontalBar',
-		) ??
-			true);
-
-	let xAxisData = makeXAxisData(properties, locationHistory, pageExtractor);
-	let yAxisData = makeYAxisData(
+	let yAxisData = makeYAxisData(properties, locationHistory, pageExtractor, hiddenDataSets);
+	let xAxisData = makeXAxisData(
+		yAxisData.length,
 		properties,
 		locationHistory,
 		pageExtractor,
-		hasBar,
 		hiddenDataSets,
 	);
 
+	const xUniqueData = xAxisData?.length ? Array.from(new Set(xAxisData.flat(Infinity))) : [];
+	const yUniqueData = yAxisData?.length ? Array.from(new Set(yAxisData.flat(Infinity))) : [];
+
 	const xAxisType: AxisType | 'time' =
-		properties.xAxisType === 'time' ? 'time' : findDerivedType(xAxisData, properties.xAxisType);
-	const yAxisType = findDerivedType(yAxisData, properties.yAxisType);
+		properties.xAxisType === 'time'
+			? 'time'
+			: findDerivedType(xUniqueData, properties.xAxisType);
+	const yAxisType = findDerivedType(yUniqueData, properties.yAxisType);
 
 	let dataSetColors: string[] = [];
 	if (!properties.dataSetColors) {
@@ -277,32 +277,52 @@ export function makeChartDataFromProperties(
 		pageExtractor,
 	);
 
-	const dataSetStyles = getPathBasedValues(
-		properties.data,
-		properties.yAxisDataSetStyle ?? [],
-		[],
-		yAxisData.length,
-		locationHistory,
-		pageExtractor,
-	);
-
 	const axisInverted = !!properties.invertAxis && properties.stackedAxis !== 'x';
 
+	const dataSetStylesArray = properties.yAxisDataSetStyle?.length
+		? [...properties.yAxisDataSetStyle]
+		: (['bar'] as DataSetStyle[]);
+
+	let dataSetStyles: RepetetiveArray<DataSetStyle> = new RepetetiveArray<DataSetStyle>();
+	if (dataSetStylesArray.length != yAxisData.length) {
+		const filler = new RepetetiveArray<DataSetStyle>();
+		for (let i = 0; i < yAxisData.length; i++)
+			filler.push(dataSetStylesArray[i % dataSetStylesArray.length]);
+
+		dataSetStyles = RepetetiveArray.from(filler);
+	} else {
+		dataSetStyles = RepetetiveArray.from(dataSetStylesArray);
+	}
+
+	const dataSetData: DataSetData[] = [];
+
+	for (let i = 0; i < yAxisData.length; i++) {
+		const data = [];
+		for (let j = 0; j < yAxisData[i].length; j++) {
+			data.push({ x: xAxisData?.[i]?.[j], y: yAxisData[i][j] });
+		}
+		dataSetData.push({
+			data,
+			isHidden: hiddenDataSets.has(i),
+			dataColors: dataColors[i],
+			fillOpacity: fillOpacity[i],
+			strokeOpacity: strokeOpacity[i],
+			pointType: pointType[i],
+			pointSize: pointSize[i],
+			dataSetStyle: dataSetStyles.get(i),
+		});
+	}
+
 	return {
-		xAxisData,
-		yAxisData,
+		dataSetData,
 		xAxisType,
 		yAxisType,
-		dataColors,
-		fillOpacity,
-		strokeOpacity,
-		pointType,
-		pointSize,
-		dataSetStyles,
 		axisInverted,
-		hasBar,
+		hasBar: dataSetStyles.some(style => style === 'bar'),
 		xAxisTitle: axisInverted ? properties.yAxisTitle : properties.xAxisTitle,
 		yAxisTitle: axisInverted ? properties.xAxisTitle : properties.yAxisTitle,
+		xUniqueData,
+		yUniqueData,
 	};
 }
 
@@ -310,11 +330,8 @@ function makeYAxisData(
 	properties: ChartProperties,
 	locationHistory: LocationHistory[],
 	pageExtractor: PageStoreExtractor,
-	hasBar: boolean,
 	hiddenDataSets: Set<number>,
 ) {
-	if (properties.yAxisLabels) return [properties.yAxisLabels];
-
 	let yAxisData: any[][] | undefined = [];
 	if (properties.yAxisDataSetPath) {
 		yAxisData = (
@@ -368,24 +385,32 @@ function makeYAxisData(
 }
 
 function makeXAxisData(
+	dataSetsCount: number | undefined,
 	properties: ChartProperties,
-
 	locationHistory: LocationHistory[],
 	pageExtractor: PageStoreExtractor,
+	hiddenDataSets: Set<number>,
 ) {
-	let xAxisData: any[] = [];
-
-	if (properties.xAxisLabels) xAxisData = properties.xAxisLabels;
-	else if (Array.isArray(properties.data) && typeof properties.xAxisDataPath == 'string') {
-		xAxisData = properties.data.map(
-			simpleExtractor(properties.xAxisDataPath, locationHistory, pageExtractor),
-		);
-	} else if (properties.data && typeof properties.data === 'object') {
-		if (typeof properties.xAxisDataPath == 'string') {
-			xAxisData = Object.values(properties.data).map(
-				simpleExtractor(properties.xAxisDataPath, locationHistory, pageExtractor),
-			);
-		} else xAxisData = Object.keys(properties.data);
+	let xAxisData: any[][] | undefined = [];
+	if (properties.xAxisLabels) {
+		return Array(dataSetsCount).fill(properties.xAxisLabels);
+	}
+	if (properties.xAxisDataSetPath) {
+		xAxisData = (
+			Array.isArray(properties.xAxisDataSetPath)
+				? properties.xAxisDataSetPath
+				: [properties.xAxisDataSetPath]
+		).map((path: string, index: number) => {
+			if (hiddenDataSets.has(index)) return [];
+			if (Array.isArray(properties.data)) {
+				return properties.data.map(simpleExtractor(path, locationHistory, pageExtractor));
+			} else if (properties.data && typeof properties.data === 'object') {
+				return Object.values(properties.data).map(
+					simpleExtractor(path, locationHistory, pageExtractor),
+				);
+			}
+			return [];
+		});
 	}
 
 	return xAxisData;

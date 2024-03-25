@@ -16,17 +16,13 @@ export function makeRegularChart(
 	const svg = d3.select(svgRef);
 	const chartGroup = svg.select('g.chartGroup');
 
-	const yFlatData = Array.from(
-		new Set(chartData.yAxisData.filter((_, i) => !hiddenDataSets.has(i)).flat(Infinity)),
-	);
-
 	let {
 		xAxisMaxDimensions,
 		yAxisMaxDimensions,
 		chartDimension: { width: chartWidth, height: chartHeight },
 	} = computeChartDimensions(
-		chartData.xAxisData,
-		yFlatData,
+		chartData.xUniqueData,
+		chartData.yUniqueData,
 		properties,
 		chartData,
 		svg,
@@ -46,14 +42,7 @@ export function makeRegularChart(
 		})`,
 	);
 
-	const { xScale, yScale } = makeScale(
-		properties,
-		chartData,
-		d3,
-		chartHeight,
-		chartWidth,
-		yFlatData,
-	);
+	const { xScale, yScale } = makeScale(properties, chartData, d3, chartHeight, chartWidth);
 
 	const { xAxis, yAxis, xAxisTickValues, yAxisTickValues } = makeAxis(
 		properties,
@@ -92,16 +81,23 @@ export function makeRegularChart(
 		resolvedStyles,
 	);
 
-	// let chartRect = chart.select('rect.chartRect');
-	// if (!chartRect.node()) {
-	// 	chart.append('rect').attr('class', 'chartRect');
-	// 	chartRect = chart.select('rect.chartRect');
-	// }
-	// chartRect
-	// 	.attr('width', chartWidth)
-	// 	.attr('height', chartHeight)
-	// 	.attr('fill', 'none')
-	// 	.attr('stroke', 'black');
+	// chart
+	// 	.selectAll('g.dataGroup.bar')
+	// 	.data(chartData.yAxisData)
+	// 	.join('g')
+	// 	.attr('class', 'dataGroup')
+	// 	.selectAll('path')
+	// 	.data((d: any) => {
+	// 		console.log('Level 1', arguments, d);
+	// 		return d;
+	// 	})
+	// 	.join('path')
+	// 	.attr('d', (d: any) => {
+	// 		console.log('Level 2', arguments, d);
+	// 		return d;
+	// 	});
+
+	console.log('chartData', chartData);
 }
 
 function renderGrid(
@@ -340,7 +336,7 @@ function makeAxis(
 				(xAxisTickValues = scale
 					.domain()
 					.filter(
-						(_, index: number, arr: any[]) =>
+						(_: any, index: number, arr: any[]) =>
 							!(
 								(properties.yAxisStartPosition === 'right'
 									? arr.length - index
@@ -372,7 +368,7 @@ function makeAxis(
 				(yAxisTickValues = scale
 					.domain()
 					.filter(
-						(_, index: number, arr: any[]) =>
+						(_: any, index: number, arr: any[]) =>
 							!(
 								(properties.xAxisStartPosition === 'top'
 									? arr.length - index
@@ -394,12 +390,11 @@ function makeScale(
 	d3: any,
 	chartHeight: number,
 	chartWidth: number,
-	yFlatData: any[],
 ) {
 	let xScale, yScale;
 
 	if (chartData.xAxisType === 'value') {
-		let extent = d3.extent(chartData.xAxisData);
+		let extent = d3.extent(chartData.xUniqueData);
 
 		let min = extent[0];
 		let max = extent[1];
@@ -417,7 +412,7 @@ function makeScale(
 			.domain([min, max])
 			.range([0, chartData.axisInverted ? chartHeight : chartWidth]);
 	} else if (chartData.xAxisType === 'ordinal') {
-		let data = [...chartData.xAxisData];
+		let data = [...chartData.xUniqueData];
 		if (properties.xAxisLabelsSort != 'none')
 			data = data.sort(
 				properties.xAxisLabelsSort === 'ascending'
@@ -435,14 +430,14 @@ function makeScale(
 					.domain(data)
 					.range([0, chartData.axisInverted ? chartHeight : chartWidth]);
 	} else if (chartData.xAxisType === 'log') {
-		let extent = d3.extent(chartData.xAxisData);
+		let extent = d3.extent(chartData.xUniqueData);
 		if (properties.xAxisReverse) extent = extent.reverse();
 		xScale = d3
 			.scaleLog()
 			.domain(extent)
 			.range([0, chartData.axisInverted ? chartHeight : chartWidth]);
 	} else if (chartData.xAxisType === 'time') {
-		let extent = d3.extent(chartData.xAxisData);
+		let extent = d3.extent(chartData.xUniqueData);
 		if (properties.xAxisReverse) extent = extent.reverse();
 		xScale = d3
 			.scaleTime()
@@ -451,7 +446,7 @@ function makeScale(
 	}
 
 	if (chartData.yAxisType === 'value') {
-		let extent = d3.extent(yFlatData);
+		let extent = d3.extent(chartData.yUniqueData);
 
 		let min = extent[0];
 		let max = extent[1];
@@ -469,7 +464,7 @@ function makeScale(
 			.domain(extent)
 			.range([chartData.axisInverted ? chartWidth : chartHeight, 0]);
 	} else if (chartData.yAxisType === 'ordinal') {
-		let data = [...yFlatData];
+		let data = [...chartData.yUniqueData];
 		if (properties.xAxisLabelsSort != 'none')
 			data = data.sort(
 				properties.xAxisLabelsSort === 'ascending'
@@ -487,7 +482,7 @@ function makeScale(
 					.domain(data)
 					.range([chartData.axisInverted ? chartWidth : chartHeight, 0]);
 	} else if (chartData.yAxisType === 'log') {
-		let extent = d3.extent(yFlatData);
+		let extent = d3.extent(chartData.yUniqueData);
 		if (properties.yAxisReverse) extent = extent.reverse();
 		yScale = d3
 			.scaleLog()
