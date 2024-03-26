@@ -122,10 +122,13 @@ function Gallery(props: ComponentProps) {
 
 		setData(bindingPathPath, false, props.context?.pageName);
 	}, []);
+
 	const handleCloseOnOutsideClick = closeOnOutsideClick ? handleClose : undefined;
+
 	const handleBubbling = (e: any) => {
 		e.stopPropagation();
 	};
+
 	useEffect(() => {
 		const escapeHandler = (event: any) => {
 			if (event.key === 'Escape') {
@@ -145,6 +148,7 @@ function Gallery(props: ComponentProps) {
 		if (ind === -1) return 0;
 		return ind;
 	};
+
 	useEffect(() => {
 		setSlideNum(getStartingImageIndex());
 	}, [startingImageSrc]);
@@ -368,6 +372,7 @@ function Gallery(props: ComponentProps) {
 			setIsZoomed(true);
 		}
 	};
+
 	const handleZoomIconClick = () => {
 		setSlideShow(false);
 		if (imageRef.current?.classList.contains('zoomed')) {
@@ -378,6 +383,7 @@ function Gallery(props: ComponentProps) {
 			setIsZoomed(true);
 		}
 	};
+
 	const previewCloseIcon = (
 		<i
 			style={resolvedStyles.previewCloseButton ?? {}}
@@ -390,6 +396,7 @@ function Gallery(props: ComponentProps) {
 			/>
 		</i>
 	);
+
 	const zoomIcon = zoom ? (
 		<i
 			style={resolvedStyles.toolbarButton ?? {}}
@@ -430,6 +437,7 @@ function Gallery(props: ComponentProps) {
 			)}
 		</>
 	) : null;
+
 	const fullScreenIcon = fullScreen ? (
 		<i
 			style={resolvedStyles.toolbarButton ?? {}}
@@ -440,6 +448,7 @@ function Gallery(props: ComponentProps) {
 			<SubHelperComponent definition={props.definition} subComponentName="toolbarButton" />
 		</i>
 	) : null;
+
 	const thumbnailIcon =
 		previewMode === 'Thumbnail' ? (
 			<i
@@ -454,6 +463,7 @@ function Gallery(props: ComponentProps) {
 				/>
 			</i>
 		) : null;
+
 	const previewIcon =
 		previewMode === 'Preview' ? (
 			<i
@@ -468,6 +478,7 @@ function Gallery(props: ComponentProps) {
 				/>
 			</i>
 		) : null;
+
 	const closeIcon = showClose ? (
 		<i
 			style={resolvedStyles.toolbarButton ?? {}}
@@ -478,6 +489,58 @@ function Gallery(props: ComponentProps) {
 			<SubHelperComponent definition={props.definition} subComponentName="toolbarButton" />
 		</i>
 	) : null;
+
+	const galleryTools = (
+		<>
+			{zoomIcon}
+			{autoPlayIcon}
+			{fullScreenIcon}
+			{thumbnailIcon}
+			{previewIcon}
+			{closeIcon}
+		</>
+	);
+
+	const thumbnailComp =
+		previewMode === 'Thumbnail' ? (
+			<div
+				className={`_thumbnailContainer _thumbnail${position} ${
+					!showThumbnail ? `_hide${position}` : ''
+				} ${isZoomed ? '_imageZoomed' : ''}`}
+				style={resolvedStyles?.thumbnailContainer ?? {}}
+				onClick={handleBubbling}
+			>
+				<SubHelperComponent
+					definition={props.definition}
+					subComponentName="_thumbnailContainer"
+				/>
+				{galleryData?.map((each: any, index: number) => (
+					<div
+						className={`_thumbnailImageDiv ${slideNum === index ? '_selected' : ''}`}
+						style={resolvedStyles?.thumbnailImageDiv ?? {}}
+						onClick={() => selectedImage(index)}
+						key={each.key}
+					>
+						<SubHelperComponent
+							definition={props.definition}
+							subComponentName="_thumbnailImageDiv"
+						/>
+						<img
+							src={getSrcUrl(each?.src)}
+							alt={`${each?.name}}`}
+							className="_thumbnailImage"
+							style={resolvedStyles?.thumbnailImage ?? {}}
+						/>
+						<SubHelperComponent
+							style={resolvedStyles.thumbnailImage ?? {}}
+							className="_thumbnailImage"
+							definition={props.definition}
+							subComponentName="thumbnailImage"
+						/>
+					</div>
+				))}
+			</div>
+		) : null;
 
 	const previewComp =
 		previewMode === 'Preview' ? (
@@ -535,58 +598,6 @@ function Gallery(props: ComponentProps) {
 				</div>
 			</div>
 		) : null;
-
-	const thumbnailComp =
-		previewMode === 'Thumbnail' ? (
-			<div
-				className={`_thumbnailContainer _thumbnail${position} ${
-					!showThumbnail ? `_hide${position}` : ''
-				} ${isZoomed ? '_imageZoomed' : ''}`}
-				style={resolvedStyles?.thumbnailContainer ?? {}}
-				onClick={handleBubbling}
-			>
-				<SubHelperComponent
-					definition={props.definition}
-					subComponentName="_thumbnailContainer"
-				/>
-				{galleryData?.map((each: any, index: number) => (
-					<div
-						className={`_thumbnailImageDiv ${slideNum === index ? '_selected' : ''}`}
-						style={resolvedStyles?.thumbnailImageDiv ?? {}}
-						onClick={() => selectedImage(index)}
-						key={each.key}
-					>
-						<SubHelperComponent
-							definition={props.definition}
-							subComponentName="_thumbnailImageDiv"
-						/>
-						<img
-							src={getSrcUrl(each?.src)}
-							alt={`${each?.name}}`}
-							className="_thumbnailImage"
-							style={resolvedStyles?.thumbnailImage ?? {}}
-						/>
-						<SubHelperComponent
-							style={resolvedStyles.thumbnailImage ?? {}}
-							className="_thumbnailImage"
-							definition={props.definition}
-							subComponentName="thumbnailImage"
-						/>
-					</div>
-				))}
-			</div>
-		) : null;
-
-	const galleryTools = (
-		<>
-			{zoomIcon}
-			{autoPlayIcon}
-			{fullScreenIcon}
-			{thumbnailIcon}
-			{previewIcon}
-			{closeIcon}
-		</>
-	);
 
 	if (isActive || (isDesignMode && showInDesign === true)) {
 		return (
