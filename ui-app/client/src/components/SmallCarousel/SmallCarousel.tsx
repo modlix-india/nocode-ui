@@ -1,34 +1,20 @@
-import { deepEqual } from '@fincity/kirun-js';
+import { isNullValue } from '@fincity/kirun-js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-	PageStoreExtractor,
-	addListenerAndCallImmediatelyWithChildrenActivity,
-	getPathFromLocation,
-	setData,
-} from '../../context/StoreContext';
+import { PageStoreExtractor, addListenerAndCallImmediatelyWithChildrenActivity, getPathFromLocation, setData } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
-import { shortUUID } from '../../util/shortUUID';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { IconHelper } from '../util/IconHelper';
-import { updateLocationForChild } from '../util/updateLoactionForChild';
+import { getRenderData } from '../util/getRenderData';
 import useDefinition from '../util/useDefinition';
-import { flattenUUID } from '../util/uuid';
 import SmallCarouselStyle from './SmallCarouselStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './smallCarouselProperties';
 import { styleDefaults } from './smallCarouselStyleProperties';
-
-// css Class Props for different position of the navbar and arrow buttons
-const cssProp = [
-	'OutsideTop',
-	'OutsideTopLeft',
-	'OutsideTopRight',
-	'OutsideBottomRight',
-	'OutsideTopLeft',
-	'OutsideBottomLeft',
-];
+import { flattenUUID } from '../util/uuid';
+import { shortUUID } from '../../util/shortUUID';
+import { updateLocationForChild } from '../util/updateLoactionForChild';
 
 function SmallCarousel(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -36,22 +22,25 @@ function SmallCarousel(props: ComponentProps) {
 		locationHistory = [],
 		definition: { children, bindingPath, key },
 		pageDefinition,
-		context,
 		definition,
+		context,
 	} = props;
 	const {
 		stylePropertiesWithPseudoStates,
 		properties: {
-			showDotsButtons,
 			showArrowButtons,
 			slideSpeed,
 			autoPlay,
 			animationDuration,
 			dotsButtonType,
 			dotsButtonIconType,
-			hasNumbersInSlideNav,
-			slideNavButtonPosition,
-			arrowButtons,
+			showSlideNumbersInDots,
+			arrowButtonsHorizontalPlacement,
+			arrowButtonsVerticalPlacement,
+			arrowButtonsPlacement,
+			slideNavButtonHorizontalAlignment,
+			slideNavButtonVerticalAlignment,
+			slideNavButtonPlacement,
 			showNavigationControlsOnHover,
 			slidesToScroll,
 			fixedChild,
@@ -59,7 +48,13 @@ function SmallCarousel(props: ComponentProps) {
 			designType,
 			pauseOnHover,
 			easing,
-			defaultData,
+			data,
+			showArrowButtonsOnHover,
+			datatype,
+			selectionKey,
+			uniqueKeyType,
+			uniqueKey,
+			selectionType
 		} = {},
 	} = useDefinition(
 		definition,
@@ -85,12 +80,12 @@ function SmallCarousel(props: ComponentProps) {
 
 	// checking is the vertical style is selected.
 	const isVertical = () => {
-		return ['_design3', '_design4'].includes(designType);
+		return ['_tertiary', '_quaternary'].includes(designType);
 	};
 
 	//  checking if the center mode design is selected.
 	const isCenterMode = () => {
-		return ['_design2', '_design4'].includes(designType);
+		return ['_secondary', '_quaternary'].includes(designType);
 	};
 
 	const resolvedStyles = processComponentStylePseudoClasses(
@@ -99,16 +94,50 @@ function SmallCarousel(props: ComponentProps) {
 		stylePropertiesWithPseudoStates,
 	);
 
-	// array binding path for a repeater.
+	// accepting the children or childrens for the component
+	useEffect(() => {
+		let childrenArray = props?.definition?.children
+			? Object.entries(props?.definition?.children)
+					.filter((e: any) => !!e[1])
+					.sort((a: any, b: any) => {
+						const v =
+							(pageDefinition?.componentDefinition[a[0]]?.displayOrder ?? 0) -
+							(pageDefinition?.componentDefinition[b[0]]?.displayOrder ?? 0);
+						return v === 0
+							? (pageDefinition?.componentDefinition[a[0]]?.key ?? '').localeCompare(
+									pageDefinition?.componentDefinition[b[0]]?.key ?? '',
+							  )
+							: v;
+					})
+					.map(e => ({ key: e[0], children: { [e[0]]: e[1] } }))
+			: [];
+
+		setUpdatedDef(childrenArray);
+	}, [props?.definition?.children, ref?.current, data]);
+
+	const carouselData1 = React.useMemo(
+		() =>
+			Array.from(
+				getRenderData(data, datatype, uniqueKeyType, uniqueKey, selectionType, selectionKey)
+					.reduce((acc: Map<string, any>, each: any) => {
+						if (isNullValue(each?.key)) return acc;
+						acc.set(each.key, (each?.value ));
+
+						return acc;
+					}, new Map())
+					.values(),
+			),
+		[data, datatype, uniqueKeyType, uniqueKey, selectionKey, selectionType],
+	);
+
 	const bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
 		: `Store.defaultData.${pageExtractor?.getPageName() ?? '_global'}.${flattenUUID(key)}`;
 
 	useEffect(() => {
-		setData(bindingPathPath!, defaultData, context?.pageName);
-	}, [defaultData]);
+		setData(bindingPathPath!, carouselData1, context?.pageName);
+	}, [carouselData1]);
 
-	// checking if we have objects values which are duplicate so, we don't assign the unique key to that again.
 	useEffect(() => {
 		if (!bindingPathPath || !indKeys.current) return;
 
@@ -137,27 +166,6 @@ function SmallCarousel(props: ComponentProps) {
 			bindingPathPath,
 		);
 	}, [bindingPathPath, indKeys.current]);
-
-	// accepting the children or childrens for the component
-	useEffect(() => {
-		let childrenArray = props?.definition?.children
-			? Object.entries(props?.definition?.children)
-					.filter((e: any) => !!e[1])
-					.sort((a: any, b: any) => {
-						const v =
-							(pageDefinition?.componentDefinition[a[0]]?.displayOrder ?? 0) -
-							(pageDefinition?.componentDefinition[b[0]]?.displayOrder ?? 0);
-						return v === 0
-							? (pageDefinition?.componentDefinition[a[0]]?.key ?? '').localeCompare(
-									pageDefinition?.componentDefinition[b[0]]?.key ?? '',
-							  )
-							: v;
-					})
-					.map(e => ({ key: e[0], children: { [e[0]]: e[1] } }))
-			: [];
-
-		setUpdatedDef(childrenArray);
-	}, [props?.definition?.children, ref?.current, bindingPathPath, defaultData]);
 
 	// trying to get the first truthy child within an object.
 	let entry = Object.entries(children ?? {}).find(([, v]) => v);
@@ -194,7 +202,7 @@ function SmallCarousel(props: ComponentProps) {
 				}
 			}
 		};
-	}, [fixedChild, noOfChilds, designType, value]);
+	}, [fixedChild, noOfChilds, designType, carouselData1]);
 
 	// applying the main transformation
 	const applyTransform = useCallback(
@@ -348,8 +356,8 @@ function SmallCarousel(props: ComponentProps) {
 			const { definition, context, pageDefinition } = props;
 			// check if we are passing the bindingPath or default value.
 			const childrenArray =
-				Array.isArray(value) && value?.length > 0
-					? value
+				Array.isArray(carouselData1) && carouselData1?.length > 0
+					? carouselData1
 					: Array.isArray(carouselData)
 					? carouselData
 					: [carouselData];
@@ -365,7 +373,7 @@ function SmallCarousel(props: ComponentProps) {
 
 			if (Array.isArray(value) && value.length) {
 				let updatableBindingPath = bindingPath;
-				if (!updatableBindingPath && defaultData) {
+				if (!updatableBindingPath && data) {
 					updatableBindingPath = {
 						type: 'VALUE',
 						value: `Store.defaultData.${
@@ -408,23 +416,24 @@ function SmallCarousel(props: ComponentProps) {
 					</div>
 				));
 			}
+
 			// if we had added childrens directly.
 			return childrenArray.map((each, index) => (
 				<div
 					ref={el => {
 						innerSlides.current[index] = el;
 					}}
-					key={`${index}`}
+					key={`${each?.key}_${index}`}
 					className={`childElement ${isCenterMode() && center === index ? 'center' : ''}`}
 					style={resolvedStyles?.childElement ?? {}}
 				>
 					<SubHelperComponent definition={definition} subComponentName="childElement" />
 					<Children
-						children={each?.children}
+						children={carouselData1?.length > 0 ? firstchild : each?.children}
 						context={context}
 						pageDefinition={pageDefinition}
 						locationHistory={locationHistory}
-						key={`${index}`}
+						key={`${each?.key}_${index}`}
 					/>
 				</div>
 			));
@@ -435,7 +444,7 @@ function SmallCarousel(props: ComponentProps) {
 			pageDefinition,
 			designType,
 			center,
-			value,
+			carouselData1,
 		],
 	);
 
@@ -480,7 +489,7 @@ function SmallCarousel(props: ComponentProps) {
 		hover,
 		setCurrent,
 		center,
-		value,
+		carouselData1,
 	]);
 
 	const handleArrowButtonClick = (direction: any) => {
@@ -508,9 +517,13 @@ function SmallCarousel(props: ComponentProps) {
 		<>
 			<div
 				className={`arrowButtonsContainer ${hover ? `hover` : ``} ${
-					showNavigationControlsOnHover
-						? `${hover ? `show  arrowButtons${arrowButtons}` : `hide`}`
-						: `arrowButtons${arrowButtons}`
+					showArrowButtonsOnHover
+						? `${
+								hover
+									? `show  arrowButtons${arrowButtonsPlacement} arrowButtons${arrowButtonsVerticalPlacement} arrowButtons${arrowButtonsHorizontalPlacement}`
+									: `hide`
+						  }`
+						: `arrowButtons${arrowButtonsPlacement} arrowButtons${arrowButtonsVerticalPlacement} arrowButtons${arrowButtonsHorizontalPlacement}`
 				}`}
 				style={resolvedStyles.arrowButtonsContainer ?? {}}
 			>
@@ -520,11 +533,11 @@ function SmallCarousel(props: ComponentProps) {
 				></SubHelperComponent>
 
 				<i
-					className={` button ${
+					className={` button leftArrowButton ${
 						isVertical()
 							? 'fa-solid fa-chevron-up _vertical'
 							: 'fa-solid fa-chevron-left'
-					} ${arrowButtons === 'Middle' ? 'leftArrowButton' : ''}`}
+					}`}
 					style={resolvedStyles.arrowButtons ?? {}}
 					onClick={() => handleArrowButtonClick('left')}
 				>
@@ -539,11 +552,11 @@ function SmallCarousel(props: ComponentProps) {
 				></SubHelperComponent>
 
 				<i
-					className={` button ${
+					className={` button rightArrowButton ${
 						isVertical()
 							? 'fa-solid fa-chevron-down _vertical'
 							: 'fa-solid fa-chevron-right'
-					} ${arrowButtons === 'Middle' ? 'rightArrowButton' : ''}`}
+					}`}
 					style={resolvedStyles.arrowButtons ?? {}}
 					onClick={() => handleArrowButtonClick('right')}
 				>
@@ -562,8 +575,8 @@ function SmallCarousel(props: ComponentProps) {
 
 	const slideButtonContainer = (
 		<div
-			className={`slideButtonsContainer slideNavDiv${slideNavButtonPosition} ${
-				cssProp.includes(slideNavButtonPosition) ? 'slideNavDiv' : ''
+			className={`slideButtonsContainer slideNavDiv${slideNavButtonPlacement} slideNavDiv${slideNavButtonVerticalAlignment} slideNavDiv${slideNavButtonHorizontalAlignment} ${
+				slideNavButtonPlacement == '_outside' ? 'slideNavDiv' : ''
 			} ${showNavigationControlsOnHover ? (hover ? 'showFlex' : 'hide') : ''}`}
 			style={resolvedStyles.slideButtonsContainer ?? {}}
 		>
@@ -571,63 +584,60 @@ function SmallCarousel(props: ComponentProps) {
 				definition={props.definition}
 				subComponentName="slideButtonsContainer"
 			></SubHelperComponent>
-			{showDotsButtons &&
-				(value?.length > 0 ? value : updatedDef)?.map((e: any, key: any) => (
-					<button
-						key={`${key}_${currentRef?.current?.number}_${e?.key}`}
-						className={`slideNav ${
-							dotsButtonType !== 'none' && hasNumbersInSlideNav === false
-								? `fa-${dotsButtonIconType} fa-${dotsButtonType}`
-								: ` `
-						} ${hasNumbersInSlideNav ? `${dotsButtonType}WithNumbers` : ''} ${
-							key === currentRef?.current?.number ? 'active' : ''
-						}`}
-						style={resolvedStyles.dotButtons ?? {}}
-						onClick={() => {
-							if (key == currentRef.current.number) return;
+			{(carouselData1?.length > 0 ? carouselData1 : updatedDef)?.map((e: any, key: any) => (
+				<button
+					key={`${key}_${currentRef?.current?.number}_${e?.key}`}
+					className={`slideNav ${
+						dotsButtonType !== 'none' && showSlideNumbersInDots === false
+							? `fa-${dotsButtonIconType} fa-${dotsButtonType}`
+							: ` `
+					} ${showSlideNumbersInDots ? `${dotsButtonType}WithNumbers` : ''} ${
+						key === currentRef?.current?.number ? 'active' : ''
+					}`}
+					style={resolvedStyles.dotButtons ?? {}}
+					onClick={() => {
+						if (key == currentRef.current.number) return;
 
-							const c = currentRef?.current.number;
-							currentRef.current.number = key;
+						const c = currentRef?.current.number;
+						currentRef.current.number = key;
 
-							const toScroll = Math.abs(currentRef.current.number - c);
-							const dir = c > currentRef.current.number ? -1 : 1;
+						const toScroll = Math.abs(currentRef.current.number - c);
+						const dir = c > currentRef.current.number ? -1 : 1;
 
-							setCurrent(c);
-							if (isCenterMode()) {
-								setCenter(
-									c <= currentRef.current.number
-										? (center + toScroll) % innerSlides?.current?.length
-										: (center - toScroll + innerSlides?.current?.length) %
-												innerSlides?.current?.length,
-								);
-							}
-							applyTransform(
-								innerSlides.current,
-								innerSlides?.current?.length,
-								c,
-								currentRef.current.number,
-								dir,
-								toScroll,
+						setCurrent(c);
+						if (isCenterMode()) {
+							setCenter(
+								c <= currentRef.current.number
+									? (center + toScroll) % innerSlides?.current?.length
+									: (center - toScroll + innerSlides?.current?.length) %
+											innerSlides?.current?.length,
 							);
-						}}
-					>
-						<SubHelperComponent
-							definition={props.definition}
-							subComponentName="dotButtons"
-							key={key}
-						></SubHelperComponent>
-						{hasNumbersInSlideNav ? key + 1 : ''}
-					</button>
-				))}
+						}
+						applyTransform(
+							innerSlides.current,
+							innerSlides?.current?.length,
+							c,
+							currentRef.current.number,
+							dir,
+							toScroll,
+						);
+					}}
+				>
+					<SubHelperComponent
+						definition={props.definition}
+						subComponentName="dotButtons"
+						key={key}
+					></SubHelperComponent>
+					{showSlideNumbersInDots ? key + 1 : ''}
+				</button>
+			))}
 		</div>
 	);
 
 	return (
 		<div
 			ref={ref}
-			className={`comp compSmallCarousel ${designType} ${
-				cssProp?.includes(arrowButtons) ? 'containerReverse' : 'container'
-			} slideNav${slideNavButtonPosition}  arrowButtons${arrowButtons}`}
+			className={`comp compSmallCarousel ${designType} slideNav${slideNavButtonPlacement} slideNav${slideNavButtonVerticalAlignment} slideNav${slideNavButtonHorizontalAlignment}  arrowButtons${arrowButtonsPlacement} arrowButtons${arrowButtonsVerticalPlacement} arrowButtons${arrowButtonsHorizontalPlacement}`}
 			style={resolvedStyles.comp ?? {}}
 			onLoad={handleLoad}
 			onMouseEnter={() => setHover(true)}
@@ -636,11 +646,7 @@ function SmallCarousel(props: ComponentProps) {
 			<HelperComponent context={props?.context} definition={definition} />
 			{showArrowButtons ? arrowButtonComp : undefined}
 			<div
-				className={`innerDivSlideNav ${`slideNavDiv${
-					cssProp.includes(slideNavButtonPosition)
-						? slideNavButtonPosition
-						: 'innerDivSlideNav'
-				}`}`}
+				className={`innerDivSlideNav slideNavDiv${slideNavButtonPlacement} slideNavDiv${slideNavButtonVerticalAlignment}`}
 				style={resolvedStyles?.innerDivSlideNav ?? {}}
 			>
 				<SubHelperComponent
@@ -675,9 +681,6 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	allowedChildrenType: new Map<string, number>([['', -1]]),
-	bindingPaths: {
-		bindingPath: { name: 'Array Binding' },
-	},
 	subComponentDefinition: [
 		{
 			name: '',

@@ -49,171 +49,185 @@ export default function SmallCarouselStyle({ theme }: { theme: Map<string, Map<s
         position: relative;
     }
 
-    ${PREFIX} .arrowButtonsOutsideTopRight{
+    ${PREFIX}.arrowButtonsOutside {
         display:flex;
+        flex-direction: column;
+    }
+
+    ${PREFIX}.arrowButtonsOutside.arrowButtonsBottom {
+        flex-direction: column-reverse;
+    }
+
+    ${PREFIX} .arrowButtonsOutside.arrowButtonsBottom.arrowButtonsMiddle {
+        display: flex;
+        justify-content: space-between;
+    }
+    ${PREFIX} .arrowButtonsOutside.arrowButtonsBottom.arrowButtonsLeft {
+        width:100%;
+    }
+    ${PREFIX} .arrowButtonsOutside.arrowButtonsBottom.arrowButtonsRight {
+        width:100%;
+        justify-content:end;
+        display:flex;
+    }
+    ${PREFIX} .arrowButtonsOutside.arrowButtonsTop.arrowButtonsMiddle {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+    ${PREFIX} .arrowButtonsOutside.arrowButtonsTop.arrowButtonsLeft {
+        width:100%;
+    }
+    ${PREFIX} .arrowButtonsOutside.arrowButtonsTop.arrowButtonsRight {
+        display: flex;
         justify-content:end;
         width:100%;
     }
-    ${PREFIX} .arrowButtonsOutsideTopLeft{
-        width:100%;
-    }
-    ${PREFIX} .arrowButtonsOutsideBottomRight{
-        width:100%;
-        justify-content:end;
-        display:flex;
-    }
-    ${PREFIX} .arrowButtonsOutsideBottomLeft{
-        width:100%;
-    }
-    ${PREFIX} .leftArrowButton {
-        left: 0;
-        position:absolute;
-        top:50%;
-        transform:translateY(-50%);
-        z-index:1;
-    }
-    ${PREFIX} .rightArrowButton {
-        right: 0;
-        position:absolute;
-        top:50%;
-        transform:translateY(-50%);
-        z-index:1;
-    }
 
-    ${PREFIX} ._vertical.leftArrowButton {
-        top: 0;
-        right: 0;
-        width: fit-content;
-        margin: auto;
-        transform: unset;
-    }
-
-    ${PREFIX} ._vertical.rightArrowButton {
+    ${PREFIX} .arrowButtonsInside.arrowButtonsBottom.arrowButtonsMiddle {
+        position: absolute;
         bottom: 0;
-        left: 0;
-        top: unset;
-        width: fit-content;
-        margin: auto;
-        transform: unset;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
     }
-
-    ${PREFIX} .arrowButtonsRightTop{
-        position:absolute;
-        right:0;
-        top:0;
-        z-index:1;
-    }
-
-    ${PREFIX} .arrowButtonsRightBottom{
-        position:absolute;
-        right:0;
-        bottom:0;
-        z-index:1;
-    }
-  
-
-    ${PREFIX} .arrowButtonsLeftTop{
-        position:absolute;
-        left:0;
-        top:0;
-        z-index:1;
-    }
-
-    ${PREFIX} .arrowButtonsLeftBottom{
+    ${PREFIX} .arrowButtonsInside.arrowButtonsBottom.arrowButtonsLeft {
         position:absolute;
         left:0;
         Bottom:0;
         z-index:1;
     }
+    ${PREFIX} .arrowButtonsInside.arrowButtonsBottom.arrowButtonsRight {
+        position:absolute;
+        right:0;
+        Bottom:0;
+        z-index:1;
+    }
+    ${PREFIX} .arrowButtonsInside.arrowButtonsTop.arrowButtonsMiddle {
+        position: absolute;
+        top: 0;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        z-index:1;
+    }
+    ${PREFIX} .arrowButtonsInside.arrowButtonsTop.arrowButtonsLeft {
+        position:absolute;
+        left:0;
+        top:0;
+        z-index:1;
+    }
+    ${PREFIX} .arrowButtonsInside.arrowButtonsTop.arrowButtonsRight {
+        position:absolute;
+        right:0;
+        top:0;
+        z-index:1;
+    }
+    ${PREFIX} .arrowButtonsInside.arrowButtonsCenter.arrowButtonsMiddle {
+        position: absolute;
+        top: 0;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        z-index:1;
+        height: 100%;
+        display: flex;
+        align-items: center;
+    }
+    ${PREFIX} .arrowButtonsInside.arrowButtonsCenter.arrowButtonsLeft {
+        position:absolute;
+        left:0;
+        top:0;
+        z-index:1;
+        height: 100%;
+        display: flex;
+        align-items: center;
+    }
+    ${PREFIX} .arrowButtonsInside.arrowButtonsCenter.arrowButtonsRight {
+        position:absolute;
+        right:0;
+        top:0;
+        bottom:0;
+        margin: auto;
+        z-index:1;
+        height: 100%;
+        display: flex;
+        align-items: center;
+    }
 
-    ${PREFIX}.containerReverse.slideNavOutsideBottomRight, ${PREFIX}.containerReverse.slideNavOutsideBottomLeft{
+    ${PREFIX} .innerDivSlideNav.slideNavDivOutside {
         display:flex;
         flex-direction: column-reverse;
     }
 
-    ${PREFIX}.containerReverse{
-        display:flex;
+    ${PREFIX} .innerDivSlideNav.slideNavDivOutside.slideNavDivBottom {
         flex-direction: column;
     }
-    
-    ${PREFIX}.containerReverse.arrowButtonsOutsideBottomRight, ${PREFIX}.containerReverse.arrowButtonsOutsideBottomLeft {
-        flex-direction: column-reverse;
+
+    ${PREFIX} .slideNavDivOutside.slideNavDivBottom.slideNavDivMiddle {
+        display: flex;
+        justify-content: center;
+    }
+    ${PREFIX} .slideNavDivOutside.slideNavDivBottom.slideNavDivLeft {
+        width:100%;
+    }
+    ${PREFIX} .slideNavDivOutside.slideNavDivBottom.slideNavDivRight {
+        width:100%;
+        justify-content:end;
+        display:flex;
+    }
+    ${PREFIX} .slideNavDivOutside.slideNavDivTop.slideNavDivMiddle {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+    ${PREFIX} .slideNavDivOutside.slideNavDivTop.slideNavDivLeft {
+        width:100%;
+    }
+    ${PREFIX} .slideNavDivOutside.slideNavDivTop.slideNavDivRight {
+        display: flex;
+        justify-content:end;
+        width:100%;
     }
 
-    ${PREFIX} .slideNavDivBottom{
-        display: flex;
-        flex-direction: row;
+    ${PREFIX} .slideNavDivInside.slideNavDivBottom.slideNavDivMiddle {
         position: absolute;
         bottom: 0;
-        padding-bottom:20px;
-        left:50%;
-        transform: translateX(-50%);
-        gap:3px;
-    }
-    ${PREFIX} .slideNavDivTop{
+        width: 100%;
         display: flex;
-        flex-direction: row;
-        position: absolute;
-        top: 5px;
-        padding-top: 10px;
-        left: 50%;
-        transform: translateX(-50%);
-        gap: 3px;
-    }
-    ${PREFIX} .slideNavDivRight{
-        display: flex;
-        flex-direction: column;
-        position: absolute;
-        top: 50%;
-        padding-right: 10px;
-        right: 0;
-        transform: translateY(-50%);
-        gap: 3px;
-    }
-    
-    ${PREFIX} .slideNavDivLeft{
-        display: flex;
-        flex-direction: column;
-        position: absolute;
-        top: 50%;
-        padding-left: 10px;
-        left: 0;
-        transform: translateY(-50%);
-        gap: 3px;
-    }
-    ${PREFIX} .slideNavDivOutsideBottom{
-        display: flex;
-        flex-direction: row;
-        gap: 3px;
         justify-content: center;
-        padding-top: 5px;
     }
-    ${PREFIX} .slideNavDivOutsideTop{
-        display:flex;
-        flex-direction: column-reverse;
-        align-items:center;
-        gap:5px;
+    ${PREFIX} .slideNavDivInside.slideNavDivBottom.slideNavDivLeft {
+        position:absolute;
+        left:0;
+        Bottom:0;
+        z-index:1;
     }
-
-    ${PREFIX} .slideNavDivOutsideBottomRight {
+    ${PREFIX} .slideNavDivInside.slideNavDivBottom.slideNavDivRight {
+        position:absolute;
+        right:0;
+        Bottom:0;
+        z-index:1;
+    }
+    ${PREFIX} .slideNavDivInside.slideNavDivTop.slideNavDivMiddle {
+        position: absolute;
+        top: 0;
+        width: 100%;
         display: flex;
-        align-items: flex-end;
-        gap: 5px;
-        flex-direction: column;
+        justify-content: center;
+        z-index:1;
     }
-
-    ${PREFIX} .slideNavDivOutsideTopLeft {
-        display:flex;
-        flex-direction: column-reverse;
-        align-items:flex-start;
-        gap:5px;
+    ${PREFIX} .slideNavDivInside.slideNavDivTop.slideNavDivLeft {
+        position:absolute;
+        left:0;
+        top:0;
+        z-index:1;
     }
-
-    ${PREFIX} .slideNavDivOutsideTopRight {
-        display:flex;
-        flex-direction: column-reverse;
-        align-items:flex-end;
-        gap:5px;
+    ${PREFIX} .slideNavDivInside.slideNavDivTop.slideNavDivRight {
+        position:absolute;
+        right:0;
+        top:0;
+        z-index:1;
     }
 
     ${PREFIX} .slideNavDiv{
