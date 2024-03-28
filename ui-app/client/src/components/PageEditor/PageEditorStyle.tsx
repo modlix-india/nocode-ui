@@ -116,7 +116,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._filterBarContainer ._filterBar ._selectionContainer ._selectedOptionBtn {
-			width: 65px;
+			width: 75px;
 			height: 38px;
 			display: flex;
 			align-items: center;
@@ -127,6 +127,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			padding: 0 4px;
 			cursor: pointer;
 			gap: 2px;
+			font-size: 12px;
 		}
 
 		${PREFIX} ._filterBarContainer ._filterBar ._selectionContainer ._selectedOptionBtn ._selectedOption {
@@ -141,7 +142,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._filterBarContainer ._filterBar ._selectionContainer ._dropdownOptions {
-			width: 80px;
+			width: 90px;
 			position: absolute;
 			top: calc(100% + 5px);
 			left: -5px;
@@ -159,28 +160,38 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			padding: 7px 13px;
 		}
 
-		${PREFIX} ._filterBarContainer ._filterBar ._regExIconContainer {
+		${PREFIX} ._filterBarContainer ._filterBar ._regexIconContainer {
 			position: absolute;
 			right: 5px;
-			width: 20px;
-			height: 20px;
+			width: 25px;
+			height: 25px;
 			cursor: pointer;
+			border-radius: 2px;
 		}
 
-		${PREFIX} ._filterBarContainer ._filterBar ._regExIconContainer i {
+		${PREFIX} ._filterBarContainer ._filterBar ._regexIconContainer i {
 			position: absolute;
 			color: rgba(51, 51, 51, 0.6);
 		}
 
-		${PREFIX} ._filterBarContainer ._filterBar ._regExIconContainer i:nth-child(1) {
-			right: 0px;
-			top: 1px;
+		${PREFIX} ._filterBarContainer ._filterBar ._regexIconContainer i:nth-child(1) {
+			right: 2px;
+			top: 2px;
 			font-size: 11px;
 		}
 
-		${PREFIX} ._filterBarContainer ._filterBar ._regExIconContainer i:nth-child(2) {
-			bottom: 0;
+		${PREFIX} ._filterBarContainer ._filterBar ._regexIconContainer i:nth-child(2) {
+			bottom: 2px;
+			left: 2px;
 			font-size: 7px;
+		}
+
+		${PREFIX} ._filterBarContainer ._filterBar ._regexIconContainer._regexSelected i:nth-child(1) {
+			color: #4C7FEE;
+		}
+
+		${PREFIX} ._filterBarContainer ._filterBar ._regexIconContainer._regexSelected i:nth-child(2) {
+			color: #4C7FEE;
 		}
 
 		${PREFIX} ._filterBarContainer i.fa {
@@ -284,6 +295,11 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._compsTree ._treeNode ._treeText ._filter {
 			color: #4C7FEE;
 			margin-right: 5px;
+		}
+
+		${PREFIX} ._compsTree ._treeNode ._treeText ._filterText {
+			color: #52BD94;
+			font-weight: 600;
 		}
 
 		${PREFIX} ._compsTree ._treeNodeName i.fa.fa-caret-right {
@@ -495,6 +511,23 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			padding: 10px;
 			font-size: 14px;
 			color: rgba(0,0,0,0.7);
+			cursor: pointer;
+		}
+
+		._tagsContainer {
+			display: flex; 
+			flex-wrap: wrap; 
+			gap: 10px;
+		}
+
+		._tagsContainer ._tag{
+			display: flex;
+			align-items: center;
+			padding: 2px 8px;
+			border: 1px solid #8EADF4;
+			border-radius: 15px;
+			background-color: #EDF2FD;
+			gap: 5px;
 			cursor: pointer;
 		}
 

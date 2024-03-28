@@ -16,6 +16,12 @@ interface DnDEditorSearchInputProp {
 	searchOptions: string[];
 	filteredComponentList: string[] | undefined;
 	onSelectedComponentListChanged: (key: string) => void;
+	selectedComponent: string | undefined;
+	selectedComponentsList: string[];
+	setSelectedComponentOriginal: React.Dispatch<React.SetStateAction<string>>;
+	setSelectedComponentsListOriginal: React.Dispatch<React.SetStateAction<string[]>>;
+	isRegex: boolean;
+	setIsRegex: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function DnDEditorSearchInput({
@@ -34,6 +40,12 @@ export default function DnDEditorSearchInput({
 	searchOptions,
 	filteredComponentList,
 	onSelectedComponentListChanged,
+	selectedComponent,
+	selectedComponentsList,
+	setSelectedComponentOriginal,
+	setSelectedComponentsListOriginal,
+	isRegex,
+	setIsRegex,
 }: DnDEditorSearchInputProp) {
 	const handleSelect = (option: string) => {
 		setSelectedOption(option);
@@ -62,6 +74,7 @@ export default function DnDEditorSearchInput({
 											selectedOption == searchOption
 												? '#4C7FEE'
 												: 'rgba(0,0,0,0.7)',
+										fontWeight: selectedOption == searchOption ? '600' : '400',
 									}}
 									onClick={() => handleSelect(searchOption)}
 								>
@@ -81,22 +94,44 @@ export default function DnDEditorSearchInput({
 						setFilterHandle(setTimeout(() => applyFilter(e.target.value), 1000));
 					}}
 				/>
-				<div className="_regExIconContainer">
+				<div
+					className={`_regexIconContainer ${isRegex && '_regexSelected'}`}
+					onClick={() => {
+						setIsRegex(!isRegex);
+						setFilter('');
+					}}
+				>
 					<i className="fa-solid fa-star-of-life"></i>
 					<i className="fa-solid fa-square-full"></i>
 				</div>
 			</div>
-			<i
-				title="Select Filtered Components"
-				className="fa fa-solid fa-square-check"
-				onClick={() => {
-					filteredComponentList &&
-						filteredComponentList?.length > 0 &&
-						filteredComponentList?.map(filteredComponentKey => {
-							onSelectedComponentListChanged(filteredComponentKey);
-						});
-				}}
-			></i>
+			<>
+				<i
+					title="Select All Filtered Components"
+					className="fa fa-solid fa-square-check"
+					onClick={() => {
+						if (filteredComponentList && filteredComponentList?.length > 0) {
+							let filteredList = filteredComponentList.map(filteredComponentKey => {
+								return filteredComponentKey;
+							});
+							setSelectedComponentOriginal('');
+							setSelectedComponentsListOriginal([...filteredList]);
+						}
+					}}
+				></i>
+				{/* <i
+					title="Deselect All Selected Components"
+					className="fa-solid fa-xmark"
+					onClick={() => {
+						// on click of second time desecting previous selected
+						if (selectedComponentsList?.length > 0 || selectedComponent) {
+							console.log('if');
+							setSelectedComponentOriginal('');
+							setSelectedComponentsListOriginal([]);
+						}
+					}}
+				></i> */}
+			</>
 			<i
 				className={`fa fa-solid ${expandAll ? 'fa-circle-minus' : 'fa-circle-plus'}`}
 				onClick={() => {

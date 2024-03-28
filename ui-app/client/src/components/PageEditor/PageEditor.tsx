@@ -294,7 +294,15 @@ function PageEditor(props: ComponentProps) {
 	const [showCodeEditor, setShowCodeEditor] = useState<string | undefined>(undefined);
 	const [generateFormOnComponentKey, setGenerateFormOnComponentKey] = useState<string>('');
 	const [selectedComponentsList, setSelectedComponentsListOriginal] = useState<string[]>([]);
-	const [searchOptions, setSearchOptions] = useState(['All', 'Tags', 'Key', 'Name', 'Type']);
+	const [searchOptions, setSearchOptions] = useState([
+		'All',
+		'Tags',
+		'Key',
+		'Name',
+		'Type',
+		'Property',
+		'StyleProp',
+	]);
 
 	const setSelectedComponent = useCallback(
 		(v: string) => {
@@ -685,6 +693,8 @@ function PageEditor(props: ComponentProps) {
 					selectedComponentsList={selectedComponentsList}
 					onSelectedComponentChanged={(key: string) => setSelectedComponent(key)}
 					onSelectedComponentListChanged={(key: string) => setSelectedComponentList(key)}
+					setSelectedComponentOriginal={setSelectedComponentOriginal}
+					setSelectedComponentsListOriginal={setSelectedComponentsListOriginal}
 					pageOperations={operations}
 					onPageReload={() => {
 						desktopRef?.current?.contentWindow?.location.reload();

@@ -85,6 +85,31 @@ export default function TagEditor({
 												: tag,
 									});
 								}}
+								onKeyDown={e => {
+									if (e.key === 'ArrowUp') {
+										e.preventDefault();
+										e.stopPropagation();
+										if (!tag) return;
+										// setCurrentOption((options.length + currentOption - 1) % options.length);
+										// if (!open) setOpen(true);
+									} else if (e.key === 'ArrowDown') {
+										e.preventDefault();
+										e.stopPropagation();
+										// if (!options) return;
+										// setCurrentOption((currentOption + 1) % options.length);
+										// if (!open) setOpen(true);
+									} else if (e.key === 'Enter') {
+										e.preventDefault();
+										e.stopPropagation();
+										// if (!options?.[currentOption]) return;
+										// onChange(options[currentOption].name);
+										// setOpen(false);
+									} else if (e.key === 'Escape') {
+										e.preventDefault();
+										e.stopPropagation();
+										// setOpen(false);
+									}
+								}}
 							>
 								{tag}
 							</div>

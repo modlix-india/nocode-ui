@@ -41,6 +41,10 @@ interface PropertyEditorProps {
 	pageOperations: PageOperations;
 	appPath: string | undefined;
 	editorType: string | undefined;
+	filter: string;
+	setFilter: React.Dispatch<React.SetStateAction<string>>;
+	selectedOption: string;
+	setSelectedOption: React.Dispatch<React.SetStateAction<string>>;
 }
 
 function updatePropertyDefinition(
@@ -117,6 +121,10 @@ export default function PropertyEditor({
 	pageOperations,
 	appPath,
 	editorType,
+	filter,
+	setFilter,
+	selectedOption,
+	setSelectedOption,
 }: Readonly<PropertyEditorProps>) {
 	const [def, setDef] = useState<ComponentDefinition>();
 	const [pageDef, setPageDef] = useState<PageDefinition>();
@@ -419,19 +427,16 @@ export default function PropertyEditor({
 										i
 									</span>
 								</div>
-								<div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+								<div className="_tagsContainer">
 									{Array.isArray(def?.properties?._tags) &&
 										def?.properties?._tags?.map((tag, index) => (
 											<div
 												key={`${tag}_${index}`}
-												style={{
-													display: 'flex',
-													alignItems: 'center',
-													padding: '2px 8px',
-													border: '1px solid #8EADF4',
-													borderRadius: '15px',
-													backgroundColor: '#EDF2FD',
-													gap: '5px',
+												className="_tag"
+												onClick={() => {
+													// change the filterBy to Tags and add tag name to the search input.
+													setSelectedOption('Tags');
+													setFilter(tag);
 												}}
 											>
 												{tag}
