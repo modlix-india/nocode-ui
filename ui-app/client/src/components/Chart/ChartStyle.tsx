@@ -15,6 +15,19 @@ export default function ChartStyle({ theme }: { theme: Map<string, Map<string, s
 	${PREFIX} .legendText {
 		cursor: pointer
 	}
+
+	${PREFIX} .barDataSetGroup rect{
+		stroke-width: 1px;
+	}
+
+	${PREFIX} .lineDataSetGroup path{
+		
+	}
+
+	${PREFIX} .errorMessage{
+		color: #DA282D;
+
+	} 
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="ChartCss">{css}</style>;

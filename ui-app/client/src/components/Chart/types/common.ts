@@ -33,31 +33,54 @@ export enum PointType {
 	None = 'none',
 }
 
+export enum ChartType {
+	Regular = 'regular',
+	Radial = 'radial',
+	Radar = 'radar',
+	Waffle = 'waffle',
+}
+
 export enum DataSetStyle {
 	Line = 'line',
-	DottedLine = 'dottedLine',
-	DashedLine = 'dashedLine',
-	LongDashedLine = 'longDashedLine',
-	SteppedLineBefore = 'steppedLineBefore',
-	SteppedLineMiddle = 'steppedLineMiddle',
-	SteppedLineAfter = 'steppedLineAfter',
 	SmoothLine = 'smoothLine',
-	SmoothDottedLine = 'smoothDottedLine',
-	SmoothDashedLine = 'smoothDashedLine',
-	SmoothLongDashedLine = 'smoothLongDashedLine',
-	Lollipop = 'lollipop',
-
+	SteppedLineBefore = 'steppedLineBefore',
+	SteppedLineAfter = 'steppedLineAfter',
+	SteppedLineMiddle = 'steppedLineMiddle',
 	Bar = 'bar',
+	HorizontalBar = 'horizontalBar',
+	Lollipop = 'lollipop',
+	Dot = 'dot',
 
 	Pie = 'pie',
-	Doughnut = 'doughnut',
-	PolarArea = 'polarArea',
-	Radar = 'radar',
 
-	Dot = 'dot',
+	Doughnut = 'doughnut',
+
+	PolarArea = 'polarArea',
+
+	Radar = 'radar',
 
 	Waffle = 'waffle',
 }
+
+export const VALID_COMBINATIONS = new Map([
+	[
+		ChartType.Regular,
+		new Set([
+			DataSetStyle.Line,
+			DataSetStyle.SmoothLine,
+			DataSetStyle.SteppedLineBefore,
+			DataSetStyle.SteppedLineAfter,
+			DataSetStyle.SteppedLineMiddle,
+			DataSetStyle.Bar,
+			DataSetStyle.HorizontalBar,
+			DataSetStyle.Lollipop,
+			DataSetStyle.Dot,
+		]),
+	],
+	[ChartType.Radial, new Set([DataSetStyle.Pie, DataSetStyle.Doughnut, DataSetStyle.PolarArea])],
+	[ChartType.Radar, new Set([DataSetStyle.Radar])],
+	[ChartType.Waffle, new Set([DataSetStyle.Waffle])],
+]);
 
 // Properties of the chart component
 
@@ -65,7 +88,7 @@ export type AxisType = 'ordinal' | 'value' | 'log';
 export interface ChartProperties {
 	hideGrid: boolean;
 	colorScheme: string;
-	chartType: 'regular' | 'radial' | 'radar' | 'dot' | 'waffle';
+	chartType: ChartType;
 	data: any; // Done.
 
 	dataSetColors: string[]; // Done.
@@ -78,6 +101,8 @@ export interface ChartProperties {
 	dataPointTypePath?: string[]; // Done.
 	dataSetPointSize?: number[]; // Done.
 	dataPointSizePath?: string[]; // Done.
+	dataSetStrokeColors?: string[]; // Done.
+	dataStrokeColorsPath?: string[]; // Done.
 
 	xAxisType: AxisType | 'time' | 'derived'; // Done only time is not done yet
 	xAxisStartPosition: 'bottom' | 'top' | 'center' | 'y0' | 'custom';
@@ -119,7 +144,17 @@ export interface ChartProperties {
 	legendPosition?: 'top' | 'bottom' | 'left' | 'right' | 'none';
 	invertAxis?: boolean;
 	animationTime: number;
-	animationTimingFunction: 'linear' | 'ease' | 'ease-in' | 'ease-out' | 'ease-in-out';
+	animationTimingFunction:
+		| 'easeLinear'
+		| 'easePoly'
+		| 'easeQuad'
+		| 'easeCubic'
+		| 'easeSin'
+		| 'easeExp'
+		| 'easeCircle'
+		| 'easeElastic'
+		| 'easeBack'
+		| 'easeBounce';
 	preNormalization: 'none' | '100' | '1' | '-100' | '-1';
 	tooltipPosition: 'top' | 'bottom' | 'left' | 'right';
 	tooltipData: 'allDataSets' | 'currentDataSet';
@@ -127,6 +162,8 @@ export interface ChartProperties {
 	disableLegendInteraction?: boolean;
 	radarType: 'polygon' | 'circle';
 	radialType: 'circle' | 'line';
+
+	padding: number;
 }
 
 class DataValueExtractor extends TokenValueExtractor {
@@ -182,6 +219,7 @@ export interface DataSetData {
 	pointType: RepetetiveArray<PointType>;
 	pointSize: RepetetiveArray<number>;
 	dataSetStyle: DataSetStyle;
+	dataStrokeColors: RepetetiveArray<string>;
 }
 export interface ChartData {
 	dataSetData: DataSetData[];
@@ -191,8 +229,11 @@ export interface ChartData {
 	yAxisType: AxisType;
 	axisInverted: boolean;
 	hasBar: boolean;
+	hasHorizontalBar: boolean;
 	xAxisTitle?: string;
 	yAxisTitle?: string;
+	actualXAxisType: AxisType | 'time';
+	actualYAxisType: AxisType;
 }
 
 export function makeChartDataFromProperties(
@@ -213,11 +254,11 @@ export function makeChartDataFromProperties(
 	const xUniqueData = xAxisData?.length ? Array.from(new Set(xAxisData.flat(Infinity))) : [];
 	const yUniqueData = yAxisData?.length ? Array.from(new Set(yAxisData.flat(Infinity))) : [];
 
-	const xAxisType: AxisType | 'time' =
+	let xAxisType: AxisType | 'time' =
 		properties.xAxisType === 'time'
 			? 'time'
 			: findDerivedType(xUniqueData, properties.xAxisType);
-	const yAxisType = findDerivedType(yUniqueData, properties.yAxisType);
+	let yAxisType = findDerivedType(yUniqueData, properties.yAxisType);
 
 	let dataSetColors: string[] = [];
 	if (!properties.dataSetColors) {
@@ -232,10 +273,24 @@ export function makeChartDataFromProperties(
 		}
 	}
 
-	const dataColors = getPathBasedValues(
+	let dataColors: RepetetiveArray<string>[];
+	let dataStrokeColors: RepetetiveArray<string>[];
+
+	const givenColors = !!properties.dataSetColors?.length;
+	const givenStrokeColors = !!properties.dataSetStrokeColors?.length;
+
+	dataColors = getPathBasedValues(
 		properties.data,
-		properties.dataSetColors ?? dataSetColors,
+		properties.dataSetColors ?? properties.dataSetStrokeColors ?? dataSetColors,
 		properties.dataColorsPath,
+		yAxisData.length,
+		locationHistory,
+		pageExtractor,
+	);
+	dataStrokeColors = getPathBasedValues(
+		properties.data,
+		properties.dataSetStrokeColors ?? properties.dataSetColors ?? dataSetColors,
+		properties.dataStrokeColorsPath,
 		yAxisData.length,
 		locationHistory,
 		pageExtractor,
@@ -277,7 +332,7 @@ export function makeChartDataFromProperties(
 		pageExtractor,
 	);
 
-	const axisInverted = !!properties.invertAxis && properties.stackedAxis !== 'x';
+	const axisInverted = !!properties.invertAxis;
 
 	const dataSetStylesArray = properties.yAxisDataSetStyle?.length
 		? [...properties.yAxisDataSetStyle]
@@ -304,21 +359,34 @@ export function makeChartDataFromProperties(
 		dataSetData.push({
 			data,
 			isHidden: hiddenDataSets.has(i),
-			dataColors: dataColors[i],
 			fillOpacity: fillOpacity[i],
 			strokeOpacity: strokeOpacity[i],
 			pointType: pointType[i],
 			pointSize: pointSize[i],
 			dataSetStyle: dataSetStyles.get(i),
+			dataColors: dataColors[i],
+			dataStrokeColors: dataStrokeColors[i],
 		});
 	}
+
+	const hasBar = dataSetStyles.some(style => style === 'bar');
+	const hasHorizontalBar = dataSetStyles.some(style => style === 'horizontalBar');
+
+	const actualXAxisType = xAxisType;
+	const actualYAxisType = yAxisType;
+
+	if ((hasBar && !axisInverted) || (hasHorizontalBar && axisInverted)) xAxisType = 'ordinal';
+	else if ((hasHorizontalBar && !axisInverted) || (hasBar && axisInverted)) yAxisType = 'ordinal';
 
 	return {
 		dataSetData,
 		xAxisType,
 		yAxisType,
+		actualXAxisType,
+		actualYAxisType,
 		axisInverted,
-		hasBar: dataSetStyles.some(style => style === 'bar'),
+		hasBar,
+		hasHorizontalBar,
 		xAxisTitle: axisInverted ? properties.yAxisTitle : properties.xAxisTitle,
 		yAxisTitle: axisInverted ? properties.xAxisTitle : properties.yAxisTitle,
 		xUniqueData,

@@ -411,6 +411,12 @@ const component: Component = {
 			description: 'Y Axis Title',
 			icon: 'fa fa-solid fa-box',
 		},
+		{
+			name: 'bar',
+			displayName: 'Bar',
+			description: 'Bar',
+			icon: 'fa fa-solid fa-box',
+		},
 	],
 };
 

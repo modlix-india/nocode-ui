@@ -58,9 +58,24 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.DATA,
 	},
 	{
+		name: 'dataSetStrokeColors',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Data Set Stroke Colors',
+		multiValued: true,
+		group: ComponentPropertyGroup.DATA,
+	},
+	{
 		name: 'dataColorsPath',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Data Colors Expr. in Object',
+		description: 'Use "Data." prefix to access data object in expression',
+		group: ComponentPropertyGroup.ADVANCED,
+		multiValued: true,
+	},
+	{
+		name: 'dataStrokeColorsPath',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Data Stroke Colors Expr. in Object',
 		description: 'Use "Data." prefix to access data object in expression',
 		group: ComponentPropertyGroup.ADVANCED,
 		multiValued: true,
@@ -236,7 +251,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Y Axis Type',
 		group: ComponentPropertyGroup.DATA,
 		enumValues: [
-			{ name: 'oridnal', displayName: 'Oridnal' },
+			{ name: 'ordinal', displayName: 'Ordinal' },
 			{ name: 'value', displayName: 'Value' },
 			{ name: 'log', displayName: 'Logirthamic' },
 			{ name: 'derived', displayName: 'Derived' },
@@ -351,24 +366,20 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		multiValued: true,
 		enumValues: [
 			{ name: 'line', displayName: 'Line - Regular' },
-			{ name: 'dottedLine', displayName: 'Dotted Line - Regular' },
-			{ name: 'dashedLine', displayName: 'Dashed Line - Regular' },
-			{ name: 'longDashedLine', displayName: 'Long Dashed Line - Regular' },
+			{ name: 'smoothLine', displayName: 'Smooth Line - Regular' },
 			{ name: 'steppedLineBefore', displayName: 'Stepped Line - Regular' },
 			{ name: 'steppedLineAfter', displayName: 'Stepped Line After  - Regular' },
 			{ name: 'steppedLineMiddle', displayName: 'Stepped Line Middle - Regular' },
-			{ name: 'smoothLine', displayName: 'Smooth Line - Regular' },
-			{ name: 'smoothDottedLine', displayName: 'Smooth Dotted Line - Regular' },
-			{ name: 'smoothDashedLine', displayName: 'Smooth Dashed Line - Regular' },
-			{ name: 'smoothLongDashedLine', displayName: 'Smooth Long Dashed Line - Regular' },
 			{ name: 'bar', displayName: 'Bar - Regular' },
 			{ name: 'horizontalBar', displayName: 'Horizontal Bar - Regular' },
 			{ name: 'lollipop', displayName: 'Lollipop - Regular' },
+			{ name: 'dot', displayName: 'Bubble or Scatter - Regular' },
+
 			{ name: 'pie', displayName: 'Pie - Radial' },
 			{ name: 'doughnut', displayName: 'Doughnut - Radial' },
 			{ name: 'polarArea', displayName: 'Polar Area - Radial' },
 			{ name: 'radar', displayName: 'Radar - Radar' },
-			{ name: 'dot', displayName: 'Bubble or Scatter - Dot' },
+
 			{ name: 'waffle', displayName: 'Waffle - Waffle' },
 		],
 	},
@@ -505,13 +516,18 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Animation Timing Function',
 		group: ComponentPropertyGroup.ADVANCED,
-		defaultValue: 'linear',
+		defaultValue: 'easeLinear',
 		enumValues: [
-			{ name: 'linear', displayName: 'Linear' },
-			{ name: 'ease', displayName: 'Ease' },
-			{ name: 'ease-in', displayName: 'Ease In' },
-			{ name: 'ease-out', displayName: 'Ease Out' },
-			{ name: 'ease-in-out', displayName: 'Ease In Out' },
+			{ name: 'easeLinear', displayName: 'Linear' },
+			{ name: 'easePoly', displayName: 'Poly' },
+			{ name: 'easeQuad', displayName: 'Quad' },
+			{ name: 'easeCubic', displayName: 'Cubic' },
+			{ name: 'easeSin', displayName: 'Sin' },
+			{ name: 'easeExp', displayName: 'Exp' },
+			{ name: 'easeCircle', displayName: 'Circle' },
+			{ name: 'easeElastic', displayName: 'Elastic' },
+			{ name: 'easeBack', displayName: 'Back' },
+			{ name: 'easeBounce', displayName: 'Bounce' },
 		],
 	},
 
@@ -601,6 +617,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	COMMON_COMPONENT_PROPERTIES.visibility,
+
+	{
+		name: 'padding',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Padding (px)',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 5,
+	},
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
@@ -650,6 +674,11 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
 	],
 	yAxisTitle: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
+	],
+	bar: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
