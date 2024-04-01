@@ -251,6 +251,8 @@ export function makeChartDataFromProperties(
 		hiddenDataSets,
 	);
 
+	const axisInverted = !!properties.invertAxis;
+
 	const xUniqueData = xAxisData?.length ? Array.from(new Set(xAxisData.flat(Infinity))) : [];
 	const yUniqueData = yAxisData?.length ? Array.from(new Set(yAxisData.flat(Infinity))) : [];
 
@@ -331,8 +333,6 @@ export function makeChartDataFromProperties(
 		locationHistory,
 		pageExtractor,
 	);
-
-	const axisInverted = !!properties.invertAxis;
 
 	const dataSetStylesArray = properties.yAxisDataSetStyle?.length
 		? [...properties.yAxisDataSetStyle]
@@ -436,16 +436,22 @@ function makeYAxisData(
 			}
 			i++;
 			if (isNullValue(rangeData) || hiddenDataSets.has(i)) continue;
-			if (!yAxisData[i]?.length) yAxisData[i] = rangeData;
-			else
+			if (!yAxisData[i]?.length) {
+				if (Array.isArray(rangeData))
+					yAxisData[i] = rangeData.map(e => e?.flat(Infinity) ?? e);
+				else yAxisData[i] = [rangeData];
+			} else
 				yAxisData[i] = yAxisData[i].map((val: any, index: number) => {
 					if (isNullValue(val)) val = [];
 					else if (!Array.isArray(val)) val = [val];
 
 					if (isNullValue(rangeData[index])) return val;
-					if (Array.isArray(rangeData[index])) return val.concat(rangeData[index]);
+					if (Array.isArray(rangeData[index]))
+						return val.concat(rangeData[index].flat(Infinity));
 					return val.concat(rangeData[index]);
 				});
+
+			// console.log(rangeData, yAxisData[i]);
 		}
 	}
 

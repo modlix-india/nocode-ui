@@ -12,6 +12,10 @@ export default function ChartStyle({ theme }: { theme: Map<string, Map<string, s
 		height: 100%;
 	}
 
+	${PREFIX} .grid, ${PREFIX} .xAxisGroup, ${PREFIX} .yAxisGroup {
+		stroke-opacity: 0.2;
+	}
+
 	${PREFIX} .legendText {
 		cursor: pointer
 	}

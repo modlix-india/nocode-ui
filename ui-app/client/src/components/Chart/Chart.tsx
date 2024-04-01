@@ -370,6 +370,30 @@ const component: Component = {
 			icon: 'fa fa-solid fa-box',
 		},
 		{
+			name: 'xAxisTitle',
+			displayName: 'X Axis Title',
+			description: 'X Axis Title',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'yAxisTitle',
+			displayName: 'Y Axis Title',
+			description: 'Y Axis Title',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'xAxis',
+			displayName: 'X Axis',
+			description: 'X Axis',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'yAxis',
+			displayName: 'Y Axis',
+			description: 'Y Axis',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
 			name: 'legendLabel',
 			displayName: 'Legend Label',
 			description: 'Legend Label',
@@ -397,18 +421,6 @@ const component: Component = {
 			name: 'verticalLines',
 			displayName: 'Vertical Lines',
 			description: 'Vertical Lines',
-			icon: 'fa fa-solid fa-box',
-		},
-		{
-			name: 'xAxisTitle',
-			displayName: 'X Axis Title',
-			description: 'X Axis Title',
-			icon: 'fa fa-solid fa-box',
-		},
-		{
-			name: 'yAxisTitle',
-			displayName: 'Y Axis Title',
-			description: 'Y Axis Title',
 			icon: 'fa fa-solid fa-box',
 		},
 		{

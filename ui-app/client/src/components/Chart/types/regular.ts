@@ -122,17 +122,19 @@ export function makeRegularChart(
 function barX(chartData: ChartData, properties: ChartProperties, xScale: any, barWidth: number) {
 	return ({ i, j }: { i: number; j: number }) => {
 		const data = chartData.dataSetData[i].data[j];
+		let value = chartData.axisInverted ? data.y : data.x;
+		if (Array.isArray(value)) value = value[0];
 		if (
 			properties.stackedAxis === 'x' ||
 			properties.stackedAxis === 'y' ||
 			properties.stackedAxis === 'none'
 		)
 			return (
-				xScale(chartData.axisInverted ? data.y : data.x) +
+				xScale(value) +
 				properties.padding +
 				(barWidth + properties.padding) * (properties.stackedAxis === 'y' ? 0 : i)
 			);
-		return xScale(chartData.axisInverted ? data.y : data.x) + properties.padding * (i + 1);
+		return xScale(value) + properties.padding * (i + 1);
 	};
 }
 
@@ -142,12 +144,22 @@ function hBarX(
 	xScale: any,
 	axisPosition: number,
 ) {
-	return ({ i, j }: { i: number; j: number }) => {
+	return ({ i, j, k0, k1 }: { i: number; j: number; k0?: number; k1?: number }) => {
 		const data = chartData.dataSetData[i].data[j];
-		const x = xScale(chartData.axisInverted ? data.y : data.x);
+		let value = chartData.axisInverted ? data.y : data.x;
 
-		if (properties.yAxisStartPosition === 'left') return 0;
-		return x < axisPosition ? x : axisPosition;
+		if (isNullValue(k0) || isNullValue(k1) || !Array.isArray(value)) {
+			if (Array.isArray(value)) value = value[0];
+			const x = xScale(value);
+
+			if (properties.yAxisStartPosition === 'left') return 0;
+			return x < axisPosition ? x : axisPosition;
+		}
+
+		const x0 = xScale(value[k0!]);
+		const x1 = xScale(value[k1!]);
+
+		return x0 < x1 ? x0 : x1;
 	};
 }
 
@@ -157,31 +169,39 @@ function barY(
 	yScale: any,
 	axisPosition: number,
 ) {
-	return ({ i, j }: { i: number; j: number }) => {
+	return ({ i, j, k0, k1 }: { i: number; j: number; k0?: number; k1?: number }) => {
 		const data = chartData.dataSetData[i].data[j];
-		const y = yScale(chartData.axisInverted ? data.x : data.y);
+		let value = chartData.axisInverted ? data.x : data.y;
 
-		if (properties.xAxisStartPosition === 'bottom') return y;
-		return y < axisPosition ? y : axisPosition;
+		if (isNullValue(k0) || isNullValue(k1) || !Array.isArray(value)) {
+			if (Array.isArray(value)) value = value[0];
+			const y = yScale(value);
+
+			if (properties.xAxisStartPosition === 'bottom') return y;
+			return y < axisPosition ? y : axisPosition;
+		}
+
+		const y0 = yScale(value[k0!]);
+		const y1 = yScale(value[k1!]);
+
+		return y0 < y1 ? y0 : y1;
 	};
 }
 
 function hBarY(chartData: ChartData, properties: ChartProperties, yScale: any, barWidth: number) {
 	return ({ i, j }: { i: number; j: number }) => {
 		const data = chartData.dataSetData[i].data[j];
+		let value = chartData.axisInverted ? data.x : data.y;
+		if (Array.isArray(value)) value = value[0];
 
 		if (
 			properties.stackedAxis === 'x' ||
 			properties.stackedAxis === 'y' ||
 			properties.stackedAxis === 'none'
 		)
-			return (
-				yScale(chartData.axisInverted ? data.x : data.y) +
-				properties.padding +
-				(barWidth + properties.padding) * i
-			);
+			return yScale(value) + properties.padding + (barWidth + properties.padding) * i;
 
-		return yScale(chartData.axisInverted ? data.x : data.y) + properties.padding * (i + 1);
+		return yScale(value) + properties.padding * (i + 1);
 	};
 }
 
@@ -196,12 +216,22 @@ function hBarW(
 	xScale: any,
 	axisPosition: number,
 ) {
-	return ({ i, j }: { i: number; j: number }) => {
+	return ({ i, j, k0, k1 }: { i: number; j: number; k0?: number; k1?: number }) => {
 		const data = chartData.dataSetData[i].data[j];
-		const x = xScale(chartData.axisInverted ? data.y : data.x);
+		let value = chartData.axisInverted ? data.y : data.x;
 
-		if (properties.yAxisStartPosition === 'left') x;
-		return Math.abs(x - axisPosition);
+		if (isNullValue(k0) || isNullValue(k1) || !Array.isArray(value)) {
+			if (Array.isArray(value)) value = value[0];
+			const x = xScale(value);
+
+			if (properties.yAxisStartPosition === 'left') x;
+			return Math.abs(x - axisPosition);
+		}
+
+		const x0 = xScale(value[k0!]);
+		const x1 = xScale(value[k1!]);
+
+		return Math.abs(x0 - x1);
 	};
 }
 
@@ -212,13 +242,22 @@ function barH(
 	axisPosition: number,
 	barWidth: number,
 ) {
-	return ({ i, j }: { i: number; j: number }) => {
+	return ({ i, j, k0, k1 }: { i: number; j: number; k0?: number; k1?: number }) => {
 		const data = chartData.dataSetData[i].data[j];
+		let value = chartData.axisInverted ? data.x : data.y;
 
-		const y = yScale(chartData.axisInverted ? data.x : data.y);
+		if (isNullValue(k0) || isNullValue(k1) || !Array.isArray(value)) {
+			if (Array.isArray(value)) value = value[0];
+			const y = yScale(value);
 
-		if (properties.xAxisStartPosition === 'top') return y;
-		return Math.abs(y - axisPosition);
+			if (properties.xAxisStartPosition === 'top') return y;
+			return Math.abs(y - axisPosition);
+		}
+
+		const y0 = yScale(value[k0!]);
+		const y1 = yScale(value[k1!]);
+
+		return Math.abs(y0 - y1);
 	};
 }
 
@@ -257,9 +296,6 @@ function renderBars(
 	}
 	if (barWidth < 0.5) barWidth = 0.5;
 
-	const isAxisOrdinal =
-		(chartData.axisInverted ? chartData.xAxisType : chartData.yAxisType) === 'ordinal';
-
 	let axisPosition: number;
 
 	if (chartData.hasHorizontalBar) {
@@ -267,23 +303,21 @@ function renderBars(
 		else if (properties.yAxisStartPosition === 'left') axisPosition = 0;
 		else if (properties.yAxisStartPosition === 'center') axisPosition = chartWidth / 2;
 		else if (properties.yAxisStartPosition === 'x0') axisPosition = xScale(0);
-		else if (properties.yAxisStartPosition === 'custom')
-			axisPosition = xScale(
-				isAxisOrdinal
-					? properties.yAxisStartCustomValue
-					: parseFloat(properties.yAxisStartCustomValue ?? ''),
-			);
+		else if (properties.yAxisStartPosition === 'custom') {
+			axisPosition = xScale(properties.yAxisStartCustomValue);
+			if (isNullValue(axisPosition))
+				axisPosition = xScale(parseFloat(properties.yAxisStartCustomValue ?? ''));
+		}
 	} else {
 		if (properties.xAxisStartPosition === 'bottom') axisPosition = chartHeight;
 		else if (properties.xAxisStartPosition === 'top') axisPosition = 0;
 		else if (properties.xAxisStartPosition === 'center') axisPosition = chartHeight / 2;
 		else if (properties.xAxisStartPosition === 'y0') axisPosition = yScale(0);
-		else if (properties.xAxisStartPosition === 'custom')
-			axisPosition = yScale(
-				isAxisOrdinal
-					? properties.xAxisStartCustomValue
-					: parseFloat(properties.xAxisStartCustomValue ?? ''),
-			);
+		else if (properties.xAxisStartPosition === 'custom') {
+			axisPosition = yScale(properties.xAxisStartCustomValue);
+			if (isNullValue(axisPosition))
+				axisPosition = yScale(parseFloat(properties.xAxisStartCustomValue ?? ''));
+		}
 	}
 
 	const xFunction = chartData.hasHorizontalBar
@@ -306,7 +340,18 @@ function renderBars(
 		.attr('class', 'barDataSetGroup')
 		.selectAll('rect')
 		.data((index: number) =>
-			chartData.dataSetData[index].data.map((_, i) => ({ i: index, j: i })),
+			chartData.dataSetData[index].data.flatMap((_, j) => {
+				const dataSet = chartData.dataSetData[index];
+
+				if (!Array.isArray(dataSet.data[j].y)) return [{ i: index, j }];
+
+				let bars = [];
+				for (let i = 0; i < dataSet.data[j].y.length; i += 2) {
+					bars.push({ i: index, j, k0: i, k1: i + 1 });
+				}
+
+				return bars;
+			}),
 		)
 		.join('rect')
 		.transition(
@@ -466,7 +511,8 @@ function renderAxis(
 		xAxisGroup
 			.attr('transform', `translate(${left}, ${top})`)
 			.attr('font-size', 'inherit')
-			.attr('font-family', 'inherit');
+			.attr('font-family', 'inherit')
+			.attr('style', processStyleObjectToString(resolvedStyles.xAxis));
 		if (properties.hideXAxisLine) xAxisGroup.selectAll('path.domain').attr('opacity', 0);
 	} else {
 		let xAxisGroup = chartGroup.select('.xAxisGroup');
@@ -496,7 +542,9 @@ function renderAxis(
 		} else if (properties.yAxisStartPosition === 'x0') {
 			left = xScale(0);
 		} else if (properties.yAxisStartPosition === 'custom') {
-			left = xScale(properties.yAxisStartCustomValue);
+			left =
+				xScale(properties.yAxisStartCustomValue) ??
+				xScale(parseFloat(properties.yAxisStartCustomValue ?? ''));
 		}
 
 		yAxisGroup.transition().duration(properties.animationTime).call(yAxis);
@@ -507,7 +555,8 @@ function renderAxis(
 		yAxisGroup
 			.attr('transform', `translate(${left}, ${top})`)
 			.attr('font-size', 'inherit')
-			.attr('font-family', 'inherit');
+			.attr('font-family', 'inherit')
+			.attr('style', processStyleObjectToString(resolvedStyles.yAxis));
 		if (properties.hideYAxisLine) yAxisGroup.selectAll('path.domain').attr('opacity', 0);
 	} else {
 		let yAxisGroup = chartGroup.select('.yAxisGroup');
@@ -661,8 +710,8 @@ function makeScale(
 			else
 				sortLogic =
 					properties.xAxisLabelsSort === 'ascending'
-						? (a: string, b: string) => a.localeCompare(b)
-						: (a: string, b: string) => b.localeCompare(a);
+						? (a: any, b: any) => (a.localeCompare ? a.localeCompare(b) : a - b)
+						: (a: any, b: any) => (b.localeCompare ? b.localeCompare(a) : b - a);
 
 			data = data.sort(sortLogic);
 		}
@@ -729,8 +778,8 @@ function makeScale(
 			else
 				sortLogic =
 					properties.yAxisLabelsSort === 'ascending'
-						? (a: string, b: string) => a.localeCompare(b)
-						: (a: string, b: string) => b.localeCompare(a);
+						? (a: any, b: any) => (a.localeCompare ? a.localeCompare(b) : a - b)
+						: (a: any, b: any) => (b.localeCompare ? b.localeCompare(a) : b - a);
 
 			data = data.sort(sortLogic);
 		}
