@@ -498,7 +498,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			width: 259px;
 			background-color: #FFF;
 			border: 1px solid rgba(0, 0, 0, 0.10);
-			zIndex: 2;
+			z-index: 2;
 			box-shadow: 0px 1px 4px 0px #00000026;
 			border-radius: 6px;
 			margin-top: 4px;
@@ -512,6 +512,13 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			font-size: 14px;
 			color: rgba(0,0,0,0.7);
 			cursor: pointer;
+		}
+
+		._tagInputContainer ._tagOptionContainer ._tagOption._hovered {
+			background-color: #F8FAFB;
+			border-radius: 4px;
+			font-weight: bold;
+			color: #0085F2;
 		}
 
 		._tagsContainer {

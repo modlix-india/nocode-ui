@@ -432,6 +432,7 @@ export default function PropertyEditor({
 										def?.properties?._tags?.map((tag, index) => (
 											<div
 												key={`${tag}_${index}`}
+												title={tag}
 												className="_tag"
 												onClick={() => {
 													// change the filterBy to Tags and add tag name to the search input.

@@ -25,6 +25,8 @@ export default function TagEditor({
 	pageDefinition,
 }: TagEditorProperty) {
 	const [tagsList, setTagsList] = useState<string[]>([]);
+	const [open, setOpen] = useState<boolean>(false);
+	const [currentOption, setCurrentOption] = useState(-1);
 
 	useEffect(() => {
 		if (setTagsList) {
@@ -47,7 +49,11 @@ export default function TagEditor({
 
 	return (
 		<>
-			<div className="_tagInputContainer">
+			<div
+				className="_tagInputContainer"
+				// onBlur={() => setOpen(false)}
+				onFocus={() => setOpen(true)}
+			>
 				<input
 					className="_peInput"
 					type="text"
@@ -55,28 +61,53 @@ export default function TagEditor({
 					placeholder={showPlaceholder ? propDef.defaultValue : undefined}
 					onChange={e => {
 						setChngValue(e.target.value);
+						setOpen(true);
 					}}
 					onKeyDown={e => {
-						if (e.key === 'Enter') {
+						if (e.key === 'ArrowUp') {
+							e.preventDefault();
+							e.stopPropagation();
+							if (!tagsList[currentOption]) return;
+							setCurrentOption(
+								(tagsList.length + currentOption - 1) % tagsList.length,
+							);
+							if (!open) setOpen(true);
+						} else if (e.key === 'ArrowDown') {
+							e.preventDefault();
+							e.stopPropagation();
+							if (!tagsList) return;
+							setCurrentOption((currentOption + 1) % tagsList.length);
+							if (!open) setOpen(true);
+						} else if (e.key === 'Enter') {
+							e.preventDefault();
+							e.stopPropagation();
+							console.log('enter2');
+							if (!tagsList?.[currentOption]) return;
 							onChange({
 								...value,
 								value:
-									chngValue === '' || chngValue === propDef.defaultValue
+									tagsList[currentOption] === '' ||
+									tagsList[currentOption] === propDef.defaultValue
 										? undefined
-										: chngValue,
+										: tagsList[currentOption],
 							});
+							setOpen(false);
 						} else if (e.key === 'Escape') {
+							e.preventDefault();
+							e.stopPropagation();
+							setOpen(false);
 							setChngValue(value?.value ?? '');
 						}
 					}}
 				/>
-				{tagsList && tagsList.length > 0 && (
+				{open && tagsList && tagsList.length > 0 && (
 					<div className="_tagOptionContainer">
-						{tagsList.map(tag => (
+						{tagsList.map((tag, index) => (
 							<div
 								key={tag}
-								className="_tagOption"
-								onClick={e => {
+								title={tag}
+								className={`_tagOption ${currentOption === index && '_hovered'}`}
+								onClick={() => {
 									onChange({
 										...value,
 										value:
@@ -86,30 +117,22 @@ export default function TagEditor({
 									});
 								}}
 								onKeyDown={e => {
-									if (e.key === 'ArrowUp') {
+									if (e.key === 'Enter') {
+										console.log('enter');
 										e.preventDefault();
 										e.stopPropagation();
-										if (!tag) return;
-										// setCurrentOption((options.length + currentOption - 1) % options.length);
-										// if (!open) setOpen(true);
-									} else if (e.key === 'ArrowDown') {
-										e.preventDefault();
-										e.stopPropagation();
-										// if (!options) return;
-										// setCurrentOption((currentOption + 1) % options.length);
-										// if (!open) setOpen(true);
-									} else if (e.key === 'Enter') {
-										e.preventDefault();
-										e.stopPropagation();
-										// if (!options?.[currentOption]) return;
-										// onChange(options[currentOption].name);
-										// setOpen(false);
-									} else if (e.key === 'Escape') {
-										e.preventDefault();
-										e.stopPropagation();
-										// setOpen(false);
+										if (!tagsList?.[currentOption]) return;
+										onChange({
+											...value,
+											value:
+												tag === '' || tag === propDef.defaultValue
+													? undefined
+													: tag,
+										});
+										setOpen(false);
 									}
 								}}
+								onMouseOver={() => setCurrentOption(index)}
 							>
 								{tag}
 							</div>
