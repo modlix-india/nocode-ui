@@ -920,6 +920,9 @@ function makeScale(
 		[xScale, yScale] = [yScale, xScale];
 	}
 
+	if (xScale.nice) xScale = xScale.nice();
+	if (yScale.nice) yScale = yScale.nice();
+
 	return { xScale, yScale };
 }
 
