@@ -420,7 +420,7 @@ function renderBars(
 
 	chart
 		.selectAll('g.barDataSetGroup')
-		.data(barIndexes)
+		.data(barIndexes, (i: number) => i)
 		.join('g')
 		.attr('class', 'barDataSetGroup')
 		.selectAll('rect')
