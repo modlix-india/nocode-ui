@@ -259,6 +259,13 @@ function Chart(props: Readonly<ComponentProps>) {
 						else newSet.add(index);
 						setHiddenDataSets(newSet);
 					}}
+					onShowOnlyDataSet={(index: number) =>
+						setHiddenDataSets(
+							new Set(
+								chartData?.dataSetData?.map((_, i) => i).filter(i => i !== index),
+							),
+						)
+					}
 				/>
 			</svg>
 		</div>

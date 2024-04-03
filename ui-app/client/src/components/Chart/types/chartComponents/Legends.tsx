@@ -35,6 +35,7 @@ export default function Legends({
 	rectangleStyles,
 	hiddenDataSets,
 	onToggleDataSet,
+	onShowOnlyDataSet,
 }: Readonly<{
 	containerDimension: Dimension;
 	legendDimension: Dimension;
@@ -45,6 +46,7 @@ export default function Legends({
 	rectangleStyles: CSSProperties;
 	hiddenDataSets: Set<number>;
 	onToggleDataSet: (index: number) => void;
+	onShowOnlyDataSet: (index: number) => void;
 }>) {
 	const labelWidthRef = useRef<SVGTextElement>(null);
 
@@ -135,6 +137,20 @@ export default function Legends({
 	)
 		return <></>;
 
+	function onClick(index: number) {
+		return properties.disableLegendInteraction ? undefined : () => onToggleDataSet(index);
+	}
+
+	function onDoubleClick(index: number) {
+		return properties.disableLegendInteraction
+			? undefined
+			: (e: any) => {
+					e.preventDefault();
+					e.stopPropagation();
+					onShowOnlyDataSet(index);
+			  };
+	}
+
 	return (
 		<g className="legendGroup">
 			<text
@@ -160,11 +176,8 @@ export default function Legends({
 						y={legend.rectDimension.y ?? 0}
 						duration={NO_ANIMATION ?? properties.animationTime}
 						easing={properties.animationTimingFunction}
-						onClick={
-							properties.disableLegendInteraction
-								? undefined
-								: () => onToggleDataSet(index)
-						}
+						onClick={onClick(index)}
+						onDoubleClick={onDoubleClick(index)}
 					/>
 					<Animate.Text
 						key={`${legend.id}-text`}
@@ -179,11 +192,8 @@ export default function Legends({
 						y={legend.labelDimension.y ?? 0}
 						duration={NO_ANIMATION ?? properties.animationTime}
 						easing={properties.animationTimingFunction}
-						onClick={
-							properties.disableLegendInteraction
-								? undefined
-								: () => onToggleDataSet(index)
-						}
+						onClick={onClick(index)}
+						onDoubleClick={onDoubleClick(index)}
 					>
 						{legend.label}
 					</Animate.Text>
@@ -226,11 +236,7 @@ export default function Legends({
 							easing={properties.animationTimingFunction}
 							duration={NO_ANIMATION ?? properties.animationTime}
 							stroke="currentColor"
-							onClick={
-								properties.disableLegendInteraction
-									? undefined
-									: () => onToggleDataSet(index)
-							}
+							onClick={onClick(index)}
 						/>
 					) : (
 						<></>
