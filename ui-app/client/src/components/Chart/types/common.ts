@@ -254,7 +254,7 @@ export function makeChartDataFromProperties(
 	const axisInverted = !!properties.invertAxis;
 
 	const xUniqueData = xAxisData?.length ? Array.from(new Set(xAxisData.flat(Infinity))) : [];
-	const yUniqueData = yAxisData?.length ? Array.from(new Set(yAxisData.flat(Infinity))) : [];
+	let yUniqueData = yAxisData?.length ? Array.from(new Set(yAxisData.flat(Infinity))) : [];
 
 	let xAxisType: AxisType | 'time' =
 		properties.xAxisType === 'time'
@@ -378,6 +378,13 @@ export function makeChartDataFromProperties(
 	if ((hasBar && !axisInverted) || (hasHorizontalBar && axisInverted)) xAxisType = 'ordinal';
 	else if ((hasHorizontalBar && !axisInverted) || (hasBar && axisInverted)) yAxisType = 'ordinal';
 
+	if (
+		(hasBar && properties.stackedAxis === 'y') ||
+		(hasHorizontalBar && properties.stackedAxis === 'x')
+	) {
+		yUniqueData = makeStackedYAxisStackedData(dataSetData, yUniqueData, hiddenDataSets);
+	}
+
 	return {
 		dataSetData,
 		xAxisType,
@@ -392,6 +399,40 @@ export function makeChartDataFromProperties(
 		xUniqueData,
 		yUniqueData,
 	};
+}
+
+function makeStackedYAxisStackedData(
+	dataSetData: DataSetData[],
+	yUniqueData: any[],
+	hiddenDataSets: Set<number>,
+) {
+	let data = new Set();
+	const max = dataSetData.find(e => Array.isArray(e.data) && e.data.length)?.data.length ?? 0;
+	for (let i = 0; i < max; i++) {
+		let positiveSum = 0;
+		let negativeSum = 0;
+
+		for (let j = 0; j < dataSetData.length; j++) {
+			if (hiddenDataSets.has(j)) continue;
+			let value = dataSetData[j].data[i].y;
+			if (Array.isArray(value)) {
+				for (let k = 0; k < value.length; k += 2) {
+					let current = value[k] - value[k + 1];
+					if (current < 0) negativeSum += current;
+					else positiveSum += current;
+				}
+			} else {
+				if (value > 0) positiveSum += value;
+				else negativeSum += value;
+			}
+		}
+
+		data.add(positiveSum);
+		data.add(negativeSum);
+	}
+	yUniqueData = Array.from(data);
+
+	return yUniqueData;
 }
 
 function makeYAxisData(
@@ -450,8 +491,6 @@ function makeYAxisData(
 						return val.concat(rangeData[index].flat(Infinity));
 					return val.concat(rangeData[index]);
 				});
-
-			// console.log(rangeData, yAxisData[i]);
 		}
 	}
 

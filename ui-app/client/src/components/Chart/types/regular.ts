@@ -144,11 +144,28 @@ function hBarX(
 	xScale: any,
 	axisPosition: number,
 ) {
-	return ({ i, j, k0, k1 }: { i: number; j: number; k0?: number; k1?: number }) => {
+	return ({
+		i,
+		j,
+		k0,
+		k1,
+		sum,
+	}: {
+		i: number;
+		j: number;
+		k0?: number;
+		k1?: number;
+		sum?: number;
+	}) => {
 		const data = chartData.dataSetData[i].data[j];
 		let value = chartData.axisInverted ? data.y : data.x;
 
-		if (isNullValue(k0) || isNullValue(k1) || !Array.isArray(value)) {
+		if (properties.stackedAxis === 'x' && !isNullValue(sum)) {
+			const x0 = xScale(sum);
+			const x1 = xScale(sum + value);
+
+			return x0 < x1 ? x0 : x1;
+		} else if (isNullValue(k0) || isNullValue(k1) || !Array.isArray(value)) {
 			if (Array.isArray(value)) value = value[0];
 			const x = xScale(value);
 
@@ -169,11 +186,28 @@ function barY(
 	yScale: any,
 	axisPosition: number,
 ) {
-	return ({ i, j, k0, k1 }: { i: number; j: number; k0?: number; k1?: number }) => {
+	return ({
+		i,
+		j,
+		k0,
+		k1,
+		sum,
+	}: {
+		i: number;
+		j: number;
+		k0?: number;
+		k1?: number;
+		sum?: number;
+	}) => {
 		const data = chartData.dataSetData[i].data[j];
 		let value = chartData.axisInverted ? data.x : data.y;
 
-		if (isNullValue(k0) || isNullValue(k1) || !Array.isArray(value)) {
+		if (properties.stackedAxis === 'y' && !isNullValue(sum)) {
+			const y0 = yScale(sum);
+			const y1 = yScale(sum + value);
+
+			return y0 < y1 ? y0 : y1;
+		} else if (isNullValue(k0) || isNullValue(k1) || !Array.isArray(value)) {
 			if (Array.isArray(value)) value = value[0];
 			const y = yScale(value);
 
@@ -188,7 +222,13 @@ function barY(
 	};
 }
 
-function hBarY(chartData: ChartData, properties: ChartProperties, yScale: any, barWidth: number) {
+function hBarY(
+	chartData: ChartData,
+	properties: ChartProperties,
+	yScale: any,
+	barWidth: number,
+	barIndexes: number[],
+) {
 	return ({ i, j }: { i: number; j: number }) => {
 		const data = chartData.dataSetData[i].data[j];
 		let value = chartData.axisInverted ? data.x : data.y;
@@ -199,9 +239,15 @@ function hBarY(chartData: ChartData, properties: ChartProperties, yScale: any, b
 			properties.stackedAxis === 'y' ||
 			properties.stackedAxis === 'none'
 		)
-			return yScale(value) + properties.padding + (barWidth + properties.padding) * i;
+			return (
+				yScale(value) +
+				properties.padding +
+				(properties.stackedAxis === 'x'
+					? 0
+					: (barWidth + properties.padding) * barIndexes.indexOf(i))
+			);
 
-		return yScale(value) + properties.padding * (i + 1);
+		return yScale(value) + properties.padding * (barIndexes.indexOf(i) + 1);
 	};
 }
 
@@ -216,11 +262,28 @@ function hBarW(
 	xScale: any,
 	axisPosition: number,
 ) {
-	return ({ i, j, k0, k1 }: { i: number; j: number; k0?: number; k1?: number }) => {
+	return ({
+		i,
+		j,
+		k0,
+		k1,
+		sum,
+	}: {
+		i: number;
+		j: number;
+		k0?: number;
+		k1?: number;
+		sum?: number;
+	}) => {
 		const data = chartData.dataSetData[i].data[j];
 		let value = chartData.axisInverted ? data.y : data.x;
 
-		if (isNullValue(k0) || isNullValue(k1) || !Array.isArray(value)) {
+		if (properties.stackedAxis === 'x' && !isNullValue(sum)) {
+			const x0 = xScale(sum);
+			const x1 = xScale(sum + value);
+
+			return Math.abs(x0 - x1);
+		} else if (isNullValue(k0) || isNullValue(k1) || !Array.isArray(value)) {
 			if (Array.isArray(value)) value = value[0];
 			const x = xScale(value);
 
@@ -242,11 +305,28 @@ function barH(
 	axisPosition: number,
 	barWidth: number,
 ) {
-	return ({ i, j, k0, k1 }: { i: number; j: number; k0?: number; k1?: number }) => {
+	return ({
+		i,
+		j,
+		k0,
+		k1,
+		sum,
+	}: {
+		i: number;
+		j: number;
+		k0?: number;
+		k1?: number;
+		sum?: number;
+	}) => {
 		const data = chartData.dataSetData[i].data[j];
 		let value = chartData.axisInverted ? data.x : data.y;
 
-		if (isNullValue(k0) || isNullValue(k1) || !Array.isArray(value)) {
+		if (properties.stackedAxis === 'y' && !isNullValue(sum)) {
+			const y0 = yScale(sum);
+			const y1 = yScale(sum + value);
+
+			return Math.abs(y0 - y1);
+		} else if (isNullValue(k0) || isNullValue(k1) || !Array.isArray(value)) {
 			if (Array.isArray(value)) value = value[0];
 			const y = yScale(value);
 
@@ -324,7 +404,7 @@ function renderBars(
 		? hBarX(chartData, properties, xScale, axisPosition!)
 		: barX(chartData, properties, xScale, barWidth);
 	const yFunction = chartData.hasHorizontalBar
-		? hBarY(chartData, properties, yScale, barWidth)
+		? hBarY(chartData, properties, yScale, barWidth, barIndexes)
 		: barY(chartData, properties, yScale, axisPosition!);
 	const widthFunction = chartData.hasHorizontalBar
 		? hBarW(chartData, properties, xScale, axisPosition!)
@@ -332,6 +412,11 @@ function renderBars(
 	const heightFunction = chartData.hasHorizontalBar
 		? hBarH(properties, yScale, barWidth)
 		: barH(chartData, properties, yScale, axisPosition!, barWidth);
+
+	const max = chartData.dataSetData.find(e => Array.isArray(e.data) && e.data.length)?.data
+		?.length;
+	const positiveSums = new Array(max).fill(0);
+	const negativeSums = new Array(max).fill(0);
 
 	chart
 		.selectAll('g.barDataSetGroup')
@@ -343,7 +428,26 @@ function renderBars(
 			chartData.dataSetData[index].data.flatMap((_, j) => {
 				const dataSet = chartData.dataSetData[index];
 
-				if (!Array.isArray(dataSet.data[j].y)) return [{ i: index, j }];
+				if (!Array.isArray(dataSet.data[j].y)) {
+					if (
+						(chartData.hasBar && properties.stackedAxis === 'y') ||
+						(properties.stackedAxis === 'x' && chartData.hasHorizontalBar)
+					) {
+						const value = dataSet.data[j].y;
+						let sum;
+						if (value > 0) {
+							sum = positiveSums[j] ?? 0;
+							positiveSums[j] = sum + value;
+						} else {
+							sum = negativeSums[j] ?? 0;
+							negativeSums[j] = sum + value;
+						}
+						console.log(value, { i: index, j, sum }, positiveSums, negativeSums);
+						return [{ i: index, j, sum }];
+					}
+
+					return [{ i: index, j }];
+				}
 
 				let bars = [];
 				for (let i = 0; i < dataSet.data[j].y.length; i += 2) {
@@ -748,8 +852,10 @@ function makeScale(
 			.range([0, chartData.axisInverted ? chartHeight : chartWidth]);
 	}
 
+	const yUniqueData = chartData.yUniqueData;
+
 	if (chartData.yAxisType === 'value') {
-		let extent = d3.extent(chartData.yUniqueData);
+		let extent = d3.extent(yUniqueData);
 
 		let min = extent[0];
 		let max = extent[1];
@@ -767,7 +873,7 @@ function makeScale(
 			.domain(extent)
 			.range([chartData.axisInverted ? chartWidth : chartHeight, 0]);
 	} else if (chartData.yAxisType === 'ordinal') {
-		let data = [...chartData.yUniqueData];
+		let data = [...yUniqueData];
 		if (properties.yAxisLabelsSort != 'none') {
 			let sortLogic;
 			if (chartData.actualYAxisType === 'value')
@@ -802,7 +908,7 @@ function makeScale(
 				.range([gap, size - gap]);
 		}
 	} else if (chartData.yAxisType === 'log') {
-		let extent = d3.extent(chartData.yUniqueData);
+		let extent = d3.extent(yUniqueData);
 		if (properties.yAxisReverse) extent = extent.reverse();
 		yScale = d3
 			.scaleLog()
