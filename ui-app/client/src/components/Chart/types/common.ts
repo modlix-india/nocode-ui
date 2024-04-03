@@ -164,6 +164,18 @@ export interface ChartProperties {
 	radialType: 'circle' | 'line';
 
 	padding: number;
+	focusDataSetOnHover: boolean;
+}
+
+export interface MakeChartProps {
+	properties: ChartProperties;
+	chartData: ChartData;
+	svgRef: SVGElement;
+	resolvedStyles: any;
+	chartDimension: Dimension;
+	hiddenDataSets: Set<number>;
+	focusedDataSet: number | undefined;
+	onFocusDataSet: (index: number | undefined) => void;
 }
 
 class DataValueExtractor extends TokenValueExtractor {

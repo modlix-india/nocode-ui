@@ -3,6 +3,7 @@ import { processStyleObjectToString } from '../../../util/styleProcessor';
 import {
 	ChartData,
 	ChartProperties,
+	MakeChartProps,
 	DataSetStyle,
 	Dimension,
 	labelDimensions,
@@ -11,14 +12,17 @@ import {
 
 const CHART_PADDING = 10;
 
-export function makeRegularChart(
-	properties: ChartProperties,
-	chartData: ChartData,
-	svgRef: SVGElement,
-	resolvedStyles: any,
-	chartDimension: Dimension,
-	hiddenDataSets: Set<number>,
-) {
+export function makeRegularChart(props: MakeChartProps) {
+	const {
+		properties,
+		svgRef,
+		chartData,
+		chartDimension,
+		resolvedStyles,
+		focusedDataSet,
+		hiddenDataSets,
+	} = props;
+
 	const d3 = globalThis.d3;
 	const svg = d3.select(svgRef);
 	const chartGroup = svg.select('g.chartGroup');
@@ -113,6 +117,8 @@ export function makeRegularChart(
 			chartWidth,
 			chartHeight,
 			resolvedStyles,
+			focusedDataSet,
+			props.onFocusDataSet,
 		);
 	} else {
 		chart.selectAll('g.barDataSetGroup').remove();
@@ -363,6 +369,8 @@ function renderBars(
 	chartWidth: number,
 	chartHeight: number,
 	resolvedStyles: any,
+	focusedDataSet: number | undefined,
+	onFocusDataSet: (index: number | undefined) => void,
 ) {
 	const bandWidth = (chartData.hasHorizontalBar ? yScale : xScale).bandwidth?.() ?? 0;
 	let barWidth = bandWidth - properties.padding * 2;
@@ -418,11 +426,19 @@ function renderBars(
 	const positiveSums = new Array(max).fill(0);
 	const negativeSums = new Array(max).fill(0);
 
-	chart
+	const dataSetGroups = chart
 		.selectAll('g.barDataSetGroup')
 		.data(barIndexes, (i: number) => i)
 		.join('g')
-		.attr('class', 'barDataSetGroup')
+		.attr('class', 'barDataSetGroup');
+
+	dataSetGroups
+		.transition()
+		.attr('opacity', (i: number) =>
+			focusedDataSet === undefined || focusedDataSet === i ? 1 : 0.3,
+		);
+
+	dataSetGroups
 		.selectAll('rect')
 		.data((index: number) =>
 			chartData.dataSetData[index].data.flatMap((_, j) => {
@@ -442,7 +458,7 @@ function renderBars(
 							sum = negativeSums[j] ?? 0;
 							negativeSums[j] = sum + value;
 						}
-						console.log(value, { i: index, j, sum }, positiveSums, negativeSums);
+
 						return [{ i: index, j, sum }];
 					}
 
@@ -458,6 +474,14 @@ function renderBars(
 			}),
 		)
 		.join('rect')
+		.on(
+			'mouseover',
+			properties.focusDataSetOnHover ? (e: any, d: any) => onFocusDataSet(d.i) : undefined,
+		)
+		.on(
+			'mouseout',
+			properties.focusDataSetOnHover ? (e: any, d: any) => onFocusDataSet(d.i) : undefined,
+		)
 		.transition(
 			d3
 				.transition()

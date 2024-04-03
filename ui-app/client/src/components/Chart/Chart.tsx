@@ -88,6 +88,7 @@ function Chart(props: Readonly<ComponentProps>) {
 	const [chartData, setChartData] = React.useState<ChartData | undefined>(undefined);
 
 	const [hiddenDataSets, setHiddenDataSets] = React.useState<Set<number>>(new Set<number>());
+	const [focusedDataSet, setFocusedDataSet] = React.useState<number | undefined>(undefined);
 
 	const svgRef = useRef<SVGSVGElement | null>(null);
 
@@ -135,18 +136,29 @@ function Chart(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (!globalThis.d3 || !svgRef.current || !chartData) return;
 
-		makeChart(
+		makeChart({
 			properties,
 			chartData,
-			svgRef.current,
+			svgRef: svgRef.current,
 			resolvedStyles,
-			{
+			chartDimension: {
 				width: chartWidth - CHART_PADDING * 2,
 				height: chartHeight - CHART_PADDING * 2,
 			},
 			hiddenDataSets,
-		);
-	}, [svgRef.current, globalThis.d3, chartData, legendDimension, render, resolvedStyles]);
+			focusedDataSet,
+			onFocusDataSet: (index: number | undefined) =>
+				setFocusedDataSet(index === focusedDataSet ? undefined : index),
+		});
+	}, [
+		svgRef.current,
+		globalThis.d3,
+		chartData,
+		legendDimension,
+		render,
+		resolvedStyles,
+		focusedDataSet,
+	]);
 
 	useEffect(() => {
 		if (isNullValue(svgRef.current)) return;
@@ -258,12 +270,20 @@ function Chart(props: Readonly<ComponentProps>) {
 						if (newSet.has(index)) newSet.delete(index);
 						else newSet.add(index);
 						setHiddenDataSets(newSet);
+						if (focusedDataSet) setFocusedDataSet(undefined);
 					}}
 					onShowOnlyDataSet={(index: number) =>
 						setHiddenDataSets(
 							new Set(
 								chartData?.dataSetData?.map((_, i) => i).filter(i => i !== index),
 							),
+						)
+					}
+					onFocusDataSet={(index: number | undefined) =>
+						setFocusedDataSet(
+							index === focusedDataSet || hiddenDataSets.has(index ?? -1)
+								? undefined
+								: index,
 						)
 					}
 				/>

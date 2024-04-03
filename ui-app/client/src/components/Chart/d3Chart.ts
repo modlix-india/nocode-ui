@@ -1,6 +1,7 @@
 import {
 	ChartData,
 	ChartProperties,
+	MakeChartProps,
 	ChartType,
 	DataSetStyle,
 	Dimension,
@@ -8,14 +9,16 @@ import {
 } from './types/common';
 import { makeRegularChart } from './types/regular';
 
-export function makeChart(
-	properties: ChartProperties,
-	chartData: ChartData,
-	svgRef: SVGElement,
-	resolvedStyles: any,
-	chartDimension: Dimension,
-	hiddenDataSets: Set<number>,
-) {
+export function makeChart(props: MakeChartProps) {
+	const {
+		properties,
+		chartData,
+		svgRef,
+		resolvedStyles,
+		chartDimension,
+		hiddenDataSets,
+		focusedDataSet,
+	} = props;
 	const type = `${properties.chartType}-${chartData.hasBar}`;
 
 	if (globalThis.d3.select(svgRef).attr('data-chart-type') !== type) {
@@ -44,14 +47,7 @@ export function makeChart(
 	}
 
 	if (properties.chartType === 'regular') {
-		makeRegularChart(
-			properties,
-			chartData,
-			svgRef,
-			resolvedStyles,
-			chartDimension,
-			hiddenDataSets,
-		);
+		makeRegularChart(props);
 	}
 }
 

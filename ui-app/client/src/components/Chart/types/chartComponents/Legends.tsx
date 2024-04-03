@@ -36,6 +36,7 @@ export default function Legends({
 	hiddenDataSets,
 	onToggleDataSet,
 	onShowOnlyDataSet,
+	onFocusDataSet,
 }: Readonly<{
 	containerDimension: Dimension;
 	legendDimension: Dimension;
@@ -47,6 +48,7 @@ export default function Legends({
 	hiddenDataSets: Set<number>;
 	onToggleDataSet: (index: number) => void;
 	onShowOnlyDataSet: (index: number) => void;
+	onFocusDataSet: (index: number | undefined) => void;
 }>) {
 	const labelWidthRef = useRef<SVGTextElement>(null);
 
@@ -151,6 +153,18 @@ export default function Legends({
 			  };
 	}
 
+	function onMouseEntering(index: number) {
+		return properties.disableLegendInteraction || legends.length < 2
+			? undefined
+			: () => onFocusDataSet(index);
+	}
+
+	function onMouseLeaving(index: number) {
+		return properties.disableLegendInteraction || legends.length < 2
+			? undefined
+			: () => onFocusDataSet(undefined);
+	}
+
 	return (
 		<g className="legendGroup">
 			<text
@@ -178,6 +192,8 @@ export default function Legends({
 						easing={properties.animationTimingFunction}
 						onClick={onClick(index)}
 						onDoubleClick={onDoubleClick(index)}
+						onMouseEnter={onMouseEntering(index)}
+						onMouseLeave={onMouseLeaving(index)}
 					/>
 					<Animate.Text
 						key={`${legend.id}-text`}
@@ -194,6 +210,8 @@ export default function Legends({
 						easing={properties.animationTimingFunction}
 						onClick={onClick(index)}
 						onDoubleClick={onDoubleClick(index)}
+						onMouseEnter={onMouseEntering(index)}
+						onMouseLeave={onMouseLeaving(index)}
 					>
 						{legend.label}
 					</Animate.Text>

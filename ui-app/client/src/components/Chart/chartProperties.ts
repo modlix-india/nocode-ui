@@ -615,9 +615,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{ name: 'group', displayName: 'Grouped' },
 		],
 	},
-
-	COMMON_COMPONENT_PROPERTIES.visibility,
-
 	{
 		name: 'padding',
 		schema: SCHEMA_NUM_COMP_PROP,
@@ -625,6 +622,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: 5,
 	},
+	{
+		name: 'focusDataSetOnHover',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Focus Data Set on Hover',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
+	},
+
+	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
