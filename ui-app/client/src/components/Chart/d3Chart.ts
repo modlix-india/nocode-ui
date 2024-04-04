@@ -1,24 +1,15 @@
+import { makeRegularChart } from './regular';
 import {
 	ChartData,
 	ChartProperties,
-	MakeChartProps,
 	ChartType,
 	DataSetStyle,
-	Dimension,
+	MakeChartProps,
 	VALID_COMBINATIONS,
 } from './types/common';
-import { makeRegularChart } from './types/regular';
 
 export function makeChart(props: MakeChartProps) {
-	const {
-		properties,
-		chartData,
-		svgRef,
-		resolvedStyles,
-		chartDimension,
-		hiddenDataSets,
-		focusedDataSet,
-	} = props;
+	const { properties, chartData, svgRef, chartDimension } = props;
 	const type = `${properties.chartType}-${chartData.hasBar}`;
 
 	if (globalThis.d3.select(svgRef).attr('data-chart-type') !== type) {
@@ -63,12 +54,25 @@ function checkDataValidity(properties: ChartProperties, chartData: ChartData) {
 			return `Invalid data set style: ${dataSet.dataSetStyle} for chart type: ${properties.chartType}`;
 	}
 
-	if (properties.chartType === ChartType.Radial) {
-		const combos = new Set(chartData.dataSetData.map(d => d.dataSetStyle));
-		if (combos.size > 1 && combos.has(DataSetStyle.PolarArea))
-			return 'Polar Area cannot be used with other data set styles like Pie and Doughnut';
-	}
+	let msg = radialChartCheck(properties, chartData);
+	if (msg) return msg;
 
+	msg = barChartCheck(properties, chartData);
+	if (msg) return msg;
+
+	return undefined;
+}
+
+function radialChartCheck(properties: ChartProperties, chartData: ChartData) {
+	if (properties.chartType !== ChartType.Radial) return;
+
+	const combos = new Set(chartData.dataSetData.map(d => d.dataSetStyle));
+	if (combos.size > 1 && combos.has(DataSetStyle.PolarArea))
+		return 'Polar Area cannot be used with other data set styles like Pie and Doughnut';
+	return undefined;
+}
+
+function barChartCheck(properties: ChartProperties, chartData: ChartData) {
 	if (chartData.hasHorizontalBar) {
 		if (
 			properties.stackedAxis === 'x' &&
@@ -77,12 +81,11 @@ function checkDataValidity(properties: ChartProperties, chartData: ChartData) {
 		)
 			return 'Stacked bar chart cannot be used with ordinal x-axis';
 	} else if (
+		chartData.hasBar &&
 		properties.stackedAxis === 'y' &&
 		((chartData.yAxisType === 'ordinal' && !chartData.axisInverted) ||
 			(chartData.xAxisType === 'ordinal' && chartData.axisInverted))
 	) {
 		return 'Stacked bar chart cannot be used with ordinal y-axis';
 	}
-
-	return undefined;
 }
