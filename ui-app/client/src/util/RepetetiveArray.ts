@@ -240,6 +240,27 @@ export default class RepetetiveArray<T> implements Iterable<T> {
 		return this.inMap;
 	}
 
+	public getUniqueValues(): T[] {
+		if (isNullValue(this.defaultValue)) return [];
+		else if (this.inMap.size === 0) return [this.defaultValue!];
+		return Array.from(this.inMap.values()).concat(this.defaultValue!);
+	}
+
+	public replaceValue(from: T, to: T) {
+		if (from === to) return;
+
+		if (from === this.defaultValue) {
+			this.defaultValue = to;
+			return;
+		}
+
+		const entries = Array.from(this.inMap.entries());
+		for (const entry of entries) {
+			if (entry[1] !== from) continue;
+			this.inMap.set(entry[0], to);
+		}
+	}
+
 	public toJSON(): T[] {
 		return this.toArray();
 	}

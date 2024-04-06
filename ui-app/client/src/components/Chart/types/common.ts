@@ -2,6 +2,7 @@ import { TokenValueExtractor, isNullValue } from '@fincity/kirun-js';
 import { PageStoreExtractor, getDataFromPath } from '../../../context/StoreContext';
 import { LocationHistory } from '../../../types/common';
 import RepetetiveArray from '../../../util/RepetetiveArray';
+import { hashCode } from '../../../functions/utils';
 
 export interface Dimension {
 	x?: number;
@@ -81,6 +82,11 @@ export const VALID_COMBINATIONS = new Map([
 	[ChartType.Radar, new Set([DataSetStyle.Radar])],
 	[ChartType.Waffle, new Set([DataSetStyle.Waffle])],
 ]);
+
+export interface Gradient {
+	hashCode: number;
+	gradient: string;
+}
 
 // Properties of the chart component
 
@@ -165,6 +171,7 @@ export interface ChartProperties {
 
 	padding: number;
 	focusDataSetOnHover: boolean;
+	gradientSpace: 'objectBoundingBox' | 'userSpaceOnUse';
 }
 
 export interface MakeChartProps {
@@ -246,6 +253,7 @@ export interface ChartData {
 	yAxisTitle?: string;
 	actualXAxisType: AxisType | 'time';
 	actualYAxisType: AxisType;
+	gradients: Map<number, Gradient>;
 }
 
 export function makeChartDataFromProperties(
@@ -289,9 +297,6 @@ export function makeChartDataFromProperties(
 
 	let dataColors: RepetetiveArray<string>[];
 	let dataStrokeColors: RepetetiveArray<string>[];
-
-	const givenColors = !!properties.dataSetColors?.length;
-	const givenStrokeColors = !!properties.dataSetStrokeColors?.length;
 
 	dataColors = getPathBasedValues(
 		properties.data,
@@ -363,6 +368,10 @@ export function makeChartDataFromProperties(
 
 	const dataSetData: DataSetData[] = [];
 
+	let gradients: Map<number, Gradient>;
+
+	[gradients, dataColors, dataStrokeColors] = makeGradientMap(dataColors, dataStrokeColors);
+
 	for (let i = 0; i < yAxisData.length; i++) {
 		const data = [];
 		for (let j = 0; j < yAxisData[i].length; j++) {
@@ -410,7 +419,36 @@ export function makeChartDataFromProperties(
 		yAxisTitle: axisInverted ? properties.xAxisTitle : properties.yAxisTitle,
 		xUniqueData,
 		yUniqueData,
+		gradients,
 	};
+}
+
+function makeGradientMap(
+	dataColors: RepetetiveArray<string>[],
+	dataStrokeColors: RepetetiveArray<string>[],
+): [Map<number, Gradient>, RepetetiveArray<string>[], RepetetiveArray<string>[]] {
+	const gradients = new Map<number, Gradient>();
+
+	for (let c of [dataColors, dataStrokeColors]) {
+		for (let arr of c) {
+			const v = arr.getUniqueValues();
+			for (let color of v) {
+				if (color.toLowerCase().indexOf('-gradient') === -1) continue;
+				{
+					const hash = hashCode(color);
+					if (!gradients.has(hash)) {
+						gradients.set(hash, {
+							hashCode: hash,
+							gradient: color,
+						});
+					}
+					arr.replaceValue(color, `url(#gradient_${Math.abs(hash)})`);
+				}
+			}
+		}
+	}
+
+	return [gradients, dataColors, dataStrokeColors];
 }
 
 function makeStackedYAxisStackedData(

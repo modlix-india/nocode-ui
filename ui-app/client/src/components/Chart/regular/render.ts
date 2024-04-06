@@ -374,24 +374,32 @@ export function renderBars(params: {
 			'mouseout',
 			properties.focusDataSetOnHover ? (e: any, d: any) => onFocusDataSet(d.i) : undefined,
 		)
-		.attr('x', (d: any) => {
-			if (chartData.hasBar) return xFunction(d);
+		.attr('x', function (d: any) {
+			const value = xFunction(d);
+			if (d3.select(this)?.attr('x') == value) return value;
+			if (chartData.hasBar) return value;
 			return axisPosition;
 		})
-		.attr('y', (d: any) => {
+		.attr('y', function (d: any) {
+			const value = yFunction(d);
+			if (d3.select(this)?.attr('y') == value) return value;
 			if (chartData.hasBar) {
-				if (properties.xAxisStartPosition === 'top') return yFunction(d);
+				if (properties.xAxisStartPosition === 'top') return value;
 				return axisPosition;
 			}
-			return yFunction(d);
+			return value;
 		})
-		.attr('width', (d: any) => {
-			if (chartData.hasBar) return widthFunction(d);
+		.attr('width', function (d: any) {
+			const value = widthFunction(d);
+			if (d3.select(this)?.attr('width') == value) return value;
+			if (chartData.hasBar) return value;
 			return 0;
 		})
-		.attr('height', (d: any) => {
+		.attr('height', function (d: any) {
+			const value = heightFunction(d);
+			if (d3.select(this)?.attr('height') == value) return value;
 			if (chartData.hasBar) return 0;
-			return heightFunction(d);
+			return value;
 		})
 		.transition(
 			d3

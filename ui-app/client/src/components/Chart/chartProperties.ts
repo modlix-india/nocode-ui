@@ -630,6 +630,18 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 	},
 
+	{
+		name: 'gradientSpace',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Gradient Space',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 'objectBoundingBox',
+		enumValues: [
+			{ name: 'objectBoundingBox', displayName: 'Each Object' },
+			{ name: 'userSpaceOnUse', displayName: 'Entire Chart' },
+		],
+	},
+
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 

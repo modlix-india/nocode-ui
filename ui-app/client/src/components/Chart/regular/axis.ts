@@ -49,7 +49,6 @@ export function renderAxis(
 				yScale(parseFloat(properties.xAxisStartCustomValue ?? ''));
 		}
 
-		xAxisGroup.transition().duration(properties.animationTime).call(xAxis);
 		xAxisGroup
 			.selectAll('text')
 			.attr('opacity', properties.xAxisHideLabels ? 0 : 1)
@@ -59,6 +58,7 @@ export function renderAxis(
 			.attr('font-size', 'inherit')
 			.attr('font-family', 'inherit')
 			.attr('style', processStyleObjectToString(resolvedStyles.xAxis));
+		xAxisGroup.call(xAxis);
 		if (properties.hideXAxisLine) xAxisGroup.selectAll('path.domain').attr('opacity', 0);
 	} else {
 		let xAxisGroup = chartGroup.select('.xAxisGroup');
@@ -93,7 +93,6 @@ export function renderAxis(
 				xScale(parseFloat(properties.yAxisStartCustomValue ?? ''));
 		}
 
-		yAxisGroup.transition().duration(properties.animationTime).call(yAxis);
 		yAxisGroup
 			.selectAll('text')
 			.attr('opacity', properties.yAxisHideLabels ? 0 : 1)
@@ -103,6 +102,7 @@ export function renderAxis(
 			.attr('font-size', 'inherit')
 			.attr('font-family', 'inherit')
 			.attr('style', processStyleObjectToString(resolvedStyles.yAxis));
+		yAxisGroup.call(yAxis);
 		if (properties.hideYAxisLine) yAxisGroup.selectAll('path.domain').attr('opacity', 0);
 	} else {
 		let yAxisGroup = chartGroup.select('.yAxisGroup');

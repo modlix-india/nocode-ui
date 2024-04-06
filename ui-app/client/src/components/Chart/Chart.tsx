@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediately,
@@ -16,6 +16,7 @@ import { deepEqual, isNullValue } from '@fincity/kirun-js';
 import { ChartData, Dimension, makeChartDataFromProperties } from './types/common';
 import { makeChart } from './d3Chart';
 import Legends from './types/chartComponents/Legends';
+import Gradient from './types/chartComponents/Gradient';
 
 const CHART_PADDING = 10;
 
@@ -190,6 +191,26 @@ function Chart(props: Readonly<ComponentProps>) {
 
 	useEffect(() => setHiddenDataSets(new Set()), [chartData?.dataSetData?.length]);
 
+	const gradientDef = useMemo(
+		() => (
+			<defs>
+				{Array.from(chartData?.gradients?.values() ?? []).map(g => (
+					<Gradient
+						key={'' + Math.abs(g.hashCode).toString(16)}
+						gradient={g}
+						gradientUnits={properties.gradientSpace}
+					/>
+				))}
+			</defs>
+		),
+		[
+			Array.from(chartData?.gradients?.values() ?? [])
+				.map(e => e.hashCode)
+				.reduce((a, c) => a + c, 0),
+			properties.gradientSpace,
+		],
+	);
+
 	return (
 		<div className={`comp compChart `} style={resolvedStyles.comp ?? {}}>
 			<HelperComponent context={props.context} definition={definition} />
@@ -199,6 +220,7 @@ function Chart(props: Readonly<ComponentProps>) {
 				viewBox={`0 0 ${svgDimension.width} ${svgDimension.height}`}
 				xmlns="http://www.w3.org/2000/svg"
 			>
+				{gradientDef}
 				<text
 					className="xAxisLabelSampler"
 					x={0}
