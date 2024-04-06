@@ -53,6 +53,7 @@ function BOOLEAN_CONDITION(validation: any, value: any): Array<string> {
 }
 
 function SCHEMA_TYPE(validation: any, value: any): Array<string> {
+	if (!validation?.schema) return [];
 	try {
 		const sch = Schema.from(validation.schema);
 		SchemaValidator.validate(undefined, sch, UISchemaRepository, value);

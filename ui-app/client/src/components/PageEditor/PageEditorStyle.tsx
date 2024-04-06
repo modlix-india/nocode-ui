@@ -2759,6 +2759,31 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			height: 650px;
 		}
 
+		._popupContainer._schemaFormEditor ._schemaFormEditorContainer ._bindPathContainer {
+			display: flex;
+    gap: 5px;
+
+		}
+
+		._popupContainer._schemaFormEditor ._schemaFormEditorContainer ._peInput {
+			width: 100%;
+		}
+
+		._popupContainer._schemaFormEditor ._schemaFormEditorContainer ._button {
+			color: #fff;
+    		background-color: #4C7FEE;
+			border: none;
+			border-radius: 5px;
+			height: 35px;
+			padding: 0 15px;
+			cursor: pointer
+		}
+		._popupContainer._schemaFormEditor ._schemaFormEditorContainer ._button:disabled {
+			background-color: #CCC;
+			color: #999;
+			cursor: not-allowed;
+		}
+
 		._formEditor {
 			width: 600px;
 			height: 650px;
