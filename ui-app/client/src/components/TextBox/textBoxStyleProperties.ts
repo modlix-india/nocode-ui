@@ -1,6 +1,7 @@
 import { StyleGroupDefinition, StylePropertyDefinition } from '../../types/common';
 
 export const styleProperties: Array<StylePropertyDefinition> = [
+	{ displayName: 'Text Box Font', name: 'textBoxFont', defaultValue: '<primaryFont>' },
 	{
 		groupName: 'Text Box Font',
 		displayName: 'Text Box Font Design Default',
