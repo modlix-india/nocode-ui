@@ -183,7 +183,11 @@ function TabsComponent(props: ComponentProps) {
 								: resolvedStyles.tab ?? {}
 						}
 						onMouseEnter={() => setHover(i)}
-						onMouseLeave={() => setHover(-1)}
+						onMouseLeave={e => {
+							e.preventDefault();
+							e.stopPropagation();
+							setHover(-1);
+						}}
 						onClick={() => handleClick(e)}
 					>
 						<SubHelperComponent
@@ -216,6 +220,13 @@ function TabsComponent(props: ComponentProps) {
 					<SubHelperComponent
 						definition={props.definition}
 						subComponentName="tabHighlighter"
+						zIndex={8}
+					/>
+				</div>
+				<div className="tabsSeperator" style={resolvedStyles.tabsSeperator ?? {}}>
+					<SubHelperComponent
+						definition={props.definition}
+						subComponentName="tabsSeperator"
 						zIndex={8}
 					/>
 				</div>
@@ -358,6 +369,12 @@ const component: Component = {
 			name: 'childContainer',
 			displayName: 'Child Container',
 			description: 'Child Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'tabsSeperator',
+			displayName: 'Tabs Seperator',
+			description: 'Tabs Seperator',
 			icon: 'fa-solid fa-box',
 		},
 	],

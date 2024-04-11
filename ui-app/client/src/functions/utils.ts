@@ -55,3 +55,22 @@ export function camelCaseToUpperSpaceCase(str: string) {
 	const retStr = str.replace(/([A-Z])/g, ' $1');
 	return retStr.substring(0, 1).toUpperCase() + retStr.substring(1);
 }
+
+export function hashCodeString(str: string | undefined, radix?: number): string {
+	return hashCode(str).toString(radix ?? 16);
+}
+
+export function hashCode(str: string | undefined): number {
+	if (!str || !str.length) return 0;
+
+	let hash = 0,
+		chr;
+
+	for (let i = 0; i < str.length; i++) {
+		chr = str.charCodeAt(i);
+		hash = (hash << 5) - hash + chr;
+		hash |= 0;
+	}
+
+	return hash;
+}
