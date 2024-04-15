@@ -514,18 +514,6 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'dropdownSearchContainer',
-			displayName: 'Dropdown Search Container',
-			description: 'Dropdown Search Container',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'textBoxContainer',
-			displayName: 'Text Box Container',
-			description: 'Text Box Container',
-			icon: 'fa-solid fa-box',
-		},
-		{
 			name: 'leftIcon',
 			displayName: 'Left Icon',
 			description: 'Left Icon',
@@ -544,15 +532,9 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'floatingLabel',
-			displayName: 'Floating Label',
-			description: 'Floating Label',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'noFloatLabel',
-			displayName: 'No Float Label',
-			description: 'No Float Label',
+			name: 'label',
+			displayName: 'Label',
+			description: 'Label',
 			icon: 'fa-solid fa-box',
 		},
 		{
