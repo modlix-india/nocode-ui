@@ -262,12 +262,12 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Design Type',
 		editor: ComponentPropertyEditor.ENUM,
 		group: ComponentPropertyGroup.ADVANCED,
-		defaultValue: '_primary',
+		defaultValue: '_design1',
 		enumValues: [
-			{ name: '_primary', displayName: 'Simple Mode', description: 'Simple Mode Slider' },
-			{ name: '_secondary', displayName: 'Center Mode', description: 'Center Mode Slider' },
-			{ name: '_tertiary', displayName: 'Vertical Slider', description: 'Vertical Mode Slider' },
-			{ name: '_quaternary', displayName: 'Vertical Center Mode', description: 'Vertical Center Mode' },
+			{ name: '_design1', displayName: 'Simple Mode', description: 'Simple Mode Slider' },
+			{ name: '_design2', displayName: 'Center Mode', description: 'Center Mode Slider' },
+			{ name: '_design3', displayName: 'Vertical Slider', description: 'Vertical Mode Slider' },
+			{ name: '_design4', displayName: 'Vertical Center Mode', description: 'Vertical Center Mode' },
 		],
 	},
 	{
@@ -326,10 +326,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 		],
 	},
+	COMMON_COMPONENT_PROPERTIES.colorScheme,
 	COMMON_COMPONENT_PROPERTIES.selectionKey,
 	COMMON_COMPONENT_PROPERTIES.uniqueKey,
 	COMMON_COMPONENT_PROPERTIES.selectionType,
-	COMMON_COMPONENT_PROPERTIES.uniqueKeyType
+	COMMON_COMPONENT_PROPERTIES.uniqueKeyType,
 ];
 
 const stylePropertiesDefinition = {
