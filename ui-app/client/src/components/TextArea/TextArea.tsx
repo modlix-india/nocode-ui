@@ -67,6 +67,7 @@ function TextArea(props: ComponentProps) {
 			colorScheme,
 			onFocus,
 			onBlur,
+			showMandatoryAsterisk,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -283,6 +284,13 @@ function TextArea(props: ComponentProps) {
 			autoFocus={autoFocus}
 			hasValidationCheck={validation?.length > 0}
 			inputType="TextArea"
+			showMandatoryAsterisk={
+				(validation ?? []).find(
+					(e: any) => e.type === undefined || e.type === 'MANDATORY',
+				) && showMandatoryAsterisk
+					? true
+					: false
+			}
 		/>
 	);
 }
@@ -368,6 +376,12 @@ const component: Component = {
 			name: 'noFloatLabel',
 			displayName: 'No Float Label',
 			description: 'No Float Label',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'asterisk',
+			displayName: 'asterisk',
+			description: 'asterisk',
 			icon: 'fa-solid fa-box',
 		},
 		{
