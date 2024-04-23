@@ -17,6 +17,7 @@ import { propertiesDefinition, stylePropertiesDefinition } from './tabsPropertie
 import TabsStyles from './TabsStyle';
 import { styleDefaults } from './tabsStyleProperties';
 import { IconHelper } from '../util/IconHelper';
+import { isNullValue } from '@fincity/kirun-js';
 
 function setHighlighter(
 	tabsOrientation: string,
@@ -170,49 +171,54 @@ function TabsComponent(props: ComponentProps) {
 					subComponentName="tabsContainer"
 					zIndex={7}
 				/>
-				{tabs.map((e: any, i: number) => (
-					<div
-						key={e}
-						ref={el => (tabRefs.current[i] = el)}
-						className={`tabDiv ${tabNameOrientation} ${
-							hover === i || (hover === -1 && activeTab === e) ? '_active' : ''
-						}`}
-						style={
-							i === hover
-								? resolvedStylesWithHover.tab ?? {}
-								: resolvedStyles.tab ?? {}
-						}
-						onMouseEnter={() => setHover(i)}
-						onMouseLeave={e => {
-							e.preventDefault();
-							e.stopPropagation();
-							setHover(-1);
-						}}
-						onClick={() => handleClick(e)}
-					>
-						<SubHelperComponent
-							definition={props.definition}
-							subComponentName="tab"
-							zIndex={8}
-						/>
+				{tabs.map(
+					(e: any, i: number) =>
+						!isNullValue(e) && (
+							<div
+								key={e}
+								ref={el => (tabRefs.current[i] = el)}
+								className={`tabDiv ${tabNameOrientation} ${
+									hover === i || (hover === -1 && activeTab === e)
+										? '_active'
+										: ''
+								}`}
+								style={
+									i === hover
+										? resolvedStylesWithHover.tab ?? {}
+										: resolvedStyles.tab ?? {}
+								}
+								onMouseEnter={() => setHover(i)}
+								onMouseLeave={e => {
+									e.preventDefault();
+									e.stopPropagation();
+									setHover(-1);
+								}}
+								onClick={() => handleClick(e)}
+							>
+								<SubHelperComponent
+									definition={props.definition}
+									subComponentName="tab"
+									zIndex={8}
+								/>
 
-						<i
-							className={`icon ${icon[i]}`}
-							style={
-								e === hover
-									? resolvedStylesWithHover.icon ?? {}
-									: resolvedStyles.icon ?? {}
-							}
-						>
-							<SubHelperComponent
-								definition={props.definition}
-								subComponentName="icon"
-								zIndex={9}
-							/>
-						</i>
-						{getTranslations(e, pageDefinition.translations)}
-					</div>
-				))}
+								<i
+									className={`icon ${icon[i]}`}
+									style={
+										e === hover
+											? resolvedStylesWithHover.icon ?? {}
+											: resolvedStyles.icon ?? {}
+									}
+								>
+									<SubHelperComponent
+										definition={props.definition}
+										subComponentName="icon"
+										zIndex={9}
+									/>
+								</i>
+								{getTranslations(e, pageDefinition.translations)}
+							</div>
+						),
+				)}
 				<div
 					className={`tabHighlighter`}
 					style={{ ...(resolvedStyles.tabHighlighter ?? {}), ...highlighterPosition }}
