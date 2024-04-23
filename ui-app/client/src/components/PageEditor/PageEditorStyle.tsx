@@ -2303,7 +2303,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._propContainer {
 			width: 100%;
 			padding-top: 20px;
-			padding-bottom: 20px;
 			flex: 1;
 		}
 
