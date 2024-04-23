@@ -8,14 +8,13 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<primaryFont>',
 		cssProperty: 'font',
 	},
-
 	{
 		groupName: 'Default',
 		displayName: 'Default Menu Font',
 		name: 'defaultMenuDesignFont',
 		defaultValue: '<menuFont>',
 		cssProperty: 'font',
-		selector: '.comp.compMenu._default',
+		selector: '.comp.compMenu._default, .comp.compMenu._default:visited',
 		noPrefix: true,
 	},
 	{
@@ -24,7 +23,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'outlineMenuDesignFont',
 		defaultValue: '<menuFont>',
 		cssProperty: 'font',
-		selector: '.comp.compMenu._outlined',
+		selector: '.comp.compMenu._outlined, .comp.compMenu._outlined:visited',
 		noPrefix: true,
 	},
 	{
@@ -33,7 +32,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'textMenuDesignFont',
 		defaultValue: '<menuFont>',
 		cssProperty: 'font',
-		selector: '.comp.compMenu._text',
+		selector: '.comp.compMenu._text, .comp.compMenu._text:visited',
 		noPrefix: true,
 	},
 	{
@@ -42,7 +41,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'sidesMenuDesignFont',
 		defaultValue: '<menuFont>',
 		cssProperty: 'font',
-		selector: '.comp.compMenu._sides',
+		selector: '.comp.compMenu._sides, .comp.compMenu._sides:visited',
 		noPrefix: true,
 	},
 	{
@@ -51,10 +50,54 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'topbottomMenuDesignFont',
 		defaultValue: '<menuFont>',
 		cssProperty: 'font',
-		selector: '.comp.compMenu._topbottom',
+		selector: '.comp.compMenu._topbottom, .comp.compMenu._topbottom:visited',
 		noPrefix: true,
 	},
-
+	{
+		groupName: 'Default',
+		displayName: 'Default Menu active and hover font',
+		name: 'defaultMenuDesignFonthoverandactivefont',
+		defaultValue: '<menuFont>',
+		cssProperty: 'font',
+		selector: '.comp.compMenu._default:hover, .comp.compMenu._default._isActive',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Outline',
+		displayName: 'Outline Menu Font active and hover font',
+		name: 'outlineMenuDesignFonthover and active font',
+		defaultValue: '<menuFont>',
+		cssProperty: 'font',
+		selector: '.comp.compMenu._outlined:hover, .comp.compMenu._outlined._isActive',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Text',
+		displayName: 'Text Menu Font active and hover font',
+		name: 'textMenuDesignFonthover and active font',
+		defaultValue: '<menuFont>',
+		cssProperty: 'font',
+		selector: '.comp.compMenu._text:hover, .comp.compMenu._text._isActive',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Sides',
+		displayName: 'Sides Menu Font active and hover font',
+		name: 'sidesMenuDesignFonthover and active font',
+		defaultValue: '<menuFont>',
+		cssProperty: 'font',
+		selector: '.comp.compMenu._sides:hover, .comp.compMenu._sides._isActive',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Top Bottom',
+		displayName: 'Top Bottom Menu Font active and hover font',
+		name: 'topbottomMenuDesignFonthover and active font',
+		defaultValue: '<menuFont>',
+		cssProperty: 'font',
+		selector: '.comp.compMenu._topbottom:hover, .comp.compMenu._topbottom._isActive',
+		noPrefix: true,
+	},
 	{
 		groupName: 'Menu Color',
 		displayName: 'Primary Menu Color Scheme',
@@ -90,7 +133,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<backgroundColorFive>',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Text Decoration',
 		displayName: 'Menu Text Decoration',
@@ -98,7 +140,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: 'underline',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Default',
 		displayName: 'Menu Default Design Padding',
@@ -144,7 +185,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._topbottom',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Default',
 		displayName: 'Menu Default Design Text Alignment',
@@ -185,7 +225,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._topbottom',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Default',
 		displayName: 'Menu Default Design Border Radius',
@@ -228,7 +267,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._topbottom',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Font',
 		displayName: 'Menu Font Weight',
@@ -239,7 +277,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'.comp.compMenu._text._primary._isActive, .comp.compMenu._text._primary:hover, .comp.compMenu._text._secondary._isActive, .comp.compMenu._text._secondary:hover, .comp.compMenu._text._tertiary._isActive, .comp.compMenu._text._tertiary:hover, .comp.compMenu._text._quaternary._isActive, .comp.compMenu._text._quaternary:hover, .comp.compMenu._text._quinary._isActive, .comp.compMenu._text._quinary:hover',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Default',
 		displayName: 'Menu Default Design Active Border',
@@ -283,7 +320,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._topbottom._isActive, .comp.compMenu._topbottom:hover',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Default',
 		displayName: 'Menu Default Design Border',
@@ -327,7 +363,86 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._topbottom',
 		noPrefix: true,
 	},
-
+	{
+		groupName: 'Default',
+		displayName: 'Menu Default Design Border Width',
+		name: 'defaultMenuDesignBorderWidth',
+		cssProperty: 'border-width',
+		selector: '.comp.compMenu._default',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Outline',
+		displayName: 'Menu Outline Design Border Width',
+		name: 'outlineMenuDesignBorderWidth',
+		cssProperty: 'border-width',
+		selector: '.comp.compMenu._outlined',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Text',
+		displayName: 'Menu Text Design Border width',
+		name: 'textMenuDesignBorderWidth',
+		cssProperty: 'border-width',
+		selector: '.comp.compMenu._text',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Sides',
+		displayName: 'Menu Sides Design Border width',
+		name: 'sidesMenuDesignBorderWidth',
+		cssProperty: 'border-width',
+		selector: '.comp.compMenu._sides',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Top Bottom',
+		displayName: 'Menu Top Bottom Design Border width',
+		name: 'topbottomMenuDesignBorderWidth',
+		cssProperty: 'border-width',
+		selector: '.comp.compMenu._topbottom',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Default',
+		displayName: 'Menu Default Design Border Style',
+		name: 'defaultMenuDesignBorderStyle',
+		cssProperty: 'border-style',
+		selector: '.comp.compMenu._default',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Outline',
+		displayName: 'Menu Outline Design Border Style',
+		name: 'outlineMenuDesignBorderStyle',
+		cssProperty: 'border-style',
+		selector: '.comp.compMenu._outlined',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Text',
+		displayName: 'Menu Text Design Border Style',
+		name: 'textMenuDesignBorderStyle',
+		cssProperty: 'border-style',
+		selector: '.comp.compMenu._text',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Sides',
+		displayName: 'Menu Sides Design Border Style',
+		name: 'sidesMenuDesignBorderStyle',
+		cssProperty: 'border-style',
+		selector: '.comp.compMenu._sides',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Top Bottom',
+		displayName: 'Menu Top Bottom Design Border Style',
+		name: 'topbottomMenuDesignBorderStyle',
+		cssProperty: 'border-style',
+		selector: '.comp.compMenu._topbottom',
+		noPrefix: true,
+	},
 	{
 		groupName: 'Menu Background Color',
 		displayName: 'Default Menu Primary Background Color',
@@ -369,7 +484,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._default._quinary, .comp.compMenu._default._quinary:visited',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Background Color',
 		displayName: 'Outlined Menu Primary Background Color',
@@ -412,7 +526,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._outlined._quinary, .comp.compMenu._outlined._quinary:visited',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Background Color',
 		displayName: 'Text Menu Primary Background Color',
@@ -453,7 +566,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._text._quinary, .comp.compMenu._text._quinary:visited',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Background Color',
 		displayName: 'Sides Menu Primary Background Color',
@@ -494,7 +606,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._sides._quinary, .comp.compMenu._sides._quinary:visited',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Background Color',
 		displayName: 'TopBottom Menu Primary Background Color',
@@ -538,7 +649,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._topbottom._quinary, .comp.compMenu._topbottom._quinary:visited',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Active Background Color',
 		displayName: 'Default Menu Primary Active Background Color',
@@ -589,7 +699,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'.comp.compMenu._default._quinary:hover, .comp.compMenu._default._quinary._isActive',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Active Background Color',
 		displayName: 'Outlined Menu Primary Active Background Color',
@@ -640,7 +749,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'.comp.compMenu._outlined._quinary:hover, .comp.compMenu._outlined._quinary._isActive',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Active Background Color',
 		displayName: 'Text Menu Primary Active Background Color',
@@ -683,7 +791,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._text._quinary:hover, .comp.compMenu._text._quinary._isActive',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Active Background Color',
 		displayName: 'Sides Menu Primary Active Background Color',
@@ -727,7 +834,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._sides._quinary:hover, .comp.compMenu._sides._quinary._isActive',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Active Background Color',
 		displayName: 'TopBottom Menu Primary Active Background Color',
@@ -773,7 +879,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'.comp.compMenu._topbottom._quinary:hover, .comp.compMenu._topbottom._quinary._isActive',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Text Color',
 		displayName: 'Default Menu Primary Text Color',
@@ -820,7 +925,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._default._quinary, .comp.compMenu._default._quinary:visited',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Text Color',
 		displayName: 'Outlined Menu Primary Text Color',
@@ -868,7 +972,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._outlined._quinary, .comp.compMenu._outlined._quinary:visited',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Text Color',
 		displayName: 'Text Menu Primary Text Color',
@@ -914,7 +1017,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._text._quinary, .comp.compMenu._text._quinary:visited',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Text Color',
 		displayName: 'Sides Menu Primary Text Color',
@@ -960,7 +1062,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._sides._quinary, .comp.compMenu._sides._quinary:visited',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Text Color',
 		displayName: 'TopBottom Menu Primary Text Color',
@@ -1009,7 +1110,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._topbottom._quinary, .comp.compMenu._topbottom._quinary:visited',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Active Text Color',
 		displayName: 'Default Menu Primary Active Text Color',
@@ -1060,7 +1160,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'.comp.compMenu._default._quinary:hover, .comp.compMenu._default._quinary._isActive',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Active Text Color',
 		displayName: 'Outlined Menu Primary Active Text Color',
@@ -1111,7 +1210,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'.comp.compMenu._outlined._quinary:hover, .comp.compMenu._outlined._quinary._isActive',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Active Text Color',
 		displayName: 'Text Menu Primary Active Text Color',
@@ -1159,7 +1257,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._text._quinary:hover, .comp.compMenu._text._quinary._isActive',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Active Text Color',
 		displayName: 'Sides Menu Primary Active Text Color',
@@ -1208,7 +1305,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._sides._quinary:hover, .comp.compMenu._sides._quinary._isActive',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Active Text Color',
 		displayName: 'TopBottom Menu Primary Active Text Color',
@@ -1259,7 +1355,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'.comp.compMenu._topbottom._quinary:hover, .comp.compMenu._topbottom._quinary._isActive',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Border Color',
 		displayName: 'Default Menu Primary Border Color',
@@ -1301,7 +1396,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._default._quinary, .comp.compMenu._default._quinary:visited',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Border Color',
 		displayName: 'Outlined Menu Primary Border Color',
@@ -1349,7 +1443,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._outlined._quinary, .comp.compMenu._outlined._quinary:visited',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Border Color',
 		displayName: 'Text Menu Primary Border Color',
@@ -1390,7 +1483,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._text._quinary, .comp.compMenu._text._quinary:visited',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Border Color',
 		displayName: 'Sides Menu Primary Border Color',
@@ -1436,7 +1528,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._sides._quinary, .comp.compMenu._sides._quinary:visited',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Border Color',
 		displayName: 'TopBottom Menu Primary Border Color',
@@ -1485,7 +1576,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._topbottom._quinary, .comp.compMenu._topbottom._quinary:visited',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Active Border Color',
 		displayName: 'Default Menu Primary Active Border Color',
@@ -1531,7 +1621,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'.comp.compMenu._default._quinary:hover, .comp.compMenu._default._quinary._isActive',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Active Border Color',
 		displayName: 'Outlined Menu Primary Active Border Color',
@@ -1582,7 +1671,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'.comp.compMenu._outlined._quinary:hover, .comp.compMenu._outlined._quinary._isActive',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Active Border Color',
 		displayName: 'Text Menu Primary Active Border Color',
@@ -1625,7 +1713,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._text._quinary:hover, .comp.compMenu._text._quinary._isActive',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Active Border Color',
 		displayName: 'Sides Menu Primary Active Border Color',
@@ -1674,7 +1761,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compMenu._sides._quinary:hover, .comp.compMenu._sides._quinary._isActive',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Active Border Color',
 		displayName: 'TopBottom Menu Primary Active Border Color',
@@ -1725,7 +1811,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'.comp.compMenu._topbottom._quinary:hover, .comp.compMenu._topbottom._quinary._isActive',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Disabled Border Color',
 		displayName: 'Default Menu Primary Disabled Border Color',
@@ -1771,7 +1856,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'.comp.compMenu._default._quinary._disabled, .comp.compMenu._default._quinary._disabled:visited',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Disabled Border Color',
 		displayName: 'Outlined Menu Primary Disabled Border Color',
@@ -1817,7 +1901,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'.comp.compMenu._outlined._quinary._disabled, .comp.compMenu._outlined._quinary._disabled:visited',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Disabled Border Color',
 		displayName: 'Text Menu Primary Disabled Border Color',
@@ -1863,7 +1946,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'.comp.compMenu._text._quinary._disabled, .comp.compMenu._text._quinary._disabled:visited',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Disabled Border Color',
 		displayName: 'Sides Menu Primary Disabled Border Color',
@@ -1909,7 +1991,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'.comp.compMenu._sides._quinary._disabled, .comp.compMenu._sides._quinary._disabled:visited',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Disabled Border Color',
 		displayName: 'TopBottom Menu Primary Disabled Border Color',
@@ -1955,7 +2036,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'.comp.compMenu._topbottom._quinary._disabled, .comp.compMenu._topbottom._quinary._disabled:visited',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Disabled Background Color',
 		displayName: 'Default Menu Primary Disabled Background Color',
@@ -2001,7 +2081,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'.comp.compMenu._default._quinary._disabled, .comp.compMenu._default._quinary._disabled:visited',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Disabled Background Color',
 		displayName: 'Outlined Menu Primary Disabled Background Color',
@@ -2047,7 +2126,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'.comp.compMenu._outlined._quinary._disabled, .comp.compMenu._outlined._quinary._disabled:visited',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Disabled Background Color',
 		displayName: 'Text Menu Primary Disabled Background Color',
@@ -2093,7 +2171,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'.comp.compMenu._text._quinary._disabled, .comp.compMenu._text._quinary._disabled:visited',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Disabled Background Color',
 		displayName: 'Sides Menu Primary Disabled Background Color',
@@ -2139,7 +2216,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'.comp.compMenu._sides._quinary._disabled, .comp.compMenu._sides._quinary._disabled:visited',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Disabled Background Color',
 		displayName: 'TopBottom Menu Primary Disabled Background Color',
@@ -2185,7 +2261,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'.comp.compMenu._topbottom._quinary._disabled, .comp.compMenu._topbottom._quinary._disabled:visited',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Disabled Text Color',
 		displayName: 'Default Menu Primary Disabled Text Color',
@@ -2231,7 +2306,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'.comp.compMenu._default._quinary._disabled, .comp.compMenu._default._quinary._disabled:visited',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Disabled Text Color',
 		displayName: 'Outlined Menu Primary Disabled Text Color',
@@ -2277,7 +2351,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'.comp.compMenu._outlined._quinary._disabled, .comp.compMenu._outlined._quinary._disabled:visited',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Disabled Text Color',
 		displayName: 'Text Menu Primary Disabled Text Color',
@@ -2323,7 +2396,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'.comp.compMenu._text._quinary._disabled, .comp.compMenu._text._quinary._disabled:visited',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Disabled Text Color',
 		displayName: 'Sides Menu Primary Disabled Text Color',
@@ -2369,7 +2441,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'.comp.compMenu._sides._quinary._disabled, .comp.compMenu._sides._quinary._disabled:visited',
 		noPrefix: true,
 	},
-
 	{
 		groupName: 'Menu Disabled Text Color',
 		displayName: 'TopBottom Menu Primary Disabled Text Color',
@@ -2413,6 +2484,1752 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'color',
 		selector:
 			'.comp.compMenu._topbottom._quinary._disabled, .comp.compMenu._topbottom._quinary._disabled:visited',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Default Menu Font Icon Primary Color',
+		name: 'defaultMenuFontIconPrimaryColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._default._primary ._icon, .comp.compMenu._default._primary:visited ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Default Menu Font Icon Secondary Color',
+		name: 'defaultMenuFontIconSecondaryColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._default._secondary ._icon, .comp.compMenu._default._secondary:visited ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Default Menu Font Icon Tertiary Color',
+		name: 'defaultMenuFontIconTertiaryColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._default._tertiary ._icon, .comp.compMenu._default._tertiary:visited ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Default Menu Font Icon Quaternary Color',
+		name: 'defaultMenuFontIconQuaternaryColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._default._quaternary ._icon, .comp.compMenu._default._quaternary:visited ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Default Menu Font Icon Quinary Color',
+		name: 'defaultMenuFontIconQuinaryColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._default._quinary ._icon, .comp.compMenu._default._quinary:visited ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Outlined Menu Font Icon Primary Color',
+		name: 'outlinedMenuFontIconPrimaryColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._outlined._primary ._icon, .comp.compMenu._outlined._primary:visited ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Outlined Menu Font Icon Secondary Color',
+		name: 'outlinedMenuFontIconSecondaryColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._outlined._secondary ._icon, .comp.compMenu._outlined._secondary:visited ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Outlined Menu Font Icon Tertiary Color',
+		name: 'outlinedMenuFontIconTertiaryColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._outlined._tertiary ._icon, .comp.compMenu._outlined._tertiary:visited ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Outlined Menu Font Icon Quaternary Color',
+		name: 'outlinedMenuFontIconQuaternaryColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._outlined._quaternary ._icon, .comp.compMenu._outlined._quaternary:visited ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Outlined Menu Font Icon Quinary Color',
+		name: 'outlinedMenuFontIconQuinaryColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._outlined._quinary ._icon, .comp.compMenu._outlined._quinary:visited ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Icon Menu Font Icon Primary Color',
+		name: 'iconMenuFontIconPrimaryColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._text._primary ._icon, .comp.compMenu._text._primary:visited ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Icon Menu Font Icon Secondary Color',
+		name: 'iconMenuFontIconSecondaryColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._text._secondary ._icon, .comp.compMenu._text._secondary:visited ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Icon Menu Font Icon Tertiary Color',
+		name: 'iconMenuFontIconTertiaryColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._text._tertiary ._icon, .comp.compMenu._text._tertiary:visited ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Icon Menu Font Icon Quaternary Color',
+		name: 'iconMenuFontIconQuaternaryColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._text._quaternary ._icon, .comp.compMenu._text._quaternary:visited ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Icon Menu Font Icon Quinary Color',
+		name: 'iconMenuFontIconQuinaryColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._text._quinary ._icon, .comp.compMenu._text._quinary:visited ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Sides Menu Font Icon Primary Color',
+		name: 'sidesMenuFontIconPrimaryColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._sides._primary ._icon, .comp.compMenu._sides._primary:visited ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Sides Menu Font Icon Secondary Color',
+		name: 'sidesMenuFontIconSecondaryColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._sides._secondary ._icon, .comp.compMenu._sides._secondary:visited ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Sides Menu Font Icon Tertiary Color',
+		name: 'sidesMenuFontIconTertiaryColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._sides._tertiary ._icon, .comp.compMenu._sides._tertiary:visited ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Sides Menu Font Icon Quaternary Color',
+		name: 'sidesMenuFontIconQuaternaryColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._sides._quaternary ._icon, .comp.compMenu._sides._quaternary:visited ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Sides Menu Font Icon Quinary Color',
+		name: 'sidesMenuFontIconQuinaryColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._sides._quinary ._icon, .comp.compMenu._sides._quinary:visited ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'TopBottom Menu Font Icon Primary Color',
+		name: 'topBottomMenuFontIconPrimaryColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._topbottom._primary ._icon, .comp.compMenu._topbottom._primary:visited ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'TopBottom Menu Font Icon Secondary Color',
+		name: 'topBottomMenuFontIconSecondaryColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._topbottom._secondary ._icon, .comp.compMenu._topbottom._secondary:visited ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'TopBottom Menu Font Icon Tertiary Color',
+		name: 'topBottomMenuFontIconTertiaryColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._topbottom._tertiary ._icon, .comp.compMenu._topbottom._tertiary:visited ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'TopBottom Menu Font Icon Quaternary Color',
+		name: 'topBottomMenuFontIconQuaternaryColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._topbottom._quaternary ._icon, .comp.compMenu._topbottom._quaternary:visited ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'TopBottom Menu Font Icon Quinary Color',
+		name: 'topBottomMenuFontIconQuinaryColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._topbottom._quinary ._icon, .comp.compMenu._topbottom._quinary:visited ._icon',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Default Menu Font Icon PrimaryHover Color',
+		name: 'defaultMenuFontIconPrimaryHoverColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._default._primary:hover ._icon, .comp.compMenu._default._primary._isActive ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Default Menu Font Icon SecondaryHover Color',
+		name: 'defaultMenuFontIconSecondaryHoverColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._default._secondary:hover ._icon, .comp.compMenu._default._secondary._isActive ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Default Menu Font Icon TertiaryHover Color',
+		name: 'defaultMenuFontIconTertiaryHoverColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._default._tertiary:hover ._icon, .comp.compMenu._default._tertiary._isActive ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Default Menu Font Icon QuaternaryHover Color',
+		name: 'defaultMenuFontIconQuaternaryHoverColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._default._quaternary:hover ._icon, .comp.compMenu._default._quaternary._isActive ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Default Menu Font Icon QuinaryHover Color',
+		name: 'defaultMenuFontIconQuinaryHoverColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._default._quinary:hover ._icon, .comp.compMenu._default._quinary._isActive ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Outlined Menu Font Icon PrimaryHover Color',
+		name: 'outlinedMenuFontIconPrimaryHoverColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._outlined._primary:hover ._icon, .comp.compMenu._outlined._primary._isActive ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Outlined Menu Font Icon SecondaryHover Color',
+		name: 'outlinedMenuFontIconSecondaryHoverColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._outlined._secondary:hover ._icon, .comp.compMenu._outlined._secondary._isActive ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Outlined Menu Font Icon TertiaryHover Color',
+		name: 'outlinedMenuFontIconTertiaryHoverColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._outlined._tertiary:hover ._icon, .comp.compMenu._outlined._tertiary._isActive ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Outlined Menu Font Icon QuaternaryHover Color',
+		name: 'outlinedMenuFontIconQuaternaryHoverColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._outlined._quaternary:hover ._icon, .comp.compMenu._outlined._quaternary._isActive ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Outlined Menu Font Icon QuinaryHover Color',
+		name: 'outlinedMenuFontIconQuinaryHoverColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._outlined._quinary:hover ._icon, .comp.compMenu._outlined._quinary._isActive ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Icon Menu Font Icon PrimaryHover Color',
+		name: 'iconMenuFontIconPrimaryHoverColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._text._primary:hover ._icon, .comp.compMenu._text._primary._isActive ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Icon Menu Font Icon SecondaryHover Color',
+		name: 'iconMenuFontIconSecondaryHoverColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._text._secondary:hover ._icon, .comp.compMenu._text._secondary._isActive ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Icon Menu Font Icon TertiaryHover Color',
+		name: 'iconMenuFontIconTertiaryHoverColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._text._tertiary:hover ._icon, .comp.compMenu._text._tertiary._isActive ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Icon Menu Font Icon QuaternaryHover Color',
+		name: 'iconMenuFontIconQuaternaryHoverColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._text._quaternary:hover ._icon, .comp.compMenu._text._quaternary._isActive ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Icon Menu Font Icon QuinaryHover Color',
+		name: 'iconMenuFontIconQuinaryHoverColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._text._quinary:hover ._icon, .comp.compMenu._text._quinary._isActive ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Sides Menu Font Icon PrimaryHover Color',
+		name: 'sidesMenuFontIconPrimaryHoverColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._sides._primary:hover ._icon, .comp.compMenu._sides._primary._isActive ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Sides Menu Font Icon SecondaryHover Color',
+		name: 'sidesMenuFontIconSecondaryHoverColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._sides._secondary:hover ._icon, .comp.compMenu._sides._secondary._isActive ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Sides Menu Font Icon TertiaryHover Color',
+		name: 'sidesMenuFontIconTertiaryHoverColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._sides._tertiary:hover ._icon, .comp.compMenu._sides._tertiary._isActive ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Sides Menu Font Icon QuaternaryHover Color',
+		name: 'sidesMenuFontIconQuaternaryHoverColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._sides._quaternary:hover ._icon, .comp.compMenu._sides._quaternary._isActive ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'Sides Menu Font Icon QuinaryHover Color',
+		name: 'sidesMenuFontIconQuinaryHoverColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._sides._quinary:hover ._icon, .comp.compMenu._sides._quinary._isActive ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'TopBottom Menu Font Icon PrimaryHover Color',
+		name: 'topBottomMenuFontIconPrimaryHoverColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._topbottom._primary:hover ._icon, .comp.compMenu._topbottom._primary._isActive ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'TopBottom Menu Font Icon SecondaryHover Color',
+		name: 'topBottomMenuFontIconSecondaryHoverColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._topbottom._secondary:hover ._icon, .comp.compMenu._topbottom._secondary._isActive ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'TopBottom Menu Font Icon TertiaryHover Color',
+		name: 'topBottomMenuFontIconTertiaryHoverColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._topbottom._tertiary:hover ._icon, .comp.compMenu._topbottom._tertiary._isActive ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'TopBottom Menu Font Icon QuaternaryHover Color',
+		name: 'topBottomMenuFontIconQuaternaryHoverColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._topbottom._quaternary:hover ._icon, .comp.compMenu._topbottom._quaternary._isActive ._icon',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Font Icon',
+		displayName: 'TopBottom Menu Font Icon QuinaryHover Color',
+		name: 'topBottomMenuFontIconQuinaryHoverColor',
+		cssProperty: 'color',
+		selector:
+			'.comp.compMenu._topbottom._quinary:hover ._icon, .comp.compMenu._topbottom._quinary._isActive ._icon',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'Menu Left',
+		displayName: 'Default Menu Left Primary Border',
+		name: 'defaultMenuLeftPrimaryBorder',
+		cssProperty: 'border-left',
+		selector: '.comp.compMenu._default, .comp.compMenu._default:visited',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Left',
+		displayName: 'Outlined Menu Left Primary Border',
+		name: 'outlinedMenuLeftPrimaryBorder',
+		cssProperty: 'border-left',
+		selector: '.comp.compMenu._outlined, .comp.compMenu._outlined:visited',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Left',
+		displayName: 'Icon Menu Left Primary Border',
+		name: 'iconMenuLeftPrimaryBorder',
+		cssProperty: 'border-left',
+		selector: '.comp.compMenu._text, .comp.compMenu._text:visited',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Left',
+		displayName: 'Sides Menu Left Primary Border',
+		name: 'sidesMenuLeftPrimaryBorder',
+		cssProperty: 'border-left',
+		selector: '.comp.compMenu._sides, .comp.compMenu._sides:visited',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Left',
+		displayName: 'TopBottom Menu Left Primary Border',
+		name: 'topBottomMenuLeftPrimaryBorder',
+		cssProperty: 'border-left',
+		selector: '.comp.compMenu._topbottom, .comp.compMenu._topbottom:visited',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'Menu Top',
+		displayName: 'Default Menu Top Primary Border',
+		name: 'defaultMenuTopPrimaryBorder',
+		cssProperty: 'border-top',
+		selector: '.comp.compMenu._default, .comp.compMenu._default:visited',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Top',
+		displayName: 'Outlined Menu Top Primary Border',
+		name: 'outlinedMenuTopPrimaryBorder',
+		cssProperty: 'border-top',
+		selector: '.comp.compMenu._outlined, .comp.compMenu._outlined:visited',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Top',
+		displayName: 'Icon Menu Top Primary Border',
+		name: 'iconMenuTopPrimaryBorder',
+		cssProperty: 'border-top',
+		selector: '.comp.compMenu._text, .comp.compMenu._text:visited',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Top',
+		displayName: 'Sides Menu Top Primary Border',
+		name: 'sidesMenuTopPrimaryBorder',
+		cssProperty: 'border-top',
+		selector: '.comp.compMenu._sides, .comp.compMenu._sides:visited',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Top',
+		displayName: 'TopBottom Menu Top Primary Border',
+		name: 'topBottomMenuTopPrimaryBorder',
+		cssProperty: 'border-top',
+		selector: '.comp.compMenu._topbottom, .comp.compMenu._topbottom:visited',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'Menu Right',
+		displayName: 'Default Menu Right Primary Border',
+		name: 'defaultMenuRightPrimaryBorder',
+		cssProperty: 'border-right',
+		selector: '.comp.compMenu._default, .comp.compMenu._default:visited',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Right',
+		displayName: 'Outlined Menu Right Primary Border',
+		name: 'outlinedMenuRightPrimaryBorder',
+		cssProperty: 'border-right',
+		selector: '.comp.compMenu._outlined, .comp.compMenu._outlined:visited',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Right',
+		displayName: 'Icon Menu Right Primary Border',
+		name: 'iconMenuRightPrimaryBorder',
+		cssProperty: 'border-right',
+		selector: '.comp.compMenu._text, .comp.compMenu._text:visited',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Right',
+		displayName: 'Sides Menu Right Primary Border',
+		name: 'sidesMenuRightPrimaryBorder',
+		cssProperty: 'border-right',
+		selector: '.comp.compMenu._sides, .comp.compMenu._sides:visited',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Right',
+		displayName: 'TopBottom Menu Right Primary Border',
+		name: 'topBottomMenuRightPrimaryBorder',
+		cssProperty: 'border-right',
+		selector: '.comp.compMenu._topbottom, .comp.compMenu._topbottom:visited',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'Menu Bottom',
+		displayName: 'Default Menu Bottom Primary Border',
+		name: 'defaultMenuBottomPrimaryBorder',
+		cssProperty: 'border-bottom',
+		selector: '.comp.compMenu._default, .comp.compMenu._default:visited',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Bottom',
+		displayName: 'Outlined Menu Bottom Primary Border',
+		name: 'outlinedMenuBottomPrimaryBorder',
+		cssProperty: 'border-bottom',
+		selector: '.comp.compMenu._outlined, .comp.compMenu._outlined:visited',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Bottom',
+		displayName: 'Icon Menu Bottom Primary Border',
+		name: 'iconMenuBottomPrimaryBorder',
+		cssProperty: 'border-bottom',
+		selector: '.comp.compMenu._text, .comp.compMenu._text:visited',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Bottom',
+		displayName: 'Sides Menu Bottom Primary Border',
+		name: 'sidesMenuBottomPrimaryBorder',
+		cssProperty: 'border-bottom',
+		selector: '.comp.compMenu._sides, .comp.compMenu._sides:visited',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Bottom',
+		displayName: 'TopBottom Menu Bottom Primary Border',
+		name: 'topBottomMenuBottomPrimaryBorder',
+		cssProperty: 'border-bottom',
+		selector: '.comp.compMenu._topbottom, .comp.compMenu._topbottom:visited',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'Menu Icon',
+		displayName: 'Default Menu Icon Primary Margin',
+		name: 'defaultMenuIconPrimaryMargin',
+		cssProperty: 'margin',
+		selector: '.comp.compMenu._default ._icon, .comp.compMenu._default ._icon:visited',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Icon',
+		displayName: 'Outlined Menu Icon Primary Margin',
+		name: 'outlinedMenuIconPrimaryMargin',
+		cssProperty: 'margin',
+		selector: '.comp.compMenu._outlined ._icon, .comp.compMenu._outlined ._icon:visited',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Icon',
+		displayName: 'Icon Menu Icon Primary Margin',
+		name: 'iconMenuIconPrimaryMargin',
+		cssProperty: 'margin',
+		selector: '.comp.compMenu._text ._icon, .comp.compMenu._text ._icon:visited',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Icon',
+		displayName: 'Sides Menu Icon Primary Margin',
+		name: 'sidesMenuIconPrimaryMargin',
+		cssProperty: 'margin',
+		selector: '.comp.compMenu._sides ._icon, .comp.compMenu._sides ._icon:visited',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Icon',
+		displayName: 'TopBottom Menu Icon Primary Margin',
+		name: 'topBottomMenuIconPrimaryMargin',
+		cssProperty: 'margin',
+		selector: '.comp.compMenu._topbottom ._icon, .comp.compMenu._topbottom ._icon:visited',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'Menu Icon',
+		displayName: 'Default Menu Icon Primary Padding',
+		name: 'defaultMenuIconPrimaryPadding',
+		cssProperty: 'padding',
+		selector: '.comp.compMenu._default ._icon, .comp.compMenu._default ._icon:visited',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Icon',
+		displayName: 'Outlined Menu Icon Primary Padding',
+		name: 'outlinedMenuIconPrimaryPadding',
+		cssProperty: 'padding',
+		selector: '.comp.compMenu._outlined ._icon, .comp.compMenu._outlined ._icon:visited',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Icon',
+		displayName: 'Icon Menu Icon Primary Padding',
+		name: 'iconMenuIconPrimaryPadding',
+		cssProperty: 'padding',
+		selector: '.comp.compMenu._text ._icon, .comp.compMenu._text ._icon:visited',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Icon',
+		displayName: 'Sides Menu Icon Primary Padding',
+		name: 'sidesMenuIconPrimaryPadding',
+		cssProperty: 'padding',
+		selector: '.comp.compMenu._sides ._icon, .comp.compMenu._sides ._icon:visited',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Icon',
+		displayName: 'TopBottom Menu Icon Primary Padding',
+		name: 'topBottomMenuIconPrimaryPadding',
+		cssProperty: 'padding',
+		selector: '.comp.compMenu._topbottom ._icon, .comp.compMenu._topbottom ._icon:visited',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'Menu Left',
+		displayName: 'Default Menu Left Primary Active Border',
+		name: 'defaultMenuLeftPrimaryActiveBorder',
+		cssProperty: 'border-left',
+		selector: '.comp.compMenu._default._isActive, .comp.compMenu._default._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Left',
+		displayName: 'Outlined Menu Left Primary Active Border',
+		name: 'outlinedMenuLeftPrimaryActiveBorder',
+		cssProperty: 'border-left',
+		selector: '.comp.compMenu._outlined._isActive, .comp.compMenu._outlined._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Left',
+		displayName: 'Icon Menu Left Primary Active Border',
+		name: 'iconMenuLeftPrimaryActiveBorder',
+		cssProperty: 'border-left',
+		selector: '.comp.compMenu._text._isActive, .comp.compMenu._text._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Left',
+		displayName: 'Sides Menu Left Primary Active Border',
+		name: 'sidesMenuLeftPrimaryActiveBorder',
+		cssProperty: 'border-left',
+		selector: '.comp.compMenu._sides._isActive, .comp.compMenu._sides._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Left',
+		displayName: 'TopBottom Menu Left Primary Active Border',
+		name: 'topBottomMenuLeftPrimaryActiveBorder',
+		cssProperty: 'border-left',
+		selector: '.comp.compMenu._topbottom._isActive, .comp.compMenu._topbottom._primary:hover',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'Menu Top',
+		displayName: 'Default Menu Top Primary Active Border',
+		name: 'defaultMenuTopPrimaryActiveBorder',
+		cssProperty: 'border-top',
+		selector: '.comp.compMenu._default._isActive, .comp.compMenu._default._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Top',
+		displayName: 'Outlined Menu Top Primary Active Border',
+		name: 'outlinedMenuTopPrimaryActiveBorder',
+		cssProperty: 'border-top',
+		selector: '.comp.compMenu._outlined._isActive, .comp.compMenu._outlined._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Top',
+		displayName: 'Icon Menu Top Primary Active Border',
+		name: 'iconMenuTopPrimaryActiveBorder',
+		cssProperty: 'border-top',
+		selector: '.comp.compMenu._text._isActive, .comp.compMenu._text._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Top',
+		displayName: 'Sides Menu Top Primary Active Border',
+		name: 'sidesMenuTopPrimaryActiveBorder',
+		cssProperty: 'border-top',
+		selector: '.comp.compMenu._sides._isActive, .comp.compMenu._sides._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Top',
+		displayName: 'TopBottom Menu Top Primary Active Border',
+		name: 'topBottomMenuTopPrimaryActiveBorder',
+		cssProperty: 'border-top',
+		selector: '.comp.compMenu._topbottom._isActive, .comp.compMenu._topbottom._primary:hover',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'Menu Right',
+		displayName: 'Default Menu Right Primary Active Border',
+		name: 'defaultMenuRightPrimaryActiveBorder',
+		cssProperty: 'border-right',
+		selector: '.comp.compMenu._default._isActive, .comp.compMenu._default._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Right',
+		displayName: 'Outlined Menu Right Primary Active Border',
+		name: 'outlinedMenuRightPrimaryActiveBorder',
+		cssProperty: 'border-right',
+		selector: '.comp.compMenu._outlined._isActive, .comp.compMenu._outlined._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Right',
+		displayName: 'Icon Menu Right Primary Active Border',
+		name: 'iconMenuRightPrimaryActiveBorder',
+		cssProperty: 'border-right',
+		selector: '.comp.compMenu._text._isActive, .comp.compMenu._text._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Right',
+		displayName: 'Sides Menu Right Primary Active Border',
+		name: 'sidesMenuRightPrimaryActiveBorder',
+		cssProperty: 'border-right',
+		selector: '.comp.compMenu._sides._isActive, .comp.compMenu._sides._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Right',
+		displayName: 'TopBottom Menu Right Primary Active Border',
+		name: 'topBottomMenuRightPrimaryActiveBorder',
+		cssProperty: 'border-right',
+		selector: '.comp.compMenu._topbottom._isActive, .comp.compMenu._topbottom._primary:hover',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'Menu Bottom',
+		displayName: 'Default Menu Bottom Primary Active Border',
+		name: 'defaultMenuBottomPrimaryActiveBorder',
+		cssProperty: 'border-bottom',
+		selector: '.comp.compMenu._default._isActive, .comp.compMenu._default._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Bottom',
+		displayName: 'Outlined Menu Bottom Primary Active Border',
+		name: 'outlinedMenuBottomPrimaryActiveBorder',
+		cssProperty: 'border-bottom',
+		selector: '.comp.compMenu._outlined._isActive, .comp.compMenu._outlined._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Bottom',
+		displayName: 'Icon Menu Bottom Primary Active Border',
+		name: 'iconMenuBottomPrimaryActiveBorder',
+		cssProperty: 'border-bottom',
+		selector: '.comp.compMenu._text._isActive, .comp.compMenu._text._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Bottom',
+		displayName: 'Sides Menu Bottom Primary Active Border',
+		name: 'sidesMenuBottomPrimaryActiveBorder',
+		cssProperty: 'border-bottom',
+		selector: '.comp.compMenu._sides._isActive, .comp.compMenu._sides._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Bottom',
+		displayName: 'TopBottom Menu Bottom Primary Active Border',
+		name: 'topBottomMenuBottomPrimaryActiveBorder',
+		cssProperty: 'border-bottom',
+		selector: '.comp.compMenu._topbottom._isActive, .comp.compMenu._topbottom._primary:hover',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'Menu Border Left',
+		displayName: 'Default Menu Border Left Primary Color',
+		name: 'defaultMenuBorderLeftPrimaryColor',
+		cssProperty: 'border-left-color',
+		selector:
+			'.comp.compMenu._default._primary._isActive, .comp.compMenu._default._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Left',
+		displayName: 'Default Menu Border Left Secondary Color',
+		name: 'defaultMenuBorderLeftSecondaryColor',
+		cssProperty: 'border-left-color',
+		selector:
+			'.comp.compMenu._default._secondary._isActive, .comp.compMenu._default._secondary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Left',
+		displayName: 'Default Menu Border Left Tertiary Color',
+		name: 'defaultMenuBorderLeftTertiaryColor',
+		cssProperty: 'border-left-color',
+		selector:
+			'.comp.compMenu._default._tertiary._isActive, .comp.compMenu._default._tertiary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Left',
+		displayName: 'Default Menu Border Left Quaternary Color',
+		name: 'defaultMenuBorderLeftQuaternaryColor',
+		cssProperty: 'border-left-color',
+		selector:
+			'.comp.compMenu._default._quaternary._isActive, .comp.compMenu._default._quaternary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Left',
+		displayName: 'Default Menu Border Left Quinary Color',
+		name: 'defaultMenuBorderLeftQuinaryColor',
+		cssProperty: 'border-left-color',
+		selector:
+			'.comp.compMenu._default._quinary._isActive, .comp.compMenu._default._quinary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Left',
+		displayName: 'Outlined Menu Border Left Primary Color',
+		name: 'outlinedMenuBorderLeftPrimaryColor',
+		cssProperty: 'border-left-color',
+		selector:
+			'.comp.compMenu._outlined._primary._isActive, .comp.compMenu._outlined._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Left',
+		displayName: 'Outlined Menu Border Left Secondary Color',
+		name: 'outlinedMenuBorderLeftSecondaryColor',
+		cssProperty: 'border-left-color',
+		selector:
+			'.comp.compMenu._outlined._secondary._isActive, .comp.compMenu._outlined._secondary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Left',
+		displayName: 'Outlined Menu Border Left Tertiary Color',
+		name: 'outlinedMenuBorderLeftTertiaryColor',
+		cssProperty: 'border-left-color',
+		selector:
+			'.comp.compMenu._outlined._tertiary._isActive, .comp.compMenu._outlined._tertiary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Left',
+		displayName: 'Outlined Menu Border Left Quaternary Color',
+		name: 'outlinedMenuBorderLeftQuaternaryColor',
+		cssProperty: 'border-left-color',
+		selector:
+			'.comp.compMenu._outlined._quaternary._isActive, .comp.compMenu._outlined._quaternary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Left',
+		displayName: 'Outlined Menu Border Left Quinary Color',
+		name: 'outlinedMenuBorderLeftQuinaryColor',
+		cssProperty: 'border-left-color',
+		selector:
+			'.comp.compMenu._outlined._quinary._isActive, .comp.compMenu._outlined._quinary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Left',
+		displayName: 'Icon Menu Border Left Primary Color',
+		name: 'iconMenuBorderLeftPrimaryColor',
+		cssProperty: 'border-left-color',
+		selector: '.comp.compMenu._text._primary._isActive, .comp.compMenu._text._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Left',
+		displayName: 'Icon Menu Border Left Secondary Color',
+		name: 'iconMenuBorderLeftSecondaryColor',
+		cssProperty: 'border-left-color',
+		selector:
+			'.comp.compMenu._text._secondary._isActive, .comp.compMenu._text._secondary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Left',
+		displayName: 'Icon Menu Border Left Tertiary Color',
+		name: 'iconMenuBorderLeftTertiaryColor',
+		cssProperty: 'border-left-color',
+		selector: '.comp.compMenu._text._tertiary._isActive, .comp.compMenu._text._tertiary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Left',
+		displayName: 'Icon Menu Border Left Quaternary Color',
+		name: 'iconMenuBorderLeftQuaternaryColor',
+		cssProperty: 'border-left-color',
+		selector:
+			'.comp.compMenu._text._quaternary._isActive, .comp.compMenu._text._quaternary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Left',
+		displayName: 'Icon Menu Border Left Quinary Color',
+		name: 'iconMenuBorderLeftQuinaryColor',
+		cssProperty: 'border-left-color',
+		selector: '.comp.compMenu._text._quinary._isActive, .comp.compMenu._text._quinary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Left',
+		displayName: 'Sides Menu Border Left Primary Color',
+		name: 'sidesMenuBorderLeftPrimaryColor',
+		cssProperty: 'border-left-color',
+		selector: '.comp.compMenu._sides._primary._isActive, .comp.compMenu._sides._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Left',
+		displayName: 'Sides Menu Border Left Secondary Color',
+		name: 'sidesMenuBorderLeftSecondaryColor',
+		cssProperty: 'border-left-color',
+		selector:
+			'.comp.compMenu._sides._secondary._isActive, .comp.compMenu._sides._secondary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Left',
+		displayName: 'Sides Menu Border Left Tertiary Color',
+		name: 'sidesMenuBorderLeftTertiaryColor',
+		cssProperty: 'border-left-color',
+		selector:
+			'.comp.compMenu._sides._tertiary._isActive, .comp.compMenu._sides._tertiary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Left',
+		displayName: 'Sides Menu Border Left Quaternary Color',
+		name: 'sidesMenuBorderLeftQuaternaryColor',
+		cssProperty: 'border-left-color',
+		selector:
+			'.comp.compMenu._sides._quaternary._isActive, .comp.compMenu._sides._quaternary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Left',
+		displayName: 'Sides Menu Border Left Quinary Color',
+		name: 'sidesMenuBorderLeftQuinaryColor',
+		cssProperty: 'border-left-color',
+		selector: '.comp.compMenu._sides._quinary._isActive, .comp.compMenu._sides._quinary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Left',
+		displayName: 'TopBottom Menu Border Left Primary Color',
+		name: 'topBottomMenuBorderLeftPrimaryColor',
+		cssProperty: 'border-left-color',
+		selector:
+			'.comp.compMenu._topbottom._primary._isActive, .comp.compMenu._topbottom._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Left',
+		displayName: 'TopBottom Menu Border Left Secondary Color',
+		name: 'topBottomMenuBorderLeftSecondaryColor',
+		cssProperty: 'border-left-color',
+		selector:
+			'.comp.compMenu._topbottom._secondary._isActive, .comp.compMenu._topbottom._secondary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Left',
+		displayName: 'TopBottom Menu Border Left Tertiary Color',
+		name: 'topBottomMenuBorderLeftTertiaryColor',
+		cssProperty: 'border-left-color',
+		selector:
+			'.comp.compMenu._topbottom._tertiary._isActive, .comp.compMenu._topbottom._tertiary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Left',
+		displayName: 'TopBottom Menu Border Left Quaternary Color',
+		name: 'topBottomMenuBorderLeftQuaternaryColor',
+		cssProperty: 'border-left-color',
+		selector:
+			'.comp.compMenu._topbottom._quaternary._isActive, .comp.compMenu._topbottom._quaternary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Left',
+		displayName: 'TopBottom Menu Border Left Quinary Color',
+		name: 'topBottomMenuBorderLeftQuinaryColor',
+		cssProperty: 'border-left-color',
+		selector:
+			'.comp.compMenu._topbottom._quinary._isActive, .comp.compMenu._topbottom._quinary:hover',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'Menu Border Top',
+		displayName: 'Default Menu Border Top Primary Color',
+		name: 'defaultMenuBorderTopPrimaryColor',
+		cssProperty: 'border-top-color',
+		selector:
+			'.comp.compMenu._default._primary._isActive, .comp.compMenu._default._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Top',
+		displayName: 'Default Menu Border Top Secondary Color',
+		name: 'defaultMenuBorderTopSecondaryColor',
+		cssProperty: 'border-top-color',
+		selector:
+			'.comp.compMenu._default._secondary._isActive, .comp.compMenu._default._secondary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Top',
+		displayName: 'Default Menu Border Top Tertiary Color',
+		name: 'defaultMenuBorderTopTertiaryColor',
+		cssProperty: 'border-top-color',
+		selector:
+			'.comp.compMenu._default._tertiary._isActive, .comp.compMenu._default._tertiary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Top',
+		displayName: 'Default Menu Border Top Quaternary Color',
+		name: 'defaultMenuBorderTopQuaternaryColor',
+		cssProperty: 'border-top-color',
+		selector:
+			'.comp.compMenu._default._quaternary._isActive, .comp.compMenu._default._quaternary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Top',
+		displayName: 'Default Menu Border Top Quinary Color',
+		name: 'defaultMenuBorderTopQuinaryColor',
+		cssProperty: 'border-top-color',
+		selector:
+			'.comp.compMenu._default._quinary._isActive, .comp.compMenu._default._quinary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Top',
+		displayName: 'Outlined Menu Border Top Primary Color',
+		name: 'outlinedMenuBorderTopPrimaryColor',
+		cssProperty: 'border-top-color',
+		selector:
+			'.comp.compMenu._outlined._primary._isActive, .comp.compMenu._outlined._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Top',
+		displayName: 'Outlined Menu Border Top Secondary Color',
+		name: 'outlinedMenuBorderTopSecondaryColor',
+		cssProperty: 'border-top-color',
+		selector:
+			'.comp.compMenu._outlined._secondary._isActive, .comp.compMenu._outlined._secondary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Top',
+		displayName: 'Outlined Menu Border Top Tertiary Color',
+		name: 'outlinedMenuBorderTopTertiaryColor',
+		cssProperty: 'border-top-color',
+		selector:
+			'.comp.compMenu._outlined._tertiary._isActive, .comp.compMenu._outlined._tertiary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Top',
+		displayName: 'Outlined Menu Border Top Quaternary Color',
+		name: 'outlinedMenuBorderTopQuaternaryColor',
+		cssProperty: 'border-top-color',
+		selector:
+			'.comp.compMenu._outlined._quaternary._isActive, .comp.compMenu._outlined._quaternary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Top',
+		displayName: 'Outlined Menu Border Top Quinary Color',
+		name: 'outlinedMenuBorderTopQuinaryColor',
+		cssProperty: 'border-top-color',
+		selector:
+			'.comp.compMenu._outlined._quinary._isActive, .comp.compMenu._outlined._quinary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Top',
+		displayName: 'Icon Menu Border Top Primary Color',
+		name: 'iconMenuBorderTopPrimaryColor',
+		cssProperty: 'border-top-color',
+		selector: '.comp.compMenu._text._primary._isActive, .comp.compMenu._text._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Top',
+		displayName: 'Icon Menu Border Top Secondary Color',
+		name: 'iconMenuBorderTopSecondaryColor',
+		cssProperty: 'border-top-color',
+		selector:
+			'.comp.compMenu._text._secondary._isActive, .comp.compMenu._text._secondary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Top',
+		displayName: 'Icon Menu Border Top Tertiary Color',
+		name: 'iconMenuBorderTopTertiaryColor',
+		cssProperty: 'border-top-color',
+		selector: '.comp.compMenu._text._tertiary._isActive, .comp.compMenu._text._tertiary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Top',
+		displayName: 'Icon Menu Border Top Quaternary Color',
+		name: 'iconMenuBorderTopQuaternaryColor',
+		cssProperty: 'border-top-color',
+		selector:
+			'.comp.compMenu._text._quaternary._isActive, .comp.compMenu._text._quaternary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Top',
+		displayName: 'Icon Menu Border Top Quinary Color',
+		name: 'iconMenuBorderTopQuinaryColor',
+		cssProperty: 'border-top-color',
+		selector: '.comp.compMenu._text._quinary._isActive, .comp.compMenu._text._quinary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Top',
+		displayName: 'Sides Menu Border Top Primary Color',
+		name: 'sidesMenuBorderTopPrimaryColor',
+		cssProperty: 'border-top-color',
+		selector: '.comp.compMenu._sides._primary._isActive, .comp.compMenu._sides._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Top',
+		displayName: 'Sides Menu Border Top Secondary Color',
+		name: 'sidesMenuBorderTopSecondaryColor',
+		cssProperty: 'border-top-color',
+		selector:
+			'.comp.compMenu._sides._secondary._isActive, .comp.compMenu._sides._secondary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Top',
+		displayName: 'Sides Menu Border Top Tertiary Color',
+		name: 'sidesMenuBorderTopTertiaryColor',
+		cssProperty: 'border-top-color',
+		selector:
+			'.comp.compMenu._sides._tertiary._isActive, .comp.compMenu._sides._tertiary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Top',
+		displayName: 'Sides Menu Border Top Quaternary Color',
+		name: 'sidesMenuBorderTopQuaternaryColor',
+		cssProperty: 'border-top-color',
+		selector:
+			'.comp.compMenu._sides._quaternary._isActive, .comp.compMenu._sides._quaternary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Top',
+		displayName: 'Sides Menu Border Top Quinary Color',
+		name: 'sidesMenuBorderTopQuinaryColor',
+		cssProperty: 'border-top-color',
+		selector: '.comp.compMenu._sides._quinary._isActive, .comp.compMenu._sides._quinary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Top',
+		displayName: 'TopBottom Menu Border Top Primary Color',
+		name: 'topBottomMenuBorderTopPrimaryColor',
+		cssProperty: 'border-top-color',
+		selector:
+			'.comp.compMenu._topbottom._primary._isActive, .comp.compMenu._topbottom._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Top',
+		displayName: 'TopBottom Menu Border Top Secondary Color',
+		name: 'topBottomMenuBorderTopSecondaryColor',
+		cssProperty: 'border-top-color',
+		selector:
+			'.comp.compMenu._topbottom._secondary._isActive, .comp.compMenu._topbottom._secondary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Top',
+		displayName: 'TopBottom Menu Border Top Tertiary Color',
+		name: 'topBottomMenuBorderTopTertiaryColor',
+		cssProperty: 'border-top-color',
+		selector:
+			'.comp.compMenu._topbottom._tertiary._isActive, .comp.compMenu._topbottom._tertiary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Top',
+		displayName: 'TopBottom Menu Border Top Quaternary Color',
+		name: 'topBottomMenuBorderTopQuaternaryColor',
+		cssProperty: 'border-top-color',
+		selector:
+			'.comp.compMenu._topbottom._quaternary._isActive, .comp.compMenu._topbottom._quaternary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Top',
+		displayName: 'TopBottom Menu Border Top Quinary Color',
+		name: 'topBottomMenuBorderTopQuinaryColor',
+		cssProperty: 'border-top-color',
+		selector:
+			'.comp.compMenu._topbottom._quinary._isActive, .comp.compMenu._topbottom._quinary:hover',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'Menu Border Right',
+		displayName: 'Default Menu Border Right Primary Color',
+		name: 'defaultMenuBorderRightPrimaryColor',
+		cssProperty: 'border-right-color',
+		selector:
+			'.comp.compMenu._default._primary._isActive, .comp.compMenu._default._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Right',
+		displayName: 'Default Menu Border Right Secondary Color',
+		name: 'defaultMenuBorderRightSecondaryColor',
+		cssProperty: 'border-right-color',
+		selector:
+			'.comp.compMenu._default._secondary._isActive, .comp.compMenu._default._secondary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Right',
+		displayName: 'Default Menu Border Right Tertiary Color',
+		name: 'defaultMenuBorderRightTertiaryColor',
+		cssProperty: 'border-right-color',
+		selector:
+			'.comp.compMenu._default._tertiary._isActive, .comp.compMenu._default._tertiary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Right',
+		displayName: 'Default Menu Border Right Quaternary Color',
+		name: 'defaultMenuBorderRightQuaternaryColor',
+		cssProperty: 'border-right-color',
+		selector:
+			'.comp.compMenu._default._quaternary._isActive, .comp.compMenu._default._quaternary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Right',
+		displayName: 'Default Menu Border Right Quinary Color',
+		name: 'defaultMenuBorderRightQuinaryColor',
+		cssProperty: 'border-right-color',
+		selector:
+			'.comp.compMenu._default._quinary._isActive, .comp.compMenu._default._quinary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Right',
+		displayName: 'Outlined Menu Border Right Primary Color',
+		name: 'outlinedMenuBorderRightPrimaryColor',
+		cssProperty: 'border-right-color',
+		selector:
+			'.comp.compMenu._outlined._primary._isActive, .comp.compMenu._outlined._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Right',
+		displayName: 'Outlined Menu Border Right Secondary Color',
+		name: 'outlinedMenuBorderRightSecondaryColor',
+		cssProperty: 'border-right-color',
+		selector:
+			'.comp.compMenu._outlined._secondary._isActive, .comp.compMenu._outlined._secondary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Right',
+		displayName: 'Outlined Menu Border Right Tertiary Color',
+		name: 'outlinedMenuBorderRightTertiaryColor',
+		cssProperty: 'border-right-color',
+		selector:
+			'.comp.compMenu._outlined._tertiary._isActive, .comp.compMenu._outlined._tertiary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Right',
+		displayName: 'Outlined Menu Border Right Quaternary Color',
+		name: 'outlinedMenuBorderRightQuaternaryColor',
+		cssProperty: 'border-right-color',
+		selector:
+			'.comp.compMenu._outlined._quaternary._isActive, .comp.compMenu._outlined._quaternary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Right',
+		displayName: 'Outlined Menu Border Right Quinary Color',
+		name: 'outlinedMenuBorderRightQuinaryColor',
+		cssProperty: 'border-right-color',
+		selector:
+			'.comp.compMenu._outlined._quinary._isActive, .comp.compMenu._outlined._quinary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Right',
+		displayName: 'Icon Menu Border Right Primary Color',
+		name: 'iconMenuBorderRightPrimaryColor',
+		cssProperty: 'border-right-color',
+		selector: '.comp.compMenu._text._primary._isActive, .comp.compMenu._text._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Right',
+		displayName: 'Icon Menu Border Right Secondary Color',
+		name: 'iconMenuBorderRightSecondaryColor',
+		cssProperty: 'border-right-color',
+		selector:
+			'.comp.compMenu._text._secondary._isActive, .comp.compMenu._text._secondary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Right',
+		displayName: 'Icon Menu Border Right Tertiary Color',
+		name: 'iconMenuBorderRightTertiaryColor',
+		cssProperty: 'border-right-color',
+		selector: '.comp.compMenu._text._tertiary._isActive, .comp.compMenu._text._tertiary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Right',
+		displayName: 'Icon Menu Border Right Quaternary Color',
+		name: 'iconMenuBorderRightQuaternaryColor',
+		cssProperty: 'border-right-color',
+		selector:
+			'.comp.compMenu._text._quaternary._isActive, .comp.compMenu._text._quaternary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Right',
+		displayName: 'Icon Menu Border Right Quinary Color',
+		name: 'iconMenuBorderRightQuinaryColor',
+		cssProperty: 'border-right-color',
+		selector: '.comp.compMenu._text._quinary._isActive, .comp.compMenu._text._quinary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Right',
+		displayName: 'Sides Menu Border Right Primary Color',
+		name: 'sidesMenuBorderRightPrimaryColor',
+		cssProperty: 'border-right-color',
+		selector: '.comp.compMenu._sides._primary._isActive, .comp.compMenu._sides._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Right',
+		displayName: 'Sides Menu Border Right Secondary Color',
+		name: 'sidesMenuBorderRightSecondaryColor',
+		cssProperty: 'border-right-color',
+		selector:
+			'.comp.compMenu._sides._secondary._isActive, .comp.compMenu._sides._secondary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Right',
+		displayName: 'Sides Menu Border Right Tertiary Color',
+		name: 'sidesMenuBorderRightTertiaryColor',
+		cssProperty: 'border-right-color',
+		selector:
+			'.comp.compMenu._sides._tertiary._isActive, .comp.compMenu._sides._tertiary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Right',
+		displayName: 'Sides Menu Border Right Quaternary Color',
+		name: 'sidesMenuBorderRightQuaternaryColor',
+		cssProperty: 'border-right-color',
+		selector:
+			'.comp.compMenu._sides._quaternary._isActive, .comp.compMenu._sides._quaternary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Right',
+		displayName: 'Sides Menu Border Right Quinary Color',
+		name: 'sidesMenuBorderRightQuinaryColor',
+		cssProperty: 'border-right-color',
+		selector: '.comp.compMenu._sides._quinary._isActive, .comp.compMenu._sides._quinary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Right',
+		displayName: 'TopBottom Menu Border Right Primary Color',
+		name: 'topBottomMenuBorderRightPrimaryColor',
+		cssProperty: 'border-right-color',
+		selector:
+			'.comp.compMenu._topbottom._primary._isActive, .comp.compMenu._topbottom._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Right',
+		displayName: 'TopBottom Menu Border Right Secondary Color',
+		name: 'topBottomMenuBorderRightSecondaryColor',
+		cssProperty: 'border-right-color',
+		selector:
+			'.comp.compMenu._topbottom._secondary._isActive, .comp.compMenu._topbottom._secondary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Right',
+		displayName: 'TopBottom Menu Border Right Tertiary Color',
+		name: 'topBottomMenuBorderRightTertiaryColor',
+		cssProperty: 'border-right-color',
+		selector:
+			'.comp.compMenu._topbottom._tertiary._isActive, .comp.compMenu._topbottom._tertiary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Right',
+		displayName: 'TopBottom Menu Border Right Quaternary Color',
+		name: 'topBottomMenuBorderRightQuaternaryColor',
+		cssProperty: 'border-right-color',
+		selector:
+			'.comp.compMenu._topbottom._quaternary._isActive, .comp.compMenu._topbottom._quaternary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Right',
+		displayName: 'TopBottom Menu Border Right Quinary Color',
+		name: 'topBottomMenuBorderRightQuinaryColor',
+		cssProperty: 'border-right-color',
+		selector:
+			'.comp.compMenu._topbottom._quinary._isActive, .comp.compMenu._topbottom._quinary:hover',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'Menu Border Bottom',
+		displayName: 'Default Menu Border Bottom Primary Color',
+		name: 'defaultMenuBorderBottomPrimaryColor',
+		cssProperty: 'border-bottom-color',
+		selector:
+			'.comp.compMenu._default._primary._isActive, .comp.compMenu._default._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Bottom',
+		displayName: 'Default Menu Border Bottom Secondary Color',
+		name: 'defaultMenuBorderBottomSecondaryColor',
+		cssProperty: 'border-bottom-color',
+		selector:
+			'.comp.compMenu._default._secondary._isActive, .comp.compMenu._default._secondary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Bottom',
+		displayName: 'Default Menu Border Bottom Tertiary Color',
+		name: 'defaultMenuBorderBottomTertiaryColor',
+		cssProperty: 'border-bottom-color',
+		selector:
+			'.comp.compMenu._default._tertiary._isActive, .comp.compMenu._default._tertiary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Bottom',
+		displayName: 'Default Menu Border Bottom Quaternary Color',
+		name: 'defaultMenuBorderBottomQuaternaryColor',
+		cssProperty: 'border-bottom-color',
+		selector:
+			'.comp.compMenu._default._quaternary._isActive, .comp.compMenu._default._quaternary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Bottom',
+		displayName: 'Default Menu Border Bottom Quinary Color',
+		name: 'defaultMenuBorderBottomQuinaryColor',
+		cssProperty: 'border-bottom-color',
+		selector:
+			'.comp.compMenu._default._quinary._isActive, .comp.compMenu._default._quinary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Bottom',
+		displayName: 'Outlined Menu Border Bottom Primary Color',
+		name: 'outlinedMenuBorderBottomPrimaryColor',
+		cssProperty: 'border-bottom-color',
+		selector:
+			'.comp.compMenu._outlined._primary._isActive, .comp.compMenu._outlined._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Bottom',
+		displayName: 'Outlined Menu Border Bottom Secondary Color',
+		name: 'outlinedMenuBorderBottomSecondaryColor',
+		cssProperty: 'border-bottom-color',
+		selector:
+			'.comp.compMenu._outlined._secondary._isActive, .comp.compMenu._outlined._secondary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Bottom',
+		displayName: 'Outlined Menu Border Bottom Tertiary Color',
+		name: 'outlinedMenuBorderBottomTertiaryColor',
+		cssProperty: 'border-bottom-color',
+		selector:
+			'.comp.compMenu._outlined._tertiary._isActive, .comp.compMenu._outlined._tertiary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Bottom',
+		displayName: 'Outlined Menu Border Bottom Quaternary Color',
+		name: 'outlinedMenuBorderBottomQuaternaryColor',
+		cssProperty: 'border-bottom-color',
+		selector:
+			'.comp.compMenu._outlined._quaternary._isActive, .comp.compMenu._outlined._quaternary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Bottom',
+		displayName: 'Outlined Menu Border Bottom Quinary Color',
+		name: 'outlinedMenuBorderBottomQuinaryColor',
+		cssProperty: 'border-bottom-color',
+		selector:
+			'.comp.compMenu._outlined._quinary._isActive, .comp.compMenu._outlined._quinary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Bottom',
+		displayName: 'Icon Menu Border Bottom Primary Color',
+		name: 'iconMenuBorderBottomPrimaryColor',
+		cssProperty: 'border-bottom-color',
+		selector: '.comp.compMenu._text._primary._isActive, .comp.compMenu._text._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Bottom',
+		displayName: 'Icon Menu Border Bottom Secondary Color',
+		name: 'iconMenuBorderBottomSecondaryColor',
+		cssProperty: 'border-bottom-color',
+		selector:
+			'.comp.compMenu._text._secondary._isActive, .comp.compMenu._text._secondary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Bottom',
+		displayName: 'Icon Menu Border Bottom Tertiary Color',
+		name: 'iconMenuBorderBottomTertiaryColor',
+		cssProperty: 'border-bottom-color',
+		selector: '.comp.compMenu._text._tertiary._isActive, .comp.compMenu._text._tertiary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Bottom',
+		displayName: 'Icon Menu Border Bottom Quaternary Color',
+		name: 'iconMenuBorderBottomQuaternaryColor',
+		cssProperty: 'border-bottom-color',
+		selector:
+			'.comp.compMenu._text._quaternary._isActive, .comp.compMenu._text._quaternary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Bottom',
+		displayName: 'Icon Menu Border Bottom Quinary Color',
+		name: 'iconMenuBorderBottomQuinaryColor',
+		cssProperty: 'border-bottom-color',
+		selector: '.comp.compMenu._text._quinary._isActive, .comp.compMenu._text._quinary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Bottom',
+		displayName: 'Sides Menu Border Bottom Primary Color',
+		name: 'sidesMenuBorderBottomPrimaryColor',
+		cssProperty: 'border-bottom-color',
+		selector: '.comp.compMenu._sides._primary._isActive, .comp.compMenu._sides._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Bottom',
+		displayName: 'Sides Menu Border Bottom Secondary Color',
+		name: 'sidesMenuBorderBottomSecondaryColor',
+		cssProperty: 'border-bottom-color',
+		selector:
+			'.comp.compMenu._sides._secondary._isActive, .comp.compMenu._sides._secondary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Bottom',
+		displayName: 'Sides Menu Border Bottom Tertiary Color',
+		name: 'sidesMenuBorderBottomTertiaryColor',
+		cssProperty: 'border-bottom-color',
+		selector:
+			'.comp.compMenu._sides._tertiary._isActive, .comp.compMenu._sides._tertiary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Bottom',
+		displayName: 'Sides Menu Border Bottom Quaternary Color',
+		name: 'sidesMenuBorderBottomQuaternaryColor',
+		cssProperty: 'border-bottom-color',
+		selector:
+			'.comp.compMenu._sides._quaternary._isActive, .comp.compMenu._sides._quaternary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Bottom',
+		displayName: 'Sides Menu Border Bottom Quinary Color',
+		name: 'sidesMenuBorderBottomQuinaryColor',
+		cssProperty: 'border-bottom-color',
+		selector: '.comp.compMenu._sides._quinary._isActive, .comp.compMenu._sides._quinary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Bottom',
+		displayName: 'TopBottom Menu Border Bottom Primary Color',
+		name: 'topBottomMenuBorderBottomPrimaryColor',
+		cssProperty: 'border-bottom-color',
+		selector:
+			'.comp.compMenu._topbottom._primary._isActive, .comp.compMenu._topbottom._primary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Bottom',
+		displayName: 'TopBottom Menu Border Bottom Secondary Color',
+		name: 'topBottomMenuBorderBottomSecondaryColor',
+		cssProperty: 'border-bottom-color',
+		selector:
+			'.comp.compMenu._topbottom._secondary._isActive, .comp.compMenu._topbottom._secondary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Bottom',
+		displayName: 'TopBottom Menu Border Bottom Tertiary Color',
+		name: 'topBottomMenuBorderBottomTertiaryColor',
+		cssProperty: 'border-bottom-color',
+		selector:
+			'.comp.compMenu._topbottom._tertiary._isActive, .comp.compMenu._topbottom._tertiary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Bottom',
+		displayName: 'TopBottom Menu Border Bottom Quaternary Color',
+		name: 'topBottomMenuBorderBottomQuaternaryColor',
+		cssProperty: 'border-bottom-color',
+		selector:
+			'.comp.compMenu._topbottom._quaternary._isActive, .comp.compMenu._topbottom._quaternary:hover',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Menu Border Bottom',
+		displayName: 'TopBottom Menu Border Bottom Quinary Color',
+		name: 'topBottomMenuBorderBottomQuinaryColor',
+		cssProperty: 'border-bottom-color',
+		selector:
+			'.comp.compMenu._topbottom._quinary._isActive, .comp.compMenu._topbottom._quinary:hover',
 		noPrefix: true,
 	},
 ];
