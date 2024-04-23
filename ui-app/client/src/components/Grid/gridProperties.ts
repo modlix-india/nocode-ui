@@ -1,5 +1,6 @@
 import { Schema } from '@fincity/kirun-js';
 import {
+	SCHEMA_ANY_COMP_PROP,
 	SCHEMA_BOOL_COMP_PROP,
 	SCHEMA_DATA_LOCATION,
 	SCHEMA_STRING_COMP_PROP,
@@ -47,6 +48,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		description: 'Event to be triggered when grid enters view port.',
 		group: ComponentPropertyGroup.EVENTS,
+	},
+	{
+		name: '_intermediateDefinition',
+		schema: SCHEMA_ANY_COMP_PROP,
+		displayName: 'Intermediate  Definition',
+		description: 'Intermediate definition generated from JSON Schema.',
+		group: ComponentPropertyGroup.ADVANCED,
+		hide: true,
 	},
 	{
 		name: 'onLeavingViewport',

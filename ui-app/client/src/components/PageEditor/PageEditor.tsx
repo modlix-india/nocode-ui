@@ -42,6 +42,21 @@ import axios from 'axios';
 import { getHref } from '../util/getHref';
 import SchemaFormEditor from './components/SchemaFormEditor';
 
+interface IntermediateState {
+	[key: string]: {
+		name: string;
+		bindingPath: string;
+		type: string;
+		options?: any[] | undefined;
+		dataType: string;
+		label: string;
+		order: number;
+		children?: { [key: string]: boolean };
+		props?: any;
+		componentKey: string;
+	};
+}
+
 function savePersonalizationCurry(
 	personalizationPath: string,
 	pageName: string,
@@ -301,6 +316,16 @@ function PageEditor(props: ComponentProps) {
 	const [generateFormOnComponentKey, setGenerateFormOnComponentKey] = useState<string>('');
 	const [showSchemaFormEditor, setShowSchemaFormEditor] = useState<string>('');
 	const [selectedComponentsList, setSelectedComponentsListOriginal] = useState<string[]>([]);
+	const [intermediateState, setIntermediateState] = useState<IntermediateState>();
+
+	const getIntermediateState = () => {
+		const data: PageDefinition = getDataFromPath(defPath, locationHistory, pageExtractor);
+		const interState =
+			data.componentDefinition?.[showSchemaFormEditor]?.properties?._intermediateDefinition
+				?.value;
+		if (Object.keys(interState ?? {}).length) return interState as IntermediateState;
+		return undefined;
+	};
 
 	const setSelectedComponent = useCallback(
 		(v: string) => {
@@ -798,6 +823,9 @@ function PageEditor(props: ComponentProps) {
 						defPath={defPath}
 						locationHistory={locationHistory}
 						pageExtractor={pageExtractor}
+						context={context}
+						intermediateState={getIntermediateState()}
+						hasIntermediateState={!!getIntermediateState()}
 					/>
 				)}
 			</div>

@@ -36,7 +36,6 @@ export function ContextMenu({
 
 	useEffect(() => {
 		if (!personalizationPath) return;
-
 		return addListener(
 			(_, v) => setTheme(v ?? '_light'),
 			pageExtractor,
@@ -65,6 +64,8 @@ export function ContextMenu({
 	const [componentDefinition, ifRoot] = pageOperations.getComponentDefinitionAndIfRoot(
 		menuDetails.componentKey,
 	);
+
+	const intermediateDefinition = componentDefinition.properties?._intermediateDefinition?.value;
 
 	const cdDef = Components.get(componentDefinition?.type ?? '');
 	const deleteForContainer =
@@ -370,7 +371,11 @@ export function ContextMenu({
 						{componentDefinition.type === 'Grid' && (
 							<div
 								className="_popupMenuItem"
-								title="Generate Form from schema"
+								title={
+									intermediateDefinition
+										? 'Edit Form Definition'
+										: 'Generate Form from schema'
+								}
 								onClick={() => setShowSchemaFormEditor(menuDetails.componentKey)}
 							>
 								<IconHelper viewBox="0 0 17 17">
@@ -390,7 +395,9 @@ export function ContextMenu({
 										fill="currentColor"
 									/>
 								</IconHelper>
-								Generate Form from schema
+								{intermediateDefinition
+									? 'Edit Form Definition'
+									: 'Generate Form from schema'}
 							</div>
 						)}
 					</div>

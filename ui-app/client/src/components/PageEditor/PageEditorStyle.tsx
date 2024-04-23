@@ -2738,11 +2738,30 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			background-color: #52BD94CC;
 		}
 
+		._popupBackground ._popupContainer._schemaFormEditor {
+			padding: 0;
+			border: 1px solid #0000000F;
+			font: normal 600 12px/12px Inter;
+		}
+
+		._popupBackground ._popupContainer._schemaFormEditor ._header {
+			background-color: #F8FAFB;
+			font: normal 600 12px/12px Inter;
+			padding: 15px 20px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		._popupBackground ._popupContainer._schemaFormEditor ._header ._close_btn {
+			cursor: pointer;
+		}
 		._popupContainer._schemaFormEditor ._schemaFormEditorContainer {
 			display: flex;
 			flex-direction: column;
 			flex: 1;
 			gap: 20px;
+			padding: 20px;
 		}
 
 		._popupContainer._schemaFormEditor ._jsonEditorContainer{
@@ -2761,17 +2780,19 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._popupContainer._schemaFormEditor ._schemaFormEditorContainer ._bindPathContainer {
 			display: flex;
-    gap: 5px;
-
+    		gap: 5px;
 		}
 
 		._popupContainer._schemaFormEditor ._schemaFormEditorContainer ._peInput {
 			width: 100%;
+			height: 35px;
+			font: normal 500 12px/12px Inter;
 		}
 
 		._popupContainer._schemaFormEditor ._schemaFormEditorContainer ._button {
 			color: #fff;
-    		background-color: #4C7FEE;
+    		background-color: #52BD94;
+			font: normal 600 12px/12px Inter;
 			border: none;
 			border-radius: 5px;
 			height: 35px;
@@ -2782,6 +2803,16 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			background-color: #CCC;
 			color: #999;
 			cursor: not-allowed;
+		}
+
+		._nextScreen ._tableContainer {
+			margin-top: 30px;
+			display: flex;
+			overflow: auto;
+		}
+
+		._nextScreen ._tableContainer table {
+			text-align: left;
 		}
 
 		._formEditor {
