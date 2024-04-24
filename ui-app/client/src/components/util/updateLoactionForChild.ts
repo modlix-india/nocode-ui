@@ -28,9 +28,7 @@ export const updateLocationForChild = (
 						PageStoreExtractor.getForContext(pageName),
 				  )
 				: '';
-		childLocation.expression = `(${
-			finalPath ? finalPath : childLocation?.expression
-		})[${index}]`;
+		childLocation.expression = `${finalPath ? finalPath : childLocation?.expression}[${index}]`;
 	}
 
 	return { location: childLocation, index, pageName };

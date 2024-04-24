@@ -32,7 +32,6 @@ function TableColumnComponent(props: ComponentProps) {
 	);
 
 	const [hover, setHover] = useState(false);
-
 	let entry = Object.entries(children ?? {}).find(([, v]) => v);
 
 	const firstchild: any = {};
@@ -144,6 +143,18 @@ const component: Component = {
 					/>
 				</IconHelper>
 			),
+		},
+		{
+			name: 'leftIcon',
+			displayName: 'left Icon',
+			description: 'left icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'rightIcon',
+			displayName: 'right Icon',
+			description: 'right icon',
+			icon: 'fa-solid fa-box',
 		},
 	],
 };

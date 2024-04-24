@@ -7,7 +7,16 @@ const PREFIX = '.comp.compTableHeaderColumn';
 export default function TableColumnStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
 	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
 	const css =
-		`${PREFIX} { display: table-cell; vertical-align: middle;}
+		`${PREFIX} { display: table-cell; vertical-align: middle; text-align:center}
+
+		${PREFIX} ._rightIcon {
+			padding-left: 10px;
+		}
+
+		${PREFIX} ._leftIcon {
+			padding-right: 10px;
+		}
+
 		
 		.comp.compTable._design1 ${PREFIX} { padding: ${processStyleValueWithFunction(
 			values.get('design1HeaderPadding'),

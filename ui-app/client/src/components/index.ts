@@ -51,6 +51,7 @@ import FormStorageEditor from './FormStorageEditor/FormStorageEditor';
 import SectionGrid from './SectionGrid/SectionGrid';
 import Otp from './Otp/Otp';
 import Chart from './Chart/Chart';
+import TableDynamicColumn from './TableDynamicColumn/TableDynamicColumn';
 
 export default new Map<string, Component>([
 	[Button.name, Button],
@@ -95,6 +96,7 @@ export default new Map<string, Component>([
 	[Gallery.name, Gallery],
 	[TextArea.name, TextArea],
 	[TableDynamicColumns.name, TableDynamicColumns],
+	[TableDynamicColumn.name, TableDynamicColumn],
 	[Animator.name, Animator],
 	[ImageWithBrowser.name, ImageWithBrowser],
 	[FillerValueEditor.name, FillerValueEditor],

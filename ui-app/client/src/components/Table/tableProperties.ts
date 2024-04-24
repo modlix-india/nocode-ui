@@ -75,7 +75,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{ name: 'PATH', displayName: 'Path', description: 'Path of the object of the row' },
 			{
 				name: 'OBJECT',
-				displayName: 'Row Obect',
+				displayName: 'Row Object',
 				description: 'Copy of the object that is selected',
 			},
 		],
@@ -185,6 +185,53 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		],
 	},
 	{
+		name: 'colorScheme',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Color Scheme',
+		description: 'Color Scheme',
+		defaultValue: '_primary',
+		group: ComponentPropertyGroup.ADVANCED,
+		enumValues: [
+			{
+				name: '_primary',
+				displayName: 'Primary Color Scheme',
+				description: 'Default Color Scheme',
+			},
+			{
+				name: '_secondary',
+				displayName: 'Secondary Color Scheme',
+				description: 'Secondary Color Scheme',
+			},
+			{
+				name: '_tertiary',
+				displayName: 'Tertiary Color Scheme',
+				description: 'Tertiary Color Scheme',
+			},
+			{
+				name: '_quaternary',
+				displayName: 'Quaternary Color Scheme',
+				description: 'Quaternary Color Scheme',
+			},
+			{
+				name: '_quinary',
+				displayName: 'Quinary Color Scheme',
+				description: 'Quinary Color Scheme',
+			},
+		],
+	},
+	{
+		name: 'tableLayout',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Table Layout',
+		description: 'Table Layout css property',
+		defaultValue: 'AUTO',
+		group: ComponentPropertyGroup.ADVANCED,
+		enumValues: [
+			{ name: 'AUTO', displayName: 'Auto', description: 'Auto layout' },
+			{ name: 'FIXED', displayName: 'Fixed', description: 'Fixed layout' },
+		],
+	},
+	{
 		name: 'paginationPosition',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Pagination Position',
@@ -198,6 +245,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		],
 	},
 	COMMON_COMPONENT_PROPERTIES.onSelect,
+	
 	{
 		name: 'onPagination',
 		schema: SCHEMA_STRING_COMP_PROP,

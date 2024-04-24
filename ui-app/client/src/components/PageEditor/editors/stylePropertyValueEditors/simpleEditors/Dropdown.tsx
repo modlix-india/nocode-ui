@@ -88,17 +88,19 @@ export function Dropdown({
 				{React.Children.count(children) > 0 ? (
 					<div className="_options_divider"></div>
 				) : null}
-
 				{options.map((o, i) => (
 					<div
 						key={o.name}
 						className={`_simpleEditorDropdownOption ${
 							i === currentOption ? '_hovered' : ''
 						} ${selection.has(o.name) ? '_selected' : ''}`}
-						onClick={() => {
+						onMouseDown={e => {
+							if (e.button != 0) return;
+
 							setOpen(false);
 							setTimeout(() => dropDown.current?.blur(), 0);
 							if (!multiSelect) {
+								console.log(o, 'hello');
 								onChange(value === o.name ? '' : o.name);
 								return;
 							}
@@ -113,7 +115,10 @@ export function Dropdown({
 									: arr.join(multipleValueType.toString()),
 							);
 						}}
-						onMouseOver={() => setCurrentOption(i)}
+						onMouseOver={() => {
+							setCurrentOption(i);
+							console.log(i, o, 'picard');
+						}}
 						title={o.description}
 					>
 						{o.displayName}

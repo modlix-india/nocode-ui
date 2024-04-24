@@ -329,6 +329,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Pagination Seperator Color',
 		description: 'Pagination Seperator Color',
 		defaultValue: '<lightFontColor>',
+		
 	},
 	{
 		name: 'paginationMargin',

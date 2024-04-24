@@ -20,6 +20,7 @@ import { runEvent } from '../util/runEvent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { styleDefaults } from './tableStyleProperties';
 import { IconHelper } from '../util/IconHelper';
+import TableDynamicColumns from '../TableDynamicColumns/TableDynamicColumns';
 
 function spinCalculate(
 	spinnerPath1: string | undefined,
@@ -98,6 +99,7 @@ function TableComponent(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
 		properties: {
+			tableLayout,
 			offlineData,
 			showSpinner,
 			showPagination,
@@ -109,6 +111,7 @@ function TableComponent(props: ComponentProps) {
 			previewMode,
 			previewGridPosition,
 			tableDesign,
+			colorScheme,
 			paginationPosition,
 			totalPages,
 			perPageNumbers,
@@ -248,7 +251,13 @@ function TableComponent(props: ComponentProps) {
 	useEffect(
 		() =>
 			selectionBindingPath
-				? addListenerAndCallImmediately((_, v) => setSelection(v))
+				? addListenerAndCallImmediatelyWithChildrenActivity(
+						(_, v) => {
+							setSelection(v);
+						},
+						pageExtractor,
+						selectionBindingPath,
+				  )
 				: undefined,
 		[selectionBindingPath],
 	);
@@ -278,6 +287,7 @@ function TableComponent(props: ComponentProps) {
 				gridChild = k;
 			}
 		}
+
 		let selectedChildrenArray = [columnsChild];
 		let firstchildKey = undefined;
 		if (gridChild && (!columnsChild || mode === 'GRID')) {
@@ -553,7 +563,7 @@ function TableComponent(props: ComponentProps) {
 
 	return (
 		<div
-			className={`comp compTable ${tableDesign} ${previewGridPosition}`}
+			className={`comp compTable ${tableDesign} ${colorScheme} ${previewGridPosition} ${tableLayout}`}
 			style={resolvedStyles?.comp ?? {}}
 		>
 			<HelperComponent context={props.context} definition={definition} />

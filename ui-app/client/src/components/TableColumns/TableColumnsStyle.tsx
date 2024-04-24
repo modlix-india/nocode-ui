@@ -8,7 +8,7 @@ export default function TableColumnsStyle({ theme }: { theme: Map<string, Map<st
 	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
 	const css =
 		`${PREFIX} { display: table; flex-direction: column; flex: 1; }
-		 ${PREFIX} ._row { display: table-row; }
+		 ${PREFIX} ._row { display: table-row;}
 		
 		.comp.compTable._design1 ._row { height: ${processStyleValueWithFunction(
 			values.get('design1RowHeight'),

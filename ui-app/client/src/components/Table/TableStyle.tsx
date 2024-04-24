@@ -11,18 +11,25 @@ export default function TableStyle({ theme }: { theme: Map<string, Map<string, s
 	${PREFIX} {
 		display: flex;
 		flex-direction: row;
+		
+	
 	}
+
+	${PREFIX}.FIXED .comp.compTableColumns { table-layout : fixed}
 
 	${PREFIX} ._tableWithPagination {
 		flex: 1;
 		display: flex;
-		flex-direction: column;
+		// flex-direction: column;
+		flex-wrap:wrap;
+		align-items:flex-start;
 	}
 
 	${PREFIX} ._tablePagination {
 		display: flex;
 		gap: 10px;
 		align-items: center;
+		width:100%;
 	}
 
 	${PREFIX} ._tablePagination ._selected {
@@ -42,6 +49,24 @@ export default function TableStyle({ theme }: { theme: Map<string, Map<string, s
 	${PREFIX} ._tablePagination._CENTER {
 		justify-content: center;
 	}
+
+	${PREFIX}.RIGHT {
+		flex-direction:row-reverse;
+	}
+
+	${PREFIX}.LEFT {
+		flex-direction:row;
+	}
+
+	${PREFIX}.TOP {
+		flex-direction:column;
+	}
+
+	${PREFIX}.BOTTOM {
+		flex-direction:column-reverse;
+	}
+
+
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="TableCss">{css}</style>;
