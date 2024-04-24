@@ -131,6 +131,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
+		name: 'rightIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Right Icon',
+		description: 'Icon to be shown on the Right side.',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
 		...COMMON_COMPONENT_PROPERTIES.designType,
 		enumValues: [
 			...COMMON_COMPONENT_PROPERTIES.designType.enumValues!,

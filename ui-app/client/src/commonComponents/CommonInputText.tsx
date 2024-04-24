@@ -42,6 +42,8 @@ type CommonInputType = {
 	inputType?: string;
 	maxChars?: number;
 	showDropdown?: boolean;
+	handleLeftIcon?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+	handleRightIcon?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 };
 
 function CommonInputText(props: CommonInputType) {
@@ -83,6 +85,8 @@ function CommonInputText(props: CommonInputType) {
 		inputType = 'Text',
 		maxChars,
 		showDropdown,
+		handleLeftIcon,
+		handleRightIcon
 	} = props;
 	const [focus, setFocus] = React.useState(false);
 	const [showPassword, setShowPassowrd] = React.useState(false);
@@ -209,7 +213,7 @@ function CommonInputText(props: CommonInputType) {
 		>
 			<HelperComponent context={props.context} definition={definition} />
 			{leftIcon ? (
-				<i style={computedStyles.leftIcon ?? {}} className={`_leftIcon ${leftIcon}`}>
+				<i style={computedStyles.leftIcon ?? {}} className={`_leftIcon ${leftIcon} ${handleLeftIcon ? '_pointer' : ''}`} onClick={handleLeftIcon}>
 					<SubHelperComponent
 						definition={definition}
 						subComponentName="leftIcon"
@@ -227,7 +231,7 @@ function CommonInputText(props: CommonInputType) {
 				</i>
 			) : undefined}
 			{rightIcon ? (
-				<i style={computedStyles.rightIcon ?? {}} className={`_rightIcon ${rightIcon}`}>
+				<i style={computedStyles.rightIcon ?? {}} className={`_rightIcon ${rightIcon} ${handleRightIcon ? '_pointer' : ''}`} onClick={handleRightIcon}>
 					<SubHelperComponent
 						definition={definition}
 						subComponentName="rightIcon"

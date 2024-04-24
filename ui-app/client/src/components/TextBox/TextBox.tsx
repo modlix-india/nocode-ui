@@ -74,6 +74,8 @@ function TextBox(props: ComponentProps) {
 			maxChars,
 			onFocus,
 			onBlur,
+			onLeftIconClick,
+			onRightIconClick
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -128,10 +130,16 @@ function TextBox(props: ComponentProps) {
 		  )}.isRunning`
 		: undefined;
 
+		const spinnerPath4 = onLeftIconClick
+		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
+			onLeftIconClick,
+		  )}.isRunning`
+		: undefined;	
+
 	const [isLoading, setIsLoading] = useState(
 		(getDataFromPath(spinnerPath1, props.locationHistory, pageExtractor) ||
 			getDataFromPath(spinnerPath2, props.locationHistory, pageExtractor) ||
-			getDataFromPath(spinnerPath3, props.locationHistory, pageExtractor)) ??
+			getDataFromPath(spinnerPath3, props.locationHistory, pageExtractor) || getDataFromPath(spinnerPath4, props.locationHistory, pageExtractor)) ??
 			false,
 	);
 
@@ -140,6 +148,7 @@ function TextBox(props: ComponentProps) {
 		if (spinnerPath1) paths.push(spinnerPath1);
 		if (spinnerPath2) paths.push(spinnerPath2);
 		if (spinnerPath3) paths.push(spinnerPath3);
+		if (spinnerPath4) paths.push(spinnerPath4);
 
 		if (!paths.length) return;
 		return addListener((_, value) => setIsLoading(value), pageExtractor, ...paths);
@@ -175,6 +184,8 @@ function TextBox(props: ComponentProps) {
 	const changeEvent = onChange ? props.pageDefinition.eventFunctions?.[onChange] : undefined;
 	const blurEvent = onBlur ? props.pageDefinition.eventFunctions?.[onBlur] : undefined;
 	const focusEvent = onFocus ? props.pageDefinition.eventFunctions?.[onFocus] : undefined;
+	const onLeftIconEvent = onLeftIconClick ? props.pageDefinition.eventFunctions?.[onLeftIconClick] : undefined;
+	const onRightIconEvent = onRightIconClick ? props.pageDefinition.eventFunctions?.[onRightIconClick] : undefined;
 	const updateStoreImmediately = upStoreImm || autoComplete === 'on';
 
 	const callChangeEvent = useCallback(() => {
@@ -315,6 +326,27 @@ function TextBox(props: ComponentProps) {
 		);
 	};
 
+	const handleLeftIcon = onLeftIconEvent ?  async() => 
+		await runEvent(
+			onLeftIconEvent,
+			onLeftIconClick,
+			props.context.pageName,
+			props.locationHistory,
+			props.pageDefinition,
+		)
+	 : undefined;
+
+	const handleRightIcon = onRightIconEvent ? async()=>{
+
+		await runEvent(
+			onRightIconEvent,
+			onRightIconClick,
+			props.context.pageName,
+			props.locationHistory,
+			props.pageDefinition,
+		);
+	} : undefined;
+
 	const finKey: string = 't_' + key;
 
 	let style = undefined;
@@ -359,6 +391,8 @@ function TextBox(props: ComponentProps) {
 				hasValidationCheck={validation?.length > 0}
 				hideClearContentIcon={hideClearButton}
 				maxChars={maxChars}
+				handleLeftIcon={handleLeftIcon}
+				handleRightIcon = {handleRightIcon}
 			/>
 		</>
 	);

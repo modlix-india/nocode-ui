@@ -76,6 +76,7 @@ function DropdownComponent(props: ComponentProps) {
 			colorScheme,
 			leftIcon,
 			clearOnSelectingSameValue,
+			rightIcon,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -315,7 +316,7 @@ function DropdownComponent(props: ComponentProps) {
 			value={getLabel()}
 			label={label}
 			translations={translations}
-			rightIcon={showDropdown ? 'fa-solid fa-angle-up' : 'fa-solid fa-angle-down'}
+			rightIcon={showDropdown ? 'fa-solid fa-angle-up': rightIcon} // changed to insert the dropdown right Icon.
 			valueType="text"
 			isPassword={false}
 			placeholder={placeholder}
@@ -335,6 +336,7 @@ function DropdownComponent(props: ComponentProps) {
 			designType={designType}
 			colorScheme={colorScheme}
 			leftIcon={leftIcon}
+			//rightIcon = {rightIcon} 'fa-solid fa-angle-up'
 			showDropdown={showDropdown}
 			onMouseLeave={closeOnMouseLeave ? handleClose : undefined}
 			updDownHandler={e => {
@@ -390,7 +392,7 @@ function DropdownComponent(props: ComponentProps) {
 						<div
 							className={`_dropdownItem ${
 								getIsSelected(each?.key) ? '_selected' : ''
-							} ${each.key === hoverKey ? '_hover' : ''}`}
+							} ${each.key === hoverKey ? '_hover': ''}`} // because of default className the background-color is not changing on hover to user defined.
 							style={computedStyles.dropdownItem ?? {}}
 							key={each?.key}
 							onMouseEnter={() => setHoverKey(each?.key)}
