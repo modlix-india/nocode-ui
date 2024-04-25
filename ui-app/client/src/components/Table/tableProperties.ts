@@ -244,8 +244,21 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{ name: '_CENTER', displayName: 'Center', description: 'Center' },
 		],
 	},
+	{
+		name: 'paginationDesign',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Pagination Design',
+		description: 'Pagination Design',
+		defaultValue: '_design1',
+		group: ComponentPropertyGroup.ADVANCED,
+		enumValues: [
+			{ name: '_design1', displayName: 'Design1', description: 'design1' },
+			{ name: '_design2', displayName: 'Design2', description: 'design2' },
+			{ name: '_design3', displayName: 'Design3', description: 'design3' },
+		],
+	},
 	COMMON_COMPONENT_PROPERTIES.onSelect,
-	
+
 	{
 		name: 'onPagination',
 		schema: SCHEMA_STRING_COMP_PROP,

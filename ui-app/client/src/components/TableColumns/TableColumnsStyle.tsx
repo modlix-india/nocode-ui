@@ -117,16 +117,9 @@ export default function TableColumnsStyle({ theme }: { theme: Map<string, Map<st
 			)};
 		}
 
-		.comp.compTable._design5 ._row:nth-child(even) {
+		.comp.compTable._design2 ._row:nth-child(even) {
 			background-color:  ${processStyleValueWithFunction(
-				values.get('design5EvenRowBackgroundColor'),
-				values,
-			)};
-		}
-
-		.comp.compTable._design9 ._row:nth-child(even) {
-			background-color:  ${processStyleValueWithFunction(
-				values.get('design9EvenRowBackgroundColor'),
+				values.get('design1EvenRowBackgroundColor'),
 				values,
 			)};
 		}
@@ -158,6 +151,51 @@ export default function TableColumnsStyle({ theme }: { theme: Map<string, Map<st
 				values,
 			)};
 		}
+
+		.comp.compTable._design5 .comp.compTableColumn:nth-child(odd) {
+			background-color:  ${processStyleValueWithFunction(
+				values.get('design5EvenColumnBackgroundColor'),
+				values,
+			)};
+		}
+
+		.comp.compTable._design6 .comp.compTableColumn:nth-child(odd) {
+			background-color:  ${processStyleValueWithFunction(
+				values.get('design6EvenColumnBackgroundColor'),
+				values,
+			)};
+		}
+
+		.comp.compTable._design10 .comp.compTableColumn:nth-child(odd) {
+			background-color:  ${processStyleValueWithFunction(
+				values.get('design10EvenColumnBackgroundColor'),
+				values,
+			)};
+		}
+
+		.comp.compTable._design5 .comp.compTableColumn {
+			background-color:  ${processStyleValueWithFunction(
+				values.get('design5ColumnBackgroundColor'),
+				values,
+			)};
+		}
+
+		.comp.compTable._design6 .comp.compTableColumn {
+			background-color:  ${processStyleValueWithFunction(
+				values.get('design6ColumnBackgroundColor'),
+				values,
+			)};
+		}
+
+		.comp.compTable._design10 .comp.compTableColumn {
+			background-color:  ${processStyleValueWithFunction(
+				values.get('design10ColumnBackgroundColor'),
+				values,
+			)};
+		}
+
+
+
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="TableColumnsCss">{css}</style>;

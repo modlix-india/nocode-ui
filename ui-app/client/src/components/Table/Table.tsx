@@ -118,6 +118,7 @@ function TableComponent(props: ComponentProps) {
 			showPerPage,
 			onSelect,
 			onPagination,
+			paginationDesign,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -432,7 +433,7 @@ function TableComponent(props: ComponentProps) {
 			}
 
 			pagination = (
-				<div className={`_tablePagination ${paginationPosition}`}>
+				<div className={`_tablePagination ${paginationPosition} ${paginationDesign}`}>
 					{modes}
 					{numbers.flatMap((e, i) => {
 						const arr = [];

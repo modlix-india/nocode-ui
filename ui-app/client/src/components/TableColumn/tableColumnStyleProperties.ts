@@ -14,7 +14,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Column Padding',
 		displayName: 'Design 2 Column Padding',
 		name: 'design2ColumnPadding',
-		defaultValue: '10px',
+		defaultValue: '5px',
 		description: 'Design 2 Column Padding',
 		cssProperty: 'padding',
 		noPrefix: true,
@@ -105,7 +105,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Column Border Bottom',
 		displayName: 'Design 2 Column Border Bottom',
 		name: 'design2ColumnBorderBottom',
-		defaultValue: '1px solid #ddd',
 		description: 'Design 2 Column Border Bottom',
 		cssProperty: 'border-bottom',
 		selector: '.comp.compTable._design2 .comp.compTableColumn',
@@ -115,6 +114,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Column Border Bottom',
 		displayName: 'Design 3 Column Border Bottom',
 		name: 'design3ColumnBorderBottom',
+		defaultValue: '1px solid #E5E7EB',
 		description: 'Design 3 Column Border Bottom',
 		cssProperty: 'border-bottom',
 		selector: '.comp.compTable._design3 .comp.compTableColumn',
@@ -143,6 +143,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Column Border Bottom',
 		displayName: 'Design 6 Column Border Bottom',
 		name: 'design6ColumnBorderBottom',
+		defaultValue: '1px solid #3333330D',
 		description: 'Design 6 Column Border Bottom',
 		cssProperty: 'border-bottom',
 		selector: '.comp.compTable._design6 .comp.compTableColumn',
@@ -152,6 +153,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Column Border Bottom',
 		displayName: 'Design 7 Column Border Bottom',
 		name: 'design7ColumnBorderBottom',
+		defaultValue: '1px solid #DBDBDB',
 		description: 'Design 7 Column Border Bottom',
 		cssProperty: 'border-bottom',
 		selector: '.comp.compTable._design7 .comp.compTableColumn',
@@ -161,6 +163,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Column Border Bottom',
 		displayName: 'Design 8 Column Border Bottom',
 		name: 'design8ColumnBorderBottom',
+		defaultValue: '1px solid #DBDBDB',
 		description: 'Design 8 Column Border Bottom',
 		cssProperty: 'border-bottom',
 		selector: '.comp.compTable._design8 .comp.compTableColumn',
@@ -334,6 +337,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Column Border Right',
 		displayName: 'Design 7 Column Border Right',
 		name: 'design7ColumnBorderRight',
+		defaultValue:'1px solid #DBDBDB',
 		description: 'Design 7 Column Border Right',
 		cssProperty: 'border-right',
 		selector: '.comp.compTable._design7 .comp.compTableColumn',
@@ -343,6 +347,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Column Border Right',
 		displayName: 'Design 8 Column Border Right',
 		name: 'design8ColumnBorderRight',
+		defaultValue:'1px solid #DBDBDB',
 		description: 'Design 8 Column Border Right',
 		cssProperty: 'border-right',
 		selector: '.comp.compTable._design8 .comp.compTableColumn',
@@ -457,6 +462,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compTable._design10 .comp.compTableColumn',
 		noPrefix: true,
 	},
+	
+
 ];
 
 export const styleDefaults = new Map<string, string>(
