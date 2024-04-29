@@ -20,7 +20,6 @@ export default function TableStyle({ theme }: { theme: Map<string, Map<string, s
 	${PREFIX} ._tableWithPagination {
 		flex: 1;
 		display: flex;
-		// flex-direction: column;
 		flex-wrap:wrap;
 		align-items:flex-start;
 	}
@@ -30,6 +29,7 @@ export default function TableStyle({ theme }: { theme: Map<string, Map<string, s
 		gap: 10px;
 		align-items: center;
 		width:100%;
+
 	}
 
 	${PREFIX} ._tablePagination ._selected {
@@ -66,6 +66,24 @@ export default function TableStyle({ theme }: { theme: Map<string, Map<string, s
 		flex-direction:column-reverse;
 	}
 
+	${PREFIX} ._tablePagination ._pageNumber{
+		width:26px;
+		height:26px;
+		display:flex;
+		align-items:center;
+		justify-content:center;
+
+	}
+
+	${PREFIX} ._tablePagination ._next{
+		padding:5px;
+	}
+
+	${PREFIX} ._tablePagination ._prev{
+		padding:5px;
+	}
+
+	
 
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

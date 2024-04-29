@@ -266,6 +266,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Header Font Color',
 		displayName: 'Design 9 Header Font Color',
 		name: 'design9HeaderFontColor',
+		defaultValue:'#FFFFFF',
 		description: 'Design 9 Header Font Color',
 		cssProperty: 'color',
 		selector: '.comp.compTable._design9 .comp.compTableHeaderColumn',

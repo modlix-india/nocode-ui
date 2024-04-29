@@ -467,7 +467,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Row Hover Background Color',
 		displayName: 'Design 4 Row HoverBackground Color',
 		name: 'design4RowHoverBackgroundColor',
-		defaultValue: '#BABABA1A',
 		description: 'Design 4 Row HoverBackground Color',
 		cssProperty: 'background-color',
 		selector:
@@ -1760,6 +1759,61 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		description: 'Design 9 Odd Column Background Color Quinary',
 		cssProperty: 'background-color',
 		selector: '.comp.compTable._design10._quinary .comp.compTableColumn:nth-child(odd)',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Row Hover Background Color',
+		displayName: 'Row Hover Background Color Primary Design4',
+		name: 'rowHoverBackgroundColorPrimaryDesign4',
+		defaultValue: '<backgroundHoverColorOne>',
+		description: 'Row Hover Background Color Primary Design4',
+		cssProperty: 'background-color',
+		selector:
+			'.comp.compTable._design4._primary ._row._dataRow:hover, .comp.compTable._design4._primary ._row._dataRow._selected',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Row Hover Background Color',
+		displayName: 'Row Hover Background Color SecondaryDesign4',
+		name: 'rowHoverBackgroundColorSecondaryDesign4',
+		defaultValue: '<backgroundHoverColorTwo>',
+		description: 'Row Hover Background Color SecondaryDesign4',
+		cssProperty: 'background-color',
+		selector:
+			'.comp.compTable._design4._secondary ._row._dataRow:hover, .comp.compTable._design4._secondary ._row._dataRow._selected',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Row Hover Background Color',
+		displayName: 'Row Hover Background Color TertiaryDesign4',
+		name: 'rowHoverBackgroundColorTertiaryDesign4',
+		defaultValue: '<backgroundHoverColorThree>',
+		description: 'Row Hover Background Color TertiaryDesign4',
+		cssProperty: 'background-color',
+		selector:
+			'.comp.compTable._design4._tertiary ._row._dataRow:hover, .comp.compTable._design4._tertiary ._row._dataRow._selected',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Row Hover Background Color',
+		displayName: 'Row Hover Background Color QuaternaryDesign4',
+		name: 'rowHoverBackgroundColorQuaternaryDesign4',
+		defaultValue: '<backgroundHoverColorFour>',
+		description: 'Row Hover Background Color QuaternaryDesign4',
+		cssProperty: 'background-color',
+		selector:
+			'.comp.compTable._design4._quaternary ._row._dataRow:hover, .comp.compTable._design4._quaternary ._row._dataRow._selected',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Row Hover Background Color',
+		displayName: 'Row Hover Background Color QuinaryDesign4',
+		name: 'rowHoverBackgroundColorQuinaryDesign4',
+		defaultValue: '<backgroundHoverColorFive>',
+		description: 'Row Hover Background Color QuinaryDesign4',
+		cssProperty: 'background-color',
+		selector:
+			'.comp.compTable._design4._quinary ._row._dataRow:hover, .comp.compTable._design4._quinary ._row._dataRow._selected',
 		noPrefix: true,
 	},
 ];

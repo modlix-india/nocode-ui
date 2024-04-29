@@ -119,6 +119,8 @@ function TableComponent(props: ComponentProps) {
 			onSelect,
 			onPagination,
 			paginationDesign,
+			showPageSelectionDropdown,
+			showTextArrow,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -370,7 +372,9 @@ function TableComponent(props: ComponentProps) {
 								else setMode('GRID');
 							}}
 						/>
-						<i className="fa-solid fa-grip-lines fa-rotate-90 _seperator" />
+						{!showPageSelectionDropdown && (
+							<i className="fa-solid fa-grip-lines fa-rotate-90 _seperator" />
+						)}
 					</>
 				);
 			}
@@ -379,7 +383,9 @@ function TableComponent(props: ComponentProps) {
 			if (showPerPage) {
 				perPage = (
 					<>
-						<i className="fa-solid fa-grip-lines fa-rotate-90 _seperator" />
+						{!showPageSelectionDropdown && (
+							<i className="fa-solid fa-grip-lines fa-rotate-90 _seperator" />
+						)}
 						<select
 							value={pageSize}
 							onChange={e => {
@@ -432,63 +438,195 @@ function TableComponent(props: ComponentProps) {
 				);
 			}
 
-			pagination = (
-				<div className={`_tablePagination ${paginationPosition} ${paginationDesign}`}>
-					{modes}
-					{numbers.flatMap((e, i) => {
-						const arr = [];
+			let pageSelectionDropdown = undefined;
+			if (showPageSelectionDropdown) {
+				pageSelectionDropdown = (
+					<>
+						<span>Page</span>
+						<select
+							value={pageNumber}
+							onChange={e => {
+								const selectedPage = parseInt(e.target.value);
+								if (pageNumberBindingPath) {
+									setStoreData(
+										pageNumberBindingPath,
+										selectedPage,
+										context.pageName,
+									);
+								} else {
+									setPageNumber(selectedPage);
+								}
 
-						if (i > 0 && numbers[i - 1] + 1 !== numbers[i]) {
+								if (selectionBindingPath) {
+									setStoreData(
+										selectionBindingPath,
+										undefined,
+										context.pageName,
+										true,
+									);
+								}
+
+								if (paginationEvent) {
+									(async () =>
+										await runEvent(
+											paginationEvent,
+											onPagination,
+											context.pageName,
+											locationHistory,
+											pageDefinition,
+										))();
+								}
+							}}
+						>
+							{Array.from({ length: totalPages }, (_, index) => index).map(page => (
+								<option key={page} value={page}>
+									{page}
+								</option>
+							))}
+						</select>
+						<span>of</span>
+						<span>{totalPages}</span>
+					</>
+				);
+			}
+
+			let leftArrow = undefined;
+			if (!showPageSelectionDropdown) {
+				leftArrow = (
+					<div
+						className="_clickable _pointer _leftArrow"
+						onClick={() => {
+							if (spinner || currentPage === 0) return;
+							const newPage = currentPage - 1;
+							if (pageNumberBindingPath)
+								setStoreData(pageNumberBindingPath, newPage, context.pageName);
+							else setPageNumber(newPage);
+							if (selectionBindingPath) {
+								setStoreData(
+									selectionBindingPath,
+									undefined,
+									context.pageName,
+									true,
+								);
+							}
+							if (paginationEvent) {
+								(async () =>
+									await runEvent(
+										paginationEvent,
+										onPagination,
+										context.pageName,
+										locationHistory,
+										pageDefinition,
+									))();
+							}
+						}}
+					>
+						<i className="fas fa-chevron-left"></i>
+						{showTextArrow && <span className="_prev">Prev</span>}
+					</div>
+				);
+			}
+
+			let rightArrow = undefined;
+			if (!showPageSelectionDropdown) {
+				rightArrow = (
+					<div
+						className="_clickable _pointer _rightArrow"
+						onClick={() => {
+							if (spinner || currentPage === pages - 1) return;
+							const newPage = currentPage + 1;
+							if (pageNumberBindingPath)
+								setStoreData(pageNumberBindingPath, newPage, context.pageName);
+							else setPageNumber(newPage);
+							if (selectionBindingPath) {
+								setStoreData(
+									selectionBindingPath,
+									undefined,
+									context.pageName,
+									true,
+								);
+							}
+							if (paginationEvent) {
+								(async () =>
+									await runEvent(
+										paginationEvent,
+										onPagination,
+										context.pageName,
+										locationHistory,
+										pageDefinition,
+									))();
+							}
+						}}
+					>
+						{showTextArrow && <span className="_next">Next</span>}
+						<i className="fas fa-chevron-right"></i>
+					</div>
+				);
+			}
+
+			pagination = (
+				<div
+					className={`_tablePagination ${paginationPosition} ${paginationDesign} ${colorScheme}`}
+				>
+					{modes}
+					{leftArrow}
+					{!pageSelectionDropdown &&
+						numbers.flatMap((e, i) => {
+							const arr = [];
+
+							if (i > 0 && numbers[i - 1] + 1 !== numbers[i]) {
+								arr.push(
+									<div key={`${numbers[i]}_elipsis`} className="_noclick">
+										...
+									</div>,
+								);
+							}
+
 							arr.push(
-								<div key={`${numbers[i]}_elipsis`} className="_noclick">
-									...
+								<div
+									key={`${numbers[i]}_pagenumber`}
+									className={
+										e === currentPage + 1
+											? '_noclick _pageNumber _selected'
+											: '_clickable _pointer _pageNumber'
+									}
+									onClick={() => {
+										if (spinner) return;
+										if (pageNumberBindingPath)
+											setStoreData(
+												pageNumberBindingPath,
+												numbers[i] - 1,
+												context.pageName,
+											);
+										else setPageNumber(numbers[i] - 1);
+										if (selectionBindingPath) {
+											setStoreData(
+												selectionBindingPath,
+												undefined,
+												context.pageName,
+												true,
+											);
+										}
+										if (paginationEvent) {
+											(async () =>
+												await runEvent(
+													paginationEvent,
+													onPagination,
+													context.pageName,
+													locationHistory,
+													pageDefinition,
+												))();
+										}
+									}}
+								>
+									{e}
 								</div>,
 							);
-						}
 
-						arr.push(
-							<div
-								key={`${numbers[i]}_pagenumber`}
-								className={
-									e === currentPage + 1
-										? '_noclick _pageNumber _selected'
-										: '_clickable _pointer _pageNumber'
-								}
-								onClick={() => {
-									if (spinner) return;
-									if (pageNumberBindingPath)
-										setStoreData(
-											pageNumberBindingPath,
-											numbers[i] - 1,
-											context.pageName,
-										);
-									else setPageNumber(numbers[i] - 1);
-									if (selectionBindingPath) {
-										setStoreData(
-											selectionBindingPath,
-											undefined,
-											context.pageName,
-											true,
-										);
-									}
-									if (paginationEvent) {
-										(async () =>
-											await runEvent(
-												paginationEvent,
-												onPagination,
-												context.pageName,
-												locationHistory,
-												pageDefinition,
-											))();
-									}
-								}}
-							>
-								{e}
-							</div>,
-						);
-
-						return arr;
-					})}
+							return arr;
+						})}
+					{rightArrow}
+					{pageSelectionDropdown}
 					{perPage}
 				</div>
 			);
