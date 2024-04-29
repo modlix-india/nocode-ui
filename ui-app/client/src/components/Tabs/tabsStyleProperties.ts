@@ -16,7 +16,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tabChildContainerBackgroundDefaultDesign',
 		defaultValue: '#FCFCFC',
 		cssProperty: 'background',
-		selector: '.comp.compTabs._default .tabGridDiv',
+		selector: '.comp.compTabs._default > .tabGridDiv',
 		noPrefix: true,
 	},
 	{
@@ -25,7 +25,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tabChildContainerBackgroundLineDesgin',
 		defaultValue: '#FCFCFC',
 		cssProperty: 'background',
-		selector: '.comp.compTabs._line .tabGridDiv',
+		selector: '.comp.compTabs._line > .tabGridDiv',
 		noPrefix: true,
 	},
 	{
@@ -34,7 +34,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tabChildContainerBackgroundHighlightDesign',
 		defaultValue: '#FCFCFC',
 		cssProperty: 'background',
-		selector: '.comp.compTabs._highlight .tabGridDiv',
+		selector: '.comp.compTabs._highlight > .tabGridDiv',
 		noPrefix: true,
 	},
 	{
@@ -43,7 +43,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tabChildContainerBackgroundUnderlineDesign',
 		defaultValue: 'transparent',
 		cssProperty: 'background',
-		selector: '.comp.compTabs._underLine .tabGridDiv',
+		selector: '.comp.compTabs._underLine > .tabGridDiv',
 		noPrefix: true,
 	},
 
@@ -62,7 +62,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'gapbetweentabsDefaultDesgin',
 		defaultValue: '0px',
 		cssProperty: 'gap',
-		selector: '.comp.compTabs._default .tabsContainer',
+		selector: '.comp.compTabs._default > .tabsContainer',
 		noPrefix: true,
 	},
 	{
@@ -71,7 +71,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'gapbetweentabsLineDesgin',
 		defaultValue: '0px',
 		cssProperty: 'gap',
-		selector: '.comp.compTabs._line .tabsContainer',
+		selector: '.comp.compTabs._line > .tabsContainer',
 		noPrefix: true,
 	},
 	{
@@ -80,7 +80,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'gapbetweentabsHighlightDesgin',
 		defaultValue: '0px',
 		cssProperty: 'gap',
-		selector: '.comp.compTabs._highlight .tabsContainer',
+		selector: '.comp.compTabs._highlight > .tabsContainer',
 		noPrefix: true,
 	},
 	{
@@ -89,7 +89,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'gapbetweentabsUnderlineDesgin',
 		defaultValue: '10px',
 		cssProperty: 'gap',
-		selector: '.comp.compTabs._underLine .tabsContainer',
+		selector: '.comp.compTabs._underLine > .tabsContainer',
 		noPrefix: true,
 	},
 
@@ -116,7 +116,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'defaultTabHorizontalBorder',
 		defaultValue: 'none',
 		cssProperty: 'border',
-		selector: '.comp.compTabs._default._horizontal .tabHighlighter',
+		selector: '.comp.compTabs._default._horizontal > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 	{
@@ -125,7 +125,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'lineTabHorizonatalBorder',
 		defaultValue: '2px solid, none, none, none',
 		cssProperty: 'border',
-		selector: '.comp.compTabs._line._horizontal .tabHighlighter',
+		selector: '.comp.compTabs._line._horizontal  > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 	{
@@ -134,7 +134,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'hightlightTabHorizonatalBorder',
 		defaultValue: '4px solid transparent',
 		cssProperty: 'border',
-		selector: '.comp.compTabs._highlight._horizontal .tabHighlighter',
+		selector: '.comp.compTabs._highlight._horizontal > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 	{
@@ -143,7 +143,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'underLineTabHorizonatalBorder',
 		defaultValue: 'none, none, 3px solid, none',
 		cssProperty: 'border',
-		selector: '.comp.compTabs._underLine._horizontal .tabHighlighter',
+		selector: '.comp.compTabs._underLine._horizontal > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 
@@ -153,7 +153,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'defaultTabVerticalBorder',
 		defaultValue: 'none',
 		cssProperty: 'border',
-		selector: '.comp.compTabs._default._vertical .tabHighlighter',
+		selector: '.comp.compTabs._default._vertical > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 	{
@@ -162,7 +162,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'lineTabVerticalBorder',
 		defaultValue: 'none, none, none, 2px solid',
 		cssProperty: 'border',
-		selector: '.comp.compTabs._line._vertical .tabHighlighter',
+		selector: '.comp.compTabs._line._vertical > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 	{
@@ -171,7 +171,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'hightlightTabVerticalBorder',
 		defaultValue: '4px solid transparent',
 		cssProperty: 'border',
-		selector: '.comp.compTabs._highlight._vertical .tabHighlighter',
+		selector: '.comp.compTabs._highlight._vertical > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 	{
@@ -180,7 +180,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'underLineTabVerticalBorder',
 		defaultValue: 'none, 3px solid, none, none',
 		cssProperty: 'border',
-		selector: '.comp.compTabs._underLine._vertical .tabHighlighter',
+		selector: '.comp.compTabs._underLine._vertical > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 
@@ -190,7 +190,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'defaultTabHorizontalTabsSeperator',
 		defaultValue: 'none',
 		cssProperty: 'border',
-		selector: '.comp.compTabs._default._horizontal .tabsSeperator',
+		selector: '.comp.compTabs._default._horizontal > .tabsContainer > .tabsSeperator',
 		noPrefix: true,
 	},
 	{
@@ -199,7 +199,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'lineTabHorizonatalTabsSeperator',
 		defaultValue: 'none',
 		cssProperty: 'border',
-		selector: '.comp.compTabs._line._horizontal .tabsSeperator',
+		selector: '.comp.compTabs._line._horizontal  > .tabsContainer > .tabsSeperator',
 		noPrefix: true,
 	},
 	{
@@ -208,7 +208,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'hightlightTabHorizonatalTabsSeperator',
 		defaultValue: 'none',
 		cssProperty: 'border',
-		selector: '.comp.compTabs._highlight._horizontal .tabsSeperator',
+		selector: '.comp.compTabs._highlight._horizontal > .tabsContainer > .tabsSeperator',
 		noPrefix: true,
 	},
 	{
@@ -217,7 +217,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'underLineTabHorizonatalTabsSeperator',
 		defaultValue: 'none, none, 1px solid <borderColorSix>, none',
 		cssProperty: 'border',
-		selector: '.comp.compTabs._underLine._horizontal .tabsSeperator',
+		selector: '.comp.compTabs._underLine._horizontal > .tabsContainer > .tabsSeperator',
 		noPrefix: true,
 	},
 
@@ -227,7 +227,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'defaultTabVerticalTabsSeperator',
 		defaultValue: 'none',
 		cssProperty: 'border',
-		selector: '.comp.compTabs._default._vertical .tabsSeperator',
+		selector: '.comp.compTabs._default._vertical > .tabsContainer > .tabsSeperator',
 		noPrefix: true,
 	},
 	{
@@ -236,7 +236,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'lineTabVerticalTabsSeperator',
 		defaultValue: 'none',
 		cssProperty: 'border',
-		selector: '.comp.compTabs._line._vertical .tabsSeperator',
+		selector: '.comp.compTabs._line._vertical > .tabsContainer > .tabsSeperator',
 		noPrefix: true,
 	},
 	{
@@ -245,7 +245,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'hightlightTabVerticalTabsSeperator',
 		defaultValue: 'none',
 		cssProperty: 'border',
-		selector: '.comp.compTabs._highlight._vertical .tabsSeperator',
+		selector: '.comp.compTabs._highlight._vertical > .tabsContainer > .tabsSeperator',
 		noPrefix: true,
 	},
 	{
@@ -254,7 +254,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'underLineTabVerticalTabsSeperator',
 		defaultValue: 'none, 1px solid <borderColorSix>, none, none',
 		cssProperty: 'border',
-		selector: '.comp.compTabs._underLine._vertical .tabsSeperator',
+		selector: '.comp.compTabs._underLine._vertical > .tabsContainer > .tabsSeperator',
 		noPrefix: true,
 	},
 
@@ -264,7 +264,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'defaultTabHorizontalPadding',
 		defaultValue: '3px 8px',
 		cssProperty: 'padding',
-		selector: '.comp.compTabs._default._horizontal .tabDiv',
+		selector: '.comp.compTabs._default._horizontal > .tabsContainer > .tabDiv',
 		noPrefix: true,
 	},
 	{
@@ -273,7 +273,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'lineTabHorizontalPadding',
 		defaultValue: '3px 8px',
 		cssProperty: 'padding',
-		selector: '.comp.compTabs._line._horizontal .tabDiv',
+		selector: '.comp.compTabs._line._horizontal > .tabsContainer > .tabDiv',
 		noPrefix: true,
 	},
 	{
@@ -282,7 +282,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'hightlightTabHorizontalPadding',
 		defaultValue: '8px 8px',
 		cssProperty: 'padding',
-		selector: '.comp.compTabs._highlight._horizontal .tabDiv',
+		selector: '.comp.compTabs._highlight._horizontal > .tabsContainer > .tabDiv',
 		noPrefix: true,
 	},
 	{
@@ -291,7 +291,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'underlineTabHorizontalPadding',
 		defaultValue: '5px 0px',
 		cssProperty: 'padding',
-		selector: '.comp.compTabs._underLine._horizontal .tabDiv',
+		selector: '.comp.compTabs._underLine._horizontal > .tabsContainer > .tabDiv',
 		noPrefix: true,
 	},
 
@@ -301,7 +301,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'defaultTabVerticalPadding',
 		defaultValue: '3px 8px',
 		cssProperty: 'padding',
-		selector: '.comp.compTabs._default._vertical .tabDiv',
+		selector: '.comp.compTabs._default._vertical > .tabsContainer > .tabDiv',
 		noPrefix: true,
 	},
 	{
@@ -310,7 +310,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'lineTabVerticalPadding',
 		defaultValue: '3px 8px',
 		cssProperty: 'padding',
-		selector: '.comp.compTabs._line._vertical .tabDiv',
+		selector: '.comp.compTabs._line._vertical > .tabsContainer > .tabDiv',
 		noPrefix: true,
 	},
 	{
@@ -319,7 +319,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'hightlightTabVerticalPadding',
 		defaultValue: '8px 8px',
 		cssProperty: 'padding',
-		selector: '.comp.compTabs._highlight._vertical .tabDiv',
+		selector: '.comp.compTabs._highlight._vertical > .tabsContainer > .tabDiv',
 		noPrefix: true,
 	},
 	{
@@ -328,7 +328,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'underlineTabVerticalPadding',
 		defaultValue: '0px 5px',
 		cssProperty: 'padding',
-		selector: '.comp.compTabs._underLine._vertical .tabDiv',
+		selector: '.comp.compTabs._underLine._vertical > .tabsContainer > .tabDiv',
 		noPrefix: true,
 	},
 
@@ -338,7 +338,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'defaultTabBackground',
 		defaultValue: '<tabChildContainerBackground>',
 		cssProperty: 'background',
-		selector: '.comp.compTabs._default .tabHighlighter',
+		selector: '.comp.compTabs._default > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 	{
@@ -347,7 +347,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'lineTabBackground',
 		defaultValue: '<tabChildContainerBackground>',
 		cssProperty: 'background',
-		selector: '.comp.compTabs._line .tabHighlighter',
+		selector: '.comp.compTabs._line > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 
@@ -357,7 +357,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryHighlightTabBackground',
 		defaultValue: '<backgroundColorOne>',
 		cssProperty: 'background',
-		selector: '.comp.compTabs._highlight._primary .tabHighlighter',
+		selector: '.comp.compTabs._highlight._primary  > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 	{
@@ -366,7 +366,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryHighlightTabBackground',
 		defaultValue: '<backgroundColorTwo>',
 		cssProperty: 'background',
-		selector: '.comp.compTabs._highlight._secondary .tabHighlighter',
+		selector: '.comp.compTabs._highlight._secondary  > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 	{
@@ -375,7 +375,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryHighlightTabBackground',
 		defaultValue: '<backgroundColorThree>',
 		cssProperty: 'background',
-		selector: '.comp.compTabs._highlight._tertiary .tabHighlighter',
+		selector: '.comp.compTabs._highlight._tertiary  > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 	{
@@ -384,7 +384,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryHighlightTabBackground',
 		defaultValue: '<backgroundColorFour>',
 		cssProperty: 'background',
-		selector: '.comp.compTabs._highlight._quaternary .tabHighlighter',
+		selector: '.comp.compTabs._highlight._quaternary  > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 	{
@@ -393,7 +393,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryHighlightTabBackground',
 		defaultValue: '<backgroundColorFive>',
 		cssProperty: 'background',
-		selector: '.comp.compTabs._highlight._quinary .tabHighlighter',
+		selector: '.comp.compTabs._highlight._quinary  > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 
@@ -403,7 +403,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'defaultTabVerticalBorderRadius',
 		defaultValue: '3px 0px 0px 3px',
 		cssProperty: 'border-radius',
-		selector: '.comp.compTabs._default._vertical .tabHighlighter',
+		selector: '.comp.compTabs._default._vertical  > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 	{
@@ -412,7 +412,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'lineTabVerticalBorderRadius',
 		defaultValue: 'none',
 		cssProperty: 'border-radius',
-		selector: '.comp.compTabs._line._vertical .tabHighlighter',
+		selector: '.comp.compTabs._line._vertical  > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 	{
@@ -421,7 +421,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'hightlightTabVerticalBorderRadius',
 		defaultValue: '4px',
 		cssProperty: 'border-radius',
-		selector: '.comp.compTabs._highlight._vertical .tabHighlighter',
+		selector: '.comp.compTabs._highlight._vertical  > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 
@@ -431,7 +431,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'defaultTabHorizontalBorderRadius',
 		defaultValue: '3px 3px 0px 0px',
 		cssProperty: 'border-radius',
-		selector: '.comp.compTabs._default._horizontal .tabHighlighter',
+		selector: '.comp.compTabs._default._horizontal  > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 	{
@@ -440,7 +440,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'lineTabHorizontalBorderRadius',
 		defaultValue: 'none',
 		cssProperty: 'border-radius',
-		selector: '.comp.compTabs._line._horizontal .tabHighlighter',
+		selector: '.comp.compTabs._line._horizontal  > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 	{
@@ -449,7 +449,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'hightlightTabHorizontalBorderRadius',
 		defaultValue: '4px',
 		cssProperty: 'border-radius',
-		selector: '.comp.compTabs._highlight._horizontal .tabHighlighter',
+		selector: '.comp.compTabs._highlight._horizontal  > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 
@@ -458,7 +458,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Default Tab Highlighter Scale',
 		name: 'defaultTabHighlighterScale',
 		cssProperty: 'transform',
-		selector: '.comp.compTabs._default .tabHighlighter',
+		selector: '.comp.compTabs._default  > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 	{
@@ -466,7 +466,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Line Tab Highlighter Scale',
 		name: 'lineTabHighlighterScale',
 		cssProperty: 'transform',
-		selector: '.comp.compTabs._line .tabHighlighter',
+		selector: '.comp.compTabs._line  > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 	{
@@ -475,7 +475,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'highlightTabHighlighterScale',
 		defaultValue: 'scale(0.8)',
 		cssProperty: 'transform',
-		selector: '.comp.compTabs._highlight .tabHighlighter',
+		selector: '.comp.compTabs._highlight  > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 
@@ -486,7 +486,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorThree>',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compTabs._line._primary .tabHighlighter, .comp.compTabs._underLine._primary .tabHighlighter',
+			'.comp.compTabs._line._primary  > .tabsContainer > .tabHighlighter, .comp.compTabs._underLine._primary  > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 	{
@@ -496,7 +496,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorFour>',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compTabs._line._secondary .tabHighlighter, .comp.compTabs._underLine._secondary .tabHighlighter',
+			'.comp.compTabs._line._secondary  > .tabsContainer > .tabHighlighter, .comp.compTabs._underLine._secondary  > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 	{
@@ -506,7 +506,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorFive>',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compTabs._line._tertiary .tabHighlighter, .comp.compTabs._underLine._tertiary .tabHighlighter',
+			'.comp.compTabs._line._tertiary  > .tabsContainer > .tabHighlighter, .comp.compTabs._underLine._tertiary  > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 	{
@@ -516,7 +516,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorNine>',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compTabs._line._quaternary .tabHighlighter, .comp.compTabs._underLine._quaternary .tabHighlighter',
+			'.comp.compTabs._line._quaternary  > .tabsContainer > .tabHighlighter, .comp.compTabs._underLine._quaternary  > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 	{
@@ -526,7 +526,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorSeven>',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compTabs._line._quinary .tabHighlighter, .comp.compTabs._underLine._quinary .tabHighlighter',
+			'.comp.compTabs._line._quinary  > .tabsContainer > .tabHighlighter, .comp.compTabs._underLine._quinary  > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 
@@ -537,7 +537,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorThree>',
 		cssProperty: 'color',
 		selector:
-			'.comp.compTabs._line._primary .tabDiv._active, .comp.compTabs._default._primary .tabDiv._active, .comp.compTabs._underLine._primary .tabDiv._active',
+			'.comp.compTabs._line._primary > .tabsContainer > .tabDiv._active, .comp.compTabs._default._primary > .tabsContainer > .tabDiv._active, .comp.compTabs._underLine._primary > .tabsContainer > .tabDiv._active',
 		noPrefix: true,
 	},
 	{
@@ -547,7 +547,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorFour>',
 		cssProperty: 'color',
 		selector:
-			'.comp.compTabs._line._secondary .tabDiv._active, .comp.compTabs._default._secondary .tabDiv._active, .comp.compTabs._underLine._secondary .tabDiv._active',
+			'.comp.compTabs._line._secondary > .tabsContainer > .tabDiv._active, .comp.compTabs._default._secondary > .tabsContainer > .tabDiv._active, .comp.compTabs._underLine._secondary > .tabsContainer > .tabDiv._active',
 		noPrefix: true,
 	},
 	{
@@ -557,7 +557,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorFive>',
 		cssProperty: 'color',
 		selector:
-			'.comp.compTabs._line._tertiary .tabDiv._active, .comp.compTabs._default._tertiary .tabDiv._active, .comp.compTabs._underLine._tertiary .tabDiv._active',
+			'.comp.compTabs._line._tertiary > .tabsContainer > .tabDiv._active, .comp.compTabs._default._tertiary > .tabsContainer > .tabDiv._active, .comp.compTabs._underLine._tertiary > .tabsContainer > .tabDiv._active',
 		noPrefix: true,
 	},
 	{
@@ -567,7 +567,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorNine>',
 		cssProperty: 'color',
 		selector:
-			'.comp.compTabs._line._quaternary .tabDiv._active, .comp.compTabs._default._quaternary .tabDiv._active, .comp.compTabs._underLine._quaternary .tabDiv._active',
+			'.comp.compTabs._line._quaternary > .tabsContainer > .tabDiv._active, .comp.compTabs._default._quaternary > .tabsContainer > .tabDiv._active, .comp.compTabs._underLine._quaternary > .tabsContainer > .tabDiv._active',
 		noPrefix: true,
 	},
 	{
@@ -577,7 +577,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorSeven>',
 		cssProperty: 'color',
 		selector:
-			'.comp.compTabs._line._quinary .tabDiv._active, .comp.compTabs._default._quinary .tabDiv._active, .comp.compTabs._underLine._quinary .tabDiv._active',
+			'.comp.compTabs._line._quinary > .tabsContainer > .tabDiv._active, .comp.compTabs._default._quinary > .tabsContainer > .tabDiv._active, .comp.compTabs._underLine._quinary > .tabsContainer > .tabDiv._active',
 		noPrefix: true,
 	},
 
@@ -587,7 +587,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tabDefaultHighlighterboxshadow',
 		defaultValue: '0px 0px 6px #DDD',
 		cssProperty: 'box-shadow',
-		selector: '.comp.compTabs._default .tabHighlighter',
+		selector: '.comp.compTabs._default  > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 	{
@@ -596,7 +596,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tabLineHighlighterboxshadow',
 		defaultValue: '0px 0px 6px #DDD',
 		cssProperty: 'box-shadow',
-		selector: '.comp.compTabs._line .tabHighlighter',
+		selector: '.comp.compTabs._line  > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 	{
@@ -605,7 +605,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tabHighlightHighlighterboxshadow',
 		defaultValue: '0px 0px 6px #DDD',
 		cssProperty: 'box-shadow',
-		selector: '.comp.compTabs._highlight .tabHighlighter',
+		selector: '.comp.compTabs._highlight  > .tabsContainer > .tabHighlighter',
 		noPrefix: true,
 	},
 
@@ -614,7 +614,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Default Design Color',
 		name: 'defaultDesignColor',
 		cssProperty: 'color',
-		selector: '.comp.compTabs._deafult .tabDiv',
+		selector: '.comp.compTabs._deafult > .tabsContainer > .tabDiv',
 		noPrefix: true,
 	},
 	{
@@ -622,7 +622,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Line Design Color',
 		name: 'lineDesignColor',
 		cssProperty: 'color',
-		selector: '.comp.compTabs._line .tabDiv',
+		selector: '.comp.compTabs._line > .tabsContainer > .tabDiv',
 		noPrefix: true,
 	},
 	{
@@ -630,7 +630,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Highlight Design Color',
 		name: 'highlightDesignColor',
 		cssProperty: 'color',
-		selector: '.comp.compTabs._highlight .tabDiv',
+		selector: '.comp.compTabs._highlight > .tabsContainer > .tabDiv',
 		noPrefix: true,
 	},
 	{
@@ -639,7 +639,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'underLlineDesignColor',
 		defaultValue: '<borderColorSix>',
 		cssProperty: 'color',
-		selector: '.comp.compTabs._underLine .tabDiv',
+		selector: '.comp.compTabs._underLine > .tabsContainer > .tabDiv',
 		noPrefix: true,
 	},
 
@@ -648,7 +648,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Default Design Font',
 		name: 'defaultDesignFont',
 		cssProperty: 'font',
-		selector: '.comp.compTabs._deafult .tabDiv',
+		selector: '.comp.compTabs._deafult > .tabsContainer > .tabDiv',
 		noPrefix: true,
 	},
 	{
@@ -656,7 +656,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Line Design Font',
 		name: 'lineDesignFont',
 		cssProperty: 'font',
-		selector: '.comp.compTabs._line .tabDiv',
+		selector: '.comp.compTabs._line > .tabsContainer > .tabDiv',
 		noPrefix: true,
 	},
 	{
@@ -664,7 +664,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Highlight Design Font',
 		name: 'highlightDesignFont',
 		cssProperty: 'font',
-		selector: '.comp.compTabs._highlight .tabDiv',
+		selector: '.comp.compTabs._highlight > .tabsContainer > .tabDiv',
 		noPrefix: true,
 	},
 	{
@@ -673,7 +673,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'underLlineDesignFont',
 		defaultValue: '500 <tabsTitleFont>',
 		cssProperty: 'font',
-		selector: '.comp.compTabs._underLine .tabDiv',
+		selector: '.comp.compTabs._underLine > .tabsContainer > .tabDiv',
 		noPrefix: true,
 	},
 ];

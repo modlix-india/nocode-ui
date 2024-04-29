@@ -358,6 +358,6 @@ export interface ComponentProps {
 
 export interface LocationHistory {
 	location: DataLocation | string;
-	index: number;
+	index: number | string;
 	pageName: string;
 }

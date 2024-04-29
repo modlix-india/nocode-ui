@@ -25,6 +25,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
+		name: 'showMandatoryAsterisk',
+		displayName: 'Show Mandatory Asterisk',
+		description: 'Show Mandatory Asterisk',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
+	},
+
+	{
 		name: 'autoComplete',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Autocomplete type',
@@ -231,6 +240,11 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 	noFloatLabel: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	asterisk: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
