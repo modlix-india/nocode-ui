@@ -4,21 +4,22 @@ import { DataLocation, LocationHistory } from '../../types/common';
 
 export const updateLocationForChild = (
 	location: DataLocation | string,
-	index: number,
+	index: number | string,
 	locationHistory: Array<LocationHistory>,
 	pageName: string,
 	...tve: Array<TokenValueExtractor>
 ): LocationHistory => {
 	let finalPath;
 	const typeOfLoc = typeof location;
+	const indexPart = typeof index === 'string' ? `.${index}` : `[${index}]`;
 	if (typeOfLoc === 'string') {
 		finalPath = location as unknown as string;
-		return { location: `(${finalPath ? finalPath : location})[${index}]`, index, pageName };
+		return { location: `(${finalPath ? finalPath : location})${indexPart}`, index, pageName };
 	}
 	let childLocation = { ...(location as DataLocation) };
 	if (childLocation?.type === 'VALUE') {
 		finalPath = locationHistory.length ? childLocation.value! : '';
-		childLocation.value = `${finalPath ? finalPath : childLocation?.value}[${index}]`;
+		childLocation.value = `${finalPath ? finalPath : childLocation?.value}${indexPart}`;
 	} else if (childLocation?.type === 'EXPRESSION') {
 		finalPath =
 			locationHistory.length && childLocation.expression
@@ -30,7 +31,7 @@ export const updateLocationForChild = (
 				: '';
 		childLocation.expression = `(${
 			finalPath ? finalPath : childLocation?.expression
-		})[${index}]`;
+		})${indexPart}`;
 	}
 
 	return { location: childLocation, index, pageName };

@@ -35,6 +35,8 @@ export default function Legends({
 	rectangleStyles,
 	hiddenDataSets,
 	onToggleDataSet,
+	onShowOnlyDataSet,
+	onFocusDataSet,
 }: Readonly<{
 	containerDimension: Dimension;
 	legendDimension: Dimension;
@@ -45,6 +47,8 @@ export default function Legends({
 	rectangleStyles: CSSProperties;
 	hiddenDataSets: Set<number>;
 	onToggleDataSet: (index: number) => void;
+	onShowOnlyDataSet: (index: number) => void;
+	onFocusDataSet: (index: number | undefined) => void;
 }>) {
 	const labelWidthRef = useRef<SVGTextElement>(null);
 
@@ -135,8 +139,34 @@ export default function Legends({
 	)
 		return <></>;
 
+	function onClick(index: number) {
+		return properties.disableLegendInteraction ? undefined : () => onToggleDataSet(index);
+	}
+
+	function onDoubleClick(index: number) {
+		return properties.disableLegendInteraction
+			? undefined
+			: (e: any) => {
+					e.preventDefault();
+					e.stopPropagation();
+					onShowOnlyDataSet(index);
+			  };
+	}
+
+	function onMouseEntering(index: number) {
+		return properties.disableLegendInteraction || legends.length < 2
+			? undefined
+			: () => onFocusDataSet(index);
+	}
+
+	function onMouseLeaving(index: number) {
+		return properties.disableLegendInteraction || legends.length < 2
+			? undefined
+			: () => onFocusDataSet(undefined);
+	}
+
 	return (
-		<>
+		<g className="legendGroup">
 			<text
 				x={0}
 				y={0}
@@ -160,11 +190,10 @@ export default function Legends({
 						y={legend.rectDimension.y ?? 0}
 						duration={NO_ANIMATION ?? properties.animationTime}
 						easing={properties.animationTimingFunction}
-						onClick={
-							properties.disableLegendInteraction
-								? undefined
-								: () => onToggleDataSet(index)
-						}
+						onClick={onClick(index)}
+						onDoubleClick={onDoubleClick(index)}
+						onMouseEnter={onMouseEntering(index)}
+						onMouseLeave={onMouseLeaving(index)}
 					/>
 					<Animate.Text
 						key={`${legend.id}-text`}
@@ -179,11 +208,10 @@ export default function Legends({
 						y={legend.labelDimension.y ?? 0}
 						duration={NO_ANIMATION ?? properties.animationTime}
 						easing={properties.animationTimingFunction}
-						onClick={
-							properties.disableLegendInteraction
-								? undefined
-								: () => onToggleDataSet(index)
-						}
+						onClick={onClick(index)}
+						onDoubleClick={onDoubleClick(index)}
+						onMouseEnter={onMouseEntering(index)}
+						onMouseLeave={onMouseLeaving(index)}
 					>
 						{legend.label}
 					</Animate.Text>
@@ -226,18 +254,14 @@ export default function Legends({
 							easing={properties.animationTimingFunction}
 							duration={NO_ANIMATION ?? properties.animationTime}
 							stroke="currentColor"
-							onClick={
-								properties.disableLegendInteraction
-									? undefined
-									: () => onToggleDataSet(index)
-							}
+							onClick={onClick(index)}
 						/>
 					) : (
 						<></>
 					)}
 				</g>
 			))}
-		</>
+		</g>
 	);
 }
 
@@ -321,7 +345,7 @@ function positionLegends(
 	const width = horizontal ? chartDimension.width : x - legendRowsColumnns.length * SPACE - start;
 	const height = horizontal ? y - SPACE - start : chartDimension.height;
 
-	return { width, height };
+	return { width: width, height: height };
 }
 
 function arrangeInRowsOrColumns(
@@ -381,7 +405,7 @@ function makeLegendItems(
 	const labelGroups: Array<LegendGroupItem> = [];
 	if (!labelWidthRef.current) return labelGroups;
 
-	for (let i = 0; i < (chartData?.yAxisData?.length ?? 0); i++) {
+	for (let i = 0; i < (chartData?.dataSetData?.length ?? 0); i++) {
 		const label = properties?.dataSetLabels?.[i] ?? `Data set ${i + 1}`;
 		labelWidthRef.current.innerHTML = label;
 		const { width, height } = labelWidthRef.current.getBoundingClientRect();
@@ -398,9 +422,9 @@ function makeLegendItems(
 			label,
 			labelDimension,
 			rectDimension,
-			color: chartData?.dataColors?.[i]?.safeGet(0) ?? 'black',
-			fillOpacity: chartData?.fillOpacity?.[i]?.safeGet(0) ?? 1,
-			strokeOpacity: chartData?.strokeOpacity?.[i]?.safeGet(0) ?? 1,
+			color: chartData?.dataSetData?.[i]?.dataColors?.safeGet(0) ?? 'black',
+			fillOpacity: chartData?.dataSetData?.[i]?.fillOpacity?.safeGet(0) ?? 1,
+			strokeOpacity: chartData?.dataSetData?.[i]?.strokeOpacity?.safeGet(0) ?? 1,
 		});
 	}
 	return labelGroups;

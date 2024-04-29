@@ -118,7 +118,7 @@ export function getPathsFromComponentProperties(
 								paths.add(path.value);
 						}
 					} else {
-						const set = getPathsFrom(iprop, evaluatorMaps).values();
+						const set = getPathsFrom(iprop.property, evaluatorMaps).values();
 						let path: IteratorResult<string, any>;
 						while ((path = set.next()) !== undefined && !path.done)
 							paths.add(path.value);

@@ -42,6 +42,7 @@ type CommonInputType = {
 	inputType?: string;
 	maxChars?: number;
 	showDropdown?: boolean;
+	showMandatoryAsterisk?: boolean;
 };
 
 function CommonInputText(props: CommonInputType) {
@@ -83,6 +84,7 @@ function CommonInputText(props: CommonInputType) {
 		inputType = 'Text',
 		maxChars,
 		showDropdown,
+		showMandatoryAsterisk,
 	} = props;
 	const [focus, setFocus] = React.useState(false);
 	const [showPassword, setShowPassowrd] = React.useState(false);
@@ -277,6 +279,13 @@ function CommonInputText(props: CommonInputType) {
 					subComponentName="label"
 				></SubHelperComponent>
 				{getTranslations(label, translations)}
+				<span style={computedStyles.asterisk ?? {}} className="_asterisk">
+					<SubHelperComponent
+						definition={definition}
+						subComponentName="asterisk"
+					></SubHelperComponent>
+					{showMandatoryAsterisk ? '*' : ''}
+				</span>
 			</label>
 			{validationsOrSupportText}
 			{children}

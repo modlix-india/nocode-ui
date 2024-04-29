@@ -5213,6 +5213,16 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'.comp.compDropdown._text._isActive._quinary, .comp.compDropdown._text._isActive._quinary ._dropdownContainer, .comp.compDropdown._text._hasValue._quinary, .comp.compDropdown._text._hasValue._quinary ._dropdownContainer',
 		noPrefix: true,
 	},
+
+	{
+		groupName: 'DropDown Asterisk Text Color',
+		displayName: 'DropDown Asterisk Text Color',
+		name: 'dropDownAsteriskTextColor',
+		defaultValue: '<colorTwelve>',
+		cssProperty: 'color',
+		selector: '.comp.compDropdown ._label ._asterisk',
+		noPrefix: true,
+	},
 ];
 
 export const styleDefaults = new Map<string, string>(

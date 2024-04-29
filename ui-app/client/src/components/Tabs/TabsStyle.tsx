@@ -31,7 +31,7 @@ export default function TabsStyles({ theme }: { theme: Map<string, Map<string, s
 			
 		}
 
-		${PREFIX}._vertical .tabsContainer {
+		${PREFIX}._vertical > .tabsContainer {
 			flex-direction: column;
 			overflow-y: auto;
 			overflow-x: hidden;
@@ -43,7 +43,7 @@ export default function TabsStyles({ theme }: { theme: Map<string, Map<string, s
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			z-index: 2;
+			z-index: 3;
 		}
 		
 		${PREFIX} .tabDiv._vertical {
@@ -55,7 +55,7 @@ export default function TabsStyles({ theme }: { theme: Map<string, Map<string, s
 			transition: all 0.3s ease-in-out;
 			left: 0;
 			top: 0;
-			z-index: 1;
+			z-index: 2;
 		}
 
 		${PREFIX} .icon {
@@ -85,6 +85,25 @@ export default function TabsStyles({ theme }: { theme: Map<string, Map<string, s
 		${PREFIX} .tabsContainer._spaceEvenly .tabDiv{
 			flex: 1;
 		}
+
+		${PREFIX}._horizontal > .tabsContainer > .tabsSeperator {
+			position: absolute;
+			left: 0;
+			bottom: 0;
+			z-index: 1;
+			width: 100%;
+			height: 1px;
+		}
+
+		${PREFIX}._vertical > .tabsContainer >  .tabsSeperator {
+			position: absolute;
+			right: 0;
+			top: 0;
+			z-index: 1;
+			width: 1px;
+			height: 100%; 
+		}
+
 ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="TabsCss">{css}</style>;

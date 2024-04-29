@@ -101,6 +101,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				displayName: 'Tab with highlight',
 				description: 'Tab with highlight',
 			},
+			{
+				name: '_underLine',
+				displayName: 'Tab with underline',
+				description: 'Tab with underline',
+			},
 		],
 	},
 	COMMON_COMPONENT_PROPERTIES.colorScheme,
@@ -159,6 +164,13 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 	icon: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+	],
+	tabsSeperator: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 	],
 };
 

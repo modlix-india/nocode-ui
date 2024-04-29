@@ -74,6 +74,7 @@ function TextBox(props: ComponentProps) {
 			maxChars,
 			onFocus,
 			onBlur,
+			showMandatoryAsterisk,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -359,6 +360,13 @@ function TextBox(props: ComponentProps) {
 				hasValidationCheck={validation?.length > 0}
 				hideClearContentIcon={hideClearButton}
 				maxChars={maxChars}
+				showMandatoryAsterisk={
+					(validation ?? []).find(
+						(e: any) => e.type === undefined || e.type === 'MANDATORY',
+					) && showMandatoryAsterisk
+						? true
+						: false
+				}
 			/>
 		</>
 	);
@@ -439,6 +447,12 @@ const component: Component = {
 			name: 'label',
 			displayName: 'Label',
 			description: 'Label',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'asterisk',
+			displayName: 'asterisk',
+			description: 'asterisk',
 			icon: 'fa-solid fa-box',
 		},
 		{

@@ -78,6 +78,18 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Default data for repeater',
 		group: ComponentPropertyGroup.ADVANCED,
 	},
+	{
+		name: 'dataType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Data Type',
+		description: 'Data type for repeater',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 'array',
+		enumValues: [
+			{ name: 'array', displayName: 'Array' },
+			{ name: 'object', displayName: 'Object' },
+		],
+	},
 
 	COMMON_COMPONENT_PROPERTIES.layout,
 	COMMON_COMPONENT_PROPERTIES.readOnly,

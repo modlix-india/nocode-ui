@@ -185,14 +185,14 @@ export function ManyFunctionsEditor({
 						}
 
 						return (
-							<>
+							<React.Fragment key={`${paramDetail.name}_editor_${i}`}>
 								<div className="_editorLine" key={`${paramDetail.name}_label_${i}`}>
 									<span className="_label">{paramDetail.displayName} : </span>
 								</div>
 								<div className="_editorLine" key={`${paramDetail.name}_${i}`}>
 									{paramEditor}
 								</div>
-							</>
+							</React.Fragment>
 						);
 					})}
 				</div>

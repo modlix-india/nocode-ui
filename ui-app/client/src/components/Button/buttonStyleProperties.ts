@@ -1,6 +1,8 @@
 import { StyleGroupDefinition, StylePropertyDefinition } from '../../types/common';
 
 export const styleProperties: Array<StylePropertyDefinition> = [
+	{ displayName: 'Button Font', name: 'buttonFont', defaultValue: '<primaryFont>' },
+
 	{
 		groupName: 'Default',
 		displayName: 'Default Button Font',
@@ -14,7 +16,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Outline',
 		displayName: 'Outline Button Font',
 		name: 'outlineButtonFont',
-		defaultValue: '<textBoxFont>',
+		defaultValue: '<buttonFont>',
 		cssProperty: 'font',
 		selector: '.comp.compButton._outlined',
 		noPrefix: true,
@@ -23,7 +25,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Text',
 		displayName: 'Text Button Font',
 		name: 'textButtonFont',
-		defaultValue: '<textBoxFont>',
+		defaultValue: '<buttonFont>',
 		cssProperty: 'font',
 		selector: '.comp.compButton._text',
 		noPrefix: true,
@@ -32,7 +34,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Primary Icon',
 		displayName: 'Primary Icon Button Font',
 		name: 'primaryiconButtonFont',
-		defaultValue: '<textBoxFont>',
+		defaultValue: '<buttonFont>',
 		cssProperty: 'font',
 		selector: '.comp.compButton._iconPrimaryButton',
 		noPrefix: true,
@@ -41,7 +43,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Icon',
 		displayName: 'Icon Button Font',
 		name: 'iconButtonFont',
-		defaultValue: '<textBoxFont>',
+		defaultValue: '<buttonFont>',
 		cssProperty: 'font',
 		selector: '.comp.compButton._iconButton',
 		noPrefix: true,
@@ -50,7 +52,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'FAB',
 		displayName: 'FAB Button Font',
 		name: 'fabButtonFont',
-		defaultValue: '<textBoxFont>',
+		defaultValue: '<buttonFont>',
 		cssProperty: 'font',
 		selector: '.comp.compButton._fabButton',
 		noPrefix: true,
@@ -59,7 +61,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'FAB Mini',
 		displayName: 'FAB Mini Button Font',
 		name: 'fabminiButtonFont',
-		defaultValue: '<textBoxFont>',
+		defaultValue: '<buttonFont>',
 		cssProperty: 'font',
 		selector: '.comp.compButton._fabButtonMini',
 		noPrefix: true,
@@ -68,7 +70,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Decortive',
 		displayName: 'Decortive Button Font',
 		name: 'decortiveButtonFont',
-		defaultValue: '<textBoxFont>',
+		defaultValue: '<buttonFont>',
 		cssProperty: 'font',
 		selector: '.comp.compButton._Decorative Button',
 		noPrefix: true,
@@ -82,6 +84,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._bigDesign1',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Default',
 		displayName: 'Default Button Height',
@@ -161,6 +164,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._bigDesign1',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Default',
 		displayName: 'Default Button Width',
@@ -235,6 +239,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._bigDesign1',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Default',
 		displayName: 'Default Button Padding',
@@ -314,6 +319,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._bigDesign1',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Default',
 		displayName: 'Default Button Border Radius',
@@ -395,6 +401,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._bigDesign1',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Default',
 		displayName: 'Default Button Border',
@@ -476,6 +483,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._bigDesign1',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Default',
 		displayName: 'Default Button Cursor',
@@ -557,6 +565,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._bigDesign1',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Padding',
 		displayName: 'Decorative Button Button Padding With Left Icon',
@@ -593,6 +602,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._Decorative Button ._rightButtonIcon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Width',
 		displayName: 'Decorative Button Button Left Icon',
@@ -611,6 +621,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._Decorative Button ._rightButtonIcon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Background Color',
 		displayName: 'Primary Default Button Design Background Color',
@@ -656,6 +667,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._default._quinary',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Background Color',
 		displayName: 'Primary Outlined Button Design Background Color',
@@ -701,6 +713,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._outlined._quinary',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Background Color',
 		displayName: 'Primary Text Button Design Background Color',
@@ -746,6 +759,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._text._quinary',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Background Color',
 		displayName: 'Primary Primary Icon  Button Design Background Color',
@@ -791,6 +805,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._iconPrimaryButton._quinary',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Background Color',
 		displayName: 'Primary Icon Button Design Background Color',
@@ -836,6 +851,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._iconButton._quinary',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Background Color',
 		displayName: 'Primary Fab Button Design Background Color',
@@ -881,6 +897,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButton._quinary',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Background Color',
 		displayName: 'Primary Fab Button Mini Design Background Color',
@@ -926,6 +943,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButtonMini._quinary',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Background Color',
 		displayName: 'Primary Decorative Button Button Design Background Color',
@@ -971,6 +989,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._Decorative Button._quinary',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Background Color',
 		displayName: 'Primary Biig Design Button One Design Background Color',
@@ -1021,6 +1040,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._bigDesign1._quinary',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Background Color Hover',
 		displayName: 'Primary Default Button Design Background Color Hover',
@@ -1066,6 +1086,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._default._quinary:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Background Color Hover',
 		displayName: 'Primary Outlined Button Design Background Color Hover',
@@ -1111,6 +1132,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._outlined._quinary:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Background Color Hover',
 		displayName: 'Primary Text Button Design Background Color Hover',
@@ -1151,6 +1173,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._text._quinary:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Background Color Hover',
 		displayName: 'Primary Icon Button Design Background Color Hover',
@@ -1196,6 +1219,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._iconButton._quinary:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Background Color Hover',
 		displayName: 'Primary Fab Button Design Background Color Hover',
@@ -1241,6 +1265,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButton._quinary:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Background Color Hover',
 		displayName: 'Primary Fab Button Mini Design Background Color Hover',
@@ -1286,6 +1311,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButtonMini._quinary:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Background Color Hover',
 		displayName: 'Primary Decorative Button Button Design Background Color Hover',
@@ -1331,6 +1357,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._Decorative Button._quinary:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Background Color Hover',
 		displayName: 'Primary Biig Design One Button Design Background Color Hover',
@@ -1376,6 +1403,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._bigDesign1._quinary:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Text Color',
 		displayName: 'Primary Default Button Design Text Color',
@@ -1421,6 +1449,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._default._quinary',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Text Color',
 		displayName: 'Primary Outlined Button Design Text Color',
@@ -1466,6 +1495,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._outlined._quinary',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Text Color',
 		displayName: 'Primary Text Button Design Text Color',
@@ -1511,6 +1541,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._text._quinary',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Text Color',
 		displayName: 'Primary Primary Icon Button Design Text Color',
@@ -1556,6 +1587,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._iconPrimaryButton._quinary',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Text Color',
 		displayName: 'Primary Icon Button Design Text Color',
@@ -1601,6 +1633,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._iconButton._quinary',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Text Color',
 		displayName: 'Primary Fab Button Design Text Color',
@@ -1646,6 +1679,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButton._quinary',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Text Color',
 		displayName: 'Primary Fab Button Mini Design Text Color',
@@ -1691,6 +1725,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButtonMini._quinary',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Text Color',
 		displayName: 'Primary Decorative Button Button Design Text Color',
@@ -1736,6 +1771,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._Decorative Button._quinary',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Text Color',
 		displayName: 'Primary Biig Design One Button Design Text Color',
@@ -1781,6 +1817,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._bigDesign1._quinary',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Text Color Hover',
 		displayName: 'Primary Default Button Design Text Color Hover',
@@ -1826,6 +1863,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._default._quinary:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Text Color Hover',
 		displayName: 'Primary Outlined Button Design Text Color Hover',
@@ -1871,6 +1909,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._outlined._quinary:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Text Color Hover',
 		displayName: 'Primary Text Button Design Text Color Hover',
@@ -1916,6 +1955,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._text._quinary:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Text Color Hover',
 		displayName: 'Primary Icon Button Design Text Color Hover',
@@ -1961,6 +2001,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._iconButton._quinary:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Text Color Hover',
 		displayName: 'Primary Fab Button Design Text Color Hover',
@@ -2006,6 +2047,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButton._quinary:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Text Color Hover',
 		displayName: 'Primary Fab Button Mini Design Text Color Hover',
@@ -2051,6 +2093,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButtonMini._quinary:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Text Color Hover',
 		displayName: 'Primary Decorative Button Design Text Color Hover',
@@ -2096,6 +2139,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._Decorative Button._quinary:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Text Color Hover',
 		displayName: 'Primary Biig Design One Button Design Text Color Hover',
@@ -2136,6 +2180,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._bigDesign1._quinary:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Background Color',
 		displayName: 'Primary Default Button Design Disabled Background Color',
@@ -2181,6 +2226,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._default._quinary:disabled',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Background Color',
 		displayName: 'Primary Outlined Button Design Disabled Background Color',
@@ -2226,6 +2272,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._outlined._quinary:disabled',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Background Color',
 		displayName: 'Primary Text Button Design Disabled Background Color',
@@ -2271,6 +2318,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._text._quinary:disabled',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Background Color',
 		displayName: 'Primary Primary Icon Button Design Disabled Background Color',
@@ -2316,6 +2364,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._iconPrimaryButton._quinary:disabled',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Background Color',
 		displayName: 'Primary Icon Button Design Disabled Background Color',
@@ -2361,6 +2410,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._iconButton._quinary:disabled',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Background Color',
 		displayName: 'Primary Fab Button Design Disabled Background Color',
@@ -2406,6 +2456,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButton._quinary:disabled',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Background Color',
 		displayName: 'Primary Fab Button Mini Design Disabled Background Color',
@@ -2451,6 +2502,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButtonMini._quinary:disabled',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Background Color',
 		displayName: 'Primary Decorative Button Design Disabled Background Color',
@@ -2496,6 +2548,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._Decorative Button._quinary:disabled',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Background Color',
 		displayName: 'Primary Biig Design One Button Design Disabled Background Color',
@@ -2541,6 +2594,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._bigDesign1._quinary:disabled',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Background Color Hover',
 		displayName: 'Primary Default Button Design Disabled Background Color Hover',
@@ -2586,6 +2640,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._default._quinary:disabled:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Background Color Hover',
 		displayName: 'Primary Outlined Button Design Disabled Background Color Hover',
@@ -2631,6 +2686,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._outlined._quinary:disabled:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Background Color Hover',
 		displayName: 'Primary Text Button Design Disabled Background Color Hover',
@@ -2676,6 +2732,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._text._quinary:disabled:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Background Color Hover',
 		displayName: 'Primary Icon Button Design Disabled Background Color Hover',
@@ -2721,6 +2778,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._iconButton._quinary:disabled:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Background Color Hover',
 		displayName: 'Primary Fab Button Design Disabled Background Color Hover',
@@ -2766,6 +2824,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButton._quinary:disabled:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Background Color Hover',
 		displayName: 'Primary Fab Button Mini Design Disabled Background Color Hover',
@@ -2811,6 +2870,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButtonMini._quinary:disabled:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Background Color Hover',
 		displayName: 'Primary Decorative Button Design Disabled Background Color Hover',
@@ -2856,6 +2916,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._Decorative Button._quinary:disabled:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Background Color Hover',
 		displayName: 'Primary Biig Design One Button Design Disabled Background Color Hover',
@@ -2901,6 +2962,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._bigDesign1._quinary:disabled:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Font Color',
 		displayName: 'Primary Default Button Design Disabled Font Color',
@@ -2946,6 +3008,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._default._quinary:disabled',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Font Color',
 		displayName: 'Primary Outlined Button Design Disabled Font Color',
@@ -2991,6 +3054,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._outlined._quinary:disabled',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Font Color',
 		displayName: 'Primary Text Button Design Disabled Font Color',
@@ -3036,6 +3100,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._text._quinary:disabled',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Font Color',
 		displayName: 'Primary Primary Icon Button Design Disabled Font Color',
@@ -3081,6 +3146,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._iconPrimaryButton._quinary:disabled',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Font Color',
 		displayName: 'Primary Icon Button Design Disabled Font Color',
@@ -3126,6 +3192,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._iconButton._quinary:disabled',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Font Color',
 		displayName: 'Primary Fab Button Design Disabled Font Color',
@@ -3171,6 +3238,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButton._quinary:disabled',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Font Color',
 		displayName: 'Primary Fab Button Mini Design Disabled Font Color',
@@ -3216,6 +3284,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButtonMini._quinary:disabled',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Font Color',
 		displayName: 'Primary Decorative Button Design Disabled Font Color',
@@ -3261,6 +3330,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._Decorative Button._quinary:disabled',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Font Color',
 		displayName: 'Primary Biig Design One Button Design Disabled Font Color',
@@ -3306,6 +3376,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._bigDesign1._quinary:disabled',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Font Color Hover',
 		displayName: 'Primary Default Button Design Disabled Font Color Hover',
@@ -3351,6 +3422,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._default._quinary:disabled:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Font Color Hover',
 		displayName: 'Primary Outlined Button Design Disabled Font Color Hover',
@@ -3396,6 +3468,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._outlined._quinary:disabled:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Font Color Hover',
 		displayName: 'Primary Text Button Design Disabled Font Color Hover',
@@ -3441,6 +3514,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._text._quinary:disabled:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Font Color Hover',
 		displayName: 'Primary Icon Button Design Disabled Font Color Hover',
@@ -3486,6 +3560,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._iconButton._quinary:disabled:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Font Color Hover',
 		displayName: 'Primary Fab Button Design Disabled Font Color Hover',
@@ -3531,6 +3606,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButton._quinary:disabled:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Font Color Hover',
 		displayName: 'Primary Fab Button Mini Design Disabled Font Color Hover',
@@ -3576,6 +3652,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButtonMini._quinary:disabled:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Font Color Hover',
 		displayName: 'Primary Decorative Button Design Disabled Font Color Hover',
@@ -3621,6 +3698,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._Decorative Button._quinary:disabled:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Font Color Hover',
 		displayName: 'Primary Biig Design One Button Design Disabled Font Color Hover',
@@ -3666,6 +3744,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._bigDesign1._quinary:disabled:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Border Color',
 		displayName: 'Primary Default Button Design Disabled Border Color',
@@ -3711,6 +3790,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._default._quinary:disabled',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Border Color',
 		displayName: 'Primary Outlined Button Design Disabled Border Color',
@@ -3756,6 +3836,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._outlined._quinary:disabled',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Border Color',
 		displayName: 'Primary Text Button Design Disabled Border Color',
@@ -3801,6 +3882,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._text._quinary:disabled',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Border Color',
 		displayName: 'Primary Primary Icon Button Design Disabled Border Color',
@@ -3846,6 +3928,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._iconPrimaryButton._quinary:disabled',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Border Color',
 		displayName: 'Primary Icon Button Design Disabled Border Color',
@@ -3891,6 +3974,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._iconButton._quinary:disabled',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Border Color',
 		displayName: 'Primary Fab Button Design Disabled Border Color',
@@ -3936,6 +4020,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButton._quinary:disabled',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Border Color',
 		displayName: 'Primary Fab Button Mini Design Disabled Border Color',
@@ -3981,6 +4066,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButtonMini._quinary:disabled',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Border Color',
 		displayName: 'Primary Decorative Button Design Disabled Border Color',
@@ -4026,6 +4112,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._Decorative Button._quinary:disabled',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Border Color',
 		displayName: 'Primary Biig Design One Button Design Disabled Border Color',
@@ -4071,6 +4158,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._bigDesign1._quinary:disabled',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Border Hover Color',
 		displayName: 'Primary Default Button Design Disabled Border Hover Color',
@@ -4116,6 +4204,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._default._quinary:disabled:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Border Hover Color',
 		displayName: 'Primary Outlined Button Design Disabled Border Hover Color',
@@ -4161,6 +4250,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._outlined._quinary:disabled:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Border Hover Color',
 		displayName: 'Primary Text Button Design Disabled Border Hover Color',
@@ -4206,6 +4296,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._text._quinary:disabled:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Border Hover Color',
 		displayName: 'Primary Icon Button Design Disabled Border Hover Color',
@@ -4251,6 +4342,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._iconButton._quinary:disabled:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Border Hover Color',
 		displayName: 'Primary Fab Button Design Disabled Border Hover Color',
@@ -4296,6 +4388,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButton._quinary:disabled:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Border Hover Color',
 		displayName: 'Primary Fab Button Mini Design Disabled Border Hover Color',
@@ -4341,6 +4434,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButtonMini._quinary:disabled:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Border Hover Color',
 		displayName: 'Primary Decorative Button Design Disabled Border Hover Color',
@@ -4386,6 +4480,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._Decorative Button._quinary:disabled:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Disabled Border Hover Color',
 		displayName: 'Primary Biig Design One Button Design Disabled Border Hover Color',
@@ -4431,6 +4526,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._bigDesign1._quinary:disabled:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Border Color',
 		displayName: 'Primary Default Button Design Border Color',
@@ -4476,6 +4572,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._default._quinary',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Border Color',
 		displayName: 'Primary Outlined Button Design Border Color',
@@ -4521,6 +4618,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._outlined._quinary',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Border Color',
 		displayName: 'Primary Text Button Design Border Color',
@@ -4561,6 +4659,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._text._quinary',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Border Color',
 		displayName: 'Primary Primary Icon Button Design Border Color',
@@ -4606,6 +4705,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._iconPrimaryButton._quinary',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Border Color',
 		displayName: 'Primary Icon Button Design Border Color',
@@ -4651,6 +4751,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._iconButton._quinary',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Border Color',
 		displayName: 'Primary Fab Button Design Border Color',
@@ -4696,6 +4797,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButton._quinary',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Border Color',
 		displayName: 'Primary Fab Button Mini Design Border Color',
@@ -4741,6 +4843,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButtonMini._quinary',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Border Color',
 		displayName: 'Primary Decorative Button Design Border Color',
@@ -4781,6 +4884,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._Decorative Button._quinary',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Border Color',
 		displayName: 'Primary Biig Design One Button Design Border Color',
@@ -4821,6 +4925,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._bigDesign1._quinary',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Border Hover Color',
 		displayName: 'Primary Default Button Design Border Hover Color',
@@ -4866,6 +4971,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._default._quinary:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Border Hover Color',
 		displayName: 'Primary Outlined Button Design Border Hover Color',
@@ -4911,6 +5017,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._outlined._quinary:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Border Hover Color',
 		displayName: 'Primary Text Button Design Border Hover Color',
@@ -4951,6 +5058,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._text._quinary:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Border Hover Color',
 		displayName: 'Primary Icon Button Design Border Hover Color',
@@ -4996,6 +5104,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._iconButton._quinary:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Border Hover Color',
 		displayName: 'Primary Fab Button Design Border Hover Color',
@@ -5041,6 +5150,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButton._quinary:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Border Hover Color',
 		displayName: 'Primary Fab Button Mini Design Border Hover Color',
@@ -5086,6 +5196,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButtonMini._quinary:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Border Hover Color',
 		displayName: 'Primary Decorative Button Design Border Hover Color',
@@ -5126,6 +5237,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._Decorative Button._quinary:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Border Hover Color',
 		displayName: 'Primary Biig Design One Button Design Border Hover Color',
@@ -5166,6 +5278,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._bigDesign1._quinary:hover',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Left Icon Padding',
 		displayName: 'Default Button Design Left Icon Padding',
@@ -5247,6 +5360,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._bigDesign1 ._leftButtonIcon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Right Icon Padding',
 		displayName: 'Default Button Design Right Icon Padding',
@@ -5328,6 +5442,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._bigDesign1 ._rightButtonIcon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Left Icon Margin',
 		displayName: 'Default Button Design Left Icon Margin',
@@ -5404,6 +5519,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._bigDesign1 ._leftButtonIcon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Right Icon Margin',
 		displayName: 'Default Button Design Right Icon Margin',
@@ -5479,6 +5595,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._bigDesign1 ._rightButtonIcon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Size',
 		displayName: 'Default Button Design Icon Size',
@@ -5551,6 +5668,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._bigDesign1 ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Color',
 		displayName: 'Primary Default Button Design Icon Color',
@@ -5591,6 +5709,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._default._quinary ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Color',
 		displayName: 'Primary Outlined Button Design Icon Color',
@@ -5631,6 +5750,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._outlined._quinary ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Color',
 		displayName: 'Primary Text Button Design Icon Color',
@@ -5671,6 +5791,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._text._quinary ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Color',
 		displayName: 'Primary Primary Icon Button Design Icon Color',
@@ -5711,6 +5832,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._iconPrimaryButton._quinary ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Color',
 		displayName: 'Primary Icon Button Design Icon Color',
@@ -5751,6 +5873,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._iconButton._quinary ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Color',
 		displayName: 'Primary Fab Button Design Icon Color',
@@ -5791,6 +5914,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButton._quinary ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Color',
 		displayName: 'Primary Fab Button Mini Design Icon Color',
@@ -5831,6 +5955,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButtonMini._quinary ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Color',
 		displayName: 'Primary Decorative Button Design Icon Color',
@@ -5871,6 +5996,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._Decorative Button._quinary ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Color',
 		displayName: 'Primary Biig Design One Button Design Icon Color',
@@ -5911,6 +6037,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._bigDesign1._quinary ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Hover Color',
 		displayName: 'Primary Default Button Design Icon Hover Color',
@@ -5951,6 +6078,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._default._quinary:hover ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Hover Color',
 		displayName: 'Primary Outlined Button Design Icon Hover Color',
@@ -5991,6 +6119,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._outlined._quinary:hover ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Hover Color',
 		displayName: 'Primary Text Button Design Icon Hover Color',
@@ -6031,6 +6160,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._text._quinary:hover ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Hover Color',
 		displayName: 'Primary Icon Button Design Icon Hover Color',
@@ -6071,6 +6201,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._iconButton._quinary:hover ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Hover Color',
 		displayName: 'Primary Fab Button Design Icon Hover Color',
@@ -6111,6 +6242,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButton._quinary:hover ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Hover Color',
 		displayName: 'Primary Fab Button Mini Design Icon Hover Color',
@@ -6151,6 +6283,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButtonMini._quinary:hover ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Hover Color',
 		displayName: 'Primary Decorative Button Design Icon Hover Color',
@@ -6191,6 +6324,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._Decorative Button._quinary:hover ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Hover Color',
 		displayName: 'Primary Biig Design One Button Design Icon Hover Color',
@@ -6231,6 +6365,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._bigDesign1._quinary:hover ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Background Color',
 		displayName: 'Primary Default Button Design Icon Background Color',
@@ -6271,6 +6406,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._default._quinary ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Background Color',
 		displayName: 'Primary Outlined Button Design Icon Background Color',
@@ -6311,6 +6447,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._outlined._quinary ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Background Color',
 		displayName: 'Primary Text Button Design Icon Background Color',
@@ -6351,6 +6488,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._text._quinary ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Background Color',
 		displayName: 'Primary Primary Icon Button Design Icon Background Color',
@@ -6391,6 +6529,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._iconPrimaryButton._quinary ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Background Color',
 		displayName: 'Primary Icon Button Design Icon Background Color',
@@ -6431,6 +6570,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._iconButton._quinary ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Background Color',
 		displayName: 'Primary Fab Button Design Icon Background Color',
@@ -6471,6 +6611,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButton._quinary ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Background Color',
 		displayName: 'Primary Fab Button Mini Design Icon Background Color',
@@ -6511,6 +6652,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButtonMini._quinary ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Background Color',
 		displayName: 'Primary Decorative Button Design Icon Background Color',
@@ -6556,6 +6698,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._Decorative Button._quinary ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Background Color',
 		displayName: 'Primary Biig Design One Button Design Icon Background Color',
@@ -6596,6 +6739,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._bigDesign1._quinary ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Background Hover Color',
 		displayName: 'Primary Default Button Design Icon Background Hover Color',
@@ -6636,6 +6780,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._default._quinary:hover ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Background Hover Color',
 		displayName: 'Primary Outlined Button Design Icon Background Hover Color',
@@ -6676,6 +6821,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._outlined._quinary:hover ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Background Hover Color',
 		displayName: 'Primary Text Button Design Icon Background Hover Color',
@@ -6716,6 +6862,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._text._quinary:hover ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Background Hover Color',
 		displayName: 'Primary Icon Button Design Icon Background Hover Color',
@@ -6756,6 +6903,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._iconButton._quinary:hover ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Background Hover Color',
 		displayName: 'Primary Fab Button Design Icon Background Hover Color',
@@ -6796,6 +6944,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButton._quinary:hover ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Background Hover Color',
 		displayName: 'Primary Fab Button Mini Design Icon Background Hover Color',
@@ -6836,6 +6985,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._fabButtonMini._quinary:hover ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Background Hover Color',
 		displayName: 'Primary Decorative Button Design Icon Background Hover Color',
@@ -6881,6 +7031,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._Decorative Button._quinary:hover ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Icon Background Hover Color',
 		displayName: 'Primary Biig Design One Button Design Icon Background Hover Color',
@@ -6921,6 +7072,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compButton._bigDesign1._quinary:hover ._icon',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Box Shadow',
 		displayName: 'Default Button Design Box Shadow',

@@ -96,10 +96,11 @@ export function TextValueEditor({ value, defaultValue, onChange }: AnyValueEdito
 			<input
 				className="_peInput"
 				type="text"
-				value={value ?? ''}
+				value={localValue ?? ''}
 				placeholder={defaultValue ?? undefined}
 				onChange={e => {
 					onChange?.(e.target.value);
+					setLocalValue(e.target.value);
 				}}
 				onKeyDown={e => {
 					if (e.key === 'Enter') {
