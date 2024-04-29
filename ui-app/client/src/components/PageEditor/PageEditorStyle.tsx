@@ -2742,6 +2742,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			padding: 0;
 			border: 1px solid #0000000F;
 			font: normal 600 12px/12px Inter;
+			overflow: hidden;
 		}
 
 		._popupBackground ._popupContainer._schemaFormEditor ._header {
@@ -2751,6 +2752,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
+			height: 40px;
 		}
 
 		._popupBackground ._popupContainer._schemaFormEditor ._header ._close_btn {
@@ -2760,8 +2762,9 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			flex-direction: column;
 			flex: 1;
-			gap: 20px;
 			padding: 20px;
+			gap: 20px;
+			max-height: calc(100% - 60px);
 		}
 
 		._popupContainer._schemaFormEditor ._jsonEditorContainer{
@@ -2781,6 +2784,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		._popupContainer._schemaFormEditor ._schemaFormEditorContainer ._bindPathContainer {
 			display: flex;
     		gap: 5px;
+			height: 35px;
 		}
 
 		._popupContainer._schemaFormEditor ._schemaFormEditorContainer ._peInput {
@@ -2789,7 +2793,21 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			font: normal 500 12px/12px Inter;
 		}
 
-		._popupContainer._schemaFormEditor ._schemaFormEditorContainer ._button {
+		._popupContainer._schemaFormEditor ._schemaFormEditorContainer ._nextScreen {
+			overflow: hidden;
+    		display: flex;
+    		flex-direction: column;
+			flex: 1;
+		}
+
+		._popupContainer._schemaFormEditor ._schemaFormEditorContainer ._textButton, ._popupBackground ._popupContainer._schemaFormEditor ._schemaFormEditorContainer ._popupButtons ._textButton {
+			color: #333333CC;
+			background-color: transparent;
+			border: none;
+			font-weight: 600;
+		}
+
+		._popupContainer._schemaFormEditor ._schemaFormEditorContainer ._button, ._popupBackground ._popupContainer._schemaFormEditor ._schemaFormEditorContainer ._popupButtons ._button {
 			color: #fff;
     		background-color: #52BD94;
 			font: normal 600 12px/12px Inter;
@@ -2799,7 +2817,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			padding: 0 15px;
 			cursor: pointer
 		}
-		._popupContainer._schemaFormEditor ._schemaFormEditorContainer ._button:disabled {
+		._popupContainer._schemaFormEditor ._schemaFormEditorContainer ._button:disabled, ._popupBackground ._popupContainer._schemaFormEditor ._schemaFormEditorContainer ._popupButtons ._button:disabled {
 			background-color: #CCC;
 			color: #999;
 			cursor: not-allowed;
@@ -2807,12 +2825,43 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		._nextScreen ._tableContainer {
 			margin-top: 30px;
-			display: flex;
+			
 			overflow: auto;
+			flex: 1;
 		}
 
 		._nextScreen ._tableContainer table {
-			text-align: left;
+			border-spacing: 0;
+			border-collapse: separate;
+			border-radius: 8px;
+			border: 1px solid black;
+			overflow: hidden;
+
+		}
+
+		._nextScreen ._tableContainer tr {
+			height: 45px;
+		}
+
+		._nextScreen ._tableContainer table, ._nextScreen ._tableContainer tr {
+			text-align: center;
+			border: 1px solid #3333331A;
+		}
+
+		._nextScreen ._tableContainer th {
+			background-color: #333333;
+			color: #FFFFFF;
+		}
+
+		._nextScreen ._tableContainer th, ._nextScreen ._tableContainer td {
+			border-bottom: 1px solid #3333331A;
+			width: 120px;
+			max-width: 120px;
+			min-width: 120px;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			
 		}
 
 		._formEditor {

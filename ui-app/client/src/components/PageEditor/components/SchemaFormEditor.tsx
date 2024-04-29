@@ -750,10 +750,11 @@ export default function SchemaFormEditor({
 		const value = intermediateState[key];
 		const row = (
 			<tr key={`${value.bindingPath}_${value.name}`}>
-				<td>{key}</td>
+				<td title={key}>{key}</td>
 				<td>
 					<input
 						type="text"
+						className="_peInput"
 						value={value.label}
 						onChange={evnt => handleLabelChange(evnt, key)}
 					/>
@@ -761,7 +762,11 @@ export default function SchemaFormEditor({
 				<td>{value.dataType}</td>
 				<td>
 					{value.dataType === 'String' ? (
-						<select value={value.type} onChange={e => handleTypeChange(e, value, key)}>
+						<select
+							className="_peInput"
+							value={value.type}
+							onChange={e => handleTypeChange(e, value, key)}
+						>
 							<option value="TextBox">TextBox</option>
 							<option value="Dropdown">Dropdown</option>
 							<option value="RadioButtonGroup">RadioButtonGroup</option>
@@ -773,6 +778,7 @@ export default function SchemaFormEditor({
 				</td>
 				<td>
 					<input
+						className="_peInput"
 						type="text"
 						value={value.bindingPath}
 						onChange={evnt => handleBindingPathChange(evnt, key)}
@@ -784,6 +790,7 @@ export default function SchemaFormEditor({
 					value.type === 'RadioButtonGroup' ? (
 						<input
 							type="text"
+							className="_peInput"
 							value={localOptionsState[key]}
 							onChange={evnt => handleOptionsChange(evnt, key)}
 						/>
@@ -813,7 +820,10 @@ export default function SchemaFormEditor({
 					onClick={e => e.stopPropagation()}
 				>
 					<div className="_header">
-						Schema Form <span className="_close_btn">{closeIcon}</span>
+						Schema Form{' '}
+						<span onClick={handleClose} className="_close_btn">
+							{closeIcon}
+						</span>
 					</div>
 					<div className="_schemaFormEditorContainer">
 						{!showNextScreen && (
@@ -884,37 +894,23 @@ export default function SchemaFormEditor({
 							</div>
 						)}
 						<div className="_popupButtons">
-							{showNextScreen && !hasIntermediateState && (
-								<button
-									onClick={() => {
-										setShowNextScreen(false);
-									}}
-								>
-									Back
-								</button>
-							)}
-							{showNextScreen && (
-								<button
-									onClick={() => {
-										handleFinish();
-									}}
-								>
-									Finish
-								</button>
-							)}
-							{!showNextScreen && (
-								<button disabled={!enableNext} onClick={handleNext}>
-									Next
-								</button>
-							)}
-
 							<button
+								className="_textButton"
 								onClick={() => {
 									setShowSchemaFormEditor('');
 								}}
 							>
 								Cancel
 							</button>
+							{
+								<button
+									className="_button"
+									disabled={!enableNext}
+									onClick={showNextScreen ? () => handleFinish() : handleNext}
+								>
+									Save Schema
+								</button>
+							}
 						</div>
 					</div>
 				</div>
