@@ -1,6 +1,7 @@
 import { StyleGroupDefinition, StylePropertyDefinition } from '../../types/common';
 
 export const styleProperties: Array<StylePropertyDefinition> = [
+	{ displayName: 'Text Box Font', name: 'textBoxFont', defaultValue: '<primaryFont>' },
 	{
 		groupName: 'Text Box Font',
 		displayName: 'Text Box Font Design Default',
@@ -4946,6 +4947,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compTextBox._bigDesign1._hasValue',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Text Box Shadow Default',
 		displayName: 'Primary Text Box Shadow Default Design Default',
@@ -5232,6 +5234,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compTextBox._filled._isActive._quinary',
 		noPrefix: true,
 	},
+
 	{
 		groupName: 'Text Box Shadow Active',
 		displayName: 'Primary Text Box Shadow Active Design Big 1',
@@ -5434,6 +5437,16 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryTextBoxShadowHasValueDesignBig1',
 		cssProperty: 'box-shadow',
 		selector: '.comp.compTextBox._bigDesign1._hasValue._quinary',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'Text Box Asterisk Text Color',
+		displayName: 'Text Box Asterisk Text Color',
+		name: 'textBoxAsteriskTextColor',
+		defaultValue: '<colorTwelve>',
+		cssProperty: 'color',
+		selector: '.comp.compTextBox ._label ._asterisk',
 		noPrefix: true,
 	},
 ];

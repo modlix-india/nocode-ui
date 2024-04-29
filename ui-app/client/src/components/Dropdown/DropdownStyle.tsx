@@ -96,7 +96,7 @@ export default function DropdownStyle({ theme }: { theme: Map<string, Map<string
 
         ${PREFIX} ._dropdownContainer{
             width: 100%;
-            z-index: 1;
+            z-index: 5;
             left: 0;
             position: absolute;
             top: 100%;

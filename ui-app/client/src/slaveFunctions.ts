@@ -81,6 +81,12 @@ export const SLAVE_FUNCTIONS = new Map<string, (payload: any) => void>([
 			setData(appPath, app);
 		},
 	],
+	[
+		'EDITOR_APP_THEME',
+		p => {
+			setData(`${STORE_PREFIX}.theme`, p?.variables);
+		},
+	],
 ]);
 
 if (isSlave) {

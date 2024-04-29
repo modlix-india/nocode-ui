@@ -410,8 +410,16 @@ export function processStyleFromString(str: string): { [key: string]: string } {
 }
 
 export function processStyleObjectToCSS(styleObj: any, selector: string): string {
+	const x = processStyleObjectToString(styleObj, '\n');
+	if (x.trim() === '') return '';
+
+	return `${selector} { ${x} }`;
+}
+
+export function processStyleObjectToString(styleObj: any, joiner: string = '') {
 	if (!styleObj) return '';
-	const x = Object.entries(styleObj)
+
+	return Object.entries(styleObj)
 		.map(
 			([key, value]) =>
 				key
@@ -422,9 +430,6 @@ export function processStyleObjectToCSS(styleObj: any, selector: string): string
 				value +
 				';',
 		)
-		.join('\n');
-
-	if (x.trim() === '') return '';
-
-	return `${selector} { ${x} }`;
+		.join(joiner)
+		.trim();
 }

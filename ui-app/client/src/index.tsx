@@ -5,7 +5,6 @@ import AppStyle from './App/AppStyle';
 import { PageDefinition } from './types/common';
 import { REPO_SERVER, RemoteRepository } from './Engine/RemoteRepository';
 import { Function, Schema } from '@fincity/kirun-js';
-
 declare global {
 	var nodeDev: boolean;
 	var isDesignMode: boolean;
@@ -38,6 +37,7 @@ declare global {
 	) => RemoteRepository<Schema>;
 	var cdnPrefix: string;
 	var determineRightClickPosition: (e: MouseEvent) => { x: number; y: number };
+	// var d3: typeof import('d3/index');
 }
 
 globalThis.getRemoteFunctionRepository = RemoteRepository.getRemoteFunctionRepository;
