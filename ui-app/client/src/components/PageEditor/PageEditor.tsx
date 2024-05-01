@@ -71,7 +71,7 @@ function savePersonalizationCurry(
 function PageEditor(props: ComponentProps) {
 	const {
 		definition,
-		definition: { bindingPath, bindingPath2, bindingPath3 },
+		definition: { bindingPath, bindingPath2, bindingPath3, bindingPath4 },
 		pageDefinition,
 		locationHistory,
 		context,
@@ -118,6 +118,11 @@ function PageEditor(props: ComponentProps) {
 	// binding path for the application definition.
 	const appPath = bindingPath3
 		? getPathFromLocation(bindingPath3, locationHistory, pageExtractor)
+		: undefined;
+
+	// binding path for the theme definition.
+	const themePath = bindingPath4
+		? getPathFromLocation(bindingPath4, locationHistory, pageExtractor)
 		: undefined;
 
 	const resolvedStyles = processComponentStylePseudoClasses(
@@ -440,6 +445,7 @@ function PageEditor(props: ComponentProps) {
 		const unListen = addListenerAndCallImmediatelyWithChildrenActivity(
 			(_, payload) => {
 				if (!templateIFrame) return;
+
 				const msg = {
 					type: 'EDITOR_APP_DEFINITION',
 					payload,
@@ -450,6 +456,22 @@ function PageEditor(props: ComponentProps) {
 			appPath,
 		);
 
+		const unlisten2 = themePath
+			? addListenerAndCallImmediatelyWithChildrenActivity(
+					(_, payload) => {
+						if (!templateIFrame) return;
+
+						const msg = {
+							type: 'EDITOR_APP_THEME',
+							payload,
+						};
+						templateIFrame.contentWindow?.postMessage(msg);
+					},
+					pageExtractor,
+					themePath,
+			  )
+			: undefined;
+
 		function onMessageFromSlave(e: any) {
 			const {
 				data: { type, payload, editorType },
@@ -458,21 +480,36 @@ function PageEditor(props: ComponentProps) {
 			if (!type || !type.startsWith('SLAVE_') || !templateIFrame) return;
 
 			if (type === 'SLAVE_STARTED') {
+				templateIFrame.contentWindow?.postMessage({
+					type: 'EDITOR_TYPE',
+					payload: { type: 'THEME' },
+				});
 				const msg = {
 					type: 'EDITOR_APP_DEFINITION',
 					payload: getDataFromPath(appPath, locationHistory, pageExtractor),
 				};
 				templateIFrame.contentWindow?.postMessage(msg);
+
+				if (themePath) {
+					const msg = {
+						type: 'EDITOR_APP_THEME',
+						payload: getDataFromPath(themePath, locationHistory, pageExtractor),
+					};
+					templateIFrame.contentWindow?.postMessage(msg);
+				}
 			}
 		}
 
-		if (templateIFrame) window.addEventListener('message', onMessageFromSlave);
+		if (templateIFrame) {
+			window.addEventListener('message', onMessageFromSlave);
+		}
 
 		return () => {
 			unListen();
+			unlisten2?.();
 			window.removeEventListener('message', onMessageFromSlave);
 		};
-	}, [appPath, templateIFrame]);
+	}, [appPath, themePath, templateIFrame]);
 
 	// On changing the selection, this effect sends to the iframe/slave.
 	useEffect(() => {
@@ -515,15 +552,6 @@ function PageEditor(props: ComponentProps) {
 			payload: { type: 'PAGE', screenType: 'mobile' },
 		});
 	}, [mobileRef.current]);
-
-	// The type of the editor should be sent to iframe/slave to make it only theme editing/viewing.
-	useEffect(() => {
-		if (!templateIFrame) return;
-		templateIFrame.contentWindow?.postMessage({
-			type: 'EDITOR_TYPE',
-			payload: { type: 'THEME' },
-		});
-	}, [templateIFrame]);
 
 	// This will be used to store slave store.
 	const [slaveStore, setSlaveStore] = useState<any>(undefined);
@@ -810,6 +838,7 @@ const component: Component = {
 		bindingPath: { name: 'Definition' },
 		bindingPath2: { name: 'Personalization' },
 		bindingPath3: { name: 'Application Definition' },
+		bindingPath4: { name: 'Theme Definition' },
 	},
 	subComponentDefinition: [
 		{

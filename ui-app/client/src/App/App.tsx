@@ -24,7 +24,6 @@ window.isDesignMode = isSlave;
 
 function onMessageFromEditor(event: MessageEvent) {
 	const { data: { type, payload } = {} } = event;
-
 	if (!type || !type.startsWith('EDITOR_')) return;
 
 	if (!SLAVE_FUNCTIONS.has(type)) throw Error('Unknown message from Editor : ' + type);

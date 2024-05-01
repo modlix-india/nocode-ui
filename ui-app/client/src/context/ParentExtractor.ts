@@ -1,4 +1,4 @@
-import { TokenValueExtractor } from '@fincity/kirun-js';
+import { isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
 import { GLOBAL_CONTEXT_NAME } from '../constants';
 import { LocationHistory } from '../types/common';
 import { SpecialTokenValueExtractor } from './SpecialTokenValueExtractor';
@@ -23,11 +23,17 @@ export class ParentExtractor extends SpecialTokenValueExtractor {
 	protected getValueInternal(token: string) {
 		const { path, lastHistory } = this.getPath(token);
 
-		return getDataFromPath(
+		const value = getDataFromPath(
 			path,
 			this.history.length === 1 ? [] : this.history.slice(0, this.history.length - 1),
 			PageStoreExtractor.getForContext(lastHistory.pageName ?? GLOBAL_CONTEXT_NAME),
 		);
+
+		if (isNullValue(value) && path.endsWith('.__index')) {
+			return lastHistory.index;
+		}
+
+		return value;
 	}
 
 	public getPath(token: string): { path: string; lastHistory: LocationHistory } {
@@ -97,11 +103,20 @@ export class ParentExtractorForRunEvent extends TokenValueExtractor {
 	}
 
 	protected getValueInternal(token: string) {
-		return getDataFromPath(
-			this.computeParentPath(token),
-			[],
-			...Array.from(this.valueMaps.values()),
-		);
+		const computedPath = this.computeParentPath(token);
+
+		const value = getDataFromPath(computedPath, [], ...Array.from(this.valueMaps.values()));
+
+		if (isNullValue(value) && computedPath.endsWith('.__index')) {
+			const parentPath = computedPath.substring(0, computedPath.length - '.__index'.length);
+			if (parentPath.endsWith(']'))
+				return parseInt(
+					parentPath.substring(parentPath.lastIndexOf('[') + 1, parentPath.length - 1),
+				);
+			else return parentPath.substring(parentPath.lastIndexOf('.') + 1);
+		}
+
+		return value;
 	}
 
 	public computeParentPath(token: string): string {
