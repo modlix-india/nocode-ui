@@ -56,6 +56,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Event to be triggered when grid leaves view port.',
 		group: ComponentPropertyGroup.EVENTS,
 	},
+
 	{
 		name: 'containerType',
 		schema: SCHEMA_STRING_COMP_PROP,
@@ -76,6 +77,74 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		],
 	},
 	COMMON_COMPONENT_PROPERTIES.background,
+	{
+		name: 'borderRadius',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Border Type',
+		description: 'Border Type',
+		defaultValue: '_STRAIGHT',
+		group: ComponentPropertyGroup.BASIC,
+		enumValues: [
+			{ name: '_STRAIGHT', displayName: 'Straight', description: 'Straight' },
+			{ name: '_ROUND', displayName: 'Round', description: 'Round' },
+			{ name: '_VERYROUND', displayName: 'VeryRound', description: 'VeryRound' },
+		],
+	},
+	{
+		name: 'border',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Border Size Type',
+		description: 'Border Size Type',
+		defaultValue: '_NONE',
+		group: ComponentPropertyGroup.BASIC,
+		enumValues: [
+			{ name: '_NONE', displayName: 'None', description: 'None' },
+			{ name: '_LIGHT', displayName: 'Light', description: 'Light' },
+			{ name: '_MEDIUM', displayName: 'Medium', description: 'Medium' },
+			{ name: '_HEAVY', displayName: 'Heavy', description: 'Heavy' },
+		],
+	},
+	{
+		name: 'boxShadow',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'BoxShadow Type',
+		description: 'BoxShadow Type',
+		defaultValue: '_NONE',
+		group: ComponentPropertyGroup.BASIC,
+		enumValues: [
+			{ name: '_NONE', displayName: 'None', description: 'None' },
+			{
+				name: '_DARKLOW',
+				displayName: 'DarkLow',
+				description: 'Light shadow for dark background',
+			},
+			{
+				name: '_DARKMEDIUM',
+				displayName: 'DarkMedium',
+				description: 'Medium shadow for dark background',
+			},
+			{
+				name: '_DARKHIGH',
+				displayName: 'DarkHigh',
+				description: 'High shadow for dark background',
+			},
+			{
+				name: '_LIGHTLOW',
+				displayName: 'LightLow',
+				description: 'Light shadow for light background',
+			},
+			{
+				name: '_LIGHTMEDIUM',
+				displayName: 'LightMedium',
+				description: 'Medium shadow for light background',
+			},
+			{
+				name: '_LIGHTHIGH',
+				displayName: 'LightHigh',
+				description: 'High shadow for light shadow',
+			},
+		],
+	},
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
