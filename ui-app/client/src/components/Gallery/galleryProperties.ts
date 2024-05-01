@@ -15,7 +15,7 @@ import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '.
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
-		name: 'galleryData',
+		name: 'data',
 		schema: SCHEMA_ANY_COMP_PROP,
 		displayName: 'Gallery Data',
 		description: 'Gallery data to be displayed on the component.',
@@ -95,31 +95,31 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Arrow Buttons',
 		description: 'Position of arrow buttons',
 		editor: ComponentPropertyEditor.ENUM,
-		defaultValue: 'Middle',
+		defaultValue: '_Middle',
 		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
 			{
-				name: 'Middle',
+				name: '_Middle',
 				displayName: 'Center',
 				description: 'arrow navigations button positioned on middle',
 			},
 			{
-				name: 'LeftTop',
+				name: '_LeftTop',
 				displayName: 'top left',
 				description: 'arrow navigations button positioned on top-Left',
 			},
 			{
-				name: 'RightTop',
+				name: '_RightTop',
 				displayName: 'top right',
 				description: 'arrow navigations button positioned on top-right ',
 			},
 			{
-				name: 'LeftBottom',
+				name: '_LeftBottom',
 				displayName: 'bottom left',
 				description: 'arrow navigations button positioned on bottom-left',
 			},
 			{
-				name: 'RightBottom',
+				name: '_RightBottom',
 				displayName: 'bottom right',
 				description: 'arrow navigations button positioned on  Bottom-right',
 			},
@@ -240,7 +240,29 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		],
 	},
 
+	{
+		...COMMON_COMPONENT_PROPERTIES.datatype,
+		enumValues: [
+			{
+				name: 'LIST_OF_STRINGS',
+				displayName: 'List of strings',
+				description: 'data has an array of strings',
+			},
+			{
+				name: 'LIST_OF_OBJECTS',
+				displayName: 'List of objects',
+				description: 'data has an array of objects',
+			},
+		],
+	},
+	{
+		...COMMON_COMPONENT_PROPERTIES.selectionKey,
+		displayName: "Source key's value",
+		description: 'Key value that is used to generate src for Gallery.',
+	},
 	COMMON_COMPONENT_PROPERTIES.showInDesign,
+	COMMON_COMPONENT_PROPERTIES.visibility,
+	COMMON_COMPONENT_PROPERTIES.readOnly,
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
