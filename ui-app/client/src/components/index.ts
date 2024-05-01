@@ -52,6 +52,7 @@ import SectionGrid from './SectionGrid/SectionGrid';
 import SmallCarousel from './SmallCarousel/SmallCarousel';
 import Otp from './Otp/Otp';
 import Chart from './Chart/Chart';
+import TemplateEditor from './TemplateEditor/TemplateEditor';
 
 export default new Map<string, Component>([
 	[Button.name, Button],
@@ -107,4 +108,5 @@ export default new Map<string, Component>([
 	[SmallCarousel.name, SmallCarousel],
 	[Otp.name, Otp],
 	[Chart.name, Chart],
+	[TemplateEditor.name, TemplateEditor],
 ]);

@@ -76,6 +76,7 @@ function DropdownComponent(props: ComponentProps) {
 			colorScheme,
 			leftIcon,
 			clearOnSelectingSameValue,
+			showMandatoryAsterisk,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -125,7 +126,7 @@ function DropdownComponent(props: ComponentProps) {
 					labelKey,
 				)
 					.reduce((acc: Map<string, any>, each: any) => {
-						if (!each?.key) return acc;
+						if (isNullValue(each?.key)) return acc;
 
 						acc.set(each.key, each);
 
@@ -337,6 +338,13 @@ function DropdownComponent(props: ComponentProps) {
 			leftIcon={leftIcon}
 			showDropdown={showDropdown}
 			onMouseLeave={closeOnMouseLeave ? handleClose : undefined}
+			showMandatoryAsterisk={
+				(validation ?? []).find(
+					(e: any) => e.type === undefined || e.type === 'MANDATORY',
+				) && showMandatoryAsterisk
+					? true
+					: false
+			}
 			updDownHandler={e => {
 				if (e.key.startsWith('Arrow')) {
 					if (!showDropdown) setShowDropdown(true);
@@ -535,6 +543,12 @@ const component: Component = {
 			name: 'label',
 			displayName: 'Label',
 			description: 'Label',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'asterisk',
+			displayName: 'asterisk',
+			description: 'asterisk',
 			icon: 'fa-solid fa-box',
 		},
 		{

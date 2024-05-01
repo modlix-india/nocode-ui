@@ -1,6 +1,8 @@
 import { StylePropertyDefinition } from '../../types/common';
 
 export const styleProperties: Array<StylePropertyDefinition> = [
+	{ displayName: 'Text Area Font', name: 'textAreaFont', defaultValue: '<primaryFont>' },
+
 	{
 		groupName: 'Text Area Font',
 		displayName: 'Text Area Font Design Default',
@@ -3715,6 +3717,16 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'textAreaBorderLeftHasValueDesignFilled',
 		cssProperty: 'border-left',
 		selector: '.comp.compTextArea._filled._hasValue',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'Text Box Asterisk Text Color',
+		displayName: 'Text Box Asterisk Text Color',
+		name: 'textBoxAsteriskTextColor',
+		defaultValue: '<colorTwelve>',
+		cssProperty: 'color',
+		selector: '.comp.compTextArea ._label ._asterisk',
 		noPrefix: true,
 	},
 ];
