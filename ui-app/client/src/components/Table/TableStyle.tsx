@@ -36,6 +36,8 @@ export default function TableStyle({ theme }: { theme: Map<string, Map<string, s
 		display: flex;
 		justify-content: center;
 		align-items: center;
+		color:#427EE4;
+
 	}
 
 	${PREFIX} ._tablePagination ._seperator {
@@ -82,7 +84,6 @@ export default function TableStyle({ theme }: { theme: Map<string, Map<string, s
 	${PREFIX} ._tablePagination ._prev{
 		padding:5px;
 	}
-
 	
 
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);

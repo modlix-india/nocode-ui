@@ -354,7 +354,7 @@ function TableComponent(props: ComponentProps) {
 					<>
 						<i
 							className={`fa-solid fa-table-columns _pointer ${
-								mode === 'COLUMNS' ? 'fa-inverse _selected' : ''
+								mode === 'COLUMNS' ? '_selected' : ''
 							}`}
 							onClick={() => {
 								if (tableModeBindingPath)
@@ -386,6 +386,7 @@ function TableComponent(props: ComponentProps) {
 						{!showPageSelectionDropdown && (
 							<i className="fa-solid fa-grip-lines fa-rotate-90 _seperator" />
 						)}
+						<span>Rows/page</span>
 						<select
 							value={pageSize}
 							onChange={e => {
@@ -444,9 +445,9 @@ function TableComponent(props: ComponentProps) {
 					<>
 						<span>Page</span>
 						<select
-							value={pageNumber}
+							value={pageNumber+1}
 							onChange={e => {
-								const selectedPage = parseInt(e.target.value);
+								const selectedPage = parseInt(e.target.value)-1;
 								if (pageNumberBindingPath) {
 									setStoreData(
 										pageNumberBindingPath,
@@ -479,8 +480,8 @@ function TableComponent(props: ComponentProps) {
 							}}
 						>
 							{Array.from({ length: totalPages }, (_, index) => index).map(page => (
-								<option key={page} value={page}>
-									{page}
+								<option key={page} value={page+1}>
+									{page+1}
 								</option>
 							))}
 						</select>
