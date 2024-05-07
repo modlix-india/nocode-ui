@@ -67,9 +67,7 @@ function TableDynamicColumnsComponent(props: ComponentProps) {
 		const excludedColumns = new Set<string>(excludeColumns);
 
 		if (dontShowOtherColumns && includeColumns.length) {
-			columns = columns.filter(c => {
-				return includedColumns.has(c);
-			});
+			columns = columns.filter(c => includedColumns.has(c));
 		} else if (excludeColumns.length) {
 			columns = columns.filter(c => !excludedColumns.has(c));
 		}
@@ -104,14 +102,14 @@ function TableDynamicColumnsComponent(props: ComponentProps) {
 						: Number.MAX_SAFE_INTEGER)),
 		);
 
-		const children: { [key: string]: boolean } = {}; //intialize  empty obj to store children
+		const children: { [key: string]: boolean } = {};
 		for (let i = 0; i < columns.length; i++) {
-			// iterate through columns
-			const eachField = columns[i]; //get each col
-			const childRendererKey = `${key}${eachField}_renderer`; //unique key for render component
+			
+			const eachField = columns[i]; 
+			const childRendererKey = `${key}${eachField}_renderer`; 
 
 			const eachChild: ComponentDefinition = {
-				//defining each children componentdefintion for current column
+				
 				key: `${key}${eachField}`,
 				type: 'TableColumn',
 				name: eachField,
@@ -125,7 +123,7 @@ function TableDynamicColumnsComponent(props: ComponentProps) {
 			};
 
 			const eachRenderer = {
-				//defining render component for current column
+			
 				key: childRendererKey,
 				type: 'Text',
 				name: eachField + 'Text',
@@ -136,15 +134,14 @@ function TableDynamicColumnsComponent(props: ComponentProps) {
 				},
 			};
 
-			children[eachChild.key] = true; //adding key of child comp to children obj
-			newPageDefinition.componentDefinition[eachChild.key] = eachChild; //adding child comp def to pgdef
+			children[eachChild.key] = true; 
+			newPageDefinition.componentDefinition[eachChild.key] = eachChild; 
 
-			newPageDefinition.componentDefinition[eachRenderer.key] = eachRenderer; //adding render comp def to pgdef
+			newPageDefinition.componentDefinition[eachRenderer.key] = eachRenderer;
 		}
 
-		newPageDefinition.componentDefinition[key].type = 'TableColumns'; //set type of comp to table columns
-		newPageDefinition.componentDefinition[key].children = children; //set the children of comp to children we get
-
+		newPageDefinition.componentDefinition[key].type = 'TableColumns'; 
+		newPageDefinition.componentDefinition[key].children = children;
 		return newPageDefinition;
 	}, [context.table.data, dontShowOtherColumns, includeColumns, columnsOrder, excludeColumns]);
 

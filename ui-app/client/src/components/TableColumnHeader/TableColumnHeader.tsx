@@ -41,7 +41,7 @@ function TableColumnHeaderComponent(props: ComponentProps) {
 		<div className="comp compTableHeaderColumn" style={{ ...styleProperties.comp }}>
 			<HelperComponent context={props.context} definition={definition} />
 
-			<div className="">
+			<div>
 				{leftIcon ? (
 					<i style={styleProperties.leftIcon ?? {}} className={`_leftIcon ${leftIcon}`}>
 						<SubHelperComponent
