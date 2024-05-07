@@ -100,7 +100,6 @@ export function Dropdown({
 							setOpen(false);
 							setTimeout(() => dropDown.current?.blur(), 0);
 							if (!multiSelect) {
-								console.log(o, 'hello');
 								onChange(value === o.name ? '' : o.name);
 								return;
 							}
@@ -117,7 +116,6 @@ export function Dropdown({
 						}}
 						onMouseOver={() => {
 							setCurrentOption(i);
-							console.log(i, o, 'picard');
 						}}
 						title={o.description}
 					>

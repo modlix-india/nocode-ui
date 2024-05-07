@@ -68,7 +68,6 @@ function TableDynamicColumnsComponent(props: ComponentProps) {
 
 		if (dontShowOtherColumns && includeColumns.length) {
 			columns = columns.filter(c => {
-				console.log('after filtering', includeColumns.has(c));
 				return includedColumns.has(c);
 			});
 		} else if (excludeColumns.length) {
@@ -77,7 +76,6 @@ function TableDynamicColumnsComponent(props: ComponentProps) {
 
 		if (includeColumns.length) {
 			columns = [...columns, ...Array.from(difference(includedColumns, new Set(columns)))];
-			console.log('cols', columns);
 		}
 
 		let columnNamesIndex = columns.reduce((a: { [key: string]: string }, c: string) => {
@@ -106,13 +104,14 @@ function TableDynamicColumnsComponent(props: ComponentProps) {
 						: Number.MAX_SAFE_INTEGER)),
 		);
 
-		const children: { [key: string]: boolean } = {};          //intialize  empty obj to store children 
-		for (let i = 0; i < columns.length; i++) {                // iterate through columns 
-			const eachField = columns[i];                         //get each col
-			const childRendererKey = `${key}${eachField}_renderer`;   //unique key for render component
-			console.log('key', key);
+		const children: { [key: string]: boolean } = {}; //intialize  empty obj to store children
+		for (let i = 0; i < columns.length; i++) {
+			// iterate through columns
+			const eachField = columns[i]; //get each col
+			const childRendererKey = `${key}${eachField}_renderer`; //unique key for render component
 
-			const eachChild: ComponentDefinition = {                 //defining each children componentdefintion for current column
+			const eachChild: ComponentDefinition = {
+				//defining each children componentdefintion for current column
 				key: `${key}${eachField}`,
 				type: 'TableColumn',
 				name: eachField,
@@ -125,7 +124,8 @@ function TableDynamicColumnsComponent(props: ComponentProps) {
 				children: { [childRendererKey]: true },
 			};
 
-			const eachRenderer = {                                 //defining render component for current column
+			const eachRenderer = {
+				//defining render component for current column
 				key: childRendererKey,
 				type: 'Text',
 				name: eachField + 'Text',
@@ -134,23 +134,20 @@ function TableDynamicColumnsComponent(props: ComponentProps) {
 						location: { type: 'EXPRESSION', expression: `Parent.${eachField}` },
 					},
 				},
-			}; 
-			
+			};
 
-			children[eachChild.key] = true;                             //adding key of child comp to children obj 
-			newPageDefinition.componentDefinition[eachChild.key] = eachChild;//adding child comp def to pgdef
-			console.log('newdf', newPageDefinition);
-			newPageDefinition.componentDefinition[eachRenderer.key] = eachRenderer;//adding render comp def to pgdef
-			console.log('newdefrendrer', eachRenderer);
+			children[eachChild.key] = true; //adding key of child comp to children obj
+			newPageDefinition.componentDefinition[eachChild.key] = eachChild; //adding child comp def to pgdef
+
+			newPageDefinition.componentDefinition[eachRenderer.key] = eachRenderer; //adding render comp def to pgdef
 		}
-		console.log("eachchildtdc",newPageDefinition.componentDefinition);
-		newPageDefinition.componentDefinition[key].type = 'TableColumns';      //set type of comp to table columns
-		newPageDefinition.componentDefinition[key].children = children;        //set the children of comp to children we get 
-		
+
+		newPageDefinition.componentDefinition[key].type = 'TableColumns'; //set type of comp to table columns
+		newPageDefinition.componentDefinition[key].children = children; //set the children of comp to children we get
+
 		return newPageDefinition;
 	}, [context.table.data, dontShowOtherColumns, includeColumns, columnsOrder, excludeColumns]);
 
-	console.log("tdcs",newPageDefinition.componentDefinition[key]);
 	return (
 		<TableColumns.component
 			definition={newPageDefinition.componentDefinition[key]}

@@ -120,7 +120,11 @@ function TableComponent(props: ComponentProps) {
 			onPagination,
 			paginationDesign,
 			showPageSelectionDropdown,
-			showTextArrow,
+			leftArrowLabel,
+			rightArrowLabel,
+			showSeperators,
+			showArrows,
+			perPageLabel,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -205,7 +209,6 @@ function TableComponent(props: ComponentProps) {
 	);
 
 	const [pageSize, setPageSize] = useState(defaultSize);
-
 	useEffect(
 		() =>
 			pageSizeBindingPath
@@ -352,28 +355,75 @@ function TableComponent(props: ComponentProps) {
 			if (gridChild && columnsChild) {
 				modes = (
 					<>
-						<i
-							className={`fa-solid fa-table-columns _pointer ${
-								mode === 'COLUMNS' ? '_selected' : ''
-							}`}
-							onClick={() => {
-								if (tableModeBindingPath)
-									setStoreData(tableModeBindingPath, 'COLUMNS', context.pageName);
-								else setMode('COLUMNS');
-							}}
-						/>
-						<i
-							className={`fa-solid fa-table _pointer  ${
-								mode === 'GRID' ? '_selected' : ''
-							}`}
-							onClick={() => {
-								if (tableModeBindingPath)
-									setStoreData(tableModeBindingPath, 'GRID', context.pageName);
-								else setMode('GRID');
-							}}
-						/>
-						{!showPageSelectionDropdown && (
-							<i className="fa-solid fa-grip-lines fa-rotate-90 _seperator" />
+						<div className="_modesContainer">
+							<div
+								className={`_columns _pointer ${
+									mode === 'COLUMNS' ? '_selected' : ''
+								}`}
+								onClick={() => {
+									if (tableModeBindingPath)
+										setStoreData(
+											tableModeBindingPath,
+											'COLUMNS',
+											context.pageName,
+										);
+									else setMode('COLUMNS');
+								}}
+							>
+								<svg
+									width="19"
+									height="18"
+									viewBox="0 0 19 18"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path d="M0 2C0 0.89543 0.895431 0 2 0H5V18H2C0.89543 18 0 17.1046 0 16V2Z" />
+									<path d="M7 0H12V18H7V0Z" />
+									<path d="M14 0H17C18.1046 0 19 0.895431 19 2V16C19 17.1046 18.1046 18 17 18H14V0Z" />
+								</svg>
+							</div>
+							<div
+								className={`_grid _pointer ${mode === 'GRID' ? '_selected' : ''}`}
+								onClick={() => {
+									if (tableModeBindingPath)
+										setStoreData(
+											tableModeBindingPath,
+											'GRID',
+											context.pageName,
+										);
+									else setMode('GRID');
+								}}
+							>
+								<svg
+									width="18"
+									height="18"
+									viewBox="0 0 18 18"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<rect width="8" height="8" rx="1" />
+									<rect y="10" width="8" height="8" rx="1" />
+									<rect x="10" width="8" height="8" rx="1" />
+									<rect x="10" y="10" width="8" height="8" rx="1" />
+								</svg>
+							</div>
+						</div>
+						{showSeperators && (
+							// <i className="fa-solid fa-grip-lines fa-rotate-90 _seperator" />
+							<svg
+								width="2"
+								height="28"
+								viewBox="0 0 2 28"
+								fill="none"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<path
+									d="M1 1L0.999999 27"
+									stroke="#DDDDDD"
+									stroke-opacity="0.7"
+									stroke-linecap="round"
+								/>
+							</svg>
 						)}
 					</>
 				);
@@ -383,10 +433,24 @@ function TableComponent(props: ComponentProps) {
 			if (showPerPage) {
 				perPage = (
 					<>
-						{!showPageSelectionDropdown && (
-							<i className="fa-solid fa-grip-lines fa-rotate-90 _seperator" />
+						{showSeperators && (
+							// <i className="fa-solid fa-grip-lines fa-rotate-90 _seperator" />
+							<svg
+								width="2"
+								height="28"
+								viewBox="0 0 2 28"
+								fill="none"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<path
+									d="M1 1L0.999999 27"
+									stroke="#DDDDDD"
+									stroke-opacity="0.7"
+									stroke-linecap="round"
+								/>
+							</svg>
 						)}
-						<span>Rows/page</span>
+						<span style={{ paddingLeft: '10px' }}>{perPageLabel}</span>
 						<select
 							value={pageSize}
 							onChange={e => {
@@ -443,11 +507,11 @@ function TableComponent(props: ComponentProps) {
 			if (showPageSelectionDropdown) {
 				pageSelectionDropdown = (
 					<>
-						<span>Page</span>
+						<span style={{ paddingLeft: '10px'}}>Page</span>
 						<select
-							value={pageNumber+1}
+							value={pageNumber + 1}
 							onChange={e => {
-								const selectedPage = parseInt(e.target.value)-1;
+								const selectedPage = parseInt(e.target.value) - 1;
 								if (pageNumberBindingPath) {
 									setStoreData(
 										pageNumberBindingPath,
@@ -480,13 +544,12 @@ function TableComponent(props: ComponentProps) {
 							}}
 						>
 							{Array.from({ length: totalPages }, (_, index) => index).map(page => (
-								<option key={page} value={page+1}>
-									{page+1}
+								<option key={page} value={page + 1}>
+									{page + 1}
 								</option>
 							))}
 						</select>
-						<span>of</span>
-						<span>{totalPages}</span>
+						<span style={{ paddingRight: '10px' }}>of {totalPages}</span>
 					</>
 				);
 			}
@@ -522,8 +585,8 @@ function TableComponent(props: ComponentProps) {
 							}
 						}}
 					>
-						<i className="fas fa-chevron-left"></i>
-						{showTextArrow && <span className="_prev">Prev</span>}
+						{showArrows && <i className="fas fa-chevron-left"></i>}
+						<span className="_prev">{leftArrowLabel}</span>
 					</div>
 				);
 			}
@@ -559,8 +622,8 @@ function TableComponent(props: ComponentProps) {
 							}
 						}}
 					>
-						{showTextArrow && <span className="_next">Next</span>}
-						<i className="fas fa-chevron-right"></i>
+						<span className="_next">{rightArrowLabel}</span>
+						{showArrows && <i className="fas fa-chevron-right"></i>}
 					</div>
 				);
 			}

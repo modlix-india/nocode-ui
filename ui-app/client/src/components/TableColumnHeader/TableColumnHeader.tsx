@@ -30,7 +30,7 @@ function TableColumnHeaderComponent(props: ComponentProps) {
 			locationHistory,
 			pageExtractor,
 		);
-	console.log(definition, 'picard', propertiesDefinition);
+
 	const styleProperties = processComponentStylePseudoClasses(
 		props.pageDefinition,
 		{ hover: false },
