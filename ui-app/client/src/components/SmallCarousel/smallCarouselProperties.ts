@@ -15,8 +15,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'showArrowButtons',
 		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Left and right Buttons',
-		description: 'Left and right arrow buttons to control carousel',
+		displayName: 'Previous and Next Arrow Buttons',
+		description: 'Previous and Next arrow buttons to control carousel',
 		group: ComponentPropertyGroup.BASIC,
 		defaultValue: true,
 	},
@@ -61,6 +61,18 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: true,
 	},
 	{
+		name: 'autoPlayDirection',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Auto Play Direction',
+		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: 'forward',
+		enumValues: [
+			{ name: 'forward', displayName: 'Forward', description: 'Forward' },
+			{ name: 'backward', displayName: 'Backward', description: 'Backward' },
+		],
+	},
+	{
 		name: 'dotsButtonType',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Dots Button Type',
@@ -99,21 +111,21 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'slideNavButtonPlacement',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'slide Nav Button Placement',
-		description: 'Slide Nav Dot buttons Placement',
+		displayName: 'Slide Nav Button Placement',
+		description: 'Slide navigation buttons placement',
 		editor: ComponentPropertyEditor.ENUM,
 		group: ComponentPropertyGroup.ADVANCED,
-		defaultValue: 'Inside',
+		defaultValue: '_insideNavButton',
 		enumValues: [
 			{
-				name: 'Inside',
+				name: '_insideNavButton',
 				displayName: 'Inside',
-				description: 'slide navigations button inside placement',
+				description: 'Slide navigations button inside placement',
 			},
 			{
-				name: 'Outside',
+				name: '_outsideNavButton',
 				displayName: 'Outside',
-				description: 'slide navigations button outside placement',
+				description: 'Slide navigations button outside placement',
 			},
 		],
 	},
@@ -121,18 +133,18 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'slideNavButtonVerticalAlignment',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Slide Nav Button Vertical Alignment',
-		description: 'Slide Nav Button Vertical Alignment',
+		description: 'Slide navigation buttons vertical alignment',
 		editor: ComponentPropertyEditor.ENUM,
 		group: ComponentPropertyGroup.ADVANCED,
-		defaultValue: 'Bottom',
+		defaultValue: '_bottomNavButton',
 		enumValues: [
 			{
-				name: 'Top',
+				name: '_topNavButton',
 				displayName: 'Top',
 				description: 'slide navigations button positioned on top',
 			},
 			{
-				name: 'Bottom',
+				name: '_bottomNavButton',
 				displayName: 'Bottom',
 				description: 'slide navigations button positioned on bottom',
 			},
@@ -142,25 +154,25 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'slideNavButtonHorizontalAlignment',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Slide Nav Button Horizontal Alignment',
-		description: 'Slide Nav Button Horizontal Alignment',
+		description: 'Slide navigation buttons horizontal alignment',
 		editor: ComponentPropertyEditor.ENUM,
 		group: ComponentPropertyGroup.ADVANCED,
-		defaultValue: 'Middle',
+		defaultValue: '_middleNavigation',
 		enumValues: [
 			{
-				name: 'Right',
+				name: '_rightNavigation',
 				displayName: 'Right',
 				description: 'slide navigations button positioned right',
 			},
 			{
-				name: 'Left',
-				displayName: 'Left',
-				description: 'slide navigations button positioned Left',
-			},
-			{
-				name: 'Middle',
+				name: '_middleNavigation',
 				displayName: 'Middle',
 				description: 'slide navigations button positioned Middle',
+			},
+			{
+				name: '_leftNavigation',
+				displayName: 'Left',
+				description: 'slide navigations button positioned Left',
 			},
 		],
 	},
@@ -170,16 +182,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Arrow Buttons Placement',
 		description: 'Arrow buttons Placement outside or inside',
 		editor: ComponentPropertyEditor.ENUM,
-		defaultValue: 'Inside',
+		defaultValue: '_insideArrow',
 		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
 			{
-				name: 'Inside',
+				name: '_insideArrow',
 				displayName: 'Inside',
 				description: 'Arrow navigations button positioned inside',
 			},
 			{
-				name: 'Outside',
+				name: '_outsideArrow',
 				displayName: 'Outside',
 				description: 'Arrow navigations button positioned outside',
 			},
@@ -189,25 +201,27 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'arrowButtonsVerticalPlacement',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Arrow Buttons Vertical Placement',
-		description: 'Arrow buttons Placement Vertical',
 		editor: ComponentPropertyEditor.ENUM,
-		defaultValue: 'Bottom',
+		defaultValue: '_centerArrow',
 		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
 			{
-				name: 'Bottom',
-				displayName: 'Bottom',
-				description: 'Arrow navigations button positioned bottom',
-			},
-			{
-				name: 'Top',
+				name: '_topArrow',
 				displayName: 'Top',
-				description: 'Arrow navigations button positioned on top',
+				description:
+					'Arrows are placed on the top in the vertical slider and in horizontal slider they are moved to the top based on the horizontal placement',
 			},
 			{
-				name: 'Center',
+				name: '_centerArrow',
 				displayName: 'Center',
-				description: 'Arrow navigations button positioned center',
+				description:
+					'Arrows are placed on the either side of the vertical slider and in horizontal slider they are moved to the center based on the horizontal placement',
+			},
+			{
+				name: '_bottomArrow',
+				displayName: 'Bottom',
+				description:
+					'Arrows are placed on the bottom in the vertical slider and in horizontal slider they are moved to the bottom based on the horizontal placement',
 			},
 		],
 	},
@@ -215,25 +229,27 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'arrowButtonsHorizontalPlacement',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Arrow Buttons Horizontal Placement',
-		description: 'Arrow buttons Placement Horizontal',
 		editor: ComponentPropertyEditor.ENUM,
-		defaultValue: 'Middle',
+		defaultValue: '_middleArrow',
 		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
 			{
-				name: 'Left',
+				name: '_leftArrow',
 				displayName: 'Left',
-				description: 'Arrow navigations button positioned Left',
+				description:
+					'Arrows are placed on the left in the horizontal slider and in vertical slider they are moved to the left based on the vertical placement',
 			},
 			{
-				name: 'Right',
-				displayName: 'Right',
-				description: 'Arrow navigations button positioned Right',
-			},
-			{
-				name: 'Middle',
+				name: '_middleArrow',
 				displayName: 'Middle',
-				description: 'Arrow navigations button positioned Middle',
+				description:
+					'Arrows are placed on the either side of the horizontal slider and in vertical slider they are moved to the middle based on the vertical placement',
+			},
+			{
+				name: '_rightArrow',
+				displayName: 'Right',
+				description:
+					'Arrows are placed on the right in the horizontal slider and in vertical slider they are moved to the right based on the vertical placement',
 			},
 		],
 	},
@@ -262,12 +278,10 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Design Type',
 		editor: ComponentPropertyEditor.ENUM,
 		group: ComponentPropertyGroup.ADVANCED,
-		defaultValue: '_design1',
+		defaultValue: '_horizontal',
 		enumValues: [
-			{ name: '_design1', displayName: 'Simple Mode', description: 'Simple Mode Slider' },
-			{ name: '_design2', displayName: 'Center Mode', description: 'Center Mode Slider' },
-			{ name: '_design3', displayName: 'Vertical Slider', description: 'Vertical Mode Slider' },
-			{ name: '_design4', displayName: 'Vertical Center Mode', description: 'Vertical Center Mode' },
+			{ name: '_horizontal', displayName: 'Horizontal Slider' },
+			{ name: '_vertical', displayName: 'Vertical Slider' },
 		],
 	},
 	{
@@ -287,29 +301,21 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 	},
 	{
-		name: 'fixedChild',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Toggle To Show Fixed no of Childs',
-		description: 'This Shows the fixed number of slides given by user',
-		group: ComponentPropertyGroup.BASIC,
-		defaultValue: false,
-	},
-	{
 		name: 'noOfChilds',
 		schema: SCHEMA_NUM_COMP_PROP,
 		displayName: 'Number of slides to show',
 		description: 'This is the number of slides to show when fixed child is selected',
 		group: ComponentPropertyGroup.BASIC,
-		defaultValue: 3,
+		defaultValue: -1,
 	},
 	COMMON_COMPONENT_PROPERTIES.visibility,
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	{
 		name: 'data',
 		schema: SCHEMA_ANY_COMP_PROP,
-		displayName: 'Default Data',
-		description: 'Default data for repeater',
-		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'Data',
+		description: 'Data For Repeater',
+		group: ComponentPropertyGroup.DATA,
 	},
 	{
 		...COMMON_COMPONENT_PROPERTIES.datatype,
@@ -326,7 +332,20 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 		],
 	},
-	COMMON_COMPONENT_PROPERTIES.colorScheme,
+	{
+		name: 'prevImage',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Previous Arrow Image',
+		editor: ComponentPropertyEditor.IMAGE,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'nextImage',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Next Arrow Image',
+		editor: ComponentPropertyEditor.IMAGE,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
 	COMMON_COMPONENT_PROPERTIES.selectionKey,
 	COMMON_COMPONENT_PROPERTIES.uniqueKey,
 	COMMON_COMPONENT_PROPERTIES.selectionType,
@@ -344,14 +363,12 @@ const stylePropertiesDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
-	arrowButtonsContainer: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+	prevButton: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 	],
-	arrowButtons: [
+	nextButton: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
@@ -371,22 +388,14 @@ const stylePropertiesDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 	],
-	innerDivSlideNav: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
-	],
-	containerInnerDiv: [
+	slidesContainer: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 	],
-	childElement: [
+	slideItem: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,

@@ -1,832 +1,660 @@
-import { isNullValue } from "@fincity/kirun-js";
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { duplicate, isNullValue } from '@fincity/kirun-js';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  PageStoreExtractor,
-  addListenerAndCallImmediatelyWithChildrenActivity,
-  getPathFromLocation,
-  setData,
-} from "../../context/StoreContext";
+	PageStoreExtractor,
+	addListenerAndCallImmediatelyWithChildrenActivity,
+	getPathFromLocation,
+	setData,
+} from '../../context/StoreContext';
 import {
-  Component,
-  ComponentPropertyDefinition,
-  ComponentProps,
-} from "../../types/common";
-import { processComponentStylePseudoClasses } from "../../util/styleProcessor";
-import Children from "../Children";
-import { HelperComponent } from "../HelperComponents/HelperComponent";
-import { SubHelperComponent } from "../HelperComponents/SubHelperComponent";
-import { IconHelper } from "../util/IconHelper";
-import { getRenderData } from "../util/getRenderData";
-import useDefinition from "../util/useDefinition";
-import SmallCarouselStyle from "./SmallCarouselStyle";
-import {
-  propertiesDefinition,
-  stylePropertiesDefinition,
-} from "./smallCarouselProperties";
-import { styleDefaults } from "./smallCarouselStyleProperties";
-import { flattenUUID } from "../util/uuid";
-import { shortUUID } from "../../util/shortUUID";
-import { updateLocationForChild } from "../util/updateLoactionForChild";
+	Component,
+	ComponentPropertyDefinition,
+	ComponentProps,
+	DataLocation,
+	LocationHistory,
+} from '../../types/common';
+import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import Children from '../Children';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
+import { IconHelper } from '../util/IconHelper';
+import { getRenderData } from '../util/getRenderData';
+import useDefinition from '../util/useDefinition';
+import SmallCarouselStyle from './SmallCarouselStyle';
+import { propertiesDefinition, stylePropertiesDefinition } from './smallCarouselProperties';
+import { styleDefaults } from './smallCarouselStyleProperties';
+import { flattenUUID } from '../util/uuid';
+import { shortUUID } from '../../util/shortUUID';
+import { updateLocationForChild } from '../util/updateLoactionForChild';
 
 function SmallCarousel(props: ComponentProps) {
-  const pageExtractor = PageStoreExtractor.getForContext(
-    props.context.pageName
-  );
-  const {
-    locationHistory = [],
-    definition: { children, bindingPath, key },
-    pageDefinition,
-    definition,
-    context,
-  } = props;
-  const {
-    stylePropertiesWithPseudoStates,
-    properties: {
-      showArrowButtons,
-      slideSpeed,
-      autoPlay,
-      animationDuration,
-      dotsButtonType,
-      dotsButtonIconType,
-      showSlideNumbersInDots,
-      arrowButtonsHorizontalPlacement,
-      arrowButtonsVerticalPlacement,
-      arrowButtonsPlacement,
-      slideNavButtonHorizontalAlignment,
-      slideNavButtonVerticalAlignment,
-      slideNavButtonPlacement,
-      showNavigationControlsOnHover,
-      slidesToScroll,
-      fixedChild,
-      noOfChilds,
-      designType,
-      pauseOnHover,
-      easing,
-      data,
-      showArrowButtonsOnHover,
-      datatype,
-      selectionKey,
-      uniqueKeyType,
-      uniqueKey,
-      selectionType,
-      colorScheme,
-    } = {},
-  } = useDefinition(
-    definition,
-    propertiesDefinition,
-    stylePropertiesDefinition,
-    locationHistory,
-    pageExtractor
-  );
-  const ref = useRef<HTMLDivElement>(null);
-  const [updatedDef, setUpdatedDef] = useState<any>();
-  const [hover, setHover] = useState<boolean>(false);
-  const innerSlides = useRef<any>([]);
-  const observableList = useRef<any>([]);
-  const [_, setCurrent] = useState<any>(false);
-  const currentRef = useRef<any>({ number: 0 });
-  const [firstTime, setFirstTime] = useState(true);
-  const [center, setCenter] = useState(Math.floor(noOfChilds / 2));
-  const [value, setValue] = React.useState<any[]>([]);
-  const indKeys = React.useRef<{
-    array: Array<string>;
-    oldKeys: Array<{ object: any; key: string }>;
-  }>({ array: [], oldKeys: [] });
+	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
+	const {
+		locationHistory = [],
+		definition: { children, key, properties },
+		pageDefinition,
+		definition,
+		context,
+	} = props;
 
-  // checking is the vertical style is selected.
-  const isVertical = () => {
-    return ["_design3", "_design4"].includes(designType);
-  };
+	const { data: dataProperty } = properties;
 
-  //  checking if the center mode design is selected.
-  const isCenterMode = () => {
-    return ["_design2", "_design4"].includes(designType);
-  };
+	const {
+		stylePropertiesWithPseudoStates,
+		properties: {
+			showArrowButtons,
+			slideSpeed,
+			autoPlay,
+			autoPlayDirection,
+			animationDuration,
+			dotsButtonType,
+			dotsButtonIconType,
+			showSlideNumbersInDots,
+			arrowButtonsHorizontalPlacement,
+			arrowButtonsVerticalPlacement,
+			arrowButtonsPlacement,
+			slideNavButtonHorizontalAlignment,
+			slideNavButtonVerticalAlignment,
+			slideNavButtonPlacement,
+			showNavigationControlsOnHover,
+			slidesToScroll,
+			fixedChild,
+			noOfChilds,
+			designType,
+			pauseOnHover,
+			easing,
+			data,
+			showArrowButtonsOnHover,
+			datatype,
+			selectionKey,
+			uniqueKeyType,
+			uniqueKey,
+			selectionType,
+			prevImage,
+			nextImage,
+		} = {},
+	} = useDefinition(
+		definition,
+		propertiesDefinition,
+		stylePropertiesDefinition,
+		locationHistory,
+		pageExtractor,
+	);
 
-  const resolvedStyles = processComponentStylePseudoClasses(
-    props.pageDefinition,
-    {},
-    stylePropertiesWithPseudoStates
-  );
+	const ref = useRef<HTMLDivElement>(null);
+	const innerSlideItems = useRef<any>([]);
+	const innerSlideItemContainers = useRef<any>([]);
+	const observableList = useRef<any>([]);
+	const [_, setChanged] = useState<number>(Date.now());
+	const transit = useRef<any>({});
+	const [firstTime, setFirstTime] = useState(true);
 
-  // accepting the children or childrens for the component
-  useEffect(() => {
-    let childrenArray = props?.definition?.children
-      ? Object.entries(props?.definition?.children)
-          .filter((e: any) => !!e[1])
-          .sort((a: any, b: any) => {
-            const v =
-              (pageDefinition?.componentDefinition[a[0]]?.displayOrder ?? 0) -
-              (pageDefinition?.componentDefinition[b[0]]?.displayOrder ?? 0);
-            return v === 0
-              ? (
-                  pageDefinition?.componentDefinition[a[0]]?.key ?? ""
-                ).localeCompare(
-                  pageDefinition?.componentDefinition[b[0]]?.key ?? ""
-                )
-              : v;
-          })
-          .map((e) => ({ key: e[0], children: { [e[0]]: e[1] } }))
-      : [];
+	const resolvedStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{},
+		stylePropertiesWithPseudoStates,
+	);
 
-    setUpdatedDef(childrenArray);
-  }, [props?.definition?.children, ref?.current, data]);
+	let childrenEntries = Object.entries(children ?? {})
+		.filter((e: any) => !!e[1])
+		.map(e => [e[0], pageDefinition?.componentDefinition[e[0]], locationHistory])
+		.sort((a: any, b: any) => {
+			const v = (a[1]?.displayOrder ?? 0) - (b[1]?.displayOrder ?? 0);
+			return v === 0 ? (a[1]?.key ?? '').localeCompare(b[1]?.key ?? '') : v;
+		});
 
-  const carouselData1 = React.useMemo(
-    () =>
-      Array.from(
-        getRenderData(
-          data,
-          datatype,
-          uniqueKeyType,
-          uniqueKey,
-          selectionType,
-          selectionKey
-        )
-          .reduce((acc: Map<string, any>, each: any) => {
-            if (isNullValue(each?.key)) return acc;
-            acc.set(each.key, each?.value);
+	const bindingPathPath = `Store.defaultData.${
+		pageExtractor?.getPageName() ?? '_global'
+	}.${flattenUUID(key)}`;
 
-            return acc;
-          }, new Map())
-          .values()
-      ),
-    [data, datatype, uniqueKeyType, uniqueKey, selectionKey, selectionType]
-  );
+	useEffect(() => {
+		setFirstTime(true);
+		if (!dataProperty?.value) return;
+		setData(bindingPathPath!, data, context?.pageName);
+	}, [dataProperty?.value, data]);
 
-  const bindingPathPath = bindingPath
-    ? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
-    : `Store.defaultData.${
-        pageExtractor?.getPageName() ?? "_global"
-      }.${flattenUUID(key)}`;
+	const carouselData = React.useMemo(
+		() => getRenderData(data, datatype, uniqueKeyType, uniqueKey, selectionType, selectionKey),
+		[data, datatype, uniqueKeyType, uniqueKey, selectionKey, selectionType],
+	);
 
-  useEffect(() => {
-    setData(bindingPathPath!, carouselData1, context?.pageName);
-  }, [carouselData1]);
+	if (!isNullValue(data)) {
+		childrenEntries = carouselData.map((e, index) => [
+			e?.key,
+			childrenEntries[0][1],
+			[
+				...locationHistory,
+				updateLocationForChild(
+					dataProperty?.value
+						? {
+								type: 'VALUE',
+								value: bindingPathPath,
+						  }
+						: dataProperty,
+					index,
+					locationHistory,
+					context.pageName,
+					pageExtractor,
+				),
+			],
+		]);
+	}
 
-  useEffect(() => {
-    if (!bindingPathPath || !indKeys.current) return;
+	const isVertical = designType === '_vertical';
 
-    return addListenerAndCallImmediatelyWithChildrenActivity(
-      (_, _v) => {
-        setValue(_v ?? []);
-        if (!_v?.length) return;
+	// used for unobserving the div's
+	useEffect(() => {
+		// on load of the images we are attaching the resize observer to each elem, and then storing it in observableList so we can unobserve it.
+		innerSlideItems?.current?.forEach((elem: any, index: number) => {
+			if (elem) {
+				const observer = new ResizeObserver(() => {
+					setChanged(Date.now());
+				});
 
-        const keyMap = new Map();
+				observer.observe(elem);
+				observableList.current[index] = { observer, element: elem };
+			}
+		});
 
-        for (const item of _v) {
-          const key = keyMap.get(item);
-          if (key) {
-            indKeys.current.array[key.index] = key.key; // Assign existing key
-          } else {
-            const newKey = shortUUID();
-            indKeys.current.array.push(newKey); // Add new key
-            keyMap.set(item, {
-              key: newKey,
-              index: indKeys.current.array.length - 1,
-            });
-            if (item !== undefined && item !== null) {
-              indKeys.current.oldKeys.push({ object: item, key: newKey });
-            }
-          }
-        }
-      },
-      pageExtractor,
-      bindingPathPath
-    );
-  }, [bindingPathPath, indKeys.current]);
+		return () => {
+			for (const element of observableList.current) {
+				if (element) {
+					element.observer.unobserve(element.element);
+				}
+			}
+		};
+	}, [fixedChild, noOfChilds, designType, data, ref.current, innerSlideItems.current]);
 
-  // trying to get the first truthy child within an object.
-  let entry = Object.entries(children ?? {}).find(([, v]) => v);
+	const [minWidth, minHeight, childWidth, childHeight, finNumberOfChildren] =
+		calculateMinDimensions(
+			ref.current,
+			innerSlideItems.current,
+			designType,
+			childrenEntries.length,
+			noOfChilds,
+		);
 
-  const firstchild: any = {};
-  if (entry) firstchild[entry[0]] = true;
+	const widthPercentage = isVertical ? '100%' : `${100 / finNumberOfChildren}%`;
+	const heightPercentage = isVertical ? `${100 / finNumberOfChildren}%` : '100%';
 
-  // on load of the images we are attaching the resize observer to each elem, and then storing it in observableList so we can unobserve it.
-  const handleLoad = () => {
-    innerSlides?.current?.forEach((elem: any, index: number) => {
-      if (elem) {
-        const observer = new ResizeObserver(() => {
-          applyTransform(
-            innerSlides?.current,
-            innerSlides?.current?.length,
-            currentRef?.current?.number,
-            currentRef?.current.number
-          );
-        });
+	let childrenComponents = childrenEntries.map((e, index) => (
+		<div
+			key={`${e[0]}_${index}`}
+			className={`_slideItemContainer`}
+			style={{
+				minWidth: `${childWidth}px`,
+				minHeight: `${childHeight}px`,
+				width: widthPercentage,
+				height: heightPercentage,
+			}}
+			ref={el => {
+				innerSlideItemContainers.current[index] = el;
+			}}
+		>
+			<div
+				ref={el => {
+					innerSlideItems.current[index] = el;
+				}}
+				className={`_slideItem`}
+				style={{ ...(resolvedStyles?.childElement ?? {}) }}
+			>
+				<SubHelperComponent definition={definition} subComponentName="slideItem" />
+				<Children
+					children={{ [e[1].key]: true }}
+					context={context}
+					pageDefinition={pageDefinition}
+					locationHistory={e[2] as LocationHistory[]}
+					key={`${e[0]}_${index}`}
+				/>
+			</div>
+		</div>
+	));
 
-        observer.observe(elem);
-        observableList.current[index] = { observer, element: elem };
-      }
-    });
-  };
+	const containerDims: React.CSSProperties = {};
 
-  // used for unobserving the div's
-  useEffect(() => {
-    handleLoad();
-    return () => {
-      for (let i = 0; i < observableList.current.length; i++) {
-        if (observableList.current[i]) {
-          observableList.current[i].observer.unobserve(
-            observableList.current[i].element
-          );
-        }
-      }
-    };
-  }, [fixedChild, noOfChilds, designType, carouselData1]);
+	if (isVertical) {
+		containerDims.minHeight = `${childHeight * finNumberOfChildren}px`;
+	} else {
+		containerDims.minWidth = `${childWidth * finNumberOfChildren}px`;
+	}
 
-  // applying the main transformation
-  const applyTransform = useCallback(
-    (
-      list: any,
-      size: any,
-      from: any,
-      to: any,
-      direction?: any,
-      slidesToScroll?: any
-    ) => {
-      if (!list) return;
+	const applyTransform = (to: number, scrollDirection: number = 1) => {
+		if (
+			finNumberOfChildren == undefined ||
+			finNumberOfChildren <= 1 ||
+			childWidth < 5 ||
+			childHeight < 5
+		)
+			return;
 
-      // left for horizontal mode and top for vertical.
-      let left = 0,
-        top = 0;
+		const totalChildren = childrenComponents.length;
+		to = (to + totalChildren) % totalChildren;
 
-      let width = 0,
-        height = 0;
+		for (let i = 0; i < childrenComponents.length; i++) {
+			innerSlideItemContainers.current[i].style.transition = undefined;
+		}
 
-      //initilizing the width if we have center mode, we need to adjust the children sizes, as the middle one is scaled in to 1.1.
-      let isCenter = isCenterMode()
-        ? 100 -
-          (innerSlides?.current?.length - noOfChilds == 0
-            ? noOfChilds * 1.1
-            : innerSlides?.current?.length - noOfChilds + 1) /
-            1.1
-        : 100;
+		const percentage: number = Math.ceil(10000 / finNumberOfChildren) / 100;
+		const direction = isVertical ? 'top' : 'left';
+		let from: number = transit.current.to;
 
-      let childs = noOfChilds == 0 ? 1 : noOfChilds;
+		if (
+			transit.current.finNumberOfChildren !== finNumberOfChildren ||
+			transit.current.totalChildren !== childrenComponents.length
+		) {
+			for (let i = 0; i < totalChildren; i++) {
+				let v;
+				if (i < to || i >= to + childrenComponents.length) v = `-${percentage}%`;
+				else v = `${(i - to) * percentage}%`;
 
-      width = isCenter / childs;
-      height = isCenter / childs;
+				innerSlideItemContainers.current[i].style[direction] = v;
+			}
+			from = 0;
+		} else {
+			if (from === to) return;
 
-      //lopping and displaying the childrens whenever the applytransform is called first.
-      for (let i = 0; i < size; i++) {
-        let curr = (from + i) % size;
-        if (!list[curr]) continue;
-        list[curr].style.transition = "none";
-        const cr = list[curr].getBoundingClientRect();
-        // initilizating the values before head it self, so there is no side effects when the slider first loads
-        list[curr].style.left = `0`;
-        list[curr].style.width = `100%`;
-        list[curr].style.top = `0`;
-        list[curr].style.height = `100%`;
-        if (isVertical()) {
-          list[curr].style.top = `${top}px`;
-          list[curr].style.height = fixedChild ? `${height}%` : ``;
-          top += cr.height;
-        } else {
-          list[curr].style.left = `${left}px`;
-          list[curr].style.width = fixedChild ? `${width}%` : ``;
-          left += cr.width;
-        }
-      }
+			let fromPercent = scrollDirection === 1 ? 0 : -(slidesToScroll * percentage);
+			for (let i = 0; i < childrenComponents.length; i++) {
+				const ind =
+					(childrenComponents.length * 2 +
+						to +
+						i -
+						(scrollDirection > 0 ? slidesToScroll : 0)) %
+					childrenComponents.length;
 
-      // when we move to previous slide.
-      if (direction == -1) {
-        let left = 0,
-          top = 0;
-        for (let i = 0; i < (slidesToScroll ?? 1); i++) {
-          let curr = (from - i - 1 + size) % size;
-          const cr = list[curr].getBoundingClientRect();
-          if (isVertical()) {
-            top -= cr.height;
-            list[curr].style.top = `${top}px`;
-          } else {
-            left -= cr.width;
-            list[curr].style.left = `${left}px`;
-          }
-        }
-        setTimeout(() => {
-          left = 0;
-          top = 0;
-          for (let i = 0; i < size; i++) {
-            let curr = (to + i) % size;
-            const cr = list[curr].getBoundingClientRect();
-            if (isVertical()) {
-              list[
-                curr
-              ].style.transition = `top ${animationDuration}ms ${easing}`;
-              list[curr].style.top = `${top}px`;
-              top += cr.height;
-            } else {
-              list[
-                curr
-              ].style.transition = `left ${animationDuration}ms ${easing}`;
-              list[curr].style.left = `${left}px`;
-              left += cr.width;
-            }
-          }
-        }, 100);
-        // when we move to the next slide.
-      } else if (direction == 1) {
-        let left = 0,
-          top = 0,
-          removedComponent: Array<any> = [];
+				const v = `${fromPercent + i * percentage}%`;
+				innerSlideItemContainers.current[ind].style[direction] = v;
+			}
 
-        for (let i = 0; i < (slidesToScroll ?? 1); i++) {
-          let curr = (from + i) % size;
-          const cr = list[curr].getBoundingClientRect();
-          if (isVertical()) {
-            top -= cr.height;
-          } else {
-            left -= cr.width;
-          }
+			setTimeout(() => {
+				fromPercent = scrollDirection === -1 ? 0 : -(slidesToScroll * percentage);
+				for (let i = 0; i < childrenComponents.length; i++) {
+					const ind =
+						(childrenComponents.length * 2 +
+							to +
+							i -
+							(scrollDirection > 0 ? slidesToScroll : 0)) %
+						childrenComponents.length;
+					innerSlideItemContainers.current[
+						ind
+					].style.transition = `${direction} ${animationDuration}ms ${easing}`;
+					const v = `${fromPercent + i * percentage}%`;
+					innerSlideItemContainers.current[ind].style[direction] = v;
+				}
+			}, 100);
+		}
 
-          removedComponent.push(curr);
-          list[curr].style.left = `${
-            ref.current?.getBoundingClientRect().width
-          }px`;
-        }
+		transit.current = {
+			from,
+			to,
+			finNumberOfChildren: finNumberOfChildren,
+			totalChildren: childrenComponents.length,
+			hover: transit.current.hover,
+			executedAt: Date.now(),
+			timerAt: transit.current.timerAt,
+		};
 
-        setTimeout(() => {
-          for (let i = 0; i < size; i++) {
-            let curr = (from + i) % size;
-            const cr = list[curr].getBoundingClientRect();
+		if (firstTime) setFirstTime(false);
+	};
 
-            if (isVertical()) {
-              list[curr].style.top = `${top}px`;
-              list[
-                curr
-              ].style.transition = `top ${animationDuration}ms ${easing}`;
-              top += cr.height;
-            } else {
-              list[curr].style.left = `${left}px`;
-              list[
-                curr
-              ].style.transition = `left ${animationDuration}ms ${easing}`;
-              left += cr.width;
-            }
-          }
-        }, 0);
+	useEffect(() => {
+		if (finNumberOfChildren <= 1 || childWidth < 5 || childHeight < 5) return;
 
-        // this adds the removed elem from the right
+		if (firstTime) applyTransform(0);
 
-        setTimeout(() => {
-          for (let i = 0; i < removedComponent?.length; i++) {
-            let curr = (from + i) % size;
-            const cr = list[curr].getBoundingClientRect();
-            if (isVertical()) {
-              list[
-                curr
-              ].style.transition = `top ${animationDuration}ms ${easing}`;
-              list[curr].style.top = `${top}px`;
-              top += cr.height;
-            } else {
-              list[
-                curr
-              ].style.transition = `left ${animationDuration}ms ${easing}`;
-              list[curr].style.left = `${left}px`;
-              left += cr.width;
-            }
-          }
-        }, 100);
-      }
-    },
-    [
-      currentRef.current,
-      easing,
-      fixedChild,
-      noOfChilds,
-      slidesToScroll,
-      setCurrent,
-      designType,
-    ]
-  );
+		if (!autoPlay) return;
 
-  // generate the elements when the children is changed or added
-  const generateElem = useMemo(
-    () => (carouselData: any) => {
-      const { definition, context, pageDefinition } = props;
-      // check if we are passing the bindingPath or default value.
-      const childrenArray =
-        Array.isArray(carouselData1) && carouselData1?.length > 0
-          ? carouselData1
-          : Array.isArray(carouselData)
-          ? carouselData
-          : [carouselData];
+		let handle: number;
 
-      // if we reach the end of the slide it will get inililized to 0, i.e first slide again.
-      if (currentRef.current.number >= childrenArray?.length)
-        currentRef.current.number = 0;
+		function timerFunction() {
+			if (
+				!transit.current.hover &&
+				(firstTime ||
+					Date.now() - transit.current.executedAt >= slideSpeed + animationDuration)
+			) {
+				const factor = autoPlayDirection === 'backward' ? -1 : 1;
+				applyTransform(transit.current.to + slidesToScroll * factor, factor);
+			}
+			transit.current.timerAt = Date.now();
+		}
 
-      // if we are removing the childs this will remove the ref's from the array of thre removed children to prevent it from throwing error.
-      if (!childrenArray.length) {
-        innerSlides.current?.splice(0, innerSlides?.current?.length);
-        return;
-      }
+		handle = setInterval(timerFunction, slideSpeed + animationDuration + 220);
 
-      if (Array.isArray(value) && value.length) {
-        let updatableBindingPath = bindingPath;
-        if (!updatableBindingPath && data) {
-          updatableBindingPath = {
-            type: "VALUE",
-            value: `Store.defaultData.${
-              pageExtractor?.getPageName() ?? "_global"
-            }.${flattenUUID(key)}`,
-          };
-        }
+		return () => clearInterval(handle);
+	}, [
+		finNumberOfChildren,
+		childWidth,
+		childHeight,
+		transit.current,
+		autoPlay,
+		autoPlayDirection,
+		firstTime,
+		slideSpeed,
+		animationDuration,
+		slidesToScroll,
+	]);
 
-        // if we are using binding path or defaultValue then return this
-        return value.map((e: any, index) => (
-          <div
-            ref={(el) => {
-              innerSlides.current[index] = el;
-            }}
-            key={`${index}`}
-            className={`childElement ${
-              isCenterMode() && center === index ? "center" : ""
-            }`}
-            style={resolvedStyles?.childElement ?? {}}
-          >
-            <SubHelperComponent
-              definition={definition}
-              subComponentName="childElement"
-            />
-            <Children
-              pageDefinition={pageDefinition}
-              children={firstchild}
-              context={context}
-              locationHistory={[
-                ...locationHistory,
-                updateLocationForChild(
-                  updatableBindingPath!,
-                  index,
-                  locationHistory,
-                  context.pageName,
-                  pageExtractor
-                ),
-              ]}
-            />
-          </div>
-        ));
-      }
+	let { prevButton, buttonGroup, nextButton } = makeArrowButtons(
+		showArrowButtons,
+		finNumberOfChildren,
+		childrenEntries,
+		arrowButtonsPlacement,
+		isVertical,
+		arrowButtonsVerticalPlacement,
+		arrowButtonsHorizontalPlacement,
+		resolvedStyles,
+		props,
+		prevImage,
+		nextImage,
+		() => applyTransform(transit.current.to - slidesToScroll, -1),
+		() => applyTransform(transit.current.to + slidesToScroll, 1),
+	);
 
-      // if we had added childrens directly.
-      return childrenArray.map((each, index) => (
-        <div
-          ref={(el) => {
-            innerSlides.current[index] = el;
-          }}
-          key={`${each?.key}_${index}`}
-          className={`childElement ${
-            isCenterMode() && center === index ? "center" : ""
-          }`}
-          style={resolvedStyles?.childElement ?? {}}
-        >
-          <SubHelperComponent
-            definition={definition}
-            subComponentName="childElement"
-          />
-          <Children
-            children={carouselData1?.length > 0 ? firstchild : each?.children}
-            context={context}
-            pageDefinition={pageDefinition}
-            locationHistory={locationHistory}
-            key={`${each?.key}_${index}`}
-          />
-        </div>
-      ));
-    },
-    [
-      currentRef.current,
-      resolvedStyles?.childElement,
-      pageDefinition,
-      designType,
-      center,
-      carouselData1,
-    ]
-  );
+	return (
+		<div
+			className={`comp compSmallCarousel ${designType} ${arrowButtonsPlacement} ${arrowButtonsHorizontalPlacement} ${arrowButtonsVerticalPlacement} ${
+				showArrowButtonsOnHover ? '_showArrowsOnHover' : ''
+			} `}
+			style={{ minWidth, minHeight, ...(resolvedStyles?.comp ?? {}) }}
+			onMouseOver={pauseOnHover ? () => (transit.current.hover = true) : undefined}
+			onMouseOut={pauseOnHover ? () => (transit.current.hover = false) : undefined}
+		>
+			<HelperComponent context={props?.context} definition={definition} />
+			{prevButton}
+			{buttonGroup}
+			<div
+				className={`_slidesContainer`}
+				style={{ ...containerDims, ...(resolvedStyles?.containerInnerDiv ?? {}) }}
+				ref={ref}
+			>
+				{childrenComponents}
+				<SubHelperComponent
+					definition={props?.definition}
+					subComponentName="slidesContainer"
+				></SubHelperComponent>
+			</div>
+			{nextButton}
+		</div>
+	);
+}
 
-  useEffect(() => {
-    // onhover stop autoplay
-    if (!autoPlay || (hover && pauseOnHover)) return;
-    // we check if the updateDef is empty or not, or innerSlides refs is empty then return
-    if (!updatedDef || innerSlides?.current?.length <= 1) return;
+function makeArrowButtons(
+	showArrowButtons: any,
+	finNumberOfChildren: any,
+	childrenEntries: any,
+	arrowButtonsPlacement: any,
+	isVertical: boolean,
+	arrowButtonsVerticalPlacement: any,
+	arrowButtonsHorizontalPlacement: any,
+	resolvedStyles: any,
+	props: ComponentProps,
+	prevImage: any,
+	nextImage: any,
+	onPrevClick: () => void,
+	onNextClick: () => void,
+): { prevButton?: JSX.Element; nextButton?: JSX.Element; buttonGroup?: JSX.Element } {
+	let prevButton;
+	let nextButton;
+	let buttonGroup;
 
-    // for autoplay
-    const handle = setInterval(
-      () => {
-        const c = currentRef.current.number;
-        currentRef.current.number = c + (slidesToScroll ?? 1);
-        if (currentRef.current.number >= innerSlides.current.length)
-          currentRef.current.number = 0;
-        applyTransform(
-          innerSlides.current,
-          innerSlides?.current?.length,
-          c,
-          currentRef.current.number,
-          1,
-          slidesToScroll
-        );
-        if (firstTime) setFirstTime(false);
-        setCurrent(currentRef?.current?.number);
+	if (!showArrowButtons || finNumberOfChildren >= childrenEntries.length) return {};
 
-        if (isCenterMode()) {
-          setCenter(
-            (center + (slidesToScroll ?? 1)) % innerSlides?.current?.length
-          );
-        }
-      },
-      firstTime ? slideSpeed : slideSpeed + animationDuration + 220
-    );
+	if (
+		arrowButtonsPlacement === '_outsideArrow' ||
+		(isVertical &&
+			arrowButtonsPlacement === '_insideArrow' &&
+			arrowButtonsVerticalPlacement === '_centerArrow') ||
+		(!isVertical &&
+			arrowButtonsPlacement === '_insideArrow' &&
+			arrowButtonsHorizontalPlacement === '_middleArrow')
+	) {
+		prevButton = (
+			<div
+				className="_arrowButtons _prev"
+				style={resolvedStyles?.prevButton ?? {}}
+				onClick={onPrevClick}
+			>
+				{prevImage ? (
+					<img src={prevImage} alt="prev" />
+				) : isVertical ? (
+					<UpArrow />
+				) : (
+					<LeftArrow />
+				)}
+				<SubHelperComponent
+					definition={props?.definition}
+					subComponentName="prevButton"
+				></SubHelperComponent>
+			</div>
+		);
+		nextButton = (
+			<div
+				className="_arrowButtons _next"
+				style={resolvedStyles?.nextButton ?? {}}
+				onClick={onNextClick}
+			>
+				{nextImage ? (
+					<img src={nextImage} alt="next" />
+				) : isVertical ? (
+					<DownArrow />
+				) : (
+					<RightArrow />
+				)}
+				<SubHelperComponent
+					definition={props?.definition}
+					subComponentName="nextButton"
+				></SubHelperComponent>
+			</div>
+		);
 
-    return () => clearInterval(handle);
-  }, [
-    updatedDef,
-    slideSpeed,
-    firstTime,
-    setFirstTime,
-    pauseOnHover,
-    hover,
-    setCurrent,
-    center,
-    carouselData1,
-  ]);
+		return { prevButton, nextButton };
+	} else if (arrowButtonsPlacement === '_insideArrow') {
+		buttonGroup = (
+			<div className="_arrowButtonGroup">
+				<div
+					className="_arrowButtons _prev"
+					style={resolvedStyles?.prevButton ?? {}}
+					onClick={onPrevClick}
+				>
+					{prevImage ? (
+						<img src={prevImage} alt="prev" />
+					) : isVertical ? (
+						<UpArrow />
+					) : (
+						<LeftArrow />
+					)}
+					<SubHelperComponent
+						definition={props?.definition}
+						subComponentName="prevButton"
+					></SubHelperComponent>
+				</div>
+				<div
+					className="_arrowButtons _next"
+					style={resolvedStyles?.nextButton ?? {}}
+					onClick={onNextClick}
+				>
+					{nextImage ? (
+						<img src={nextImage} alt="next" />
+					) : isVertical ? (
+						<DownArrow />
+					) : (
+						<RightArrow />
+					)}
+					<SubHelperComponent
+						definition={props?.definition}
+						subComponentName="nextButton"
+					></SubHelperComponent>
+				</div>
+			</div>
+		);
+		return { buttonGroup };
+	}
 
-  const handleArrowButtonClick = (direction: any) => {
-    const c = currentRef.current.number;
-    const increment = direction === "left" ? -1 : 1;
-    currentRef.current.number =
-      (c + increment * slidesToScroll + innerSlides?.current?.length) %
-      innerSlides?.current?.length;
+	return {};
+}
 
-    setCurrent(c);
-    if (isCenterMode()) {
-      setCenter((center + increment) % innerSlides?.current?.length);
-    }
-    applyTransform(
-      innerSlides.current,
-      innerSlides?.current?.length,
-      c,
-      currentRef.current.number,
-      increment,
-      slidesToScroll
-    );
-  };
+function calculateMinDimensions(
+	ref: HTMLDivElement | null,
+	childRefs: any[],
+	designType: any,
+	totalChildren: number,
+	noOfChilds: any,
+) {
+	if (!ref || childRefs.length < totalChildren) return [0, 0];
 
-  const arrowButtonComp = (
-    <>
-      <div
-        className={`arrowButtonsContainer ${hover ? `hover` : ``} ${
-          showArrowButtonsOnHover
-            ? `${
-                hover
-                  ? `show  arrowButtons${arrowButtonsPlacement} arrowButtons${arrowButtonsVerticalPlacement} arrowButtons${arrowButtonsHorizontalPlacement}`
-                  : `hide`
-              }`
-            : `arrowButtons${arrowButtonsPlacement} arrowButtons${arrowButtonsVerticalPlacement} arrowButtons${arrowButtonsHorizontalPlacement}`
-        }`}
-        style={resolvedStyles.arrowButtonsContainer ?? {}}
-      >
-        <SubHelperComponent
-          definition={props.definition}
-          subComponentName="arrowButtonsContainer"
-        ></SubHelperComponent>
+	let maxChildWidth = 0;
+	let maxChildHeight = 0;
 
-        <i
-          className={` button leftArrowButton ${
-            isVertical()
-              ? "fa-solid fa-chevron-up _vertical"
-              : "fa-solid fa-chevron-left"
-          }`}
-          style={resolvedStyles.arrowButtons ?? {}}
-          onClick={() => handleArrowButtonClick("left")}
-        >
-          <SubHelperComponent
-            definition={props.definition}
-            subComponentName="arrowButtons"
-          ></SubHelperComponent>
-        </i>
-        <SubHelperComponent
-          definition={props.definition}
-          subComponentName="leftArrowButtonContainer"
-        ></SubHelperComponent>
+	for (let i = 0; i < totalChildren; i++) {
+		const { width, height } = childRefs[i].getBoundingClientRect();
+		if (width > maxChildWidth) maxChildWidth = width;
+		if (height > maxChildHeight) maxChildHeight = height;
+	}
 
-        <i
-          className={` button rightArrowButton ${
-            isVertical()
-              ? "fa-solid fa-chevron-down _vertical"
-              : "fa-solid fa-chevron-right"
-          }`}
-          style={resolvedStyles.arrowButtons ?? {}}
-          onClick={() => handleArrowButtonClick("right")}
-        >
-          <SubHelperComponent
-            definition={props.definition}
-            subComponentName="arrowButtons"
-          ></SubHelperComponent>
-        </i>
-        <SubHelperComponent
-          definition={props.definition}
-          subComponentName="rightArrowButtonContainer"
-        ></SubHelperComponent>
-      </div>
-    </>
-  );
+	if (noOfChilds === -1) {
+		if (designType === '_vertical')
+			noOfChilds = Math.floor(ref.getBoundingClientRect().height / maxChildHeight);
+		else noOfChilds = Math.floor(ref.getBoundingClientRect().width / maxChildWidth);
+		if (noOfChilds > totalChildren) noOfChilds = totalChildren;
+	}
 
-  const slideButtonContainer = (
-    <div
-      className={`slideButtonsContainer slideNavDiv${slideNavButtonPlacement} slideNavDiv${slideNavButtonVerticalAlignment} slideNavDiv${slideNavButtonHorizontalAlignment} ${
-        slideNavButtonPlacement == "_outside" ? "slideNavDiv" : ""
-      } ${showNavigationControlsOnHover ? (hover ? "showFlex" : "hide") : ""}`}
-      style={resolvedStyles.slideButtonsContainer ?? {}}
-    >
-      <SubHelperComponent
-        definition={props.definition}
-        subComponentName="slideButtonsContainer"
-      ></SubHelperComponent>
-      {(carouselData1?.length > 0 ? carouselData1 : updatedDef)?.map(
-        (e: any, key: any) => (
-          <button
-            key={`${key}_${currentRef?.current?.number}_${e?.key}`}
-            className={`slideNav ${
-              dotsButtonType !== "none" && showSlideNumbersInDots === false
-                ? `fa-${dotsButtonIconType} fa-${dotsButtonType}`
-                : ` `
-            } ${showSlideNumbersInDots ? `${dotsButtonType}WithNumbers` : ""} ${
-              key === currentRef?.current?.number ? "active" : ""
-            }`}
-            style={resolvedStyles.dotButtons ?? {}}
-            onClick={() => {
-              if (key == currentRef.current.number) return;
+	return [
+		designType === '_vertical' ? maxChildWidth : maxChildWidth * noOfChilds,
+		designType === '_vertical' ? maxChildHeight * noOfChilds : maxChildHeight,
+		maxChildWidth,
+		maxChildHeight,
+		noOfChilds,
+	];
+}
 
-              const c = currentRef?.current.number;
-              currentRef.current.number = key;
+function LeftArrow({ angle = 0 }) {
+	return (
+		<svg
+			width="29.961"
+			height="41.326"
+			viewBox="0 0 29.961 41.326"
+			transform={`rotate(${angle})`}
+		>
+			<path
+				data-name="Path 268"
+				d="M32.309-6.1a4.866,4.866,0,0,1,1.033,2.912A3.3,3.3,0,0,1,32.309-.7a3.654,3.654,0,0,1-2.63.986,6.065,6.065,0,0,1-2.348-.564q-2.348-1.691-5.26-3.851T16.155-8.547q-3.006-2.254-5.917-4.461t-5.354-3.9a4.405,4.405,0,0,1-1.5-3.1,4.115,4.115,0,0,1,1.785-3.287l2.113-1.691q1.644-1.315,3.992-3.1T16.2-31.934Q18.785-34,21.133-35.785t4.039-3.146q1.691-1.362,2.066-1.644a5.966,5.966,0,0,1,2.066-.47,3.562,3.562,0,0,1,2.63,1.033,3.448,3.448,0,0,1,1.033,2.536,4.874,4.874,0,0,1-1.221,3.1q-1.6,1.315-4.039,3.193t-5.072,3.945q-2.63,2.066-5.072,3.945T13.525-20.1q1.878,1.409,4.367,3.24T22.917-13.1q2.536,1.925,5.025,3.757T32.309-6.1Z"
+				fill="currentColor"
+				transform="translate(-3.381 41.044)"
+			/>
+		</svg>
+	);
+}
 
-              const toScroll = Math.abs(currentRef.current.number - c);
-              const dir = c > currentRef.current.number ? -1 : 1;
+function RightArrow() {
+	return <LeftArrow angle={180} />;
+}
 
-              setCurrent(c);
-              if (isCenterMode()) {
-                setCenter(
-                  c <= currentRef.current.number
-                    ? (center + toScroll) % innerSlides?.current?.length
-                    : (center - toScroll + innerSlides?.current?.length) %
-                        innerSlides?.current?.length
-                );
-              }
-              applyTransform(
-                innerSlides.current,
-                innerSlides?.current?.length,
-                c,
-                currentRef.current.number,
-                dir,
-                toScroll
-              );
-            }}
-          >
-            <SubHelperComponent
-              definition={props.definition}
-              subComponentName="dotButtons"
-              key={key}
-            ></SubHelperComponent>
-            {showSlideNumbersInDots ? key + 1 : ""}
-          </button>
-        )
-      )}
-    </div>
-  );
+function UpArrow({ angle = 0 }) {
+	return (
+		<svg
+			width="41.326"
+			height="29.961"
+			viewBox="0 0 41.326 29.961"
+			transform={`rotate(${angle})`}
+		>
+			<path
+				id="Path_269"
+				data-name="Path 269"
+				d="M32.309-6.1a4.866,4.866,0,0,1,1.033,2.912A3.3,3.3,0,0,1,32.309-.7a3.654,3.654,0,0,1-2.63.986,6.065,6.065,0,0,1-2.348-.564q-2.348-1.691-5.26-3.851T16.155-8.547q-3.006-2.254-5.917-4.461t-5.354-3.9a4.405,4.405,0,0,1-1.5-3.1,4.115,4.115,0,0,1,1.785-3.287l2.113-1.691q1.644-1.315,3.992-3.1T16.2-31.934Q18.785-34,21.133-35.785t4.039-3.146q1.691-1.362,2.066-1.644a5.966,5.966,0,0,1,2.066-.47,3.562,3.562,0,0,1,2.63,1.033,3.448,3.448,0,0,1,1.033,2.536,4.874,4.874,0,0,1-1.221,3.1q-1.6,1.315-4.039,3.193t-5.072,3.945q-2.63,2.066-5.072,3.945T13.525-20.1q1.878,1.409,4.367,3.24T22.917-13.1q2.536,1.925,5.025,3.757T32.309-6.1Z"
+				transform="translate(0.282 -3.381) rotate(90)"
+				fill="currentColor"
+			/>
+		</svg>
+	);
+}
 
-  return (
-    <div
-      ref={ref}
-      className={`comp compSmallCarousel ${designType} ${colorScheme} slideNav${slideNavButtonPlacement} slideNav${slideNavButtonVerticalAlignment} slideNav${slideNavButtonHorizontalAlignment}  arrowButtons${arrowButtonsPlacement} arrowButtons${arrowButtonsVerticalPlacement} arrowButtons${arrowButtonsHorizontalPlacement}`}
-      style={resolvedStyles.comp ?? {}}
-      onLoad={handleLoad}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-    >
-      <HelperComponent context={props?.context} definition={definition} />
-      {showArrowButtons ? arrowButtonComp : undefined}
-      <div
-        className={`innerDivSlideNav slideNavDiv${slideNavButtonPlacement} slideNavDiv${slideNavButtonVerticalAlignment}`}
-        style={resolvedStyles?.innerDivSlideNav ?? {}}
-      >
-        <SubHelperComponent
-          definition={props?.definition}
-          subComponentName="innerDivSlideNav"
-        ></SubHelperComponent>
-        <div
-          className={`containerInnerDiv ${isVertical() ? "_vertical" : ""}`}
-          style={resolvedStyles?.containerInnerDiv ?? {}}
-        >
-          {generateElem(updatedDef)}
-          <SubHelperComponent
-            definition={props?.definition}
-            subComponentName="containerInnerDiv"
-          ></SubHelperComponent>
-        </div>
-
-        {slideButtonContainer}
-      </div>
-    </div>
-  );
+function DownArrow() {
+	return <UpArrow angle={180} />;
 }
 
 const component: Component = {
-  name: "Small Carousel",
-  displayName: "Small Carousel",
-  description: "Small Carousel component",
-  component: SmallCarousel,
-  styleProperties: stylePropertiesDefinition,
-  styleComponent: SmallCarouselStyle,
-  styleDefaults: styleDefaults,
-  propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
-  properties: propertiesDefinition,
-  allowedChildrenType: new Map<string, number>([["", -1]]),
-  subComponentDefinition: [
-    {
-      name: "",
-      displayName: "Component",
-      description: "Component",
-      icon: (
-        <IconHelper viewBox="0 0 24 24">
-          <path
-            d="M15.0934 5.34961H9.24609C8.69381 5.34961 8.24609 5.79732 8.24609 6.34961V17.6071C8.24609 18.1594 8.69381 18.6071 9.24609 18.6071H15.0934C15.6457 18.6071 16.0934 18.1594 16.0934 17.6071V6.34961C16.0934 5.79732 15.6457 5.34961 15.0934 5.34961Z"
-            fill="currentColor"
-          />
-          <path
-            d="M6.41442 6.91943H5.27539C4.72311 6.91943 4.27539 7.36715 4.27539 7.91943V16.0379C4.27539 16.5902 4.72311 17.0379 5.27539 17.0379H6.41442C6.9667 17.0379 7.41442 16.5902 7.41442 16.0379V7.91943C7.41442 7.36715 6.9667 6.91943 6.41442 6.91943Z"
-            fill="currentColor"
-            fillOpacity="0.2"
-          />
-          <path
-            d="M19.0631 6.91943H17.9238C17.3715 6.91943 16.9238 7.36715 16.9238 7.91943V16.0379C16.9238 16.5902 17.3715 17.0379 17.9238 17.0379H19.0631C19.6154 17.0379 20.0631 16.5902 20.0631 16.0379V7.91943C20.0631 7.36715 19.6154 6.91943 19.0631 6.91943Z"
-            fill="currentColor"
-            fillOpacity="0.2"
-          />
-          <path
-            d="M22.0011 7.99902H21.8945C21.3422 7.99902 20.8945 8.44674 20.8945 8.99902V14.959C20.8945 15.5112 21.3422 15.959 21.8945 15.959H22.0011C22.5534 15.959 23.0011 15.5112 23.0011 14.959V8.99902C23.0011 8.44674 22.5534 7.99902 22.0011 7.99902Z"
-            fill="currentColor"
-            fillOpacity="0.2"
-          />
-          <path
-            d="M2.44468 7.99902H2.33789C1.78561 7.99902 1.33789 8.44674 1.33789 8.99902V14.959C1.33789 15.5112 1.78561 15.959 2.33789 15.959H2.44468C2.99697 15.959 3.44468 15.5112 3.44468 14.959V8.99902C3.44468 8.44674 2.99697 7.99902 2.44468 7.99902Z"
-            fill="currentColor"
-            fillOpacity="0.2"
-          />
-        </IconHelper>
-      ),
-      mainComponent: true,
-    },
-    {
-      name: "arrowButtonsContainer",
-      displayName: "Arrow Buttons Container",
-      description: "Arrow Buttons Container",
-      icon: "fa-solid fa-box",
-    },
-    {
-      name: "arrowButtons",
-      displayName: "Arrow Buttons",
-      description: "Arrow Buttons",
-      icon: "fa-solid fa-box",
-    },
-    {
-      name: "slideButtonsContainer",
-      displayName: "Slide Buttons Container",
-      description: "Slide Buttons Container",
-      icon: "fa-solid fa-box",
-    },
-    {
-      name: "dotButtons",
-      displayName: "Dot Buttons",
-      description: "Dot Buttons",
-      icon: "fa-solid fa-box",
-    },
-    {
-      name: "slideNavDiv",
-      displayName: "Slide Wrapper Grid",
-      description: "Slder Wapper for navigation button and slider",
-      icon: "fa-solid fa-box",
-    },
-    {
-      name: "containerInnerDiv",
-      displayName: "Slide Container",
-      description: "Slder Wapper for Slider",
-      icon: "fa-solid fa-box",
-    },
-    {
-      name: "childElement",
-      displayName: "Container Items",
-      description: "Each Slides in the Slider",
-      icon: "fa-solid fa-box",
-    },
-  ],
+	name: 'Small Carousel',
+	displayName: 'Small Carousel',
+	description: 'Small Carousel component',
+	component: SmallCarousel,
+	styleProperties: stylePropertiesDefinition,
+	styleComponent: SmallCarouselStyle,
+	styleDefaults: styleDefaults,
+	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
+	properties: propertiesDefinition,
+	allowedChildrenType: new Map<string, number>([['', -1]]),
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					<path
+						d="M15.0934 5.34961H9.24609C8.69381 5.34961 8.24609 5.79732 8.24609 6.34961V17.6071C8.24609 18.1594 8.69381 18.6071 9.24609 18.6071H15.0934C15.6457 18.6071 16.0934 18.1594 16.0934 17.6071V6.34961C16.0934 5.79732 15.6457 5.34961 15.0934 5.34961Z"
+						fill="currentColor"
+					/>
+					<path
+						d="M6.41442 6.91943H5.27539C4.72311 6.91943 4.27539 7.36715 4.27539 7.91943V16.0379C4.27539 16.5902 4.72311 17.0379 5.27539 17.0379H6.41442C6.9667 17.0379 7.41442 16.5902 7.41442 16.0379V7.91943C7.41442 7.36715 6.9667 6.91943 6.41442 6.91943Z"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<path
+						d="M19.0631 6.91943H17.9238C17.3715 6.91943 16.9238 7.36715 16.9238 7.91943V16.0379C16.9238 16.5902 17.3715 17.0379 17.9238 17.0379H19.0631C19.6154 17.0379 20.0631 16.5902 20.0631 16.0379V7.91943C20.0631 7.36715 19.6154 6.91943 19.0631 6.91943Z"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<path
+						d="M22.0011 7.99902H21.8945C21.3422 7.99902 20.8945 8.44674 20.8945 8.99902V14.959C20.8945 15.5112 21.3422 15.959 21.8945 15.959H22.0011C22.5534 15.959 23.0011 15.5112 23.0011 14.959V8.99902C23.0011 8.44674 22.5534 7.99902 22.0011 7.99902Z"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<path
+						d="M2.44468 7.99902H2.33789C1.78561 7.99902 1.33789 8.44674 1.33789 8.99902V14.959C1.33789 15.5112 1.78561 15.959 2.33789 15.959H2.44468C2.99697 15.959 3.44468 15.5112 3.44468 14.959V8.99902C3.44468 8.44674 2.99697 7.99902 2.44468 7.99902Z"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+				</IconHelper>
+			),
+			mainComponent: true,
+		},
+		{
+			name: 'prevButton',
+			displayName: 'Previous Arrow Button',
+			description: 'Previous Arrow Button',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'nextButton',
+			displayName: 'Next Arrow Button',
+			description: 'Next Arrow Button',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'slideButtonsContainer',
+			displayName: 'Slide Buttons Container',
+			description: 'Slide Buttons Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'dotButtons',
+			displayName: 'Dot Buttons',
+			description: 'Dot Buttons',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'slidesContainer',
+			displayName: 'Slide Container',
+			description: 'Slder Wapper for Slider',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'slideItem',
+			displayName: 'Slide Item',
+			description: 'Each Slides in the Slider',
+			icon: 'fa-solid fa-box',
+		},
+	],
 };
 
 export default component;
