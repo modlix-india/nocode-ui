@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediately,
@@ -9,17 +9,16 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { IconHelper } from '../util/IconHelper';
 import useDefinition from '../util/useDefinition';
-import SubPageStyle from './ChartStyle';
+import ChartStyle from './ChartStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './chartProperties';
 import { styleDefaults } from './chartStyleProperties';
 import { deepEqual, isNullValue } from '@fincity/kirun-js';
-import Regular from './types/Regular';
-import Radial from './types/Radial';
-import Waffle from './types/Waffle';
-import Dot from './types/Dot';
-import Radar from './types/Radar';
 import { ChartData, Dimension, makeChartDataFromProperties } from './types/common';
+import { makeChart } from './d3Chart';
 import Legends from './types/chartComponents/Legends';
+import Gradient from './types/chartComponents/Gradient';
+
+const CHART_PADDING = 10;
 
 function Chart(props: Readonly<ComponentProps>) {
 	const {
@@ -58,34 +57,121 @@ function Chart(props: Readonly<ComponentProps>) {
 		);
 	}, [bindingPathPath]);
 
-	const resolvedStyles = processComponentStylePseudoClasses(
+	const [render, setRender] = React.useState(Date.now());
+
+	React.useEffect(() => {
+		const element = document.getElementById('d3-7.9.0');
+		if (element) {
+			element.addEventListener('load', () => setRender(Date.now()));
+			return;
+		}
+		const script = document.createElement('script');
+		script.id = 'd3-7.9.0';
+		script.src = '/api/files/static/file/SYSTEM/jslib/d3/d3%407.9.0.min.js';
+		script.async = true;
+		script.addEventListener('load', () => setRender(Date.now()));
+		document.body.appendChild(script);
+	}, [setRender]);
+
+	const processedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
 		{},
 		stylePropertiesWithPseudoStates,
 	);
 
-	const containerRef = useRef<HTMLDivElement>(null);
-	const [chartDimension, setChartDimension] = React.useState<Dimension>({ width: 0, height: 0 });
-	const [legendDimesion, setLegendDimension] = React.useState<Dimension>({ width: 0, height: 0 });
+	const [resolvedStyles, setResolvedStyles] = useState<any>({});
+
+	useEffect(() => {
+		setResolvedStyles((old: any) => (deepEqual(old, processedStyles) ? old : processedStyles));
+	}, [processedStyles]);
 
 	const [oldProperties, setOldProperties] = React.useState<any>(undefined);
 	const [chartData, setChartData] = React.useState<ChartData | undefined>(undefined);
 
+	const [hiddenDataSets, setHiddenDataSets] = React.useState<Set<number>>(new Set<number>());
+	const [focusedDataSet, setFocusedDataSet] = React.useState<number | undefined>(undefined);
+
+	const svgRef = useRef<SVGSVGElement | null>(null);
+
+	const [svgDimension, setSvgDimension] = React.useState<Dimension>({ width: 0, height: 0 });
+	const [legendDimension, setLegendDimension] = React.useState<Dimension>({
+		width: 0,
+		height: 0,
+	});
+
+	const chartWidth = Math.floor(
+		svgDimension.width -
+			(properties.legendPosition === 'left' || properties.legendPosition === 'right'
+				? legendDimension.width
+				: 0),
+	);
+	const chartHeight = Math.floor(
+		svgDimension.height -
+			(properties.legendPosition === 'top' || properties.legendPosition === 'bottom'
+				? legendDimension.height
+				: 0),
+	);
+
 	useEffect(() => {
 		if (deepEqual(properties, oldProperties)) return;
-		console.log('Setting props', properties);
 		setOldProperties(properties);
-		setChartData(makeChartDataFromProperties(properties, locationHistory, pageExtractor));
-	}, [oldProperties, properties, locationHistory, pageExtractor]);
+		const cd = makeChartDataFromProperties(
+			properties,
+			locationHistory,
+			pageExtractor,
+			hiddenDataSets,
+		);
+		setChartData(cd);
+	}, [oldProperties, properties, locationHistory, pageExtractor, hiddenDataSets]);
 
 	useEffect(() => {
-		if (isNullValue(containerRef.current)) return;
+		const cd = makeChartDataFromProperties(
+			properties,
+			locationHistory,
+			pageExtractor,
+			hiddenDataSets,
+		);
+		setChartData(cd);
+	}, [hiddenDataSets]);
 
-		let rect = containerRef.current!.getBoundingClientRect();
-		setChartDimension({ width: rect.width, height: rect.height });
+	useEffect(() => {
+		if (!globalThis.d3 || !svgRef.current || !chartData) return;
+
+		makeChart({
+			properties,
+			chartData,
+			svgRef: svgRef.current,
+			resolvedStyles,
+			chartDimension: {
+				width: chartWidth - CHART_PADDING * 2,
+				height: chartHeight - CHART_PADDING * 2,
+			},
+			hiddenDataSets,
+			focusedDataSet,
+			onFocusDataSet: (index: number | undefined) =>
+				setFocusedDataSet(index === focusedDataSet ? undefined : index),
+		});
+	}, [
+		svgRef.current,
+		globalThis.d3,
+		chartData,
+		legendDimension,
+		render,
+		resolvedStyles,
+		focusedDataSet,
+	]);
+
+	useEffect(() => {
+		if (isNullValue(svgRef.current)) return;
+
+		let rect = svgRef.current!.getBoundingClientRect();
+		setSvgDimension({
+			width: Math.floor(rect.width),
+			height: Math.floor(rect.height),
+		});
 		const resizeObserver = new ResizeObserver(() => {
 			setTimeout(() => {
-				const newRect = containerRef.current?.getBoundingClientRect();
+				const newRect = svgRef.current?.getBoundingClientRect();
 				if (!newRect) return;
 				if (
 					Math.abs(newRect.width - rect.width) < 8 &&
@@ -93,51 +179,135 @@ function Chart(props: Readonly<ComponentProps>) {
 				)
 					return;
 				rect = newRect;
-				setChartDimension({ width: newRect.width, height: newRect.height });
+				setSvgDimension({
+					width: Math.floor(newRect.width),
+					height: Math.floor(newRect.height),
+				});
 			}, 2000);
 		});
-		resizeObserver.observe(containerRef.current!);
+		resizeObserver.observe(svgRef.current!);
 		return () => resizeObserver.disconnect();
-	}, [containerRef.current, setChartDimension]);
+	}, [svgRef.current, setSvgDimension]);
 
-	let chart = <></>;
+	useEffect(() => setHiddenDataSets(new Set()), [chartData?.dataSetData?.length]);
 
-	if (properties?.type === 'waffle') {
-		chart = <Waffle properties={properties} containerRef={containerRef.current} />;
-	} else if (properties?.type === 'radial') {
-		chart = <Radial properties={properties} containerRef={containerRef.current} />;
-	} else if (properties?.type === 'dot') {
-		chart = <Dot properties={properties} containerRef={containerRef.current} />;
-	} else if (properties?.type === 'radar') {
-		chart = <Radar properties={properties} containerRef={containerRef.current} />;
-	} else {
-		chart = (
-			<Regular
-				properties={properties}
-				chartDimension={chartDimension}
-				legendDimension={legendDimesion}
-				locationHistory={locationHistory}
-				pageExtractor={pageExtractor}
-			/>
-		);
-	}
-
-	console.log(resolvedStyles);
+	const gradientDef = useMemo(
+		() => (
+			<defs>
+				{Array.from(chartData?.gradients?.values() ?? []).map(g => (
+					<Gradient
+						key={'' + Math.abs(g.hashCode).toString(16)}
+						gradient={g}
+						gradientUnits={properties.gradientSpace}
+					/>
+				))}
+			</defs>
+		),
+		[
+			Array.from(chartData?.gradients?.values() ?? [])
+				.map(e => e.hashCode)
+				.reduce((a, c) => a + c, 0),
+			properties.gradientSpace,
+		],
+	);
 
 	return (
-		<div className={`comp compChart `} style={resolvedStyles.comp ?? {}} ref={containerRef}>
+		<div className={`comp compChart `} style={resolvedStyles.comp ?? {}}>
 			<HelperComponent context={props.context} definition={definition} />
 			<svg
-				viewBox={`0 0 ${chartDimension.width} ${chartDimension.height}`}
+				className="chart"
+				ref={svgRef}
+				viewBox={`0 0 ${svgDimension.width} ${svgDimension.height}`}
 				xmlns="http://www.w3.org/2000/svg"
 			>
+				{gradientDef}
+				<text
+					className="xAxisLabelSampler"
+					x={0}
+					y={0}
+					style={{ ...resolvedStyles.xAxisLabel, transition: 'none' }}
+					fillOpacity={0}
+					strokeOpacity={0}
+				></text>
+				<text
+					x={0}
+					y={0}
+					className="yAxisLabelSampler"
+					style={{ ...resolvedStyles.yAxisLabel, transition: 'none' }}
+					fillOpacity={0}
+					strokeOpacity={0}
+				></text>
+				<g
+					className="titleGroup"
+					transform={`translate(${
+						(properties.legendPosition === 'left' ? legendDimension.width : 0) +
+						CHART_PADDING
+					}, ${
+						(properties.legendPosition === 'top' ? legendDimension.height : 0) +
+						CHART_PADDING
+					})`}
+				>
+					<text
+						x={0}
+						y={0}
+						className="xAxisTitle"
+						style={resolvedStyles.xAxisTitle ?? {}}
+						fill="currentColor"
+					>
+						{chartData?.xAxisTitle ?? ''}
+					</text>
+					<text
+						x={0}
+						y={0}
+						className="yAxisTitle"
+						style={resolvedStyles.yAxisTitle ?? {}}
+						fill="currentColor"
+						textAnchor="end"
+					>
+						{chartData?.yAxisTitle ?? ''}
+					</text>
+				</g>
+
+				<g
+					className="chartGroup"
+					transform={`translate(${
+						(properties.legendPosition === 'left' ? legendDimension.width : 0) +
+						CHART_PADDING
+					}, ${
+						(properties.legendPosition === 'top' ? legendDimension.height : 0) +
+						CHART_PADDING
+					})`}
+				/>
 				<Legends
-					chartData={chartData}
+					containerDimension={{ width: svgDimension.width, height: svgDimension.height }}
+					legendDimension={legendDimension}
 					properties={properties}
-					chartDimension={chartDimension}
-					legendDimension={legendDimesion}
-					styles={resolvedStyles.legendLabel ?? {}}
-					onLegendDimensionChange={d => setLegendDimension(d)}
+					chartData={chartData}
+					onLegendDimensionChange={setLegendDimension}
+					labelStyles={resolvedStyles.legendLabel ?? {}}
+					rectangleStyles={resolvedStyles.legendRectangle ?? {}}
+					hiddenDataSets={hiddenDataSets}
+					onToggleDataSet={(index: number) => {
+						const newSet = new Set(hiddenDataSets);
+						if (newSet.has(index)) newSet.delete(index);
+						else newSet.add(index);
+						setHiddenDataSets(newSet);
+						if (focusedDataSet) setFocusedDataSet(undefined);
+					}}
+					onShowOnlyDataSet={(index: number) =>
+						setHiddenDataSets(
+							new Set(
+								chartData?.dataSetData?.map((_, i) => i).filter(i => i !== index),
+							),
+						)
+					}
+					onFocusDataSet={(index: number | undefined) =>
+						setFocusedDataSet(
+							index === focusedDataSet || hiddenDataSets.has(index ?? -1)
+								? undefined
+								: index,
+						)
+					}
 				/>
 			</svg>
 		</div>
@@ -152,7 +322,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
-	styleComponent: SubPageStyle,
+	styleComponent: ChartStyle,
 	styleDefaults: styleDefaults,
 	stylePseudoStates: [],
 	allowedChildrenType: new Map([['Grid', 1]]),
@@ -249,15 +419,63 @@ const component: Component = {
 			icon: 'fa fa-solid fa-box',
 		},
 		{
+			name: 'xAxisTitle',
+			displayName: 'X Axis Title',
+			description: 'X Axis Title',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'yAxisTitle',
+			displayName: 'Y Axis Title',
+			description: 'Y Axis Title',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'xAxis',
+			displayName: 'X Axis',
+			description: 'X Axis',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'yAxis',
+			displayName: 'Y Axis',
+			description: 'Y Axis',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
 			name: 'legendLabel',
 			displayName: 'Legend Label',
 			description: 'Legend Label',
 			icon: 'fa fa-solid fa-box',
 		},
 		{
+			name: 'legendRectangle',
+			displayName: 'Legend Rectangle',
+			description: 'Legend Rectangle',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
 			name: 'tooltip',
 			displayName: 'Tooltip',
 			description: 'Tooltip',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'horizontalLines',
+			displayName: 'Horizontal Lines',
+			description: 'Horizontal Lines',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'verticalLines',
+			displayName: 'Vertical Lines',
+			description: 'Vertical Lines',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'bar',
+			displayName: 'Bar',
+			description: 'Bar',
 			icon: 'fa fa-solid fa-box',
 		},
 	],

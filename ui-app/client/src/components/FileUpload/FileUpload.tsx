@@ -5,7 +5,12 @@ import {
 	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
-import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
+import {
+	Component,
+	ComponentDefinition,
+	ComponentPropertyDefinition,
+	ComponentProps,
+} from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { runEvent } from '../util/runEvent';
@@ -23,8 +28,9 @@ import { styleDefaults } from './fileUploadStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import binaryToBase64Encode from '../../util/binaryToBase64Encode';
 
-const icon1 = (
-	<div className="_uploadIcon _upload_icon_1">
+const icon1 = (computedStyles: any, def: ComponentDefinition) => (
+	<div className="_uploadIcon _upload_icon_1" style={computedStyles.icon ?? {}}>
+		<SubHelperComponent definition={def} subComponentName="icon" />
 		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
 			<path
 				id="Path_150"
@@ -37,8 +43,9 @@ const icon1 = (
 	</div>
 );
 
-const icon2 = (
-	<div className="_uploadIcon _upload_icon_2">
+const icon2 = (computedStyles: any, def: ComponentDefinition) => (
+	<div className="_uploadIcon _upload_icon_2" style={computedStyles.icon ?? {}}>
+		<SubHelperComponent definition={def} subComponentName="icon" />
 		<svg viewBox="0 0 54 70" fill="none" xmlns="http://www.w3.org/2000/svg">
 			<path
 				d="M51.114 18.769H36.295C35.209 18.769 34.32 17.88 34.32 16.794V1.975C34.32 0.889001 33.431 0 32.345 0H1.975C0.889 0 0 0.889001 0 1.975V67.409C0 68.495 0.889 69.384 1.975 69.384H51.115C52.201 69.384 53.089 68.495 53.089 67.409V20.744C53.088 19.658 52.2 18.769 51.114 18.769ZM36.69 3.16C36.69 2.074 37.318 1.813 38.086 2.581L50.509 15.005C51.277 15.773 51.017 16.401 49.931 16.401H38.664C37.578 16.401 36.689 15.512 36.689 14.426L36.69 3.16Z"
@@ -318,8 +325,10 @@ function FileUpload(props: ComponentProps) {
 				<SubHelperComponent definition={props.definition} subComponentName="icon" />
 			</i>
 		);
-	else if (uploadViewType === '_only_icon_design1') uploadIconComp = icon1;
-	else if (uploadViewType === '_only_icon_design2') uploadIconComp = icon2;
+	else if (uploadViewType === '_only_icon_design1')
+		uploadIconComp = icon1(computedStyles, props.definition);
+	else if (uploadViewType === '_only_icon_design2')
+		uploadIconComp = icon2(computedStyles, props.definition);
 
 	const inputContainer = (
 		<input

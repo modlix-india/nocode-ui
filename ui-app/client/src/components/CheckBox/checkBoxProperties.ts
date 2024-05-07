@@ -1,8 +1,5 @@
-import { Schema } from '@fincity/kirun-js';
 import {
-	SCHEMA_BOOL_COMP_PROP,
-	SCHEMA_DATA_LOCATION,
-	SCHEMA_STRING_COMP_PROP,
+	SCHEMA_STRING_COMP_PROP
 } from '../../constants';
 import {
 	ComponentPropertyDefinition,
@@ -51,6 +48,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				name: '_outlined',
 				displayName: 'Outline Checkbox',
 				description: 'Outline Checkbox type',
+			},
+			{
+				name: '_filled',
+				displayName: 'Filled Checkbox',
+				description: 'Filled Checkbox type',
 			},
 		],
 	},

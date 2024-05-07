@@ -331,19 +331,17 @@ export default function DnDPropertyBar({
 	const gripIcon = (
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
-			width="9"
-			height="9"
-			viewBox="0 0 9 9"
+			width="8"
+			height="13"
+			viewBox="0 0 8 13"
 			fill="none"
-			className="_leftIcon _grip"
-			tabIndex={0}
 		>
-			<circle cx="7.5" cy="1.5" r="1.5" fill="#8E90A4" />
+			<circle cx="6.5" cy="1.5" r="1.5" fill="#8E90A4" />
 			<circle
-				cx="7.5"
+				cx="6.5"
 				cy="1.5"
 				r="1.1"
-				stroke="black"
+				stroke="#8E90A4"
 				strokeOpacity="0.15"
 				strokeWidth="0.8"
 			/>
@@ -352,25 +350,43 @@ export default function DnDPropertyBar({
 				cx="1.5"
 				cy="1.5"
 				r="1.1"
-				stroke="black"
+				stroke="#8E90A4"
 				strokeOpacity="0.15"
 				strokeWidth="0.8"
 			/>
-			<circle cx="7.5" cy="7.5" r="1.5" fill="#8E90A4" />
+			<circle cx="6.5" cy="6.5" r="1.5" fill="#8E90A4" />
 			<circle
-				cx="7.5"
-				cy="7.5"
+				cx="6.5"
+				cy="6.5"
 				r="1.1"
-				stroke="black"
+				stroke="#8E90A4"
 				strokeOpacity="0.15"
 				strokeWidth="0.8"
 			/>
-			<circle cx="1.5" cy="7.5" r="1.5" fill="#8E90A4" />
+			<circle cx="1.5" cy="6.5" r="1.5" fill="#8E90A4" />
 			<circle
 				cx="1.5"
-				cy="7.5"
+				cy="6.5"
 				r="1.1"
-				stroke="black"
+				stroke="#8E90A4"
+				strokeOpacity="0.15"
+				strokeWidth="0.8"
+			/>
+			<circle cx="6.5" cy="11.5" r="1.5" fill="#8E90A4" />
+			<circle
+				cx="6.5"
+				cy="11.5"
+				r="1.1"
+				stroke="#8E90A4"
+				strokeOpacity="0.15"
+				strokeWidth="0.8"
+			/>
+			<circle cx="1.5" cy="11.5" r="1.5" fill="#8E90A4" />
+			<circle
+				cx="1.5"
+				cy="11.5"
+				r="1.1"
+				stroke="#8E90A4"
 				strokeOpacity="0.15"
 				strokeWidth="0.8"
 			/>
