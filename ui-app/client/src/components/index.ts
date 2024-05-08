@@ -49,6 +49,7 @@ import Jot from './Jot/Jot';
 import FillerDefinitionEditor from './FillerDefinitionEditor/FillerDefinitionEditor';
 import FormStorageEditor from './FormStorageEditor/FormStorageEditor';
 import SectionGrid from './SectionGrid/SectionGrid';
+import SmallCarousel from './SmallCarousel/SmallCarousel';
 import Otp from './Otp/Otp';
 import Chart from './Chart/Chart';
 import TemplateEditor from './TemplateEditor/TemplateEditor';
@@ -104,6 +105,7 @@ export default new Map<string, Component>([
 	[FillerDefinitionEditor.name, FillerDefinitionEditor],
 	[FormStorageEditor.name, FormStorageEditor],
 	[SectionGrid.name, SectionGrid],
+	[SmallCarousel.name, SmallCarousel],
 	[Otp.name, Otp],
 	[Chart.name, Chart],
 	[TemplateEditor.name, TemplateEditor],
