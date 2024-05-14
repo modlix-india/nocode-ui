@@ -316,172 +316,165 @@ export default function DnDTopBar({
 			</div>
 		));
 		popup = (
-			<Portal>
-				<div className={`_popupBackground`} onClick={() => setShowProperties(false)}>
-					<div
-						className="_popupContainer _pageProperties"
-						onClick={e => e.stopPropagation()}
-					>
-						<div className="_popupHeader">Page Properties</div>
-						<div className="_popupContent _propertyContent">
-							<div className="_pagePropertiesGrid _pageSimplePropGrid">
-								<div className="_eachProp">
-									<div className="_propLabel">Page Title</div>
-									<PropertyValueEditor
-										propDef={{
-											name: 'title',
-											displayName: 'Page Title',
-											schema: SCHEMA_STRING_COMP_PROP,
-										}}
-										value={properties?.title?.name}
-										onChange={v => updatePageProperties('title', 'name', v)}
-										storePaths={storePaths}
-										slaveStore={slaveStore}
-										editPageName={editPageName}
-										pageOperations={pageOperations}
-									/>
-								</div>
-								<div className="_eachProp">
-									<div className="_propLabel">Append/Prepend Title</div>
-									<PropertyValueEditor
-										propDef={{
-											name: 'append',
-											displayName: 'Append Title',
-											defaultValue: 'true',
-											schema: SCHEMA_STRING_COMP_PROP,
-											enumValues: [
-												{
-													name: 'true',
-													displayName: 'Append',
-													description:
-														'Appends the title after the application title',
-												},
-												{
-													name: 'prepend',
-													displayName: 'Prepend',
-													description:
-														'Prepends the title before the application title',
-												},
-												{
-													name: 'false',
-													displayName: 'Full',
-													description: 'Shows the title only',
-												},
-											],
-										}}
-										value={properties?.title?.append}
-										onChange={v => updatePageProperties('title', 'append', v)}
-										storePaths={storePaths}
-										slaveStore={slaveStore}
-										editPageName={editPageName}
-										pageOperations={pageOperations}
-									/>
-								</div>
-								<div className="_eachProp">
-									<div className="_propLabel">Wrap Shell</div>
-									<PropertyValueEditor
-										propDef={{
-											name: 'wrapShell',
-											displayName: 'Wrap Shell',
-											schema: SCHEMA_BOOL_COMP_PROP,
-										}}
-										value={{ value: properties?.wrapShell }}
-										onlyValue={true}
-										onChange={v =>
-											updatePageProperties('simple', 'wrapShell', v)
-										}
-										storePaths={storePaths}
-										slaveStore={slaveStore}
-										editPageName={editPageName}
-										pageOperations={pageOperations}
-									/>
-								</div>
-								{eventEnums.length ? (
-									<div className="_eachProp">
-										<div className="_propLabel">On Load Function</div>
-										<PropertyValueEditor
-											propDef={{
-												name: 'onLoadEvent',
-												displayName: 'On Load Event Function',
-												schema: SCHEMA_STRING_COMP_PROP,
-												enumValues: eventEnums,
-											}}
-											value={{ value: properties?.onLoadEvent }}
-											onlyValue={true}
-											onChange={v =>
-												updatePageProperties('simple', 'onLoadEvent', v)
-											}
-											storePaths={storePaths}
-											slaveStore={slaveStore}
-											editPageName={editPageName}
-											pageOperations={pageOperations}
-										/>
-									</div>
-								) : (
-									<></>
-								)}
-								<div className="_eachProp">
-									<div className="_propLabel">Load Strategy</div>
-									<PropertyValueEditor
-										propDef={{
-											name: 'loadStrategy',
-											displayName: 'Load Strategy',
-											schema: SCHEMA_STRING_COMP_PROP,
-											defaultValue: 'default',
-											enumValues: [
-												{
-													name: 'default',
-													displayName: 'No Force Call',
-													description:
-														"Don't call on load function on page loading.",
-												},
-												{
-													name: 'reload',
-													displayName: 'Force Call',
-													description:
-														'Force call on load function on page loading',
-												},
-											],
-										}}
-										value={{ value: properties?.loadStrategy }}
-										onlyValue={true}
-										onChange={v =>
-											updatePageProperties('simple', 'loadStrategy', v)
-										}
-										storePaths={storePaths}
-										slaveStore={slaveStore}
-										editPageName={editPageName}
-										pageOperations={pageOperations}
-									/>
-								</div>
-								<div className="_eachProp">
-									<div className="_propLabel">Permission Expression</div>
-									<PropertyValueEditor
-										propDef={{
-											name: 'permission',
-											displayName: 'Permission Expression',
-											schema: SCHEMA_STRING_COMP_PROP,
-										}}
-										value={{ value: permission }}
-										onlyValue={true}
-										onChange={v =>
-											updatePageProperties('permission', 'permission', v)
-										}
-										storePaths={storePaths}
-										slaveStore={slaveStore}
-										editPageName={editPageName}
-										pageOperations={pageOperations}
-									/>
-								</div>
+			<div className={`_popupBackground`} onClick={() => setShowProperties(false)}>
+				<div className="_popupContainer _pageProperties" onClick={e => e.stopPropagation()}>
+					<div className="_popupHeader">Page Properties</div>
+					<div className="_popupContent _propertyContent">
+						<div className="_pagePropertiesGrid _pageSimplePropGrid">
+							<div className="_eachProp">
+								<div className="_propLabel">Page Title</div>
+								<PropertyValueEditor
+									propDef={{
+										name: 'title',
+										displayName: 'Page Title',
+										schema: SCHEMA_STRING_COMP_PROP,
+									}}
+									value={properties?.title?.name}
+									onChange={v => updatePageProperties('title', 'name', v)}
+									storePaths={storePaths}
+									slaveStore={slaveStore}
+									editPageName={editPageName}
+									pageOperations={pageOperations}
+								/>
 							</div>
-							<div className="_pagePropertiesGrid">{seoNames}</div>
+							<div className="_eachProp">
+								<div className="_propLabel">Append/Prepend Title</div>
+								<PropertyValueEditor
+									propDef={{
+										name: 'append',
+										displayName: 'Append Title',
+										defaultValue: 'true',
+										schema: SCHEMA_STRING_COMP_PROP,
+										enumValues: [
+											{
+												name: 'true',
+												displayName: 'Append',
+												description:
+													'Appends the title after the application title',
+											},
+											{
+												name: 'prepend',
+												displayName: 'Prepend',
+												description:
+													'Prepends the title before the application title',
+											},
+											{
+												name: 'false',
+												displayName: 'Full',
+												description: 'Shows the title only',
+											},
+										],
+									}}
+									value={properties?.title?.append}
+									onChange={v => updatePageProperties('title', 'append', v)}
+									storePaths={storePaths}
+									slaveStore={slaveStore}
+									editPageName={editPageName}
+									pageOperations={pageOperations}
+								/>
+							</div>
+							<div className="_eachProp">
+								<div className="_propLabel">Wrap Shell</div>
+								<PropertyValueEditor
+									propDef={{
+										name: 'wrapShell',
+										displayName: 'Wrap Shell',
+										schema: SCHEMA_BOOL_COMP_PROP,
+									}}
+									value={{ value: properties?.wrapShell }}
+									onlyValue={true}
+									onChange={v => updatePageProperties('simple', 'wrapShell', v)}
+									storePaths={storePaths}
+									slaveStore={slaveStore}
+									editPageName={editPageName}
+									pageOperations={pageOperations}
+								/>
+							</div>
+							{eventEnums.length ? (
+								<div className="_eachProp">
+									<div className="_propLabel">On Load Function</div>
+									<PropertyValueEditor
+										propDef={{
+											name: 'onLoadEvent',
+											displayName: 'On Load Event Function',
+											schema: SCHEMA_STRING_COMP_PROP,
+											enumValues: eventEnums,
+										}}
+										value={{ value: properties?.onLoadEvent }}
+										onlyValue={true}
+										onChange={v =>
+											updatePageProperties('simple', 'onLoadEvent', v)
+										}
+										storePaths={storePaths}
+										slaveStore={slaveStore}
+										editPageName={editPageName}
+										pageOperations={pageOperations}
+									/>
+								</div>
+							) : (
+								<></>
+							)}
+							<div className="_eachProp">
+								<div className="_propLabel">Load Strategy</div>
+								<PropertyValueEditor
+									propDef={{
+										name: 'loadStrategy',
+										displayName: 'Load Strategy',
+										schema: SCHEMA_STRING_COMP_PROP,
+										defaultValue: 'default',
+										enumValues: [
+											{
+												name: 'default',
+												displayName: 'No Force Call',
+												description:
+													"Don't call on load function on page loading.",
+											},
+											{
+												name: 'reload',
+												displayName: 'Force Call',
+												description:
+													'Force call on load function on page loading',
+											},
+										],
+									}}
+									value={{ value: properties?.loadStrategy }}
+									onlyValue={true}
+									onChange={v =>
+										updatePageProperties('simple', 'loadStrategy', v)
+									}
+									storePaths={storePaths}
+									slaveStore={slaveStore}
+									editPageName={editPageName}
+									pageOperations={pageOperations}
+								/>
+							</div>
+							<div className="_eachProp">
+								<div className="_propLabel">Permission Expression</div>
+								<PropertyValueEditor
+									propDef={{
+										name: 'permission',
+										displayName: 'Permission Expression',
+										schema: SCHEMA_STRING_COMP_PROP,
+									}}
+									value={{ value: permission }}
+									onlyValue={true}
+									onChange={v =>
+										updatePageProperties('permission', 'permission', v)
+									}
+									storePaths={storePaths}
+									slaveStore={slaveStore}
+									editPageName={editPageName}
+									pageOperations={pageOperations}
+								/>
+							</div>
 						</div>
-						<div className="_right">
-							<button onClick={() => setShowProperties(false)}>Close</button>
-						</div>
+						<div className="_pagePropertiesGrid">{seoNames}</div>
+					</div>
+					<div className="_right">
+						<button onClick={() => setShowProperties(false)}>Close</button>
 					</div>
 				</div>
-			</Portal>
+			</div>
 		);
 	}
 

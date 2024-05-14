@@ -6,6 +6,7 @@ import { Component, StyleResolution } from '../types/common';
 import { processStyleDefinition, StyleResolutionDefinition } from '../util/styleProcessor';
 import { styleDefaults, styleProperties } from './appStyleProperties';
 import MessageStyle from './Messages/MessageStyle';
+import { FileBrowserStyles } from '../commonComponents/FileBrowser/FileBrowserStyles';
 
 export default function AppStyle() {
 	const [theme, setTheme] = useState<Map<string, Map<string, string>>>(
@@ -249,6 +250,7 @@ export default function AppStyle() {
 			<style id="AppCss">{css}</style>
 			{styleComps}
 			<MessageStyle theme={theme} />
+			<FileBrowserStyles />
 			<style id="AppStyle">{style}</style>
 		</>
 	);

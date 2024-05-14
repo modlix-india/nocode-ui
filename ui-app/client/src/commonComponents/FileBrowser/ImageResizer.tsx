@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { RangeSlider } from '../stylePropertyValueEditors/simpleEditors/RangeSlider';
+import { RangeSlider } from '../../components/PageEditor/editors/stylePropertyValueEditors/simpleEditors/RangeSlider';
 import axios from 'axios';
-import { ColorSelector } from '../stylePropertyValueEditors/simpleEditors/ColorSelector';
+import { ColorSelector } from '../../components/PageEditor/editors/stylePropertyValueEditors/simpleEditors/ColorSelector';
 
 interface ImageResizerProps {
 	path?: string;
