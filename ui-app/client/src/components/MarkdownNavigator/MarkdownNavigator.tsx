@@ -40,7 +40,10 @@ function MarkdownNavigator(props: ComponentProps) {
 	let translatedText = getTranslations(markdownText, translations);
 
 	return (
-		<div className={`comp compText _markdown ${designType}`} style={styleProperties.comp ?? {}}>
+		<div
+			className={`comp compMarkdownNav _markdown ${designType}`}
+			style={styleProperties.comp ?? {}}
+		>
 			<HelperComponent context={props.context} definition={definition} />
 			<MarkDownNavigatorLinks
 				text={translatedText ?? ''}

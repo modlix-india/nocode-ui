@@ -42,7 +42,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 
 	{
 		...COMMON_COMPONENT_PROPERTIES.designType,
-		enumValues: [...COMMON_COMPONENT_PROPERTIES.designType.enumValues!],
 	},
 
 	COMMON_COMPONENT_PROPERTIES.visibility,

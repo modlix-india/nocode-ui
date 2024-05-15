@@ -436,7 +436,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Color',
 		displayName: 'Color Sixteen',
 		name: 'colorSixteen',
-		defaultValue: '#1F1F1F',
+		defaultValue: '#333333',
 		noPrefix: true,
 	},
 

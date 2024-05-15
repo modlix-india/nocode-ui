@@ -2,7 +2,7 @@ import React from 'react';
 import { processStyleDefinition } from '../../util/styleProcessor';
 import { styleProperties, styleDefaults } from './markdownNavigaotrStyleProperties';
 
-const PREFIX = '.comp.compText';
+const PREFIX = '.comp.compMarkdownNav._markdown';
 export default function LabelStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
 	const css =
 		`

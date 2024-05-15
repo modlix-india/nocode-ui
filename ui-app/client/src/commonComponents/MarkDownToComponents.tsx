@@ -128,7 +128,7 @@ const processList = (listItems: string[], isOrdered: boolean, level = 1) => {
 	} else return <ul key={listItems.join('_')}>{finalList}</ul>;
 };
 
-const parseText = (text: string) => {
+export const parseText = (text: string) => {
 	// parsing line one character at a time
 	let tokens: Array<React.ReactNode> = [];
 	let tokenCount = 0;
@@ -392,9 +392,9 @@ const parseText = (text: string) => {
 			);
 			tokenCount += 2;
 			i = linkEndIndex;
-		} else if (text[i] === '<') {
+		} else if (text[i] === '=') {
 			// highlight text
-			const endIndex = text.indexOf('>', i + 1);
+			const endIndex = text.indexOf('=', i + 1);
 			if (endIndex === -1) {
 				tokens[tokenCount] = (tokens[tokenCount] ?? '') + text[i];
 				continue;
