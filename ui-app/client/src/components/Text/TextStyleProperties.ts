@@ -492,7 +492,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'MD Heading1 Font',
 		displayName: 'MD Heading1 Font Default Design',
 		name: 'mDHeading1FontDefaultDesign',
-		defaultValue: 'bold <quinaryFont>',
+		defaultValue: '600 <senaryFont>',
 		cssProperty: 'font',
 		selector: '.comp.compText._markdown h1, ._markDownContent h1',
 		noPrefix: true,

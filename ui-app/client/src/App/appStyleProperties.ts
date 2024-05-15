@@ -287,6 +287,16 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '._quinaryFont',
 		noPrefix: true,
 	},
+	{
+		groupName: 'Senary Font',
+		displayName: 'Senary Font',
+		name: 'senaryFont',
+		defaultValue: '30px/30px Inter',
+		description: 'Senary Font used in application.',
+		cssProperty: 'font',
+		selector: '._senaryFont',
+		noPrefix: true,
+	},
 
 	{
 		groupName: 'Font Style',
@@ -423,6 +433,14 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 
 	{
+		groupName: 'Color',
+		displayName: 'Color Sixteen',
+		name: 'colorSixteen',
+		defaultValue: '#1F1F1F',
+		noPrefix: true,
+	},
+
+	{
 		groupName: 'Font Color',
 		displayName: 'Font Color One',
 		name: 'fontColorOne',
@@ -492,6 +510,14 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'fontColorNine',
 		defaultValue: '<colorFour>',
 		description: 'Font Color Nine used in application',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Font Color',
+		displayName: 'Font Color Ten',
+		name: 'fontColorTen',
+		defaultValue: '<colorSixteen>',
+		description: 'Font Color Ten used in application',
 		noPrefix: true,
 	},
 

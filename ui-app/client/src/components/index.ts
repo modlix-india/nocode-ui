@@ -52,6 +52,7 @@ import SectionGrid from './SectionGrid/SectionGrid';
 import SmallCarousel from './SmallCarousel/SmallCarousel';
 import Otp from './Otp/Otp';
 import Chart from './Chart/Chart';
+import MarkdownNavigatorText from './MarkdownNavigator/MarkdownNavigator';
 import TemplateEditor from './TemplateEditor/TemplateEditor';
 
 export default new Map<string, Component>([
@@ -108,5 +109,6 @@ export default new Map<string, Component>([
 	[SmallCarousel.name, SmallCarousel],
 	[Otp.name, Otp],
 	[Chart.name, Chart],
+	[MarkdownNavigatorText.name, MarkdownNavigatorText],
 	[TemplateEditor.name, TemplateEditor],
 ]);
