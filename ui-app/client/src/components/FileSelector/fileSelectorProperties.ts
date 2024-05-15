@@ -55,6 +55,12 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
+		name: 'hideEdit',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Hide Edit',
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
 		name: 'selectionType',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Selection Type',

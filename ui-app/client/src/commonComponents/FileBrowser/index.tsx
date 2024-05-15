@@ -3,10 +3,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { LOCAL_STORE_PREFIX } from '../../constants';
 import { getDataFromPath } from '../../context/StoreContext';
 import { shortUUID } from '../../util/shortUUID';
-import Portal from '../../components/Portal';
-import PathParts from '../PathParts';
 
-const RESIZABLE_EXT = new Set<string>(['.jpg', '.jpeg', '.jpe', '.webp', '.png']);
+const RESIZABLE_EXT = new Set<string>(['jpg', 'jpeg', 'jpe', 'webp', 'png', 'avif']);
 
 const RENDERABLE_EXT = new Set<string>(
 	'png,apng,avif,gif,jpg,jpeg,jpe,webp,jfif,pjpeg,pjp,svg,bmp,cur,tif,tiff'.split(','),
@@ -62,6 +60,7 @@ interface FileBrowserProps {
 	hideUploadFile?: boolean;
 	hideCreateFolder?: boolean;
 	hideDelete?: boolean;
+	hideEdit?: boolean;
 	fileCategory?: string[];
 }
 
@@ -76,6 +75,7 @@ export function FileBrowser({
 	restrictSelectionType,
 	selectionType,
 	hideUploadFile,
+	hideEdit,
 	hideCreateFolder,
 	hideDelete,
 	fileCategory,
@@ -87,13 +87,9 @@ export function FileBrowser({
 	const [newFolder, setNewFolder] = useState(false);
 	const [newFolderName, setNewFolderName] = useState('');
 	const [showImageResizerPopup, setShowImageResizerPopup] = useState(false);
-	const [formData, setFormData] = useState<FormData>();
-	const [image, setImage] = useState<string>('');
 	const [fileSelection, setFileSelection] = useState<any>();
-	const [override, setOverride] = useState<boolean>(false);
-	const [showOverrideCheckbox, setShowOverrideCheckbox] = useState<boolean>(false);
 	const [somethingChanged, setSomethingChanged] = useState(Date.now());
-	const [deleteObject, setDeleteObject] = useState<{ name: string; url: string } | undefined>();
+	const [deleteObject, setDeleteObject] = useState<any>();
 
 	const setPathAndClearFilter = useCallback(
 		(v: string) => {
@@ -184,15 +180,6 @@ export function FileBrowser({
 				type="file"
 				onChange={async e => {
 					if (e.target.files?.length === 0) return;
-					const currFormData = new FormData();
-					currFormData.append('file', e.target.files![0]);
-					setFormData(currFormData);
-					setInProgress(true);
-					setShowImageResizerPopup(true);
-					const imageUrl = URL.createObjectURL(e.target.files![0]);
-					setImage(imageUrl);
-					setShowOverrideCheckbox(false);
-					setOverride(true);
 				}}
 			/>
 		</div>
@@ -209,9 +196,15 @@ export function FileBrowser({
 						<button
 							onClick={async () => {
 								setInProgress(true);
-								await axios.delete(deleteObject.url, {
-									headers,
-								});
+								await axios.delete(
+									`/api/files/${resourceType}/${deleteObject.filePath
+										.split('/')
+										.map(encodeURIComponent)
+										.join('/')}`,
+									{
+										headers,
+									},
+								);
 								setInProgress(false);
 								setDeleteObject(undefined);
 								setSomethingChanged(Date.now());
@@ -378,6 +371,16 @@ export function FileBrowser({
 		);
 	}
 
+	let editButton;
+
+	if (!hideEdit && RESIZABLE_EXT.has(fileSelection?.type?.toLowerCase() ?? '')) {
+		editButton = (
+			<button className="_editBtn" title="Edit" tabIndex={0} onClick={() => {}}>
+				Edit
+			</button>
+		);
+	}
+
 	return (
 		<div className="_fileBrowser">
 			<div className="_searchUploadContainer">
@@ -410,15 +413,7 @@ export function FileBrowser({
 				<div className={`_files ${inProgress ? '_progressBar' : ''}`}>{content}</div>
 			</div>
 			<div className="_editBtnContainer">
-				<button
-					className="_editBtn"
-					title="Edit"
-					tabIndex={0}
-					disabled={!fileSelection}
-					onClick={() => {}}
-				>
-					Edit
-				</button>
+				{editButton}
 				{deletButton}
 				<button
 					className="_selectBtn"
