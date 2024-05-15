@@ -31,7 +31,7 @@ export default function TabsStyles({ theme }: { theme: Map<string, Map<string, s
 			
 		}
 
-		${PREFIX}._vertical .tabsContainer {
+		${PREFIX}._vertical > .tabsContainer {
 			flex-direction: column;
 			overflow-y: auto;
 			overflow-x: hidden;
@@ -86,7 +86,7 @@ export default function TabsStyles({ theme }: { theme: Map<string, Map<string, s
 			flex: 1;
 		}
 
-		${PREFIX}._horizontal .tabsSeperator {
+		${PREFIX}._horizontal > .tabsContainer > .tabsSeperator {
 			position: absolute;
 			left: 0;
 			bottom: 0;
@@ -95,7 +95,7 @@ export default function TabsStyles({ theme }: { theme: Map<string, Map<string, s
 			height: 1px;
 		}
 
-		${PREFIX}._vertical .tabsSeperator {
+		${PREFIX}._vertical > .tabsContainer >  .tabsSeperator {
 			position: absolute;
 			right: 0;
 			top: 0;

@@ -21,7 +21,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Preview background color',
 		description: 'The background color of Preview.',
 		defaultValue: '<lightFontColor>',
-		selector: '.previewContainer',
+		selector: '._previewContainer',
 	},
 	{
 		name: 'previewListGap',
@@ -29,7 +29,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Preview list Gap',
 		description: 'The gap between preview list images.',
 		defaultValue: '8px',
-		selector: '.previewList',
+		selector: '._previewList',
 	},
 	{
 		name: 'previewListMarginWhenRightOrLeft',
@@ -37,7 +37,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Preview List Margin when position Right or Left',
 		description: 'The margin of preview list when position is Right or Left.',
 		defaultValue: '22px 12px',
-		selector: '.previewList',
+		selector: '._previewList',
 	},
 	{
 		name: 'previewListMarginWhenBottom',
@@ -45,7 +45,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Preview List Margin when position Bottom',
 		description: 'The margin of preview list when position Bottom.',
 		defaultValue: '-22px auto 16px',
-		selector: '.previewList.Bottom',
+		selector: '._previewList._Bottom',
 	},
 	{
 		name: 'previewListMarginWhenTop',
@@ -53,7 +53,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Preview List Margin when position Top',
 		description: 'The margin of preview list when position Top.',
 		defaultValue: '-22px auto 16px',
-		selector: '.previewList.Top',
+		selector: '._previewList._Top',
 	},
 	{
 		name: 'previewImageDivWidthWhenRightOrLeft',
@@ -61,7 +61,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Preview Image Div Width when position Right or Left',
 		description: 'The width of preview Image Div when position Right or Left.',
 		defaultValue: '80px',
-		selector: '.previewImageDiv',
+		selector: '._previewImageDiv',
 	},
 	{
 		name: 'previewImageDivHeightWhenRightOrLeft',
@@ -69,7 +69,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Preview Image Div Height when position Right or Left',
 		description: 'The Height of preview Image div when position Right or Left.',
 		defaultValue: '100px',
-		selector: '.previewImageDiv',
+		selector: '._previewImageDiv',
 	},
 	{
 		name: 'previewImageDivBorder',
@@ -77,7 +77,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Preview Image Div Border',
 		description: 'The Border of preview Image Div.',
 		defaultValue: '2px solid grey',
-		selector: '.previewImageDiv',
+		selector: '._previewImageDiv',
 	},
 	{
 		name: 'previewImageDivBorderWhenSelected',
@@ -85,7 +85,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Preview Image Div Border When Selected',
 		description: 'The Border of preview Image Div When Selected.',
 		defaultValue: '2px solid blue',
-		selector: '.previewImageDiv.selected',
+		selector: '._previewImageDiv._selected',
 	},
 	{
 		name: 'previewImageDivBorderRadius',
@@ -93,7 +93,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Preview Image Div Border Radius',
 		description: 'The border radius of preview Image Div.',
 		defaultValue: '4px',
-		selector: '.previewImageDiv',
+		selector: '._previewImageDiv',
 	},
 	{
 		name: 'previewImageDivWidthWhenTop',
@@ -101,7 +101,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Preview Image Div Width when position Top',
 		description: 'The width of preview Image Div when position Top.',
 		defaultValue: '100px',
-		selector: '.previewImageDiv.Top',
+		selector: '._previewImageDiv._Top',
 	},
 	{
 		name: 'previewImageDivHeightWhenTop',
@@ -109,7 +109,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Preview Image Div Height when position Top',
 		description: 'The Height of preview Image Div when position Top.',
 		defaultValue: '80px',
-		selector: '.previewImageDiv.Top',
+		selector: '._previewImageDiv._Top',
 	},
 	{
 		name: 'previewImageDivWidthWhenBottom',
@@ -117,7 +117,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Preview Image Div Width when position Bottom',
 		description: 'The width of preview Image Div when position Bottom.',
 		defaultValue: '100px',
-		selector: '.previewImageDiv.Bottom',
+		selector: '._previewImageDiv._Bottom',
 	},
 	{
 		name: 'previewImageDivHeightWhenBottom',
@@ -125,7 +125,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Preview Image Div Height when position Bottom',
 		description: 'The Height of preview Image Div when position Bottom.',
 		defaultValue: '80px',
-		selector: '.previewImageDiv.Bottom',
+		selector: '._previewImageDiv._Bottom',
 	},
 	{
 		name: 'previewImageBorderRadius',
@@ -133,7 +133,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Preview Image Border Radius',
 		description: 'The border of preview Image.',
 		defaultValue: '3px',
-		selector: '.previewImage',
+		selector: '._previewImage',
 	},
 	{
 		name: 'previewImageObjectFit',
@@ -141,7 +141,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Preview Image Border Radius',
 		description: 'The border of preview Image.',
 		defaultValue: 'cover',
-		selector: '.previewImage',
+		selector: '._previewImage',
 	},
 	{
 		name: 'previewCloseIconMargin',
@@ -149,7 +149,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Preview Image Border Radius',
 		description: 'The border of preview Image.',
 		defaultValue: '10px 14px;',
-		selector: '.previewCloseIcon',
+		selector: '._previewCloseIcon',
 	},
 	{
 		name: 'previewCloseIconFontSize',
@@ -157,7 +157,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Preview Image Border Radius',
 		description: 'The border of preview Image.',
 		defaultValue: '24px;',
-		selector: '.previewCloseIcon i',
+		selector: '._previewCloseIcon i',
 	},
 	{
 		name: 'galleryToolbarRightColumnGap',
@@ -165,7 +165,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Gallery Toolbar Right Column Gap',
 		description: 'The gap between items of gallery Toolbar Right Column.',
 		defaultValue: '20px',
-		selector: '.galleryToolbar .rightColumn',
+		selector: '._galleryToolbar ._rightColumn',
 	},
 	{
 		name: 'galleryToolbarRightColumnPadding',
@@ -173,7 +173,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Gallery Toolbar Right Column Padding',
 		description: 'The padding of gallery Toolbar Right Column.',
 		defaultValue: '10px 12px',
-		selector: '.galleryToolbar .rightColumn',
+		selector: '._galleryToolbar ._rightColumn',
 	},
 	{
 		name: 'galleryToolbarRightColumnBackgroundColor',
@@ -181,7 +181,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Gallery Toolbar Right Column Background Color',
 		description: 'The Background Color of gallery Toolbar Right Column.',
 		defaultValue: 'rgb(24 24 27 / 50%)',
-		selector: '.galleryToolbar .rightColumn',
+		selector: '._galleryToolbar ._rightColumn',
 	},
 	{
 		name: 'galleryToolbarRightColumnIconColor',
@@ -189,7 +189,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Gallery Toolbar Right Column Color',
 		description: 'The Color of gallery Toolbar Right Column.',
 		defaultValue: '<lightFontColor>',
-		selector: '.galleryToolbar .rightColumn i',
+		selector: '._galleryToolbar ._rightColumn i',
 	},
 	{
 		name: 'galleryToolbarRightColumnIconWidth',
@@ -197,7 +197,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Gallery Toolbar Right Column Width',
 		description: 'The widht of gallery Toolbar Right Column.',
 		defaultValue: '24px',
-		selector: '.galleryToolbar .rightColumn i',
+		selector: '._galleryToolbar ._rightColumn i',
 	},
 	{
 		name: 'galleryToolbarRightColumnIconFontSize',
@@ -205,7 +205,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Gallery Toolbar Right Column Font Size',
 		description: 'The Font Size of gallery Toolbar Right Column.',
 		defaultValue: '24px',
-		selector: '.galleryToolbar .rightColumn i',
+		selector: '._galleryToolbar ._rightColumn i',
 	},
 	{
 		name: 'galleryToolbarLeftColumnColor',
@@ -213,7 +213,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Gallery Toolbar Left Column Color',
 		description: 'The Color of gallery Toolbar Left Column.',
 		defaultValue: '<lightFontColor>',
-		selector: '.galleryToolbar .leftColumn',
+		selector: '._galleryToolbar ._leftColumn',
 	},
 	{
 		name: 'galleryToolbarLeftColumnMargin',
@@ -221,7 +221,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Gallery Toolbar Left Column Width',
 		description: 'The widht of gallery Toolbar Left Column.',
 		defaultValue: '0 12px',
-		selector: '.galleryToolbar .leftColumn',
+		selector: '._galleryToolbar ._leftColumn',
 	},
 	{
 		name: 'galleryToolbarLeftColumnFontSize',
@@ -229,7 +229,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Gallery Toolbar Right Column Font Size',
 		description: 'The Font Size of gallery Toolbar Right Column.',
 		defaultValue: '18px',
-		selector: '.galleryToolbar .leftColumn',
+		selector: '._galleryToolbar ._leftColumn',
 	},
 	{
 		name: 'thumbnailContainerGap',
@@ -237,7 +237,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Thumbnail Container Gap',
 		description: 'The Gap between items in Thumbnail Container.',
 		defaultValue: '8px',
-		selector: '.thumbnailContainer',
+		selector: '._thumbnailContainer',
 	},
 	{
 		name: 'thumbnailContainerMaxHeightWhenTopOrBottom',
@@ -245,7 +245,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Thumbnail Container Max Height when position Top or Bottom',
 		description: 'The Max Height of Thumbnail Container when position Top or Bottom.',
 		defaultValue: '90px',
-		selector: '.thumbnailContainer',
+		selector: '._thumbnailContainer',
 	},
 	{
 		name: 'thumbnailContainerwidthWhenTopOrBottom',
@@ -253,7 +253,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Thumbnail Container Width when position Top or Bottom',
 		description: 'The Width of Thumbnail Container when position Top or Bottom.',
 		defaultValue: '80%',
-		selector: '.thumbnailContainer',
+		selector: '._thumbnailContainer',
 	},
 	{
 		name: 'thumbnailContainerMarginWhenBottom',
@@ -261,7 +261,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Thumbnail Container Margin when position Bottom',
 		description: 'The Margin of Thumbnail Container when position Bottom.',
 		defaultValue: '8px auto',
-		selector: '.thumbnailContainer',
+		selector: '._thumbnailContainer',
 	},
 	{
 		name: 'thumbnailContainerMarginWhenTop',
@@ -269,7 +269,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Thumbnail Container Margin when position Top',
 		description: 'The Margin of Thumbnail Container when position Top.',
 		defaultValue: '50px auto 8px auto',
-		selector: '.thumbnailContainer.thumbnailTop',
+		selector: '._thumbnailContainer._thumbnailTop',
 	},
 	{
 		name: 'thumbnailContainerMarginWhenRight',
@@ -277,7 +277,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Thumbnail Container Margin when position Right',
 		description: 'The Margin of Thumbnail Container when position Right.',
 		defaultValue: '0 10px;',
-		selector: '.thumbnailContainer.thumbnailRight',
+		selector: '._thumbnailContainer._thumbnailRight',
 	},
 	{
 		name: 'thumbnailContainerMarginWhenLeft',
@@ -285,7 +285,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Thumbnail Container Margin when position Left',
 		description: 'The Margin of Thumbnail Container when position Left.',
 		defaultValue: '0 10px',
-		selector: '.thumbnailContainer.thumbnailLeft',
+		selector: '._thumbnailContainer._thumbnailLeft',
 	},
 	{
 		name: 'thumbnailContainerHeightWhenRight',
@@ -293,7 +293,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Thumbnail Container Height when position Right',
 		description: 'The Height of Thumbnail Container when position Right.',
 		defaultValue: '80%',
-		selector: '.thumbnailContainer.thumbnailRight',
+		selector: '._thumbnailContainer._thumbnailRight',
 	},
 	{
 		name: 'thumbnailContainerHeightWhenLeft',
@@ -301,7 +301,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Thumbnail Container Height when position Left',
 		description: 'The Height of Thumbnail Container when position Left.',
 		defaultValue: '80%',
-		selector: '.thumbnailContainer.thumbnailLeft',
+		selector: '._thumbnailContainer._thumbnailLeft',
 	},
 	{
 		name: 'thumbnailContainerMaxWidthWhenRight',
@@ -309,7 +309,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Thumbnail Container Max Width when position Right',
 		description: 'The Max Width of Thumbnail Container when position Right.',
 		defaultValue: '140px',
-		selector: '.thumbnailContainer.thumbnailRight',
+		selector: '._thumbnailContainer._thumbnailRight',
 	},
 	{
 		name: 'thumbnailContainerMaxWidthWhenLeft',
@@ -317,7 +317,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Thumbnail Container Max Width when position Left',
 		description: 'The Max Width of Thumbnail Container when position Left.',
 		defaultValue: '140px',
-		selector: '.thumbnailContainer.thumbnailLeft',
+		selector: '._thumbnailContainer._thumbnailLeft',
 	},
 	{
 		name: 'thumbnailImageDivHeight',
@@ -325,7 +325,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Thumbnail Image Div Height',
 		description: 'The Height of Thumbnail Image Div.',
 		defaultValue: '80px',
-		selector: '.thumbnailImageDiv',
+		selector: '._thumbnailImageDiv',
 	},
 	{
 		name: 'thumbnailImageDivWidth',
@@ -333,7 +333,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Thumbnail Image Div Width',
 		description: 'The Width of Thumbnail Image Div.',
 		defaultValue: '120px',
-		selector: '.thumbnailImageDiv',
+		selector: '._thumbnailImageDiv',
 	},
 	{
 		name: 'thumbnailImageDivBorder',
@@ -341,7 +341,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Thumbnail Image Div Border',
 		description: 'The Border of Thumbnail Image Div.',
 		defaultValue: '1px solid grey',
-		selector: '.thumbnailImageDiv',
+		selector: '._thumbnailImageDiv',
 	},
 	{
 		name: 'thumbnailImageDivBorderRadius',
@@ -349,7 +349,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Thumbnail Image Div Border Radius',
 		description: 'The Border Radius of Thumbnail Image Div.',
 		defaultValue: '4px',
-		selector: '.thumbnailImageDiv',
+		selector: '._thumbnailImageDiv',
 	},
 	{
 		name: 'thumbnailImageBorderRadius',
@@ -357,7 +357,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Thumbnail Image Border Radius',
 		description: 'The border of Thumbnail Image.',
 		defaultValue: '3px',
-		selector: '.thumbnailImage',
+		selector: '._thumbnailImage',
 	},
 	{
 		name: 'thumbnailImageObjectFit',
@@ -365,7 +365,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Thumbnail Image Border Radius',
 		description: 'The border of Thumbnail Image.',
 		defaultValue: 'cover',
-		selector: '.thumbnailImage',
+		selector: '._thumbnailImage',
 	},
 	{
 		name: 'slideImageObjectFit',
@@ -373,7 +373,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Slide Image Border Radius',
 		description: 'The border of Slide Image.',
 		defaultValue: 'cover',
-		selector: '.slideImage',
+		selector: '._slideImage',
 	},
 	{
 		name: 'arrowButtonContainerPadding',
@@ -381,7 +381,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Arrow Button Container Padding',
 		description: 'The padding of Arrow Button Container.',
 		defaultValue: '0 10px',
-		selector: '.arrowButtonsContainer',
+		selector: '._arrowButtonsContainer',
 	},
 	{
 		name: 'arrowButtonColor',
@@ -389,7 +389,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Arrow Button Container Color',
 		description: 'The Color of Arrow Button.',
 		defaultValue: '<lightFontColor>',
-		selector: '.button',
+		selector: '._button',
 	},
 	{
 		name: 'arrowButtonFontSize',
@@ -397,7 +397,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Arrow Button Container Font Size',
 		description: 'The Font Size of Arrow Button.',
 		defaultValue: '50px',
-		selector: '.button',
+		selector: '._button',
 	},
 ];
 
