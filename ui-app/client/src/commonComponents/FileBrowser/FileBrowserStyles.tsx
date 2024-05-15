@@ -165,6 +165,10 @@ export function FileBrowserStyles() {
         z-index: 1;
     }
 
+    ._fileBrowser ._files ._eachFile._directory:hover {
+        background-color: #E8E8E8;
+    }
+
     ._fileBrowser ._pathContainer {
         display: flex;
         gap: 5px;
@@ -181,6 +185,7 @@ export function FileBrowserStyles() {
     
     }
 
+    ._fileBrowser ._pathPart:hover,
     ._fileBrowser ._pathPart:last-child {
         font-weight: bold;
     } 
@@ -194,6 +199,54 @@ export function FileBrowserStyles() {
 
     ._fileBrowser ._progressBar svg {
         animation: _tada 2s linear infinite;
+    }
+
+    ._fileBrowser button:disabled {
+        border-color: #d9d9d9;
+        color: #d9d9d9;
+    }
+
+    ._fileBrowser ._confirmationBox {
+        position: absolute;
+        background: #0003;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 2;
+    }
+
+    ._fileBrowser ._confirmationBoxContent {
+        background: #FFF;
+        padding: 10px;
+        border-radius: 4px;
+    }
+
+    ._fileBrowser ._confirmationBoxButtons {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+    }
+
+    ._fileBrowser ._eachFile ._deleteInner {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 2;
+        display: none;
+    }
+
+    ._fileBrowser ._eachFile:hover ._deleteInner {
+        display: flex;
+    }
+
+    ._fileBrowser ._deleteInner svg {
+        width: 16px;
+    }
+
+    ._fileBrowser ._deleteInner:hover {
+        transform: scale(1.1);
     }
 
     `;

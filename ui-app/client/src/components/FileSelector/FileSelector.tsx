@@ -42,6 +42,7 @@ function FileSelector(props: ComponentProps) {
 			fileCategory,
 			selectionType,
 			hideUploadFile,
+			hideDelete,
 			hideCreateFolder,
 			resourceType,
 			uploadImage,
@@ -145,6 +146,7 @@ function FileSelector(props: ComponentProps) {
 								fileCategory={fileCategory}
 								selectionType={selectionType}
 								hideUploadFile={hideUploadFile}
+								hideDelete={hideDelete}
 								hideCreateFolder={hideCreateFolder}
 								resourceType={resourceType}
 								onChange={onChangeSelection}
@@ -165,6 +167,7 @@ function FileSelector(props: ComponentProps) {
 				fileCategory={fileCategory}
 				selectionType={selectionType}
 				hideUploadFile={hideUploadFile}
+				hideDelete={hideDelete}
 				hideCreateFolder={hideCreateFolder}
 				resourceType={resourceType}
 				onChange={onChangeSelection}

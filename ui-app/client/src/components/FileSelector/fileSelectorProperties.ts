@@ -70,7 +70,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'fileCategory',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'File Category',
-		defaultValue: '',
 		enumValues: [
 			{ name: '', displayName: 'All' },
 			{ name: 'FILES', displayName: 'Files Only' },

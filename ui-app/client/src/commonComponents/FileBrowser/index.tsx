@@ -62,7 +62,7 @@ interface FileBrowserProps {
 	hideUploadFile?: boolean;
 	hideCreateFolder?: boolean;
 	hideDelete?: boolean;
-	fileCategory?: string;
+	fileCategory?: string[];
 }
 
 export function FileBrowser({
@@ -81,7 +81,7 @@ export function FileBrowser({
 	fileCategory,
 }: FileBrowserProps) {
 	const [filter, setFilter] = useState('');
-	const [path, setInternalPath] = useState(startLocation ?? '/');
+	const [path, setPath] = useState(startLocation ?? '/');
 	const [files, setFiles] = useState<any>();
 	const [inProgress, setInProgress] = useState(false);
 	const [newFolder, setNewFolder] = useState(false);
@@ -93,13 +93,14 @@ export function FileBrowser({
 	const [override, setOverride] = useState<boolean>(false);
 	const [showOverrideCheckbox, setShowOverrideCheckbox] = useState<boolean>(false);
 	const [somethingChanged, setSomethingChanged] = useState(Date.now());
+	const [deleteObject, setDeleteObject] = useState<{ name: string; url: string } | undefined>();
 
-	const setPath = useCallback(
+	const setPathAndClearFilter = useCallback(
 		(v: string) => {
-			setInternalPath(v);
+			setPath(v);
 			setFilter('');
 		},
-		[setInternalPath, setFilter],
+		[setPath, setFilter],
 	);
 
 	const headers: any = {
@@ -107,14 +108,17 @@ export function FileBrowser({
 	};
 	if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
 
-	useEffect(() => setPath(startLocation ?? '/'), [startLocation, setPath]);
+	useEffect(
+		() => setPathAndClearFilter(startLocation ?? '/'),
+		[startLocation, setPathAndClearFilter],
+	);
 
 	useEffect(() => {
 		setInProgress(true);
 
 		(async () => {
 			let url = `api/files/${resourceType}/${path}?size=200`;
-			if (fileCategory) url += `&fileType=${fileCategory}`;
+			if (fileCategory?.length) url += `&fileType=${fileCategory}`;
 			if (filter.trim() !== '') url += `&filter=${filter}`;
 			await axios
 				.get(url, { headers })
@@ -125,10 +129,10 @@ export function FileBrowser({
 
 	const newFolderDiv = newFolder ? (
 		<div className="_eachFile">
-			<i className={`fa fa-2x fa-solid fa-folder folderIcon`} />
+			<div className="_image" style={{ backgroundImage: `url('${FOLDER_SVG}')` }} />
 			<input
 				type="text"
-				className="_peInput"
+				className="_imageLabel"
 				placeholder="folderName"
 				autoFocus={true}
 				onChange={e => setNewFolderName(e.target.value)}
@@ -194,23 +198,20 @@ export function FileBrowser({
 		</div>
 	);
 
-	const [deleteObject, setDeleteObject] = useState<{ name: string; url: string } | undefined>();
-
 	let confirmationBox;
 
 	if (deleteObject) {
 		confirmationBox = (
 			<div className="_confirmationBox">
 				<div className="_confirmationBoxContent">
-					<p>Are you sure you want to delete {deleteObject.name}?</p>
+					<p>Are you sure you want to delete "{deleteObject.name}" ?</p>
 					<div className="_confirmationBoxButtons">
 						<button
-							onClick={() => {
+							onClick={async () => {
 								setInProgress(true);
-								(async () =>
-									await axios.delete(deleteObject.url, {
-										headers,
-									}))();
+								await axios.delete(deleteObject.url, {
+									headers,
+								});
 								setInProgress(false);
 								setDeleteObject(undefined);
 								setSomethingChanged(Date.now());
@@ -229,21 +230,19 @@ export function FileBrowser({
 
 	if (inProgress)
 		content = (
-			<div className="_progressBar ">
-				<svg xmlns="http://www.w3.org/2000/svg" width="44" height="70" viewBox="0 0 54 70">
-					<path
-						id="Subtraction_4"
-						data-name="Subtraction 4"
-						d="M-2077-648h-36a8.888,8.888,0,0,1-9-8.75v-52.5a8.888,8.888,0,0,1,9-8.75h22.5v17.5a4.444,4.444,0,0,0,4.5,4.375h18v39.375A8.888,8.888,0,0,1-2077-648Zm1-37v9h2v-9Zm-5,0v9h2v-9Zm-5,0v9h2v-9Zm-5,0v9h2v-9Zm-5,0v9h2v-9Zm-5,0v9h2v-9Zm-5,0v9h2v-9Zm-5,0v9h2v-9Zm-5,0v9h2v-9Zm48-15.5h-18V-718l18,17.5Z"
-						transform="translate(2122 718)"
-						fill="#eee"
-					/>
-				</svg>
-			</div>
+			<svg xmlns="http://www.w3.org/2000/svg" width="44" height="70" viewBox="0 0 54 70">
+				<path
+					id="Subtraction_4"
+					data-name="Subtraction 4"
+					d="M-2077-648h-36a8.888,8.888,0,0,1-9-8.75v-52.5a8.888,8.888,0,0,1,9-8.75h22.5v17.5a4.444,4.444,0,0,0,4.5,4.375h18v39.375A8.888,8.888,0,0,1-2077-648Zm1-37v9h2v-9Zm-5,0v9h2v-9Zm-5,0v9h2v-9Zm-5,0v9h2v-9Zm-5,0v9h2v-9Zm-5,0v9h2v-9Zm-5,0v9h2v-9Zm-5,0v9h2v-9Zm-5,0v9h2v-9Zm48-15.5h-18V-718l18,17.5Z"
+					transform="translate(2122 718)"
+					fill="#eee"
+				/>
+			</svg>
 		);
 	else
 		content = (
-			<div className="_files">
+			<>
 				{newFolderDiv}
 				{files?.content?.map((e: any) => {
 					let backgroundImage;
@@ -261,30 +260,57 @@ export function FileBrowser({
 
 					const selectable = isSelectable(e, selectionType, restrictSelectionType);
 
+					let deletButton;
+
+					if (!hideDelete && e.directory && selectionType === '_files') {
+						deletButton = (
+							<div
+								className="_deleteInner"
+								title="Delete"
+								tabIndex={0}
+								onClick={ev => {
+									ev.stopPropagation();
+									ev.preventDefault();
+									setDeleteObject(e);
+								}}
+							>
+								<svg viewBox="0 0 22 24">
+									<path
+										fill="currentColor"
+										d="M8.373,2.419,7.44,3.75H14.56l-.933-1.331A.406.406,0,0,0,13.3,2.25H8.7a.394.394,0,0,0-.329.169Zm7.219-1.247,1.8,2.578h3.428A1.15,1.15,0,0,1,22,4.875,1.15,1.15,0,0,1,20.821,6h-.393V20.25A3.841,3.841,0,0,1,16.5,24H5.5a3.841,3.841,0,0,1-3.929-3.75V6H1.179A1.15,1.15,0,0,1,0,4.875,1.15,1.15,0,0,1,1.179,3.75H4.606l1.8-2.583A2.8,2.8,0,0,1,8.7,0h4.6a2.8,2.8,0,0,1,2.288,1.167ZM3.929,6V20.25A1.535,1.535,0,0,0,5.5,21.75h11a1.535,1.535,0,0,0,1.571-1.5V6ZM7.857,9v9.75a.787.787,0,0,1-1.571,0V9A.787.787,0,0,1,7.857,9Zm3.929,0v9.75a.787.787,0,0,1-1.571,0V9a.787.787,0,0,1,1.571,0Zm3.929,0v9.75a.787.787,0,0,1-1.571,0V9a.787.787,0,0,1,1.571,0Z"
+									/>
+								</svg>
+							</div>
+						);
+					}
+
 					return (
 						<div
 							key={e.name}
 							title={`${e.name}`}
-							className={`_eachFile ${selectable ? '_selectable' : ''} ${
-								e.name === fileSelection?.name ? '_selected' : ''
-							} `}
-							onClick={
-								selectable
-									? () =>
-											setFileSelection(
-												e.name === fileSelection?.name ? undefined : e,
-											)
-									: undefined
-							}
+							className={`_eachFile ${e.directory ? '_directory' : ''} ${
+								selectable ? '_selectable' : ''
+							} ${e.name === fileSelection?.name ? '_selected' : ''} `}
+							onClick={() => {
+								if (selectable) {
+									setFileSelection(
+										e.name === fileSelection?.name ? undefined : e,
+									);
+									return;
+								}
+								if (!e.directory || selectionType != '_files') return;
+								setPathAndClearFilter(e.filePath);
+							}}
 							onDoubleClick={() => {
 								if (e.directory) {
-									setPath(e.filePath);
+									setPathAndClearFilter(e.filePath);
 									return;
 								}
 								setFileSelection(e);
 								onChange(e.url);
 							}}
 						>
+							{deletButton}
 							<div className="_image" style={{ backgroundImage }} />
 							<p className="_imageLabel">
 								{e.name && e.name.length < 19
@@ -294,7 +320,7 @@ export function FileBrowser({
 						</div>
 					);
 				})}
-			</div>
+			</>
 		);
 
 	let actualPath = path ?? '/';
@@ -317,7 +343,11 @@ export function FileBrowser({
 		const eachPart = [];
 		const spath = arr.slice(0, i + 1).join('/');
 		eachPart.push(
-			<div className="_pathPart" key={e} onClick={() => setPath(spath == '' ? '/' : spath)}>
+			<div
+				className="_pathPart"
+				key={e}
+				onClick={() => setPathAndClearFilter(spath == '' ? '/' : spath)}
+			>
 				{e !== '' ? e : 'All'}
 			</div>,
 		);
@@ -332,6 +362,22 @@ export function FileBrowser({
 
 	paths.pop();
 
+	let deletButton;
+
+	if (!hideDelete) {
+		deletButton = (
+			<button
+				className="_deleteBtn"
+				title="Delete"
+				tabIndex={0}
+				disabled={!fileSelection}
+				onClick={() => setDeleteObject(fileSelection)}
+			>
+				Delete
+			</button>
+		);
+	}
+
 	return (
 		<div className="_fileBrowser">
 			<div className="_searchUploadContainer">
@@ -344,17 +390,11 @@ export function FileBrowser({
 						onChange={e => setFilter(e.target.value)}
 					/>
 				</div>
-				<button
-					title="Create New Folder"
-					className="_createFolderBtn"
-					tabIndex={0}
-					onClick={() => {
-						if (inProgress) return;
-						setNewFolder(true);
-					}}
-				>
-					Create folder
-				</button>
+				<CreateButton
+					hideCreateFolder={hideCreateFolder}
+					onClick={() => (inProgress ? undefined : setNewFolder(true))}
+					fileCategory={fileCategory}
+				/>
 				{uploadDiv}
 			</div>
 			<div className="_filesContainer">
@@ -362,22 +402,14 @@ export function FileBrowser({
 					<div
 						className="_pathFolderImage"
 						style={{ backgroundImage: `url('${FOLDER_SVG}')` }}
+						onClick={() => setPathAndClearFilter(startLocation ?? '/')}
 					/>
 					<Sperator />
 					{paths}
 				</div>
-				{content}
+				<div className={`_files ${inProgress ? '_progressBar' : ''}`}>{content}</div>
 			</div>
 			<div className="_editBtnContainer">
-				<button
-					className="_deleteBtn"
-					title="Delete"
-					tabIndex={0}
-					disabled={!fileSelection}
-					onClick={() => {}}
-				>
-					Delete
-				</button>
 				<button
 					className="_editBtn"
 					title="Edit"
@@ -387,7 +419,7 @@ export function FileBrowser({
 				>
 					Edit
 				</button>
-
+				{deletButton}
 				<button
 					className="_selectBtn"
 					title="Select"
@@ -398,7 +430,45 @@ export function FileBrowser({
 					Select
 				</button>
 			</div>
+			{confirmationBox}
 		</div>
+	);
+}
+
+function CreateButton({
+	hideCreateFolder,
+	onClick,
+	fileCategory,
+}: {
+	hideCreateFolder?: boolean;
+	onClick: () => void;
+	fileCategory?: string[];
+}) {
+	if (hideCreateFolder) return <></>;
+
+	if (fileCategory?.length) {
+		let found = false;
+		for (let cat of fileCategory) {
+			if (cat === 'DIRECTORIES' || cat === '') {
+				found = true;
+				break;
+			}
+		}
+
+		if (!found) {
+			return <></>;
+		}
+	}
+
+	return (
+		<button
+			title="Create New Folder"
+			className="_createFolderBtn"
+			tabIndex={0}
+			onClick={onClick}
+		>
+			Create folder
+		</button>
 	);
 }
 
