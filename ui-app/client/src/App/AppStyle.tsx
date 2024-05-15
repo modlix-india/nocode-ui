@@ -141,6 +141,10 @@ export default function AppStyle() {
 		grid-template-columns: 1fr;
 	}
 
+	.taskList {
+		list-style: none;
+	}
+
 	@media screen and (min-width: ${TABLET_MIN_WIDTH}px) {
 	
 		._FIVECOLUMNSLAYOUT,
