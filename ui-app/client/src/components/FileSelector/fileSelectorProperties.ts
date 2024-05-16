@@ -61,6 +61,48 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
+		name: 'cropToWidth',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Crop to Width in pixels',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'cropToHeight',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Crop to Height in pixels',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'cropToCircle',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Crop to Circle (width is considered as diameter)',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'cropToMaxWidth',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Crop to Max Width',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'cropToMaxHeight',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Crop to Max Height',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'cropToMinWidth',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Crop to Min Width',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'cropToMinHeight',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Crop to Min Height',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
 		name: 'selectionType',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Selection Type',
@@ -125,6 +167,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Restrict Navigation to folders above',
 		defaultValue: false,
 		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'editOnUpload',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Edit on Upload',
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
 	},
 	{
 		name: 'validation',

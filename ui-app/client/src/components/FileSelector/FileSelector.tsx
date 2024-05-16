@@ -50,6 +50,14 @@ function FileSelector(props: ComponentProps) {
 			readOnly,
 			designType,
 			validation,
+			cropToWidth,
+			cropToHeight,
+			cropToCircle,
+			cropToMaxWidth,
+			cropToMaxHeight,
+			cropToMinWidth,
+			cropToMinHeight,
+			editOnUpload,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -152,6 +160,14 @@ function FileSelector(props: ComponentProps) {
 								hideEdit={hideEdit}
 								resourceType={resourceType}
 								onChange={onChangeSelection}
+								cropToWidth={cropToWidth}
+								cropToHeight={cropToHeight}
+								cropToCircle={cropToCircle}
+								cropToMaxWidth={cropToMaxWidth}
+								cropToMaxHeight={cropToMaxHeight}
+								cropToMinWidth={cropToMinWidth}
+								cropToMinHeight={cropToMinHeight}
+								editOnUpload={editOnUpload}
 							/>
 						</div>
 					</div>
@@ -174,6 +190,14 @@ function FileSelector(props: ComponentProps) {
 				hideEdit={hideEdit}
 				resourceType={resourceType}
 				onChange={onChangeSelection}
+				cropToWidth={cropToWidth}
+				cropToHeight={cropToHeight}
+				cropToCircle={cropToCircle}
+				cropToMaxWidth={cropToMaxWidth}
+				cropToMaxHeight={cropToMaxHeight}
+				cropToMinWidth={cropToMinWidth}
+				cropToMinHeight={cropToMinHeight}
+				editOnUpload={editOnUpload}
 			/>
 		);
 	}

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { RangeSlider } from '../../components/PageEditor/editors/stylePropertyValueEditors/simpleEditors/RangeSlider';
+import { RangeSlider } from '../RangeSlider';
 import axios from 'axios';
 import { ColorSelector } from '../../components/PageEditor/editors/stylePropertyValueEditors/simpleEditors/ColorSelector';
 

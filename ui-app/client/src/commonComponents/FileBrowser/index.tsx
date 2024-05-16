@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { LOCAL_STORE_PREFIX } from '../../constants';
 import { getDataFromPath } from '../../context/StoreContext';
 import { shortUUID } from '../../util/shortUUID';
+import { ImageResizer2 } from './ImageResizer2';
 
 const RESIZABLE_EXT = new Set<string>(['jpg', 'jpeg', 'jpe', 'webp', 'png', 'avif']);
 
@@ -62,6 +63,14 @@ interface FileBrowserProps {
 	hideDelete?: boolean;
 	hideEdit?: boolean;
 	fileCategory?: string[];
+	cropToWidth?: number;
+	cropToHeight?: number;
+	cropToCircle?: boolean;
+	cropToMaxWidth?: number;
+	cropToMaxHeight?: number;
+	cropToMinWidth?: number;
+	cropToMinHeight?: number;
+	editOnUpload: boolean;
 }
 
 export function FileBrowser({
@@ -79,6 +88,14 @@ export function FileBrowser({
 	hideCreateFolder,
 	hideDelete,
 	fileCategory,
+	cropToWidth,
+	cropToHeight,
+	cropToCircle,
+	cropToMaxWidth,
+	cropToMaxHeight,
+	cropToMinWidth,
+	cropToMinHeight,
+	editOnUpload,
 }: FileBrowserProps) {
 	const [filter, setFilter] = useState('');
 	const [path, setPath] = useState(startLocation ?? '/');
@@ -86,7 +103,9 @@ export function FileBrowser({
 	const [inProgress, setInProgress] = useState(false);
 	const [newFolder, setNewFolder] = useState(false);
 	const [newFolderName, setNewFolderName] = useState('');
-	const [showImageResizerPopup, setShowImageResizerPopup] = useState(false);
+	const [file, setFile] = useState<any>();
+	const [imageResizerURL, setImageResizerURL] = useState('');
+	const [showFullScreen, setShowFullScreen] = useState(false);
 	const [fileSelection, setFileSelection] = useState<any>();
 	const [somethingChanged, setSomethingChanged] = useState(Date.now());
 	const [deleteObject, setDeleteObject] = useState<any>();
@@ -166,7 +185,7 @@ export function FileBrowser({
 		<></>
 	);
 
-	const uploadDiv = (
+	const uploadDiv = hideUploadFile ? undefined : (
 		<div className="_upload">
 			<svg width="14" height="14" viewBox="0 0 14 14">
 				<path
@@ -177,9 +196,52 @@ export function FileBrowser({
 			Upload from device
 			<input
 				className="_peInput"
+				key={shortUUID()}
 				type="file"
 				onChange={async e => {
-					if (e.target.files?.length === 0) return;
+					if (e.target.files?.length !== 1) return;
+
+					const file = e.target.files[0];
+					if (fileUploadSizeLimit && file.size > fileUploadSizeLimit * 1000 * 1000) {
+						alert('File size exceeds the limit');
+						return;
+					}
+
+					const extension = file.name.split('.').pop()?.toLowerCase();
+					if (
+						restrictUploadType &&
+						!restrictUploadType.split(',').includes(extension ?? '')
+					) {
+						alert(
+							'File type not allowed, please upload only of type ' +
+								restrictUploadType,
+						);
+						return;
+					}
+
+					if (editOnUpload && RESIZABLE_EXT.has(extension ?? '')) {
+						var fr = new FileReader();
+						fr.onload = function () {
+							if (!fr.result || typeof fr.result != 'string') return;
+							setFile(file);
+							setImageResizerURL(fr.result);
+						};
+						fr.readAsDataURL(file);
+						return;
+					}
+
+					const formData = new FormData();
+					formData.append('file', file);
+					setInProgress(true);
+					try {
+						await axios.post(`/api/files/${resourceType}/${path}`, formData, {
+							headers,
+						});
+					} catch (e) {
+					} finally {
+						setInProgress(false);
+						setSomethingChanged(Date.now());
+					}
 				}}
 			/>
 		</div>
@@ -375,9 +437,59 @@ export function FileBrowser({
 
 	if (!hideEdit && RESIZABLE_EXT.has(fileSelection?.type?.toLowerCase() ?? '')) {
 		editButton = (
-			<button className="_editBtn" title="Edit" tabIndex={0} onClick={() => {}}>
+			<button
+				className="_editBtn"
+				title="Edit"
+				tabIndex={0}
+				onClick={() => setImageResizerURL(fileSelection.url)}
+			>
 				Edit
 			</button>
+		);
+	}
+
+	let imageResizerPopup;
+
+	if (imageResizerURL) {
+		imageResizerPopup = (
+			<div
+				className="_popupBackground"
+				onClick={e => {
+					if (e.target !== e.currentTarget) return;
+					setImageResizerURL('');
+					setFile(undefined);
+				}}
+			>
+				<div
+					className={`_popupContainer  _imageResizerContainer ${
+						showFullScreen ? '_fullScreen' : ''
+					}`}
+				>
+					<div
+						className="_fullScreenButton"
+						onClick={() => setShowFullScreen(!showFullScreen)}
+					>
+						{showFullScreen ? <ToSmallScreen /> : <ToFullScreen />}
+					</div>
+					<ImageResizer2
+						url={imageResizerURL}
+						cropToWidth={cropToWidth}
+						cropToHeight={cropToHeight}
+						cropToCircle={cropToCircle}
+						cropToMaxWidth={cropToMaxWidth}
+						cropToMaxHeight={cropToMaxHeight}
+						cropToMinWidth={cropToMinWidth}
+						cropToMinHeight={cropToMinHeight}
+						onClose={() => {
+							setImageResizerURL('');
+							setFile(undefined);
+						}}
+						onSave={async (props: any) => {
+							console.log(props);
+						}}
+					/>
+				</div>
+			</div>
 		);
 	}
 
@@ -426,6 +538,7 @@ export function FileBrowser({
 				</button>
 			</div>
 			{confirmationBox}
+			{imageResizerPopup}
 		</div>
 	);
 }
@@ -497,4 +610,76 @@ function isSelectable(
 	else if (selectionType === '_folders' && !file.directory) return false;
 
 	return true;
+}
+
+function ToFullScreen() {
+	return (
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			width="50.892"
+			height="44.667"
+			viewBox="0 0 50.892 44.667"
+		>
+			<g
+				id="Group_113"
+				data-name="Group 113"
+				transform="matrix(0.602, 0.799, -0.799, 0.602, 256.993, -869.183)"
+			>
+				<path
+					id="Path_289"
+					data-name="Path 289"
+					d="M47.041,7.793h0a1.887,1.887,0,0,1,0,2.679l0,0a1.885,1.885,0,0,1-2.677,0h0L41.416,7.5l-.684-.69V20.565a1.885,1.885,0,1,1-3.77,0V6.813l-.684.69-2.947,2.971h0a1.895,1.895,0,0,1-2.678-2.682L37.5.938a1.884,1.884,0,0,1,.619-.393h0l.007,0a1.884,1.884,0,0,1,1.432,0h0l.007,0a1.886,1.886,0,0,1,.619.393Z"
+					transform="translate(533.8 696.524)"
+					stroke="#fff"
+					strokeWidth="0.8"
+					fill="currentColor"
+				/>
+				<path
+					id="Path_290"
+					data-name="Path 290"
+					d="M47.041,7.793h0a1.887,1.887,0,0,1,0,2.679l0,0a1.885,1.885,0,0,1-2.677,0h0L41.416,7.5l-.684-.69V20.565a1.885,1.885,0,1,1-3.77,0V6.813l-.684.69-2.947,2.971h0a1.895,1.895,0,0,1-2.678-2.682L37.5.938a1.884,1.884,0,0,1,.619-.393h0l.007,0a1.884,1.884,0,0,1,1.432,0h0l.007,0a1.886,1.886,0,0,1,.619.393Z"
+					transform="translate(611.497 746.376) rotate(180)"
+					stroke="#fff"
+					strokeWidth="0.8"
+					fill="currentColor"
+				/>
+			</g>
+		</svg>
+	);
+}
+
+function ToSmallScreen() {
+	return (
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			width="50.828"
+			height="44.619"
+			viewBox="0 0 50.828 44.619"
+		>
+			<g
+				id="Group_114"
+				data-name="Group 114"
+				transform="matrix(0.602, 0.799, -0.799, 0.602, 256.961, -869.208)"
+			>
+				<path
+					id="Path_289"
+					data-name="Path 289"
+					d="M47.041,7.793h0a1.887,1.887,0,0,1,0,2.679l0,0a1.885,1.885,0,0,1-2.677,0h0L41.416,7.5l-.684-.69V20.565a1.885,1.885,0,1,1-3.77,0V6.813l-.684.69-2.947,2.971h0a1.895,1.895,0,0,1-2.678-2.682L37.5.938a1.884,1.884,0,0,1,.619-.393h0l.007,0a1.884,1.884,0,0,1,1.432,0h0l.007,0a1.886,1.886,0,0,1,.619.393Z"
+					transform="translate(533.8 723.524)"
+					stroke="#fff"
+					strokeWidth="0.8"
+					fill="currentColor"
+				/>
+				<path
+					id="Path_290"
+					data-name="Path 290"
+					d="M47.041,7.793h0a1.887,1.887,0,0,1,0,2.679l0,0a1.885,1.885,0,0,1-2.677,0h0L41.416,7.5l-.684-.69V20.565a1.885,1.885,0,1,1-3.77,0V6.813l-.684.69-2.947,2.971h0a1.895,1.895,0,0,1-2.678-2.682L37.5.938a1.884,1.884,0,0,1,.619-.393h0l.007,0a1.884,1.884,0,0,1,1.432,0h0l.007,0a1.886,1.886,0,0,1,.619.393Z"
+					transform="translate(611.497 719.376) rotate(180)"
+					stroke="#fff"
+					strokeWidth="0.8"
+					fill="currentColor"
+				/>
+			</g>
+		</svg>
+	);
 }

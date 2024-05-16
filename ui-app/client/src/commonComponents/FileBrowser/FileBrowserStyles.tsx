@@ -249,6 +249,248 @@ export function FileBrowserStyles() {
         transform: scale(1.1);
     }
 
+    ._fileBrowser ._popupBackground {
+		background: #0004;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 100vw;
+		height: 100vh;
+	}
+
+	._fileBrowser ._popupBackground ._popupContainer {
+		background-color: #fff;
+		padding: 20px;
+		border-radius: 3px;
+		max-width: 60vw;
+		max-height: 60vh;
+		display: flex;
+		flex-direction: column;
+		gap: 15px;
+		position: relative;
+	}
+
+	._fileBrowser ._popupBackground ._popupContainer._fullScreen {
+		max-width: 95vw;
+		max-height: 95vh;
+		width: 95vw;
+		height: 95vh;
+	}
+
+    ._fileBrowser ._imageResizer {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    ._fileBrowser ._imageResizerHeader {
+        color: #FFF;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-left: 20px;
+        min-width: 600px;
+        background-color: #427EE4;
+        height: 40px;
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
+    }
+
+    ._fileBrowser ._imageResizerBody {
+        border-width: 0px 1px 1px 1px;
+        border-style: solid;
+        border-color: #d9d9d9;
+        border-bottom-left-radius: 3px;
+        border-bottom-right-radius: 3px;
+    }
+
+    ._fileBrowser ._imageResizerFooter {
+        display: flex;
+        margin-top: 15px;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    ._fileBrowser ._popupBackground ._popupContainer._imageResizerContainer {
+        max-width: -webkit-fill-available;
+        max-height: -webkit-fill-available;
+        min-width: 600px;
+        min-height: 500px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    ._fileBrowser ._popupContainer._imageResizerContainer ._imageResizerBody {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        position: relative;
+    }
+
+    ._fileBrowser ._popupContainer._imageResizerContainer ._imageResizerBody ._imagePreviewer {
+        flex: 1;
+        background-image:
+            linear-gradient(45deg, #EDEDED 25%, transparent 25%),
+            linear-gradient(45deg, transparent 75%, #EDEDED 75%),
+            linear-gradient(45deg, transparent 75%, #EDEDED 75%),
+            linear-gradient(45deg, #EDEDED 25%, #fff 25%);    
+
+        background-size: 20px 20px;       
+        background-position: 0 0, 0 0, -10px -10px, 10px 10px;
+        box-shadow: inset 0px 0px 5px #0004;
+        overflow: auto;
+        position: relative;
+    }
+
+    ._fileBrowser ._imagePreviewer img {
+        position: absolute;
+        transform-origin: 0 0;
+        top: 0px;
+        transition: all linear 0.3s;
+    }
+
+    ._fileBrowser ._imageSizeDisplayer {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        border: 3px dotted transparent;
+        z-index: 1;
+    }
+
+    ._fileBrowser ._imagePreviewer:hover ._imageSizeDisplayer {
+        border-color: #0004;
+        transition: all linear 0.3s;
+    }
+
+    ._fileBrowser ._popupContainer._imageResizerContainer._fullScreen ._imageResizerBody {
+        flex-direction: row;
+    }
+
+    ._fileBrowser ._popupContainer._imageResizerContainer._fullScreen ._imageResizerBody ._imageControls {
+        min-width: 300px;
+        flex-grow: 0;
+    }
+
+    ._fileBrowser ._imageZOOM {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: sticky;
+        z-index: 2;
+        left: 20px;
+        top: 10px;
+        background-color: #FFF;
+        border-radius: 5px;
+        box-shadow: 0px 0px 5px #0004;
+        width: 82px;
+    }
+
+    ._fileBrowser ._imageZOOM button {
+        border: none;
+        border-radius: 5px;
+        padding: 5px 10px;
+        box-shadow: none;
+        background-color: #FFF;
+        padding: 3px;
+        width: 25px;
+        height: 25px;
+    }
+
+    ._fileBrowser ._imageZOOM button:first-child {
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
+    }
+
+    ._fileBrowser ._imageZOOM button:last-child {
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+    }
+
+    ._fileBrowser ._imageControls {
+        display: flex;
+        gap: 10px;
+        padding: 10px;
+    }
+
+    ._fileBrowser ._popupContainer._imageResizerContainer._fullScreen ._imageControls {
+        flex-direction: column;
+    }
+
+    ._fileBrowser ._controlGroup {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    ._fileBrowser ._controlHeader {
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+        justify-content: center;
+        align-items: center;
+        height: 30px;
+        border-bottom: 2px solid #427EE4;
+    }
+
+    ._fileBrowser ._controlLabel {
+        font-size: 12px;
+        color: #000000;
+    }
+
+    ._fileBrowser ._controlBody {
+        display: flex;
+        gap: 5px;
+        flex-direction: column;
+        padding: 10px;
+    } 
+
+    ._fileBrowser ._controlBody button {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        justify-content: center;
+        font-size: 12px;
+    }
+
+    ._fileBrowser ._controlValue {
+        display: flex;
+        gap: 5px;
+        align-items: center;
+    }
+
+    ._fileBrowser ._controlValue ._simpleEditorRange {
+        flex: 1;
+    }
+
+    ._fileBrowser ._controlInput {
+        display: flex;
+        align-items: center;
+        height: 32px;
+        background-color: #F8FAFB;
+        padding: 5px;
+        border-radius: 6px;
+    }
+
+    ._fileBrowser ._controlInput input {
+        flex: 1;
+        background: none;
+        border: none;
+        font-size: 12px;
+        padding: 0px;
+        height: 100%;
+    }
+
+    ._fileBrowser ._controlInput input._degrees {
+        width: 40px;
+    }
+
+    ._fileBrowser ._controlInput span {
+        color: #000;
+        font-size: 12px;
+    }
+
+
     `;
 	return <style id="fileBrowserStyles">{styles}</style>;
 }

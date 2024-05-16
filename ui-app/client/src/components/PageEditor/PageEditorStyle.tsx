@@ -929,11 +929,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			background-color: transparent;
 		}
 
-		${PREFIX} ._simpleEditorPixelSize ._simpleEditorRange {
-			flex: 2;
-			margin-right: 12px;
-		}
-
 		${PREFIX} ._simpleEditorSelect,
 		${PREFIX} ._simpleEditorInput{
 			min-height: 35px;
@@ -948,56 +943,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			padding: 5px 15px;
 			flex: 1;
 			outline: none;
-		}
-
-		${PREFIX} ._simpleEditorRange {
-			position: relative;
-		}
-
-		${PREFIX} ._simpleEditorRange ._rangeTrack {
-			width: 100%;
-			min-width: 60px;
-			height: 2px;
-			border-radius: 10px;
-			background-color: #E2E2E7;			
-			left: 0;
-			z-index: 1;
-		}
-
-		${PREFIX} ._simpleEditorRange ._rangeTrackFill {
-			width: 0%;
-			height: 2px;
-			border-radius: 10px;
-			background-color: #4C7FEE;
-			position: absolute;
-			left: 0;
-			z-index: 1;
-			margin-top: -2px;
-			transition: width 0s;
-		}
-
-		${PREFIX} ._simpleEditorRange ._rangeThumb {
-			width: 12px;
-			height: 12px;
-			border-radius: 50%;
-			background-color: #FFF;
-			position: absolute;
-			top: -5px;
-			z-index: 1;
-			cursor: pointer;
-			box-shadow: 0px 1px 4px 0px #0000001A;
-			cursor: pointer;
-		}
-
-		${PREFIX} ._simpleEditorRange ._rangeThumb::before {
-			content: '';
-			position: absolute;
-			width: 60%;
-			height: 60%;
-			left: 20%;
-			top: 20%;
-			border-radius: 50%;
-			background-color: #4C7FEE;
 		}
 
 		${PREFIX} ._simpleEditorSelect {
