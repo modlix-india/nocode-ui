@@ -29,10 +29,14 @@ export function ImageResizer2({
 	const imageRef = React.useRef<HTMLImageElement>(null);
 	const [zoom, setZoom] = React.useState(1);
 	const [size, setSize] = React.useState({ width: 0, height: 0 });
-	const [imageSize, setImageSize] = React.useState({ width: undefined, height: undefined });
+	const [imageSize, setImageSize] = React.useState<{ width?: number; height?: number }>({
+		width: undefined,
+		height: undefined,
+	});
 	const [rotate, setRotate] = React.useState(0);
 	const [flipHorizontal, setFlipHorizontal] = React.useState(false);
 	const [flipVertical, setFlipVertical] = React.useState(false);
+	const [keepAspectRatio, setKeepAspectRatio] = React.useState(true);
 
 	let x = 0,
 		y = 0;
@@ -101,6 +105,8 @@ export function ImageResizer2({
 							const { width, height } = e.currentTarget.getBoundingClientRect();
 							setSize({ width, height });
 						}}
+						width={imageSize.width ?? 'auto'}
+						height={imageSize.height ?? 'auto'}
 					/>
 				</div>
 				<div className="_imageControls">
@@ -175,7 +181,146 @@ export function ImageResizer2({
 							/>
 							Resize
 						</div>
-						<div className="_controlBody"></div>
+						<div className="_controlBody">
+							<div className="_controlLabel">Resize</div>
+							<div className="_controlValue">
+								<div className="_controlInput">
+									<input
+										className="_size"
+										type="number"
+										value={imageSize.width ?? size.width}
+										onChange={e => {
+											const width = parseInt(e.target.value);
+											setImageSize({
+												width,
+												height: keepAspectRatio
+													? Math.round((width / size.width) * size.height)
+													: imageSize.height ?? size.height,
+											});
+										}}
+									/>
+									<span>px (W)</span>
+								</div>
+								<svg
+									className={`_aspectRatio ${keepAspectRatio ? '_active' : ''}`}
+									onClick={() => {
+										setKeepAspectRatio(!keepAspectRatio);
+										if (!keepAspectRatio) {
+											const widthPercent = Math.round(
+												((imageSize.width ?? size.width) * 100) /
+													size.width,
+											);
+											const heightPercent = Math.round(
+												((imageSize.height ?? size.height) * 100) /
+													size.height,
+											);
+											if (widthPercent === heightPercent) return;
+											setImageSize({
+												width: size.width,
+												height: size.height,
+											});
+										}
+									}}
+									width="16"
+									height="8"
+									viewBox="0 0 16 8"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path
+										d="M0 3.99964C0 6.00794 1.62806 7.63601 3.63636 7.63601H5.81818C6.21984 7.63601 6.54545 7.31041 6.54545 6.90874C6.54545 6.50706 6.21984 6.18146 5.81818 6.18146H3.63636C2.43138 6.18146 1.45455 5.20466 1.45455 3.99964C1.45455 2.79463 2.43138 1.81783 3.63636 1.81783H5.81818C6.21984 1.81783 6.54545 1.49221 6.54545 1.09055C6.54545 0.688889 6.21984 0.363281 5.81818 0.363281H3.63636C1.62806 0.363281 0 1.99134 0 3.99964Z"
+										fill="currentColor"
+									/>
+									<path
+										d="M9.45508 6.90874C9.45508 7.31041 9.78068 7.63601 10.1824 7.63601H12.3642C14.3725 7.63601 16.0005 6.00794 16.0005 3.99964C16.0005 1.99134 14.3725 0.363281 12.3642 0.363281H10.1824C9.78068 0.363281 9.45508 0.688889 9.45508 1.09055C9.45508 1.49221 9.78068 1.81783 10.1824 1.81783H12.3642C13.5692 1.81783 14.546 2.79463 14.546 3.99964C14.546 5.20466 13.5692 6.18146 12.3642 6.18146H10.1824C9.78068 6.18146 9.45508 6.50706 9.45508 6.90874Z"
+										fill="currentColor"
+									/>
+									<path
+										d="M5.09055 4.72603C4.6889 4.72603 4.36328 4.40043 4.36328 3.99876C4.36328 3.59708 4.6889 3.27148 5.09055 3.27148H10.9087C11.3104 3.27148 11.636 3.59708 11.636 3.99876C11.636 4.40043 11.3104 4.72603 10.9087 4.72603H5.09055Z"
+										fill="currentColor"
+									/>
+								</svg>
+								<div className="_controlInput">
+									<input
+										className="_size"
+										type="number"
+										value={imageSize.height ?? size.height}
+										onChange={e => {
+											const height = parseInt(e.target.value);
+											setImageSize({
+												height,
+												width: keepAspectRatio
+													? (height / size.height) * size.width
+													: imageSize.width ?? size.width,
+											});
+										}}
+									/>
+									<span>px (H)</span>
+								</div>
+							</div>
+
+							{keepAspectRatio ? (
+								<>
+									<div className="_controlLabel">Size</div>
+									<div className="_controlValue">
+										<RangeSlider
+											value={Math.round(
+												((imageSize.width ?? size.width) * 100) /
+													size.width,
+											)}
+											onChange={v =>
+												setImageSize({
+													width: Math.round((v * size.width) / 100),
+													height: Math.round((v * size.height) / 100),
+												})
+											}
+											min={1}
+											max={200}
+											step={1}
+										/>
+									</div>
+								</>
+							) : (
+								<>
+									<div className="_controlLabel">Width</div>
+									<div className="_controlValue">
+										<RangeSlider
+											value={Math.round(
+												((imageSize.width ?? size.width) * 100) /
+													size.width,
+											)}
+											onChange={v =>
+												setImageSize({
+													width: Math.round((v * size.width) / 100),
+													height: imageSize.height,
+												})
+											}
+											min={1}
+											max={200}
+											step={1}
+										/>
+									</div>
+									<div className="_controlLabel">Height</div>
+									<div className="_controlValue">
+										<RangeSlider
+											value={Math.round(
+												((imageSize.height ?? size.height) * 100) /
+													size.height,
+											)}
+											onChange={v =>
+												setImageSize({
+													width: imageSize.width,
+													height: Math.round((v * size.height) / 100),
+												})
+											}
+											min={1}
+											max={200}
+											step={1}
+										/>
+									</div>
+								</>
+							)}
+						</div>
 					</div>
 				</div>
 			</div>

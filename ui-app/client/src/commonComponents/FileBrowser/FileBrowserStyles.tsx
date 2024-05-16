@@ -440,7 +440,7 @@ export function FileBrowserStyles() {
 
     ._fileBrowser ._controlBody {
         display: flex;
-        gap: 5px;
+        gap: 10px;
         flex-direction: column;
         padding: 10px;
     } 
@@ -484,10 +484,22 @@ export function FileBrowserStyles() {
     ._fileBrowser ._controlInput input._degrees {
         width: 40px;
     }
+    ._fileBrowser ._controlInput input._size {
+        width: 60px;
+    }
 
     ._fileBrowser ._controlInput span {
         color: #000;
         font-size: 12px;
+    }
+
+    ._fileBrowser ._aspectRatio {
+        color: #d9d9d9;
+    }
+
+    ._fileBrowser ._aspectRatio:hover,
+    ._fileBrowser ._aspectRatio._active {
+        color: #427EE4;
     }
 
 
