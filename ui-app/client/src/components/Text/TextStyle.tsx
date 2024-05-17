@@ -54,6 +54,16 @@ export default function LabelStyle({ theme }: { theme: Map<string, Map<string, s
 		margin: 0;
 		border: 0;
 	}
+
+	${PREFIX}._markdown table {
+		border: 1px solid black;
+		border-collapse: collapse;
+	}
+
+	${PREFIX}._markdown table tr th,td {
+		border: 1px solid black;
+		padding: 5px 10px;
+	}
 	
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
