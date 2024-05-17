@@ -287,16 +287,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '._quinaryFont',
 		noPrefix: true,
 	},
-	{
-		groupName: 'Senary Font',
-		displayName: 'Senary Font',
-		name: 'senaryFont',
-		defaultValue: '30px/30px Inter',
-		description: 'Senary Font used in application.',
-		cssProperty: 'font',
-		selector: '._senaryFont',
-		noPrefix: true,
-	},
 
 	{
 		groupName: 'Font Style',

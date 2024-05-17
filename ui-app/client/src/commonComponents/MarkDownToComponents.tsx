@@ -3,7 +3,8 @@ import React, { ReactElement, ReactNode } from 'react';
 const unorderedCondition = (text: string) =>
 	text.startsWith('* ') || text.startsWith('+ ') || text.startsWith('_ ');
 
-const taskListCondition = (text: string) => text.startsWith('- [x] ') || text.startsWith('- [ ] ');
+const taskListCondition = (text: string) =>
+	text.startsWith('- [x] ') || text.startsWith('- [X] ') || text.startsWith('- [ ] ');
 
 const findLevel = (text: string) => {
 	let level = 1;
@@ -93,7 +94,9 @@ const processList = (listItems: string[], isOrdered: boolean, level = 1) => {
 					className={`${taskListCondition(listItems[i]) && 'taskList'}`}
 					key={`${listItems[i]}_${subList.map(e => e.line).join('_')}`}
 				>
-					{!listItems[i].startsWith('- [x] ') && !listItems[i].startsWith('- [ ] ')
+					{!listItems[i].startsWith('- [x] ') &&
+					!listItems[i].startsWith('- [X] ') &&
+					!listItems[i].startsWith('- [ ] ')
 						? renderLine(listItems[i].slice(isOrdered ? 3 : 2))
 						: renderLine(listItems[i])}
 
@@ -111,7 +114,7 @@ const processList = (listItems: string[], isOrdered: boolean, level = 1) => {
 			}
 			finalList.push(
 				<li className={`${taskListCondition(k) && 'taskList'}`} key={k}>
-					{!k.startsWith('- [x] ') && !k.startsWith('- [ ] ')
+					{!k.startsWith('- [x] ') && !k.startsWith('- [X] ') && !k.startsWith('- [ ] ')
 						? renderLine(k.slice(isOrdered ? 3 : 2))
 						: renderLine(k)}
 				</li>,
@@ -126,6 +129,63 @@ const processList = (listItems: string[], isOrdered: boolean, level = 1) => {
 			</ol>
 		);
 	} else return <ul key={listItems.join('_')}>{finalList}</ul>;
+};
+
+const processLink = (text: string, i: number, isVideo: boolean) => {
+	const endIndex = text.indexOf(']', i + 2);
+	if (endIndex === -1 || text[endIndex + 1] !== '(') {
+		return { token: text[i], index: i };
+	}
+
+	const linkEndIndex = text.indexOf(')', endIndex);
+	if (linkEndIndex === -1) {
+		return { token: text[i], index: i };
+	}
+
+	let linkSubStr: string | string[] = text.slice(endIndex + 2, linkEndIndex);
+	const spaceIndex = linkSubStr.indexOf(' ');
+	const actualLink = linkSubStr.slice(0, spaceIndex !== -1 ? spaceIndex : undefined);
+
+	if (isVideo) {
+		let controls = '';
+		if (
+			spaceIndex !== -1 &&
+			linkSubStr[spaceIndex + 1] === '"' &&
+			linkSubStr[linkSubStr.length - 1] === '"'
+		) {
+			controls = linkSubStr.slice(spaceIndex + 2, linkSubStr.length - 1);
+		}
+		return {
+			token: React.createElement('video', {
+				src: actualLink,
+				controls: controls === 'controls',
+				autoPlay: true,
+				muted: true,
+				loading: 'lazy',
+			}),
+			index: linkEndIndex,
+		};
+	} else {
+		const altText = text.slice(i + 2, endIndex);
+		let title = '';
+		if (
+			spaceIndex !== -1 &&
+			linkSubStr[spaceIndex + 1] === '"' &&
+			linkSubStr[linkSubStr.length - 1] === '"'
+		) {
+			title = linkSubStr.slice(spaceIndex + 2, linkSubStr.length - 1);
+		}
+		return {
+			token: React.createElement('img', {
+				key: linkSubStr,
+				title: title ?? '',
+				src: actualLink,
+				loading: 'lazy',
+				alt: altText,
+			}),
+			index: linkEndIndex,
+		};
+	}
 };
 
 export const parseText = (text: string) => {
@@ -279,86 +339,25 @@ export const parseText = (text: string) => {
 				i = endIndex;
 			}
 		} else if (text[i] === '!') {
+			let result;
 			if (text[i + 1] === '!') {
 				//video line
 				if (text[i + 2] !== '[') {
 					tokens[tokenCount] = (tokens[tokenCount] ?? '') + text[i];
 					continue;
 				}
-				// '[' is present now check ']' and '('
-				const endIndex = text.indexOf(']', i + 2);
-				if (endIndex === -1 || text[endIndex + 1] !== '(') {
-					tokens[tokenCount] = (tokens[tokenCount] ?? '') + text[i];
-					continue;
-				}
-
-				const linkEndIndex = text.indexOf(')', endIndex);
-				if (linkEndIndex === -1) {
-					tokens[tokenCount] = (tokens[tokenCount] ?? '') + text[i];
-					continue;
-				}
-				let linkSubStr: string | string[] = text.slice(endIndex + 2, linkEndIndex);
-				const spaceIndex = linkSubStr.indexOf(' ');
-				let controls = '';
-				if (
-					spaceIndex !== -1 &&
-					linkSubStr[spaceIndex + 1] === '"' &&
-					linkSubStr[linkSubStr.length - 1] === '"'
-				) {
-					controls = linkSubStr.slice(spaceIndex + 2, linkSubStr.length - 1);
-				}
-				const actualLink = linkSubStr.slice(0, spaceIndex !== -1 ? spaceIndex : undefined);
-				tokens.push(
-					React.createElement('video', {
-						src: actualLink,
-						controls: controls === 'controls',
-						autoPlay: true,
-						muted: true,
-						loading: 'lazy',
-					}),
-				);
-				tokenCount += 2;
-				i = linkEndIndex;
+				result = processLink(text, i, true);
 			} else {
 				// image line
 				if (text[i + 1] !== '[') {
 					tokens[tokenCount] = (tokens[tokenCount] ?? '') + text[i];
 					continue;
 				}
-				const endIndex = text.indexOf(']', i + 1);
-				if (endIndex === -1 || text[endIndex + 1] !== '(') {
-					tokens[tokenCount] = (tokens[tokenCount] ?? '') + text[i];
-					continue;
-				}
-				const altText = text.slice(i + 2, endIndex);
-				const linkEndIndex = text.indexOf(')', endIndex);
-				if (linkEndIndex === -1) {
-					tokens[tokenCount] = (tokens[tokenCount] ?? '') + text[i];
-					continue;
-				}
-				let linkSubStr: string | string[] = text.slice(endIndex + 2, linkEndIndex);
-				const spaceIndex = linkSubStr.indexOf(' ');
-				let title = '';
-				if (
-					spaceIndex !== -1 &&
-					linkSubStr[spaceIndex + 1] === '"' &&
-					linkSubStr[linkSubStr.length - 1] === '"'
-				) {
-					title = linkSubStr.slice(spaceIndex + 2, linkSubStr.length - 1);
-				}
-				const actualLink = linkSubStr.slice(0, spaceIndex !== -1 ? spaceIndex : undefined);
-				tokens.push(
-					React.createElement('img', {
-						key: linkSubStr,
-						title: title ?? '',
-						src: actualLink,
-						loading: 'lazy',
-						alt: altText,
-					}),
-				);
-				tokenCount += 2;
-				i = linkEndIndex;
+				result = processLink(text, i, false);
 			}
+			tokens.push(result.token);
+			tokenCount += 2;
+			i = result.index;
 		} else if (text[i] === '[') {
 			// link line
 			const endIndex = text.indexOf(']', i + 1);
@@ -499,7 +498,7 @@ const renderLine = (line: string) => {
 	} else if (taskListCondition(line)) {
 		const checkbox = React.createElement('input', {
 			type: 'checkbox',
-			checked: line.startsWith('- [x] '),
+			checked: line.startsWith('- [x] ') || line.startsWith('- [X] '),
 			disabled: true,
 			key: `tl_${line}`,
 		});
@@ -915,7 +914,6 @@ function MarkDownToComponents({ text }: { text: string }) {
 							key: `${currRow}${curColStart}-${currColEnd}`,
 							style: {
 								flex: 1,
-								border: '1px solid black',
 							},
 						}),
 					);
@@ -983,7 +981,6 @@ function MarkDownToComponents({ text }: { text: string }) {
 							className: `row${currRow}col${currColEnd}`,
 							style: {
 								width: `${(currColSize * 100) / maxColCount}%`,
-								border: '1px solid black',
 							},
 						},
 						children,
@@ -1021,7 +1018,6 @@ function MarkDownToComponents({ text }: { text: string }) {
 						key: `${currRow}${curColStart}-${maxColCount}`,
 						style: {
 							flex: 1,
-							border: '1px solid black',
 						},
 					}),
 				);

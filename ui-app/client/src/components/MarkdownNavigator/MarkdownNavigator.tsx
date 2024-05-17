@@ -7,7 +7,10 @@ import { propertiesDefinition, stylePropertiesDefinition } from './markdownNavig
 import { Component } from '../../types/common';
 import MarkdownNavigatorStyle from './MarkdownNavigatorStyle';
 import useDefinition from '../util/useDefinition';
-import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import {
+	processComponentStylePseudoClasses,
+	processStyleObjectToCSS,
+} from '../../util/styleProcessor';
 import { styleDefaults } from './markdownNavigaotrStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import MarkDownNavigatorLinks from '../../commonComponents/MarkDownNavigatorLinks';
@@ -21,7 +24,8 @@ function MarkdownNavigator(props: ComponentProps) {
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
-		properties: { text: markdownText, showLinksFor, designType } = {},
+		key,
+		properties: { text: markdownText, showLinksFor, designType, colorScheme } = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
 		definition,
@@ -30,27 +34,89 @@ function MarkdownNavigator(props: ComponentProps) {
 		locationHistory,
 		pageExtractor,
 	);
-	const [hover, setHover] = useState(false);
-	const styleProperties = processComponentStylePseudoClasses(
+
+	const regularStyle = processComponentStylePseudoClasses(
 		props.pageDefinition,
-		{ hover },
+		{ visited: false, hover: false },
 		stylePropertiesWithPseudoStates,
+	);
+
+	const hoverStyle = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{ hover: true },
+		stylePropertiesWithPseudoStates,
+	);
+
+	const visitedStyle = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{ visited: true },
+		stylePropertiesWithPseudoStates,
+	);
+
+	const styleKey = `${key}_${
+		locationHistory?.length ? locationHistory.map(e => e.index).join('_') : ''
+	}`;
+
+	const styleComp = (
+		<style key={`${styleKey}_style`}>
+			{processStyleObjectToCSS(
+				regularStyle?.comp,
+				`.comp.compMarkdownNav._markdown#_${styleKey}`,
+			)}
+			{processStyleObjectToCSS(
+				visitedStyle?.comp,
+				`.comp.compMarkdownNav._markdown#_${styleKey}`,
+			)}
+			{processStyleObjectToCSS(
+				hoverStyle?.comp,
+				`.comp.compMarkdownNav._markdown#_${styleKey}`,
+			)}
+			{processStyleObjectToCSS(
+				regularStyle?.h1,
+				`.comp.compMarkdownNav._markdown#_${styleKey} a.h1`,
+			)}
+			{processStyleObjectToCSS(
+				visitedStyle?.h1,
+				`.comp.compMarkdownNav._markdown#_${styleKey} a.h1:visited`,
+			)}
+			{processStyleObjectToCSS(
+				hoverStyle?.h1,
+				`.comp.compMarkdownNav._markdown#_${styleKey} a.h1:hover`,
+			)}
+			{processStyleObjectToCSS(
+				regularStyle?.h2,
+				`.comp.compMarkdownNav._markdown#_${styleKey} a.h2`,
+			)}
+			{processStyleObjectToCSS(
+				visitedStyle?.h2,
+				`.comp.compMarkdownNav._markdown#_${styleKey} a.h2:visited`,
+			)}
+			{processStyleObjectToCSS(
+				hoverStyle?.h2,
+				`.comp.compMarkdownNav._markdown#_${styleKey} a.h2:hover`,
+			)}
+		</style>
 	);
 
 	let translatedText = getTranslations(markdownText, translations);
 
 	return (
-		<div
-			className={`comp compMarkdownNav _markdown ${designType}`}
-			style={styleProperties.comp ?? {}}
-		>
-			<HelperComponent context={props.context} definition={definition} />
-			<MarkDownNavigatorLinks
-				text={translatedText ?? ''}
-				filterOnlyH1s={showLinksFor === 'h1'}
-				filterBothH1sAndH2s={showLinksFor !== 'h1'}
-			/>
-		</div>
+		<>
+			{styleComp}
+			<div
+				id={`_${styleKey}`}
+				className={`comp compMarkdownNav _markdown ${designType} ${colorScheme}`}
+				style={regularStyle.comp ?? {}}
+			>
+				<HelperComponent context={props.context} definition={definition} />
+				<MarkDownNavigatorLinks
+					text={translatedText ?? ''}
+					filterOnlyH1s={showLinksFor === 'h1'}
+					filterBothH1sAndH2s={showLinksFor !== 'h1'}
+					definition={props.definition}
+				/>
+			</div>
+		</>
 	);
 }
 
@@ -64,7 +130,7 @@ const component: Component = {
 	styleComponent: MarkdownNavigatorStyle,
 	styleDefaults: styleDefaults,
 	styleProperties: stylePropertiesDefinition,
-	stylePseudoStates: ['hover', 'active'],
+	stylePseudoStates: ['hover', 'visited'],
 	defaultTemplate: {
 		key: '',
 		type: 'MarkdownNavigator',
@@ -97,10 +163,16 @@ const component: Component = {
 			),
 		},
 		{
-			name: 'markdownNavigator',
-			displayName: 'Markdown Navigator',
-			description: 'MarkdownNavigator Component',
-			icon: 'fa fa-solid fa-box',
+			name: 'h1',
+			displayName: 'H1 Links',
+			description: 'H1 Links',
+			icon: 'fa-solid fa-heading',
+		},
+		{
+			name: 'h2',
+			displayName: 'H2 Links',
+			description: 'H2 Links',
+			icon: '',
 		},
 	],
 };
