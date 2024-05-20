@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { onMouseDownDragStartCurry } from '../functions/utils';
 
 export function RangeSlider({
 	value,
@@ -15,12 +16,13 @@ export function RangeSlider({
 }) {
 	const percent = (((value ?? min) - min) / (max - min)) * 100;
 	const thumbLeft: React.CSSProperties = {
-		left: `${percent < 0 || percent > 100 ? 50 : percent}%`,
+		left: `calc(${percent < 0 || percent > 100 ? 50 : percent}% - 6px)`,
 	};
 	const trackFillWidth: React.CSSProperties = {
-		width: `${percent < 0 ? 0 : percent > 100 ? 50 : percent}%`,
+		width: `calc(${percent < 0 ? 0 : percent > 100 ? 50 : percent}% - 6px)`,
 	};
 	const ref = React.useRef<HTMLDivElement>(null);
+
 	const fixedPoint = useMemo(() => {
 		const stepString = step.toString();
 		const decimalIndex = stepString.indexOf('.');
@@ -36,41 +38,21 @@ export function RangeSlider({
 				style={thumbLeft}
 				role="button"
 				onMouseDown={e => {
-					if (!ref.current || e.buttons !== 1) return;
 					e.preventDefault();
 					e.stopPropagation();
-					const startX = e.clientX;
-					const startValue = value ?? min;
-					const width = ref.current.getBoundingClientRect().width;
-					const onMouseMove = (e: MouseEvent) => {
-						e.preventDefault();
-						e.stopPropagation();
-						if (e.buttons !== 1) {
-							document.body.removeEventListener('mousemove', onMouseMove);
-							document.body.removeEventListener('mouseup', onMouseUp);
-							document.body.addEventListener('mouseleave', onMouseUp);
-							return;
-						}
 
-						const diff = e.clientX - startX;
+					const startValue = value ?? min;
+					const width = ref.current?.getBoundingClientRect()?.width ?? 0;
+					onMouseDownDragStartCurry(e.clientX, 0, (newX, newY, diffX) => {
 						let newValue = !step
-							? Math.round(startValue + (diff / width) * (max - min))
-							: Math.round((startValue + (diff / width) * (max - min)) / step) * step;
+							? Math.round(startValue + (diffX / width) * (max - min))
+							: Math.round((startValue + (diffX / width) * (max - min)) / step) *
+							  step;
 						if (fixedPoint > 0) newValue = Number(newValue.toFixed(fixedPoint));
 						if (newValue < min) onChange(min);
 						else if (newValue > max) onChange(max);
 						else onChange(newValue);
-					};
-					const onMouseUp = (e: MouseEvent) => {
-						e.preventDefault();
-						e.stopPropagation();
-						document.body.removeEventListener('mousemove', onMouseMove);
-						document.body.removeEventListener('mouseup', onMouseUp);
-						document.body.addEventListener('mouseleave', onMouseUp);
-					};
-					document.body.addEventListener('mousemove', onMouseMove);
-					document.body.addEventListener('mouseup', onMouseUp);
-					document.body.addEventListener('mouseleave', onMouseUp);
+					})(e);
 				}}
 			></div>
 		</div>

@@ -64,18 +64,20 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'cropToWidth',
 		schema: SCHEMA_NUM_COMP_PROP,
 		displayName: 'Crop to Width in pixels',
-		group: ComponentPropertyGroup.ADVANCED,
+		group: ComponentPropertyGroup.BASIC,
 	},
 	{
 		name: 'cropToHeight',
 		schema: SCHEMA_NUM_COMP_PROP,
 		displayName: 'Crop to Height in pixels',
-		group: ComponentPropertyGroup.ADVANCED,
+		group: ComponentPropertyGroup.BASIC,
 	},
 	{
-		name: 'cropToCircle',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Crop to Circle (width is considered as diameter)',
+		name: 'cropToAspectRatio',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Crop to Aspect Ratio (width:height)',
+		description:
+			'Aspect ratio to crop the image to in the format width:height, or just size to crop to a square',
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{

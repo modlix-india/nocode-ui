@@ -169,6 +169,10 @@ export function FileBrowserStyles() {
         background-color: #E8E8E8;
     }
 
+    ._fileBrowser ._files ._eachFile._file._unselectable {
+        opacity: 0.5;
+    }
+
     ._fileBrowser ._pathContainer {
         display: flex;
         gap: 5px;
@@ -215,6 +219,8 @@ export function FileBrowserStyles() {
         justify-content: center;
         align-items: center;
         z-index: 2;
+        left: 0;
+        top: 0;
     }
 
     ._fileBrowser ._confirmationBoxContent {
@@ -281,6 +287,7 @@ export function FileBrowserStyles() {
         display: flex;
         flex-direction: column;
         flex: 1;
+        position: relative;
     }
 
     ._fileBrowser ._imageResizerHeader {
@@ -377,7 +384,7 @@ export function FileBrowserStyles() {
         justify-content: center;
         align-items: center;
         position: sticky;
-        z-index: 2;
+        z-index: 4;
         left: 20px;
         top: 10px;
         background-color: #FFF;
@@ -411,6 +418,7 @@ export function FileBrowserStyles() {
         display: flex;
         gap: 10px;
         padding: 10px;
+        height: 200px;
     }
 
     ._fileBrowser ._popupContainer._imageResizerContainer._fullScreen ._imageControls {
@@ -418,9 +426,9 @@ export function FileBrowserStyles() {
     }
 
     ._fileBrowser ._controlGroup {
-        flex: 1;
         display: flex;
         flex-direction: column;
+        flex: 1;
     }
 
     ._fileBrowser ._controlHeader {
@@ -429,13 +437,16 @@ export function FileBrowserStyles() {
         gap: 5px;
         justify-content: center;
         align-items: center;
-        height: 30px;
+        min-height: 30px;
         border-bottom: 2px solid #427EE4;
     }
 
     ._fileBrowser ._controlLabel {
         font-size: 12px;
         color: #000000;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
     ._fileBrowser ._controlBody {
@@ -443,6 +454,7 @@ export function FileBrowserStyles() {
         gap: 10px;
         flex-direction: column;
         padding: 10px;
+        overflow: auto;
     } 
 
     ._fileBrowser ._controlBody button {
@@ -479,6 +491,7 @@ export function FileBrowserStyles() {
         font-size: 12px;
         padding: 0px;
         height: 100%;
+        outline: none;
     }
 
     ._fileBrowser ._controlInput input._degrees {
@@ -491,6 +504,7 @@ export function FileBrowserStyles() {
     ._fileBrowser ._controlInput span {
         color: #000;
         font-size: 12px;
+        padding: 0px 5px;
     }
 
     ._fileBrowser ._aspectRatio {
@@ -502,7 +516,184 @@ export function FileBrowserStyles() {
         color: #427EE4;
     }
 
+    ._fileBrowser ._cropBox {
+        position: absolute;
+        border: 2px solid #FFF;
+        z-index: 3;
+        mix-blend-mode: difference;
+    }
 
+    ._fileBrowser ._cropBox ._mask {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 3;
+    }
+
+    ._fileBrowser ._cropBox ._horizontal1,
+    ._fileBrowser ._cropBox ._horizontal2 {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 33%;
+        border-bottom: 1px solid #FFFFFF;
+    }
+
+    ._fileBrowser ._cropBox ._horizontal2 {
+        height: 66%;
+    }
+
+    ._fileBrowser ._cropBox ._vertical1,
+    ._fileBrowser ._cropBox ._vertical2 {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 33%;
+        height: 100%;
+        border-right: 1px solid #FFFFFF;
+    }
+
+    ._fileBrowser ._cropBox ._vertical2 {
+        width: 66%;
+    }
+
+    ._fileBrowser ._cropBox ._topLeft {
+        position: absolute;
+        top: -4px;
+        left: -4px;
+        z-index: 2;
+        width: 20%;
+        height: 20%;
+        border-top: 2px solid #FFFFFF;
+        border-left: 2px solid #FFFFFF;
+        cursor: nw-resize;
+    }
+
+    ._fileBrowser ._cropBox ._topRight {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        z-index: 2;
+        width: 20%;
+        height: 20%;
+        border-top: 2px solid #FFFFFF;
+        border-right: 2px solid #FFFFFF;
+        cursor: ne-resize;
+    }
+
+    ._fileBrowser ._cropBox ._bottomLeft {
+        position: absolute;
+        bottom: -4px;
+        left: -4px;
+        z-index: 2;
+        width: 20%;
+        height: 20%;
+        border-bottom: 2px solid #FFFFFF;
+        border-left: 2px solid #FFFFFF;
+        cursor: sw-resize;
+    }
+
+    ._fileBrowser ._cropBox ._bottomRight {
+        position: absolute;
+        bottom: -4px;
+        right: -4px;
+        z-index: 2;
+        width: 20%;
+        height: 20%;
+        border-bottom: 2px solid #FFFFFF;
+        border-right: 2px solid #FFFFFF;
+        cursor: se-resize;
+    }
+
+    ._fileBrowser ._cropBox ._top {
+        position: absolute;
+        top: -4px;
+        left: 40%;
+        z-index: 2;
+        width: 20%;
+        height: 20%;
+        border-top: 2px solid #FFFFFF;
+        cursor: n-resize;
+    }
+
+    ._fileBrowser ._cropBox ._bottom {
+        position: absolute;
+        bottom: -4px;
+        left: 40%;
+        z-index: 2;
+        width: 20%;
+        height: 20%;
+        border-bottom: 2px solid #FFFFFF;
+        cursor: s-resize;
+    }
+
+    ._fileBrowser ._cropBox ._left {
+        position: absolute;
+        top: 40%;
+        left: -4px;
+        z-index: 2;
+        width: 20%;
+        height: 20%;
+        border-left: 2px solid #FFFFFF;
+        cursor: w-resize;
+    }
+
+    ._fileBrowser ._cropBox ._right {
+        position: absolute;
+        top: 40%;
+        right: -4px;
+        z-index: 2;
+        width: 20%;
+        height: 20%;
+        border-right: 2px solid #FFFFFF;
+        cursor: e-resize;
+    }
+
+    ._fileBrowser ._iroBackground {
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: 5;
+        background: #0005;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    ._fileBrowser ._iroContainer {
+        position: absolute;
+        background: #FFF;
+        padding: 10px;
+        border-radius: 4px;
+    }
+
+    ._fileBrowser ._imageResizerHeader {
+        min-width: auto;
+    }
+
+    ._fileBrowser ._iroBody {
+        padding: 20px 10px 10px 10px;
+        border: 1px solid #d2d2d2;
+        border-top: none;
+        border-bottom: none;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    ._fileBrowser ._iroButtons {
+        padding: 5px 10px;
+        border: 1px solid #d2d2d2;
+        border-top: none;
+        justify-content: flex-end;
+        display: flex;
+        gap: 10px;
+    }
     `;
 	return <style id="fileBrowserStyles">{styles}</style>;
 }

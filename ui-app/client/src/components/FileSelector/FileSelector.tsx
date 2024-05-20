@@ -1,6 +1,6 @@
 import { isNullValue } from '@fincity/kirun-js';
 import React, { useEffect, useState } from 'react';
-import { FileBrowser } from '../../commonComponents/FileBrowser';
+import { FileBrowser, imageURLForFile } from '../../commonComponents/FileBrowser';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediately,
@@ -19,6 +19,7 @@ import { validate } from '../../util/validationProcessor';
 import { flattenUUID } from '../util/uuid';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { runEvent } from '../util/runEvent';
+import { select } from 'd3';
 
 function FileSelector(props: ComponentProps) {
 	const {
@@ -57,6 +58,7 @@ function FileSelector(props: ComponentProps) {
 			cropToMaxHeight,
 			cropToMinWidth,
 			cropToMinHeight,
+			cropToAspectRatio,
 			editOnUpload,
 		} = {},
 		stylePropertiesWithPseudoStates,
@@ -85,6 +87,12 @@ function FileSelector(props: ComponentProps) {
 
 	const [validationMessages, setValidationMessages] = React.useState<Array<string>>([]);
 
+	const [recentlySelected, setRecentlySelected] = useState<{
+		file: string;
+		type: string;
+		directory: boolean;
+	}>();
+
 	useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
@@ -94,10 +102,11 @@ function FileSelector(props: ComponentProps) {
 		);
 	}, [bindingPathPath]);
 
-	const onChangeSelection = async (file: string) => {
+	const onChangeSelection = async (file: string, type: string, directory: boolean) => {
 		if (!bindingPathPath) return;
 		setData(bindingPathPath, selectedFile === file ? undefined : file, context.pageName, true);
 		setShowBrowser(false);
+		setRecentlySelected({ file, type, directory });
 		if (!onSelect || !pageDefinition.eventFunctions[onSelect]) return;
 		await runEvent(
 			pageDefinition.eventFunctions[onSelect],
@@ -109,20 +118,29 @@ function FileSelector(props: ComponentProps) {
 	};
 
 	let content;
-
 	if (designType === 'button') {
-		if (selectedFile)
+		if (selectedFile) {
+			let directory = recentlySelected?.directory ?? false;
+			let type =
+				recentlySelected?.type ??
+				(selectedFile ? selectedFile.split('.').pop()?.toLowerCase() : '') ??
+				'';
 			content = (
 				<>
 					<img
-						src={selectedFile}
+						ref={async e => {
+							if (!e || e.src) return;
+							const dataURL = await imageURLForFile(selectedFile, directory, type);
+							e.src = dataURL;
+						}}
 						alt="Selected file"
 						style={resolvedStyles.image ?? {}}
+						onClick={e => e.currentTarget == e.target && setShowBrowser(true)}
 					/>
 					<UploadImage image={uploadImage} onClick={() => setShowBrowser(true)} />
 				</>
 			);
-		else
+		} else
 			content = (
 				<>
 					<UploadImage image={uploadImage} onClick={() => setShowBrowser(true)} />
@@ -134,9 +152,9 @@ function FileSelector(props: ComponentProps) {
 					{content}
 					<div
 						className="_popupBackground"
-						onClick={e =>
-							e.target === e.currentTarget ? setShowBrowser(false) : undefined
-						}
+						onClick={e => {
+							if (e.target === e.currentTarget) setShowBrowser(false);
+						}}
 					>
 						<div className={`_popupContainer ${showFullScreen ? '_fullScreen' : ''}`}>
 							<div
@@ -167,6 +185,7 @@ function FileSelector(props: ComponentProps) {
 								cropToMaxHeight={cropToMaxHeight}
 								cropToMinWidth={cropToMinWidth}
 								cropToMinHeight={cropToMinHeight}
+								cropToAspectRatio={cropToAspectRatio}
 								editOnUpload={editOnUpload}
 							/>
 						</div>
@@ -197,6 +216,7 @@ function FileSelector(props: ComponentProps) {
 				cropToMaxHeight={cropToMaxHeight}
 				cropToMinWidth={cropToMinWidth}
 				cropToMinHeight={cropToMinHeight}
+				cropToAspectRatio={cropToAspectRatio}
 				editOnUpload={editOnUpload}
 			/>
 		);
@@ -268,7 +288,14 @@ function FileSelector(props: ComponentProps) {
 
 function UploadImage({ image, onClick }: { image: string; onClick: () => void }) {
 	if (image) {
-		return <img className="_imageButton" src={image} alt="Upload" onClick={onClick} />;
+		return (
+			<img
+				className="_imageButton"
+				src={image}
+				alt="Upload"
+				onClick={e => (e.target === e.currentTarget ? onClick() : undefined)}
+			/>
+		);
 	}
 	return (
 		<svg

@@ -5,7 +5,9 @@ import { getDataFromPath } from '../../context/StoreContext';
 import { shortUUID } from '../../util/shortUUID';
 import { ImageResizer2 } from './ImageResizer2';
 
-const RESIZABLE_EXT = new Set<string>(['jpg', 'jpeg', 'jpe', 'webp', 'png', 'avif']);
+const RESIZABLE_EXT = new Set<string>(['jpg', 'jpeg', 'jpe', 'png']);
+
+const TRANSPARENT_EXT = new Set<string>(['png', 'webp', 'avif']);
 
 const RENDERABLE_EXT = new Set<string>(
 	'png,apng,avif,gif,jpg,jpeg,jpe,webp,jfif,pjpeg,pjp,svg,bmp,cur,tif,tiff'.split(','),
@@ -50,7 +52,7 @@ const FOLDER_SVG = 'api/files/static/file/SYSTEM/icons/folder.svg';
 
 interface FileBrowserProps {
 	selectedFile: string;
-	onChange: (v: string) => void;
+	onChange: (v: string, type: string, directory: boolean) => void;
 	resourceType?: string;
 	restrictNavigationToTopLevel?: boolean;
 	startLocation?: string;
@@ -71,6 +73,48 @@ interface FileBrowserProps {
 	cropToMinWidth?: number;
 	cropToMinHeight?: number;
 	editOnUpload: boolean;
+	cropToAspectRatio?: string;
+}
+
+export async function imageURLForFile(
+	url: string,
+	isDirectory: boolean,
+	type: string,
+	width?: number,
+	height?: number,
+): Promise<string> {
+	let imgUrl;
+	if (isDirectory) return `${FOLDER_SVG}`;
+	else if (RENDERABLE_EXT.has(type?.toLowerCase() ?? '')) {
+		let wparam, hparam;
+
+		if (width) wparam = `width=${width}`;
+		if (height) hparam = `height=${height}`;
+
+		if (wparam && hparam) imgUrl = `${url}?${wparam}&${hparam}`;
+		else if (wparam) imgUrl = `${url}?${wparam}`;
+		else if (hparam) imgUrl = `${url}?${hparam}`;
+		else imgUrl = `${url}`;
+	}
+
+	if (!imgUrl)
+		imgUrl = `${
+			Array.from(ICON_SET.entries()).find(([_, exts]) => exts.has(type))?.[0] ??
+			'api/files/static/file/SYSTEM/icons/anyfile.svg'
+		}`;
+
+	if (imgUrl.indexOf('api/files/secured') !== -1) {
+		const headers: any = {
+			Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
+		};
+		if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
+
+		imgUrl = await axios
+			.get(url, { responseType: 'blob', headers })
+			.then(res => URL.createObjectURL(res.data));
+	}
+
+	return imgUrl;
 }
 
 export function FileBrowser({
@@ -95,6 +139,7 @@ export function FileBrowser({
 	cropToMaxHeight,
 	cropToMinWidth,
 	cropToMinHeight,
+	cropToAspectRatio,
 	editOnUpload,
 }: FileBrowserProps) {
 	const [filter, setFilter] = useState('');
@@ -105,6 +150,7 @@ export function FileBrowser({
 	const [newFolderName, setNewFolderName] = useState('');
 	const [file, setFile] = useState<any>();
 	const [imageResizerURL, setImageResizerURL] = useState('');
+	const [isTransparent, setIsTransparent] = useState(false);
 	const [showFullScreen, setShowFullScreen] = useState(false);
 	const [fileSelection, setFileSelection] = useState<any>();
 	const [somethingChanged, setSomethingChanged] = useState(Date.now());
@@ -140,7 +186,7 @@ export function FileBrowser({
 				.then(res => setFiles(res.data))
 				.finally(() => setInProgress(false));
 		})();
-	}, [path, filter, setFiles, setInProgress, somethingChanged, fileCategory]);
+	}, [path, resourceType, filter, setFiles, setInProgress, somethingChanged, fileCategory]);
 
 	const newFolderDiv = newFolder ? (
 		<div className="_eachFile">
@@ -225,6 +271,7 @@ export function FileBrowser({
 							if (!fr.result || typeof fr.result != 'string') return;
 							setFile(file);
 							setImageResizerURL(fr.result);
+							setIsTransparent(TRANSPARENT_EXT.has(extension ?? ''));
 						};
 						fr.readAsDataURL(file);
 						return;
@@ -251,7 +298,12 @@ export function FileBrowser({
 
 	if (deleteObject) {
 		confirmationBox = (
-			<div className="_confirmationBox">
+			<div
+				className="_confirmationBox"
+				onClick={e =>
+					e.target === e.currentTarget ? setDeleteObject(undefined) : undefined
+				}
+			>
 				<div className="_confirmationBoxContent">
 					<p>Are you sure you want to delete "{deleteObject.name}" ?</p>
 					<div className="_confirmationBoxButtons">
@@ -300,19 +352,6 @@ export function FileBrowser({
 			<>
 				{newFolderDiv}
 				{files?.content?.map((e: any) => {
-					let backgroundImage;
-
-					if (e.directory) backgroundImage = `url('${FOLDER_SVG}')`;
-					else if (RENDERABLE_EXT.has(e.type?.toLowerCase() ?? ''))
-						backgroundImage = `url('${e.url}?width=96&height=96')`;
-					else {
-						backgroundImage = `url('${
-							Array.from(ICON_SET.entries()).find(([_, exts]) =>
-								exts.has(e.type),
-							)?.[0] ?? 'api/files/static/file/SYSTEM/icons/anyfile.svg'
-						}')`;
-					}
-
 					const selectable = isSelectable(e, selectionType, restrictSelectionType);
 
 					let deletButton;
@@ -343,8 +382,8 @@ export function FileBrowser({
 						<div
 							key={e.name}
 							title={`${e.name}`}
-							className={`_eachFile ${e.directory ? '_directory' : ''} ${
-								selectable ? '_selectable' : ''
+							className={`_eachFile ${e.directory ? '_directory' : '_file'} ${
+								selectable ? '_selectable' : '_unselectable'
 							} ${e.name === fileSelection?.name ? '_selected' : ''} `}
 							onClick={() => {
 								if (selectable) {
@@ -362,11 +401,27 @@ export function FileBrowser({
 									return;
 								}
 								setFileSelection(e);
-								onChange(e.url);
+								onChange(e.url, e.type, e.directory);
 							}}
 						>
 							{deletButton}
-							<div className="_image" style={{ backgroundImage }} />
+							<div
+								className="_image"
+								ref={async ref => {
+									if (!ref?.style || ref.style.backgroundImage) return;
+
+									ref.style.backgroundImage =
+										"url('" +
+										(await imageURLForFile(
+											e.url,
+											e.directory,
+											e.type,
+											96,
+											96,
+										)) +
+										"')";
+								}}
+							/>
 							<p className="_imageLabel">
 								{e.name && e.name.length < 19
 									? e.name
@@ -441,9 +496,40 @@ export function FileBrowser({
 				className="_editBtn"
 				title="Edit"
 				tabIndex={0}
-				onClick={() => setImageResizerURL(fileSelection.url)}
+				onClick={() => {
+					setImageResizerURL(fileSelection.url);
+					setIsTransparent(TRANSPARENT_EXT.has(fileSelection.type));
+				}}
 			>
 				Edit
+			</button>
+		);
+	}
+
+	let selectButton;
+
+	const hasCrop = !!(
+		cropToWidth ??
+		cropToHeight ??
+		cropToMaxWidth ??
+		cropToMaxHeight ??
+		cropToMinWidth ??
+		cropToMinHeight ??
+		cropToAspectRatio
+	);
+
+	if (!hasCrop) {
+		selectButton = (
+			<button
+				className="_selectBtn"
+				title="Select"
+				tabIndex={0}
+				disabled={!fileSelection}
+				onClick={() =>
+					onChange(fileSelection?.url, fileSelection?.type, fileSelection?.directory)
+				}
+			>
+				Select
 			</button>
 		);
 	}
@@ -457,6 +543,7 @@ export function FileBrowser({
 				onClick={e => {
 					if (e.target !== e.currentTarget) return;
 					setImageResizerURL('');
+					setIsTransparent(false);
 					setFile(undefined);
 				}}
 			>
@@ -480,12 +567,62 @@ export function FileBrowser({
 						cropToMaxHeight={cropToMaxHeight}
 						cropToMinWidth={cropToMinWidth}
 						cropToMinHeight={cropToMinHeight}
+						cropToAspectRatio={cropToAspectRatio}
+						isTransparent={isTransparent}
+						fileName={imageResizerURL.startsWith('data') ? '' : fileSelection?.name}
 						onClose={() => {
 							setImageResizerURL('');
+							setIsTransparent(false);
 							setFile(undefined);
 						}}
 						onSave={async (props: any) => {
 							console.log(props);
+							try {
+								const formData = new FormData();
+
+								if (file || imageResizerURL.startsWith('data'))
+									formData.append('file', file);
+								else formData.append('path', imageResizerURL);
+
+								if (!hasCrop) formData.append('override', 'true');
+								if (props.imageSize.width)
+									formData.append('width', props.imageSize.width);
+								if (props.imageSize.height)
+									formData.append('height', props.imageSize.height);
+
+								if (props.rotate) formData.append('rotation', props.rotate);
+
+								if (props.crop) {
+									formData.append('cropAreaX', props.crop.x);
+									formData.append('cropAreaY', props.crop.y);
+									formData.append('cropAreaWidth', props.crop.width);
+									formData.append('cropAreaHeight', props.crop.height);
+								}
+
+								if (props.flipHorizontal) formData.append('flipHorizontal', 'true');
+								if (props.flipVertical) formData.append('flipVertical', 'true');
+								if (props.bgColor)
+									formData.append('backgroundColor', props.bgColor);
+								if (props.fileName) formData.append('fileName', props.fileName);
+
+								const fileObject = await axios.post(
+									`/api/files/transform/${resourceType}/${path
+										.split('/')
+										.map(encodeURIComponent)
+										.join('/')}`,
+									formData,
+									{ headers },
+								);
+
+								onChange(
+									fileObject.data.url,
+									fileObject.data.type,
+									fileObject.data.directory,
+								);
+								setImageResizerURL('');
+								setIsTransparent(false);
+								setFile(undefined);
+							} catch (err) {}
 						}}
 					/>
 				</div>
@@ -527,15 +664,7 @@ export function FileBrowser({
 			<div className="_editBtnContainer">
 				{editButton}
 				{deletButton}
-				<button
-					className="_selectBtn"
-					title="Select"
-					tabIndex={0}
-					disabled={!fileSelection}
-					onClick={() => onChange(fileSelection?.url)}
-				>
-					Select
-				</button>
+				{selectButton}
 			</div>
 			{confirmationBox}
 			{imageResizerPopup}

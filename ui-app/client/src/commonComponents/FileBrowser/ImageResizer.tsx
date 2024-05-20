@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { RangeSlider } from '../RangeSlider';
 import axios from 'axios';
-import { ColorSelector } from '../../components/PageEditor/editors/stylePropertyValueEditors/simpleEditors/ColorSelector';
+import { CommonColorPicker } from '../CommonColorPicker';
 
 interface ImageResizerProps {
 	path?: string;
@@ -1085,7 +1085,7 @@ const ImageResizer = ({
 										i
 									</span>
 								</p>
-								<ColorSelector
+								<CommonColorPicker
 									color={{ value: chngValue }}
 									variableSelection={false}
 									onChange={e => setChngValue(e.value)}

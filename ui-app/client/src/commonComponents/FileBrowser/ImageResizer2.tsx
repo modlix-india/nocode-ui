@@ -1,5 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { RangeSlider } from '../RangeSlider';
+import { onMouseDownDragStartCurry } from '../../functions/utils';
+import { CommonColorPicker } from '../CommonColorPicker';
+import { getDataFromPath } from '../../context/StoreContext';
+import { LOCAL_STORE_PREFIX } from '../../constants';
+import { shortUUID } from '../../util/shortUUID';
+import axios from 'axios';
 
 interface ImageResizer2Props {
 	url: string;
@@ -10,9 +16,21 @@ interface ImageResizer2Props {
 	cropToMaxHeight?: number;
 	cropToMinWidth?: number;
 	cropToMinHeight?: number;
+	cropToAspectRatio?: string;
 	onClose: () => void;
 	onSave: (props: any) => void;
+	isTransparent: boolean;
+	fileName: string;
 }
+
+interface CropDimension {
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+}
+
+const MIN_CROP_SIZE = 30;
 
 export function ImageResizer2({
 	url,
@@ -23,10 +41,13 @@ export function ImageResizer2({
 	cropToMaxHeight,
 	cropToMinWidth,
 	cropToMinHeight,
+	cropToAspectRatio,
 	onClose,
 	onSave,
+	isTransparent,
+	fileName,
 }: ImageResizer2Props) {
-	const imageRef = React.useRef<HTMLImageElement>(null);
+	const imageRef = React.useRef<HTMLImageElement | null>(null);
 	const [zoom, setZoom] = React.useState(1);
 	const [size, setSize] = React.useState({ width: 0, height: 0 });
 	const [imageSize, setImageSize] = React.useState<{ width?: number; height?: number }>({
@@ -37,6 +58,26 @@ export function ImageResizer2({
 	const [flipHorizontal, setFlipHorizontal] = React.useState(false);
 	const [flipVertical, setFlipVertical] = React.useState(false);
 	const [keepAspectRatio, setKeepAspectRatio] = React.useState(true);
+	const [bgColor, setBgColor] = React.useState(isTransparent ? undefined : '#000000');
+	const [showOverride, setShowOverride] = React.useState(false);
+
+	const hasCrop = !!(
+		cropToWidth ??
+		cropToHeight ??
+		cropToMaxWidth ??
+		cropToMaxHeight ??
+		cropToMinWidth ??
+		cropToMinHeight ??
+		cropToAspectRatio
+	);
+
+	let finFileName = fileName;
+	if (hasCrop && fileName.indexOf('.') !== -1) {
+		const ind = fileName.lastIndexOf('.');
+		finFileName = fileName.substring(0, ind) + '_edit' + fileName.substring(ind);
+	}
+
+	const [overrideFileName, setOverrideFileName] = React.useState(finFileName);
 
 	let x = 0,
 		y = 0;
@@ -60,8 +101,370 @@ export function ImageResizer2({
 		if (flipVertical) y += imgHeight * zoom;
 	}
 
+	const aspects = cropToAspectRatio?.split(':')?.map(Number);
+
+	const [crop, setCrop] = React.useState<CropDimension | undefined>(
+		hasCrop
+			? getDefaultCropBox({
+					cropToWidth,
+					cropToHeight,
+					cropToCircle,
+					cropToMaxWidth,
+					cropToMaxHeight,
+					cropToMinWidth,
+					cropToMinHeight,
+					cropToAspectRatio: aspects,
+					size,
+			  })
+			: undefined,
+	);
+
+	useEffect(() => {
+		setCrop(e => {
+			if (
+				(cropToHeight || cropToWidth) &&
+				(e?.width !== cropToWidth || e?.height !== cropToHeight)
+			) {
+				return getDefaultCropBox({
+					cropToWidth,
+					cropToHeight,
+					cropToCircle,
+					cropToMaxWidth,
+					cropToMaxHeight,
+					cropToMinWidth,
+					cropToMinHeight,
+					cropToAspectRatio: aspects,
+					size,
+				});
+			}
+
+			return e;
+		});
+	}, [
+		setCrop,
+		hasCrop,
+		cropToWidth,
+		cropToHeight,
+		cropToCircle,
+		cropToMaxWidth,
+		cropToMaxHeight,
+		cropToMinWidth,
+		cropToMinHeight,
+		size,
+	]);
+
+	if (cropToMinWidth && cropToMaxWidth && cropToMinWidth > cropToMaxWidth) {
+		let temp = cropToMinWidth;
+		cropToMinWidth = cropToMaxWidth;
+		cropToMaxWidth = temp;
+	}
+
+	if (cropToMinHeight && cropToMaxHeight && cropToMinHeight > cropToMaxHeight) {
+		let temp = cropToMinHeight;
+		cropToMinHeight = cropToMaxHeight;
+		cropToMaxHeight = temp;
+	}
+
+	const cropDefaults = {
+		cropToWidth,
+		cropToHeight,
+		cropToCircle,
+		cropToMaxWidth,
+		cropToMaxHeight,
+		cropToMinWidth,
+		cropToMinHeight,
+		cropToAspectRatio: aspects,
+	};
+
+	let cropBox = null,
+		cropTextBoxes = null;
+	if (crop) {
+		cropBox = (
+			<div
+				className="_cropBox"
+				style={{
+					left: crop.x * zoom,
+					top: crop.y * zoom,
+					width: crop.width * zoom,
+					height: crop.height * zoom,
+				}}
+				onMouseDown={onMouseDownDragStartCurry(crop.x * zoom, crop.y * zoom, (nX, nY) => {
+					nX /= zoom;
+					nY /= zoom;
+					if (nX - 10 < -crop.width) nX = 10 - crop.width;
+					else if (nX + 10 > imgWidth) nX = imgWidth - 10;
+					if (nY - 10 < -crop.height) nY = 10 - crop.height;
+					else if (nY + 10 > imgHeight) nY = imgHeight - 10;
+					setCrop(c => ({ ...c!, x: nX, y: nY }));
+				})}
+			>
+				<div className="_mask" />
+				<div className="_horizontal1" />
+				<div className="_horizontal2" />
+
+				<div className="_vertical1" />
+				<div className="_vertical2" />
+
+				<div
+					className="_topLeft"
+					onMouseDown={onMouseDownDragStartCurry(
+						0,
+						0,
+						adjustCropBox(
+							crop,
+							setCrop,
+							zoom,
+							{ x: 1, y: 1, width: 1, height: 1 },
+							cropDefaults,
+						),
+					)}
+				/>
+				<div
+					className="_topRight"
+					onMouseDown={onMouseDownDragStartCurry(
+						0,
+						0,
+						adjustCropBox(
+							crop,
+							setCrop,
+							zoom,
+							{ x: 0, y: 1, width: -1, height: 1 },
+							cropDefaults,
+						),
+					)}
+				/>
+				<div
+					className="_bottomLeft"
+					onMouseDown={onMouseDownDragStartCurry(
+						0,
+						0,
+						adjustCropBox(
+							crop,
+							setCrop,
+							zoom,
+							{ x: 1, y: 0, width: 1, height: -1 },
+							cropDefaults,
+						),
+					)}
+				/>
+				<div
+					className="_bottomRight"
+					onMouseDown={onMouseDownDragStartCurry(
+						0,
+						0,
+						adjustCropBox(
+							crop,
+							setCrop,
+							zoom,
+							{ x: 0, y: 0, width: -1, height: -1 },
+							cropDefaults,
+						),
+					)}
+				/>
+				<div
+					className="_top"
+					onMouseDown={onMouseDownDragStartCurry(
+						0,
+						0,
+						adjustCropBox(
+							crop,
+							setCrop,
+							zoom,
+							{ x: 0, y: 1, width: 0, height: 1 },
+							cropDefaults,
+						),
+					)}
+				/>
+				<div
+					className="_bottom"
+					onMouseDown={onMouseDownDragStartCurry(
+						0,
+						0,
+						adjustCropBox(
+							crop,
+							setCrop,
+							zoom,
+							{ x: 0, y: 0, width: 0, height: -1 },
+							cropDefaults,
+						),
+					)}
+				/>
+				<div
+					className="_left"
+					onMouseDown={onMouseDownDragStartCurry(
+						0,
+						0,
+						adjustCropBox(
+							crop,
+							setCrop,
+							zoom,
+							{ x: 1, y: 0, width: 1, height: 0 },
+							cropDefaults,
+						),
+					)}
+				/>
+				<div
+					className="_right"
+					onMouseDown={onMouseDownDragStartCurry(
+						0,
+						0,
+						adjustCropBox(
+							crop,
+							setCrop,
+							zoom,
+							{ x: 0, y: 0, width: -1, height: 0 },
+							cropDefaults,
+						),
+					)}
+				/>
+			</div>
+		);
+
+		cropTextBoxes = (
+			<>
+				<div className="_controlValue">
+					<div className="_controlInput">
+						<span>X</span>
+						<input
+							className="_size"
+							type="number"
+							value={crop.x}
+							onChange={e => setCrop({ ...crop, x: parseInt(e.target.value) })}
+						/>
+					</div>
+					<div className="_controlInput">
+						<span>Y</span>
+						<input
+							className="_size"
+							type="number"
+							value={crop.y}
+							onChange={e => setCrop({ ...crop, y: parseInt(e.target.value) })}
+						/>
+					</div>
+				</div>
+				<div className="_controlValue">
+					<div className="_controlInput">
+						<input
+							className="_size"
+							type="number"
+							value={crop.width}
+							readOnly={!!cropToWidth}
+							onChange={
+								!cropToWidth
+									? e => {
+											let width = parseInt(e.target.value);
+											let height = crop.height;
+											if (cropToAspectRatio) {
+												if (!cropToHeight)
+													height = Math.round(
+														(width * aspects![1]) / aspects![0],
+													);
+												else
+													width = Math.round(
+														(height * aspects![0]) / aspects![1],
+													);
+											}
+											if (cropToMinWidth && width < cropToMinWidth) return;
+											if (cropToMaxWidth && width > cropToMaxWidth) return;
+											if (cropToMinHeight && height < cropToMinHeight) return;
+											if (cropToMaxHeight && height > cropToMaxHeight) return;
+											setCrop({ ...crop, width, height });
+									  }
+									: undefined
+							}
+						/>
+						<span>px (W)</span>
+					</div>
+					<div className="_controlInput">
+						<input
+							className="_size"
+							type="number"
+							value={crop.height}
+							readOnly={!!cropToHeight}
+							onChange={
+								!cropToHeight
+									? e => {
+											let height = parseInt(e.target.value);
+											let width = crop.width;
+											if (cropToAspectRatio) {
+												if (!cropToWidth)
+													width = Math.round(
+														(height * aspects![0]) / aspects![1],
+													);
+												else
+													height = Math.round(
+														(width * aspects![1]) / aspects![0],
+													);
+											}
+											if (cropToMinWidth && width < cropToMinWidth) return;
+											if (cropToMaxWidth && width > cropToMaxWidth) return;
+											if (cropToMinHeight && height < cropToMinHeight) return;
+											if (cropToMaxHeight && height > cropToMaxHeight) return;
+											setCrop({ ...crop, width, height });
+									  }
+									: undefined
+							}
+						/>
+						<span>px (H)</span>
+					</div>
+				</div>
+			</>
+		);
+	}
+
+	let overrideDialog = null;
+	if (showOverride) {
+		overrideDialog = (
+			<div className="_iroBackground">
+				<div className="_iroContainer">
+					<div className="_imageResizerHeader _iroHeader">
+						<ResizerIcon
+							size={16}
+							pathData="M14.7375 0.513281C14.0531 -0.171094 12.9469 -0.171094 12.2625 0.513281L11.3219 1.45078L14.3813 4.51016L15.3219 3.56953C16.0063 2.88516 16.0063 1.77891 15.3219 1.09453L14.7375 0.513281ZM5.3875 7.38828C5.19687 7.57891 5.05 7.81328 4.96562 8.07266L4.04063 10.8477C3.95 11.1164 4.02188 11.4133 4.22188 11.6164C4.42188 11.8195 4.71875 11.8883 4.99062 11.7977L7.76562 10.8727C8.02188 10.7883 8.25625 10.6414 8.45 10.4508L13.6781 5.21953L10.6156 2.15703L5.3875 7.38828ZM3 1.83516C1.34375 1.83516 0 3.17891 0 4.83516V12.8352C0 14.4914 1.34375 15.8352 3 15.8352H11C12.6562 15.8352 14 14.4914 14 12.8352V9.83516C14 9.28203 13.5531 8.83516 13 8.83516C12.4469 8.83516 12 9.28203 12 9.83516V12.8352C12 13.3883 11.5531 13.8352 11 13.8352H3C2.44688 13.8352 2 13.3883 2 12.8352V4.83516C2 4.28203 2.44688 3.83516 3 3.83516H6C6.55312 3.83516 7 3.38828 7 2.83516C7 2.28203 6.55312 1.83516 6 1.83516H3Z"
+						/>
+						Change / Override
+					</div>
+
+					<div className="_iroBody">
+						<span>Enter a new file name to make a copy</span>
+						<div className="_controlInput">
+							<input
+								type="text"
+								value={overrideFileName}
+								onChange={e => setOverrideFileName(e.target.value)}
+							/>
+						</div>
+					</div>
+					<div className="_iroButtons">
+						<button onClick={() => setShowOverride(false)}>Cancel</button>
+						<button
+							onClick={() => {
+								if (hasCrop && overrideFileName == fileName) {
+									alert('Cannot use the same file name as the original file.');
+									return;
+								}
+								onSave({
+									crop,
+									rotate,
+									flipHorizontal,
+									flipVertical,
+									imageSize,
+									bgColor,
+									fileName: overrideFileName,
+								});
+							}}
+						>
+							Edit
+						</button>
+					</div>
+				</div>
+			</div>
+		);
+	}
+
 	return (
 		<div className="_imageResizer">
+			{overrideDialog}
 			<div className="_imageResizerHeader">
 				<ResizerIcon
 					size={16}
@@ -70,7 +473,10 @@ export function ImageResizer2({
 				Edit
 			</div>
 			<div className="_imageResizerBody">
-				<div className="_imagePreviewer">
+				<div
+					className="_imagePreviewer"
+					style={bgColor ? { backgroundColor: bgColor, backgroundImage: 'none' } : {}}
+				>
 					<div className="_imageZOOM">
 						<button onClick={() => setZoom(zoom + (zoom > 0.1 ? 0.1 : 0.01))}>+</button>
 						<button onClick={() => setZoom(1)}>o</button>
@@ -91,9 +497,27 @@ export function ImageResizer2({
 						className="_imageSizeDisplayer"
 						style={{ width: imgWidth * zoom, height: imgHeight * zoom }}
 					/>
+					{cropBox}
 					<img
-						src={url}
-						ref={imageRef}
+						ref={async r => {
+							imageRef.current = r;
+
+							if (!r || r.src) return;
+
+							if (url.indexOf('api/files/secured') !== -1) {
+								const headers: any = {
+									Authorization: getDataFromPath(
+										`${LOCAL_STORE_PREFIX}.AuthToken`,
+										[],
+									),
+								};
+								if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
+
+								r.src = await axios
+									.get(url, { responseType: 'blob', headers })
+									.then(res => URL.createObjectURL(res.data));
+							} else r.src = url;
+						}}
 						style={{
 							transform: `scale(${zoom}) rotate(${rotate}deg) ${
 								flipHorizontal ? 'scaleX(-1)' : ''
@@ -119,6 +543,33 @@ export function ImageResizer2({
 							Crop & Rotate
 						</div>
 						<div className="_controlBody">
+							<div className="_controlLabel">
+								{!hasCrop && (
+									<input
+										id="cropBox"
+										type="checkbox"
+										checked={!!crop}
+										onChange={e =>
+											setCrop(
+												e.target.checked
+													? getDefaultCropBox({
+															cropToWidth,
+															cropToHeight,
+															cropToCircle,
+															cropToMaxWidth,
+															cropToMaxHeight,
+															cropToMinWidth,
+															cropToMinHeight,
+															size,
+													  })
+													: undefined,
+											)
+										}
+									/>
+								)}
+								<label htmlFor="cropBox">Crop</label>
+							</div>
+							{cropTextBoxes}
 							<div className="_controlLabel">Rotate</div>
 							<div className="_controlValue">
 								<button onClick={() => setRotate((rotate + 270) % 360)}>
@@ -135,6 +586,8 @@ export function ImageResizer2({
 									/>
 									90&deg;
 								</button>
+							</div>
+							<div className="_controlValue">
 								<RangeSlider
 									value={rotate}
 									onChange={setRotate}
@@ -320,18 +773,167 @@ export function ImageResizer2({
 									</div>
 								</>
 							)}
+
+							<div className="_controlLabel">
+								Background Color{' '}
+								<CommonColorPicker
+									color={{ value: bgColor }}
+									showAlpha={isTransparent}
+									variableSelection={false}
+									onChange={e =>
+										setBgColor(
+											e.value
+												? e.value
+												: isTransparent
+												? undefined
+												: '#000000',
+										)
+									}
+								/>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 			<div className="_imageResizerFooter">
 				<button onClick={onClose}>Cancel</button>
-				<button onClick={() => onSave({})}>
+				<button
+					onClick={() => {
+						if (url.startsWith('data')) {
+							onSave({
+								crop,
+								rotate,
+								flipHorizontal,
+								flipVertical,
+								imageSize,
+								bgColor,
+							});
+						} else {
+							setShowOverride(true);
+						}
+					}}
+				>
 					{url.startsWith('data') ? 'Upload' : 'Edit'}
 				</button>
 			</div>
 		</div>
 	);
+}
+
+function adjustCropBox(
+	crop: CropDimension,
+	setCrop: (crop: CropDimension) => void,
+	zoom: number,
+	changeDefaults: {
+		x: number;
+		y: number;
+		width: number;
+		height: number;
+	},
+	cropDefaults: {
+		cropToWidth?: number;
+		cropToHeight?: number;
+		cropToCircle?: boolean;
+		cropToMaxWidth?: number;
+		cropToMaxHeight?: number;
+		cropToMinWidth?: number;
+		cropToMinHeight?: number;
+		cropToAspectRatio?: number[];
+	},
+) {
+	const {
+		cropToWidth,
+		cropToHeight,
+		cropToMaxWidth,
+		cropToMaxHeight,
+		cropToMinWidth,
+		cropToMinHeight,
+		cropToAspectRatio,
+	} = cropDefaults;
+
+	const { x: changeX, y: changeY, width: changeWidth, height: changeHeight } = changeDefaults;
+	let [aspectWidth, aspectHeight] = cropToAspectRatio ?? [];
+
+	return (nX: number, nY: number) => {
+		nX /= zoom;
+		nY /= zoom;
+
+		let width = crop.width - nX * changeWidth;
+		if (width < MIN_CROP_SIZE) width = MIN_CROP_SIZE;
+		if (cropToWidth) width = cropToWidth;
+		else if (cropToMinWidth && width < cropToMinWidth) width = cropToMinWidth;
+		else if (cropToMaxWidth && width > cropToMaxWidth) width = cropToMaxWidth;
+
+		let height = crop.height - nY * changeHeight;
+		if (height < MIN_CROP_SIZE) height = MIN_CROP_SIZE;
+		if (cropToHeight) height = cropToHeight;
+		else if (cropToMinHeight && height < cropToMinHeight) height = cropToMinHeight;
+		else if (cropToMaxHeight && height > cropToMaxHeight) height = cropToMaxHeight;
+
+		if (cropToAspectRatio && (!cropToWidth || !cropToHeight)) {
+			if (aspectHeight === undefined) aspectHeight = aspectWidth;
+
+			if (!cropToWidth && !changeHeight)
+				width = Math.round((height * aspectWidth) / aspectHeight);
+			else height = Math.round((width * aspectHeight) / aspectWidth);
+		}
+
+		setCrop({
+			x: crop.x + (crop.width - width) * changeX,
+			y: crop.y + (crop.height - height) * changeY,
+			width: changeWidth ? width : crop.width,
+			height: changeHeight ? height : crop.height,
+		});
+	};
+}
+
+function getDefaultCropBox({
+	cropToWidth,
+	cropToHeight,
+	cropToCircle,
+	cropToMaxWidth,
+	cropToMaxHeight,
+	cropToMinWidth,
+	cropToMinHeight,
+	cropToAspectRatio,
+	size,
+}: {
+	cropToWidth?: number;
+	cropToHeight?: number;
+	cropToCircle?: boolean;
+	cropToMaxWidth?: number;
+	cropToMaxHeight?: number;
+	cropToMinWidth?: number;
+	cropToMinHeight?: number;
+	cropToAspectRatio?: number[];
+	size: { width: number; height: number };
+}): { x: number; y: number; width: number; height: number } {
+	const defaults = {
+		x: 0,
+		y: 0,
+		width:
+			cropToWidth ??
+			cropToMinWidth ??
+			cropToMaxWidth ??
+			Math.max(Math.round(size.width / 10), MIN_CROP_SIZE),
+		height:
+			cropToHeight ??
+			cropToMinHeight ??
+			cropToMaxHeight ??
+			Math.max(Math.round(size.height / 10), MIN_CROP_SIZE),
+	};
+
+	if (cropToAspectRatio && (!cropToWidth || !cropToHeight)) {
+		const [aspectWidth, aspectHeight] = cropToAspectRatio;
+		if (aspectHeight === undefined) cropToAspectRatio[1] = aspectWidth;
+		if (!cropToWidth) {
+			defaults.width = Math.round((defaults.height * aspectWidth) / aspectHeight);
+		} else {
+			defaults.height = Math.round((defaults.width * aspectHeight) / aspectWidth);
+		}
+	}
+
+	return defaults;
 }
 
 function cartesianCoordinatesToPolar(x: number, y: number): { r: number; theta: number } {
@@ -407,7 +1009,7 @@ function computeLeftAndTopForRotation(
 	return { left, top, width, height };
 }
 
-function ResizerIcon({ size, pathData }: { size: number; pathData: string }) {
+function ResizerIcon({ size, pathData }: Readonly<{ size: number; pathData: string }>) {
 	return (
 		<svg
 			width={size}

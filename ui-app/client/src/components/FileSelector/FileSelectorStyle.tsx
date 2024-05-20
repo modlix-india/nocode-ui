@@ -20,11 +20,13 @@ export default function FileSelector({ theme }: { theme: Map<string, Map<string,
 
 	${PREFIX}._withImage ._imageButton {
 		opacity: 0.5;
-		display: hidden;
+		display: none;
+		position: absolute;
 	}
 
 	${PREFIX}._withImage:hover ._imageButton {
 		display: block;
+		opacity: 1;
 	}
 
 	${PREFIX} ._popupBackground {
