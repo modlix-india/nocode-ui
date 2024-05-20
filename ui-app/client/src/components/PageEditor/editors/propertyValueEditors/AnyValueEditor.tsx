@@ -36,53 +36,50 @@ export function AnyValueEditor({
 	let popup = <></>;
 	if (showEditor) {
 		popup = (
-			<Portal>
-				<div className={`_popupBackground`} onClick={() => setShowEditor(false)}>
-					<div className="_popupContainer" onClick={e => e.stopPropagation()}>
-						<div className="_jsonEditorContainer">
-							<Editor
-								language="json"
-								height="100%"
-								value={localValue}
-								onChange={ev => {
-									setEditorValue(ev ?? '');
-									try {
-										if (ev !== 'undefined' && ev !== 'null' && ev)
-											JSON.parse(ev);
-										setEnableOk(true);
-									} catch (err) {
-										setEnableOk(false);
-									}
-								}}
-							/>
-						</div>
-						<div className="_popupButtons">
-							<button
-								disabled={!enableOk}
-								onClick={() => {
-									let v = undefined;
-									let ev = (editorValue ?? '').trim();
-									if (ev === 'undefined' || ev === '') v = undefined;
-									else if (ev === 'null') v = null;
-									else if (ev) v = JSON.parse(ev);
-									onChange?.(v);
-									setShowEditor(false);
-								}}
-							>
-								Ok
-							</button>
+			<div className={`_popupBackground`} onClick={() => setShowEditor(false)}>
+				<div className="_popupContainer" onClick={e => e.stopPropagation()}>
+					<div className="_jsonEditorContainer">
+						<Editor
+							language="json"
+							height="100%"
+							value={localValue}
+							onChange={ev => {
+								setEditorValue(ev ?? '');
+								try {
+									if (ev !== 'undefined' && ev !== 'null' && ev) JSON.parse(ev);
+									setEnableOk(true);
+								} catch (err) {
+									setEnableOk(false);
+								}
+							}}
+						/>
+					</div>
+					<div className="_popupButtons">
+						<button
+							disabled={!enableOk}
+							onClick={() => {
+								let v = undefined;
+								let ev = (editorValue ?? '').trim();
+								if (ev === 'undefined' || ev === '') v = undefined;
+								else if (ev === 'null') v = null;
+								else if (ev) v = JSON.parse(ev);
+								onChange?.(v);
+								setShowEditor(false);
+							}}
+						>
+							Ok
+						</button>
 
-							<button
-								onClick={() => {
-									setShowEditor(false);
-								}}
-							>
-								Cancel
-							</button>
-						</div>
+						<button
+							onClick={() => {
+								setShowEditor(false);
+							}}
+						>
+							Cancel
+						</button>
 					</div>
 				</div>
-			</Portal>
+			</div>
 		);
 	}
 

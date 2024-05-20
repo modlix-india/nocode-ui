@@ -133,8 +133,8 @@ const component: Component = {
 		name: 'image',
 		type: 'Image',
 		properties: {
-			src: { value: 'api/files/static/file/SYSTEM/appbuilder/Placeholder_view_vector.svg' },
-			alt: { value: 'Placeholder image' },
+			src: { value: 'api/files/static/file/SYSTEM/appbuilder/sample.svg' },
+			alt: { value: 'Image' },
 		},
 	},
 	subComponentDefinition: [

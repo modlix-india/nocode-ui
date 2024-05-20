@@ -45,22 +45,20 @@ export default function IssuePopup({
 	if (!issue) return <></>;
 
 	return (
-		<Portal>
-			<div
-				className={`_popupBackground ${theme}`}
-				onClick={() => handleClick(issue.defaultOption)}
-			>
-				<div className="_popupContainer" onClick={e => e.stopPropagation()}>
-					{issue.message}
-					<div className="_popupButtons">
-						{issue.options.map(e => (
-							<button key={e} onClick={() => handleClick(e)}>
-								{e}
-							</button>
-						))}
-					</div>
+		<div
+			className={`_popupBackground ${theme}`}
+			onClick={() => handleClick(issue.defaultOption)}
+		>
+			<div className="_popupContainer" onClick={e => e.stopPropagation()}>
+				{issue.message}
+				<div className="_popupButtons">
+					{issue.options.map(e => (
+						<button key={e} onClick={() => handleClick(e)}>
+							{e}
+						</button>
+					))}
 				</div>
 			</div>
-		</Portal>
+		</div>
 	);
 }

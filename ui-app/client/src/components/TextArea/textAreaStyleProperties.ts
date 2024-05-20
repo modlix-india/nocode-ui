@@ -1,6 +1,8 @@
 import { StylePropertyDefinition } from '../../types/common';
 
 export const styleProperties: Array<StylePropertyDefinition> = [
+	{ displayName: 'Text Area Font', name: 'textAreaFont', defaultValue: '<primaryFont>' },
+
 	{
 		groupName: 'Text Area Font',
 		displayName: 'Text Area Font Design Default',
@@ -34,7 +36,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Primary Text Area Placeholder Color Design Default',
 		name: 'primaryTextAreaPlaceholderColorDesignDefault',
 		cssProperty: 'color',
-		selector: '.comp.compTextArea._default._primary input::placeholder',
+		selector: '.comp.compTextArea._default._primary textarea::placeholder',
 		noPrefix: true,
 	},
 	{
@@ -42,7 +44,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Secondary Text Area Placeholder Color Design Default',
 		name: 'secondaryTextAreaPlaceholderColorDesignDefault',
 		cssProperty: 'color',
-		selector: '.comp.compTextArea._default._secondary input::placeholder',
+		selector: '.comp.compTextArea._default._secondary textarea::placeholder',
 		noPrefix: true,
 	},
 	{
@@ -50,7 +52,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Tertiary Text Area Placeholder Color Design Default',
 		name: 'tertiaryTextAreaPlaceholderColorDesignDefault',
 		cssProperty: 'color',
-		selector: '.comp.compTextArea._default._tertiary input::placeholder',
+		selector: '.comp.compTextArea._default._tertiary textarea::placeholder',
 		noPrefix: true,
 	},
 	{
@@ -58,7 +60,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Quaternary Text Area Placeholder Color Design Default',
 		name: 'quaternaryTextAreaPlaceholderColorDesignDefault',
 		cssProperty: 'color',
-		selector: '.comp.compTextArea._default._quaternary input::placeholder',
+		selector: '.comp.compTextArea._default._quaternary textarea::placeholder',
 		noPrefix: true,
 	},
 	{
@@ -66,7 +68,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Quinary Text Area Placeholder Color Design Default',
 		name: 'quinaryTextAreaPlaceholderColorDesignDefault',
 		cssProperty: 'color',
-		selector: '.comp.compTextArea._default._quinary input::placeholder',
+		selector: '.comp.compTextArea._default._quinary textarea::placeholder',
 		noPrefix: true,
 	},
 
@@ -75,7 +77,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Primary Text Area Placeholder Color Design Outline',
 		name: 'primaryTextAreaPlaceholderColorDesignOutline',
 		cssProperty: 'color',
-		selector: '.comp.compTextArea._outlined._primary input::placeholder',
+		selector: '.comp.compTextArea._outlined._primary textarea::placeholder',
 		noPrefix: true,
 	},
 	{
@@ -83,7 +85,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Secondary Text Area Placeholder Color Design Outline',
 		name: 'secondaryTextAreaPlaceholderColorDesignOutline',
 		cssProperty: 'color',
-		selector: '.comp.compTextArea._outlined._secondary input::placeholder',
+		selector: '.comp.compTextArea._outlined._secondary textarea::placeholder',
 		noPrefix: true,
 	},
 	{
@@ -91,7 +93,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Tertiary Text Area Placeholder Color Design Outline',
 		name: 'tertiaryTextAreaPlaceholderColorDesignOutline',
 		cssProperty: 'color',
-		selector: '.comp.compTextArea._outlined._tertiary input::placeholder',
+		selector: '.comp.compTextArea._outlined._tertiary textarea::placeholder',
 		noPrefix: true,
 	},
 	{
@@ -99,7 +101,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Quaternary Text Area Placeholder Color Design Outline',
 		name: 'quaternaryTextAreaPlaceholderColorDesignOutline',
 		cssProperty: 'color',
-		selector: '.comp.compTextArea._outlined._quaternary input::placeholder',
+		selector: '.comp.compTextArea._outlined._quaternary textarea::placeholder',
 		noPrefix: true,
 	},
 	{
@@ -107,7 +109,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Quinary Text Area Placeholder Color Design Outline',
 		name: 'quinaryTextAreaPlaceholderColorDesignOutline',
 		cssProperty: 'color',
-		selector: '.comp.compTextArea._outlined._quinary input::placeholder',
+		selector: '.comp.compTextArea._outlined._quinary textarea::placeholder',
 		noPrefix: true,
 	},
 
@@ -117,7 +119,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryTextAreaPlaceholderColorDesignFilled',
 		defaultValue: '<colorSeven>',
 		cssProperty: 'color',
-		selector: '.comp.compTextArea._filled._primary input::placeholder',
+		selector: '.comp.compTextArea._filled._primary textarea::placeholder',
 		noPrefix: true,
 	},
 	{
@@ -126,7 +128,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryTextAreaPlaceholderColorDesignFilled',
 		defaultValue: '<colorSeven>',
 		cssProperty: 'color',
-		selector: '.comp.compTextArea._filled._secondary input::placeholder',
+		selector: '.comp.compTextArea._filled._secondary textarea::placeholder',
 		noPrefix: true,
 	},
 	{
@@ -135,7 +137,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryTextAreaPlaceholderColorDesignFilled',
 		defaultValue: '<colorSeven>',
 		cssProperty: 'color',
-		selector: '.comp.compTextArea._filled._tertiary input::placeholder',
+		selector: '.comp.compTextArea._filled._tertiary textarea::placeholder',
 		noPrefix: true,
 	},
 	{
@@ -144,7 +146,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryTextAreaPlaceholderColorDesignFilled',
 		defaultValue: '<colorSeven>',
 		cssProperty: 'color',
-		selector: '.comp.compTextArea._filled._quaternary input::placeholder',
+		selector: '.comp.compTextArea._filled._quaternary textarea::placeholder',
 		noPrefix: true,
 	},
 	{
@@ -153,7 +155,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryTextAreaPlaceholderColorDesignFilled',
 		defaultValue: '<colorSeven>',
 		cssProperty: 'color',
-		selector: '.comp.compTextArea._filled._quinary input::placeholder',
+		selector: '.comp.compTextArea._filled._quinary textarea::placeholder',
 		noPrefix: true,
 	},
 
@@ -3715,6 +3717,16 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'textAreaBorderLeftHasValueDesignFilled',
 		cssProperty: 'border-left',
 		selector: '.comp.compTextArea._filled._hasValue',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'Text Box Asterisk Text Color',
+		displayName: 'Text Box Asterisk Text Color',
+		name: 'textBoxAsteriskTextColor',
+		defaultValue: '<colorTwelve>',
+		cssProperty: 'color',
+		selector: '.comp.compTextArea ._label ._asterisk',
 		noPrefix: true,
 	},
 ];
