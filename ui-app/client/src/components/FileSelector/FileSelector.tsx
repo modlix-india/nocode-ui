@@ -107,6 +107,7 @@ function FileSelector(props: ComponentProps) {
 		setData(bindingPathPath, selectedFile === file ? undefined : file, context.pageName, true);
 		setShowBrowser(false);
 		setRecentlySelected({ file, type, directory });
+		setIsDirty(true);
 		if (!onSelect || !pageDefinition.eventFunctions[onSelect]) return;
 		await runEvent(
 			pageDefinition.eventFunctions[onSelect],
@@ -137,13 +138,25 @@ function FileSelector(props: ComponentProps) {
 						style={resolvedStyles.image ?? {}}
 						onClick={e => e.currentTarget == e.target && setShowBrowser(true)}
 					/>
-					<UploadImage image={uploadImage} onClick={() => setShowBrowser(true)} />
+					<UploadImage
+						image={uploadImage}
+						onClick={() => {
+							setShowBrowser(true);
+							setIsDirty(true);
+						}}
+					/>
 				</>
 			);
 		} else
 			content = (
 				<>
-					<UploadImage image={uploadImage} onClick={() => setShowBrowser(true)} />
+					<UploadImage
+						image={uploadImage}
+						onClick={() => {
+							setShowBrowser(true);
+							setIsDirty(true);
+						}}
+					/>
 				</>
 			);
 		if (showBrowser)
@@ -251,9 +264,7 @@ function FileSelector(props: ComponentProps) {
 	}, [selectedFile, validation]);
 
 	const hasErrorMessages =
-		validationMessages?.length &&
-		(selectedFile.trim() == '' || isDirty || context.showValidationMessages) &&
-		!readOnly;
+		validationMessages?.length && (isDirty || context.showValidationMessages) && !readOnly;
 
 	let validationsOrSupportText = undefined;
 	if (hasErrorMessages) {

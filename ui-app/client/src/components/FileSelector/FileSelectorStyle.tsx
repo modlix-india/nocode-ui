@@ -61,24 +61,6 @@ export default function FileSelector({ theme }: { theme: Map<string, Map<string,
 		height: 95vh;
 	}
 
-	${PREFIX} ._fullScreenButton {
-		position: absolute;
-		right: -16px;
-		top: -16px;
-		width: 32px;
-		height: 32px;
-		background: #FFF;
-		border-radius: 50%;
-		padding: 5px;
-		box-shadow: 0px 1px 3px 0px #0000001A;
-	}
-
-	${PREFIX} ._fullScreenButton svg {
-		width: 100%;
-		height: 100%;
-	
-	}
-
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="FileSelectorCss">{css}</style>;
