@@ -37,6 +37,8 @@ declare global {
 	) => RemoteRepository<Schema>;
 	var cdnPrefix: string;
 	var determineRightClickPosition: (e: MouseEvent) => { x: number; y: number };
+	var domainClientCode: string;
+	var domainAppCode: string;
 	// var d3: typeof import('d3/index');
 }
 

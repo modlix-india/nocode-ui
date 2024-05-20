@@ -61,7 +61,7 @@ export default function FileSelector({ theme }: { theme: Map<string, Map<string,
 		height: 95vh;
 	}
 
-	${PREFIX} ._fullScreenButton {
+	${PREFIX} ._popupBackground ._popupContainer ._fullScreenButton {
 		position: absolute;
 		right: -16px;
 		top: -16px;
@@ -73,7 +73,7 @@ export default function FileSelector({ theme }: { theme: Map<string, Map<string,
 		box-shadow: 0px 1px 3px 0px #0000001A;
 	}
 
-	${PREFIX} ._fullScreenButton svg {
+	${PREFIX} ._popupBackground ._popupContainer ._fullScreenButton svg {
 		width: 100%;
 		height: 100%;
 	
