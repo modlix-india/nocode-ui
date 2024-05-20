@@ -3,7 +3,7 @@ import { processStyleDefinition } from "../../util/styleProcessor";
 import { styleDefaults, styleProperties } from "./calendarStyleProperties";
 
 const PREFIX = ".comp.compCalendar";
-export default function DropdownStyle({
+export default function CalendarStyle({
   theme,
 }: {
   theme: Map<string, Map<string, string>>;
@@ -79,14 +79,10 @@ export default function DropdownStyle({
             z-index: 2;
         }
 
-        .dateContainer._center {
+        .dateContainer._center, .dateContainer._left, .dateContainer._right {
             position: relative;
             justify-content: center;
             align-items: center;
-        }
-
-        .dateContainer._left {
-            flex-direction: row-reverse;
         }
 
         .arrowButton._center {
@@ -96,6 +92,20 @@ export default function DropdownStyle({
             width: 100%;
         }
 
+        .arrowButton._left {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            left: 0;
+        }
+
+        .arrowButton._right {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            right: 0;
+        }
+
         .dateText {
             display: flex;
             align-items: center;
@@ -103,6 +113,11 @@ export default function DropdownStyle({
 
         .calendar .date {
             text-align: center;
+        }
+
+        .svgIcon_180 {
+            position: relative;
+            top: -2px;
         }
 
  	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);

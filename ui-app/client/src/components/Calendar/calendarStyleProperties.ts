@@ -4599,6 +4599,24 @@ export const styleProperties: Array<StylePropertyDefinition> = [
         selector: '.calendarPopOver._fullCalendar .date.selected',
         noPrefix: true,
     },
+    {
+        groupName: 'Calendar Popover dates selected background color disabled',
+        displayName: ' Calendar Popover dates selected background color disabled Design Simple',
+        name: ' CalendarPopoverdatesselectedbackgroundcolordisabledDesignSimple',
+        defaultValue: '#f7f7f7',
+        cssProperty: 'background',
+        selector: '.calendarPopOver._simpleCalendar .date.disabled',
+        noPrefix: true,
+    },
+    {
+        groupName: 'Calendar Popover dates selected background color disabled',
+        displayName: ' Calendar Popover dates selected background color disabled Design Full',
+        name: ' CalendarPopoverdatesselectedbackgroundcolordisabledDesignFull',
+        defaultValue: '#f7f7f7',
+        cssProperty: 'background',
+        selector: '.calendarPopOver._fullCalendar .date.disabled',
+        noPrefix: true,
+    },
 ];
 
 export const styleDefaults = new Map<string, string>(

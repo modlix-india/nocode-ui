@@ -131,26 +131,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
     COMMON_COMPONENT_PROPERTIES.readOnly,
     COMMON_COMPONENT_PROPERTIES.visibility,
     {
-        name: 'iconType',
-        schema: SCHEMA_STRING_COMP_PROP,
-        displayName: 'Icon Type',
-        description: 'Icon type for the calendar icon.',
-        group: ComponentPropertyGroup.ADVANCED,
-        defaultValue: 'regular',
-        enumValues: [
-            {
-                name: 'regular',
-                displayName: 'Regular Icon',
-                description: 'Regular Calendar Icon type',
-            },
-            {
-                name: 'solid',
-                displayName: 'solid Icon',
-                description: 'solid Calendar Icon type',
-            }
-        ]
-    },
-    {
         ...COMMON_COMPONENT_PROPERTIES.designType,
         enumValues: [
             ...COMMON_COMPONENT_PROPERTIES.designType.enumValues!,
@@ -216,16 +196,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
         ]
     },
     {
-        ...COMMON_COMPONENT_PROPERTIES.datatype,
-        enumValues: [
-            {
-                name: 'LIST_OF_STRINGS',
-                displayName: 'List of strings',
-                description: 'data has an array of strings',
-            },
-        ],
-    },
-    {
         name: "disbaleDays",
         schema: SCHEMA_STRING_COMP_PROP,
         multiValued: true,
@@ -270,7 +240,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
             }
         ]
     },
-    COMMON_COMPONENT_PROPERTIES.uniqueKeyType,
     {
         name: "calendarDesignType",
         schema: SCHEMA_ANY_COMP_PROP,

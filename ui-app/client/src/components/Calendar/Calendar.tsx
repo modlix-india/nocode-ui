@@ -26,7 +26,7 @@ import { IconHelper } from "../util/IconHelper";
 import { days, formatDateTo, months, preprocess } from "../util/calendarUtil";
 import useDefinition from "../util/useDefinition";
 import { flattenUUID } from "../util/uuid";
-import DropdownStyle from "./CalendarStyle";
+import CalendarStyle from "./CalendarStyle";
 import {
   propertiesDefinition,
   stylePropertiesDefinition,
@@ -60,7 +60,6 @@ function CalendarComponent(props: ComponentProps) {
       validation,
       noFloat,
       label,
-      iconType,
       colorScheme,
       dateType,
       disableDates,
@@ -123,7 +122,7 @@ function CalendarComponent(props: ComponentProps) {
   }: any) {
     return (
       <svg
-        className="svgIcon"
+        className={`svgIcon_${angle}`}
         width="30"
         height="35"
         viewBox="0 0 44 45"
@@ -353,6 +352,8 @@ function CalendarComponent(props: ComponentProps) {
     const isDisabledDate = disableDates
       ?.split(", ")
       ?.some((date: any) => utcCurrDate == date);
+
+    console.log(isDisabledDate);
 
     currentWeek.push(
       <td
@@ -585,7 +586,7 @@ function CalendarComponent(props: ComponentProps) {
       )}
       label={label}
       translations={translations}
-      rightIcon={`fa-${iconType} fa-calendar`}
+      rightIcon={`fa-solid fa-calendar`}
       valueType="text"
       isPassword={false}
       placeholder={placeholder}
@@ -623,7 +624,7 @@ const component: Component = {
   displayName: "Calendar",
   description: "Calendar component",
   component: CalendarComponent,
-  styleComponent: DropdownStyle,
+  styleComponent: CalendarStyle,
   styleDefaults: styleDefaults,
   propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
   properties: propertiesDefinition,
