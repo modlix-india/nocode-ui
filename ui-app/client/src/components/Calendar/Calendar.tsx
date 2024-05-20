@@ -529,7 +529,15 @@ function CalendarComponent(props: ComponentProps) {
   );
 
   const Calendar = (
-    <div className={`calendarPopOver ${calendarDesignType}`} ref={calendarRef}>
+    <div
+      className={`calendarPopOver ${calendarDesignType}`}
+      ref={calendarRef}
+      style={computedStyles?.calendarPopOver}
+    >
+      <SubHelperComponent
+        definition={props.definition}
+        subComponentName="calendarPopOver"
+      ></SubHelperComponent>
       <div
         className={`dateContainer ${arrowButtonsHorizontalPlacement}`}
         style={computedStyles?.dateContainer}
@@ -568,6 +576,10 @@ function CalendarComponent(props: ComponentProps) {
         </div>
       </div>
       <table className="calendar" style={computedStyles?.calendar}>
+        <SubHelperComponent
+          definition={props.definition}
+          subComponentName="calendar"
+        ></SubHelperComponent>
         {showChildren}
       </table>
     </div>
@@ -613,7 +625,9 @@ function CalendarComponent(props: ComponentProps) {
   );
 
   return calendarDesignType?.startsWith("_fullCalendar") ? (
-    <div className="comp compCalendar">{Calendar}</div>
+    <div className="comp compCalendar" style={computedStyles?.comp}>
+      {Calendar}
+    </div>
   ) : (
     comp1
   );
@@ -680,9 +694,21 @@ const component: Component = {
       mainComponent: true,
     },
     {
-      name: "dateContainer",
+      name: "calendarPopOver",
+      displayName: "Calendar Popover",
+      description: "Calendar Popover",
+      icon: "fa-solid fa-box",
+    },
+    {
+      name: "calendar",
       displayName: "Calendar Container",
       description: "Calendar Container",
+      icon: "fa-solid fa-box",
+    },
+    {
+      name: "dateContainer",
+      displayName: "Calendar Date Container",
+      description: "Calendar Date Container",
       icon: "fa-solid fa-box",
     },
     {

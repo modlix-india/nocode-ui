@@ -62,6 +62,14 @@ export default function CalendarStyle({
             top: 100%;
         }
 
+        .calendarPopOver._fullCalendar {
+            width: 100%;
+        }
+
+        .calendar {
+            width: 100%;
+        }
+
        .calendarPopOver._simpleCalendar {
             position: absolute;
         }
