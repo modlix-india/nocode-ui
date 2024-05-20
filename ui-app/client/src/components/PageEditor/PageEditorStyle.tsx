@@ -281,7 +281,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			width: 100%;
 		}
 
-		${PREFIX} button, ._popupButtons button {
+		${PREFIX} button, ${PREFIX} ._popupButtons button {
 			color: #555;
 			background-color: #eee;
 			text-transform: uppercase;
@@ -293,7 +293,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._filterBar input,
-		${PREFIX} input._peInput, ._pvExpressionEditor,
+		${PREFIX} input._peInput, ${PREFIX} ._pvExpressionEditor,
 		${PREFIX} textarea._peInput, select._peInput {
 			color: #000;
 			background-color: #F8FAFB;
@@ -359,7 +359,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex: 1;
 		}
 
-		${PREFIX} input._peInput[type='text'], ._pvExpressionEditor, input._peInput[type='number'] {
+		${PREFIX} input._peInput[type='text'], ${PREFIX} ._pvExpressionEditor, input._peInput[type='number'] {
 			height: 35px;
 			font-size: 12px;
 			line-height:12px;
@@ -401,7 +401,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			background-color: #eee;
 		}
 
-		${PREFIX} ._pvExpressionEditor input._peInput[type='text'], ._pvExpressionEditor input._peInput[type='number']{
+		${PREFIX} ._pvExpressionEditor input._peInput[type='text'], ${PREFIX} ._pvExpressionEditor input._peInput[type='number']{
 			border: none;
 			background-color: transparent;
 			flex: 1;
@@ -530,7 +530,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			color: #4C7FEE;
 		}
 
-		${PREFIX} ._iconMenuOption, ._popupMenuBackground ._popupMenuItem  {
+		${PREFIX} ._iconMenuOption, ${PREFIX} ._popupMenuBackground ._popupMenuItem  {
 			padding: 10px 15px;
 			color: #96A1B4;
 			display: flex;
@@ -1961,7 +1961,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			top: 8px;
 		}
 
-		${PREFIX} ._dragBar ._leftIcon, ._dragBar ._rightIcon {
+		${PREFIX} ._dragBar ._leftIcon, ${PREFIX} ._dragBar ._rightIcon {
 			outline: none;
 			cursor: pointer;
 		}
@@ -2919,7 +2919,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			background-color: #eee;
 		}
 
-		${PREFIX} ._popupMenuBackground, ._popupBackground {
+		${PREFIX} ._popupMenuBackground, ${PREFIX} ._popupBackground {
 			position: fixed;
 			left: 0px;
 			top: 0px;
@@ -3270,14 +3270,14 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 		
 		${PREFIX}._dark ._sideBar, ${PREFIX}._dark ._iconMenuBody,
-		${PREFIX}._dark ._topBarGrid, ._popupBackground._dark ._popupContainer,
-		${PREFIX}._dark ._selectionBar, ._dark ._propBar,
+		${PREFIX}._dark ._topBarGrid, ${PREFIX} ._popupBackground._dark ._popupContainer,
+		${PREFIX}._dark ._selectionBar, ${PREFIX} ._dark ._propBar,
 		${PREFIX} ._popupMenuBackground._dark ._popupMenu{
 			background-color:#555;
 		}
 
-		${PREFIX}._dark button, ._dark select._peSelect, ._dark input._peInput[type='text'],
-		${PREFIX}._dark ._pvExpressionEditor, ._popupBackground._dark button,
+		${PREFIX}._dark button, ${PREFIX} ._dark select._peSelect, ${PREFIX} ._dark input._peInput[type='text'],
+		${PREFIX}._dark ._pvExpressionEditor, ${PREFIX} ._popupBackground._dark button,
 		${PREFIX}._dark input._peInput[type='number'] {
 			color: #aaa;
 			background-color: #222;
@@ -3293,7 +3293,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX}._dark button:hover, ${PREFIX}._dark select:hover,  ${PREFIX}._dark ._iconMenuOption:hover,
-		${PREFIX} ._popupMenuBackground._dark ._popupMenuItem:hover, ._popupMenuBackground._dark ._popupMenuItem.active,
+		${PREFIX} ._popupMenuBackground._dark ._popupMenuItem:hover, ${PREFIX} ._popupMenuBackground._dark ._popupMenuItem.active,
 		${PREFIX} ._popupBackground._dark button:hover {
 			background-color: #aaa;
     		color: #222;
@@ -3307,11 +3307,11 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX}._dark ._buttonBar i.fa.active, ${PREFIX}._dark ._buttonBar i.fa:hover,
-		${PREFIX}._dark ._eachSelectionBar, ._popupBackground._dark{
+		${PREFIX}._dark ._eachSelectionBar, ${PREFIX} ._popupBackground._dark{
 			color: #aaa;
 		}
 
-		${PREFIX}._dark ._iconMenuOption, ._popupMenuBackground._dark ._popupMenuItem {
+		${PREFIX}._dark ._iconMenuOption, ${PREFIX} ._popupMenuBackground._dark ._popupMenuItem {
 			color: #000;
 		}
 
