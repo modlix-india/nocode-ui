@@ -74,3 +74,41 @@ export function hashCode(str: string | undefined): number {
 
 	return hash;
 }
+
+export function onMouseDownDragStartCurry(
+	startX: number,
+	startY: number,
+	onDrag?: (newX: number, newY: number, diffX: number, diffY: number, e: MouseEvent) => void,
+): (e: React.MouseEvent) => void {
+	return (e: React.MouseEvent) => {
+		if (e.buttons !== 1) return;
+		e.preventDefault();
+		e.stopPropagation();
+
+		const { clientX, clientY } = e;
+		const onMouseMove = (ie: MouseEvent) => {
+			ie.preventDefault();
+			ie.stopPropagation();
+			if (ie.buttons !== 1) {
+				document.body.removeEventListener('mousemove', onMouseMove);
+				document.body.removeEventListener('mouseup', onMouseUp);
+				document.body.addEventListener('mouseleave', onMouseUp);
+				return;
+			}
+
+			const diffX = ie.clientX - clientX;
+			const diffY = ie.clientY - clientY;
+			onDrag?.(startX + diffX, startY + diffY, diffX, diffY, ie);
+		};
+		const onMouseUp = (e: MouseEvent) => {
+			e.preventDefault();
+			e.stopPropagation();
+			document.body.removeEventListener('mousemove', onMouseMove);
+			document.body.removeEventListener('mouseup', onMouseUp);
+			document.body.addEventListener('mouseleave', onMouseUp);
+		};
+		document.body.addEventListener('mousemove', onMouseMove);
+		document.body.addEventListener('mouseup', onMouseUp);
+		document.body.addEventListener('mouseleave', onMouseUp);
+	};
+}

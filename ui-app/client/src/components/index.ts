@@ -53,6 +53,7 @@ import SmallCarousel from './SmallCarousel/SmallCarousel';
 import Otp from './Otp/Otp';
 import Chart from './Chart/Chart';
 import TemplateEditor from './TemplateEditor/TemplateEditor';
+import FileSelector from './FileSelector/FileSelector';
 
 export default new Map<string, Component>([
 	[Button.name, Button],
@@ -109,4 +110,5 @@ export default new Map<string, Component>([
 	[Otp.name, Otp],
 	[Chart.name, Chart],
 	[TemplateEditor.name, TemplateEditor],
+	[FileSelector.name, FileSelector],
 ]);

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Generate } from './FillerValueEditorIcons';
-import { ColorSelector } from './ColorSelector';
+import { CommonColorPicker } from '../../../commonComponents/CommonColorPicker';
 
 const PALLETTE_NAMES = [
 	{
@@ -130,7 +130,7 @@ export default function Palette({
 		<div className="_palette">
 			<div className="_currentPalette">
 				{(value.length ? value : new Array(numOfColors).fill('')).map((color, index) => (
-					<ColorSelector
+					<CommonColorPicker
 						key={`${index}`}
 						color={color ?? ''}
 						onChange={color => {
