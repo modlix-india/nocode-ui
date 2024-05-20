@@ -178,7 +178,7 @@ export function FileBrowser({
 		setInProgress(true);
 
 		(async () => {
-			let url = `api/files/${resourceType}/${path}?size=200`;
+			let url = `api/files/${resourceType}${path}?size=200`;
 			if (fileCategory?.length) url += `&fileType=${fileCategory}`;
 			if (filter.trim() !== '') url += `&filter=${filter}`;
 			await axios
@@ -576,7 +576,6 @@ export function FileBrowser({
 							setFile(undefined);
 						}}
 						onSave={async (props: any) => {
-							console.log(props);
 							try {
 								const formData = new FormData();
 
@@ -619,9 +618,11 @@ export function FileBrowser({
 									fileObject.data.type,
 									fileObject.data.directory,
 								);
+								setFileSelection(fileObject.data);
 								setImageResizerURL('');
 								setIsTransparent(false);
 								setFile(undefined);
+								setSomethingChanged(Date.now());
 							} catch (err) {}
 						}}
 					/>
