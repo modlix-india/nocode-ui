@@ -18,23 +18,20 @@ import {
   ComponentPropertyDefinition,
   ComponentProps,
 } from "../../types/common";
+import { formatString } from "../../util/stringFormat";
 import { processComponentStylePseudoClasses } from "../../util/styleProcessor";
-import { PortalCoordinates } from "../Popover/Popover";
-import Portal from "../Portal";
+import { validate } from "../../util/validationProcessor";
+import { SubHelperComponent } from "../HelperComponents/SubHelperComponent";
 import { IconHelper } from "../util/IconHelper";
 import { days, formatDateTo, months, preprocess } from "../util/calendarUtil";
-import getPositions from "../util/getPositions";
 import useDefinition from "../util/useDefinition";
+import { flattenUUID } from "../util/uuid";
 import DropdownStyle from "./CalendarStyle";
 import {
   propertiesDefinition,
   stylePropertiesDefinition,
 } from "./calendarProperties";
 import { styleDefaults } from "./calendarStyleProperties";
-import { formatString } from "../../util/stringFormat";
-import { validate } from "../../util/validationProcessor";
-import { flattenUUID } from "../util/uuid";
-import { SubHelperComponent } from "../HelperComponents/SubHelperComponent";
 
 const typeOfDate = ["startDate", "endDate"];
 const typeOfTemporal = ["_disableFuture"];
@@ -65,7 +62,6 @@ function CalendarComponent(props: ComponentProps) {
       label,
       iconType,
       colorScheme,
-      position,
       dateType,
       disableDates,
       disbaleDays,
@@ -99,7 +95,6 @@ function CalendarComponent(props: ComponentProps) {
   const [validationMessages, setValidationMessages] = useState<string[]>([]);
   const [focus, setFocus] = useState<boolean>(false);
   const [showCalendar, setShowCalendar] = useState(false);
-  const [coords, setCoords] = useState<PortalCoordinates | undefined>();
   const [displayType, setDisplayType] = useState("day");
   const inputRef = useRef<HTMLDivElement | null>(null);
   const calendarRef = useRef<HTMLDivElement | null>(null);
@@ -298,17 +293,6 @@ function CalendarComponent(props: ComponentProps) {
         true
       );
   }, [startDate, endDate, validation]); // validation
-
-  React.useEffect(() => {
-    if (!inputRef.current || !showCalendar) return;
-    const boxRect = (inputRef.current as HTMLElement)?.getBoundingClientRect();
-    const calendarRect = (
-      calendarRef.current as HTMLElement
-    )?.getBoundingClientRect();
-
-    let positions = getPositions(position, boxRect, calendarRect)!;
-    setCoords(positions.coords);
-  }, [showCalendar, inputRef.current, position]);
 
   const handleClick = (value: any) => {
     let newValue = new Date(value);
@@ -544,11 +528,7 @@ function CalendarComponent(props: ComponentProps) {
   );
 
   const Calendar = (
-    <div
-      className={`calendarPopOver ${calendarDesignType}`}
-      style={coords}
-      ref={calendarRef}
-    >
+    <div className={`calendarPopOver ${calendarDesignType}`} ref={calendarRef}>
       <div
         className={`dateContainer ${arrowButtonsHorizontalPlacement}`}
         style={computedStyles?.dateContainer}
@@ -627,7 +607,7 @@ function CalendarComponent(props: ComponentProps) {
       designType={designType}
       colorScheme={colorScheme}
     >
-      {showCalendar ? <Portal>{Calendar}</Portal> : undefined}
+      {showCalendar ? Calendar : undefined}
     </CommonInputText>
   );
 

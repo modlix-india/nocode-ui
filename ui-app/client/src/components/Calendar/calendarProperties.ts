@@ -4,9 +4,9 @@ import {
     SCHEMA_STRING_COMP_PROP,
 } from '../../constants';
 import {
-    ComponentPropertyGroup,
     ComponentPropertyDefinition,
     ComponentPropertyEditor,
+    ComponentPropertyGroup,
 } from '../../types/common';
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
@@ -188,53 +188,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
                 description: 'End date type'
             }
         ]
-    },
-    {
-        name: 'position',
-        schema: SCHEMA_STRING_COMP_PROP,
-        displayName: 'Popover position',
-        description: 'Popover position with respect to first child which is the trigger.',
-        defaultValue: 'bottom-end',
-        editor: ComponentPropertyEditor.ENUM,
-        group: ComponentPropertyGroup.BASIC,
-        enumValues: [
-            {
-                name: 'bottom',
-                displayName: 'Bottom Center',
-                description: 'Position Bottom Center.',
-            },
-            {
-                name: 'bottom-start',
-                displayName: 'Bottom Start',
-                description: 'Position Bottom Start.',
-            },
-            {
-                name: 'bottom-end',
-                displayName: 'Bottom End',
-                description: 'Position Bottom End.',
-            },
-            { name: 'top', displayName: 'Top Center', description: 'Position Top Center.' },
-            { name: 'top-start', displayName: 'Top Start', description: 'Position Top Start.' },
-            { name: 'top-end', displayName: 'Top End', description: 'Position Top End.' },
-            { name: 'left', displayName: 'Left Center', description: 'Position Left Center.' },
-            { name: 'left-start', displayName: 'Left Start', description: 'Position Left Start.' },
-            {
-                name: 'left-end',
-                displayName: 'Left End',
-                description: 'Position Left End.',
-            },
-            { name: 'right', displayName: 'Right Center', description: 'Position Right Center.' },
-            {
-                name: 'right-start',
-                displayName: 'Right Start',
-                description: 'Position Right Start.',
-            },
-            {
-                name: 'right-end',
-                displayName: 'Right End',
-                description: 'Position Right End.',
-            },
-        ],
     },
     {
         name: "disableDates",

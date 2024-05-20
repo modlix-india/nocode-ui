@@ -1,7 +1,6 @@
 import React from "react";
-import { StyleResolution } from "../../types/common";
 import { processStyleDefinition } from "../../util/styleProcessor";
-import { styleProperties, styleDefaults } from "./calendarStyleProperties";
+import { styleDefaults, styleProperties } from "./calendarStyleProperties";
 
 const PREFIX = ".comp.compCalendar";
 export default function DropdownStyle({
@@ -57,7 +56,10 @@ export default function DropdownStyle({
         }
 
         .calendarPopOver {
-            background-color: white;
+            z-index: 5;
+            left: 0;
+            position: absolute;
+            top: 100%;
         }
 
        .calendarPopOver._simpleCalendar {
@@ -97,6 +99,10 @@ export default function DropdownStyle({
         .dateText {
             display: flex;
             align-items: center;
+        }
+
+        .calendar .date {
+            text-align: center;
         }
 
  	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
