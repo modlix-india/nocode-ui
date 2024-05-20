@@ -36,6 +36,10 @@ export default function FileSelector({ theme }: { theme: Map<string, Map<string,
 		align-items: center;
 		width: 100vw;
 		height: 100vh;
+		position: fixed;
+        z-index: 6;
+		left: 0px;
+		top: 0px;
 	}
 
 	${PREFIX} ._popupBackground ._popupContainer {

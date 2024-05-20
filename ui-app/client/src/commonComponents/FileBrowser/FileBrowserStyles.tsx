@@ -262,6 +262,10 @@ export function FileBrowserStyles() {
 		align-items: center;
 		width: 100vw;
 		height: 100vh;
+        position: absolute;
+        z-index: 6;
+        left: 0px;
+		top: 0px;
 	}
 
 	._fileBrowser ._popupBackground ._popupContainer {
