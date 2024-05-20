@@ -178,7 +178,12 @@ export function ImageResizer2({
 
 	let cropBox = null,
 		cropTextBoxes = null;
+
+	let translate = '';
 	if (crop) {
+		if (crop.x < 0 || crop.y < 0) {
+			translate = `translate(${crop.x < 0 ? -crop.x : 0}px, ${crop.y < 0 ? -crop.y : 0}px)`;
+		}
 		cropBox = (
 			<div
 				className="_cropBox"
@@ -187,6 +192,7 @@ export function ImageResizer2({
 					top: crop.y * zoom,
 					width: crop.width * zoom,
 					height: crop.height * zoom,
+					transform: translate,
 				}}
 				onMouseDown={onMouseDownDragStartCurry(crop.x * zoom, crop.y * zoom, (nX, nY) => {
 					nX /= zoom;
@@ -495,7 +501,11 @@ export function ImageResizer2({
 					</div>
 					<div
 						className="_imageSizeDisplayer"
-						style={{ width: imgWidth * zoom, height: imgHeight * zoom }}
+						style={{
+							width: imgWidth * zoom,
+							height: imgHeight * zoom,
+							transform: translate,
+						}}
 					/>
 					{cropBox}
 					<img
@@ -521,7 +531,7 @@ export function ImageResizer2({
 						style={{
 							transform: `scale(${zoom}) rotate(${rotate}deg) ${
 								flipHorizontal ? 'scaleX(-1)' : ''
-							} ${flipVertical ? 'scaleY(-1)' : ''}`,
+							} ${flipVertical ? 'scaleY(-1)' : ''} ${translate}`,
 							left: `${x}px`,
 							top: `${y}px`,
 						}}
