@@ -698,6 +698,24 @@ export function FileBrowserStyles() {
         display: flex;
         gap: 10px;
     }
+
+    ._fileBrowser ._fullScreenButton {
+		position: absolute;
+		right: -16px;
+		top: -16px;
+		width: 32px;
+		height: 32px;
+		background: #FFF;
+		border-radius: 50%;
+		padding: 5px;
+		box-shadow: 0px 1px 3px 0px #0000001A;
+	}
+
+	._fileBrowser ._fullScreenButton svg {
+		width: 100%;
+		height: 100%;
+	
+	}
     `;
 	return <style id="fileBrowserStyles">{styles}</style>;
 }

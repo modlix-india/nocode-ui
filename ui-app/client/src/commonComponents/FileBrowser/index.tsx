@@ -400,6 +400,7 @@ export function FileBrowser({
 									setPathAndClearFilter(e.filePath);
 									return;
 								}
+								if (!selectable) return;
 								setFileSelection(e);
 								onChange(e.url, e.type, e.directory);
 							}}
