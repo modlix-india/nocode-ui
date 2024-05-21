@@ -86,9 +86,30 @@ function urlPrefixRemoval(url: string) {
 
 	const prefix = `/${globalThis.domainAppCode}/${globalThis.domainClientCode}/page`;
 
+	url = encodeRequestParmaeters(url);
+
 	if (url.startsWith(prefix)) {
 		return url.substring(prefix.length);
 	}
 
+	return url;
+}
+
+function encodeRequestParmaeters(url: string) {
+	const qindex = url.indexOf('?');
+	if (qindex !== -1) {
+		const params = url.substring(qindex + 1).split('&');
+
+		url =
+			url.substring(0, qindex + 1) +
+			params
+				.map(e => {
+					if (!e) return;
+					const [pname, pvalue] = e.split('=');
+					if (pvalue == undefined) return pname;
+					return pname + '=' + encodeURIComponent(pvalue ?? '');
+				})
+				.join('&');
+	}
 	return url;
 }
