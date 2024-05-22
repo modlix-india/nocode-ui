@@ -1,7 +1,7 @@
 import { StylePropertyDefinition } from '../../types/common';
 
 export const styleProperties: Array<StylePropertyDefinition> = [
-	{ groupName: 'Font', displayName: 'calendarFont', name: '<primaryFont>' },
+	{ displayName: 'Font', name: 'calendarFont', defaultValue: '<primaryFont>' },
 
 	{
 		groupName: 'Font',
@@ -2984,7 +2984,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		groupName: 'Border Color',
 		displayName: 'Primary Calendar Default Design border Color',
-		name: 'primaryCalendarDefaultDesignborderColor',
+		name: 'primaryCalendarDefaultDesignborderColorisActive',
 		defaultValue: '<fontColorThree>',
 		cssProperty: 'border-color',
 		selector:
@@ -2994,7 +2994,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		groupName: 'Border Color',
 		displayName: 'Secondary Calendar Default Design border Color',
-		name: 'secondaryCalendarDefaultDesignborderColor',
+		name: 'secondaryCalendarDefaultDesignborderColorisActive',
 		defaultValue: '<fontColorFour>',
 		cssProperty: 'border-color',
 		selector:
@@ -3004,7 +3004,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		groupName: 'Border Color',
 		displayName: 'Tertiary Calendar Default Design border Color',
-		name: 'tertiaryCalendarDefaultDesignborderColor',
+		name: 'tertiaryCalendarDefaultDesignborderColorisActive',
 		defaultValue: '<fontColorFive>',
 		cssProperty: 'border-color',
 		selector:
@@ -3014,7 +3014,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		groupName: 'Border Color',
 		displayName: 'Quaternary Calendar Default Design border Color',
-		name: 'quaternaryCalendarDefaultDesignborderColor',
+		name: 'quaternaryCalendarDefaultDesignborderColorisActive',
 		defaultValue: '<fontColorNine>',
 		cssProperty: 'border-color',
 		selector:
@@ -3024,7 +3024,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		groupName: 'Border Color',
 		displayName: 'Quinary Calendar Default Design border Color',
-		name: 'quinaryCalendarDefaultDesignborderColor',
+		name: 'quinaryCalendarDefaultDesignborderColorisActive',
 		defaultValue: '<fontColorSeven>',
 		cssProperty: 'border-color',
 		selector:
@@ -3034,7 +3034,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		groupName: 'Border Color',
 		displayName: 'Primary Calendar Outline Design border Color',
-		name: 'primaryCalendarOutlineDesignborderColor',
+		name: 'primaryCalendarOutlineDesignborderColorisActive',
 		defaultValue: '<fontColorThree>',
 		cssProperty: 'border-color',
 		selector:
@@ -3044,7 +3044,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		groupName: 'Border Color',
 		displayName: 'Secondary Calendar Outline Design border Color',
-		name: 'secondaryCalendarOutlineDesignborderColor',
+		name: 'secondaryCalendarOutlineDesignborderColorisActive',
 		defaultValue: '<fontColorFour>',
 		cssProperty: 'border-color',
 		selector:
@@ -3054,7 +3054,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		groupName: 'Border Color',
 		displayName: 'Tertiary Calendar Outline Design border Color',
-		name: 'tertiaryCalendarOutlineDesignborderColor',
+		name: 'tertiaryCalendarOutlineDesignborderColorisActive',
 		defaultValue: '<fontColorFive>',
 		cssProperty: 'border-color',
 		selector:
@@ -3064,7 +3064,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		groupName: 'Border Color',
 		displayName: 'Quaternary Calendar Outline Design border Color',
-		name: 'quaternaryCalendarOutlineDesignborderColor',
+		name: 'quaternaryCalendarOutlineDesignborderColorisActive',
 		defaultValue: '<fontColorNine>',
 		cssProperty: 'border-color',
 		selector:
@@ -3074,7 +3074,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		groupName: 'Border Color',
 		displayName: 'Quinary Calendar Outline Design border Color',
-		name: 'quinaryCalendarOutlineDesignborderColor',
+		name: 'quinaryCalendarOutlineDesignborderColorisActive',
 		defaultValue: '<fontColorSeven>',
 		cssProperty: 'border-color',
 		selector:
@@ -3084,7 +3084,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		groupName: 'Border Color',
 		displayName: 'Primary Calendar Filled Design border Color',
-		name: 'primaryCalendarFilledDesignborderColor',
+		name: 'primaryCalendarFilledDesignborderColorisActive',
 		defaultValue: '<fontColorThree>',
 		cssProperty: 'border-color',
 		selector:
@@ -3094,7 +3094,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		groupName: 'Border Color',
 		displayName: 'Secondary Calendar Filled Design border Color',
-		name: 'secondaryCalendarFilledDesignborderColor',
+		name: 'secondaryCalendarFilledDesignborderColorisActive',
 		defaultValue: '<fontColorFour>',
 		cssProperty: 'border-color',
 		selector:
@@ -3104,7 +3104,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		groupName: 'Border Color',
 		displayName: 'Tertiary Calendar Filled Design border Color',
-		name: 'tertiaryCalendarFilledDesignborderColor',
+		name: 'tertiaryCalendarFilledDesignborderColorisActive',
 		defaultValue: '<fontColorFive>',
 		cssProperty: 'border-color',
 		selector:
@@ -3114,7 +3114,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		groupName: 'Border Color',
 		displayName: 'Quaternary Calendar Filled Design border Color',
-		name: 'quaternaryCalendarFilledDesignborderColor',
+		name: 'quaternaryCalendarFilledDesignborderColorisActive',
 		defaultValue: '<fontColorNine>',
 		cssProperty: 'border-color',
 		selector:
@@ -3124,7 +3124,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		groupName: 'Border Color',
 		displayName: 'Quinary Calendar Filled Design border Color',
-		name: 'quinaryCalendarFilledDesignborderColor',
+		name: 'quinaryCalendarFilledDesignborderColorisActive',
 		defaultValue: '<fontColorSeven>',
 		cssProperty: 'border-color',
 		selector:
@@ -3134,7 +3134,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		groupName: 'Border Color',
 		displayName: 'Primary Calendar Design One Design border Color',
-		name: 'primaryCalendarDesignOneDesignborderColor',
+		name: 'primaryCalendarDesignOneDesignborderColorisActive',
 		defaultValue: '<fontColorThree>',
 		cssProperty: 'border-color',
 		selector:
@@ -3144,7 +3144,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		groupName: 'Border Color',
 		displayName: 'Secondary Calendar Design One Design border Color',
-		name: 'secondaryCalendarDesignOneDesignborderColor',
+		name: 'secondaryCalendarDesignOneDesignborderColorisActive',
 		defaultValue: '<fontColorFour>',
 		cssProperty: 'border-color',
 		selector:
@@ -3154,7 +3154,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		groupName: 'Border Color',
 		displayName: 'Tertiary Calendar Design One Design border Color',
-		name: 'tertiaryCalendarDesignOneDesignborderColor',
+		name: 'tertiaryCalendarDesignOneDesignborderColorisActive',
 		defaultValue: '<fontColorFive>',
 		cssProperty: 'border-color',
 		selector:
@@ -3164,7 +3164,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		groupName: 'Border Color',
 		displayName: 'Quaternary Calendar Design One Design border Color',
-		name: 'quaternaryCalendarDesignOneDesignborderColor',
+		name: 'quaternaryCalendarDesignOneDesignborderColorisActive',
 		defaultValue: '<fontColorNine>',
 		cssProperty: 'border-color',
 		selector:
@@ -3174,7 +3174,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		groupName: 'Border Color',
 		displayName: 'Quinary Calendar Design One Design border Color',
-		name: 'quinaryCalendarDesignOneDesignborderColor',
+		name: 'quinaryCalendarDesignOneDesignborderColorisActive',
 		defaultValue: '<fontColorSeven>',
 		cssProperty: 'border-color',
 		selector:
@@ -3184,7 +3184,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		groupName: 'Border Color',
 		displayName: 'Primary Calendar Text Design border Color',
-		name: 'primaryCalendarTextDesignborderColor',
+		name: 'primaryCalendarTextDesignborderColorisActive',
 		cssProperty: 'border-color',
 		selector:
 			'.comp.compCalendar._text._isActive._primary, .comp.compCalendar._text._isActive._primary ._dropdownContainer, .comp.compCalendar._text._hasValue._primary, .comp.compCalendar._text._hasValue._primary ._dropdownContainer',
@@ -3193,7 +3193,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		groupName: 'Border Color',
 		displayName: 'Secondary Calendar Text Design border Color',
-		name: 'secondaryCalendarTextDesignborderColor',
+		name: 'secondaryCalendarTextDesignborderColorisActive',
 		cssProperty: 'border-color',
 		selector:
 			'.comp.compCalendar._text._isActive._secondary, .comp.compCalendar._text._isActive._secondary ._dropdownContainer, .comp.compCalendar._text._hasValue._secondary, .comp.compCalendar._text._hasValue._secondary ._dropdownContainer',
@@ -3202,7 +3202,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		groupName: 'Border Color',
 		displayName: 'Tertiary Calendar Text Design border Color',
-		name: 'tertiaryCalendarTextDesignborderColor',
+		name: 'tertiaryCalendarTextDesignborderColorisActive',
 		cssProperty: 'border-color',
 		selector:
 			'.comp.compCalendar._text._isActive._tertiary, .comp.compCalendar._text._isActive._tertiary ._dropdownContainer, .comp.compCalendar._text._hasValue._tertiary, .comp.compCalendar._text._hasValue._tertiary ._dropdownContainer',
@@ -3211,7 +3211,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		groupName: 'Border Color',
 		displayName: 'Quaternary Calendar Text Design border Color',
-		name: 'quaternaryCalendarTextDesignborderColor',
+		name: 'quaternaryCalendarTextDesignborderColorisActive',
 		cssProperty: 'border-color',
 		selector:
 			'.comp.compCalendar._text._isActive._quaternary, .comp.compCalendar._text._isActive._quaternary ._dropdownContainer, .comp.compCalendar._text._hasValue._quaternary, .comp.compCalendar._text._hasValue._quaternary ._dropdownContainer',
@@ -3220,7 +3220,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		groupName: 'Border Color',
 		displayName: 'Quinary Calendar Text Design border Color',
-		name: 'quinaryCalendarTextDesignborderColor',
+		name: 'quinaryCalendarTextDesignborderColorisActive',
 		cssProperty: 'border-color',
 		selector:
 			'.comp.compCalendar._text._isActive._quinary, .comp.compCalendar._text._isActive._quinary ._dropdownContainer, .comp.compCalendar._text._hasValue._quinary, .comp.compCalendar._text._hasValue._quinary ._dropdownContainer',
