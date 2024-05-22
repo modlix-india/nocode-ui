@@ -1,20 +1,16 @@
-import React from "react";
-import { processStyleDefinition } from "../../util/styleProcessor";
-import { styleDefaults, styleProperties } from "./calendarStyleProperties";
+import React from 'react';
+import { processStyleDefinition } from '../../util/styleProcessor';
+import { styleDefaults, styleProperties } from './calendarStyleProperties';
 
-const PREFIX = ".comp.compCalendar";
-export default function CalendarStyle({
-  theme,
-}: {
-  theme: Map<string, Map<string, string>>;
-}) {
-  const css =
-    `
+const PREFIX = '.comp.compCalendar';
+export default function CalendarStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+	const css =
+		`
         ${PREFIX} {
             display: flex;
             align-items: center;
         }
-
+    
         ${PREFIX} input {
             flex: 1;
             height: 100%;
@@ -27,13 +23,17 @@ export default function CalendarStyle({
             color: inherit;
             min-width: 20px;
         }
-
+    
         ${PREFIX}._isActive ._label,
         ${PREFIX} ._label._noFloat {
             transform: translateY(-50%);
 		    bottom: 100%;
         }
-
+    
+        ${PREFIX}._hasLeftIcon ._label {
+            padding-left: 24px;
+        }
+    
         ${PREFIX} ._label {
             position: absolute;
             user-select: none;
@@ -42,11 +42,37 @@ export default function CalendarStyle({
 		    transform: translateY(50%);
             transition: transform 0.2s ease-in-out, left 0.2s ease-in-out, bottom 0.2s ease-in-out;
         }
-        
-        ${PREFIX} ._rightIcon {
+    
+        ${PREFIX} ._rightIcon,
+        ${PREFIX} ._leftIcon {
             width: 24px;
         }
-
+    
+        ${PREFIX}._bigDesign1 ._leftIcon {
+            margin-right: 10px;
+            border-right: 1px solid;
+        }
+    
+        ${PREFIX}._bigDesign1 ._label {
+            margin-top: 0px;
+        }
+    
+        ${PREFIX}._bigDesign1._hasLeftIcon ._label {
+            padding-left: 36px;
+        }
+    
+        ${PREFIX}._bigDesign1._hasValue ._label,
+        ${PREFIX}._bigDesign1._isActive ._label,
+        ${PREFIX}._bigDesign1 ._label._noFloat {
+            margin-top: -30px;
+            bottom: auto;
+            transform: none;
+        }
+    
+        ${PREFIX}._bigDesign1 ._inputBox {
+            padding-top: 10px;
+        }
+    
         ${PREFIX} ._rightIcon {
             padding-right: 5px;
         }
@@ -54,81 +80,29 @@ export default function CalendarStyle({
         ${PREFIX} ._label._float {
             bottom: 0px;
         }
+    
+        ${PREFIX} ._clearText, ${PREFIX} ._passwordIcon {
+            cursor: pointer;
+        }
+    
+        ${PREFIX} ._supportText {
+            position:absolute;
+            z-index:1;
+            left: 0;
+            top: 100%;
+            margin-top: 5px;
+        }
 
-        .calendarPopOver {
+        ${PREFIX} ._dropdownContainer{
+            width: 100%;
             z-index: 5;
             left: 0;
             position: absolute;
             top: 100%;
         }
 
-        .calendarPopOver._fullCalendar {
-            width: 100%;
-        }
-
-        .calendar {
-            width: 100%;
-        }
-
-       .calendarPopOver._simpleCalendar {
-            position: absolute;
-        }
-
-        .date.disabled {
-            background-color: #f7f7f7;
-        }
-
-        .dateContainer {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .dateContainer span {
-            z-index: 2;
-        }
-
-        .dateContainer._center, .dateContainer._left, .dateContainer._right {
-            position: relative;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .arrowButton._center {
-            display: flex;
-            justify-content: space-between;
-            position: absolute;
-            width: 100%;
-        }
-
-        .arrowButton._left {
-            display: flex;
-            align-items: center;
-            position: absolute;
-            left: 0;
-        }
-
-        .arrowButton._right {
-            display: flex;
-            align-items: center;
-            position: absolute;
-            right: 0;
-        }
-
-        .dateText {
-            display: flex;
-            align-items: center;
-        }
-
-        .calendar .date {
-            text-align: center;
-        }
-
-        .svgIcon_180 {
-            position: relative;
-            top: -2px;
-        }
-
+      
  	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
-  return <style id="CalendarCss">{css}</style>;
+	return <style id="CalendarCss">{css}</style>;
 }
