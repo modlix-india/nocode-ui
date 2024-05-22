@@ -1,6 +1,8 @@
 import { StyleGroupDefinition, StylePropertyDefinition } from '../../types/common';
 
 export const styleProperties: Array<StylePropertyDefinition> = [
+	{ groupName: 'Font', displayName: 'dropdownFont', name: '<primaryFont>' },
+
 	{
 		groupName: 'Font',
 		displayName: 'Dropdown FontDefault Design',
