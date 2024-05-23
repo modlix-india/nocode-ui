@@ -369,15 +369,9 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'floatingLabel',
-			displayName: 'Floating Label',
-			description: 'Floating Label',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'noFloatLabel',
-			displayName: 'No Float Label',
-			description: 'No Float Label',
+			name: 'label',
+			displayName: 'Label',
+			description: 'Label',
 			icon: 'fa-solid fa-box',
 		},
 		{
