@@ -32,7 +32,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 		group: ComponentPropertyGroup.BASIC,
 	},
-
+	{
+		name: 'hideClearButton',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Hide Clear Button',
+		description: 'Hide Clear Button',
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
 	{
 		name: 'autoComplete',
 		schema: SCHEMA_STRING_COMP_PROP,

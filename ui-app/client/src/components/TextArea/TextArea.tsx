@@ -68,6 +68,7 @@ function TextArea(props: ComponentProps) {
 			onFocus,
 			onBlur,
 			showMandatoryAsterisk,
+			hideClearButton,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -283,6 +284,7 @@ function TextArea(props: ComponentProps) {
 			autoComplete={autoComplete}
 			autoFocus={autoFocus}
 			hasValidationCheck={validation?.length > 0}
+			hideClearContentIcon={hideClearButton}
 			inputType="TextArea"
 			showMandatoryAsterisk={
 				(validation ?? []).find(

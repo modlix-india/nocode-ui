@@ -268,7 +268,7 @@ function CommonInputText(props: CommonInputType) {
 				</i>
 			) : undefined}
 			<label
-				style={computedStyles.label ?? {}}
+				style={(noFloat ? computedStyles.noFloatLabel:computedStyles.floatingLabel) || {}}
 				htmlFor={id}
 				className={`_label ${noFloat || value?.toString()?.length ? '_noFloat' : ''} ${
 					readOnly ? 'disabled' : ''
