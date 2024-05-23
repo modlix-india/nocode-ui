@@ -68,6 +68,7 @@ function TextArea(props: ComponentProps) {
 			onFocus,
 			onBlur,
 			showMandatoryAsterisk,
+			hideClearButton,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -283,6 +284,7 @@ function TextArea(props: ComponentProps) {
 			autoComplete={autoComplete}
 			autoFocus={autoFocus}
 			hasValidationCheck={validation?.length > 0}
+			hideClearContentIcon={hideClearButton}
 			inputType="TextArea"
 			showMandatoryAsterisk={
 				(validation ?? []).find(
@@ -367,15 +369,9 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'floatingLabel',
-			displayName: 'Floating Label',
-			description: 'Floating Label',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'noFloatLabel',
-			displayName: 'No Float Label',
-			description: 'No Float Label',
+			name: 'label',
+			displayName: 'Label',
+			description: 'Label',
 			icon: 'fa-solid fa-box',
 		},
 		{
