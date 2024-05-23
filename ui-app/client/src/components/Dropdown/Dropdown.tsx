@@ -324,7 +324,10 @@ function DropdownComponent(props: ComponentProps) {
 			validationMessages={validationMessages}
 			context={context}
 			hideClearContentIcon={true}
-			blurHandler={() => setFocus(false)}
+			blurHandler={() => {
+				setFocus(false);
+				setShowDropdown(false);
+			}}
 			focusHandler={() => {
 				setFocus(true);
 				setShowDropdown(true);
