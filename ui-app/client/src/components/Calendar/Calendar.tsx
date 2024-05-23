@@ -1,24 +1,41 @@
 import { isNullValue } from '@fincity/kirun-js';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+	ChangeEvent,
+	FocusEvent,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from 'react';
 import CommonInputText from '../../commonComponents/CommonInputText';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediately,
+	getData,
 	getPathFromLocation,
 	setData,
 } from '../../context/StoreContext';
-import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
+import {
+	Component,
+	ComponentDefinition,
+	ComponentProperty,
+	ComponentPropertyDefinition,
+	ComponentProps,
+	LocationHistory,
+} from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { validate } from '../../util/validationProcessor';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { IconHelper } from '../util/IconHelper';
-import { days, formatDateTo, months, preprocess } from '../util/calendarUtil';
+import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
+import { flattenUUID } from '../util/uuid';
+import { getValidDate, toFormat } from './CalendarMap';
 import CalendarStyle from './CalendarStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './calendarProperties';
 import { styleDefaults } from './calendarStyleProperties';
-import { runEvent } from '../util/runEvent';
-import { flattenUUID } from '../util/uuid';
+import { makePropertiesObject } from '../util/make';
 
 function CalendarComponent(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -62,7 +79,12 @@ function CalendarComponent(props: ComponentProps) {
 			weekStartsOn,
 			lowLightWeekEnds,
 			showPreviousNextMonthDate,
+			secondInterval,
+			minuteInterval,
+			timeDesignType,
 			isMultiSelect,
+			multipleDateSeparator,
+			disableTextEntry,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -79,9 +101,9 @@ function CalendarComponent(props: ComponentProps) {
 	const bindingPathPath1 = getPathFromLocation(bindingPath2!, locationHistory, pageExtractor);
 
 	// This date is from date if the date type is startDate and to date if the date type is endDate
-	const [thisDate, setThisDate] = useState<string>('');
-	// That dae is from date if the date type is endDate and to date if the date type is startDate
-	const [thatDate, setThatDate] = useState<string>('');
+	const [thisDate, setThisDate] = useState<string | undefined>();
+	// That date is from date if the date type is endDate and to date if the date type is startDate
+	const [thatDate, setThatDate] = useState<string | undefined>();
 
 	const [showDropdown, setShowDropdown] = useState(false);
 	const [focus, setFocus] = useState(false);
@@ -114,35 +136,122 @@ function CalendarComponent(props: ComponentProps) {
 		if (!bindingPathPath) return;
 		addListenerAndCallImmediately(
 			(_, value) => {
-				setThisDate(toFormat(value, storageFormat, displayDateFormat));
+				const setFunction = dateType === 'startDate' ? setThisDate : setThatDate;
+
+				if (!value) {
+					setFunction(undefined);
+				} else if (Array.isArray(value)) {
+					const formatted = value.map(e =>
+						toFormat(e, storageFormat ?? displayDateFormat, displayDateFormat),
+					);
+					setFunction(formatted.join(multipleDateSeparator));
+				} else {
+					setFunction(
+						toFormat(value, storageFormat ?? displayDateFormat, displayDateFormat),
+					);
+				}
 			},
 			pageExtractor,
 			bindingPathPath,
 		);
-	}, [bindingPathPath]);
+	}, [bindingPathPath, setThisDate, storageFormat, displayDateFormat, setThatDate, dateType]);
 
 	useEffect(() => {
 		if (!bindingPathPath1) return;
 		addListenerAndCallImmediately(
 			(_, value) => {
-				setThatDate(toFormat(value, storageFormat, displayDateFormat));
+				const setFunction = dateType === 'startDate' ? setThatDate : setThisDate;
+
+				if (!value) {
+					setFunction(undefined);
+				} else if (Array.isArray(value)) {
+					const formatted = value.map(e =>
+						toFormat(e, storageFormat ?? displayDateFormat, displayDateFormat),
+					);
+					setFunction(formatted.join(multipleDateSeparator));
+				} else {
+					setFunction(
+						toFormat(value, storageFormat ?? displayDateFormat, displayDateFormat),
+					);
+				}
 			},
 			pageExtractor,
 			bindingPathPath1,
 		);
-	}, [bindingPathPath1]);
+	}, [bindingPathPath1, setThisDate, storageFormat, displayDateFormat, setThatDate, dateType]);
 
-	const handleClick = async (each: { key: any; label: any; value: any } | undefined) => {
-		if (changeEvent) {
+	const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+		let currentBindingPath = dateType === 'startDate' ? bindingPathPath : bindingPathPath1;
+		if (!currentBindingPath) return;
+
+		const value = e.target.value;
+		if (value.trim() === '') {
+			if (thisDate) setData(currentBindingPath, undefined, context.pageName);
+			else return;
+		} else {
+			if (isMultiSelect || bindingPathPath1) {
+				const values = value.split(multipleDateSeparator);
+				const dates = values
+					.map(e => e.trim())
+					.map(v => toFormat(v, displayDateFormat, storageFormat ?? displayDateFormat));
+				console.log(values, dates);
+				if (dates?.indexOf(undefined) != -1) {
+					setThisDate(value);
+					return;
+				}
+
+				if (isMultiSelect) {
+					setData(currentBindingPath, dates.length ? dates : undefined, context.pageName);
+				} else {
+					if (dates.length === 1) {
+						setData(currentBindingPath, dates[0], context.pageName);
+					} else if (dates.length > 1) {
+						setData(bindingPathPath, dates[0], context.pageName);
+						setData(bindingPathPath1, dates[1], context.pageName);
+					}
+				}
+			} else {
+				const date = toFormat(value, displayDateFormat, storageFormat ?? displayDateFormat);
+				if (isNullValue(date)) {
+					setThisDate(value);
+					return;
+				}
+
+				setData(currentBindingPath, date, context.pageName);
+			}
+		}
+
+		if (!changeEvent) return;
+		(async () =>
 			await runEvent(
 				changeEvent,
 				key,
 				context.pageName,
 				props.locationHistory,
 				props.pageDefinition,
+			))();
+	};
+
+	const handleBlur = (e: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+		setShowDropdown(false);
+		setFocus(false);
+
+		if (thisDate !== e.target.value) {
+			setData(
+				dateType === 'endDate' ? bindingPathPath1 : bindingPathPath,
+				e.target.value,
+				context.pageName,
 			);
+			if (!changeEvent) return;
+			(async () =>
+				await runEvent(
+					changeEvent,
+					key,
+					context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				))();
 		}
-		if (!isMultiSelect && !bindingPathPath1) handleClose();
 	};
 
 	const handleClose = useCallback(() => {
@@ -189,7 +298,7 @@ function CalendarComponent(props: ComponentProps) {
 			cssPrefix="comp compCalendar"
 			noFloat={noFloat}
 			readOnly={readOnly}
-			value={thisDate}
+			value={thisDate ?? ''}
 			label={label}
 			translations={translations}
 			rightIcon={showDropdown ? 'fa-solid fa-angle-up' : 'fa-solid fa-angle-down'}
@@ -200,7 +309,7 @@ function CalendarComponent(props: ComponentProps) {
 			validationMessages={validationMessages}
 			context={context}
 			hideClearContentIcon={true}
-			blurHandler={() => setFocus(false)}
+			blurHandler={handleBlur}
 			focusHandler={() => {
 				setFocus(true);
 				setShowDropdown(true);
@@ -213,6 +322,7 @@ function CalendarComponent(props: ComponentProps) {
 			colorScheme={colorScheme}
 			leftIcon={leftIcon}
 			showDropdown={showDropdown}
+			handleChange={handleChange}
 			onMouseLeave={closeOnMouseLeave ? handleClose : undefined}
 			showMandatoryAsterisk={
 				showMandatoryAsterisk &&
@@ -231,18 +341,6 @@ function CalendarComponent(props: ComponentProps) {
 			)}
 		</CommonInputText>
 	);
-}
-
-function toFormat(date: string, fromFormat: string, toFormat: string) {
-	if (!date) return '';
-
-	return date;
-}
-
-function toDate(date: string, format: string) {
-	if (!date) return '';
-
-	return date;
 }
 
 const component: Component = {
@@ -468,7 +566,33 @@ const component: Component = {
 		},
 	],
 	validations: {
-		DATE: function (validation: any, value: any): Array<string> {
+		DATE: function (
+			validation: any,
+			value: any,
+			def: ComponentDefinition,
+			locationHistory: Array<LocationHistory>,
+			pageExtractor: PageStoreExtractor,
+		): Array<string> {
+			if (!value) return [];
+
+			let { storageFormat, displayDateFormat, multipleDateSeparator } = makePropertiesObject(
+				propertiesDefinition,
+				def.properties,
+				locationHistory,
+				pageExtractor ? [pageExtractor] : [],
+			);
+
+			if (!storageFormat) storageFormat = displayDateFormat;
+
+			console.log('Storage Format ', storageFormat);
+			console.log('seperator', multipleDateSeparator);
+
+			let dates = ('' + value)
+				.split(multipleDateSeparator)
+				.map(e => getValidDate(e, storageFormat!));
+			console.log(dates);
+			if (dates.findIndex(e => isNullValue(e)) != -1) return [validation.message];
+
 			return [];
 		},
 	},

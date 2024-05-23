@@ -97,14 +97,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'minDate',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Minimum Date (In Date So',
+		displayName: 'Minimum Date (In Storage Format)',
 		description: 'Calendar minimum date to be shown',
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
 		name: 'maxDate',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Mximum date',
+		displayName: 'Mximum Date (In Storage Format)',
 		description: 'Calendar maximum date to be shown',
 		group: ComponentPropertyGroup.BASIC,
 	},
@@ -115,7 +115,49 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Display Date Format',
 		group: ComponentPropertyGroup.BASIC,
 		description: 'Date Format to display',
-		defaultValue: 'MM/DD/YYYY',
+		defaultValue: 'DD/MM/YYYY',
+		enumValues: [
+			{
+				name: 'DD/MM/YYYY',
+				displayName: 'DD/MM/YYYY',
+			},
+			{
+				name: 'MM/DD/YYYY',
+				displayName: 'MM/DD/YYYY',
+			},
+			{
+				name: 'DD/MM/YYYY HH:mm',
+				displayName: 'DD/MM/YYYY HH:mm (24 Hr)',
+			},
+			{
+				name: 'MM/DD/YYYY HH:mm',
+				displayName: 'MM/DD/YYYY HH:mm (24 Hr)',
+			},
+			{
+				name: 'DD/MM/YYYY hh:mm A',
+				displayName: 'DD/MM/YYYY hh:mm A (12 Hr)',
+			},
+			{
+				name: 'MM/DD/YYYY hh:mm A',
+				displayName: 'MM/DD/YYYY hh:mm A (12 Hr)',
+			},
+			{
+				name: 'DD/MM/YYYY HH:mm:ss',
+				displayName: 'DD/MM/YYYY HH:mm:ss (24 Hr)',
+			},
+			{
+				name: 'MM/DD/YYYY HH:mm:ss',
+				displayName: 'MM/DD/YYYY HH:mm:ss (24 Hr)',
+			},
+			{
+				name: 'DD/MM/YYYY hh:mm:ss A',
+				displayName: 'DD/MM/YYYY hh:mm:ss A (12 Hr)',
+			},
+			{
+				name: 'MM/DD/YYYY hh:mm:ss A',
+				displayName: 'MM/DD/YYYY hh:mm:ss A (12 Hr)',
+			},
+		],
 	},
 
 	{
@@ -124,6 +166,48 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Storage Format',
 		group: ComponentPropertyGroup.BASIC,
 		description: 'Date Format to store uses display format if not provided',
+		enumValues: [
+			{
+				name: 'DD/MM/YYYY',
+				displayName: 'DD/MM/YYYY',
+			},
+			{
+				name: 'MM/DD/YYYY',
+				displayName: 'MM/DD/YYYY',
+			},
+			{
+				name: 'DD/MM/YYYY HH:mm',
+				displayName: 'DD/MM/YYYY HH:mm (24 Hr)',
+			},
+			{
+				name: 'MM/DD/YYYY HH:mm',
+				displayName: 'MM/DD/YYYY HH:mm (24 Hr)',
+			},
+			{
+				name: 'DD/MM/YYYY hh:mm A',
+				displayName: 'DD/MM/YYYY hh:mm A (12 Hr)',
+			},
+			{
+				name: 'MM/DD/YYYY hh:mm A',
+				displayName: 'MM/DD/YYYY hh:mm A (12 Hr)',
+			},
+			{
+				name: 'DD/MM/YYYY HH:mm:ss',
+				displayName: 'DD/MM/YYYY HH:mm:ss (24 Hr)',
+			},
+			{
+				name: 'MM/DD/YYYY HH:mm:ss',
+				displayName: 'MM/DD/YYYY HH:mm:ss (24 Hr)',
+			},
+			{
+				name: 'DD/MM/YYYY hh:mm:ss A',
+				displayName: 'DD/MM/YYYY hh:mm:ss A (12 Hr)',
+			},
+			{
+				name: 'MM/DD/YYYY hh:mm:ss A',
+				displayName: 'MM/DD/YYYY hh:mm:ss A (12 Hr)',
+			},
+		],
 	},
 
 	{
@@ -226,8 +310,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'componentDesignType',
 		schema: SCHEMA_ANY_COMP_PROP,
-		displayName: 'Calendar Designs',
-		description: 'Calendar design styles',
+		displayName: 'Component Type',
 		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: 'simpleCalendar',
 		enumValues: [
@@ -242,6 +325,54 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				description: 'Only Calendar',
 			},
 		],
+	},
+	{
+		name: 'timeDesignType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Time Type',
+		description: 'Time type to be selected',
+		defaultValue: 'none',
+		group: ComponentPropertyGroup.ADVANCED,
+		enumValues: [
+			{
+				name: 'None',
+				displayName: 'None',
+			},
+			{
+				name: 'comboBoxes12Hr',
+				displayName: 'Combo Boxes 12 Hr',
+			},
+			{
+				name: 'comboBoxes24Hr',
+				displayName: 'Combo Boxes 24 Hr',
+			},
+			{
+				name: 'dial',
+				displayName: 'Dial',
+			},
+			{
+				name: 'comboBoxes12HrAndSeconds',
+				displayName: 'Combo Boxes 12 Hr and Seconds',
+			},
+			{
+				name: 'comboBoxes24HrAndSeconds',
+				displayName: 'Combo Boxes 24 Hr and Seconds',
+			},
+		],
+	},
+	{
+		name: 'minuteInterval',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Minute Interval',
+		defaultValue: 1,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'secondInterval',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Second Interval',
+		defaultValue: 1,
+		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
 		name: 'arrowButtonsHorizontalPlacement',
@@ -365,6 +496,21 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Allows the users to select multiple dates.',
 		defaultValue: false,
 		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'multipleDateSeparator',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Multiple Date Separator',
+		description: 'Separator for multiple dates',
+		defaultValue: ',',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'disableTextEntry',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Disable Text Entry',
+		description: 'Disable Text Entry',
+		defaultValue: false,
 	},
 	COMMON_COMPONENT_PROPERTIES.onChange,
 	{
