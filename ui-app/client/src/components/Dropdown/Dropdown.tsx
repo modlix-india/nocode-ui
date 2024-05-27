@@ -251,7 +251,7 @@ function DropdownComponent(props: ComponentProps) {
 	}, [selected, selectedDataKey, dropdownData, isMultiSelect]);
 	const computedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
-		{ focus, readOnly },
+		{ focus, disabled: readOnly },
 		stylePropertiesWithPseudoStates,
 	);
 
@@ -324,7 +324,10 @@ function DropdownComponent(props: ComponentProps) {
 			validationMessages={validationMessages}
 			context={context}
 			hideClearContentIcon={true}
-			blurHandler={() => setFocus(false)}
+			blurHandler={() => {
+				setFocus(false);
+				setShowDropdown(false);
+			}}
 			focusHandler={() => {
 				setFocus(true);
 				setShowDropdown(true);
