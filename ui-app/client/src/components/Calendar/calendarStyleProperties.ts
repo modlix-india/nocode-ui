@@ -749,62 +749,12 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		noPrefix: true,
 	},
 	{
-		groupName: 'Active Border',
-		displayName: 'Calendar Default Active Border',
-		name: 'calendarDefaultActiveBorder',
-		defaultValue: '1px solid',
-		cssProperty: 'border',
-		selector:
-			'.comp.compCalendar._isActive._default, .comp.compCalendar._default ._dropdownContainer',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Active Border',
-		displayName: 'Calendar Outline Active Border',
-		name: 'calendarOutlineActiveBorder',
-		defaultValue: '1px solid',
-		cssProperty: 'border',
-		selector:
-			'.comp.compCalendar._isActive._outlined, .comp.compCalendar._outlined ._dropdownContainer',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Active Border',
-		displayName: 'Calendar Filled Active Border',
-		name: 'calendarFilledActiveBorder',
-		defaultValue: '1px solid',
-		cssProperty: 'border',
-		selector:
-			'.comp.compCalendar._isActive._filled, .comp.compCalendar._filled ._dropdownContainer',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Active Border',
-		displayName: 'Calendar Big Design 1 Active Border',
-		name: 'calendarBigDesign1ActiveBorder',
-		defaultValue: '1px solid',
-		cssProperty: 'border',
-		selector:
-			'.comp.compCalendar._isActive._bigDesign1, .comp.compCalendar._bigDesign1 ._dropdownContainer',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Active Border',
-		displayName: 'Calendar Text Active Border',
-		name: 'calendarTextActiveBorder',
-		cssProperty: 'border',
-		selector:
-			'.comp.compCalendar._isActive._text, .comp.compCalendar._text ._dropdownContainer',
-		noPrefix: true,
-	},
-	{
 		groupName: 'Border Color',
 		displayName: 'Primary Calendar Default Design border Color',
 		name: 'primaryCalendarDefaultDesignborderColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'border-color',
-		selector:
-			'.comp.compCalendar._default._primary, .comp.compCalendar._default._primary ._dropdownContainer',
+		selector: '.comp.compCalendar._default._primary',
 		noPrefix: true,
 	},
 	{
@@ -813,8 +763,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryCalendarDefaultDesignborderColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'border-color',
-		selector:
-			'.comp.compCalendar._default._secondary, .comp.compCalendar._default._secondary ._dropdownContainer',
+		selector: '.comp.compCalendar._default._secondary',
 		noPrefix: true,
 	},
 	{
@@ -823,8 +772,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryCalendarDefaultDesignborderColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'border-color',
-		selector:
-			'.comp.compCalendar._default._tertiary, .comp.compCalendar._default._tertiary ._dropdownContainer',
+		selector: '.comp.compCalendar._default._tertiary',
 		noPrefix: true,
 	},
 	{
@@ -833,8 +781,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryCalendarDefaultDesignborderColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'border-color',
-		selector:
-			'.comp.compCalendar._default._quaternary, .comp.compCalendar._default._quaternary ._dropdownContainer',
+		selector: '.comp.compCalendar._default._quaternary',
 		noPrefix: true,
 	},
 	{
@@ -843,8 +790,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryCalendarDefaultDesignborderColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'border-color',
-		selector:
-			'.comp.compCalendar._default._quinary, .comp.compCalendar._default._quinary ._dropdownContainer',
+		selector: '.comp.compCalendar._default._quinary',
 		noPrefix: true,
 	},
 	{
@@ -853,8 +799,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryCalendarOutlineDesignborderColor',
 		defaultValue: '<fontColorThree>',
 		cssProperty: 'border-color',
-		selector:
-			'.comp.compCalendar._outlined._primary, .comp.compCalendar._outlined._primary ._dropdownContainer',
+		selector: '.comp.compCalendar._outlined._primary',
 		noPrefix: true,
 	},
 	{
@@ -863,8 +808,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryCalendarOutlineDesignborderColor',
 		defaultValue: '<fontColorFour>',
 		cssProperty: 'border-color',
-		selector:
-			'.comp.compCalendar._outlined._secondary, .comp.compCalendar._outlined._secondary ._dropdownContainer',
+		selector: '.comp.compCalendar._outlined._secondary',
 		noPrefix: true,
 	},
 	{
@@ -873,8 +817,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryCalendarOutlineDesignborderColor',
 		defaultValue: '<fontColorFive>',
 		cssProperty: 'border-color',
-		selector:
-			'.comp.compCalendar._outlined._tertiary, .comp.compCalendar._outlined._tertiary ._dropdownContainer',
+		selector: '.comp.compCalendar._outlined._tertiary',
 		noPrefix: true,
 	},
 	{
@@ -883,8 +826,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryCalendarOutlineDesignborderColor',
 		defaultValue: '<fontColorNine>',
 		cssProperty: 'border-color',
-		selector:
-			'.comp.compCalendar._outlined._quaternary, .comp.compCalendar._outlined._quaternary ._dropdownContainer',
+		selector: '.comp.compCalendar._outlined._quaternary',
 		noPrefix: true,
 	},
 	{
@@ -893,8 +835,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryCalendarOutlineDesignborderColor',
 		defaultValue: '<fontColorSeven>',
 		cssProperty: 'border-color',
-		selector:
-			'.comp.compCalendar._outlined._quinary, .comp.compCalendar._outlined._quinary ._dropdownContainer',
+		selector: '.comp.compCalendar._outlined._quinary',
 		noPrefix: true,
 	},
 	{
@@ -902,8 +843,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Primary Calendar Filled Design border Color',
 		name: 'primaryCalendarFilledDesignborderColor',
 		cssProperty: 'border-color',
-		selector:
-			'.comp.compCalendar._filled._primary, .comp.compCalendar._filled._primary ._dropdownContainer',
+		selector: '.comp.compCalendar._filled._primary',
 		noPrefix: true,
 	},
 	{
@@ -911,8 +851,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Secondary Calendar Filled Design border Color',
 		name: 'secondaryCalendarFilledDesignborderColor',
 		cssProperty: 'border-color',
-		selector:
-			'.comp.compCalendar._filled._secondary, .comp.compCalendar._filled._secondary ._dropdownContainer',
+		selector: '.comp.compCalendar._filled._secondary',
 		noPrefix: true,
 	},
 	{
@@ -920,8 +859,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Tertiary Calendar Filled Design border Color',
 		name: 'tertiaryCalendarFilledDesignborderColor',
 		cssProperty: 'border-color',
-		selector:
-			'.comp.compCalendar._filled._tertiary, .comp.compCalendar._filled._tertiary ._dropdownContainer',
+		selector: '.comp.compCalendar._filled._tertiary',
 		noPrefix: true,
 	},
 	{
@@ -929,8 +867,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Quaternary Calendar Filled Design border Color',
 		name: 'quaternaryCalendarFilledDesignborderColor',
 		cssProperty: 'border-color',
-		selector:
-			'.comp.compCalendar._filled._quaternary, .comp.compCalendar._filled._quaternary ._dropdownContainer',
+		selector: '.comp.compCalendar._filled._quaternary',
 		noPrefix: true,
 	},
 	{
@@ -938,8 +875,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'Quinary Calendar Filled Design border Color',
 		name: 'quinaryCalendarFilledDesignborderColor',
 		cssProperty: 'border-color',
-		selector:
-			'.comp.compCalendar._filled._quinary, .comp.compCalendar._filled._quinary ._dropdownContainer',
+		selector: '.comp.compCalendar._filled._quinary',
 		noPrefix: true,
 	},
 	{
@@ -948,8 +884,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryCalendarDesignOneDesignborderColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'border-color',
-		selector:
-			'.comp.compCalendar._bigDesign1._primary, .comp.compCalendar._bigDesign1._primary ._dropdownContainer',
+		selector: '.comp.compCalendar._bigDesign1._primary',
 		noPrefix: true,
 	},
 	{
@@ -958,8 +893,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryCalendarDesignOneDesignborderColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'border-color',
-		selector:
-			'.comp.compCalendar._bigDesign1._secondary, .comp.compCalendar._bigDesign1._secondary ._dropdownContainer',
+		selector: '.comp.compCalendar._bigDesign1._secondary',
 		noPrefix: true,
 	},
 	{
@@ -968,8 +902,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryCalendarDesignOneDesignborderColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'border-color',
-		selector:
-			'.comp.compCalendar._bigDesign1._tertiary, .comp.compCalendar._bigDesign1._tertiary ._dropdownContainer',
+		selector: '.comp.compCalendar._bigDesign1._tertiary',
 		noPrefix: true,
 	},
 	{
@@ -978,8 +911,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryCalendarDesignOneDesignborderColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'border-color',
-		selector:
-			'.comp.compCalendar._bigDesign1._quaternary, .comp.compCalendar._bigDesign1._quaternary ._dropdownContainer',
+		selector: '.comp.compCalendar._bigDesign1._quaternary',
 		noPrefix: true,
 	},
 	{
@@ -988,8 +920,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryCalendarDesignOneDesignborderColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'border-color',
-		selector:
-			'.comp.compCalendar._bigDesign1._quinary, .comp.compCalendar._bigDesign1._quinary ._dropdownContainer',
+		selector: '.comp.compCalendar._bigDesign1._quinary',
 		noPrefix: true,
 	},
 	{
@@ -998,8 +929,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryCalendarTextDesignborderColor',
 		defaultValue: 'transparent',
 		cssProperty: 'border-color',
-		selector:
-			'.comp.compCalendar._text._primary, .comp.compCalendar._text._primary ._dropdownContainer',
+		selector: '.comp.compCalendar._text._primary',
 		noPrefix: true,
 	},
 	{
@@ -1008,8 +938,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryCalendarTextDesignborderColor',
 		defaultValue: 'transparent',
 		cssProperty: 'border-color',
-		selector:
-			'.comp.compCalendar._text._secondary, .comp.compCalendar._text._secondary ._dropdownContainer',
+		selector: '.comp.compCalendar._text._secondary',
 		noPrefix: true,
 	},
 	{
@@ -1018,8 +947,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryCalendarTextDesignborderColor',
 		defaultValue: 'transparent',
 		cssProperty: 'border-color',
-		selector:
-			'.comp.compCalendar._text._tertiary, .comp.compCalendar._text._tertiary ._dropdownContainer',
+		selector: '.comp.compCalendar._text._tertiary',
 		noPrefix: true,
 	},
 	{
@@ -1028,8 +956,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryCalendarTextDesignborderColor',
 		defaultValue: 'transparent',
 		cssProperty: 'border-color',
-		selector:
-			'.comp.compCalendar._text._quaternary, .comp.compCalendar._text._quaternary ._dropdownContainer',
+		selector: '.comp.compCalendar._text._quaternary',
 		noPrefix: true,
 	},
 	{
@@ -1038,8 +965,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryCalendarTextDesignborderColor',
 		defaultValue: 'transparent',
 		cssProperty: 'border-color',
-		selector:
-			'.comp.compCalendar._text._quinary, .comp.compCalendar._text._quinary ._dropdownContainer',
+		selector: '.comp.compCalendar._text._quinary',
 		noPrefix: true,
 	},
 	{
@@ -1490,231 +1416,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorSeven>',
 		cssProperty: 'color',
 		selector: '.comp.compCalendar._isActive._text._quinary ._label',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Calendar Background Color ',
-		displayName: 'Primary Calendar Container Default Design background Color',
-		name: 'primaryCalendarContainerDefaultDesignbackgroundColor',
-		defaultValue: '<backgroundColorSeven>',
-		cssProperty: 'background',
-		selector: '.comp.compCalendar._default._primary ._dropdownContainer',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Calendar Background Color ',
-		displayName: 'Secondary Calendar Container Default Design background Color',
-		name: 'secondaryCalendarContainerDefaultDesignbackgroundColor',
-		defaultValue: '<backgroundColorSeven>',
-		cssProperty: 'background',
-		selector: '.comp.compCalendar._default._secondary ._dropdownContainer',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Calendar Background Color ',
-		displayName: 'Tertiary Calendar Container Default Design background Color',
-		name: 'tertiaryCalendarContainerDefaultDesignbackgroundColor',
-		defaultValue: '<backgroundColorSeven>',
-		cssProperty: 'background',
-		selector: '.comp.compCalendar._default._tertiary ._dropdownContainer',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Calendar Background Color ',
-		displayName: 'Quaternary Calendar Container Default Design background Color',
-		name: 'quaternaryCalendarContainerDefaultDesignbackgroundColor',
-		defaultValue: '<backgroundColorSeven>',
-		cssProperty: 'background',
-		selector: '.comp.compCalendar._default._quaternary ._dropdownContainer',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Calendar Background Color ',
-		displayName: 'Quinary Calendar Container Default Design background Color',
-		name: 'quinaryCalendarContainerDefaultDesignbackgroundColor',
-		defaultValue: '<backgroundColorSeven>',
-		cssProperty: 'background',
-		selector: '.comp.compCalendar._default._quinary ._dropdownContainer',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Calendar Background Color ',
-		displayName: 'Primary Calendar Container Outline Design background Color',
-		name: 'primaryCalendarContainerOutlineDesignbackgroundColor',
-		defaultValue: '<backgroundColorSeven>',
-		cssProperty: 'background',
-		selector: '.comp.compCalendar._outlined._primary ._dropdownContainer',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Calendar Background Color ',
-		displayName: 'Secondary Calendar Container Outline Design background Color',
-		name: 'secondaryCalendarContainerOutlineDesignbackgroundColor',
-		defaultValue: '<backgroundColorSeven>',
-		cssProperty: 'background',
-		selector: '.comp.compCalendar._outlined._secondary ._dropdownContainer',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Calendar Background Color ',
-		displayName: 'Tertiary Calendar Container Outline Design background Color',
-		name: 'tertiaryCalendarContainerOutlineDesignbackgroundColor',
-		defaultValue: '<backgroundColorSeven>',
-		cssProperty: 'background',
-		selector: '.comp.compCalendar._outlined._tertiary ._dropdownContainer',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Calendar Background Color ',
-		displayName: 'Quaternary Calendar Container Outline Design background Color',
-		name: 'quaternaryCalendarContainerOutlineDesignbackgroundColor',
-		defaultValue: '<backgroundColorSeven>',
-		cssProperty: 'background',
-		selector: '.comp.compCalendar._outlined._quaternary ._dropdownContainer',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Calendar Background Color ',
-		displayName: 'Quinary Calendar Container Outline Design background Color',
-		name: 'quinaryCalendarContainerOutlineDesignbackgroundColor',
-		defaultValue: '<backgroundColorSeven>',
-		cssProperty: 'background',
-		selector: '.comp.compCalendar._outlined._quinary ._dropdownContainer',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Calendar Background Color ',
-		displayName: 'Primary Calendar Container Filled Design background Color',
-		name: 'primaryCalendarContainerFilledDesignbackgroundColor',
-		defaultValue: '<backgroundColorTwo>',
-		cssProperty: 'background',
-		selector: '.comp.compCalendar._filled._primary ._dropdownContainer',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Calendar Background Color ',
-		displayName: 'Secondary Calendar Container Filled Design background Color',
-		name: 'secondaryCalendarContainerFilledDesignbackgroundColor',
-		defaultValue: '<backgroundColorTwo>',
-		cssProperty: 'background',
-		selector: '.comp.compCalendar._filled._secondary ._dropdownContainer',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Calendar Background Color ',
-		displayName: 'Tertiary Calendar Container Filled Design background Color',
-		name: 'tertiaryCalendarContainerFilledDesignbackgroundColor',
-		defaultValue: '<backgroundColorThree>',
-		cssProperty: 'background',
-		selector: '.comp.compCalendar._filled._tertiary ._dropdownContainer',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Calendar Background Color ',
-		displayName: 'Quaternary Calendar Container Filled Design background Color',
-		name: 'quaternaryCalendarContainerFilledDesignbackgroundColor',
-		defaultValue: '<backgroundColorNine>',
-		cssProperty: 'background',
-		selector: '.comp.compCalendar._filled._quaternary ._dropdownContainer',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Calendar Background Color ',
-		displayName: 'Quinary Calendar Container Filled Design background Color',
-		name: 'quinaryCalendarContainerFilledDesignbackgroundColor',
-		defaultValue: '<backgroundColorNine>',
-		cssProperty: 'background',
-		selector: '.comp.compCalendar._filled._quinary ._dropdownContainer',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Calendar Background Color ',
-		displayName: 'Primary Calendar Container Design One Design background Color',
-		name: 'primaryCalendarContainerDesignOneDesignbackgroundColor',
-		defaultValue: 'linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white',
-		cssProperty: 'background',
-		selector: '.comp.compCalendar._bigDesign1._primary ._dropdownContainer',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Calendar Background Color ',
-		displayName: 'Secondary Calendar Container Design One Design background Color',
-		name: 'secondaryCalendarContainerDesignOneDesignbackgroundColor',
-		defaultValue: 'linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white',
-		cssProperty: 'background',
-		selector: '.comp.compCalendar._bigDesign1._secondary ._dropdownContainer',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Calendar Background Color ',
-		displayName: 'Tertiary Calendar Container Design One Design background Color',
-		name: 'tertiaryCalendarContainerDesignOneDesignbackgroundColor',
-		defaultValue: 'linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white',
-		cssProperty: 'background',
-		selector: '.comp.compCalendar._bigDesign1._tertiary ._dropdownContainer',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Calendar Background Color ',
-		displayName: 'Quaternary Calendar Container Design One Design background Color',
-		name: 'quaternaryCalendarContainerDesignOneDesignbackgroundColor',
-		defaultValue: 'linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white',
-		cssProperty: 'background',
-		selector: '.comp.compCalendar._bigDesign1._quaternary ._dropdownContainer',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Calendar Background Color ',
-		displayName: 'Quinary Calendar Container Design One Design background Color',
-		name: 'quinaryCalendarContainerDesignOneDesignbackgroundColor',
-		defaultValue: 'linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white',
-		cssProperty: 'background',
-		selector: '.comp.compCalendar._bigDesign1._quinary ._dropdownContainer',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Calendar Background Color ',
-		displayName: 'Primary Calendar Container Text Design background Color',
-		name: 'primaryCalendarContainerTextDesignbackgroundColor',
-		defaultValue: '<backgroundColorSeven>',
-		cssProperty: 'background',
-		selector: '.comp.compCalendar._text._primary ._dropdownContainer',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Calendar Background Color ',
-		displayName: 'Secondary Calendar Container Text Design background Color',
-		name: 'secondaryCalendarContainerTextDesignbackgroundColor',
-		defaultValue: '<backgroundColorSeven>',
-		cssProperty: 'background',
-		selector: '.comp.compCalendar._text._secondary ._dropdownContainer',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Calendar Background Color ',
-		displayName: 'Tertiary Calendar Container Text Design background Color',
-		name: 'tertiaryCalendarContainerTextDesignbackgroundColor',
-		defaultValue: '<backgroundColorSeven>',
-		cssProperty: 'background',
-		selector: '.comp.compCalendar._text._tertiary ._dropdownContainer',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Calendar Background Color ',
-		displayName: 'Quaternary Calendar Container Text Design background Color',
-		name: 'quaternaryCalendarContainerTextDesignbackgroundColor',
-		defaultValue: '<backgroundColorSeven>',
-		cssProperty: 'background',
-		selector: '.comp.compCalendar._text._quaternary ._dropdownContainer',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Calendar Background Color ',
-		displayName: 'Quinary Calendar Container Text Design background Color',
-		name: 'quinaryCalendarContainerTextDesignbackgroundColor',
-		defaultValue: '<backgroundColorSeven>',
-		cssProperty: 'background',
-		selector: '.comp.compCalendar._text._quinary ._dropdownContainer',
 		noPrefix: true,
 	},
 	{
@@ -2988,7 +2689,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorThree>',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compCalendar._default._isActive._primary, .comp.compCalendar._default._isActive._primary ._dropdownContainer, .comp.compCalendar._default._hasValue._primary, .comp.compCalendar._default._hasValue._primary ._dropdownContainer',
+			'.comp.compCalendar._default._isActive._primary, .comp.compCalendar._default._hasValue._primary',
 		noPrefix: true,
 	},
 	{
@@ -2998,7 +2699,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorFour>',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compCalendar._default._isActive._secondary, .comp.compCalendar._default._isActive._secondary ._dropdownContainer, .comp.compCalendar._default._hasValue._secondary, .comp.compCalendar._default._hasValue._secondary ._dropdownContainer',
+			'.comp.compCalendar._default._isActive._secondary, .comp.compCalendar._default._hasValue._secondary',
 		noPrefix: true,
 	},
 	{
@@ -3008,7 +2709,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorFive>',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compCalendar._default._isActive._tertiary, .comp.compCalendar._default._isActive._tertiary ._dropdownContainer, .comp.compCalendar._default._hasValue._tertiary, .comp.compCalendar._default._hasValue._tertiary ._dropdownContainer',
+			'.comp.compCalendar._default._isActive._tertiary, .comp.compCalendar._default._hasValue._tertiary',
 		noPrefix: true,
 	},
 	{
@@ -3018,7 +2719,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorNine>',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compCalendar._default._isActive._quaternary, .comp.compCalendar._default._isActive._quaternary ._dropdownContainer, .comp.compCalendar._default._hasValue._quaternary, .comp.compCalendar._default._hasValue._quaternary ._dropdownContainer',
+			'.comp.compCalendar._default._isActive._quaternary, .comp.compCalendar._default._hasValue._quaternary',
 		noPrefix: true,
 	},
 	{
@@ -3028,7 +2729,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorSeven>',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compCalendar._default._isActive._quinary, .comp.compCalendar._default._isActive._quinary ._dropdownContainer, .comp.compCalendar._default._hasValue._quinary, .comp.compCalendar._default._hasValue._quinary ._dropdownContainer',
+			'.comp.compCalendar._default._isActive._quinary, .comp.compCalendar._default._hasValue._quinary',
 		noPrefix: true,
 	},
 	{
@@ -3038,7 +2739,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorThree>',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compCalendar._outlined._isActive._primary, .comp.compCalendar._outlined._isActive._primary ._dropdownContainer, .comp.compCalendar._outlined._hasValue._primary, .comp.compCalendar._outlined._hasValue._primary ._dropdownContainer',
+			'.comp.compCalendar._outlined._isActive._primary, .comp.compCalendar._outlined._hasValue._primary',
 		noPrefix: true,
 	},
 	{
@@ -3048,7 +2749,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorFour>',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compCalendar._outlined._isActive._secondary, .comp.compCalendar._outlined._isActive._secondary ._dropdownContainer, .comp.compCalendar._outlined._hasValue._secondary, .comp.compCalendar._outlined._hasValue._secondary ._dropdownContainer',
+			'.comp.compCalendar._outlined._isActive._secondary, .comp.compCalendar._outlined._hasValue._secondary',
 		noPrefix: true,
 	},
 	{
@@ -3058,7 +2759,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorFive>',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compCalendar._outlined._isActive._tertiary, .comp.compCalendar._outlined._isActive._tertiary ._dropdownContainer, .comp.compCalendar._outlined._hasValue._tertiary, .comp.compCalendar._outlined._hasValue._tertiary ._dropdownContainer',
+			'.comp.compCalendar._outlined._isActive._tertiary, .comp.compCalendar._outlined._hasValue._tertiary',
 		noPrefix: true,
 	},
 	{
@@ -3068,7 +2769,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorNine>',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compCalendar._outlined._isActive._quaternary, .comp.compCalendar._outlined._isActive._quaternary ._dropdownContainer, .comp.compCalendar._outlined._hasValue._quaternary, .comp.compCalendar._outlined._hasValue._quaternary ._dropdownContainer',
+			'.comp.compCalendar._outlined._isActive._quaternary, .comp.compCalendar._outlined._hasValue._quaternary',
 		noPrefix: true,
 	},
 	{
@@ -3078,7 +2779,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorSeven>',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compCalendar._outlined._isActive._quinary, .comp.compCalendar._outlined._isActive._quinary ._dropdownContainer, .comp.compCalendar._outlined._hasValue._quinary, .comp.compCalendar._outlined._hasValue._quinary ._dropdownContainer',
+			'.comp.compCalendar._outlined._isActive._quinary, .comp.compCalendar._outlined._hasValue._quinary',
 		noPrefix: true,
 	},
 	{
@@ -3088,7 +2789,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorThree>',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compCalendar._filled._isActive._primary, .comp.compCalendar._filled._isActive._primary ._dropdownContainer, .comp.compCalendar._filled._hasValue._primary, .comp.compCalendar._filled._hasValue._primary ._dropdownContainer',
+			'.comp.compCalendar._filled._isActive._primary, .comp.compCalendar._filled._hasValue._primary',
 		noPrefix: true,
 	},
 	{
@@ -3098,7 +2799,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorFour>',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compCalendar._filled._isActive._secondary, .comp.compCalendar._filled._isActive._secondary ._dropdownContainer, .comp.compCalendar._filled._hasValue._secondary, .comp.compCalendar._filled._hasValue._secondary ._dropdownContainer',
+			'.comp.compCalendar._filled._isActive._secondary, .comp.compCalendar._filled._hasValue._secondary',
 		noPrefix: true,
 	},
 	{
@@ -3108,7 +2809,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorFive>',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compCalendar._filled._isActive._tertiary, .comp.compCalendar._filled._isActive._tertiary ._dropdownContainer, .comp.compCalendar._filled._hasValue._tertiary, .comp.compCalendar._filled._hasValue._tertiary ._dropdownContainer',
+			'.comp.compCalendar._filled._isActive._tertiary, .comp.compCalendar._filled._hasValue._tertiary',
 		noPrefix: true,
 	},
 	{
@@ -3118,7 +2819,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorNine>',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compCalendar._filled._isActive._quaternary, .comp.compCalendar._filled._isActive._quaternary ._dropdownContainer, .comp.compCalendar._filled._hasValue._quaternary, .comp.compCalendar._filled._hasValue._quaternary ._dropdownContainer',
+			'.comp.compCalendar._filled._isActive._quaternary, .comp.compCalendar._filled._hasValue._quaternary',
 		noPrefix: true,
 	},
 	{
@@ -3128,7 +2829,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorSeven>',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compCalendar._filled._isActive._quinary, .comp.compCalendar._filled._isActive._quinary ._dropdownContainer, .comp.compCalendar._filled._hasValue._quinary, .comp.compCalendar._filled._hasValue._quinary ._dropdownContainer',
+			'.comp.compCalendar._filled._isActive._quinary, .comp.compCalendar._filled._hasValue._quinary',
 		noPrefix: true,
 	},
 	{
@@ -3138,7 +2839,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorThree>',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compCalendar._bigDesign1._isActive._primary, .comp.compCalendar._bigDesign1._isActive._primary ._dropdownContainer, .comp.compCalendar._bigDesign1._hasValue._primary, .comp.compCalendar._bigDesign1._hasValue._primary ._dropdownContainer',
+			'.comp.compCalendar._bigDesign1._isActive._primary, .comp.compCalendar._bigDesign1._hasValue._primary',
 		noPrefix: true,
 	},
 	{
@@ -3148,7 +2849,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorFour>',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compCalendar._bigDesign1._isActive._secondary, .comp.compCalendar._bigDesign1._isActive._secondary ._dropdownContainer, .comp.compCalendar._bigDesign1._hasValue._secondary, .comp.compCalendar._bigDesign1._hasValue._secondary ._dropdownContainer',
+			'.comp.compCalendar._bigDesign1._isActive._secondary, .comp.compCalendar._bigDesign1._hasValue._secondary',
 		noPrefix: true,
 	},
 	{
@@ -3158,7 +2859,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorFive>',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compCalendar._bigDesign1._isActive._tertiary, .comp.compCalendar._bigDesign1._isActive._tertiary ._dropdownContainer, .comp.compCalendar._bigDesign1._hasValue._tertiary, .comp.compCalendar._bigDesign1._hasValue._tertiary ._dropdownContainer',
+			'.comp.compCalendar._bigDesign1._isActive._tertiary, .comp.compCalendar._bigDesign1._hasValue._tertiary',
 		noPrefix: true,
 	},
 	{
@@ -3168,7 +2869,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorNine>',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compCalendar._bigDesign1._isActive._quaternary, .comp.compCalendar._bigDesign1._isActive._quaternary ._dropdownContainer, .comp.compCalendar._bigDesign1._hasValue._quaternary, .comp.compCalendar._bigDesign1._hasValue._quaternary ._dropdownContainer',
+			'.comp.compCalendar._bigDesign1._isActive._quaternary, .comp.compCalendar._bigDesign1._hasValue._quaternary',
 		noPrefix: true,
 	},
 	{
@@ -3178,7 +2879,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorSeven>',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compCalendar._bigDesign1._isActive._quinary, .comp.compCalendar._bigDesign1._isActive._quinary ._dropdownContainer, .comp.compCalendar._bigDesign1._hasValue._quinary, .comp.compCalendar._bigDesign1._hasValue._quinary ._dropdownContainer',
+			'.comp.compCalendar._bigDesign1._isActive._quinary, .comp.compCalendar._bigDesign1._hasValue._quinary',
 		noPrefix: true,
 	},
 	{
@@ -3187,7 +2888,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryCalendarTextDesignborderColorisActive',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compCalendar._text._isActive._primary, .comp.compCalendar._text._isActive._primary ._dropdownContainer, .comp.compCalendar._text._hasValue._primary, .comp.compCalendar._text._hasValue._primary ._dropdownContainer',
+			'.comp.compCalendar._text._isActive._primary, .comp.compCalendar._text._hasValue._primary',
 		noPrefix: true,
 	},
 	{
@@ -3196,7 +2897,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryCalendarTextDesignborderColorisActive',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compCalendar._text._isActive._secondary, .comp.compCalendar._text._isActive._secondary ._dropdownContainer, .comp.compCalendar._text._hasValue._secondary, .comp.compCalendar._text._hasValue._secondary ._dropdownContainer',
+			'.comp.compCalendar._text._isActive._secondary, .comp.compCalendar._text._hasValue._secondary',
 		noPrefix: true,
 	},
 	{
@@ -3205,7 +2906,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryCalendarTextDesignborderColorisActive',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compCalendar._text._isActive._tertiary, .comp.compCalendar._text._isActive._tertiary ._dropdownContainer, .comp.compCalendar._text._hasValue._tertiary, .comp.compCalendar._text._hasValue._tertiary ._dropdownContainer',
+			'.comp.compCalendar._text._isActive._tertiary, .comp.compCalendar._text._hasValue._tertiary',
 		noPrefix: true,
 	},
 	{
@@ -3214,7 +2915,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryCalendarTextDesignborderColorisActive',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compCalendar._text._isActive._quaternary, .comp.compCalendar._text._isActive._quaternary ._dropdownContainer, .comp.compCalendar._text._hasValue._quaternary, .comp.compCalendar._text._hasValue._quaternary ._dropdownContainer',
+			'.comp.compCalendar._text._isActive._quaternary, .comp.compCalendar._text._hasValue._quaternary',
 		noPrefix: true,
 	},
 	{
@@ -3223,7 +2924,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryCalendarTextDesignborderColorisActive',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compCalendar._text._isActive._quinary, .comp.compCalendar._text._isActive._quinary ._dropdownContainer, .comp.compCalendar._text._hasValue._quinary, .comp.compCalendar._text._hasValue._quinary ._dropdownContainer',
+			'.comp.compCalendar._text._isActive._quinary, .comp.compCalendar._text._hasValue._quinary',
 		noPrefix: true,
 	},
 
@@ -3459,7 +3160,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryCalendarDefaultDesignActiveBackground',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._default._isActive._primary, .comp.compCalendar._default._isActive._primary ._dropdownContainer, .comp.compCalendar._default._hasValue._primary, .comp.compCalendar._default._hasValue._primary ._dropdownContainer',
+			'.comp.compCalendar._default._isActive._primary, .comp.compCalendar._default._hasValue._primary',
 		noPrefix: true,
 	},
 	{
@@ -3468,7 +3169,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryCalendarDefaultDesignActiveBackground',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._default._isActive._secondary, .comp.compCalendar._default._isActive._secondary ._dropdownContainer, .comp.compCalendar._default._hasValue._secondary, .comp.compCalendar._default._hasValue._secondary ._dropdownContainer',
+			'.comp.compCalendar._default._isActive._secondary, .comp.compCalendar._default._hasValue._secondary',
 		noPrefix: true,
 	},
 	{
@@ -3477,7 +3178,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryCalendarDefaultDesignActiveBackground',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._default._isActive._tertiary, .comp.compCalendar._default._isActive._tertiary ._dropdownContainer, .comp.compCalendar._default._hasValue._tertiary, .comp.compCalendar._default._hasValue._tertiary ._dropdownContainer',
+			'.comp.compCalendar._default._isActive._tertiary, .comp.compCalendar._default._hasValue._tertiary',
 		noPrefix: true,
 	},
 	{
@@ -3486,7 +3187,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryCalendarDefaultDesignActiveBackground',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._default._isActive._quaternary, .comp.compCalendar._default._isActive._quaternary ._dropdownContainer, .comp.compCalendar._default._hasValue._quaternary, .comp.compCalendar._default._hasValue._quaternary ._dropdownContainer',
+			'.comp.compCalendar._default._isActive._quaternary, .comp.compCalendar._default._hasValue._quaternary',
 		noPrefix: true,
 	},
 	{
@@ -3495,7 +3196,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryCalendarDefaultDesignActiveBackground',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._default._isActive._quinary, .comp.compCalendar._default._isActive._quinary ._dropdownContainer, .comp.compCalendar._default._hasValue._quinary, .comp.compCalendar._default._hasValue._quinary ._dropdownContainer',
+			'.comp.compCalendar._default._isActive._quinary, .comp.compCalendar._default._hasValue._quinary',
 		noPrefix: true,
 	},
 	{
@@ -3504,7 +3205,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryCalendarOutlineDesignActiveBackground',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._outlined._isActive._primary, .comp.compCalendar._outlined._isActive._primary ._dropdownContainer, .comp.compCalendar._outlined._hasValue._primary, .comp.compCalendar._outlined._hasValue._primary ._dropdownContainer',
+			'.comp.compCalendar._outlined._isActive._primary, .comp.compCalendar._outlined._hasValue._primary',
 		noPrefix: true,
 	},
 	{
@@ -3513,7 +3214,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryCalendarOutlineDesignActiveBackground',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._outlined._isActive._secondary, .comp.compCalendar._outlined._isActive._secondary ._dropdownContainer, .comp.compCalendar._outlined._hasValue._secondary, .comp.compCalendar._outlined._hasValue._secondary ._dropdownContainer',
+			'.comp.compCalendar._outlined._isActive._secondary, .comp.compCalendar._outlined._hasValue._secondary',
 		noPrefix: true,
 	},
 	{
@@ -3522,7 +3223,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryCalendarOutlineDesignActiveBackground',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._outlined._isActive._tertiary, .comp.compCalendar._outlined._isActive._tertiary ._dropdownContainer, .comp.compCalendar._outlined._hasValue._tertiary, .comp.compCalendar._outlined._hasValue._tertiary ._dropdownContainer',
+			'.comp.compCalendar._outlined._isActive._tertiary, .comp.compCalendar._outlined._hasValue._tertiary',
 		noPrefix: true,
 	},
 	{
@@ -3531,7 +3232,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryCalendarOutlineDesignActiveBackground',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._outlined._isActive._quaternary, .comp.compCalendar._outlined._isActive._quaternary ._dropdownContainer, .comp.compCalendar._outlined._hasValue._quaternary, .comp.compCalendar._outlined._hasValue._quaternary ._dropdownContainer',
+			'.comp.compCalendar._outlined._isActive._quaternary, .comp.compCalendar._outlined._hasValue._quaternary',
 		noPrefix: true,
 	},
 	{
@@ -3540,7 +3241,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryCalendarOutlineDesignActiveBackground',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._outlined._isActive._quinary, .comp.compCalendar._outlined._isActive._quinary ._dropdownContainer, .comp.compCalendar._outlined._hasValue._quinary, .comp.compCalendar._outlined._hasValue._quinary ._dropdownContainer',
+			'.comp.compCalendar._outlined._isActive._quinary, .comp.compCalendar._outlined._hasValue._quinary',
 		noPrefix: true,
 	},
 	{
@@ -3549,7 +3250,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryCalendarFilledDesignActiveBackground',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._filled._isActive._primary, .comp.compCalendar._filled._isActive._primary ._dropdownContainer, .comp.compCalendar._filled._hasValue._primary, .comp.compCalendar._filled._hasValue._primary ._dropdownContainer',
+			'.comp.compCalendar._filled._isActive._primary, .comp.compCalendar._filled._hasValue._primary',
 		noPrefix: true,
 	},
 	{
@@ -3558,7 +3259,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryCalendarFilledDesignActiveBackground',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._filled._isActive._secondary, .comp.compCalendar._filled._isActive._secondary ._dropdownContainer, .comp.compCalendar._filled._hasValue._secondary, .comp.compCalendar._filled._hasValue._secondary ._dropdownContainer',
+			'.comp.compCalendar._filled._isActive._secondary, .comp.compCalendar._filled._hasValue._secondary',
 		noPrefix: true,
 	},
 	{
@@ -3567,7 +3268,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryCalendarFilledDesignActiveBackground',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._filled._isActive._tertiary, .comp.compCalendar._filled._isActive._tertiary ._dropdownContainer, .comp.compCalendar._filled._hasValue._tertiary, .comp.compCalendar._filled._hasValue._tertiary ._dropdownContainer',
+			'.comp.compCalendar._filled._isActive._tertiary, .comp.compCalendar._filled._hasValue._tertiary',
 		noPrefix: true,
 	},
 	{
@@ -3576,7 +3277,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryCalendarFilledDesignActiveBackground',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._filled._isActive._quaternary, .comp.compCalendar._filled._isActive._quaternary ._dropdownContainer, .comp.compCalendar._filled._hasValue._quaternary, .comp.compCalendar._filled._hasValue._quaternary ._dropdownContainer',
+			'.comp.compCalendar._filled._isActive._quaternary, .comp.compCalendar._filled._hasValue._quaternary',
 		noPrefix: true,
 	},
 	{
@@ -3585,7 +3286,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryCalendarFilledDesignActiveBackground',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._filled._isActive._quinary, .comp.compCalendar._filled._isActive._quinary ._dropdownContainer, .comp.compCalendar._filled._hasValue._quinary, .comp.compCalendar._filled._hasValue._quinary ._dropdownContainer',
+			'.comp.compCalendar._filled._isActive._quinary, .comp.compCalendar._filled._hasValue._quinary',
 		noPrefix: true,
 	},
 	{
@@ -3596,7 +3297,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'linear-gradient(90deg, <backgroundColorOne>19 0%, <backgroundColorSix>00 64.33%), white',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._bigDesign1._isActive._primary, .comp.compCalendar._bigDesign1._isActive._primary ._dropdownContainer, .comp.compCalendar._bigDesign1._hasValue._primary, .comp.compCalendar._bigDesign1._hasValue._primary ._dropdownContainer',
+			'.comp.compCalendar._bigDesign1._isActive._primary, .comp.compCalendar._bigDesign1._hasValue._primary',
 		noPrefix: true,
 	},
 	{
@@ -3607,7 +3308,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'linear-gradient(90deg, <backgroundColorTwo>19 0%, <backgroundColorSix>00 64.33%), white',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._bigDesign1._isActive._secondary, .comp.compCalendar._bigDesign1._isActive._secondary ._dropdownContainer, .comp.compCalendar._bigDesign1._hasValue._secondary, .comp.compCalendar._bigDesign1._hasValue._secondary ._dropdownContainer',
+			'.comp.compCalendar._bigDesign1._isActive._secondary, .comp.compCalendar._bigDesign1._hasValue._secondary',
 		noPrefix: true,
 	},
 	{
@@ -3618,7 +3319,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'linear-gradient(90deg, <backgroundColorThree>19 0%, <backgroundColorSix>00 64.33%), white',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._bigDesign1._isActive._tertiary, .comp.compCalendar._bigDesign1._isActive._tertiary ._dropdownContainer, .comp.compCalendar._bigDesign1._hasValue._tertiary, .comp.compCalendar._bigDesign1._hasValue._tertiary ._dropdownContainer',
+			'.comp.compCalendar._bigDesign1._isActive._tertiary, .comp.compCalendar._bigDesign1._hasValue._tertiary',
 		noPrefix: true,
 	},
 	{
@@ -3629,7 +3330,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'linear-gradient(90deg, <backgroundColorFour>19 0%, <backgroundColorSix>00 64.33%), white',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._bigDesign1._isActive._quaternary, .comp.compCalendar._bigDesign1._isActive._quaternary ._dropdownContainer, .comp.compCalendar._bigDesign1._hasValue._quaternary, .comp.compCalendar._bigDesign1._hasValue._quaternary ._dropdownContainer',
+			'.comp.compCalendar._bigDesign1._isActive._quaternary, .comp.compCalendar._bigDesign1._hasValue._quaternary',
 		noPrefix: true,
 	},
 	{
@@ -3640,7 +3341,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 			'linear-gradient(90deg, <backgroundColorFive>19 0%, <backgroundColorSix>00 64.33%), white',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._bigDesign1._isActive._quinary, .comp.compCalendar._bigDesign1._isActive._quinary ._dropdownContainer, .comp.compCalendar._bigDesign1._hasValue._quinary, .comp.compCalendar._bigDesign1._hasValue._quinary ._dropdownContainer',
+			'.comp.compCalendar._bigDesign1._isActive._quinary, .comp.compCalendar._bigDesign1._hasValue._quinary',
 		noPrefix: true,
 	},
 	{
@@ -3649,7 +3350,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryCalendarTextDesignActiveBackground',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._text._isActive._primary, .comp.compCalendar._text._isActive._primary ._dropdownContainer, .comp.compCalendar._text._hasValue._primary, .comp.compCalendar._text._hasValue._primary ._dropdownContainer',
+			'.comp.compCalendar._text._isActive._primary, .comp.compCalendar._text._hasValue._primary',
 		noPrefix: true,
 	},
 	{
@@ -3658,7 +3359,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryCalendarTextDesignActiveBackground',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._text._isActive._secondary, .comp.compCalendar._text._isActive._secondary ._dropdownContainer, .comp.compCalendar._text._hasValue._secondary, .comp.compCalendar._text._hasValue._secondary ._dropdownContainer',
+			'.comp.compCalendar._text._isActive._secondary, .comp.compCalendar._text._hasValue._secondary',
 		noPrefix: true,
 	},
 	{
@@ -3667,7 +3368,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryCalendarTextDesignActiveBackground',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._text._isActive._tertiary, .comp.compCalendar._text._isActive._tertiary ._dropdownContainer, .comp.compCalendar._text._hasValue._tertiary, .comp.compCalendar._text._hasValue._tertiary ._dropdownContainer',
+			'.comp.compCalendar._text._isActive._tertiary, .comp.compCalendar._text._hasValue._tertiary',
 		noPrefix: true,
 	},
 	{
@@ -3676,7 +3377,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryCalendarTextDesignActiveBackground',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._text._isActive._quaternary, .comp.compCalendar._text._isActive._quaternary ._dropdownContainer, .comp.compCalendar._text._hasValue._quaternary, .comp.compCalendar._text._hasValue._quaternary ._dropdownContainer',
+			'.comp.compCalendar._text._isActive._quaternary, .comp.compCalendar._text._hasValue._quaternary',
 		noPrefix: true,
 	},
 	{
@@ -3685,7 +3386,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryCalendarTextDesignActiveBackground',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._text._isActive._quinary, .comp.compCalendar._text._isActive._quinary ._dropdownContainer, .comp.compCalendar._text._hasValue._quinary, .comp.compCalendar._text._hasValue._quinary ._dropdownContainer',
+			'.comp.compCalendar._text._isActive._quinary, .comp.compCalendar._text._hasValue._quinary',
 		noPrefix: true,
 	},
 

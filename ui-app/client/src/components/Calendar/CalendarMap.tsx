@@ -1,15 +1,11 @@
 import React from 'react';
+import { CalendarValidationProps, getValidDate, toFormat } from './calendarFunctions';
 
 interface CalendarMapProps {
+	date: string | number | undefined;
+	endDate: string | number | undefined;
 	isRangeType: boolean;
-	minDate: string;
-	maxDate: string;
-	colorScheme: string;
 	dateType: string;
-	numberOfDaysInRange: number;
-	disableDates: Array<string>;
-	disableTemporalRange: boolean;
-	disableDays: Array<string>;
 	componentDesignType: string;
 	calendarDesignType: string;
 	arrowButtonsHorizontalPlacement: string;
@@ -19,118 +15,184 @@ interface CalendarMapProps {
 	weekStartsOn: number;
 	lowLightWeekEnds: boolean;
 	showPreviousNextMonthDate: boolean;
-	secondInterval: number;
-	minuteInterval: number;
 	timeDesignType: string;
-	isMultiSelect: boolean;
-	multipleDateSeparator: string;
-	disableTextEntry: boolean;
+	browsingMonthYear: string;
+	onBrowsingMonthYearChange: (value: string) => void;
+	onChange: (value: string) => void;
 }
 
 export function CalendarMap({
-	minDate,
-	maxDate,
-	colorScheme,
-	dateType,
-	numberOfDaysInRange,
-	disableDates,
-	disableTemporalRange,
-	disableDays,
-	componentDesignType,
-	calendarDesignType,
 	arrowButtonsHorizontalPlacement,
-	calendarFormat,
-	showWeekNumber,
-	highlightToday,
-	weekStartsOn,
-	lowLightWeekEnds,
-	showPreviousNextMonthDate,
-	secondInterval,
-	minuteInterval,
-	timeDesignType,
-	isMultiSelect,
-	multipleDateSeparator,
-	disableTextEntry,
-}: CalendarMapProps) {
-	return <></>;
-}
+	browsingMonthYear,
+	date,
+	displayDateFormat,
+	storageFormat,
+	onBrowsingMonthYearChange,
+	onChange,
+}: CalendarMapProps & CalendarValidationProps) {
+	let currentDate = new Date();
+	if (browsingMonthYear) {
+		const [month, year] = browsingMonthYear.split('-').map(e => parseInt(e, 10));
+		currentDate.setMonth(month);
+		currentDate.setFullYear(year);
+	} else if (date) {
+		currentDate = getValidDate(date, storageFormat ?? displayDateFormat) ?? new Date();
+	}
 
-// Will support more formats after the kirun functions are integrated where all the time and date api is implemented.
+	const selectedDate = getValidDate(date, storageFormat ?? displayDateFormat);
 
-export function toFormat(date: string, fromFormat: string, toFormat: string): string | undefined {
-	if (!date) return undefined;
+	const numbers = [];
+	const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
+	const lastDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
 
-	const dateObject = getValidDate(date, fromFormat);
-	if (!dateObject) return undefined;
+	function selectDate(dateCounter: number) {
+		return () => {
+			const selectedDate = new Date(
+				currentDate.getFullYear(),
+				currentDate.getMonth(),
+				dateCounter,
+			);
+			onChange(toFormat(selectedDate, 'Date', storageFormat ?? displayDateFormat));
+		};
+	}
 
-	const year = dateObject.getFullYear();
-	const month = dateObject.getMonth() + 1;
-	const day = dateObject.getDate();
-	const hour = dateObject.getHours();
-	const minute = dateObject.getMinutes();
-	const second = dateObject.getSeconds();
+	let dateCounter = 1;
 
-	let formattedDate = toFormat.replace('YYYY', year.toString().padStart(4, '0'));
-	formattedDate = formattedDate.replace('MM', month.toString().padStart(2, '0'));
-	formattedDate = formattedDate.replace('DD', day.toString().padStart(2, '0'));
-	formattedDate = formattedDate.replace('HH', hour.toString().padStart(2, '0'));
-	formattedDate = formattedDate.replace(
-		'hh',
-		hour > 12 ? (hour - 12).toString().padStart(2, '0') : hour.toString().padStart(2, '0'),
-	);
-	formattedDate = formattedDate.replace('mm', minute.toString().padStart(2, '0'));
-	formattedDate = formattedDate.replace('ss', second.toString().padStart(2, '0'));
-	formattedDate = formattedDate.replace('A', hour < 12 ? 'AM' : 'PM');
-
-	return formattedDate;
-}
-
-export function getValidDate(date: string, format: string): Date | undefined {
-	if (!date) return undefined;
-
-	const [dateFormat, timeFormat, ampmFormat] = format.split(' ');
-
-	const [datePart, timePart, ampmPart] = date.split(' ').filter(e => e);
-
-	if (!datePart) return undefined;
-
-	let [day, month, year] = datePart.split('/').map(e => parseInt(e, 10));
-	if (dateFormat.startsWith('MM')) [day, month] = [month, day];
-
-	if (year < 1000 || year > 9999) return undefined;
-	if (month < 1 || month > 12) return undefined;
-	if (day < 1 || day > 31) return undefined;
-
-	let [hour, minute, second] = [0, 0, 0];
-
-	if (timeFormat) {
-		if (!timePart || (ampmFormat && !ampmPart)) return undefined;
-
-		const timeParts = timePart?.split(':');
-		const timeFormatParts = timeFormat.split(':');
-
-		if (timeParts.length != timeFormatParts.length) return undefined;
-
-		if (timeParts[1].length != 2 || (timeParts[2] && timeParts[2].length != 2))
-			return undefined;
-
-		[hour = 0, minute = 0, second = 0] = timeParts.map(e => parseInt(e, 10));
-
-		if (timeFormat.startsWith('hh')) {
-			if (hour < 1 || hour > 12) return undefined;
-			if (!ampmPart) return undefined;
-			if (ampmPart.toUpperCase() === 'PM') hour += 12;
-			if (hour === 24) hour = 0;
-		} else if (timeFormat.startsWith('HH')) {
-			if (hour < 0 || hour > 23) return undefined;
+	for (let i = 0; i < 6; i++) {
+		for (let j = 0; j < 7; j++) {
+			if (i === 0 && j < firstDay) {
+				numbers.push(<div key={`${currentDate.getMonth()}-${i}-${j}`} />);
+			} else if (dateCounter > lastDate) {
+				numbers.push(<div key={`${currentDate.getMonth()}-${i}-${j}`} />);
+			} else {
+				numbers.push(
+					<div
+						className={`_date ${
+							currentDate.getDate() === dateCounter &&
+							currentDate.getMonth() === new Date().getMonth() &&
+							currentDate.getFullYear() === new Date().getFullYear()
+								? '_today'
+								: ''
+						} ${
+							dateCounter == selectedDate?.getDate() &&
+							currentDate.getMonth() === selectedDate?.getMonth() &&
+							currentDate.getFullYear() === selectedDate?.getFullYear()
+								? '_selected'
+								: ''
+						}`}
+						key={`${currentDate.getMonth()}-${i}-${j}`}
+						onClick={selectDate(dateCounter)}
+					>
+						{dateCounter}
+					</div>,
+				);
+				dateCounter++;
+			}
 		}
+	}
 
-		if (minute < 0 || minute > 59) return undefined;
-		if (second < 0 || second > 59) return undefined;
-	} else if (timePart) return undefined;
+	return (
+		<>
+			<div className="_calenderHeader">
+				<ArrowRight
+					rotate={180}
+					onClick={() => {
+						currentDate.setMonth(currentDate.getMonth() - 1);
+						onBrowsingMonthYearChange(
+							`${currentDate.getMonth()}-${currentDate.getFullYear()}`,
+						);
+					}}
+				/>
+				<div className="_monthYear">
+					{currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+				</div>
+				<ArrowRight
+					rotate={0}
+					onClick={() => {
+						currentDate.setMonth(currentDate.getMonth() + 1);
+						onBrowsingMonthYearChange(
+							`${currentDate.getMonth()}-${currentDate.getFullYear()}`,
+						);
+					}}
+				/>
+			</div>
+			<div className="_calenderBody">
+				<div className="_calendarBodyContainer">
+					<div>Sun</div>
+					<div>Mon</div>
+					<div>Tue</div>
+					<div>Wed</div>
+					<div>Thu</div>
+					<div>Fri</div>
+					<div>Sat</div>
+					{numbers}
+				</div>
+			</div>
+		</>
+	);
+}
 
-	if (isNaN(year) || isNaN(month) || isNaN(day) || isNaN(hour) || isNaN(minute) || isNaN(second))
-		return undefined;
-
-	return new Date(year, month - 1, day, hour, minute, second);
+function ArrowRight({ rotate, onClick }: { rotate: number; onClick: () => void }) {
+	return (
+		<svg
+			width="30"
+			height="32"
+			viewBox="0 0 44 45"
+			fill="none"
+			style={{ transform: `rotate(${rotate}deg)` }}
+			xmlns="http://www.w3.org/2000/svg"
+			onClick={e => {
+				e.stopPropagation();
+				e.preventDefault();
+				onClick();
+			}}
+		>
+			<g filter="url(#filter0_d_0_589)">
+				<circle cx="22" cy="20.5" r="20" fill="white" />
+				<circle cx="22" cy="20.5" r="19.5" stroke="black" stroke-opacity="0.05" />
+			</g>
+			<path
+				d="M27.6339 20.1427C28.122 20.6169 28.122 21.3869 27.6339 21.8611L20.1353 29.1444C19.6471 29.6185 18.8543 29.6185 18.3661 29.1444C17.878 28.6702 17.878 27.9001 18.3661 27.426L24.982 21L18.37 14.574C17.8819 14.0999 17.8819 13.3298 18.37 12.8556C18.8582 12.3815 19.651 12.3815 20.1392 12.8556L27.6378 20.1389L27.6339 20.1427Z"
+				fill="#333333"
+				fill-opacity="0.8"
+			/>
+			<defs>
+				<filter
+					id="filter0_d_0_589"
+					x="0"
+					y="0.5"
+					width="44"
+					height="44"
+					filterUnits="userSpaceOnUse"
+					color-interpolation-filters="sRGB"
+				>
+					<feFlood flood-opacity="0" result="BackgroundImageFix" />
+					<feColorMatrix
+						in="SourceAlpha"
+						type="matrix"
+						values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+						result="hardAlpha"
+					/>
+					<feOffset dy="2" />
+					<feGaussianBlur stdDeviation="1" />
+					<feComposite in2="hardAlpha" operator="out" />
+					<feColorMatrix
+						type="matrix"
+						values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.02 0"
+					/>
+					<feBlend
+						mode="normal"
+						in2="BackgroundImageFix"
+						result="effect1_dropShadow_0_589"
+					/>
+					<feBlend
+						mode="normal"
+						in="SourceGraphic"
+						in2="effect1_dropShadow_0_589"
+						result="shape"
+					/>
+				</filter>
+			</defs>
+		</svg>
+	);
 }

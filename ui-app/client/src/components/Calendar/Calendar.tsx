@@ -31,11 +31,19 @@ import { IconHelper } from '../util/IconHelper';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { flattenUUID } from '../util/uuid';
-import { getValidDate, toFormat } from './CalendarMap';
 import CalendarStyle from './CalendarStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './calendarProperties';
 import { styleDefaults } from './calendarStyleProperties';
 import { makePropertiesObject } from '../util/make';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
+import {
+	toFormat,
+	validateRangesAndSetData,
+	getValidDate,
+	validateWithProps,
+	CalendarValidationProps,
+} from './calendarFunctions';
+import { CalendarMap } from './CalendarMap';
 
 function CalendarComponent(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -59,6 +67,15 @@ function CalendarComponent(props: ComponentProps) {
 			leftIcon,
 			minDate,
 			maxDate,
+			disableDates,
+			disableTemporalRange,
+			disableDays,
+			hourIntervalFrom,
+			hourInterval,
+			secondIntervalFrom,
+			secondInterval,
+			minuteIntervalFrom,
+			minuteInterval,
 			displayDateFormat,
 			storageFormat,
 			validation,
@@ -67,9 +84,6 @@ function CalendarComponent(props: ComponentProps) {
 			colorScheme,
 			dateType,
 			numberOfDaysInRange,
-			disableDates,
-			disableTemporalRange,
-			disableDays,
 			componentDesignType,
 			calendarDesignType,
 			arrowButtonsHorizontalPlacement,
@@ -79,8 +93,6 @@ function CalendarComponent(props: ComponentProps) {
 			weekStartsOn,
 			lowLightWeekEnds,
 			showPreviousNextMonthDate,
-			secondInterval,
-			minuteInterval,
 			timeDesignType,
 			isMultiSelect,
 			multipleDateSeparator,
@@ -99,6 +111,8 @@ function CalendarComponent(props: ComponentProps) {
 
 	const bindingPathPath = getPathFromLocation(bindingPath!, locationHistory, pageExtractor);
 	const bindingPathPath1 = getPathFromLocation(bindingPath2!, locationHistory, pageExtractor);
+
+	const isRangeType = !!bindingPathPath1;
 
 	// This date is from date if the date type is startDate and to date if the date type is endDate
 	const [thisDate, setThisDate] = useState<string | undefined>();
@@ -147,7 +161,11 @@ function CalendarComponent(props: ComponentProps) {
 					setFunction(formatted.join(multipleDateSeparator));
 				} else {
 					setFunction(
-						toFormat(value, storageFormat ?? displayDateFormat, displayDateFormat),
+						toFormat(
+							value,
+							storageFormat ?? displayDateFormat,
+							displayDateFormat,
+						)?.toString(),
 					);
 				}
 			},
@@ -171,7 +189,11 @@ function CalendarComponent(props: ComponentProps) {
 					setFunction(formatted.join(multipleDateSeparator));
 				} else {
 					setFunction(
-						toFormat(value, storageFormat ?? displayDateFormat, displayDateFormat),
+						toFormat(
+							value,
+							storageFormat ?? displayDateFormat,
+							displayDateFormat,
+						)?.toString(),
 					);
 				}
 			},
@@ -180,13 +202,57 @@ function CalendarComponent(props: ComponentProps) {
 		);
 	}, [bindingPathPath1, setThisDate, storageFormat, displayDateFormat, setThatDate, dateType]);
 
+	const validationProps = useMemo(() => {
+		return {
+			storageFormat,
+			displayDateFormat,
+			isMultiSelect,
+			isRangeType,
+			minDate,
+			maxDate,
+			disableDates,
+			disableTemporalRange,
+			disableDays,
+			hourIntervalFrom,
+			hourInterval,
+			secondIntervalFrom,
+			secondInterval,
+			minuteIntervalFrom,
+			minuteInterval,
+			multipleDateSeparator,
+		};
+	}, [
+		storageFormat,
+		displayDateFormat,
+		isMultiSelect,
+		isRangeType,
+		minDate,
+		maxDate,
+		disableDates,
+		disableTemporalRange,
+		disableDays,
+		hourIntervalFrom,
+		hourInterval,
+		secondIntervalFrom,
+		secondInterval,
+		minuteIntervalFrom,
+		minuteInterval,
+		multipleDateSeparator,
+	]);
+
 	const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		let currentBindingPath = dateType === 'startDate' ? bindingPathPath : bindingPathPath1;
 		if (!currentBindingPath) return;
 
 		const value = e.target.value;
 		if (value.trim() === '') {
-			if (thisDate) setData(currentBindingPath, undefined, context.pageName);
+			if (thisDate)
+				validateRangesAndSetData(
+					currentBindingPath,
+					undefined,
+					context.pageName,
+					validationProps,
+				);
 			else return;
 		} else {
 			if (isMultiSelect || bindingPathPath1) {
@@ -201,13 +267,33 @@ function CalendarComponent(props: ComponentProps) {
 				}
 
 				if (isMultiSelect) {
-					setData(currentBindingPath, dates.length ? dates : undefined, context.pageName);
+					validateRangesAndSetData(
+						currentBindingPath,
+						dates.length ? dates : undefined,
+						context.pageName,
+						validationProps,
+					);
 				} else {
 					if (dates.length === 1) {
-						setData(currentBindingPath, dates[0], context.pageName);
+						validateRangesAndSetData(
+							currentBindingPath,
+							dates[0],
+							context.pageName,
+							validationProps,
+						);
 					} else if (dates.length > 1) {
-						setData(bindingPathPath, dates[0], context.pageName);
-						setData(bindingPathPath1, dates[1], context.pageName);
+						validateRangesAndSetData(
+							bindingPathPath,
+							dates[0],
+							context.pageName,
+							validationProps,
+						);
+						validateRangesAndSetData(
+							bindingPathPath1,
+							dates[1],
+							context.pageName,
+							validationProps,
+						);
 					}
 				}
 			} else {
@@ -217,7 +303,12 @@ function CalendarComponent(props: ComponentProps) {
 					return;
 				}
 
-				setData(currentBindingPath, date, context.pageName);
+				validateRangesAndSetData(
+					currentBindingPath,
+					date,
+					context.pageName,
+					validationProps,
+				);
 			}
 		}
 
@@ -236,11 +327,20 @@ function CalendarComponent(props: ComponentProps) {
 		setShowDropdown(false);
 		setFocus(false);
 
-		if (thisDate !== e.target.value) {
-			setData(
+		if (disableTextEntry) return;
+
+		const storable = toFormat(
+			e.target.value,
+			displayDateFormat,
+			storageFormat ?? displayDateFormat,
+		);
+
+		if (thisDate !== storable || storable === undefined) {
+			validateRangesAndSetData(
 				dateType === 'endDate' ? bindingPathPath1 : bindingPathPath,
-				e.target.value,
+				storable,
 				context.pageName,
+				validationProps,
 			);
 			if (!changeEvent) return;
 			(async () =>
@@ -287,9 +387,57 @@ function CalendarComponent(props: ComponentProps) {
 				context.pageName,
 				true,
 			);
-	}, [thisDate, validation]);
+	}, [thisDate, validation, validationProps]);
+
+	const calendar =
+		componentDesignType === 'fullCalendar' || showDropdown ? (
+			<CalendarMap
+				date={thisDate}
+				isRangeType={isRangeType}
+				endDate={thatDate}
+				dateType={dateType}
+				componentDesignType={componentDesignType}
+				calendarDesignType={calendarDesignType}
+				arrowButtonsHorizontalPlacement={arrowButtonsHorizontalPlacement}
+				calendarFormat={calendarFormat}
+				showWeekNumber={showWeekNumber}
+				highlightToday={highlightToday}
+				weekStartsOn={weekStartsOn}
+				lowLightWeekEnds={lowLightWeekEnds}
+				showPreviousNextMonthDate={showPreviousNextMonthDate}
+				timeDesignType={timeDesignType}
+				isMultiSelect={isMultiSelect}
+				numberOfDaysInRange={numberOfDaysInRange}
+				minDate={minDate}
+				maxDate={maxDate}
+				disableDates={disableDates}
+				disableTemporalRange={disableTemporalRange}
+				disableDays={disableDays}
+				hourIntervalFrom={hourIntervalFrom}
+				hourInterval={hourInterval}
+				secondIntervalFrom={secondIntervalFrom}
+				secondInterval={secondInterval}
+				minuteIntervalFrom={minuteIntervalFrom}
+				minuteInterval={minuteInterval}
+				browsingMonthYear={browsingMonthYear}
+				onBrowsingMonthYearChange={setBrowsingMonthYear}
+				displayDateFormat={displayDateFormat}
+				multipleDateSeparator={multipleDateSeparator}
+				storageFormat={storageFormat}
+				onChange={(date: string) => {
+					setThisDate(date);
+					handleChange({ target: { value: date } } as any);
+				}}
+			/>
+		) : undefined;
 
 	if (componentDesignType === 'fullCalendar') {
+		return (
+			<div className="comp compCalendar fullCalendar" style={computedStyles?.comp ?? {}}>
+				<HelperComponent context={context} definition={definition} />
+				{calendar}
+			</div>
+		);
 	}
 
 	return (
@@ -322,7 +470,7 @@ function CalendarComponent(props: ComponentProps) {
 			colorScheme={colorScheme}
 			leftIcon={leftIcon}
 			showDropdown={showDropdown}
-			handleChange={handleChange}
+			handleChange={disableTextEntry ? undefined : handleChange}
 			onMouseLeave={closeOnMouseLeave ? handleClose : undefined}
 			showMandatoryAsterisk={
 				showMandatoryAsterisk &&
@@ -331,12 +479,13 @@ function CalendarComponent(props: ComponentProps) {
 					: false
 			}
 		>
-			{showDropdown && (
+			{calendar && (
 				<div className="_dropdownContainer" style={computedStyles.dropDownContainer ?? {}}>
 					<SubHelperComponent
 						definition={props.definition}
 						subComponentName="dropDownContainer"
 					/>
+					{calendar}
 				</div>
 			)}
 		</CommonInputText>
@@ -511,6 +660,84 @@ const component: Component = {
 			mainComponent: true,
 		},
 		{
+			name: 'calendarHeader',
+			displayName: 'Calendar Header',
+			description: 'Calendar Header',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'calendarBodyContainer',
+			displayName: 'Calendar Body Container',
+			description: 'Calendar Body Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'calendarBody',
+			displayName: 'Calendar Body',
+			description: 'Calendar Body',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'leftArrow',
+			displayName: 'Left Arrow',
+			description: 'Left Arrow',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'rigthArrow',
+			displayName: 'Rigth Arrow',
+			description: 'Rigth Arrow',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'weekName',
+			displayName: 'Week Name',
+			description: 'Week Name',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'date',
+			displayName: 'Date',
+			description: 'Date',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'monthName',
+			displayName: 'Month Name',
+			description: 'Month Name',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'disabledDate',
+			displayName: 'Disabled Date',
+			description: 'Disabled Date',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'prevNextMonthDate',
+			displayName: 'Prev Next Month Date',
+			description: 'Prev Next Month Date',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'todayDate',
+			displayName: 'Today Date',
+			description: 'Today Date',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'selectedDate',
+			displayName: 'Selected Date',
+			description: 'Selected Date',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'weekendLowLightDate',
+			displayName: 'Weekend Low Light Date',
+			description: 'Weekend Low Light Date',
+			icon: 'fa-solid fa-box',
+		},
+		{
 			name: 'dropDownContainer',
 			displayName: 'Drop Down Container',
 			description: 'Drop Down Container',
@@ -575,22 +802,22 @@ const component: Component = {
 		): Array<string> {
 			if (!value) return [];
 
-			let { storageFormat, displayDateFormat, multipleDateSeparator } = makePropertiesObject(
+			let props = makePropertiesObject(
 				propertiesDefinition,
 				def.properties,
 				locationHistory,
 				pageExtractor ? [pageExtractor] : [],
 			);
 
-			if (!storageFormat) storageFormat = displayDateFormat;
+			let { storageFormat, displayDateFormat, multipleDateSeparator } = props;
 
-			console.log('Storage Format ', storageFormat);
-			console.log('seperator', multipleDateSeparator);
+			if (!storageFormat) storageFormat = displayDateFormat;
 
 			let dates = ('' + value)
 				.split(multipleDateSeparator)
-				.map(e => getValidDate(e, storageFormat!));
-			console.log(dates);
+				.map(e => getValidDate(e, storageFormat!))
+				.map(e => validateWithProps(e, props as CalendarValidationProps));
+
 			if (dates.findIndex(e => isNullValue(e)) != -1) return [validation.message];
 
 			return [];

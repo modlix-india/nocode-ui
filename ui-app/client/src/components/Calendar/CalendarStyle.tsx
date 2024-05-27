@@ -10,6 +10,12 @@ export default function CalendarStyle({ theme }: { theme: Map<string, Map<string
             display: flex;
             align-items: center;
         }
+
+        ${PREFIX}.fullCalendar {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
     
         ${PREFIX} input {
             flex: 1;
@@ -94,14 +100,62 @@ export default function CalendarStyle({ theme }: { theme: Map<string, Map<string
         }
 
         ${PREFIX} ._dropdownContainer{
-            width: 100%;
             z-index: 5;
             left: 0;
             position: absolute;
             top: 100%;
+            padding: 0 !important;
+            box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
         }
 
-      
+        ${PREFIX} ._calenderHeader{
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            color: #333333;
+            border-top-left-radius: 2px;
+            border-top-right-radius: 2px;
+            width: 100%;
+        }
+
+        ${PREFIX} ._calenderBody{
+            background-color: #ffffff;
+            border-bottom-left-radius: 2px;
+            border-bottom-right-radius: 2px;
+        }
+
+        ${PREFIX} ._calendarBodyContainer {
+            width: 300px;
+            height: 300px;
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            grid-template-rows: repeat(7, 1fr);
+            justify-items: center;
+            align-items: center;
+        }
+
+        ${PREFIX} ._date {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            border-radius: 50%;
+            color: #333333;
+        }
+
+        ${PREFIX} ._date:hover {
+            background-color: #219C90;
+            color: #ffffff;
+        }
+
+        ${PREFIX} ._date._selected {
+            background-color: #219C90;
+            color: #ffffff;
+        }
  	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="CalendarCss">{css}</style>;

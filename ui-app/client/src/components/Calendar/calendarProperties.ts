@@ -16,37 +16,81 @@ const WEEK_DAYS = [
 	{
 		name: '0',
 		displayName: 'Sunday',
-		description: 'first day of week',
 	},
 	{
 		name: '1',
 		displayName: 'Monday',
-		description: 'second day of week',
 	},
 	{
 		name: '2',
 		displayName: 'Tuesday',
-		description: 'third day of week',
 	},
 	{
 		name: '3',
 		displayName: 'Wednesday',
-		description: 'fourth day of week',
 	},
 	{
 		name: '4',
 		displayName: 'Thursday',
-		description: 'fifth day of week',
 	},
 	{
 		name: '5',
 		displayName: 'Friday',
-		description: 'sixth day of week',
 	},
 	{
 		name: '6',
 		displayName: 'Saturday',
-		description: 'seventh day of week',
+	},
+];
+
+const DATE_FORMATS = [
+	{
+		name: 'DD/MM/YYYY',
+		displayName: 'DD/MM/YYYY',
+	},
+	{
+		name: 'MM/DD/YYYY',
+		displayName: 'MM/DD/YYYY',
+	},
+	{
+		name: 'DD/MM/YYYY HH:mm',
+		displayName: 'DD/MM/YYYY HH:mm (24 Hr)',
+	},
+	{
+		name: 'MM/DD/YYYY HH:mm',
+		displayName: 'MM/DD/YYYY HH:mm (24 Hr)',
+	},
+	{
+		name: 'DD/MM/YYYY hh:mm A',
+		displayName: 'DD/MM/YYYY hh:mm A (12 Hr)',
+	},
+	{
+		name: 'MM/DD/YYYY hh:mm A',
+		displayName: 'MM/DD/YYYY hh:mm A (12 Hr)',
+	},
+	{
+		name: 'DD/MM/YYYY HH:mm:ss',
+		displayName: 'DD/MM/YYYY HH:mm:ss (24 Hr)',
+	},
+	{
+		name: 'MM/DD/YYYY HH:mm:ss',
+		displayName: 'MM/DD/YYYY HH:mm:ss (24 Hr)',
+	},
+	{
+		name: 'DD/MM/YYYY hh:mm:ss A',
+		displayName: 'DD/MM/YYYY hh:mm:ss A (12 Hr)',
+	},
+	{
+		name: 'MM/DD/YYYY hh:mm:ss A',
+		displayName: 'MM/DD/YYYY hh:mm:ss A (12 Hr)',
+	},
+	{
+		name: 'x',
+		displayName: 'Milliseconds Since Epoch',
+	},
+	{
+		name: 'X',
+		displayName: 'Seconds Since Epoch',
 	},
 ];
 
@@ -116,48 +160,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 		description: 'Date Format to display',
 		defaultValue: 'DD/MM/YYYY',
-		enumValues: [
-			{
-				name: 'DD/MM/YYYY',
-				displayName: 'DD/MM/YYYY',
-			},
-			{
-				name: 'MM/DD/YYYY',
-				displayName: 'MM/DD/YYYY',
-			},
-			{
-				name: 'DD/MM/YYYY HH:mm',
-				displayName: 'DD/MM/YYYY HH:mm (24 Hr)',
-			},
-			{
-				name: 'MM/DD/YYYY HH:mm',
-				displayName: 'MM/DD/YYYY HH:mm (24 Hr)',
-			},
-			{
-				name: 'DD/MM/YYYY hh:mm A',
-				displayName: 'DD/MM/YYYY hh:mm A (12 Hr)',
-			},
-			{
-				name: 'MM/DD/YYYY hh:mm A',
-				displayName: 'MM/DD/YYYY hh:mm A (12 Hr)',
-			},
-			{
-				name: 'DD/MM/YYYY HH:mm:ss',
-				displayName: 'DD/MM/YYYY HH:mm:ss (24 Hr)',
-			},
-			{
-				name: 'MM/DD/YYYY HH:mm:ss',
-				displayName: 'MM/DD/YYYY HH:mm:ss (24 Hr)',
-			},
-			{
-				name: 'DD/MM/YYYY hh:mm:ss A',
-				displayName: 'DD/MM/YYYY hh:mm:ss A (12 Hr)',
-			},
-			{
-				name: 'MM/DD/YYYY hh:mm:ss A',
-				displayName: 'MM/DD/YYYY hh:mm:ss A (12 Hr)',
-			},
-		],
+		enumValues: DATE_FORMATS,
 	},
 
 	{
@@ -166,48 +169,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Storage Format',
 		group: ComponentPropertyGroup.BASIC,
 		description: 'Date Format to store uses display format if not provided',
-		enumValues: [
-			{
-				name: 'DD/MM/YYYY',
-				displayName: 'DD/MM/YYYY',
-			},
-			{
-				name: 'MM/DD/YYYY',
-				displayName: 'MM/DD/YYYY',
-			},
-			{
-				name: 'DD/MM/YYYY HH:mm',
-				displayName: 'DD/MM/YYYY HH:mm (24 Hr)',
-			},
-			{
-				name: 'MM/DD/YYYY HH:mm',
-				displayName: 'MM/DD/YYYY HH:mm (24 Hr)',
-			},
-			{
-				name: 'DD/MM/YYYY hh:mm A',
-				displayName: 'DD/MM/YYYY hh:mm A (12 Hr)',
-			},
-			{
-				name: 'MM/DD/YYYY hh:mm A',
-				displayName: 'MM/DD/YYYY hh:mm A (12 Hr)',
-			},
-			{
-				name: 'DD/MM/YYYY HH:mm:ss',
-				displayName: 'DD/MM/YYYY HH:mm:ss (24 Hr)',
-			},
-			{
-				name: 'MM/DD/YYYY HH:mm:ss',
-				displayName: 'MM/DD/YYYY HH:mm:ss (24 Hr)',
-			},
-			{
-				name: 'DD/MM/YYYY hh:mm:ss A',
-				displayName: 'DD/MM/YYYY hh:mm:ss A (12 Hr)',
-			},
-			{
-				name: 'MM/DD/YYYY hh:mm:ss A',
-				displayName: 'MM/DD/YYYY hh:mm:ss A (12 Hr)',
-			},
-		],
+		enumValues: DATE_FORMATS,
 	},
 
 	{
@@ -361,16 +323,44 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		],
 	},
 	{
+		name: 'hourIntervalFrom',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Hour Interval From (0-23)',
+		defaultValue: 0,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'hourInterval',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Hour Interval (0-23)',
+		defaultValue: 1,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'minuteIntervalFrom',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Minute Interval From (0-59)',
+		defaultValue: 0,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
 		name: 'minuteInterval',
 		schema: SCHEMA_NUM_COMP_PROP,
-		displayName: 'Minute Interval',
+		displayName: 'Minute Interval (0-59)',
 		defaultValue: 1,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'secondIntervalFrom',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Second Interval From (0-59)',
+		defaultValue: 0,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
 		name: 'secondInterval',
 		schema: SCHEMA_NUM_COMP_PROP,
-		displayName: 'Second Interval',
+		displayName: 'Second Interval (0-59)',
 		defaultValue: 1,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
@@ -380,7 +370,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Arrow Buttons Horizontal Placement',
 		description: 'Arrow buttons Placement Horizontal',
 		editor: ComponentPropertyEditor.ENUM,
-		defaultValue: '_center',
+		defaultValue: '_either',
 		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
 			{
@@ -394,9 +384,9 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				description: 'Arrow navigations button positioned Right',
 			},
 			{
-				name: '_center',
-				displayName: 'Center',
-				description: 'Arrow navigations button positioned Middle',
+				name: '_either',
+				displayName: 'Either Side',
+				description: 'Arrow navigations button positioned on either side',
 			},
 		],
 	},
@@ -521,6 +511,20 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		editor: ComponentPropertyEditor.ICON,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
+	{
+		name: 'leftArrowImage',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Left Arrow Image',
+		group: ComponentPropertyGroup.ADVANCED,
+		editor: ComponentPropertyEditor.IMAGE,
+	},
+	{
+		name: 'rightArrowImage',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Right Arrow Image',
+		group: ComponentPropertyGroup.ADVANCED,
+		editor: ComponentPropertyEditor.IMAGE,
+	},
 ];
 
 const stylePropertiesDefinition = {
@@ -532,6 +536,88 @@ const stylePropertiesDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	calendarHeader: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	calendarBodyContainer: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	calendarBody: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	leftArrow: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	rigthArrow: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	weekName: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	date: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	monthName: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	disabledDate: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	prevNextMonthDate: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	todayDate: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	selectedDate: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	weekendLowLightDate: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 	leftIcon: [
