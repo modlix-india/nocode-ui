@@ -251,13 +251,11 @@ export function FileBrowser({
 						alert('File size exceeds the limit');
 						return;
 					}
-					//console.log('filename ', file, file?.name);
 					const extension = file?.name?.split('.').pop()?.toLowerCase();
 					if (
 						restrictUploadType &&
 						!restrictUploadType.includes(extension ?? '')
 					) {
-						//console.log('file type not valid');
 						alert(
 							'File type not allowed, please upload only of type ' +
 								restrictUploadType,
