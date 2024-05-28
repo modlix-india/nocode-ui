@@ -24,7 +24,9 @@ export default function LinkStyle({ theme }: { theme: Map<string, Map<string, st
 		position: relative;
 	}
 
-	${PREFIX} ._icon {
+	${PREFIX} ._icon,
+	${PREFIX}._imageIcon,
+	${PREFIX}._activeImageIcon {
 		position: relative;
 	}
 
