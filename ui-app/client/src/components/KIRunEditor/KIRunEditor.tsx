@@ -1031,8 +1031,12 @@ function KIRunEditor(
 		containerContents = <div className="_error">{error?.message ?? error}</div>;
 	}
 
+	// Here it is an exception for the style properties, we add comp page editor when used standalone.
 	return (
-		<div className="comp compKIRunEditor" style={resolvedStyles?.comp ?? {}}>
+		<div
+			className={`comp compKIRunEditor ${!props.functionKey ? 'compPageEditor' : ''}`}
+			style={resolvedStyles?.comp ?? {}}
+		>
 			<HelperComponent context={props.context} definition={definition} />
 			<div className="_header">
 				<div className="_left">

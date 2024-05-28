@@ -67,6 +67,8 @@ function TextArea(props: ComponentProps) {
 			colorScheme,
 			onFocus,
 			onBlur,
+			showMandatoryAsterisk,
+			hideClearButton,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -282,7 +284,15 @@ function TextArea(props: ComponentProps) {
 			autoComplete={autoComplete}
 			autoFocus={autoFocus}
 			hasValidationCheck={validation?.length > 0}
+			hideClearContentIcon={hideClearButton}
 			inputType="TextArea"
+			showMandatoryAsterisk={
+				(validation ?? []).find(
+					(e: any) => e.type === undefined || e.type === 'MANDATORY',
+				) && showMandatoryAsterisk
+					? true
+					: false
+			}
 		/>
 	);
 }
@@ -359,15 +369,15 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'floatingLabel',
-			displayName: 'Floating Label',
-			description: 'Floating Label',
+			name: 'label',
+			displayName: 'Label',
+			description: 'Label',
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'noFloatLabel',
-			displayName: 'No Float Label',
-			description: 'No Float Label',
+			name: 'asterisk',
+			displayName: 'asterisk',
+			description: 'asterisk',
 			icon: 'fa-solid fa-box',
 		},
 		{

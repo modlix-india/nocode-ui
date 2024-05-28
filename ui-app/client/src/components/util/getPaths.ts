@@ -1,6 +1,7 @@
 import { ExpressionEvaluator, isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
 import {
 	ComponentDefinition,
+	ComponentMultiProperty,
 	ComponentProperty,
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
@@ -86,6 +87,7 @@ export function getPathsFromComponentProperties(
 		| {
 				[key: string]:
 					| ComponentProperty<any>
+					| ComponentMultiProperty<any>
 					| { [key: string]: ComponentProperty<any> }
 					| { [key: string]: Validation };
 		  }
@@ -116,7 +118,7 @@ export function getPathsFromComponentProperties(
 								paths.add(path.value);
 						}
 					} else {
-						const set = getPathsFrom(iprop, evaluatorMaps).values();
+						const set = getPathsFrom(iprop.property, evaluatorMaps).values();
 						let path: IteratorResult<string, any>;
 						while ((path = set.next()) !== undefined && !path.done)
 							paths.add(path.value);

@@ -17,6 +17,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Hide Grid',
 		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
 	},
 	{
 		...COMMON_COMPONENT_PROPERTIES.colorScheme,
@@ -37,7 +38,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		enumValues: [
 			{ name: 'regular', displayName: 'Regular (Line or Bar)' },
 			{ name: 'radial', displayName: 'Radial (Pie or Doughnut or Polar Area)' },
-			{ name: 'radar', displayName: 'Radar' },
+			{ name: 'radar', displayName: 'Radar (Circular or Polygon)' },
 			{ name: 'dot', displayName: 'Dot (Bubble or Scatter)' },
 			{ name: 'waffle', displayName: 'Waffle' },
 		],
@@ -57,9 +58,24 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.DATA,
 	},
 	{
+		name: 'dataSetStrokeColors',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Data Set Stroke Colors',
+		multiValued: true,
+		group: ComponentPropertyGroup.DATA,
+	},
+	{
 		name: 'dataColorsPath',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Data Colors Expr. in Object',
+		description: 'Use "Data." prefix to access data object in expression',
+		group: ComponentPropertyGroup.ADVANCED,
+		multiValued: true,
+	},
+	{
+		name: 'dataStrokeColorsPath',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Data Stroke Colors Expr. in Object',
 		description: 'Use "Data." prefix to access data object in expression',
 		group: ComponentPropertyGroup.ADVANCED,
 		multiValued: true,
@@ -97,11 +113,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'xAxisType',
 		schema: SCHEMA_STRING_COMP_PROP,
-		defaultValue: 'oridnal',
+		defaultValue: 'ordinal',
 		displayName: 'X Axis Type',
 		group: ComponentPropertyGroup.DATA,
 		enumValues: [
-			{ name: 'oridnal', displayName: 'Oridnal' },
+			{ name: 'ordinal', displayName: 'Ordinal' },
 			{ name: 'value', displayName: 'Value' },
 			{ name: 'time', displayName: 'Time' },
 			{ name: 'log', displayName: 'Logirthamic' },
@@ -113,12 +129,20 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		defaultValue: 'bottom',
 		displayName: 'X Axis Start Position',
-		group: ComponentPropertyGroup.DATA,
+		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
 			{ name: 'bottom', displayName: 'Bottom' },
 			{ name: 'top', displayName: 'Top' },
 			{ name: 'center', displayName: 'Center' },
+			{ name: 'y0', displayName: 'Y = 0' },
+			{ name: 'custom', displayName: 'Custom' },
 		],
+	},
+	{
+		name: 'xAxisStartCustomValue',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'X Axis Start Custom Value',
+		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
 		name: 'xAxisLabels',
@@ -129,9 +153,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	{
 		name: 'xAxisLabelsSort',
-		schema: SCHEMA_BOOL_COMP_PROP,
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Sort X Axis Labels',
 		group: ComponentPropertyGroup.DATA,
+		defaultValue: 'none',
+		enumValues: [
+			{ name: 'none', displayName: 'None' },
+			{ name: 'ascending', displayName: 'Ascending' },
+			{ name: 'descending', displayName: 'Descending' },
+		],
 	},
 	{
 		name: 'xAxisMin',
@@ -161,6 +191,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'xAxisReverse',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'X Axis Reverse',
+		defaultValue: false,
 		group: ComponentPropertyGroup.DATA,
 	},
 	{
@@ -168,25 +199,43 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Hide X Axis Ticks',
 		group: ComponentPropertyGroup.DATA,
+		defaultValue: false,
 	},
 	{
 		name: 'xAxisHideLabels',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Hide X Axis Labels',
 		group: ComponentPropertyGroup.DATA,
+		defaultValue: false,
 	},
 	{
-		name: 'xAxisDataPath',
+		name: 'xAxisDataSetPath',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'X Axis Data Expr. in Object',
 		description: 'Use "Data." prefix to access data object in expression',
 		group: ComponentPropertyGroup.DATA,
+		multiValued: true,
 	},
 	{
 		name: 'hideXAxis',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Hide X Axis',
-		group: ComponentPropertyGroup.DATA,
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
+	},
+	{
+		name: 'hideXAxisLine',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Hide X Axis Line',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
+	},
+	{
+		name: 'hideXLines',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Hide X Lines',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
 	},
 	{
 		name: 'xAxisTitle',
@@ -202,7 +251,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Y Axis Type',
 		group: ComponentPropertyGroup.DATA,
 		enumValues: [
-			{ name: 'oridnal', displayName: 'Oridnal' },
+			{ name: 'ordinal', displayName: 'Ordinal' },
 			{ name: 'value', displayName: 'Value' },
 			{ name: 'log', displayName: 'Logirthamic' },
 			{ name: 'derived', displayName: 'Derived' },
@@ -213,12 +262,20 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		defaultValue: 'left',
 		displayName: 'Y Axis Start Position',
-		group: ComponentPropertyGroup.DATA,
+		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
 			{ name: 'left', displayName: 'Left' },
 			{ name: 'right', displayName: 'Right' },
 			{ name: 'center', displayName: 'Center' },
+			{ name: 'x0', displayName: 'X = 0' },
+			{ name: 'custom', displayName: 'Custom' },
 		],
+	},
+	{
+		name: 'yAxisStartCustomValue',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Y Axsis Start Custom Value',
+		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
 		name: 'dataSetLabels',
@@ -227,17 +284,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		multiValued: true,
 	},
 	{
-		name: 'yAxisLabels',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Y Axis Labels for Ordinal Axis',
-		group: ComponentPropertyGroup.DATA,
-		multiValued: true,
-	},
-	{
 		name: 'yAxisLabelsSort',
-		schema: SCHEMA_BOOL_COMP_PROP,
+		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Sort Y Axis Labels for Ordinal Axis',
 		group: ComponentPropertyGroup.DATA,
+		defaultValue: 'none',
+		enumValues: [
+			{ name: 'none', displayName: 'None' },
+			{ name: 'ascending', displayName: 'Ascending' },
+			{ name: 'descending', displayName: 'Descending' },
+		],
 	},
 	{
 		name: 'yAxisMin',
@@ -267,6 +323,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'yAxisReverse',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Y Axis Reverse',
+		defaultValue: false,
 		group: ComponentPropertyGroup.DATA,
 	},
 	{
@@ -274,12 +331,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Hide Y Axis Ticks',
 		group: ComponentPropertyGroup.DATA,
+		defaultValue: false,
 	},
 	{
 		name: 'yAxisHideLabels',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Hide Y Axis Labels',
 		group: ComponentPropertyGroup.DATA,
+		defaultValue: false,
 	},
 	{
 		name: 'yAxisDataSetPath',
@@ -301,28 +360,26 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'yAxisDataSetStyle',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Y Axis Data Set Style',
+		displayName: 'Data Set Style',
 		description: 'Style for the data set, make sure the style is supported by the chart type.',
 		group: ComponentPropertyGroup.DATA,
 		multiValued: true,
 		enumValues: [
 			{ name: 'line', displayName: 'Line - Regular' },
-			{ name: 'dottedLine', displayName: 'Dotted Line - Regular' },
-			{ name: 'dashedLine', displayName: 'Dashed Line - Regular' },
-			{ name: 'longDashedLine', displayName: 'Long Dashed Line - Regular' },
-			{ name: 'steppedLine', displayName: 'Stepped Line - Regular' },
 			{ name: 'smoothLine', displayName: 'Smooth Line - Regular' },
-			{ name: 'smoothDottedLine', displayName: 'Smooth Dotted Line - Regular' },
-			{ name: 'smoothDashedLine', displayName: 'Smooth Dashed Line - Regular' },
-			{ name: 'smoothLongDashedLine', displayName: 'Smooth Long Dashed Line - Regular' },
+			{ name: 'steppedLineBefore', displayName: 'Stepped Line - Regular' },
+			{ name: 'steppedLineAfter', displayName: 'Stepped Line After  - Regular' },
+			{ name: 'steppedLineMiddle', displayName: 'Stepped Line Middle - Regular' },
 			{ name: 'bar', displayName: 'Bar - Regular' },
-			{ name: 'roundedBar', displayName: 'Rounded Bar - Regular' },
+			{ name: 'horizontalBar', displayName: 'Horizontal Bar - Regular' },
 			{ name: 'lollipop', displayName: 'Lollipop - Regular' },
+			{ name: 'dot', displayName: 'Bubble or Scatter - Regular' },
+
 			{ name: 'pie', displayName: 'Pie - Radial' },
 			{ name: 'doughnut', displayName: 'Doughnut - Radial' },
 			{ name: 'polarArea', displayName: 'Polar Area - Radial' },
 			{ name: 'radar', displayName: 'Radar - Radar' },
-			{ name: 'dot', displayName: 'Bubble or Scatter - Dot' },
+
 			{ name: 'waffle', displayName: 'Waffle - Waffle' },
 		],
 	},
@@ -330,7 +387,22 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'hideYAxis',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Hide Y Axis',
-		group: ComponentPropertyGroup.DATA,
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
+	},
+	{
+		name: 'hideYAxisLine',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Hide Y Axis Line',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
+	},
+	{
+		name: 'hideYLines',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Hide Y Lines',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
 	},
 	{
 		name: 'yAxisTitle',
@@ -372,7 +444,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'dataSetPointType',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Point Type',
-		group: ComponentPropertyGroup.BASIC,
+		group: ComponentPropertyGroup.ADVANCED,
 		multiValued: true,
 		defaultValue: ['circle'],
 		enumValues: [
@@ -426,24 +498,37 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'invertAxis',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Invert Axis',
+		defaultValue: false,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
 		name: 'animationTime',
 		schema: SCHEMA_NUM_COMP_PROP,
 		displayName: 'Animation Time (ms)',
+		defaultValue: 1000,
 		description:
 			'Animation Time in Milliseconds with values less than or equal to 0 for no animation',
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 
 	{
-		name: 'animationEasing',
+		name: 'animationTimingFunction',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Animation Easing',
+		displayName: 'Animation Timing Function',
 		group: ComponentPropertyGroup.ADVANCED,
-		defaultValue: 'linear',
-		enumValues: [{ name: 'linear', displayName: 'Linear' }],
+		defaultValue: 'easeLinear',
+		enumValues: [
+			{ name: 'easeLinear', displayName: 'Linear' },
+			{ name: 'easePoly', displayName: 'Poly' },
+			{ name: 'easeQuad', displayName: 'Quad' },
+			{ name: 'easeCubic', displayName: 'Cubic' },
+			{ name: 'easeSin', displayName: 'Sin' },
+			{ name: 'easeExp', displayName: 'Exp' },
+			{ name: 'easeCircle', displayName: 'Circle' },
+			{ name: 'easeElastic', displayName: 'Elastic' },
+			{ name: 'easeBack', displayName: 'Back' },
+			{ name: 'easeBounce', displayName: 'Bounce' },
+		],
 	},
 
 	{
@@ -507,6 +592,56 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 
+	{
+		name: 'radarType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Radar Type',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 'polygon',
+		enumValues: [
+			{ name: 'polygon', displayName: 'Polygon' },
+			{ name: 'circular', displayName: 'Circular' },
+		],
+	},
+
+	{
+		name: 'radialType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Radial Type',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 'stack',
+		enumValues: [
+			{ name: 'stack', displayName: 'Stacked' },
+			{ name: 'group', displayName: 'Grouped' },
+		],
+	},
+	{
+		name: 'padding',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Padding (px)',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 5,
+	},
+	{
+		name: 'focusDataSetOnHover',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Focus Data Set on Hover',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
+	},
+
+	{
+		name: 'gradientSpace',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Gradient Space',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 'objectBoundingBox',
+		enumValues: [
+			{ name: 'objectBoundingBox', displayName: 'Each Object' },
+			{ name: 'userSpaceOnUse', displayName: 'Entire Chart' },
+		],
+	},
+
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
@@ -518,24 +653,63 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 	],
 	xAxisLabel: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
 	],
 	yAxisLabel: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
 	],
 	legendLabel: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
+	],
+	legendRectangle: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
+	],
+	tooltip: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 	],
-	tooltip: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+	horizontalLines: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
+	],
+	verticalLines: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
+	],
+	xAxisTitle: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
+	],
+	yAxisTitle: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
+	],
+	bar: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
+	],
+	xAxis: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
+	],
+	yAxis: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
 	],
 };
 

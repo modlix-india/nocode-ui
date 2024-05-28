@@ -13,7 +13,10 @@ export default function ProgressBarStyles({ theme }: { theme: Map<string, Map<st
   		width: 100%;
 	}
 	${PREFIX} ._hidden {
-		display : none;
+		visibility: hidden;
+		width: 100%;
+		position: absolute;
+		height: 100%;
 	}
 
 	${PREFIX} ._fileUploadText {
