@@ -29,7 +29,13 @@ export function toFormat(
 ): string | number | undefined {
 	if (!date) return undefined;
 
-	const dateObject = fromFormat === 'Date' ? (date as Date) : getValidDate(date, fromFormat);
+	const dateObject =
+		fromFormat === 'Date'
+			? (date as Date)
+			: getValidDate(
+					typeof date === 'string' ? (date as string) : (date as number),
+					fromFormat,
+			  );
 	if (!dateObject) return undefined;
 
 	if (toFormat === 'x') return dateObject.getTime();
@@ -46,18 +52,23 @@ export function toFormat(
 	formattedDate = formattedDate.replace('MM', month.toString().padStart(2, '0'));
 	formattedDate = formattedDate.replace('DD', day.toString().padStart(2, '0'));
 	formattedDate = formattedDate.replace('HH', hour.toString().padStart(2, '0'));
-	formattedDate = formattedDate.replace(
-		'hh',
-		hour > 12 ? (hour - 12).toString().padStart(2, '0') : hour.toString().padStart(2, '0'),
-	);
+	let smallhh = hour > 12 ? hour - 12 : hour;
+	if (smallhh === 0) smallhh = 12;
+	formattedDate = formattedDate.replace('hh', smallhh.toString().padStart(2, '0'));
 	formattedDate = formattedDate.replace('mm', minute.toString().padStart(2, '0'));
 	formattedDate = formattedDate.replace('ss', second.toString().padStart(2, '0'));
 	formattedDate = formattedDate.replace('A', hour < 12 ? 'AM' : 'PM');
 
+	if (hour == 12) debugger;
+	console.log(hour, smallhh, formattedDate, dateObject);
+
 	return formattedDate;
 }
 
-export function getValidDate(inDate: string | number, format: string): Date | undefined {
+export function getValidDate(
+	inDate: string | number | undefined,
+	format: string,
+): Date | undefined {
 	if (!inDate) return undefined;
 
 	if (format === 'x')
@@ -101,6 +112,7 @@ export function getValidDate(inDate: string | number, format: string): Date | un
 			if (hour < 1 || hour > 12) return undefined;
 			if (!ampmPart) return undefined;
 			if (ampmPart.toUpperCase() === 'PM') hour += 12;
+			else if (hour == 12) hour = 0;
 			if (hour === 24) hour = 0;
 		} else if (timeFormat.startsWith('HH')) {
 			if (hour < 0 || hour > 23) return undefined;

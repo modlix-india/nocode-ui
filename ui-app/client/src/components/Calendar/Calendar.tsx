@@ -120,6 +120,7 @@ function CalendarComponent(props: ComponentProps) {
 	const [thatDate, setThatDate] = useState<string | undefined>();
 
 	const [showDropdown, setShowDropdown] = useState(false);
+	const [mouseIsInside, setMouseIsInside] = useState(false);
 	const [focus, setFocus] = useState(false);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [validationMessages, setValidationMessages] = React.useState<Array<string>>([]);
@@ -324,6 +325,8 @@ function CalendarComponent(props: ComponentProps) {
 	};
 
 	const handleBlur = (e: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+		if (mouseIsInside) return;
+
 		setShowDropdown(false);
 		setFocus(false);
 
@@ -424,9 +427,9 @@ function CalendarComponent(props: ComponentProps) {
 				displayDateFormat={displayDateFormat}
 				multipleDateSeparator={multipleDateSeparator}
 				storageFormat={storageFormat}
-				onChange={(date: string) => {
-					setThisDate(date);
-					handleChange({ target: { value: date } } as any);
+				onChange={date => {
+					setThisDate(date?.toString());
+					handleChange({ target: { value: date ?? '' } } as any);
 				}}
 			/>
 		) : undefined;
@@ -471,7 +474,11 @@ function CalendarComponent(props: ComponentProps) {
 			leftIcon={leftIcon}
 			showDropdown={showDropdown}
 			handleChange={disableTextEntry ? undefined : handleChange}
-			onMouseLeave={closeOnMouseLeave ? handleClose : undefined}
+			onMouseEnter={() => setMouseIsInside(true)}
+			onMouseLeave={() => {
+				setMouseIsInside(false);
+				if (closeOnMouseLeave) handleClose();
+			}}
 			showMandatoryAsterisk={
 				showMandatoryAsterisk &&
 				(validation ?? []).find((e: any) => e.type === undefined || e.type === 'MANDATORY')
