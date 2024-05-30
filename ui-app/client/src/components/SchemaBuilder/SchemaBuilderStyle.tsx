@@ -113,6 +113,48 @@ export default function SchemaBuilderStyle({ theme }: { theme: Map<string, Map<s
 		border-top: 1px solid #eee;
 		border-left: 1px solid #eee;
 	}
+
+	${PREFIX} ._popupBackground {
+		background: #0004;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 100vw;
+		height: 100vh;
+		position: fixed;
+        z-index: 6;
+		left: 0px;
+		top: 0px;
+	}
+
+	${PREFIX} ._popupBackground ._popupContainer {
+		background-color: #fff;
+		padding: 15px;
+		border-radius: 3px;
+		max-width: 60vw;
+		display: flex;
+		flex-direction: column;
+		gap: 15px;
+	}
+
+	${PREFIX} ._popupBackground ._popupButtons {
+		display: flex;
+		gap: 10px;
+		justify-content: end;
+	}
+
+	${PREFIX} ._popupBackground ._popupContainer ._jsonEditorContainer{
+		border: 1px solid #eee;
+		border-radius: 4px;
+		padding: 2px;
+		width:400px;
+		height: 400px;
+		transition: width 0s, height 0s;
+	}
+
+	${PREFIX} ._popupBackground ._popupContainer ._jsonEditorContainer > * {
+		transition: width 0s, height 0s;
+	}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="SchemaBuilderCss">{css}</style>;
