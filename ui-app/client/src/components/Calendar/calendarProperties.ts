@@ -289,6 +289,28 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		],
 	},
 	{
+		name: 'calendarDesignType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Calendar Design Type',
+		description: 'Calendar Design Type',
+		defaultValue: '_defaultCalendar',
+		group: ComponentPropertyGroup.ADVANCED,
+		enumValues: [
+			{
+				name: '_defaultCalendar',
+				displayName: 'Default Calendar',
+			},
+			{
+				name: '_bigCalendar',
+				displayName: 'Big Calendar',
+			},
+			{
+				name: '_smallCalendar',
+				displayName: 'Small Calendar',
+			},
+		],
+	},
+	{
 		name: 'timeDesignType',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Time Type',
@@ -491,7 +513,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'multipleDateSeparator',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Multiple Date Separator',
-		description: 'Separator for multiple dates',
+		description:
+			'Separator for multiple dates when displayed in the text box. But stored as an array',
 		defaultValue: ',',
 		group: ComponentPropertyGroup.ADVANCED,
 	},
@@ -499,10 +522,18 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'disableTextEntry',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Disable Text Entry',
-		description: 'Disable Text Entry',
 		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
 	},
 	COMMON_COMPONENT_PROPERTIES.onChange,
+	{
+		name: 'onMonthChange',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Month Change',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered when the month is changed in the calendar.',
+		group: ComponentPropertyGroup.EVENTS,
+	},
 	{
 		name: 'leftIcon',
 		schema: SCHEMA_STRING_COMP_PROP,
@@ -524,6 +555,65 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Right Arrow Image',
 		group: ComponentPropertyGroup.ADVANCED,
 		editor: ComponentPropertyEditor.IMAGE,
+	},
+	{
+		name: 'monthLabels',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Month Labels',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 'long',
+		enumValues: [
+			{ name: 'long', displayName: 'Long (Full)' },
+			{ name: 'short', displayName: 'Short (3 Letters)' },
+			{ name: 'narrow', displayName: 'Narrow (1 Letter)' },
+		],
+	},
+	{
+		name: 'weekDayLabels',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Week Day Labels',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 'narrow',
+		enumValues: [
+			{ name: 'long', displayName: 'Long (Full)' },
+			{ name: 'short', displayName: 'Short (3 Letters)' },
+			{ name: 'narrow', displayName: 'Narrow (1 Letter)' },
+		],
+	},
+	{
+		name: 'language',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Language',
+		description:
+			'Language for the calendar, when not set it takes the system language. Format to be used is BCP 47 language tag',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+
+	{
+		name: 'dayEvents',
+		schema: SCHEMA_ANY_COMP_PROP,
+		displayName: 'Day Events',
+		description:
+			'List or object of events for the day to mark the day with events and provide to the user',
+		group: ComponentPropertyGroup.DATA,
+	},
+
+	{
+		name: 'dayEventsDateFormat',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Day Events Date Format',
+		description:
+			'Date Format to display the day events when not provided it takes the storage format or display format in that order',
+		group: ComponentPropertyGroup.DATA,
+		enumValues: DATE_FORMATS,
+	},
+
+	{
+		name: 'showMonthSelectionInHeader',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Month Selection In Header',
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
 	},
 ];
 

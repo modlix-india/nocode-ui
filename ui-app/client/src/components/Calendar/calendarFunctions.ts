@@ -59,9 +59,6 @@ export function toFormat(
 	formattedDate = formattedDate.replace('ss', second.toString().padStart(2, '0'));
 	formattedDate = formattedDate.replace('A', hour < 12 ? 'AM' : 'PM');
 
-	if (hour == 12) debugger;
-	console.log(hour, smallhh, formattedDate, dateObject);
-
 	return formattedDate;
 }
 

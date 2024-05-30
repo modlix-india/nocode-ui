@@ -48,7 +48,7 @@ import { CalendarMap } from './CalendarMap';
 function CalendarComponent(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const {
-		definition: { bindingPath, bindingPath2 },
+		definition: { bindingPath, bindingPath2, bindingPath3 },
 		locationHistory,
 		context,
 		definition,
@@ -63,19 +63,8 @@ function CalendarComponent(props: ComponentProps) {
 			noFloat,
 			label,
 			closeOnMouseLeave,
-			onChange,
-			leftIcon,
 			minDate,
 			maxDate,
-			disableDates,
-			disableTemporalRange,
-			disableDays,
-			hourIntervalFrom,
-			hourInterval,
-			secondIntervalFrom,
-			secondInterval,
-			minuteIntervalFrom,
-			minuteInterval,
 			displayDateFormat,
 			storageFormat,
 			validation,
@@ -84,8 +73,18 @@ function CalendarComponent(props: ComponentProps) {
 			colorScheme,
 			dateType,
 			numberOfDaysInRange,
+			disableDates,
+			disableTemporalRange,
+			disableDays,
 			componentDesignType,
 			calendarDesignType,
+			timeDesignType,
+			hourIntervalFrom,
+			hourInterval,
+			minuteIntervalFrom,
+			minuteInterval,
+			secondIntervalFrom,
+			secondInterval,
 			arrowButtonsHorizontalPlacement,
 			calendarFormat,
 			showWeekNumber,
@@ -93,10 +92,20 @@ function CalendarComponent(props: ComponentProps) {
 			weekStartsOn,
 			lowLightWeekEnds,
 			showPreviousNextMonthDate,
-			timeDesignType,
 			isMultiSelect,
 			multipleDateSeparator,
 			disableTextEntry,
+			onChange,
+			onMonthChange,
+			leftIcon,
+			leftArrowImage,
+			rightArrowImage,
+			monthLabels,
+			weekDayLabels,
+			language,
+			dayEvents,
+			dayEventsDateFormat,
+			showMonthSelectionInHeader,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -108,11 +117,26 @@ function CalendarComponent(props: ComponentProps) {
 	);
 
 	const changeEvent = onChange ? props.pageDefinition.eventFunctions?.[onChange] : undefined;
+	const monthChangeEnvet = onMonthChange
+		? props.pageDefinition.eventFunctions?.[onMonthChange]
+		: undefined;
 
-	const bindingPathPath = getPathFromLocation(bindingPath!, locationHistory, pageExtractor);
-	const bindingPathPath1 = getPathFromLocation(bindingPath2!, locationHistory, pageExtractor);
+	const bindingPathPath1 = getPathFromLocation(bindingPath!, locationHistory, pageExtractor);
+	const bindingPathPath2 = getPathFromLocation(bindingPath2!, locationHistory, pageExtractor);
+	const bindingPathPath3 = getPathFromLocation(bindingPath3!, locationHistory, pageExtractor);
 
-	const isRangeType = !!bindingPathPath1;
+	useEffect(() => {
+		if (!bindingPathPath3) return;
+		addListenerAndCallImmediately(
+			(_, value) => {
+				setBrowsingMonthYear(value);
+			},
+			pageExtractor,
+			bindingPathPath3,
+		);
+	}, [bindingPathPath3]);
+
+	const isRangeType = !!bindingPathPath2;
 
 	// This date is from date if the date type is startDate and to date if the date type is endDate
 	const [thisDate, setThisDate] = useState<string | undefined>();
@@ -147,8 +171,18 @@ function CalendarComponent(props: ComponentProps) {
 		[focus, stylePropertiesWithPseudoStates, readOnly],
 	);
 
+	const disabledComputedStyles = useMemo(
+		() =>
+			processComponentStylePseudoClasses(
+				props.pageDefinition,
+				{ disabled: true },
+				stylePropertiesWithPseudoStates,
+			),
+		[focus, stylePropertiesWithPseudoStates, readOnly],
+	);
+
 	useEffect(() => {
-		if (!bindingPathPath) return;
+		if (!bindingPathPath1) return;
 		addListenerAndCallImmediately(
 			(_, value) => {
 				const setFunction = dateType === 'startDate' ? setThisDate : setThatDate;
@@ -171,12 +205,12 @@ function CalendarComponent(props: ComponentProps) {
 				}
 			},
 			pageExtractor,
-			bindingPathPath,
+			bindingPathPath1,
 		);
-	}, [bindingPathPath, setThisDate, storageFormat, displayDateFormat, setThatDate, dateType]);
+	}, [bindingPathPath1, setThisDate, storageFormat, displayDateFormat, setThatDate, dateType]);
 
 	useEffect(() => {
-		if (!bindingPathPath1) return;
+		if (!bindingPathPath2) return;
 		addListenerAndCallImmediately(
 			(_, value) => {
 				const setFunction = dateType === 'startDate' ? setThatDate : setThisDate;
@@ -199,9 +233,9 @@ function CalendarComponent(props: ComponentProps) {
 				}
 			},
 			pageExtractor,
-			bindingPathPath1,
+			bindingPathPath2,
 		);
-	}, [bindingPathPath1, setThisDate, storageFormat, displayDateFormat, setThatDate, dateType]);
+	}, [bindingPathPath2, setThisDate, storageFormat, displayDateFormat, setThatDate, dateType]);
 
 	const validationProps = useMemo(() => {
 		return {
@@ -242,7 +276,7 @@ function CalendarComponent(props: ComponentProps) {
 	]);
 
 	const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-		let currentBindingPath = dateType === 'startDate' ? bindingPathPath : bindingPathPath1;
+		let currentBindingPath = dateType === 'startDate' ? bindingPathPath1 : bindingPathPath2;
 		if (!currentBindingPath) return;
 
 		const value = e.target.value;
@@ -256,7 +290,7 @@ function CalendarComponent(props: ComponentProps) {
 				);
 			else return;
 		} else {
-			if (isMultiSelect || bindingPathPath1) {
+			if (isMultiSelect || bindingPathPath2) {
 				const values = value.split(multipleDateSeparator);
 				const dates = values
 					.map(e => e.trim())
@@ -284,13 +318,13 @@ function CalendarComponent(props: ComponentProps) {
 						);
 					} else if (dates.length > 1) {
 						validateRangesAndSetData(
-							bindingPathPath,
+							bindingPathPath1,
 							dates[0],
 							context.pageName,
 							validationProps,
 						);
 						validateRangesAndSetData(
-							bindingPathPath1,
+							bindingPathPath2,
 							dates[1],
 							context.pageName,
 							validationProps,
@@ -330,7 +364,7 @@ function CalendarComponent(props: ComponentProps) {
 		setShowDropdown(false);
 		setFocus(false);
 
-		if (disableTextEntry) return;
+		if (disableTextEntry || readOnly) return;
 
 		const storable = toFormat(
 			e.target.value,
@@ -340,7 +374,7 @@ function CalendarComponent(props: ComponentProps) {
 
 		if (thisDate !== storable || storable === undefined) {
 			validateRangesAndSetData(
-				dateType === 'endDate' ? bindingPathPath1 : bindingPathPath,
+				dateType === 'endDate' ? bindingPathPath2 : bindingPathPath1,
 				storable,
 				context.pageName,
 				validationProps,
@@ -395,9 +429,9 @@ function CalendarComponent(props: ComponentProps) {
 	const calendar =
 		componentDesignType === 'fullCalendar' || showDropdown ? (
 			<CalendarMap
-				date={thisDate}
+				thisDate={thisDate}
 				isRangeType={isRangeType}
-				endDate={thatDate}
+				thatDate={thatDate}
 				dateType={dateType}
 				componentDesignType={componentDesignType}
 				calendarDesignType={calendarDesignType}
@@ -423,20 +457,47 @@ function CalendarComponent(props: ComponentProps) {
 				minuteIntervalFrom={minuteIntervalFrom}
 				minuteInterval={minuteInterval}
 				browsingMonthYear={browsingMonthYear}
-				onBrowsingMonthYearChange={setBrowsingMonthYear}
+				onBrowsingMonthYearChange={async my => {
+					setBrowsingMonthYear(my);
+					if (bindingPathPath3) setData(bindingPathPath3, my, context.pageName);
+					if (!monthChangeEnvet) return;
+					await runEvent(
+						monthChangeEnvet,
+						key,
+						context.pageName,
+						props.locationHistory,
+						props.pageDefinition,
+					);
+				}}
 				displayDateFormat={displayDateFormat}
 				multipleDateSeparator={multipleDateSeparator}
 				storageFormat={storageFormat}
 				onChange={date => {
+					if (readOnly) return;
 					setThisDate(date?.toString());
 					handleChange({ target: { value: date ?? '' } } as any);
 				}}
+				monthLabels={monthLabels}
+				weekDayLabels={weekDayLabels}
+				styles={computedStyles}
+				hoverStyles={hoverComputedStyles}
+				disabledStyles={disabledComputedStyles}
+				language={language}
+				dayEvents={dayEvents}
+				dayEventsDateFormat={dayEventsDateFormat}
+				showMonthSelectionInHeader={showMonthSelectionInHeader}
+				leftArrowImage={leftArrowImage}
+				rightArrowImage={rightArrowImage}
+				readOnly={readOnly}
 			/>
 		) : undefined;
 
 	if (componentDesignType === 'fullCalendar') {
 		return (
-			<div className="comp compCalendar fullCalendar" style={computedStyles?.comp ?? {}}>
+			<div
+				className={`comp compCalendar fullCalendar ${calendarDesignType}`}
+				style={computedStyles?.comp ?? {}}
+			>
 				<HelperComponent context={context} definition={definition} />
 				{calendar}
 			</div>
@@ -446,7 +507,7 @@ function CalendarComponent(props: ComponentProps) {
 	return (
 		<CommonInputText
 			id={key}
-			cssPrefix="comp compCalendar"
+			cssPrefix={`comp compCalendar ${calendarDesignType}`}
 			noFloat={noFloat}
 			readOnly={readOnly}
 			value={thisDate ?? ''}
@@ -473,7 +534,7 @@ function CalendarComponent(props: ComponentProps) {
 			colorScheme={colorScheme}
 			leftIcon={leftIcon}
 			showDropdown={showDropdown}
-			handleChange={disableTextEntry ? undefined : handleChange}
+			handleChange={disableTextEntry || readOnly ? undefined : handleChange}
 			onMouseEnter={() => setMouseIsInside(true)}
 			onMouseLeave={() => {
 				setMouseIsInside(false);
@@ -510,9 +571,11 @@ const component: Component = {
 	properties: propertiesDefinition,
 	stylePseudoStates: ['hover', 'focus', 'disabled'],
 	styleProperties: stylePropertiesDefinition,
+	allowedChildrenType: new Map<string, number>([['', -1]]),
 	bindingPaths: {
 		bindingPath: { name: 'Start Date Binding' },
 		bindingPath2: { name: 'End Date Binding' },
+		bindingPath3: { name: 'Browsing month-year (mm-yyyy) Binding ' },
 	},
 	defaultTemplate: {
 		key: '',
