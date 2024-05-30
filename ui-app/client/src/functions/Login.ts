@@ -71,6 +71,12 @@ export class Login extends AbstractFunction {
 
 			setData('Store.auth', response.data);
 			setData('LocalStore.AuthToken', response.data?.accessToken, undefined, true);
+			setData(
+				'LocalStore.AuthTokenExpiry',
+				response.data?.accessTokenExpiryAt,
+				undefined,
+				true,
+			);
 
 			setData('Store.pageDefinition', {});
 			setData('Store.messages', []);
