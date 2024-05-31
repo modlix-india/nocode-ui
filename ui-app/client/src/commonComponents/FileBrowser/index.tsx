@@ -57,7 +57,7 @@ interface FileBrowserProps {
 	restrictNavigationToTopLevel?: boolean;
 	startLocation?: string;
 	fileUploadSizeLimit?: number;
-	restrictUploadType?: string;
+	restrictUploadType?: string[];
 	restrictSelectionType?: string[];
 	selectionType?: string;
 	hideUploadFile?: boolean;
@@ -155,7 +155,6 @@ export function FileBrowser({
 	const [fileSelection, setFileSelection] = useState<any>();
 	const [somethingChanged, setSomethingChanged] = useState(Date.now());
 	const [deleteObject, setDeleteObject] = useState<any>();
-
 	const setPathAndClearFilter = useCallback(
 		(v: string) => {
 			setPath(v);
@@ -252,11 +251,10 @@ export function FileBrowser({
 						alert('File size exceeds the limit');
 						return;
 					}
-
-					const extension = file.name.split('.').pop()?.toLowerCase();
+					const extension = file?.name?.split('.').pop()?.toLowerCase();
 					if (
 						restrictUploadType &&
-						!restrictUploadType.split(',').includes(extension ?? '')
+						!restrictUploadType.includes(extension ?? '')
 					) {
 						alert(
 							'File type not allowed, please upload only of type ' +
@@ -739,7 +737,6 @@ function isSelectable(
 
 	if (selectionType === '_files' && file.directory) return false;
 	else if (selectionType === '_folders' && !file.directory) return false;
-
 	return true;
 }
 
