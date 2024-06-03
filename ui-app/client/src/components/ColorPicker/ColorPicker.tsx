@@ -1,5 +1,5 @@
 import { isNullValue } from '@fincity/kirun-js';
-import React, { CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
 import CommonInputText from '../../commonComponents/CommonInputText';
 import {
 	PageStoreExtractor,
@@ -12,6 +12,7 @@ import { Component, ComponentPropertyDefinition, ComponentProps } from '../../ty
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { validate } from '../../util/validationProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { IconHelper } from '../util/IconHelper';
 import {
 	HSV_HSL,
@@ -25,10 +26,9 @@ import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { flattenUUID } from '../util/uuid';
 import ColorPickerStyle from './ColorPickerStyle';
+import { Dropdown } from './DropdownSubComponent';
 import { propertiesDefinition, stylePropertiesDefinition } from './colorPickerProperties';
 import { styleDefaults } from './colorPickerStyleProperties';
-import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
-import { Dropdown } from './DropdownSubComponent';
 
 enum ColorType {
 	BACKGROUND_COLORS = 'Backgrounds',
@@ -668,7 +668,7 @@ function ColorPickerComponent(props: ComponentProps) {
 		  }
 		: { background: defaultColor };
 
-	const [timeoutHandle, setTimeoutHandle] = useState<NodeJS.Timeout | undefined>(undefined);
+	const [timeoutHandle, setTimeoutHandle] = useState<number | undefined>(undefined);
 
 	const onBlur = () => {
 		setShowColorPicker(false);

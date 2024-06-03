@@ -789,24 +789,24 @@ function PageEditor(props: ComponentProps) {
 						setClickedComponent={setGenerateFormOnComponentKey}
 					/>
 				)}
+				<IssuePopup
+					issue={issue}
+					personalizationPath={personalizationPath}
+					pageExtractor={pageExtractor}
+					onClearIssue={() => setIssue(undefined)}
+				/>
+				<ContextMenu
+					menuDetails={contextMenu}
+					personalizationPath={personalizationPath}
+					pageExtractor={pageExtractor}
+					onCloseContextmenu={() => {
+						setContextMenu(undefined);
+					}}
+					pageOperations={operations}
+					formStorageUrl={formStorageUrl}
+					setClickedComponent={setGenerateFormOnComponentKey}
+				/>
 			</div>
-			<IssuePopup
-				issue={issue}
-				personalizationPath={personalizationPath}
-				pageExtractor={pageExtractor}
-				onClearIssue={() => setIssue(undefined)}
-			/>
-			<ContextMenu
-				menuDetails={contextMenu}
-				personalizationPath={personalizationPath}
-				pageExtractor={pageExtractor}
-				onCloseContextmenu={() => {
-					setContextMenu(undefined);
-				}}
-				pageOperations={operations}
-				formStorageUrl={formStorageUrl}
-				setClickedComponent={setGenerateFormOnComponentKey}
-			/>
 		</>
 	);
 }

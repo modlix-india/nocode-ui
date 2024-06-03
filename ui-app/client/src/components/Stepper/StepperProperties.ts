@@ -168,6 +168,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 		],
 	},
+	{
+		name: 'onClick',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Click Event',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered when clicked.',
+		group: ComponentPropertyGroup.EVENTS,
+	},
 	COMMON_COMPONENT_PROPERTIES.colorScheme,
 
 	COMMON_COMPONENT_PROPERTIES.visibility,

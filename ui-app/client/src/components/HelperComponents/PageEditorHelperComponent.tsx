@@ -62,7 +62,7 @@ export function PageEditorHelperComponent({
 		width: 'calc( 100% + 0px)',
 		top: '0px',
 		left: '0px',
-		// zIndex: '6',
+		zIndex: '6',
 		minWidth: '10px',
 		opacity: '0',
 		boxSizing: 'border-box',

@@ -782,17 +782,6 @@ export default function FillerValueEditorStyle({
 		}
 
 		${PREFIX} ._colorPickerBody {
-			position: fixed;
-			background-color: #FFF;
-			z-index: 2;
-			box-shadow: 0px 1px 4px 0px #00000026;
-			border-radius: 6px;
-			padding: 10px;
-			min-height: 250px;
-			width: 250px;
-			display: flex;
-			flex-direction: column;
-			gap: 10px;
 			margin-left: 0px;
 		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);

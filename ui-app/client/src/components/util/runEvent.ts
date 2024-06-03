@@ -48,6 +48,7 @@ export const runEvent = async (
 	pageDefinition?: PageDefinition,
 	args?: Map<string, any>,
 ) => {
+	window.lastInteracted = Date.now();
 	const isRunningPath = `Store.functionExecutions.${page}.${flattenUUID(key)}.isRunning`;
 	try {
 		const def: FunctionDefinition = FunctionDefinition.from(functionDefinition);

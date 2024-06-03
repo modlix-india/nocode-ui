@@ -184,24 +184,26 @@ function FileUpload(props: ComponentProps) {
 		);
 	}, [bindingPathPath]);
 
-	const filesToBase64 = async (files: any, isMultiple: boolean) => {
+	const filesToBase64 = async (files: any, withMetadata: boolean) => {
 		let stringFiles = [];
 		if (isMultiple) {
 			if (!files.length) return;
 			for (let i = 0; i < files.length; i++) {
-				let str = await binaryToBase64Encode(files[i]);
+				let str = await binaryToBase64Encode(files[i], withMetadata);
 				stringFiles.push(str);
 			}
 		} else {
-			stringFiles[0] = await binaryToBase64Encode(files[0]);
+			stringFiles[0] = await binaryToBase64Encode(files[0], withMetadata);
 		}
 
 		return isMultiple ? [...stringFiles] : stringFiles[0];
 	};
 
 	const setFiles = async (files: FileList | null) => {
+
+		if (!files?.length) return;
+
 		if (uploadType === 'FILE_OBJECT') {
-			if (files)
 				setData(
 					bindingPathPath!,
 					isMultiple ? Array.from(files) : files[0],
@@ -210,10 +212,8 @@ function FileUpload(props: ComponentProps) {
 			return;
 		}
 
-		if (!files?.length || isMultiple) return;
-
-		if (uploadType === 'BINARY_TO_BASE_64') {
-			const fileObjects = await filesToBase64(files, isMultiple);
+		if (uploadType.startsWith('BINARY_TO_BASE_64')) {
+			const fileObjects = await filesToBase64(files , uploadType != 'BINARY_TO_BASE_64' );
 			setData(bindingPathPath!, fileObjects, context?.pageName);
 			return;
 		}

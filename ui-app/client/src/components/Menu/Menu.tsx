@@ -40,6 +40,8 @@ function Menu(props: ComponentProps) {
 			caretIconClose,
 			caretIconOpen,
 			icon,
+			imageIcon,
+			activeImageIcon,
 			isMenuOpen,
 			onlyIconMenu,
 			onMenuClose,
@@ -64,6 +66,7 @@ function Menu(props: ComponentProps) {
 	const [isMenuActive, setIsMenuActive] = React.useState(false);
 	const { pathname } = useLocation();
 	const [containerHover, setContainerHover] = useState(false);
+	const [isHovered, setIsHovered] = useState(false);
 
 	React.useEffect(() => {
 		if (!pathsActiveFor?.length) return;
@@ -130,8 +133,20 @@ function Menu(props: ComponentProps) {
 		<i className={`_icon ${icon}`}>
 			<SubHelperComponent definition={definition} subComponentName="icon" />
 		</i>
+	) : imageIcon && !isHovered && !isMenuActive ? (
+		<>
+			<img className={`_imageIcon ${imageIcon}`} src={imageIcon} alt="imageIcon" />
+			<SubHelperComponent definition={definition} subComponentName="imageIcon" />
+		</>
 	) : (
-		<></>
+		<>
+			<img
+				className={`_activeImageIcon ${activeImageIcon}`}
+				src={activeImageIcon}
+				alt="activeImageIcon"
+			/>
+			<SubHelperComponent definition={definition} subComponentName="activeImageIcon" />
+		</>
 	);
 
 	const menuToggle = (e: MouseEvent<HTMLElement>) => {
@@ -211,6 +226,31 @@ function Menu(props: ComponentProps) {
 			)}
 
 			{processStyleObjectToCSS(
+				regularStyle?.imageIcon,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme} > ._imageIcon`,
+			)}
+			{processStyleObjectToCSS(
+				visitedStyle?.imageIcon,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:visited > ._imageIcon`,
+			)}
+			{processStyleObjectToCSS(
+				hoverStyle?.imageIcon,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover > ._imageIcon, .comp.compMenu._${styleKey}menu_css._isActive.${menuDesignSelectionType}.${menuColorScheme} > ._imageIcon`,
+			)}
+			{processStyleObjectToCSS(
+				regularStyle?.activeImageIcon,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme} > ._activeImageIcon`,
+			)}
+			{processStyleObjectToCSS(
+				visitedStyle?.activeImageIcon,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:visited > ._activeImageIcon`,
+			)}
+			{processStyleObjectToCSS(
+				hoverStyle?.activeImageIcon,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover > ._activeImageIcon, .comp.compMenu._${styleKey}menu_css._isActive.${menuDesignSelectionType}.${menuColorScheme} > ._activeImageIcon`,
+			)}
+
+			{processStyleObjectToCSS(
 				regularStyle?.caretIcon,
 				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme} > ._caretIcon`,
 			)}
@@ -257,6 +297,8 @@ function Menu(props: ComponentProps) {
 				} ${readOnly ? '_disabled' : ''} _level${context.menuLevel ?? 0}`}
 				href={readOnly ? 'javascript:void(0)' : resolvedLink}
 				target={target}
+				onMouseEnter={() => setIsHovered(true)}
+				onMouseLeave={() => setIsHovered(false)}
 				onClick={e => {
 					if ((!target || target === '_self') && linkPath) {
 						e.stopPropagation();
@@ -368,6 +410,18 @@ const component: Component = {
 			name: 'icon',
 			displayName: 'Icon',
 			description: 'Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'imageIcon',
+			displayName: 'ImageIcon',
+			description: 'ImageIcon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'activeImageIcon',
+			displayName: 'ActiveImageIcon',
+			description: 'ActiveImageIcon',
 			icon: 'fa-solid fa-box',
 		},
 		{

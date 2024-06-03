@@ -1,17 +1,15 @@
+import { isNullValue } from '@fincity/kirun-js';
 import React, { CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
+import { Dropdown } from '../components/PageEditor/editors/stylePropertyValueEditors/simpleEditors/Dropdown';
 import {
-	HSL_RGB,
 	HSV_HSL,
 	HSV_HexString,
 	HSV_RGB,
 	HSV_RGBAString,
-	RGB_HSL,
 	stringRGBHSL_HSVA,
-} from '../../../../util/colorUtil';
-import { isNullValue } from '@fincity/kirun-js';
-import { Dropdown } from './Dropdown';
-import { ComponentProperty, DataLocation } from '../../../../../types/common';
-import { getDataFromPath } from '../../../../../context/StoreContext';
+} from '../components/util/colorUtil';
+import { getDataFromPath } from '../context/StoreContext';
+import { ComponentProperty } from '../types/common';
 
 enum ColorType {
 	BACKGROUND_COLORS = 'Backgrounds',
@@ -93,16 +91,18 @@ const COLOR_TYPE_TO_VARIABLES = new Map([
 	],
 ]);
 
-export function ColorSelector({
+export function CommonColorPicker({
 	color: colorProperty,
 	variableSelection = true,
 	onChange,
 	showGradient = false,
+	showAlpha = true,
 }: {
 	color: ComponentProperty<string>;
 	onChange: (v: ComponentProperty<string>) => void;
 	showGradient?: boolean;
 	variableSelection?: boolean;
+	showAlpha?: boolean;
 }) {
 	const color = colorProperty.value;
 	const colorLocation = colorProperty.location;
@@ -138,8 +138,8 @@ export function ColorSelector({
 			setHue(h!);
 			setSaturation(s!);
 			setValue(v!);
-			setAlpha(a ?? 1);
-			setAlphaEdit('' + (a ?? 1));
+			setAlpha(showAlpha ? a ?? 1 : 1);
+			setAlphaEdit('' + (showAlpha ? a ?? 1 : 1));
 			setHexString(HSV_HexString({ h: h!, s: s!, v: v!, a: a ?? 1 }));
 			const hsl = HSV_HSL({ h: h!, s: s!, v: v! });
 			const rgb = HSV_RGB({ h: h!, s: s!, v: v! });
@@ -358,6 +358,59 @@ export function ColorSelector({
 			</div>
 		) : undefined;
 
+		const alphaComponent = showAlpha ? (
+			<div className="_combineEditors">
+				<div
+					className="_alpha_picker"
+					ref={alphaPickerRef}
+					onClick={alphaPickerChange}
+					onMouseMove={alphaPickerChange}
+				>
+					<div className="_thumb" style={alphaThumbStyle}>
+						<div className="_thumb_inner" />
+					</div>
+					<div className="_alpha_picker_gradient" style={alphaGradientStyle} />
+				</div>
+				<input
+					className="_simpleEditorInput"
+					placeholder={'Alpha'}
+					value={alphaEdit}
+					type="number"
+					step="0.1"
+					onChange={e => setAlphaEdit(showAlpha ? e.target.value : '1')}
+					onBlur={() => {
+						let v = parseFloat(alphaEdit);
+						if (isNaN(v)) v = 1;
+						if (v < 0) v = 0;
+						if (v > 1) v = 1;
+						onChange({
+							value: HSV_RGBAString({ h: hue, s: saturation, v: value, a: v }),
+							location: colorLocation,
+						});
+					}}
+					onKeyDown={e => {
+						if (e.key === 'Enter') {
+							let v = parseFloat(alphaEdit);
+							if (isNaN(v)) v = 1;
+							if (v < 0) v = 0;
+							if (v > 1) v = 1;
+							onChange({
+								value: HSV_RGBAString({
+									h: hue,
+									s: saturation,
+									v: value,
+									a: v,
+								}),
+								location: colorLocation,
+							});
+						} else if (e.key === 'Escape') {
+							setAlphaEdit('' + (showAlpha ? alpha : '1'));
+						}
+					}}
+				/>
+			</div>
+		) : undefined;
+
 		colorPicker = (
 			<div className="_colorPickerBody" style={bodyPosition}>
 				<div
@@ -381,56 +434,7 @@ export function ColorSelector({
 						<div className="_thumb_inner" />
 					</div>
 				</div>
-				<div className="_combineEditors">
-					<div
-						className="_alpha_picker"
-						ref={alphaPickerRef}
-						onClick={alphaPickerChange}
-						onMouseMove={alphaPickerChange}
-					>
-						<div className="_thumb" style={alphaThumbStyle}>
-							<div className="_thumb_inner" />
-						</div>
-						<div className="_alpha_picker_gradient" style={alphaGradientStyle} />
-					</div>
-					<input
-						className="_simpleEditorInput"
-						placeholder={'Alpha'}
-						value={alphaEdit}
-						type="number"
-						step="0.1"
-						onChange={e => setAlphaEdit(e.target.value)}
-						onBlur={() => {
-							let v = parseFloat(alphaEdit);
-							if (isNaN(v)) v = 1;
-							if (v < 0) v = 0;
-							if (v > 1) v = 1;
-							onChange({
-								value: HSV_RGBAString({ h: hue, s: saturation, v: value, a: v }),
-								location: colorLocation,
-							});
-						}}
-						onKeyDown={e => {
-							if (e.key === 'Enter') {
-								let v = parseFloat(alphaEdit);
-								if (isNaN(v)) v = 1;
-								if (v < 0) v = 0;
-								if (v > 1) v = 1;
-								onChange({
-									value: HSV_RGBAString({
-										h: hue,
-										s: saturation,
-										v: value,
-										a: v,
-									}),
-									location: colorLocation,
-								});
-							} else if (e.key === 'Escape') {
-								setAlphaEdit('' + alpha);
-							}
-						}}
-					/>
-				</div>
+				{alphaComponent}
 				<div className="_combineEditors _top">
 					<div className="_combineEditors _vertical _colorValues ">
 						<div className="_colorValueline">
@@ -581,7 +585,7 @@ export function ColorSelector({
 		  }
 		: {};
 
-	const [timeoutHandle, setTimeoutHandle] = useState<NodeJS.Timeout | undefined>(undefined);
+	const [timeoutHandle, setTimeoutHandle] = useState<number | undefined>(undefined);
 
 	return (
 		<div

@@ -16,7 +16,7 @@ import { PageOperations } from '../../../functions/PageOperations';
 import { DropdownOptions, Dropdown } from './Dropdown';
 import { IconOptions, IconsSimpleEditor } from './IconsSimpleEditor';
 import { PixelSize, RangeWithoutUnit } from './SizeSliders';
-import { ColorSelector } from './ColorSelector';
+import { CommonColorPicker } from '../../../../../commonComponents/CommonColorPicker';
 import { ShadowEditor, ShadowEditorType } from './ShadowEditor';
 import { PageStoreExtractor, getDataFromPath, setData } from '../../../../../context/StoreContext';
 import { shortUUID } from '../../../../../util/shortUUID';
@@ -131,7 +131,7 @@ export function EachSimpleEditor({
 			);
 			break;
 		case SimpleEditorType.Color:
-			editor = <ColorSelector color={value} onChange={editorOnchange} />;
+			editor = <CommonColorPicker color={value} onChange={editorOnchange} />;
 			break;
 		case SimpleEditorType.TextShadow:
 			editor = (
