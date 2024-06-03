@@ -361,9 +361,10 @@ function TextBox(props: ComponentProps) {
 				hideClearContentIcon={hideClearButton}
 				maxChars={maxChars}
 				showMandatoryAsterisk={
+					showMandatoryAsterisk &&
 					(validation ?? []).find(
 						(e: any) => e.type === undefined || e.type === 'MANDATORY',
-					) && showMandatoryAsterisk
+					)
 						? true
 						: false
 				}

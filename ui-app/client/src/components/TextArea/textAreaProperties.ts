@@ -32,7 +32,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 		group: ComponentPropertyGroup.BASIC,
 	},
-
+	{
+		name: 'hideClearButton',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Hide Clear Button',
+		description: 'Hide Clear Button',
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
 	{
 		name: 'autoComplete',
 		schema: SCHEMA_STRING_COMP_PROP,
@@ -234,12 +241,7 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
-	floatingLabel: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
-	],
-	noFloatLabel: [
+	label: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
