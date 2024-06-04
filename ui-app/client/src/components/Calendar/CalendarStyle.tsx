@@ -108,6 +108,11 @@ export default function CalendarStyle({ theme }: { theme: Map<string, Map<string
             box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
         }
 
+        ${PREFIX} ._leftArrow, 
+        ${PREFIX} ._rightArrow,
+        ${PREFIX} ._calenderHeader {
+            position: relative;
+        }
        
  	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { CalendarValidationProps, getValidDate, toFormat } from './calendarFunctions';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 
 interface CalendarMapProps {
 	thisDate: string | number | undefined;
@@ -31,6 +32,7 @@ interface CalendarMapProps {
 	leftArrowImage?: string;
 	rightArrowImage?: string;
 	readOnly?: boolean;
+	definition: any;
 }
 
 export function CalendarMap({
@@ -79,6 +81,7 @@ export function CalendarMap({
 	leftArrowImage,
 	rightArrowImage,
 	readOnly,
+	definition,
 }: CalendarMapProps & CalendarValidationProps) {
 	const isEndDate = isRangeType && dateType === 'endDate';
 	let currentDate = new Date();
@@ -101,24 +104,58 @@ export function CalendarMap({
 		storageFormat ?? displayDateFormat,
 	);
 
+	const [hovers, setHovers] = React.useState<Set<string>>(() => new Set());
+	const [disableds, setDisableds] = React.useState<Set<string>>(() => new Set());
+
+	const getStyleObject = useMemo(
+		() => getStyleObjectCurry(styles, hoverStyles, disabledStyles),
+		[styles, hoverStyles, disabledStyles],
+	);
+
 	const header = [
-		<div key="leftArrow" className="_leftArrow">
-			{' '}
+		<div
+			key="leftArrow"
+			className={`_leftArrow`}
+			style={getStyleObject('leftArrow', hovers, disableds) ?? {}}
+		>
+			<SubHelperComponent definition={definition} subComponentName="leftArrow" />
+			{leftArrowImage ? <img src={leftArrowImage} /> : <ArrowRight rotate={180} />}
 		</div>,
-		<div key="rightArrow" className="_rightArrow">
-			{' '}
+		<div
+			key="rightArrow"
+			className={`_rightArrow`}
+			style={getStyleObject('rightArrow', hovers, disableds) ?? {}}
+		>
+			<SubHelperComponent definition={definition} subComponentName="rightArrow" />
+			{rightArrowImage ? <img src={rightArrowImage} /> : <ArrowRight rotate={0} />}
 		</div>,
 	];
 
+	let position = 0;
+	if (arrowButtonsHorizontalPlacement === '_right') position = 2;
+	else if (arrowButtonsHorizontalPlacement === '_either') position = 1;
+	header.splice(position, 0, <div key="label" className="_label"></div>);
+
 	return (
 		<>
-			<div className="_calenderHeader"></div>
+			<div
+				className="_calenderHeader"
+				style={getStyleObject('calendarHeader', hovers, disableds) ?? {}}
+			></div>
 			<div className="_calenderBody"></div>
 		</>
 	);
 }
 
-function ArrowRight({ rotate }: { rotate: number; onClick: () => void }) {
+function getStyleObjectCurry(styles: any, hoverStyles: any, disabledStyles: any) {
+	return (key: string, hovers: Set<string>, disableds: Set<string>) => {
+		if (hovers.has(key)) return hoverStyles;
+		if (disableds.has(key)) return disabledStyles;
+		return styles;
+	};
+}
+
+function ArrowRight({ rotate }: { rotate: number }) {
 	return (
 		<svg
 			width="30"

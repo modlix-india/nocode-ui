@@ -489,6 +489,7 @@ function CalendarComponent(props: ComponentProps) {
 				leftArrowImage={leftArrowImage}
 				rightArrowImage={rightArrowImage}
 				readOnly={readOnly}
+				definition={definition}
 			/>
 		) : undefined;
 
@@ -543,8 +544,6 @@ function CalendarComponent(props: ComponentProps) {
 			showMandatoryAsterisk={
 				showMandatoryAsterisk &&
 				(validation ?? []).find((e: any) => e.type === undefined || e.type === 'MANDATORY')
-					? true
-					: false
 			}
 		>
 			{calendar && (
@@ -736,15 +735,15 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'calendarBodyContainer',
-			displayName: 'Calendar Body Container',
-			description: 'Calendar Body Container',
-			icon: 'fa-solid fa-box',
-		},
-		{
 			name: 'calendarBody',
 			displayName: 'Calendar Body',
 			description: 'Calendar Body',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'calendar',
+			displayName: 'Calendar Body Container',
+			description: 'Calendar Body Container',
 			icon: 'fa-solid fa-box',
 		},
 		{
