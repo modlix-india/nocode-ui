@@ -224,6 +224,8 @@ function DropdownComponent(props: ComponentProps) {
 		);
 	}, [searchText, dropdownData]);
 
+	const [mouseIsInside, setMouseIsInside] = useState(false);
+
 	const handleClose = useCallback(() => {
 		if (!showDropdown) return;
 		setShowDropdown(false);
@@ -325,6 +327,7 @@ function DropdownComponent(props: ComponentProps) {
 			context={context}
 			hideClearContentIcon={true}
 			blurHandler={() => {
+				if (mouseIsInside) return;
 				setFocus(false);
 				setShowDropdown(false);
 			}}
@@ -340,7 +343,13 @@ function DropdownComponent(props: ComponentProps) {
 			colorScheme={colorScheme}
 			leftIcon={leftIcon}
 			showDropdown={showDropdown}
-			onMouseLeave={closeOnMouseLeave ? handleClose : undefined}
+			onMouseEnter={() => {
+				setMouseIsInside(true);
+			}}
+			onMouseLeave={() => {
+				setMouseIsInside(false);
+				if (closeOnMouseLeave) handleClose();
+			}}
 			showMandatoryAsterisk={
 				(validation ?? []).find(
 					(e: any) => e.type === undefined || e.type === 'MANDATORY',
