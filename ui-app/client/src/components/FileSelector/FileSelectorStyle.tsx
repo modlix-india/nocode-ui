@@ -1,9 +1,13 @@
 import React from 'react';
-import { processStyleDefinition } from '../../util/styleProcessor';
+import { StyleResolutionDefinition, processStyleDefinition } from '../../util/styleProcessor';
 import { styleProperties, styleDefaults } from './fileSelectorStyleProperties';
+import { StyleResolution } from '../../types/common';
 
 const PREFIX = '.comp.compFileSelector';
 export default function FileSelector({ theme }: { theme: Map<string, Map<string, string>> }) {
+	const TABLET_MIN_WIDTH = StyleResolutionDefinition.get(
+		StyleResolution.TABLET_POTRAIT_SCREEN,
+	)?.minWidth;
 	const css =
 		`
 	${PREFIX}  {
@@ -76,7 +80,14 @@ export default function FileSelector({ theme }: { theme: Map<string, Map<string,
 	${PREFIX} ._popupBackground ._popupContainer ._fullScreenButton svg {
 		width: 100%;
 		height: 100%;
-	
+	}
+
+	@media screen and (max-width: ${TABLET_MIN_WIDTH}px) {
+		${PREFIX} ._popupBackground ._popupContainer {
+			min-width: 90vw;
+			max-width: 90vw;
+			max-height: 80vh;
+		}
 	}
 
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
