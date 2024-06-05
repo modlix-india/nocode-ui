@@ -1,6 +1,11 @@
 import React from 'react';
+import { StyleResolutionDefinition } from '../../util/styleProcessor';
+import { StyleResolution } from '../../types/common';
 
 export function FileBrowserStyles() {
+	const TABLET_MIN_WIDTH = StyleResolutionDefinition.get(
+		StyleResolution.TABLET_POTRAIT_SCREEN,
+	)?.minWidth;
 	const styles = `
     ._fileBrowser {
         display: flex;
@@ -714,7 +719,18 @@ export function FileBrowserStyles() {
 	._fileBrowser ._fullScreenButton svg {
 		width: 100%;
 		height: 100%;
-	
+	}
+
+    @media screen and (max-width: ${TABLET_MIN_WIDTH}px) {
+        ._fileBrowser {
+			min-width: auto;
+			min-height: 400px;
+		}
+
+        ._fileBrowser ._searchUploadContainer {
+            height: auto;
+            flex-wrap: wrap;
+        }
 	}
     `;
 	return <style id="fileBrowserStyles">{styles}</style>;
