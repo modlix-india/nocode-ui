@@ -133,12 +133,12 @@ function Menu(props: ComponentProps) {
 		<i className={`_icon ${icon}`}>
 			<SubHelperComponent definition={definition} subComponentName="icon" />
 		</i>
-	) : imageIcon && !isHovered && !isMenuActive ? (
+	) : imageIcon && !activeImageIcon ? (
 		<>
 			<img className={`_imageIcon ${imageIcon}`} src={imageIcon} alt="imageIcon" />
 			<SubHelperComponent definition={definition} subComponentName="imageIcon" />
 		</>
-	) : (
+	) : !imageIcon && activeImageIcon ? (
 		<>
 			<img
 				className={`_activeImageIcon ${activeImageIcon}`}
@@ -147,6 +147,22 @@ function Menu(props: ComponentProps) {
 			/>
 			<SubHelperComponent definition={definition} subComponentName="activeImageIcon" />
 		</>
+	) : imageIcon && activeImageIcon && (isHovered || isMenuActive) ? (
+		<>
+			<img
+				className={`_activeImageIcon ${activeImageIcon}`}
+				src={activeImageIcon}
+				alt="activeImageIcon"
+			/>
+			<SubHelperComponent definition={definition} subComponentName="activeImageIcon" />
+		</>
+	) : imageIcon && activeImageIcon && (!isHovered || !isMenuActive) ? (
+		<>
+			<img className={`_imageIcon ${imageIcon}`} src={imageIcon} alt="imageIcon" />
+			<SubHelperComponent definition={definition} subComponentName="imageIcon" />
+		</>
+	) : (
+		<></>
 	);
 
 	const menuToggle = (e: MouseEvent<HTMLElement>) => {
