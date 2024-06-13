@@ -142,14 +142,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'minDate',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Minimum Date (In Storage Format)',
-		description: 'Calendar minimum date to be shown',
+		description:
+			'Calendar minimum date to be shown, or the minimum relative date in +/- days, months, years, hours, minutes and seconds (+3d, -2m, +1y, +1y -2d -3h 4mi 5s). Positivie is future and negative is past',
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
 		name: 'maxDate',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Mximum Date (In Storage Format)',
-		description: 'Calendar maximum date to be shown',
+		description:
+			'Calendar maximum date to be shown, or the maximum relative date in +/- days, months, years, hours, minutes and seconds (+3d, -2m, +1y, +1y +2d 3h 4mi 5s). Positivie is future and negative is past',
 		group: ComponentPropertyGroup.BASIC,
 	},
 
@@ -293,7 +295,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Calendar Design Type',
 		description: 'Calendar Design Type',
-		defaultValue: '_defaultCalendar',
+		defaultValue: '_default',
 		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
 			{
@@ -638,7 +640,7 @@ const stylePropertiesDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
-	calendarBodyContainer: [
+	calendar: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
@@ -659,12 +661,14 @@ const stylePropertiesDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 	leftArrow: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
-	rigthArrow: [
+	rightArrow: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
@@ -681,6 +685,11 @@ const stylePropertiesDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 	monthName: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	yearNumber: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,

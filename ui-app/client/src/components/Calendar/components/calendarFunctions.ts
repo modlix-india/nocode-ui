@@ -1,24 +1,7 @@
 import { isNullValue } from '@fincity/kirun-js';
-import { setData } from '../../context/StoreContext';
-
-export interface CalendarValidationProps {
-	isMultiSelect: boolean;
-	minDate?: string;
-	maxDate?: string;
-	disableDates?: Array<string>;
-	disableTemporalRange?: string;
-	disableDays?: Array<string>;
-	hourIntervalFrom?: number;
-	hourInterval?: number;
-	secondIntervalFrom?: number;
-	secondInterval?: number;
-	minuteIntervalFrom?: number;
-	minuteInterval?: number;
-	storageFormat?: string;
-	displayDateFormat: string;
-	multipleDateSeparator: string;
-	numberOfDaysInRange?: number;
-}
+import { setData } from '../../../context/StoreContext';
+import { Dispatch, SetStateAction } from 'react';
+import { CalendarAllProps, CalendarMapProps, CalendarValidationProps } from './calendarTypes';
 
 // Will support more formats after the kirun functions are integrated where all the time and date api is implemented.
 
@@ -246,10 +229,152 @@ export function validateWithProps(
 	return date;
 }
 
-function zeroHourDate(date: Date | undefined): Date | undefined {
+export function zeroHourDate(date: Date | undefined): Date | undefined {
 	if (!date) return date;
 	date.setHours(0);
 	date.setMinutes(0);
 	date.setSeconds(0);
+	return date;
+}
+
+export function getStyleObjectCurry(styles: any, hoverStyles: any, disabledStyles: any) {
+	return (key: string, hovers: Set<string>, disableds: Set<string>) => {
+		if (hovers.has(key)) return hoverStyles[key] ?? {};
+		if (disableds.has(key)) return disabledStyles[key] ?? {};
+		return styles[key] ?? {};
+	};
+}
+
+export function addToToggleSetCurry(
+	set: Set<string>,
+	setStateFunction: Dispatch<SetStateAction<Set<string>>>,
+	key: string,
+) {
+	return () => {
+		if (set.has(key)) return;
+		setStateFunction(new Set([...Array.from(set), key]));
+	};
+}
+
+export function removeFromToggleSetCurry(
+	set: Set<string>,
+	setStateFunction: Dispatch<SetStateAction<Set<string>>>,
+	key: string,
+) {
+	return () => {
+		if (!set.has(key)) return;
+		const newSet = new Set([...Array.from(set)]);
+		newSet.delete(key);
+		setStateFunction(newSet);
+	};
+}
+
+export function computeMinMaxDates(
+	props: CalendarMapProps & CalendarValidationProps,
+): [Date, Date | undefined, Date | undefined] {
+	let currentDate = new Date();
+	let minimumPossibleDate = processRelativeOrAbsoluteDate(
+		props.minDate,
+		props.storageFormat ?? props.displayDateFormat,
+	);
+	let maximumPossibleDate = processRelativeOrAbsoluteDate(
+		props.maxDate,
+		props.storageFormat ?? props.displayDateFormat,
+	);
+	if (props.minDate) {
+		const minDate = getValidDate(props.minDate, props.storageFormat ?? props.displayDateFormat);
+		if (minDate) minimumPossibleDate = minDate;
+	}
+	if (props.maxDate) {
+		const maxDate = getValidDate(props.maxDate, props.storageFormat ?? props.displayDateFormat);
+		if (maxDate) maximumPossibleDate = maxDate;
+	}
+
+	if (props.disableTemporalRange) {
+		switch (props.disableTemporalRange) {
+			case 'disableTodayFuture':
+				maximumPossibleDate = new Date(zeroHourDate(new Date())!.getTime() - 1);
+				break;
+			case 'disableTodayPast':
+				minimumPossibleDate = zeroHourDate(new Date(Date.now() + 86400000))!;
+				break;
+			case 'disableFuture':
+				maximumPossibleDate = zeroHourDate(new Date(Date.now() + 86400000))!;
+				break;
+			case 'disablePast':
+				minimumPossibleDate = zeroHourDate(new Date())!;
+				break;
+		}
+	}
+
+	return [currentDate, minimumPossibleDate, maximumPossibleDate];
+}
+
+const NUMBER_PARTS = new Set(['-', '+', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9']);
+export function processRelativeOrAbsoluteDate(
+	dateString: string | undefined,
+	// "+3y"
+	// "-2Years3hours"
+	// "-2 years 3 minUTes"
+	format: string,
+): Date | undefined {
+	if (!dateString) return undefined;
+	dateString = dateString.trim();
+	if (dateString.startsWith('+') || dateString.startsWith('-')) {
+		return parseRelativeDate(dateString);
+	}
+	return getValidDate(dateString, format);
+}
+
+export function parseRelativeDate(dateString: string): Date {
+	dateString = dateString.toLowerCase();
+
+	let from = 0;
+	let isNumberPart = true;
+	const parts = [];
+	for (let i = 0; i < dateString.length; i++) {
+		if (
+			dateString[i] === ' ' ||
+			(isNumberPart && NUMBER_PARTS.has(dateString[i])) ||
+			(!isNumberPart && !NUMBER_PARTS.has(dateString[i]))
+		)
+			continue;
+		if (i > from) parts.push(dateString.substring(from, i));
+		isNumberPart = !isNumberPart;
+		from = i;
+	}
+
+	if (from < dateString.length) parts.push(dateString.substring(from));
+
+	return makeDateFromParts(parts);
+}
+
+export function makeDateFromParts(parts: string[]): Date {
+	const date = new Date();
+	let timeUsed: boolean = false;
+	for (let i = 0; i < parts.length; i += 2) {
+		const number = parseInt(parts[i], 10);
+		const unit = parts[i + 1];
+		if (isNaN(number)) continue;
+		if (unit.startsWith('y')) date.setFullYear(date.getFullYear() + number);
+		else if (unit.startsWith('mi')) {
+			date.setMinutes(date.getMinutes() + number);
+			timeUsed = true;
+		} else if (unit.startsWith('h')) {
+			date.setHours(date.getHours() + number);
+			timeUsed = true;
+		} else if (unit.startsWith('d')) date.setDate(date.getDate() + number);
+		else if (unit.startsWith('m')) date.setMonth(date.getMonth() + number);
+		else if (unit.startsWith('s')) {
+			date.setSeconds(date.getSeconds() + number);
+			timeUsed = true;
+		}
+	}
+
+	if (!timeUsed) {
+		date.setHours(0);
+		date.setMinutes(0);
+		date.setSeconds(0);
+	}
 	return date;
 }

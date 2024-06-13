@@ -12,38 +12,36 @@ import CommonInputText from '../../commonComponents/CommonInputText';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediately,
-	getData,
 	getPathFromLocation,
 	setData,
 } from '../../context/StoreContext';
 import {
 	Component,
 	ComponentDefinition,
-	ComponentProperty,
 	ComponentPropertyDefinition,
 	ComponentProps,
 	LocationHistory,
 } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { validate } from '../../util/validationProcessor';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { IconHelper } from '../util/IconHelper';
+import { makePropertiesObject } from '../util/make';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { flattenUUID } from '../util/uuid';
 import CalendarStyle from './CalendarStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './calendarProperties';
 import { styleDefaults } from './calendarStyleProperties';
-import { makePropertiesObject } from '../util/make';
-import { HelperComponent } from '../HelperComponents/HelperComponent';
+import { CalendarMap } from './components/CalendarMap';
 import {
+	getValidDate,
 	toFormat,
 	validateRangesAndSetData,
-	getValidDate,
 	validateWithProps,
-	CalendarValidationProps,
-} from './calendarFunctions';
-import { CalendarMap } from './CalendarMap';
+} from './components/calendarFunctions';
+import { CalendarValidationProps } from './components/calendarTypes';
 
 function CalendarComponent(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -427,7 +425,7 @@ function CalendarComponent(props: ComponentProps) {
 	}, [thisDate, validation, validationProps]);
 
 	const calendar =
-		componentDesignType === 'fullCalendar' || showDropdown ? (
+		componentDesignType === 'fullCalendar' || showDropdown || true ? (
 			<CalendarMap
 				thisDate={thisDate}
 				isRangeType={isRangeType}
@@ -496,7 +494,7 @@ function CalendarComponent(props: ComponentProps) {
 	if (componentDesignType === 'fullCalendar') {
 		return (
 			<div
-				className={`comp compCalendar fullCalendar ${calendarDesignType}`}
+				className={`comp compCalendar fullCalendar ${calendarDesignType} ${colorScheme}`}
 				style={computedStyles?.comp ?? {}}
 			>
 				<HelperComponent context={context} definition={definition} />
@@ -753,9 +751,9 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'rigthArrow',
-			displayName: 'Rigth Arrow',
-			description: 'Rigth Arrow',
+			name: 'rightArrow',
+			displayName: 'Right Arrow',
+			description: 'Right Arrow',
 			icon: 'fa-solid fa-box',
 		},
 		{
@@ -774,6 +772,12 @@ const component: Component = {
 			name: 'monthName',
 			displayName: 'Month Name',
 			description: 'Month Name',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'yearNumber',
+			displayName: 'Year Number',
+			description: 'Year Number',
 			icon: 'fa-solid fa-box',
 		},
 		{

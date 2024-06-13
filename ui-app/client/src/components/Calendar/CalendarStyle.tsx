@@ -110,8 +110,28 @@ export default function CalendarStyle({ theme }: { theme: Map<string, Map<string
 
         ${PREFIX} ._leftArrow, 
         ${PREFIX} ._rightArrow,
-        ${PREFIX} ._calenderHeader {
+        ${PREFIX} ._calendarHeader,
+        ${PREFIX} ._calendarBody {
             position: relative;
+        }
+
+        ${PREFIX} ._calendarHeader {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        ${PREFIX} ._calendarHeader svg {
+            width: 100% 
+        }
+
+        ${PREFIX} ._leftArrow, 
+        ${PREFIX} ._rightArrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
         }
        
  	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
