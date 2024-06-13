@@ -8,6 +8,8 @@ import {
 } from '../../context/StoreContext';
 import {
 	Component,
+	ComponentDefinition,
+	ComponentProperty,
 	ComponentPropertyDefinition,
 	ComponentProps,
 	DataLocation,
@@ -37,7 +39,7 @@ function SmallCarousel(props: ComponentProps) {
 		context,
 	} = props;
 
-	const { data: dataProperty } = properties;
+	const { data: dataProperty } = (properties ?? {}) as { data: ComponentProperty<any> };
 
 	const {
 		stylePropertiesWithPseudoStates,
@@ -95,9 +97,18 @@ function SmallCarousel(props: ComponentProps) {
 		stylePropertiesWithPseudoStates,
 	);
 
-	let childrenEntries = Object.entries(children ?? {})
+	let childrenEntries: Array<[string, ComponentDefinition, LocationHistory[]]> = Object.entries(
+		children ?? {},
+	)
 		.filter((e: any) => !!e[1])
-		.map(e => [e[0], pageDefinition?.componentDefinition[e[0]], locationHistory])
+		.map(
+			e =>
+				[e[0], pageDefinition?.componentDefinition[e[0]], locationHistory] as [
+					string,
+					ComponentDefinition,
+					LocationHistory[],
+				],
+		)
 		.sort((a: any, b: any) => {
 			const v = (a[1]?.displayOrder ?? 0) - (b[1]?.displayOrder ?? 0);
 			return v === 0 ? (a[1]?.key ?? '').localeCompare(b[1]?.key ?? '') : v;
@@ -130,7 +141,7 @@ function SmallCarousel(props: ComponentProps) {
 								type: 'VALUE',
 								value: bindingPathPath,
 						  }
-						: dataProperty,
+						: dataProperty.location!,
 					index,
 					locationHistory,
 					context.pageName,
@@ -177,38 +188,40 @@ function SmallCarousel(props: ComponentProps) {
 	const widthPercentage = isVertical ? '100%' : `${100 / finNumberOfChildren}%`;
 	const heightPercentage = isVertical ? `${100 / finNumberOfChildren}%` : '100%';
 
-	let childrenComponents = childrenEntries.map((e, index) => (
-		<div
-			key={`${e[0]}_${index}`}
-			className={`_slideItemContainer`}
-			style={{
-				minWidth: `${childWidth}px`,
-				minHeight: `${childHeight}px`,
-				width: widthPercentage,
-				height: heightPercentage,
-			}}
-			ref={el => {
-				innerSlideItemContainers.current[index] = el;
-			}}
-		>
+	let childrenComponents = childrenEntries.map(
+		(e: [string, ComponentDefinition, LocationHistory[]], index: number) => (
 			<div
-				ref={el => {
-					innerSlideItems.current[index] = el;
+				key={`${e[0]}_${index}`}
+				className={`_slideItemContainer`}
+				style={{
+					minWidth: `${childWidth}px`,
+					minHeight: `${childHeight}px`,
+					width: widthPercentage,
+					height: heightPercentage,
 				}}
-				className={`_slideItem`}
-				style={{ ...(resolvedStyles?.childElement ?? {}) }}
+				ref={el => {
+					innerSlideItemContainers.current[index] = el;
+				}}
 			>
-				<SubHelperComponent definition={definition} subComponentName="slideItem" />
-				<Children
-					children={{ [e[1].key]: true }}
-					context={context}
-					pageDefinition={pageDefinition}
-					locationHistory={e[2] as LocationHistory[]}
-					key={`${e[0]}_${index}`}
-				/>
+				<div
+					ref={el => {
+						innerSlideItems.current[index] = el;
+					}}
+					className={`_slideItem`}
+					style={{ ...(resolvedStyles?.childElement ?? {}) }}
+				>
+					<SubHelperComponent definition={definition} subComponentName="slideItem" />
+					<Children
+						children={{ [e[1].key]: true }}
+						context={context}
+						pageDefinition={pageDefinition}
+						locationHistory={e[2] as LocationHistory[]}
+						key={`${e[0]}_${index}`}
+					/>
+				</div>
 			</div>
-		</div>
-	));
+		),
+	);
 
 	const containerDims: React.CSSProperties = {};
 
