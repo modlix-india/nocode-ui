@@ -18,7 +18,7 @@ export function toFormat(
 			: getValidDate(
 					typeof date === 'string' ? (date as string) : (date as number),
 					fromFormat,
-			  );
+				);
 	if (!dateObject) return undefined;
 
 	if (toFormat === 'x') return dateObject.getTime();
@@ -120,17 +120,13 @@ export function validateRangesAndSetData(
 	}
 
 	if (props.isMultiSelect) {
-		const dates = value
-			.split(props.multipleDateSeparator)
+		const splits = value.split(props.multipleDateSeparator);
+		const dates: (Date | undefined)[] = splits
 			.map((e: string) => getValidDate(e, props.storageFormat ?? props.displayDateFormat))
 			.map((e: Date | undefined) => validateWithProps(e, props));
-
-		if (dates.findIndex((e: Date | undefined) => isNullValue(e)) != -1) {
-			setData(path, value, context);
-			return;
+		if (dates.every((e: Date | undefined) => !isNullValue(e))) {
+			setData(path, splits, context);
 		}
-
-		setData(path, dates.length ? dates : undefined, context);
 		return;
 	}
 
@@ -176,18 +172,20 @@ export function validateWithProps(
 			return undefined;
 	}
 
-	if (props.disableTemporalRange) {
+	if (props.disableTemporalRanges?.length) {
 		const today = zeroHourDate(new Date())!;
 		const onlyDate = zeroHourDate(new Date(date.getTime()))!;
+		const disableToday = props.disableTemporalRanges.includes('disableToday');
+		const disableFuture = props.disableTemporalRanges.includes('disableFuture');
+		const disablePast = props.disableTemporalRanges.includes('disablePast');
+		const disableWeekend = props.disableTemporalRanges.includes('disableWeekend');
+		const weekEndDays = props.weekEndDays?.map(e => parseInt(e, 10));
 
-		if (props.disableTemporalRange === 'disableTodayFuture' && onlyDate >= today)
+		if (disableToday && onlyDate.toDateString() === today.toDateString()) return undefined;
+		if (disableFuture && onlyDate > today) return undefined;
+		if (disablePast && onlyDate < today) return undefined;
+		if (disableWeekend && weekEndDays?.length && weekEndDays.includes(onlyDate.getDay()))
 			return undefined;
-		if (props.disableTemporalRange === 'disableTodayPast' && onlyDate <= today)
-			return undefined;
-		if (props.disableTemporalRange === 'disableToday' && onlyDate.getTime() === today.getTime())
-			return undefined;
-		if (props.disableTemporalRange === 'disableFuture' && onlyDate > today) return undefined;
-		if (props.disableTemporalRange === 'disablePast' && onlyDate < today) return undefined;
 	}
 
 	if (props.disableDays) {
@@ -290,20 +288,22 @@ export function computeMinMaxDates(
 		if (maxDate) maximumPossibleDate = maxDate;
 	}
 
-	if (props.disableTemporalRange) {
-		switch (props.disableTemporalRange) {
-			case 'disableTodayFuture':
-				maximumPossibleDate = new Date(zeroHourDate(new Date())!.getTime() - 1);
-				break;
-			case 'disableTodayPast':
-				minimumPossibleDate = zeroHourDate(new Date(Date.now() + 86400000))!;
-				break;
-			case 'disableFuture':
-				maximumPossibleDate = zeroHourDate(new Date(Date.now() + 86400000))!;
-				break;
-			case 'disablePast':
-				minimumPossibleDate = zeroHourDate(new Date())!;
-				break;
+	if (props.disableTemporalRanges?.length) {
+		const today = zeroHourDate(new Date())!;
+		const disableToday = props.disableTemporalRanges.includes('disableToday');
+		const disableFuture = props.disableTemporalRanges.includes('disableFuture');
+		const disablePast = props.disableTemporalRanges.includes('disablePast');
+
+		if (disablePast) {
+			minimumPossibleDate = zeroHourDate(new Date(today))!;
+			if (disableToday) minimumPossibleDate.setDate(minimumPossibleDate.getDate() + 1);
+		}
+
+		if (disableFuture) {
+			maximumPossibleDate = zeroHourDate(new Date(today))!;
+			maximumPossibleDate.setDate(maximumPossibleDate.getDate() + 1);
+			maximumPossibleDate.setSeconds(maximumPossibleDate.getSeconds() - 1);
+			if (disableToday) maximumPossibleDate.setDate(maximumPossibleDate.getDate() - 1);
 		}
 	}
 
@@ -353,28 +353,42 @@ export function makeDateFromParts(parts: string[]): Date {
 	const date = new Date();
 	let timeUsed: boolean = false;
 	for (let i = 0; i < parts.length; i += 2) {
-		const number = parseInt(parts[i], 10);
+		const number = Math.abs(parseInt(parts[i], 10));
 		const unit = parts[i + 1];
+		const factor =
+			parts[i].startsWith('-') || parts[i].startsWith('+') ? parseInt(parts[i][0] + '1') : 1;
+		const fullSetFactor = parts[i].startsWith('-') || parts[i].startsWith('+') ? 1 : 0;
 		if (isNaN(number)) continue;
-		if (unit.startsWith('y')) date.setFullYear(date.getFullYear() + number);
+		if (unit.startsWith('y'))
+			date.setFullYear(date.getFullYear() * fullSetFactor + number * factor);
 		else if (unit.startsWith('mi')) {
-			date.setMinutes(date.getMinutes() + number);
+			date.setMinutes(date.getMinutes() * fullSetFactor + number * factor);
 			timeUsed = true;
 		} else if (unit.startsWith('h')) {
-			date.setHours(date.getHours() + number);
+			date.setHours(date.getHours() * fullSetFactor + number * factor);
 			timeUsed = true;
-		} else if (unit.startsWith('d')) date.setDate(date.getDate() + number);
-		else if (unit.startsWith('m')) date.setMonth(date.getMonth() + number);
+		} else if (unit.startsWith('d'))
+			date.setDate(date.getDate() * fullSetFactor + number * factor);
+		else if (unit.startsWith('m'))
+			date.setMonth(date.getMonth() * fullSetFactor + number * factor);
 		else if (unit.startsWith('s')) {
-			date.setSeconds(date.getSeconds() + number);
+			date.setSeconds(date.getSeconds() * fullSetFactor + number * factor);
 			timeUsed = true;
 		}
 	}
-
 	if (!timeUsed) {
 		date.setHours(0);
 		date.setMinutes(0);
 		date.setSeconds(0);
 	}
 	return date;
+}
+
+export function computeWeekNumberOfYear(date: Date): number {
+	const firstDayOfYear = new Date(date);
+	firstDayOfYear.setMonth(0);
+	firstDayOfYear.setDate(1);
+	const pastDaysOfYear = (date.getTime() - firstDayOfYear.getTime()) / (1000 * 60 * 60 * 24);
+
+	return Math.ceil(pastDaysOfYear / 7) + 1;
 }
