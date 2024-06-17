@@ -1,26 +1,17 @@
-// {
-//     name: 'disableTodayFuture',
-//     displayName: 'Disable Today and Future Dates',
-// },
-// { name: 'disableTodayPast', displayName: 'Disable Today and Past Dates' },
-// { name: 'disableToday', displayName: 'Disable Today' },
-// { name: 'disableFuture', displayName: 'Disable Future Dates' },
-// { name: 'disablePast', displayName: 'Disable Past Dates' },
-
 type Days = '0' | '1' | '2' | '3' | '4' | '5' | '6';
+
+type LabelType = 'long' | 'short' | 'narrow';
+
+type TemporalRange = 'disableToday' | 'disableFuture' | 'disablePast' | 'disableWeekend';
 
 export interface CalendarValidationProps {
 	isMultiSelect: boolean;
 	minDate?: string;
 	maxDate?: string;
 	disableDates?: Array<string>;
-	disableTemporalRange?:
-		| 'disableTodayFuture'
-		| 'disableTodayPast'
-		| 'disableToday'
-		| 'disableFuture'
-		| 'disablePast';
+	disableTemporalRanges?: Array<TemporalRange>;
 	disableDays?: Array<Days>;
+	weekEndDays: Array<Days>;
 	hourIntervalFrom?: number;
 	hourInterval?: number;
 	secondIntervalFrom?: number;
@@ -30,7 +21,8 @@ export interface CalendarValidationProps {
 	storageFormat?: string;
 	displayDateFormat: string;
 	multipleDateSeparator: string;
-	numberOfDaysInRange?: number;
+	minNumberOfDaysInRange?: number;
+	maxNumberOfDaysInRange?: number;
 }
 
 export interface CalendarMapProps {
@@ -55,7 +47,7 @@ export interface CalendarMapProps {
 	showWeekNumber: boolean;
 	highlightToday: boolean;
 	weekStartsOn: Days;
-	lowLightWeekEnds: boolean;
+	lowLightWeekEnd: boolean;
 	showPreviousNextMonthDate: boolean;
 	timeDesignType:
 		| 'none'
@@ -64,8 +56,8 @@ export interface CalendarMapProps {
 		| 'dial'
 		| 'comboBoxes12HrAndSeconds'
 		| 'comboBoxes24HrAndSeconds';
-	monthLabels: 'long' | 'short' | 'narrow';
-	weekDayLabels: 'long' | 'short' | 'narrow';
+	monthLabels: LabelType;
+	weekDayLabels: LabelType;
 	styles: any;
 	hoverStyles: any;
 	disabledStyles: any;
@@ -77,10 +69,14 @@ export interface CalendarMapProps {
 	rightArrowImage?: string;
 	readOnly?: boolean;
 	definition: any;
+	headerMonthsLabels: LabelType;
+	headerMonthsCount: number;
 }
 
-export interface CalendarAllProps extends CalendarMapProps, CalendarValidationProps {
+export interface CalendarIntermediateAllProps extends CalendarMapProps, CalendarValidationProps {
 	currentDate: Date;
-	minimumPossibleDate?: Date | undefined;
-	maximumPossibleDate?: Date | undefined;
+	minimumPossibleDate: Date | undefined;
+	maximumPossibleDate: Date | undefined;
 }
+
+export interface CalendarAllProps extends Readonly<CalendarIntermediateAllProps> {}
