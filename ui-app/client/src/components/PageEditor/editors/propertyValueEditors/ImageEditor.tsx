@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { FileBrowser } from '../../../../commonComponents/FileBrowser';
 import { ComponentPropertyDefinition } from '../../../../types/common';
 import { PageOperations } from '../../functions/PageOperations';
-import { FileBrowser } from '../../../../commonComponents/FileBrowser';
-import Portal from '../../../Portal';
 
 interface ImageSelectionEditorProps {
 	value?: string;
@@ -32,6 +31,7 @@ export function ImageEditor({
 				onClick={e => e.stopPropagation()}
 			>
 				<FileBrowser
+					editOnUpload={false}
 					selectedFile={chngValue}
 					onChange={v => {
 						changed(v);

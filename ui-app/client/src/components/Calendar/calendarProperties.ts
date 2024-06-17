@@ -142,14 +142,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'minDate',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Minimum Date (In Storage Format)',
-		description: 'Calendar minimum date to be shown',
+		description:
+			'Calendar minimum date to be shown, or the minimum relative date in +/- days, months, years, hours, minutes and seconds (+3d, -2m, +1y, +1y -2d -3h 4mi 5s). Positivie is future, negative is past and nothing will set',
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
 		name: 'maxDate',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Mximum Date (In Storage Format)',
-		description: 'Calendar maximum date to be shown',
+		displayName: 'Maximum Date (In Storage Format)',
+		description:
+			'Calendar maximum date to be shown, or the maximum relative date in +/- days, months, years, hours, minutes and seconds (+3d, -2m, +1y, +1y +2d 3h 4mi 5s). Positivie is future, negative is past and nothing will set',
 		group: ComponentPropertyGroup.BASIC,
 	},
 
@@ -230,9 +232,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		],
 	},
 	{
-		name: 'numberOfDaysInRange',
+		name: 'minNumberOfDaysInRange',
 		schema: SCHEMA_NUM_COMP_PROP,
-		displayName: 'Number of Days in Range',
+		displayName: 'Minimum Number of Days in Range',
+		group: ComponentPropertyGroup.DATA,
+	},
+	{
+		name: 'maxNumberOfDaysInRange',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Maximum Number of Days in Range',
 		group: ComponentPropertyGroup.DATA,
 	},
 	{
@@ -244,21 +252,17 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
-		name: 'disableTemporalRange',
+		name: 'disableTemporalRanges',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Disable Date Range',
-		description: 'disbale disable dates which is either past or future',
 		group: ComponentPropertyGroup.DATA,
 		enumValues: [
-			{
-				name: 'disableTodayFuture',
-				displayName: 'Disable Today and Future Dates',
-			},
-			{ name: 'disableTodayPast', displayName: 'Disable Today and Past Dates' },
 			{ name: 'disableToday', displayName: 'Disable Today' },
 			{ name: 'disableFuture', displayName: 'Disable Future Dates' },
 			{ name: 'disablePast', displayName: 'Disable Past Dates' },
+			{ name: 'disableWeekend', displayName: 'Disable Weekend' },
 		],
+		multiValued: true,
 	},
 	{
 		name: 'disableDays',
@@ -285,6 +289,28 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				name: 'fullCalendar',
 				displayName: 'Only Calendar',
 				description: 'Only Calendar',
+			},
+		],
+	},
+	{
+		name: 'calendarDesignType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Calendar Design Type',
+		description: 'Calendar Design Type',
+		defaultValue: '_default',
+		group: ComponentPropertyGroup.ADVANCED,
+		enumValues: [
+			{
+				name: '_defaultCalendar',
+				displayName: 'Default Calendar',
+			},
+			{
+				name: '_bigCalendar',
+				displayName: 'Big Calendar',
+			},
+			{
+				name: '_smallCalendar',
+				displayName: 'Small Calendar',
 			},
 		],
 	},
@@ -428,7 +454,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 			{
 				name: 'showSixMonths',
-				displayName: 'Show Six Year',
+				displayName: 'Show Six Months',
 			},
 			{
 				name: 'showTwelveMonths',
@@ -463,12 +489,20 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		enumValues: WEEK_DAYS,
 	},
 	{
-		name: 'lowLightWeekEnds',
-		schema: SCHEMA_NUM_COMP_PROP,
-		displayName: 'Low Light Week Ends',
-		description: 'Low Light Number of days on Week Ends',
+		name: 'weekEndDays',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Week End Days',
 		group: ComponentPropertyGroup.ADVANCED,
-		defaultValue: 0,
+		defaultValue: ['0', '6'],
+		enumValues: WEEK_DAYS,
+		multiValued: true,
+	},
+	{
+		name: 'lowLightWeekEnd',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Low Light Weekend',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
 	},
 	{
 		name: 'showPreviousNextMonthDate',
@@ -491,7 +525,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'multipleDateSeparator',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Multiple Date Separator',
-		description: 'Separator for multiple dates',
+		description:
+			'Separator for multiple dates when displayed in the text box. But stored as an array',
 		defaultValue: ',',
 		group: ComponentPropertyGroup.ADVANCED,
 	},
@@ -499,10 +534,18 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'disableTextEntry',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Disable Text Entry',
-		description: 'Disable Text Entry',
 		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
 	},
 	COMMON_COMPONENT_PROPERTIES.onChange,
+	{
+		name: 'onMonthChange',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Month Change',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered when the month is changed in the calendar.',
+		group: ComponentPropertyGroup.EVENTS,
+	},
 	{
 		name: 'leftIcon',
 		schema: SCHEMA_STRING_COMP_PROP,
@@ -524,6 +567,84 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Right Arrow Image',
 		group: ComponentPropertyGroup.ADVANCED,
 		editor: ComponentPropertyEditor.IMAGE,
+	},
+	{
+		name: 'headerMonthsLabels',
+		schema: SCHEMA_ANY_COMP_PROP,
+		displayName: 'Header Months Labels',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 'short',
+		enumValues: [
+			{ name: 'long', displayName: 'Long (Full)' },
+			{ name: 'short', displayName: 'Short (3 Letters)' },
+			{ name: 'narrow', displayName: 'Narrow (1 Letter)' },
+		],
+	},
+	{
+		name: 'headerMonthsCount',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Header Months Count',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 12,
+	},
+	{
+		name: 'monthLabels',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Month Labels',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 'long',
+		enumValues: [
+			{ name: 'long', displayName: 'Long (Full)' },
+			{ name: 'short', displayName: 'Short (3 Letters)' },
+			{ name: 'narrow', displayName: 'Narrow (1 Letter)' },
+		],
+	},
+	{
+		name: 'weekDayLabels',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Week Day Labels',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 'narrow',
+		enumValues: [
+			{ name: 'long', displayName: 'Long (Full)' },
+			{ name: 'short', displayName: 'Short (3 Letters)' },
+			{ name: 'narrow', displayName: 'Narrow (1 Letter)' },
+		],
+	},
+	{
+		name: 'language',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Language',
+		description:
+			'Language for the calendar, when not set it takes the system language. Format to be used is BCP 47 language tag',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+
+	{
+		name: 'dayEvents',
+		schema: SCHEMA_ANY_COMP_PROP,
+		displayName: 'Day Events',
+		description:
+			'List or object of events for the day to mark the day with events and provide to the user',
+		group: ComponentPropertyGroup.DATA,
+	},
+
+	{
+		name: 'dayEventsDateFormat',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Day Events Date Format',
+		description:
+			'Date Format to display the day events when not provided it takes the storage format or display format in that order',
+		group: ComponentPropertyGroup.DATA,
+		enumValues: DATE_FORMATS,
+	},
+
+	{
+		name: 'showMonthSelectionInHeader',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Month Selection In Header',
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
 	},
 ];
 
@@ -548,7 +669,37 @@ const stylePropertiesDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
-	calendarBodyContainer: [
+	calendarHeaderTitle: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	calendarHeaderMonthsContainer: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	calendarHeaderMonths: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	calendar: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
@@ -569,12 +720,14 @@ const stylePropertiesDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 	leftArrow: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
-	rigthArrow: [
+	rightArrow: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
@@ -591,6 +744,11 @@ const stylePropertiesDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 	monthName: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	yearNumber: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
