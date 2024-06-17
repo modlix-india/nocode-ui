@@ -106,56 +106,128 @@ export default function CalendarStyle({ theme }: { theme: Map<string, Map<string
             top: 100%;
             padding: 0 !important;
             box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+            min-width: 100%;
         }
 
-        ${PREFIX} ._calenderHeader{
-            background-color: #f5f5f5;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            color: #333333;
-            border-top-left-radius: 2px;
-            border-top-right-radius: 2px;
-            width: 100%;
+        ${PREFIX} ._leftArrow, 
+        ${PREFIX} ._rightArrow,
+        ${PREFIX} ._calendarHeader,
+        ${PREFIX} ._calendarHeaderTitle,
+        ${PREFIX} ._calendarBody,
+        ${PREFIX} ._yearNumber,
+        ${PREFIX} ._monthName,
+        ${PREFIX} ._calendarHeaderMonthsContainer,
+        ${PREFIX} ._calendarHeaderMonths
+         {
+            position: relative;
         }
 
-        ${PREFIX} ._calenderBody{
-            background-color: #ffffff;
-            border-bottom-left-radius: 2px;
-            border-bottom-right-radius: 2px;
-        }
-
-        ${PREFIX} ._calendarBodyContainer {
-            width: 300px;
-            height: 300px;
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            grid-template-rows: repeat(7, 1fr);
-            justify-items: center;
-            align-items: center;
-        }
-
-        ${PREFIX} ._date {
-            width: 30px;
-            height: 30px;
+        ${PREFIX} ._calendarHeader {
             display: flex;
             justify-content: center;
             align-items: center;
+            gap: 10px;
+            width: 100%;
+        }
+
+        ${PREFIX} ._calendarHeader svg {
+            width: 100% 
+        }
+
+        ${PREFIX} ._leftArrow, 
+        ${PREFIX} ._rightArrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            border-radius: 50%;
-            color: #333333;
         }
 
-        ${PREFIX} ._date:hover {
-            background-color: #219C90;
-            color: #ffffff;
+        ${PREFIX} ._calendarHeaderTitle {
+            display: flex;
+            gap: 5px;
+            flex: 1;
+            justify-content: center;
         }
 
-        ${PREFIX} ._date._selected {
-            background-color: #219C90;
-            color: #ffffff;
+        ${PREFIX} ._calendarHeaderMonthsContainer {
+            display: flex;
+            gap: 5px;
+            width: 100%;
+            align-items: center;
+            justify-content: space-between;            
         }
+
+        ${PREFIX} ._calendarHeaderMonths {
+            cursor: pointer;
+        }
+
+        ${PREFIX} ._month {
+            display: grid;
+            justify-items: center;
+            align-items: center;
+            grid-template-rows: auto repeat(6, 1fr);
+        }
+
+        ${PREFIX} ._month._withMonthName {
+            grid-template-rows: auto auto repeat(6, 1fr)
+        }
+
+        ${PREFIX} ._month._8cols {
+            grid-template-columns: repeat(8, 1fr);
+        }
+        
+        ${PREFIX} ._month._7cols {
+            grid-template-columns: repeat(7, 1fr);
+        }
+
+        ${PREFIX} ._month._8cols ._monthName {
+            grid-column: 1 / span 8;
+        }
+        
+        ${PREFIX} ._month._7cols ._monthName {
+            grid-column: 1 / span 7;
+        }
+
+        ${PREFIX} ._calendarBody._months {
+            display: grid;
+            gap: 10px;
+            grid-template-columns: auto auto auto;
+        }
+
+        ${PREFIX} ._calendarBody._months._1cols {
+            grid-template-columns: repeat(1, 1fr);
+        }
+
+        ${PREFIX} ._calendarBody._months._1cols > ._month {
+            grid-template-rows: auto repeat(5, 1fr) auto;
+        }
+
+        ${PREFIX} ._calendarBody._months._2cols {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        ${PREFIX} ._calendarBody._months._3cols,
+        ${PREFIX} ._calendarBody._months._6cols,
+        ${PREFIX} ._calendarBody._months._12cols {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        ${PREFIX} ._calendarBody._months._4cols {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        ${PREFIX} ._month > div {
+            padding: 3px;
+        }
+
+        ${PREFIX} ._date {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        ${PREFIX} ._date._dateSelectable {
+            cursor: pointer;
+        }
+       
  	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="CalendarCss">{css}</style>;
