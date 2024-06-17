@@ -106,12 +106,19 @@ export default function CalendarStyle({ theme }: { theme: Map<string, Map<string
             top: 100%;
             padding: 0 !important;
             box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+            min-width: 100%;
         }
 
         ${PREFIX} ._leftArrow, 
         ${PREFIX} ._rightArrow,
         ${PREFIX} ._calendarHeader,
-        ${PREFIX} ._calendarBody {
+        ${PREFIX} ._calendarHeaderTitle,
+        ${PREFIX} ._calendarBody,
+        ${PREFIX} ._yearNumber,
+        ${PREFIX} ._monthName,
+        ${PREFIX} ._calendarHeaderMonthsContainer,
+        ${PREFIX} ._calendarHeaderMonths
+         {
             position: relative;
         }
 
@@ -120,6 +127,7 @@ export default function CalendarStyle({ theme }: { theme: Map<string, Map<string
             justify-content: center;
             align-items: center;
             gap: 10px;
+            width: 100%;
         }
 
         ${PREFIX} ._calendarHeader svg {
@@ -131,6 +139,92 @@ export default function CalendarStyle({ theme }: { theme: Map<string, Map<string
             display: flex;
             align-items: center;
             justify-content: center;
+            cursor: pointer;
+        }
+
+        ${PREFIX} ._calendarHeaderTitle {
+            display: flex;
+            gap: 5px;
+            flex: 1;
+            justify-content: center;
+        }
+
+        ${PREFIX} ._calendarHeaderMonthsContainer {
+            display: flex;
+            gap: 5px;
+            width: 100%;
+            align-items: center;
+            justify-content: space-between;            
+        }
+
+        ${PREFIX} ._calendarHeaderMonths {
+            cursor: pointer;
+        }
+
+        ${PREFIX} ._month {
+            display: grid;
+            justify-items: center;
+            align-items: center;
+            grid-template-rows: auto repeat(6, 1fr);
+        }
+
+        ${PREFIX} ._month._withMonthName {
+            grid-template-rows: auto auto repeat(6, 1fr)
+        }
+
+        ${PREFIX} ._month._8cols {
+            grid-template-columns: repeat(8, 1fr);
+        }
+        
+        ${PREFIX} ._month._7cols {
+            grid-template-columns: repeat(7, 1fr);
+        }
+
+        ${PREFIX} ._month._8cols ._monthName {
+            grid-column: 1 / span 8;
+        }
+        
+        ${PREFIX} ._month._7cols ._monthName {
+            grid-column: 1 / span 7;
+        }
+
+        ${PREFIX} ._calendarBody._months {
+            display: grid;
+            gap: 10px;
+            grid-template-columns: auto auto auto;
+        }
+
+        ${PREFIX} ._calendarBody._months._1cols {
+            grid-template-columns: repeat(1, 1fr);
+        }
+
+        ${PREFIX} ._calendarBody._months._1cols > ._month {
+            grid-template-rows: auto repeat(5, 1fr) auto;
+        }
+
+        ${PREFIX} ._calendarBody._months._2cols {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        ${PREFIX} ._calendarBody._months._3cols,
+        ${PREFIX} ._calendarBody._months._6cols,
+        ${PREFIX} ._calendarBody._months._12cols {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        ${PREFIX} ._calendarBody._months._4cols {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        ${PREFIX} ._month > div {
+            padding: 3px;
+        }
+
+        ${PREFIX} ._date {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        ${PREFIX} ._date._dateSelectable {
             cursor: pointer;
         }
        
