@@ -113,13 +113,19 @@ export default function CalendarStyle({ theme }: { theme: Map<string, Map<string
         ${PREFIX} ._rightArrow,
         ${PREFIX} ._calendarHeader,
         ${PREFIX} ._calendarHeaderTitle,
-        ${PREFIX} ._calendarBody,
+        ${PREFIX} ._calendarBodyMonths,
         ${PREFIX} ._yearNumber,
         ${PREFIX} ._monthName,
         ${PREFIX} ._calendarHeaderMonthsContainer,
         ${PREFIX} ._calendarHeaderMonths
          {
             position: relative;
+        }
+
+        ${PREFIX} ._yearNumber,
+        ${PREFIX} ._monthName {
+            cursor: pointer;
+            user-select: none;
         }
 
         ${PREFIX} ._calendarHeader {
@@ -188,29 +194,29 @@ export default function CalendarStyle({ theme }: { theme: Map<string, Map<string
             grid-column: 1 / span 7;
         }
 
-        ${PREFIX} ._calendarBody._months {
+        ${PREFIX} ._calendarBodyMonths._months {
             display: grid;
             gap: 10px;
             grid-template-columns: auto auto auto;
         }
 
-        ${PREFIX} ._calendarBody._months._1cols {
+        ${PREFIX} ._calendarBodyMonths._months._1cols {
             grid-template-columns: repeat(1, 1fr);
         }
 
-        ${PREFIX} ._calendarBody._months._1cols > ._month {
+        ${PREFIX} ._calendarBodyMonths._months._1cols > ._month {
             grid-template-rows: auto repeat(5, 1fr) auto;
         }
 
-        ${PREFIX} ._calendarBody._months._2cols {
+        ${PREFIX} ._calendarBodyMonths._months._2cols {
             grid-template-columns: repeat(2, 1fr);
         }
-        ${PREFIX} ._calendarBody._months._3cols,
-        ${PREFIX} ._calendarBody._months._6cols,
-        ${PREFIX} ._calendarBody._months._12cols {
+        ${PREFIX} ._calendarBodyMonths._months._3cols,
+        ${PREFIX} ._calendarBodyMonths._months._6cols,
+        ${PREFIX} ._calendarBodyMonths._months._12cols {
             grid-template-columns: repeat(3, 1fr);
         }
-        ${PREFIX} ._calendarBody._months._4cols {
+        ${PREFIX} ._calendarBodyMonths._months._4cols {
             grid-template-columns: repeat(4, 1fr);
         }
 
@@ -226,6 +232,21 @@ export default function CalendarStyle({ theme }: { theme: Map<string, Map<string
 
         ${PREFIX} ._date._dateSelectable {
             cursor: pointer;
+        }
+
+        ${PREFIX} ._calendarBodyBrowseYears,
+        ${PREFIX} ._calendarBodyBrowseMonths  {
+            position: absolute;
+            gap: 10px;
+            bottom: 0px;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 20px;
         }
        
  	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);

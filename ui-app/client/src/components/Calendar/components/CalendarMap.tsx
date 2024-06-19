@@ -1,6 +1,11 @@
 import React from 'react';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
-import { CalendarHeader } from './CalendarHeader';
+import {
+	CalendarHeaderForBrowsing,
+	CalendarHeaderForMonth,
+	CalendarMonthTitle,
+	CalendarYearTitle,
+} from './CalendarHeader';
 import {
 	computeMinMaxDates,
 	getStyleObjectCurry,
@@ -49,8 +54,8 @@ export function CalendarMap(
 			new Date();
 	}
 
-	const [browseMonths, setBrowseMonths] = React.useState(false);
-	const [browseYears, setBrowseYears] = React.useState(false);
+	const [browseMonths, setBrowseMonths] = React.useState<number | undefined>();
+	const [browseYears, setBrowseYears] = React.useState<number | undefined>();
 
 	const newProps = { ...props, currentDate, minimumPossibleDate, maximumPossibleDate };
 
@@ -98,14 +103,32 @@ export function CalendarMap(
 	}
 
 	function onPreviousClick() {
-		if (browseMonths || browseYears) return;
+		if (browseMonths || browseYears) {
+			if (browseMonths) {
+				if (!minimumPossibleDate || browseMonths > minimumPossibleDate.getFullYear())
+					setBrowseMonths(browseMonths - 1);
+			} else {
+				if (!minimumPossibleDate || browseYears! > minimumPossibleDate.getFullYear())
+					setBrowseYears(browseYears! - count * 10);
+			}
+			return;
+		}
 		const newDate = new Date(currentDate);
 		newDate.setMonth(newDate.getMonth() - count);
 		onBMYChange(`${newDate.getMonth() + 1}-${newDate.getFullYear()}`);
 	}
 
 	function onNextClick() {
-		if (browseMonths || browseYears) return;
+		if (browseMonths || browseYears) {
+			if (browseMonths) {
+				if (!maximumPossibleDate || browseMonths < maximumPossibleDate.getFullYear())
+					setBrowseMonths(browseMonths + 1);
+			} else {
+				if (!maximumPossibleDate || browseYears! < maximumPossibleDate.getFullYear())
+					setBrowseYears(browseYears! + count * 10);
+			}
+			return;
+		}
 		const newDate = new Date(currentDate);
 		newDate.setMonth(newDate.getMonth() + count);
 		onBMYChange(`${newDate.getMonth() + 1}-${newDate.getFullYear()}`);
@@ -147,27 +170,139 @@ export function CalendarMap(
 
 	let months: Array<React.JSX.Element> = makeMonths(nextDate, count, onDateSelection, newProps);
 
-	let monthSelector = props.showMonthSelectionInHeader ? (
-		<CalendarMonthsInHeader {...newProps} onBrowsingMonthYearChange={onBMYChange} />
-	) : null;
+	let monthSelector =
+		!browseMonths && !browseYears && props.showMonthSelectionInHeader ? (
+			<CalendarMonthsInHeader {...newProps} onBrowsingMonthYearChange={onBMYChange} />
+		) : null;
 
-	return (
-		<>
-			<CalendarHeader
+	let header: React.JSX.Element;
+	let browseBody: React.JSX.Element | undefined = undefined;
+
+	if (browseMonths || browseYears) {
+		header = (
+			<CalendarHeaderForBrowsing
 				{...newProps}
-				onBrowsingMonthYearChange={onBMYChange}
-				onYearClick={() => setBrowseYears(!browseYears)}
-				onMonthClick={() => setBrowseMonths(!browseMonths)}
+				from={(browseMonths ?? browseYears)!}
+				to={browseMonths ? undefined : maximumYears(newProps, browseYears!)}
+				onYearClick={() => {
+					setBrowseYears(undefined);
+					setBrowseMonths(undefined);
+				}}
+				onMonthClick={() => {}}
 				onPreviousClick={onPreviousClick}
 				onNextClick={onNextClick}
 			/>
+		);
+
+		if (browseMonths) {
+			const from = new Date();
+			from.setFullYear(browseMonths);
+			from.setMonth(0);
+			const monthNames: React.JSX.Element[] = [];
+			console.log(maximumPossibleDate);
+			for (let i = 0; i < 12; i++) {
+				const monthDate = new Date(from);
+				if (
+					minimumPossibleDate &&
+					monthDate.getFullYear() === minimumPossibleDate.getFullYear()
+				) {
+					if (i < minimumPossibleDate.getMonth()) continue;
+				}
+				if (
+					maximumPossibleDate &&
+					monthDate.getFullYear() === maximumPossibleDate.getFullYear()
+				) {
+					if (i > maximumPossibleDate.getMonth()) continue;
+				}
+				monthDate.setMonth(i);
+				monthNames.push(
+					<CalendarMonthTitle
+						key={monthDate.toDateString()}
+						{...newProps}
+						month={monthDate.toLocaleDateString(props.language, {
+							month: props.monthLabels,
+						})}
+						onClick={() => {
+							onBMYChange(`${i + 1}-${browseMonths}`);
+							setBrowseMonths(undefined);
+							setBrowseYears(undefined);
+						}}
+					/>,
+				);
+			}
+			browseBody = (
+				<div className="_calendarBodyBrowseMonths">
+					<SubHelperComponent
+						definition={definition}
+						subComponentName="calendarBodyBrowseMonths"
+					/>
+					{monthNames}
+				</div>
+			);
+		} else {
+			const yearNumbers: React.JSX.Element[] = [];
+			for (let i = 0; i < count * 10; i++) {
+				const year = browseYears! + i;
+				if (maximumPossibleDate && year > maximumPossibleDate.getFullYear()) break;
+				if (minimumPossibleDate && year < minimumPossibleDate.getFullYear()) continue;
+				yearNumbers.push(
+					<CalendarYearTitle
+						key={year}
+						{...newProps}
+						year={year}
+						onClick={() => {
+							setBrowseMonths(year);
+							setBrowseYears(undefined);
+						}}
+					/>,
+				);
+			}
+			browseBody = (
+				<div className="_calendarBodyBrowseYears">
+					<SubHelperComponent
+						definition={definition}
+						subComponentName="calendarBodyBrowseYears"
+					/>
+					{yearNumbers}
+				</div>
+			);
+		}
+	} else {
+		header = (
+			<CalendarHeaderForMonth
+				{...newProps}
+				onYearClick={() => props.browseYears && setBrowseYears(currentDate.getFullYear())}
+				onMonthClick={() =>
+					props.browseMonths && setBrowseMonths(currentDate.getFullYear())
+				}
+				onPreviousClick={onPreviousClick}
+				onNextClick={onNextClick}
+			/>
+		);
+	}
+
+	let subComponent =
+		!browseMonths && !browseYears ? (
+			<SubHelperComponent definition={definition} subComponentName="calendarBodyMonths" />
+		) : undefined;
+
+	return (
+		<>
+			{header}
 			{monthSelector}
-			<div className={`_calendarBody _months _${count}cols`}>
-				<SubHelperComponent definition={definition} subComponentName="calendarBody" />
+			<div className={`_calendarBodyMonths _months _${count}cols`}>
+				{subComponent}
 				{months}
+				{browseBody}
 			</div>
 		</>
 	);
+}
+
+function maximumYears(props: CalendarIntermediateAllProps, from: number): number {
+	if (!props.maximumPossibleDate) return from + 10;
+	const diff = props.maximumPossibleDate.getFullYear() - from;
+	return diff > 10 ? from + 10 : props.maximumPossibleDate.getFullYear();
 }
 
 function CalendarMonthsInHeader(

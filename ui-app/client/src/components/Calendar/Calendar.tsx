@@ -692,9 +692,21 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'calendarBody',
-			displayName: 'Calendar Body',
-			description: 'Calendar Body',
+			name: 'calendarBodyMonths',
+			displayName: 'Calendar Body Months',
+			description: 'Calendar Body Months',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'calendarBodyBrowseYears',
+			displayName: 'Calendar Body Browse Years',
+			description: 'Calendar Body Browse Years',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'calendarBodyBrowseMonths',
+			displayName: 'Calendar Body Browse Months',
+			description: 'Calendar Body Browse Months',
 			icon: 'fa-solid fa-box',
 		},
 		{
@@ -705,14 +717,14 @@ const component: Component = {
 		},
 		{
 			name: 'calendarHeaderMonthsContainer',
-			displayName: 'Calendar Header Months Container',
-			description: 'Calendar Header Months Container',
+			displayName: 'Calendar Months Container Above Month',
+			description: 'Calendar Months Container Above Month',
 			icon: 'fa-solid fa-box',
 		},
 		{
 			name: 'calendarHeaderMonths',
-			displayName: 'Calendar Header Months',
-			description: 'Calendar Header Months',
+			displayName: 'Calendar Month Above Month',
+			description: 'Calendar Month Above Month',
 			icon: 'fa-solid fa-box',
 		},
 		{

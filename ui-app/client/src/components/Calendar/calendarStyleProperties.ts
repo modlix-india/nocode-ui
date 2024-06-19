@@ -3401,7 +3401,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 
 	////////////////////////
-
 	{
 		groupName: 'Calendar Header',
 		displayName: 'Primary Calendar DefaultCalendar Design Header Background',
@@ -4220,11 +4219,11 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 
 	{
 		groupName: 'Calendar Body',
-		displayName: 'Primary Calendar DefaultCalendar Design Header Color',
-		name: 'primaryCalendarDefaultCalendarDesignHeaderColor',
+		displayName: 'Primary Calendar DefaultCalendar Design Body Color',
+		name: 'primaryCalendarDefaultCalendarDesignBodyColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compCalendar._defaultCalendar._primary ._calendarHeader',
+		selector: '.comp.compCalendar._defaultCalendar._primary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -4233,7 +4232,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryCalendarDefaultCalendarDesignBodyColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compCalendar._defaultCalendar._secondary ._calendarBody',
+		selector: '.comp.compCalendar._defaultCalendar._secondary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -4242,7 +4241,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryCalendarDefaultCalendarDesignBodyColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compCalendar._defaultCalendar._tertiary ._calendarBody',
+		selector: '.comp.compCalendar._defaultCalendar._tertiary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -4251,7 +4250,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryCalendarDefaultCalendarDesignBodyColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compCalendar._defaultCalendar._quaternary ._calendarBody',
+		selector: '.comp.compCalendar._defaultCalendar._quaternary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -4260,7 +4259,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryCalendarDefaultCalendarDesignBodyColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compCalendar._defaultCalendar._quinary ._calendarBody',
+		selector: '.comp.compCalendar._defaultCalendar._quinary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -4269,7 +4268,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryCalendarBigCalendarDesignBodyColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compCalendar._bigCalendar._primary ._calendarBody',
+		selector: '.comp.compCalendar._bigCalendar._primary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -4278,7 +4277,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryCalendarBigCalendarDesignBodyColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compCalendar._bigCalendar._secondary ._calendarBody',
+		selector: '.comp.compCalendar._bigCalendar._secondary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -4287,7 +4286,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryCalendarBigCalendarDesignBodyColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compCalendar._bigCalendar._tertiary ._calendarBody',
+		selector: '.comp.compCalendar._bigCalendar._tertiary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -4296,7 +4295,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryCalendarBigCalendarDesignBodyColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compCalendar._bigCalendar._quaternary ._calendarBody',
+		selector: '.comp.compCalendar._bigCalendar._quaternary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -4305,7 +4304,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryCalendarBigCalendarDesignBodyColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compCalendar._bigCalendar._quinary ._calendarBody',
+		selector: '.comp.compCalendar._bigCalendar._quinary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -4314,7 +4313,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryCalendarSmallCalendarDesignBodyColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compCalendar._smallCalendar._primary ._calendarBody',
+		selector: '.comp.compCalendar._smallCalendar._primary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -4323,7 +4322,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryCalendarSmallCalendarDesignBodyColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compCalendar._smallCalendar._secondary ._calendarBody',
+		selector: '.comp.compCalendar._smallCalendar._secondary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -4332,7 +4331,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryCalendarSmallCalendarDesignBodyColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compCalendar._smallCalendar._tertiary ._calendarBody',
+		selector: '.comp.compCalendar._smallCalendar._tertiary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -4341,7 +4340,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryCalendarSmallCalendarDesignBodyColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compCalendar._smallCalendar._quaternary ._calendarBody',
+		selector: '.comp.compCalendar._smallCalendar._quaternary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -4350,7 +4349,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryCalendarSmallCalendarDesignBodyColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compCalendar._smallCalendar._quinary ._calendarBody',
+		selector: '.comp.compCalendar._smallCalendar._quinary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 
@@ -6264,7 +6263,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryCalendarDefaultCalendarDesignBodyBorderRadius',
 		defaultValue: '0px 0px 4px 4px',
 		cssProperty: 'border-radius',
-		selector: '.comp.compCalendar._defaultCalendar._primary ._calendarBody',
+		selector: '.comp.compCalendar._defaultCalendar._primary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -6273,7 +6272,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryCalendarDefaultCalendarDesignBodyBorderRadius',
 		defaultValue: '0px 0px 4px 4px',
 		cssProperty: 'border-radius',
-		selector: '.comp.compCalendar._defaultCalendar._secondary ._calendarBody',
+		selector: '.comp.compCalendar._defaultCalendar._secondary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -6282,7 +6281,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryCalendarDefaultCalendarDesignBodyBorderRadius',
 		defaultValue: '0px 0px 4px 4px',
 		cssProperty: 'border-radius',
-		selector: '.comp.compCalendar._defaultCalendar._tertiary ._calendarBody',
+		selector: '.comp.compCalendar._defaultCalendar._tertiary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -6291,7 +6290,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryCalendarDefaultCalendarDesignBodyBorderRadius',
 		defaultValue: '0px 0px 4px 4px',
 		cssProperty: 'border-radius',
-		selector: '.comp.compCalendar._defaultCalendar._quaternary ._calendarBody',
+		selector: '.comp.compCalendar._defaultCalendar._quaternary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -6300,7 +6299,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryCalendarDefaultCalendarDesignBodyBorderRadius',
 		defaultValue: '0px 0px 4px 4px',
 		cssProperty: 'border-radius',
-		selector: '.comp.compCalendar._defaultCalendar._quinary ._calendarBody',
+		selector: '.comp.compCalendar._defaultCalendar._quinary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -6309,7 +6308,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryCalendarBigCalendarDesignBodyBorderRadius',
 		defaultValue: '0px 0px 4px 4px',
 		cssProperty: 'border-radius',
-		selector: '.comp.compCalendar._bigCalendar._primary ._calendarBody',
+		selector: '.comp.compCalendar._bigCalendar._primary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -6318,7 +6317,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryCalendarBigCalendarDesignBodyBorderRadius',
 		defaultValue: '0px 0px 4px 4px',
 		cssProperty: 'border-radius',
-		selector: '.comp.compCalendar._bigCalendar._secondary ._calendarBody',
+		selector: '.comp.compCalendar._bigCalendar._secondary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -6327,7 +6326,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryCalendarBigCalendarDesignBodyBorderRadius',
 		defaultValue: '0px 0px 4px 4px',
 		cssProperty: 'border-radius',
-		selector: '.comp.compCalendar._bigCalendar._tertiary ._calendarBody',
+		selector: '.comp.compCalendar._bigCalendar._tertiary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -6336,7 +6335,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryCalendarBigCalendarDesignBodyBorderRadius',
 		defaultValue: '0px 0px 4px 4px',
 		cssProperty: 'border-radius',
-		selector: '.comp.compCalendar._bigCalendar._quaternary ._calendarBody',
+		selector: '.comp.compCalendar._bigCalendar._quaternary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -6345,7 +6344,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryCalendarBigCalendarDesignBodyBorderRadius',
 		defaultValue: '0px 0px 4px 4px',
 		cssProperty: 'border-radius',
-		selector: '.comp.compCalendar._bigCalendar._quinary ._calendarBody',
+		selector: '.comp.compCalendar._bigCalendar._quinary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -6354,7 +6353,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryCalendarSmallCalendarDesignBodyBorderRadius',
 		defaultValue: '0px 0px 4px 4px',
 		cssProperty: 'border-radius',
-		selector: '.comp.compCalendar._smallCalendar._primary ._calendarBody',
+		selector: '.comp.compCalendar._smallCalendar._primary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -6363,7 +6362,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryCalendarSmallCalendarDesignBodyBorderRadius',
 		defaultValue: '0px 0px 4px 4px',
 		cssProperty: 'border-radius',
-		selector: '.comp.compCalendar._smallCalendar._secondary ._calendarBody',
+		selector: '.comp.compCalendar._smallCalendar._secondary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -6372,7 +6371,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryCalendarSmallCalendarDesignBodyBorderRadius',
 		defaultValue: '0px 0px 4px 4px',
 		cssProperty: 'border-radius',
-		selector: '.comp.compCalendar._smallCalendar._tertiary ._calendarBody',
+		selector: '.comp.compCalendar._smallCalendar._tertiary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -6381,7 +6380,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryCalendarSmallCalendarDesignBodyBorderRadius',
 		defaultValue: '0px 0px 4px 4px',
 		cssProperty: 'border-radius',
-		selector: '.comp.compCalendar._smallCalendar._quaternary ._calendarBody',
+		selector: '.comp.compCalendar._smallCalendar._quaternary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -6390,7 +6389,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryCalendarSmallCalendarDesignBodyBorderRadius',
 		defaultValue: '0px 0px 4px 4px',
 		cssProperty: 'border-radius',
-		selector: '.comp.compCalendar._smallCalendar._quinary ._calendarBody',
+		selector: '.comp.compCalendar._smallCalendar._quinary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 
@@ -6400,7 +6399,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryCalendarDefaultCalendarDesignBodyColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compCalendar._defaultCalendar._primary ._calendarBody',
+		selector: '.comp.compCalendar._defaultCalendar._primary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -6409,7 +6408,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryCalendarDefaultCalendarDesignBodyColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compCalendar._defaultCalendar._secondary ._calendarBody',
+		selector: '.comp.compCalendar._defaultCalendar._secondary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -6418,7 +6417,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryCalendarDefaultCalendarDesignBodyColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compCalendar._defaultCalendar._tertiary ._calendarBody',
+		selector: '.comp.compCalendar._defaultCalendar._tertiary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -6427,7 +6426,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryCalendarDefaultCalendarDesignBodyColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compCalendar._defaultCalendar._quaternary ._calendarBody',
+		selector: '.comp.compCalendar._defaultCalendar._quaternary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -6436,7 +6435,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryCalendarDefaultCalendarDesignBodyColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compCalendar._defaultCalendar._quinary ._calendarBody',
+		selector: '.comp.compCalendar._defaultCalendar._quinary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -6445,7 +6444,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryCalendarBigCalendarDesignBodyColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compCalendar._bigCalendar._primary ._calendarBody',
+		selector: '.comp.compCalendar._bigCalendar._primary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -6454,7 +6453,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryCalendarBigCalendarDesignBodyColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compCalendar._bigCalendar._secondary ._calendarBody',
+		selector: '.comp.compCalendar._bigCalendar._secondary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -6463,7 +6462,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryCalendarBigCalendarDesignBodyColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compCalendar._bigCalendar._tertiary ._calendarBody',
+		selector: '.comp.compCalendar._bigCalendar._tertiary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -6472,7 +6471,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryCalendarBigCalendarDesignBodyColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compCalendar._bigCalendar._quaternary ._calendarBody',
+		selector: '.comp.compCalendar._bigCalendar._quaternary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -6481,7 +6480,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryCalendarBigCalendarDesignBodyColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compCalendar._bigCalendar._quinary ._calendarBody',
+		selector: '.comp.compCalendar._bigCalendar._quinary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -6490,7 +6489,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryCalendarSmallCalendarDesignBodyColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compCalendar._smallCalendar._primary ._calendarBody',
+		selector: '.comp.compCalendar._smallCalendar._primary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -6499,7 +6498,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryCalendarSmallCalendarDesignBodyColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compCalendar._smallCalendar._secondary ._calendarBody',
+		selector: '.comp.compCalendar._smallCalendar._secondary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -6508,7 +6507,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryCalendarSmallCalendarDesignBodyColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compCalendar._smallCalendar._tertiary ._calendarBody',
+		selector: '.comp.compCalendar._smallCalendar._tertiary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -6517,7 +6516,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryCalendarSmallCalendarDesignBodyColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compCalendar._smallCalendar._quaternary ._calendarBody',
+		selector: '.comp.compCalendar._smallCalendar._quaternary ._calendarBodyMonths',
 		noPrefix: true,
 	},
 	{
@@ -6526,7 +6525,63 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryCalendarSmallCalendarDesignBodyColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
-		selector: '.comp.compCalendar._smallCalendar._quinary ._calendarBody',
+		selector: '.comp.compCalendar._smallCalendar._quinary ._calendarBodyMonths',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'Calendar Body',
+		displayName: 'DefaultCalendar Design One Calendar Width',
+		name: 'defaultCalendarDesignOneCalendarWidth',
+		defaultValue: '315px',
+		cssProperty: 'min-width',
+		selector: '.comp.compCalendar._defaultCalendar ._calendarBodyMonths ._month',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Calendar Body',
+		displayName: 'BigCalendar Design One Calendar Width',
+		name: 'bigCalendarDesignOneCalendarWidth',
+		defaultValue: '840px',
+		cssProperty: 'min-width',
+		selector: '.comp.compCalendar._bigCalendar ._calendarBodyMonths ._month',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Calendar Body',
+		displayName: 'SmallCalendar Design One Calendar Width',
+		name: 'smallCalendarDesignOneCalendarWidth',
+		defaultValue: '235px',
+		cssProperty: 'min-width',
+		selector: '.comp.compCalendar._smallCalendar ._calendarBodyMonths ._month',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'Calendar Body',
+		displayName: 'DefaultCalendar Design One Calendar Height',
+		name: 'defaultCalendarDesignOneCalendarHeight',
+		defaultValue: '295px',
+		cssProperty: 'min-height',
+		selector: '.comp.compCalendar._defaultCalendar ._calendarBodyMonths ._month',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Calendar Body',
+		displayName: 'BigCalendar Design One Calendar Height',
+		name: 'bigCalendarDesignOneCalendarHeight',
+		defaultValue: '745px',
+		cssProperty: 'min-height',
+		selector: '.comp.compCalendar._bigCalendar ._calendarBodyMonths ._month',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Calendar Body',
+		displayName: 'SmallCalendar Design One Calendar Height',
+		name: 'smallCalendarDesignOneCalendarHeight',
+		defaultValue: '145px',
+		cssProperty: 'min-height',
+		selector: '.comp.compCalendar._smallCalendar ._calendarBodyMonths ._month',
 		noPrefix: true,
 	},
 
@@ -6536,7 +6591,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryCalendarDefaultCalendarDesignDropdownBackground',
 		defaultValue: '#FFFFFF',
 		cssProperty: 'background',
-		selector: '.comp.compCalendar._defaultCalendar._primary ._dropdownContainer',
+		selector:
+			'.comp.compCalendar._defaultCalendar._primary ._dropdownContainer, .comp.compCalendar._defaultCalendar._primary ._calendarBodyBrowseYears, .comp.compCalendar._defaultCalendar._primary ._calendarBodyBrowseMonths',
 		noPrefix: true,
 	},
 	{
@@ -6545,7 +6601,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryCalendarDefaultCalendarDesignDropdownBackground',
 		defaultValue: '#FFFFFF',
 		cssProperty: 'background',
-		selector: '.comp.compCalendar._defaultCalendar._secondary ._dropdownContainer',
+		selector:
+			'.comp.compCalendar._defaultCalendar._secondary ._dropdownContainer, .comp.compCalendar._defaultCalendar._secondary ._calendarBodyBrowseYears, .comp.compCalendar._defaultCalendar._secondary ._calendarBodyBrowseMonths',
 		noPrefix: true,
 	},
 	{
@@ -6554,7 +6611,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryCalendarDefaultCalendarDesignDropdownBackground',
 		defaultValue: '#FFFFFF',
 		cssProperty: 'background',
-		selector: '.comp.compCalendar._defaultCalendar._tertiary ._dropdownContainer',
+		selector:
+			'.comp.compCalendar._defaultCalendar._tertiary ._dropdownContainer, .comp.compCalendar._defaultCalendar._tertiary ._calendarBodyBrowseYears, .comp.compCalendar._defaultCalendar._tertiary ._calendarBodyBrowseMonths',
 		noPrefix: true,
 	},
 	{
@@ -6563,7 +6621,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryCalendarDefaultCalendarDesignDropdownBackground',
 		defaultValue: '#FFFFFF',
 		cssProperty: 'background',
-		selector: '.comp.compCalendar._defaultCalendar._quaternary ._dropdownContainer',
+		selector:
+			'.comp.compCalendar._defaultCalendar._quaternary ._dropdownContainer, .comp.compCalendar._defaultCalendar._quaternary ._calendarBodyBrowseYears, .comp.compCalendar._defaultCalendar._quaternary ._calendarBodyBrowseMonths',
 		noPrefix: true,
 	},
 	{
@@ -6572,7 +6631,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryCalendarDefaultCalendarDesignDropdownBackground',
 		defaultValue: '#FFFFFF',
 		cssProperty: 'background',
-		selector: '.comp.compCalendar._defaultCalendar._quinary ._dropdownContainer',
+		selector:
+			'.comp.compCalendar._defaultCalendar._quinary ._dropdownContainer, .comp.compCalendar._defaultCalendar._quinary ._calendarBodyBrowseYears, .comp.compCalendar._defaultCalendar._quinary ._calendarBodyBrowseMonths',
 		noPrefix: true,
 	},
 	{
@@ -6581,7 +6641,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryCalendarBigCalendarDesignDropdownBackground',
 		defaultValue: '#FFFFFF',
 		cssProperty: 'background',
-		selector: '.comp.compCalendar._bigCalendar._primary ._dropdownContainer',
+		selector:
+			'.comp.compCalendar._bigCalendar._primary ._dropdownContainer, .comp.compCalendar._bigCalendar._primary ._calendarBodyBrowseYears, .comp.compCalendar._bigCalendar._primary ._calendarBodyBrowseMonths',
 		noPrefix: true,
 	},
 	{
@@ -6590,7 +6651,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryCalendarBigCalendarDesignDropdownBackground',
 		defaultValue: '#FFFFFF',
 		cssProperty: 'background',
-		selector: '.comp.compCalendar._bigCalendar._secondary ._dropdownContainer',
+		selector:
+			'.comp.compCalendar._bigCalendar._secondary ._dropdownContainer, .comp.compCalendar._bigCalendar._secondary ._calendarBodyBrowseYears, .comp.compCalendar._bigCalendar._secondary ._calendarBodyBrowseMonths',
 		noPrefix: true,
 	},
 	{
@@ -6599,7 +6661,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryCalendarBigCalendarDesignDropdownBackground',
 		defaultValue: '#FFFFFF',
 		cssProperty: 'background',
-		selector: '.comp.compCalendar._bigCalendar._tertiary ._dropdownContainer',
+		selector:
+			'.comp.compCalendar._bigCalendar._tertiary ._dropdownContainer, .comp.compCalendar._bigCalendar._tertiary ._calendarBodyBrowseYears, .comp.compCalendar._bigCalendar._tertiary ._calendarBodyBrowseMonths',
 		noPrefix: true,
 	},
 	{
@@ -6608,7 +6671,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryCalendarBigCalendarDesignDropdownBackground',
 		defaultValue: '#FFFFFF',
 		cssProperty: 'background',
-		selector: '.comp.compCalendar._bigCalendar._quaternary ._dropdownContainer',
+		selector:
+			'.comp.compCalendar._bigCalendar._quaternary ._dropdownContainer, .comp.compCalendar._bigCalendar._quaternary ._calendarBodyBrowseYears, .comp.compCalendar._bigCalendar._quaternary ._calendarBodyBrowseMonths',
 		noPrefix: true,
 	},
 	{
@@ -6617,7 +6681,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryCalendarBigCalendarDesignDropdownBackground',
 		defaultValue: '#FFFFFF',
 		cssProperty: 'background',
-		selector: '.comp.compCalendar._bigCalendar._quinary ._dropdownContainer',
+		selector:
+			'.comp.compCalendar._bigCalendar._quinary ._dropdownContainer, .comp.compCalendar._bigCalendar._quinary ._calendarBodyBrowseYears, .comp.compCalendar._bigCalendar._quinary ._calendarBodyBrowseMonths',
 		noPrefix: true,
 	},
 	{
@@ -6626,7 +6691,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryCalendarSmallCalendarDesignDropdownBackground',
 		defaultValue: '#FFFFFF',
 		cssProperty: 'background',
-		selector: '.comp.compCalendar._smallCalendar._primary ._dropdownContainer',
+		selector:
+			'.comp.compCalendar._smallCalendar._primary ._dropdownContainer, .comp.compCalendar._smallCalendar._primary ._calendarBodyBrowseYears, .comp.compCalendar._smallCalendar._primary ._calendarBodyBrowseMonths',
 		noPrefix: true,
 	},
 	{
@@ -6635,7 +6701,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryCalendarSmallCalendarDesignDropdownBackground',
 		defaultValue: '#FFFFFF',
 		cssProperty: 'background',
-		selector: '.comp.compCalendar._smallCalendar._secondary ._dropdownContainer',
+		selector:
+			'.comp.compCalendar._smallCalendar._secondary ._dropdownContainer, .comp.compCalendar._smallCalendar._secondary ._calendarBodyBrowseYears, .comp.compCalendar._smallCalendar._secondary ._calendarBodyBrowseMonths',
 		noPrefix: true,
 	},
 	{
@@ -6644,7 +6711,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryCalendarSmallCalendarDesignDropdownBackground',
 		defaultValue: '#FFFFFF',
 		cssProperty: 'background',
-		selector: '.comp.compCalendar._smallCalendar._tertiary ._dropdownContainer',
+		selector:
+			'.comp.compCalendar._smallCalendar._tertiary ._dropdownContainer, .comp.compCalendar._smallCalendar._tertiary ._calendarBodyBrowseYears, .comp.compCalendar._smallCalendar._tertiary ._calendarBodyBrowseMonths',
 		noPrefix: true,
 	},
 	{
@@ -6653,7 +6721,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryCalendarSmallCalendarDesignDropdownBackground',
 		defaultValue: '#FFFFFF',
 		cssProperty: 'background',
-		selector: '.comp.compCalendar._smallCalendar._quaternary ._dropdownContainer',
+		selector:
+			'.comp.compCalendar._smallCalendar._quaternary ._dropdownContainer, .comp.compCalendar._smallCalendar._quaternary ._calendarBodyBrowseYears, .comp.compCalendar._smallCalendar._quaternary ._calendarBodyBrowseMonths',
 		noPrefix: true,
 	},
 	{
@@ -6662,7 +6731,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryCalendarSmallCalendarDesignDropdownBackground',
 		defaultValue: '#FFFFFF',
 		cssProperty: 'background',
-		selector: '.comp.compCalendar._smallCalendar._quinary ._dropdownContainer',
+		selector:
+			'.comp.compCalendar._smallCalendar._quinary ._dropdownContainer, .comp.compCalendar._smallCalendar._quinary ._calendarBodyBrowseYears, .comp.compCalendar._smallCalendar._quinary ._calendarBodyBrowseMonths',
 		noPrefix: true,
 	},
 
@@ -6716,7 +6786,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Calendar Month Date',
 		displayName: 'SmallCalendar Design Month Date Width',
 		name: 'smallCalendarDesignMonthDateWidth',
-		defaultValue: '20px',
+		defaultValue: '34px',
 		cssProperty: 'width',
 		selector: '.comp.compCalendar._smallCalendar ._date',
 		noPrefix: true,
@@ -6744,7 +6814,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Calendar Month Date',
 		displayName: 'SmallCalendar Design Month Date Height',
 		name: 'smallCalendarDesignMonthDateHeight',
-		defaultValue: '20px',
+		defaultValue: '34px',
 		cssProperty: 'height',
 		selector: '.comp.compCalendar._smallCalendar ._date',
 		noPrefix: true,
