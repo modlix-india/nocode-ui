@@ -170,11 +170,14 @@ function computeClassName(
 	const today = new Date().toDateString();
 
 	if (props.isRangeType && thisDates?.length && thatDate) {
-		if (date > thisDates[0] && date < thatDate) className += ' _dateInRange';
-		else if (date.toDateString() === thisDates[0].toDateString())
-			className += props.dateType === 'startDate' ? ' _dateStart' : ' _dateEnd';
-		else if (date.toDateString() === thatDate.toDateString())
-			className += props.dateType === 'startDate' ? ' _dateEnd' : ' _dateStart';
+		let startDate = thisDates[0],
+			endDate = thatDate;
+		if (startDate > endDate) [startDate, endDate] = [endDate, startDate];
+		if (date > startDate && date < endDate) className += ' _dateInRange _dateSelected';
+		else if (date.toDateString() === startDate.toDateString())
+			className += ' _dateStart _dateSelected';
+		else if (date.toDateString() === endDate.toDateString())
+			className += ' _dateEnd _dateSelected';
 	}
 
 	let disabled = false;

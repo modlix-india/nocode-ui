@@ -25,7 +25,8 @@ export function CalendarMap(
 		CalendarValidationProps & {
 			browsingMonthYear: string;
 			onBrowsingMonthYearChange: (value: string) => void;
-			onChange: (value: string | number | undefined) => void;
+			onChange: (value: string | number | undefined, close: boolean) => void;
+			onClearOtherDate?: () => void;
 		},
 ) {
 	const {
@@ -59,48 +60,7 @@ export function CalendarMap(
 
 	const newProps = { ...props, currentDate, minimumPossibleDate, maximumPossibleDate };
 
-	let nextDate = new Date(currentDate);
-	let count = 0;
-
-	switch (props.calendarFormat) {
-		case 'showCurrentYear':
-			nextDate.setMonth(0);
-			count = 12;
-			break;
-		case 'showCurrentMonth':
-			count = 1;
-			break;
-		case 'showCurrentMonthAndNext':
-			count = 2;
-			break;
-		case 'showCurrentMonthAndPrevious':
-			nextDate.setMonth(nextDate.getMonth() - 1);
-			count = 2;
-			break;
-		case 'showPreviousCurrentAndNextMonth':
-			nextDate.setMonth(nextDate.getMonth() - 1);
-			count = 3;
-			break;
-		case 'showCurrentAndPreviousTwoMonths':
-			nextDate.setMonth(nextDate.getMonth() - 2);
-			count = 3;
-			break;
-		case 'showCurrentAndNextTwoMonths':
-			count = 3;
-			break;
-		case 'showFourMonths':
-			nextDate.setMonth(nextDate.getMonth() - 2);
-			count = 4;
-			break;
-		case 'showSixMonths':
-			nextDate.setMonth(nextDate.getMonth() - 2);
-			count = 6;
-			break;
-		case 'showTwelveMonths':
-			nextDate.setMonth(nextDate.getMonth() - 5);
-			count = 12;
-			break;
-	}
+	const [count, nextDate] = computeMonthCounts(currentDate, props.calendarFormat);
 
 	function onPreviousClick() {
 		if (browseMonths || browseYears) {
@@ -161,12 +121,67 @@ export function CalendarMap(
 		onBrowsingMonthYearChange(value);
 	}
 
-	function onDateSelection(date: Date) {
-		if (!isRangeType) {
-			props.onChange(toFormat(date, 'Date', props.storageFormat ?? props.displayDateFormat));
-			return;
+	const onDateSelection = (date: Date) => {
+		if (props.isMultiSelect) {
+			let finDate = toFormat(
+				date,
+				'Date',
+				props.storageFormat ?? props.displayDateFormat,
+			)!.toString();
+			if (props.thisDate) {
+				const splits = props.thisDate.toString().split(props.multipleDateSeparator);
+				const index = splits.indexOf(finDate);
+				if (index >= 0) splits.splice(index, 1);
+				else splits.push(finDate);
+				finDate = splits.join(props.multipleDateSeparator);
+			}
+			props.onChange(finDate, false);
+		} else if (props.isRangeType) {
+			let startDate = props.thisDate;
+			let endDate = props.thatDate;
+
+			let wipeEndDate = false;
+			if (startDate && endDate) {
+				startDate = endDate = undefined;
+				wipeEndDate = true;
+			}
+			if (isEndDate && startDate && endDate) [startDate, endDate] = [endDate, startDate];
+
+			let start = getValidDate(startDate, storageFormat ?? displayDateFormat);
+			let end = getValidDate(endDate, storageFormat ?? displayDateFormat);
+			if (startDate || isEndDate) {
+				end = date;
+				endDate = toFormat(date, 'Date', storageFormat ?? displayDateFormat);
+			} else {
+				start = date;
+				startDate = toFormat(date, 'Date', storageFormat ?? displayDateFormat);
+			}
+
+			if (start && end && start > end) [startDate, endDate] = [endDate, startDate];
+
+			console.log(start, end);
+			console.log(startDate, endDate);
+			if (startDate && endDate)
+				props.onChange(
+					startDate && endDate && isEndDate
+						? `${endDate}${props.multipleDateSeparator}${startDate}`
+						: `${startDate}${props.multipleDateSeparator}${endDate}`,
+					true,
+				);
+			else {
+				props.onChange(
+					toFormat(date, 'Date', props.storageFormat ?? props.displayDateFormat),
+					false,
+				);
+				if (wipeEndDate && props.onClearOtherDate) props.onClearOtherDate();
+			}
+		} else {
+			props.onChange(
+				toFormat(date, 'Date', props.storageFormat ?? props.displayDateFormat),
+				true,
+			);
 		}
-	}
+	};
 
 	let months: Array<React.JSX.Element> = makeMonths(nextDate, count, onDateSelection, newProps);
 
@@ -183,7 +198,7 @@ export function CalendarMap(
 			<CalendarHeaderForBrowsing
 				{...newProps}
 				from={(browseMonths ?? browseYears)!}
-				to={browseMonths ? undefined : maximumYears(newProps, browseYears!)}
+				to={browseMonths ? undefined : browseYears! + count * 10}
 				onYearClick={() => {
 					setBrowseYears(undefined);
 					setBrowseMonths(undefined);
@@ -199,7 +214,6 @@ export function CalendarMap(
 			from.setFullYear(browseMonths);
 			from.setMonth(0);
 			const monthNames: React.JSX.Element[] = [];
-			console.log(maximumPossibleDate);
 			for (let i = 0; i < 12; i++) {
 				const monthDate = new Date(from);
 				if (
@@ -299,10 +313,51 @@ export function CalendarMap(
 	);
 }
 
-function maximumYears(props: CalendarIntermediateAllProps, from: number): number {
-	if (!props.maximumPossibleDate) return from + 10;
-	const diff = props.maximumPossibleDate.getFullYear() - from;
-	return diff > 10 ? from + 10 : props.maximumPossibleDate.getFullYear();
+function computeMonthCounts(currentDate: Date, calendarFormat: string): [number, Date] {
+	let nextDate = new Date(currentDate);
+	let count = 0;
+
+	switch (calendarFormat) {
+		case 'showCurrentYear':
+			nextDate.setMonth(0);
+			count = 12;
+			break;
+		case 'showCurrentMonth':
+			count = 1;
+			break;
+		case 'showCurrentMonthAndNext':
+			count = 2;
+			break;
+		case 'showCurrentMonthAndPrevious':
+			nextDate.setMonth(nextDate.getMonth() - 1);
+			count = 2;
+			break;
+		case 'showPreviousCurrentAndNextMonth':
+			nextDate.setMonth(nextDate.getMonth() - 1);
+			count = 3;
+			break;
+		case 'showCurrentAndPreviousTwoMonths':
+			nextDate.setMonth(nextDate.getMonth() - 2);
+			count = 3;
+			break;
+		case 'showCurrentAndNextTwoMonths':
+			count = 3;
+			break;
+		case 'showFourMonths':
+			nextDate.setMonth(nextDate.getMonth() - 2);
+			count = 4;
+			break;
+		case 'showSixMonths':
+			nextDate.setMonth(nextDate.getMonth() - 2);
+			count = 6;
+			break;
+		case 'showTwelveMonths':
+			nextDate.setMonth(nextDate.getMonth() - 5);
+			count = 12;
+			break;
+	}
+
+	return [count, nextDate];
 }
 
 function CalendarMonthsInHeader(

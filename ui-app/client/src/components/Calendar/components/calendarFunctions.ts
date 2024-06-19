@@ -116,7 +116,7 @@ export function validateRangesAndSetData(
 ) {
 	if (!value) {
 		setData(path, value, context);
-		return;
+		return true;
 	}
 
 	if (props.isMultiSelect) {
@@ -127,7 +127,7 @@ export function validateRangesAndSetData(
 		if (dates.every((e: Date | undefined) => !isNullValue(e))) {
 			setData(path, splits, context);
 		}
-		return;
+		return true;
 	}
 
 	const date = validateWithProps(
@@ -137,8 +137,10 @@ export function validateRangesAndSetData(
 
 	if (date != undefined) {
 		setData(path, value, context);
-		return;
+		return true;
 	}
+
+	return false;
 }
 
 export function validateWithProps(

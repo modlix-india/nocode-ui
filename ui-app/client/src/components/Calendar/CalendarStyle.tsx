@@ -234,6 +234,17 @@ export default function CalendarStyle({ theme }: { theme: Map<string, Map<string
             cursor: pointer;
         }
 
+        ${PREFIX} ._date._dateInRange._dateSelectable {
+            border-radius: 0px;
+        }
+
+        ${PREFIX} ._date._dateSelectable._dateEnd {
+            border-radius: 0 50% 50% 0;
+        }
+        ${PREFIX} ._date._dateSelectable._dateStart {
+            border-radius: 50% 0 0 50%;
+        }
+
         ${PREFIX} ._calendarBodyBrowseYears,
         ${PREFIX} ._calendarBodyBrowseMonths  {
             position: absolute;
