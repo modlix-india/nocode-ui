@@ -7,17 +7,41 @@ import {
 } from './calendarFunctions';
 import { CalendarAllProps } from './calendarTypes';
 
-export function CalendarHeader(
-	props: CalendarAllProps & {
-		onMonthClick: () => void;
-		onYearClick: () => void;
-		onBrowsingMonthYearChange: (value: string) => void;
-		onPreviousClick: () => void;
-		onNextClick: () => void;
-	},
+export interface CalendarHeaderProps extends CalendarAllProps {
+	onMonthClick: () => void;
+	onYearClick: () => void;
+	onPreviousClick: () => void;
+	onNextClick: () => void;
+}
+
+export function CalendarHeaderForBrowsing(
+	props: CalendarHeaderProps & { from: number; to: number | undefined },
 ) {
+	let content;
+	if (props.to === undefined) {
+		content = <CalendarYearTitle {...props} year={props.from} onClick={props.onYearClick} />;
+	} else {
+		content = (
+			<>
+				<CalendarYearTitle {...props} year={props.from} onClick={props.onYearClick} />
+				-
+				<CalendarYearTitle {...props} year={props.to} onClick={props.onYearClick} />
+			</>
+		);
+	}
+	return <CalendarHeader {...props}>{content}</CalendarHeader>;
+}
+
+export function CalendarHeaderForMonth(props: CalendarHeaderProps) {
+	return (
+		<CalendarHeader {...props}>
+			<CalendarTitle {...props} />
+		</CalendarHeader>
+	);
+}
+
+export function CalendarHeader(props: CalendarHeaderProps & { children: React.ReactNode }) {
 	const {
-		currentDate,
 		styles,
 		hoverStyles,
 		disabledStyles,
@@ -73,7 +97,7 @@ export function CalendarHeader(
 			onMouseEnter={addToToggleSetCurry(hovers, setHovers, 'calendarHeaderTitle')}
 			onMouseLeave={removeFromToggleSetCurry(hovers, setHovers, 'calendarHeaderTitle')}
 		>
-			<CalendarTitle {...props} />
+			{props.children}
 		</div>,
 	);
 
@@ -107,7 +131,7 @@ function CalendarTitle(
 					month={props.currentDate.toLocaleDateString(props.language, {
 						month: props.monthLabels,
 					})}
-					onClick={props.onYearClick}
+					onClick={props.onMonthClick}
 				/>
 				<CalendarYearTitle
 					{...props}
@@ -187,7 +211,7 @@ function CalendarTitle(
 	);
 }
 
-function CalendarYearTitle(props: CalendarAllProps & { year: number; onClick: () => void }) {
+export function CalendarYearTitle(props: CalendarAllProps & { year: number; onClick: () => void }) {
 	const [hover, setHover] = React.useState<boolean>(false);
 
 	const yearStyles = getStyleObjectCurry(props.styles, props.hoverStyles, props.disabledStyles)(

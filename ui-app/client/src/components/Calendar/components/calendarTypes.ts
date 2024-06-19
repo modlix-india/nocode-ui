@@ -71,6 +71,8 @@ export interface CalendarMapProps {
 	definition: any;
 	headerMonthsLabels: LabelType;
 	headerMonthsCount: number;
+	browseYears: boolean;
+	browseMonths: boolean;
 }
 
 export interface CalendarIntermediateAllProps extends CalendarMapProps, CalendarValidationProps {
