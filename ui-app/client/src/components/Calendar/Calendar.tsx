@@ -260,7 +260,16 @@ function CalendarComponent(props: ComponentProps) {
 		weekEndDays,
 	]);
 
-	const handleChange = (e: any) => {
+	const clearOtherDate = () => {
+		if (!isRangeType) return;
+
+		const currentBindingPath = dateType === 'startDate' ? bindingPathPath2 : bindingPathPath1;
+		if (!currentBindingPath) return;
+
+		validateRangesAndSetData(currentBindingPath, undefined, context.pageName, validationProps);
+	};
+
+	const handleChange = (e: any, close: boolean) => {
 		let currentBindingPath = dateType === 'startDate' ? bindingPathPath1 : bindingPathPath2;
 		if (!currentBindingPath) return;
 
@@ -272,14 +281,17 @@ function CalendarComponent(props: ComponentProps) {
 			).toString() ?? '';
 
 		if (value.trim() === '') {
-			if (thisDate)
-				validateRangesAndSetData(
-					currentBindingPath,
-					undefined,
-					context.pageName,
-					validationProps,
-				);
-			else return;
+			if (!thisDate) return;
+			const validatedAndSet = validateRangesAndSetData(
+				currentBindingPath,
+				undefined,
+				context.pageName,
+				validationProps,
+			);
+			if (!validatedAndSet && close) {
+				setShowDropdown(false);
+				return;
+			}
 		} else {
 			if (isMultiSelect || bindingPathPath2) {
 				const values = value.split(multipleDateSeparator);
@@ -292,8 +304,9 @@ function CalendarComponent(props: ComponentProps) {
 					return;
 				}
 
+				let validatedAndSet = false;
 				if (isMultiSelect) {
-					validateRangesAndSetData(
+					validatedAndSet = validateRangesAndSetData(
 						currentBindingPath,
 						dates.length ? dates.join(multipleDateSeparator) : undefined,
 						context.pageName,
@@ -301,26 +314,31 @@ function CalendarComponent(props: ComponentProps) {
 					);
 				} else {
 					if (dates.length === 1) {
-						validateRangesAndSetData(
+						validatedAndSet = validateRangesAndSetData(
 							currentBindingPath,
 							dates[0],
 							context.pageName,
 							validationProps,
 						);
 					} else if (dates.length > 1) {
-						validateRangesAndSetData(
-							bindingPathPath1,
+						validatedAndSet = validateRangesAndSetData(
+							dateType === 'startDate' ? bindingPathPath1 : bindingPathPath2,
 							dates[0],
 							context.pageName,
 							validationProps,
 						);
-						validateRangesAndSetData(
-							bindingPathPath2,
+						validatedAndSet = validateRangesAndSetData(
+							dateType === 'startDate' ? bindingPathPath2 : bindingPathPath1,
 							dates[1],
 							context.pageName,
 							validationProps,
 						);
 					}
+				}
+
+				if (validatedAndSet && close) {
+					setShowDropdown(false);
+					return;
 				}
 			} else {
 				const date = toFormat(value, displayDateFormat, storageFormat ?? displayDateFormat);
@@ -329,12 +347,17 @@ function CalendarComponent(props: ComponentProps) {
 					return;
 				}
 
-				validateRangesAndSetData(
+				const validatedAndSet = validateRangesAndSetData(
 					currentBindingPath,
 					date,
 					context.pageName,
 					validationProps,
 				);
+
+				if (validatedAndSet && close) {
+					setShowDropdown(false);
+					return;
+				}
 			}
 		}
 
@@ -437,12 +460,8 @@ function CalendarComponent(props: ComponentProps) {
 						props.pageDefinition,
 					);
 				}}
-				onChange={date => {
-					if (readOnly) return;
-					if (isMultiSelect && thisDate?.trim()) {
-						handleChange(thisDate + multipleDateSeparator + date);
-					} else handleChange(date);
-				}}
+				onChange={readOnly ? undefined : handleChange}
+				onClearOtherDate={readOnly ? undefined : clearOtherDate}
 				styles={computedStyles}
 				hoverStyles={hoverComputedStyles}
 				disabledStyles={disabledComputedStyles}
@@ -492,7 +511,7 @@ function CalendarComponent(props: ComponentProps) {
 			colorScheme={colorScheme}
 			leftIcon={leftIcon}
 			showDropdown={showDropdown}
-			handleChange={disableTextEntry || readOnly ? undefined : handleChange}
+			handleChange={disableTextEntry || readOnly ? undefined : e => handleChange(e, true)}
 			onMouseEnter={() => setMouseIsInside(true)}
 			onMouseLeave={() => {
 				setMouseIsInside(false);
@@ -692,9 +711,21 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'calendarBody',
-			displayName: 'Calendar Body',
-			description: 'Calendar Body',
+			name: 'calendarBodyMonths',
+			displayName: 'Calendar Body Months',
+			description: 'Calendar Body Months',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'calendarBodyBrowseYears',
+			displayName: 'Calendar Body Browse Years',
+			description: 'Calendar Body Browse Years',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'calendarBodyBrowseMonths',
+			displayName: 'Calendar Body Browse Months',
+			description: 'Calendar Body Browse Months',
 			icon: 'fa-solid fa-box',
 		},
 		{
@@ -705,14 +736,14 @@ const component: Component = {
 		},
 		{
 			name: 'calendarHeaderMonthsContainer',
-			displayName: 'Calendar Header Months Container',
-			description: 'Calendar Header Months Container',
+			displayName: 'Calendar Months Container Above Month',
+			description: 'Calendar Months Container Above Month',
 			icon: 'fa-solid fa-box',
 		},
 		{
 			name: 'calendarHeaderMonths',
-			displayName: 'Calendar Header Months',
-			description: 'Calendar Header Months',
+			displayName: 'Calendar Month Above Month',
+			description: 'Calendar Month Above Month',
 			icon: 'fa-solid fa-box',
 		},
 		{
