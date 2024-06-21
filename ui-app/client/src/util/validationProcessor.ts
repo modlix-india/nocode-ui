@@ -80,7 +80,7 @@ function NUMBER_VALUE(validation: any, value: any): Array<string> {
 	if (isNaN(floatValue) || '' + floatValue !== '' + value) return [validation.message];
 	if (!isNullValue(validation.minValue) && floatValue < parseFloat(validation.minValue))
 		return [validation.message];
-	if (!isNullValue(validation.maxValue) && floatValue > parseInt(validation.maxValue))
+	if (!isNullValue(validation.maxValue) && floatValue > parseFloat(validation.maxValue))
 		return [validation.message];
 	return [];
 }
