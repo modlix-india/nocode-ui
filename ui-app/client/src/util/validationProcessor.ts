@@ -70,19 +70,21 @@ function EMAIL(validation: any, value: any): Array<string> {
 	return [];
 }
 
+//function DATE_FORMAT(validation: any, value: any): Array<string> {
+//	return [];
+//}
+
 function NUMBER_VALUE(validation: any, value: any): Array<string> {
 	if (isNullValue(value)) return [];
-	const intValue = parseInt(value);
-	if (isNaN(intValue) || '' + intValue !== '' + value) return [validation.message];
-	if (!isNullValue(validation.minValue) && intValue < parseInt(validation.minValue))
+	const floatValue = parseFloat(value);
+	if (isNaN(floatValue) || '' + floatValue !== '' + value) return [validation.message];
+	if (!isNullValue(validation.minValue) && floatValue < parseFloat(validation.minValue))
 		return [validation.message];
-	if (!isNullValue(validation.maxValue) && intValue > parseInt(validation.maxValue))
+	if (!isNullValue(validation.maxValue) && floatValue > parseInt(validation.maxValue))
 		return [validation.message];
 	return [];
 }
-// function DATE_FORMAT(validation: any, value: any): Array<string> {
-// 	return [];
-// }
+ 
 
 function FILE_SIZE(validation: any, value: FileList): Array<string> {
 	if (isNullValue(value)) return [];
@@ -168,6 +170,7 @@ export const VALIDATION_FUNCTIONS: {
 		],
 	},
 	EMAIL: { functionCode: EMAIL, displayName: 'Email' },
+	//DATE_FORMAT : {functionCode: DATE_FORMAT, displayName:'Date'},
 	NUMBER_VALUE: {
 		functionCode: NUMBER_VALUE,
 		displayName: 'Number',
