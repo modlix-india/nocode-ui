@@ -38,11 +38,13 @@ type CommonInputType = {
 	cssPrefix: string;
 	children?: React.ReactNode;
 	onMouseLeave?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+	onMouseEnter?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 	updDownHandler?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 	inputType?: string;
 	maxChars?: number;
 	showDropdown?: boolean;
 	leftChildren?: React.ReactNode;
+	showMandatoryAsterisk?: boolean;
 };
 
 function CommonInputText(props: CommonInputType) {
@@ -85,6 +87,8 @@ function CommonInputText(props: CommonInputType) {
 		maxChars,
 		showDropdown,
 		leftChildren,
+		showMandatoryAsterisk,
+		onMouseEnter,
 	} = props;
 	const [focus, setFocus] = React.useState(false);
 	const [showPassword, setShowPassowrd] = React.useState(false);
@@ -207,6 +211,7 @@ function CommonInputText(props: CommonInputType) {
 			}`}
 			style={computedStyles.comp ?? {}}
 			onMouseLeave={onMouseLeave}
+			onMouseEnter={onMouseEnter}
 			onKeyUp={updDownHandler}
 		>
 			<HelperComponent context={props.context} definition={definition} />
@@ -280,6 +285,13 @@ function CommonInputText(props: CommonInputType) {
 					subComponentName="label"
 				></SubHelperComponent>
 				{getTranslations(label, translations)}
+				<span style={computedStyles.asterisk ?? {}} className="_asterisk">
+					<SubHelperComponent
+						definition={definition}
+						subComponentName="asterisk"
+					></SubHelperComponent>
+					{showMandatoryAsterisk ? '*' : ''}
+				</span>
 			</label>
 			{validationsOrSupportText}
 			{children}

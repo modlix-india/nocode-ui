@@ -1,18 +1,25 @@
-import React, { useCallback, useState } from 'react';
-import { PageStoreExtractor } from '../../context/StoreContext';
-import { HelperComponent } from '../HelperComponents/HelperComponent';
-import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
-import { getTranslations } from '../util/getTranslations';
-import { propertiesDefinition, stylePropertiesDefinition } from './textProperties';
-import { Component } from '../../types/common';
-import TextStyle from './TextStyle';
-import useDefinition from '../util/useDefinition';
-import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
-import { formatString } from '../../util/stringFormat';
-import { styleDefaults } from './TextStyleProperties';
-import { IconHelper } from '../util/IconHelper';
+import React, { useCallback, useEffect, useState } from 'react';
 import MarkDownToComponents from '../../commonComponents/MarkDownToComponents';
+import {
+	PageStoreExtractor,
+	addListenerAndCallImmediatelyWithChildrenActivity,
+} from '../../context/StoreContext';
+import {
+	Component,
+	ComponentProperty,
+	ComponentPropertyDefinition,
+	ComponentProps,
+} from '../../types/common';
+import { formatString } from '../../util/stringFormat';
+import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
+import { IconHelper } from '../util/IconHelper';
+import { getTranslations } from '../util/getTranslations';
+import useDefinition from '../util/useDefinition';
+import TextStyle from './TextStyle';
+import { styleDefaults } from './TextStyleProperties';
+import { propertiesDefinition, stylePropertiesDefinition } from './textProperties';
 
 function Text(props: ComponentProps) {
 	const {
@@ -50,6 +57,25 @@ function Text(props: ComponentProps) {
 
 	const hoverTrue = useCallback(() => setHover(true), [stylePropertiesWithPseudoStates]);
 	const hoverFalse = useCallback(() => setHover(false), [stylePropertiesWithPseudoStates]);
+
+	const textProp = definition.properties?.text as ComponentProperty<any>;
+
+	const [changed, setChanged] = useState<number>(Date.now());
+	useEffect(() => {
+		if (
+			typeof originalTextObj !== 'object' ||
+			(!textProp?.location?.value && !textProp?.location?.expression)
+		)
+			return;
+
+		return addListenerAndCallImmediatelyWithChildrenActivity(
+			() => {
+				setChanged(Date.now());
+			},
+			pageExtractor,
+			(textProp.location.value ?? textProp.location.expression)!,
+		);
+	}, [originalTextObj, textProp?.value, textProp?.location?.value]);
 
 	const text =
 		typeof originalTextObj === 'object'

@@ -12,6 +12,7 @@ import { propertiesDefinition, stylePropertiesDefinition } from './StepperProper
 import { Component } from '../../types/common';
 import StepperStyle from './StepperStyle';
 import useDefinition from '../util/useDefinition';
+import { runEvent } from '../util/runEvent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { getRoman, getAlphaNumeral } from '../util/numberConverter';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
@@ -39,6 +40,7 @@ function Stepper(props: ComponentProps) {
 			colorScheme,
 			stepperDesign,
 			showLines,
+			onClick
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -69,24 +71,27 @@ function Stepper(props: ComponentProps) {
 			bindingPathPath,
 		);
 	}, [bindingPath]);
-	const goToStep = (stepNumber: number) => {
+
+	const onClickEvent = onClick ? props.pageDefinition.eventFunctions?.[onClick] : undefined;
+
+	const handleOnClick = onClickEvent ?  async() => 
+		await runEvent(
+			onClickEvent,
+			onClick,
+			props.context.pageName,
+			props.locationHistory,
+			props.pageDefinition,
+		)
+	 : undefined;
+
+	const goToStep = async (stepNumber: number) => {
 		if (!bindingPathPath) return;
 		setData(bindingPathPath, stepNumber, context.pageName);
+		await handleOnClick?.();
 	};
 	const checkIcon = 'fa-solid fa-check';
-	const effectiveTitles = titles
-		? titles
-				.split(',')
-				.map((e: string) => e.trim())
-				.filter((e: string) => !!e)
-		: [];
-
-	const iconList = icons
-		? icons
-				.split(',')
-				.map((e: string) => e.trim())
-				.filter((e: string) => !!e)
-		: [];
+	const effectiveTitles = titles ? titles : [];
+	const iconList = icons ? icons : [];
 
 	const getCount = (num: number) => {
 		let count =
@@ -143,7 +148,8 @@ function Stepper(props: ComponentProps) {
 						onClick={
 							(i < value && moveToAnyPreviousStep) ||
 							(i > value && moveToAnyFutureStep)
-								? () => goToStep(i)
+								? () => 
+									goToStep(i)
 								: undefined
 						}
 						className={`_listItem ${showLines ? '_withLines' : ''} ${
@@ -282,7 +288,23 @@ const component: Component = {
 		type: 'Stepper',
 		name: 'Stepper',
 		properties: {
-			titles: { value: 'Step1, Step2, Step3' },
+			titles: {
+				Rmum33beKct0kVQkRrMM7: {
+					key: 'Rmum33beKct0kVQkRrMM7',
+					order: 1,
+					property: { value: 'Step 1' },
+				},
+				'4CIx4eatNBBYeYau1jSgud': {
+					key: '4CIx4eatNBBYeYau1jSgud',
+					order: 2,
+					property: { value: 'Step 2' },
+				},
+				Rmum33beKct0kVQkRrMM9: {
+					key: 'Rmum33beKct0kVQkRrMM9',
+					order: 1,
+					property: { value: 'Step 3' },
+				},
+			},
 		},
 	},
 	subComponentDefinition: [

@@ -23,6 +23,7 @@ export default function ImageStyle({ theme }: { theme: Map<string, Map<string, s
             border-radius: 4px;
             gap: 10px;
 			position: relative;
+			z-index: 7;
         }
 
 		._imageBrowserPopup ._altTextContainer {
