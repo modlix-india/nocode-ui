@@ -23,6 +23,8 @@ import CommonInputText from '../../commonComponents/CommonInputText';
 import { styleDefaults } from './textBoxStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
+const REGEX_NUBMER = /^[0-9+-.,]*$/;
+
 interface mapType {
 	[key: string]: any;
 }
@@ -75,6 +77,7 @@ function TextBox(props: ComponentProps) {
 			onFocus,
 			onBlur,
 			showMandatoryAsterisk,
+			numberFormat,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -104,29 +107,38 @@ function TextBox(props: ComponentProps) {
 					setValue('');
 					return;
 				}
-				setValue(value);
+				if (valueType === 'number' && numberFormat) {
+					const formatter = new Intl.NumberFormat(
+						numberFormat.toLowerCase() === 'system' ? navigator.language : numberFormat,
+						{ style: 'decimal' },
+					);
+					value = numberType === 'DECIMAL' ? parseFloat(value) : parseInt(value);
+					setValue(formatter.format(value));
+				} else {
+					setValue(value);
+				}
 			},
 			pageExtractor,
 			bindingPathPath,
 		);
-	}, [bindingPathPath]);
+	}, [bindingPathPath, valueType, numberFormat, numberType]);
 
 	const spinnerPath1 = onEnter
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
 				onEnter,
-		  )}.isRunning`
+			)}.isRunning`
 		: undefined;
 
 	const spinnerPath2 = onClear
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
 				onClear,
-		  )}.isRunning`
+			)}.isRunning`
 		: undefined;
 
 	const spinnerPath3 = onChange
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
 				onChange,
-		  )}.isRunning`
+			)}.isRunning`
 		: undefined;
 
 	const [isLoading, setIsLoading] = useState(
@@ -217,13 +229,26 @@ function TextBox(props: ComponentProps) {
 	const handleBlur = (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		let temp = value === '' && emptyValue ? mapValue[emptyValue] : value;
 		if (valueType === 'number') {
-			const tempNumber =
-				value !== ''
-					? numberType === 'DECIMAL'
-						? parseFloat(value)
-						: parseInt(value)
-					: temp;
-			temp = isNaN(tempNumber) ? temp : tempNumber;
+			if (numberFormat) {
+				const formatter = new Intl.NumberFormat(
+					numberFormat.toLowerCase() === 'system' ? navigator.language : numberFormat,
+					{ style: 'decimal' },
+				);
+				const commaDot = formatter.format(1234.56) === '1,234.56';
+				temp = temp?.toString() ?? '';
+				const tempNumber = commaDot
+					? temp.replace(/,/g, '')
+					: temp.replace(/\./g, '').replace(/,/g, '.');
+				temp = numberType === 'DECIMAL' ? parseFloat(tempNumber) : parseInt(tempNumber);
+			} else {
+				const tempNumber =
+					value !== ''
+						? numberType === 'DECIMAL'
+							? parseFloat(value)
+							: parseInt(value)
+						: temp;
+				temp = isNaN(tempNumber) ? temp : tempNumber;
+			}
 		}
 		if (!updateStoreImmediately && bindingPathPath) {
 			if (event?.target.value === '' && removeKeyWhenEmpty) {
@@ -263,11 +288,40 @@ function TextBox(props: ComponentProps) {
 			return;
 		}
 		let temp = text === '' && emptyValue ? mapValue[emptyValue] : text;
-		let tempNumber = numberType === 'DECIMAL' ? parseFloat(temp) : parseInt(temp);
-		temp = !isNaN(tempNumber) ? tempNumber : temp;
-		if (updateStoreImmediately && bindingPathPath) {
-			setData(bindingPathPath, temp, context?.pageName);
-			callChangeEvent();
+		let tempNumber;
+
+		if (numberFormat) {
+			if (!REGEX_NUBMER.test(temp)) return;
+
+			const formatter = new Intl.NumberFormat(
+				numberFormat.toLowerCase() === 'system' ? navigator.language : numberFormat,
+				{ style: 'decimal' },
+			);
+			const commaDot = formatter.format(1234.56) === '1,234.56';
+
+			tempNumber = commaDot
+				? temp.replace(/,/g, '')
+				: temp.replace(/\./g, '').replace(/,/g, '.');
+			tempNumber = numberType === 'DECIMAL' ? parseFloat(tempNumber) : parseInt(tempNumber);
+			temp = formatter.format(tempNumber);
+
+			if (text[text.length - 1] === ',' || text[text.length - 1] === '.')
+				temp += text[text.length - 1];
+			if (updateStoreImmediately && bindingPathPath) {
+				if (text[text.length - 1] === ',' || text[text.length - 1] === '.') {
+					setValue(temp);
+				} else {
+					setData(bindingPathPath, tempNumber, context?.pageName);
+					callChangeEvent();
+				}
+			}
+		} else {
+			tempNumber = numberType === 'DECIMAL' ? parseFloat(temp) : parseInt(temp);
+			temp = !isNaN(tempNumber) ? tempNumber : temp;
+			if (updateStoreImmediately && bindingPathPath) {
+				setData(bindingPathPath, temp, context?.pageName);
+				callChangeEvent();
+			}
 		}
 
 		if (!updateStoreImmediately) setValue(!isNaN(tempNumber) ? temp?.toString() : '');
@@ -338,7 +392,7 @@ function TextBox(props: ComponentProps) {
 				translations={translations}
 				leftIcon={leftIcon}
 				rightIcon={rightIcon}
-				valueType={valueType}
+				valueType={numberFormat ? 'text' : valueType}
 				isPassword={isPassword}
 				placeholder={placeholder}
 				hasFocusStyles={stylePropertiesWithPseudoStates?.focus}
