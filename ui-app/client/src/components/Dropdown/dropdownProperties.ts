@@ -138,6 +138,22 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
+		name: 'rightIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Right Icon (closed)',
+		description: 'Icon to be shown on the Right side when closed.',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'rightIconOpen',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Right Icon (opened)',
+		description: 'Icon to be shown on the Right side when opened.',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
 		...COMMON_COMPONENT_PROPERTIES.designType,
 		enumValues: [
 			...COMMON_COMPONENT_PROPERTIES.designType.enumValues!,
