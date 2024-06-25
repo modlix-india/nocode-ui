@@ -279,6 +279,30 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: undefined,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
+	{
+		name: 'onLeftIconClick',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Left Icon Click',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered when Left Icon clicked.',
+		group: ComponentPropertyGroup.EVENTS,
+	},
+	{
+		name: 'onRightIconClick',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Right Icon Click',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered when Right Icon clicked.',
+		group: ComponentPropertyGroup.EVENTS,
+  },
+	{
+		name: 'numberFormat',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Number Format Locale',
+		description:
+			"Number Format Locale - en-IN, en-US, or system (based on system's settings) etc.",
+		group: ComponentPropertyGroup.ADVANCED,
+	},
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
