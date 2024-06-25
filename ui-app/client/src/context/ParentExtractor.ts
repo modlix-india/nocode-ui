@@ -20,6 +20,22 @@ export class ParentExtractor extends SpecialTokenValueExtractor {
 		return 'Parent.';
 	}
 
+	public getValue(token: string) {
+		const value = super.getValue(token);
+
+		if (token.endsWith('.__index') && value?.endsWith?.('Parent')) {
+			let count = 0;
+			let index = 0;
+			while ((index = value.indexOf('Parent', index)) !== -1) {
+				count++;
+				index++;
+			}
+			return this.history[this.history.length - count]?.index ?? value;
+		}
+
+		return value;
+	}
+
 	protected getValueInternal(token: string) {
 		const { path, lastHistory } = this.getPath(token);
 
@@ -94,6 +110,22 @@ export class ParentExtractorForRunEvent extends TokenValueExtractor {
 
 	public getPrefix(): string {
 		return 'Parent.';
+	}
+
+	public getValue(token: string) {
+		const value = super.getValue(token);
+
+		if (token.endsWith('.__index') && value?.endsWith?.('Parent')) {
+			let count = 0;
+			let index = 0;
+			while ((index = value.indexOf('Parent', index)) !== -1) {
+				count++;
+				index++;
+			}
+			return this.history[this.history.length - count]?.index ?? value;
+		}
+
+		return value;
 	}
 
 	protected getValueInternal(token: string) {

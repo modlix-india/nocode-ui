@@ -1,4 +1,4 @@
-export default function binaryToBase64Encode(file: File) {
+export default function binaryToBase64Encode(file: File, withmetadata: boolean) {
 	return new Promise<string>((resolve, reject) => {
 		const reader = new FileReader();
 
@@ -12,7 +12,10 @@ export default function binaryToBase64Encode(file: File) {
 							'',
 						),
 					);
-					resolve(base64Encoded);
+					if (!withmetadata)
+						resolve(base64Encoded);
+					else
+						resolve("data:"+file.type+";name:"+file.name+";base64,"+base64Encoded);
 				} else {
 					reject(new Error('Failed to read binary data from the file.'));
 				}

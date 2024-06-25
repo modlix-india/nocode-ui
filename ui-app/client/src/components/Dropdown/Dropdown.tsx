@@ -77,6 +77,7 @@ function DropdownComponent(props: ComponentProps) {
 			leftIcon,
 			clearOnSelectingSameValue,
 			rightIcon,
+			showMandatoryAsterisk,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -126,7 +127,7 @@ function DropdownComponent(props: ComponentProps) {
 					labelKey,
 				)
 					.reduce((acc: Map<string, any>, each: any) => {
-						if (!each?.key) return acc;
+						if (isNullValue(each?.key)) return acc;
 
 						acc.set(each.key, each);
 
@@ -224,6 +225,8 @@ function DropdownComponent(props: ComponentProps) {
 		);
 	}, [searchText, dropdownData]);
 
+	const [mouseIsInside, setMouseIsInside] = useState(false);
+
 	const handleClose = useCallback(() => {
 		if (!showDropdown) return;
 		setShowDropdown(false);
@@ -251,7 +254,7 @@ function DropdownComponent(props: ComponentProps) {
 	}, [selected, selectedDataKey, dropdownData, isMultiSelect]);
 	const computedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
-		{ focus, readOnly },
+		{ focus, disabled: readOnly },
 		stylePropertiesWithPseudoStates,
 	);
 
@@ -324,7 +327,11 @@ function DropdownComponent(props: ComponentProps) {
 			validationMessages={validationMessages}
 			context={context}
 			hideClearContentIcon={true}
-			blurHandler={() => setFocus(false)}
+			blurHandler={() => {
+				if (mouseIsInside) return;
+				setFocus(false);
+				setShowDropdown(false);
+			}}
 			focusHandler={() => {
 				setFocus(true);
 				setShowDropdown(true);
@@ -338,7 +345,20 @@ function DropdownComponent(props: ComponentProps) {
 			leftIcon={leftIcon}
 			//rightIcon = {rightIcon} 'fa-solid fa-angle-up'
 			showDropdown={showDropdown}
-			onMouseLeave={closeOnMouseLeave ? handleClose : undefined}
+			onMouseEnter={() => {
+				setMouseIsInside(true);
+			}}
+			onMouseLeave={() => {
+				setMouseIsInside(false);
+				if (closeOnMouseLeave) handleClose();
+			}}
+			showMandatoryAsterisk={
+				(validation ?? []).find(
+					(e: any) => e.type === undefined || e.type === 'MANDATORY',
+				) && showMandatoryAsterisk
+					? true
+					: false
+			}
 			updDownHandler={e => {
 				if (e.key.startsWith('Arrow')) {
 					if (!showDropdown) setShowDropdown(true);
@@ -516,18 +536,6 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'dropdownSearchContainer',
-			displayName: 'Dropdown Search Container',
-			description: 'Dropdown Search Container',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'textBoxContainer',
-			displayName: 'Text Box Container',
-			description: 'Text Box Container',
-			icon: 'fa-solid fa-box',
-		},
-		{
 			name: 'leftIcon',
 			displayName: 'Left Icon',
 			description: 'Left Icon',
@@ -546,15 +554,15 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'floatingLabel',
-			displayName: 'Floating Label',
-			description: 'Floating Label',
+			name: 'label',
+			displayName: 'Label',
+			description: 'Label',
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'noFloatLabel',
-			displayName: 'No Float Label',
-			description: 'No Float Label',
+			name: 'asterisk',
+			displayName: 'asterisk',
+			description: 'asterisk',
 			icon: 'fa-solid fa-box',
 		},
 		{

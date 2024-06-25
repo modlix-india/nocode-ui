@@ -10,10 +10,6 @@ export interface ComponentProperty<T> {
 }
 
 export interface ComponentMultiProperty<T> {
-	fullValue?: {
-		key: string;
-		property: ComponentProperty<T>;
-	};
 	[key: string]: {
 		key: string;
 		order?: number;
@@ -346,6 +342,7 @@ export interface PageDefinition {
 	processedClasses?: {
 		[key: string]: { [key: string]: string };
 	};
+	id?: string;
 }
 
 export interface ComponentProps {
@@ -357,6 +354,6 @@ export interface ComponentProps {
 
 export interface LocationHistory {
 	location: DataLocation | string;
-	index: number;
+	index: number | string;
 	pageName: string;
 }

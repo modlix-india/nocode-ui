@@ -49,8 +49,12 @@ import Jot from './Jot/Jot';
 import FillerDefinitionEditor from './FillerDefinitionEditor/FillerDefinitionEditor';
 import FormStorageEditor from './FormStorageEditor/FormStorageEditor';
 import SectionGrid from './SectionGrid/SectionGrid';
+import SmallCarousel from './SmallCarousel/SmallCarousel';
 import Otp from './Otp/Otp';
 import Chart from './Chart/Chart';
+import Calendar from './Calendar/Calendar';
+import TemplateEditor from './TemplateEditor/TemplateEditor';
+import FileSelector from './FileSelector/FileSelector';
 
 export default new Map<string, Component>([
 	[Button.name, Button],
@@ -103,6 +107,10 @@ export default new Map<string, Component>([
 	[FillerDefinitionEditor.name, FillerDefinitionEditor],
 	[FormStorageEditor.name, FormStorageEditor],
 	[SectionGrid.name, SectionGrid],
+	[SmallCarousel.name, SmallCarousel],
 	[Otp.name, Otp],
 	[Chart.name, Chart],
+	[Calendar.name, Calendar],
+	[TemplateEditor.name, TemplateEditor],
+	[FileSelector.name, FileSelector],
 ]);

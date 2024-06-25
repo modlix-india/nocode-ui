@@ -11,9 +11,9 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'titles',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Comma separated titles',
-		description: 'List of titles that are comma separated and should be in order.',
-		defaultValue: '',
+		displayName: 'Step Name',
+		description: 'Name of the step.',
+		multiValued: true,
 		group: ComponentPropertyGroup.BASIC,
 		translatable: true,
 	},
@@ -21,10 +21,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'icons',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Comma separated icons',
-		description: 'List of icon that are comma separated and should be in order of titles.',
+		displayName: 'Icon',
+		description: 'Icon',
 		group: ComponentPropertyGroup.BASIC,
-		defaultValue: '',
+		editor: ComponentPropertyEditor.ICON,
+		multiValued: true,
 	},
 	{
 		name: 'textPosition',
@@ -166,6 +167,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				description: 'Stepper Rectangle Arrow design.',
 			},
 		],
+	},
+	{
+		name: 'onClick',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Click Event',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered when clicked.',
+		group: ComponentPropertyGroup.EVENTS,
 	},
 	COMMON_COMPONENT_PROPERTIES.colorScheme,
 

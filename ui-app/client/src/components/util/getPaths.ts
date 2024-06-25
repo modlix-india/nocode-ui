@@ -1,14 +1,19 @@
 import { ExpressionEvaluator, isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
 import {
 	ComponentDefinition,
+	ComponentMultiProperty,
 	ComponentProperty,
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
 	ComponentStyle,
 	DataLocation,
+	LocationHistory,
 	StyleResolution,
 } from '../../types/common';
 import { Validation } from '../../types/validation';
+import { ParentExtractor, ParentExtractorForRunEvent } from '../../context/ParentExtractor';
+import { getDataFromPath, PageStoreExtractor } from '../../context/StoreContext';
+import { GLOBAL_CONTEXT_NAME } from '../../constants';
 
 export class PathExtractor extends TokenValueExtractor {
 	private prefix: string;
@@ -37,6 +42,92 @@ export class PathExtractor extends TokenValueExtractor {
 
 	public getStore(): any {
 		this.paths.add(this.prefix.substring(0, this.prefix.length - 1));
+		return undefined;
+	}
+}
+
+export class ParentPathExtractor extends TokenValueExtractor {
+	private paths: Set<string>;
+	private history: LocationHistory[];
+
+	constructor(parentExtractor: TokenValueExtractor, paths: Set<string>) {
+		super();
+		this.paths = paths;
+		const ex: ParentExtractor = parentExtractor as ParentExtractor;
+		this.history = ex.getHistory();
+	}
+
+	public getValue(token: string) {
+		const value = super.getValue(token);
+
+		if (token.endsWith('.__index') && value?.endsWith?.('Parent')) {
+			let count = 0;
+			let index = 0;
+			while ((index = value.indexOf('Parent', index)) !== -1) {
+				count++;
+				index++;
+			}
+			return this.history[this.history.length - count]?.index ?? value;
+		}
+
+		return value;
+	}
+
+	protected getValueInternal(token: string) {
+		const { path, lastHistory } = this.getPath(token);
+		this.paths.add(path);
+
+		return getDataFromPath(
+			path,
+			this.history.length === 1 ? [] : this.history.slice(0, this.history.length - 1),
+			PageStoreExtractor.getForContext(lastHistory.pageName ?? GLOBAL_CONTEXT_NAME),
+		);
+	}
+
+	public getPath(token: string): { path: string; lastHistory: LocationHistory } {
+		let currentHistory = this.history;
+
+		do {
+			let { path, lastHistory } = this.getPathInternal(token, currentHistory);
+			if (!path.startsWith('Parent.')) return { path, lastHistory };
+			token = path;
+			currentHistory = currentHistory.slice(0, currentHistory.length - 1);
+		} while (true);
+	}
+
+	public getPathInternal(
+		token: string,
+		locationHistory: LocationHistory[],
+	): { path: string; lastHistory: LocationHistory } {
+		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
+
+		let pNum: number = 0;
+		while (parts[pNum] === 'Parent') pNum++;
+
+		const lastHistory = locationHistory[locationHistory.length - pNum];
+		let path = '';
+
+		if (typeof lastHistory.location === 'string')
+			path = `${lastHistory.location}.${parts.slice(pNum).join('.')}`;
+		else
+			path = `${
+				lastHistory.location.type === 'VALUE'
+					? lastHistory.location.value
+					: lastHistory.location.expression
+			}.${parts.slice(pNum).join('.')}`;
+
+		return { path, lastHistory };
+	}
+
+	public getPaths() {
+		return this.paths;
+	}
+
+	public getPrefix(): string {
+		return 'Parent.';
+	}
+
+	public getStore(): any {
 		return undefined;
 	}
 }
@@ -72,6 +163,10 @@ export function getPathsFrom<T>(
 	const retSet = new Set<string>();
 
 	evaluatorMaps.forEach(x => {
+		if (x.getPrefix() === 'Parent.') {
+			map.set(x.getPrefix(), new ParentPathExtractor(x, retSet));
+			return;
+		}
 		map.set(x.getPrefix(), new PathExtractor(x.getPrefix(), x, retSet));
 	});
 
@@ -86,6 +181,7 @@ export function getPathsFromComponentProperties(
 		| {
 				[key: string]:
 					| ComponentProperty<any>
+					| ComponentMultiProperty<any>
 					| { [key: string]: ComponentProperty<any> }
 					| { [key: string]: Validation };
 		  }
@@ -116,7 +212,7 @@ export function getPathsFromComponentProperties(
 								paths.add(path.value);
 						}
 					} else {
-						const set = getPathsFrom(iprop, evaluatorMaps).values();
+						const set = getPathsFrom(iprop.property, evaluatorMaps).values();
 						let path: IteratorResult<string, any>;
 						while ((path = set.next()) !== undefined && !path.done)
 							paths.add(path.value);
