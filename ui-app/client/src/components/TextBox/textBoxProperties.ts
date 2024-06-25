@@ -279,6 +279,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: undefined,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
+
+	{
+		name: 'numberFormat',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Number Format Locale',
+		description:
+			"Number Format Locale - en-IN, en-US, or system (based on system's settings) etc.",
+		group: ComponentPropertyGroup.ADVANCED,
+	},
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
