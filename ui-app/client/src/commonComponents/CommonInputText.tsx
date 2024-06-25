@@ -88,7 +88,7 @@ function CommonInputText(props: CommonInputType) {
 		maxChars,
 		showDropdown,
 		handleLeftIcon,
-		handleRightIcon
+		handleRightIcon,
 		showMandatoryAsterisk,
 		onMouseEnter,
 	} = props;
@@ -155,7 +155,7 @@ function CommonInputText(props: CommonInputType) {
 				if (e.currentTarget.value.length < maxChars) return;
 				if (e.metaKey || e.shiftKey || e.ctrlKey || e.key.length > 2) return;
 				e.preventDefault();
-		  }
+			}
 		: undefined;
 
 	const inputControl =
@@ -218,7 +218,11 @@ function CommonInputText(props: CommonInputType) {
 		>
 			<HelperComponent context={props.context} definition={definition} />
 			{leftIcon ? (
-				<i style={computedStyles.leftIcon ?? {}} className={`_leftIcon ${leftIcon} ${handleLeftIcon ? '_pointer' : ''}`} onClick={handleLeftIcon}>
+				<i
+					style={computedStyles.leftIcon ?? {}}
+					className={`_leftIcon ${leftIcon} ${handleLeftIcon ? '_pointer' : ''}`}
+					onClick={handleLeftIcon}
+				>
 					<SubHelperComponent
 						definition={definition}
 						subComponentName="leftIcon"
@@ -236,7 +240,11 @@ function CommonInputText(props: CommonInputType) {
 				</i>
 			) : undefined}
 			{rightIcon ? (
-				<i style={computedStyles.rightIcon ?? {}} className={`_rightIcon ${rightIcon} ${handleRightIcon ? '_pointer' : ''}`} onClick={handleRightIcon}>
+				<i
+					style={computedStyles.rightIcon ?? {}}
+					className={`_rightIcon ${rightIcon} ${handleRightIcon ? '_pointer' : ''}`}
+					onClick={handleRightIcon}
+				>
 					<SubHelperComponent
 						definition={definition}
 						subComponentName="rightIcon"

@@ -140,8 +140,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'rightIcon',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Right Icon',
-		description: 'Icon to be shown on the Right side.',
+		displayName: 'Right Icon (closed)',
+		description: 'Icon to be shown on the Right side when closed.',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'rightIconOpen',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Right Icon (opened)',
+		description: 'Icon to be shown on the Right side when opened.',
 		editor: ComponentPropertyEditor.ICON,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
