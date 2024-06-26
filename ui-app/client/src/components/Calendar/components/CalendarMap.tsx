@@ -159,8 +159,6 @@ export function CalendarMap(
 
 			if (start && end && start > end) [startDate, endDate] = [endDate, startDate];
 
-			console.log(start, end);
-			console.log(startDate, endDate);
 			if (startDate && endDate)
 				props.onChange(
 					startDate && endDate && isEndDate

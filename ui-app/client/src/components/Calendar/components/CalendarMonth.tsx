@@ -167,17 +167,17 @@ function computeClassName(
 ): [boolean, string] {
 	let className = '_date';
 	if (date.getMonth() !== monthDate.getMonth()) className += ' _dateNotInMonth';
-	const today = new Date().toDateString();
 
 	if (props.isRangeType && thisDates?.length && thatDate) {
 		let startDate = thisDates[0],
 			endDate = thatDate;
 		if (startDate > endDate) [startDate, endDate] = [endDate, startDate];
-		if (date > startDate && date < endDate) className += ' _dateInRange _dateSelected';
-		else if (date.toDateString() === startDate.toDateString())
+
+		if (date.toDateString() === startDate.toDateString())
 			className += ' _dateStart _dateSelected';
 		else if (date.toDateString() === endDate.toDateString())
 			className += ' _dateEnd _dateSelected';
+		else if (date > startDate && date < endDate) className += ' _dateInRange _dateSelected';
 	}
 
 	let disabled = false;
