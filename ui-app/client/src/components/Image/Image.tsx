@@ -34,6 +34,7 @@ function ImageComponent(props: ComponentProps) {
 			src5,
 			onClick: onClickEvent,
 			fallBackImg,
+			imgLazyLoading,
 		} = {},
 		key,
 		stylePropertiesWithPseudoStates,
@@ -106,6 +107,7 @@ function ImageComponent(props: ComponentProps) {
 				src={getSrcUrl(getHref(src ?? defaultSrc, location))}
 				alt={alt}
 				onError={fallBackImg ? handleError : undefined}
+				loading={imgLazyLoading ? 'lazy' : 'eager'}
 			/>
 			<SubHelperComponent
 				style={resolvedStyles.image ?? {}}
