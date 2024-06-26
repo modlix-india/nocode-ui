@@ -5,6 +5,7 @@ import AppStyle from './App/AppStyle';
 import { PageDefinition } from './types/common';
 import { REPO_SERVER, RemoteRepository } from './Engine/RemoteRepository';
 import { Function, Schema } from '@fincity/kirun-js';
+import axios from 'axios';
 declare global {
 	var nodeDev: boolean;
 	var isDesignMode: boolean;
@@ -37,6 +38,9 @@ declare global {
 	) => RemoteRepository<Schema>;
 	var cdnPrefix: string;
 	var determineRightClickPosition: (e: MouseEvent) => { x: number; y: number };
+	var domainClientCode: string;
+	var domainAppCode: string;
+	var lastInteracted: number;
 	// var d3: typeof import('d3/index');
 }
 
@@ -45,6 +49,41 @@ globalThis.getRemoteSchemaRepository = RemoteRepository.getRemoteSchemaRepositor
 
 // To enable debug mode, add ?debug to the URL
 window.isDebugMode = window.location.search.indexOf('debug') != -1;
+
+// To check if the app is being interacted with
+window.lastInteracted = Date.now();
+
+const THREE_MINUTES = 3 * 60 * 1000;
+const FIFTEEN_MINUTES = 15 * 60 * 1000;
+setInterval(async () => {
+	const AUTH_TOKEN_EXPIRY = window.isDebugMode ? 'designMode_AuthTokenExpiry' : 'AuthTokenExpiry';
+	const AUTH_TOKEN = window.isDebugMode ? 'designMode_AuthToken' : 'AuthToken';
+	let authTokenExpiry = parseInt(window.localStorage.getItem(AUTH_TOKEN_EXPIRY) ?? '0');
+	if (isNaN(authTokenExpiry)) return;
+	authTokenExpiry *= 1000;
+
+	const now = Date.now();
+
+	if (
+		authTokenExpiry < now || // Token is already expired
+		authTokenExpiry - now > THREE_MINUTES || // Token expires in more than 2 minutes
+		now - window.lastInteracted > FIFTEEN_MINUTES // No interaction for 15 minutes
+	)
+		return;
+
+	// Refresh token
+
+	axios({
+		url: 'api/security/refreshToken',
+		method: 'GET',
+		headers: {
+			Authorization: JSON.parse(window.localStorage.getItem(AUTH_TOKEN) ?? '""'),
+		},
+	}).then(response => {
+		window.localStorage.setItem(AUTH_TOKEN, JSON.stringify(response.data.accessToken));
+		window.localStorage.setItem(AUTH_TOKEN_EXPIRY, response.data.accessTokenExpiryAt);
+	});
+}, 60000);
 
 const app = document.getElementById('app');
 if (!app) {

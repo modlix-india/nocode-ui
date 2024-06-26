@@ -1039,6 +1039,8 @@ function MarkDownToComponents({ text }: { text: string }) {
 		} else if (line.trim() === '') {
 			// creating line breaks on return or enter
 			elements.push(React.createElement('br', { key: `br_${line}_${i}` }));
+		} else if (line.startsWith('*')) {
+			elements.push(parseText(line));
 		} else {
 			// Paragraph
 			if (line === '') continue;
