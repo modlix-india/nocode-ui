@@ -43,6 +43,7 @@ type CommonInputType = {
 	inputType?: string;
 	maxChars?: number;
 	showDropdown?: boolean;
+	leftChildren?: React.ReactNode;
 	handleLeftIcon?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 	handleRightIcon?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 	showMandatoryAsterisk?: boolean;
@@ -87,6 +88,7 @@ function CommonInputText(props: CommonInputType) {
 		inputType = 'Text',
 		maxChars,
 		showDropdown,
+		leftChildren,
 		handleLeftIcon,
 		handleRightIcon,
 		showMandatoryAsterisk,
@@ -217,6 +219,7 @@ function CommonInputText(props: CommonInputType) {
 			onKeyUp={updDownHandler}
 		>
 			<HelperComponent context={props.context} definition={definition} />
+			{leftChildren}
 			{leftIcon ? (
 				<i
 					style={computedStyles.leftIcon ?? {}}
