@@ -1,11 +1,8 @@
-import React from 'react';
 import { deepEqual, duplicate } from '@fincity/kirun-js';
-import { editor } from 'monaco-editor';
-import { title } from 'process';
+import React from 'react';
 import {
 	ComponentProperty,
 	ComponentStyle,
-	DataLocation,
 	EachComponentStyle,
 	LocationHistory,
 	PageDefinition,
@@ -13,13 +10,13 @@ import {
 } from '../../../../../types/common';
 import { PageOperations } from '../../../functions/PageOperations';
 
-import { DropdownOptions, Dropdown } from './Dropdown';
-import { IconOptions, IconsSimpleEditor } from './IconsSimpleEditor';
-import { PixelSize, RangeWithoutUnit } from './SizeSliders';
-import { ColorSelector } from './ColorSelector';
-import { ShadowEditor, ShadowEditorType } from './ShadowEditor';
+import { CommonColorPicker } from '../../../../../commonComponents/CommonColorPicker';
 import { PageStoreExtractor, getDataFromPath, setData } from '../../../../../context/StoreContext';
 import { shortUUID } from '../../../../../util/shortUUID';
+import { Dropdown, DropdownOptions } from './Dropdown';
+import { IconOptions, IconsSimpleEditor } from './IconsSimpleEditor';
+import { ShadowEditor, ShadowEditorType } from './ShadowEditor';
+import { PixelSize, RangeWithoutUnit } from './SizeSliders';
 
 export interface SimpleStyleEditorsProps {
 	pseudoState: string;
@@ -131,7 +128,7 @@ export function EachSimpleEditor({
 			);
 			break;
 		case SimpleEditorType.Color:
-			editor = <ColorSelector color={value} onChange={editorOnchange} />;
+			editor = <CommonColorPicker color={value} onChange={editorOnchange} />;
 			break;
 		case SimpleEditorType.TextShadow:
 			editor = (

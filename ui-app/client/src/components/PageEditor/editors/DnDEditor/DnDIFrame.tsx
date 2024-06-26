@@ -378,35 +378,33 @@ export default function DnDIFrame({
 	if (showDevices) {
 		let devices = DEVICES[showDevices.name];
 		deviceMenu = (
-			<Portal>
+			<div
+				className={`_popupMenuBackground ${theme}`}
+				onClick={() => setShowDevices(undefined)}
+			>
 				<div
-					className={`_popupMenuBackground ${theme}`}
-					onClick={() => setShowDevices(undefined)}
+					className="_popupMenuContainer _plain"
+					style={{ left: showDevices.left, top: showDevices.top }}
 				>
-					<div
-						className="_popupMenuContainer _plain"
-						style={{ left: showDevices.left, top: showDevices.top }}
-					>
-						<div className="_contextMenu">
-							{devices.map((d: { name: string; width: number; height: number }) => (
-								<div
-									key={d.name}
-									className="_popupMenuItem"
-									onClick={() => {
-										onChangePersonalization(
-											`devices.${showDevices.name}Device`,
-											d.name,
-										);
-										setShowDevices(undefined);
-									}}
-								>
-									{d.name} ({d.width} x {d.height})
-								</div>
-							))}
-						</div>
+					<div className="_contextMenu">
+						{devices.map((d: { name: string; width: number; height: number }) => (
+							<div
+								key={d.name}
+								className="_popupMenuItem"
+								onClick={() => {
+									onChangePersonalization(
+										`devices.${showDevices.name}Device`,
+										d.name,
+									);
+									setShowDevices(undefined);
+								}}
+							>
+								{d.name} ({d.width} x {d.height})
+							</div>
+						))}
 					</div>
 				</div>
-			</Portal>
+			</div>
 		);
 	}
 

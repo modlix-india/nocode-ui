@@ -49,6 +49,23 @@ export const localStoreExtractor = new LocalStoreExtractor(localStore, `${LOCAL_
 export const themeExtractor = new ThemeExtractor();
 export const fillerExtractor = new FillerExtractor();
 
+let pathName = window.location?.pathname;
+let urlAppCode = undefined;
+let urlClientCode = undefined;
+
+let index = pathName?.indexOf('/page');
+
+if (index != undefined && index != -1) {
+	pathName = pathName.substring(0, index);
+	const parts = pathName.split('/');
+	if (parts.length > 1) {
+		urlAppCode = parts[1];
+	}
+	if (parts.length > 2) {
+		urlClientCode = parts[2];
+	}
+}
+
 const {
 	getData: _getData,
 	setData: _setData,
@@ -59,7 +76,7 @@ const {
 	addListenerAndCallImmediatelyWithChildrenActivity:
 		_addListenerAndCallImmediatelyWithChildrenActivity,
 } = useStore(
-	{},
+	{ url: { appCode: urlAppCode, clientCode: urlClientCode } },
 	STORE_PREFIX,
 	localStoreExtractor,
 	themeExtractor,

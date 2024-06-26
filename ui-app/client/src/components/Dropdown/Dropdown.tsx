@@ -76,6 +76,8 @@ function DropdownComponent(props: ComponentProps) {
 			colorScheme,
 			leftIcon,
 			clearOnSelectingSameValue,
+			rightIcon,
+			rightIconOpen,
 			showMandatoryAsterisk,
 		} = {},
 		stylePropertiesWithPseudoStates,
@@ -224,6 +226,8 @@ function DropdownComponent(props: ComponentProps) {
 		);
 	}, [searchText, dropdownData]);
 
+	const [mouseIsInside, setMouseIsInside] = useState(false);
+
 	const handleClose = useCallback(() => {
 		if (!showDropdown) return;
 		setShowDropdown(false);
@@ -251,7 +255,7 @@ function DropdownComponent(props: ComponentProps) {
 	}, [selected, selectedDataKey, dropdownData, isMultiSelect]);
 	const computedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
-		{ focus, readOnly },
+		{ focus, disabled: readOnly },
 		stylePropertiesWithPseudoStates,
 	);
 
@@ -304,7 +308,7 @@ function DropdownComponent(props: ComponentProps) {
 						locationHistory,
 						props.pageDefinition,
 					);
-			  }
+				}
 			: undefined;
 
 	return (
@@ -316,7 +320,11 @@ function DropdownComponent(props: ComponentProps) {
 			value={getLabel()}
 			label={label}
 			translations={translations}
-			rightIcon={showDropdown ? 'fa-solid fa-angle-up' : 'fa-solid fa-angle-down'}
+			rightIcon={
+				showDropdown
+					? rightIconOpen ?? 'fa-solid fa-angle-up'
+					: rightIcon ?? 'fa-solid fa-angle-down'
+			}
 			valueType="text"
 			isPassword={false}
 			placeholder={placeholder}
@@ -324,7 +332,11 @@ function DropdownComponent(props: ComponentProps) {
 			validationMessages={validationMessages}
 			context={context}
 			hideClearContentIcon={true}
-			blurHandler={() => setFocus(false)}
+			blurHandler={() => {
+				if (mouseIsInside) return;
+				setFocus(false);
+				setShowDropdown(false);
+			}}
 			focusHandler={() => {
 				setFocus(true);
 				setShowDropdown(true);
@@ -336,8 +348,15 @@ function DropdownComponent(props: ComponentProps) {
 			designType={designType}
 			colorScheme={colorScheme}
 			leftIcon={leftIcon}
+			//rightIcon = {rightIcon} 'fa-solid fa-angle-up'
 			showDropdown={showDropdown}
-			onMouseLeave={closeOnMouseLeave ? handleClose : undefined}
+			onMouseEnter={() => {
+				setMouseIsInside(true);
+			}}
+			onMouseLeave={() => {
+				setMouseIsInside(false);
+				if (closeOnMouseLeave) handleClose();
+			}}
 			showMandatoryAsterisk={
 				(validation ?? []).find(
 					(e: any) => e.type === undefined || e.type === 'MANDATORY',
@@ -398,7 +417,7 @@ function DropdownComponent(props: ComponentProps) {
 						<div
 							className={`_dropdownItem ${
 								getIsSelected(each?.key) ? '_selected' : ''
-							} ${each.key === hoverKey ? '_hover' : ''}`}
+							} ${each.key === hoverKey ? '_hover' : ''}`} // because of default className the background-color is not changing on hover to user defined.
 							style={computedStyles.dropdownItem ?? {}}
 							key={each?.key}
 							onMouseEnter={() => setHoverKey(each?.key)}

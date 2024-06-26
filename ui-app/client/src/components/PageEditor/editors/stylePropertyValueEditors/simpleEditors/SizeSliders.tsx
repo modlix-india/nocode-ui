@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Dropdown } from './Dropdown';
-import { RangeSlider } from './RangeSlider';
+import { RangeSlider } from '../../../../../commonComponents/RangeSlider';
 import { AngleSlider } from './AngleSlider';
 
 export interface UnitOption {

@@ -10,10 +10,6 @@ export interface ComponentProperty<T> {
 }
 
 export interface ComponentMultiProperty<T> {
-	fullValue?: {
-		key: string;
-		property: ComponentProperty<T>;
-	};
 	[key: string]: {
 		key: string;
 		order?: number;

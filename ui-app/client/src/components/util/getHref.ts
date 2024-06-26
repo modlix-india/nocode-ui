@@ -1,8 +1,17 @@
 import { Location as ReactLocation, useLocation } from 'react-router-dom';
 import { processLocation } from '../../util/locationProcessor';
+import { getDataFromPath } from '../../context/StoreContext';
+
+globalThis.domainAppCode = 'appbuilder';
+globalThis.domainClientCode = 'SYSTEM';
 
 export function getHref(linkPath: string = '', location: ReactLocation | Location) {
 	// {pathname: '/page/dashboard', search: '', hash: '', state: null, key: 'default'}
+
+	if (linkPath.startsWith('\\')) {
+		return urlPrefixRemoval(linkPath.substring(1));
+	}
+
 	const processedLocation = processLocation(location);
 	let prefix: string = '';
 	let midfix: string = '';
@@ -60,5 +69,47 @@ export function getHref(linkPath: string = '', location: ReactLocation | Locatio
 		}
 	}
 
+	return urlPrefixRemoval(url);
+}
+
+function urlPrefixRemoval(url: string) {
+	if (!globalThis.domainAppCode || !globalThis.domainClientCode) {
+		return url;
+	}
+
+	let index = url.indexOf('/page');
+	if (index === -1) return url;
+
+	const { appCode, clientCode } = getDataFromPath('Store.url', []) ?? {};
+
+	if (appCode !== undefined || clientCode !== undefined) return url;
+
+	const prefix = `/${globalThis.domainAppCode}/${globalThis.domainClientCode}/page`;
+
+	url = encodeRequestParmaeters(url);
+
+	if (url.startsWith(prefix)) {
+		return url.substring(prefix.length);
+	}
+
+	return url;
+}
+
+function encodeRequestParmaeters(url: string) {
+	const qindex = url.indexOf('?');
+	if (qindex !== -1) {
+		const params = url.substring(qindex + 1).split('&');
+
+		url =
+			url.substring(0, qindex + 1) +
+			params
+				.map(e => {
+					if (!e) return;
+					const [pname, pvalue] = e.split('=');
+					if (pvalue == undefined) return pname;
+					return pname + '=' + encodeURIComponent(pvalue ?? '');
+				})
+				.join('&');
+	}
 	return url;
 }

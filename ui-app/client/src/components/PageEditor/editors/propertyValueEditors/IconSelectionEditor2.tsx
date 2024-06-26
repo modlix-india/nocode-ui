@@ -184,74 +184,72 @@ export function IconSelectionEditor2({
 
 	if (showIconBrowser) {
 		popup = (
-			<Portal>
-				<div className={`_popupBackground`} onClick={() => setShowIconBrowser(false)}>
-					<div className="_popupContainer" onClick={e => e.stopPropagation()}>
-						<div className="_iconSelectionBrowser">
-							<div className="_selectors">
-								Icon Pack :
-								<Dropdown
-									value={selectedPack}
-									onChange={updatePackData}
-									options={packs.map(p => ({
-										name: p,
-										displayName: p,
-									}))}
-								/>
-								Search :
-								<input
-									className="_peInput"
-									placeholder="Search for icons..."
-									type="text"
-									value={filter}
-									onChange={e => setFilter(e.target.value)}
-								/>
-							</div>
-							<div className="_iconSelectionDisplay">
-								{(filter
-									? packJson.filter(i => i.k.includes(filter))
-									: packJson.slice(0, 30)
-								).map((i, index) => {
-									return (
-										<div
-											key={`${i.n} ${index}`}
-											className="_eachIcon"
-											onClick={() => {
-												let v =
-													chngValue === '' ||
-													chngValue === propDef.defaultValue
-														? ''
-														: chngValue;
+			<div className={`_popupBackground`} onClick={() => setShowIconBrowser(false)}>
+				<div className="_popupContainer" onClick={e => e.stopPropagation()}>
+					<div className="_iconSelectionBrowser">
+						<div className="_selectors">
+							Icon Pack :
+							<Dropdown
+								value={selectedPack}
+								onChange={updatePackData}
+								options={packs.map(p => ({
+									name: p,
+									displayName: p,
+								}))}
+							/>
+							Search :
+							<input
+								className="_peInput"
+								placeholder="Search for icons..."
+								type="text"
+								value={filter}
+								onChange={e => setFilter(e.target.value)}
+							/>
+						</div>
+						<div className="_iconSelectionDisplay">
+							{(filter
+								? packJson.filter(i => i.k.includes(filter))
+								: packJson.slice(0, 30)
+							).map((i, index) => {
+								return (
+									<div
+										key={`${i.n} ${index}`}
+										className="_eachIcon"
+										onClick={() => {
+											let v =
+												chngValue === '' ||
+												chngValue === propDef.defaultValue
+													? ''
+													: chngValue;
 
-												onChange(
-													v
-														.split(' ')
-														.filter(
-															e =>
-																prefixMap.has(e) ||
-																ALL_OPTIONS.includes(e),
-														)
-														.join(' ') +
-														' ' +
-														`${prefixMap.get(selectedPack)} ${i.n}`,
-												);
-												setShowIconBrowser(false);
-											}}
-										>
-											<i
-												className={`${prefixMap.get(selectedPack)} _size3 ${
-													i.n
-												}`}
-											/>
-											{i.d}
-										</div>
-									);
-								})}
-							</div>
+											onChange(
+												v
+													.split(' ')
+													.filter(
+														e =>
+															prefixMap.has(e) ||
+															ALL_OPTIONS.includes(e),
+													)
+													.join(' ') +
+													' ' +
+													`${prefixMap.get(selectedPack)} ${i.n}`,
+											);
+											setShowIconBrowser(false);
+										}}
+									>
+										<i
+											className={`${prefixMap.get(selectedPack)} _size3 ${
+												i.n
+											}`}
+										/>
+										{i.d}
+									</div>
+								);
+							})}
 						</div>
 					</div>
 				</div>
-			</Portal>
+			</div>
 		);
 	}
 

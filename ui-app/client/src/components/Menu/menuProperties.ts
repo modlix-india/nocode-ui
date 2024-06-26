@@ -43,6 +43,22 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: "Link Button's target features",
 	},
 	{
+		name: 'imageIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: "Menu's imageIcon",
+		description: "Menu's imageIcon to be displayed on left.",
+		editor: ComponentPropertyEditor.IMAGE,
+	},
+	{
+		name: 'activeImageIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: "Menu's imageIcon on active",
+		description: "Menu's imageIcon to be displayed on left when active.",
+		editor: ComponentPropertyEditor.IMAGE,
+	},
+	{
 		name: 'icon',
 		schema: SCHEMA_STRING_COMP_PROP,
 		group: ComponentPropertyGroup.ADVANCED,
@@ -174,6 +190,14 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 	],
 	icon: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+	],
+	imageIcon: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+	],
+	activeImageIcon: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 	],

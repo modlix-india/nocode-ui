@@ -383,7 +383,7 @@ function CompTree({
 	isRegex,
 }: CompTreeProps) {
 	const comp = pageDef?.componentDefinition[compKey];
-	const hoverLonger = useRef<NodeJS.Timeout | null>();
+	const hoverLonger = useRef<number | null>();
 	if (!comp) return <></>;
 
 	const children =

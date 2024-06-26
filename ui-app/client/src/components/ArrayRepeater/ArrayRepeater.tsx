@@ -30,6 +30,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 		definition,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+
 	const {
 		properties: {
 			isItemDraggable,
@@ -42,6 +43,10 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 			removeEvent,
 			moveEvent,
 			defaultData,
+			addIcon,
+			deleteIcon,
+			moveUpIcon,
+			moveDownIcon,
 			dataType,
 		} = {},
 		stylePropertiesWithPseudoStates,
@@ -219,7 +224,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 						addButton = (
 							<i
 								tabIndex={0}
-								className="addOne fa fa-circle-plus fa-solid"
+								className={`addOne ${addIcon ?? 'fa fa-circle-plus fa-solid'}`}
 								onClick={showAdd ? () => handleAdd(index) : undefined}
 								style={styleProperties.add ?? {}}
 								onKeyDown={e =>
@@ -241,8 +246,8 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 								tabIndex={0}
 								className={`moveOne ${
 									index == arrayValue?.length - 1
-										? 'fa fa-circle-arrow-up fa-solid'
-										: 'fa fa-circle-arrow-down fa-solid'
+										? moveUpIcon ?? 'fa fa-circle-arrow-up fa-solid'
+										: moveDownIcon ?? 'fa fa-circle-arrow-down fa-solid'
 								}`}
 								style={styleProperties.move ?? {}}
 								onClick={
@@ -270,7 +275,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 								className={`moveOne ${
 									index == 0 || index == arrayValue?.length - 1
 										? ''
-										: 'fa fa-circle-arrow-up fa-solid'
+										: moveUpIcon ?? 'fa fa-circle-arrow-up fa-solid'
 								}`}
 								onClick={showMove ? () => handleMove(index, index - 1) : undefined}
 								style={styleProperties.move ?? {}}
@@ -320,11 +325,12 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 									definition={props.definition}
 									subComponentName="iconGrid"
 								></SubHelperComponent>
+
 								{addButton}
 								{showDelete && (
 									<i
 										tabIndex={0}
-										className="reduceOne fa fa-circle-minus fa-solid"
+										className={`reduceOne ${deleteIcon ?? 'fa fa-circle-minus fa-solid'}`}
 										onClick={showDelete ? () => handleDelete(index) : undefined}
 										style={styleProperties.remove ?? {}}
 									>
@@ -350,7 +356,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 					subComponentName="iconGrid"
 				></SubHelperComponent>
 				<i
-					className="addOne fa fa-circle-plus fa-solid"
+					className={`addOne ${addIcon || 'fa fa-solid fa-circle-plus'}`}
 					onClick={() => handleAdd(0)}
 					style={styleProperties.add ?? {}}
 				>
