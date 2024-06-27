@@ -365,7 +365,7 @@ export default function ObjectPopup({
 								<ImageEditor
 									onPopup={() => setShowImagePopup(ed.valueKey)}
 									value={value}
-									onDelete={onChangeLocal}
+									onDelete={() => onChangeLocal(undefined)}
 								/>
 							);
 						} else if (ed.type === EditorType.TEXT_BOX) {
@@ -465,7 +465,7 @@ export default function ObjectPopup({
 							<ImageEditor
 								onPopup={() => setShowImagePopupNewObject(ed.valueKey)}
 								value={value}
-								onDelete={onChangeLocal}
+								onDelete={() => onChangeLocal(undefined)}
 							/>
 						);
 					} else if (ed.type === EditorType.TEXT_BOX) {

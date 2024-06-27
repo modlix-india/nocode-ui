@@ -64,14 +64,6 @@ setInterval(async () => {
 
 	const now = Date.now();
 
-	if (window.isDebugMode) {
-		console.log(authTokenExpiry, now, window.lastInteracted);
-		console.log(
-			authTokenExpiry < now,
-			authTokenExpiry - now > THREE_MINUTES,
-			now - window.lastInteracted > FIFTEEN_MINUTES,
-		);
-	}
 	if (
 		authTokenExpiry < now || // Token is already expired
 		authTokenExpiry - now > THREE_MINUTES || // Token expires in more than 2 minutes

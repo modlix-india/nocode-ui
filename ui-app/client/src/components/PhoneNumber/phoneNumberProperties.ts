@@ -6,16 +6,120 @@ import {
 	SCHEMA_VALIDATION,
 } from '../../constants';
 import {
+	ComponentENUM,
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
 	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
-
+import { COUNTRY_LIST } from './components/listOfCountries';
+const ENUM_OPTION: Array<ComponentENUM> = COUNTRY_LIST.map(each => {
+	return { name: each.C, displayName: `${each.N} ${each.D}` };
+});
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.label,
-
+	{
+		name: 'placeholder',
+		displayName: 'Placeholder',
+		description: 'Placeholder to be shown in input box.',
+		schema: SCHEMA_STRING_COMP_PROP,
+		defaultValue: '',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'countries',
+		displayName: 'Countries',
+		description: 'Countries to appear in list.',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.BASIC,
+		multiValued: true,
+		enumValues: ENUM_OPTION,
+	},
+	{
+		name: 'topCountries',
+		displayName: 'Top Countries',
+		description: 'Top Countries to appear in list.',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.BASIC,
+		multiValued: true,
+		enumValues: ENUM_OPTION,
+	},
+	{
+		name: 'orderBy',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Order By',
+		description: 'Order of dropdown option by',
+		defaultValue: 'countryname',
+		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.BASIC,
+		enumValues: [
+			{ name: 'countryname', displayName: 'Country Name', description: 'Country Name' },
+			{ name: 'countrycode', displayName: 'Country Code', description: 'Country Code' },
+			{ name: 'dialcode', displayName: 'Dial Code', description: 'Dial Code' },
+		],
+	},
+	{
+		name: 'format',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Formar Number',
+		description: 'Format Phone Number.',
+		defaultValue: true,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'storeFormatted',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Store Formatted Number',
+		description: 'Store the formatted phone number.',
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'seperator',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Format Value Type',
+		description: 'Type of the Value for Format',
+		defaultValue: ' ',
+		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.BASIC,
+		enumValues: [
+			{ name: ' ', displayName: 'Space', description: 'Space' },
+			{ name: '-', displayName: 'Hyphen', description: 'Hyphen' },
+			{ name: '.', displayName: 'Dot', description: 'Dot' },
+		],
+	},
+	{
+		name: 'isSearchable',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Is Searchable',
+		description: 'Allows the users search options.',
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'searchLabel',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Search Label ',
+		description: 'Label for searchbox.',
+		translatable: true,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'clearSearchTextOnClose',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Clear Search on close',
+		description: 'Clear Search on close.',
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'noCodeForFirstCountry',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: "Don't add dial code for first country",
+		defaultValue: false,
+		group: ComponentPropertyGroup.DATA,
+	},
 	{
 		name: 'noFloat',
 		schema: SCHEMA_BOOL_COMP_PROP,
@@ -41,62 +145,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
-		name: 'defaultValue',
-		schema: SCHEMA_ANY_COMP_PROP,
-		displayName: 'Default Value',
-		description: 'This value is use when the data entered is empty or not entered.',
-		group: ComponentPropertyGroup.DATA,
-	},
-
-	{
 		name: 'supportingText',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Supporting Text',
 		description: 'Text to be shown to help fill the textbox.',
 		translatable: true,
-		group: ComponentPropertyGroup.ADVANCED,
-	},
-
-	{
-		name: 'leftIcon',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Left Icon',
-		description: 'Icon to be shown on the left side.',
-		editor: ComponentPropertyEditor.ICON,
-		group: ComponentPropertyGroup.ADVANCED,
-	},
-
-	{
-		name: 'rightIcon',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Right Icon',
-		description: 'Icon to be shown on the right side.',
-		editor: ComponentPropertyEditor.ICON,
-		group: ComponentPropertyGroup.ADVANCED,
-	},
-
-	{
-		name: 'isPassword',
-		displayName: 'Password',
-		description: 'Textbox to enter password',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		defaultValue: false,
-		group: ComponentPropertyGroup.ADVANCED,
-	},
-	{
-		name: 'showMandatoryAsterisk',
-		displayName: 'Show Mandatory Asterisk',
-		description: 'Show Mandatory Asterisk',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		defaultValue: false,
-		group: ComponentPropertyGroup.BASIC,
-	},
-	{
-		name: 'placeholder',
-		displayName: 'Placeholder',
-		description: 'Placeholder to be shown in input box.',
-		schema: SCHEMA_STRING_COMP_PROP,
-		defaultValue: '',
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 
@@ -182,34 +235,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
-		name: 'valueType',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Value Type',
-		description: 'Type of the Value',
-		defaultValue: 'text',
-		editor: ComponentPropertyEditor.ENUM,
-		group: ComponentPropertyGroup.DATA,
-		enumValues: [
-			{ name: 'text', displayName: 'Text', description: 'Javascript String type' },
-			{ name: 'number', displayName: 'Number', description: 'Javascript Number type' },
-		],
-	},
-
-	{
-		name: 'numberType',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Number Type',
-		description: 'Choose whether number can be decimal or integer',
-		defaultValue: 'DECIMAL',
-		editor: ComponentPropertyEditor.ENUM,
-		group: ComponentPropertyGroup.DATA,
-		enumValues: [
-			{ name: 'DECIMAL', displayName: 'Decimal', description: 'Javascript Float type' },
-			{ name: 'INTEGER', displayName: 'Integer', description: 'Javascript Integer type' },
-		],
-	},
-
-	{
 		name: 'removeKeyWhenEmpty',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Delete Key on Empty',
@@ -263,44 +288,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
-		name: 'showNumberSpinners',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Show Number Spinners',
-		description: 'Show Number Spinners',
-		defaultValue: true,
-		group: ComponentPropertyGroup.ADVANCED,
-	},
-
-	{
 		name: 'maxChars',
 		schema: SCHEMA_NUM_COMP_PROP,
 		displayName: 'Max Characters Allowed',
 		description: 'Max Characters Allowed to type',
 		defaultValue: undefined,
-		group: ComponentPropertyGroup.ADVANCED,
-	},
-	{
-		name: 'onLeftIconClick',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'On Left Icon Click',
-		editor: ComponentPropertyEditor.EVENT_SELECTOR,
-		description: 'Event to be triggered when Left Icon clicked.',
-		group: ComponentPropertyGroup.EVENTS,
-	},
-	{
-		name: 'onRightIconClick',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'On Right Icon Click',
-		editor: ComponentPropertyEditor.EVENT_SELECTOR,
-		description: 'Event to be triggered when Right Icon clicked.',
-		group: ComponentPropertyGroup.EVENTS,
-  },
-	{
-		name: 'numberFormat',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Number Format Locale',
-		description:
-			"Number Format Locale - en-IN, en-US, or system (based on system's settings) etc.",
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 ];
@@ -316,14 +308,6 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
-	leftIcon: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
-	],
-	rightIcon: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
-	],
 	inputBox: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
@@ -334,12 +318,84 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
-	label: [
+	dropdownSelect: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	selectedOption: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
-	asterisk: [
+	arrowIcon: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+	],
+	dropdownBody: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	searchBoxContainer: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+
+	searchIcon: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+	],
+	searchBox: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	dropdownOptionList: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	dropdownOption: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	rightIcon: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+	],
+	label: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,

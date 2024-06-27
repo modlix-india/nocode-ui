@@ -374,13 +374,13 @@ export function renderBars(params: {
 			'mouseout',
 			properties.focusDataSetOnHover ? (e: any, d: any) => onFocusDataSet(d.i) : undefined,
 		)
-		.attr('x', function (d: any) {
+		.attr('x', function (this: any, d: any) {
 			const value = xFunction(d);
 			if (d3.select(this)?.attr('x') == value) return value;
 			if (chartData.hasBar) return value;
 			return axisPosition;
 		})
-		.attr('y', function (d: any) {
+		.attr('y', function (this: any, d: any) {
 			const value = yFunction(d);
 			if (d3.select(this)?.attr('y') == value) return value;
 			if (chartData.hasBar) {
@@ -389,13 +389,13 @@ export function renderBars(params: {
 			}
 			return value;
 		})
-		.attr('width', function (d: any) {
+		.attr('width', function (this: any, d: any) {
 			const value = widthFunction(d);
 			if (d3.select(this)?.attr('width') == value) return value;
 			if (chartData.hasBar) return value;
 			return 0;
 		})
-		.attr('height', function (d: any) {
+		.attr('height', function (this: any, d: any) {
 			const value = heightFunction(d);
 			if (d3.select(this)?.attr('height') == value) return value;
 			if (chartData.hasBar) return 0;

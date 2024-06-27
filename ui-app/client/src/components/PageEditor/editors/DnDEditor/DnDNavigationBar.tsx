@@ -150,7 +150,7 @@ export default function DnDNavigationBar({
 		}
 	}, [selectedComponent]);
 
-	const [filterHandle, setFilterHandle] = useState<NodeJS.Timeout | undefined>();
+	const [filterHandle, setFilterHandle] = useState<number | undefined>();
 
 	if (!componentTree || previewMode || !pageDef?.componentDefinition || !pageDef.rootComponent)
 		return <div className="_propBar"></div>;
@@ -252,7 +252,7 @@ function CompTree({
 	editorType,
 }: CompTreeProps) {
 	const comp = pageDef?.componentDefinition[compKey];
-	const hoverLonger = useRef<NodeJS.Timeout | null>();
+	const hoverLonger = useRef<number | null>();
 	if (!comp) return <></>;
 
 	const children =
