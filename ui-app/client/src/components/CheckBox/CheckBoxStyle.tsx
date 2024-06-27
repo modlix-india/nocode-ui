@@ -10,6 +10,7 @@ export default function CheckBoxStyle({ theme }: { theme: Map<string, Map<string
     input[type='checkbox'].commonCheckbox.radio {
         border-radius:50%;
     }
+
     input[type='checkbox'].commonCheckbox,
     span.commonTriStateCheckbox {
         -webkit-appearance: none;
@@ -27,12 +28,12 @@ export default function CheckBoxStyle({ theme }: { theme: Map<string, Map<string
     input[type='checkbox'].commonCheckbox::before,
     span.commonTriStateCheckbox::before {
         content: '';
-        width: 12px;
+        width: 14px;
         height: 12px;
         transform: scale(0);
         transition: 500ms transform ease-in-out;
         transform-origin: bottom left;
-        clip-path: polygon(18% 45%, 5% 66%, 34% 93%, 90% 40%, 90% 5%, 34% 72%);
+        clip-path: path('M12.922.859a1.307,1.307,0,0,1,0,1.854l-7,7.005a1.307,1.307,0,0,1-1.854,0l-3.5-3.5A1.311,1.311,0,0,1,2.423,4.364l2.57,2.57L11.063.859a1.307,1.307,0,0,1,1.854,0Z');
     }
     input[type='checkbox'].commonCheckbox.radio::before {
         background-color: #F5E2C6;
@@ -47,6 +48,7 @@ export default function CheckBoxStyle({ theme }: { theme: Map<string, Map<string
     input[type='checkbox'].commonCheckbox:checked {
         border: 0px;
     }
+    
 
     span.commonTriStateCheckbox._false::before {
         transform: scale(1);
@@ -55,7 +57,7 @@ export default function CheckBoxStyle({ theme }: { theme: Map<string, Map<string
     
     input[type='checkbox'].commonCheckbox:checked::before,
     span.commonTriStateCheckbox._true::before {
-        transform: scale(1);
+        transform: scale(0.7) translate(3px, -2px);
     }
     
     ${PREFIX} .checkbox {

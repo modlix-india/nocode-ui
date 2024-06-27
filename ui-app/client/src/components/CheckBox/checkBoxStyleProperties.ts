@@ -65,6 +65,34 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 
 	{
+		groupName: 'Default',
+		displayName: 'Default Checkbox Border Checked',
+		name: 'defaultCheckboxBorderChecked',
+		defaultValue: 'none',
+		cssProperty: 'border',
+		selector: '.comp.compCheckbox._default .commonCheckbox._checked',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Outline',
+		displayName: 'Outline Checkbox Border Checked',
+		name: 'outlineCheckboxBorderChecked',
+		defaultValue: '2px solid',
+		cssProperty: 'border',
+		selector: '.comp.compCheckbox._outlined .commonCheckbox._checked',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Filled',
+		displayName: 'Filled Checkbox Border Checked',
+		name: 'filledCheckboxBorderChecked',
+		defaultValue: '2px solid',
+		cssProperty: 'border',
+		selector: '.comp.compCheckbox._filled .commonCheckbox._checked',
+		noPrefix: true,
+	},
+
+	{
 		groupName: 'Border Color',
 		displayName: 'Primary Outline Checkbox Border Color',
 		name: 'primaryOutlineCheckboxBorderColor',
