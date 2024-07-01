@@ -212,12 +212,15 @@ function computeClassName(
 		className += ' _dateToday';
 	}
 
-	if (
-		props.disableTemporalRanges?.some(e => e === 'disableWeekend') &&
-		weekendDays.some(e => e === date.getDay())
-	) {
-		className += ' _dateDisabled';
-		disabled = true;
+	if (weekendDays.some(e => e === date.getDay())) {
+		if (props.disableTemporalRanges?.some(e => e === 'disableWeekend')) {
+			className += ' _dateDisabled';
+			disabled = true;
+		}
+
+		if (weekendDays.some(e => e === date.getDay())) {
+			className += ' _dateWeekend';
+		}
 	}
 
 	if (!disabled) className += ' _dateSelectable';

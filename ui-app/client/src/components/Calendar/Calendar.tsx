@@ -88,6 +88,7 @@ function CalendarComponent(props: ComponentProps) {
 			onMonthChange,
 			leftIcon,
 			weekEndDays,
+			lowLightWeekEnd,
 		} = {},
 		properties: computedProperties,
 		stylePropertiesWithPseudoStates,
@@ -472,7 +473,7 @@ function CalendarComponent(props: ComponentProps) {
 	if (componentDesignType === 'fullCalendar') {
 		return (
 			<div
-				className={`comp compCalendar fullCalendar ${calendarDesignType} ${colorScheme}`}
+				className={`comp compCalendar fullCalendar ${calendarDesignType} ${colorScheme} ${lowLightWeekEnd ? '_lowLightWeekend' : ''}`}
 				style={computedStyles?.comp ?? {}}
 			>
 				<HelperComponent context={context} definition={definition} />
@@ -484,7 +485,7 @@ function CalendarComponent(props: ComponentProps) {
 	return (
 		<CommonInputText
 			id={key}
-			cssPrefix={`comp compCalendar ${calendarDesignType}`}
+			cssPrefix={`comp compCalendar ${calendarDesignType} ${lowLightWeekEnd ? '_lowLightWeekend' : ''}`}
 			noFloat={noFloat}
 			readOnly={readOnly}
 			value={thisDate ?? ''}
@@ -850,8 +851,8 @@ const component: Component = {
 		},
 		{
 			name: 'asterisk',
-			displayName: 'asterisk',
-			description: 'asterisk',
+			displayName: 'Asterisk',
+			description: 'Asterisk',
 			icon: 'fa-solid fa-box',
 		},
 		{
