@@ -117,7 +117,8 @@ export default function CalendarStyle({ theme }: { theme: Map<string, Map<string
         ${PREFIX} ._yearNumber,
         ${PREFIX} ._monthName,
         ${PREFIX} ._calendarHeaderMonthsContainer,
-        ${PREFIX} ._calendarHeaderMonths
+        ${PREFIX} ._calendarHeaderMonths,
+        ${PREFIX} ._weekLabel
          {
             position: relative;
         }
@@ -234,15 +235,31 @@ export default function CalendarStyle({ theme }: { theme: Map<string, Map<string
             cursor: pointer;
         }
 
-        ${PREFIX} ._date._dateInRange._dateSelectable {
+        ${PREFIX} ._date._dateInRange._dateSelectable,
+        ${PREFIX}._lowLightWeekend._defaultCalendar ._date._dateInRange._dateSelectable._dateWeekend,
+        ${PREFIX}._lowLightWeekend._bigCalendar ._date._dateInRange._dateSelectable._dateWeekend,
+        ${PREFIX}._lowLightWeekend._smallCalendar ._date._dateInRange._dateSelectable._dateWeekend {
             border-radius: 0px;
         }
 
-        ${PREFIX} ._date._dateSelectable._dateEnd {
+        ${PREFIX} ._date._dateSelected._dateEnd,
+        ${PREFIX}._lowLightWeekend._defaultCalendar ._date._dateEnd._dateWeekend._dateSelected,
+        ${PREFIX}._lowLightWeekend._bigCalendar ._date._dateEnd._dateWeekend._dateSelected,
+        ${PREFIX}._lowLightWeekend._smallCalendar ._date._dateEnd._dateWeekend._dateSelected {
             border-radius: 0 50% 50% 0;
         }
-        ${PREFIX} ._date._dateSelectable._dateStart {
+        ${PREFIX} ._date._dateSelected._dateStart,
+        ${PREFIX}._lowLightWeekend._defaultCalendar ._date._dateStart._dateWeekend._dateSelected,
+        ${PREFIX}._lowLightWeekend._bigCalendar ._date._dateStart._dateWeekend._dateSelected,
+        ${PREFIX}._lowLightWeekend._smallCalendar ._date._dateStart._dateWeekend._dateSelected {
             border-radius: 50% 0 0 50%;
+        }
+
+        ${PREFIX} ._date._dateSelected._dateEnd._dateStart,
+        ${PREFIX}._lowLightWeekend._defaultCalendar ._date._dateEnd._dateWeekend._dateSelected._dateStart,
+        ${PREFIX}._lowLightWeekend._bigCalendar ._date._dateEnd._dateWeekend._dateSelected._dateStart,
+        ${PREFIX}._lowLightWeekend._smallCalendar ._date._dateEnd._dateWeekend._dateSelected._dateStart {
+            border-radius: 50%;
         }
 
         ${PREFIX} ._calendarBodyBrowseYears,
@@ -258,6 +275,11 @@ export default function CalendarStyle({ theme }: { theme: Map<string, Map<string
             justify-content: flex-start;
             align-items: center;
             padding: 20px;
+        }
+
+        ${PREFIX}._lowLightWeekend ._dateWeekend {
+            background-color: #f5f5f5;
+            border-radius: 0px;
         }
        
  	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
