@@ -81,6 +81,7 @@ function PhoneNumber(props: ComponentProps) {
 			searchLabel,
 			clearSearchTextOnClose,
 			noCodeForFirstCountry,
+			showMandatoryAsterisk,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -525,6 +526,12 @@ function PhoneNumber(props: ComponentProps) {
 			maxChars={maxChars}
 			showDropdown={dropdownOpen}
 			leftChildren={leftChildren}
+			showMandatoryAsterisk={
+				showMandatoryAsterisk &&
+				(validation ?? []).find((e: any) => e.type === undefined || e.type === 'MANDATORY')
+					? true
+					: false
+			}
 		/>
 	);
 }
@@ -650,6 +657,12 @@ const component: Component = {
 			name: 'label',
 			displayName: 'Label',
 			description: 'Label',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'asterisk',
+			displayName: 'asterisk',
+			description: 'asterisk',
 			icon: 'fa-solid fa-box',
 		},
 		{

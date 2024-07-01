@@ -113,7 +113,8 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 
 	${PREFIX} ._dropdownSelect ._selectedOption {
 		display: flex; 
-		gap: 8px;
+		gap: 2px;
+		align-items:center;
 	}
 
 	${PREFIX} ._dropdownSelect ._arrowIcon {
@@ -176,6 +177,8 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 		// border-radius: 6px;
 		white-space: wrap;
 		cursor: pointer;
+		align-items:center;
+		
 	}
 
 	// ${PREFIX} ._dropdownBody ._dropdownOption._hovered {
