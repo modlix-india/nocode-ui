@@ -1,7 +1,14 @@
 import React from 'react';
 import { CalendarAllProps } from './calendarTypes';
 import { CalendarMonthTitle } from './CalendarHeader';
-import { computeWeekNumberOfYear, getValidDate } from './calendarFunctions';
+import {
+	addToToggleSetCurry,
+	computeWeekNumberOfYear,
+	getStyleObjectCurry,
+	getValidDate,
+	removeFromToggleSetCurry,
+} from './calendarFunctions';
+import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
 
 export function CalendarMonth(
 	props: CalendarAllProps & {
@@ -16,6 +23,15 @@ export function CalendarMonth(
 
 	if (date.getDay() > weekStartsOn) date.setDate(weekStartsOn - date.getDay() + 1);
 	else if (date.getDay() < weekStartsOn) date.setDate(weekStartsOn - date.getDay() - 6);
+
+	let curry = getStyleObjectCurry(props.styles, props.hoverStyles, props.disabledStyles);
+	const [hovers, setHovers] = React.useState<Set<string>>(new Set());
+
+	const disableds = new Set(props.disableDays?.map(e => `weekLabel-${e}`) ?? []);
+
+	if (props.disableTemporalRanges?.some(e => e === 'disableWeekend')) {
+		for (let i of props.weekEndDays ?? []) disableds.add(`weekLabel-${i}`);
+	}
 
 	let datesNLabels: Array<React.JSX.Element> = [];
 
@@ -37,7 +53,18 @@ export function CalendarMonth(
 		else if (props.weekDayLabels === 'long') weekNumberLabel = 'Week';
 
 		datesNLabels.push(
-			<div className="_weekLabel _weekNumberLabel" key="weekNumberLabel">
+			<div
+				className="_weekLabel _weekNumberLabel"
+				key="weekNumberLabel"
+				style={curry(
+					'weekName',
+					hovers.has('weekLabel-wk') ? new Set(['weekName']) : new Set(),
+					disableds,
+				)}
+				onMouseEnter={addToToggleSetCurry(hovers, setHovers, 'weekLabel-wk')}
+				onMouseLeave={removeFromToggleSetCurry(hovers, setHovers, 'weekLabel-wk')}
+			>
+				<SubHelperComponent definition={props.definition} subComponentName="weekName" />
 				{weekNumberLabel}
 			</div>,
 		);
@@ -45,8 +72,20 @@ export function CalendarMonth(
 
 	let iterationDate = new Date(date);
 	for (let i = 0; i < 7; i++) {
+		const label = `weekLabel-${iterationDate.getDay()}`;
 		datesNLabels.push(
-			<div className="_weekLabel" key={`weekLabel-${iterationDate.getDay()}`}>
+			<div
+				className="_weekLabel"
+				key={label}
+				style={curry(
+					'weekName',
+					hovers.has(label) ? new Set(['weekName']) : new Set(),
+					disableds.has(label) ? new Set(['weekName']) : new Set(),
+				)}
+				onMouseEnter={addToToggleSetCurry(hovers, setHovers, label)}
+				onMouseLeave={removeFromToggleSetCurry(hovers, setHovers, label)}
+			>
+				<SubHelperComponent definition={props.definition} subComponentName="weekName" />
 				{iterationDate.toLocaleDateString(props.language, {
 					weekday: props.weekDayLabels,
 				})}
@@ -168,16 +207,24 @@ function computeClassName(
 	let className = '_date';
 	if (date.getMonth() !== monthDate.getMonth()) className += ' _dateNotInMonth';
 
+	let isSelected = false;
+
 	if (props.isRangeType && thisDates?.length && thatDate) {
 		let startDate = thisDates[0],
 			endDate = thatDate;
 		if (startDate > endDate) [startDate, endDate] = [endDate, startDate];
 
-		if (date.toDateString() === startDate.toDateString())
-			className += ' _dateStart _dateSelected';
-		else if (date.toDateString() === endDate.toDateString())
-			className += ' _dateEnd _dateSelected';
-		else if (date > startDate && date < endDate) className += ' _dateInRange _dateSelected';
+		if (date.toDateString() === startDate.toDateString()) {
+			className += ' _dateStart';
+			isSelected = true;
+		}
+		if (date.toDateString() === endDate.toDateString()) {
+			className += ' _dateEnd';
+			isSelected = true;
+		} else if (date > startDate && date < endDate) {
+			className += ' _dateInRange';
+			isSelected = true;
+		}
 	}
 
 	let disabled = false;
@@ -225,7 +272,7 @@ function computeClassName(
 
 	if (!disabled) className += ' _dateSelectable';
 
-	if (thisDates && thisDates.some(thisDate => thisDate.toDateString() === date.toDateString()))
+	if (isSelected || thisDates?.some(thisDate => thisDate.toDateString() === date.toDateString()))
 		className += ' _dateSelected';
 
 	return [disabled, className];

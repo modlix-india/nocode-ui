@@ -117,7 +117,8 @@ export default function CalendarStyle({ theme }: { theme: Map<string, Map<string
         ${PREFIX} ._yearNumber,
         ${PREFIX} ._monthName,
         ${PREFIX} ._calendarHeaderMonthsContainer,
-        ${PREFIX} ._calendarHeaderMonths
+        ${PREFIX} ._calendarHeaderMonths,
+        ${PREFIX} ._weekLabel
          {
             position: relative;
         }
@@ -252,6 +253,13 @@ export default function CalendarStyle({ theme }: { theme: Map<string, Map<string
         ${PREFIX}._lowLightWeekend._bigCalendar ._date._dateStart._dateWeekend._dateSelected,
         ${PREFIX}._lowLightWeekend._smallCalendar ._date._dateStart._dateWeekend._dateSelected {
             border-radius: 50% 0 0 50%;
+        }
+
+        ${PREFIX} ._date._dateSelected._dateEnd._dateStart,
+        ${PREFIX}._lowLightWeekend._defaultCalendar ._date._dateEnd._dateWeekend._dateSelected._dateStart,
+        ${PREFIX}._lowLightWeekend._bigCalendar ._date._dateEnd._dateWeekend._dateSelected._dateStart,
+        ${PREFIX}._lowLightWeekend._smallCalendar ._date._dateEnd._dateWeekend._dateSelected._dateStart {
+            border-radius: 50%;
         }
 
         ${PREFIX} ._calendarBodyBrowseYears,

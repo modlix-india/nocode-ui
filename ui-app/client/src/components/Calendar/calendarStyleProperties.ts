@@ -7112,7 +7112,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorThree>',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._defaultCalendar._primary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._primary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._primary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._primary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._defaultCalendar._primary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._primary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._primary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._primary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._defaultCalendar._primary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7123,7 +7123,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorFour>',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._defaultCalendar._secondary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._secondary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._secondary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._secondary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._defaultCalendar._secondary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._secondary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._secondary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._secondary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._defaultCalendar._secondary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7134,7 +7134,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorFive>',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._defaultCalendar._tertiary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._tertiary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._tertiary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._tertiary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._defaultCalendar._tertiary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._tertiary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._tertiary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._tertiary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._defaultCalendar._tertiary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7145,7 +7145,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorNine>',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._defaultCalendar._quaternary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._quaternary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quaternary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quaternary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._defaultCalendar._quaternary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._quaternary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quaternary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quaternary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._defaultCalendar._quaternary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7155,7 +7155,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorSeven>',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._defaultCalendar._quinary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._quinary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quinary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quinary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._defaultCalendar._quinary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._quinary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quinary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quinary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._defaultCalendar._quinary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7165,7 +7165,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorThree>',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._bigCalendar._primary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._primary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._primary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._primary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._bigCalendar._primary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._primary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._primary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._primary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._bigCalendar._primary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7175,7 +7175,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorFour>',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._bigCalendar._secondary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._secondary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._secondary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._secondary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._bigCalendar._secondary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._secondary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._secondary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._secondary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._bigCalendar._secondary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7185,7 +7185,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorFive>',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._bigCalendar._tertiary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._tertiary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._tertiary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._tertiary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._bigCalendar._tertiary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._tertiary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._tertiary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._tertiary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._bigCalendar._tertiary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7195,7 +7195,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorNine>',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._bigCalendar._quaternary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._quaternary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quaternary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quaternary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._bigCalendar._quaternary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._quaternary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quaternary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quaternary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._bigCalendar._quaternary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7205,7 +7205,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorSeven>',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._bigCalendar._quinary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._quinary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quinary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quinary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._bigCalendar._quinary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._quinary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quinary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quinary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._bigCalendar._quinary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7215,7 +7215,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorThree>',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._smallCalendar._primary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._primary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._primary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._primary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._smallCalendar._primary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._primary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._primary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._primary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._smallCalendar._primary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7225,7 +7225,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorFour>',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._smallCalendar._secondary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._secondary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._secondary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._secondary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._smallCalendar._secondary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._secondary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._secondary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._secondary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._smallCalendar._secondary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7235,7 +7235,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorFive>',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._smallCalendar._tertiary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._tertiary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._tertiary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._tertiary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._smallCalendar._tertiary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._tertiary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._tertiary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._tertiary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._smallCalendar._tertiary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7246,7 +7246,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorNine>',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._smallCalendar._quaternary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._quaternary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quaternary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quaternary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._smallCalendar._quaternary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._quaternary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quaternary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quaternary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._smallCalendar._quaternary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7256,7 +7256,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorSeven>',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCalendar._smallCalendar._quinary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._quinary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quinary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quinary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._smallCalendar._quinary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._quinary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quinary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quinary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._smallCalendar._quinary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 
@@ -7267,7 +7267,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorTwo>',
 		cssProperty: 'color',
 		selector:
-			'.comp.compCalendar._defaultCalendar._primary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._primary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._primary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._primary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._defaultCalendar._primary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._primary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._primary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._primary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._defaultCalendar._primary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7278,7 +7278,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorTwo>',
 		cssProperty: 'color',
 		selector:
-			'.comp.compCalendar._defaultCalendar._secondary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._secondary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._secondary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._secondary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._defaultCalendar._secondary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._secondary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._secondary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._secondary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._defaultCalendar._secondary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7289,7 +7289,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
 		selector:
-			'.comp.compCalendar._defaultCalendar._tertiary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._tertiary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._tertiary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._tertiary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._defaultCalendar._tertiary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._tertiary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._tertiary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._tertiary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._defaultCalendar._tertiary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7300,7 +7300,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorTwo>',
 		cssProperty: 'color',
 		selector:
-			'.comp.compCalendar._defaultCalendar._quaternary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._quaternary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quaternary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quaternary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._defaultCalendar._quaternary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._quaternary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quaternary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quaternary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._defaultCalendar._quaternary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7310,7 +7310,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorTwo>',
 		cssProperty: 'color',
 		selector:
-			'.comp.compCalendar._defaultCalendar._quinary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._quinary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quinary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quinary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._defaultCalendar._quinary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._quinary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quinary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quinary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._defaultCalendar._quinary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7320,7 +7320,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorTwo>',
 		cssProperty: 'color',
 		selector:
-			'.comp.compCalendar._bigCalendar._primary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._primary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._primary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._primary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._bigCalendar._primary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._primary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._primary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._primary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._bigCalendar._primary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7330,7 +7330,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorTwo>',
 		cssProperty: 'color',
 		selector:
-			'.comp.compCalendar._bigCalendar._secondary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._secondary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._secondary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._secondary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._bigCalendar._secondary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._secondary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._secondary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._secondary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._bigCalendar._secondary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7340,7 +7340,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
 		selector:
-			'.comp.compCalendar._bigCalendar._tertiary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._tertiary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._tertiary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._tertiary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._bigCalendar._tertiary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._tertiary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._tertiary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._tertiary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._bigCalendar._tertiary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7350,7 +7350,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorTwo>',
 		cssProperty: 'color',
 		selector:
-			'.comp.compCalendar._bigCalendar._quaternary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._quaternary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quaternary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quaternary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._bigCalendar._quaternary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._quaternary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quaternary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quaternary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._bigCalendar._quaternary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7360,7 +7360,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorTwo>',
 		cssProperty: 'color',
 		selector:
-			'.comp.compCalendar._bigCalendar._quinary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._quinary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quinary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quinary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._bigCalendar._quinary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._quinary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quinary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quinary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._bigCalendar._quinary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7370,7 +7370,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorTwo>',
 		cssProperty: 'color',
 		selector:
-			'.comp.compCalendar._smallCalendar._primary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._primary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._primary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._primary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._smallCalendar._primary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._primary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._primary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._primary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._smallCalendar._primary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7380,7 +7380,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorTwo>',
 		cssProperty: 'color',
 		selector:
-			'.comp.compCalendar._smallCalendar._secondary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._secondary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._secondary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._secondary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._smallCalendar._secondary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._secondary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._secondary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._secondary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._smallCalendar._secondary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7390,7 +7390,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
 		selector:
-			'.comp.compCalendar._smallCalendar._tertiary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._tertiary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._tertiary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._tertiary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._smallCalendar._tertiary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._tertiary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._tertiary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._tertiary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._smallCalendar._tertiary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7401,7 +7401,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorTwo>',
 		cssProperty: 'color',
 		selector:
-			'.comp.compCalendar._smallCalendar._quaternary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._quaternary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quaternary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quaternary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._smallCalendar._quaternary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._quaternary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quaternary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quaternary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._smallCalendar._quaternary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7411,7 +7411,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorTwo>',
 		cssProperty: 'color',
 		selector:
-			'.comp.compCalendar._smallCalendar._quinary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._quinary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quinary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quinary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._smallCalendar._quinary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._quinary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quinary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quinary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._smallCalendar._quinary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 
@@ -7422,7 +7422,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryCalendarDefaultCalendarDesignDateFontborderOnHoverOrSelected',
 		cssProperty: 'border',
 		selector:
-			'.comp.compCalendar._defaultCalendar._primary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._primary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._primary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._primary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._defaultCalendar._primary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._primary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._primary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._primary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._defaultCalendar._primary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7432,7 +7432,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryCalendarDefaultCalendarDesignDateFontborderOnHoverOrSelected',
 		cssProperty: 'border',
 		selector:
-			'.comp.compCalendar._defaultCalendar._secondary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._secondary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._secondary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._secondary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._defaultCalendar._secondary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._secondary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._secondary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._secondary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._defaultCalendar._secondary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7442,7 +7442,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryCalendarDefaultCalendarDesignDateFontborderOnHoverOrSelected',
 		cssProperty: 'border',
 		selector:
-			'.comp.compCalendar._defaultCalendar._tertiary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._tertiary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._tertiary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._tertiary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._defaultCalendar._tertiary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._tertiary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._tertiary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._tertiary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._defaultCalendar._tertiary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7452,7 +7452,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryCalendarDefaultCalendarDesignDateFontborderOnHoverOrSelected',
 		cssProperty: 'border',
 		selector:
-			'.comp.compCalendar._defaultCalendar._quaternary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._quaternary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quaternary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quaternary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._defaultCalendar._quaternary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._quaternary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quaternary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quaternary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._defaultCalendar._quaternary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7462,7 +7462,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryCalendarDefaultCalendarDesignDateFontborderOnHoverOrSelected',
 		cssProperty: 'border',
 		selector:
-			'.comp.compCalendar._defaultCalendar._quinary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._quinary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quinary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quinary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._defaultCalendar._quinary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._quinary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quinary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quinary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._defaultCalendar._quinary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7471,7 +7471,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryCalendarBigCalendarDesignDateFontborderOnHoverOrSelected',
 		cssProperty: 'border',
 		selector:
-			'.comp.compCalendar._bigCalendar._primary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._primary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._primary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._primary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._bigCalendar._primary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._primary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._primary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._primary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._bigCalendar._primary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7480,7 +7480,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryCalendarBigCalendarDesignDateFontborderOnHoverOrSelected',
 		cssProperty: 'border',
 		selector:
-			'.comp.compCalendar._bigCalendar._secondary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._secondary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._secondary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._secondary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._bigCalendar._secondary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._secondary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._secondary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._secondary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._bigCalendar._secondary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7489,7 +7489,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryCalendarBigCalendarDesignDateFontborderOnHoverOrSelected',
 		cssProperty: 'border',
 		selector:
-			'.comp.compCalendar._bigCalendar._tertiary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._tertiary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._tertiary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._tertiary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._bigCalendar._tertiary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._tertiary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._tertiary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._tertiary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._bigCalendar._tertiary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7498,7 +7498,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryCalendarBigCalendarDesignDateFontborderOnHoverOrSelected',
 		cssProperty: 'border',
 		selector:
-			'.comp.compCalendar._bigCalendar._quaternary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._quaternary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quaternary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quaternary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._bigCalendar._quaternary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._quaternary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quaternary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quaternary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._bigCalendar._quaternary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7507,7 +7507,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryCalendarBigCalendarDesignDateFontborderOnHoverOrSelected',
 		cssProperty: 'border',
 		selector:
-			'.comp.compCalendar._bigCalendar._quinary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._quinary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quinary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quinary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._bigCalendar._quinary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._quinary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quinary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quinary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._bigCalendar._quinary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7516,7 +7516,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryCalendarSmallCalendarDesignDateFontborderOnHoverOrSelected',
 		cssProperty: 'border',
 		selector:
-			'.comp.compCalendar._smallCalendar._primary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._primary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._primary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._primary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._smallCalendar._primary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._primary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._primary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._primary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._smallCalendar._primary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7526,7 +7526,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryCalendarSmallCalendarDesignDateFontborderOnHoverOrSelected',
 		cssProperty: 'border',
 		selector:
-			'.comp.compCalendar._smallCalendar._secondary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._secondary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._secondary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._secondary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._smallCalendar._secondary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._secondary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._secondary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._secondary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._smallCalendar._secondary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7535,7 +7535,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryCalendarSmallCalendarDesignDateFontborderOnHoverOrSelected',
 		cssProperty: 'border',
 		selector:
-			'.comp.compCalendar._smallCalendar._tertiary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._tertiary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._tertiary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._tertiary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._smallCalendar._tertiary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._tertiary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._tertiary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._tertiary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._smallCalendar._tertiary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7545,7 +7545,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryCalendarSmallCalendarDesignDateFontborderOnHoverOrSelected',
 		cssProperty: 'border',
 		selector:
-			'.comp.compCalendar._smallCalendar._quaternary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._quaternary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quaternary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quaternary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._smallCalendar._quaternary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._quaternary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quaternary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quaternary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._smallCalendar._quaternary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7554,7 +7554,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryCalendarSmallCalendarDesignDateFontborderOnHoverOrSelected',
 		cssProperty: 'border',
 		selector:
-			'.comp.compCalendar._smallCalendar._quinary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._quinary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quinary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quinary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._smallCalendar._quinary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._quinary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quinary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quinary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._smallCalendar._quinary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 
@@ -7565,7 +7565,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryCalendarDefaultCalendarDesignDateFontBorderRadiusOnHoverOrSelected',
 		cssProperty: 'border-radius',
 		selector:
-			'.comp.compCalendar._defaultCalendar._primary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._primary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._primary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._primary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._defaultCalendar._primary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._primary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._primary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._primary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._defaultCalendar._primary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7575,7 +7575,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryCalendarDefaultCalendarDesignDateFontBorderRadiusOnHoverOrSelected',
 		cssProperty: 'border-radius',
 		selector:
-			'.comp.compCalendar._defaultCalendar._secondary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._secondary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._secondary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._secondary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._defaultCalendar._secondary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._secondary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._secondary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._secondary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._defaultCalendar._secondary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7585,7 +7585,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryCalendarDefaultCalendarDesignDateFontBorderRadiusOnHoverOrSelected',
 		cssProperty: 'border-radius',
 		selector:
-			'.comp.compCalendar._defaultCalendar._tertiary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._tertiary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._tertiary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._tertiary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._defaultCalendar._tertiary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._tertiary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._tertiary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._tertiary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._defaultCalendar._tertiary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7595,7 +7595,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryCalendarDefaultCalendarDesignDateFontBorderRadiusOnHoverOrSelected',
 		cssProperty: 'border-radius',
 		selector:
-			'.comp.compCalendar._defaultCalendar._quaternary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._quaternary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quaternary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quaternary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._defaultCalendar._quaternary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._quaternary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quaternary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quaternary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._defaultCalendar._quaternary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7605,7 +7605,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryCalendarDefaultCalendarDesignDateFontBorderRadiusOnHoverOrSelected',
 		cssProperty: 'border-radius',
 		selector:
-			'.comp.compCalendar._defaultCalendar._quinary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._quinary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quinary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quinary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._defaultCalendar._quinary ._date._dateSelectable:hover, .comp.compCalendar._defaultCalendar._quinary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quinary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._defaultCalendar._quinary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._defaultCalendar._quinary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7615,7 +7615,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryCalendarBigCalendarDesignDateFontBorderRadiusOnHoverOrSelected',
 		cssProperty: 'border-radius',
 		selector:
-			'.comp.compCalendar._bigCalendar._primary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._primary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._primary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._primary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._bigCalendar._primary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._primary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._primary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._primary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._bigCalendar._primary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7625,7 +7625,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryCalendarBigCalendarDesignDateFontBorderRadiusOnHoverOrSelected',
 		cssProperty: 'border-radius',
 		selector:
-			'.comp.compCalendar._bigCalendar._secondary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._secondary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._secondary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._secondary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._bigCalendar._secondary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._secondary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._secondary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._secondary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._bigCalendar._secondary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7635,7 +7635,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryCalendarBigCalendarDesignDateFontBorderRadiusOnHoverOrSelected',
 		cssProperty: 'border-radius',
 		selector:
-			'.comp.compCalendar._bigCalendar._tertiary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._tertiary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._tertiary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._tertiary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._bigCalendar._tertiary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._tertiary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._tertiary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._tertiary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._bigCalendar._tertiary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7645,7 +7645,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryCalendarBigCalendarDesignDateFontBorderRadiusOnHoverOrSelected',
 		cssProperty: 'border-radius',
 		selector:
-			'.comp.compCalendar._bigCalendar._quaternary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._quaternary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quaternary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quaternary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._bigCalendar._quaternary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._quaternary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quaternary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quaternary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._bigCalendar._quaternary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7655,7 +7655,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryCalendarBigCalendarDesignDateFontBorderRadiusOnHoverOrSelected',
 		cssProperty: 'border-radius',
 		selector:
-			'.comp.compCalendar._bigCalendar._quinary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._quinary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quinary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quinary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._bigCalendar._quinary ._date._dateSelectable:hover, .comp.compCalendar._bigCalendar._quinary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quinary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._bigCalendar._quinary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._bigCalendar._quinary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7665,7 +7665,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryCalendarSmallCalendarDesignDateFontBorderRadiusOnHoverOrSelected',
 		cssProperty: 'border-radius',
 		selector:
-			'.comp.compCalendar._smallCalendar._primary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._primary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._primary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._primary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._smallCalendar._primary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._primary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._primary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._primary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._smallCalendar._primary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7675,7 +7675,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryCalendarSmallCalendarDesignDateFontBorderRadiusOnHoverOrSelected',
 		cssProperty: 'border-radius',
 		selector:
-			'.comp.compCalendar._smallCalendar._secondary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._secondary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._secondary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._secondary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._smallCalendar._secondary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._secondary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._secondary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._secondary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._smallCalendar._secondary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7685,7 +7685,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryCalendarSmallCalendarDesignDateFontBorderRadiusOnHoverOrSelected',
 		cssProperty: 'border-radius',
 		selector:
-			'.comp.compCalendar._smallCalendar._tertiary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._tertiary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._tertiary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._tertiary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._smallCalendar._tertiary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._tertiary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._tertiary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._tertiary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._smallCalendar._tertiary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7695,7 +7695,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryCalendarSmallCalendarDesignDateFontBorderRadiusOnHoverOrSelected',
 		cssProperty: 'border-radius',
 		selector:
-			'.comp.compCalendar._smallCalendar._quaternary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._quaternary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quaternary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quaternary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._smallCalendar._quaternary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._quaternary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quaternary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quaternary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._smallCalendar._quaternary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 	{
@@ -7705,7 +7705,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryCalendarSmallCalendarDesignDateFontBorderRadiusOnHoverOrSelected',
 		cssProperty: 'border-radius',
 		selector:
-			'.comp.compCalendar._smallCalendar._quinary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._quinary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quinary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quinary ._date._dateWeekend._dateSelectable:hover',
+			'.comp.compCalendar._smallCalendar._quinary ._date._dateSelectable:hover, .comp.compCalendar._smallCalendar._quinary ._date._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quinary ._date._dateWeekend._dateSelected, .comp.compCalendar._lowLightWeekend._smallCalendar._quinary ._date._dateWeekend._dateSelectable:hover, .comp.compCalendar._smallCalendar._quinary ._date._dateSelected._dateNotInMonth',
 		noPrefix: true,
 	},
 
