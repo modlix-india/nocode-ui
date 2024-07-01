@@ -78,7 +78,7 @@ export const runEvent = async (
 						break;
 					}
 				}
-				if (!pageDefinition.componentDefinition[key].children) continue;
+				if (!pageDefinition.componentDefinition[key]?.children) continue;
 				Object.entries(pageDefinition.componentDefinition[key].children ?? {})
 					.filter(([, v]: [string, boolean]) => v)
 					.forEach(([k]) => list.add(k));

@@ -40,6 +40,7 @@ import {
 	toFormat,
 	validateRangesAndSetData,
 	validateWithProps,
+	zeroHourDate,
 } from './components/calendarFunctions';
 import { CalendarValidationProps } from './components/calendarTypes';
 
@@ -88,6 +89,9 @@ function CalendarComponent(props: ComponentProps) {
 			onMonthChange,
 			leftIcon,
 			weekEndDays,
+			lowLightWeekEnd,
+			maxNumberOfDaysInRange,
+			minNumberOfDaysInRange,
 		} = {},
 		properties: computedProperties,
 		stylePropertiesWithPseudoStates,
@@ -295,7 +299,7 @@ function CalendarComponent(props: ComponentProps) {
 		} else {
 			if (isMultiSelect || bindingPathPath2) {
 				const values = value.split(multipleDateSeparator);
-				const dates = values
+				let dates = values
 					.map(e => e.trim())
 					.map(v => toFormat(v, displayDateFormat, storageFormat ?? displayDateFormat));
 
@@ -321,6 +325,36 @@ function CalendarComponent(props: ComponentProps) {
 							validationProps,
 						);
 					} else if (dates.length > 1) {
+						if (minNumberOfDaysInRange || maxNumberOfDaysInRange) {
+							let start = zeroHourDate(
+								getValidDate(dates[0], storageFormat ?? displayDateFormat),
+							);
+							let end = zeroHourDate(
+								getValidDate(dates[1], storageFormat ?? displayDateFormat),
+							);
+							if (!start || !end) return;
+							if (start > end) {
+								[start, end] = [end, start];
+							}
+
+							const diff = Math.abs(end.getTime() - start.getTime());
+							const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+							if (minNumberOfDaysInRange && days < minNumberOfDaysInRange) {
+								end = new Date(
+									start.getTime() + minNumberOfDaysInRange * 24 * 60 * 60 * 1000,
+								);
+							}
+
+							if (maxNumberOfDaysInRange && days > maxNumberOfDaysInRange) {
+								end = new Date(
+									start.getTime() + maxNumberOfDaysInRange * 24 * 60 * 60 * 1000,
+								);
+							}
+							dates = [
+								toFormat(start, 'Date', storageFormat ?? displayDateFormat),
+								toFormat(end, 'Date', storageFormat ?? displayDateFormat),
+							];
+						}
 						validatedAndSet = validateRangesAndSetData(
 							dateType === 'startDate' ? bindingPathPath1 : bindingPathPath2,
 							dates[0],
@@ -472,7 +506,7 @@ function CalendarComponent(props: ComponentProps) {
 	if (componentDesignType === 'fullCalendar') {
 		return (
 			<div
-				className={`comp compCalendar fullCalendar ${calendarDesignType} ${colorScheme}`}
+				className={`comp compCalendar fullCalendar ${calendarDesignType} ${colorScheme} ${lowLightWeekEnd ? '_lowLightWeekend' : ''}`}
 				style={computedStyles?.comp ?? {}}
 			>
 				<HelperComponent context={context} definition={definition} />
@@ -484,7 +518,7 @@ function CalendarComponent(props: ComponentProps) {
 	return (
 		<CommonInputText
 			id={key}
-			cssPrefix={`comp compCalendar ${calendarDesignType}`}
+			cssPrefix={`comp compCalendar ${calendarDesignType} ${lowLightWeekEnd ? '_lowLightWeekend' : ''}`}
 			noFloat={noFloat}
 			readOnly={readOnly}
 			value={thisDate ?? ''}
@@ -789,12 +823,6 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'disabledDate',
-			displayName: 'Disabled Date',
-			description: 'Disabled Date',
-			icon: 'fa-solid fa-box',
-		},
-		{
 			name: 'prevNextMonthDate',
 			displayName: 'Prev Next Month Date',
 			description: 'Prev Next Month Date',
@@ -816,6 +844,12 @@ const component: Component = {
 			name: 'weekendLowLightDate',
 			displayName: 'Weekend Low Light Date',
 			description: 'Weekend Low Light Date',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'weekNumber',
+			displayName: 'Week Number',
+			description: 'Week Number',
 			icon: 'fa-solid fa-box',
 		},
 		{
@@ -850,8 +884,8 @@ const component: Component = {
 		},
 		{
 			name: 'asterisk',
-			displayName: 'asterisk',
-			description: 'asterisk',
+			displayName: 'Asterisk',
+			description: 'Asterisk',
 			icon: 'fa-solid fa-box',
 		},
 		{

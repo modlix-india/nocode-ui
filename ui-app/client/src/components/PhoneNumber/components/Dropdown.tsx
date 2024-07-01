@@ -49,7 +49,8 @@ export function Dropdown({
 		label = (
 			<div style={computedStyles.selectedOption ?? {}} className="_selectedOption">
 				<SubHelperComponent definition={definition} subComponentName="selectedOption" />
-				<span>{getFlagEmoji(value!.C)}</span>
+				<span className={`_flag ${value!.C.toLowerCase()}`}></span>
+				{/* <span>{getFlagEmoji(value!.C)}</span> */}
 				{showDialCode && <span>{value.D}</span>}
 			</div>
 		);
@@ -188,7 +189,8 @@ export function Dropdown({
 										definition={definition}
 										subComponentName="dropdownOption"
 									/>
-									<span>{getFlagEmoji(o.C) + ' '}</span>
+									<span className={`_flag ${o.C.toLowerCase()}`}></span>
+									{/* <span>{getFlagEmoji(o.C) + ' '}</span> */}
 									<span>{`${o.N} (${o.D})`}</span>
 								</div>
 							),

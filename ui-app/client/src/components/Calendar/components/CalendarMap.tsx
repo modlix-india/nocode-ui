@@ -7,9 +7,11 @@ import {
 	CalendarYearTitle,
 } from './CalendarHeader';
 import {
+	addToToggleSetCurry,
 	computeMinMaxDates,
 	getStyleObjectCurry,
 	getValidDate,
+	removeFromToggleSetCurry,
 	toFormat,
 } from './calendarFunctions';
 import {
@@ -159,8 +161,6 @@ export function CalendarMap(
 
 			if (start && end && start > end) [startDate, endDate] = [endDate, startDate];
 
-			console.log(start, end);
-			console.log(startDate, endDate);
 			if (startDate && endDate)
 				props.onChange(
 					startDate && endDate && isEndDate
@@ -192,6 +192,9 @@ export function CalendarMap(
 
 	let header: React.JSX.Element;
 	let browseBody: React.JSX.Element | undefined = undefined;
+
+	const curry = getStyleObjectCurry(props.styles, props.hoverStyles, props.disabledStyles);
+	const [hovers, setHovers] = React.useState<Set<string>>(new Set());
 
 	if (browseMonths || browseYears) {
 		header = (
@@ -245,7 +248,20 @@ export function CalendarMap(
 				);
 			}
 			browseBody = (
-				<div className="_calendarBodyBrowseMonths">
+				<div
+					className="_calendarBodyBrowseMonths"
+					style={curry('calendarBodyBrowseMonths', hovers, new Set())}
+					onMouseEnter={addToToggleSetCurry(
+						hovers,
+						setHovers,
+						'calendarBodyBrowseMonths',
+					)}
+					onMouseLeave={removeFromToggleSetCurry(
+						hovers,
+						setHovers,
+						'calendarBodyBrowseMonths',
+					)}
+				>
 					<SubHelperComponent
 						definition={definition}
 						subComponentName="calendarBodyBrowseMonths"
@@ -272,7 +288,16 @@ export function CalendarMap(
 				);
 			}
 			browseBody = (
-				<div className="_calendarBodyBrowseYears">
+				<div
+					className="_calendarBodyBrowseYears"
+					style={curry('calendarBodyBrowseYears', hovers, new Set())}
+					onMouseEnter={addToToggleSetCurry(hovers, setHovers, 'calendarBodyBrowseYears')}
+					onMouseLeave={removeFromToggleSetCurry(
+						hovers,
+						setHovers,
+						'calendarBodyBrowseYears',
+					)}
+				>
 					<SubHelperComponent
 						definition={definition}
 						subComponentName="calendarBodyBrowseYears"
@@ -304,7 +329,12 @@ export function CalendarMap(
 		<>
 			{header}
 			{monthSelector}
-			<div className={`_calendarBodyMonths _months _${count}cols`}>
+			<div
+				className={`_calendarBodyMonths _months _${count}cols`}
+				style={curry('calendarBodyMonths', hovers, new Set())}
+				onMouseEnter={addToToggleSetCurry(hovers, setHovers, 'calendarBodyMonths')}
+				onMouseLeave={removeFromToggleSetCurry(hovers, setHovers, 'calendarBodyMonths')}
+			>
 				{subComponent}
 				{months}
 				{browseBody}
