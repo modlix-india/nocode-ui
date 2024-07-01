@@ -32,38 +32,6 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 		bottom: 100%;
 	}
 
-	// ${PREFIX}._dialCodeLength1 ._label {
-	// 	padding-left: 60px;
-	// }
-
-	// ${PREFIX}._dialCodeLength2 ._label {
-	// 	padding-left: 84px;
-	// }
-
-	// ${PREFIX}._dialCodeLength3 ._label {
-	// 	padding-left: 92px;
-	// }
-
-	// ${PREFIX}._dialCodeLength4 ._label {
-	// 	padding-left: 100px;
-	// }
-
-	// ${PREFIX}._dialCodeLength5 ._label {
-	// 	padding-left: 108px;
-	// }
-
-	// ${PREFIX}._dialCodeLength6 ._label {
-	// 	padding-left: 114px;
-	// }
-
-	// ${PREFIX}._dialCodeLength7 ._label {
-	// 	padding-left: 122px;
-	// }
-
-	// ${PREFIX}._dialCodeLength8 ._label {
-	// 	padding-left: 130px;
-	// }
-
 	${PREFIX} ._label {
 		position: absolute;
 		user-select: none;
@@ -113,7 +81,8 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 
 	${PREFIX} ._dropdownSelect ._selectedOption {
 		display: flex; 
-		gap: 8px;
+		gap: 2px;
+		align-items:center;
 	}
 
 	${PREFIX} ._dropdownSelect ._arrowIcon {
@@ -172,24 +141,11 @@ export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<str
 	${PREFIX} ._dropdownBody ._dropdownOption {
 		display: flex;
 		gap: 10px;
-		// padding: 10px 8px;
-		// border-radius: 6px;
 		white-space: wrap;
 		cursor: pointer;
+		align-items:center;
+		
 	}
-
-	// ${PREFIX} ._dropdownBody ._dropdownOption._hovered {
-	// 	background-color: rgba(51, 51, 51, 0.05)
-	// }
-
-	// ${PREFIX} ._dropdownBody ._dropdownOption._selected {
-	// 	background-color: rgba(51, 51, 51, 0.05)
-	// }
-
-	// ${PREFIX} ._dropdownBody ._dropdownOption._nextSeperator {
-	// 	border-radius: 0px;
-	// 	border-bottom: 1px solid rgb(0,0,0,.07);
-	// }
 
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
