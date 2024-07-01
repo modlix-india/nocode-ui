@@ -83,6 +83,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 		editor: ComponentPropertyEditor.IMAGE,
 	},
+	{
+		name: 'imgLazyLoading',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Image lazy loading',
+		description: 'Image lazy loading',
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
