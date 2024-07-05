@@ -103,17 +103,22 @@ export function Dropdown({
 	}, [open, searchText, handleClose]);
 
 	let body;
+	
 	if (open) {
 		const dropdownBodyStyle: CSSProperties = computedStyles.dropdownBody ?? {};
 		if (dropDown.current) {
 			const rect = dropDown.current.getBoundingClientRect();
-			if (rect.top + 300 > document.body.clientHeight)
-				dropdownBodyStyle.bottom = document.body.clientHeight - rect.top;
-			else dropdownBodyStyle.top = rect.top + rect.height;
-			const parentRect = dropDown.current.parentElement?.getBoundingClientRect();
-			dropdownBodyStyle.right = document.body.clientWidth - (parentRect?.right ?? 0) + 6;
-			dropdownBodyStyle.minWidth = rect.width;
-			dropdownBodyStyle.maxWidth = parentRect?.width ?? '100%';
+			const parentRect =
+				dropDown.current.parentElement?.getBoundingClientRect();
+			if (parentRect) {
+				if (rect.top + 300 > document.body.clientHeight)
+					dropdownBodyStyle.bottom = parentRect.height;
+				else 
+					dropdownBodyStyle.top = rect.height;
+				dropdownBodyStyle.left = parentRect.left - rect.left;
+				dropdownBodyStyle.minWidth = parentRect?.width;
+				dropdownBodyStyle.maxWidth = parentRect?.width ?? '100%';
+			}
 		}
 		body = (
 			<>
