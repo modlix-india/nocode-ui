@@ -87,10 +87,7 @@ function Text(props: ComponentProps) {
 
 	if (textType === 'MD') {
 		return (
-			<div
-				className={`comp compText _markdown ${designType}`}
-				style={styleProperties.comp ?? {}}
-			>
+			<div className={`comp compText _markdown`} style={styleProperties.comp ?? {}}>
 				<HelperComponent context={props.context} definition={definition} />
 				<MarkDownToComponents text={translatedText ?? ''} />
 			</div>
