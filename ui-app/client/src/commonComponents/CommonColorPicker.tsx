@@ -91,7 +91,7 @@ const COLOR_TYPE_TO_VARIABLES = new Map([
 	],
 ]);
 
-export function CommonColorPicker({
+export function CommonColorPickerPropertyEditor({
 	color: colorProperty,
 	variableSelection = true,
 	onChange,
@@ -582,7 +582,7 @@ export function CommonColorPicker({
 	const colorStyle: CSSProperties = color
 		? {
 				background: color,
-		  }
+			}
 		: {};
 
 	const [timeoutHandle, setTimeoutHandle] = useState<number | undefined>(undefined);

@@ -1,7 +1,7 @@
 import { duplicate, isNullValue } from '@fincity/kirun-js';
 import React, { useMemo } from 'react';
 import { PixelSize } from './SizeSliders';
-import { CommonColorPicker } from '../../../../../commonComponents/CommonColorPicker';
+import { CommonColorPickerPropertyEditor } from '../../../../../commonComponents/CommonColorPicker';
 import { IconsSimpleEditor } from './IconsSimpleEditor';
 import { ButtonBar } from './ButtonBar';
 
@@ -138,7 +138,7 @@ export function ShadowEditor({
 			{shadows.map((e, i) => (
 				<div key={makeKey(e, type) + '_' + i} className="_eachShadowEditor">
 					<div className="_color_controls">
-						<CommonColorPicker
+						<CommonColorPickerPropertyEditor
 							variableSelection={false}
 							color={{ value: e.color ?? '' }}
 							onChange={v => {
