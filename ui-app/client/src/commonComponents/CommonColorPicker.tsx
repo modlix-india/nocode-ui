@@ -9,6 +9,7 @@ import {
 } from '../components/util/colorUtil';
 import { getDataFromPath } from '../context/StoreContext';
 import { ComponentProperty } from '../types/common';
+import { roundTo } from '../functions/utils';
 
 enum ColorType {
 	BACKGROUND_COLORS = 'Backgrounds',
@@ -216,9 +217,9 @@ export function CommonColorPicker({
 			setHexString(HSV_HexString({ h: h!, s: s!, v: v!, a: a ?? 1 }));
 			const hsl = HSV_HSL({ h: h!, s: s!, v: v! });
 			const rgb = HSV_RGB({ h: h!, s: s!, v: v! });
-			setHrEdit('' + (type === 'hsl' ? Math.round(hsl.h) : Math.round(rgb.r)));
-			setSgEdit('' + (type === 'hsl' ? Math.round(hsl.s) : Math.round(rgb.g)));
-			setLbEdit('' + (type === 'hsl' ? Math.round(hsl.l) : Math.round(rgb.b)));
+			setHrEdit('' + (type === 'hsl' ? hsl.h : rgb.r));
+			setSgEdit('' + (type === 'hsl' ? hsl.s : rgb.g));
+			setLbEdit('' + (type === 'hsl' ? hsl.l : rgb.b));
 		},
 		[setHue, setSaturation, setValue, setAlpha, setHexString, type],
 	);
@@ -260,7 +261,7 @@ export function CommonColorPicker({
 		const rect = parent.getBoundingClientRect();
 		const x = e.clientX - rect.left;
 		const width = rect.width;
-		fun(Math.round((x * 100) / width));
+		fun((x * 100) / width);
 	};
 
 	const svThumbStyle: CSSProperties = {
@@ -278,8 +279,8 @@ export function CommonColorPicker({
 		const y = e.clientY - rect.top;
 		const width = rect.width;
 		const height = rect.height;
-		const newSaturation = Math.round((x * 100) / width);
-		const newValue = Math.round(100 - (y * 100) / height);
+		const newSaturation = (x * 100) / width;
+		const newValue = 100 - (y * 100) / height;
 		onChange({
 			value: HSV_RGBAString({
 				h: hue,
@@ -295,7 +296,7 @@ export function CommonColorPicker({
 		onClickSlider(e, huePickerRef.current!, percent =>
 			onChange({
 				value: HSV_RGBAString({
-					h: Math.round((percent / 100) * 360),
+					h: (percent / 100) * 360,
 					s: saturation,
 					v: value,
 					a: alpha,
@@ -562,7 +563,7 @@ export function CommonColorPicker({
 						<input
 							className="_simpleEditorInput"
 							placeholder={type === 'hsl' ? 'Hue' : 'Red'}
-							value={hrEdit}
+							value={roundTo(hrEdit, 2)}
 							type="number"
 							step="1"
 							onChange={e => setHrEdit(e.target.value)}
@@ -586,7 +587,7 @@ export function CommonColorPicker({
 						<input
 							className="_simpleEditorInput"
 							placeholder={type === 'hsl' ? 'Saturation' : 'Green'}
-							value={sgEdit}
+							value={roundTo(sgEdit, 2)}
 							type="number"
 							step="1"
 							onChange={e => setSgEdit(e.target.value)}
@@ -610,7 +611,7 @@ export function CommonColorPicker({
 						<input
 							className="_simpleEditorInput"
 							placeholder={type === 'hsl' ? 'Lightness' : 'Blue'}
-							value={lbEdit}
+							value={roundTo(lbEdit, 2)}
 							type="number"
 							step="1"
 							onChange={e => setLbEdit(e.target.value)}

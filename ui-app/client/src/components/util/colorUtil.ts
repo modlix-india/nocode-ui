@@ -79,7 +79,7 @@ export function RGB_HSL({ r, g, b }: RGBA): HSLA {
 		}
 	}
 
-	return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
+	return { h: h * 360, s: s * 100, l: l * 100 };
 }
 
 export function RGBA_HEX({ r, g, b, a }: RGBA) {
@@ -193,7 +193,7 @@ export function SV_SL({ s, v }: SV): SL {
 	const l = v - (s * v) / 2;
 	const sl = l === 0 || l === 1 ? 0 : (v - l) / Math.min(l, 1 - l);
 
-	return { l: Math.round(l * 100), s: Math.round(sl * 100) };
+	return { l: l * 100, s: sl * 100 };
 }
 
 export function SL_SV({ s, l }: SL): SV {
@@ -201,7 +201,7 @@ export function SL_SV({ s, l }: SL): SV {
 	l /= 100;
 	const v = l + s * (l < 1 - l ? l : 1 - l);
 	const sv = v === 0 ? 0 : 2 * (1 - l / v);
-	return { v: Math.round(v * 100), s: Math.round(sv * 100) };
+	return { v: v * 100, s: sv * 100 };
 }
 
 function parse(n: string): number {
