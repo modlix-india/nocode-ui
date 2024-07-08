@@ -299,7 +299,7 @@ export default function AppStyle() {
 		position: relative;
 	}
 
-	._simpleEditorColorSelector ._colorPickerBody {
+	._colorPickerBody {
 		position: fixed;
 		background-color: #FFF;
 		z-index: 2;
@@ -314,7 +314,7 @@ export default function AppStyle() {
 		gap: 10px;
 	}
 
-	._simpleEditorColorSelector ._colorPickerBody ._color_variable_picker {
+	._colorPickerBody ._color_variable_picker {
 		display: flex;
 		flex-direction: row;
 		align-items: center;
@@ -325,7 +325,7 @@ export default function AppStyle() {
 		flex-wrap: wrap;
 	}
 
-	._simpleEditorColorSelector ._colorPickerBody ._color_variable {
+	._colorPickerBody ._color_variable {
 		width: 20px;
 		height: 20px;
 		border-radius: 50%;
@@ -334,12 +334,12 @@ export default function AppStyle() {
 		position: relative;
 	}
 
-	._simpleEditorColorSelector ._colorPickerBody ._color_variable._selected {
+	._colorPickerBody ._color_variable._selected {
 		border: 2px solid #51BD94;
 		box-shadow: 0px 0px 4px 4px #51BD94;
 	}
 
-	._simpleEditorColorSelector ._colorPickerBody ._color_variable::before {
+	._colorPickerBody ._color_variable::before {
 		content: '';
 		width: 100%;
 		height: 100%;
@@ -355,15 +355,15 @@ export default function AppStyle() {
 		border-radius: 8px;
 	}
 
-	._simpleEditorColorSelector ._colorPickerBody ._color_variable_name {
+	._colorPickerBody ._color_variable_name {
 		width: 100%;
 		height: 100%;
 		border-radius: 50%;
 		position: absolute;
 	}
 
-	._simpleEditorColorSelector ._colorPickerBody ._simpleEditorInput,
-	._simpleEditorColorSelector ._colorPickerBody ._simpleEditorSelect {
+	._colorPickerBody ._simpleEditorInput,
+	._colorPickerBody ._simpleEditorSelect {
 		min-height: 25px;
 		padding-top: 3px;
 		padding-bottom: 3px;
@@ -372,17 +372,17 @@ export default function AppStyle() {
 		background: transparent;
 	}
 
-	._simpleEditorColorSelector ._colorPickerBody ._saturation_value_picker{
+	._colorPickerBody ._saturation_value_picker{
 		position: relative;
 		height: 150px;
 		border-radius: 6px;
 	}
 
-	._simpleEditorColorSelector ._colorPickerBody ._saturation_value_picker ._thumb {
+	._colorPickerBody ._saturation_value_picker ._thumb {
 		margin-top: -8px;
 	}
 
-	._simpleEditorColorSelector ._colorPickerBody ._hue_picker{
+	._colorPickerBody ._hue_picker{
 		background: linear-gradient(to right,red 0,#ff0 16.66%,#0f0 33.33%,#0ff 50%,#00f 66.66%,#f0f 83.33%,red 100%);
 		height: 10px;
 		width: 100%;
@@ -391,7 +391,7 @@ export default function AppStyle() {
 		margin-bottom: 10px;
 	}
 
-	._simpleEditorColorSelector ._colorPickerBody ._alpha_picker {
+	._colorPickerBody ._alpha_picker {
 		cursor: pointer;
 		height: 10px;
 		position: relative;
@@ -407,14 +407,14 @@ export default function AppStyle() {
 		border-radius: 8px;
 	}
 
-	._simpleEditorColorSelector ._colorPickerBody ._alpha_picker_gradient {
+	._colorPickerBody ._alpha_picker_gradient {
 		position: absolute;
 		height: 100%;
 		width: 100%;
 		border-radius: 8px;
 	}
 
-	._simpleEditorColorSelector ._colorPickerBody ._colorValueline {
+	._colorPickerBody ._colorValueline {
 		display: flex;
 		flex-direction: row;
 		align-items: center;
@@ -422,13 +422,13 @@ export default function AppStyle() {
 		gap: 5px;
 	}
 
-	._simpleEditorColorSelector ._colorPickerBody ._colorValues {
+	._colorPickerBody ._colorValues {
 		margin-right: 2px;
 		padding-right: 5px;
 		border-right: 0.5px solid #0000000D;
 	}
 
-	._simpleEditorColorSelector ._thumb {
+	._colorPickerBody ._thumb {
 		width: 16px;
 		height: 16px;
 		border-radius: 50%;
@@ -444,7 +444,7 @@ export default function AppStyle() {
 		pointer-events: none;
 	}
 	
-	._simpleEditorColorSelector ._thumbInner {
+	._colorPickerBody ._thumbInner {
 		position: absolute;
 		width: 60%;
 		height: 60%;
