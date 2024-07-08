@@ -1997,7 +1997,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Dropdown Background Color ',
 		displayName: 'Primary Dropdown Container Filled Design background Color',
 		name: 'primaryDropdownContainerFilledDesignbackgroundColor',
-		defaultValue: '<backgroundColorTwo>',
+		defaultValue: '<backgroundColorOne>',
 		cssProperty: 'background',
 		selector: '.comp.compDropdown._filled._primary ._dropdownContainer',
 		noPrefix: true,
