@@ -282,6 +282,7 @@ export function CommonColorPicker({
 		const height = rect.height;
 		const newSaturation = (x * 100) / width;
 		const newValue = 100 - (y * 100) / height;
+
 		onChange({
 			value: HSV_RGBAString({
 				h: hue,

@@ -138,29 +138,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.DATA,
 		enumValues: [
 			{
-				name: 'HEX',
+				name: 'hex',
 				displayName: 'HEX String',
 				description: 'HEX String',
 			},
 			{
-				name: 'RGB',
-				displayName: 'RGB String',
-				description: 'RGB String',
-			},
-			{
-				name: 'RGBA',
+				name: 'rgba',
 				displayName: 'RGBA String',
 				description: 'RGBA String',
-			},
-			{
-				name: 'HSL',
-				displayName: 'HSL String',
-				description: 'HSL String',
-			},
-			{
-				name: 'HSLA',
-				displayName: 'HSLA String',
-				description: 'HSLA String',
 			},
 		],
 	},
