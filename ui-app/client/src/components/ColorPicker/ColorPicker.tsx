@@ -406,24 +406,6 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'dropdownItem',
-			displayName: 'Dropdown Item',
-			description: 'Dropdown Item',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'dropdownItemLabel',
-			displayName: 'Dropdown Item Label',
-			description: 'Dropdown Item Label',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'dropdownCheckIcon',
-			displayName: 'Dropdown Check Icon',
-			description: 'Dropdown Check Icon',
-			icon: 'fa-solid fa-box',
-		},
-		{
 			name: 'leftIcon',
 			displayName: 'Left Icon',
 			description: 'Left Icon',
