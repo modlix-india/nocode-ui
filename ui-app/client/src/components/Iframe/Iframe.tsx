@@ -39,6 +39,32 @@ function Iframe(props: ComponentProps) {
 		{},
 		stylePropertiesWithPseudoStates,
 	);
+
+	if (!src || src.trim() === '') {
+		return null; // Returning null if src is not provided or empty
+	}
+
+	// if want to validate the url as well
+	const isValidURL = (url: any) => {
+		if (!url || url.trim() === '') {
+			return true; // Treating empty or null URLs as valid for this purpose
+		}
+		try {
+			new URL(url);
+			return true;
+		} catch {
+			return false;
+		}
+	};
+
+	if (!isValidURL(src)) {
+		return (
+			<div className="invalid-url">
+				The URL provided is incorrect, please insert the correct embedded URL.
+			</div>
+		);
+	}
+
 	return (
 		<div className="comp compIframe" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent context={props.context} definition={definition} />
