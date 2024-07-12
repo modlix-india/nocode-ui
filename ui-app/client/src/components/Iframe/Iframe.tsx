@@ -40,51 +40,40 @@ function Iframe(props: ComponentProps) {
 		stylePropertiesWithPseudoStates,
 	);
 
-	if (!src || src.trim() === '') {
-		return null; // Returning null if src is not provided or empty
-	}
-
-	// if want to validate the url as well
-	const isValidURL = (url: any) => {
-		if (!url || url.trim() === '') {
-			return true; // Treating empty or null URLs as valid for this purpose
-		}
+	const shouldRenderIframe = (srcdoc: any, src: any) => {
+		if (srcdoc) return true;
+		if (!src || !src.trim()) return false;
 		try {
-			new URL(url);
+			new URL(src);
 			return true;
-		} catch {
+		} catch (e) {
 			return false;
 		}
 	};
 
-	if (!isValidURL(src)) {
-		return (
-			<div className="invalid-url">
-				The URL provided is incorrect, please insert the correct embedded URL.
-			</div>
-		);
-	}
-
 	return (
 		<div className="comp compIframe" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent context={props.context} definition={definition} />
-			<iframe
-				className="iframe"
-				style={resolvedStyles.iframe ?? {}}
-				width={width}
-				src={src}
-				height={height}
-				name={name}
-				loading={loading}
-				allow={allow}
-				sandbox={sandbox}
-				referrerPolicy={referrerpolicy}
-				allowFullScreen={allowfullscreen}
-				srcDoc={srcdoc}
-			></iframe>
+			{shouldRenderIframe(srcdoc, src) ? (
+				<iframe
+					className="iframe"
+					style={resolvedStyles.iframe ?? {}}
+					width={width}
+					src={srcdoc ? undefined : src}
+					srcDoc={srcdoc}
+					height={height}
+					name={name}
+					loading={loading}
+					allow={allow}
+					sandbox={sandbox}
+					referrerPolicy={referrerpolicy}
+					allowFullScreen={allowfullscreen}
+				></iframe>
+			) : null}
 		</div>
 	);
 }
+
 const component: Component = {
 	name: 'Iframe',
 	displayName: 'Iframe',
