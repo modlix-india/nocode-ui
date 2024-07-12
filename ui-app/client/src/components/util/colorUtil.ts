@@ -7,6 +7,8 @@ const REGEX_LIST: { [key: string]: RegExp } = {
 	8: /([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i,
 };
 
+export type ColorFormatTypeAlpha = 'hex' | 'rgba' | 'hsla' | 'hsva';
+
 export interface RGBA {
 	r: number;
 	g: number;
@@ -102,31 +104,27 @@ function hue2rgb(p: number, q: number, t: number) {
 	return p;
 }
 
-export function HSL_RGB({ h, s, l }: HSLA): RGBA {
+function HSL_RGB({ h, s, l }: HSLA): RGBA {
+	h /= 360;
+	s /= 100;
+	l /= 100;
 	let r, g, b;
-
-	if (s == 0) {
-		r = g = b = l; // achromatic
+	if (s === 0) {
+		r = g = b = l;
 	} else {
-		let q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-		let p = 2 * l - q;
-
+		const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+		const p = 2 * l - q;
 		r = hue2rgb(p, q, h + 1 / 3);
 		g = hue2rgb(p, q, h);
 		b = hue2rgb(p, q, h - 1 / 3);
 	}
-
-	return {
-		r: Math.max(0, Math.min(Math.round(r * 255), 255)),
-		g: Math.max(0, Math.min(Math.round(g * 255), 255)),
-		b: Math.max(0, Math.min(Math.round(b * 255), 255)),
-	};
+	return { r: Math.round(r * 255), g: Math.round(g * 255), b: Math.round(b * 255) };
 }
 
 export function HSV_RGB({ h, s, v }: HSVA): RGBA {
-	h /= 360;
-	s /= 100;
-	v /= 100;
+	if (h > 1) h /= 360;
+	if (s > 1) s /= 100;
+	if (v > 1) v /= 100;
 	let r, g, b;
 	const i = Math.floor(h * 6);
 	const f = h * 6 - i;
@@ -223,8 +221,15 @@ export function HSV_HSLAString({ h, s, v, a }: HSVA): string {
 export function HSV_RGBAString({ h, s, v, a }: HSVA): string {
 	const { r, g, b } = HSV_RGB({ h, s, v });
 
-	if (a === 1 || isNullValue(a)) return `rgb(${r}, ${g}, ${b})`;
-	return `rgba(${r}, ${g}, ${b}, ${a})`;
+	if (a == 1 || isNullValue(a)) return `rgb(${r}, ${g}, ${b})`;
+	return `rgba(${r}, ${g}, ${b}, ${Math.round(a! * 100) / 100})`;
+}
+
+export function HSLA_RGBAString({ h, s, l, a }: HSLA): string {
+	const { r, g, b } = HSL_RGB({ h, s, l });
+
+	if (a == 1 || isNullValue(a)) return `rgb(${r}, ${g}, ${b})`;
+	return `rgba(${r}, ${g}, ${b}, ${Math.round(a! * 100) / 100})`;
 }
 
 export function HSV_HexString({ h, s, v, a }: HSVA): string {
@@ -232,47 +237,101 @@ export function HSV_HexString({ h, s, v, a }: HSVA): string {
 	return RGBA_HEX({ r, g, b, a });
 }
 
-export function stringRGBHSL_HSVA(rgbStr: string): HSVA | undefined {
+export function HSLA_RGBA_TO_RGBAString(values: HSLA | RGBA): string {
+	if ('r' in values) {
+		const a = values.a;
+		if (a === undefined || a === null || a === 1)
+			return `rgb(${values.r}, ${values.g}, ${values.b})`;
+		return `rgba(${values.r}, ${values.g}, ${values.b}, ${values.a})`;
+	} else {
+		const { r, g, b } = HSL_RGB(values);
+
+		const a = values.a;
+		if (a === undefined || a === null || a === 1) return `rgb(${r}, ${g}, ${b})`;
+		return `rgba(${r}, ${g}, ${b}, ${a})`;
+	}
+}
+
+export function HSLA_RGBA_TO_HSLAString(values: HSLA | RGBA): string {
+	if ('r' in values) {
+		const { h, s, l } = RGB_HSL(values);
+		const a = values.a;
+		if (a === undefined || a === null || a === 1) return `hsl(${h}, ${s}%, ${l}%)`;
+		return `hsla(${h}, ${s}%, ${l}%, ${a})`;
+	} else {
+		const a = values.a;
+		if (a === undefined || a === null || a === 1)
+			return `hsl(${values.h}, ${values.s}%, ${values.l}%)`;
+		return `hsla(${values.h}, ${values.s}%, ${values.l}%, ${values.a})`;
+	}
+}
+
+export function RGBA_any(
+	{ r, g, b, a }: RGBA,
+	to: ColorFormatTypeAlpha,
+): RGBA | HSLA | HSVA | string | undefined {
+	if (to === 'rgba') return { r, g, b, a };
+	if (to === 'hex') return RGBA_HEX({ r, g, b, a });
+
+	const { h, s, l } = RGB_HSL({ r, g, b });
+	if (to === 'hsla') return { h, s, l, a };
+	if (to === 'hsva') return { h, ...SL_SV({ s, l }), a };
+
+	return undefined;
+}
+
+export function HSLA_any(
+	{ h, s, l, a }: HSLA,
+	to: ColorFormatTypeAlpha,
+): RGBA | HSLA | HSVA | string | undefined {
+	if (to === 'hsla') return { h, s, l, a };
+	if (to === 'hsva') return { h, ...SL_SV({ s, l }), a };
+	if (to === 'hex') return HSLA_HEX({ h, s, l, a });
+	if (to === 'rgba') return { ...HSL_RGB({ h, s, l }), a };
+
+	return undefined;
+}
+
+export function HEXRGBHSL_any(
+	rgbStr: string,
+	to: ColorFormatTypeAlpha = 'hex',
+): RGBA | HSLA | HSVA | string | undefined {
 	if (!rgbStr?.trim()) return undefined;
 	let strMatch = rgbStr.match(COLOR_REGEX);
 	if (!strMatch) return undefined;
 	let str = strMatch[0];
 
-	let h = 0,
-		s = 0,
-		l = 0,
-		a;
-
 	try {
-		if (str.startsWith('rgb') || str.startsWith('hsl')) {
-			let conv = str.trim().toLowerCase().startsWith('r');
+		if (str.startsWith('rgb')) {
 			let nums = str
 				.substring(str.indexOf('(') + 1, str.indexOf(')'))
 				.split(' ')
 				.flatMap(e => e.split(','))
 				.filter(e => e != '/' && e);
+			let a = undefined;
 			if (nums.length >= 4) {
 				a = parse(nums[3]);
 			}
-
-			if (nums.length < 3) throw new Error('Error in rgb or hsl');
-			h = parse(nums[0]);
-			s = parse(nums[1].endsWith('%') ? nums[1].substring(0, nums[1].length - 1) : nums[1]);
-			l = parse(nums[2].endsWith('%') ? nums[2].substring(0, nums[2].length - 1) : nums[2]);
-			if (conv) {
-				({ h, s, l } = RGB_HSL({ r: h, g: s, b: l }));
+			return RGBA_any({ r: parse(nums[0]), g: parse(nums[1]), b: parse(nums[2]), a }, to);
+		} else if (str.startsWith('hsl')) {
+			let nums = str
+				.substring(str.indexOf('(') + 1, str.indexOf(')'))
+				.split(' ')
+				.flatMap(e => e.split(','))
+				.filter(e => e != '/' && e);
+			let a = undefined;
+			if (nums.length >= 4) {
+				a = parse(nums[3]);
 			}
+			const hsla = { h: parse(nums[0]), s: parse(nums[1]), l: parse(nums[2]), a };
+			return HSLA_any(hsla, to);
 		} else {
-			const rgba = HEX_RGBA(str);
-			a = rgba.a;
-			({ h, s, l } = { ...RGB_HSL(rgba) });
+			if (to === 'hex') {
+				return str;
+			}
+			return RGBA_any(HEX_RGBA(str), to);
 		}
 	} catch (err) {
 		return undefined;
 	}
-
-	let v;
-	({ s, v } = SL_SV({ s, l }));
-
-	return { h, s, v, a };
 }

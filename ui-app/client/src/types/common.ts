@@ -356,4 +356,5 @@ export interface LocationHistory {
 	location: DataLocation | string;
 	index: number | string;
 	pageName: string;
+	componentKey: string;
 }
