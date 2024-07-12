@@ -134,6 +134,10 @@ export default function AppStyle() {
 		flex-direction: column;
 	}
 
+	._ROWLAYOUT {
+		flex-direction: row;
+	}
+
 	._FIVECOLUMNSLAYOUT,
 	._FOURCOLUMNSLAYOUT,
 	._THREECOLUMNSLAYOUT,
