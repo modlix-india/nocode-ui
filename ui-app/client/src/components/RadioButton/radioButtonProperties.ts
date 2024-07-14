@@ -59,7 +59,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		],
 	},
 	COMMON_COMPONENT_PROPERTIES.colorScheme,
-	COMMON_COMPONENT_PROPERTIES.label,
 	COMMON_COMPONENT_PROPERTIES.layout,
 	COMMON_COMPONENT_PROPERTIES.onClick,
 	COMMON_COMPONENT_PROPERTIES.datatype,
@@ -90,7 +89,15 @@ const stylePropertiesDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
-	radio: [
+	checkbox: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.accentColor.type,
+	],
+	thumb: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,

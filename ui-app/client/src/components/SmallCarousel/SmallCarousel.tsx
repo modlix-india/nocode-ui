@@ -136,11 +136,12 @@ function SmallCarousel(props: ComponentProps) {
 			[
 				...locationHistory,
 				updateLocationForChild(
+					key,
 					dataProperty?.value
 						? {
 								type: 'VALUE',
 								value: bindingPathPath,
-						  }
+							}
 						: dataProperty.location!,
 					index,
 					locationHistory,
@@ -288,9 +289,8 @@ function SmallCarousel(props: ComponentProps) {
 							i -
 							(scrollDirection > 0 ? slidesToScroll : 0)) %
 						childrenComponents.length;
-					innerSlideItemContainers.current[
-						ind
-					].style.transition = `${direction} ${animationDuration}ms ${easing}`;
+					innerSlideItemContainers.current[ind].style.transition =
+						`${direction} ${animationDuration}ms ${easing}`;
 					const v = `${fromPercent + i * percentage}%`;
 					innerSlideItemContainers.current[ind].style[direction] = v;
 				}

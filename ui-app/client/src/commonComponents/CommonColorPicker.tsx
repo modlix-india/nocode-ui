@@ -1,11 +1,15 @@
 import { isNullValue } from '@fincity/kirun-js';
 import React, { CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
 import {
+	ColorFormatTypeAlpha,
+	HEXRGBHSL_any,
+	HSLA_RGBAString,
+	HSLA_RGBA_TO_RGBAString,
+	HSVA,
 	HSV_HSL,
 	HSV_HexString,
 	HSV_RGB,
 	HSV_RGBAString,
-	stringRGBHSL_HSVA,
 } from '../components/util/colorUtil';
 import { getDataFromPath } from '../context/StoreContext';
 import { ComponentProperty } from '../types/common';
@@ -184,19 +188,13 @@ export function CommonColorPicker({
 	variableSelection?: boolean;
 	colorLocation?: ComponentProperty<string>['location'];
 }) {
-	const [hue, setHue] = useState<number>(0);
-	const [saturation, setSaturation] = useState<number>(100);
-	const [value, setValue] = useState<number>(100);
-	const [alpha, setAlpha] = useState<number>(1);
-	const [hexString, setHexString] = useState<string>(
-		HSV_HexString({ h: hue, s: saturation, v: value, a: alpha }),
-	);
-	const [type, setType] = useState<'rgb' | 'hsl'>('hsl');
+	const [hexString, setHexString] = useState<string>('#000000');
+	const [type, setType] = useState<'rgba' | 'hsla'>('rgba');
 
 	const [alphaEdit, setAlphaEdit] = useState<string>('1');
 	const [hrEdit, setHrEdit] = useState<string>('0');
-	const [sgEdit, setSgEdit] = useState<string>('100');
-	const [lbEdit, setLbEdit] = useState<string>('50');
+	const [sgEdit, setSgEdit] = useState<string>('0');
+	const [lbEdit, setLbEdit] = useState<string>('0');
 
 	const saturationValuePickerRef = useRef<HTMLDivElement>(null);
 	const huePickerRef = useRef<HTMLDivElement>(null);
@@ -206,28 +204,31 @@ export function CommonColorPicker({
 
 	const updateStates = useCallback(
 		(c: string) => {
-			let { h, s, v, a } = stringRGBHSL_HSVA(c) ?? {};
+			let { h, s, v, a } = (HEXRGBHSL_any(c, 'hsva') ?? {}) as HSVA;
 			if (isNullValue(h)) return;
 
-			setHue(h!);
-			setSaturation(s!);
-			setValue(v!);
-			setAlpha(showAlpha ? a ?? 1 : 1);
 			setAlphaEdit('' + (showAlpha ? a ?? 1 : 1));
 			setHexString(HSV_HexString({ h: h!, s: s!, v: v!, a: a ?? 1 }));
 			const hsl = HSV_HSL({ h: h!, s: s!, v: v! });
 			const rgb = HSV_RGB({ h: h!, s: s!, v: v! });
-			setHrEdit('' + (type === 'hsl' ? hsl.h : rgb.r));
-			setSgEdit('' + (type === 'hsl' ? hsl.s : rgb.g));
-			setLbEdit('' + (type === 'hsl' ? hsl.l : rgb.b));
+			setHrEdit('' + (type === 'hsla' ? hsl.h : rgb.r));
+			setSgEdit('' + (type === 'hsla' ? hsl.s : rgb.g));
+			setLbEdit('' + (type === 'hsla' ? hsl.l : rgb.b));
 		},
-		[setHue, setSaturation, setValue, setAlpha, setHexString, type],
+		[setHexString, type],
 	);
 
 	useEffect(() => {
 		if (!color) return;
 		updateStates(color);
 	}, [color]);
+
+	const {
+		h: hue = 0,
+		s: saturation = 0,
+		v: value = 0,
+		a: alpha = 1,
+	} = (HEXRGBHSL_any(color ?? hexString, 'hsva') ?? {}) as HSVA;
 
 	const hueThumbStyle: CSSProperties = {
 		left: `${(hue * 100) / 360}%`,
@@ -281,6 +282,7 @@ export function CommonColorPicker({
 		const height = rect.height;
 		const newSaturation = (x * 100) / width;
 		const newValue = 100 - (y * 100) / height;
+
 		onChange({
 			value: HSV_RGBAString({
 				h: hue,
@@ -288,6 +290,24 @@ export function CommonColorPicker({
 				v: newValue,
 				a: alpha,
 			}),
+			location: colorLocation,
+		});
+	};
+
+	const updated = (updatePart: 'hr' | 'sg' | 'lb') => {
+		const typeIndex = type === 'hsla' ? 0 : 1;
+		const cValues: any = HEXRGBHSL_any(color ?? hexString, type as ColorFormatTypeAlpha) ?? {};
+
+		const partIndex = updatePart === 'hr' ? 0 : updatePart === 'sg' ? 1 : 2;
+		const values = [hrEdit, sgEdit, lbEdit];
+		if (cValues[updatePart?.[typeIndex]] != undefined)
+			cValues[updatePart[typeIndex]] = (typeIndex ? parseInt : parseFloat)(
+				values[partIndex],
+				10,
+			);
+
+		onChange({
+			value: HSLA_RGBA_TO_RGBAString(cValues),
 			location: colorLocation,
 		});
 	};
@@ -317,69 +337,6 @@ export function CommonColorPicker({
 				location: colorLocation,
 			}),
 		);
-
-	const hueRedUpdate = () => {
-		let v = parseInt(hrEdit);
-		if (isNaN(v) || v < 0) v = 0;
-		if (type === 'hsl') {
-			if (v > 360) v = 360;
-			onChange({
-				value: HSV_RGBAString({ h: v, s: saturation, v: value, a: alpha }),
-				location: colorLocation,
-			});
-		} else {
-			if (v > 255) v = 255;
-			const { g, b } = HSV_RGB({
-				h: hue,
-				s: saturation,
-				v: value,
-				a: alpha,
-			});
-			onChange({ value: `rgba(${v},${g},${b},${alpha})`, location: colorLocation });
-		}
-	};
-
-	const saturationGreenUpdate = () => {
-		let v = parseInt(sgEdit);
-		if (isNaN(v) || v < 0) v = 0;
-		if (type === 'hsl') {
-			if (v > 100) v = 100;
-			onChange({
-				value: HSV_RGBAString({ h: hue, s: v, v: value, a: alpha }),
-				location: colorLocation,
-			});
-		} else {
-			if (v > 255) v = 255;
-			const { r, b } = HSV_RGB({
-				h: hue,
-				s: saturation,
-				v: value,
-				a: alpha,
-			});
-			onChange({ value: `rgba(${r},${v},${b},${alpha})`, location: colorLocation });
-		}
-	};
-
-	const lightnessBlueUpdate = () => {
-		let v = parseInt(lbEdit);
-		if (isNaN(v) || v < 0) v = 0;
-		if (type === 'hsl') {
-			if (v > 100) v = 100;
-			onChange({
-				value: HSV_RGBAString({ h: hue, s: saturation, v: v, a: alpha }),
-				location: colorLocation,
-			});
-		} else {
-			if (v > 255) v = 255;
-			const { r, g } = HSV_RGB({
-				h: hue,
-				s: saturation,
-				v: value,
-				a: alpha,
-			});
-			onChange({ value: `rgba(${r},${g},${v},${alpha})`, location: colorLocation });
-		}
-	};
 
 	const variablePicker = variableSelection ? (
 		<div className="_combineEditors _vertical">
@@ -532,9 +489,9 @@ export function CommonColorPicker({
 						<span
 							className="_colorSchemeType"
 							onClick={() => {
-								const e = type === 'hsl' ? 'rgb' : 'hsl';
+								const e = type === 'hsla' ? 'rgba' : 'hsla';
 								setType(e);
-								if (e === 'rgb') {
+								if (e === 'rgba') {
 									const { r, g, b } = HSV_RGB({
 										h: hue,
 										s: saturation,
@@ -555,26 +512,26 @@ export function CommonColorPicker({
 								}
 							}}
 						>
-							{type.toUpperCase()}
+							{type.toUpperCase().substring(0, type.length - 1)}
 						</span>
 					</div>
 					<div className="_colorValueline">
-						{type === 'hsl' ? 'H' : 'R'} :
+						{type === 'hsla' ? 'H' : 'R'} :
 						<input
 							className="_simpleEditorInput"
-							placeholder={type === 'hsl' ? 'Hue' : 'Red'}
+							placeholder={type === 'hsla' ? 'Hue' : 'Red'}
 							value={roundTo(hrEdit, 2)}
 							type="number"
 							step="1"
 							onChange={e => setHrEdit(e.target.value)}
-							onBlur={() => hueRedUpdate()}
+							onBlur={() => updated('hr')}
 							onKeyDown={e => {
 								if (e.key === 'Enter') {
-									hueRedUpdate();
+									updated('hr');
 								} else if (e.key === 'Escape') {
 									setHrEdit(
 										'' +
-											(type === 'hsl'
+											(type === 'hsla'
 												? hue
 												: HSV_RGB({ h: hue, s: saturation, v: value }).r),
 									);
@@ -583,22 +540,22 @@ export function CommonColorPicker({
 						/>
 					</div>
 					<div className="_colorValueline">
-						{type === 'hsl' ? 'S' : 'G'} :
+						{type === 'hsla' ? 'S' : 'G'} :
 						<input
 							className="_simpleEditorInput"
-							placeholder={type === 'hsl' ? 'Saturation' : 'Green'}
+							placeholder={type === 'hsla' ? 'Saturation' : 'Green'}
 							value={roundTo(sgEdit, 2)}
 							type="number"
 							step="1"
 							onChange={e => setSgEdit(e.target.value)}
-							onBlur={() => saturationGreenUpdate()}
+							onBlur={() => updated('sg')}
 							onKeyDown={e => {
 								if (e.key === 'Enter') {
-									saturationGreenUpdate();
+									updated('sg');
 								} else if (e.key === 'Escape') {
 									setSgEdit(
 										'' +
-											(type === 'hsl'
+											(type === 'hsla'
 												? saturation
 												: HSV_RGB({ h: hue, s: saturation, v: value }).g),
 									);
@@ -607,22 +564,22 @@ export function CommonColorPicker({
 						/>
 					</div>
 					<div className="_colorValueline">
-						{type === 'hsl' ? 'L' : 'B'} :
+						{type === 'hsla' ? 'L' : 'B'} :
 						<input
 							className="_simpleEditorInput"
-							placeholder={type === 'hsl' ? 'Lightness' : 'Blue'}
+							placeholder={type === 'hsla' ? 'Lightness' : 'Blue'}
 							value={roundTo(lbEdit, 2)}
 							type="number"
 							step="1"
 							onChange={e => setLbEdit(e.target.value)}
-							onBlur={() => lightnessBlueUpdate()}
+							onBlur={() => updated('lb')}
 							onKeyDown={e => {
 								if (e.key === 'Enter') {
-									lightnessBlueUpdate();
+									updated('lb');
 								} else if (e.key === 'Escape') {
 									setLbEdit(
 										'' +
-											(type === 'hsl'
+											(type === 'hsla'
 												? value
 												: HSV_RGB({ h: hue, s: saturation, v: value }).b),
 									);
