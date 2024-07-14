@@ -65,6 +65,39 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: "Button's icon to be displayed on right of label.",
 		editor: ComponentPropertyEditor.ICON,
 	},
+
+	{
+		name: 'leftImage',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: "Button's left image",
+		description: "Button's image to be displayed on left of label.",
+		editor: ComponentPropertyEditor.IMAGE,
+	},
+	{
+		name: 'rightImage',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: "Button's right image",
+		description: "Button's image to be displayed on right of label.",
+		editor: ComponentPropertyEditor.IMAGE,
+	},
+	{
+		name: 'activeLeftImage',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: "Button's active left image",
+		description: "Button's active image to be displayed on left of label.",
+		editor: ComponentPropertyEditor.IMAGE,
+	},
+	{
+		name: 'activeRightImage',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: "Button's active right image",
+		description: "Button's active image to be displayed on right of label.",
+		editor: ComponentPropertyEditor.IMAGE,
+	},
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 	{
@@ -93,6 +126,22 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 	],
 	leftIcon: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+	],
+	rightImage: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+	],
+	leftImage: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+	],
+	activeRightImage: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+	],
+	activeLeftImage: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 	],
