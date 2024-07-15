@@ -40,6 +40,7 @@ function ButtonComponent(props: ComponentProps) {
 			target,
 			linkPath,
 			stopPropagation,
+			preventDefault,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -54,7 +55,7 @@ function ButtonComponent(props: ComponentProps) {
 	const spinnerPath = onClick
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
 				onClick,
-		  )}.isRunning`
+			)}.isRunning`
 		: undefined;
 
 	const [isLoading, setIsLoading] = useState(
@@ -77,6 +78,7 @@ function ButtonComponent(props: ComponentProps) {
 
 	const handleClick = async (e: any) => {
 		if (stopPropagation) e.stopPropagation();
+		if (preventDefault) e.preventDefault();
 		if (linkPath) {
 			if (target) {
 				window.open(getHref(linkPath, location), target);
