@@ -33,9 +33,14 @@ function ButtonComponent(props: ComponentProps) {
 			readOnly,
 			leftIcon,
 			rightIcon,
+			leftImage,
+			rightImage,
+			activeLeftImage,
+			activeRightImage,
 			target,
 			linkPath,
 			stopPropagation,
+			preventDefault,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -50,7 +55,7 @@ function ButtonComponent(props: ComponentProps) {
 	const spinnerPath = onClick
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
 				onClick,
-		  )}.isRunning`
+			)}.isRunning`
 		: undefined;
 
 	const [isLoading, setIsLoading] = useState(
@@ -73,6 +78,7 @@ function ButtonComponent(props: ComponentProps) {
 
 	const handleClick = async (e: any) => {
 		if (stopPropagation) e.stopPropagation();
+		if (preventDefault) e.preventDefault();
 		if (linkPath) {
 			if (target) {
 				window.open(getHref(linkPath, location), target);
@@ -99,7 +105,10 @@ function ButtonComponent(props: ComponentProps) {
 	};
 
 	const hasRightIcon =
+		rightIcon &&
 		!leftIcon &&
+		!leftImage &&
+		!rightImage &&
 		!designType.startsWith('_fabButton') &&
 		designType !== '_iconButton' &&
 		designType !== '_iconPrimaryButton';
@@ -121,7 +130,7 @@ function ButtonComponent(props: ComponentProps) {
 		</i>
 	) : undefined;
 
-	const hasLeftIcon = leftIcon || isLoading;
+	const hasLeftIcon = (leftIcon && !leftImage) || isLoading;
 
 	const leftIconTag = (
 		<i
@@ -140,10 +149,31 @@ function ButtonComponent(props: ComponentProps) {
 			></SubHelperComponent>
 		</i>
 	);
+
+	const leftImageTag = leftImage ? (
+		<img
+			src={hover && activeLeftImage ? activeLeftImage : leftImage}
+			alt="left"
+			style={styleProperties.leftImage ?? {}}
+			className={hover ? '_leftButtonActiveImage' : '_leftButtonImage'}
+		/>
+	) : undefined;
+
+	const rightImageTag =
+		rightImage && !leftImage ? (
+			<img
+				src={hover && activeRightImage ? activeRightImage : rightImage}
+				alt="right"
+				style={styleProperties.rightImage ?? {}}
+				className={hover ? '_rightButtonActiveImage' : '_rightButtonImage'}
+			/>
+		) : undefined;
+
 	const [editableLabel, setEditableLabel] = useState(label);
 	const [editName, setEditName] = useState(false);
 	useEffect(() => setEditableLabel(label), [label]);
 	label = getTranslations(label, props.pageDefinition.translations);
+
 	return (
 		<button
 			className={`comp compButton button ${designType} ${colorScheme} ${
@@ -152,11 +182,17 @@ function ButtonComponent(props: ComponentProps) {
 			disabled={isLoading || readOnly}
 			onClick={handleClick}
 			style={styleProperties.comp ?? {}}
-			onMouseEnter={stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined}
-			onMouseLeave={
-				stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
+			onMouseEnter={() => {
+				setHover(true);
+			}}
+			onMouseLeave={() => setHover(false)}
+			onFocus={
+				stylePropertiesWithPseudoStates?.focus
+					? () => {
+							setFocus(true);
+					  }
+					: undefined
 			}
-			onFocus={stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined}
 			onBlur={stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined}
 			title={label ?? ''}
 		>
@@ -370,9 +406,11 @@ function ButtonComponent(props: ComponentProps) {
 					</div>
 				</div>
 			</HelperComponent>
+			{leftImageTag}
 			{leftIconTag}
 			{!designType?.startsWith('_fabButton') && designType !== '_iconButton' ? label : ''}
 			{rightIconTag}
+			{rightImageTag}
 		</button>
 	);
 }
@@ -428,6 +466,31 @@ const component: Component = {
 			name: 'rightIcon',
 			displayName: 'Right Icon',
 			description: 'Right Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'leftImage',
+			displayName: 'Left Image',
+			description: 'Left Image',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'RightImage',
+			displayName: 'Right Image',
+			description: 'Right Image',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'activeLeftImage',
+			displayName: 'Active Left Image',
+			description: 'Active Left Image',
+			icon: 'fa-solid fa-box',
+		},
+
+		{
+			name: 'activeRightImage',
+			displayName: 'Active Right Image',
+			description: 'Active Right Image',
 			icon: 'fa-solid fa-box',
 		},
 	],

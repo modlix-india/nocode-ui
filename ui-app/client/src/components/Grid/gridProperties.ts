@@ -154,6 +154,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			'Stop propagation of click event which will not trigger the container click event.',
 		defaultValue: false,
 	},
+	{
+		name: 'preventDefault',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'Prevent default of click event',
+		description: 'Prevent default of click event.',
+		defaultValue: false,
+	},
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
