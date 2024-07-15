@@ -53,6 +53,7 @@ function Grid(props: ComponentProps) {
 			borderRadius,
 			boxShadow,
 			stopPropagation,
+			preventDefault,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -333,6 +334,7 @@ function Grid(props: ComponentProps) {
 
 			onClick: ev => {
 				if (stopPropagation) ev.stopPropagation();
+				if (preventDefault) ev.preventDefault();
 				handleClick?.();
 			},
 			id: key,

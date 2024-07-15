@@ -36,6 +36,7 @@ function ImageComponent(props: ComponentProps) {
 			fallBackImg,
 			imgLazyLoading,
 			stopPropagation,
+			preventDefault,
 		} = {},
 		key,
 		stylePropertiesWithPseudoStates,
@@ -106,6 +107,7 @@ function ImageComponent(props: ComponentProps) {
 					onClickEvent
 						? ev => {
 								if (stopPropagation) ev.stopPropagation();
+								if (preventDefault) ev.preventDefault();
 								handleClick();
 							}
 						: undefined
