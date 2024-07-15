@@ -40,21 +40,20 @@ function Iframe(props: ComponentProps) {
 		stylePropertiesWithPseudoStates,
 	);
 
-	const shouldRenderIframe = (srcdoc: any, src: any) => {
-		if (srcdoc) return true;
-		if (!src || !src.trim()) return false;
+	let shouldRenderIframe = true;
+
+	if (!srcdoc?.trim()) {
 		try {
 			new URL(src);
-			return true;
-		} catch (e) {
-			return false;
+		} catch (err) {
+			shouldRenderIframe = false;
 		}
-	};
+	}
 
 	return (
 		<div className="comp compIframe" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent context={props.context} definition={definition} />
-			{shouldRenderIframe(srcdoc, src) ? (
+			{shouldRenderIframe ? (
 				<iframe
 					className="iframe"
 					style={resolvedStyles.iframe ?? {}}
