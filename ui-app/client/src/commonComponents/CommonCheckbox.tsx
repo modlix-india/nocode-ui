@@ -5,10 +5,11 @@ import { ComponentDefinition } from '../types/common';
 type CommonCheckboxType = {
 	isChecked: boolean;
 	showAsRadio?: boolean;
-	onChange?: (event: any) => void;
+	onChange?: (value: boolean) => void;
 	id?: string;
 	isReadOnly?: boolean;
 	styles?: any;
+	thumbStyles?: any;
 	focusHandler?: () => void;
 	blurHandler?: () => void;
 	definition?: ComponentDefinition;
@@ -21,34 +22,37 @@ function CommonCheckbox({
 	id,
 	isReadOnly = false,
 	styles,
+	thumbStyles,
 	focusHandler,
 	blurHandler,
 	definition,
 }: CommonCheckboxType) {
-	let sh = definition ? (
-		<SubHelperComponent
-			style={styles ?? {}}
-			className={`commonCheckbox ${showAsRadio ? 'radio' : ''}`}
-			definition={definition}
-			subComponentName="checkbox"
-		></SubHelperComponent>
+	const sh = definition ? (
+		<SubHelperComponent definition={definition} subComponentName="checkbox" />
 	) : undefined;
+
+	const sh2 = definition ? (
+		<SubHelperComponent definition={definition} subComponentName="thumb" zIndex={6} />
+	) : undefined;
+
 	return (
 		<>
-			<input
+			<span
 				className={`commonCheckbox ${showAsRadio ? 'radio' : ''} ${
 					isChecked ? '_checked' : ''
-				}`}
-				disabled={isReadOnly}
-				type="checkbox"
+				} ${isReadOnly ? '_disabled' : ''}`}
+				role="checkbox"
 				id={id}
-				onChange={onChange}
-				checked={isChecked}
-				style={styles}
+				onClick={isReadOnly ? undefined : e => onChange?.(!isChecked)}
+				style={styles ?? {}}
 				onFocus={focusHandler}
 				onBlur={blurHandler}
-			/>
-			{sh}
+			>
+				{sh}
+				<span className="_thumb" style={thumbStyles ?? {}}>
+					{sh2}
+				</span>
+			</span>
 		</>
 	);
 }

@@ -52,6 +52,8 @@ function Grid(props: ComponentProps) {
 			border,
 			borderRadius,
 			boxShadow,
+			stopPropagation,
+			preventDefault,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -115,14 +117,16 @@ function Grid(props: ComponentProps) {
 	const handleClick =
 		!clickEvent || isLoading
 			? undefined
-			: async () =>
-					await runEvent(
-						clickEvent,
-						onClick,
-						props.context.pageName,
-						props.locationHistory,
-						props.pageDefinition,
-					);
+			: () =>
+					(async () =>
+						await runEvent(
+							clickEvent,
+							onClick,
+							props.context.pageName,
+							props.locationHistory,
+							props.pageDefinition,
+						))();
+
 	const sepStyle = resolvedStyles?.comp?.hideScrollBar;
 	const styleComp = sepStyle ? (
 		<style
@@ -223,7 +227,7 @@ function Grid(props: ComponentProps) {
 											props.locationHistory,
 											props.pageDefinition,
 										))();
-							  }
+								}
 							: undefined
 					}
 					onMouseLeave={
@@ -239,7 +243,7 @@ function Grid(props: ComponentProps) {
 											props.locationHistory,
 											props.pageDefinition,
 										))();
-							  }
+								}
 							: undefined
 					}
 					onFocus={
@@ -277,7 +281,7 @@ function Grid(props: ComponentProps) {
 							context.pageName,
 						);
 					}
-			  }
+				}
 			: undefined;
 
 	return React.createElement(
@@ -297,7 +301,7 @@ function Grid(props: ComponentProps) {
 									props.locationHistory,
 									props.pageDefinition,
 								))();
-					  }
+						}
 					: undefined,
 
 			onMouseLeave:
@@ -313,7 +317,7 @@ function Grid(props: ComponentProps) {
 									props.locationHistory,
 									props.pageDefinition,
 								))();
-					  }
+						}
 					: undefined,
 			onDragStart:
 				dragData?.length && dragData?.startsWith('TEMPLATE_DRAG_')
@@ -328,7 +332,11 @@ function Grid(props: ComponentProps) {
 			}`,
 			style: resolvedStyles.comp ?? {},
 
-			onClick: handleClick,
+			onClick: ev => {
+				if (stopPropagation) ev.stopPropagation();
+				if (preventDefault) ev.preventDefault();
+				handleClick?.();
+			},
 			id: key,
 		},
 		[
