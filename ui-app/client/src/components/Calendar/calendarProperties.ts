@@ -297,7 +297,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Calendar Design Type',
 		description: 'Calendar Design Type',
-		defaultValue: '_default',
+		defaultValue: '_defaultCalendar',
 		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
 			{
