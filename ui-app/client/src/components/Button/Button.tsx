@@ -130,9 +130,9 @@ function ButtonComponent(props: ComponentProps) {
 		</i>
 	) : undefined;
 
-	const hasLeftIcon = (leftIcon && !leftImage) || isLoading;
+	const hasLeftIcon = (leftIcon && !leftImage && !rightIcon && !rightImage) || isLoading;
 
-	const leftIconTag = (
+	const leftIconTag = hasLeftIcon ? (
 		<i
 			style={styleProperties.leftIcon ?? {}}
 			className={`_leftButtonIcon _icon ${
@@ -148,7 +148,7 @@ function ButtonComponent(props: ComponentProps) {
 				subComponentName="leftIcon"
 			></SubHelperComponent>
 		</i>
-	);
+	) : undefined;
 
 	const leftImageTag = leftImage ? (
 		<img
@@ -475,7 +475,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'RightImage',
+			name: 'rightImage',
 			displayName: 'Right Image',
 			description: 'Right Image',
 			icon: 'fa-solid fa-box',
