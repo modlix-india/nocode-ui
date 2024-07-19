@@ -28,7 +28,7 @@ export function PageEditorHelperComponent({
 
 	useEffect(() => {
 		function onMessageRecieved(e: MessageEvent) {
-			const { data: { type } = {} } = e;
+			const { data: { type } = { type: undefined } } = e ?? {};
 
 			if (!e.origin) return;
 

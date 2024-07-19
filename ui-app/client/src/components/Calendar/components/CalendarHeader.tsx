@@ -105,6 +105,8 @@ export function CalendarHeader(props: CalendarHeaderProps & { children: React.Re
 		<div
 			className="_calendarHeader"
 			style={getStyleObject('calendarHeader', hovers, disableds)}
+			onMouseEnter={addToToggleSetCurry(hovers, setHovers, 'calendarHeader')}
+			onMouseLeave={removeFromToggleSetCurry(hovers, setHovers, 'calendarHeader')}
 		>
 			<SubHelperComponent definition={definition} subComponentName="calendarHeader" />
 			{header}

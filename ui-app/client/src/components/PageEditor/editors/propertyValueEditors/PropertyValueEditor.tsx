@@ -22,7 +22,7 @@ import { ImageEditor } from './ImageEditor';
 import { ValidationEditor } from './ValidationEditor';
 import { AnimationValueEditor } from './AnimationValueEditor';
 import { Dropdown } from '../stylePropertyValueEditors/simpleEditors/Dropdown';
-import { CommonColorPicker } from '../../../../commonComponents/CommonColorPicker';
+import { CommonColorPickerPropertyEditor } from '../../../../commonComponents/CommonColorPicker';
 import SectionPropertyValueEditor from './SectionPropertyValueEditor';
 
 interface PropertyValueEditorProps {
@@ -351,7 +351,7 @@ function makeValueEditor(
 						})
 					}
 				/>
-				<CommonColorPicker
+				<CommonColorPickerPropertyEditor
 					color={{ value: chngValue }}
 					variableSelection={false}
 					onChange={e => onChange({ ...value, value: e.value })}

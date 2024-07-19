@@ -26,7 +26,7 @@ function SubHelperComponentInternal({
 
 	useEffect(() => {
 		function onMessageRecieved(e: MessageEvent) {
-			const { data: { type } = {} } = e;
+			const { data: { type } = { type: undefined } } = e ?? {};
 
 			if (!type || !type.startsWith('EDITOR_')) return;
 			setLastChanged(Date.now());

@@ -63,8 +63,9 @@ function CheckBox(props: ComponentProps) {
 		{ hover, focus, disabled: readOnly },
 		stylePropertiesWithPseudoStates,
 	);
-	const handleChange = async (event: any) => {
-		if (bindingPathPath) setData(bindingPathPath, !!event.target.checked, context.pageName);
+	const handleChange = async (value: boolean) => {
+		if (readOnly || !bindingPathPath) return;
+		if (bindingPathPath) setData(bindingPathPath, value, context.pageName);
 		if (clickEvent)
 			await runEvent(
 				pageDefinition.eventFunctions[onClick],
@@ -93,6 +94,7 @@ function CheckBox(props: ComponentProps) {
 					readOnly ? '_disabled' : ''
 				}`}
 				htmlFor={key}
+				onClick={() => handleChange(!checkBoxdata)}
 			>
 				<SubHelperComponent definition={props.definition} subComponentName="label" />
 				<CommonCheckbox
@@ -101,6 +103,7 @@ function CheckBox(props: ComponentProps) {
 					id={key}
 					onChange={handleChange}
 					styles={resolvedStyles.checkbox ?? {}}
+					thumbStyles={resolvedStyles.thumb ?? {}}
 					focusHandler={
 						stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined
 					}
@@ -159,15 +162,21 @@ const component: Component = {
 			mainComponent: true,
 		},
 		{
+			name: 'label',
+			displayName: 'Label',
+			description: 'Label',
+			icon: 'fa-solid fa-box',
+		},
+		{
 			name: 'checkbox',
 			displayName: 'Checkbox',
 			description: 'Checkbox',
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'label',
-			displayName: 'Label',
-			description: 'Label',
+			name: 'thumb',
+			displayName: 'Tick',
+			description: 'Tick',
 			icon: 'fa-solid fa-box',
 		},
 	],

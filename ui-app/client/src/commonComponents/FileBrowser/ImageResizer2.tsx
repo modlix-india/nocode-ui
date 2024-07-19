@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { RangeSlider } from '../RangeSlider';
 import { onMouseDownDragStartCurry } from '../../functions/utils';
-import { CommonColorPicker } from '../CommonColorPicker';
+import { CommonColorPickerPropertyEditor } from '../CommonColorPicker';
 import { getDataFromPath } from '../../context/StoreContext';
 import { LOCAL_STORE_PREFIX } from '../../constants';
 import { shortUUID } from '../../util/shortUUID';
@@ -115,7 +115,7 @@ export function ImageResizer2({
 					cropToMinHeight,
 					cropToAspectRatio: aspects,
 					size,
-			  })
+				})
 			: undefined,
 	);
 
@@ -375,7 +375,7 @@ export function ImageResizer2({
 											if (cropToMinHeight && height < cropToMinHeight) return;
 											if (cropToMaxHeight && height > cropToMaxHeight) return;
 											setCrop({ ...crop, width, height });
-									  }
+										}
 									: undefined
 							}
 						/>
@@ -407,7 +407,7 @@ export function ImageResizer2({
 											if (cropToMinHeight && height < cropToMinHeight) return;
 											if (cropToMaxHeight && height > cropToMaxHeight) return;
 											setCrop({ ...crop, width, height });
-									  }
+										}
 									: undefined
 							}
 						/>
@@ -571,7 +571,7 @@ export function ImageResizer2({
 															cropToMinWidth,
 															cropToMinHeight,
 															size,
-													  })
+														})
 													: undefined,
 											)
 										}
@@ -786,7 +786,7 @@ export function ImageResizer2({
 
 							<div className="_controlLabel">
 								Background Color{' '}
-								<CommonColorPicker
+								<CommonColorPickerPropertyEditor
 									color={{ value: bgColor }}
 									showAlpha={isTransparent}
 									variableSelection={false}
@@ -795,8 +795,8 @@ export function ImageResizer2({
 											e.value
 												? e.value
 												: isTransparent
-												? undefined
-												: '#000000',
+													? undefined
+													: '#000000',
 										)
 									}
 								/>

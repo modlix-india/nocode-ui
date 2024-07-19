@@ -10,7 +10,7 @@ import {
 } from '../../../../../types/common';
 import { PageOperations } from '../../../functions/PageOperations';
 
-import { CommonColorPicker } from '../../../../../commonComponents/CommonColorPicker';
+import { CommonColorPickerPropertyEditor } from '../../../../../commonComponents/CommonColorPicker';
 import { PageStoreExtractor, getDataFromPath, setData } from '../../../../../context/StoreContext';
 import { shortUUID } from '../../../../../util/shortUUID';
 import { Dropdown, DropdownOptions } from './Dropdown';
@@ -128,7 +128,7 @@ export function EachSimpleEditor({
 			);
 			break;
 		case SimpleEditorType.Color:
-			editor = <CommonColorPicker color={value} onChange={editorOnchange} />;
+			editor = <CommonColorPickerPropertyEditor color={value} onChange={editorOnchange} />;
 			break;
 		case SimpleEditorType.TextShadow:
 			editor = (

@@ -129,6 +129,7 @@ function FileSelector(props: ComponentProps) {
 			content = (
 				<>
 					<img
+						key={selectedFile}
 						ref={async e => {
 							if (!e || e.src) return;
 							const dataURL = await imageURLForFile(selectedFile, directory, type);

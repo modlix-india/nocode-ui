@@ -297,7 +297,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Calendar Design Type',
 		description: 'Calendar Design Type',
-		defaultValue: '_default',
+		defaultValue: '_defaultCalendar',
 		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
 			{
@@ -774,6 +774,11 @@ const stylePropertiesDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 	date: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	weekNumber: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,

@@ -566,8 +566,8 @@ const component: Component = {
 		},
 		{
 			name: 'asterisk',
-			displayName: 'asterisk',
-			description: 'asterisk',
+			displayName: 'Asterisk',
+			description: 'Asterisk',
 			icon: 'fa-solid fa-box',
 		},
 		{

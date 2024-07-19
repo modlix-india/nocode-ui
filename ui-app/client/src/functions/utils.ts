@@ -112,3 +112,11 @@ export function onMouseDownDragStartCurry(
 		document.body.addEventListener('mouseleave', onMouseUp);
 	};
 }
+
+export function roundTo(num: number | string, digits: number): number | string {
+	const isString = typeof num === 'string';
+	const v = isString ? parseFloat(num) : num;
+	const factor = Math.pow(10, digits);
+	if (isString) return (Math.round(v * factor) / factor).toString();
+	return Math.round(v * factor) / factor;
+}

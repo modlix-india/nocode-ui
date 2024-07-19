@@ -62,7 +62,7 @@ export const RenderEngineContainer = () => {
 
 	useEffect(() => {
 		if (!location.hash) return;
-		let handle: NodeJS.Timeout | undefined = undefined;
+		let handle: number | undefined = undefined;
 		handle = setInterval(() => {
 			const [id, block, inline] = location.hash.replace('#', '').split(':');
 			const element = document.getElementById(id);
@@ -270,7 +270,7 @@ export const RenderEngineContainer = () => {
 		if (window.designMode !== 'PAGE' && window.designMode !== 'FILLER_VALUE_EDITOR') return;
 
 		function onMessageRecieved(e: MessageEvent) {
-			const { data: { type } = {} } = e;
+			const { data: { type } = { type: undefined } } = e ?? {};
 
 			if (!type || !type.startsWith('EDITOR_')) return;
 			setLastChanged(Date.now());

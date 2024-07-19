@@ -182,7 +182,9 @@ function RadioButton(props: ComponentProps) {
 						...((hover === e.key ? resolvedStylesHover.label : resolvedStyles.label) ??
 							{}),
 					}}
+					onClick={readOnly ? undefined : () => handleClick(e)}
 				>
+					<SubHelperComponent definition={props.definition} subComponentName="label" />
 					<CommonCheckbox
 						id={e.key}
 						isChecked={getIsSelected(e.key)}
@@ -192,11 +194,19 @@ function RadioButton(props: ComponentProps) {
 						definition={props.definition}
 						styles={{
 							...((focus === e.key
-								? resolvedStylesFocus.radio
-								: resolvedStyles.radio) ?? {}),
+								? resolvedStylesFocus.checkbox
+								: resolvedStyles.checkbox) ?? {}),
 							...((hover === e.key
-								? resolvedStylesHover.radio
-								: resolvedStyles.radio) ?? {}),
+								? resolvedStylesHover.checkbox
+								: resolvedStyles.checkbox) ?? {}),
+						}}
+						thumbStyles={{
+							...((focus === e.key
+								? resolvedStylesFocus.thumb
+								: resolvedStyles.thumb) ?? {}),
+							...((hover === e.key
+								? resolvedStylesHover.thumb
+								: resolvedStyles.thumb) ?? {}),
 						}}
 						focusHandler={
 							stylePropertiesWithPseudoStates?.focus
@@ -207,7 +217,6 @@ function RadioButton(props: ComponentProps) {
 							stylePropertiesWithPseudoStates?.focus ? () => setFocus('') : undefined
 						}
 					/>
-					<SubHelperComponent definition={props.definition} subComponentName="label" />
 					{getTranslations(e.label, translations)}
 				</label>
 			))}
@@ -270,9 +279,15 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'radio',
-			displayName: 'Radio',
-			description: 'Radio',
+			name: 'checkbox',
+			displayName: 'Radio / Checkbox',
+			description: 'Radio / Chedckbox',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'thumb',
+			displayName: 'Circle / Tick',
+			description: 'Circle / Tick',
 			icon: 'fa-solid fa-box',
 		},
 	],
