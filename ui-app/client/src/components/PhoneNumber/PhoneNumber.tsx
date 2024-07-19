@@ -81,6 +81,7 @@ function PhoneNumber(props: ComponentProps) {
 			searchLabel,
 			clearSearchTextOnClose,
 			noCodeForFirstCountry,
+			showMandatoryAsterisk,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -115,19 +116,19 @@ function PhoneNumber(props: ComponentProps) {
 	const spinnerPath1 = onEnter
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
 				onEnter,
-		  )}.isRunning`
+			)}.isRunning`
 		: undefined;
 
 	const spinnerPath2 = onClear
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
 				onClear,
-		  )}.isRunning`
+			)}.isRunning`
 		: undefined;
 
 	const spinnerPath3 = onChange
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
 				onChange,
-		  )}.isRunning`
+			)}.isRunning`
 		: undefined;
 
 	const [isLoading, setIsLoading] = useState(
@@ -435,7 +436,7 @@ function PhoneNumber(props: ComponentProps) {
 		} else if (!updateStoreImmediately) {
 			let temp = format
 				? selected.D +
-				  (storeFormatted ? seperator + getFormattedNumber(text, selected.D) : text)
+					(storeFormatted ? seperator + getFormattedNumber(text, selected.D) : text)
 				: selected.D + text;
 			updateBindingPathData(temp);
 		}
@@ -525,6 +526,12 @@ function PhoneNumber(props: ComponentProps) {
 			maxChars={maxChars}
 			showDropdown={dropdownOpen}
 			leftChildren={leftChildren}
+			showMandatoryAsterisk={
+				showMandatoryAsterisk &&
+				(validation ?? []).find((e: any) => e.type === undefined || e.type === 'MANDATORY')
+					? true
+					: false
+			}
 		/>
 	);
 }
@@ -650,6 +657,12 @@ const component: Component = {
 			name: 'label',
 			displayName: 'Label',
 			description: 'Label',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'asterisk',
+			displayName: 'Asterisk',
+			description: 'Asterisk',
 			icon: 'fa-solid fa-box',
 		},
 		{

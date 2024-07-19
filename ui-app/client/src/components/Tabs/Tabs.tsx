@@ -183,7 +183,7 @@ function TabsComponent(props: ComponentProps) {
 										: ''
 								}`}
 								style={
-									i === hover
+									hover === i || activeTab === e
 										? resolvedStylesWithHover.tab ?? {}
 										: resolvedStyles.tab ?? {}
 								}

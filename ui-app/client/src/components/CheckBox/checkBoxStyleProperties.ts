@@ -65,6 +65,34 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 
 	{
+		groupName: 'Default',
+		displayName: 'Default Checkbox Border Checked',
+		name: 'defaultCheckboxBorderChecked',
+		defaultValue: 'none',
+		cssProperty: 'border',
+		selector: '.comp.compCheckbox._default .commonCheckbox._checked',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Outline',
+		displayName: 'Outline Checkbox Border Checked',
+		name: 'outlineCheckboxBorderChecked',
+		defaultValue: '2px solid',
+		cssProperty: 'border',
+		selector: '.comp.compCheckbox._outlined .commonCheckbox._checked',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Filled',
+		displayName: 'Filled Checkbox Border Checked',
+		name: 'filledCheckboxBorderChecked',
+		defaultValue: '2px solid',
+		cssProperty: 'border',
+		selector: '.comp.compCheckbox._filled .commonCheckbox._checked',
+		noPrefix: true,
+	},
+
+	{
 		groupName: 'Border Color',
 		displayName: 'Primary Outline Checkbox Border Color',
 		name: 'primaryOutlineCheckboxBorderColor',
@@ -264,7 +292,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'checkboxTickColor',
 		defaultValue: '<backgroundColorSeven>',
 		cssProperty: 'background',
-		selector: '.comp.compCheckbox._default .commonCheckbox::before',
+		selector: '.comp.compCheckbox._default .commonCheckbox ._thumb',
 		noPrefix: true,
 	},
 
@@ -274,7 +302,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'filledTickColor',
 		defaultValue: '<backgroundColorSeven>',
 		cssProperty: 'background',
-		selector: '.comp.compCheckbox._filled .commonCheckbox::before',
+		selector: '.comp.compCheckbox._filled .commonCheckbox ._thumb',
 		noPrefix: true,
 	},
 
@@ -284,7 +312,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryOutlineCheckboxTickColor',
 		defaultValue: '<fontColorThree>',
 		cssProperty: 'background',
-		selector: '.comp.compCheckbox._outlined._primary .commonCheckbox::before',
+		selector: '.comp.compCheckbox._outlined._primary .commonCheckbox ._thumb',
 		noPrefix: true,
 	},
 	{
@@ -293,7 +321,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryOutlineCheckboxTickColor',
 		defaultValue: '<fontColorFour>',
 		cssProperty: 'background',
-		selector: '.comp.compCheckbox._outlined._secondary .commonCheckbox::before',
+		selector: '.comp.compCheckbox._outlined._secondary .commonCheckbox ._thumb',
 		noPrefix: true,
 	},
 	{
@@ -302,7 +330,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryOutlineCheckboxTickColor',
 		defaultValue: '<fontColorFive>',
 		cssProperty: 'background',
-		selector: '.comp.compCheckbox._outlined._tertiary .commonCheckbox::before',
+		selector: '.comp.compCheckbox._outlined._tertiary .commonCheckbox ._thumb',
 		noPrefix: true,
 	},
 	{
@@ -311,7 +339,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryOutlineCheckboxTickColor',
 		defaultValue: '<fontColorNine>',
 		cssProperty: 'background',
-		selector: '.comp.compCheckbox._outlined._quaternary .commonCheckbox::before',
+		selector: '.comp.compCheckbox._outlined._quaternary .commonCheckbox ._thumb',
 		noPrefix: true,
 	},
 	{
@@ -320,7 +348,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryOutlineCheckboxTickColor',
 		defaultValue: '<fontColorSeven>',
 		cssProperty: 'background',
-		selector: '.comp.compCheckbox._outlined._quinary .commonCheckbox::before',
+		selector: '.comp.compCheckbox._outlined._quinary .commonCheckbox ._thumb',
 		noPrefix: true,
 	},
 
@@ -331,7 +359,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compCheckbox._outlined._primary .commonCheckbox:disabled,.comp.compCheckbox._outlined._secondary .commonCheckbox:disabled,.comp.compCheckbox._outlined._tertiary .commonCheckbox:disabled,.comp.compCheckbox._outlined._quaternary .commonCheckbox:disabled,.comp.compCheckbox._outlined._quinary .commonCheckbox:disabled',
+			'.comp.compCheckbox._outlined._primary .commonCheckbox._disabled,.comp.compCheckbox._outlined._secondary .commonCheckbox._disabled,.comp.compCheckbox._outlined._tertiary .commonCheckbox._disabled,.comp.compCheckbox._outlined._quaternary .commonCheckbox._disabled,.comp.compCheckbox._outlined._quinary .commonCheckbox._disabled',
 		noPrefix: true,
 	},
 	{
@@ -341,7 +369,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<backgroundColorEight>',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCheckbox._default._primary .commonCheckbox:disabled,.comp.compCheckbox._default._secondary .commonCheckbox:disabled,.comp.compCheckbox._default._tertiary .commonCheckbox:disabled,.comp.compCheckbox._default._quaternary .commonCheckbox:disabled,.comp.compCheckbox._default._quinary .commonCheckbox:disabled',
+			'.comp.compCheckbox._default._primary .commonCheckbox._disabled,.comp.compCheckbox._default._secondary .commonCheckbox._disabled,.comp.compCheckbox._default._tertiary .commonCheckbox._disabled,.comp.compCheckbox._default._quaternary .commonCheckbox._disabled,.comp.compCheckbox._default._quinary .commonCheckbox._disabled',
 		noPrefix: true,
 	},
 	{
@@ -351,7 +379,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'background',
 		selector:
-			'.comp.compCheckbox._outlined._primary .commonCheckbox:disabled::before,.comp.compCheckbox._outlined._secondary .commonCheckbox:disabled::before,.comp.compCheckbox._outlined._tertiary .commonCheckbox:disabled::before,.comp.compCheckbox._outlined._quaternary .commonCheckbox:disabled::before,.comp.compCheckbox._outlined._quinary .commonCheckbox:disabled::before',
+			'.comp.compCheckbox._outlined._primary .commonCheckbox._disabled ._thumb,.comp.compCheckbox._outlined._secondary .commonCheckbox._disabled ._thumb,.comp.compCheckbox._outlined._tertiary .commonCheckbox._disabled ._thumb,.comp.compCheckbox._outlined._quaternary .commonCheckbox._disabled ._thumb,.comp.compCheckbox._outlined._quinary .commonCheckbox._disabled ._thumb',
 		noPrefix: true,
 	},
 	{

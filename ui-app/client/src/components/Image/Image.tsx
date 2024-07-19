@@ -34,6 +34,9 @@ function ImageComponent(props: ComponentProps) {
 			src5,
 			onClick: onClickEvent,
 			fallBackImg,
+			imgLazyLoading,
+			stopPropagation,
+			preventDefault,
 		} = {},
 		key,
 		stylePropertiesWithPseudoStates,
@@ -100,12 +103,21 @@ function ImageComponent(props: ComponentProps) {
 				onMouseLeave={
 					stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
 				}
-				onClick={onClickEvent ? handleClick : undefined}
+				onClick={
+					onClickEvent
+						? ev => {
+								if (stopPropagation) ev.stopPropagation();
+								if (preventDefault) ev.preventDefault();
+								handleClick();
+							}
+						: undefined
+				}
 				className={onClickEvent ? '_onclicktrue' : ''}
 				style={resolvedStyles.image ?? {}}
 				src={getSrcUrl(getHref(src ?? defaultSrc, location))}
 				alt={alt}
 				onError={fallBackImg ? handleError : undefined}
+				loading={imgLazyLoading ? 'lazy' : 'eager'}
 			/>
 			<SubHelperComponent
 				style={resolvedStyles.image ?? {}}

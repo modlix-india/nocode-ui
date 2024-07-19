@@ -48,7 +48,7 @@ export default function AppStyle() {
 									? new Map<string, string>([
 											...Array.from(styleDefaults),
 											...Array.from(thm.get(StyleResolution.ALL) ?? []),
-									  ])
+										])
 									: styleDefaults,
 							);
 
@@ -132,6 +132,10 @@ export default function AppStyle() {
 	._ROWLAYOUT, ._SINGLECOLUMNLAYOUT, ._ROWCOLUMNLAYOUT {
 		display: flex;
 		flex-direction: column;
+	}
+
+	._ROWLAYOUT {
+		flex-direction: row;
 	}
 
 	._FIVECOLUMNSLAYOUT,
@@ -299,7 +303,7 @@ export default function AppStyle() {
 		position: relative;
 	}
 
-	._simpleEditorColorSelector ._colorPickerBody {
+	._colorPickerBody {
 		position: fixed;
 		background-color: #FFF;
 		z-index: 2;
@@ -314,7 +318,7 @@ export default function AppStyle() {
 		gap: 10px;
 	}
 
-	._simpleEditorColorSelector ._colorPickerBody ._color_variable_picker {
+	._colorPickerBody ._color_variable_picker {
 		display: flex;
 		flex-direction: row;
 		align-items: center;
@@ -325,7 +329,7 @@ export default function AppStyle() {
 		flex-wrap: wrap;
 	}
 
-	._simpleEditorColorSelector ._colorPickerBody ._color_variable {
+	._colorPickerBody ._color_variable {
 		width: 20px;
 		height: 20px;
 		border-radius: 50%;
@@ -334,12 +338,12 @@ export default function AppStyle() {
 		position: relative;
 	}
 
-	._simpleEditorColorSelector ._colorPickerBody ._color_variable._selected {
+	._colorPickerBody ._color_variable._selected {
 		border: 2px solid #51BD94;
 		box-shadow: 0px 0px 4px 4px #51BD94;
 	}
 
-	._simpleEditorColorSelector ._colorPickerBody ._color_variable::before {
+	._colorPickerBody ._color_variable::before {
 		content: '';
 		width: 100%;
 		height: 100%;
@@ -355,15 +359,15 @@ export default function AppStyle() {
 		border-radius: 8px;
 	}
 
-	._simpleEditorColorSelector ._colorPickerBody ._color_variable_name {
+	._colorPickerBody ._color_variable_name {
 		width: 100%;
 		height: 100%;
 		border-radius: 50%;
 		position: absolute;
 	}
 
-	._simpleEditorColorSelector ._colorPickerBody ._simpleEditorInput,
-	._simpleEditorColorSelector ._colorPickerBody ._simpleEditorSelect {
+	._colorPickerBody ._simpleEditorInput,
+	._colorPickerBody ._simpleEditorSelect {
 		min-height: 25px;
 		padding-top: 3px;
 		padding-bottom: 3px;
@@ -372,17 +376,17 @@ export default function AppStyle() {
 		background: transparent;
 	}
 
-	._simpleEditorColorSelector ._colorPickerBody ._saturation_value_picker{
+	._colorPickerBody ._saturation_value_picker{
 		position: relative;
 		height: 150px;
 		border-radius: 6px;
 	}
 
-	._simpleEditorColorSelector ._colorPickerBody ._saturation_value_picker ._thumb {
+	._colorPickerBody ._saturation_value_picker ._thumb {
 		margin-top: -8px;
 	}
 
-	._simpleEditorColorSelector ._colorPickerBody ._hue_picker{
+	._colorPickerBody ._hue_picker{
 		background: linear-gradient(to right,red 0,#ff0 16.66%,#0f0 33.33%,#0ff 50%,#00f 66.66%,#f0f 83.33%,red 100%);
 		height: 10px;
 		width: 100%;
@@ -391,7 +395,7 @@ export default function AppStyle() {
 		margin-bottom: 10px;
 	}
 
-	._simpleEditorColorSelector ._colorPickerBody ._alpha_picker {
+	._colorPickerBody ._alpha_picker {
 		cursor: pointer;
 		height: 10px;
 		position: relative;
@@ -407,14 +411,14 @@ export default function AppStyle() {
 		border-radius: 8px;
 	}
 
-	._simpleEditorColorSelector ._colorPickerBody ._alpha_picker_gradient {
+	._colorPickerBody ._alpha_picker_gradient {
 		position: absolute;
 		height: 100%;
 		width: 100%;
 		border-radius: 8px;
 	}
 
-	._simpleEditorColorSelector ._colorPickerBody ._colorValueline {
+	._colorPickerBody ._colorValueline {
 		display: flex;
 		flex-direction: row;
 		align-items: center;
@@ -422,13 +426,13 @@ export default function AppStyle() {
 		gap: 5px;
 	}
 
-	._simpleEditorColorSelector ._colorPickerBody ._colorValues {
+	._colorPickerBody ._colorValues {
 		margin-right: 2px;
 		padding-right: 5px;
 		border-right: 0.5px solid #0000000D;
 	}
 
-	._simpleEditorColorSelector ._thumb {
+	._colorPickerBody ._thumb {
 		width: 16px;
 		height: 16px;
 		border-radius: 50%;
@@ -444,7 +448,7 @@ export default function AppStyle() {
 		pointer-events: none;
 	}
 	
-	._simpleEditorColorSelector ._thumbInner {
+	._colorPickerBody ._thumbInner {
 		position: absolute;
 		width: 60%;
 		height: 60%;
@@ -453,6 +457,11 @@ export default function AppStyle() {
 		border-radius: 50%;
 		background-color: #4C7FEE;
 	}
+
+	span._flag { width: 44px; height: 30px; transform:scale(0.5); }
+	
+	._flag { background: url("api/files/static/file/SYSTEM/jslib/flags/flags.png") no-repeat; background-size: 100%; }
+	._flag.ad { background-position: 0 0.413223%; }._flag.ae { background-position: 0 0.826446%; } ._flag.af { background-position: 0 1.239669%; }._flag.ag { background-position: 0 1.652893%; }._flag.ai { background-position: 0 2.066116%; }._flag.al { background-position: 0 2.479339%; }._flag.am { background-position: 0 2.892562%; }._flag.an { background-position: 0 3.305785%; }._flag.ao { background-position: 0 3.719008%; }._flag.aq { background-position: 0 4.132231%; }._flag.ar { background-position: 0 4.545455%; }._flag.as { background-position: 0 4.958678%; }._flag.at { background-position: 0 5.371901%; }._flag.au { background-position: 0 5.785124%; }._flag.aw { background-position: 0 6.198347%; }._flag.az { background-position: 0 6.61157%; }._flag.ba { background-position: 0 7.024793%; }._flag.bb { background-position: 0 7.438017%; }._flag.bd { background-position: 0 7.85124%; }._flag.be { background-position: 0 8.264463%; }._flag.bf { background-position: 0 8.677686%; }._flag.bg { background-position: 0 9.090909%; }._flag.bh { background-position: 0 9.504132%; }._flag.bi { background-position: 0 9.917355%; }._flag.bj { background-position: 0 10.330579%; }._flag.bm { background-position: 0 10.743802%; }._flag.bn { background-position: 0 11.157025%; }._flag.bo { background-position: 0 11.570248%; }._flag.br { background-position: 0 11.983471%; }._flag.bs { background-position: 0 12.396694%; }._flag.bt { background-position: 0 12.809917%; }._flag.bv { background-position: 0 13.22314%; }._flag.bw { background-position: 0 13.636364%; }._flag.by { background-position: 0 14.049587%; }._flag.bz { background-position: 0 14.46281%; }._flag.ca { background-position: 0 14.876033%; }._flag.cc { background-position: 0 15.289256%; }._flag.cd { background-position: 0 15.702479%; }._flag.cf { background-position: 0 16.115702%; }._flag.cg { background-position: 0 16.528926%; }._flag.ch { background-position: 0 16.942149%; }._flag.ci { background-position: 0 17.355372%; }._flag.ck { background-position: 0 17.768595%; }._flag.cl { background-position: 0 18.181818%; }._flag.cm { background-position: 0 18.595041%; }._flag.cn { background-position: 0 19.008264%; }._flag.co { background-position: 0 19.421488%; }._flag.cr { background-position: 0 19.834711%; }._flag.cu { background-position: 0 20.247934%; }._flag.cv { background-position: 0 20.661157%; }._flag.cx { background-position: 0 21.07438%; }._flag.cy { background-position: 0 21.487603%; }._flag.cz { background-position: 0 21.900826%; }._flag.de { background-position: 0 22.31405%; }._flag.dj { background-position: 0 22.727273%; }._flag.dk { background-position: 0 23.140496%; }._flag.dm { background-position: 0 23.553719%; }._flag.do { background-position: 0 23.966942%; }._flag.dz { background-position: 0 24.380165%; }._flag.ec { background-position: 0 24.793388%; }._flag.ee { background-position: 0 25.206612%; }._flag.eg { background-position: 0 25.619835%; }._flag.eh { background-position: 0 26.033058%; }._flag.er { background-position: 0 26.446281%; }._flag.es { background-position: 0 26.859504%; }._flag.et { background-position: 0 27.272727%; }._flag.fi { background-position: 0 27.68595%; }._flag.fj { background-position: 0 28.099174%; }._flag.fk { background-position: 0 28.512397%; }._flag.fm { background-position: 0 28.92562%; }._flag.fo { background-position: 0 29.338843%; }._flag.fr { background-position: 0 29.752066%; }._flag.ga { background-position: 0 30.165289%; }._flag.gd { background-position: 0 30.578512%; }._flag.ge { background-position: 0 30.991736%; }._flag.gf { background-position: 0 31.404959%; }._flag.gh { background-position: 0 31.818182%; }._flag.gi { background-position: 0 32.231405%; }._flag.gl { background-position: 0 32.644628%; }._flag.gm { background-position: 0 33.057851%; }._flag.gn { background-position: 0 33.471074%; }._flag.gp { background-position: 0 33.884298%; }._flag.gq { background-position: 0 34.297521%; }._flag.gr { background-position: 0 34.710744%; }._flag.gs { background-position: 0 35.123967%; }._flag.gt { background-position: 0 35.53719%; }._flag.gu { background-position: 0 35.950413%; }._flag.gw { background-position: 0 36.363636%; }._flag.gy { background-position: 0 36.77686%; }._flag.hk { background-position: 0 37.190083%; }._flag.hm { background-position: 0 37.603306%; }._flag.hn { background-position: 0 38.016529%; }._flag.hr { background-position: 0 38.429752%; }._flag.ht { background-position: 0 38.842975%; }._flag.hu { background-position: 0 39.256198%; }._flag.id { background-position: 0 39.669421%; }._flag.ie { background-position: 0 40.082645%; }._flag.il { background-position: 0 40.495868%; }._flag.in { background-position: 0 40.909091%; }._flag.io { background-position: 0 41.322314%; }._flag.iq { background-position: 0 41.735537%; }._flag.ir { background-position: 0 42.14876%; }._flag.is { background-position: 0 42.561983%; }._flag.it { background-position: 0 42.975207%; }._flag.jm { background-position: 0 43.38843%; }._flag.jo { background-position: 0 43.801653%; }._flag.jp { background-position: 0 44.214876%; }._flag.ke { background-position: 0 44.628099%; }._flag.kg { background-position: 0 45.041322%; }._flag.kh { background-position: 0 45.454545%; }._flag.ki { background-position: 0 45.867769%; }._flag.km { background-position: 0 46.280992%; }._flag.kn { background-position: 0 46.694215%; }._flag.kp { background-position: 0 47.107438%; }._flag.kr { background-position: 0 47.520661%; }._flag.kw { background-position: 0 47.933884%; }._flag.ky { background-position: 0 48.347107%; }._flag.kz { background-position: 0 48.760331%; }._flag.la { background-position: 0 49.173554%; }._flag.lb { background-position: 0 49.586777%; }._flag.lc { background-position: 0 50%; }._flag.li { background-position: 0 50.413223%; }._flag.lk { background-position: 0 50.826446%; }._flag.lr { background-position: 0 51.239669%; }._flag.ls { background-position: 0 51.652893%; }._flag.lt { background-position: 0 52.066116%; }._flag.lu { background-position: 0 52.479339%; }._flag.lv { background-position: 0 52.892562%; }._flag.ly { background-position: 0 53.305785%; }._flag.ma { background-position: 0 53.719008%; }._flag.mc { background-position: 0 54.132231%; }._flag.md { background-position: 0 54.545455%; }._flag.me { background-position: 0 54.958678%; }._flag.mg { background-position: 0 55.371901%; }._flag.mh { background-position: 0 55.785124%; }._flag.mk { background-position: 0 56.198347%; }._flag.ml { background-position: 0 56.61157%; }._flag.mm { background-position: 0 57.024793%; }._flag.mn { background-position: 0 57.438017%; }._flag.mo { background-position: 0 57.85124%; }._flag.mp { background-position: 0 58.264463%; }._flag.mq { background-position: 0 58.677686%; }._flag.mr { background-position: 0 59.090909%; }._flag.ms { background-position: 0 59.504132%; }._flag.mt { background-position: 0 59.917355%; }._flag.mu { background-position: 0 60.330579%; }._flag.mv { background-position: 0 60.743802%; }._flag.mw { background-position: 0 61.157025%; }._flag.mx { background-position: 0 61.570248%; }._flag.my { background-position: 0 61.983471%; }._flag.mz { background-position: 0 62.396694%; }._flag.na { background-position: 0 62.809917%; }._flag.nc { background-position: 0 63.22314%; }._flag.ne { background-position: 0 63.636364%; }._flag.nf { background-position: 0 64.049587%; }._flag.ng { background-position: 0 64.46281%; }._flag.ni { background-position: 0 64.876033%; }._flag.nl { background-position: 0 65.289256%; }._flag.no { background-position: 0 65.702479%; }._flag.np { background-position: 0 66.115702%; }._flag.nr { background-position: 0 66.528926%; }._flag.nu { background-position: 0 66.942149%; }._flag.nz { background-position: 0 67.355372%; }._flag.om { background-position: 0 67.768595%; }._flag.pa { background-position: 0 68.181818%; }._flag.pe { background-position: 0 68.595041%; }._flag.pf { background-position: 0 69.008264%; }._flag.pg { background-position: 0 69.421488%; }._flag.ph { background-position: 0 69.834711%; }._flag.pk { background-position: 0 70.247934%; }._flag.pl { background-position: 0 70.661157%; }._flag.pm { background-position: 0 71.07438%; }._flag.pn { background-position: 0 71.487603%; }._flag.pr { background-position: 0 71.900826%; }._flag.pt { background-position: 0 72.31405%; }._flag.pw { background-position: 0 72.727273%; }._flag.py { background-position: 0 73.140496%; }._flag.qa { background-position: 0 73.553719%; }._flag.re { background-position: 0 73.966942%; }._flag.ro { background-position: 0 74.380165%; }._flag.rs { background-position: 0 74.793388%; }._flag.ru { background-position: 0 75.206612%; }._flag.rw { background-position: 0 75.619835%; }._flag.sa { background-position: 0 76.033058%; }._flag.sb { background-position: 0 76.446281%; }._flag.sc { background-position: 0 76.859504%; }._flag.sd { background-position: 0 77.272727%; }._flag.se { background-position: 0 77.68595%; }._flag.sg { background-position: 0 78.099174%; }._flag.sh { background-position: 0 78.512397%; }._flag.si { background-position: 0 78.92562%; }._flag.sj { background-position: 0 79.338843%; }._flag.sk { background-position: 0 79.752066%; }._flag.sl { background-position: 0 80.165289%; }._flag.sm { background-position: 0 80.578512%; }._flag.sn { background-position: 0 80.991736%; }._flag.so { background-position: 0 81.404959%; }._flag.sr { background-position: 0 81.818182%; }._flag.ss { background-position: 0 82.231405%; }._flag.st { background-position: 0 82.644628%; }._flag.sv { background-position: 0 83.057851%; }._flag.sy { background-position: 0 83.471074%; }._flag.sz { background-position: 0 83.884298%; }._flag.tc { background-position: 0 84.297521%; }._flag.td { background-position: 0 84.710744%; }._flag.tf { background-position: 0 85.123967%; }._flag.tg { background-position: 0 85.53719%; }._flag.th { background-position: 0 85.950413%; }._flag.tj { background-position: 0 86.363636%; }._flag.tk { background-position: 0 86.77686%; }._flag.tl { background-position: 0 87.190083%; }._flag.tm { background-position: 0 87.603306%; }._flag.tn { background-position: 0 88.016529%; }._flag.to { background-position: 0 88.429752%; }._flag.tp { background-position: 0 88.842975%; }._flag.tr { background-position: 0 89.256198%; }._flag.tt { background-position: 0 89.669421%; }._flag.tv { background-position: 0 90.082645%; }._flag.tw { background-position: 0 90.495868%; }._flag.ty { background-position: 0 90.909091%; }._flag.tz { background-position: 0 91.322314%; }._flag.ua { background-position: 0 91.735537%; }._flag.ug { background-position: 0 92.14876%; }._flag.gb, ._flag.uk { background-position: 0 92.561983%; }._flag.um { background-position: 0 92.975207%; }._flag.us { background-position: 0 93.38843%; }._flag.uy { background-position: 0 93.801653%; }._flag.uz { background-position: 0 94.214876%; }._flag.va { background-position: 0 94.628099%; }._flag.vc { background-position: 0 95.041322%; }._flag.ve { background-position: 0 95.454545%; }._flag.vg { background-position: 0 95.867769%; }._flag.vi { background-position: 0 96.280992%; }._flag.vn { background-position: 0 96.694215%; }._flag.vu { background-position: 0 97.107438%; }._flag.wf { background-position: 0 97.520661%; }._flag.ws { background-position: 0 97.933884%; }._flag.ye { background-position: 0 98.347107%; }._flag.za { background-position: 0 98.760331%; }._flag.zm { background-position: 0 99.173554%; }._flag.zr { background-position: 0 99.586777%; }._flag.zw { background-position: 0 100%; }
 	` + processStyleDefinition('', styleProperties, styleDefaults, theme);
 
 	const styleComps = new Array();

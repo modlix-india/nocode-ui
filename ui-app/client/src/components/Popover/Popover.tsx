@@ -161,13 +161,15 @@ function Popover(props: ComponentProps) {
 										definition={props.definition}
 										subComponentName="popoverContainer"
 									/>
-									<Children
-										key={`${key}_${popover.key}_chld`}
-										pageDefinition={pageDefinition}
-										children={{ [popover.key]: true }}
-										context={{ ...context, isReadonly }}
-										locationHistory={locationHistory}
-									/>
+									{popover ? (
+										<Children
+											key={`${key}_${popover.key}_chld`}
+											pageDefinition={pageDefinition}
+											children={{ [popover.key]: true }}
+											context={{ ...context, isReadonly }}
+											locationHistory={locationHistory}
+										/>
+									) : undefined}
 								</div>
 							</div>
 						</Portal>

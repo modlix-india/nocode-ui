@@ -158,7 +158,11 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 	};
 
 	const handleDragStart = async (e: any, index: any) => {
-		e.dataTransfer.setData('_array_repeater_drag', `${key}_${index}`);
+		e.stopPropagation();
+		const prefix = locationHistory?.length
+			? locationHistory.map(e => `${e.componentKey}_${e.index}`).join('_')
+			: '';
+		e.dataTransfer.setData('_array_repeater_drag', `${prefix}_${key}_${index}`);
 	};
 
 	const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => e.preventDefault();
@@ -171,14 +175,35 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 		if (dataType === 'object') return;
 
 		const fromData = e.dataTransfer.getData('_array_repeater_drag');
-		if (!fromData?.startsWith(`${key}_`)) return;
 
-		const from = Number(fromData.split('_')[1]);
+		if (!fromData) return;
+
+		const lastIndex = fromData.lastIndexOf('_');
+
+		const fromDataKey = fromData.substring(0, lastIndex);
+		const prefix = locationHistory?.length
+			? locationHistory.map(e => `${e.componentKey}_${e.index}`).join('_')
+			: '';
+
+		if (fromDataKey != `${prefix}_${key}`) return;
+
+		const from = Number(fromData.substring(lastIndex + 1));
 		if (from === to) return;
 
 		const newData = arrayValue.slice();
 		newData.splice(to, 0, newData.splice(from, 1)[0]);
 		setData(bindingPathPath!, newData, context?.pageName);
+
+		if (!clickMove) return;
+		(async () => {
+			await runEvent(
+				clickMove,
+				moveEvent,
+				props.context.pageName,
+				props.locationHistory,
+				props.pageDefinition,
+			);
+		})();
 	};
 
 	const styleProperties = processComponentStylePseudoClasses(
@@ -210,6 +235,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 							locationHistory={[
 								...locationHistory,
 								updateLocationForChild(
+									key,
 									updatableBindingPath!,
 									dataType === 'object' ? indKeys.current.array[index] : index,
 									locationHistory,

@@ -3,6 +3,7 @@ import { PageStoreExtractor, getPathFromLocation } from '../../context/StoreCont
 import { DataLocation, LocationHistory } from '../../types/common';
 
 export const updateLocationForChild = (
+	componentKey: string,
 	location: DataLocation | string,
 	index: number | string,
 	locationHistory: Array<LocationHistory>,
@@ -14,7 +15,12 @@ export const updateLocationForChild = (
 	const indexPart = typeof index === 'string' ? `.${index}` : `[${index}]`;
 	if (typeOfLoc === 'string') {
 		finalPath = location as unknown as string;
-		return { location: `(${finalPath ? finalPath : location})${indexPart}`, index, pageName };
+		return {
+			location: `(${finalPath ? finalPath : location})${indexPart}`,
+			index,
+			pageName,
+			componentKey,
+		};
 	}
 	let childLocation = { ...(location as DataLocation) };
 	if (childLocation?.type === 'VALUE') {
@@ -27,12 +33,12 @@ export const updateLocationForChild = (
 						childLocation,
 						locationHistory,
 						PageStoreExtractor.getForContext(pageName),
-				  )
+					)
 				: '';
 		childLocation.expression = `(${
 			finalPath ? finalPath : childLocation?.expression
 		})${indexPart}`;
 	}
 
-	return { location: childLocation, index, pageName };
+	return { location: childLocation, index, pageName, componentKey };
 };

@@ -68,17 +68,17 @@ export const runEvent = async (
 			while (list.size()) {
 				const key = list.pop();
 				const flat = flattenUUID(key);
-				if (invalidEntries[flat]?.length) {
+				if (invalidEntries?.[flat]?.length) {
 					valid = false;
 					break;
 				}
 				for (let i = 0; i < suffixes.length; i++) {
-					if (invalidEntries[flat + suffixes[i]]?.length) {
+					if (invalidEntries?.[flat + suffixes[i]]?.length) {
 						valid = false;
 						break;
 					}
 				}
-				if (!pageDefinition.componentDefinition[key].children) continue;
+				if (!pageDefinition.componentDefinition[key]?.children) continue;
 				Object.entries(pageDefinition.componentDefinition[key].children ?? {})
 					.filter(([, v]: [string, boolean]) => v)
 					.forEach(([k]) => list.add(k));
