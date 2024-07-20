@@ -122,7 +122,7 @@ function parseHeaderLine(params: MarkdownParserParameters): MarkdownParserReturn
 
 	const comp = React.createElement(
 		`h${hNumber}`,
-		{ key, className: '_h1', id: key, ...(attrs ?? {}), style },
+		{ key, className: '_h1', id: makeId(text), ...(attrs ?? {}), style },
 		parseInline({ ...params, line: text }),
 	);
 
@@ -182,8 +182,52 @@ function processAttributeValue(name: string, value: string): any {
 	return style;
 }
 
-function parseInline({ line, lines, lineNumber }: MarkdownParserParameters & { line?: string }) {
-	return <>{line ?? lines[lineNumber]}</>;
+function parseInline({
+	line,
+	lines,
+	lineNumber,
+	styles,
+}: MarkdownParserParameters & { line?: string }) {
+	const actualLine = line ?? lines[lineNumber];
+
+	const lineParts: Array<React.JSX.Element> = [];
+
+	let current = '';
+	for (let i = 0; i < actualLine.length; i++) {
+		let found = false;
+		if ((actualLine[i] === '*' || actualLine[i] === '_' || actualLine[i] === '~') && i != 0) {
+			let count = 1;
+			const ch = actualLine[i];
+			let j = i + 1;
+			for (; j < actualLine.length && count < 2; j++) {
+				if (actualLine[j] === ch) count++;
+				break;
+			}
+
+			if (j < actualLine.length && actualLine[j] !== ' ') {
+				const searchString = ch.repeat(count);
+				let ind = -1;
+				while ((ind = actualLine.indexOf(searchString, j)) != -1) {
+					if (actualLine[ind - 1] !== '\\' || actualLine[ind - 1] !== ' ') break;
+					j = ind + 1;
+				}
+				if (ind != -1) {
+					if (current) {
+						lineParts.push(<>{current}</>);
+						current = '';
+					}
+				}
+			}
+		} else if (actualLine[i] === '\\') {
+			i++;
+			if (i < actualLine.length) current += actualLine[i];
+			found = true;
+		}
+
+		if (!found) current += actualLine[i];
+	}
+
+	return lineParts;
 }
 
 function parseLine(
@@ -294,4 +338,11 @@ function parseHrLine(params: MarkdownParserParameters): MarkdownParserReturnValu
 	const comp = React.createElement('hr', { key, className: '_hr', style });
 
 	return { lineNumber, comp };
+}
+
+function makeId(text: string) {
+	return text
+		.toLowerCase()
+		.replace(/ /g, '-')
+		.replace(/[^a-z0-9-]/g, '');
 }
