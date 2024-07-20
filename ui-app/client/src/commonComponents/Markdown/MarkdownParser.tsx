@@ -182,39 +182,107 @@ function processAttributeValue(name: string, value: string): any {
 	return style;
 }
 
-function parseInline({
-	line,
-	lines,
-	lineNumber,
-	styles,
-}: MarkdownParserParameters & { line?: string }) {
+const TYPE_MAP: { [key: string]: 's' | 'em' | 'b' | 'mark' | 'sup' | 'sub' } = {
+	'~~': 's',
+	'*': 'em',
+	_: 'em',
+	'**': 'b',
+	__: 'b',
+	'==': 'mark',
+	'^': 'sup',
+	'~': 'sub',
+	'***': 'b',
+};
+
+function parseInline(params: MarkdownParserParameters & { line?: string }) {
+	const { lines, lineNumber, line, styles } = params;
 	const actualLine = line ?? lines[lineNumber];
 
 	const lineParts: Array<React.JSX.Element> = [];
 
 	let current = '';
+
 	for (let i = 0; i < actualLine.length; i++) {
 		let found = false;
-		if ((actualLine[i] === '*' || actualLine[i] === '_' || actualLine[i] === '~') && i != 0) {
+		if (
+			actualLine[i] === '*' ||
+			actualLine[i] === '_' ||
+			actualLine[i] === '~' ||
+			actualLine[i] === '=' ||
+			actualLine[i] === '^'
+		) {
 			let count = 1;
 			const ch = actualLine[i];
 			let j = i + 1;
-			for (; j < actualLine.length && count < 2; j++) {
+			for (; j < actualLine.length && count < 3; j++) {
 				if (actualLine[j] === ch) count++;
-				break;
+				else break;
 			}
 
 			if (j < actualLine.length && actualLine[j] !== ' ') {
 				const searchString = ch.repeat(count);
 				let ind = -1;
-				while ((ind = actualLine.indexOf(searchString, j)) != -1) {
-					if (actualLine[ind - 1] !== '\\' || actualLine[ind - 1] !== ' ') break;
+
+				while ((ind = actualLine.indexOf(searchString, j + 1)) != -1) {
+					if (actualLine[ind - 1] !== '\\' && actualLine[ind - 1] !== ' ') break;
 					j = ind + 1;
 				}
-				if (ind != -1) {
+				console.log(actualLine, searchString, ind, count, j);
+				if (actualLine[ind - 1] === '\\' || actualLine[ind - 1] === ' ') ind = -1;
+				console.log(actualLine, searchString, ind, count, j);
+
+				if (ind != -1 && TYPE_MAP[searchString]) {
 					if (current) {
 						lineParts.push(<>{current}</>);
 						current = '';
+					}
+
+					const text = actualLine.substring(i + count, ind);
+
+					ind += count - 1;
+					const attrStart = actualLine.indexOf('{', ind);
+
+					let attrs: { [key: string]: any } | undefined = undefined;
+					let style = styles[TYPE_MAP[searchString]];
+					if (attrStart) {
+						const attrEnd = actualLine.indexOf('}', attrStart);
+						if (attrEnd !== -1) {
+							attrs = parseAttributes(actualLine.substring(attrStart, attrEnd));
+							if (attrs) {
+								ind = attrEnd;
+								if (attrs.style)
+									style = style ? { ...style, ...attrs.style } : attrs.style;
+								ind = attrEnd;
+							}
+						}
+					}
+					i = ind;
+					found = true;
+
+					const innerComp = React.createElement(
+						TYPE_MAP[searchString] ?? 'span',
+						{
+							key: cyrb53(actualLine + '-' + text + '-' + lineNumber + '-' + i),
+							className: `_${TYPE_MAP[searchString]}`,
+							...(attrs ?? {}),
+							style,
+						},
+						text ? parseInline({ ...params, line: text }) : undefined,
+					);
+
+					if (searchString != '***') lineParts.push(innerComp);
+					else {
+						lineParts.push(
+							<em
+								style={styles.em ?? {}}
+								key={cyrb53(
+									actualLine + '-' + text + '-' + lineNumber + '-' + i + '-em',
+								)}
+								className="_em"
+							>
+								{innerComp}
+							</em>,
+						);
 					}
 				}
 			}
@@ -226,6 +294,8 @@ function parseInline({
 
 		if (!found) current += actualLine[i];
 	}
+
+	if (current) lineParts.push(<>{current}</>);
 
 	return lineParts;
 }

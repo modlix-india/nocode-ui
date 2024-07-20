@@ -392,21 +392,39 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'emphasis',
+			name: 'em',
 			displayName: 'Emphasised Text',
 			description: 'Emphasised Text',
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'bold',
+			name: 'b',
 			displayName: 'Bold Text',
 			description: 'Bold Text',
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'highLight',
+			name: 'mark',
 			displayName: 'High Light Text',
 			description: 'High Light Text',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 's',
+			displayName: 'Strike Through Text',
+			description: 'Strike Through Text',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'sup',
+			displayName: 'Super Script',
+			description: 'Super Script',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'sub',
+			displayName: 'Sub Script',
+			description: 'Sub Script',
 			icon: 'fa-solid fa-box',
 		},
 		{
