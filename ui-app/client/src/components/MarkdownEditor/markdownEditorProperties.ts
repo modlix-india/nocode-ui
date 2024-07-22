@@ -193,6 +193,7 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
+	br: [COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type],
 	ol: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
@@ -222,16 +223,6 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
-	],
-	tl: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 	tlli: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,

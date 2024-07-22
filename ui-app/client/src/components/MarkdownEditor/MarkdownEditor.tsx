@@ -428,6 +428,12 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
+			name: 'br',
+			displayName: 'Line Break',
+			description: 'Line Break',
+			icon: 'fa-solid fa-box',
+		},
+		{
 			name: 'ol',
 			displayName: 'Ordered List',
 			description: 'Ordered List',
@@ -449,12 +455,6 @@ const component: Component = {
 			name: 'ulli',
 			displayName: 'Un Ordered List Item',
 			description: 'Un Ordered List Item',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'tl',
-			displayName: 'Task List',
-			description: 'Task List',
 			icon: 'fa-solid fa-box',
 		},
 		{
