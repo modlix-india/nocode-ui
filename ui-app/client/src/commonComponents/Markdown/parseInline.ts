@@ -16,6 +16,72 @@ const TYPE_MAP: { [key: string]: 's' | 'em' | 'b' | 'mark' | 'sup' | 'sub' | 'co
 	'`': 'code',
 };
 
+const URL_REGEX =
+	/<?(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})>?/g;
+
+const TEMP_SPAN = document.createElement('span');
+
+function parseForURLs(text: string, styles: any): Array<React.JSX.Element> | string {
+	const matches = text.matchAll(URL_REGEX);
+	const parts: Array<React.JSX.Element> = [];
+	let match;
+
+	let lastIndex = 0;
+	while ((match = matches.next())) {
+		if (match.done) break;
+
+		let url = match.value[0];
+		const actualLength = url.length;
+		if (url.startsWith('<')) {
+			url = url.substring(1, url.length - (url.endsWith('>') ? 1 : 0));
+		}
+
+		const index = match.value.index;
+
+		if (index > lastIndex) {
+			TEMP_SPAN.innerHTML = text.substring(lastIndex, index);
+			parts.push(
+				React.createElement(
+					React.Fragment,
+					{ key: cyrb53(`${text}-${index}`) },
+					TEMP_SPAN.innerText,
+				),
+			);
+		}
+
+		parts.push(
+			React.createElement(
+				'a',
+				{
+					key: cyrb53(`${text}-${index}-a`),
+					href: url,
+					style: styles.a ?? {},
+				},
+				url,
+			),
+		);
+
+		lastIndex = index + actualLength;
+	}
+
+	if (lastIndex == 0) {
+		TEMP_SPAN.innerHTML = text;
+		return TEMP_SPAN.innerText;
+	}
+
+	if (lastIndex < text.length) {
+		TEMP_SPAN.innerHTML = text.substring(lastIndex);
+		parts.push(
+			React.createElement(
+				React.Fragment,
+				{ key: cyrb53(`${text}-${lastIndex}`) },
+				TEMP_SPAN.innerText,
+			),
+		);
+	}
+	return parts;
+}
+
 export function parseInline(
 	params: MarkdownParserParameters & { line?: string; parseNewline?: boolean },
 ): Array<React.JSX.Element> {
@@ -77,7 +143,7 @@ export function parseInline(
 							React.createElement(
 								React.Fragment,
 								{ key: cyrb53(`${current}-${lineNumber}-${i}`) },
-								current,
+								parseForURLs(current, styles),
 							),
 						);
 						current = '';
@@ -144,6 +210,7 @@ export function parseInline(
 			i++;
 			if (i < actualLine.length) current += actualLine[i];
 			found = true;
+		} else if (actualLine[i] === '<') {
 		}
 
 		if (!found) current += actualLine[i];
@@ -154,7 +221,7 @@ export function parseInline(
 			React.createElement(
 				React.Fragment,
 				{ key: cyrb53(`${current}-${lineNumber}`) },
-				current,
+				parseForURLs(current, styles),
 			),
 		);
 

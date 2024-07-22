@@ -130,6 +130,7 @@ function MarkdownEditor(props: ComponentProps) {
 						: undefined
 				}
 				onChange={ev => onChangeText(ev.target.value)}
+				onPaste={ev => {}}
 			/>
 		) : undefined;
 
