@@ -48,6 +48,10 @@ export default function MarkdownEditorStyle({
 		justify-content: center;
 	}
 
+	${PREFIX} ._markdown ul > ._tlli {
+		list-style-type: none;
+	}
+
 	${PREFIX} ._code {
 		padding: 20px;
 		font-family: monospace;
