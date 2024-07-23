@@ -9,6 +9,7 @@ import { makeRefsAndRemove, parseAttributes } from './utils';
 import { parseInline } from './parseInline';
 import { isNullValue } from '@fincity/kirun-js';
 import { ORDERED_LIST_REGEX, UNORDERED_LIST_REGEX, parseLists } from './parseLists';
+import { parseYoutubeEmbedding } from './parseYoutubeEmbedding';
 
 const HR_REGEX = /^[-*=_]{3,}$/;
 
@@ -63,7 +64,9 @@ function parseTextLine(params: MarkdownParserParameters): MarkdownParserReturnVa
 
 	let comp = undefined;
 
-	if (
+	if (/^https:\/\/((www\.)?youtube.com\/(watch|embed)|youtu.be\/)/i.test(line)) {
+		({ lineNumber, comp } = parseYoutubeEmbedding(params));
+	} else if (
 		line.startsWith('#') ||
 		line.startsWith('\\#') ||
 		(i + 1 < lines.length && (lines[i + 1].startsWith('---') || lines[i + 1].startsWith('===')))
