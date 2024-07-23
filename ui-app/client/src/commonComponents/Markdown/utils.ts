@@ -1,4 +1,6 @@
-import { MarkdownFootnoteRef } from './common';
+import { MarkdownFootnoteRef, MarkdownURLRef } from './common';
+
+const URL_TITLE_REGEX = /(\S*)\s*(\"(.*?)\")?/;
 
 export function parseAttributes(line: string | undefined): { [key: string]: any } | undefined {
 	if (!line?.startsWith('{')) return undefined;
@@ -60,10 +62,10 @@ export function makeId(text: string) {
 
 export function makeRefsAndRemove(lines: string[]): {
 	footNoteRefs: Map<string, MarkdownFootnoteRef>;
-	urlRefs: Map<string, string>;
+	urlRefs: Map<string, MarkdownURLRef>;
 } {
 	const footNoteRefs = new Map<string, MarkdownFootnoteRef>();
-	const urlRefs = new Map<string, string>();
+	const urlRefs = new Map<string, MarkdownURLRef>();
 
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i].trim();
@@ -72,7 +74,7 @@ export function makeRefsAndRemove(lines: string[]): {
 		const ending = line.indexOf(']:');
 		if (ending === -1) continue;
 		const ref = line.substring(1, ending);
-		let url = line.substring(ending).trim();
+		let url = line.substring(ending + 2).trim();
 		let count = 0;
 		if (ref.startsWith('^')) {
 			let j = i + 1;
@@ -86,7 +88,7 @@ export function makeRefsAndRemove(lines: string[]): {
 		} else {
 			if (url.startsWith('<')) url = url.substring(1);
 			if (url.endsWith('>')) url = url.substring(0, url.length - 1);
-			urlRefs.set(ref, url);
+			urlRefs.set(ref.toLowerCase(), makeURLnTitle(url));
 			count = 1;
 		}
 
@@ -95,4 +97,11 @@ export function makeRefsAndRemove(lines: string[]): {
 	}
 
 	return { footNoteRefs, urlRefs };
+}
+
+export function makeURLnTitle(text: string): MarkdownURLRef {
+	const match = text.match(URL_TITLE_REGEX);
+	if (!match) return { url: text };
+	const [, url, , title] = match;
+	return { url, title: title };
 }

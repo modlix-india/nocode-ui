@@ -5,7 +5,7 @@ export interface MarkdownParserParameters {
 	onChange?: (text: string) => void;
 	editable?: boolean;
 	footNoteRefs: Map<string, MarkdownFootnoteRef>;
-	urlRefs: Map<string, string>;
+	urlRefs: Map<string, MarkdownURLRef>;
 }
 
 export interface MarkdownParserReturnValue {
@@ -18,4 +18,9 @@ export interface MarkdownFootnoteRef {
 	text: string;
 	num: number;
 	refKeys: string[];
+}
+
+export interface MarkdownURLRef {
+	title?: string;
+	url: string;
 }
