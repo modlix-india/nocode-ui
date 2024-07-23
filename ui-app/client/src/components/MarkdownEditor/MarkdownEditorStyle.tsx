@@ -128,6 +128,11 @@ export default function MarkdownEditorStyle({
 	${PREFIX} ._footNote {
 		font-size: 75%;
 	}
+
+	${PREFIX} ._codeBlockKeywords {
+		padding-right: 5px;
+		color: blue;
+	}
 	
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

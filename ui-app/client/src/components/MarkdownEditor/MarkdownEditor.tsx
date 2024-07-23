@@ -15,6 +15,7 @@ import MarkdownEditorStyle from './MarkdownEditorStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './markdownEditorProperties';
 import { styleDefaults } from './markdownEditorStyleProperties';
 import { runEvent } from '../util/runEvent';
+import { useStateCallback } from '../../util/useStateCallBack';
 
 function MarkdownEditor(props: ComponentProps) {
 	const {
@@ -44,7 +45,7 @@ function MarkdownEditor(props: ComponentProps) {
 	const [mode, setMode] = useState<'editText' | 'editDoc' | 'editTextnDoc'>(
 		editType ?? 'editText',
 	);
-	const [text, setText] = useState<string>('');
+	const [text, setText] = useStateCallback<string>('');
 	const [buttonBarPosition, setButtonBarPosition] = useState({ x: 0, y: 0 });
 	const textAreaRef = useRef<any>(null);
 	const buttonBarRef = useRef<any>(null);
@@ -58,10 +59,12 @@ function MarkdownEditor(props: ComponentProps) {
 	useEffect(() => {
 		if (!bindingPathPath) return;
 
-		let updateEditor = true;
 		return addListenerAndCallImmediately(
 			(_, fromStore) => {
-				setText(fromStore ?? '');
+				setText((v: string) => {
+					if (v === fromStore) return v;
+					return fromStore ?? '';
+				});
 			},
 			pageExtractor,
 			bindingPathPath,
@@ -81,9 +84,9 @@ function MarkdownEditor(props: ComponentProps) {
 	if (readOnly) {
 		renderingComponent = <MarkdownParser text={text} styles={styleProperties} />;
 	} else {
-		const onChangeText = (editedText: string) => {
+		const onChangeText = (editedText: string, callBack?: () => void) => {
 			if (!bindingPathPath) return;
-			setText(editedText);
+			setText(editedText, callBack);
 			setData(
 				bindingPathPath,
 				editedText === '' && emptyStringValue === 'UNDEFINED' ? undefined : editedText,
@@ -130,6 +133,22 @@ function MarkdownEditor(props: ComponentProps) {
 						: undefined
 				}
 				onChange={ev => onChangeText(ev.target.value)}
+				onKeyDown={ev => {
+					if (ev.key === 'Tab') {
+						ev.preventDefault();
+						const { selectionStart, selectionEnd } = textAreaRef.current;
+						const newText = `${text.substring(0, selectionStart)}    ${text.substring(
+							selectionEnd,
+						)}`;
+
+						onChangeText(newText, () =>
+							textAreaRef.current.setSelectionRange(
+								selectionStart + 4,
+								selectionStart + 4,
+							),
+						);
+					}
+				}}
 				onPaste={ev => {}}
 			/>
 		) : undefined;
