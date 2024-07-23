@@ -20,18 +20,18 @@ import { styleDefaults } from './colorPickerStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import { CommonColorPicker } from '../../commonComponents/CommonColorPicker';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
+import {
+	HEXRGBHSL_any,
+	HSLA_RGBA_TO_HSLAString,
+	HSLA_RGBA_TO_RGBAString,
+	RGBA,
+	RGBA_HEX,
+} from '../util/colorUtil';
 
 function getEmptyValue(emptyValue: string | undefined): string | null | undefined {
 	if (emptyValue === 'ENMPTYSTRING') return '';
 	if (emptyValue === 'NULL') return null;
 	return undefined;
-}
-
-function textColorToHex(str: string): string {
-	let canvasContext = document.createElement('canvas').getContext('2d');
-	if (!canvasContext) return str;
-	canvasContext.fillStyle = str;
-	return canvasContext.fillStyle;
 }
 
 function convertToFormat(
@@ -40,10 +40,15 @@ function convertToFormat(
 ): string | undefined | null {
 	if (!format || !color) return color;
 
-	if (format === 'HEX') {
+	if (format === 'rgba') {
+		if (color.startsWith('rgb')) return color;
+		return HSLA_RGBA_TO_RGBAString(HEXRGBHSL_any(color, 'rgba') as RGBA);
+	} else if (format === 'hsla') {
+		if (color.startsWith('hsl')) return color;
+		return HSLA_RGBA_TO_HSLAString(HEXRGBHSL_any(color, 'hsla') as RGBA);
+	} else {
 		if (color.startsWith('#')) return color;
-
-		return textColorToHex(color);
+		return HEXRGBHSL_any(color, 'hex') as string;
 	}
 }
 
@@ -71,7 +76,6 @@ function ColorPickerComponent(props: ComponentProps) {
 			noFloat,
 			validation,
 			clearSearchTextOnClose,
-			onSearch,
 			designType,
 			colorScheme,
 			leftIcon,
@@ -183,7 +187,7 @@ function ColorPickerComponent(props: ComponentProps) {
 					onChange={vobj => {
 						const v = vobj.value;
 						if (readOnly || !bindingPathPath) return;
-						setData(bindingPathPath, v, context.pageName);
+						setData(bindingPathPath, convertToFormat(v, format), context.pageName);
 						if (!changeEvent) return;
 						(async () =>
 							await runEvent(
@@ -235,7 +239,7 @@ function ColorPickerComponent(props: ComponentProps) {
 				if (!updateStoreImmediately) {
 					setColor(v);
 				} else {
-					setData(bindingPathPath, v, context.pageName);
+					setData(bindingPathPath, convertToFormat(v, format), context.pageName);
 					if (!changeEvent) return;
 					(async () =>
 						await runEvent(
@@ -268,7 +272,7 @@ function ColorPickerComponent(props: ComponentProps) {
 					let v: string | undefined | null = color;
 					if (v?.trim() === '' || isNullValue(v))
 						v = removeKeyWhenEmpty ? undefined : getEmptyValue(emptyValue);
-					setData(bindingPathPath, v, context.pageName);
+					setData(bindingPathPath, convertToFormat(v, format), context.pageName);
 					if (changeEvent) {
 						(async () =>
 							await runEvent(
@@ -403,24 +407,6 @@ const component: Component = {
 			name: 'dropDownContainer',
 			displayName: 'Dropdown Container',
 			description: 'Dropdown Container',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'dropdownItem',
-			displayName: 'Dropdown Item',
-			description: 'Dropdown Item',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'dropdownItemLabel',
-			displayName: 'Dropdown Item Label',
-			description: 'Dropdown Item Label',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'dropdownCheckIcon',
-			displayName: 'Dropdown Check Icon',
-			description: 'Dropdown Check Icon',
 			icon: 'fa-solid fa-box',
 		},
 		{
