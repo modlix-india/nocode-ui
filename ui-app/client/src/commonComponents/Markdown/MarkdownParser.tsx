@@ -10,6 +10,7 @@ import { parseInline } from './parseInline';
 import { isNullValue } from '@fincity/kirun-js';
 import { ORDERED_LIST_REGEX, UNORDERED_LIST_REGEX, parseLists } from './parseLists';
 import { parseYoutubeEmbedding } from './parseYoutubeEmbedding';
+import { parseFootNotesSection } from './parseFootNotesSection';
 
 const HR_REGEX = /^[-*=_]{3,}$/;
 
@@ -31,6 +32,7 @@ export function MarkdownParser({
 		let comps: Array<React.JSX.Element | undefined> = [];
 
 		const { footNoteRefs, urlRefs } = makeRefsAndRemove(lines);
+		const footNotes = { currentRefNumber: 0, footNoteRefs };
 
 		for (let i = 0; i < lines.length; i++) {
 			let { lineNumber, comp } = parseTextLine({
@@ -38,12 +40,23 @@ export function MarkdownParser({
 				lineNumber: i,
 				editable,
 				styles,
-				footNoteRefs,
+				footNotes,
 				urlRefs,
 			});
 			i = lineNumber;
 			comps.push(comp);
 		}
+
+		comps.push(
+			...parseFootNotesSection({
+				lines: [],
+				lineNumber: lines.length,
+				editable,
+				styles,
+				footNotes,
+				urlRefs,
+			}),
+		);
 
 		return comps;
 	}, [text]);

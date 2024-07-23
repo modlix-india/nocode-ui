@@ -554,6 +554,18 @@ const component: Component = {
 			description: 'Video',
 			icon: 'fa-solid fa-box',
 		},
+		{
+			name: 'footNote',
+			displayName: 'Video',
+			description: 'Video',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'footNoteLink',
+			displayName: 'Video',
+			description: 'Video',
+			icon: 'fa-solid fa-box',
+		},
 	],
 };
 

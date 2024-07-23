@@ -1,6 +1,6 @@
 import React from 'react';
 import { cyrb53 } from '../../util/cyrb53';
-import { MarkdownParserParameters, MarkdownURLRef } from './common';
+import { MarkdowFootnotes, MarkdownParserParameters, MarkdownURLRef } from './common';
 import { makeURLnTitle, parseAttributes } from './utils';
 
 const TYPE_MAP: { [key: string]: 's' | 'em' | 'b' | 'mark' | 'sup' | 'sub' | 'code' } = {
@@ -24,7 +24,7 @@ const TEMP_SPAN = document.createElement('span');
 export function parseInline(
 	params: MarkdownParserParameters & { line?: string; parseNewline?: boolean },
 ): Array<React.JSX.Element> {
-	const { lines, lineNumber, line, styles, parseNewline } = params;
+	const { lines, lineNumber, line, styles, parseNewline, footNotes } = params;
 	const actualLine = line ?? lines[lineNumber];
 
 	const lineParts: Array<React.JSX.Element> = [];
@@ -35,6 +35,19 @@ export function parseInline(
 		let found = false;
 		if (parseNewline && actualLine[i] === '\n') {
 			current = processNewLineWithBR(current, lineParts, lineNumber, i, actualLine, styles);
+		} else if (
+			(actualLine[i] === '[' && i + 1 < actualLine.length && actualLine[i + 1] === '^') ||
+			(actualLine[i] === '^' && i + 1 < actualLine.length && actualLine[i + 1] === '[')
+		) {
+			({ i, current, found } = processFootnotes(
+				actualLine,
+				i,
+				footNotes,
+				current,
+				lineParts,
+				lineNumber,
+				styles,
+			));
 		} else if (
 			actualLine[i] === '*' ||
 			actualLine[i] === '_' ||
@@ -86,11 +99,68 @@ export function parseInline(
 			React.createElement(
 				React.Fragment,
 				{ key: cyrb53(`${current}-${lineNumber}`) },
-				parseForURLs(current, styles),
+				processForURLs(current, styles),
 			),
 		);
 
 	return lineParts;
+}
+
+function processFootnotes(
+	actualLine: string,
+	i: number,
+	footNotes: MarkdowFootnotes,
+	current: string,
+	lineParts: React.JSX.Element[],
+	lineNumber: number,
+	styles: any,
+) {
+	const refEnd = actualLine.indexOf(']', i + 1);
+	if (refEnd === -1) return { i, current, found: false };
+
+	let ref = actualLine.substring(i + 1, refEnd);
+	if (ref.startsWith('[')) ref = ref.substring(1);
+	let footNote = footNotes.footNoteRefs.get(ref.toLowerCase());
+	if (!footNote) {
+		footNote = {
+			ref: ref.toLowerCase(),
+			text: ref,
+			num: 0,
+			refNum: 0,
+		};
+		footNotes.footNoteRefs.set(footNote.ref, footNote);
+	}
+
+	if (current) {
+		lineParts.push(
+			React.createElement(
+				React.Fragment,
+				{ key: cyrb53(`${current}-${lineNumber}-${i}`) },
+				processForURLs(current, styles),
+			),
+		);
+		current = '';
+	}
+	if (!footNote.num) {
+		footNotes.currentRefNumber++;
+		footNote.num = footNotes.currentRefNumber;
+	}
+	footNote.refNum = (footNote.refNum ?? 0) + 1;
+	lineParts.push(
+		React.createElement(
+			'a',
+			{
+				key: cyrb53(`fnref-${footNote.num}-${footNote.refNum}-${lineNumber}`),
+				href: `#fn-${footNote.num}`,
+				className: '_footNoteLink',
+				id: `fnref-${footNote.num}-${footNote.refNum}`,
+				style: styles.footnote ?? {},
+			},
+			`[${footNote.num}]`,
+		),
+	);
+
+	return { i: refEnd, current, found: true };
 }
 
 function processImageLink(
@@ -147,7 +217,7 @@ function processImageLink(
 			React.createElement(
 				React.Fragment,
 				{ key: cyrb53(`${current}-${lineNumber}`) },
-				parseForURLs(current, styles),
+				processForURLs(current, styles),
 			),
 		);
 	current = '';
@@ -221,7 +291,7 @@ function processLink(
 			React.createElement(
 				React.Fragment,
 				{ key: cyrb53(`${current}-${lineNumber}`) },
-				parseForURLs(current, styles),
+				processForURLs(current, styles),
 			),
 		);
 	current = '';
@@ -279,7 +349,7 @@ function processInlineMarkup(
 			React.createElement(
 				React.Fragment,
 				{ key: cyrb53(`${current}-${lineNumber}-${i}`) },
-				parseForURLs(current, styles),
+				processForURLs(current, styles),
 			),
 		);
 		current = '';
@@ -359,7 +429,7 @@ function processNewLineWithBR(
 	return current;
 }
 
-function parseForURLs(text: string, styles: any): Array<React.JSX.Element> | string {
+function processForURLs(text: string, styles: any): Array<React.JSX.Element> | string {
 	const matches = text.matchAll(URL_REGEX);
 	const parts: Array<React.JSX.Element> = [];
 	let match;

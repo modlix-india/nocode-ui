@@ -118,6 +118,16 @@ export default function MarkdownEditorStyle({
 	${PREFIX} ._resizer:hover {
 		opacity: 1;
 	}
+
+	${PREFIX} ._footNoteLink {
+		top: -5px;
+		font-size: 75%;
+		position: relative;
+	}
+
+	${PREFIX} ._footNote {
+		font-size: 75%;
+	}
 	
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

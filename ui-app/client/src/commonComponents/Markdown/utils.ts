@@ -67,9 +67,15 @@ export function makeRefsAndRemove(lines: string[]): {
 	const footNoteRefs = new Map<string, MarkdownFootnoteRef>();
 	const urlRefs = new Map<string, MarkdownURLRef>();
 
+	let inCodeBlock = false;
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i].trim();
-		if (!line.startsWith('[')) continue;
+
+		if (line.startsWith('```')) {
+			inCodeBlock = !inCodeBlock;
+			continue;
+		}
+		if (inCodeBlock || !line.startsWith('[')) continue;
 
 		const ending = line.indexOf(']:');
 		if (ending === -1) continue;
@@ -84,7 +90,12 @@ export function makeRefsAndRemove(lines: string[]): {
 				else url += '\n' + inLine;
 			}
 			count = j - i;
-			footNoteRefs.set(ref, { text: url, ref, refKeys: new Array<string>(), num: 0 });
+			footNoteRefs.set(ref.toLowerCase(), {
+				text: url,
+				ref,
+				refKeys: new Array<string>(),
+				num: 0,
+			});
 		} else {
 			if (url.startsWith('<')) url = url.substring(1);
 			if (url.endsWith('>')) url = url.substring(0, url.length - 1);

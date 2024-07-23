@@ -4,7 +4,7 @@ export interface MarkdownParserParameters {
 	styles: any;
 	onChange?: (text: string) => void;
 	editable?: boolean;
-	footNoteRefs: Map<string, MarkdownFootnoteRef>;
+	footNotes: MarkdowFootnotes;
 	urlRefs: Map<string, MarkdownURLRef>;
 }
 
@@ -13,11 +13,16 @@ export interface MarkdownParserReturnValue {
 	comp: JSX.Element | undefined;
 }
 
+export interface MarkdowFootnotes {
+	currentRefNumber: number;
+	footNoteRefs: Map<string, MarkdownFootnoteRef>;
+}
+
 export interface MarkdownFootnoteRef {
 	ref: string;
 	text: string;
 	num: number;
-	refKeys: string[];
+	refNum: number;
 }
 
 export interface MarkdownURLRef {
