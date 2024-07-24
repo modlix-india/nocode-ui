@@ -16,9 +16,13 @@ export function parseTable(params: MarkdownParserParameters): MarkdownParserRetu
 
 	if (attrLine.startsWith('{')) i++;
 
-	const rows = [
-		processRowMakeTR('th', processRow(line), colAlignments, styles, attrLine, params),
-	];
+	const head = React.createElement(
+		'thead',
+		{ key: cyrb53(line + '-' + lineNumber + ' - thead'), className: '_thead' },
+		processRowMakeTR(0, 'th', processRow(line), colAlignments, styles, attrLine, params),
+	);
+
+	const rows: React.JSX.Element[] = [];
 
 	({ i } = makeRows(i, lines, rows, colAlignments, styles, params));
 
@@ -33,15 +37,22 @@ export function parseTable(params: MarkdownParserParameters): MarkdownParserRetu
 		}
 	}
 
+	const body = React.createElement(
+		'tbody',
+		{ key: cyrb53(line + ' - ' + lineNumber + ' - tbody'), className: '_tbody' },
+		...rows,
+	);
+
 	const comp = React.createElement(
 		'table',
 		{
-			key: cyrb53(rows.map(row => row.key).join(',')),
+			key: cyrb53(lines.slice(lineNumber, i).join(',')),
 			...attr,
 			className: '_table',
 			style: style,
 		},
-		...rows,
+		head,
+		body,
 	);
 
 	return { lineNumber: i - 1, comp };
@@ -67,7 +78,7 @@ function makeRows(
 		if (attrLine.startsWith('{')) i = i + 1;
 
 		rows.push(
-			processRowMakeTR('td', processRow(line), colAlignments, styles, attrLine, params),
+			processRowMakeTR(i, 'td', processRow(line), colAlignments, styles, attrLine, params),
 		);
 		i++;
 	}
@@ -75,6 +86,7 @@ function makeRows(
 }
 
 function processRowMakeTR(
+	rowNum: number,
 	type: 'th' | 'td',
 	columns: string[],
 	colAlignments: string[],
@@ -91,12 +103,12 @@ function processRowMakeTR(
 	return React.createElement(
 		'tr',
 		{
-			key: cyrb53(columns.join(',')),
+			key: cyrb53(`${columns.join(',')}-${rowNum}`),
 			...attr,
 			className: '_tr',
 			style: style,
 		},
-		columns.map((col, i) => {
+		...columns.map((col, i) => {
 			let style = styles[type];
 
 			style = style
@@ -106,7 +118,7 @@ function processRowMakeTR(
 			return React.createElement(
 				type,
 				{
-					key: cyrb53(col),
+					key: cyrb53(`${col}-${i}`),
 					style: style,
 					className: `_${type}`,
 				},

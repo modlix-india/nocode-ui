@@ -137,6 +137,28 @@ export default function MarkdownEditorStyle({
 	${PREFIX} ._table {
 		width: fit-content;
 	}
+
+	${PREFIX} ._popupBackground{
+	    position: fixed;
+		z-index: 4;
+		background: #0005;
+		width: 100vw;
+		height: 100vh;
+		backdrop-filter: blur(2px);
+		left: 0;
+		top: 0;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	${PREFIX} ._popupContainer {
+	    position: absolute;
+		background: #ffff;
+		padding: 10px 20px;
+		border-radius: 5px;
+		min-width: 50vw;
+	}
 	
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

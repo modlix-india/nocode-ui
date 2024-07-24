@@ -6,7 +6,7 @@ import { parseAttributes } from './utils';
 export function parseCodeBlock(params: MarkdownParserParameters): MarkdownParserReturnValue {
 	const { lineNumber: i, lines, styles } = params;
 	let lineNumber = i;
-	const key = `${cyrb53(lines[i])}-${i}`;
+
 	const codeLines: string[] = [];
 	const language = lines[i].slice(3).trim();
 	let j = i + 1;
@@ -26,6 +26,7 @@ export function parseCodeBlock(params: MarkdownParserParameters): MarkdownParser
 		}
 	}
 
+	const key = cyrb53(lines.slice(lineNumber, i).join('\n') + ' - ' + lineNumber + ' - ' + i);
 	const comp = React.createElement(
 		'code',
 		{ key, className: '_code', ...(attrs ?? {}), style },
