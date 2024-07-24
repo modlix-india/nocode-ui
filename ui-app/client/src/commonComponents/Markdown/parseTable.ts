@@ -1,8 +1,8 @@
 import React from 'react';
-import { MarkdownParserParameters, MarkdownParserReturnValue } from './common';
-import { parseAttributes } from './utils';
 import { cyrb53 } from '../../util/cyrb53';
+import { MarkdownParserParameters, MarkdownParserReturnValue } from './common';
 import { parseInline } from './parseInline';
+import { parseAttributes } from './utils';
 
 export function parseTable(params: MarkdownParserParameters): MarkdownParserReturnValue {
 	const { lines, lineNumber, styles } = params;
@@ -20,18 +20,7 @@ export function parseTable(params: MarkdownParserParameters): MarkdownParserRetu
 		processRowMakeTR('th', processRow(line), colAlignments, styles, attrLine, params),
 	];
 
-	for (; i < lines.length; i++) {
-		if (lines[i].trim() === '') break;
-
-		line = lines[i];
-		attrLine = (i + 1 < lines.length ? lines[i + 1] : undefined) ?? '';
-
-		if (attrLine.startsWith('{')) i = i + 1;
-
-		rows.push(
-			processRowMakeTR('td', processRow(line), colAlignments, styles, attrLine, params),
-		);
-	}
+	({ i } = makeRows(i, lines, rows, colAlignments, styles, params));
 
 	let style = styles.table;
 	let attr;
@@ -56,6 +45,33 @@ export function parseTable(params: MarkdownParserParameters): MarkdownParserRetu
 	);
 
 	return { lineNumber: i - 1, comp };
+}
+
+function makeRows(
+	i: number,
+	lines: string[],
+	rows: React.JSX.Element[],
+	colAlignments: ('center' | 'left' | 'right')[],
+	styles: any,
+	params: MarkdownParserParameters,
+) {
+	let line;
+	let attrLine;
+
+	while (i < lines.length) {
+		if (lines[i].trim() === '') break;
+
+		line = lines[i];
+		attrLine = (i + 1 < lines.length ? lines[i + 1] : undefined) ?? '';
+
+		if (attrLine.startsWith('{')) i = i + 1;
+
+		rows.push(
+			processRowMakeTR('td', processRow(line), colAlignments, styles, attrLine, params),
+		);
+		i++;
+	}
+	return { i, line, attrLine };
 }
 
 function processRowMakeTR(
