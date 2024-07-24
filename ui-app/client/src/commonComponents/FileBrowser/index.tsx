@@ -187,10 +187,10 @@ export function FileBrowser({
 			} catch (error: any) {
 				if (error.response && error.response.status === 403) {
 					console.error('Access forbidden: ', error.response);
-					alert('You do not have permission to access this resource.');
+					// alert('You do not have permission to access this resource.');
 				} else {
 					console.error('An error occurred: ', error);
-					alert('An error occurred while fetching files.');
+					// alert('An error occurred while fetching files.');
 				}
 			} finally {
 				setInProgress(false);
@@ -226,7 +226,7 @@ export function FileBrowser({
 						setSomethingChanged(Date.now());
 					} catch (error) {
 						console.error('Error creating folder:', error);
-						alert('An error occurred while creating the folder.');
+						// alert('An error occurred while creating the folder.');
 					} finally {
 						setInProgress(false);
 					}
