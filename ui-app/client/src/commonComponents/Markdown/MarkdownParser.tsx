@@ -11,6 +11,7 @@ import { isNullValue } from '@fincity/kirun-js';
 import { ORDERED_LIST_REGEX, UNORDERED_LIST_REGEX, parseLists } from './parseLists';
 import { parseYoutubeEmbedding } from './parseYoutubeEmbedding';
 import { parseFootNotesSection } from './parseFootNotesSection';
+import { parseBlockQuote } from './parseBlockQuote';
 
 const HR_REGEX = /^[-*=_]{3,}$/;
 
@@ -44,7 +45,8 @@ export function MarkdownParser({
 				urlRefs,
 			});
 			i = lineNumber;
-			comps.push(comp);
+			if (Array.isArray(comp)) comps.push(...comp);
+			else comps.push(comp);
 		}
 
 		comps.push(
@@ -91,6 +93,8 @@ function parseTextLine(params: MarkdownParserParameters): MarkdownParserReturnVa
 		({ lineNumber, comp } = parseHrLine(params));
 	} else if (ORDERED_LIST_REGEX.test(line) || UNORDERED_LIST_REGEX.test(line)) {
 		({ lineNumber, comp } = parseLists(params));
+	} else if (line.startsWith('>')) {
+		({ lineNumber, comp } = parseBlockQuote(params));
 	}
 
 	if (!comp) {

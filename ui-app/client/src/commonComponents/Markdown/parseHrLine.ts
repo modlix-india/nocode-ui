@@ -16,7 +16,7 @@ export function parseHrLine(params: MarkdownParserParameters): MarkdownParserRet
 			style = style ? { ...style, ...attrs.style } : attrs.style;
 		}
 	}
-	const comp = React.createElement('hr', { key, className: '_hr', style });
+	const comp = React.createElement('hr', { key, className: '_hr', ...(attrs ?? {}), style });
 
 	return { lineNumber, comp };
 }

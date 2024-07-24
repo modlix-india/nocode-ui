@@ -28,7 +28,7 @@ export function parseCodeBlock(params: MarkdownParserParameters): MarkdownParser
 
 	const comp = React.createElement(
 		'code',
-		{ key, className: '_code', style },
+		{ key, className: '_code', ...(attrs ?? {}), style },
 		hilightFunctionMap.has(language)
 			? hilightFunctionMap.get(language)?.(language, codeLines, styles)
 			: codeLines.join('\n'),

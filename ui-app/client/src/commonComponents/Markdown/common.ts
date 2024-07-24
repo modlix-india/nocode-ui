@@ -10,7 +10,7 @@ export interface MarkdownParserParameters {
 
 export interface MarkdownParserReturnValue {
 	lineNumber: number;
-	comp: JSX.Element | undefined;
+	comp: JSX.Element[] | JSX.Element | undefined;
 }
 
 export interface MarkdowFootnotes {

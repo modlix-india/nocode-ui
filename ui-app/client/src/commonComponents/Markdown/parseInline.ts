@@ -230,8 +230,8 @@ function processImageLink(
 			src: linkParts.url,
 			className: isVideo ? '_video' : '_images',
 			alt: linkParts.title ?? altText,
-			style,
 			...(attrs ?? {}),
+			style,
 		}),
 	);
 
