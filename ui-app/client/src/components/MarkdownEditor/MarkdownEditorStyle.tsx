@@ -133,6 +133,10 @@ export default function MarkdownEditorStyle({
 		padding-right: 5px;
 		color: blue;
 	}
+
+	${PREFIX} ._table {
+		width: fit-content;
+	}
 	
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

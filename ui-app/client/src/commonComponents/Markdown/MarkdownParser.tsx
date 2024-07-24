@@ -12,8 +12,10 @@ import { ORDERED_LIST_REGEX, UNORDERED_LIST_REGEX, parseLists } from './parseLis
 import { parseYoutubeEmbedding } from './parseYoutubeEmbedding';
 import { parseFootNotesSection } from './parseFootNotesSection';
 import { parseBlockQuote } from './parseBlockQuote';
+import { parseTable } from './parseTable';
 
 const HR_REGEX = /^[-*=_]{3,}$/;
+const TABLE_REGEX = /^(\| )?(:)?-{3,}:?\s+(\|(:|\s+:?)-{3,}(:?\s*))*\|?$/;
 
 export function MarkdownParser({
 	text,
@@ -81,6 +83,8 @@ function parseTextLine(params: MarkdownParserParameters): MarkdownParserReturnVa
 
 	if (/^https:\/\/((www\.)?youtube.com\/(watch|embed)|youtu.be\/)/i.test(line)) {
 		({ lineNumber, comp } = parseYoutubeEmbedding(params));
+	} else if (lineNumber + 1 < lines.length && TABLE_REGEX.test(lines[i + 1])) {
+		({ lineNumber, comp } = parseTable(params));
 	} else if (
 		line.startsWith('#') ||
 		line.startsWith('\\#') ||
