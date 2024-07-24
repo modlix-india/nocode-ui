@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { MarkdownParser } from '../../commonComponents/Markdown/MarkdownParser';
 import {
 	addListenerAndCallImmediately,
+	getDataFromPath,
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
@@ -17,6 +18,9 @@ import MarkdownEditorStyle from './MarkdownEditorStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './markdownEditorProperties';
 import { styleDefaults } from './markdownEditorStyleProperties';
 import { EditorMode, MEButtonBar } from './components/MEButtonBar';
+import axios from 'axios';
+import { LOCAL_STORE_PREFIX } from '../../constants';
+import { shortUUID } from '../../util/shortUUID';
 
 function MarkdownEditor(props: ComponentProps) {
 	const {
@@ -27,7 +31,14 @@ function MarkdownEditor(props: ComponentProps) {
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
-		properties: { readOnly, emptyStringValue, onChange, onBlur, editType } = {},
+		properties: {
+			readOnly,
+			emptyStringValue,
+			onChange,
+			onBlur,
+			editType,
+			pathForPastedFiles,
+		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
 		definition,
@@ -149,7 +160,56 @@ function MarkdownEditor(props: ComponentProps) {
 						);
 					}
 				}}
-				onPaste={ev => {}}
+				onPaste={ev => {
+					ev.preventDefault();
+
+					if (ev.clipboardData.files.length) {
+						const file = ev.clipboardData.files[0];
+						const formData = new FormData();
+						formData.append('file', file);
+						const fileNamePrefix = `pasted_${shortUUID()}_`;
+						formData.append('name', fileNamePrefix);
+
+						const headers: any = {
+							Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
+						};
+						if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
+						(async () => {
+							try {
+								let url = `/api/files/static/${pathForPastedFiles}`;
+								let data = await axios.post(url, formData, {
+									headers,
+								});
+								if (data.status === 200) {
+									const { selectionStart, selectionEnd } = textAreaRef.current;
+									const paste = `api/files/static/${pathForPastedFiles}/${fileNamePrefix}image.jpg`;
+									const newText = `${text.substring(0, selectionStart)}![](${paste})${text.substring(
+										selectionEnd,
+									)}`;
+									onChangeText(newText, () =>
+										textAreaRef.current.setSelectionRange(
+											selectionStart + paste + 5,
+											selectionStart + paste + 5,
+										),
+									);
+								}
+							} catch (e) {}
+						})();
+					} else {
+						const paste = ev.clipboardData.getData('text');
+						const { selectionStart, selectionEnd } = textAreaRef.current;
+						const newText = `${text.substring(0, selectionStart)}${paste}${text.substring(
+							selectionEnd,
+						)}`;
+
+						onChangeText(newText, () =>
+							textAreaRef.current.setSelectionRange(
+								selectionStart + paste.length,
+								selectionStart + paste.length,
+							),
+						);
+					}
+				}}
 			/>
 		) : undefined;
 
