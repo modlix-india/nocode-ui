@@ -29,7 +29,7 @@ export default function MarkdownEditorStyle({
 
 	${PREFIX} ._markdown {
 		max-width: 1020px;
-		width: 80vw;
+		width: 80%;
 		display: flex;
 		flex-direction: column;
 		flex: 1;
