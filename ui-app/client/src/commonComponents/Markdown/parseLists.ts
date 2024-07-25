@@ -85,7 +85,8 @@ export function parseLists(params: MarkdownParserParameters): MarkdownParserRetu
 						closeList.type === 'ol' ? 'ol' : 'ul',
 						{
 							key: cyrb53(inLines.join('') + `-${content}-${lineNumber}-${j}`),
-							style: styles[`${closeList.type}`] ?? {},
+							style: styles[`${closeList.type === 'ol' ? 'ol' : 'ul'}`] ?? {},
+							className: `_${closeList.type === 'ol' ? 'ol' : 'ul'}`,
 						},
 						lists.splice(closeList.startIndex),
 					),
@@ -172,7 +173,11 @@ export function parseLists(params: MarkdownParserParameters): MarkdownParserRetu
 			lists.push(
 				React.createElement(
 					closeList.type === 'ol' ? 'ol' : 'ul',
-					{ key: cyrb53(inLines.join('') + `-${lineNumber}-${j}`) },
+					{
+						key: cyrb53(inLines.join('') + `-${lineNumber}-${j}`),
+						style: styles[`${closeList.type === 'ol' ? 'ol' : 'ul'}`] ?? {},
+						className: `_${closeList.type === 'ol' ? 'ol' : 'ul'}`,
+					},
 					lists.splice(closeList.startIndex),
 				),
 			);

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { styleProperties } from '../markdownEditorStyleProperties';
 import { FileBrowser } from '../../../commonComponents/FileBrowser';
 import { isNullValue } from '@fincity/kirun-js';
@@ -25,6 +25,20 @@ export function MEButtonBar({
 	const [showFileBrowser, setShowFileBrowser] = useState<
 		{ selectionStart: number; selectionEnd: number } | undefined
 	>();
+
+	const [buttonBarTop, setButtonBarTop] = useState();
+
+	useEffect(() => {
+		if (isNullValue(textAreaRef)) return;
+		setButtonBarTop(x => {
+			if (x) return x;
+			let tp = textAreaRef?.getBoundingClientRect().top;
+
+			if (tp + 100 > window.innerHeight) tp -= 100;
+
+			return tp;
+		});
+	}, [setButtonBarTop, textAreaRef?.getBoundingClientRect().top]);
 
 	let fileBrowser = undefined;
 
@@ -77,9 +91,11 @@ export function MEButtonBar({
 						? {
 								...styleProperties.buttonBar,
 								transform: `translate(${buttonBarPosition.x}px, ${buttonBarPosition.y}px)`,
+								top: `${buttonBarTop}px`,
 							}
 						: {
 								transform: `translate(${buttonBarPosition.x}px, ${buttonBarPosition.y}px)`,
+								top: `${buttonBarTop}px`,
 							}
 				}
 				onMouseDown={ev => {
