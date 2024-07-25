@@ -73,11 +73,14 @@ setInterval(async () => {
 
 	// Refresh token
 
+	const token = window.localStorage.getItem(AUTH_TOKEN);
+	if (!token) return;
+
 	axios({
 		url: 'api/security/refreshToken',
 		method: 'GET',
 		headers: {
-			Authorization: JSON.parse(window.localStorage.getItem(AUTH_TOKEN) ?? '""'),
+			Authorization: JSON.parse(token ?? '""'),
 		},
 	}).then(response => {
 		window.localStorage.setItem(AUTH_TOKEN, JSON.stringify(response.data.accessToken));
