@@ -607,14 +607,14 @@ const component: Component = {
 		},
 		{
 			name: 'footNote',
-			displayName: 'Video',
-			description: 'Video',
+			displayName: 'Footnote',
+			description: 'Footnote',
 			icon: 'fa-solid fa-box',
 		},
 		{
 			name: 'footNoteLink',
-			displayName: 'Video',
-			description: 'Video',
+			displayName: 'Footnote Link',
+			description: 'Footnote Link',
 			icon: 'fa-solid fa-box',
 		},
 	],

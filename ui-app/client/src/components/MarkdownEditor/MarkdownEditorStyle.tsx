@@ -21,10 +21,11 @@ export default function MarkdownEditorStyle({
 	${PREFIX} textarea {
 		width: 100%;
 		min-height: 100%;
-		border: none;
 		resize: none;
-		padding: 5px;
-		outline: none;
+		padding: 10px;
+		border: 1px solid #efefef;
+		border-radius: 0px;
+		border-left: 20px solid #efefef;
 	}
 
 	${PREFIX} ._markdown {
@@ -101,6 +102,7 @@ export default function MarkdownEditorStyle({
 		width: 100%;
 		height: 2px;
 		background-color: #000;
+		border: none;
 	}
 
 	${PREFIX} ._resizer {

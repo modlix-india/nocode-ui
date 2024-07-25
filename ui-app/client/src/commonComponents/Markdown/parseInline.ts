@@ -464,7 +464,7 @@ function processForURLs(text: string, styles: any): Array<React.JSX.Element> | s
 					key: cyrb53(`${text}-${index}-a`),
 					href: url,
 					className: '_links',
-					style: styles.a ?? {},
+					style: styles.links ?? {},
 				},
 				url,
 			),

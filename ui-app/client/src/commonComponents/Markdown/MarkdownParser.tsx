@@ -7,12 +7,13 @@ import { parseHeaderLine } from './parseHeaderLine';
 import { parseHrLine } from './parseHrLine';
 import { makeRefsAndRemove, parseAttributes } from './utils';
 import { parseInline } from './parseInline';
-import { isNullValue } from '@fincity/kirun-js';
+import { deepEqual, isNullValue } from '@fincity/kirun-js';
 import { ORDERED_LIST_REGEX, UNORDERED_LIST_REGEX, parseLists } from './parseLists';
 import { parseYoutubeEmbedding } from './parseYoutubeEmbedding';
 import { parseFootNotesSection } from './parseFootNotesSection';
 import { parseBlockQuote } from './parseBlockQuote';
 import { parseTable } from './parseTable';
+import { shortUUID } from '../../util/shortUUID';
 
 const HR_REGEX = /^[-*=_]{3,}$/;
 const TABLE_REGEX = /^(\| )?(:)?-{3,}:?\s+(\|(:|\s+:?)-{3,}(:?\s*))*\|?$/;
@@ -30,6 +31,17 @@ export function MarkdownParser({
 	onChange?: (text: string) => void;
 	className?: string;
 }>) {
+	const [styleState, setStyleState] = React.useState(styles);
+	const [key, setKey] = React.useState(shortUUID());
+
+	React.useEffect(() => {
+		setStyleState((existing: any) => {
+			if (deepEqual(existing, styles)) return existing;
+			setKey(shortUUID());
+			return styles;
+		});
+	}, [styles, setKey]);
+
 	const parsedContent = useMemo(() => {
 		const lines = text.split('\n');
 		let comps: Array<React.JSX.Element | undefined> = [];
@@ -63,10 +75,10 @@ export function MarkdownParser({
 		);
 
 		return comps;
-	}, [text]);
+	}, [key, text]);
 
 	return (
-		<div className={`_markdown ${className}`} style={styles.markdownContainer ?? {}}>
+		<div key={key} className={`_markdown ${className}`} style={styles.markdownContainer ?? {}}>
 			{parsedContent}
 		</div>
 	);

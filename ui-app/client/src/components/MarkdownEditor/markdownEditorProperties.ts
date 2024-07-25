@@ -316,7 +316,10 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
-	hr: [COMPONENT_STYLE_GROUP_PROPERTIES.border.type],
+	hr: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+	],
 	video: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
