@@ -456,6 +456,12 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
+			name: 'p',
+			displayName: 'Paragraph',
+			description: 'Paragraph',
+			icon: 'fa-solid fa-box',
+		},
+		{
 			name: 'mark',
 			displayName: 'High Light Text',
 			description: 'High Light Text',
