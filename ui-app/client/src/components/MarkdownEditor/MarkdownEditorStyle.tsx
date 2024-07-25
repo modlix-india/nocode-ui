@@ -12,7 +12,7 @@ export default function MarkdownEditorStyle({
 		`
 	${PREFIX} {
 		width: 100%;
-		height: 100%;
+		flex: 1;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -26,6 +26,7 @@ export default function MarkdownEditorStyle({
 		border: 1px solid #efefef;
 		border-radius: 0px;
 		border-left: 20px solid #efefef;
+		overflow-y: hidden;
 	}
 
 	${PREFIX} ._markdown {
@@ -34,7 +35,6 @@ export default function MarkdownEditorStyle({
 		display: flex;
 		flex-direction: column;
 		flex: 1;
-		overflow-y: auto;
 		padding: 20px;
 	}
 
@@ -47,6 +47,8 @@ export default function MarkdownEditorStyle({
 		flex-direction: row;
 		width: 100%;
 		justify-content: center;
+		min-height: 100%;
+		overflow: auto;
 	}
 
 	${PREFIX} ._markdown ul > ._tlli {
@@ -138,6 +140,15 @@ export default function MarkdownEditorStyle({
 
 	${PREFIX} ._table {
 		width: fit-content;
+		border-collapse: collapse;
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
+
+	${PREFIX} ._th,
+	${PREFIX} ._td {
+		border: 1px solid #000;
+		padding: 5px;
 	}
 
 	${PREFIX} ._popupBackground{
@@ -161,6 +172,21 @@ export default function MarkdownEditorStyle({
 		border-radius: 5px;
 		min-width: 50vw;
 	}
+
+	${PREFIX} ._ul {
+		padding-left: 20px;
+	}
+
+	${PREFIX} ._ol {
+		padding-left: 20px;
+	}
+
+	${PREFIX} ._h1 a._links { font-size: inherit !important; }
+	${PREFIX} ._h2 a._links { font-size: inherit !important; }
+	${PREFIX} ._h3 a._links { font-size: inherit !important; }
+	${PREFIX} ._h4 a._links { font-size: inherit !important; }
+	${PREFIX} ._h5 a._links { font-size: inherit !important; }
+	${PREFIX} ._h6 a._links { font-size: inherit !important; }
 	
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
