@@ -17,6 +17,10 @@ export default function ButtonStyle({ theme }: { theme: Map<string, Map<string, 
 			justify-content: center;
 		}
 
+		${PREFIX} ._icon{
+			position: relative;
+		}
+
 		${PREFIX}._decorative ._icon {
 			height: 100%;
 			position: absolute;

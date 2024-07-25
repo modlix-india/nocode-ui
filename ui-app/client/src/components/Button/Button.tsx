@@ -55,7 +55,7 @@ function ButtonComponent(props: ComponentProps) {
 	const spinnerPath = onClick
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
 				onClick,
-			)}.isRunning`
+		  )}.isRunning`
 		: undefined;
 
 	const [isLoading, setIsLoading] = useState(
@@ -118,7 +118,7 @@ function ButtonComponent(props: ComponentProps) {
 		designType !== '_iconButton' &&
 		designType !== '_iconPrimaryButton';
 
-	const rightIconTag = hasRightIcon ? (
+	const rightIconTag = (
 		<i
 			style={styleProperties.rightIcon ?? {}}
 			className={`_rightButtonIcon _icon ${rightIcon ?? 'fa fa-circle-notch hide'}`}
@@ -128,11 +128,11 @@ function ButtonComponent(props: ComponentProps) {
 				subComponentName="rightIcon"
 			></SubHelperComponent>
 		</i>
-	) : undefined;
+	);
 
 	const hasLeftIcon = (leftIcon && !leftImage && !rightIcon && !rightImage) || isLoading;
 
-	const leftIconTag = hasLeftIcon ? (
+	const leftIconTag = (
 		<i
 			style={styleProperties.leftIcon ?? {}}
 			className={`_leftButtonIcon _icon ${
@@ -148,7 +148,7 @@ function ButtonComponent(props: ComponentProps) {
 				subComponentName="leftIcon"
 			></SubHelperComponent>
 		</i>
-	) : undefined;
+	);
 
 	const leftImageTag = leftImage ? (
 		<img
@@ -159,15 +159,14 @@ function ButtonComponent(props: ComponentProps) {
 		/>
 	) : undefined;
 
-	const rightImageTag =
-		rightImage && !leftImage ? (
-			<img
-				src={hover && activeRightImage ? activeRightImage : rightImage}
-				alt="right"
-				style={styleProperties.rightImage ?? {}}
-				className={hover ? '_rightButtonActiveImage' : '_rightButtonImage'}
-			/>
-		) : undefined;
+	const rightImageTag = rightImage ? (
+		<img
+			src={hover && activeRightImage ? activeRightImage : rightImage}
+			alt="right"
+			style={styleProperties.rightImage ?? {}}
+			className={hover ? '_rightButtonActiveImage' : '_rightButtonImage'}
+		/>
+	) : undefined;
 
 	const [editableLabel, setEditableLabel] = useState(label);
 	const [editName, setEditName] = useState(false);

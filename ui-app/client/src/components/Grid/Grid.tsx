@@ -246,6 +246,7 @@ function Grid(props: ComponentProps) {
 								}
 							: undefined
 					}
+					onMouseDown={handleClick}
 					onFocus={
 						stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined
 					}
