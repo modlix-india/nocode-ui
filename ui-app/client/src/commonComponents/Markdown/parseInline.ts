@@ -3,7 +3,7 @@ import { cyrb53 } from '../../util/cyrb53';
 import { MarkdowFootnotes, MarkdownParserParameters, MarkdownURLRef } from './common';
 import { makeURLnTitle, parseAttributes } from './utils';
 
-const TYPE_MAP: { [key: string]: 's' | 'em' | 'b' | 'mark' | 'sup' | 'sub' | 'code' } = {
+const TYPE_MAP: { [key: string]: 's' | 'em' | 'b' | 'mark' | 'sup' | 'sub' | 'code' | 'span' } = {
 	'~~': 's',
 	'*': 'em',
 	_: 'em',
@@ -14,6 +14,7 @@ const TYPE_MAP: { [key: string]: 's' | 'em' | 'b' | 'mark' | 'sup' | 'sub' | 'co
 	'~': 'sub',
 	'***': 'b',
 	'`': 'code',
+	'!!': 'span',
 };
 
 const URL_REGEX =
@@ -54,7 +55,8 @@ export function parseInline(
 			actualLine[i] === '~' ||
 			actualLine[i] === '=' ||
 			actualLine[i] === '^' ||
-			actualLine[i] === '`'
+			actualLine[i] === '`' ||
+			actualLine[i] === '!'
 		) {
 			({ i, current, found } = processInlineMarkup(
 				actualLine,
