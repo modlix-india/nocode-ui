@@ -89,11 +89,13 @@ export default function MarkdownEditorStyle({
 	}
 
 	${PREFIX} ._markdown {
-		width: 100%;
+		max-width: 1020px;
+		width: 80%;
 		display: flex;
 		flex-direction: column;
 		flex: 1;
 		padding: 20px;
+		overflow: auto;
 	}
 
 	${PREFIX} ._markdown._both {

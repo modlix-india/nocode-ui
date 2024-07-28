@@ -56,7 +56,7 @@ export function parseInline(
 			actualLine[i] === '=' ||
 			actualLine[i] === '^' ||
 			actualLine[i] === '`' ||
-			actualLine[i] === '!'
+			(actualLine[i] === '!' && i + 1 < actualLine.length && actualLine[i + 1] === '!')
 		) {
 			({ i, current, found } = processInlineMarkup(
 				actualLine,
