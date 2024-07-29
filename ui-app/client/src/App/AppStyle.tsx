@@ -525,6 +525,8 @@ export default function AppStyle() {
 	._markdown ._h5 a._links { font-size: inherit !important; }
 	._markdown ._h6 a._links { font-size: inherit !important; }
 
+	._markdown ._blockQuotes { display: flex; flex-direction: column;}
+
 	` + processStyleDefinition('', styleProperties, styleDefaults, theme);
 
 	const styleComps = new Array();

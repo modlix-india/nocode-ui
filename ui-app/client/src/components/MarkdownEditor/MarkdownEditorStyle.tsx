@@ -18,6 +18,29 @@ export default function MarkdownEditorStyle({
 		align-items: center;
 	}
 
+	${PREFIX}._both _editorContainer {
+		max-height: 100%;
+	}
+
+	${PREFIX}._both textarea {
+		overflow-y: auto;
+ 	}
+
+	${PREFIX}._both ._wrapper {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		overflow: auto;
+		height: 100px;
+		max-height: 100%;
+	}
+
+	 ${PREFIX} ._markdown._both {
+		max-width: 100%;
+		max-height: 100%;
+		width: 100%;
+	}
+
 	${PREFIX} textarea {
 		width: 100%;
 		min-height: 100%;
@@ -96,10 +119,6 @@ export default function MarkdownEditorStyle({
 		flex: 1;
 		padding: 20px;
 		overflow: auto;
-	}
-
-	${PREFIX} ._markdown._both {
-		max-width: 100%;
 	}
 
 	${PREFIX} ._editorContainer {

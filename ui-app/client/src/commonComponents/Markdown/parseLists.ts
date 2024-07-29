@@ -48,12 +48,14 @@ export function parseLists(params: MarkdownParserParameters): MarkdownParserRetu
 	for (; j < lines.length; j++) {
 		let type: 'ol' | 'ul' | undefined = undefined;
 
-		if (ORDERED_LIST_REGEX.test(lines[j])) type = 'ol';
-		else if (UNORDERED_LIST_REGEX.test(lines[j])) type = 'ul';
+		let currentLine = lines[j].substring(params.indentationLength ?? 0);
+
+		if (ORDERED_LIST_REGEX.test(currentLine)) type = 'ol';
+		else if (UNORDERED_LIST_REGEX.test(currentLine)) type = 'ul';
 
 		if (type === undefined) break;
 
-		const match = lines[j].match(MAP_LIST_REGEX[type]);
+		const match = currentLine.match(MAP_LIST_REGEX[type]);
 		const indentation = match![1];
 		const number = match![2];
 		let content = match![3];
@@ -98,26 +100,29 @@ export function parseLists(params: MarkdownParserParameters): MarkdownParserRetu
 		let listStyle = styles[`${type}li`];
 		let attrs = undefined;
 
-		while (
-			j + 1 < lines.length &&
-			lines[j + 1].trim() &&
-			lines[j + 1].startsWith(indentation) &&
-			MULTILINE_LIST_REGEX.test(lines[j + 1]) &&
-			!UNORDERED_LIST_REGEX.test(lines[j + 1]) &&
-			!ORDERED_LIST_REGEX.test(lines[j + 1])
-		) {
-			const currentLineContent = lines[j + 1].match(MULTILINE_LIST_REGEX)![2];
+		while (j + 1 < lines.length) {
+			const nextLine = lines[j + 1].substring(params.indentationLength ?? 0).trim();
+
+			if (
+				!nextLine.startsWith(indentation) ||
+				MULTILINE_LIST_REGEX.test(nextLine) ||
+				UNORDERED_LIST_REGEX.test(nextLine) ||
+				ORDERED_LIST_REGEX.test(nextLine)
+			)
+				break;
+
+			const currentLineContent = nextLine.match(MULTILINE_LIST_REGEX)![2];
 			if (currentLineContent[0] === '{') {
-				const attrString = lines[j + 1].substring(indentation.length);
+				const attrString = nextLine.substring(indentation.length);
 				attrs = parseAttributes(attrString);
 				if (attrs) {
-					inLines.push(lines[j + 1]);
+					inLines.push(nextLine);
 					j++;
 					if (attrs.style)
 						listStyle = listStyle ? { ...listStyle, ...attrs.style } : attrs.style;
 				} else break;
 			} else {
-				inLines.push(lines[j + 1]);
+				inLines.push(nextLine);
 				j++;
 				content += '\n' + currentLineContent;
 			}

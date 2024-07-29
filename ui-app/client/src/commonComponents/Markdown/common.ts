@@ -6,6 +6,8 @@ export interface MarkdownParserParameters {
 	editable?: boolean;
 	footNotes: MarkdowFootnotes;
 	urlRefs: Map<string, MarkdownURLRef>;
+	line?: string;
+	indentationLength?: number;
 }
 
 export interface MarkdownParserReturnValue {
