@@ -8,10 +8,15 @@ export function parseTable(params: MarkdownParserParameters): MarkdownParserRetu
 	const { lines, lineNumber, styles } = params;
 	let i = lineNumber;
 
-	const colAlignments = processColoumnAlignments(lines[i + 1]);
+	const colAlignments = processColoumnAlignments(
+		lines[i + 1]?.substring(params.indentationLength ?? 0) ?? '',
+	);
 
-	let line = lines[i];
-	let attrLine = (i + 2 < lines.length ? lines[i + 2] : undefined) ?? '';
+	let line = lines[i]?.substring(params.indentationLength ?? 0) ?? '';
+	let attrLine =
+		(i + 2 < lines.length
+			? lines[i + 2]?.substring(params.indentationLength ?? 0)
+			: undefined) ?? '';
 	i += 2;
 
 	if (attrLine.startsWith('{')) i++;
@@ -29,8 +34,11 @@ export function parseTable(params: MarkdownParserParameters): MarkdownParserRetu
 	let style = styles.table;
 	let attr;
 
-	if (i + 1 < lines.length && lines[i + 1].trim() === '{') {
-		attr = parseAttributes(lines[i + 1]);
+	if (
+		i + 1 < lines.length &&
+		lines[i + 1].substring(params.indentationLength ?? 0).startsWith('{')
+	) {
+		attr = parseAttributes(lines[i + 1].substring(params.indentationLength ?? 0) ?? '');
 		if (attr) i++;
 		if (attr?.style) {
 			style = style ? { ...style, ...attr.style } : attr.style;
@@ -70,11 +78,11 @@ function makeRows(
 	let attrLine;
 
 	while (i < lines.length) {
-		if (lines[i].trim() === '') break;
+		line = lines[i]?.substring(params.indentationLength ?? 0) ?? '';
 
-		line = lines[i];
+		if (line.trim() === '') break;
 		attrLine = (i + 1 < lines.length ? lines[i + 1] : undefined) ?? '';
-
+		attrLine = attrLine.substring(params.indentationLength ?? 0);
 		if (attrLine.startsWith('{')) i = i + 1;
 
 		rows.push(
@@ -122,7 +130,13 @@ function processRowMakeTR(
 					style: style,
 					className: `_${type}`,
 				},
-				parseInline({ ...params, lines: [col], lineNumber: 0 }),
+				parseInline({
+					...params,
+					lines: [col],
+					lineNumber: 0,
+					line: undefined,
+					indentationLength: undefined,
+				}),
 			);
 		}),
 	);

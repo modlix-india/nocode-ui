@@ -1,28 +1,26 @@
+import { isNullValue } from '@fincity/kirun-js';
 import React, { useEffect, useState } from 'react';
-import { HelperComponent } from '../HelperComponents/HelperComponent';
-import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
+import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../../constants';
 import {
 	addListenerAndCallImmediately,
-	getData,
 	getDataFromPath,
 	PageStoreExtractor,
 } from '../../context/StoreContext';
-import { Component } from '../../types/common';
-import { propertiesDefinition, stylePropertiesDefinition } from './subPageProperties';
-import SubPageStyle from './SubPageStyle';
-import useDefinition from '../util/useDefinition';
-import Children from '../Children';
+import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import {
 	processClassesForPageDefinition,
 	processComponentStylePseudoClasses,
 } from '../../util/styleProcessor';
-import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../../constants';
-import { isNullValue } from '@fincity/kirun-js';
-import { runEvent } from '../util/runEvent';
-import * as getPageDefinition from './../../definitions/getPageDefinition.json';
-import { flattenUUID } from '../util/uuid';
-import { styleDefaults } from './subPageStyleProperties';
+import Children from '../Children';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { IconHelper } from '../util/IconHelper';
+import { runEvent } from '../util/runEvent';
+import useDefinition from '../util/useDefinition';
+import { flattenUUID } from '../util/uuid';
+import * as getPageDefinition from './../../definitions/getPageDefinition.json';
+import { propertiesDefinition, stylePropertiesDefinition } from './subPageProperties';
+import SubPageStyle from './SubPageStyle';
+import { styleDefaults } from './subPageStyleProperties';
 
 function SubPage(props: ComponentProps) {
 	const {
@@ -83,7 +81,7 @@ function SubPage(props: ComponentProps) {
 	}, [subPage]);
 
 	const locHist = bindingPath
-		? [...locationHistory, { location: bindingPath, index: -1, pageName }]
+		? [...locationHistory, { location: bindingPath, index: -1, pageName, componentKey: key }]
 		: locationHistory;
 
 	const childs = !isNullValue(subPage) ? (
