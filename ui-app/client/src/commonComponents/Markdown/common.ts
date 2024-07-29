@@ -1,4 +1,5 @@
 export interface MarkdownParserParameters {
+	componentKey: string;
 	lineNumber: number;
 	lines: string[];
 	styles: any;
