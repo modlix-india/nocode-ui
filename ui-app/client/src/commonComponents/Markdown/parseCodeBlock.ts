@@ -8,17 +8,21 @@ export function parseCodeBlock(params: MarkdownParserParameters): MarkdownParser
 	let lineNumber = i;
 
 	const codeLines: string[] = [];
-	const language = lines[i].slice(3).trim();
+	const language = lines[i]
+		.substring(params.indentationLength ?? 0)
+		.slice(3)
+		.trim();
 	let j = i + 1;
 
 	for (; j < lines.length; j++) {
-		if (lines[j].startsWith('```')) break;
-		codeLines.push(lines[j]);
+		const jthLine = lines[j].substring(params.indentationLength ?? 0);
+		if (jthLine.startsWith('```')) break;
+		codeLines.push(jthLine);
 	}
 	lineNumber = j;
 
 	let style = styles.codeBlock;
-	const attrs = parseAttributes(lines[lineNumber + 1]);
+	const attrs = parseAttributes(lines[lineNumber + 1]?.substring(params.indentationLength ?? 0));
 	if (attrs) {
 		lineNumber++;
 		if (attrs.style) {
@@ -31,7 +35,12 @@ export function parseCodeBlock(params: MarkdownParserParameters): MarkdownParser
 		'code',
 		{ key, className: '_code', ...(attrs ?? {}), style },
 		hilightFunctionMap.has(language)
-			? hilightFunctionMap.get(language)?.(language, codeLines, styles)
+			? hilightFunctionMap.get(language)?.(
+					language,
+					codeLines,
+					styles,
+					params.indentationLength,
+				)
 			: codeLines.join('\n'),
 	);
 
@@ -91,7 +100,12 @@ const sourceMap = new Map([
 
 const hilightFunctionMap = new Map<
 	string,
-	(langague: string, lines: string[], styles: any) => Array<React.JSX.Element>
+	(
+		langague: string,
+		lines: string[],
+		styles: any,
+		indentationLength?: number,
+	) => Array<React.JSX.Element>
 >([
 	['javascript', highLightKeyWords],
 	['js', highLightKeyWords],
@@ -109,6 +123,7 @@ function highLightKeyWords(
 	langague: string,
 	lines: string[],
 	styles: any,
+	indentationLength?: number,
 ): Array<React.JSX.Element> {
 	let keywordSet: Set<string> | undefined = sourceMap.get(langague)?.set;
 
@@ -121,7 +136,7 @@ function highLightKeyWords(
 	const elements: Array<React.JSX.Element> = [];
 
 	for (let i = 0; i < lines.length; i++) {
-		const line = lines[i];
+		const line = lines[i].substring(indentationLength ?? 0);
 		const words = line.split(' ');
 
 		for (let j = 0; j < words.length; j++) {
@@ -221,7 +236,12 @@ function highlightHTML(langauge: string, lines: string[], styles: any): Array<Re
 	return elements;
 }
 
-function highlightCSS(langauge: string, lines: string[], styles: any): Array<React.JSX.Element> {
+function highlightCSS(
+	langauge: string,
+	lines: string[],
+	styles: any,
+	indentationLength?: number,
+): Array<React.JSX.Element> {
 	const elements: Array<React.JSX.Element> = [];
 
 	const text = lines.join('\n');

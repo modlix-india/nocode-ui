@@ -22,7 +22,11 @@ export function parseLine(
 	const comp = React.createElement(
 		'p',
 		{ key, className: '_p', ...(attrs ?? {}), style },
-		parseInline({ ...params, line }),
+		parseInline({
+			...params,
+			line: (line ?? lines[i]).substring(params.indentationLength ?? 0),
+			indentationLength: undefined,
+		}),
 	);
 	return { lineNumber, comp };
 }

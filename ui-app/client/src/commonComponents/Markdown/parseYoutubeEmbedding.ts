@@ -5,7 +5,7 @@ import { cyrb53 } from '../../util/cyrb53';
 export function parseYoutubeEmbedding(params: MarkdownParserParameters): MarkdownParserReturnValue {
 	const { lines, lineNumber: i, styles } = params;
 	let lineNumber = i;
-	const line = lines[i].trim();
+	const line = lines[i].trim()?.substring(params.indentationLength ?? 0);
 
 	let ind = line.indexOf('watch?v=');
 	let key = '';

@@ -42,8 +42,11 @@ export default function SmallCarouselStyle({ theme }: { theme: Map<string, Map<s
         cursor: pointer;
         display: flex;
         position: relative;
-        color: #5555
+        color: #5555;
+        width: 2.5vw;  
+        height: 2.5vw; 
     }
+
 
     ${PREFIX}._horizontal._centerArrow ._arrowButtons { align-items: center; }
     ${PREFIX}._horizontal._topArrow ._arrowButtons { align-items: flex-start; }

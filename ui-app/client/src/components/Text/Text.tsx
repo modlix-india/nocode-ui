@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import MarkDownToComponents from '../../commonComponents/MarkDownToComponents';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediatelyWithChildrenActivity,
@@ -20,6 +19,7 @@ import useDefinition from '../util/useDefinition';
 import TextStyle from './TextStyle';
 import { styleDefaults } from './TextStyleProperties';
 import { propertiesDefinition, stylePropertiesDefinition } from './textProperties';
+import { MarkdownParser } from '../../commonComponents/Markdown/MarkdownParser';
 
 function Text(props: ComponentProps) {
 	const {
@@ -87,9 +87,9 @@ function Text(props: ComponentProps) {
 
 	if (textType === 'MD') {
 		return (
-			<div className={`comp compText _markdown`} style={styleProperties.comp ?? {}}>
+			<div className={`comp compText _textMarkdown`} style={styleProperties.comp ?? {}}>
 				<HelperComponent context={props.context} definition={definition} />
-				<MarkDownToComponents text={translatedText ?? ''} />
+				<MarkdownParser text={translatedText ?? ''} styles={styleProperties} />
 			</div>
 		);
 	}
@@ -198,6 +198,228 @@ const component: Component = {
 			displayName: 'Text',
 			description: 'Text',
 			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'markdownContainer',
+			displayName: 'Markdown Container',
+			description: 'Markdown Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'h1',
+			displayName: 'H1',
+			description: 'H1',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'h2',
+			displayName: 'H2',
+			description: 'H2',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'h3',
+			displayName: 'H3',
+			description: 'H3',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'h4',
+			displayName: 'H4',
+			description: 'H4',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'h5',
+			displayName: 'H5',
+			description: 'H5',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'h6',
+			displayName: 'H6',
+			description: 'H6',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'em',
+			displayName: 'Emphasised Text',
+			description: 'Emphasised Text',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'b',
+			displayName: 'Bold Text',
+			description: 'Bold Text',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'p',
+			displayName: 'Paragraph',
+			description: 'Paragraph',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'mark',
+			displayName: 'High Light Text',
+			description: 'High Light Text',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 's',
+			displayName: 'Strike Through Text',
+			description: 'Strike Through Text',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'sup',
+			displayName: 'Super Script',
+			description: 'Super Script',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'sub',
+			displayName: 'Sub Script',
+			description: 'Sub Script',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'br',
+			displayName: 'Line Break',
+			description: 'Line Break',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'ol',
+			displayName: 'Ordered List',
+			description: 'Ordered List',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'oli',
+			displayName: 'Ordered List Item',
+			description: 'Ordered List Item',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'ul',
+			displayName: 'Un Ordered List',
+			description: 'Un Ordered List',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'ulli',
+			displayName: 'Un Ordered List Item',
+			description: 'Un Ordered List Item',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'tlli',
+			displayName: 'Task List Item',
+			description: 'Task List Item',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'tlcheckbox',
+			displayName: 'Task List Checkbox',
+			description: 'Task List Checkbox',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'links',
+			displayName: 'Links',
+			description: 'Links',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'linksHover',
+			displayName: 'Links Hover',
+			description: 'Links Hover',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'images',
+			displayName: 'Image',
+			description: 'Image',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'icBlock',
+			displayName: 'Inline Code Block',
+			description: 'Inline Code Block',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'codeBlock',
+			displayName: 'Code Block',
+			description: 'Code Block',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'codeBlockKeywords',
+			displayName: 'Code Block Keywords',
+			description: 'Code Block Keywords',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'codeBlockVariables',
+			displayName: 'Code Block Variables',
+			description: 'Code Block Variables',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'table',
+			displayName: 'Table',
+			description: 'Table',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'th',
+			displayName: 'Table Header Cell',
+			description: 'Table Header Cell',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'tr',
+			displayName: 'Table Row',
+			description: 'Table Row',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'td',
+			displayName: 'Table Cell',
+			description: 'Table Cell',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'blockQuotes',
+			displayName: 'Block Quote',
+			description: 'Block Quote',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'hr',
+			displayName: 'Horizontal Rule',
+			description: 'Horizontal Rule',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'video',
+			displayName: 'Video',
+			description: 'Video',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'footNote',
+			displayName: 'Footnote',
+			description: 'Footnote',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'footNoteLink',
+			displayName: 'Footnote Link',
+			description: 'Footnote Link',
+			icon: 'fa-solid fa-box',
 		},
 	],
 };

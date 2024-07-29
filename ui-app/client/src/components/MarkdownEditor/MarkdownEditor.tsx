@@ -58,7 +58,7 @@ function MarkdownEditor(props: ComponentProps) {
 	const [text, setText] = useStateCallback<string>('');
 
 	const textAreaRef = useRef<any>(null);
-
+	const wrapperRef = useRef<any>(null);
 	const resizerBarRef = useRef<any>(null);
 	const [textAreaWidth, setTextAreaWidth] = useState<number>(0);
 
@@ -82,6 +82,23 @@ function MarkdownEditor(props: ComponentProps) {
 	}, [bindingPathPath, textAreaRef.current]);
 
 	useEffect(() => setMode(editType), [editType]);
+
+	useEffect(() => {
+		if (!textAreaRef.current || !wrapperRef.current) return;
+
+		const func = () => {
+			if (!wrapperRef.current || !textAreaRef.current) return;
+			wrapperRef.current.style.height = '100px';
+			setTimeout(
+				() =>
+					(wrapperRef.current.style.height =
+						textAreaRef.current.getBoundingClientRect().height + 'px'),
+				600,
+			);
+		};
+		window.addEventListener('resize', func);
+		return () => window.removeEventListener('resize', func);
+	}, [mode, textAreaRef.current, wrapperRef.current]);
 
 	const onBlurEvent = onBlur ? props.pageDefinition.eventFunctions?.[onBlur] : undefined;
 	const onChangeEvent = onChange ? props.pageDefinition.eventFunctions?.[onChange] : undefined;
@@ -108,15 +125,13 @@ function MarkdownEditor(props: ComponentProps) {
 
 	let renderingComponent = undefined;
 
-	if (textAreaRef.current)
-		textAreaRef.current.style.height = textAreaRef.current.scrollHeight + 'px';
-
+	let showBoth = false;
 	if (readOnly) {
 		renderingComponent = <MarkdownParser text={text} styles={styleProperties} />;
 	} else {
 		const showText = mode.indexOf('Text') != -1;
 		const showDoc = mode.indexOf('Doc') != -1;
-		const showBoth = showText && showDoc;
+		showBoth = showText && showDoc;
 		const finTextAreaWidth = showBoth ? `calc(50% + ${textAreaWidth}px)` : '100%';
 		const textComp = showText ? (
 			<textarea
@@ -213,7 +228,7 @@ function MarkdownEditor(props: ComponentProps) {
 			/>
 		) : undefined;
 
-		const docComp = showDoc ? (
+		let docComp = showDoc ? (
 			<MarkdownParser
 				text={text}
 				styles={styleProperties}
@@ -222,6 +237,21 @@ function MarkdownEditor(props: ComponentProps) {
 				className={showBoth ? '_both' : ''}
 			/>
 		) : undefined;
+
+		if (showBoth) {
+			docComp = (
+				<div
+					className="_wrapper"
+					ref={x => {
+						wrapperRef.current = x;
+						if (!x || !textAreaRef.current) return;
+						x.style.height = textAreaRef.current.getBoundingClientRect().height + 'px';
+					}}
+				>
+					{docComp}
+				</div>
+			);
+		}
 
 		const resizer = showBoth ? (
 			<div
@@ -261,6 +291,11 @@ function MarkdownEditor(props: ComponentProps) {
 		);
 	}
 
+	if (textAreaRef.current)
+		textAreaRef.current.style.height = showBoth
+			? '100%'
+			: textAreaRef.current.scrollHeight + 'px';
+
 	let buttonBar = undefined;
 
 	if (!readOnly) {
@@ -281,7 +316,11 @@ function MarkdownEditor(props: ComponentProps) {
 	}
 
 	return (
-		<div className={`comp compMarkdownEditor`} style={styleProperties.comp ?? {}}>
+		<div
+			key={mode}
+			className={`comp compMarkdownEditor ${showBoth ? '_both' : ''}`}
+			style={styleProperties.comp ?? {}}
+		>
 			<HelperComponent context={props.context} definition={definition} />
 			{buttonBar}
 			<div className="_editorContainer">{renderingComponent}</div>

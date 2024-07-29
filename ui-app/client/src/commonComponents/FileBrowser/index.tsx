@@ -177,13 +177,24 @@ export function FileBrowser({
 		setInProgress(true);
 
 		(async () => {
-			let url = `api/files/${resourceType}${path}?size=200`;
-			if (fileCategory?.length) url += `&fileType=${fileCategory}`;
-			if (filter.trim() !== '') url += `&filter=${filter}`;
-			await axios
-				.get(url, { headers })
-				.then(res => setFiles(res.data))
-				.finally(() => setInProgress(false));
+			try {
+				let url = `api/files/${resourceType}${path}?size=200`;
+				if (fileCategory?.length) url += `&fileType=${fileCategory}`;
+				if (filter.trim() !== '') url += `&filter=${filter}`;
+
+				const response = await axios.get(url, { headers });
+				setFiles(response.data);
+			} catch (error: any) {
+				if (error.response && error.response.status === 403) {
+					console.error('Access forbidden: ', error.response);
+					// alert('You do not have permission to access this resource.');
+				} else {
+					console.error('An error occurred: ', error);
+					// alert('An error occurred while fetching files.');
+				}
+			} finally {
+				setInProgress(false);
+			}
 		})();
 	}, [path, resourceType, filter, setFiles, setInProgress, somethingChanged, fileCategory]);
 
@@ -200,29 +211,25 @@ export function FileBrowser({
 					setNewFolder(false);
 					setNewFolderName('');
 				}}
-				onKeyUp={e => {
+				onKeyUp={async e => {
 					if (e.key !== 'Enter') return;
 					e.preventDefault();
 					e.stopPropagation();
+
 					const formData = new FormData();
-					(async () => {
-						setInProgress(true);
-						try {
-							let url = `/api/files/${resourceType}/${
-								path === '' ? '/' : path + '/'
-							}${newFolderName}`;
-							await axios
-								.post(url, formData, {
-									headers,
-								})
-								.finally(() => {
-									setInProgress(false);
-									setNewFolder(false);
-									setNewFolderName('');
-									setSomethingChanged(Date.now());
-								});
-						} catch (e) {}
-					})();
+					setInProgress(true);
+					try {
+						let url = `/api/files/${resourceType}/${path === '' ? '/' : path + '/' + newFolderName}`;
+						await axios.post(url, formData, { headers });
+						setNewFolder(false);
+						setNewFolderName('');
+						setSomethingChanged(Date.now());
+					} catch (error) {
+						console.error('Error creating folder:', error);
+						// alert('An error occurred while creating the folder.');
+					} finally {
+						setInProgress(false);
+					}
 				}}
 			/>
 		</div>
@@ -252,10 +259,7 @@ export function FileBrowser({
 						return;
 					}
 					const extension = file?.name?.split('.').pop()?.toLowerCase();
-					if (
-						restrictUploadType &&
-						!restrictUploadType.includes(extension ?? '')
-					) {
+					if (restrictUploadType && !restrictUploadType.includes(extension ?? '')) {
 						alert(
 							'File type not allowed, please upload only of type ' +
 								restrictUploadType,

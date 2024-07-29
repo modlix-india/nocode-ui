@@ -23,7 +23,7 @@ const URL_REGEX =
 const TEMP_SPAN = document.createElement('span');
 
 export function parseInline(
-	params: MarkdownParserParameters & { line?: string; parseNewline?: boolean },
+	params: MarkdownParserParameters & { parseNewline?: boolean },
 ): Array<React.JSX.Element> {
 	const { lines, lineNumber, line, styles, parseNewline, footNotes } = params;
 	const actualLine = line ?? lines[lineNumber];
@@ -56,7 +56,7 @@ export function parseInline(
 			actualLine[i] === '=' ||
 			actualLine[i] === '^' ||
 			actualLine[i] === '`' ||
-			actualLine[i] === '!'
+			(actualLine[i] === '!' && i + 1 < actualLine.length && actualLine[i + 1] === '!')
 		) {
 			({ i, current, found } = processInlineMarkup(
 				actualLine,
@@ -172,7 +172,7 @@ function processImageLink(
 	current: string,
 	lineNumber: number,
 	styles: any,
-	params: MarkdownParserParameters & { line?: string; parseNewline?: boolean },
+	params: MarkdownParserParameters & { parseNewline?: boolean },
 ) {
 	if (actualLine[i + 1] !== '[') return { i, current, found: false };
 
@@ -247,7 +247,7 @@ function processLink(
 	current: string,
 	lineNumber: number,
 	styles: any,
-	params: MarkdownParserParameters & { line?: string; parseNewline?: boolean },
+	params: MarkdownParserParameters & { parseNewline?: boolean },
 ) {
 	let ind = actualLine.indexOf(']', i + 1);
 	if (ind == -1) return { i, current, found: false };
@@ -322,7 +322,7 @@ function processInlineMarkup(
 	lineParts: React.JSX.Element[],
 	lineNumber: number,
 	styles: any,
-	params: MarkdownParserParameters & { line?: string; parseNewline?: boolean },
+	params: MarkdownParserParameters & { parseNewline?: boolean },
 ) {
 	let count = 1;
 	const ch = actualLine[i];

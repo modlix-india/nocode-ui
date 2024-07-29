@@ -18,6 +18,29 @@ export default function MarkdownEditorStyle({
 		align-items: center;
 	}
 
+	${PREFIX}._both _editorContainer {
+		max-height: 100%;
+	}
+
+	${PREFIX}._both textarea {
+		overflow-y: auto;
+ 	}
+
+	${PREFIX}._both ._wrapper {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		overflow: auto;
+		height: 100px;
+		max-height: 100%;
+	}
+
+	 ${PREFIX} ._markdown._both {
+		max-width: 100%;
+		max-height: 100%;
+		width: 100%;
+	}
+
 	${PREFIX} textarea {
 		width: 100%;
 		min-height: 100%;
@@ -29,41 +52,7 @@ export default function MarkdownEditorStyle({
 		overflow-y: hidden;
 	}
 
-	${PREFIX} ._markdown {
-		max-width: 1020px;
-		width: 80%;
-		display: flex;
-		flex-direction: column;
-		flex: 1;
-		padding: 20px;
-	}
-
-	${PREFIX} ._markdown._both {
-		max-width: 100%;
-	}
-
-	${PREFIX} ._editorContainer {
-		display: flex;
-		flex-direction: row;
-		width: 100%;
-		justify-content: center;
-		min-height: 100%;
-		overflow: auto;
-	}
-
-	${PREFIX} ._markdown ul > ._tlli {
-		list-style-type: none;
-	}
-
-	${PREFIX} ._code {
-		padding: 20px;
-		font-family: monospace;
-		background-color: #FFFFFF55;
-		border-radius: 10px;
-		white-space: pre-wrap;
-	}
-
-	${PREFIX} ._buttonBar {
+		${PREFIX} ._buttonBar {
 		padding: 5px;
 		display: flex;
 		gap: 5px;
@@ -100,57 +89,6 @@ export default function MarkdownEditorStyle({
 		heght: auto;
 	}
 
-	${PREFIX} ._hr {
-		width: 100%;
-		height: 2px;
-		background-color: #000;
-		border: none;
-	}
-
-	${PREFIX} ._resizer {
-		width: 5px;
-		height: 100%;
-		background-color: #ccc4;
-		backdrop-filter: blur(10px);
-		opacity: 0;
-		position: absolute;
-		top: 0;
-		cursor: ew-resize;
-		transform: translateX(-50%);
-	}
-
-	${PREFIX} ._resizer:hover {
-		opacity: 1;
-	}
-
-	${PREFIX} ._footNoteLink {
-		top: -5px;
-		font-size: 75%;
-		position: relative;
-	}
-
-	${PREFIX} ._footNote {
-		font-size: 75%;
-	}
-
-	${PREFIX} ._codeBlockKeywords {
-		padding-right: 5px;
-		color: blue;
-	}
-
-	${PREFIX} ._table {
-		width: fit-content;
-		border-collapse: collapse;
-		margin-top: 10px;
-		margin-bottom: 10px;
-	}
-
-	${PREFIX} ._th,
-	${PREFIX} ._td {
-		border: 1px solid #000;
-		padding: 5px;
-	}
-
 	${PREFIX} ._popupBackground{
 	    position: fixed;
 		z-index: 4;
@@ -173,20 +111,40 @@ export default function MarkdownEditorStyle({
 		min-width: 50vw;
 	}
 
-	${PREFIX} ._ul {
-		padding-left: 20px;
+	${PREFIX} ._markdown {
+		max-width: 1020px;
+		width: 80%;
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+		padding: 20px;
+		overflow: auto;
 	}
 
-	${PREFIX} ._ol {
-		padding-left: 20px;
+	${PREFIX} ._editorContainer {
+		display: flex;
+		flex-direction: row;
+		width: 100%;
+		justify-content: center;
+		min-height: 100%;
+		overflow: auto;
 	}
 
-	${PREFIX} ._h1 a._links { font-size: inherit !important; }
-	${PREFIX} ._h2 a._links { font-size: inherit !important; }
-	${PREFIX} ._h3 a._links { font-size: inherit !important; }
-	${PREFIX} ._h4 a._links { font-size: inherit !important; }
-	${PREFIX} ._h5 a._links { font-size: inherit !important; }
-	${PREFIX} ._h6 a._links { font-size: inherit !important; }
+	${PREFIX} ._resizer {
+		width: 5px;
+		height: 100%;
+		background-color: #ccc4;
+		backdrop-filter: blur(10px);
+		opacity: 0;
+		position: absolute;
+		top: 0;
+		cursor: ew-resize;
+		transform: translateX(-50%);
+	}
+
+	${PREFIX} ._resizer:hover {
+		opacity: 1;
+	}
 	
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
