@@ -3,6 +3,7 @@ import { MarkdownParserParameters, MarkdownParserReturnValue } from './common';
 import { parseInline } from './parseInline';
 import { cyrb53 } from '../../util/cyrb53';
 import { parseAttributes } from './utils';
+import { parseTextLine } from './parseTextLine';
 
 export const BLOCK_QUOTE_MULTI_LEVEL_REGEX = /^>(\s{0,3}>){0,}\s/;
 
@@ -22,15 +23,14 @@ export function parseBlockQuote(params: MarkdownParserParameters): MarkdownParse
 		}
 
 		const indentation = match[0].replace(' ', '').length;
+		const actualIndentationLength = match[0].length;
 		if (
 			indentationStack.length === 0 ||
 			indentation > indentationStack[indentationStack.length - 1]
 		) {
 			indentationStack.push(indentation);
 			quoteElementsStack.push([]);
-			quoteElementsStack[quoteElementsStack.length - 1].push(
-				...parseInline({ ...params, line: line.substring(match[0].length) }),
-			);
+			i = addToStack(params, line, actualIndentationLength, i, quoteElementsStack);
 		} else if (indentation < indentationStack[indentationStack.length - 1]) {
 			indentationStack.pop();
 			const element = quoteElementsStack.pop();
@@ -64,16 +64,12 @@ export function parseBlockQuote(params: MarkdownParserParameters): MarkdownParse
 			quoteElementsStack[quoteElementsStack.length - 1].push(
 				React.createElement('br', { key: cyrb53(`blockQuote-${i}-line`) }),
 			);
-			quoteElementsStack[quoteElementsStack.length - 1].push(
-				...parseInline({ ...params, line: line.substring(match[0].length) }),
-			);
+			i = addToStack(params, line, actualIndentationLength, i, quoteElementsStack);
 		} else {
 			quoteElementsStack[quoteElementsStack.length - 1].push(
 				React.createElement('br', { key: cyrb53(`blockQuote-${i}-line`) }),
 			);
-			quoteElementsStack[quoteElementsStack.length - 1].push(
-				...parseInline({ ...params, line: line.substring(match[0].length) }),
-			);
+			i = addToStack(params, line, actualIndentationLength, i, quoteElementsStack);
 		}
 	}
 
@@ -112,4 +108,25 @@ export function parseBlockQuote(params: MarkdownParserParameters): MarkdownParse
 	}
 
 	return { lineNumber: i, comp: undefined };
+}
+function addToStack(
+	params: MarkdownParserParameters,
+	line: string,
+	actualIndentationLength: number,
+	i: number,
+	quoteElementsStack: React.JSX.Element[][],
+) {
+	const { lineNumber, comp } = parseTextLine({
+		...params,
+		line,
+		lineNumber: i,
+		indentationLength: actualIndentationLength,
+	});
+
+	if (comp)
+		quoteElementsStack[quoteElementsStack.length - 1].push(
+			...(Array.isArray(comp) ? comp : [comp]),
+		);
+
+	return lineNumber;
 }

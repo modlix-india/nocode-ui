@@ -9,7 +9,7 @@ export function parseHrLine(params: MarkdownParserParameters): MarkdownParserRet
 	let lineNumber = i;
 
 	let style = styles.hr;
-	const attrs = parseAttributes(params.lines[i + 1]);
+	const attrs = parseAttributes(params.lines[i + 1]?.substring(params.indentationLength ?? 0));
 	if (attrs) {
 		lineNumber++;
 		if (attrs.style) {
