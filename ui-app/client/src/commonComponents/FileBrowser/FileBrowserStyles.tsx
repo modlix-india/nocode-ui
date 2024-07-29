@@ -12,7 +12,7 @@ export function FileBrowserStyles() {
         flex-direction: column;
         width: 100%;
         height: 100%;
-        min-height: 500px;
+        min-height: 50vh;
         min-width: 500px;
         gap: 5px;
     }
@@ -332,7 +332,7 @@ export function FileBrowserStyles() {
         max-width: -webkit-fill-available;
         max-height: -webkit-fill-available;
         min-width: 600px;
-        min-height: 500px;
+        min-height: 50vh;
         display: flex;
         flex-direction: column;
     }
