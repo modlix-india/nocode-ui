@@ -9,7 +9,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'spanTextFont',
 		defaultValue: '<primaryFont>',
 		cssProperty: 'font',
-		selector: '.comp.compText.span span',
+		selector: '.comp.compText.span',
 		noPrefix: true,
 	},
 	{
@@ -18,7 +18,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h1TextFont',
 		defaultValue: 'bold <quinaryFont>',
 		cssProperty: 'font',
-		selector: '.comp.compText.h1 h1',
+		selector: '.comp.compText.h1',
 		noPrefix: true,
 	},
 	{
@@ -27,7 +27,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h2TextFont',
 		defaultValue: '<quinaryFont>',
 		cssProperty: 'font',
-		selector: '.comp.compText.h2 h2',
+		selector: '.comp.compText.h2',
 		noPrefix: true,
 	},
 	{
@@ -36,7 +36,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h3TextFont',
 		defaultValue: 'bold <secondaryFont>',
 		cssProperty: 'font',
-		selector: '.comp.compText.h3 h3',
+		selector: '.comp.compText.h3',
 		noPrefix: true,
 	},
 	{
@@ -45,7 +45,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h4TextFont',
 		defaultValue: '<secondaryFont>',
 		cssProperty: 'font',
-		selector: '.comp.compText.h4 h4',
+		selector: '.comp.compText.h4',
 		noPrefix: true,
 	},
 	{
@@ -54,7 +54,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h5TextFont',
 		defaultValue: 'bold <tertiaryFont>',
 		cssProperty: 'font',
-		selector: '.comp.compText.h5 h5',
+		selector: '.comp.compText.h5',
 		noPrefix: true,
 	},
 	{
@@ -63,7 +63,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h6TextFont',
 		defaultValue: '<tertiaryFont>',
 		cssProperty: 'font',
-		selector: '.comp.compText.h6 h6',
+		selector: '.comp.compText.h6',
 		noPrefix: true,
 	},
 	{
@@ -81,7 +81,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'pTextFont',
 		defaultValue: '<primaryFont>',
 		cssProperty: 'font',
-		selector: '.comp.compText.p p',
+		selector: '.comp.compText.p',
 		noPrefix: true,
 	},
 	{
@@ -90,7 +90,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'bTextFont',
 		defaultValue: 'bold <primaryFont>',
 		cssProperty: 'font',
-		selector: '.comp.compText.b b',
+		selector: '.comp.compText.b',
 		noPrefix: true,
 	},
 	{
@@ -99,7 +99,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'preTextFont',
 		defaultValue: '<primaryFont>',
 		cssProperty: 'font',
-		selector: '.comp.compText.pre pre',
+		selector: '.comp.compText.pre',
 		noPrefix: true,
 	},
 
