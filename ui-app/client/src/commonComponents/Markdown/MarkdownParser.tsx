@@ -7,12 +7,14 @@ import { parseTextLine } from './parseTextLine';
 import { makeRefsAndRemove } from './utils';
 
 export function MarkdownParser({
+	componentKey,
 	text,
 	styles,
 	editable,
 	onChange,
 	className = '',
 }: Readonly<{
+	componentKey: string;
 	text: string;
 	styles: any;
 	editable?: boolean;
@@ -38,6 +40,7 @@ export function MarkdownParser({
 
 	for (let i = 0; i < lines.length; i++) {
 		let { lineNumber, comp } = parseTextLine({
+			componentKey,
 			lines,
 			lineNumber: i,
 			editable,
@@ -52,6 +55,7 @@ export function MarkdownParser({
 
 	comps.push(
 		...parseFootNotesSection({
+			componentKey,
 			lines: [],
 			lineNumber: lines.length,
 			editable,
