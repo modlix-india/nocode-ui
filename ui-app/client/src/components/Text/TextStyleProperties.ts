@@ -9,7 +9,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'spanTextFont',
 		defaultValue: '<primaryFont>',
 		cssProperty: 'font',
-		selector: '.comp.compText.span',
+		selector: '.comp.compText.span span',
 		noPrefix: true,
 	},
 	{
@@ -18,7 +18,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h1TextFont',
 		defaultValue: 'bold <quinaryFont>',
 		cssProperty: 'font',
-		selector: '.comp.compText.h1',
+		selector: '.comp.compText.h1 h1',
 		noPrefix: true,
 	},
 	{
@@ -27,7 +27,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h2TextFont',
 		defaultValue: '<quinaryFont>',
 		cssProperty: 'font',
-		selector: '.comp.compText.h2',
+		selector: '.comp.compText.h2 h2',
 		noPrefix: true,
 	},
 	{
@@ -36,7 +36,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h3TextFont',
 		defaultValue: 'bold <secondaryFont>',
 		cssProperty: 'font',
-		selector: '.comp.compText.h3',
+		selector: '.comp.compText.h3 h3',
 		noPrefix: true,
 	},
 	{
@@ -45,7 +45,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h4TextFont',
 		defaultValue: '<secondaryFont>',
 		cssProperty: 'font',
-		selector: '.comp.compText.h4',
+		selector: '.comp.compText.h4 h4',
 		noPrefix: true,
 	},
 	{
@@ -54,7 +54,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h5TextFont',
 		defaultValue: 'bold <tertiaryFont>',
 		cssProperty: 'font',
-		selector: '.comp.compText.h5',
+		selector: '.comp.compText.h5 h5',
 		noPrefix: true,
 	},
 	{
@@ -63,7 +63,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h6TextFont',
 		defaultValue: '<tertiaryFont>',
 		cssProperty: 'font',
-		selector: '.comp.compText.h6',
+		selector: '.comp.compText.h6 h6',
 		noPrefix: true,
 	},
 	{
@@ -72,7 +72,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'iTextFont',
 		defaultValue: 'italic <primaryFont>',
 		cssProperty: 'font',
-		selector: '.comp.compText.i',
+		selector: '.comp.compText.i i',
 		noPrefix: true,
 	},
 	{
@@ -81,7 +81,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'pTextFont',
 		defaultValue: '<primaryFont>',
 		cssProperty: 'font',
-		selector: '.comp.compText.p',
+		selector: '.comp.compText.p p',
 		noPrefix: true,
 	},
 	{
@@ -90,7 +90,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'bTextFont',
 		defaultValue: 'bold <primaryFont>',
 		cssProperty: 'font',
-		selector: '.comp.compText.b',
+		selector: '.comp.compText.b b',
 		noPrefix: true,
 	},
 	{
@@ -99,7 +99,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'preTextFont',
 		defaultValue: '<primaryFont>',
 		cssProperty: 'font',
-		selector: '.comp.compText.pre',
+		selector: '.comp.compText.pre pre',
 		noPrefix: true,
 	},
 
@@ -109,7 +109,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'spanTextPadding',
 		defaultValue: '0',
 		cssProperty: 'padding',
-		selector: '.comp.compText.span',
+		selector: '.comp.compText.span span',
+		noPrefix: true,
 	},
 	{
 		groupName: 'H1',
@@ -117,7 +118,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h1TextPadding',
 		defaultValue: '5px 0px',
 		cssProperty: 'padding',
-		selector: '.comp.compText.h1',
+		selector: '.comp.compText.h1 h1',
+		noPrefix: true,
 	},
 	{
 		groupName: 'H2',
@@ -125,7 +127,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h2TextPadding',
 		defaultValue: '4px 0px',
 		cssProperty: 'padding',
-		selector: '.comp.compText.h2',
+		selector: '.comp.compText.h2 h2',
+		noPrefix: true,
 	},
 	{
 		groupName: 'H3',
@@ -133,7 +136,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h3TextPadding',
 		defaultValue: '3px 0px',
 		cssProperty: 'padding',
-		selector: '.comp.compText.h3',
+		selector: '.comp.compText.h3 h3',
+		noPrefix: true,
 	},
 	{
 		groupName: 'H4',
@@ -141,7 +145,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h4TextPadding',
 		defaultValue: '2px 0px',
 		cssProperty: 'padding',
-		selector: '.comp.compText.h4',
+		selector: '.comp.compText.h4 h4',
+		noPrefix: true,
 	},
 	{
 		groupName: 'H5',
@@ -149,7 +154,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h5TextPadding',
 		defaultValue: '1px 0px',
 		cssProperty: 'padding',
-		selector: '.comp.compText.h5',
+		selector: '.comp.compText.h5 h5',
+		noPrefix: true,
 	},
 	{
 		groupName: 'H6',
@@ -157,7 +163,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h6TextPadding',
 		defaultValue: '1px 0px',
 		cssProperty: 'padding',
-		selector: '.comp.compText.h6',
+		selector: '.comp.compText.h6 h6',
+		noPrefix: true,
 	},
 	{
 		groupName: 'I',
@@ -165,7 +172,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'iTextPadding',
 		defaultValue: '0',
 		cssProperty: 'padding',
-		selector: '.comp.compText.i',
+		selector: '.comp.compText.i i',
+		noPrefix: true,
 	},
 	{
 		groupName: 'P',
@@ -173,7 +181,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'pTextPadding',
 		defaultValue: '0',
 		cssProperty: 'padding',
-		selector: '.comp.compText.p',
+		selector: '.comp.compText.p p',
+		noPrefix: true,
 	},
 	{
 		groupName: 'B',
@@ -181,7 +190,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'bTextPadding',
 		defaultValue: '0',
 		cssProperty: 'padding',
-		selector: '.comp.compText.b',
+		selector: '.comp.compText.b b',
+		noPrefix: true,
 	},
 	{
 		groupName: 'PRE',
@@ -189,7 +199,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'preTextPadding',
 		defaultValue: '0',
 		cssProperty: 'padding',
-		selector: '.comp.compText.pre',
+		selector: '.comp.compText.pre pre',
+		noPrefix: true,
 	},
 
 	{
@@ -198,7 +209,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'spanTextMargin',
 		defaultValue: '0',
 		cssProperty: 'margin',
-		selector: '.comp.compText.span',
+		selector: '.comp.compText.span span',
+		noPrefix: true,
 	},
 	{
 		groupName: 'H1',
@@ -206,7 +218,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h1TextMargin',
 		defaultValue: '5px 0px',
 		cssProperty: 'margin',
-		selector: '.comp.compText.h1',
+		selector: '.comp.compText.h1 h1',
+		noPrefix: true,
 	},
 	{
 		groupName: 'H2',
@@ -214,7 +227,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h2TextMargin',
 		defaultValue: '4px 0px',
 		cssProperty: 'margin',
-		selector: '.comp.compText.h2',
+		selector: '.comp.compText.h2 h2',
+		noPrefix: true,
 	},
 	{
 		groupName: 'H3',
@@ -222,7 +236,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h3TextMargin',
 		defaultValue: '3px 0px',
 		cssProperty: 'margin',
-		selector: '.comp.compText.h3',
+		selector: '.comp.compText.h3 h3',
+		noPrefix: true,
 	},
 	{
 		groupName: 'H4',
@@ -230,7 +245,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h4TextMargin',
 		defaultValue: '2px 0px',
 		cssProperty: 'margin',
-		selector: '.comp.compText.h4',
+		selector: '.comp.compText.h4 h4',
+		noPrefix: true,
 	},
 	{
 		groupName: 'H5',
@@ -238,7 +254,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h5TextMargin',
 		defaultValue: '1px 0px',
 		cssProperty: 'margin',
-		selector: '.comp.compText.h5',
+		selector: '.comp.compText.h5 h5',
+		noPrefix: true,
 	},
 	{
 		groupName: 'H6',
@@ -246,7 +263,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'h6TextMargin',
 		defaultValue: '1px 0px',
 		cssProperty: 'margin',
-		selector: '.comp.compText.h6',
+		selector: '.comp.compText.h6 h6',
+		noPrefix: true,
 	},
 	{
 		groupName: 'I',
@@ -254,7 +272,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'iTextMargin',
 		defaultValue: '0',
 		cssProperty: 'margin',
-		selector: '.comp.compText.i',
+		selector: '.comp.compText.i i',
+		noPrefix: true,
 	},
 	{
 		groupName: 'P',
@@ -262,7 +281,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'pTextMargin',
 		defaultValue: '0',
 		cssProperty: 'margin',
-		selector: '.comp.compText.p',
+		selector: '.comp.compText.p p',
+		noPrefix: true,
 	},
 	{
 		groupName: 'B',
@@ -270,7 +290,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'bTextMargin',
 		defaultValue: '0',
 		cssProperty: 'margin',
-		selector: '.comp.compText.b',
+		selector: '.comp.compText.b b',
+		noPrefix: true,
 	},
 	{
 		groupName: 'PRE',
@@ -278,7 +299,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'preTextMargin',
 		defaultValue: '0',
 		cssProperty: 'margin',
-		selector: '.comp.compText.pre',
+		selector: '.comp.compText.pre pre',
+		noPrefix: true,
 	},
 
 	{
@@ -286,7 +308,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'SPAN Text Decoration',
 		name: 'spanTextDecoration',
 		cssProperty: 'text-decoration',
-		selector: '.comp.compText.span',
+		selector: '.comp.compText.span span',
 		noPrefix: true,
 	},
 	{
@@ -294,7 +316,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'H1 Text Decoration',
 		name: 'h1TextDecoration',
 		cssProperty: 'text-decoration',
-		selector: '.comp.compText.h1',
+		selector: '.comp.compText.h1 h1',
 		noPrefix: true,
 	},
 	{
@@ -302,7 +324,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'H2 Text Decoration',
 		name: 'h2TextDecoration',
 		cssProperty: 'text-decoration',
-		selector: '.comp.compText.h2',
+		selector: '.comp.compText.h2 h2',
 		noPrefix: true,
 	},
 	{
@@ -310,7 +332,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'H3 Text Decoration',
 		name: 'h3TextDecoration',
 		cssProperty: 'text-decoration',
-		selector: '.comp.compText.h3',
+		selector: '.comp.compText.h3 h3',
 		noPrefix: true,
 	},
 	{
@@ -318,7 +340,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'H4 Text Decoration',
 		name: 'h4TextDecoration',
 		cssProperty: 'text-decoration',
-		selector: '.comp.compText.h4',
+		selector: '.comp.compText.h4 h4',
 		noPrefix: true,
 	},
 	{
@@ -326,7 +348,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'H5 Text Decoration',
 		name: 'h5TextDecoration',
 		cssProperty: 'text-decoration',
-		selector: '.comp.compText.h5',
+		selector: '.comp.compText.h5 h5',
 		noPrefix: true,
 	},
 	{
@@ -334,7 +356,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'H6 Text Decoration',
 		name: 'h6TextDecoration',
 		cssProperty: 'text-decoration',
-		selector: '.comp.compText.h6',
+		selector: '.comp.compText.h6 h6',
 		noPrefix: true,
 	},
 	{
@@ -342,7 +364,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'I Text Decoration',
 		name: 'iTextDecoration',
 		cssProperty: 'text-decoration',
-		selector: '.comp.compText.i',
+		selector: '.comp.compText.i i',
 		noPrefix: true,
 	},
 	{
@@ -350,7 +372,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'P Text Decoration',
 		name: 'pTextDecoration',
 		cssProperty: 'text-decoration',
-		selector: '.comp.compText.p',
+		selector: '.comp.compText.p p',
 		noPrefix: true,
 	},
 	{
@@ -358,7 +380,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'B Text Decoration',
 		name: 'bTextDecoration',
 		cssProperty: 'text-decoration',
-		selector: '.comp.compText.p',
+		selector: '.comp.compText.b b',
 		noPrefix: true,
 	},
 	{
@@ -366,7 +388,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		displayName: 'PRE Text Decoration',
 		name: 'preTextDecoration',
 		cssProperty: 'text-decoration',
-		selector: '.comp.compText.pre',
+		selector: '.comp.compText.pre pre',
 		noPrefix: true,
 	},
 
