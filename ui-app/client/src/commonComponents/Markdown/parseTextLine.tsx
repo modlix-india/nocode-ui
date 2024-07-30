@@ -1,3 +1,4 @@
+import React from 'react';
 import { MarkdownParserParameters, MarkdownParserReturnValue } from './common';
 import { parseBlockQuote } from './parseBlockQuote';
 import { parseCodeBlock } from './parseCodeBlock';
@@ -44,5 +45,19 @@ export function parseTextLine(params: MarkdownParserParameters): MarkdownParserR
 		({ lineNumber, comp } = parseLine(params));
 	}
 
-	return { lineNumber, comp };
+	return {
+		lineNumber,
+		comp: params.editable
+			? React.createElement(
+					React.Fragment,
+					{ key: `${params.componentKey}-frag-${i}` },
+					React.createElement('div', {
+						key: `${params.componentKey}-div-${i}`,
+						id: `${params.componentKey}-div-${i}`,
+						className: '_lineHook',
+					}),
+					comp,
+				)
+			: comp,
+	};
 }
