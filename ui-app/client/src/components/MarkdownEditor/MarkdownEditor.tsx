@@ -25,7 +25,7 @@ import { shortUUID } from '../../util/shortUUID';
 function MarkdownEditor(props: ComponentProps) {
 	const {
 		definition,
-		definition: { bindingPath },
+		definition: { key: componentKey, bindingPath },
 		locationHistory,
 		context,
 	} = props;
@@ -127,7 +127,9 @@ function MarkdownEditor(props: ComponentProps) {
 
 	let showBoth = false;
 	if (readOnly) {
-		renderingComponent = <MarkdownParser text={text} styles={styleProperties} />;
+		renderingComponent = (
+			<MarkdownParser componentKey={componentKey} text={text} styles={styleProperties} />
+		);
 	} else {
 		const showText = mode.indexOf('Text') != -1;
 		const showDoc = mode.indexOf('Doc') != -1;
@@ -159,6 +161,21 @@ function MarkdownEditor(props: ComponentProps) {
 						: undefined
 				}
 				onChange={ev => onChangeText(ev.target.value)}
+				onKeyUp={() => scrollToCaret(textAreaRef, componentKey)}
+				onClick={() => scrollToCaret(textAreaRef, componentKey)}
+				onScroll={() => {
+					if (!textAreaRef.current) return;
+
+					scrollToCaret(
+						textAreaRef,
+						componentKey,
+						Math.round(
+							(textAreaRef.current.value.split('\n').length *
+								textAreaRef.current.scrollTop) /
+								textAreaRef.current.scrollHeight,
+						),
+					);
+				}}
 				onKeyDown={ev => {
 					if (ev.key === 'Tab') {
 						ev.preventDefault();
@@ -230,6 +247,7 @@ function MarkdownEditor(props: ComponentProps) {
 
 		let docComp = showDoc ? (
 			<MarkdownParser
+				componentKey={componentKey}
 				text={text}
 				styles={styleProperties}
 				editable={true}
@@ -326,6 +344,25 @@ function MarkdownEditor(props: ComponentProps) {
 			<div className="_editorContainer">{renderingComponent}</div>
 		</div>
 	);
+}
+
+function scrollToCaret(textAreaRef: any, componentKey: string, lineNumber?: number) {
+	const { selectionStart } = textAreaRef.current;
+	let block = 'center';
+	if (!lineNumber)
+		lineNumber = (textAreaRef.current.value ?? '')
+			.substring(0, selectionStart)
+			.split('\n').length;
+	else block = 'start';
+	let element;
+	while (lineNumber && lineNumber > 0) {
+		element = document.getElementById(`${componentKey}-div-${lineNumber}`);
+
+		if (!element) lineNumber--;
+		else break;
+	}
+	if (!element) return;
+	setTimeout(() => element.scrollIntoView({ block, inline: 'nearest', behavior: 'smooth' }), 10);
 }
 
 function makeTextForImageSelection(text: string, s: number, e: number, file: string): string {
