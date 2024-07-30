@@ -316,7 +316,11 @@ function Menu(props: ComponentProps) {
 				onMouseEnter={() => setIsHovered(true)}
 				onMouseLeave={() => setIsHovered(false)}
 				onClick={e => {
-					if ((!target || target === '_self') && linkPath) {
+					if (!linkPath) {
+						e.stopPropagation();
+						e.preventDefault();
+						menuToggle(e);
+					} else if ((!target || target === '_self') && linkPath) {
 						e.stopPropagation();
 						e.preventDefault();
 						window.history.pushState(undefined, '', resolvedLink);
