@@ -34,5 +34,5 @@ jobs:
       - name: Cache Clear
         uses: fjogeleit/http-request-action@v1
         with:
-          url: https://stage.openbracket.in/api/ui/cache/jsCache
+          url: https://stage.modlix.com/api/ui/cache/jsCache
           method: "DELETE"
