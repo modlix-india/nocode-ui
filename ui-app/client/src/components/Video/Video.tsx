@@ -97,6 +97,15 @@ function Video(props: ComponentProps) {
 	const [fullScreenState, setFullScreenState] = useState<String>('expand');
 	const [isFirstTimePlay, setFirstTimePlay] = useState<boolean>(true);
 
+	
+	const videoSrc = getSrcUrl(src);
+
+	useEffect(() => {
+        if (video.current && videoSrc) {
+            video.current.src = videoSrc;
+        }
+    }, [videoSrc]);
+
 	//videoRef
 	const video = useRef<any>();
 	//InputProgressBarRef
@@ -490,6 +499,7 @@ function Video(props: ComponentProps) {
 				poster={poster}
 				playsInline={playsInline}
 				preload="metadata"
+				key={videoSrc}
 				ref={video}
 				muted={muted}
 				loop={loop}
