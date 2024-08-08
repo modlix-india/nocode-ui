@@ -76,7 +76,7 @@ function EMAIL(validation: any, value: any): Array<string> {
 //}
 
 function NUMBER_VALUE(validation: any, value: any): Array<string> {
-	if (isNullValue(value)) return [];
+	if (isNullValue(value) || value === '') return [];
 	const floatValue = parseFloat(value);
 	if (isNaN(floatValue) || '' + floatValue !== '' + value) return [validation.message];
 	if (!isNullValue(validation.minValue) && floatValue < parseFloat(validation.minValue))
