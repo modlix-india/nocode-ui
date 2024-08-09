@@ -491,6 +491,7 @@ function Video(props: ComponentProps) {
 				playsInline={playsInline}
 				preload="metadata"
 				ref={video}
+				key={getSrcUrl(src)}
 				muted={muted}
 				loop={loop}
 				autoPlay={autoPlay}
