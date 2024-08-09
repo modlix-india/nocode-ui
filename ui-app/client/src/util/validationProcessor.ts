@@ -55,6 +55,7 @@ function BOOLEAN_CONDITION(validation: any, value: any): Array<string> {
 function SCHEMA_TYPE(validation: any, value: any): Array<string> {
 	try {
 		const sch = Schema.from(validation.schema);
+		if (!sch) return [];
 		SchemaValidator.validate(undefined, sch, UISchemaRepository, value);
 		return [];
 	} catch (err) {
@@ -75,7 +76,7 @@ function EMAIL(validation: any, value: any): Array<string> {
 //}
 
 function NUMBER_VALUE(validation: any, value: any): Array<string> {
-	if (isNullValue(value)) return [];
+	if (isNullValue(value) || value === '') return [];
 	const floatValue = parseFloat(value);
 	if (isNaN(floatValue) || '' + floatValue !== '' + value) return [validation.message];
 	if (!isNullValue(validation.minValue) && floatValue < parseFloat(validation.minValue))
@@ -84,7 +85,6 @@ function NUMBER_VALUE(validation: any, value: any): Array<string> {
 		return [validation.message];
 	return [];
 }
- 
 
 function FILE_SIZE(validation: any, value: FileList): Array<string> {
 	if (isNullValue(value)) return [];

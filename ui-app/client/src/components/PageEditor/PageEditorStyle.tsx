@@ -2785,6 +2785,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._popupBackground ._popupContainer._popupContainerWithPreview {
 			flex-direction: row;
+			width: 50vw;
+			height: 60vh;
 		}
 
 		${PREFIX} ._popupBackground ._popupContainer._popupContainerWithPreview ._mdPreviewContainer {
