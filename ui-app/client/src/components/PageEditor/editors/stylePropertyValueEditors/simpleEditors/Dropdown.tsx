@@ -95,7 +95,9 @@ export function Dropdown({
 						className={`_simpleEditorDropdownOption ${
 							i === currentOption ? '_hovered' : ''
 						} ${selection.has(o.name) ? '_selected' : ''}`}
-						onClick={() => {
+						onMouseDown={e => {
+							if (e.button != 0) return;
+
 							setOpen(false);
 							setTimeout(() => dropDown.current?.blur(), 0);
 							if (!multiSelect) {
