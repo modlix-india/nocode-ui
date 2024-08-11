@@ -16,6 +16,7 @@ import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { styleDefaults } from './toggleButtonStyleProperties';
 import { IconHelper } from '../util/IconHelper';
+import { runEvent } from '../util/runEvent';
 
 function ToggleButton(props: ComponentProps) {
 	const {
@@ -36,6 +37,7 @@ function ToggleButton(props: ComponentProps) {
 			designType,
 			toggleButtonLabelAlignment,
 			colorScheme,
+			onClick,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -69,8 +71,20 @@ function ToggleButton(props: ComponentProps) {
 		(event: any) => {
 			if (!bindingPathPath) return;
 			setData(bindingPathPath, event.target.checked, context.pageName);
+			if (!onClick || !props.pageDefinition.eventFunctions?.[onClick]) return;
+			const eventFunction = props.pageDefinition.eventFunctions[onClick];
+
+			(async () => {
+				await runEvent(
+					eventFunction,
+					onClick,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				);
+			})();
 		},
-		[bindingPathPath],
+		[onClick, bindingPathPath, props.pageDefinition.eventFunctions?.[onClick]],
 	);
 
 	const label = isToggled ? onLabel : offLabel ?? onLabel;

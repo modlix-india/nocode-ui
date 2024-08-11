@@ -13,3 +13,5 @@ export * from './NavigateForward';
 export * from './CopyTextToClipboard';
 export * from './ExecuteJSFunction';
 export * from './Refresh';
+export * from './EncodeURIComponent';
+export * from './DecodeURIComponent';

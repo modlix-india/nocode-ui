@@ -55,7 +55,7 @@ function ButtonComponent(props: ComponentProps) {
 	const spinnerPath = onClick
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
 				onClick,
-			)}.isRunning`
+		  )}.isRunning`
 		: undefined;
 
 	const [isLoading, setIsLoading] = useState(
@@ -464,6 +464,30 @@ const component: Component = {
 			name: 'rightIcon',
 			displayName: 'Right Icon',
 			description: 'Right Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'leftImage',
+			displayName: 'Left Image',
+			description: 'Left Image',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'activeLeftImage',
+			displayName: 'Active Left Image',
+			description: 'Active Left Image',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'rightImage',
+			displayName: 'Right Image',
+			description: 'Right Image',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'activeRightImage',
+			displayName: 'Active Right Image',
+			description: 'Active Right Image',
 			icon: 'fa-solid fa-box',
 		},
 	],

@@ -75,6 +75,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
+	COMMON_COMPONENT_PROPERTIES.onClick,
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
