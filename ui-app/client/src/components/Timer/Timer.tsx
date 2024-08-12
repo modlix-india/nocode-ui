@@ -1,7 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { PageStoreExtractor, getPathFromLocation } from '../../context/StoreContext';
+import React, { useCallback, useEffect } from 'react';
+import { PageStoreExtractor } from '../../context/StoreContext';
 import { ComponentProps } from '../../types/common';
-import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import TimerStyle from './TimerStyle';
@@ -9,14 +8,12 @@ import { propertiesDefinition, stylePropertiesDefinition } from './timerProperti
 import { styleDefaults } from './timerStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
-import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 
 function Timer(props: ComponentProps) {
 	const { definition, pageDefinition, locationHistory, context } = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
 		properties: { timerType, duration, initialDelay, repeatCount, onTimerEventFunction } = {},
-		stylePropertiesWithPseudoStates,
 	} = useDefinition(
 		definition,
 		propertiesDefinition,
@@ -25,57 +22,63 @@ function Timer(props: ComponentProps) {
 		pageExtractor,
 	);
 
-	const [output, setOutput] = useState<string>('');
-
 	const runUserDefinedFunction = useCallback(() => {
 		if (!onTimerEventFunction) return;
 		const event = pageDefinition.eventFunctions?.[onTimerEventFunction];
 		if (!event) return;
-		const result = runEvent(
-			event,
-			onTimerEventFunction,
-			context.pageName,
-			locationHistory,
-			pageDefinition,
-		);
-		setOutput(result?.toString() || '');
+		runEvent(event, onTimerEventFunction, context.pageName, locationHistory, pageDefinition);
 	}, [pageDefinition, context.pageName, locationHistory, onTimerEventFunction]);
 
 	useEffect(() => {
 		const initialDelayMs = initialDelay || 0;
 		const durationMs = duration || 1000;
 
-		const initialDelayId = setTimeout(() => {
-			if (timerType === 'Non-Reapeating') {
-				runUserDefinedFunction();
-			} else {
-				let executionCount = 0;
-				const intervalId = setInterval(() => {
-					runUserDefinedFunction();
-					executionCount++;
+		let timeoutId: number | undefined;
+		let intervalId: number | undefined;
 
-					if (repeatCount !== -1 && executionCount >= repeatCount) {
+		const executeFunction = () => {
+			runUserDefinedFunction();
+		};
+
+		if (timerType === 'Repeating') {
+			let executionCount = 0;
+
+			const startRepeatingTimer = () => {
+				intervalId = setInterval(() => {
+					if (!window.designMode) {
 						clearInterval(intervalId);
+					} else {
+						executeFunction();
+						executionCount++;
+						if (repeatCount !== -1 && executionCount >= repeatCount) {
+							clearInterval(intervalId);
+						}
 					}
 				}, durationMs);
+			};
 
-				return () => clearInterval(intervalId);
+			if (initialDelayMs > 0) {
+				timeoutId = setTimeout(() => {
+					executeFunction();
+					executionCount++;
+					startRepeatingTimer();
+				}, initialDelayMs);
+			} else {
+				startRepeatingTimer();
 			}
-		}, initialDelayMs);
+		} else {
+			timeoutId = setTimeout(executeFunction, durationMs);
+		}
 
-		return () => clearTimeout(initialDelayId);
+		return () => {
+			if (timeoutId) clearTimeout(timeoutId);
+			if (intervalId) clearInterval(intervalId);
+		};
 	}, [timerType, duration, initialDelay, repeatCount, runUserDefinedFunction]);
 
-	const computedStyles = processComponentStylePseudoClasses(
-		props.pageDefinition,
-		{},
-		stylePropertiesWithPseudoStates,
-	);
-
 	return window.designMode ? (
-		<div className="comp compTimer" style={computedStyles}>
-			<SubHelperComponent definition={definition} subComponentName={''} />
-			{/* {output} */}
+		<div className="comp compTimer">
+			<HelperComponent context={context} definition={definition} />
 		</div>
 	) : (
 		<></>
@@ -92,17 +95,14 @@ const component = {
 	propertyValidation: () => [],
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
-	bindingPaths: {
-		bindingPath: { name: 'Timer Value Binding' },
-	},
 	defaultTemplate: {
 		key: '',
 		type: 'Timer',
 		name: 'Timer',
 		properties: {
-			timerType: { value: 'Non-Reapeating' },
-			duration: { value: 5000 },
-			initialDelay: { value: 1000 },
+			timerType: { value: 'Non-Repeating' },
+			duration: { value: 1000 },
+			initialDelay: { value: 0 },
 			repeatCount: { value: -1 },
 		},
 	},
@@ -111,6 +111,7 @@ const component = {
 			name: '',
 			displayName: 'Component',
 			description: 'Component',
+
 			icon: (
 				<IconHelper viewBox="0 0 18 18">
 					<g transform="translate(-1092.044 -629)">

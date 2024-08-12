@@ -1,18 +1,12 @@
-import { Schema } from '@fincity/kirun-js';
-import {
-	SCHEMA_ANY_COMP_PROP,
-	SCHEMA_BOOL_COMP_PROP,
-	SCHEMA_STRING_COMP_PROP,
-	SCHEMA_NUM_COMP_PROP,
-} from '../../constants';
+import { SCHEMA_STRING_COMP_PROP, SCHEMA_NUM_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyEditor,
 	ComponentPropertyDefinition,
-	ComponentStylePropertyGroupDefinition,
 	ComponentStylePropertyDefinition,
 	ComponentPropertyGroup,
 } from '../../types/common';
-import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
+import { COMMON_COMPONENT_PROPERTIES } from '../util/properties';
+
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'timerType',
@@ -20,11 +14,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Timer Type',
 		description: 'Choose between Repeating or Non-Repeating',
 		group: ComponentPropertyGroup.BASIC,
-		defaultValue: 'Non-Reapeating',
+		defaultValue: 'Non-Repeating',
 		editor: ComponentPropertyEditor.ENUM,
 		enumValues: [
-			{ name: 'Reapeating', displayName: 'Repeating' },
-			{ name: 'Non-Reapeating', displayName: 'Non-Repeating' },
+			{ name: 'Repeating', displayName: 'Repeating' },
+			{ name: 'Non-Repeating', displayName: 'Non-Repeating' },
 		],
 	},
 	{
@@ -33,7 +27,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Duration (ms)',
 		description: 'Duration of the timer in milliseconds',
 		group: ComponentPropertyGroup.DATA,
-		defaultValue: 5000,
+		defaultValue: 1000,
 	},
 	{
 		name: 'initialDelay',
@@ -41,7 +35,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Initial Delay (ms)',
 		description: 'Delay before the first execution of the timer',
 		group: ComponentPropertyGroup.DATA,
-		defaultValue: 1000,
+		defaultValue: 0,
 	},
 	{
 		name: 'repeatCount',
