@@ -1,6 +1,6 @@
 import { MarkdownFootnoteRef, MarkdownURLRef } from './common';
 
-const URL_TITLE_REGEX = /(\S*)\s*(\"(.*?)\")?/;
+const URL_TITLE_REGEX = /(.*)(\"(.*?)\")?/;
 
 export function parseAttributes(line: string | undefined): { [key: string]: any } | undefined {
 	if (!line?.startsWith('{')) return undefined;
