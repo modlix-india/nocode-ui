@@ -758,12 +758,6 @@ const component: Component = {
 			icon: 'fa fa-solid fa-box',
 		},
 		{
-			name: 'activeMarks',
-			displayName: 'Active Marks',
-			description: 'Active Marks',
-			icon: 'fa fa-solid fa-box',
-		},
-		{
 			name: 'circularText',
 			displayName: 'Circular Text',
 			description: 'Circular Text',

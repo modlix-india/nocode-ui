@@ -22,7 +22,6 @@ export default function RangeSliderStyle({ theme }: { theme: Map<string, Map<str
 			width: 100%;
 			border-radius: 2px;
 			cursor:pointer;
-			margin-left:10px;
 		}
 		
 		${PREFIX} ._rangeTrackFill {
@@ -148,7 +147,7 @@ export default function RangeSliderStyle({ theme }: { theme: Map<string, Map<str
         }
 
         ${PREFIX} ._max-tooltip {
-           right:0px;
+           right:10px;
             bottom: 100%;
             transform: translateX(50%);
             margin-bottom: 10px;
@@ -218,6 +217,7 @@ export default function RangeSliderStyle({ theme }: { theme: Map<string, Map<str
 			align-items: center;
 			justify-content: center;
 			margin-left: 10px;
+			margin-right:10px;
 		}
 
 		${PREFIX} ._tick-labels{
@@ -226,7 +226,6 @@ export default function RangeSliderStyle({ theme }: { theme: Map<string, Map<str
 			font-size: 12px;
 			font-weight:500;
 			color: #888;
-			margin-left: 10px;
 		}
 		${PREFIX} ._tick-labels._active-tick-label{
 		 color:#000000;
