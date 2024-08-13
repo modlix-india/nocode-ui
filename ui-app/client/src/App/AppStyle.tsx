@@ -239,15 +239,16 @@ export default function AppStyle() {
 
 	._simpleEditorPixelSize ._simpleEditorRange {
 		flex: 2;
-		margin-right: 12px;
+		margin-right:20px;
 	}
 
 	._simpleEditorRange {
 		position: relative;
+		margin-left:20px;
 	}
 
 	._simpleEditorRange ._rangeTrack {
-		 width: calc(100% - 6px);
+		width: calc(100% - 6px);
 		min-width: 60px;
 		height: 2px;
 		border-radius: 10px;
@@ -259,12 +260,9 @@ export default function AppStyle() {
 	._simpleEditorRange ._rangeTrackFill {
 		width: 0%;
 		height: 2px;
-		border-radius: 10px;
-		background-color: #4C7FEE;
 		position: absolute;
 		left: 0;
 		z-index: 1;
-		margin-top: -2px;
 		transition: width 0s;
 	}
 
@@ -276,8 +274,6 @@ export default function AppStyle() {
 		position: absolute;
 		top: -5px;
 		z-index: 1;
-		cursor: pointer;
-		box-shadow: 0px 1px 4px 0px #0000001A;
 		cursor: pointer;
 	}
 
