@@ -53,6 +53,24 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.EVENTS,
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 	},
+	{
+		name: 'left',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Left',
+		description: 'Left position of the timer',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: 0,
+		hide: true,
+	},
+	{
+		name: 'top',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Top',
+		description: 'Top position of the timer',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: 0,
+		hide: true,
+	},
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 

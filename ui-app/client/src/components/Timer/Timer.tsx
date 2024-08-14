@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { PageStoreExtractor } from '../../context/StoreContext';
 import { ComponentProps } from '../../types/common';
 import { runEvent } from '../util/runEvent';
@@ -8,12 +8,21 @@ import { propertiesDefinition, stylePropertiesDefinition } from './timerProperti
 import { styleDefaults } from './timerStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
+import { messageToMaster } from '../../slaveFunctions';
 
 function Timer(props: ComponentProps) {
 	const { definition, pageDefinition, locationHistory, context } = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
-		properties: { timerType, duration, initialDelay, repeatCount, onTimerEventFunction } = {},
+		properties: {
+			timerType,
+			duration,
+			initialDelay,
+			repeatCount,
+			onTimerEventFunction,
+			left = 0,
+			top = 0,
+		} = {},
 	} = useDefinition(
 		definition,
 		propertiesDefinition,
@@ -22,62 +31,100 @@ function Timer(props: ComponentProps) {
 		pageExtractor,
 	);
 
-	const runUserDefinedFunction = useCallback(() => {
-		if (!onTimerEventFunction) return;
-		const event = pageDefinition.eventFunctions?.[onTimerEventFunction];
-		if (!event) return;
-		runEvent(event, onTimerEventFunction, context.pageName, locationHistory, pageDefinition);
-	}, [pageDefinition, context.pageName, locationHistory, onTimerEventFunction]);
-
 	useEffect(() => {
-		const initialDelayMs = initialDelay || 0;
-		const durationMs = duration || 1000;
+		if (!onTimerEventFunction || !pageDefinition.eventFunctions?.[onTimerEventFunction]) return;
 
-		let timeoutId: number | undefined;
-		let intervalId: number | undefined;
+		let handler: number | undefined = undefined;
+		let count = 0;
 
-		const executeFunction = () => {
-			runUserDefinedFunction();
-		};
+		function run() {
+			(async () =>
+				await runEvent(
+					pageDefinition.eventFunctions?.[onTimerEventFunction],
+					onTimerEventFunction,
+					context.pageName,
+					locationHistory,
+					pageDefinition,
+				))();
+			count++;
 
-		if (timerType === 'Repeating') {
-			let executionCount = 0;
-
-			const startRepeatingTimer = () => {
-				intervalId = setInterval(() => {
-					if (!window.designMode) {
-						clearInterval(intervalId);
-					} else {
-						executeFunction();
-						executionCount++;
-						if (repeatCount !== -1 && executionCount >= repeatCount) {
-							clearInterval(intervalId);
-						}
-					}
-				}, durationMs);
-			};
-
-			if (initialDelayMs > 0) {
-				timeoutId = setTimeout(() => {
-					executeFunction();
-					executionCount++;
-					startRepeatingTimer();
-				}, initialDelayMs);
-			} else {
-				startRepeatingTimer();
+			if (
+				(timerType === 'Non-Repeating' && count > 0) ||
+				(repeatCount !== -1 && count >= repeatCount)
+			) {
+				handler = undefined;
+				return;
 			}
-		} else {
-			timeoutId = setTimeout(executeFunction, durationMs);
+
+			handler = setTimeout(run, duration);
 		}
 
+		if (initialDelay > 0) handler = setTimeout(() => run(), initialDelay);
+		else handler = setTimeout(run, duration);
+
 		return () => {
-			if (timeoutId) clearTimeout(timeoutId);
-			if (intervalId) clearInterval(intervalId);
+			if (handler) clearTimeout(handler);
 		};
-	}, [timerType, duration, initialDelay, repeatCount, runUserDefinedFunction]);
+	}, [timerType, duration, initialDelay, repeatCount, onTimerEventFunction]);
+
+	const ref = useRef<HTMLDivElement>(null);
 
 	return window.designMode ? (
-		<div className="comp compTimer">
+		<div
+			className="comp compTimer"
+			ref={ref}
+			style={{ transform: `translate(${left}px, ${top}px)` }}
+			onMouseDown={ev => {
+				ev.preventDefault();
+				ev.stopPropagation();
+
+				if (!ref.current || ev.button !== 0) return;
+
+				let startX = ev.clientX;
+				let startY = ev.clientY;
+				let newX = left;
+				let newY = top;
+
+				const mouseUpHandler = (e: MouseEvent) => {
+					e.preventDefault();
+					e.stopPropagation();
+					document.body.removeEventListener('mousemove', mouseMoveHandler);
+					document.body.removeEventListener('mouseup', mouseUpHandler);
+
+					messageToMaster({
+						type: 'SLAVE_COMP_PROP_CHANGED',
+						payload: {
+							key: props.definition.key,
+							properties: [
+								{
+									name: 'left',
+									value: newX,
+								},
+								{
+									name: 'top',
+									value: newY,
+								},
+							],
+						},
+					});
+				};
+
+				const mouseMoveHandler = (e: MouseEvent) => {
+					e.preventDefault();
+					e.stopPropagation();
+					if (!ref.current) return;
+
+					newX = left + e.clientX - startX;
+					newY = top + e.clientY - startY;
+					const style = `translate(${newX}px, ${newY}px)`;
+					ref.current.style.transform = style;
+				};
+
+				document.body.addEventListener('mousemove', mouseMoveHandler);
+				document.body.addEventListener('mouseup', mouseUpHandler);
+			}}
+		>
+			{component.subComponentDefinition[0].icon}
 			<HelperComponent context={context} definition={definition} />
 		</div>
 	) : (
