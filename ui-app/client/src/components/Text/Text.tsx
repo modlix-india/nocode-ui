@@ -39,6 +39,7 @@ function Text(props: ComponentProps) {
 			textLength,
 			textColor,
 			designType,
+			removeToolTip
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -139,7 +140,7 @@ function Text(props: ComponentProps) {
 		<div
 			className={`comp compText ${textContainer.toLowerCase()} ${textColor}`}
 			style={styleProperties.comp ?? {}}
-			title={originalText}
+			title={removeToolTip ? '' : originalText}
 		>
 			{comp}
 			<HelperComponent context={props.context} definition={definition} />

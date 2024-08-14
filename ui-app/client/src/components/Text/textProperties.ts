@@ -136,6 +136,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 	},
 	{
+		name: 'removeToolTip',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Remove Tooltip',
+		group: ComponentPropertyGroup.ADVANCED,
+		description: 'Process text to remove tooltips.',
+		defaultValue: false,
+	},
+	{
 		name: 'textColor',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Text Color Scheme',
