@@ -15,7 +15,7 @@ export function parseFootNotesSection(params: MarkdownParserParameters): Array<R
 	while (!(ref = iterator.next()).done) {
 		const anchors: Array<React.JSX.Element> = [];
 
-		for (let i = 0; i < ref.value.refNum; i++) {
+		for (let i = 0; i < (ref.value.refNum ?? 0); i++) {
 			anchors.push(
 				React.createElement(
 					'a',

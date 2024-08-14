@@ -93,7 +93,6 @@ export function makeRefsAndRemove(lines: string[]): {
 			footNoteRefs.set(ref.toLowerCase(), {
 				text: url,
 				ref,
-				refKeys: new Array<string>(),
 				num: 0,
 			});
 		} else {
