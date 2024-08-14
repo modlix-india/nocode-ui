@@ -214,7 +214,7 @@ function MarkdownEditor(props: ComponentProps) {
 								});
 								if (data.status === 200) {
 									const { selectionStart, selectionEnd } = textAreaRef.current;
-									const paste = `api/files/static/${pathForPastedFiles}/${fileNamePrefix}image.jpg`;
+									const paste = data.data.url;
 									const newText = `${text.substring(0, selectionStart)}![](${paste})${text.substring(
 										selectionEnd,
 									)}`;
