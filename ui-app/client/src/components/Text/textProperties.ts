@@ -140,7 +140,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Remove Tooltip',
 		group: ComponentPropertyGroup.ADVANCED,
-		description: 'Process text to remove tooltips.',
+		description: 'Process text to remove tooltip.',
 		defaultValue: false,
 	},
 	{
