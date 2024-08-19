@@ -124,6 +124,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				displayName: 'UTC to Month DD, YYYY HH:MM:SS.SSS',
 				description: 'UTC to Month DD, YYYY HH:MM:SS.SSS',
 			},
+			{
+				name: 'EN_IN_NUMBER_FORMAT',
+				displayName: 'Indian Number Formatting',
+				description: 'Format numbers according to the Indian numbering system (en-IN locale)',
+			}
 		],
 	},
 

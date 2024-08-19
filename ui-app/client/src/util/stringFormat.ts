@@ -227,6 +227,37 @@ const FORMATTING_FUNCTIONS = new Map<string, (str: string) => string>([
 			return str;
 		},
 	],
+	[
+		'EN_IN_NUMBER_FORMAT',
+		str => {
+			try {
+				let number;
+	
+				if (typeof str === 'number') {
+					number = str;
+				} else if (typeof str === 'string') {
+					const cleanedValue = str.replace(/[^0-9.]/g, '');
+					number = parseFloat(cleanedValue);
+				} else {
+					throw new Error('Invalid input type');
+				}
+	
+				const inFormatter = new Intl.NumberFormat('en-IN', {
+					style: 'currency',
+					currency: 'INR',   
+					minimumFractionDigits: number % 1 === 0 ? 0 : 2,
+				});
+	
+				return inFormatter.format(number);
+			} catch (e) {
+				console.error(e);
+			}
+			return str;
+		}
+	]
+	
+	
+	
 ]);
 
 export function formatString(str: string, format: string): string {
