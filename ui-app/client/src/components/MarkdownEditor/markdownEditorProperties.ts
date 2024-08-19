@@ -1,12 +1,6 @@
-import { Schema } from '@fincity/kirun-js';
-import {
-	SCHEMA_BOOL_COMP_PROP,
-	SCHEMA_NUM_COMP_PROP,
-	SCHEMA_STRING_COMP_PROP,
-} from '../../constants';
+import { SCHEMA_STRING_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyDefinition,
-	ComponentPropertyEditor,
 	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
@@ -14,282 +8,56 @@ import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '.
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
-		name: 'text',
+		name: 'editType',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Text',
-		description: 'Text to display',
+		displayName: 'Editing Type',
+		description: 'Type of editor',
 		group: ComponentPropertyGroup.BASIC,
-		editor: ComponentPropertyEditor.TEXT_EDITOR,
-		translatable: true,
-	},
-
-	{
-		name: 'textType',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Text Type',
-		description: 'Text type',
-		editor: ComponentPropertyEditor.ENUM,
-		group: ComponentPropertyGroup.BASIC,
-		defaultValue: 'TEXT',
+		defaultValue: 'editText',
 		enumValues: [
 			{
-				name: 'TEXT',
-				displayName: 'Plain Text',
-				description: 'Plain Text',
+				name: 'editText',
+				displayName: 'Edit Text',
 			},
 			{
-				name: 'MD',
-				displayName: 'Markdown',
-				description: 'Markdown Format',
-			},
-		],
-	},
-
-	{
-		...COMMON_COMPONENT_PROPERTIES.designType,
-		enumValues: [...COMMON_COMPONENT_PROPERTIES.designType.enumValues!],
-	},
-
-	{
-		name: 'stringFormat',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'String Format',
-		description: 'String format with dates, numbers and strings',
-		editor: ComponentPropertyEditor.ENUM,
-		group: ComponentPropertyGroup.BASIC,
-		defaultValue: 'STRING',
-		enumValues: [
-			{
-				name: 'STRING',
-				displayName: 'Plain String',
-				description: 'Plain String',
+				name: 'editDoc',
+				displayName: 'Edit Document',
 			},
 			{
-				name: 'UTC_TO_MM/DD/YYYY',
-				displayName: 'UTC to MM/DD/YYYY',
-				description: 'UTC to MM/DD/YYYY',
-			},
-			{
-				name: 'UTC_TO_MM/DD/YYYY_HH:MM',
-				displayName: 'UTC to MM/DD/YYYY HH:MM',
-				description: 'UTC to MM/DD/YYYY HH:MM',
-			},
-			{
-				name: 'UTC_TO_MM/DD/YYYY_HH:MM:SS',
-				displayName: 'UTC to MM/DD/YYYY HH:MM:SS',
-				description: 'UTC to MM/DD/YYYY HH:MM:SS',
-			},
-			{
-				name: 'UTC_TO_MM/DD/YYYY_HH:MM:SS.SSS',
-				displayName: 'UTC to MM/DD/YYYY HH:MM:SS.SSS',
-				description: 'UTC to MM/DD/YYYY HH:MM:SS.SSS',
-			},
-			{
-				name: 'UTC_TO_YYYY-MM-DD',
-				displayName: 'UTC to YYYY-MM-DD',
-				description: 'UTC to YYYY-MM-DD',
-			},
-			{
-				name: 'UTC_TO_YYYY-MM-DD_HH:MM',
-				displayName: 'UTC to YYYY-MM-DD HH:MM',
-				description: 'UTC to YYYY-MM-DD HH:MM',
-			},
-			{
-				name: 'UTC_TO_YYYY-MM-DD_HH:MM:SS',
-				displayName: 'UTC to YYYY-MM-DD HH:MM:SS',
-				description: 'UTC to YYYY-MM-DD HH:MM:SS',
-			},
-			{
-				name: 'UTC_TO_YYYY-MM-DD_HH:MM:SS.SSS',
-				displayName: 'UTC to YYYY-MM-DD HH:MM:SS.SSS',
-				description: 'UTC to YYYY-MM-DD HH:MM:SS.SSS',
-			},
-			{
-				name: 'UTC_TO_MONTH_DD,YYYY',
-				displayName: 'UTC to Month DD, YYYY',
-				description: 'UTC to Month DD, YYYY',
-			},
-			{
-				name: 'UTC_TO_MONTH_DD,YYYY_HH:MM',
-				displayName: 'UTC to Month DD, YYYY HH:MM',
-				description: 'UTC to Month DD, YYYY HH:MM',
-			},
-			{
-				name: 'UTC_TO_MONTH_DD,YYYY_HH:MM:SS',
-				displayName: 'UTC to Month DD, YYYY HH:MM:SS',
-				description: 'UTC to Month DD, YYYY HH:MM:SS',
-			},
-			{
-				name: 'UTC_TO_MONTH_DD,YYYY_HH:MM:SS.SSS',
-				displayName: 'UTC to Month DD, YYYY HH:MM:SS.SSS',
-				description: 'UTC to Month DD, YYYY HH:MM:SS.SSS',
-			},
-		],
-	},
-
-	{
-		name: 'processNewLine',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Text with line breaks',
-		group: ComponentPropertyGroup.ADVANCED,
-		description: 'Process text to show new line characters',
-		defaultValue: false,
-	},
-	{
-		name: 'removeToolTip',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Remove Tooltip',
-		group: ComponentPropertyGroup.ADVANCED,
-		description: 'Process text to remove tooltip.',
-		defaultValue: false,
-	},
-	{
-		name: 'textColor',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Text Color Scheme',
-		description: 'Text Color Scheme',
-		editor: ComponentPropertyEditor.ENUM,
-		group: ComponentPropertyGroup.BASIC,
-		defaultValue: '_primaryText',
-		enumValues: [
-			{
-				name: '_primaryText',
-				displayName: 'Primary Text Color',
-				description: 'Primary Text Color.',
-			},
-			{ name: '_subText', displayName: 'SubText Color', description: 'SubText Color.' },
-			{
-				name: '_labelText',
-				displayName: 'Label Text Color',
-				description: 'Label Text color.',
-			},
-			{
-				name: '_paragraphText',
-				displayName: 'Paragraph Text Color',
-				description: 'Paragraph Text Color.',
-			},
-			{
-				name: '_lightPrimaryText',
-				displayName: 'Light Primary Text Color',
-				description: 'Light Primary Text Color',
-			},
-			{
-				name: '_lightSubText',
-				displayName: 'Light SubText Color',
-				description: 'Light SubText Color',
-			},
-			{
-				name: '_lightLabelText',
-				displayName: 'Light Label Text Color',
-				description: 'Light Label Text Color',
-			},
-			{
-				name: '_lightParagraphText',
-				displayName: 'Light Paragraph Text Color',
-				description: 'Light Paragraph Text Color',
-			},
-			{
-				name: '_coloredText1',
-				displayName: 'Coloured Text Color 1',
-				description: 'Coloured Text Color 1',
-			},
-			{
-				name: '_coloredText2',
-				displayName: 'Coloured Text Color 2',
-				description: 'Coloured Text Color 2',
-			},
-			{
-				name: '_coloredText3',
-				displayName: 'Coloured Text Color 3',
-				description: 'Coloured Text Color 3',
-			},
-			{
-				name: '_coloredText4',
-				displayName: 'Coloured Text Color 4',
-				description: 'Coloured Text Color 4',
-			},
-			{
-				name: '_coloredText5',
-				displayName: 'Coloured Text Color 5',
-				description: 'Coloured Text Color 5',
+				name: 'editTextnDoc',
+				displayName: 'Edit Text and Document',
 			},
 		],
 	},
 	{
-		name: 'textContainer',
+		name: 'emptyStringValue',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Text Container Type (SEO)',
-		description: 'Text container type for seo optimization',
-		editor: ComponentPropertyEditor.ENUM,
-		group: ComponentPropertyGroup.ADVANCED,
-		defaultValue: 'SPAN',
+		displayName: 'Value for Empty String',
+		description: 'Value to be used on empty string',
+		group: ComponentPropertyGroup.DATA,
+		defaultValue: 'UNDEFINED',
 		enumValues: [
 			{
-				name: 'SPAN',
-				displayName: 'SPAN',
-				description: 'Span tag',
+				name: 'UNDEFINED',
+				displayName: 'undefined',
 			},
 			{
-				name: 'H1',
-				displayName: 'H1',
-				description: 'H1 tag',
-			},
-			{
-				name: 'H2',
-				displayName: 'H2',
-				description: 'H2 tag',
-			},
-			{
-				name: 'H3',
-				displayName: 'H3',
-				description: 'H3 tag',
-			},
-			{
-				name: 'H4',
-				displayName: 'H4',
-				description: 'H4 tag',
-			},
-			{
-				name: 'H5',
-				displayName: 'H5',
-				description: 'H5 tag',
-			},
-			{
-				name: 'H6',
-				displayName: 'H6',
-				description: 'H6 tag',
-			},
-			{
-				name: 'I',
-				displayName: 'I',
-				description: 'I tag',
-			},
-			{
-				name: 'P',
-				displayName: 'P',
-				description: 'P tag',
-			},
-			{
-				name: 'B',
-				displayName: 'B',
-				description: 'B tag',
-			},
-			{
-				name: 'PRE',
-				displayName: 'PRE',
-				description: 'Pre tag',
+				name: 'EMPTYSTRING',
+				displayName: 'Empty String',
 			},
 		],
 	},
-
 	{
-		name: 'textLength',
-		schema: SCHEMA_NUM_COMP_PROP,
-		displayName: 'Max Text Length',
-		description: 'Max text length',
+		name: 'pathForPastedFiles',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Static path to store pasted files',
+		description: 'Static path to store pasted files',
 		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: '/mdPastedFiles',
 	},
-
+	COMMON_COMPONENT_PROPERTIES.onChange,
+	{ ...COMMON_COMPONENT_PROPERTIES.onBlur, displayName: 'On Blur of Editor' },
+	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
@@ -304,11 +72,51 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
-	text: [
+	textArea: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	resizer: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	buttonBar: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	button: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	editorContainer: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 	markdownContainer: [

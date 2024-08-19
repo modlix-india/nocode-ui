@@ -16,8 +16,8 @@ export default function CheckBoxStyle({ theme }: { theme: Map<string, Map<string
         -webkit-appearance: none;
         appearance: none;
         margin: 0;
-        width: 16px;
-        height: 16px;
+        min-width: 16px;
+        min-height: 16px;
         border: 0.15em solid;
         border-radius: 0.15em;
         display: grid;

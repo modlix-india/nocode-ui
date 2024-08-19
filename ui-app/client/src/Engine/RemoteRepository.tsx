@@ -13,7 +13,7 @@ import {
 	isNullValue,
 } from '@fincity/kirun-js';
 import axios from 'axios';
-import { LOCAL_STORE_PREFIX } from '../constants';
+import { LOCAL_STORE_PREFIX, STORE_PREFIX } from '../constants';
 import { getDataFromPath } from '../context/StoreContext';
 import { shortUUID } from '../util/shortUUID';
 
@@ -31,6 +31,10 @@ const functionRepoCache = new Map<string, RemoteRepository<Function>>();
 const schemaRepoCache = new Map<string, RemoteRepository<Schema>>();
 
 const HALF_A_MINUTE = 60 * 1000;
+
+const url = getDataFromPath(`${STORE_PREFIX}.url`, []);
+const URL_PREFIX =
+	url.appCode && url.clientCode ? `/${url.appCode}/${url.clientCode}/page/repos/` : '';
 
 export class RemoteRepository<T> implements Repository<T> {
 	private url: string;
@@ -53,7 +57,7 @@ export class RemoteRepository<T> implements Repository<T> {
 		repoType = REPO_TYPE.FUNCTION,
 		repoServer = REPO_SERVER.CORE,
 	) {
-		this.url = `api/${repoServer.toLowerCase()}/${repoType}/`;
+		this.url = `${URL_PREFIX}api/${repoServer.toLowerCase()}/${repoType}/`;
 		this.jsonConversion = jsonConversion;
 		this.appCode = appCode;
 		this.clientCode = clientCode;
@@ -241,7 +245,7 @@ export class RemoteFunction extends AbstractFunction {
 		if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
 
 		let response = await axios.post(
-			`api/core/function/execute/${this.fd.getNamespace()}/${this.fd.getName()}`,
+			`${URL_PREFIX}api/core/function/execute/${this.fd.getNamespace()}/${this.fd.getName()}`,
 			Array.from((context.getArguments() ?? new Map()).entries()).reduce((a, [k, v]) => {
 				a[k] = v;
 				return a;
