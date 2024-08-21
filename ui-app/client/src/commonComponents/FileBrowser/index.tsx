@@ -83,6 +83,7 @@ export async function imageURLForFile(
 	type: string,
 	width?: number,
 	height?: number,
+	clientCode?: string,
 ): Promise<string> {
 	let imgUrl;
 	if (isDirectory) return `${FOLDER_SVG}`;
@@ -96,6 +97,9 @@ export async function imageURLForFile(
 		else if (wparam) imgUrl = `${url}?${wparam}`;
 		else if (hparam) imgUrl = `${url}?${hparam}`;
 		else imgUrl = `${url}`;
+		if (clientCode) {
+			imgUrl += `${imgUrl.includes('?') ? '&' : '?'}clientCode=${clientCode}`;
+		}
 	}
 
 	if (!imgUrl)
@@ -232,6 +236,9 @@ export function FileBrowser({
 					setInProgress(true);
 					try {
 						let url = `/api/files/${resourceType}/${path === '' ? '/' : path + '/' + newFolderName}`;
+						if (clientCode) {
+							url += `?clientCode=${clientCode}`;
+						}
 						await axios.post(url, formData, { headers });
 						setNewFolder(false);
 						setNewFolderName('');
@@ -295,7 +302,11 @@ export function FileBrowser({
 					formData.append('file', file);
 					setInProgress(true);
 					try {
-						await axios.post(`/api/files/${resourceType}/${path}`, formData, {
+						let url = `/api/files/${resourceType}/${path}`;
+						if (clientCode) {
+							url += `?clientCode=${clientCode}`;
+						}
+						await axios.post(url, formData, {
 							headers,
 						});
 					} catch (e) {
@@ -324,18 +335,24 @@ export function FileBrowser({
 						<button
 							onClick={async () => {
 								setInProgress(true);
-								await axios.delete(
-									`/api/files/${resourceType}/${deleteObject.filePath
+								try {
+									let deleteUrl = `/api/files/${resourceType}/${deleteObject.filePath
 										.split('/')
 										.map(encodeURIComponent)
-										.join('/')}`,
-									{
+										.join('/')}`;
+									if (clientCode) {
+										deleteUrl += `?clientCode=${clientCode}`;
+									}
+									await axios.delete(deleteUrl, {
 										headers,
-									},
-								);
-								setInProgress(false);
-								setDeleteObject(undefined);
-								setSomethingChanged(Date.now());
+									});
+									setInProgress(false);
+									setDeleteObject(undefined);
+									setSomethingChanged(Date.now());
+								} catch (error) {
+									setInProgress(false);
+									console.error('Error deleting file:', error);
+								}
 							}}
 						>
 							Yes
@@ -638,14 +655,17 @@ export function FileBrowser({
 									formData.append('backgroundColor', props.bgColor);
 								if (props.fileName) formData.append('fileName', props.fileName);
 
-								const fileObject = await axios.post(
-									`/api/files/transform/${resourceType}/${path
-										.split('/')
-										.map(encodeURIComponent)
-										.join('/')}`,
-									formData,
-									{ headers },
-								);
+								let url = `/api/files/transform/${resourceType}/${path
+									.split('/')
+									.map(encodeURIComponent)
+									.join('/')}`;
+								if (clientCode) {
+									url += `?clientCode=${clientCode}`;
+								}
+
+								const fileObject = await axios.post(url, formData, {
+									headers,
+								});
 
 								onChange(
 									fileObject.data.url,
