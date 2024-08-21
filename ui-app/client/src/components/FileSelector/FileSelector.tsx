@@ -48,6 +48,7 @@ function FileSelector(props: ComponentProps) {
 			hideEdit,
 			resourceType,
 			uploadImage,
+			removeImage,
 			readOnly,
 			designType,
 			validation,
@@ -60,6 +61,7 @@ function FileSelector(props: ComponentProps) {
 			cropToMinHeight,
 			cropToAspectRatio,
 			editOnUpload,
+			clientCode,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -118,6 +120,22 @@ function FileSelector(props: ComponentProps) {
 		);
 	};
 
+	const handleRemoveFile = () => {
+		setSelectedFile('');
+		setIsDirty(true);
+		if (bindingPathPath) {
+			setData(bindingPathPath, undefined, context.pageName, true);
+		}
+		if (!onSelect || !pageDefinition.eventFunctions[onSelect]) return;
+		runEvent(
+			pageDefinition.eventFunctions[onSelect],
+			onSelect,
+			props.context.pageName,
+			props.locationHistory,
+			props.pageDefinition,
+		);
+	};
+
 	let content;
 	if (designType === 'button') {
 		if (selectedFile) {
@@ -139,11 +157,10 @@ function FileSelector(props: ComponentProps) {
 						style={resolvedStyles.image ?? {}}
 						onClick={e => e.currentTarget == e.target && setShowBrowser(true)}
 					/>
-					<UploadImage
-						image={uploadImage}
+					<RemoveImage
+						image={removeImage}
 						onClick={() => {
-							setShowBrowser(true);
-							setIsDirty(true);
+							handleRemoveFile();
 						}}
 					/>
 				</>
@@ -201,6 +218,7 @@ function FileSelector(props: ComponentProps) {
 								cropToMinHeight={cropToMinHeight}
 								cropToAspectRatio={cropToAspectRatio}
 								editOnUpload={editOnUpload}
+								clientCode={clientCode}
 							/>
 						</div>
 					</div>
@@ -232,6 +250,7 @@ function FileSelector(props: ComponentProps) {
 				cropToMinHeight={cropToMinHeight}
 				cropToAspectRatio={cropToAspectRatio}
 				editOnUpload={editOnUpload}
+				clientCode={clientCode}
 			/>
 		);
 	}
@@ -339,6 +358,58 @@ function UploadImage({ image, onClick }: { image: string; onClick: () => void })
 					d="M4,0,.5,3,0,3.5,1,5,13.5,17,15,15l1-2.5-.5-5L7,0Z"
 					transform="translate(22.5 29.745)"
 					opacity="0.2"
+					fill="currentColor"
+				/>
+			</g>
+		</svg>
+	);
+}
+
+function RemoveImage({ image, onClick }: { image: string; onClick: () => void }) {
+	if (image) {
+		return (
+			<img
+				className="_imageButton"
+				src={image}
+				alt="Remove"
+				onClick={e => (e.target === e.currentTarget ? onClick() : undefined)}
+			/>
+		);
+	}
+	return (
+		<svg
+			className="_imageButton"
+			xmlns="http://www.w3.org/2000/svg"
+			width="47.2"
+			height="47.2"
+			viewBox="0 0 47.2 47.2"
+			onClick={onClick}
+		>
+			<g id="Group_114" data-name="Group 114" transform="translate(-0.4 -0.4)">
+				<path
+					id="Path_291"
+					data-name="Path 291"
+					d="M11.188,47.6a6.457,6.457,0,0,1-6.458-6.458V13.706a1.885,1.885,0,1,1,3.77,0V41.141a2.686,2.686,0,0,0,2.688,2.686h27.421a2.686,2.686,0,0,0,2.688-2.686V13.706a1.885,1.885,0,1,1,3.77,0V41.141a6.457,6.457,0,0,1-6.458,6.458Z"
+					fill="currentColor"
+				/>
+				<path
+					id="Path_292"
+					data-name="Path 292"
+					d="M15.5,12.2h0a1.885,1.885,0,1,1,0-3.77h8.329V3.77a1.885,1.885,0,0,1,3.77,0V8.429H35.926a1.885,1.885,0,1,1,0,3.77H15.5Z"
+					fill="currentColor"
+				/>
+				<path
+					id="Path_293"
+					data-name="Path 293"
+					d="M0,0H2.874V21.825H0Z"
+					transform="translate(15.5 17.796)"
+					fill="currentColor"
+				/>
+				<path
+					id="Path_294"
+					data-name="Path 294"
+					d="M0,0H2.874V21.825H0Z"
+					transform="translate(28.826 17.796)"
 					fill="currentColor"
 				/>
 			</g>

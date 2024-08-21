@@ -74,6 +74,7 @@ interface FileBrowserProps {
 	cropToMinHeight?: number;
 	editOnUpload: boolean;
 	cropToAspectRatio?: string;
+	clientCode?: string;
 }
 
 export async function imageURLForFile(
@@ -141,6 +142,7 @@ export function FileBrowser({
 	cropToMinHeight,
 	cropToAspectRatio,
 	editOnUpload,
+	clientCode,
 }: FileBrowserProps) {
 	const [filter, setFilter] = useState('');
 	const [path, setPath] = useState(startLocation ?? '/');
@@ -181,6 +183,7 @@ export function FileBrowser({
 				let url = `api/files/${resourceType}${path}?size=200`;
 				if (fileCategory?.length) url += `&fileType=${fileCategory}`;
 				if (filter.trim() !== '') url += `&filter=${filter}`;
+				if (clientCode) url += `&clientCode=${clientCode}`;
 
 				const response = await axios.get(url, { headers });
 				setFiles(response.data);
@@ -196,7 +199,16 @@ export function FileBrowser({
 				setInProgress(false);
 			}
 		})();
-	}, [path, resourceType, filter, setFiles, setInProgress, somethingChanged, fileCategory]);
+	}, [
+		path,
+		resourceType,
+		filter,
+		setFiles,
+		setInProgress,
+		somethingChanged,
+		fileCategory,
+		clientCode,
+	]);
 
 	const newFolderDiv = newFolder ? (
 		<div className="_eachFile">
