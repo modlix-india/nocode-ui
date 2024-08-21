@@ -539,12 +539,31 @@ export function FileBrowser({
 				className="_selectBtn"
 				title="Select"
 				tabIndex={0}
-				disabled={!fileSelection}
+				disabled={!fileSelection || fileSelection.url === selectedFile}
+				onClick={() => {
+					if (fileSelection && fileSelection.url !== selectedFile) {
+						onChange(fileSelection?.url, fileSelection?.type, fileSelection?.directory);
+					}
+				}}
+			>
+				Select
+			</button>
+		);
+	}
+
+	let deselectButton;
+
+	if (selectedFile) {
+		deselectButton = (
+			<button
+				className="_deselectBtn"
+				title="Deselect"
+				tabIndex={0}
 				onClick={() =>
 					onChange(fileSelection?.url, fileSelection?.type, fileSelection?.directory)
 				}
 			>
-				Select
+				Deselect
 			</button>
 		);
 	}
@@ -678,6 +697,7 @@ export function FileBrowser({
 				<div className={`_files ${inProgress ? '_progressBar' : ''}`}>{content}</div>
 			</div>
 			<div className="_editBtnContainer">
+				{deselectButton}
 				{editButton}
 				{deletButton}
 				{selectButton}
