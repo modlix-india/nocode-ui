@@ -157,12 +157,7 @@ function FileSelector(props: ComponentProps) {
 						style={resolvedStyles.image ?? {}}
 						onClick={e => e.currentTarget == e.target && setShowBrowser(true)}
 					/>
-					<RemoveImage
-						image={removeImage}
-						onClick={() => {
-							handleRemoveFile();
-						}}
-					/>
+					<RemoveImage image={removeImage} onClick={handleRemoveFile} />
 				</>
 			);
 		} else
@@ -378,6 +373,7 @@ function RemoveImage({ image, onClick }: { image: string; onClick: () => void })
 	}
 	return (
 		<svg
+			className="_imageButton"
 			xmlns="http://www.w3.org/2000/svg"
 			width="47.2"
 			height="47.2"
