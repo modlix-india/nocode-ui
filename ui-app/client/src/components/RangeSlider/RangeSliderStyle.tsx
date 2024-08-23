@@ -111,7 +111,130 @@ export default function RangeSliderStyle({
 		transform: translateX(50%);
 	}	
 
-	/* Variables */
+	${PREFIX} ._tickContainer ._tick {
+	    transform: translateX(-50%);
+	}
+
+	${PREFIX} ._toolTip {
+		position: absolute;
+	}
+
+	${PREFIX}._onHoverToolTip._hoverSlider ._toolTip {
+		visibility: visible;
+	}
+
+	${PREFIX}._onHoverToolTip ._toolTip {
+		visibility: hidden;
+	}
+
+	${PREFIX} ._toolTip {
+		position: absolute;
+	}
+
+	${PREFIX} ._toolTip::before {
+		content: '';
+		position: absolute;
+		width: 8px;
+		height: 8px;
+		background-color: inherit;
+		z-index: -1;
+	}
+
+	${PREFIX} ._toolTip._top {
+		top: -100%;
+		left: 50%;
+		transform: translateX(-50%);
+		margin-top: -15px;
+	}
+
+	${PREFIX}._largeRoundedTT ._toolTip._top {
+		margin-top: -23px;
+	}
+
+	${PREFIX} ._toolTip._top::before {
+		bottom: calc(0% + 2px);
+		left: 50%;
+		transform: translate(-50%, 50%) rotate(45deg);
+	}
+
+	${PREFIX} ._toolTip._bottom {
+		top: 100%;
+		left: 50%;
+		transform: translateX(-50%);
+		margin-top: 8px;
+	}
+
+	${PREFIX}._largeRoundedTT ._toolTip._bottom {
+		margin-top: 10px;
+	}
+
+	${PREFIX} ._toolTip._bottom::before {
+		bottom: calc(100% - 2px);
+		left: 50%;
+		transform: translate(-50%, 50%) rotate(45deg);
+	}
+
+	${PREFIX} ._toolTip._left {
+		top: 50%;
+		right: 100%;
+		transform: translateY(-50%);
+		margin-right: 5px;
+	}
+
+	${PREFIX} ._toolTip._left::before {
+		top: 50%;
+		left: calc(100% - 2px);
+		transform: translate(-50%, -50%) rotate(45deg);
+	}
+
+	${PREFIX} ._toolTip._right {
+		top: 50%;
+		left: 100%;
+		transform: translateY(-50%);
+		margin-left: 5px;
+	}
+
+	${PREFIX} ._toolTip._right::before {
+		top: 50%;
+		right: calc(100% - 2px);
+		transform: translate(50%, -50%) rotate(45deg);
+	}
+
+	${PREFIX}._roundedTT._top,
+	${PREFIX}._roundedRectangleTT._top,
+	${PREFIX}._largeRoundedTT._top,
+	${PREFIX}._labelTT._top {
+		padding-top: 15px;
+	}
+
+	${PREFIX}._roundedTT._bottom,
+	${PREFIX}._roundedRectangleTT._bottom,
+	${PREFIX}._largeRoundedTT._bottom,
+	${PREFIX}._labelTT._bottom {
+		padding-bottom: 15px;
+	}
+
+
+	${PREFIX}._fixedLabelTT ._toolTip{
+		position: static;
+		text-align: center;
+		transform: none;
+	}
+
+	.comp.compRangeSlider ._thumbPit {
+		background-color: #52BD94;
+	}
+	
+	.comp.compRangeSlider._invertThumb ._thumb {
+		background-color: #52BD94;
+	}
+
+	.comp.compRangeSlider._roundedTT ._toolTip, .comp.compRangeSlider._roundedRectangleTT ._toolTip, .comp.compRangeSlider._largeRoundedTT ._toolTip {
+		background-color: #52BD94;
+		color: #FFF;
+	}
+
+	/* Variables 
 
 	${PREFIX}._thinTrack ._track{
 		height: 2px;
@@ -360,6 +483,37 @@ export default function RangeSliderStyle({
 		color: #A3A3A3;
 	}
 
+	${PREFIX}._fixedLabelTT ._toolTip{
+		font-size: 30px;
+		line-height: 30px;
+		height: 30px;
+		margin-bottom: 5px;
+		margin-top: 5px;
+	}
+
+	${PREFIX}._roundedTT ._toolTip,
+	${PREFIX}._roundedRectangleTT ._toolTip,
+	${PREFIX}._largeRoundedTT ._toolTip {
+		background-color: #52BD94;
+		font-size: 10px;
+		border-radius: 15px;
+		color: #FFF;
+		box-shadow: 2px 4px 10px 0px #00000014;
+	}
+
+	${PREFIX}._roundedTT ._toolTip {
+		padding: 3px 7px;
+	}
+
+	${PREFIX}._largeRoundedTT ._toolTip {
+		padding: 7px 9px;
+	}
+
+	${PREFIX}._roundedRectangleTT ._toolTip {
+		padding: 3px 7px;
+		border-radius: 5px;
+	}
+*/
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="RangeSliderCss">{css}</style>;

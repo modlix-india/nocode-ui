@@ -289,6 +289,17 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 
 	{
+		groupName: 'Senary Font',
+		displayName: 'Senary Font',
+		name: 'senaryFont',
+		defaultValue: '30px/30px Asap',
+		description: 'Senary Font used in application.',
+		cssProperty: 'font',
+		selector: '._senaryFont',
+		noPrefix: true,
+	},
+
+	{
 		groupName: 'Font Style',
 		displayName: 'Normal Font Style',
 		name: 'normalFontStyle',
@@ -428,7 +439,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '#1F1F1F',
 		noPrefix: true,
 	},
-
 
 	{
 		groupName: 'Font Color',

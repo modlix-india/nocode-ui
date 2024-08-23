@@ -90,7 +90,7 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 	const [min, max] =
 		originalMin > originalMax ? [originalMax, originalMin] : [originalMin, originalMax];
 
-	const [value, setValue] = useState<number>(min);
+	const [actualValue, setActualValue] = useState<number | undefined>(undefined);
 	const [hoverSlider, setHoverSlider] = useState<boolean>(false);
 	const [hoverThumb, setHoverThumb] = useState<boolean>(false);
 	const [hoverMark, setHoverMark] = useState<number | undefined>(undefined);
@@ -99,7 +99,7 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
-			(_, v) => setValue(getValue(isNullValue(v) ? min : v, storageDataType, min, max, step)),
+			(_, v) => setActualValue(v),
 			pageExtractor,
 			bindingPathPath,
 		);
@@ -117,6 +117,13 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 		stylePropertiesWithPseudoStates,
 	);
 
+	const value = getValue(
+		isNullValue(actualValue) ? min : actualValue,
+		storageDataType,
+		min,
+		max,
+		step,
+	);
 	const visualPercent = getPercentage(value, min, max, step, 2);
 	const precision = getPrecision(step, decimalPrecision);
 	const labelPercent = getPercentage(value, min, max, step, precision);
@@ -191,7 +198,7 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 			if (v < min) v = min;
 			else if (v > max) v = max;
 			if (updateStoreImmediately) updateStore(v);
-			else setValue(v);
+			else setActualValue(v);
 		},
 		[bindingPathPath, readOnly, min, max, updateStoreImmediately],
 	);
@@ -282,6 +289,17 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 		}
 	}
 
+	let toolTip = undefined;
+
+	if (toolTipDisplay !== '_neverToolTip') {
+		toolTip = (
+			<div className={`_toolTip ${toolTipPosition}`}>
+				<SubHelperComponent subComponentName="toolTip" definition={definition} />
+				{`${toolTipValueLabelPrefix ?? ''}${toolTipDisplayType == 'value' ? (actualValue == value ? value : actualValue) ?? '' : labelPercent + '%'}${toolTipValueLabelSuffix ?? ''}`}
+			</div>
+		);
+	}
+
 	const track = (
 		<div
 			className="_track _contentMargin"
@@ -365,6 +383,7 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 						zIndex={10}
 					/>
 				</div>
+				{toolTipDesign !== '_fixedLabelTT' ? toolTip : null}
 			</div>
 			{markThumbs}
 		</div>
@@ -420,6 +439,7 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 			makeTick(
 				min,
 				0,
+				0,
 				ticksValueType,
 				tickValueLabelPrefix,
 				tickValueLabelSuffix,
@@ -432,6 +452,7 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 		const maxTick = makeTick(
 			max,
 			100,
+			100,
 			ticksValueType,
 			tickValueLabelPrefix,
 			tickValueLabelSuffix,
@@ -443,6 +464,7 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 
 		const dummyTick = makeTick(
 			min,
+			0,
 			0,
 			ticksValueType,
 			tickValueLabelPrefix,
@@ -467,11 +489,12 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 		for (let i = 0; i < tCount; i++) {
 			const value =
 				Math.round((min + tickStep * (i + 1)) * precisionFactor) / precisionFactor;
-			const percent = getPercentage(value, min, max, step, precision);
+			const percent = getPercentage(value, min, max, step, 2);
 			container.appendChild(
 				makeTick(
 					value,
 					percent,
+					getPercentage(value, min, max, step, precision),
 					ticksValueType,
 					tickValueLabelPrefix,
 					tickValueLabelSuffix,
@@ -510,17 +533,19 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 
 	return (
 		<div
-			className={`comp compRangeSlider ${readOnly ? '_readOnly' : ''} ${colorScheme} ${trackDesign} ${trackColor} ${rangeThumbDesign} ${rangeThumbPitDesign} ${toolTipDesign} ${rangeThumbSize} `}
+			className={`comp compRangeSlider ${readOnly ? '_readOnly' : ''} ${hoverSlider ? '_hoverSlider' : ''} ${colorScheme} ${trackDesign} ${trackColor} ${rangeThumbDesign} ${rangeThumbPitDesign} ${toolTipDesign} ${toolTipPosition} ${rangeThumbSize} ${toolTipDisplay} `}
 			style={(hoverSlider ? hoverStyleProperties : styleProperties)?.comp ?? {}}
 			onMouseEnter={() => setHoverSlider(true)}
 			onMouseLeave={() => setHoverSlider(false)}
 		>
 			<HelperComponent context={context} definition={definition} />
+			{toolTipPosition === '_top' && toolTipDesign === '_fixedLabelTT' ? toolTip : null}
 			{topContainer}
 			{ticksPosition === 'top' ? ticksContainer : null}
 			{track}
 			{ticksPosition === 'bottom' ? ticksContainer : null}
 			{bottomContainer}
+			{toolTipPosition !== '_top' && toolTipDesign === '_fixedLabelTT' ? toolTip : null}
 		</div>
 	);
 }
@@ -528,6 +553,7 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 function makeTick(
 	value: number,
 	percent: number,
+	displayPercent: number,
 	ticksValueType: string,
 	tickValueLabelPrefix: string | undefined,
 	tickValueLabelSuffix: string | undefined,
@@ -536,9 +562,8 @@ function makeTick(
 	updateStore: ((v: number) => void) | undefined,
 ) {
 	const tickContainer = document.createElement('div');
-	tickContainer.className = `_tickContainer ${percent >= 50 ? '_right' : '_left'}`;
-	if (percent < 50) tickContainer.style.left = `${percent}%`;
-	else tickContainer.style.right = `${100 - percent}%`;
+	tickContainer.className = '_tickContainer';
+	tickContainer.style.left = `${percent}%`;
 	if (updateStore) tickContainer.addEventListener('click', () => updateStore(value));
 	applyStyle(tickContainer, styleProperties?.tickContainer);
 
@@ -548,9 +573,9 @@ function makeTick(
 	applyStyle(tick, styleProperties?.tick);
 
 	const tickLabel = document.createElement('div');
-	tickLabel.className = '_tickLabel';
+	tickLabel.className = `_tickLabel ${!updateStore ? '_dummy' : ''}`;
 	tickContainer.appendChild(tickLabel);
-	tickLabel.innerHTML = `${tickValueLabelPrefix ?? ''}${ticksValueType === 'value' ? value : percent + '%'}${tickValueLabelSuffix ?? ''}`;
+	tickLabel.innerHTML = `${tickValueLabelPrefix ?? ''}${ticksValueType === 'value' ? value : displayPercent + '%'}${tickValueLabelSuffix ?? ''}`;
 	applyStyle(tickLabel, styleProperties?.tickLabel);
 
 	if (
@@ -771,6 +796,12 @@ const component: Component = {
 			name: 'tickLabel',
 			displayName: 'Tick Label',
 			description: 'Tick Label',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'toolTip',
+			displayName: 'Tool Tip',
+			description: 'Tool Tip',
 			icon: 'fa-solid fa-box',
 		},
 	],
