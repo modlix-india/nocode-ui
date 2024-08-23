@@ -79,6 +79,7 @@ export function onMouseDownDragStartCurry(
 	startX: number,
 	startY: number,
 	onDrag?: (newX: number, newY: number, diffX: number, diffY: number, e: MouseEvent) => void,
+	onDragEnd?: (newX: number, newY: number, diffX: number, diffY: number, e: MouseEvent) => void,
 ): (e: React.MouseEvent) => void {
 	return (e: React.MouseEvent) => {
 		if (e.buttons !== 1) return;
@@ -86,6 +87,7 @@ export function onMouseDownDragStartCurry(
 		e.stopPropagation();
 
 		const { clientX, clientY } = e;
+		let lastData = { newX: 0, newY: 0, diffX: 0, diffY: 0 };
 		const onMouseMove = (ie: MouseEvent) => {
 			ie.preventDefault();
 			ie.stopPropagation();
@@ -98,11 +100,13 @@ export function onMouseDownDragStartCurry(
 
 			const diffX = ie.clientX - clientX;
 			const diffY = ie.clientY - clientY;
+			lastData = { newX: startX + diffX, newY: startY + diffY, diffX, diffY };
 			onDrag?.(startX + diffX, startY + diffY, diffX, diffY, ie);
 		};
-		const onMouseUp = (e: MouseEvent) => {
-			e.preventDefault();
-			e.stopPropagation();
+		const onMouseUp = (ie: MouseEvent) => {
+			ie.preventDefault();
+			ie.stopPropagation();
+			onDragEnd?.(lastData.newX, lastData.newY, lastData.diffX, lastData.diffY, ie);
 			document.body.removeEventListener('mousemove', onMouseMove);
 			document.body.removeEventListener('mouseup', onMouseUp);
 			document.body.addEventListener('mouseleave', onMouseUp);

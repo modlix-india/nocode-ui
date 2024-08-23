@@ -124,6 +124,36 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				displayName: 'UTC to Month DD, YYYY HH:MM:SS.SSS',
 				description: 'UTC to Month DD, YYYY HH:MM:SS.SSS',
 			},
+			{
+				name: 'SYSTEM_NUMBER_FORMAT',
+				displayName: 'System Number Format',
+				description: 'Formats number based on system locale.',
+			},
+			{
+				name: 'IN_NUMBER_FORMAT',
+				displayName: 'Indian Number Format',
+				description: 'Formats number in Indian format.',
+			},
+			{
+				name: 'US_NUMBER_FORMAT',
+				displayName: 'US Number Format',
+				description: 'Formats number in US format.',
+			},
+			{
+				name: 'EU_NUMBER_FORMAT',
+				displayName: 'EU Number Format',
+				description: 'Formats number in EU format.',
+			},
+			{
+				name: 'FR_NUMBER_FORMAT',
+				displayName: 'France Number Format',
+				description: 'Formats number in France format.',
+			},
+			{
+				name: 'LI_NUMBER_FORMAT',
+				displayName: 'German Liechtenstein Number Format',
+				description: 'Formats number in German Liechtenstein format.',
+			},
 		],
 	},
 
@@ -134,6 +164,20 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 		description: 'Process text to show new line characters',
 		defaultValue: false,
+	},
+	{
+		name: 'textPrefix',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Text Prefix',
+		description: 'Text Prefix only used in non Markdown format',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'textSuffix',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Text Suffix',
+		description: 'Text Suffix only used in non Markdown format',
+		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
 		name: 'removeToolTip',

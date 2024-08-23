@@ -48,6 +48,7 @@ function FileSelector(props: ComponentProps) {
 			hideEdit,
 			resourceType,
 			uploadImage,
+			removeImage,
 			readOnly,
 			designType,
 			validation,
@@ -60,6 +61,7 @@ function FileSelector(props: ComponentProps) {
 			cropToMinHeight,
 			cropToAspectRatio,
 			editOnUpload,
+			clientCode,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -118,6 +120,22 @@ function FileSelector(props: ComponentProps) {
 		);
 	};
 
+	const handleRemoveFile = () => {
+		setSelectedFile('');
+		setIsDirty(true);
+		if (bindingPathPath) {
+			setData(bindingPathPath, undefined, context.pageName, true);
+		}
+		if (!onSelect || !pageDefinition.eventFunctions[onSelect]) return;
+		runEvent(
+			pageDefinition.eventFunctions[onSelect],
+			onSelect,
+			props.context.pageName,
+			props.locationHistory,
+			props.pageDefinition,
+		);
+	};
+
 	let content;
 	if (designType === 'button') {
 		if (selectedFile) {
@@ -139,13 +157,7 @@ function FileSelector(props: ComponentProps) {
 						style={resolvedStyles.image ?? {}}
 						onClick={e => e.currentTarget == e.target && setShowBrowser(true)}
 					/>
-					<UploadImage
-						image={uploadImage}
-						onClick={() => {
-							setShowBrowser(true);
-							setIsDirty(true);
-						}}
-					/>
+					<RemoveImage image={removeImage} onClick={handleRemoveFile} />
 				</>
 			);
 		} else
@@ -201,6 +213,7 @@ function FileSelector(props: ComponentProps) {
 								cropToMinHeight={cropToMinHeight}
 								cropToAspectRatio={cropToAspectRatio}
 								editOnUpload={editOnUpload}
+								clientCode={clientCode}
 							/>
 						</div>
 					</div>
@@ -232,6 +245,7 @@ function FileSelector(props: ComponentProps) {
 				cropToMinHeight={cropToMinHeight}
 				cropToAspectRatio={cropToAspectRatio}
 				editOnUpload={editOnUpload}
+				clientCode={clientCode}
 			/>
 		);
 	}
@@ -341,6 +355,64 @@ function UploadImage({ image, onClick }: { image: string; onClick: () => void })
 					opacity="0.2"
 					fill="currentColor"
 				/>
+			</g>
+		</svg>
+	);
+}
+
+function RemoveImage({ image, onClick }: { image: string; onClick: () => void }) {
+	if (image) {
+		return (
+			<img
+				className="_imageButton"
+				src={image}
+				alt="Remove"
+				onClick={e => (e.target === e.currentTarget ? onClick() : undefined)}
+			/>
+		);
+	}
+	return (
+		<svg
+			className="_imageButton"
+			xmlns="http://www.w3.org/2000/svg"
+			width="47.2"
+			height="47.2"
+			viewBox="0 0 47.2 47.2"
+			onClick={onClick}
+		>
+			<g transform="translate(-656 -671.8)">
+				<g transform="translate(655.6 671.4)">
+					<path
+						fill="currentColor"
+						d="M36.278,30.861l.683.683V29.71a1.885,1.885,0,0,1,3.77,0V41.141A6.457,6.457,0,0,1,34.276,47.6H6.855A6.457,6.457,0,0,1,.4,41.141V13.706A6.457,6.457,0,0,1,6.855,7.247h16a1.887,1.887,0,0,1,0,3.773h-16A2.686,2.686,0,0,0,4.17,13.706V27.475l.683-.683,3.378-3.38a6.11,6.11,0,0,1,8.422,0l5.664,5.666.283.283.283-.283,1.6-1.6h0a5.973,5.973,0,0,1,8.415,0h0ZM4.287,32.7l-.117.117v8.327A2.686,2.686,0,0,0,6.855,43.83H31.723l-.683-.683-9.826-9.831L13.97,26.069h0l-.007-.007a2.2,2.2,0,0,0-3.043,0h0l-.007.007Zm32.674,8.448v-4.26l-.116-.117-6.6-6.651h0a2.159,2.159,0,0,0-3.083,0h0l-1.6,1.6-.283.28.281.283L35.867,42.635l.325.327.278-.368a2.436,2.436,0,0,0,.491-1.45Z"
+					/>
+					<path
+						fill="currentColor"
+						d="M31.5,20,11.5.974A2.612,2.612,0,0,0,7.97.908l-6.117,5.4a4,4,0,0,0-1.354,3v7.844A3.851,3.851,0,0,0,4.351,21H30.5A1,1,0,0,0,31.5,20Z"
+						transform="translate(0 23.745)"
+						opacity="0.2"
+					/>
+					<path
+						fill="currentColor"
+						d="M4,0,.5,3,0,3.5,1,5,13.5,17,15,15l1-2.5-.5-5L7,0Z"
+						transform="translate(22.5 29.745)"
+						opacity="0.2"
+					/>
+					<path
+						fill="currentColor"
+						d="M36.278,30.861l.683.683V29.71a1.885,1.885,0,0,1,3.77,0V41.141A6.457,6.457,0,0,1,34.276,47.6H6.855A6.457,6.457,0,0,1,.4,41.141V13.706A6.457,6.457,0,0,1,6.855,7.247h16a1.887,1.887,0,0,1,0,3.773h-16A2.686,2.686,0,0,0,4.17,13.706V27.475l.683-.683,3.378-3.38a6.11,6.11,0,0,1,8.422,0l5.664,5.666.283.283.283-.283,1.6-1.6h0a5.973,5.973,0,0,1,8.415,0h0ZM4.287,32.7l-.117.117v8.327A2.686,2.686,0,0,0,6.855,43.83H31.723l-.683-.683-9.826-9.831L13.97,26.069h0l-.007-.007a2.2,2.2,0,0,0-3.043,0h0l-.007.007Zm32.674,8.448v-4.26l-.116-.117-6.6-6.651h0a2.159,2.159,0,0,0-3.083,0h0l-1.6,1.6-.283.28.281.283L35.867,42.635l.325.327.278-.368a2.436,2.436,0,0,0,.491-1.45ZM46.774,14.2h0a1.887,1.887,0,0,1,0,2.679h0a1.885,1.885,0,0,1-2.677,0h0s-2.78-2.76-2.948-2.972c-2.147-2.525-2.161-2.57-5.138,0L33.064,16.88h0A1.9,1.9,0,0,1,30.386,14.2l6.847-6.854a1.884,1.884,0,0,1,.619-.393h.007a1.884,1.884,0,0,1,1.432,0H39.3a1.886,1.886,0,0,1,.619.393Z"
+					/>
+				</g>
+				<g transform="translate(733.296 682.364) rotate(180)">
+					<path
+						fill="currentColor"
+						d="M47.041,7.469h0a1.749,1.749,0,0,1,0,2.561h0a1.946,1.946,0,0,1-2.677,0h0s-2.78-2.639-2.948-2.842c-2.147-2.414-2.161-2.458-5.138,0l-2.947,2.841h0a1.957,1.957,0,0,1-2.68,0,1.756,1.756,0,0,1,0-2.562L37.5.915a1.9,1.9,0,0,1,.619-.376h.007a1.964,1.964,0,0,1,1.432,0h.007a1.9,1.9,0,0,1,.619.376Z"
+					/>
+					<path
+						fill="currentColor"
+						d="M47.041,7.469h0a1.749,1.749,0,0,1,0,2.561h0a1.946,1.946,0,0,1-2.677,0h0s-2.78-2.639-2.948-2.842c-2.147-2.414-2.161-2.458-5.138,0l-2.947,2.841h0a1.957,1.957,0,0,1-2.68,0,1.756,1.756,0,0,1,0-2.562L37.5.915a1.9,1.9,0,0,1,.619-.376h.007a1.964,1.964,0,0,1,1.432,0h.007a1.9,1.9,0,0,1,.619.376Z"
+					/>
+				</g>
 			</g>
 		</svg>
 	);

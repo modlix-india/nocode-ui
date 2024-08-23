@@ -158,6 +158,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
+		name: 'removeImage',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Image to show for remove prompt',
+		editor: ComponentPropertyEditor.IMAGE,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
 		name: 'startLocation',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Start Location',
@@ -175,6 +182,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Edit on Upload',
 		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'clientCode',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Client Code',
+		description: 'Provide the client code to access the client files',
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{

@@ -82,7 +82,7 @@ export default function FileSelector({ theme }: { theme: Map<string, Map<string,
 		height: 100%;
 	}
 
-	@media screen and (max-width: ${TABLET_MIN_WIDTH}px) {
+		@media screen and (max-width: ${TABLET_MIN_WIDTH}px) {®
 		${PREFIX} ._popupBackground ._popupContainer {
 			min-width: 90vw;
 			max-width: 90vw;

@@ -7,13 +7,13 @@ export function RangeSlider({
 	min = 0,
 	max,
 	step = 1,
-}: {
+}: Readonly<{
 	value?: number;
 	onChange: (v: number) => void;
 	min?: number;
 	max: number;
 	step?: number;
-}) {
+}>) {
 	const percent = (((value ?? min) - min) / (max - min)) * 100;
 	const thumbLeft: React.CSSProperties = {
 		left: `calc(${percent < 0 || percent > 100 ? 50 : percent}% - 6px)`,
@@ -30,10 +30,11 @@ export function RangeSlider({
 		return stepString.length - decimalIndex - 1;
 	}, [step]);
 	return (
-		<div className="_simpleEditorRange" role="slider" ref={ref}>
+		<div className="_simpleEditorRange" role="slider" ref={ref} aria-valuenow={percent}>
 			<div className="_rangeTrack"></div>
 			<div className="_rangeTrackFill" style={trackFillWidth}></div>
 			<div
+				tabIndex={0}
 				className="_rangeThumb"
 				style={thumbLeft}
 				role="button"
@@ -47,7 +48,7 @@ export function RangeSlider({
 						let newValue = !step
 							? Math.round(startValue + (diffX / width) * (max - min))
 							: Math.round((startValue + (diffX / width) * (max - min)) / step) *
-							  step;
+								step;
 						if (fixedPoint > 0) newValue = Number(newValue.toFixed(fixedPoint));
 						if (newValue < min) onChange(min);
 						else if (newValue > max) onChange(max);
