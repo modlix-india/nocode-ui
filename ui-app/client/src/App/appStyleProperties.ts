@@ -433,14 +433,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		noPrefix: true,
 	},
 	{
-		groupName: 'Color',
-		displayName: 'Color Sixteen',
-		name: 'colorSixteen',
-		defaultValue: '#1F1F1F',
-		noPrefix: true,
-	},
-
-	{
 		groupName: 'Font Color',
 		displayName: 'Font Color One',
 		name: 'fontColorOne',
@@ -510,14 +502,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'fontColorNine',
 		defaultValue: '<colorFour>',
 		description: 'Font Color Nine used in application',
-		noPrefix: true,
-	},
-	{
-		groupName: 'Font Color',
-		displayName: 'Font Color Ten',
-		name: 'fontColorTen',
-		defaultValue: '<colorSixteen>',
-		description: 'Font Color Ten used in application',
 		noPrefix: true,
 	},
 
