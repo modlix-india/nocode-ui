@@ -56,6 +56,8 @@ import Chart from './Chart/Chart';
 import Calendar from './Calendar/Calendar';
 import TemplateEditor from './TemplateEditor/TemplateEditor';
 import FileSelector from './FileSelector/FileSelector';
+import RangeSlider from './RangeSlider/RangeSlider';
+import Timer from './Timer/Timer';
 import MarkdownEditor from './MarkdownEditor/MarkdownEditor';
 
 export default new Map<string, Component>([
@@ -116,5 +118,7 @@ export default new Map<string, Component>([
 	[Calendar.name, Calendar],
 	[TemplateEditor.name, TemplateEditor],
 	[FileSelector.name, FileSelector],
+	[RangeSlider.name, RangeSlider],
+	[Timer.name, Timer],
 	[MarkdownEditor.name, MarkdownEditor],
 ]);

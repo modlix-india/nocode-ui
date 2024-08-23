@@ -90,7 +90,11 @@ function Text(props: ComponentProps) {
 		return (
 			<div className={`comp compText _textMarkdown`} style={styleProperties.comp ?? {}}>
 				<HelperComponent context={props.context} definition={definition} />
-				<MarkdownParser text={translatedText ?? ''} styles={styleProperties} />
+				<MarkdownParser
+					componentKey={definition.key}
+					text={translatedText ?? ''}
+					styles={styleProperties}
+				/>
 			</div>
 		);
 	}

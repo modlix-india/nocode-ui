@@ -25,7 +25,7 @@ export interface MarkdownFootnoteRef {
 	ref: string;
 	text: string;
 	num: number;
-	refNum: number;
+	refNum?: number;
 }
 
 export interface MarkdownURLRef {
