@@ -94,7 +94,7 @@ export function onMouseDownDragStartCurry(
 			if (ie.buttons !== 1) {
 				document.body.removeEventListener('mousemove', onMouseMove);
 				document.body.removeEventListener('mouseup', onMouseUp);
-				document.body.addEventListener('mouseleave', onMouseUp);
+				document.body.removeEventListener('mouseleave', onMouseUp);
 				return;
 			}
 
@@ -104,12 +104,14 @@ export function onMouseDownDragStartCurry(
 			onDrag?.(startX + diffX, startY + diffY, diffX, diffY, ie);
 		};
 		const onMouseUp = (ie: MouseEvent) => {
+			if (ie.buttons !== 1) return;
 			ie.preventDefault();
 			ie.stopPropagation();
-			onDragEnd?.(lastData.newX, lastData.newY, lastData.diffX, lastData.diffY, ie);
 			document.body.removeEventListener('mousemove', onMouseMove);
 			document.body.removeEventListener('mouseup', onMouseUp);
-			document.body.addEventListener('mouseleave', onMouseUp);
+			document.body.removeEventListener('mouseleave', onMouseUp);
+			if (ie.type === 'mouseleave') return;
+			onDragEnd?.(lastData.newX, lastData.newY, lastData.diffX, lastData.diffY, ie);
 		};
 		document.body.addEventListener('mousemove', onMouseMove);
 		document.body.addEventListener('mouseup', onMouseUp);
