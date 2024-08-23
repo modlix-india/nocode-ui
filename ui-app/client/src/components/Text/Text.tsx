@@ -39,7 +39,9 @@ function Text(props: ComponentProps) {
 			textLength,
 			textColor,
 			designType,
-			removeToolTip
+			removeToolTip,
+			textSuffix,
+			textPrefix,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -122,7 +124,11 @@ function Text(props: ComponentProps) {
 				.flatMap((e, i, a) =>
 					i + 1 === a.length ? [e] : [e, <br key={e + '_' + i}></br>],
 				);
+			if (textPrefix) comps.unshift(textPrefix);
+			if (textSuffix) comps.push(textSuffix);
 		} else {
+			if (textPrefix) translatedText = textPrefix + translatedText;
+			if (textSuffix) translatedText = translatedText + textSuffix;
 			comps = [subcomp, translatedText];
 		}
 	}
@@ -144,7 +150,7 @@ function Text(props: ComponentProps) {
 		<div
 			className={`comp compText ${textContainer.toLowerCase()} ${textColor}`}
 			style={styleProperties.comp ?? {}}
-			title={removeToolTip ? '' : originalText}
+			title={removeToolTip ? undefined : originalText}
 		>
 			{comp}
 			<HelperComponent context={props.context} definition={definition} />
