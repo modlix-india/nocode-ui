@@ -306,6 +306,8 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 			style={(hoverSlider ? hoverStyleProperties : styleProperties)?.track ?? {}}
 			ref={ref}
 			onClick={e => {
+				e.stopPropagation();
+				e.preventDefault();
 				if (!ref.current) return;
 				const width = ref.current.getBoundingClientRect().width ?? 0;
 				const newValue =
@@ -349,6 +351,7 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 
 					const startValue = value ?? min;
 					const width = ref.current?.getBoundingClientRect()?.width ?? 0;
+
 					onMouseDownDragStartCurry(
 						e.clientX,
 						0,
@@ -367,9 +370,13 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 										: Math.round(
 												(startValue + (diffX / width) * (max - min)) / step,
 											) * step;
-									updateStore(newValue);
+									if (!updateStoreImmediately) updateStore(newValue);
 								},
 					)(e);
+				}}
+				onMouseUp={e => {
+					e.stopPropagation();
+					e.preventDefault();
 				}}
 			>
 				<SubHelperComponent subComponentName="thumb" definition={definition} zIndex={9} />
@@ -564,7 +571,11 @@ function makeTick(
 	const tickContainer = document.createElement('div');
 	tickContainer.className = '_tickContainer';
 	tickContainer.style.left = `${percent}%`;
-	if (updateStore) tickContainer.addEventListener('click', () => updateStore(value));
+	if (updateStore)
+		tickContainer.addEventListener('click', e => {
+			e.stopPropagation();
+			updateStore(value);
+		});
 	applyStyle(tickContainer, styleProperties?.tickContainer);
 
 	const tick = document.createElement('div');
