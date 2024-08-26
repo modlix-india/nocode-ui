@@ -306,6 +306,9 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 		);
 	}
 
+	const thumbRef = useRef<HTMLDivElement>(null);
+	const filledTrackRef = useRef<HTMLDivElement>(null);
+
 	const track = (
 		<div
 			className="_track _contentMargin"
@@ -330,6 +333,7 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 			<SubHelperComponent subComponentName="track" definition={definition} zIndex={7} />
 			<div
 				className="_rangeTrack"
+				ref={filledTrackRef}
 				style={{
 					...((hoverSlider ? hoverStyleProperties : styleProperties)?.rangeTrack ?? {}),
 					width: `${visualPercent}%`,
@@ -343,6 +347,7 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 			</div>
 			<div
 				className="_thumb"
+				ref={thumbRef}
 				onMouseOver={() => setHoverThumb(true)}
 				onMouseOut={() => setHoverThumb(false)}
 				style={{
@@ -357,6 +362,8 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 
 					const startValue = value ?? min;
 					const width = ref.current?.getBoundingClientRect()?.width ?? 0;
+					if (thumbRef.current) thumbRef.current.style.transition = 'none';
+					if (filledTrackRef.current) filledTrackRef.current.style.transition = 'none';
 
 					onMouseDownDragStartCurry(
 						e.clientX,
@@ -369,14 +376,22 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 							handleChange(newValue);
 						},
 						updateStoreImmediately
-							? undefined
+							? () => {
+									if (thumbRef.current) thumbRef.current.style.transition = '';
+									if (filledTrackRef.current)
+										filledTrackRef.current.style.transition = '';
+								}
 							: (newX, newY, diffX) => {
 									let newValue = !step
 										? Math.round(startValue + (diffX / width) * (max - min))
 										: Math.round(
 												(startValue + (diffX / width) * (max - min)) / step,
 											) * step;
-									if (!updateStoreImmediately) updateStore(newValue);
+									if (thumbRef.current) thumbRef.current.style.transition = '';
+									if (filledTrackRef.current)
+										filledTrackRef.current.style.transition = '';
+									console.log(thumbRef.current?.style.transition);
+									updateStore(newValue);
 								},
 					)(e);
 				}}
