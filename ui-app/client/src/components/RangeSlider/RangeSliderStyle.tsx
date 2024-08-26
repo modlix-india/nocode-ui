@@ -25,6 +25,7 @@ export default function RangeSliderStyle({
 		top: 50%;
 		transform: translateY(-50%);
 		left: 0px;
+		transition: all 0.3s ease-in-out;
 	}
 
 	${PREFIX} ._thumb {
@@ -32,6 +33,7 @@ export default function RangeSliderStyle({
 		top: 50%;
 		transform: translate(-50%, -50%);
 		z-index: 3;
+		transition: all 0.3s ease-in-out;
 	}
 
 	${PREFIX} ._mark._thumb {
