@@ -1341,6 +1341,39 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compRangeSlider._quinary._roundedRectangleTT ._toolTip',
 		noPrefix: true,
 	},
+
+	{
+		groupName: 'Readonly',
+		displayName: 'Readonly Background Color Range Slider',
+		name: 'readonlyBackgroundColorRangeSlider',
+		defaultValue: '<backgroundColorNine>',
+		cssProperty: 'background-color',
+		selector:
+			'.comp.compRangeSlider._readOnly ._track, .comp.compRangeSlider._readOnly ._rangeTrack, .comp.compRangeSlider._readOnly ._thumb, .comp.compRangeSlider._readOnly._filledTrack ._track, .comp.compRangeSlider._readOnly ._thumbPit,.comp.compRangeSlider._primary._roundedTT._readOnly ._toolTip, .comp.compRangeSlider._secondary._roundedTT._readOnly ._toolTip, .comp.compRangeSlider._tertiary._roundedTT._readOnly ._toolTip, .comp.compRangeSlider._quaternary._roundedTT._readOnly ._toolTip, .comp.compRangeSlider._quinary._roundedTT._readOnly ._toolTip, .comp.compRangeSlider._primary._largeRoundedTT._readOnly ._toolTip, .comp.compRangeSlider._secondary._largeRoundedTT._readOnly ._toolTip, .comp.compRangeSlider._tertiary._largeRoundedTT._readOnly ._toolTip, .comp.compRangeSlider._quaternary._largeRoundedTT._readOnly ._toolTip, .comp.compRangeSlider._quinary._largeRoundedTT._readOnly ._toolTip, .comp.compRangeSlider._primary._roundedRectangleTT._readOnly ._toolTip, .comp.compRangeSlider._secondary._roundedRectangleTT._readOnly ._toolTip, .comp.compRangeSlider._tertiary._roundedRectangleTT._readOnly ._toolTip, .comp.compRangeSlider._quaternary._roundedRectangleTT._readOnly ._toolTip, .comp.compRangeSlider._quinary._roundedRectangleTT._readOnly ._toolTip',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'ReadOnly',
+		displayName: 'Readonly Tooltip Box Shadow',
+		name: 'readonlyTooltipBoxShadowRangeSlider',
+		defaultValue: 'none',
+		cssProperty: 'box-shadow',
+		selector:
+			'.comp.compRangeSlider._roundedTT._readOnly ._toolTip, .comp.compRangeSlider._roundedRectangleTT._readOnly ._toolTip, .comp.compRangeSlider._largeRoundedTT._readOnly ._toolTip, .comp.compRangeSlider._readOnly ._thumb',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'ReadOnly',
+		displayName: 'Readonly Tooltip Color',
+		name: 'readonlyTooltipColorRangeSlider',
+		defaultValue: '<fontColorOne>',
+		cssProperty: 'color',
+		selector:
+			'.comp.compRangeSlider._roundedTT._readOnly ._toolTip, .comp.compRangeSlider._roundedRectangleTT._readOnly ._toolTip, .comp.compRangeSlider._largeRoundedTT._readOnly ._toolTip',
+		noPrefix: true,
+	},
 ];
 export const styleDefaults = new Map<string, string>(
 	styleProperties
