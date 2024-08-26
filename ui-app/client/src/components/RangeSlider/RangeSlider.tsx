@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import useDefinition from '../util/useDefinition';
 import { runEvent } from '../util/runEvent';
@@ -90,16 +90,20 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 	const [min, max] =
 		originalMin > originalMax ? [originalMax, originalMin] : [originalMin, originalMax];
 
-	const [actualValue, setActualValue] = useState<number | undefined>(undefined);
 	const [hoverSlider, setHoverSlider] = useState<boolean>(false);
 	const [hoverThumb, setHoverThumb] = useState<boolean>(false);
 	const [hoverMark, setHoverMark] = useState<number | undefined>(undefined);
-	const [hoverTick, setHoverTick] = useState<number | undefined>(undefined);
+
+	const [value, setValue] = useState<number | undefined>();
 
 	useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
-			(_, v) => setActualValue(v),
+			(_, v) => {
+				if (isNullValue(v)) setValue(undefined);
+				else if (storageDataType === 'value') setValue(v);
+				else setValue(getValue(v, storageDataType, min, max, step));
+			},
 			pageExtractor,
 			bindingPathPath,
 		);
@@ -117,16 +121,9 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 		stylePropertiesWithPseudoStates,
 	);
 
-	const value = getValue(
-		isNullValue(actualValue) ? min : actualValue,
-		storageDataType,
-		min,
-		max,
-		step,
-	);
-	const visualPercent = getPercentage(value, min, max, step, 2);
+	const visualPercent = value ? getPercentage(value, min, max, step, 2) : 0;
 	const precision = getPrecision(step, decimalPrecision);
-	const labelPercent = getPercentage(value, min, max, step, precision);
+	const labelPercent = value ? getPercentage(value, min, max, step, precision) : 0;
 
 	const topLabels: Array<JSX.Element> = [];
 	const bottomLabels: Array<JSX.Element> = [];
@@ -161,7 +158,7 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 
 	const updateStore = useCallback(
 		(v: number) => {
-			if (!bindingPathPath) return;
+			if (!bindingPathPath || readOnly) return;
 			if (v < min) v = min;
 			else if (v > max) v = max;
 			setData(
@@ -189,6 +186,8 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 			precision,
 			onChange,
 			pageDefinition.eventFunctions,
+			readOnly,
+			updateStoreImmediately,
 		],
 	);
 
@@ -198,9 +197,9 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 			if (v < min) v = min;
 			else if (v > max) v = max;
 			if (updateStoreImmediately) updateStore(v);
-			else setActualValue(v);
+			else setValue(v);
 		},
-		[bindingPathPath, readOnly, min, max, updateStoreImmediately],
+		[bindingPathPath, readOnly, min, max, updateStoreImmediately, updateStore],
 	);
 
 	const markThumbs: Array<JSX.Element> = [];
@@ -225,6 +224,7 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 				markValueType === 'value' ? getPercentage(mark, min, max, step, precision) : mark;
 			const markValue =
 				markValueType === 'value' ? mark : getValue(mark, 'percent', min, max, step);
+
 			if (markPercent < 0 || markPercent > 100) continue;
 			let style = defaultMarkThumbStyle;
 			let pitStyle = defaultMarkThumbPitStyle;
@@ -245,7 +245,11 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 				<div
 					key={mark}
 					className="_mark _thumb"
-					style={{ ...style, left: `${markPercent}%` }}
+					style={{
+						...style,
+						left: `${markPercent}%`,
+						opacity: markPercent === visualPercent ? 0 : 1,
+					}}
 					onMouseOver={() => setHoverMark(markPercent)}
 					onMouseOut={() => setHoverMark(undefined)}
 					onClick={e => {
@@ -274,6 +278,7 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 							...((hoverMark === markPercent ? styleProperties : hoverStyleProperties)
 								?.markLabel ?? {}),
 							left: `${markPercent}%`,
+							opacity: markPercent === visualPercent ? 0 : 1,
 						}}
 						onClick={e => {
 							e.stopPropagation();
@@ -293,12 +298,15 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 
 	if (toolTipDisplay !== '_neverToolTip') {
 		toolTip = (
-			<div className={`_toolTip ${toolTipPosition}`}>
+			<div className={`_toolTip ${toolTipPosition}`} style={styleProperties?.toolTip ?? {}}>
 				<SubHelperComponent subComponentName="toolTip" definition={definition} />
-				{`${toolTipValueLabelPrefix ?? ''}${toolTipDisplayType == 'value' ? (actualValue == value ? value : actualValue) ?? '' : labelPercent + '%'}${toolTipValueLabelSuffix ?? ''}`}
+				{`${toolTipValueLabelPrefix ?? ''}${toolTipDisplayType == 'value' ? value ?? '' : labelPercent + '%'}${toolTipValueLabelSuffix ?? ''}`}
 			</div>
 		);
 	}
+
+	const thumbRef = useRef<HTMLDivElement>(null);
+	const filledTrackRef = useRef<HTMLDivElement>(null);
 
 	const track = (
 		<div
@@ -324,6 +332,7 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 			<SubHelperComponent subComponentName="track" definition={definition} zIndex={7} />
 			<div
 				className="_rangeTrack"
+				ref={filledTrackRef}
 				style={{
 					...((hoverSlider ? hoverStyleProperties : styleProperties)?.rangeTrack ?? {}),
 					width: `${visualPercent}%`,
@@ -337,6 +346,7 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 			</div>
 			<div
 				className="_thumb"
+				ref={thumbRef}
 				onMouseOver={() => setHoverThumb(true)}
 				onMouseOut={() => setHoverThumb(false)}
 				style={{
@@ -351,6 +361,8 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 
 					const startValue = value ?? min;
 					const width = ref.current?.getBoundingClientRect()?.width ?? 0;
+					if (thumbRef.current) thumbRef.current.style.transition = 'none';
+					if (filledTrackRef.current) filledTrackRef.current.style.transition = 'none';
 
 					onMouseDownDragStartCurry(
 						e.clientX,
@@ -363,14 +375,21 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 							handleChange(newValue);
 						},
 						updateStoreImmediately
-							? undefined
+							? () => {
+									if (thumbRef.current) thumbRef.current.style.transition = '';
+									if (filledTrackRef.current)
+										filledTrackRef.current.style.transition = '';
+								}
 							: (newX, newY, diffX) => {
 									let newValue = !step
 										? Math.round(startValue + (diffX / width) * (max - min))
 										: Math.round(
 												(startValue + (diffX / width) * (max - min)) / step,
 											) * step;
-									if (!updateStoreImmediately) updateStore(newValue);
+									if (thumbRef.current) thumbRef.current.style.transition = '';
+									if (filledTrackRef.current)
+										filledTrackRef.current.style.transition = '';
+									updateStore(newValue);
 								},
 					)(e);
 				}}
@@ -526,6 +545,7 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 		JSON.stringify(styleProperties),
 		JSON.stringify(hoverStyleProperties),
 		updateStore,
+		readOnly,
 	]);
 
 	if (tickCount) {
