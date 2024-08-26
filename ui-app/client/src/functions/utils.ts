@@ -95,6 +95,7 @@ export function onMouseDownDragStartCurry(
 				document.body.removeEventListener('mousemove', onMouseMove);
 				document.body.removeEventListener('mouseup', onMouseUp);
 				document.body.removeEventListener('mouseleave', onMouseUp);
+				onDragEnd?.(lastData.newX, lastData.newY, lastData.diffX, lastData.diffY, ie);
 				return;
 			}
 
@@ -104,9 +105,9 @@ export function onMouseDownDragStartCurry(
 			onDrag?.(startX + diffX, startY + diffY, diffX, diffY, ie);
 		};
 		const onMouseUp = (ie: MouseEvent) => {
-			if (ie.buttons !== 1) return;
 			ie.preventDefault();
 			ie.stopPropagation();
+
 			document.body.removeEventListener('mousemove', onMouseMove);
 			document.body.removeEventListener('mouseup', onMouseUp);
 			document.body.removeEventListener('mouseleave', onMouseUp);
