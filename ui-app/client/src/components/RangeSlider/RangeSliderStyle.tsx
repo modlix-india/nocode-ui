@@ -45,6 +45,7 @@ export default function RangeSliderStyle({
 		position: absolute;
 		transform: translateX(-50%);
 		cursor: pointer;
+		transition: all 0.3s ease-in-out;
 	}
 
 	${PREFIX} ._thumbPit {

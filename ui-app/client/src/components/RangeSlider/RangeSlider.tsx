@@ -225,6 +225,7 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 				markValueType === 'value' ? getPercentage(mark, min, max, step, precision) : mark;
 			const markValue =
 				markValueType === 'value' ? mark : getValue(mark, 'percent', min, max, step);
+
 			if (markPercent < 0 || markPercent > 100) continue;
 			let style = defaultMarkThumbStyle;
 			let pitStyle = defaultMarkThumbPitStyle;
@@ -245,7 +246,11 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 				<div
 					key={mark}
 					className="_mark _thumb"
-					style={{ ...style, left: `${markPercent}%` }}
+					style={{
+						...style,
+						left: `${markPercent}%`,
+						opacity: markPercent === visualPercent ? 0 : 1,
+					}}
 					onMouseOver={() => setHoverMark(markPercent)}
 					onMouseOut={() => setHoverMark(undefined)}
 					onClick={e => {
@@ -274,6 +279,7 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 							...((hoverMark === markPercent ? styleProperties : hoverStyleProperties)
 								?.markLabel ?? {}),
 							left: `${markPercent}%`,
+							opacity: markPercent === visualPercent ? 0 : 1,
 						}}
 						onClick={e => {
 							e.stopPropagation();
