@@ -298,7 +298,7 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 
 	if (toolTipDisplay !== '_neverToolTip') {
 		toolTip = (
-			<div className={`_toolTip ${toolTipPosition}`}>
+			<div className={`_toolTip ${toolTipPosition}`} style={styleProperties?.toolTip ?? {}}>
 				<SubHelperComponent subComponentName="toolTip" definition={definition} />
 				{`${toolTipValueLabelPrefix ?? ''}${toolTipDisplayType == 'value' ? value ?? '' : labelPercent + '%'}${toolTipValueLabelSuffix ?? ''}`}
 			</div>
