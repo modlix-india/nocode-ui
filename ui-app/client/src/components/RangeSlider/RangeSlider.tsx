@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import useDefinition from '../util/useDefinition';
 import { runEvent } from '../util/runEvent';
@@ -90,16 +90,20 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 	const [min, max] =
 		originalMin > originalMax ? [originalMax, originalMin] : [originalMin, originalMax];
 
-	const [actualValue, setActualValue] = useState<number | undefined>(undefined);
 	const [hoverSlider, setHoverSlider] = useState<boolean>(false);
 	const [hoverThumb, setHoverThumb] = useState<boolean>(false);
 	const [hoverMark, setHoverMark] = useState<number | undefined>(undefined);
-	const [hoverTick, setHoverTick] = useState<number | undefined>(undefined);
+
+	const [value, setValue] = useState<number | undefined>();
 
 	useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
-			(_, v) => setActualValue(v),
+			(_, v) => {
+				if (isNullValue(v)) setValue(undefined);
+				else if (storageDataType === 'value') setValue(v);
+				else setValue(getValue(v, storageDataType, min, max, step));
+			},
 			pageExtractor,
 			bindingPathPath,
 		);
@@ -117,16 +121,9 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 		stylePropertiesWithPseudoStates,
 	);
 
-	const value = getValue(
-		isNullValue(actualValue) ? min : actualValue,
-		storageDataType,
-		min,
-		max,
-		step,
-	);
-	const visualPercent = getPercentage(value, min, max, step, 2);
+	const visualPercent = value ? getPercentage(value, min, max, step, 2) : 0;
 	const precision = getPrecision(step, decimalPrecision);
-	const labelPercent = getPercentage(value, min, max, step, precision);
+	const labelPercent = value ? getPercentage(value, min, max, step, precision) : 0;
 
 	const topLabels: Array<JSX.Element> = [];
 	const bottomLabels: Array<JSX.Element> = [];
@@ -161,7 +158,7 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 
 	const updateStore = useCallback(
 		(v: number) => {
-			if (!bindingPathPath) return;
+			if (!bindingPathPath || readOnly) return;
 			if (v < min) v = min;
 			else if (v > max) v = max;
 			setData(
@@ -189,6 +186,8 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 			precision,
 			onChange,
 			pageDefinition.eventFunctions,
+			readOnly,
+			updateStoreImmediately,
 		],
 	);
 
@@ -198,9 +197,9 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 			if (v < min) v = min;
 			else if (v > max) v = max;
 			if (updateStoreImmediately) updateStore(v);
-			else setActualValue(v);
+			else setValue(v);
 		},
-		[bindingPathPath, readOnly, min, max, updateStoreImmediately],
+		[bindingPathPath, readOnly, min, max, updateStoreImmediately, updateStore],
 	);
 
 	const markThumbs: Array<JSX.Element> = [];
@@ -301,7 +300,7 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 		toolTip = (
 			<div className={`_toolTip ${toolTipPosition}`}>
 				<SubHelperComponent subComponentName="toolTip" definition={definition} />
-				{`${toolTipValueLabelPrefix ?? ''}${toolTipDisplayType == 'value' ? (actualValue == value ? value : actualValue) ?? '' : labelPercent + '%'}${toolTipValueLabelSuffix ?? ''}`}
+				{`${toolTipValueLabelPrefix ?? ''}${toolTipDisplayType == 'value' ? value ?? '' : labelPercent + '%'}${toolTipValueLabelSuffix ?? ''}`}
 			</div>
 		);
 	}
@@ -390,7 +389,6 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 									if (thumbRef.current) thumbRef.current.style.transition = '';
 									if (filledTrackRef.current)
 										filledTrackRef.current.style.transition = '';
-									console.log(thumbRef.current?.style.transition);
 									updateStore(newValue);
 								},
 					)(e);
@@ -547,6 +545,7 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 		JSON.stringify(styleProperties),
 		JSON.stringify(hoverStyleProperties),
 		updateStore,
+		readOnly,
 	]);
 
 	if (tickCount) {
