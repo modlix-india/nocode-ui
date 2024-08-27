@@ -793,15 +793,33 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
+			name: 'leftArrowImage',
+			displayName: 'Left Arrow Image',
+			description: 'Left Arrow Image',
+			icon: 'fa-solid fa-box',
+		},
+		{
 			name: 'rightArrow',
 			displayName: 'Right Arrow',
 			description: 'Right Arrow',
 			icon: 'fa-solid fa-box',
 		},
 		{
+			name: 'rightArrowImage',
+			displayName: 'Right Arrow Image',
+			description: 'Right Arrow Image',
+			icon: 'fa-solid fa-box',
+		},
+		{
 			name: 'weekName',
 			displayName: 'Week Name',
 			description: 'Week Name',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'month',
+			displayName: 'Month',
+			description: 'Month',
 			icon: 'fa-solid fa-box',
 		},
 		{
@@ -838,6 +856,12 @@ const component: Component = {
 			name: 'selectedDate',
 			displayName: 'Selected Date',
 			description: 'Selected Date',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'emptyDate',
+			displayName: 'Empty Date',
+			description: 'Empty Date',
 			icon: 'fa-solid fa-box',
 		},
 		{
