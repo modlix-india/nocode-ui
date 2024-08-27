@@ -69,7 +69,18 @@ export function CalendarHeader(props: CalendarHeaderProps & { children: React.Re
 			onClick={props.onPreviousClick}
 		>
 			<SubHelperComponent definition={definition} subComponentName="leftArrow" zIndex={7} />
-			{leftArrowImage ? <img src={leftArrowImage} /> : <ArrowRight rotate={180} />}
+			{leftArrowImage ? (
+				<img
+					src={leftArrowImage}
+					style={getStyleObject(
+						'leftArrowImage',
+						hovers.has('leftArrow') ? new Set(['leftArrowImage']) : new Set(),
+						disableds.has('leftArrow') ? new Set(['leftArrowImage']) : new Set(),
+					)}
+				/>
+			) : (
+				<ArrowRight rotate={180} />
+			)}
 		</div>,
 		<div
 			key="rightArrow"
@@ -80,7 +91,18 @@ export function CalendarHeader(props: CalendarHeaderProps & { children: React.Re
 			onClick={props.onNextClick}
 		>
 			<SubHelperComponent definition={definition} subComponentName="rightArrow" zIndex={7} />
-			{rightArrowImage ? <img src={rightArrowImage} /> : <ArrowRight rotate={0} />}
+			{rightArrowImage ? (
+				<img
+					src={rightArrowImage}
+					style={getStyleObject(
+						'rightArrowImage',
+						hovers.has('rightArrow') ? new Set(['rightArrowImage']) : new Set(),
+						disableds.has('rightArrow') ? new Set(['rightArrowImage']) : new Set(),
+					)}
+				/>
+			) : (
+				<ArrowRight rotate={0} />
+			)}
 		</div>,
 	];
 

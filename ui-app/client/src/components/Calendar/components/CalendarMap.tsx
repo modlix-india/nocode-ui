@@ -335,6 +335,7 @@ export function CalendarMap(
 				onMouseEnter={addToToggleSetCurry(hovers, setHovers, 'calendarBodyMonths')}
 				onMouseLeave={removeFromToggleSetCurry(hovers, setHovers, 'calendarBodyMonths')}
 			>
+				<SubHelperComponent definition={definition} subComponentName="calendarBodyMonths" />
 				{subComponent}
 				{months}
 				{browseBody}
