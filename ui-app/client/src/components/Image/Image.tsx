@@ -93,38 +93,50 @@ function ImageComponent(props: ComponentProps) {
 		stylePropertiesWithPseudoStates,
 	);
 
+	const actualSrc = getSrcUrl(getHref(src ?? defaultSrc, location));
+
+	let imageTag = undefined;
+
+	if (actualSrc) {
+		imageTag = (
+			<>
+				<img
+					onMouseEnter={
+						stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
+					}
+					onMouseLeave={
+						stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
+					}
+					onClick={
+						onClickEvent
+							? ev => {
+									if (stopPropagation) ev.stopPropagation();
+									if (preventDefault) ev.preventDefault();
+									handleClick();
+								}
+							: undefined
+					}
+					className={onClickEvent ? '_onclicktrue' : ''}
+					style={resolvedStyles.image ?? {}}
+					src={actualSrc}
+					alt={alt}
+					onError={fallBackImg ? handleError : undefined}
+					loading={imgLazyLoading ? 'lazy' : 'eager'}
+				/>
+				<SubHelperComponent
+					style={resolvedStyles.image ?? {}}
+					className={onClickEvent ? '_onclicktrue' : ''}
+					definition={definition}
+					subComponentName="image"
+				></SubHelperComponent>
+			</>
+		);
+	}
+
 	return (
 		<div className="comp compImage" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent context={props.context} definition={definition} />
-			<img
-				onMouseEnter={
-					stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
-				}
-				onMouseLeave={
-					stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
-				}
-				onClick={
-					onClickEvent
-						? ev => {
-								if (stopPropagation) ev.stopPropagation();
-								if (preventDefault) ev.preventDefault();
-								handleClick();
-							}
-						: undefined
-				}
-				className={onClickEvent ? '_onclicktrue' : ''}
-				style={resolvedStyles.image ?? {}}
-				src={getSrcUrl(getHref(src ?? defaultSrc, location))}
-				alt={alt}
-				onError={fallBackImg ? handleError : undefined}
-				loading={imgLazyLoading ? 'lazy' : 'eager'}
-			/>
-			<SubHelperComponent
-				style={resolvedStyles.image ?? {}}
-				className={onClickEvent ? '_onclicktrue' : ''}
-				definition={definition}
-				subComponentName="image"
-			></SubHelperComponent>
+			{imageTag}
 		</div>
 	);
 }
