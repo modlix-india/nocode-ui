@@ -793,9 +793,21 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
+			name: 'leftArrowImage',
+			displayName: 'Left Arrow Image',
+			description: 'Left Arrow Image',
+			icon: 'fa-solid fa-box',
+		},
+		{
 			name: 'rightArrow',
 			displayName: 'Right Arrow',
 			description: 'Right Arrow',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'rightArrowImage',
+			displayName: 'Right Arrow Image',
+			description: 'Right Arrow Image',
 			icon: 'fa-solid fa-box',
 		},
 		{
