@@ -230,7 +230,6 @@ export function CalendarMonth(
 					weekendDays,
 					props,
 					hovers,
-					setHovers,
 					curry,
 				});
 				console.log(iterationDate.toDateString(), subComponentName, hovers);
@@ -281,7 +280,7 @@ export function CalendarMonth(
 			key={props.monthDate.toDateString()}
 			style={curry('month', hovers.has('month') ? new Set(['month']) : new Set(), new Set())}
 			onMouseEnter={addToToggleSetCurry(hovers, setHovers, 'month')}
-			onMouseLeave={removeFromToggleSetCurry(hovers, setHovers, 'month')}
+			onMouseLeave={() => setHovers(new Set())}
 		>
 			{datesNLabels}
 		</div>
@@ -313,7 +312,6 @@ function computeClassName({
 	weekendDays,
 	props,
 	hovers,
-	setHovers,
 	curry,
 }: {
 	date: Date;
@@ -325,7 +323,6 @@ function computeClassName({
 	weekendDays: number[];
 	props: CalendarAllProps;
 	hovers: Set<string>;
-	setHovers: React.Dispatch<Set<string>>;
 	curry: (style: string, hovers: Set<string>, disableds: Set<string>) => React.CSSProperties;
 }): [boolean, string, DATE_SUBCOMPONENT_NAMES, React.CSSProperties] {
 	let className = '_date';
@@ -396,7 +393,7 @@ function computeClassName({
 			disabled = true;
 		}
 
-		if (weekendDays.some(e => e === date.getDay())) {
+		if (props.lowLightWeekEnd && weekendDays.some(e => e === date.getDay())) {
 			className += ' _dateWeekend';
 			if (
 				SUBCOMPONENT_PREFRENCE.weekendLowLightDate >
@@ -421,7 +418,9 @@ function computeClassName({
 
 	const style = curry(
 		subComponentName,
-		hovers.has(`date-${date.toDateString()}`) ? new Set([subComponentName]) : new Set(),
+		hovers.has(`date-${date.toDateString()}`) && !disabled
+			? new Set([subComponentName])
+			: new Set(),
 		disabled ? new Set([subComponentName]) : new Set(),
 	);
 
