@@ -805,6 +805,12 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
+			name: 'month',
+			displayName: 'Month',
+			description: 'Month',
+			icon: 'fa-solid fa-box',
+		},
+		{
 			name: 'date',
 			displayName: 'Date',
 			description: 'Date',
@@ -838,6 +844,12 @@ const component: Component = {
 			name: 'selectedDate',
 			displayName: 'Selected Date',
 			description: 'Selected Date',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'emptyDate',
+			displayName: 'Empty Date',
+			description: 'Empty Date',
 			icon: 'fa-solid fa-box',
 		},
 		{
