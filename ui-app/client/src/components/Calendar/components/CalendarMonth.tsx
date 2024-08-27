@@ -261,6 +261,7 @@ export function CalendarMonth(
 						role="button"
 						tabIndex={0}
 						onKeyDown={!disabled ? onClickDate(iterationDate) : undefined}
+						aria-label={subComponentName}
 					>
 						<SubHelperComponent
 							definition={props.definition}
@@ -406,14 +407,15 @@ function computeClassName({
 
 	if (!disabled) className += ' _dateSelectable';
 
-	if (isSelected || thisDates?.some(thisDate => thisDate.toDateString() === date.toDateString()))
+	if (
+		isSelected ||
+		thisDates?.some(thisDate => thisDate.toDateString() === date.toDateString())
+	) {
 		className += ' _dateSelected';
 
-	if (
-		isSelected &&
-		SUBCOMPONENT_PREFRENCE.selectedDate > SUBCOMPONENT_PREFRENCE[subComponentName]
-	) {
-		subComponentName = 'selectedDate';
+		if (SUBCOMPONENT_PREFRENCE.selectedDate > SUBCOMPONENT_PREFRENCE[subComponentName]) {
+			subComponentName = 'selectedDate';
+		}
 	}
 
 	const style = curry(
