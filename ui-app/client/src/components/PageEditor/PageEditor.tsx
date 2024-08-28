@@ -1,4 +1,7 @@
+import { deepEqual, duplicate } from '@fincity/kirun-js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import ComponentDefinitions from '../';
+import { LOCAL_STORE_PREFIX, PAGE_STORE_PREFIX, STORE_PREFIX } from '../../constants';
 import {
 	addListenerAndCallImmediately,
 	addListenerAndCallImmediatelyWithChildrenActivity,
@@ -9,18 +12,20 @@ import {
 } from '../../context/StoreContext';
 import {
 	Component,
-	ComponentDefinition,
 	ComponentPropertyDefinition,
 	ComponentProps,
 	LocationHistory,
 	PageDefinition,
 } from '../../types/common';
+import { allPaths } from '../../util/allPaths';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
+import { IconHelper } from '../util/IconHelper';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import CodeEditor from './components/CodeEditor';
 import { ContextMenu, ContextMenuDetails } from './components/ContextMenu';
+import FormEditor from './components/FormEditor';
 import IssuePopup, { Issue } from './components/IssuePopup';
 import DnDEditor from './editors/DnDEditor/DnDEditor';
 import { MASTER_FUNCTIONS } from './functions/masterFunctions';
@@ -30,16 +35,7 @@ import {
 } from './functions/PageOperations';
 import { propertiesDefinition, stylePropertiesDefinition } from './pageEditorProperties';
 import GridStyle from './PageEditorStyle';
-import { allPaths } from '../../util/allPaths';
-import { LOCAL_STORE_PREFIX, PAGE_STORE_PREFIX, STORE_PREFIX } from '../../constants';
-import ComponentDefinitions from '../';
-import { deepEqual, duplicate } from '@fincity/kirun-js';
 import { styleDefaults } from './pageEditorStyleProperties';
-import { IconHelper } from '../util/IconHelper';
-import FormEditor from './components/FormEditor';
-import { shortUUID } from '../../util/shortUUID';
-import axios from 'axios';
-import { getHref } from '../util/getHref';
 
 function savePersonalizationCurry(
 	personalizationPath: string,
@@ -68,7 +64,7 @@ function savePersonalizationCurry(
 	};
 }
 
-function PageEditor(props: ComponentProps) {
+function PageEditor(props: Readonly<ComponentProps>) {
 	const {
 		definition,
 		definition: { bindingPath, bindingPath2, bindingPath3, bindingPath4 },
@@ -97,6 +93,7 @@ function PageEditor(props: ComponentProps) {
 			editorType,
 			sectionsListConnectionName,
 			sectionsCategoryList,
+			helpURL,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -132,7 +129,7 @@ function PageEditor(props: ComponentProps) {
 	);
 
 	const personalization = personalizationPath
-		? getDataFromPath(personalizationPath, locationHistory, pageExtractor) ?? {}
+		? (getDataFromPath(personalizationPath, locationHistory, pageExtractor) ?? {})
 		: {};
 
 	// Managing theme with local state.
@@ -155,7 +152,7 @@ function PageEditor(props: ComponentProps) {
 	const saveFunction = useCallback(() => {
 		if (!onSave || !pageDefinition.eventFunctions?.[onSave]) return;
 
-		let def = getDataFromPath(defPath!, locationHistory, pageExtractor) as PageDefinition;
+		let def = getDataFromPath(defPath, locationHistory, pageExtractor) as PageDefinition;
 		if (!def) return;
 
 		def = removeUnreferenecedComponentDefinitions(def);
@@ -242,9 +239,7 @@ function PageEditor(props: ComponentProps) {
 		? undefined
 		: (getDataFromPath(`${defPath}`, locationHistory, pageExtractor) as PageDefinition);
 
-	const appDefinition = !appPath
-		? undefined
-		: (getDataFromPath(appPath, locationHistory, pageExtractor) as any);
+	const appDefinition = getDataFromPath(appPath, locationHistory, pageExtractor);
 
 	useEffect(() => {
 		if (!editPageDefinition || !personalization) {
@@ -263,7 +258,7 @@ function PageEditor(props: ComponentProps) {
 		setUrl(
 			`/${editPageDefinition.appCode}/${
 				clientCode === ''
-					? appDefinition?.clientCode ?? editPageDefinition.clientCode
+					? (appDefinition?.clientCode ?? editPageDefinition.clientCode)
 					: clientCode
 			}/page/${editPageDefinition.name}`,
 		);
@@ -279,7 +274,7 @@ function PageEditor(props: ComponentProps) {
 			savePersonalization(
 				`pageLeftAt.${editPageDefinition!.name}.clientCode`,
 				clientCode === ''
-					? appDefinition?.clientCode ?? editPageDefinition!.clientCode
+					? (appDefinition?.clientCode ?? editPageDefinition!.clientCode)
 					: clientCode,
 			);
 		},
@@ -308,7 +303,7 @@ function PageEditor(props: ComponentProps) {
 			if (!defPath) return;
 
 			let pageDef = getDataFromPath(
-				defPath!,
+				defPath,
 				locationHistory,
 				pageExtractor,
 			) as PageDefinition;
@@ -357,7 +352,7 @@ function PageEditor(props: ComponentProps) {
 				return;
 			}
 
-			const [componentKey, subComponentKey] = key.split(':');
+			const [componentKey] = key.split(':');
 
 			setSelectedComponent(componentKey);
 			setSelectedSubComponentOriginal(key);
@@ -460,15 +455,15 @@ function PageEditor(props: ComponentProps) {
 					},
 					pageExtractor,
 					themePath,
-			  )
+				)
 			: undefined;
 
 		function onMessageFromSlave(e: any) {
 			const {
-				data: { type, payload, editorType },
+				data: { type },
 			} = e;
 
-			if (!type || !type.startsWith('SLAVE_') || !templateIFrame) return;
+			if (!type?.startsWith('SLAVE_') || !templateIFrame) return;
 
 			if (type === 'SLAVE_STARTED') {
 				templateIFrame.contentWindow?.postMessage({
@@ -554,7 +549,7 @@ function PageEditor(props: ComponentProps) {
 				data: { type, payload, editorType, screenType },
 			} = e;
 
-			if (!type || !type.startsWith('SLAVE_')) return;
+			if (!type?.startsWith('SLAVE_')) return;
 			if (!MASTER_FUNCTIONS.has(type)) throw Error('Unknown message from Slave : ' + type);
 
 			if (editorType && editorType !== 'PAGE') return;
@@ -646,7 +641,7 @@ function PageEditor(props: ComponentProps) {
 		if (!defPath) return;
 		const removeListener = addListenerAndCallImmediately(
 			(_, v) => {
-				if (!v || !v.id) return;
+				if (!v?.id) return;
 
 				removeListener();
 
@@ -669,7 +664,7 @@ function PageEditor(props: ComponentProps) {
 					callbackOnOption: {
 						Yes: () => {
 							setData(defPath, storagePage, pageExtractor.getPageName());
-							window.localStorage.removeItem(key!);
+							window.localStorage.removeItem(key);
 						},
 					},
 				});
@@ -685,129 +680,124 @@ function PageEditor(props: ComponentProps) {
 	if (personalizationPath && !personalization) return <></>;
 
 	return (
-		<>
-			<div className={`comp compPageEditor ${localTheme}`} style={resolvedStyles.comp ?? {}}>
-				<HelperComponent
-					context={props.context}
-					key={`${key}_hlp`}
-					definition={definition}
-				/>
-				<DnDEditor
-					personalizationPath={personalizationPath}
-					defPath={defPath}
-					url={url}
-					pageName={context.pageName}
-					pageExtractor={pageExtractor}
-					onSave={saveFunction}
-					onPublish={onPublish ? publishFunction : undefined}
-					onChangePersonalization={savePersonalization}
-					desktopIframe={desktopRef}
-					tabletIframe={tabletRef}
-					mobileIframe={mobileRef}
-					templateIframeRef={(element: HTMLIFrameElement | undefined) =>
-						setTemplateIFrame(element)
-					}
-					locationHistory={locationHistory}
-					selectedComponent={selectedComponent}
-					selectedComponentsList={selectedComponentsList}
-					onSelectedComponentChanged={(key: string) => setSelectedComponent(key)}
-					onSelectedComponentListChanged={(key: string) => setSelectedComponentList(key)}
-					pageOperations={operations}
-					onPageReload={() => {
-						desktopRef?.current?.contentWindow?.location.reload();
-						tabletRef?.current?.contentWindow?.location.reload();
-						mobileRef?.current?.contentWindow?.location.reload();
-						setSelectedComponent('');
-						setSelectedSubComponent('');
-					}}
-					onPageBack={() => {
-						desktopRef?.current?.contentWindow?.history.back();
-						tabletRef?.current?.contentWindow?.history.back();
-						mobileRef?.current?.contentWindow?.history.back();
-					}}
-					onPageForward={() => {
-						desktopRef?.current?.contentWindow?.history.forward();
-						tabletRef?.current?.contentWindow?.history.forward();
-						mobileRef?.current?.contentWindow?.history.forward();
-					}}
-					theme={localTheme}
-					logo={logo}
-					onUrlChange={urlChange}
-					onDeletePersonalization={deletePersonalization}
-					onContextMenu={(m: ContextMenuDetails) => setContextMenu(m)}
-					onShowCodeEditor={evName => setShowCodeEditor(evName)}
-					undoStackRef={undoStackRef}
-					redoStackRef={redoStackRef}
-					firstTimeRef={firstTimeRef}
-					latestVersion={latestVersion}
-					slaveStore={slaveStore}
-					editPageName={editPageDefinition?.name}
-					selectedSubComponent={selectedSubComponent}
-					onSelectedSubComponentChanged={(key: string) => setSelectedSubComponent(key)}
-					storePaths={storePaths}
-					setStyleSelectorPref={setStyleSelectorPref}
-					styleSelectorPref={styleSelectorPref}
-					appPath={appPath}
-					onVersions={onVersions ? versionsFunction : undefined}
-					pagesData={pagesData}
-					currentPageId={currentPageId}
-					settingsPageName={settingsPageName}
-					dashboardPageName={dashboardPageName}
-					addnewPageName={addnewPageName}
-					editorType={editorType}
-					sectionsListConnectionName={sectionsListConnectionName}
-					sectionsCategoryList={sectionsCategoryList}
-				/>
-				<CodeEditor
-					showCodeEditor={showCodeEditor}
-					onSetShowCodeEditor={funcName => setShowCodeEditor(funcName)}
-					defPath={defPath}
-					personalizationPath={personalizationPath}
-					locationHistory={locationHistory}
-					context={context}
-					pageDefinition={pageDefinition}
-					pageExtractor={pageExtractor}
-					slaveStore={slaveStore}
-					undoStackRef={undoStackRef}
-					redoStackRef={redoStackRef}
-					firstTimeRef={firstTimeRef}
-					latestVersion={latestVersion}
-					definition={definition}
-					storePaths={storePaths}
-					selectedSubComponent={selectedSubComponent}
-					selectedComponent={selectedComponent}
-					onSelectedSubComponentChanged={(key: string) => setSelectedSubComponent(key)}
-					onSelectedComponentChanged={(key: string) => setSelectedComponent(key)}
-				/>
-				{generateFormOnComponentKey && (
-					<FormEditor
-						formStorageUrl={formStorageUrl}
-						defPath={defPath}
-						pageExtractor={pageExtractor}
-						locationHistory={locationHistory}
-						clickedComponent={generateFormOnComponentKey}
-						setClickedComponent={setGenerateFormOnComponentKey}
-					/>
-				)}
-				<IssuePopup
-					issue={issue}
-					personalizationPath={personalizationPath}
-					pageExtractor={pageExtractor}
-					onClearIssue={() => setIssue(undefined)}
-				/>
-				<ContextMenu
-					menuDetails={contextMenu}
-					personalizationPath={personalizationPath}
-					pageExtractor={pageExtractor}
-					onCloseContextmenu={() => {
-						setContextMenu(undefined);
-					}}
-					pageOperations={operations}
+		<div className={`comp compPageEditor ${localTheme}`} style={resolvedStyles.comp ?? {}}>
+			<HelperComponent context={props.context} key={`${key}_hlp`} definition={definition} />
+			<DnDEditor
+				personalizationPath={personalizationPath}
+				defPath={defPath}
+				url={url}
+				pageName={context.pageName}
+				pageExtractor={pageExtractor}
+				onSave={saveFunction}
+				onPublish={onPublish ? publishFunction : undefined}
+				onChangePersonalization={savePersonalization}
+				desktopIframe={desktopRef}
+				tabletIframe={tabletRef}
+				mobileIframe={mobileRef}
+				templateIframeRef={(element: HTMLIFrameElement | undefined) =>
+					setTemplateIFrame(element)
+				}
+				locationHistory={locationHistory}
+				selectedComponent={selectedComponent}
+				selectedComponentsList={selectedComponentsList}
+				onSelectedComponentChanged={(key: string) => setSelectedComponent(key)}
+				onSelectedComponentListChanged={(key: string) => setSelectedComponentList(key)}
+				pageOperations={operations}
+				onPageReload={() => {
+					desktopRef?.current?.contentWindow?.location.reload();
+					tabletRef?.current?.contentWindow?.location.reload();
+					mobileRef?.current?.contentWindow?.location.reload();
+					setSelectedComponent('');
+					setSelectedSubComponent('');
+				}}
+				onPageBack={() => {
+					desktopRef?.current?.contentWindow?.history.back();
+					tabletRef?.current?.contentWindow?.history.back();
+					mobileRef?.current?.contentWindow?.history.back();
+				}}
+				onPageForward={() => {
+					desktopRef?.current?.contentWindow?.history.forward();
+					tabletRef?.current?.contentWindow?.history.forward();
+					mobileRef?.current?.contentWindow?.history.forward();
+				}}
+				theme={localTheme}
+				logo={logo}
+				onUrlChange={urlChange}
+				onDeletePersonalization={deletePersonalization}
+				onContextMenu={(m: ContextMenuDetails) => setContextMenu(m)}
+				onShowCodeEditor={evName => setShowCodeEditor(evName)}
+				undoStackRef={undoStackRef}
+				redoStackRef={redoStackRef}
+				firstTimeRef={firstTimeRef}
+				latestVersion={latestVersion}
+				slaveStore={slaveStore}
+				editPageName={editPageDefinition?.name}
+				selectedSubComponent={selectedSubComponent}
+				onSelectedSubComponentChanged={(key: string) => setSelectedSubComponent(key)}
+				storePaths={storePaths}
+				setStyleSelectorPref={setStyleSelectorPref}
+				styleSelectorPref={styleSelectorPref}
+				appPath={appPath}
+				onVersions={onVersions ? versionsFunction : undefined}
+				pagesData={pagesData}
+				currentPageId={currentPageId}
+				settingsPageName={settingsPageName}
+				dashboardPageName={dashboardPageName}
+				addnewPageName={addnewPageName}
+				editorType={editorType}
+				sectionsListConnectionName={sectionsListConnectionName}
+				sectionsCategoryList={sectionsCategoryList}
+				helpURL={helpURL}
+			/>
+			<CodeEditor
+				showCodeEditor={showCodeEditor}
+				onSetShowCodeEditor={funcName => setShowCodeEditor(funcName)}
+				defPath={defPath}
+				personalizationPath={personalizationPath}
+				locationHistory={locationHistory}
+				context={context}
+				pageDefinition={pageDefinition}
+				pageExtractor={pageExtractor}
+				slaveStore={slaveStore}
+				undoStackRef={undoStackRef}
+				redoStackRef={redoStackRef}
+				firstTimeRef={firstTimeRef}
+				latestVersion={latestVersion}
+				definition={definition}
+				storePaths={storePaths}
+				selectedSubComponent={selectedSubComponent}
+				selectedComponent={selectedComponent}
+				onSelectedSubComponentChanged={(key: string) => setSelectedSubComponent(key)}
+				onSelectedComponentChanged={(key: string) => setSelectedComponent(key)}
+			/>
+			{generateFormOnComponentKey && (
+				<FormEditor
 					formStorageUrl={formStorageUrl}
+					defPath={defPath}
+					pageExtractor={pageExtractor}
+					locationHistory={locationHistory}
+					clickedComponent={generateFormOnComponentKey}
 					setClickedComponent={setGenerateFormOnComponentKey}
 				/>
-			</div>
-		</>
+			)}
+			<IssuePopup
+				issue={issue}
+				personalizationPath={personalizationPath}
+				pageExtractor={pageExtractor}
+				onClearIssue={() => setIssue(undefined)}
+			/>
+			<ContextMenu
+				menuDetails={contextMenu}
+				personalizationPath={personalizationPath}
+				pageExtractor={pageExtractor}
+				onCloseContextmenu={() => {
+					setContextMenu(undefined);
+				}}
+				pageOperations={operations}
+				formStorageUrl={formStorageUrl}
+				setClickedComponent={setGenerateFormOnComponentKey}
+			/>
+		</div>
 	);
 }
 

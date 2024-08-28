@@ -102,7 +102,7 @@ export default function ComponentMenu({
 				const selectedSection = !v?.selectedSection
 					? comp?.sections && comp.sections[0]
 					: comp?.sections &&
-					  comp.sections.find(e => e.name === v?.selectedSection?.name);
+						comp.sections.find(e => e.name === v?.selectedSection?.name);
 				setSelectedComponentType(componentName);
 				setSelectedTemplateSection(selectedSection);
 			},
@@ -292,30 +292,32 @@ export default function ComponentMenu({
 				} _compMenuRight`}
 			>
 				<div className="_compTemplateSections">
-					{tempSections.map((e: Section) => (
-						<button
-							key={e.name}
-							onClick={() => {
-								onChangePersonalization('selectedComponent', {
-									componentName: selectedComponentType,
-									selectedSection: e,
-								});
-							}}
-							className={`_eachTemplateSection ${
-								e.name === selectedTemplateSection?.name ? '_active' : ''
-							}`}
-						>
-							{e.name}
-						</button>
-					))}
+					<div className="_tabContainer">
+						{tempSections.map((e: Section) => (
+							<button
+								key={e.name}
+								onClick={() => {
+									onChangePersonalization('selectedComponent', {
+										componentName: selectedComponentType,
+										selectedSection: e,
+									});
+								}}
+								className={`_tab ${
+									e.name === selectedTemplateSection?.name ? '_selected' : ''
+								}`}
+							>
+								{e.name}
+							</button>
+						))}
+					</div>
 				</div>
 				{selectedTemplateSection && (
 					<iframe
 						name="templateIframe"
 						title="Template"
 						ref={iframeRef}
-						style={{ border: 'none' }}
 						src={`/editortemplates/SYSTEM/page/${selectedTemplateSection?.pageName}`}
+						style={{ border: '0' }}
 					/>
 				)}
 			</div>

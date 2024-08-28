@@ -1,5 +1,5 @@
 import { deepEqual, duplicate, isNullValue } from '@fincity/kirun-js';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MESSAGE_TYPE, addMessage } from '../../../../App/Messages/Messages';
 import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../../../constants';
 import {
@@ -140,7 +140,7 @@ export default function DnDTopBar({
 						},
 						pageExtractor,
 						personalizationPath,
-				  )
+					)
 				: undefined,
 		[personalizationPath],
 	);
@@ -505,7 +505,14 @@ export default function DnDTopBar({
 
 	let pageSelector = <></>;
 
-	if (pagesData?.length) {
+	const sortedPagesData = useMemo(() => {
+		if (!pagesData) return [];
+		return pagesData.sort((a: any, b: any) =>
+			a.displayName?.toLowerCase().localeCompare(b.displayName?.toLowerCase()),
+		);
+	}, [pagesData]);
+
+	if (sortedPagesData?.length) {
 		let addNewPageButton = <></>;
 		if (addnewPageName) {
 			addNewPageButton = (
@@ -532,7 +539,7 @@ export default function DnDTopBar({
 					onChange={v => {
 						setSelectedPage(typeof v === 'string' ? v : '');
 					}}
-					options={pagesData ?? []}
+					options={sortedPagesData ?? []}
 					placeholder="Pages"
 				>
 					{addNewPageButton}
