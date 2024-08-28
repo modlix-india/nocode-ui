@@ -49,16 +49,9 @@ function SmallCarousel(props: ComponentProps) {
 			autoPlay,
 			autoPlayDirection,
 			animationDuration,
-			dotsButtonType,
-			dotsButtonIconType,
-			showSlideNumbersInDots,
 			arrowButtonsHorizontalPlacement,
 			arrowButtonsVerticalPlacement,
 			arrowButtonsPlacement,
-			slideNavButtonHorizontalAlignment,
-			slideNavButtonVerticalAlignment,
-			slideNavButtonPlacement,
-			showNavigationControlsOnHover,
 			slidesToScroll,
 			fixedChild,
 			noOfChilds,
@@ -74,6 +67,14 @@ function SmallCarousel(props: ComponentProps) {
 			selectionType,
 			prevImage,
 			nextImage,
+			showSlideNav,
+			slideNavOrientation,
+			slideNavPlacement,
+			slideNavIconType,
+			slideNavIconFill,
+			showSlideNumbersInDots,
+			showNavigationControlsOnHover,
+			visibleSlideNavButtons,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -90,6 +91,7 @@ function SmallCarousel(props: ComponentProps) {
 	const [_, setChanged] = useState<number>(Date.now());
 	const transit = useRef<any>({});
 	const [firstTime, setFirstTime] = useState(true);
+	const [currentSlide, setCurrentSlide] = useState(0);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
@@ -232,56 +234,43 @@ function SmallCarousel(props: ComponentProps) {
 		containerDims.minWidth = `${childWidth * finNumberOfChildren}px`;
 	}
 
-	const applyTransform = (to: number, scrollDirection: number = 1) => {
-		if (
-			finNumberOfChildren == undefined ||
-			finNumberOfChildren <= 1 ||
-			childWidth < 5 ||
-			childHeight < 5
-		)
-			return;
+	const applyTransform = useCallback(
+		(to: number, scrollDirection: number = 1) => {
+			if (
+				finNumberOfChildren == undefined ||
+				finNumberOfChildren <= 1 ||
+				childWidth < 5 ||
+				childHeight < 5
+			)
+				return;
 
-		const totalChildren = childrenComponents.length;
-		to = (to + totalChildren) % totalChildren;
+			const totalChildren = childrenComponents.length;
+			to = (to + totalChildren) % totalChildren;
 
-		for (let i = 0; i < childrenComponents.length; i++) {
-			innerSlideItemContainers.current[i].style.transition = undefined;
-		}
-
-		const percentage: number = Math.ceil(10000 / finNumberOfChildren) / 100;
-		const direction = isVertical ? 'top' : 'left';
-		let from: number = transit.current.to;
-
-		if (
-			transit.current.finNumberOfChildren !== finNumberOfChildren ||
-			transit.current.totalChildren !== childrenComponents.length
-		) {
-			for (let i = 0; i < totalChildren; i++) {
-				let v;
-				if (i < to || i >= to + childrenComponents.length) v = `-${percentage}%`;
-				else v = `${(i - to) * percentage}%`;
-
-				innerSlideItemContainers.current[i].style[direction] = v;
-			}
-			from = 0;
-		} else {
-			if (from === to) return;
-
-			let fromPercent = scrollDirection === 1 ? 0 : -(slidesToScroll * percentage);
 			for (let i = 0; i < childrenComponents.length; i++) {
-				const ind =
-					(childrenComponents.length * 2 +
-						to +
-						i -
-						(scrollDirection > 0 ? slidesToScroll : 0)) %
-					childrenComponents.length;
-
-				const v = `${fromPercent + i * percentage}%`;
-				innerSlideItemContainers.current[ind].style[direction] = v;
+				innerSlideItemContainers.current[i].style.transition = undefined;
 			}
 
-			setTimeout(() => {
-				fromPercent = scrollDirection === -1 ? 0 : -(slidesToScroll * percentage);
+			const percentage: number = Math.ceil(10000 / finNumberOfChildren) / 100;
+			const direction = isVertical ? 'top' : 'left';
+			let from: number = transit.current.to;
+
+			if (
+				transit.current.finNumberOfChildren !== finNumberOfChildren ||
+				transit.current.totalChildren !== childrenComponents.length
+			) {
+				for (let i = 0; i < totalChildren; i++) {
+					let v;
+					if (i < to || i >= to + childrenComponents.length) v = `-${percentage}%`;
+					else v = `${(i - to) * percentage}%`;
+
+					innerSlideItemContainers.current[i].style[direction] = v;
+				}
+				from = 0;
+			} else {
+				if (from === to) return;
+
+				let fromPercent = scrollDirection === 1 ? 0 : -(slidesToScroll * percentage);
 				for (let i = 0; i < childrenComponents.length; i++) {
 					const ind =
 						(childrenComponents.length * 2 +
@@ -289,26 +278,54 @@ function SmallCarousel(props: ComponentProps) {
 							i -
 							(scrollDirection > 0 ? slidesToScroll : 0)) %
 						childrenComponents.length;
-					innerSlideItemContainers.current[ind].style.transition =
-						`${direction} ${animationDuration}ms ${easing}`;
+
 					const v = `${fromPercent + i * percentage}%`;
 					innerSlideItemContainers.current[ind].style[direction] = v;
 				}
-			}, 100);
-		}
 
-		transit.current = {
-			from,
-			to,
-			finNumberOfChildren: finNumberOfChildren,
-			totalChildren: childrenComponents.length,
-			hover: transit.current.hover,
-			executedAt: Date.now(),
-			timerAt: transit.current.timerAt,
-		};
+				setTimeout(() => {
+					fromPercent = scrollDirection === -1 ? 0 : -(slidesToScroll * percentage);
+					for (let i = 0; i < childrenComponents.length; i++) {
+						const ind =
+							(childrenComponents.length * 2 +
+								to +
+								i -
+								(scrollDirection > 0 ? slidesToScroll : 0)) %
+							childrenComponents.length;
+						innerSlideItemContainers.current[ind].style.transition =
+							`${direction} ${animationDuration}ms ${easing}`;
+						const v = `${fromPercent + i * percentage}%`;
+						innerSlideItemContainers.current[ind].style[direction] = v;
+					}
+				}, 100);
+			}
 
-		if (firstTime) setFirstTime(false);
-	};
+			transit.current = {
+				from,
+				to,
+				finNumberOfChildren: finNumberOfChildren,
+				totalChildren: childrenComponents.length,
+				hover: transit.current.hover,
+				executedAt: Date.now(),
+				timerAt: transit.current.timerAt,
+			};
+
+			setCurrentSlide(to);
+
+			if (firstTime) setFirstTime(false);
+		},
+		[
+			finNumberOfChildren,
+			childrenComponents.length,
+			firstTime,
+			childWidth,
+			childHeight,
+			isVertical,
+			slidesToScroll,
+			animationDuration,
+			easing,
+		],
+	);
 
 	useEffect(() => {
 		if (finNumberOfChildren <= 1 || childWidth < 5 || childHeight < 5) return;
@@ -326,7 +343,11 @@ function SmallCarousel(props: ComponentProps) {
 					Date.now() - transit.current.executedAt >= slideSpeed + animationDuration)
 			) {
 				const factor = autoPlayDirection === 'backward' ? -1 : 1;
-				applyTransform(transit.current.to + slidesToScroll * factor, factor);
+				applyTransform(
+					(currentSlide + slidesToScroll * factor + childrenComponents.length) %
+						childrenComponents.length,
+					factor,
+				);
 			}
 			transit.current.timerAt = Date.now();
 		}
@@ -338,13 +359,15 @@ function SmallCarousel(props: ComponentProps) {
 		finNumberOfChildren,
 		childWidth,
 		childHeight,
-		transit.current,
 		autoPlay,
 		autoPlayDirection,
 		firstTime,
 		slideSpeed,
 		animationDuration,
 		slidesToScroll,
+		currentSlide,
+		childrenComponents.length,
+		applyTransform,
 	]);
 
 	let { prevButton, buttonGroup, nextButton } = makeArrowButtons(
@@ -363,11 +386,101 @@ function SmallCarousel(props: ComponentProps) {
 		() => applyTransform(transit.current.to + slidesToScroll, 1),
 	);
 
+	function makeSlideNavButtons(
+		showSlideNav: boolean,
+		totalSlides: number,
+		currentSlide: number,
+		slideNavOrientation: string,
+		slideNavPlacement: string,
+		slideNavIconType: string,
+		slideNavIconFill: string,
+		showSlideNumbersInDots: boolean,
+		resolvedStyles: any,
+		onSlideNavClick: (index: number) => void,
+		visibleSlideNavButtons: number,
+	) {
+		if (!showSlideNav) return null;
+
+		const buttons = [];
+		let startIndex = 0;
+		let endIndex = totalSlides;
+
+		if (visibleSlideNavButtons > 0 && visibleSlideNavButtons < totalSlides) {
+			const halfVisible = Math.floor(visibleSlideNavButtons / 2);
+			startIndex = Math.max(0, currentSlide - halfVisible);
+			endIndex = Math.min(totalSlides, startIndex + visibleSlideNavButtons);
+
+			if (endIndex - startIndex < visibleSlideNavButtons) {
+				startIndex = Math.max(0, endIndex - visibleSlideNavButtons);
+			}
+		}
+
+		const showStartArrow = startIndex > 0;
+		const showEndArrow = endIndex < totalSlides;
+
+		const navButtons = [];
+
+		const isVertical = slideNavOrientation.startsWith('vertical');
+		const rotationClass = isVertical ? '_vertical' : '';
+
+		if (showStartArrow) {
+			navButtons.push(
+				<div
+					key="start-arrow"
+					className={`_slideNavArrow _start ${rotationClass}`}
+					onClick={() =>
+						onSlideNavClick(Math.max(0, startIndex - visibleSlideNavButtons))
+					}
+					style={resolvedStyles?.slideNavArrow ?? {}}
+				/>,
+			);
+		}
+
+		for (let i = startIndex; i < endIndex; i++) {
+			navButtons.push(
+				<div
+					key={`slide-nav-${i}`}
+					className={`_slideNavButton ${
+						showSlideNumbersInDots ? '_number' : `_${slideNavIconType}`
+					} ${slideNavIconFill === 'solid' ? '_solid' : ''} ${
+						i === currentSlide ? '_active' : ''
+					}`}
+					style={resolvedStyles?.slideNavButton ?? {}}
+					onClick={() => onSlideNavClick(i)}
+				>
+					{showSlideNumbersInDots ? i + 1 : null}
+				</div>,
+			);
+		}
+
+		if (showEndArrow) {
+			navButtons.push(
+				<div
+					key="end-arrow"
+					className={`_slideNavArrow _end ${rotationClass}`}
+					onClick={() => onSlideNavClick(Math.min(totalSlides - 1, endIndex))}
+					style={resolvedStyles?.slideNavArrow ?? {}}
+				/>,
+			);
+		}
+
+		return (
+			<div
+				className={`_slideNavContainer _${slideNavOrientation} _${slideNavPlacement}`}
+				style={resolvedStyles?.slideNavContainer ?? {}}
+			>
+				{navButtons}
+			</div>
+		);
+	}
+
 	return (
 		<div
 			className={`comp compSmallCarousel ${designType} ${arrowButtonsPlacement} ${arrowButtonsHorizontalPlacement} ${arrowButtonsVerticalPlacement} ${
 				showArrowButtonsOnHover ? '_showArrowsOnHover' : ''
-			} `}
+			} ${
+				showNavigationControlsOnHover ? '_showSlideNavOnHover' : ''
+			} ${slideNavOrientation} ${slideNavPlacement}`}
 			style={{ minWidth, minHeight, ...(resolvedStyles?.comp ?? {}) }}
 			onMouseOver={pauseOnHover ? () => (transit.current.hover = true) : undefined}
 			onMouseOut={pauseOnHover ? () => (transit.current.hover = false) : undefined}
@@ -386,6 +499,19 @@ function SmallCarousel(props: ComponentProps) {
 					subComponentName="slidesContainer"
 				></SubHelperComponent>
 			</div>
+			{makeSlideNavButtons(
+				showSlideNav,
+				childrenComponents.length,
+				currentSlide,
+				slideNavOrientation,
+				slideNavPlacement,
+				slideNavIconType,
+				slideNavIconFill,
+				showSlideNumbersInDots,
+				resolvedStyles,
+				index => applyTransform(index),
+				visibleSlideNavButtons,
+			)}
 			{nextButton}
 		</div>
 	);
@@ -513,7 +639,7 @@ function calculateMinDimensions(
 	totalChildren: number,
 	noOfChilds: any,
 ) {
-	if (!ref || childRefs.length < totalChildren) return [0, 0];
+	if (!ref || childRefs.length < totalChildren) return [0, 0, 0, 0, 0];
 
 	let maxChildWidth = 0;
 	let maxChildHeight = 0;
