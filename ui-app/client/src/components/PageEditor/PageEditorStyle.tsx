@@ -493,11 +493,6 @@ export default function GridStyle({
 			color: #FFF;
 		}
 
-		${PREFIX} ._iconMenu._personalize {
-			background: #F9F9F9;
-			border-radius: 10px;
-		}
-
 		${PREFIX} ._sideBar ._arrow svg._iconHelperSVG {
 			width: 20px;
 		}
@@ -526,8 +521,7 @@ export default function GridStyle({
 			color: #FFFFFF;
 		}
 
-		${PREFIX} ._sideBar ._iconMenu  svg._iconHelperSVG,
-		${PREFIX} ._topBarGrid ._iconMenu  svg._iconHelperSVG {
+		${PREFIX} ._sideBar ._iconMenu  svg._iconHelperSVG {
 			color: #000000;
 			width: 16px;
 			height: 16px;
@@ -1727,6 +1721,10 @@ export default function GridStyle({
 
 		${PREFIX} ._buttonBar._screenSizes {
 			height: 70px;
+		}
+
+		${PREFIX} ._screenSizes:hover {
+			background-color: #FFFFFF;
 		}
 
 		${PREFIX} ._buttonBar._screenSizes i.fa:hover, ${PREFIX} ._buttonBar._screenSizes svg:hover,
@@ -3094,6 +3092,26 @@ export default function GridStyle({
 			font-weight: 600;
 		}
 
+		${PREFIX} ._tab:hover svg ._blackGradient {
+			fill: url(#blackGradient);
+		}
+
+		${PREFIX} ._tab:hover  svg ._yellow2Gradient {
+			fill: url(#yellow2Gradient);
+		}
+
+		${PREFIX} ._tab:hover svg ._yellow1Gradient {
+			fill: url(#yellow1Gradient);
+		}
+
+		${PREFIX} ._tab:hover  svg ._blueGradient {
+			fill: url(#blueGradient);
+		}
+
+		${PREFIX} ._tab._personalize {
+			padding: 6px;
+		}
+
 		${PREFIX} ._compTemplateSections {
 			margin: 15px;
 		}
@@ -3108,10 +3126,11 @@ export default function GridStyle({
 
 		${PREFIX} ._topRightBarGrid svg._iconHelperSVG  {
 			width: 24px;
+			height: 20px
 		}
 
 		${PREFIX} ._topRightBarGrid ._tab._reload svg._iconHelperSVG  {
-			width: 17px;
+			width: 18px;
 		}
 
 		${PREFIX} ._popupMenuContainer._compMenu ._compMenuSearch {

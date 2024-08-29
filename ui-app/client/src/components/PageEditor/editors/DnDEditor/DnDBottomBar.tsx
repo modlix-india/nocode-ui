@@ -180,8 +180,10 @@ export default function DnDBottomBar({
 		} while (currentKey);
 	}
 
+	compPaths.reverse();
+
 	const comps = compPaths.length
-		? compPaths.reverse()
+		? compPaths
 		: [
 				<div key="nocomp" className="_eachSelectionBar _iconMenu">
 					No component selected
