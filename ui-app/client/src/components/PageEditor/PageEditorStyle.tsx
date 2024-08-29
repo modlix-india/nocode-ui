@@ -3078,6 +3078,18 @@ export default function GridStyle({
 			height: 30px;
 		}
 
+		${PREFIX} ._topRightBarGrid ._tabContainer {
+			padding: 3px 9px;
+		}
+
+		${PREFIX} ._topRightBarGrid ._tabContainer ._tab {
+			padding: 4px 10px;
+		}
+
+		${PREFIX} ._tabContainer ._tab._personalize {
+			padding: 5px 5px 7px 5px;
+		}
+
 		${PREFIX} ._tabContainer ._tab:hover {
 			background: none;
 			color: #333333;
@@ -3106,10 +3118,6 @@ export default function GridStyle({
 
 		${PREFIX} ._tab:hover  svg ._blueGradient {
 			fill: url(#blueGradient);
-		}
-
-		${PREFIX} ._tab._personalize {
-			padding: 6px;
 		}
 
 		${PREFIX} ._compTemplateSections {
