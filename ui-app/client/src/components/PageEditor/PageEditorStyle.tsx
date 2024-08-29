@@ -1002,6 +1002,13 @@ export default function GridStyle({
 			width: 100%;
 			height: 30px;
 		}
+
+		${PREFIX} button._iconOnly {
+			border: none;
+			background: transparent;
+			padding: 0px;
+			margin: 0px;
+		}
 		
 		${PREFIX} ._simpleEditorSelect ._simpleEditorDropdownBody{
 			position: fixed;
