@@ -18,7 +18,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._dndGrid {
 			display: flex;
 			flex:1;
-			background-color: #eee;
+			background-color: #F9F9F9;
 			height: 100%;
 		}
 
@@ -442,6 +442,11 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			justify-content: center;
 		}
 
+		${PREFIX} ._urlInput ._urlInputIcon svg {
+			color: #99999973;
+			fill: black;
+		}
+
 		${PREFIX} ._urlInput._peInput svg {
 			min-width: 20px;
 			cursor: pointer;
@@ -745,7 +750,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._scaleControlContainer {
 			position: relative;	
-			margin-left: -20px;
+			
 		}
 
 		${PREFIX} ._scaleControlContainer ._scaleControl {
@@ -754,10 +759,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			left: -20px;
 			top: 0;
 			background: #FFFFFF;
-			margin-bottom: 50px;
+			margin-bottom: 15px;
 			border-radius: 4px;
-			padding: 0px 5px;
-			box-shadow: 0px 1px 4px 0px #00000012;
+			padding: 0px 15px;
+			border: 1px solid #0000000D;
 			align-items: stretch;
 		}
 
@@ -765,36 +770,39 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			min-width: 20px;
 			display: flex;
 			cursor: pointer;
-			font-family: Asap;
-			font-size: 16px;
-			font-weight: 600;
+			font-size: 11px;
+			font-weight: 500;
 			padding: 8px 5px;
 			align-items: center;
-			border-radius: 3px;
-			border-bottom-left-radius: 0px;
-			border-bottom-right-radius: 0px;
-			margin: 2px;
+			justify-content: center;
 			border: none;
 			background-color: transparent;
-			border-bottom: 2px solid transparent;
 			margin-bottom: 0px;
 			white-space: nowrap;
+			color: #000000CC;
+		}
+
+		${PREFIX} ._scaleControlContainer ._scaleControl ._control svg {
+			color: #00000066;
 		}
 
 		${PREFIX} ._scaleControlContainer ._scaleControl ._control._text {
 			user-select: none;
+			width: 50px;
+			border-radius: 4px;
+			background-color: #F9F9F9;
+			padding: 0px;
+			margin: 6px 0px;
 		}
 
 		${PREFIX} ._scaleControlContainer ._scaleControl ._control:hover,
 		${PREFIX} ._scaleControlContainer ._scaleControl ._control._active {
 
-			background-color: #F9F9F9;
 		}
 
 		${PREFIX} ._scaleControlContainer ._scaleControl ._control._device:hover,
 		${PREFIX} ._scaleControlContainer ._scaleControl ._control._device._active {
 
-			border-bottom: 2px solid #4D7FEE;
 		}
 
 		${PREFIX} ._microToggle2 {
@@ -1734,7 +1742,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._spacingEditor ._value._right { right: 5px; }
 
 		${PREFIX} ._screenSizes {
-			height: 30px;
+			height: 38px;
 		}
 
 		${PREFIX} ._buttonBar._screenSizes {
@@ -1795,19 +1803,23 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			align-items: center;
 			justify-content: flex-start;
 			gap: 10px;
-			background-color: #0000000a;
-			border-radius: 4px;
-			font-size: 12px;
-			color: #000000a0;
+			background-color: #FFF;
+			border-radius: 6px;
+			font-family: Inter;
+			font-size: 11px;
+			font-weight: 600;
+			color: #333333E5;
 			cursor: pointer;
     		transform-origin: top left;
+			padding-left: 30px;
+			border: 1.5px solid #3333331A;
 		}
 
 		${PREFIX} ._iframeCenter {
 			display: table-cell;
 			flex: 1;
 			padding: 70px;
-			padding-top: 10px;
+			padding-top: 30px;
 			overflow: auto;
 		}
 
