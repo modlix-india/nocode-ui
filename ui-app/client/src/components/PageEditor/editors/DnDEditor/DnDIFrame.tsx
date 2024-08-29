@@ -251,7 +251,7 @@ export default function DnDIFrame({
 					gap: `${40 / scale}px`,
 				}}
 			>
-				<div
+				<button
 					className="_iframeHeader _screenSizes"
 					style={{ width: `${scale * 100}%`, transform: `scale(${1 / scale})` }}
 					onClick={e =>
@@ -259,7 +259,7 @@ export default function DnDIFrame({
 					}
 				>
 					{desktopDevice.name} ({desktopDevice.width} x {desktopDevice.height})
-				</div>
+				</button>
 				<iframe
 					id="desktop"
 					data-scale-factor={scale}
@@ -288,7 +288,7 @@ export default function DnDIFrame({
 					gap: `${40 / scale}px`,
 				}}
 			>
-				<div
+				<button
 					className="_iframeHeader _screenSizes"
 					style={{ width: `${scale * 100}%`, transform: `scale(${1 / scale})` }}
 					onClick={e =>
@@ -296,7 +296,7 @@ export default function DnDIFrame({
 					}
 				>
 					{tabletDevice.name} ({tabletDevice.width} x {tabletDevice.height})
-				</div>
+				</button>
 				<iframe
 					id="tablet"
 					data-scale-factor={scale}
@@ -325,7 +325,7 @@ export default function DnDIFrame({
 					gap: `${40 / scale}px`,
 				}}
 			>
-				<div
+				<button
 					className="_iframeHeader _screenSizes"
 					style={{ width: `${scale * 100}%`, transform: `scale(${1 / scale})` }}
 					onClick={e =>
@@ -333,7 +333,7 @@ export default function DnDIFrame({
 					}
 				>
 					{mobileDevice.name} ({mobileDevice.width} x {mobileDevice.height})
-				</div>
+				</button>
 				<iframe
 					id="mobile"
 					data-scale-factor={scale}
@@ -376,7 +376,7 @@ export default function DnDIFrame({
 		deviceMenu = (
 			<div
 				className={`_popupMenuBackground ${theme}`}
-				onClick={() => setShowDevices(undefined)}
+				onMouseUp={() => setShowDevices(undefined)}
 			>
 				<div
 					className="_popupMenuContainer _plain"
@@ -384,7 +384,7 @@ export default function DnDIFrame({
 				>
 					<div className="_contextMenu">
 						{devices.map((d: { name: string; width: number; height: number }) => (
-							<div
+							<button
 								key={d.name}
 								className="_popupMenuItem"
 								onClick={() => {
@@ -396,7 +396,7 @@ export default function DnDIFrame({
 								}}
 							>
 								{d.name} ({d.width} x {d.height})
-							</div>
+							</button>
 						))}
 					</div>
 				</div>
@@ -502,12 +502,10 @@ export function DesktopIcon({ isActive }: Readonly<{ isActive: boolean }>) {
 			<path
 				d="M19.4127 1H2.5873C1.71066 1 1 1.5831 1 2.3024V13.0309C1 13.7502 1.71066 14.3333 2.5873 14.3333H19.4127C20.2893 14.3333 21 13.7502 21 13.0309V2.3024C21 1.5831 20.2893 1 19.4127 1Z"
 				stroke="#C2C3CE"
-				strokeOpacity="0.6"
 			/>
 			<path
 				d="M5.55078 16.5557H16.4726"
 				stroke="#C2C3CE"
-				strokeOpacity="0.6"
 				strokeLinecap="round"
 				strokeLinejoin="round"
 			/>

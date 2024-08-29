@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { addListener, PageStoreExtractor } from '../../../context/StoreContext';
-import Portal from '../../Portal';
 
 export interface Issue {
 	message: string;
@@ -21,7 +20,7 @@ export default function IssuePopup({
 	personalizationPath,
 	pageExtractor,
 	onClearIssue,
-}: IssueProps) {
+}: Readonly<IssueProps>) {
 	const [theme, setTheme] = useState('_light');
 
 	useEffect(() => {
@@ -47,9 +46,9 @@ export default function IssuePopup({
 	return (
 		<div
 			className={`_popupBackground ${theme}`}
-			onClick={() => handleClick(issue.defaultOption)}
+			onMouseUp={() => handleClick(issue.defaultOption)}
 		>
-			<div className="_popupContainer" onClick={e => e.stopPropagation()}>
+			<div className="_popupContainer" onMouseDown={e => e.stopPropagation()}>
 				{issue.message}
 				<div className="_popupButtons">
 					{issue.options.map(e => (

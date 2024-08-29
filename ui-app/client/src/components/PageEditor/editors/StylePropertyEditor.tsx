@@ -388,7 +388,7 @@ export default function StylePropertyEditor({
 	const styleSectionsToShow = reverseStyleSections
 		? Object.values(COMPONENT_STYLE_GROUP_PROPERTIES).filter(
 				each => subComponentSectionsArray.findIndex(e => e === each.name) === -1,
-		  )
+			)
 		: subComponentSectionsArray.map(each => COMPONENT_STYLE_GROUP_PROPERTIES[each]);
 
 	let pseudoState = '';

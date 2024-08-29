@@ -3,7 +3,9 @@ import { processStyleDefinition, StyleResolutionDefinition } from '../../util/st
 import { styleDefaults, styleProperties } from './pageEditorStyleProperties';
 
 const PREFIX = '.comp.compPageEditor';
-export default function GridStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function GridStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const css =
 		`
 		${PREFIX} {
@@ -476,6 +478,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._sideBar ._iconMenu {
 			background: #F9F9F9;
 			color: #FFF;
+			border: none;
 		}
 
 		${PREFIX} ._sideBar ._seperator {
@@ -495,7 +498,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border-radius: 10px;
 		}
 
-		${PREFIX} ._sideBar ._iconMenu._arrow svg._iconHelperSVG {
+		${PREFIX} ._sideBar ._arrow svg._iconHelperSVG {
 			width: 20px;
 		}
 
@@ -515,12 +518,11 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._iconMenuBody ._iconMenuOption:hover i.fa,
 		${PREFIX} ._iconMenuBody ._iconMenuOption:hover svg._iconHelperSVG,
+		${PREFIX} ._iconMenu._active svg._iconHelperSVG {
+			color: #000;
+		}
 		${PREFIX} ._sideBar ._iconMenu._active  svg._iconHelperSVG,
-		${PREFIX} ._sideBar ._iconMenu:hover  svg._iconHelperSVG,
-		${PREFIX} ._topBarGrid ._iconMenu._active svg._iconHelperSVG,
-		${PREFIX} ._topBarGrid ._iconMenu:hover svg._iconHelperSVG,
-		${PREFIX} ._topBarGrid ._iconMenu._active ._iconMenuOption:hover svg._iconHelperSVG,
-		${PREFIX} ._topBarGrid ._iconMenu:hover ._iconMenuOption:hover svg._iconHelperSVG {
+		${PREFIX} ._sideBar ._iconMenu:hover  svg._iconHelperSVG {
 			color: #FFFFFF;
 		}
 
@@ -553,6 +555,9 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			white-space: nowrap;
 			cursor: pointer;
 			margin-bottom: 2px;
+			font-family: Inter;
+			border: none;
+			background-color: transparent;
 		}
 
 		${PREFIX} ._iconMenuBody ._iconMenuOption i.fa,
@@ -605,6 +610,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: block;
 		}
 
+		${PREFIX} ._topBarGrid ._iconMenuBody {
+			top: 100%;
+		}
+
 		${PREFIX} ._iconMenu:hover {
 			background-color: rgba(77, 127, 238, 0.05);
 			
@@ -652,10 +661,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._buttonBar svg.active, ${PREFIX} ._buttonBar svg:hover{
 			background-color: rgba(77, 127, 238, 0.05);
 			color: #1893E9;
-		}
-
-		${PREFIX} ._buttonBar i.fa._hasNoData {
-			color: #8E90A44D;
 		}
 
 		${PREFIX} ._screenSizes i.fa,
@@ -997,10 +1002,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			width: 100%;
 			height: 30px;
 		}
-
-		${PREFIX} ._main_editor_dropdown { 
-			position: relative;
-		}
 		
 		${PREFIX} ._simpleEditorSelect ._simpleEditorDropdownBody{
 			position: fixed;
@@ -1011,23 +1012,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			box-shadow: 0px 1px 4px 0px #00000026;
 			border-radius: 6px;
 			margin-top: 4px;
-			
 			max-height: 250px;
 			overflow: auto;
 		}
 
-		${PREFIX} ._main_editor_dropdown ._simpleEditorDropdownBody{
-			position: absolute;
-			min-width: 100%;
-			background-color: #FFF;
-			border: 1px solid rgba(0, 0, 0, 0.10);
-			z-index: 2;
-			box-shadow: 0px 1px 4px 0px #00000026;
-			border-radius: 6px;
-			max-height: 300px;
-			overflow: auto;
-			padding: 10px;
-		}
 
 		${PREFIX} ._simpleEditorSelect ._simpleEditorDropdownBody {
 		}
@@ -1065,21 +1053,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._simpleEditorSelect ._simpleEditorDropdownBody ._simpleEditorDropdownOption._selected {
 			color: #0085F2;
-		}
-
-		${PREFIX} ._main_editor_dropdown ._simpleEditorDropdownBody ._simpleEditorDropdownOption {
-			height: 25px;
-			padding: 5px 10px 5px 0px;
-			color: rgba(0, 0, 0, 0.4); 
-			border-radius: 4px;
-			white-space: nowrap;
-		}
-
-		${PREFIX} ._main_editor_dropdown ._simpleEditorDropdownBody ._simpleEditorDropdownOption:hover {
-			background-color: #F9F9F9;
-			border-radius: 4px;
-			color: #0085F2;
-			cursor: pointer;
 		}
 
 		${PREFIX} ._simpleEditorIcons {
@@ -1931,7 +1904,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			background-color: #fff;
 			height: 29px;
 			padding-left: 28px;
-			overflow: hidden;
+			z-index: 1;
 		}
 		
 		${PREFIX} ._selectionBar._previewMode {
@@ -2110,7 +2083,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._propContainer {
 			width: 100%;
-			padding-top: 20px;
 			flex: 1;
 		}
 
@@ -2118,6 +2090,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			flex-direction: column;
 			position: relative;
+			padding-top: 15px;
 		}
 
 		${PREFIX} ._eachProp {
@@ -3048,6 +3021,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._popupMenuContainer._compMenu ._compList {
 			flex: 1;
 			overflow-y: auto;
+			height: 100%
 		}
 
 		${PREFIX} ._popupMenuContainer._compMenu ._compList::-webkit-scrollbar {
@@ -3119,6 +3093,18 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._compTemplateSections ._tab {
 			flex: none;
+		}
+
+		${PREFIX} ._tab._inActive svg {
+			color: #99999973;
+		}
+
+		${PREFIX} ._topRightBarGrid svg._iconHelperSVG  {
+			width: 24px;
+		}
+
+		${PREFIX} ._topRightBarGrid ._tab._reload svg._iconHelperSVG  {
+			width: 17px;
 		}
 
 		${PREFIX} ._popupMenuContainer._compMenu ._compMenuSearch {

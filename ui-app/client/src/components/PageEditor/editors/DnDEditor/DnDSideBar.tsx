@@ -1,15 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { DRAG_CD_KEY } from '../../../../constants';
 import {
 	addListenerAndCallImmediately,
-	getDataFromPath,
 	PageStoreExtractor,
 } from '../../../../context/StoreContext';
-import { Component, LocationHistory, PageDefinition, Section } from '../../../../types/common';
-import ComponentDefinitions from '../../../';
-import { PageOperations } from '../../functions/PageOperations';
-import { DRAG_CD_KEY, DRAG_COMP_NAME } from '../../../../constants';
+import { LocationHistory } from '../../../../types/common';
 import { IconHelper } from '../../../util/IconHelper';
 import ComponentMenu from '../../components/ComponentMenu';
+import { PageOperations } from '../../functions/PageOperations';
 
 interface DnDSideBarProps {
 	personalizationPath: string | undefined;
@@ -43,7 +41,7 @@ export default function DnDSideBar({
 	sectionsListConnectionName,
 	sectionsCategoryList,
 	helpURL,
-}: DnDSideBarProps) {
+}: Readonly<DnDSideBarProps>) {
 	const [noSelection, setNoSelection] = useState<boolean>(false);
 	const [componentTree, setComponentTree] = useState<boolean>(false);
 	const [noShell, setNoShell] = useState<boolean>(false);
@@ -102,9 +100,8 @@ export default function DnDSideBar({
 	let shellIcon = <></>;
 	if (editorType !== 'SECTION') {
 		shellIcon = (
-			<div
+			<button
 				className="_iconMenu"
-				tabIndex={0}
 				onClick={() => onChangePersonalization('slave.noShell', !noShell)}
 				title={!noShell ? 'Hide Shell' : 'Show Shell'}
 			>
@@ -129,7 +126,7 @@ export default function DnDSideBar({
 						/>
 					)}
 				</IconHelper>
-			</div>
+			</button>
 		);
 	}
 
@@ -154,12 +151,9 @@ export default function DnDSideBar({
 		<>
 			<div className="_sideBar">
 				<div className="_top">
-					<div
+					<button
 						className={`_iconMenu _compMenuButton ${showCompMenu ? '_active' : ''}`}
-						tabIndex={0}
-						onClick={() => {
-							setShowCompMenu(true);
-						}}
+						onClick={() => setShowCompMenu(true)}
 					>
 						<IconHelper viewBox="0 0 48 48">
 							<path
@@ -175,10 +169,9 @@ export default function DnDSideBar({
 								stroke="currentColor"
 							/>
 						</IconHelper>
-					</div>
-					<div
+					</button>
+					<button
 						className={`_iconMenu ${componentTree ? '_active' : ''}`}
-						tabIndex={0}
 						onClick={() => onChangePersonalization('componentTree', !componentTree)}
 					>
 						<IconHelper viewBox="0 0 16 16">
@@ -192,10 +185,10 @@ export default function DnDSideBar({
 								fill="currentColor"
 							/>
 						</IconHelper>
-					</div>
+					</button>
 				</div>
 				<div className="_bottom">
-					<div className="_iconMenu" tabIndex={0} onClick={() => onShowCodeEditor('')}>
+					<button className="_iconMenu" onClick={() => onShowCodeEditor('')}>
 						<IconHelper viewBox="0 0 18 16">
 							<path
 								d="M10.4961 2L8.24609 14.75"
@@ -209,10 +202,9 @@ export default function DnDSideBar({
 								fill="currentColor"
 							/>
 						</IconHelper>
-					</div>
-					<div
+					</button>
+					<button
 						className="_iconMenu"
-						tabIndex={0}
 						onClick={() => onChangePersonalization('preview', true)}
 					>
 						<IconHelper viewBox="0 0 20 16">
@@ -226,8 +218,8 @@ export default function DnDSideBar({
 								fillOpacity={0.5}
 							/>
 						</IconHelper>
-					</div>
-					<div
+					</button>
+					<button
 						className="_iconMenu"
 						tabIndex={0}
 						onClick={() => pageOperations.deleteComponent(selectedComponent)}
@@ -263,8 +255,8 @@ export default function DnDSideBar({
 								fill="currentColor"
 							/>
 						</IconHelper>
-					</div>
-					<div
+					</button>
+					<button
 						className="_iconMenu _arrow"
 						tabIndex={0}
 						onClick={() => onChangePersonalization('slave.noSelection', !noSelection)}
@@ -284,7 +276,7 @@ export default function DnDSideBar({
 								fillOpacity={noSelection ? '0' : '0.5'}
 							/>
 						</IconHelper>
-					</div>
+					</button>
 					{shellIcon}
 					{helpIcon}
 				</div>
