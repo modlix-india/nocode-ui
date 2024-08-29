@@ -776,15 +776,15 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'dotButtons',
-			displayName: 'Dot Buttons',
-			description: 'Dot Buttons',
+			name: 'slideNavButtons',
+			displayName: 'Slider Navigation Buttons',
+			description: 'Slider Navigation Buttons',
 			icon: 'fa-solid fa-box',
 		},
 		{
 			name: 'slidesContainer',
 			displayName: 'Slide Container',
-			description: 'Slder Wapper for Slider',
+			description: 'Slider Wapper for Slider',
 			icon: 'fa-solid fa-box',
 		},
 		{
