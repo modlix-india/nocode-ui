@@ -271,7 +271,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'decimalPrecision',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Decimal Precision for Display',
+		displayName: 'Decimal Precision',
 		defaultValue: 'auto',
 		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [

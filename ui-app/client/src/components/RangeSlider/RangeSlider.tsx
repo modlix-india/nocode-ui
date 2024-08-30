@@ -96,18 +96,20 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 
 	const [value, setValue] = useState<number | undefined>();
 
+	const precision = getPrecision(step, decimalPrecision);
+
 	useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
 			(_, v) => {
 				if (isNullValue(v)) setValue(undefined);
 				else if (storageDataType === 'value') setValue(v);
-				else setValue(getValue(v, storageDataType, min, max, step));
+				else setValue(getValue(v, storageDataType, min, max, step, precision));
 			},
 			pageExtractor,
 			bindingPathPath,
 		);
-	}, [bindingPathPath, storageDataType, min, max, step]);
+	}, [bindingPathPath, storageDataType, min, max, step, precision]);
 
 	const styleProperties = processComponentStylePseudoClasses(
 		props.pageDefinition,
@@ -122,7 +124,6 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 	);
 
 	const visualPercent = value ? getPercentage(value, min, max, step, 2) : 0;
-	const precision = getPrecision(step, decimalPrecision);
 	const labelPercent = value ? getPercentage(value, min, max, step, precision) : 0;
 
 	const topLabels: Array<JSX.Element> = [];
@@ -157,10 +158,12 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 	const ref = useRef<HTMLDivElement>(null);
 
 	const updateStore = useCallback(
-		(v: number) => {
+		(v: number, processed: boolean = false) => {
 			if (!bindingPathPath || readOnly) return;
 			if (v < min) v = min;
 			else if (v > max) v = max;
+			if (!processed) v = getValue(v, 'value', min, max, step, precision);
+
 			setData(
 				bindingPathPath,
 				storageDataType === 'value' ? v : getPercentage(v, min, max, step, precision),
@@ -194,12 +197,15 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 	const handleChange = useCallback(
 		(v: number) => {
 			if (!bindingPathPath || readOnly) return;
+
+			v = getValue(v, 'value', min, max, step, precision);
+
 			if (v < min) v = min;
 			else if (v > max) v = max;
-			if (updateStoreImmediately) updateStore(v);
+			if (updateStoreImmediately) updateStore(v, true);
 			else setValue(v);
 		},
-		[bindingPathPath, readOnly, min, max, updateStoreImmediately, updateStore],
+		[bindingPathPath, readOnly, min, max, updateStoreImmediately, updateStore, step, precision],
 	);
 
 	const markThumbs: Array<JSX.Element> = [];
@@ -223,7 +229,9 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 			const markPercent =
 				markValueType === 'value' ? getPercentage(mark, min, max, step, precision) : mark;
 			const markValue =
-				markValueType === 'value' ? mark : getValue(mark, 'percent', min, max, step);
+				markValueType === 'value'
+					? mark
+					: getValue(mark, 'percent', min, max, step, precision);
 
 			if (markPercent < 0 || markPercent > 100) continue;
 			let style = defaultMarkThumbStyle;
@@ -300,7 +308,7 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 		toolTip = (
 			<div className={`_toolTip ${toolTipPosition}`} style={styleProperties?.toolTip ?? {}}>
 				<SubHelperComponent subComponentName="toolTip" definition={definition} />
-				{`${toolTipValueLabelPrefix ?? ''}${toolTipDisplayType == 'value' ? value ?? '' : labelPercent + '%'}${toolTipValueLabelSuffix ?? ''}`}
+				{`${toolTipValueLabelPrefix ?? ''}${toolTipDisplayType == 'value' ? (value ?? '') : labelPercent + '%'}${toolTipValueLabelSuffix ?? ''}`}
 			</div>
 		);
 	}
@@ -654,23 +662,24 @@ function getValue(
 	min: number,
 	max: number,
 	step: number,
+	decimalPrecision: number,
 ): number {
-	if (storageDataType === 'value') {
-		if (vOrP < min) return min;
-		else if (vOrP > max) return max;
-		else {
-			const value = Math.round((vOrP - min) / step) * step + min;
-			return value;
-		}
-	}
+	let value;
 
-	return Math.round((min + ((max - min) * vOrP) / 100) / step) * step;
+	if (storageDataType === 'value') {
+		if (vOrP < min) value = min;
+		else if (vOrP > max) value = max;
+		else value = Math.round((vOrP - min) / step) * step + min;
+	} else value = Math.round((min + ((max - min) * vOrP) / 100) / step) * step;
+
+	const precision = Math.pow(10, decimalPrecision);
+	value = Math.round(value * precision) / precision;
+
+	return parseFloat(value.toFixed(decimalPrecision));
 }
 
 function getPrecision(step: number, decimalPrecision: string): number {
 	if (decimalPrecision != 'auto') return parseInt(decimalPrecision);
-
-	if (step > 0) return 0;
 
 	const stepString = step.toString();
 	const decimalIndex = stepString.indexOf('.');
@@ -689,7 +698,7 @@ function getPercentage(
 	if (value < min) return 0;
 	if (value > max) return 100;
 	const perOne = ((value - min) * 100) / (max - min);
-	return Math.round(perOne * precision) / precision;
+	return parseFloat((Math.round(perOne * precision) / precision).toFixed(decimalPrecision));
 }
 
 const component: Component = {
