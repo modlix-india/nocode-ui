@@ -88,6 +88,28 @@ export default function GridStyle({
 			opacity: 0.6;
 		}
 
+		${PREFIX} ._propBarTabContainer {
+			padding: 14px 15px;
+			width: 100%;
+		}
+
+		${PREFIX} ._propBarTabContainer ._tabContainer {
+			height: 46px;
+		}
+		
+		${PREFIX} ._propBarTabContainer ._tabContainer ._tab {
+			height: 36px;
+		}
+
+		${PREFIX} ._propBarTabContainer svg._iconHelperSVG {
+			color: #99999973;
+		}
+
+		${PREFIX} ._propBarTabContainer ._tab:hover svg._iconHelperSVG ._gradientFill,
+		${PREFIX} ._propBarTabContainer ._tab._selected svg._iconHelperSVG ._gradientFill {
+			fill: url(#greenPropBarGradient);
+		}
+
 		${PREFIX} ._filterBar {
 			display: flex;
 			flex-direction: row;
@@ -326,12 +348,12 @@ export default function GridStyle({
 		}
 
 		${PREFIX} ._overflowContainer {
-			height: calc(100vh - 138px);
+			height: calc(100vh - 173px);
 			overflow: auto;
 		}
 
 		${PREFIX} ._overflowContainer._withCopyButtons {
-			height: calc(100vh - 210px);
+			height: calc(100vh - 228px);
 		}
 
 		${PREFIX} ._withDragProperty {
@@ -2071,6 +2093,7 @@ export default function GridStyle({
 			height: 45px;
 			position: relative;		
 			padding: 0px 5px;	
+			margin-bottom: 10px;
 		}
 
 		${PREFIX} ._addArrayItemButton {
@@ -2095,7 +2118,6 @@ export default function GridStyle({
 			display: flex;
 			flex-direction: column;
 			position: relative;
-			padding-top: 15px;
 		}
 
 		${PREFIX} ._eachProp {
@@ -2995,6 +3017,7 @@ export default function GridStyle({
 			flex-direction: column;
 			padding: 15px 0px 0px 15px;
 			border-right: 1px solid rgba(0, 0, 0, 0.10);
+			display: flex;
 		}
 
 		${PREFIX} ._popupMenuContainer._compMenu ._right {
@@ -3021,12 +3044,6 @@ export default function GridStyle({
 			padding: 10px;
 			gap: 10px;
 			overflow: auto;
-		}
-
-		${PREFIX} ._popupMenuContainer._compMenu ._compList {
-			flex: 1;
-			overflow-y: auto;
-			height: 100%
 		}
 
 		${PREFIX} ._popupMenuContainer._compMenu ._compList::-webkit-scrollbar {
@@ -3076,6 +3093,9 @@ export default function GridStyle({
 			color: #33333399;
 			flex: 1;
 			height: 30px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
 		}
 
 		${PREFIX} ._topRightBarGrid ._tabContainer {
@@ -3228,7 +3248,7 @@ export default function GridStyle({
 			overflow: auto;
 			padding-top: 5px;
 			border-left: 1px solid #52BD94;
-			border-radius: 4px;
+			border-radius: 0px 4px 4px 0px;
 			background-color: #fff;
 			box-shadow: 0px 1px 10px 0px #0000001A;
 		}
@@ -3243,6 +3263,8 @@ export default function GridStyle({
 			flex-direction: column;
 			gap: 15px;
 			padding-bottom: 10px;
+			flex: 1;
+			overflow-y: auto;
 		}
 
 		${PREFIX} ._popupMenuContainer._compMenu ._compList ._compMenuItem {
