@@ -72,111 +72,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{ name: 'backward', displayName: 'Backward', description: 'Backward' },
 		],
 	},
-	// {
-	// 	name: 'dotsButtonType',
-	// 	schema: SCHEMA_STRING_COMP_PROP,
-	// 	displayName: 'Dots Button Type',
-	// 	description: 'Types of Dot buttons',
-	// 	editor: ComponentPropertyEditor.ENUM,
-	// 	defaultValue: 'circle',
-	// 	group: ComponentPropertyGroup.BASIC,
-	// 	enumValues: [
-	// 		{ name: 'circle', displayName: 'dots', description: 'dots' },
-	// 		{ name: 'square', displayName: 'square', description: 'square buttons' },
-	// 		{ name: 'minus', displayName: 'dash', description: 'dash icon' },
-	// 		{ name: 'none', displayName: 'none', description: 'none' },
-	// 	],
-	// },
-	// {
-	// 	name: 'dotsButtonIconType',
-	// 	schema: SCHEMA_STRING_COMP_PROP,
-	// 	displayName: 'Dots Button Type',
-	// 	description: 'Position of Dot buttons',
-	// 	editor: ComponentPropertyEditor.ENUM,
-	// 	group: ComponentPropertyGroup.BASIC,
-	// 	defaultValue: 'regular',
-	// 	enumValues: [
-	// 		{ name: 'regular', displayName: 'regular', description: 'hallow icon' },
-	// 		{ name: 'solid', displayName: 'solid', description: 'solid icon' },
-	// 	],
-	// },
-	// {
-	// 	name: 'show Slide Numbers In Dots',
-	// 	schema: SCHEMA_BOOL_COMP_PROP,
-	// 	displayName: 'Show Slide Numbers In Dots',
-	// 	description: 'Show Slide number in the dots',
-	// 	group: ComponentPropertyGroup.BASIC,
-	// 	defaultValue: false,
-	// },
-	// {
-	// 	name: 'slideNavButtonPlacement',
-	// 	schema: SCHEMA_STRING_COMP_PROP,
-	// 	displayName: 'Slide Nav Button Placement',
-	// 	description: 'Slide navigation buttons placement',
-	// 	editor: ComponentPropertyEditor.ENUM,
-	// 	group: ComponentPropertyGroup.ADVANCED,
-	// 	defaultValue: '_insideNavButton',
-	// 	enumValues: [
-	// 		{
-	// 			name: '_insideNavButton',
-	// 			displayName: 'Inside',
-	// 			description: 'Slide navigations button inside placement',
-	// 		},
-	// 		{
-	// 			name: '_outsideNavButton',
-	// 			displayName: 'Outside',
-	// 			description: 'Slide navigations button outside placement',
-	// 		},
-	// 	],
-	// },
-	// {
-	// 	name: 'slideNavButtonVerticalAlignment',
-	// 	schema: SCHEMA_STRING_COMP_PROP,
-	// 	displayName: 'Slide Nav Button Vertical Alignment',
-	// 	description: 'Slide navigation buttons vertical alignment',
-	// 	editor: ComponentPropertyEditor.ENUM,
-	// 	group: ComponentPropertyGroup.ADVANCED,
-	// 	defaultValue: '_bottomNavButton',
-	// 	enumValues: [
-	// 		{
-	// 			name: '_topNavButton',
-	// 			displayName: 'Top',
-	// 			description: 'slide navigations button positioned on top',
-	// 		},
-	// 		{
-	// 			name: '_bottomNavButton',
-	// 			displayName: 'Bottom',
-	// 			description: 'slide navigations button positioned on bottom',
-	// 		},
-	// 	],
-	// },
-	// {
-	// 	name: 'slideNavButtonHorizontalAlignment',
-	// 	schema: SCHEMA_STRING_COMP_PROP,
-	// 	displayName: 'Slide Nav Button Horizontal Alignment',
-	// 	description: 'Slide navigation buttons horizontal alignment',
-	// 	editor: ComponentPropertyEditor.ENUM,
-	// 	group: ComponentPropertyGroup.ADVANCED,
-	// 	defaultValue: '_middleNavigation',
-	// 	enumValues: [
-	// 		{
-	// 			name: '_rightNavigation',
-	// 			displayName: 'Right',
-	// 			description: 'slide navigations button positioned right',
-	// 		},
-	// 		{
-	// 			name: '_middleNavigation',
-	// 			displayName: 'Middle',
-	// 			description: 'slide navigations button positioned Middle',
-	// 		},
-	// 		{
-	// 			name: '_leftNavigation',
-	// 			displayName: 'Left',
-	// 			description: 'slide navigations button positioned Left',
-	// 		},
-	// 	],
-	// },
-
 	{
 		name: 'arrowButtonsPlacement',
 		schema: SCHEMA_STRING_COMP_PROP,
@@ -272,6 +167,19 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: true,
 	},
 	{
+		name: 'designType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Deisgn Type',
+		description: 'Design Type',
+		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: '_horizontal',
+		enumValues: [
+			{ name: '_horizontal', displayName: 'Horizontal Slider' },
+			{ name: '_vertical', displayName: 'Vertical Slider' },
+		],
+	},
+	{
 		name: 'slideNavOrientation',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Slide Navigation Orientation',
@@ -350,6 +258,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{ name: 'outline', displayName: 'Outline', description: 'Outline fill' },
 		],
 	},
+
 	{
 		name: 'showArrowButtonsOnHover',
 		schema: SCHEMA_BOOL_COMP_PROP,
@@ -359,19 +268,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: false,
 	},
-	{
-		name: 'designType',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Deisgn Type',
-		description: 'Design Type',
-		editor: ComponentPropertyEditor.ENUM,
-		group: ComponentPropertyGroup.ADVANCED,
-		defaultValue: '_horizontal',
-		enumValues: [
-			{ name: '_horizontal', displayName: 'Horizontal Slider' },
-			{ name: '_vertical', displayName: 'Vertical Slider' },
-		],
-	},
+
 	{
 		name: 'slidesToScroll',
 		schema: SCHEMA_NUM_COMP_PROP,
@@ -403,6 +300,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Number of visible slide navigation buttons',
 		group: ComponentPropertyGroup.BASIC,
 		defaultValue: -1,
+	},
+	{
+		name: 'showNavArrowButtons',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show NavigationArrow Buttons',
+		description: 'This property display arrow buttons on navigation.',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: false,
 	},
 	COMMON_COMPONENT_PROPERTIES.visibility,
 	COMMON_COMPONENT_PROPERTIES.readOnly,

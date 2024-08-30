@@ -1,8 +1,7 @@
 import React from 'react';
-import { StyleResolution } from '../../types/common';
 import { processStyleDefinition } from '../../util/styleProcessor';
-
 import { styleProperties, styleDefaults } from './smallCarouselStyleProperties';
+
 const PREFIX = '.comp.compSmallCarousel';
 
 export default function SmallCarouselStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
@@ -15,9 +14,7 @@ export default function SmallCarouselStyle({ theme }: { theme: Map<string, Map<s
         position: relative;
     }
 
-    ${PREFIX}._vertical {
-        flex-direction: column;
-    }
+    ${PREFIX}._vertical { flex-direction: column; }
 
     ${PREFIX} ._slidesContainer {
         overflow: hidden;
@@ -43,15 +40,58 @@ export default function SmallCarouselStyle({ theme }: { theme: Map<string, Map<s
         display: flex;
         position: relative;
         color: #5555;
-        width: 2.5vw;  
-        height: 2.5vw; 
+        width: 2.5vw;
+        height: 2.5vw;
     }
 
-    
     ${PREFIX} ._slideNavContainer {
         display: flex;
         position: absolute;
         z-index: 1;
+    }
+
+    ${PREFIX} ._slideNavContainer._verticalLeft,
+    ${PREFIX} ._slideNavContainer._verticalRight {
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    ${PREFIX} ._vertical._slideNavContainer._verticalLeft._inside {
+        left: 2%;
+    }
+
+    ${PREFIX} ._vertical._slideNavContainer._verticalLeft._outside {
+        left: -1%;
+    }
+
+    ${PREFIX} ._vertical._slideNavContainer._verticalRight._inside {
+        right: 3%;
+    }
+
+    ${PREFIX} ._vertical._slideNavContainer._verticalRight._outside {
+        right: 0%;
+    }
+
+    ${PREFIX} ._slideNavContainer._horizontalTop,
+    ${PREFIX} ._slideNavContainer._horizontalBottom {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    ${PREFIX} ._slideNavContainer._horizontalTop._inside {
+        top:10%;
+    }
+
+    ${PREFIX} ._slideNavContainer._horizontalTop._outside {
+        top: 0;
+    }
+
+    ${PREFIX} ._slideNavContainer._horizontalBottom._inside {
+        bottom: 10%;
+    }
+
+    ${PREFIX} ._slideNavContainer._horizontalBottom._outside {
+        bottom: 0%;
     }
 
     ${PREFIX} ._slideNavButton {
@@ -60,22 +100,22 @@ export default function SmallCarouselStyle({ theme }: { theme: Map<string, Map<s
         width: 10px;
         height: 10px;
         transition: all 0.3s ease;
-    }
-
-    ${PREFIX} ._slideNavButton {
-        transition: all 0.3s ease;
         display: flex;
         align-items: center;
         justify-content: center;
         border: 1px solid #555;
+        font-size: 12px;
+        color: #555;
     }
+
+    ${PREFIX} ._slideNavButton._active { color: #000; }
 
     ${PREFIX} ._slideNavButton._number {
         width: 20px;
         height: 20px;
         font-size: 12px;
         border-radius: 50%;
-        transform: translateY(-5px);
+        transform:   translateY(-5px);
     }
 
     ${PREFIX} ._slideNavButton._number._active {
@@ -105,6 +145,16 @@ export default function SmallCarouselStyle({ theme }: { theme: Map<string, Map<s
         transform: translateY(-5px);
     }
 
+    ${PREFIX} ._slideNavButton._vertical._circle {
+        margin-top: 3px;
+        margin-bottom: 3px;
+        transform: translateX(15px);
+    }
+
+    ${PREFIX} ._slideNavButton._vertical._circle._active {
+        transform: translateX(10px);
+    }
+
     ${PREFIX} ._slideNavButton._square {
         width: 10px;
         height: 10px;
@@ -120,6 +170,24 @@ export default function SmallCarouselStyle({ theme }: { theme: Map<string, Map<s
         width: 20px;
         height: 20px;
         transform: translateY(-5px);
+    }
+    
+    ${PREFIX} ._slideNavButton._vertical._square {
+        margin-top: 3px;
+        margin-bottom: 3px;
+        transform: translateX(15px);
+    }
+
+    ${PREFIX} ._slideNavButton._vertical._square._solid {
+        background-color: #999;
+    }
+
+    ${PREFIX} ._slideNavButton._vertical._square._active {
+        background-color: #000;
+        border-color: #000;
+        width: 20px;
+        height: 20px;
+        transform: translateX(10px);
     }
 
     ${PREFIX} ._slideNavButton._dash {
@@ -139,89 +207,40 @@ export default function SmallCarouselStyle({ theme }: { theme: Map<string, Map<s
         transform: translateY(-1px);
     }
 
-    ${PREFIX} ._slideNavContainer._horizontalBottom._inside {
-    flex-direction: row;
-    bottom: 25%;
-    left: 50%;
-    transform: translateX(-50%);
+    ${PREFIX} ._slideNavButton._vertical._dash {
+        margin-top: 3px;
+        margin-bottom: 3px;
+        transform: translateX(12px);
     }
 
-    ${PREFIX} ._slideNavContainer._horizontalBottom._outside {
-    flex-direction: row;
-    bottom: 5%;
-    // bottom: 2.5vw;
-    left: 50%;
-    transform: translateX(-50%);
+    ${PREFIX} ._slideNavButton._vertical._dash._active {
+        transform: translateX(8px);
     }
 
-    ${PREFIX} ._slideNavContainer._horizontalTop._inside {
-    flex-direction: row;
-    bottom:70%;
-    left: 50%;
-    transform: translateX(-50%);
+    ${PREFIX} ._slideNavButton._vertical._number {
+        margin-top: 3px;
+        margin-bottom: 3px;
+        transform: translateX(10px);
     }
 
-    ${PREFIX} ._slideNavContainer._horizontalTop._outside {
-    flex-direction: row;
-    bottom: 95%;
-    left: 50%;
-    transform: translateX(-50%);
+    ${PREFIX} ._slideNavButton._vertical._number._active {
+        transform: translateX(7px);
     }
 
-    ${PREFIX} ._slideNavContainer._verticalLeft._inside {
-    flex-direction: column;    
-    bottom: 10.5vw;
-    left: 3%;
-    transform: translateX(-50%);
-    }
-    
-    ${PREFIX} ._slideNavContainer._verticalLeft._outside {
-    flex-direction: column;    
-    bottom: 10.5vw;
-    left: 0 %;
-    transform: translateX(-50%);
+    ${PREFIX}._vertical ._slideNavContainer._horizontalTop._inside {
+        top: 10px;
     }
 
-    ${PREFIX} ._slideNavContainer._verticalRight._inside {
-    flex-direction: column;    
-    bottom: 10.5vw;
-    left: 97%;
-    transform: translateX(-50%);
-    }
-    
-    ${PREFIX} ._slideNavContainer._verticalRight._outside {
-    flex-direction: column;    
-    bottom: 10.5vw;
-    left: 100%;
-    transform: translateX(-50%);
+    ${PREFIX}._vertical ._slideNavContainer._horizontalTop._outside {     
+        top: 0;
     }
 
-    ${PREFIX} ._slideNavButton {
-    cursor: pointer;
-    margin: 0 5px;
-    font-size: 12px;
-    color: #555;
-   
+    ${PREFIX}._vertical ._slideNavContainer._horizontalBottom._inside {
+        bottom: 10px;
     }
 
-    ${PREFIX} ._slideNavButton._active {
-    color: #000;
-    }
-
-    ${PREFIX}._vertical ._slideNavContainer._inside {
-    right: 10px;
-    top: 50%;
-    bottom: auto;
-    left: auto;
-    transform: translateY(-50%);
-    }
-
-    ${PREFIX}._vertical ._slideNavContainer._outside {
-    right: -30px;
-    top: 50%;
-    bottom: auto;
-    left: auto;
-    transform: translateY(-50%);
+    ${PREFIX}._vertical ._slideNavContainer._horizontalBottom._outside {     
+        bottom: 0;
     }
 
     ${PREFIX}._horizontal._centerArrow ._arrowButtons { align-items: center; }
@@ -284,8 +303,7 @@ export default function SmallCarouselStyle({ theme }: { theme: Map<string, Map<s
 
     ${PREFIX} ._slideNavArrow:hover {
         background-color: rgba(0, 0, 0, 0.7);
-        transform: scale(1.1);
-        transform: translateY(-10px);
+        transform: scale(1.1) translateY(-10px);
     }
 
     ${PREFIX} ._slideNavArrow._start::before {
@@ -312,58 +330,42 @@ export default function SmallCarouselStyle({ theme }: { theme: Map<string, Map<s
         transform: rotate(90deg);
     }
 
-    ${PREFIX} ._slideNavContainer._verticalLeft{
-        flex-direction: column;
-    }
-    ${PREFIX} ._slideNavContainer._verticalRight {
-        flex-direction: column;
+    ${PREFIX} ._slideNavContainer._vertical {
+      flex-direction: column;
     }
 
-    ${PREFIX} ._slideNavContainer._verticalLeft {
-        left: 10px;
-    }
-
-    ${PREFIX} ._slideNavContainer._verticalRight {
-        right: 10px;
-    }
-
-    ${PREFIX} ._slideNavContainer._verticalLeft._inside {
-        left: 10px;
-    }
-    ${PREFIX} ._slideNavContainer._verticalRight._inside {
-        top: 50%;
-        
-    }
-
-    ${PREFIX} ._slideNavContainer._verticalLeft._outside {
-        // left: 10px;
-    }
-
-    ${PREFIX} ._slideNavContainer._verticalRight._outside {
-        // right: -40px;
-    }
-
-    ${PREFIX} ._slideNavContainer._horizontalTop,
-    ${PREFIX} ._slideNavContainer._horizontalBottom {
-        flex-direction: row;
+    ${PREFIX} ._slideNavContainer._vertical._horizontalTop{ 
         left: 50%;
+        top: 10px;
         transform: translateX(-50%);
+        flex-direction: row;
     }
-
-    ${PREFIX} ._slideNavContainer._horizontalTop._inside {
-        top: 20px;
-    }
-
-    ${PREFIX} ._slideNavContainer._horizontalBottom._inside {
+    ${PREFIX} ._slideNavContainer._vertical._horizontalBottom {
+        left: 50%;
         bottom: 10px;
+        top: auto;
+        transform: translateX(-50%);
+        flex-direction: row;
     }
 
-    ${PREFIX} ._slideNavContainer._horizontalTop._outside {
-        top: 0px;
+    ${PREFIX} ._slideNavContainer._vertical._horizontalTop {
+      top: 10px;
+      bottom: auto;
     }
 
-    ${PREFIX} ._slideNavContainer._horizontalBottom._outside {
-        bottom: -40px;
+    ${PREFIX} ._slideNavContainer._vertical._horizontalBottom {
+      bottom: 10px;
+      top: auto;
+    }
+
+    ${PREFIX} ._slideNavContainer._vertical._inside {
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    ${PREFIX} ._slideNavContainer._vertical._outside {
+      top: 50%;
+      transform: translateY(-50%);
     }
 
     ${PREFIX}._showSlideNavOnHover ._slideNavContainer {

@@ -75,6 +75,7 @@ function SmallCarousel(props: ComponentProps) {
 			showSlideNumbersInDots,
 			showNavigationControlsOnHover,
 			visibleSlideNavButtons,
+			showNavArrowButtons,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -398,6 +399,7 @@ function SmallCarousel(props: ComponentProps) {
 		resolvedStyles: any,
 		onSlideNavClick: (index: number) => void,
 		visibleSlideNavButtons: number,
+		showNavArrowButtons: boolean,
 	) {
 		if (!showSlideNav) return null;
 
@@ -415,15 +417,12 @@ function SmallCarousel(props: ComponentProps) {
 			}
 		}
 
-		const showStartArrow = startIndex > 0;
-		const showEndArrow = endIndex < totalSlides;
-
 		const navButtons = [];
 
 		const isVertical = slideNavOrientation.startsWith('vertical');
 		const rotationClass = isVertical ? '_vertical' : '';
 
-		if (showStartArrow) {
+		if (startIndex > 0 && showNavArrowButtons) {
 			navButtons.push(
 				<div
 					key="start-arrow"
@@ -440,7 +439,7 @@ function SmallCarousel(props: ComponentProps) {
 			navButtons.push(
 				<div
 					key={`slide-nav-${i}`}
-					className={`_slideNavButton ${
+					className={`_slideNavButton ${rotationClass} ${
 						showSlideNumbersInDots ? '_number' : `_${slideNavIconType}`
 					} ${slideNavIconFill === 'solid' ? '_solid' : ''} ${
 						i === currentSlide ? '_active' : ''
@@ -453,7 +452,7 @@ function SmallCarousel(props: ComponentProps) {
 			);
 		}
 
-		if (showEndArrow) {
+		if (endIndex < totalSlides && showNavArrowButtons) {
 			navButtons.push(
 				<div
 					key="end-arrow"
@@ -464,11 +463,10 @@ function SmallCarousel(props: ComponentProps) {
 			);
 		}
 
+		const navContainerClass = `_slideNavContainer _${slideNavOrientation} _${slideNavPlacement} ${isVertical ? '_vertical' : '_horizontal'}`;
+
 		return (
-			<div
-				className={`_slideNavContainer _${slideNavOrientation} _${slideNavPlacement}`}
-				style={resolvedStyles?.slideNavContainer ?? {}}
-			>
+			<div className={navContainerClass} style={resolvedStyles?.slideNavContainer ?? {}}>
 				{navButtons}
 			</div>
 		);
@@ -480,7 +478,7 @@ function SmallCarousel(props: ComponentProps) {
 				showArrowButtonsOnHover ? '_showArrowsOnHover' : ''
 			} ${
 				showNavigationControlsOnHover ? '_showSlideNavOnHover' : ''
-			} ${slideNavOrientation} ${slideNavPlacement}`}
+			} ${slideNavOrientation} ${slideNavPlacement} ${isVertical ? '_vertical' : ''}`}
 			style={{ minWidth, minHeight, ...(resolvedStyles?.comp ?? {}) }}
 			onMouseOver={pauseOnHover ? () => (transit.current.hover = true) : undefined}
 			onMouseOut={pauseOnHover ? () => (transit.current.hover = false) : undefined}
@@ -509,8 +507,9 @@ function SmallCarousel(props: ComponentProps) {
 				slideNavIconFill,
 				showSlideNumbersInDots,
 				resolvedStyles,
-				index => applyTransform(index),
+				(index: number) => applyTransform(index),
 				visibleSlideNavButtons,
+				showNavArrowButtons,
 			)}
 			{nextButton}
 		</div>
@@ -749,7 +748,7 @@ const component: Component = {
 						fillOpacity="0.2"
 					/>
 					<path
-						d="M2.44468 7.99902H2.33789C1.78561 7.99902 1.33789 8.44674 1.33789 8.99902V14.959C1.33789 15.5112 1.78561 15.959 2.33789 15.959H2.44468C2.99697 15.959 3.44468 15.5112 3.44468 14.959V8.99902C3.44468 8.44674 2.99697 7.99902 2.44468 7.99902Z"
+						d="M2.44468 7.99902H2.33789C1.78561 7.99902 1.33789 8.44674 1.33789 8.99902V14.959C1.33789 15.5112 1.78561 17.0379 5.27539 17.0379H6.41442C6.9667 17.0379 7.41442 16.5902 7.41442 16.0379V7.91943C7.41442 7.36715 6.9667 6.91943 6.41442 6.91943Z"
 						fill="currentColor"
 						fillOpacity="0.2"
 					/>
