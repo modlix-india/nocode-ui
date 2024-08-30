@@ -901,15 +901,17 @@ export default function DnDTopBar({
 					</div>
 				</div>
 
+				<button className="_topBarButton _save" onClick={onSave} title="Save">
+					Save
+				</button>
+
+				{onPublish && (
+					<button className="_topBarButton _publish" onClick={onPublish} title="Publish">
+						Publish
+					</button>
+				)}
+
 				<div className="_buttonBar">
-					<i onClick={onSave} title="Save" className="fa fa-solid fa-floppy-disk" />
-					{onPublish && (
-						<i
-							onClick={onPublish}
-							title="Publish"
-							className="fa fa-solid fa-square-arrow-up-right"
-						/>
-					)}
 					{onVersions && (
 						<i
 							onClick={onVersions}

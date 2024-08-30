@@ -3141,6 +3141,28 @@ export default function GridStyle({
 			width: 18px;
 		}
 
+		${PREFIX} ._topRightBarGrid button {
+			height: 34px;
+			padding: 0px 18px;
+			font-family: 'Inter';
+			font-size: 13px;
+			line-height: 14px;
+			font-weight: 600;
+			text-transform: none;
+			border-radius: 8px;
+			border: none;
+		}
+
+		${PREFIX} ._topRightBarGrid button._save {
+			background: linear-gradient(180deg, #4BC6FF 0%, #1893E9 100%);
+			color: #fff;
+		}
+
+		${PREFIX} ._topRightBarGrid button._publish {
+			background: linear-gradient(180deg, #7CD9B6 0%, #52BD94 100%);
+			color: #fff;
+		}
+
 		${PREFIX} ._popupMenuContainer._compMenu ._compMenuSearch {
 			font-family: 'Inter';
 			font-size: 12px;
