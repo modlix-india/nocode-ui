@@ -281,6 +281,10 @@ export default function CalendarStyle({ theme }: { theme: Map<string, Map<string
             background-color: #f5f5f5;
             border-radius: 0px;
         }
+
+        ${PREFIX} ._date {
+            position: relative;
+        }
        
  	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

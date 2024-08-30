@@ -141,7 +141,31 @@ export function CalendarMonth(
 
 		if (props.showWeekNumber && cnt > 0) {
 			datesNLabels.push(
-				<div className="_weekNumber" key={`weeknumber+${weekNumber}`}>
+				<div
+					className="_weekNumber"
+					key={`weeknumber+${weekNumber}`}
+					style={curry(
+						'weekNumber',
+						hovers.has(`weekNumber-${weekNumber}`)
+							? new Set([`weekNumber`])
+							: new Set(),
+						new Set(),
+					)}
+					onMouseEnter={addToToggleSetCurry(
+						hovers,
+						setHovers,
+						`weekNumber-${weekNumber}`,
+					)}
+					onMouseLeave={removeFromToggleSetCurry(
+						hovers,
+						setHovers,
+						`weekNumber-${weekNumber}`,
+					)}
+				>
+					<SubHelperComponent
+						definition={props.definition}
+						subComponentName="weekNumber"
+					/>
 					{'W' + weekNumber}
 				</div>,
 			);
@@ -149,6 +173,7 @@ export function CalendarMonth(
 		}
 
 		for (let i = 0; cnt > 0 && i < 7; i++) {
+			const iterationDateString = iterationDate.toDateString();
 			if (
 				!props.showPreviousNextMonthDate &&
 				iterationDate.getMonth() !== props.monthDate.getMonth()
@@ -157,25 +182,91 @@ export function CalendarMonth(
 					<div
 						className="_date _dateNotInMonth _dateEmpty"
 						key={iterationDate.toDateString()}
-					></div>,
+						style={curry(
+							'emptyDate',
+							hovers.has(`emptyDate-${iterationDate.toDateString()}`)
+								? new Set(['emptyDate'])
+								: new Set(),
+							new Set(),
+						)}
+						onMouseEnter={(
+							(dtStr: string) => () =>
+								setHovers(
+									h =>
+										new Set([
+											...Array.from(h).filter(
+												e => !e.startsWith('emptyDate-'),
+											),
+											`emptyDate-${dtStr}`,
+										]),
+								)
+						)(iterationDateString)}
+						onMouseLeave={(
+							(dtStr: string) => () =>
+								setHovers(
+									h =>
+										new Set([
+											...Array.from(h).filter(
+												e => !e.startsWith('emptyDate-'),
+											),
+										]),
+								)
+						)(iterationDateString)}
+					>
+						<SubHelperComponent
+							definition={props.definition}
+							subComponentName="emptyDate"
+						/>
+					</div>,
 				);
 			} else {
-				const [disabled, className] = computeClassName(
-					iterationDate,
-					props.monthDate,
-					dateThisDates,
-					dateThatDate,
+				const [disabled, className, subComponentName, style] = computeClassName({
+					date: iterationDate,
+					monthDate: props.monthDate,
+					thisDates: dateThisDates,
+					thatDate: dateThatDate,
 					disabledDates,
 					disabledDays,
 					weekendDays,
 					props,
-				);
+					hovers,
+					curry,
+				});
+				console.log(iterationDate.toDateString(), subComponentName, hovers);
 				datesNLabels.push(
 					<div
 						className={className}
+						style={style}
 						onClick={!disabled ? onClickDate(iterationDate) : undefined}
+						onMouseEnter={(
+							(dtStr: string) => () =>
+								setHovers(
+									h =>
+										new Set([
+											...Array.from(h).filter(e => !e.startsWith('date-')),
+											`date-${dtStr}`,
+										]),
+								)
+						)(iterationDateString)}
+						onMouseLeave={(
+							(dtStr: string) => () =>
+								setHovers(
+									h =>
+										new Set([
+											...Array.from(h).filter(e => !e.startsWith('date-')),
+										]),
+								)
+						)(iterationDateString)}
 						key={iterationDate.toDateString()}
+						role="button"
+						tabIndex={0}
+						onKeyDown={!disabled ? onClickDate(iterationDate) : undefined}
+						aria-label={subComponentName}
 					>
+						<SubHelperComponent
+							definition={props.definition}
+							subComponentName={subComponentName}
+						/>
 						{iterationDate.getDate()}
 					</div>,
 				);
@@ -188,24 +279,59 @@ export function CalendarMonth(
 		<div
 			className={`_month ${props.showWeekNumber ? '_8cols' : '_7cols'} ${props.showMonthName ? '_withMonthName' : ''}`}
 			key={props.monthDate.toDateString()}
+			style={curry('month', hovers.has('month') ? new Set(['month']) : new Set(), new Set())}
+			onMouseEnter={addToToggleSetCurry(hovers, setHovers, 'month')}
+			onMouseLeave={() => setHovers(new Set())}
 		>
 			{datesNLabels}
 		</div>
 	);
 }
 
-function computeClassName(
-	date: Date,
-	monthDate: Date,
-	thisDates: Array<Date> | undefined,
-	thatDate: Date | undefined,
-	disabledDates: Date[],
-	disabledDays: number[],
-	weekendDays: number[],
-	props: CalendarAllProps,
-): [boolean, string] {
+type DATE_SUBCOMPONENT_NAMES =
+	| 'date'
+	| 'prevNextMonthDate'
+	| 'weekendLowLightDate'
+	| 'todayDate'
+	| 'selectedDate';
+
+const SUBCOMPONENT_PREFRENCE: Record<DATE_SUBCOMPONENT_NAMES, number> = {
+	date: 1,
+	prevNextMonthDate: 2,
+	weekendLowLightDate: 3,
+	todayDate: 4,
+	selectedDate: 6,
+};
+
+function computeClassName({
+	date,
+	monthDate,
+	thisDates,
+	thatDate,
+	disabledDates,
+	disabledDays,
+	weekendDays,
+	props,
+	hovers,
+	curry,
+}: {
+	date: Date;
+	monthDate: Date;
+	thisDates: Array<Date> | undefined;
+	thatDate: Date | undefined;
+	disabledDates: Date[];
+	disabledDays: number[];
+	weekendDays: number[];
+	props: CalendarAllProps;
+	hovers: Set<string>;
+	curry: (style: string, hovers: Set<string>, disableds: Set<string>) => React.CSSProperties;
+}): [boolean, string, DATE_SUBCOMPONENT_NAMES, React.CSSProperties] {
 	let className = '_date';
-	if (date.getMonth() !== monthDate.getMonth()) className += ' _dateNotInMonth';
+	let subComponentName: DATE_SUBCOMPONENT_NAMES = 'date';
+	if (date.getMonth() !== monthDate.getMonth()) {
+		className += ' _dateNotInMonth';
+		subComponentName = 'prevNextMonthDate';
+	}
 
 	let isSelected = false;
 
@@ -257,6 +383,9 @@ function computeClassName(
 
 	if (props.highlightToday && date.toDateString() === new Date().toDateString()) {
 		className += ' _dateToday';
+		if (SUBCOMPONENT_PREFRENCE.todayDate > SUBCOMPONENT_PREFRENCE[subComponentName]) {
+			subComponentName = 'todayDate';
+		}
 	}
 
 	if (weekendDays.some(e => e === date.getDay())) {
@@ -265,15 +394,37 @@ function computeClassName(
 			disabled = true;
 		}
 
-		if (weekendDays.some(e => e === date.getDay())) {
+		if (props.lowLightWeekEnd && weekendDays.some(e => e === date.getDay())) {
 			className += ' _dateWeekend';
+			if (
+				SUBCOMPONENT_PREFRENCE.weekendLowLightDate >
+				SUBCOMPONENT_PREFRENCE[subComponentName]
+			) {
+				subComponentName = 'weekendLowLightDate';
+			}
 		}
 	}
 
 	if (!disabled) className += ' _dateSelectable';
 
-	if (isSelected || thisDates?.some(thisDate => thisDate.toDateString() === date.toDateString()))
+	if (
+		isSelected ||
+		thisDates?.some(thisDate => thisDate.toDateString() === date.toDateString())
+	) {
 		className += ' _dateSelected';
 
-	return [disabled, className];
+		if (SUBCOMPONENT_PREFRENCE.selectedDate > SUBCOMPONENT_PREFRENCE[subComponentName]) {
+			subComponentName = 'selectedDate';
+		}
+	}
+
+	const style = curry(
+		subComponentName,
+		hovers.has(`date-${date.toDateString()}`) && !disabled
+			? new Set([subComponentName])
+			: new Set(),
+		disabled ? new Set([subComponentName]) : new Set(),
+	);
+
+	return [disabled, className, subComponentName, style];
 }
