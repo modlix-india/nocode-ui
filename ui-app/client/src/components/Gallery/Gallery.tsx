@@ -681,6 +681,7 @@ function Gallery(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 12,
 	name: 'Gallery',
 	displayName: 'Gallery',
 	description: 'Gallery component',

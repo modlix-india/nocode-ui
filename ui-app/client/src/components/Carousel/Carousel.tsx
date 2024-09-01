@@ -59,9 +59,9 @@ function Carousel(props: ComponentProps) {
 							return v === 0
 								? (
 										pageDefinition?.componentDefinition[a[0]]?.key ?? ''
-								  ).localeCompare(
+									).localeCompare(
 										pageDefinition?.componentDefinition[b[0]]?.key ?? '',
-								  )
+									)
 								: v;
 						})
 						.map(e => ({ key: e[0], children: { [e[0]]: e[1] } }))
@@ -318,6 +318,7 @@ function Carousel(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 9,
 	name: 'Carousel',
 	displayName: 'Carousel',
 	description: 'Carousel component',

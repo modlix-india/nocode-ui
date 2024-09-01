@@ -120,7 +120,7 @@ function Menu(props: ComponentProps) {
 									externalButtonFeatures ?? features,
 								);
 							}
-					  }
+						}
 			}
 		>
 			<SubHelperComponent definition={definition} subComponentName="externalIcon" />
@@ -356,6 +356,7 @@ function Menu(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 22,
 	name: 'Menu',
 	displayName: 'Menu',
 	description: 'Menu component',

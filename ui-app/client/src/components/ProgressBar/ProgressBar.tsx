@@ -94,7 +94,7 @@ function ProgressBar(props: ComponentProps) {
 						{getTranslations(progressLabel, pageDefinition.translations)}
 					</span>
 				) : null,
-		  ]
+			]
 		: null;
 
 	const cProgressBar = () => {
@@ -147,6 +147,7 @@ function ProgressBar(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 23,
 	name: 'ProgressBar',
 	displayName: 'Progress Bar',
 	description: 'ProgressBar component',

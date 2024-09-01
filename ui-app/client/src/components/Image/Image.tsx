@@ -142,6 +142,7 @@ function ImageComponent(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 3,
 	name: 'Image',
 	displayName: 'Image',
 	description: 'Image Component',

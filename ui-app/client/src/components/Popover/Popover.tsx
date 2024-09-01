@@ -181,6 +181,7 @@ function Popover(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 24,
 	name: 'Popover',
 	displayName: 'Popover',
 	description: 'Popover component',

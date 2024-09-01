@@ -586,6 +586,7 @@ function DownArrow() {
 }
 
 const component: Component = {
+	order: 10,
 	name: 'Small Carousel',
 	displayName: 'Small Carousel',
 	description: 'Small Carousel component',

@@ -74,6 +74,7 @@ function Iframe(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 18,
 	name: 'Iframe',
 	displayName: 'Iframe',
 	description: 'Iframe component',

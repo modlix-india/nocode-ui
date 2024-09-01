@@ -159,6 +159,7 @@ function Text(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 2,
 	name: 'Text',
 	displayName: 'Text',
 	description: 'Text component',

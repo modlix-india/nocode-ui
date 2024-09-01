@@ -570,6 +570,7 @@ function CalendarComponent(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 17,
 	name: 'Calendar',
 	displayName: 'Calendar',
 	description: 'Calendar component',

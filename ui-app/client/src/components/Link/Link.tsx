@@ -66,7 +66,7 @@ function Link(props: ComponentProps) {
 						props.locationHistory,
 						props.pageDefinition,
 					))();
-		  }
+			}
 		: undefined;
 
 	const visitedStyle = processComponentStylePseudoClasses(
@@ -171,6 +171,7 @@ function Link(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 14,
 	name: 'Link',
 	displayName: 'Link',
 	description: 'Link component',

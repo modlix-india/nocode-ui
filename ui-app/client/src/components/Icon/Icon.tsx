@@ -38,6 +38,7 @@ function Icon(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 15,
 	name: 'Icon',
 	displayName: 'Icon',
 	description: 'Icon component',

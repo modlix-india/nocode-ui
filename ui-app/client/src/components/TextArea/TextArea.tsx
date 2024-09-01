@@ -298,6 +298,7 @@ function TextArea(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 13,
 	name: 'TextArea',
 	displayName: 'Text Area',
 	description: 'TextArea component',

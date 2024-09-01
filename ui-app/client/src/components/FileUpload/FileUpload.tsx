@@ -138,7 +138,7 @@ function FileUpload(props: ComponentProps) {
 					fileValue,
 					locationHistory,
 					pageExtractor,
-			  )
+				)
 			: [];
 		if (msgs.length) {
 			setValidationMessages(msgs);
@@ -200,20 +200,15 @@ function FileUpload(props: ComponentProps) {
 	};
 
 	const setFiles = async (files: FileList | null) => {
-
 		if (!files?.length) return;
 
 		if (uploadType === 'FILE_OBJECT') {
-				setData(
-					bindingPathPath!,
-					isMultiple ? Array.from(files) : files[0],
-					context?.pageName,
-				);
+			setData(bindingPathPath!, isMultiple ? Array.from(files) : files[0], context?.pageName);
 			return;
 		}
 
 		if (uploadType.startsWith('BINARY_TO_BASE_64')) {
-			const fileObjects = await filesToBase64(files , uploadType != 'BINARY_TO_BASE_64' );
+			const fileObjects = await filesToBase64(files, uploadType != 'BINARY_TO_BASE_64');
 			setData(bindingPathPath!, fileObjects, context?.pageName);
 			return;
 		}
@@ -393,7 +388,7 @@ function FileUpload(props: ComponentProps) {
 							<span className="_subtext" key="_subText">
 								{subText}
 							</span>,
-					  ]
+						]
 					: null}
 				{uploadViewType?.startsWith('_only_icon') ? inputContainer : null}
 			</label>
@@ -438,6 +433,7 @@ function FileUpload(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 25,
 	name: 'FileUpload',
 	displayName: 'File Upload',
 	description: 'FileUpload Component',

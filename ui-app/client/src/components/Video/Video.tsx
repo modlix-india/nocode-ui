@@ -658,6 +658,7 @@ function Video(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 19,
 	name: 'Video',
 	displayName: 'Video',
 	description: 'Video component',

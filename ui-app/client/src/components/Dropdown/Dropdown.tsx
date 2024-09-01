@@ -322,8 +322,8 @@ function DropdownComponent(props: ComponentProps) {
 			translations={translations}
 			rightIcon={
 				showDropdown
-					? rightIconOpen ?? 'fa-solid fa-angle-up'
-					: rightIcon ?? 'fa-solid fa-angle-down'
+					? (rightIconOpen ?? 'fa-solid fa-angle-up')
+					: (rightIcon ?? 'fa-solid fa-angle-down')
 			}
 			valueType="text"
 			isPassword={false}
@@ -457,6 +457,7 @@ function DropdownComponent(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 7,
 	name: 'Dropdown',
 	displayName: 'Dropdown',
 	description: 'Dropdown component',

@@ -382,7 +382,7 @@ function PhoneNumber(props: ComponentProps) {
 		let selectedCountry = getSelectedCountry(unformattedText);
 		if (selectedCountry) setSelected(selectedCountry);
 		else setSelected(countryList[0]);
-		let dc = selectedCountry ? selectedCountry.D ?? '' : '';
+		let dc = selectedCountry ? (selectedCountry.D ?? '') : '';
 		if (format) setPhoneNumber(getFormattedNumber(unformattedText.slice(dc.length), dc));
 		else setPhoneNumber(unformattedText.slice(dc.length));
 	}, [value, countryList, seperator]);
@@ -492,7 +492,8 @@ function PhoneNumber(props: ComponentProps) {
 		/>
 	);
 	const finKey: string = 't_' + key;
-	const x = noCodeForFirstCountry && selected.C === countryList[0].C ? 1 : selected.D.length ?? 1;
+	const x =
+		noCodeForFirstCountry && selected.C === countryList[0].C ? 1 : (selected.D.length ?? 1);
 
 	return (
 		<CommonInputText
@@ -537,6 +538,7 @@ function PhoneNumber(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 16,
 	name: 'PhoneNumber',
 	displayName: 'Phone Number',
 	description: 'Phone Number component',

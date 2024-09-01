@@ -349,6 +349,7 @@ function Grid(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 1,
 	name: 'Grid',
 	displayName: 'Grid',
 	description: 'Grid component',

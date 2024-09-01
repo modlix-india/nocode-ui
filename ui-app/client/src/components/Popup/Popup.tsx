@@ -187,7 +187,7 @@ function Popup(props: ComponentProps) {
 											? getTranslations(
 													modelTitle,
 													props.pageDefinition.translations,
-											  )
+												)
 											: ''}
 									</div>
 									{showClose && closeButtonPosition === 'RIGHT' && (
@@ -231,6 +231,7 @@ function Popup(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 20,
 	name: 'Popup',
 	displayName: 'Popup',
 	description: 'Popup component',

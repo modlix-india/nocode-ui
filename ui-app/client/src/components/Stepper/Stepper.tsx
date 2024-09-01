@@ -40,7 +40,7 @@ function Stepper(props: ComponentProps) {
 			colorScheme,
 			stepperDesign,
 			showLines,
-			onClick
+			onClick,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -74,15 +74,16 @@ function Stepper(props: ComponentProps) {
 
 	const onClickEvent = onClick ? props.pageDefinition.eventFunctions?.[onClick] : undefined;
 
-	const handleOnClick = onClickEvent ?  async() => 
-		await runEvent(
-			onClickEvent,
-			onClick,
-			props.context.pageName,
-			props.locationHistory,
-			props.pageDefinition,
-		)
-	 : undefined;
+	const handleOnClick = onClickEvent
+		? async () =>
+				await runEvent(
+					onClickEvent,
+					onClick,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				)
+		: undefined;
 
 	const goToStep = async (stepNumber: number) => {
 		if (!bindingPathPath) return;
@@ -98,12 +99,12 @@ function Stepper(props: ComponentProps) {
 			countingType === 'NUMBER'
 				? num
 				: countingType.startsWith('ROMAN')
-				? countingType === 'ROMAN'
-					? getRoman(num, false)
-					: getRoman(num, true)
-				: countingType === 'ALPHA'
-				? getAlphaNumeral(num, false)
-				: getAlphaNumeral(num, true);
+					? countingType === 'ROMAN'
+						? getRoman(num, false)
+						: getRoman(num, true)
+					: countingType === 'ALPHA'
+						? getAlphaNumeral(num, false)
+						: getAlphaNumeral(num, true);
 
 		return count;
 	};
@@ -148,8 +149,7 @@ function Stepper(props: ComponentProps) {
 						onClick={
 							(i < value && moveToAnyPreviousStep) ||
 							(i > value && moveToAnyFutureStep)
-								? () => 
-									goToStep(i)
+								? () => goToStep(i)
 								: undefined
 						}
 						className={`_listItem ${showLines ? '_withLines' : ''} ${
@@ -271,6 +271,7 @@ function Stepper(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 11,
 	name: 'Stepper',
 	displayName: 'Stepper',
 	description: 'Stepper component',

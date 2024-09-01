@@ -119,6 +119,7 @@ function CheckBox(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 8,
 	name: 'CheckBox',
 	displayName: 'Check Box',
 	description: 'CheckBox component',

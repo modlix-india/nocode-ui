@@ -491,6 +491,7 @@ function ToSmallScreen() {
 }
 
 const component: Component = {
+	order: 21,
 	name: 'FileSelector',
 	displayName: 'File Selector',
 	description: 'File Selector',

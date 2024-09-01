@@ -55,12 +55,12 @@ function ButtonComponent(props: ComponentProps) {
 	const spinnerPath = onClick
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
 				onClick,
-		  )}.isRunning`
+			)}.isRunning`
 		: undefined;
 
 	const [isLoading, setIsLoading] = useState(
 		onClick
-			? getDataFromPath(spinnerPath, props.locationHistory, pageExtractor) ?? false
+			? (getDataFromPath(spinnerPath, props.locationHistory, pageExtractor) ?? false)
 			: false,
 	);
 
@@ -123,7 +123,7 @@ function ButtonComponent(props: ComponentProps) {
 				alt="right"
 				style={
 					(hover
-						? styleProperties.activeRightImage ?? styleProperties.rightImage
+						? (styleProperties.activeRightImage ?? styleProperties.rightImage)
 						: styleProperties.rightImage) ?? {}
 				}
 				className={hover ? '_rightButtonActiveImage' : '_rightButtonImage'}
@@ -153,7 +153,7 @@ function ButtonComponent(props: ComponentProps) {
 				alt="left"
 				style={
 					(hover
-						? styleProperties.activeLeftImage ?? styleProperties.leftImage
+						? (styleProperties.activeLeftImage ?? styleProperties.leftImage)
 						: styleProperties.leftImage) ?? {}
 				}
 				className={hover ? '_leftButtonActiveImage' : '_leftButtonImage'}
@@ -414,6 +414,7 @@ function ButtonComponent(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 4,
 	name: 'Button',
 	displayName: 'Button',
 	description: 'Button component',

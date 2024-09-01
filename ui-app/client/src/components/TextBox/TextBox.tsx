@@ -470,6 +470,7 @@ function TextBox(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 5,
 	name: 'TextBox',
 	displayName: 'Text Box',
 	description: 'TextBox component',
