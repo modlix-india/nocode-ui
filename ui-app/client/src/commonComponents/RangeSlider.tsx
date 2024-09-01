@@ -15,11 +15,12 @@ export function RangeSlider({
 	step?: number;
 }>) {
 	const percent = (((value ?? min) - min) / (max - min)) * 100;
+	const pixPercent = 6 * (percent / 100);
 	const thumbLeft: React.CSSProperties = {
-		left: `calc(${percent < 0 || percent > 100 ? 50 : percent}% - 6px)`,
+		left: `calc(${percent < 0 || percent > 100 ? 50 : percent}% - ${pixPercent}px)`,
 	};
 	const trackFillWidth: React.CSSProperties = {
-		width: `calc(${percent < 0 ? 0 : percent > 100 ? 50 : percent}% - 6px)`,
+		width: `calc(${percent < 0 ? 0 : percent > 100 ? 50 : percent}% - ${pixPercent}px)`,
 	};
 	const ref = React.useRef<HTMLDivElement>(null);
 
