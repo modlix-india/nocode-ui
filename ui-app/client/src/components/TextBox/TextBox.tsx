@@ -500,26 +500,29 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
-					<rect width="24" height="24" fill="#D9D9D9" fillOpacity="0.1" />
+				<IconHelper viewBox="0 0 30 30">
+					<defs>
+						<linearGradient
+							id="_red-black-linear-gradient"
+							x1="0.944"
+							x2="0.053"
+							y2="0.942"
+							gradientUnits="objectBoundingBox"
+						>
+							<stop offset="0" stop-color="#ce2929" />
+							<stop offset="1" stop-color="#d37a39" />
+						</linearGradient>
+					</defs>
+					<rect width="30" height="30" rx="4" fill="url(#_red-black-linear-gradient)" />
+					<rect width="26" height="26" rx="3" transform="translate(2 2)" fill="#fff" />
 					<path
-						d="M15.832 7.73047V10.2393H15.5859C15.4401 9.66048 15.2783 9.24577 15.1006 8.99512C14.9229 8.73991 14.679 8.53711 14.3691 8.38672C14.196 8.30469 13.8929 8.26367 13.46 8.26367H12.7695V15.4141C12.7695 15.888 12.7946 16.1842 12.8447 16.3027C12.8994 16.4212 13.002 16.526 13.1523 16.6172C13.3073 16.7038 13.5169 16.7471 13.7812 16.7471H14.0889V17H9.23535V16.7471H9.54297C9.81185 16.7471 10.0283 16.6992 10.1924 16.6035C10.3109 16.5397 10.4043 16.4303 10.4727 16.2754C10.5228 16.166 10.5479 15.8789 10.5479 15.4141V8.26367H9.87793C9.25358 8.26367 8.80013 8.39583 8.51758 8.66016C8.12109 9.0293 7.87044 9.55566 7.76562 10.2393H7.50586V7.73047H15.832Z"
-						fill="currentColor"
+						id="_text_box_text"
+						d="M14,0V3.789h-.414A5.577,5.577,0,0,0,12.77,1.91,3.067,3.067,0,0,0,11.54.991,4.348,4.348,0,0,0,10.012.805H8.851V11.6a4.155,4.155,0,0,0,.126,1.342,1.2,1.2,0,0,0,.517.475,2.381,2.381,0,0,0,1.057.2h.517V14H2.908v-.382h.517A2.358,2.358,0,0,0,4.517,13.4a1.027,1.027,0,0,0,.471-.5,3.841,3.841,0,0,0,.126-1.3V.805H3.989A3.535,3.535,0,0,0,1.7,1.4,3.817,3.817,0,0,0,.437,3.789H0V0Z"
+						transform="translate(9 10)"
 					/>
-					<mask id="path-3-inside-1_433_993" fill="white">
-						<rect x="1" y="1" width="22" height="22" rx="1" />
-					</mask>
-					<rect
-						x="1"
-						y="1"
-						width="22"
-						height="22"
-						rx="1"
-						stroke="currentColor"
-						strokeWidth="3"
-						mask="url(#path-3-inside-1_433_993)"
-						fill="transparent"
-					/>
+					<g id="_text_box_caret" opacity={0}>
+						<rect width="2" height="18" transform="translate(5 8)" />
+					</g>
 				</IconHelper>
 			),
 		},

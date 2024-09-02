@@ -440,17 +440,36 @@ const component: Component = {
 			displayName: 'Component',
 			description: 'Component',
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
+				<IconHelper viewBox="0 0 30 30">
+					<defs>
+						<linearGradient
+							id="_button_purple_linear-gradient"
+							y1="1"
+							x2="0.907"
+							y2="0.085"
+							gradientUnits="objectBoundingBox"
+						>
+							<stop offset="0" stop-color="#0ea3f4" />
+							<stop offset="1" stop-color="#91d8ff" />
+						</linearGradient>
+					</defs>
+					<rect width="30" height="30" fill="none" />
 					<rect
-						x="3.25"
-						y="3.25"
-						width="19.25"
-						height="19.25"
+						width="24.286"
+						height="24.286"
 						rx="2"
-						fill="currentColor"
-						fillOpacity="0.2"
+						transform="translate(4.786 4.795)"
+						fill="#edeaea"
 					/>
-					<rect x="1.5" y="1.5" width="17" height="17" rx="2" fill="currentColor" />
+					<g className="_updownAnimation _leftrightAnimation">
+						<rect
+							width="24.286"
+							height="24.286"
+							rx="2"
+							transform="translate(0.929 0.92)"
+							fill="url(#_button_purple_linear-gradient)"
+						/>
+					</g>
 				</IconHelper>
 			),
 			mainComponent: true,

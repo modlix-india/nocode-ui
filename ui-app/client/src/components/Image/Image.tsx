@@ -16,6 +16,7 @@ import { useLocation } from 'react-router-dom';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { styleDefaults } from './imageStyleProperties';
 import getSrcUrl from '../util/getSrcUrl';
+import { IconHelper } from '../util/IconHelper';
 
 function ImageComponent(props: ComponentProps) {
 	const { definition, locationHistory, context } = props;
@@ -168,7 +169,62 @@ const component: Component = {
 			displayName: 'Component',
 			description: 'Component',
 			mainComponent: true,
-			icon: 'fa-solid fa-image',
+			icon: (
+				<IconHelper viewBox="0 0 30 30">
+					<defs>
+						<linearGradient
+							id="_light-image-linear-gradient"
+							x1="0.5"
+							x2="0.5"
+							y2="1"
+							gradientUnits="objectBoundingBox"
+						>
+							<stop offset="0" stop-color="#fff" />
+							<stop offset="1" stop-color="#3f83ea" />
+						</linearGradient>
+						<linearGradient
+							id="_dark-image-linear-gradient-2"
+							x1="0.5"
+							x2="0.5"
+							y2="1"
+							gradientUnits="objectBoundingBox"
+						>
+							<stop offset="0" stop-color="#c1c1c1" />
+							<stop offset="1" stop-color="#214883" />
+						</linearGradient>
+					</defs>
+					<rect width="30" height="30" fill="none" />
+					<g transform="translate(26 3.875)">
+						<path
+							d="M0,3.75A3.753,3.753,0,0,1,3.75,0h22.5A3.753,3.753,0,0,1,30,3.75V22.5a3.753,3.753,0,0,1-3.75,3.75H3.75A3.753,3.753,0,0,1,0,22.5Z"
+							transform="translate(-26 -2)"
+							fill="#edeaea"
+						/>
+					</g>
+					<path
+						d="M18.973,9.99a1.4,1.4,0,0,0-2.32,0l-5.1,7.477L10,15.527a1.4,1.4,0,0,0-2.191,0l-3.75,4.687a1.406,1.406,0,0,0,1.1,2.285H24.844A1.405,1.405,0,0,0,26,20.3Z"
+						transform="translate(0 2.188)"
+						fill="url(#_light-image-linear-gradient)"
+					/>
+					<path
+						d="M18.973,9.99a1.4,1.4,0,0,0-2.32,0l-5.1,7.477L10,15.527a1.4,1.4,0,0,0-2.191,0l-3.75,4.687a1.406,1.406,0,0,0,1.1,2.285H24.844A1.405,1.405,0,0,0,26,20.3Z"
+						transform="translate(0 2.188)"
+						className="_opacityAnimation"
+						opacity={0}
+						fill="url(#_dark-image-linear-gradient-2)"
+					/>
+					<circle cx="3" cy="3" r="3" transform="translate(4 6)" fill="#ffb100" />
+					<circle
+						cx="3"
+						cy="3"
+						r="3"
+						className="_opacityAnimation"
+						opacity={0}
+						transform="translate(4 6)"
+						fill="#fff"
+					/>
+				</IconHelper>
+			),
 		},
 		{
 			name: 'image',

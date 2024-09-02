@@ -487,32 +487,43 @@ const component: Component = {
 			displayName: 'Component',
 			description: 'Component',
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
+				<IconHelper viewBox="0 0 30 30">
+					<defs>
+						<linearGradient
+							id="_dropdown_blue_linear-gradient-1"
+							x1="0.563"
+							y1="1.242"
+							x2="0.551"
+							gradientUnits="objectBoundingBox"
+						>
+							<stop offset="0" stop-color="#b0dce6" />
+							<stop offset="1" stop-color="#09a0c2" />
+						</linearGradient>
+						<linearGradient
+							id="_dropdown_blue_linear-gradient-2"
+							x1="0.5"
+							y1="0"
+							x2="0.5"
+							y2="1"
+						>
+							<stop offset="0" stop-color="#b0dce6" />
+							<stop offset="1" stop-color="#09a0c2" />
+						</linearGradient>
+					</defs>
 					<path
-						d="M19.5289 1H4.49556C2.56444 1 1 2.56444 1 4.49556V19.5289C1 21.4356 2.56444 23 4.49556 23H19.5289C21.4356 23 23 21.4356 23 19.5289V4.49556C23 2.56444 21.4356 1 19.5289 1ZM18.4044 9.77556L11.2667 16.9133C11.0222 17.1578 10.7044 17.28 10.4111 17.28C10.1178 17.28 9.77556 17.1578 9.55556 16.9133L5.59556 12.9533C5.10667 12.4644 5.10667 17.2067 5.59556 16.7178C6.08444 16.2289 6.84222 16.2289 7.33111 16.7178L10.4356 19.8222L20.25 8.5625C20.7389 8.07361 17.9644 7.55111 18.4533 8.04C18.8933 8.52889 18.8933 9.31111 18.4044 9.77556Z"
-						fill="currentColor"
-						fillOpacity="0.2"
-					/>
-					<path
-						d="M15.9746 6.13324C16.3155 6.13324 16.5002 6.53232 16.2795 6.79215L12.1219 11.6882C11.9633 11.8751 11.6754 11.8766 11.5148 11.6914L7.2681 6.79534C7.04346 6.53634 7.22743 6.13324 7.57027 6.13324L15.9746 6.13324Z"
-						fill="currentColor"
+						id="_dropDownAnimation"
+						d="M0,0H25a0,0,0,0,1,0,0V14a2,2,0,0,1-2,2H2a2,2,0,0,1-2-2V0A0,0,0,0,1,0,0Z"
+						transform="translate(2 13)"
+						fill="url(#_dropdown_blue_linear-gradient-1)"
 					/>
 					<rect
-						x="7.10938"
-						y="15.5444"
-						width="9.77778"
-						height="1.22222"
-						rx="0.611111"
-						fill="currentColor"
+						width="28"
+						height="9"
+						rx="2"
+						transform="translate(1 2)"
+						fill="url(#_dropdown_blue_linear-gradient-2)"
 					/>
-					<rect
-						x="4.66797"
-						y="18.1113"
-						width="14.6667"
-						height="1.22222"
-						rx="0.611111"
-						fill="currentColor"
-					/>
+					<path d="M1.5,0,3,2H0Z" transform="translate(27 8) rotate(180)" fill="#fff" />
 				</IconHelper>
 			),
 			mainComponent: true,
