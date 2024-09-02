@@ -15,6 +15,8 @@ export default function GridStyle({
 			flex-direction: column;
 			overflow: hidden;
 			position: relative;
+			--comp-item-animation-duration: 1s;
+			--comp-item-animation-duration-long: 4s;
 		}
 
 		${PREFIX} ._dndGrid {
@@ -3018,6 +3020,7 @@ export default function GridStyle({
 			padding: 15px 0px 0px 15px;
 			border-right: 1px solid rgba(0, 0, 0, 0.10);
 			display: flex;
+			gap: 15px;
 		}
 
 		${PREFIX} ._popupMenuContainer._compMenu ._right {
@@ -3062,7 +3065,6 @@ export default function GridStyle({
 		${PREFIX} ._popupMenuContainer._compMenu ._tabContainerContainer {
 			display: flex;
 			flex-direction: row;
-			margin-bottom: 15px;
 			margin-right: 19px;
 		}
 
@@ -3193,6 +3195,7 @@ export default function GridStyle({
 			outline: none;
 			background-color: #F9F9F9;
 			color: #52BD94;
+			margin-right: 19px;
 		}
 
 		${PREFIX} ._popupMenuContainer._compMenu ._compMenuSearch:focus {
@@ -3259,12 +3262,12 @@ export default function GridStyle({
 
 		${PREFIX} ._popupMenuContainer._compMenu ._compList {
 			padding-right: 15px;
-			display: flex;
-			flex-direction: column;
 			gap: 15px;
 			padding-bottom: 10px;
 			flex: 1;
 			overflow-y: auto;
+			display: grid;
+			grid-template-columns: 1fr 1fr;
 		}
 
 		${PREFIX} ._popupMenuContainer._compMenu ._compList ._compMenuItem {
@@ -3274,20 +3277,28 @@ export default function GridStyle({
 			border-radius: 6px;
 			color: #333333E5;
 			display: flex;
-			flex-direction: row;
+			flex-direction: column;
 			align-items: center;
 			gap: 10px;
 			font-size: 12px;
-			font-weight: 500;
+			font-weight: 600;
 			font-family: Inter;
-			border: 1.5px solid transparent;
+			border: 0.5px solid transparent;
+			width: 100px;
+			height: 100px;
+			justify-content: center;
 		}
 
 		${PREFIX} ._popupMenuContainer._compMenu ._compList ._compMenuItem:hover,
 		${PREFIX} ._popupMenuContainer._compMenu ._compList ._compMenuItem.active {
-			border: 1.5px solid #1893E9;
-			color: #1893E9;
-			background-color: #1893E90E;
+			border: 0.5px solid #1893E9;			
+		}
+
+		${PREFIX} ._popupMenuContainer._compMenu ._compList ._compMenuItem svg._iconHelperSVG,
+		${PREFIX} ._popupMenuContainer._compMenu ._compList ._compMenuItem i.fa {
+			width: 30px;
+			height: 30px;
+			font-size: 30px;
 		}
 
 		${PREFIX} ._popupMenuContainer._compMenu ._compList ._compMenuItem.active svg,
@@ -3296,6 +3307,185 @@ export default function GridStyle({
 		${PREFIX} ._popupMenuContainer._compMenu ._compList ._compMenuItem:hover i.fa {
 			color: #1893E9;
 		}
+		/* Animations Start here... */
+		@keyframes updown {
+			0% { transform: translateY(0); }
+			50% { transform: translateY(5px); }
+			100% { transform: translateY(0); }
+		}
+		
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._updownAnimation {
+			animation: updown var(--comp-item-animation-duration) infinite;
+		}
+
+		@keyframes scaleBottomTop {
+			0% { transform: scaleY(1); }
+			50% { transform: scaleY(0.2); }
+			100% { transform: scaleY(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._scaleBottomTop {
+			animation: scaleBottomTop var(--comp-item-animation-duration) infinite;
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._scaleTopBottom {
+			animation: scaleBottomTop var(--comp-item-animation-duration) infinite;
+			transform-origin: bottom;
+		}
+
+		@keyframes opacityAnimation {
+			0% { opacity: 0; }
+			50% { opacity: 1; }
+			100% { opacity: 0; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._opacityAnimation {
+			animation: opacityAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes leftrightAnimation {
+			0% { transform: translateX(0); }
+			50% { transform: translateX(5px); }
+			100% { transform: translateX(0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._leftrightAnimation {
+			animation: leftrightAnimation var(--comp-item-animation-duration) infinite;
+		}
+
+		@keyframes updownleftrightAnimation {
+			0% { transform: translate(0 0); }
+			50% { transform: translate(5px, 5px); }
+			100% { transform: translate(0, 0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._updownAnimation._leftrightAnimation {
+			animation: updownleftrightAnimation var(--comp-item-animation-duration) infinite;
+		}
+		
+		@keyframes text_box_caret_animation {
+			0% { opacity: 0; }
+			25% { opacity: 1; }
+			35% { opacity: 0; transform: translateX(0%);}
+			55% { opacity: 1; transform: translateX(65%); }
+			99% { opacity: 1; transform: translateX(65%); }
+		}
+
+		@keyframes text_box_text_animation {
+			0% { opacity: 0; }
+			25% { opacity: 0; }
+			40% { opacity: 1; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG #_text_box_caret {
+			animation: text_box_caret_animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG #_text_box_text {
+			animation: text_box_text_animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes array_repeater_rect1_animation {
+			0% { opacity: 0}
+			9% { opacity: 0}
+			10% { opacity: 1}
+			100% { opacity: 1}
+		}
+
+		@keyframes array_repeater_rect2_animation {
+			0% { opacity: 0}
+			19% { opacity: 0}
+			20% { opacity: 1}
+			100% { opacity: 1}
+		}
+
+		@keyframes array_repeater_rect3_animation {
+			0% { opacity: 0}
+			29% { opacity: 0}
+			30% { opacity: 1}
+			100% { opacity: 1}
+		}
+
+		@keyframes array_repeater_rect4_animation {
+			0% { opacity: 0}
+			39% { opacity: 0}
+			40% { opacity: 1}	
+			100% { opacity: 1}
+		}
+
+		@keyframes array_repeater_rect5_animation {
+			0% { opacity: 0}
+			49% { opacity: 0}
+			50% { opacity: 1}	
+			100% { opacity: 1}
+			}
+
+		@keyframes array_repeater_rect6_animation {
+			0% { opacity: 0}
+			59% { opacity: 0}
+			60% { opacity: 1}	
+			100% { opacity: 1}
+		}
+
+		@keyframes array_repeater_rect7_animation {
+			0% { opacity: 0}
+			69% { opacity: 0} 
+			70% { opacity: 1}	
+			100% { opacity: 1}
+		}
+
+		@keyframes array_repeater_rect8_animation {
+			0% { opacity: 0}
+			79% { opacity: 0}
+			80% { opacity: 1}	
+			100% { opacity: 1}
+		}		
+
+		${PREFIX} ._compMenuItem:hover #_arrayRepeaterIcon #_rect1 {
+			animation: array_repeater_rect1_animation var(--comp-item-animation-duration) infinite;
+		}
+
+		${PREFIX} ._compMenuItem:hover #_arrayRepeaterIcon #_rect2 {
+			animation: array_repeater_rect2_animation var(--comp-item-animation-duration) infinite;
+		}
+
+		${PREFIX} ._compMenuItem:hover #_arrayRepeaterIcon #_rect3 {
+			animation: array_repeater_rect3_animation var(--comp-item-animation-duration) infinite;
+		}
+
+		${PREFIX} ._compMenuItem:hover #_arrayRepeaterIcon #_rect4 {
+			animation: array_repeater_rect4_animation var(--comp-item-animation-duration) infinite;
+		}
+
+		${PREFIX} ._compMenuItem:hover #_arrayRepeaterIcon #_rect5 {
+			animation: array_repeater_rect5_animation var(--comp-item-animation-duration) infinite;
+		}
+
+		${PREFIX} ._compMenuItem:hover #_arrayRepeaterIcon #_rect6 {
+			animation: array_repeater_rect6_animation var(--comp-item-animation-duration) infinite;
+		}
+
+		${PREFIX} ._compMenuItem:hover #_arrayRepeaterIcon #_rect7 {
+			animation: array_repeater_rect7_animation var(--comp-item-animation-duration) infinite;
+		}
+
+		${PREFIX} ._compMenuItem:hover #_arrayRepeaterIcon #_rect8 {
+			animation: array_repeater_rect8_animation var(--comp-item-animation-duration) infinite;
+		}
+
+		@keyframes dropDownAnimation {
+			0% { scale: 0; 	}
+			60% { scale: 1; }
+			100% { scale: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG #_dropDownAnimation {
+			transform-origin: center left;
+			animation: dropDownAnimation var(--comp-item-animation-duration) infinite;
+		}
+
+		/* Animations End here... */
 
 		${PREFIX} ._popupMenuBackground ._contextMenu ._popupMenuItem:hover {
 			background: #00000005;

@@ -164,17 +164,17 @@ export default function ComponentMenu({
 		.join('');
 	let regex = new RegExp(`${pattern}`, 'gi');
 	const compList =
-		compType === 'COMPONENTS' ? (
-			<>
-				<input
-					className="_compMenuSearch"
-					type="text"
-					placeholder="Search"
-					onChange={e => setQuery(e.target.value)}
-					value={query}
-				/>
-				{compsList
-					.sort((a, b) => a.displayName.localeCompare(b.displayName))
+		compType === 'COMPONENTS'
+			? compsList
+					.sort((a, b) => {
+						if (a.order || b.order) {
+							return (
+								(a.order ?? Number.MAX_SAFE_INTEGER) -
+								(b.order ?? Number.MAX_SAFE_INTEGER)
+							);
+						}
+						return a.displayName.localeCompare(b.displayName);
+					})
 					.filter(
 						f =>
 							regex.exec(f.displayName.toLowerCase()) ||
@@ -220,25 +220,22 @@ export default function ComponentMenu({
 							)}
 							{e.displayName}
 						</div>
-					))}
-			</>
-		) : (
-			sectionsCategoryList?.map((e: any) => (
-				<div
-					key={e.name}
-					className={`_compMenuItem ${selectedSectionCategory === e._id ? 'active' : ''}`}
-					title={e.name}
-					onClick={() => onChangePersonalization('selectedSectionCategory', e._id)}
-					onDragStart={ev =>
-						ev.dataTransfer.items.add(`${DRAG_COMP_NAME}${e.name}`, 'text/plain')
-					}
-				>
-					<img className="actual" src={e.image} />
-					<img className="hover" src={e.hoverImage} />
-					{e.name}
-				</div>
-			))
-		);
+					))
+			: sectionsCategoryList?.map((e: any) => (
+					<div
+						key={e.name}
+						className={`_compMenuItem ${selectedSectionCategory === e._id ? 'active' : ''}`}
+						title={e.name}
+						onClick={() => onChangePersonalization('selectedSectionCategory', e._id)}
+						onDragStart={ev =>
+							ev.dataTransfer.items.add(`${DRAG_COMP_NAME}${e.name}`, 'text/plain')
+						}
+					>
+						<img className="actual" src={e.image} />
+						<img className="hover" src={e.hoverImage} />
+						{e.name}
+					</div>
+				));
 
 	let tempSections: any =
 		(selectedComponentType && compType === 'COMPONENTS'
@@ -366,6 +363,15 @@ export default function ComponentMenu({
 							</button>
 						</div>
 					</div>
+					{compType === 'COMPONENTS' && (
+						<input
+							className="_compMenuSearch"
+							type="text"
+							placeholder="Search"
+							onChange={e => setQuery(e.target.value)}
+							value={query}
+						/>
+					)}
 					<div className="_compList">{compList}</div>
 				</div>
 			</div>
