@@ -108,6 +108,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 		],
 	},
+	{
+		name: 'onTabChange',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Tab Change',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered when a tab clicked.',
+		group: ComponentPropertyGroup.EVENTS,
+  },
+
 	COMMON_COMPONENT_PROPERTIES.colorScheme,
 ];
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
