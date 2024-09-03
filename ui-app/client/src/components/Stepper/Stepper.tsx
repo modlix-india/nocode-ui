@@ -32,6 +32,9 @@ function Stepper(props: ComponentProps) {
 			countingType,
 			titles,
 			icons,
+			successIcon,
+			currentIcon,
+			nextIcon,
 			showCheckOnComplete,
 			textPosition,
 			moveToAnyPreviousStep,
@@ -40,7 +43,7 @@ function Stepper(props: ComponentProps) {
 			colorScheme,
 			stepperDesign,
 			showLines,
-			onClick
+			onClick,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -74,15 +77,16 @@ function Stepper(props: ComponentProps) {
 
 	const onClickEvent = onClick ? props.pageDefinition.eventFunctions?.[onClick] : undefined;
 
-	const handleOnClick = onClickEvent ?  async() => 
-		await runEvent(
-			onClickEvent,
-			onClick,
-			props.context.pageName,
-			props.locationHistory,
-			props.pageDefinition,
-		)
-	 : undefined;
+	const handleOnClick = onClickEvent
+		? async () =>
+				await runEvent(
+					onClickEvent,
+					onClick,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				)
+		: undefined;
 
 	const goToStep = async (stepNumber: number) => {
 		if (!bindingPathPath) return;
@@ -98,12 +102,12 @@ function Stepper(props: ComponentProps) {
 			countingType === 'NUMBER'
 				? num
 				: countingType.startsWith('ROMAN')
-				? countingType === 'ROMAN'
-					? getRoman(num, false)
-					: getRoman(num, true)
-				: countingType === 'ALPHA'
-				? getAlphaNumeral(num, false)
-				: getAlphaNumeral(num, true);
+					? countingType === 'ROMAN'
+						? getRoman(num, false)
+						: getRoman(num, true)
+					: countingType === 'ALPHA'
+						? getAlphaNumeral(num, false)
+						: getAlphaNumeral(num, true);
 
 		return count;
 	};
@@ -148,15 +152,18 @@ function Stepper(props: ComponentProps) {
 						onClick={
 							(i < value && moveToAnyPreviousStep) ||
 							(i > value && moveToAnyFutureStep)
-								? () => 
-									goToStep(i)
+								? () => goToStep(i)
 								: undefined
 						}
-						className={`_listItem ${showLines ? '_withLines' : ''} ${
-							i < value ? '_done' : ''
-						} ${i === value ? '_active' : ''} ${
-							i > value && moveToAnyFutureStep ? '_nextItem' : ''
-						} ${i < value && moveToAnyPreviousStep ? '_previousItem' : ''}`}
+						className={`_listItem ${
+							stepperDesign === '_pills' || stepperDesign === '_rectangle_arrow'
+								? `${showLines ? '_withLines' : ''} ${i < value ? '_done' : ''} ${
+										i === value ? '_active' : ''
+									} ${i > value && moveToAnyFutureStep ? '_nextItem' : ''} ${
+										i < value && moveToAnyPreviousStep ? '_previousItem' : ''
+									}`
+								: ''
+						}`}
 						key={i}
 					>
 						<SubHelperComponent
@@ -183,13 +190,30 @@ function Stepper(props: ComponentProps) {
 													: undefined
 											}
 											style={resolvedStyles.step ?? {}}
-											className={`${
-												i < value && showCheckOnComplete
-													? checkIcon
-													: iconList[i]
-											} _step ${i < value ? '_done' : ''} ${
-												i === value ? '_active' : ''
-											}`}
+											className={`${i < value && showCheckOnComplete ? checkIcon : iconList[i]} _step ${i < value ? '_done' : ''} ${i === value ? '_active' : ''}`}
+										>
+											<SubHelperComponent
+												definition={props.definition}
+												subComponentName="step"
+											/>
+										</i>
+									) : successIcon ||
+									  currentIcon ||
+									  (nextIcon && !showCheckOnComplete) ? (
+										<i
+											onMouseEnter={
+												stylePropertiesWithPseudoStates?.hover
+													? () => setHover(true)
+													: undefined
+											}
+											onMouseLeave={
+												stylePropertiesWithPseudoStates?.hover
+													? () => setHover(false)
+													: undefined
+											}
+											style={resolvedStyles.step ?? {}}
+											className={`${i < value ? successIcon : ''} ${i === value ? currentIcon : ''} ${i > value ? nextIcon : ''} 
+									_step ${i < value ? '_done' : ''} ${i === value ? '_active' : ''}`}
 										>
 											<SubHelperComponent
 												definition={props.definition}
@@ -211,9 +235,7 @@ function Stepper(props: ComponentProps) {
 															: undefined
 													}
 													style={resolvedStyles.step ?? {}}
-													className={`${checkIcon} _step ${
-														i < value ? '_done' : ''
-													} ${i === value ? '_active' : ''}`}
+													className={`${checkIcon} _step ${i < value ? '_done' : ''} ${i === value ? '_active' : ''}`}
 												>
 													<SubHelperComponent
 														definition={props.definition}
@@ -223,9 +245,7 @@ function Stepper(props: ComponentProps) {
 											) : (
 												<span
 													style={resolvedStyles.step ?? {}}
-													className={`_step ${i < value ? '_done' : ''} ${
-														i === value ? '_active' : ''
-													}`}
+													className={`_step ${i < value ? '_done' : ''} ${i === value ? '_active' : ''}`}
 												>
 													<SubHelperComponent
 														definition={props.definition}
@@ -263,6 +283,107 @@ function Stepper(props: ComponentProps) {
 								</span>
 							)}
 						</div>
+						{i < effectiveTitles.length - 1 &&
+							showLines &&
+							(stepperDesign === '_default' || stepperDesign === '_big_circle') && (
+								<Fragment>
+									{i > value && (
+										<div
+											className={` ${
+												isStepperVertical
+													? textPosition === 'LEFT'
+														? '_leftVerticalNextItem'
+														: textPosition === 'RIGHT'
+															? '_rightVerticalNextItem'
+															: '_topBottomVerticalNextItem'
+													: textPosition === 'TOP'
+														? '_topHorizontalNextItem'
+														: textPosition === 'BOTTOM'
+															? '_bottomHorizontalNextItem'
+															: '_leftRightHorizontalNextItem'
+											}`}
+											style={resolvedStyles.nextItemLines ?? {}}
+										>
+											<SubHelperComponent
+												definition={props.definition}
+												subComponentName="nextItemLines"
+											></SubHelperComponent>
+										</div>
+									)}
+
+									{i === value && (
+										<div
+											className={` ${
+												isStepperVertical
+													? textPosition === 'LEFT'
+														? '_leftVerticalActive'
+														: textPosition === 'RIGHT'
+															? '_rightVerticalActive'
+															: '_topBottomVerticalActive'
+													: textPosition === 'TOP'
+														? '_topHorizontalActive'
+														: textPosition === 'BOTTOM'
+															? '_bottomHorizontalActive'
+															: '_leftRightHorizontalActive'
+											}`}
+											style={resolvedStyles.activeAfterLine ?? {}}
+										>
+											<SubHelperComponent
+												definition={props.definition}
+												subComponentName="activeAfterLine"
+											></SubHelperComponent>
+										</div>
+									)}
+
+									{i < value && i !== value - 1 && (
+										<div
+											className={` ${
+												isStepperVertical
+													? textPosition === 'LEFT'
+														? '_leftVerticalDone'
+														: textPosition === 'RIGHT'
+															? '_rightVerticalDone'
+															: '_topBottomVerticalDone'
+													: textPosition === 'TOP'
+														? '_topHorizontalDone'
+														: textPosition === 'BOTTOM'
+															? '_bottomHorizontalDone'
+															: '_leftRightHorizontalDone'
+											}`}
+											style={resolvedStyles.doneLines ?? {}}
+										>
+											<SubHelperComponent
+												definition={props.definition}
+												subComponentName="doneLines"
+											></SubHelperComponent>
+										</div>
+									)}
+
+									{i === value - 1 && (
+										<div
+											className={` ${
+												isStepperVertical
+													? textPosition === 'LEFT'
+														? '_leftVerticalActiveBeforeLine'
+														: textPosition === 'RIGHT'
+															? '_rightVerticalActiveBeforeLine'
+															: '_topBottomVerticalActiveBeforeLine'
+													: textPosition === 'TOP'
+														? '_topHorizontalActiveBeforeLine'
+														: textPosition === 'BOTTOM'
+															? '_bottomHorizontalActiveBeforeLine'
+															: '_leftRightHorizontalActiveBeforeLine'
+											}`}
+											style={resolvedStyles.activeBeforeLine ?? {}}
+										>
+											<SubHelperComponent
+												definition={props.definition}
+												subComponentName="activeBeforeLine"
+											></SubHelperComponent>
+										</div>
+									)}
+								</Fragment>
+							)}
 					</li>
 				))}
 			</ul>
@@ -343,6 +464,30 @@ const component: Component = {
 			name: 'title',
 			displayName: 'Text',
 			description: 'Text',
+			icon: 'fa-solid fa-list',
+		},
+		{
+			name: 'nextItemLines',
+			displayName: 'NextItemLines',
+			description: 'NextItemLines',
+			icon: 'fa-solid fa-list',
+		},
+		{
+			name: 'doneLines',
+			displayName: 'DoneLines',
+			description: 'DoneLines',
+			icon: 'fa-solid fa-list',
+		},
+		{
+			name: 'activeAfterLine',
+			displayName: 'ActiveAfterLine',
+			description: 'ActiveAfterLine',
+			icon: 'fa-solid fa-list',
+		},
+		{
+			name: 'activeBeforeLine',
+			displayName: 'ActiveBeforeLine',
+			description: 'ActiveBeforeLine',
 			icon: 'fa-solid fa-list',
 		},
 	],

@@ -70,41 +70,6 @@ export default function StepperStyle({ theme }: { theme: Map<string, Map<string,
 			z-index: 1;
 		}
 		
-		${PREFIX}._default ._listItem._withLines:last-child,
-		${PREFIX}._big_circle ._listItem._withLines:last-child {
-		    flex-grow: 0;
-		}
-
-		${PREFIX}._default ul._horizontal ._listItem._withLines:not(:last-child)::after,
-		${PREFIX}._big_circle ul._horizontal ._listItem._withLines:not(:last-child)::after {
-			content: "";
-			align-self: flex-start;
-			flex-grow: 1;
-		}
-
-		${PREFIX}._default ul._horizontal._textTop ._listItem._withLines:not(:last-child)::after,
-		${PREFIX}._big_circle ul._horizontal._textTop ._listItem._withLines:not(:last-child)::after {
-			border-bottom: none;
-			align-self: flex-end;
-		}
-		
-		${PREFIX}._default ul._vertical ._listItem._withLines:not(:last-child)::after,
-		${PREFIX}._big_circle ul._vertical ._listItem._withLines:not(:last-child)::after {
-			content: "";
-			flex-grow: 1;
-		}
-
-		${PREFIX}._default ul._vertical._textRight ._listItem._withLines:not(:last-child)::after,
-		${PREFIX}._big_circle ul._vertical._textRight ._listItem._withLines:not(:last-child)::after {
-			border-left: none;
-			align-self: flex-start;
-		}
-
-		${PREFIX}._default ul._vertical._textLeft ._listItem._withLines:not(:last-child)::after,
-		${PREFIX}._big_circle ul._vertical._textLeft ._listItem._withLines:not(:last-child)::after {
-			align-self: flex-end;
-		}
-		
 		${PREFIX} ._itemContainer {
 			display: flex;
 			flex-direction: column;
@@ -141,7 +106,173 @@ export default function StepperStyle({ theme }: { theme: Map<string, Map<string,
 		    white-space: nowrap;
 			position: relative;
 		}
+		
+		${PREFIX} ._leftRightHorizontalActive {
+			border-bottom:2px dashed #0000001A;
+			align-self:center;
+			min-width:100px;
+			
+		}
 
+		${PREFIX}  ._leftRightHorizontalNextItem {
+			border-bottom:2px dashed #0000001A;
+			align-self:center;
+			min-width:100px;
+			
+		}
+
+		${PREFIX}  ._leftRightHorizontalDone {
+			border-bottom:2px solid #1CBA79;
+			align-self:center;
+			min-width:100px;
+		}
+		
+		${PREFIX}  ._leftRightHorizontalActiveBeforeLine {
+			border-bottom:2px solid #0880AE;
+			align-self:center;
+			min-width:100px;
+		}
+
+		${PREFIX} ._topHorizontalActive {
+			border-top:2px dashed #0000001A;
+			align-self:flex-end;
+			height:18px;
+			min-width:100px;
+
+	    }
+
+		${PREFIX}  ._topHorizontalNextItem {
+			border-top:2px dashed #0000001A;
+			align-self:flex-end;
+			height:18px;
+			min-width:100px;
+	    }
+		
+		${PREFIX}  ._topHorizontalDone {
+			border-top:2px solid #1CBA79;
+			align-self:flex-end;
+			height:18px;
+			min-width:100px;
+		}
+		
+		${PREFIX}  ._topHorizontalActiveBeforeLine {
+			border-top:2px solid #0880AE;
+			align-self:flex-end;
+			height:18px;
+			min-width:100px;
+		}
+
+		${PREFIX} ._bottomHorizontalActive {
+			border-bottom:2px dashed #0000001A;
+			align-self:flex-start;
+			height:17px;
+			min-width:100px;
+		}
+		
+		${PREFIX} ._bottomHorizontalNextItem {
+			border-bottom:2px dashed #0000001A;
+			align-self:flex-start;
+			height:17px;
+			min-width:100px;
+		}
+		
+		${PREFIX} ._bottomHorizontalActiveBeforeLine {
+			border-bottom: 2px solid #0880AE;
+			align-self:flex-start;
+			height:17px;
+			min-width:100px;
+		}
+		
+		${PREFIX} ._bottomHorizontalDone {
+			border-bottom: 2px solid #1CBA79;
+			align-self:flex-start;
+			height:17px;
+			min-width:100px;
+		}
+
+		${PREFIX}  ._topBottomVerticalActive {
+			border-right: 2px dashed #0000001A;
+			align-self:center;
+			min-height:100px;
+			
+		}
+		
+		${PREFIX}  ._topBottomVerticalNextItem {
+			border-right: 2px dashed #0000001A;
+			align-self:center;
+			min-height:100px;
+		}
+		
+		${PREFIX}  ._topBottomVerticalDone {
+			border-right: 2px solid #1CBA79;
+			align-self:center;
+			min-height:100px;	
+		}
+
+		${PREFIX}  ._topBottomVerticalActiveBeforeLine {
+			border-right: 2px solid #0880AE;
+			align-self:center;
+			min-height:100px;
+			
+			
+		}
+		
+		${PREFIX}  ._leftVerticalDone {
+			border-left:2px solid #1CBA79;
+			align-self:flex-end;
+			min-height:100px;
+			width:17px;
+		}
+		
+		${PREFIX}  ._leftVerticalActiveBeforeLine {
+			border-left:2px solid #0880AE;
+			align-self:flex-end;
+			min-height:100px;
+			width:17px;
+		}
+		
+		${PREFIX}  ._leftVerticalNextItem {
+			border-left:2px dashed #0000001A;
+			align-self:flex-end;
+			min-height:100px;
+			width:17px;
+		}
+
+		${PREFIX}  ._leftVerticalActive {
+			border-left:2px dashed #0000001A;
+			align-self:flex-end;
+			min-height:100px;
+			width:17px;
+		}
+
+		${PREFIX}  ._rightVerticalDone {
+			border-right:2px solid #1CBA79;
+			align-self:flex-start;
+			min-height:100px;
+			width:17px;
+		}
+
+		${PREFIX}  ._rightVerticalActive {
+			border-right:2px dashed #0000001A;
+			align-self:flex-start;
+			min-height:100px;
+			width:17px;
+		}
+		
+		${PREFIX}  ._rightVerticalNextItem {
+			border-right:2px dashed #0000001A;
+			align-self:flex-start;
+			min-height:100px;
+			width:17px;
+		}
+		
+		${PREFIX}  ._rightVerticalActiveBeforeLine {
+			border-right:2px solid #0880AE;
+			align-self:flex-start;
+			min-height:100px;
+			width:17px;
+		}
+		
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="StepperCss">{css}</style>;
