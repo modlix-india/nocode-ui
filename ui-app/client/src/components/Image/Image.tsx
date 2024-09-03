@@ -179,8 +179,8 @@ const component: Component = {
 							y2="1"
 							gradientUnits="objectBoundingBox"
 						>
-							<stop offset="0" stop-color="#fff" />
-							<stop offset="1" stop-color="#3f83ea" />
+							<stop offset="0" stopColor="#fff" />
+							<stop offset="1" stopColor="#3f83ea" />
 						</linearGradient>
 						<linearGradient
 							id="_dark-image-linear-gradient-2"
@@ -189,8 +189,8 @@ const component: Component = {
 							y2="1"
 							gradientUnits="objectBoundingBox"
 						>
-							<stop offset="0" stop-color="#c1c1c1" />
-							<stop offset="1" stop-color="#214883" />
+							<stop offset="0" stopColor="#c1c1c1" />
+							<stop offset="1" stopColor="#214883" />
 						</linearGradient>
 					</defs>
 					<rect width="30" height="30" fill="none" />

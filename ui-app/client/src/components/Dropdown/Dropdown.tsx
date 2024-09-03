@@ -496,8 +496,8 @@ const component: Component = {
 							x2="0.551"
 							gradientUnits="objectBoundingBox"
 						>
-							<stop offset="0" stop-color="#b0dce6" />
-							<stop offset="1" stop-color="#09a0c2" />
+							<stop offset="0" stopColor="#b0dce6" />
+							<stop offset="1" stopColor="#09a0c2" />
 						</linearGradient>
 						<linearGradient
 							id="_dropdown_blue_linear-gradient-2"
@@ -506,8 +506,8 @@ const component: Component = {
 							x2="0.5"
 							y2="1"
 						>
-							<stop offset="0" stop-color="#b0dce6" />
-							<stop offset="1" stop-color="#09a0c2" />
+							<stop offset="0" stopColor="#b0dce6" />
+							<stop offset="1" stopColor="#09a0c2" />
 						</linearGradient>
 					</defs>
 					<path

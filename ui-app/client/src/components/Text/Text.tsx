@@ -197,8 +197,8 @@ const component: Component = {
 							y2="1"
 							gradientUnits="objectBoundingBox"
 						>
-							<stop offset="0" stop-color="#f2a1d5" />
-							<stop offset="1" stop-color="#ff76ce" />
+							<stop offset="0" stopColor="#f2a1d5" />
+							<stop offset="1" stopColor="#ff76ce" />
 						</linearGradient>
 					</defs>
 					<rect width="30" height="30" rx="5" fill="url(#_text-linear-gradient)" />

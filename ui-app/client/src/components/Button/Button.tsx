@@ -449,8 +449,8 @@ const component: Component = {
 							y2="0.085"
 							gradientUnits="objectBoundingBox"
 						>
-							<stop offset="0" stop-color="#0ea3f4" />
-							<stop offset="1" stop-color="#91d8ff" />
+							<stop offset="0" stopColor="#0ea3f4" />
+							<stop offset="1" stopColor="#91d8ff" />
 						</linearGradient>
 					</defs>
 					<rect width="30" height="30" fill="none" />
