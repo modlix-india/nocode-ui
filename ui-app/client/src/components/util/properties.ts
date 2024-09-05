@@ -815,7 +815,7 @@ const COMPONENT_STYLE_GROUP_PROPERTIES: { [key: string]: ComponentStylePropertyG
 			'perspective',
 		],
 	},
-	slectorName: {
+	selectorName: {
 		name: 'selectorName',
 		type: 'selectorName',
 		displayName: 'Selector Names',

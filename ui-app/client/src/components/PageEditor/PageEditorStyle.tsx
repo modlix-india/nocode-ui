@@ -317,7 +317,7 @@ export default function GridStyle({
 			color: #000;
 			background-color: #F9F9F9;
 			font-family: Inter;
-			font-weight: 400;
+			font-weight: 500;
 			font-size: 12px;
 			padding: 5px 15px;
 			border-radius: 6px;
@@ -974,10 +974,11 @@ export default function GridStyle({
 			min-height: 35px;
 			min-width: 35px;
 			font-family: Inter;
+			font-weight: 500;
 			font-size: 12px;
 			border: none;
 			border-radius: 6px;
-			color: #555;
+			color: #000000;
 			background-color: #F9F9F9;
 			cursor: pointer;
 			padding: 5px 15px;
@@ -1064,27 +1065,33 @@ export default function GridStyle({
 
 		${PREFIX} ._simpleEditorSelect ._simpleEditorDropdownBody ._simpleEditorDropdownOption {
 			padding: 10px;
-			color: rgba(0, 0, 0, 0.4); 
+			color: #0000004D; 
 			border-radius: 4px;
 			white-space: nowrap;
+			font-weight: 400;
+			font-size: 12px;
+			font-family: Inter;
 		}
 
 		${PREFIX} ._simpleEditorSelect ._simpleEditorDropdownBody ._simpleEditorDropdownOption._hovered {
 			background-color: #F9F9F9;
 			border-radius: 4px;
-			font-weight: bold;
-			color: #0085F2;
+			color: #52BD94;
 		}
 
 		${PREFIX} ._simpleEditorSelect ._simpleEditorDropdownBody ._simpleEditorDropdownOption._selected {
-			color: #0085F2;
+			color: #52BD94;
+			
 		}
 
 		${PREFIX} ._simpleEditorIcons {
 			border-radius: 6px;
 			display: flex;
 			align-items: center;
-			flex-direction: row;		
+			flex-direction: row;
+			height: 36px;
+			padding: 2px;
+			gap: 2px;
 		}
 
 		${PREFIX} ._simpleEditorIcons ._eachIcon {
@@ -1093,25 +1100,18 @@ export default function GridStyle({
 			justify-content: center;
 			align-items: center;
 			cursor: pointer;
+			border-radius: 6px;
 		}
 
-		${PREFIX} ._simpleEditorIcons._bground ._eachIcon {
+		${PREFIX} ._simpleEditorIcons._bground {
 			background: #F9F9F9;
 		}
 
-		${PREFIX} ._simpleEditorIcons ._eachIcon:first-child {
-			border-top-left-radius: 6px;
-			border-bottom-left-radius: 6px;
-		}
-
-		${PREFIX} ._simpleEditorIcons ._eachIcon:last-child {
-			border-top-right-radius: 6px;
-			border-bottom-right-radius: 6px;
-		}
 
 		${PREFIX} ._simpleEditorIcons._bground ._eachIcon:hover,
 		${PREFIX} ._simpleEditorIcons._bground ._eachIcon._active {
-			background: #EEF3FA;
+			background: #FFF;
+			box-shadow: 0px 2px 4px 0px #0000001A;
 		}
 
 		${PREFIX} ._simpleEditorIcons ._eachIcon svg path,
@@ -1138,8 +1138,8 @@ export default function GridStyle({
 		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg circle,
 		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg rect,
 		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg line {
-			fill: #3A8BED;
-			stroke: #3A8BED;
+			fill: #52BD94;
+			stroke: #52BD94;
 		}
 
 		${PREFIX} ._simpleEditorShadow {
@@ -1492,29 +1492,28 @@ export default function GridStyle({
 		}
 
 		${PREFIX} ._detailStyleEditor{
-			min-width: 250px;
-			width: 250px;
+			min-width: 300px;
+			width: 300px;
 			min-height: 400px;
 			background-color: #FFF;
 			box-shadow: 0px 2px 15px 0px #0000001A;
 			border: 1px solid #00000029;
 			position: fixed;
 			z-index: 4;
-			border-radius: 4px;
+			border-radius: 9px;
 			display: flex;
 			flex-direction: column;
 		}
 
-		${PREFIX} ._detailStyleEditor._header {
+		${PREFIX} ._detailStyleEditor ._header {
 			display: flex;
 			flex-direction: row;
 			align-items: center;
 			justify-content: space-between;
 			padding: 10px;
 			border-bottom: 1px solid #0000000F;
-			background-color: #F9F9F9;
 			font-family: Inter;
-			font-size: 11px;
+			font-size: 12px;
 			font-weight: 600;
 			line-height: 12px;
 			color: #000000;
@@ -1522,17 +1521,18 @@ export default function GridStyle({
 			border-top-right-radius: 4px;
 			padding-left: 20px;			
 			cursor: move;
+			height: 44px;
 		}
 
-		${PREFIX} ._detailStyleEditor._header ._title {
+		${PREFIX} ._detailStyleEditor ._header ._title {
 			flex: 1;
 		}
 
-		${PREFIX} ._detailStyleEditor._header ._close {
+		${PREFIX} ._detailStyleEditor ._header ._close {
 			cursor: pointer;
 		}
 
-		${PREFIX} ._detailStyleEditor._editorContent {
+		${PREFIX} ._detailStyleEditor ._editorContent {
 			padding-top: 10px;
 			padding-bottom: 10px;
 			white-space: nowrap;
@@ -2187,7 +2187,7 @@ export default function GridStyle({
 		}
 
 		${PREFIX} ._propLabel {
-			color: #222222B2;
+			color: #22222299;
 			display: flex;
 			gap: 5px;
 			align-items: center;
@@ -2318,7 +2318,7 @@ export default function GridStyle({
 		${PREFIX} ._propertyGroup {
 			display: flex;
 			flex-direction: column;
-			border-bottom: 1px solid rgba(0,0,0,0.05);
+			border-bottom: 1px solid #0000000D;
 		}
 
 		${PREFIX} ._propertyGroup._opened ._propertyGroupContent {
@@ -2331,8 +2331,8 @@ export default function GridStyle({
 
 		${PREFIX} ._propertyGroupHeader {
 			font-family: Inter;
-			font-size: 13px;			
-			color: #888;
+			font-size: 12px;			
+			color: #333;
 			padding: 14px 15px;
 			cursor: pointer;
 			border-radius: 3px;
@@ -2353,7 +2353,7 @@ export default function GridStyle({
 			display: flex;
 			flex-direction: row;
 			gap: 15px;
-			font-size: 20px;
+			font-size: 15px;
 			font-weight: 200;
 			justify-content: flex-end;
 			font-family: monospace;
@@ -3573,7 +3573,7 @@ export default function GridStyle({
 		${PREFIX}._dark button, ${PREFIX} ._dark select._peSelect, ${PREFIX} ._dark input._peInput[type='text'],
 		${PREFIX}._dark ._pvExpressionEditor, ${PREFIX} ._popupBackground._dark button,
 		${PREFIX}._dark input._peInput[type='number'] {
-			color: #aaa;
+			color: #000;
 			background-color: #222;
 			border: 1px solid #333;
 		}
