@@ -232,7 +232,6 @@ export function CalendarMonth(
 					hovers,
 					curry,
 				});
-				console.log(iterationDate.toDateString(), subComponentName, hovers);
 				datesNLabels.push(
 					<div
 						className={className}
