@@ -18,20 +18,25 @@ export function IconsSimpleEditor({
 	withBackground = false,
 	multipleValueType = SimpleEditorMultipleValueType.SpaceSeparated,
 	multiSelect = false,
+	multiSelectWithControl = false,
 }: {
 	options: IconOptions;
-	selected: string;
+	selected: string | Array<string>;
 	onChange: (v: string | Array<string>) => void;
 	withBackground?: boolean;
 	multipleValueType?: SimpleEditorMultipleValueType;
 	multiSelect?: boolean;
+	multiSelectWithControl?: boolean;
 }) {
 	const selection = useMemo(() => {
-		if (!multiSelect) return new Set<string>([selected]);
+		if (!multiSelect && typeof selected === 'string') return new Set<string>([selected]);
 		if (!selected) return new Set<string>();
-		if (multipleValueType === SimpleEditorMultipleValueType.Array)
-			return new Set<string>(selected);
-		return new Set<string>(selected.split(multipleValueType.toString()));
+		if (
+			multipleValueType === SimpleEditorMultipleValueType.Array &&
+			typeof selected === 'string'
+		)
+			return new Set<string>(selected.split(multipleValueType.toString()));
+		return new Set<string>(selected);
 	}, [selected]);
 
 	return (
@@ -42,15 +47,19 @@ export function IconsSimpleEditor({
 					<div
 						key={i}
 						className={`_eachIcon ${activeClass}`}
-						onClick={() => {
+						onClick={ev => {
 							if (!multiSelect) {
 								onChange(selected === e.name ? '' : e.name);
 								return;
 							}
-
 							let arr = Array.from(selection);
-							if (selection.has(e.name)) arr.splice(arr.indexOf(e.name), 1);
-							else arr.push(e.name);
+
+							if (multiSelectWithControl && !ev.ctrlKey && !ev.metaKey) {
+								arr = [e.name];
+							} else {
+								if (selection.has(e.name)) arr.splice(arr.indexOf(e.name), 1);
+								else arr.push(e.name);
+							}
 
 							onChange(
 								multipleValueType === SimpleEditorMultipleValueType.Array

@@ -1138,10 +1138,81 @@ export default function GridStyle({
 		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg path,
 		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg circle,
 		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg rect,
-		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg line {
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg line,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg path._highlight,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg circle._highlight,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg rect._highlight,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg line._highlight {
 			fill: #52BD94;
 			stroke: #52BD94;
 		}
+
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg path._color1,
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg circle._color1,
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg rect._color1,
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg line._color1,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg path._color1,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg circle._color1,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg rect._color1,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg line._color1,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg path._highlight._color1,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg circle._highlight._color1,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg rect._highlight._color1,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg line._highlight._color1 {
+			fill: #3A8BED;
+			stroke: #3A8BED;
+		}
+
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg path._color2,
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg circle._color2,
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg rect._color2,
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg line._color2,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg path._color2,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg circle._color2,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg rect._color2,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg line._color2,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg path._highlight._color2,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg circle._highlight._color2,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg rect._highlight._color2,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg line._highlight._color2 {
+			fill: #007962;
+			stroke: #007962;
+		}
+
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg path._color3,
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg circle._color3,
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg rect._color3,
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg line._color3,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg path._color3,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg circle._color3,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg rect._color3,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg line._color3,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg path._highlight._color3,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg circle._highlight._color3,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg rect._highlight._color3,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg line._highlight._color3 {
+			fill: #2A69B5;
+			stroke: #2A69B5;
+		}
+
+
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg path._lowlight,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg circle._lowlight,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg rect._lowlight,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg line._lowlight,
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg path._lowlight,
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg circle._lowlight,
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg rect._lowlight,
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg line._lowlight,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg path._lowlight,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg circle._lowlight,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg rect._lowlight,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg line._lowlight {
+			fill: #e3e5ea;
+			stroke: #e3e5ea;
+		}
+
+
 
 		${PREFIX} ._simpleEditorShadow {
 			display: flex;
