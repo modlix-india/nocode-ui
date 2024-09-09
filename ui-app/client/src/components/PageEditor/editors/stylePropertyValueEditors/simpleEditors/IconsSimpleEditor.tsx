@@ -8,6 +8,7 @@ export type IconOptions = Array<{
 	width?: string;
 	height?: string;
 	viewBox?: string;
+	transform?: string;
 }>;
 
 export function IconsSimpleEditor({
@@ -68,6 +69,7 @@ export function IconsSimpleEditor({
 							fill="none"
 							xmlns="http://www.w3.org/2000/svg"
 							className={activeClass}
+							transform={e.transform}
 						>
 							{e.icon}
 						</svg>

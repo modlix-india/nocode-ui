@@ -1101,6 +1101,7 @@ export default function GridStyle({
 			align-items: center;
 			cursor: pointer;
 			border-radius: 6px;
+			flex: 1;
 		}
 
 		${PREFIX} ._simpleEditorIcons._bground {
