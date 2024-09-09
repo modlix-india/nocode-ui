@@ -1493,7 +1493,7 @@ export default function GridStyle({
 			flex-direction: row;
 			align-items: center;			
 			padding: 5px 15px;
-			gap: 5px;
+			gap: 10px;
 			width: 100%;
 		}
 

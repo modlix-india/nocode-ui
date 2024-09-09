@@ -193,13 +193,15 @@ function BorderStandardEditor({
 	return (
 		<>
 			<div className="_combineEditors">
-				<div className="_simpleLabel">Width :</div>
+				<div className="_simpleLabel">Width </div>
 				<div className="_simpleEditor">
 					<PixelSize autofocus={true} value={size} onChange={onChangeCurry('Width')} />
 				</div>
 			</div>
-			<div className="_combineEditors">
-				<div className="_simpleLabel">Style :</div>
+			<div className="_simpleEditor">
+				<div className="_simpleLabel">Basic</div>
+			</div>
+			<div className="_simpleEditor">
 				<IconsSimpleEditor
 					options={[
 						{
@@ -307,59 +309,127 @@ function BorderStandardEditor({
 					onChange={v => onChangeCurry('Style')(v as string)}
 					withBackground={true}
 				/>
+			</div>
+			<div className="_simpleEditor">
+				<div className="_simpleLabel">Advanced</div>
+			</div>
+			<div className="_simpleEditor">
+				<IconsSimpleEditor
+					options={[
+						{
+							name: 'groove',
+							description: 'Groove border',
+							icon: (
+								<g transform="translate(664.646 293.118) rotate(180)">
+									<path
+										d="M-1.5,2A3.5,3.5,0,0,1,2-1.5h8.5A3.5,3.5,0,0,1,14,2c0-.276-.9-.5-2-.5H2a.5.5,0,0,0-.5.5ZM14,14h0ZM2,14a3.5,3.5,0,0,1-3.5-3.5V2A3.5,3.5,0,0,1,2-1.5v3a.5.5,0,0,0-.5.5V12C1.5,13.1,1.724,14,2,14ZM14,0V0Z"
+										transform="translate(656.146 284.618) rotate(180)"
+										strokeOpacity="0"
+									/>
+									<path
+										d="M15.5,12A3.5,3.5,0,0,1,12,15.5H3.5A3.5,3.5,0,0,1,0,12c0,.276.9.5,2,.5H12a.5.5,0,0,0,.5-.5ZM0,0H0ZM12,0a3.5,3.5,0,0,1,3.5,3.5V12A3.5,3.5,0,0,1,12,15.5v-3a.5.5,0,0,0,.5-.5V2C12.5.9,12.276,0,12,0ZM0,14v0Z"
+										transform="translate(655.499 283.927) rotate(180)"
+										strokeOpacity="0"
+										opacity="0.5"
+									/>
+									<path
+										d="M-.176,1.824a2,2,0,0,1,2-2h9.353a2,2,0,0,1,2,2H-.176ZM13.177,13.177h0Zm-11.353,0a2,2,0,0,1-2-2V1.824a2,2,0,0,1,2-2V13.177ZM13.177.824v0Z"
+										transform="translate(642.322 270.75)"
+										strokeOpacity="0"
+									/>
+									<path
+										d="M14.176,12.176a2,2,0,0,1-2,2H3.646a2,2,0,0,1-2-2H14.176ZM1.646,1.647h0Zm10.529,0a2,2,0,0,1,2,2v8.529a2,2,0,0,1-2,2V1.647ZM1.646,13.176v0Z"
+										transform="translate(640.824 269.383)"
+										strokeOpacity="0"
+										opacity="0.5"
+									/>
+								</g>
+							),
+						},
+						{
+							name: 'ridge',
+							description: 'Ridge border',
+							icon: (
+								<g transform="translate(-632.999 -262)">
+									<path
+										d="M-1.5,2A3.5,3.5,0,0,1,2-1.5h8.5A3.5,3.5,0,0,1,14,2c0-.276-.9-.5-2-.5H2a.5.5,0,0,0-.5.5ZM14,14h0ZM2,14a3.5,3.5,0,0,1-3.5-3.5V2A3.5,3.5,0,0,1,2-1.5v3a.5.5,0,0,0-.5.5V12C1.5,13.1,1.724,14,2,14ZM14,0V0Z"
+										transform="translate(656.146 284.618) rotate(180)"
+										strokeOpacity="0"
+									/>
+									<path
+										d="M15.5,12A3.5,3.5,0,0,1,12,15.5H3.5A3.5,3.5,0,0,1,0,12c0,.276.9.5,2,.5H12a.5.5,0,0,0,.5-.5ZM0,0H0ZM12,0a3.5,3.5,0,0,1,3.5,3.5V12A3.5,3.5,0,0,1,12,15.5v-3a.5.5,0,0,0,.5-.5V2C12.5.9,12.276,0,12,0ZM0,14v0Z"
+										transform="translate(655.499 283.927) rotate(180)"
+										strokeOpacity="0"
+										opacity="0.5"
+									/>
+									<path
+										d="M-.176,1.824a2,2,0,0,1,2-2h9.353a2,2,0,0,1,2,2H-.176ZM13.177,13.177h0Zm-11.353,0a2,2,0,0,1-2-2V1.824a2,2,0,0,1,2-2V13.177ZM13.177.824v0Z"
+										transform="translate(642.322 270.75)"
+										strokeOpacity="0"
+									/>
+									<path
+										d="M14.176,12.176a2,2,0,0,1-2,2H3.646a2,2,0,0,1-2-2H14.176ZM1.646,1.647h0Zm10.529,0a2,2,0,0,1,2,2v8.529a2,2,0,0,1-2,2V1.647ZM1.646,13.176v0Z"
+										transform="translate(640.824 269.383)"
+										strokeOpacity="0"
+										opacity="0.5"
+									/>
+								</g>
+							),
+						},
+						{
+							name: 'inset',
+							description: 'Inset border',
+							icon: (
+								<g transform="translate(9.5 9.5)">
+									<path
+										d="M0,0H0ZM15.5,12A3.5,3.5,0,0,1,12,15.5H3.5A3.5,3.5,0,0,1,0,12c0,.276.9.5,2,.5H12a.5.5,0,0,0,.5-.5ZM0,14v0ZM12,0a3.5,3.5,0,0,1,3.5,3.5V12A3.5,3.5,0,0,1,12,15.5v-3a.5.5,0,0,0,.5-.5V2C12.5.9,12.276,0,12,0Z"
+										strokeOpacity="0"
+										opacity="0.5"
+									/>
+									<path
+										d="M-1.5,2A3.5,3.5,0,0,1,2-1.5h8.5A3.5,3.5,0,0,1,14,2c0-.276-.9-.5-2-.5H2a.5.5,0,0,0-.5.5ZM14,14h0ZM2,14a3.5,3.5,0,0,1-3.5-3.5V2A3.5,3.5,0,0,1,2-1.5v3a.5.5,0,0,0-.5.5V12C1.5,13.1,1.724,14,2,14ZM14,0V0Z"
+										strokeOpacity="0"
+									/>
+								</g>
+							),
+						},
+						{
+							name: 'outset',
+							description: 'Outset border',
+							icon: (
+								<g transform="translate(23.5 23.5) rotate(180)">
+									<path
+										d="M0,0H0ZM15.5,12A3.5,3.5,0,0,1,12,15.5H3.5A3.5,3.5,0,0,1,0,12c0,.276.9.5,2,.5H12a.5.5,0,0,0,.5-.5ZM0,14v0ZM12,0a3.5,3.5,0,0,1,3.5,3.5V12A3.5,3.5,0,0,1,12,15.5v-3a.5.5,0,0,0,.5-.5V2C12.5.9,12.276,0,12,0Z"
+										strokeOpacity="0"
+										opacity="0.5"
+									/>
+									<path
+										d="M-1.5,2A3.5,3.5,0,0,1,2-1.5h8.5A3.5,3.5,0,0,1,14,2c0-.276-.9-.5-2-.5H2a.5.5,0,0,0-.5.5ZM14,14h0ZM2,14a3.5,3.5,0,0,1-3.5-3.5V2A3.5,3.5,0,0,1,2-1.5v3a.5.5,0,0,0-.5.5V12C1.5,13.1,1.724,14,2,14ZM14,0V0Z"
+										strokeOpacity="0"
+									/>
+								</g>
+							),
+						},
+						{
+							name: 'hidden',
+							description: 'Hidden border',
+							icon: <></>,
+						},
+					]}
+					selected={style}
+					onChange={v => onChangeCurry('Style')(v as string)}
+					withBackground={true}
+				/>
+			</div>
+
+			<div className="_combineEditors">
+				<div className="_simpleLabel">Color</div>
 				<CommonColorPickerPropertyEditor
 					color={{ value: color }}
 					onChange={onChangeCurry('Color')}
 				/>
 			</div>
-			<div className="_simpleEditor">
-				<Dropdown
-					value={style}
-					onChange={v => onChangeCurry('Style')(v as string)}
-					options={[
-						{
-							name: 'none',
-							displayName: 'No border',
-						},
-						{
-							name: 'solid',
-							displayName: 'Solid line border',
-						},
-						{
-							name: 'double',
-							displayName: 'Double line border',
-						},
-						{
-							name: 'dotted',
-							displayName: 'Dotted line border',
-						},
-						{
-							name: 'dashed',
-							displayName: 'Dashed line border',
-						},
-						{
-							name: 'groove',
-							displayName: 'Groove border',
-						},
-						{
-							name: 'ridge',
-							displayName: 'Ridge border',
-						},
-						{
-							name: 'inset',
-							displayName: 'Inset border',
-						},
-						{
-							name: 'outset',
-							displayName: 'Outset border',
-						},
-						{
-							name: 'hidden',
-							displayName: 'Hidden border',
-						},
-					]}
-				/>
-			</div>
+
 			<div className="_simpleEditor">
 				<IconsSimpleEditor
 					options={[
