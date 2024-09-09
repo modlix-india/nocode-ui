@@ -31,7 +31,26 @@ export function RangeSlider({
 		return stepString.length - decimalIndex - 1;
 	}, [step]);
 	return (
-		<div className="_simpleEditorRange" role="slider" ref={ref} aria-valuenow={percent}>
+		<div
+			className="_simpleEditorRange"
+			role="slider"
+			ref={ref}
+			aria-valuenow={percent}
+			onMouseDown={e => {
+				e.stopPropagation();
+				e.preventDefault();
+
+				const left = e.currentTarget.getBoundingClientRect().left;
+				const width = e.currentTarget.getBoundingClientRect().width;
+
+				const clickLeft = e.clientX - left;
+				const clickPercent = (clickLeft / width) * 100;
+				let newValue = min + (clickPercent / 100) * (max - min);
+				if (fixedPoint > 0) newValue = Number(newValue.toFixed(fixedPoint));
+
+				onChange(newValue);
+			}}
+		>
 			<div className="_rangeTrack"></div>
 			<div className="_rangeTrackFill" style={trackFillWidth}></div>
 			<div
