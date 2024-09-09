@@ -215,7 +215,7 @@ export function PositionEditor({
 				<div className="_spacer" />
 
 				<div className="_combineEditors">
-					<div className="_simpleLabel">Z-Index : </div>
+					<div className="_simpleLabel">Z-Index</div>
 					<EachSimpleEditor
 						defPath={defPath}
 						locationHistory={locationHistory}
@@ -261,7 +261,7 @@ export function PositionEditor({
 	return (
 		<>
 			<div className="_combineEditors">
-				<div className="_simpleLabel">Type : </div>
+				<div className="_simpleLabel">Type</div>
 				<EachSimpleEditor
 					defPath={defPath}
 					locationHistory={locationHistory}
@@ -319,7 +319,7 @@ export function PositionEditor({
 			{otherEditors}
 			<div className="_spacer"></div>
 			<div className="_combineEditors _spaceBetween">
-				<div className="_simpleLabel">Float :</div>
+				<div className="_simpleLabel">Float</div>
 				<EachSimpleEditor
 					defPath={defPath}
 					locationHistory={locationHistory}
@@ -447,7 +447,7 @@ export function PositionEditor({
 				/>
 			</div>
 			<div className="_combineEditors _spaceBetween">
-				<div className="_simpleLabel">Clear :</div>
+				<div className="_simpleLabel">Clear</div>
 				<EachSimpleEditor
 					defPath={defPath}
 					locationHistory={locationHistory}

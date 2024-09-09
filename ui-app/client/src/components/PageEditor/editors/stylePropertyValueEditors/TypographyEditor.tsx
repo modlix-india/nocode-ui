@@ -50,7 +50,7 @@ export function TypographyEditor({
 	if (isDetailStyleEditor) {
 		return (
 			<>
-				<div className="_simpleLabel">Text Decoration Line :</div>
+				<div className="_simpleLabel">Text Decoration Line</div>
 				<div className="_combineEditors _alignEnd" title="Text Decoration">
 					<EachSimpleEditor
 						selectedComponentsList={selectedComponentsList}
@@ -184,7 +184,7 @@ export function TypographyEditor({
 						editorDef={{ type: SimpleEditorType.Color }}
 					/>
 				</div>
-				<div className="_simpleLabel">Word Spacing :</div>
+				<div className="_simpleLabel">Word Spacing</div>
 				<div className="_combineEditors" title="Word Spacing">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -266,7 +266,7 @@ export function TypographyEditor({
 						className="_confineWidth"
 					/>
 				</div>
-				<div className="_simpleLabel">Intendation :</div>
+				<div className="_simpleLabel">Intendation</div>
 				<div className="_combineEditors" title="Text Indentation">
 					<svg
 						width="14"
@@ -316,7 +316,7 @@ export function TypographyEditor({
 					/>
 				</div>
 				<div className="_combineEditors">
-					<div className="_simpleLabel">Transform :</div>
+					<div className="_simpleLabel">Transform</div>
 					<EachSimpleEditor
 						selectedComponentsList={selectedComponentsList}
 						defPath={defPath}
@@ -403,7 +403,7 @@ export function TypographyEditor({
 				</div>
 
 				<div className="_combineEditors">
-					<div className="_simpleLabel">Word Break :</div>
+					<div className="_simpleLabel">Word Break</div>
 					<EachSimpleEditor
 						selectedComponentsList={selectedComponentsList}
 						defPath={defPath}
@@ -491,7 +491,7 @@ export function TypographyEditor({
 				</div>
 
 				<div className="_combineEditors">
-					<div className="_simpleLabel">Whitespace :</div>
+					<div className="_simpleLabel">Whitespace</div>
 					<EachSimpleEditor
 						selectedComponentsList={selectedComponentsList}
 						defPath={defPath}
@@ -592,7 +592,7 @@ export function TypographyEditor({
 						}}
 					/>
 				</div>
-				<div className="_simpleLabel">Text Shadow :</div>
+				<div className="_simpleLabel">Text Shadow</div>
 				<EachSimpleEditor
 					selectedComponentsList={selectedComponentsList}
 					defPath={defPath}
