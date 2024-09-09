@@ -73,7 +73,7 @@ function Stepper(props: ComponentProps) {
 			pageExtractor,
 			bindingPathPath,
 		);
-	}, [bindingPath]);
+	}, [bindingPathPath]);
 
 	const onClickEvent = onClick ? props.pageDefinition.eventFunctions?.[onClick] : undefined;
 
