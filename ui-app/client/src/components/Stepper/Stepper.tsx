@@ -21,9 +21,9 @@ import { styleDefaults } from './StepperStyleProperties';
 const COUNT_FUNCTIONS: Record<string, (num: number) => string> = {
 	NUMBER: (num: number) => num.toString(),
 	ROMAN: (num: number) => getRoman(num, false),
-	ROMAN_UPPER: (num: number) => getRoman(num, true),
+	ROMAN_UPPERCASE: (num: number) => getRoman(num, true),
 	ALPHA: (num: number) => getAlphaNumeral(num, false),
-	ALPHA_UPPER: (num: number) => getAlphaNumeral(num, true),
+	ALPHA_UPPERCASE: (num: number) => getAlphaNumeral(num, true),
 	NONE: () => '',
 };
 

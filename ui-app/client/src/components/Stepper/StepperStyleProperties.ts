@@ -2590,6 +2590,24 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		selector: '.comp.compStepper._default._quinary ._listItem._done',
 		noPrefix: true,
 	},
+	{
+		groupName: 'Stepper Step Text Top Bottom Line Width',
+		displayName: 'Stepper Step Text Top Bottom Line Width Design Default',
+		name: 'stepperStepTextTopBottomLineWidthDesignDefault',
+		defaultValue: '2px',
+		cssProperty: 'width',
+		selector: '.comp.compStepper._default._vertical ._listItem ._line',
+		noPrefix: true,
+	},
+	{
+		groupName: 'Stepper Step Text Top Bottom Line Width',
+		displayName: 'Stepper Step Text Top Bottom Line Width Design Big Circle',
+		name: 'stepperStepTextTopBottomLineWidthDesignBigCircle',
+		defaultValue: '2px',
+		cssProperty: 'width',
+		selector: '.comp.compStepper._big_circle._vertical ._listItem ._line',
+		noPrefix: true,
+	},
 ];
 
 export const styleDefaults = new Map<string, string>(
