@@ -314,6 +314,12 @@ const component: Component = {
 			icon: 'fa-solid fa-arrow-down-1-9',
 		},
 		{
+            name: 'list',
+            displayName: 'List',
+            description: 'List',
+            icon: 'fa-solid fa-list',
+        },
+		{
 			name: 'listItem',
 			displayName: 'Step',
 			description: 'Step',
