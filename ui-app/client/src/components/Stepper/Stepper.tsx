@@ -254,7 +254,7 @@ function Stepper(props: ComponentProps) {
 	}
 	return (
 		<ul
-			style={resolvedStyles.list ?? {}}
+			style={resolvedStyles.comp ?? {}}
 			className={`comp compStepper ${stepperDesign} ${colorScheme} ${
 				stepperDesign !== '_rectangle_arrow' && isStepperVertical
 					? '_vertical'
@@ -313,12 +313,6 @@ const component: Component = {
 			mainComponent: true,
 			icon: 'fa-solid fa-arrow-down-1-9',
 		},
-		{
-            name: 'list',
-            displayName: 'List',
-            description: 'List',
-            icon: 'fa-solid fa-list',
-        },
 		{
 			name: 'listItem',
 			displayName: 'Step',
