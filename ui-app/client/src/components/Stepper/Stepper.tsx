@@ -254,7 +254,7 @@ function Stepper(props: ComponentProps) {
 	}
 	return (
 		<ul
-			style={resolvedStyles.list ?? {}}
+			style={resolvedStyles.comp ?? {}}
 			className={`comp compStepper ${stepperDesign} ${colorScheme} ${
 				stepperDesign !== '_rectangle_arrow' && isStepperVertical
 					? '_vertical'
