@@ -201,6 +201,8 @@ export function ImageResizer2({
 					else if (nX + 10 > imgWidth) nX = imgWidth - 10;
 					if (nY - 10 < -crop.height) nY = 10 - crop.height;
 					else if (nY + 10 > imgHeight) nY = imgHeight - 10;
+					nX = Math.round(nX);
+					nY = Math.round(nY);
 					setCrop(c => ({ ...c!, x: nX, y: nY }));
 				})}
 			>
@@ -658,7 +660,7 @@ export function ImageResizer2({
 												width,
 												height: keepAspectRatio
 													? Math.round((width / size.width) * size.height)
-													: imageSize.height ?? size.height,
+													: (imageSize.height ?? size.height),
 											});
 										}}
 									/>
@@ -714,7 +716,7 @@ export function ImageResizer2({
 												height,
 												width: keepAspectRatio
 													? (height / size.height) * size.width
-													: imageSize.width ?? size.width,
+													: (imageSize.width ?? size.width),
 											});
 										}}
 									/>
