@@ -39,6 +39,51 @@ export function IconsSimpleEditor({
 		return new Set<string>(selected);
 	}, [selected]);
 
+	const handleSelection = (clickedOption: string, ctrlKey: boolean, metaKey: boolean) => {
+		if (!multiSelect) {
+			onChange(selected === clickedOption ? '' : clickedOption);
+			return;
+		}
+
+		let newSelection: string[];
+
+		if (multiSelectWithControl && !ctrlKey && !metaKey) {
+			newSelection = [clickedOption];
+		} else {
+			const currentSelection = Array.from(selection);
+			const allOptionIndex = options.findIndex(opt => opt.name === 'ALL');
+			const isAllOption = clickedOption === 'ALL';
+
+			if (isAllOption) {
+				newSelection = currentSelection.includes('ALL') ? [] : ['ALL'];
+			} else {
+				if (currentSelection.includes(clickedOption)) {
+					newSelection = currentSelection.filter(item => item !== clickedOption);
+				} else {
+					newSelection = [...currentSelection, clickedOption];
+				}
+
+				if (
+					newSelection.length === options.length - 1 &&
+					!newSelection.includes('ALL') &&
+					allOptionIndex !== -1
+				) {
+					newSelection = ['ALL'];
+				}
+
+				if (newSelection.includes('ALL') && newSelection.length > 1) {
+					newSelection = newSelection.filter(item => item !== 'ALL');
+				}
+			}
+		}
+
+		onChange(
+			multipleValueType === SimpleEditorMultipleValueType.Array
+				? newSelection
+				: newSelection.join(multipleValueType.toString()),
+		);
+	};
+
 	return (
 		<div className={`_simpleEditorIcons ${withBackground ? '_bground' : ''}`}>
 			{options.map((e, i) => {
@@ -47,26 +92,7 @@ export function IconsSimpleEditor({
 					<div
 						key={i}
 						className={`_eachIcon ${activeClass}`}
-						onClick={ev => {
-							if (!multiSelect) {
-								onChange(selected === e.name ? '' : e.name);
-								return;
-							}
-							let arr = Array.from(selection);
-
-							if (multiSelectWithControl && !ev.ctrlKey && !ev.metaKey) {
-								arr = [e.name];
-							} else {
-								if (selection.has(e.name)) arr.splice(arr.indexOf(e.name), 1);
-								else arr.push(e.name);
-							}
-
-							onChange(
-								multipleValueType === SimpleEditorMultipleValueType.Array
-									? arr
-									: arr.join(multipleValueType.toString()),
-							);
-						}}
+						onClick={ev => handleSelection(e.name, ev.ctrlKey, ev.metaKey)}
 						title={e.description}
 					>
 						<svg
