@@ -69,6 +69,8 @@ function TextArea(props: ComponentProps) {
 			onBlur,
 			showMandatoryAsterisk,
 			hideClearButton,
+			maxChars,
+			rows,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -104,33 +106,6 @@ function TextArea(props: ComponentProps) {
 			bindingPathPath,
 		);
 	}, [bindingPathPath]);
-
-	// const spinnerPath1 = onChange
-	// 	? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
-	// 			onChange,
-	// 	  )}.isRunning`
-	// 	: undefined;
-
-	// const spinnerPath2 = onClear
-	// 	? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
-	// 			onClear,
-	// 	  )}.isRunning`
-	// 	: undefined;
-
-	// const [isLoading, setIsLoading] = useState(
-	// 	(getDataFromPath(spinnerPath1, props.locationHistory, pageExtractor) ||
-	// 		getDataFromPath(spinnerPath2, props.locationHistory, pageExtractor)) ??
-	// 		false,
-	// );
-
-	// useEffect(() => {
-	// 	let paths = [];
-	// 	if (spinnerPath1) paths.push(spinnerPath1);
-	// 	if (spinnerPath2) paths.push(spinnerPath2);
-
-	// 	if (!paths.length) return;
-	// 	return addListener((_, value) => setIsLoading(value), pageExtractor, ...paths);
-	// }, []);
 
 	useEffect(() => {
 		if (!validation?.length) return;
@@ -266,6 +241,7 @@ function TextArea(props: ComponentProps) {
 			readOnly={readOnly}
 			value={value}
 			label={label}
+			maxChars={maxChars}
 			translations={translations}
 			placeholder={placeholder}
 			hasFocusStyles={stylePropertiesWithPseudoStates?.focus}
@@ -286,6 +262,7 @@ function TextArea(props: ComponentProps) {
 			hasValidationCheck={validation?.length > 0}
 			hideClearContentIcon={hideClearButton}
 			inputType="TextArea"
+			rows={rows}
 			showMandatoryAsterisk={
 				(validation ?? []).find(
 					(e: any) => e.type === undefined || e.type === 'MANDATORY',

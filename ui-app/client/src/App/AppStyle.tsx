@@ -306,7 +306,7 @@ export default function AppStyle() {
 	._colorPickerBody {
 		position: fixed;
 		background-color: #FFF;
-		z-index: 2;
+		z-index: 6;
 		box-shadow: 0px 1px 4px 0px #00000026;
 		border-radius: 6px;
 		padding: 10px;

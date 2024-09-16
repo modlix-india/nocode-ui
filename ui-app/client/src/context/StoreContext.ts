@@ -143,7 +143,7 @@ export function getPathFromLocation(
 		const data = pe
 			? getDataFromLocation(loc, locationHistory, ...tve, pe)
 			: getDataFromLocation(loc, locationHistory, ...tve);
-		path = data || '';
+		path = data ?? '';
 	}
 
 	return pe ? pe.computeParentPath(path) : path;

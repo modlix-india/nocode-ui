@@ -47,6 +47,7 @@ type CommonInputType = {
 	handleLeftIcon?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 	handleRightIcon?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 	showMandatoryAsterisk?: boolean;
+	rows?: number;
 };
 
 function CommonInputText(props: CommonInputType) {
@@ -93,6 +94,7 @@ function CommonInputText(props: CommonInputType) {
 		handleRightIcon,
 		showMandatoryAsterisk,
 		onMouseEnter,
+		rows,
 	} = props;
 	const [focus, setFocus] = React.useState(false);
 	const [showPassword, setShowPassowrd] = React.useState(false);
@@ -201,6 +203,7 @@ function CommonInputText(props: CommonInputType) {
 				autoFocus={autoFocus}
 				autoComplete={autoComplete}
 				onKeyDown={keyDownEvent}
+				rows={rows}
 			/>
 		);
 

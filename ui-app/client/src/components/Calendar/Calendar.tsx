@@ -580,7 +580,6 @@ const component: Component = {
 	properties: propertiesDefinition,
 	stylePseudoStates: ['hover', 'focus', 'disabled'],
 	styleProperties: stylePropertiesDefinition,
-	allowedChildrenType: new Map<string, number>([['', -1]]),
 	bindingPaths: {
 		bindingPath: { name: 'Start Date Binding' },
 		bindingPath2: { name: 'End Date Binding' },

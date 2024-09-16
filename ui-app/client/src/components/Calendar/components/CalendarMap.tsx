@@ -53,8 +53,7 @@ export function CalendarMap(
 		currentDate.setFullYear(year);
 	} else if (thisDate || thatDate) {
 		currentDate =
-			getValidDate(isEndDate ? thatDate : thisDate, storageFormat ?? displayDateFormat) ??
-			new Date();
+			getValidDate(isEndDate ? thatDate : thisDate, displayDateFormat) ?? new Date();
 	}
 
 	const [browseMonths, setBrowseMonths] = React.useState<number | undefined>();
@@ -125,11 +124,7 @@ export function CalendarMap(
 
 	const onDateSelection = (date: Date) => {
 		if (props.isMultiSelect) {
-			let finDate = toFormat(
-				date,
-				'Date',
-				props.storageFormat ?? props.displayDateFormat,
-			)!.toString();
+			let finDate = toFormat(date, 'Date', props.displayDateFormat)!.toString();
 			if (props.thisDate) {
 				const splits = props.thisDate.toString().split(props.multipleDateSeparator);
 				const index = splits.indexOf(finDate);
@@ -149,14 +144,14 @@ export function CalendarMap(
 			}
 			if (isEndDate && startDate && endDate) [startDate, endDate] = [endDate, startDate];
 
-			let start = getValidDate(startDate, storageFormat ?? displayDateFormat);
-			let end = getValidDate(endDate, storageFormat ?? displayDateFormat);
+			let start = getValidDate(startDate, displayDateFormat);
+			let end = getValidDate(endDate, displayDateFormat);
 			if (startDate || isEndDate) {
 				end = date;
-				endDate = toFormat(date, 'Date', storageFormat ?? displayDateFormat);
+				endDate = toFormat(date, 'Date', displayDateFormat);
 			} else {
 				start = date;
-				startDate = toFormat(date, 'Date', storageFormat ?? displayDateFormat);
+				startDate = toFormat(date, 'Date', displayDateFormat);
 			}
 
 			if (start && end && start > end) [startDate, endDate] = [endDate, startDate];
@@ -169,17 +164,11 @@ export function CalendarMap(
 					true,
 				);
 			else {
-				props.onChange(
-					toFormat(date, 'Date', props.storageFormat ?? props.displayDateFormat),
-					false,
-				);
+				props.onChange(toFormat(date, 'Date', displayDateFormat), false);
 				if (wipeEndDate && props.onClearOtherDate) props.onClearOtherDate();
 			}
 		} else {
-			props.onChange(
-				toFormat(date, 'Date', props.storageFormat ?? props.displayDateFormat),
-				true,
-			);
+			props.onChange(toFormat(date, 'Date', displayDateFormat), true);
 		}
 	};
 

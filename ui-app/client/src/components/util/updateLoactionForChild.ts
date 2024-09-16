@@ -16,7 +16,7 @@ export const updateLocationForChild = (
 	if (typeOfLoc === 'string') {
 		finalPath = location as unknown as string;
 		return {
-			location: `(${finalPath ? finalPath : location})${indexPart}`,
+			location: `${finalPath ? finalPath : location}${indexPart}`,
 			index,
 			pageName,
 			componentKey,
@@ -27,18 +27,17 @@ export const updateLocationForChild = (
 		finalPath = locationHistory.length ? childLocation.value! : '';
 		childLocation.value = `${finalPath ? finalPath : childLocation?.value}${indexPart}`;
 	} else if (childLocation?.type === 'EXPRESSION') {
-		finalPath =
-			locationHistory.length && childLocation.expression
-				? getPathFromLocation(
-						childLocation,
-						locationHistory,
-						PageStoreExtractor.getForContext(pageName),
-					)
-				: '';
-		childLocation.expression = `(${
-			finalPath ? finalPath : childLocation?.expression
-		})${indexPart}`;
-	}
+		finalPath = childLocation.expression
+			? getPathFromLocation(
+					childLocation,
+					locationHistory,
+					PageStoreExtractor.getForContext(pageName),
+				)
+			: '';
 
+		childLocation.expression = `${
+			finalPath ? finalPath : childLocation?.expression
+		}${indexPart}`;
+	}
 	return { location: childLocation, index, pageName, componentKey };
 };
