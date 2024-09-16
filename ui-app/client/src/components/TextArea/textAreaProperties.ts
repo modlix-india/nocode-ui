@@ -1,6 +1,7 @@
 import {
 	SCHEMA_ANY_COMP_PROP,
 	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_NUM_COMP_PROP,
 	SCHEMA_STRING_COMP_PROP,
 	SCHEMA_VALIDATION,
 } from '../../constants';
@@ -181,7 +182,22 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.onChange,
 	COMMON_COMPONENT_PROPERTIES.onBlur,
 	COMMON_COMPONENT_PROPERTIES.onFocus,
-
+	{
+		name: 'maxChars',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Max Characters Allowed',
+		description: 'Max Characters Allowed to type',
+		defaultValue: undefined,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'rows',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Rows',
+		description: 'Number of rows to display',
+		defaultValue: undefined,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
 	{
 		name: 'onClear',
 		schema: SCHEMA_STRING_COMP_PROP,
