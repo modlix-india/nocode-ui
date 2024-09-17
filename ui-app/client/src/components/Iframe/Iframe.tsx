@@ -40,15 +40,17 @@ function Iframe(props: ComponentProps) {
 		stylePropertiesWithPseudoStates,
 	);
 
-	let shouldRenderIframe = true;
+	let shouldRenderIframe = false;
+ 
+    if (!srcdoc?.trim()) {
+        try {
+            if (src) {
+                new URL(src, window.location.origin);
+                shouldRenderIframe = true;
+            }
+        } catch (err) {}
+    } else shouldRenderIframe = true;
 
-	if (!srcdoc?.trim()) {
-		try {
-			new URL(src);
-		} catch (err) {
-			shouldRenderIframe = false;
-		}
-	}
 
 	return (
 		<div className="comp compIframe" style={resolvedStyles.comp ?? {}}>

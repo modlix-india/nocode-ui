@@ -115,16 +115,16 @@ export function CalendarMonth(
 
 	if (props.isMultiSelect && props.thisDate) {
 		for (let x of props.thisDate.toString().split(props.multipleDateSeparator)) {
-			const date = getValidDate(x, props.storageFormat ?? props.displayDateFormat);
+			const date = getValidDate(x, props.displayDateFormat);
 			if (date) dateThisDates.push(date);
 		}
 	} else if (props.thisDate) {
-		const date = getValidDate(props.thisDate, props.storageFormat ?? props.displayDateFormat);
+		const date = getValidDate(props.thisDate, props.displayDateFormat);
 		if (date) dateThisDates.push(date);
 	}
 
 	const dateThatDate = props.thatDate
-		? getValidDate(props.thatDate, props.storageFormat ?? props.displayDateFormat)
+		? getValidDate(props.thatDate, props.displayDateFormat)
 		: undefined;
 
 	const disabledDays = props.disableDays?.map(e => parseInt(e)) ?? [];
