@@ -1102,6 +1102,9 @@ export default function GridStyle({
 			cursor: pointer;
 			border-radius: 6px;
 			flex: 1;
+			background-color: transparent;
+			padding: 0px;
+			border: none;
 		}
 
 		${PREFIX} ._simpleEditorIcons._bground {
