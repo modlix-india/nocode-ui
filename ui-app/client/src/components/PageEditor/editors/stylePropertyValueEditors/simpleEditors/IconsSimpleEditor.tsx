@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { SimpleEditorMultipleValueType } from '.';
 
-export type IconOptions = Array<{
+interface IconOption {
 	name: string;
 	icon: React.ReactNode;
 	description?: string;
@@ -9,7 +9,16 @@ export type IconOptions = Array<{
 	height?: string;
 	viewBox?: string;
 	transform?: string;
-}>;
+}
+export type IconOptions = Array<IconOption>;
+
+//When combination options are provided, the editor will resort to the name of the icon to be
+// selected when the combination condition is met.
+// Works only when multiSelect is true.
+// For Example :
+// combinationOptions: [
+// 	{ condition: ['TOP', 'BOTTOM', 'LEFT', 'RIGHT'], name: 'ALL' },
+// ]
 
 export function IconsSimpleEditor({
 	options,
@@ -19,7 +28,9 @@ export function IconsSimpleEditor({
 	multipleValueType = SimpleEditorMultipleValueType.SpaceSeparated,
 	multiSelect = false,
 	multiSelectWithControl = false,
-}: {
+	exclusiveOptions,
+	combinationOptions,
+}: Readonly<{
 	options: IconOptions;
 	selected: string | Array<string>;
 	onChange: (v: string | Array<string>) => void;
@@ -27,7 +38,9 @@ export function IconsSimpleEditor({
 	multipleValueType?: SimpleEditorMultipleValueType;
 	multiSelect?: boolean;
 	multiSelectWithControl?: boolean;
-}) {
+	exclusiveOptions?: string[];
+	combinationOptions?: { condition: Array<string>; name: string | Array<string> }[];
+}>) {
 	const selection = useMemo(() => {
 		if (!multiSelect && typeof selected === 'string') return new Set<string>([selected]);
 		if (!selected) return new Set<string>();
@@ -39,48 +52,37 @@ export function IconsSimpleEditor({
 		return new Set<string>(selected);
 	}, [selected]);
 
-	const handleSelection = (clickedOption: string, ctrlKey: boolean, metaKey: boolean) => {
+	const handleSelection = (ev: React.MouseEvent<HTMLButtonElement>, option: IconOption) => {
 		if (!multiSelect) {
-			onChange(selected === clickedOption ? '' : clickedOption);
+			onChange(selected === option.name ? '' : option.name);
 			return;
 		}
+		let arr = Array.from(selection);
 
-		let newSelection: string[];
-
-		if (multiSelectWithControl && !ctrlKey && !metaKey) {
-			newSelection = [clickedOption];
+		if (multiSelectWithControl && !ev.ctrlKey && !ev.metaKey) {
+			arr = [option.name];
 		} else {
-			const currentSelection = Array.from(selection);
-			const allOptionIndex = options.findIndex(opt => opt.name === 'ALL');
-			const isAllOption = clickedOption === 'ALL';
+			if (selection.has(option.name)) arr.splice(arr.indexOf(option.name), 1);
+			else arr.push(option.name);
+		}
 
-			if (isAllOption) {
-				newSelection = currentSelection.includes('ALL') ? [] : ['ALL'];
-			} else {
-				if (currentSelection.includes(clickedOption)) {
-					newSelection = currentSelection.filter(item => item !== clickedOption);
-				} else {
-					newSelection = [...currentSelection, clickedOption];
-				}
+		if (exclusiveOptions?.length && arr.length) {
+			const optionName = exclusiveOptions.find(e => arr.includes(e));
+			if (optionName) arr = [optionName];
+		}
 
-				if (
-					newSelection.length === options.length - 1 &&
-					!newSelection.includes('ALL') &&
-					allOptionIndex !== -1
-				) {
-					newSelection = ['ALL'];
-				}
-
-				if (newSelection.includes('ALL') && newSelection.length > 1) {
-					newSelection = newSelection.filter(item => item !== 'ALL');
-				}
-			}
+		if (combinationOptions?.length && arr.length) {
+			const optionName = combinationOptions.find(e =>
+				e.condition.every(c => arr.includes(c)),
+			);
+			if (optionName)
+				arr = Array.isArray(optionName.name) ? optionName.name : [optionName.name];
 		}
 
 		onChange(
 			multipleValueType === SimpleEditorMultipleValueType.Array
-				? newSelection
-				: newSelection.join(multipleValueType.toString()),
+				? arr
+				: arr.join(multipleValueType.toString()),
 		);
 	};
 
@@ -89,10 +91,10 @@ export function IconsSimpleEditor({
 			{options.map((e, i) => {
 				const activeClass = selection.has(e.name) ? '_active' : '';
 				return (
-					<div
-						key={i}
+					<button
+						key={e.name}
 						className={`_eachIcon ${activeClass}`}
-						onClick={ev => handleSelection(e.name, ev.ctrlKey, ev.metaKey)}
+						onClick={ev => handleSelection(ev, e)}
 						title={e.description}
 					>
 						<svg
@@ -108,7 +110,7 @@ export function IconsSimpleEditor({
 						>
 							{e.icon}
 						</svg>
-					</div>
+					</button>
 				);
 			})}
 		</div>
