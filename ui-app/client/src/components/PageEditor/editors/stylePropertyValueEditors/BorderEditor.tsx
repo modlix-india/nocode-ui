@@ -1642,7 +1642,7 @@ function BorderDetailedEditor({
 							description: 'Start End',
 							icon: (
 								<g
-									transform="translate(8 8) rotate(90)"
+									transform="translate(22 8) rotate(90)"
 									style={{ transformOrigin: '7 7' }}
 								>
 									<rect
@@ -1676,7 +1676,7 @@ function BorderDetailedEditor({
 							description: 'End Start',
 							icon: (
 								<g
-									transform="translate(8 8) rotate(270)"
+									transform="translate(8 22) rotate(270)"
 									style={{ transformOrigin: '7 7' }}
 								>
 									<rect
@@ -1710,7 +1710,7 @@ function BorderDetailedEditor({
 							description: 'End End',
 							icon: (
 								<g
-									transform="translate(8 8) rotate(180)"
+									transform="translate(22 22) rotate(180)"
 									style={{ transformOrigin: '7 7' }}
 								>
 									<rect
