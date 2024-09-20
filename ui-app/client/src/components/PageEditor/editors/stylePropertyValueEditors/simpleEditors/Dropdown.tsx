@@ -88,6 +88,7 @@ export function Dropdown({
 				{React.Children.count(children) > 0 ? (
 					<div className="_options_divider"></div>
 				) : null}
+
 				{options.map((o, i) => (
 					<div
 						key={o.name}
@@ -114,9 +115,7 @@ export function Dropdown({
 									: arr.join(multipleValueType.toString()),
 							);
 						}}
-						onMouseOver={() => {
-							setCurrentOption(i);
-						}}
+						onMouseOver={() => setCurrentOption(i)}
 						title={o.description}
 					>
 						{o.displayName}
