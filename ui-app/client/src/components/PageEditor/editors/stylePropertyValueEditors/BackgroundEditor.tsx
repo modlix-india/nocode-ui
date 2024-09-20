@@ -99,20 +99,34 @@ function BackgroundDetailedEditor({
 
 	const handleBackdropFilterChange = (filter: string, value: string) => {
 		const newFilter = value ? `${filter}(${value})` : '';
-		const updatedFilters = backdropFilter
-			.split(' ')
-			.filter(f => !f.startsWith(filter))
-			.concat(newFilter)
-			.filter(Boolean)
-			.join(' ');
-		setBackdropFilter(updatedFilters);
-		onChangeBDFCurry('backdropFilter')(updatedFilters);
+		setBackdropFilter(newFilter);
+		onChangeBDFCurry('backdropFilter')(newFilter);
 	};
+
+	// for multiple filters
+	// const handleBackdropFilterChange = (filter: string, value: string) => {
+	// 	const newFilter = value ? `${filter}(${value})` : '';
+	// 	const filterRegex = new RegExp(`${filter}\\([^)]*\\)`);
+
+	// 	let updatedFilters = backdropFilter;
+	// 	if (backdropFilter.match(filterRegex)) {
+	// 		updatedFilters = backdropFilter.replace(filterRegex, newFilter);
+	// 	} else {
+	// 		updatedFilters = backdropFilter
+	// 			.split(/\s+/)
+	// 			.filter(Boolean)
+	// 			.concat(newFilter)
+	// 			.join(' ');
+	// 	}
+
+	// 	setBackdropFilter(updatedFilters);
+	// 	onChangeBDFCurry('backdropFilter')(updatedFilters);
+	// };
 
 	return (
 		<>
 			<div className="_combineEditors">
-				<div className="_simpleLabel">Attachment {backdropFilter}</div>
+				<div className="_simpleLabel">Attachment</div>
 				<div className="_simpleEditor">
 					<IconsSimpleEditor
 						options={[
@@ -121,7 +135,21 @@ function BackgroundDetailedEditor({
 								description: 'Scroll',
 								icon: (
 									<g transform="translate(4 4)">
-										<path d="M4 4h16v16H4z" />
+										<rect
+											x="2"
+											y="2"
+											width="20"
+											height="20"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="2"
+										/>
+										<path
+											d="M6 6h12v12H6z"
+											fill="currentColor"
+											fillOpacity="0.3"
+										/>
+										<path d="M8 18l8-8" stroke="currentColor" strokeWidth="2" />
 									</g>
 								),
 							},
@@ -130,7 +158,25 @@ function BackgroundDetailedEditor({
 								description: 'Fixed',
 								icon: (
 									<g transform="translate(4 4)">
-										<path d="M5 5h14v14H5z M3 3h18v18H3z" />
+										<rect
+											x="2"
+											y="2"
+											width="20"
+											height="20"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="2"
+										/>
+										<path
+											d="M6 6h12v12H6z"
+											fill="currentColor"
+											fillOpacity="0.3"
+										/>
+										<path
+											d="M6 18h12M6 6h12"
+											stroke="currentColor"
+											strokeWidth="2"
+										/>
 									</g>
 								),
 							},
@@ -139,7 +185,25 @@ function BackgroundDetailedEditor({
 								description: 'Local',
 								icon: (
 									<g transform="translate(4 4)">
-										<path d="M4 4h16v16H4z M7 7h10v10H7z" />
+										<rect
+											x="2"
+											y="2"
+											width="20"
+											height="20"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="2"
+										/>
+										<path
+											d="M6 6h12v12H6z"
+											fill="currentColor"
+											fillOpacity="0.3"
+										/>
+										<path
+											d="M6 10h12M6 14h12"
+											stroke="currentColor"
+											strokeWidth="2"
+										/>
 									</g>
 								),
 							},
@@ -204,6 +268,14 @@ function BackgroundDetailedEditor({
 											stroke="currentColor"
 											strokeWidth="2"
 										/>
+										<rect
+											x="4"
+											y="4"
+											width="16"
+											height="16"
+											fill="currentColor"
+											fillOpacity="0.3"
+										/>
 									</g>
 								),
 							},
@@ -213,6 +285,15 @@ function BackgroundDetailedEditor({
 								icon: (
 									<g transform="translate(4 4)">
 										<rect
+											x="2"
+											y="2"
+											width="20"
+											height="20"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="2"
+										/>
+										<rect
 											x="4"
 											y="4"
 											width="16"
@@ -220,6 +301,14 @@ function BackgroundDetailedEditor({
 											fill="none"
 											stroke="currentColor"
 											strokeWidth="2"
+										/>
+										<rect
+											x="6"
+											y="6"
+											width="12"
+											height="12"
+											fill="currentColor"
+											fillOpacity="0.3"
 										/>
 									</g>
 								),
@@ -230,6 +319,24 @@ function BackgroundDetailedEditor({
 								icon: (
 									<g transform="translate(4 4)">
 										<rect
+											x="2"
+											y="2"
+											width="20"
+											height="20"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="2"
+										/>
+										<rect
+											x="4"
+											y="4"
+											width="16"
+											height="16"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="2"
+										/>
+										<rect
 											x="6"
 											y="6"
 											width="12"
@@ -238,6 +345,14 @@ function BackgroundDetailedEditor({
 											stroke="currentColor"
 											strokeWidth="2"
 										/>
+										<rect
+											x="8"
+											y="8"
+											width="8"
+											height="8"
+											fill="currentColor"
+											fillOpacity="0.3"
+										/>
 									</g>
 								),
 							},
@@ -245,17 +360,59 @@ function BackgroundDetailedEditor({
 								name: 'text',
 								description: 'Text',
 								icon: (
-									<g transform="translate(1 2)">
+									<g transform="translate(4 4)">
+										<rect
+											x="2"
+											y="2"
+											width="20"
+											height="20"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="2"
+										/>
 										<text
-											x="50%"
-											y="50%"
-											dominantBaseline="middle"
-											textAnchor="middle"
+											x="12"
+											y="16"
 											fontSize="14"
-											fill="black"
+											fontWeight="bold"
+											textAnchor="middle"
+											fill="currentColor"
 										>
 											T
 										</text>
+										<rect
+											x="6"
+											y="6"
+											width="12"
+											height="12"
+											fill="currentColor"
+											fillOpacity="0.1"
+										/>
+									</g>
+								),
+							},
+							{
+								name: 'border-area',
+								description: 'Border Area',
+								icon: (
+									<g transform="translate(7 7)">
+										<rect
+											x="2"
+											y="2"
+											width="14"
+											height="14"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="2"
+										/>
+										<rect
+											x="2"
+											y="2"
+											width="14"
+											height="14"
+											fill="currentColor"
+											fillOpacity="0.3"
+										/>
 									</g>
 								),
 							},
@@ -286,6 +443,14 @@ function BackgroundDetailedEditor({
 											stroke="currentColor"
 											strokeWidth="2"
 										/>
+										<rect
+											x="4"
+											y="4"
+											width="16"
+											height="16"
+											fill="currentColor"
+											fillOpacity="0.3"
+										/>
 									</g>
 								),
 							},
@@ -295,6 +460,15 @@ function BackgroundDetailedEditor({
 								icon: (
 									<g transform="translate(4 4)">
 										<rect
+											x="2"
+											y="2"
+											width="20"
+											height="20"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="2"
+										/>
+										<rect
 											x="4"
 											y="4"
 											width="16"
@@ -302,6 +476,14 @@ function BackgroundDetailedEditor({
 											fill="none"
 											stroke="currentColor"
 											strokeWidth="2"
+										/>
+										<rect
+											x="6"
+											y="6"
+											width="12"
+											height="12"
+											fill="currentColor"
+											fillOpacity="0.3"
 										/>
 									</g>
 								),
@@ -312,6 +494,24 @@ function BackgroundDetailedEditor({
 								icon: (
 									<g transform="translate(4 4)">
 										<rect
+											x="2"
+											y="2"
+											width="20"
+											height="20"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="2"
+										/>
+										<rect
+											x="4"
+											y="4"
+											width="16"
+											height="16"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="2"
+										/>
+										<rect
 											x="6"
 											y="6"
 											width="12"
@@ -319,6 +519,14 @@ function BackgroundDetailedEditor({
 											fill="none"
 											stroke="currentColor"
 											strokeWidth="2"
+										/>
+										<rect
+											x="8"
+											y="8"
+											width="8"
+											height="8"
+											fill="currentColor"
+											fillOpacity="0.3"
 										/>
 									</g>
 								),
@@ -351,7 +559,8 @@ function BackgroundDetailedEditor({
 						onChange={(v: string | string[]) => {
 							const filter = v as string;
 							setSelectedFilter(filter);
-							// setBackdropFilterValue('');
+							setBackdropFilterValue('');
+							handleBackdropFilterChange(filter, '');
 						}}
 					/>
 				</div>
@@ -393,6 +602,8 @@ function BackgroundStandardEditor({
 	const [color, setColor] = useState<string>('');
 	const [image, setImage] = useState<string>('');
 	const [size, setSize] = useState<string>('');
+	const [sizeX, setSizeX] = useState<string>('');
+	const [sizeY, setSizeY] = useState<string>('');
 	const [repeat, setRepeat] = useState<string>('');
 	const [position, setPosition] = useState<string>('');
 	const [positionX, setPositionX] = useState<string>('');
@@ -402,6 +613,8 @@ function BackgroundStandardEditor({
 		{ prop: 'backgroundColor', setter: setColor },
 		{ prop: 'backgroundImage', setter: setImage },
 		{ prop: 'backgroundSize', setter: setSize },
+		{ prop: 'backgroundSizeX', setter: setSizeX },
+		{ prop: 'backgroundSizeY', setter: setSizeY },
 		{ prop: 'backgroundRepeat', setter: setRepeat },
 		{ prop: 'backgroundPosition', setter: setPosition },
 		{ prop: 'backgroundPositionX', setter: setPositionX },
@@ -445,6 +658,23 @@ function BackgroundStandardEditor({
 		onChangeCurry('PositionY')(y);
 	};
 
+	const updateSize = (newSize: string, newSizeX: string, newSizeY: string) => {
+		setSize(newSize);
+		setSizeX(newSizeX);
+		setSizeY(newSizeY);
+
+		if (['cover', 'contain', 'auto'].includes(newSize)) {
+			onChangeCurry('Size')(newSize);
+			onChangeCurry('SizeX')('');
+			onChangeCurry('SizeY')('');
+		} else {
+			const combinedSize = `${newSizeX} ${newSizeY}`.trim();
+			onChangeCurry('Size')(combinedSize);
+			onChangeCurry('SizeX')(newSizeX);
+			onChangeCurry('SizeY')(newSizeY);
+		}
+	};
+
 	return (
 		<>
 			<div className="_combineEditors">
@@ -469,11 +699,112 @@ function BackgroundStandardEditor({
 					/>
 				</div>
 			</div>
+			<div className="_combineEditors">
+				<div className="_simpleLabel">Size </div>
+				<div className="_simpleLabel">
+					<input
+						type="text"
+						className="_simpleEditorInput"
+						value={size}
+						onChange={e => updateSize(e.target.value, '', '')}
+					/>
+				</div>
+				<div className="_simpleEditor">
+					<IconsSimpleEditor
+						options={[
+							{
+								name: 'cover',
+								description: 'Cover',
+								icon: (
+									<g transform="translate(5 5)">
+										<rect
+											x="2"
+											y="2"
+											width="20"
+											height="20"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="2"
+										/>
+										<rect
+											x="2"
+											y="2"
+											width="20"
+											height="20"
+											fill="currentColor"
+											fillOpacity="0.3"
+										/>
+									</g>
+								),
+							},
+							{
+								name: 'contain',
+								description: 'Contain',
+								icon: (
+									<g transform="translate(5 5)">
+										<rect
+											x="2"
+											y="2"
+											width="20"
+											height="20"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="2"
+										/>
+										<rect
+											x="6"
+											y="6"
+											width="12"
+											height="12"
+											fill="currentColor"
+											fillOpacity="0.3"
+										/>
+									</g>
+								),
+							},
+							{
+								name: 'auto',
+								description: 'Auto',
+								icon: (
+									<g transform="translate(5 5)">
+										<rect
+											x="2"
+											y="2"
+											width="20"
+											height="20"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="2"
+										/>
+										<rect
+											x="6"
+											y="6"
+											width="8"
+											height="8"
+											fill="currentColor"
+											fillOpacity="0.3"
+										/>
+									</g>
+								),
+							},
+						]}
+						selected={size}
+						onChange={v => updateSize(v as string, '', '')}
+						withBackground={true}
+					/>
+				</div>
+			</div>
+			<div className="_combineEditors">
+				<div className="_simpleLabel">Width</div>
+				<div className="_simpleEditor">
+					<PixelSize value={sizeX} onChange={v => updateSize('', v, sizeY)} />
+				</div>
+			</div>
 
 			<div className="_combineEditors">
-				<div className="_simpleLabel">Size</div>
+				<div className="_simpleLabel">Height</div>
 				<div className="_simpleEditor">
-					<PixelSize value={size} onChange={onChangeCurry('Size')} />
+					<PixelSize value={sizeY} onChange={v => updateSize('', sizeX, v)} />
 				</div>
 			</div>
 
@@ -547,7 +878,7 @@ function BackgroundStandardEditor({
 			</div>
 
 			<div className="_combineEditors">
-				<div className="_simpleLabel">Position :</div>
+				<div className="_simpleLabel">Position </div>
 				<div className="_simpleEditor">
 					<div className="_iconGrid">
 						{[
