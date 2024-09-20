@@ -7,6 +7,7 @@ import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tableCloumnHeaderProperties';
 import TableColumnHeaderStyle from './TableColumnHeaderStyle';
 import { styleDefaults } from './tableColumnHeaderStyleProperties';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 
 function TableColumnHeaderComponent(props: ComponentProps) {
 	const {
@@ -16,13 +17,14 @@ function TableColumnHeaderComponent(props: ComponentProps) {
 		definition,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
-	const { properties: { label } = {}, stylePropertiesWithPseudoStates } = useDefinition(
-		definition,
-		propertiesDefinition,
-		stylePropertiesDefinition,
-		locationHistory,
-		pageExtractor,
-	);
+	const { properties: { label, leftIcon, rightIcon } = {}, stylePropertiesWithPseudoStates } =
+		useDefinition(
+			definition,
+			propertiesDefinition,
+			stylePropertiesDefinition,
+			locationHistory,
+			pageExtractor,
+		);
 
 	const styleProperties = processComponentStylePseudoClasses(
 		props.pageDefinition,
@@ -31,9 +33,31 @@ function TableColumnHeaderComponent(props: ComponentProps) {
 	);
 
 	return (
-		<div className="comp compTableHeaderColumn" style={styleProperties.comp}>
+		<div className="comp compTableHeaderColumn" style={{ ...styleProperties.comp }}>
 			<HelperComponent context={props.context} definition={definition} />
-			<div className="">{label}</div>
+
+			<div>
+				{leftIcon ? (
+					<i style={styleProperties.leftIcon ?? {}} className={`_leftIcon ${leftIcon}`}>
+						<SubHelperComponent
+							definition={definition}
+							subComponentName="leftIcon"
+						></SubHelperComponent>
+					</i>
+				) : undefined}
+				{label}
+				{rightIcon ? (
+					<i
+						style={styleProperties.rightIcon ?? {}}
+						className={`_rightIcon ${rightIcon}`}
+					>
+						<SubHelperComponent
+							definition={definition}
+							subComponentName="rightIcon"
+						></SubHelperComponent>
+					</i>
+				) : undefined}
+			</div>
 		</div>
 	);
 }
