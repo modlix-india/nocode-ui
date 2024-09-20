@@ -7,8 +7,8 @@ const PREFIX = '.comp.compTableColumn';
 export default function TableColumnStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
 	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
 	const css =
-		`${PREFIX} { display: table-cell; vertical-align: middle;}
-
+		`${PREFIX} { display: table-cell; vertical-align: middle; text-align:center;}
+	
 		.comp.compTable._design1 ${PREFIX} { padding: ${processStyleValueWithFunction(
 			values.get('design1ColumnPadding'),
 			values,

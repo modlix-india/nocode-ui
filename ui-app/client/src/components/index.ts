@@ -53,6 +53,7 @@ import PhoneNumber from './PhoneNumber/PhoneNumber';
 import SmallCarousel from './SmallCarousel/SmallCarousel';
 import Otp from './Otp/Otp';
 import Chart from './Chart/Chart';
+import TableDynamicColumn from './TableDynamicColumn/TableDynamicColumn';
 import Calendar from './Calendar/Calendar';
 import TemplateEditor from './TemplateEditor/TemplateEditor';
 import FileSelector from './FileSelector/FileSelector';
@@ -103,6 +104,7 @@ export default new Map<string, Component>([
 	[Gallery.name, Gallery],
 	[TextArea.name, TextArea],
 	[TableDynamicColumns.name, TableDynamicColumns],
+	[TableDynamicColumn.name, TableDynamicColumn],
 	[Animator.name, Animator],
 	[ImageWithBrowser.name, ImageWithBrowser],
 	[FillerValueEditor.name, FillerValueEditor],
