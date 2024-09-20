@@ -39,26 +39,42 @@ function Iframe(props: ComponentProps) {
 		{},
 		stylePropertiesWithPseudoStates,
 	);
+
+	let shouldRenderIframe = false;
+ 
+    if (!srcdoc?.trim()) {
+        try {
+            if (src) {
+                new URL(src, window.location.origin);
+                shouldRenderIframe = true;
+            }
+        } catch (err) {}
+    } else shouldRenderIframe = true;
+
+
 	return (
 		<div className="comp compIframe" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent context={props.context} definition={definition} />
-			<iframe
-				className="iframe"
-				style={resolvedStyles.iframe ?? {}}
-				width={width}
-				src={src}
-				height={height}
-				name={name}
-				loading={loading}
-				allow={allow}
-				sandbox={sandbox}
-				referrerPolicy={referrerpolicy}
-				allowFullScreen={allowfullscreen}
-				srcDoc={srcdoc}
-			></iframe>
+			{shouldRenderIframe ? (
+				<iframe
+					className="iframe"
+					style={resolvedStyles.iframe ?? {}}
+					width={width}
+					src={srcdoc ? undefined : src}
+					srcDoc={srcdoc}
+					height={height}
+					name={name}
+					loading={loading}
+					allow={allow}
+					sandbox={sandbox}
+					referrerPolicy={referrerpolicy}
+					allowFullScreen={allowfullscreen}
+				></iframe>
+			) : null}
 		</div>
 	);
 }
+
 const component: Component = {
 	name: 'Iframe',
 	displayName: 'Iframe',

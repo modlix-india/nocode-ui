@@ -101,8 +101,22 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				displayName: 'Tab with highlight',
 				description: 'Tab with highlight',
 			},
+			{
+				name: '_underLine',
+				displayName: 'Tab with underline',
+				description: 'Tab with underline',
+			},
 		],
 	},
+	{
+		name: 'onTabChange',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Tab Change',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered when a tab clicked.',
+		group: ComponentPropertyGroup.EVENTS,
+  },
+
 	COMMON_COMPONENT_PROPERTIES.colorScheme,
 ];
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
@@ -159,6 +173,13 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 	icon: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+	],
+	tabsSeperator: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 	],
 };
 

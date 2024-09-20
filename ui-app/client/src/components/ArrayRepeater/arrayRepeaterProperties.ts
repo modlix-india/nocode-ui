@@ -19,6 +19,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'When this option is set to true, User will be able to add items to repeater',
 		group: ComponentPropertyGroup.BASIC,
 		defaultValue: false,
+		
 	},
 	{
 		name: 'showDelete',
@@ -32,11 +33,43 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'showMove',
 		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Move buttons',
+		displayName: 'Move',
 		group: ComponentPropertyGroup.BASIC,
 		description:
 			'When this option is set to true, User will be able to move items up/down the index in the repeater',
 		defaultValue: false,
+	},
+	{
+		name: 'addIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Add Icon',
+		description: 'Icon to be shown in the add button.',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'deleteIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Delete Icon',
+		description: 'Icon to be shown in the delete button.',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'moveUpIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'MoveUp Icon',
+		description: 'Icon to be shown in the moveup button.',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'moveDownIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'MoveDown Icon',
+		description: 'Icon to be shown in the movedown button.',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.BASIC,
 	},
 	{
 		name: 'isItemDraggable',
@@ -77,6 +110,18 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Default Data',
 		description: 'Default data for repeater',
 		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'dataType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Data Type',
+		description: 'Data type for repeater',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 'array',
+		enumValues: [
+			{ name: 'array', displayName: 'Array' },
+			{ name: 'object', displayName: 'Object' },
+		],
 	},
 
 	COMMON_COMPONENT_PROPERTIES.layout,
@@ -133,6 +178,7 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 	],
+	
 };
 
 export { propertiesDefinition, stylePropertiesDefinition };

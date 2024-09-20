@@ -1,6 +1,7 @@
 import {
 	SCHEMA_ANY_COMP_PROP,
 	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_NUM_COMP_PROP,
 	SCHEMA_STRING_COMP_PROP,
 	SCHEMA_VALIDATION,
 } from '../../constants';
@@ -24,6 +25,22 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 
+	{
+		name: 'showMandatoryAsterisk',
+		displayName: 'Show Mandatory Asterisk',
+		description: 'Show Mandatory Asterisk',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'hideClearButton',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Hide Clear Button',
+		description: 'Hide Clear Button',
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
 	{
 		name: 'autoComplete',
 		schema: SCHEMA_STRING_COMP_PROP,
@@ -165,7 +182,22 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.onChange,
 	COMMON_COMPONENT_PROPERTIES.onBlur,
 	COMMON_COMPONENT_PROPERTIES.onFocus,
-
+	{
+		name: 'maxChars',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Max Characters Allowed',
+		description: 'Max Characters Allowed to type',
+		defaultValue: undefined,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'rows',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Rows',
+		description: 'Number of rows to display',
+		defaultValue: undefined,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
 	{
 		name: 'onClear',
 		schema: SCHEMA_STRING_COMP_PROP,
@@ -225,12 +257,12 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
-	floatingLabel: [
+	label: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
-	noFloatLabel: [
+	asterisk: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,

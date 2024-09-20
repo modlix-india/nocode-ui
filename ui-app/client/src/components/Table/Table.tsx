@@ -36,15 +36,18 @@ function spinCalculate(
 				() =>
 					setIsLoading(
 						(spinnerPath1
-							? getDataFromPath(spinnerPath1, props.locationHistory, pageExtractor) ??
-							  false
+							? (getDataFromPath(
+									spinnerPath1,
+									props.locationHistory,
+									pageExtractor,
+								) ?? false)
 							: false) ||
 							(spinnerPath2
-								? getDataFromPath(
+								? (getDataFromPath(
 										spinnerPath2,
 										props.locationHistory,
 										pageExtractor,
-								  ) ?? false
+									) ?? false)
 								: false),
 					),
 				pageExtractor,
@@ -58,15 +61,18 @@ function spinCalculate(
 				() =>
 					setIsLoading(
 						(spinnerPath1
-							? getDataFromPath(spinnerPath1, props.locationHistory, pageExtractor) ??
-							  false
+							? (getDataFromPath(
+									spinnerPath1,
+									props.locationHistory,
+									pageExtractor,
+								) ?? false)
 							: false) ||
 							(spinnerPath2
-								? getDataFromPath(
+								? (getDataFromPath(
 										spinnerPath2,
 										props.locationHistory,
 										pageExtractor,
-								  ) ?? false
+									) ?? false)
 								: false),
 					),
 				pageExtractor,
@@ -160,7 +166,7 @@ function TableComponent(props: ComponentProps) {
 						(_, v) => setData(v),
 						pageExtractor,
 						dataBindingPath,
-				  )
+					)
 				: undefined,
 		[dataBindingPath],
 	);
@@ -168,7 +174,7 @@ function TableComponent(props: ComponentProps) {
 	const spinnerPath1 = onSelect
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
 				onSelect,
-		  )}.isRunning`
+			)}.isRunning`
 		: undefined;
 
 	const paginationEvent = onPagination
@@ -178,7 +184,7 @@ function TableComponent(props: ComponentProps) {
 	const spinnerPath2 = onPagination
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
 				onPagination,
-		  )}.isRunning`
+			)}.isRunning`
 		: undefined;
 
 	const [isLoading, setIsLoading] = useState(false);
@@ -203,12 +209,17 @@ function TableComponent(props: ComponentProps) {
 						(_, v) => setMode(v ?? displayMode),
 						pageExtractor,
 						tableModeBindingPath,
-				  )
+					)
 				: undefined,
 		[tableModeBindingPath],
 	);
 
 	const [pageSize, setPageSize] = useState(defaultSize);
+
+	useEffect(() => {
+		setPageSize(defaultSize);
+	}, [defaultSize]);
+
 	useEffect(
 		() =>
 			pageSizeBindingPath
@@ -216,7 +227,7 @@ function TableComponent(props: ComponentProps) {
 						(_, v) => setPageSize(v),
 						pageExtractor,
 						pageSizeBindingPath,
-				  )
+					)
 				: undefined,
 		[pageSizeBindingPath],
 	);
@@ -230,7 +241,7 @@ function TableComponent(props: ComponentProps) {
 						(_, v) => setPageNumber(v),
 						pageExtractor,
 						pageNumberBindingPath,
-				  )
+					)
 				: undefined,
 		[pageNumberBindingPath],
 	);
@@ -263,7 +274,7 @@ function TableComponent(props: ComponentProps) {
 						},
 						pageExtractor,
 						selectionBindingPath,
-				  )
+					)
 				: undefined,
 		[selectionBindingPath],
 	);
@@ -323,7 +334,7 @@ function TableComponent(props: ComponentProps) {
 		let to = data?.length ?? 0;
 		if (offlineData) {
 			to = (pageNumber + 1) * pageSize;
-			if (to >= data.length) to = data.length - 1;
+			if (to >= data?.length) to = (data?.length ?? 0) - 1;
 		}
 
 		let pagination = undefined;
@@ -336,7 +347,7 @@ function TableComponent(props: ComponentProps) {
 			if (offlineData) {
 				size = defaultSize;
 				currentPage = pageNumber;
-				pages = Math.ceil(data.length / size);
+				pages = size > 0 ? Math.ceil(data.length / size) : 0;
 			}
 
 			let numbers: Array<number> = [];
@@ -507,7 +518,7 @@ function TableComponent(props: ComponentProps) {
 			if (showPageSelectionDropdown) {
 				pageSelectionDropdown = (
 					<>
-						<span style={{ paddingLeft: '10px'}}>Page</span>
+						<span style={{ paddingLeft: '10px' }}>Page</span>
 						<select
 							value={pageNumber + 1}
 							onChange={e => {

@@ -18,7 +18,7 @@ import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { runEvent } from '../util/runEvent';
 import { styleDefaults } from './arrayRepeaterStyleProperties';
 import { IconHelper } from '../util/IconHelper';
-import { deepEqual } from '@fincity/kirun-js';
+import { deepEqual, isNullValue } from '@fincity/kirun-js';
 import { flattenUUID } from '../util/uuid';
 
 function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
@@ -30,6 +30,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 		definition,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+
 	const {
 		properties: {
 			isItemDraggable,
@@ -42,6 +43,11 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 			removeEvent,
 			moveEvent,
 			defaultData,
+			addIcon,
+			deleteIcon,
+			moveUpIcon,
+			moveDownIcon,
+			dataType,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -52,7 +58,8 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 		pageExtractor,
 	);
 
-	const [value, setValue] = React.useState<any[]>([]);
+	const [arrayValue, setArrayValue] = React.useState<any[]>([]);
+	const [objectValue, setObjectValue] = React.useState<any>(undefined);
 
 	const clickMove = moveEvent ? props.pageDefinition.eventFunctions?.[moveEvent] : undefined;
 	const clickRemove = removeEvent
@@ -79,44 +86,9 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 		if (!bindingPathPath || !indKeys.current) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
 			(_, _v) => {
-				setValue(_v ?? []);
-				if (!_v?.length) return;
-
-				const duplicateCheck = new Array<{ object: any; occurance: number }>();
-				for (let i = 0; i < _v.length; i++) {
-					let oldIndex = -1;
-
-					let duplicate = duplicateCheck.find(e => deepEqual(e.object, _v[i]));
-
-					if (!duplicate) {
-						duplicate = { object: _v[i], occurance: 1 };
-						duplicateCheck.push(duplicate);
-					} else {
-						duplicate.occurance++;
-					}
-
-					let occurance = duplicate.occurance;
-					let count = -1;
-					for (let oldIndexObject of indKeys.current.oldKeys) {
-						count++;
-						if (!deepEqual(oldIndexObject.object, _v[i])) continue;
-						occurance--;
-						if (occurance !== 0) continue;
-						oldIndex = count;
-						break;
-					}
-
-					if (oldIndex === -1) {
-						indKeys.current.array[i] = shortUUID();
-						if (_v[i] !== undefined && _v[i] !== null)
-							indKeys.current.oldKeys.push({
-								object: _v[i],
-								key: indKeys.current.array[i],
-							});
-					} else {
-						indKeys.current.array[i] = indKeys.current.oldKeys[oldIndex].key;
-					}
-				}
+				if (dataType === 'object')
+					processObjectValue(_v, setArrayValue, setObjectValue, indKeys.current);
+				else processArrayValue(_v, setArrayValue, setObjectValue, indKeys.current);
 			},
 			pageExtractor,
 			bindingPathPath,
@@ -129,7 +101,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 	if (entry) firstchild[entry[0]] = true;
 
 	const handleAdd = async (index: any) => {
-		const newData = [...(value ?? [])];
+		const newData = [...(arrayValue ?? [])];
 		newData.splice(index + 1, 0, undefined as unknown as never);
 		setData(bindingPathPath!, newData, context?.pageName);
 
@@ -144,8 +116,16 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 	};
 
 	const handleDelete = async (index: any) => {
-		const newData = value.slice();
-		newData.splice(index, 1);
+		let newData: any;
+
+		if (dataType === 'object') {
+			newData = { ...objectValue };
+			delete newData[index];
+		} else {
+			newData = arrayValue.slice();
+			newData.splice(index, 1);
+		}
+
 		setData(bindingPathPath!, newData, context?.pageName);
 		clickRemove &&
 			(await runEvent(
@@ -158,7 +138,9 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 	};
 
 	const handleMove = async (from: number, to: number) => {
-		const newData = value.slice();
+		if (dataType === 'object') return;
+
+		const newData = arrayValue.slice();
 		if (from >= newData?.length || from < 0 || to >= newData.length || to < 0) return;
 		const temp = newData[from];
 		newData[from] = newData[to];
@@ -176,7 +158,11 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 	};
 
 	const handleDragStart = async (e: any, index: any) => {
-		e.dataTransfer.setData('_array_repeater_drag', `${key}_${index}`);
+		e.stopPropagation();
+		const prefix = locationHistory?.length
+			? locationHistory.map(e => `${e.componentKey}_${e.index}`).join('_')
+			: '';
+		e.dataTransfer.setData('_array_repeater_drag', `${prefix}_${key}_${index}`);
 	};
 
 	const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => e.preventDefault();
@@ -185,15 +171,39 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 
 	const handleDrop = (e: React.DragEvent<HTMLDivElement>, to: number) => {
 		e.preventDefault();
-		const fromData = e.dataTransfer.getData('_array_repeater_drag');
-		if (!fromData?.startsWith(`${key}_`)) return;
 
-		const from = Number(fromData.split('_')[1]);
+		if (dataType === 'object') return;
+
+		const fromData = e.dataTransfer.getData('_array_repeater_drag');
+
+		if (!fromData) return;
+
+		const lastIndex = fromData.lastIndexOf('_');
+
+		const fromDataKey = fromData.substring(0, lastIndex);
+		const prefix = locationHistory?.length
+			? locationHistory.map(e => `${e.componentKey}_${e.index}`).join('_')
+			: '';
+
+		if (fromDataKey != `${prefix}_${key}`) return;
+
+		const from = Number(fromData.substring(lastIndex + 1));
 		if (from === to) return;
 
-		const newData = value.slice();
+		const newData = arrayValue.slice();
 		newData.splice(to, 0, newData.splice(from, 1)[0]);
 		setData(bindingPathPath!, newData, context?.pageName);
+
+		if (!clickMove) return;
+		(async () => {
+			await runEvent(
+				clickMove,
+				moveEvent,
+				props.context.pageName,
+				props.locationHistory,
+				props.pageDefinition,
+			);
+		})();
 	};
 
 	const styleProperties = processComponentStylePseudoClasses(
@@ -204,7 +214,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 
 	let items = <></>;
 
-	if (Array.isArray(value) && value.length) {
+	if (Array.isArray(arrayValue) && arrayValue.length) {
 		let updatableBindingPath = bindingPath;
 		if (!updatableBindingPath && defaultData) {
 			updatableBindingPath = {
@@ -216,7 +226,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 		}
 		items = (
 			<>
-				{value.map((e: any, index) => {
+				{arrayValue.map((e: any, index) => {
 					const comp = (
 						<Children
 							pageDefinition={pageDefinition}
@@ -225,8 +235,9 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 							locationHistory={[
 								...locationHistory,
 								updateLocationForChild(
+									key,
 									updatableBindingPath!,
-									index,
+									dataType === 'object' ? indKeys.current.array[index] : index,
 									locationHistory,
 									context.pageName,
 									pageExtractor,
@@ -234,6 +245,74 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 							]}
 						/>
 					);
+					let addButton;
+					if (showAdd && dataType !== 'object') {
+						addButton = (
+							<i
+								tabIndex={0}
+								className={`addOne ${addIcon ?? 'fa fa-circle-plus fa-solid'}`}
+								onClick={showAdd ? () => handleAdd(index) : undefined}
+								style={styleProperties.add ?? {}}
+								onKeyDown={e =>
+									e.key === 'Enter' || e.key == ' ' ? handleAdd(index) : undefined
+								}
+							>
+								<SubHelperComponent
+									definition={props.definition}
+									subComponentName="add"
+								></SubHelperComponent>
+							</i>
+						);
+					}
+					let firstMoveButton;
+					let secondMoveButton;
+					if (showMove && dataType !== 'object') {
+						firstMoveButton = (
+							<i
+								tabIndex={0}
+								className={`moveOne ${
+									index == arrayValue?.length - 1
+										? moveUpIcon ?? 'fa fa-circle-arrow-up fa-solid'
+										: moveDownIcon ?? 'fa fa-circle-arrow-down fa-solid'
+								}`}
+								style={styleProperties.move ?? {}}
+								onClick={
+									showMove
+										? () =>
+												handleMove(
+													index,
+													index == arrayValue?.length - 1
+														? index - 1
+														: index + 1,
+												)
+										: undefined
+								}
+							>
+								<SubHelperComponent
+									definition={props.definition}
+									subComponentName="move"
+								></SubHelperComponent>
+							</i>
+						);
+
+						secondMoveButton = (
+							<i
+								tabIndex={0}
+								className={`moveOne ${
+									index == 0 || index == arrayValue?.length - 1
+										? ''
+										: moveUpIcon ?? 'fa fa-circle-arrow-up fa-solid'
+								}`}
+								onClick={showMove ? () => handleMove(index, index - 1) : undefined}
+								style={styleProperties.move ?? {}}
+							>
+								<SubHelperComponent
+									definition={props.definition}
+									subComponentName="move"
+								></SubHelperComponent>
+							</i>
+						);
+					}
 					return (
 						<div
 							tabIndex={0}
@@ -241,12 +320,14 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 							key={`${indKeys.current.array[index]}`}
 							data-key={`${indKeys.current.array[index]}`}
 							className={`repeaterProperties ${readOnly ? 'disabled' : ''}`}
-							onDragStart={e => handleDragStart(e, index)}
-							onDragOver={handleDragOver}
-							onDrop={e => handleDrop(e, index)}
-							onDragEnter={handleDragEnter}
-							onDragLeave={handleDragLeave}
-							draggable={isItemDraggable && !readOnly}
+							onDragStart={
+								dataType === 'object' ? undefined : e => handleDragStart(e, index)
+							}
+							onDragOver={dataType === 'object' ? undefined : handleDragOver}
+							onDrop={dataType === 'object' ? undefined : e => handleDrop(e, index)}
+							onDragEnter={dataType === 'object' ? undefined : handleDragEnter}
+							onDragLeave={dataType === 'object' ? undefined : handleDragLeave}
+							draggable={dataType !== 'object' && isItemDraggable && !readOnly}
 							style={styleProperties.repeaterProperties ?? {}}
 							onKeyDown={() => {}}
 						>
@@ -270,28 +351,12 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 									definition={props.definition}
 									subComponentName="iconGrid"
 								></SubHelperComponent>
-								{showAdd && (
-									<i
-										tabIndex={0}
-										className="addOne fa fa-circle-plus fa-solid"
-										onClick={showAdd ? () => handleAdd(index) : undefined}
-										style={styleProperties.add ?? {}}
-										onKeyDown={e =>
-											e.key === 'Enter' || e.key == ' '
-												? handleAdd(index)
-												: undefined
-										}
-									>
-										<SubHelperComponent
-											definition={props.definition}
-											subComponentName="add"
-										></SubHelperComponent>
-									</i>
-								)}
+
+								{addButton}
 								{showDelete && (
 									<i
 										tabIndex={0}
-										className="reduceOne fa fa-circle-minus fa-solid"
+										className={`reduceOne ${deleteIcon ?? 'fa fa-circle-minus fa-solid'}`}
 										onClick={showDelete ? () => handleDelete(index) : undefined}
 										style={styleProperties.remove ?? {}}
 									>
@@ -301,61 +366,15 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 										></SubHelperComponent>
 									</i>
 								)}
-								{showMove && (
-									<i
-										tabIndex={0}
-										className={`moveOne ${
-											index == value?.length - 1
-												? 'fa fa-circle-arrow-up fa-solid'
-												: 'fa fa-circle-arrow-down fa-solid'
-										}`}
-										style={styleProperties.move ?? {}}
-										onClick={
-											showMove
-												? () =>
-														handleMove(
-															index,
-															index == value?.length - 1
-																? index - 1
-																: index + 1,
-														)
-												: undefined
-										}
-									>
-										<SubHelperComponent
-											definition={props.definition}
-											subComponentName="move"
-										></SubHelperComponent>
-									</i>
-								)}
-								{showMove && (
-									<i
-										tabIndex={0}
-										className={`moveOne ${
-											index == 0 || index == value?.length - 1
-												? ''
-												: 'fa fa-circle-arrow-up fa-solid'
-										}`}
-										onClick={
-											showMove
-												? () => handleMove(index, index - 1)
-												: undefined
-										}
-										style={styleProperties.move ?? {}}
-									>
-										<SubHelperComponent
-											definition={props.definition}
-											subComponentName="move"
-										></SubHelperComponent>
-									</i>
-								)}
+								{firstMoveButton}
+								{secondMoveButton}
 							</div>
 						</div>
 					);
 				})}
 			</>
 		);
-	} else if (!value?.length && showAdd) {
+	} else if (!arrayValue?.length && dataType !== 'object' && showAdd) {
 		items = (
 			<div className="iconGrid" style={styleProperties.iconGrid ?? {}}>
 				<SubHelperComponent
@@ -363,7 +382,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 					subComponentName="iconGrid"
 				></SubHelperComponent>
 				<i
-					className="addOne fa fa-circle-plus fa-solid"
+					className={`addOne ${addIcon || 'fa fa-solid fa-circle-plus'}`}
 					onClick={() => handleAdd(0)}
 					style={styleProperties.add ?? {}}
 				>
@@ -384,6 +403,74 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 	);
 }
 
+function processObjectValue(
+	_v: any | undefined,
+	setArrayValue: (v: any[]) => void,
+	setObjectValue: (v: any) => void,
+	indKeysCurrent: { array: Array<string>; oldKeys: Array<{ object: any; key: string }> },
+) {
+	if (isNullValue(_v)) {
+		setArrayValue([]);
+		setObjectValue(undefined);
+		return;
+	}
+
+	const entries = Object.entries(_v);
+	const keys = entries.map(([k, v]) => k);
+	const values = entries.map(([k, v]) => v);
+
+	setArrayValue(values);
+	setObjectValue(_v);
+	indKeysCurrent.array = keys;
+}
+
+function processArrayValue(
+	_v: any[] | undefined,
+	setArrayValue: (v: any[]) => void,
+	setObjectValue: (v: any) => void,
+	indKeysCurrent: { array: Array<string>; oldKeys: Array<{ object: any; key: string }> },
+) {
+	setArrayValue(_v ?? []);
+	setObjectValue(undefined);
+	if (!_v?.length) return;
+
+	const duplicateCheck = new Array<{ object: any; occurance: number }>();
+	for (let i = 0; i < _v.length; i++) {
+		let oldIndex = -1;
+
+		let duplicate = duplicateCheck.find(e => deepEqual(e.object, _v[i]));
+
+		if (!duplicate) {
+			duplicate = { object: _v[i], occurance: 1 };
+			duplicateCheck.push(duplicate);
+		} else {
+			duplicate.occurance++;
+		}
+
+		let occurance = duplicate.occurance;
+		let count = -1;
+		for (let oldIndexObject of indKeysCurrent.oldKeys) {
+			count++;
+			if (!deepEqual(oldIndexObject.object, _v[i])) continue;
+			occurance--;
+			if (occurance !== 0) continue;
+			oldIndex = count;
+			break;
+		}
+
+		if (oldIndex === -1) {
+			indKeysCurrent.array[i] = shortUUID();
+			if (_v[i] !== undefined && _v[i] !== null)
+				indKeysCurrent.oldKeys.push({
+					object: _v[i],
+					key: indKeysCurrent.array[i],
+				});
+		} else {
+			indKeysCurrent.array[i] = indKeysCurrent.oldKeys[oldIndex].key;
+		}
+	}
+}
+
 const component: Component = {
 	name: 'ArrayRepeater',
 	displayName: 'Repeater',
@@ -396,11 +483,11 @@ const component: Component = {
 	styleDefaults: styleDefaults,
 	allowedChildrenType: new Map<string, number>([['', 1]]),
 	bindingPaths: {
-		bindingPath: { name: 'Array Binding' },
+		bindingPath: { name: 'Array/Object Binding' },
 	},
 	defaultTemplate: {
 		key: '',
-		name: 'repeator',
+		name: 'Repeator',
 		type: 'ArrayRepeater',
 		properties: {},
 	},

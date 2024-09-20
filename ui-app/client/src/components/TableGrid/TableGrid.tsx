@@ -187,6 +187,7 @@ function TableGridComponent(props: ComponentProps) {
 							locationHistory={[
 								...locationHistory,
 								updateLocationForChild(
+									definition.key,
 									context.table?.bindingPath,
 									index,
 									locationHistory,

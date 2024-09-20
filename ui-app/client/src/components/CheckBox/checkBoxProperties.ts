@@ -1,9 +1,4 @@
-import { Schema } from '@fincity/kirun-js';
-import {
-	SCHEMA_BOOL_COMP_PROP,
-	SCHEMA_DATA_LOCATION,
-	SCHEMA_STRING_COMP_PROP,
-} from '../../constants';
+import { SCHEMA_STRING_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
@@ -52,6 +47,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				displayName: 'Outline Checkbox',
 				description: 'Outline Checkbox type',
 			},
+			{
+				name: '_filled',
+				displayName: 'Filled Checkbox',
+				description: 'Filled Checkbox type',
+			},
 		],
 	},
 	COMMON_COMPONENT_PROPERTIES.colorScheme,
@@ -75,11 +75,18 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.accentColor.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 	label: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+	],
+	thumb: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 };
 

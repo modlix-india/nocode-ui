@@ -84,6 +84,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
+		name: 'showMandatoryAsterisk',
+		displayName: 'Show Mandatory Asterisk',
+		description: 'Show Mandatory Asterisk',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
 		name: 'placeholder',
 		displayName: 'Placeholder',
 		description: 'Placeholder to be shown in input box.',
@@ -271,6 +279,30 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: undefined,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
+	{
+		name: 'onLeftIconClick',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Left Icon Click',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered when Left Icon clicked.',
+		group: ComponentPropertyGroup.EVENTS,
+	},
+	{
+		name: 'onRightIconClick',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Right Icon Click',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered when Right Icon clicked.',
+		group: ComponentPropertyGroup.EVENTS,
+  },
+	{
+		name: 'numberFormat',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Number Format Locale',
+		description:
+			"Number Format Locale - en-IN, en-US, or system (based on system's settings) etc.",
+		group: ComponentPropertyGroup.ADVANCED,
+	},
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
@@ -303,6 +335,11 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 	label: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	asterisk: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,

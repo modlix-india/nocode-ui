@@ -1,6 +1,6 @@
 {
 	"**/api/**": {
-		"target": "https://apps.dev.openbracket.in/",
+		"target": "https://apps.dev.modlix.com/",
 		"changeOrigin": true,
 		"secure": false
 	}

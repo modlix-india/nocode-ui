@@ -1,6 +1,8 @@
 import { StyleGroupDefinition, StylePropertyDefinition } from '../../types/common';
 
 export const styleProperties: Array<StylePropertyDefinition> = [
+	{ displayName: 'Font', name: 'dropdownFont', defaultValue: '<primaryFont>' },
+
 	{
 		groupName: 'Font',
 		displayName: 'Dropdown FontDefault Design',
@@ -30,8 +32,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Font',
-		displayName: 'Dropdown FontBiig Design One',
-		name: 'dropdownFontBiigDesignOne',
+		displayName: 'Dropdown FontBig Design One',
+		name: 'dropdownFontBigDesignOne',
 		defaultValue: '<dropdownFont>',
 		cssProperty: 'font',
 		selector: '.comp.compDropdown._bigDesign1',
@@ -187,8 +189,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 
 	{
 		groupName: 'Text Color',
-		displayName: 'Primary Dropdown Biig Design One Text Color',
-		name: 'primaryDropdownBiigDesignOneTextColor',
+		displayName: 'Primary Dropdown Big Design One Text Color',
+		name: 'primaryDropdownBigDesignOneTextColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
 		selector: '.comp.compDropdown._bigDesign1._primary',
@@ -196,8 +198,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Text Color',
-		displayName: 'Secondary Dropdown Biig Design One Text Color',
-		name: 'secondaryDropdownBiigDesignOneTextColor',
+		displayName: 'Secondary Dropdown Big Design One Text Color',
+		name: 'secondaryDropdownBigDesignOneTextColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
 		selector: '.comp.compDropdown._bigDesign1._secondary',
@@ -205,8 +207,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Text Color',
-		displayName: 'Tertiary Dropdown Biig Design One Text Color',
-		name: 'tertiaryDropdownBiigDesignOneTextColor',
+		displayName: 'Tertiary Dropdown Big Design One Text Color',
+		name: 'tertiaryDropdownBigDesignOneTextColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
 		selector: '.comp.compDropdown._bigDesign1._tertiary',
@@ -214,8 +216,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Text Color',
-		displayName: 'Quaternary Dropdown Biig Design One Text Color',
-		name: 'quaternaryDropdownBiigDesignOneTextColor',
+		displayName: 'Quaternary Dropdown Big Design One Text Color',
+		name: 'quaternaryDropdownBigDesignOneTextColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
 		selector: '.comp.compDropdown._bigDesign1._quaternary',
@@ -223,8 +225,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Text Color',
-		displayName: 'Quinary Dropdown Biig Design One Text Color',
-		name: 'quinaryDropdownBiigDesignOneTextColor',
+		displayName: 'Quinary Dropdown Big Design One Text Color',
+		name: 'quinaryDropdownBigDesignOneTextColor',
 		defaultValue: '<fontColorOne>',
 		cssProperty: 'color',
 		selector: '.comp.compDropdown._bigDesign1._quinary',
@@ -407,40 +409,40 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 
 	{
 		groupName: 'Text Color Dropdown Items',
-		displayName: 'Primary Dropdown Biig Design One Text Color For Dropdown Items',
-		name: 'primaryDropdownBiigDesignOneTextColorForDropdownItems',
+		displayName: 'Primary Dropdown Big Design One Text Color For Dropdown Items',
+		name: 'primaryDropdownBigDesignOneTextColorForDropdownItems',
 		cssProperty: 'color',
 		selector: '.comp.compDropdown._bigDesign1._primary ._dropdownItem',
 		noPrefix: true,
 	},
 	{
 		groupName: 'Text Color Dropdown Items',
-		displayName: 'Secondary Dropdown Biig Design One Text Color For Dropdown Items',
-		name: 'secondaryDropdownBiigDesignOneTextColorForDropdownItems',
+		displayName: 'Secondary Dropdown Big Design One Text Color For Dropdown Items',
+		name: 'secondaryDropdownBigDesignOneTextColorForDropdownItems',
 		cssProperty: 'color',
 		selector: '.comp.compDropdown._bigDesign1._secondary ._dropdownItem',
 		noPrefix: true,
 	},
 	{
 		groupName: 'Text Color Dropdown Items',
-		displayName: 'Tertiary Dropdown Biig Design One Text Color For Dropdown Items',
-		name: 'tertiaryDropdownBiigDesignOneTextColorForDropdownItems',
+		displayName: 'Tertiary Dropdown Big Design One Text Color For Dropdown Items',
+		name: 'tertiaryDropdownBigDesignOneTextColorForDropdownItems',
 		cssProperty: 'color',
 		selector: '.comp.compDropdown._bigDesign1._tertiary ._dropdownItem',
 		noPrefix: true,
 	},
 	{
 		groupName: 'Text Color Dropdown Items',
-		displayName: 'Quaternary Dropdown Biig Design One Text Color For Dropdown Items',
-		name: 'quaternaryDropdownBiigDesignOneTextColorForDropdownItems',
+		displayName: 'Quaternary Dropdown Big Design One Text Color For Dropdown Items',
+		name: 'quaternaryDropdownBigDesignOneTextColorForDropdownItems',
 		cssProperty: 'color',
 		selector: '.comp.compDropdown._bigDesign1._quaternary ._dropdownItem',
 		noPrefix: true,
 	},
 	{
 		groupName: 'Text Color Dropdown Items',
-		displayName: 'Quinary Dropdown Biig Design One Text Color For Dropdown Items',
-		name: 'quinaryDropdownBiigDesignOneTextColorForDropdownItems',
+		displayName: 'Quinary Dropdown Big Design One Text Color For Dropdown Items',
+		name: 'quinaryDropdownBigDesignOneTextColorForDropdownItems',
 		cssProperty: 'color',
 		selector: '.comp.compDropdown._bigDesign1._quinary ._dropdownItem',
 		noPrefix: true,
@@ -609,40 +611,40 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Text Color Selected Items',
-		displayName: 'Primary Dropdown Biig Design One Text Color For Selected Items',
-		name: 'primaryDropdownBiigDesignOneTextColorForSelectedItems',
+		displayName: 'Primary Dropdown Big Design One Text Color For Selected Items',
+		name: 'primaryDropdownBigDesignOneTextColorForSelectedItems',
 		cssProperty: 'color',
 		selector: '.comp.compDropdown._bigDesign1._primary ._dropdownItem._selected',
 		noPrefix: true,
 	},
 	{
 		groupName: 'Text Color Selected Items',
-		displayName: 'Secondary Dropdown Biig Design One Text Color For Selected Items',
-		name: 'secondaryDropdownBiigDesignOneTextColorForSelectedItems',
+		displayName: 'Secondary Dropdown Big Design One Text Color For Selected Items',
+		name: 'secondaryDropdownBigDesignOneTextColorForSelectedItems',
 		cssProperty: 'color',
 		selector: '.comp.compDropdown._bigDesign1._secondary ._dropdownItem._selected',
 		noPrefix: true,
 	},
 	{
 		groupName: 'Text Color Selected Items',
-		displayName: 'Tertiary Dropdown Biig Design One Text Color For Selected Items',
-		name: 'tertiaryDropdownBiigDesignOneTextColorForSelectedItems',
+		displayName: 'Tertiary Dropdown Big Design One Text Color For Selected Items',
+		name: 'tertiaryDropdownBigDesignOneTextColorForSelectedItems',
 		cssProperty: 'color',
 		selector: '.comp.compDropdown._bigDesign1._tertiary ._dropdownItem._selected',
 		noPrefix: true,
 	},
 	{
 		groupName: 'Text Color Selected Items',
-		displayName: 'Quaternary Dropdown Biig Design One Text Color For Selected Items',
-		name: 'quaternaryDropdownBiigDesignOneTextColorForSelectedItems',
+		displayName: 'Quaternary Dropdown Big Design One Text Color For Selected Items',
+		name: 'quaternaryDropdownBigDesignOneTextColorForSelectedItems',
 		cssProperty: 'color',
 		selector: '.comp.compDropdown._bigDesign1._quaternary ._dropdownItem._selected',
 		noPrefix: true,
 	},
 	{
 		groupName: 'Text Color Selected Items',
-		displayName: 'Quinary Dropdown Biig Design One Text Color For Selected Items',
-		name: 'quinaryDropdownBiigDesignOneTextColorForSelectedItems',
+		displayName: 'Quinary Dropdown Big Design One Text Color For Selected Items',
+		name: 'quinaryDropdownBigDesignOneTextColorForSelectedItems',
 		cssProperty: 'color',
 		selector: '.comp.compDropdown._bigDesign1._quinary ._dropdownItem._selected',
 		noPrefix: true,
@@ -815,40 +817,40 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Text Color Placeholder',
-		displayName: 'Primary Dropdown Biig Design One Text Color For Placeholder',
-		name: 'primaryDropdownBiigDesignOneTextColorForPlaceholder',
+		displayName: 'Primary Dropdown Big Design One Text Color For Placeholder',
+		name: 'primaryDropdownBigDesignOneTextColorForPlaceholder',
 		cssProperty: 'color',
 		selector: '.comp.compDropdown._bigDesign1._primary input::placeholder',
 		noPrefix: true,
 	},
 	{
 		groupName: 'Text Color Placeholder',
-		displayName: 'Secondary Dropdown Biig Design One Text Color For Placeholder',
-		name: 'secondaryDropdownBiigDesignOneTextColorForPlaceholder',
+		displayName: 'Secondary Dropdown Big Design One Text Color For Placeholder',
+		name: 'secondaryDropdownBigDesignOneTextColorForPlaceholder',
 		cssProperty: 'color',
 		selector: '.comp.compDropdown._bigDesign1._secondary input::placeholder',
 		noPrefix: true,
 	},
 	{
 		groupName: 'Text Color Placeholder',
-		displayName: 'Tertiary Dropdown Biig Design One Text Color For Placeholder',
-		name: 'tertiaryDropdownBiigDesignOneTextColorForPlaceholder',
+		displayName: 'Tertiary Dropdown Big Design One Text Color For Placeholder',
+		name: 'tertiaryDropdownBigDesignOneTextColorForPlaceholder',
 		cssProperty: 'color',
 		selector: '.comp.compDropdown._bigDesign1._tertiary input::placeholder',
 		noPrefix: true,
 	},
 	{
 		groupName: 'Text Color Placeholder',
-		displayName: 'Quaternary Dropdown Biig Design One Text Color For Placeholder',
-		name: 'quaternaryDropdownBiigDesignOneTextColorForPlaceholder',
+		displayName: 'Quaternary Dropdown Big Design One Text Color For Placeholder',
+		name: 'quaternaryDropdownBigDesignOneTextColorForPlaceholder',
 		cssProperty: 'color',
 		selector: '.comp.compDropdown._bigDesign1._quaternary input::placeholder',
 		noPrefix: true,
 	},
 	{
 		groupName: 'Text Color Placeholder',
-		displayName: 'Quinary Dropdown Biig Design One Text Color For Placeholder',
-		name: 'quinaryDropdownBiigDesignOneTextColorForPlaceholder',
+		displayName: 'Quinary Dropdown Big Design One Text Color For Placeholder',
+		name: 'quinaryDropdownBigDesignOneTextColorForPlaceholder',
 		cssProperty: 'color',
 		selector: '.comp.compDropdown._bigDesign1._quinary input::placeholder',
 		noPrefix: true,
@@ -1995,7 +1997,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		groupName: 'Dropdown Background Color ',
 		displayName: 'Primary Dropdown Container Filled Design background Color',
 		name: 'primaryDropdownContainerFilledDesignbackgroundColor',
-		defaultValue: '<backgroundColorTwo>',
+		defaultValue: '<backgroundColorOne>',
 		cssProperty: 'background',
 		selector: '.comp.compDropdown._filled._primary ._dropdownContainer',
 		noPrefix: true,
@@ -2328,8 +2330,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Icon color',
-		displayName: 'Primary Default Icon Color',
-		name: 'primaryDefaultIconColor',
+		displayName: 'Primary Dropdown Default Icon Color',
+		name: 'primaryDropdownDefaultIconColor',
 		defaultValue: '<fontColorSix>',
 		cssProperty: 'color',
 		selector:
@@ -2338,8 +2340,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Icon color',
-		displayName: 'Secondary Default Icon Color',
-		name: 'secondaryDefaultIconColor',
+		displayName: 'Secondary Dropdown Default Icon Color',
+		name: 'secondaryDropdownDefaultIconColor',
 		defaultValue: '<fontColorSix>',
 		cssProperty: 'color',
 		selector:
@@ -2348,8 +2350,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Icon color',
-		displayName: 'Tertiary Default Icon Color',
-		name: 'tertiaryDefaultIconColor',
+		displayName: 'Tertiary Dropdown Default Icon Color',
+		name: 'tertiaryDropdownDefaultIconColor',
 		defaultValue: '<fontColorSix>',
 		cssProperty: 'color',
 		selector:
@@ -2358,8 +2360,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Icon color',
-		displayName: 'Quaternary Default Icon Color',
-		name: 'quaternaryDefaultIconColor',
+		displayName: 'Quaternary Dropdown Default Icon Color',
+		name: 'quaternaryDropdownDefaultIconColor',
 		defaultValue: '<fontColorSix>',
 		cssProperty: 'color',
 		selector:
@@ -2368,8 +2370,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Icon color',
-		displayName: 'Quinary Default Icon Color',
-		name: 'quinaryDefaultIconColor',
+		displayName: 'Quinary Dropdown Default Icon Color',
+		name: 'quinaryDropdownDefaultIconColor',
 		defaultValue: '<fontColorSix>',
 		cssProperty: 'color',
 		selector:
@@ -2378,8 +2380,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Icon color',
-		displayName: 'Primary Outline Icon Color',
-		name: 'primaryOutlineIconColor',
+		displayName: 'Primary Dropdown Outline Icon Color',
+		name: 'primaryDropdownOutlineIconColor',
 		defaultValue: '<fontColorSix>',
 		cssProperty: 'color',
 		selector:
@@ -2388,8 +2390,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Icon color',
-		displayName: 'Secondary Outline Icon Color',
-		name: 'secondaryOutlineIconColor',
+		displayName: 'Secondary Dropdown Outline Icon Color',
+		name: 'secondaryDropdownOutlineIconColor',
 		defaultValue: '<fontColorSix>',
 		cssProperty: 'color',
 		selector:
@@ -2398,8 +2400,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Icon color',
-		displayName: 'Tertiary Outline Icon Color',
-		name: 'tertiaryOutlineIconColor',
+		displayName: 'Tertiary Dropdown Outline Icon Color',
+		name: 'tertiaryDropdownOutlineIconColor',
 		defaultValue: '<fontColorSix>',
 		cssProperty: 'color',
 		selector:
@@ -2408,8 +2410,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Icon color',
-		displayName: 'Quaternary Outline Icon Color',
-		name: 'quaternaryOutlineIconColor',
+		displayName: 'Quaternary Dropdown Outline Icon Color',
+		name: 'quaternaryDropdownOutlineIconColor',
 		defaultValue: '<fontColorSix>',
 		cssProperty: 'color',
 		selector:
@@ -2418,8 +2420,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Icon color',
-		displayName: 'Quinary Outline Icon Color',
-		name: 'quinaryOutlineIconColor',
+		displayName: 'Quinary Dropdown Outline Icon Color',
+		name: 'quinaryDropdownOutlineIconColor',
 		defaultValue: '<fontColorSix>',
 		cssProperty: 'color',
 		selector:
@@ -2428,8 +2430,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Icon color',
-		displayName: 'Primary Filled Icon Color',
-		name: 'primaryFilledIconColor',
+		displayName: 'Primary Dropdown Filled Icon Color',
+		name: 'primaryDropdownFilledIconColor',
 		defaultValue: '<fontColorSix>',
 		cssProperty: 'color',
 		selector:
@@ -2438,8 +2440,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Icon color',
-		displayName: 'Secondary Filled Icon Color',
-		name: 'secondaryFilledIconColor',
+		displayName: 'Secondary Dropdown Filled Icon Color',
+		name: 'secondaryDropdownFilledIconColor',
 		defaultValue: '<fontColorSix>',
 		cssProperty: 'color',
 		selector:
@@ -2448,8 +2450,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Icon color',
-		displayName: 'Tertiary Filled Icon Color',
-		name: 'tertiaryFilledIconColor',
+		displayName: 'Tertiary Dropdown Filled Icon Color',
+		name: 'tertiaryDropdownFilledIconColor',
 		defaultValue: '<fontColorSix>',
 		cssProperty: 'color',
 		selector:
@@ -2458,8 +2460,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Icon color',
-		displayName: 'Quaternary Filled Icon Color',
-		name: 'quaternaryFilledIconColor',
+		displayName: 'Quaternary Dropdown Filled Icon Color',
+		name: 'quaternaryDropdownFilledIconColor',
 		defaultValue: '<fontColorSix>',
 		cssProperty: 'color',
 		selector:
@@ -2468,8 +2470,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Icon color',
-		displayName: 'Quinary Filled Icon Color',
-		name: 'quinaryFilledIconColor',
+		displayName: 'Quinary Dropdown Filled Icon Color',
+		name: 'quinaryDropdownFilledIconColor',
 		defaultValue: '<fontColorSix>',
 		cssProperty: 'color',
 		selector:
@@ -2478,8 +2480,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Icon color',
-		displayName: 'Primary Design One Icon Color',
-		name: 'primaryDesignOneIconColor',
+		displayName: 'Primary Dropdown Design One Icon Color',
+		name: 'primaryDropdownDesignOneIconColor',
 		defaultValue: '<fontColorSix>',
 		cssProperty: 'color',
 		selector:
@@ -2488,8 +2490,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Icon color',
-		displayName: 'Secondary Design One Icon Color',
-		name: 'secondaryDesignOneIconColor',
+		displayName: 'Secondary Dropdown Design One Icon Color',
+		name: 'secondaryDropdownDesignOneIconColor',
 		defaultValue: '<fontColorSix>',
 		cssProperty: 'color',
 		selector:
@@ -2498,8 +2500,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Icon color',
-		displayName: 'Tertiary Design One Icon Color',
-		name: 'tertiaryDesignOneIconColor',
+		displayName: 'Tertiary Dropdown Design One Icon Color',
+		name: 'tertiaryDropdownDesignOneIconColor',
 		defaultValue: '<fontColorSix>',
 		cssProperty: 'color',
 		selector:
@@ -2508,8 +2510,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Icon color',
-		displayName: 'Quaternary Design One Icon Color',
-		name: 'quaternaryDesignOneIconColor',
+		displayName: 'Quaternary Dropdown Design One Icon Color',
+		name: 'quaternaryDropdownDesignOneIconColor',
 		defaultValue: '<fontColorSix>',
 		cssProperty: 'color',
 		selector:
@@ -2518,8 +2520,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Icon color',
-		displayName: 'Quinary Design One Icon Color',
-		name: 'quinaryDesignOneIconColor',
+		displayName: 'Quinary Dropdown Design One Icon Color',
+		name: 'quinaryDropdownDesignOneIconColor',
 		defaultValue: '<fontColorSix>',
 		cssProperty: 'color',
 		selector:
@@ -2528,8 +2530,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Icon color',
-		displayName: 'Primary Text Icon Color',
-		name: 'primaryTextIconColor',
+		displayName: 'Primary Dropdown Text Icon Color',
+		name: 'primaryDropdownTextIconColor',
 		defaultValue: '<fontColorSix>',
 		cssProperty: 'color',
 		selector:
@@ -2538,8 +2540,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Icon color',
-		displayName: 'Secondary Text Icon Color',
-		name: 'secondaryTextIconColor',
+		displayName: 'Secondary Dropdown Text Icon Color',
+		name: 'secondaryDropdownTextIconColor',
 		defaultValue: '<fontColorSix>',
 		cssProperty: 'color',
 		selector:
@@ -2548,8 +2550,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Icon color',
-		displayName: 'Tertiary Text Icon Color',
-		name: 'tertiaryTextIconColor',
+		displayName: 'Tertiary Dropdown Text Icon Color',
+		name: 'tertiaryDropdownTextIconColor',
 		defaultValue: '<fontColorSix>',
 		cssProperty: 'color',
 		selector:
@@ -2558,8 +2560,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Icon color',
-		displayName: 'Quaternary Text Icon Color',
-		name: 'quaternaryTextIconColor',
+		displayName: 'Quaternary Dropdown Text Icon Color',
+		name: 'quaternaryDropdownTextIconColor',
 		defaultValue: '<fontColorSix>',
 		cssProperty: 'color',
 		selector:
@@ -2568,8 +2570,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Icon color',
-		displayName: 'Quinary Text Icon Color',
-		name: 'quinaryTextIconColor',
+		displayName: 'Quinary Dropdown Text Icon Color',
+		name: 'quinaryDropdownTextIconColor',
 		defaultValue: '<fontColorSix>',
 		cssProperty: 'color',
 		selector:
@@ -2578,8 +2580,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Active Icon color',
-		displayName: 'Primary Default Active Icon Color',
-		name: 'primaryDefaultActiveIconColor',
+		displayName: 'Primary Dropdown Default Active Icon Color',
+		name: 'primaryDropdownDefaultActiveIconColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
 		selector:
@@ -2588,8 +2590,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Active Icon color',
-		displayName: 'Secondary Default Active Icon Color',
-		name: 'secondaryDefaultActiveIconColor',
+		displayName: 'Secondary Dropdown Default Active Icon Color',
+		name: 'secondaryDropdownDefaultActiveIconColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
 		selector:
@@ -2598,8 +2600,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Active Icon color',
-		displayName: 'Tertiary Default Active Icon Color',
-		name: 'tertiaryDefaultActiveIconColor',
+		displayName: 'Tertiary Dropdown Default Active Icon Color',
+		name: 'tertiaryDropdownDefaultActiveIconColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
 		selector:
@@ -2608,8 +2610,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Active Icon color',
-		displayName: 'Quaternary Default Active Icon Color',
-		name: 'quaternaryDefaultActiveIconColor',
+		displayName: 'Quaternary Dropdown Default Active Icon Color',
+		name: 'quaternaryDropdownDefaultActiveIconColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
 		selector:
@@ -2618,8 +2620,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Active Icon color',
-		displayName: 'Quinary Default Active Icon Color',
-		name: 'quinaryDefaultActiveIconColor',
+		displayName: 'Quinary Dropdown Default Active Icon Color',
+		name: 'quinaryDropdownDefaultActiveIconColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
 		selector:
@@ -2628,8 +2630,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Active Icon color',
-		displayName: 'Primary Outline Active Icon Color',
-		name: 'primaryOutlineActiveIconColor',
+		displayName: 'Primary Dropdown Outline Active Icon Color',
+		name: 'primaryDropdownOutlineActiveIconColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
 		selector:
@@ -2638,8 +2640,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Active Icon color',
-		displayName: 'Secondary Outline Active Icon Color',
-		name: 'secondaryOutlineActiveIconColor',
+		displayName: 'Secondary Dropdown Outline Active Icon Color',
+		name: 'secondaryDropdownOutlineActiveIconColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
 		selector:
@@ -2648,8 +2650,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Active Icon color',
-		displayName: 'Tertiary Outline Active Icon Color',
-		name: 'tertiaryOutlineActiveIconColor',
+		displayName: 'Tertiary Dropdown Outline Active Icon Color',
+		name: 'tertiaryDropdownOutlineActiveIconColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
 		selector:
@@ -2658,8 +2660,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Active Icon color',
-		displayName: 'Quaternary Outline Active Icon Color',
-		name: 'quaternaryOutlineActiveIconColor',
+		displayName: 'Quaternary Dropdown Outline Active Icon Color',
+		name: 'quaternaryDropdownOutlineActiveIconColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
 		selector:
@@ -2668,8 +2670,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Active Icon color',
-		displayName: 'Quinary Outline Active Icon Color',
-		name: 'quinaryOutlineActiveIconColor',
+		displayName: 'Quinary Dropdown Outline Active Icon Color',
+		name: 'quinaryDropdownOutlineActiveIconColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
 		selector:
@@ -2678,8 +2680,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Active Icon color',
-		displayName: 'Primary Filled Active Icon Color',
-		name: 'primaryFilledActiveIconColor',
+		displayName: 'Primary Dropdown Filled Active Icon Color',
+		name: 'primaryDropdownFilledActiveIconColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
 		selector:
@@ -2688,8 +2690,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Active Icon color',
-		displayName: 'Secondary Filled Active Icon Color',
-		name: 'secondaryFilledActiveIconColor',
+		displayName: 'Secondary Dropdown Filled Active Icon Color',
+		name: 'secondaryDropdownFilledActiveIconColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
 		selector:
@@ -2698,8 +2700,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Active Icon color',
-		displayName: 'Tertiary Filled Active Icon Color',
-		name: 'tertiaryFilledActiveIconColor',
+		displayName: 'Tertiary Dropdown Filled Active Icon Color',
+		name: 'tertiaryDropdownFilledActiveIconColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
 		selector:
@@ -2708,8 +2710,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Active Icon color',
-		displayName: 'Quaternary Filled Active Icon Color',
-		name: 'quaternaryFilledActiveIconColor',
+		displayName: 'Quaternary Dropdown Filled Active Icon Color',
+		name: 'quaternaryDropdownFilledActiveIconColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
 		selector:
@@ -2718,8 +2720,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Active Icon color',
-		displayName: 'Quinary Filled Active Icon Color',
-		name: 'quinaryFilledActiveIconColor',
+		displayName: 'Quinary Dropdown Filled Active Icon Color',
+		name: 'quinaryDropdownFilledActiveIconColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
 		selector:
@@ -2728,8 +2730,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Active Icon color',
-		displayName: 'Primary Design One Active Icon Color',
-		name: 'primaryDesignOneActiveIconColor',
+		displayName: 'Primary Dropdown Design One Active Icon Color',
+		name: 'primaryDropdownDesignOneActiveIconColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
 		selector:
@@ -2738,8 +2740,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Active Icon color',
-		displayName: 'Secondary Design One Active Icon Color',
-		name: 'secondaryDesignOneActiveIconColor',
+		displayName: 'Secondary Dropdown Design One Active Icon Color',
+		name: 'secondaryDropdownDesignOneActiveIconColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
 		selector:
@@ -2748,8 +2750,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Active Icon color',
-		displayName: 'Tertiary Design One Active Icon Color',
-		name: 'tertiaryDesignOneActiveIconColor',
+		displayName: 'Tertiary Dropdown Design One Active Icon Color',
+		name: 'tertiaryDropdownDesignOneActiveIconColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
 		selector:
@@ -2758,8 +2760,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Active Icon color',
-		displayName: 'Quaternary Design One Active Icon Color',
-		name: 'quaternaryDesignOneActiveIconColor',
+		displayName: 'Quaternary Dropdown Design One Active Icon Color',
+		name: 'quaternaryDropdownDesignOneActiveIconColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
 		selector:
@@ -2768,8 +2770,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Active Icon color',
-		displayName: 'Quinary Design One Active Icon Color',
-		name: 'quinaryDesignOneActiveIconColor',
+		displayName: 'Quinary Dropdown Design One Active Icon Color',
+		name: 'quinaryDropdownDesignOneActiveIconColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
 		selector:
@@ -2778,8 +2780,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Active Icon color',
-		displayName: 'Primary Text Active Icon Color',
-		name: 'primaryTextActiveIconColor',
+		displayName: 'Primary Dropdown Text Active Icon Color',
+		name: 'primaryDropdownTextActiveIconColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
 		selector:
@@ -2788,8 +2790,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Active Icon color',
-		displayName: 'Secondary Text Active Icon Color',
-		name: 'secondaryTextActiveIconColor',
+		displayName: 'Secondary Dropdown Text Active Icon Color',
+		name: 'secondaryDropdownTextActiveIconColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
 		selector:
@@ -2798,8 +2800,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Active Icon color',
-		displayName: 'Tertiary Text Active Icon Color',
-		name: 'tertiaryTextActiveIconColor',
+		displayName: 'Tertiary Dropdown Text Active Icon Color',
+		name: 'tertiaryDropdownTextActiveIconColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
 		selector:
@@ -2808,8 +2810,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Active Icon color',
-		displayName: 'Quaternary Text Active Icon Color',
-		name: 'quaternaryTextActiveIconColor',
+		displayName: 'Quaternary Dropdown Text Active Icon Color',
+		name: 'quaternaryDropdownTextActiveIconColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
 		selector:
@@ -2818,8 +2820,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Active Icon color',
-		displayName: 'Quinary Text Active Icon Color',
-		name: 'quinaryTextActiveIconColor',
+		displayName: 'Quinary Dropdown Text Active Icon Color',
+		name: 'quinaryDropdownTextActiveIconColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
 		selector:
@@ -2828,7 +2830,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Success Icon Color',
-		displayName: 'Default Success Icon color',
+		displayName: 'Default Dropdown Success Icon color',
 		name: 'successDropdownIconDefaultColor',
 		defaultValue: '<successColor>',
 		cssProperty: 'color',
@@ -2838,7 +2840,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Success Icon Color',
-		displayName: 'Outline Success Icon color',
+		displayName: 'Outline Dropdown Success Icon color',
 		name: 'successDropdownIconOutlinedColor',
 		defaultValue: '<successColor>',
 		cssProperty: 'color',
@@ -2848,7 +2850,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Success Icon Color',
-		displayName: 'Filled Success Icon color',
+		displayName: 'Filled Dropdown Success Icon color',
 		name: 'successDropdownIconFilledColor',
 		defaultValue: '<successColor>',
 		cssProperty: 'color',
@@ -2858,7 +2860,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Success Icon Color',
-		displayName: 'Design One Success Icon color',
+		displayName: 'Design Dropdown One Success Icon color',
 		name: 'successDropdownIconBigDesignOneColor',
 		defaultValue: '<successColor>',
 		cssProperty: 'color',
@@ -2868,7 +2870,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Success Icon Color',
-		displayName: 'Text Success Icon color',
+		displayName: 'Text Dropdown Success Icon color',
 		name: 'successDropdownIconTextColor',
 		defaultValue: '<successColor>',
 		cssProperty: 'color',
@@ -2878,7 +2880,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Error Icon Color',
-		displayName: 'Default Error Icon color',
+		displayName: 'Default Dropdown Error Icon color',
 		name: 'errorDropdownIconDefaultColor',
 		defaultValue: '<errorColor>',
 		cssProperty: 'color',
@@ -2888,7 +2890,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Error Icon Color',
-		displayName: 'Outline Error Icon color',
+		displayName: 'Outline Dropdown Error Icon color',
 		name: 'errorDropdownIconOutlinedColor',
 		defaultValue: '<errorColor>',
 		cssProperty: 'color',
@@ -2898,7 +2900,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Error Icon Color',
-		displayName: 'Filled Error Icon color',
+		displayName: 'Filled Dropdown Error Icon color',
 		name: 'errorDropdownIconFilledColor',
 		defaultValue: '<errorColor>',
 		cssProperty: 'color',
@@ -2908,7 +2910,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Error Icon Color',
-		displayName: 'Design One Error Icon color',
+		displayName: 'Design One Dropdown Error Icon color',
 		name: 'errorDropdownIconBigDesignOneColor',
 		defaultValue: '<errorColor>',
 		cssProperty: 'color',
@@ -2918,7 +2920,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Error Icon Color',
-		displayName: 'Text Error Icon color',
+		displayName: 'Text Error Dropdown Icon color',
 		name: 'errorDropdownIconTextColor',
 		defaultValue: '<errorColor>',
 		cssProperty: 'color',
@@ -2928,7 +2930,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Error Border Color',
-		displayName: 'Default Error Border color',
+		displayName: 'Default Error Dropdown Border color',
 		name: 'errorDropdownBorderDefaultColor',
 		defaultValue: '<errorColor>',
 		cssProperty: 'border-color',
@@ -2938,7 +2940,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Error Border Color',
-		displayName: 'Outline Error Border Icon color',
+		displayName: 'Outline Error Dropdown Border Icon color',
 		name: 'errorDropdownBorderOutlinedColor',
 		defaultValue: '<errorColor>',
 		cssProperty: 'border-color',
@@ -2948,7 +2950,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Error Border Color',
-		displayName: 'Filled Error Border Icon color',
+		displayName: 'Filled Error Dropdown Border Icon color',
 		name: 'errorDropdownBorderFilledColor',
 		defaultValue: '<errorColor>',
 		cssProperty: 'border-color',
@@ -2958,7 +2960,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Error Border Color',
-		displayName: 'Design One Error Border Icon color',
+		displayName: 'Design One Dropdown Error Border Icon color',
 		name: 'errorDropdownBorderBigDesignOneColor',
 		defaultValue: '<errorColor>',
 		cssProperty: 'border-color',
@@ -2968,7 +2970,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Error Border Color',
-		displayName: 'Text Error Border Icon color',
+		displayName: 'Text Error Dropdown Border Icon color',
 		name: 'errorDropdownBorderTextColor',
 		defaultValue: '<errorColor>',
 		cssProperty: 'border-color',
@@ -3659,8 +3661,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 
 	{
 		groupName: 'Text Color',
-		displayName: 'Primary Dropdown Label Biig Design One Text Color',
-		name: 'primaryDropdownLabelBiigDesignOneTextColor',
+		displayName: 'Primary Dropdown Label Big Design One Text Color',
+		name: 'primaryDropdownLabelBigDesignOneTextColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
 		selector: '.comp.compDropdown._bigDesign1._primary ._label',
@@ -3668,8 +3670,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Text Color',
-		displayName: 'Secondary Dropdown Label Biig Design One Text Color',
-		name: 'secondaryDropdownLabelBiigDesignOneTextColor',
+		displayName: 'Secondary Dropdown Label Big Design One Text Color',
+		name: 'secondaryDropdownLabelBigDesignOneTextColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
 		selector: '.comp.compDropdown._bigDesign1._secondary ._label',
@@ -3677,8 +3679,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Text Color',
-		displayName: 'Tertiary Dropdown Label Biig Design One Text Color',
-		name: 'tertiaryDropdownLabelBiigDesignOneTextColor',
+		displayName: 'Tertiary Dropdown Label Big Design One Text Color',
+		name: 'tertiaryDropdownLabelBigDesignOneTextColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
 		selector: '.comp.compDropdown._bigDesign1._tertiary ._label',
@@ -3686,8 +3688,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Text Color',
-		displayName: 'Quaternary Dropdown Label Biig Design One Text Color',
-		name: 'quaternaryDropdownLabelBiigDesignOneTextColor',
+		displayName: 'Quaternary Dropdown Label Big Design One Text Color',
+		name: 'quaternaryDropdownLabelBigDesignOneTextColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
 		selector: '.comp.compDropdown._bigDesign1._quaternary ._label',
@@ -3695,8 +3697,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'Text Color',
-		displayName: 'Quinary Dropdown Label Biig Design One Text Color',
-		name: 'quinaryDropdownLabelBiigDesignOneTextColor',
+		displayName: 'Quinary Dropdown Label Big Design One Text Color',
+		name: 'quinaryDropdownLabelBigDesignOneTextColor',
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'color',
 		selector: '.comp.compDropdown._bigDesign1._quinary ._label',
@@ -4735,8 +4737,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		groupName: 'DropDown Item Font on Hover',
-		displayName: 'Dropdown DropDown Item Font on HoverBiig Design One',
-		name: 'dropdownDropDownItemFontonHoverBiigDesignOne',
+		displayName: 'Dropdown DropDown Item Font on HoverBig Design One',
+		name: 'dropdownDropDownItemFontonHoverBigDesignOne',
 		defaultValue: '<dropdownFont>',
 		cssProperty: 'font',
 		selector: '.comp.compDropdown._bigDesign1 ._dropdownItem._hover',
@@ -5211,6 +5213,16 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		cssProperty: 'background',
 		selector:
 			'.comp.compDropdown._text._isActive._quinary, .comp.compDropdown._text._isActive._quinary ._dropdownContainer, .comp.compDropdown._text._hasValue._quinary, .comp.compDropdown._text._hasValue._quinary ._dropdownContainer',
+		noPrefix: true,
+	},
+
+	{
+		groupName: 'DropDown Asterisk Text Color',
+		displayName: 'DropDown Asterisk Text Color',
+		name: 'dropDownAsteriskTextColor',
+		defaultValue: '<colorTwelve>',
+		cssProperty: 'color',
+		selector: '.comp.compDropdown ._label ._asterisk',
 		noPrefix: true,
 	},
 ];

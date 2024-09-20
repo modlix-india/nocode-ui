@@ -3,33 +3,41 @@ import { PageStoreExtractor, getPathFromLocation } from '../../context/StoreCont
 import { DataLocation, LocationHistory } from '../../types/common';
 
 export const updateLocationForChild = (
+	componentKey: string,
 	location: DataLocation | string,
-	index: number,
+	index: number | string,
 	locationHistory: Array<LocationHistory>,
 	pageName: string,
 	...tve: Array<TokenValueExtractor>
 ): LocationHistory => {
 	let finalPath;
 	const typeOfLoc = typeof location;
+	const indexPart = typeof index === 'string' ? `.${index}` : `[${index}]`;
 	if (typeOfLoc === 'string') {
 		finalPath = location as unknown as string;
-		return { location: `(${finalPath ? finalPath : location})[${index}]`, index, pageName };
+		return {
+			location: `${finalPath ? finalPath : location}${indexPart}`,
+			index,
+			pageName,
+			componentKey,
+		};
 	}
 	let childLocation = { ...(location as DataLocation) };
 	if (childLocation?.type === 'VALUE') {
 		finalPath = locationHistory.length ? childLocation.value! : '';
-		childLocation.value = `${finalPath ? finalPath : childLocation?.value}[${index}]`;
+		childLocation.value = `${finalPath ? finalPath : childLocation?.value}${indexPart}`;
 	} else if (childLocation?.type === 'EXPRESSION') {
-		finalPath =
-			locationHistory.length && childLocation.expression
-				? getPathFromLocation(
-						childLocation,
-						locationHistory,
-						PageStoreExtractor.getForContext(pageName),
-				  )
-				: '';
-		childLocation.expression = `${finalPath ? finalPath : childLocation?.expression}[${index}]`;
-	}
+		finalPath = childLocation.expression
+			? getPathFromLocation(
+					childLocation,
+					locationHistory,
+					PageStoreExtractor.getForContext(pageName),
+				)
+			: '';
 
-	return { location: childLocation, index, pageName };
+		childLocation.expression = `${
+			finalPath ? finalPath : childLocation?.expression
+		}${indexPart}`;
+	}
+	return { location: childLocation, index, pageName, componentKey };
 };

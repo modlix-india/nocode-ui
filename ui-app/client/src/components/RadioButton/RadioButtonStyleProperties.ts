@@ -154,7 +154,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'radioButtonTickColor',
 		defaultValue: '<backgroundColorSeven>',
 		cssProperty: 'background',
-		selector: '.comp.compRadioButton._default .commonCheckbox::before',
+		selector: '.comp.compRadioButton._default .commonCheckbox ._thumb',
 		noPrefix: true,
 	},
 
@@ -164,7 +164,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'primaryOutlineRadioButtonTickColor',
 		defaultValue: '<fontColorThree>',
 		cssProperty: 'background',
-		selector: '.comp.compRadioButton._outlined._primary .commonCheckbox::before',
+		selector: '.comp.compRadioButton._outlined._primary .commonCheckbox ._thumb',
 		noPrefix: true,
 	},
 	{
@@ -173,7 +173,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'secondaryOutlineRadioButtonTickColor',
 		defaultValue: '<fontColorFour>',
 		cssProperty: 'background',
-		selector: '.comp.compRadioButton._outlined._secondary .commonCheckbox::before',
+		selector: '.comp.compRadioButton._outlined._secondary .commonCheckbox ._thumb',
 		noPrefix: true,
 	},
 	{
@@ -182,7 +182,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'tertiaryOutlineRadioButtonTickColor',
 		defaultValue: '<fontColorFive>',
 		cssProperty: 'background',
-		selector: '.comp.compRadioButton._outlined._tertiary .commonCheckbox::before',
+		selector: '.comp.compRadioButton._outlined._tertiary .commonCheckbox ._thumb',
 		noPrefix: true,
 	},
 	{
@@ -191,7 +191,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quaternaryOutlineRadioButtonTickColor',
 		defaultValue: '<fontColorNine>',
 		cssProperty: 'background',
-		selector: '.comp.compRadioButton._outlined._quaternary .commonCheckbox::before',
+		selector: '.comp.compRadioButton._outlined._quaternary .commonCheckbox ._thumb',
 		noPrefix: true,
 	},
 	{
@@ -200,7 +200,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		name: 'quinaryOutlineRadioButtonTickColor',
 		defaultValue: '<fontColorSeven>',
 		cssProperty: 'background',
-		selector: '.comp.compRadioButton._outlined._quinary .commonCheckbox::before',
+		selector: '.comp.compRadioButton._outlined._quinary .commonCheckbox ._thumb',
 		noPrefix: true,
 	},
 
@@ -211,7 +211,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'border-color',
 		selector:
-			'.comp.compRadioButton._outlined._primary .commonCheckbox:disabled,.comp.compRadioButton._outlined._secondary .commonCheckbox:disabled,.comp.compRadioButton._outlined._tertiary .commonCheckbox:disabled,.comp.compRadioButton._outlined._quaternary .commonCheckbox:disabled,.comp.compRadioButton._outlined._quinary .commonCheckbox:disabled',
+			'.comp.compRadioButton._outlined._primary .commonCheckbox._disabled,.comp.compRadioButton._outlined._secondary .commonCheckbox._disabled,.comp.compRadioButton._outlined._tertiary .commonCheckbox._disabled,.comp.compRadioButton._outlined._quaternary .commonCheckbox._disabled,.comp.compRadioButton._outlined._quinary .commonCheckbox._disabled',
 		noPrefix: true,
 	},
 	{
@@ -221,7 +221,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<backgroundColorEight>',
 		cssProperty: 'background',
 		selector:
-			'.comp.compRadioButton._default._primary .commonCheckbox:disabled,.comp.compRadioButton._default._secondary .commonCheckbox:disabled,.comp.compRadioButton._default._tertiary .commonCheckbox:disabled,.comp.compRadioButton._default._quaternary .commonCheckbox:disabled,.comp.compRadioButton._default._quinary .commonCheckbox:disabled',
+			'.comp.compRadioButton._default._primary .commonCheckbox._disabled,.comp.compRadioButton._default._secondary .commonCheckbox._disabled,.comp.compRadioButton._default._tertiary .commonCheckbox._disabled,.comp.compRadioButton._default._quaternary .commonCheckbox._disabled,.comp.compRadioButton._default._quinary .commonCheckbox._disabled',
 		noPrefix: true,
 	},
 	{
@@ -231,7 +231,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		defaultValue: '<fontColorEight>',
 		cssProperty: 'background',
 		selector:
-			'.comp.compRadioButton._outlined._primary .commonCheckbox:disabled::before,.comp.compRadioButton._outlined._secondary .commonCheckbox:disabled::before,.comp.compRadioButton._outlined._tertiary .commonCheckbox:disabled::before,.comp.compRadioButton._outlined._quaternary .commonCheckbox:disabled::before,.comp.compRadioButton._outlined._quinary .commonCheckbox:disabled::before',
+			'.comp.compRadioButton._outlined._primary .commonCheckbox._disabled ._thumb,.comp.compRadioButton._outlined._secondary .commonCheckbox._disabled ._thumb,.comp.compRadioButton._outlined._tertiary .commonCheckbox._disabled ._thumb,.comp.compRadioButton._outlined._quaternary .commonCheckbox._disabled ._thumb,.comp.compRadioButton._outlined._quinary .commonCheckbox._disabled ._thumb',
 		noPrefix: true,
 	},
 	{

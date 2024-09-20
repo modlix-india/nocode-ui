@@ -26,7 +26,7 @@ function SubHelperComponentInternal({
 
 	useEffect(() => {
 		function onMessageRecieved(e: MessageEvent) {
-			const { data: { type } = {} } = e;
+			const { data: { type } = { type: undefined } } = e ?? {};
 
 			if (!type || !type.startsWith('EDITOR_')) return;
 			setLastChanged(Date.now());
@@ -61,10 +61,10 @@ function SubHelperComponentInternal({
 		borderRadius: '3px',
 		zIndex: zIndex,
 		pointerEvents: 'all',
-		height: '94%',
-		width: '94%',
-		left: '2%',
-		top: '2%',
+		height: '100%',
+		width: '100%',
+		left: '0%',
+		top: '0%',
 		position: 'absolute',
 		cursor: 'pointer',
 		border: 'none',

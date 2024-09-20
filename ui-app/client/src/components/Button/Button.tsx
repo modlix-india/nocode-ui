@@ -33,9 +33,14 @@ function ButtonComponent(props: ComponentProps) {
 			readOnly,
 			leftIcon,
 			rightIcon,
+			leftImage,
+			rightImage,
+			activeLeftImage,
+			activeRightImage,
 			target,
 			linkPath,
 			stopPropagation,
+			preventDefault,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -73,6 +78,7 @@ function ButtonComponent(props: ComponentProps) {
 
 	const handleClick = async (e: any) => {
 		if (stopPropagation) e.stopPropagation();
+		if (preventDefault) e.preventDefault();
 		if (linkPath) {
 			if (target) {
 				window.open(getHref(linkPath, location), target);
@@ -98,48 +104,80 @@ function ButtonComponent(props: ComponentProps) {
 			);
 	};
 
-	const hasRightIcon =
-		!leftIcon &&
-		!designType.startsWith('_fabButton') &&
+	const hasRightIcon = !leftIcon && !leftImage && (rightIcon || rightImage);
+	!designType.startsWith('_fabButton') &&
 		designType !== '_iconButton' &&
 		designType !== '_iconPrimaryButton';
-	const hasRightIconClass = !!rightIcon && !leftIcon;
+	const hasRightIconClass = (!!rightIcon || !!rightImage) && !leftIcon;
 	const hasLabel =
 		!designType.startsWith('_fabButton') &&
 		designType !== '_iconButton' &&
 		designType !== '_iconPrimaryButton';
 
-	const rightIconTag = hasRightIcon ? (
-		<i
-			style={styleProperties.rightIcon ?? {}}
-			className={`_rightButtonIcon _icon ${rightIcon ?? 'fa fa-circle-notch hide'}`}
-		>
-			<SubHelperComponent
-				definition={props.definition}
-				subComponentName="rightIcon"
-			></SubHelperComponent>
-		</i>
-	) : undefined;
+	let rightIconTag = undefined;
 
-	const hasLeftIcon = leftIcon || isLoading;
+	if (rightImage) {
+		rightIconTag = (
+			<img
+				src={hover && activeRightImage ? activeRightImage : rightImage}
+				alt="right"
+				style={
+					(hover
+						? styleProperties.activeRightImage ?? styleProperties.rightImage
+						: styleProperties.rightImage) ?? {}
+				}
+				className={hover ? '_rightButtonActiveImage' : '_rightButtonImage'}
+			/>
+		);
+	} else if (hasLabel) {
+		rightIconTag = (
+			<i
+				style={styleProperties.rightIcon ?? {}}
+				className={`_rightButtonIcon _icon ${rightIcon ?? 'fa fa-circle-notch hide'}`}
+			>
+				<SubHelperComponent
+					definition={props.definition}
+					subComponentName="rightIcon"
+				></SubHelperComponent>
+			</i>
+		);
+	}
 
-	const leftIconTag = (
-		<i
-			style={styleProperties.leftIcon ?? {}}
-			className={`_leftButtonIcon _icon ${
-				leftIcon
-					? !isLoading
-						? leftIcon
-						: 'fa fa-circle-notch fa-spin'
-					: 'fa fa-circle-notch hide'
-			}`}
-		>
-			<SubHelperComponent
-				definition={props.definition}
-				subComponentName="leftIcon"
-			></SubHelperComponent>
-		</i>
-	);
+	const hasLeftIcon = leftIcon || leftImage || isLoading;
+
+	let leftIconTag = undefined;
+	if (leftImage) {
+		leftIconTag = (
+			<img
+				src={hover && activeLeftImage ? activeLeftImage : leftImage}
+				alt="left"
+				style={
+					(hover
+						? styleProperties.activeLeftImage ?? styleProperties.leftImage
+						: styleProperties.leftImage) ?? {}
+				}
+				className={hover ? '_leftButtonActiveImage' : '_leftButtonImage'}
+			/>
+		);
+	} else {
+		leftIconTag = (
+			<i
+				style={styleProperties.leftIcon ?? {}}
+				className={`_leftButtonIcon _icon ${
+					leftIcon
+						? !isLoading
+							? leftIcon
+							: 'fa fa-circle-notch fa-spin'
+						: 'fa fa-circle-notch hide'
+				}`}
+			>
+				<SubHelperComponent
+					definition={props.definition}
+					subComponentName="leftIcon"
+				></SubHelperComponent>
+			</i>
+		);
+	}
 	const [editableLabel, setEditableLabel] = useState(label);
 	const [editName, setEditName] = useState(false);
 	useEffect(() => setEditableLabel(label), [label]);
@@ -152,10 +190,8 @@ function ButtonComponent(props: ComponentProps) {
 			disabled={isLoading || readOnly}
 			onClick={handleClick}
 			style={styleProperties.comp ?? {}}
-			onMouseEnter={stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined}
-			onMouseLeave={
-				stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
-			}
+			onMouseEnter={() => setHover(true)}
+			onMouseLeave={() => setHover(false)}
 			onFocus={stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined}
 			onBlur={stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined}
 			title={label ?? ''}
@@ -428,6 +464,30 @@ const component: Component = {
 			name: 'rightIcon',
 			displayName: 'Right Icon',
 			description: 'Right Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'leftImage',
+			displayName: 'Left Image',
+			description: 'Left Image',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'activeLeftImage',
+			displayName: 'Active Left Image',
+			description: 'Active Left Image',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'rightImage',
+			displayName: 'Right Image',
+			description: 'Right Image',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'activeRightImage',
+			displayName: 'Active Right Image',
+			description: 'Active Right Image',
 			icon: 'fa-solid fa-box',
 		},
 	],

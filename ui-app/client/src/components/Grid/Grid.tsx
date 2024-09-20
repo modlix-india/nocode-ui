@@ -49,6 +49,11 @@ function Grid(props: ComponentProps) {
 			onLeavingViewport,
 			onEnteringViewport,
 			dragData,
+			border,
+			borderRadius,
+			boxShadow,
+			stopPropagation,
+			preventDefault,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -112,14 +117,16 @@ function Grid(props: ComponentProps) {
 	const handleClick =
 		!clickEvent || isLoading
 			? undefined
-			: async () =>
-					await runEvent(
-						clickEvent,
-						onClick,
-						props.context.pageName,
-						props.locationHistory,
-						props.pageDefinition,
-					);
+			: () =>
+					(async () =>
+						await runEvent(
+							clickEvent,
+							onClick,
+							props.context.pageName,
+							props.locationHistory,
+							props.pageDefinition,
+						))();
+
 	const sepStyle = resolvedStyles?.comp?.hideScrollBar;
 	const styleComp = sepStyle ? (
 		<style
@@ -203,7 +210,7 @@ function Grid(props: ComponentProps) {
 				<Link
 					key={`${key}_Link`}
 					ref={ref}
-					className={`_anchorGrid _${layout} ${background} ${
+					className={`_anchorGrid _${layout} ${background} ${border} ${borderRadius} ${boxShadow} ${
 						sepStyle ? `_${key}_grid_css` : ''
 					}`}
 					onMouseEnter={
@@ -220,7 +227,7 @@ function Grid(props: ComponentProps) {
 											props.locationHistory,
 											props.pageDefinition,
 										))();
-							  }
+								}
 							: undefined
 					}
 					onMouseLeave={
@@ -236,9 +243,10 @@ function Grid(props: ComponentProps) {
 											props.locationHistory,
 											props.pageDefinition,
 										))();
-							  }
+								}
 							: undefined
 					}
+					onMouseDown={handleClick}
 					onFocus={
 						stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined
 					}
@@ -274,7 +282,7 @@ function Grid(props: ComponentProps) {
 							context.pageName,
 						);
 					}
-			  }
+				}
 			: undefined;
 
 	return React.createElement(
@@ -294,7 +302,7 @@ function Grid(props: ComponentProps) {
 									props.locationHistory,
 									props.pageDefinition,
 								))();
-					  }
+						}
 					: undefined,
 
 			onMouseLeave:
@@ -310,7 +318,7 @@ function Grid(props: ComponentProps) {
 									props.locationHistory,
 									props.pageDefinition,
 								))();
-					  }
+						}
 					: undefined,
 			onDragStart:
 				dragData?.length && dragData?.startsWith('TEMPLATE_DRAG_')
@@ -320,12 +328,16 @@ function Grid(props: ComponentProps) {
 			onBlur: stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined,
 			ref: ref,
 			draggable: dragData?.length && dragData?.startsWith('TEMPLATE_DRAG_') ? true : false,
-			className: `comp compGrid _noAnchorGrid _${layout} ${background} ${
+			className: `comp compGrid _noAnchorGrid _${layout} ${background} ${border} ${borderRadius} ${boxShadow} ${
 				sepStyle ? `_${key}_grid_css` : ''
 			}`,
 			style: resolvedStyles.comp ?? {},
 
-			onClick: handleClick,
+			onClick: ev => {
+				if (stopPropagation) ev.stopPropagation();
+				if (preventDefault) ev.preventDefault();
+				handleClick?.();
+			},
 			id: key,
 		},
 		[

@@ -1,16 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { getData, getDataFromPath, PageStoreExtractor, setData } from '../../context/StoreContext';
+import React from 'react';
+import { PageStoreExtractor } from '../../context/StoreContext';
+import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
+import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
-import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
-import { updateLocationForChild } from '../util/updateLoactionForChild';
-import { Component } from '../../types/common';
+import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tableCloumnHeaderProperties';
 import TableColumnHeaderStyle from './TableColumnHeaderStyle';
-import useDefinition from '../util/useDefinition';
-import Children from '../Children';
-import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import { deepEqual, ExpressionEvaluator } from '@fincity/kirun-js';
-import { getExtractionMap } from '../util/getRenderData';
 import { styleDefaults } from './tableColumnHeaderStyleProperties';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 

@@ -47,6 +47,17 @@ export const RenderEngineContainer = () => {
 			(async () => {
 				await runEvent(getPageDefinition, 'pageDefinition', GLOBAL_CONTEXT_NAME, []);
 				pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
+				const appCode = getDataFromPath(`${STORE_PREFIX}.application.appCode`, []);
+				if (appCode !== pDef.appCode) {
+					console.error(
+						"Trying to load a page that doesn't belong to the app. Host app code:",
+						appCode,
+						'Page app code:',
+						pDef.appCode,
+					);
+					window.location.reload();
+					return;
+				}
 				setPageDefinition(processClassesForPageDefinition(pDef));
 				setCurrentPageName(pageName);
 			})();
@@ -62,7 +73,7 @@ export const RenderEngineContainer = () => {
 
 	useEffect(() => {
 		if (!location.hash) return;
-		let handle: NodeJS.Timeout | undefined = undefined;
+		let handle: number | undefined = undefined;
 		handle = setInterval(() => {
 			const [id, block, inline] = location.hash.replace('#', '').split(':');
 			const element = document.getElementById(id);
@@ -112,7 +123,8 @@ export const RenderEngineContainer = () => {
 		() =>
 			addListenerAndCallImmediately(
 				async (_, value) => {
-					setShellPageDefinition(processClassesForPageDefinition(value));
+					const sd = processClassesForPageDefinition(value);
+					setShellPageDefinition(sd);
 					if (isNullValue(value)) return;
 					const { properties: { onLoadEvent = undefined } = {}, eventFunctions } = value;
 					if (isNullValue(onLoadEvent) || isNullValue(eventFunctions[onLoadEvent]))
@@ -122,6 +134,7 @@ export const RenderEngineContainer = () => {
 						'appOnLoad',
 						GLOBAL_CONTEXT_NAME,
 						[],
+						sd,
 					);
 				},
 				undefined,
@@ -261,6 +274,7 @@ export const RenderEngineContainer = () => {
 				'appOnLoad',
 				GLOBAL_CONTEXT_NAME,
 				[],
+				shellPageDefinition,
 			))();
 	}, [shellPageDefinition?.properties?.onLoadEvent]);
 
@@ -270,7 +284,7 @@ export const RenderEngineContainer = () => {
 		if (window.designMode !== 'PAGE' && window.designMode !== 'FILLER_VALUE_EDITOR') return;
 
 		function onMessageRecieved(e: MessageEvent) {
-			const { data: { type } = {} } = e;
+			const { data: { type } = { type: undefined } } = e ?? {};
 
 			if (!type || !type.startsWith('EDITOR_')) return;
 			setLastChanged(Date.now());

@@ -320,10 +320,8 @@ export default function FormEditor({
 	);
 
 	return (
-		<Portal>
-			<div className={`_popupBackground`} onClick={handleCloseForm}>
-				{formBuilderContent}
-			</div>
-		</Portal>
+		<div className={`_popupBackground`} onClick={handleCloseForm}>
+			{formBuilderContent}
+		</div>
 	);
 }

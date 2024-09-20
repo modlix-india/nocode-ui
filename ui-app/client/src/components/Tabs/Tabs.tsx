@@ -14,23 +14,27 @@ import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { getTranslations } from '../util/getTranslations';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tabsProperties';
+import { runEvent } from '../util/runEvent';
 import TabsStyles from './TabsStyle';
 import { styleDefaults } from './tabsStyleProperties';
 import { IconHelper } from '../util/IconHelper';
+import { isNullValue } from '@fincity/kirun-js';
 
 function setHighlighter(
 	tabsOrientation: string,
 	tabRefs: React.MutableRefObject<any[]>,
 	hover: number,
-	tabs: any,
+	tabs: any[],
 	activeTab: any,
 	setHighlighterPosition: React.Dispatch<React.SetStateAction<React.CSSProperties>>,
 ) {
 	const currentTab = tabRefs.current[hover === -1 ? tabs.indexOf(activeTab) : hover];
 	const tabRect = currentTab?.getBoundingClientRect();
-	const tabsRect = tabRefs.current[0].parentElement.getBoundingClientRect();
-	const hp: CSSProperties = {};
 	if (!tabRect) return;
+	const tabsContainer = tabRefs.current[0];
+	if(!tabsContainer || !tabsContainer.parentElement) return;
+	const tabsRect = tabsContainer.parentElement.getBoundingClientRect();
+	const hp: CSSProperties = {};
 	hp['left'] = tabRect.left - tabsRect.left;
 	hp['top'] = tabRect.top - tabsRect.top;
 	hp['width'] = tabsOrientation === '_horizontal' ? tabRect.width : '100%';
@@ -50,7 +54,7 @@ function TabsComponent(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
 		properties: {
-			tabs,
+			tabs=[],
 			defaultActive,
 			readOnly,
 			icon,
@@ -59,6 +63,7 @@ function TabsComponent(props: ComponentProps) {
 			tabsPosition,
 			designType,
 			colorScheme,
+			onTabChange,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -97,12 +102,27 @@ function TabsComponent(props: ComponentProps) {
 		);
 	}, [bindingPathPath, defaultActive, tabs?.[0]]);
 
-	const handleClick = function (key: string) {
+	const onChangeTabEvent = onTabChange ? props.pageDefinition.eventFunctions?.[onTabChange] : undefined;
+
+	const handleOnChange = onChangeTabEvent ?  async() => 
+		await runEvent(
+			onChangeTabEvent,
+			onTabChange,
+			props.context.pageName,
+			props.locationHistory,
+			props.pageDefinition,
+		)
+	 : undefined;
+
+
+
+	const handleClick = async (key: string) => {
 		if (!bindingPathPath) {
 			setActiveTab(key);
 			return;
 		}
 		setData(bindingPathPath, key, context.pageName);
+		await handleOnChange?.();
 	};
 
 	const index = tabs.findIndex((e: string) => e == activeTab);
@@ -137,9 +157,9 @@ function TabsComponent(props: ComponentProps) {
 		setHighlighterPosition,
 	]);
 
-	useEffect(() => {
-		tabRefs.current = [...tabRefs.current.slice(0, tabs.length)];
-	}, [tabs]);
+	 useEffect(() => {
+	 	tabRefs.current = [...tabRefs.current.slice(0, tabs.length)];
+	 }, [tabs]);
 
 	return (
 		<div
@@ -170,45 +190,54 @@ function TabsComponent(props: ComponentProps) {
 					subComponentName="tabsContainer"
 					zIndex={7}
 				/>
-				{tabs.map((e: any, i: number) => (
-					<div
-						key={e}
-						ref={el => (tabRefs.current[i] = el)}
-						className={`tabDiv ${tabNameOrientation} ${
-							hover === i || (hover === -1 && activeTab === e) ? '_active' : ''
-						}`}
-						style={
-							i === hover
-								? resolvedStylesWithHover.tab ?? {}
-								: resolvedStyles.tab ?? {}
-						}
-						onMouseEnter={() => setHover(i)}
-						onMouseLeave={() => setHover(-1)}
-						onClick={() => handleClick(e)}
-					>
-						<SubHelperComponent
-							definition={props.definition}
-							subComponentName="tab"
-							zIndex={8}
-						/>
+				{tabs.map(
+					(e: any, i: number) =>
+						!isNullValue(e) && (
+							<div
+								key={e}
+								ref={el => (tabRefs.current[i] = el)}
+								className={`tabDiv ${tabNameOrientation} ${
+									hover === i || (hover === -1 && activeTab === e)
+										? '_active'
+										: ''
+								}`}
+								style={
+									hover === i || activeTab === e
+										? resolvedStylesWithHover.tab ?? {}
+										: resolvedStyles.tab ?? {}
+								}
+								onMouseEnter={() => setHover(i)}
+								onMouseLeave={e => {
+									e.preventDefault();
+									e.stopPropagation();
+									setHover(-1);
+								}}
+								onClick={() => handleClick(e)}
+							>
+								<SubHelperComponent
+									definition={props.definition}
+									subComponentName="tab"
+									zIndex={8}
+								/>
 
-						<i
-							className={`icon ${icon[i]}`}
-							style={
-								e === hover
-									? resolvedStylesWithHover.icon ?? {}
-									: resolvedStyles.icon ?? {}
-							}
-						>
-							<SubHelperComponent
-								definition={props.definition}
-								subComponentName="icon"
-								zIndex={9}
-							/>
-						</i>
-						{getTranslations(e, pageDefinition.translations)}
-					</div>
-				))}
+								<i
+									className={`icon ${icon[i]}`}
+									style={
+										e === hover
+											? resolvedStylesWithHover.icon ?? {}
+											: resolvedStyles.icon ?? {}
+									}
+								>
+									<SubHelperComponent
+										definition={props.definition}
+										subComponentName="icon"
+										zIndex={9}
+									/>
+								</i>
+								{getTranslations(e, pageDefinition.translations)}
+							</div>
+						),
+				)}
 				<div
 					className={`tabHighlighter`}
 					style={{ ...(resolvedStyles.tabHighlighter ?? {}), ...highlighterPosition }}
@@ -216,6 +245,13 @@ function TabsComponent(props: ComponentProps) {
 					<SubHelperComponent
 						definition={props.definition}
 						subComponentName="tabHighlighter"
+						zIndex={8}
+					/>
+				</div>
+				<div className="tabsSeperator" style={resolvedStyles.tabsSeperator ?? {}}>
+					<SubHelperComponent
+						definition={props.definition}
+						subComponentName="tabsSeperator"
 						zIndex={8}
 					/>
 				</div>
@@ -358,6 +394,12 @@ const component: Component = {
 			name: 'childContainer',
 			displayName: 'Child Container',
 			description: 'Child Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'tabsSeperator',
+			displayName: 'Tabs Seperator',
+			description: 'Tabs Seperator',
 			icon: 'fa-solid fa-box',
 		},
 	],

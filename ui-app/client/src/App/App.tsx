@@ -24,14 +24,13 @@ window.isDesignMode = isSlave;
 
 function onMessageFromEditor(event: MessageEvent) {
 	const { data: { type, payload } = {} } = event;
-
-	if (!type || !type.startsWith('EDITOR_')) return;
+	if (!type?.startsWith('EDITOR_')) return;
 
 	if (!SLAVE_FUNCTIONS.has(type)) throw Error('Unknown message from Editor : ' + type);
 
 	SLAVE_FUNCTIONS.get(type)?.(payload);
 	if (type === 'EDITOR_DEFINITION') {
-		if (!payload || !payload.name) return;
+		if (!payload?.name) return;
 		const storePage = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${payload.name}`, []);
 		if (storePage?.name !== payload.name) return;
 		innerSetData(`${STORE_PREFIX}.pageDefinition.${payload.name}`, payload);
@@ -42,8 +41,8 @@ function processTagType(headTags: any, tag: string) {
 	if (!headTags) return;
 
 	const existingLinks = document.head.getElementsByTagName(tag);
-	for (let i = 0; i < existingLinks.length; i++) {
-		document.head.removeChild(existingLinks[i]);
+	for (const link of Array.from(existingLinks)) {
+		document.head.removeChild(link);
 	}
 	Object.entries(headTags)
 		.sort((a: any[], b: any[]) => (b[1]?.order ?? 0) - (a[1]?.order ?? 0))
@@ -243,10 +242,8 @@ export function App() {
 }
 
 let currentDevices = '';
-function setDeviceType() {
-	const size = document.body.offsetWidth;
-	const newDevices: { [key: string]: boolean } = {};
 
+function setBaseDeviceTypes(size: number, newDevices: { [key: string]: boolean }) {
 	if (size >= (StyleResolutionDefinition.get(StyleResolution.WIDE_SCREEN)?.minWidth ?? 1281)) {
 		newDevices[StyleResolution.WIDE_SCREEN] = true;
 		newDevices[StyleResolution.DESKTOP_SCREEN] = true;
@@ -291,7 +288,9 @@ function setDeviceType() {
 		newDevices[StyleResolution.MOBILE_POTRAIT_SCREEN_ONLY] = true;
 		newDevices[StyleResolution.MOBILE_POTRAIT_SCREEN] = true;
 	}
+}
 
+function setSmallDeviceTypes(size: number, newDevices: { [key: string]: boolean }) {
 	if (
 		size <=
 		StyleResolutionDefinition.get(StyleResolution.MOBILE_LANDSCAPE_SCREEN_SMALL)?.maxWidth!
@@ -319,6 +318,14 @@ function setDeviceType() {
 	if (size <= StyleResolutionDefinition.get(StyleResolution.DESKTOP_SCREEN_SMALL)?.maxWidth!) {
 		newDevices[StyleResolution.DESKTOP_SCREEN_SMALL] = true;
 	}
+}
+
+function setDeviceType() {
+	const size = document.body.offsetWidth;
+	const newDevices: { [key: string]: boolean } = {};
+
+	setBaseDeviceTypes(size, newDevices);
+	setSmallDeviceTypes(size, newDevices);
 
 	let devicesString = JSON.stringify(newDevices);
 

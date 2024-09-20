@@ -76,6 +76,9 @@ function DropdownComponent(props: ComponentProps) {
 			colorScheme,
 			leftIcon,
 			clearOnSelectingSameValue,
+			rightIcon,
+			rightIconOpen,
+			showMandatoryAsterisk,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -125,7 +128,7 @@ function DropdownComponent(props: ComponentProps) {
 					labelKey,
 				)
 					.reduce((acc: Map<string, any>, each: any) => {
-						if (!each?.key) return acc;
+						if (isNullValue(each?.key)) return acc;
 
 						acc.set(each.key, each);
 
@@ -223,6 +226,8 @@ function DropdownComponent(props: ComponentProps) {
 		);
 	}, [searchText, dropdownData]);
 
+	const [mouseIsInside, setMouseIsInside] = useState(false);
+
 	const handleClose = useCallback(() => {
 		if (!showDropdown) return;
 		setShowDropdown(false);
@@ -250,7 +255,7 @@ function DropdownComponent(props: ComponentProps) {
 	}, [selected, selectedDataKey, dropdownData, isMultiSelect]);
 	const computedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
-		{ focus, readOnly },
+		{ focus, disabled: readOnly },
 		stylePropertiesWithPseudoStates,
 	);
 
@@ -303,7 +308,7 @@ function DropdownComponent(props: ComponentProps) {
 						locationHistory,
 						props.pageDefinition,
 					);
-			  }
+				}
 			: undefined;
 
 	return (
@@ -315,7 +320,11 @@ function DropdownComponent(props: ComponentProps) {
 			value={getLabel()}
 			label={label}
 			translations={translations}
-			rightIcon={showDropdown ? 'fa-solid fa-angle-up' : 'fa-solid fa-angle-down'}
+			rightIcon={
+				showDropdown
+					? rightIconOpen ?? 'fa-solid fa-angle-up'
+					: rightIcon ?? 'fa-solid fa-angle-down'
+			}
 			valueType="text"
 			isPassword={false}
 			placeholder={placeholder}
@@ -323,7 +332,11 @@ function DropdownComponent(props: ComponentProps) {
 			validationMessages={validationMessages}
 			context={context}
 			hideClearContentIcon={true}
-			blurHandler={() => setFocus(false)}
+			blurHandler={() => {
+				if (mouseIsInside) return;
+				setFocus(false);
+				setShowDropdown(false);
+			}}
 			focusHandler={() => {
 				setFocus(true);
 				setShowDropdown(true);
@@ -335,8 +348,22 @@ function DropdownComponent(props: ComponentProps) {
 			designType={designType}
 			colorScheme={colorScheme}
 			leftIcon={leftIcon}
+			//rightIcon = {rightIcon} 'fa-solid fa-angle-up'
 			showDropdown={showDropdown}
-			onMouseLeave={closeOnMouseLeave ? handleClose : undefined}
+			onMouseEnter={() => {
+				setMouseIsInside(true);
+			}}
+			onMouseLeave={() => {
+				setMouseIsInside(false);
+				if (closeOnMouseLeave) handleClose();
+			}}
+			showMandatoryAsterisk={
+				(validation ?? []).find(
+					(e: any) => e.type === undefined || e.type === 'MANDATORY',
+				) && showMandatoryAsterisk
+					? true
+					: false
+			}
 			updDownHandler={e => {
 				if (e.key.startsWith('Arrow')) {
 					if (!showDropdown) setShowDropdown(true);
@@ -390,7 +417,7 @@ function DropdownComponent(props: ComponentProps) {
 						<div
 							className={`_dropdownItem ${
 								getIsSelected(each?.key) ? '_selected' : ''
-							} ${each.key === hoverKey ? '_hover' : ''}`}
+							} ${each.key === hoverKey ? '_hover' : ''}`} // because of default className the background-color is not changing on hover to user defined.
 							style={computedStyles.dropdownItem ?? {}}
 							key={each?.key}
 							onMouseEnter={() => setHoverKey(each?.key)}
@@ -514,18 +541,6 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'dropdownSearchContainer',
-			displayName: 'Dropdown Search Container',
-			description: 'Dropdown Search Container',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'textBoxContainer',
-			displayName: 'Text Box Container',
-			description: 'Text Box Container',
-			icon: 'fa-solid fa-box',
-		},
-		{
 			name: 'leftIcon',
 			displayName: 'Left Icon',
 			description: 'Left Icon',
@@ -544,15 +559,15 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'floatingLabel',
-			displayName: 'Floating Label',
-			description: 'Floating Label',
+			name: 'label',
+			displayName: 'Label',
+			description: 'Label',
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'noFloatLabel',
-			displayName: 'No Float Label',
-			description: 'No Float Label',
+			name: 'asterisk',
+			displayName: 'Asterisk',
+			description: 'Asterisk',
 			icon: 'fa-solid fa-box',
 		},
 		{

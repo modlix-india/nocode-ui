@@ -20,6 +20,22 @@ export class ParentExtractor extends SpecialTokenValueExtractor {
 		return 'Parent.';
 	}
 
+	public getValue(token: string) {
+		const value = super.getValue(token);
+
+		if (token.endsWith('.__index') && value?.endsWith?.('Parent')) {
+			let count = 0;
+			let index = 0;
+			while ((index = value.indexOf('Parent', index)) !== -1) {
+				count++;
+				index++;
+			}
+			return this.history[this.history.length - count]?.index ?? value;
+		}
+
+		return value;
+	}
+
 	protected getValueInternal(token: string) {
 		const { path, lastHistory } = this.getPath(token);
 
@@ -34,17 +50,17 @@ export class ParentExtractor extends SpecialTokenValueExtractor {
 		let currentHistory = this.history;
 
 		do {
-			let { path, lastHistory } = this.getPathInternal(token, currentHistory);
+			let { path, lastHistory, removeHistory } = this.getPathInternal(token, currentHistory);
 			if (!path.startsWith('Parent.')) return { path, lastHistory };
 			token = path;
-			currentHistory = currentHistory.slice(0, currentHistory.length - 1);
+			currentHistory = currentHistory.slice(0, currentHistory.length - removeHistory);
 		} while (true);
 	}
 
 	public getPathInternal(
 		token: string,
 		locationHistory: LocationHistory[],
-	): { path: string; lastHistory: LocationHistory } {
+	): { path: string; lastHistory: LocationHistory; removeHistory: number } {
 		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
 
 		let pNum: number = 0;
@@ -62,7 +78,7 @@ export class ParentExtractor extends SpecialTokenValueExtractor {
 					: lastHistory.location.expression
 			}.${parts.slice(pNum).join('.')}`;
 
-		return { path, lastHistory };
+		return { path, lastHistory, removeHistory: pNum };
 	}
 
 	public getStore(): any {
@@ -96,6 +112,22 @@ export class ParentExtractorForRunEvent extends TokenValueExtractor {
 		return 'Parent.';
 	}
 
+	public getValue(token: string) {
+		const value = super.getValue(token);
+
+		if (token.endsWith('.__index') && value?.endsWith?.('Parent')) {
+			let count = 0;
+			let index = 0;
+			while ((index = value.indexOf('Parent', index)) !== -1) {
+				count++;
+				index++;
+			}
+			return this.history[this.history.length - count]?.index ?? value;
+		}
+
+		return value;
+	}
+
 	protected getValueInternal(token: string) {
 		return getDataFromPath(
 			this.computeParentPath(token),
@@ -108,14 +140,17 @@ export class ParentExtractorForRunEvent extends TokenValueExtractor {
 		let currentHistory = this.history;
 
 		do {
-			let path = this.computeParentPathInternal(token, currentHistory);
+			let { path, removeHistory } = this.computeParentPathInternal(token, currentHistory);
 			if (!path.startsWith('Parent.')) return path;
 			token = path;
-			currentHistory = currentHistory.slice(0, currentHistory.length - 1);
+			currentHistory = currentHistory.slice(0, currentHistory.length - removeHistory);
 		} while (true);
 	}
 
-	public computeParentPathInternal(token: string, history: LocationHistory[]): string {
+	public computeParentPathInternal(
+		token: string,
+		history: LocationHistory[],
+	): { path: string; removeHistory: number } {
 		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
 
 		let pNum: number = 0;
@@ -126,6 +161,7 @@ export class ParentExtractorForRunEvent extends TokenValueExtractor {
 		let lastHistory;
 
 		lastHistory = history[history.length - pNum];
+
 		if (typeof lastHistory?.location === 'string') path = `${lastHistory.location}.${path}`;
 		else if (lastHistory?.location)
 			path = `${
@@ -134,7 +170,7 @@ export class ParentExtractorForRunEvent extends TokenValueExtractor {
 					: lastHistory.location.expression
 			}.${path}`;
 
-		return path;
+		return { path, removeHistory: pNum };
 	}
 
 	public getPath(token: string): { path: string; lastHistory: LocationHistory } {

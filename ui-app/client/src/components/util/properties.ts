@@ -808,7 +808,7 @@ const COMPONENT_STYLE_GROUP_PROPERTIES: { [key: string]: ComponentStylePropertyG
 			'transformBox',
 			'transitionProperty',
 			'transitionDuration',
-			'transitionTiming-function',
+			'transitionTimingFunction',
 			'transitionDelay',
 			'filter',
 			'cursor',

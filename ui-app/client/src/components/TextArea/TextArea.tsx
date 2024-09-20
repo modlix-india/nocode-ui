@@ -67,6 +67,10 @@ function TextArea(props: ComponentProps) {
 			colorScheme,
 			onFocus,
 			onBlur,
+			showMandatoryAsterisk,
+			hideClearButton,
+			maxChars,
+			rows,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -102,33 +106,6 @@ function TextArea(props: ComponentProps) {
 			bindingPathPath,
 		);
 	}, [bindingPathPath]);
-
-	// const spinnerPath1 = onChange
-	// 	? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
-	// 			onChange,
-	// 	  )}.isRunning`
-	// 	: undefined;
-
-	// const spinnerPath2 = onClear
-	// 	? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
-	// 			onClear,
-	// 	  )}.isRunning`
-	// 	: undefined;
-
-	// const [isLoading, setIsLoading] = useState(
-	// 	(getDataFromPath(spinnerPath1, props.locationHistory, pageExtractor) ||
-	// 		getDataFromPath(spinnerPath2, props.locationHistory, pageExtractor)) ??
-	// 		false,
-	// );
-
-	// useEffect(() => {
-	// 	let paths = [];
-	// 	if (spinnerPath1) paths.push(spinnerPath1);
-	// 	if (spinnerPath2) paths.push(spinnerPath2);
-
-	// 	if (!paths.length) return;
-	// 	return addListener((_, value) => setIsLoading(value), pageExtractor, ...paths);
-	// }, []);
 
 	useEffect(() => {
 		if (!validation?.length) return;
@@ -264,6 +241,7 @@ function TextArea(props: ComponentProps) {
 			readOnly={readOnly}
 			value={value}
 			label={label}
+			maxChars={maxChars}
 			translations={translations}
 			placeholder={placeholder}
 			hasFocusStyles={stylePropertiesWithPseudoStates?.focus}
@@ -282,7 +260,16 @@ function TextArea(props: ComponentProps) {
 			autoComplete={autoComplete}
 			autoFocus={autoFocus}
 			hasValidationCheck={validation?.length > 0}
+			hideClearContentIcon={hideClearButton}
 			inputType="TextArea"
+			rows={rows}
+			showMandatoryAsterisk={
+				(validation ?? []).find(
+					(e: any) => e.type === undefined || e.type === 'MANDATORY',
+				) && showMandatoryAsterisk
+					? true
+					: false
+			}
 		/>
 	);
 }
@@ -359,15 +346,15 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'floatingLabel',
-			displayName: 'Floating Label',
-			description: 'Floating Label',
+			name: 'label',
+			displayName: 'Label',
+			description: 'Label',
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'noFloatLabel',
-			displayName: 'No Float Label',
-			description: 'No Float Label',
+			name: 'asterisk',
+			displayName: 'Asterisk',
+			description: 'Asterisk',
 			icon: 'fa-solid fa-box',
 		},
 		{
