@@ -1,51 +1,11 @@
-import React, {  } from 'react';
-import {
-	Component,
-	ComponentPropertyDefinition,
-	ComponentProps,
-} from '../../types/common';
+import React from 'react';
+import { Component, ComponentPropertyDefinition } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './tableDynamicColumnProperties';
-import { PageStoreExtractor } from '../../context/StoreContext';
-import useDefinition from '../util/useDefinition';
-import { styleDefaults } from './tableDynamicColumnStyleProperties';
 import TableDynamicColumnStyle from './TableDynamicColumnStyle';
+import { styleDefaults } from './tableDynamicColumnStyleProperties';
 
-function fieldToName(field: string): string {
-	return field
-		.replace('_', ' ')
-		.trim()
-		.replace(/([A-Z])/g, ' $1')
-		.replace('.', ' ')
-		.split(' ')
-		.map(e => e.replace(/^./, str => str.toUpperCase()))
-		.join(' ');
-}
-
-function TableDynamicColumnComponent(props: ComponentProps) {
-	const {
-		pageDefinition,
-		locationHistory = [],
-		context,
-		definition,
-		definition: { key },
-	} = props;
-	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
-	const {
-		properties: {
-			dontShowOtherColumns = false,
-			includeColumns = [],
-			columnsOrder = [],
-			excludeColumns = [],
-		} = {},
-	} = useDefinition(
-		definition,
-		propertiesDefinition,
-		stylePropertiesDefinition,
-		locationHistory,
-		pageExtractor,
-	);
-	
-	return null;
+function TableDynamicColumnComponent() {
+	return <></>;
 }
 const component: Component = {
 	name: 'TableDynamicColumn',
