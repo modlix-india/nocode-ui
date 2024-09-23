@@ -172,7 +172,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Title Text',
 		description: 'Text to be shown to for the title.',
 		translatable: true,
-		defaultValue:"Table of Contents",
+		defaultValue: 'Table of Contents',
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
@@ -181,7 +181,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Top Label Text',
 		description: 'Text to be shown to for the gototop.',
 		translatable: true,
-		defaultValue:"Top",
+		defaultValue: 'Top',
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
@@ -190,23 +190,23 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Bottom Label Text',
 		description: 'Text to be shown to for the gotobottom.',
 		translatable: true,
-		defaultValue:"Bottom",
+		defaultValue: 'Bottom',
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
 		name: 'topTextImage',
 		schema: SCHEMA_STRING_COMP_PROP,
 		group: ComponentPropertyGroup.ADVANCED,
-		displayName: "Top Text image",
-		description: "Top Text image",
+		displayName: 'Top Text image',
+		description: 'Top Text image',
 		editor: ComponentPropertyEditor.IMAGE,
 	},
 	{
 		name: 'bottomTextImage',
 		schema: SCHEMA_STRING_COMP_PROP,
 		group: ComponentPropertyGroup.ADVANCED,
-		displayName: "Bottom Text image",
-		description: "Bottom Text image",
+		displayName: 'Bottom Text image',
+		description: 'Bottom Text image',
 		editor: ComponentPropertyEditor.IMAGE,
 	},
 	{
@@ -306,7 +306,7 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
-	Header: [
+	header: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,

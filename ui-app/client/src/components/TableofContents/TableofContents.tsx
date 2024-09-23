@@ -8,10 +8,8 @@ import {
 } from '../../types/common';
 import {
 	PageStoreExtractor,
-	addListenerAndCallImmediately,
 	addListenerAndCallImmediatelyWithChildrenActivity,
 	getPathFromLocation,
-	setData,
 } from '../../context/StoreContext';
 import useDefinition from '../util/useDefinition';
 import {
@@ -97,27 +95,159 @@ function TableofContents(props: ComponentProps) {
 		<style key={`${styleKey}_style`}>
 			{processStyleObjectToCSS(
 				regularStyle?.comp,
-				`.comp.compTableOfContent#_${styleKey}link_css`,
+				`.comp.compTableOfContent#_${styleKey}toc_css`,
 			)}
 			{processStyleObjectToCSS(
 				visitedStyle?.comp,
-				`.comp.compTableOfContent._${styleKey}link_css:visited`,
+				`.comp.compTableOfContent._${styleKey}toc_css:visited`,
 			)}
 			{processStyleObjectToCSS(
 				hoverStyle?.comp,
-				`.comp.compTableOfContent#_${styleKey}link_css:hover`,
+				`.comp.compTableOfContent#_${styleKey}toc_css:hover`,
 			)}
 			{processStyleObjectToCSS(
-				regularStyle?.externalIcon,
-				`.comp.compTableOfContent#_${styleKey}link_css > ._externalButton`,
+				regularStyle?.goToTopLabel,
+				`.comp.compTableOfContent#_${styleKey}toc_css > ._goToTopLink`,
 			)}
 			{processStyleObjectToCSS(
-				visitedStyle?.externalIcon,
-				`.comp.compTableOfContent#_${styleKey}link_css:visited > ._externalButton`,
+				visitedStyle?.goToTopLabel,
+				`.comp.compTableOfContent#_${styleKey}toc_css:visited > ._goToTopLink`,
 			)}
 			{processStyleObjectToCSS(
-				hoverStyle?.externalIcon,
-				`.comp.compTableOfContent#_${styleKey}link_css:hover > ._externalButton`,
+				hoverStyle?.goToTopLabel,
+				`.comp.compTableOfContent#_${styleKey}toc_css:hover > ._goToTopLink`,
+			)}
+			{processStyleObjectToCSS(
+				regularStyle?.header,
+				`.comp.compTableOfContent#_${styleKey}toc_css > ._header`,
+			)}
+			{processStyleObjectToCSS(
+				visitedStyle?.header,
+				`.comp.compTableOfContent#_${styleKey}toc_css:visited > ._header`,
+			)}
+			{processStyleObjectToCSS(
+				hoverStyle?.header,
+				`.comp.compTableOfContent#_${styleKey}toc_css:hover > ._header`,
+			)}
+			{processStyleObjectToCSS(
+				regularStyle?.H1,
+				`.comp.compTableOfContent#_${styleKey}toc_css > ._heading1`,
+			)}
+			{processStyleObjectToCSS(
+				visitedStyle?.H1,
+				`.comp.compTableOfContent#_${styleKey}toc_css:visited > ._heading1`,
+			)}
+			{processStyleObjectToCSS(
+				hoverStyle?.H1,
+				`.comp.compTableOfContent#_${styleKey}toc_css:hover > ._heading1`,
+			)}
+			{processStyleObjectToCSS(
+				regularStyle?.H2,
+				`.comp.compTableOfContent#_${styleKey}toc_css > ._heading2`,
+			)}
+			{processStyleObjectToCSS(
+				visitedStyle?.H2,
+				`.comp.compTableOfContent#_${styleKey}toc_css:visited > ._heading2`,
+			)}
+			{processStyleObjectToCSS(
+				hoverStyle?.H2,
+				`.comp.compTableOfContent#_${styleKey}toc_css:hover > ._heading2`,
+			)}
+			{processStyleObjectToCSS(
+				regularStyle?.H3,
+				`.comp.compTableOfContent#_${styleKey}toc_css > ._heading3`,
+			)}
+			{processStyleObjectToCSS(
+				visitedStyle?.H3,
+				`.comp.compTableOfContent#_${styleKey}toc_css:visited > ._heading3`,
+			)}
+			{processStyleObjectToCSS(
+				hoverStyle?.H3,
+				`.comp.compTableOfContent#_${styleKey}toc_css:hover > ._heading3`,
+			)}
+			{processStyleObjectToCSS(
+				regularStyle?.H4,
+				`.comp.compTableOfContent#_${styleKey}toc_css > ._heading4`,
+			)}
+			{processStyleObjectToCSS(
+				visitedStyle?.H4,
+				`.comp.compTableOfContent#_${styleKey}toc_css:visited > ._heading4`,
+			)}
+			{processStyleObjectToCSS(
+				hoverStyle?.H4,
+				`.comp.compTableOfContent#_${styleKey}toc_css:hover > ._heading4`,
+			)}
+			{processStyleObjectToCSS(
+				regularStyle?.H5,
+				`.comp.compTableOfContent#_${styleKey}toc_css > ._heading5`,
+			)}
+			{processStyleObjectToCSS(
+				visitedStyle?.H5,
+				`.comp.compTableOfContent#_${styleKey}toc_css:visited > ._heading5`,
+			)}
+			{processStyleObjectToCSS(
+				hoverStyle?.H5,
+				`.comp.compTableOfContent#_${styleKey}toc_css:hover > ._heading5`,
+			)}
+			{processStyleObjectToCSS(
+				regularStyle?.H6,
+				`.comp.compTableOfContent#_${styleKey}toc_css > ._heading6`,
+			)}
+			{processStyleObjectToCSS(
+				visitedStyle?.H6,
+				`.comp.compTableOfContent#_${styleKey}toc_css:visited > ._heading6`,
+			)}
+			{processStyleObjectToCSS(
+				hoverStyle?.H6,
+				`.comp.compTableOfContent#_${styleKey}toc_css:hover > ._heading6`,
+			)}
+			{processStyleObjectToCSS(
+				regularStyle?.goToBottomLabel,
+				`.comp.compTableOfContent#_${styleKey}toc_css > ._goToBottomLink`,
+			)}
+			{processStyleObjectToCSS(
+				visitedStyle?.goToBottomLabel,
+				`.comp.compTableOfContent#_${styleKey}toc_css:visited > ._goToBottomLink`,
+			)}
+			{processStyleObjectToCSS(
+				hoverStyle?.goToBottomLabel,
+				`.comp.compTableOfContent#_${styleKey}toc_css:hover > ._goToBottomLink`,
+			)}
+			{processStyleObjectToCSS(
+				regularStyle?.numericBullets,
+				`.comp.compTableOfContent#_${styleKey}toc_css > ._numericbullets`,
+			)}
+			{processStyleObjectToCSS(
+				visitedStyle?.numericBullets,
+				`.comp.compTableOfContent#_${styleKey}toc_css:visited > ._numericbullets`,
+			)}
+			{processStyleObjectToCSS(
+				hoverStyle?.numericBullets,
+				`.comp.compTableOfContent#_${styleKey}toc_css:hover > ._numericbullets`,
+			)}
+			{processStyleObjectToCSS(
+				regularStyle?.topImage,
+				`.comp.compTableOfContent#_${styleKey}toc_css > ._topImage`,
+			)}
+			{processStyleObjectToCSS(
+				visitedStyle?.topImage,
+				`.comp.compTableOfContent#_${styleKey}toc_css:visited > ._topImage`,
+			)}
+			{processStyleObjectToCSS(
+				hoverStyle?.topImage,
+				`.comp.compTableOfContent#_${styleKey}toc_css:hover > ._topImage`,
+			)}
+			{processStyleObjectToCSS(
+				regularStyle?.bottomImage,
+				`.comp.compTableOfContent#_${styleKey}toc_css > ._bottomImage`,
+			)}
+			{processStyleObjectToCSS(
+				visitedStyle?.bottomImage,
+				`.comp.compTableOfContent#_${styleKey}toc_css:visited > ._bottomImage`,
+			)}
+			{processStyleObjectToCSS(
+				hoverStyle?.bottomImage,
+				`.comp.compTableOfContent#_${styleKey}toc_css:hover > ._bottomImage`,
 			)}
 		</style>
 	);
@@ -215,7 +345,12 @@ function TableofContents(props: ComponentProps) {
 				return (
 					<React.Fragment key={heading.id}>
 						{shouldRender && (
-							<a href={`#${heading.id}`} className={`_heading${heading.level}`}>
+							<a
+								id={heading.id}
+								href={`#${heading.id}`}
+								className={`_heading${heading.level}`}
+								style={{ marginLeft: `${20 * (heading.level - 1)}px` }}
+							>
 								<SubHelperComponent
 									definition={definition}
 									subComponentName={`H${heading.level}`}
@@ -249,11 +384,11 @@ function TableofContents(props: ComponentProps) {
 							</a>
 						)}
 						{heading.children && shouldShowChildren && (
-							<nav className="_children" style={{ marginLeft: '20px' }}>
+							<>
 								{!isCollapsible || shouldCollapseChildren
 									? renderHeadings(heading.children, level + 1)
 									: null}
-							</nav>
+							</>
 						)}
 					</React.Fragment>
 				);
@@ -264,52 +399,68 @@ function TableofContents(props: ComponentProps) {
 	console.log('lastHeading', lastHeading);
 	console.log('gototop', goToBottomStyle);
 	return (
-		<nav className={`comp compTableOfContent`}>
+		<>
 			{styleComp}
-			<HelperComponent context={props.context} definition={definition} />
-			{goToTopLabel && (
-				<a href={`#${headings[0]?.id}`} className="_goToTopLink">
-					<SubHelperComponent definition={definition} subComponentName="goToTopLabel" />
-					{(goToTopStyle === 'leftImageWithText' || goToTopStyle === 'onlyImage') && (
-						<img src={topTextImage} alt="Top image" />
-					)}
-					{goToTopStyle === 'onlyText' ||
-					goToTopStyle === 'leftImageWithText' ||
-					goToTopStyle === 'rightImageWithText'
-						? topLabelText
-						: ''}
-					{goToTopStyle === 'rightImageWithText' && (
-						<img src={topTextImage} alt="Bottom image" />
-					)}
-				</a>
-			)}
-			<span>{titleText}</span>
-			{renderHeadings(headings)}
-			{goToBottomLabel && (
-				<a href={`#${lastHeading}`} className="_goToBottomLink">
-					<SubHelperComponent
-						definition={definition}
-						subComponentName="goToBottomLabel"
-					/>
-					{(goToBottomStyle === 'leftImageWithText' ||
-						goToBottomStyle === 'onlyImage') && (
-						<img src={bottomTextImage}>
-							<SubHelperComponent definition={definition} subComponentName="image" />
-						</img>
-					)}
-					{goToBottomStyle === 'onlyText' ||
-					goToBottomStyle === 'rightImageWithText' ||
-					goToBottomStyle === 'leftImageWithText'
-						? bottomLabelText
-						: ''}
-					{goToBottomStyle == 'rightImageWithText' && (
-						<img src={bottomTextImage}>
-							<SubHelperComponent definition={definition} subComponentName="image" />
-						</img>
-					)}
-				</a>
-			)}
-		</nav>
+			<nav className={`comp compTableOfContent`} id={`_${styleKey}toc_css`}>
+				<HelperComponent context={props.context} definition={definition} />
+				{goToTopLabel && (
+					<a href={`#${headings[0]?.id}`} className="_goToTopLink">
+						<SubHelperComponent
+							definition={definition}
+							subComponentName="goToTopLabel"
+						/>
+						{(goToTopStyle === 'leftImageWithText' || goToTopStyle === 'onlyImage') && (
+							<img src={topTextImage} alt="Top image" />
+						)}
+						{goToTopStyle === 'onlyText' ||
+						goToTopStyle === 'leftImageWithText' ||
+						goToTopStyle === 'rightImageWithText'
+							? topLabelText
+							: ''}
+						{goToTopStyle === 'rightImageWithText' && (
+							<img src={topTextImage} alt="Bottom image" />
+						)}
+					</a>
+				)}
+				<span className="_header">
+					{titleText}
+					<SubHelperComponent definition={definition} subComponentName="header" />
+				</span>
+				{renderHeadings(headings)}
+				{goToBottomLabel && (
+					<a href={`#${lastHeading}`} className="_goToBottomLink">
+						<SubHelperComponent
+							definition={definition}
+							subComponentName="goToBottomLabel"
+						/>
+						{(goToBottomStyle === 'leftImageWithText' ||
+							goToBottomStyle === 'onlyImage') && (
+							<>
+								<img src={bottomTextImage} className="._topImage" />
+								<SubHelperComponent
+									definition={definition}
+									subComponentName="topImage"
+								/>
+							</>
+						)}
+						{goToBottomStyle === 'onlyText' ||
+						goToBottomStyle === 'rightImageWithText' ||
+						goToBottomStyle === 'leftImageWithText'
+							? bottomLabelText
+							: ''}
+						{goToBottomStyle == 'rightImageWithText' && (
+							<>
+								<img className="._bottomImage" src={bottomTextImage} />
+								<SubHelperComponent
+									definition={definition}
+									subComponentName="bottomImage"
+								/>
+							</>
+						)}
+					</a>
+				)}
+			</nav>
+		</>
 	);
 }
 
@@ -381,7 +532,7 @@ const component: Component = {
 			),
 		},
 		{
-			name: 'Header',
+			name: 'header',
 			displayName: 'Header',
 			description: 'Header',
 			icon: 'fa-solid fa-box',
