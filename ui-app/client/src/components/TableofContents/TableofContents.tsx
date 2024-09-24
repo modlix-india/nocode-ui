@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {
 	Component,
-	ComponentDefinition,
 	ComponentPropertyDefinition,
-	ComponentProps,
-	LocationHistory,
+	ComponentProps
 } from '../../types/common';
 import {
 	PageStoreExtractor,
@@ -38,7 +36,6 @@ function TableofContents(props: ComponentProps) {
 	const {
 		definition: { bindingPath },
 		definition,
-		pageDefinition: { translations },
 		locationHistory,
 		context,
 	} = props;
@@ -91,173 +88,165 @@ function TableofContents(props: ComponentProps) {
 		locationHistory?.length ? locationHistory.map(e => e.index).join('_') : ''
 	}`;
 
-	const styleComp = (
-		<style key={`${styleKey}_style`}>
-			{processStyleObjectToCSS(
-				regularStyle?.comp,
-				`.comp.compTableOfContent#_${styleKey}toc_css`,
-			)}
-			{processStyleObjectToCSS(
-				visitedStyle?.comp,
-				`.comp.compTableOfContent._${styleKey}toc_css:visited`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.comp,
-				`.comp.compTableOfContent#_${styleKey}toc_css:hover`,
-			)}
-			{processStyleObjectToCSS(
-				regularStyle?.goToTopLabel,
-				`.comp.compTableOfContent#_${styleKey}toc_css > ._goToTopLink`,
-			)}
-			{processStyleObjectToCSS(
-				visitedStyle?.goToTopLabel,
-				`.comp.compTableOfContent#_${styleKey}toc_css:visited > ._goToTopLink`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.goToTopLabel,
-				`.comp.compTableOfContent#_${styleKey}toc_css:hover > ._goToTopLink`,
-			)}
-			{processStyleObjectToCSS(
-				regularStyle?.header,
-				`.comp.compTableOfContent#_${styleKey}toc_css > ._header`,
-			)}
-			{processStyleObjectToCSS(
-				visitedStyle?.header,
-				`.comp.compTableOfContent#_${styleKey}toc_css:visited > ._header`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.header,
-				`.comp.compTableOfContent#_${styleKey}toc_css:hover > ._header`,
-			)}
-			{processStyleObjectToCSS(
-				regularStyle?.H1,
-				`.comp.compTableOfContent#_${styleKey}toc_css > ._heading1`,
-			)}
-			{processStyleObjectToCSS(
-				visitedStyle?.H1,
-				`.comp.compTableOfContent#_${styleKey}toc_css:visited > ._heading1`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.H1,
-				`.comp.compTableOfContent#_${styleKey}toc_css:hover > ._heading1`,
-			)}
-			{processStyleObjectToCSS(
-				regularStyle?.H2,
-				`.comp.compTableOfContent#_${styleKey}toc_css > ._heading2`,
-			)}
-			{processStyleObjectToCSS(
-				visitedStyle?.H2,
-				`.comp.compTableOfContent#_${styleKey}toc_css:visited > ._heading2`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.H2,
-				`.comp.compTableOfContent#_${styleKey}toc_css:hover > ._heading2`,
-			)}
-			{processStyleObjectToCSS(
-				regularStyle?.H3,
-				`.comp.compTableOfContent#_${styleKey}toc_css > ._heading3`,
-			)}
-			{processStyleObjectToCSS(
-				visitedStyle?.H3,
-				`.comp.compTableOfContent#_${styleKey}toc_css:visited > ._heading3`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.H3,
-				`.comp.compTableOfContent#_${styleKey}toc_css:hover > ._heading3`,
-			)}
-			{processStyleObjectToCSS(
-				regularStyle?.H4,
-				`.comp.compTableOfContent#_${styleKey}toc_css > ._heading4`,
-			)}
-			{processStyleObjectToCSS(
-				visitedStyle?.H4,
-				`.comp.compTableOfContent#_${styleKey}toc_css:visited > ._heading4`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.H4,
-				`.comp.compTableOfContent#_${styleKey}toc_css:hover > ._heading4`,
-			)}
-			{processStyleObjectToCSS(
-				regularStyle?.H5,
-				`.comp.compTableOfContent#_${styleKey}toc_css > ._heading5`,
-			)}
-			{processStyleObjectToCSS(
-				visitedStyle?.H5,
-				`.comp.compTableOfContent#_${styleKey}toc_css:visited > ._heading5`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.H5,
-				`.comp.compTableOfContent#_${styleKey}toc_css:hover > ._heading5`,
-			)}
-			{processStyleObjectToCSS(
-				regularStyle?.H6,
-				`.comp.compTableOfContent#_${styleKey}toc_css > ._heading6`,
-			)}
-			{processStyleObjectToCSS(
-				visitedStyle?.H6,
-				`.comp.compTableOfContent#_${styleKey}toc_css:visited > ._heading6`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.H6,
-				`.comp.compTableOfContent#_${styleKey}toc_css:hover > ._heading6`,
-			)}
-			{processStyleObjectToCSS(
-				regularStyle?.goToBottomLabel,
-				`.comp.compTableOfContent#_${styleKey}toc_css > ._goToBottomLink`,
-			)}
-			{processStyleObjectToCSS(
-				visitedStyle?.goToBottomLabel,
-				`.comp.compTableOfContent#_${styleKey}toc_css:visited > ._goToBottomLink`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.goToBottomLabel,
-				`.comp.compTableOfContent#_${styleKey}toc_css:hover > ._goToBottomLink`,
-			)}
-			{processStyleObjectToCSS(
-				regularStyle?.numericBullets,
-				`.comp.compTableOfContent#_${styleKey}toc_css > ._numericbullets`,
-			)}
-			{processStyleObjectToCSS(
-				visitedStyle?.numericBullets,
-				`.comp.compTableOfContent#_${styleKey}toc_css:visited > ._numericbullets`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.numericBullets,
-				`.comp.compTableOfContent#_${styleKey}toc_css:hover > ._numericbullets`,
-			)}
-			{processStyleObjectToCSS(
-				regularStyle?.topImage,
-				`.comp.compTableOfContent#_${styleKey}toc_css > ._topImage`,
-			)}
-			{processStyleObjectToCSS(
-				visitedStyle?.topImage,
-				`.comp.compTableOfContent#_${styleKey}toc_css:visited > ._topImage`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.topImage,
-				`.comp.compTableOfContent#_${styleKey}toc_css:hover > ._topImage`,
-			)}
-			{processStyleObjectToCSS(
-				regularStyle?.bottomImage,
-				`.comp.compTableOfContent#_${styleKey}toc_css > ._bottomImage`,
-			)}
-			{processStyleObjectToCSS(
-				visitedStyle?.bottomImage,
-				`.comp.compTableOfContent#_${styleKey}toc_css:visited > ._bottomImage`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.bottomImage,
-				`.comp.compTableOfContent#_${styleKey}toc_css:hover > ._bottomImage`,
-			)}
-		</style>
-	);
+		const styleComp = (
+			<style key={`${styleKey}_style`}>
+				{processStyleObjectToCSS(
+					regularStyle?.comp,
+					`.comp.compTableOfContent#_${styleKey}toc_css`,
+				)}
+				{processStyleObjectToCSS(
+					visitedStyle?.comp,
+					`.comp.compTableOfContent._${styleKey}toc_css:visited`,
+				)}
+				{processStyleObjectToCSS(
+					hoverStyle?.comp,
+					`.comp.compTableOfContent#_${styleKey}toc_css:hover`,
+				)}
+				{processStyleObjectToCSS(
+					regularStyle?.header,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._header`,
+				)}
+				{processStyleObjectToCSS(
+					visitedStyle?.header,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._header:visited`,
+				)}
+				{processStyleObjectToCSS(
+					hoverStyle?.header,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._header:hover`,
+				)}
+				{processStyleObjectToCSS(
+					regularStyle?.H1,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._heading1`,
+				)}
+				{processStyleObjectToCSS(
+					visitedStyle?.H1,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._heading1:visited`,
+				)}
+				{processStyleObjectToCSS(
+					hoverStyle?.H1,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._heading1:hover`,
+				)}
+				{processStyleObjectToCSS(
+					regularStyle?.H2,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._heading2`,
+				)}
+				{processStyleObjectToCSS(
+					visitedStyle?.H2,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._heading2:visited`,
+				)}
+				{processStyleObjectToCSS(
+					hoverStyle?.H2,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._heading2:hover`,
+				)}
+				{processStyleObjectToCSS(
+					regularStyle?.H3,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._heading3`,
+				)}
+				{processStyleObjectToCSS(
+					visitedStyle?.H3,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._heading3:visited`,
+				)}
+				{processStyleObjectToCSS(
+					hoverStyle?.H3,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._heading3:hover`,
+				)}
+				{processStyleObjectToCSS(
+					regularStyle?.H4,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._heading4`,
+				)}
+				{processStyleObjectToCSS(
+					visitedStyle?.H4,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._heading4:visited`,
+				)}
+				{processStyleObjectToCSS(
+					hoverStyle?.H4,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._heading4:hover`,
+				)}
+				{processStyleObjectToCSS(
+					regularStyle?.H5,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._heading5`,
+				)}
+				{processStyleObjectToCSS(
+					visitedStyle?.H5,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._heading5:visited`,
+				)}
+				{processStyleObjectToCSS(
+					hoverStyle?.H5,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._heading5:hover`,
+				)}
+				{processStyleObjectToCSS(
+					regularStyle?.H6,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._heading6`,
+				)}
+				{processStyleObjectToCSS(
+					visitedStyle?.H6,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._heading6:visited`,
+				)}
+				{processStyleObjectToCSS(
+					hoverStyle?.H6,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._heading6:hover`,
+				)}
+				{processStyleObjectToCSS(
+					regularStyle?.collapasibleIcon,
+					`.comp.compTableOfContent#_${styleKey}toc_css i`,
+				)}
+				{processStyleObjectToCSS(
+					hoverStyle?.collapasibleIcon,
+					`.comp.compTableOfContent#_${styleKey}toc_css i:hover`,
+				)}
+				{processStyleObjectToCSS(
+					regularStyle?.goToTopLabel,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._goToTopLink`,
+				)}
+				{processStyleObjectToCSS(
+					hoverStyle?.goToTopLabel,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._goToTopLink:hover`,
+				)}
+				{processStyleObjectToCSS(
+					regularStyle?.goToBottomLabel,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._goToBottomLink`,
+				)}
+				{processStyleObjectToCSS(
+					hoverStyle?.goToBottomLabel,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._goToBottomLink:hover`,
+				)}
+				{processStyleObjectToCSS(
+					regularStyle?.numericBullets,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._numericbullets`,
+				)}
+				{processStyleObjectToCSS(
+					visitedStyle?.numericBullets,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._numericbullets:visited`,
+				)}
+				{processStyleObjectToCSS(
+					hoverStyle?.numericBullets,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._numericbullets:hover`,
+				)}
+				{processStyleObjectToCSS(
+					regularStyle?.topImage,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._goToTopLink > img`,
+				)}
+				{processStyleObjectToCSS(
+					hoverStyle?.topImage,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._goToTopLink > img:hover`,
+				)}
+				{processStyleObjectToCSS(
+					regularStyle?.bottomImage,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._goToBottomLink > img`,
+				)}
+				{processStyleObjectToCSS(
+					hoverStyle?.bottomImage,
+					`.comp.compTableOfContent#_${styleKey}toc_css > ._goToBottomLink > img:hover`,
+				)}
+			</style>
+		);
 
 	const dataBindingPath =
 		bindingPath && getPathFromLocation(bindingPath, locationHistory, pageExtractor);
 	let lastHeading = '';
 	const [data, setData] = useState<string>();
 	const [expandedHeadings, setExpandedHeadings] = useState<{ [key: string]: boolean }>({});
-	console.log('expand', expandedHeadings);
+
 	useEffect(
 		() =>
 			dataBindingPath
@@ -270,13 +259,12 @@ function TableofContents(props: ComponentProps) {
 		[dataBindingPath],
 	);
 
-	console.log('data', data);
-
 	const parseHeadings = (markdowndata: string): heading[] => {
 		const lines = markdowndata.split('\n');
 		const headings: heading[] = [];
 		const stack: heading[] = [];
 		const numbers: number[] = [];
+		let firstLevel = 0;
 
 		lines.forEach(line => {
 			const match = line.match(/^(#{1,6}) (.+)$/);
@@ -284,6 +272,12 @@ function TableofContents(props: ComponentProps) {
 				const level = match[1].length;
 				const text = match[2];
 				const id = text.toLowerCase().replace(/\s+/g, '-');
+
+				if (firstLevel === 0) {
+					firstLevel = level; 
+				}
+				const adjustedLevel = level - firstLevel + 1;
+
 				const heading: heading = {
 					level,
 					text,
@@ -291,13 +285,14 @@ function TableofContents(props: ComponentProps) {
 					number: '',
 				};
 
-				if (numbers.length < level) {
-					numbers.push(1);
-				} else {
-					numbers[level - 1]++;
+				if (numbers.length < adjustedLevel) {
+					while (numbers.length < adjustedLevel) {
+						numbers.push(0);
+					}
 				}
-				numbers.length = level;
-				heading.number = numbers.join('.');
+				numbers[adjustedLevel - 1]++;
+				numbers.length = adjustedLevel;
+				heading.number = numbers.join('.'); 
 
 				lastHeading = match[match.length - 1];
 				while (stack.length && stack[stack.length - 1].level >= level) {
@@ -323,7 +318,6 @@ function TableofContents(props: ComponentProps) {
 			[id]: !prev[id],
 		}));
 	};
-	console.log('headings', headings);
 
 	const renderHeadings = (headings: heading[], level: number = 1): React.ReactNode => (
 		<>
@@ -333,20 +327,12 @@ function TableofContents(props: ComponentProps) {
 					makeCollapsible && heading.level <= parseInt(makeCollapsibleTill.charAt(1));
 				const shouldShowChildren = heading.level < parseInt(showTill.charAt(1));
 				const shouldCollapseChildren = isCollapsible ? expandedHeadings[heading.id] : true;
-				console.log('shouldrender', shouldRender, showTill.charAt(1));
-				console.log(
-					'shd',
-					shouldShowChildren,
-					expandedHeadings[heading.id],
-					heading.children,
-				);
-				console.log('main', heading);
-
+              
 				return (
 					<React.Fragment key={heading.id}>
 						{shouldRender && (
+
 							<a
-								id={heading.id}
 								href={`#${heading.id}`}
 								className={`_heading${heading.level}`}
 								style={{ marginLeft: `${20 * (heading.level - 1)}px` }}
@@ -355,18 +341,7 @@ function TableofContents(props: ComponentProps) {
 									definition={definition}
 									subComponentName={`H${heading.level}`}
 								/>
-								{numericBullets && (
-									<span
-										className="_numericbullets"
-										style={{ marginRight: '20px' }}
-									>
-										<SubHelperComponent
-											definition={definition}
-											subComponentName="numericBullets"
-										/>
-										{heading.number}
-									</span>
-								)}
+						
 								{makeCollapsible &&
 									heading.children &&
 									heading.level <= parseInt(makeCollapsibleTill.charAt(1)) && (
@@ -380,6 +355,18 @@ function TableofContents(props: ComponentProps) {
 											className={`fa-solid ${expandedHeadings[heading.id] ? 'fa-chevron-down' : 'fa-chevron-right'}`}
 										></i>
 									)}
+									{numericBullets && (
+									<span
+										className="_numericbullets"
+										style={{ marginRight: '20px' }}
+									>
+										<SubHelperComponent
+											definition={definition}
+											subComponentName="numericBullets"
+										/>
+										{heading.number}
+									</span>
+								)}
 								{heading.text}
 							</a>
 						)}
@@ -396,77 +383,55 @@ function TableofContents(props: ComponentProps) {
 		</>
 	);
 
-	console.log('lastHeading', lastHeading);
-	console.log('gototop', goToBottomStyle);
-	return (
+	const renderGoToLink = (href: string | undefined, label: any, style: string, textImage: string | undefined, labelText: any, position: string) => (
+		<a href={href} className={`_goTo${position}Link`}>
+		  <SubHelperComponent definition={definition} subComponentName={`goTo${position}Label`} />
+		  {(style === 'leftImageWithText' || style === 'onlyImage') && (
+			<>
+			<img src={textImage} alt={`${position} image`} className="_topImage"  />
+			<SubHelperComponent
+			definition={definition}
+			subComponentName="topImage"
+					/>
+			</>
+		  )}
+		  {(style === 'onlyText' || style === 'leftImageWithText' || style === 'rightImageWithText') && labelText}
+		  {style === 'rightImageWithText' && (
+			<>
+			<img src={textImage} alt={`${position} image`} className="_bottomImage"  />
+			<SubHelperComponent
+			definition={definition}
+			subComponentName="_bottomImage"
+					/>
+			</>
+		  )}
+		</a>
+	  );
+	
+	  return (
 		<>
-			{styleComp}
-			<nav className={`comp compTableOfContent`} id={`_${styleKey}toc_css`}>
-				<HelperComponent context={props.context} definition={definition} />
-				{goToTopLabel && (
-					<a href={`#${headings[0]?.id}`} className="_goToTopLink">
-						<SubHelperComponent
-							definition={definition}
-							subComponentName="goToTopLabel"
-						/>
-						{(goToTopStyle === 'leftImageWithText' || goToTopStyle === 'onlyImage') && (
-							<img src={topTextImage} alt="Top image" />
-						)}
-						{goToTopStyle === 'onlyText' ||
-						goToTopStyle === 'leftImageWithText' ||
-						goToTopStyle === 'rightImageWithText'
-							? topLabelText
-							: ''}
-						{goToTopStyle === 'rightImageWithText' && (
-							<img src={topTextImage} alt="Bottom image" />
-						)}
-					</a>
-				)}
-				<span className="_header">
-					{titleText}
-					<SubHelperComponent definition={definition} subComponentName="header" />
-				</span>
-				{renderHeadings(headings)}
-				{goToBottomLabel && (
-					<a href={`#${lastHeading}`} className="_goToBottomLink">
-						<SubHelperComponent
-							definition={definition}
-							subComponentName="goToBottomLabel"
-						/>
-						{(goToBottomStyle === 'leftImageWithText' ||
-							goToBottomStyle === 'onlyImage') && (
-							<>
-								<img src={bottomTextImage} className="._topImage" />
-								<SubHelperComponent
-									definition={definition}
-									subComponentName="topImage"
-								/>
-							</>
-						)}
-						{goToBottomStyle === 'onlyText' ||
-						goToBottomStyle === 'rightImageWithText' ||
-						goToBottomStyle === 'leftImageWithText'
-							? bottomLabelText
-							: ''}
-						{goToBottomStyle == 'rightImageWithText' && (
-							<>
-								<img className="._bottomImage" src={bottomTextImage} />
-								<SubHelperComponent
-									definition={definition}
-									subComponentName="bottomImage"
-								/>
-							</>
-						)}
-					</a>
-				)}
-			</nav>
+		  {styleComp}
+		  <nav className="comp compTableOfContent" id={`_${styleKey}toc_css`}>
+			<HelperComponent context={context} definition={definition} />
+	
+			{goToTopLabel && renderGoToLink(`#${headings[0]?.id}`, goToTopLabel, goToTopStyle, topTextImage, topLabelText, 'Top')}
+	
+			<span className="_header">
+			  {titleText}
+			  <SubHelperComponent definition={definition} subComponentName="header" />
+			</span>
+	
+			{renderHeadings(headings)}
+	
+			{goToBottomLabel && renderGoToLink(`#${lastHeading}`, goToBottomLabel, goToBottomStyle, bottomTextImage, bottomLabelText, 'Bottom')}
+		  </nav>
 		</>
-	);
-}
+	  );
+	};
 
 const component: Component = {
 	name: 'TableofContent',
-	displayName: 'TableofContent',
+	displayName: 'Table of Contents',
 	description: 'TableofContents for Markdown component',
 	component: TableofContents,
 	styleComponent: TableofContentsStyle,
@@ -574,32 +539,38 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
+			name: 'collapasibleIcon',
+			displayName: 'Collapasible Icon',
+			description: 'Collapasible Icon',
+		    icon: 'fa-solid fa-box',
+		},
+			{
 			name: 'goToTopLabel',
-			displayName: 'gototopLabel',
+			displayName: 'Goto Top Label',
 			description: 'gototopLabel',
 			icon: 'fa-solid fa-box',
 		},
 		{
 			name: 'goToBottomLabel',
-			displayName: 'gotobottomLabel',
+			displayName: 'Goto Bottom Label',
 			description: 'gotobottomLabel',
 			icon: 'fa-solid fa-box',
 		},
 		{
 			name: 'numericBullets',
-			displayName: 'numericBullets',
+			displayName: 'Numeric Bullets',
 			description: 'numericBullets',
 			icon: 'fa-solid fa-box',
 		},
 		{
 			name: 'topImage',
-			displayName: 'topImage',
+			displayName: 'Top Image',
 			description: 'topImage',
 			icon: 'fa-solid fa-box',
 		},
 		{
 			name: 'bottomImage',
-			displayName: 'bottomImage',
+			displayName: 'Bottom Image',
 			description: 'bottomImage',
 			icon: 'fa-solid fa-box',
 		},

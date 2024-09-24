@@ -1,9 +1,6 @@
 import {
-	SCHEMA_ANY_COMP_PROP,
 	SCHEMA_BOOL_COMP_PROP,
-	SCHEMA_NUM_COMP_PROP,
 	SCHEMA_STRING_COMP_PROP,
-	SCHEMA_VALIDATION,
 } from '../../constants';
 import {
 	ComponentPropertyDefinition,
@@ -11,7 +8,7 @@ import {
 	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
-import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
+import {COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
@@ -125,12 +122,12 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 			{
 				name: 'leftImageWithText',
-				displayName: 'LeftImage With Text',
+				displayName: 'Left Image With Text',
 				description: 'LeftImage With Text',
 			},
 			{
 				name: 'rightImageWithText',
-				displayName: 'RightImage With Text',
+				displayName: 'Right Image With Text',
 				description: 'RightImage With Text',
 			},
 		],
@@ -156,12 +153,12 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 			{
 				name: 'leftImageWithText',
-				displayName: 'LeftImage With Text',
+				displayName: 'Left Image With Text',
 				description: 'LeftImage With Text',
 			},
 			{
 				name: 'rightImageWithText',
-				displayName: 'RightImage With Text',
+				displayName: 'Right Image With Text',
 				description: 'RightImage With Text',
 			},
 		],
@@ -212,24 +209,24 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'goToTopLabel',
 		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'GoToTopLabel',
-		description: 'Go to top label',
+		displayName: 'GoTo Top Label',
+		description: 'Goto top label',
 		defaultValue: false,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
 		name: 'goToBottomLabel',
 		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'GoToBottomLabel',
-		description: 'Go to Bottom label',
+		displayName: 'GoTo Bottom Label',
+		description: 'Goto Bottom label',
 		defaultValue: false,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
 		name: 'numericBullets',
 		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'NumericBullets',
-		description: 'NumericBullets',
+		displayName: 'Numeric Bullets',
+		description: 'Numeric Bullets',
 		defaultValue: false,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
@@ -305,6 +302,14 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	collapasibleIcon: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 	],
 	header: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
