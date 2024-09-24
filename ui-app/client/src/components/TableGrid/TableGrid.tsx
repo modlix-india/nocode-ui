@@ -95,7 +95,7 @@ function TableGridComponent(props: ComponentProps) {
 		if (selectionType === 'NONE' || !selectionBindingPath) return;
 
 		const putObj =
-			selectionType === 'OBJECT' ? duplicate(data[index]) : `(${dataBindingPath})[${index}]`;
+			selectionType === 'OBJECT' ? duplicate(data[index]) : `${dataBindingPath}[${index}]`;
 
 		if (multiSelect) {
 			let x = selection ? [...selection] : [];

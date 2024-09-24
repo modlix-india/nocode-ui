@@ -1,7 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { getDataFromPath, PageStoreExtractor, setData } from '../../context/StoreContext';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
-import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
+import {
+	ComponentDefinition,
+	ComponentPropertyDefinition,
+	ComponentProps,
+} from '../../types/common';
 import { updateLocationForChild } from '../util/updateLoactionForChild';
 import { Component } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './tableColumnsProperties';
@@ -15,7 +19,17 @@ import CommonCheckbox from '../../commonComponents/CommonCheckbox';
 import { duplicate } from '@fincity/kirun-js';
 import { runEvent } from '../util/runEvent';
 import { styleDefaults } from './tableColumnsStyleProperties';
-
+import { difference } from '../../util/setOperations';
+function fieldToName(field: string): string {
+	return field
+		.replace('_', ' ')
+		.trim()
+		.replace(/([A-Z])/g, ' $1')
+		.replace('.', ' ')
+		.split(' ')
+		.map(e => e.replace(/^./, str => str.toUpperCase()))
+		.join(' ');
+}
 function TableColumnsComponent(props: ComponentProps) {
 	const [value, setValue] = useState([]);
 	const {
@@ -25,6 +39,7 @@ function TableColumnsComponent(props: ComponentProps) {
 		context,
 		definition,
 	} = props;
+
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const { properties: { showEmptyRows, showHeaders } = {}, stylePropertiesWithPseudoStates } =
 		useDefinition(
@@ -35,22 +50,179 @@ function TableColumnsComponent(props: ComponentProps) {
 			pageExtractor,
 		);
 
+	const dynamicColumns = Object.values(pageDefinition.componentDefinition).filter(
+		cd => cd?.type === 'TableDynamicColumn',
+	);
+
+	if (dynamicColumns.length > 0) {
+		let includeColumnsArray = [];
+		let excludeColumnsArray = [];
+		let columnsOrderArray = [];
+
+		for (let i = 0; i < dynamicColumns.length; i++) {
+			const key = dynamicColumns[i].key;
+			const visibility = dynamicColumns[i]?.properties?.visibility?.value;
+			const includeColumns = dynamicColumns[i]?.properties?.includeColumns;
+			if (visibility == false) {
+				continue;
+			}
+			if (includeColumns) 
+				includeColumnsArray = Object.values(includeColumns).map(col => col.property.value);
+			
+			const excludeColumns = dynamicColumns[i]?.properties?.excludeColumns;
+			if (excludeColumns)
+				excludeColumnsArray = Object.values(excludeColumns).map(col => col.property.value);
+
+			const dontShowOtherColumns = dynamicColumns[i]?.properties?.dontShowOtherColumns;
+
+			const columnsOrder = dynamicColumns[i]?.properties?.columnsOrder;
+			if (columnsOrder) 
+				columnsOrderArray = Object.values(columnsOrder).map(col => col.property.value);
+
+			let columns = Array.from<string>(
+				(context.table.data ?? []).reduce((a: Set<string>, c: any) => {
+					if (!c) return a;
+					for (const eachKey of Object.keys(c)) a.add(eachKey);
+					return a;
+				}, new Set<string>()),
+			);
+			
+			const includedColumns = new Set<string>(includeColumnsArray);
+			const excludedColumns = new Set<string>(excludeColumnsArray);
+
+			if (dontShowOtherColumns && includeColumnsArray.length) {
+				columns = columns.filter(c => includedColumns.has(c));
+			} else if (excludeColumnsArray.length) {
+				columns = columns.filter(c => !excludedColumns.has(c));
+			}
+
+			if (includeColumnsArray.length) {
+				columns = [
+					...columns,
+					...Array.from(difference(includedColumns, new Set(columns))),
+				];
+			}
+
+			let columnNamesIndex = columns.reduce((a: { [key: string]: string }, c: string) => {
+				a[c] = fieldToName(c);
+				return a;
+			}, {} as { [key: string]: string });
+
+			columns = columns.sort((a: string, b: string) =>
+				columnNamesIndex[a].localeCompare(columnNamesIndex[b]),
+			);
+
+			const index = columnsOrderArray.reduce(
+				(a: { [key: string]: number }, c: string, i: number) => {
+					a[c] = i + 1;
+					return a;
+				},
+				{} as { [key: string]: number },
+			);
+
+			columns = columns.sort(
+				(a: string, b: string) =>
+					(index[a] ??
+						(includedColumns.has(a)
+							? Number.MAX_SAFE_INTEGER - 200
+							: Number.MAX_SAFE_INTEGER)) -
+					(index[b] ??
+						(includedColumns.has(b)
+							? Number.MAX_SAFE_INTEGER - 200
+							: Number.MAX_SAFE_INTEGER)),
+			);
+
+			for (let i = 0; i < columns.length; i++) {
+				const eachField = columns[i];
+
+				const childRendererKey = `${key}${eachField}_renderer`;
+				const eachRenderer: ComponentDefinition = {
+					key: childRendererKey,
+					type: 'Text',
+					name: eachField + 'Text',
+					properties: {
+						text: {
+							location: { type: 'EXPRESSION', expression: `Parent.${eachField}` },
+						},
+					},
+				};
+
+				const eachChild: ComponentDefinition = {
+					key: `${key}${eachField}`,
+					type: 'TableColumn',
+					name: eachField,
+					displayOrder: i,
+					properties: {
+						label: {
+							value: columnNamesIndex[eachField],
+						},
+					},
+					children: { [eachRenderer.key]: true },
+				};
+
+				pageDefinition.componentDefinition[eachRenderer.key] = eachRenderer;
+				pageDefinition.componentDefinition[eachChild.key] = eachChild;
+				children![eachChild.key] = true;
+			}
+		}
+		const displayOrderMap = new Map();
+
+		for (const key of Object.keys(pageDefinition.componentDefinition)) {
+			const component = pageDefinition.componentDefinition[key];
+			if (
+				component &&
+				(component.name === 'TableDynamicColumn' || component.name === 'TableColumn')
+			) {
+				const displayOrder = component.displayOrder ?? 0;
+				displayOrderMap.set(key, displayOrder);
+			}
+
+			const sortedEntries = Array.from(displayOrderMap.entries()).sort((a, b) => a[1] - b[1]);
+
+			const newarr = sortedEntries.flatMap(([key]) => {
+				const columnType = pageDefinition.componentDefinition[key]?.type;
+
+				if (columnType === 'TableColumn') {
+					return [key];
+				} else if (columnType === 'TableDynamicColumn') {
+					const childrenKeys = Object.keys(
+						pageDefinition.componentDefinition || {},
+					).filter(
+						childKey =>
+							childKey.startsWith(key) &&
+							children?.hasOwnProperty(childKey) &&
+							childKey !== key,
+					);
+					return childrenKeys;
+				}
+				return [];
+			});
+
+			newarr.forEach((key, index) => {
+				pageDefinition.componentDefinition[key].displayOrder = index + 1;
+			});
+		}
+	}
+
 	const newPageDef = useMemo(() => {
+		//for headers generation
 		const np = duplicate(pageDefinition);
 		Object.keys(children ?? {})
 			.map(k => np?.componentDefinition[k])
-			.filter(e => e?.type === 'TableColumn')
-			.forEach(cd => (cd.type = 'TableColumnHeader'));
+			.filter(e => e?.type === 'TableColumn') 
+			.forEach(cd => (cd.type = 'TableColumnHeader')); 
 		return np;
 	}, [pageDefinition]);
 
 	const colPageDef = useMemo(() => {
 		if (!showEmptyRows) return pageDefinition;
 		const np = duplicate(pageDefinition);
+
 		Object.keys(children ?? {})
 			.map(k => np?.componentDefinition[k])
 			.filter(e => e?.type === 'TableColumn')
 			.forEach(cd => (cd.children = {}));
+
 		return np;
 	}, [pageDefinition, showEmptyRows]);
 
@@ -116,7 +288,7 @@ function TableColumnsComponent(props: ComponentProps) {
 		if (selectionType === 'NONE' || !selectionBindingPath) return;
 
 		const putObj =
-			selectionType === 'OBJECT' ? duplicate(data[index]) : `(${dataBindingPath})[${index}]`;
+			selectionType === 'OBJECT' ? duplicate(data[index]) : `${dataBindingPath}[${index}]`;
 
 		if (multiSelect) {
 			let x = selection ? [...selection] : [];
@@ -148,7 +320,6 @@ function TableColumnsComponent(props: ComponentProps) {
 
 	const rows = value.map((e: any, index) => {
 		if (index < from || index >= to) return undefined;
-
 		const checkBox = showCheckBox ? (
 			<div className="comp compTableColumn">
 				<CommonCheckbox
@@ -271,7 +442,10 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleComponent: TableColumnsStyle,
 	styleDefaults: styleDefaults,
-	allowedChildrenType: new Map([['TableColumn', -1]]),
+	allowedChildrenType: new Map([
+		['TableColumn', -1],
+		['TableDynamicColumn', -1],
+	]),
 	parentType: 'Table',
 	stylePseudoStates: ['hover'],
 	subComponentDefinition: [
