@@ -13,6 +13,7 @@ import { duplicate } from '@fincity/kirun-js';
 import TableColumns from '../TableColumns/TableColumns';
 import { difference } from '../../util/setOperations';
 import { styleDefaults } from './tableDynamicColumnsStyleProperties';
+import TableColumn from '../TableColumn/TableColumn';
 
 function fieldToName(field: string): string {
 	return field
@@ -103,9 +104,12 @@ function TableDynamicColumnsComponent(props: ComponentProps) {
 
 		const children: { [key: string]: boolean } = {};
 		for (let i = 0; i < columns.length; i++) {
-			const eachField = columns[i];
-			const childRendererKey = `${key}${eachField}_renderer`;
+			
+			const eachField = columns[i]; 
+			const childRendererKey = `${key}${eachField}_renderer`; 
+
 			const eachChild: ComponentDefinition = {
+				
 				key: `${key}${eachField}`,
 				type: 'TableColumn',
 				name: eachField,
@@ -119,6 +123,7 @@ function TableDynamicColumnsComponent(props: ComponentProps) {
 			};
 
 			const eachRenderer = {
+			
 				key: childRendererKey,
 				type: 'Text',
 				name: eachField + 'Text',
@@ -129,13 +134,14 @@ function TableDynamicColumnsComponent(props: ComponentProps) {
 				},
 			};
 
-			children[eachChild.key] = true;
-			newPageDefinition.componentDefinition[eachChild.key] = eachChild;
+			children[eachChild.key] = true; 
+			newPageDefinition.componentDefinition[eachChild.key] = eachChild; 
+
 			newPageDefinition.componentDefinition[eachRenderer.key] = eachRenderer;
 		}
-		newPageDefinition.componentDefinition[key].type = 'TableColumns';
-		newPageDefinition.componentDefinition[key].children = children;
 
+		newPageDefinition.componentDefinition[key].type = 'TableColumns'; 
+		newPageDefinition.componentDefinition[key].children = children;
 		return newPageDefinition;
 	}, [context.table.data, dontShowOtherColumns, includeColumns, columnsOrder, excludeColumns]);
 
