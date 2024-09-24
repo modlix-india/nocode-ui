@@ -327,7 +327,7 @@ function TableofContents(props: ComponentProps) {
 					makeCollapsible && heading.level <= parseInt(makeCollapsibleTill.charAt(1));
 				const shouldShowChildren = heading.level < parseInt(showTill.charAt(1));
 				const shouldCollapseChildren = isCollapsible ? expandedHeadings[heading.id] : true;
-              
+             
 				return (
 					<React.Fragment key={heading.id}>
 						{shouldRender && (
@@ -335,7 +335,7 @@ function TableofContents(props: ComponentProps) {
 							<a
 								href={`#${heading.id}`}
 								className={`_heading${heading.level}`}
-								style={{ marginLeft: `${20 * (heading.level - 1)}px` }}
+								style={heading.level > 2 ? { marginLeft: `${15 * (heading.level - 1)}px`, } : {}}
 							>
 								<SubHelperComponent
 									definition={definition}
@@ -358,7 +358,7 @@ function TableofContents(props: ComponentProps) {
 									{numericBullets && (
 									<span
 										className="_numericbullets"
-										style={{ marginRight: '20px' }}
+										style={{ marginRight: '10px' }}
 									>
 										<SubHelperComponent
 											definition={definition}

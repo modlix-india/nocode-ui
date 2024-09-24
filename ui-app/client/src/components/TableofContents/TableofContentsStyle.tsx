@@ -14,14 +14,9 @@ export default function TableOfContentsStyle({
 		display:flex;
 		flex-direction:column;
 		gap:20px;
-        margin:20px;
+		padding:20px;
 		}
 
-		${PREFIX} ._children{
-		display:flex;
-		flex-direction:column;
-		gap:20px;
-		}
 		
 }
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
