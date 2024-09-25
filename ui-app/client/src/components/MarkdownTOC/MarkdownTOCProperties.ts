@@ -1,21 +1,26 @@
-import {
-	SCHEMA_BOOL_COMP_PROP,
-	SCHEMA_STRING_COMP_PROP,
-} from '../../constants';
+import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
 	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
-import {COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
+import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
+		name: 'markdownText',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Markdown Text',
+		description: 'Markdown Text',
+		defaultValue: '',
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
 		name: 'showTill',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Show Till',
-		description: 'Show Till',
+		displayName: 'Show Headings Till',
+		description: 'Show Headings Till',
 		editor: ComponentPropertyEditor.ENUM,
 		defaultValue: 'H2',
 		group: ComponentPropertyGroup.BASIC,
@@ -55,18 +60,18 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'makeCollapsible',
 		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Make collapsible',
-		description: 'Make the toc expandable',
+		displayName: 'Make Collapsible',
+		description: 'Make Collapsible',
 		defaultValue: true,
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
-		name: 'makeCollapsibleTill',
+		name: 'makeCollapsibleFrom',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Make collapsible Till',
-		description: 'Make collapsible Till',
+		displayName: 'Make Collapsible From',
+		description: 'Make Collapsible From',
 		editor: ComponentPropertyEditor.ENUM,
-		defaultValue: 'H2',
+		defaultValue: 'H6',
 		group: ComponentPropertyGroup.BASIC,
 		enumValues: [
 			{
@@ -102,68 +107,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		],
 	},
 	{
-		name: 'goToTopStyle',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'goToTopStyle',
-		description: 'go to top style',
-		editor: ComponentPropertyEditor.ENUM,
-		defaultValue: 'onlyText',
-		group: ComponentPropertyGroup.ADVANCED,
-		enumValues: [
-			{
-				name: 'onlyText',
-				displayName: 'Only Text',
-				description: 'Only Text',
-			},
-			{
-				name: 'onlyImage',
-				displayName: 'Only Image',
-				description: 'Only Image',
-			},
-			{
-				name: 'leftImageWithText',
-				displayName: 'Left Image With Text',
-				description: 'LeftImage With Text',
-			},
-			{
-				name: 'rightImageWithText',
-				displayName: 'Right Image With Text',
-				description: 'RightImage With Text',
-			},
-		],
-	},
-	{
-		name: 'goToBottomStyle',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'goToBottomStyle',
-		description: 'go to bottom style',
-		editor: ComponentPropertyEditor.ENUM,
-		defaultValue: 'onlyText',
-		group: ComponentPropertyGroup.ADVANCED,
-		enumValues: [
-			{
-				name: 'onlyText',
-				displayName: 'Only Text',
-				description: 'Only Text',
-			},
-			{
-				name: 'onlyImage',
-				displayName: 'Only Image',
-				description: 'Only Image',
-			},
-			{
-				name: 'leftImageWithText',
-				displayName: 'Left Image With Text',
-				description: 'LeftImage With Text',
-			},
-			{
-				name: 'rightImageWithText',
-				displayName: 'Right Image With Text',
-				description: 'RightImage With Text',
-			},
-		],
-	},
-	{
 		name: 'titleText',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Title Text',
@@ -191,45 +134,157 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
+		name: 'topTextIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'Top Icon',
+		description: 'Top Icon',
+		editor: ComponentPropertyEditor.ICON,
+	},
+	{
 		name: 'topTextImage',
 		schema: SCHEMA_STRING_COMP_PROP,
 		group: ComponentPropertyGroup.ADVANCED,
-		displayName: 'Top Text image',
-		description: 'Top Text image',
+		displayName: 'Top Image',
+		description: 'Top Image',
 		editor: ComponentPropertyEditor.IMAGE,
+	},
+	{
+		name: 'topIconImagePosition',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'Top Icon/Image Position',
+		description: 'Top Icon/Image Position',
+		editor: ComponentPropertyEditor.ENUM,
+		defaultValue: 'left',
+		enumValues: [
+			{
+				name: 'left',
+				displayName: 'Left',
+				description: 'Left',
+			},
+			{
+				name: 'right',
+				displayName: 'Right',
+				description: 'Right',
+			},
+		],
+	},
+	{
+		name: 'bottomTextIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'Bottom Icon',
+		description: 'Bottom Icon',
+		editor: ComponentPropertyEditor.ICON,
 	},
 	{
 		name: 'bottomTextImage',
 		schema: SCHEMA_STRING_COMP_PROP,
 		group: ComponentPropertyGroup.ADVANCED,
-		displayName: 'Bottom Text image',
-		description: 'Bottom Text image',
+		displayName: 'Bottom Image',
+		description: 'Bottom Image',
 		editor: ComponentPropertyEditor.IMAGE,
 	},
+
 	{
-		name: 'goToTopLabel',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'GoTo Top Label',
-		description: 'Goto top label',
-		defaultValue: false,
+		name: 'bottomIconImagePosition',
+		schema: SCHEMA_STRING_COMP_PROP,
 		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'Bottom Icon/Image Position',
+		description: 'Bottom Icon/Image Position',
+		editor: ComponentPropertyEditor.ENUM,
+		defaultValue: 'left',
+		enumValues: [
+			{
+				name: 'left',
+				displayName: 'Left',
+				description: 'Left',
+			},
+			{
+				name: 'right',
+				displayName: 'Right',
+				description: 'Right',
+			},
+		],
 	},
+
 	{
-		name: 'goToBottomLabel',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'GoTo Bottom Label',
-		description: 'Goto Bottom label',
-		defaultValue: false,
+		name: 'bulletType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Bullet Type',
+		description: 'Bullet Type',
+		defaultValue: 'none',
 		group: ComponentPropertyGroup.ADVANCED,
+		enumValues: [
+			{
+				name: 'none',
+				displayName: 'None',
+				description: 'None',
+			},
+			{
+				name: 'numeric',
+				displayName: 'Numeric',
+				description: 'Numeric',
+			},
+			{
+				name: 'alphabetic',
+				displayName: 'Alphabetic',
+				description: 'Alphabetic',
+			},
+			{
+				name: 'roman',
+				displayName: 'Roman',
+				description: 'Roman',
+			},
+			{
+				name: 'capitalAlphabetic',
+				displayName: 'Capital Alphabetic',
+				description: 'Capital Alphabetic',
+			},
+			{
+				name: 'capitalRoman',
+				displayName: 'Capital Roman',
+				description: 'Capital Roman',
+			},
+		],
 	},
+
 	{
-		name: 'numericBullets',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Numeric Bullets',
-		description: 'Numeric Bullets',
-		defaultValue: false,
+		name: 'bulletIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
 		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'Bullet Icon',
+		description: 'Bullet Icon',
+		editor: ComponentPropertyEditor.ICON,
 	},
+
+	{
+		name: 'bulletImage',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'Bullet Image',
+		description: 'Bullet Image',
+		editor: ComponentPropertyEditor.IMAGE,
+	},
+];
+
+const propslist = [
+	'markdownText',
+	'showTill',
+	'makeCollapsibleFrom',
+	'titleText',
+	'topLabelText',
+	'bottomLabelText',
+	'topTextIcon',
+	'topTextImage',
+	'topIconImagePosition',
+	'bottomTextIcon',
+	'bottomTextImage',
+	'bottomIconImagePosition',
+	'bulletType',
+	'bulletIcon',
+	'bulletImage',
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
@@ -311,7 +366,22 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 	],
-	header: [
+	title: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+	],
+	topText: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+	],
+	bottomText: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+	],
+	bulletTextIconImage: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
@@ -321,7 +391,7 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
-	goToTopLabel: [
+	topIconImage: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
@@ -331,37 +401,7 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
-	goToBottomLabel: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
-	],
-	numericBullets: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
-	],
-	topImage: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
-	],
-	bottomImage: [
+	bottomIconImage: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,

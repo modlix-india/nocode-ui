@@ -2,12 +2,8 @@ import React from 'react';
 import { processStyleDefinition } from '../../util/styleProcessor';
 import { styleDefaults, styleProperties } from '../Page/pageStyleProperties';
 
-const PREFIX = '.comp.compTableOfContent';
-export default function TableOfContentsStyle({
-	theme,
-}: {
-	theme: Map<string, Map<string, string>>;
-}) {
+const PREFIX = '.comp.compMarkdownTOC';
+export default function MarkdownTOCStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
 	const css =
 		`
 		${PREFIX} {
@@ -21,5 +17,5 @@ export default function TableOfContentsStyle({
 }
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
-	return <style id="TableofContentsCss">{css}</style>;
+	return <style id="MarkdownTOCCss">{css}</style>;
 }
