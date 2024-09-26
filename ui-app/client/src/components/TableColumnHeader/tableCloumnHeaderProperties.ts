@@ -15,6 +15,23 @@ import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '.
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.label,
 	COMMON_COMPONENT_PROPERTIES.visibility,
+	{
+		name: 'leftIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Left Icon',
+		description: 'Icon to be shown on the left side.',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+
+	{
+		name: 'rightIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Right Icon',
+		description: 'Icon to be shown on the right side.',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
