@@ -112,7 +112,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Title Text',
 		description: 'Text to be shown to for the title.',
 		translatable: true,
-		defaultValue: 'Table of Contents',
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
@@ -267,24 +266,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Bullet Image',
 		editor: ComponentPropertyEditor.IMAGE,
 	},
-];
-
-const propslist = [
-	'markdownText',
-	'showTill',
-	'makeCollapsibleFrom',
-	'titleText',
-	'topLabelText',
-	'bottomLabelText',
-	'topTextIcon',
-	'topTextImage',
-	'topIconImagePosition',
-	'bottomTextIcon',
-	'bottomTextImage',
-	'bottomIconImagePosition',
-	'bulletType',
-	'bulletIcon',
-	'bulletImage',
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import {
 	PageStoreExtractor,
@@ -16,39 +16,89 @@ import {
 	processComponentStylePseudoClasses,
 	processStyleObjectToCSS,
 } from '../../util/styleProcessor';
+import { parseInline } from '../../commonComponents/Markdown/parseInline';
 
-interface heading {
+interface BulletPoint {
 	level: number;
-	text: string;
+	component: JSX.Element;
 	id: string;
-	children?: heading[];
 	number: string;
+	children: Array<BulletPoint>;
+}
+
+function makeTOCBulletPoints(text: string, showTill: string): Array<BulletPoint> {
+	if (!text.trim()) {
+		return [];
+	}
+
+	const bullets: Array<BulletPoint> = [];
+
+	const lines = text.split('\n');
+	const MATCH_REGEX = new RegExp(`^(#{1,${parseInt(showTill.charAt(1))}}) `);
+
+	const stack: BulletPoint[] = [];
+
+	for (const line of lines) {
+		const match = line.match(MATCH_REGEX);
+		if (!match) continue;
+
+		const level = match[1].length;
+		const text = line.slice(level + 1);
+		const id = text.toLowerCase().replace(/\s+/g, '-');
+
+		const component = (
+			<>
+				{parseInline({
+					lines: [text],
+					lineNumber: 0,
+					styles: {},
+					componentKey: '',
+				})}
+			</>
+		);
+
+		const bullet: BulletPoint = {
+			level,
+			component,
+			id,
+			number: '',
+			children: [],
+		};
+
+		if (stack.length) {
+			const parent = stack[stack.length - 1];
+			parent.children = parent.children || [];
+			parent.children.push(bullet);
+		} else {
+			bullets.push(bullet);
+		}
+		stack.push(bullet);
+	}
+
+	return bullets;
 }
 
 function MarkdownTOC(props: ComponentProps) {
-	const {
-		definition: { bindingPath },
-		definition,
-		locationHistory,
-		context,
-	} = props;
+	const { definition, locationHistory, context } = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
 		key,
 		properties: {
+			markdownText,
 			showTill,
-			makeCollapsible,
 			makeCollapsibleFrom,
-			goToBottomLabel,
-			goToTopLabel,
-			goToTopStyle,
-			goToBottomStyle,
-			topTextImage,
-			bottomTextImage,
+			titleText,
 			topLabelText,
 			bottomLabelText,
-			titleText,
-			numericBullets,
+			topTextIcon,
+			topTextImage,
+			topIconImagePosition,
+			bottomTextIcon,
+			bottomTextImage,
+			bottomIconImagePosition,
+			bulletType,
+			bulletIcon,
+			bulletImage,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -234,215 +284,158 @@ function MarkdownTOC(props: ComponentProps) {
 		</style>
 	);
 
-	const dataBindingPath =
-		bindingPath && getPathFromLocation(bindingPath, locationHistory, pageExtractor);
-	let lastHeading = '';
-	const [data, setData] = useState<string>();
-	const [expandedHeadings, setExpandedHeadings] = useState<{ [key: string]: boolean }>({});
-
-	useEffect(
-		() =>
-			dataBindingPath
-				? addListenerAndCallImmediatelyWithChildrenActivity(
-						(_, v) => setData(v),
-						pageExtractor,
-						dataBindingPath,
-					)
-				: undefined,
-		[dataBindingPath],
-	);
-
-	const parseHeadings = (markdowndata: string): heading[] => {
-		const lines = markdowndata.split('\n');
-		const headings: heading[] = [];
-		const stack: heading[] = [];
-		const numbers: number[] = [];
-		let firstLevel = 0;
-
-		lines.forEach(line => {
-			const match = line.match(/^(#{1,6}) (.+)$/);
-			if (match) {
-				const level = match[1].length;
-				const text = match[2];
-				const id = text.toLowerCase().replace(/\s+/g, '-');
-
-				if (firstLevel === 0) {
-					firstLevel = level;
-				}
-				const adjustedLevel = level - firstLevel + 1;
-
-				const heading: heading = {
-					level,
-					text,
-					id,
-					number: '',
-				};
-
-				if (numbers.length < adjustedLevel) {
-					while (numbers.length < adjustedLevel) {
-						numbers.push(0);
-					}
-				}
-				numbers[adjustedLevel - 1]++;
-				numbers.length = adjustedLevel;
-				heading.number = numbers.join('.');
-
-				lastHeading = match[match.length - 1];
-				while (stack.length && stack[stack.length - 1].level >= level) {
-					stack.pop();
-				}
-				if (stack.length) {
-					const parent = stack[stack.length - 1];
-					parent.children = parent.children || [];
-					parent.children.push(heading);
-				} else {
-					headings.push(heading);
-				}
-				stack.push(heading);
-			}
-		});
-		return headings;
-	};
-
-	const headings = typeof data === 'string' ? parseHeadings(data) : [];
-	const toggleCollapse = (id: string) => {
-		setExpandedHeadings(prev => ({
-			...prev,
-			[id]: !prev[id],
-		}));
-	};
-
-	const renderHeadings = (headings: heading[], level: number = 1): React.ReactNode => (
-		<>
-			{headings.map(heading => {
-				const shouldRender = heading.level <= parseInt(showTill.charAt(1));
-				const isCollapsible =
-					makeCollapsible && heading.level <= parseInt(makeCollapsibleFrom.charAt(1));
-				const shouldShowChildren = heading.level < parseInt(showTill.charAt(1));
-				const shouldCollapseChildren = isCollapsible ? expandedHeadings[heading.id] : true;
-
-				return (
-					<React.Fragment key={heading.id}>
-						{shouldRender && (
-							<a
-								href={`#${heading.id}`}
-								className={`_heading${heading.level}`}
-								style={
-									heading.level > 2
-										? { marginLeft: `${15 * (heading.level - 1)}px` }
-										: {}
-								}
-							>
-								<SubHelperComponent
-									definition={definition}
-									subComponentName={`H${heading.level}`}
-								/>
-
-								{makeCollapsible &&
-									heading.children &&
-									heading.level <= parseInt(makeCollapsibleFrom.charAt(1)) && (
-										<i
-											onClick={e => {
-												if (isCollapsible && heading.children) {
-													e.preventDefault();
-													toggleCollapse(heading.id);
-												}
-											}}
-											className={`fa-solid ${expandedHeadings[heading.id] ? 'fa-chevron-down' : 'fa-chevron-right'}`}
-										></i>
-									)}
-								{numericBullets && (
-									<span
-										className="_numericbullets"
-										style={{ marginRight: '10px' }}
-									>
-										<SubHelperComponent
-											definition={definition}
-											subComponentName="numericBullets"
-										/>
-										{heading.number}
-									</span>
-								)}
-								{heading.text}
-							</a>
-						)}
-						{heading.children && shouldShowChildren && (
-							<>
-								{!isCollapsible || shouldCollapseChildren
-									? renderHeadings(heading.children, level + 1)
-									: null}
-							</>
-						)}
-					</React.Fragment>
-				);
-			})}
-		</>
-	);
-
-	const renderGoToLink = (
-		href: string | undefined,
-		label: any,
-		style: string,
-		textImage: string | undefined,
-		labelText: any,
-		position: string,
-	) => (
-		<a href={href} className={`_goTo${position}Link`}>
-			<SubHelperComponent definition={definition} subComponentName={`goTo${position}Label`} />
-			{(style === 'leftImageWithText' || style === 'onlyImage') && (
-				<>
-					<img src={textImage} alt={`${position} image`} className="_topImage" />
-					<SubHelperComponent definition={definition} subComponentName="topImage" />
-				</>
-			)}
-			{(style === 'onlyText' ||
-				style === 'leftImageWithText' ||
-				style === 'rightImageWithText') &&
-				labelText}
-			{style === 'rightImageWithText' && (
-				<>
-					<img src={textImage} alt={`${position} image`} className="_bottomImage" />
-					<SubHelperComponent definition={definition} subComponentName="_bottomImage" />
-				</>
-			)}
-		</a>
+	const headings = useMemo(
+		() => makeTOCBulletPoints(markdownText, showTill),
+		[markdownText, showTill],
 	);
 
 	return (
 		<>
 			{styleComp}
-			<nav className="comp compMarkdownTOC" id={`_${styleKey}toc_css`}>
+			<nav className="comp compMarkdownTOC" style={regularStyle?.comp ?? {}}>
 				<HelperComponent context={context} definition={definition} />
-
-				{goToTopLabel &&
-					renderGoToLink(
-						`#${headings[0]?.id}`,
-						goToTopLabel,
-						goToTopStyle,
-						topTextImage,
-						topLabelText,
-						'Top',
-					)}
-
-				<span className="_header">
-					{titleText}
-					<SubHelperComponent definition={definition} subComponentName="header" />
-				</span>
-
-				{renderHeadings(headings)}
-
-				{goToBottomLabel &&
-					renderGoToLink(
-						`#${lastHeading}`,
-						goToBottomLabel,
-						goToBottomStyle,
-						bottomTextImage,
-						bottomLabelText,
-						'Bottom',
-					)}
+				{headings.map(heading => (
+					<ContentLink {...heading} />
+				))}
 			</nav>
 		</>
 	);
+
+	// const renderHeadings = (headings: heading[], level: number = 1): React.ReactNode => (
+	// 	<>
+	// 		{headings.map(heading => {
+	// 			const shouldRender = heading.level <= parseInt(showTill.charAt(1));
+	// 			const isCollapsible =
+	// 				makeCollapsible && heading.level <= parseInt(makeCollapsibleFrom.charAt(1));
+	// 			const shouldShowChildren = heading.level < parseInt(showTill.charAt(1));
+	// 			const shouldCollapseChildren = isCollapsible ? expandedHeadings[heading.id] : true;
+
+	// 			return (
+	// 				<React.Fragment key={heading.id}>
+	// 					{shouldRender && (
+	// 						<a
+	// 							href={`#${heading.id}`}
+	// 							className={`_heading${heading.level}`}
+	// 							style={
+	// 								heading.level > 2
+	// 									? { marginLeft: `${15 * (heading.level - 1)}px` }
+	// 									: {}
+	// 							}
+	// 						>
+	// 							<SubHelperComponent
+	// 								definition={definition}
+	// 								subComponentName={`H${heading.level}`}
+	// 							/>
+
+	// 							{makeCollapsible &&
+	// 								heading.children &&
+	// 								heading.level <= parseInt(makeCollapsibleFrom.charAt(1)) && (
+	// 									<i
+	// 										onClick={e => {
+	// 											if (isCollapsible && heading.children) {
+	// 												e.preventDefault();
+	// 												toggleCollapse(heading.id);
+	// 											}
+	// 										}}
+	// 										className={`fa-solid ${expandedHeadings[heading.id] ? 'fa-chevron-down' : 'fa-chevron-right'}`}
+	// 									></i>
+	// 								)}
+	// 							{numericBullets && (
+	// 								<span
+	// 									className="_numericbullets"
+	// 									style={{ marginRight: '10px' }}
+	// 								>
+	// 									<SubHelperComponent
+	// 										definition={definition}
+	// 										subComponentName="numericBullets"
+	// 									/>
+	// 									{heading.number}
+	// 								</span>
+	// 							)}
+	// 							{heading.text}
+	// 						</a>
+	// 					)}
+	// 					{heading.children && shouldShowChildren && (
+	// 						<>
+	// 							{!isCollapsible || shouldCollapseChildren
+	// 								? renderHeadings(heading.children, level + 1)
+	// 								: null}
+	// 						</>
+	// 					)}
+	// 				</React.Fragment>
+	// 			);
+	// 		})}
+	// 	</>
+	// );
+
+	// const renderGoToLink = (
+	// 	href: string | undefined,
+	// 	label: any,
+	// 	style: string,
+	// 	textImage: string | undefined,
+	// 	labelText: any,
+	// 	position: string,
+	// ) => (
+	// 	<a href={href} className={`_goTo${position}Link`}>
+	// 		<SubHelperComponent definition={definition} subComponentName={`goTo${position}Label`} />
+	// 		{(style === 'leftImageWithText' || style === 'onlyImage') && (
+	// 			<>
+	// 				<img src={textImage} alt={`${position} image`} className="_topImage" />
+	// 				<SubHelperComponent definition={definition} subComponentName="topImage" />
+	// 			</>
+	// 		)}
+	// 		{(style === 'onlyText' ||
+	// 			style === 'leftImageWithText' ||
+	// 			style === 'rightImageWithText') &&
+	// 			labelText}
+	// 		{style === 'rightImageWithText' && (
+	// 			<>
+	// 				<img src={textImage} alt={`${position} image`} className="_bottomImage" />
+	// 				<SubHelperComponent definition={definition} subComponentName="_bottomImage" />
+	// 			</>
+	// 		)}
+	// 	</a>
+	// );
+
+	// return (
+	// 	<>
+	// 		{styleComp}
+	// 		<nav className="comp compMarkdownTOC" id={`_${styleKey}toc_css`}>
+	// 			<HelperComponent context={context} definition={definition} />
+
+	// 			{goToTopLabel &&
+	// 				renderGoToLink(
+	// 					`#${headings[0]?.id}`,
+	// 					goToTopLabel,
+	// 					goToTopStyle,
+	// 					topTextImage,
+	// 					topLabelText,
+	// 					'Top',
+	// 				)}
+
+	// 			<span className="_header">
+	// 				{titleText}
+	// 				<SubHelperComponent definition={definition} subComponentName="header" />
+	// 			</span>
+
+	// 			{renderHeadings(headings)}
+
+	// 			{goToBottomLabel &&
+	// 				renderGoToLink(
+	// 					`#${lastHeading}`,
+	// 					goToBottomLabel,
+	// 					goToBottomStyle,
+	// 					bottomTextImage,
+	// 					bottomLabelText,
+	// 					'Bottom',
+	// 				)}
+	// 		</nav>
+	// 	</>
+	// );
+}
+
+function ContentLink({}: BulletPoint) {
+	return <></>;
 }
 
 const component: Component = {
