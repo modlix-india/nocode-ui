@@ -49,16 +49,9 @@ function SmallCarousel(props: ComponentProps) {
 			autoPlay,
 			autoPlayDirection,
 			animationDuration,
-			dotsButtonType,
-			dotsButtonIconType,
-			showSlideNumbersInDots,
 			arrowButtonsHorizontalPlacement,
 			arrowButtonsVerticalPlacement,
 			arrowButtonsPlacement,
-			slideNavButtonHorizontalAlignment,
-			slideNavButtonVerticalAlignment,
-			slideNavButtonPlacement,
-			showNavigationControlsOnHover,
 			slidesToScroll,
 			fixedChild,
 			noOfChilds,
@@ -74,6 +67,15 @@ function SmallCarousel(props: ComponentProps) {
 			selectionType,
 			prevImage,
 			nextImage,
+			showSlideNav,
+			slideNavOrientation,
+			slideNavPlacement,
+			slideNavIconType,
+			slideNavIconFill,
+			showSlideNumbersInDots,
+			showNavigationControlsOnHover,
+			visibleSlideNavButtons,
+			showNavArrowButtons,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -90,6 +92,7 @@ function SmallCarousel(props: ComponentProps) {
 	const [_, setChanged] = useState<number>(Date.now());
 	const transit = useRef<any>({});
 	const [firstTime, setFirstTime] = useState(true);
+	const [currentSlide, setCurrentSlide] = useState(0);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
@@ -232,56 +235,43 @@ function SmallCarousel(props: ComponentProps) {
 		containerDims.minWidth = `${childWidth * finNumberOfChildren}px`;
 	}
 
-	const applyTransform = (to: number, scrollDirection: number = 1) => {
-		if (
-			finNumberOfChildren == undefined ||
-			finNumberOfChildren <= 1 ||
-			childWidth < 5 ||
-			childHeight < 5
-		)
-			return;
+	const applyTransform = useCallback(
+		(to: number, scrollDirection: number = 1) => {
+			if (
+				finNumberOfChildren == undefined ||
+				finNumberOfChildren <= 1 ||
+				childWidth < 5 ||
+				childHeight < 5
+			)
+				return;
 
-		const totalChildren = childrenComponents.length;
-		to = (to + totalChildren) % totalChildren;
+			const totalChildren = childrenComponents.length;
+			to = (to + totalChildren) % totalChildren;
 
-		for (let i = 0; i < childrenComponents.length; i++) {
-			innerSlideItemContainers.current[i].style.transition = undefined;
-		}
-
-		const percentage: number = Math.ceil(10000 / finNumberOfChildren) / 100;
-		const direction = isVertical ? 'top' : 'left';
-		let from: number = transit.current.to;
-
-		if (
-			transit.current.finNumberOfChildren !== finNumberOfChildren ||
-			transit.current.totalChildren !== childrenComponents.length
-		) {
-			for (let i = 0; i < totalChildren; i++) {
-				let v;
-				if (i < to || i >= to + childrenComponents.length) v = `-${percentage}%`;
-				else v = `${(i - to) * percentage}%`;
-
-				innerSlideItemContainers.current[i].style[direction] = v;
-			}
-			from = 0;
-		} else {
-			if (from === to) return;
-
-			let fromPercent = scrollDirection === 1 ? 0 : -(slidesToScroll * percentage);
 			for (let i = 0; i < childrenComponents.length; i++) {
-				const ind =
-					(childrenComponents.length * 2 +
-						to +
-						i -
-						(scrollDirection > 0 ? slidesToScroll : 0)) %
-					childrenComponents.length;
-
-				const v = `${fromPercent + i * percentage}%`;
-				innerSlideItemContainers.current[ind].style[direction] = v;
+				innerSlideItemContainers.current[i].style.transition = undefined;
 			}
 
-			setTimeout(() => {
-				fromPercent = scrollDirection === -1 ? 0 : -(slidesToScroll * percentage);
+			const percentage: number = Math.ceil(10000 / finNumberOfChildren) / 100;
+			const direction = isVertical ? 'top' : 'left';
+			let from: number = transit.current.to;
+
+			if (
+				transit.current.finNumberOfChildren !== finNumberOfChildren ||
+				transit.current.totalChildren !== childrenComponents.length
+			) {
+				for (let i = 0; i < totalChildren; i++) {
+					let v;
+					if (i < to || i >= to + childrenComponents.length) v = `-${percentage}%`;
+					else v = `${(i - to) * percentage}%`;
+
+					innerSlideItemContainers.current[i].style[direction] = v;
+				}
+				from = 0;
+			} else {
+				if (from === to) return;
+
+				let fromPercent = scrollDirection === 1 ? 0 : -(slidesToScroll * percentage);
 				for (let i = 0; i < childrenComponents.length; i++) {
 					const ind =
 						(childrenComponents.length * 2 +
@@ -289,26 +279,54 @@ function SmallCarousel(props: ComponentProps) {
 							i -
 							(scrollDirection > 0 ? slidesToScroll : 0)) %
 						childrenComponents.length;
-					innerSlideItemContainers.current[ind].style.transition =
-						`${direction} ${animationDuration}ms ${easing}`;
+
 					const v = `${fromPercent + i * percentage}%`;
 					innerSlideItemContainers.current[ind].style[direction] = v;
 				}
-			}, 100);
-		}
 
-		transit.current = {
-			from,
-			to,
-			finNumberOfChildren: finNumberOfChildren,
-			totalChildren: childrenComponents.length,
-			hover: transit.current.hover,
-			executedAt: Date.now(),
-			timerAt: transit.current.timerAt,
-		};
+				setTimeout(() => {
+					fromPercent = scrollDirection === -1 ? 0 : -(slidesToScroll * percentage);
+					for (let i = 0; i < childrenComponents.length; i++) {
+						const ind =
+							(childrenComponents.length * 2 +
+								to +
+								i -
+								(scrollDirection > 0 ? slidesToScroll : 0)) %
+							childrenComponents.length;
+						innerSlideItemContainers.current[ind].style.transition =
+							`${direction} ${animationDuration}ms ${easing}`;
+						const v = `${fromPercent + i * percentage}%`;
+						innerSlideItemContainers.current[ind].style[direction] = v;
+					}
+				}, 100);
+			}
 
-		if (firstTime) setFirstTime(false);
-	};
+			transit.current = {
+				from,
+				to,
+				finNumberOfChildren: finNumberOfChildren,
+				totalChildren: childrenComponents.length,
+				hover: transit.current.hover,
+				executedAt: Date.now(),
+				timerAt: transit.current.timerAt,
+			};
+
+			setCurrentSlide(to);
+
+			if (firstTime) setFirstTime(false);
+		},
+		[
+			finNumberOfChildren,
+			childrenComponents.length,
+			firstTime,
+			childWidth,
+			childHeight,
+			isVertical,
+			slidesToScroll,
+			animationDuration,
+			easing,
+		],
+	);
 
 	useEffect(() => {
 		if (finNumberOfChildren <= 1 || childWidth < 5 || childHeight < 5) return;
@@ -326,7 +344,11 @@ function SmallCarousel(props: ComponentProps) {
 					Date.now() - transit.current.executedAt >= slideSpeed + animationDuration)
 			) {
 				const factor = autoPlayDirection === 'backward' ? -1 : 1;
-				applyTransform(transit.current.to + slidesToScroll * factor, factor);
+				applyTransform(
+					(currentSlide + slidesToScroll * factor + childrenComponents.length) %
+						childrenComponents.length,
+					factor,
+				);
 			}
 			transit.current.timerAt = Date.now();
 		}
@@ -338,13 +360,15 @@ function SmallCarousel(props: ComponentProps) {
 		finNumberOfChildren,
 		childWidth,
 		childHeight,
-		transit.current,
 		autoPlay,
 		autoPlayDirection,
 		firstTime,
 		slideSpeed,
 		animationDuration,
 		slidesToScroll,
+		currentSlide,
+		childrenComponents.length,
+		applyTransform,
 	]);
 
 	let { prevButton, buttonGroup, nextButton } = makeArrowButtons(
@@ -363,11 +387,98 @@ function SmallCarousel(props: ComponentProps) {
 		() => applyTransform(transit.current.to + slidesToScroll, 1),
 	);
 
+	function makeSlideNavButtons(
+		showSlideNav: boolean,
+		totalSlides: number,
+		currentSlide: number,
+		slideNavOrientation: string,
+		slideNavPlacement: string,
+		slideNavIconType: string,
+		slideNavIconFill: string,
+		showSlideNumbersInDots: boolean,
+		resolvedStyles: any,
+		onSlideNavClick: (index: number) => void,
+		visibleSlideNavButtons: number,
+		showNavArrowButtons: boolean,
+	) {
+		if (!showSlideNav) return null;
+
+		const buttons = [];
+		let startIndex = 0;
+		let endIndex = totalSlides;
+
+		if (visibleSlideNavButtons > 0 && visibleSlideNavButtons < totalSlides) {
+			const halfVisible = Math.floor(visibleSlideNavButtons / 2);
+			startIndex = Math.max(0, currentSlide - halfVisible);
+			endIndex = Math.min(totalSlides, startIndex + visibleSlideNavButtons);
+
+			if (endIndex - startIndex < visibleSlideNavButtons) {
+				startIndex = Math.max(0, endIndex - visibleSlideNavButtons);
+			}
+		}
+
+		const navButtons = [];
+
+		const isVertical = slideNavOrientation.startsWith('vertical');
+		const rotationClass = isVertical ? '_vertical' : '';
+
+		if (startIndex > 0 && showNavArrowButtons) {
+			navButtons.push(
+				<div
+					key="start-arrow"
+					className={`_slideNavArrow _start ${rotationClass}`}
+					onClick={() =>
+						onSlideNavClick(Math.max(0, startIndex - visibleSlideNavButtons))
+					}
+					style={resolvedStyles?.slideNavArrow ?? {}}
+				/>,
+			);
+		}
+
+		for (let i = startIndex; i < endIndex; i++) {
+			navButtons.push(
+				<div
+					key={`slide-nav-${i}`}
+					className={`_slideNavButton ${rotationClass} ${
+						showSlideNumbersInDots ? '_number' : `_${slideNavIconType}`
+					} ${slideNavIconFill === 'solid' ? '_solid' : ''} ${
+						i === currentSlide ? '_active' : ''
+					}`}
+					style={resolvedStyles?.slideNavButton ?? {}}
+					onClick={() => onSlideNavClick(i)}
+				>
+					{showSlideNumbersInDots ? i + 1 : null}
+				</div>,
+			);
+		}
+
+		if (endIndex < totalSlides && showNavArrowButtons) {
+			navButtons.push(
+				<div
+					key="end-arrow"
+					className={`_slideNavArrow _end ${rotationClass}`}
+					onClick={() => onSlideNavClick(Math.min(totalSlides - 1, endIndex))}
+					style={resolvedStyles?.slideNavArrow ?? {}}
+				/>,
+			);
+		}
+
+		const navContainerClass = `_slideNavContainer _${slideNavOrientation} _${slideNavPlacement} ${isVertical ? '_vertical' : '_horizontal'}`;
+
+		return (
+			<div className={navContainerClass} style={resolvedStyles?.slideNavContainer ?? {}}>
+				{navButtons}
+			</div>
+		);
+	}
+
 	return (
 		<div
 			className={`comp compSmallCarousel ${designType} ${arrowButtonsPlacement} ${arrowButtonsHorizontalPlacement} ${arrowButtonsVerticalPlacement} ${
 				showArrowButtonsOnHover ? '_showArrowsOnHover' : ''
-			} `}
+			} ${
+				showNavigationControlsOnHover ? '_showSlideNavOnHover' : ''
+			} ${slideNavOrientation} ${slideNavPlacement} ${isVertical ? '_vertical' : ''}`}
 			style={{ minWidth, minHeight, ...(resolvedStyles?.comp ?? {}) }}
 			onMouseOver={pauseOnHover ? () => (transit.current.hover = true) : undefined}
 			onMouseOut={pauseOnHover ? () => (transit.current.hover = false) : undefined}
@@ -386,6 +497,20 @@ function SmallCarousel(props: ComponentProps) {
 					subComponentName="slidesContainer"
 				></SubHelperComponent>
 			</div>
+			{makeSlideNavButtons(
+				showSlideNav,
+				childrenComponents.length,
+				currentSlide,
+				slideNavOrientation,
+				slideNavPlacement,
+				slideNavIconType,
+				slideNavIconFill,
+				showSlideNumbersInDots,
+				resolvedStyles,
+				(index: number) => applyTransform(index),
+				visibleSlideNavButtons,
+				showNavArrowButtons,
+			)}
 			{nextButton}
 		</div>
 	);
@@ -513,7 +638,7 @@ function calculateMinDimensions(
 	totalChildren: number,
 	noOfChilds: any,
 ) {
-	if (!ref || childRefs.length < totalChildren) return [0, 0];
+	if (!ref || childRefs.length < totalChildren) return [0, 0, 0, 0, 0];
 
 	let maxChildWidth = 0;
 	let maxChildHeight = 0;
@@ -623,7 +748,7 @@ const component: Component = {
 						fillOpacity="0.2"
 					/>
 					<path
-						d="M2.44468 7.99902H2.33789C1.78561 7.99902 1.33789 8.44674 1.33789 8.99902V14.959C1.33789 15.5112 1.78561 15.959 2.33789 15.959H2.44468C2.99697 15.959 3.44468 15.5112 3.44468 14.959V8.99902C3.44468 8.44674 2.99697 7.99902 2.44468 7.99902Z"
+						d="M2.44468 7.99902H2.33789C1.78561 7.99902 1.33789 8.44674 1.33789 8.99902V14.959C1.33789 15.5112 1.78561 17.0379 5.27539 17.0379H6.41442C6.9667 17.0379 7.41442 16.5902 7.41442 16.0379V7.91943C7.41442 7.36715 6.9667 6.91943 6.41442 6.91943Z"
 						fill="currentColor"
 						fillOpacity="0.2"
 					/>
@@ -650,15 +775,15 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'dotButtons',
-			displayName: 'Dot Buttons',
-			description: 'Dot Buttons',
+			name: 'slideNavButtons',
+			displayName: 'Slider Navigation Buttons',
+			description: 'Slider Navigation Buttons',
 			icon: 'fa-solid fa-box',
 		},
 		{
 			name: 'slidesContainer',
 			displayName: 'Slide Container',
-			description: 'Slder Wapper for Slider',
+			description: 'Slider Wapper for Slider',
 			icon: 'fa-solid fa-box',
 		},
 		{
