@@ -213,36 +213,36 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Bullet Type',
 		description: 'Bullet Type',
-		defaultValue: 'none',
+		defaultValue: 'NONE',
 		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
 			{
-				name: 'none',
+				name: 'NONE',
 				displayName: 'None',
 				description: 'None',
 			},
 			{
-				name: 'numeric',
+				name: 'NUMBER',
 				displayName: 'Numeric',
 				description: 'Numeric',
 			},
 			{
-				name: 'alphabetic',
+				name: 'ALPHA',
 				displayName: 'Alphabetic',
 				description: 'Alphabetic',
 			},
 			{
-				name: 'roman',
+				name: 'ROMAN',
 				displayName: 'Roman',
 				description: 'Roman',
 			},
 			{
-				name: 'capitalAlphabetic',
+				name: 'ALPHA_UPPERCASE',
 				displayName: 'Capital Alphabetic',
 				description: 'Capital Alphabetic',
 			},
 			{
-				name: 'capitalRoman',
+				name: 'ROMAN_UPPERCASE',
 				displayName: 'Capital Roman',
 				description: 'Capital Roman',
 			},

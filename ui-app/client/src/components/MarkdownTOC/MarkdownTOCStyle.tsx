@@ -10,10 +10,24 @@ export default function MarkdownTOCStyle({ theme }: { theme: Map<string, Map<str
 		display:flex;
 		flex-direction:column;
 		gap:20px;
-		padding:20px;
 		}
 
+		${PREFIX} .topLabel,.bottomLabel {
+		display:flex;
+		justify-content:start;
+		}
+
+		${PREFIX} .topLabel.left,.bottomLabel.left{
+		flex-direction:row
+		}
+
+		${PREFIX} .topLabel.right,.bottomLabel.right{
+			flex-direction:row-reverse
+			}
 		
+		${PREFIX} a span {
+		margin-right:5px;
+		}		
 }
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
