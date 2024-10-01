@@ -1,5 +1,5 @@
 import { AnimationEditor } from './AnimationEditor';
-import { BorderEditor } from './BorderEditor';
+import { BorderEditor } from './BorderEditor/BorderEditor';
 import { EffectsEditor } from './EffectsEditor';
 import { PositionEditor } from './PositionEditor';
 import { SpacingEditor } from './SpacingEditor';
