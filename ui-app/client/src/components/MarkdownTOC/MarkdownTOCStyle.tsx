@@ -12,16 +12,16 @@ export default function MarkdownTOCStyle({ theme }: { theme: Map<string, Map<str
 		gap:20px;
 		}
 
-		${PREFIX} .topLabel,.bottomLabel {
+		${PREFIX} ._topLabel,._bottomLabel {
 		display:flex;
 		justify-content:start;
 		}
 
-		${PREFIX} .topLabel.left,.bottomLabel.left{
+		${PREFIX} ._topLabel._left,._bottomLabel._left{
 		flex-direction:row
 		}
 
-		${PREFIX} .topLabel.right,.bottomLabel.right{
+		${PREFIX} ._topLabel._right,._bottomLabel._right{
 			flex-direction:row-reverse
 			}
 		

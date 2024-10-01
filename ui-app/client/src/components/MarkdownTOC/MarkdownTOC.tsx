@@ -58,7 +58,6 @@ function makeTOCBulletPoints(
 
 	const stack: BulletPoint[] = [];
 	const numbers: number[] = [];
-	let lastBullet = '';
 
 	for (const line of lines) {
 		const match = line.match(MATCH_REGEX);
@@ -67,8 +66,6 @@ function makeTOCBulletPoints(
 		const level = match[1].length;
 		const text = line.slice(level + 1);
 		const id = text.toLowerCase().replace(/\s+/g, '-');
-
-		lastBullet = text;
 
 		const component = (
 			<>
@@ -361,35 +358,40 @@ function MarkdownTOC(props: ComponentProps) {
 		() => makeTOCBulletPoints(markdownText, showTill, bulletType),
 		[markdownText, showTill, bulletType],
 	);
-	const firstBullet = headings.length > 0 ? headings[0].id : null;
-	const lastBullet = headings.length > 0 ? headings[headings.length - 1].id : null;
+	const firstBullet = headings[0].id;
+	const lastBullet = headings[headings.length - 1].id;
 
 	return (
 		<>
 			{styleComp}
 			<HelperComponent context={context} definition={definition} />
 			<nav className={`comp compMarkdownTOC`} id={`_${styleKey}toc_css`}>
-				<a className={`_topLabel ${topIconImagePosition}`} href={`#${firstBullet}`}>
-					{topTextIcon && !topTextImage && (
-						<i className={`_topIconImage ${topTextIcon}`}>
-							<SubHelperComponent
-								definition={props.definition}
-								subComponentName="topIconImage"
-							/>
-						</i>
-					)}
-					{topTextImage && (
-						<>
-							<img src={topTextImage}></img>
-							<SubHelperComponent
-								definition={props.definition}
-								subComponentName="topIconImage"
-							/>
-						</>
-					)}
-					{topLabelText}
-					<SubHelperComponent definition={props.definition} subComponentName="topLabel" />
-				</a>
+				{headings.length > 0 && (
+					<a className={`_topLabel ${topIconImagePosition}`} href={`#${firstBullet}`}>
+						{topTextIcon && !topTextImage && (
+							<i className={`_topIconImage ${topTextIcon}`}>
+								<SubHelperComponent
+									definition={props.definition}
+									subComponentName="topIconImage"
+								/>
+							</i>
+						)}
+						{topTextImage && (
+							<>
+								<img src={topTextImage}></img>
+								<SubHelperComponent
+									definition={props.definition}
+									subComponentName="topIconImage"
+								/>
+							</>
+						)}
+						{topLabelText}
+						<SubHelperComponent
+							definition={props.definition}
+							subComponentName="topLabel"
+						/>
+					</a>
+				)}
 				<span className="_titleText">{titleText}</span>
 				<SubHelperComponent definition={props.definition} subComponentName="titleText" />
 				{headings.map(heading => (
@@ -402,22 +404,27 @@ function MarkdownTOC(props: ComponentProps) {
 						bulletImage={bulletImage}
 					/>
 				))}
-				<a className={bottomIconImagePosition} href={`#${lastBullet}`}>
-					{bottomTextIcon && !bottomTextImage && (
-						<i className={bottomTextIcon}>
-							<SubHelperComponent
-								definition={props.definition}
-								subComponentName="bottomIconImage"
-							/>
-						</i>
-					)}
-					{bottomTextImage && <img src={bottomTextImage}></img>}
-					{bottomLabelText}
-					<SubHelperComponent
-						definition={props.definition}
-						subComponentName="bottomLabel"
-					/>
-				</a>
+				{headings.length > 0 && (
+					<a
+						className={`_bottomLabel ${bottomIconImagePosition}`}
+						href={`#${lastBullet}`}
+					>
+						{bottomTextIcon && !bottomTextImage && (
+							<i className={bottomTextIcon}>
+								<SubHelperComponent
+									definition={props.definition}
+									subComponentName="bottomIconImage"
+								/>
+							</i>
+						)}
+						{bottomTextImage && <img src={bottomTextImage}></img>}
+						{bottomLabelText}
+						<SubHelperComponent
+							definition={props.definition}
+							subComponentName="bottomLabel"
+						/>
+					</a>
+				)}
 			</nav>
 		</>
 	);

@@ -155,15 +155,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Top Icon/Image Position',
 		description: 'Top Icon/Image Position',
 		editor: ComponentPropertyEditor.ENUM,
-		defaultValue: 'left',
+		defaultValue: '_left',
 		enumValues: [
 			{
-				name: 'left',
+				name: '_left',
 				displayName: 'Left',
 				description: 'Left',
 			},
 			{
-				name: 'right',
+				name: '_right',
 				displayName: 'Right',
 				description: 'Right',
 			},
@@ -193,15 +193,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Bottom Icon/Image Position',
 		description: 'Bottom Icon/Image Position',
 		editor: ComponentPropertyEditor.ENUM,
-		defaultValue: 'left',
+		defaultValue: '_left',
 		enumValues: [
 			{
-				name: 'left',
+				name: '_left',
 				displayName: 'Left',
 				description: 'Left',
 			},
 			{
-				name: 'right',
+				name: '_right',
 				displayName: 'Right',
 				description: 'Right',
 			},
