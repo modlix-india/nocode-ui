@@ -358,8 +358,8 @@ function MarkdownTOC(props: ComponentProps) {
 		() => makeTOCBulletPoints(markdownText, showTill, bulletType),
 		[markdownText, showTill, bulletType],
 	);
-	const firstBullet = headings[0].id;
-	const lastBullet = headings[headings.length - 1].id;
+	const firstBullet = headings.length > 0 ? headings[0].id : null;
+	const lastBullet = headings.length > 0 ? headings[headings.length - 1].id : null;
 
 	return (
 		<>
