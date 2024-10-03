@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import {
+	SimpleEditorMultipleValueType,
 	StyleEditorsProps,
 	extractValue,
 	valuesChangedOnlyValues,
-	SimpleEditorMultipleValueType,
 } from '../simpleEditors';
 import { IconsSimpleEditor } from '../simpleEditors/IconsSimpleEditor';
 import { PixelSize } from '../simpleEditors/SizeSliders';
@@ -156,7 +156,7 @@ export function BorderRadiusLikeEditor({
 	let ellipticalRadiusComp = null;
 	if (showEllipticalRadius) {
 		ellipticalRadiusComp = (
-			<div className="_combineEditors">
+			<>
 				<div className="_simpleLabel">Elliptical</div>
 				<div className="_simpleEditor">
 					<PixelSize
@@ -164,7 +164,7 @@ export function BorderRadiusLikeEditor({
 						onChange={v => onChangeBorderRadius(borderRadius + ' ' + v)}
 					/>
 				</div>
-			</div>
+			</>
 		);
 	}
 
@@ -172,17 +172,18 @@ export function BorderRadiusLikeEditor({
 		<>
 			<div className="_combineEditors">
 				<div className="_simpleLabel">Radius</div>
-				<div className="_simpleEditor">
-					<PixelSize
-						value={borderRadius}
-						onChange={v => {
-							if (showEllipticalRadius && v != ellipticalRadius)
-								v = v + ' ' + ellipticalRadius;
-							onChangeBorderRadius(v);
-						}}
-					/>
-				</div>
 			</div>
+			<div className="_simpleEditor">
+				<PixelSize
+					value={borderRadius}
+					onChange={v => {
+						if (showEllipticalRadius && v != ellipticalRadius)
+							v = v + ' ' + ellipticalRadius;
+						onChangeBorderRadius(v);
+					}}
+				/>
+			</div>
+
 			{ellipticalRadiusComp}
 			<div className="_simpleEditor">
 				<IconsSimpleEditor
