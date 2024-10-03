@@ -248,13 +248,12 @@ export default function AppStyle() {
 	}
 
 	._simpleEditorRange ._rangeTrack {
-		 width: calc(100% - 6px);
+		width: calc(100% - 6px);
 		min-width: 60px;
 		height: 2px;
 		border-radius: 10px;
 		background-color: #E2E2E7;			
-		left: 0;
-		z-index: 1;
+		margin-left: 2px;
 	}
 
 	._simpleEditorRange ._rangeTrackFill {
@@ -263,7 +262,7 @@ export default function AppStyle() {
 		border-radius: 10px;
 		background-color: #52BD94;
 		position: absolute;
-		left: 0;
+		left: 2px;
 		z-index: 1;
 		margin-top: -2px;
 		transition: width 0s;
@@ -285,10 +284,10 @@ export default function AppStyle() {
 	._simpleEditorRange ._rangeThumb::before {
 		content: '';
 		position: absolute;
-		width: 8px;
-		height: 8px;
-		left: 3px;
-		top: 3px;
+		width: 10px;
+		height: 10px;
+		left: 2px;
+		top: 2px;
 		border-radius: 50%;
 		background: linear-gradient(180deg, #7CD9B6 0%, #52BD94 100%);
 	}
