@@ -1131,7 +1131,7 @@ export default function GridStyle({
 		${PREFIX} ._simpleEditorIcons._bground ._eachIcon svg rect,
 		${PREFIX} ._simpleEditorIcons._bground ._eachIcon svg line {
 			fill: #E3E5EA;
-			stroke: rgba(142, 144, 164, 0.5);
+			stroke: #E3E5EA;
 		}
 
 		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg path,
