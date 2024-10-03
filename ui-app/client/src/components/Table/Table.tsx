@@ -431,8 +431,8 @@ function TableComponent(props: ComponentProps) {
 								<path
 									d="M1 1L0.999999 27"
 									stroke="#DDDDDD"
-									stroke-opacity="0.7"
-									stroke-linecap="round"
+									strokeOpacity="0.7"
+									strokeLinecap="round"
 								/>
 							</svg>
 						)}
@@ -456,8 +456,8 @@ function TableComponent(props: ComponentProps) {
 								<path
 									d="M1 1L0.999999 27"
 									stroke="#DDDDDD"
-									stroke-opacity="0.7"
-									stroke-linecap="round"
+									strokeOpacity="0.7"
+									strokeLinecap="round"
 								/>
 							</svg>
 						)}

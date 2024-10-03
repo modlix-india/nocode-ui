@@ -223,7 +223,7 @@ export function TypographyEditor({
 								d="M20.625,12.438H6"
 								fill="none"
 								stroke="#000"
-								stroke-linecap="round"
+								strokeLinecap="round"
 								strokeWidth="1.5"
 							/>
 							<path
@@ -232,7 +232,7 @@ export function TypographyEditor({
 								d="M20.625,10v4.875"
 								fill="none"
 								stroke="#000"
-								stroke-linecap="round"
+								strokeLinecap="round"
 								strokeWidth="1.5"
 							/>
 							<path
@@ -241,7 +241,7 @@ export function TypographyEditor({
 								d="M6,10v4.875"
 								fill="none"
 								stroke="#000"
-								stroke-linecap="round"
+								strokeLinecap="round"
 								strokeWidth="1.5"
 							/>
 						</g>
@@ -279,21 +279,16 @@ export function TypographyEditor({
 							d="M6 1L13 1"
 							stroke="#8E90A4"
 							strokeWidth="2"
-							stroke-linecap="round"
+							strokeLinecap="round"
 						/>
-						<path d="M1 5H13" stroke="#8E90A4" strokeWidth="2" stroke-linecap="round" />
+						<path d="M1 5H13" stroke="#8E90A4" strokeWidth="2" strokeLinecap="round" />
 						<path
 							d="M1 9L13 9"
 							stroke="#8E90A4"
 							strokeWidth="2"
-							stroke-linecap="round"
+							strokeLinecap="round"
 						/>
-						<path
-							d="M1 13H13"
-							stroke="#8E90A4"
-							strokeWidth="2"
-							stroke-linecap="round"
-						/>
+						<path d="M1 13H13" stroke="#8E90A4" strokeWidth="2" strokeLinecap="round" />
 					</svg>
 
 					<EachSimpleEditor
