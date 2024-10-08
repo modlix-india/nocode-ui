@@ -1,23 +1,20 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import { parseInline } from '../../commonComponents/Markdown/parseInline';
+import { makeId } from '../../commonComponents/Markdown/utils';
+import { PageStoreExtractor } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
-import {
-	PageStoreExtractor,
-	addListenerAndCallImmediatelyWithChildrenActivity,
-	getPathFromLocation,
-} from '../../context/StoreContext';
-import useDefinition from '../util/useDefinition';
-import { propertiesDefinition, stylePropertiesDefinition } from './MarkdownTOCProperties';
-import { styleDefaults } from './MarkdownTOCStyleProperties';
-import { IconHelper } from '../util/IconHelper';
-import MarkdownTOCStyle from './MarkdownTOCStyle';
-import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
-import { HelperComponent } from '../HelperComponents/HelperComponent';
 import {
 	processComponentStylePseudoClasses,
 	processStyleObjectToCSS,
 } from '../../util/styleProcessor';
-import { parseInline } from '../../commonComponents/Markdown/parseInline';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
+import { IconHelper } from '../util/IconHelper';
 import { getAlphaNumeral, getRoman } from '../util/numberConverter';
+import useDefinition from '../util/useDefinition';
+import { propertiesDefinition, stylePropertiesDefinition } from './dharaProps';
+import { styleDefaults } from './dharaStyleProps';
+import MarkdownTOCStyle from './MarkdownTOCStyle';
 
 interface BulletPoint {
 	level: number;
@@ -34,6 +31,53 @@ const COUNT_FUNCTIONS: Record<string, (num: number) => string> = {
 	ALPHA: (num: number) => getAlphaNumeral(num, false),
 	ALPHA_UPPERCASE: (num: number) => getAlphaNumeral(num, true),
 };
+
+const STYLE_SELECTORS = [
+	['comp', `toc_css`, '', `toc_css:hover`],
+	['titleText', `toc_css > ._titleText`, '', `toc_css > ._titleText:hover`],
+	['H1', `toc_css > ._heading1`, `toc_css > ._heading1:visited`, `toc_css > ._heading1:hover`],
+	['H2', `toc_css > ._heading2`, `toc_css > ._heading2:visited`, `toc_css > ._heading2:hover`],
+	['H3', `toc_css > ._heading3`, `toc_css > ._heading3:visited`, `toc_css > ._heading3:hover`],
+	['H4', `toc_css > ._heading4`, `toc_css > ._heading4:visited`, `toc_css > ._heading4:hover`],
+	['H5', `toc_css > ._heading5`, `toc_css > ._heading5:visited`, `toc_css > ._heading5:hover`],
+	['H6', `toc_css > ._heading6`, `toc_css > ._heading6:visited`, `toc_css > ._heading6:hover`],
+	[
+		'collapsibleIcon',
+		`toc_css a i._collapsibleIcon`,
+		`toc_css a:visited i._collapsibleIcon`,
+		`toc_css a:hover i._collapsibleIcon`,
+	],
+	[
+		'topLabel',
+		`toc_css > ._topLabel`,
+		`toc_css > ._topLabel:visited`,
+		`toc_css > ._topLabel:hover`,
+	],
+	[
+		'bottomLabel',
+		`toc_css > ._bottomLabel`,
+		`toc_css > ._bottomLabel:visited`,
+		`toc_css > ._bottomLabel:hover`,
+	],
+	[
+		'bulletIconImage',
+		`toc_css > a > ._bulletIconImage`,
+		`toc_css > a:visited > ._bulletIconImage`,
+		`toc_css > a:hover > ._bulletIconImage`,
+	],
+	[
+		'topIconImage',
+		`toc_css > ._topLabel > img`,
+		`toc_css > ._topLabel:visited > img`,
+		`toc_css > ._topLabel:hover > img`,
+	],
+	[
+		'bottomIconImage',
+		`toc_css > ._bottomLabel > img`,
+		`toc_css > ._bottomLabel:visited > img`,
+		`toc_css > ._bottomLabel:hover > img`,
+	],
+];
 
 function formatBulletNumber(numbers: number[], bulletType: string): string {
 	if (bulletType === 'NONE') {
@@ -60,12 +104,12 @@ function makeTOCBulletPoints(
 	const numbers: number[] = [];
 
 	for (const line of lines) {
-		const match = line.match(MATCH_REGEX);
+		const match = MATCH_REGEX.exec(line);
 		if (!match) continue;
 
 		const level = match[1].length;
 		const text = line.slice(level + 1);
-		const id = text.toLowerCase().replace(/\s+/g, '-');
+		const id = makeId(text);
 
 		const component = (
 			<>
@@ -107,7 +151,7 @@ function makeTOCBulletPoints(
 	return bullets;
 }
 
-function MarkdownTOC(props: ComponentProps) {
+function MarkdownTOC(props: Readonly<ComponentProps>) {
 	const { definition, locationHistory, context } = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
@@ -129,6 +173,7 @@ function MarkdownTOC(props: ComponentProps) {
 			bulletIcon,
 			bulletImage,
 			makeCollapsible,
+			colorScheme,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -161,239 +206,99 @@ function MarkdownTOC(props: ComponentProps) {
 		locationHistory?.length ? locationHistory.map(e => e.index).join('_') : ''
 	}`;
 
-	const styleComp = (
-		<style key={`${styleKey}_style`}>
-			{processStyleObjectToCSS(
-				regularStyle?.comp,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css`,
-			)}
-			{processStyleObjectToCSS(
-				visitedStyle?.comp,
-				`.comp.compMarkdownTOC._${styleKey}toc_css:visited`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.comp,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css:hover`,
-			)}
-			{processStyleObjectToCSS(
-				regularStyle?.titleText,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > ._titleText`,
-			)}
-			{processStyleObjectToCSS(
-				visitedStyle?.titleText,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > ._titleText:visited`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.titleText,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > ._titleText:hover`,
-			)}
-			{processStyleObjectToCSS(
-				regularStyle?.H1,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > ._heading1`,
-			)}
-			{processStyleObjectToCSS(
-				visitedStyle?.H1,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > ._heading1:visited`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.H1,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > ._heading1:hover`,
-			)}
-			{processStyleObjectToCSS(
-				regularStyle?.H2,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > ._heading2`,
-			)}
-			{processStyleObjectToCSS(
-				visitedStyle?.H2,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > ._heading2:visited`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.H2,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > ._heading2:hover`,
-			)}
-			{processStyleObjectToCSS(
-				regularStyle?.H3,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > ._heading3`,
-			)}
-			{processStyleObjectToCSS(
-				visitedStyle?.H3,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > ._heading3:visited`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.H3,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > ._heading3:hover`,
-			)}
-			{processStyleObjectToCSS(
-				regularStyle?.H4,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > ._heading4`,
-			)}
-			{processStyleObjectToCSS(
-				visitedStyle?.H4,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > ._heading4:visited`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.H4,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > ._heading4:hover`,
-			)}
-			{processStyleObjectToCSS(
-				regularStyle?.H5,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > ._heading5`,
-			)}
-			{processStyleObjectToCSS(
-				visitedStyle?.H5,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > ._heading5:visited`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.H5,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > ._heading5:hover`,
-			)}
-			{processStyleObjectToCSS(
-				regularStyle?.H6,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > ._heading6`,
-			)}
-			{processStyleObjectToCSS(
-				visitedStyle?.H6,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > ._heading6:visited`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.H6,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > ._heading6:hover`,
-			)}
-			{processStyleObjectToCSS(
-				regularStyle?.collapasibleIcon,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css i`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.collapasibleIcon,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css i:hover`,
-			)}
-			{processStyleObjectToCSS(
-				regularStyle?.topLabel,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > ._topLabel`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.topLabel,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > ._topLabel:hover`,
-			)}
-			{processStyleObjectToCSS(
-				regularStyle?.bottomLabel,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > ._bottomLabel`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.bottomLabel,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > ._bottomLabel:hover`,
-			)}
-			{processStyleObjectToCSS(
-				regularStyle?.bulletIconImage,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > a > ._bulletIconImage`,
-			)}
-			{processStyleObjectToCSS(
-				visitedStyle?.bulletIconImage,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > a > ._bulletIconImage:visited`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.bulletIconImage,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > a > ._bulletIconImage:hover`,
-			)}
-			{processStyleObjectToCSS(
-				regularStyle?.bulletIconImage,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > a > img`,
-			)}
-			{processStyleObjectToCSS(
-				visitedStyle?.bulletIconImage,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > a > img:visited`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.bulletIconImage,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > a > img:hover`,
-			)}
-			{processStyleObjectToCSS(
-				regularStyle?.bulletIconImage,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > a > span`,
-			)}
-			{processStyleObjectToCSS(
-				visitedStyle?.bulletIconImage,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > a > span:visited`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.bulletIconImage,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > a > span:hover`,
-			)}
-			{processStyleObjectToCSS(
-				regularStyle?.topIconImage,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > ._topLabel > img`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.topIconImage,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css ._topLabel > img:hover`,
-			)}
-			{processStyleObjectToCSS(
-				regularStyle?.topIconImage,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > ._topLabel > i`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.topIconImage,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css ._topLabel > i:hover`,
-			)}
-			{processStyleObjectToCSS(
-				regularStyle?.topIconImage,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > ._topLabel > img`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.bottomIconImage,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css ._bottomLabel > img:hover`,
-			)}
-			{processStyleObjectToCSS(
-				regularStyle?.bottomIconImage,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css > ._bottomLabel > i`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.bottomIconImage,
-				`.comp.compMarkdownTOC#_${styleKey}toc_css ._bottomLabel > i:hover`,
-			)}
-		</style>
-	);
+	const styleStrings: Array<string> = [];
+	const styleObjects = [undefined, regularStyle, visitedStyle, hoverStyle];
+
+	for (const styleName of STYLE_SELECTORS) {
+		for (let i = 1; i < styleName.length; i++) {
+			if (!styleName[i]) continue;
+			let style = processStyleObjectToCSS(
+				styleObjects[i]?.[styleName[0]],
+				`.comp.compMarkdownTOC#_${styleKey}${styleName[i]}`,
+			);
+			if (style) styleStrings.push(style);
+		}
+	}
+
+	const styleComp = styleStrings.length ? (
+		<style key={`${styleKey}_style`}>{styleStrings.join('\n')}</style>
+	) : null;
 
 	const headings = useMemo(
 		() => makeTOCBulletPoints(markdownText, showTill, bulletType),
 		[markdownText, showTill, bulletType],
 	);
+
 	const firstBullet = headings.length > 0 ? headings[0].id : null;
 	const lastBullet = headings.length > 0 ? headings[headings.length - 1].id : null;
+
+	let titleTextComp = null;
+	if (titleText) {
+		titleTextComp = (
+			<span className="_titleText">
+				<SubHelperComponent definition={props.definition} subComponentName="titleText" />
+				{titleText}
+			</span>
+		);
+	}
+
+	let topComp = null;
+	if (topLabelText && firstBullet) {
+		let iconImage;
+		if (topTextIcon) {
+			iconImage = (
+				<i className={`_topIconImage ${topTextIcon}`}>
+					<SubHelperComponent
+						definition={props.definition}
+						subComponentName="topIconImage"
+					/>
+				</i>
+			);
+		} else if (topTextImage) {
+			iconImage = <img src={topTextImage} alt="topTextImage" />;
+		}
+
+		topComp = (
+			<a className="_topLabel" href={`#${firstBullet}`}>
+				<SubHelperComponent definition={props.definition} subComponentName="topLabel" />
+				{topIconImagePosition === '_left' ? iconImage : topLabelText}
+				{topIconImagePosition === '_right' ? iconImage : topLabelText}
+			</a>
+		);
+	}
+
+	let bottomComp = null;
+	if (bottomLabelText && lastBullet) {
+		let iconImage;
+		if (bottomTextIcon) {
+			iconImage = (
+				<i className={`_bottomIconImage ${bottomTextIcon}`}>
+					<SubHelperComponent
+						definition={props.definition}
+						subComponentName="bottomIconImage"
+					/>
+				</i>
+			);
+		} else if (bottomTextImage) {
+			iconImage = <img src={bottomTextImage} alt="bottomTextImage" />;
+		}
+
+		bottomComp = (
+			<a className="_bottomLabel" href={`#${lastBullet}`}>
+				<SubHelperComponent definition={props.definition} subComponentName="bottomLabel" />
+				{bottomIconImagePosition === '_left' ? iconImage : bottomLabelText}
+				{bottomIconImagePosition === '_right' ? iconImage : bottomLabelText}
+			</a>
+		);
+	}
 
 	return (
 		<>
 			{styleComp}
-			<HelperComponent context={context} definition={definition} />
-			<nav className={`comp compMarkdownTOC`} id={`_${styleKey}toc_css`}>
-				{headings.length > 0 && (
-					<a className={`_topLabel ${topIconImagePosition}`} href={`#${firstBullet}`}>
-						{topTextIcon && !topTextImage && (
-							<i className={`_topIconImage ${topTextIcon}`}>
-								<SubHelperComponent
-									definition={props.definition}
-									subComponentName="topIconImage"
-								/>
-							</i>
-						)}
-						{topTextImage && (
-							<>
-								<img src={topTextImage}></img>
-								<SubHelperComponent
-									definition={props.definition}
-									subComponentName="topIconImage"
-								/>
-							</>
-						)}
-						{topLabelText}
-						<SubHelperComponent
-							definition={props.definition}
-							subComponentName="topLabel"
-						/>
-					</a>
-				)}
-				<span className="_titleText">{titleText}</span>
-				<SubHelperComponent definition={props.definition} subComponentName="titleText" />
+			<nav className={`comp compMarkdownTOC ${colorScheme}`} id={`_${styleKey}toc_css`}>
+				<HelperComponent context={context} definition={definition} />
+				{titleTextComp}
+				{topComp}
 				{headings.map(heading => (
 					<ContentLink
 						{...heading}
@@ -404,27 +309,7 @@ function MarkdownTOC(props: ComponentProps) {
 						bulletImage={bulletImage}
 					/>
 				))}
-				{headings.length > 0 && (
-					<a
-						className={`_bottomLabel ${bottomIconImagePosition}`}
-						href={`#${lastBullet}`}
-					>
-						{bottomTextIcon && !bottomTextImage && (
-							<i className={bottomTextIcon}>
-								<SubHelperComponent
-									definition={props.definition}
-									subComponentName="bottomIconImage"
-								/>
-							</i>
-						)}
-						{bottomTextImage && <img src={bottomTextImage}></img>}
-						{bottomLabelText}
-						<SubHelperComponent
-							definition={props.definition}
-							subComponentName="bottomLabel"
-						/>
-					</a>
-				)}
+				{bottomComp}
 			</nav>
 		</>
 	);
@@ -448,78 +333,82 @@ function ContentLink({
 	bulletImage: string;
 	props: ComponentProps;
 }) {
-	const [expandedHeadings, setExpandedHeadings] = useState<{ [key: string]: boolean }>({});
-	const toggleCollapse = (id: string) => {
-		setExpandedHeadings(prev => ({
-			...prev,
-			[id]: !prev[id],
-		}));
-	};
+	const from = parseInt(makeCollapsibleFrom.charAt(1));
 
-	const isCollapsible = makeCollapsible && level >= parseInt(makeCollapsibleFrom.charAt(1));
-	const shouldCollapseChildren = isCollapsible ? expandedHeadings[id] : true;
+	const [expanded, setExpanded] = useState(false);
+
+	const isExpanded = children.length && (level >= from ? expanded : !expanded);
+
+	let iconImage;
+
+	if (bulletIcon) {
+		iconImage = (
+			<i className={`_bulletIconImage ${bulletIcon}`}>
+				<SubHelperComponent
+					definition={props.definition}
+					subComponentName="_bulletIconImage"
+				/>
+			</i>
+		);
+	} else if (bulletImage) {
+		iconImage = <img className="_bulletIconImage" alt={`${id}`} src={bulletImage}></img>;
+	} else {
+		iconImage = (
+			<span className="_bulletIconImage">
+				<SubHelperComponent
+					definition={props.definition}
+					subComponentName="_bulletIconImage"
+				/>
+				{number}
+			</span>
+		);
+	}
+
+	const childrenComps = (isExpanded || !makeCollapsible ? children : []).map(child => (
+		<ContentLink
+			key={child.id}
+			{...child}
+			makeCollapsible={makeCollapsible}
+			makeCollapsibleFrom={makeCollapsibleFrom}
+			props={props}
+			bulletIcon={bulletIcon}
+			bulletImage={bulletImage}
+		/>
+	));
+
+	let collapseIcon;
+
+	if (makeCollapsible) {
+		let icon = 'fa-chevron-right hide';
+		if (children.length) {
+			icon = isExpanded ? 'fa-chevron-down' : 'fa-chevron-right';
+		}
+
+		collapseIcon = (
+			<i
+				onClick={e => {
+					e.preventDefault();
+					setExpanded(!expanded);
+				}}
+				className={`_collapsibleIcon fa-solid ${icon}`}
+			>
+				<SubHelperComponent
+					definition={props.definition}
+					subComponentName="collapsibleIcon"
+				/>
+			</i>
+		);
+	}
 
 	return (
 		<>
-			<a
-				key={id}
-				href={`#${id}`}
-				className={`_heading${level}`}
-				style={level >= 2 ? { marginLeft: `${15 * (level - 1)}px` } : {}}
-			>
-				{makeCollapsible &&
-					children.length > 0 &&
-					level >= parseInt(makeCollapsibleFrom.charAt(1)) && (
-						<i
-							onClick={e => {
-								e.preventDefault();
-								toggleCollapse(id);
-							}}
-							className={`fa-solid ${expandedHeadings[id] ? 'fa-chevron-down' : 'fa-chevron-right'}`}
-						>
-							<SubHelperComponent
-								definition={props.definition}
-								subComponentName="collapsibleIcon"
-							/>
-						</i>
-					)}
-				{!bulletImage && (
-					<i className={`_bulletIconImage ${bulletIcon}`}>
-						<SubHelperComponent
-							definition={props.definition}
-							subComponentName="_bulletIconImage"
-						/>
-					</i>
-				)}
-				{bulletImage && <img className="_bulletIconImage" src={bulletImage}></img>}
-				{!bulletIcon && !bulletImage && (
-					<span className="_bulletIconImage">
-						{number}
-						<SubHelperComponent
-							definition={props.definition}
-							subComponentName="bulletIconImage"
-						/>
-					</span>
-				)}
-				{component}
+			<a key={id} href={`#${id}`} className={`_heading${level}`}>
 				<SubHelperComponent definition={props.definition} subComponentName={`H${level}`} />
+				{collapseIcon}
+				{iconImage}
+				{component}
 			</a>
-
-			{(!isCollapsible || shouldCollapseChildren) && (
-				<>
-					{children.map(child => (
-						<ContentLink
-							key={child.id}
-							{...child}
-							makeCollapsible={makeCollapsible}
-							makeCollapsibleFrom={makeCollapsibleFrom}
-							props={props}
-							bulletIcon={bulletIcon}
-							bulletImage={bulletImage}
-						/>
-					))}
-				</>
-			)}
+			{childrenComps}
 		</>
 	);
 }
@@ -631,7 +520,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'collapasibleIcon',
+			name: 'collapsibleIcon',
 			displayName: 'Collapasible Icon',
 			description: 'Collapasible Icon',
 			icon: 'fa-solid fa-box',

@@ -5,7 +5,7 @@ import {
 	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
-import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
+import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
@@ -15,7 +15,10 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Markdown Text',
 		defaultValue: '',
 		group: ComponentPropertyGroup.BASIC,
+		editor: ComponentPropertyEditor.TEXT_EDITOR,
+		translatable: true,
 	},
+	COMMON_COMPONENT_PROPERTIES.colorScheme,
 	{
 		name: 'showTill',
 		schema: SCHEMA_STRING_COMP_PROP,
@@ -120,16 +123,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Top Label Text',
 		description: 'Text to be shown to for the gototop.',
 		translatable: true,
-		defaultValue: 'Top',
-		group: ComponentPropertyGroup.ADVANCED,
-	},
-	{
-		name: 'bottomLabelText',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Bottom Label Text',
-		description: 'Text to be shown to for the gotobottom.',
-		translatable: true,
-		defaultValue: 'Bottom',
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
@@ -168,6 +161,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				description: 'Right',
 			},
 		],
+	},
+	{
+		name: 'bottomLabelText',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Bottom Label Text',
+		description: 'Text to be shown to for the gotobottom.',
+		translatable: true,
+		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
 		name: 'bottomTextIcon',
@@ -339,7 +340,7 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
-	collapasibleIcon: [
+	collapsibleIcon: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
