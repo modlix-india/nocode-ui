@@ -12,9 +12,9 @@ import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { IconHelper } from '../util/IconHelper';
 import { getAlphaNumeral, getRoman } from '../util/numberConverter';
 import useDefinition from '../util/useDefinition';
-import { propertiesDefinition, stylePropertiesDefinition } from './dharaProps';
-import { styleDefaults } from './dharaStyleProps';
+import { propertiesDefinition, stylePropertiesDefinition } from './markdownTOCProperties';
 import MarkdownTOCStyle from './MarkdownTOCStyle';
+import { styleDefaults } from './markdownTOCStyleProperties';
 
 interface BulletPoint {
 	level: number;

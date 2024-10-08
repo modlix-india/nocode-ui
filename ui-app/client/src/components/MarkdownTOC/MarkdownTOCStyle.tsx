@@ -1,6 +1,6 @@
 import React from 'react';
 import { processStyleDefinition } from '../../util/styleProcessor';
-import { styleDefaults, styleProperties } from './dharaStyleProps';
+import { styleDefaults, styleProperties } from './markdownTOCStyleProperties';
 
 const PREFIX = '.comp.compMarkdownTOC';
 export default function MarkdownTOCStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
