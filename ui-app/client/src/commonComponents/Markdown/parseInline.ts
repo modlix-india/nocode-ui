@@ -111,14 +111,14 @@ export function parseInline(
 function processFootnotes(
 	actualLine: string,
 	i: number,
-	footNotes: MarkdowFootnotes,
+	footNotes: MarkdowFootnotes | undefined,
 	current: string,
 	lineParts: React.JSX.Element[],
 	lineNumber: number,
 	styles: any,
 ) {
 	const refEnd = actualLine.indexOf(']', i + 1);
-	if (refEnd === -1) return { i, current, found: false };
+	if (refEnd === -1 || !footNotes) return { i, current, found: false };
 
 	let ref = actualLine.substring(i + 1, refEnd);
 	if (ref.startsWith('[')) ref = ref.substring(1);
@@ -197,7 +197,7 @@ function processImageLink(
 				ind = refEnd;
 			}
 		}
-		linkParts = params.urlRefs.get(ref.toLowerCase());
+		linkParts = params.urlRefs?.get(ref.toLowerCase());
 		i = ind;
 	}
 
@@ -271,7 +271,7 @@ function processLink(
 				ind = refEnd;
 			}
 		}
-		linkParts = params.urlRefs.get(ref.toLowerCase());
+		linkParts = params.urlRefs?.get(ref.toLowerCase());
 		i = ind;
 	}
 
