@@ -1,10 +1,19 @@
 import React from 'react';
-import { TimeSize, UnitOption } from './SizeSliders';
-import { IconsSimpleEditor } from './IconsSimpleEditor';
+
+import { AngleSize, PixelSize, TimeSize, UnitOption } from './SizeSliders';
+import { IconOptions, IconsSimpleEditor } from './IconsSimpleEditor';
 import { duplicate } from '@fincity/kirun-js';
 import { Dropdown } from './Dropdown';
+import TextArea from '../../../../TextArea/TextArea';
+import ColorPicker from '../../../../ColorPicker/ColorPicker';
+import {
+	CommonColorPicker,
+	CommonColorPickerPropertyEditor,
+} from '../../../../../commonComponents/CommonColorPicker';
+import { ComponentProperty } from '../../../../../types/common';
 
 export interface PropertyDetail {
+	options: IconOptions;
 	name: string;
 	displayName: string;
 	type:
@@ -15,11 +24,14 @@ export interface PropertyDetail {
 		| 'number percentage'
 		| 'dropdown'
 		| 'icons'
+		| 'color'
 		| 'time';
 	default: string;
 	optionOverride?: Array<UnitOption>;
 	dropdownOptions?: Array<{ name: string; displayName: string }>;
 	numberOptions?: { min: number; max: number; step: number };
+	// onChange?: (value: string) => void;
+	onChange?: (value: string, allValues: { [key: string]: string[] }) => void;
 }
 
 export function ManyValuesEditor({
@@ -30,6 +42,7 @@ export function ManyValuesEditor({
 	newValueProps,
 	groupTitle,
 	showNewGroup,
+	// splitOptions,
 }: {
 	values: { prop: string; value: string }[];
 	newValueGroupTitle?: string;
@@ -38,12 +51,22 @@ export function ManyValuesEditor({
 	newValueProps: Array<string>;
 	groupTitle?: string;
 	showNewGroup?: boolean;
+	// splitOptions?: {
+	// 	splitBy: 'comma' | 'custom';
+	// 	customRegex?: string;
+	// 	defaultValue?: 'comma';
+	// };
 }) {
 	const props: { [key: string]: Array<string> } = {};
 	let max = 0;
 	for (let i = 0; i < values.length; i++) {
 		props[values[i].prop] = values[i].value.trim()
-			? values[i].value.split(',').map(e => e.trim()) ?? []
+			? values[i].value
+					.split(
+						',',
+						// splitOptions?.splitBy === 'comma' ? ',' : splitOptions?.customRegex ?? '',
+					)
+					.map(e => e.trim()) ?? []
 			: [];
 		if (max < props[values[i].prop].length) max = props[values[i].prop].length;
 	}
@@ -54,6 +77,9 @@ export function ManyValuesEditor({
 			for (let i = newProps[def.name].length; i < curMax; i++) {
 				newProps[def.name].push(def.default);
 			}
+		}
+		if (def.onChange) {
+			def.onChange(v, newProps);
 		}
 		for (let eachDef of propDefinitions) {
 			if (newProps[eachDef.name].length && newProps[eachDef.name].length < curMax) {
@@ -99,10 +125,11 @@ export function ManyValuesEditor({
 								{
 									name: 'Delete',
 									description: 'Delete this animation',
-									width: '13',
-									height: '14',
+									width: '15',
+									height: '15',
 									icon: (
 										<>
+											{' '}
 											<path
 												d="M3.93393 0.483984L3.74107 0.875H1.16964C0.695536 0.875 0.3125 1.26602 0.3125 1.75C0.3125 2.23398 0.695536 2.625 1.16964 2.625H11.4554C11.9295 2.625 12.3125 2.23398 12.3125 1.75C12.3125 1.26602 11.9295 0.875 11.4554 0.875H8.88393L8.69107 0.483984C8.54643 0.185938 8.24911 0 7.925 0H4.7C4.37589 0 4.07857 0.185938 3.93393 0.483984ZM11.4554 3.5H1.16964L1.7375 12.7695C1.78036 13.4613 2.34286 14 3.02054 14H9.60446C10.2821 14 10.8446 13.4613 10.8875 12.7695L11.4554 3.5Z"
 												strokeWidth="0"
@@ -135,8 +162,60 @@ export function ManyValuesEditor({
 									placeholder={def.displayName}
 								/>
 							);
+						} else if (def.type === 'pixel size') {
+							editor = (
+								<PixelSize
+									value={props[def.name][i]}
+									onChange={e => valueChanged(def, i, max, e)}
+									placeholder={def.displayName}
+								/>
+							);
+						} else if (def.type === 'angle size') {
+							editor = (
+								<AngleSize
+									value={props[def.name][i]}
+									onChange={e => valueChanged(def, i, max, e)}
+									placeholder={def.displayName}
+								/>
+							);
+						} else if (def.type === 'text area') {
+							editor = (
+								<textarea
+									value={props[def.name][i]}
+									onChange={e => valueChanged(def, i, max, e.target.value)}
+									placeholder={def.displayName}
+								/>
+							);
+						} else if (def.type === 'number percentage') {
+							editor = (
+								<PixelSize
+									value={props[def.name][i]}
+									onChange={e => valueChanged(def, i, max, e)}
+									placeholder={def.displayName}
+								/>
+							);
+						} else if (def.type === 'icons') {
+							editor = (
+								<IconsSimpleEditor
+									selected={props[def.name][i]}
+									onChange={v => valueChanged(def, i, max, v as string)}
+									options={def.options}
+								/>
+							);
+						} else if (def.type === 'color') {
+							editor = (
+								<CommonColorPickerPropertyEditor
+									color={{
+										value: props[def.name][i] || '',
+										location: { type: 'VALUE' },
+									}}
+									onChange={(v: ComponentProperty<string>) => {
+										const colorString = v.value || '';
+										valueChanged(def, i, max, colorString);
+									}}
+								/>
+							);
 						}
-
 						return (
 							<div className="_editorLine">
 								<span className="_label">{def.displayName} </span>
@@ -177,6 +256,75 @@ export function ManyValuesEditor({
 									<TimeSize
 										value={''}
 										onChange={e => valueChanged(def, max, max + 1, e)}
+										placeholder={def.displayName}
+									/>
+								);
+							} else if (def.type === 'icons') {
+								editor = (
+									<IconsSimpleEditor
+										selected={''}
+										onChange={v => valueChanged(def, max, max + 1, v as string)}
+										options={def.options}
+									/>
+								);
+							} else if (def.type === 'color') {
+								editor = (
+									<CommonColorPickerPropertyEditor
+										color={{
+											value: '',
+											location: { type: 'VALUE' },
+										}}
+										onChange={(v: ComponentProperty<string>) => {
+											const colorString = v.value || '';
+											valueChanged(def, max, max + 1, colorString);
+										}}
+									/>
+								);
+							} else if (def.type === 'number') {
+								editor = (
+									<input
+										type="number"
+										value={''}
+										onChange={e =>
+											valueChanged(def, max, max + 1, e.target.value)
+										}
+										placeholder={def.displayName}
+									/>
+								);
+							} else if (def.type === 'number percentage') {
+								editor = (
+									<input
+										type="number"
+										value={''}
+										onChange={e =>
+											valueChanged(def, max, max + 1, e.target.value)
+										}
+										placeholder={def.displayName}
+									/>
+								);
+							} else if (def.type === 'pixel size') {
+								editor = (
+									<PixelSize
+										value={''}
+										onChange={e => valueChanged(def, max, max + 1, e)}
+										placeholder={def.displayName}
+									/>
+								);
+							} else if (def.type === 'angle size') {
+								editor = (
+									<AngleSize
+										value={''}
+										onChange={e => valueChanged(def, max, max + 1, e)}
+										placeholder={def.displayName}
+									/>
+								);
+							} else if (def.type === 'text area') {
+								editor = (
+									<textarea
+										value={''}
+										onChange={e =>
+											valueChanged(def, max, max + 1, e.target.value)
+										}
 										placeholder={def.displayName}
 									/>
 								);

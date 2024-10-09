@@ -1364,9 +1364,47 @@ export default function GridStyle({
 		${PREFIX} ._simpleEditorGroupTitle._gradient {
 			border-radius: 4px 4px 0px 0px;
 			color: #FFF;
-			background: linear-gradient(90deg, rgba(67, 178, 255) 0%, rgba(82, 189, 148) 100%);
+			// background: linear-gradient(90deg, rgba(67, 178, 255) 0%, rgba(82, 189, 148) 100%);
+			background: #52BD94;
 		}
 
+		${PREFIX} ._controls {
+            display: flex;
+            align-items: center;
+        }
+
+        ${PREFIX} ._inputWithIcon {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        ${PREFIX} ._simpleEditorInput {
+            width: 100%;
+            padding-left: 30px; /* Make room for the icon */
+        }
+
+		${PREFIX} ._eachBackgroundEditor {
+			width: 100%;
+		}
+			
+		${PREFIX} ._layerControls {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			// gap: 5px;
+		}
+
+
+
+        ${PREFIX} ._inputIcon {
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+			
 		${PREFIX} ._simpleEditorGroupTitle ._controls {
 			flex: 1;
 			height: 100%;
