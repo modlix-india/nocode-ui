@@ -60,6 +60,7 @@ import FileSelector from './FileSelector/FileSelector';
 import RangeSlider from './RangeSlider/RangeSlider';
 import Timer from './Timer/Timer';
 import MarkdownEditor from './MarkdownEditor/MarkdownEditor';
+import MarkdownTOC from './MarkdownTOC/MarkdownTOC';
 
 export default new Map<string, Component>([
 	[Button.name, Button],
@@ -123,4 +124,5 @@ export default new Map<string, Component>([
 	[RangeSlider.name, RangeSlider],
 	[Timer.name, Timer],
 	[MarkdownEditor.name, MarkdownEditor],
+	[MarkdownTOC.name, MarkdownTOC],
 ]);
