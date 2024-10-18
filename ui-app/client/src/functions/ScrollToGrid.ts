@@ -30,11 +30,10 @@ export class ScrollToGrid extends AbstractFunction {
 		const gridkey: string = context.getArguments()?.get('gridkey');
 		const behaviour: string = context.getArguments()?.get('behaviour');
 		const gridElement = document.getElementById(gridkey);
-		if (gridElement) {
-			gridElement.scrollIntoView({
-				behavior: behaviour.toLowerCase() == 'smooth' ? 'smooth' : 'instant',
-			});
-		}
+
+		gridElement?.scrollIntoView({
+			behavior: behaviour == 'Instant' ? 'instant' : 'smooth',
+		});
 
 		return new FunctionOutput([EventResult.outputOf(new Map())]);
 	}

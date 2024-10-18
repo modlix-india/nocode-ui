@@ -28,8 +28,11 @@ const SIGNATURE = new FunctionSignature('ScrollTo')
 
 export class ScrollTo extends AbstractFunction {
 	protected async internalExecute(context: FunctionExecutionParameters): Promise<FunctionOutput> {
-		const vertical: string = context.getArguments()?.get('vertical');
-		const horizontal: string = context.getArguments()?.get('horizontal');
+		const vertical: string = context.getArguments()?.get('vertical').setDefaultValue('top');
+		const horizontal: string = context
+			.getArguments()
+			?.get('horizontal')
+			.setDefaultValue('left');
 		const behaviour: string = context.getArguments()?.get('behaviour');
 		window.scrollTo({
 			top: caluclateTop(vertical.toLowerCase()),
@@ -46,7 +49,9 @@ export class ScrollTo extends AbstractFunction {
 function caluclateTop(vertical: string): number {
 	if (vertical == 'top') return 0;
 	if (vertical == 'bottom') return document.body.scrollHeight;
+
 	const parsedValue = parseInt(vertical);
+	if (isNaN(parsedValue)) return 0;
 	return parsedValue;
 }
 
@@ -54,5 +59,6 @@ function caluclateLeft(horizontal: string): number {
 	if (horizontal == 'left') return 0;
 	if (horizontal == 'right') return document.body.scrollWidth;
 	const parsedValue = parseInt(horizontal);
+	if (isNaN(parsedValue)) return 0;
 	return parsedValue;
 }
