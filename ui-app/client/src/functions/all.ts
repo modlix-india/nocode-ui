@@ -15,3 +15,5 @@ export * from './ExecuteJSFunction';
 export * from './Refresh';
 export * from './EncodeURIComponent';
 export * from './DecodeURIComponent';
+export * from './ScrollTo';
+export * from './ScrollToGrid';
