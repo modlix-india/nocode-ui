@@ -1,10 +1,10 @@
 import {
-	FunctionSignature,
 	AbstractFunction,
+	Event,
+	EventResult,
 	FunctionExecutionParameters,
 	FunctionOutput,
-	EventResult,
-	Event,
+	FunctionSignature,
 	Parameter,
 	Schema,
 } from '@fincity/kirun-js';
@@ -32,7 +32,7 @@ export class ScrollToGrid extends AbstractFunction {
 		const gridElement = document.getElementById(gridkey);
 
 		gridElement?.scrollIntoView({
-			behavior: behaviour == 'Instant' ? 'instant' : 'smooth',
+			behavior: behaviour.toLowerCase() == 'instant' ? 'instant' : 'smooth',
 		});
 
 		return new FunctionOutput([EventResult.outputOf(new Map())]);

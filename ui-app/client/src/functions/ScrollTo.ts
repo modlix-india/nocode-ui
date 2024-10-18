@@ -1,10 +1,10 @@
 import {
-	FunctionSignature,
 	AbstractFunction,
+	Event,
+	EventResult,
 	FunctionExecutionParameters,
 	FunctionOutput,
-	EventResult,
-	Event,
+	FunctionSignature,
 	Parameter,
 	Schema,
 } from '@fincity/kirun-js';
@@ -14,8 +14,8 @@ const SIGNATURE = new FunctionSignature('ScrollTo')
 	.setNamespace(NAMESPACE_UI_ENGINE)
 	.setParameters(
 		new Map([
-			Parameter.ofEntry('vertical', Schema.ofString('vertical')),
-			Parameter.ofEntry('horizontal', Schema.ofString('horizontal')),
+			Parameter.ofEntry('vertical', Schema.ofString('vertical').setDefaultValue('top')),
+			Parameter.ofEntry('horizontal', Schema.ofString('horizontal').setDefaultValue('left')),
 			Parameter.ofEntry(
 				'behaviour',
 				Schema.ofString('behaviour')
@@ -28,16 +28,13 @@ const SIGNATURE = new FunctionSignature('ScrollTo')
 
 export class ScrollTo extends AbstractFunction {
 	protected async internalExecute(context: FunctionExecutionParameters): Promise<FunctionOutput> {
-		const vertical: string = context.getArguments()?.get('vertical').setDefaultValue('top');
-		const horizontal: string = context
-			.getArguments()
-			?.get('horizontal')
-			.setDefaultValue('left');
+		const vertical: string = context.getArguments()?.get('vertical');
+		const horizontal: string = context.getArguments()?.get('horizontal');
 		const behaviour: string = context.getArguments()?.get('behaviour');
 		window.scrollTo({
 			top: caluclateTop(vertical.toLowerCase()),
 			left: caluclateLeft(horizontal.toLowerCase()),
-			behavior: behaviour == 'Instant' ? 'instant' : 'smooth',
+			behavior: behaviour.toLowerCase() == 'instant' ? 'instant' : 'smooth',
 		});
 		return new FunctionOutput([EventResult.outputOf(new Map())]);
 	}
