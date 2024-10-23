@@ -156,7 +156,7 @@ export function IconsSimpleEditor({
 						className={`_dropdownToggle ${isDropdownOpen ? '_open' : ''}`}
 						onClick={toggleDropdown}
 					>
-						More &nbsp;
+						More
 						<svg
 							width="8"
 							height="4"

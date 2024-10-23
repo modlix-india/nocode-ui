@@ -17,6 +17,7 @@ import { Dropdown, DropdownOptions } from './Dropdown';
 import { IconOptions, IconsSimpleEditor } from './IconsSimpleEditor';
 import { ShadowEditor, ShadowEditorType } from './ShadowEditor';
 import { PixelSize, RangeWithoutUnit } from './SizeSliders';
+import { RadioButton, RadioButtonOptions } from './RadioButton';
 
 export interface SimpleStyleEditorsProps {
 	pseudoState: string;
@@ -222,7 +223,20 @@ export function EachSimpleEditor({
 				/>
 			);
 			break;
-
+		case SimpleEditorType.Radio:
+			editor = (
+				<RadioButton
+					value={value.value ?? editorDef.radioDefaultValue}
+					onChange={editorOnchange}
+					options={editorDef.radioOptions!}
+					placeholder={placeholder}
+					multipleValueType={editorDef.multipleValueType}
+					multiSelect={editorDef.multiSelect}
+					showNoneLabel={editorDef.radioShowNoneLabel}
+					selectNoneLabel={editorDef.radioSelectNoneLabel}
+				/>
+			);
+			break;
 		default:
 			editor = <></>;
 	}
@@ -248,6 +262,7 @@ export enum SimpleEditorType {
 }
 
 export interface SimpleEditorDefinition {
+	[x: string]: any;
 	type: SimpleEditorType;
 	dropdownOptions?: DropdownOptions;
 	dropdDownSelectNoneLabel?: string;
@@ -262,6 +277,10 @@ export interface SimpleEditorDefinition {
 	rangeStep?: number;
 	hideSlider?: boolean;
 	visibleIconCount?: number;
+	radioOptions?: RadioButtonOptions;
+	radioSelectNoneLabel?: string;
+	radioShowNoneLabel?: boolean;
+	radioDefaultValue?: string | Array<string>;
 }
 
 export enum SimpleEditorMultipleValueType {

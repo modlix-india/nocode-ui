@@ -5,9 +5,11 @@ import {
 	SimpleEditorType,
 	StyleEditorsProps,
 } from './simpleEditors';
+
 import TextEditor from '../../../TextEditor/TextEditor';
 import { MultipleValueEditor } from './simpleEditors/MultipleValueEditor';
 import AnyField from '../../../SchemaBuilder/components/AnyField';
+import { RadioButtonOptions } from './simpleEditors/RadioButton';
 
 export function LayoutEditor(props: Readonly<StyleEditorsProps>) {
 	if (props.isDetailStyleEditor) {
@@ -957,18 +959,20 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 		pageExtractor,
 	} = props;
 
-	const flexLogic = (values: Record<string, any>) => {
-		const { flexGrow, flexShrink, flexBasis, flex } = values;
+	const flexOptions: RadioButtonOptions = [
+		{ name: 'none', displayName: 'None' },
+		{ name: 'auto', displayName: 'Auto' },
+		{ name: 'custom', displayName: 'Custom' },
+	];
 
+	const flexLogic = ({ flexGrow, flexShrink, flexBasis, flex }: Record<string, any>) => {
 		if (flex === 'auto') {
 			return { flexGrow: '1', flexShrink: '1', flexBasis: 'auto', flex: 'auto' };
 		}
 		if (flex === 'none') {
 			return { flexGrow: '0', flexShrink: '0', flexBasis: 'auto', flex: 'none' };
 		}
-
-		const newFlex = `${flexGrow} ${flexShrink} ${flexBasis}`;
-		return { flexGrow, flexShrink, flexBasis, flex: newFlex };
+		return { flexGrow, flexShrink, flexBasis, flex: `${flexGrow} ${flexShrink} ${flexBasis}` };
 	};
 
 	const flexRelatedProps = {
@@ -976,15 +980,11 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 		logic: flexLogic,
 	};
 
-	const flexFlowLogic = (values: Record<string, any>) => {
-		const { flexFlow, flexDirection, flexWrap } = values;
-
+	const flexFlowLogic = ({ flexFlow, flexDirection, flexWrap }: Record<string, any>) => {
 		if (flexFlow === 'auto') {
 			return { flexDirection: 'row', flexWrap: 'nowrap' };
 		}
-
-		const newFlexFlow = `${flexDirection} ${flexWrap}`;
-		return { flexDirection, flexWrap, flexFlow: newFlexFlow };
+		return { flexDirection, flexWrap, flexFlow: `${flexDirection} ${flexWrap}` };
 	};
 
 	const flexFlowRelatedProps = {
@@ -1243,7 +1243,33 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 					],
 				}}
 			/>
-			<div className="_combineEditors">Flex</div>
+			<div className="_combineEditors">
+				<div className="_combineEditorLabel">Flex</div>
+				<EachSimpleEditor
+					selectedComponentsList={selectedComponentsList}
+					defPath={defPath}
+					className={'_simpleEditor'}
+					locationHistory={locationHistory}
+					pageExtractor={pageExtractor}
+					subComponentName={subComponentName}
+					pseudoState={pseudoState}
+					prop="flex"
+					placeholder="Flex"
+					iterateProps={iterateProps}
+					selectorPref={selectorPref}
+					styleProps={styleProps}
+					selectedComponent={selectedComponent}
+					saveStyle={saveStyle}
+					properties={properties}
+					editorDef={{
+						type: SimpleEditorType.Radio,
+						radioOptions: flexOptions,
+						radioShowNoneLabel: false,
+					}}
+					relatedProps={flexRelatedProps}
+				/>
+			</div>
+
 			<EachSimpleEditor
 				selectedComponentsList={selectedComponentsList}
 				defPath={defPath}
