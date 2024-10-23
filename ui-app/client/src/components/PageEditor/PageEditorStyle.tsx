@@ -1395,7 +1395,76 @@ export default function GridStyle({
 			// gap: 5px;
 		}
 
+		${PREFIX} ._iconDropdown {
+			position: relative;
+			display: inline-block;
+		}
 
+		${PREFIX} ._dropdownToggle {
+			font-family: Inter;
+			font-size: 12px;
+			border: none;
+			border-radius: 6px;
+			color: #555;
+			background-color: #F9F9F9;
+			cursor: pointer;
+			padding: 5px 8px;
+			display: flex;
+			justify-content: flex-start;
+			align-items: center;
+			height: 35px;
+			overflow: hidden;
+		}
+
+		${PREFIX} ._dropdownToggle._open {
+			top : 0;
+			border: none;
+			height: 100%;
+			background-color: transparent;
+			outline: none;
+			font-family: Inter;
+			font-size: 12px;
+			color: #555;
+			max-width: 60px;
+			min-width: 20px;
+		}
+
+		${PREFIX} ._dropdownToggle._open + ._dropdownContent {
+			min-width: 100px;
+			max-width: 250px;
+			position: absolute;
+			left: 50%;
+			transform: translateX(-80%);
+			display: block;
+		}
+
+		${PREFIX} ._dropdownContent {
+			position: relative;
+			top: 100%;
+			left: 0;
+			z-index: 2;
+			background-color: white;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			padding: 5px;
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+			max-height: 300px;
+			overflow-y: auto;
+		}
+
+		${PREFIX} ._dropdownContent ._eachIcon {
+			display: block;
+			width: 100%;
+			text-align: left;
+			padding: 8px 12px;
+			border: none;
+			background: none;
+			cursor: pointer;
+		}
+
+		${PREFIX} ._dropdownContent ._eachIcon:hover {
+			background-color: #f5f5f5;
+		}
 
         ${PREFIX} ._inputIcon {
             position: absolute;
@@ -1404,6 +1473,21 @@ export default function GridStyle({
             transform: translateY(-50%);
             cursor: pointer;
         }
+
+		${PREFIX} ._dropdownContent ._eachIcon {
+			display: flex;
+			align-items: center;
+			width: 100%;
+			text-align: left;
+		}
+
+		${PREFIX} ._dropdownContent ._eachIcon svg {
+			margin-right: 8px;
+		}
+
+		${PREFIX} ._dropdownContent ._iconName {
+			flex-grow: 1;
+		}
 			
 		${PREFIX} ._simpleEditorGroupTitle ._controls {
 			flex: 1;

@@ -31,7 +31,7 @@ export interface PropertyDetail {
 	dropdownOptions?: Array<{ name: string; displayName: string }>;
 	numberOptions?: { min: number; max: number; step: number };
 	// onChange?: (value: string) => void;
-	onChange?: (value: string, allValues: { [key: string]: string[] }) => void;
+	// onChange?: (value: string, allValues: { [key: string]: string[] }) => void;
 }
 
 export function ManyValuesEditor({
@@ -78,9 +78,9 @@ export function ManyValuesEditor({
 				newProps[def.name].push(def.default);
 			}
 		}
-		if (def.onChange) {
-			def.onChange(v, newProps);
-		}
+		// if (def.onChange) {
+		// 	def.onChange(v, newProps);
+		// }
 		for (let eachDef of propDefinitions) {
 			if (newProps[eachDef.name].length && newProps[eachDef.name].length < curMax) {
 				for (let i = newProps[eachDef.name].length; i < curMax; i++) {
@@ -217,7 +217,7 @@ export function ManyValuesEditor({
 							);
 						}
 						return (
-							<div className="_editorLine">
+							<div className="_editorLine" key={def.name}>
 								<span className="_label">{def.displayName} </span>
 								{editor}
 							</div>

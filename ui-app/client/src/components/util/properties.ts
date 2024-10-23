@@ -508,7 +508,7 @@ const COMPONENT_STYLE_GROUPS: { [key: string]: Array<string> } = {
 		'backgroundClip',
 		'backgroundImage',
 		'backgroundSize',
-		// 'backgroundPosition',//short hand property
+		// 'backgroundPosition', //short hand property
 		'backgroundWidth',
 		'backgroundHeight',
 		'backgroundPositionX',
@@ -655,11 +655,11 @@ const COMPONENT_STYLE_GROUP_PROPERTIES: { [key: string]: ComponentStylePropertyG
 			'justifyItems',
 			'justifySelf',
 			'flex',
-			'flexBasis',
-			'flexDirection',
-			'flexFlow',
 			'flexGrow',
 			'flexShrink',
+			'flexBasis',
+			'flexFlow',
+			'flexDirection',
 			'flexWrap',
 			'gap',
 		],

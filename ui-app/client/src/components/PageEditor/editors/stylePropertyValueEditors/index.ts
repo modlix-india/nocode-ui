@@ -5,6 +5,7 @@ import { PositionEditor } from './PositionEditor';
 import { SpacingEditor } from './SpacingEditor';
 import { TypographyEditor } from './TypographyEditor';
 import { BackgroundEditor } from './BackgroundEditor';
+import { LayoutEditor } from './LayoutEditor';
 
 export const Style_Group_Editors = new Map([
 	['typography', { component: TypographyEditor, hasDetails: true, displayName: 'Typography' }],
@@ -14,4 +15,5 @@ export const Style_Group_Editors = new Map([
 	['effects', { component: EffectsEditor, hasDetails: true, displayName: 'Effects' }],
 	['border', { component: BorderEditor, hasDetails: true, displayName: 'Border' }],
 	['background', { component: BackgroundEditor, hasDetails: true, displayName: 'Background' }],
+	['layout', { component: LayoutEditor, hasDetails: true, displayName: 'Layout' }],
 ]);
