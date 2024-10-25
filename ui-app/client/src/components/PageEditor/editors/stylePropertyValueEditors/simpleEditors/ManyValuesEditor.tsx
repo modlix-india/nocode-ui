@@ -1,19 +1,12 @@
 import React from 'react';
-
 import { AngleSize, PixelSize, TimeSize, UnitOption } from './SizeSliders';
 import { IconOptions, IconsSimpleEditor } from './IconsSimpleEditor';
 import { duplicate } from '@fincity/kirun-js';
 import { Dropdown } from './Dropdown';
-import TextArea from '../../../../TextArea/TextArea';
-import ColorPicker from '../../../../ColorPicker/ColorPicker';
-import {
-	CommonColorPicker,
-	CommonColorPickerPropertyEditor,
-} from '../../../../../commonComponents/CommonColorPicker';
+import { CommonColorPickerPropertyEditor } from '../../../../../commonComponents/CommonColorPicker';
 import { ComponentProperty } from '../../../../../types/common';
-
+import { RelatedProps } from './index';
 export interface PropertyDetail {
-	options: IconOptions;
 	name: string;
 	displayName: string;
 	type:
@@ -30,6 +23,8 @@ export interface PropertyDetail {
 	optionOverride?: Array<UnitOption>;
 	dropdownOptions?: Array<{ name: string; displayName: string }>;
 	numberOptions?: { min: number; max: number; step: number };
+	options?: IconOptions;
+	relatedProps?: RelatedProps;
 	// onChange?: (value: string) => void;
 	// onChange?: (value: string, allValues: { [key: string]: string[] }) => void;
 }
@@ -42,6 +37,7 @@ export function ManyValuesEditor({
 	newValueProps,
 	groupTitle,
 	showNewGroup,
+	relatedProps,
 	// splitOptions,
 }: {
 	values: { prop: string; value: string }[];
@@ -51,6 +47,7 @@ export function ManyValuesEditor({
 	newValueProps: Array<string>;
 	groupTitle?: string;
 	showNewGroup?: boolean;
+	relatedProps?: RelatedProps;
 	// splitOptions?: {
 	// 	splitBy: 'comma' | 'custom';
 	// 	customRegex?: string;
@@ -61,18 +58,14 @@ export function ManyValuesEditor({
 	let max = 0;
 	for (let i = 0; i < values.length; i++) {
 		props[values[i].prop] = values[i].value.trim()
-			? values[i].value
-					.split(
-						',',
-						// splitOptions?.splitBy === 'comma' ? ',' : splitOptions?.customRegex ?? '',
-					)
-					.map(e => e.trim()) ?? []
+			? values[i].value.split(',').map(e => e.trim()) ?? []
 			: [];
 		if (max < props[values[i].prop].length) max = props[values[i].prop].length;
 	}
 
 	const valueChanged = (def: PropertyDetail, i: number, curMax: number, v: string) => {
 		let newProps = duplicate(props) as { [key: string]: Array<string> };
+
 		if (newProps[def.name].length < curMax) {
 			for (let i = newProps[def.name].length; i < curMax; i++) {
 				newProps[def.name].push(def.default);
@@ -89,6 +82,25 @@ export function ManyValuesEditor({
 			}
 		}
 		newProps[def.name][i] = v as string;
+
+		if (relatedProps) {
+			const currentValues = relatedProps.props.reduce(
+				(acc, propName) => {
+					acc[propName] = newProps[propName][i] || '';
+					return acc;
+				},
+				{} as Record<string, string>,
+			);
+
+			const updatedValues = relatedProps.logic(currentValues);
+
+			Object.entries(updatedValues).forEach(([prop, value]) => {
+				if (prop !== def.name && newProps[prop]) {
+					newProps[prop][i] = value;
+				}
+			});
+		}
+
 		onChange(
 			Object.entries(newProps).map(e => ({
 				prop: e[0],
@@ -199,7 +211,7 @@ export function ManyValuesEditor({
 								<IconsSimpleEditor
 									selected={props[def.name][i]}
 									onChange={v => valueChanged(def, i, max, v as string)}
-									options={def.options}
+									options={def.options ?? []}
 								/>
 							);
 						} else if (def.type === 'color') {
@@ -264,7 +276,7 @@ export function ManyValuesEditor({
 									<IconsSimpleEditor
 										selected={''}
 										onChange={v => valueChanged(def, max, max + 1, v as string)}
-										options={def.options}
+										options={def.options ?? []}
 									/>
 								);
 							} else if (def.type === 'color') {

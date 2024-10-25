@@ -42,7 +42,7 @@ export interface SimpleStyleEditorsProps {
 }
 
 // Add this new interface
-interface RelatedProps {
+export interface RelatedProps {
 	props: string[];
 	logic: (values: Record<string, any>) => Record<string, any>;
 }
@@ -163,6 +163,7 @@ export function EachSimpleEditor({
 					multipleValueType={editorDef.multipleValueType}
 					multiSelect={editorDef.multiSelect}
 					visibleIconCount={editorDef.visibleIconCount}
+					// gridSize={editorDef.gridSize}
 				/>
 			);
 			break;
@@ -207,7 +208,7 @@ export function EachSimpleEditor({
 					type="text"
 					className="_simpleEditorInput"
 					placeholder={placeholder}
-					value={value.value}
+					value={value.value ?? ''}
 					onChange={e => editorOnchange(e.target.value)}
 				/>
 			);

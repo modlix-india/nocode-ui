@@ -6,9 +6,6 @@ import {
 	StyleEditorsProps,
 } from './simpleEditors';
 
-import TextEditor from '../../../TextEditor/TextEditor';
-import { MultipleValueEditor } from './simpleEditors/MultipleValueEditor';
-import AnyField from '../../../SchemaBuilder/components/AnyField';
 import { RadioButtonOptions } from './simpleEditors/RadioButton';
 
 export function LayoutEditor(props: Readonly<StyleEditorsProps>) {
@@ -1254,7 +1251,7 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 					subComponentName={subComponentName}
 					pseudoState={pseudoState}
 					prop="flex"
-					placeholder="Flex"
+					placeholder="Flex (Grow Shrink Basis)"
 					iterateProps={iterateProps}
 					selectorPref={selectorPref}
 					styleProps={styleProps}
@@ -1289,7 +1286,7 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 				editorDef={{ type: SimpleEditorType.Text }}
 				relatedProps={flexRelatedProps}
 			/>
-			<div className="_combineEditors">Flex Grow</div>
+			<div className="_combineEditors">Grow</div>
 			<EachSimpleEditor
 				selectedComponentsList={selectedComponentsList}
 				defPath={defPath}
@@ -1309,7 +1306,7 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 				editorDef={{ type: SimpleEditorType.Range, rangeMin: 0, rangeMax: 10 }}
 				relatedProps={flexRelatedProps}
 			/>
-			<div className="_combineEditors">Flex Shrink</div>
+			<div className="_combineEditors">Shrink</div>
 			<EachSimpleEditor
 				selectedComponentsList={selectedComponentsList}
 				defPath={defPath}
@@ -1329,7 +1326,7 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 				editorDef={{ type: SimpleEditorType.Range, rangeMin: 0, rangeMax: 10 }}
 				relatedProps={flexRelatedProps}
 			/>
-			<div className="_combineEditors">Flex Basis</div>
+			<div className="_combineEditors">Basis</div>
 			<EachSimpleEditor
 				selectedComponentsList={selectedComponentsList}
 				defPath={defPath}
@@ -1349,7 +1346,7 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 				editorDef={{ type: SimpleEditorType.PixelSize }}
 				relatedProps={flexRelatedProps}
 			/>
-			<div className="_combineEditors">Flex Flow</div>
+			<div className="_combineEditors">Flow</div>
 			<EachSimpleEditor
 				selectedComponentsList={selectedComponentsList}
 				defPath={defPath}
@@ -1369,7 +1366,7 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 				editorDef={{ type: SimpleEditorType.Text }}
 				relatedProps={flexFlowRelatedProps}
 			/>
-			<div className="_combineEditors">Flex Direction</div>
+			<div className="_combineEditors">Direction</div>
 			<EachSimpleEditor
 				selectedComponentsList={selectedComponentsList}
 				defPath={defPath}
@@ -1475,7 +1472,7 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 					],
 				}}
 			/>
-			<div className="_combineEditors">Flex Wrap</div>
+			<div className="_combineEditors">Wrap</div>
 			<EachSimpleEditor
 				selectedComponentsList={selectedComponentsList}
 				defPath={defPath}

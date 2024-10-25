@@ -19,6 +19,10 @@ type BackgroundImage = {
 	type: 'URL' | 'Gradient';
 	value: string;
 };
+export interface RelatedProps {
+	props: string[];
+	logic: (values: Record<string, any>) => Record<string, any>;
+}
 
 const FILTER_FUNCTIONS: Array<FunctionDetail> = [
 	{
@@ -168,35 +172,6 @@ export function BackgroundEditor(props: Readonly<StyleEditorsProps>) {
 	return <BackgroundDetailedEditor {...props} />;
 }
 
-// function parseImageValues(imageValue: string): Array<string> {
-// 	const arr: Array<string> = [];
-// 	let current = '';
-// 	let parenCount = 0;
-
-// 	for (let i = 0; i < imageValue.length; i++) {
-// 		const char = imageValue[i];
-
-// 		if (char === '(') {
-// 			parenCount++;
-// 		} else if (char === ')') {
-// 			parenCount--;
-// 		}
-
-// 		if (char === ',' && parenCount === 0 && imageValue[i - 1] === ')') {
-// 			arr.push(current.trim());
-// 			current = '';
-// 		} else {
-// 			current += char;
-// 		}
-// 	}
-
-// 	if (current) {
-// 		arr.push(current.trim());
-// 	}
-
-// 	return arr;
-// }
-
 function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 	const { propValues, propAndValue } = BACKGROUND_PROPS.reduce(
 		(a, c) => {
@@ -217,9 +192,31 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 		{ propValues: [] as any[], propAndValue: [] as { prop: string; value: string }[] },
 	);
 
-	const isAdvanced = propValues.map(e => e.value).some(e => !!e.location);
-	const [backgroundImages, setBackgroundImages] = useState<Array<BackgroundImage>>([]);
-	const [showFileBrowser, setShowFileBrowser] = useState(false);
+	let isAdvanced = propValues.map(e => e.value).some(e => !!e.location);
+	let [backgroundImages, setBackgroundImages] = useState<Array<BackgroundImage>>([]);
+	let [showFileBrowser, setShowFileBrowser] = useState(false);
+
+	let backgroundSizeRelatedProps: RelatedProps = {
+		props: ['backgroundSize', 'backgroundWidth', 'backgroundHeight'],
+		logic: values => {
+			let { backgroundSize, backgroundWidth, backgroundHeight } = values;
+
+			if (backgroundSize === 'cover' || backgroundSize === 'contain') {
+				return {
+					backgroundSize,
+				};
+			}
+
+			let width = backgroundWidth === 'auto' ? 'auto' : backgroundWidth;
+			let height = backgroundHeight === 'auto' ? 'auto' : backgroundHeight;
+
+			return {
+				backgroundSize: `${width} ${height}`,
+				backgroundWidth: width,
+				backgroundHeight: height,
+			};
+		},
+	};
 
 	useEffect(() => {
 		if (!props.selectedComponent) return;
@@ -315,7 +312,7 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 										<path
 											d="M19.2087 8.38339C21.127 6.46508 21.127 3.35551 19.2087 1.4372C17.3825 -0.38895 14.4505 -0.487937 12.5049 1.21533L12.2966 1.39965C11.9553 1.69662 11.9212 2.21545 12.2181 2.55678C12.5151 2.89812 13.0339 2.93225 13.3753 2.63529L13.5835 2.45097C14.8806 1.31773 16.833 1.38259 18.0516 2.60116C19.3282 3.87775 19.3282 5.94967 18.0516 7.22968L14.1842 11.0936C12.9076 12.3702 10.8323 12.3702 9.55571 11.0936C8.33714 9.87503 8.27228 7.92259 9.40552 6.62551L9.56595 6.44119C9.86291 6.09985 9.82878 5.58444 9.48744 5.28406C9.1461 4.98368 8.63069 5.02123 8.33031 5.36257L8.16988 5.54689C6.47003 7.49251 6.56902 10.4246 8.39516 12.2507C10.3135 14.169 13.423 14.169 15.3414 12.2507L19.2087 8.38339ZM1.43873 7.6188C-0.479577 9.53711 -0.479577 12.6467 1.43873 14.5616C3.26829 16.3911 6.20037 16.4867 8.14599 14.7835L8.3542 14.5991C8.69554 14.3022 8.72967 13.7833 8.43271 13.442C8.13575 13.1007 7.61692 13.0665 7.27558 13.3635L7.06737 13.5478C5.77029 14.681 3.81785 14.6162 2.59928 13.3976C1.32268 12.121 1.32268 10.0491 2.59928 8.7691L6.46662 4.90859C7.74321 3.63199 9.81512 3.63199 11.0951 4.90859C12.3137 6.12716 12.3786 8.0796 11.2453 9.37668L11.061 9.5849C10.764 9.92623 10.7982 10.4417 11.1395 10.742C11.4808 11.0424 11.9963 11.0049 12.2966 10.6635L12.481 10.4553C14.1842 8.50969 14.0852 5.57761 12.2591 3.74805C10.3408 1.82974 7.23121 1.82974 5.3129 3.74805L1.43873 7.6188Z"
 											fill="black"
-											fill-opacity="1"
+											fillOpacity="1"
 											strokeOpacity={0}
 										/>
 									</g>
@@ -337,13 +334,13 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 												<path
 													d="M4 11C4 6.58172 7.58172 3 12 3C16.4183 3 20 6.58172 20 11C20 15.4183 16.4183 19 12 19C7.58172 19 4 15.4183 4 11Z"
 													fill="url(#paint0_linear_3644_10515)"
-													shape-rendering="crispEdges"
+													shapeRendering="crispEdges"
 												/>
 												<path
 													d="M4.5 11C4.5 6.85786 7.85786 3.5 12 3.5C16.1421 3.5 19.5 6.85786 19.5 11C19.5 15.1421 16.1421 18.5 12 18.5C7.85786 18.5 4.5 15.1421 4.5 11Z"
 													stroke="black"
-													stroke-opacity="0.2"
-													shape-rendering="crispEdges"
+													strokeOpacity="0.2"
+													shapeRendering="crispEdges"
 												/>
 											</g>
 											<defs>
@@ -354,10 +351,10 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 													width="24"
 													height="24"
 													filterUnits="userSpaceOnUse"
-													color-interpolation-filters="sRGB"
+													colorInterpolationFilters="sRGB"
 												>
 													<feFlood
-														flood-opacity="0"
+														floodOpacity="0"
 														result="BackgroundImageFix"
 													/>
 													<feColorMatrix
@@ -393,14 +390,11 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 													y2="19"
 													gradientUnits="userSpaceOnUse"
 												>
-													<stop
-														stop-color="#333333c"
-														stop-opacity="0.5"
-													/>
+													<stop stopColor="#333333c" stopOpacity="0.5" />
 													<stop
 														offset="1"
-														stop-color="#333333c"
-														stop-opacity="0.1"
+														stopColor="#333333c"
+														stopOpacity="0.1"
 													/>
 												</linearGradient>
 											</defs>
@@ -606,14 +600,15 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 					groupTitle={'Standard Properties'}
 					newValueProps={['backgroundColor']}
 					showNewGroup={false}
+					relatedProps={backgroundSizeRelatedProps}
 					propDefinitions={[
-						// {
-						// 	name: 'backgroundColor',
-						// 	displayName: 'Color',
-						// 	type: 'color',
-						// 	default: '#',
-						// 	options: [],
-						// },
+						{
+							name: 'backgroundColor',
+							displayName: 'Color',
+							type: 'color',
+							default: '#',
+							options: [],
+						},
 						{
 							name: 'backgroundSize',
 							displayName: 'Size',
@@ -708,7 +703,6 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 									),
 								},
 							],
-							// onChange: (value: string) => updateSize(value, width, height),
 						},
 						{
 							name: 'backgroundWidth',
@@ -716,7 +710,6 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 							type: 'pixel size',
 							default: '0px',
 							options: [],
-							// onChange: (value: string) => updateSize(size, value, height),
 						},
 						{
 							name: 'backgroundHeight',
@@ -724,7 +717,6 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 							type: 'pixel size',
 							default: '0px',
 							options: [],
-							// onChange: (value: string) => updateSize(size, width, value),
 						},
 
 						{
@@ -882,6 +874,7 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 								},
 							],
 						},
+
 						{
 							name: 'backgroundPosition',
 							displayName: 'Position',
@@ -897,21 +890,185 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 								{ name: 'center bottom', displayName: 'Center Bottom' },
 								{ name: 'right bottom', displayName: 'Right Bottom' },
 							],
+							// to shift to icons
+							// 	{
+							// 		name: 'left top',
+							// 		description: 'Left Top',
+							// 		icon: (
+							// 			<g transform="translate(9 9)">
+							// 				<rect
+							// 					x="1"
+							// 					y="1"
+							// 					width="12"
+							// 					height="12"
+							// 					stroke="#02B694"
+							// 					strokeWidth="1"
+							// 					style={{ fill: 'none' }}
+							// 				/>
+							// 				<path d="M2 2h4v4H2V2z" fill="#02B694" />
+							// 			</g>
+							// 		),
+							// 	},
+							// 	{
+							// 		name: 'center top',
+							// 		description: 'Center Top',
+							// 		icon: (
+							// 			<g transform="translate(9 9)">
+							// 				<rect
+							// 					x="1"
+							// 					y="1"
+							// 					width="12"
+							// 					height="12"
+							// 					style={{ fill: 'none' }}
+							// 					stroke="#02B694"
+							// 					strokeWidth="1"
+							// 				/>
+							// 				<path d="M5 2h4v4H5V2z" fill="#02B694" />
+							// 			</g>
+							// 		),
+							// 	},
+							// 	{
+							// 		name: 'right top',
+							// 		description: 'Right Top',
+							// 		icon: (
+							// 			<g transform="translate(9 9)">
+							// 				<rect
+							// 					x="1"
+							// 					y="1"
+							// 					width="12"
+							// 					height="12"
+							// 					style={{ fill: 'none' }}
+							// 					stroke="#02B694"
+							// 					strokeWidth="1"
+							// 				/>
+							// 				<path d="M8 2h4v4H8V2z" fill="#02B694" />
+							// 			</g>
+							// 		),
+							// 	},
+							// 	{
+							// 		name: 'left center',
+							// 		description: 'Left Center',
+							// 		icon: (
+							// 			<g transform="translate(9 9)">
+							// 				<rect
+							// 					x="1"
+							// 					y="1"
+							// 					width="12"
+							// 					height="12"
+							// 					style={{ fill: 'none' }}
+							// 					stroke="#02B694"
+							// 					strokeWidth="1"
+							// 				/>
+							// 				<path d="M2 5h4v4H2V5z" fill="#02B694" />
+							// 			</g>
+							// 		),
+							// 	},
+							// 	{
+							// 		name: 'center center',
+							// 		description: 'Center Center',
+							// 		icon: (
+							// 			<g transform="translate(9 9)">
+							// 				<rect
+							// 					x="1"
+							// 					y="1"
+							// 					width="12"
+							// 					height="12"
+							// 					style={{ fill: 'none' }}
+							// 					stroke="#02B694"
+							// 					strokeWidth="1"
+							// 				/>
+							// 				<path d="M5 5h4v4H5V5z" fill="#02B694" />
+							// 			</g>
+							// 		),
+							// 	},
+							// 	{
+							// 		name: 'right center',
+							// 		description: 'Right Center',
+							// 		icon: (
+							// 			<g transform="translate(9 9)">
+							// 				<rect
+							// 					x="1"
+							// 					y="1"
+							// 					width="12"
+							// 					height="12"
+							// 					style={{ fill: 'none' }}
+							// 					stroke="#02B694"
+							// 					strokeWidth="1"
+							// 				/>
+							// 				<path d="M8 5h4v4H8V5z" fill="#02B694" />
+							// 			</g>
+							// 		),
+							// 	},
+							// 	{
+							// 		name: 'left bottom',
+							// 		description: 'Left Bottom',
+							// 		icon: (
+							// 			<g transform="translate(9 9)">
+							// 				<rect
+							// 					x="1"
+							// 					y="1"
+							// 					width="12"
+							// 					height="12"
+							// 					style={{ fill: 'none' }}
+							// 					stroke="#02B694"
+							// 					strokeWidth="1"
+							// 				/>
+							// 				<path d="M2 8h4v4H2V8z" fill="#02B694" />
+							// 			</g>
+							// 		),
+							// 	},
+							// 	{
+							// 		name: 'center bottom',
+							// 		description: 'Center Bottom',
+							// 		icon: (
+							// 			<g transform="translate(9 9)">
+							// 				<rect
+							// 					x="1"
+							// 					y="1"
+							// 					width="12"
+							// 					height="12"
+							// 					style={{ fill: 'none' }}
+							// 					stroke="#02B694"
+							// 					strokeWidth="1"
+							// 				/>
+							// 				<path d="M5 8h4v4H5V8z" fill="#02B694" />
+							// 			</g>
+							// 		),
+							// 	},
+							// 	{
+							// 		name: 'right bottom',
+							// 		description: 'Right Bottom',
+							// 		icon: (
+							// 			<g transform="translate(9 9)">
+							// 				<rect
+							// 					x="1"
+							// 					y="1"
+							// 					width="12"
+							// 					height="12"
+							// 					style={{ fill: 'none' }}
+							// 					stroke="#02B694"
+							// 					strokeWidth="1"
+							// 				/>
+							// 				<path d="M8 8h4v4H8V8z" fill="#02B694" />
+							// 			</g>
+							// 		),
+							// 	},
+							// ],
 							default: 'left top',
-							options: [],
 						},
+
 						{
 							name: 'backgroundPositionX',
-							displayName: 'Position X',
+							displayName: 'Horizontal',
 							type: 'pixel size',
-							default: '0px',
+							default: '10px',
 							options: [],
 						},
 						{
 							name: 'backgroundPositionY',
-							displayName: 'Position Y',
+							displayName: 'Vertical',
 							type: 'pixel size',
-							default: '0px',
+							default: '10px',
 							options: [],
 						},
 					]}

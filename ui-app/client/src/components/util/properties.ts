@@ -508,7 +508,7 @@ const COMPONENT_STYLE_GROUPS: { [key: string]: Array<string> } = {
 		'backgroundClip',
 		'backgroundImage',
 		'backgroundSize',
-		// 'backgroundPosition', //short hand property
+		'backgroundPosition', //short hand property
 		'backgroundWidth',
 		'backgroundHeight',
 		'backgroundPositionX',

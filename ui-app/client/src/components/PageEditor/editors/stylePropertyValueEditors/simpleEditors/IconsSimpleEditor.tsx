@@ -23,6 +23,7 @@ export function IconsSimpleEditor({
 	exclusiveOptions,
 	combinationOptions,
 	visibleIconCount,
+	// gridSize,
 }: Readonly<{
 	options: IconOptions;
 	selected: string | Array<string>;
@@ -106,10 +107,8 @@ export function IconsSimpleEditor({
 			);
 		}
 
-		// Close dropdown after selection
 		setIsDropdownOpen(false);
 
-		// Update visible icons and dropdown icons
 		const newVisibleIcons = [
 			option,
 			...visibleIcons.filter(icon => icon.name !== option.name),
@@ -141,7 +140,6 @@ export function IconsSimpleEditor({
 								e.viewBox ? e.viewBox : `0 0 ${e.width ?? '32'} ${e.height ?? '32'}`
 							}
 							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
 							className={activeClass}
 							transform={e.transform}
 						>
