@@ -195,7 +195,7 @@ export function processStyleDefinition(
 						Array.from(styleDefaults.entries()).concat(
 							Array.from(theme.get(StyleResolution.ALL)!),
 						),
-				  )
+					)
 				: styleDefaults,
 		);
 	}
@@ -332,6 +332,28 @@ export function processComponentStylePseudoClasses(
 			style[target] = s;
 		}
 	}
+
+	return window.cdnPrefix ? processCDN(style) : style;
+}
+
+const STATIC_FILE_API_PREFIX = "url('api/files/static/file";
+const STATIC_FILE_API_PREFIX_LENGTH = "url('".length;
+const STATIC_FILE_API_STRIP_PREFIX_LENGTH = STATIC_FILE_API_PREFIX.length;
+
+function processCDN(style: any) {
+	for (let [_, value] of Object.entries(style as { [key: string]: { [key: string]: string } })) {
+		for (let [k, v] of Object.entries(value)) {
+			if (!v) continue;
+
+			const index = v.indexOf(STATIC_FILE_API_PREFIX);
+			if (index == -1) continue;
+
+			let url = v.substring(0, index);
+			url += `url('https://${window.cdnPrefix}${v.substring(index + (window.cdnStripAPIPrefix ? STATIC_FILE_API_STRIP_PREFIX_LENGTH : STATIC_FILE_API_PREFIX_LENGTH))}`;
+			value[k] = url;
+		}
+	}
+
 	return style;
 }
 
