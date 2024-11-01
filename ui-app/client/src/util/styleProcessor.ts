@@ -336,20 +336,24 @@ export function processComponentStylePseudoClasses(
 	return window.cdnPrefix ? processCDN(style) : style;
 }
 
-const STATIC_FILE_API_PREFIX = "url('api/files/static/file";
-const STATIC_FILE_API_PREFIX_LENGTH = "url('".length;
-const STATIC_FILE_API_STRIP_PREFIX_LENGTH = STATIC_FILE_API_PREFIX.length;
+const STATIC_FILE_API_PREFIX = 'api/files/static/file/';
+const STATIC_FILE_API_PREFIX_LENGTH = STATIC_FILE_API_PREFIX.length;
 
 function processCDN(style: any) {
 	for (let [_, value] of Object.entries(style as { [key: string]: { [key: string]: string } })) {
 		for (let [k, v] of Object.entries(value)) {
 			if (!v) continue;
 
+			if (!window.cdnPrefix) continue;
+
 			const index = v.indexOf(STATIC_FILE_API_PREFIX);
 			if (index == -1) continue;
 
-			let url = v.substring(0, index);
-			url += `url('https://${window.cdnPrefix}${v.substring(index + (window.cdnStripAPIPrefix ? STATIC_FILE_API_STRIP_PREFIX_LENGTH : STATIC_FILE_API_PREFIX_LENGTH))}`;
+			let lastPart = v.substring(index + STATIC_FILE_API_PREFIX_LENGTH);
+			let url = `url('https://${window.cdnPrefix}/`;
+			if (!window.cdnStripAPIPrefix) url += STATIC_FILE_API_PREFIX;
+			url += `${lastPart}`;
+			if (window.cdnReplacePlus) url = url.replaceAll('+', '%20');
 			value[k] = url;
 		}
 	}
