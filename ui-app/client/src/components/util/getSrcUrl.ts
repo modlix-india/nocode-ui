@@ -8,9 +8,14 @@ export default function getSrcUrl(url: string) {
 
 	if (index == -1) return url;
 
-	return 'https://' + window.cdnPrefix + (window.cdnStripAPIPrefix ? strip(url, index) : url);
-}
+	if (window.cdnStripAPIPrefix) {
+		url = url.substring(index + STATIC_FILE_API_PREFIX_LENGTH);
+	}
 
-function strip(url: string, index: number) {
-	return url.substring(index + STATIC_FILE_API_PREFIX_LENGTH);
+	// In some CDNs, the '+' character is not recognized as a space.
+	if (window.cdnReplacePlus) {
+		url = url.replace('+', '%20');
+	}
+
+	return 'https://' + window.cdnPrefix + url;
 }
