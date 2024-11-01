@@ -14,7 +14,7 @@ export default function getSrcUrl(url: string) {
 
 	// In some CDNs, the '+' character is not recognized as a space.
 	if (window.cdnReplacePlus) {
-		url = url.replace('+', '%20');
+		url = url.replaceAll('+', '%20');
 	}
 
 	return 'https://' + window.cdnPrefix + url;
