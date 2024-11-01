@@ -12,7 +12,7 @@ import { styleDefaults } from './videoStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import getSrcUrl from '../util/getSrcUrl';
 
-function Video(props: ComponentProps) {
+function Video(props: Readonly<ComponentProps>) {
 	const { definition, locationHistory, context, pageDefinition } = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
@@ -55,14 +55,14 @@ function Video(props: ComponentProps) {
 	};
 
 	//to check wheater browser supports html5 video
-	const [videoControls, setVideoControl] = useState<boolean>(true);
+	const [videoControls, setVideoControls] = useState<boolean>(true);
 	//playPauseButton
 	const [playPauseEnd, setPlayPauseEnd] = useState<string>('play');
 	//VIDEODURATION
 	const [progressbarMax, setProgressbarMax] = useState<number>(0);
 
 	//current duration of the video(timeElapsed)
-	const [progressbarCurr, setProgressBarCurr] = useState<number>(0);
+	const [progressbarCurr, setProgressbarCurr] = useState<number>(0);
 
 	const [toolTipX, setToolTipX] = useState<number>(0);
 
@@ -80,7 +80,7 @@ function Video(props: ComponentProps) {
 		seconds: '00',
 	});
 	//To show timeElapsed in time tag
-	const [timElapsed, settimeElapsed] = useState<{
+	const [timElapsed, setTimeElapsed] = useState<{
 		hours: string;
 		minutes: string;
 		seconds: string;
@@ -94,8 +94,8 @@ function Video(props: ComponentProps) {
 	const [toogleToolTip, setToggleToolTip] = useState<boolean>(false);
 	const [controlsOnHover, setControlsOnHover] = useState<boolean>(false);
 	const [muted, setMuted] = useState<boolean>(mutedProperty);
-	const [fullScreenState, setFullScreenState] = useState<String>('expand');
-	const [isFirstTimePlay, setFirstTimePlay] = useState<boolean>(true);
+	const [fullScreenState, setFullScreenState] = useState<string>('expand');
+	const [isFirstTimePlay, setIsFirstTimePlay] = useState<boolean>(true);
 
 	//videoRef
 	const video = useRef<any>();
@@ -122,7 +122,7 @@ function Video(props: ComponentProps) {
 		if (!video.current) return;
 		// checking wheather browser supports html5 video or not.
 		if (typeof video.current.canPlayType === 'function') {
-			setVideoControl(false);
+			setVideoControls(false);
 		}
 	}, [video.current]);
 
@@ -151,9 +151,9 @@ function Video(props: ComponentProps) {
 	const updateTimeElapsed = () => {
 		if (!video.current) return;
 		const time = formatTime(Math.round(video.current.currentTime));
-		setProgressBarCurr(Math.floor(video.current.currentTime));
+		setProgressbarCurr(Math.floor(video.current.currentTime));
 		//to show in the time tag of time Elapsed
-		settimeElapsed(time);
+		setTimeElapsed(time);
 	};
 
 	//By this we can get the videoDuration after initilizing
@@ -487,7 +487,7 @@ function Video(props: ComponentProps) {
 			) : null}
 			<video
 				controls={videoControls}
-				poster={poster}
+				poster={getSrcUrl(poster)}
 				playsInline={playsInline}
 				preload="metadata"
 				ref={video}
@@ -505,7 +505,7 @@ function Video(props: ComponentProps) {
 					if (!isFirstTimePlay || !autoPlay || !autoUnMuteAfterPlaying) return;
 					setTimeout(() => {
 						setMuted(false);
-						setFirstTimePlay(false);
+						setIsFirstTimePlay(false);
 					}, 500);
 				}}
 			>
@@ -540,7 +540,7 @@ function Video(props: ComponentProps) {
 									let value =
 										Number.parseInt(progressBarRef.current?.value ?? '') ?? 0;
 									skipAhead(value);
-									setProgressBarCurr(value);
+									setProgressbarCurr(value);
 									setManualSeek(undefined);
 								}}
 								ref={progressBarRef}

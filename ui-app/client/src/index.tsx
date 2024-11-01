@@ -8,8 +8,9 @@ import { Function, Schema } from '@fincity/kirun-js';
 import axios from 'axios';
 
 // TEST CDN CODE
-// window.cdnPrefix = 'cdn-local.modlix.com';
+// window.cdnPrefix = 'cdn-dev.modlix.com';
 // window.cdnStripAPIPrefix = true;
+// window.cdnReplacePlus = true;
 
 declare global {
 	var nodeDev: boolean;
