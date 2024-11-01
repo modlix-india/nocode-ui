@@ -349,10 +349,11 @@ function processCDN(style: any) {
 			const index = v.indexOf(STATIC_FILE_API_PREFIX);
 			if (index == -1) continue;
 
-			let lastPart = v.substring(index + STATIC_FILE_API_PREFIX_LENGTH);
+			let lastPart = v.substring(index + STATIC_FILE_API_PREFIX_LENGTH).trim();
+			lastPart = lastPart.substring(0, lastPart.length - 2);
 			let url = `url('https://${window.cdnPrefix}/`;
 			if (!window.cdnStripAPIPrefix) url += STATIC_FILE_API_PREFIX;
-			url += `${lastPart}`;
+			url += `${lastPart}')`;
 			if (window.cdnReplacePlus) url = url.replaceAll('+', '%20');
 			value[k] = url;
 		}
