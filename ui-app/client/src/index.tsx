@@ -43,6 +43,7 @@ declare global {
 	) => RemoteRepository<Schema>;
 	var cdnPrefix: string;
 	var cdnStripAPIPrefix: boolean;
+	var cdnReplacePlus: boolean;
 	var determineRightClickPosition: (e: MouseEvent) => { x: number; y: number };
 	var domainClientCode: string;
 	var domainAppCode: string;
