@@ -141,10 +141,10 @@ function PageComponent(props: Readonly<ComponentProps>) {
 			if (fullStyle.endsWith('/')) fullStyle = fullStyle.substring(0, fullStyle.length - 1);
 			fullStyle += `https://${window.cdnPrefix}/`;
 			if (!window.cdnStripAPIPrefix) fullStyle += STATIC_FILE_API_PREFIX;
-			const lastPartIndex = styleParts[i + 1].indexOf("')");
+			const lastPartIndex = styleParts[i + 1].indexOf(')');
 			let lastPart = styleParts[i + 1].substring(0, lastPartIndex);
 			if (window.cdnReplacePlus) lastPart = lastPart.replaceAll('+', '%20');
-			fullStyle += lastPart;
+			fullStyle += lastPart + ')';
 			fullStyle += styleParts[i + 1].substring(lastPartIndex + 2);
 		}
 		return fullStyle;
