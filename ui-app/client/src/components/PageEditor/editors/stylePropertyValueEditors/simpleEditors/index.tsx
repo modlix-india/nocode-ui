@@ -18,6 +18,7 @@ import { IconOptions, IconsSimpleEditor } from './IconsSimpleEditor';
 import { ShadowEditor, ShadowEditorType } from './ShadowEditor';
 import { PixelSize, RangeWithoutUnit } from './SizeSliders';
 import { RadioButton, RadioButtonOptions } from './RadioButton';
+import { ButtonBar, ButtonBarOptions } from './ButtonBar';
 
 export interface SimpleStyleEditorsProps {
 	pseudoState: string;
@@ -238,6 +239,15 @@ export function EachSimpleEditor({
 				/>
 			);
 			break;
+		case SimpleEditorType.ButtonBar:
+			editor = (
+				<ButtonBar
+					value={value.value}
+					onChange={editorOnchange}
+					options={editorDef.buttonBarOptions!}
+				/>
+			);
+			break;
 		default:
 			editor = <></>;
 	}
@@ -260,6 +270,7 @@ export enum SimpleEditorType {
 	Number = 'Number',
 	TextBox = 'TextBox',
 	Radio = 'Radio',
+	ButtonBar = 'ButtonBar',
 }
 
 export interface SimpleEditorDefinition {
