@@ -46,8 +46,9 @@ function DetailedLayoutEditor(props: Readonly<StyleEditorsProps>) {
 				properties={properties}
 				editorDef={{
 					type: SimpleEditorType.Icons,
+					withBackground: true,
 					visibleIconCount: 3,
-					iconButtonOptions: [
+					Options: [
 						{
 							name: 'normal',
 							description: 'Normal',
@@ -595,8 +596,9 @@ function DetailedLayoutEditor(props: Readonly<StyleEditorsProps>) {
 				properties={properties}
 				editorDef={{
 					type: SimpleEditorType.Icons,
+					withBackground: true,
 					visibleIconCount: 3,
-					iconButtonOptions: [
+					Options: [
 						{
 							name: 'auto',
 							description: 'Auto',
@@ -1055,8 +1057,9 @@ function DetailedLayoutEditor(props: Readonly<StyleEditorsProps>) {
 				properties={properties}
 				editorDef={{
 					type: SimpleEditorType.Icons,
+					withBackground: true,
 					visibleIconCount: 3,
-					iconButtonOptions: [
+					Options: [
 						{
 							name: 'normal',
 							description: 'Normal',
@@ -1463,8 +1466,9 @@ function DetailedLayoutEditor(props: Readonly<StyleEditorsProps>) {
 				properties={properties}
 				editorDef={{
 					type: SimpleEditorType.Icons,
+					withBackground: true,
 					visibleIconCount: 3,
-					iconButtonOptions: [
+					Options: [
 						{
 							name: 'auto',
 							description: 'Auto',
@@ -1883,35 +1887,48 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 		pageExtractor,
 	} = props;
 
-	const flexOptions: ButtonBarOptions = [
+	let flexOptions: ButtonBarOptions = [
 		{ name: 'none', displayName: 'None' },
 		{ name: 'auto', displayName: 'Auto' },
 		{ name: 'custom', displayName: 'Custom' },
 	];
 
-	const flexLogic = ({ flexGrow, flexShrink, flexBasis, flex }: Record<string, any>) => {
+	let flexBasisOptions: ButtonBarOptions = [
+		{ name: 'content', displayName: 'Content' },
+		{ name: 'max-content', displayName: 'Max Content' },
+		{ name: 'min-content', displayName: 'Min Content' },
+		{ name: 'fit-content', displayName: 'Fit Content' },
+	];
+
+	let flexLogic = ({ flexGrow, flexShrink, flexBasis, flex }: Record<string, any>) => {
 		if (flex === 'auto') {
 			return { flexGrow: '1', flexShrink: '1', flexBasis: 'auto', flex: 'auto' };
 		}
 		if (flex === 'none') {
 			return { flexGrow: '0', flexShrink: '0', flexBasis: 'auto', flex: 'none' };
+		} else {
+			return {
+				flexGrow,
+				flexShrink,
+				flexBasis,
+				flex: `${flexGrow} ${flexShrink} ${flexBasis}`,
+			};
 		}
-		return { flexGrow, flexShrink, flexBasis, flex: `${flexGrow} ${flexShrink} ${flexBasis}` };
 	};
 
-	const flexRelatedProps = {
+	let flexRelatedProps = {
 		props: ['flexGrow', 'flexShrink', 'flexBasis', 'flex'],
 		logic: flexLogic,
 	};
 
-	const flexFlowLogic = ({ flexFlow, flexDirection, flexWrap }: Record<string, any>) => {
+	let flexFlowLogic = ({ flexFlow, flexDirection, flexWrap }: Record<string, any>) => {
 		if (flexFlow === 'auto') {
 			return { flexDirection: 'row', flexWrap: 'nowrap' };
 		}
 		return { flexDirection, flexWrap, flexFlow: `${flexDirection} ${flexWrap}` };
 	};
 
-	const flexFlowRelatedProps = {
+	let flexFlowRelatedProps = {
 		props: ['flexDirection', 'flexWrap'],
 		logic: flexFlowLogic,
 	};
@@ -1937,8 +1954,9 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 				properties={properties}
 				editorDef={{
 					type: SimpleEditorType.Icons,
+					withBackground: true,
 					visibleIconCount: 3,
-					iconButtonOptions: [
+					Options: [
 						{
 							name: 'flex',
 							description: 'Flex container',
@@ -2413,42 +2431,42 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 										d="M5.52047 5.40625H4.21936C3.98711 5.40625 3.79883 5.56445 3.79883 5.75961V6.85289C3.79883 7.04805 3.98711 7.20625 4.21936 7.20625H5.52047C5.75272 7.20625 5.941 7.04805 5.941 6.85289V5.75961C5.941 5.56445 5.75272 5.40625 5.52047 5.40625Z"
 										fill="#999999"
 										fillOpacity="1"
-										strokeOpacity={1}
+										strokeOpacity={0}
 										// style={{ fill: '#e3e5ea' }}
 									/>
 									<path
 										d="M16.171 5.75961V6.85289C16.171 6.94661 16.1375 7.03649 16.0779 7.10275C16.0183 7.16902 15.9374 7.20625 15.8532 7.20625H7.76133C7.67685 7.20625 7.5958 7.1691 7.53586 7.1029C7.47592 7.0367 7.44197 6.94682 7.44141 6.85289V5.75961C7.44197 5.66568 7.47592 5.5758 7.53586 5.5096C7.5958 5.4434 7.67685 5.40625 7.76133 5.40625H15.8532C15.9374 5.40625 16.0183 5.44348 16.0779 5.50975C16.1375 5.57601 16.171 5.66589 16.171 5.75961Z"
 										fill="#999999"
 										fillOpacity="1"
-										strokeOpacity={1}
+										strokeOpacity={0}
 										// style={{ fill: '#e3e5ea' }}
 									/>
 									<path
 										d="M5.941 9.46464V10.5541C5.941 10.6479 5.89678 10.7379 5.818 10.8045C5.73921 10.871 5.63226 10.9087 5.52047 10.9094H4.21936C4.10757 10.9087 4.00061 10.871 3.92183 10.8045C3.84304 10.7379 3.79883 10.6479 3.79883 10.5541V9.46464C3.79883 9.37083 3.84304 9.28082 3.92183 9.21426C4.00061 9.14771 4.10757 9.11 4.21936 9.10938H5.52047C5.63226 9.11 5.73921 9.14771 5.818 9.21426C5.89678 9.28082 5.941 9.37083 5.941 9.46464Z"
 										fill="#999999"
 										fillOpacity="1"
-										strokeOpacity={1}
+										strokeOpacity={0}
 										// style={{ fill: '#e3e5ea' }}
 									/>
 									<path
 										d="M16.171 9.46464V10.5541C16.171 10.6479 16.1375 10.7379 16.078 10.8045C16.0185 10.871 15.9376 10.9087 15.8532 10.9094H7.76133C7.67648 10.9094 7.59511 10.8719 7.53511 10.8053C7.47511 10.7387 7.44141 10.6483 7.44141 10.5541V9.46464C7.44141 9.37042 7.47511 9.28005 7.53511 9.21343C7.59511 9.1468 7.67648 9.10938 7.76133 9.10938H15.8532C15.9376 9.11 16.0185 9.14771 16.078 9.21426C16.1375 9.28082 16.171 9.37083 16.171 9.46464Z"
 										fill="#999999"
 										fillOpacity="1"
-										strokeOpacity={1}
+										strokeOpacity={0}
 										// style={{ fill: '#e3e5ea' }}
 									/>
 									<path
 										d="M5.52047 12.8125H4.21936C3.98711 12.8125 3.79883 12.9707 3.79883 13.1659V14.2591C3.79883 14.4543 3.98711 14.6125 4.21936 14.6125H5.52047C5.75272 14.6125 5.941 14.4543 5.941 14.2591V13.1659C5.941 12.9707 5.75272 12.8125 5.52047 12.8125Z"
 										fill="#999999"
 										fillOpacity="1"
-										strokeOpacity={1}
+										strokeOpacity={0}
 										// style={{ fill: '#e3e5ea' }}
 									/>
 									<path
 										d="M16.171 13.1659V14.2591C16.171 14.3529 16.1375 14.4427 16.0779 14.509C16.0183 14.5753 15.9374 14.6125 15.8532 14.6125H7.76133C7.67685 14.6125 7.5958 14.5753 7.53586 14.5091C7.47592 14.4429 7.44197 14.3531 7.44141 14.2591V13.1659C7.44197 13.0719 7.47592 12.9821 7.53586 12.9159C7.5958 12.8497 7.67685 12.8125 7.76133 12.8125H15.8532C15.9374 12.8125 16.0183 12.8497 16.0779 12.916C16.1375 12.9823 16.171 13.0721 16.171 13.1659Z"
 										fill="#999999"
 										fillOpacity="1"
-										strokeOpacity={1}
+										strokeOpacity={0}
 										// style={{ fill: '#e3e5ea' }}
 									/>
 								</g>
@@ -2512,29 +2530,7 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 			/>
 			<div className="_combineEditors">
 				<div className="_combineEditorLabel">Flex</div>
-				{/* <EachSimpleEditor
-					selectedComponentsList={selectedComponentsList}
-					defPath={defPath}
-					className={'_simpleEditor'}
-					locationHistory={locationHistory}
-					pageExtractor={pageExtractor}
-					subComponentName={subComponentName}
-					pseudoState={pseudoState}
-					prop="flex"
-					placeholder="Flex (Grow Shrink Basis)"
-					iterateProps={iterateProps}
-					selectorPref={selectorPref}
-					styleProps={styleProps}
-					selectedComponent={selectedComponent}
-					saveStyle={saveStyle}
-					properties={properties}
-					editorDef={{
-						type: SimpleEditorType.Radio,
-						radioOptions: flexOptions,
-						radioShowNoneLabel: false,
-					}}
-					relatedProps={flexRelatedProps}
-				/> */}
+
 				<EachSimpleEditor
 					selectedComponentsList={selectedComponentsList}
 					defPath={defPath}
@@ -2578,47 +2574,75 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 				editorDef={{ type: SimpleEditorType.Text }}
 				relatedProps={flexRelatedProps}
 			/>
-			<div className="_combineEditors">Grow</div>
-			<EachSimpleEditor
-				selectedComponentsList={selectedComponentsList}
-				defPath={defPath}
-				className={'_simpleEditor'}
-				locationHistory={locationHistory}
-				pageExtractor={pageExtractor}
-				subComponentName={subComponentName}
-				pseudoState={pseudoState}
-				prop="flexGrow"
-				placeholder="Flex Grow"
-				iterateProps={iterateProps}
-				selectorPref={selectorPref}
-				styleProps={styleProps}
-				selectedComponent={selectedComponent}
-				saveStyle={saveStyle}
-				properties={properties}
-				editorDef={{ type: SimpleEditorType.Range, rangeMin: 0, rangeMax: 10 }}
-				relatedProps={flexRelatedProps}
-			/>
-			<div className="_combineEditors">Shrink</div>
-			<EachSimpleEditor
-				selectedComponentsList={selectedComponentsList}
-				defPath={defPath}
-				className={'_simpleEditor'}
-				locationHistory={locationHistory}
-				pageExtractor={pageExtractor}
-				subComponentName={subComponentName}
-				pseudoState={pseudoState}
-				prop="flexShrink"
-				placeholder="Flex Shrink"
-				iterateProps={iterateProps}
-				selectorPref={selectorPref}
-				styleProps={styleProps}
-				selectedComponent={selectedComponent}
-				saveStyle={saveStyle}
-				properties={properties}
-				editorDef={{ type: SimpleEditorType.Range, rangeMin: 0, rangeMax: 10 }}
-				relatedProps={flexRelatedProps}
-			/>
+			<div className="_combineEditors">
+				<div className="_combineEditors">Grow</div>
+				<EachSimpleEditor
+					selectedComponentsList={selectedComponentsList}
+					defPath={defPath}
+					className={'_simpleEditor'}
+					locationHistory={locationHistory}
+					pageExtractor={pageExtractor}
+					subComponentName={subComponentName}
+					pseudoState={pseudoState}
+					prop="flexGrow"
+					placeholder="Flex Grow"
+					iterateProps={iterateProps}
+					selectorPref={selectorPref}
+					styleProps={styleProps}
+					selectedComponent={selectedComponent}
+					saveStyle={saveStyle}
+					properties={properties}
+					editorDef={{ type: SimpleEditorType.Range, rangeMin: 0, rangeMax: 10 }}
+					relatedProps={flexRelatedProps}
+				/>
+			</div>
+			<div className="_combineEditors">
+				<div className="_combineEditors">Shrink</div>
+				<EachSimpleEditor
+					selectedComponentsList={selectedComponentsList}
+					defPath={defPath}
+					className={'_simpleEditor'}
+					locationHistory={locationHistory}
+					pageExtractor={pageExtractor}
+					subComponentName={subComponentName}
+					pseudoState={pseudoState}
+					prop="flexShrink"
+					placeholder="Flex Shrink"
+					iterateProps={iterateProps}
+					selectorPref={selectorPref}
+					styleProps={styleProps}
+					selectedComponent={selectedComponent}
+					saveStyle={saveStyle}
+					properties={properties}
+					editorDef={{ type: SimpleEditorType.Range, rangeMin: 0, rangeMax: 10 }}
+					relatedProps={flexRelatedProps}
+				/>
+			</div>
+			{/* <div className="_combineEditors"> */}
 			<div className="_combineEditors">Basis</div>
+			<EachSimpleEditor
+				selectedComponentsList={selectedComponentsList}
+				defPath={defPath}
+				className={'_simpleEditor'}
+				locationHistory={locationHistory}
+				pageExtractor={pageExtractor}
+				subComponentName={subComponentName}
+				pseudoState={pseudoState}
+				prop="flexBasis"
+				placeholder="Flex Basis"
+				iterateProps={iterateProps}
+				selectorPref={selectorPref}
+				styleProps={styleProps}
+				selectedComponent={selectedComponent}
+				saveStyle={saveStyle}
+				properties={properties}
+				editorDef={{
+					type: SimpleEditorType.ButtonBar,
+					buttonBarOptions: flexBasisOptions,
+				}}
+				relatedProps={flexRelatedProps}
+			/>
+			{/* </div> */}
 			<EachSimpleEditor
 				selectedComponentsList={selectedComponentsList}
 				defPath={defPath}
@@ -2638,6 +2662,7 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 				editorDef={{ type: SimpleEditorType.PixelSize }}
 				relatedProps={flexRelatedProps}
 			/>
+
 			<div className="_combineEditors">Flow</div>
 			<EachSimpleEditor
 				selectedComponentsList={selectedComponentsList}
@@ -2678,8 +2703,9 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 				relatedProps={flexFlowRelatedProps}
 				editorDef={{
 					type: SimpleEditorType.Icons,
-					visibleIconCount: 3,
-					iconButtonOptions: [
+					withBackground: true,
+					visibleIconCount: 5,
+					Options: [
 						{
 							name: 'row',
 							description: 'Row (left to right)',
@@ -2717,42 +2743,6 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 							),
 						},
 						{
-							name: 'inherit',
-							description: 'Inherit from parent element',
-							icon: (
-								<g transform="translate(2 2)">
-									<path d="M4 21v-7h16v7M12 3v11" />
-								</g>
-							),
-						},
-						{
-							name: 'initial',
-							description: 'Set to default value',
-							icon: (
-								<g transform="translate(2 2)">
-									<path d="M12 3v3M3 12h3m12 0h3M12 21v-3" />
-								</g>
-							),
-						},
-						{
-							name: 'revert',
-							description: 'Revert to browser default',
-							icon: (
-								<g transform="translate(2 2)">
-									<path d="M20 8h-9v3l-5-4 5-4v3h11v8h-2z" />
-								</g>
-							),
-						},
-						{
-							name: 'revert-layer',
-							description: 'Revert to previous cascade layer',
-							icon: (
-								<g transform="translate(2 2)">
-									<path d="M20 8h-9v3l-5-4 5-4v3h11v8h-2zM4 19h16v2H4z" />
-								</g>
-							),
-						},
-						{
 							name: 'unset',
 							description: 'Unset this property',
 							icon: (
@@ -2784,8 +2774,9 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 				relatedProps={flexFlowRelatedProps}
 				editorDef={{
 					type: SimpleEditorType.Icons,
-					visibleIconCount: 3,
-					iconButtonOptions: [
+					withBackground: true,
+					visibleIconCount: 4,
+					Options: [
 						{
 							name: 'nowrap',
 							description: 'No Wrap: All flex items will be on one line',
@@ -2812,44 +2803,6 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 							icon: (
 								<g transform="translate(2 2)">
 									<path d="M3 19h18v-2H3v2zm0-6h10v-2H3v2zm12 0h6v-2h-6v2zm-12-6h8V5H3v2zm10 0h8V5h-8v2z" />
-								</g>
-							),
-						},
-						{
-							name: 'inherit',
-							description:
-								'Inherit: Inherits the flex-wrap property from its parent element',
-							icon: (
-								<g transform="translate(2 2)">
-									<path d="M4 21v-7h16v7M12 3v11" />
-								</g>
-							),
-						},
-						{
-							name: 'initial',
-							description: 'Initial: Sets this property to its default value',
-							icon: (
-								<g transform="translate(2 2)">
-									<path d="M12 3v3M3 12h3m12 0h3M12 21v-3" />
-								</g>
-							),
-						},
-						{
-							name: 'revert',
-							description: 'Revert: Reverts this property to the browser default',
-							icon: (
-								<g transform="translate(2 2)">
-									<path d="M20 8h-9v3l-5-4 5-4v3h11v8h-2z" />
-								</g>
-							),
-						},
-						{
-							name: 'revert-layer',
-							description:
-								'Revert Layer: Reverts to the value established in a previous cascade layer',
-							icon: (
-								<g transform="translate(2 2)">
-									<path d="M20 8h-9v3l-5-4 5-4v3h11v8h-2zM4 19h16v2H4z" />
 								</g>
 							),
 						},
@@ -2904,8 +2857,9 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 				properties={properties}
 				editorDef={{
 					type: SimpleEditorType.Icons,
+					withBackground: true,
 					visibleIconCount: 3,
-					iconButtonOptions: [
+					Options: [
 						{
 							name: 'center',
 							description: 'Center',
@@ -3268,8 +3222,9 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 				properties={properties}
 				editorDef={{
 					type: SimpleEditorType.Icons,
+					withBackground: true,
 					visibleIconCount: 3,
-					iconButtonOptions: [
+					Options: [
 						{
 							name: 'normal',
 							description: 'Normal',
@@ -3293,28 +3248,26 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 							description: 'Stretch',
 							icon: (
 								<g viewBox="0 0 20 20" transform="translate(4 4)">
-									<g viewBox="0 0 20 20" transform="translate(4 4)">
-										<path
-											d="M18.1667 18.3334C18.1667 18.7934 17.7933 19.1667 17.3333 19.1667H2.33333C1.87333 19.1667 1.5 18.7934 1.5 18.3334C1.5 17.8734 1.87333 17.5 2.33333 17.5H17.3333C17.7933 17.5 18.1667 17.8734 18.1667 18.3334Z"
-											fillOpacity={1}
-											strokeOpacity={0}
-										/>
-										<path
-											d="M18.1667 2.33335C18.1667 2.79335 17.7933 3.16669 17.3333 3.16669L2.33333 3.16669C1.87333 3.16669 1.5 2.79335 1.5 2.33335C1.5 1.87335 1.87333 1.50002 2.33333 1.50002L17.3333 1.50002C17.7933 1.50002 18.1667 1.87335 18.1667 2.33335Z"
-											fillOpacity={1}
-											strokeOpacity={0}
-										/>
-										<path
-											d="M4.66667 18.1667H14.5C15.0523 18.1667 15.5 17.719 15.5 17.1667V15.1667C15.5 14.6144 15.0523 14.1667 14.5 14.1667H4.66667C4.20667 14.1667 3.83333 14.4654 3.83333 14.8334V17.5C3.83333 17.868 4.20667 18.1667 4.66667 18.1667Z"
-											fillOpacity={1}
-											strokeOpacity={0}
-										/>
-										<path
-											d="M4.66667 6.66669L14.5 6.66669C15.0523 6.66669 15.5 6.21897 15.5 5.66669V3.66669C15.5 3.1144 15.0523 2.66669 14.5 2.66669L4.66667 2.66669C4.20667 2.66669 3.83333 2.96535 3.83333 3.33335V6.00002C3.83333 6.36802 4.20667 6.66669 4.66667 6.66669Z"
-											fillOpacity={1}
-											strokeOpacity={0}
-										/>
-									</g>
+									<path
+										d="M18.1667 18.3334C18.1667 18.7934 17.7933 19.1667 17.3333 19.1667H2.33333C1.87333 19.1667 1.5 18.7934 1.5 18.3334C1.5 17.8734 1.87333 17.5 2.33333 17.5H17.3333C17.7933 17.5 18.1667 17.8734 18.1667 18.3334Z"
+										fillOpacity={1}
+										strokeOpacity={0}
+									/>
+									<path
+										d="M18.1667 2.33335C18.1667 2.79335 17.7933 3.16669 17.3333 3.16669L2.33333 3.16669C1.87333 3.16669 1.5 2.79335 1.5 2.33335C1.5 1.87335 1.87333 1.50002 2.33333 1.50002L17.3333 1.50002C17.7933 1.50002 18.1667 1.87335 18.1667 2.33335Z"
+										fillOpacity={1}
+										strokeOpacity={0}
+									/>
+									<path
+										d="M4.66667 18.1667H14.5C15.0523 18.1667 15.5 17.719 15.5 17.1667V15.1667C15.5 14.6144 15.0523 14.1667 14.5 14.1667H4.66667C4.20667 14.1667 3.83333 14.4654 3.83333 14.8334V17.5C3.83333 17.868 4.20667 18.1667 4.66667 18.1667Z"
+										fillOpacity={1}
+										strokeOpacity={0}
+									/>
+									<path
+										d="M4.66667 6.66669L14.5 6.66669C15.0523 6.66669 15.5 6.21897 15.5 5.66669V3.66669C15.5 3.1144 15.0523 2.66669 14.5 2.66669L4.66667 2.66669C4.20667 2.66669 3.83333 2.96535 3.83333 3.33335V6.00002C3.83333 6.36802 4.20667 6.66669 4.66667 6.66669Z"
+										fillOpacity={1}
+										strokeOpacity={0}
+									/>
 								</g>
 							),
 						},

@@ -157,14 +157,13 @@ export function EachSimpleEditor({
 		case SimpleEditorType.Icons:
 			editor = (
 				<IconsSimpleEditor
-					options={editorDef.iconButtonOptions!}
+					options={editorDef.Options}
 					selected={value.value}
 					onChange={editorOnchange}
-					withBackground={editorDef.iconButtonsBackground}
+					withBackground={editorDef.withBackground}
 					multipleValueType={editorDef.multipleValueType}
 					multiSelect={editorDef.multiSelect}
 					visibleIconCount={editorDef.visibleIconCount}
-					// gridSize={editorDef.gridSize}
 				/>
 			);
 			break;

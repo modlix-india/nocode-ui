@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { SimpleEditorMultipleValueType } from '.';
-
 interface IconOption {
 	name: string;
 	icon: React.ReactNode;
@@ -16,14 +15,13 @@ export function IconsSimpleEditor({
 	options,
 	selected,
 	onChange,
-	withBackground = false,
+	withBackground,
 	multipleValueType = SimpleEditorMultipleValueType.SpaceSeparated,
 	multiSelect = false,
 	multiSelectWithControl = false,
 	exclusiveOptions,
 	combinationOptions,
 	visibleIconCount,
-	// gridSize,
 }: Readonly<{
 	options: IconOptions;
 	selected: string | Array<string>;
@@ -40,24 +38,45 @@ export function IconsSimpleEditor({
 	const [dropdownIcons, setDropdownIcons] = useState<IconOptions>([]);
 
 	useEffect(() => {
-		const selectedSet = new Set(Array.isArray(selected) ? selected : [selected]);
-		const selectedIcons = options.filter(icon => selectedSet.has(icon.name));
-		const remainingIcons = options.filter(icon => !selectedSet.has(icon.name));
-
-		if (visibleIconCount !== undefined) {
-			const visibleCount = Math.min(visibleIconCount, options.length);
-			const newVisibleIcons = [...selectedIcons, ...remainingIcons].slice(0, visibleCount);
-			setVisibleIcons(newVisibleIcons);
-			setDropdownIcons(options.filter(icon => !newVisibleIcons.includes(icon)));
-		} else {
+		if (!visibleIconCount || visibleIconCount >= options.length) {
 			setVisibleIcons(options);
 			setDropdownIcons([]);
+			return;
 		}
+
+		let selectedSet = new Set(Array.isArray(selected) ? selected : [selected]);
+		let selectedIcons = options.filter(icon => selectedSet.has(icon.name));
+		let remainingIcons = options.filter(icon => !selectedSet.has(icon.name));
+
+		let newVisibleIcons = [...visibleIcons];
+
+		selectedIcons.forEach(icon => {
+			if (!newVisibleIcons.find(vi => vi.name === icon.name)) {
+				newVisibleIcons.unshift(icon);
+			}
+		});
+
+		remainingIcons.forEach(icon => {
+			if (
+				!newVisibleIcons.find(vi => vi.name === icon.name) &&
+				newVisibleIcons.length < visibleIconCount
+			) {
+				newVisibleIcons.push(icon);
+			}
+		});
+
+		let finalVisibleIcons = newVisibleIcons.slice(0, visibleIconCount);
+		setVisibleIcons(finalVisibleIcons);
+
+		let newDropdownIcons = options.filter(
+			icon => !finalVisibleIcons.find(vi => vi.name === icon.name),
+		);
+		setDropdownIcons(newDropdownIcons);
 	}, [options, visibleIconCount, selected]);
 
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-	const selection = useMemo(() => {
+	let selection = useMemo(() => {
 		if (!multiSelect && typeof selected === 'string') return new Set<string>([selected]);
 		if (!selected) return new Set<string>();
 		if (
@@ -107,18 +126,23 @@ export function IconsSimpleEditor({
 			);
 		}
 
-		setIsDropdownOpen(false);
+		if (dropdownIcons.length > 0) {
+			if (dropdownIcons.find(icon => icon.name === option.name)) {
+				const newVisibleIcons = [option, ...visibleIcons.slice(0, -1)];
+				setVisibleIcons(newVisibleIcons);
 
-		const newVisibleIcons = [
-			option,
-			...visibleIcons.filter(icon => icon.name !== option.name),
-		].slice(0, visibleIconCount);
-		const newDropdownIcons = [...options.filter(icon => !newVisibleIcons.includes(icon))];
-		setVisibleIcons(newVisibleIcons);
-		setDropdownIcons(newDropdownIcons);
+				const lastVisibleIcon = visibleIcons[visibleIcons.length - 1];
+				setDropdownIcons([
+					lastVisibleIcon,
+					...dropdownIcons.filter(icon => icon.name !== option.name),
+				]);
+			}
+		}
+
+		setIsDropdownOpen(false);
 	};
 
-	const toggleDropdown = () => {
+	let toggleDropdown = () => {
 		setIsDropdownOpen(!isDropdownOpen);
 	};
 
@@ -155,16 +179,10 @@ export function IconsSimpleEditor({
 						onClick={toggleDropdown}
 					>
 						More
-						<svg
-							width="8"
-							height="4"
-							viewBox="0 0 8 4"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-						>
+						<svg width="8" height="4" viewBox="0 0 8 4">
 							<path
 								d="M4.56629 3.80476C4.56548 3.80476 4.5647 3.80505 4.56408 3.80556C4.25163 4.06508 3.74506 4.06481 3.43301 3.80476L0.234347 1.13914C0.00444266 0.947547 -0.0630292 0.662241 0.0619187 0.412339C0.186867 0.162436 0.476746 5.68513e-09 0.80161 9.5591e-09L7.19894 8.58465e-08C7.52131 8.96907e-08 7.81369 0.162437 7.93863 0.412339C8.06358 0.662241 7.99361 0.947547 7.76621 1.13914L4.5685 3.80396C4.56788 3.80448 4.5671 3.80476 4.56629 3.80476Z"
-								fill="#CCCCCC"
+								fill="#F0F0F0"
 							/>
 						</svg>
 					</label>
@@ -188,7 +206,6 @@ export function IconsSimpleEditor({
 													: `0 0 ${e.width ?? '32'} ${e.height ?? '32'}`
 											}
 											fill="none"
-											xmlns="http://www.w3.org/2000/svg"
 											className={activeClass}
 											transform={e.transform}
 										>
