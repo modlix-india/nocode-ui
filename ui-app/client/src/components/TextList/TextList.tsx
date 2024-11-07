@@ -76,10 +76,10 @@ function TextList(props: ComponentProps) {
 	let translatedText = dropdownData?.length
 		? dropdownData.map((e: any) => {
 				return { ...e, label: getTranslations(e.label, translations) };
-		  })
+			})
 		: text && text.length
-		? text.split(delimitter).map((e: string) => getTranslations(e, translations))
-		: [];
+			? text.split(delimitter).map((e: string) => getTranslations(e, translations))
+			: [];
 
 	translatedText = translatedText.map((e: any) => [e.key ?? e, e.label ?? e]);
 
@@ -198,22 +198,135 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
+				<IconHelper viewBox="0 0 30 30">
+					<rect width="30" height="30" rx="2" fill="url(#paint0_linear_3214_9643)" />
 					<rect
-						x="1"
-						y="1"
-						width="22"
-						height="22"
+						className="_TextListLine2"
+						x="10.9097"
+						y="13.6357"
+						width="15"
+						height="2.72727"
 						rx="1"
-						fill="currentColor"
-						fillOpacity="0.2"
+						fill="url(#paint1_linear_3214_9643)"
 					/>
-					<rect x="9" y="11" width="11" height="2" rx="0.4" fill="currentColor" />
-					<circle cx="6" cy="6" r="2" fill="currentColor" />
-					<circle cx="6" cy="12" r="2" fill="currentColor" />
-					<circle cx="6" cy="18" r="2" fill="currentColor" />
-					<rect x="9" y="17" width="11" height="2" rx="0.4" fill="currentColor" />
-					<rect x="9" y="5" width="11" height="2" rx="0.4" fill="currentColor" />
+					<circle
+						className="_TextListCircle1"
+						cx="6.81858"
+						cy="6.81785"
+						r="2.72727"
+						fill="url(#paint2_linear_3214_9643)"
+					/>
+					<circle
+						className="_TextListCircle2"
+						cx="6.81858"
+						cy="14.9983"
+						r="2.72727"
+						fill="url(#paint3_linear_3214_9643)"
+					/>
+					<circle
+						className="_TextListCircle3"
+						cx="6.81858"
+						cy="23.1825"
+						r="2.72727"
+						fill="url(#paint4_linear_3214_9643)"
+					/>
+					<rect
+						className="_TextListLine3"
+						x="10.9097"
+						y="21.8162"
+						width="15"
+						height="2.72727"
+						rx="1"
+						fill="url(#paint5_linear_3214_9643)"
+					/>
+					<rect
+						className="_TextListLine1"
+						x="10.9097"
+						y="5.4552"
+						width="15"
+						height="2.72727"
+						rx="1"
+						fill="url(#paint6_linear_3214_9643)"
+					/>
+					<defs>
+						<linearGradient
+							id="paint0_linear_3214_9643"
+							x1="15"
+							y1="0"
+							x2="15"
+							y2="30"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#EEEEEE" />
+							<stop offset="1" stopColor="#EDEAEA" />
+						</linearGradient>
+						<linearGradient
+							id="paint1_linear_3214_9643"
+							x1="18.4097"
+							y1="13.6357"
+							x2="18.4097"
+							y2="16.363"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#FF8EE7" />
+							<stop offset="1" stopColor="#FF00C8" />
+						</linearGradient>
+						<linearGradient
+							id="paint2_linear_3214_9643"
+							x1="6.81858"
+							y1="4.09058"
+							x2="6.81858"
+							y2="9.54512"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#FF8EE7" />
+							<stop offset="1" stopColor="#FF00C8" />
+						</linearGradient>
+						<linearGradient
+							id="paint3_linear_3214_9643"
+							x1="6.81858"
+							y1="12.271"
+							x2="6.81858"
+							y2="17.7255"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#FF8EE7" />
+							<stop offset="1" stopColor="#FF00C8" />
+						</linearGradient>
+						<linearGradient
+							id="paint4_linear_3214_9643"
+							x1="6.81858"
+							y1="20.4552"
+							x2="6.81858"
+							y2="25.9097"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#FF8EE7" />
+							<stop offset="1" stopColor="#FF00C8" />
+						</linearGradient>
+						<linearGradient
+							id="paint5_linear_3214_9643"
+							x1="18.4097"
+							y1="21.8162"
+							x2="18.4097"
+							y2="24.5434"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#FF8EE7" />
+							<stop offset="1" stopColor="#FF00C8" />
+						</linearGradient>
+						<linearGradient
+							id="paint6_linear_3214_9643"
+							x1="18.4097"
+							y1="5.4552"
+							x2="18.4097"
+							y2="8.18247"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#FF8EE7" />
+							<stop offset="1" stopColor="#FF00C8" />
+						</linearGradient>
+					</defs>
 				</IconHelper>
 			),
 		},

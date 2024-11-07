@@ -129,7 +129,7 @@ function PageEditor(props: Readonly<ComponentProps>) {
 	);
 
 	const personalization = personalizationPath
-		? (getDataFromPath(personalizationPath, locationHistory, pageExtractor) ?? {})
+		? getDataFromPath(personalizationPath, locationHistory, pageExtractor) ?? {}
 		: {};
 
 	// Managing theme with local state.
@@ -258,7 +258,7 @@ function PageEditor(props: Readonly<ComponentProps>) {
 		setUrl(
 			`/${editPageDefinition.appCode}/${
 				clientCode === ''
-					? (appDefinition?.clientCode ?? editPageDefinition.clientCode)
+					? appDefinition?.clientCode ?? editPageDefinition.clientCode
 					: clientCode
 			}/page/${editPageDefinition.name}`,
 		);
@@ -274,7 +274,7 @@ function PageEditor(props: Readonly<ComponentProps>) {
 			savePersonalization(
 				`pageLeftAt.${editPageDefinition!.name}.clientCode`,
 				clientCode === ''
-					? (appDefinition?.clientCode ?? editPageDefinition!.clientCode)
+					? appDefinition?.clientCode ?? editPageDefinition!.clientCode
 					: clientCode,
 			);
 		},
@@ -825,21 +825,55 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
+				<IconHelper viewBox="0 0 30 34">
 					<path
-						d="M12.4836 5.4706V1H3.5493C2.69501 1 2 1.69501 2 2.5493V21.4507C2 22.305 2.69501 23 3.5493 23H17.4706C18.3249 23 19.0199 22.305 19.0199 21.4507V7.53632H14.5493C13.4103 7.53632 12.4836 6.60964 12.4836 5.4706Z"
-						fill="currentColor"
-						fillOpacity="0.2"
+						d="M15.7879 6.73258V0H2.33319C1.04667 0 0 1.04667 0 2.33319V30.7982C0 32.0847 1.04667 33.1313 2.33319 33.1313H23.2983C24.5848 33.1313 25.6315 32.0847 25.6315 30.7982V9.84351H18.8989C17.1835 9.84351 15.7879 8.44795 15.7879 6.73258Z"
+						fill="url(#paint0_linear_3214_9572)"
 					/>
 					<path
-						d="M13.5176 5.47056C13.5176 6.04008 13.9809 6.50342 14.5504 6.50342H18.2553L13.5176 1.78809V5.47056Z"
-						fill="currentColor"
-						fillOpacity="0.2"
+						d="M17.3452 6.73417C17.3452 7.59185 18.043 8.28963 18.9007 8.28963H24.48L17.3452 1.18848V6.73417Z"
+						fill="url(#paint1_linear_3214_9572)"
 					/>
 					<path
-						d="M14.5542 15.025L19.0139 10.5653C19.7675 9.81158 20.6015 9.81158 21.3552 10.5653C22.1089 11.3189 22.1089 12.1529 21.3552 12.9066L16.8955 17.3663L14.5542 15.025ZM16.2967 17.7041L14.3677 17.9184C14.1568 17.9418 13.9786 17.7636 14.0021 17.5527L14.2164 15.6237L16.2967 17.7041Z"
-						fill="currentColor"
+						className="_PageEditorPen"
+						d="M18.9063 21.1187L25.6225 14.4025C26.7575 13.2675 28.0135 13.2675 29.1485 14.4025C30.2835 15.5375 30.2835 16.7935 29.1485 17.9285L22.4323 24.6447L18.9063 21.1187ZM21.5306 25.1533L18.6256 25.4761C18.308 25.5114 18.0396 25.2431 18.0749 24.9255L18.3977 22.0204L21.5306 25.1533Z"
+						fill="url(#paint2_linear_3214_9572)"
 					/>
+					<defs>
+						<linearGradient
+							id="paint0_linear_3214_9572"
+							x1="12.8157"
+							y1="0"
+							x2="12.8157"
+							y2="33.1313"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#EEEEEE" stopOpacity="0.933333" />
+							<stop offset="1" stopColor="#EDEAEA" />
+						</linearGradient>
+						<linearGradient
+							id="paint1_linear_3214_9572"
+							x1="20.9126"
+							y1="1.18848"
+							x2="20.9126"
+							y2="8.28963"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#EEEEEE" stopOpacity="0.933333" />
+							<stop offset="1" stopColor="#EDEAEA" />
+						</linearGradient>
+						<linearGradient
+							id="paint2_linear_3214_9572"
+							x1="24.0358"
+							y1="13.5513"
+							x2="24.0358"
+							y2="25.4793"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#00B5B9" />
+							<stop offset="1" stopColor="#006769" />
+						</linearGradient>
+					</defs>
 				</IconHelper>
 			),
 		},

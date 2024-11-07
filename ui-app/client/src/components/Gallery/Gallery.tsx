@@ -709,26 +709,57 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
+				<IconHelper viewBox="0 0 46 33">
 					<path
-						d="M16.1953 3.45215C17.8452 3.45215 19.1953 4.79961 19.1953 6.45215C19.1953 8.10268 17.8458 9.45215 16.1953 9.45215C14.5448 9.45215 13.1953 8.10268 13.1953 6.45215C13.1953 4.79961 14.5454 3.45215 16.1953 3.45215Z"
-						fill="currentColor"
-						fillOpacity="0.2"
+						className="_gallerymainframe"
+						d="M45.355 31L45.355 21.1611C45.355 20.0566 44.4596 19.1611 43.355 19.1611L2.64479 19.1611C1.54023 19.1611 0.644794 20.0566 0.644794 21.1611L0.644794 31C0.644794 32.1046 1.54022 33 2.64479 33L43.355 33C44.4595 33 45.355 32.1046 45.355 31Z"
+						fill="url(#paint0_linear_3782_8677)"
 					/>
 					<path
-						d="M6.03544 9.37851L4.17973 10.1906C4.07055 10.2384 4 10.3462 4 10.4654V19.4C4 19.7314 4.26863 20 4.6 20H19.4C19.7314 20 20 19.7314 20 19.4V16.3432C20 16.2501 19.9568 16.1624 19.8832 16.1056L17.2524 14.0774C16.8427 13.7615 16.2846 13.7186 15.8315 13.9682L13.0133 15.5205C12.8906 15.588 12.7375 15.5617 12.6444 15.4571L7.52791 9.70542C7.1537 9.28476 6.55123 9.15279 6.03544 9.37851Z"
-						fill="currentColor"
+						className="_gallerysecondframe"
+						d="M42.1616 13.9677L42.1616 11.5806C42.1616 10.476 41.2662 9.58057 40.1616 9.58057L5.8386 9.58056C4.73404 9.58056 3.8386 10.476 3.8386 11.5806L3.8386 13.9677C3.8386 15.0723 4.73404 15.9677 5.8386 15.9677L40.1616 15.9677C41.2662 15.9677 42.1616 15.0723 42.1616 13.9677Z"
+						fill="url(#paint1_linear_3782_8677)"
 					/>
-					<rect
-						x="1.5"
-						y="1.5"
-						width="21"
-						height="21"
-						rx="1.5"
-						fill="none"
-						stroke="currentColor"
-						strokeOpacity="0.2"
+					<path
+						className="_galleryfirstframe"
+						d="M36.8389 4.38693L36.8389 1.99976C36.8389 0.895186 35.9434 -0.00024418 34.8389 -0.000244228L11.1611 -0.000245263C10.0566 -0.000245311 9.16113 0.895183 9.16113 1.99975L9.16113 4.38692C9.16113 5.49149 10.0566 6.38692 11.1611 6.38692L34.8389 6.38693C35.9434 6.38693 36.8389 5.4915 36.8389 4.38693Z"
+						fill="url(#paint2_linear_3782_8677)"
 					/>
+					<defs>
+						<linearGradient
+							id="paint0_linear_3782_8677"
+							x1="22.9999"
+							y1="19.1611"
+							x2="22.9999"
+							y2="33"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#BEADFA" />
+							<stop offset="1" stopColor="#AC94FF" />
+						</linearGradient>
+						<linearGradient
+							id="paint1_linear_3782_8677"
+							x1="23.0001"
+							y1="9.58057"
+							x2="23.0001"
+							y2="15.9677"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#EEEEEE" />
+							<stop offset="1" stopColor="#EDEAEA" />
+						</linearGradient>
+						<linearGradient
+							id="paint2_linear_3782_8677"
+							x1="23"
+							y1="-0.000244746"
+							x2="23"
+							y2="6.38693"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#EEEEEE" />
+							<stop offset="1" stopColor="#EDEAEA" />
+						</linearGradient>
+					</defs>
 				</IconHelper>
 			),
 		},

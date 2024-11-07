@@ -348,57 +348,41 @@ const component: Component = {
 			displayName: 'Component',
 			description: 'Component',
 			icon: (
-				<IconHelper viewBox="0 0 22.526 22">
-					<g id="Group_134" data-name="Group 134" transform="translate(-1203 -629)">
-						<rect
-							id="Rectangle_73"
-							data-name="Rectangle 73"
-							width="22"
-							height="22"
-							rx="1"
-							transform="translate(1203 629)"
-							fill="currentColor"
-							fillOpacity="0.2"
-						/>
-						<path
-							id="Subtraction_12"
-							data-name="Subtraction 12"
-							d="M-120.013,211.7h0a8.926,8.926,0,0,1-5.075-2.107l2.547-3.082a4.95,4.95,0,0,0,2.907,1.207l-.379,3.981Zm1.482,0h0l-.379-3.981A4.952,4.952,0,0,0-116,206.509l2.547,3.082a8.925,8.925,0,0,1-5.073,2.106Zm6.121-3.153h0L-115.492,206a4.953,4.953,0,0,0,1.206-2.9l3.983.368a8.926,8.926,0,0,1-2.106,5.073Zm-13.726,0h0a8.926,8.926,0,0,1-2.106-5.074l3.984-.372a4.953,4.953,0,0,0,1.206,2.9l-3.082,2.547Zm1.877-6.186h0l-3.983-.372a8.924,8.924,0,0,1,2.106-5.074l3.083,2.547a4.951,4.951,0,0,0-1.206,2.9Zm9.972,0h0a4.952,4.952,0,0,0-1.206-2.893l3.083-2.547a8.925,8.925,0,0,1,2.106,5.074l-3.982.368Zm-8.255-3.405h0l-2.547-3.082a8.926,8.926,0,0,1,5.076-2.107l.376,3.984a4.951,4.951,0,0,0-2.9,1.206Zm6.538,0h0a4.954,4.954,0,0,0-2.9-1.205l.377-3.983a8.927,8.927,0,0,1,5.074,2.107L-116,198.947Z"
-							transform="translate(1333.272 438.188)"
-							fill="currentColor"
-						/>
-						<g
-							id="Group_133"
-							data-name="Group 133"
-							transform="translate(1555.346 1976.277) rotate(-131)"
+				<IconHelper viewBox="0 0 30 30">
+					<path
+						className="_CPtube"
+						d="M3.04373 17.632C2.21954 18.4562 1.75799 19.5771 1.75799 20.7419V23.0716L0.296427 25.264C-0.170614 25.9618 -0.0772057 26.8904 0.516211 27.4838C1.10963 28.0772 2.03821 28.1706 2.73603 27.7036L4.92837 26.242H7.25808C8.42294 26.242 9.54383 25.7805 10.368 24.9563L17 18.3243L14.5109 15.8352L7.87897 22.4672C7.71413 22.6321 7.48886 22.7255 7.25808 22.7255H5.27453V20.7419C5.27453 20.5111 5.36794 20.2859 5.53278 20.121L12.1648 13.4891L9.6757 11L3.04373 17.632Z"
+						fill="url(#paint0_linear_3214_9505)"
+					/>
+					<path
+						className="_CPhandle"
+						d="M18.3622 1.6463L12.623 7.39176L12.0915 6.86019C11.3847 6.15332 10.2369 6.15332 9.53009 6.86019C8.8233 7.56706 8.8233 8.71502 9.53009 9.42189L18.577 18.4698C19.2838 19.1767 20.4317 19.1767 21.1385 18.4698C21.8453 17.763 21.8453 16.615 21.1385 15.9081L20.6069 15.3766L26.3461 9.63112C28.5513 7.42569 28.5513 3.85174 26.3461 1.65196C24.1409 -0.547825 20.5674 -0.55348 18.3678 1.65196L18.3622 1.6463Z"
+						fill="url(#paint1_linear_3214_9505)"
+					/>
+					<defs>
+						<linearGradient
+							id="paint0_linear_3214_9505"
+							x1="8.5"
+							y1="11"
+							x2="8.5"
+							y2="28"
+							gradientUnits="userSpaceOnUse"
 						>
-							<path
-								id="Path_367"
-								data-name="Path 367"
-								d="M1.558-.142a.442.442,0,0,1,.823,0l.454,1.176L3.252,2.1c.146.338,0,8.648,0,8.648H.641S.495,2.443.641,2.1L1.1,1.034Z"
-								transform="translate(1229.877 618.157)"
-								fill="currentColor"
-							/>
-							<rect
-								id="Rectangle_74"
-								data-name="Rectangle 74"
-								width="5.478"
-								height="1.524"
-								transform="translate(1229 628.537)"
-								fill="currentColor"
-							/>
-							<ellipse
-								id="Ellipse_41"
-								data-name="Ellipse 41"
-								cx="1.383"
-								cy="2.032"
-								rx="1.383"
-								ry="2.032"
-								transform="translate(1230.453 628.537)"
-								fill="currentColor"
-							/>
-						</g>
-					</g>
+							<stop stopColor="#EEEEEE" stopOpacity="0.933333" />
+							<stop offset="1" stopColor="#EDEAEA" />
+						</linearGradient>
+						<linearGradient
+							id="paint1_linear_3214_9505"
+							x1="18.5"
+							y1="0"
+							x2="18.5"
+							y2="19"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#F938AC" />
+							<stop offset="1" stopColor="#A03C78" />
+						</linearGradient>
+					</defs>
 				</IconHelper>
 			),
 			mainComponent: true,

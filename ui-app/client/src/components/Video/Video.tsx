@@ -676,21 +676,52 @@ const component: Component = {
 			mainComponent: true,
 			description: 'Component',
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
+				<IconHelper viewBox="0 0 27 30">
 					<path
-						d="M21.23 10.7446C22.2567 11.3373 22.2567 12.8192 21.23 13.4119L5.06 22.7477C4.03333 23.3404 2.75 22.5995 2.75 21.414L2.75 2.74249C2.75 1.557 4.03333 0.816067 5.06 1.40881L21.23 10.7446Z"
-						fill="currentColor"
-						fillOpacity="0.2"
+						className="_videoOuterDesign"
+						d="M25.4827 13.161C26.8984 13.9783 26.8984 16.0217 25.4827 16.839L3.18547 29.7123C1.76977 30.5297 0.00015702 29.508 0.000157092 27.8733L0.000158217 2.12671C0.000158288 0.492004 1.76978 -0.529684 3.18547 0.287668L25.4827 13.161Z"
+						fill="url(#paint1_linear_3214_9373)"
 					/>
 					<path
-						d="M21.23 10.7446C22.2567 11.3373 22.2567 12.8192 21.23 13.4119L5.06 22.7477C4.03333 23.3404 2.75 22.5995 2.75 21.414L2.75 2.74249C2.75 1.557 4.03333 0.816067 5.06 1.40881L21.23 10.7446Z"
-						fill="currentColor"
-						fillOpacity="0.2"
+						className="_videoInnerDesign"
+						d="M15.1777 14.5677C15.5111 14.7602 15.5111 15.2413 15.1777 15.4338L7.1218 20.0849C6.78846 20.2773 6.3718 20.0367 6.3718 19.6518L6.3718 10.3496C6.3718 9.96475 6.78846 9.72419 7.1218 9.91664L15.1777 14.5677Z"
+						fill="url(#paint2_linear_3214_9373)"
 					/>
-					<path
-						d="M13.5508 11.6455C13.8841 11.8379 13.8841 12.3191 13.5508 12.5115L8.12078 15.6465C7.78745 15.839 7.37078 15.5984 7.37078 15.2135L7.37078 8.94348C7.37078 8.55858 7.78745 8.31802 8.12078 8.51047L13.5508 11.6455Z"
-						fill="currentColor"
-					/>
+					<defs>
+						<linearGradient
+							id="paint0_linear_3214_9373"
+							x1="13.2723"
+							y1="-5.80144e-07"
+							x2="13.2723"
+							y2="30"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#EEEEEE" />
+							<stop offset="1" stopColor="#EDEAEA" />
+						</linearGradient>
+						<linearGradient
+							id="paint1_linear_3214_9373"
+							x1="13.2723"
+							y1="-5.80144e-07"
+							x2="13.2723"
+							y2="30"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#EEEEEE" />
+							<stop offset="1" stopColor="#EDEAEA" />
+						</linearGradient>
+						<linearGradient
+							id="paint2_linear_3214_9373"
+							x1="9.55711"
+							y1="8.63012"
+							x2="9.55711"
+							y2="21.3714"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#ACF3E6" />
+							<stop offset="1" stopColor="#02B694" />
+						</linearGradient>
+					</defs>
 				</IconHelper>
 			),
 		},

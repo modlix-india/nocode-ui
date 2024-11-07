@@ -171,44 +171,93 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
+				<IconHelper viewBox="0 0 30 30">
 					<rect
-						x="4.5"
-						y="7"
-						width="10"
-						height="3.75"
+						className="_progressBarInner1"
+						x="5.625"
+						y="8.75761"
+						width="12.5"
+						height="4.6875"
 						rx="0.2"
-						transform="rotate(90 4.5 7)"
-						fill="currentColor"
+						transform="rotate(90 5.625 8.75761)"
+						fill="url(#paint0_linear_3214_9486)"
 					/>
 					<rect
-						x="10.75"
-						y="7"
-						width="10"
-						height="3.75"
+						className="_progressBarInner2"
+						x="13.438"
+						y="8.75761"
+						width="12.5"
+						height="4.6875"
 						rx="0.2"
-						transform="rotate(90 10.75 7)"
-						fill="currentColor"
+						transform="rotate(90 13.438 8.75761)"
+						fill="url(#paint1_linear_3214_9486)"
 					/>
 					<rect
-						x="17"
-						y="7"
-						width="10"
-						height="3.75"
+						className="_progressBarInner3"
+						x="21.2495"
+						y="8.75761"
+						width="12.5"
+						height="4.6875"
 						rx="0.2"
-						transform="rotate(90 17 7)"
-						fill="currentColor"
+						transform="rotate(90 21.2495 8.75761)"
+						fill="url(#paint2_linear_3214_9486)"
 					/>
 					<rect
-						x="23.25"
-						y="7"
-						width="10"
-						height="3.75"
+						className="_progressBarInner4"
+						x="29.0625"
+						y="8.75761"
+						width="12.5"
+						height="4.6875"
 						rx="0.2"
-						transform="rotate(90 23.25 7)"
-						fill="currentColor"
-						fillOpacity="0.2"
+						transform="rotate(90 29.0625 8.75761)"
+						fill="url(#paint3_linear_3214_9486)"
 					/>
+					<defs>
+						<linearGradient
+							id="paint0_linear_3214_9486"
+							x1="11.875"
+							y1="8.75761"
+							x2="11.875"
+							y2="13.4451"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#B1A5FF" />
+							<stop offset="1" stopColor="#7B66FF" />
+						</linearGradient>
+						<linearGradient
+							id="paint1_linear_3214_9486"
+							x1="19.688"
+							y1="8.75761"
+							x2="19.688"
+							y2="13.4451"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#B1A5FF" />
+							<stop offset="1" stopColor="#7B66FF" />
+						</linearGradient>
+						<linearGradient
+							id="paint2_linear_3214_9486"
+							x1="27.4995"
+							y1="8.75761"
+							x2="27.4995"
+							y2="13.4451"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#B1A5FF" />
+							<stop offset="1" stopColor="#7B66FF" />
+						</linearGradient>
+						<linearGradient
+							id="paint3_linear_3214_9486"
+							x1="35.3125"
+							y1="8.75761"
+							x2="35.3125"
+							y2="13.4451"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#EEEEEE" stopOpacity="0.933333" />
+							<stop offset="1" stopColor="#EDEAEA" />
+						</linearGradient>
+					</defs>
 				</IconHelper>
 			),
 		},

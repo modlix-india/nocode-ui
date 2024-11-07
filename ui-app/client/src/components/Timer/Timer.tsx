@@ -160,45 +160,87 @@ const component = {
 			description: 'Component',
 
 			icon: (
-				<IconHelper viewBox="0 0 18 18">
-					<g transform="translate(-1092.044 -629)">
-						<path
-							d="M6.376,12.752a6.376,6.376,0,1,1,6.376-6.376A6.383,6.383,0,0,1,6.376,12.752Zm0-10.93A4.554,4.554,0,1,0,10.93,6.376,4.559,4.559,0,0,0,6.376,1.821Z"
-							transform="translate(1094.529 634.13)"
-							fill="#96a1b4"
-						/>
-						<rect
-							width="6.827"
-							height="2.56"
-							rx="1.28"
-							transform="translate(1097.491 630.265)"
-							fill="#96a1b4"
-						/>
-						<rect
-							width="3.414"
-							height="0.853"
-							rx="0.427"
-							transform="matrix(0.799, 0.602, -0.602, 0.799, 1104.832, 633.364)"
-							fill="#96a1b4"
-						/>
-						<rect
-							width="2"
-							height="3"
-							transform="translate(1099.881 632.573)"
-							fill="#96a1b4"
-						/>
-						<rect
-							width="1.495"
-							height="1.122"
-							transform="matrix(0.799, 0.602, -0.602, 0.799, 1105.184, 634.491)"
-							fill="#96a1b4"
-						/>
-						<path
-							d="M1.508,0S3.6,3,3.637,3.012A2.87,2.87,0,0,1,.22,3.174C.206,3.185,1.508,0,1.508,0Z"
-							transform="matrix(-0.438, -0.899, 0.899, -0.438, 1101.588, 642.367)"
-							fill="#96a1b4"
-						/>
-					</g>
+				<IconHelper viewBox="0 0 30 30">
+					<path
+						d="M14.0483 5.27883C14.0155 5.27883 13.978 5.27414 13.9452 5.26945C13.4484 5.19914 12.9374 5.17102 12.4171 5.17102C11.8968 5.17102 11.3905 5.19914 10.889 5.26945C10.8608 5.27414 10.8233 5.27883 10.7905 5.27883C4.70633 6.08039 0 11.2928 0 17.5834C0 24.4317 5.56852 30.0006 12.4171 30.0006C19.2657 30.0006 24.8342 24.432 24.8342 17.5834C24.8342 11.2928 20.1277 6.08042 14.0483 5.27883ZM12.4171 26.8128C7.33128 26.8128 3.18744 22.6738 3.18744 17.5831C3.18744 12.4973 7.33098 8.35828 12.4171 8.35828C17.5032 8.35828 21.6468 12.4973 21.6468 17.5831C21.6468 22.6783 17.5032 26.8128 12.4171 26.8128Z"
+						fill="url(#paint0_linear_3214_9624)"
+					/>
+					<path
+						d="M12.4168 17.1565C11.6293 17.1565 10.9824 17.794 10.9824 18.5815C10.9824 19.369 11.6246 20.0158 12.4168 20.0158C13.2089 20.0158 13.8511 19.3736 13.8511 18.5815C13.8511 17.794 13.2042 17.1565 12.4168 17.1565Z"
+						fill="url(#paint1_linear_3214_9624)"
+					/>
+					<path
+						className="_TimerHand"
+						d="M12.8997 16.2376V11.0768C12.8997 10.8096 12.6841 10.594 12.4169 10.594C12.1497 10.594 11.9341 10.8096 11.9341 11.0768V16.2376C12.0935 16.2048 12.2528 16.1861 12.4169 16.1861C12.581 16.1861 12.7403 16.2048 12.8997 16.2376Z"
+						fill="url(#paint2_linear_3214_9624)"
+					/>
+					<path
+						className="_TimerClose1"
+						d="M9.99805 0H14.8403V1.71561H9.99805V0Z"
+						fill="url(#paint3_linear_3214_9624)"
+					/>
+					<path
+						className="_TimerClose2"
+						d="M12.4172 4.20526C12.8062 4.20526 13.1859 4.21932 13.5656 4.25682V2.68652H11.2734V4.25682C11.6484 4.22401 12.0328 4.20526 12.4172 4.20526Z"
+						fill="url(#paint4_linear_3214_9624)"
+					/>
+					<defs>
+						<linearGradient
+							id="paint0_linear_3214_9624"
+							x1="12.4171"
+							y1="5.17102"
+							x2="12.4171"
+							y2="30.0006"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#24DFDF" />
+							<stop offset="1" stopColor="#0F7B7B" />
+						</linearGradient>
+						<linearGradient
+							id="paint1_linear_3214_9624"
+							x1="12.5"
+							y1="17.0002"
+							x2="12.4168"
+							y2="20.0158"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#24DFDF" />
+							<stop offset="1" stopColor="#0F7B7B" />
+						</linearGradient>
+						<linearGradient
+							id="paint2_linear_3214_9624"
+							x1="12.5002"
+							y1="11.5002"
+							x2="12.4169"
+							y2="16.2376"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#24DFDF" />
+							<stop offset="1" stopColor="#0F7B7B" />
+						</linearGradient>
+						<linearGradient
+							id="paint3_linear_3214_9624"
+							x1="12.4192"
+							y1="1"
+							x2="12.4192"
+							y2="1.71561"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#24DFDF" />
+							<stop offset="1" stopColor="#01B5B5" />
+						</linearGradient>
+						<linearGradient
+							id="paint4_linear_3214_9624"
+							x1="12.4195"
+							y1="2.68652"
+							x2="12.4195"
+							y2="4.25682"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop offset="0.45" stopColor="#24DFDF" />
+							<stop offset="1" stopColor="#0BADAD" />
+						</linearGradient>
+					</defs>
 				</IconHelper>
 			),
 			mainComponent: true,

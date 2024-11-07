@@ -160,25 +160,34 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
-					<svg
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill="none"
-						xmlns="http://www.w3.org/2000/svg"
-					>
-						<rect
-							x="1"
-							y="6.5"
-							width="22"
-							height="11"
-							rx="5.5"
-							fill="currentColor"
-							fillOpacity="0.2"
-						/>
-						<circle cx="17.4992" cy="12.0002" r="3.3" fill="currentColor" />
-					</svg>
+				<IconHelper viewBox="0 0 30 15">
+					<rect
+						className="_toggleButtonTrack"
+						width="30"
+						height="15"
+						rx="7.5"
+						fill="url(#paint0_linear_3214_9306)"
+					/>
+					<circle
+						className="_toggleButtonKnob"
+						cx="22.498"
+						cy="7.50781"
+						r="4.5"
+						fill="white"
+					/>
+					<defs>
+						<linearGradient
+							id="paint0_linear_3214_9306"
+							x1="15"
+							y1="0"
+							x2="15"
+							y2="15"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stop-color="#F6CDFF" />
+							<stop offset="0.995" stop-color="#E36CFD" />
+						</linearGradient>
+					</defs>
 				</IconHelper>
 			),
 		},

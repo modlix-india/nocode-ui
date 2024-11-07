@@ -259,17 +259,41 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
+				<IconHelper viewBox="0 0 30 30">
+					<rect width="30" height="30" rx="2" fill="url(#paint0_linear_3214_9360)" />
 					<rect
-						x="1"
-						y="1"
-						width="22"
-						height="22"
+						className="_popupInner"
+						x="5.45459"
+						y="5.455078"
+						width="19.0909"
+						height="19.0909"
 						rx="2"
-						fill="currentColor"
-						fillOpacity="0.2"
+						fill="url(#paint0_linear_3214_9361)"
 					/>
-					<rect x="5" y="5" width="14" height="14" rx="1" fill="currentColor" />
+					<defs>
+						<linearGradient
+							id="paint0_linear_3214_9360"
+							x1="15"
+							y1="0"
+							x2="15"
+							y2="30"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#EEEEEE" />
+							<stop offset="1" stopColor="#EDEAEA" />
+						</linearGradient>
+						<linearGradient
+							id="paint0_linear_3214_9361"
+							x1="15"
+							y1="0.455078"
+							x2="15"
+							y2="19.546"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#B0DCE6" />
+							<stop offset="1" stopColor="#09A0C2" />
+						</linearGradient>
+					</defs>
 				</IconHelper>
 			),
 		},

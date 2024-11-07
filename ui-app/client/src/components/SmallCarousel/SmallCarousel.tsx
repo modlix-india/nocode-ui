@@ -603,31 +603,89 @@ const component: Component = {
 			displayName: 'Component',
 			description: 'Component',
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
+				<IconHelper viewBox="0 0 30 30">
 					<path
-						d="M15.0934 5.34961H9.24609C8.69381 5.34961 8.24609 5.79732 8.24609 6.34961V17.6071C8.24609 18.1594 8.69381 18.6071 9.24609 18.6071H15.0934C15.6457 18.6071 16.0934 18.1594 16.0934 17.6071V6.34961C16.0934 5.79732 15.6457 5.34961 15.0934 5.34961Z"
-						fill="currentColor"
+						className="_carouselmainframe"
+						d="M16.0958 0H9.00391C8.45162 0 8.00391 0.447716 8.00391 1V14.36C8.00391 14.9123 8.45162 15.36 9.0039 15.36H16.0958C16.648 15.36 17.0958 14.9123 17.0958 14.36V1C17.0958 0.447715 16.648 0 16.0958 0Z"
+						fill="url(#paint0_linear_3214_9454)"
 					/>
 					<path
-						d="M6.41442 6.91943H5.27539C4.72311 6.91943 4.27539 7.36715 4.27539 7.91943V16.0379C4.27539 16.5902 4.72311 17.0379 5.27539 17.0379H6.41442C6.9667 17.0379 7.41442 16.5902 7.41442 16.0379V7.91943C7.41442 7.36715 6.9667 6.91943 6.41442 6.91943Z"
-						fill="currentColor"
-						fillOpacity="0.2"
+						className="_carouselsecondframe"
+						d="M6.0392 1.81726H4.40234C3.85006 1.81726 3.40234 2.26498 3.40234 2.81726V12.5404C3.40234 13.0927 3.85006 13.5404 4.40234 13.5404H6.0392C6.59148 13.5404 7.0392 13.0927 7.0392 12.5404V2.81726C7.0392 2.26498 6.59148 1.81726 6.0392 1.81726Z"
+						fill="url(#paint1_linear_3214_9454)"
 					/>
 					<path
-						d="M19.0631 6.91943H17.9238C17.3715 6.91943 16.9238 7.36715 16.9238 7.91943V16.0379C16.9238 16.5902 17.3715 17.0379 17.9238 17.0379H19.0631C19.6154 17.0379 20.0631 16.5902 20.0631 16.0379V7.91943C20.0631 7.36715 19.6154 6.91943 19.0631 6.91943Z"
-						fill="currentColor"
-						fillOpacity="0.2"
+						className="_carouselthirdframe"
+						d="M20.6957 1.81726H19.0586C18.5063 1.81726 18.0586 2.26498 18.0586 2.81726V12.5404C18.0586 13.0927 18.5063 13.5404 19.0586 13.5404H20.6957C21.248 13.5404 21.6957 13.0927 21.6957 12.5404V2.81726C21.6957 2.26498 21.248 1.81726 20.6957 1.81726Z"
+						fill="url(#paint2_linear_3214_9454)"
 					/>
 					<path
-						d="M22.0011 7.99902H21.8945C21.3422 7.99902 20.8945 8.44674 20.8945 8.99902V14.959C20.8945 15.5112 21.3422 15.959 21.8945 15.959H22.0011C22.5534 15.959 23.0011 15.5112 23.0011 14.959V8.99902C23.0011 8.44674 22.5534 7.99902 22.0011 7.99902Z"
-						fill="currentColor"
-						fillOpacity="0.2"
+						className="_carouselfourthframe"
+						d="M24.0983 3.07153H23.6577C23.1054 3.07153 22.6577 3.51925 22.6577 4.07153V11.2938C22.6577 11.8461 23.1054 12.2938 23.6577 12.2938H24.0983C24.6506 12.2938 25.0983 11.8461 25.0983 11.2938V4.07153C25.0983 3.51925 24.6506 3.07153 24.0983 3.07153Z"
+						fill="url(#paint3_linear_3214_9454)"
 					/>
 					<path
-						d="M2.44468 7.99902H2.33789C1.78561 7.99902 1.33789 8.44674 1.33789 8.99902V14.959C1.33789 15.5112 1.78561 15.959 2.33789 15.959H2.44468C2.99697 15.959 3.44468 15.5112 3.44468 14.959V8.99902C3.44468 8.44674 2.99697 7.99902 2.44468 7.99902Z"
-						fill="currentColor"
-						fillOpacity="0.2"
+						className="_carouselfirstframe"
+						d="M1.44091 3.07153H1C0.447715 3.07153 0 3.51925 0 4.07153V11.2938C0 11.8461 0.447716 12.2938 1 12.2938H1.44091C1.9932 12.2938 2.44091 11.8461 2.44091 11.2938V4.07153C2.44091 3.51925 1.9932 3.07153 1.44091 3.07153Z"
+						fill="url(#paint4_linear_3214_9454)"
 					/>
+					<defs>
+						<linearGradient
+							id="paint0_linear_3214_9454"
+							x1="12.5498"
+							y1="0"
+							x2="12.5498"
+							y2="15.36"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#E6E2FF" />
+							<stop offset="1" stopColor="#B1A5FF" />
+						</linearGradient>
+						<linearGradient
+							id="paint1_linear_3214_9454"
+							x1="5.22077"
+							y1="1.81726"
+							x2="5.22077"
+							y2="13.5404"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#EEEEEE" />
+							<stop offset="1" stopColor="#EDEAEA" />
+						</linearGradient>
+						<linearGradient
+							id="paint2_linear_3214_9454"
+							x1="19.8772"
+							y1="1.81726"
+							x2="19.8772"
+							y2="13.5404"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#EEEEEE" />
+							<stop offset="1" stopColor="#EDEAEA" />
+						</linearGradient>
+						<linearGradient
+							id="paint3_linear_3214_9454"
+							x1="23.878"
+							y1="3.07153"
+							x2="23.878"
+							y2="12.2938"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#EEEEEE" />
+							<stop offset="1" stopColor="#EDEAEA" />
+						</linearGradient>
+						<linearGradient
+							id="paint4_linear_3214_9454"
+							x1="1.22046"
+							y1="3.07153"
+							x2="1.22046"
+							y2="12.2938"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#EEEEEE" />
+							<stop offset="1" stopColor="#EDEAEA" />
+						</linearGradient>
+					</defs>
 				</IconHelper>
 			),
 			mainComponent: true,

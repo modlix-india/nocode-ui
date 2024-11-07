@@ -266,9 +266,35 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
-					<circle cx="12" cy="12" r="10.5" fill="currentColor" fillOpacity="0.2" />
-					<circle cx="12" cy="12" r="7" fill="currentColor" />
+				<IconHelper viewBox="0 0 30 30">
+					<circle
+						className="_radioButtonArc"
+						cx="15"
+						cy="15"
+						r="14.5"
+						stroke="#EDEAEA"
+						fillOpacity={0.1}
+					/>
+					<circle
+						className="_RadioButtonCircle"
+						cx="15"
+						cy="15"
+						r="10"
+						fill="url(#paint0_linear_3214_9327)"
+					/>
+					<defs>
+						<linearGradient
+							id="paint0_linear_3214_9327"
+							x1="15"
+							y1="5"
+							x2="15"
+							y2="25"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#E2A8BD" />
+							<stop offset="1" stopColor="#F86299" />
+						</linearGradient>
+					</defs>
 				</IconHelper>
 			),
 		},

@@ -92,42 +92,73 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 22 19">
-					<g
-						id="Group_108"
-						data-name="Group 108"
-						transform="translate(-1468.055 -277.818)"
-					>
-						<rect
-							id="Rectangle_35"
-							data-name="Rectangle 35"
-							width="13"
-							height="9"
-							rx="2"
-							transform="translate(1468.055 277.818)"
-							opacity="0.5"
-							fill="currentColor"
-						/>
-						<rect
-							id="Rectangle_37"
-							data-name="Rectangle 37"
-							width="22"
-							height="8"
-							rx="2"
-							transform="translate(1468.055 288.818)"
-							fill="currentColor"
-						/>
-						<rect
-							id="Rectangle_36"
-							data-name="Rectangle 36"
-							width="7"
-							height="9"
-							rx="2"
-							transform="translate(1483.055 277.818)"
-							opacity="0.5"
-							fill="currentColor"
-						/>
-					</g>
+				<IconHelper viewBox="0 0 25 25">
+					<path
+						className="_SectionGridBlock1"
+						d="M0 10.9091H10.9091V-3.33786e-05H0.800001C0.358173 -3.33786e-05 0 0.358139 0 0.799967V10.9091Z"
+						fill="url(#paint0_linear_3818_9724)"
+					/>
+					<path
+						className="_SectionGridBlock4"
+						d="M24.5469 13.6356L13.6378 13.6356L13.6378 24.5447H23.7469C24.1887 24.5447 24.5469 24.1865 24.5469 23.7447L24.5469 13.6356Z"
+						fill="url(#paint1_linear_3818_9724)"
+					/>
+					<path
+						className="_SectionGridBlock3"
+						d="M0 13.6356L10.9091 13.6356L10.9091 24.5447H0.800001C0.358173 24.5447 0 24.1865 0 23.7447L0 13.6356Z"
+						fill="url(#paint2_linear_3818_9724)"
+					/>
+					<path
+						className="_SectionGridBlock2"
+						d="M24.5469 10.9091L13.6378 10.9091L13.6378 -3.33786e-05L23.7469 -3.33786e-05C24.1887 -3.33786e-05 24.5469 0.358139 24.5469 0.799967L24.5469 10.9091Z"
+						fill="url(#paint3_linear_3818_9724)"
+					/>
+					<defs>
+						<linearGradient
+							id="paint0_linear_3818_9724"
+							x1="5.45455"
+							y1="10.9091"
+							x2="5.45455"
+							y2="-3.33786e-05"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#F6C0CD" />
+							<stop offset="1" stopColor="#FBA1B7" />
+						</linearGradient>
+						<linearGradient
+							id="paint1_linear_3818_9724"
+							x1="19.0923"
+							y1="13.6356"
+							x2="19.0923"
+							y2="24.5447"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#F6C0CD" />
+							<stop offset="1" stopColor="#FBA1B7" />
+						</linearGradient>
+						<linearGradient
+							id="paint2_linear_3818_9724"
+							x1="5.45455"
+							y1="13.6356"
+							x2="5.45455"
+							y2="24.5447"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#F6C0CD" />
+							<stop offset="1" stopColor="#FBA1B7" />
+						</linearGradient>
+						<linearGradient
+							id="paint3_linear_3818_9724"
+							x1="19.0923"
+							y1="10.9091"
+							x2="19.0923"
+							y2="-3.33786e-05"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#F6C0CD" />
+							<stop offset="1" stopColor="#FBA1B7" />
+						</linearGradient>
+					</defs>
 				</IconHelper>
 			),
 		},

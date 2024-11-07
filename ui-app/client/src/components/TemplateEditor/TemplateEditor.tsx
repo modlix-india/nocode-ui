@@ -107,20 +107,113 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
+				<IconHelper viewBox="0 0 30 30">
+					<rect width="30" height="30" rx="2" fill="white" />
 					<rect
-						x="1"
-						y="1"
-						width="22"
-						height="22"
-						rx="2"
-						fillOpacity="0.2"
-						fill="currentColor"
+						x="0.5"
+						y="0.5"
+						width="29"
+						height="29"
+						rx="1.5"
+						stroke="black"
+						fillOpacity={0}
+						strokeOpacity="0.3"
+					/>
+					<rect
+						className="_TEWindow"
+						x="3"
+						y="10"
+						width="10"
+						height="8"
+						rx="1"
+						fill="url(#paint0_linear_3818_9747)"
 					/>
 					<path
-						d="M17.0938 6.40625V9.27344H16.8125C16.6458 8.61198 16.4609 8.13802 16.2578 7.85156C16.0547 7.5599 15.776 7.32812 15.4219 7.15625C15.224 7.0625 14.8776 7.01562 14.3828 7.01562H13.5938V15.1875C13.5938 15.7292 13.6224 16.0677 13.6797 16.2031C13.7422 16.3385 13.8594 16.4583 14.0312 16.5625C14.2083 16.6615 14.4479 16.7109 14.75 16.7109H15.1016V17H9.55469V16.7109H9.90625C10.2135 16.7109 10.4609 16.6562 10.6484 16.5469C10.7839 16.474 10.8906 16.349 10.9688 16.1719C11.026 16.0469 11.0547 15.7188 11.0547 15.1875V7.01562H10.2891C9.57552 7.01562 9.05729 7.16667 8.73438 7.46875C8.28125 7.89062 7.99479 8.49219 7.875 9.27344H7.57812V6.40625H17.0938Z"
-						fill="currentColor"
+						className="_TEfirstline"
+						d="M17 12C16.4477 12 16 11.5523 16 11C16 10.4477 16.4477 10 17 10H25C25.5523 10 26 10.4477 26 11C26 11.5523 25.5523 12 25 12H17Z"
+						fill="url(#paint1_linear_3818_9747)"
 					/>
+					<path
+						className="_TEsecondline"
+						d="M17 18C16.4477 18 16 17.5523 16 17C16 16.4477 16.4477 16 17 16H25C25.5523 16 26 16.4477 26 17C26 17.5523 25.5523 18 25 18H17Z"
+						fill="url(#paint2_linear_3818_9747)"
+					/>
+					<path
+						className="_TEthirdline"
+						d="M4 24C3.44772 24 3 23.5523 3 23C3 22.4477 3.44772 22 4 22H25C25.5523 22 26 22.4477 26 23C26 23.5523 25.5523 24 25 24H4Z"
+						fill="url(#paint3_linear_3818_9747)"
+					/>
+					<path
+						d="M1 2C1 1.44772 1.44772 1 2 1H28C28.5523 1 29 1.44772 29 2V5H1V2Z"
+						fill="url(#paint4_linear_3818_9747)"
+					/>
+					<rect
+						className="_TEHeaderline"
+						x="3"
+						y="2.5"
+						width="4"
+						height="1"
+						rx="0.5"
+						fill="white"
+					/>
+					<path d="M1 5.5H29" stroke="black" strokeOpacity="0.3" />
+					<defs>
+						<linearGradient
+							id="paint0_linear_3818_9747"
+							x1="3"
+							y1="14"
+							x2="13"
+							y2="14"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#FBDAC5" />
+							<stop offset="1" stopColor="#FAAB78" />
+						</linearGradient>
+						<linearGradient
+							id="paint1_linear_3818_9747"
+							x1="16"
+							y1="11"
+							x2="26"
+							y2="11"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#EEEEEE" stopOpacity="0.933333" />
+							<stop offset="1" stopColor="#EDEAEA" />
+						</linearGradient>
+						<linearGradient
+							id="paint2_linear_3818_9747"
+							x1="16"
+							y1="17"
+							x2="26"
+							y2="17"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#EEEEEE" stopOpacity="0.933333" />
+							<stop offset="1" stopColor="#EDEAEA" />
+						</linearGradient>
+						<linearGradient
+							id="paint3_linear_3818_9747"
+							x1="3"
+							y1="23"
+							x2="26"
+							y2="23"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#EEEEEE" stopOpacity="0.933333" />
+							<stop offset="1" stopColor="#EDEAEA" />
+						</linearGradient>
+						<linearGradient
+							id="paint4_linear_3818_9747"
+							x1="1"
+							y1="3"
+							x2="29"
+							y2="3"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#FBDAC5" />
+							<stop offset="1" stopColor="#FAAB78" />
+						</linearGradient>
+					</defs>
 				</IconHelper>
 			),
 		},

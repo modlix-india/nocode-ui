@@ -207,18 +207,42 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
-					<path
-						d="M2 3C2 1.89543 2.89543 1 4 1H20C21.1046 1 22 1.89543 22 3V17C22 18.1046 21.1046 19 20 19H4C2.89543 19 2 18.1046 2 17V3Z"
-						fill="currentColor"
-						fillOpacity="0.2"
+				<IconHelper viewBox="0 0 30 20">
+					<rect
+						className="_popOver"
+						width="30"
+						height="20"
+						rx="2"
+						fill="url(#paint0_linear_3214_9662)"
 					/>
-					<rect x="5" y="4" width="14" height="12" rx="1" fill="currentColor" />
-					<path
-						d="M12.0988 22.4761C12.3002 22.7391 12.697 22.7371 12.8958 22.4721L15.4997 19H9.4375L12.0988 22.4761Z"
-						fill="currentColor"
-						fillOpacity="0.2"
+					<rect
+						className="_popOver"
+						x="3"
+						y="3"
+						width="24"
+						height="14"
+						rx="2"
+						fill="white"
+						fillOpacity="0.5"
 					/>
+					<path
+						className="_popOver"
+						d="M10.6062 24.95C10.3368 25.4167 9.66321 25.4167 9.39378 24.95L6.27609 19.55C6.00666 19.0833 6.34345 18.5 6.88231 18.5H13.1177C13.6566 18.5 13.9933 19.0833 13.7239 19.55L10.6062 24.95Z"
+						fill="#0582C7"
+					/>
+					<defs>
+						<linearGradient
+							id="paint0_linear_3214_9662"
+							x1="15"
+							y1="0"
+							x2="15"
+							y2="20"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#93D9FF" />
+							<stop offset="1" stopColor="#007FC5" />
+						</linearGradient>
+					</defs>
 				</IconHelper>
 			),
 		},

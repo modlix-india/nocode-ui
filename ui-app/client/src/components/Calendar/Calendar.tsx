@@ -601,139 +601,47 @@ const component: Component = {
 			displayName: 'Component',
 			description: 'Component',
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
-					<g
-						id="Group_113"
-						data-name="Group 113"
-						transform="translate(-1115.29 -454.281)"
-					>
-						<rect
-							id="Rectangle_38"
-							data-name="Rectangle 38"
-							width="22"
-							height="22"
-							rx="1"
-							transform="translate(1116.464 456.215)"
-							fill="currentColor"
-							fillOpacity="0.2"
-						/>
-						<path
-							id="Path_290"
-							data-name="Path 290"
-							d="M1,0H21a1,1,0,0,1,1,1s-1.156,13.134-2.325,16.334S17.393,21,16.841,21H-.861c-.552,0-.441-1.235.861-3.666S0,1,0,1A1,1,0,0,1,1,0Z"
-							transform="translate(1116.464 456.215)"
-							fill="currentColor"
-							fillOpacity="0.2"
-						/>
-						<rect
-							id="Rectangle_52"
-							data-name="Rectangle 52"
-							width="2.437"
-							height="2.24"
-							rx="0.4"
-							transform="translate(1122.24 465.496) rotate(90)"
-							fill="currentColor"
-						/>
-						<rect
-							id="Rectangle_56"
-							data-name="Rectangle 56"
-							width="2.437"
-							height="2.24"
-							rx="0.4"
-							transform="translate(1122.24 469.496) rotate(90)"
-							fill="currentColor"
-						/>
-						<rect
-							id="Rectangle_49"
-							data-name="Rectangle 49"
-							width="2.437"
-							height="2.24"
-							rx="0.4"
-							transform="translate(1126.24 461.527) rotate(90)"
-							fill="currentColor"
-						/>
-						<rect
-							id="Rectangle_53"
-							data-name="Rectangle 53"
-							width="2.437"
-							height="2.24"
-							rx="0.4"
-							transform="translate(1126.24 465.496) rotate(90)"
-							fill="currentColor"
-						/>
-						<rect
-							id="Rectangle_57"
-							data-name="Rectangle 57"
-							width="2.437"
-							height="2.24"
-							rx="0.4"
-							transform="translate(1126.24 469.496) rotate(90)"
-							fill="currentColor"
-						/>
-						<rect
-							id="Rectangle_50"
-							data-name="Rectangle 50"
-							width="2.437"
-							height="2.24"
-							rx="0.4"
-							transform="translate(1130.24 461.527) rotate(90)"
-							fill="currentColor"
-						/>
-						<rect
-							id="Rectangle_54"
-							data-name="Rectangle 54"
-							width="2.437"
-							height="2.24"
-							rx="0.4"
-							transform="translate(1130.24 465.496) rotate(90)"
-							fill="currentColor"
-						/>
-						<rect
-							id="Rectangle_58"
-							data-name="Rectangle 58"
-							width="2.437"
-							height="2.24"
-							rx="0.4"
-							transform="translate(1130.24 469.496) rotate(90)"
-							fill="currentColor"
-						/>
-						<rect
-							id="Rectangle_51"
-							data-name="Rectangle 51"
-							width="2.437"
-							height="2.24"
-							rx="0.4"
-							transform="translate(1134.24 461.496) rotate(90)"
-							fill="currentColor"
-						/>
-						<rect
-							id="Rectangle_55"
-							data-name="Rectangle 55"
-							width="2.437"
-							height="2.24"
-							rx="0.4"
-							transform="translate(1134.24 465.496) rotate(90)"
-							fill="currentColor"
-						/>
-						<rect
-							id="Rectangle_43"
-							data-name="Rectangle 43"
-							width="3.867"
-							height="1.718"
-							rx="0.4"
-							transform="translate(1120.824 454.281) rotate(90)"
-							fill="currentColor"
-						/>
-						<rect
-							id="Rectangle_48"
-							data-name="Rectangle 48"
-							width="3.867"
-							height="1.718"
-							rx="0.4"
-							transform="translate(1135.964 454.418) rotate(90)"
-							fill="currentColor"
-						/>
-					</g>
+				<IconHelper viewBox="0 0 30 30">
+					<path
+						className="_calenderValues"
+						d="M0 11.25H26.25V27.1875C26.25 28.7402 24.9902 30 23.4375 30H2.8125C1.25977 30 0 28.7402 0 27.1875V11.25ZM3.75 15.9375V17.8125C3.75 18.3281 4.17188 18.75 4.6875 18.75H6.5625C7.07812 18.75 7.5 18.3281 7.5 17.8125V15.9375C7.5 15.4219 7.07812 15 6.5625 15H4.6875C4.17188 15 3.75 15.4219 3.75 15.9375ZM12.1875 15C11.6719 15 11.25 15.4219 11.25 15.9375V17.8125C11.25 18.3281 11.6719 18.75 12.1875 18.75H14.0625C14.5781 18.75 15 18.3281 15 17.8125V15.9375C15 15.4219 14.5781 15 14.0625 15H12.1875ZM18.75 15.9375V17.8125C18.75 18.3281 19.1719 18.75 19.6875 18.75H21.5625C22.0781 18.75 22.5 18.3281 22.5 17.8125V15.9375C22.5 15.4219 22.0781 15 21.5625 15H19.6875C19.1719 15 18.75 15.4219 18.75 15.9375ZM4.6875 22.5C4.17188 22.5 3.75 22.9219 3.75 23.4375V25.3125C3.75 25.8281 4.17188 26.25 4.6875 26.25H6.5625C7.07812 26.25 7.5 25.8281 7.5 25.3125V23.4375C7.5 22.9219 7.07812 22.5 6.5625 22.5H4.6875ZM11.25 23.4375V25.3125C11.25 25.8281 11.6719 26.25 12.1875 26.25H14.0625C14.5781 26.25 15 25.8281 15 25.3125V23.4375C15 22.9219 14.5781 22.5 14.0625 22.5H12.1875C11.6719 22.5 11.25 22.9219 11.25 23.4375ZM19.6875 22.5C19.1719 22.5 18.75 22.9219 18.75 23.4375V25.3125C18.75 25.8281 19.1719 26.25 19.6875 26.25H21.5625C22.0781 26.25 22.5 25.8281 22.5 25.3125V23.4375C22.5 22.9219 22.0781 22.5 21.5625 22.5H19.6875Z"
+						fill="url(#paint0_linear_3214_9469)"
+					/>
+					<path
+						className="_calenderValue1"
+						d="M0 11.25H26.25V27.1875C26.25 28.7402 24.9902 30 23.4375 30H2.8125C1.25977 30 0 28.7402 0 27.1875V11.25ZM3.75 15.9375V17.8125C3.75 18.3281 4.17188 18.75 4.6875 18.75H6.5625C7.07812 18.75 7.5 18.3281 7.5 17.8125V15.9375C7.5 15.4219 7.07812 15 6.5625 15H4.6875C4.17188 15 3.75 15.4219 3.75 15.9375ZM12.1875 15C11.6719 15 11.25 15.4219 11.25 15.9375V17.8125C11.25 18.3281 11.6719 18.75 12.1875 18.75H14.0625C14.5781 18.75 15 18.3281 15 17.8125V15.9375C15 15.4219 14.5781 15 14.0625 15H12.1875ZM18.75 15.9375V17.8125C18.75 18.3281 19.1719 18.75 19.6875 18.75H21.5625C22.0781 18.75 22.5 18.3281 22.5 17.8125V15.9375C22.5 15.4219 22.0781 15 21.5625 15H19.6875C19.1719 15 18.75 15.4219 18.75 15.9375ZM4.6875 22.5C4.17188 22.5 3.75 22.9219 3.75 23.4375V25.3125C3.75 25.8281 4.17188 26.25 4.6875 26.25H6.5625C7.07812 26.25 7.5 25.8281 7.5 25.3125V23.4375C7.5 22.9219 7.07812 22.5 6.5625 22.5H4.6875ZM11.25 23.4375V25.3125C11.25 25.8281 11.6719 26.25 12.1875 26.25H14.0625C14.5781 26.25 15 25.8281 15 25.3125V23.4375C15 22.9219 14.5781 22.5 14.0625 22.5H12.1875C11.6719 22.5 11.25 22.9219 11.25 23.4375ZM19.6875 22.5C19.1719 22.5 18.75 22.9219 18.75 23.4375V25.3125C18.75 25.8281 19.1719 26.25 19.6875 26.25H21.5625C22.0781 26.25 22.5 25.8281 22.5 25.3125V23.4375C22.5 22.9219 22.0781 22.5 21.5625 22.5H19.6875Z"
+						fill="url(#paint0_linear_3214_9469)"
+					/>
+					<path
+						className="_calendarboard"
+						d="M9.375 1.875C9.375 0.837891 8.53711 0 7.5 0C6.46289 0 5.625 0.837891 5.625 1.875V3.75H2.8125C1.25977 3.75 0 5.00977 0 6.5625V11.25H26.25V6.5625C26.25 5.00977 24.9902 3.75 23.4375 3.75H20.625V1.875C20.625 0.837891 19.7871 0 18.75 0C17.7129 0 16.875 0.837891 16.875 1.875V3.75H9.375V1.875Z"
+						fill="url(#paint1_linear_3214_9469)"
+						z-index={-2}
+					/>
+					<defs>
+						<linearGradient
+							id="paint0_linear_3214_9469"
+							x1="13.125"
+							y1="11.25"
+							x2="13.125"
+							y2="30"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#99D1FA" />
+							<stop offset="1" stopColor="#1D96F1" />
+						</linearGradient>
+						<linearGradient
+							id="paint1_linear_3214_9469"
+							x1="13.125"
+							y1="0"
+							x2="13.125"
+							y2="11.25"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#EEEEEE" />
+							<stop offset="1" stopColor="#EDEAEA" />
+						</linearGradient>
+					</defs>
 				</IconHelper>
 			),
 			mainComponent: true,

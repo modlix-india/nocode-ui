@@ -391,29 +391,81 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
+				<IconHelper viewBox="0 0 30 30">
+					<rect width="30" height="30" rx="2" fill="url(#paint0_linear_3817_9691)" />
 					<rect
-						x="1"
-						y="1"
-						width="22"
-						height="22"
-						rx="2"
-						fill="currentColor"
-						fillOpacity="0.2"
+						className="_menuInner1"
+						x="6"
+						y="7"
+						width="18"
+						height="3"
+						rx="1.5"
+						fill="url(#paint1_linear_3817_9691)"
 					/>
-					<path d="M3 11H11V3H3.8C3.35817 3 3 3.35817 3 3.8V11Z" fill="currentColor" />
-					<path
-						d="M21 13L13 13L13 21H20.2C20.6418 21 21 20.6418 21 20.2V13Z"
-						fill="currentColor"
+					<rect
+						className="_menuInner2"
+						x="6"
+						y="13"
+						width="18"
+						height="3"
+						rx="1.5"
+						fill="url(#paint2_linear_3817_9691)"
 					/>
-					<path
-						d="M3 13L11 13L11 21H3.8C3.35817 21 3 20.6418 3 20.2L3 13Z"
-						fill="currentColor"
+					<rect
+						className="_menuInner3"
+						x="6"
+						y="19"
+						width="18"
+						height="3"
+						rx="1.5"
+						fill="url(#paint3_linear_3817_9691)"
 					/>
-					<path
-						d="M21 11L13 11L13 3L20.2 3C20.6418 3 21 3.35817 21 3.8V11Z"
-						fill="currentColor"
-					/>
+					<defs>
+						<linearGradient
+							id="paint0_linear_3817_9691"
+							x1="15"
+							y1="0"
+							x2="15"
+							y2="30"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#EEEEEE" />
+							<stop offset="1" stopColor="#EDEAEA" />
+						</linearGradient>
+						<linearGradient
+							id="paint1_linear_3817_9691"
+							x1="15"
+							y1="7"
+							x2="15"
+							y2="10"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#DC8D8D" />
+							<stop offset="1" stopColor="#EE7070" />
+						</linearGradient>
+						<linearGradient
+							id="paint2_linear_3817_9691"
+							x1="15"
+							y1="13"
+							x2="15"
+							y2="16"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#DC8D8D" />
+							<stop offset="1" stopColor="#EE7070" />
+						</linearGradient>
+						<linearGradient
+							id="paint3_linear_3817_9691"
+							x1="15"
+							y1="19"
+							x2="15"
+							y2="22"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#DC8D8D" />
+							<stop offset="1" stopColor="#EE7070" />
+						</linearGradient>
+					</defs>
 				</IconHelper>
 			),
 		},

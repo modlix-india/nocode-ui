@@ -322,8 +322,8 @@ function DropdownComponent(props: ComponentProps) {
 			translations={translations}
 			rightIcon={
 				showDropdown
-					? (rightIconOpen ?? 'fa-solid fa-angle-up')
-					: (rightIcon ?? 'fa-solid fa-angle-down')
+					? rightIconOpen ?? 'fa-solid fa-angle-up'
+					: rightIcon ?? 'fa-solid fa-angle-down'
 			}
 			valueType="text"
 			isPassword={false}
@@ -488,42 +488,79 @@ const component: Component = {
 			description: 'Component',
 			icon: (
 				<IconHelper viewBox="0 0 30 30">
-					<defs>
-						<linearGradient
-							id="_dropdown_blue_linear-gradient-1"
-							x1="0.563"
-							y1="1.242"
-							x2="0.551"
-							gradientUnits="objectBoundingBox"
-						>
-							<stop offset="0" stopColor="#b0dce6" />
-							<stop offset="1" stopColor="#09a0c2" />
-						</linearGradient>
-						<linearGradient
-							id="_dropdown_blue_linear-gradient-2"
-							x1="0.5"
-							y1="0"
-							x2="0.5"
-							y2="1"
-						>
-							<stop offset="0" stopColor="#b0dce6" />
-							<stop offset="1" stopColor="#09a0c2" />
-						</linearGradient>
-					</defs>
 					<path
-						id="_dropDownAnimation"
-						d="M0,0H25a0,0,0,0,1,0,0V14a2,2,0,0,1-2,2H2a2,2,0,0,1-2-2V0A0,0,0,0,1,0,0Z"
-						transform="translate(2 13)"
-						fill="url(#_dropdown_blue_linear-gradient-1)"
+						d="M25.2667 0H4.76667C2.13333 0 0 2.13333 0 4.76667V25.2667C0 27.8667 2.13333 30 4.76667 30H25.2667C27.8667 30 30 27.8667 30 25.2667V4.76667C30 2.13333 27.8667 0 25.2667 0ZM23.7333 11.9667L14 21.7C13.6667 22.0333 13.2333 22.2 12.8333 22.2C12.4333 22.2 11.9667 22.0333 11.6667 21.7L6.26667 16.3C5.6 15.6333 5.6 22.1 6.26667 21.4333C6.93333 20.7667 7.96667 20.7667 8.63333 21.4333L12.8667 25.6667L26.25 10.3125C26.9167 9.64583 23.1333 8.93333 23.8 9.6C24.4 10.2667 24.4 11.3333 23.7333 11.9667Z"
+						fill="url(#paint0_linear_3214_9386)"
+					/>
+					<path
+						className="_dropdownarrow"
+						d="M20.7343 6.9998C21.0752 6.9998 21.2598 7.39889 21.0392 7.65872L15.0566 14.704C14.8979 14.8908 14.6101 14.8923 14.4495 14.7072L8.33863 7.6619C8.11398 7.4029 8.29795 6.9998 8.6408 6.9998L20.7343 6.9998Z"
+						fill="url(#paint1_linear_3214_9386)"
 					/>
 					<rect
-						width="28"
-						height="9"
-						rx="2"
-						transform="translate(1 2)"
-						fill="url(#_dropdown_blue_linear-gradient-2)"
+						className="_dropdownlines"
+						x="8.33105"
+						y="19.8349"
+						width="13.3333"
+						height="1.66667"
+						rx="0.833333"
+						fill="url(#paint2_linear_3214_9386)"
 					/>
-					<path d="M1.5,0,3,2H0Z" transform="translate(27 8) rotate(180)" fill="#fff" />
+					<rect
+						className="_dropdownlines"
+						x="5.00195"
+						y="23.3336"
+						width="20"
+						height="1.66667"
+						rx="0.833333"
+						fill="url(#paint3_linear_3214_9386)"
+					/>
+					<defs>
+						<linearGradient
+							id="paint0_linear_3214_9386"
+							x1="15"
+							y1="0"
+							x2="15"
+							y2="30"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#EEEEEE" />
+							<stop offset="1" stopColor="#EDEAEA" />
+						</linearGradient>
+						<linearGradient
+							id="paint1_linear_3214_9386"
+							x1="20.7589"
+							y1="5.54513"
+							x2="10.3831"
+							y2="11.5356"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#F2B7EB" />
+							<stop offset="1" stopColor="#C539B4" />
+						</linearGradient>
+						<linearGradient
+							id="paint2_linear_3214_9386"
+							x1="14.9977"
+							y1="19.8349"
+							x2="14.9977"
+							y2="21.5016"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#F2B7EB" />
+							<stop offset="1" stopColor="#C539B4" />
+						</linearGradient>
+						<linearGradient
+							id="paint3_linear_3214_9386"
+							x1="15.002"
+							y1="23.3336"
+							x2="15.002"
+							y2="25.0002"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#F2B7EB" />
+							<stop offset="1" stopColor="#C539B4" />
+						</linearGradient>
+					</defs>
 				</IconHelper>
 			),
 			mainComponent: true,

@@ -382,7 +382,7 @@ function PhoneNumber(props: ComponentProps) {
 		let selectedCountry = getSelectedCountry(unformattedText);
 		if (selectedCountry) setSelected(selectedCountry);
 		else setSelected(countryList[0]);
-		let dc = selectedCountry ? (selectedCountry.D ?? '') : '';
+		let dc = selectedCountry ? selectedCountry.D ?? '' : '';
 		if (format) setPhoneNumber(getFormattedNumber(unformattedText.slice(dc.length), dc));
 		else setPhoneNumber(unformattedText.slice(dc.length));
 	}, [value, countryList, seperator]);
@@ -492,8 +492,7 @@ function PhoneNumber(props: ComponentProps) {
 		/>
 	);
 	const finKey: string = 't_' + key;
-	const x =
-		noCodeForFirstCountry && selected.C === countryList[0].C ? 1 : (selected.D.length ?? 1);
+	const x = noCodeForFirstCountry && selected.C === countryList[0].C ? 1 : selected.D.length ?? 1;
 
 	return (
 		<CommonInputText
@@ -568,24 +567,42 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
-					<svg
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill="none"
-						xmlns="http://www.w3.org/2000/svg"
-					>
-						<path
-							opacity="0.4"
-							d="M4.14286 1C2.40938 1 1 2.40938 1 4.14286V19.8571C1 21.5906 2.40938 23 4.14286 23H19.8571C21.5906 23 23 21.5906 23 19.8571V4.14286C23 2.40938 21.5906 1 19.8571 1H4.14286ZM8.59687 5.74866C9.07321 5.62098 9.57411 5.86161 9.76071 6.3183L10.7429 8.67545C10.9098 9.07812 10.792 9.53973 10.458 9.81473L9.25 10.8067C10.0652 12.5353 11.4647 13.9348 13.1933 14.75L14.1853 13.5371C14.4603 13.2031 14.9219 13.0853 15.3246 13.2522L17.6817 14.2344C18.1384 14.4259 18.379 14.9219 18.2513 15.3982L17.6621 17.5589C17.5442 17.9911 17.1562 18.2857 16.7143 18.2857C10.6397 18.2857 5.71429 13.3603 5.71429 7.28571C5.71429 6.84375 6.00893 6.4558 6.43616 6.33795L8.59687 5.74866Z"
-							fill="#E7E9ED"
-						/>
-						<path
-							d="M9.75107 6.27922C9.55824 5.81938 9.05885 5.5771 8.57923 5.70566L6.40366 6.29899C5.96854 6.41766 5.67188 6.80828 5.67188 7.25328C5.67188 13.3696 10.6312 18.3289 16.7475 18.3289C17.1925 18.3289 17.5831 18.0323 17.7018 17.6021L18.2951 15.4265C18.4237 14.9469 18.1814 14.4426 17.7216 14.2547L15.3482 13.2658C14.9428 13.0977 14.478 13.2163 14.2011 13.5526L13.2023 14.7689C11.4619 13.9481 10.0527 12.5389 9.2319 10.7985L10.4532 9.79969C10.7894 9.5228 10.9081 9.05802 10.74 8.65257L9.75107 6.27922Z"
-							fill="#96A1B4"
-						/>
-					</svg>
+				<IconHelper viewBox="0 0 30 30">
+					<path
+						className="_phonenumber1"
+						opacity="0.4"
+						d="M4.28571 0C1.92188 0 0 1.92188 0 4.28571V25.7143C0 28.0781 1.92188 30 4.28571 30H25.7143C28.0781 30 30 28.0781 30 25.7143V4.28571C30 1.92188 28.0781 0 25.7143 0H4.28571ZM10.3594 6.47545C11.0089 6.30134 11.692 6.62946 11.9464 7.25223L13.2857 10.4665C13.5134 11.0156 13.3527 11.6451 12.8973 12.0201L11.25 13.3728C12.3616 15.7299 14.2701 17.6384 16.6272 18.75L17.9799 17.096C18.3549 16.6406 18.9844 16.4799 19.5335 16.7076L22.7478 18.0469C23.3705 18.308 23.6987 18.9844 23.5246 19.6339L22.721 22.5804C22.5603 23.1696 22.0312 23.5714 21.4286 23.5714C13.1451 23.5714 6.42857 16.8549 6.42857 8.57143C6.42857 7.96875 6.83036 7.43973 7.41295 7.27902L10.3594 6.47545Z"
+						fill="url(#paint0_linear_3214_9466)"
+					/>
+					<path
+						className="_phonenumber"
+						d="M11.9331 7.1996C11.6702 6.57255 10.9892 6.24217 10.3352 6.41747L7.36849 7.22657C6.77515 7.38839 6.37061 7.92105 6.37061 8.52787C6.37061 16.8683 13.1333 23.631 21.4738 23.631C22.0806 23.631 22.6132 23.2265 22.7751 22.6399L23.5842 19.6732C23.7595 19.0192 23.4291 18.3314 22.802 18.0752L19.5656 16.7267C19.0128 16.4975 18.379 16.6593 18.0014 17.1178L16.6394 18.7764C14.266 17.6572 12.3444 15.7356 11.2252 13.3622L12.8906 12.0002C13.3491 11.6227 13.5109 10.9889 13.2816 10.436L11.9331 7.1996Z"
+						fill="url(#paint1_linear_3214_9466)"
+					/>
+					<defs>
+						<linearGradient
+							id="paint0_linear_3214_9466"
+							x1="15"
+							y1="0"
+							x2="15"
+							y2="30"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#EEEEEE" />
+							<stop offset="1" stopColor="#EDEAEA" />
+						</linearGradient>
+						<linearGradient
+							id="paint1_linear_3214_9466"
+							x1="15.0007"
+							y1="6.37074"
+							x2="15.0007"
+							y2="23.631"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#00D9B5" />
+							<stop offset="1" stopColor="#007965" />
+						</linearGradient>
+					</defs>
 				</IconHelper>
 			),
 		},

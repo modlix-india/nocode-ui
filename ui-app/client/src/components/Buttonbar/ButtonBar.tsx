@@ -209,33 +209,66 @@ const component: Component = {
 			displayName: 'Component',
 			description: 'Component',
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
+				<IconHelper viewBox="0 0 30 30">
 					<rect
-						x="15.0879"
-						y="14.4531"
-						width="7.41176"
-						height="7.41176"
+						x="19.4116"
+						y="17.6454"
+						width="10.5884"
+						height="10.5884"
 						rx="2"
-						fill="currentColor"
-						fillOpacity="0.2"
+						fill="url(#paint0_linear_3214_9313)"
 					/>
 					<rect
-						x="8.91211"
-						y="9.51172"
-						width="9.88235"
-						height="9.88235"
+						className="_buttonBar2"
+						x="10.5889"
+						y="10.5917"
+						width="14.1179"
+						height="14.1179"
 						rx="2"
-						fill="currentColor"
-						fillOpacity="0.4"
+						fill="url(#paint1_linear_3214_9313)"
 					/>
 					<rect
-						x="1.5"
-						y="2.1001"
-						width="14.8235"
-						height="14.8235"
+						className="_buttonBar1"
+						width="21.1768"
+						height="21.1768"
 						rx="2"
-						fill="currentColor"
+						fill="url(#paint2_linear_3214_9313)"
 					/>
+					<defs>
+						<linearGradient
+							id="paint0_linear_3214_9313"
+							x1="24.7058"
+							y1="17.6454"
+							x2="24.7058"
+							y2="28.2338"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#EEEEEE" />
+							<stop offset="1" stopColor="#EDEAEA" />
+						</linearGradient>
+						<linearGradient
+							id="paint1_linear_3214_9313"
+							x1="17.6478"
+							y1="10.5917"
+							x2="17.6478"
+							y2="24.7096"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#EEEEEE" />
+							<stop offset="1" stopColor="#EDEAEA" />
+						</linearGradient>
+						<linearGradient
+							id="paint2_linear_3214_9313"
+							x1="10.5884"
+							y1="0"
+							x2="10.5884"
+							y2="21.1768"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#FFDB9D" />
+							<stop offset="1" stopColor="#FFB534" />
+						</linearGradient>
+					</defs>
 				</IconHelper>
 			),
 			mainComponent: true,

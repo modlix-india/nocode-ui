@@ -32,7 +32,7 @@ function setHighlighter(
 	const tabRect = currentTab?.getBoundingClientRect();
 	if (!tabRect) return;
 	const tabsContainer = tabRefs.current[0];
-	if(!tabsContainer || !tabsContainer.parentElement) return;
+	if (!tabsContainer || !tabsContainer.parentElement) return;
 	const tabsRect = tabsContainer.parentElement.getBoundingClientRect();
 	const hp: CSSProperties = {};
 	hp['left'] = tabRect.left - tabsRect.left;
@@ -54,7 +54,7 @@ function TabsComponent(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
 		properties: {
-			tabs=[],
+			tabs = [],
 			defaultActive,
 			readOnly,
 			icon,
@@ -102,19 +102,20 @@ function TabsComponent(props: ComponentProps) {
 		);
 	}, [bindingPathPath, defaultActive, tabs?.[0]]);
 
-	const onChangeTabEvent = onTabChange ? props.pageDefinition.eventFunctions?.[onTabChange] : undefined;
+	const onChangeTabEvent = onTabChange
+		? props.pageDefinition.eventFunctions?.[onTabChange]
+		: undefined;
 
-	const handleOnChange = onChangeTabEvent ?  async() => 
-		await runEvent(
-			onChangeTabEvent,
-			onTabChange,
-			props.context.pageName,
-			props.locationHistory,
-			props.pageDefinition,
-		)
-	 : undefined;
-
-
+	const handleOnChange = onChangeTabEvent
+		? async () =>
+				await runEvent(
+					onChangeTabEvent,
+					onTabChange,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				)
+		: undefined;
 
 	const handleClick = async (key: string) => {
 		if (!bindingPathPath) {
@@ -135,7 +136,7 @@ function TabsComponent(props: ComponentProps) {
 			return v === 0
 				? (pageDefinition.componentDefinition[a[0]]?.key ?? '').localeCompare(
 						pageDefinition.componentDefinition[b[0]]?.key ?? '',
-				  )
+					)
 				: v;
 		})[index == -1 ? 0 : index];
 	const selectedChild = entry ? { [entry[0]]: entry[1] } : {};
@@ -157,9 +158,9 @@ function TabsComponent(props: ComponentProps) {
 		setHighlighterPosition,
 	]);
 
-	 useEffect(() => {
-	 	tabRefs.current = [...tabRefs.current.slice(0, tabs.length)];
-	 }, [tabs]);
+	useEffect(() => {
+		tabRefs.current = [...tabRefs.current.slice(0, tabs.length)];
+	}, [tabs]);
 
 	return (
 		<div
@@ -353,16 +354,67 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
-					<path
-						d="M16.5006 7H1.50002C1.22387 7 1 7.22387 1 7.50002V22.5006C1 22.7768 1.22387 23.0006 1.50002 23.0006H16.5006C16.7768 23.0006 17.0006 22.7768 17.0006 22.5006V7.50002C17.0006 7.22387 16.7768 7 16.5006 7Z"
-						fill="currentColor"
+				<IconHelper viewBox="0 0 38 14">
+					<rect width="38" height="14" rx="2" fill="url(#paint0_linear_3818_9713)" />
+					<rect
+						className="_tabsBlock1"
+						x="2.25"
+						y="5.25"
+						width="9.5"
+						height="4.5"
+						rx="0.75"
+						fill="url(#paint1_linear_3818_9713)"
+						stroke="black"
+						strokeWidth="0.5"
 					/>
-					<path
-						d="M22.5006 0.999512H7.50002C7.36741 0.999512 7.24022 1.05219 7.14645 1.14596C7.05268 1.23974 7 1.36692 7 1.49953V5.99971H16.5004C16.8982 5.99971 17.2798 6.15776 17.5611 6.43907C17.8424 6.72039 18.0004 7.10193 18.0004 7.49977V17.0002H22.5006C22.6332 17.0002 22.7604 16.9475 22.8542 16.8537C22.948 16.7599 23.0006 16.6328 23.0006 16.5001V1.49953C23.0006 1.36692 22.948 1.23974 22.8542 1.14596C22.7604 1.05219 22.6332 0.999512 22.5006 0.999512Z"
-						fill="currentColor"
+					<rect
+						className="_tabsBlock2"
+						x="14.25"
+						y="5.25"
+						width="9.5"
+						height="4.5"
+						rx="0.75"
+						fill="#333333"
 						fillOpacity="0.2"
+						stroke="black"
+						strokeWidth="0.5"
 					/>
+					<rect
+						className="_tabsBlock3"
+						x="26.25"
+						y="5.25"
+						width="9.5"
+						height="4.5"
+						rx="0.75"
+						fill="#333333"
+						fillOpacity="0.4"
+						stroke="black"
+						strokeWidth="0.5"
+					/>
+					<defs>
+						<linearGradient
+							id="paint0_linear_3818_9713"
+							x1="19"
+							y1="0"
+							x2="19"
+							y2="14"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#EEEEEE" />
+							<stop offset="1" stopColor="#EDEAEA" />
+						</linearGradient>
+						<linearGradient
+							id="paint1_linear_3818_9713"
+							x1="7"
+							y1="5"
+							x2="7"
+							y2="10"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#79B7FF" />
+							<stop offset="1" stopColor="#3792FE" />
+						</linearGradient>
+					</defs>
 				</IconHelper>
 			),
 		},

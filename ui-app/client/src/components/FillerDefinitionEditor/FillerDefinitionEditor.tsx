@@ -177,58 +177,100 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
-					<g id="Group_103" data-name="Group 103" transform="translate(-1042 -254)">
-						<g id="Group_69" data-name="Group 69" transform="translate(-234 2)">
-							<path
-								id="Path_141"
-								data-name="Path 141"
-								d="M16.553,20v2.166H5V20Z"
-								transform="translate(1279.447 236.418)"
-								fill="currentColor"
-								fillOpacity={0.2}
-							/>
-							<path
-								id="Path_149"
-								data-name="Path 149"
-								d="M21,20v2.166H5V20Z"
-								transform="translate(1302.166 251) rotate(90)"
-								fill="currentColor"
-								fillOpacity={0.2}
-							/>
-							<path
-								id="Path_142"
-								data-name="Path 142"
-								d="M16.553,20v2.166H5V20Z"
-								transform="translate(1279.447 240.751)"
-								fill="currentColor"
-								fillOpacity={0.2}
-							/>
-							<path
-								id="Path_143"
-								data-name="Path 143"
-								d="M16.553,20v2.166H5V20Z"
-								transform="translate(1279.447 245.083)"
-								fill="currentColor"
-								fillOpacity={0.2}
-							/>
-							<path
-								id="Path_144"
-								data-name="Path 144"
-								d="M16.553,20v2.166H5V20Z"
-								transform="translate(1279.447 249.415)"
-								fill="currentColor"
-								fillOpacity={0.2}
-							/>
-						</g>
-						<path
-							id="Path_249"
-							data-name="Path 249"
-							d="M14.554,15.025l4.46-4.46a1.5,1.5,0,0,1,2.341,0,1.5,1.5,0,0,1,0,2.341l-4.46,4.46ZM16.3,17.7l-1.929.214A.331.331,0,0,1,14,17.553l.214-1.929Z"
-							transform="translate(1039.653 254)"
-							fill="currentColor"
-						/>
-					</g>
+				<IconHelper viewBox="0 0 27 27">
+					<path
+						d="M6 1C6 0.447715 6.44772 0 7 0H26C26.5523 0 27 0.447715 27 1V2C27 2.55228 26.5523 3 26 3H7C6.44772 3 6 2.55228 6 2V1Z"
+						fill="url(#paint0_linear_3214_9518)"
+					/>
+					<path
+						d="M1 27C0.447715 27 0 26.5523 0 26L0 1C0 0.447714 0.447715 0 1 0H2C2.55228 0 3 0.447716 3 1L3 26C3 26.5523 2.55228 27 2 27H1Z"
+						fill="url(#paint1_linear_3214_9518)"
+					/>
+					<path
+						d="M6 9C6 8.44772 6.44772 8 7 8H26C26.5523 8 27 8.44772 27 9V10C27 10.5523 26.5523 11 26 11H7C6.44772 11 6 10.5523 6 10V9Z"
+						fill="url(#paint2_linear_3214_9518)"
+					/>
+					<path
+						d="M6 17C6 16.4477 6.44772 16 7 16H26C26.5523 16 27 16.4477 27 17V18C27 18.5523 26.5523 19 26 19H7C6.44772 19 6 18.5523 6 18V17Z"
+						fill="url(#paint3_linear_3214_9518)"
+					/>
+					<path
+						d="M6 25C6 24.4477 6.44772 24 7 24H26C26.5523 24 27 24.4477 27 25V26C27 26.5523 26.5523 27 26 27H7C6.44772 27 6 26.5523 6 26V25Z"
+						fill="url(#paint4_linear_3214_9518)"
+					/>
+					<path
+						className="_FDEPen"
+						d="M9.10547 21.0239L18.0018 12.1276C19.5053 10.6241 21.169 10.6241 22.6724 12.1276C24.1759 13.631 24.1759 15.2947 22.6724 16.7982L13.7761 25.6945L9.10547 21.0239ZM12.5816 26.3683L8.73357 26.7959C8.31287 26.8426 7.9574 26.4871 8.00414 26.0664L8.4317 22.2184L12.5816 26.3683Z"
+						fill="url(#paint5_linear_3214_9518)"
+					/>
+					<defs>
+						<linearGradient
+							id="paint0_linear_3214_9518"
+							x1="16.5"
+							y1="0"
+							x2="16.5"
+							y2="3"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#EEEEEE" stopOpacity="0.933333" />
+							<stop offset="1" stopColor="#EDEAEA" />
+						</linearGradient>
+						<linearGradient
+							id="paint1_linear_3214_9518"
+							x1="0"
+							y1="13.5"
+							x2="3"
+							y2="13.5"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#EEEEEE" stopOpacity="0.933333" />
+							<stop offset="1" stopColor="#EDEAEA" />
+						</linearGradient>
+						<linearGradient
+							id="paint2_linear_3214_9518"
+							x1="16.5"
+							y1="8"
+							x2="16.5"
+							y2="11"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#EEEEEE" stopOpacity="0.933333" />
+							<stop offset="1" stopColor="#EDEAEA" />
+						</linearGradient>
+						<linearGradient
+							id="paint3_linear_3214_9518"
+							x1="16.5"
+							y1="16"
+							x2="16.5"
+							y2="19"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#EEEEEE" stopOpacity="0.933333" />
+							<stop offset="1" stopColor="#EDEAEA" />
+						</linearGradient>
+						<linearGradient
+							id="paint4_linear_3214_9518"
+							x1="16.5"
+							y1="24"
+							x2="16.5"
+							y2="27"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#EEEEEE" stopOpacity="0.933333" />
+							<stop offset="1" stopColor="#EDEAEA" />
+						</linearGradient>
+						<linearGradient
+							id="paint5_linear_3214_9518"
+							x1="15.9"
+							y1="11"
+							x2="15.9"
+							y2="26.8"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#00B5B9" />
+							<stop offset="1" stopColor="#006769" />
+						</linearGradient>
+					</defs>
 				</IconHelper>
 			),
 		},

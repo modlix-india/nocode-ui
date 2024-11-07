@@ -1085,6 +1085,7 @@ export default function GridStyle({
 		}
 
 		${PREFIX} ._simpleEditorIcons {
+			// background-color: #F9F9F9;
 			border-radius: 6px;
 			display: flex;
 			align-items: center;
@@ -1108,21 +1109,21 @@ export default function GridStyle({
 		}
 
 		${PREFIX} ._simpleEditorIcons._bground {
-			background: #F9F9F9;
+			background-color: #F9F9F9;	
 		}
 
 
 		${PREFIX} ._simpleEditorIcons._bground ._eachIcon:hover,
 		${PREFIX} ._simpleEditorIcons._bground ._eachIcon._active {
-			background: #FFF;
+			background-color: #FFF;
 			box-shadow: 0px 2px 4px 0px #0000001A;
 		}
 
 		${PREFIX} ._simpleEditorIcons ._eachIcon svg path,
 		${PREFIX} ._simpleEditorIcons ._eachIcon svg circle,
 		${PREFIX} ._simpleEditorIcons ._eachIcon svg rect,
-		${PREFIX} ._simpleEditorIcons ._eachIcon svg rect {
-			fill: #333333;
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg line {
+			fill: #E3E5EA;
 			stroke: rgba(142, 144, 164, 0.5);
 		}
 
@@ -1398,15 +1399,15 @@ export default function GridStyle({
 		${PREFIX} ._iconDropdown {
 			position: relative;
 			display: inline-block;
+
 		}
 
 		${PREFIX} ._dropdownToggle {
 			font-family: Inter;
-			font-size: 12px;
+			font-size: 14px;
 			border: none;
 			border-radius: 6px;
 			color: #555;
-			background-color: #F9F9F9;
 			cursor: pointer;
 			padding: 5px 8px;
 			display: flex;
@@ -1420,7 +1421,7 @@ export default function GridStyle({
 			top : 0;
 			border: none;
 			height: 100%;
-			background-color: transparent;
+			background-color: #fff;
 			outline: none;
 			font-family: Inter;
 			font-size: 12px;
@@ -1482,7 +1483,7 @@ export default function GridStyle({
 		}
 
 		${PREFIX} ._dropdownContent ._eachIcon svg {
-			margin-right: 8px;
+			margin-right: 5px;
 		}
 
 		${PREFIX} ._dropdownContent ._iconName {
@@ -1603,7 +1604,7 @@ export default function GridStyle({
 		}
 
 		${PREFIX} ._simpleEditorButtonBar ._simpleButtonBarButton._selected {
-			background-color: #1893E9;
+			background-color: #52BD94;
 			color: #FFF;
 			box-shadow: 0px 1px 3px 0px #0000001A;
 		}
@@ -3505,6 +3506,7 @@ export default function GridStyle({
 			color: #1893E9;
 		}
 		/* Animations Start here... */
+
 		@keyframes updown {
 			0% { transform: translateY(0); }
 			50% { transform: translateY(5px); }
@@ -3530,6 +3532,986 @@ export default function GridStyle({
 			transform-origin: bottom;
 		}
 
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._dropdownarrow {
+			animation: dropdownarrowAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes dropdownarrowAnimation {
+			0% { transform: scaleY(0.8); }
+			100% { transform: scaleY(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._dropdownlines {
+			animation: dropdownlinesScaleAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes dropdownlinesScaleAnimation {
+			0% { opacity: 0; }
+			50% { opacity: 0.5; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._checkboxbox {
+			animation: checkboxboxAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes checkboxboxAnimation {
+			0% { opacity: 0; }
+			100% { opacity: 1; }
+		}
+
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._checkboxTick {
+			animation: checkboxTickAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes checkboxTickAnimation {
+			0% { transform: scale(1); }
+			33% { transform: scale(0.5); }
+			66%	{ transform: scale(1.2); }
+			100% { transform: scale(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._carouselmainframe {
+			animation: carouselframeAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes carouselframeAnimation {
+			0% { opacity: 0; transform: translate(5px);  }
+			100% { opacity: 1; transform: translate(0px); }
+		}
+		
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._carouselfirstframe,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._carouselsecondframe,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._carouselthirdframe,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._carouselfourthframe
+		{
+			animation: carouselframeAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._gallerymainframe{
+			animation: gallerymainAnimation var(--comp-item-animation-duration) infinite;
+		}
+
+		@keyframes gallerymainAnimation {
+			0% { opacity: 0; transform: translateY(-25px); }
+			100% { opacity: 1; transform: translateY(0px); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._gallerysecondframe{
+			animation: gallerysecondAnimation var(--comp-item-animation-duration) infinite;
+		}
+
+		@keyframes gallerysecondAnimation {
+			0% { opacity: 0; transform: translateY(-15px); }
+			100% { opacity: 1; transform: translateY(0px); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._galleryfirstframe
+		{
+			animation: galleryfirstAnimation var(--comp-item-animation-duration) infinite;
+		}
+
+		@keyframes galleryfirstAnimation {
+			0% { opacity: 0; transform: translateY(-5px); }
+			100% { opacity: 1; transform: translateY(0px); }
+		}
+			
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._linkbox {
+			animation: linkboxAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes linkboxAnimation {
+			0% { opacity: 0; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._linkarrowleft,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._linkarrowright,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._linkarrowtail
+		{
+			animation: linkarrowAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes linkarrowAnimation {
+			0% { transform: translate(-20px, 20px); }
+			50% { transform: translate(-5px, 5px); }
+			100% { transform: translate(0, 0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._phonenumber {
+			animation: phonenumberAnimation var(--comp-item-animation-duration) infinite;
+			transform-origin: 15px 15px;
+		}	
+
+		@keyframes phonenumberAnimation {
+			0% { transform: rotate(0deg); }
+			10% { transform: rotate(10deg);}
+			20% { transform: rotate(-10deg);}
+			30% { transform: rotate(10deg);}
+			40% { transform:rotate(-10deg);}
+			50% { transform: rotate(10deg);}
+			60% { transform: rotate(-10deg);}
+			70% { transform: rotate(10deg);}
+			80% { transform:rotate(-10deg);}
+			90% { transform: rotate(10deg);}
+			100% { transform: rotate(0deg); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._calenderValues {
+			animation: calendervaluesAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 12px; 
+			z-index: 10;
+		}	
+
+		@keyframes calendervaluesAnimation {
+			0% { opacity: 1; transform: rotateX(0deg); }
+			25% { opacity: 0.8; transform: rotateX(90deg); }
+			50% { opacity: 0.7; transform: rotateX(180deg); }
+			75% { opacity: 0.8; transform: rotateX(90deg); }
+			100% { opacity: 1; transform: rotateX(0deg); }
+			
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._calenderValue1 {
+			animation: calendervalue1Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes calendervalue1Animation {
+			0% { opacity: 0; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._calendarboard {
+			animation: calendarboardAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes calendarboardAnimation {
+			0% { opacity: 1; }
+			25% { opacity: 0.5; }
+			50% { opacity: 0; }
+			75% { opacity: 0.5; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._iframeboard {
+			animation: iframeboardAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes iframeboardAnimation {
+			0% { opacity: 0; }
+			50% { opacity: 0.5; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._iframesymbol {
+			animation: iframesymbolAnimation var(--comp-item-animation-duration-long) infinite;
+		}	
+
+		@keyframes iframesymbolAnimation {
+			0% { transform: translateX(-5px); }
+			50% { transform: translateX(5px); }
+			100% { transform: translateX(0px); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._greenStepperIcon {
+			animation: greenStepperIconAnimation var(--comp-item-animation-duration-long) infinite;
+			z-index:12;
+		}
+
+		@keyframes greenStepperIconAnimation {
+			0% { transform: translateX(0px); }
+			100% { transform: translateX(38px); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._greenFinalStepIcon {
+			animation: greenFinalStepIconAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes greenFinalStepIconAnimation {
+			0% { fill: #E0E0E7; }
+			100% { fill: transparent; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TAFirstLine,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TASecondLine {
+			animation: iframeboardAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._icon3,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._icon4,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._icon21,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._icon22,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._icon1 {
+			animation: iconAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes iconAnimation {
+			0% { transform: scale(0.5) rotate(0deg);}
+			50% { transform: scale(0.8) rotate(180deg); }
+			100% { transform: scale(1) rotate(360deg); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._videoOuterDesign {
+			animation: videoOuterDesignAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes videoOuterDesignAnimation {
+			0% { fill: #EEEEEE; }
+			50% { fill: #EDEAEA;  }
+			100% { fill: #EDEAEA; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._videoInnerDesign {
+			animation: videoInnerDesignAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 10px 15px;
+		}
+
+		@keyframes videoInnerDesignAnimation {
+			0% { fill: #02B694; transform: rotate(0deg); }	
+			25% { fill: #ACF3E6; transform: rotate(90deg); }
+			50% { fill: #02B694; transform: rotate(180deg); }
+			75% { fill: #ACF3E6; transform: rotate(270deg); }
+			100% { fill: #02B694; transform: rotate(360deg); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._popupInner {
+			animation: popupInnerAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes popupInnerAnimation {
+			0% { transform: scale(1); }
+			50% { transform: scale(0.6); }
+			75% { transform: scale(1.6); }
+			100% { transform: scale(1); }
+		}
+
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._menuInner1,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._menuInner2,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._menuInner3 {
+			animation: menuInnerAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 5px 5px;
+		}
+
+		@keyframes menuInnerAnimation {
+			0% { transform: scaleX(1); }
+			50% { transform: scaleX(0); }
+			100% { transform: scaleX(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._progressBarInner1{
+			animation: progressBarInner1Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes progressBarInner1Animation {
+			0% { opacity: 0; }
+			20% { opacity: 0.5; }
+			40% { opacity: 1; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._progressBarInner2{
+			animation: progressBarInner2Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes progressBarInner2Animation {
+			0% { opacity: 0; }
+			40% { opacity: 0.5; }
+			60% { opacity: 1; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._progressBarInner3{
+			animation: progressBarInner3Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes progressBarInner3Animation {
+			0% { opacity: 0; }
+			60% { opacity: 0.5; }
+			80% { opacity: 1; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._progressBarInner4 {
+			animation: progressBarInner4Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes progressBarInner4Animation {
+			0% { opacity: 0; }
+			80% { opacity: 1; }
+			100% { opacity: 1; }
+		}
+		
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._popOver {
+			animation: popOverAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes popOverAnimation {
+			0% { transform: scale(1); }
+			50% { transform: scale(0.5); }
+			100% { transform: scale(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._fileUploadAT,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._fileUploadAB {
+			animation: updownarrow var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes updownarrow {
+			0% { transform: translateY(20px); }
+			30% { transform: translateY(5px); }
+			65% { transform: translateY(0px); }
+			100% { transform: translateY(20px); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._animatorGlobeBG1,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._animatorGlobeBG2 {
+			animation: animatorglobeBGAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes animatorglobeBGAnimation {
+			0% { transform: rotateZ(0deg); }
+			50% { transform: rotateZ(90deg); }
+			100% { transform: rotateZ(180deg); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._buttonBar1{
+			animation: buttonBar1Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes buttonBar1Animation {
+			0% { transform: translate(0, 0); }
+			50% { transform: translate(9px, 8px); }
+			100% { transform: translate(0, 0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._buttonBar2 {
+			animation: buttonBar2Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes buttonBar2Animation {
+			0% { transform: translate(0, 0); }
+			50% { transform: translate(5px, 4px); }
+			100% { transform: translate(0, 0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._chartbars {
+			animation: chartbarsAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 25px;
+		}
+
+		@keyframes chartbarsAnimation {
+			0% { transform: scaleY(1); }
+			50% { transform: scaleY(0.2); }
+			100% { transform: scaleY(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._CPtube{
+			animation: CPtubeAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 30px 0px;
+		}
+
+		@keyframes CPtubeAnimation {
+			0% { transform: translate(0, 0);}
+			20% { transform: translate(15px, -10px); fill: white }
+			40% { transform: translate(0, 0); fill:red; }
+			60% { fill: green; }
+			80% { fill: blue; }
+			100% { fill: white; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._CPhandle {
+			animation: CPhandleAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 30px 0px;
+		}
+		
+		@keyframes CPhandleAnimation {
+			0% { transform: translate(0, 0); }
+			20% { transform: translate(15px, -10px); }
+			40% { transform: translate(0, 0); }
+			60% { transform: translate(0, 0);}
+			80% { transform: translate(0, 0);}
+			100% { transform: translate(0, 0); }
+		}
+		
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._JotPen,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._FDEPen {
+			animation: FDEPenAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes FDEPenAnimation {
+			0% { transform: translate(0, 0); }
+			10% { transform: translate(0, -20px); }
+			20% { transform: translate(15px, -20px); }
+			30% { transform: translate(0px, -15px); }
+			40% { transform: translate(15px, -15px); }
+			50% { transform: translate(0, -10px); }
+			60% { transform: translate(15px, -10px); }
+			70% { transform: translate(0, -5px); }
+			80% { transform: translate(15px, -5px); }
+			90% { transform: translate(0, 0px); }
+			100% { transform: translate(15px, 0px); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._JotPen1 {
+			animation: JotPen1Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;	
+		}
+
+		@keyframes JotPen1Animation {
+			0% { transform: scale(1) translate(0, 0) rotateZ(0deg);  }
+			50% { transform: scale(0.5) translate(15px, 15px) rotateZ(90deg); }
+			100% { transform: scale(1) translate(0, 0) rotateZ(0deg); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._FVEMailCloser {
+			animation: FVEMailCloserAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes FVEMailCloserAnimation {
+			0% { transform: rotateX(0); }
+			50% { transform: rotateX(-70deg); }
+			100% { transform: rotateX(0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._FVEMailPencil {
+			animation: FVEMailPencilAnimation var(--comp-item-animation-duration-long) infinite;
+		}		
+
+		@keyframes FVEMailPencilAnimation {
+			0% { transform: translateX(0); }
+			50% { transform: translateX(-15px); }
+			100% { transform: translateX(0); }
+			
+		} 
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._PageEditorPen,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._FSEPen {
+			animation: FSEPenAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 0px 5px;
+		}
+
+		@keyframes FSEPenAnimation {
+			0% { transform: translate(0px, 0px); }
+			10% { transform: translate(-15px, -20px); }
+			20% { transform: translate(0px, -20px); }
+			30% { transform: translate(-15px, -15px); }
+			40% { transform: translate(0px, -15px); }
+			50% { transform: translate(-15px, -10px); }
+			60% { transform: translate(0px, -10px); }
+			70% { transform: translate(-15px, -5px); }
+			80% { transform: translate(0px, -5px); }
+			90% { transform: translate(-15px, 0px); }
+			100% { transform: translate(0px, 0px); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._IWBCircle {
+			animation: IWBCircleAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes IWBCircleAnimation {
+			0% { opacity: 1; }
+			50% { opacity: 0; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._IWBhill {
+			animation: IWBhillAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes IWBhillAnimation {
+			0% { transform: rotateY(0deg); }
+			50% { transform: rotateY(180deg); }
+			100% { transform: rotateY(0deg); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._MarkdownEditorArrowIcon {
+			animation: updown var(--comp-item-animation-duration) infinite;
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._OtpInputBox1{
+			animation: OtpInputBox1Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes OtpInputBox1Animation {
+			0% { opacity: 0; }
+			25% { opacity: 1; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._OtpInputBox2{
+			animation: OtpInputBox2Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes OtpInputBox2Animation {
+			0% { opacity: 0; }
+			50% { opacity: 1; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._OtpInputBox3{
+			animation: OtpInputBox3Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes OtpInputBox3Animation {
+			0% { opacity: 0; }
+			75% { opacity: 1; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._PageIcon {
+			animation: opacityAnimation var(--comp-item-animation-duration) infinite;
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._RadioButtonCircle {
+			animation: RBAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 16px 16px;
+		}
+
+		@keyframes RBAnimation {
+			0% { transform: scale(1); }
+			50% { transform: scale(0.6); }
+			75% { transform: scale(1.2); }
+			100% { transform: scale(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._RangeSliderThumb,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._RangeSliderThumbPit {
+			animation: RangeSliderThumbPitAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes RangeSliderThumbPitAnimation {
+			0% { transform: translateX(0); }
+			50% { transform: translateX(-15px); }
+			100% { transform: translateX(0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._RangeSliderRangeTrack {
+			animation: RangeSliderRangeTrackAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes RangeSliderRangeTrackAnimation {
+			0% { opacity: 1; }
+			50% { opacity: 0; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SchemaBuilderPen {
+			animation: SchemaBuilderPenAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes SchemaBuilderPenAnimation {
+			0% { transform: translateY(0); }
+			25% { transform: translateY(-7px); }
+			50% { transform: translateY(-15px); }
+			75% { transform: translateY(-23px); }
+			100% { transform: translateY(0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SchemaBuilderDBTop{
+			animation: SchemaBuilderDBTopAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes SchemaBuilderDBTopAnimation {
+			0% { opacity: 0; }
+			25% { opacity: 0; }
+			50% { opacity: 0; }
+			75% { opacity: 0; }
+			95% { opacity: 1; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SchemaBuilderDB1 {
+			animation: SchemaBuilderDB1Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes SchemaBuilderDB1Animation {
+			0% { opacity: 0; }
+			25% { opacity: 0; }
+			50% { opacity: 0; }
+			75% { opacity: 1; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SchemaBuilderDB2 {
+			animation: SchemaBuilderDB2Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes SchemaBuilderDB2Animation {
+			0% { opacity: 0; }
+			25% { opacity: 0; }
+			50% { opacity: 1; }
+			75% { opacity: 1; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SchemaBuilderDB3 {
+			animation: SchemaBuilderDB3Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes SchemaBuilderDB3Animation {
+			0% { opacity: 0; }
+			25% { opacity: 1; }
+			50% { opacity: 1; }
+			75% { opacity: 1; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SchemaFormPen {
+			animation: SchemaFormPenAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 3px 15px;
+		}
+
+		@keyframes SchemaFormPenAnimation {
+			0% { transform: scale(1); }
+			50% { transform: scale(0); }
+			100% { transform: scale(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SubPageBlock1,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SectionGridBlock1 {
+			animation: SectionGridBlock1Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes SectionGridBlock1Animation {
+			0% { opacity: 0; transform: scale(0); }
+			25% { opacity: 1; transform: scale(1.2); }
+			50% { opacity: 1; transform: scale(1); }
+			75% { opacity: 1; transform: scale(1); }
+			100% { opacity: 1; transform: scale(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SubPageBlock2,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SectionGridBlock2 {
+			animation: SectionGridBlock2Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes SectionGridBlock2Animation {
+			0% { opacity: 0; transform: scale(0); }
+			25% { opacity: 0; transform: scale(0); }
+			50% { opacity: 1; transform: scale(1.2); }
+			75% { opacity: 1; transform: scale(1); }
+			100% { opacity: 1; transform: scale(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SubPageBlock3,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SectionGridBlock3 {
+			animation: SectionGridBlock3Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes SectionGridBlock3Animation {
+			0% { opacity: 0; transform: scale(0); }
+			25% { opacity: 0; transform: scale(0); }
+			50% { opacity: 0; transform: scale(0); }
+			75% { opacity: 1; transform: scale(1.2); }
+			100% { opacity: 1; transform: scale(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SubPageMainFrame,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SectionGridBlock4 {
+			animation: SectionGridBlock4Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}	
+
+		@keyframes SectionGridBlock4Animation {
+			0% { opacity: 0; transform: scale(0); }
+			25% { opacity: 0; transform: scale(0); }
+			50% { opacity: 0; transform: scale(0); }
+			75% { opacity: 0; transform: scale(0);}
+			85% { opacity: 1; transform: scale(1.2); }
+			100% { opacity: 1; transform: scale(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TableHeaderBlock {
+			animation: TableHeaderBlockAnimation var(--comp-item-animation-duration-long) infinite;
+		}	
+
+		@keyframes TableHeaderBlockAnimation {
+			0% { opacity: 0; }
+			12% { opacity: 1; }
+			25% { opacity: 1; }
+			37% { opacity: 1; }
+			50% { opacity: 1; }
+			62% { opacity: 1; }
+			75% { opacity: 1; }
+			87% { opacity: 1; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TableGridBlock1 {
+			animation: TableGridBlock1Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes TableGridBlock1Animation {
+			0% { opacity: 0; }
+			12% { opacity: 0; }
+			25% { opacity: 1; }
+			37% { opacity: 1; }
+			50% { opacity: 1; }
+			62% { opacity: 1; }
+			75% { opacity: 1; }
+			87% { opacity: 1; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TableGridBlock2 {
+			animation: TableGridBlock2Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes TableGridBlock2Animation {
+			0% { opacity: 0; }
+			12% { opacity: 0; }
+			25% { opacity: 0; }
+			37% { opacity: 1; }
+			50% { opacity: 1; }
+			62% { opacity: 1; }
+			75% { opacity: 1; }
+			87% { opacity: 1; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TableGridBlock3 {
+			animation: TableGridBlock3Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes TableGridBlock3Animation {
+			0% { opacity: 0; }
+			12% { opacity: 0; }
+			25% { opacity: 0; }
+			37% { opacity: 0; }
+			50% { opacity: 1; }
+			62% { opacity: 1; }
+			75% { opacity: 1; }
+			87% { opacity: 1; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TableGridBlock4 {
+			animation: TableGridBlock4Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes TableGridBlock4Animation {
+			0% { opacity: 0; }
+			12% { opacity: 0; }
+			25% { opacity: 0; }
+			37% { opacity: 0; }
+			50% { opacity: 0; }
+			62% { opacity: 1; }
+			75% { opacity: 1; }
+			87% { opacity: 1; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TableGridBlock5 {
+			animation: TableGridBlock5Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes TableGridBlock5Animation {
+			0% { opacity: 0; }
+			12% { opacity: 0; }
+			25% { opacity: 0; }
+			37% { opacity: 0; }
+			50% { opacity: 0; }
+			62% { opacity: 0; }
+			75% { opacity: 1; }
+			87% { opacity: 1; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TableGridBlock6 {
+			animation: TableGridBlock6Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes TableGridBlock6Animation {
+			0% { opacity: 0; }
+			12% { opacity: 0; }
+			25% { opacity: 0; }
+			37% { opacity: 0; }
+			50% { opacity: 0; }
+			62% { opacity: 0; }	
+			75% { opacity: 0; }
+			87% { opacity: 1; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._tabsBlock1{
+			animation: SectionGridBlock1Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._tabsBlock2{
+			animation: SectionGridBlock2Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._tabsBlock3 {
+			animation: SectionGridBlock3Animation var(--comp-item-animation-duration-long) infinite;
+		}	
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._tagIcon2{
+			animation: tagIconAnimation2 var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes tagIconAnimation2{
+			0% { transform: rotate(0deg); }
+			25% { transform: rotate(-15deg); }
+			50% { transform: rotate(-20deg); }
+			75% { transform: rotate(-15deg); }
+			100% { transform: rotate(0deg); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._tagIcon3 {
+			animation: tagIconAnimation3 var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes tagIconAnimation3{
+			0% { transform: rotate(0deg); }
+			25% { transform: rotate(-25deg); }
+			50% { transform: rotate(-50deg); }
+			75% { transform: rotate(-25deg); }
+			100% { transform: rotate(0deg); }
+		}
+		
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TEWindow {
+			animation: TEWindowAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 4px 10px;
+		}
+
+		@keyframes TEWindowAnimation {
+			0% { transform: scale(1); }
+			50% { transform: scale(0.2); }
+			100% { transform: scale(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TEfirstline {
+			animation: TEfirstlineAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 17px 12px;
+		}	
+
+		@keyframes TEfirstlineAnimation {
+			0% { transform: scaleX(1); }
+			50% { transform: scaleX(0.2); }
+			100% { transform: scaleX(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TEsecondline {
+			animation: TEsecondlineAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 17px 18px;
+		}		
+
+		@keyframes TEsecondlineAnimation {
+			0% { transform: scaleX(1); }
+			50% { transform: scaleX(0.2); }
+			100% { transform: scaleX(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TEthirdline {
+			animation: TEthirdlineAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 4px 24px;
+		}	
+
+		@keyframes TEthirdlineAnimation {
+			0% { transform: scaleX(1); }
+			50% { transform: scaleX(0.1); }
+			100% { transform: scaleX(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TEHeaderline {
+			animation: TElineAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 4px 30px;
+		}
+
+		@keyframes TElineAnimation {
+			0% { transform: scaleX(1); }
+			50% { transform: scaleX(0.1); }
+			100% { transform: scaleX(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextEditorBubble,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextEditorBubbleLine1,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextEditorBubbleLine2,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextEditorBubbleLine3,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextEditorT {
+			animation: TextEditorBubbleLineAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 28px 28px;
+		}
+
+		@keyframes TextEditorBubbleLineAnimation {
+			0% { opacity: 1; transform: scale(1); }
+			50% { opacity: 0; transform: scale(0); }
+			100% { opacity: 1; transform: scale(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextListLine1,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextListLine2,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextListLine3 {
+			animation: menuInnerAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin:  11px;
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextListCircle1{
+			animation: RBAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 8px 9px;
+		}
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextListCircle2{
+			animation: RBAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 8px 16px;
+		}
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextListCircle3 {
+			animation: RBAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 8px 23px;
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TimerClose1{
+			animation: TimerClose1Animation var(--comp-item-animation-duration-long) linear infinite;
+		}
+
+		@keyframes TimerClose1Animation {
+			0% { transform: translateY(0px); }
+			50% { transform: translateY(6.5px); }
+			100% { transform: translateY(0px); }
+		}
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TimerClose2 {
+			animation: TimerClose2Animation var(--comp-item-animation-duration-long) linear infinite;
+		}
+
+		@keyframes TimerClose2Animation {
+			0% { transform: translateY(0px); }
+			50% { transform: translateY(3.5px); }
+			100% { transform: translateY(0px); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._toggleButtonKnob {
+			animation: toggleButtonKnobAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes toggleButtonKnobAnimation {
+			0% { transform: translateX(0); }
+			50% { transform: translateX(-15px); }
+			100% { transform: translateX(0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._toggleButtonTrack {
+			animation: toggleButtonTrackAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes toggleButtonTrackAnimation {
+			0% { fill: #E442E2; }
+			50% { fill: #e5e5e5; }
+			100% { fill: #E442E2; }
+		}
+
+		
 		@keyframes opacityAnimation {
 			0% { opacity: 0; }
 			50% { opacity: 1; }
@@ -3669,17 +4651,6 @@ export default function GridStyle({
 
 		${PREFIX} ._compMenuItem:hover #_arrayRepeaterIcon #_rect8 {
 			animation: array_repeater_rect8_animation var(--comp-item-animation-duration) infinite;
-		}
-
-		@keyframes dropDownAnimation {
-			0% { scale: 0; 	}
-			60% { scale: 1; }
-			100% { scale: 1; }
-		}
-
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG #_dropDownAnimation {
-			transform-origin: center left;
-			animation: dropDownAnimation var(--comp-item-animation-duration) infinite;
 		}
 
 		/* Animations End here... */

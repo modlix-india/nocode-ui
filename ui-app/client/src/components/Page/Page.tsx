@@ -180,17 +180,42 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
+				<IconHelper viewBox="0 0 30 30">
 					<path
-						d="M12.4836 5.4706V1H3.5493C2.69501 1 2 1.69501 2 2.5493V21.4507C2 22.305 2.69501 23 3.5493 23H17.4706C18.3249 23 19.0199 22.305 19.0199 21.4507V7.53632H14.5493C13.4103 7.53632 12.4836 6.60964 12.4836 5.4706Z"
-						fill="currentColor"
-						fillOpacity="0.2"
+						className="_PageIcon"
+						d="M13.5511 6.09627V0H2.00263C0.898379 0 0 0.947747 0 2.11268V27.8873C0 29.0523 0.898379 30 2.00263 30H19.9974C21.1016 30 22 29.0523 22 27.8873V8.91317H16.2213C14.749 8.91317 13.5511 7.64951 13.5511 6.09627Z"
+						fill="url(#paint0_linear_3214_9567)"
 					/>
+
 					<path
-						d="M13.5176 5.47056C13.5176 6.04008 13.9809 6.50342 14.5504 6.50342H18.2553L13.5176 1.78809V5.47056Z"
-						fill="currentColor"
-						fillOpacity="0.2"
+						className="_PageIcon"
+						d="M14.8882 6.1012C14.8882 6.87782 15.4871 7.50965 16.2233 7.50965H21.0122L14.8882 1.07965V6.1012Z"
+						fill="url(#paint1_linear_3214_9567)"
 					/>
+					<defs>
+						<linearGradient
+							id="paint0_linear_3214_9567"
+							x1="11"
+							y1="0"
+							x2="11"
+							y2="30"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#00ADB7" />
+							<stop offset="1" stopColor="#016A70" />
+						</linearGradient>
+						<linearGradient
+							id="paint1_linear_3214_9567"
+							x1="17.9502"
+							y1="1.07965"
+							x2="17.9502"
+							y2="7.50965"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#00ADB7" />
+							<stop offset="1" stopColor="#016A70" />
+						</linearGradient>
+					</defs>
 				</IconHelper>
 			),
 		},

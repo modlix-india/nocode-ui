@@ -131,41 +131,83 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
-					<rect
-						x="1"
-						y="1"
-						width="22"
-						height="22"
-						rx="1"
-						fill="currentColor"
-						fillOpacity="0.2"
-					/>
+				<IconHelper viewBox="0 0 28 28">
+					<rect width="28" height="28" rx="1" fill="#96A1B4" fillOpacity="0.2" />
 					<path
-						d="M6.5 10.333C6.5 9.22844 7.39543 8.33301 8.5 8.33301H23V21.9997C23 22.552 22.5523 22.9997 22 22.9997H6.5V10.333Z"
-						fill="currentColor"
+						className="_SubPageMainFrame"
+						d="M7 11.333C7 10.2284 7.89543 9.33301 9 9.33301H28V26.9997C28 27.552 27.5523 27.9997 27 27.9997H7V11.333Z"
+						fill="url(#paint0_linear_3214_9603)"
 					/>
 					<ellipse
-						cx="3.89793"
-						cy="3.89598"
-						rx="1.06199"
-						ry="1.06199"
-						fill="currentColor"
+						className="_SubPageBlock1"
+						cx="3.68805"
+						cy="3.68878"
+						rx="1.35163"
+						ry="1.35163"
+						fill="url(#paint1_linear_3214_9603)"
 					/>
 					<ellipse
-						cx="8.14402"
-						cy="3.89598"
-						rx="1.06199"
-						ry="1.06199"
-						fill="currentColor"
+						className="_SubPageBlock2"
+						cx="9.09235"
+						cy="3.68878"
+						rx="1.35163"
+						ry="1.35163"
+						fill="url(#paint2_linear_3214_9603)"
 					/>
 					<ellipse
-						cx="12.3901"
-						cy="3.89598"
-						rx="1.06199"
-						ry="1.06199"
-						fill="currentColor"
+						className="_SubPageBlock3"
+						cx="14.4966"
+						cy="3.68878"
+						rx="1.35163"
+						ry="1.35163"
+						fill="url(#paint3_linear_3214_9603)"
 					/>
+					<defs>
+						<linearGradient
+							id="paint0_linear_3214_9603"
+							x1="17.5"
+							y1="9.33301"
+							x2="17.5"
+							y2="27.9997"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#5D59F2" />
+							<stop offset="1" stopColor="#04009A" />
+						</linearGradient>
+						<linearGradient
+							id="paint1_linear_3214_9603"
+							x1="3.68805"
+							y1="2.33716"
+							x2="3.68805"
+							y2="5.04041"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#5D59F2" />
+							<stop offset="1" stopColor="#04009A" />
+						</linearGradient>
+						<linearGradient
+							id="paint2_linear_3214_9603"
+							x1="9.09235"
+							y1="2.33716"
+							x2="9.09235"
+							y2="5.04041"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#5D59F2" />
+							<stop offset="1" stopColor="#04009A" />
+						</linearGradient>
+						<linearGradient
+							id="paint3_linear_3214_9603"
+							x1="14.4966"
+							y1="2.33716"
+							x2="14.4966"
+							y2="5.04041"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#5D59F2" />
+							<stop offset="1" stopColor="#04009A" />
+						</linearGradient>
+					</defs>
 				</IconHelper>
 			),
 		},

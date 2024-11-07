@@ -308,7 +308,7 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 		toolTip = (
 			<div className={`_toolTip ${toolTipPosition}`} style={styleProperties?.toolTip ?? {}}>
 				<SubHelperComponent subComponentName="toolTip" definition={definition} />
-				{`${toolTipValueLabelPrefix ?? ''}${toolTipDisplayType == 'value' ? (value ?? '') : labelPercent + '%'}${toolTipValueLabelSuffix ?? ''}`}
+				{`${toolTipValueLabelPrefix ?? ''}${toolTipDisplayType == 'value' ? value ?? '' : labelPercent + '%'}${toolTipValueLabelSuffix ?? ''}`}
 			</div>
 		);
 	}
@@ -729,22 +729,70 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
+				<IconHelper viewBox="0 0 30 30">
+					<rect width="30" height="30" rx="2" fill="url(#paint0_linear_3817_9701)" />
 					<rect
-						x="1"
-						y="1"
-						width="22"
-						height="22"
-						rx="2"
+						className="_RangeSliderTrack"
+						x="2"
+						y="14"
+						width="26"
+						height="2"
+						rx="1"
+						fill="black"
 						fillOpacity="0.2"
-						fill="currentColor"
 					/>
-					<path d="M2 11H22V13H2V11Z" fill="currentColor" />
-					<path
-						d="M12 8C10.3431 8 9 9.34315 9 11C9 12.6569 10.3431 14 12 14C13.6569 14 15 12.6569 15 11C15 9.34315 13.6569 8 12 8ZM12 10C12.5523 10 13 10.4477 13 11C13 11.5523 12.5523 12 12 12C11.4477 12 11 11.5523 11 11C11 10.4477 11.4477 10 12 10Z"
-						transform="translate(0 1)"
-						fill="currentColor"
+					<rect
+						className="_RangeSliderRangeTrack"
+						x="2"
+						y="14"
+						width="17"
+						height="2"
+						rx="1"
+						fill="url(#paint1_linear_3817_9701)"
 					/>
+					<circle className="_RangeSliderThumb" cx="18" cy="15" r="5" fill="white" />
+					<circle
+						className="_RangeSliderThumbPit"
+						cx="18"
+						cy="15"
+						r="3"
+						fill="url(#paint2_linear_3817_9701)"
+					/>
+					<defs>
+						<linearGradient
+							id="paint0_linear_3817_9701"
+							x1="15"
+							y1="0"
+							x2="15"
+							y2="30"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#EEEEEE" />
+							<stop offset="1" stopColor="#EDEAEA" />
+						</linearGradient>
+						<linearGradient
+							id="paint1_linear_3817_9701"
+							x1="10.5"
+							y1="14"
+							x2="10.5"
+							y2="16"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#A170FF" />
+							<stop offset="1" stopColor="#350B86" />
+						</linearGradient>
+						<linearGradient
+							id="paint2_linear_3817_9701"
+							x1="18"
+							y1="12"
+							x2="18"
+							y2="18"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#A170FF" />
+							<stop offset="1" stopColor="#350B86" />
+						</linearGradient>
+					</defs>
 				</IconHelper>
 			),
 		},

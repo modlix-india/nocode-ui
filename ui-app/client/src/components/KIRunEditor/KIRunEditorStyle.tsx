@@ -550,7 +550,7 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 
 		${PREFIX} ._connector {
 			fill: transparent;
-			stroke-width: 8px;
+			strokeWidth: 8px;
 			stroke-linecap: round;
 			transform: translate(6px, 6px);
 			opacity: 0.3;
@@ -559,7 +559,7 @@ export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<str
 		}
 
 		${PREFIX} ._connector._straight {
-			stroke-width: 7px;
+			strokeWidth: 7px;
 		}
 
 		${PREFIX} ._connector:hover,

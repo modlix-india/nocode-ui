@@ -36,18 +36,15 @@ function spinCalculate(
 				() =>
 					setIsLoading(
 						(spinnerPath1
-							? (getDataFromPath(
-									spinnerPath1,
-									props.locationHistory,
-									pageExtractor,
-								) ?? false)
+							? getDataFromPath(spinnerPath1, props.locationHistory, pageExtractor) ??
+								false
 							: false) ||
 							(spinnerPath2
-								? (getDataFromPath(
+								? getDataFromPath(
 										spinnerPath2,
 										props.locationHistory,
 										pageExtractor,
-									) ?? false)
+									) ?? false
 								: false),
 					),
 				pageExtractor,
@@ -61,18 +58,15 @@ function spinCalculate(
 				() =>
 					setIsLoading(
 						(spinnerPath1
-							? (getDataFromPath(
-									spinnerPath1,
-									props.locationHistory,
-									pageExtractor,
-								) ?? false)
+							? getDataFromPath(spinnerPath1, props.locationHistory, pageExtractor) ??
+								false
 							: false) ||
 							(spinnerPath2
-								? (getDataFromPath(
+								? getDataFromPath(
 										spinnerPath2,
 										props.locationHistory,
 										pageExtractor,
-									) ?? false)
+									) ?? false
 								: false),
 					),
 				pageExtractor,
@@ -818,49 +812,150 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
+				<IconHelper viewBox="0 0 30 29">
 					<path
-						d="M1 4.2998H14.2V22.1998C14.2 22.6416 13.8418 22.9998 13.4 22.9998H1V4.2998Z"
-						fill="currentColor"
+						d="M0 4.32007H17.2799V28C17.2799 28.4418 16.9218 28.8 16.4799 28.8H0V4.32007Z"
+						fill="#96A1B4"
 						fillOpacity="0.2"
 					/>
-					<path
-						d="M1 1.8C1 1.35817 1.35817 1 1.8 1H22.2C22.6418 1 23 1.35817 23 1.8V6.5H1V1.8Z"
-						fill="currentColor"
-					/>
-					<rect x="1" y="9.7998" width="5.5" height="4.4" rx="0.2" fill="currentColor" />
-					<path
-						d="M1 17.5H6.5V23H1.8C1.35817 23 1 22.6418 1 22.2V17.5Z"
-						fill="currentColor"
+					<rect
+						className="_TableHeaderBlock"
+						width="30"
+						height="7.5"
+						rx="2"
+						fill="url(#paint0_linear_3214_9611)"
 					/>
 					<rect
-						x="9.80078"
-						y="9.7998"
-						width="4.4"
-						height="4.4"
-						rx="0.2"
-						fill="currentColor"
+						className="_TableGridBlock1"
+						y="10.5602"
+						width="8.4"
+						height="6.72"
+						rx="1"
+						fill="url(#paint1_linear_3214_9611)"
 					/>
 					<rect
-						x="9.80078"
-						y="17.5"
-						width="4.4"
-						height="5.5"
-						rx="0.2"
-						fill="currentColor"
+						className="_TableGridBlock4"
+						y="20.6405"
+						width="8.16"
+						height="8.16"
+						rx="1"
+						fill="url(#paint2_linear_3214_9611)"
 					/>
 					<rect
-						x="17.5"
-						y="9.7998"
-						width="5.5"
-						height="4.4"
-						rx="0.2"
-						fill="currentColor"
+						className="_TableGridBlock2"
+						x="11.521"
+						y="10.5602"
+						width="6.72"
+						height="6.72"
+						rx="1"
+						fill="url(#paint3_linear_3214_9611)"
 					/>
-					<path
-						d="M17.5 17.5H23V22.2C23 22.6418 22.6418 23 22.2 23H17.5V17.5Z"
-						fill="currentColor"
+					<rect
+						className="_TableGridBlock5"
+						x="11.521"
+						y="20.6405"
+						width="6.528"
+						height="8.16"
+						rx="1"
+						fill="url(#paint4_linear_3214_9611)"
 					/>
+					<rect
+						className="_TableGridBlock3"
+						x="21.6001"
+						y="10.5602"
+						width="8.4"
+						height="6.72"
+						rx="1"
+						fill="url(#paint5_linear_3214_9611)"
+					/>
+					<rect
+						className="_TableGridBlock6"
+						x="21.6001"
+						y="20.6405"
+						width="8.16"
+						height="8.16"
+						rx="1"
+						fill="url(#paint6_linear_3214_9611)"
+					/>
+					<defs>
+						<linearGradient
+							id="paint0_linear_3214_9611"
+							x1="15"
+							y1="0"
+							x2="15"
+							y2="7.5"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#0E9CED" />
+							<stop offset="1" stopColor="#0F6292" />
+						</linearGradient>
+						<linearGradient
+							id="paint1_linear_3214_9611"
+							x1="4.2"
+							y1="10.5602"
+							x2="4.2"
+							y2="17.2802"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#0E9CED" />
+							<stop offset="1" stopColor="#0F6292" />
+						</linearGradient>
+						<linearGradient
+							id="paint2_linear_3214_9611"
+							x1="4.08"
+							y1="20.6405"
+							x2="4.08"
+							y2="28.8005"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#0E9CED" />
+							<stop offset="1" stopColor="#0F6292" />
+						</linearGradient>
+						<linearGradient
+							id="paint3_linear_3214_9611"
+							x1="14.881"
+							y1="10.5602"
+							x2="14.881"
+							y2="17.2802"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#0E9CED" />
+							<stop offset="1" stopColor="#0F6292" />
+						</linearGradient>
+						<linearGradient
+							id="paint4_linear_3214_9611"
+							x1="14.785"
+							y1="20.6405"
+							x2="14.785"
+							y2="28.8005"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#0E9CED" />
+							<stop offset="1" stopColor="#0F6292" />
+						</linearGradient>
+						<linearGradient
+							id="paint5_linear_3214_9611"
+							x1="25.8001"
+							y1="10.5602"
+							x2="25.8001"
+							y2="17.2802"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#0E9CED" />
+							<stop offset="1" stopColor="#0F6292" />
+						</linearGradient>
+						<linearGradient
+							id="paint6_linear_3214_9611"
+							x1="25.6801"
+							y1="20.6405"
+							x2="25.6801"
+							y2="28.8005"
+							gradientUnits="userSpaceOnUse"
+						>
+							<stop stopColor="#0E9CED" />
+							<stop offset="1" stopColor="#0F6292" />
+						</linearGradient>
+					</defs>
 				</IconHelper>
 			),
 		},
