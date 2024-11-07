@@ -15,7 +15,7 @@ export function IconsSimpleEditor({
 	options = [],
 	selected,
 	onChange,
-	withBackground,
+	withBackground = false,
 	multipleValueType = SimpleEditorMultipleValueType.SpaceSeparated,
 	multiSelect = false,
 	multiSelectWithControl = false,
@@ -167,7 +167,7 @@ export function IconsSimpleEditor({
 							gridTemplateColumns: `repeat(${gridDimensions.columns}, 1fr)`,
 							gap: '8px',
 							width: '100%',
-							height: `${gridDimensions.rows * 32}px`,
+							height: `${gridDimensions.rows * 40}px`,
 						}
 					: undefined
 			}

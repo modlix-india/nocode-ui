@@ -68,6 +68,7 @@ export function TypographyEditor({
 						properties={properties}
 						editorDef={{
 							type: SimpleEditorType.Icons,
+							withBackground: true,
 							iconButtonsBackground: true,
 							Options: [
 								{
@@ -330,6 +331,7 @@ export function TypographyEditor({
 						editorDef={{
 							type: SimpleEditorType.Icons,
 							multiSelect: false,
+							withBackground: true,
 							iconButtonsBackground: true,
 							Options: [
 								{
@@ -417,6 +419,7 @@ export function TypographyEditor({
 						editorDef={{
 							type: SimpleEditorType.Icons,
 							multiSelect: false,
+							withBackground: true,
 							iconButtonsBackground: true,
 							Options: [
 								{
@@ -505,6 +508,7 @@ export function TypographyEditor({
 						editorDef={{
 							type: SimpleEditorType.Icons,
 							multiSelect: false,
+							withBackground: true,
 							iconButtonsBackground: true,
 							Options: [
 								{
@@ -702,6 +706,7 @@ export function TypographyEditor({
 					properties={properties}
 					editorDef={{
 						type: SimpleEditorType.Icons,
+						withBackground: true,
 						iconButtonsBackground: true,
 						Options: [
 							{
@@ -777,6 +782,7 @@ export function TypographyEditor({
 						properties={properties}
 						editorDef={{
 							type: SimpleEditorType.Icons,
+							withBackground: true,
 							iconButtonsBackground: false,
 							Options: [
 								{
@@ -826,6 +832,7 @@ export function TypographyEditor({
 						properties={properties}
 						editorDef={{
 							type: SimpleEditorType.Icons,
+							withBackground: true,
 							iconButtonsBackground: false,
 							Options: [
 								{
@@ -884,6 +891,7 @@ export function TypographyEditor({
 					editorDef={{
 						type: SimpleEditorType.Icons,
 						multiSelect: true,
+						withBackground: true,
 						iconButtonsBackground: false,
 						Options: [
 							{

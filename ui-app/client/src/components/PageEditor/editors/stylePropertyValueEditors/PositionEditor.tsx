@@ -337,6 +337,7 @@ export function PositionEditor({
 					properties={properties}
 					editorDef={{
 						type: SimpleEditorType.Icons,
+						withBackground: true,
 						multiSelect: false,
 						iconButtonsBackground: true,
 						Options: [
@@ -465,6 +466,7 @@ export function PositionEditor({
 					properties={properties}
 					editorDef={{
 						type: SimpleEditorType.Icons,
+						withBackground: true,
 						multiSelect: false,
 						iconButtonsBackground: true,
 						Options: [
