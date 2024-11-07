@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentProperty } from '../../../../../types/common';
 import { StyleEditorsProps, extractValue, valuesChangedOnlyValues } from '../simpleEditors';
-import { IconOptions, IconsSimpleEditor } from '../simpleEditors/IconsSimpleEditor';
+import { iconButtonOptions, IconsSimpleEditor } from '../simpleEditors/IconsSimpleEditor';
 import { PixelSize } from '../simpleEditors/SizeSliders';
 
 const LABELS: Record<string, string[]> = {
@@ -11,7 +11,7 @@ const LABELS: Record<string, string[]> = {
 	'4': ['Top', 'Right', 'Bottom', 'Left'],
 };
 
-const FOUR_OPTIONS: IconOptions = [
+const FOUR_OPTIONS = [
 	{
 		name: '1',
 		description: 'Top Right Bottom Left',

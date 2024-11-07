@@ -69,7 +69,7 @@ export function TypographyEditor({
 						editorDef={{
 							type: SimpleEditorType.Icons,
 							iconButtonsBackground: true,
-							iconButtonOptions: [
+							Options: [
 								{
 									name: 'solid',
 									description: 'Text Decoration Style : Solid',
@@ -331,7 +331,7 @@ export function TypographyEditor({
 							type: SimpleEditorType.Icons,
 							multiSelect: false,
 							iconButtonsBackground: true,
-							iconButtonOptions: [
+							Options: [
 								{
 									name: '',
 									description: 'Default',
@@ -418,7 +418,7 @@ export function TypographyEditor({
 							type: SimpleEditorType.Icons,
 							multiSelect: false,
 							iconButtonsBackground: true,
-							iconButtonOptions: [
+							Options: [
 								{
 									name: '',
 									description: 'Default',
@@ -506,7 +506,7 @@ export function TypographyEditor({
 							type: SimpleEditorType.Icons,
 							multiSelect: false,
 							iconButtonsBackground: true,
-							iconButtonOptions: [
+							Options: [
 								{
 									name: '',
 									description: 'Default',
@@ -703,7 +703,7 @@ export function TypographyEditor({
 					editorDef={{
 						type: SimpleEditorType.Icons,
 						iconButtonsBackground: true,
-						iconButtonOptions: [
+						Options: [
 							{
 								name: 'left',
 								icon: (
@@ -778,7 +778,7 @@ export function TypographyEditor({
 						editorDef={{
 							type: SimpleEditorType.Icons,
 							iconButtonsBackground: false,
-							iconButtonOptions: [
+							Options: [
 								{
 									name: 'normal',
 									description: 'Normal',
@@ -827,7 +827,7 @@ export function TypographyEditor({
 						editorDef={{
 							type: SimpleEditorType.Icons,
 							iconButtonsBackground: false,
-							iconButtonOptions: [
+							Options: [
 								{
 									name: 'bold',
 									description: 'Bold',
@@ -885,7 +885,7 @@ export function TypographyEditor({
 						type: SimpleEditorType.Icons,
 						multiSelect: true,
 						iconButtonsBackground: false,
-						iconButtonOptions: [
+						Options: [
 							{
 								name: 'underline',
 								description: 'Text Decoration Line : Underline',

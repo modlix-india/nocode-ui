@@ -1115,6 +1115,7 @@ export default function GridStyle({
 
 		${PREFIX} ._simpleEditorIcons._bground ._eachIcon:hover,
 		${PREFIX} ._simpleEditorIcons._bground ._eachIcon._active {
+
 			background-color: #FFF;
 			box-shadow: 0px 2px 4px 0px #0000001A;
 		}

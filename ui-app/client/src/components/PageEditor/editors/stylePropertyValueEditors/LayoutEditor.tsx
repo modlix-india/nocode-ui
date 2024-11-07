@@ -2529,12 +2529,12 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 				}}
 			/>
 			<div className="_combineEditors">
-				<div className="_combineEditorLabel">Flex</div>
+				<div className="_combineEditors">Flex</div>
 
 				<EachSimpleEditor
 					selectedComponentsList={selectedComponentsList}
 					defPath={defPath}
-					className={'_simpleEditor'}
+					className={'_combineEditors'}
 					locationHistory={locationHistory}
 					pageExtractor={pageExtractor}
 					subComponentName={subComponentName}
@@ -2555,7 +2555,7 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 				/>
 			</div>
 
-			<EachSimpleEditor
+			{/* <EachSimpleEditor
 				selectedComponentsList={selectedComponentsList}
 				defPath={defPath}
 				className={'_simpleEditor'}
@@ -2573,7 +2573,8 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 				properties={properties}
 				editorDef={{ type: SimpleEditorType.Text }}
 				relatedProps={flexRelatedProps}
-			/>
+			/> */}
+
 			<div className="_combineEditors">
 				<div className="_combineEditors">Grow</div>
 				<EachSimpleEditor
@@ -2618,8 +2619,28 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 					relatedProps={flexRelatedProps}
 				/>
 			</div>
-			{/* <div className="_combineEditors"> */}
-			<div className="_combineEditors">Basis</div>
+			<div className="_combineEditors">
+				<div className="_combineEditors">Basis</div>
+				<EachSimpleEditor
+					selectedComponentsList={selectedComponentsList}
+					defPath={defPath}
+					className={'_simpleEditor'}
+					locationHistory={locationHistory}
+					pageExtractor={pageExtractor}
+					subComponentName={subComponentName}
+					pseudoState={pseudoState}
+					prop="flexBasis"
+					placeholder="Flex Basis"
+					iterateProps={iterateProps}
+					selectorPref={selectorPref}
+					styleProps={styleProps}
+					selectedComponent={selectedComponent}
+					saveStyle={saveStyle}
+					properties={properties}
+					editorDef={{ type: SimpleEditorType.PixelSize }}
+					relatedProps={flexRelatedProps}
+				/>
+			</div>
 			<EachSimpleEditor
 				selectedComponentsList={selectedComponentsList}
 				defPath={defPath}
@@ -2643,31 +2664,12 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 				relatedProps={flexRelatedProps}
 			/>
 			{/* </div> */}
-			<EachSimpleEditor
-				selectedComponentsList={selectedComponentsList}
-				defPath={defPath}
-				className={'_simpleEditor'}
-				locationHistory={locationHistory}
-				pageExtractor={pageExtractor}
-				subComponentName={subComponentName}
-				pseudoState={pseudoState}
-				prop="flexBasis"
-				placeholder="Flex Basis"
-				iterateProps={iterateProps}
-				selectorPref={selectorPref}
-				styleProps={styleProps}
-				selectedComponent={selectedComponent}
-				saveStyle={saveStyle}
-				properties={properties}
-				editorDef={{ type: SimpleEditorType.PixelSize }}
-				relatedProps={flexRelatedProps}
-			/>
 
-			<div className="_combineEditors">Flow</div>
+			{/* <div className="_combineEditors">Flow</div>
 			<EachSimpleEditor
 				selectedComponentsList={selectedComponentsList}
 				defPath={defPath}
-				className={'_simpleEditor'}
+				className={'_combineEditors'}
 				locationHistory={locationHistory}
 				pageExtractor={pageExtractor}
 				subComponentName={subComponentName}
@@ -2682,8 +2684,9 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 				properties={properties}
 				editorDef={{ type: SimpleEditorType.Text }}
 				relatedProps={flexFlowRelatedProps}
-			/>
-			<div className="_combineEditors">Direction</div>
+			/> */}
+
+			<div className="_combineEditors">Flow Direction</div>
 			<EachSimpleEditor
 				selectedComponentsList={selectedComponentsList}
 				defPath={defPath}
@@ -2754,7 +2757,7 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 					],
 				}}
 			/>
-			<div className="_combineEditors">Wrap</div>
+			<div className="_combineEditors">Flow Wrap</div>
 			<EachSimpleEditor
 				selectedComponentsList={selectedComponentsList}
 				defPath={defPath}

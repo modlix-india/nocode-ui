@@ -9,10 +9,10 @@ interface IconOption {
 	viewBox?: string;
 	transform?: string;
 }
-export type IconOptions = Array<IconOption>;
+export type iconButtonOptions = Array<IconOption>;
 
 export function IconsSimpleEditor({
-	options,
+	options = [],
 	selected,
 	onChange,
 	withBackground,
@@ -22,8 +22,9 @@ export function IconsSimpleEditor({
 	exclusiveOptions,
 	combinationOptions,
 	visibleIconCount,
+	gridSize,
 }: Readonly<{
-	options: IconOptions;
+	options: iconButtonOptions;
 	selected: string | Array<string>;
 	onChange: (v: string | Array<string>) => void;
 	visibleIconCount?: number;
@@ -33,9 +34,10 @@ export function IconsSimpleEditor({
 	multiSelectWithControl?: boolean;
 	exclusiveOptions?: string[];
 	combinationOptions?: { condition: Array<string>; name: string | Array<string> }[];
+	gridSize?: string;
 }>) {
-	const [visibleIcons, setVisibleIcons] = useState<IconOptions>([]);
-	const [dropdownIcons, setDropdownIcons] = useState<IconOptions>([]);
+	const [visibleIcons, setVisibleIcons] = useState<iconButtonOptions>([]);
+	const [dropdownIcons, setDropdownIcons] = useState<iconButtonOptions>([]);
 
 	useEffect(() => {
 		if (!visibleIconCount || visibleIconCount >= options.length) {
@@ -88,7 +90,10 @@ export function IconsSimpleEditor({
 	}, [selected, multiSelect, multipleValueType]);
 
 	useEffect(() => {
-		if (!selected && options.length > 0) {
+		if (
+			(!selected || selected === '' || (Array.isArray(selected) && selected.length === 0)) &&
+			options?.length > 0
+		) {
 			onChange(options[0].name);
 		}
 	}, []);
@@ -146,78 +151,130 @@ export function IconsSimpleEditor({
 		setIsDropdownOpen(!isDropdownOpen);
 	};
 
+	const gridDimensions = useMemo(() => {
+		if (!gridSize) return null;
+		const [rows, columns] = gridSize.split(' ').map(Number);
+		return { rows, columns };
+	}, [gridSize]);
+
 	return (
-		<div className={`_simpleEditorIcons ${withBackground ? '_bground' : ''}`}>
-			{visibleIcons.map((e, i) => {
-				const activeClass = selection.has(e.name) ? '_active' : '';
-				return (
-					<button
-						key={e.name}
-						className={`_eachIcon ${activeClass}`}
-						onClick={ev => handleSelection(ev, e)}
-						title={e.description}
-					>
-						<svg
-							width={e.width ?? '32'}
-							height={e.height ?? '32'}
-							viewBox={
-								e.viewBox ? e.viewBox : `0 0 ${e.width ?? '32'} ${e.height ?? '32'}`
-							}
-							fill="none"
-							className={activeClass}
-							transform={e.transform}
+		<div
+			className={`_simpleEditorIcons ${withBackground ? '_bground' : ''}`}
+			style={
+				gridDimensions
+					? {
+							display: 'grid',
+							gridTemplateColumns: `repeat(${gridDimensions.columns}, 1fr)`,
+							gap: '8px',
+							width: '100%',
+							height: `${gridDimensions.rows * 32}px`,
+						}
+					: undefined
+			}
+		>
+			{gridDimensions ? (
+				options?.map((e, i) => {
+					const activeClass = selection.has(e.name) ? '_active' : '';
+					return (
+						<button
+							key={e.name}
+							className={`_eachIcon ${activeClass}`}
+							onClick={ev => handleSelection(ev, e)}
+							title={e.description}
 						>
-							{e.icon}
-						</svg>
-					</button>
-				);
-			})}
-			{dropdownIcons.length > 0 && (
-				<div className="_iconDropdown">
-					<label
-						className={`_dropdownToggle ${isDropdownOpen ? '_open' : ''}`}
-						onClick={toggleDropdown}
-					>
-						More
-						<svg width="8" height="4" viewBox="0 0 8 4">
-							<path
-								d="M4.56629 3.80476C4.56548 3.80476 4.5647 3.80505 4.56408 3.80556C4.25163 4.06508 3.74506 4.06481 3.43301 3.80476L0.234347 1.13914C0.00444266 0.947547 -0.0630292 0.662241 0.0619187 0.412339C0.186867 0.162436 0.476746 5.68513e-09 0.80161 9.5591e-09L7.19894 8.58465e-08C7.52131 8.96907e-08 7.81369 0.162437 7.93863 0.412339C8.06358 0.662241 7.99361 0.947547 7.76621 1.13914L4.5685 3.80396C4.56788 3.80448 4.5671 3.80476 4.56629 3.80476Z"
-								fill="#F0F0F0"
-							/>
-						</svg>
-					</label>
-					{isDropdownOpen && (
-						<div className="_dropdownContent">
-							{dropdownIcons.map((e, i) => {
-								const activeClass = selection.has(e.name) ? '_active' : '';
-								return (
-									<button
-										key={e.name}
-										className={`_eachIcon ${activeClass}`}
-										onClick={ev => handleSelection(ev, e)}
-										title={e.description}
-									>
-										<svg
-											width={e.width ?? '32'}
-											height={e.height ?? '32'}
-											viewBox={
-												e.viewBox
-													? e.viewBox
-													: `0 0 ${e.width ?? '32'} ${e.height ?? '32'}`
-											}
-											fill="none"
-											className={activeClass}
-											transform={e.transform}
-										>
-											{e.icon}
-										</svg>
-										<span className="_iconName">{e.name}</span>
-									</button>
-								);
-							})}
+							<svg
+								width={e.width ?? '32'}
+								height={e.height ?? '32'}
+								viewBox={
+									e.viewBox
+										? e.viewBox
+										: `0 0 ${e.width ?? '32'} ${e.height ?? '32'}`
+								}
+								fill="none"
+								className={activeClass}
+								transform={e.transform}
+							>
+								{e.icon}
+							</svg>
+						</button>
+					);
+				})
+			) : (
+				<>
+					{visibleIcons?.map((e, i) => {
+						const activeClass = selection.has(e.name) ? '_active' : '';
+						return (
+							<button
+								key={e.name}
+								className={`_eachIcon ${activeClass}`}
+								onClick={ev => handleSelection(ev, e)}
+								title={e.description}
+							>
+								<svg
+									width={e.width ?? '32'}
+									height={e.height ?? '32'}
+									viewBox={
+										e.viewBox
+											? e.viewBox
+											: `0 0 ${e.width ?? '32'} ${e.height ?? '32'}`
+									}
+									fill="none"
+									className={activeClass}
+									transform={e.transform}
+								>
+									{e.icon}
+								</svg>
+							</button>
+						);
+					})}
+					{dropdownIcons.length > 0 && (
+						<div className="_iconDropdown">
+							<label
+								className={`_dropdownToggle ${isDropdownOpen ? '_open' : ''}`}
+								onClick={toggleDropdown}
+							>
+								More
+								<svg width="8" height="4" viewBox="0 0 8 4">
+									<path
+										d="M4.56629 3.80476C4.56548 3.80476 4.5647 3.80505 4.56408 3.80556C4.25163 4.06508 3.74506 4.06481 3.43301 3.80476L0.234347 1.13914C0.00444266 0.947547 -0.0630292 0.662241 0.0619187 0.412339C0.186867 0.162436 0.476746 5.68513e-09 0.80161 9.5591e-09L7.19894 8.58465e-08C7.52131 8.96907e-08 7.81369 0.162437 7.93863 0.412339C8.06358 0.662241 7.99361 0.947547 7.76621 1.13914L4.5685 3.80396C4.56788 3.80448 4.5671 3.80476 4.56629 3.80476Z"
+										fill="#F0F0F0"
+									/>
+								</svg>
+							</label>
+							{isDropdownOpen && (
+								<div className="_dropdownContent">
+									{dropdownIcons.map((e, i) => {
+										const activeClass = selection.has(e.name) ? '_active' : '';
+										return (
+											<button
+												key={e.name}
+												className={`_eachIcon ${activeClass}`}
+												onClick={ev => handleSelection(ev, e)}
+												title={e.description}
+											>
+												<svg
+													width={e.width ?? '32'}
+													height={e.height ?? '32'}
+													viewBox={
+														e.viewBox
+															? e.viewBox
+															: `0 0 ${e.width ?? '32'} ${e.height ?? '32'}`
+													}
+													fill="none"
+													className={activeClass}
+													transform={e.transform}
+												>
+													{e.icon}
+												</svg>
+												<span className="_iconName">{e.name}</span>
+											</button>
+										);
+									})}
+								</div>
+							)}
 						</div>
 					)}
-				</div>
+				</>
 			)}
 		</div>
 	);

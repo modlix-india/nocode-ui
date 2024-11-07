@@ -14,6 +14,7 @@ import { FunctionDetail, ManyFunctionsEditor } from './simpleEditors/ManyFunctio
 import { CommonColorPickerPropertyEditor } from '../../../../commonComponents/CommonColorPicker';
 import { ComponentProperty } from '../../../../types/common';
 import { color, max } from 'd3';
+import { ButtonBar } from './simpleEditors/ButtonBar';
 
 type BackgroundImage = {
 	type: 'URL' | 'Gradient';
@@ -167,9 +168,9 @@ const BACKGROUND_PROPS = [
 
 export function BackgroundEditor(props: Readonly<StyleEditorsProps>) {
 	if (props.isDetailStyleEditor) {
-		return <BackgroundStandardEditor {...props} />;
+		return <BackgroundDetailedEditor {...props} />;
 	}
-	return <BackgroundDetailedEditor {...props} />;
+	return <BackgroundStandardEditor {...props} />;
 }
 
 function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
@@ -247,7 +248,7 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 	if (isAdvanced) {
 		return (
 			<div className="_simpleEditor _warning">
-				<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 32 32">
+				<svg width="14" height="14" viewBox="0 0 32 32">
 					<g
 						id="Group_75"
 						data-name="Group 75"
@@ -302,7 +303,28 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 		<div key={`background_${index}`} className="_eachBackgroundEditor">
 			<div className="_combineEditors">
 				<div className="_layerControls" style={{ display: 'flex' }}>
-					<IconsSimpleEditor
+					<ButtonBar
+						value={img.type}
+						onChange={v => {
+							const newImages = duplicate(backgroundImages);
+							newImages[index].type = v as 'URL' | 'Gradient';
+							updateBackgroundImages(newImages);
+						}}
+						options={[
+							{
+								name: 'URL',
+								displayName: 'URL',
+								description: 'URL',
+							},
+							{
+								name: 'Gradient',
+								displayName: 'Gradient',
+								description: 'Gradient',
+							},
+						]}
+					/>
+
+					{/* <IconsSimpleEditor
 						options={[
 							{
 								name: 'URL',
@@ -323,13 +345,7 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 								description: 'Gradient',
 								icon: (
 									<g transform="translate(5 5)">
-										<svg
-											width="24"
-											height="24"
-											viewBox="0 0 24 24"
-											fill="none"
-											xmlns="http://www.w3.org/2000/svg"
-										>
+										<svg width="24" height="24" viewBox="0 0 24 24">
 											<g filter="url(#filter0_d_3644_10515)">
 												<path
 													d="M4 11C4 6.58172 7.58172 3 12 3C16.4183 3 20 6.58172 20 11C20 15.4183 16.4183 19 12 19C7.58172 19 4 15.4183 4 11Z"
@@ -410,7 +426,7 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 							newImages[index].value = '';
 							updateBackgroundImages(newImages);
 						}}
-					/>
+					/> */}
 					<IconsSimpleEditor
 						options={[
 							{
@@ -466,7 +482,7 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 									<g transform="translate(9 9)">
 										<path
 											d="M3.93393 0.483984L3.74107 0.875H1.16964C0.695536 0.875 0.3125 1.26602 0.3125 1.75C0.3125 2.23398 0.695536 2.625 1.16964 2.625H11.4554C11.9295 2.625 12.3125 2.23398 12.3125 1.75C12.3125 1.26602 11.9295 0.875 11.4554 0.875H8.88393L8.69107 0.483984C8.54643 0.185938 8.24911 0 7.925 0H4.7C4.37589 0 4.07857 0.185938 3.93393 0.483984ZM11.4554 3.5H1.16964L1.7375 12.7695C1.78036 13.4613 2.34286 14 3.02054 14H9.60446C10.2821 14 10.8446 13.4613 10.8875 12.7695L11.4554 3.5Z"
-											fillOpacity="0.25"
+											fillOpacity="1"
 											strokeWidth="0"
 										/>
 									</g>
@@ -614,6 +630,7 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 							displayName: 'Size',
 							type: 'icons',
 							default: 'auto',
+							withBackground: true,
 							options: [
 								{
 									name: 'cover',
@@ -724,6 +741,7 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 							displayName: 'Repeat',
 							type: 'icons',
 							default: 'repeat',
+							withBackground: true,
 							options: [
 								{
 									name: 'repeat',
@@ -878,182 +896,184 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 						{
 							name: 'backgroundPosition',
 							displayName: 'Position',
-							type: 'dropdown',
-							dropdownOptions: [
-								{ name: 'left top', displayName: 'Left Top' },
-								{ name: 'center top', displayName: 'Center Top' },
-								{ name: 'right top', displayName: 'Right Top' },
-								{ name: 'left center', displayName: 'Left Center' },
-								{ name: 'center center', displayName: 'Center Center' },
-								{ name: 'right center', displayName: 'Right Center' },
-								{ name: 'left bottom', displayName: 'Left Bottom' },
-								{ name: 'center bottom', displayName: 'Center Bottom' },
-								{ name: 'right bottom', displayName: 'Right Bottom' },
-							],
-							// to shift to icons
-							// 	{
-							// 		name: 'left top',
-							// 		description: 'Left Top',
-							// 		icon: (
-							// 			<g transform="translate(9 9)">
-							// 				<rect
-							// 					x="1"
-							// 					y="1"
-							// 					width="12"
-							// 					height="12"
-							// 					stroke="#02B694"
-							// 					strokeWidth="1"
-							// 					style={{ fill: 'none' }}
-							// 				/>
-							// 				<path d="M2 2h4v4H2V2z" fill="#02B694" />
-							// 			</g>
-							// 		),
-							// 	},
-							// 	{
-							// 		name: 'center top',
-							// 		description: 'Center Top',
-							// 		icon: (
-							// 			<g transform="translate(9 9)">
-							// 				<rect
-							// 					x="1"
-							// 					y="1"
-							// 					width="12"
-							// 					height="12"
-							// 					style={{ fill: 'none' }}
-							// 					stroke="#02B694"
-							// 					strokeWidth="1"
-							// 				/>
-							// 				<path d="M5 2h4v4H5V2z" fill="#02B694" />
-							// 			</g>
-							// 		),
-							// 	},
-							// 	{
-							// 		name: 'right top',
-							// 		description: 'Right Top',
-							// 		icon: (
-							// 			<g transform="translate(9 9)">
-							// 				<rect
-							// 					x="1"
-							// 					y="1"
-							// 					width="12"
-							// 					height="12"
-							// 					style={{ fill: 'none' }}
-							// 					stroke="#02B694"
-							// 					strokeWidth="1"
-							// 				/>
-							// 				<path d="M8 2h4v4H8V2z" fill="#02B694" />
-							// 			</g>
-							// 		),
-							// 	},
-							// 	{
-							// 		name: 'left center',
-							// 		description: 'Left Center',
-							// 		icon: (
-							// 			<g transform="translate(9 9)">
-							// 				<rect
-							// 					x="1"
-							// 					y="1"
-							// 					width="12"
-							// 					height="12"
-							// 					style={{ fill: 'none' }}
-							// 					stroke="#02B694"
-							// 					strokeWidth="1"
-							// 				/>
-							// 				<path d="M2 5h4v4H2V5z" fill="#02B694" />
-							// 			</g>
-							// 		),
-							// 	},
-							// 	{
-							// 		name: 'center center',
-							// 		description: 'Center Center',
-							// 		icon: (
-							// 			<g transform="translate(9 9)">
-							// 				<rect
-							// 					x="1"
-							// 					y="1"
-							// 					width="12"
-							// 					height="12"
-							// 					style={{ fill: 'none' }}
-							// 					stroke="#02B694"
-							// 					strokeWidth="1"
-							// 				/>
-							// 				<path d="M5 5h4v4H5V5z" fill="#02B694" />
-							// 			</g>
-							// 		),
-							// 	},
-							// 	{
-							// 		name: 'right center',
-							// 		description: 'Right Center',
-							// 		icon: (
-							// 			<g transform="translate(9 9)">
-							// 				<rect
-							// 					x="1"
-							// 					y="1"
-							// 					width="12"
-							// 					height="12"
-							// 					style={{ fill: 'none' }}
-							// 					stroke="#02B694"
-							// 					strokeWidth="1"
-							// 				/>
-							// 				<path d="M8 5h4v4H8V5z" fill="#02B694" />
-							// 			</g>
-							// 		),
-							// 	},
-							// 	{
-							// 		name: 'left bottom',
-							// 		description: 'Left Bottom',
-							// 		icon: (
-							// 			<g transform="translate(9 9)">
-							// 				<rect
-							// 					x="1"
-							// 					y="1"
-							// 					width="12"
-							// 					height="12"
-							// 					style={{ fill: 'none' }}
-							// 					stroke="#02B694"
-							// 					strokeWidth="1"
-							// 				/>
-							// 				<path d="M2 8h4v4H2V8z" fill="#02B694" />
-							// 			</g>
-							// 		),
-							// 	},
-							// 	{
-							// 		name: 'center bottom',
-							// 		description: 'Center Bottom',
-							// 		icon: (
-							// 			<g transform="translate(9 9)">
-							// 				<rect
-							// 					x="1"
-							// 					y="1"
-							// 					width="12"
-							// 					height="12"
-							// 					style={{ fill: 'none' }}
-							// 					stroke="#02B694"
-							// 					strokeWidth="1"
-							// 				/>
-							// 				<path d="M5 8h4v4H5V8z" fill="#02B694" />
-							// 			</g>
-							// 		),
-							// 	},
-							// 	{
-							// 		name: 'right bottom',
-							// 		description: 'Right Bottom',
-							// 		icon: (
-							// 			<g transform="translate(9 9)">
-							// 				<rect
-							// 					x="1"
-							// 					y="1"
-							// 					width="12"
-							// 					height="12"
-							// 					style={{ fill: 'none' }}
-							// 					stroke="#02B694"
-							// 					strokeWidth="1"
-							// 				/>
-							// 				<path d="M8 8h4v4H8V8z" fill="#02B694" />
-							// 			</g>
-							// 		),
-							// 	},
+							type: 'icons',
+							withBackground: true,
+							gridSize: '3 3',
+							// dropdownOptions: [
+							// 	{ name: 'left top', displayName: 'Left Top' },
+							// 	{ name: 'center top', displayName: 'Center Top' },
+							// 	{ name: 'right top', displayName: 'Right Top' },
+							// 	{ name: 'left center', displayName: 'Left Center' },
+							// 	{ name: 'center center', displayName: 'Center Center' },
+							// 	{ name: 'right center', displayName: 'Right Center' },
+							// 	{ name: 'left bottom', displayName: 'Left Bottom' },
+							// 	{ name: 'center bottom', displayName: 'Center Bottom' },
+							// 	{ name: 'right bottom', displayName: 'Right Bottom' },
 							// ],
+							options: [
+								{
+									name: 'left top',
+									description: 'Left Top',
+									icon: (
+										<g transform="translate(9 9)">
+											<rect
+												x="1"
+												y="1"
+												width="12"
+												height="12"
+												stroke="#02B694"
+												strokeWidth="1"
+												style={{ fill: 'none' }}
+											/>
+											<path d="M2 2h4v4H2V2z" fill="#02B694" />
+										</g>
+									),
+								},
+								{
+									name: 'center top',
+									description: 'Center Top',
+									icon: (
+										<g transform="translate(9 9)">
+											<rect
+												x="1"
+												y="1"
+												width="12"
+												height="12"
+												style={{ fill: 'none' }}
+												stroke="#02B694"
+												strokeWidth="1"
+											/>
+											<path d="M5 2h4v4H5V2z" fill="#02B694" />
+										</g>
+									),
+								},
+								{
+									name: 'right top',
+									description: 'Right Top',
+									icon: (
+										<g transform="translate(9 9)">
+											<rect
+												x="1"
+												y="1"
+												width="12"
+												height="12"
+												style={{ fill: 'none' }}
+												stroke="#02B694"
+												strokeWidth="1"
+											/>
+											<path d="M8 2h4v4H8V2z" fill="#02B694" />
+										</g>
+									),
+								},
+								{
+									name: 'left center',
+									description: 'Left Center',
+									icon: (
+										<g transform="translate(9 9)">
+											<rect
+												x="1"
+												y="1"
+												width="12"
+												height="12"
+												style={{ fill: 'none' }}
+												stroke="#02B694"
+												strokeWidth="1"
+											/>
+											<path d="M2 5h4v4H2V5z" fill="#02B694" />
+										</g>
+									),
+								},
+								{
+									name: 'center center',
+									description: 'Center Center',
+									icon: (
+										<g transform="translate(9 9)">
+											<rect
+												x="1"
+												y="1"
+												width="12"
+												height="12"
+												style={{ fill: 'none' }}
+												stroke="#02B694"
+												strokeWidth="1"
+											/>
+											<path d="M5 5h4v4H5V5z" fill="#02B694" />
+										</g>
+									),
+								},
+								{
+									name: 'right center',
+									description: 'Right Center',
+									icon: (
+										<g transform="translate(9 9)">
+											<rect
+												x="1"
+												y="1"
+												width="12"
+												height="12"
+												style={{ fill: 'none' }}
+												stroke="#02B694"
+												strokeWidth="1"
+											/>
+											<path d="M8 5h4v4H8V5z" fill="#02B694" />
+										</g>
+									),
+								},
+								{
+									name: 'left bottom',
+									description: 'Left Bottom',
+									icon: (
+										<g transform="translate(9 9)">
+											<rect
+												x="1"
+												y="1"
+												width="12"
+												height="12"
+												style={{ fill: 'none' }}
+												stroke="#02B694"
+												strokeWidth="1"
+											/>
+											<path d="M2 8h4v4H2V8z" fill="#02B694" />
+										</g>
+									),
+								},
+								{
+									name: 'center bottom',
+									description: 'Center Bottom',
+									icon: (
+										<g transform="translate(9 9)">
+											<rect
+												x="1"
+												y="1"
+												width="12"
+												height="12"
+												style={{ fill: 'none' }}
+												stroke="#02B694"
+												strokeWidth="1"
+											/>
+											<path d="M5 8h4v4H5V8z" fill="#02B694" />
+										</g>
+									),
+								},
+								{
+									name: 'right bottom',
+									description: 'Right Bottom',
+									icon: (
+										<g transform="translate(9 9)">
+											<rect
+												x="1"
+												y="1"
+												width="12"
+												height="12"
+												style={{ fill: 'none' }}
+												stroke="#02B694"
+												strokeWidth="1"
+											/>
+											<path d="M8 8h4v4H8V8z" fill="#02B694" />
+										</g>
+									),
+								},
+							],
 							default: 'left top',
 						},
 

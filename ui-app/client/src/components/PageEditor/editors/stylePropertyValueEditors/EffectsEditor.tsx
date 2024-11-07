@@ -1206,7 +1206,7 @@ function TransformEditor({
 					editorDef={{
 						type: SimpleEditorType.Icons,
 						iconButtonsBackground: true,
-						iconButtonOptions: [
+						Options: [
 							{
 								name: 'flat',
 								description: 'Transform Style : Flat',
@@ -1576,7 +1576,7 @@ function OutlineEditor({
 					editorDef={{
 						type: SimpleEditorType.Icons,
 						iconButtonsBackground: true,
-						iconButtonOptions: [
+						Options: [
 							{
 								name: 'solid',
 								description: 'Outline Style : Solid',

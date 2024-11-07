@@ -339,7 +339,7 @@ export function PositionEditor({
 						type: SimpleEditorType.Icons,
 						multiSelect: false,
 						iconButtonsBackground: true,
-						iconButtonOptions: [
+						Options: [
 							{
 								name: '',
 								description: 'Float : None',
@@ -467,7 +467,7 @@ export function PositionEditor({
 						type: SimpleEditorType.Icons,
 						multiSelect: false,
 						iconButtonsBackground: true,
-						iconButtonOptions: [
+						Options: [
 							{
 								name: '',
 								description: 'Clear : None',

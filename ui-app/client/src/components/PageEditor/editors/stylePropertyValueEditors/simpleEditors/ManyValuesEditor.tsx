@@ -1,6 +1,6 @@
 import React from 'react';
 import { AngleSize, PixelSize, TimeSize, UnitOption } from './SizeSliders';
-import { IconOptions, IconsSimpleEditor } from './IconsSimpleEditor';
+import { iconButtonOptions, IconsSimpleEditor } from './IconsSimpleEditor';
 import { duplicate } from '@fincity/kirun-js';
 import { Dropdown } from './Dropdown';
 import { CommonColorPickerPropertyEditor } from '../../../../../commonComponents/CommonColorPicker';
@@ -23,10 +23,10 @@ export interface PropertyDetail {
 	optionOverride?: Array<UnitOption>;
 	dropdownOptions?: Array<{ name: string; displayName: string }>;
 	numberOptions?: { min: number; max: number; step: number };
-	options?: IconOptions;
+	options?: iconButtonOptions;
 	relatedProps?: RelatedProps;
-	// onChange?: (value: string) => void;
-	// onChange?: (value: string, allValues: { [key: string]: string[] }) => void;
+	gridSize?: string;
+	withBackground?: boolean;
 }
 
 export function ManyValuesEditor({
@@ -38,7 +38,8 @@ export function ManyValuesEditor({
 	groupTitle,
 	showNewGroup,
 	relatedProps,
-	// splitOptions,
+	gridSize,
+	withBackground,
 }: {
 	values: { prop: string; value: string }[];
 	newValueGroupTitle?: string;
@@ -48,11 +49,8 @@ export function ManyValuesEditor({
 	groupTitle?: string;
 	showNewGroup?: boolean;
 	relatedProps?: RelatedProps;
-	// splitOptions?: {
-	// 	splitBy: 'comma' | 'custom';
-	// 	customRegex?: string;
-	// 	defaultValue?: 'comma';
-	// };
+	gridSize?: string;
+	withBackground?: boolean;
 }) {
 	const props: { [key: string]: Array<string> } = {};
 	let max = 0;
@@ -71,9 +69,6 @@ export function ManyValuesEditor({
 				newProps[def.name].push(def.default);
 			}
 		}
-		// if (def.onChange) {
-		// 	def.onChange(v, newProps);
-		// }
 		for (let eachDef of propDefinitions) {
 			if (newProps[eachDef.name].length && newProps[eachDef.name].length < curMax) {
 				for (let i = newProps[eachDef.name].length; i < curMax; i++) {
@@ -139,15 +134,7 @@ export function ManyValuesEditor({
 									description: 'Delete this animation',
 									width: '15',
 									height: '15',
-									icon: (
-										<>
-											{' '}
-											<path
-												d="M3.93393 0.483984L3.74107 0.875H1.16964C0.695536 0.875 0.3125 1.26602 0.3125 1.75C0.3125 2.23398 0.695536 2.625 1.16964 2.625H11.4554C11.9295 2.625 12.3125 2.23398 12.3125 1.75C12.3125 1.26602 11.9295 0.875 11.4554 0.875H8.88393L8.69107 0.483984C8.54643 0.185938 8.24911 0 7.925 0H4.7C4.37589 0 4.07857 0.185938 3.93393 0.483984ZM11.4554 3.5H1.16964L1.7375 12.7695C1.78036 13.4613 2.34286 14 3.02054 14H9.60446C10.2821 14 10.8446 13.4613 10.8875 12.7695L11.4554 3.5Z"
-												strokeWidth="0"
-											/>
-										</>
-									),
+									icon: 'd="M3.93393 0.483984L3.74107 0.875H1.16964C0.695536 0.875 0.3125 1.26602 0.3125 1.75C0.3125 2.23398 0.695536 2.625 1.16964 2.625H11.4554C11.9295 2.625 12.3125 2.23398 12.3125 1.75C12.3125 1.26602 11.9295 0.875 11.4554 0.875H8.88393L8.69107 0.483984C8.54643 0.185938 8.24911 0 7.925 0H4.7C4.37589 0 4.07857 0.185938 3.93393 0.483984ZM11.4554 3.5H1.16964L1.7375 12.7695C1.78036 13.4613 2.34286 14 3.02054 14H9.60446C10.2821 14 10.8446 13.4613 10.8875 12.7695L11.4554 3.5Z',
 								},
 							]}
 						/>
@@ -212,6 +199,8 @@ export function ManyValuesEditor({
 									selected={props[def.name][i]}
 									onChange={v => valueChanged(def, i, max, v as string)}
 									options={def.options ?? []}
+									gridSize={def.gridSize}
+									withBackground={def.withBackground}
 								/>
 							);
 						} else if (def.type === 'color') {
