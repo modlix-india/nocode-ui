@@ -969,8 +969,10 @@ export default function GridStyle({
 			background-color: transparent;
 		}
 
+		${PREFIX} ._simpleEditorInputWithIcon,
 		${PREFIX} ._simpleEditorSelect,
 		${PREFIX} ._simpleEditorInput{
+			width: 100%;
 			min-height: 35px;
 			min-width: 35px;
 			font-family: Inter;
@@ -986,6 +988,10 @@ export default function GridStyle({
 			outline: none;
 		}
 
+		${PREFIX} ._simpleEditorInputWithIcon {
+			padding-left: 30px;
+		}
+			
 		${PREFIX} ._simpleEditorSelect {
 			text-transform: uppercase;
 			position: relative;
@@ -1379,12 +1385,9 @@ export default function GridStyle({
             position: relative;
             display: flex;
             align-items: center;
-        }
+		}
 
-        ${PREFIX} ._simpleEditorInput {
-            width: 100%;
-            padding-left: 30px; /* Make room for the icon */
-        }
+		
 
 		${PREFIX} ._eachBackgroundEditor {
 			width: 100%;
@@ -1646,11 +1649,7 @@ export default function GridStyle({
 			flex: 1.5;
 		}
 
-		${PREFIX} ._combineEditors ._simpleEditorInput,
-		${PREFIX} ._combineEditors ._simpleEditorSelect {
-			padding: 8px;
-			width: 100%;
-		}
+		
 
 		${PREFIX} ._combineEditors ._combineEditors {
 			padding: 0;
