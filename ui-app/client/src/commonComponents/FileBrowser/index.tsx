@@ -50,6 +50,8 @@ const ICON_SET = new Map<string, Set<string>>([
 
 const FOLDER_SVG = 'api/files/static/file/SYSTEM/icons/folder.svg';
 
+const STATIC_FILE_API_PREFIX = 'api/files/static/file/';
+const STATIC_FILE_API_PREFIX_LENGTH = STATIC_FILE_API_PREFIX.length;
 interface FileBrowserProps {
 	selectedFile: string;
 	onChange: (v: string, type: string, directory: boolean) => void;
@@ -118,6 +120,21 @@ export async function imageURLForFile(
 			.get(url, { responseType: 'blob', headers })
 			.then(res => URL.createObjectURL(res.data));
 	}
+	if (window.cdnPrefix) {
+		let index = imgUrl.indexOf(STATIC_FILE_API_PREFIX);
+		if (index !== -1) {
+			let urlPart = imgUrl.substring(index + STATIC_FILE_API_PREFIX_LENGTH);
+			imgUrl = `https://${window.cdnPrefix}/`;
+			if (!window.cdnStripAPIPrefix) {
+				imgUrl += STATIC_FILE_API_PREFIX;
+			}
+			imgUrl += urlPart;
+
+			if (window.cdnReplacePlus) {
+				imgUrl = imgUrl.replace(/\+/g, '%20');
+			}
+		}
+	}
 
 	return imgUrl;
 }
@@ -147,7 +164,7 @@ export function FileBrowser({
 	cropToAspectRatio,
 	editOnUpload,
 	clientCode,
-}: FileBrowserProps) {
+}: Readonly<FileBrowserProps>) {
 	const [filter, setFilter] = useState('');
 	const [path, setPath] = useState(startLocation ?? '/');
 	const [files, setFiles] = useState<any>();
@@ -287,7 +304,7 @@ export function FileBrowser({
 					}
 
 					if (editOnUpload && RESIZABLE_EXT.has(extension ?? '')) {
-						var fr = new FileReader();
+						let fr = new FileReader();
 						fr.onload = function () {
 							if (!fr.result || typeof fr.result != 'string') return;
 							setFile(file);
