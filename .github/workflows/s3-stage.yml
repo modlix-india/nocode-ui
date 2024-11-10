@@ -16,7 +16,7 @@ jobs:
       - name: Setting up node
         uses: actions/setup-node@v4
         with:
-          node-version: 21.5.0
+          node-version: 21.7.3
       - name: Install Dependencies
         working-directory: ./ui-app/client
         run: npm i
