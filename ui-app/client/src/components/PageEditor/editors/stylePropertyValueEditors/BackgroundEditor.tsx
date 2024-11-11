@@ -13,7 +13,7 @@ import { ManyValuesEditor } from './simpleEditors/ManyValuesEditor';
 import { FunctionDetail, ManyFunctionsEditor } from './simpleEditors/ManyFunctionsEditor';
 import { CommonColorPickerPropertyEditor } from '../../../../commonComponents/CommonColorPicker';
 import { ComponentProperty } from '../../../../types/common';
-import { color, max } from 'd3';
+// import { color, index, max } from 'd3';
 import { ButtonBar } from './simpleEditors/ButtonBar';
 
 type BackgroundImage = {
@@ -332,16 +332,18 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 								width: '20',
 								height: '10',
 								icon: (
-									<g>
+									<g transform="translate(5 0)">
 										<path
 											d="M14.614,20v1.234H5V20Z"
 											transform="translate(30.424 -5) rotate(90)"
-											fillOpacity={canAddNewImage ? '0.25' : '0.1'}
+											strokeOpacity="0"
+											fillOpacity="1"
 										/>
 										<path
 											d="M14.614,20v1.234H5V20Z"
 											transform="translate(0 -15.81)"
-											fillOpacity={canAddNewImage ? '0.25' : '0.1'}
+											strokeOpacity="0"
+											fillOpacity="1"
 										/>
 									</g>
 								),
@@ -353,8 +355,9 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 									<g transform="translate(13 9)">
 										<path
 											d="M3.98268 13C3.71844 13 3.50481 12.7864 3.50481 12.5221V2.62474L1.46967 4.64582C1.28134 4.83134 0.980567 4.83134 0.795043 4.64301C0.60952 4.45467 0.60952 4.1539 0.797854 3.96838L3.64536 1.13774C3.73812 1.04497 3.85899 1 3.98268 1C4.10636 1 4.22723 1.04497 4.31999 1.13774L7.17031 3.96838C7.35864 4.1539 7.35864 4.45748 7.17312 4.64301C6.98759 4.83134 6.68401 4.83134 6.49849 4.64582L4.46054 2.62474V12.5221C4.46054 12.7836 4.24691 13 3.98268 13Z"
-											fillOpacity="0.25"
-											transform="translate(2,0)"
+											fillOpacity="1"
+											strokeOpacity="0"
+											transform="translate(5 0)"
 										/>
 									</g>
 								),
@@ -366,8 +369,9 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 									<g transform="translate(11 9)">
 										<path
 											d="M4.32643 1C4.06219 1 3.84856 1.21363 3.84856 1.47786V11.3753L1.81342 9.35418C1.62509 9.16866 1.32432 9.16866 1.13879 9.35699C0.95327 9.54533 0.95327 9.8461 1.1416 10.0316L3.98911 12.8623C4.08187 12.955 4.20274 13 4.32643 13C4.45011 13 4.57098 12.955 4.66374 12.8623L7.51406 10.0316C7.70239 9.8461 7.70239 9.54252 7.51687 9.35699C7.33134 9.16866 7.02776 9.16866 6.84224 9.35418L4.80429 11.3753V1.47786C4.80429 1.21644 4.59066 1 4.32643 1Z"
-											fillOpacity="0.25"
-											transform="translate(2,0)"
+											fillOpacity="1"
+											strokeOpacity="0"
+											transform="translate(2 0)"
 										/>
 									</g>
 								),
@@ -520,7 +524,6 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 							displayName: 'Color',
 							type: 'color',
 							default: '',
-							options: [],
 						},
 						{
 							name: 'backgroundSize',
@@ -623,14 +626,12 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 							displayName: 'Width',
 							type: 'pixel size',
 							default: '0px',
-							options: [],
 						},
 						{
 							name: 'backgroundHeight',
 							displayName: 'Height',
 							type: 'pixel size',
 							default: '0px',
-							options: [],
 						},
 
 						{
@@ -638,31 +639,23 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 							displayName: 'Repeat',
 							type: 'icons',
 							default: 'repeat',
+							gridSize: '2 3',
 							withBackground: true,
 							options: [
 								{
-									name: 'repeat',
-									description: 'Repeat both horizontally and vertically',
+									name: 'no-repeat',
+									description: 'No repeat',
 									icon: (
 										<g transform="translate(9 9)">
-											<rect width="14" height="14" rx="1" opacity={0} />
-											<path
-												d="M6 5.5C6 5.77614 5.77614 6 5.5 6H1.5C1.22386 6 1 5.77614 1 5.5V1.5C1 1.22386 1.22386 1 1.5 1H5.5C5.77614 1 6 1.22386 6 1.5V5.5Z"
-												fill="#02B694"
-												strokeOpacity={0}
+											<rect
+												width="14"
+												height="14"
+												rx="1"
+												opacity={0}
+												strokeOpacity={1}
 											/>
 											<path
-												d="M6 12.5C6 12.7761 5.77614 13 5.5 13H1.5C1.22386 13 1 12.7761 1 12.5V8.5C1 8.22386 1.22386 8 1.5 8H5.5C5.77614 8 6 8.22386 6 8.5V12.5Z"
-												fill="#02B694"
-												strokeOpacity={0}
-											/>
-											<path
-												d="M13 5.5C13 5.77614 12.7761 6 12.5 6H8.5C8.22386 6 8 5.77614 8 5.5V1.5C8 1.22386 8.22386 1 8.5 1H12.5C12.7761 1 13 1.22386 13 1.5V5.5Z"
-												fill="#02B694"
-												strokeOpacity={0}
-											/>
-											<path
-												d="M13 12.5C13 12.7761 12.7761 13 12.5 13H8.5C8.22386 13 8 12.7761 8 12.5V8.5C8 8.22386 8.22386 8 8.5 8H12.5C12.7761 8 13 8.22386 13 8.5V12.5Z"
+												d="M9 4.5C9.27614 4.5 9.5 4.72386 9.5 5V9C9.5 9.27614 9.27614 9.5 9 9.5H5C4.72386 9.5 4.5 9.27614 4.5 9L4.5 5C4.5 4.72386 4.72386 4.5 5 4.5L9 4.5Z"
 												fill="#02B694"
 												strokeOpacity={0}
 											/>
@@ -720,19 +713,28 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 									),
 								},
 								{
-									name: 'no-repeat',
-									description: 'No repeat',
+									name: 'repeat',
+									description: 'Repeat both horizontally and vertically',
 									icon: (
 										<g transform="translate(9 9)">
-											<rect
-												width="14"
-												height="14"
-												rx="1"
-												opacity={0}
-												strokeOpacity={1}
+											<rect width="14" height="14" rx="1" opacity={0} />
+											<path
+												d="M6 5.5C6 5.77614 5.77614 6 5.5 6H1.5C1.22386 6 1 5.77614 1 5.5V1.5C1 1.22386 1.22386 1 1.5 1H5.5C5.77614 1 6 1.22386 6 1.5V5.5Z"
+												fill="#02B694"
+												strokeOpacity={0}
 											/>
 											<path
-												d="M9 4.5C9.27614 4.5 9.5 4.72386 9.5 5V9C9.5 9.27614 9.27614 9.5 9 9.5H5C4.72386 9.5 4.5 9.27614 4.5 9L4.5 5C4.5 4.72386 4.72386 4.5 5 4.5L9 4.5Z"
+												d="M6 12.5C6 12.7761 5.77614 13 5.5 13H1.5C1.22386 13 1 12.7761 1 12.5V8.5C1 8.22386 1.22386 8 1.5 8H5.5C5.77614 8 6 8.22386 6 8.5V12.5Z"
+												fill="#02B694"
+												strokeOpacity={0}
+											/>
+											<path
+												d="M13 5.5C13 5.77614 12.7761 6 12.5 6H8.5C8.22386 6 8 5.77614 8 5.5V1.5C8 1.22386 8.22386 1 8.5 1H12.5C12.7761 1 13 1.22386 13 1.5V5.5Z"
+												fill="#02B694"
+												strokeOpacity={0}
+											/>
+											<path
+												d="M13 12.5C13 12.7761 12.7761 13 12.5 13H8.5C8.22386 13 8 12.7761 8 12.5V8.5C8 8.22386 8.22386 8 8.5 8H12.5C12.7761 8 13 8.22386 13 8.5V12.5Z"
 												fill="#02B694"
 												strokeOpacity={0}
 											/>
@@ -796,17 +798,6 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 							type: 'icons',
 							withBackground: true,
 							gridSize: '3 3',
-							// dropdownOptions: [
-							// 	{ name: 'left top', displayName: 'Left Top' },
-							// 	{ name: 'center top', displayName: 'Center Top' },
-							// 	{ name: 'right top', displayName: 'Right Top' },
-							// 	{ name: 'left center', displayName: 'Left Center' },
-							// 	{ name: 'center center', displayName: 'Center Center' },
-							// 	{ name: 'right center', displayName: 'Right Center' },
-							// 	{ name: 'left bottom', displayName: 'Left Bottom' },
-							// 	{ name: 'center bottom', displayName: 'Center Bottom' },
-							// 	{ name: 'right bottom', displayName: 'Right Bottom' },
-							// ],
 							options: [
 								{
 									name: 'left top',
@@ -973,20 +964,17 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 							],
 							default: 'left top',
 						},
-
 						{
 							name: 'backgroundPositionX',
 							displayName: 'Horizontal',
 							type: 'pixel size',
-							default: '10px',
-							options: [],
+							default: '0px',
 						},
 						{
 							name: 'backgroundPositionY',
 							displayName: 'Vertical',
 							type: 'pixel size',
-							default: '10px',
-							options: [],
+							default: '0px',
 						},
 					]}
 				/>
@@ -1043,6 +1031,7 @@ function BackgroundDetailedEditor(props: Readonly<StyleEditorsProps>) {
 					{
 						name: 'backgroundAttachment',
 						displayName: 'Attachment',
+						withBackground: true,
 						type: 'icons',
 						default: 'scroll',
 						options: [
@@ -1121,6 +1110,7 @@ function BackgroundDetailedEditor(props: Readonly<StyleEditorsProps>) {
 					{
 						name: 'backgroundClip',
 						displayName: 'Clip',
+						withBackground: true,
 						type: 'icons',
 						default: 'border-box',
 						options: [
@@ -1247,6 +1237,7 @@ function BackgroundDetailedEditor(props: Readonly<StyleEditorsProps>) {
 					{
 						name: 'backgroundOrigin',
 						displayName: 'Origin',
+						withBackground: true,
 						type: 'icons',
 						default: 'padding-box',
 						options: [
@@ -1371,6 +1362,7 @@ function BackgroundDetailedEditor(props: Readonly<StyleEditorsProps>) {
 			/>
 
 			<div className="_simpleLabel _withPadding">Backdrop Filter</div>
+			<div className="_simpleLabel _withPadding">Filter</div>
 			<div className="background-multiimage-common-editor">
 				<ManyFunctionsEditor
 					onChange={v =>

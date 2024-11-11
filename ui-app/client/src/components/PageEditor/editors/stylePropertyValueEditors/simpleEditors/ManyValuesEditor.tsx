@@ -6,6 +6,7 @@ import { Dropdown } from './Dropdown';
 import { CommonColorPickerPropertyEditor } from '../../../../../commonComponents/CommonColorPicker';
 import { ComponentProperty } from '../../../../../types/common';
 import { RelatedProps } from './index';
+import { ButtonBar } from './ButtonBar';
 export interface PropertyDetail {
 	name: string;
 	displayName: string;
@@ -18,15 +19,19 @@ export interface PropertyDetail {
 		| 'dropdown'
 		| 'icons'
 		| 'color'
-		| 'time';
+		| 'time'
+		| 'buttonBar'
+		| 'text';
 	default: string;
 	optionOverride?: Array<UnitOption>;
 	dropdownOptions?: Array<{ name: string; displayName: string }>;
 	numberOptions?: { min: number; max: number; step: number };
 	options?: iconButtonOptions;
+	buttonBarOptions?: Array<{ name: string; displayName: string }>;
 	relatedProps?: RelatedProps;
 	gridSize?: string;
 	withBackground?: boolean;
+	textValue?: string;
 }
 
 export function ManyValuesEditor({
@@ -40,6 +45,7 @@ export function ManyValuesEditor({
 	relatedProps,
 	gridSize,
 	withBackground,
+	textValue,
 }: {
 	values: { prop: string; value: string }[];
 	newValueGroupTitle?: string;
@@ -51,9 +57,17 @@ export function ManyValuesEditor({
 	relatedProps?: RelatedProps;
 	gridSize?: string;
 	withBackground?: boolean;
+	textValue?: string;
 }) {
 	const props: { [key: string]: Array<string> } = {};
 	let max = 0;
+
+	// Initialize all properties from propDefinitions with default values
+	propDefinitions.forEach(def => {
+		props[def.name] = [];
+	});
+
+	// Then process the values
 	for (let i = 0; i < values.length; i++) {
 		props[values[i].prop] = values[i].value.trim()
 			? values[i].value.split(',').map(e => e.trim()) ?? []
@@ -222,6 +236,22 @@ export function ManyValuesEditor({
 									}}
 								/>
 							);
+						} else if (def.type === 'buttonBar') {
+							editor = (
+								<ButtonBar
+									value={props[def.name][i]}
+									onChange={v => valueChanged(def, i, max, v as string)}
+									options={def.buttonBarOptions ?? []}
+								/>
+							);
+						} else if (def.type === 'text') {
+							editor = (
+								<input
+									value={textValue ? textValue : props[def.name][i]}
+									onChange={e => valueChanged(def, i, max, e.target.value)}
+									placeholder={def.displayName}
+								/>
+							);
 						}
 						return (
 							<div className="_editorLine" key={def.name}>
@@ -328,6 +358,24 @@ export function ManyValuesEditor({
 							} else if (def.type === 'text area') {
 								editor = (
 									<textarea
+										value={''}
+										onChange={e =>
+											valueChanged(def, max, max + 1, e.target.value)
+										}
+										placeholder={def.displayName}
+									/>
+								);
+							} else if (def.type === 'buttonBar') {
+								editor = (
+									<ButtonBar
+										value={''}
+										onChange={v => valueChanged(def, max, max + 1, v as string)}
+										options={def.buttonBarOptions ?? []}
+									/>
+								);
+							} else if (def.type === 'text') {
+								editor = (
+									<input
 										value={''}
 										onChange={e =>
 											valueChanged(def, max, max + 1, e.target.value)
