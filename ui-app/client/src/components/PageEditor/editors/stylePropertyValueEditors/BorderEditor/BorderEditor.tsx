@@ -25,7 +25,7 @@ export function BorderEditor(props: Readonly<StyleEditorsProps>) {
 			<BorderLikeEditor
 				{...props}
 				fixedDirectionLabel="blockStart"
-				valueBagDirectionLabels={['blockStart', 'blockEnd', 'inlineStart', 'inlineEnd']}
+				valueBagDirectionLabels={['blockStart', 'inlineEnd', 'blockEnd', 'inlineStart']}
 				valueBagDirectionLabelDescriptions={{
 					blockStart: 'Block Start',
 					blockEnd: 'Block End',
