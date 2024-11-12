@@ -6,6 +6,12 @@ import { PageDefinition } from './types/common';
 import { REPO_SERVER, RemoteRepository } from './Engine/RemoteRepository';
 import { Function, Schema } from '@fincity/kirun-js';
 import axios from 'axios';
+
+// TEST CDN CODE
+// window.cdnPrefix = 'cdn-dev.modlix.com';
+// window.cdnStripAPIPrefix = true;
+// window.cdnReplacePlus = true;
+
 declare global {
 	var nodeDev: boolean;
 	var isDesignMode: boolean;
@@ -37,6 +43,8 @@ declare global {
 		repoServer: REPO_SERVER,
 	) => RemoteRepository<Schema>;
 	var cdnPrefix: string;
+	var cdnStripAPIPrefix: boolean;
+	var cdnReplacePlus: boolean;
 	var determineRightClickPosition: (e: MouseEvent) => { x: number; y: number };
 	var domainClientCode: string;
 	var domainAppCode: string;

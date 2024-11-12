@@ -341,7 +341,7 @@ function TableComponent(props: ComponentProps) {
 			if (offlineData) {
 				size = defaultSize;
 				currentPage = pageNumber;
-				pages = size > 0 ? Math.ceil(data.length / size) : 0;
+				pages = size > 0 ? Math.ceil(data?.length / size) : 0;
 			}
 
 			let numbers: Array<number> = [];

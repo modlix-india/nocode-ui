@@ -1,6 +1,7 @@
-import { deepEqual, isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
+import { deepEqual, TokenValueExtractor } from '@fincity/kirun-js';
 import { useEffect, useState } from 'react';
 import { STORE_PREFIX } from '../../constants';
+import { ParentExtractor } from '../../context/ParentExtractor';
 import {
 	addListener,
 	fillerExtractor,
@@ -13,9 +14,7 @@ import {
 import {
 	ComponentDefinition,
 	ComponentDefinitionValues,
-	ComponentMultiProperty,
 	ComponentPropertyDefinition,
-	ComponentPropertyEditor,
 	ComponentResoltuions,
 	ComponentStylePropertyDefinition,
 	LocationHistory,
@@ -23,8 +22,6 @@ import {
 } from '../../types/common';
 import { isNotEqual } from '../../util/setOperations';
 import { getPathsFromComponentDefinition } from './getPaths';
-import { ParentExtractor } from '../../context/ParentExtractor';
-import { ANIMATION_PROPERTIES } from './properties';
 import { makePropertiesObject } from './make';
 
 function createNewState(
@@ -243,7 +240,7 @@ export default function useDefinition(
 					tokenExtractors,
 				);
 
-				if (pageExtractor.getPageName() === '_global') {
+				if (paths.length > 1) {
 					const newPaths = getPathsFromComponentDefinition(
 						definition,
 						evaluatorMaps,
@@ -256,6 +253,7 @@ export default function useDefinition(
 						setPathsChangedAt(Date.now());
 					}
 				}
+
 				setCompState(newState);
 			},
 			pageExtractor,
