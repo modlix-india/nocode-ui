@@ -1408,7 +1408,7 @@ export default function GridStyle({
 
 		${PREFIX} ._dropdownToggle {
 			font-family: Inter;
-			font-size: 14px;
+			font-size: 12px;
 			border: none;
 			border-radius: 6px;
 			color: #555;
@@ -3948,17 +3948,17 @@ export default function GridStyle({
 		}
 
 		@keyframes FDEPenAnimation {
-			0% { transform: translate(0, 0); }
-			10% { transform: translate(0, -20px); }
-			20% { transform: translate(15px, -20px); }
-			30% { transform: translate(0px, -15px); }
-			40% { transform: translate(15px, -15px); }
-			50% { transform: translate(0, -10px); }
-			60% { transform: translate(15px, -10px); }
-			70% { transform: translate(0, -5px); }
-			80% { transform: translate(15px, -5px); }
-			90% { transform: translate(0, 0px); }
-			100% { transform: translate(15px, 0px); }
+			0% { transform: translate(0, 0) }
+            10% { transform: translate(0, -20px) }
+            20% { transform: translate(15px, -20px) }
+            30% { transform: translate(0px, -15px) }
+            40% { transform: translate(15px, -15px) }
+            50% { transform: translate(0, -10px) }
+            60% { transform: translate(15px, -10px) }
+            70% { transform: translate(0, -5px) }
+            80% { transform: translate(15px, -5px) }
+            90% { transform: translate(0, 0px) }
+            100% { transform: translate(15px, 0px) }
 		}
 
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._JotPen1 {

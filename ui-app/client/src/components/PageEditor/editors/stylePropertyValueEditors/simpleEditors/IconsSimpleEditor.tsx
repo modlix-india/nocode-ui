@@ -151,9 +151,9 @@ export function IconsSimpleEditor({
 		setIsDropdownOpen(!isDropdownOpen);
 	};
 
-	const gridDimensions = useMemo(() => {
+	let gridDimensions = useMemo(() => {
 		if (!gridSize) return null;
-		const [rows, columns] = gridSize.split(' ').map(Number);
+		let [rows, columns] = gridSize.split(' ').map(Number);
 		return { rows, columns };
 	}, [gridSize]);
 
