@@ -23,6 +23,7 @@ export function Dropdown({
 	value,
 	onChange,
 	options,
+	readOnly,
 	isSearchable,
 	searchLabel,
 	clearSearchTextOnClose,
@@ -35,6 +36,7 @@ export function Dropdown({
 	value: DropdownOption;
 	onChange: (v: DropdownOption) => void;
 	options: DropdownOptions;
+	readOnly:boolean;
 	isSearchable?: boolean;
 	searchLabel?: string;
 	clearSearchTextOnClose?: boolean;
@@ -242,7 +244,7 @@ export function Dropdown({
 		>
 			<SubHelperComponent definition={definition} subComponentName="dropdownSelect" />
 			{label}
-			{open ? (
+			{ open && !readOnly ? (
 				<svg
 					style={computedStyles.arrowIcon ?? {}}
 					className="_arrowIcon"
@@ -275,7 +277,7 @@ export function Dropdown({
 					<SubHelperComponent definition={definition} subComponentName="arrowIcon" />
 				</svg>
 			)}
-			{body}
+			{!readOnly && body}
 		</div>
 	);
 }
