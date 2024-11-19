@@ -482,6 +482,7 @@ function PhoneNumber(props: ComponentProps) {
 			onChange={handleCountryChange}
 			options={countryList}
 			isSearchable={isSearchable}
+			readOnly={readOnly}
 			searchLabel={searchLabel}
 			clearSearchTextOnClose={clearSearchTextOnClose}
 			computedStyles={computedStyles}

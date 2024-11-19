@@ -23,7 +23,7 @@ import CommonInputText from '../../commonComponents/CommonInputText';
 import { styleDefaults } from './textBoxStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
-const REGEX_NUBMER = /^[0-9+-.,]*$/;
+const REGEX_NUMBER = /^(?![.,])[0-9.,]+$/;
 
 interface mapType {
 	[key: string]: any;
@@ -246,6 +246,10 @@ function TextBox(props: ComponentProps) {
 	const handleBlur = (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		let temp = value === '' && emptyValue ? mapValue[emptyValue] : value;
 		if (valueType === 'number') {
+			if (temp === mapValue[emptyValue]) {
+				setValue(mapValue[emptyValue]);
+				return;
+			}
 			if (numberFormat) {
 				const formatter = new Intl.NumberFormat(
 					numberFormat.toLowerCase() === 'system' ? navigator.language : numberFormat,
@@ -304,24 +308,27 @@ function TextBox(props: ComponentProps) {
 			callChangeEvent();
 			return;
 		}
-		let temp = text === '' && emptyValue ? mapValue[emptyValue] : text;
-		let tempNumber;
 
+		let temp = text === '' && emptyValue ? mapValue[emptyValue] : text;
+
+		let tempNumber;
+		if (temp === mapValue[emptyValue]) {
+			setValue(mapValue[emptyValue]);
+		}
 		if (numberFormat) {
-			if (!REGEX_NUBMER.test(temp)) return;
+			if (!REGEX_NUMBER.test(temp)) return;
 
 			const formatter = new Intl.NumberFormat(
 				numberFormat.toLowerCase() === 'system' ? navigator.language : numberFormat,
 				{ style: 'decimal' },
 			);
 			const commaDot = formatter.format(1234.56) === '1,234.56';
-
+			temp = temp?.toString();
 			tempNumber = commaDot
 				? temp.replace(/,/g, '')
 				: temp.replace(/\./g, '').replace(/,/g, '.');
 			tempNumber = numberType === 'DECIMAL' ? parseFloat(tempNumber) : parseInt(tempNumber);
 			temp = formatter.format(tempNumber);
-
 			if (text[text.length - 1] === ',' || text[text.length - 1] === '.')
 				temp += text[text.length - 1];
 			if (updateStoreImmediately && bindingPathPath) {
@@ -335,6 +342,7 @@ function TextBox(props: ComponentProps) {
 		} else {
 			tempNumber = numberType === 'DECIMAL' ? parseFloat(temp) : parseInt(temp);
 			temp = !isNaN(tempNumber) ? tempNumber : temp;
+
 			if (updateStoreImmediately && bindingPathPath) {
 				setData(bindingPathPath, temp, context?.pageName);
 				callChangeEvent();
