@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { act, useEffect, useMemo, useState } from 'react';
 import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
 import {
 	addListenerAndCallImmediately,
@@ -21,6 +21,12 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { styleDefaults } from './tableStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import TableDynamicColumns from '../TableDynamicColumns/TableDynamicColumns';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
+import {
+	addToToggleSetCurry,
+	getStyleObjectCurry,
+	removeFromToggleSetCurry,
+} from '../Calendar/components/calendarFunctions';
 
 function spinCalculate(
 	spinnerPath1: string | undefined,
@@ -131,6 +137,12 @@ function TableComponent(props: ComponentProps) {
 			showSeperators,
 			showArrows,
 			perPageLabel,
+			columnsModeIcon,
+			gridModeIcon,
+			columnsModeImage,
+			gridModeImage,
+			columnsModeActiveImage,
+			gridModeActiveImage,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -142,6 +154,37 @@ function TableComponent(props: ComponentProps) {
 		pageExtractor,
 	);
 
+	const [hovers, setHovers] = React.useState<Set<string>>(() => new Set());
+	const computedStyles = useMemo(
+		() =>
+			processComponentStylePseudoClasses(
+				props.pageDefinition,
+				{ hover: false },
+				stylePropertiesWithPseudoStates,
+			),
+		[stylePropertiesWithPseudoStates, hovers],
+	);
+
+	const hoverComputedStyles = useMemo(
+		() =>
+			processComponentStylePseudoClasses(
+				props.pageDefinition,
+				{ hover: true },
+				stylePropertiesWithPseudoStates,
+			),
+		[stylePropertiesWithPseudoStates],
+	);
+
+	const getStyleObject = useMemo(
+		() => (key: string, hovers: Set<string>) => {
+			if (hovers.has(key)) return hoverComputedStyles[key] ?? {};
+			return computedStyles[key] ?? {};
+		},
+		[computedStyles, hoverComputedStyles],
+	);
+
+	console.log('hovers', hovers);
+	console.log('computed', computedStyles, 'hover', hoverComputedStyles);
 	const dataBindingPath =
 		bindingPath && getPathFromLocation(bindingPath, locationHistory, pageExtractor);
 
@@ -362,36 +405,112 @@ function TableComponent(props: ComponentProps) {
 				if (currentPage < pages) numbers.push(pages);
 			}
 
+			const columnsMode = columnsModeImage ? (
+				<img
+					src={mode === 'COLUMNS' ? columnsModeActiveImage : columnsModeImage}
+					style={getStyleObject(
+						'columnsModeImage',
+						hovers.has('columnsModeIcon') ? new Set(['columnsModeImage']) : new Set(),
+					)}
+				></img>
+			) : columnsModeIcon ? (
+				<i
+					className={columnsModeIcon}
+					style={getStyleObject(
+						mode === 'COLUMNS' ? 'selectedColumnsModeIcon' : 'columnsModeIcon',
+						hovers,
+					)}
+				></i>
+			) : (
+				<svg
+					width="19"
+					height="18"
+					viewBox="0 0 19 18"
+					fill="none"
+					xmlns="http://www.w3.org/2000/svg"
+				>
+					<path d="M0 2C0 0.89543 0.895431 0 2 0H5V18H2C0.89543 18 0 17.1046 0 16V2Z" />
+					<path d="M7 0H12V18H7V0Z" />
+					<path d="M14 0H17C18.1046 0 19 0.895431 19 2V16C19 17.1046 18.1046 18 17 18H14V0Z" />
+				</svg>
+			);
+
+			const gridMode = gridModeImage ? (
+				<img
+					src={mode === 'COLUMNS' ? gridModeActiveImage : gridModeImage}
+					style={getStyleObject(
+						'gridModeImage',
+						hovers.has('gridModeIcon') ? new Set(['gridModeImage']) : new Set(),
+					)}
+				></img>
+			) : gridModeIcon ? (
+				<i
+					className={gridModeIcon}
+					style={getStyleObject(
+						mode === 'GRID' ? 'selectedGridModeIcon' : 'gridModeIcon',
+						hovers,
+					)}
+				></i>
+			) : (
+				<svg
+					width="18"
+					height="18"
+					viewBox="0 0 18 18"
+					fill="none"
+					xmlns="http://www.w3.org/2000/svg"
+				>
+					<rect width="8" height="8" rx="1" />
+					<rect y="10" width="8" height="8" rx="1" />
+					<rect x="10" width="8" height="8" rx="1" />
+					<rect x="10" y="10" width="8" height="8" rx="1" />
+				</svg>
+			);
+
 			let modes = undefined;
 			if (gridChild && columnsChild) {
 				modes = (
 					<>
-						<div className="_modesContainer">
+						<div
+							className="_modesContainer"
+							style={getStyleObject('modesContainer', hovers)}
+							onMouseEnter={addToToggleSetCurry(hovers, setHovers, 'modesContainer')}
+							onMouseLeave={removeFromToggleSetCurry(
+								hovers,
+								setHovers,
+								'modesContainer',
+							)}
+						>
 							<div
 								className={`_columns _pointer ${
 									mode === 'COLUMNS' ? '_selected' : ''
 								}`}
 								onClick={() => {
-									if (tableModeBindingPath)
+									if (tableModeBindingPath) {
 										setStoreData(
 											tableModeBindingPath,
 											'COLUMNS',
 											context.pageName,
 										);
-									else setMode('COLUMNS');
+									} else {
+										setMode('COLUMNS');
+									}
 								}}
+								onMouseEnter={addToToggleSetCurry(
+									hovers,
+									setHovers,
+									mode === 'COLUMNS'
+										? 'selectedColumnsModeIcon'
+										: 'columnsModeIcon',
+								)}
+								onMouseLeave={removeFromToggleSetCurry(
+									hovers,
+									setHovers,
+									mode === 'COLUMNS'
+										? 'selectedColumnsModeIcon'
+										: 'columnsModeIcon',
+								)}
 							>
-								<svg
-									width="19"
-									height="18"
-									viewBox="0 0 19 18"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-								>
-									<path d="M0 2C0 0.89543 0.895431 0 2 0H5V18H2C0.89543 18 0 17.1046 0 16V2Z" />
-									<path d="M7 0H12V18H7V0Z" />
-									<path d="M14 0H17C18.1046 0 19 0.895431 19 2V16C19 17.1046 18.1046 18 17 18H14V0Z" />
-								</svg>
+								{columnsMode}
 							</div>
 							<div
 								className={`_grid _pointer ${mode === 'GRID' ? '_selected' : ''}`}
@@ -404,23 +523,21 @@ function TableComponent(props: ComponentProps) {
 										);
 									else setMode('GRID');
 								}}
+								onMouseEnter={addToToggleSetCurry(
+									hovers,
+									setHovers,
+									mode === 'GRID' ? 'selectedGridModeIcon' : 'gridModeIcon',
+								)}
+								onMouseLeave={removeFromToggleSetCurry(
+									hovers,
+									setHovers,
+									mode === 'GRID' ? 'selectedGridModeIcon' : 'gridModeIcon',
+								)}
 							>
-								<svg
-									width="18"
-									height="18"
-									viewBox="0 0 18 18"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-								>
-									<rect width="8" height="8" rx="1" />
-									<rect y="10" width="8" height="8" rx="1" />
-									<rect x="10" width="8" height="8" rx="1" />
-									<rect x="10" y="10" width="8" height="8" rx="1" />
-								</svg>
+								{gridMode}
 							</div>
 						</div>
 						{showSeperators && (
-							// <i className="fa-solid fa-grip-lines fa-rotate-90 _seperator" />
 							<svg
 								width="2"
 								height="28"
@@ -445,7 +562,6 @@ function TableComponent(props: ComponentProps) {
 				perPage = (
 					<>
 						{showSeperators && (
-							// <i className="fa-solid fa-grip-lines fa-rotate-90 _seperator" />
 							<svg
 								width="2"
 								height="28"
@@ -461,9 +577,31 @@ function TableComponent(props: ComponentProps) {
 								/>
 							</svg>
 						)}
-						<span style={{ paddingLeft: '10px' }}>{perPageLabel}</span>
+						<span
+							className="_perPageLabel"
+							style={getStyleObject('perPageLabel', hovers)}
+							onMouseEnter={addToToggleSetCurry(hovers, setHovers, 'perPageLabel')}
+							onMouseLeave={removeFromToggleSetCurry(
+								hovers,
+								setHovers,
+								'perPageLabel',
+							)}
+						>
+							{perPageLabel}
+						</span>
 						<select
 							value={pageSize}
+							style={getStyleObject('itemsPerPageDropdown', hovers)}
+							onMouseEnter={addToToggleSetCurry(
+								hovers,
+								setHovers,
+								'itemsPerPageDropdown',
+							)}
+							onMouseLeave={removeFromToggleSetCurry(
+								hovers,
+								setHovers,
+								'itemsPerPageDropdown',
+							)}
 							onChange={e => {
 								if (pageSizeBindingPath) {
 									setStoreData(
@@ -518,9 +656,35 @@ function TableComponent(props: ComponentProps) {
 			if (showPageSelectionDropdown) {
 				pageSelectionDropdown = (
 					<>
-						<span style={{ paddingLeft: '10px' }}>Page</span>
+						<span
+							className="_pageSelectionLabel"
+							style={getStyleObject('pageSelectionLabel', hovers)}
+							onMouseEnter={addToToggleSetCurry(
+								hovers,
+								setHovers,
+								'pageSelectionLabel',
+							)}
+							onMouseLeave={removeFromToggleSetCurry(
+								hovers,
+								setHovers,
+								'pageSelectionLabel',
+							)}
+						>
+							Page
+						</span>
 						<select
 							value={pageNumber + 1}
+							style={getStyleObject('pageSelectionDropdown', hovers)}
+							onMouseEnter={addToToggleSetCurry(
+								hovers,
+								setHovers,
+								'pageSelectionDropdown',
+							)}
+							onMouseLeave={removeFromToggleSetCurry(
+								hovers,
+								setHovers,
+								'pageSelectionDropdown',
+							)}
 							onChange={e => {
 								const selectedPage = parseInt(e.target.value) - 1;
 								if (pageNumberBindingPath) {
@@ -560,7 +724,22 @@ function TableComponent(props: ComponentProps) {
 								</option>
 							))}
 						</select>
-						<span style={{ paddingRight: '10px' }}>of {totalPages}</span>
+						<span
+							className="_pageSelectionDropdownLabelOf"
+							style={getStyleObject('pageSelectionLabel', hovers)}
+							onMouseEnter={addToToggleSetCurry(
+								hovers,
+								setHovers,
+								'pageSelectionLabel',
+							)}
+							onMouseLeave={removeFromToggleSetCurry(
+								hovers,
+								setHovers,
+								'pageSelectionLabel',
+							)}
+						>
+							of {totalPages}
+						</span>
 					</>
 				);
 			}
@@ -596,8 +775,34 @@ function TableComponent(props: ComponentProps) {
 							}
 						}}
 					>
-						{showArrows && <i className="fas fa-chevron-left"></i>}
-						<span className="_prev">{leftArrowLabel}</span>
+						{showArrows && (
+							<i
+								className="fas fa-chevron-left"
+								style={getStyleObject('previousArrow', hovers)}
+								onMouseEnter={addToToggleSetCurry(
+									hovers,
+									setHovers,
+									'previousArrow',
+								)}
+								onMouseLeave={removeFromToggleSetCurry(
+									hovers,
+									setHovers,
+									'previousArrow',
+								)}
+							></i>
+						)}
+						<span
+							className="_prev"
+							style={getStyleObject('previousText', hovers)}
+							onMouseEnter={addToToggleSetCurry(hovers, setHovers, 'previousText')}
+							onMouseLeave={removeFromToggleSetCurry(
+								hovers,
+								setHovers,
+								'previousText',
+							)}
+						>
+							{leftArrowLabel}
+						</span>
 					</div>
 				);
 			}
@@ -633,8 +838,28 @@ function TableComponent(props: ComponentProps) {
 							}
 						}}
 					>
-						<span className="_next">{rightArrowLabel}</span>
-						{showArrows && <i className="fas fa-chevron-right"></i>}
+						<span
+							className="_next"
+							// style={resolvedStyles?.nextAndPreviousText}
+							style={getStyleObject('nextText', hovers)}
+							onMouseEnter={addToToggleSetCurry(hovers, setHovers, 'nextText')}
+							onMouseLeave={removeFromToggleSetCurry(hovers, setHovers, 'nextText')}
+						>
+							{rightArrowLabel}
+						</span>
+						{showArrows && (
+							<i
+								className="fas fa-chevron-right"
+								// style={resolvedStyles?.nextAndPreviousArrows}
+								style={getStyleObject('nextArrow', hovers)}
+								onMouseEnter={addToToggleSetCurry(hovers, setHovers, 'nextArrow')}
+								onMouseLeave={removeFromToggleSetCurry(
+									hovers,
+									setHovers,
+									'nextArrow',
+								)}
+							></i>
+						)}
 					</div>
 				);
 			}
@@ -665,6 +890,24 @@ function TableComponent(props: ComponentProps) {
 											? '_noclick _pageNumber _selected'
 											: '_clickable _pointer _pageNumber'
 									}
+									style={getStyleObject(
+										e === currentPage + 1
+											? 'selectedPageNumber'
+											: 'pageNumbers',
+										hovers.has(`${numbers[i]}_pagenumber`)
+											? new Set(['pageNumbers'])
+											: new Set(),
+									)}
+									onMouseEnter={addToToggleSetCurry(
+										hovers,
+										setHovers,
+										`${numbers[i]}_pagenumber`,
+									)}
+									onMouseLeave={removeFromToggleSetCurry(
+										hovers,
+										setHovers,
+										`${numbers[i]}_pagenumber`,
+									)}
 									onClick={() => {
 										if (spinner) return;
 										if (pageNumberBindingPath)
@@ -768,17 +1011,12 @@ function TableComponent(props: ComponentProps) {
 		}
 	}
 
-	const resolvedStyles =
-		processComponentStylePseudoClasses(
-			props.pageDefinition,
-			{},
-			stylePropertiesWithPseudoStates,
-		) ?? {};
-
 	return (
 		<div
 			className={`comp compTable ${tableDesign} ${colorScheme} ${previewGridPosition} ${tableLayout}`}
-			style={resolvedStyles?.comp ?? {}}
+			style={getStyleObject('comp', hovers)}
+			onMouseEnter={addToToggleSetCurry(hovers, setHovers, 'comp')}
+			onMouseLeave={removeFromToggleSetCurry(hovers, setHovers, 'comp')}
 		>
 			<HelperComponent context={props.context} definition={definition} />
 			{body}
@@ -796,6 +1034,7 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	styleComponent: TableStyle,
+	stylePseudoStates: ['hover'],
 	styleDefaults: styleDefaults,
 	allowedChildrenType: new Map([
 		['TableEmptyGrid', 1],
@@ -863,6 +1102,108 @@ const component: Component = {
 					/>
 				</IconHelper>
 			),
+		},
+		{
+			name: 'modesContainer',
+			displayName: 'Modes Container',
+			description: 'Modes Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'columnsModeIcon',
+			displayName: 'Columns Mode Icon',
+			description: 'Columns Mode Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'selectedColumnsModeIcon',
+			displayName: 'Selected Columns Mode Icon',
+			description: 'Selected Columns Mode Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'columnsModeImage',
+			displayName: 'Columns Mode Image',
+			description: 'Columns Mode Image',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'gridModeIcon',
+			displayName: 'Grid Mode Icon',
+			description: 'Grid Mode Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'selectedGridModeIcon',
+			displayName: 'Selected Grid Mode Icon',
+			description: 'Selected Grid Mode Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'gridModeImage',
+			displayName: 'Grid Mode Image',
+			description: 'Grid Mode Image',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'nextArrow',
+			displayName: 'Next Arrow',
+			description: 'Next Arrow',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'previousArrow',
+			displayName: 'Previous Arrow',
+			description: 'Previous Arrow',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'nextText',
+			displayName: 'Next Text',
+			description: 'Next Text',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'previousText',
+			displayName: 'Previous Text',
+			description: 'Previous Text',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'pageNumbers',
+			displayName: 'Page Numbers',
+			description: 'Page Numbers',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'selectedPageNumber',
+			displayName: 'Selected Page Number',
+			description: 'Selected Page Number',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'itemsPerPageDropdown',
+			displayName: 'Items per page Dropdown',
+			description: 'Items per page Dropdown',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'perPageLabel',
+			displayName: 'Per Page Label',
+			description: 'Per Page Label',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'pageSelectionDropdown',
+			displayName: 'Page Selection Dropdown',
+			description: 'Page Selection Dropdown',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'pageSelectionLabel',
+			displayName: 'Page Selection Label',
+			description: 'Page Selection Label',
+			icon: 'fa-solid fa-box',
 		},
 	],
 };
