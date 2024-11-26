@@ -1,6 +1,6 @@
 import React, { ReactNode, useRef, useState } from 'react';
 import { StyleEditorsProps, extractValue, valuesChangedOnlyValues } from './simpleEditors';
-import { iconButtonOptions, IconsSimpleEditor } from './simpleEditors/IconsSimpleEditor';
+import { IconButtonOptions, IconsSimpleEditor } from './simpleEditors/IconsSimpleEditor';
 import { PixelSize } from './simpleEditors/SizeSliders';
 
 export function SpacingEditor({
@@ -16,7 +16,7 @@ export function SpacingEditor({
 	defPath,
 	locationHistory,
 	pageExtractor,
-}: StyleEditorsProps) {
+}: Readonly<StyleEditorsProps>) {
 	const [top, setTop] = useState('');
 	const [changeType, setChangeType] = useState('');
 	const [direction, setDirection] = useState('');
@@ -107,7 +107,7 @@ export function SpacingEditor({
 			title = title.replace(whatDirection, 'Left/Right');
 		}
 
-		const directionOptions: iconButtonOptions = [];
+		const directionOptions: IconButtonOptions = [];
 
 		if (whatDirection === 'Top') {
 			directionOptions.push({

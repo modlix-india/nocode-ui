@@ -9,7 +9,7 @@ interface IconOption {
 	viewBox?: string;
 	transform?: string;
 }
-export type iconButtonOptions = Array<IconOption>;
+export type IconButtonOptions = Array<IconOption>;
 
 export function IconsSimpleEditor({
 	options = [],
@@ -24,7 +24,7 @@ export function IconsSimpleEditor({
 	visibleIconCount,
 	gridSize,
 }: Readonly<{
-	options: iconButtonOptions;
+	options: IconButtonOptions;
 	selected: string | Array<string>;
 	onChange: (v: string | Array<string>) => void;
 	visibleIconCount?: number;
@@ -36,8 +36,8 @@ export function IconsSimpleEditor({
 	combinationOptions?: { condition: Array<string>; name: string | Array<string> }[];
 	gridSize?: string;
 }>) {
-	const [visibleIcons, setVisibleIcons] = useState<iconButtonOptions>([]);
-	const [dropdownIcons, setDropdownIcons] = useState<iconButtonOptions>([]);
+	const [visibleIcons, setVisibleIcons] = useState<IconButtonOptions>([]);
+	const [dropdownIcons, setDropdownIcons] = useState<IconButtonOptions>([]);
 
 	useEffect(() => {
 		if (!visibleIconCount || visibleIconCount >= options.length) {

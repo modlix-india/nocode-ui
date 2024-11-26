@@ -174,7 +174,7 @@ export default function FillerDefinitionEditorStyle({
 		${PREFIX} ._sectionHeaderButtons ._button:hover svg path,
 		${PREFIX} ._sectionHeaderButtons ._button:hover svg circle,
 		${PREFIX} ._sectionHeaderButtons ._button:hover svg rect{
-			fillOpacity: 0.8;
+			fill-pacity: 0.8;
 		}
 
 		${PREFIX} ._section._collapsed ._sectionHeader{

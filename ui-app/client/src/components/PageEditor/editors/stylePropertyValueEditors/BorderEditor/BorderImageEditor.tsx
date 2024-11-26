@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentProperty } from '../../../../../types/common';
 import { StyleEditorsProps, extractValue, valuesChangedOnlyValues } from '../simpleEditors';
-import { iconButtonOptions, IconsSimpleEditor } from '../simpleEditors/IconsSimpleEditor';
+import { IconButtonOptions, IconsSimpleEditor } from '../simpleEditors/IconsSimpleEditor';
 import { PixelSize } from '../simpleEditors/SizeSliders';
 
 const LABELS: Record<string, string[]> = {

@@ -115,23 +115,8 @@ function Stepper(props: ComponentProps) {
 		await handleOnClick?.();
 	};
 
-	const effectiveTitles = titles ? titles : [];
-	const iconList = icons ? icons : [];
-
-	const getCount = (num: number) => {
-		let count =
-			countingType === 'NUMBER'
-				? num
-				: countingType.startsWith('ROMAN')
-					? countingType === 'ROMAN'
-						? getRoman(num, false)
-						: getRoman(num, true)
-					: countingType === 'ALPHA'
-						? getAlphaNumeral(num, false)
-						: getAlphaNumeral(num, true);
-
-		return count;
-	};
+	const effectiveTitles = titles ?? [];
+	const iconList = icons ?? [];
 
 	const getPositionStyle = () => {
 		let textStyle;

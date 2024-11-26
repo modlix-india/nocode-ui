@@ -13,7 +13,7 @@ export default function ChartStyle({ theme }: { theme: Map<string, Map<string, s
 	}
 
 	${PREFIX} .grid, ${PREFIX} .xAxisGroup, ${PREFIX} .yAxisGroup {
-		strokeOpacity: 0.2;
+		stroke-opacity: 0.2;
 	}
 
 	${PREFIX} .legendText {
@@ -21,7 +21,7 @@ export default function ChartStyle({ theme }: { theme: Map<string, Map<string, s
 	}
 
 	${PREFIX} .barDataSetGroup rect{
-		strokeWidth: 1px;
+		stroke-width: 1px;
 	}
 
 	${PREFIX} .lineDataSetGroup path{

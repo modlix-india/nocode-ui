@@ -1,6 +1,6 @@
 import React from 'react';
 import { AngleSize, PixelSize, TimeSize, UnitOption } from './SizeSliders';
-import { iconButtonOptions, IconsSimpleEditor } from './IconsSimpleEditor';
+import { IconButtonOptions, IconsSimpleEditor } from './IconsSimpleEditor';
 import { duplicate } from '@fincity/kirun-js';
 import { Dropdown } from './Dropdown';
 import { CommonColorPickerPropertyEditor } from '../../../../../commonComponents/CommonColorPicker';
@@ -26,7 +26,7 @@ export interface PropertyDetail {
 	optionOverride?: Array<UnitOption>;
 	dropdownOptions?: Array<{ name: string; displayName: string }>;
 	numberOptions?: { min: number; max: number; step: number };
-	options?: iconButtonOptions;
+	options?: IconButtonOptions;
 	buttonBarOptions?: Array<{ name: string; displayName: string }>;
 	relatedProps?: RelatedProps;
 	gridSize?: string;
@@ -70,7 +70,7 @@ export function ManyValuesEditor({
 	// Then process the values
 	for (let i = 0; i < values.length; i++) {
 		props[values[i].prop] = values[i].value.trim()
-			? values[i].value.split(',').map(e => e.trim()) ?? []
+			? (values[i].value.split(',').map(e => e.trim()) ?? [])
 			: [];
 		if (max < props[values[i].prop].length) max = props[values[i].prop].length;
 	}

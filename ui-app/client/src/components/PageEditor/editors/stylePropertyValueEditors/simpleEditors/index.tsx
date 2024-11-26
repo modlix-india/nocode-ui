@@ -14,7 +14,7 @@ import { CommonColorPickerPropertyEditor } from '../../../../../commonComponents
 import { PageStoreExtractor, getDataFromPath, setData } from '../../../../../context/StoreContext';
 import { shortUUID } from '../../../../../util/shortUUID';
 import { Dropdown, DropdownOptions } from './Dropdown';
-import { iconButtonOptions, IconsSimpleEditor } from './IconsSimpleEditor';
+import { IconButtonOptions, IconsSimpleEditor } from './IconsSimpleEditor';
 import { ShadowEditor, ShadowEditorType } from './ShadowEditor';
 import { PixelSize, RangeWithoutUnit } from './SizeSliders';
 import { RadioButton, RadioButtonOptions } from './RadioButton';
@@ -285,7 +285,7 @@ export interface SimpleEditorDefinition {
 	dropdDownSelectNoneLabel?: string;
 	dropDownShowNoneLabel?: boolean;
 	dropDownDefaultValue?: string | Array<string>;
-	iconButtonOptions?: iconButtonOptions;
+	iconButtonOptions?: IconButtonOptions;
 	iconButtonsBackground?: boolean;
 	multiSelect?: boolean;
 	multipleValueType?: SimpleEditorMultipleValueType;
