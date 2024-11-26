@@ -47,12 +47,8 @@ export const RenderEngineContainer = () => {
 			(async () => {
 				await runEvent(getPageDefinition, 'pageDefinition', GLOBAL_CONTEXT_NAME, []);
 				pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
-				if (!pDef) {
-					console.error('Failed to load page definition for:', pageName);
-					return;
-				}
 				const appCode = getDataFromPath(`${STORE_PREFIX}.application.appCode`, []);
-				if (appCode !== pDef.appCode) {
+				if (appCode !== pDef?.appCode) {
 					console.error(
 						"Trying to load a page that doesn't belong to the app. Host app code:",
 						appCode,
