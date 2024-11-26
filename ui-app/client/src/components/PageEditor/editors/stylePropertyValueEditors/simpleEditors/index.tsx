@@ -62,7 +62,7 @@ export function EachSimpleEditor({
 	properties,
 	editorDef,
 	placeholder,
-	className = '',
+	className,
 	defPath,
 	locationHistory,
 	pageExtractor,
@@ -252,7 +252,12 @@ export function EachSimpleEditor({
 			editor = <></>;
 	}
 
-	return <div className={`_simpleEditor ${className}`}>{editor}</div>;
+	return (
+		<div className={`_simpleEditor ${className}`}>
+			{displayName && <div className="_simpleEditorTitle">{displayName}</div>}
+			{editor}
+		</div>
+	);
 }
 
 export enum SimpleEditorType {

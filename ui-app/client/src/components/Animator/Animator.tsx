@@ -201,23 +201,10 @@ const component: Component = {
 						fillOpacity="0.2"
 					/>
 					<path
-						// className="_animatorglobe"
+						className="_animatorglobe"
 						d="M14.9962 24.7351C17.5974 24.7351 20.0422 23.7232 21.8799 21.8856C23.6314 20.1344 24.6433 17.8121 24.7295 15.3425C24.8157 12.6088 23.8038 10.0438 21.8799 8.12023C19.9559 6.19662 17.3926 5.18701 14.6525 5.27144C12.1863 5.35748 9.86371 6.36915 8.11248 8.12023C4.31667 11.9154 4.31667 18.0904 8.11248 21.8856C9.95021 23.7232 12.3949 24.7351 14.9962 24.7351Z"
-						fill="url(#paint0_linear_3214_9493)"
+						fill="#7E81D6"
 					/>
-					<defs>
-						<linearGradient
-							id="paint0_linear_3214_9493"
-							x1="15.0001"
-							y1="5.26654"
-							x2="15.0001"
-							y2="24.7351"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#7E81D6" />
-							<stop offset="1" stopColor="#494CA2" />
-						</linearGradient>
-					</defs>
 				</IconHelper>
 			),
 			mainComponent: true,

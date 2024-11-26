@@ -392,80 +392,33 @@ const component: Component = {
 			mainComponent: true,
 			icon: (
 				<IconHelper viewBox="0 0 30 30">
-					<rect width="30" height="30" rx="2" fill="url(#paint0_linear_3817_9691)" />
-					<rect
+					<path
+						d="M15 0.85C7.19505 0.85 0.85 7.19505 0.85 15C0.85 22.8049 7.19505 29.15 15 29.15C22.8049 29.15 29.15 22.8049 29.15 15C29.15 7.19505 22.8049 0.85 15 0.85Z"
+						fill="#02B694"
+						stroke="#02B694"
+						stroke-width="0.3"
+					/>
+					<path
+						d="M20.3023 8.85H9.69767C9.44104 8.85 9.22511 8.99519 9.07931 9.20417C8.93365 9.41295 8.85 9.69401 8.85 10C8.85 10.306 8.93365 10.5871 9.07931 10.7958C9.22511 11.0048 9.44104 11.15 9.69767 11.15H20.3023C20.559 11.15 20.7749 11.0048 20.9207 10.7958C21.0663 10.5871 21.15 10.306 21.15 10C21.15 9.69401 21.0663 9.41295 20.9207 9.20417C20.7749 8.99519 20.559 8.85 20.3023 8.85Z"
+						fill="white"
+						stroke="white"
+						stroke-width="0.3"
 						className="_menuInner1"
-						x="6"
-						y="7"
-						width="18"
-						height="3"
-						rx="1.5"
-						fill="url(#paint1_linear_3817_9691)"
 					/>
-					<rect
+					<path
+						d="M20.3023 13.85H9.69767C9.44104 13.85 9.22511 13.9952 9.07931 14.2042C8.93365 14.4129 8.85 14.694 8.85 15C8.85 15.306 8.93365 15.5871 9.07931 15.7958C9.22511 16.0048 9.44104 16.15 9.69767 16.15H20.3023C20.559 16.15 20.7749 16.0048 20.9207 15.7958C21.0663 15.5871 21.15 15.306 21.15 15C21.15 14.694 21.0663 14.4129 20.9207 14.2042C20.7749 13.9952 20.559 13.85 20.3023 13.85Z"
+						fill="white"
+						stroke="white"
+						stroke-width="0.3"
 						className="_menuInner2"
-						x="6"
-						y="13"
-						width="18"
-						height="3"
-						rx="1.5"
-						fill="url(#paint2_linear_3817_9691)"
 					/>
-					<rect
+					<path
+						d="M20.3023 18.85H9.69767C9.44104 18.85 9.22511 18.9952 9.07931 19.2042C8.93365 19.4129 8.85 19.694 8.85 20C8.85 20.306 8.93365 20.5871 9.07931 20.7958C9.22511 21.0048 9.44104 21.15 9.69767 21.15H20.3023C20.559 21.15 20.7749 21.0048 20.9207 20.7958C21.0663 20.5871 21.15 20.306 21.15 20C21.15 19.694 21.0663 19.4129 20.9207 19.2042C20.7749 18.9952 20.559 18.85 20.3023 18.85Z"
+						fill="white"
+						stroke="white"
+						stroke-width="0.3"
 						className="_menuInner3"
-						x="6"
-						y="19"
-						width="18"
-						height="3"
-						rx="1.5"
-						fill="url(#paint3_linear_3817_9691)"
 					/>
-					<defs>
-						<linearGradient
-							id="paint0_linear_3817_9691"
-							x1="15"
-							y1="0"
-							x2="15"
-							y2="30"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#EEEEEE" />
-							<stop offset="1" stopColor="#EDEAEA" />
-						</linearGradient>
-						<linearGradient
-							id="paint1_linear_3817_9691"
-							x1="15"
-							y1="7"
-							x2="15"
-							y2="10"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#DC8D8D" />
-							<stop offset="1" stopColor="#EE7070" />
-						</linearGradient>
-						<linearGradient
-							id="paint2_linear_3817_9691"
-							x1="15"
-							y1="13"
-							x2="15"
-							y2="16"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#DC8D8D" />
-							<stop offset="1" stopColor="#EE7070" />
-						</linearGradient>
-						<linearGradient
-							id="paint3_linear_3817_9691"
-							x1="15"
-							y1="19"
-							x2="15"
-							y2="22"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#DC8D8D" />
-							<stop offset="1" stopColor="#EE7070" />
-						</linearGradient>
-					</defs>
 				</IconHelper>
 			),
 		},

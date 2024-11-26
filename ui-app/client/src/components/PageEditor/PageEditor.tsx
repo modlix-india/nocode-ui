@@ -828,52 +828,17 @@ const component: Component = {
 				<IconHelper viewBox="0 0 30 34">
 					<path
 						d="M15.7879 6.73258V0H2.33319C1.04667 0 0 1.04667 0 2.33319V30.7982C0 32.0847 1.04667 33.1313 2.33319 33.1313H23.2983C24.5848 33.1313 25.6315 32.0847 25.6315 30.7982V9.84351H18.8989C17.1835 9.84351 15.7879 8.44795 15.7879 6.73258Z"
-						fill="url(#paint0_linear_3214_9572)"
+						fill="#EDEAEA"
 					/>
 					<path
 						d="M17.3452 6.73417C17.3452 7.59185 18.043 8.28963 18.9007 8.28963H24.48L17.3452 1.18848V6.73417Z"
-						fill="url(#paint1_linear_3214_9572)"
+						fill="#EDEAEA"
 					/>
 					<path
 						className="_PageEditorPen"
 						d="M18.9063 21.1187L25.6225 14.4025C26.7575 13.2675 28.0135 13.2675 29.1485 14.4025C30.2835 15.5375 30.2835 16.7935 29.1485 17.9285L22.4323 24.6447L18.9063 21.1187ZM21.5306 25.1533L18.6256 25.4761C18.308 25.5114 18.0396 25.2431 18.0749 24.9255L18.3977 22.0204L21.5306 25.1533Z"
-						fill="url(#paint2_linear_3214_9572)"
+						fill="#006769"
 					/>
-					<defs>
-						<linearGradient
-							id="paint0_linear_3214_9572"
-							x1="12.8157"
-							y1="0"
-							x2="12.8157"
-							y2="33.1313"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#EEEEEE" stopOpacity="0.933333" />
-							<stop offset="1" stopColor="#EDEAEA" />
-						</linearGradient>
-						<linearGradient
-							id="paint1_linear_3214_9572"
-							x1="20.9126"
-							y1="1.18848"
-							x2="20.9126"
-							y2="8.28963"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#EEEEEE" stopOpacity="0.933333" />
-							<stop offset="1" stopColor="#EDEAEA" />
-						</linearGradient>
-						<linearGradient
-							id="paint2_linear_3214_9572"
-							x1="24.0358"
-							y1="13.5513"
-							x2="24.0358"
-							y2="25.4793"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#00B5B9" />
-							<stop offset="1" stopColor="#006769" />
-						</linearGradient>
-					</defs>
 				</IconHelper>
 			),
 		},

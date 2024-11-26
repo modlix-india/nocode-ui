@@ -342,7 +342,6 @@ function TextBox(props: ComponentProps) {
 		} else {
 			tempNumber = numberType === 'DECIMAL' ? parseFloat(temp) : parseInt(temp);
 			temp = !isNaN(tempNumber) ? tempNumber : temp;
-
 			if (updateStoreImmediately && bindingPathPath) {
 				setData(bindingPathPath, temp, context?.pageName);
 				callChangeEvent();
@@ -509,27 +508,23 @@ const component: Component = {
 			mainComponent: true,
 			icon: (
 				<IconHelper viewBox="0 0 30 30">
-					<defs>
-						<linearGradient
-							id="_red-black-linear-gradient"
-							x1="0.944"
-							x2="0.053"
-							y2="0.942"
-							gradientUnits="objectBoundingBox"
-						>
-							<stop offset="0" stopColor="#ce2929" />
-							<stop offset="1" stopColor="#d37a39" />
-						</linearGradient>
-					</defs>
-					<rect width="30" height="30" rx="4" fill="url(#_red-black-linear-gradient)" />
-					<rect width="26" height="26" rx="3" transform="translate(2 2)" fill="#fff" />
 					<path
 						id="_text_box_text"
-						d="M14,0V3.789h-.414A5.577,5.577,0,0,0,12.77,1.91,3.067,3.067,0,0,0,11.54.991,4.348,4.348,0,0,0,10.012.805H8.851V11.6a4.155,4.155,0,0,0,.126,1.342,1.2,1.2,0,0,0,.517.475,2.381,2.381,0,0,0,1.057.2h.517V14H2.908v-.382h.517A2.358,2.358,0,0,0,4.517,13.4a1.027,1.027,0,0,0,.471-.5,3.841,3.841,0,0,0,.126-1.3V.805H3.989A3.535,3.535,0,0,0,1.7,1.4,3.817,3.817,0,0,0,.437,3.789H0V0Z"
-						transform="translate(9 10)"
+						d="M22.0608 7.52344V11.4658H21.6741C21.4449 10.5563 21.1907 9.90462 20.9114 9.51074C20.6321 9.1097 20.249 8.79102 19.762 8.55469C19.4899 8.42578 19.0136 8.36133 18.3333 8.36133H17.2483V19.5977C17.2483 20.3424 17.2877 20.8079 17.3665 20.9941C17.4524 21.1803 17.6136 21.3451 17.8499 21.4883C18.0934 21.6243 18.4228 21.6924 18.8382 21.6924H19.3216V22.0898H11.6946V21.6924H12.178C12.6005 21.6924 12.9407 21.6172 13.1985 21.4668C13.3847 21.3665 13.5315 21.1947 13.6389 20.9512C13.7177 20.7793 13.7571 20.3281 13.7571 19.5977V8.36133H12.7044C11.7233 8.36133 11.0107 8.56901 10.5667 8.98438C9.94363 9.56445 9.54975 10.3916 9.38504 11.4658H8.97684V7.52344H22.0608Z"
+						fill="black"
+					/>
+					<rect
+						x="1.25"
+						y="1.25"
+						width="27.5"
+						height="27.5"
+						rx="1.75"
+						stroke="#EC255A"
+						strokeWidth="2.5"
+						fillOpacity={0}
 					/>
 					<g id="_text_box_caret" opacity={0}>
-						<rect width="2" height="18" transform="translate(5 8)" />
+						<rect width="2" height="18" transform="translate(5 6)" />
 					</g>
 				</IconHelper>
 			),

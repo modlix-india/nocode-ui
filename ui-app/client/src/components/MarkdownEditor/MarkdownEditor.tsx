@@ -422,7 +422,7 @@ const component: Component = {
 			mainComponent: true,
 			icon: (
 				<IconHelper viewBox="0 0 30 30">
-					<rect width="30" height="30" rx="4" fill="url(#paint0_linear_3214_9556)" />
+					<rect width="30" height="30" rx="4" fill="#1679AB" />
 					<path
 						className="_MarkdownEditorMIcon"
 						d="M13.5801 20.8509H16.7596V10H13.5697L10.3798 13.9887L7.18991 10H4V20.8509H7.20028V14.6267L10.3902 18.6153L13.5801 14.6267V20.8509Z"
@@ -433,19 +433,6 @@ const component: Component = {
 						d="M18 15.1421L22.5375 20.4366L27.07 15.1421H24.0467V10H21.0233V15.1421H18Z"
 						fill="white"
 					/>
-					<defs>
-						<linearGradient
-							id="paint0_linear_3214_9556"
-							x1="15"
-							y1="0"
-							x2="15"
-							y2="30"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#41B6F1" />
-							<stop offset="1" stopColor="#1679AB" />
-						</linearGradient>
-					</defs>
 				</IconHelper>
 			),
 		},

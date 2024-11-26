@@ -207,42 +207,47 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 30 20">
-					<rect
+				<IconHelper viewBox="0 0 30 30">
+					<path
+						fill-rule="evenodd"
+						clip-rule="evenodd"
+						d="M1.5 9C0.671573 9 0 8.32843 0 7.5V1.5C0 0.671573 0.671573 0 1.5 0H28.5C29.3284 0 30 0.671573 30 1.5V7.5C30 8.32843 29.3284 9 28.5 9H1.5ZM8.5 3.5H21.5C21.7761 3.5 22 3.72386 22 4V5C22 5.27614 21.7761 5.5 21.5 5.5H8.5C8.22386 5.5 8 5.27614 8 5V4C8 3.72386 8.22386 3.5 8.5 3.5Z"
+						fill="#C5A400"
 						className="_popOver"
-						width="30"
-						height="20"
-						rx="2"
-						fill="url(#paint0_linear_3214_9662)"
+						transform="translate(0, 19)"
 					/>
 					<rect
-						className="_popOver"
-						x="3"
-						y="3"
-						width="24"
-						height="14"
+						width="30"
+						height="24"
 						rx="2"
-						fill="white"
-						fillOpacity="0.5"
+						fill="#C5A400"
+						className="_popOver1"
+						opacity="0"
 					/>
 					<path
-						className="_popOver"
-						d="M10.6062 24.95C10.3368 25.4167 9.66321 25.4167 9.39378 24.95L6.27609 19.55C6.00666 19.0833 6.34345 18.5 6.88231 18.5H13.1177C13.6566 18.5 13.9933 19.0833 13.7239 19.55L10.6062 24.95Z"
-						fill="#0582C7"
+						d="M23.5 11H6.5C6.22386 11 6 11.2239 6 11.5V12.5C6 12.7761 6.22386 13 6.5 13H23.5C23.7761 13 24 12.7761 24 12.5V11.5C24 11.2239 23.7761 11 23.5 11Z"
+						fill="white"
+						className="_popOver1"
+						opacity="0"
 					/>
-					<defs>
-						<linearGradient
-							id="paint0_linear_3214_9662"
-							x1="15"
-							y1="0"
-							x2="15"
-							y2="20"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#93D9FF" />
-							<stop offset="1" stopColor="#007FC5" />
-						</linearGradient>
-					</defs>
+					<path
+						d="M23.5 5H12.5C12.2239 5 12 5.22386 12 5.5V6.5C12 6.77614 12.2239 7 12.5 7H23.5C23.7761 7 24 6.77614 24 6.5V5.5C24 5.22386 23.7761 5 23.5 5Z"
+						fill="white"
+						className="_popOver1"
+						opacity="0"
+					/>
+					<path
+						d="M23.5 17H12.5C12.2239 17 12 17.2239 12 17.5V18.5C12 18.7761 12.2239 19 12.5 19H23.5C23.7761 19 24 18.7761 24 18.5V17.5C24 17.2239 23.7761 17 23.5 17Z"
+						fill="white"
+						className="_popOver1"
+						opacity="0"
+					/>
+					<path
+						d="M10.6062 28.95C10.3368 29.4167 9.66321 29.4167 9.39378 28.95L6.27609 23.55C6.00666 23.0833 6.34345 22.5 6.88231 22.5H13.1177C13.6566 22.5 13.9933 23.0833 13.7239 23.55L10.6062 28.95Z"
+						fill="#C5A400"
+						className="_popOver1"
+						opacity="0"
+					/>
 				</IconHelper>
 			),
 		},

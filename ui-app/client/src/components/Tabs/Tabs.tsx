@@ -355,7 +355,7 @@ const component: Component = {
 			mainComponent: true,
 			icon: (
 				<IconHelper viewBox="0 0 38 14">
-					<rect width="38" height="14" rx="2" fill="url(#paint0_linear_3818_9713)" />
+					<rect width="38" height="14" rx="2" fill="#EDEAEA" />
 					<rect
 						className="_tabsBlock1"
 						x="2.25"
@@ -363,7 +363,7 @@ const component: Component = {
 						width="9.5"
 						height="4.5"
 						rx="0.75"
-						fill="url(#paint1_linear_3818_9713)"
+						fill="#3792FE"
 						stroke="black"
 						strokeWidth="0.5"
 					/>

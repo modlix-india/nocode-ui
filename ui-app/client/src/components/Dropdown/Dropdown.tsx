@@ -489,78 +489,27 @@ const component: Component = {
 			icon: (
 				<IconHelper viewBox="0 0 30 30">
 					<path
-						d="M25.2667 0H4.76667C2.13333 0 0 2.13333 0 4.76667V25.2667C0 27.8667 2.13333 30 4.76667 30H25.2667C27.8667 30 30 27.8667 30 25.2667V4.76667C30 2.13333 27.8667 0 25.2667 0ZM23.7333 11.9667L14 21.7C13.6667 22.0333 13.2333 22.2 12.8333 22.2C12.4333 22.2 11.9667 22.0333 11.6667 21.7L6.26667 16.3C5.6 15.6333 5.6 22.1 6.26667 21.4333C6.93333 20.7667 7.96667 20.7667 8.63333 21.4333L12.8667 25.6667L26.25 10.3125C26.9167 9.64583 23.1333 8.93333 23.8 9.6C24.4 10.2667 24.4 11.3333 23.7333 11.9667Z"
-						fill="url(#paint0_linear_3214_9386)"
+						className="_dropdownlines"
+						d="M26 14L26 12C26 11.4477 25.5523 11 25 11L1 11C0.447716 11 -1.95702e-08 11.4477 -4.37114e-08 12L-1.31134e-07 14C-1.55275e-07 14.5523 0.447716 15 1 15L25 15C25.5523 15 26 14.5523 26 14Z"
+						fill="#EDEAEA"
 					/>
 					<path
-						className="_dropdownarrow"
-						d="M20.7343 6.9998C21.0752 6.9998 21.2598 7.39889 21.0392 7.65872L15.0566 14.704C14.8979 14.8908 14.6101 14.8923 14.4495 14.7072L8.33863 7.6619C8.11398 7.4029 8.29795 6.9998 8.6408 6.9998L20.7343 6.9998Z"
-						fill="url(#paint1_linear_3214_9386)"
-					/>
-					<rect
 						className="_dropdownlines"
-						x="8.33105"
-						y="19.8349"
-						width="13.3333"
-						height="1.66667"
-						rx="0.833333"
-						fill="url(#paint2_linear_3214_9386)"
+						d="M19 20L19 18C19 17.4477 18.5523 17 18 17L1 17C0.447716 17 -1.95702e-08 17.4477 -4.37114e-08 18L-1.31134e-07 20C-1.55275e-07 20.5523 0.447716 21 1 21L18 21C18.5523 21 19 20.5523 19 20Z"
+						fill="#EDEAEA"
 					/>
-					<rect
-						className="_dropdownlines"
-						x="5.00195"
-						y="23.3336"
-						width="20"
-						height="1.66667"
-						rx="0.833333"
-						fill="url(#paint3_linear_3214_9386)"
+					<path
+						d="M30 8L30 1C30 0.447715 29.5523 -1.95703e-08 29 -4.37114e-08L1 -1.26763e-06C0.447716 -1.29177e-06 1.88778e-06 0.447714 1.86364e-06 0.999999L1.55766e-06 8C1.53352e-06 8.55228 0.447717 9 1 9L29 9C29.5523 9 30 8.55229 30 8Z"
+						fill="#EC255A"
 					/>
-					<defs>
-						<linearGradient
-							id="paint0_linear_3214_9386"
-							x1="15"
-							y1="0"
-							x2="15"
-							y2="30"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#EEEEEE" />
-							<stop offset="1" stopColor="#EDEAEA" />
-						</linearGradient>
-						<linearGradient
-							id="paint1_linear_3214_9386"
-							x1="20.7589"
-							y1="5.54513"
-							x2="10.3831"
-							y2="11.5356"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#F2B7EB" />
-							<stop offset="1" stopColor="#C539B4" />
-						</linearGradient>
-						<linearGradient
-							id="paint2_linear_3214_9386"
-							x1="14.9977"
-							y1="19.8349"
-							x2="14.9977"
-							y2="21.5016"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#F2B7EB" />
-							<stop offset="1" stopColor="#C539B4" />
-						</linearGradient>
-						<linearGradient
-							id="paint3_linear_3214_9386"
-							x1="15.002"
-							y1="23.3336"
-							x2="15.002"
-							y2="25.0002"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#F2B7EB" />
-							<stop offset="1" stopColor="#C539B4" />
-						</linearGradient>
-					</defs>
+					<path
+						d="M24.433 5.75C24.2406 6.08333 23.7594 6.08333 23.567 5.75L22.701 4.25C22.5085 3.91667 22.7491 3.5 23.134 3.5L24.866 3.5C25.2509 3.5 25.4915 3.91667 25.299 4.25L24.433 5.75Z"
+						fill="white"
+					/>
+					<path
+						d="M25.0657 3.5H22.9343C22.5349 3.5 22.2967 3.94507 22.5182 4.27735L23.584 5.87596C23.7819 6.17283 24.2181 6.17283 24.416 5.87596L25.4818 4.27735C25.7033 3.94507 25.4651 3.5 25.0657 3.5Z"
+						fill="white"
+					/>
 				</IconHelper>
 			),
 			mainComponent: true,

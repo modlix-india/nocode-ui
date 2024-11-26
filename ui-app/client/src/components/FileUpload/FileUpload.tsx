@@ -468,12 +468,12 @@ const component: Component = {
 					<path
 						className="_fileUploadBG"
 						d="M14.2958 6.09627V0H2.11268C0.947746 0 0 0.947747 0 2.11268V27.8873C0 29.0523 0.947746 30 2.11268 30H21.0963C22.2612 30 23.2089 29.0523 23.2089 27.8873V8.91317H17.1127C15.5594 8.91317 14.2958 7.64951 14.2958 6.09627Z"
-						fill="url(#paint0_linear_3214_9244)"
+						fill="#43B2FF"
 					/>
 					<path
 						className="_fileUploadRC"
 						d="M15.707 6.08405C15.707 6.86067 16.3389 7.4925 17.1155 7.4925H22.1675L15.707 1.0625V6.08405Z"
-						fill="url(#paint1_linear_3214_9244)"
+						fill="#43B2FF"
 					/>
 					<path
 						className="_fileUploadAT"
@@ -485,30 +485,6 @@ const component: Component = {
 						d="M13.5039 23.2891C13.5039 23.8413 13.0562 24.2891 12.5039 24.2891L9.38435 24.2891C8.83207 24.2891 8.38435 23.8413 8.38435 23.2891L8.38435 18.4381L13.5039 18.4381L13.5039 23.2891Z"
 						fill="white"
 					/>
-					<defs>
-						<linearGradient
-							id="paint0_linear_3214_9244"
-							x1="11.6045"
-							y1="0"
-							x2="11.6045"
-							y2="30"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#AADCFF" />
-							<stop offset="1" stopColor="#43B2FF" />
-						</linearGradient>
-						<linearGradient
-							id="paint1_linear_3214_9244"
-							x1="18.9373"
-							y1="1.0625"
-							x2="18.9373"
-							y2="7.4925"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#AADCFF" />
-							<stop offset="1" stopColor="#43B2FF" />
-						</linearGradient>
-					</defs>
 				</IconHelper>
 			),
 			mainComponent: true,

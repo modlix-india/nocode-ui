@@ -92,73 +92,50 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 25 25">
-					<path
+				<IconHelper viewBox="0 0 30 30">
+					<rect
+						x="0"
+						y="0"
+						rx={1}
+						ry={1}
+						width="14"
+						height="14"
 						className="_SectionGridBlock1"
-						d="M0 10.9091H10.9091V-3.33786e-05H0.800001C0.358173 -3.33786e-05 0 0.358139 0 0.799967V10.9091Z"
-						fill="url(#paint0_linear_3818_9724)"
+						fill="#FF557E"
 					/>
-					<path
-						className="_SectionGridBlock4"
-						d="M24.5469 13.6356L13.6378 13.6356L13.6378 24.5447H23.7469C24.1887 24.5447 24.5469 24.1865 24.5469 23.7447L24.5469 13.6356Z"
-						fill="url(#paint1_linear_3818_9724)"
-					/>
-					<path
-						className="_SectionGridBlock3"
-						d="M0 13.6356L10.9091 13.6356L10.9091 24.5447H0.800001C0.358173 24.5447 0 24.1865 0 23.7447L0 13.6356Z"
-						fill="url(#paint2_linear_3818_9724)"
-					/>
-					<path
+
+					<rect
+						x="16"
+						y="0"
+						rx={1}
+						ry={1}
+						width="14"
+						height="14"
 						className="_SectionGridBlock2"
-						d="M24.5469 10.9091L13.6378 10.9091L13.6378 -3.33786e-05L23.7469 -3.33786e-05C24.1887 -3.33786e-05 24.5469 0.358139 24.5469 0.799967L24.5469 10.9091Z"
-						fill="url(#paint3_linear_3818_9724)"
+						fill="#FF557E"
 					/>
-					<defs>
-						<linearGradient
-							id="paint0_linear_3818_9724"
-							x1="5.45455"
-							y1="10.9091"
-							x2="5.45455"
-							y2="-3.33786e-05"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#F6C0CD" />
-							<stop offset="1" stopColor="#FBA1B7" />
-						</linearGradient>
-						<linearGradient
-							id="paint1_linear_3818_9724"
-							x1="19.0923"
-							y1="13.6356"
-							x2="19.0923"
-							y2="24.5447"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#F6C0CD" />
-							<stop offset="1" stopColor="#FBA1B7" />
-						</linearGradient>
-						<linearGradient
-							id="paint2_linear_3818_9724"
-							x1="5.45455"
-							y1="13.6356"
-							x2="5.45455"
-							y2="24.5447"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#F6C0CD" />
-							<stop offset="1" stopColor="#FBA1B7" />
-						</linearGradient>
-						<linearGradient
-							id="paint3_linear_3818_9724"
-							x1="19.0923"
-							y1="10.9091"
-							x2="19.0923"
-							y2="-3.33786e-05"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#F6C0CD" />
-							<stop offset="1" stopColor="#FBA1B7" />
-						</linearGradient>
-					</defs>
+
+					<rect
+						x="0"
+						y="16"
+						rx={1}
+						ry={1}
+						width="14"
+						height="14"
+						className="_SectionGridBlock3"
+						fill="#FF557E"
+					/>
+
+					<rect
+						x="16"
+						y="16"
+						rx={1}
+						ry={1}
+						width="14"
+						height="14"
+						className="_SectionGridBlock4"
+						fill="#FF557E"
+					/>
 				</IconHelper>
 			),
 		},

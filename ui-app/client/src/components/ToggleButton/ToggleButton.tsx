@@ -166,7 +166,7 @@ const component: Component = {
 						width="30"
 						height="15"
 						rx="7.5"
-						fill="url(#paint0_linear_3214_9306)"
+						fill="#02B694"
 					/>
 					<circle
 						className="_toggleButtonKnob"
@@ -175,19 +175,6 @@ const component: Component = {
 						r="4.5"
 						fill="white"
 					/>
-					<defs>
-						<linearGradient
-							id="paint0_linear_3214_9306"
-							x1="15"
-							y1="0"
-							x2="15"
-							y2="15"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stop-color="#F6CDFF" />
-							<stop offset="0.995" stop-color="#E36CFD" />
-						</linearGradient>
-					</defs>
 				</IconHelper>
 			),
 		},

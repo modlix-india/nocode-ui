@@ -216,7 +216,7 @@ const component: Component = {
 						width="10.5884"
 						height="10.5884"
 						rx="2"
-						fill="url(#paint0_linear_3214_9313)"
+						fill="#EDEAEA"
 					/>
 					<rect
 						className="_buttonBar2"
@@ -225,50 +225,15 @@ const component: Component = {
 						width="14.1179"
 						height="14.1179"
 						rx="2"
-						fill="url(#paint1_linear_3214_9313)"
+						fill="#EDEAEA"
 					/>
 					<rect
 						className="_buttonBar1"
 						width="21.1768"
 						height="21.1768"
 						rx="2"
-						fill="url(#paint2_linear_3214_9313)"
+						fill="#FFB534"
 					/>
-					<defs>
-						<linearGradient
-							id="paint0_linear_3214_9313"
-							x1="24.7058"
-							y1="17.6454"
-							x2="24.7058"
-							y2="28.2338"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#EEEEEE" />
-							<stop offset="1" stopColor="#EDEAEA" />
-						</linearGradient>
-						<linearGradient
-							id="paint1_linear_3214_9313"
-							x1="17.6478"
-							y1="10.5917"
-							x2="17.6478"
-							y2="24.7096"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#EEEEEE" />
-							<stop offset="1" stopColor="#EDEAEA" />
-						</linearGradient>
-						<linearGradient
-							id="paint2_linear_3214_9313"
-							x1="10.5884"
-							y1="0"
-							x2="10.5884"
-							y2="21.1768"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#FFDB9D" />
-							<stop offset="1" stopColor="#FFB534" />
-						</linearGradient>
-					</defs>
 				</IconHelper>
 			),
 			mainComponent: true,

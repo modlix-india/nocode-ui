@@ -179,98 +179,26 @@ const component: Component = {
 			icon: (
 				<IconHelper viewBox="0 0 27 27">
 					<path
-						d="M6 1C6 0.447715 6.44772 0 7 0H26C26.5523 0 27 0.447715 27 1V2C27 2.55228 26.5523 3 26 3H7C6.44772 3 6 2.55228 6 2V1Z"
-						fill="url(#paint0_linear_3214_9518)"
+						d="M0 1C0 0.447715 0.447715 0 1 0H20C20.5523 0 21 0.447715 21 1V2C21 2.55228 20.5523 3 20 3H1C0.447715 3 0 2.55228 0 2V1Z"
+						fill="#EDEAEA"
 					/>
 					<path
-						d="M1 27C0.447715 27 0 26.5523 0 26L0 1C0 0.447714 0.447715 0 1 0H2C2.55228 0 3 0.447716 3 1L3 26C3 26.5523 2.55228 27 2 27H1Z"
-						fill="url(#paint1_linear_3214_9518)"
+						d="M0 9C0 8.44772 0.447715 8 1 8H20C20.5523 8 21 8.44772 21 9V10C21 10.5523 20.5523 11 20 11H1C0.447715 11 0 10.5523 0 10V9Z"
+						fill="#EDEAEA"
 					/>
 					<path
-						d="M6 9C6 8.44772 6.44772 8 7 8H26C26.5523 8 27 8.44772 27 9V10C27 10.5523 26.5523 11 26 11H7C6.44772 11 6 10.5523 6 10V9Z"
-						fill="url(#paint2_linear_3214_9518)"
+						d="M0 17C0 16.4477 0.447715 16 1 16H20C20.5523 16 21 16.4477 21 17V18C21 18.5523 20.5523 19 20 19H1C0.447715 19 0 18.5523 0 18V17Z"
+						fill="#EDEAEA"
 					/>
 					<path
-						d="M6 17C6 16.4477 6.44772 16 7 16H26C26.5523 16 27 16.4477 27 17V18C27 18.5523 26.5523 19 26 19H7C6.44772 19 6 18.5523 6 18V17Z"
-						fill="url(#paint3_linear_3214_9518)"
-					/>
-					<path
-						d="M6 25C6 24.4477 6.44772 24 7 24H26C26.5523 24 27 24.4477 27 25V26C27 26.5523 26.5523 27 26 27H7C6.44772 27 6 26.5523 6 26V25Z"
-						fill="url(#paint4_linear_3214_9518)"
+						d="M0 25C0 24.4477 0.447715 24 1 24H20C20.5523 24 21 24.4477 21 25V26C21 26.5523 20.5523 27 20 27H1C0.447715 27 0 26.5523 0 26V25Z"
+						fill="#EDEAEA"
 					/>
 					<path
 						className="_FDEPen"
-						d="M9.10547 21.0239L18.0018 12.1276C19.5053 10.6241 21.169 10.6241 22.6724 12.1276C24.1759 13.631 24.1759 15.2947 22.6724 16.7982L13.7761 25.6945L9.10547 21.0239ZM12.5816 26.3683L8.73357 26.7959C8.31287 26.8426 7.9574 26.4871 8.00414 26.0664L8.4317 22.2184L12.5816 26.3683Z"
-						fill="url(#paint5_linear_3214_9518)"
+						d="M3.10547 21.0239L12.0018 12.1276C13.5053 10.6241 15.169 10.6241 16.6724 12.1276C18.1759 13.631 18.1759 15.2947 16.6724 16.7982L7.77607 25.6945L3.10547 21.0239ZM6.5816 26.3683L2.73357 26.7959C2.31287 26.8426 1.9574 26.4871 2.00414 26.0664L2.4317 22.2184L6.5816 26.3683Z"
+						fill="#00B5B9"
 					/>
-					<defs>
-						<linearGradient
-							id="paint0_linear_3214_9518"
-							x1="16.5"
-							y1="0"
-							x2="16.5"
-							y2="3"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#EEEEEE" stopOpacity="0.933333" />
-							<stop offset="1" stopColor="#EDEAEA" />
-						</linearGradient>
-						<linearGradient
-							id="paint1_linear_3214_9518"
-							x1="0"
-							y1="13.5"
-							x2="3"
-							y2="13.5"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#EEEEEE" stopOpacity="0.933333" />
-							<stop offset="1" stopColor="#EDEAEA" />
-						</linearGradient>
-						<linearGradient
-							id="paint2_linear_3214_9518"
-							x1="16.5"
-							y1="8"
-							x2="16.5"
-							y2="11"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#EEEEEE" stopOpacity="0.933333" />
-							<stop offset="1" stopColor="#EDEAEA" />
-						</linearGradient>
-						<linearGradient
-							id="paint3_linear_3214_9518"
-							x1="16.5"
-							y1="16"
-							x2="16.5"
-							y2="19"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#EEEEEE" stopOpacity="0.933333" />
-							<stop offset="1" stopColor="#EDEAEA" />
-						</linearGradient>
-						<linearGradient
-							id="paint4_linear_3214_9518"
-							x1="16.5"
-							y1="24"
-							x2="16.5"
-							y2="27"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#EEEEEE" stopOpacity="0.933333" />
-							<stop offset="1" stopColor="#EDEAEA" />
-						</linearGradient>
-						<linearGradient
-							id="paint5_linear_3214_9518"
-							x1="15.9"
-							y1="11"
-							x2="15.9"
-							y2="26.8"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#00B5B9" />
-							<stop offset="1" stopColor="#006769" />
-						</linearGradient>
-					</defs>
 				</IconHelper>
 			),
 		},

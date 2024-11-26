@@ -16,6 +16,8 @@ export default function GridStyle({
 			overflow: hidden;
 			position: relative;
 			--comp-item-animation-duration: 1s;
+			--comp-item-animation-duration-short: 2s;
+			--comp-item-animation-duration-mid: 3s;
 			--comp-item-animation-duration-long: 4s;
 		}
 
@@ -1488,10 +1490,12 @@ export default function GridStyle({
 
 		${PREFIX} ._dropdownContent ._eachIcon svg {
 			margin-right: 5px;
+			justify-content: center;
 		}
 
 		${PREFIX} ._dropdownContent ._iconName {
 			flex-grow: 1;
+			text-align: center;
 		}
 			
 		${PREFIX} ._simpleEditorGroupTitle ._controls {
@@ -1584,17 +1588,17 @@ export default function GridStyle({
 		}
 
 		${PREFIX} ._simpleEditorButtonBar {
-			height: 35px;
+			width: 100%;
+			height: 36px;
 			display: flex;
 			flex-direction: row;
-			padding: 5px;
+			padding: 3px;
 			font-family: Inter;
 			font-size: 12px;
 			gap: 5px;
-			background-color: #F9F9F9;
-			border-radius: 6px;
-			justify-content: center;
-			align-items: center;
+			background-color: #f9f9f9;
+			border-radius: 4px;
+			text-align: center;
 		}
 
 		${PREFIX} ._simpleEditorButtonBar ._simpleButtonBarButton {
@@ -1602,7 +1606,7 @@ export default function GridStyle({
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			padding: 0px 10px;
+			padding: 0px 8px;
 			border-radius: 4px;
 			cursor: pointer;
 		}
@@ -1610,7 +1614,7 @@ export default function GridStyle({
 		${PREFIX} ._simpleEditorButtonBar ._simpleButtonBarButton._selected {
 			background-color: #52BD94;
 			color: #FFF;
-			box-shadow: 0px 1px 3px 0px #0000001A;
+			box-shadow: 0px 1px 2px 0px #0000001A;
 		}
 
 		${PREFIX} ._svgButton {
@@ -3477,9 +3481,10 @@ export default function GridStyle({
 			display: flex;
 			flex-direction: column;
 			align-items: center;
+			text-align: center;
 			gap: 10px;
-			font-size: 12px;
-			font-weight: 600;
+			font-size: 11px;
+			font-weight: 500;
 			font-family: Inter;
 			border: 0.5px solid transparent;
 			width: 100px;
@@ -3489,7 +3494,7 @@ export default function GridStyle({
 
 		${PREFIX} ._popupMenuContainer._compMenu ._compList ._compMenuItem:hover,
 		${PREFIX} ._popupMenuContainer._compMenu ._compList ._compMenuItem.active {
-			border: 0.5px solid #1893E9;			
+			border: 0.5px solid rgba(0, 0, 0, 0.1);			
 		}
 
 		${PREFIX} ._popupMenuContainer._compMenu ._compList ._compMenuItem svg._iconHelperSVG,
@@ -3524,108 +3529,115 @@ export default function GridStyle({
 		}
 
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._scaleBottomTop {
-			animation: scaleBottomTop var(--comp-item-animation-duration) infinite;
+			animation: scaleBottomTop var(--comp-item-animation-duration-short) infinite;
 		}
 
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._scaleTopBottom {
-			animation: scaleBottomTop var(--comp-item-animation-duration) infinite;
+			animation: scaleBottomTop var(--comp-item-animation-duration-short) infinite;
 			transform-origin: bottom;
 		}
 
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._dropdownarrow {
-			animation: dropdownarrowAnimation var(--comp-item-animation-duration-long) infinite;
+			animation: dropdownarrowAnimation var(--comp-item-animation-duration-mid) infinite;
+			transform-origin: 24.5px 6px;
 		}
 
 		@keyframes dropdownarrowAnimation {
-			0% { transform: scaleY(0.8); }
-			100% { transform: scaleY(1); }
+			0% { transform: rotate(90deg); }
+			100% { transform: rotate(0deg); }
 		}
 
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._dropdownlines {
-			animation: dropdownlinesScaleAnimation var(--comp-item-animation-duration-long) infinite;
+			animation: dropdownlinesScaleAnimation var(--comp-item-animation-duration-mid) infinite;
 		}
 
 		@keyframes dropdownlinesScaleAnimation {
-			0% { opacity: 0; }
-			50% { opacity: 0.5; }
-			100% { opacity: 1; }
-		}
-
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._checkboxbox {
-			animation: checkboxboxAnimation var(--comp-item-animation-duration-long) infinite;
-		}
-
-		@keyframes checkboxboxAnimation {
-			0% { opacity: 0; }
-			100% { opacity: 1; }
+			0% { transform: translateY(0px); opacity: 1; }
+			50% { transform: translateY(-10px); opacity: 0; }
+			100% { transform: translateY(0px); opacity: 1; }
 		}
 
 
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._checkboxTick {
-			animation: checkboxTickAnimation var(--comp-item-animation-duration-long) infinite;
+			animation: checkboxTickAnimation var(--comp-item-animation-duration-mid) infinite;
 			transform-origin: 15px 15px;
 		}
 
 		@keyframes checkboxTickAnimation {
 			0% { transform: scale(1); }
-			33% { transform: scale(0.5); }
+			33% { transform: scale(1); }
 			66%	{ transform: scale(1.2); }
 			100% { transform: scale(1); }
 		}
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._carouselmainframe {
-			animation: carouselframeAnimation var(--comp-item-animation-duration-long) infinite;
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._checkboxbox {
+			animation: checkboxboxAnimation var(--comp-item-animation-duration-mid) infinite;
+
 		}
 
-		@keyframes carouselframeAnimation {
-			0% { opacity: 0; transform: translate(5px);  }
+		@keyframes checkboxboxAnimation {
+			0% { transform: translate(8px, 8px) ; opacity: 1; }
+			33% { transform: translate(30px, 8px) ; opacity: 1; }
+			66% { transform: translate(30px, 8px) ; opacity: 1; }
+			100% { transform: translate(8px, 8px) ; opacity: 1; }
+		}
+
+		@keyframes carouselframe12Animation {
+			0% { opacity: 1; transform: translate(0px);  }
+			50% { opacity: 0; transform: translate(10px);  }
 			100% { opacity: 1; transform: translate(0px); }
 		}
 		
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._carouselfirstframe,
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._carouselsecondframe,
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._carouselthirdframe,
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._carouselfourthframe
-		{
-			animation: carouselframeAnimation var(--comp-item-animation-duration-long) infinite;
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._carouselsecondframe{
+			animation: carouselframe12Animation var(--comp-item-animation-duration-mid) infinite;
+			z-index: -1;
 		}
 
+		@keyframes carouselframe34Animation {
+			0% { opacity: 1; transform: translate(0px);  }
+		50% { opacity: 0; transform: translate(-10px);  }
+			100% { opacity: 1; transform: translate(0px); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._carouselthirdframe,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._carouselfourthframe{
+			animation: carouselframe34Animation var(--comp-item-animation-duration-mid) infinite;
+			z-index: -1;
+		}
+
+
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._gallerymainframe{
-			animation: gallerymainAnimation var(--comp-item-animation-duration) infinite;
+			animation: gallerymainAnimation var(--comp-item-animation-duration-mid) infinite;
 		}
 
 		@keyframes gallerymainAnimation {
-			0% { opacity: 0; transform: translateY(-25px); }
-			100% { opacity: 1; transform: translateY(0px); }
+			0% { opacity: 0; transform: translateY(-20px); }
+			50% { opacity: 1; transform: translateY(0px); }
+			100% { opacity: 1; transform: translateY(-20px); }
 		}
 
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._gallerysecondframe{
-			animation: gallerysecondAnimation var(--comp-item-animation-duration) infinite;
+			animation: gallerysecondAnimation var(--comp-item-animation-duration-mid) infinite;
 		}
 
 		@keyframes gallerysecondAnimation {
 			0% { opacity: 0; transform: translateY(-15px); }
-			100% { opacity: 1; transform: translateY(0px); }
+			50% { opacity: 1; transform: translateY(0px); }
+			100% { opacity: 1; transform: translateY(-15px); }
 		}
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._galleryfirstframe
-		{
-			animation: galleryfirstAnimation var(--comp-item-animation-duration) infinite;
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._galleryfirstframe{
+			animation: galleryfirstAnimation var(--comp-item-animation-duration-mid) infinite;
 		}
 
 		@keyframes galleryfirstAnimation {
 			0% { opacity: 0; transform: translateY(-5px); }
-			100% { opacity: 1; transform: translateY(0px); }
+			50% { opacity: 1; transform: translateY(0px); }
+			100% { opacity: 1; transform: translateY(-5px); }
 		}
 			
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._linkbox {
-			animation: linkboxAnimation var(--comp-item-animation-duration-long) infinite;
-		}
-
-		@keyframes linkboxAnimation {
-			0% { opacity: 0; }
-			100% { opacity: 1; }
-		}
+		
 
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._linkarrowleft,
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._linkarrowright,
@@ -3635,8 +3647,8 @@ export default function GridStyle({
 		}
 
 		@keyframes linkarrowAnimation {
-			0% { transform: translate(-20px, 20px); }
-			50% { transform: translate(-5px, 5px); }
+			0% { transform: translate(0px, 0px); }
+			50% { transform: translate(-10px, 10px); }
 			100% { transform: translate(0, 0); }
 		}
 
@@ -3647,34 +3659,15 @@ export default function GridStyle({
 
 		@keyframes phonenumberAnimation {
 			0% { transform: rotate(0deg); }
-			10% { transform: rotate(10deg);}
 			20% { transform: rotate(-10deg);}
-			30% { transform: rotate(10deg);}
-			40% { transform:rotate(-10deg);}
-			50% { transform: rotate(10deg);}
-			60% { transform: rotate(-10deg);}
-			70% { transform: rotate(10deg);}
-			80% { transform:rotate(-10deg);}
-			90% { transform: rotate(10deg);}
+			40% { transform: rotate(10deg);}
+			60% { transform:rotate(-10deg);}
+			80% { transform: rotate(10deg);}
 			100% { transform: rotate(0deg); }
 		}
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._calenderValues {
-			animation: calendervaluesAnimation var(--comp-item-animation-duration-long) infinite;
-			transform-origin: 15px 12px; 
-			z-index: 10;
-		}	
-
-		@keyframes calendervaluesAnimation {
-			0% { opacity: 1; transform: rotateX(0deg); }
-			25% { opacity: 0.8; transform: rotateX(90deg); }
-			50% { opacity: 0.7; transform: rotateX(180deg); }
-			75% { opacity: 0.8; transform: rotateX(90deg); }
-			100% { opacity: 1; transform: rotateX(0deg); }
-			
-		}
-
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._calenderValue1 {
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._calender01bg,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._calender01num {
 			animation: calendervalue1Animation var(--comp-item-animation-duration-long) infinite;
 		}
 
@@ -3683,41 +3676,53 @@ export default function GridStyle({
 			100% { opacity: 1; }
 		}
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._calendarboard {
-			animation: calendarboardAnimation var(--comp-item-animation-duration-long) infinite;
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._calender31bg,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._calender31num {
+			animation: calendervalue31Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 11px;
 		}
 
-		@keyframes calendarboardAnimation {
-			0% { opacity: 1; }
-			25% { opacity: 0.5; }
-			50% { opacity: 0; }
-			75% { opacity: 0.5; }
-			100% { opacity: 1; }
+		@keyframes calendervalue31Animation {
+			0% { opacity: 1; transform: rotateX(0deg); }
+			50% { opacity: 0; transform: rotateX(100deg); }
 		}
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._iframeboard {
-			animation: iframeboardAnimation var(--comp-item-animation-duration-long) infinite;
-		}
 
-		@keyframes iframeboardAnimation {
-			0% { opacity: 0; }
-			50% { opacity: 0.5; }
-			100% { opacity: 1; }
-		}
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._iframesymbol {
-			animation: iframesymbolAnimation var(--comp-item-animation-duration-long) infinite;
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._iframesymbolstart{
+			animation: iframesymbolstartAnimation var(--comp-item-animation-duration-long) infinite;
 		}	
 
-		@keyframes iframesymbolAnimation {
-			0% { transform: translateX(-5px); }
+		@keyframes iframesymbolstartAnimation {
+			0% { transform: translateX(0px); }
+			50% { transform: translateX(-5px); }
+			100% { transform: translateX(0px); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._iframesymbolend{
+			animation: iframesymbolendAnimation var(--comp-item-animation-duration-long) infinite;
+		}	
+
+		@keyframes iframesymbolendAnimation {
+			0% { transform: translateX(0px); }
 			50% { transform: translateX(5px); }
 			100% { transform: translateX(0px); }
 		}
 
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._greenStepperInitialIcon{
+			animation: greenStepperInitialIconAnimation var(--comp-item-animation-duration-long) infinite;
+			z-index:-1;
+		}
+
+		@keyframes greenStepperInitialIconAnimation {
+			0% { fill: transparent; opacity: 1; }
+			35% { fill: #1CBA79; opacity: 1; }
+			100% { fill: #1CBA79; opacity: 1; }
+		}
+
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._greenStepperIcon {
 			animation: greenStepperIconAnimation var(--comp-item-animation-duration-long) infinite;
-			z-index:12;
+			z-index:1;
 		}
 
 		@keyframes greenStepperIconAnimation {
@@ -3736,45 +3741,70 @@ export default function GridStyle({
 
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TAFirstLine,
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TASecondLine {
-			animation: iframeboardAnimation var(--comp-item-animation-duration-long) infinite;
+			animation: TALineAnimation var(--comp-item-animation-duration-long) infinite;
 		}
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._icon3,
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._icon4,
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._icon21,
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._icon22,
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._icon1 {
-			animation: iconAnimation var(--comp-item-animation-duration-long) infinite;
+		@keyframes TALineAnimation {
+			0% { transform: translate(0px, 0px); }
+			50% { transform: translate(-2px, -2px); }
+			100% { transform: translate(0px, 0px); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._iconcircle{
+			animation: iconcircleAnimation var(--comp-item-animation-duration-mid) infinite;
+		}
+
+		@keyframes iconcircleAnimation {
+			0% { transform: translateY(0px); }
+			50% { transform: translateY(-3px); }
+			100% { transform: translateY(0px); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._icontriangle{
+			animation: icontriangleAnimation var(--comp-item-animation-duration-mid) infinite;
+			transform-origin: 7px 17px;
+		}
+
+		@keyframes icontriangleAnimation {
+			0% { transform: rotate(0deg); }
+			33% { transform: rotate(10deg); }
+			66% { transform: rotate(-10deg); }
+			100% { transform: rotate(0deg); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._iconbar {
+			animation: iconbarAnimation var(--comp-item-animation-duration-mid) infinite;
 			transform-origin: 15px 15px;
 		}
 
-		@keyframes iconAnimation {
-			0% { transform: scale(0.5) rotate(0deg);}
-			50% { transform: scale(0.8) rotate(180deg); }
-			100% { transform: scale(1) rotate(360deg); }
+		@keyframes iconbarAnimation {
+			0% { transform: scaleY(1) }
+			50% { transform: scaleY(0.2) }
+			100% { transform: scaleY(1) }
 		}
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._videoOuterDesign {
-			animation: videoOuterDesignAnimation var(--comp-item-animation-duration-long) infinite;
+		
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._videoPlayStart{
+			animation: videoPlayStartAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
 		}
 
-		@keyframes videoOuterDesignAnimation {
-			0% { fill: #EEEEEE; }
-			50% { fill: #EDEAEA;  }
-			100% { fill: #EDEAEA; }
+		@keyframes videoPlayStartAnimation {
+			0% { opacity: 1; rotate: 0deg; }
+			50% { opacity: 0; rotate: 90deg; }
+			100% { opacity: 1; rotate: 0deg; }
 		}
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._videoInnerDesign {
-			animation: videoInnerDesignAnimation var(--comp-item-animation-duration-long) infinite;
-			transform-origin: 10px 15px;
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._videoPlayPause {
+			animation: videoPlayPauseAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
 		}
 
-		@keyframes videoInnerDesignAnimation {
-			0% { fill: #02B694; transform: rotate(0deg); }	
-			25% { fill: #ACF3E6; transform: rotate(90deg); }
-			50% { fill: #02B694; transform: rotate(180deg); }
-			75% { fill: #ACF3E6; transform: rotate(270deg); }
-			100% { fill: #02B694; transform: rotate(360deg); }
+		@keyframes videoPlayPauseAnimation {
+			0% { opacity: 0; rotate: -90deg; }
+			50% { opacity: 1; rotate: 0deg; }
+			100% { opacity: 0; rotate: -90deg; }
 		}
 
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._popupInner {
@@ -3783,10 +3813,9 @@ export default function GridStyle({
 		}
 
 		@keyframes popupInnerAnimation {
-			0% { transform: scale(1); }
-			50% { transform: scale(0.6); }
-			75% { transform: scale(1.6); }
-			100% { transform: scale(1); }
+			0% { transform: translate(0, 0); }
+			50% { transform: translate(11px, 3.5px); }
+			100% { transform: translate(0, 0); }
 		}
 
 
@@ -3794,13 +3823,13 @@ export default function GridStyle({
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._menuInner2,
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._menuInner3 {
 			animation: menuInnerAnimation var(--comp-item-animation-duration-long) infinite;
-			transform-origin: 5px 5px;
+			transform-origin: 15px 15px;
 		}
 
 		@keyframes menuInnerAnimation {
-			0% { transform: scaleX(1); }
-			50% { transform: scaleX(0); }
-			100% { transform: scaleX(1); }
+			0% { transform: rotate(0deg); }
+			50% { transform: rotate(90deg); }
+			100% { transform: rotate(0deg); }
 		}
 
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._progressBarInner1{
@@ -3808,21 +3837,25 @@ export default function GridStyle({
 		}
 
 		@keyframes progressBarInner1Animation {
-			0% { opacity: 0; }
-			20% { opacity: 0.5; }
-			40% { opacity: 1; }
-			100% { opacity: 1; }
-		}
+			0% { opacity: 0.2; }
+			10% { opacity: 0.5; }
+			20% { opacity: 1; }
+			80% { opacity: 1; }	
+			90% { opacity: 0.5; }
+			100% { opacity: 0.2; }
+		}			
 
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._progressBarInner2{
 			animation: progressBarInner2Animation var(--comp-item-animation-duration-long) infinite;
 		}
 
 		@keyframes progressBarInner2Animation {
-			0% { opacity: 0; }
-			40% { opacity: 0.5; }
-			60% { opacity: 1; }
-			100% { opacity: 1; }
+			0% { opacity: 0.2; }
+			20% { opacity: 0.5; }
+			30%	{ opacity: 1; }
+			70% { opacity: 1; }
+			80% { opacity: 0.5; }
+			100% { opacity: 0.2; }
 		}
 
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._progressBarInner3{
@@ -3830,10 +3863,12 @@ export default function GridStyle({
 		}
 
 		@keyframes progressBarInner3Animation {
-			0% { opacity: 0; }
-			60% { opacity: 0.5; }
-			80% { opacity: 1; }
-			100% { opacity: 1; }
+			0% { opacity: 0.2; }
+			30% { opacity: 0.5; }
+			40% { opacity: 1; }
+			60% { opacity: 1; }
+			70% { opacity: 0.5; }
+			100% { opacity: 0.2; }
 		}
 
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._progressBarInner4 {
@@ -3841,9 +3876,12 @@ export default function GridStyle({
 		}
 
 		@keyframes progressBarInner4Animation {
-			0% { opacity: 0; }
-			80% { opacity: 1; }
-			100% { opacity: 1; }
+			0% { opacity: 0.2; }
+			40% { opacity: 0.5; }
+			50% { opacity: 1; }
+			60% { opacity: 1; }
+			70% { opacity: 0.5; }
+			100% { opacity: 0.2; }
 		}
 		
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._popOver {
@@ -3852,9 +3890,30 @@ export default function GridStyle({
 		}
 
 		@keyframes popOverAnimation {
-			0% { transform: scale(1); }
-			50% { transform: scale(0.5); }
-			100% { transform: scale(1); }
+			0% { transform: translate(0, 19) scale(1); opacity: 1; }
+			50% { transform: translate(0, 19) scale(0.5); opacity: 0; }
+			100% { transform: translate(0, 19) scale(1); opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._popOver1 {
+			animation: popOver1Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 30px;
+		}
+
+		@keyframes popOver1Animation {
+			0% { transform: scale(0); opacity: 0; }
+			50% { transform: scale(1); opacity: 1; }
+			100% { transform: scale(0); opacity: 0; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._FileSelectorArrow{
+			animation: FileSelectorArrowAnimation var(--comp-item-animation-duration-mid) infinite;
+		}
+
+		@keyframes FileSelectorArrowAnimation {
+			0% { transform: translateY(5px); }
+			50% { transform: translateY(0px); }
+			100% { transform: translateY(5px); }
 		}
 
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._fileUploadAT,
@@ -3869,6 +3928,17 @@ export default function GridStyle({
 			100% { transform: translateY(20px); }
 		}
 
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._animatorglobe {
+			animation: animatorglobeAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes animatorglobeAnimation {
+			0% { transform: scale(1); }
+			50% { transform: scale(0.5); }
+			100% { transform: scale(1); }
+		}
+
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._animatorGlobeBG1,
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._animatorGlobeBG2 {
 			animation: animatorglobeBGAnimation var(--comp-item-animation-duration-long) infinite;
@@ -3876,9 +3946,9 @@ export default function GridStyle({
 		}
 
 		@keyframes animatorglobeBGAnimation {
-			0% { transform: rotateZ(0deg); }
-			50% { transform: rotateZ(90deg); }
-			100% { transform: rotateZ(180deg); }
+			0% { transform: rotateZ(0deg) scale(1); }
+			50% { transform: rotateZ(90deg) scale(0.8); }
+			100% { transform: rotateZ(180deg) scale(1); }
 		}
 
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._buttonBar1{
@@ -3904,69 +3974,166 @@ export default function GridStyle({
 		}
 
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._chartbars {
-			animation: chartbarsAnimation var(--comp-item-animation-duration-long) infinite;
-			transform-origin: 15px 25px;
+			animation: chartbarsAnimation var(--comp-item-animation-duration-mid) infinite;
+			transform-origin: 15px 29px;
 		}
 
 		@keyframes chartbarsAnimation {
-			0% { transform: scaleY(1); }
-			50% { transform: scaleY(0.2); }
+			0% { transform: scaleY(1);  }
+			50% { transform: scaleY(0.4); }
 			100% { transform: scaleY(1); }
 		}
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._CPtube{
-			animation: CPtubeAnimation var(--comp-item-animation-duration-long) infinite;
-			transform-origin: 30px 0px;
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._chartbars1 {
+			animation: chartbars1Animation var(--comp-item-animation-duration-mid) infinite;
+			transform-origin: 15px 29px;
 		}
 
-		@keyframes CPtubeAnimation {
-			0% { transform: translate(0, 0);}
-			20% { transform: translate(15px, -10px); fill: white }
-			40% { transform: translate(0, 0); fill:red; }
-			60% { fill: green; }
-			80% { fill: blue; }
-			100% { fill: white; }
+		@keyframes chartbars1Animation {
+			0% { transform: scaleY(1);  }
+			50% { transform: scaleY(1.6); }
+			100% { transform: scaleY(1); }
 		}
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._CPhandle {
-			animation: CPhandleAnimation var(--comp-item-animation-duration-long) infinite;
-			transform-origin: 30px 0px;
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._cptube{
+			animation: cptubeAnimation var(--comp-item-animation-duration-mid) infinite;	
 		}
 		
-		@keyframes CPhandleAnimation {
-			0% { transform: translate(0, 0); }
-			20% { transform: translate(15px, -10px); }
-			40% { transform: translate(0, 0); }
-			60% { transform: translate(0, 0);}
-			80% { transform: translate(0, 0);}
-			100% { transform: translate(0, 0); }
+		@keyframes cptubeAnimation {
+			0% { fill: #FF6A1F; }
+			49% { fill: #FF6A1F; }
+			50% { fill: #2A6AFF; }
+			100% { fill: #2A6AFF; }
 		}
-		
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._JotPen,
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._FDEPen {
+
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._FDEPen{
 			animation: FDEPenAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 10px 30px;
 		}
 
 		@keyframes FDEPenAnimation {
-			0% { transform: translate(0, 0) }
-            10% { transform: translate(0, -20px) }
-            20% { transform: translate(15px, -20px) }
-            30% { transform: translate(0px, -15px) }
-            40% { transform: translate(15px, -15px) }
-            50% { transform: translate(0, -10px) }
-            60% { transform: translate(15px, -10px) }
-            70% { transform: translate(0, -5px) }
-            80% { transform: translate(15px, -5px) }
-            90% { transform: translate(0, 0px) }
-            100% { transform: translate(15px, 0px) }
+			0% { transform: translate(-15px, -15px) rotateZ(90deg); }
+			20% { transform: translate(0px, -15px) rotateZ(90deg); }
+			40% { transform: translate(-15px, -7px) rotateZ(90deg); }
+			60% { transform: translate(0px, -7px) rotateZ(90deg); }
+			80% { transform: translate(-15px, -0px) rotateZ(90deg); }
+			100% { transform: translate(0px, 0px) rotateZ(90deg); }
 		}
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._JotPen1 {
-			animation: JotPen1Animation var(--comp-item-animation-duration-long) infinite;
-			transform-origin: 15px 15px;	
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._JotPen{
+			animation: JotPenAnimation var(--comp-item-animation-duration-long) infinite;
 		}
 
-		@keyframes JotPen1Animation {
+		@keyframes JotPenAnimation {
+			0% { transform: translate(0px, 0); }
+			50% { transform: translate(4px, 0); }
+			100% { transform: translate(0px, 0); }
+		}
+
+		
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._Jotline1{
+			animation: Jot1lineAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 6px ;
+		}
+
+		@keyframes Jot1lineAnimation {
+			0% { transform: scaleX(0.5); }
+			50% { transform: scaleX(1); }
+			100% { transform: scaleX(0.5); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextListLine1,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._MTOCLine1{
+			animation: MTOCLine1Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 7px;
+		}
+
+		@keyframes MTOCLine1Animation {
+			0% { transform: scaleX(0); }
+			20% { transform: scaleX(0); }
+			50% { transform: scaleX(1); }
+			80% { transform: scaleX(1); }
+			100% { transform: scaleX(0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextListLine2,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._MTOCLine2{
+			animation: MTOCLine2Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 7px;
+		}
+
+		@keyframes MTOCLine2Animation {
+			0% { transform: scaleX(0); }
+			30% { transform: scaleX(0); }
+			50% { transform: scaleX(1); }
+			70% { transform: scaleX(1); }
+			100% { transform: scaleX(0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextListLine3,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._MTOCLine3{
+			animation: MTOCLine3Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 7px;
+		}
+
+		@keyframes MTOCLine3Animation {
+			0% { transform: scaleX(0); }
+			40% { transform: scaleX(0); }
+			50% { transform: scaleX(1); }
+			60% { transform: scaleX(1); }
+			100% { transform: scaleX(0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._MTOCcircle1,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextListCircle1{
+			animation: MTOCLine1Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 7px;
+		}
+
+		@keyframes MTOCcircle1Animation {
+			0% { transform: scaleX(0); }
+			15% { transform: scaleX(0); }
+			50% { transform: scaleX(1); }
+			85% { transform: scaleX(1); }
+			100% { transform: scaleX(0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._MTOCcircle2,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextListCircle2{
+			animation: MTOCcircle2Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 7px;
+		}
+
+		@keyframes MTOCcircle2Animation {
+			0% { transform: scaleX(0); }
+			25% { transform: scaleX(0); }
+			50% { transform: scaleX(1); }
+			75% { transform: scaleX(1); }
+			100% { transform: scaleX(0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._MTOCcircle3,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextListCircle3{
+			animation: MTOCcircle3Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 7px;
+		}
+
+		@keyframes MTOCcircle3Animation {
+			0% { transform: scaleX(0); }
+			35% { transform: scaleX(0); }
+			50% { transform: scaleX(1); }
+			65% { transform: scaleX(1); }
+			100% { transform: scaleX(0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TEPen{
+			animation: TEPen1Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 10px 10px;
+		}
+
+		@keyframes TEPen1Animation {
 			0% { transform: scale(1) translate(0, 0) rotateZ(0deg);  }
 			50% { transform: scale(0.5) translate(15px, 15px) rotateZ(90deg); }
 			100% { transform: scale(1) translate(0, 0) rotateZ(0deg); }
@@ -4038,13 +4205,82 @@ export default function GridStyle({
 			animation: updown var(--comp-item-animation-duration) infinite;
 		}
 
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._OtpLockBoxClosed{
+			animation: OtpLockBoxClosedAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes OtpLockBoxClosedAnimation {
+			0% { opacity: 0; }
+			39% { opacity: 0; }
+			40% { opacity: 1; }
+			60% { opacity: 1; }
+			61% { opacity: 0; }
+			100% { opacity: 0; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._OtpLockBoxOpen {
+			animation: OtpLockBoxOpenAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes OtpLockBoxOpenAnimation {
+			0% { opacity: 1; }
+			39% { opacity: 1; }
+			40% { opacity: 0; }
+			60% { opacity: 0; }
+			61% { opacity: 1; }
+			100% { opacity: 1; }
+		}
+
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._OtpInputstar1{
+			animation: OtpInputstar1Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes OtpInputstar1Animation {
+			0% { opacity: 0; }
+			19% { opacity: 0; }
+			20% { opacity: 1; }
+			90% { opacity: 1; }
+			91% { opacity: 0; }
+			100% { opacity: 0; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._OtpInputstar2{
+			animation: OtpInputstar2Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes OtpInputstar2Animation {
+			0% { opacity: 0; }
+			29% { opacity: 0; }
+			30% { opacity: 1; }
+			80% { opacity: 1; }
+			81% { opacity: 0; }
+			100% { opacity: 0; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._OtpInputstar3 {
+			animation: OtpInputstar3Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes OtpInputstar3Animation {
+			0% { opacity: 0; }
+			39% { opacity: 0; }
+			40% { opacity: 1; }
+			70% { opacity: 1; }
+			71% { opacity: 0; }
+			100% { opacity: 0; }
+		}
+
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._OtpInputBox1{
 			animation: OtpInputBox1Animation var(--comp-item-animation-duration-long) infinite;
 		}
 
 		@keyframes OtpInputBox1Animation {
-			0% { opacity: 0; }
-			25% { opacity: 1; }
+			0% { opacity: 1; }
+			19% { opacity: 1; }
+			20% { opacity: 0; }
+			90% { opacity: 0; }
+			91% { opacity: 1; }
 			100% { opacity: 1; }
 		}
 
@@ -4053,8 +4289,11 @@ export default function GridStyle({
 		}
 
 		@keyframes OtpInputBox2Animation {
-			0% { opacity: 0; }
-			50% { opacity: 1; }
+			0% { opacity: 1; }
+			29% { opacity: 1; }
+			30% { opacity: 0; }
+			80% { opacity: 0; }
+			81% { opacity: 1; }
 			100% { opacity: 1; }
 		}
 
@@ -4063,35 +4302,61 @@ export default function GridStyle({
 		}
 
 		@keyframes OtpInputBox3Animation {
-			0% { opacity: 0; }
-			75% { opacity: 1; }
+			0% { opacity: 1; }
+			39% { opacity: 1; }
+			40% { opacity: 0; }
+			70% { opacity: 0; }
+			71% { opacity: 1; }
 			100% { opacity: 1; }
-		}
+		}		
 
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._PageIcon {
-			animation: opacityAnimation var(--comp-item-animation-duration) infinite;
+			animation: pageAnimation var(--comp-item-animation-duration-mid) infinite;
+			transform-origin: 5px 30px;
 		}
+
+		@keyframes pageAnimation {
+			0% { transform: translate(5px, 0px) rotate(-12deg); }
+			50% { transform: translate(5px, 0px) rotate(0deg); }
+			100% { transform: translate(5px, 0px) rotate(-12deg); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SubPageIcon {
+			animation: subpageAnimation var(--comp-item-animation-duration-mid) infinite;
+			transform-origin: 5px 30px;
+		}
+
+		@keyframes subpageAnimation {
+			0% { transform: rotate(0deg); }
+			25% { transform: rotate(-3deg); }
+			50% { transform: rotate(3deg); }
+			75% { transform: rotate(9deg); }
+			100% { transform: rotate(0deg); }
+		}
+
 
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._RadioButtonCircle {
 			animation: RBAnimation var(--comp-item-animation-duration-long) infinite;
-			transform-origin: 16px 16px;
+			transform-origin: 15px 15px;
 		}
 
 		@keyframes RBAnimation {
-			0% { transform: scale(1); }
-			50% { transform: scale(0.6); }
-			75% { transform: scale(1.2); }
-			100% { transform: scale(1); }
+			0% { transform: scale(0); }
+			19% { transform: scale(0); }
+			20% { transform: scale(1); }
+			79% { transform: scale(1); }
+			80% { transform: scale(0); }
+			100% { transform: scale(0); }
+			
 		}
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._RangeSliderThumb,
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._RangeSliderThumbPit {
 			animation: RangeSliderThumbPitAnimation var(--comp-item-animation-duration-long) infinite;
 		}
 
 		@keyframes RangeSliderThumbPitAnimation {
 			0% { transform: translateX(0); }
-			50% { transform: translateX(-15px); }
+			50% { transform: translateX(-11px); }
 			100% { transform: translateX(0); }
 		}
 
@@ -4100,9 +4365,9 @@ export default function GridStyle({
 		}
 
 		@keyframes RangeSliderRangeTrackAnimation {
-			0% { opacity: 1; }
-			50% { opacity: 0; }
-			100% { opacity: 1; }
+			0% { transform: scaleX(1); }
+			50% { transform: scaleX(0.2); }
+			100% { transform: scaleX(1); }
 		}
 
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SchemaBuilderPen {
@@ -4168,22 +4433,92 @@ export default function GridStyle({
 
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SchemaFormPen {
 			animation: SchemaFormPenAnimation var(--comp-item-animation-duration-long) infinite;
-			transform-origin: 3px 15px;
+			transform-origin: 3px ;
 		}
 
 		@keyframes SchemaFormPenAnimation {
-			0% { transform: scale(1); }
-			50% { transform: scale(0); }
-			100% { transform: scale(1); }
+			0% { transform: translateX(-8px); }
+			25% { transform: translateX(-4px); }
+			50% { transform: translateX(0); }
+			75% { transform: translateX(-4px); }
+			100% { transform: translateX(-8px); }
 		}
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SubPageBlock1,
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SectionGridBlock1 {
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SchemaFormDot1{
+			animation: SchemaFormDot1Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes SchemaFormDot1Animation {
+			0% { opacity: 0; }
+			25% { opacity: 1; }
+			50% { opacity: 1; }
+			75% { opacity: 1; }
+			100% { opacity: 0; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SchemaFormDot2{
+			animation: SchemaFormDot2Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes SchemaFormDot2Animation {
+			0% { opacity: 0; }
+			25% { opacity: 0; }
+			50% { opacity: 1; }
+			75% { opacity: 0; }
+			100% { opacity: 0; }
+		}
+
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SectionGridBlock1{
 			animation: SectionGridBlock1Animation var(--comp-item-animation-duration-long) infinite;
 			transform-origin: 15px 15px;
 		}
 
 		@keyframes SectionGridBlock1Animation {
+			0% { transform: translate(0, 0); }
+			50% { transform: translate(-7px, -7px); }
+			100% { transform: translate(0, 0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SectionGridBlock2{
+			animation: SectionGridBlock2Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes SectionGridBlock2Animation {
+			0% { transform: translate(0, 0); }
+			50% { transform: translate(7px, -7px); }
+			100% { transform: translate(0, 0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SectionGridBlock3{
+			animation: SectionGridBlock3Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes SectionGridBlock3Animation {
+			0% { transform: translate(0, 0); }
+			50% { transform: translate(-7px, 7px); }
+			100% { transform: translate(0, 0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SectionGridBlock4{
+			animation: SectionGridBlock4Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes SectionGridBlock4Animation {
+			0% { transform: translate(0, 0); }
+			50% { transform: translate(7px, 7px); }
+			100% { transform: translate(0, 0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SubPageBlock1{
+			animation: SubPageBlock1Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes SubPageBlock1Animation {
 			0% { opacity: 0; transform: scale(0); }
 			25% { opacity: 1; transform: scale(1.2); }
 			50% { opacity: 1; transform: scale(1); }
@@ -4191,13 +4526,12 @@ export default function GridStyle({
 			100% { opacity: 1; transform: scale(1); }
 		}
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SubPageBlock2,
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SectionGridBlock2 {
-			animation: SectionGridBlock2Animation var(--comp-item-animation-duration-long) infinite;
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SubPageBlock2 {
+			animation: SubPageBlock2Animation var(--comp-item-animation-duration-long) infinite;
 			transform-origin: 15px 15px;
 		}
 
-		@keyframes SectionGridBlock2Animation {
+		@keyframes SubPageBlock2Animation {
 			0% { opacity: 0; transform: scale(0); }
 			25% { opacity: 0; transform: scale(0); }
 			50% { opacity: 1; transform: scale(1.2); }
@@ -4205,13 +4539,12 @@ export default function GridStyle({
 			100% { opacity: 1; transform: scale(1); }
 		}
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SubPageBlock3,
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SectionGridBlock3 {
-			animation: SectionGridBlock3Animation var(--comp-item-animation-duration-long) infinite;
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SubPageBlock3{
+			animation: SubPageBlock3Animation var(--comp-item-animation-duration-long) infinite;
 			transform-origin: 15px 15px;
 		}
 
-		@keyframes SectionGridBlock3Animation {
+		@keyframes SubPageBlock3Animation {
 			0% { opacity: 0; transform: scale(0); }
 			25% { opacity: 0; transform: scale(0); }
 			50% { opacity: 0; transform: scale(0); }
@@ -4219,13 +4552,12 @@ export default function GridStyle({
 			100% { opacity: 1; transform: scale(1); }
 		}
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SubPageMainFrame,
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SectionGridBlock4 {
-			animation: SectionGridBlock4Animation var(--comp-item-animation-duration-long) infinite;
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SubPageMainFrame{
+			animation: SubPageBlock4Animation var(--comp-item-animation-duration-long) infinite;
 			transform-origin: 15px 15px;
 		}	
 
-		@keyframes SectionGridBlock4Animation {
+		@keyframes SubPageBlock4Animation {
 			0% { opacity: 0; transform: scale(0); }
 			25% { opacity: 0; transform: scale(0); }
 			50% { opacity: 0; transform: scale(0); }
@@ -4234,128 +4566,65 @@ export default function GridStyle({
 			100% { opacity: 1; transform: scale(1); }
 		}
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TableHeaderBlock {
-			animation: TableHeaderBlockAnimation var(--comp-item-animation-duration-long) infinite;
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._tableline{
+			animation: TableLineAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 3px 15px;
 		}	
 
-		@keyframes TableHeaderBlockAnimation {
-			0% { opacity: 0; }
-			12% { opacity: 1; }
-			25% { opacity: 1; }
-			37% { opacity: 1; }
-			50% { opacity: 1; }
-			62% { opacity: 1; }
-			75% { opacity: 1; }
-			87% { opacity: 1; }
-			100% { opacity: 1; }
+		@keyframes TableLineAnimation {
+			0% { transform: scaleX(1); }
+			25% { transform: scaleX(0.3); }
+			50% { transform: scaleX(1); }
+			75% { transform: scaleX(0.3); }
+			100% { transform: scaleX(1); }
 		}
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TableGridBlock1 {
-			animation: TableGridBlock1Animation var(--comp-item-animation-duration-long) infinite;
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._tablelineY{
+			animation: TableLineYAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 3px 10px;
+		}	
+
+		@keyframes TableLineYAnimation {
+			0% { transform: scaleY(1); }
+			25% { transform: scaleY(0.3); }
+			50% { transform: scaleY(1); }
+			75% { transform: scaleY(0.3); }
+			100% { transform: scaleY(1); }
+		}
+			
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._tablePG{
+			animation: TablePGAnimation var(--comp-item-animation-duration-long) infinite;
 		}
 
-		@keyframes TableGridBlock1Animation {
-			0% { opacity: 0; }
-			12% { opacity: 0; }
-			25% { opacity: 1; }
-			37% { opacity: 1; }
-			50% { opacity: 1; }
-			62% { opacity: 1; }
-			75% { opacity: 1; }
-			87% { opacity: 1; }
-			100% { opacity: 1; }
-		}
-
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TableGridBlock2 {
-			animation: TableGridBlock2Animation var(--comp-item-animation-duration-long) infinite;
-		}
-
-		@keyframes TableGridBlock2Animation {
-			0% { opacity: 0; }
-			12% { opacity: 0; }
-			25% { opacity: 0; }
-			37% { opacity: 1; }
-			50% { opacity: 1; }
-			62% { opacity: 1; }
-			75% { opacity: 1; }
-			87% { opacity: 1; }
-			100% { opacity: 1; }
-		}
-
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TableGridBlock3 {
-			animation: TableGridBlock3Animation var(--comp-item-animation-duration-long) infinite;
-		}
-
-		@keyframes TableGridBlock3Animation {
-			0% { opacity: 0; }
-			12% { opacity: 0; }
-			25% { opacity: 0; }
-			37% { opacity: 0; }
-			50% { opacity: 1; }
-			62% { opacity: 1; }
-			75% { opacity: 1; }
-			87% { opacity: 1; }
-			100% { opacity: 1; }
-		}
-
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TableGridBlock4 {
-			animation: TableGridBlock4Animation var(--comp-item-animation-duration-long) infinite;
-		}
-
-		@keyframes TableGridBlock4Animation {
-			0% { opacity: 0; }
-			12% { opacity: 0; }
-			25% { opacity: 0; }
-			37% { opacity: 0; }
+		@keyframes TablePGAnimation {
+			0% { opacity: 1; }
 			50% { opacity: 0; }
-			62% { opacity: 1; }
-			75% { opacity: 1; }
-			87% { opacity: 1; }
 			100% { opacity: 1; }
 		}
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TableGridBlock5 {
-			animation: TableGridBlock5Animation var(--comp-item-animation-duration-long) infinite;
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._tableDCSpinner{
+			animation: TableDCSpinnerAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 19.5px 19px;
 		}
 
-		@keyframes TableGridBlock5Animation {
-			0% { opacity: 0; }
-			12% { opacity: 0; }
-			25% { opacity: 0; }
-			37% { opacity: 0; }
-			50% { opacity: 0; }
-			62% { opacity: 0; }
-			75% { opacity: 1; }
-			87% { opacity: 1; }
-			100% { opacity: 1; }
+		@keyframes TableDCSpinnerAnimation {
+			0% { transform: rotate(0deg); }
+			50% { transform: rotate(180deg); }
+			100% { transform: rotate(360deg); }
 		}
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TableGridBlock6 {
-			animation: TableGridBlock6Animation var(--comp-item-animation-duration-long) infinite;
-		}
-
-		@keyframes TableGridBlock6Animation {
-			0% { opacity: 0; }
-			12% { opacity: 0; }
-			25% { opacity: 0; }
-			37% { opacity: 0; }
-			50% { opacity: 0; }
-			62% { opacity: 0; }	
-			75% { opacity: 0; }
-			87% { opacity: 1; }
-			100% { opacity: 1; }
-		}
 
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._tabsBlock1{
-			animation: SectionGridBlock1Animation var(--comp-item-animation-duration-long) infinite;
+			animation: SubPageBlock1Animation var(--comp-item-animation-duration-long) infinite;
 		}
 
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._tabsBlock2{
-			animation: SectionGridBlock2Animation var(--comp-item-animation-duration-long) infinite;
+			animation: SubPageBlock2Animation var(--comp-item-animation-duration-long) infinite;
 		}
 
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._tabsBlock3 {
-			animation: SectionGridBlock3Animation var(--comp-item-animation-duration-long) infinite;
+			animation: SubPageBlock3Animation var(--comp-item-animation-duration-long) infinite;
 		}	
 
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._tagIcon2{
@@ -4382,114 +4651,72 @@ export default function GridStyle({
 			100% { transform: rotate(0deg); }
 		}
 		
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TEWindow {
-			animation: TEWindowAnimation var(--comp-item-animation-duration-long) infinite;
-			transform-origin: 4px 10px;
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TEIcon {
+			animation: templateEditorAnimation var(--comp-item-animation-duration-mid) infinite;
 		}
 
-		@keyframes TEWindowAnimation {
-			0% { transform: scale(1); }
-			50% { transform: scale(0.2); }
-			100% { transform: scale(1); }
+		@keyframes templateEditorAnimation {
+			0% { transform: translateX(0px); }
+			50% { transform: translateX(14px); }
+			100% { transform: translateX(0px); }
 		}
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TEfirstline {
-			animation: TEfirstlineAnimation var(--comp-item-animation-duration-long) infinite;
-			transform-origin: 17px 12px;
-		}	
-
-		@keyframes TEfirstlineAnimation {
-			0% { transform: scaleX(1); }
-			50% { transform: scaleX(0.2); }
-			100% { transform: scaleX(1); }
-		}
-
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TEsecondline {
-			animation: TEsecondlineAnimation var(--comp-item-animation-duration-long) infinite;
-			transform-origin: 17px 18px;
-		}		
-
-		@keyframes TEsecondlineAnimation {
-			0% { transform: scaleX(1); }
-			50% { transform: scaleX(0.2); }
-			100% { transform: scaleX(1); }
-		}
-
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TEthirdline {
-			animation: TEthirdlineAnimation var(--comp-item-animation-duration-long) infinite;
-			transform-origin: 4px 24px;
-		}	
-
-		@keyframes TEthirdlineAnimation {
-			0% { transform: scaleX(1); }
-			50% { transform: scaleX(0.1); }
-			100% { transform: scaleX(1); }
-		}
-
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TEHeaderline {
-			animation: TElineAnimation var(--comp-item-animation-duration-long) infinite;
-			transform-origin: 4px 30px;
-		}
-
-		@keyframes TElineAnimation {
-			0% { transform: scaleX(1); }
-			50% { transform: scaleX(0.1); }
-			100% { transform: scaleX(1); }
-		}
-
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextEditorBubble,
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextEditorBubbleLine1,
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextEditorBubbleLine2,
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextEditorBubbleLine3,
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextEditorT {
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextEditorLine3,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextEditorLine1 {
 			animation: TextEditorBubbleLineAnimation var(--comp-item-animation-duration-long) infinite;
-			transform-origin: 28px 28px;
+			transform-origin: 23px ;
 		}
 
 		@keyframes TextEditorBubbleLineAnimation {
-			0% { opacity: 1; transform: scale(1); }
-			50% { opacity: 0; transform: scale(0); }
-			100% { opacity: 1; transform: scale(1); }
+			0% { transform: scaleX(1); }
+			50% { transform: scaleX(1.6); }
+			100% { transform: scaleX(1); }
 		}
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextListLine1,
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextListLine2,
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextListLine3 {
-			animation: menuInnerAnimation var(--comp-item-animation-duration-long) infinite;
-			transform-origin:  11px;
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextEditorLine2 {
+			animation: TextEditorLine2Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 23px ;
 		}
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextListCircle1{
-			animation: RBAnimation var(--comp-item-animation-duration-long) infinite;
-			transform-origin: 8px 9px;
-		}
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextListCircle2{
-			animation: RBAnimation var(--comp-item-animation-duration-long) infinite;
-			transform-origin: 8px 16px;
-		}
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextListCircle3 {
-			animation: RBAnimation var(--comp-item-animation-duration-long) infinite;
-			transform-origin: 8px 23px;
+		@keyframes TextEditorLine2Animation {
+			0% { transform: scaleX(1); }
+			50% { transform: scaleX(0.2); }
+			100% { transform: scaleX(1); }
 		}
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TimerClose1{
-			animation: TimerClose1Animation var(--comp-item-animation-duration-long) linear infinite;
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._timer12Number{
+			animation: timerNumber12Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
 		}
 
-		@keyframes TimerClose1Animation {
-			0% { transform: translateY(0px); }
-			50% { transform: translateY(6.5px); }
-			100% { transform: translateY(0px); }
-		}
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TimerClose2 {
-			animation: TimerClose2Animation var(--comp-item-animation-duration-long) linear infinite;
+		@keyframes timerNumber12Animation {
+			0% { opacity: 1; transform: rotate(0deg); }
+			50% { opacity: 0; transform: rotate(180deg); }
+			100% { opacity: 1; transform: rotate(360deg); }
 		}
 
-		@keyframes TimerClose2Animation {
-			0% { transform: translateY(0px); }
-			50% { transform: translateY(3.5px); }
-			100% { transform: translateY(0px); }
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._timer24Number {
+			animation: timerNumber24Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
 		}
+
+		@keyframes timerNumber24Animation {
+			0% { opacity: 0; transform: rotate(-180deg); }
+			50% { opacity: 1; transform: rotate(0deg); }
+			100% { opacity: 0; transform: rotate(180deg); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._timer12Arc{
+			animation: timerArc12Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes timerArc12Animation {
+			0% { transform: rotate(0deg); }
+			50% { transform: rotate(180deg); }
+			100% { transform: rotate(360deg); }
+		}
+
 
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._toggleButtonKnob {
 			animation: toggleButtonKnobAnimation var(--comp-item-animation-duration-long) infinite;
@@ -4506,9 +4733,9 @@ export default function GridStyle({
 		}
 
 		@keyframes toggleButtonTrackAnimation {
-			0% { fill: #E442E2; }
-			50% { fill: #e5e5e5; }
-			100% { fill: #E442E2; }
+			0% { fill: #02B694; }
+			50% { fill: #EDEAEA; }
+			100% { fill: #02B694; }
 		}
 
 		
@@ -4520,6 +4747,27 @@ export default function GridStyle({
 
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._opacityAnimation {
 			animation: opacityAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._imageCircle {
+			animation: imageCircleAnimation var(--comp-item-animation-duration-short) infinite;
+			transform-origin: 15px 17px;
+		}
+
+		@keyframes imageCircleAnimation {
+			0% { transform: translate(0px, 0px); }
+			50% { transform: translate(0px, 4px); }
+			100% { transform: translate(0px, 0px); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._IamgeAnimation {
+			animation: ImageAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes ImageAnimation {
+			0% { opacity: 0.5; }
+			50% { opacity: 1; }
+			100% { opacity: 0.5; }
 		}
 
 		@keyframes leftrightAnimation {
@@ -4547,7 +4795,7 @@ export default function GridStyle({
 			25% { opacity: 1; }
 			35% { opacity: 0; transform: translateX(0%);}
 			55% { opacity: 1; transform: translateX(65%); }
-			99% { opacity: 1; transform: translateX(65%); }
+			99% { opacity: 0; transform: translateX(65%); }
 		}
 
 		@keyframes text_box_text_animation {
@@ -4622,35 +4870,35 @@ export default function GridStyle({
 		}		
 
 		${PREFIX} ._compMenuItem:hover #_arrayRepeaterIcon #_rect1 {
-			animation: array_repeater_rect1_animation var(--comp-item-animation-duration) infinite;
+			animation: array_repeater_rect1_animation var(--comp-item-animation-duration-short) infinite;
 		}
 
 		${PREFIX} ._compMenuItem:hover #_arrayRepeaterIcon #_rect2 {
-			animation: array_repeater_rect2_animation var(--comp-item-animation-duration) infinite;
+			animation: array_repeater_rect2_animation var(--comp-item-animation-duration-short) infinite;
 		}
 
 		${PREFIX} ._compMenuItem:hover #_arrayRepeaterIcon #_rect3 {
-			animation: array_repeater_rect3_animation var(--comp-item-animation-duration) infinite;
+			animation: array_repeater_rect3_animation var(--comp-item-animation-duration-short) infinite;
 		}
 
 		${PREFIX} ._compMenuItem:hover #_arrayRepeaterIcon #_rect4 {
-			animation: array_repeater_rect4_animation var(--comp-item-animation-duration) infinite;
+			animation: array_repeater_rect4_animation var(--comp-item-animation-duration-short) infinite;
 		}
 
 		${PREFIX} ._compMenuItem:hover #_arrayRepeaterIcon #_rect5 {
-			animation: array_repeater_rect5_animation var(--comp-item-animation-duration) infinite;
+			animation: array_repeater_rect5_animation var(--comp-item-animation-duration-short) infinite;
 		}
 
 		${PREFIX} ._compMenuItem:hover #_arrayRepeaterIcon #_rect6 {
-			animation: array_repeater_rect6_animation var(--comp-item-animation-duration) infinite;
+			animation: array_repeater_rect6_animation var(--comp-item-animation-duration-short) infinite;
 		}
 
 		${PREFIX} ._compMenuItem:hover #_arrayRepeaterIcon #_rect7 {
-			animation: array_repeater_rect7_animation var(--comp-item-animation-duration) infinite;
+			animation: array_repeater_rect7_animation var(--comp-item-animation-duration-short) infinite;
 		}
 
 		${PREFIX} ._compMenuItem:hover #_arrayRepeaterIcon #_rect8 {
-			animation: array_repeater_rect8_animation var(--comp-item-animation-duration) infinite;
+			animation: array_repeater_rect8_animation var(--comp-item-animation-duration-short) infinite;
 		}
 
 		/* Animations End here... */

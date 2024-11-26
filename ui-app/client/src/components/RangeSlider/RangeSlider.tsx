@@ -730,69 +730,28 @@ const component: Component = {
 			mainComponent: true,
 			icon: (
 				<IconHelper viewBox="0 0 30 30">
-					<rect width="30" height="30" rx="2" fill="url(#paint0_linear_3817_9701)" />
 					<rect
 						className="_RangeSliderTrack"
-						x="2"
-						y="14"
-						width="26"
-						height="2"
-						rx="1"
-						fill="black"
-						fillOpacity="0.2"
+						y="3"
+						width="28"
+						height="3"
+						rx="0.5"
+						fill="#EDEAEA"
 					/>
-					<rect
+					<path
 						className="_RangeSliderRangeTrack"
-						x="2"
-						y="14"
-						width="17"
-						height="2"
-						rx="1"
-						fill="url(#paint1_linear_3817_9701)"
+						d="M0 3.5C0 3.22386 0.223858 3 0.5 3H15V6H0.5C0.223858 6 0 5.77614 0 5.5V3.5Z"
+						fill="#A170FF"
 					/>
-					<circle className="_RangeSliderThumb" cx="18" cy="15" r="5" fill="white" />
 					<circle
 						className="_RangeSliderThumbPit"
-						cx="18"
-						cy="15"
+						cx="15"
+						cy="4"
 						r="3"
-						fill="url(#paint2_linear_3817_9701)"
+						fill="white"
+						stroke="#A170FF"
+						strokeWidth="2"
 					/>
-					<defs>
-						<linearGradient
-							id="paint0_linear_3817_9701"
-							x1="15"
-							y1="0"
-							x2="15"
-							y2="30"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#EEEEEE" />
-							<stop offset="1" stopColor="#EDEAEA" />
-						</linearGradient>
-						<linearGradient
-							id="paint1_linear_3817_9701"
-							x1="10.5"
-							y1="14"
-							x2="10.5"
-							y2="16"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#A170FF" />
-							<stop offset="1" stopColor="#350B86" />
-						</linearGradient>
-						<linearGradient
-							id="paint2_linear_3817_9701"
-							x1="18"
-							y1="12"
-							x2="18"
-							y2="18"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#A170FF" />
-							<stop offset="1" stopColor="#350B86" />
-						</linearGradient>
-					</defs>
 				</IconHelper>
 			),
 		},

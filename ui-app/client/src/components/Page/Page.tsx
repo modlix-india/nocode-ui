@@ -202,40 +202,21 @@ const component: Component = {
 			icon: (
 				<IconHelper viewBox="0 0 30 30">
 					<path
-						className="_PageIcon"
-						d="M13.5511 6.09627V0H2.00263C0.898379 0 0 0.947747 0 2.11268V27.8873C0 29.0523 0.898379 30 2.00263 30H19.9974C21.1016 30 22 29.0523 22 27.8873V8.91317H16.2213C14.749 8.91317 13.5511 7.64951 13.5511 6.09627Z"
-						fill="url(#paint0_linear_3214_9567)"
+						d="M14.2958 6.09627V0H2.11268C0.947746 0 0 0.947747 0 2.11268V27.8873C0 29.0523 0.947746 30 2.11268 30H21.0963C22.2612 30 23.2089 29.0523 23.2089 27.8873V8.91317H17.1127C15.5594 8.91317 14.2958 7.64951 14.2958 6.09627Z"
+						fill="#00ADB7"
+						transform="translate(5, 0)"
 					/>
-
 					<path
-						className="_PageIcon"
-						d="M14.8882 6.1012C14.8882 6.87782 15.4871 7.50965 16.2233 7.50965H21.0122L14.8882 1.07965V6.1012Z"
-						fill="url(#paint1_linear_3214_9567)"
+						d="M15.707 6.08405C15.707 6.86067 16.3389 7.4925 17.1155 7.4925H22.1675L15.707 1.0625V6.08405Z"
+						fill="#00ADB7"
+						transform="translate(5, 0)"
 					/>
-					<defs>
-						<linearGradient
-							id="paint0_linear_3214_9567"
-							x1="11"
-							y1="0"
-							x2="11"
-							y2="30"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#00ADB7" />
-							<stop offset="1" stopColor="#016A70" />
-						</linearGradient>
-						<linearGradient
-							id="paint1_linear_3214_9567"
-							x1="17.9502"
-							y1="1.07965"
-							x2="17.9502"
-							y2="7.50965"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#00ADB7" />
-							<stop offset="1" stopColor="#016A70" />
-						</linearGradient>
-					</defs>
+					<path
+						d="M14.1671 8.48664V3L2.09366 3C0.939214 3 0 3.85297 0 4.90141L0 28.0986C0 29.147 0.939214 30 2.09366 30H20.9063C22.0608 30 23 29.147 23 28.0986V11.0219H16.9586C15.4194 11.0219 14.1671 9.88456 14.1671 8.48664Z"
+						fill="#00ADB7"
+						fillOpacity="0.3"
+						className="_PageIcon"
+					/>
 				</IconHelper>
 			),
 		},

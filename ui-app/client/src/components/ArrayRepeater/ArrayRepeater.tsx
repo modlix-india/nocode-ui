@@ -272,8 +272,8 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 								tabIndex={0}
 								className={`moveOne ${
 									index == arrayValue?.length - 1
-										? (moveUpIcon ?? 'fa fa-circle-arrow-up fa-solid')
-										: (moveDownIcon ?? 'fa fa-circle-arrow-down fa-solid')
+										? moveUpIcon ?? 'fa fa-circle-arrow-up fa-solid'
+										: moveDownIcon ?? 'fa fa-circle-arrow-down fa-solid'
 								}`}
 								style={styleProperties.move ?? {}}
 								onClick={
@@ -301,7 +301,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 								className={`moveOne ${
 									index == 0 || index == arrayValue?.length - 1
 										? ''
-										: (moveUpIcon ?? 'fa fa-circle-arrow-up fa-solid')
+										: moveUpIcon ?? 'fa fa-circle-arrow-up fa-solid'
 								}`}
 								onClick={showMove ? () => handleMove(index, index - 1) : undefined}
 								style={styleProperties.move ?? {}}
@@ -499,104 +499,16 @@ const component: Component = {
 			description: 'Component',
 			icon: (
 				<IconHelper id="_arrayRepeaterIcon" viewBox="0 0 30 30">
-					<defs>
-						<linearGradient
-							id="repeater_add_gradient"
-							x1="0.5"
-							y1="-0.211"
-							x2="0.5"
-							y2="1.15"
-							gradientUnits="objectBoundingBox"
-						>
-							<stop offset="0" stopColor="#f79200" />
-							<stop offset="1" stopColor="#882deb" />
-						</linearGradient>
-						<linearGradient
-							id="repeater_add_gradient-2"
-							x1="0.5"
-							y1="-0.211"
-							x2="0.5"
-							y2="1.15"
-							gradientUnits="objectBoundingBox"
-						>
-							<stop offset="0" stopColor="#0ea3f4" />
-							<stop offset="1" stopColor="#91d8ff" />
-						</linearGradient>
-					</defs>
-					<rect
-						id="_rect1"
-						width="6"
-						height="6"
-						rx="1"
-						x="0"
-						y="7"
-						fill="url(#repeater_add_gradient)"
-					/>
-					<rect
-						id="_rect2"
-						width="6"
-						height="6"
-						rx="1"
-						x="8"
-						y="7"
-						fill="url(#repeater_add_gradient)"
-					/>
-					<rect
-						id="_rect3"
-						width="6"
-						height="6"
-						rx="1"
-						x="16"
-						y="7"
-						fill="url(#repeater_add_gradient-2)"
-					/>
+					<rect id="_rect1" width="6" height="6" rx="1" x="0" y="7" fill="#D20044" />
+					<rect id="_rect2" width="6" height="6" rx="1" x="8" y="7" fill="#D20044" />
+					<rect id="_rect3" width="6" height="6" rx="1" x="16" y="7" fill="#008FDD" />
 
-					<rect
-						id="_rect4"
-						width="6"
-						height="6"
-						rx="1"
-						x="24"
-						y="7"
-						fill="url(#repeater_add_gradient)"
-					/>
+					<rect id="_rect4" width="6" height="6" rx="1" x="24" y="7" fill="#D20044" />
 
-					<rect
-						id="_rect5"
-						width="6"
-						height="6"
-						rx="1"
-						x="0"
-						y="18"
-						fill="url(#repeater_add_gradient)"
-					/>
-					<rect
-						id="_rect6"
-						width="6"
-						height="6"
-						rx="1"
-						x="8"
-						y="18"
-						fill="url(#repeater_add_gradient-2)"
-					/>
-					<rect
-						id="_rect7"
-						width="6"
-						height="6"
-						rx="1"
-						x="16"
-						y="18"
-						fill="url(#repeater_add_gradient)"
-					/>
-					<rect
-						id="_rect8"
-						width="6"
-						height="6"
-						rx="1"
-						x="24"
-						y="18"
-						fill="url(#repeater_add_gradient)"
-					/>
+					<rect id="_rect5" width="6" height="6" rx="1" x="0" y="18" fill="#D20044" />
+					<rect id="_rect6" width="6" height="6" rx="1" x="8" y="18" fill="#008FDD" />
+					<rect id="_rect7" width="6" height="6" rx="1" x="16" y="18" fill="#D20044" />
+					<rect id="_rect8" width="6" height="6" rx="1" x="24" y="18" fill="#D20044" />
 				</IconHelper>
 			),
 			mainComponent: true,

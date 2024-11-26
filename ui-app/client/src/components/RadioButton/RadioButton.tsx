@@ -271,30 +271,13 @@ const component: Component = {
 						className="_radioButtonArc"
 						cx="15"
 						cy="15"
-						r="14.5"
+						r="13.5"
 						stroke="#EDEAEA"
-						fillOpacity={0.1}
+						strokeWidth={3}
+						fill="white"
+						fillOpacity={1}
 					/>
-					<circle
-						className="_RadioButtonCircle"
-						cx="15"
-						cy="15"
-						r="10"
-						fill="url(#paint0_linear_3214_9327)"
-					/>
-					<defs>
-						<linearGradient
-							id="paint0_linear_3214_9327"
-							x1="15"
-							y1="5"
-							x2="15"
-							y2="25"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#E2A8BD" />
-							<stop offset="1" stopColor="#F86299" />
-						</linearGradient>
-					</defs>
+					<circle className="_RadioButtonCircle" cx="15" cy="15" r="10" fill="#F86299" />
 				</IconHelper>
 			),
 		},

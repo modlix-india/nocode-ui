@@ -260,7 +260,18 @@ const component: Component = {
 			mainComponent: true,
 			icon: (
 				<IconHelper viewBox="0 0 30 30">
-					<rect width="30" height="30" rx="2" fill="url(#paint0_linear_3214_9360)" />
+					<path
+						d="M29.6971 0H27.9555C27.7873 0 27.6515 0.134272 27.6515 0.301832V19.7241H0.302883C0.135851 19.7241 0 19.8594 0 20.0259V21.6982C0 21.8646 0.135851 22 0.302883 22H29.6971C29.8641 22 30 21.8646 30 21.6982V0.301889C30 0.134329 29.8641 0 29.6971 0Z"
+						fill="#EDEAEA"
+					/>
+					<rect width="26" height="18" rx="1" fill="#B35900" />
+					<path
+						d="M5.89245 4.03022H9.02365C9.18494 4.03022 9.31612 3.90939 9.31612 3.75985V2.26938C9.31612 2.11983 9.18494 2 9.02365 2H2.29247C2.13118 2 2 2.11983 2 2.26938V8.24026C2 8.3898 2.13118 8.50963 2.29247 8.50963H3.97636C4.13872 8.50963 4.2699 8.3898 4.2699 8.24026V5.45041L9.31505 9.92572C9.37204 9.97524 9.44516 10 9.51828 10C9.59139 10 9.66452 9.97524 9.72043 9.92572L10.9097 8.86901C10.9677 8.8185 11 8.74819 11 8.6749C11 8.60261 10.9677 8.5313 10.9097 8.4808L5.89245 4.03022Z"
+						fill="white"
+						className="_popupInner"
+					/>
+
+					{/* <rect width="30" height="30" rx="2" fill="#EDEAEA" />
 					<rect
 						className="_popupInner"
 						x="5.45459"
@@ -268,32 +279,8 @@ const component: Component = {
 						width="19.0909"
 						height="19.0909"
 						rx="2"
-						fill="url(#paint0_linear_3214_9361)"
-					/>
-					<defs>
-						<linearGradient
-							id="paint0_linear_3214_9360"
-							x1="15"
-							y1="0"
-							x2="15"
-							y2="30"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#EEEEEE" />
-							<stop offset="1" stopColor="#EDEAEA" />
-						</linearGradient>
-						<linearGradient
-							id="paint0_linear_3214_9361"
-							x1="15"
-							y1="0.455078"
-							x2="15"
-							y2="19.546"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#B0DCE6" />
-							<stop offset="1" stopColor="#09A0C2" />
-						</linearGradient>
-					</defs>
+						fill="#09A0C2"
+					/> */}
 				</IconHelper>
 			),
 		},

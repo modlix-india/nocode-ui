@@ -676,52 +676,41 @@ const component: Component = {
 			mainComponent: true,
 			description: 'Component',
 			icon: (
-				<IconHelper viewBox="0 0 27 30">
-					<path
-						className="_videoOuterDesign"
-						d="M25.4827 13.161C26.8984 13.9783 26.8984 16.0217 25.4827 16.839L3.18547 29.7123C1.76977 30.5297 0.00015702 29.508 0.000157092 27.8733L0.000158217 2.12671C0.000158288 0.492004 1.76978 -0.529684 3.18547 0.287668L25.4827 13.161Z"
-						fill="url(#paint1_linear_3214_9373)"
+				<IconHelper viewBox="0 0 30 30">
+					<circle cx="14" cy="14" r="14" fill="#000000" />
+					<circle
+						cx="14"
+						cy="14"
+						r="13.5"
+						stroke=""
+						strokeOpacity="0.04"
+						fillOpacity={0}
 					/>
 					<path
-						className="_videoInnerDesign"
-						d="M15.1777 14.5677C15.5111 14.7602 15.5111 15.2413 15.1777 15.4338L7.1218 20.0849C6.78846 20.2773 6.3718 20.0367 6.3718 19.6518L6.3718 10.3496C6.3718 9.96475 6.78846 9.72419 7.1218 9.91664L15.1777 14.5677Z"
-						fill="url(#paint2_linear_3214_9373)"
+						className="_videoPlayStart"
+						d="M19.8932 13.2644C20.4594 13.5913 20.4594 14.4087 19.8932 14.7356L10.9743 19.8849C10.408 20.2119 9.70016 19.8032 9.70016 19.1493L9.70016 8.85068C9.70016 8.1968 10.408 7.78813 10.9743 8.11507L19.8932 13.2644Z"
+						fill="white"
 					/>
-					<defs>
-						<linearGradient
-							id="paint0_linear_3214_9373"
-							x1="13.2723"
-							y1="-5.80144e-07"
-							x2="13.2723"
-							y2="30"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#EEEEEE" />
-							<stop offset="1" stopColor="#EDEAEA" />
-						</linearGradient>
-						<linearGradient
-							id="paint1_linear_3214_9373"
-							x1="13.2723"
-							y1="-5.80144e-07"
-							x2="13.2723"
-							y2="30"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#EEEEEE" />
-							<stop offset="1" stopColor="#EDEAEA" />
-						</linearGradient>
-						<linearGradient
-							id="paint2_linear_3214_9373"
-							x1="9.55711"
-							y1="8.63012"
-							x2="9.55711"
-							y2="21.3714"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#ACF3E6" />
-							<stop offset="1" stopColor="#02B694" />
-						</linearGradient>
-					</defs>
+					<rect
+						className="_videoPlayPause"
+						x="9"
+						y="8"
+						width="4"
+						height="12"
+						rx="1"
+						fill="white"
+						opacity={0}
+					/>
+					<rect
+						className="_videoPlayPause"
+						x="15"
+						y="8"
+						width="4"
+						height="12"
+						rx="1"
+						fill="white"
+						opacity={0}
+					/>
 				</IconHelper>
 			),
 		},

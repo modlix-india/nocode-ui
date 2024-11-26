@@ -202,14 +202,14 @@ let DisplayOptions = [
 		name: 'grid',
 		description: 'Grid container',
 		icon: (
-			<g viewBox="0 0 20 20" transform="translate(6 6)">
+			<g viewBox="0 0 20 20" transform="translate(4 6)">
 				<rect
 					x="3.5"
 					y="3.5"
 					width="13"
 					height="13"
 					rx="0.5"
-					style={{ fill: '#e3e5ea' }}
+					style={{ fill: 'none' }}
 					stroke="#D1D1D1"
 				/>
 				<path d="M4 10H16" stroke="#D1D1D1" strokeLinecap="round" />
@@ -241,7 +241,7 @@ let DisplayOptions = [
 					fill="white"
 					stroke="#D1D1D1"
 					strokeOpacity={1}
-					style={{ fill: '#e3e5ea' }}
+					style={{ fill: 'none' }}
 				/>
 				<path d="M5.71387 10H14.2853" stroke="#D1D1D1" strokeLinecap="round" />
 				<path d="M10 5.71732V14.2887" stroke="#D1D1D1" strokeLinecap="round" />
@@ -252,12 +252,12 @@ let DisplayOptions = [
 		name: 'table',
 		description: 'Table',
 		icon: (
-			<g viewBox="0 0 20 20" transform="translate(6 6)">
+			<g viewBox="0 0 20 20" transform="translate(4 6)">
 				<path
 					d="M15.9997 3H4.48242C3.93014 3 3.48242 3.44772 3.48242 4V15.5172C3.48242 16.0695 3.93014 16.5172 4.48242 16.5172H15.9997C16.5519 16.5172 16.9997 16.0695 16.9997 15.5172V4C16.9997 3.44772 16.5519 3 15.9997 3Z"
 					stroke="#999999"
 					strokeOpacity="1"
-					style={{ fill: '#e3e5ea' }}
+					style={{ fill: 'none' }}
 				/>
 				<path d="M3 7.82758H17.4828" stroke="#D6D6D6" />
 				<path d="M10.2412 7.82758V17" stroke="#D6D6D6" />
@@ -284,7 +284,7 @@ let DisplayOptions = [
 					d="M13.4947 5H5.8418C5.28951 5 4.8418 5.44771 4.8418 6V13.6529C4.8418 14.2052 5.28951 14.6529 5.8418 14.6529H13.4947C14.047 14.6529 14.4947 14.2052 14.4947 13.6529V6C14.4947 5.44772 14.047 5 13.4947 5Z"
 					strokeOpacity={1}
 					fillOpacity="1"
-					style={{ fill: '#e3e5ea' }}
+					style={{ fill: 'none' }}
 				/>
 				<path d="M4.5 8.45312H14.8424" stroke="#D6D6D6" />
 				<path d="M9.67188 8.45312V15.0033" stroke="#D6D6D6" />
@@ -296,12 +296,12 @@ let DisplayOptions = [
 		name: 'table-row',
 		description: 'Table row',
 		icon: (
-			<g viewBox="0 0 20 20" transform="translate(2 2)">
+			<g viewBox="0 0 20 20" transform="translate(4 4)">
 				<path
 					d="M15.9997 3H4.48242C3.93014 3 3.48242 3.44772 3.48242 4V15.5172C3.48242 16.0695 3.93014 16.5172 4.48242 16.5172H15.9997C16.5519 16.5172 16.9997 16.0695 16.9997 15.5172V4C16.9997 3.44772 16.5519 3 15.9997 3Z"
 					stroke="#999999"
 					strokeOpacity="1"
-					style={{ fill: '#e3e5ea' }}
+					style={{ fill: 'none' }}
 				/>
 				<path d="M3 7.82758H17.4828" stroke="#D6D6D6" />
 				<path d="M7 3L7 17" stroke="#D6D6D6" />
@@ -313,30 +313,30 @@ let DisplayOptions = [
 		name: 'table-cell',
 		description: 'Table cell',
 		icon: (
-			<g viewBox="0 0 20 20" transform="translate(6 6)">
+			<g viewBox="0 0 20 20" transform="translate(4 6)">
 				<path
 					d="M8 4H4C3.44772 4 3 4.44772 3 5V8C3 8.55228 3.44772 9 4 9H8C8.55228 9 9 8.55228 9 8V5C9 4.44772 8.55228 4 8 4Z"
 					stroke="#999999"
 					strokeOpacity={1}
-					style={{ fill: '#e3e5ea' }}
+					style={{ fill: 'none' }}
 				/>
 				<path
 					d="M8 11H4C3.44772 11 3 11.4477 3 12V15C3 15.5523 3.44772 16 4 16H8C8.55228 16 9 15.5523 9 15V12C9 11.4477 8.55228 11 8 11Z"
 					stroke="#999999"
 					strokeOpacity={1}
-					style={{ fill: '#e3e5ea' }}
+					style={{ fill: 'none' }}
 				/>
 				<path
 					d="M16 4H12C11.4477 4 11 4.44772 11 5V8C11 8.55228 11.4477 9 12 9H16C16.5523 9 17 8.55228 17 8V5C17 4.44772 16.5523 4 16 4Z"
 					stroke="#999999"
 					strokeOpacity={1}
-					style={{ fill: '#e3e5ea' }}
+					style={{ fill: 'none' }}
 				/>
 				<path
 					d="M16 11H12C11.4477 11 11 11.4477 11 12V15C11 15.5523 11.4477 16 12 16H16C16.5523 16 17 15.5523 17 15V12C17 11.4477 16.5523 11 16 11Z"
 					stroke="#999999"
 					strokeOpacity={1}
-					style={{ fill: '#e3e5ea' }}
+					style={{ fill: 'none' }}
 				/>
 			</g>
 		),
@@ -350,7 +350,7 @@ let DisplayOptions = [
 					d="M15.9997 3H4.48242C3.93014 3 3.48242 3.44772 3.48242 4V15.5172C3.48242 16.0695 3.93014 16.5172 4.48242 16.5172H15.9997C16.5519 16.5172 16.9997 16.0695 16.9997 15.5172V4C16.9997 3.44772 16.5519 3 15.9997 3Z"
 					stroke="#999999"
 					strokeOpacity="1"
-					style={{ fill: '#e3e5ea' }}
+					style={{ fill: 'none' }}
 				/>
 				<path d="M3 7.82758H17.4828" stroke="#D6D6D6" />
 				<path d="M10.2412 7.82758V17" stroke="#D6D6D6" />
@@ -366,13 +366,13 @@ let DisplayOptions = [
 					d="M6.76923 4H4C3.44772 4 3 4.44772 3 5V8C3 8.55228 3.44771 9 4 9H6.76923M6.76923 4H16C16.5523 4 17 4.44772 17 5V8C17 8.55228 16.5523 9 16 9H6.76923M6.76923 4V9"
 					stroke="#999999"
 					strokeOpacity="1"
-					style={{ fill: '#e3e5ea' }}
+					style={{ fill: 'none' }}
 				/>
 				<path
 					d="M6.76923 11H4C3.44772 11 3 11.4477 3 12V15C3 15.5523 3.44771 16 4 16H6.76923M6.76923 11H16C16.5523 11 17 11.4477 17 12V15C17 15.5523 16.5523 16 16 16H6.76923M6.76923 11V16"
 					stroke="#999999"
 					strokeOpacity="1"
-					style={{ fill: '#e3e5ea' }}
+					style={{ fill: 'none' }}
 				/>
 			</g>
 		),
@@ -386,13 +386,13 @@ let DisplayOptions = [
 					d="M17 6.76923V4C17 3.44772 16.5523 3 16 3L12 3C11.4477 3 11 3.44771 11 4V6.76923M17 6.76923V16C17 16.5523 16.5523 17 16 17H12C11.4477 17 11 16.5523 11 16V6.76923M17 6.76923H11"
 					stroke="#999999"
 					strokeOpacity="1"
-					style={{ fill: '#e3e5ea' }}
+					style={{ fill: 'none' }}
 				/>
 				<path
 					d="M9 6.76923V4C9 3.44772 8.55228 3 8 3L4 3C3.44772 3 3 3.44771 3 4V6.76923M9 6.76923V16C9 16.5523 8.55228 17 8 17H4C3.44772 17 3 16.5523 3 16L3 6.76923M9 6.76923H3"
 					stroke="#999999"
 					strokeOpacity="1"
-					style={{ fill: '#e3e5ea' }}
+					style={{ fill: 'none' }}
 				/>
 			</g>
 		),
@@ -406,7 +406,7 @@ let DisplayOptions = [
 					d="M15.9997 3H4.48242C3.93014 3 3.48242 3.44772 3.48242 4V15.5172C3.48242 16.0695 3.93014 16.5172 4.48242 16.5172H15.9997C16.5519 16.5172 16.9997 16.0695 16.9997 15.5172V4C16.9997 3.44772 16.5519 3 15.9997 3Z"
 					stroke="#999999"
 					strokeOpacity="1"
-					style={{ fill: '#e3e5ea' }}
+					style={{ fill: 'none' }}
 				/>
 				<path d="M3 7.82758H17.4828" stroke="#D6D6D6" />
 				<path d="M10 3L10 17" stroke="#D6D6D6" />
@@ -422,7 +422,7 @@ let DisplayOptions = [
 					d="M4.00034 17H15.5176C16.0699 17 16.5176 16.5523 16.5176 16V4.48276C16.5176 3.93047 16.0699 3.48276 15.5176 3.48276L4.00034 3.48276C3.44805 3.48276 3.00034 3.93047 3.00034 4.48276L3.00034 16C3.00034 16.5523 3.44805 17 4.00034 17Z"
 					stroke="#999999"
 					strokeOpacity="1"
-					style={{ fill: '#e3e5ea' }}
+					style={{ fill: 'none' }}
 				/>
 				<path d="M17 12.1724L2.51724 12.1724" stroke="#D6D6D6" />
 				<path d="M10 17L10 3" stroke="#D6D6D6" />
@@ -537,7 +537,7 @@ let DisplayOptions = [
 					rx="0.5"
 					stroke="#999999"
 					strokeOpacity="1"
-					style={{ fill: '#e3e5ea' }}
+					style={{ fill: 'none' }}
 				/>
 				<rect
 					x="6.5"
@@ -547,7 +547,7 @@ let DisplayOptions = [
 					rx="0.5"
 					fillOpacity="0.7"
 					stroke="#D6D6D6"
-					style={{ fill: '#e3e5ea' }}
+					style={{ fill: 'none' }}
 				/>
 				<path d="M10 7V13" stroke="#D6D6D6" />
 				<path d="M7 10H14" stroke="#D6D6D6" />
@@ -853,13 +853,7 @@ let JustifyContentOptions = [
 					fillOpacity="1"
 					strokeOpacity="1"
 				/>
-				<path
-					d="M4 3.5H16C16.2761 3.5 16.5 3.72386 16.5 4V16C16.5 16.2761 16.2761 16.5 16 16.5H4C3.72386 16.5 3.5 16.2761 3.5 16V4C3.5 3.72386 3.72386 3.5 4 3.5Z"
-					stroke="#999999"
-					strokeOpacity="1"
-					style={{ fill: '#e3e5ea' }}
-				/>
-				<rect x="6" y="6" width="8" height="8" rx="1" />
+				<rect x="6" y="6" width="8" height="8" rx="1" fillOpacity="1" />
 			</g>
 		),
 	},
@@ -872,14 +866,15 @@ let JustifyContentOptions = [
 					d="M16 3H4C3.44772 3 3 3.44772 3 4V16C3 16.5523 3.44772 17 4 17H16C16.5523 17 17 16.5523 17 16V4C17 3.44772 16.5523 3 16 3Z"
 					fill="#D9D9D9"
 					fillOpacity="1"
+					style={{ fill: 'none' }}
 				/>
 				<path
 					d="M4 3.5H16C16.2761 3.5 16.5 3.72386 16.5 4V16C16.5 16.2761 16.2761 16.5 16 16.5H4C3.72386 16.5 3.5 16.2761 3.5 16V4C3.5 3.72386 3.72386 3.5 4 3.5Z"
 					stroke="#999999"
-					strokeOpacity="1"
-					style={{ fill: '#e3e5ea' }}
+					strokeOpacity="0"
+					style={{ fill: 'none' }}
 				/>
-				<rect x="6" y="6" width="6" height="6" rx="1" fill="#D9D9D9" />
+				<rect x="6" y="6" width="6" height="6" rx="1" fillOpacity="1" />
 			</g>
 		),
 	},
@@ -892,7 +887,7 @@ let JustifyContentOptions = [
 					d="M13.0406 14.2793L5.7207 6.95938C5.1082 7.81523 4.75 8.86523 4.75 10C4.75 12.8984 7.10156 15.25 10 15.25C11.1348 15.25 12.1848 14.8918 13.0406 14.2793ZM14.2793 13.0406C14.8918 12.1848 15.25 11.1348 15.25 10C15.25 7.10156 12.8984 4.75 10 4.75C8.86523 4.75 7.81523 5.1082 6.95938 5.7207L14.2793 13.0406ZM3 10C3 8.14348 3.7375 6.36301 5.05025 5.05025C6.36301 3.7375 8.14348 3 10 3C11.8565 3 13.637 3.7375 14.9497 5.05025C16.2625 6.36301 17 8.14348 17 10C17 11.8565 16.2625 13.637 14.9497 14.9497C13.637 16.2625 11.8565 17 10 17C8.14348 17 6.36301 16.2625 5.05025 14.9497C3.7375 13.637 3 11.8565 3 10Z"
 					fill="#999999"
 					fillOpacity="1"
-					strokeOpacity={1}
+					strokeOpacity="0"
 				/>
 			</g>
 		),
@@ -1257,14 +1252,15 @@ let JustifyItemsOptions = [
 					fill="#D9D9D9"
 					fillOpacity="1"
 					strokeOpacity="0"
+					style={{ fill: 'none' }}
 				/>
 				<path
 					d="M4 3.5H16C16.2761 3.5 16.5 3.72386 16.5 4V16C16.5 16.2761 16.2761 16.5 16 16.5H4C3.72386 16.5 3.5 16.2761 3.5 16V4C3.5 3.72386 3.72386 3.5 4 3.5Z"
 					stroke="#999999"
 					strokeOpacity="1"
-					style={{ fill: '#e3e5ea' }}
+					style={{ fill: 'none' }}
 				/>
-				<rect x="6" y="6" width="8" height="8" rx="1" strokeOpacity={0} />
+				<rect x="6" y="6" width="8" height="8" rx="1" strokeOpacity={1} />
 			</g>
 		),
 	},
@@ -1276,15 +1272,30 @@ let JustifyItemsOptions = [
 				<path
 					d="M16 3H4C3.44772 3 3 3.44772 3 4V16C3 16.5523 3.44772 17 4 17H16C16.5523 17 17 16.5523 17 16V4C17 3.44772 16.5523 3 16 3Z"
 					fill="#D9D9D9"
-					fillOpacity="1"
+					fillOpacity="0"
+					style={{ fill: 'none' }}
 				/>
 				<path
 					d="M4 3.5H16C16.2761 3.5 16.5 3.72386 16.5 4V16C16.5 16.2761 16.2761 16.5 16 16.5H4C3.72386 16.5 3.5 16.2761 3.5 16V4C3.5 3.72386 3.72386 3.5 4 3.5Z"
 					stroke="#999999"
 					strokeOpacity={0}
-					style={{ fill: '#e3e5ea' }}
+					style={{ fill: 'none' }}
 				/>
-				<rect x="6" y="6" width="6" height="6" rx="1" fill="#D9D9D9" strokeOpacity={0} />
+				<rect x="6" y="6" width="6" height="6" rx="1" fill="#D9D9D9" strokeOpacity={1} />
+			</g>
+		),
+	},
+	{
+		name: 'unset',
+		description: 'Unset',
+		icon: (
+			<g viewBox="0 0 20 20" transform="translate(6 6)">
+				<path
+					d="M13.0406 14.2793L5.7207 6.95938C5.1082 7.81523 4.75 8.86523 4.75 10C4.75 12.8984 7.10156 15.25 10 15.25C11.1348 15.25 12.1848 14.8918 13.0406 14.2793ZM14.2793 13.0406C14.8918 12.1848 15.25 11.1348 15.25 10C15.25 7.10156 12.8984 4.75 10 4.75C8.86523 4.75 7.81523 5.1082 6.95938 5.7207L14.2793 13.0406ZM3 10C3 8.14348 3.7375 6.36301 5.05025 5.05025C6.36301 3.7375 8.14348 3 10 3C11.8565 3 13.637 3.7375 14.9497 5.05025C16.2625 6.36301 17 8.14348 17 10C17 11.8565 16.2625 13.637 14.9497 14.9497C13.637 16.2625 11.8565 17 10 17C8.14348 17 6.36301 16.2625 5.05025 14.9497C3.7375 13.637 3 11.8565 3 10Z"
+					fill="#999999"
+					fillOpacity="1"
+					strokeOpacity={0}
+				/>
 			</g>
 		),
 	},
@@ -1397,19 +1408,6 @@ let JustifyItemsOptions = [
 			</g>
 		),
 	},
-	{
-		name: 'unset',
-		description: 'Unset',
-		icon: (
-			<g viewBox="0 0 20 20" transform="translate(6 6)">
-				<path
-					d="M13.0406 14.2793L5.7207 6.95938C5.1082 7.81523 4.75 8.86523 4.75 10C4.75 12.8984 7.10156 15.25 10 15.25C11.1348 15.25 12.1848 14.8918 13.0406 14.2793ZM14.2793 13.0406C14.8918 12.1848 15.25 11.1348 15.25 10C15.25 7.10156 12.8984 4.75 10 4.75C8.86523 4.75 7.81523 5.1082 6.95938 5.7207L14.2793 13.0406ZM3 10C3 8.14348 3.7375 6.36301 5.05025 5.05025C6.36301 3.7375 8.14348 3 10 3C11.8565 3 13.637 3.7375 14.9497 5.05025C16.2625 6.36301 17 8.14348 17 10C17 11.8565 16.2625 13.637 14.9497 14.9497C13.637 16.2625 11.8565 17 10 17C8.14348 17 6.36301 16.2625 5.05025 14.9497C3.7375 13.637 3 11.8565 3 10Z"
-					fillOpacity="1"
-					strokeOpacity={0}
-				/>
-			</g>
-		),
-	},
 ];
 
 let JustifySelfOptions = [
@@ -1417,13 +1415,8 @@ let JustifySelfOptions = [
 		name: 'auto',
 		description: 'Auto',
 		icon: (
-			<g viewBox="0 0 20 20" transform="translate(6 6)">
-				<path
-					d="M4.85714 16H15C15.5523 16 16 15.5523 16 15V5C16 4.44771 15.5523 4 15 4H4.85714C4.384 4 6 6.896 4 6V14C4 15.104 4.384 16 4.85714 16Z"
-					fill="#999999"
-					fillOpacity="1"
-					strokeOpacity={0}
-				/>
+			<g viewBox="0 0 20 20" transform="translate(9 9)">
+				<rect width="14" height="14" rx="1" fillOpacity="1" />
 			</g>
 		),
 	},
@@ -1784,14 +1777,15 @@ let JustifySelfOptions = [
 					fill="#D9D9D9"
 					fillOpacity="1"
 					strokeOpacity="0"
+					style={{ fill: 'none' }}
 				/>
 				<path
 					d="M4 3.5H16C16.2761 3.5 16.5 3.72386 16.5 4V16C16.5 16.2761 16.2761 16.5 16 16.5H4C3.72386 16.5 3.5 16.2761 3.5 16V4C3.5 3.72386 3.72386 3.5 4 3.5Z"
 					stroke="#999999"
 					strokeOpacity="1"
-					style={{ fill: '#e3e5ea' }}
+					style={{ fill: 'none' }}
 				/>
-				<rect x="6" y="6" width="8" height="8" rx="1" strokeOpacity={0} />
+				<rect x="6" y="6" width="8" height="8" rx="1" strokeOpacity={1} />
 			</g>
 		),
 	},
@@ -1804,14 +1798,15 @@ let JustifySelfOptions = [
 					d="M16 3H4C3.44772 3 3 3.44772 3 4V16C3 16.5523 3.44772 17 4 17H16C16.5523 17 17 16.5523 17 16V4C17 3.44772 16.5523 3 16 3Z"
 					fill="#D9D9D9"
 					fillOpacity="1"
+					style={{ fill: 'none' }}
 				/>
 				<path
 					d="M4 3.5H16C16.2761 3.5 16.5 3.72386 16.5 4V16C16.5 16.2761 16.2761 16.5 16 16.5H4C3.72386 16.5 3.5 16.2761 3.5 16V4C3.5 3.72386 3.72386 3.5 4 3.5Z"
 					stroke="#999999"
 					strokeOpacity={0}
-					style={{ fill: '#e3e5ea' }}
+					style={{ fill: 'none' }}
 				/>
-				<rect x="6" y="6" width="6" height="6" rx="1" fill="#D9D9D9" strokeOpacity={0} />
+				<rect x="6" y="6" width="6" height="6" rx="1" fill="#D9D9D9" strokeOpacity={1} />
 			</g>
 		),
 	},
@@ -2153,16 +2148,10 @@ let AlignContentOptions = [
 				<path
 					d="M16 3H4C3.44772 3 3 3.44772 3 4V16C3 16.5523 3.44772 17 4 17H16C16.5523 17 17 16.5523 17 16V4C17 3.44772 16.5523 3 16 3Z"
 					fill="#D9D9D9"
-					fillOpacity="1"
-					strokeOpacity="0"
-				/>
-				<path
-					d="M4 3.5H16C16.2761 3.5 16.5 3.72386 16.5 4V16C16.5 16.2761 16.2761 16.5 16 16.5H4C3.72386 16.5 3.5 16.2761 3.5 16V4C3.5 3.72386 3.72386 3.5 4 3.5Z"
-					stroke="#999999"
+					fillOpacity="0"
 					strokeOpacity="1"
-					style={{ fill: '#e3e5ea' }}
 				/>
-				<rect x="6" y="6" width="8" height="8" rx="1" strokeOpacity={0} />
+				<rect x="6" y="6" width="8" height="8" rx="1" fillOpacity="1" />
 			</g>
 		),
 	},
@@ -2175,14 +2164,15 @@ let AlignContentOptions = [
 					d="M16 3H4C3.44772 3 3 3.44772 3 4V16C3 16.5523 3.44772 17 4 17H16C16.5523 17 17 16.5523 17 16V4C17 3.44772 16.5523 3 16 3Z"
 					fill="#D9D9D9"
 					fillOpacity="1"
+					style={{ fill: 'none' }}
 				/>
 				<path
 					d="M4 3.5H16C16.2761 3.5 16.5 3.72386 16.5 4V16C16.5 16.2761 16.2761 16.5 16 16.5H4C3.72386 16.5 3.5 16.2761 3.5 16V4C3.5 3.72386 3.72386 3.5 4 3.5Z"
 					stroke="#999999"
-					strokeOpacity={0}
-					style={{ fill: '#e3e5ea' }}
+					strokeOpacity="0"
+					style={{ fill: 'none' }}
 				/>
-				<rect x="6" y="6" width="6" height="6" rx="1" fill="#D9D9D9" strokeOpacity={0} />
+				<rect x="6" y="6" width="6" height="6" rx="1" fillOpacity="1" />
 			</g>
 		),
 	},
@@ -2195,7 +2185,7 @@ let AlignContentOptions = [
 					d="M13.0406 14.2793L5.7207 6.95938C5.1082 7.81523 4.75 8.86523 4.75 10C4.75 12.8984 7.10156 15.25 10 15.25C11.1348 15.25 12.1848 14.8918 13.0406 14.2793ZM14.2793 13.0406C14.8918 12.1848 15.25 11.1348 15.25 10C15.25 7.10156 12.8984 4.75 10 4.75C8.86523 4.75 7.81523 5.1082 6.95938 5.7207L14.2793 13.0406ZM3 10C3 8.14348 3.7375 6.36301 5.05025 5.05025C6.36301 3.7375 8.14348 3 10 3C11.8565 3 13.637 3.7375 14.9497 5.05025C16.2625 6.36301 17 8.14348 17 10C17 11.8565 16.2625 13.637 14.9497 14.9497C13.637 16.2625 11.8565 17 10 17C8.14348 17 6.36301 16.2625 5.05025 14.9497C3.7375 13.637 3 11.8565 3 10Z"
 					fill="#999999"
 					fillOpacity="1"
-					strokeOpacity={0}
+					strokeOpacity="0"
 				/>
 			</g>
 		),
@@ -2211,12 +2201,14 @@ let AlignItemsOptions = [
 				<path
 					d="M5 4.83073V14.6641C5 15.2163 5.44772 15.6641 6 15.6641H8C8.55228 15.6641 9 15.2163 9 14.6641V4.83073C9 4.37073 8.70133 3.9974 8.33333 3.9974H5.66667C5.29867 3.9974 5 4.37073 5 4.83073Z"
 					fill="#999999"
-					fillOpacity="0.45"
+					fillOpacity="1"
+					strokeOpacity={0}
 				/>
 				<path
 					d="M12 4.83073V14.6641C12 15.2163 12.4477 15.6641 13 15.6641H15C15.5523 15.6641 16 15.2163 16 14.6641V4.83073C16 4.37073 15.7013 3.9974 15.3333 3.9974H12.6667C12.2987 3.9974 12 4.37073 12 4.83073Z"
 					fill="#999999"
-					fillOpacity="0.45"
+					fillOpacity="1"
+					strokeOpacity={0}
 				/>
 			</g>
 		),
@@ -2526,16 +2518,10 @@ let AlignItemsOptions = [
 				<path
 					d="M16 3H4C3.44772 3 3 3.44772 3 4V16C3 16.5523 3.44772 17 4 17H16C16.5523 17 17 16.5523 17 16V4C17 3.44772 16.5523 3 16 3Z"
 					fill="#D9D9D9"
-					fillOpacity="1"
-					strokeOpacity="0"
-				/>
-				<path
-					d="M4 3.5H16C16.2761 3.5 16.5 3.72386 16.5 4V16C16.5 16.2761 16.2761 16.5 16 16.5H4C3.72386 16.5 3.5 16.2761 3.5 16V4C3.5 3.72386 3.72386 3.5 4 3.5Z"
-					stroke="#999999"
+					fillOpacity="0"
 					strokeOpacity="1"
-					style={{ fill: '#e3e5ea' }}
 				/>
-				<rect x="6" y="6" width="8" height="8" rx="1" strokeOpacity={0} />
+				<rect x="6" y="6" width="8" height="8" rx="1" fillOpacity="1" />
 			</g>
 		),
 	},
@@ -2548,14 +2534,15 @@ let AlignItemsOptions = [
 					d="M16 3H4C3.44772 3 3 3.44772 3 4V16C3 16.5523 3.44772 17 4 17H16C16.5523 17 17 16.5523 17 16V4C17 3.44772 16.5523 3 16 3Z"
 					fill="#D9D9D9"
 					fillOpacity="1"
+					style={{ fill: 'none' }}
 				/>
 				<path
 					d="M4 3.5H16C16.2761 3.5 16.5 3.72386 16.5 4V16C16.5 16.2761 16.2761 16.5 16 16.5H4C3.72386 16.5 3.5 16.2761 3.5 16V4C3.5 3.72386 3.72386 3.5 4 3.5Z"
 					stroke="#999999"
-					strokeOpacity={0}
-					style={{ fill: '#e3e5ea' }}
+					strokeOpacity="0"
+					style={{ fill: 'none' }}
 				/>
-				<rect x="6" y="6" width="6" height="6" rx="1" fill="#D9D9D9" strokeOpacity={0} />
+				<rect x="6" y="6" width="6" height="6" rx="1" fillOpacity="1" />
 			</g>
 		),
 	},
@@ -2568,7 +2555,7 @@ let AlignItemsOptions = [
 					d="M13.0406 14.2793L5.7207 6.95938C5.1082 7.81523 4.75 8.86523 4.75 10C4.75 12.8984 7.10156 15.25 10 15.25C11.1348 15.25 12.1848 14.8918 13.0406 14.2793ZM14.2793 13.0406C14.8918 12.1848 15.25 11.1348 15.25 10C15.25 7.10156 12.8984 4.75 10 4.75C8.86523 4.75 7.81523 5.1082 6.95938 5.7207L14.2793 13.0406ZM3 10C3 8.14348 3.7375 6.36301 5.05025 5.05025C6.36301 3.7375 8.14348 3 10 3C11.8565 3 13.637 3.7375 14.9497 5.05025C16.2625 6.36301 17 8.14348 17 10C17 11.8565 16.2625 13.637 14.9497 14.9497C13.637 16.2625 11.8565 17 10 17C8.14348 17 6.36301 16.2625 5.05025 14.9497C3.7375 13.637 3 11.8565 3 10Z"
 					fill="#999999"
 					fillOpacity="1"
-					strokeOpacity={0}
+					strokeOpacity="0"
 				/>
 			</g>
 		),
@@ -2580,13 +2567,8 @@ let AlignSelfOptions = [
 		name: 'auto',
 		description: 'Auto',
 		icon: (
-			<g viewBox="0 0 20 20" transform="translate(6 6)">
-				<path
-					d="M4.85714 16H15C15.5523 16 16 15.5523 16 15V5C16 4.44771 15.5523 4 15 4H4.85714C4.384 4 6 6.896 4 6V14C4 15.104 4.384 16 4.85714 16Z"
-					fill="#999999"
-					fillOpacity="1"
-					strokeOpacity={0}
-				/>
+			<g viewBox="0 0 20 20" transform="translate(9 9)">
+				<rect width="14" height="14" rx="1" fillOpacity="1" />
 			</g>
 		),
 	},
@@ -2913,16 +2895,10 @@ let AlignSelfOptions = [
 				<path
 					d="M16 3H4C3.44772 3 3 3.44772 3 4V16C3 16.5523 3.44772 17 4 17H16C16.5523 17 17 16.5523 17 16V4C17 3.44772 16.5523 3 16 3Z"
 					fill="#D9D9D9"
-					fillOpacity="1"
-					strokeOpacity="0"
-				/>
-				<path
-					d="M4 3.5H16C16.2761 3.5 16.5 3.72386 16.5 4V16C16.5 16.2761 16.2761 16.5 16 16.5H4C3.72386 16.5 3.5 16.2761 3.5 16V4C3.5 3.72386 3.72386 3.5 4 3.5Z"
-					stroke="#999999"
+					fillOpacity="0"
 					strokeOpacity="1"
-					style={{ fill: '#e3e5ea' }}
 				/>
-				<rect x="6" y="6" width="8" height="8" rx="1" strokeOpacity={0} />
+				<rect x="6" y="6" width="8" height="8" rx="1" fillOpacity="1" />
 			</g>
 		),
 	},
@@ -2935,14 +2911,15 @@ let AlignSelfOptions = [
 					d="M16 3H4C3.44772 3 3 3.44772 3 4V16C3 16.5523 3.44772 17 4 17H16C16.5523 17 17 16.5523 17 16V4C17 3.44772 16.5523 3 16 3Z"
 					fill="#D9D9D9"
 					fillOpacity="1"
+					style={{ fill: 'none' }}
 				/>
 				<path
 					d="M4 3.5H16C16.2761 3.5 16.5 3.72386 16.5 4V16C16.5 16.2761 16.2761 16.5 16 16.5H4C3.72386 16.5 3.5 16.2761 3.5 16V4C3.5 3.72386 3.72386 3.5 4 3.5Z"
 					stroke="#999999"
-					strokeOpacity={0}
-					style={{ fill: '#e3e5ea' }}
+					strokeOpacity="0"
+					style={{ fill: 'none' }}
 				/>
-				<rect x="6" y="6" width="6" height="6" rx="1" fill="#D9D9D9" strokeOpacity={0} />
+				<rect x="6" y="6" width="6" height="6" rx="1" fillOpacity="1" />
 			</g>
 		),
 	},
@@ -2955,7 +2932,7 @@ let AlignSelfOptions = [
 					d="M13.0406 14.2793L5.7207 6.95938C5.1082 7.81523 4.75 8.86523 4.75 10C4.75 12.8984 7.10156 15.25 10 15.25C11.1348 15.25 12.1848 14.8918 13.0406 14.2793ZM14.2793 13.0406C14.8918 12.1848 15.25 11.1348 15.25 10C15.25 7.10156 12.8984 4.75 10 4.75C8.86523 4.75 7.81523 5.1082 6.95938 5.7207L14.2793 13.0406ZM3 10C3 8.14348 3.7375 6.36301 5.05025 5.05025C6.36301 3.7375 8.14348 3 10 3C11.8565 3 13.637 3.7375 14.9497 5.05025C16.2625 6.36301 17 8.14348 17 10C17 11.8565 16.2625 13.637 14.9497 14.9497C13.637 16.2625 11.8565 17 10 17C8.14348 17 6.36301 16.2625 5.05025 14.9497C3.7375 13.637 3 11.8565 3 10Z"
 					fill="#999999"
 					fillOpacity="1"
-					strokeOpacity={0}
+					strokeOpacity="0"
 				/>
 			</g>
 		),
@@ -2975,7 +2952,7 @@ function DetailedLayoutEditor(props: Readonly<StyleEditorsProps>) {
 	} = props;
 	return (
 		<>
-			<div className="_combineEditors">Justify Items</div>
+			<div className="_simpleEditor">Justify Items</div>
 			<EachSimpleEditor
 				selectedComponentsList={selectedComponentsList}
 				defPath={defPath}
@@ -3089,60 +3066,42 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 		pageExtractor,
 	} = props;
 
-	let flexOptions: ButtonBarOptions = [
-		{ name: 'none', displayName: 'None' },
-		{ name: 'auto', displayName: 'Auto' },
-		{ name: 'custom', displayName: 'Custom' },
-	];
-
-	let flexBasisOptions: ButtonBarOptions = [
-		{ name: 'content', displayName: 'Content' },
-		{ name: 'max-content', displayName: 'Max Content' },
-		{ name: 'min-content', displayName: 'Min Content' },
-		{ name: 'fit-content', displayName: 'Fit Content' },
-	];
-
-	let flexLogic = ({ flexGrow, flexShrink, flexBasis, flex }: Record<string, any>) => {
-		if (flex === 'auto') {
-			return { flexGrow: '1', flexShrink: '1', flexBasis: 'auto', flex: 'auto' };
-		}
-		if (flex === 'none') {
-			return { flexGrow: '0', flexShrink: '0', flexBasis: 'auto', flex: 'none' };
-		} else {
-			return {
-				flexGrow,
-				flexShrink,
-				flexBasis,
-				flex: `${flexGrow} ${flexShrink} ${flexBasis}`,
-			};
-		}
-	};
-
 	let flexRelatedProps = {
 		props: ['flexGrow', 'flexShrink', 'flexBasis', 'flex'],
-		logic: flexLogic,
-	};
-
-	let flexFlowLogic = ({ flexFlow, flexDirection, flexWrap }: Record<string, any>) => {
-		if (flexFlow === 'auto') {
-			return { flexDirection: 'row', flexWrap: 'nowrap' };
-		}
-		return { flexDirection, flexWrap, flexFlow: `${flexDirection} ${flexWrap}` };
+		logic: ({ flexGrow, flexShrink, flexBasis, flex }: Record<string, any>) => {
+			if (flex === 'auto') {
+				return { flexGrow: '1', flexShrink: '1', flexBasis: 'auto', flex: 'auto' };
+			}
+			if (flex === 'none') {
+				return { flexGrow: '0', flexShrink: '0', flexBasis: 'auto', flex: 'none' };
+			} else {
+				return {
+					flexGrow,
+					flexShrink,
+					flexBasis,
+					flex: `${flexGrow} ${flexShrink} ${flexBasis}`,
+				};
+			}
+		},
 	};
 
 	let flexFlowRelatedProps = {
 		props: ['flexDirection', 'flexWrap'],
-		logic: flexFlowLogic,
+		logic: ({ flexFlow, flexDirection, flexWrap }: Record<string, any>) => {
+			return { flexDirection, flexWrap, flexFlow: `${flexDirection} ${flexWrap}` };
+		},
 	};
 
+	let displayValue = styleProps?.display || 'flex';
 	return (
 		<>
 			<div className="_combineEditors">
-				<div className="_combineEditors">Display</div>
+				{/* <div className="_combineEditors">Display</div> */}
 				<EachSimpleEditor
 					selectedComponentsList={selectedComponentsList}
+					displayName="Display"
 					defPath={defPath}
-					className={'_simpleEditor'}
+					className={'_combineEditors'}
 					locationHistory={locationHistory}
 					pageExtractor={pageExtractor}
 					subComponentName={subComponentName}
@@ -3186,7 +3145,11 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 					properties={properties}
 					editorDef={{
 						type: SimpleEditorType.ButtonBar,
-						buttonBarOptions: flexOptions,
+						buttonBarOptions: [
+							{ name: 'none', displayName: 'None' },
+							{ name: 'auto', displayName: 'Auto' },
+							{ name: 'custom', displayName: 'Custom' },
+						],
 					}}
 					relatedProps={flexRelatedProps}
 				/>
@@ -3276,31 +3239,16 @@ function LayoutStandardEditor(props: Readonly<StyleEditorsProps>) {
 				properties={properties}
 				editorDef={{
 					type: SimpleEditorType.ButtonBar,
-					buttonBarOptions: flexBasisOptions,
+					buttonBarOptions: [
+						{ name: 'content', displayName: 'Content' },
+						{ name: 'max-content', displayName: 'Max Content' },
+						{ name: 'min-content', displayName: 'Min Content' },
+						{ name: 'fit-content', displayName: 'Fit Content' },
+					],
 				}}
 				relatedProps={flexRelatedProps}
 			/>
 
-			{/* <div className="_combineEditors">Flow</div>
-			<EachSimpleEditor
-				selectedComponentsList={selectedComponentsList}
-				defPath={defPath}
-				className={'_combineEditors'}
-				locationHistory={locationHistory}
-				pageExtractor={pageExtractor}
-				subComponentName={subComponentName}
-				pseudoState={pseudoState}
-				prop="flexFlow"
-				placeholder="Flex Flow"
-				iterateProps={iterateProps}
-				selectorPref={selectorPref}
-				styleProps={styleProps}
-				selectedComponent={selectedComponent}
-				saveStyle={saveStyle}
-				properties={properties}
-				editorDef={{ type: SimpleEditorType.Text }}
-				relatedProps={flexFlowRelatedProps}
-			/> */}
 			<br />
 			<div className="_combineEditors">
 				<div className="_combineEditors">Direction</div>

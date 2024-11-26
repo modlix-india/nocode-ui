@@ -199,134 +199,52 @@ const component: Component = {
 			mainComponent: true,
 			icon: (
 				<IconHelper viewBox="0 0 30 30">
-					<rect width="30" height="30" rx="2" fill="url(#paint0_linear_3214_9643)" />
-					<rect
-						className="_TextListLine2"
-						x="10.9097"
-						y="13.6357"
-						width="15"
-						height="2.72727"
-						rx="1"
-						fill="url(#paint1_linear_3214_9643)"
-					/>
-					<circle
-						className="_TextListCircle1"
-						cx="6.81858"
-						cy="6.81785"
-						r="2.72727"
-						fill="url(#paint2_linear_3214_9643)"
-					/>
-					<circle
-						className="_TextListCircle2"
-						cx="6.81858"
-						cy="14.9983"
-						r="2.72727"
-						fill="url(#paint3_linear_3214_9643)"
-					/>
-					<circle
-						className="_TextListCircle3"
-						cx="6.81858"
-						cy="23.1825"
-						r="2.72727"
-						fill="url(#paint4_linear_3214_9643)"
-					/>
-					<rect
-						className="_TextListLine3"
-						x="10.9097"
-						y="21.8162"
-						width="15"
-						height="2.72727"
-						rx="1"
-						fill="url(#paint5_linear_3214_9643)"
-					/>
-					<rect
-						className="_TextListLine1"
-						x="10.9097"
-						y="5.4552"
-						width="15"
-						height="2.72727"
-						rx="1"
-						fill="url(#paint6_linear_3214_9643)"
-					/>
-					<defs>
-						<linearGradient
-							id="paint0_linear_3214_9643"
-							x1="15"
-							y1="0"
-							x2="15"
-							y2="30"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#EEEEEE" />
-							<stop offset="1" stopColor="#EDEAEA" />
-						</linearGradient>
-						<linearGradient
-							id="paint1_linear_3214_9643"
-							x1="18.4097"
-							y1="13.6357"
-							x2="18.4097"
-							y2="16.363"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#FF8EE7" />
-							<stop offset="1" stopColor="#FF00C8" />
-						</linearGradient>
-						<linearGradient
-							id="paint2_linear_3214_9643"
-							x1="6.81858"
-							y1="4.09058"
-							x2="6.81858"
-							y2="9.54512"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#FF8EE7" />
-							<stop offset="1" stopColor="#FF00C8" />
-						</linearGradient>
-						<linearGradient
-							id="paint3_linear_3214_9643"
-							x1="6.81858"
-							y1="12.271"
-							x2="6.81858"
-							y2="17.7255"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#FF8EE7" />
-							<stop offset="1" stopColor="#FF00C8" />
-						</linearGradient>
-						<linearGradient
-							id="paint4_linear_3214_9643"
-							x1="6.81858"
-							y1="20.4552"
-							x2="6.81858"
-							y2="25.9097"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#FF8EE7" />
-							<stop offset="1" stopColor="#FF00C8" />
-						</linearGradient>
-						<linearGradient
-							id="paint5_linear_3214_9643"
-							x1="18.4097"
-							y1="21.8162"
-							x2="18.4097"
-							y2="24.5434"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#FF8EE7" />
-							<stop offset="1" stopColor="#FF00C8" />
-						</linearGradient>
-						<linearGradient
-							id="paint6_linear_3214_9643"
-							x1="18.4097"
-							y1="5.4552"
-							x2="18.4097"
-							y2="8.18247"
-							gradientUnits="userSpaceOnUse"
-						>
-							<stop stopColor="#FF8EE7" />
-							<stop offset="1" stopColor="#FF00C8" />
-						</linearGradient>
-					</defs>
+					<svg
+						width="22"
+						height="30"
+						viewBox="0 0 22 30"
+						fill="none"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<path
+							d="M13.5511 6.09627V0H2.00263C0.898379 0 0 0.947747 0 2.11268V27.8873C0 29.0523 0.898379 30 2.00263 30H19.9974C21.1016 30 22 29.0523 22 27.8873V8.91317H16.2213C14.749 8.91317 13.5511 7.64951 13.5511 6.09627Z"
+							fill="#E663CA"
+						/>
+						<path
+							d="M14.8882 6.10163C14.8882 6.87825 15.4871 7.51008 16.2233 7.51008H21.0122L14.8882 1.08008V6.10163Z"
+							fill="#E663CA"
+						/>
+						<path
+							d="M17.5 14H6.5C6.22386 14 6 14.2239 6 14.5V15.5C6 15.7761 6.22386 16 6.5 16H17.5C17.7761 16 18 15.7761 18 15.5V14.5C18 14.2239 17.7761 14 17.5 14Z"
+							fill="white"
+							className="_TextListLine1"
+						/>
+						<path
+							d="M17.5 19H6.5C6.22386 19 6 19.2239 6 19.5V20.5C6 20.7761 6.22386 21 6.5 21H17.5C17.7761 21 18 20.7761 18 20.5V19.5C18 19.2239 17.7761 19 17.5 19Z"
+							fill="white"
+							className="_TextListLine2"
+						/>
+						<path
+							d="M17.5 24H6.5C6.22386 24 6 24.2239 6 24.5V25.5C6 25.7761 6.22386 26 6.5 26H17.5C17.7761 26 18 25.7761 18 25.5V24.5C18 24.2239 17.7761 24 17.5 24Z"
+							fill="white"
+							className="_TextListLine3"
+						/>
+						<path
+							d="M2 15C2 15.5523 2.44772 16 3 16C3.55228 16 4 15.5523 4 15C4 14.4477 3.55228 14 3 14C2.44772 14 2 14.4477 2 15Z"
+							fill="white"
+							className="_TextListCircle1"
+						/>
+						<path
+							d="M2 20C2 20.5523 2.44772 21 3 21C3.55228 21 4 20.5523 4 20C4 19.4477 3.55228 19 3 19C2.44772 19 2 19.4477 2 20Z"
+							fill="white"
+							className="_TextListCircle2"
+						/>
+						<path
+							d="M2 25C2 25.5523 2.44772 26 3 26C3.55228 26 4 25.5523 4 25C4 24.4477 3.55228 24 3 24C2.44772 24 2 24.4477 2 25Z"
+							fill="white"
+							className="_TextListCircle3"
+						/>
+					</svg>
 				</IconHelper>
 			),
 		},

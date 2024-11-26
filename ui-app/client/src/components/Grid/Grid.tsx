@@ -384,39 +384,24 @@ const component: Component = {
 			mainComponent: true,
 			icon: (
 				<IconHelper viewBox="0 0 30 30">
-					<defs>
-						<linearGradient
-							id="_grid-linear-gradient"
-							x1="0.5"
-							x2="0.5"
-							y2="1"
-							gradientUnits="objectBoundingBox"
-						>
-							<stop offset="0" stopColor="#c1a9ef" />
-							<stop offset="1" stopColor="#7743db" />
-						</linearGradient>
-					</defs>
-					<rect width="30" height="30" fill="#fff" opacity="0" />
-					<g transform="translate(2)">
-						<path
-							className="_scaleBottomTop"
-							d="M11,0H1A1,1,0,0,0,0,1V18a1,1,0,0,0,1,1H11a1,1,0,0,0,1-1V1A1,1,0,0,0,11,0Z"
-							fill="url(#_grid-linear-gradient)"
-						/>
-						<path
-							className="_scaleTopBottom"
-							d="M26,11H16a1,1,0,0,0-1,1V29a1,1,0,0,0,1,1H26a1,1,0,0,0,1-1V12A1,1,0,0,0,26,11Z"
-							fill="url(#_grid-linear-gradient)"
-						/>
-						<path
-							d="M11,22H1a1,1,0,0,0-1,1v6a1,1,0,0,0,1,1H11a1,1,0,0,0,1-1V23A1,1,0,0,0,11,22Z"
-							fill="#EDEAEA"
-						/>
-						<path
-							d="M26,0H16a1,1,0,0,0-1,1V7a1,1,0,0,0,1,1H26a1,1,0,0,0,1-1V1A1,1,0,0,0,26,0Z"
-							fill="#EDEAEA"
-						/>
-					</g>
+					<path
+						className="_scaleBottomTop"
+						d="M11 0H1C0.447715 0 0 0.447715 0 1V18C0 18.5523 0.447715 19 1 19H11C11.5523 19 12 18.5523 12 18V1C12 0.447715 11.5523 0 11 0Z"
+						fill="#7743DB"
+					/>
+					<path
+						className="_scaleTopBottom"
+						d="M26 11H16C15.4477 11 15 11.4477 15 12V29C15 29.5523 15.4477 30 16 30H26C26.5523 30 27 29.5523 27 29V12C27 11.4477 26.5523 11 26 11Z"
+						fill="#7743DB"
+					/>
+					<path
+						d="M11 22H1C0.447715 22 0 22.4477 0 23V29C0 29.5523 0.447715 30 1 30H11C11.5523 30 12 29.5523 12 29V23C12 22.4477 11.5523 22 11 22Z"
+						fill="#EDEAEA"
+					/>
+					<path
+						d="M26 0H16C15.4477 0 15 0.447715 15 1V7C15 7.55229 15.4477 8 16 8H26C26.5523 8 27 7.55229 27 7V1C27 0.447715 26.5523 0 26 0Z"
+						fill="#EDEAEA"
+					/>
 				</IconHelper>
 			),
 		},
