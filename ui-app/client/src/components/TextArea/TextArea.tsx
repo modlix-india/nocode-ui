@@ -305,7 +305,7 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 30 30">
+				<IconHelper viewBox="0 0 30 24">
 					<rect width="28" height="24" rx="3" fill="#9B82F3" />
 					<path
 						className="_TAFirstLine"

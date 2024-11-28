@@ -3552,9 +3552,9 @@ export default function GridStyle({
 		}
 
 		@keyframes dropdownlinesScaleAnimation {
-			0% { transform: translateY(0px); opacity: 1; }
+			0% { transform: translateY(0px); opacity: 0.5; }
 			50% { transform: translateY(-10px); opacity: 0; }
-			100% { transform: translateY(0px); opacity: 1; }
+			100% { transform: translateY(0px); opacity: 0.5; }
 		}
 
 
@@ -3727,7 +3727,7 @@ export default function GridStyle({
 
 		@keyframes greenStepperIconAnimation {
 			0% { transform: translateX(0px); }
-			100% { transform: translateX(38px); }
+			100% { transform: translateX(18px); }
 		}
 
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._greenFinalStepIcon {
@@ -3995,18 +3995,82 @@ export default function GridStyle({
 			100% { transform: scaleY(1); }
 		}
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._cptube{
-			animation: cptubeAnimation var(--comp-item-animation-duration-mid) infinite;	
-		}
-		
-		@keyframes cptubeAnimation {
-			0% { fill: #FF6A1F; }
-			49% { fill: #FF6A1F; }
-			50% { fill: #2A6AFF; }
-			100% { fill: #2A6AFF; }
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._colorPickerIcon{
+			animation: colorPickerIconAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
 		}
 
+		@keyframes colorPickerIconAnimation {
+			0% { transform: rotateZ(0deg); }
+			50% { transform: rotateZ(90deg); }
+			100% { transform: rotateZ(0deg); }
+		}
 
+		// ${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._circle21{
+		// 	animation: circle21Animation var(--comp-item-animation-duration-long) infinite;
+		// }
+
+		// @keyframes circle21Animation {
+		// 	0% { transform: translate(0, 0); }
+		// 	10% { transform: translate(-2px, 0); }
+		// 	20% { transform: translate(-2px, 17px); }
+		// 	30% { transform: translate(16px, 17px); }
+		// 	40% { transform: translate(16px, 8px); }
+		// 	60% { transform: translate(16px, 8px); }
+		// 	70% { transform: translate(16px, -6px); }
+		// 	80% { transform: translate(-2px, -6px); }
+		// 	100% { transform: translate(-2px, 0); }
+		// }
+
+		// ${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._circle22{
+		// 	animation: circle22Animation var(--comp-item-animation-duration-long) infinite;
+		// }
+
+		// @keyframes circle22Animation {
+		// 	0% { transform: translate(0, 0); }
+		// 	15% { transform: translate(-5px, 0); }
+		// 	25% { transform: translate(-5px, 17px); }
+		// 	35% { transform: translate(12.3px, 17px); }
+		// 	45% { transform: translate(12.3px, 12px); }
+		// 	65% { transform: translate(12.3px, 12px); }
+		// 	75% { transform: translate(12.3px, -6px); }
+		// 	85% { transform: translate(-5px, -6px); }
+		// 	90% { transform: translate(-5px, 0px); }
+		// 	100% { transform: translate(0px, 0); }
+		// }
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._circle11{
+			animation: circle11Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes circle11Animation {
+			0% { transform: translate(0, 0); }
+			5% { transform: translate(-2px, 0); }
+			25% { transform: translate(-2px, 24px); }
+			50% { transform: translate(16px, 24px); }
+			// 50% { transform: translate(16px, 22px); }
+			// 70% { transform: translate(16px, 22px); }
+			75% { transform: translate(16px, 0px); }
+			// 90% { transform: translate(-2px, 0px); }
+			100% { transform: translate(0px, 0); }
+		}
+			
+		// ${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._circle12{
+		// 	animation: circle12Animation var(--comp-item-animation-duration-long) infinite;
+		// }
+
+		// @keyframes circle12Animation {
+		// 	0% { transform: translate(0, 0); }
+		// 	25% { transform: translate(-5px, 0); }
+		// 	35% { transform: translate(-5px, 24px); }
+		// 	45% { transform: translate(12.3px, 24px); }
+		// 	55% { transform: translate(12.3px, 25px); }
+		// 	75% { transform: translate(12.3px, 25px); }
+		// 	85% { transform: translate(12.3px, 0px); }
+		// 	95% { transform: translate(-5px, 0px); }
+		// 	100% { transform: translate(0px, 0); }
+		// }
+			
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._FDEPen{
 			animation: FDEPenAnimation var(--comp-item-animation-duration-long) infinite;
 			transform-origin: 10px 30px;
@@ -4160,7 +4224,19 @@ export default function GridStyle({
 			
 		} 
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._PageEditorPen,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._PageEditorPen{
+			animation: FPEPenAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 0px 5px;
+		}
+
+		@keyframes FPEPenAnimation {
+			0% { transform: translate(0px, 0px); }
+			25% { transform: translate(5px, -6px); }
+			50% { transform: translate(6px, -2px); }
+			75% { transform: translate(8px, -6px); }
+			100% { transform: translate(10px, 0px); }
+		}
+
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._FSEPen {
 			animation: FSEPenAnimation var(--comp-item-animation-duration-long) infinite;
 			transform-origin: 0px 5px;
@@ -4185,22 +4261,12 @@ export default function GridStyle({
 		}
 
 		@keyframes IWBCircleAnimation {
-			0% { opacity: 1; }
-			50% { opacity: 0; }
-			100% { opacity: 1; }
+			0% { transform: translateX(0); }
+			50% { transform: translateX(-8px); }
+			100% { transform: translateX(0); }
 		}
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._IWBhill {
-			animation: IWBhillAnimation var(--comp-item-animation-duration-long) infinite;
-			transform-origin: 15px 15px;
-		}
-
-		@keyframes IWBhillAnimation {
-			0% { transform: rotateY(0deg); }
-			50% { transform: rotateY(180deg); }
-			100% { transform: rotateY(0deg); }
-		}
-
+		
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._MarkdownEditorArrowIcon {
 			animation: updown var(--comp-item-animation-duration) infinite;
 		}
@@ -4310,15 +4376,17 @@ export default function GridStyle({
 			100% { opacity: 1; }
 		}		
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._PageIcon {
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._pagePen {
 			animation: pageAnimation var(--comp-item-animation-duration-mid) infinite;
 			transform-origin: 5px 30px;
 		}
 
 		@keyframes pageAnimation {
-			0% { transform: translate(5px, 0px) rotate(-12deg); }
-			50% { transform: translate(5px, 0px) rotate(0deg); }
-			100% { transform: translate(5px, 0px) rotate(-12deg); }
+			0% { transform: translate(0px, 0px) rotate(12deg); }
+			25% { transform: translate(7px, -5px) rotate(-12deg); }
+			50% { transform: translate(15px, 0px) rotate(0deg); }
+			75% { transform: translate(7px, -5px) rotate(12deg); }
+			100% { transform: translate(0px, 0px) rotate(-12deg); }
 		}
 
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SubPageIcon {
@@ -4615,17 +4683,16 @@ export default function GridStyle({
 		}
 
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._tabsBlock1{
-			animation: SubPageBlock1Animation var(--comp-item-animation-duration-long) infinite;
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._tabs{
+			animation: TabsAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 13px 17px;
 		}
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._tabsBlock2{
-			animation: SubPageBlock2Animation var(--comp-item-animation-duration-long) infinite;
+		@keyframes TabsAnimation {
+			0% { transform: rotate(0deg); }
+			50% { transform: rotate(90deg); }
+			100% { transform: rotate(0deg); }
 		}
-
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._tabsBlock3 {
-			animation: SubPageBlock3Animation var(--comp-item-animation-duration-long) infinite;
-		}	
 
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._tagIcon2{
 			animation: tagIconAnimation2 var(--comp-item-animation-duration-long) infinite;
@@ -4684,39 +4751,150 @@ export default function GridStyle({
 			100% { transform: scaleX(1); }
 		}
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._timer12Number{
-			animation: timerNumber12Animation var(--comp-item-animation-duration-long) infinite;
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._timer1Number{
+			animation: timerNumber1Animation var(--comp-item-animation-duration-long) infinite;
 			transform-origin: 15px 15px;
 		}
 
-		@keyframes timerNumber12Animation {
-			0% { opacity: 1; transform: rotate(0deg); }
-			50% { opacity: 0; transform: rotate(180deg); }
-			100% { opacity: 1; transform: rotate(360deg); }
-		}
-
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._timer24Number {
-			animation: timerNumber24Animation var(--comp-item-animation-duration-long) infinite;
-			transform-origin: 15px 15px;
-		}
-
-		@keyframes timerNumber24Animation {
+		@keyframes timerNumber1Animation {
 			0% { opacity: 0; transform: rotate(-180deg); }
-			50% { opacity: 1; transform: rotate(0deg); }
+			30% { opacity: 0; transform: rotate(-180deg); }
+			31% { opacity: 1; transform: rotate(0deg); }
+			40% { opacity: 1; transform: rotate(0deg); }
+			41% { opacity: 1; transform: rotate(0deg); }
+			59% { opacity: 1; transform: rotate(0deg); }
+			60% { opacity: 1; transform: rotate(0deg); }
+			70% { opacity: 1; transform: rotate(0deg); }
+			71% { opacity: 0; transform: rotate(180deg); }
 			100% { opacity: 0; transform: rotate(180deg); }
 		}
 
-		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._timer12Arc{
-			animation: timerArc12Animation var(--comp-item-animation-duration-long) infinite;
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._timer2Number {
+			animation: timerNumber2Animation var(--comp-item-animation-duration-long) infinite;
 			transform-origin: 15px 15px;
 		}
 
-		@keyframes timerArc12Animation {
-			0% { transform: rotate(0deg); }
-			50% { transform: rotate(180deg); }
-			100% { transform: rotate(360deg); }
+		@keyframes timerNumber2Animation {
+			0% { opacity: 0; transform: rotate(-180deg); }
+			20% { opacity: 0; transform: rotate(-180deg); }
+			21% { opacity: 1; transform: rotate(0deg); }
+			30% { opacity: 1; transform: rotate(0deg); }
+			31% { opacity: 0; transform: rotate(180deg); }
+			69% { opacity: 0; transform: rotate(180deg); }
+			70% { opacity: 1; transform: rotate(360deg); }
+			80% { opacity: 1; transform: rotate(360deg); }
+			81% { opacity: 0; transform: rotate(540deg); }
+			100% { opacity: 0; transform: rotate(540deg); }
 		}
 
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._timer3Number{
+			animation: timerNumber3Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes timerNumber3Animation {
+			0% { opacity: 0; transform: rotate(-180deg); }
+			10% { opacity: 0; transform: rotate(-180deg); }
+			11% { opacity: 1; transform: rotate(0deg); }
+			20% { opacity: 1; transform: rotate(0deg); }
+			21% { opacity: 0; transform: rotate(180deg); }
+			79% { opacity: 0; transform: rotate(180deg); }
+			80% { opacity: 1; transform: rotate(360deg); }
+			90% { opacity: 1; transform: rotate(360deg); }
+			91% { opacity: 0; transform: rotate(540deg); }
+			100% { opacity: 0; transform: rotate(540deg); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._timer4Number {
+			animation: timerNumber4Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes timerNumber4Animation {
+			0% { opacity: 1; transform: rotate(0deg); }
+			10% { opacity: 1; transform: rotate(0deg); }
+			11% { opacity: 0; transform: rotate(180deg); }
+			20% { opacity: 0; transform: rotate(180deg); }
+			40% { opacity: 0; transform: rotate(180deg); }
+			50% { opacity: 0; transform: rotate(180deg); }
+			60% { opacity: 0; transform: rotate(180deg); }
+			89% { opacity: 0; transform: rotate(180deg); }
+			90% { opacity: 1; transform: rotate(360deg); }
+			100% { opacity: 1; transform: rotate(360deg); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._timer4Arc{
+			animation: timerArc4Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes timerArc4Animation {
+			0% { transform: rotate(0deg); }
+			10% { transform: rotate(90deg); }
+			20% { transform: rotate(180deg); }
+			30% { transform: rotate(270deg); }
+			40% { transform: rotate(360deg); }
+			50% { transform: rotate(360deg); }
+			60% { transform: rotate(360deg); }
+			70% { transform: rotate(270deg); }
+			80% { transform: rotate(180deg); }
+			90% { transform: rotate(90deg); }
+			100% { transform: rotate(0deg); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._timer3Arc{
+			animation: timerArc3Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes timerArc3Animation {
+			0% { opacity: 0; }
+			10% { opacity: 1; }
+			20% { opacity: 1; }
+			30% { opacity: 1; }
+			40% { opacity: 1; }
+			60% { opacity: 1; }
+			70% { opacity: 1; }
+			80% { opacity: 1; }
+			90% { opacity: 1; }
+			100% { opacity: 0; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._timer2Arc{
+			animation: timerArc2Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes timerArc2Animation {
+			0% { opacity: 0; }
+			10% { opacity: 0; }
+			20% { opacity: 1; }
+			30% { opacity: 1; }
+			40% { opacity: 1; }
+			60% { opacity: 1; }
+			70% { opacity: 1; }
+			80% { opacity: 1; }
+			90% { opacity: 0; }
+			100% { opacity: 0; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._timer1Arc{
+			animation: timerArc1Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes timerArc1Animation {
+			0% { opacity: 0; }
+			10% { opacity: 0; }
+			20% { opacity: 0; }
+			30% { opacity: 1; }
+			40% { opacity: 1; }
+			60% { opacity: 1; }
+			70% { opacity: 1; }
+			80% { opacity: 0; }
+			90% { opacity: 0; }
+			100% { opacity: 0; }
+		}
 
 		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._toggleButtonKnob {
 			animation: toggleButtonKnobAnimation var(--comp-item-animation-duration-long) infinite;

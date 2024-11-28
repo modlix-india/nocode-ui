@@ -729,7 +729,7 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 30 30">
+				<IconHelper viewBox="0 0 30 12">
 					<rect
 						className="_RangeSliderTrack"
 						y="3"

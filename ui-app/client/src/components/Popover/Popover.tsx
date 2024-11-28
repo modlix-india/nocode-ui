@@ -215,38 +215,28 @@ const component: Component = {
 						fill="#C5A400"
 						className="_popOver"
 						transform="translate(0, 19)"
+						opacity={0}
 					/>
-					<rect
-						width="30"
-						height="24"
-						rx="2"
-						fill="#C5A400"
-						className="_popOver1"
-						opacity="0"
-					/>
+					<rect width="30" height="24" rx="2" fill="#C5A400" className="_popOver1" />
 					<path
 						d="M23.5 11H6.5C6.22386 11 6 11.2239 6 11.5V12.5C6 12.7761 6.22386 13 6.5 13H23.5C23.7761 13 24 12.7761 24 12.5V11.5C24 11.2239 23.7761 11 23.5 11Z"
 						fill="white"
 						className="_popOver1"
-						opacity="0"
 					/>
 					<path
 						d="M23.5 5H12.5C12.2239 5 12 5.22386 12 5.5V6.5C12 6.77614 12.2239 7 12.5 7H23.5C23.7761 7 24 6.77614 24 6.5V5.5C24 5.22386 23.7761 5 23.5 5Z"
 						fill="white"
 						className="_popOver1"
-						opacity="0"
 					/>
 					<path
 						d="M23.5 17H12.5C12.2239 17 12 17.2239 12 17.5V18.5C12 18.7761 12.2239 19 12.5 19H23.5C23.7761 19 24 18.7761 24 18.5V17.5C24 17.2239 23.7761 17 23.5 17Z"
 						fill="white"
 						className="_popOver1"
-						opacity="0"
 					/>
 					<path
 						d="M10.6062 28.95C10.3368 29.4167 9.66321 29.4167 9.39378 28.95L6.27609 23.55C6.00666 23.0833 6.34345 22.5 6.88231 22.5H13.1177C13.6566 22.5 13.9933 23.0833 13.7239 23.55L10.6062 28.95Z"
 						fill="#C5A400"
 						className="_popOver1"
-						opacity="0"
 					/>
 				</IconHelper>
 			),

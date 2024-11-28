@@ -259,7 +259,7 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 30 30">
+				<IconHelper viewBox="0 0 30 26">
 					<path
 						d="M29.6971 0H27.9555C27.7873 0 27.6515 0.134272 27.6515 0.301832V19.7241H0.302883C0.135851 19.7241 0 19.8594 0 20.0259V21.6982C0 21.8646 0.135851 22 0.302883 22H29.6971C29.8641 22 30 21.8646 30 21.6982V0.301889C30 0.134329 29.8641 0 29.6971 0Z"
 						fill="#EDEAEA"
@@ -270,17 +270,6 @@ const component: Component = {
 						fill="white"
 						className="_popupInner"
 					/>
-
-					{/* <rect width="30" height="30" rx="2" fill="#EDEAEA" />
-					<rect
-						className="_popupInner"
-						x="5.45459"
-						y="5.455078"
-						width="19.0909"
-						height="19.0909"
-						rx="2"
-						fill="#09A0C2"
-					/> */}
 				</IconHelper>
 			),
 		},
