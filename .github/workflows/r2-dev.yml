@@ -23,6 +23,9 @@ jobs:
       - name: Building to JS
         working-directory: ./ui-app/client
         run: npm run cf
+      - name: Check full path
+        working-directory: ./ui-app/client/dist
+        run: pwd
       - uses: actions/checkout@v4
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
