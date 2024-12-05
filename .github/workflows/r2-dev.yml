@@ -1,6 +1,7 @@
 name: Cloudflare R2 - Dev
 
 on:
+  #To trigger manually
   workflow_dispatch:
   push:
     branches: [cf-development]
@@ -9,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
         with:
           ref: cf-development
       - name: Setting up node
@@ -22,10 +23,10 @@ jobs:
       - name: Building to JS
         working-directory: ./ui-app/client
         run: npm run cf
-      - name: Configure AWS credentials with Cloudflare credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.CLOUDFLARE_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.CLOUDFLARE_SECRET_ACCESS_KEY }}
+      - uses: actions/checkout@v4
       - name: Deploy
-        run: aws s3 sync --endpoint-url https://${{ secrets.CLOUDFLARE_ACCOUNT_ID }}.r2.cloudflarestorage.com ./ui-app/client/dist s3://dev-static/js/dist/
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          run: npx wrangler r2 object put dev-static/js/dist/index.js --file=./ui-app/client/dist/index.js --cache-control public max-age=3600
