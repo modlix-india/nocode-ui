@@ -1,4 +1,7 @@
 node_modules
 .parcel-cache
-dist
+dist/*.js
+dist/*.css
+dist/*.map
+dist/*.html
 .DS_Store
