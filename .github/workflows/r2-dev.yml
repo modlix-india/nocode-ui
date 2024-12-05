@@ -1,0 +1,31 @@
+name: Cloudflare R2 - Dev
+
+on:
+  #To trigger manually
+  workflow_dispatch:
+  push:
+    branches: [cf-development]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: cf-development
+      - name: Setting up node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 21.7.3
+      - name: Install Dependencies
+        working-directory: ./ui-app/client
+        run: npm i
+      - name: Building to JS
+        working-directory: ./ui-app/client
+        run: npm run cf
+      - name: Pushing to Cloudflare
+        working-directory: ./ui-app/client
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: find dist -type f -exec npx wrangler r2 object put dev-static/js/{} --file={} --cache-control="public,max-age=3600" \;
