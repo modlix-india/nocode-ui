@@ -4,6 +4,7 @@ import { SpecialTokenValueExtractor } from './SpecialTokenValueExtractor';
 import ComponentDefinitions from '../components';
 import { processStyleValueWithFunction } from '../util/styleProcessor';
 import { styleDefaults } from '../App/appStyleProperties';
+import { usedComponents } from '../App/usedComponents';
 
 const ORDER_OF_RESOLUTION = [
 	StyleResolution.MOBILE_POTRAIT_SCREEN,
@@ -26,13 +27,15 @@ const ORDER_OF_RESOLUTION = [
 export class ThemeExtractor extends SpecialTokenValueExtractor {
 	private store: any;
 	private defaults: Map<string, string> | undefined = undefined;
+	private currentTime: number = Date.now();
 
 	public setStore(store: any) {
 		this.store = store;
 	}
 
 	protected getValueInternal(token: string) {
-		if (!this.defaults) {
+		if (!this.defaults || this.currentTime != usedComponents.lastAdded()) {
+			this.currentTime = usedComponents.lastAdded();
 			this.defaults = new Map<string, string>(
 				Array.from(ComponentDefinitions.values())
 					.map(e => e.styleDefaults)
