@@ -3552,9 +3552,9 @@ export default function GridStyle({
 		}
 
 		@keyframes dropdownlinesScaleAnimation {
-			0% { transform: translateY(0px); opacity: 0.5; }
+			0% { transform: translateY(0px); opacity: 1; }
 			50% { transform: translateY(-10px); opacity: 0; }
-			100% { transform: translateY(0px); opacity: 0.5; }
+			100% { transform: translateY(0px); opacity: 1; }
 		}
 
 
