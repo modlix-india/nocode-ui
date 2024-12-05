@@ -26,12 +26,11 @@ jobs:
       - name: Check full path
         working-directory: ./ui-app/client/dist
         run: pwd
-      - uses: actions/checkout@v4
-      - name: Deploy
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: r2 object put dev-static/js/dist/index.js --file=/home/runner/work/nocode-ui/nocode-ui/ui-app/client/dist/index.js --cache-control "public,max-age=3600"
       - name: Without action
-        run: npx wrangler r2 object put dev-static/js/dist/index.js.map --file=/home/runner/work/nocode-ui/nocode-ui/ui-app/client/dist/index.js.map --cache-control "public,max-age=3600"
+        working-directory: ./ui-app/client/dist
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          npx wrangler r2 object put dev-static/js/dist/index.js.map --file=index.js.map --cache-control "public,max-age=3600"
+          npx wrangler r2 object put dev-static/js/dist/index.js --file=index.js --cache-control "public,max-age=3600"
