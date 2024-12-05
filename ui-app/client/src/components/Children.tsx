@@ -24,6 +24,8 @@ import PageComponentDefinition from './Page/Page';
 import { getPathsFrom } from './util/getPaths';
 import { flattenUUID } from './util/uuid';
 
+import { usedComponents } from '../App/usedComponents';
+
 const getOrLoadPageDefinition = (location: any) => {
 	let { pageName } = processLocation(location);
 	if (!pageName) {
@@ -108,6 +110,7 @@ function Children({
 				.map((e, i) => {
 					if (!e) return;
 					let Comp = ComponentDefinitions.get(e!.type)?.component;
+					usedComponents.using(e!.type ?? Nothing.name);
 					if (!Comp) Comp = Nothing.component;
 					if (!Comp) return undefined;
 					if (e!.type === 'Page') {
