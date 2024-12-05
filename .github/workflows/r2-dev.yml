@@ -29,6 +29,6 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: wrangler r2 object put dev-static/js/dist/index.js --file=./ui-app/client/dist/index.js --cache-control public max-age=3600
+          command: r2 object put dev-static/js/dist/index.js --file=./ui-app/client/dist/index.js --cache-control public max-age=3600
       - name: Without action
-        run: wrangler r2 object put dev-static/js/dist/index.js.map --file=./ui-app/client/dist/index.js.map --cache-control public max-age=3600
+        run: npx wrangler r2 object put dev-static/js/dist/index.js.map --file=./ui-app/client/dist/index.js.map --cache-control public max-age=3600
