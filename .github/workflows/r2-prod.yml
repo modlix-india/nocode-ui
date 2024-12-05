@@ -1,10 +1,10 @@
-name: Cloudflare R2 - Dev
+name: Cloudflare R2 - Prod
 
 on:
   #To trigger manually
   workflow_dispatch:
   push:
-    branches: [cf-development]
+    branches: [cf-production]
 
 jobs:
   build:
@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: cf-development
+          ref: cf-production
       - name: Setting up node
         uses: actions/setup-node@v4
         with:
@@ -28,4 +28,4 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: find dist -type f -exec npx wrangler r2 object put dev-static/js/{} --file={} --cache-control="public,max-age=3600" \;
+        run: find dist -type f -exec npx wrangler r2 object put prod-static/js/{} --file={} --cache-control="public,max-age=3600" \;
