@@ -50,7 +50,7 @@ export function TypographyEditor({
 	if (isDetailStyleEditor) {
 		return (
 			<>
-				<div className="_simpleLabel">Text Decoration Line :</div>
+				<div className="_simpleLabel">Text Decoration Line</div>
 				<div className="_combineEditors _alignEnd" title="Text Decoration">
 					<EachSimpleEditor
 						selectedComponentsList={selectedComponentsList}
@@ -68,8 +68,9 @@ export function TypographyEditor({
 						properties={properties}
 						editorDef={{
 							type: SimpleEditorType.Icons,
+							withBackground: true,
 							iconButtonsBackground: true,
-							iconButtonOptions: [
+							Options: [
 								{
 									name: 'solid',
 									description: 'Text Decoration Style : Solid',
@@ -184,7 +185,7 @@ export function TypographyEditor({
 						editorDef={{ type: SimpleEditorType.Color }}
 					/>
 				</div>
-				<div className="_simpleLabel">Word Spacing :</div>
+				<div className="_simpleLabel">Word Spacing</div>
 				<div className="_combineEditors" title="Word Spacing">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -223,7 +224,7 @@ export function TypographyEditor({
 								d="M20.625,12.438H6"
 								fill="none"
 								stroke="#000"
-								stroke-linecap="round"
+								strokeLinecap="round"
 								strokeWidth="1.5"
 							/>
 							<path
@@ -232,7 +233,7 @@ export function TypographyEditor({
 								d="M20.625,10v4.875"
 								fill="none"
 								stroke="#000"
-								stroke-linecap="round"
+								strokeLinecap="round"
 								strokeWidth="1.5"
 							/>
 							<path
@@ -241,7 +242,7 @@ export function TypographyEditor({
 								d="M6,10v4.875"
 								fill="none"
 								stroke="#000"
-								stroke-linecap="round"
+								strokeLinecap="round"
 								strokeWidth="1.5"
 							/>
 						</g>
@@ -266,7 +267,7 @@ export function TypographyEditor({
 						className="_confineWidth"
 					/>
 				</div>
-				<div className="_simpleLabel">Intendation :</div>
+				<div className="_simpleLabel">Intendation</div>
 				<div className="_combineEditors" title="Text Indentation">
 					<svg
 						width="14"
@@ -279,21 +280,16 @@ export function TypographyEditor({
 							d="M6 1L13 1"
 							stroke="#8E90A4"
 							strokeWidth="2"
-							stroke-linecap="round"
+							strokeLinecap="round"
 						/>
-						<path d="M1 5H13" stroke="#8E90A4" strokeWidth="2" stroke-linecap="round" />
+						<path d="M1 5H13" stroke="#8E90A4" strokeWidth="2" strokeLinecap="round" />
 						<path
 							d="M1 9L13 9"
 							stroke="#8E90A4"
 							strokeWidth="2"
-							stroke-linecap="round"
+							strokeLinecap="round"
 						/>
-						<path
-							d="M1 13H13"
-							stroke="#8E90A4"
-							strokeWidth="2"
-							stroke-linecap="round"
-						/>
+						<path d="M1 13H13" stroke="#8E90A4" strokeWidth="2" strokeLinecap="round" />
 					</svg>
 
 					<EachSimpleEditor
@@ -316,7 +312,7 @@ export function TypographyEditor({
 					/>
 				</div>
 				<div className="_combineEditors">
-					<div className="_simpleLabel">Transform :</div>
+					<div className="_simpleLabel">Transform</div>
 					<EachSimpleEditor
 						selectedComponentsList={selectedComponentsList}
 						defPath={defPath}
@@ -335,8 +331,9 @@ export function TypographyEditor({
 						editorDef={{
 							type: SimpleEditorType.Icons,
 							multiSelect: false,
+							withBackground: true,
 							iconButtonsBackground: true,
-							iconButtonOptions: [
+							Options: [
 								{
 									name: '',
 									description: 'Default',
@@ -403,7 +400,7 @@ export function TypographyEditor({
 				</div>
 
 				<div className="_combineEditors">
-					<div className="_simpleLabel">Word Break :</div>
+					<div className="_simpleLabel">Word Break</div>
 					<EachSimpleEditor
 						selectedComponentsList={selectedComponentsList}
 						defPath={defPath}
@@ -422,8 +419,9 @@ export function TypographyEditor({
 						editorDef={{
 							type: SimpleEditorType.Icons,
 							multiSelect: false,
+							withBackground: true,
 							iconButtonsBackground: true,
-							iconButtonOptions: [
+							Options: [
 								{
 									name: '',
 									description: 'Default',
@@ -491,7 +489,7 @@ export function TypographyEditor({
 				</div>
 
 				<div className="_combineEditors">
-					<div className="_simpleLabel">Whitespace :</div>
+					<div className="_simpleLabel">Whitespace</div>
 					<EachSimpleEditor
 						selectedComponentsList={selectedComponentsList}
 						defPath={defPath}
@@ -510,8 +508,9 @@ export function TypographyEditor({
 						editorDef={{
 							type: SimpleEditorType.Icons,
 							multiSelect: false,
+							withBackground: true,
 							iconButtonsBackground: true,
-							iconButtonOptions: [
+							Options: [
 								{
 									name: '',
 									description: 'Default',
@@ -592,7 +591,7 @@ export function TypographyEditor({
 						}}
 					/>
 				</div>
-				<div className="_simpleLabel">Text Shadow :</div>
+				<div className="_simpleLabel">Text Shadow</div>
 				<EachSimpleEditor
 					selectedComponentsList={selectedComponentsList}
 					defPath={defPath}
@@ -707,8 +706,9 @@ export function TypographyEditor({
 					properties={properties}
 					editorDef={{
 						type: SimpleEditorType.Icons,
+						withBackground: true,
 						iconButtonsBackground: true,
-						iconButtonOptions: [
+						Options: [
 							{
 								name: 'left',
 								icon: (
@@ -782,8 +782,9 @@ export function TypographyEditor({
 						properties={properties}
 						editorDef={{
 							type: SimpleEditorType.Icons,
+							withBackground: true,
 							iconButtonsBackground: false,
-							iconButtonOptions: [
+							Options: [
 								{
 									name: 'normal',
 									description: 'Normal',
@@ -831,8 +832,9 @@ export function TypographyEditor({
 						properties={properties}
 						editorDef={{
 							type: SimpleEditorType.Icons,
+							withBackground: true,
 							iconButtonsBackground: false,
-							iconButtonOptions: [
+							Options: [
 								{
 									name: 'bold',
 									description: 'Bold',
@@ -889,8 +891,9 @@ export function TypographyEditor({
 					editorDef={{
 						type: SimpleEditorType.Icons,
 						multiSelect: true,
+						withBackground: true,
 						iconButtonsBackground: false,
-						iconButtonOptions: [
+						Options: [
 							{
 								name: 'underline',
 								description: 'Text Decoration Line : Underline',

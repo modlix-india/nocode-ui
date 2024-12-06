@@ -658,6 +658,7 @@ function Video(props: Readonly<ComponentProps>) {
 }
 
 const component: Component = {
+	order: 19,
 	name: 'Video',
 	displayName: 'Video',
 	description: 'Video component',
@@ -675,20 +676,40 @@ const component: Component = {
 			mainComponent: true,
 			description: 'Component',
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
-					<path
-						d="M21.23 10.7446C22.2567 11.3373 22.2567 12.8192 21.23 13.4119L5.06 22.7477C4.03333 23.3404 2.75 22.5995 2.75 21.414L2.75 2.74249C2.75 1.557 4.03333 0.816067 5.06 1.40881L21.23 10.7446Z"
-						fill="currentColor"
-						fillOpacity="0.2"
+				<IconHelper viewBox="0 0 30 30">
+					<circle cx="14" cy="14" r="14" fill="#000000" />
+					<circle
+						cx="14"
+						cy="14"
+						r="13.5"
+						stroke=""
+						strokeOpacity="0.04"
+						fillOpacity={0}
 					/>
 					<path
-						d="M21.23 10.7446C22.2567 11.3373 22.2567 12.8192 21.23 13.4119L5.06 22.7477C4.03333 23.3404 2.75 22.5995 2.75 21.414L2.75 2.74249C2.75 1.557 4.03333 0.816067 5.06 1.40881L21.23 10.7446Z"
-						fill="currentColor"
-						fillOpacity="0.2"
+						className="_videoPlayStart"
+						d="M19.8932 13.2644C20.4594 13.5913 20.4594 14.4087 19.8932 14.7356L10.9743 19.8849C10.408 20.2119 9.70016 19.8032 9.70016 19.1493L9.70016 8.85068C9.70016 8.1968 10.408 7.78813 10.9743 8.11507L19.8932 13.2644Z"
+						fill="white"
 					/>
-					<path
-						d="M13.5508 11.6455C13.8841 11.8379 13.8841 12.3191 13.5508 12.5115L8.12078 15.6465C7.78745 15.839 7.37078 15.5984 7.37078 15.2135L7.37078 8.94348C7.37078 8.55858 7.78745 8.31802 8.12078 8.51047L13.5508 11.6455Z"
-						fill="currentColor"
+					<rect
+						className="_videoPlayPause"
+						x="9"
+						y="8"
+						width="4"
+						height="12"
+						rx="1"
+						fill="white"
+						opacity={0}
+					/>
+					<rect
+						className="_videoPlayPause"
+						x="15"
+						y="8"
+						width="4"
+						height="12"
+						rx="1"
+						fill="white"
+						opacity={0}
 					/>
 				</IconHelper>
 			),

@@ -240,6 +240,7 @@ export default function AppStyle() {
 	._simpleEditorPixelSize ._simpleEditorRange {
 		flex: 2;
 		margin-right: 12px;
+		cursor: pointer;
 	}
 
 	._simpleEditorRange {
@@ -247,49 +248,48 @@ export default function AppStyle() {
 	}
 
 	._simpleEditorRange ._rangeTrack {
-		 width: calc(100% - 6px);
+		width: calc(100% - 6px);
 		min-width: 60px;
 		height: 2px;
 		border-radius: 10px;
 		background-color: #E2E2E7;			
-		left: 0;
-		z-index: 1;
+		margin-left: 2px;
 	}
 
 	._simpleEditorRange ._rangeTrackFill {
 		width: 0%;
 		height: 2px;
 		border-radius: 10px;
-		background-color: #4C7FEE;
+		background-color: #52BD94;
 		position: absolute;
-		left: 0;
+		left: 2px;
 		z-index: 1;
 		margin-top: -2px;
 		transition: width 0s;
 	}
 
 	._simpleEditorRange ._rangeThumb {
-		width: 12px;
-		height: 12px;
+		width: 14px;
+		height: 14px;
 		border-radius: 50%;
 		background-color: #FFF;
 		position: absolute;
-		top: -5px;
+		top: -7px;
 		z-index: 1;
 		cursor: pointer;
-		box-shadow: 0px 1px 4px 0px #0000001A;
+		box-shadow: 0px 1px 4px 0px #0000001A, 0px 1px 4px 0px #0000001A;
 		cursor: pointer;
 	}
 
 	._simpleEditorRange ._rangeThumb::before {
 		content: '';
 		position: absolute;
-		width: 60%;
-		height: 60%;
-		left: 20%;
-		top: 20%;
+		width: 10px;
+		height: 10px;
+		left: 2px;
+		top: 2px;
 		border-radius: 50%;
-		background-color: #4C7FEE;
+		background: linear-gradient(180deg, #7CD9B6 0%, #52BD94 100%);
 	}
 
 	._simpleEditorColorSelector {

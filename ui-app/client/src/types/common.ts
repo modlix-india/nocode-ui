@@ -143,6 +143,7 @@ export interface Section {
 
 export interface Component {
 	name: string;
+	order?: number;
 	displayName: string;
 	description: string;
 	component: React.ElementType;

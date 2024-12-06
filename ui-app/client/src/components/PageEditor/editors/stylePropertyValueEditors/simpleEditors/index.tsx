@@ -14,9 +14,11 @@ import { CommonColorPickerPropertyEditor } from '../../../../../commonComponents
 import { PageStoreExtractor, getDataFromPath, setData } from '../../../../../context/StoreContext';
 import { shortUUID } from '../../../../../util/shortUUID';
 import { Dropdown, DropdownOptions } from './Dropdown';
-import { IconOptions, IconsSimpleEditor } from './IconsSimpleEditor';
+import { IconButtonOptions, IconsSimpleEditor } from './IconsSimpleEditor';
 import { ShadowEditor, ShadowEditorType } from './ShadowEditor';
 import { PixelSize, RangeWithoutUnit } from './SizeSliders';
+import { RadioButton, RadioButtonOptions } from './RadioButton';
+import { ButtonBar, ButtonBarOptions } from './ButtonBar';
 
 export interface SimpleStyleEditorsProps {
 	pseudoState: string;
@@ -40,6 +42,12 @@ export interface SimpleStyleEditorsProps {
 	pageExtractor: PageStoreExtractor;
 }
 
+// Add this new interface
+export interface RelatedProps {
+	props: string[];
+	logic: (values: Record<string, any>) => Record<string, any>;
+}
+
 export function EachSimpleEditor({
 	subComponentName,
 	displayName,
@@ -54,11 +62,12 @@ export function EachSimpleEditor({
 	properties,
 	editorDef,
 	placeholder,
-	className = '',
+	className,
 	defPath,
 	locationHistory,
 	pageExtractor,
-}: SimpleStyleEditorsProps) {
+	relatedProps,
+}: SimpleStyleEditorsProps & { relatedProps?: RelatedProps }) {
 	if (!properties) return <></>;
 
 	const { value, actualProp, propName, screenSize, compProp } = extractValue({
@@ -78,16 +87,46 @@ export function EachSimpleEditor({
 		else if (typeof v === 'string') newValue = { value: v, location: value.location };
 		else newValue = v;
 
-		valuesChangedOnlyValues({
-			subComponentName,
-			selectedComponent,
-			selectedComponentsList,
-			propValues: [{ prop, value: newValue }],
-			selectorPref,
-			defPath,
-			locationHistory,
-			pageExtractor,
-		});
+		if (relatedProps) {
+			const currentValues = relatedProps.props.reduce(
+				(acc, propName) => {
+					acc[propName] = iterateProps[propName]?.value;
+					return acc;
+				},
+				{} as Record<string, any>,
+			);
+
+			currentValues[prop] = newValue.value;
+
+			const updatedValues = relatedProps.logic(currentValues);
+
+			const propValues = Object.entries(updatedValues).map(([prop, value]) => ({
+				prop,
+				value: { value, location: iterateProps[prop]?.location },
+			}));
+
+			valuesChangedOnlyValues({
+				subComponentName,
+				selectedComponent,
+				selectedComponentsList,
+				propValues,
+				selectorPref,
+				defPath,
+				locationHistory,
+				pageExtractor,
+			});
+		} else {
+			valuesChangedOnlyValues({
+				subComponentName,
+				selectedComponent,
+				selectedComponentsList,
+				propValues: [{ prop, value: newValue }],
+				selectorPref,
+				defPath,
+				locationHistory,
+				pageExtractor,
+			});
+		}
 	};
 
 	switch (editorDef.type) {
@@ -118,12 +157,14 @@ export function EachSimpleEditor({
 		case SimpleEditorType.Icons:
 			editor = (
 				<IconsSimpleEditor
-					options={editorDef.iconButtonOptions!}
+					options={editorDef.Options}
 					selected={value.value}
 					onChange={editorOnchange}
-					withBackground={editorDef.iconButtonsBackground}
+					withBackground={editorDef.withBackground}
 					multipleValueType={editorDef.multipleValueType}
 					multiSelect={editorDef.multiSelect}
+					visibleIconCount={editorDef.visibleIconCount}
+					gridSize={editorDef.gridSize}
 				/>
 			);
 			break;
@@ -162,11 +203,61 @@ export function EachSimpleEditor({
 				/>
 			);
 			break;
+		case SimpleEditorType.Text:
+			editor = (
+				<input
+					type="text"
+					className="_simpleEditorInput"
+					placeholder={placeholder}
+					value={value.value ?? ''}
+					onChange={e => editorOnchange(e.target.value)}
+				/>
+			);
+			break;
+		case SimpleEditorType.Number:
+			editor = (
+				<input
+					type="number"
+					className="_simpleEditorInput"
+					placeholder={placeholder}
+					value={value.value}
+					onChange={e => editorOnchange(e.target.value)}
+				/>
+			);
+			break;
+		case SimpleEditorType.Radio:
+			editor = (
+				<RadioButton
+					value={value.value ?? editorDef.radioDefaultValue}
+					onChange={editorOnchange}
+					options={editorDef.radioOptions!}
+					placeholder={placeholder}
+					multipleValueType={editorDef.multipleValueType}
+					multiSelect={editorDef.multiSelect}
+					showNoneLabel={editorDef.radioShowNoneLabel}
+					selectNoneLabel={editorDef.radioSelectNoneLabel}
+				/>
+			);
+			break;
+		case SimpleEditorType.ButtonBar:
+			editor = (
+				<ButtonBar
+					value={value.value}
+					onChange={editorOnchange}
+					options={editorDef.buttonBarOptions!}
+				/>
+			);
+			break;
 		default:
 			editor = <></>;
 	}
 
-	return <div className={`_simpleEditor ${className}`}>{editor}</div>;
+	return (
+		<div className={`_simpleEditor ${className}`}>
+			{displayName && <div className="_simpleEditorTitle">{displayName}</div>}
+			{editor}
+		</div>
+	);
 }
 
 export enum SimpleEditorType {
@@ -180,15 +271,21 @@ export enum SimpleEditorType {
 	Gradient = 'Gradient',
 	ImageGradient = 'ImageGradient',
 	Range = 'Range',
+	Text = 'Text',
+	Number = 'Number',
+	TextBox = 'TextBox',
+	Radio = 'Radio',
+	ButtonBar = 'ButtonBar',
 }
 
 export interface SimpleEditorDefinition {
+	[x: string]: any;
 	type: SimpleEditorType;
 	dropdownOptions?: DropdownOptions;
 	dropdDownSelectNoneLabel?: string;
 	dropDownShowNoneLabel?: boolean;
 	dropDownDefaultValue?: string | Array<string>;
-	iconButtonOptions?: IconOptions;
+	iconButtonOptions?: IconButtonOptions;
 	iconButtonsBackground?: boolean;
 	multiSelect?: boolean;
 	multipleValueType?: SimpleEditorMultipleValueType;
@@ -196,6 +293,11 @@ export interface SimpleEditorDefinition {
 	rangeMax?: number;
 	rangeStep?: number;
 	hideSlider?: boolean;
+	visibleIconCount?: number;
+	radioOptions?: RadioButtonOptions;
+	radioSelectNoneLabel?: string;
+	radioShowNoneLabel?: boolean;
+	radioDefaultValue?: string | Array<string>;
 }
 
 export enum SimpleEditorMultipleValueType {

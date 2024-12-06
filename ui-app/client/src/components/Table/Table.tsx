@@ -36,18 +36,15 @@ function spinCalculate(
 				() =>
 					setIsLoading(
 						(spinnerPath1
-							? (getDataFromPath(
-									spinnerPath1,
-									props.locationHistory,
-									pageExtractor,
-								) ?? false)
+							? getDataFromPath(spinnerPath1, props.locationHistory, pageExtractor) ??
+								false
 							: false) ||
 							(spinnerPath2
-								? (getDataFromPath(
+								? getDataFromPath(
 										spinnerPath2,
 										props.locationHistory,
 										pageExtractor,
-									) ?? false)
+									) ?? false
 								: false),
 					),
 				pageExtractor,
@@ -61,18 +58,15 @@ function spinCalculate(
 				() =>
 					setIsLoading(
 						(spinnerPath1
-							? (getDataFromPath(
-									spinnerPath1,
-									props.locationHistory,
-									pageExtractor,
-								) ?? false)
+							? getDataFromPath(spinnerPath1, props.locationHistory, pageExtractor) ??
+								false
 							: false) ||
 							(spinnerPath2
-								? (getDataFromPath(
+								? getDataFromPath(
 										spinnerPath2,
 										props.locationHistory,
 										pageExtractor,
-									) ?? false)
+									) ?? false
 								: false),
 					),
 				pageExtractor,
@@ -431,8 +425,8 @@ function TableComponent(props: ComponentProps) {
 								<path
 									d="M1 1L0.999999 27"
 									stroke="#DDDDDD"
-									stroke-opacity="0.7"
-									stroke-linecap="round"
+									strokeOpacity="0.7"
+									strokeLinecap="round"
 								/>
 							</svg>
 						)}
@@ -456,8 +450,8 @@ function TableComponent(props: ComponentProps) {
 								<path
 									d="M1 1L0.999999 27"
 									stroke="#DDDDDD"
-									stroke-opacity="0.7"
-									stroke-linecap="round"
+									strokeOpacity="0.7"
+									strokeLinecap="round"
 								/>
 							</svg>
 						)}
@@ -818,48 +812,34 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
+				<IconHelper viewBox="0 0 30 30">
+					<rect width="30" height="30" rx="4" fill="white" />
 					<path
-						d="M1 4.2998H14.2V22.1998C14.2 22.6416 13.8418 22.9998 13.4 22.9998H1V4.2998Z"
-						fill="currentColor"
-						fillOpacity="0.2"
-					/>
-					<path
-						d="M1 1.8C1 1.35817 1.35817 1 1.8 1H22.2C22.6418 1 23 1.35817 23 1.8V6.5H1V1.8Z"
-						fill="currentColor"
-					/>
-					<rect x="1" y="9.7998" width="5.5" height="4.4" rx="0.2" fill="currentColor" />
-					<path
-						d="M1 17.5H6.5V23H1.8C1.35817 23 1 22.6418 1 22.2V17.5Z"
-						fill="currentColor"
-					/>
-					<rect
-						x="9.80078"
-						y="9.7998"
-						width="4.4"
-						height="4.4"
-						rx="0.2"
-						fill="currentColor"
-					/>
-					<rect
-						x="9.80078"
-						y="17.5"
-						width="4.4"
-						height="5.5"
-						rx="0.2"
-						fill="currentColor"
-					/>
-					<rect
-						x="17.5"
-						y="9.7998"
-						width="5.5"
-						height="4.4"
-						rx="0.2"
-						fill="currentColor"
+						d="M2.54769 14.2852C2.39752 14.2846 2.24873 14.3136 2.10977 14.3705C1.97081 14.4274 1.84442 14.5112 1.73784 14.617C1.63126 14.7228 1.54657 14.8486 1.48861 14.9871C1.43064 15.1256 1.40055 15.2742 1.40003 15.4244C1.39944 15.5753 1.4287 15.7248 1.48617 15.8643C1.54363 16.0038 1.62815 16.1305 1.73484 16.2372C1.84153 16.3439 1.96832 16.4284 2.10783 16.4859C2.24734 16.5433 2.39681 16.5726 2.54769 16.572H27.6949C27.8458 16.5726 27.9953 16.5433 28.1348 16.4859C28.2743 16.4284 28.4011 16.3439 28.5077 16.2372C28.6144 16.1305 28.699 16.0038 28.7564 15.8643C28.8139 15.7248 28.8431 15.5753 28.8425 15.4244C28.842 15.2742 28.8119 15.1256 28.754 14.9871C28.696 14.8486 28.6113 14.7228 28.5048 14.617C28.3982 14.5112 28.2718 14.4275 28.1328 14.3705C27.9939 14.3136 27.8451 14.2846 27.6949 14.2852H2.54769Z"
+						fill="#CFD8DD"
+						className="_tableline"
 					/>
 					<path
-						d="M17.5 17.5H23V22.2C23 22.6418 22.6418 23 22.2 23H17.5V17.5Z"
-						fill="currentColor"
+						className="_tableline"
+						d="M2.54769 20.5742C2.39752 20.5736 2.24873 20.6026 2.10977 20.6595C1.97081 20.7165 1.84442 20.8002 1.73784 20.906C1.63126 21.0118 1.54657 21.1376 1.48861 21.2761C1.43064 21.4147 1.40055 21.5632 1.40003 21.7134C1.39944 21.8643 1.4287 22.0138 1.48617 22.1533C1.54363 22.2928 1.62815 22.4196 1.73484 22.5263C1.84153 22.633 1.96832 22.7174 2.10783 22.7749C2.24734 22.8324 2.39681 22.8617 2.54769 22.8611H27.6949C27.8458 22.8617 27.9953 22.8324 28.1348 22.7749C28.2743 22.7174 28.4011 22.6329 28.5077 22.5263C28.6144 22.4196 28.699 22.2928 28.7564 22.1533C28.8139 22.0138 28.8431 21.8643 28.8425 21.7134C28.842 21.5632 28.8119 21.4147 28.754 21.2761C28.696 21.1376 28.6113 21.0119 28.5048 20.9061C28.3982 20.8003 28.2718 20.7165 28.1328 20.6596C27.9939 20.6026 27.8451 20.5736 27.6949 20.5742H2.54769Z"
+						fill="#CFD8DD"
+					/>
+					<path d="M18.5474 8.71289V26.9995H20.8342V8.71289H18.5474Z" fill="#CFD8DD" />
+					<path d="M9.40833 8.71289V26.9995H11.6952V8.71289H9.40833Z" fill="#CFD8DD" />
+					<path
+						d="M2.54769 7.00001C2.39752 6.99941 2.24873 7.02842 2.10977 7.08535C1.97081 7.14229 1.84442 7.22606 1.73784 7.33185C1.63126 7.43765 1.54657 7.5634 1.48861 7.70193C1.43064 7.84047 1.40055 7.98906 1.40003 8.13923C1.39944 8.29011 1.4287 8.43961 1.48617 8.57913C1.54363 8.71864 1.62815 8.84539 1.73484 8.95208C1.84154 9.05877 1.96828 9.14329 2.10779 9.20075C2.24731 9.25822 2.39681 9.28749 2.54769 9.28689H27.6949C27.8458 9.28748 27.9953 9.25822 28.1348 9.20075C28.2743 9.14329 28.4011 9.05877 28.5078 8.95208C28.6145 8.84539 28.699 8.71864 28.7564 8.57913C28.8139 8.43962 28.8431 8.29011 28.8425 8.13923C28.842 7.98906 28.8119 7.84047 28.754 7.70193C28.696 7.5634 28.6113 7.43765 28.5048 7.33185C28.3982 7.22606 28.2718 7.14229 28.1328 7.08535C27.9939 7.02841 27.8451 6.99942 27.6949 7.00001H2.54769Z"
+						fill="#CFD8DD"
+					/>
+					<path
+						d="M1.5 9.5H28.5V26C28.5 27.3807 27.3807 28.5 26 28.5H4C2.61929 28.5 1.5 27.3807 1.5 26V9.5Z"
+						stroke="#CFD8DD"
+						strokeWidth="3"
+						fillOpacity={0}
+					/>
+					<path
+						d="M0 4C0 1.79086 1.79086 0 4 0H26C28.2091 0 30 1.79086 30 4V8H0V4Z"
+						fill="#2196F3"
+						className="_tableHeader"
 					/>
 				</IconHelper>
 			),

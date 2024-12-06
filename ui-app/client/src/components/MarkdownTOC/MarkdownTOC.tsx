@@ -431,48 +431,37 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
+				<IconHelper viewBox="0 0 30 30">
+					<rect width="30" height="30" rx="3" fill="#3DBCB8" />
 					<path
-						d="M1 4.2998H14.2V22.1998C14.2 22.6416 13.8418 22.9998 13.4 22.9998H1V4.2998Z"
-						fill="currentColor"
-						fillOpacity="0.2"
-					/>
-					<path
-						d="M1 1.8C1 1.35817 1.35817 1 1.8 1H22.2C22.6418 1 23 1.35817 23 1.8V6.5H1V1.8Z"
-						fill="currentColor"
-					/>
-					<rect x="1" y="9.7998" width="5.5" height="4.4" rx="0.2" fill="currentColor" />
-					<path
-						d="M1 17.5H6.5V23H1.8C1.35817 23 1 22.6418 1 22.2V17.5Z"
-						fill="currentColor"
-					/>
-					<rect
-						x="9.80078"
-						y="9.7998"
-						width="4.4"
-						height="4.4"
-						rx="0.2"
-						fill="currentColor"
-					/>
-					<rect
-						x="9.80078"
-						y="17.5"
-						width="4.4"
-						height="5.5"
-						rx="0.2"
-						fill="currentColor"
-					/>
-					<rect
-						x="17.5"
-						y="9.7998"
-						width="5.5"
-						height="4.4"
-						rx="0.2"
-						fill="currentColor"
+						d="M26 13.5H11C10.7239 13.5 10.5 13.7239 10.5 14V16C10.5 16.2761 10.7239 16.5 11 16.5H26C26.2761 16.5 26.5 16.2761 26.5 16V14C26.5 13.7239 26.2761 13.5 26 13.5Z"
+						fill="white"
+						className="_MTOCLine2"
 					/>
 					<path
-						d="M17.5 17.5H23V22.2C23 22.6418 22.6418 23 22.2 23H17.5V17.5Z"
-						fill="currentColor"
+						d="M4.5 15C4.5 15.8284 5.17157 16.5 6 16.5C6.82843 16.5 7.5 15.8284 7.5 15C7.5 14.1716 6.82843 13.5 6 13.5C5.17157 13.5 4.5 14.1716 4.5 15Z"
+						fill="white"
+						className="_MTOCcircle1"
+					/>
+					<path
+						d="M22 7.5H11C10.7239 7.5 10.5 7.72386 10.5 8V10C10.5 10.2761 10.7239 10.5 11 10.5H22C22.2761 10.5 22.5 10.2761 22.5 10V8C22.5 7.72386 22.2761 7.5 22 7.5Z"
+						fill="white"
+						className="_MTOCLine1"
+					/>
+					<path
+						d="M4.5 9C4.5 9.82843 5.17157 10.5 6 10.5C6.82843 10.5 7.5 9.82843 7.5 9C7.5 8.17157 6.82843 7.5 6 7.5C5.17157 7.5 4.5 8.17157 4.5 9Z"
+						fill="white"
+						className="_MTOCcircle1"
+					/>
+					<path
+						d="M22 19.5H11C10.7239 19.5 10.5 19.7239 10.5 20V22C10.5 22.2761 10.7239 22.5 11 22.5H22C22.2761 22.5 22.5 22.2761 22.5 22V20C22.5 19.7239 22.2761 19.5 22 19.5Z"
+						fill="white"
+						className="_MTOCLine3"
+					/>
+					<path
+						d="M4.5 21C4.5 21.8284 5.17157 22.5 6 22.5C6.82843 22.5 7.5 21.8284 7.5 21C7.5 20.1716 6.82843 19.5 6 19.5C5.17157 19.5 4.5 20.1716 4.5 21Z"
+						fill="white"
+						className="_MTOCcircle3"
 					/>
 				</IconHelper>
 			),

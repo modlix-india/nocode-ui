@@ -146,7 +146,6 @@ export default function StylePropertyEditor({
 	const [pageDef, setPageDef] = useState<PageDefinition>();
 	const [appDef, setAppDef] = useState<any>();
 	const [styleProps, setStyleProps] = useState<ComponentStyle>();
-	const [showAdvanced, setShowAdvanced] = useState<Array<string>>([]);
 	const [isDragging, setIsDragging] = useState<boolean>(false);
 
 	const [properties, setProperties] = useState<[string, EachComponentStyle]>(); // contains all the applied properties
@@ -388,7 +387,7 @@ export default function StylePropertyEditor({
 	const styleSectionsToShow = reverseStyleSections
 		? Object.values(COMPONENT_STYLE_GROUP_PROPERTIES).filter(
 				each => subComponentSectionsArray.findIndex(e => e === each.name) === -1,
-		  )
+			)
 		: subComponentSectionsArray.map(each => COMPONENT_STYLE_GROUP_PROPERTIES[each]);
 
 	let pseudoState = '';
@@ -427,7 +426,15 @@ export default function StylePropertyEditor({
 			{detailStyleEditor}
 			<div className="_eachStyleClass">
 				<div className="_propLabel _styleButtonContainer">
-					<button onClick={() => saveStyle({})} title="Clear Styles">
+					<button
+						onClick={() => {
+							const newPref = duplicate(selectorPref);
+							newPref[selectedComponent] = {};
+							setSelectorPref(newPref);
+							saveStyle({});
+						}}
+						title="Clear Styles"
+					>
 						<svg
 							width="10"
 							height="12"

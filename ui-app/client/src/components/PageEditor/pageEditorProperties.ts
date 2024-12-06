@@ -166,6 +166,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Section Items Connection Name',
 		group: ComponentPropertyGroup.DATA,
 	},
+
+	{
+		name: 'helpURL',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Help URL',
+		group: ComponentPropertyGroup.ADVANCED,
+		description: 'URL to the help page.',
+	},
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

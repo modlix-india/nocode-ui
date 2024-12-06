@@ -330,7 +330,7 @@ export function ShadowEditor({
 					)}
 					{type === ShadowEditorType.BoxShadow && (
 						<div className="_inset">
-							<div className="_simpleLabel">Position : </div>
+							<div className="_simpleLabel">Position</div>
 							<ButtonBar
 								value={e.inset ? 'inset' : ''}
 								onChange={v => {

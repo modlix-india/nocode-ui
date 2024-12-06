@@ -1,4 +1,4 @@
-import { Location as ReactLocation, useLocation } from 'react-router-dom';
+import { Location as ReactLocation } from 'react-router-dom';
 import { processLocation } from '../../util/locationProcessor';
 import { getDataFromPath } from '../../context/StoreContext';
 
@@ -6,7 +6,7 @@ globalThis.domainAppCode = 'appbuilder';
 globalThis.domainClientCode = 'SYSTEM';
 
 export function getHref(linkPath: string = '', location: ReactLocation | Location) {
-	// {pathname: '/page/dashboard', search: '', hash: '', state: null, key: 'default'}
+	if (typeof linkPath !== 'string') return undefined;
 
 	if (linkPath.startsWith('\\')) {
 		return urlPrefixRemoval(linkPath.substring(1));
@@ -37,12 +37,10 @@ export function getHref(linkPath: string = '', location: ReactLocation | Locatio
 	if (linkPath?.startsWith('/')) {
 		if (linkPath?.startsWith('/api/')) {
 			url = prefix + '' + linkPath;
+		} else if (location.pathname.includes('/page/')) {
+			url = prefix + '/page' + linkPath;
 		} else {
-			if (location.pathname.includes('/page/')) {
-				url = prefix + '/page' + linkPath;
-			} else {
-				url = linkPath;
-			}
+			url = linkPath;
 		}
 	} else {
 		let length = '/page/'.length;
@@ -60,12 +58,10 @@ export function getHref(linkPath: string = '', location: ReactLocation | Locatio
 			} else {
 				url = linkPath;
 			}
+		} else if (location.pathname.includes('/page/')) {
+			url = prefix + '/page/' + midfix + linkPath;
 		} else {
-			if (location.pathname.includes('/page/')) {
-				url = prefix + '/page/' + midfix + linkPath;
-			} else {
-				url = linkPath;
-			}
+			url = linkPath;
 		}
 	}
 

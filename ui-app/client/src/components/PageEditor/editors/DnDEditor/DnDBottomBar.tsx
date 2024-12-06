@@ -26,7 +26,7 @@ export default function DnDBottomBar({
 	pageOperations,
 	onContextMenu,
 	previewMode,
-}: SelectionBarProps) {
+}: Readonly<SelectionBarProps>) {
 	const [map, setMap] = useState(new Map<string, string>());
 	const [defMap, setDefMap] = useState<any>();
 	const [menuForComponent, setMenuForComponent] = useState('');
@@ -107,10 +107,7 @@ export default function DnDBottomBar({
 							}`}
 						/> */}
 						{comp.name} {last ? '' : '/'}
-						<div
-							className="_iconMenuBody _top _clickable"
-							style={{ display: menuForComponent === comp.key ? 'block' : 'none' }}
-						>
+						<div className="_iconMenuBody _top _clickable">
 							{Object.keys(defMap[comp.key].children ?? {})
 								.filter(f => !!defMap[f])
 								.sort((a: any, b: any) => {
@@ -183,13 +180,15 @@ export default function DnDBottomBar({
 		} while (currentKey);
 	}
 
+	compPaths.reverse();
+
 	const comps = compPaths.length
-		? compPaths.reverse()
+		? compPaths
 		: [
 				<div key="nocomp" className="_eachSelectionBar _iconMenu">
 					No component selected
 				</div>,
-		  ];
+			];
 
 	return (
 		<div className="_selectionBar" onMouseLeave={() => setMenuForComponent('')}>
