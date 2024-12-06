@@ -9,7 +9,7 @@ export function lazyStylePropertyLoadFunction(
 	return () =>
 		axios
 			.get(
-				`${window.cdnPrefix ? 'https://' + window.cdnPrefix + '/js/dist/' : ''}/styleProperties/${name}.json`,
+				`${window.cdnPrefix ? 'https://' + window.cdnPrefix + '/js/dist' : ''}/styleProperties/${name}.json`,
 			)
 			.then((res: any) => {
 				if (!res?.data) return;
