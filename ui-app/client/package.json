@@ -8,7 +8,7 @@
 		"start": "parcel --no-cache",
 		"build": "parcel build src/index.html",
 		"aws": "parcel build src/index.tsx",
-		"cf": "parcel build --detailed-report 50 src/index.html",
+		"cf": "parcel build --detailed-report 50 src/index.tsx",
 		"test": "jest --watchAll",
 		"coverage": "jest --coverage",
 		"pretty": "prettier --write ./src || prettier --write ./__tests__"
