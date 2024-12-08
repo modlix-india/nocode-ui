@@ -12,11 +12,17 @@ export function lazyStylePropertyLoadFunction(
 				`${window.cdnPrefix ? 'https://' + window.cdnPrefix + '/js/dist' : ''}/styleProperties/${name}.json`,
 			)
 			.then((res: any) => {
-				if (!res?.data) return;
+				if (!Array.isArray(res.data)) {
+					console.error('Unable to load style properties for component : ', name);
+					console.error('Response : ', res);
+					return;
+				}
 				setStyleProperties(res.data);
 
 				res.data
-					.filter((e: any) => !!e.defaultValue)
-					.map(({ name, defaultValue }: any) => styleDefaults.set(name, defaultValue));
+					?.filter((e: any) => !!e.dv)
+					?.map(({ n: name, dv: defaultValue }: any) =>
+						styleDefaults.set(name, defaultValue),
+					);
 			});
 }
