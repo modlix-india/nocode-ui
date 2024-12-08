@@ -1,0 +1,2592 @@
+[
+	{
+		"gn": "General",
+		"dn": "Stepper Font",
+		"n": "stepperFont",
+		"dv": "<primaryFont>"
+	},
+
+	{
+		"gn": "Stepper Step Line Color",
+		"dn": "Primary Stepper Step Line Color  Horizontal Design Default",
+		"n": "primaryStepperStepLineColorHorizontalDesignDefault",
+		"dv": "<backgroundColorOne>",
+		"cp": "background",
+		"sel": ".comp.compStepper._default._primary ._listItem ._line",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Line Color",
+		"dn": "Secondary Stepper Step Line Color  Horizontal Design Default",
+		"n": "secondaryStepperStepLineColorHorizontalDesignDefault",
+		"dv": "<backgroundColorTwo>",
+		"cp": "background",
+		"sel": ".comp.compStepper._default._secondary ._listItem ._line",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Line Color",
+		"dn": "Tertiary Stepper Step Line Color  Horizontal Design Default",
+		"n": "tertiaryStepperStepLineColorHorizontalDesignDefault",
+		"dv": "<backgroundColorThree>",
+		"cp": "background",
+		"sel": ".comp.compStepper._default._tertiary ._listItem ._line",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Line Color",
+		"dn": "Quaternary Stepper Step Line Color  Horizontal Design Default",
+		"n": "quaternaryStepperStepLineColorHorizontalDesignDefault",
+		"dv": "<backgroundColorFour>",
+		"cp": "background",
+		"sel": ".comp.compStepper._default._quaternary ._listItem ._line",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Line Color",
+		"dn": "Quinary Stepper Step Line Color  Horizontal Design Default",
+		"n": "quinaryStepperStepLineColorHorizontalDesignDefault",
+		"dv": "<backgroundColorFive>",
+		"cp": "background",
+		"sel": ".comp.compStepper._default._quinary ._listItem ._line",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Line Color",
+		"dn": "Primary Stepper Step Line Color  Horizontal Design Big Circle",
+		"n": "primaryStepperStepLineColorHorizontalDesignBigCircle",
+		"dv": "<backgroundColorOne>",
+		"cp": "background",
+		"sel": ".comp.compStepper._big_circle._primary ._listItem ._line",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Line Color",
+		"dn": "Secondary Stepper Step Line Color  Horizontal Design Big Circle",
+		"n": "secondaryStepperStepLineColorHorizontalDesignBigCircle",
+		"dv": "<backgroundColorTwo>",
+		"cp": "background",
+		"sel": ".comp.compStepper._big_circle._secondary ._listItem ._line",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Line Color",
+		"dn": "Tertiary Stepper Step Line Color  Horizontal Design Big Circle",
+		"n": "tertiaryStepperStepLineColorHorizontalDesignBigCircle",
+		"dv": "<backgroundColorThree>",
+		"cp": "background",
+		"sel": ".comp.compStepper._big_circle._tertiary ._listItem ._line",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Line Color",
+		"dn": "Quaternary Stepper Step Line Color  Horizontal Design Big Circle",
+		"n": "quaternaryStepperStepLineColorHorizontalDesignBigCircle",
+		"dv": "<backgroundColorFour>",
+		"cp": "background",
+		"sel": ".comp.compStepper._big_circle._quaternary ._listItem ._line",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Line Color",
+		"dn": "Quinary Stepper Step Line Color  Horizontal Design Big Circle",
+		"n": "quinaryStepperStepLineColorHorizontalDesignBigCircle",
+		"dv": "<backgroundColorFive>",
+		"cp": "background",
+		"sel": ".comp.compStepper._big_circle._quinary ._listItem ._line",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Circle Height",
+		"dn": "Stepper Step Circle Height Design Default",
+		"n": "stepperStepCircleHeightDesignDefault",
+		"dv": "32px",
+		"cp": "height",
+		"sel": ".comp.compStepper._default ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Circle Height",
+		"dn": "Stepper Step Circle Height Design Big Circle",
+		"n": "stepperStepCircleHeightDesignBigCircle",
+		"dv": "50px",
+		"cp": "height",
+		"sel": ".comp.compStepper._big_circle ._step",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Circle Width",
+		"dn": "Stepper Step Circle Width Design Default",
+		"n": "stepperStepCircleWidthDesignDefault",
+		"dv": "32px",
+		"cp": "width",
+		"sel": ".comp.compStepper._default ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Circle Width",
+		"dn": "Stepper Step Circle Width Design Big Circle",
+		"n": "stepperStepCircleWidthDesignBigCircle",
+		"dv": "50px",
+		"cp": "width",
+		"sel": ".comp.compStepper._big_circle ._step",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Line Min Width",
+		"dn": "Stepper Step Line Min Width Design Default",
+		"n": "stepperStepLineMinWidthDesignDefault",
+		"dv": "30px",
+		"cp": "min-width",
+		"sel": ".comp.compStepper._default._horizontal ._listItem ._line",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Line Min Width",
+		"dn": "Stepper Step Line Min Width Design Big Circle",
+		"n": "stepperStepLineMinWidthDesignBigCircle",
+		"dv": "30px",
+		"cp": "min-width",
+		"sel": ".comp.compStepper._big_circle._horizontal ._listItem ._line",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Line Min Height",
+		"dn": "Stepper Step Line Min Height Design Default",
+		"n": "stepperStepLineMinHeightDesignDefault",
+		"dv": "30px",
+		"cp": "min-height",
+		"sel": ".comp.compStepper._default._vertical ._listItem ._line",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Line Min Height",
+		"dn": "Stepper Step Line Min Height Design Big Circle",
+		"n": "stepperStepLineMinHeightDesignBigCircle",
+		"dv": "30px",
+		"cp": "min-height",
+		"sel": ".comp.compStepper._big_circle._vertical ._listItem ._line",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Line Height",
+		"dn": "Stepper Step Line Height Design Default",
+		"n": "stepperStepLineHeightDesignDefault",
+		"dv": "2px",
+		"cp": "height",
+		"sel": ".comp.compStepper._default._horizontal ._listItem ._line",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Line Height",
+		"dn": "Stepper Step Line Height Design Big Circle",
+		"n": "stepperStepLineHeightDesignBigCircle",
+		"dv": "2px",
+		"cp": "height",
+		"sel": ".comp.compStepper._big_circle._horizontal ._listItem ._line",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Line Width",
+		"dn": "Stepper Step Line Width Design Default",
+		"n": "stepperStepLineWidthDesignDefault",
+		"dv": "2px",
+		"cp": "width",
+		"sel": ".comp.compStepper._default._vertical._textRight ._listItem ._line,.comp.compStepper._default._vertical._textLeft ._listItem ._line",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Line Width",
+		"dn": "Stepper Step Line Width Design Big Circle",
+		"n": "stepperStepLineWidthDesignBigCircle",
+		"dv": "2px",
+		"cp": "width",
+		"sel": ".comp.compStepper._big_circle._vertical._textRight ._listItem ._line,.comp.compStepper._big_circle._vertical._textLeft ._listItem ._line",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Horizontal Line Margin Top",
+		"dn": "Stepper Step Horizontal Line Margin Top Design Default",
+		"n": "stepperStepHorizontalLineMarginTopDesignDefault",
+		"dv": "15px",
+		"cp": "margin-top",
+		"sel": ".comp.compStepper._default._horizontal ._listItem ._line",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Horizontal Line Margin Top",
+		"dn": "Stepper Step Horizontal Line Margin Top Design Big Circle",
+		"n": "stepperStepHorizontalLineMarginTopDesignBigCircle",
+		"dv": "25px",
+		"cp": "margin-top",
+		"sel": ".comp.compStepper._big_circle._horizontal ._listItem ._line",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Horizontal Line Margin Bottom",
+		"dn": "Stepper Step Horizontal Line Margin Bottom Design Default",
+		"n": "stepperStepHorizontalLineMarginBottomDesignDefault",
+		"dv": "15px",
+		"cp": "margin-bottom",
+		"sel": ".comp.compStepper._default._horizontal ._listItem ._line",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Horizontal Line Margin Bottom",
+		"dn": "Stepper Step Horizontal Line Margin Bottom Design Big Circle",
+		"n": "stepperStepHorizontalLineMarginBottomDesignBigCircle",
+		"dv": "25px",
+		"cp": "margin-bottom",
+		"sel": ".comp.compStepper._big_circle._horizontal ._listItem ._line",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Vertical Line Margin Left",
+		"dn": "Stepper Step Vertical Line Margin Left Design Default",
+		"n": "stepperStepVerticalLineMarginLeftDesignDefault",
+		"dv": "15px",
+		"cp": "margin-left",
+		"sel": ".comp.compStepper._default._vertical._textRight ._listItem ._line,.comp.compStepper._default._vertical._textLeft ._listItem ._line",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Vertical Line Margin Left",
+		"dn": "Stepper Step Vertical Line Margin Left Design Big Circle",
+		"n": "stepperStepVerticalLineMarginLeftDesignBigCircle",
+		"dv": "25px",
+		"cp": "margin-left",
+		"sel": ".comp.compStepper._big_circle._vertical._textRight ._listItem ._line,.comp.compStepper._big_circle._vertical._textLeft ._listItem ._line",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Vertical Line Margin Right",
+		"dn": "Stepper Step Vertical Line Margin Right Design Default",
+		"n": "stepperStepVerticalLineMarginRightDesignDefault",
+		"dv": "15px",
+		"cp": "margin-right",
+		"sel": ".comp.compStepper._default._vertical._textRight ._listItem ._line,.comp.compStepper._default._vertical._textLeft ._listItem ._line",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Vertical Line Margin Right",
+		"dn": "Stepper Step Vertical Line Margin Right Design Big Circle",
+		"n": "stepperStepVerticalLineMarginRightDesignBigCircle",
+		"dv": "25px",
+		"cp": "margin-right",
+		"sel": ".comp.compStepper._big_circle._vertical._textRight ._listItem ._line,.comp.compStepper._big_circle._vertical._textLeft ._listItem ._line",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Pill Width",
+		"dn": "Stepper Step Pill Width Design Pills",
+		"n": "stepperStepPillWidthDesignPills",
+		"dv": "48px",
+		"cp": "width",
+		"sel": ".comp.compStepper._pills ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Pill Height",
+		"dn": "Stepper Step Pill Height Design Pills",
+		"n": "stepperStepPillHeightDesignPills",
+		"dv": "24px",
+		"cp": "height",
+		"sel": ".comp.compStepper._pills ._step",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Border Default State",
+		"dn": "Stepper Step Border Default State Design Default",
+		"n": "stepperStepBorderDefaultStateDesignDefault",
+		"dv": "2px solid",
+		"cp": "border",
+		"sel": ".comp.compStepper._default ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Border Default State",
+		"dn": "Stepper Step Border Default State Design Big Circle",
+		"n": "stepperStepBorderDefaultStateDesignBigCircle",
+		"dv": "2px solid",
+		"cp": "border",
+		"sel": ".comp.compStepper._big_circle ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Border Default State",
+		"dn": "Stepper Step Border Default State Design Pills",
+		"n": "stepperStepBorderDefaultStateDesignPills",
+		"dv": "none",
+		"cp": "border",
+		"sel": ".comp.compStepper._pills ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Border Default State",
+		"dn": "Stepper Step Border Default State Design Rectangle Arrow",
+		"n": "stepperStepBorderDefaultStateDesignRectangleArrow",
+		"dv": "none",
+		"cp": "border",
+		"sel": ".comp.compStepper._rectangle_arrow ._step",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Border Active State",
+		"dn": "Stepper Step Border Active State Design Default",
+		"n": "stepperStepBorderActiveStateDesignDefault",
+		"dv": "2px solid",
+		"cp": "border",
+		"sel": ".comp.compStepper._default ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Border Active State",
+		"dn": "Stepper Step Border Active State Design Big Circle",
+		"n": "stepperStepBorderActiveStateDesignBigCircle",
+		"dv": "none",
+		"cp": "border",
+		"sel": ".comp.compStepper._big_circle ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Border Active State",
+		"dn": "Stepper Step Border Active State Design Pills",
+		"n": "stepperStepBorderActiveStateDesignPills",
+		"dv": "none",
+		"cp": "border",
+		"sel": ".comp.compStepper._pills ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Border Active State",
+		"dn": "Stepper Step Border Active State Design Rectangle Arrow",
+		"n": "stepperStepBorderActiveStateDesignRectangleArrow",
+		"dv": "none",
+		"cp": "border",
+		"sel": ".comp.compStepper._rectangle_arrow ._step._active",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Border Done State",
+		"dn": "Stepper Step Border Done State Design Default",
+		"n": "stepperStepBorderDoneStateDesignDefault",
+		"dv": "none",
+		"cp": "border",
+		"sel": ".comp.compStepper._default ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Border Done State",
+		"dn": "Stepper Step Border Done State Design Big Circle",
+		"n": "stepperStepBorderDoneStateDesignBigCircle",
+		"dv": "2px solid",
+		"cp": "border",
+		"sel": ".comp.compStepper._big_circle ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Border Done State",
+		"dn": "Stepper Step Border Done State Design Pills",
+		"n": "stepperStepBorderDoneStateDesignPills",
+		"dv": "none",
+		"cp": "border",
+		"sel": ".comp.compStepper._pills ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Border Done State",
+		"dn": "Stepper Step Border Done State Design Rectangle Arrow",
+		"n": "stepperStepBorderDoneStateDesignRectangleArrow",
+		"dv": "none",
+		"cp": "border",
+		"sel": ".comp.compStepper._rectangle_arrow ._step._done",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Border Radius",
+		"dn": "Stepper Step Border Radius Design Default",
+		"n": "stepperStepBorderRadiusDesignDefault",
+		"dv": "50%",
+		"cp": "border-radius",
+		"sel": ".comp.compStepper._default ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Border Radius",
+		"dn": "Stepper Step Border Radius Design Big Circle",
+		"n": "stepperStepBorderRadiusDesignBigCircle",
+		"dv": "50%",
+		"cp": "border-radius",
+		"sel": ".comp.compStepper._big_circle ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Border Radius",
+		"dn": "Stepper Step Border Radius Design Pills",
+		"n": "stepperStepBorderRadiusDesignPills",
+		"dv": "12px",
+		"cp": "border-radius",
+		"sel": ".comp.compStepper._pills ._step",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Border Color Default State",
+		"dn": "Primary Stepper Step Border Color Default State Design Default",
+		"n": "primaryStepperStepBorderColorDefaultStateDesignDefault",
+		"dv": "<colorThirteen>",
+		"cp": "border-color",
+		"sel": ".comp.compStepper._default._primary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Border Color Default State",
+		"dn": "Secondary Stepper Step Border Color Default State Design Default",
+		"n": "secondaryStepperStepBorderColorDefaultStateDesignDefault",
+		"dv": "<colorThirteen>",
+		"cp": "border-color",
+		"sel": ".comp.compStepper._default._secondary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Border Color Default State",
+		"dn": "Tertiary Stepper Step Border Color Default State Design Default",
+		"n": "tertiaryStepperStepBorderColorDefaultStateDesignDefault",
+		"dv": "<colorThirteen>",
+		"cp": "border-color",
+		"sel": ".comp.compStepper._default._tertiary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Border Color Default State",
+		"dn": "Quaternary Stepper Step Border Color Default State Design Default",
+		"n": "quaternaryStepperStepBorderColorDefaultStateDesignDefault",
+		"dv": "<colorThirteen>",
+		"cp": "border-color",
+		"sel": ".comp.compStepper._default._quaternary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Border Color Default State",
+		"dn": "Quinary Stepper Step Border Color Default State Design Default",
+		"n": "quinaryStepperStepBorderColorDefaultStateDesignDefault",
+		"dv": "<colorThirteen>",
+		"cp": "border-color",
+		"sel": ".comp.compStepper._default._quinary ._step",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Border Color Default State",
+		"dn": "Primary Stepper Step Border Color Default State Design Big Circle",
+		"n": "primaryStepperStepBorderColorDefaultStateDesignBigCircle",
+		"dv": "<backgroundColorOne>",
+		"cp": "border-color",
+		"sel": ".comp.compStepper._big_circle._primary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Border Color Default State",
+		"dn": "Secondary Stepper Step Border Color Default State Design Big Circle",
+		"n": "secondaryStepperStepBorderColorDefaultStateDesignBigCircle",
+		"dv": "<backgroundColorTwo>",
+		"cp": "border-color",
+		"sel": ".comp.compStepper._big_circle._secondary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Border Color Default State",
+		"dn": "Tertiary Stepper Step Border Color Default State Design Big Circle",
+		"n": "tertiaryStepperStepBorderColorDefaultStateDesignBigCircle",
+		"dv": "<backgroundColorThree>",
+		"cp": "border-color",
+		"sel": ".comp.compStepper._big_circle._tertiary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Border Color Default State",
+		"dn": "Quaternary Stepper Step Border Color Default State Design Big Circle",
+		"n": "quaternaryStepperStepBorderColorDefaultStateDesignBigCircle",
+		"dv": "<backgroundColorFour>",
+		"cp": "border-color",
+		"sel": ".comp.compStepper._big_circle._quaternary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Border Color Default State",
+		"dn": "Quinary Stepper Step Border Color Default State Design Big Circle",
+		"n": "quinaryStepperStepBorderColorDefaultStateDesignBigCircle",
+		"dv": "<backgroundColorFive>",
+		"cp": "border-color",
+		"sel": ".comp.compStepper._big_circle._quinary ._step",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Border Color Active State",
+		"dn": "Primary Stepper Step Border Color Active State Design Default",
+		"n": "primaryStepperStepBorderColorActiveStateDesignDefault",
+		"dv": "<backgroundColorOne>",
+		"cp": "border-color",
+		"sel": ".comp.compStepper._default._primary ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Border Color Active State",
+		"dn": "Secondary Stepper Step Border Color Active State Design Default",
+		"n": "secondaryStepperStepBorderColorActiveStateDesignDefault",
+		"dv": "<backgroundColorTwo>",
+		"cp": "border-color",
+		"sel": ".comp.compStepper._default._secondary ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Border Color Active State",
+		"dn": "Tertiary Stepper Step Border Color Active State Design Default",
+		"n": "tertiaryStepperStepBorderColorActiveStateDesignDefault",
+		"dv": "<backgroundColorThree>",
+		"cp": "border-color",
+		"sel": ".comp.compStepper._default._tertiary ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Border Color Active State",
+		"dn": "Quaternary Stepper Step Border Color Active State Design Default",
+		"n": "quaternaryStepperStepBorderColorActiveStateDesignDefault",
+		"dv": "<backgroundColorFour>",
+		"cp": "border-color",
+		"sel": ".comp.compStepper._default._quaternary ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Border Color Active State",
+		"dn": "Quinary Stepper Step Border Color Active State Design Default",
+		"n": "quinaryStepperStepBorderColorActiveStateDesignDefault",
+		"dv": "<backgroundColorFive>",
+		"cp": "border-color",
+		"sel": ".comp.compStepper._default._quinary ._step._active",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Border Color Done State",
+		"dn": "Primary Stepper Step Border Color Done State Design Big Circle",
+		"n": "primaryStepperStepBorderColorDoneStateDesignBigCircle",
+		"dv": "<backgroundColorOne>",
+		"cp": "border-color",
+		"sel": ".comp.compStepper._big_circle._primary ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Border Color Done State",
+		"dn": "Secondary Stepper Step Border Color Done State Design Big Circle",
+		"n": "secondaryStepperStepBorderColorDoneStateDesignBigCircle",
+		"dv": "<backgroundColorTwo>",
+		"cp": "border-color",
+		"sel": ".comp.compStepper._big_circle._secondary ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Border Color Done State",
+		"dn": "Tertiary Stepper Step Border Color Done State Design Big Circle",
+		"n": "tertiaryStepperStepBorderColorDoneStateDesignBigCircle",
+		"dv": "<backgroundColorThree>",
+		"cp": "border-color",
+		"sel": ".comp.compStepper._big_circle._tertiary ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Border Color Done State",
+		"dn": "Quaternary Stepper Step Border Color Done State Design Big Circle",
+		"n": "quaternaryStepperStepBorderColorDoneStateDesignBigCircle",
+		"dv": "<backgroundColorFour>",
+		"cp": "border-color",
+		"sel": ".comp.compStepper._big_circle._quaternary ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Border Color Done State",
+		"dn": "Quinary Stepper Step Border Color Done State Design Big Circle",
+		"n": "quinaryStepperStepBorderColorDoneStateDesignBigCircle",
+		"dv": "<backgroundColorFive>",
+		"cp": "border-color",
+		"sel": ".comp.compStepper._big_circle._quinary ._step._done",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Background Color Done State",
+		"dn": "Primary Stepper Step Background Color Done State Design Default",
+		"n": "primaryStepperStepBackgroundColorDoneStateDesignDefault",
+		"dv": "<backgroundColorOne>",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._default._primary ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Done State",
+		"dn": "Secondary Stepper Step Background Color Done State Design Default",
+		"n": "secondaryStepperStepBackgroundColorDoneStateDesignDefault",
+		"dv": "<backgroundColorTwo>",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._default._secondary ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Done State",
+		"dn": "Tertiary Stepper Step Background Color Done State Design Default",
+		"n": "tertiaryStepperStepBackgroundColorDoneStateDesignDefault",
+		"dv": "<backgroundColorThree>",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._default._tertiary ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Done State",
+		"dn": "Quaternary Stepper Step Background Color Done State Design Default",
+		"n": "quaternaryStepperStepBackgroundColorDoneStateDesignDefault",
+		"dv": "<backgroundColorFour>",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._default._quaternary ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Done State",
+		"dn": "Quinary Stepper Step Background Color Done State Design Default",
+		"n": "quinaryStepperStepBackgroundColorDoneStateDesignDefault",
+		"dv": "<backgroundColorFive>",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._default._quinary ._step._done",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Background Color Active State",
+		"dn": "Primary Stepper Step Background Color Active State Design Big Circle",
+		"n": "primaryStepperStepBackgroundColorActiveStateDesignBigCircle",
+		"dv": "<backgroundColorOne>",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._big_circle._primary ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Active State",
+		"dn": "Secondary Stepper Step Background Color Active State Design Big Circle",
+		"n": "secondaryStepperStepBackgroundColorActiveStateDesignBigCircle",
+		"dv": "<backgroundColorTwo>",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._big_circle._secondary ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Active State",
+		"dn": "Tertiary Stepper Step Background Color Active State Design Big Circle",
+		"n": "tertiaryStepperStepBackgroundColorActiveStateDesignBigCircle",
+		"dv": "<backgroundColorThree>",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._big_circle._tertiary ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Active State",
+		"dn": "Quaternary Stepper Step Background Color Active State Design Big Circle",
+		"n": "quaternaryStepperStepBackgroundColorActiveStateDesignBigCircle",
+		"dv": "<backgroundColorFour>",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._big_circle._quaternary ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Active State",
+		"dn": "Quinary Stepper Step Background Color Active State Design Big Circle",
+		"n": "quinaryStepperStepBackgroundColorActiveStateDesignBigCircle",
+		"dv": "<backgroundColorFive>",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._big_circle._quinary ._step._active",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Color Default State",
+		"dn": "Primary Stepper Step Color Default State Design Default",
+		"n": "primaryStepperStepColorDefaultStateDesignDefault",
+		"dv": "<colorThirteen>",
+		"cp": "color",
+		"sel": ".comp.compStepper._default._primary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Default State",
+		"dn": "Secondary Stepper Step Color Default State Design Default",
+		"n": "secondaryStepperStepColorDefaultStateDesignDefault",
+		"dv": "<colorThirteen>",
+		"cp": "color",
+		"sel": ".comp.compStepper._default._secondary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Default State",
+		"dn": "Tertiary Stepper Step Color Default State Design Default",
+		"n": "tertiaryStepperStepColorDefaultStateDesignDefault",
+		"dv": "<colorThirteen>",
+		"cp": "color",
+		"sel": ".comp.compStepper._default._tertiary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Default State",
+		"dn": "Quaternary Stepper Step Color Default State Design Default",
+		"n": "quaternaryStepperStepColorDefaultStateDesignDefault",
+		"dv": "<colorThirteen>",
+		"cp": "color",
+		"sel": ".comp.compStepper._default._quaternary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Default State",
+		"dn": "Quinary Stepper Step Color Default State Design Default",
+		"n": "quinaryStepperStepColorDefaultStateDesignDefault",
+		"dv": "<colorThirteen>",
+		"cp": "color",
+		"sel": ".comp.compStepper._default._quinary ._step",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Color Default State",
+		"dn": "Primary Stepper Step Color Default State Design Big Circle",
+		"n": "primaryStepperStepColorDefaultStateDesignBigCircle",
+		"dv": "<backgroundColorOne>",
+		"cp": "color",
+		"sel": ".comp.compStepper._big_circle._primary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Default State",
+		"dn": "Secondary Stepper Step Color Default State Design Big Circle",
+		"n": "secondaryStepperStepColorDefaultStateDesignBigCircle",
+		"dv": "<backgroundColorTwo>",
+		"cp": "color",
+		"sel": ".comp.compStepper._big_circle._secondary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Default State",
+		"dn": "Tertiary Stepper Step Color Default State Design Big Circle",
+		"n": "tertiaryStepperStepColorDefaultStateDesignBigCircle",
+		"dv": "<backgroundColorThree>",
+		"cp": "color",
+		"sel": ".comp.compStepper._big_circle._tertiary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Default State",
+		"dn": "Quaternary Stepper Step Color Default State Design Big Circle",
+		"n": "quaternaryStepperStepColorDefaultStateDesignBigCircle",
+		"dv": "<backgroundColorFour>",
+		"cp": "color",
+		"sel": ".comp.compStepper._big_circle._quaternary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Default State",
+		"dn": "Quinary Stepper Step Color Default State Design Big Circle",
+		"n": "quinaryStepperStepColorDefaultStateDesignBigCircle",
+		"dv": "<backgroundColorFive>",
+		"cp": "color",
+		"sel": ".comp.compStepper._big_circle._quinary ._step",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Color Active State",
+		"dn": "Primary Stepper Step Color Active State Design Default",
+		"n": "primaryStepperStepColorActiveStateDesignDefault",
+		"dv": "<backgroundColorOne>",
+		"cp": "color",
+		"sel": ".comp.compStepper._default._primary ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Active State",
+		"dn": "Secondary Stepper Step Color Active State Design Default",
+		"n": "secondaryStepperStepColorActiveStateDesignDefault",
+		"dv": "<backgroundColorTwo>",
+		"cp": "color",
+		"sel": ".comp.compStepper._default._secondary ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Active State",
+		"dn": "Tertiary Stepper Step Color Active State Design Default",
+		"n": "tertiaryStepperStepColorActiveStateDesignDefault",
+		"dv": "<backgroundColorThree>",
+		"cp": "color",
+		"sel": ".comp.compStepper._default._tertiary ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Active State",
+		"dn": "Quaternary Stepper Step Color Active State Design Default",
+		"n": "quaternaryStepperStepColorActiveStateDesignDefault",
+		"dv": "<backgroundColorFour>",
+		"cp": "color",
+		"sel": ".comp.compStepper._default._quaternary ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Active State",
+		"dn": "Quinary Stepper Step Color Active State Design Default",
+		"n": "quinaryStepperStepColorActiveStateDesignDefault",
+		"dv": "<backgroundColorFive>",
+		"cp": "color",
+		"sel": ".comp.compStepper._default._quinary ._step._active",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Color Active State",
+		"dn": "Primary Stepper Step Color Active State Design Big Circle",
+		"n": "primaryStepperStepColorActiveStateDesignBigCircle",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._big_circle._primary ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Active State",
+		"dn": "Secondary Stepper Step Color Active State Design Big Circle",
+		"n": "secondaryStepperStepColorActiveStateDesignBigCircle",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._big_circle._secondary ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Active State",
+		"dn": "Tertiary Stepper Step Color Active State Design Big Circle",
+		"n": "tertiaryStepperStepColorActiveStateDesignBigCircle",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._big_circle._tertiary ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Active State",
+		"dn": "Quaternary Stepper Step Color Active State Design Big Circle",
+		"n": "quaternaryStepperStepColorActiveStateDesignBigCircle",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._big_circle._quaternary ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Active State",
+		"dn": "Quinary Stepper Step Color Active State Design Big Circle",
+		"n": "quinaryStepperStepColorActiveStateDesignBigCircle",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._big_circle._quinary ._step._active",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Color Done State",
+		"dn": "Primary Stepper Step Color Done State Design Default",
+		"n": "primaryStepperStepColorDoneStateDesignDefault",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._default._primary ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Done State",
+		"dn": "Secondary Stepper Step Color Done State Design Default",
+		"n": "secondaryStepperStepColorDoneStateDesignDefault",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._default._secondary ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Done State",
+		"dn": "Tertiary Stepper Step Color Done State Design Default",
+		"n": "tertiaryStepperStepColorDoneStateDesignDefault",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._default._tertiary ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Done State",
+		"dn": "Quaternary Stepper Step Color Done State Design Default",
+		"n": "quaternaryStepperStepColorDoneStateDesignDefault",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._default._quaternary ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Done State",
+		"dn": "Quinary Stepper Step Color Done State Design Default",
+		"n": "quinaryStepperStepColorDoneStateDesignDefault",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._default._quinary ._step._done",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Color Done State",
+		"dn": "Primary Stepper Step Color Done State Design Big Circle",
+		"n": "primaryStepperStepColorDoneStateDesignBigCircle",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._big_circle._primary ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Done State",
+		"dn": "Secondary Stepper Step Color Done State Design Big Circle",
+		"n": "secondaryStepperStepColorDoneStateDesignBigCircle",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._big_circle._secondary ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Done State",
+		"dn": "Tertiary Stepper Step Color Done State Design Big Circle",
+		"n": "tertiaryStepperStepColorDoneStateDesignBigCircle",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._big_circle._tertiary ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Done State",
+		"dn": "Quaternary Stepper Step Color Done State Design Big Circle",
+		"n": "quaternaryStepperStepColorDoneStateDesignBigCircle",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._big_circle._quaternary ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Done State",
+		"dn": "Quinary Stepper Step Color Done State Design Big Circle",
+		"n": "quinaryStepperStepColorDoneStateDesignBigCircle",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._big_circle._quinary ._step._done",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Title Color",
+		"dn": "Primary Stepper Step Title Color Design Default",
+		"n": "primaryStepperStepTitleColorDesignDefault",
+		"dv": "<colorThirteen>",
+		"cp": "color",
+		"sel": ".comp.compStepper._default._primary ._title",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color",
+		"dn": "Secondary Stepper Step Title Color Design Default",
+		"n": "secondaryStepperStepTitleColorDesignDefault",
+		"dv": "<colorThirteen>",
+		"cp": "color",
+		"sel": ".comp.compStepper._default._secondary ._title",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color",
+		"dn": "Tertiary Stepper Step Title Color Design Default",
+		"n": "tertiaryStepperStepTitleColorDesignDefault",
+		"dv": "<colorThirteen>",
+		"cp": "color",
+		"sel": ".comp.compStepper._default._tertiary ._title",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color",
+		"dn": "Quaternary Stepper Step Title Color Design Default",
+		"n": "quaternaryStepperStepTitleColorDesignDefault",
+		"dv": "<colorThirteen>",
+		"cp": "color",
+		"sel": ".comp.compStepper._default._quaternary ._title",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color",
+		"dn": "Quinary Stepper Step Title Color Design Default",
+		"n": "quinaryStepperStepTitleColorDesignDefault",
+		"dv": "<colorThirteen>",
+		"cp": "color",
+		"sel": ".comp.compStepper._default._quinary ._title",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Title Color",
+		"dn": "Primary Stepper Step Title Color Design Big Circle",
+		"n": "primaryStepperStepTitleColorDesignBigCircle",
+		"dv": "<colorThirteen>",
+		"cp": "color",
+		"sel": ".comp.compStepper._big_circle._primary ._title",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color",
+		"dn": "Secondary Stepper Step Title Color Design Big Circle",
+		"n": "secondaryStepperStepTitleColorDesignBigCircle",
+		"dv": "<colorThirteen>",
+		"cp": "color",
+		"sel": ".comp.compStepper._big_circle._secondary ._title",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color",
+		"dn": "Tertiary Stepper Step Title Color Design Big Circle",
+		"n": "tertiaryStepperStepTitleColorDesignBigCircle",
+		"dv": "<colorThirteen>",
+		"cp": "color",
+		"sel": ".comp.compStepper._big_circle._tertiary ._title",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color",
+		"dn": "Quaternary Stepper Step Title Color Design Big Circle",
+		"n": "quaternaryStepperStepTitleColorDesignBigCircle",
+		"dv": "<colorThirteen>",
+		"cp": "color",
+		"sel": ".comp.compStepper._big_circle._quaternary ._title",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color",
+		"dn": "Quinary Stepper Step Title Color Design Big Circle",
+		"n": "quinaryStepperStepTitleColorDesignBigCircle",
+		"dv": "<colorThirteen>",
+		"cp": "color",
+		"sel": ".comp.compStepper._big_circle._quinary ._title",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Title Padding",
+		"dn": "Stepper Step Title Padding Design Default",
+		"n": "stepperStepTitlePaddingDesignDefault",
+		"dv": "5px",
+		"cp": "padding",
+		"sel": ".comp.compStepper._default ._title",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Padding",
+		"dn": "Stepper Step Title Padding Design Big Circle",
+		"n": "stepperStepTitlePaddingDesignBigCircle",
+		"dv": "8px",
+		"cp": "padding",
+		"sel": ".comp.compStepper._big_circle ._title",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Background Color Default State",
+		"dn": "Primary Stepper Step Background Color Default State Design Pills",
+		"n": "primaryStepperStepBackgroundColorDefaultStateDesignPills",
+		"dv": "<backgroundHoverColorSeven>",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._pills._primary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Default State",
+		"dn": "Secondary Stepper Step Background Color Default State Design Pills",
+		"n": "secondaryStepperStepBackgroundColorDefaultStateDesignPills",
+		"dv": "<backgroundHoverColorSeven>",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._pills._secondary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Default State",
+		"dn": "Tertiary Stepper Step Background Color Default State Design Pills",
+		"n": "tertiaryStepperStepBackgroundColorDefaultStateDesignPills",
+		"dv": "<backgroundHoverColorSeven>",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._pills._tertiary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Default State",
+		"dn": "Quaternary Stepper Step Background Color Default State Design Pills",
+		"n": "quaternaryStepperStepBackgroundColorDefaultStateDesignPills",
+		"dv": "<backgroundHoverColorSeven>",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._pills._quaternary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Default State",
+		"dn": "Quinary Stepper Step Background Color Default State Design Pills",
+		"n": "quinaryStepperStepBackgroundColorDefaultStateDesignPills",
+		"dv": "<backgroundHoverColorSeven>",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._pills._quinary ._step",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Background Color Active State",
+		"dn": "Primary Stepper Step Background Color Active State Design Pills",
+		"n": "primaryStepperStepBackgroundColorActiveStateDesignPills",
+		"dv": "<backgroundColorOne>",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._pills._primary ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Active State",
+		"dn": "Secondary Stepper Step Background Color Active State Design Pills",
+		"n": "secondaryStepperStepBackgroundColorActiveStateDesignPills",
+		"dv": "<backgroundColorTwo>",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._pills._secondary ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Active State",
+		"dn": "Tertiary Stepper Step Background Color Active State Design Pills",
+		"n": "tertiaryStepperStepBackgroundColorActiveStateDesignPills",
+		"dv": "<backgroundColorThree>",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._pills._tertiary ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Active State",
+		"dn": "Quaternary Stepper Step Background Color Active State Design Pills",
+		"n": "quaternaryStepperStepBackgroundColorActiveStateDesignPills",
+		"dv": "<backgroundColorFour>",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._pills._quaternary ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Active State",
+		"dn": "Quinary Stepper Step Background Color Active State Design Pills",
+		"n": "quinaryStepperStepBackgroundColorActiveStateDesignPills",
+		"dv": "<backgroundColorFive>",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._pills._quinary ._step._active",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Background Color Done State",
+		"dn": "Primary Stepper Step Background Color Done State Design Pills",
+		"n": "primaryStepperStepBackgroundColorDoneStateDesignPills",
+		"dv": "<backgroundColorOne>",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._pills._primary ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Done State",
+		"dn": "Secondary Stepper Step Background Color Done State Design Pills",
+		"n": "secondaryStepperStepBackgroundColorDoneStateDesignPills",
+		"dv": "<backgroundColorTwo>",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._pills._secondary ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Done State",
+		"dn": "Tertiary Stepper Step Background Color Done State Design Pills",
+		"n": "tertiaryStepperStepBackgroundColorDoneStateDesignPills",
+		"dv": "<backgroundColorThree>",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._pills._tertiary ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Done State",
+		"dn": "Quaternary Stepper Step Background Color Done State Design Pills",
+		"n": "quaternaryStepperStepBackgroundColorDoneStateDesignPills",
+		"dv": "<backgroundColorFour>",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._pills._quaternary ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Done State",
+		"dn": "Quinary Stepper Step Background Color Done State Design Pills",
+		"n": "quinaryStepperStepBackgroundColorDoneStateDesignPills",
+		"dv": "<backgroundColorFive>",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._pills._quinary ._step._done",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Color Default State",
+		"dn": "Primary Stepper Step Color Default State Design Pills",
+		"n": "primaryStepperStepColorDefaultStateDesignPills",
+		"dv": "<colorThirteen>",
+		"cp": "color",
+		"sel": ".comp.compStepper._pills._primary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Default State",
+		"dn": "Secondary Stepper Step Color Default State Design Pills",
+		"n": "secondaryStepperStepColorDefaultStateDesignPills",
+		"dv": "<colorThirteen>",
+		"cp": "color",
+		"sel": ".comp.compStepper._pills._secondary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Default State",
+		"dn": "Tertiary Stepper Step Color Default State Design Pills",
+		"n": "tertiaryStepperStepColorDefaultStateDesignPills",
+		"dv": "<colorThirteen>",
+		"cp": "color",
+		"sel": ".comp.compStepper._pills._tertiary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Default State",
+		"dn": "Quaternary Stepper Step Color Default State Design Pills",
+		"n": "quaternaryStepperStepColorDefaultStateDesignPills",
+		"dv": "<colorThirteen>",
+		"cp": "color",
+		"sel": ".comp.compStepper._pills._quaternary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Default State",
+		"dn": "Quinary Stepper Step Color Default State Design Pills",
+		"n": "quinaryStepperStepColorDefaultStateDesignPills",
+		"dv": "<colorThirteen>",
+		"cp": "color",
+		"sel": ".comp.compStepper._pills._quinary ._step",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Color Active State",
+		"dn": "Primary Stepper Step Color Active State Design Pills",
+		"n": "primaryStepperStepColorActiveStateDesignPills",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._pills._primary ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Active State",
+		"dn": "Secondary Stepper Step Color Active State Design Pills",
+		"n": "secondaryStepperStepColorActiveStateDesignPills",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._pills._secondary ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Active State",
+		"dn": "Tertiary Stepper Step Color Active State Design Pills",
+		"n": "tertiaryStepperStepColorActiveStateDesignPills",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._pills._tertiary ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Active State",
+		"dn": "Quaternary Stepper Step Color Active State Design Pills",
+		"n": "quaternaryStepperStepColorActiveStateDesignPills",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._pills._quaternary ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Active State",
+		"dn": "Quinary Stepper Step Color Active State Design Pills",
+		"n": "quinaryStepperStepColorActiveStateDesignPills",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._pills._quinary ._step._active",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Color Done State",
+		"dn": "Primary Stepper Step Color Done State Design Pills",
+		"n": "primaryStepperStepColorDoneStateDesignPills",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._pills._primary ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Done State",
+		"dn": "Secondary Stepper Step Color Done State Design Pills",
+		"n": "secondaryStepperStepColorDoneStateDesignPills",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._pills._secondary ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Done State",
+		"dn": "Tertiary Stepper Step Color Done State Design Pills",
+		"n": "tertiaryStepperStepColorDoneStateDesignPills",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._pills._tertiary ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Done State",
+		"dn": "Quaternary Stepper Step Color Done State Design Pills",
+		"n": "quaternaryStepperStepColorDoneStateDesignPills",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._pills._quaternary ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Color Done State",
+		"dn": "Quinary Stepper Step Color Done State Design Pills",
+		"n": "quinaryStepperStepColorDoneStateDesignPills",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._pills._quinary ._step._done",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Gap",
+		"dn": "Stepper Gap Design Pills",
+		"n": "stepperGapDesignPills",
+		"dv": "8px",
+		"cp": "gap",
+		"sel": "ul.comp.compStepper._pills",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Border Radius",
+		"dn": "Stepper Border Radius Design Rectangle Arrow",
+		"n": "stepperBorderRadiusDesignRectangleArrow",
+		"dv": "4px",
+		"cp": "border-radius",
+		"sel": "ul.comp.compStepper._rectangle_arrow",
+		"np": true
+	},
+	{
+		"gn": "Stepper Box Shadow",
+		"dn": "Stepper Box Shadow Design Rectangle Arrow",
+		"n": "stepperBoxShadowDesignRectangleArrow",
+		"dv": "0px 1px 4px 0px rgba(0, 0, 0, 0.10)",
+		"cp": "box-shadow",
+		"sel": "ul.comp.compStepper._rectangle_arrow",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Rectangle Arrow Design Item Container Gap",
+		"dn": "Stepper Rectangle Arrow Design Item Container Gap Design Rectangle Arrow",
+		"n": "stepperRectangleArrowDesignItemContainerGapDesignRectangleArrow",
+		"dv": "10px",
+		"cp": "gap",
+		"sel": "ul.comp.compStepper._rectangle_arrow ._itemContainer",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Background Color",
+		"dn": "Primary Stepper Background Color Design Rectangle Arrow",
+		"n": "primaryStepperBackgroundColorDesignRectangleArrow",
+		"dv": "<colorSeven>",
+		"cp": "background-color",
+		"sel": "ul.comp.compStepper._rectangle_arrow._primary",
+		"np": true
+	},
+	{
+		"gn": "Stepper Background Color",
+		"dn": "Secondary Stepper Background Color Design Rectangle Arrow",
+		"n": "secondaryStepperBackgroundColorDesignRectangleArrow",
+		"dv": "<colorSeven>",
+		"cp": "background-color",
+		"sel": "ul.comp.compStepper._rectangle_arrow._secondary",
+		"np": true
+	},
+	{
+		"gn": "Stepper Background Color",
+		"dn": "Tertiary Stepper Background Color Design Rectangle Arrow",
+		"n": "tertiaryStepperBackgroundColorDesignRectangleArrow",
+		"dv": "<colorSeven>",
+		"cp": "background-color",
+		"sel": "ul.comp.compStepper._rectangle_arrow._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Stepper Background Color",
+		"dn": "Quaternary Stepper Background Color Design Rectangle Arrow",
+		"n": "quaternaryStepperBackgroundColorDesignRectangleArrow",
+		"dv": "<colorSeven>",
+		"cp": "background-color",
+		"sel": "ul.comp.compStepper._rectangle_arrow._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Stepper Background Color",
+		"dn": "Quinary Stepper Background Color Design Rectangle Arrow",
+		"n": "quinaryStepperBackgroundColorDesignRectangleArrow",
+		"dv": "<colorSeven>",
+		"cp": "background-color",
+		"sel": "ul.comp.compStepper._rectangle_arrow._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Height",
+		"dn": "Stepper Step Height Design Rectangle Arrow",
+		"n": "stepperStepHeightDesignRectangleArrow",
+		"dv": "48px",
+		"cp": "height",
+		"sel": ".comp.compStepper._rectangle_arrow ._listItem",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Background Color Default State",
+		"dn": "Primary Stepper Step Background Color Default State Design Rectangle Arrow",
+		"n": "primaryStepperStepBackgroundColorDefaultStateDesignRectangleArrow",
+		"dv": "transparent",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._rectangle_arrow._primary ._listItem",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Default State",
+		"dn": "Secondary Stepper Step Background Color Default State Design Rectangle Arrow",
+		"n": "secondaryStepperStepBackgroundColorDefaultStateDesignRectangleArrow",
+		"dv": "transparent",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._rectangle_arrow._secondary ._listItem",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Default State",
+		"dn": "Tertiary Stepper Step Background Color Default State Design Rectangle Arrow",
+		"n": "tertiaryStepperStepBackgroundColorDefaultStateDesignRectangleArrow",
+		"dv": "transparent",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._rectangle_arrow._tertiary ._listItem",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Default State",
+		"dn": "Quaternary Stepper Step Background Color Default State Design Rectangle Arrow",
+		"n": "quaternaryStepperStepBackgroundColorDefaultStateDesignRectangleArrow",
+		"dv": "transparent",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._rectangle_arrow._quaternary ._listItem",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Default State",
+		"dn": "Quinary Stepper Step Background Color Default State Design Rectangle Arrow",
+		"n": "quinaryStepperStepBackgroundColorDefaultStateDesignRectangleArrow",
+		"dv": "transparent",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._rectangle_arrow._quinary ._listItem",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Background Color Active State",
+		"dn": "Primary Stepper Step Background Color Active State Design Rectangle Arrow",
+		"n": "primaryStepperStepBackgroundColorActiveStateDesignRectangleArrow",
+		"dv": "<backgroundHoverColorOne>",
+		"cp": "background",
+		"sel": ".comp.compStepper._rectangle_arrow._primary ._listItem._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Active State",
+		"dn": "Secondary Stepper Step Background Color Active State Design Rectangle Arrow",
+		"n": "secondaryStepperStepBackgroundColorActiveStateDesignRectangleArrow",
+		"dv": "<backgroundHoverColorTwo>",
+		"cp": "background",
+		"sel": ".comp.compStepper._rectangle_arrow._secondary ._listItem._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Active State",
+		"dn": "Tertiary Stepper Step Background Color Active State Design Rectangle Arrow",
+		"n": "tertiaryStepperStepBackgroundColorActiveStateDesignRectangleArrow",
+		"dv": "<backgroundHoverColorThree>",
+		"cp": "background",
+		"sel": ".comp.compStepper._rectangle_arrow._tertiary ._listItem._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Active State",
+		"dn": "Quaternary Stepper Step Background Color Active State Design Rectangle Arrow",
+		"n": "quaternaryStepperStepBackgroundColorActiveStateDesignRectangleArrow",
+		"dv": "<backgroundHoverColorFour>",
+		"cp": "background",
+		"sel": ".comp.compStepper._rectangle_arrow._quaternary ._listItem._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Active State",
+		"dn": "Quinary Stepper Step Background Color Active State Design Rectangle Arrow",
+		"n": "quinaryStepperStepBackgroundColorActiveStateDesignRectangleArrow",
+		"dv": "<backgroundHoverColorFive>",
+		"cp": "background",
+		"sel": ".comp.compStepper._rectangle_arrow._quinary ._listItem._active",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Background Color Done State",
+		"dn": "Primary Stepper Step Background Color Done State Design Rectangle Arrow",
+		"n": "primaryStepperStepBackgroundColorDoneStateDesignRectangleArrow",
+		"dv": "<backgroundColorOne>",
+		"cp": "background",
+		"sel": ".comp.compStepper._rectangle_arrow._primary ._listItem._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Done State",
+		"dn": "Secondary Stepper Step Background Color Done State Design Rectangle Arrow",
+		"n": "secondaryStepperStepBackgroundColorDoneStateDesignRectangleArrow",
+		"dv": "<backgroundColorTwo>",
+		"cp": "background",
+		"sel": ".comp.compStepper._rectangle_arrow._secondary ._listItem._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Done State",
+		"dn": "Tertiary Stepper Step Background Color Done State Design Rectangle Arrow",
+		"n": "tertiaryStepperStepBackgroundColorDoneStateDesignRectangleArrow",
+		"dv": "<backgroundColorThree>",
+		"cp": "background",
+		"sel": ".comp.compStepper._rectangle_arrow._tertiary ._listItem._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Done State",
+		"dn": "Quaternary Stepper Step Background Color Done State Design Rectangle Arrow",
+		"n": "quaternaryStepperStepBackgroundColorDoneStateDesignRectangleArrow",
+		"dv": "<backgroundColorFour>",
+		"cp": "background",
+		"sel": ".comp.compStepper._rectangle_arrow._quaternary ._listItem._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Done State",
+		"dn": "Quinary Stepper Step Background Color Done State Design Rectangle Arrow",
+		"n": "quinaryStepperStepBackgroundColorDoneStateDesignRectangleArrow",
+		"dv": "<backgroundColorFive>",
+		"cp": "background",
+		"sel": ".comp.compStepper._rectangle_arrow._quinary ._listItem._done",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Arrow Border Width",
+		"dn": "Stepper Step Arrow Border Width Design Rectangle Arrow",
+		"n": "stepperStepArrowBorderWidthDesignRectangleArrow",
+		"dv": "20px",
+		"cp": "width",
+		"sel": ".comp.compStepper._rectangle_arrow ._listItem ._line",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Arrow Border Height",
+		"dn": "Stepper Step Arrow Border Height Design Rectangle Arrow",
+		"n": "stepperStepArrowBorderHeightDesignRectangleArrow",
+		"dv": "100%",
+		"cp": "height",
+		"sel": ".comp.compStepper._rectangle_arrow ._listItem ._line",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Arrow Border Left Color Active State",
+		"dn": "Primary Stepper Step Arrow Border Left Color Active State Design Rectangle Arrow",
+		"n": "primaryStepperStepArrowBorderLeftColorActiveStateDesignRectangleArrow",
+		"dv": "<backgroundHoverColorOne>",
+		"cp": "background",
+		"sel": ".comp.compStepper._rectangle_arrow._primary ._listItem._active ._line",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Arrow Border Left Color Active State",
+		"dn": "Secondary Stepper Step Arrow Border Left Color Active State Design Rectangle Arrow",
+		"n": "secondaryStepperStepArrowBorderLeftColorActiveStateDesignRectangleArrow",
+		"dv": "<backgroundHoverColorTwo>",
+		"cp": "background",
+		"sel": ".comp.compStepper._rectangle_arrow._secondary ._listItem._active ._line",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Arrow Border Left Color Active State",
+		"dn": "Tertiary Stepper Step Arrow Border Left Color Active State Design Rectangle Arrow",
+		"n": "tertiaryStepperStepArrowBorderLeftColorActiveStateDesignRectangleArrow",
+		"dv": "<backgroundHoverColorThree>",
+		"cp": "background",
+		"sel": ".comp.compStepper._rectangle_arrow._tertiary ._listItem._active ._line",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Arrow Border Left Color Active State",
+		"dn": "Quaternary Stepper Step Arrow Border Left Color Active State Design Rectangle Arrow",
+		"n": "quaternaryStepperStepArrowBorderLeftColorActiveStateDesignRectangleArrow",
+		"dv": "<backgroundHoverColorFour>",
+		"cp": "background",
+		"sel": ".comp.compStepper._rectangle_arrow._quaternary ._listItem._active ._line",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Arrow Border Left Color Active State",
+		"dn": "Quinary Stepper Step Arrow Border Left Color Active State Design Rectangle Arrow",
+		"n": "quinaryStepperStepArrowBorderLeftColorActiveStateDesignRectangleArrow",
+		"dv": "<backgroundHoverColorFive>",
+		"cp": "background",
+		"sel": ".comp.compStepper._rectangle_arrow._quinary ._listItem._active ._line",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Arrow Border Left Color Done State",
+		"dn": "Primary Stepper Step Arrow Border Left Color Done State Design Rectangle Arrow",
+		"n": "primaryStepperStepArrowBorderLeftColorDoneStateDesignRectangleArrow",
+		"dv": "<backgroundColorOne>",
+		"cp": "background",
+		"sel": ".comp.compStepper._rectangle_arrow._primary ._listItem._done ._line",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Arrow Border Left Color Done State",
+		"dn": "Secondary Stepper Step Arrow Border Left Color Done State Design Rectangle Arrow",
+		"n": "secondaryStepperStepArrowBorderLeftColorDoneStateDesignRectangleArrow",
+		"dv": "<backgroundColorTwo>",
+		"cp": "background",
+		"sel": ".comp.compStepper._rectangle_arrow._secondary ._listItem._done ._line",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Arrow Border Left Color Done State",
+		"dn": "Tertiary Stepper Step Arrow Border Left Color Done State Design Rectangle Arrow",
+		"n": "tertiaryStepperStepArrowBorderLeftColorDoneStateDesignRectangleArrow",
+		"dv": "<backgroundColorThree>",
+		"cp": "background",
+		"sel": ".comp.compStepper._rectangle_arrow._tertiary ._listItem._done ._line",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Arrow Border Left Color Done State",
+		"dn": "Quaternary Stepper Step Arrow Border Left Color Done State Design Rectangle Arrow",
+		"n": "quaternaryStepperStepArrowBorderLeftColorDoneStateDesignRectangleArrow",
+		"dv": "<backgroundColorFour>",
+		"cp": "background",
+		"sel": ".comp.compStepper._rectangle_arrow._quaternary ._listItem._done ._line",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Arrow Border Left Color Done State",
+		"dn": "Quinary Stepper Step Arrow Border Left Color Done State Design Rectangle Arrow",
+		"n": "quinaryStepperStepArrowBorderLeftColorDoneStateDesignRectangleArrow",
+		"dv": "<backgroundColorFive>",
+		"cp": "background",
+		"sel": ".comp.compStepper._rectangle_arrow._quinary ._listItem._done ._line",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Title Color Default State",
+		"dn": "Primary Stepper Step Title Color Default State Design Rectangle Arrow",
+		"n": "primaryStepperStepTitleColorDefaultStateDesignRectangleArrow",
+		"dv": "<colorSix>",
+		"cp": "color",
+		"sel": ".comp.compStepper._rectangle_arrow._primary ._title",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color Default State",
+		"dn": "Secondary Stepper Step Title Color Default State Design Rectangle Arrow",
+		"n": "secondaryStepperStepTitleColorDefaultStateDesignRectangleArrow",
+		"dv": "<colorSix>",
+		"cp": "color",
+		"sel": ".comp.compStepper._rectangle_arrow._secondary ._title",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color Default State",
+		"dn": "Tertiary Stepper Step Title Color Default State Design Rectangle Arrow",
+		"n": "tertiaryStepperStepTitleColorDefaultStateDesignRectangleArrow",
+		"dv": "<colorSix>",
+		"cp": "color",
+		"sel": ".comp.compStepper._rectangle_arrow._tertiary ._title",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color Default State",
+		"dn": "Quaternary Stepper Step Title Color Default State Design Rectangle Arrow",
+		"n": "quaternaryStepperStepTitleColorDefaultStateDesignRectangleArrow",
+		"dv": "<colorSix>",
+		"cp": "color",
+		"sel": ".comp.compStepper._rectangle_arrow._quaternary ._title",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color Default State",
+		"dn": "Quinary Stepper Step Title Color Default State Design Rectangle Arrow",
+		"n": "quinaryStepperStepTitleColorDefaultStateDesignRectangleArrow",
+		"dv": "<colorSix>",
+		"cp": "color",
+		"sel": ".comp.compStepper._rectangle_arrow._quinary ._title",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Title Color Active State",
+		"dn": "Primary Stepper Step Title Color Active State Design Rectangle Arrow",
+		"n": "primaryStepperStepTitleColorActiveStateDesignRectangleArrow",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._rectangle_arrow._primary ._title._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color Active State",
+		"dn": "Secondary Stepper Step Title Color Active State Design Rectangle Arrow",
+		"n": "secondaryStepperStepTitleColorActiveStateDesignRectangleArrow",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._rectangle_arrow._secondary ._title._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color Active State",
+		"dn": "Tertiary Stepper Step Title Color Active State Design Rectangle Arrow",
+		"n": "tertiaryStepperStepTitleColorActiveStateDesignRectangleArrow",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._rectangle_arrow._tertiary ._title._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color Active State",
+		"dn": "Quaternary Stepper Step Title Color Active State Design Rectangle Arrow",
+		"n": "quaternaryStepperStepTitleColorActiveStateDesignRectangleArrow",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._rectangle_arrow._quaternary ._title._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color Active State",
+		"dn": "Quinary Stepper Step Title Color Active State Design Rectangle Arrow",
+		"n": "quinaryStepperStepTitleColorActiveStateDesignRectangleArrow",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._rectangle_arrow._quinary ._title._active",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Title Color Done State",
+		"dn": "Primary Stepper Step Title Color Done State Design Rectangle Arrow",
+		"n": "primaryStepperStepTitleColorDoneStateDesignRectangleArrow",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._rectangle_arrow._primary ._title._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color Done State",
+		"dn": "Secondary Stepper Step Title Color Done State Design Rectangle Arrow",
+		"n": "secondaryStepperStepTitleColorDoneStateDesignRectangleArrow",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._rectangle_arrow._secondary ._title._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color Done State",
+		"dn": "Tertiary Stepper Step Title Color Done State Design Rectangle Arrow",
+		"n": "tertiaryStepperStepTitleColorDoneStateDesignRectangleArrow",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._rectangle_arrow._tertiary ._title._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color Done State",
+		"dn": "Quaternary Stepper Step Title Color Done State Design Rectangle Arrow",
+		"n": "quaternaryStepperStepTitleColorDoneStateDesignRectangleArrow",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._rectangle_arrow._quaternary ._title._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color Done State",
+		"dn": "Quinary Stepper Step Title Color Done State Design Rectangle Arrow",
+		"n": "quinaryStepperStepTitleColorDoneStateDesignRectangleArrow",
+		"dv": "<colorSeven>",
+		"cp": "color",
+		"sel": ".comp.compStepper._rectangle_arrow._quinary ._title._done",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Background Color",
+		"dn": "Primary Stepper Step Background Color Design Default Active State",
+		"n": "primaryStepperStepBackgroundColorDesignDefaultActiveState",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._default._primary ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color",
+		"dn": "Secondary Stepper Step Background Color Design Default Active State",
+		"n": "secondaryStepperStepBackgroundColorDesignDefaultActiveState",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._default._secondary ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color",
+		"dn": "Tertiary Stepper Step Background Color Design Default Active State",
+		"n": "tertiaryStepperStepBackgroundColorDesignDefaultActiveState",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._default._tertiary ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color",
+		"dn": "Quaternary Stepper Step Background Color Design Default Active State",
+		"n": "quaternaryStepperStepBackgroundColorDesignDefaultActiveState",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._default._quaternary ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color",
+		"dn": "Quinary Stepper Step Background Color Design Default Active State",
+		"n": "quinaryStepperStepBackgroundColorDesignDefaultActiveState",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._default._quinary ._step._active",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Background Color",
+		"dn": "Primary Stepper Step Background Color Design Default Future State",
+		"n": "primaryStepperStepBackgroundColorDesignDefaultFutureState",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._default._primary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color",
+		"dn": "Secondary Stepper Step Background Color Design Default Future State",
+		"n": "secondaryStepperStepBackgroundColorDesignDefaultFutureState",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._default._secondary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color",
+		"dn": "Tertiary Stepper Step Background Color Design Default Future State",
+		"n": "tertiaryStepperStepBackgroundColorDesignDefaultFutureState",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._default._tertiary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color",
+		"dn": "Quaternary Stepper Step Background Color Design Default Future State",
+		"n": "quaternaryStepperStepBackgroundColorDesignDefaultFutureState",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._default._quaternary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color",
+		"dn": "Quinary Stepper Step Background Color Design Default Future State",
+		"n": "quinaryStepperStepBackgroundColorDesignDefaultFutureState",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._default._quinary ._step",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Background Color Done State",
+		"dn": "Primary Stepper Step Background Color Done State Design Big Circle",
+		"n": "primaryStepperStepBackgroundColorDoneStateDesignBigCircle",
+		"dv": "<backgroundColorOne>",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._big_circle._primary ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Done State",
+		"dn": "Secondary Stepper Step Background Color Done State Design Big Circle",
+		"n": "secondaryStepperStepBackgroundColorDoneStateDesignBigCircle",
+		"dv": "<backgroundColorTwo>",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._big_circle._secondary ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Done State",
+		"dn": "Tertiary Stepper Step Background Color Done State Design Big Circle",
+		"n": "tertiaryStepperStepBackgroundColorDoneStateDesignBigCircle",
+		"dv": "<backgroundColorThree>",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._big_circle._tertiary ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Done State",
+		"dn": "Quaternary Stepper Step Background Color Done State Design Big Circle",
+		"n": "quaternaryStepperStepBackgroundColorDoneStateDesignBigCircle",
+		"dv": "<backgroundColorFour>",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._big_circle._quaternary ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Done State",
+		"dn": "Quinary Stepper Step Background Color Done State Design Big Circle",
+		"n": "quinaryStepperStepBackgroundColorDoneStateDesignBigCircle",
+		"dv": "<backgroundColorFive>",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._big_circle._quinary ._step._done",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Background Color Future State",
+		"dn": "Primary Stepper Step Background Color Future State Design Big Circle",
+		"n": "primaryStepperStepBackgroundColorFutureStateDesignBigCircle",
+		"dv": "transparent",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._big_circle._primary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Future State",
+		"dn": "Secondary Stepper Step Background Color Future State Design Big Circle",
+		"n": "secondaryStepperStepBackgroundColorFutureStateDesignBigCircle",
+		"dv": "transparent",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._big_circle._secondary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Future State",
+		"dn": "Tertiary Stepper Step Background Color Future State Design Big Circle",
+		"n": "tertiaryStepperStepBackgroundColorFutureStateDesignBigCircle",
+		"dv": "transparent",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._big_circle._tertiary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Future State",
+		"dn": "Quaternary Stepper Step Background Color Future State Design Big Circle",
+		"n": "quaternaryStepperStepBackgroundColorFutureStateDesignBigCircle",
+		"dv": "transparent",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._big_circle._quaternary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Background Color Future State",
+		"dn": "Quinary Stepper Step Background Color Future State Design Big Circle",
+		"n": "quinaryStepperStepBackgroundColorFutureStateDesignBigCircle",
+		"dv": "transparent",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._big_circle._quinary ._step",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Title Color Active",
+		"dn": "Primary Stepper Step Title Color Active Design Default",
+		"n": "primaryStepperStepTitleColorActiveDesignDefault",
+		"dv": "<backgroundColorOne>",
+		"cp": "color",
+		"sel": ".comp.compStepper._default._primary ._title._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color Active",
+		"dn": "Secondary Stepper Step Title Color Active Design Default",
+		"n": "secondaryStepperStepTitleColorActiveDesignDefault",
+		"dv": "<backgroundColorTwo>",
+		"cp": "color",
+		"sel": ".comp.compStepper._default._secondary ._title._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color Active",
+		"dn": "Tertiary Stepper Step Title Color Active Design Default",
+		"n": "tertiaryStepperStepTitleColorActiveDesignDefault",
+		"dv": "<backgroundColorThree>",
+		"cp": "color",
+		"sel": ".comp.compStepper._default._tertiary ._title._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color Active",
+		"dn": "Quaternary Stepper Step Title Color Active Design Default",
+		"n": "quaternaryStepperStepTitleColorActiveDesignDefault",
+		"dv": "<backgroundColorFour>",
+		"cp": "color",
+		"sel": ".comp.compStepper._default._quaternary ._title._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color Active",
+		"dn": "Quinary Stepper Step Title Color Active Design Default",
+		"n": "quinaryStepperStepTitleColorActiveDesignDefault",
+		"dv": "<backgroundColorFive>",
+		"cp": "color",
+		"sel": ".comp.compStepper._default._quinary ._title._active",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Title Color Active",
+		"dn": "Primary Stepper Step Title Color Active Design Big Circle",
+		"n": "primaryStepperStepTitleColorActiveDesignBigCircle",
+		"dv": "<backgroundColorOne>",
+		"cp": "color",
+		"sel": ".comp.compStepper._big_circle._primary ._title._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color Active",
+		"dn": "Secondary Stepper Step Title Color Active Design Big Circle",
+		"n": "secondaryStepperStepTitleColorActiveDesignBigCircle",
+		"dv": "<backgroundColorTwo>",
+		"cp": "color",
+		"sel": ".comp.compStepper._big_circle._secondary ._title._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color Active",
+		"dn": "Tertiary Stepper Step Title Color Active Design Big Circle",
+		"n": "tertiaryStepperStepTitleColorActiveDesignBigCircle",
+		"dv": "<backgroundColorThree>",
+		"cp": "color",
+		"sel": ".comp.compStepper._big_circle._tertiary ._title._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color Active",
+		"dn": "Quaternary Stepper Step Title Color Active Design Big Circle",
+		"n": "quaternaryStepperStepTitleColorActiveDesignBigCircle",
+		"dv": "<backgroundColorFour>",
+		"cp": "color",
+		"sel": ".comp.compStepper._big_circle._quaternary ._title._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color Active",
+		"dn": "Quinary Stepper Step Title Color Active Design Big Circle",
+		"n": "quinaryStepperStepTitleColorActiveDesignBigCircle",
+		"dv": "<backgroundColorFive>",
+		"cp": "color",
+		"sel": ".comp.compStepper._big_circle._quinary ._title._active",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Title Color Done State",
+		"dn": "Primary Stepper Step Title Color Done State Design Default",
+		"n": "primaryStepperStepTitleColorDoneStateDesignDefault",
+		"dv": "<backgroundColorOne>",
+		"cp": "color",
+		"sel": ".comp.compStepper._default._primary ._title._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color Done State",
+		"dn": "Secondary Stepper Step Title Color Done State Design Default",
+		"n": "secondaryStepperStepTitleColorDoneStateDesignDefault",
+		"dv": "<backgroundColorTwo>",
+		"cp": "color",
+		"sel": ".comp.compStepper._default._secondary ._title._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color Done State",
+		"dn": "Tertiary Stepper Step Title Color Done State Design Default",
+		"n": "tertiaryStepperStepTitleColorDoneStateDesignDefault",
+		"dv": "<backgroundColorThree>",
+		"cp": "color",
+		"sel": ".comp.compStepper._default._tertiary ._title._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color Done State",
+		"dn": "Quaternary Stepper Step Title Color Done State Design Default",
+		"n": "quaternaryStepperStepTitleColorDoneStateDesignDefault",
+		"dv": "<backgroundColorFour>",
+		"cp": "color",
+		"sel": ".comp.compStepper._default._quaternary ._title._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color Done State",
+		"dn": "Quinary Stepper Step Title Color Done State Design Default",
+		"n": "quinaryStepperStepTitleColorDoneStateDesignDefault",
+		"dv": "<backgroundColorFive>",
+		"cp": "color",
+		"sel": ".comp.compStepper._default._quinary ._title._done",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Title Color Done State",
+		"dn": "Primary Stepper Step Title Color Done State Design Big Circle",
+		"n": "primaryStepperStepTitleColorDoneStateDesignBigCircle",
+		"dv": "<backgroundColorOne>",
+		"cp": "color",
+		"sel": ".comp.compStepper._big_circle._primary ._title._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color Done State",
+		"dn": "Secondary Stepper Step Title Color Done State Design Big Circle",
+		"n": "secondaryStepperStepTitleColorDoneStateDesignBigCircle",
+		"dv": "<backgroundColorTwo>",
+		"cp": "color",
+		"sel": ".comp.compStepper._big_circle._secondary ._title._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color Done State",
+		"dn": "Tertiary Stepper Step Title Color Done State Design Big Circle",
+		"n": "tertiaryStepperStepTitleColorDoneStateDesignBigCircle",
+		"dv": "<backgroundColorThree>",
+		"cp": "color",
+		"sel": ".comp.compStepper._big_circle._tertiary ._title._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color Done State",
+		"dn": "Quaternary Stepper Step Title Color Done State Design Big Circle",
+		"n": "quaternaryStepperStepTitleColorDoneStateDesignBigCircle",
+		"dv": "<backgroundColorFour>",
+		"cp": "color",
+		"sel": ".comp.compStepper._big_circle._quaternary ._title._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Color Done State",
+		"dn": "Quinary Stepper Step Title Color Done State Design Big Circle",
+		"n": "quinaryStepperStepTitleColorDoneStateDesignBigCircle",
+		"dv": "<backgroundColorFive>",
+		"cp": "color",
+		"sel": ".comp.compStepper._big_circle._quinary ._title._done",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Title Font",
+		"dn": "Stepper Title Font Default Design",
+		"n": "stepperTitleFontDefaultDesign",
+		"dv": "<stepperFont>",
+		"cp": "font",
+		"sel": ".comp.compStepper._default ._title",
+		"np": true
+	},
+	{
+		"gn": "Stepper Title Font",
+		"dn": "Stepper Title Font Big Circle",
+		"n": "stepperTitleFontBigCircle",
+		"dv": "<stepperFont>",
+		"cp": "font",
+		"sel": ".comp.compStepper._big_circle ._title",
+		"np": true
+	},
+	{
+		"gn": "Stepper Title Font",
+		"dn": "Stepper Title Font Rectangle",
+		"n": "stepperTitleFontRectangle",
+		"dv": "<stepperFont>",
+		"cp": "font",
+		"sel": ".comp.compStepper._rectangle_arrow ._title",
+		"np": true
+	},
+	{
+		"gn": "Stepper Title Font",
+		"dn": "Stepper Title Font Pills",
+		"n": "stepperTitleFontPills",
+		"cp": "font",
+		"sel": ".comp.compStepper._pills ._step",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Title Font Active",
+		"dn": "Stepper Title Font Active Default Design",
+		"n": "stepperTitleFontActiveDefaultDesign",
+		"dv": "<stepperFont>",
+		"cp": "font",
+		"sel": ".comp.compStepper._default ._title._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Title Font Active",
+		"dn": "Stepper Title Font Active Big Circle",
+		"n": "stepperTitleFontActiveBigCircle",
+		"dv": "<stepperFont>",
+		"cp": "font",
+		"sel": ".comp.compStepper._big_circle ._title._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Title Font Active",
+		"dn": "Stepper Title Font Active Rectangle",
+		"n": "stepperTitleFontActiveRectangle",
+		"dv": "<stepperFont>",
+		"cp": "font",
+		"sel": ".comp.compStepper._rectangle_arrow ._title._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Title Font Active",
+		"dn": "Stepper Title Font Active Pills",
+		"n": "stepperTitleFontActivePills",
+		"cp": "font",
+		"sel": ".comp.compStepper._pills ._step._active",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Title Font Done",
+		"dn": "Stepper Title Font Done Default Design",
+		"n": "stepperTitleFontDoneDefaultDesign",
+		"dv": "<stepperFont>",
+		"cp": "font",
+		"sel": ".comp.compStepper._default ._title._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Title Font Done",
+		"dn": "Stepper Title Font Done Big Circle",
+		"n": "stepperTitleFontDoneBigCircle",
+		"dv": "<stepperFont>",
+		"cp": "font",
+		"sel": ".comp.compStepper._big_circle ._title._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Title Font Done",
+		"dn": "Stepper Title Font Done Rectangle",
+		"n": "stepperTitleFontDoneRectangle",
+		"dv": "<stepperFont>",
+		"cp": "font",
+		"sel": ".comp.compStepper._rectangle_arrow ._title._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Title Font Done",
+		"dn": "Stepper Title Font Done Pills",
+		"n": "stepperTitleFontDonePills",
+		"cp": "font",
+		"sel": ".comp.compStepper._pills ._step._done",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Font",
+		"dn": "Stepper Step Font Default Design",
+		"n": "stepperStepFontDefaultDesign",
+		"cp": "font",
+		"sel": ".comp.compStepper._default ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Font",
+		"dn": "Stepper Step Font Big Circle",
+		"n": "stepperStepFontBigCircle",
+		"cp": "font",
+		"sel": ".comp.compStepper._big_circle ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Font",
+		"dn": "Stepper Step Font Rectangle",
+		"n": "stepperStepFontRectangle",
+		"cp": "font",
+		"sel": ".comp.compStepper._rectangle_arrow ._step",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Font Active",
+		"dn": "Stepper Step Font Active Default Design",
+		"n": "stepperStepFontActiveDefaultDesign",
+		"cp": "font",
+		"sel": ".comp.compStepper._default ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Font Active",
+		"dn": "Stepper Step Font Active Big Circle",
+		"n": "stepperStepFontActiveBigCircle",
+		"cp": "font",
+		"sel": ".comp.compStepper._big_circle ._step._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Font Active",
+		"dn": "Stepper Step Font Active Rectangle",
+		"n": "stepperStepFontActiveRectangle",
+		"cp": "font",
+		"sel": ".comp.compStepper._rectangle_arrow ._step._active",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Font Done",
+		"dn": "Stepper Step Font Done Default Design",
+		"n": "stepperStepFontDoneDefaultDesign",
+		"cp": "font",
+		"sel": ".comp.compStepper._default ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Font Done",
+		"dn": "Stepper Step Font Done Big Circle",
+		"n": "stepperStepFontDoneBigCircle",
+		"cp": "font",
+		"sel": ".comp.compStepper._big_circle ._step._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Font Done",
+		"dn": "Stepper Step Font Done Rectangle",
+		"n": "stepperStepFontDoneRectangle",
+		"cp": "font",
+		"sel": ".comp.compStepper._rectangle_arrow ._step._done",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Title Background Color Active",
+		"dn": "Stepper Step Title Background Color Active Design DefaultPrimary",
+		"n": "stepperStepTitleBackgroundColorActiveDesignDefaultPrimary",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._default._primary ._listItem._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Background Color Active",
+		"dn": "Stepper Step Title Background Color Active Design DefaultSecondary",
+		"n": "stepperStepTitleBackgroundColorActiveDesignDefaultSecondary",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._default._secondary ._listItem._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Background Color Active",
+		"dn": "Stepper Step Title Background Color Active Design DefaultTertiary",
+		"n": "stepperStepTitleBackgroundColorActiveDesignDefaultTertiary",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._default._tertiary ._listItem._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Background Color Active",
+		"dn": "Stepper Step Title Background Color Active Design DefaultQuaternary",
+		"n": "stepperStepTitleBackgroundColorActiveDesignDefaultQuaternary",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._default._quaternary ._listItem._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Background Color Active",
+		"dn": "Stepper Step Title Background Color Active Design DefaultQuinary",
+		"n": "stepperStepTitleBackgroundColorActiveDesignDefaultQuinary",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._default._quinary ._listItem._active",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Title Background Color Done",
+		"dn": "Stepper Step Title Background Color Done Design DefaultPrimary",
+		"n": "stepperStepTitleBackgroundColorDoneDesignDefaultPrimary",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._default._primary ._listItem._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Background Color Done",
+		"dn": "Stepper Step Title Background Color Done Design DefaultSecondary",
+		"n": "stepperStepTitleBackgroundColorDoneDesignDefaultSecondary",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._default._secondary ._listItem._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Background Color Done",
+		"dn": "Stepper Step Title Background Color Done Design DefaultTertiary",
+		"n": "stepperStepTitleBackgroundColorDoneDesignDefaultTertiary",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._default._tertiary ._listItem._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Background Color Done",
+		"dn": "Stepper Step Title Background Color Done Design DefaultQuaternary",
+		"n": "stepperStepTitleBackgroundColorDoneDesignDefaultQuaternary",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._default._quaternary ._listItem._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Background Color Done",
+		"dn": "Stepper Step Title Background Color Done Design DefaultQuinary",
+		"n": "stepperStepTitleBackgroundColorDoneDesignDefaultQuinary",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._default._quinary ._listItem._done",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Title Border Radius  Active",
+		"dn": "Stepper Step Title Border Radius  Active Design DefaultPrimary",
+		"n": "stepperStepTitleBorderRadiusActiveDesignDefaultPrimary",
+		"cp": "border-radius",
+		"sel": ".comp.compStepper._default._primary ._listItem._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Border Radius  Active",
+		"dn": "Stepper Step Title Border Radius  Active Design DefaultSecondary",
+		"n": "stepperStepTitleBorderRadiusActiveDesignDefaultSecondary",
+		"cp": "border-radius",
+		"sel": ".comp.compStepper._default._secondary ._listItem._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Border Radius  Active",
+		"dn": "Stepper Step Title Border Radius  Active Design DefaultTertiary",
+		"n": "stepperStepTitleBorderRadiusActiveDesignDefaultTertiary",
+		"cp": "border-radius",
+		"sel": ".comp.compStepper._default._tertiary ._listItem._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Border Radius  Active",
+		"dn": "Stepper Step Title Border Radius  Active Design DefaultQuaternary",
+		"n": "stepperStepTitleBorderRadiusActiveDesignDefaultQuaternary",
+		"cp": "border-radius",
+		"sel": ".comp.compStepper._default._quaternary ._listItem._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Border Radius  Active",
+		"dn": "Stepper Step Title Border Radius  Active Design DefaultQuinary",
+		"n": "stepperStepTitleBorderRadiusActiveDesignDefaultQuinary",
+		"cp": "border-radius",
+		"sel": ".comp.compStepper._default._quinary ._listItem._active",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Title Border Radius  Done",
+		"dn": "Stepper Step Title Border Radius  Done Design DefaultPrimary",
+		"n": "stepperStepTitleBorderRadiusDoneDesignDefaultPrimary",
+		"cp": "border-radius",
+		"sel": ".comp.compStepper._default._primary ._listItem._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Border Radius  Done",
+		"dn": "Stepper Step Title Border Radius  Done Design DefaultSecondary",
+		"n": "stepperStepTitleBorderRadiusDoneDesignDefaultSecondary",
+		"cp": "border-radius",
+		"sel": ".comp.compStepper._default._secondary ._listItem._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Border Radius  Done",
+		"dn": "Stepper Step Title Border Radius  Done Design DefaultTertiary",
+		"n": "stepperStepTitleBorderRadiusDoneDesignDefaultTertiary",
+		"cp": "border-radius",
+		"sel": ".comp.compStepper._default._tertiary ._listItem._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Border Radius  Done",
+		"dn": "Stepper Step Title Border Radius  Done Design DefaultQuaternary",
+		"n": "stepperStepTitleBorderRadiusDoneDesignDefaultQuaternary",
+		"cp": "border-radius",
+		"sel": ".comp.compStepper._default._quaternary ._listItem._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Border Radius  Done",
+		"dn": "Stepper Step Title Border Radius  Done Design DefaultQuinary",
+		"n": "stepperStepTitleBorderRadiusDoneDesignDefaultQuinary",
+		"cp": "border-radius",
+		"sel": ".comp.compStepper._default._quinary ._listItem._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Text Top Bottom Line Width",
+		"dn": "Stepper Step Text Top Bottom Line Width Design Default",
+		"n": "stepperStepTextTopBottomLineWidthDesignDefault",
+		"dv": "2px",
+		"cp": "width",
+		"sel": ".comp.compStepper._default._vertical ._listItem ._line",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Text Top Bottom Line Width",
+		"dn": "Stepper Step Text Top Bottom Line Width Design Big Circle",
+		"n": "stepperStepTextTopBottomLineWidthDesignBigCircle",
+		"dv": "2px",
+		"cp": "width",
+		"sel": ".comp.compStepper._big_circle._vertical ._listItem ._line",
+		"np": true
+	}
+]
