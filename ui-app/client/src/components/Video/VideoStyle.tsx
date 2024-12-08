@@ -1,9 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { processStyleDefinition } from '../../util/styleProcessor';
-import { styleDefaults, styleProperties } from './videoStyleProperties';
+import { styleDefaults } from './videoStyleProperties';
+import { StylePropertyDefinition } from '../../types/common';
+import { lazyStylePropertyLoadFunction } from '../util/lazyStylePropertyUtil';
+import { usedComponents } from '../../App/usedComponents';
 
 const PREFIX = '.comp.compVideo';
+const NAME = 'Video';
 export default function VideoStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>([]);
+
+	useEffect(() => {
+		const fn = lazyStylePropertyLoadFunction(NAME, setStyleProperties, styleDefaults);
+
+		if (usedComponents.used(NAME)) fn();
+		else usedComponents.register(NAME, fn);
+
+		return () => usedComponents.deRegister(NAME);
+	}, []);
 	const css =
 		` 
     ${PREFIX} {

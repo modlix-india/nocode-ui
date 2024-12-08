@@ -202,14 +202,14 @@ export enum StyleResolution {
 }
 
 export interface StylePropertyDefinition {
-	name: string;
-	displayName: string;
-	groupName?: string;
-	description?: string;
-	defaultValue?: string;
-	cssProperty?: string;
-	selector?: string;
-	noPrefix?: boolean;
+	n: string;
+	dn: string;
+	gn?: string;
+	de?: string;
+	dv?: string;
+	cp?: string;
+	sel?: string;
+	np?: boolean;
 }
 
 export interface StyleGroupDefinition {
