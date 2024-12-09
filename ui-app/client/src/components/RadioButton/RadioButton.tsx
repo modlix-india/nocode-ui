@@ -266,9 +266,18 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
-					<circle cx="12" cy="12" r="10.5" fill="currentColor" fillOpacity="0.2" />
-					<circle cx="12" cy="12" r="7" fill="currentColor" />
+				<IconHelper viewBox="0 0 30 30">
+					<circle
+						className="_radioButtonArc"
+						cx="15"
+						cy="15"
+						r="13.5"
+						stroke="#EDEAEA"
+						strokeWidth={3}
+						fill="white"
+						fillOpacity={1}
+					/>
+					<circle className="_RadioButtonCircle" cx="15" cy="15" r="10" fill="#F86299" />
 				</IconHelper>
 			),
 		},

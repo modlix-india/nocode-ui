@@ -66,10 +66,13 @@ export function NumberPercentageSize({
 	const options = [...NUMBER_PERCENTAGE_OPTIONS];
 
 	if (extraOptions.length > 0) {
-		const extras = extraOptions.reduce((acc, cur) => {
-			acc[cur.name] = cur;
-			return acc;
-		}, {} as { [key: string]: UnitOption });
+		const extras = extraOptions.reduce(
+			(acc, cur) => {
+				acc[cur.name] = cur;
+				return acc;
+			},
+			{} as { [key: string]: UnitOption },
+		);
 
 		for (let i = 0; i < options.length; i++) {
 			const option = options[i];
@@ -138,10 +141,13 @@ export function PixelSize({
 	extraOptions?: UnitOption[];
 }) {
 	const extras: { [key: string]: UnitOption } = extraOptions.length
-		? extraOptions.reduce((acc, cur) => {
-				acc[cur.name] = cur;
-				return acc;
-		  }, {} as { [key: string]: UnitOption })
+		? extraOptions.reduce(
+				(acc, cur) => {
+					acc[cur.name] = cur;
+					return acc;
+				},
+				{} as { [key: string]: UnitOption },
+			)
 		: {};
 
 	const options: UnitOption[] = [...BEFORE_OPTIONS];
@@ -293,7 +299,7 @@ function GenericRangeSlider({
 
 	let slider = undefined;
 	if (!hideSlider) {
-		const { min, max, step } = unitOptions.find(e => e.name === unit) ?? {};
+		const { min, max, step } = unitOptions.find(e => e.name === unit) ?? unitOptions[0];
 		slider = (
 			<RangeSlider
 				value={Number(inNum)}

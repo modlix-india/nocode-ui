@@ -50,7 +50,7 @@ export function ContextMenu({
 	let right: number | string = 'auto';
 	let bottom: number | string = 'auto';
 
-	if (window.innerHeight - top < 200) {
+	if (window.innerHeight - top < 450) {
 		bottom = window.innerHeight - top;
 		top = 'auto';
 	}

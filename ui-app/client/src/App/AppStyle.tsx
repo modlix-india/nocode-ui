@@ -107,10 +107,7 @@ export default function AppStyle() {
 		._THREECOLUMNSLAYOUT {grid-template-columns: 1fr 1fr 1fr;}
 
 		._ROWCOLUMNLAYOUT {flex-direction: row;}
-	}
-
-
-	` + processStyleDefinition('', styleProperties, styleDefaults, theme);
+	}	` + processStyleDefinition('', styleProperties, styleDefaults, theme);
 
 	const styleComps = new Array();
 

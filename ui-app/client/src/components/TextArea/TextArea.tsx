@@ -269,6 +269,7 @@ function TextArea(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 13,
 	name: 'TextArea',
 	displayName: 'Text Area',
 	description: 'TextArea component',
@@ -298,31 +299,17 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
+				<IconHelper viewBox="0 0 30 24">
+					<rect width="28" height="24" rx="3" fill="#9B82F3" />
 					<path
-						d="M9.80078 9.7002C9.80078 9.14791 10.2485 8.7002 10.8008 8.7002H19.7008V19.7002H9.80078V9.7002Z"
-						fill="currentColor"
-						fillOpacity="0.2"
+						className="_TAFirstLine"
+						d="M25.5013 14.9382C25.5013 14.6896 25.4025 14.4512 25.2268 14.2754C25.1397 14.1881 25.0362 14.1189 24.9223 14.0716C24.8084 14.0243 24.6863 14 24.563 14C24.4397 14 24.3176 14.0243 24.2037 14.0716C24.0898 14.1189 23.9864 14.1881 23.8993 14.2754L18.2743 19.9004C18.0985 20.0765 17.9998 20.3151 18 20.5639C18.0002 20.8127 18.0992 21.0512 18.2752 21.227C18.4512 21.4028 18.6899 21.5014 18.9387 21.5013C19.1875 21.5011 19.426 21.4021 19.6018 21.2261L25.2268 15.601C25.4025 15.4252 25.5013 15.1868 25.5013 14.9382Z"
+						fill="white"
 					/>
-					<rect
-						x="3.94922"
-						y="3.9502"
-						width="16.1"
-						height="16.1"
-						stroke="currentColor"
-						strokeWidth="1.5"
-						fill="transparent"
-					/>
-					<rect x="1" y="1" width="4.4" height="4.4" rx="0.4" fill="currentColor" />
-					<rect x="1" y="18.6001" width="4.4" height="4.4" rx="0.4" fill="currentColor" />
-					<rect x="18.5996" y="1" width="4.4" height="4.4" rx="0.4" fill="currentColor" />
-					<rect
-						x="18.5996"
-						y="18.6001"
-						width="4.4"
-						height="4.4"
-						rx="0.4"
-						fill="currentColor"
+					<path
+						className="_TASecondLine"
+						d="M25.5013 19.6257C25.5013 19.3771 25.4025 19.1387 25.2268 18.9629C25.1397 18.8756 25.0362 18.8064 24.9223 18.7591C24.8084 18.7118 24.6863 18.6875 24.563 18.6875C24.4397 18.6875 24.3176 18.7118 24.2037 18.7591C24.0898 18.8064 23.9864 18.8756 23.8993 18.9629L22.9618 19.9004C22.786 20.0765 22.6873 20.3151 22.6875 20.5639C22.6877 20.8127 22.7867 21.0512 22.9627 21.227C23.1387 21.4028 23.3774 21.5014 23.6262 21.5013C23.875 21.5011 24.1135 21.4021 24.2893 21.2261L25.2268 20.2886C25.4025 20.1127 25.5013 19.8743 25.5013 19.6257Z"
+						fill="white"
 					/>
 				</IconHelper>
 			),

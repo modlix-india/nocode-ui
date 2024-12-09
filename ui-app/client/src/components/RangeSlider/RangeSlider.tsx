@@ -308,7 +308,7 @@ function RangeSlider(props: Readonly<ComponentProps>) {
 		toolTip = (
 			<div className={`_toolTip ${toolTipPosition}`} style={styleProperties?.toolTip ?? {}}>
 				<SubHelperComponent subComponentName="toolTip" definition={definition} />
-				{`${toolTipValueLabelPrefix ?? ''}${toolTipDisplayType == 'value' ? (value ?? '') : labelPercent + '%'}${toolTipValueLabelSuffix ?? ''}`}
+				{`${toolTipValueLabelPrefix ?? ''}${toolTipDisplayType == 'value' ? value ?? '' : labelPercent + '%'}${toolTipValueLabelSuffix ?? ''}`}
 			</div>
 		);
 	}
@@ -729,21 +729,28 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
+				<IconHelper viewBox="0 0 30 12">
 					<rect
-						x="1"
-						y="1"
-						width="22"
-						height="22"
-						rx="2"
-						fillOpacity="0.2"
-						fill="currentColor"
+						className="_RangeSliderTrack"
+						y="3"
+						width="28"
+						height="3"
+						rx="0.5"
+						fill="#EDEAEA"
 					/>
-					<path d="M2 11H22V13H2V11Z" fill="currentColor" />
 					<path
-						d="M12 8C10.3431 8 9 9.34315 9 11C9 12.6569 10.3431 14 12 14C13.6569 14 15 12.6569 15 11C15 9.34315 13.6569 8 12 8ZM12 10C12.5523 10 13 10.4477 13 11C13 11.5523 12.5523 12 12 12C11.4477 12 11 11.5523 11 11C11 10.4477 11.4477 10 12 10Z"
-						transform="translate(0 1)"
-						fill="currentColor"
+						className="_RangeSliderRangeTrack"
+						d="M0 3.5C0 3.22386 0.223858 3 0.5 3H15V6H0.5C0.223858 6 0 5.77614 0 5.5V3.5Z"
+						fill="#A170FF"
+					/>
+					<circle
+						className="_RangeSliderThumbPit"
+						cx="15"
+						cy="4"
+						r="3"
+						fill="white"
+						stroke="#A170FF"
+						strokeWidth="2"
 					/>
 				</IconHelper>
 			),

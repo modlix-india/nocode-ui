@@ -3,7 +3,9 @@ import { processStyleDefinition, StyleResolutionDefinition } from '../../util/st
 import { styleDefaults, styleProperties } from './pageEditorStyleProperties';
 
 const PREFIX = '.comp.compPageEditor';
-export default function GridStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function GridStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const css =
 		`
 		${PREFIX} {
@@ -13,21 +15,24 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction: column;
 			overflow: hidden;
 			position: relative;
+			--comp-item-animation-duration: 1s;
+			--comp-item-animation-duration-short: 2s;
+			--comp-item-animation-duration-mid: 3s;
+			--comp-item-animation-duration-long: 4s;
 		}
 
 		${PREFIX} ._dndGrid {
 			display: flex;
 			flex:1;
-			background-color: #eee;
+			background-color: #F9F9F9;
 			height: 100%;
 		}
 
 		${PREFIX} ._topBarGrid {
 			display: flex;
-			height: 65px;
+			height: 70px;
 			background-color: #fff;
 			border-bottom: 1px solid rgba(0, 0, 0, 0.10);
-			box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.05);
 		}
 
 		${PREFIX} ._topBarGrid._previewMode{
@@ -35,13 +40,12 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._sideBar {
-			width: 48px;
+			width: 70px;
 			background-color: #fff;
 			display: flex;
 			flex-direction: column;
 			align-items: center;
 			padding-top: 10px;
-			background-color: #F8FAFB;
 			border-right: 1px solid rgba(0, 0, 0, 0.10)
 		}
 
@@ -72,7 +76,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._propBar._left{
-			box-shadow: 0px 3px 4px 0px #00000040;
 			border-right: 1px solid rgba(0, 0, 0, 0.10);
 		}
 
@@ -87,6 +90,28 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._propBar._right._isDragged {
 			opacity: 0.6;
+		}
+
+		${PREFIX} ._propBarTabContainer {
+			padding: 14px 15px;
+			width: 100%;
+		}
+
+		${PREFIX} ._propBarTabContainer ._tabContainer {
+			height: 46px;
+		}
+		
+		${PREFIX} ._propBarTabContainer ._tabContainer ._tab {
+			height: 36px;
+		}
+
+		${PREFIX} ._propBarTabContainer svg._iconHelperSVG {
+			color: #99999973;
+		}
+
+		${PREFIX} ._propBarTabContainer ._tab:hover svg._iconHelperSVG ._gradientFill,
+		${PREFIX} ._propBarTabContainer ._tab._selected svg._iconHelperSVG ._gradientFill {
+			fill: url(#greenPropBarGradient);
 		}
 
 		${PREFIX} ._filterBar {
@@ -150,13 +175,13 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._compsTree ._treeNode._selected,
 		${PREFIX} ._compsTree ._treeNode:hover {
-			background-color: #4C7FEE0D;
-			color: #4C7FEE;
+			background-color: #1893E90D;
+			color: #1893E9;
 		}
 
 		${PREFIX} ._compsTree ._treeNode._selected i.fa,
 		${PREFIX} ._compsTree ._treeNode:hover i.fa {
-			color: #4C7FEE;
+			color: #1893E9;
 		}
 
 		${PREFIX} ._compsTree:hover ._treeNodeLevel {
@@ -220,7 +245,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._compsTree ._treeNode:hover ._iconHelperSVG,
 		${PREFIX} ._compsTree ._treeNode._selected ._iconHelperSVG {
-			color: #4C7FEE;
+			color: #1893E9;
 		}
 
 		${PREFIX} ._sideBar ._top {
@@ -241,7 +266,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction: column;
 			padding-bottom: 30px;
 			align-items: center;
-    		gap: 10px;
+    		gap: 15px;
 		}
 
 		${PREFIX} ._topLeftBarGrid {
@@ -251,10 +276,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction: row;
 			align-items: center;
 			padding-left: 15px;
-		}
-
-		${PREFIX} ._logo {
-			height: 20px;
 		}
 
 		${PREFIX} ._topRightBarGrid {
@@ -274,7 +295,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border-radius: 6px;
 			border: none;
 			color: #555;
-			background-color: #F8FAFB;
+			background-color: #F9F9F9;
 			text-transform: uppercase;
 			outline: none;
 			cursor: pointer;
@@ -296,9 +317,9 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} input._peInput, ${PREFIX} ._pvExpressionEditor,
 		${PREFIX} textarea._peInput, select._peInput {
 			color: #000;
-			background-color: #F8FAFB;
+			background-color: #F9F9F9;
 			font-family: Inter;
-			font-weight: 400;
+			font-weight: 500;
 			font-size: 12px;
 			padding: 5px 15px;
 			border-radius: 6px;
@@ -327,16 +348,16 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} textarea._peInput::-webkit-scrollbar-thumb {
-			background-color: #4C7FEE;
+			background-color: #1893E9;
 		}
 
 		${PREFIX} ._overflowContainer {
-			height: calc(100vh - 138px);
+			height: calc(100vh - 173px);
 			overflow: auto;
 		}
 
 		${PREFIX} ._overflowContainer._withCopyButtons {
-			height: calc(100vh - 210px);
+			height: calc(100vh - 228px);
 		}
 
 		${PREFIX} ._withDragProperty {
@@ -344,7 +365,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._addSelector {
-			background: #4C7FEE;
+			background: #1893E9;
 			color: #fff;
 			border:none;
 			border-radius: 6px;
@@ -424,27 +445,34 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			outline: none;
 			height: 100%;
 			flex: 1;
-			background: #F8FAFB;
+			background: transparent;
 			padding-left: 5px;
 		}
 
 		${PREFIX} ._urlInput._peInput {
-			background: #F8FAFB;
+			background: #FFFFFF;
 			border-radius: 4px;
 			position: static;
-			height: 38px;
+			height: 32px;
 			display: flex;
     		align-items: center;
 			padding: 8px;
-			border-radius: 20px;
+			border-radius: 8px;
 			border: none;
 			gap: 8px;
+			box-shadow: 0px 1px 4px 0px #0000001A;
+			margin-left: 10px;
 		}
 
 		${PREFIX} ._urlInput ._urlInputIcon {
 			display: flex;
 			align-items: center;
 			justify-content: center;
+		}
+
+		${PREFIX} ._urlInput ._urlInputIcon svg {
+			color: #99999973;
+			fill: black;
 		}
 
 		${PREFIX} ._urlInput._peInput svg {
@@ -454,7 +482,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._textValueEditorContainer {
 			color: #000;
-			background-color: #F8FAFB;
+			background-color: #F9F9F9;
 			font-family: Inter;
 			font-weight: 400;
 			padding-top: 0px;
@@ -473,20 +501,32 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex: 1;
 		}
 
-		${PREFIX} ._iconMenu._personalize {
-			background: #F8FAFB;
-			border-radius: 10px;
+		${PREFIX} ._sideBar ._iconMenu {
+			background: #F9F9F9;
+			color: #FFF;
+			border: none;
 		}
 
-		${PREFIX} ._iconMenu._arrow i.fa {
-			width: 16px;
+		${PREFIX} ._sideBar ._seperator {
+			width: 36px;
+			height: 1px;
+			background-color: #0000001A;
+		}
+		
+		${PREFIX} ._sideBar ._iconMenu._active,
+		${PREFIX} ._sideBar ._iconMenu:hover {
+			background: #000000;
+			color: #FFF;
 		}
 
-		${PREFIX} ._iconMenu._arrow span.fa-stack {
-			width: 16px;
+		${PREFIX} ._sideBar ._arrow svg._iconHelperSVG {
+			width: 20px;
 		}
-		${PREFIX} ._iconMenu._arrow span.fa-stack .fa-slash {
-			margin-left: -4px;
+
+		${PREFIX} ._iconMenu._compMenuButton {
+			width: 40px;
+			height: 40px;
+			margin-bottom: 10px;
 		}
 		
 
@@ -494,40 +534,36 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._iconMenuOption:hover,
 		${PREFIX} ._popupButtons button:hover {
 			background-color: rgba(77, 127, 238, 0.05);
-    		color: #4C7FEE;
+    		color: #000;
 		}
 
 		${PREFIX} ._iconMenuBody ._iconMenuOption:hover i.fa,
 		${PREFIX} ._iconMenuBody ._iconMenuOption:hover svg._iconHelperSVG,
+		${PREFIX} ._iconMenu._active svg._iconHelperSVG {
+			color: #000;
+		}
 		${PREFIX} ._sideBar ._iconMenu._active  svg._iconHelperSVG,
-		${PREFIX} ._sideBar ._iconMenu:hover  svg._iconHelperSVG,
-		${PREFIX} ._topBarGrid ._iconMenu._active svg._iconHelperSVG,
-		${PREFIX} ._topBarGrid ._iconMenu:hover svg._iconHelperSVG,
-		${PREFIX} ._topBarGrid ._iconMenu._active ._iconMenuOption:hover svg._iconHelperSVG,
-		${PREFIX} ._topBarGrid ._iconMenu:hover ._iconMenuOption:hover svg._iconHelperSVG {
-			color: #4C7FEE;
+		${PREFIX} ._sideBar ._iconMenu:hover  svg._iconHelperSVG {
+			color: #FFFFFF;
 		}
 
-		${PREFIX} ._sideBar ._iconMenu  svg._iconHelperSVG,
-		${PREFIX} ._topBarGrid ._iconMenu  svg._iconHelperSVG,
-		${PREFIX} ._topBarGrid ._iconMenu._active ._iconMenuOption svg._iconHelperSVG,
-		${PREFIX} ._topBarGrid ._iconMenu:hover ._iconMenuOption svg._iconHelperSVG {
-			color: #96A1B4;
-			width: 20px;
-			height: 20px;
+		${PREFIX} ._sideBar ._iconMenu  svg._iconHelperSVG {
+			color: #000000;
+			width: 16px;
+			height: 16px;
 		}
 
 		${PREFIX} i.fa {
-			color: #96A1B4;
+			color: #000000;
 			font-size: 18px;
 		}
 
 		${PREFIX} ._iconMenu:hover i.fa {
-			color: #4C7FEE;
+			color: #1893E9;
 		}
 
 		${PREFIX} ._iconMenu._active i.fa {
-			color: #4C7FEE;
+			color: #1893E9;
 		}
 
 		${PREFIX} ._iconMenuOption, ${PREFIX} ._popupMenuBackground ._popupMenuItem  {
@@ -539,6 +575,9 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			white-space: nowrap;
 			cursor: pointer;
 			margin-bottom: 2px;
+			font-family: Inter;
+			border: none;
+			background-color: transparent;
 		}
 
 		${PREFIX} ._iconMenuBody ._iconMenuOption i.fa,
@@ -578,31 +617,35 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._iconMenu {
 			cursor: pointer;
 			position: relative;
-			min-height: 35px;
+			min-height: 36px;
 			display: flex;
 			align-items: center;
 			justify-content: center;
 			padding: 0 5px;
-			width: 35px;
+			width: 36px;
+			border-radius: 8px;
 		}
 
 		${PREFIX} ._iconMenu:hover ._iconMenuBody{
 			display: block;
 		}
 
+		${PREFIX} ._topBarGrid ._iconMenuBody {
+			top: 100%;
+		}
+
 		${PREFIX} ._iconMenu:hover {
 			background-color: rgba(77, 127, 238, 0.05);
-			border-radius: 5px
+			
 		}
 
 		${PREFIX} ._selectionBar ._iconMenu:hover {
 			background-color: transparent;
-			color: #4C7FEE;
+			color: #1893E9;
 		}
 
 		${PREFIX} ._iconMenu._active {
 			background-color: rgba(77, 127, 238, 0.05);
-			border-radius: 5px
 		}
 
 		${PREFIX} ._buttonBar{
@@ -622,7 +665,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		
 			padding: 7px;
 			cursor: pointer;
-			background: #F8FAFB;
+			background: #F9F9F9;
 			border-radius: 10px;
 			width: 32px;
 			height: 32px;
@@ -637,11 +680,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._buttonBar i.fa.active, ${PREFIX} ._buttonBar i.fa:hover,
 		${PREFIX} ._buttonBar svg.active, ${PREFIX} ._buttonBar svg:hover{
 			background-color: rgba(77, 127, 238, 0.05);
-			color: #4C7FEE;
-		}
-
-		${PREFIX} ._buttonBar i.fa._hasNoData {
-			color: #8E90A44D;
+			color: #1893E9;
 		}
 
 		${PREFIX} ._screenSizes i.fa,
@@ -690,7 +729,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			justify-content: center;
 			align-items: center;
 			cursor: pointer;
-			background: #F8FAFB;		
+			background: #F9F9F9;		
 		}
 
 		${PREFIX} ._propLabel._svgButtons .svgContainer:last-child {
@@ -736,7 +775,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._scaleControlContainer {
 			position: relative;	
-			margin-left: -20px;
+			
 		}
 
 		${PREFIX} ._scaleControlContainer ._scaleControl {
@@ -745,10 +784,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			left: -20px;
 			top: 0;
 			background: #FFFFFF;
-			margin-bottom: 50px;
+			margin-bottom: 15px;
 			border-radius: 4px;
-			padding: 0px 5px;
-			box-shadow: 0px 1px 4px 0px #00000012;
+			padding: 0px 15px;
+			border: 1px solid #0000000D;
 			align-items: stretch;
 		}
 
@@ -756,42 +795,45 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			min-width: 20px;
 			display: flex;
 			cursor: pointer;
-			font-family: Asap;
-			font-size: 16px;
-			font-weight: 600;
+			font-size: 11px;
+			font-weight: 500;
 			padding: 8px 5px;
 			align-items: center;
-			border-radius: 3px;
-			border-bottom-left-radius: 0px;
-			border-bottom-right-radius: 0px;
-			margin: 2px;
+			justify-content: center;
 			border: none;
 			background-color: transparent;
-			border-bottom: 2px solid transparent;
 			margin-bottom: 0px;
 			white-space: nowrap;
+			color: #000000CC;
+		}
+
+		${PREFIX} ._scaleControlContainer ._scaleControl ._control svg {
+			color: #00000066;
 		}
 
 		${PREFIX} ._scaleControlContainer ._scaleControl ._control._text {
 			user-select: none;
+			width: 50px;
+			border-radius: 4px;
+			background-color: #F9F9F9;
+			padding: 0px;
+			margin: 6px 0px;
 		}
 
 		${PREFIX} ._scaleControlContainer ._scaleControl ._control:hover,
 		${PREFIX} ._scaleControlContainer ._scaleControl ._control._active {
 
-			background-color: #F8FAFB;
 		}
 
 		${PREFIX} ._scaleControlContainer ._scaleControl ._control._device:hover,
 		${PREFIX} ._scaleControlContainer ._scaleControl ._control._device._active {
 
-			border-bottom: 2px solid #4D7FEE;
 		}
 
 		${PREFIX} ._microToggle2 {
 			padding: 2px;
 			border-radius: 10px;
-			background-color: #F8FAFB;
+			background-color: #F9F9F9;
 			color: #555;
 			position: relative;
 			font-weight: 400;
@@ -890,7 +932,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border: none;
 			border-radius: 6px;
 			color: #555;
-			background-color: #F8FAFB;
+			background-color: #F9F9F9;
 			cursor: pointer;
 			padding: 5px 8px;
 			display: flex;
@@ -929,22 +971,29 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			background-color: transparent;
 		}
 
+		${PREFIX} ._simpleEditorInputWithIcon,
 		${PREFIX} ._simpleEditorSelect,
 		${PREFIX} ._simpleEditorInput{
+			width: 100%;
 			min-height: 35px;
 			min-width: 35px;
 			font-family: Inter;
+			font-weight: 500;
 			font-size: 12px;
 			border: none;
 			border-radius: 6px;
-			color: #555;
-			background-color: #F8FAFB;
+			color: #000000;
+			background-color: #F9F9F9;
 			cursor: pointer;
 			padding: 5px 15px;
 			flex: 1;
 			outline: none;
 		}
 
+		${PREFIX} ._simpleEditorInputWithIcon {
+			padding-left: 30px;
+		}
+			
 		${PREFIX} ._simpleEditorSelect {
 			text-transform: uppercase;
 			position: relative;
@@ -961,6 +1010,13 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._page_Selector ._simpleEditorSelect {	
 			height: 38px;
 			border-radius: 20px;
+			background: transparent;
+			font-weight: 600;
+			text-transform: none;
+		}
+
+		${PREFIX} ._page_Selector ._simpleEditorSelect path {
+			fill: #000000;
 		}
 		${PREFIX} ._add_page_btn_container {
 			padding: 10px 10px;
@@ -968,14 +1024,17 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._add_page_btn_container button._add_page_btn {
 			border-radius: 2px;
-			background: #4C7FEE;
+			background: #1893E9;
 			color: #fff;
 			width: 100%;
 			height: 30px;
 		}
 
-		${PREFIX} ._main_editor_dropdown { 
-			position: relative;
+		${PREFIX} button._iconOnly {
+			border: none;
+			background: transparent;
+			padding: 0px;
+			margin: 0px;
 		}
 		
 		${PREFIX} ._simpleEditorSelect ._simpleEditorDropdownBody{
@@ -987,23 +1046,10 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			box-shadow: 0px 1px 4px 0px #00000026;
 			border-radius: 6px;
 			margin-top: 4px;
-			
 			max-height: 250px;
 			overflow: auto;
 		}
 
-		${PREFIX} ._main_editor_dropdown ._simpleEditorDropdownBody{
-			position: absolute;
-			min-width: 100%;
-			background-color: #FFF;
-			border: 1px solid rgba(0, 0, 0, 0.10);
-			z-index: 2;
-			box-shadow: 0px 1px 4px 0px #00000026;
-			border-radius: 6px;
-			max-height: 300px;
-			overflow: auto;
-			padding: 10px;
-		}
 
 		${PREFIX} ._simpleEditorSelect ._simpleEditorDropdownBody {
 		}
@@ -1027,42 +1073,34 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._simpleEditorSelect ._simpleEditorDropdownBody ._simpleEditorDropdownOption {
 			padding: 10px;
-			color: rgba(0, 0, 0, 0.4); 
+			color: #0000004D; 
 			border-radius: 4px;
 			white-space: nowrap;
+			font-weight: 400;
+			font-size: 12px;
+			font-family: Inter;
 		}
 
 		${PREFIX} ._simpleEditorSelect ._simpleEditorDropdownBody ._simpleEditorDropdownOption._hovered {
-			background-color: #F8FAFB;
+			background-color: #F9F9F9;
 			border-radius: 4px;
-			font-weight: bold;
-			color: #0085F2;
+			color: #52BD94;
 		}
 
 		${PREFIX} ._simpleEditorSelect ._simpleEditorDropdownBody ._simpleEditorDropdownOption._selected {
-			color: #0085F2;
-		}
-
-		${PREFIX} ._main_editor_dropdown ._simpleEditorDropdownBody ._simpleEditorDropdownOption {
-			height: 25px;
-			padding: 5px 10px 5px 0px;
-			color: rgba(0, 0, 0, 0.4); 
-			border-radius: 4px;
-			white-space: nowrap;
-		}
-
-		${PREFIX} ._main_editor_dropdown ._simpleEditorDropdownBody ._simpleEditorDropdownOption:hover {
-			background-color: #F8FAFB;
-			border-radius: 4px;
-			color: #0085F2;
-			cursor: pointer;
+			color: #52BD94;
+			
 		}
 
 		${PREFIX} ._simpleEditorIcons {
+			// background-color: #F9F9F9;
 			border-radius: 6px;
 			display: flex;
 			align-items: center;
-			flex-direction: row;		
+			flex-direction: row;
+			height: 36px;
+			padding: 2px;
+			gap: 2px;
 		}
 
 		${PREFIX} ._simpleEditorIcons ._eachIcon {
@@ -1071,32 +1109,30 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			justify-content: center;
 			align-items: center;
 			cursor: pointer;
+			border-radius: 6px;
+			flex: 1;
+			background-color: transparent;
+			padding: 0px;
+			border: none;
 		}
 
-		${PREFIX} ._simpleEditorIcons._bground ._eachIcon {
-			background: #F8FAFB;
+		${PREFIX} ._simpleEditorIcons._bground {
+			background-color: #F9F9F9;	
 		}
 
-		${PREFIX} ._simpleEditorIcons ._eachIcon:first-child {
-			border-top-left-radius: 6px;
-			border-bottom-left-radius: 6px;
-		}
-
-		${PREFIX} ._simpleEditorIcons ._eachIcon:last-child {
-			border-top-right-radius: 6px;
-			border-bottom-right-radius: 6px;
-		}
 
 		${PREFIX} ._simpleEditorIcons._bground ._eachIcon:hover,
 		${PREFIX} ._simpleEditorIcons._bground ._eachIcon._active {
-			background: #EEF3FA;
+
+			background-color: #FFF;
+			box-shadow: 0px 2px 4px 0px #0000001A;
 		}
 
 		${PREFIX} ._simpleEditorIcons ._eachIcon svg path,
 		${PREFIX} ._simpleEditorIcons ._eachIcon svg circle,
 		${PREFIX} ._simpleEditorIcons ._eachIcon svg rect,
-		${PREFIX} ._simpleEditorIcons ._eachIcon svg rect {
-			fill: #333333;
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg line {
+			fill: #E3E5EA;
 			stroke: rgba(142, 144, 164, 0.5);
 		}
 
@@ -1105,7 +1141,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._simpleEditorIcons._bground ._eachIcon svg rect,
 		${PREFIX} ._simpleEditorIcons._bground ._eachIcon svg line {
 			fill: #E3E5EA;
-			stroke: rgba(142, 144, 164, 0.5);
+			stroke: #E3E5EA;
 		}
 
 		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg path,
@@ -1115,10 +1151,81 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg path,
 		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg circle,
 		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg rect,
-		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg line {
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg line,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg path._highlight,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg circle._highlight,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg rect._highlight,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg line._highlight {
+			fill: #52BD94;
+			stroke: #52BD94;
+		}
+
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg path._color1,
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg circle._color1,
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg rect._color1,
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg line._color1,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg path._color1,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg circle._color1,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg rect._color1,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg line._color1,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg path._highlight._color1,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg circle._highlight._color1,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg rect._highlight._color1,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg line._highlight._color1 {
 			fill: #3A8BED;
 			stroke: #3A8BED;
 		}
+
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg path._color2,
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg circle._color2,
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg rect._color2,
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg line._color2,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg path._color2,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg circle._color2,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg rect._color2,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg line._color2,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg path._highlight._color2,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg circle._highlight._color2,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg rect._highlight._color2,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg line._highlight._color2 {
+			fill: #007962;
+			stroke: #007962;
+		}
+
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg path._color3,
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg circle._color3,
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg rect._color3,
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg line._color3,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg path._color3,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg circle._color3,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg rect._color3,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg line._color3,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg path._highlight._color3,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg circle._highlight._color3,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg rect._highlight._color3,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg line._highlight._color3 {
+			fill: #2A69B5;
+			stroke: #2A69B5;
+		}
+
+
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg path._lowlight,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg circle._lowlight,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg rect._lowlight,
+		${PREFIX} ._simpleEditorIcons ._eachIcon svg line._lowlight,
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg path._lowlight,
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg circle._lowlight,
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg rect._lowlight,
+		${PREFIX} ._simpleEditorIcons ._eachIcon:hover svg line._lowlight,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg path._lowlight,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg circle._lowlight,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg rect._lowlight,
+		${PREFIX} ._simpleEditorIcons ._eachIcon._active svg line._lowlight {
+			fill: #e3e5ea;
+			stroke: #e3e5ea;
+		}
+
+
 
 		${PREFIX} ._simpleEditorShadow {
 			display: flex;
@@ -1165,7 +1272,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			align-items: center;
 			border: 0.5px solid #DFE1E2;
-			background-color: #F8FAFB;
+			background-color: #F9F9F9;
 			border-radius: 6px;
 			padding: 0px 10px;
 		}
@@ -1258,7 +1365,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			line-height: 14px;
 			padding: 5px 10px;
 			border-radius: 4px 4px 0px 0px;
-			background: #F8FAFB;
+			background: #F9F9F9;
 			height: 30px;
 			display: flex;
 			align-items: center;
@@ -1267,9 +1374,130 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._simpleEditorGroupTitle._gradient {
 			border-radius: 4px 4px 0px 0px;
 			color: #FFF;
-			background: linear-gradient(90deg, rgba(67, 178, 255) 0%, rgba(82, 189, 148) 100%);
+			// background: linear-gradient(90deg, rgba(67, 178, 255) 0%, rgba(82, 189, 148) 100%);
+			background: #52BD94;
 		}
 
+		${PREFIX} ._controls {
+            display: flex;
+            align-items: center;
+        }
+
+        ${PREFIX} ._inputWithIcon {
+            position: relative;
+            display: flex;
+            align-items: center;
+		}
+
+		
+
+		${PREFIX} ._eachBackgroundEditor {
+			width: 100%;
+		}
+			
+		${PREFIX} ._layerControls {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			// gap: 5px;
+		}
+
+		${PREFIX} ._iconDropdown {
+			position: relative;
+			display: inline-block;
+
+		}
+
+		${PREFIX} ._dropdownToggle {
+			font-family: Inter;
+			font-size: 12px;
+			border: none;
+			border-radius: 6px;
+			color: #555;
+			cursor: pointer;
+			padding: 5px 8px;
+			display: flex;
+			justify-content: flex-start;
+			align-items: center;
+			height: 35px;
+			overflow: hidden;
+		}
+
+		${PREFIX} ._dropdownToggle._open {
+			top : 0;
+			border: none;
+			height: 100%;
+			background-color: #fff;
+			outline: none;
+			font-family: Inter;
+			font-size: 12px;
+			color: #555;
+			max-width: 60px;
+			min-width: 20px;
+		}
+
+		${PREFIX} ._dropdownToggle._open + ._dropdownContent {
+			min-width: 100px;
+			max-width: 250px;
+			position: absolute;
+			left: 50%;
+			transform: translateX(-80%);
+			display: block;
+		}
+
+		${PREFIX} ._dropdownContent {
+			position: relative;
+			top: 100%;
+			left: 0;
+			z-index: 2;
+			background-color: white;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			padding: 5px;
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+			max-height: 300px;
+			overflow-y: auto;
+		}
+
+		${PREFIX} ._dropdownContent ._eachIcon {
+			display: block;
+			width: 100%;
+			text-align: left;
+			padding: 8px 12px;
+			border: none;
+			background: none;
+			cursor: pointer;
+		}
+
+		${PREFIX} ._dropdownContent ._eachIcon:hover {
+			background-color: #f5f5f5;
+		}
+
+        ${PREFIX} ._inputIcon {
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+
+		${PREFIX} ._dropdownContent ._eachIcon {
+			display: flex;
+			align-items: center;
+			width: 100%;
+			text-align: left;
+		}
+
+		${PREFIX} ._dropdownContent ._eachIcon svg {
+			margin-right: 5px;
+			justify-content: center;
+		}
+
+		${PREFIX} ._dropdownContent ._iconName {
+			flex-grow: 1;
+			text-align: center;
+		}
+			
 		${PREFIX} ._simpleEditorGroupTitle ._controls {
 			flex: 1;
 			height: 100%;
@@ -1332,7 +1560,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			min-height: 60px;
 			min-width: 60px;
 			border-radius: 50%;
-			background-color: #F8FAFB;
+			background-color: #F9F9F9;
 			position: relative;
 		}
 
@@ -1360,17 +1588,17 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._simpleEditorButtonBar {
-			height: 35px;
+			width: 100%;
+			height: 36px;
 			display: flex;
 			flex-direction: row;
-			padding: 5px;
+			padding: 3px;
 			font-family: Inter;
 			font-size: 12px;
 			gap: 5px;
-			background-color: #F8FAFB;
-			border-radius: 6px;
-			justify-content: center;
-			align-items: center;
+			background-color: #f9f9f9;
+			border-radius: 4px;
+			text-align: center;
 		}
 
 		${PREFIX} ._simpleEditorButtonBar ._simpleButtonBarButton {
@@ -1378,15 +1606,15 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			padding: 0px 10px;
+			padding: 0px 8px;
 			border-radius: 4px;
 			cursor: pointer;
 		}
 
 		${PREFIX} ._simpleEditorButtonBar ._simpleButtonBarButton._selected {
-			background-color: #4C7FEE;
+			background-color: #52BD94;
 			color: #FFF;
-			box-shadow: 0px 1px 3px 0px #0000001A;
+			box-shadow: 0px 1px 2px 0px #0000001A;
 		}
 
 		${PREFIX} ._svgButton {
@@ -1399,7 +1627,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex-direction: row;
 			align-items: center;			
 			padding: 5px 15px;
-			gap: 5px;
+			gap: 10px;
 			width: 100%;
 		}
 
@@ -1425,11 +1653,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			flex: 1.5;
 		}
 
-		${PREFIX} ._combineEditors ._simpleEditorInput,
-		${PREFIX} ._combineEditors ._simpleEditorSelect {
-			padding: 8px;
-			width: 100%;
-		}
+		
 
 		${PREFIX} ._combineEditors ._combineEditors {
 			padding: 0;
@@ -1470,29 +1694,28 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._detailStyleEditor{
-			min-width: 250px;
-			width: 250px;
+			min-width: 300px;
+			width: 300px;
 			min-height: 400px;
 			background-color: #FFF;
 			box-shadow: 0px 2px 15px 0px #0000001A;
 			border: 1px solid #00000029;
 			position: fixed;
 			z-index: 4;
-			border-radius: 4px;
+			border-radius: 9px;
 			display: flex;
 			flex-direction: column;
 		}
 
-		${PREFIX} ._detailStyleEditor._header {
+		${PREFIX} ._detailStyleEditor ._header {
 			display: flex;
 			flex-direction: row;
 			align-items: center;
 			justify-content: space-between;
 			padding: 10px;
 			border-bottom: 1px solid #0000000F;
-			background-color: #F8FAFB;
 			font-family: Inter;
-			font-size: 11px;
+			font-size: 12px;
 			font-weight: 600;
 			line-height: 12px;
 			color: #000000;
@@ -1500,17 +1723,18 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border-top-right-radius: 4px;
 			padding-left: 20px;			
 			cursor: move;
+			height: 44px;
 		}
 
-		${PREFIX} ._detailStyleEditor._header ._title {
+		${PREFIX} ._detailStyleEditor ._header ._title {
 			flex: 1;
 		}
 
-		${PREFIX} ._detailStyleEditor._header ._close {
+		${PREFIX} ._detailStyleEditor ._header ._close {
 			cursor: pointer;
 		}
 
-		${PREFIX} ._detailStyleEditor._editorContent {
+		${PREFIX} ._detailStyleEditor ._editorContent {
 			padding-top: 10px;
 			padding-bottom: 10px;
 			white-space: nowrap;
@@ -1540,7 +1764,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._positionKnob #background{
-			fill: #F8FAFB;
+			fill: #F9F9F9;
 		}
 
 		${PREFIX} ._positionKnob #knob {
@@ -1559,7 +1783,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._positionKnob._top #top,
 		${PREFIX} ._positionKnob._right #right,
 		${PREFIX} ._positionKnob._bottom #bottom {
-			fill: #4C7FEE;
+			fill: #1893E9;
 		}
 
 		${PREFIX} ._spacingEditor._margin {
@@ -1622,7 +1846,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			color: #000000;
 			user-select: none;
 			padding: 5px;
-			background-color: #F8FAFB;
+			background-color: #F9F9F9;
 			border-top-left-radius: 4px;
 			border-top-right-radius: 4px;
 			border-bottom: 1px solid #0000000F;
@@ -1642,7 +1866,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._spacingEditor ._value {
 			height: 25px;
 			min-width: 45px;
-			background: #F8FAFB;
+			background: #F9F9F9;
 			border-radius: 4px;
 			font-family: Inter;
 			font-size: 12px;
@@ -1718,11 +1942,15 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._spacingEditor ._value._right { right: 5px; }
 
 		${PREFIX} ._screenSizes {
-			height: 30px;
+			height: 38px;
 		}
 
 		${PREFIX} ._buttonBar._screenSizes {
-			height: 65px;
+			height: 70px;
+		}
+
+		${PREFIX} ._screenSizes:hover {
+			background-color: #FFFFFF;
 		}
 
 		${PREFIX} ._buttonBar._screenSizes i.fa:hover, ${PREFIX} ._buttonBar._screenSizes svg:hover,
@@ -1779,19 +2007,23 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			align-items: center;
 			justify-content: flex-start;
 			gap: 10px;
-			background-color: #0000000a;
-			border-radius: 4px;
-			font-size: 12px;
-			color: #000000a0;
+			background-color: #FFF;
+			border-radius: 6px;
+			font-family: Inter;
+			font-size: 11px;
+			font-weight: 600;
+			color: #333333E5;
 			cursor: pointer;
     		transform-origin: top left;
+			padding-left: 30px;
+			border: 1.5px solid #3333331A;
 		}
 
 		${PREFIX} ._iframeCenter {
 			display: table-cell;
 			flex: 1;
 			padding: 70px;
-			padding-top: 10px;
+			padding-top: 30px;
 			overflow: auto;
 		}
 
@@ -1887,14 +2119,14 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._dndContentContainer {
 			display: flex;
 			flex: 1;
-			height: calc(100% - 65px);
+			height: calc(100% - 70px);
 		}
 
 		${PREFIX} ._dndIframeContentContainer {
 			display: flex;
 			flex: 1;
 			flex-direction: column;
-			width: calc(100% - 48px);
+			width: calc(100% - 70px);
 			position: relative;
 		}
 
@@ -1903,6 +2135,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			background-color: #fff;
 			height: 29px;
 			padding-left: 28px;
+			z-index: 1;
 		}
 		
 		${PREFIX} ._selectionBar._previewMode {
@@ -1994,7 +2227,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._tabBar {
 			width: 100%;
 			display: flex;
-			background: #F8FAFB;
+			background: #F9F9F9;
 			height: 53px;
 			justify-content: space-around;
 			align-items: center;
@@ -2057,13 +2290,14 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._styleButtonContainer {
-			background: #F8FAFB;
+			background: #F9F9F9;
 			border-radius: 6px;
 			margin-left: 15px;
 			margin-right: 15px;
 			height: 45px;
 			position: relative;		
 			padding: 0px 5px;	
+			margin-bottom: 10px;
 		}
 
 		${PREFIX} ._addArrayItemButton {
@@ -2081,7 +2315,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._propContainer {
 			width: 100%;
-			padding-top: 20px;
 			flex: 1;
 		}
 
@@ -2113,7 +2346,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._pvEditor ._microToggle {
 			width: 20px;
-			background-color: #F8FAFB;
+			background-color: #F9F9F9;
 			height: 10px;
 			border-radius: 2px;
 			position: relative;
@@ -2156,7 +2389,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._propLabel {
-			color: #222222B2;
+			color: #22222299;
 			display: flex;
 			gap: 5px;
 			align-items: center;
@@ -2174,8 +2407,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._propValue._padding {
-			background-color: #F8FAFB77;
-			border: 1px solid #F8FAFB;
+			background-color: #F9F9F977;
+			border: 1px solid #F9F9F9;
 			border-radius: 4px;
 			min-width: 300px;
 		}
@@ -2287,7 +2520,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._propertyGroup {
 			display: flex;
 			flex-direction: column;
-			border-bottom: 1px solid rgba(0,0,0,0.05);
+			border-bottom: 1px solid #0000000D;
 		}
 
 		${PREFIX} ._propertyGroup._opened ._propertyGroupContent {
@@ -2300,8 +2533,8 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._propertyGroupHeader {
 			font-family: Inter;
-			font-size: 13px;			
-			color: #888;
+			font-size: 12px;			
+			color: #333;
 			padding: 14px 15px;
 			cursor: pointer;
 			border-radius: 3px;
@@ -2322,7 +2555,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			flex-direction: row;
 			gap: 15px;
-			font-size: 20px;
+			font-size: 15px;
 			font-weight: 200;
 			justify-content: flex-end;
 			font-family: monospace;
@@ -2749,7 +2982,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX} ._popupContainer._formEditor ._formFieldsAndButtons ._formFieldAndButton {
 			height: 44px;
 			border-radius: 4px;
-			background: #F8FAFB;
+			background: #F9F9F9;
 			margin: 15px;
 			display: flex;
 			justify-content: space-between;
@@ -2969,24 +3202,27 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._popupMenuBackground ._popupMenuContainer._compMenu {
-			left: 48px;
-			top: 64px;
-			height: calc(100% - 68px);
+			left: 70px;
+			top: 70px;
+			height: calc(100% - 70px);
 			width: 0px;
 			overflow: hidden;
 			transition: width 0.5s ease-in-out;
 			display: flex;
 			flex-direction: row;
-			box-shadow: 0px 1px 10px 0px #0000001A;
+			border: none;
+			opacity: 0;
 		}
 
 		${PREFIX} ._popupMenuContainer._compMenu ._left {
 			flex: 100px;
-			border-right: 1px solid #F2F4F8;
+			1px solid rgba(0, 0, 0, 0.10)
 			display: flex;
 			flex-direction: column;
-			padding: 10px 0px 0px 10px;
-			
+			padding: 15px 0px 0px 15px;
+			border-right: 1px solid rgba(0, 0, 0, 0.10);
+			display: flex;
+			gap: 15px;
 		}
 
 		${PREFIX} ._popupMenuContainer._compMenu ._right {
@@ -2997,7 +3233,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._popupMenuContainer._compMenu._compMenuRight {
 			width: 0px;
-			left: 250px;
+			left: 320px;
 			border: none;
 		}
 
@@ -3005,18 +3241,14 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			display: flex;
 			flex-direction: column;
 			width: 320px;
-			border-right: 1px solid #F2F4F8;
+			border-right: 1px solid rgba(0, 0, 0, 0.10);
+			box-shadow: 4px 0px 15px 0px #00000008;
 		}
 
 		${PREFIX} ._popupMenuContainer._compMenu._compMenuRight._sections {
 			padding: 10px;
 			gap: 10px;
 			overflow: auto;
-		}
-
-		${PREFIX} ._popupMenuContainer._compMenu ._compList {
-			flex: 1;
-			overflow-y: auto;
 		}
 
 		${PREFIX} ._popupMenuContainer._compMenu ._compList::-webkit-scrollbar {
@@ -3028,53 +3260,131 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._popupMenuContainer._compMenu._show {
-			width: 200px;
+			width: 250px;
+			opacity: 1;
 		}
 
 		${PREFIX} ._popupMenuContainer._compMenu ._tabContainerContainer {
 			display: flex;
 			flex-direction: row;
-			margin-bottom: 10px;
-			margin-right: 10px;
-			width: 170px;
+			margin-right: 19px;
 		}
 
-		${PREFIX} ._popupMenuContainer._compMenu ._tabContainer {
+		${PREFIX} ._tabContainer {
 			display: flex;
 			flex-direction: row;
 			align-items: center;
-			padding: 10px;
+			padding: 5px;
 			cursor: pointer;
-			background-color: #F8FAFB;
+			background-color: #F9F9F9;
 			border-radius: 6px;
 			gap: 10px;
-			font-size: 12px;
+			font-size: 14px;
 			font-weight: 600;
 			font-family: Inter;
-			padding: 5px 8px;
+			flex: 1;
 		}
 
-		${PREFIX} ._popupMenuContainer._compMenu ._tabContainer ._tab {
+		${PREFIX} ._tabContainer ._tab {
 			padding: 6px 10px;
 			transition: background-color 0.5s;
 			border: none;
 			background: none;
 			font-family: 'Inter';
 			font-weight: 500;
-			font-size: 12px;
+			font-size: 13px;
 			text-transform: none;
-			color: #333333;
+			color: #33333399;
+			flex: 1;
+			height: 30px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
 		}
 
-		${PREFIX} ._popupMenuContainer._compMenu ._tabContainer ._tab:hover {
+		${PREFIX} ._topRightBarGrid ._tabContainer {
+			padding: 3px 9px;
+		}
+
+		${PREFIX} ._topRightBarGrid ._tabContainer ._tab {
+			padding: 4px 10px;
+		}
+
+		${PREFIX} ._tabContainer ._tab._personalize {
+			padding: 5px 5px 7px 5px;
+		}
+
+		${PREFIX} ._tabContainer ._tab:hover {
 			background: none;
 			color: #333333;
+			font-weight: 600;
 		}
 
-		${PREFIX} ._popupMenuContainer._compMenu ._tabContainer ._tab._selected {
-			background-color: #52BD94;
-			color: #fff;
+		${PREFIX} ._tabContainer ._tab._selected {
+			background-color: #FFFFFF;
+			color: #000;
 			border-radius: 4px;
+			box-shadow: 0px 2px 4px 0px #0000001A;
+			font-weight: 600;
+		}
+
+		${PREFIX} ._tab:hover svg ._blackGradient {
+			fill: url(#blackGradient);
+		}
+
+		${PREFIX} ._tab:hover  svg ._yellow2Gradient {
+			fill: url(#yellow2Gradient);
+		}
+
+		${PREFIX} ._tab:hover svg ._yellow1Gradient {
+			fill: url(#yellow1Gradient);
+		}
+
+		${PREFIX} ._tab:hover  svg ._blueGradient {
+			fill: url(#blueGradient);
+		}
+
+		${PREFIX} ._compTemplateSections {
+			margin: 15px;
+		}
+
+		${PREFIX} ._compTemplateSections ._tab {
+			flex: none;
+		}
+
+		${PREFIX} ._tab._inActive svg {
+			color: #99999973;
+		}
+
+		${PREFIX} ._topRightBarGrid svg._iconHelperSVG  {
+			width: 24px;
+			height: 20px
+		}
+
+		${PREFIX} ._topRightBarGrid ._tab._reload svg._iconHelperSVG  {
+			width: 18px;
+		}
+
+		${PREFIX} ._topRightBarGrid button {
+			height: 34px;
+			padding: 0px 18px;
+			font-family: 'Inter';
+			font-size: 13px;
+			line-height: 14px;
+			font-weight: 600;
+			text-transform: none;
+			border-radius: 8px;
+			border: none;
+		}
+
+		${PREFIX} ._topRightBarGrid button._save {
+			background: linear-gradient(180deg, #4BC6FF 0%, #1893E9 100%);
+			color: #fff;
+		}
+
+		${PREFIX} ._topRightBarGrid button._publish {
+			background: linear-gradient(180deg, #7CD9B6 0%, #52BD94 100%);
+			color: #fff;
 		}
 
 		${PREFIX} ._popupMenuContainer._compMenu ._compMenuSearch {
@@ -3085,9 +3395,9 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			border: 1.5px solid transparent;
 			border-radius: 6px;
 			outline: none;
-			width: 170px;
-			background-color: #F8FAFB;
+			background-color: #F9F9F9;
 			color: #52BD94;
+			margin-right: 19px;
 		}
 
 		${PREFIX} ._popupMenuContainer._compMenu ._compMenuSearch:focus {
@@ -3143,7 +3453,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 			overflow: auto;
 			padding-top: 5px;
 			border-left: 1px solid #52BD94;
-			border-radius: 4px;
+			border-radius: 0px 4px 4px 0px;
 			background-color: #fff;
 			box-shadow: 0px 1px 10px 0px #0000001A;
 		}
@@ -3153,43 +3463,1623 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		}
 
 		${PREFIX} ._popupMenuContainer._compMenu ._compList {
-			padding-right: 10px;
-			display: flex;
-			flex-direction: column;
+			padding-right: 15px;
 			gap: 15px;
 			padding-bottom: 10px;
+			flex: 1;
+			overflow-y: auto;
+			display: grid;
+			grid-template-columns: 1fr 1fr;
 		}
 
 		${PREFIX} ._popupMenuContainer._compMenu ._compList ._compMenuItem {
 			padding: 10px;
 			cursor: pointer;
-			background-color: #F8FAFB;
+			background-color: #F9F9F9;
 			border-radius: 6px;
 			color: #333333E5;
 			display: flex;
-			flex-direction: row;
+			flex-direction: column;
 			align-items: center;
+			text-align: center;
 			gap: 10px;
-			font-size: 12px;
+			font-size: 11px;
 			font-weight: 500;
 			font-family: Inter;
-			border: 1.5px solid transparent;
-			width: 170px;
+			border: 0.5px solid transparent;
+			width: 100px;
+			height: 100px;
+			justify-content: center;
 		}
 
 		${PREFIX} ._popupMenuContainer._compMenu ._compList ._compMenuItem:hover,
 		${PREFIX} ._popupMenuContainer._compMenu ._compList ._compMenuItem.active {
-			border: 1.5px solid #4C7FEE;
-			color: #4C7FEE;
-			background-color: #4C7FEE0E;
+			border: 0.5px solid rgba(0, 0, 0, 0.1);			
+		}
+
+		${PREFIX} ._popupMenuContainer._compMenu ._compList ._compMenuItem svg._iconHelperSVG,
+		${PREFIX} ._popupMenuContainer._compMenu ._compList ._compMenuItem i.fa {
+			width: 30px;
+			height: 30px;
+			font-size: 30px;
 		}
 
 		${PREFIX} ._popupMenuContainer._compMenu ._compList ._compMenuItem.active svg,
 		${PREFIX} ._popupMenuContainer._compMenu ._compList ._compMenuItem:hover svg,
 		${PREFIX} ._popupMenuContainer._compMenu ._compList ._compMenuItem.active i.fa,
 		${PREFIX} ._popupMenuContainer._compMenu ._compList ._compMenuItem:hover i.fa {
-			color: #4C7FEE;
+			color: #1893E9;
 		}
+		/* Animations Start here... */
+
+		@keyframes updown {
+			0% { transform: translateY(0); }
+			50% { transform: translateY(5px); }
+			100% { transform: translateY(0); }
+		}
+		
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._updownAnimation {
+			animation: updown var(--comp-item-animation-duration) infinite;
+		}
+
+		@keyframes scaleBottomTop {
+			0% { transform: scaleY(1); }
+			50% { transform: scaleY(0.2); }
+			100% { transform: scaleY(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._scaleBottomTop {
+			animation: scaleBottomTop var(--comp-item-animation-duration-short) infinite;
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._scaleTopBottom {
+			animation: scaleBottomTop var(--comp-item-animation-duration-short) infinite;
+			transform-origin: bottom;
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._dropdownarrow {
+			animation: dropdownarrowAnimation var(--comp-item-animation-duration-mid) infinite;
+			transform-origin: 24.5px 6px;
+		}
+
+		@keyframes dropdownarrowAnimation {
+			0% { transform: rotate(90deg); }
+			100% { transform: rotate(0deg); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._dropdownlines {
+			animation: dropdownlinesScaleAnimation var(--comp-item-animation-duration-mid) infinite;
+		}
+
+		@keyframes dropdownlinesScaleAnimation {
+			0% { transform: translateY(0px); opacity: 1; }
+			50% { transform: translateY(-10px); opacity: 0; }
+			100% { transform: translateY(0px); opacity: 1; }
+		}
+
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._checkboxTick {
+			animation: checkboxTickAnimation var(--comp-item-animation-duration-mid) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes checkboxTickAnimation {
+			0% { transform: scale(1); }
+			33% { transform: scale(1); }
+			66%	{ transform: scale(1.2); }
+			100% { transform: scale(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._checkboxbox {
+			animation: checkboxboxAnimation var(--comp-item-animation-duration-mid) infinite;
+
+		}
+
+		@keyframes checkboxboxAnimation {
+			0% { transform: translate(8px, 8px) ; opacity: 1; }
+			33% { transform: translate(30px, 8px) ; opacity: 1; }
+			66% { transform: translate(30px, 8px) ; opacity: 1; }
+			100% { transform: translate(8px, 8px) ; opacity: 1; }
+		}
+
+		@keyframes carouselframe12Animation {
+			0% { opacity: 1; transform: translate(0px);  }
+			50% { opacity: 0; transform: translate(10px);  }
+			100% { opacity: 1; transform: translate(0px); }
+		}
+		
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._carouselfirstframe,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._carouselsecondframe{
+			animation: carouselframe12Animation var(--comp-item-animation-duration-mid) infinite;
+			z-index: -1;
+		}
+
+		@keyframes carouselframe34Animation {
+			0% { opacity: 1; transform: translate(0px);  }
+		50% { opacity: 0; transform: translate(-10px);  }
+			100% { opacity: 1; transform: translate(0px); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._carouselthirdframe,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._carouselfourthframe{
+			animation: carouselframe34Animation var(--comp-item-animation-duration-mid) infinite;
+			z-index: -1;
+		}
+
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._gallerymainframe{
+			animation: gallerymainAnimation var(--comp-item-animation-duration-mid) infinite;
+		}
+
+		@keyframes gallerymainAnimation {
+			0% { opacity: 0; transform: translateY(-20px); }
+			50% { opacity: 1; transform: translateY(0px); }
+			100% { opacity: 1; transform: translateY(-20px); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._gallerysecondframe{
+			animation: gallerysecondAnimation var(--comp-item-animation-duration-mid) infinite;
+		}
+
+		@keyframes gallerysecondAnimation {
+			0% { opacity: 0; transform: translateY(-15px); }
+			50% { opacity: 1; transform: translateY(0px); }
+			100% { opacity: 1; transform: translateY(-15px); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._galleryfirstframe{
+			animation: galleryfirstAnimation var(--comp-item-animation-duration-mid) infinite;
+		}
+
+		@keyframes galleryfirstAnimation {
+			0% { opacity: 0; transform: translateY(-5px); }
+			50% { opacity: 1; transform: translateY(0px); }
+			100% { opacity: 1; transform: translateY(-5px); }
+		}
+			
+		
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._linkarrowleft,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._linkarrowright,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._linkarrowtail
+		{
+			animation: linkarrowAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes linkarrowAnimation {
+			0% { transform: translate(0px, 0px); }
+			50% { transform: translate(-10px, 10px); }
+			100% { transform: translate(0, 0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._phonenumber {
+			animation: phonenumberAnimation var(--comp-item-animation-duration) infinite;
+			transform-origin: 15px 15px;
+		}	
+
+		@keyframes phonenumberAnimation {
+			0% { transform: rotate(0deg); }
+			20% { transform: rotate(-10deg);}
+			40% { transform: rotate(10deg);}
+			60% { transform:rotate(-10deg);}
+			80% { transform: rotate(10deg);}
+			100% { transform: rotate(0deg); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._calender01bg,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._calender01num {
+			animation: calendervalue1Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes calendervalue1Animation {
+			0% { opacity: 0; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._calender31bg,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._calender31num {
+			animation: calendervalue31Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 11px;
+		}
+
+		@keyframes calendervalue31Animation {
+			0% { opacity: 1; transform: rotateX(0deg); }
+			50% { opacity: 0; transform: rotateX(100deg); }
+		}
+
+
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._iframesymbolstart{
+			animation: iframesymbolstartAnimation var(--comp-item-animation-duration-long) infinite;
+		}	
+
+		@keyframes iframesymbolstartAnimation {
+			0% { transform: translateX(0px); }
+			50% { transform: translateX(-5px); }
+			100% { transform: translateX(0px); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._iframesymbolend{
+			animation: iframesymbolendAnimation var(--comp-item-animation-duration-long) infinite;
+		}	
+
+		@keyframes iframesymbolendAnimation {
+			0% { transform: translateX(0px); }
+			50% { transform: translateX(5px); }
+			100% { transform: translateX(0px); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._greenStepperInitialIcon{
+			animation: greenStepperInitialIconAnimation var(--comp-item-animation-duration-long) infinite;
+			z-index:-1;
+		}
+
+		@keyframes greenStepperInitialIconAnimation {
+			0% { fill: transparent; opacity: 1; }
+			35% { fill: #1CBA79; opacity: 1; }
+			100% { fill: #1CBA79; opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._greenStepperIcon {
+			animation: greenStepperIconAnimation var(--comp-item-animation-duration-long) infinite;
+			z-index:1;
+		}
+
+		@keyframes greenStepperIconAnimation {
+			0% { transform: translateX(0px); }
+			100% { transform: translateX(18px); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._greenFinalStepIcon {
+			animation: greenFinalStepIconAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes greenFinalStepIconAnimation {
+			0% { fill: #E0E0E7; }
+			100% { fill: transparent; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TAFirstLine,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TASecondLine {
+			animation: TALineAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes TALineAnimation {
+			0% { transform: translate(0px, 0px); }
+			50% { transform: translate(-2px, -2px); }
+			100% { transform: translate(0px, 0px); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._iconcircle{
+			animation: iconcircleAnimation var(--comp-item-animation-duration-mid) infinite;
+		}
+
+		@keyframes iconcircleAnimation {
+			0% { transform: translateY(0px); }
+			50% { transform: translateY(-3px); }
+			100% { transform: translateY(0px); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._icontriangle{
+			animation: icontriangleAnimation var(--comp-item-animation-duration-mid) infinite;
+			transform-origin: 7px 17px;
+		}
+
+		@keyframes icontriangleAnimation {
+			0% { transform: rotate(0deg); }
+			33% { transform: rotate(10deg); }
+			66% { transform: rotate(-10deg); }
+			100% { transform: rotate(0deg); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._iconbar {
+			animation: iconbarAnimation var(--comp-item-animation-duration-mid) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes iconbarAnimation {
+			0% { transform: scaleY(1) }
+			50% { transform: scaleY(0.2) }
+			100% { transform: scaleY(1) }
+		}
+
+		
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._videoPlayStart{
+			animation: videoPlayStartAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes videoPlayStartAnimation {
+			0% { opacity: 1; rotate: 0deg; }
+			50% { opacity: 0; rotate: 90deg; }
+			100% { opacity: 1; rotate: 0deg; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._videoPlayPause {
+			animation: videoPlayPauseAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes videoPlayPauseAnimation {
+			0% { opacity: 0; rotate: -90deg; }
+			50% { opacity: 1; rotate: 0deg; }
+			100% { opacity: 0; rotate: -90deg; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._popupInner {
+			animation: popupInnerAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes popupInnerAnimation {
+			0% { transform: translate(0, 0); }
+			50% { transform: translate(11px, 3.5px); }
+			100% { transform: translate(0, 0); }
+		}
+
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._menuInner1,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._menuInner2,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._menuInner3 {
+			animation: menuInnerAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes menuInnerAnimation {
+			0% { transform: rotate(0deg); }
+			50% { transform: rotate(90deg); }
+			100% { transform: rotate(0deg); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._progressBarInner1{
+			animation: progressBarInner1Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes progressBarInner1Animation {
+			0% { opacity: 0.2; }
+			10% { opacity: 0.5; }
+			20% { opacity: 1; }
+			80% { opacity: 1; }	
+			90% { opacity: 0.5; }
+			100% { opacity: 0.2; }
+		}			
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._progressBarInner2{
+			animation: progressBarInner2Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes progressBarInner2Animation {
+			0% { opacity: 0.2; }
+			20% { opacity: 0.5; }
+			30%	{ opacity: 1; }
+			70% { opacity: 1; }
+			80% { opacity: 0.5; }
+			100% { opacity: 0.2; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._progressBarInner3{
+			animation: progressBarInner3Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes progressBarInner3Animation {
+			0% { opacity: 0.2; }
+			30% { opacity: 0.5; }
+			40% { opacity: 1; }
+			60% { opacity: 1; }
+			70% { opacity: 0.5; }
+			100% { opacity: 0.2; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._progressBarInner4 {
+			animation: progressBarInner4Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes progressBarInner4Animation {
+			0% { opacity: 0.2; }
+			40% { opacity: 0.5; }
+			50% { opacity: 1; }
+			60% { opacity: 1; }
+			70% { opacity: 0.5; }
+			100% { opacity: 0.2; }
+		}
+		
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._popOver {
+			animation: popOverAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes popOverAnimation {
+			0% { transform: translate(0, 19) scale(1); opacity: 1; }
+			50% { transform: translate(0, 19) scale(0.5); opacity: 0; }
+			100% { transform: translate(0, 19) scale(1); opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._popOver1 {
+			animation: popOver1Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 30px;
+		}
+
+		@keyframes popOver1Animation {
+			0% { transform: scale(0); opacity: 0; }
+			50% { transform: scale(1); opacity: 1; }
+			100% { transform: scale(0); opacity: 0; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._FileSelectorArrow{
+			animation: FileSelectorArrowAnimation var(--comp-item-animation-duration-mid) infinite;
+		}
+
+		@keyframes FileSelectorArrowAnimation {
+			0% { transform: translateY(5px); }
+			50% { transform: translateY(0px); }
+			100% { transform: translateY(5px); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._fileUploadAT,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._fileUploadAB {
+			animation: updownarrow var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes updownarrow {
+			0% { transform: translateY(20px); }
+			30% { transform: translateY(5px); }
+			65% { transform: translateY(0px); }
+			100% { transform: translateY(20px); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._animatorglobe {
+			animation: animatorglobeAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes animatorglobeAnimation {
+			0% { transform: scale(1); }
+			50% { transform: scale(0.5); }
+			100% { transform: scale(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._animatorGlobeBG1,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._animatorGlobeBG2 {
+			animation: animatorglobeBGAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes animatorglobeBGAnimation {
+			0% { transform: rotateZ(0deg) scale(1); }
+			50% { transform: rotateZ(90deg) scale(0.8); }
+			100% { transform: rotateZ(180deg) scale(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._buttonBar1{
+			animation: buttonBar1Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes buttonBar1Animation {
+			0% { transform: translate(0, 0); }
+			50% { transform: translate(9px, 8px); }
+			100% { transform: translate(0, 0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._buttonBar2 {
+			animation: buttonBar2Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes buttonBar2Animation {
+			0% { transform: translate(0, 0); }
+			50% { transform: translate(5px, 4px); }
+			100% { transform: translate(0, 0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._chartbars {
+			animation: chartbarsAnimation var(--comp-item-animation-duration-mid) infinite;
+			transform-origin: 15px 29px;
+		}
+
+		@keyframes chartbarsAnimation {
+			0% { transform: scaleY(1);  }
+			50% { transform: scaleY(0.4); }
+			100% { transform: scaleY(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._chartbars1 {
+			animation: chartbars1Animation var(--comp-item-animation-duration-mid) infinite;
+			transform-origin: 15px 29px;
+		}
+
+		@keyframes chartbars1Animation {
+			0% { transform: scaleY(1);  }
+			50% { transform: scaleY(1.6); }
+			100% { transform: scaleY(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._colorPickerIcon{
+			animation: colorPickerIconAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes colorPickerIconAnimation {
+			0% { transform: rotateZ(0deg); }
+			50% { transform: rotateZ(90deg); }
+			100% { transform: rotateZ(0deg); }
+		}
+
+		// ${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._circle21{
+		// 	animation: circle21Animation var(--comp-item-animation-duration-long) infinite;
+		// }
+
+		// @keyframes circle21Animation {
+		// 	0% { transform: translate(0, 0); }
+		// 	10% { transform: translate(-2px, 0); }
+		// 	20% { transform: translate(-2px, 17px); }
+		// 	30% { transform: translate(16px, 17px); }
+		// 	40% { transform: translate(16px, 8px); }
+		// 	60% { transform: translate(16px, 8px); }
+		// 	70% { transform: translate(16px, -6px); }
+		// 	80% { transform: translate(-2px, -6px); }
+		// 	100% { transform: translate(-2px, 0); }
+		// }
+
+		// ${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._circle22{
+		// 	animation: circle22Animation var(--comp-item-animation-duration-long) infinite;
+		// }
+
+		// @keyframes circle22Animation {
+		// 	0% { transform: translate(0, 0); }
+		// 	15% { transform: translate(-5px, 0); }
+		// 	25% { transform: translate(-5px, 17px); }
+		// 	35% { transform: translate(12.3px, 17px); }
+		// 	45% { transform: translate(12.3px, 12px); }
+		// 	65% { transform: translate(12.3px, 12px); }
+		// 	75% { transform: translate(12.3px, -6px); }
+		// 	85% { transform: translate(-5px, -6px); }
+		// 	90% { transform: translate(-5px, 0px); }
+		// 	100% { transform: translate(0px, 0); }
+		// }
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._circle11{
+			animation: circle11Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes circle11Animation {
+			0% { transform: translate(0, 0); }
+			5% { transform: translate(-2px, 0); }
+			25% { transform: translate(-2px, 24px); }
+			50% { transform: translate(16px, 24px); }
+			// 50% { transform: translate(16px, 22px); }
+			// 70% { transform: translate(16px, 22px); }
+			75% { transform: translate(16px, 0px); }
+			// 90% { transform: translate(-2px, 0px); }
+			100% { transform: translate(0px, 0); }
+		}
+			
+		// ${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._circle12{
+		// 	animation: circle12Animation var(--comp-item-animation-duration-long) infinite;
+		// }
+
+		// @keyframes circle12Animation {
+		// 	0% { transform: translate(0, 0); }
+		// 	25% { transform: translate(-5px, 0); }
+		// 	35% { transform: translate(-5px, 24px); }
+		// 	45% { transform: translate(12.3px, 24px); }
+		// 	55% { transform: translate(12.3px, 25px); }
+		// 	75% { transform: translate(12.3px, 25px); }
+		// 	85% { transform: translate(12.3px, 0px); }
+		// 	95% { transform: translate(-5px, 0px); }
+		// 	100% { transform: translate(0px, 0); }
+		// }
+			
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._FDEPen{
+			animation: FDEPenAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 10px 30px;
+		}
+
+		@keyframes FDEPenAnimation {
+			0% { transform: translate(-15px, -15px) rotateZ(90deg); }
+			20% { transform: translate(0px, -15px) rotateZ(90deg); }
+			40% { transform: translate(-15px, -7px) rotateZ(90deg); }
+			60% { transform: translate(0px, -7px) rotateZ(90deg); }
+			80% { transform: translate(-15px, -0px) rotateZ(90deg); }
+			100% { transform: translate(0px, 0px) rotateZ(90deg); }
+		}
+
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._JotPen{
+			animation: JotPenAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes JotPenAnimation {
+			0% { transform: translate(0px, 0); }
+			50% { transform: translate(4px, 0); }
+			100% { transform: translate(0px, 0); }
+		}
+
+		
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._Jotline1{
+			animation: Jot1lineAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 6px ;
+		}
+
+		@keyframes Jot1lineAnimation {
+			0% { transform: scaleX(0.5); }
+			50% { transform: scaleX(1); }
+			100% { transform: scaleX(0.5); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextListLine1,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._MTOCLine1{
+			animation: MTOCLine1Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 7px;
+		}
+
+		@keyframes MTOCLine1Animation {
+			0% { transform: scaleX(0); }
+			20% { transform: scaleX(0); }
+			50% { transform: scaleX(1); }
+			80% { transform: scaleX(1); }
+			100% { transform: scaleX(0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextListLine2,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._MTOCLine2{
+			animation: MTOCLine2Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 7px;
+		}
+
+		@keyframes MTOCLine2Animation {
+			0% { transform: scaleX(0); }
+			30% { transform: scaleX(0); }
+			50% { transform: scaleX(1); }
+			70% { transform: scaleX(1); }
+			100% { transform: scaleX(0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextListLine3,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._MTOCLine3{
+			animation: MTOCLine3Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 7px;
+		}
+
+		@keyframes MTOCLine3Animation {
+			0% { transform: scaleX(0); }
+			40% { transform: scaleX(0); }
+			50% { transform: scaleX(1); }
+			60% { transform: scaleX(1); }
+			100% { transform: scaleX(0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._MTOCcircle1,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextListCircle1{
+			animation: MTOCLine1Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 7px;
+		}
+
+		@keyframes MTOCcircle1Animation {
+			0% { transform: scaleX(0); }
+			15% { transform: scaleX(0); }
+			50% { transform: scaleX(1); }
+			85% { transform: scaleX(1); }
+			100% { transform: scaleX(0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._MTOCcircle2,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextListCircle2{
+			animation: MTOCcircle2Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 7px;
+		}
+
+		@keyframes MTOCcircle2Animation {
+			0% { transform: scaleX(0); }
+			25% { transform: scaleX(0); }
+			50% { transform: scaleX(1); }
+			75% { transform: scaleX(1); }
+			100% { transform: scaleX(0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._MTOCcircle3,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextListCircle3{
+			animation: MTOCcircle3Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 7px;
+		}
+
+		@keyframes MTOCcircle3Animation {
+			0% { transform: scaleX(0); }
+			35% { transform: scaleX(0); }
+			50% { transform: scaleX(1); }
+			65% { transform: scaleX(1); }
+			100% { transform: scaleX(0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TEPen{
+			animation: TEPen1Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 10px 10px;
+		}
+
+		@keyframes TEPen1Animation {
+			0% { transform: scale(1) translate(0, 0) rotateZ(0deg);  }
+			50% { transform: scale(0.5) translate(15px, 15px) rotateZ(90deg); }
+			100% { transform: scale(1) translate(0, 0) rotateZ(0deg); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._FVEMailCloser {
+			animation: FVEMailCloserAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes FVEMailCloserAnimation {
+			0% { transform: rotateX(0); }
+			50% { transform: rotateX(-70deg); }
+			100% { transform: rotateX(0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._FVEMailPencil {
+			animation: FVEMailPencilAnimation var(--comp-item-animation-duration-long) infinite;
+		}		
+
+		@keyframes FVEMailPencilAnimation {
+			0% { transform: translateX(0); }
+			50% { transform: translateX(-15px); }
+			100% { transform: translateX(0); }
+			
+		} 
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._PageEditorPen{
+			animation: FPEPenAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 0px 5px;
+		}
+
+		@keyframes FPEPenAnimation {
+			0% { transform: translate(0px, 0px); }
+			25% { transform: translate(5px, -6px); }
+			50% { transform: translate(6px, -2px); }
+			75% { transform: translate(8px, -6px); }
+			100% { transform: translate(10px, 0px); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._FSEPen {
+			animation: FSEPenAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 0px 5px;
+		}
+
+		@keyframes FSEPenAnimation {
+			0% { transform: translate(0px, 0px); }
+			10% { transform: translate(-15px, -20px); }
+			20% { transform: translate(0px, -20px); }
+			30% { transform: translate(-15px, -15px); }
+			40% { transform: translate(0px, -15px); }
+			50% { transform: translate(-15px, -10px); }
+			60% { transform: translate(0px, -10px); }
+			70% { transform: translate(-15px, -5px); }
+			80% { transform: translate(0px, -5px); }
+			90% { transform: translate(-15px, 0px); }
+			100% { transform: translate(0px, 0px); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._IWBCircle {
+			animation: IWBCircleAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes IWBCircleAnimation {
+			0% { transform: translateX(0); }
+			50% { transform: translateX(-8px); }
+			100% { transform: translateX(0); }
+		}
+
+		
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._MarkdownEditorArrowIcon {
+			animation: updown var(--comp-item-animation-duration) infinite;
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._OtpLockBoxClosed{
+			animation: OtpLockBoxClosedAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes OtpLockBoxClosedAnimation {
+			0% { opacity: 0; }
+			39% { opacity: 0; }
+			40% { opacity: 1; }
+			60% { opacity: 1; }
+			61% { opacity: 0; }
+			100% { opacity: 0; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._OtpLockBoxOpen {
+			animation: OtpLockBoxOpenAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes OtpLockBoxOpenAnimation {
+			0% { opacity: 1; }
+			39% { opacity: 1; }
+			40% { opacity: 0; }
+			60% { opacity: 0; }
+			61% { opacity: 1; }
+			100% { opacity: 1; }
+		}
+
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._OtpInputstar1{
+			animation: OtpInputstar1Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes OtpInputstar1Animation {
+			0% { opacity: 0; }
+			19% { opacity: 0; }
+			20% { opacity: 1; }
+			90% { opacity: 1; }
+			91% { opacity: 0; }
+			100% { opacity: 0; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._OtpInputstar2{
+			animation: OtpInputstar2Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes OtpInputstar2Animation {
+			0% { opacity: 0; }
+			29% { opacity: 0; }
+			30% { opacity: 1; }
+			80% { opacity: 1; }
+			81% { opacity: 0; }
+			100% { opacity: 0; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._OtpInputstar3 {
+			animation: OtpInputstar3Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes OtpInputstar3Animation {
+			0% { opacity: 0; }
+			39% { opacity: 0; }
+			40% { opacity: 1; }
+			70% { opacity: 1; }
+			71% { opacity: 0; }
+			100% { opacity: 0; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._OtpInputBox1{
+			animation: OtpInputBox1Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes OtpInputBox1Animation {
+			0% { opacity: 1; }
+			19% { opacity: 1; }
+			20% { opacity: 0; }
+			90% { opacity: 0; }
+			91% { opacity: 1; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._OtpInputBox2{
+			animation: OtpInputBox2Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes OtpInputBox2Animation {
+			0% { opacity: 1; }
+			29% { opacity: 1; }
+			30% { opacity: 0; }
+			80% { opacity: 0; }
+			81% { opacity: 1; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._OtpInputBox3{
+			animation: OtpInputBox3Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes OtpInputBox3Animation {
+			0% { opacity: 1; }
+			39% { opacity: 1; }
+			40% { opacity: 0; }
+			70% { opacity: 0; }
+			71% { opacity: 1; }
+			100% { opacity: 1; }
+		}		
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._pagePen {
+			animation: pageAnimation var(--comp-item-animation-duration-mid) infinite;
+			transform-origin: 5px 30px;
+		}
+
+		@keyframes pageAnimation {
+			0% { transform: translate(0px, 0px) rotate(12deg); }
+			25% { transform: translate(7px, -5px) rotate(-12deg); }
+			50% { transform: translate(15px, 0px) rotate(0deg); }
+			75% { transform: translate(7px, -5px) rotate(12deg); }
+			100% { transform: translate(0px, 0px) rotate(-12deg); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SubPageIcon {
+			animation: subpageAnimation var(--comp-item-animation-duration-mid) infinite;
+			transform-origin: 5px 30px;
+		}
+
+		@keyframes subpageAnimation {
+			0% { transform: rotate(0deg); }
+			25% { transform: rotate(-3deg); }
+			50% { transform: rotate(3deg); }
+			75% { transform: rotate(9deg); }
+			100% { transform: rotate(0deg); }
+		}
+
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._RadioButtonCircle {
+			animation: RBAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes RBAnimation {
+			0% { transform: scale(0); }
+			19% { transform: scale(0); }
+			20% { transform: scale(1); }
+			79% { transform: scale(1); }
+			80% { transform: scale(0); }
+			100% { transform: scale(0); }
+			
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._RangeSliderThumbPit {
+			animation: RangeSliderThumbPitAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes RangeSliderThumbPitAnimation {
+			0% { transform: translateX(0); }
+			50% { transform: translateX(-11px); }
+			100% { transform: translateX(0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._RangeSliderRangeTrack {
+			animation: RangeSliderRangeTrackAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes RangeSliderRangeTrackAnimation {
+			0% { transform: scaleX(1); }
+			50% { transform: scaleX(0.2); }
+			100% { transform: scaleX(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SchemaBuilderPen {
+			animation: SchemaBuilderPenAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes SchemaBuilderPenAnimation {
+			0% { transform: translateY(0); }
+			25% { transform: translateY(-7px); }
+			50% { transform: translateY(-15px); }
+			75% { transform: translateY(-23px); }
+			100% { transform: translateY(0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SchemaBuilderDBTop{
+			animation: SchemaBuilderDBTopAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes SchemaBuilderDBTopAnimation {
+			0% { opacity: 0; }
+			25% { opacity: 0; }
+			50% { opacity: 0; }
+			75% { opacity: 0; }
+			95% { opacity: 1; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SchemaBuilderDB1 {
+			animation: SchemaBuilderDB1Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes SchemaBuilderDB1Animation {
+			0% { opacity: 0; }
+			25% { opacity: 0; }
+			50% { opacity: 0; }
+			75% { opacity: 1; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SchemaBuilderDB2 {
+			animation: SchemaBuilderDB2Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes SchemaBuilderDB2Animation {
+			0% { opacity: 0; }
+			25% { opacity: 0; }
+			50% { opacity: 1; }
+			75% { opacity: 1; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SchemaBuilderDB3 {
+			animation: SchemaBuilderDB3Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes SchemaBuilderDB3Animation {
+			0% { opacity: 0; }
+			25% { opacity: 1; }
+			50% { opacity: 1; }
+			75% { opacity: 1; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SchemaFormPen {
+			animation: SchemaFormPenAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 3px ;
+		}
+
+		@keyframes SchemaFormPenAnimation {
+			0% { transform: translateX(-8px); }
+			25% { transform: translateX(-4px); }
+			50% { transform: translateX(0); }
+			75% { transform: translateX(-4px); }
+			100% { transform: translateX(-8px); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SchemaFormDot1{
+			animation: SchemaFormDot1Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes SchemaFormDot1Animation {
+			0% { opacity: 0; }
+			25% { opacity: 1; }
+			50% { opacity: 1; }
+			75% { opacity: 1; }
+			100% { opacity: 0; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SchemaFormDot2{
+			animation: SchemaFormDot2Animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes SchemaFormDot2Animation {
+			0% { opacity: 0; }
+			25% { opacity: 0; }
+			50% { opacity: 1; }
+			75% { opacity: 0; }
+			100% { opacity: 0; }
+		}
+
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SectionGridBlock1{
+			animation: SectionGridBlock1Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes SectionGridBlock1Animation {
+			0% { transform: translate(0, 0); }
+			50% { transform: translate(-7px, -7px); }
+			100% { transform: translate(0, 0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SectionGridBlock2{
+			animation: SectionGridBlock2Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes SectionGridBlock2Animation {
+			0% { transform: translate(0, 0); }
+			50% { transform: translate(7px, -7px); }
+			100% { transform: translate(0, 0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SectionGridBlock3{
+			animation: SectionGridBlock3Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes SectionGridBlock3Animation {
+			0% { transform: translate(0, 0); }
+			50% { transform: translate(-7px, 7px); }
+			100% { transform: translate(0, 0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SectionGridBlock4{
+			animation: SectionGridBlock4Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes SectionGridBlock4Animation {
+			0% { transform: translate(0, 0); }
+			50% { transform: translate(7px, 7px); }
+			100% { transform: translate(0, 0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SubPageBlock1{
+			animation: SubPageBlock1Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes SubPageBlock1Animation {
+			0% { opacity: 0; transform: scale(0); }
+			25% { opacity: 1; transform: scale(1.2); }
+			50% { opacity: 1; transform: scale(1); }
+			75% { opacity: 1; transform: scale(1); }
+			100% { opacity: 1; transform: scale(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SubPageBlock2 {
+			animation: SubPageBlock2Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes SubPageBlock2Animation {
+			0% { opacity: 0; transform: scale(0); }
+			25% { opacity: 0; transform: scale(0); }
+			50% { opacity: 1; transform: scale(1.2); }
+			75% { opacity: 1; transform: scale(1); }
+			100% { opacity: 1; transform: scale(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SubPageBlock3{
+			animation: SubPageBlock3Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes SubPageBlock3Animation {
+			0% { opacity: 0; transform: scale(0); }
+			25% { opacity: 0; transform: scale(0); }
+			50% { opacity: 0; transform: scale(0); }
+			75% { opacity: 1; transform: scale(1.2); }
+			100% { opacity: 1; transform: scale(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._SubPageMainFrame{
+			animation: SubPageBlock4Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}	
+
+		@keyframes SubPageBlock4Animation {
+			0% { opacity: 0; transform: scale(0); }
+			25% { opacity: 0; transform: scale(0); }
+			50% { opacity: 0; transform: scale(0); }
+			75% { opacity: 0; transform: scale(0);}
+			85% { opacity: 1; transform: scale(1.2); }
+			100% { opacity: 1; transform: scale(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._tableline{
+			animation: TableLineAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 3px 15px;
+		}	
+
+		@keyframes TableLineAnimation {
+			0% { transform: scaleX(1); }
+			25% { transform: scaleX(0.3); }
+			50% { transform: scaleX(1); }
+			75% { transform: scaleX(0.3); }
+			100% { transform: scaleX(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._tablelineY{
+			animation: TableLineYAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 3px 10px;
+		}	
+
+		@keyframes TableLineYAnimation {
+			0% { transform: scaleY(1); }
+			25% { transform: scaleY(0.3); }
+			50% { transform: scaleY(1); }
+			75% { transform: scaleY(0.3); }
+			100% { transform: scaleY(1); }
+		}
+			
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._tablePG{
+			animation: TablePGAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes TablePGAnimation {
+			0% { opacity: 1; }
+			50% { opacity: 0; }
+			100% { opacity: 1; }
+		}
+
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._tableDCSpinner{
+			animation: TableDCSpinnerAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 19.5px 19px;
+		}
+
+		@keyframes TableDCSpinnerAnimation {
+			0% { transform: rotate(0deg); }
+			50% { transform: rotate(180deg); }
+			100% { transform: rotate(360deg); }
+		}
+
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._tabs{
+			animation: TabsAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 13px 17px;
+		}
+
+		@keyframes TabsAnimation {
+			0% { transform: rotate(0deg); }
+			50% { transform: rotate(90deg); }
+			100% { transform: rotate(0deg); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._tagIcon2{
+			animation: tagIconAnimation2 var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes tagIconAnimation2{
+			0% { transform: rotate(0deg); }
+			25% { transform: rotate(-15deg); }
+			50% { transform: rotate(-20deg); }
+			75% { transform: rotate(-15deg); }
+			100% { transform: rotate(0deg); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._tagIcon3 {
+			animation: tagIconAnimation3 var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes tagIconAnimation3{
+			0% { transform: rotate(0deg); }
+			25% { transform: rotate(-25deg); }
+			50% { transform: rotate(-50deg); }
+			75% { transform: rotate(-25deg); }
+			100% { transform: rotate(0deg); }
+		}
+		
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TEIcon {
+			animation: templateEditorAnimation var(--comp-item-animation-duration-mid) infinite;
+		}
+
+		@keyframes templateEditorAnimation {
+			0% { transform: translateX(0px); }
+			50% { transform: translateX(14px); }
+			100% { transform: translateX(0px); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextEditorLine3,
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextEditorLine1 {
+			animation: TextEditorBubbleLineAnimation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 23px ;
+		}
+
+		@keyframes TextEditorBubbleLineAnimation {
+			0% { transform: scaleX(1); }
+			50% { transform: scaleX(1.6); }
+			100% { transform: scaleX(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._TextEditorLine2 {
+			animation: TextEditorLine2Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 23px ;
+		}
+
+		@keyframes TextEditorLine2Animation {
+			0% { transform: scaleX(1); }
+			50% { transform: scaleX(0.2); }
+			100% { transform: scaleX(1); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._timer1Number{
+			animation: timerNumber1Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes timerNumber1Animation {
+			0% { opacity: 0; transform: rotate(-180deg); }
+			30% { opacity: 0; transform: rotate(-180deg); }
+			31% { opacity: 1; transform: rotate(0deg); }
+			40% { opacity: 1; transform: rotate(0deg); }
+			41% { opacity: 1; transform: rotate(0deg); }
+			59% { opacity: 1; transform: rotate(0deg); }
+			60% { opacity: 1; transform: rotate(0deg); }
+			70% { opacity: 1; transform: rotate(0deg); }
+			71% { opacity: 0; transform: rotate(180deg); }
+			100% { opacity: 0; transform: rotate(180deg); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._timer2Number {
+			animation: timerNumber2Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes timerNumber2Animation {
+			0% { opacity: 0; transform: rotate(-180deg); }
+			20% { opacity: 0; transform: rotate(-180deg); }
+			21% { opacity: 1; transform: rotate(0deg); }
+			30% { opacity: 1; transform: rotate(0deg); }
+			31% { opacity: 0; transform: rotate(180deg); }
+			69% { opacity: 0; transform: rotate(180deg); }
+			70% { opacity: 1; transform: rotate(360deg); }
+			80% { opacity: 1; transform: rotate(360deg); }
+			81% { opacity: 0; transform: rotate(540deg); }
+			100% { opacity: 0; transform: rotate(540deg); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._timer3Number{
+			animation: timerNumber3Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes timerNumber3Animation {
+			0% { opacity: 0; transform: rotate(-180deg); }
+			10% { opacity: 0; transform: rotate(-180deg); }
+			11% { opacity: 1; transform: rotate(0deg); }
+			20% { opacity: 1; transform: rotate(0deg); }
+			21% { opacity: 0; transform: rotate(180deg); }
+			79% { opacity: 0; transform: rotate(180deg); }
+			80% { opacity: 1; transform: rotate(360deg); }
+			90% { opacity: 1; transform: rotate(360deg); }
+			91% { opacity: 0; transform: rotate(540deg); }
+			100% { opacity: 0; transform: rotate(540deg); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._timer4Number {
+			animation: timerNumber4Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes timerNumber4Animation {
+			0% { opacity: 1; transform: rotate(0deg); }
+			10% { opacity: 1; transform: rotate(0deg); }
+			11% { opacity: 0; transform: rotate(180deg); }
+			20% { opacity: 0; transform: rotate(180deg); }
+			40% { opacity: 0; transform: rotate(180deg); }
+			50% { opacity: 0; transform: rotate(180deg); }
+			60% { opacity: 0; transform: rotate(180deg); }
+			89% { opacity: 0; transform: rotate(180deg); }
+			90% { opacity: 1; transform: rotate(360deg); }
+			100% { opacity: 1; transform: rotate(360deg); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._timer4Arc{
+			animation: timerArc4Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes timerArc4Animation {
+			0% { transform: rotate(0deg); }
+			10% { transform: rotate(90deg); }
+			20% { transform: rotate(180deg); }
+			30% { transform: rotate(270deg); }
+			40% { transform: rotate(360deg); }
+			50% { transform: rotate(360deg); }
+			60% { transform: rotate(360deg); }
+			70% { transform: rotate(270deg); }
+			80% { transform: rotate(180deg); }
+			90% { transform: rotate(90deg); }
+			100% { transform: rotate(0deg); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._timer3Arc{
+			animation: timerArc3Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes timerArc3Animation {
+			0% { opacity: 0; }
+			10% { opacity: 1; }
+			20% { opacity: 1; }
+			30% { opacity: 1; }
+			40% { opacity: 1; }
+			60% { opacity: 1; }
+			70% { opacity: 1; }
+			80% { opacity: 1; }
+			90% { opacity: 1; }
+			100% { opacity: 0; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._timer2Arc{
+			animation: timerArc2Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes timerArc2Animation {
+			0% { opacity: 0; }
+			10% { opacity: 0; }
+			20% { opacity: 1; }
+			30% { opacity: 1; }
+			40% { opacity: 1; }
+			60% { opacity: 1; }
+			70% { opacity: 1; }
+			80% { opacity: 1; }
+			90% { opacity: 0; }
+			100% { opacity: 0; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._timer1Arc{
+			animation: timerArc1Animation var(--comp-item-animation-duration-long) infinite;
+			transform-origin: 15px 15px;
+		}
+
+		@keyframes timerArc1Animation {
+			0% { opacity: 0; }
+			10% { opacity: 0; }
+			20% { opacity: 0; }
+			30% { opacity: 1; }
+			40% { opacity: 1; }
+			60% { opacity: 1; }
+			70% { opacity: 1; }
+			80% { opacity: 0; }
+			90% { opacity: 0; }
+			100% { opacity: 0; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._toggleButtonKnob {
+			animation: toggleButtonKnobAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes toggleButtonKnobAnimation {
+			0% { transform: translateX(0); }
+			50% { transform: translateX(-15px); }
+			100% { transform: translateX(0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._toggleButtonTrack {
+			animation: toggleButtonTrackAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes toggleButtonTrackAnimation {
+			0% { fill: #02B694; }
+			50% { fill: #EDEAEA; }
+			100% { fill: #02B694; }
+		}
+
+		
+		@keyframes opacityAnimation {
+			0% { opacity: 0; }
+			50% { opacity: 1; }
+			100% { opacity: 0; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._opacityAnimation {
+			animation: opacityAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._imageCircle {
+			animation: imageCircleAnimation var(--comp-item-animation-duration-short) infinite;
+			transform-origin: 15px 17px;
+		}
+
+		@keyframes imageCircleAnimation {
+			0% { transform: translate(0px, 0px); }
+			50% { transform: translate(0px, 4px); }
+			100% { transform: translate(0px, 0px); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._IamgeAnimation {
+			animation: ImageAnimation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes ImageAnimation {
+			0% { opacity: 0.5; }
+			50% { opacity: 1; }
+			100% { opacity: 0.5; }
+		}
+
+		@keyframes leftrightAnimation {
+			0% { transform: translateX(0); }
+			50% { transform: translateX(5px); }
+			100% { transform: translateX(0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._leftrightAnimation {
+			animation: leftrightAnimation var(--comp-item-animation-duration) infinite;
+		}
+
+		@keyframes updownleftrightAnimation {
+			0% { transform: translate(0 0); }
+			50% { transform: translate(5px, 5px); }
+			100% { transform: translate(0, 0); }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG ._updownAnimation._leftrightAnimation {
+			animation: updownleftrightAnimation var(--comp-item-animation-duration) infinite;
+		}
+		
+		@keyframes text_box_caret_animation {
+			0% { opacity: 0; }
+			25% { opacity: 1; }
+			35% { opacity: 0; transform: translateX(0%);}
+			55% { opacity: 1; transform: translateX(65%); }
+			99% { opacity: 0; transform: translateX(65%); }
+		}
+
+		@keyframes text_box_text_animation {
+			0% { opacity: 0; }
+			25% { opacity: 0; }
+			40% { opacity: 1; }
+			100% { opacity: 1; }
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG #_text_box_caret {
+			animation: text_box_caret_animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		${PREFIX} ._compMenuItem:hover svg._iconHelperSVG #_text_box_text {
+			animation: text_box_text_animation var(--comp-item-animation-duration-long) infinite;
+		}
+
+		@keyframes array_repeater_rect1_animation {
+			0% { opacity: 0}
+			9% { opacity: 0}
+			10% { opacity: 1}
+			100% { opacity: 1}
+		}
+
+		@keyframes array_repeater_rect2_animation {
+			0% { opacity: 0}
+			19% { opacity: 0}
+			20% { opacity: 1}
+			100% { opacity: 1}
+		}
+
+		@keyframes array_repeater_rect3_animation {
+			0% { opacity: 0}
+			29% { opacity: 0}
+			30% { opacity: 1}
+			100% { opacity: 1}
+		}
+
+		@keyframes array_repeater_rect4_animation {
+			0% { opacity: 0}
+			39% { opacity: 0}
+			40% { opacity: 1}	
+			100% { opacity: 1}
+		}
+
+		@keyframes array_repeater_rect5_animation {
+			0% { opacity: 0}
+			49% { opacity: 0}
+			50% { opacity: 1}	
+			100% { opacity: 1}
+			}
+
+		@keyframes array_repeater_rect6_animation {
+			0% { opacity: 0}
+			59% { opacity: 0}
+			60% { opacity: 1}	
+			100% { opacity: 1}
+		}
+
+		@keyframes array_repeater_rect7_animation {
+			0% { opacity: 0}
+			69% { opacity: 0} 
+			70% { opacity: 1}	
+			100% { opacity: 1}
+		}
+
+		@keyframes array_repeater_rect8_animation {
+			0% { opacity: 0}
+			79% { opacity: 0}
+			80% { opacity: 1}	
+			100% { opacity: 1}
+		}		
+
+		${PREFIX} ._compMenuItem:hover #_arrayRepeaterIcon #_rect1 {
+			animation: array_repeater_rect1_animation var(--comp-item-animation-duration-short) infinite;
+		}
+
+		${PREFIX} ._compMenuItem:hover #_arrayRepeaterIcon #_rect2 {
+			animation: array_repeater_rect2_animation var(--comp-item-animation-duration-short) infinite;
+		}
+
+		${PREFIX} ._compMenuItem:hover #_arrayRepeaterIcon #_rect3 {
+			animation: array_repeater_rect3_animation var(--comp-item-animation-duration-short) infinite;
+		}
+
+		${PREFIX} ._compMenuItem:hover #_arrayRepeaterIcon #_rect4 {
+			animation: array_repeater_rect4_animation var(--comp-item-animation-duration-short) infinite;
+		}
+
+		${PREFIX} ._compMenuItem:hover #_arrayRepeaterIcon #_rect5 {
+			animation: array_repeater_rect5_animation var(--comp-item-animation-duration-short) infinite;
+		}
+
+		${PREFIX} ._compMenuItem:hover #_arrayRepeaterIcon #_rect6 {
+			animation: array_repeater_rect6_animation var(--comp-item-animation-duration-short) infinite;
+		}
+
+		${PREFIX} ._compMenuItem:hover #_arrayRepeaterIcon #_rect7 {
+			animation: array_repeater_rect7_animation var(--comp-item-animation-duration-short) infinite;
+		}
+
+		${PREFIX} ._compMenuItem:hover #_arrayRepeaterIcon #_rect8 {
+			animation: array_repeater_rect8_animation var(--comp-item-animation-duration-short) infinite;
+		}
+
+		/* Animations End here... */
 
 		${PREFIX} ._popupMenuBackground ._contextMenu ._popupMenuItem:hover {
 			background: #00000005;
@@ -3221,10 +5111,6 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 
 		${PREFIX} ._popupMenuBackground ._popupMenuContainer ._compTemplates iframe{
 			flex: 1;
-		}
-
-		${PREFIX} ._popupMenuBackground ._popupMenuContainer ._compTemplateSections {
-			border-bottom: 0.5px dashed rgba(0, 0, 0, 0.3);
 		}
 
 		${PREFIX} ._popupMenuBackground ._popupMenuContainer ._compTemplateSections ._eachTemplateSection {
@@ -3281,7 +5167,7 @@ export default function GridStyle({ theme }: { theme: Map<string, Map<string, st
 		${PREFIX}._dark button, ${PREFIX} ._dark select._peSelect, ${PREFIX} ._dark input._peInput[type='text'],
 		${PREFIX}._dark ._pvExpressionEditor, ${PREFIX} ._popupBackground._dark button,
 		${PREFIX}._dark input._peInput[type='number'] {
-			color: #aaa;
+			color: #000;
 			background-color: #222;
 			border: 1px solid #333;
 		}

@@ -421,35 +421,18 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 22 22">
-					<g transform="translate(-1234.51 -629.334)">
-						<rect
-							width="22"
-							height="22"
-							rx="1"
-							transform="translate(1234.51 629.334)"
-							fill="currentColor"
-							fillOpacity="0.2"
-						/>
-						<g transform="translate(0 2.529)">
-							<path
-								d="M.991-10.021H5.065l1.572,6.1,1.565-6.1h4.061V0H9.734V-7.643L7.772,0H5.482L3.527-7.643V0H.991Z"
-								transform="translate(1235.736 643.127)"
-								fill="currentColor"
-							/>
-							<path
-								d="M3,0,6,4H0Z"
-								transform="translate(1255 644) rotate(180)"
-								fill="currentColor"
-							/>
-							<rect
-								width="2"
-								height="7"
-								transform="translate(1251 633)"
-								fill="currentColor"
-							/>
-						</g>
-					</g>
+				<IconHelper viewBox="0 0 30 30">
+					<rect width="30" height="30" rx="4" fill="#1679AB" />
+					<path
+						className="_MarkdownEditorMIcon"
+						d="M13.5801 20.8509H16.7596V10H13.5697L10.3798 13.9887L7.18991 10H4V20.8509H7.20028V14.6267L10.3902 18.6153L13.5801 14.6267V20.8509Z"
+						fill="white"
+					/>
+					<path
+						className="_MarkdownEditorArrowIcon"
+						d="M18 15.1421L22.5375 20.4366L27.07 15.1421H24.0467V10H21.0233V15.1421H18Z"
+						fill="white"
+					/>
 				</IconHelper>
 			),
 		},

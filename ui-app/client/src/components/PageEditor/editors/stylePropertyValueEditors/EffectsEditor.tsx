@@ -86,7 +86,7 @@ export function EffectsEditor(props: StyleEditorsProps) {
 					storePaths={storePaths}
 					pageOperations={pageOperations}
 				/>
-				<div className="_simpleLabel _withPadding">Mix Blend Mode : </div>
+				<div className="_simpleLabel _withPadding">Mix Blend Mode</div>
 				<EachSimpleEditor
 					selectedComponentsList={selectedComponentsList}
 					defPath={defPath}
@@ -126,7 +126,7 @@ export function EffectsEditor(props: StyleEditorsProps) {
 					}}
 				/>
 
-				<div className="_simpleLabel _withPadding">Filter : </div>
+				<div className="_simpleLabel _withPadding">Filter</div>
 				<ManyFunctionsEditor
 					newFunctionTitle="New Filter Function"
 					value={filterValue}
@@ -179,7 +179,7 @@ export function EffectsEditor(props: StyleEditorsProps) {
 				storePaths={storePaths}
 				pageOperations={pageOperations}
 			/>
-			<div className="_simpleLabel _withPadding">Cursor : </div>
+			<div className="_simpleLabel _withPadding">Cursor</div>
 			<EachSimpleEditor
 				selectedComponentsList={selectedComponentsList}
 				defPath={defPath}
@@ -238,7 +238,7 @@ export function EffectsEditor(props: StyleEditorsProps) {
 					],
 				}}
 			/>
-			<div className="_simpleLabel _withPadding">Transform : </div>
+			<div className="_simpleLabel _withPadding">Transform</div>
 			<ManyFunctionsEditor
 				newFunctionTitle="New Transform Function"
 				value={transform}
@@ -256,7 +256,7 @@ export function EffectsEditor(props: StyleEditorsProps) {
 					})
 				}
 			/>
-			<div className="_simpleLabel _withPadding">Box Shadow : </div>
+			<div className="_simpleLabel _withPadding">Box Shadow</div>
 			<EachSimpleEditor
 				selectedComponentsList={selectedComponentsList}
 				defPath={defPath}
@@ -1121,7 +1121,7 @@ function TransformEditor({
 
 	return (
 		<>
-			<div className="_simpleLabel _withPadding">Transform : </div>
+			<div className="_simpleLabel _withPadding">Transform</div>
 			<div className="_combineEditors _spaceBetween">
 				<div className="_combineEditors">
 					<svg
@@ -1206,7 +1206,7 @@ function TransformEditor({
 					editorDef={{
 						type: SimpleEditorType.Icons,
 						iconButtonsBackground: true,
-						iconButtonOptions: [
+						Options: [
 							{
 								name: 'flat',
 								description: 'Transform Style : Flat',
@@ -1518,7 +1518,7 @@ function OutlineEditor({
 }: StyleEditorsProps) {
 	return (
 		<>
-			<div className="_simpleLabel _withPadding">Outline : </div>
+			<div className="_simpleLabel _withPadding">Outline</div>
 			<div className="_combineEditors">
 				<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
 					<rect
@@ -1576,7 +1576,7 @@ function OutlineEditor({
 					editorDef={{
 						type: SimpleEditorType.Icons,
 						iconButtonsBackground: true,
-						iconButtonOptions: [
+						Options: [
 							{
 								name: 'solid',
 								description: 'Outline Style : Solid',

@@ -177,58 +177,28 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
-					<g id="Group_103" data-name="Group 103" transform="translate(-1042 -254)">
-						<g id="Group_69" data-name="Group 69" transform="translate(-234 2)">
-							<path
-								id="Path_141"
-								data-name="Path 141"
-								d="M16.553,20v2.166H5V20Z"
-								transform="translate(1279.447 236.418)"
-								fill="currentColor"
-								fillOpacity={0.2}
-							/>
-							<path
-								id="Path_149"
-								data-name="Path 149"
-								d="M21,20v2.166H5V20Z"
-								transform="translate(1302.166 251) rotate(90)"
-								fill="currentColor"
-								fillOpacity={0.2}
-							/>
-							<path
-								id="Path_142"
-								data-name="Path 142"
-								d="M16.553,20v2.166H5V20Z"
-								transform="translate(1279.447 240.751)"
-								fill="currentColor"
-								fillOpacity={0.2}
-							/>
-							<path
-								id="Path_143"
-								data-name="Path 143"
-								d="M16.553,20v2.166H5V20Z"
-								transform="translate(1279.447 245.083)"
-								fill="currentColor"
-								fillOpacity={0.2}
-							/>
-							<path
-								id="Path_144"
-								data-name="Path 144"
-								d="M16.553,20v2.166H5V20Z"
-								transform="translate(1279.447 249.415)"
-								fill="currentColor"
-								fillOpacity={0.2}
-							/>
-						</g>
-						<path
-							id="Path_249"
-							data-name="Path 249"
-							d="M14.554,15.025l4.46-4.46a1.5,1.5,0,0,1,2.341,0,1.5,1.5,0,0,1,0,2.341l-4.46,4.46ZM16.3,17.7l-1.929.214A.331.331,0,0,1,14,17.553l.214-1.929Z"
-							transform="translate(1039.653 254)"
-							fill="currentColor"
-						/>
-					</g>
+				<IconHelper viewBox="0 0 27 27">
+					<path
+						d="M0 1C0 0.447715 0.447715 0 1 0H20C20.5523 0 21 0.447715 21 1V2C21 2.55228 20.5523 3 20 3H1C0.447715 3 0 2.55228 0 2V1Z"
+						fill="#EDEAEA"
+					/>
+					<path
+						d="M0 9C0 8.44772 0.447715 8 1 8H20C20.5523 8 21 8.44772 21 9V10C21 10.5523 20.5523 11 20 11H1C0.447715 11 0 10.5523 0 10V9Z"
+						fill="#EDEAEA"
+					/>
+					<path
+						d="M0 17C0 16.4477 0.447715 16 1 16H20C20.5523 16 21 16.4477 21 17V18C21 18.5523 20.5523 19 20 19H1C0.447715 19 0 18.5523 0 18V17Z"
+						fill="#EDEAEA"
+					/>
+					<path
+						d="M0 25C0 24.4477 0.447715 24 1 24H20C20.5523 24 21 24.4477 21 25V26C21 26.5523 20.5523 27 20 27H1C0.447715 27 0 26.5523 0 26V25Z"
+						fill="#EDEAEA"
+					/>
+					<path
+						className="_FDEPen"
+						d="M3.10547 21.0239L12.0018 12.1276C13.5053 10.6241 15.169 10.6241 16.6724 12.1276C18.1759 13.631 18.1759 15.2947 16.6724 16.7982L7.77607 25.6945L3.10547 21.0239ZM6.5816 26.3683L2.73357 26.7959C2.31287 26.8426 1.9574 26.4871 2.00414 26.0664L2.4317 22.2184L6.5816 26.3683Z"
+						fill="#00B5B9"
+					/>
 				</IconHelper>
 			),
 		},
