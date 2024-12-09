@@ -422,7 +422,7 @@ const component: Component = {
 			mainComponent: true,
 			icon: (
 				<IconHelper viewBox="0 0 30 30">
-					<rect width="30" height="30" rx="4" fill="#1679AB" />
+					<rect width="30" height="30" rx="4" fill="#834E63" />
 					<path
 						className="_MarkdownEditorMIcon"
 						d="M13.5801 20.8509H16.7596V10H13.5697L10.3798 13.9887L7.18991 10H4V20.8509H7.20028V14.6267L10.3902 18.6153L13.5801 14.6267V20.8509Z"
