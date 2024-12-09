@@ -46,9 +46,9 @@ export default function IssuePopup({
 	return (
 		<div
 			className={`_popupBackground ${theme}`}
-			onMouseUp={() => handleClick(issue.defaultOption)}
+			onClick={() => handleClick(issue.defaultOption)}
 		>
-			<div className="_popupContainer" onMouseDown={e => e.stopPropagation()}>
+			<div className="_popupContainer" onClick={e => e.stopPropagation()}>
 				{issue.message}
 				<div className="_popupButtons">
 					{issue.options.map(e => (

@@ -163,12 +163,12 @@ export default function FormEditor({
 					const updatedSet = new Set(prevSelectedFormComponent ?? []);
 					updatedSet.add(each.key);
 					return updatedSet;
-			  })
+				})
 			: setFieldChecked(prevSelectedFormComponent => {
 					const updatedSet = new Set(prevSelectedFormComponent);
 					updatedSet.delete(each.key);
 					return updatedSet;
-			  });
+				});
 	}
 
 	const prevPage = () => {
