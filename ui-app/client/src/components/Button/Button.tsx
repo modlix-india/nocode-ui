@@ -90,7 +90,7 @@ function ButtonComponent(props: ComponentProps) {
 					linkPath?.startsWith('www')
 				)
 					window.location.href = linkPath;
-				else navigate(getHref(linkPath, location));
+				else navigate(getHref(linkPath, location)!);
 			}
 		}
 
