@@ -25,6 +25,11 @@ jobs:
         run: npm run cf
       - uses: cloudposse/github-action-jq@main
         name: Installing jq
+        with:
+          compact: true
+          input: '["test", "test2", "test3"]'
+          script: |-
+            map(select(. == "test"))
       - name: Pushing to Cloudflare
         working-directory: ./ui-app/client
         env:
