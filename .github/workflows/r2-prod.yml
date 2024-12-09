@@ -20,6 +20,13 @@ jobs:
       - name: Install Dependencies
         working-directory: ./ui-app/client
         run: npm i
+      - uses: cloudposse/github-action-jq@main
+        name: Installing jq
+        with:
+          compact: true
+          input: '["test", "test2", "test3"]'
+          script: |-
+            map(select(. == "test"))
       - name: Building to JS
         working-directory: ./ui-app/client
         run: npm run cf
@@ -33,3 +40,4 @@ jobs:
           find dist -name "*.css" -type f -exec npx wrangler r2 object put prod-static/js/{} --file={} --content-type text/css --cache-control="public,max-age=3600" \;
           find dist -name "*.html" -type f -exec npx wrangler r2 object put prod-static/js/{} --file={} --content-type text/html --cache-control="public,max-age=3600" \;
           find dist -name "*.json" -type f -exec npx wrangler r2 object put prod-static/js/{} --file={} --content-type application/json --cache-control="public,max-age=3600" \;
+          find dist -type f | jq -Rns '{"files": [inputs | "https://cdn.modlix.com/js/" + . | select(. != "https://cdn.modlix.com/js/")]}' | curl -X POST -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" -H "Content-Type: application/json" -d @- https://api.cloudflare.com/client/v4/zones/ae81e53db5aca470c4e4073aa03498cd/purge_cache
