@@ -3396,16 +3396,16 @@ export default function GridStyle({
 			border-radius: 6px;
 			outline: none;
 			background-color: #F9F9F9;
-			color: #52BD94;
+			color: #000000;
 			margin-right: 19px;
 		}
 
 		${PREFIX} ._popupMenuContainer._compMenu ._compMenuSearch:focus {
-			border-color:#52BD94;
+			border-color:#000000;
 		}
 
 		${PREFIX} ._popupMenuContainer._compMenu ._compMenuSearch::placeholder {
-			color: #52BD9488;
+			color: #00000088;
 		}
 
 		${PREFIX} ._popupMenuContainer._compMenu ._compMenuItem img.hover {
