@@ -43,4 +43,4 @@ jobs:
           echo "JSON prepared :"
           find dist -type f | jq -Rs '{"files": split("\n")[:-1] | map("https://cdn.modlix.com/js/" + .)}'
           echo "Calling purge for cdn.modlix.com:"
-          find dist -type f | jq -Rs '{"files": split("\n")[:-1] | map("https://cdn.modlix.com/js/" + .)}' | curl -s -X POST -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" -H "Content-Type: application/json" -d @- https://api.cloudflare.com/client/v4/zones/ae81e53db5aca470c4e4073aa03498cd/purge_cache
+          find dist -type f | jq -Rs '{"files": split("\n")[:-1] | map("https://cdn.modlix.com/js/" + .)}' | curl https://api.cloudflare.com/client/v4/zones/f8fe46c016fcfdc188401768a0ac7d01/purge_cache --request POST --header "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" --header "Content-Type: application/json"  --data @-
