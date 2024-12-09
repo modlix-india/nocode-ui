@@ -89,15 +89,6 @@ export function IconsSimpleEditor({
 		return new Set<string>(selected);
 	}, [selected, multiSelect, multipleValueType]);
 
-	useEffect(() => {
-		if (
-			(!selected || selected === '' || (Array.isArray(selected) && selected.length === 0)) &&
-			options?.length > 0
-		) {
-			onChange(options[0].name);
-		}
-	}, []);
-
 	const handleSelection = (ev: React.MouseEvent<HTMLButtonElement>, option: IconOption) => {
 		if (!multiSelect) {
 			onChange(selected === option.name ? '' : option.name);
