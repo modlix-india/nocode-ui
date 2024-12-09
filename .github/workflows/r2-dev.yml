@@ -45,10 +45,10 @@ jobs:
           find dist -name "*.json" -type f -exec npx wrangler r2 object put dev-static/js/{} --file={} --content-type application/json --cache-control="public,max-age=3600" \;
           find dist -name "*.json" -type f -exec npx wrangler r2 object put local-static/js/{} --file={} --content-type application/json --cache-control="public,max-age=3600" \;
           echo "JSON prepared :"
-          find dist -type f | jq -Rns '{"files": split("\n")[:-1] | map("https://cdn-dev.modlix.com/js/" + .)}'
+          find dist -type f | jq -Rs '{"files": split("\n")[:-1] | map("https://cdn-dev.modlix.com/js/" + .)}'
           echo "Calling purge for cdn-dev.modlix.com :"
-          find dist -type f | jq -Rns '{"files": split("\n")[:-1] | map("https://cdn-dev.modlix.com/js/" + .)}' | curl -s -X POST -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" -H "Content-Type: application/json" -d @- https://api.cloudflare.com/client/v4/zones/ae81e53db5aca470c4e4073aa03498cd/purge_cache
+          find dist -type f | jq -Rs '{"files": split("\n")[:-1] | map("https://cdn-dev.modlix.com/js/" + .)}' | curl -s -X POST -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" -H "Content-Type: application/json" -d @- https://api.cloudflare.com/client/v4/zones/ae81e53db5aca470c4e4073aa03498cd/purge_cache
           echo "JSON prepared :"
-          find dist -type f | jq -Rns '{"files": split("\n")[:-1] | map("https://cdn-local.modlix.com/js/" + .)}'
+          find dist -type f | jq -Rs '{"files": split("\n")[:-1] | map("https://cdn-local.modlix.com/js/" + .)}'
           echo "Calling purge for cdn-local.modlix.com:"
-          find dist -type f | jq -Rns '{"files": split("\n")[:-1] | map("https://cdn-local.modlix.com/js/" + .)}' | curl -s -X POST -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" -H "Content-Type: application/json" -d @- https://api.cloudflare.com/client/v4/zones/ae81e53db5aca470c4e4073aa03498cd/purge_cache
+          find dist -type f | jq -Rs '{"files": split("\n")[:-1] | map("https://cdn-local.modlix.com/js/" + .)}' | curl -s -X POST -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" -H "Content-Type: application/json" -d @- https://api.cloudflare.com/client/v4/zones/ae81e53db5aca470c4e4073aa03498cd/purge_cache
