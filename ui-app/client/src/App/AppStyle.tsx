@@ -68,8 +68,7 @@ export default function AppStyle() {
 	);
 
 	let css =
-		`
-	${window.isDesignMode ? 'html { width: calc(100% - 6px) }' : ''}
+		`${window.isDesignMode ? 'html { width: calc(100% - 6px) }' : ''}
 
 	._ROWLAYOUT, ._SINGLECOLUMNLAYOUT, ._ROWCOLUMNLAYOUT {
 		display: flex;

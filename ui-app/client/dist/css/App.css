@@ -110,20 +110,20 @@
 	-webkit-font-smoothing: antialiased;
 }
 .mio-demoicon1::before {
-	content: '\\2660';
+	content: '\2660';
 }
 .mio-demoicon2::before {
-	content: '\\2663';
+	content: '\2663';
 }
 .mio-demoicon3::before {
-	content: '\\2665';
+	content: '\2665';
 }
 .mio-demoicon4::before {
-	content: '\\2666';
+	content: '\2666';
 }
 
 .mio-demoicon-close::before {
-	content: '\\2715';
+	content: '\2715';
 }
 
 .opacityShowOnHover {
