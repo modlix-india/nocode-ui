@@ -62,6 +62,7 @@ interface DnDEditorProps {
 	editorType: string | undefined;
 	sectionsListConnectionName: string | undefined;
 	sectionsCategoryList: any;
+	helpURL: string | undefined;
 }
 
 export default function DnDEditor({
@@ -113,6 +114,7 @@ export default function DnDEditor({
 	editorType,
 	sectionsListConnectionName,
 	sectionsCategoryList,
+	helpURL,
 }: DnDEditorProps) {
 	const [preview, setPreview] = useState(false);
 
@@ -180,6 +182,7 @@ export default function DnDEditor({
 						editorType={editorType}
 						sectionsListConnectionName={sectionsListConnectionName}
 						sectionsCategoryList={sectionsCategoryList}
+						helpURL={helpURL}
 					/>
 					<div className="_dndIframeContentContainer">
 						<div className={`_iframeContainer ${preview ? '_previewMode' : ''}`}>

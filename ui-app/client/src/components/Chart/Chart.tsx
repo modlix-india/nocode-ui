@@ -336,73 +336,41 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 22 24">
-					<g id="Group_109" data-name="Group 109" transform="translate(-1387 -336.204)">
-						<rect
-							id="Rectangle_38"
-							data-name="Rectangle 38"
-							width="22"
-							height="22"
-							rx="1"
-							transform="translate(1387 338)"
-							fill="currentColor"
-							fillOpacity="0.2"
-						/>
-						<rect
-							id="Rectangle_39"
-							data-name="Rectangle 39"
-							width="15"
-							height="2"
-							rx="0.4"
-							transform="translate(1391.5 342.796) rotate(90)"
-							fill="currentColor"
-						/>
-						<rect
-							id="Rectangle_40"
-							data-name="Rectangle 40"
-							width="17"
-							height="2"
-							rx="0.4"
-							transform="translate(1389.5 355.796)"
-							fill="currentColor"
-						/>
-						<rect
-							id="Rectangle_41"
-							data-name="Rectangle 41"
-							width="9.452"
-							height="1.718"
-							rx="0.4"
-							transform="translate(1394.993 344.876) rotate(90)"
-							fill="currentColor"
-						/>
-						<rect
-							id="Rectangle_42"
-							data-name="Rectangle 42"
-							width="6.391"
-							height="1.718"
-							rx="0.4"
-							transform="translate(1401.978 347.937) rotate(90)"
-							fill="currentColor"
-						/>
-						<rect
-							id="Rectangle_43"
-							data-name="Rectangle 43"
-							width="3.867"
-							height="1.718"
-							rx="0.4"
-							transform="translate(1398.485 350.461) rotate(90)"
-							fill="currentColor"
-						/>
-						<rect
-							id="Rectangle_44"
-							data-name="Rectangle 44"
-							width="18.124"
-							height="1.718"
-							rx="0.4"
-							transform="translate(1405.471 336.204) rotate(90)"
-							fill="currentColor"
-						/>
-					</g>
+				<IconHelper viewBox="0 0 30 30">
+					<rect
+						className="_chartbars"
+						y="14"
+						width="5"
+						height="15"
+						rx="1"
+						fill="#FFAA47"
+					/>
+					<rect
+						className="_chartbars1"
+						x="8"
+						y="23"
+						width="5"
+						height="6"
+						rx="1"
+						fill="#86D171"
+					/>
+					<rect
+						className="_chartbars"
+						x="16"
+						width="5"
+						height="29"
+						rx="1"
+						fill="#F6332A"
+					/>
+					<rect
+						className="_chartbars1"
+						x="24"
+						y="14"
+						width="5"
+						height="15"
+						rx="1"
+						fill="#89C2F5"
+					/>
 				</IconHelper>
 			),
 		},

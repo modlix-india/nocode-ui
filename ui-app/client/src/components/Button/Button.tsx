@@ -55,7 +55,7 @@ function ButtonComponent(props: ComponentProps) {
 	const spinnerPath = onClick
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
 				onClick,
-		  )}.isRunning`
+			)}.isRunning`
 		: undefined;
 
 	const [isLoading, setIsLoading] = useState(
@@ -414,6 +414,7 @@ function ButtonComponent(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 4,
 	name: 'Button',
 	displayName: 'Button',
 	description: 'Button component',
@@ -439,17 +440,24 @@ const component: Component = {
 			displayName: 'Component',
 			description: 'Component',
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
+				<IconHelper viewBox="0 0 30 30">
+					<rect width="30" height="30" fill="none" />
 					<rect
-						x="3.25"
-						y="3.25"
-						width="19.25"
-						height="19.25"
+						width="24.286"
+						height="24.286"
 						rx="2"
-						fill="currentColor"
-						fillOpacity="0.2"
+						transform="translate(4.786 4.795)"
+						fill="#edeaea"
 					/>
-					<rect x="1.5" y="1.5" width="17" height="17" rx="2" fill="currentColor" />
+					<g className="_updownAnimation _leftrightAnimation">
+						<rect
+							width="24.286"
+							height="24.286"
+							rx="2"
+							transform="translate(0.929 0.92)"
+							fill="#1893E9"
+						/>
+					</g>
 				</IconHelper>
 			),
 			mainComponent: true,
