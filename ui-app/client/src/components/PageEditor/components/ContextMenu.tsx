@@ -186,7 +186,11 @@ export function ContextMenu({
 				e.preventDefault();
 			}}
 		>
-			<div className="_popupMenuContainer _plain" style={{ left, top, right, bottom }}>
+			<div
+				className="_popupMenuContainer _plain"
+				style={{ left, top, right, bottom }}
+				onClick={e => e.stopPropagation()}
+			>
 				<div className="_contextMenu">
 					{addGrid}
 					{!ifRoot && (
