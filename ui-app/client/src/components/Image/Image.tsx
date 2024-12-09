@@ -94,7 +94,7 @@ function ImageComponent(props: ComponentProps) {
 		stylePropertiesWithPseudoStates,
 	);
 
-	const actualSrc = getSrcUrl(getHref(src ?? defaultSrc, location));
+	const actualSrc = getSrcUrl(getHref(src ?? defaultSrc, location)!);
 
 	let imageTag = undefined;
 
