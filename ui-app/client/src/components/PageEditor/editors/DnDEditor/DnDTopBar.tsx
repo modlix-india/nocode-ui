@@ -322,10 +322,7 @@ export default function DnDTopBar({
 				onClick={() => setShowProperties(false)}
 				onKeyUp={e => e.key === 'Escape' && setShowProperties(false)}
 			>
-				<div
-					className="_popupContainer _pageProperties"
-					onMouseDown={e => e.stopPropagation()}
-				>
+				<div className="_popupContainer _pageProperties" onClick={e => e.stopPropagation()}>
 					<div className="_popupHeader">Page Properties</div>
 					<div className="_popupContent _propertyContent">
 						<div className="_pagePropertiesGrid _pageSimplePropGrid">

@@ -34,8 +34,8 @@ export function AnyValueEditor({
 	let popup = <></>;
 	if (showEditor) {
 		popup = (
-			<div className={`_popupBackground`} onMouseUp={() => setShowEditor(false)}>
-				<div className="_popupContainer" onMouseDown={e => e.stopPropagation()}>
+			<div className={`_popupBackground`} onClick={() => setShowEditor(false)}>
+				<div className="_popupContainer" onClick={e => e.stopPropagation()}>
 					<div className="_jsonEditorContainer">
 						<Editor
 							language="json"

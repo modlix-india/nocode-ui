@@ -21,10 +21,10 @@ export function TextValueEditor({ value, defaultValue, onChange }: Readonly<Text
 	let popup = <></>;
 	if (showEditor) {
 		popup = (
-			<div className={`_popupBackground`} onMouseUp={() => setShowEditor(false)}>
+			<div className={`_popupBackground`} onClick={() => setShowEditor(false)}>
 				<div
 					className="_popupContainer _popupContainerWithPreview"
-					onMouseDown={e => e.stopPropagation()}
+					onClick={e => e.stopPropagation()}
 				>
 					<div>
 						<div className="_jsonEditorContainer">
