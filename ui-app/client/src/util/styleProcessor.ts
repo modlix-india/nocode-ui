@@ -220,12 +220,9 @@ export function processEachResolution(
 	const index = new Map<string, string>();
 
 	for (const propDef of styleProperties) {
-		if (!propDef.selector || !propDef.cssProperty) continue;
-		const sel = propDef.noPrefix ? propDef.selector : prefix + ' ' + propDef.selector;
-		index.set(
-			sel,
-			(index.get(sel) ?? '') + processStyleValue(propDef.name, theme, propDef.cssProperty),
-		);
+		if (!propDef.sel || !propDef.cp) continue;
+		const sel = propDef.np ? propDef.sel : prefix + ' ' + propDef.sel;
+		index.set(sel, (index.get(sel) ?? '') + processStyleValue(propDef.n, theme, propDef.cp));
 	}
 
 	if (index.size === 0) return EMPTY_STRING;

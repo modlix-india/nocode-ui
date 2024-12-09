@@ -1,28 +1,22 @@
 import { isNullValue } from '@fincity/kirun-js';
-import React, { useCallback, useEffect, useState } from 'react';
-import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
+import React, { useCallback, useEffect } from 'react';
+import CommonInputText from '../../commonComponents/CommonInputText';
 import {
 	PageStoreExtractor,
-	addListener,
 	addListenerAndCallImmediately,
-	getDataFromPath,
 	getPathFromLocation,
 	setData,
 } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { validate } from '../../util/validationProcessor';
-import { HelperComponent } from '../HelperComponents/HelperComponent';
-import { getTranslations } from '../util/getTranslations';
+import { IconHelper } from '../util/IconHelper';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { flattenUUID } from '../util/uuid';
 import TextAreaStyle from './TextAreaStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './textAreaProperties';
-import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
-import CommonInputText from '../../commonComponents/CommonInputText';
 import { styleDefaults } from './textAreaStyleProperties';
-import { IconHelper } from '../util/IconHelper';
 
 interface mapType {
 	[key: string]: any;
