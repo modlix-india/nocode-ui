@@ -277,7 +277,7 @@ const component: Component = {
 						fill="white"
 						fillOpacity={1}
 					/>
-					<circle className="_RadioButtonCircle" cx="15" cy="15" r="10" fill="#F86299" />
+					<circle className="_RadioButtonCircle" cx="15" cy="15" r="10" fill="#36d593" />
 				</IconHelper>
 			),
 		},

@@ -499,16 +499,10 @@ const component: Component = {
 			description: 'Component',
 			icon: (
 				<IconHelper id="_arrayRepeaterIcon" viewBox="0 0 30 30">
-					<rect id="_rect1" width="6" height="6" rx="1" x="0" y="7" fill="#D20044" />
-					<rect id="_rect2" width="6" height="6" rx="1" x="8" y="7" fill="#D20044" />
-					<rect id="_rect3" width="6" height="6" rx="1" x="16" y="7" fill="#008FDD" />
-
-					<rect id="_rect4" width="6" height="6" rx="1" x="24" y="7" fill="#D20044" />
-
-					<rect id="_rect5" width="6" height="6" rx="1" x="0" y="18" fill="#D20044" />
-					<rect id="_rect6" width="6" height="6" rx="1" x="8" y="18" fill="#008FDD" />
-					<rect id="_rect7" width="6" height="6" rx="1" x="16" y="18" fill="#D20044" />
-					<rect id="_rect8" width="6" height="6" rx="1" x="24" y="18" fill="#D20044" />
+					<rect id="_rect1" width="13" height="13" rx="1" fill="#3aad6c" />
+					<rect id="_rect5" y="15" width="13" height="13" rx="1" fill="#008FDD" />
+					<rect id="_rect3" x="15" width="13" height="13" rx="1" fill="#3aad6c" />
+					<rect id="_rect7" x="15" y="15" width="13" height="13" rx="1" fill="#008FDD" />
 				</IconHelper>
 			),
 			mainComponent: true,
