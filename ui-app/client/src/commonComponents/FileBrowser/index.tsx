@@ -472,9 +472,11 @@ export function FileBrowser({
 								}}
 							/>
 							<p className="_imageLabel">
-								{e.name && e.name.length < 19
-									? e.name
-									: e.name.substring(0, 17) + '...'}
+								{e.name
+									? e.name.length < 19
+										? e.name
+										: e.name.substring(0, 17) + '...'
+									: ''}
 							</p>
 						</div>
 					);
