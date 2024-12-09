@@ -169,8 +169,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		de: 'Icon Size 1',
 		np: true,
 		cp: 'font-size',
-		sel: '.fa._size1::before, .mi._size1::before, .ms._size1::before',
-		dv: '1em',
+		sel: '.fa._size1, .mi._size1, .ms._size1',
+		dv: '24px',
 	},
 	{
 		n: 'iconSize2',
@@ -178,8 +178,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		de: 'Icon Size 2',
 		np: true,
 		cp: 'font-size',
-		sel: '.fa._size2::before, .mi._size2::before, .ms._size2::before',
-		dv: '1.5em',
+		sel: '.fa._size2, .mi._size2, .ms._size2',
+		dv: '36px',
 	},
 	{
 		n: 'iconSize3',
@@ -187,8 +187,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		de: 'Icon Size 3',
 		np: true,
 		cp: 'font-size',
-		sel: '.fa._size3::before, .mi._size3::before, .ms._size3::before',
-		dv: '2em',
+		sel: '.fa._size3, .mi._size3, .ms._size3',
+		dv: '48px',
 	},
 	{
 		n: 'iconSize4',
@@ -196,8 +196,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		de: 'Icon Size 4',
 		np: true,
 		cp: 'font-size',
-		sel: '.fa._size4::before, .mi._size4::before, .ms._size4::before',
-		dv: '2.5em',
+		sel: '.fa._size4, .mi._size4, .ms._size4',
+		dv: '60px',
 	},
 	{
 		n: 'iconSize5',
@@ -205,8 +205,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		de: 'Icon Size 5',
 		np: true,
 		cp: 'font-size',
-		sel: '.fa._size5::before, .mi._size5::before, .ms._size5::before',
-		dv: '3em',
+		sel: '.fa._size5, .mi._size5, .ms._size5',
+		dv: '72px',
 	},
 	{
 		n: 'iconSize6',
@@ -214,8 +214,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		de: 'Icon Size 6',
 		np: true,
 		cp: 'font-size',
-		sel: '.fa._size6::before, .mi._size6::before, .ms._size6::before',
-		dv: '3.5em',
+		sel: '.fa._size6, .mi._size6, .ms._size6',
+		dv: '84px',
 	},
 	{
 		n: 'iconSize7',
@@ -223,8 +223,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		de: 'Icon Size 7',
 		np: true,
 		cp: 'font-size',
-		sel: '.fa._size7::before, .mi._size7::before, .ms._size7::before',
-		dv: '4em',
+		sel: '.fa._size7, .mi._size7, .ms._size7',
+		dv: '96px',
 	},
 	{
 		n: 'iconSize8',
@@ -232,8 +232,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		de: 'Icon Size 8',
 		np: true,
 		cp: 'font-size',
-		sel: '.fa._size8::before, .mi._size8::before, .ms._size8::before',
-		dv: '4.5em',
+		sel: '.fa._size8, .mi._size8, .ms._size8',
+		dv: '108px',
 	},
 
 	// Global Theme
