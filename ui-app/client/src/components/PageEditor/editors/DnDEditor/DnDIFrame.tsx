@@ -376,11 +376,12 @@ export default function DnDIFrame({
 		deviceMenu = (
 			<div
 				className={`_popupMenuBackground ${theme}`}
-				onMouseUp={() => setShowDevices(undefined)}
+				onClick={() => setShowDevices(undefined)}
 			>
 				<div
 					className="_popupMenuContainer _plain"
 					style={{ left: showDevices.left, top: showDevices.top }}
+					onClick={e => e.stopPropagation()}
 				>
 					<div className="_contextMenu">
 						{devices.map((d: { name: string; width: number; height: number }) => (
