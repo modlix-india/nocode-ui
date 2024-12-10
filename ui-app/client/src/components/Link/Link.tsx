@@ -87,7 +87,7 @@ function Link(props: ComponentProps) {
 			onClick={e => {
 				e.stopPropagation();
 				e.preventDefault();
-				if (resolvedLink.startsWith('tel') || resolvedLink.startsWith('mailto')) {
+				if (resolvedLink?.startsWith('tel') || resolvedLink?.startsWith('mailto')) {
 					window.open(resolvedLink, target);
 				} else if (externalButtonTarget === '_self') {
 					window.history.pushState(undefined, '', resolvedLink);
@@ -146,7 +146,7 @@ function Link(props: ComponentProps) {
 				href={resolvedLink}
 				target={target}
 				onClick={e => {
-					if (resolvedLink.startsWith('tel') || resolvedLink.startsWith('mailto')) {
+					if (resolvedLink?.startsWith('tel') || resolvedLink?.startsWith('mailto')) {
 						window.open(resolvedLink, target);
 					} else if (!target || target === '_self') {
 						e.stopPropagation();
