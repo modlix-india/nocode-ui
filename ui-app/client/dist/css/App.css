@@ -106,6 +106,7 @@
 	white-space: nowrap;
 	word-wrap: normal;
 	direction: ltr;
+	font-feature-settings: 'liga';
 	-webkit-font-feature-settings: 'liga';
 	-webkit-font-smoothing: antialiased;
 }
@@ -1376,10 +1377,6 @@ span._flag {
 	transform: scale(0.5);
 }
 
-._flag {
-	background: url('api/files/static/file/SYSTEM/jslib/flags/flags.png') no-repeat;
-	background-size: 100%;
-}
 ._flag.ad {
 	background-position: 0 0.413223%;
 }
