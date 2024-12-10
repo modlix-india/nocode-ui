@@ -8,7 +8,7 @@
 		"start": "parcel --no-cache",
 		"build": "parcel build src/index.html",
 		"aws": "parcel build src/index.tsx",
-		"cf": "parcel build --detailed-report 50 src/index.tsx",
+		"cf": "parcel build src/index.tsx --reporter @parcel/reporter-bundle-analyzer",
 		"test": "jest --watchAll",
 		"coverage": "jest --coverage",
 		"pretty": "prettier --write ./src || prettier --write ./__tests__"
@@ -51,6 +51,7 @@
 	"devDependencies": {
 		"@babel/core": "^7.26.0",
 		"@babel/preset-typescript": "^7.26.0",
+		"@parcel/reporter-bundle-analyzer": "^2.13.2",
 		"@types/d3": "^7.4.3",
 		"@types/jest": "^29.5.14",
 		"@types/node": "^22.10.1",
