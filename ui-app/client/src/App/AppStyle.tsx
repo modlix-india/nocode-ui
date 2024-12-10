@@ -9,7 +9,6 @@ import { Component, StyleResolution } from '../types/common';
 import { processStyleDefinition, StyleResolutionDefinition } from '../util/styleProcessor';
 import { styleDefaults, styleProperties } from './appStyleProperties';
 import MessageStyle from './Messages/MessageStyle';
-import { useLocation } from 'react-router-dom';
 
 export default function AppStyle() {
 	const [theme, setTheme] = useState<Map<string, Map<string, string>>>(
@@ -29,8 +28,6 @@ export default function AppStyle() {
 	const DESKTOP_MIN_WIDTH = StyleResolutionDefinition.get(
 		StyleResolution.DESKTOP_SCREEN,
 	)?.minWidth;
-
-	const location = useLocation();
 
 	useEffect(
 		() =>
@@ -73,9 +70,8 @@ export default function AppStyle() {
 
 	let css =
 		`${window.isDesignMode ? 'html { width: calc(100% - 6px) }' : ''}
-
 	._flag {
-		background: url('${getHref('api/files/static/file/SYSTEM/jslib/flags/flags.png', location)}') no-repeat;
+		background: url('${getHref('api/files/static/file/SYSTEM/jslib/flags/flags.png', window.location)}') no-repeat;
 		background-size: 100%;
 	}
 
