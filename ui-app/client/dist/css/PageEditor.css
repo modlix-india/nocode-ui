@@ -818,14 +818,6 @@ input._peInput[type='number'] {
 	margin: 6px 0px;
 }
 
-.comp.compPageEditor ._scaleControlContainer ._scaleControl ._control:hover,
-.comp.compPageEditor ._scaleControlContainer ._scaleControl ._control._active {
-}
-
-.comp.compPageEditor ._scaleControlContainer ._scaleControl ._control._device:hover,
-.comp.compPageEditor ._scaleControlContainer ._scaleControl ._control._device._active {
-}
-
 .comp.compPageEditor ._microToggle2 {
 	padding: 2px;
 	border-radius: 10px;
