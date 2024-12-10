@@ -1,0 +1,6462 @@
+.comp.compPageEditor {
+	display: flex;
+	width: 100%;
+	height: 100%;
+	flex-direction: column;
+	overflow: hidden;
+	position: relative;
+	--comp-item-animation-duration: 1s;
+	--comp-item-animation-duration-short: 2s;
+	--comp-item-animation-duration-mid: 3s;
+	--comp-item-animation-duration-long: 4s;
+}
+
+.comp.compPageEditor ._dndGrid {
+	display: flex;
+	flex: 1;
+	background-color: #f9f9f9;
+	height: 100%;
+}
+
+.comp.compPageEditor ._topBarGrid {
+	display: flex;
+	height: 70px;
+	background-color: #fff;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.comp.compPageEditor ._topBarGrid._previewMode {
+	height: 0px;
+}
+
+.comp.compPageEditor ._sideBar {
+	width: 70px;
+	background-color: #fff;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding-top: 10px;
+	border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.comp.compPageEditor ._sideBar._previewMode {
+	width: 0px;
+}
+
+.comp.compPageEditor ._propBar {
+	display: flex;
+	background-color: #fff;
+	flex-direction: column;
+	align-items: center;
+	width: 0px;
+	transition: width 1s;
+}
+
+.comp.compPageEditor ._propBar._propBarVisible {
+	display: flex;
+	width: 300px;
+}
+
+.comp.compPageEditor ._propBar._compNavBarVisible {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	width: auto;
+	min-width: 250px;
+}
+
+.comp.compPageEditor ._propBar._left {
+	border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.comp.compPageEditor ._propBar._right {
+	box-shadow: 2px 3px 4px 0px #00000040;
+	border-left: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.comp.compPageEditor ._propBar._right._isDrag {
+	position: absolute;
+}
+
+.comp.compPageEditor ._propBar._right._isDragged {
+	opacity: 0.6;
+}
+
+.comp.compPageEditor ._propBarTabContainer {
+	padding: 14px 15px;
+	width: 100%;
+}
+
+.comp.compPageEditor ._propBarTabContainer ._tabContainer {
+	height: 46px;
+}
+
+.comp.compPageEditor ._propBarTabContainer ._tabContainer ._tab {
+	height: 36px;
+}
+
+.comp.compPageEditor ._propBarTabContainer svg._iconHelperSVG {
+	color: #99999973;
+}
+
+.comp.compPageEditor ._propBarTabContainer ._tab:hover svg._iconHelperSVG ._gradientFill,
+.comp.compPageEditor ._propBarTabContainer ._tab._selected svg._iconHelperSVG ._gradientFill {
+	fill: url(#greenPropBarGradient);
+}
+
+.comp.compPageEditor ._filterBar {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	padding: 15px 10px;
+	gap: 5px;
+	width: 100%;
+}
+
+.comp.compPageEditor ._filterBar i.fa {
+	font-size: 22px;
+	cursor: pointer;
+	color: #52bd94;
+}
+
+.comp.compPageEditor ._compsTree {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	overflow: auto;
+}
+
+.comp.compPageEditor ._compsTree ._treeNode {
+	font-size: 12px;
+	font-weight: 400;
+	font-family: Inter;
+	line-height: 14px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	height: 34px;
+	flex-shrink: 0;
+	margin: 0px 8px;
+	border-radius: 4px;
+}
+
+.comp.compPageEditor ._compsTree ._treeNodeName {
+	padding: 3px 5px;
+	display: flex;
+	align-items: center;
+}
+
+.comp.compPageEditor ._compsTree ._treeNodeLevel {
+	width: 13px;
+	height: 100%;
+}
+
+.comp.compPageEditor ._compsTree ._treeNode._subComponent._selected,
+.comp.compPageEditor ._compsTree ._treeNode._subComponent:hover {
+	background-color: transparent;
+	color: #52bd94;
+}
+
+.comp.compPageEditor ._compsTree ._treeNode._subComponent._selected i.fa,
+.comp.compPageEditor ._compsTree ._treeNode._subComponent:hover i.fa {
+	color: #52bd94;
+}
+
+.comp.compPageEditor ._compsTree ._treeNode._selected,
+.comp.compPageEditor ._compsTree ._treeNode:hover {
+	background-color: #1893e90d;
+	color: #1893e9;
+}
+
+.comp.compPageEditor ._compsTree ._treeNode._selected i.fa,
+.comp.compPageEditor ._compsTree ._treeNode:hover i.fa {
+	color: #1893e9;
+}
+
+.comp.compPageEditor ._compsTree:hover ._treeNodeLevel {
+	border-right: 0.75px dotted #00000020;
+}
+.comp.compPageEditor ._compsTree:hover ._treeNode._subComponent:hover ._treeNodeLevel,
+.comp.compPageEditor ._compsTree:hover ._treeNode._subComponent._selected ._treeNodeLevel {
+	border-right: 0.75px dotted #00000020;
+}
+
+.comp.compPageEditor ._compsTree:hover ._treeNode:hover ._treeNodeLevel,
+.comp.compPageEditor ._compsTree:hover ._treeNode._selected ._treeNodeLevel {
+	border-right: none;
+}
+
+.comp.compPageEditor ._compsTree ._treeNodeLevel._lastOpened {
+	border-right: 0.75px dotted #00000020;
+}
+
+.comp.compPageEditor ._compsTree ._treeNode i.fa {
+	font-size: 11px;
+	width: 11px;
+	height: 11px;
+	display: flex;
+	justify-content: center;
+	margin: 0px 2px;
+	color: #cacbca;
+}
+
+.comp.compPageEditor ._compsTree ._treeNode ._treeText {
+	padding-left: 5px;
+}
+
+.comp.compPageEditor ._compsTree ._treeNode ._treeText ._filter {
+	color: #52bd94;
+	font-weight: 600;
+}
+
+.comp.compPageEditor ._compsTree ._treeNodeName i.fa.fa-caret-right {
+	font-size: 10px;
+	margin-right: 6px;
+}
+
+.comp.compPageEditor ._compsTree ._treeNodeName i.fa._nothing {
+	margin-right: 6px;
+}
+
+.comp.compPageEditor ._compsTree ._animateTransform i.fa {
+	transition: transform 0.5s;
+}
+
+.comp.compPageEditor ._compsTree ._treeNode._dragStart ._treeNodeLevel {
+	border-right: none;
+}
+
+.comp.compPageEditor svg._iconHelperSVG {
+	width: 16px;
+	height: 16px;
+	color: #96a1b4;
+}
+
+.comp.compPageEditor ._compsTree ._treeNode:hover ._iconHelperSVG,
+.comp.compPageEditor ._compsTree ._treeNode._selected ._iconHelperSVG {
+	color: #1893e9;
+}
+
+.comp.compPageEditor ._sideBar ._top {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10px;
+	padding-top: 15px;
+}
+
+.comp.compPageEditor ._sideBar ._top i.fa {
+	font-size: 22px;
+}
+
+.comp.compPageEditor ._sideBar ._bottom {
+	display: flex;
+	flex-direction: column;
+	padding-bottom: 30px;
+	align-items: center;
+	gap: 15px;
+}
+
+.comp.compPageEditor ._topLeftBarGrid {
+	flex: 1;
+	gap: 10px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	padding-left: 15px;
+}
+
+.comp.compPageEditor ._topRightBarGrid {
+	display: flex;
+	align-items: center;
+	padding-right: 10px;
+	gap: 15px;
+}
+
+.comp.compPageEditor select._peSelect {
+	height: 35px;
+	font-family: Inter;
+	font-size: 12px;
+	line-height: 12px;
+	font-weight: 500;
+	padding: 5px 15px;
+	border-radius: 6px;
+	border: none;
+	color: #555;
+	background-color: #f9f9f9;
+	text-transform: uppercase;
+	outline: none;
+	cursor: pointer;
+	width: 100%;
+}
+
+.comp.compPageEditor button,
+.comp.compPageEditor ._popupButtons button {
+	color: #555;
+	background-color: #eee;
+	text-transform: uppercase;
+	font-size: 11px;
+	padding: 5px 15px;
+	cursor: pointer;
+	border-radius: 2px;
+	border: 1px solid #ccc;
+}
+
+.comp.compPageEditor ._filterBar input,
+.comp.compPageEditor input._peInput,
+.comp.compPageEditor ._pvExpressionEditor,
+.comp.compPageEditor textarea._peInput,
+select._peInput {
+	color: #000;
+	background-color: #f9f9f9;
+	font-family: Inter;
+	font-weight: 500;
+	font-size: 12px;
+	padding: 5px 15px;
+	border-radius: 6px;
+	border: none;
+}
+
+.comp.compPageEditor ._filterBar input {
+	width: 100%;
+	height: 38px;
+	border: 0.8px solid #e9ecef;
+	border-radius: 2px;
+}
+
+.comp.compPageEditor textarea._peInput {
+	flex: 1;
+	height: 132px;
+	padding: 8px;
+	scrollbar-width: thin;
+	resize: none;
+}
+
+.comp.compPageEditor textarea._peInput::-webkit-scrollbar {
+	width: 2px;
+	background: none;
+	margin-right: 5px;
+}
+
+.comp.compPageEditor textarea._peInput::-webkit-scrollbar-thumb {
+	background-color: #1893e9;
+}
+
+.comp.compPageEditor ._overflowContainer {
+	height: calc(100vh - 173px);
+	overflow: auto;
+}
+
+.comp.compPageEditor ._overflowContainer._withCopyButtons {
+	height: calc(100vh - 228px);
+}
+
+.comp.compPageEditor ._withDragProperty {
+	height: 45vh;
+}
+
+.comp.compPageEditor ._addSelector {
+	background: #1893e9;
+	color: #fff;
+	border: none;
+	border-radius: 6px;
+}
+
+.comp.compPageEditor ._eachStyleClass ._propLabel i.fa {
+	font-size: 14px;
+	cursor: pointer;
+}
+
+.comp.compPageEditor ._eachStyleClass ._propLabel button {
+	flex: 1;
+}
+
+.comp.compPageEditor input._peInput[type='text'],
+.comp.compPageEditor ._pvExpressionEditor,
+input._peInput[type='number'] {
+	height: 35px;
+	font-size: 12px;
+	line-height: 12px;
+	border-radius: 6px;
+	padding-left: 8px;
+	outline: none;
+	flex: 1;
+}
+
+.comp.compPageEditor ._pvExpressionEditor {
+	padding-top: 0px;
+	padding-bottom: 0px;
+	border-radius: 6px;
+	display: flex;
+	align-items: center;
+	padding-right: 8px;
+	gap: 5px;
+}
+
+.comp.compPageEditor ._pvExpressionEditor ._pathsList {
+	z-index: 2;
+	background-color: #fff;
+	display: flex;
+	flex-direction: column;
+	border-radius: 4px;
+	float: left;
+	position: absolute;
+	top: 100%;
+	box-shadow:
+		0 15px 30px 0 rgba(0, 0, 0, 0.1),
+		0 5px 15px 0 rgba(0, 0, 0, 0.1);
+}
+
+.comp.compPageEditor ._pvExpressionEditor ._pathsList ._path {
+	padding: 5px 5px;
+	border-radius: 2px;
+	cursor: pointer;
+}
+
+.comp.compPageEditor ._pvExpressionEditor ._pathsList ._path:hover {
+	background-color: #eee;
+}
+
+.comp.compPageEditor ._pvExpressionEditor input._peInput[type='text'],
+.comp.compPageEditor ._pvExpressionEditor input._peInput[type='number'] {
+	border: none;
+	background-color: transparent;
+	flex: 1;
+	padding: 5px 5px 5px 0;
+}
+
+.comp.compPageEditor ._pvExpressionEditor i.fa {
+	cursor: pointer;
+}
+
+.comp.compPageEditor ._urlInput {
+	position: absolute;
+	width: 240px;
+	left: 22px;
+	z-index: 1;
+}
+
+.comp.compPageEditor ._urlInput._peInput input {
+	border: none;
+	outline: none;
+	height: 100%;
+	flex: 1;
+	background: transparent;
+	padding-left: 5px;
+}
+
+.comp.compPageEditor ._urlInput._peInput {
+	background: #ffffff;
+	border-radius: 4px;
+	position: static;
+	height: 32px;
+	display: flex;
+	align-items: center;
+	padding: 8px;
+	border-radius: 8px;
+	border: none;
+	gap: 8px;
+	box-shadow: 0px 1px 4px 0px #0000001a;
+	margin-left: 10px;
+}
+
+.comp.compPageEditor ._urlInput ._urlInputIcon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.comp.compPageEditor ._urlInput ._urlInputIcon svg {
+	color: #99999973;
+	fill: black;
+}
+
+.comp.compPageEditor ._urlInput._peInput svg {
+	min-width: 20px;
+	cursor: pointer;
+}
+
+.comp.compPageEditor ._textValueEditorContainer {
+	color: #000;
+	background-color: #f9f9f9;
+	font-family: Inter;
+	font-weight: 400;
+	padding-top: 0px;
+	padding-bottom: 0px;
+	border-radius: 6px;
+	display: flex;
+	align-items: center;
+	padding-right: 8px;
+	gap: 5px;
+	flex: 1;
+}
+
+.comp.compPageEditor ._textValueEditorContainer ._peInput {
+	border: none;
+	background-color: transparent;
+	flex: 1;
+}
+
+.comp.compPageEditor ._sideBar ._iconMenu {
+	background: #f9f9f9;
+	color: #fff;
+	border: none;
+}
+
+.comp.compPageEditor ._sideBar ._seperator {
+	width: 36px;
+	height: 1px;
+	background-color: #0000001a;
+}
+
+.comp.compPageEditor ._sideBar ._iconMenu._active,
+.comp.compPageEditor ._sideBar ._iconMenu:hover {
+	background: #000000;
+	color: #fff;
+}
+
+.comp.compPageEditor ._sideBar ._arrow svg._iconHelperSVG {
+	width: 20px;
+}
+
+.comp.compPageEditor ._iconMenu._compMenuButton {
+	width: 40px;
+	height: 40px;
+	margin-bottom: 10px;
+}
+
+.comp.compPageEditor button:hover,
+.comp.compPageEditor select:hover,
+.comp.compPageEditor ._iconMenuOption:hover,
+.comp.compPageEditor ._popupButtons button:hover {
+	background-color: rgba(77, 127, 238, 0.05);
+	color: #000;
+}
+
+.comp.compPageEditor ._iconMenuBody ._iconMenuOption:hover i.fa,
+.comp.compPageEditor ._iconMenuBody ._iconMenuOption:hover svg._iconHelperSVG,
+.comp.compPageEditor ._iconMenu._active svg._iconHelperSVG {
+	color: #000;
+}
+.comp.compPageEditor ._sideBar ._iconMenu._active svg._iconHelperSVG,
+.comp.compPageEditor ._sideBar ._iconMenu:hover svg._iconHelperSVG {
+	color: #ffffff;
+}
+
+.comp.compPageEditor ._sideBar ._iconMenu svg._iconHelperSVG {
+	color: #000000;
+	width: 16px;
+	height: 16px;
+}
+
+.comp.compPageEditor i.fa {
+	color: #000000;
+	font-size: 18px;
+}
+
+.comp.compPageEditor ._iconMenu:hover i.fa {
+	color: #1893e9;
+}
+
+.comp.compPageEditor ._iconMenu._active i.fa {
+	color: #1893e9;
+}
+
+.comp.compPageEditor ._iconMenuOption,
+.comp.compPageEditor ._popupMenuBackground ._popupMenuItem {
+	padding: 10px 15px;
+	color: #96a1b4;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	white-space: nowrap;
+	cursor: pointer;
+	margin-bottom: 2px;
+	font-family: Inter;
+	border: none;
+	background-color: transparent;
+}
+
+.comp.compPageEditor ._iconMenuBody ._iconMenuOption i.fa,
+.comp.compPageEditor ._iconMenuBody ._iconMenuOption svg._iconHelperSVG {
+	color: #96a1b4;
+}
+
+.comp.compPageEditor ._iconMenuBody {
+	position: absolute;
+	background-color: #fff;
+	font-size: 12px;
+	font-family: Inter;
+	box-shadow: 0px 1px 4px 0px #00000026;
+	display: none;
+	border-radius: 4px;
+	z-index: 3;
+	transform: translateX(40px);
+	font-weight: normal;
+	text-transform: initial;
+}
+
+.comp.compPageEditor ._iconMenuBody._clickable {
+	display: none;
+}
+
+.comp.compPageEditor ._iconMenuBody._top {
+	bottom: 100%;
+}
+
+.comp.compPageEditor ._iconMenuBody._bottom {
+	top: 100%;
+}
+.comp.compPageEditor ._iconMenuBody._right {
+	right: 100%;
+}
+
+.comp.compPageEditor ._iconMenu {
+	cursor: pointer;
+	position: relative;
+	min-height: 36px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0 5px;
+	width: 36px;
+	border-radius: 8px;
+}
+
+.comp.compPageEditor ._iconMenu:hover ._iconMenuBody {
+	display: block;
+}
+
+.comp.compPageEditor ._topBarGrid ._iconMenuBody {
+	top: 100%;
+}
+
+.comp.compPageEditor ._iconMenu:hover {
+	background-color: rgba(77, 127, 238, 0.05);
+}
+
+.comp.compPageEditor ._selectionBar ._iconMenu:hover {
+	background-color: transparent;
+	color: #1893e9;
+}
+
+.comp.compPageEditor ._iconMenu._active {
+	background-color: rgba(77, 127, 238, 0.05);
+}
+
+.comp.compPageEditor ._buttonBar {
+	height: 50px;
+	display: flex;
+	align-items: center;
+	position: relative;
+}
+
+.comp.compPageEditor ._buttonBar._lightBackground {
+	background-color: #eee5;
+	padding: 0px 10px;
+}
+
+.comp.compPageEditor ._buttonBar i.fa,
+.comp.compPageEditor ._buttonBar svg {
+	padding: 7px;
+	cursor: pointer;
+	background: #f9f9f9;
+	border-radius: 10px;
+	width: 32px;
+	height: 32px;
+	text-align: center;
+}
+
+.comp.compPageEditor ._buttonBar i.fa:not(:last-child),
+.comp.compPageEditor ._buttonBar svg:not(:last-child) {
+	margin-right: 10px;
+}
+
+.comp.compPageEditor ._buttonBar i.fa.active,
+.comp.compPageEditor ._buttonBar i.fa:hover,
+.comp.compPageEditor ._buttonBar svg.active,
+.comp.compPageEditor ._buttonBar svg:hover {
+	background-color: rgba(77, 127, 238, 0.05);
+	color: #1893e9;
+}
+
+.comp.compPageEditor ._screenSizes i.fa,
+.comp.compPageEditor ._screenSizes svg {
+	background-color: transparent;
+	border-radius: 0;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: 3px;
+}
+
+.comp.compPageEditor ._buttonBar._screenSizes i.fa,
+.comp.compPageEditor ._buttonBar._screenSizes svg {
+	border-bottom: 3px solid transparent;
+}
+
+.comp.compPageEditor ._iframeHeader._screenSizes svg {
+	margin: 0;
+	width: 28px;
+	height: 28px;
+	background: #0000001a;
+	padding: 4px 6px;
+	border-top-left-radius: 3px;
+	border-bottom-left-radius: 3px;
+}
+
+.comp.compPageEditor ._propLabel._svgButtons {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+}
+
+.comp.compPageEditor ._propLabel ._svgButtonsContainer {
+	border-radius: 6px;
+	display: flex;
+	align-items: center;
+	flex-direction: row;
+}
+
+.comp.compPageEditor ._propLabel._svgButtons .svgContainer {
+	width: 30px;
+	height: 30px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+	background: #f9f9f9;
+}
+
+.comp.compPageEditor ._propLabel._svgButtons .svgContainer:last-child {
+	border-top-right-radius: 6px;
+	border-bottom-right-radius: 6px;
+}
+
+.comp.compPageEditor ._propLabel._svgButtons .svgContainer:first-child {
+	border-top-left-radius: 6px;
+	border-bottom-left-radius: 6px;
+}
+
+.comp.compPageEditor ._propLabel._svgButtons .svgContainer:hover,
+.comp.compPageEditor ._propLabel._svgButtons .svgContainer.active {
+	background: #eef3fa;
+}
+
+.comp.compPageEditor ._screenSizes svg path,
+.comp.compPageEditor ._propLabel._svgButtons svg path,
+.comp.compPageEditor ._propLabel._svgButtons svg circle,
+.comp.compPageEditor ._propLabel._svgButtons svg rect {
+	fill: rgba(150, 161, 180, 0.2);
+	stroke: rgba(142, 144, 164, 0.5);
+}
+
+.comp.compPageEditor ._screenSizes svg.active path,
+.comp.compPageEditor ._propLabel._svgButtons.active svg path,
+.comp.compPageEditor ._propLabel._svgButtons.active svg circle,
+.comp.compPageEditor ._propLabel._svgButtons.active svg rect {
+	fill: rgba(150, 161, 180, 1);
+	stroke: rgba(142, 144, 164, 1);
+}
+
+.comp.compPageEditor ._propLabel._svgButtons .svgContainer:hover path,
+.comp.compPageEditor ._propLabel._svgButtons .svgContainer:hover circle,
+.comp.compPageEditor ._propLabel._svgButtons .svgContainer:hover rect,
+.comp.compPageEditor ._propLabel._svgButtons .svgContainer.active path,
+.comp.compPageEditor ._propLabel._svgButtons .svgContainer.active rect,
+.comp.compPageEditor ._propLabel._svgButtons .svgContainer.active circle {
+	fill: #3a8bed;
+	stroke: #3a8bed;
+}
+
+.comp.compPageEditor ._scaleControlContainer {
+	position: relative;
+}
+
+.comp.compPageEditor ._scaleControlContainer ._scaleControl {
+	display: inline-flex;
+	position: sticky;
+	left: -20px;
+	top: 0;
+	background: #ffffff;
+	margin-bottom: 15px;
+	border-radius: 4px;
+	padding: 0px 15px;
+	border: 1px solid #0000000d;
+	align-items: stretch;
+}
+
+.comp.compPageEditor ._scaleControlContainer ._scaleControl ._control {
+	min-width: 20px;
+	display: flex;
+	cursor: pointer;
+	font-size: 11px;
+	font-weight: 500;
+	padding: 8px 5px;
+	align-items: center;
+	justify-content: center;
+	border: none;
+	background-color: transparent;
+	margin-bottom: 0px;
+	white-space: nowrap;
+	color: #000000cc;
+}
+
+.comp.compPageEditor ._scaleControlContainer ._scaleControl ._control svg {
+	color: #00000066;
+}
+
+.comp.compPageEditor ._scaleControlContainer ._scaleControl ._control._text {
+	user-select: none;
+	width: 50px;
+	border-radius: 4px;
+	background-color: #f9f9f9;
+	padding: 0px;
+	margin: 6px 0px;
+}
+
+.comp.compPageEditor ._scaleControlContainer ._scaleControl ._control:hover,
+.comp.compPageEditor ._scaleControlContainer ._scaleControl ._control._active {
+}
+
+.comp.compPageEditor ._scaleControlContainer ._scaleControl ._control._device:hover,
+.comp.compPageEditor ._scaleControlContainer ._scaleControl ._control._device._active {
+}
+
+.comp.compPageEditor ._microToggle2 {
+	padding: 2px;
+	border-radius: 10px;
+	background-color: #f9f9f9;
+	color: #555;
+	position: relative;
+	font-weight: 400;
+	text-transform: uppercase;
+	font-size: 10px;
+	letter-spacing: 0.5px;
+	transition: all 0.5s;
+	height: 10px;
+	width: 20px;
+	border: 1px solid #888;
+	cursor: pointer;
+	opacity: 0.3;
+}
+
+.comp.compPageEditor ._microToggle2._withText {
+	height: auto;
+	width: auto;
+	padding-left: 16px;
+	padding-right: 15px;
+	color: #333;
+	border-radius: 20px;
+}
+
+.comp.compPageEditor ._microToggle2::before {
+	content: '';
+	width: 6px;
+	height: 6px;
+	position: absolute;
+	background-color: #ccc;
+	border-radius: 50%;
+	right: 1px;
+	top: 50%;
+	transform: translateY(-50%);
+	transition: all 0.5s;
+	border: 1px solid #888;
+}
+
+.comp.compPageEditor ._microToggle2._withText::before {
+	width: 10px;
+	height: 10px;
+	right: 3px;
+}
+
+.comp.compPageEditor ._microToggle2._on {
+	background-color: #52bd94;
+	opacity: 0.8;
+	border: 1px solid #198a61;
+	color: #fff;
+}
+
+.comp.compPageEditor ._microToggle2._on::before {
+	right: calc(100% - 7px);
+	transform: translateY(-50%);
+	background-color: #fff;
+	border: 1px solid #fff;
+}
+
+.comp.compPageEditor ._microToggle2._withText._on::before {
+	right: calc(100% - 13px);
+}
+
+.comp.compPageEditor ._confineWidth {
+	overflow: hidden;
+}
+
+.comp.compPageEditor ._simpleEditor {
+	padding: 5px 15px;
+}
+
+.comp.compPageEditor ._combineEditors ._simpleEditor {
+	padding: 0px;
+}
+
+.comp.compPageEditor ._combineEditors ._simpleEditor._expandWidth {
+	width: 100%;
+}
+
+.comp.compPageEditor ._simpleEditorAngleSize {
+	display: flex;
+	align-items: center;
+	gap: 2px;
+	overflow: hidden;
+}
+
+.comp.compPageEditor ._simpleEditorPixelSize {
+	display: flex;
+	align-items: center;
+	gap: 2px;
+	overflow: hidden;
+	height: 35px;
+}
+
+.comp.compPageEditor ._simpleEditorPixelSize ._inputDropdownContainer {
+	font-family: Inter;
+	font-size: 12px;
+	border: none;
+	border-radius: 6px;
+	color: #555;
+	background-color: #f9f9f9;
+	cursor: pointer;
+	padding: 5px 8px;
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	height: 35px;
+	overflow: hidden;
+}
+
+.comp.compPageEditor ._simpleEditorPixelSize ._inputDropdownContainer input {
+	border: none;
+	height: 100%;
+	background-color: transparent;
+	outline: none;
+	font-family: Inter;
+	font-size: 12px;
+	color: #555;
+	max-width: 60px;
+	min-width: 20px;
+}
+
+.comp.compPageEditor ._simpleEditorPixelSize ._inputDropdownContainer ._simpleEditorSelect {
+	min-width: 60px;
+	flex: 0.5;
+	padding-left: 0px;
+	width: 64px;
+}
+
+.comp.compPageEditor
+	._simpleEditorPixelSize
+	._inputDropdownContainer
+	._simpleEditorSelect
+	._selectedOption {
+	margin-right: 5px;
+	text-align: right;
+}
+
+.comp.compPageEditor ._simpleEditorPixelSize ._simpleEditorSelect {
+	flex: 1;
+	background-color: transparent;
+}
+
+.comp.compPageEditor ._simpleEditorInputWithIcon,
+.comp.compPageEditor ._simpleEditorSelect,
+.comp.compPageEditor ._simpleEditorInput {
+	width: 100%;
+	min-height: 35px;
+	min-width: 35px;
+	font-family: Inter;
+	font-weight: 500;
+	font-size: 12px;
+	border: none;
+	border-radius: 6px;
+	color: #000000;
+	background-color: #f9f9f9;
+	cursor: pointer;
+	padding: 5px 15px;
+	flex: 1;
+	outline: none;
+}
+
+.comp.compPageEditor ._simpleEditorInputWithIcon {
+	padding-left: 30px;
+}
+
+.comp.compPageEditor ._simpleEditorSelect {
+	text-transform: uppercase;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 4px;
+}
+
+.comp.compPageEditor ._page_Selector {
+	width: 186px;
+}
+
+.comp.compPageEditor ._page_Selector ._simpleEditorSelect {
+	height: 38px;
+	border-radius: 20px;
+	background: transparent;
+	font-weight: 600;
+	text-transform: none;
+}
+
+.comp.compPageEditor ._page_Selector ._simpleEditorSelect path {
+	fill: #000000;
+}
+.comp.compPageEditor ._add_page_btn_container {
+	padding: 10px 10px;
+}
+
+.comp.compPageEditor ._add_page_btn_container button._add_page_btn {
+	border-radius: 2px;
+	background: #1893e9;
+	color: #fff;
+	width: 100%;
+	height: 30px;
+}
+
+.comp.compPageEditor button._iconOnly {
+	border: none;
+	background: transparent;
+	padding: 0px;
+	margin: 0px;
+}
+
+.comp.compPageEditor ._simpleEditorSelect ._simpleEditorDropdownBody {
+	position: fixed;
+	min-width: 100%;
+	background-color: #fff;
+	border: 1px solid rgba(0, 0, 0, 0.1);
+	z-index: 2;
+	box-shadow: 0px 1px 4px 0px #00000026;
+	border-radius: 6px;
+	margin-top: 4px;
+	max-height: 250px;
+	overflow: auto;
+}
+
+.comp.compPageEditor ._simpleEditorSelect ._simpleEditorDropdownBody ._options_divider {
+	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.comp.compPageEditor ._simpleEditorSelect svg {
+	min-width: 8px;
+}
+
+.comp.compPageEditor ._simpleEditorSelect ._selectedOption {
+	min-width: calc(100% - 8px);
+}
+
+.comp.compPageEditor ._simpleEditorSelect ._selectedOption._placeholder {
+	text-transform: capitalize;
+	color: #757575;
+}
+
+.comp.compPageEditor ._simpleEditorSelect ._simpleEditorDropdownBody ._simpleEditorDropdownOption {
+	padding: 10px;
+	color: #0000004d;
+	border-radius: 4px;
+	white-space: nowrap;
+	font-weight: 400;
+	font-size: 12px;
+	font-family: Inter;
+}
+
+.comp.compPageEditor
+	._simpleEditorSelect
+	._simpleEditorDropdownBody
+	._simpleEditorDropdownOption._hovered {
+	background-color: #f9f9f9;
+	border-radius: 4px;
+	color: #52bd94;
+}
+
+.comp.compPageEditor
+	._simpleEditorSelect
+	._simpleEditorDropdownBody
+	._simpleEditorDropdownOption._selected {
+	color: #52bd94;
+}
+
+.comp.compPageEditor ._simpleEditorIcons {
+	border-radius: 6px;
+	display: flex;
+	align-items: center;
+	flex-direction: row;
+	height: 36px;
+	padding: 2px;
+	gap: 2px;
+}
+
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon {
+	cursor: pointer;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+	border-radius: 6px;
+	flex: 1;
+	background-color: transparent;
+	padding: 0px;
+	border: none;
+}
+
+.comp.compPageEditor ._simpleEditorIcons._bground {
+	background-color: #f9f9f9;
+}
+
+.comp.compPageEditor ._simpleEditorIcons._bground ._eachIcon:hover,
+.comp.compPageEditor ._simpleEditorIcons._bground ._eachIcon._active {
+	background-color: #fff;
+	box-shadow: 0px 2px 4px 0px #0000001a;
+}
+
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon svg path,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon svg circle,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon svg rect,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon svg line {
+	fill: #e3e5ea;
+	stroke: rgba(142, 144, 164, 0.5);
+}
+
+.comp.compPageEditor ._simpleEditorIcons._bground ._eachIcon svg path,
+.comp.compPageEditor ._simpleEditorIcons._bground ._eachIcon svg circle,
+.comp.compPageEditor ._simpleEditorIcons._bground ._eachIcon svg rect,
+.comp.compPageEditor ._simpleEditorIcons._bground ._eachIcon svg line {
+	fill: #e3e5ea;
+	stroke: #e3e5ea;
+}
+
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon:hover svg path,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon:hover svg circle,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon:hover svg rect,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon:hover svg line,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon._active svg path,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon._active svg circle,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon._active svg rect,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon._active svg line,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon svg path._highlight,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon svg circle._highlight,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon svg rect._highlight,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon svg line._highlight {
+	fill: #52bd94;
+	stroke: #52bd94;
+}
+
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon:hover svg path._color1,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon:hover svg circle._color1,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon:hover svg rect._color1,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon:hover svg line._color1,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon._active svg path._color1,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon._active svg circle._color1,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon._active svg rect._color1,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon._active svg line._color1,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon svg path._highlight._color1,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon svg circle._highlight._color1,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon svg rect._highlight._color1,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon svg line._highlight._color1 {
+	fill: #3a8bed;
+	stroke: #3a8bed;
+}
+
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon:hover svg path._color2,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon:hover svg circle._color2,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon:hover svg rect._color2,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon:hover svg line._color2,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon._active svg path._color2,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon._active svg circle._color2,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon._active svg rect._color2,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon._active svg line._color2,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon svg path._highlight._color2,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon svg circle._highlight._color2,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon svg rect._highlight._color2,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon svg line._highlight._color2 {
+	fill: #007962;
+	stroke: #007962;
+}
+
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon:hover svg path._color3,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon:hover svg circle._color3,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon:hover svg rect._color3,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon:hover svg line._color3,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon._active svg path._color3,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon._active svg circle._color3,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon._active svg rect._color3,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon._active svg line._color3,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon svg path._highlight._color3,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon svg circle._highlight._color3,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon svg rect._highlight._color3,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon svg line._highlight._color3 {
+	fill: #2a69b5;
+	stroke: #2a69b5;
+}
+
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon svg path._lowlight,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon svg circle._lowlight,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon svg rect._lowlight,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon svg line._lowlight,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon:hover svg path._lowlight,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon:hover svg circle._lowlight,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon:hover svg rect._lowlight,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon:hover svg line._lowlight,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon._active svg path._lowlight,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon._active svg circle._lowlight,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon._active svg rect._lowlight,
+.comp.compPageEditor ._simpleEditorIcons ._eachIcon._active svg line._lowlight {
+	fill: #e3e5ea;
+	stroke: #e3e5ea;
+}
+
+.comp.compPageEditor ._simpleEditorShadow {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 5px;
+}
+
+.comp.compPageEditor ._simpleEditorShadow ._eachShadowEditor {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	width: 100%;
+}
+
+.comp.compPageEditor ._simpleEditorShadow ._inset {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+}
+
+.comp.compPageEditor ._simpleEditorShadow ._color_controls {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 5px;
+	width: 100%;
+}
+
+.comp.compPageEditor ._simpleEditor._warning {
+	font-size: 11px;
+	font-family: Inter;
+	color: #ffcc00;
+	padding: 5px 15px;
+}
+
+.comp.compPageEditor ._simpleEditorBigSelector {
+	padding: 5px 15px;
+}
+
+.comp.compPageEditor ._simpleEditorBigSelector ._searchBox {
+	height: 35px;
+	display: flex;
+	align-items: center;
+	border: 0.5px solid #dfe1e2;
+	background-color: #f9f9f9;
+	border-radius: 6px;
+	padding: 0px 10px;
+}
+
+.comp.compPageEditor ._simpleEditorBigSelector input {
+	border: none;
+	height: 100%;
+	font-family: Inter;
+	font-size: 12px;
+	border: none;
+	background: transparent;
+	flex: 1;
+	outline: none;
+}
+
+.comp.compPageEditor ._simpleEditorControls {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 5px;
+	width: 100%;
+}
+
+.comp.compPageEditor ._simpleEditorBigSelector ._searchResult {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	padding: 5px 0px;
+	flex-direction: row;
+	gap: 10px;
+	flex-wrap: wrap;
+	max-height: 400px;
+	overflow: auto;
+	margin-top: 15px;
+}
+
+.comp.compPageEditor ._simpleEditorBigSelector ._searchResult ._searchResultItem {
+	display: flex;
+	flex-direction: column;
+	cursor: pointer;
+}
+
+.comp.compPageEditor ._simpleEditorBigSelector ._searchResult ._searchResultItem ._animationIcon {
+	width: 66px;
+	height: 66px;
+	border-radius: 4px;
+	background: #cfcfd81a;
+	border-radius: 4px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.comp.compPageEditor ._searchResultItem ._animationIcon ._hovered {
+	display: none;
+}
+
+.comp.compPageEditor ._searchResultItem:hover ._animationIcon ._default,
+.comp.compPageEditor ._searchResultItem._selected ._animationIcon ._default {
+	display: none;
+}
+
+.comp.compPageEditor ._searchResultItem ._animationIcon ._default {
+	display: block;
+}
+
+.comp.compPageEditor ._searchResultItem:hover ._animationIcon ._hovered,
+.comp.compPageEditor ._searchResultItem._selected ._animationIcon ._hovered {
+	display: block;
+}
+
+.comp.compPageEditor ._simpleEditorBigSelector ._searchResult ._searchResultItem ._animationName {
+	font-size: 11px;
+	font-weight: 500;
+	font-family: Asap;
+	text-align: center;
+}
+
+.comp.compPageEditor
+	._simpleEditorBigSelector
+	._searchResult
+	._searchResultItem:hover
+	._animationName {
+	color: #4fbbb2;
+}
+
+.comp.compPageEditor ._simpleEditorGroup {
+	padding: 15px;
+}
+
+.comp.compPageEditor ._simpleEditorGroupTitle {
+	font-family: Inter;
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 14px;
+	padding: 5px 10px;
+	border-radius: 4px 4px 0px 0px;
+	background: #f9f9f9;
+	height: 30px;
+	display: flex;
+	align-items: center;
+}
+
+.comp.compPageEditor ._simpleEditorGroupTitle._gradient {
+	border-radius: 4px 4px 0px 0px;
+	color: #fff;
+
+	background: #52bd94;
+}
+
+.comp.compPageEditor ._controls {
+	display: flex;
+	align-items: center;
+}
+
+.comp.compPageEditor ._inputWithIcon {
+	position: relative;
+	display: flex;
+	align-items: center;
+}
+
+.comp.compPageEditor ._eachBackgroundEditor {
+	width: 100%;
+}
+
+.comp.compPageEditor ._layerControls {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+.comp.compPageEditor ._iconDropdown {
+	position: relative;
+	display: inline-block;
+}
+
+.comp.compPageEditor ._dropdownToggle {
+	font-family: Inter;
+	font-size: 12px;
+	border: none;
+	border-radius: 6px;
+	color: #555;
+	cursor: pointer;
+	padding: 5px 8px;
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	height: 35px;
+	overflow: hidden;
+}
+
+.comp.compPageEditor ._dropdownToggle._open {
+	top: 0;
+	border: none;
+	height: 100%;
+	background-color: #fff;
+	outline: none;
+	font-family: Inter;
+	font-size: 12px;
+	color: #555;
+	max-width: 60px;
+	min-width: 20px;
+}
+
+.comp.compPageEditor ._dropdownToggle._open + ._dropdownContent {
+	min-width: 100px;
+	max-width: 250px;
+	position: absolute;
+	left: 50%;
+	transform: translateX(-80%);
+	display: block;
+}
+
+.comp.compPageEditor ._dropdownContent {
+	position: relative;
+	top: 100%;
+	left: 0;
+	z-index: 2;
+	background-color: white;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	padding: 5px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	max-height: 300px;
+	overflow-y: auto;
+}
+
+.comp.compPageEditor ._dropdownContent ._eachIcon {
+	display: block;
+	width: 100%;
+	text-align: left;
+	padding: 8px 12px;
+	border: none;
+	background: none;
+	cursor: pointer;
+}
+
+.comp.compPageEditor ._dropdownContent ._eachIcon:hover {
+	background-color: #f5f5f5;
+}
+
+.comp.compPageEditor ._inputIcon {
+	position: absolute;
+	left: 8px;
+	top: 50%;
+	transform: translateY(-50%);
+	cursor: pointer;
+}
+
+.comp.compPageEditor ._dropdownContent ._eachIcon {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	text-align: left;
+}
+
+.comp.compPageEditor ._dropdownContent ._eachIcon svg {
+	margin-right: 5px;
+	justify-content: center;
+}
+
+.comp.compPageEditor ._dropdownContent ._iconName {
+	flex-grow: 1;
+	text-align: center;
+}
+
+.comp.compPageEditor ._simpleEditorGroupTitle ._controls {
+	flex: 1;
+	height: 100%;
+	display: flex;
+	justify-content: flex-end;
+}
+
+.comp.compPageEditor ._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon svg path,
+.comp.compPageEditor ._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon svg circle,
+.comp.compPageEditor ._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon svg rect,
+.comp.compPageEditor ._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon svg line {
+	fill: #fff;
+	stroke: #fff;
+}
+
+.comp.compPageEditor
+	._simpleEditorGroupTitle._gradient
+	._simpleEditorIcons
+	._eachIcon:hover
+	svg
+	path,
+.comp.compPageEditor
+	._simpleEditorGroupTitle._gradient
+	._simpleEditorIcons
+	._eachIcon:hover
+	svg
+	circle,
+.comp.compPageEditor
+	._simpleEditorGroupTitle._gradient
+	._simpleEditorIcons
+	._eachIcon:hover
+	svg
+	rect,
+.comp.compPageEditor
+	._simpleEditorGroupTitle._gradient
+	._simpleEditorIcons
+	._eachIcon:hover
+	svg
+	line,
+.comp.compPageEditor
+	._simpleEditorGroupTitle._gradient
+	._simpleEditorIcons
+	._eachIcon._active
+	svg
+	path,
+.comp.compPageEditor
+	._simpleEditorGroupTitle._gradient
+	._simpleEditorIcons
+	._eachIcon._active
+	svg
+	circle,
+.comp.compPageEditor
+	._simpleEditorGroupTitle._gradient
+	._simpleEditorIcons
+	._eachIcon._active
+	svg
+	rect,
+.comp.compPageEditor
+	._simpleEditorGroupTitle._gradient
+	._simpleEditorIcons
+	._eachIcon._active
+	svg
+	line {
+	fill-opacity: 0.5;
+	stroke-opacity: 0.5;
+}
+
+.comp.compPageEditor ._simpleEditorGroup ._simpleEditorGroupContent {
+	padding: 10px;
+	border-radius: 0px 0px 4px 4px;
+	background: rgba(248, 250, 251, 0.6);
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	justify-content: center;
+	align-items: center;
+}
+
+.comp.compPageEditor ._simpleEditorGroupContent ._editorLine {
+	width: 100%;
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	gap: 5px;
+}
+
+.comp.compPageEditor ._simpleEditorGroupContent ._editorLine ._simpleEditorPixelSize {
+	width: 100%;
+}
+
+.comp.compPageEditor ._simpleEditorGroupContent ._editorLine ._label {
+	color: #33333399;
+	font-family: Inter;
+	font-size: 12px;
+	font-weight: 500;
+	white-space: nowrap;
+}
+
+.comp.compPageEditor ._simpleEditorAngle {
+	min-height: 60px;
+	min-width: 60px;
+	border-radius: 50%;
+	background-color: #f9f9f9;
+	position: relative;
+}
+
+.comp.compPageEditor ._simpleEditorGroupContent ._simpleEditorAngle {
+	border: 1px solid rgba(67, 178, 255);
+}
+
+.comp.compPageEditor ._simpleEditorAngle ._angleTrack {
+	height: 100%;
+	position: absolute;
+	left: 50%;
+	transform-origin: center center;
+	margin-left: -4px;
+}
+
+.comp.compPageEditor ._simpleEditorAngle ._angleTrack::before {
+	content: '';
+	display: block;
+	width: 10px;
+	height: 10px;
+	background: linear-gradient(150deg, #43b2ff 13.39%, #52bd94 86.61%);
+	border-radius: 50%;
+	margin-top: 2px;
+	cursor: pointer;
+}
+
+.comp.compPageEditor ._simpleEditorButtonBar {
+	width: 100%;
+	height: 36px;
+	display: flex;
+	flex-direction: row;
+	padding: 3px;
+	font-family: Inter;
+	font-size: 12px;
+	gap: 5px;
+	background-color: #f9f9f9;
+	border-radius: 4px;
+	text-align: center;
+}
+
+.comp.compPageEditor ._simpleEditorButtonBar ._simpleButtonBarButton {
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 0px 8px;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.comp.compPageEditor ._simpleEditorButtonBar ._simpleButtonBarButton._selected {
+	background-color: #52bd94;
+	color: #fff;
+	box-shadow: 0px 1px 2px 0px #0000001a;
+}
+
+.comp.compPageEditor ._svgButton {
+	border: none;
+	background: transparent;
+}
+
+.comp.compPageEditor ._combineEditors {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	padding: 5px 15px;
+	gap: 10px;
+	width: 100%;
+}
+
+.comp.compPageEditor ._detailStyleEditor ._combineEditors ._simpleLabel {
+	padding: 0px;
+	padding-right: 5px;
+	flex: 1;
+}
+
+.comp.compPageEditor ._detailStyleEditor ._combineEditors ._simpleEditor {
+	width: auto;
+}
+
+.comp.compPageEditor ._combineEditors ._onePart {
+	flex: 1;
+}
+
+.comp.compPageEditor ._combineEditors ._twoParts {
+	flex: 2;
+}
+
+.comp.compPageEditor ._combineEditors ._oneAndHalfParts {
+	flex: 1.5;
+}
+
+.comp.compPageEditor ._combineEditors ._combineEditors {
+	padding: 0;
+}
+
+.comp.compPageEditor ._combineEditors ._eachProp {
+	padding: 0;
+}
+
+.comp.compPageEditor ._spacer {
+	width: 10px;
+	height: 15px;
+}
+
+.comp.compPageEditor ._combineEditors._spaceBetween {
+	justify-content: space-between;
+}
+
+.comp.compPageEditor ._combineEditors._spaceAround {
+	justify-content: space-around;
+}
+
+.comp.compPageEditor ._combineEditors._centered {
+	justify-content: center;
+}
+
+.comp.compPageEditor ._combineEditors._alignEnd {
+	justify-content: flex-end;
+}
+
+.comp.compPageEditor ._combineEditors._vertical {
+	flex-direction: column;
+	align-items: flex-start;
+}
+
+.comp.compPageEditor ._combineEditors._top {
+	align-items: flex-start;
+}
+
+.comp.compPageEditor ._detailStyleEditor {
+	min-width: 300px;
+	width: 300px;
+	min-height: 400px;
+	background-color: #fff;
+	box-shadow: 0px 2px 15px 0px #0000001a;
+	border: 1px solid #00000029;
+	position: fixed;
+	z-index: 4;
+	border-radius: 9px;
+	display: flex;
+	flex-direction: column;
+}
+
+.comp.compPageEditor ._detailStyleEditor ._header {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	padding: 10px;
+	border-bottom: 1px solid #0000000f;
+	font-family: Inter;
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 12px;
+	color: #000000;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	padding-left: 20px;
+	cursor: move;
+	height: 44px;
+}
+
+.comp.compPageEditor ._detailStyleEditor ._header ._title {
+	flex: 1;
+}
+
+.comp.compPageEditor ._detailStyleEditor ._header ._close {
+	cursor: pointer;
+}
+
+.comp.compPageEditor ._detailStyleEditor ._editorContent {
+	padding-top: 10px;
+	padding-bottom: 10px;
+	white-space: nowrap;
+	gap: 10px;
+	display: flex;
+	flex-direction: column;
+	max-height: 500px;
+	overflow: auto;
+	margin-bottom: 5px;
+}
+
+.comp.compPageEditor ._simpleLabel {
+	font-size: 12px;
+	font-family: Inter;
+	color: #222222b2;
+	white-space: nowrap;
+	font-weight: 500;
+}
+
+.comp.compPageEditor ._simpleLabel._withPadding {
+	padding: 5px 15px;
+}
+
+.comp.compPageEditor ._detailStyleEditor ._simpleLabel {
+	padding-left: 15px;
+	padding-right: 15px;
+}
+
+.comp.compPageEditor ._positionKnob #background {
+	fill: #f9f9f9;
+}
+
+.comp.compPageEditor ._positionKnob #knob {
+	fill: #fff;
+	filter: drop-shadow(0px 0px 3px #0000000d);
+}
+
+.comp.compPageEditor ._positionKnob #left,
+.comp.compPageEditor ._positionKnob #top,
+.comp.compPageEditor ._positionKnob #right,
+.comp.compPageEditor ._positionKnob #bottom {
+	fill: #e3e5ea;
+}
+
+.comp.compPageEditor ._positionKnob._left #left,
+.comp.compPageEditor ._positionKnob._top #top,
+.comp.compPageEditor ._positionKnob._right #right,
+.comp.compPageEditor ._positionKnob._bottom #bottom {
+	fill: #1893e9;
+}
+
+.comp.compPageEditor ._spacingEditor._margin {
+	margin: 0px 15px;
+	position: relative;
+	border-radius: 6px;
+	border: 2px solid #e3e5ea;
+	height: 166px;
+}
+
+.comp.compPageEditor ._spacingEditor._margin._hasValue,
+.comp.compPageEditor ._spacingEditor ._padding._hasValue {
+	border-color: #52bd94;
+}
+
+.comp.compPageEditor ._spacingEditor ._padding {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	border: 2px solid #e3e5ea;
+	height: 90px;
+	min-width: 58%;
+	border-radius: 6px;
+}
+
+.comp.compPageEditor ._spacingEditor ._label {
+	font-size: 8px;
+	font-family: Inter;
+	color: #d2d3db;
+	position: absolute;
+	bottom: 2px;
+	right: 6px;
+	text-transform: uppercase;
+	user-select: none;
+	white-space: nowrap;
+}
+
+.comp.compPageEditor ._spacingEditor ._label._hasValue {
+	color: #52bd94;
+}
+
+.comp.compPageEditor ._spacingEditor ._changer {
+	position: absolute;
+	width: 110%;
+	margin-left: -5%;
+	top: 0;
+	left: 0;
+	cursor: pointer;
+	background-color: #ffffff;
+	box-shadow: 2px 2px 4px 0px #0000001a;
+	border-radius: 4px;
+	z-index: 1;
+}
+
+.comp.compPageEditor ._spacingEditor ._changer ._header {
+	font-size: 11px;
+	font-family: Inter;
+	font-weight: 600;
+	color: #000000;
+	user-select: none;
+	padding: 5px;
+	background-color: #f9f9f9;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	border-bottom: 1px solid #0000000f;
+	padding-left: 20px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	height: 35px;
+}
+
+.comp.compPageEditor ._spacingEditor ._changer ._body {
+	padding: 10px 15px;
+	display: flex;
+	flex-direction: column;
+}
+
+.comp.compPageEditor ._spacingEditor ._value {
+	height: 25px;
+	min-width: 45px;
+	background: #f9f9f9;
+	border-radius: 4px;
+	font-family: Inter;
+	font-size: 12px;
+	line-height: 12px;
+	color: #000000;
+	position: absolute;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 4px;
+	cursor: pointer;
+}
+
+.comp.compPageEditor ._spacingEditor ._value._default {
+	color: #d2d3db;
+}
+
+.comp.compPageEditor ._spacingEditor ._padding ._value {
+	font-size: 10px;
+}
+
+.comp.compPageEditor ._spacingEditor ._square {
+	position: absolute;
+	width: 8px;
+	height: 8px;
+	border-radius: 1px;
+	background-color: #e3e5ea;
+	opacity: 0.5;
+}
+
+.comp.compPageEditor ._spacingEditor ._circle {
+	position: absolute;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background-color: #e3e5ea;
+	opacity: 0.5;
+}
+
+.comp.compPageEditor ._spacingEditor ._square._hasValue,
+.comp.compPageEditor ._spacingEditor ._circle._hasValue {
+	background-color: #52bd94;
+	opacity: 1;
+}
+
+.comp.compPageEditor ._spacingEditor ._top {
+	top: -5px;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+.comp.compPageEditor ._spacingEditor ._bottom {
+	bottom: -5px;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+.comp.compPageEditor ._spacingEditor ._left {
+	left: -5px;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+.comp.compPageEditor ._spacingEditor ._right {
+	right: -5px;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+.comp.compPageEditor ._spacingEditor ._value._top {
+	top: 5px;
+}
+.comp.compPageEditor ._spacingEditor ._value._bottom {
+	bottom: 5px;
+}
+.comp.compPageEditor ._spacingEditor ._value._left {
+	left: 5px;
+}
+.comp.compPageEditor ._spacingEditor ._value._right {
+	right: 5px;
+}
+
+.comp.compPageEditor ._screenSizes {
+	height: 38px;
+}
+
+.comp.compPageEditor ._buttonBar._screenSizes {
+	height: 70px;
+}
+
+.comp.compPageEditor ._screenSizes:hover {
+	background-color: #ffffff;
+}
+
+.comp.compPageEditor ._buttonBar._screenSizes i.fa:hover,
+.comp.compPageEditor ._buttonBar._screenSizes svg:hover,
+.comp.compPageEditor ._buttonBar._screenSizes i.fa.active,
+.comp.compPageEditor ._buttonBar._screenSizes svg.active {
+	color: #8e90a4;
+	border-bottom: 3px solid #8e90a4;
+	background: linear-gradient(
+		360deg,
+		rgba(142, 144, 164, 0.1) 0.78%,
+		rgba(142, 144, 164, 0.011) 157.03%
+	);
+}
+
+.comp.compPageEditor ._screenSizes i.fa {
+	color: #8e90a480;
+}
+
+.comp.compPageEditor i._rotate-before-270::before {
+	transform: rotate(270deg);
+	display: block;
+}
+
+.comp.compPageEditor ._buttonBarText {
+	position: absolute;
+	font-size: 11px;
+	width: 100%;
+	left: 0;
+	bottom: 0;
+	text-align: center;
+}
+
+.comp.compPageEditor ._inputBar {
+	display: flex;
+	gap: 10px;
+	align-items: center;
+	position: relative;
+	min-width: 220px;
+}
+
+.comp.compPageEditor ._topLeftCenterBarGrid {
+	display: flex;
+	flex: 1;
+	align-items: center;
+	justify-content: center;
+}
+
+.comp.compPageEditor ._iframeHolder {
+	flex: 1;
+	position: relative;
+	display: flex;
+	gap: 20px;
+	transform-origin: left top;
+}
+
+.comp.compPageEditor ._iframeHeader {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 10px;
+	background-color: #fff;
+	border-radius: 6px;
+	font-family: Inter;
+	font-size: 11px;
+	font-weight: 600;
+	color: #333333e5;
+	cursor: pointer;
+	transform-origin: top left;
+	padding-left: 30px;
+	border: 1.5px solid #3333331a;
+}
+
+.comp.compPageEditor ._iframeCenter {
+	display: table-cell;
+	flex: 1;
+	padding: 70px;
+	padding-top: 30px;
+	overflow: auto;
+}
+
+.comp.compPageEditor ._dummyDevice {
+	min-width: 70px;
+}
+
+.comp.compPageEditor ._iframe {
+	display: flex;
+	overflow: auto;
+	transform-origin: top left;
+	flex-direction: column;
+	gap: 10px;
+	overflow: hidden;
+}
+
+.comp.compPageEditor ._iframe iframe {
+	border: none;
+	width: 100%;
+}
+
+.comp.compPageEditor ._urlInput._peInput:focus-within {
+	width: 500px;
+}
+
+.comp.compPageEditor ._dndGridMain {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+.comp.compPageEditor ._dndContentContainer {
+	display: flex;
+	flex: 1;
+	height: calc(100% - 70px);
+}
+
+.comp.compPageEditor ._dndIframeContentContainer {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	width: calc(100% - 70px);
+	position: relative;
+}
+
+.comp.compPageEditor ._selectionBar {
+	display: flex;
+	background-color: #fff;
+	height: 29px;
+	padding-left: 28px;
+	z-index: 1;
+}
+
+.comp.compPageEditor ._selectionBar._previewMode {
+	height: 0px;
+}
+
+.comp.compPageEditor ._selectionBar ._iconMenu {
+	min-height: 100%;
+}
+
+.comp.compPageEditor ._eachSelectionBar {
+	font-size: 10px;
+	font-weight: 600;
+	padding: 3px;
+	display: flex;
+	align-items: center;
+	position: relative;
+	cursor: pointer;
+	user-select: none;
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	width: auto;
+	text-transform: uppercase;
+	color: #8e90a4b2;
+}
+
+.comp.compPageEditor ._eachSelectionBar i.fa,
+.comp.compPageEditor ._iconMenuBody i.fa {
+	font-size: 11px;
+	width: 10px;
+}
+
+.comp.compPageEditor ._iframeContainer {
+	display: flex;
+	flex: 1;
+	max-height: calc(100% - 29px);
+}
+
+.comp.compPageEditor ._dragBar {
+	position: relative;
+	width: 100%;
+	color: #8e90a4;
+}
+
+.comp.compPageEditor ._dragBar._unbuckled {
+	display: flex;
+	justify-content: space-between;
+	padding: 8px 6px 8px 6px;
+}
+
+.comp.compPageEditor ._dragBar ._buckle {
+	cursor: pointer;
+	outline: none;
+	position: absolute;
+	left: -20px;
+	top: 8px;
+}
+
+.comp.compPageEditor ._dragBar ._leftIcon,
+.comp.compPageEditor ._dragBar ._rightIcon {
+	outline: none;
+	cursor: pointer;
+}
+
+.comp.compPageEditor ._iframeContainer._previewMode {
+	max-height: 100%;
+}
+
+.comp.compPageEditor ._previewModeCloser {
+	position: fixed;
+	bottom: 20px;
+	left: 50%;
+	transform: translateX(-50%);
+	cursor: pointer;
+	width: 30px;
+	height: 30px;
+	background-color: #aaa7;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1.5px solid;
+	transition: bottom 0.5s;
+}
+
+.comp.compPageEditor ._previewModeCloser:hover {
+	bottom: 25px;
+}
+
+.comp.compPageEditor ._tabBar {
+	width: 100%;
+	display: flex;
+	background: #f9f9f9;
+	height: 53px;
+	justify-content: space-around;
+	align-items: center;
+	flex-shrink: 0;
+}
+
+.comp.compPageEditor ._tabBar svg {
+	cursor: pointer;
+	outline: none;
+}
+
+.comp.compPageEditor ._tabBar svg path,
+.comp.compPageEditor ._tabBar svg rect {
+	transition:
+		fill 0.5s,
+		fill-opacity 0.5s;
+	fill: #8e90a4;
+	fill-opacity: 0.2;
+}
+
+.comp.compPageEditor ._tabBar svg:hover path,
+.comp.compPageEditor ._tabBar svg.active path,
+.comp.compPageEditor ._tabBar svg:hover rect,
+.comp.compPageEditor ._tabBar svg.active rect {
+	fill: #52bd94;
+	fill-opacity: 1;
+}
+.comp.compPageEditor i._separator {
+	opacity: 0.1;
+}
+
+.comp.compPageEditor ._styleButtonContainer button {
+	border: none;
+	background-color: transparent;
+	color: #d2d3db;
+	display: flex;
+	gap: 5px;
+	justify-content: center;
+	align-items: center;
+	height: 30px;
+	border-radius: 6px;
+	z-index: 2;
+	padding: 0;
+	transition: none;
+}
+
+.comp.compPageEditor ._styleButtonContainer button:hover {
+	background-color: #52bd94;
+	color: #fff;
+	box-shadow: 0px 1px 3px 0px #0000001a;
+}
+.comp.compPageEditor ._styleButtonContainer button:hover svg path {
+	fill: #fff;
+}
+.comp.compPageEditor ._styleButtonContainer button svg path {
+	fill: #d2d3db;
+}
+.comp.compPageEditor ._styleButtonContainer ._seperator {
+	height: 12px;
+	width: 1px;
+	border-right: 1px solid #d2d3db;
+}
+
+.comp.compPageEditor ._styleButtonContainer {
+	background: #f9f9f9;
+	border-radius: 6px;
+	margin-left: 15px;
+	margin-right: 15px;
+	height: 45px;
+	position: relative;
+	padding: 0px 5px;
+	margin-bottom: 10px;
+}
+
+.comp.compPageEditor ._addArrayItemButton {
+	color: #ffffff;
+	background: #52bd94;
+	border-radius: 2px;
+	padding: 3px 8px;
+	border: none;
+	box-shadow: 0px 1px 6px 2px #0000001a;
+}
+
+.comp.compPageEditor .commonTriStateCheckbox::before {
+	background: black;
+}
+
+.comp.compPageEditor ._propContainer {
+	width: 100%;
+	flex: 1;
+}
+
+.comp.compPageEditor ._propertyEditor {
+	display: flex;
+	flex-direction: column;
+	position: relative;
+}
+
+.comp.compPageEditor ._eachProp {
+	font-size: 12px;
+	padding: 5px 20px;
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	border-radius: 4px;
+	position: relative;
+}
+
+.comp.compPageEditor ._eachProp svg {
+	cursor: pointer;
+}
+
+.comp.compPageEditor ._pvEditor {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+
+.comp.compPageEditor ._pvEditor ._microToggle {
+	width: 20px;
+	background-color: #f9f9f9;
+	height: 10px;
+	border-radius: 2px;
+	position: relative;
+	cursor: pointer;
+	transition:
+		left 0.5s,
+		background-color 0.5s;
+}
+
+.comp.compPageEditor ._pvEditor ._microToggle::before {
+	position: absolute;
+	float: left;
+	left: -10%;
+	top: -25%;
+	border-radius: 2px;
+	content: '';
+	width: 65%;
+	height: 150%;
+	background-color: #e8eaeb;
+	transition:
+		left 0.5s,
+		background-color 0.5s;
+	font-size: 9px;
+	text-align: center;
+	font-weight: bold;
+	padding: 0px 2px;
+	text-align: center;
+}
+
+.comp.compPageEditor ._pvEditor ._microToggle._on {
+	background-color: #e8eaeb;
+}
+
+.comp.compPageEditor ._pvEditor ._microToggle._on::before {
+	left: 50%;
+	background-color: #c8cacb;
+	color: #eee;
+}
+
+.comp.compPageEditor ._pvValueEditor {
+	display: flex;
+	gap: 5px;
+	flex: 1;
+}
+
+.comp.compPageEditor ._propLabel {
+	color: #22222299;
+	display: flex;
+	gap: 5px;
+	align-items: center;
+	text-transform: capitalize;
+	font-family: Inter;
+	white-space: nowrap;
+}
+
+.comp.compPageEditor ._propLabel i.fa {
+	cursor: pointer;
+}
+
+.comp.compPageEditor ._propValue ._peInput {
+	width: 20px;
+}
+
+.comp.compPageEditor ._propValue._padding {
+	background-color: #f9f9f977;
+	border: 1px solid #f9f9f9;
+	border-radius: 4px;
+	min-width: 300px;
+}
+
+.comp.compPageEditor ._propValue ._propertyGroup {
+	min-width: 300px;
+	overflow: auto;
+}
+
+.comp.compPageEditor ._tooltip {
+	display: flex;
+	align-items: center;
+}
+
+.comp.compPageEditor ._description {
+	font-size: 10px;
+	background-color: #8e90a433;
+	color: #fff;
+	width: 11px;
+	height: 11px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 50%;
+	text-transform: initial;
+}
+
+.comp.compPageEditor ._tooltip:hover::after {
+	content: attr(title);
+	float: left;
+	min-width: 50px;
+	z-index: 9;
+	position: absolute;
+	font-size: 11px;
+	font-weight: normal;
+	width: 150px;
+	padding: 5px;
+	background-color: #fffe;
+	border-radius: 4px;
+	border: 1px solid #eee;
+	color: #777;
+	margin-top: 10px;
+	white-space: break-spaces;
+}
+
+.comp.compPageEditor ._pvExpressionEditor {
+	display: flex;
+}
+
+.comp.compPageEditor ._pillTag {
+	border: 1px solid;
+	padding: 2px 7px;
+	border-radius: 10px;
+	background-color: #fff;
+	font-size: 10px;
+	cursor: pointer;
+}
+
+.comp.compPageEditor i._pillTag.fa {
+	font-size: 10px !important;
+}
+
+.comp.compPageEditor ._iconSelectionEditor {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+
+.comp.compPageEditor ._iconSelectionButtons {
+	display: flex;
+	flex-direction: row;
+	gap: 10px;
+	align-items: center;
+	flex-wrap: wrap;
+}
+
+.comp.compPageEditor ._iconSelectionButton {
+	background-color: #fff;
+	padding: 2px;
+	border-radius: 2px;
+	border: 1px solid #eee;
+	cursor: pointer;
+	width: 30px;
+	text-align: center;
+	font-size: 24px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 30px;
+	border-radius: 4px;
+}
+
+.comp.compPageEditor ._iconSelectionButton.active {
+	background-color: #eee;
+}
+
+.comp.compPageEditor ._smallEditorContainer {
+	display: flex;
+	flex: 1;
+	align-items: center;
+	gap: 10px;
+}
+
+.comp.compPageEditor ._smallEditorContainer i.fa {
+	cursor: pointer;
+}
+
+.comp.compPageEditor ._propertyGroup {
+	display: flex;
+	flex-direction: column;
+	border-bottom: 1px solid #0000000d;
+}
+
+.comp.compPageEditor ._propertyGroup._opened ._propertyGroupContent {
+	padding-bottom: 8px;
+}
+
+.comp.compPageEditor ._propertyGroupContent {
+	transition: padding-bottom 0s;
+}
+
+.comp.compPageEditor ._propertyGroupHeader {
+	font-family: Inter;
+	font-size: 12px;
+	color: #333;
+	padding: 14px 15px;
+	cursor: pointer;
+	border-radius: 3px;
+	display: flex;
+	align-items: center;
+	flex-direction: row;
+	gap: 5px;
+	font-weight: 600;
+}
+
+.comp.compPageEditor ._propertyGroupHeaderStar {
+	fill: #52bd94;
+	transform: scale(1.4);
+}
+
+.comp.compPageEditor ._propertyGroupHeaderIcon {
+	flex: 1;
+	display: flex;
+	flex-direction: row;
+	gap: 15px;
+	font-size: 15px;
+	font-weight: 200;
+	justify-content: flex-end;
+	font-family: monospace;
+}
+
+.comp.compPageEditor ._propertyGroup._closed ._propertyGroupHeader {
+	margin-bottom: 0px;
+}
+
+.comp.compPageEditor ._propertyGroupHeader i.fa {
+	transition: transform 0.5s;
+	color: #eee;
+}
+
+.comp.compPageEditor ._propertyGroup._closed i.fa {
+	transform: rotate(-90deg);
+}
+
+.comp.compPageEditor ._propertyGroup ._detailsSwitchEditor {
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	color: #333333;
+}
+
+.comp.compPageEditor ._propertyGroup ._detailsSwitchEditor._open,
+.comp.compPageEditor ._propertyGroup ._detailsSwitchEditor:hover {
+	color: #2680eb;
+}
+
+.comp.compPageEditor ._multiValueEditor {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+
+.comp.compPageEditor ._eachProperty {
+	display: flex;
+	gap: 10px;
+	align-items: center;
+	border-bottom: 1px solid #ddd;
+	padding: 5px;
+	padding-top: 20px;
+	position: relative;
+}
+
+.comp.compPageEditor ._eachProperty i.fa._controlIcons {
+	color: #aaa;
+	cursor: pointer;
+	font-size: 13px;
+	position: absolute;
+	top: 5px;
+	left: 5px;
+	background-color: #eee;
+	width: 14px;
+	height: 14px;
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 3px;
+	font-size: 12px;
+}
+
+.comp.compPageEditor ._eachProperty i.fa-close._controlIcons {
+	left: 24px;
+}
+
+.comp.compPageEditor ._eachProperty:hover i.fa {
+	color: inherit;
+}
+
+.comp.compPageEditor ._eachProperty ._pvEditor {
+	flex: 1;
+}
+
+.comp.compPageEditor ._validationEditor,
+.comp.compPageEditor ._animationValueEditor {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	flex: 1;
+}
+
+.comp.compPageEditor ._eachProperty ._eachProp {
+	padding: 5px 0px;
+}
+
+.comp.compPageEditor ._codeEditor {
+	display: flex;
+	visibility: hidden;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	align-items: center;
+	z-index: 3;
+	opacity: 0;
+	transition: opacity 1s;
+}
+
+.comp.compPageEditor ._codeEditorContent {
+	background-color: #fff;
+	width: 70vw;
+	min-height: 80vh;
+	max-height: 80vh;
+	margin-left: 5vw;
+	display: flex;
+	border-radius: 4px;
+	box-shadow:
+		0 15px 30px 0 rgba(0, 0, 0, 0.1),
+		0 5px 15px 0 rgba(0, 0, 0, 0.1);
+	flex-direction: column;
+	opacity: 0;
+	transition:
+		margin-left 1s,
+		width 1s,
+		height 1s,
+		min-height 1s,
+		max-height 1s,
+		opacity 1s,
+		visibility 1s;
+}
+
+.comp.compPageEditor ._codeEditor.show ._codeEditorContent {
+	opacity: 1;
+}
+
+.comp.compPageEditor ._codeEditor.show {
+	opacity: 1;
+	visibility: visible;
+}
+
+.comp.compPageEditor ._codeEditorContent._fullScreen {
+	width: 98vw;
+	min-height: 98vh;
+	max-height: 98vh;
+	margin-left: 1vw;
+}
+
+.comp.compPageEditor ._codeEditorContent ._codeEditorHeader {
+	background-color: #eeea;
+	display: flex;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+}
+
+.comp.compPageEditor ._codeEditorContent ._codeFunctions {
+	flex: 1;
+	display: flex;
+	gap: 5px;
+	padding: 8px;
+	align-items: center;
+}
+
+.comp.compPageEditor ._codeEditorContent ._codeFunctions select._peSelect {
+	text-transform: none;
+}
+
+.comp.compPageEditor ._codeEditorContent ._codeButtons {
+	display: flex;
+
+	justify-content: center;
+	align-items: center;
+}
+
+.comp.compPageEditor ._codeEditorContent ._iconMenu {
+	width: 32px;
+}
+
+.comp.compPageEditor ._codeEditorContent ._iconMenuSeperator {
+	border: 1.5px solid #ccc;
+	height: 75%;
+	width: 0;
+	margin-right: 5px;
+	border-radius: 4px;
+	margin-left: 5px;
+}
+
+.comp.compPageEditor ._addPropertyButtonContainer {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 10px;
+}
+
+.comp.compPageEditor ._addPropertyButtonContainer button {
+	color: #ffffff;
+	background-color: #52bd94;
+	border-radius: 4px;
+	border: none;
+	padding: 8px 10px;
+	box-shadow:
+		0 15px 30px 0 rgba(0, 0, 0, 0.1),
+		0 5px 15px 0 rgba(0, 0, 0, 0.1);
+}
+
+.comp.compPageEditor ._addPropertyButtonContainer button:hover {
+	background-color: #52bd94cc;
+}
+
+.comp.compPageEditor ._popupContainer._formEditor {
+	width: 600px;
+	height: 650px;
+}
+
+.comp.compPageEditor ._popupContainer._formEditor ._formEditorContent {
+	height: 100%;
+	width: 100%;
+	padding: 20px;
+}
+
+.comp.compPageEditor ._popupContainer._formEditor ._formButton {
+	display: flex;
+	justify-content: space-between;
+}
+
+.comp.compPageEditor ._popupContainer._formEditor ._formButton .fa-close {
+	margin-top: 10px;
+	margin-right: 10px;
+	cursor: pointer;
+	transition: transform 0.2s ease-in-out;
+}
+
+.comp.compPageEditor ._popupContainer._formEditor ._formButton ._backButton {
+	display: flex;
+	margin-top: 10px;
+	margin-left: 10px;
+	color: rgba(0, 0, 0, 0.4);
+	font-family: Inter;
+	font-size: 14px;
+	font-style: normal;
+	font-weight: 600;
+	line-height: 14px;
+	cursor: pointer;
+}
+
+.comp.compPageEditor ._popupContainer._formEditor ._formEditorContent ._generateButton {
+	width: 125px;
+	padding: 12px;
+	border-radius: 4px;
+	background: #0085f2;
+	box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.1);
+	color: #fff;
+	font-family: Inter;
+	font-size: 14px;
+	font-style: normal;
+	font-weight: 600;
+	line-height: 14px;
+	cursor: pointer;
+	transition: transform 0.2s ease-in-out;
+}
+
+.comp.compPageEditor ._popupContainer._formEditor ._formEditorContent ._formEditorBottomBorder {
+	margin-top: 15px;
+	margin-bottom: 10px;
+	background: rgba(0, 0, 0, 0.1);
+	height: 1px;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+.comp.compPageEditor ._popupContainer._formEditor ._formEditorContent ._formEditorHeader {
+	color: rgba(0, 0, 0, 0.8);
+	font-family: Inter;
+	font-size: 16px;
+	font-style: normal;
+	font-weight: 600;
+	line-height: 16px;
+	letter-spacing: 0.16px;
+	text-transform: uppercase;
+	padding: 5px;
+}
+
+.comp.compPageEditor ._popupContainer._formEditor ._formEditorContent ._formEditorSubHeader {
+	color: rgba(0, 0, 0, 0.4);
+	font-family: Inter;
+	font-size: 12px;
+	font-style: normal;
+	font-weight: 400;
+	line-height: 12px;
+	letter-spacing: 0.12px;
+	padding: 5px;
+}
+
+.comp.compPageEditor ._popupContainer._formEditor ._formEditorContent ._formEditorFilesTitle {
+	color: rgba(0, 0, 0, 0.4);
+	font-family: Inter;
+	font-size: 12px;
+	font-style: normal;
+	font-weight: 500;
+	line-height: 12px;
+	letter-spacing: 0.12px;
+	padding: 5px;
+}
+
+.comp.compPageEditor ._popupContainer._formEditor ._formEditorContent ._formEditorOptions {
+	padding: 5px;
+	width: 100%;
+	height: 42vh;
+	display: flex;
+	flex-wrap: wrap;
+	margin-top: 10px;
+	overflow-y: scroll;
+}
+
+.comp.compPageEditor
+	._popupContainer._formEditor
+	._formEditorContent
+	._formEditorOptionsPagination {
+	width: 100%;
+	height: 40px;
+	display: flex;
+	justify-content: space-between;
+	align-items: end;
+}
+
+.comp.compPageEditor ._formEditorOptionsPagination ._paginationPrev {
+	width: 100px;
+	text-align: left;
+	color: rgba(0, 0, 0, 0.4);
+	font-family: Inter;
+	font-size: 14px;
+	font-style: normal;
+	font-weight: 600;
+	line-height: 14px;
+	cursor: pointer;
+}
+
+.comp.compPageEditor ._formEditorOptionsPagination ._paginationPages {
+	width: 100px;
+	text-align: center;
+	color: rgba(0, 0, 0, 0.4);
+	font-family: Inter;
+	font-size: 14px;
+	font-style: normal;
+	font-weight: 600;
+	line-height: 14px;
+}
+
+.comp.compPageEditor ._formEditorOptionsPagination ._paginationNext {
+	width: 100px;
+	text-align: right;
+	color: rgba(0, 0, 0, 0.4);
+	font-family: Inter;
+	font-size: 14px;
+	font-style: normal;
+	font-weight: 600;
+	line-height: 14px;
+	cursor: pointer;
+}
+
+.comp.compPageEditor ._imagePopupContainer ._fileBrowser {
+	height: 60vh;
+}
+
+.comp.compPageEditor ._paginationContainer ._prevButton {
+	cursor: pointer;
+	color: rgba(0, 0, 0, 0.6);
+}
+
+.comp.compPageEditor ._paginationContainer ._nextButton {
+	cursor: pointer;
+	color: rgba(0, 0, 0, 0.6);
+}
+
+.comp.compPageEditor ._paginationContainer ._pageButton {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 50%;
+	width: 40px;
+	height: 40px;
+	background: rgba(0, 0, 0, 0.05);
+	cursor: pointer;
+}
+
+.comp.compPageEditor ._paginationContainer ._pageButtonActive {
+	color: #fff;
+	background: #0085f2;
+}
+
+.comp.compPageEditor ._popupContainer._formEditor ._formEditorOptions ._formEditorEachOption {
+	width: 161px;
+	height: 201px;
+	display: flex;
+	flex-direction: column;
+	padding: 10px;
+	cursor: pointer;
+}
+
+.comp.compPageEditor
+	._popupContainer._formEditor
+	._formEditorEachOption:hover
+	._formEditorEachOptionPreview {
+	box-shadow: 0px 3px 8px 0px rgba(0, 0, 0, 0.1);
+	border: 1px solid rgba(66, 126, 228, 0.8);
+}
+
+.comp.compPageEditor
+	._popupContainer._formEditor
+	._formEditorEachOption
+	._formEditorEachOptionPreview {
+	height: 80%;
+	border-radius: 4px;
+	background: #f9f9f9;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.comp.compPageEditor
+	._popupContainer._formEditor
+	._formEditorEachOption
+	._formEditorEachOptionName {
+	margin-top: 15px;
+	color: rgba(0, 0, 0, 0.8);
+	font-family: Inter;
+	font-size: 12px;
+	font-style: normal;
+	font-weight: 600;
+	line-height: 12px;
+	letter-spacing: 0.12px;
+}
+
+.comp.compPageEditor ._popupContainer._formEditor ._formEditorContent ._formElements {
+	height: 400px;
+	width: 100%;
+	margin-bottom: 20px;
+	display: flex;
+	overflow-y: scroll;
+}
+
+.comp.compPageEditor ._popupContainer._formEditor ._formElements ._formFieldsAndButtons {
+	flex: 1;
+}
+
+.comp.compPageEditor
+	._popupContainer._formEditor
+	._formFieldsAndButtons
+	._formFieldsAndButtonsTitle {
+	color: rgba(0, 0, 0, 0.4);
+	font-family: Inter;
+	font-size: 12px;
+	font-style: normal;
+	font-weight: 500;
+	line-height: 12px;
+	letter-spacing: 0.12px;
+	margin-left: 15px;
+}
+
+.comp.compPageEditor ._popupContainer._formEditor ._formFieldsAndButtons ._formFieldAndButton {
+	height: 44px;
+	border-radius: 4px;
+	background: #f9f9f9;
+	margin: 15px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.comp.compPageEditor ._popupContainer._formEditor ._formFieldAndButton ._formFieldAndButtonTitle {
+	color: rgba(0, 0, 0, 0.8);
+	font-family: Inter;
+	font-size: 14px;
+	font-style: normal;
+	font-weight: 500;
+	line-height: 14px;
+	padding-left: 20px;
+}
+
+.comp.compPageEditor
+	._popupContainer._formEditor
+	._formFieldAndButton
+	._formFieldAndButtonCheckbox {
+	padding-right: 20px;
+	width: 18px;
+	height: 18px;
+	cursor: pointer;
+}
+
+.comp.compPageEditor ._popupBackground ._popupContainer ._progressBar {
+	flex: 1;
+	text-align: center;
+	padding-top: 150px;
+}
+
+.comp.compPageEditor ._popupBackground ._popupContainer ._progressBar i.fa {
+	font-size: 50px;
+}
+
+.comp.compPageEditor ._popupBackground ._popupContainer._popupContainerWithPreview {
+	flex-direction: row;
+	width: 50vw;
+	height: 60vh;
+}
+
+.comp.compPageEditor
+	._popupBackground
+	._popupContainer._popupContainerWithPreview
+	._mdPreviewContainer {
+	overflow: auto;
+}
+
+.comp.compPageEditor
+	._popupBackground
+	._popupContainer._popupContainerWithPreview
+	._mdPreviewContainer
+	._markDownContent {
+	height: 400px;
+	width: 400px;
+}
+
+.comp.compPageEditor ._popupBackground ._popupContainer ._jsonEditorContainer {
+	border: 1px solid #eee;
+	border-radius: 4px;
+	padding: 2px;
+	width: 400px;
+	height: 400px;
+	transition:
+		width 0s,
+		height 0s;
+}
+
+.comp.compPageEditor ._popupBackground ._popupContainer ._jsonEditorContainer > * {
+	transition:
+		width 0s,
+		height 0s;
+}
+
+.comp.compPageEditor ._popupBackground ._popupContainer ._iconSelectionBrowser {
+	height: 450px;
+	width: 540px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.comp.compPageEditor ._popupBackground ._popupContainer ._iconSelectionBrowser ._selectors {
+	display: flex;
+	gap: 5px;
+	align-items: center;
+}
+
+.comp.compPageEditor ._popupBackground ._popupContainer ._iconSelectionDisplay {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 20px;
+	overflow: auto;
+}
+
+.comp.compPageEditor ._popupBackground ._popupContainer ._iconSelectionDisplay._inProgress {
+	height: 100%;
+	justify-content: center;
+	align-items: center;
+	padding-bottom: 5%;
+}
+
+.comp.compPageEditor ._popupBackground ._popupContainer ._iconSelectionDisplay ._eachIcon {
+	width: 90px;
+	height: 90px;
+	display: flex;
+	flex-direction: column;
+	font-size: 11px;
+	cursor: pointer;
+	align-items: center;
+	padding: 5px;
+	border-radius: 5px;
+	background-color: #fafafa;
+	justify-content: center;
+	gap: 15px;
+	text-align: center;
+	word-break: break-all;
+	position: relative;
+}
+
+.comp.compPageEditor ._popupBackground ._popupContainer ._iconSelectionDisplay ._eachIcon:hover {
+	background-color: #ddd;
+}
+
+.comp.compPageEditor ._popupBackground ._popupContainer ._pathParts {
+	display: flex;
+	flex-direction: row;
+	gap: 5px;
+	flex: 1;
+}
+
+.comp.compPageEditor ._popupBackground ._popupContainer ._pathContainer {
+	display: flex;
+	gap: 10px;
+}
+
+.comp.compPageEditor ._popupBackground ._popupContainer ._pathContainer i.fa {
+	cursor: pointer;
+}
+
+.comp.compPageEditor ._popupBackground ._popupContainer ._eachIcon input {
+	font-size: 11px;
+	border: none;
+	width: 80px;
+	background-color: #eee;
+	padding: 0px 5px;
+}
+
+.comp.compPageEditor ._popupBackground ._popupContainer ._eachIcon ._deleteButton {
+	position: absolute;
+	display: none;
+	right: 5px;
+	top: 5px;
+}
+.comp.compPageEditor ._popupBackground ._popupContainer ._eachIcon:hover ._deleteButton {
+	display: block;
+}
+
+.comp.compPageEditor ._popupBackground ._popupContainer ._pathParts span {
+	padding: 0px 5px;
+}
+
+.comp.compPageEditor ._popupBackground ._popupContainer ._eachIcon._upload {
+	border: 2px dashed #ccc;
+}
+
+.comp.compPageEditor ._popupBackground ._popupContainer ._eachIcon input._peInput[type='file'] {
+	position: absolute;
+	opacity: 0;
+	width: 100%;
+	height: 100%;
+	cursor: pointer;
+}
+
+.comp.compPageEditor ._popupBackground ._popupContainer ._pathParts span._clickable {
+	cursor: pointer;
+	border-radius: 3px;
+}
+
+.comp.compPageEditor ._popupBackground ._popupContainer ._pathParts span._clickable:hover {
+	color: #000;
+	background-color: #eee;
+}
+
+.comp.compPageEditor ._popupMenuBackground,
+.comp.compPageEditor ._popupBackground {
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	width: 100vw;
+	height: 100vh;
+	z-index: 8;
+}
+
+.comp.compPageEditor ._popupBackground {
+	background: #0004;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100vw;
+}
+
+.comp.compPageEditor ._popupBackground ._popupContainer {
+	background-color: #fff;
+	padding: 15px;
+	border-radius: 3px;
+	max-width: 60vw;
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+}
+
+.comp.compPageEditor ._popupBackground ._popupButtons {
+	display: flex;
+	gap: 10px;
+	justify-content: end;
+}
+
+.comp.compPageEditor ._popupMenuBackground ._popupMenuContainer {
+	display: flex;
+	flex-direction: column;
+	background-color: #fff;
+	position: absolute;
+	border: 1px solid #eee;
+	font-size: 13px;
+}
+
+.comp.compPageEditor ._popupMenuBackground ._popupMenuContainer._plain {
+	border: none;
+	background-color: transparent;
+}
+
+.comp.compPageEditor ._popupMenuBackground ._popupMenuContainer._compMenu {
+	left: 70px;
+	top: 70px;
+	height: calc(100% - 70px);
+	width: 0px;
+	overflow: hidden;
+	transition: width 0.5s ease-in-out;
+	display: flex;
+	flex-direction: row;
+	border: none;
+	opacity: 0;
+}
+
+.comp.compPageEditor ._popupMenuContainer._compMenu ._left {
+	flex: 100px;
+	display: flex;
+	flex-direction: column;
+	padding: 15px 0px 0px 15px;
+	border-right: 1px solid rgba(0, 0, 0, 0.1);
+	display: flex;
+	gap: 15px;
+}
+
+.comp.compPageEditor ._popupMenuContainer._compMenu ._right {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}
+
+.comp.compPageEditor ._popupMenuContainer._compMenu._compMenuRight {
+	width: 0px;
+	left: 320px;
+	border: none;
+}
+
+.comp.compPageEditor ._popupMenuContainer._compMenu._show._compMenuRight {
+	display: flex;
+	flex-direction: column;
+	width: 320px;
+	border-right: 1px solid rgba(0, 0, 0, 0.1);
+	box-shadow: 4px 0px 15px 0px #00000008;
+}
+
+.comp.compPageEditor ._popupMenuContainer._compMenu._compMenuRight._sections {
+	padding: 10px;
+	gap: 10px;
+	overflow: auto;
+}
+
+.comp.compPageEditor ._popupMenuContainer._compMenu ._compList::-webkit-scrollbar {
+	width: 4px;
+}
+
+.comp.compPageEditor ._popupMenuContainer._compMenu iframe {
+	flex: 1;
+}
+
+.comp.compPageEditor ._popupMenuContainer._compMenu._show {
+	width: 250px;
+	opacity: 1;
+}
+
+.comp.compPageEditor ._popupMenuContainer._compMenu ._tabContainerContainer {
+	display: flex;
+	flex-direction: row;
+	margin-right: 19px;
+}
+
+.comp.compPageEditor ._tabContainer {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	padding: 5px;
+	cursor: pointer;
+	background-color: #f9f9f9;
+	border-radius: 6px;
+	gap: 10px;
+	font-size: 14px;
+	font-weight: 600;
+	font-family: Inter;
+	flex: 1;
+}
+
+.comp.compPageEditor ._tabContainer ._tab {
+	padding: 6px 10px;
+	transition: background-color 0.5s;
+	border: none;
+	background: none;
+	font-family: 'Inter';
+	font-weight: 500;
+	font-size: 13px;
+	text-transform: none;
+	color: #33333399;
+	flex: 1;
+	height: 30px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.comp.compPageEditor ._topRightBarGrid ._tabContainer {
+	padding: 3px 9px;
+}
+
+.comp.compPageEditor ._topRightBarGrid ._tabContainer ._tab {
+	padding: 4px 10px;
+}
+
+.comp.compPageEditor ._tabContainer ._tab._personalize {
+	padding: 5px 5px 7px 5px;
+}
+
+.comp.compPageEditor ._tabContainer ._tab:hover {
+	background: none;
+	color: #333333;
+	font-weight: 600;
+}
+
+.comp.compPageEditor ._tabContainer ._tab._selected {
+	background-color: #ffffff;
+	color: #000;
+	border-radius: 4px;
+	box-shadow: 0px 2px 4px 0px #0000001a;
+	font-weight: 600;
+}
+
+.comp.compPageEditor ._tab:hover svg ._blackGradient {
+	fill: url(#blackGradient);
+}
+
+.comp.compPageEditor ._tab:hover svg ._yellow2Gradient {
+	fill: url(#yellow2Gradient);
+}
+
+.comp.compPageEditor ._tab:hover svg ._yellow1Gradient {
+	fill: url(#yellow1Gradient);
+}
+
+.comp.compPageEditor ._tab:hover svg ._blueGradient {
+	fill: url(#blueGradient);
+}
+
+.comp.compPageEditor ._compTemplateSections {
+	margin: 15px;
+}
+
+.comp.compPageEditor ._compTemplateSections ._tab {
+	flex: none;
+}
+
+.comp.compPageEditor ._tab._inActive svg {
+	color: #99999973;
+}
+
+.comp.compPageEditor ._topRightBarGrid svg._iconHelperSVG {
+	width: 24px;
+	height: 20px;
+}
+
+.comp.compPageEditor ._topRightBarGrid ._tab._reload svg._iconHelperSVG {
+	width: 18px;
+}
+
+.comp.compPageEditor ._topRightBarGrid button {
+	height: 34px;
+	padding: 0px 18px;
+	font-family: 'Inter';
+	font-size: 13px;
+	line-height: 14px;
+	font-weight: 600;
+	text-transform: none;
+	border-radius: 8px;
+	border: none;
+}
+
+.comp.compPageEditor ._topRightBarGrid button._save {
+	background: linear-gradient(180deg, #4bc6ff 0%, #1893e9 100%);
+	color: #fff;
+}
+
+.comp.compPageEditor ._topRightBarGrid button._publish {
+	background: linear-gradient(180deg, #7cd9b6 0%, #52bd94 100%);
+	color: #fff;
+}
+
+.comp.compPageEditor ._popupMenuContainer._compMenu ._compMenuSearch {
+	font-family: 'Inter';
+	font-size: 12px;
+	font-weight: 600;
+	padding: 10px 11px;
+	border: 1.5px solid transparent;
+	border-radius: 6px;
+	outline: none;
+	background-color: #f9f9f9;
+	color: #000000;
+	margin-right: 19px;
+}
+
+.comp.compPageEditor ._popupMenuContainer._compMenu ._compMenuSearch:focus {
+	border-color: #000000;
+}
+
+.comp.compPageEditor ._popupMenuContainer._compMenu ._compMenuSearch::placeholder {
+	color: #00000088;
+}
+
+.comp.compPageEditor ._popupMenuContainer._compMenu ._compMenuItem img.hover {
+	display: none;
+}
+
+.comp.compPageEditor ._popupMenuContainer._compMenu ._compMenuItem:hover img.hover,
+.comp.compPageEditor ._popupMenuContainer._compMenu ._compMenuItem.active img.hover {
+	display: inline;
+}
+
+.comp.compPageEditor ._popupMenuContainer._compMenu ._compMenuItem:hover img.actual,
+.comp.compPageEditor ._popupMenuContainer._compMenu ._compMenuItem.active img.actual {
+	display: none;
+}
+
+.comp.compPageEditor ._popupMenuContainer._compMenu ._sectionThumb {
+	width: 100%;
+	height: 200px;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center center;
+	cursor: pointer;
+	border-radius: 4px;
+	border: 1.5px solid #f2f4f8;
+}
+
+.comp.compPageEditor ._popupMenuContainer._compMenu ._sectionThumb:hover {
+	background-color: #f2f4f8;
+}
+
+.comp.compPageEditor ._popupMenuBackground ._popupMenu {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	overflow: auto;
+	padding-left: 5px;
+	padding-top: 5px;
+}
+
+.comp.compPageEditor ._popupMenuBackground ._contextMenu {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	overflow: auto;
+	padding-top: 5px;
+	border-left: 1px solid #52bd94;
+	border-radius: 0px 4px 4px 0px;
+	background-color: #fff;
+	box-shadow: 0px 1px 10px 0px #0000001a;
+}
+
+.comp.compPageEditor ._popupMenuBackground ._popupMenuSeperator {
+	height: 0px;
+}
+
+.comp.compPageEditor ._popupMenuContainer._compMenu ._compList {
+	padding-right: 15px;
+	gap: 15px;
+	padding-bottom: 10px;
+	flex: 1;
+	overflow-y: auto;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+}
+
+.comp.compPageEditor ._popupMenuContainer._compMenu ._compList ._compMenuItem {
+	padding: 10px;
+	cursor: pointer;
+	background-color: #f9f9f9;
+	border-radius: 6px;
+	color: #333333e5;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	gap: 10px;
+	font-size: 11px;
+	font-weight: 500;
+	font-family: Inter;
+	border: 0.5px solid transparent;
+	width: 100px;
+	height: 100px;
+	justify-content: center;
+}
+
+.comp.compPageEditor ._popupMenuContainer._compMenu ._compList ._compMenuItem:hover,
+.comp.compPageEditor ._popupMenuContainer._compMenu ._compList ._compMenuItem.active {
+	border: 0.5px solid rgba(0, 0, 0, 0.1);
+}
+
+.comp.compPageEditor ._popupMenuContainer._compMenu ._compList ._compMenuItem svg._iconHelperSVG,
+.comp.compPageEditor ._popupMenuContainer._compMenu ._compList ._compMenuItem i.fa {
+	width: 30px;
+	height: 30px;
+	font-size: 30px;
+}
+
+.comp.compPageEditor ._popupMenuContainer._compMenu ._compList ._compMenuItem.active svg,
+.comp.compPageEditor ._popupMenuContainer._compMenu ._compList ._compMenuItem:hover svg,
+.comp.compPageEditor ._popupMenuContainer._compMenu ._compList ._compMenuItem.active i.fa,
+.comp.compPageEditor ._popupMenuContainer._compMenu ._compList ._compMenuItem:hover i.fa {
+	color: #1893e9;
+}
+/* Animations Start here... */
+
+@keyframes updown {
+	0% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(5px);
+	}
+	100% {
+		transform: translateY(0);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._updownAnimation {
+	animation: updown var(--comp-item-animation-duration) infinite;
+}
+
+@keyframes scaleBottomTop {
+	0% {
+		transform: scaleY(1);
+	}
+	50% {
+		transform: scaleY(0.2);
+	}
+	100% {
+		transform: scaleY(1);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._scaleBottomTop {
+	animation: scaleBottomTop var(--comp-item-animation-duration-short) infinite;
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._scaleTopBottom {
+	animation: scaleBottomTop var(--comp-item-animation-duration-short) infinite;
+	transform-origin: bottom;
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._dropdownarrow {
+	animation: dropdownarrowAnimation var(--comp-item-animation-duration-mid) infinite;
+	transform-origin: 24.5px 6px;
+}
+
+@keyframes dropdownarrowAnimation {
+	0% {
+		transform: rotate(90deg);
+	}
+	100% {
+		transform: rotate(0deg);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._dropdownlines {
+	animation: dropdownlinesScaleAnimation var(--comp-item-animation-duration-mid) infinite;
+}
+
+@keyframes dropdownlinesScaleAnimation {
+	0% {
+		transform: translateY(0px);
+		opacity: 1;
+	}
+	50% {
+		transform: translateY(-10px);
+		opacity: 0;
+	}
+	100% {
+		transform: translateY(0px);
+		opacity: 1;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._checkboxTick {
+	animation: checkboxTickAnimation var(--comp-item-animation-duration-mid) infinite;
+	transform-origin: 15px 15px;
+}
+
+@keyframes checkboxTickAnimation {
+	0% {
+		transform: scale(1);
+	}
+	33% {
+		transform: scale(1);
+	}
+	66% {
+		transform: scale(1.2);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._checkboxbox {
+	animation: checkboxboxAnimation var(--comp-item-animation-duration-mid) infinite;
+}
+
+@keyframes checkboxboxAnimation {
+	0% {
+		transform: translate(8px, 8px);
+		opacity: 1;
+	}
+	33% {
+		transform: translate(30px, 8px);
+		opacity: 1;
+	}
+	66% {
+		transform: translate(30px, 8px);
+		opacity: 1;
+	}
+	100% {
+		transform: translate(8px, 8px);
+		opacity: 1;
+	}
+}
+
+@keyframes carouselframe12Animation {
+	0% {
+		opacity: 1;
+		transform: translate(0px);
+	}
+	50% {
+		opacity: 0;
+		transform: translate(10px);
+	}
+	100% {
+		opacity: 1;
+		transform: translate(0px);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._carouselfirstframe,
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._carouselsecondframe {
+	animation: carouselframe12Animation var(--comp-item-animation-duration-mid) infinite;
+	z-index: -1;
+}
+
+@keyframes carouselframe34Animation {
+	0% {
+		opacity: 1;
+		transform: translate(0px);
+	}
+	50% {
+		opacity: 0;
+		transform: translate(-10px);
+	}
+	100% {
+		opacity: 1;
+		transform: translate(0px);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._carouselthirdframe,
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._carouselfourthframe {
+	animation: carouselframe34Animation var(--comp-item-animation-duration-mid) infinite;
+	z-index: -1;
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._gallerymainframe {
+	animation: gallerymainAnimation var(--comp-item-animation-duration-mid) infinite;
+}
+
+@keyframes gallerymainAnimation {
+	0% {
+		opacity: 0;
+		transform: translateY(-20px);
+	}
+	50% {
+		opacity: 1;
+		transform: translateY(0px);
+	}
+	100% {
+		opacity: 1;
+		transform: translateY(-20px);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._gallerysecondframe {
+	animation: gallerysecondAnimation var(--comp-item-animation-duration-mid) infinite;
+}
+
+@keyframes gallerysecondAnimation {
+	0% {
+		opacity: 0;
+		transform: translateY(-15px);
+	}
+	50% {
+		opacity: 1;
+		transform: translateY(0px);
+	}
+	100% {
+		opacity: 1;
+		transform: translateY(-15px);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._galleryfirstframe {
+	animation: galleryfirstAnimation var(--comp-item-animation-duration-mid) infinite;
+}
+
+@keyframes galleryfirstAnimation {
+	0% {
+		opacity: 0;
+		transform: translateY(-5px);
+	}
+	50% {
+		opacity: 1;
+		transform: translateY(0px);
+	}
+	100% {
+		opacity: 1;
+		transform: translateY(-5px);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._linkarrowleft,
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._linkarrowright,
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._linkarrowtail {
+	animation: linkarrowAnimation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes linkarrowAnimation {
+	0% {
+		transform: translate(0px, 0px);
+	}
+	50% {
+		transform: translate(-10px, 10px);
+	}
+	100% {
+		transform: translate(0, 0);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._phonenumber {
+	animation: phonenumberAnimation var(--comp-item-animation-duration) infinite;
+	transform-origin: 15px 15px;
+}
+
+@keyframes phonenumberAnimation {
+	0% {
+		transform: rotate(0deg);
+	}
+	20% {
+		transform: rotate(-10deg);
+	}
+	40% {
+		transform: rotate(10deg);
+	}
+	60% {
+		transform: rotate(-10deg);
+	}
+	80% {
+		transform: rotate(10deg);
+	}
+	100% {
+		transform: rotate(0deg);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._calender01bg,
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._calender01num {
+	animation: calendervalue1Animation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes calendervalue1Animation {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._calender31bg,
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._calender31num {
+	animation: calendervalue31Animation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 15px 11px;
+}
+
+@keyframes calendervalue31Animation {
+	0% {
+		opacity: 1;
+		transform: rotateX(0deg);
+	}
+	50% {
+		opacity: 0;
+		transform: rotateX(100deg);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._iframesymbolstart {
+	animation: iframesymbolstartAnimation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes iframesymbolstartAnimation {
+	0% {
+		transform: translateX(0px);
+	}
+	50% {
+		transform: translateX(-5px);
+	}
+	100% {
+		transform: translateX(0px);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._iframesymbolend {
+	animation: iframesymbolendAnimation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes iframesymbolendAnimation {
+	0% {
+		transform: translateX(0px);
+	}
+	50% {
+		transform: translateX(5px);
+	}
+	100% {
+		transform: translateX(0px);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._greenStepperInitialIcon {
+	animation: greenStepperInitialIconAnimation var(--comp-item-animation-duration-long) infinite;
+	z-index: -1;
+}
+
+@keyframes greenStepperInitialIconAnimation {
+	0% {
+		fill: transparent;
+		opacity: 1;
+	}
+	35% {
+		fill: #1cba79;
+		opacity: 1;
+	}
+	100% {
+		fill: #1cba79;
+		opacity: 1;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._greenStepperIcon {
+	animation: greenStepperIconAnimation var(--comp-item-animation-duration-long) infinite;
+	z-index: 1;
+}
+
+@keyframes greenStepperIconAnimation {
+	0% {
+		transform: translateX(0px);
+	}
+	100% {
+		transform: translateX(18px);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._greenFinalStepIcon {
+	animation: greenFinalStepIconAnimation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes greenFinalStepIconAnimation {
+	0% {
+		fill: #e0e0e7;
+	}
+	100% {
+		fill: transparent;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._TAFirstLine,
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._TASecondLine {
+	animation: TALineAnimation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes TALineAnimation {
+	0% {
+		transform: translate(0px, 0px);
+	}
+	50% {
+		transform: translate(-2px, -2px);
+	}
+	100% {
+		transform: translate(0px, 0px);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._iconcircle {
+	animation: iconcircleAnimation var(--comp-item-animation-duration-mid) infinite;
+}
+
+@keyframes iconcircleAnimation {
+	0% {
+		transform: translateY(0px);
+	}
+	50% {
+		transform: translateY(-3px);
+	}
+	100% {
+		transform: translateY(0px);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._icontriangle {
+	animation: icontriangleAnimation var(--comp-item-animation-duration-mid) infinite;
+	transform-origin: 7px 17px;
+}
+
+@keyframes icontriangleAnimation {
+	0% {
+		transform: rotate(0deg);
+	}
+	33% {
+		transform: rotate(10deg);
+	}
+	66% {
+		transform: rotate(-10deg);
+	}
+	100% {
+		transform: rotate(0deg);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._iconbar {
+	animation: iconbarAnimation var(--comp-item-animation-duration-mid) infinite;
+	transform-origin: 15px 15px;
+}
+
+@keyframes iconbarAnimation {
+	0% {
+		transform: scaleY(1);
+	}
+	50% {
+		transform: scaleY(0.2);
+	}
+	100% {
+		transform: scaleY(1);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._videoPlayStart {
+	animation: videoPlayStartAnimation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 15px 15px;
+}
+
+@keyframes videoPlayStartAnimation {
+	0% {
+		opacity: 1;
+		rotate: 0deg;
+	}
+	50% {
+		opacity: 0;
+		rotate: 90deg;
+	}
+	100% {
+		opacity: 1;
+		rotate: 0deg;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._videoPlayPause {
+	animation: videoPlayPauseAnimation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 15px 15px;
+}
+
+@keyframes videoPlayPauseAnimation {
+	0% {
+		opacity: 0;
+		rotate: -90deg;
+	}
+	50% {
+		opacity: 1;
+		rotate: 0deg;
+	}
+	100% {
+		opacity: 0;
+		rotate: -90deg;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._popupInner {
+	animation: popupInnerAnimation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 15px 15px;
+}
+
+@keyframes popupInnerAnimation {
+	0% {
+		transform: translate(0, 0);
+	}
+	50% {
+		transform: translate(11px, 3.5px);
+	}
+	100% {
+		transform: translate(0, 0);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._menuInner1,
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._menuInner2,
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._menuInner3 {
+	animation: menuInnerAnimation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 15px 15px;
+}
+
+@keyframes menuInnerAnimation {
+	0% {
+		transform: rotate(0deg);
+	}
+	50% {
+		transform: rotate(90deg);
+	}
+	100% {
+		transform: rotate(0deg);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._progressBarInner1 {
+	animation: progressBarInner1Animation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes progressBarInner1Animation {
+	0% {
+		opacity: 0.2;
+	}
+	10% {
+		opacity: 0.5;
+	}
+	20% {
+		opacity: 1;
+	}
+	80% {
+		opacity: 1;
+	}
+	90% {
+		opacity: 0.5;
+	}
+	100% {
+		opacity: 0.2;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._progressBarInner2 {
+	animation: progressBarInner2Animation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes progressBarInner2Animation {
+	0% {
+		opacity: 0.2;
+	}
+	20% {
+		opacity: 0.5;
+	}
+	30% {
+		opacity: 1;
+	}
+	70% {
+		opacity: 1;
+	}
+	80% {
+		opacity: 0.5;
+	}
+	100% {
+		opacity: 0.2;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._progressBarInner3 {
+	animation: progressBarInner3Animation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes progressBarInner3Animation {
+	0% {
+		opacity: 0.2;
+	}
+	30% {
+		opacity: 0.5;
+	}
+	40% {
+		opacity: 1;
+	}
+	60% {
+		opacity: 1;
+	}
+	70% {
+		opacity: 0.5;
+	}
+	100% {
+		opacity: 0.2;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._progressBarInner4 {
+	animation: progressBarInner4Animation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes progressBarInner4Animation {
+	0% {
+		opacity: 0.2;
+	}
+	40% {
+		opacity: 0.5;
+	}
+	50% {
+		opacity: 1;
+	}
+	60% {
+		opacity: 1;
+	}
+	70% {
+		opacity: 0.5;
+	}
+	100% {
+		opacity: 0.2;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._popOver {
+	animation: popOverAnimation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 15px 15px;
+}
+
+@keyframes popOverAnimation {
+	0% {
+		transform: translate(0, 19) scale(1);
+		opacity: 1;
+	}
+	50% {
+		transform: translate(0, 19) scale(0.5);
+		opacity: 0;
+	}
+	100% {
+		transform: translate(0, 19) scale(1);
+		opacity: 1;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._popOver1 {
+	animation: popOver1Animation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 15px 30px;
+}
+
+@keyframes popOver1Animation {
+	0% {
+		transform: scale(0);
+		opacity: 0;
+	}
+	50% {
+		transform: scale(1);
+		opacity: 1;
+	}
+	100% {
+		transform: scale(0);
+		opacity: 0;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._FileSelectorArrow {
+	animation: FileSelectorArrowAnimation var(--comp-item-animation-duration-mid) infinite;
+}
+
+@keyframes FileSelectorArrowAnimation {
+	0% {
+		transform: translateY(5px);
+	}
+	50% {
+		transform: translateY(0px);
+	}
+	100% {
+		transform: translateY(5px);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._fileUploadAT,
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._fileUploadAB {
+	animation: updownarrow var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes updownarrow {
+	0% {
+		transform: translateY(20px);
+	}
+	30% {
+		transform: translateY(5px);
+	}
+	65% {
+		transform: translateY(0px);
+	}
+	100% {
+		transform: translateY(20px);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._animatorglobe {
+	animation: animatorglobeAnimation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 15px 15px;
+}
+
+@keyframes animatorglobeAnimation {
+	0% {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(0.5);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._animatorGlobeBG1,
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._animatorGlobeBG2 {
+	animation: animatorglobeBGAnimation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 15px 15px;
+}
+
+@keyframes animatorglobeBGAnimation {
+	0% {
+		transform: rotateZ(0deg) scale(1);
+	}
+	50% {
+		transform: rotateZ(90deg) scale(0.8);
+	}
+	100% {
+		transform: rotateZ(180deg) scale(1);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._buttonBar1 {
+	animation: buttonBar1Animation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 15px 15px;
+}
+
+@keyframes buttonBar1Animation {
+	0% {
+		transform: translate(0, 0);
+	}
+	50% {
+		transform: translate(9px, 8px);
+	}
+	100% {
+		transform: translate(0, 0);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._buttonBar2 {
+	animation: buttonBar2Animation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 15px 15px;
+}
+
+@keyframes buttonBar2Animation {
+	0% {
+		transform: translate(0, 0);
+	}
+	50% {
+		transform: translate(5px, 4px);
+	}
+	100% {
+		transform: translate(0, 0);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._chartbars {
+	animation: chartbarsAnimation var(--comp-item-animation-duration-mid) infinite;
+	transform-origin: 15px 29px;
+}
+
+@keyframes chartbarsAnimation {
+	0% {
+		transform: scaleY(1);
+	}
+	50% {
+		transform: scaleY(0.4);
+	}
+	100% {
+		transform: scaleY(1);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._chartbars1 {
+	animation: chartbars1Animation var(--comp-item-animation-duration-mid) infinite;
+	transform-origin: 15px 29px;
+}
+
+@keyframes chartbars1Animation {
+	0% {
+		transform: scaleY(1);
+	}
+	50% {
+		transform: scaleY(1.6);
+	}
+	100% {
+		transform: scaleY(1);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._colorPickerIcon {
+	animation: colorPickerIconAnimation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 15px 15px;
+}
+
+@keyframes colorPickerIconAnimation {
+	0% {
+		transform: rotateZ(0deg);
+	}
+	50% {
+		transform: rotateZ(90deg);
+	}
+	100% {
+		transform: rotateZ(0deg);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._circle11 {
+	animation: circle11Animation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes circle11Animation {
+	0% {
+		transform: translate(0, 0);
+	}
+	5% {
+		transform: translate(-2px, 0);
+	}
+	25% {
+		transform: translate(-2px, 24px);
+	}
+	50% {
+		transform: translate(16px, 24px);
+	}
+
+	75% {
+		transform: translate(16px, 0px);
+	}
+
+	100% {
+		transform: translate(0px, 0);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._FDEPen {
+	animation: FDEPenAnimation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 10px 30px;
+}
+
+@keyframes FDEPenAnimation {
+	0% {
+		transform: translate(-15px, -15px) rotateZ(90deg);
+	}
+	20% {
+		transform: translate(0px, -15px) rotateZ(90deg);
+	}
+	40% {
+		transform: translate(-15px, -7px) rotateZ(90deg);
+	}
+	60% {
+		transform: translate(0px, -7px) rotateZ(90deg);
+	}
+	80% {
+		transform: translate(-15px, -0px) rotateZ(90deg);
+	}
+	100% {
+		transform: translate(0px, 0px) rotateZ(90deg);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._JotPen {
+	animation: JotPenAnimation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes JotPenAnimation {
+	0% {
+		transform: translate(0px, 0);
+	}
+	50% {
+		transform: translate(4px, 0);
+	}
+	100% {
+		transform: translate(0px, 0);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._Jotline1 {
+	animation: Jot1lineAnimation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 6px;
+}
+
+@keyframes Jot1lineAnimation {
+	0% {
+		transform: scaleX(0.5);
+	}
+	50% {
+		transform: scaleX(1);
+	}
+	100% {
+		transform: scaleX(0.5);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._TextListLine1,
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._MTOCLine1 {
+	animation: MTOCLine1Animation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 7px;
+}
+
+@keyframes MTOCLine1Animation {
+	0% {
+		transform: scaleX(0);
+	}
+	20% {
+		transform: scaleX(0);
+	}
+	50% {
+		transform: scaleX(1);
+	}
+	80% {
+		transform: scaleX(1);
+	}
+	100% {
+		transform: scaleX(0);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._TextListLine2,
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._MTOCLine2 {
+	animation: MTOCLine2Animation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 7px;
+}
+
+@keyframes MTOCLine2Animation {
+	0% {
+		transform: scaleX(0);
+	}
+	30% {
+		transform: scaleX(0);
+	}
+	50% {
+		transform: scaleX(1);
+	}
+	70% {
+		transform: scaleX(1);
+	}
+	100% {
+		transform: scaleX(0);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._TextListLine3,
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._MTOCLine3 {
+	animation: MTOCLine3Animation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 7px;
+}
+
+@keyframes MTOCLine3Animation {
+	0% {
+		transform: scaleX(0);
+	}
+	40% {
+		transform: scaleX(0);
+	}
+	50% {
+		transform: scaleX(1);
+	}
+	60% {
+		transform: scaleX(1);
+	}
+	100% {
+		transform: scaleX(0);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._MTOCcircle1,
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._TextListCircle1 {
+	animation: MTOCLine1Animation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 7px;
+}
+
+@keyframes MTOCcircle1Animation {
+	0% {
+		transform: scaleX(0);
+	}
+	15% {
+		transform: scaleX(0);
+	}
+	50% {
+		transform: scaleX(1);
+	}
+	85% {
+		transform: scaleX(1);
+	}
+	100% {
+		transform: scaleX(0);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._MTOCcircle2,
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._TextListCircle2 {
+	animation: MTOCcircle2Animation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 7px;
+}
+
+@keyframes MTOCcircle2Animation {
+	0% {
+		transform: scaleX(0);
+	}
+	25% {
+		transform: scaleX(0);
+	}
+	50% {
+		transform: scaleX(1);
+	}
+	75% {
+		transform: scaleX(1);
+	}
+	100% {
+		transform: scaleX(0);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._MTOCcircle3,
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._TextListCircle3 {
+	animation: MTOCcircle3Animation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 7px;
+}
+
+@keyframes MTOCcircle3Animation {
+	0% {
+		transform: scaleX(0);
+	}
+	35% {
+		transform: scaleX(0);
+	}
+	50% {
+		transform: scaleX(1);
+	}
+	65% {
+		transform: scaleX(1);
+	}
+	100% {
+		transform: scaleX(0);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._TEPen {
+	animation: TEPen1Animation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 10px 10px;
+}
+
+@keyframes TEPen1Animation {
+	0% {
+		transform: scale(1) translate(0, 0) rotateZ(0deg);
+	}
+	50% {
+		transform: scale(0.5) translate(15px, 15px) rotateZ(90deg);
+	}
+	100% {
+		transform: scale(1) translate(0, 0) rotateZ(0deg);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._FVEMailCloser {
+	animation: FVEMailCloserAnimation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes FVEMailCloserAnimation {
+	0% {
+		transform: rotateX(0);
+	}
+	50% {
+		transform: rotateX(-70deg);
+	}
+	100% {
+		transform: rotateX(0);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._FVEMailPencil {
+	animation: FVEMailPencilAnimation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes FVEMailPencilAnimation {
+	0% {
+		transform: translateX(0);
+	}
+	50% {
+		transform: translateX(-15px);
+	}
+	100% {
+		transform: translateX(0);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._PageEditorPen {
+	animation: FPEPenAnimation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 0px 5px;
+}
+
+@keyframes FPEPenAnimation {
+	0% {
+		transform: translate(0px, 0px);
+	}
+	25% {
+		transform: translate(5px, -6px);
+	}
+	50% {
+		transform: translate(6px, -2px);
+	}
+	75% {
+		transform: translate(8px, -6px);
+	}
+	100% {
+		transform: translate(10px, 0px);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._FSEPen {
+	animation: FSEPenAnimation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 0px 5px;
+}
+
+@keyframes FSEPenAnimation {
+	0% {
+		transform: translate(0px, 0px);
+	}
+	10% {
+		transform: translate(-15px, -20px);
+	}
+	20% {
+		transform: translate(0px, -20px);
+	}
+	30% {
+		transform: translate(-15px, -15px);
+	}
+	40% {
+		transform: translate(0px, -15px);
+	}
+	50% {
+		transform: translate(-15px, -10px);
+	}
+	60% {
+		transform: translate(0px, -10px);
+	}
+	70% {
+		transform: translate(-15px, -5px);
+	}
+	80% {
+		transform: translate(0px, -5px);
+	}
+	90% {
+		transform: translate(-15px, 0px);
+	}
+	100% {
+		transform: translate(0px, 0px);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._IWBCircle {
+	animation: IWBCircleAnimation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes IWBCircleAnimation {
+	0% {
+		transform: translateX(0);
+	}
+	50% {
+		transform: translateX(-8px);
+	}
+	100% {
+		transform: translateX(0);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._MarkdownEditorArrowIcon {
+	animation: updown var(--comp-item-animation-duration) infinite;
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._OtpLockBoxClosed {
+	animation: OtpLockBoxClosedAnimation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes OtpLockBoxClosedAnimation {
+	0% {
+		opacity: 0;
+	}
+	39% {
+		opacity: 0;
+	}
+	40% {
+		opacity: 1;
+	}
+	60% {
+		opacity: 1;
+	}
+	61% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._OtpLockBoxOpen {
+	animation: OtpLockBoxOpenAnimation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes OtpLockBoxOpenAnimation {
+	0% {
+		opacity: 1;
+	}
+	39% {
+		opacity: 1;
+	}
+	40% {
+		opacity: 0;
+	}
+	60% {
+		opacity: 0;
+	}
+	61% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._OtpInputstar1 {
+	animation: OtpInputstar1Animation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes OtpInputstar1Animation {
+	0% {
+		opacity: 0;
+	}
+	19% {
+		opacity: 0;
+	}
+	20% {
+		opacity: 1;
+	}
+	90% {
+		opacity: 1;
+	}
+	91% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._OtpInputstar2 {
+	animation: OtpInputstar2Animation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes OtpInputstar2Animation {
+	0% {
+		opacity: 0;
+	}
+	29% {
+		opacity: 0;
+	}
+	30% {
+		opacity: 1;
+	}
+	80% {
+		opacity: 1;
+	}
+	81% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._OtpInputstar3 {
+	animation: OtpInputstar3Animation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes OtpInputstar3Animation {
+	0% {
+		opacity: 0;
+	}
+	39% {
+		opacity: 0;
+	}
+	40% {
+		opacity: 1;
+	}
+	70% {
+		opacity: 1;
+	}
+	71% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._OtpInputBox1 {
+	animation: OtpInputBox1Animation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes OtpInputBox1Animation {
+	0% {
+		opacity: 1;
+	}
+	19% {
+		opacity: 1;
+	}
+	20% {
+		opacity: 0;
+	}
+	90% {
+		opacity: 0;
+	}
+	91% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._OtpInputBox2 {
+	animation: OtpInputBox2Animation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes OtpInputBox2Animation {
+	0% {
+		opacity: 1;
+	}
+	29% {
+		opacity: 1;
+	}
+	30% {
+		opacity: 0;
+	}
+	80% {
+		opacity: 0;
+	}
+	81% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._OtpInputBox3 {
+	animation: OtpInputBox3Animation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes OtpInputBox3Animation {
+	0% {
+		opacity: 1;
+	}
+	39% {
+		opacity: 1;
+	}
+	40% {
+		opacity: 0;
+	}
+	70% {
+		opacity: 0;
+	}
+	71% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._pagePen {
+	animation: pageAnimation var(--comp-item-animation-duration-mid) infinite;
+	transform-origin: 5px 30px;
+}
+
+@keyframes pageAnimation {
+	0% {
+		transform: translate(0px, 0px) rotate(12deg);
+	}
+	25% {
+		transform: translate(7px, -5px) rotate(-12deg);
+	}
+	50% {
+		transform: translate(15px, 0px) rotate(0deg);
+	}
+	75% {
+		transform: translate(7px, -5px) rotate(12deg);
+	}
+	100% {
+		transform: translate(0px, 0px) rotate(-12deg);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._SubPageIcon {
+	animation: subpageAnimation var(--comp-item-animation-duration-mid) infinite;
+	transform-origin: 5px 30px;
+}
+
+@keyframes subpageAnimation {
+	0% {
+		transform: rotate(0deg);
+	}
+	25% {
+		transform: rotate(-3deg);
+	}
+	50% {
+		transform: rotate(3deg);
+	}
+	75% {
+		transform: rotate(9deg);
+	}
+	100% {
+		transform: rotate(0deg);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._RadioButtonCircle {
+	animation: RBAnimation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 15px 15px;
+}
+
+@keyframes RBAnimation {
+	0% {
+		transform: scale(0);
+	}
+	19% {
+		transform: scale(0);
+	}
+	20% {
+		transform: scale(1);
+	}
+	79% {
+		transform: scale(1);
+	}
+	80% {
+		transform: scale(0);
+	}
+	100% {
+		transform: scale(0);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._RangeSliderThumbPit {
+	animation: RangeSliderThumbPitAnimation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes RangeSliderThumbPitAnimation {
+	0% {
+		transform: translateX(0);
+	}
+	50% {
+		transform: translateX(-11px);
+	}
+	100% {
+		transform: translateX(0);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._RangeSliderRangeTrack {
+	animation: RangeSliderRangeTrackAnimation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes RangeSliderRangeTrackAnimation {
+	0% {
+		transform: scaleX(1);
+	}
+	50% {
+		transform: scaleX(0.2);
+	}
+	100% {
+		transform: scaleX(1);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._SchemaBuilderPen {
+	animation: SchemaBuilderPenAnimation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes SchemaBuilderPenAnimation {
+	0% {
+		transform: translateY(0);
+	}
+	25% {
+		transform: translateY(-7px);
+	}
+	50% {
+		transform: translateY(-15px);
+	}
+	75% {
+		transform: translateY(-23px);
+	}
+	100% {
+		transform: translateY(0);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._SchemaBuilderDBTop {
+	animation: SchemaBuilderDBTopAnimation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes SchemaBuilderDBTopAnimation {
+	0% {
+		opacity: 0;
+	}
+	25% {
+		opacity: 0;
+	}
+	50% {
+		opacity: 0;
+	}
+	75% {
+		opacity: 0;
+	}
+	95% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._SchemaBuilderDB1 {
+	animation: SchemaBuilderDB1Animation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes SchemaBuilderDB1Animation {
+	0% {
+		opacity: 0;
+	}
+	25% {
+		opacity: 0;
+	}
+	50% {
+		opacity: 0;
+	}
+	75% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._SchemaBuilderDB2 {
+	animation: SchemaBuilderDB2Animation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes SchemaBuilderDB2Animation {
+	0% {
+		opacity: 0;
+	}
+	25% {
+		opacity: 0;
+	}
+	50% {
+		opacity: 1;
+	}
+	75% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._SchemaBuilderDB3 {
+	animation: SchemaBuilderDB3Animation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes SchemaBuilderDB3Animation {
+	0% {
+		opacity: 0;
+	}
+	25% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 1;
+	}
+	75% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._SchemaFormPen {
+	animation: SchemaFormPenAnimation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 3px;
+}
+
+@keyframes SchemaFormPenAnimation {
+	0% {
+		transform: translateX(-8px);
+	}
+	25% {
+		transform: translateX(-4px);
+	}
+	50% {
+		transform: translateX(0);
+	}
+	75% {
+		transform: translateX(-4px);
+	}
+	100% {
+		transform: translateX(-8px);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._SchemaFormDot1 {
+	animation: SchemaFormDot1Animation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes SchemaFormDot1Animation {
+	0% {
+		opacity: 0;
+	}
+	25% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 1;
+	}
+	75% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._SchemaFormDot2 {
+	animation: SchemaFormDot2Animation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes SchemaFormDot2Animation {
+	0% {
+		opacity: 0;
+	}
+	25% {
+		opacity: 0;
+	}
+	50% {
+		opacity: 1;
+	}
+	75% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._SectionGridBlock1 {
+	animation: SectionGridBlock1Animation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 15px 15px;
+}
+
+@keyframes SectionGridBlock1Animation {
+	0% {
+		transform: translate(0, 0);
+	}
+	50% {
+		transform: translate(-7px, -7px);
+	}
+	100% {
+		transform: translate(0, 0);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._SectionGridBlock2 {
+	animation: SectionGridBlock2Animation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 15px 15px;
+}
+
+@keyframes SectionGridBlock2Animation {
+	0% {
+		transform: translate(0, 0);
+	}
+	50% {
+		transform: translate(7px, -7px);
+	}
+	100% {
+		transform: translate(0, 0);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._SectionGridBlock3 {
+	animation: SectionGridBlock3Animation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 15px 15px;
+}
+
+@keyframes SectionGridBlock3Animation {
+	0% {
+		transform: translate(0, 0);
+	}
+	50% {
+		transform: translate(-7px, 7px);
+	}
+	100% {
+		transform: translate(0, 0);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._SectionGridBlock4 {
+	animation: SectionGridBlock4Animation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 15px 15px;
+}
+
+@keyframes SectionGridBlock4Animation {
+	0% {
+		transform: translate(0, 0);
+	}
+	50% {
+		transform: translate(7px, 7px);
+	}
+	100% {
+		transform: translate(0, 0);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._SubPageBlock1 {
+	animation: SubPageBlock1Animation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 15px 15px;
+}
+
+@keyframes SubPageBlock1Animation {
+	0% {
+		opacity: 0;
+		transform: scale(0);
+	}
+	25% {
+		opacity: 1;
+		transform: scale(1.2);
+	}
+	50% {
+		opacity: 1;
+		transform: scale(1);
+	}
+	75% {
+		opacity: 1;
+		transform: scale(1);
+	}
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._SubPageBlock2 {
+	animation: SubPageBlock2Animation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 15px 15px;
+}
+
+@keyframes SubPageBlock2Animation {
+	0% {
+		opacity: 0;
+		transform: scale(0);
+	}
+	25% {
+		opacity: 0;
+		transform: scale(0);
+	}
+	50% {
+		opacity: 1;
+		transform: scale(1.2);
+	}
+	75% {
+		opacity: 1;
+		transform: scale(1);
+	}
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._SubPageBlock3 {
+	animation: SubPageBlock3Animation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 15px 15px;
+}
+
+@keyframes SubPageBlock3Animation {
+	0% {
+		opacity: 0;
+		transform: scale(0);
+	}
+	25% {
+		opacity: 0;
+		transform: scale(0);
+	}
+	50% {
+		opacity: 0;
+		transform: scale(0);
+	}
+	75% {
+		opacity: 1;
+		transform: scale(1.2);
+	}
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._SubPageMainFrame {
+	animation: SubPageBlock4Animation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 15px 15px;
+}
+
+@keyframes SubPageBlock4Animation {
+	0% {
+		opacity: 0;
+		transform: scale(0);
+	}
+	25% {
+		opacity: 0;
+		transform: scale(0);
+	}
+	50% {
+		opacity: 0;
+		transform: scale(0);
+	}
+	75% {
+		opacity: 0;
+		transform: scale(0);
+	}
+	85% {
+		opacity: 1;
+		transform: scale(1.2);
+	}
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._tableline {
+	animation: TableLineAnimation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 3px 15px;
+}
+
+@keyframes TableLineAnimation {
+	0% {
+		transform: scaleX(1);
+	}
+	25% {
+		transform: scaleX(0.3);
+	}
+	50% {
+		transform: scaleX(1);
+	}
+	75% {
+		transform: scaleX(0.3);
+	}
+	100% {
+		transform: scaleX(1);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._tablelineY {
+	animation: TableLineYAnimation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 3px 10px;
+}
+
+@keyframes TableLineYAnimation {
+	0% {
+		transform: scaleY(1);
+	}
+	25% {
+		transform: scaleY(0.3);
+	}
+	50% {
+		transform: scaleY(1);
+	}
+	75% {
+		transform: scaleY(0.3);
+	}
+	100% {
+		transform: scaleY(1);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._tablePG {
+	animation: TablePGAnimation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes TablePGAnimation {
+	0% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._tableDCSpinner {
+	animation: TableDCSpinnerAnimation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 19.5px 19px;
+}
+
+@keyframes TableDCSpinnerAnimation {
+	0% {
+		transform: rotate(0deg);
+	}
+	50% {
+		transform: rotate(180deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._tabs {
+	animation: TabsAnimation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 13px 17px;
+}
+
+@keyframes TabsAnimation {
+	0% {
+		transform: rotate(0deg);
+	}
+	50% {
+		transform: rotate(90deg);
+	}
+	100% {
+		transform: rotate(0deg);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._tagIcon2 {
+	animation: tagIconAnimation2 var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes tagIconAnimation2 {
+	0% {
+		transform: rotate(0deg);
+	}
+	25% {
+		transform: rotate(-15deg);
+	}
+	50% {
+		transform: rotate(-20deg);
+	}
+	75% {
+		transform: rotate(-15deg);
+	}
+	100% {
+		transform: rotate(0deg);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._tagIcon3 {
+	animation: tagIconAnimation3 var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes tagIconAnimation3 {
+	0% {
+		transform: rotate(0deg);
+	}
+	25% {
+		transform: rotate(-25deg);
+	}
+	50% {
+		transform: rotate(-50deg);
+	}
+	75% {
+		transform: rotate(-25deg);
+	}
+	100% {
+		transform: rotate(0deg);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._TEIcon {
+	animation: templateEditorAnimation var(--comp-item-animation-duration-mid) infinite;
+}
+
+@keyframes templateEditorAnimation {
+	0% {
+		transform: translateX(0px);
+	}
+	50% {
+		transform: translateX(14px);
+	}
+	100% {
+		transform: translateX(0px);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._TextEditorLine3,
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._TextEditorLine1 {
+	animation: TextEditorBubbleLineAnimation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 23px;
+}
+
+@keyframes TextEditorBubbleLineAnimation {
+	0% {
+		transform: scaleX(1);
+	}
+	50% {
+		transform: scaleX(1.6);
+	}
+	100% {
+		transform: scaleX(1);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._TextEditorLine2 {
+	animation: TextEditorLine2Animation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 23px;
+}
+
+@keyframes TextEditorLine2Animation {
+	0% {
+		transform: scaleX(1);
+	}
+	50% {
+		transform: scaleX(0.2);
+	}
+	100% {
+		transform: scaleX(1);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._timer1Number {
+	animation: timerNumber1Animation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 15px 15px;
+}
+
+@keyframes timerNumber1Animation {
+	0% {
+		opacity: 0;
+		transform: rotate(-180deg);
+	}
+	30% {
+		opacity: 0;
+		transform: rotate(-180deg);
+	}
+	31% {
+		opacity: 1;
+		transform: rotate(0deg);
+	}
+	40% {
+		opacity: 1;
+		transform: rotate(0deg);
+	}
+	41% {
+		opacity: 1;
+		transform: rotate(0deg);
+	}
+	59% {
+		opacity: 1;
+		transform: rotate(0deg);
+	}
+	60% {
+		opacity: 1;
+		transform: rotate(0deg);
+	}
+	70% {
+		opacity: 1;
+		transform: rotate(0deg);
+	}
+	71% {
+		opacity: 0;
+		transform: rotate(180deg);
+	}
+	100% {
+		opacity: 0;
+		transform: rotate(180deg);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._timer2Number {
+	animation: timerNumber2Animation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 15px 15px;
+}
+
+@keyframes timerNumber2Animation {
+	0% {
+		opacity: 0;
+		transform: rotate(-180deg);
+	}
+	20% {
+		opacity: 0;
+		transform: rotate(-180deg);
+	}
+	21% {
+		opacity: 1;
+		transform: rotate(0deg);
+	}
+	30% {
+		opacity: 1;
+		transform: rotate(0deg);
+	}
+	31% {
+		opacity: 0;
+		transform: rotate(180deg);
+	}
+	69% {
+		opacity: 0;
+		transform: rotate(180deg);
+	}
+	70% {
+		opacity: 1;
+		transform: rotate(360deg);
+	}
+	80% {
+		opacity: 1;
+		transform: rotate(360deg);
+	}
+	81% {
+		opacity: 0;
+		transform: rotate(540deg);
+	}
+	100% {
+		opacity: 0;
+		transform: rotate(540deg);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._timer3Number {
+	animation: timerNumber3Animation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 15px 15px;
+}
+
+@keyframes timerNumber3Animation {
+	0% {
+		opacity: 0;
+		transform: rotate(-180deg);
+	}
+	10% {
+		opacity: 0;
+		transform: rotate(-180deg);
+	}
+	11% {
+		opacity: 1;
+		transform: rotate(0deg);
+	}
+	20% {
+		opacity: 1;
+		transform: rotate(0deg);
+	}
+	21% {
+		opacity: 0;
+		transform: rotate(180deg);
+	}
+	79% {
+		opacity: 0;
+		transform: rotate(180deg);
+	}
+	80% {
+		opacity: 1;
+		transform: rotate(360deg);
+	}
+	90% {
+		opacity: 1;
+		transform: rotate(360deg);
+	}
+	91% {
+		opacity: 0;
+		transform: rotate(540deg);
+	}
+	100% {
+		opacity: 0;
+		transform: rotate(540deg);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._timer4Number {
+	animation: timerNumber4Animation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 15px 15px;
+}
+
+@keyframes timerNumber4Animation {
+	0% {
+		opacity: 1;
+		transform: rotate(0deg);
+	}
+	10% {
+		opacity: 1;
+		transform: rotate(0deg);
+	}
+	11% {
+		opacity: 0;
+		transform: rotate(180deg);
+	}
+	20% {
+		opacity: 0;
+		transform: rotate(180deg);
+	}
+	40% {
+		opacity: 0;
+		transform: rotate(180deg);
+	}
+	50% {
+		opacity: 0;
+		transform: rotate(180deg);
+	}
+	60% {
+		opacity: 0;
+		transform: rotate(180deg);
+	}
+	89% {
+		opacity: 0;
+		transform: rotate(180deg);
+	}
+	90% {
+		opacity: 1;
+		transform: rotate(360deg);
+	}
+	100% {
+		opacity: 1;
+		transform: rotate(360deg);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._timer4Arc {
+	animation: timerArc4Animation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 15px 15px;
+}
+
+@keyframes timerArc4Animation {
+	0% {
+		transform: rotate(0deg);
+	}
+	10% {
+		transform: rotate(90deg);
+	}
+	20% {
+		transform: rotate(180deg);
+	}
+	30% {
+		transform: rotate(270deg);
+	}
+	40% {
+		transform: rotate(360deg);
+	}
+	50% {
+		transform: rotate(360deg);
+	}
+	60% {
+		transform: rotate(360deg);
+	}
+	70% {
+		transform: rotate(270deg);
+	}
+	80% {
+		transform: rotate(180deg);
+	}
+	90% {
+		transform: rotate(90deg);
+	}
+	100% {
+		transform: rotate(0deg);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._timer3Arc {
+	animation: timerArc3Animation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 15px 15px;
+}
+
+@keyframes timerArc3Animation {
+	0% {
+		opacity: 0;
+	}
+	10% {
+		opacity: 1;
+	}
+	20% {
+		opacity: 1;
+	}
+	30% {
+		opacity: 1;
+	}
+	40% {
+		opacity: 1;
+	}
+	60% {
+		opacity: 1;
+	}
+	70% {
+		opacity: 1;
+	}
+	80% {
+		opacity: 1;
+	}
+	90% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._timer2Arc {
+	animation: timerArc2Animation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 15px 15px;
+}
+
+@keyframes timerArc2Animation {
+	0% {
+		opacity: 0;
+	}
+	10% {
+		opacity: 0;
+	}
+	20% {
+		opacity: 1;
+	}
+	30% {
+		opacity: 1;
+	}
+	40% {
+		opacity: 1;
+	}
+	60% {
+		opacity: 1;
+	}
+	70% {
+		opacity: 1;
+	}
+	80% {
+		opacity: 1;
+	}
+	90% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._timer1Arc {
+	animation: timerArc1Animation var(--comp-item-animation-duration-long) infinite;
+	transform-origin: 15px 15px;
+}
+
+@keyframes timerArc1Animation {
+	0% {
+		opacity: 0;
+	}
+	10% {
+		opacity: 0;
+	}
+	20% {
+		opacity: 0;
+	}
+	30% {
+		opacity: 1;
+	}
+	40% {
+		opacity: 1;
+	}
+	60% {
+		opacity: 1;
+	}
+	70% {
+		opacity: 1;
+	}
+	80% {
+		opacity: 0;
+	}
+	90% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._toggleButtonKnob {
+	animation: toggleButtonKnobAnimation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes toggleButtonKnobAnimation {
+	0% {
+		transform: translateX(0);
+	}
+	50% {
+		transform: translateX(-15px);
+	}
+	100% {
+		transform: translateX(0);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._toggleButtonTrack {
+	animation: toggleButtonTrackAnimation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes toggleButtonTrackAnimation {
+	0% {
+		fill: #02b694;
+	}
+	50% {
+		fill: #edeaea;
+	}
+	100% {
+		fill: #02b694;
+	}
+}
+
+@keyframes opacityAnimation {
+	0% {
+		opacity: 0;
+	}
+	50% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._opacityAnimation {
+	animation: opacityAnimation var(--comp-item-animation-duration-long) infinite;
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._imageCircle {
+	animation: imageCircleAnimation var(--comp-item-animation-duration-short) infinite;
+	transform-origin: 15px 17px;
+}
+
+@keyframes imageCircleAnimation {
+	0% {
+		transform: translate(0px, 0px);
+	}
+	50% {
+		transform: translate(0px, 4px);
+	}
+	100% {
+		transform: translate(0px, 0px);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._IamgeAnimation {
+	animation: ImageAnimation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes ImageAnimation {
+	0% {
+		opacity: 0.5;
+	}
+	50% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0.5;
+	}
+}
+
+@keyframes leftrightAnimation {
+	0% {
+		transform: translateX(0);
+	}
+	50% {
+		transform: translateX(5px);
+	}
+	100% {
+		transform: translateX(0);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._leftrightAnimation {
+	animation: leftrightAnimation var(--comp-item-animation-duration) infinite;
+}
+
+@keyframes updownleftrightAnimation {
+	0% {
+		transform: translate(0 0);
+	}
+	50% {
+		transform: translate(5px, 5px);
+	}
+	100% {
+		transform: translate(0, 0);
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._updownAnimation._leftrightAnimation {
+	animation: updownleftrightAnimation var(--comp-item-animation-duration) infinite;
+}
+
+@keyframes text_box_caret_animation {
+	0% {
+		opacity: 0;
+	}
+	25% {
+		opacity: 1;
+	}
+	35% {
+		opacity: 0;
+		transform: translateX(0%);
+	}
+	55% {
+		opacity: 1;
+		transform: translateX(65%);
+	}
+	99% {
+		opacity: 0;
+		transform: translateX(65%);
+	}
+}
+
+@keyframes text_box_text_animation {
+	0% {
+		opacity: 0;
+	}
+	25% {
+		opacity: 0;
+	}
+	40% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG #_text_box_caret {
+	animation: text_box_caret_animation var(--comp-item-animation-duration-long) infinite;
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG #_text_box_text {
+	animation: text_box_text_animation var(--comp-item-animation-duration-long) infinite;
+}
+
+@keyframes array_repeater_rect1_animation {
+	0% {
+		opacity: 0;
+	}
+	9% {
+		opacity: 0;
+	}
+	10% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+@keyframes array_repeater_rect2_animation {
+	0% {
+		opacity: 0;
+	}
+	19% {
+		opacity: 0;
+	}
+	20% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+@keyframes array_repeater_rect3_animation {
+	0% {
+		opacity: 0;
+	}
+	29% {
+		opacity: 0;
+	}
+	30% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+@keyframes array_repeater_rect4_animation {
+	0% {
+		opacity: 0;
+	}
+	39% {
+		opacity: 0;
+	}
+	40% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+@keyframes array_repeater_rect5_animation {
+	0% {
+		opacity: 0;
+	}
+	49% {
+		opacity: 0;
+	}
+	50% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+@keyframes array_repeater_rect6_animation {
+	0% {
+		opacity: 0;
+	}
+	59% {
+		opacity: 0;
+	}
+	60% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+@keyframes array_repeater_rect7_animation {
+	0% {
+		opacity: 0;
+	}
+	69% {
+		opacity: 0;
+	}
+	70% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+@keyframes array_repeater_rect8_animation {
+	0% {
+		opacity: 0;
+	}
+	79% {
+		opacity: 0;
+	}
+	80% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+.comp.compPageEditor ._compMenuItem:hover #_arrayRepeaterIcon #_rect1 {
+	animation: array_repeater_rect1_animation var(--comp-item-animation-duration-short) infinite;
+}
+
+.comp.compPageEditor ._compMenuItem:hover #_arrayRepeaterIcon #_rect2 {
+	animation: array_repeater_rect2_animation var(--comp-item-animation-duration-short) infinite;
+}
+
+.comp.compPageEditor ._compMenuItem:hover #_arrayRepeaterIcon #_rect3 {
+	animation: array_repeater_rect3_animation var(--comp-item-animation-duration-short) infinite;
+}
+
+.comp.compPageEditor ._compMenuItem:hover #_arrayRepeaterIcon #_rect4 {
+	animation: array_repeater_rect4_animation var(--comp-item-animation-duration-short) infinite;
+}
+
+.comp.compPageEditor ._compMenuItem:hover #_arrayRepeaterIcon #_rect5 {
+	animation: array_repeater_rect5_animation var(--comp-item-animation-duration-short) infinite;
+}
+
+.comp.compPageEditor ._compMenuItem:hover #_arrayRepeaterIcon #_rect6 {
+	animation: array_repeater_rect6_animation var(--comp-item-animation-duration-short) infinite;
+}
+
+.comp.compPageEditor ._compMenuItem:hover #_arrayRepeaterIcon #_rect7 {
+	animation: array_repeater_rect7_animation var(--comp-item-animation-duration-short) infinite;
+}
+
+.comp.compPageEditor ._compMenuItem:hover #_arrayRepeaterIcon #_rect8 {
+	animation: array_repeater_rect8_animation var(--comp-item-animation-duration-short) infinite;
+}
+
+/* Animations End here... */
+
+.comp.compPageEditor ._popupMenuBackground ._contextMenu ._popupMenuItem:hover {
+	background: #00000005;
+	color: #52bd94;
+}
+
+.comp.compPageEditor ._popupMenuBackground ._contextMenu ._popupMenuItem:hover i.fa {
+	color: #52bd94;
+}
+
+.comp.compPageEditor ._popupMenuBackground ._contextMenu ._iconHelperSVG {
+	color: #cacbca;
+	width: 16px;
+	height: 16px;
+}
+
+.comp.compPageEditor ._popupMenuBackground ._contextMenu ._popupMenuItem:hover ._iconHelperSVG {
+	color: #52bd94;
+}
+
+.comp.compPageEditor ._popupMenuBackground ._contextMenu i.fa {
+	color: #cacbca;
+}
+
+.comp.compPageEditor ._popupMenuBackground ._popupMenuContainer ._compTemplates {
+	display: flex;
+	flex-direction: column;
+}
+
+.comp.compPageEditor ._popupMenuBackground ._popupMenuContainer ._compTemplates iframe {
+	flex: 1;
+}
+
+.comp.compPageEditor
+	._popupMenuBackground
+	._popupMenuContainer
+	._compTemplateSections
+	._eachTemplateSection {
+	padding: 11px 20px 11px 20px;
+	cursor: pointer;
+}
+
+.comp.compPageEditor
+	._popupMenuBackground
+	._popupMenuContainer
+	._compTemplateSections
+	._eachTemplateSection:hover,
+.comp.compPageEditor
+	._popupMenuBackground
+	._popupMenuContainer
+	._compTemplateSections
+	._eachTemplateSection._active {
+	background: linear-gradient(90deg, rgba(8, 112, 92, 0.2) 0%, rgba(248, 250, 251, 0) 93.35%);
+	color: #08705c;
+}
+
+.comp.compPageEditor ._propertyContent {
+	display: flex;
+	flex-direction: row;
+}
+
+.comp.compPageEditor ._pagePropertiesGrid {
+	display: flex;
+	flex-direction: column;
+	width: 350px;
+}
+
+.comp.compPageEditor ._pageSimplePropGrid {
+	width: 250px;
+}
+
+.comp.compPageEditor ._popupBackground ._popupContainer ._right {
+	text-align: right;
+	padding: 5px;
+}
+
+.comp.compPageEditor ._popupBackground._transparent {
+	background: none;
+}
+/* Dark theme values  */
+.comp.compPageEditor._dark ._dndGrid {
+	background-color: #000;
+}
+
+.comp.compPageEditor._dark ._iconMenuBody {
+	box-shadow: 2px 2px 5px #555;
+}
+
+.comp.compPageEditor._dark ._sideBar,
+.comp.compPageEditor._dark ._iconMenuBody,
+.comp.compPageEditor._dark ._topBarGrid,
+.comp.compPageEditor ._popupBackground._dark ._popupContainer,
+.comp.compPageEditor._dark ._selectionBar,
+.comp.compPageEditor ._dark ._propBar,
+.comp.compPageEditor ._popupMenuBackground._dark ._popupMenu {
+	background-color: #555;
+}
+
+.comp.compPageEditor._dark button,
+.comp.compPageEditor ._dark select._peSelect,
+.comp.compPageEditor ._dark input._peInput[type='text'],
+.comp.compPageEditor._dark ._pvExpressionEditor,
+.comp.compPageEditor ._popupBackground._dark button,
+.comp.compPageEditor._dark input._peInput[type='number'] {
+	color: #000;
+	background-color: #222;
+	border: 1px solid #333;
+}
+
+.comp.compPageEditor._dark ._pvExpressionEditor input._peInput {
+	border: none;
+}
+
+.comp.compPageEditor._dark i.fa {
+	color: #aaa;
+}
+
+.comp.compPageEditor._dark button:hover,
+.comp.compPageEditor._dark select:hover,
+.comp.compPageEditor._dark ._iconMenuOption:hover,
+.comp.compPageEditor ._popupMenuBackground._dark ._popupMenuItem:hover,
+.comp.compPageEditor ._popupMenuBackground._dark ._popupMenuItem.active,
+.comp.compPageEditor ._popupBackground._dark button:hover {
+	background-color: #aaa;
+	color: #222;
+}
+.comp.compPageEditor._dark ._iconMenu:hover i.fa,
+.comp.compPageEditor._dark ._buttonBar i.fa {
+	color: #222;
+}
+
+.comp.compPageEditor._dark ._propLabel {
+	color: #bbb;
+}
+
+.comp.compPageEditor._dark ._buttonBar i.fa.active,
+.comp.compPageEditor._dark ._buttonBar i.fa:hover,
+.comp.compPageEditor._dark ._eachSelectionBar,
+.comp.compPageEditor ._popupBackground._dark {
+	color: #aaa;
+}
+
+.comp.compPageEditor._dark ._iconMenuOption,
+.comp.compPageEditor ._popupMenuBackground._dark ._popupMenuItem {
+	color: #000;
+}
+
+.comp.compPageEditor._dark ._selectionBar {
+	border-left: 1px solid #aaa;
+}
+
+.comp.compPageEditor._dark ._pvEditor ._microToggle::before {
+	background-color: #333;
+	color: #777;
+}
+
+.comp.compPageEditor._dark ._pvEditor ._microToggle {
+	background-color: #444;
+	border-color: #333;
+}
+
+.comp.compPageEditor._dark ._pvEditor ._microToggle._on::before {
+	background-color: #222;
+	color: #777;
+}
+
+.comp.compPageEditor._dark ._pvEditor ._microToggle._on {
+	background-color: #888;
+	border-color: #777;
+}
+
+.comp.compPageEditor._dark ._tooltip:hover::after {
+	background-color: #555b;
+	color: #bbb;
+	border-color: #777;
+}
+
+.comp.compPageEditor._dark ._pillTag {
+	background-color: #555;
+	color: #000;
+}
+
+.comp.compPageEditor._dark ._iconSelectionEditor {
+	color: #bbb;
+}
+
+.comp.compPageEditor._dark ._iconSelectionButton {
+	background-color: #555;
+	color: #000;
+	border: 1px solid transparent;
+}
+
+.comp.compPageEditor._dark ._iconSelectionButton.active {
+	background-color: #333;
+}
+
+.comp.compPageEditor._dark ._propertyGroupHeader {
+	color: #aaa;
+}
+.comp.compPageEditor._dark ._propertyGroupHeader i.fa {
+	color: #222;
+}
+
+.comp.compPageEditor._dark ._eachProperty:hover i.fa {
+	color: #777;
+}
+
+.comp.compPageEditor._dark ._eachProperty {
+	border: 2px solid #333;
+}
+
+.comp.compPageEditor._dark ._codeEditorContent ._codeEditorHeader {
+	background-color: #666;
+}
+
+.comp.compPageEditor._dark ._eachProperty i.fa {
+	background-color: #333;
+}
+
+.comp.compPageEditor ._popupMenuBackground._dark ._popupMenuContainer {
+	border-color: #444;
+	box-shadow: 2px 2px 5px #555;
+}
+
+.comp.compPageEditor ._popupMenuBackground._dark ._popupMenu {
+	border-color: #aaa;
+}
