@@ -34,7 +34,7 @@ function Timer(props: ComponentProps) {
 	useEffect(() => {
 		if (!onTimerEventFunction || !pageDefinition.eventFunctions?.[onTimerEventFunction]) return;
 
-		let handler: number | undefined = undefined;
+		let handler: NodeJS.Timeout | undefined = undefined;
 		let count = 0;
 
 		function run() {
