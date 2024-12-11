@@ -1,0 +1,757 @@
+.comp.compKIRunEditor {
+	flex: 1;
+	border: 1px solid #eee;
+	display: flex;
+	flex-direction: column;
+	overflow: auto;
+}
+
+.comp.compKIRunEditor ._header {
+	min-height: 36px;
+	background-color: #eee;
+	width: 100%;
+	display: flex;
+	align-items: center;
+}
+
+.comp.compKIRunEditor ._header i.fa {
+	color: #777;
+	font-size: 14px;
+	padding: 5px;
+	background-color: #ccc;
+	border-radius: 3px;
+	cursor: pointer;
+	transition: all 0.4s;
+}
+
+.comp.compKIRunEditor ._header i.fa:hover {
+	color: #ccc;
+	background-color: #777;
+}
+
+.comp.compKIRunEditor ._header ._separator {
+	height: 18px;
+	border-radius: 2px;
+	width: 2px;
+	background-color: #aaa;
+	margin-left: 4px;
+	margin-right: 4px;
+}
+
+.comp.compKIRunEditor ._header ._left {
+	display: flex;
+	gap: 5px;
+	padding: 5px;
+	flex: 1;
+	align-items: center;
+}
+
+.comp.compKIRunEditor ._header ._right {
+	display: flex;
+	gap: 5px;
+	padding: 5px;
+	justify-content: flex-end;
+}
+
+.comp.compKIRunEditor ._container {
+	flex: 1;
+	overflow: auto;
+	width: 100%;
+	height: 100%;
+	background-image: linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 0px),
+		linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 0px);
+	background-size: 20px 20px;
+	background-color: #fff;
+}
+
+.comp.compKIRunEditor ._designer {
+	position: relative;
+	min-width: 3000px;
+	min-height: 3000px;
+	outline: none;
+	transform-origin: left top;
+	transition: transform 1s ease-in;
+	overflow: hidden;
+}
+
+.comp.compKIRunEditor ._designer._moving {
+	cursor: grab;
+}
+
+.comp.compKIRunEditor ._selectionBox {
+	opacity: 0.5;
+	background-color: #679ae6;
+	border: 2px solid #4578c4;
+	position: absolute;
+	transition: none;
+	z-index: 4;
+}
+
+.comp.compKIRunEditor ._messages {
+	color: #f25332;
+	position: absolute;
+	float: left;
+	top: 100%;
+	margin-top: 10px;
+	padding: 5px;
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+
+.comp.compKIRunEditor ._messages ._message {
+	background-color: #fffa;
+	border-left: 3px solid #f25332;
+	padding: 5px;
+	border-top-right-radius: 4px;
+	border-bottom-right-radius: 4px;
+}
+
+.comp.compKIRunEditor ._statementName input[type='text'] {
+	color: #555;
+	border-radius: 4px;
+	font-size: 13px;
+	font-family: inherit;
+	border: none;
+	background-color: #0000000a;
+	width: 160px;
+	padding-left: 5px;
+	margin-left: -5px;
+}
+
+.comp.compKIRunEditor ._statement {
+	position: absolute;
+	background-color: #fff;
+	border: 2px solid #eee;
+	border-radius: 4px;
+	display: flex;
+	flex-direction: column;
+	font-size: 13px;
+	box-shadow:
+		0 15px 30px 0 rgba(0, 0, 0, 0.1),
+		0 5px 15px 0 rgba(0, 0, 0, 0.1);
+	padding: 2px;
+}
+
+.comp.compKIRunEditor ._statement._editParameters {
+	width: 400px;
+	height: 350px;
+}
+
+.comp.compKIRunEditor ._storeContainer {
+	position: fixed;
+	display: flex;
+	flex-direction: column;
+	padding: 15px;
+	gap: 10px;
+	transform-origin: left top;
+	transition: transform 1s ease-in;
+}
+
+.comp.compKIRunEditor ._storeNode {
+	display: flex;
+	background-color: #fff;
+	padding: 2px;
+	justify-content: left;
+	align-items: center;
+	box-shadow:
+		0 15px 30px 0 rgba(0, 0, 0, 0.1),
+		0 5px 15px 0 rgba(0, 0, 0, 0.1);
+	border-radius: 4px;
+	position: relative;
+}
+
+.comp.compKIRunEditor ._storeNode i.fa {
+	font-size: 12px;
+	background-color: #ccc;
+	color: #fff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 20px;
+	height: 20px;
+	border-radius: 3px;
+	border-top-right-radius: 0px;
+	border-bottom-right-radius: 0px;
+}
+
+.comp.compKIRunEditor ._storeNode ._storeNode_name {
+	font-size: 12px;
+	background-color: #f8f8f8;
+	padding: 3px 8px;
+	border-radius: 3px;
+	flex: 1;
+}
+
+.comp.compKIRunEditor ._storeNode_node {
+	position: absolute;
+	right: 0px;
+	top: 0px;
+	transform: translate(50%, 50%);
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	background-color: #fff;
+	border: 2px solid #fff;
+}
+
+.comp.compKIRunEditor ._statement ._commentContainer {
+	position: absolute;
+	top: -10px;
+	transform: translateY(-100%);
+	padding: 5px 18px;
+	font-size: 12px;
+	background: #fff9;
+	min-width: 100%;
+	border-radius: 4px;
+	color: #628d4e;
+	font-family: monospace;
+	line-height: 13px;
+	border: 2px solid #628d4e33;
+	min-height: 44px;
+}
+
+.comp.compKIRunEditor ._statement._editParameters ._commentContainer {
+	background: #fff;
+}
+
+.comp.compKIRunEditor ._statement ._commentContainer ._comment::before {
+	content: '/* ';
+	position: absolute;
+	left: 2px;
+	top: 4px;
+}
+
+.comp.compKIRunEditor ._statement ._commentContainer ._comment::after {
+	content: ' */';
+	position: absolute;
+	right: 2px;
+	bottom: 4px;
+}
+
+.comp.compKIRunEditor ._statement ._commentContainer ._comment,
+.comp.compKIRunEditor ._statement ._commentContainer ._commentEditor {
+	min-width: 100%;
+	height: 100%;
+
+	border: none;
+	outline-color: #ccc;
+	font-family: inherit;
+	font-size: inherit;
+	white-space: pre;
+}
+
+.comp.compKIRunEditor ._statement ._commentContainer textarea._commentEditor {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	width: 100%;
+	height: 100%;
+	padding: 5px 18px;
+	line-height: 13px;
+	min-height: 40px;
+}
+
+.comp.compKIRunEditor ._statement._selected {
+	border: 2px solid #679ae6;
+}
+
+.comp.compKIRunEditor ._statement ._icon {
+	width: 32px;
+	height: 32px;
+	background-color: inherit;
+	color: #fff;
+	border-top-right-radius: 2px;
+	border-top-left-radius: 4px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.comp.compKIRunEditor ._statement ._statementContanier {
+	background-color: #f8f8f8;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	border-top-right-radius: 4px;
+	flex: 1;
+}
+
+.comp.compKIRunEditor ._statement ._statementName {
+	flex: 1;
+
+	height: 33px;
+	display: flex;
+	align-items: center;
+	padding-left: 5px;
+	min-width: 160px;
+}
+
+.comp.compKIRunEditor ._editIcon {
+	font-size: 12px !important;
+	margin-right: 5px;
+	cursor: pointer;
+	visibility: hidden;
+}
+
+.comp.compKIRunEditor ._nameContainer:hover ._editIcon,
+.comp.compKIRunEditor ._nameNamespaceContainer:hover ._editIcon {
+	visibility: visible;
+}
+
+.comp.compKIRunEditor ._statement ._namesContainer {
+	border-radius: 4px;
+}
+
+.comp.compKIRunEditor ._statement ._nameContainer {
+	display: flex;
+
+	align-items: center;
+	min-width: 200px;
+	border-radius: 2px;
+	cursor: move;
+}
+
+.comp.compKIRunEditor ._nameNamespaceContainer {
+	display: flex;
+	height: 32px;
+	align-items: center;
+	padding: 5px;
+	color: #fff;
+	border-radius: 2px;
+	border-top-left-radius: 0px;
+}
+
+.comp.compKIRunEditor ._nameNamespaceContainer ._nameNamespace {
+	flex: 1;
+}
+
+.comp.compKIRunEditor ._nameNamespaceContainer i.fa {
+	color: #fff;
+}
+
+.comp.compKIRunEditor ._statement._forAdd {
+	width: 300px;
+}
+
+.comp.compKIRunEditor ._statement ._otherContainer {
+	padding: 5px;
+	display: flex;
+	flex-direction: row;
+	gap: 10px;
+}
+
+.comp.compKIRunEditor ._statement._editParameters ._otherContainer {
+	overflow: auto;
+}
+
+.comp.compKIRunEditor ._statement ._otherContainer ._eventsContainer,
+.comp.compKIRunEditor ._statement ._otherContainer ._paramsContainer {
+	flex: 1;
+}
+
+.comp.compKIRunEditor ._statement ._otherContainer ._eventsContainer {
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+}
+
+.comp.compKIRunEditor ._statement ._param {
+	position: relative;
+	display: flex;
+	gap: 5px;
+	padding: 3px;
+	padding-left: 0px;
+	flex-direction: column;
+}
+
+.comp.compKIRunEditor ._statement ._paramValue {
+	font-family: monospace;
+	white-space: nowrap;
+	max-width: 200px;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.comp.compKIRunEditor ._paramsContainer._event ._param {
+	flex-direction: row-reverse;
+	justify-content: flex-end;
+}
+
+.comp.compKIRunEditor ._statement ._paramNode {
+	position: absolute;
+	left: -14px;
+	top: 4px;
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	background-color: #fff;
+	border: 2px solid #fff;
+}
+
+.comp.compKIRunEditor ._statement ._param ._paramName {
+	cursor: pointer;
+	flex: 1;
+	user-select: none;
+}
+
+.comp.compKIRunEditor ._statement ._paramName._hasValue {
+	font-weight: bold;
+}
+
+.comp.compKIRunEditor ._statement ._paramsContainer._event ._paramName {
+	text-align: right;
+}
+
+.comp.compKIRunEditor ._statement ._paramsContainer {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	position: relative;
+}
+
+.comp.compKIRunEditor ._statement ._paramsContainer._event ._paramHeader {
+	text-align: right;
+}
+
+.comp.compKIRunEditor ._statement ._paramNode._eventNode {
+	border-width: 3px;
+	cursor: pointer;
+}
+
+.comp.compKIRunEditor ._statement ._paramsContainer._event ._paramNode {
+	cursor: pointer;
+}
+
+.comp.compKIRunEditor ._statement ._paramsContainer._event ._paramNode,
+.comp.compKIRunEditor ._statement ._paramNode._eventNode {
+	left: auto;
+	right: -14px;
+}
+
+.comp.compKIRunEditor ._statement ._paramHeader {
+	font-family: monospace;
+	font-size: 16px;
+	color: #aaa;
+}
+
+.comp.compKIRunEditor ._statement ._buttons {
+	position: absolute;
+	left: 100%;
+	display: flex;
+	flex-direction: column;
+	margin-left: 10px;
+	gap: 5px;
+}
+
+.comp.compKIRunEditor ._statement ._buttons ._buttonsGap {
+	height: 6px;
+}
+
+.comp.compKIRunEditor ._statement ._buttons i.fa {
+	color: inherit;
+	cursor: pointer;
+	background-color: #ffffff;
+	border-radius: 4px;
+	display: block;
+	padding: 4px;
+	box-shadow:
+		0 15px 30px 0 rgba(0, 0, 0, 0.1),
+		0 5px 15px 0 rgba(0, 0, 0, 0.1);
+	text-align: center;
+	font-size: 14px;
+	border: 1px solid transparent;
+}
+
+.comp.compKIRunEditor ._statement ._buttons i.fa:hover {
+	opacity: 0.8;
+	border: 1px solid;
+}
+
+.comp.compKIRunEditor ._statement ._dependencyNode:hover,
+.comp.compKIRunEditor ._statement ._paramNode:hover,
+.comp.compKIRunEditor ._statement ._paramHeader:hover ~ ._paramNode,
+.comp.compKIRunEditor ._statement ._paramsContainer._event ._param:hover ._paramNode {
+	border-width: 7px;
+	margin-left: -1px;
+	margin-top: -1px;
+}
+
+.comp.compKIRunEditor ._statement ._dependencyNode {
+	position: absolute;
+	width: 12px;
+	height: 12px;
+	background-color: #fff;
+	border: 2px solid;
+	border-radius: 50%;
+	top: -8px;
+	left: 50%;
+}
+
+.comp.compKIRunEditor ._search {
+	position: absolute;
+	border-radius: 4px;
+	padding: 5px;
+	margin-left: -5px;
+	margin-top: -12px;
+	min-width: 100%;
+	z-index: 3;
+	background-color: #eee;
+}
+
+.comp.compKIRunEditor ._search ._value {
+	background: #fff;
+	color: #777;
+	border-radius: 4px;
+	height: 24px;
+	display: flex;
+	align-items: center;
+	padding-left: 5px;
+	width: 100%;
+	font-size: 11px;
+	padding: 5px 15px;
+	border: 1px solid #ccc;
+}
+
+.comp.compKIRunEditor ._search ._options {
+	height: 200px;
+	overflow: auto;
+	display: flex;
+	gap: 3px;
+	flex-direction: column;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	margin-top: 5px;
+}
+
+.comp.compKIRunEditor ._search ._option {
+	padding: 5px;
+	cursor: pointer;
+}
+
+.comp.compKIRunEditor ._search ._option:hover {
+	background-color: #f8f8f833;
+	border-radius: 2px;
+}
+
+.comp.compKIRunEditor ._linesSvg {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+.comp.compKIRunEditor ._linesSvg._overLine {
+	pointer-events: none;
+	z-index: 4;
+}
+
+.comp.compKIRunEditor ._connector {
+	fill: transparent;
+	stroke-width: 8px;
+	stroke-linecap: round;
+	transform: translate(6px, 6px);
+	opacity: 0.3;
+	transition: opacity 0.5s;
+	cursor: pointer;
+}
+
+.comp.compKIRunEditor ._connector._straight {
+	stroke-width: 7px;
+}
+
+.comp.compKIRunEditor ._connector:hover,
+.comp.compKIRunEditor ._connector._selected {
+	opacity: 1;
+}
+
+.comp.compKIRunEditor ._menu {
+	position: absolute;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	background-color: #fff;
+	border-radius: 4px;
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+	border-top: 3px solid #aaa;
+	box-shadow:
+		0 15px 30px 0 rgba(0, 0, 0, 0.1),
+		0 5px 15px 0 rgba(0, 0, 0, 0.1);
+	font-size: 13px;
+}
+
+.comp.compKIRunEditor ._menu ._menuItem {
+	padding: 5px;
+	cursor: pointer;
+}
+
+.comp.compKIRunEditor ._menu ._menuItem i.fa {
+	font-size: 12px;
+}
+
+.comp.compKIRunEditor ._menu ._menuItem:hover {
+	background-color: #eee;
+}
+
+.comp.compKIRunEditor ._paramEditorBack {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background-color: #fffa;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.comp.compKIRunEditor ._paramEditorBack ._statementBack {
+	position: absolute;
+}
+
+.comp.compKIRunEditor ._statement._editParameters {
+	position: unset;
+}
+
+.comp.compKIRunEditor ._statement._editParameters ._hideInEdit {
+	display: none !important;
+}
+
+.comp.compKIRunEditor ._statement._editForm {
+	width: 400px;
+}
+
+.comp.compKIRunEditor ._statement._editForm ._header {
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	padding-left: 10px;
+}
+
+.comp.compKIRunEditor ._form {
+	padding: 10px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	font-size: 11px;
+}
+
+.comp.compKIRunEditor ._form ._field {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	position: relative;
+}
+
+.comp.compKIRunEditor ._form ._field input {
+	height: 25px;
+	font-size: 11px;
+	padding: 5px 10px;
+	border-radius: 2px;
+	flex: 1;
+	outline: initial;
+	color: #555;
+	background-color: #eee;
+	border: 1px solid #ddd;
+}
+
+.comp.compKIRunEditor ._form ._field span._errors {
+	color: #ff2b2b;
+	background-color: #fffa;
+	position: absolute;
+	top: 100%;
+	translate: 0px, 5px;
+	padding: 5px;
+	border-radius: 4px;
+}
+
+.comp.compKIRunEditor ._formButtons {
+	padding: 10px;
+	display: flex;
+	gap: 10px;
+	justify-content: flex-end;
+}
+
+.comp.compKIRunEditor ._formButtons button {
+	color: #555;
+	background-color: #eee;
+	text-transform: uppercase;
+	font-size: 11px;
+	padding: 5px 15px;
+	cursor: pointer;
+	border-radius: 2px;
+	border: 1px solid #ccc;
+}
+
+.comp.compKIRunEditor ._formButtons ._okButton {
+	background-color: #555;
+	color: #fff;
+}
+
+.comp.compKIRunEditor ._paramEditorRow {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+
+.comp.compKIRunEditor ._paramToggleContainer ._paramEditorToggle {
+	display: flex;
+	position: relative;
+	font-size: 10px;
+	cursor: pointer;
+	padding: 3px 22px;
+	padding-left: 5px;
+	height: 20px;
+	border-radius: 20px;
+	border: 1px solid #ccc;
+	transition: width 0.5s;
+	width: 40px;
+}
+
+.comp.compKIRunEditor ._paramEditorRow ._paramEditorToggle::before {
+	position: absolute;
+	content: ' ';
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	left: -1px;
+	top: -1px;
+	background-color: #ccc8;
+	transition: left 0.5s;
+	border: 1px solid #ccc;
+}
+
+.comp.compKIRunEditor ._paramEditorRow ._paramEditorToggle._value::before {
+	left: calc(100% - 19px);
+}
+
+.comp.compKIRunEditor ._paramToggleContainer {
+	display: flex;
+}
+
+.comp.compKIRunEditor ._paramExpression input {
+	color: #555;
+	border-radius: 4px;
+	font-size: 13px;
+	font-family: inherit;
+	border: none;
+	background-color: #0000000a;
+	width: 100%;
+
+	padding: 5px 5px;
+}
+
+.comp.compKIRunEditor input._peInput {
+	border: none;
+	background: transparent;
+}
+
+.comp.compKIRunEditor ._paramToggleValueGrid {
+	display: flex;
+	gap: 10px;
+	align-items: center;
+}
+
+.comp.compKIRunEditor ._paramToggleValueGrid i.fa {
+	font-size: 13px;
+	cursor: pointer;
+}

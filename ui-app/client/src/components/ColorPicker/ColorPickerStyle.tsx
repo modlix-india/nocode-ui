@@ -14,7 +14,7 @@ export default function ColorPickerStyle({ theme }: { theme: Map<string, Map<str
 		const fn = lazyStylePropertyLoadFunction(NAME, setStyleProperties, styleDefaults);
 
 		if (usedComponents.used(NAME)) fn();
-		else usedComponents.register(NAME, fn);
+		usedComponents.register(NAME, fn);
 
 		return () => usedComponents.deRegister(NAME);
 	}, []);
