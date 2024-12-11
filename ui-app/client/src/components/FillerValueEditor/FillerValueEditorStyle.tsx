@@ -26,7 +26,7 @@ export default function FillerValueEditorStyle({
 	return (
 		<>
 			{used ? <link key="externalCSS" rel="stylesheet" href={lazyCSSURL(NAME)} /> : <></>}
-			<style id="FillterValueEditorCSS">{css}</style>;
+			<style id="FillterValueEditorCSS">{css}</style>
 		</>
 	);
 }

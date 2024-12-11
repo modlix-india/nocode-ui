@@ -253,7 +253,7 @@ function Grid(props: ComponentProps) {
 					onBlur={
 						stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined
 					}
-					to={getHref(linkPath, location)}
+					to={getHref(linkPath, location) ?? ''}
 					target={target}
 					style={resolvedStyles.comp ?? {}}
 				>
