@@ -4,5 +4,6 @@ dist/*.js
 dist/*.css
 dist/*.map
 dist/*.html
+dist/*.txt
 .DS_Store
 parcel-bundle-reports/*
