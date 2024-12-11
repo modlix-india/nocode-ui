@@ -121,8 +121,6 @@ export function BorderLikeEditor({
 		size = valueBag[borderMode[0]]?.width;
 		style = valueBag[borderMode[0]]?.style;
 		color = valueBag[borderMode[0]]?.color;
-		console.log(valueBag, valueBagDirectionLabels);
-		console.log(size, style, color);
 	}
 
 	let topHighlightClass = '_highlight';

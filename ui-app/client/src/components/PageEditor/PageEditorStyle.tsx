@@ -16,7 +16,7 @@ export default function GridStyle({
 		const fn = () => setUsed(true);
 
 		if (usedComponents.used(NAME)) fn();
-		else usedComponents.register(NAME, fn);
+		usedComponents.register(NAME, fn);
 
 		return () => usedComponents.deRegister(NAME);
 	}, [setUsed]);

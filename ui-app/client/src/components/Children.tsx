@@ -103,7 +103,6 @@ function Children({
 			const v = (a?.displayOrder ?? 0) - (b?.displayOrder ?? 0);
 			return v === 0 ? (a?.key ?? '').localeCompare(b?.key ?? '') : v;
 		});
-
 	return (
 		<>
 			{defs

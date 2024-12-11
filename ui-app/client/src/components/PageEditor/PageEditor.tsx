@@ -36,6 +36,7 @@ import {
 import { propertiesDefinition, stylePropertiesDefinition } from './pageEditorProperties';
 import GridStyle from './PageEditorStyle';
 import { styleDefaults } from './pageEditorStyleProperties';
+import { usedComponents } from '../../App/usedComponents';
 
 function savePersonalizationCurry(
 	personalizationPath: string,
@@ -129,7 +130,7 @@ function PageEditor(props: Readonly<ComponentProps>) {
 	);
 
 	const personalization = personalizationPath
-		? getDataFromPath(personalizationPath, locationHistory, pageExtractor) ?? {}
+		? (getDataFromPath(personalizationPath, locationHistory, pageExtractor) ?? {})
 		: {};
 
 	// Managing theme with local state.
@@ -146,7 +147,10 @@ function PageEditor(props: Readonly<ComponentProps>) {
 		);
 	}, [personalizationPath]);
 
-	useEffect(() => setData('Store.pageData._global.collapseMenu', true), []);
+	useEffect(() => {
+		setData('Store.pageData._global.collapseMenu', true);
+		usedComponents.using('KIRun Editor');
+	}, []);
 
 	// Function to save the page
 	const saveFunction = useCallback(() => {
@@ -258,7 +262,7 @@ function PageEditor(props: Readonly<ComponentProps>) {
 		setUrl(
 			`/${editPageDefinition.appCode}/${
 				clientCode === ''
-					? appDefinition?.clientCode ?? editPageDefinition.clientCode
+					? (appDefinition?.clientCode ?? editPageDefinition.clientCode)
 					: clientCode
 			}/page/${editPageDefinition.name}`,
 		);
@@ -274,7 +278,7 @@ function PageEditor(props: Readonly<ComponentProps>) {
 			savePersonalization(
 				`pageLeftAt.${editPageDefinition!.name}.clientCode`,
 				clientCode === ''
-					? appDefinition?.clientCode ?? editPageDefinition!.clientCode
+					? (appDefinition?.clientCode ?? editPageDefinition!.clientCode)
 					: clientCode,
 			);
 		},
