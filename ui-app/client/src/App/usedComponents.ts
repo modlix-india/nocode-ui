@@ -5,7 +5,7 @@ let lastAdded = Date.now();
 
 export const usedComponents = {
 	using: (name: string) => {
-		if (usedSet.has(name) || !registeredComponents.has(name)) return;
+		if (usedSet.has(name)) return;
 		lastAdded = Date.now();
 		usedSet.add(name);
 		registeredComponents.get(name)?.();

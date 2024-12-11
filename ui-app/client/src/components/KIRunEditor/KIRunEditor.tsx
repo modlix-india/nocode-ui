@@ -43,6 +43,7 @@ import { REPO_SERVER, RemoteRepository } from '../../Engine/RemoteRepository';
 import { styleDefaults } from './KIRunEditorStyleProperties';
 import { editor } from 'monaco-editor';
 import { IconHelper } from '../util/IconHelper';
+import { usedComponents } from '../../App/usedComponents';
 
 const gridSize = 20;
 
@@ -248,6 +249,8 @@ function KIRunEditor(
 		}
 		return UISchemaRepository;
 	}, [actualSchemaRepository, appCode, clientCode, editorType]);
+
+	useEffect(() => usedComponents.using('PageEditor'), []);
 
 	useEffect(() => {
 		if (!bindingPathPath) return;
