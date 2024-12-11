@@ -53,15 +53,19 @@ function BOOLEAN_CONDITION(validation: any, value: any): Array<string> {
 }
 
 function SCHEMA_TYPE(validation: any, value: any): Array<string> {
-	try {
-		const sch = Schema.from(validation.schema);
-		if (!sch) return [];
-		SchemaValidator.validate(undefined, sch, UISchemaRepository, value);
-		return [];
-	} catch (err) {
-		console.error('Error while validating a schema.', err);
-		return [validation.message];
-	}
+	const sch = Schema.from(validation.schema);
+	if (!sch) return [];
+	let err;
+	(async () => {
+		try {
+			await SchemaValidator.validate(undefined, sch, UISchemaRepository, value);
+		} catch (er) {
+			err = er;
+			console.error('Error while validating a schema.', er);
+		}
+	})();
+	if (err) return [validation.message];
+	return [];
 }
 
 const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
