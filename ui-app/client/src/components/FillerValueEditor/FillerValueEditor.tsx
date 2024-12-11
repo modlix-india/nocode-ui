@@ -17,7 +17,7 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { IconHelper } from '../util/IconHelper';
 import useDefinition from '../util/useDefinition';
-import GridStyle from './FillerValueEditorStyle';
+import FillerValueEditorStyle from './FillerValueEditorStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './fillerValueEditorProperties';
 import { styleDefaults } from './fillerValueEditorStyleProperties';
 import ValueEditor from './components/ValueEditor';
@@ -400,7 +400,7 @@ const component: Component = {
 	component: FillerValueEditor,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
-	styleComponent: GridStyle,
+	styleComponent: FillerValueEditorStyle,
 	styleDefaults: styleDefaults,
 	stylePseudoStates: [],
 	styleProperties: stylePropertiesDefinition,

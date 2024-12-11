@@ -150,7 +150,7 @@ export default function DnDNavigationBar({
 		}
 	}, [selectedComponent]);
 
-	const [filterHandle, setFilterHandle] = useState<number | undefined>();
+	const [filterHandle, setFilterHandle] = useState<NodeJS.Timeout | undefined>();
 
 	if (!componentTree || previewMode || !pageDef?.componentDefinition || !pageDef.rootComponent)
 		return <div className="_propBar"></div>;
@@ -252,7 +252,7 @@ function CompTree({
 	editorType,
 }: CompTreeProps) {
 	const comp = pageDef?.componentDefinition[compKey];
-	const hoverLonger = useRef<number | null>();
+	const hoverLonger = useRef<NodeJS.Timeout | null>();
 	if (!comp) return <></>;
 
 	const children =
@@ -292,7 +292,7 @@ function CompTree({
 				return v === 0
 					? (pageDef?.componentDefinition[a]?.key ?? '').localeCompare(
 							pageDef?.componentDefinition[b]?.key ?? '',
-					  )
+						)
 					: v;
 			})
 			.map((cKey, i) => (
@@ -365,7 +365,11 @@ function CompTree({
 		</>
 	) : (
 		<span className="_treeText">
-			{filter ? <Filter name={comp.name ?? compKey} filter={filter} /> : comp.name ?? compKey}
+			{filter ? (
+				<Filter name={comp.name ?? compKey} filter={filter} />
+			) : (
+				(comp.name ?? compKey)
+			)}
 		</span>
 	);
 

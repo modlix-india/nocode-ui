@@ -118,7 +118,7 @@ export default function AppStyle() {
 	const styleComps = new Array();
 
 	const comps = ComponentDefinitions.values();
-	let comp: IteratorResult<Component, boolean>;
+	let comp: IteratorResult<Component, undefined>;
 	while (!(comp = comps.next()).done) {
 		if (!comp.value.styleComponent) continue;
 		if (compList.size != 0 && !compList.has(comp.value.name)) continue;

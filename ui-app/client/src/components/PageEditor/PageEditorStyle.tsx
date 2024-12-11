@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { processStyleDefinition, StyleResolutionDefinition } from '../../util/styleProcessor';
-import { styleDefaults, styleProperties } from './pageEditorStyleProperties';
-import { StylePropertyDefinition } from '../../types/common';
+import { useEffect, useState } from 'react';
 import { usedComponents } from '../../App/usedComponents';
-import { lazyCSSURL, lazyStylePropertyLoadFunction } from '../util/lazyStylePropertyUtil';
+import { processStyleDefinition, StyleResolutionDefinition } from '../../util/styleProcessor';
+import { lazyCSSURL } from '../util/lazyStylePropertyUtil';
+import { styleDefaults, styleProperties } from './pageEditorStyleProperties';
 
 const PREFIX = '.comp.compPageEditor';
 const NAME = 'PageEditor';
-export default function GridStyle({
+export default function PageEditorStyle({
 	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const [used, setUsed] = useState(false);

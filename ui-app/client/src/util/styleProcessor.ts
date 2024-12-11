@@ -308,7 +308,7 @@ export function processComponentStylePseudoClasses(
 ): any {
 	if (!styleProperties) return {};
 
-	let style = { ...styleProperties[''] } ?? {};
+	let style = { ...styleProperties[''] };
 
 	for (let [state, status] of Object.entries(pseudoStates)) {
 		if (!status || !styleProperties[state]) continue;

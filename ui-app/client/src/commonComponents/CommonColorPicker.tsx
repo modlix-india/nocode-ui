@@ -117,7 +117,7 @@ export function CommonColorPickerPropertyEditor({
 
 	let colorPicker = undefined;
 	if (showColorPicker) {
-		const bodyPosition: CSSProperties = {};
+		const bodyPosition: CSSProperties & { left?: number; top?: number; bottom?: number } = {};
 		if (buttonRef.current) {
 			const rect = buttonRef.current.getBoundingClientRect();
 			bodyPosition.left = rect.left;
@@ -146,7 +146,7 @@ export function CommonColorPickerPropertyEditor({
 			}
 		: {};
 
-	const [timeoutHandle, setTimeoutHandle] = useState<number | undefined>(undefined);
+	const [timeoutHandle, setTimeoutHandle] = useState<any>(undefined);
 
 	return (
 		<div

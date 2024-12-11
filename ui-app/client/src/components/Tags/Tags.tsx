@@ -108,8 +108,8 @@ function Tags(props: ComponentProps) {
 					...(inputData
 						?.trim()
 						?.split(delimitter)
-						.filter(e => !!e) ?? []),
-				] ?? [],
+						?.filter(e => !!e) ?? []),
+				],
 				context.pageName,
 			);
 			setInputData('');
@@ -208,14 +208,12 @@ function Tags(props: ComponentProps) {
 							{icon && (
 								<i
 									className={`${icon} iconCss`}
-									style={
-										{
-											...((hover === e?.key
-												? resolvedStylesWithPseudo
-												: resolvedStyles
-											).icon ?? {}),
-										} ?? {}
-									}
+									style={{
+										...((hover === e?.key
+											? resolvedStylesWithPseudo
+											: resolvedStyles
+										).icon ?? {}),
+									}}
 								>
 									<SubHelperComponent
 										definition={props.definition}

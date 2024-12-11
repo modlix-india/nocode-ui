@@ -73,7 +73,7 @@ export const RenderEngineContainer = () => {
 
 	useEffect(() => {
 		if (!location.hash) return;
-		let handle: number | undefined = undefined;
+		let handle: ReturnType<typeof setInterval> | undefined = undefined;
 		handle = setInterval(() => {
 			const [id, block, inline] = location.hash.replace('#', '').split(':');
 			const element = document.getElementById(id);
@@ -303,7 +303,7 @@ export const RenderEngineContainer = () => {
 		);
 	}, [window.designMode, currentPageName]);
 
-	const Page = ComponentDefinitions.get('Page')!.component;
+	const Page = ComponentDefinitions.get('Page')?.component as React.ComponentType<any>;
 
 	if (isNullValue(pageDefinition)) return <GlobalLoader />;
 
