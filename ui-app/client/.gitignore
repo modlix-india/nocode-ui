@@ -5,3 +5,4 @@ dist/*.css
 dist/*.map
 dist/*.html
 .DS_Store
+parcel-bundle-reports/*
