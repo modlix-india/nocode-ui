@@ -29,7 +29,7 @@ jobs:
             map(select(. == "test"))
       - name: Building to JS
         working-directory: ./ui-app/client
-        run: npm run cf
+        run: npm run cf-stage
       - name: Pushing to Cloudflare
         working-directory: ./ui-app/client
         env:
@@ -37,6 +37,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           find dist -name "*.js" -type f -exec npx wrangler r2 object put stage-static/js/{} --file={} --content-type text/javascript --cache-control="public,max-age=3600" \;
+          find dist -name "*.map" -type f -exec npx wrangler r2 object put stage-static/js/{} --file={} --content-type application/json --cache-control="public,max-age=3600" \;
           find dist -name "*.css" -type f -exec npx wrangler r2 object put stage-static/js/{} --file={} --content-type text/css --cache-control="public,max-age=3600" \;
           find dist -name "*.html" -type f -exec npx wrangler r2 object put stage-static/js/{} --file={} --content-type text/html --cache-control="public,max-age=3600" \;
           find dist -name "*.json" -type f -exec npx wrangler r2 object put stage-static/js/{} --file={} --content-type application/json --cache-control="public,max-age=3600" \;
@@ -44,4 +45,4 @@ jobs:
           echo "JSON prepared :"
           find dist -type f | xargs -d '\n' -n 25 | while IFS= read -r batch; do echo "$batch" | tr ' ' '\n' | jq -R -s '{"files": split("\n")[:-1] | map("https://cdn-stage.modlix.com/js/" + .)}'; done
           echo "Calling purge for cdn-stage.modlix.com :"
-          find dist -type f | xargs -d '\n' -n 25 | while IFS= read -r batch; do echo "$batch" | tr ' ' '\n' | jq -R -s '{"files": split("\n")[:-1] | map("https://cdn-stage.modlix.com/js/" + .)}' | curl https://api.cloudflare.com/client/v4/zones/f8fe46c016fcfdc188401768a0ac7d01/purge_cache --request POST --header "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" --header "Content-Type: application/json"  --data @- ; done
+          find dist -type f | xargs -d '\n' -n 25 | while IFS= read -r batch; do echo "$batch" | tr ' ' '\n' | jq -R -s '{"files": split("\n")[:-1] | map("https://cdn-stage.modlix.com/js/" + .)}' | curl https://api.cloudflare.com/client/v4/zones/f8fe46c016fcfdc188401768a0ac7d01/purge_cache --request POST --header "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" --header "Content-Type: application/json"  --data @- ; echo ""; done

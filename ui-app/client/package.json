@@ -6,10 +6,10 @@
 	"scripts": {
 		"start": "webpack serve --config webpack.dev.js",
 		"build": "webpack --config webpack.prod.js",
-		"cf-local": "webpack --config webpack.prod.js --env publicUrl=http://cdn-local.modlix.com/js/dist ",
-		"cf-dev": "webpack --config webpack.prod.js --env publicUrl=https://cdn-dev.modlix.com/js/dist",
-		"cf-stage": "webpack --config webpack.prod.js --env publicUrl=https://cdn-stage.modlix.com/js/dist",
-		"cf-prod": "webpack --config webpack.prod.js --env publicUrl=https://cdn.modlix.com/js/dist",
+		"cf-local": "webpack --config webpack.prod.js --env publicUrl=http://cdn-local.modlix.com/js/dist/ ",
+		"cf-dev": "webpack --config webpack.prod.js --env publicUrl=https://cdn-dev.modlix.com/js/dist/",
+		"cf-stage": "webpack --config webpack.prod.js --env publicUrl=https://cdn-stage.modlix.com/js/dist/",
+		"cf-prod": "webpack --config webpack.prod.js --env publicUrl=https://cdn.modlix.com/js/dist/",
 		"test": "jest --watchAll",
 		"coverage": "jest --coverage",
 		"pretty": "prettier --write ./src || prettier --write ./__tests__"
