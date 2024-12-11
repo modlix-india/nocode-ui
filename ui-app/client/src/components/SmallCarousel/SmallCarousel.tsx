@@ -317,7 +317,7 @@ function SmallCarousel(props: ComponentProps) {
 
 		if (!autoPlay) return;
 
-		let handle: number;
+		let handle: NodeJS.Timeout;
 
 		function timerFunction() {
 			if (

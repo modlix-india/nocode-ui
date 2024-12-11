@@ -13,7 +13,7 @@ import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { IconHelper } from '../util/IconHelper';
 import useDefinition from '../util/useDefinition';
 import { Dots } from './components/FillerDefinitionEditorIcons';
-import GridStyle from './FillerDefinitionEditorStyle';
+import FillerDefinitionEditorStyle from './FillerDefinitionEditorStyle';
 import {
 	propertiesDefinition,
 	stylePropertiesDefinition,
@@ -158,7 +158,7 @@ const component: Component = {
 	component: FillerDefinitionEditor,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
-	styleComponent: GridStyle,
+	styleComponent: FillerDefinitionEditorStyle,
 	styleDefaults: styleDefaults,
 	stylePseudoStates: [],
 	styleProperties: stylePropertiesDefinition,

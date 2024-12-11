@@ -136,7 +136,7 @@ function ImageWithBrowser(props: ComponentProps) {
 			onClick={onClickEvent ? handleClick : undefined}
 			className={onClickEvent ? '_onclicktrue' : ''}
 			style={resolvedStyles.image ?? {}}
-			src={getSrcUrl(getHref(src, location))}
+			src={getSrcUrl(getHref(src, location) ?? '')}
 			alt={altText}
 		/>
 	) : (

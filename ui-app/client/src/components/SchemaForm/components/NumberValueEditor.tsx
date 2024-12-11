@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react';
 import {
 	Repository,
 	Schema,
@@ -6,7 +7,6 @@ import {
 	duplicate,
 	isNullValue,
 } from '@fincity/kirun-js';
-import React, { useEffect, useState } from 'react';
 
 export function NumberValueEditor({
 	value,
@@ -14,13 +14,13 @@ export function NumberValueEditor({
 	onChange: actualOnChange,
 	schemaRepository,
 	defaultValue,
-}: {
+}: Readonly<{
 	value: number | undefined;
 	defaultValue: number | undefined;
 	schema: Schema;
 	onChange: (v: number | undefined) => void;
 	schemaRepository: Repository<Schema>;
-}) {
+}>) {
 	const [inValue, setInValue] = useState<number | undefined>(value ?? defaultValue);
 
 	const onChange = async (v: number | undefined) => {
