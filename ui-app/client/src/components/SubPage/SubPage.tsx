@@ -1,11 +1,12 @@
 import { isNullValue } from '@fincity/kirun-js';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../../constants';
 import {
 	addListenerAndCallImmediately,
 	getDataFromPath,
 	PageStoreExtractor,
 } from '../../context/StoreContext';
+import getPageDefinition from '../../Engine/pageDefinition';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import {
 	processClassesForPageDefinition,
@@ -14,18 +15,15 @@ import {
 import Children from '../Children';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { IconHelper } from '../util/IconHelper';
-import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { flattenUUID } from '../util/uuid';
-import * as getPageDefinition from './../../definitions/getPageDefinition.json';
 import { propertiesDefinition, stylePropertiesDefinition } from './subPageProperties';
 import SubPageStyle from './SubPageStyle';
 import { styleDefaults } from './subPageStyleProperties';
 
-function SubPage(props: ComponentProps) {
+function SubPage(props: Readonly<ComponentProps>) {
 	const {
 		definition,
-		pageDefinition,
 		locationHistory,
 		context,
 		definition: { bindingPath },
@@ -68,15 +66,7 @@ function SubPage(props: ComponentProps) {
 			);
 			if (isRunning) return;
 
-			(async () =>
-				await runEvent(
-					getPageDefinition,
-					pageNameKey,
-					GLOBAL_CONTEXT_NAME,
-					locationHistory,
-					pageDefinition,
-					new Map([['pageName', pageName]]),
-				))();
+			(async () => await getPageDefinition(pageName))();
 		}, 10);
 	}, [subPage]);
 
@@ -88,7 +78,7 @@ function SubPage(props: ComponentProps) {
 		<Children
 			key={`${key}_chld`}
 			pageDefinition={subPage}
-			children={{ [subPage.rootComponent]: true }}
+			renderableChildren={{ [subPage.rootComponent]: true }}
 			context={context}
 			locationHistory={locHist}
 		/>

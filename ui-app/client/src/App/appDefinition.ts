@@ -1,6 +1,7 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { STORE_PREFIX } from '../constants';
 import { setData } from '../context/StoreContext';
+import { shortUUID } from '../util/shortUUID';
 
 let firstTime = true;
 export default async function getAppDefinition() {
@@ -15,7 +16,7 @@ export default async function getAppDefinition() {
 	const authToken = localStorage.getItem(TOKEN_NAME);
 	const authExpiry = localStorage.getItem(TOKEN_EXPIRY);
 
-	let axiosOptions = {};
+	let axiosOptions: AxiosRequestConfig<any> = { headers: {} };
 	let language: string | undefined = undefined;
 	if (authToken) {
 		if (parseInt(authExpiry ?? '0') * 1000 < Date.now()) {
@@ -40,6 +41,7 @@ export default async function getAppDefinition() {
 	}
 
 	(async () => {
+		if (globalThis.isDebugMode) axiosOptions.headers!['x-debug'] = shortUUID();
 		const response = await axios.get('api/ui/theme', axiosOptions);
 		if (response.status === 200) setData(`${STORE_PREFIX}.theme`, response.data);
 	})();
@@ -51,7 +53,10 @@ export default async function getAppDefinition() {
 	firstTime = false;
 }
 
-async function makeAppDefinitionCall(axiosOptions: {}, language: string | undefined) {
+async function makeAppDefinitionCall(
+	axiosOptions: AxiosRequestConfig<any>,
+	language: string | undefined,
+) {
 	try {
 		const response = await axios.get('api/ui/application', axiosOptions);
 		if (response.status === 200) {
@@ -66,20 +71,17 @@ async function makeAppDefinitionCall(axiosOptions: {}, language: string | undefi
 }
 
 async function makeVerifyTokenCall(
-	axiosOptionsIn: AxiosRequestConfig<any> | undefined,
+	axiosOptions: AxiosRequestConfig<any>,
 	authToken: string,
 	language: string | undefined,
 	TOKEN_NAME: string,
 	TOKEN_EXPIRY: string,
 ) {
-	let axiosOptions = axiosOptionsIn;
 	try {
-		axiosOptions = {
-			headers: {
-				Authorization: JSON.parse(authToken),
-			},
-		};
+		axiosOptions.headers!.Authorization = JSON.parse(authToken);
+		if (globalThis.isDebugMode) axiosOptions.headers!['x-debug'] = shortUUID();
 		const response = await axios.get('api/security/verifyToken', axiosOptions);
+
 		if (response.status === 200) {
 			setData('Store.auth', response.data);
 			language = response.data.localeCode;
@@ -91,7 +93,8 @@ async function makeVerifyTokenCall(
 	} catch (e) {
 		localStorage.removeItem(TOKEN_NAME);
 		localStorage.removeItem(TOKEN_EXPIRY);
-		axiosOptions = {};
+		axiosOptions = { headers: {} };
+		if (globalThis.isDebugMode) axiosOptions.headers!['x-debug'] = shortUUID();
 		console.error('Unable to verify token:', e);
 	}
 	return { axiosOptions, language };
