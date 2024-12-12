@@ -1,4 +1,4 @@
-import { isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
+import { duplicate, isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { STORE_PREFIX } from '../constants';
@@ -16,7 +16,6 @@ import {
 	PageDefinition,
 	RenderContext,
 } from '../types/common';
-import { duplicate } from '@fincity/kirun-js';
 import { processLocation } from '../util/locationProcessor';
 import ComponentDefinitions from './index';
 import Nothing from './Nothing';
@@ -25,6 +24,8 @@ import { getPathsFrom } from './util/getPaths';
 import { flattenUUID } from './util/uuid';
 
 import { usedComponents } from '../App/usedComponents';
+
+const Page = PageComponentDefinition.component;
 
 const getOrLoadPageDefinition = (location: any) => {
 	let { pageName } = processLocation(location);
@@ -49,16 +50,16 @@ function processDefinitionLocationHistory(
 
 function Children({
 	pageDefinition,
-	children,
+	renderableChildren,
 	context,
 	locationHistory,
-}: {
+}: Readonly<{
 	pageDefinition: PageDefinition;
-	children: any;
+	renderableChildren: any;
 	context: RenderContext;
 	locationHistory: Array<LocationHistory>;
-}) {
-	const [visibilityPaths, setVisibilityPaths] = React.useState(Date.now());
+}>): JSX.Element {
+	const [, setVisibilityPaths] = React.useState(Date.now());
 	const location = useLocation();
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const evaluatorMaps = new Map<string, TokenValueExtractor>([
@@ -68,7 +69,9 @@ function Children({
 	]);
 
 	React.useEffect(() => {
-		let set = Object.entries((pageDefinition?.componentDefinition ? children : {}) ?? {})
+		let set = Object.entries(
+			(pageDefinition?.componentDefinition ? renderableChildren : {}) ?? {},
+		)
 			.filter(([, v]) => !!v)
 			.map(([k]) => pageDefinition.componentDefinition[k])
 			.map(def => processDefinitionLocationHistory(def, locationHistory))
@@ -88,13 +91,13 @@ function Children({
 
 	if (!pageDefinition?.componentDefinition) return <></>;
 
-	const defs = Object.entries(children ?? {})
+	const defs = Object.entries(renderableChildren ?? {})
 		.filter(([, v]) => !!v)
 		.map(([k]) => pageDefinition.componentDefinition[k])
 		.map(e => {
 			if (!e?.properties?.visibility) return e;
 
-			return !!getData(e?.properties?.visibility, locationHistory, pageExtractor)
+			return getData(e?.properties?.visibility, locationHistory, pageExtractor)
 				? e
 				: undefined;
 		})
@@ -108,15 +111,15 @@ function Children({
 			{defs
 				.map((e, i) => {
 					if (!e) return;
-					let Comp = ComponentDefinitions.get(e!.type)?.component;
-					usedComponents.using(e!.type ?? Nothing.name);
+					let Comp = ComponentDefinitions.get(e.type)?.component;
+					usedComponents.using(e.type ?? Nothing.name);
 					if (!Comp) Comp = Nothing.component;
 					if (!Comp) return undefined;
-					if (e!.type === 'Page') {
+					if (e.type === 'Page') {
 						const pageDef = getOrLoadPageDefinition(location);
 						if (pageDef)
 							return (
-								<PageComponentDefinition.component
+								<Page
 									definition={e}
 									pageDefinition={pageDef}
 									key={pageDef.name}
@@ -136,7 +139,7 @@ function Children({
 						: context;
 					const rComp = React.createElement(Comp, {
 						definition: e,
-						key: e!.key,
+						key: e.key,
 						pageDefinition: pageDefinition,
 						context: { ...ctx },
 						locationHistory: locationHistory,
