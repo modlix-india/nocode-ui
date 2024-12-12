@@ -49,6 +49,7 @@ declare global {
 	var domainClientCode: string;
 	var domainAppCode: string;
 	var lastInteracted: number;
+	var applicationDefinition: any;
 	// var d3: typeof import('d3/index');
 }
 
