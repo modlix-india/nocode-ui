@@ -230,7 +230,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 					const comp = (
 						<Children
 							pageDefinition={pageDefinition}
-							children={firstchild}
+							renderableChildren={firstchild}
 							context={context}
 							locationHistory={[
 								...locationHistory,
@@ -272,8 +272,8 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 								tabIndex={0}
 								className={`moveOne ${
 									index == arrayValue?.length - 1
-										? moveUpIcon ?? 'fa fa-circle-arrow-up fa-solid'
-										: moveDownIcon ?? 'fa fa-circle-arrow-down fa-solid'
+										? (moveUpIcon ?? 'fa fa-circle-arrow-up fa-solid')
+										: (moveDownIcon ?? 'fa fa-circle-arrow-down fa-solid')
 								}`}
 								style={styleProperties.move ?? {}}
 								onClick={
@@ -301,7 +301,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 								className={`moveOne ${
 									index == 0 || index == arrayValue?.length - 1
 										? ''
-										: moveUpIcon ?? 'fa fa-circle-arrow-up fa-solid'
+										: (moveUpIcon ?? 'fa fa-circle-arrow-up fa-solid')
 								}`}
 								onClick={showMove ? () => handleMove(index, index - 1) : undefined}
 								style={styleProperties.move ?? {}}

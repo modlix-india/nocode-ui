@@ -279,7 +279,7 @@ function TableColumnsComponent(props: ComponentProps) {
 		if (selectionType === 'NONE' || !selectionBindingPath) return false;
 
 		const selected =
-			(multiSelect ? selection ?? [] : [selection]).filter((e: any) =>
+			(multiSelect ? (selection ?? []) : [selection]).filter((e: any) =>
 				selectionType === 'OBJECT'
 					? deepEqual(e, data[index])
 					: e === `(${dataBindingPath})[${index}]`,
@@ -363,7 +363,7 @@ function TableColumnsComponent(props: ComponentProps) {
 				{checkBox}
 				<Children
 					pageDefinition={pageDefinition}
-					children={children}
+					renderableChildren={children}
 					context={context}
 					locationHistory={[
 						...locationHistory,
@@ -395,7 +395,7 @@ function TableColumnsComponent(props: ComponentProps) {
 				{checkBoxTop}
 				<Children
 					pageDefinition={newPageDef}
-					children={children}
+					renderableChildren={children}
 					context={context}
 					locationHistory={locationHistory}
 				/>
@@ -410,7 +410,7 @@ function TableColumnsComponent(props: ComponentProps) {
 				<div key={`emptyRow_${i}`} className="_row" style={styleNormalProperties.row}>
 					<Children
 						pageDefinition={colPageDef}
-						children={children}
+						renderableChildren={children}
 						context={context}
 						locationHistory={locationHistory}
 					/>

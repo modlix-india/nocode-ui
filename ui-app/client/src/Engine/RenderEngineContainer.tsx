@@ -1,6 +1,7 @@
 import { TokenValueExtractor, isNullValue } from '@fincity/kirun-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
+import GlobalLoader from '../App/GlobalLoader';
 import ComponentDefinitions from '../components';
 import { getPathsFrom } from '../components/util/getPaths';
 import { runEvent } from '../components/util/runEvent';
@@ -18,8 +19,7 @@ import {
 import { ComponentProperty, PageDefinition } from '../types/common';
 import { processLocation } from '../util/locationProcessor';
 import { processClassesForPageDefinition } from '../util/styleProcessor';
-import * as getPageDefinition from './../definitions/getPageDefinition.json';
-import GlobalLoader from '../App/GlobalLoader';
+import getPageDefinition from './pageDefinition';
 
 const POSITIONS: { [key: string]: boolean } = {
 	center: true,
@@ -45,7 +45,7 @@ export const RenderEngineContainer = () => {
 		let pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
 		if (!pDef) {
 			(async () => {
-				await runEvent(getPageDefinition, 'pageDefinition', GLOBAL_CONTEXT_NAME, []);
+				await getPageDefinition(pageName);
 				pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
 				const appCode = getDataFromPath(`${STORE_PREFIX}.application.appCode`, []);
 				if (appCode !== pDef?.appCode) {

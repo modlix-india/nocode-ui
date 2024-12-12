@@ -1,7 +1,0 @@
-{
-	"**/api/**": {
-		"target": "https://apps.dev.modlix.com/",
-		"changeOrigin": true,
-		"secure": false
-	}
-}

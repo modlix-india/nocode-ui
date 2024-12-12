@@ -51,7 +51,7 @@ function TableColumnComponent(props: ComponentProps) {
 			<HelperComponent context={props.context} definition={definition} />
 			<Children
 				pageDefinition={pageDefinition}
-				children={firstchild}
+				renderableChildren={firstchild}
 				context={context}
 				locationHistory={locationHistory}
 			/>

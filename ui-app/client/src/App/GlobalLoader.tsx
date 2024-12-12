@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function GlobalLoader({ noSpin }: { noSpin?: boolean }) {
+export default function GlobalLoader({ noSpin }: Readonly<{ noSpin?: boolean }>) {
 	return (
 		<div
 			style={{

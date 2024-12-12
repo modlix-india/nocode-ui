@@ -217,7 +217,7 @@ function Popup(props: ComponentProps) {
 							)}
 							<Children
 								pageDefinition={props.pageDefinition}
-								children={props.definition.children}
+								renderableChildren={props.definition.children}
 								context={props.context}
 								locationHistory={props.locationHistory}
 							/>

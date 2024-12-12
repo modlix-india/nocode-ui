@@ -204,8 +204,8 @@ function TabsComponent(props: ComponentProps) {
 								}`}
 								style={
 									hover === i || activeTab === e
-										? resolvedStylesWithHover.tab ?? {}
-										: resolvedStyles.tab ?? {}
+										? (resolvedStylesWithHover.tab ?? {})
+										: (resolvedStyles.tab ?? {})
 								}
 								onMouseEnter={() => setHover(i)}
 								onMouseLeave={e => {
@@ -225,8 +225,8 @@ function TabsComponent(props: ComponentProps) {
 									className={`icon ${icon[i]}`}
 									style={
 										e === hover
-											? resolvedStylesWithHover.icon ?? {}
-											: resolvedStyles.icon ?? {}
+											? (resolvedStylesWithHover.icon ?? {})
+											: (resolvedStyles.icon ?? {})
 									}
 								>
 									<SubHelperComponent
@@ -265,7 +265,7 @@ function TabsComponent(props: ComponentProps) {
 				<Children
 					key={`${activeTab}_chld`}
 					pageDefinition={pageDefinition}
-					children={selectedChild}
+					renderableChildren={selectedChild}
 					context={context}
 					locationHistory={locationHistory}
 				/>

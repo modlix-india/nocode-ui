@@ -51,7 +51,7 @@ function Animator(props: ComponentProps) {
 		<Children
 			key={`${key}_chld`}
 			pageDefinition={pageDefinition}
-			children={definition.children}
+			renderableChildren={definition.children}
 			context={context}
 			locationHistory={locationHistory}
 		/>
