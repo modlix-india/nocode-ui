@@ -156,7 +156,7 @@ function Carousel(props: ComponentProps) {
 					ref={previousSlide}
 				>
 					<Children
-						children={childrenDef[transitionFrom!].children}
+						renderableChildren={childrenDef[transitionFrom!].children}
 						context={props.context}
 						pageDefinition={props.pageDefinition}
 						locationHistory={locationHistory}
@@ -175,7 +175,7 @@ function Carousel(props: ComponentProps) {
 					style={style}
 				>
 					<Children
-						children={childrenDef[slideNum].children}
+						renderableChildren={childrenDef[slideNum].children}
 						context={props.context}
 						pageDefinition={props.pageDefinition}
 						locationHistory={locationHistory}
@@ -186,7 +186,7 @@ function Carousel(props: ComponentProps) {
 			showChildren = [
 				<div className="_eachSlide _previous" key={childrenDef[slideNum!].key}>
 					<Children
-						children={childrenDef[slideNum!].children}
+						renderableChildren={childrenDef[slideNum!].children}
 						context={props.context}
 						pageDefinition={props.pageDefinition}
 						locationHistory={locationHistory}

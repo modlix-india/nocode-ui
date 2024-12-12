@@ -1,25 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import { HelperComponent } from '../HelperComponents/HelperComponent';
-import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
-import Children from '../Children';
 import { deepEqual, duplicate, isNullValue } from '@fincity/kirun-js';
-import { runEvent } from '../util/runEvent';
-import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../../constants';
+import React, { useEffect, useState } from 'react';
+import { STORE_PREFIX } from '../../constants';
 import {
 	addListenerAndCallImmediately,
-	addListenerAndCallImmediatelyWithChildrenActivity,
 	addListenerWithChildrenActivity,
 	getDataFromPath,
 	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
-import PageStyle from './PageStyle';
-import { propertiesDefinition, stylePropertiesDefinition } from './pageProperties';
-import useDefinition from '../util/useDefinition';
+import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import pageHistory from './pageHistory';
-import { styleDefaults } from './pageStyleProperties';
+import Children from '../Children';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { IconHelper } from '../util/IconHelper';
+import { runEvent } from '../util/runEvent';
+import useDefinition from '../util/useDefinition';
+import PageStyle from './PageStyle';
+import pageHistory from './pageHistory';
+import { propertiesDefinition, stylePropertiesDefinition } from './pageProperties';
+import { styleDefaults } from './pageStyleProperties';
 
 const STATIC_FILE_API_PREFIX = 'api/files/static/file/';
 
@@ -41,7 +40,7 @@ function PageComponent(props: Readonly<ComponentProps>) {
 		pageExtractor,
 	);
 
-	const [_, setLastChanged] = useState<number>(Date.now());
+	const [, setLastChanged] = useState<number>(Date.now());
 
 	useEffect(
 		() =>
@@ -172,7 +171,7 @@ function PageComponent(props: Readonly<ComponentProps>) {
 			<style>{styleText}</style>
 			<Children
 				pageDefinition={pageDefinition}
-				children={{
+				renderableChildren={{
 					[pageDefinition.rootComponent]: true,
 				}}
 				context={context}

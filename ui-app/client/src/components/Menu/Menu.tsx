@@ -295,7 +295,7 @@ function Menu(props: ComponentProps) {
 				/>
 				<Children
 					pageDefinition={props.pageDefinition}
-					children={definition.children}
+					renderableChildren={definition.children}
 					context={{ ...context, menuLevel: (context.menuLevel ?? 0) + 1 }}
 					locationHistory={locationHistory}
 				/>

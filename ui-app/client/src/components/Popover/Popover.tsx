@@ -129,7 +129,7 @@ function Popover(props: ComponentProps) {
 					<Children
 						key={`${key}_${popController}_chld`}
 						pageDefinition={pageDefinition}
-						children={{ [popController.key]: true }}
+						renderableChildren={{ [popController.key]: true }}
 						context={{ ...context, isReadonly }}
 						locationHistory={locationHistory}
 					/>
@@ -165,7 +165,7 @@ function Popover(props: ComponentProps) {
 										<Children
 											key={`${key}_${popover.key}_chld`}
 											pageDefinition={pageDefinition}
-											children={{ [popover.key]: true }}
+											renderableChildren={{ [popover.key]: true }}
 											context={{ ...context, isReadonly }}
 											locationHistory={locationHistory}
 										/>

@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FileBrowserStyles } from '../commonComponents/FileBrowser/FileBrowserStyles';
 import ComponentDefinitions from '../components';
 import { getHref } from '../components/util/getHref';
 import { lazyCSSURL } from '../components/util/lazyStylePropertyUtil';
 import { STORE_PATH_APP, STORE_PATH_STYLE_PATH, STORE_PATH_THEME_PATH } from '../constants';
 import { addListener } from '../context/StoreContext';
-import { Component, StyleResolution } from '../types/common';
+import { StyleResolution } from '../types/common';
 import { processStyleDefinition, StyleResolutionDefinition } from '../util/styleProcessor';
 import { styleDefaults, styleProperties } from './appStyleProperties';
 import MessageStyle from './Messages/MessageStyle';
@@ -19,10 +19,6 @@ export default function AppStyle() {
 
 	const TABLET_MIN_WIDTH = StyleResolutionDefinition.get(
 		StyleResolution.TABLET_POTRAIT_SCREEN,
-	)?.minWidth;
-
-	const TABLET_LAND_MIN_WIDTH = StyleResolutionDefinition.get(
-		StyleResolution.TABLET_LANDSCAPE_SCREEN,
 	)?.minWidth;
 
 	const DESKTOP_MIN_WIDTH = StyleResolutionDefinition.get(
@@ -118,8 +114,7 @@ export default function AppStyle() {
 	const styleComps = new Array();
 
 	const comps = ComponentDefinitions.values();
-	let comp: IteratorResult<Component, undefined>;
-	while (!(comp = comps.next()).done) {
+	for (let comp = comps.next(); !comp.done; comp = comps.next()) {
 		if (!comp.value.styleComponent) continue;
 		if (compList.size != 0 && !compList.has(comp.value.name)) continue;
 

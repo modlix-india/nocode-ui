@@ -213,7 +213,7 @@ function SmallCarousel(props: ComponentProps) {
 				>
 					<SubHelperComponent definition={definition} subComponentName="slideItem" />
 					<Children
-						children={{ [e[1].key]: true }}
+						renderableChildren={{ [e[1].key]: true }}
 						context={context}
 						pageDefinition={pageDefinition}
 						locationHistory={e[2] as LocationHistory[]}

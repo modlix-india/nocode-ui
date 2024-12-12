@@ -36,15 +36,18 @@ function spinCalculate(
 				() =>
 					setIsLoading(
 						(spinnerPath1
-							? getDataFromPath(spinnerPath1, props.locationHistory, pageExtractor) ??
-								false
+							? (getDataFromPath(
+									spinnerPath1,
+									props.locationHistory,
+									pageExtractor,
+								) ?? false)
 							: false) ||
 							(spinnerPath2
-								? getDataFromPath(
+								? (getDataFromPath(
 										spinnerPath2,
 										props.locationHistory,
 										pageExtractor,
-									) ?? false
+									) ?? false)
 								: false),
 					),
 				pageExtractor,
@@ -58,15 +61,18 @@ function spinCalculate(
 				() =>
 					setIsLoading(
 						(spinnerPath1
-							? getDataFromPath(spinnerPath1, props.locationHistory, pageExtractor) ??
-								false
+							? (getDataFromPath(
+									spinnerPath1,
+									props.locationHistory,
+									pageExtractor,
+								) ?? false)
 							: false) ||
 							(spinnerPath2
-								? getDataFromPath(
+								? (getDataFromPath(
 										spinnerPath2,
 										props.locationHistory,
 										pageExtractor,
-									) ?? false
+									) ?? false)
 								: false),
 					),
 				pageExtractor,
@@ -252,7 +258,7 @@ function TableComponent(props: ComponentProps) {
 			body = (
 				<Children
 					pageDefinition={pageDefinition}
-					children={{ [entry[0][0]]: true }}
+					renderableChildren={{ [entry[0][0]]: true }}
 					context={context}
 					locationHistory={locationHistory}
 				/>
@@ -705,7 +711,7 @@ function TableComponent(props: ComponentProps) {
 			<div className="_tableWithPagination">
 				<Children
 					pageDefinition={pageDefinition}
-					children={selectedChildren}
+					renderableChildren={selectedChildren}
 					context={{
 						...context,
 						table: {
@@ -736,7 +742,7 @@ function TableComponent(props: ComponentProps) {
 				<>
 					<Children
 						pageDefinition={pageDefinition}
-						children={{ [previewChild]: true }}
+						renderableChildren={{ [previewChild]: true }}
 						context={{
 							...context,
 							table: {

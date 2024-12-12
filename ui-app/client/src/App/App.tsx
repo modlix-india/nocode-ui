@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { isNullValue } from '@fincity/kirun-js';
+import { useEffect, useState } from 'react';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { RenderEngineContainer } from '../Engine/RenderEngineContainer';
-import * as getAppDefinition from '../definitions/getAppDefinition.json';
-import { runEvent } from '../components/util/runEvent';
+import { STORE_PREFIX } from '../constants';
 import {
 	addListener,
 	addListenerAndCallImmediately,
@@ -10,13 +10,12 @@ import {
 	innerSetData,
 	setData,
 } from '../context/StoreContext';
-import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../constants';
+import { isSlave, messageToMaster, SLAVE_FUNCTIONS } from '../slaveFunctions';
 import { StyleResolution } from '../types/common';
 import { StyleResolutionDefinition } from '../util/styleProcessor';
-import { Messages } from './Messages/Messages';
-import { isSlave, messageToMaster, SLAVE_FUNCTIONS } from '../slaveFunctions';
-import { isNullValue } from '@fincity/kirun-js';
 import GlobalLoader from './GlobalLoader';
+import { Messages } from './Messages/Messages';
+import getAppDefinition from './appDefinition';
 
 // In design mode we are listening to the messages from editor
 
@@ -172,7 +171,7 @@ function processIconPacks(iconPacks: any) {
 }
 
 export function App() {
-	const [isApplicationLoadFailed, setIsApplicationFailed] = useState(false);
+	const [isApplicationLoadFailed, setIsApplicationLoadFailed] = useState(false);
 	const [applicationLoaded, setApplicationLoaded] = useState(false);
 
 	const [firstTime, setFirstTime] = useState(true);
@@ -181,12 +180,7 @@ export function App() {
 			addListenerAndCallImmediately(
 				async (_, appDef) => {
 					if (appDef === undefined) {
-						await runEvent(
-							getAppDefinition,
-							'initialLoadFunction',
-							GLOBAL_CONTEXT_NAME,
-							[],
-						);
+						await getAppDefinition();
 						setApplicationLoaded(true);
 						return;
 					}
@@ -218,7 +212,7 @@ export function App() {
 	useEffect(
 		() =>
 			addListener(
-				(_, value) => setIsApplicationFailed(value),
+				(_, value) => setIsApplicationLoadFailed(value),
 				undefined,
 				`${STORE_PREFIX}.isApplicationLoadFailed`,
 			),

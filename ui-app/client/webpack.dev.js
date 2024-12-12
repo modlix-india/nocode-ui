@@ -1,5 +1,4 @@
 const path = require('path');
-const proxyConfig = require('./.proxyrc.json');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
@@ -48,7 +47,15 @@ module.exports = {
     historyApiFallback: true, // For React Router support
     port: 1234,
     hot: true, 
-    proxy: proxyConfig
+    proxy: [
+      {
+        context: ["**/api/**"],
+        target: "https://apps.dev.modlix.com/",
+        changeOrigin: true,
+        secure: false
+      }
+    ]
   }
+  
 };
 
