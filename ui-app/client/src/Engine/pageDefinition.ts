@@ -11,7 +11,7 @@ export default async function getPageDefinition(pageName: string) {
 	);
 
 	if (authToken) {
-		axiosConfig.headers!['Authorization'] = authToken;
+		axiosConfig.headers!['Authorization'] = JSON.parse(authToken);
 	}
 
 	const response = await axios.get(`api/ui/page/${pageName}`, axiosConfig);
