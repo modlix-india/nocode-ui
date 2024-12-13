@@ -320,6 +320,7 @@ function setSmallDeviceTypes(size: number, newDevices: { [key: string]: boolean 
 }
 
 function setDeviceType() {
+	if (!document.body) return;
 	const size = document.body.offsetWidth;
 	const newDevices: { [key: string]: boolean } = {};
 
