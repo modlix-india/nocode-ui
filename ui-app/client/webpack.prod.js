@@ -5,6 +5,24 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 module.exports = (env = {}) => {
   const publicUrl = env.publicUrl || '/';
 
+  const plugins =  [
+    new CleanWebpackPlugin({
+      cleanOnceBeforeBuildPatterns: ['**/*', '!css/**', '!styleProperties/**' ]
+    }),
+    new HtmlWebpackPlugin({
+      template: path.join(__dirname, 'src', 'index.html'),
+      // If you need to dynamically set <base href>, you can do so here if needed
+    })
+  ];
+
+  if (env.analyze) {
+    const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+    plugins.push(new BundleAnalyzerPlugin({
+      reportFilename: path.resolve(__dirname, 'report', 'index.html'),
+      openAnalyzer: false
+    }));
+  }
+
   return {
     mode: 'production',
     entry: {
@@ -42,15 +60,7 @@ module.exports = (env = {}) => {
     resolve: {
       extensions: ['.ts', '.tsx', '.js']
     },
-    plugins: [
-      new CleanWebpackPlugin({
-        cleanOnceBeforeBuildPatterns: ['**/*', '!css/**', '!styleProperties/**' ]
-      }),
-      new HtmlWebpackPlugin({
-        template: path.join(__dirname, 'src', 'index.html'),
-        // If you need to dynamically set <base href>, you can do so here if needed
-      })
-    ],
+    plugins,
     optimization: {
       splitChunks: {
         chunks: "all",
