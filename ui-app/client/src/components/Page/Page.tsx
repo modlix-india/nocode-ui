@@ -97,14 +97,21 @@ function PageComponent(props: Readonly<ComponentProps>) {
 					!isNullValue(onLoadEvent) &&
 					!isNullValue(eventFunctions[onLoadEvent!])
 				) {
-					(async () =>
-						await runEvent(
-							eventFunctions[onLoadEvent!],
-							'pageOnLoad',
-							pageName,
-							locationHistory,
-							pageDefinition,
-						))();
+					if (
+						!getDataFromPath(
+							`Store.functionExecutions.${pageName}.pageOnLoad.isRunning`,
+							[],
+						)
+					) {
+						(async () =>
+							await runEvent(
+								eventFunctions[onLoadEvent!],
+								'pageOnLoad',
+								pageName,
+								locationHistory,
+								pageDefinition,
+							))();
+					}
 				}
 			},
 			pageExtractor,
