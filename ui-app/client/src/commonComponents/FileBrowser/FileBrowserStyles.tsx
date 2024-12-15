@@ -37,7 +37,7 @@ export function FileBrowserStyles() {
 	return (
 		<>
 			{used ? <link key="externalCSS" rel="stylesheet" href={lazyCSSURL(NAME)} /> : undefined}
-			<style id="fileBrowserStyles">{styles}</style>;
+			<style id="fileBrowserStyles">{styles}</style>
 		</>
 	);
 }
