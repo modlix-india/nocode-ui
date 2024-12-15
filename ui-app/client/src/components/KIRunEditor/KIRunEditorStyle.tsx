@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { usedComponents } from '../../App/usedComponents';
-import { StylePropertyDefinition } from '../../types/common';
 import { processStyleDefinition } from '../../util/styleProcessor';
-import { lazyCSSURL, lazyStylePropertyLoadFunction } from '../util/lazyStylePropertyUtil';
+import { lazyCSSURL } from '../util/lazyStylePropertyUtil';
 import { styleDefaults, styleProperties } from './KIRunEditorStyleProperties';
 
 const PREFIX = '.comp.compKIRunEditor';
