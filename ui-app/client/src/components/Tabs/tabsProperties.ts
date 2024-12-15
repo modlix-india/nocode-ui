@@ -115,7 +115,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		description: 'Event to be triggered when a tab clicked.',
 		group: ComponentPropertyGroup.EVENTS,
-  },
+	},
 
 	COMMON_COMPONENT_PROPERTIES.colorScheme,
 ];

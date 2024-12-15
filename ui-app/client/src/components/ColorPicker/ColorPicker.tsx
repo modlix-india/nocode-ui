@@ -255,8 +255,8 @@ function ColorPickerComponent(props: ComponentProps) {
 			translations={translations}
 			rightIcon={
 				showDropdown
-					? rightIconOpen ?? 'fa-solid fa-angle-up'
-					: rightIcon ?? 'fa-solid fa-angle-down'
+					? (rightIconOpen ?? 'fa-solid fa-angle-up')
+					: (rightIcon ?? 'fa-solid fa-angle-down')
 			}
 			valueType="text"
 			isPassword={false}

@@ -46,7 +46,7 @@ export default function ImagePopup({
 						new Map([['Filler.', new StoreExtractor(newFiller, 'Filler.')]]),
 					);
 					onValueChanged?.(isUIFiller, newFiller);
-			  },
+				},
 		[isUIFiller, uiFiller, coreFiller, onValueChanged, dataPath],
 	);
 

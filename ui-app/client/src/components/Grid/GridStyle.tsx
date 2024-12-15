@@ -2,7 +2,9 @@ import { processStyleDefinition } from '../../util/styleProcessor';
 import { styleDefaults, styleProperties } from './gridStyleProperties';
 
 const PREFIX = '.comp.compGrid';
-export default function GridStyle({ theme }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
+export default function GridStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const css =
 		`
 		

@@ -87,7 +87,7 @@ function ToggleButton(props: ComponentProps) {
 		[onClick, bindingPathPath, props.pageDefinition.eventFunctions?.[onClick]],
 	);
 
-	const label = isToggled ? onLabel : offLabel ?? onLabel;
+	const label = isToggled ? onLabel : (offLabel ?? onLabel);
 
 	const labelComp = label ? (
 		<span

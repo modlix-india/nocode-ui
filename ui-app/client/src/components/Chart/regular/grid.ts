@@ -33,8 +33,8 @@ export default function renderGrid(
 			yScale.ticks
 				? yScale.ticks()
 				: chartData.axisInverted
-				? xAxisTickValues
-				: yAxisTickValues
+					? xAxisTickValues
+					: yAxisTickValues
 		).map((d: any) => yScale(d));
 		ys.indexOf(chartHeight) === -1 && ys.push(chartHeight);
 		ys.indexOf(0) === -1 && ys.push(0);
@@ -58,8 +58,8 @@ export default function renderGrid(
 			xScale.ticks
 				? xScale.ticks()
 				: chartData.axisInverted
-				? yAxisTickValues
-				: xAxisTickValues
+					? yAxisTickValues
+					: xAxisTickValues
 		).map((d: any) => xScale(d));
 		xs.indexOf(chartWidth) === -1 && xs.push(chartWidth);
 		xs.indexOf(0) === -1 && xs.push(0);
