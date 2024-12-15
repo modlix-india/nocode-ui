@@ -1,23 +1,9 @@
-import { deepEqual, duplicate, Repository, Schema } from '@fincity/kirun-js';
-import { setStoreData, StoreExtractor } from '@fincity/path-reactive-state-management';
-import React, { Suspense, useEffect } from 'react';
-import {
-	addListenerAndCallImmediately,
-	getPathFromLocation,
-	PageStoreExtractor,
-	setData,
-} from '../../context/StoreContext';
-import { UISchemaRepository } from '../../schemas/common';
+import React, { Suspense } from 'react';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
-import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import { HelperComponent } from '../HelperComponents/HelperComponent';
-import { AnyValueEditor } from '../PageEditor/editors/propertyValueEditors/AnyValueEditor';
-import useDefinition from '../util/useDefinition';
-import SingleSchema from './components/SingleSchemaForm';
+import { IconHelper } from '../util/IconHelper';
 import { propertiesDefinition, stylePropertiesDefinition } from './schemaFormProperties';
 import SchemaFormStyle from './SchemaFormStyle';
 import { styleDefaults } from './schemaFormStyleProperies';
-import { IconHelper } from '../util/IconHelper';
 
 const LazySchemaForm = React.lazy(
 	() => import(/* webpackChunkName: "FillerDefinitionEditor" */ './LazySchemaForm'),
