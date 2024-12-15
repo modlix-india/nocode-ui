@@ -18,7 +18,7 @@ import { propertiesDefinition, stylePropertiesDefinition } from './checkBoxPrope
 import { styleDefaults } from './checkBoxStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
-function CheckBox(props: ComponentProps) {
+function CheckBox(props: Readonly<ComponentProps>) {
 	const [checkBoxdata, setCheckBoxData] = useState(false);
 	const [hover, setHover] = useState(false);
 	const [focus, setFocus] = useState(false);

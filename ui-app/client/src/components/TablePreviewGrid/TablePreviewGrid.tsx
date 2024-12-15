@@ -15,7 +15,7 @@ import TablePreviewGridStyle from './TablePreviewGridStyle';
 import { styleDefaults } from './tablePreviewGridStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
-function TablePreviewGrid(props: ComponentProps) {
+function TablePreviewGrid(props: Readonly<ComponentProps>) {
 	const [hover, setHover] = React.useState(false);
 	const [focus, setFocus] = React.useState(false);
 	const { definition, pageDefinition, locationHistory, context } = props;

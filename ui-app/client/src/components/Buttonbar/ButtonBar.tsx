@@ -20,7 +20,7 @@ import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { styleDefaults } from './buttonBarStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
-function ButtonBar(props: ComponentProps) {
+function ButtonBar(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const {
 		definition: { bindingPath },

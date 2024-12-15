@@ -19,7 +19,7 @@ import {
 	stylePropertiesDefinition,
 } from './fillerDefinitionEditorProperties';
 
-export default function FillerDefinitionEditor(props: ComponentProps) {
+export default function FillerDefinitionEditor(props: Readonly<ComponentProps>) {
 	const { definition, pageDefinition, locationHistory, context } = props;
 	const {
 		definition: { bindingPath },

@@ -17,7 +17,7 @@ import { messageToMaster } from '../../slaveFunctions';
 import { styleDefaults } from './buttonStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
-function ButtonComponent(props: ComponentProps) {
+function ButtonComponent(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const [focus, setFocus] = useState(false);
 	const [hover, setHover] = useState(false);

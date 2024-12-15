@@ -21,7 +21,7 @@ import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { runEvent } from '../util/runEvent';
 import { select } from 'd3';
 
-function FileSelector(props: ComponentProps) {
+function FileSelector(props: Readonly<ComponentProps>) {
 	const {
 		pageDefinition: { translations },
 		definition,

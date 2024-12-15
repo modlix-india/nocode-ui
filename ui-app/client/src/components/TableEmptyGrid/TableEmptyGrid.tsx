@@ -15,7 +15,7 @@ import TableEmptyGridStyle from './TableEmptyGridStyle';
 import { styleDefaults } from './tableEmptyGridStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
-function TableEmptyGrid(props: ComponentProps) {
+function TableEmptyGrid(props: Readonly<ComponentProps>) {
 	const [hover, setHover] = React.useState(false);
 	const [focus, setFocus] = React.useState(false);
 	const { definition, pageDefinition, locationHistory, context } = props;

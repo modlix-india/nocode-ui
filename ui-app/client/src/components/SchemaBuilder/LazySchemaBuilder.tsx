@@ -14,7 +14,7 @@ import { UISchemaRepository } from '../../schemas/common';
 import { isNullValue } from '@fincity/kirun-js';
 import { ComponentProps } from '../../types/common';
 
-export default function SchemaBuilder(props: ComponentProps) {
+export default function SchemaBuilder(props: Readonly<ComponentProps>) {
 	const {
 		definition,
 		definition: { bindingPath },

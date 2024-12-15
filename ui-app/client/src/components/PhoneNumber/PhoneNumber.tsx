@@ -28,7 +28,7 @@ interface mapType {
 	[key: string]: any;
 }
 
-function PhoneNumber(props: ComponentProps) {
+function PhoneNumber(props: Readonly<ComponentProps>) {
 	const [focus, setFocus] = React.useState(false);
 	const [dropdownOpen, setDropdownOpen] = React.useState(false);
 	const [validationMessages, setValidationMessages] = React.useState<Array<string>>([]);

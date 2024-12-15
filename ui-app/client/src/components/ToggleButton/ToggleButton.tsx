@@ -18,7 +18,7 @@ import { styleDefaults } from './toggleButtonStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import { runEvent } from '../util/runEvent';
 
-function ToggleButton(props: ComponentProps) {
+function ToggleButton(props: Readonly<ComponentProps>) {
 	const {
 		definition: { bindingPath },
 		pageDefinition: { translations },

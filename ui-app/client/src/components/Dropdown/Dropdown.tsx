@@ -21,7 +21,7 @@ import { propertiesDefinition, stylePropertiesDefinition } from './dropdownPrope
 import { styleDefaults } from './dropdownStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
-function DropdownComponent(props: ComponentProps) {
+function DropdownComponent(props: Readonly<ComponentProps>) {
 	const [showDropdown, setShowDropdown] = useState(false);
 	const [searchDropdownData, setSearchDropdownData] = useState<
 		Array<

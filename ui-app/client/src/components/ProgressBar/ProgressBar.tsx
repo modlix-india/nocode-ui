@@ -11,7 +11,7 @@ import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { styleDefaults } from './progressBarStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
-function ProgressBar(props: ComponentProps) {
+function ProgressBar(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const [hover, setHover] = React.useState(false);
 

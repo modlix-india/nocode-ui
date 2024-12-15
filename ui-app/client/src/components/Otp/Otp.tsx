@@ -25,7 +25,7 @@ import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { makePropertiesObject } from '../util/make';
 
-function Otp(props: ComponentProps) {
+function Otp(props: Readonly<ComponentProps>) {
 	const [focusBoxIndex, setFocusBoxIndex] = React.useState(0);
 	const [validationMessages, setValidationMessages] = React.useState<Array<string>>([]);
 	const {

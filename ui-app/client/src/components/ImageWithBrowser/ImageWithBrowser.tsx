@@ -27,7 +27,7 @@ import { styleDefaults } from './imageWithBrowserStyleProperties';
 import getSrcUrl from '../util/getSrcUrl';
 import { IconHelper } from '../util/IconHelper';
 
-function ImageWithBrowser(props: ComponentProps) {
+function ImageWithBrowser(props: Readonly<ComponentProps>) {
 	const {
 		definition,
 		definition: {

@@ -18,7 +18,7 @@ import { styleDefaults } from './imageStyleProperties';
 import getSrcUrl from '../util/getSrcUrl';
 import { IconHelper } from '../util/IconHelper';
 
-function ImageComponent(props: ComponentProps) {
+function ImageComponent(props: Readonly<ComponentProps>) {
 	const { definition, locationHistory, context } = props;
 	const [hover, setHover] = useState(false);
 	const [src, setSrc] = useState('');

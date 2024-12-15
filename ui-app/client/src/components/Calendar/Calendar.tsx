@@ -44,7 +44,7 @@ import {
 } from './components/calendarFunctions';
 import { CalendarValidationProps } from './components/calendarTypes';
 
-function CalendarComponent(props: ComponentProps) {
+function CalendarComponent(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const {
 		definition: { bindingPath, bindingPath2, bindingPath3 },

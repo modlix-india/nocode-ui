@@ -12,7 +12,7 @@ import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { styleDefaults } from './carouselStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
-function Carousel(props: ComponentProps) {
+function Carousel(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const { locationHistory, definition, pageDefinition } = props;
 	const {
