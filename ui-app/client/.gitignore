@@ -1,8 +1,10 @@
 node_modules
 .parcel-cache
-dist/**
-!dist/css/**
-!dist/styleProperties/**
+dist/*.js
+dist/*.map
+dist/*.html
+dist/*.json
 .DS_Store
 report/**
+reports/**
 stats.json
