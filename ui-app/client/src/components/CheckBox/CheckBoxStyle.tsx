@@ -3,7 +3,9 @@ import { processStyleDefinition } from '../../util/styleProcessor';
 import { styleDefaults, styleProperties } from './checkBoxStyleProperties';
 
 const PREFIX = '.comp.compCheckbox';
-export default function CheckBoxStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function CheckBoxStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const css =
 		`
 

@@ -6,7 +6,9 @@ import { styleDefaults, styleProperties } from './KIRunEditorStyleProperties';
 
 const PREFIX = '.comp.compKIRunEditor';
 const NAME = 'KIRun Editor';
-export default function KIRunEditorStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function KIRunEditorStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const [used, setUsed] = useState(false);
 
 	useEffect(() => {

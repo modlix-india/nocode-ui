@@ -7,7 +7,7 @@ import { StylePropertyDefinition } from '../../types/common';
 
 const PREFIX = '.comp.compOtp';
 const NAME = 'Otp';
-export default function OtpStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function OtpStyle({ theme }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>([]);
 
 	useEffect(() => {

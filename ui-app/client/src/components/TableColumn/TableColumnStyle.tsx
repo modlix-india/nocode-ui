@@ -4,7 +4,9 @@ import { processStyleDefinition, processStyleValueWithFunction } from '../../uti
 import { styleProperties, styleDefaults } from './tableColumnStyleProperties';
 
 const PREFIX = '.comp.compTableColumn';
-export default function TableColumnStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function TableColumnStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
 	const css =
 		`${PREFIX} { display: table-cell; vertical-align: middle; text-align:center;}

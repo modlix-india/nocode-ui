@@ -7,7 +7,9 @@ import { usedComponents } from '../../App/usedComponents';
 
 const PREFIX = '.comp.compVideo';
 const NAME = 'Video';
-export default function VideoStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function VideoStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>([]);
 
 	useEffect(() => {

@@ -4,7 +4,9 @@ import { processStyleDefinition, processStyleValueWithFunction } from '../../uti
 import { styleProperties, styleDefaults } from './tableStyleProperties';
 
 const PREFIX = '.comp.compTable';
-export default function TableStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function TableStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
 	const css =
 		`

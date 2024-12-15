@@ -6,7 +6,9 @@ import { lazyCSSURL } from '../util/lazyStylePropertyUtil';
 
 const PREFIX = '.comp.compSchemaBuilder';
 const NAME = 'SchemaBuilder';
-export default function SchemaBuilderStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function SchemaBuilderStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const [used, setUsed] = useState(false);
 
 	useEffect(() => {

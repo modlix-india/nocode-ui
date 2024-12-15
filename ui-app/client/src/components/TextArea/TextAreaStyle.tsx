@@ -7,7 +7,9 @@ import { StylePropertyDefinition } from '../../types/common';
 
 const PREFIX = '.comp.compTextArea';
 const NAME = 'TextArea';
-export default function TextAreaStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function TextAreaStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>([]);
 
 	useEffect(() => {

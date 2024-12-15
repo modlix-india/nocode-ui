@@ -1,32 +1,26 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { duplicate } from '@fincity/kirun-js';
+import { useCallback, useEffect, useState } from 'react';
 import {
 	addListenerAndCallImmediately,
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
-import {
-	Component,
-	ComponentPropertyDefinition,
-	ComponentProps,
-	LocationHistory,
-	PageDefinition,
-} from '../../types/common';
+import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
+import { IconHelper } from '../util/IconHelper';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
+import { FormStorageEditorDefinition } from './components/formCommons';
+import FormComponents from './components/FormComponents';
+import FormEditor from './components/FormEditor';
+import FormPreview from './components/FormPreview';
 import { propertiesDefinition, stylePropertiesDefinition } from './formStorageEditorProperties';
 import StorageEditorStyle from './FormStorageEditorStyle';
 import { styleDefaults } from './formStorageEditorStyleProperties';
-import { IconHelper } from '../util/IconHelper';
-import FormComponents from './components/FormComponents';
-import FormEditor from './components/FormEditor';
-import { FormStorageEditorDefinition } from './components/formCommons';
-import FormPreview from './components/FormPreview';
-import { duplicate } from '@fincity/kirun-js';
 
-function FormStorageEditor(props: ComponentProps) {
+function FormStorageEditor(props: Readonly<ComponentProps>) {
 	const [formStorage, setFormStorage] = useState<FormStorageEditorDefinition>({
 		name: 'form',
 		fieldDefinitionMap: {},
