@@ -30,7 +30,7 @@ module.exports = (env = {}) => {
     },
     output: {
       filename: '[name].js',
-      chunkFilename: '[name].js',
+      chunkFilename: '[name].[chunkhash].js',
       path: path.resolve(__dirname, 'dist'),
       publicPath: publicUrl
     },
