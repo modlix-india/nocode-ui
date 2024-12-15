@@ -1,0 +1,148 @@
+.comp.compSchemaBuilder ._leftJustify {
+    justify-self: left;
+}	
+
+.comp.compSchemaBuilder ._leftJustify:hover > ._helptext {
+    display: inline;
+}
+
+.comp.compSchemaBuilder ._rightJustify {
+    justify-self: right;
+}	
+
+.comp.compSchemaBuilder ._leftJustify,
+.comp.compSchemaBuilder ._rightJustify {
+    border-bottom: 1px solid #eee;
+    border-right: 1px solid #eee;
+    padding: 5px;
+    width: 100%;
+}
+
+.comp.compSchemaBuilder ._helptext {
+    font-size: 12px;
+    color: #ccc;
+    display: none;
+}
+
+.comp.compSchemaBuilder ._flexRow {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+
+.comp.compSchemaBuilder ._array {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.comp.compSchemaBuilder ._eachValue {
+    margin: 5px;
+    border-bottom: 1px solid #eee;
+}
+
+.comp.compSchemaBuilder ._eachUpDown {
+    display: flex;
+    gap: 8px;
+    padding: 3px;
+    align-items: center;
+}
+
+.comp.compSchemaBuilder ._eachUpDown i.fa {
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+    padding: 2px;
+    background-color: #eee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.comp.compSchemaBuilder ._eachUpDown i.fa:hover {
+    background-color: #ddd;
+}
+
+.comp.compSchemaBuilder ._eachUpDown > ._leftJustify {
+    border: none;
+}
+
+.comp.compSchemaBuilder ._object > ._leftJustify,
+.comp.compSchemaBuilder ._object > ._rightJustify {
+    border: none;
+}
+
+.comp.compSchemaBuilder select,
+.comp.compSchemaBuilder input[type="text"],
+.comp.compSchemaBuilder input[type="number"],
+.comp.compSchemaBuilder textarea {
+    border: 1px solid #ccc;
+    background-color: #eee;
+    font-family: inherit;
+    font-size: 12px;
+    border-radius: 3px;
+    padding: 2px 5px;
+    width: 200px;
+}
+
+.comp.compSchemaBuilder textarea {
+    width:	300px;
+    height: 100px;
+}
+
+.comp.compSchemaBuilder ._error {
+    color: #ff2b2b;
+    font-size: 12px;
+}
+
+.comp.compSchemaBuilder ._singleSchema,
+.comp.compSchemaBuilder ._object {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    font-size: 14px;
+    border-top: 1px solid #eee;
+    border-left: 1px solid #eee;
+}
+
+.comp.compSchemaBuilder ._popupBackground {
+    background: #0004;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    z-index: 6;
+    left: 0px;
+    top: 0px;
+}
+
+.comp.compSchemaBuilder ._popupBackground ._popupContainer {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 3px;
+    max-width: 60vw;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.comp.compSchemaBuilder ._popupBackground ._popupButtons {
+    display: flex;
+    gap: 10px;
+    justify-content: end;
+}
+
+.comp.compSchemaBuilder ._popupBackground ._popupContainer ._jsonEditorContainer{
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 2px;
+    width:400px;
+    height: 400px;
+    transition: width 0s, height 0s;
+}
+
+.comp.compSchemaBuilder ._popupBackground ._popupContainer ._jsonEditorContainer > * {
+    transition: width 0s, height 0s;
+}
