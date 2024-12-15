@@ -32,7 +32,6 @@ export default function SchemaForm(
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
-		key,
 		properties: { schema: jsonSchema, design, readOnly, showJSONEditorButton } = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
