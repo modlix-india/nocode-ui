@@ -10,7 +10,7 @@ import SectionGridStyle from './SectionGridStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './sectionGridProperties';
 import { styleDefaults } from './sectionGridStyleProperties';
 
-function SectionGrid(props: ComponentProps) {
+function SectionGrid(props: Readonly<ComponentProps>) {
 	const [hover, setHover] = React.useState(false);
 	const [focus, setFocus] = React.useState(false);
 

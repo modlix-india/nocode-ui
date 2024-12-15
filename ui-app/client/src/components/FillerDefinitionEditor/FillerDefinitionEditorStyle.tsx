@@ -9,9 +9,9 @@ const PREFIX = '.comp.compFillerDefinitionEditor';
 const NAME = 'FillerDefinitionEditor';
 export default function FillerDefinitionEditorStyle({
 	theme,
-}: {
+}: Readonly<{
 	theme: Map<string, Map<string, string>>;
-}) {
+}>) {
 	const [used, setUsed] = useState(false);
 
 	useEffect(() => {

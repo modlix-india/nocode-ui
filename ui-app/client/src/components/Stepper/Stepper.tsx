@@ -28,7 +28,7 @@ const COUNT_FUNCTIONS: Record<string, (num: number) => string> = {
 	NONE: () => '',
 };
 
-function Stepper(props: ComponentProps) {
+function Stepper(props: Readonly<ComponentProps>) {
 	const {
 		pageDefinition: { translations },
 		definition: { bindingPath },

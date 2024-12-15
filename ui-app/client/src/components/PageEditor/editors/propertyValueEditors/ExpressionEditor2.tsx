@@ -136,7 +136,7 @@ export function ExpressionEditor2({
 										[bothModes && inValue.type === 'VALUE'
 											? 'value'
 											: 'expression']: textValue,
-								  },
+									},
 						);
 					}
 				}}

@@ -52,7 +52,7 @@ function convertToFormat(
 	}
 }
 
-function ColorPickerComponent(props: ComponentProps) {
+function ColorPickerComponent(props: Readonly<ComponentProps>) {
 	const [showDropdown, setShowDropdown] = useState(false);
 	const [focus, setFocus] = useState(false);
 	const [validationMessages, setValidationMessages] = React.useState<Array<string>>([]);
@@ -255,8 +255,8 @@ function ColorPickerComponent(props: ComponentProps) {
 			translations={translations}
 			rightIcon={
 				showDropdown
-					? rightIconOpen ?? 'fa-solid fa-angle-up'
-					: rightIcon ?? 'fa-solid fa-angle-down'
+					? (rightIconOpen ?? 'fa-solid fa-angle-up')
+					: (rightIcon ?? 'fa-solid fa-angle-down')
 			}
 			valueType="text"
 			isPassword={false}

@@ -20,7 +20,7 @@ export interface PortalCoordinates {
 	bottom?: number;
 }
 
-function Popover(props: ComponentProps) {
+function Popover(props: Readonly<ComponentProps>) {
 	const {
 		pageDefinition: { translations },
 		pageDefinition,

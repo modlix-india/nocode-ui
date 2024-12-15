@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { processStyleDefinition, StyleResolutionDefinition } from '../../util/styleProcessor';
-import { styleProperties, styleDefaults } from './fillerValueEditorStyleProperties';
-import { lazyCSSURL } from '../util/lazyStylePropertyUtil';
+import { useEffect, useState } from 'react';
 import { usedComponents } from '../../App/usedComponents';
+import { processStyleDefinition } from '../../util/styleProcessor';
+import { lazyCSSURL } from '../util/lazyStylePropertyUtil';
+import { styleDefaults, styleProperties } from './fillerValueEditorStyleProperties';
 
 const PREFIX = '.comp.compFillerValueEditor';
 const NAME = 'FillerValueEditor';
 export default function FillerValueEditorStyle({
 	theme,
-}: {
+}: Readonly<{
 	theme: Map<string, Map<string, string>>;
-}) {
+}>) {
 	const [used, setUsed] = useState(false);
 
 	useEffect(() => {

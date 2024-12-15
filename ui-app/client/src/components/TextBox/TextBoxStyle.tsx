@@ -7,7 +7,9 @@ import { lazyStylePropertyLoadFunction } from '../util/lazyStylePropertyUtil';
 
 const PREFIX = '.comp.compTextBox';
 const NAME = 'TextBox';
-export default function TextBoxStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function TextBoxStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>([]);
 
 	useEffect(() => {

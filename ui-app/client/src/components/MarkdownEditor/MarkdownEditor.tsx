@@ -22,7 +22,7 @@ import axios from 'axios';
 import { LOCAL_STORE_PREFIX } from '../../constants';
 import { shortUUID } from '../../util/shortUUID';
 
-function MarkdownEditor(props: ComponentProps) {
+function MarkdownEditor(props: Readonly<ComponentProps>) {
 	const {
 		definition,
 		definition: { key: componentKey, bindingPath },

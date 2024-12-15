@@ -10,7 +10,7 @@ import { propertiesDefinition, stylePropertiesDefinition } from './tableCloumnPr
 import TableColumnStyle from './TableColumnStyle';
 import { styleDefaults } from './tableColumnStyleProperties';
 
-function TableColumnComponent(props: ComponentProps) {
+function TableColumnComponent(props: Readonly<ComponentProps>) {
 	const {
 		definition: { children },
 		pageDefinition,

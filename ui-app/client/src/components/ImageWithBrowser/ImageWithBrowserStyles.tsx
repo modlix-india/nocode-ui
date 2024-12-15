@@ -4,7 +4,9 @@ import { styleDefaults, styleProperties } from './imageWithBrowserStylePropertie
 
 const PREFIX = '.comp.compImageWithBrowser';
 
-export default function ImageStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function ImageStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const css =
 		`
         ${PREFIX} ._onClickTrue {

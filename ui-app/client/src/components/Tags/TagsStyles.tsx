@@ -3,7 +3,9 @@ import { processStyleDefinition } from '../../util/styleProcessor';
 import { styleDefaults, styleProperties } from './TagsStyleProperties';
 
 const PREFIX = '.comp.compTags';
-export default function TagsStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function TagsStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const css =
 		`
 		${PREFIX} .container{

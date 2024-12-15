@@ -31,7 +31,7 @@ function fieldToName(field: string): string {
 		.map(e => e.replace(/^./, str => str.toUpperCase()))
 		.join(' ');
 }
-function TableColumnsComponent(props: ComponentProps) {
+function TableColumnsComponent(props: Readonly<ComponentProps>) {
 	const [value, setValue] = useState([]);
 	const {
 		definition: { children },

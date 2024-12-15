@@ -7,7 +7,9 @@ import { StylePropertyDefinition } from '../../types/common';
 
 const PREFIX = '.comp.compColorPicker';
 const NAME = 'ColorPicker';
-export default function ColorPickerStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function ColorPickerStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>([]);
 
 	useEffect(() => {

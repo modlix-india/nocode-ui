@@ -4,7 +4,9 @@ import { styleProperties, styleDefaults } from './fileSelectorStyleProperties';
 import { StyleResolution } from '../../types/common';
 
 const PREFIX = '.comp.compFileSelector';
-export default function FileSelector({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function FileSelector({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const TABLET_MIN_WIDTH = StyleResolutionDefinition.get(
 		StyleResolution.TABLET_POTRAIT_SCREEN,
 	)?.minWidth;

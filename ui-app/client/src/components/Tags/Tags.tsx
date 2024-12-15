@@ -20,7 +20,7 @@ import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { styleDefaults } from './TagsStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
-function Tags(props: ComponentProps) {
+function Tags(props: Readonly<ComponentProps>) {
 	const [hover, setHover] = React.useState('');
 	const {
 		definition: { bindingPath },

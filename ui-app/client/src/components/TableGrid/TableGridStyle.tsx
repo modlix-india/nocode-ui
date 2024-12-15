@@ -3,7 +3,9 @@ import { processStyleDefinition } from '../../util/styleProcessor';
 import { styleProperties, styleDefaults } from './tableGridStyleProperties';
 
 const PREFIX = '.comp.compTableGrid';
-export default function TableGridStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function TableGridStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const css =
 		`
 	${PREFIX}{

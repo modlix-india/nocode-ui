@@ -20,7 +20,7 @@ import { getTranslations } from '../util/getTranslations';
 import { styleDefaults } from './popupStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
-function Popup(props: ComponentProps) {
+function Popup(props: Readonly<ComponentProps>) {
 	const [isActive, setIsActive] = React.useState(false);
 	const {
 		definition: { bindingPath },

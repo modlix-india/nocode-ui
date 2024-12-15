@@ -7,7 +7,9 @@ import { lazyStylePropertyLoadFunction } from '../util/lazyStylePropertyUtil';
 
 const PREFIX = '.comp.compButton';
 const NAME = 'Button';
-export default function ButtonStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function ButtonStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>([]);
 
 	useEffect(() => {

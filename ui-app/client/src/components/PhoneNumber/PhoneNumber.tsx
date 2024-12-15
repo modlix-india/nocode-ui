@@ -28,7 +28,7 @@ interface mapType {
 	[key: string]: any;
 }
 
-function PhoneNumber(props: ComponentProps) {
+function PhoneNumber(props: Readonly<ComponentProps>) {
 	const [focus, setFocus] = React.useState(false);
 	const [dropdownOpen, setDropdownOpen] = React.useState(false);
 	const [validationMessages, setValidationMessages] = React.useState<Array<string>>([]);
@@ -382,7 +382,7 @@ function PhoneNumber(props: ComponentProps) {
 		let selectedCountry = getSelectedCountry(unformattedText);
 		if (selectedCountry) setSelected(selectedCountry);
 		else setSelected(countryList[0]);
-		let dc = selectedCountry ? selectedCountry.D ?? '' : '';
+		let dc = selectedCountry ? (selectedCountry.D ?? '') : '';
 		if (format) setPhoneNumber(getFormattedNumber(unformattedText.slice(dc.length), dc));
 		else setPhoneNumber(unformattedText.slice(dc.length));
 	}, [value, countryList, seperator]);
@@ -493,7 +493,8 @@ function PhoneNumber(props: ComponentProps) {
 		/>
 	);
 	const finKey: string = 't_' + key;
-	const x = noCodeForFirstCountry && selected.C === countryList[0].C ? 1 : selected.D.length ?? 1;
+	const x =
+		noCodeForFirstCountry && selected.C === countryList[0].C ? 1 : (selected.D.length ?? 1);
 
 	return (
 		<CommonInputText

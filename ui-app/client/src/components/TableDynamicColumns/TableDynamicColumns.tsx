@@ -27,7 +27,7 @@ function fieldToName(field: string): string {
 		.join(' ');
 }
 
-function TableDynamicColumnsComponent(props: ComponentProps) {
+function TableDynamicColumnsComponent(props: Readonly<ComponentProps>) {
 	// This is a dummy component, it will not render anything
 
 	const {

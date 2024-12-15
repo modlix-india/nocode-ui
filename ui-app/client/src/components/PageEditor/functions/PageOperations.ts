@@ -909,10 +909,13 @@ export class PageOperations {
 			if (!e.children) return;
 			e.children = Object.entries(e.children)
 				.map(x => ({ key: index[x[0]], value: x[1] }))
-				.reduce((a, c) => {
-					a[c.key] = c.value;
-					return a;
-				}, {} as { [key: string]: boolean });
+				.reduce(
+					(a, c) => {
+						a[c.key] = c.value;
+						return a;
+					},
+					{} as { [key: string]: boolean },
+				);
 
 			if (e.type === 'SectionGrid' && e.properties?.sectionProperties?.value) {
 				Object.values(e.properties.sectionProperties.value).forEach((sectionProp: any) =>
@@ -1107,7 +1110,7 @@ export class PageOperations {
 					? Object.keys(doComp.children).length
 					: Object.keys(doComp.children).filter(
 							e => pageDef.componentDefinition[e].type === dpComp.type,
-					  ).length;
+						).length;
 				if (count >= allowedChildCount!) {
 					// If there is a count restriction we need a confirmation to replace the existing ones.
 					this.setIssue({
@@ -1137,7 +1140,7 @@ export class PageOperations {
 									: Object.keys(doComp.children ?? {}).filter(
 											e =>
 												dpComp.type === inPgDef.componentDefinition[e].type,
-									  );
+										);
 
 								removeChildren.forEach(e => {
 									delete inPgDef.componentDefinition[e];

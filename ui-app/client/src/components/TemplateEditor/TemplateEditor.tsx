@@ -16,7 +16,7 @@ import { styleDefaults } from './TemplateEditorStyleProperties';
 import EmailEditor from './email/EmailEditor';
 import { propertiesDefinition, stylePropertiesDefinition } from './templateEditorProperties';
 
-function TemplateEditor(props: ComponentProps) {
+function TemplateEditor(props: Readonly<ComponentProps>) {
 	const {
 		pageDefinition: { translations },
 		definition,

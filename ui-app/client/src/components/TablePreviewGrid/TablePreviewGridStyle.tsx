@@ -6,9 +6,9 @@ import { styleProperties, styleDefaults } from './tablePreviewGridStylePropertie
 const PREFIX = '.comp.compTablePreviewGrid';
 export default function TablePreviewGridStyle({
 	theme,
-}: {
+}: Readonly<{
 	theme: Map<string, Map<string, string>>;
-}) {
+}>) {
 	const css =
 		`
 		${PREFIX} ._anchorGrid,

@@ -3,7 +3,9 @@ import { processStyleDefinition } from '../../util/styleProcessor';
 import { styleProperties, styleDefaults } from './chartStyleProperties';
 
 const PREFIX = '.comp.compChart';
-export default function ChartStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function ChartStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const css =
 		`
 	${PREFIX} ,

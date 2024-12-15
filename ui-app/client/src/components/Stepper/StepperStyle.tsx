@@ -7,7 +7,9 @@ import { lazyStylePropertyLoadFunction } from '../util/lazyStylePropertyUtil';
 
 const PREFIX = '.comp.compStepper';
 const NAME = 'Stepper';
-export default function StepperStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function StepperStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>([]);
 
 	useEffect(() => {

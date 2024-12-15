@@ -9,7 +9,7 @@ import IframeStyle from './IframeStyle';
 import { styleDefaults } from './iframeStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
-function Iframe(props: ComponentProps) {
+function Iframe(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const { locationHistory, definition } = props;
 	const {

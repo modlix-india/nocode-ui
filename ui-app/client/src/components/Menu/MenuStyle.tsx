@@ -7,7 +7,9 @@ import { lazyStylePropertyLoadFunction } from '../util/lazyStylePropertyUtil';
 
 const PREFIX = '.comp.compMenu';
 const NAME = 'Menu';
-export default function LinkStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function LinkStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>([]);
 
 	useEffect(() => {

@@ -24,7 +24,7 @@ import { styleDefaults } from './jotStyleProperies';
 import { DEFAULT_DOCUMENT, LOCAL_STORAGE_PREFIX, savePersonalizationCurry } from './constants';
 import { IconHelper } from '../util/IconHelper';
 
-function Jot(props: ComponentProps) {
+function Jot(props: Readonly<ComponentProps>) {
 	const {
 		definition,
 		locationHistory,
