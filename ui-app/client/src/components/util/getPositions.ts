@@ -26,8 +26,8 @@ export default function getPositions(position: Position, boxRect: DOMRect, popov
 		let xAsixTipStyle = position.includes('end')
 			? { left: `${boxRect.width * 0.5 + (popoverRect.width - boxRect.width)}px` }
 			: position.includes('start')
-			? { left: `${boxRect.width * 0.5}px` }
-			: { left: `50%` };
+				? { left: `${boxRect.width * 0.5}px` }
+				: { left: `50%` };
 
 		if (position === 'bottom-start' || position === 'top-start') {
 			left = boxRect.x;
@@ -67,20 +67,20 @@ export default function getPositions(position: Position, boxRect: DOMRect, popov
 					tipPosition: 'topTip',
 					tipStyle: xAsixTipStyle,
 					marginContainer: { marginTop: '14px' },
-			  }
+				}
 			: {
 					coords: topCoords,
 					tipPosition: 'bottomTip',
 					tipStyle: xAsixTipStyle,
 					marginContainer: { marginBottom: '14px' },
-			  };
+				};
 	}
 
 	let yAxisTipStyle = position.includes('end')
 		? { top: `${boxRect.height * 0.5 + (popoverRect.height - boxRect.height)}px` }
 		: position.includes('start')
-		? { top: `${boxRect.height * 0.5}px` }
-		: { top: '50%' };
+			? { top: `${boxRect.height * 0.5}px` }
+			: { top: '50%' };
 
 	if (position === 'left-start' || position === 'right-start') {
 		top = boxRect.y;
@@ -120,12 +120,12 @@ export default function getPositions(position: Position, boxRect: DOMRect, popov
 					tipPosition: 'rightTip',
 					tipStyle: yAxisTipStyle,
 					marginContainer: { marginRight: '14px' },
-			  }
+				}
 			: {
 					coords: rightCoords,
 					tipPosition: 'leftTip',
 					tipStyle: yAxisTipStyle,
 					marginContainer: { marginLeft: '14px' },
-			  };
+				};
 	}
 }

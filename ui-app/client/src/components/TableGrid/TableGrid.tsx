@@ -17,7 +17,7 @@ import { runEvent } from '../util/runEvent';
 import { styleDefaults } from './tableGridStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
-function TableGridComponent(props: ComponentProps) {
+function TableGridComponent(props: Readonly<ComponentProps>) {
 	const [value, setValue] = useState([]);
 	const {
 		definition: { children },

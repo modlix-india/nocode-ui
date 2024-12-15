@@ -3,7 +3,9 @@ import { processStyleDefinition } from '../../util/styleProcessor';
 import { styleDefaults, styleProperties } from './tabsStyleProperties';
 
 const PREFIX = '.comp.compTabs';
-export default function TabsStyles({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function TabsStyles({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const css =
 		`
 		${PREFIX} {

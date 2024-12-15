@@ -120,7 +120,7 @@ export default class RepetetiveArray<T> implements Iterable<T> {
 	}
 
 	public safeGet(index: number): T | undefined {
-		return index < this._length ? this.inMap.get(index) ?? this.defaultValue : undefined;
+		return index < this._length ? (this.inMap.get(index) ?? this.defaultValue) : undefined;
 	}
 
 	public set(index: number, value: T): void {

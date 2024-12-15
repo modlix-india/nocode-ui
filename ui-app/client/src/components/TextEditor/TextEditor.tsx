@@ -16,7 +16,7 @@ import TextEditorStyle from './TextEditorStyle';
 import { styleDefaults } from './textEditorStyleProperies';
 import { IconHelper } from '../util/IconHelper';
 
-function TextEditor(props: ComponentProps) {
+function TextEditor(props: Readonly<ComponentProps>) {
 	const {
 		definition,
 		definition: { bindingPath },

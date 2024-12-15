@@ -4,7 +4,9 @@ import { processStyleDefinition, processStyleValueWithFunction } from '../../uti
 import { styleProperties, styleDefaults } from './tableColumnsStyleProperties';
 
 const PREFIX = '.comp.compTableColumns';
-export default function TableColumnsStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function TableColumnsStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
 	const css =
 		`${PREFIX} { display: table; flex-direction: column; flex: 1; }

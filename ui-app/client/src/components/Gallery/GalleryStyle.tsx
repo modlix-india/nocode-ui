@@ -7,7 +7,9 @@ import { lazyCSSURL } from '../util/lazyStylePropertyUtil';
 
 const PREFIX = '.comp.compGallery';
 const NAME = 'Gallery';
-export default function GalleryStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function GalleryStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const values = new Map<string, string>([
 		...Array.from(theme.get(StyleResolution.ALL) ?? []),
 		...Array.from(styleDefaults),

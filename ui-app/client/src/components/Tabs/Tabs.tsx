@@ -43,7 +43,7 @@ function setHighlighter(
 	setHighlighterPosition(hp);
 }
 
-function TabsComponent(props: ComponentProps) {
+function TabsComponent(props: Readonly<ComponentProps>) {
 	const {
 		definition,
 		definition: { bindingPath },

@@ -20,7 +20,7 @@ import { IconHelper } from '../util/IconHelper';
 import getSrcUrl from '../util/getSrcUrl';
 import { getRenderData } from '../util/getRenderData';
 
-function Gallery(props: ComponentProps) {
+function Gallery(props: Readonly<ComponentProps>) {
 	const [isActive, setIsActive] = useState(false);
 	const [startingImageSrc, setStartingImageSrc] = useState();
 	const {

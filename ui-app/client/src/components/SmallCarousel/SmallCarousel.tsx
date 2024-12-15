@@ -29,7 +29,7 @@ import { flattenUUID } from '../util/uuid';
 import { shortUUID } from '../../util/shortUUID';
 import { updateLocationForChild } from '../util/updateLoactionForChild';
 
-function SmallCarousel(props: ComponentProps) {
+function SmallCarousel(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const {
 		locationHistory = [],

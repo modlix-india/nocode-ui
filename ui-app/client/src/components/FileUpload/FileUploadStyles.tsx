@@ -7,7 +7,9 @@ import { usedComponents } from '../../App/usedComponents';
 
 const PREFIX = '.comp.compFileUpload';
 const NAME = 'FileUpload';
-export default function ProgressBarStyles({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function ProgressBarStyles({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>([]);
 
 	useEffect(() => {

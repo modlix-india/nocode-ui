@@ -33,8 +33,8 @@ function CommonTriStateCheckbox({
 						? value === true
 							? false
 							: value === false
-							? undefined
-							: true
+								? undefined
+								: true
 						: !value,
 				);
 			}}

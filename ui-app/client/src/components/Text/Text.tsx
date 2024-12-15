@@ -21,7 +21,7 @@ import { styleDefaults } from './TextStyleProperties';
 import { propertiesDefinition, stylePropertiesDefinition } from './textProperties';
 import { MarkdownParser } from '../../commonComponents/Markdown/MarkdownParser';
 
-function Text(props: ComponentProps) {
+function Text(props: Readonly<ComponentProps>) {
 	const {
 		pageDefinition: { translations },
 		definition,

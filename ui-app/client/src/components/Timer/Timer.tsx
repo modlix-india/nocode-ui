@@ -10,7 +10,7 @@ import { IconHelper } from '../util/IconHelper';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { messageToMaster } from '../../slaveFunctions';
 
-function Timer(props: ComponentProps) {
+function Timer(props: Readonly<ComponentProps>) {
 	const { definition, pageDefinition, locationHistory, context } = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {

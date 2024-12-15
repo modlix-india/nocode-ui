@@ -4,7 +4,9 @@ import { processStyleDefinition, processStyleValueWithFunction } from '../../uti
 import { styleProperties, styleDefaults } from './timerStyleProperties';
 
 const PREFIX = '.comp.compTimer';
-export default function TimerStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function TimerStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const values = new Map([
 		...Array.from(theme.get(StyleResolution.ALL) ?? []),
 		...Array.from(styleDefaults),

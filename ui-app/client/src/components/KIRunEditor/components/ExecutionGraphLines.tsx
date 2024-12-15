@@ -310,7 +310,7 @@ function makeLineFromExpression(
 						? generateColor(
 								rawDef.steps[names[1]].namespace,
 								rawDef.steps[names[1]].name,
-						  )
+							)
 						: generateColor('stor', type);
 				makeGradients(fromColor, toColor, gradients);
 				return lineFrom(
@@ -337,7 +337,7 @@ function makeLineFromExpression(
 										? [
 												[statementName, true],
 												[names[1], true],
-										  ]
+											]
 										: [[statementName, true]],
 								),
 							);

@@ -26,8 +26,8 @@ export function stringValue(paramValue: any): StringValue | undefined {
 					(c.type === 'EXPRESSION'
 						? c.expression
 						: typeof c.value === 'object'
-						? JSON.stringify(c.value, undefined, 2)
-						: c.value),
+							? JSON.stringify(c.value, undefined, 2)
+							: c.value),
 			}),
 			{ isExpression: false, isValue: false, string: '' } as StringValue,
 		);

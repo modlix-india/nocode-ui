@@ -17,7 +17,7 @@ import { messageToMaster } from '../../slaveFunctions';
 import { styleDefaults } from './buttonStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
-function ButtonComponent(props: ComponentProps) {
+function ButtonComponent(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const [focus, setFocus] = useState(false);
 	const [hover, setHover] = useState(false);
@@ -60,7 +60,7 @@ function ButtonComponent(props: ComponentProps) {
 
 	const [isLoading, setIsLoading] = useState(
 		onClick
-			? getDataFromPath(spinnerPath, props.locationHistory, pageExtractor) ?? false
+			? (getDataFromPath(spinnerPath, props.locationHistory, pageExtractor) ?? false)
 			: false,
 	);
 
@@ -123,7 +123,7 @@ function ButtonComponent(props: ComponentProps) {
 				alt="right"
 				style={
 					(hover
-						? styleProperties.activeRightImage ?? styleProperties.rightImage
+						? (styleProperties.activeRightImage ?? styleProperties.rightImage)
 						: styleProperties.rightImage) ?? {}
 				}
 				className={hover ? '_rightButtonActiveImage' : '_rightButtonImage'}
@@ -153,7 +153,7 @@ function ButtonComponent(props: ComponentProps) {
 				alt="left"
 				style={
 					(hover
-						? styleProperties.activeLeftImage ?? styleProperties.leftImage
+						? (styleProperties.activeLeftImage ?? styleProperties.leftImage)
 						: styleProperties.leftImage) ?? {}
 				}
 				className={hover ? '_leftButtonActiveImage' : '_leftButtonImage'}

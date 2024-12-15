@@ -9,7 +9,7 @@ import TableColumnHeaderStyle from './TableColumnHeaderStyle';
 import { styleDefaults } from './tableColumnHeaderStyleProperties';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 
-function TableColumnHeaderComponent(props: ComponentProps) {
+function TableColumnHeaderComponent(props: Readonly<ComponentProps>) {
 	const {
 		definition: { children },
 		locationHistory = [],

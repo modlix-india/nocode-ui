@@ -17,7 +17,7 @@ import { runEvent } from '../util/runEvent';
 import { styleDefaults } from './linkStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
-function Link(props: ComponentProps) {
+function Link(props: Readonly<ComponentProps>) {
 	const location = useLocation();
 	const {
 		pageDefinition: { translations },

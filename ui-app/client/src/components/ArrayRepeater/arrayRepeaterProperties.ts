@@ -19,7 +19,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'When this option is set to true, User will be able to add items to repeater',
 		group: ComponentPropertyGroup.BASIC,
 		defaultValue: false,
-		
 	},
 	{
 		name: 'showDelete',
@@ -178,7 +177,6 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 	],
-	
 };
 
 export { propertiesDefinition, stylePropertiesDefinition };

@@ -13,7 +13,7 @@ import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { styleDefaults } from './textListStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
-function TextList(props: ComponentProps) {
+function TextList(props: Readonly<ComponentProps>) {
 	const {
 		pageDefinition: { translations },
 		definition,

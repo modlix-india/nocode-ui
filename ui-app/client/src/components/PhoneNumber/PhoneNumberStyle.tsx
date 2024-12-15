@@ -7,7 +7,9 @@ import { lazyStylePropertyLoadFunction } from '../util/lazyStylePropertyUtil';
 
 const PREFIX = '.comp.compPhoneNumber';
 const NAME = 'PhoneNumber';
-export default function PhoneNumberStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function PhoneNumberStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>([]);
 
 	useEffect(() => {

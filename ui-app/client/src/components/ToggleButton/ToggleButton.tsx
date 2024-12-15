@@ -18,7 +18,7 @@ import { styleDefaults } from './toggleButtonStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import { runEvent } from '../util/runEvent';
 
-function ToggleButton(props: ComponentProps) {
+function ToggleButton(props: Readonly<ComponentProps>) {
 	const {
 		definition: { bindingPath },
 		pageDefinition: { translations },
@@ -87,7 +87,7 @@ function ToggleButton(props: ComponentProps) {
 		[onClick, bindingPathPath, props.pageDefinition.eventFunctions?.[onClick]],
 	);
 
-	const label = isToggled ? onLabel : offLabel ?? onLabel;
+	const label = isToggled ? onLabel : (offLabel ?? onLabel);
 
 	const labelComp = label ? (
 		<span

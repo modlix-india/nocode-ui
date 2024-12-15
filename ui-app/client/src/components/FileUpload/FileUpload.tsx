@@ -60,7 +60,7 @@ const icon2 = (computedStyles: any, def: ComponentDefinition) => (
 	</div>
 );
 
-function FileUpload(props: ComponentProps) {
+function FileUpload(props: Readonly<ComponentProps>) {
 	const [fileValue, setFileValue] = useState<any>();
 	const inputRef = useRef<any>();
 	const [hover, setHover] = useState<boolean>(false);

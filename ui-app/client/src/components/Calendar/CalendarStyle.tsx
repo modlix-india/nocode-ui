@@ -7,7 +7,9 @@ import { lazyCSSURL, lazyStylePropertyLoadFunction } from '../util/lazyStyleProp
 
 const PREFIX = '.comp.compCalendar';
 const NAME = 'Calendar';
-export default function CalendarStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function CalendarStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>([]);
 
 	useEffect(() => {

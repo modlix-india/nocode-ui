@@ -4,7 +4,9 @@ import { processStyleDefinition } from '../../util/styleProcessor';
 import { styleProperties, styleDefaults } from './progressBarStyleProperties';
 
 const PREFIX = '.comp.compProgressBar';
-export default function ProgressBarStyles({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function ProgressBarStyles({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const values = new Map([
 		...Array.from(theme.get(StyleResolution.ALL) ?? []),
 		...Array.from(styleDefaults),

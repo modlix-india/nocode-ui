@@ -21,7 +21,7 @@ import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { styleDefaults } from './RadioButtonStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
-function RadioButton(props: ComponentProps) {
+function RadioButton(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const {
 		definition: { bindingPath },

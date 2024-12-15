@@ -22,7 +22,7 @@ interface mapType {
 	[key: string]: any;
 }
 
-function TextArea(props: ComponentProps) {
+function TextArea(props: Readonly<ComponentProps>) {
 	const [focus, setFocus] = React.useState(false);
 	const [validationMessages, setValidationMessages] = React.useState<Array<string>>([]);
 	const [isDirty, setIsDirty] = React.useState(false);

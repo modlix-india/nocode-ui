@@ -108,8 +108,8 @@ export default function StatementNode({
 		validationMessages.size > 0 || executionPlanMessage?.length
 			? '#f25332'
 			: selected
-			? alwaysColor
-			: '';
+				? alwaysColor
+				: '';
 
 	const [editComment, setEditComment] = useState(false);
 

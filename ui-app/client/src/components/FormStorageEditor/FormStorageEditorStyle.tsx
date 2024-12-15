@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { processStyleDefinition } from '../../util/styleProcessor';
-import { styleDefaults, styleProperties } from './formStorageEditorStyleProperties';
+import { useEffect, useState } from 'react';
 import { usedComponents } from '../../App/usedComponents';
+import { processStyleDefinition } from '../../util/styleProcessor';
 import { lazyCSSURL } from '../util/lazyStylePropertyUtil';
+import { styleDefaults, styleProperties } from './formStorageEditorStyleProperties';
 
 const PREFIX = '.comp.compFormStorageEditor';
 const NAME = 'FormStorageEditor';
 export default function FormStorageEditorStyle({
 	theme,
-}: {
+}: Readonly<{
 	theme: Map<string, Map<string, string>>;
-}) {
+}>) {
 	const [used, setUsed] = useState(false);
 
 	useEffect(() => {

@@ -18,7 +18,7 @@ import Children from '../Children';
 import { styleDefaults } from './menuStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
-function Menu(props: ComponentProps) {
+function Menu(props: Readonly<ComponentProps>) {
 	const location = useLocation();
 	const {
 		pageDefinition: { translations },

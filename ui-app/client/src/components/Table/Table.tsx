@@ -87,7 +87,7 @@ function spinCalculate(
 	};
 }
 
-function TableComponent(props: ComponentProps) {
+function TableComponent(props: Readonly<ComponentProps>) {
 	const {
 		definition: {
 			children,

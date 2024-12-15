@@ -10,7 +10,7 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { styleDefaults } from './iconStyleProperies';
 import { IconHelper } from '../util/IconHelper';
 
-function Icon(props: ComponentProps) {
+function Icon(props: Readonly<ComponentProps>) {
 	const { definition, locationHistory, context } = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const { properties: { icon, designType, colorScheme } = {}, stylePropertiesWithPseudoStates } =

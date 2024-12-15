@@ -31,7 +31,7 @@ function makeOneAnimationString(a: any): string {
 	}`;
 }
 
-function Animator(props: ComponentProps) {
+function Animator(props: Readonly<ComponentProps>) {
 	const { definition, pageDefinition, locationHistory, context } = props;
 
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);

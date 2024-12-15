@@ -29,7 +29,7 @@ interface mapType {
 	[key: string]: any;
 }
 
-function TextBox(props: ComponentProps) {
+function TextBox(props: Readonly<ComponentProps>) {
 	const [focus, setFocus] = React.useState(false);
 	const [validationMessages, setValidationMessages] = React.useState<Array<string>>([]);
 	const mapValue: mapType = {

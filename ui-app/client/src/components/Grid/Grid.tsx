@@ -22,7 +22,7 @@ import { isNullValue } from '@fincity/kirun-js';
 import { styleDefaults } from './gridStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
-function Grid(props: ComponentProps) {
+function Grid(props: Readonly<ComponentProps>) {
 	const location = useLocation();
 	const [hover, setHover] = React.useState(false);
 	const [focus, setFocus] = React.useState(false);

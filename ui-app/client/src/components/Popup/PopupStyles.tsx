@@ -4,7 +4,9 @@ import { processStyleDefinition, processStyleValueWithFunction } from '../../uti
 import { styleProperties, styleDefaults } from '../Popup/popupStyleProperties';
 
 const PREFIX = '.comp.compPopup';
-export default function PopupStyles({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function PopupStyles({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const values = new Map<string, string>([
 		...Array.from(theme.get(StyleResolution.ALL) ?? []),
 		...Array.from(styleDefaults),
