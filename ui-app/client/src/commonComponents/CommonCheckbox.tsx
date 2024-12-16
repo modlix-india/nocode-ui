@@ -47,6 +47,15 @@ function CommonCheckbox({
 				style={styles ?? {}}
 				onFocus={focusHandler}
 				onBlur={blurHandler}
+				tabIndex={0}
+				onKeyUp={
+					isReadOnly
+						? undefined
+						: e => {
+								if (e.key !== 'Enter' && e.key !== ' ') return;
+								onChange?.(!isChecked);
+							}
+				}
 			>
 				{sh}
 				<span className="_thumb" style={thumbStyles ?? {}}>
