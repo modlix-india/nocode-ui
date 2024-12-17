@@ -1,4 +1,4 @@
-import React, { act, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
 import {
 	addListenerAndCallImmediately,
@@ -8,25 +8,21 @@ import {
 	PageStoreExtractor,
 	setData as setStoreData,
 } from '../../context/StoreContext';
-import { HelperComponent } from '../HelperComponents/HelperComponent';
-import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
-import { Component } from '../../types/common';
-import { propertiesDefinition, stylePropertiesDefinition } from './tableProperties';
-import TableStyle from './TableStyle';
-import useDefinition from '../util/useDefinition';
-import Children from '../Children';
-import { flattenUUID } from '../util/uuid';
-import { runEvent } from '../util/runEvent';
+import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import { styleDefaults } from './tableStyleProperties';
-import { IconHelper } from '../util/IconHelper';
-import TableDynamicColumns from '../TableDynamicColumns/TableDynamicColumns';
-import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import {
 	addToToggleSetCurry,
-	getStyleObjectCurry,
 	removeFromToggleSetCurry,
 } from '../Calendar/components/calendarFunctions';
+import Children from '../Children';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
+import { IconHelper } from '../util/IconHelper';
+import { runEvent } from '../util/runEvent';
+import useDefinition from '../util/useDefinition';
+import { flattenUUID } from '../util/uuid';
+import { propertiesDefinition, stylePropertiesDefinition } from './tableProperties';
+import TableStyle from './TableStyle';
+import { styleDefaults } from './tableStyleProperties';
 
 function spinCalculate(
 	spinnerPath1: string | undefined,
@@ -183,8 +179,6 @@ function TableComponent(props: Readonly<ComponentProps>) {
 		[computedStyles, hoverComputedStyles],
 	);
 
-	console.log('hovers', hovers);
-	console.log('computed', computedStyles, 'hover', hoverComputedStyles);
 	const dataBindingPath =
 		bindingPath && getPathFromLocation(bindingPath, locationHistory, pageExtractor);
 
