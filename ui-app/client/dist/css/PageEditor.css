@@ -3496,6 +3496,7 @@ input._peInput[type='number'] {
 	overflow-y: auto;
 	display: grid;
 	grid-template-columns: 1fr 1fr;
+	align-content: baseline;
 }
 
 .comp.compPageEditor ._popupMenuContainer._compMenu ._compList ._compMenuItem {

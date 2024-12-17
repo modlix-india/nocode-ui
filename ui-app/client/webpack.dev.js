@@ -1,5 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const ReactRefreshTypeScript = require('react-refresh-typescript');
 
 module.exports = {
   mode: 'development',
@@ -13,9 +15,19 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
-        use: 'ts-loader',
-        exclude: /node_modules/
+        test: /\.[jt]sx?$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: require.resolve('ts-loader'),
+            options: {
+              getCustomTransformers: () => ({
+                before: [ReactRefreshTypeScript()],
+              }),
+              transpileOnly: true,
+            },
+          },
+        ],
       },
       {
         test: /\.css$/, // If you are using CSS
@@ -38,9 +50,11 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'src', 'index.html')
-    })
+    }),
+    new ReactRefreshWebpackPlugin()
   ],
   devServer: {
+
     static: {
       directory: path.join(__dirname, 'dist') // If you have static files like index.html
     },
