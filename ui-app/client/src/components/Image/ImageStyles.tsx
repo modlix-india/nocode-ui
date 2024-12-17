@@ -16,6 +16,8 @@ export default function ImageStyle({
         ${PREFIX} img {
             width: inherit;
             height: inherit;
+            opacity: 1;
+            transition: opacity 0.3s;
         }
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

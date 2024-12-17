@@ -1,22 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { HelperComponent } from '../HelperComponents/HelperComponent';
-import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
-import useDefinition from '../util/useDefinition';
-import {
-	PageStoreExtractor,
-	addListenerAndCallImmediately,
-	getData,
-} from '../../context/StoreContext';
-import { propertiesDefinition, stylePropertiesDefinition } from './imageProperties';
-import ImageStyle from './ImageStyles';
-import { runEvent } from '../util/runEvent';
-import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import { getHref } from '../util/getHref';
 import { useLocation } from 'react-router-dom';
+import { PageStoreExtractor, addListenerAndCallImmediately } from '../../context/StoreContext';
+import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
+import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
-import { styleDefaults } from './imageStyleProperties';
+import { getHref } from '../util/getHref';
 import getSrcUrl from '../util/getSrcUrl';
 import { IconHelper } from '../util/IconHelper';
+import { runEvent } from '../util/runEvent';
+import useDefinition from '../util/useDefinition';
+import { propertiesDefinition, stylePropertiesDefinition } from './imageProperties';
+import { styleDefaults } from './imageStyleProperties';
+import ImageStyle from './ImageStyles';
 
 function ImageComponent(props: Readonly<ComponentProps>) {
 	const { definition, locationHistory, context } = props;
@@ -96,7 +92,19 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 
 	const actualSrc = getSrcUrl(getHref(src ?? defaultSrc, location)!);
 
+	const [firstTime, setFirstTime] = useState(true);
+	useEffect(() => {
+		setFirstTime(true);
+	}, [actualSrc]);
+
 	let imageTag = undefined;
+	const styleObject =
+		(resolvedStyles.image && firstTime ? { ...resolvedStyles.image } : resolvedStyles.image) ??
+		{};
+
+	if (firstTime) {
+		styleObject.opacity = 0;
+	}
 
 	if (actualSrc) {
 		imageTag = (
@@ -118,14 +126,16 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 							: undefined
 					}
 					className={onClickEvent ? '_onclicktrue' : ''}
-					style={resolvedStyles.image ?? {}}
+					tabIndex={onClickEvent ? 0 : undefined}
+					style={styleObject}
 					src={actualSrc}
 					alt={alt}
 					onError={fallBackImg ? handleError : undefined}
 					loading={imgLazyLoading ? 'lazy' : 'eager'}
+					onLoad={() => setFirstTime(false)}
 				/>
 				<SubHelperComponent
-					style={resolvedStyles.image ?? {}}
+					style={styleObject}
 					className={onClickEvent ? '_onclicktrue' : ''}
 					definition={definition}
 					subComponentName="image"
