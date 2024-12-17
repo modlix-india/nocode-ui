@@ -1,0 +1,213 @@
+.comp.compRangeSlider {
+	display: flex;
+	flex-direction: column;
+}
+
+.comp.compRangeSlider ._track {
+	position: relative;
+	cursor: pointer;
+}
+
+.comp.compRangeSlider ._rangeTrack {
+	position: absolute;
+	height: 100%;
+	top: 50%;
+	transform: translateY(-50%);
+	left: 0px;
+	transition: all 0.3s ease-in-out;
+}
+
+.comp.compRangeSlider ._thumb {
+	position: absolute;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 3;
+	transition: all 0.3s ease-in-out;
+}
+
+.comp.compRangeSlider ._mark._thumb {
+	transform-origin: center center;
+	z-index: 2;
+}
+
+.comp.compRangeSlider ._markLabel {
+	position: absolute;
+	transform: translateX(-50%);
+	cursor: pointer;
+	transition: all 0.3s ease-in-out;
+}
+
+.comp.compRangeSlider ._thumbPit {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 70%;
+	height: 70%;
+	border-radius: 50%;
+}
+
+.comp.compRangeSlider._noPit ._thumbPit {
+	display: none;
+}
+
+.comp.compRangeSlider ._bottomLabelContainer,
+.comp.compRangeSlider ._topLabelContainer {
+	position: relative;
+}
+
+.comp.compRangeSlider ._maxLabel {
+	position: absolute;
+	right: 0;
+}
+
+.comp.compRangeSlider ._minLabel {
+	position: absolute;
+	left: 0;
+}
+
+.comp.compRangeSlider ._ticksContainer {
+	position: relative;
+}
+
+.comp.compRangeSlider ._ticksContainer._onHover {
+	opacity: 0;
+}
+
+.comp.compRangeSlider ._ticksContainer._onHover._hovered {
+	opacity: 1;
+}
+
+.comp.compRangeSlider ._ticksContainer._topTickLabel ._tickContainer {
+	flex-direction: column-reverse;
+}
+
+.comp.compRangeSlider ._tickContainer {
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+	top: 0;
+	cursor: pointer;
+}
+
+.comp.compRangeSlider ._tickLabel {
+	white-space: nowrap;
+	transform: translateX(-50%);
+}
+
+.comp.compRangeSlider ._tickContainer._right {
+	align-items: flex-end;
+}
+
+.comp.compRangeSlider ._tickContainer._right ._tickLabel {
+	transform: translateX(50%);
+}
+
+.comp.compRangeSlider ._tickContainer ._tick {
+	transform: translateX(-50%);
+}
+
+.comp.compRangeSlider ._toolTip {
+	position: absolute;
+}
+
+.comp.compRangeSlider._onHoverToolTip._hoverSlider ._toolTip {
+	visibility: visible;
+}
+
+.comp.compRangeSlider._onHoverToolTip ._toolTip {
+	visibility: hidden;
+}
+
+.comp.compRangeSlider ._toolTip {
+	position: absolute;
+}
+
+.comp.compRangeSlider ._toolTip::before {
+	content: '';
+	position: absolute;
+	width: 8px;
+	height: 8px;
+	background-color: inherit;
+	z-index: -1;
+}
+
+.comp.compRangeSlider ._toolTip._top {
+	top: -100%;
+	left: 50%;
+	transform: translateX(-50%);
+	margin-top: -15px;
+}
+
+.comp.compRangeSlider._largeRoundedTT ._toolTip._top {
+	margin-top: -23px;
+}
+
+.comp.compRangeSlider ._toolTip._top::before {
+	bottom: calc(0% + 2px);
+	left: 50%;
+	transform: translate(-50%, 50%) rotate(45deg);
+}
+
+.comp.compRangeSlider ._toolTip._bottom {
+	top: 100%;
+	left: 50%;
+	transform: translateX(-50%);
+	margin-top: 8px;
+}
+
+.comp.compRangeSlider._largeRoundedTT ._toolTip._bottom {
+	margin-top: 10px;
+}
+
+.comp.compRangeSlider ._toolTip._bottom::before {
+	bottom: calc(100% - 2px);
+	left: 50%;
+	transform: translate(-50%, 50%) rotate(45deg);
+}
+
+.comp.compRangeSlider ._toolTip._left {
+	top: 50%;
+	right: 100%;
+	transform: translateY(-50%);
+	margin-right: 5px;
+}
+
+.comp.compRangeSlider ._toolTip._left::before {
+	top: 50%;
+	left: calc(100% - 2px);
+	transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.comp.compRangeSlider ._toolTip._right {
+	top: 50%;
+	left: 100%;
+	transform: translateY(-50%);
+	margin-left: 5px;
+}
+
+.comp.compRangeSlider ._toolTip._right::before {
+	top: 50%;
+	right: calc(100% - 2px);
+	transform: translate(50%, -50%) rotate(45deg);
+}
+
+.comp.compRangeSlider._roundedTT._top,
+.comp.compRangeSlider._roundedRectangleTT._top,
+.comp.compRangeSlider._largeRoundedTT._top,
+.comp.compRangeSlider._labelTT._top {
+	padding-top: 15px;
+}
+
+.comp.compRangeSlider._roundedTT._bottom,
+.comp.compRangeSlider._roundedRectangleTT._bottom,
+.comp.compRangeSlider._largeRoundedTT._bottom,
+.comp.compRangeSlider._labelTT._bottom {
+	padding-bottom: 15px;
+}
+
+.comp.compRangeSlider._fixedLabelTT ._toolTip {
+	position: static;
+	text-align: center;
+	transform: none;
+}

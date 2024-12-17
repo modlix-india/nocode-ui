@@ -6,9 +6,9 @@ import { styleProperties, styleDefaults } from './tableEmptyGridStyleProperties'
 const PREFIX = '.comp.compTableEmptyGrid';
 export default function TableEmptyGridStyle({
 	theme,
-}: {
+}: Readonly<{
 	theme: Map<string, Map<string, string>>;
-}) {
+}>) {
 	const css =
 		`
 		${PREFIX} ._anchorGrid,

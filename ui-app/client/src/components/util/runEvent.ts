@@ -29,12 +29,12 @@ import { REPO_SERVER, RemoteRepository } from '../../Engine/RemoteRepository';
 function addValidationTriggers(
 	flatId: string,
 	page: string,
-	locationHistory: LocationHistory[],
+	locationHistory: LocationHistory[] | undefined,
 ): Array<string> {
 	const suffixes: Array<string> = [];
 	setData(`Store.validationTriggers.${page}.${flatId}`, true, page);
-	for (let i = 0; i < locationHistory?.length ?? 0; i++) {
-		suffixes.push((i === 0 ? '' : suffixes[i - 1]) + '_' + locationHistory[i].index);
+	for (let i = 0; i < (locationHistory?.length ?? 0); i++) {
+		suffixes.push((i === 0 ? '' : suffixes[i - 1]) + '_' + locationHistory![i].index);
 		setData(`Store.validationTriggers.${page}.${flatId}${suffixes[i]}`, true, page);
 	}
 	return suffixes;

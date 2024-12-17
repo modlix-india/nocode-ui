@@ -12,10 +12,11 @@ export default function binaryToBase64Encode(file: File, withmetadata: boolean) 
 							'',
 						),
 					);
-					if (!withmetadata)
-						resolve(base64Encoded);
+					if (!withmetadata) resolve(base64Encoded);
 					else
-						resolve("data:"+file.type+";name:"+file.name+";base64,"+base64Encoded);
+						resolve(
+							'data:' + file.type + ';name:' + file.name + ';base64,' + base64Encoded,
+						);
 				} else {
 					reject(new Error('Failed to read binary data from the file.'));
 				}

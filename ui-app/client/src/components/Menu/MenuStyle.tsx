@@ -1,10 +1,26 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { processStyleDefinition, processStyleValueWithFunction } from '../../util/styleProcessor';
-import { styleProperties, styleDefaults } from './menuStyleProperties';
-import { StyleResolution } from '../../types/common';
+import { styleDefaults } from './menuStyleProperties';
+import { StylePropertyDefinition, StyleResolution } from '../../types/common';
+import { usedComponents } from '../../App/usedComponents';
+import { lazyStylePropertyLoadFunction } from '../util/lazyStylePropertyUtil';
 
 const PREFIX = '.comp.compMenu';
-export default function LinkStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+const NAME = 'Menu';
+export default function LinkStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
+	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>([]);
+
+	useEffect(() => {
+		const fn = lazyStylePropertyLoadFunction(NAME, setStyleProperties, styleDefaults);
+
+		if (usedComponents.used(NAME)) fn();
+		usedComponents.register(NAME, fn);
+
+		return () => usedComponents.deRegister(NAME);
+	}, []);
+
 	const values = new Map([
 		...Array.from(theme.get(StyleResolution.ALL) ?? []),
 		...Array.from(styleDefaults),

@@ -10,7 +10,7 @@ import SectionGridStyle from './SectionGridStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './sectionGridProperties';
 import { styleDefaults } from './sectionGridStyleProperties';
 
-function SectionGrid(props: ComponentProps) {
+function SectionGrid(props: Readonly<ComponentProps>) {
 	const [hover, setHover] = React.useState(false);
 	const [focus, setFocus] = React.useState(false);
 
@@ -32,7 +32,7 @@ function SectionGrid(props: ComponentProps) {
 		<Children
 			key={`${key}_chld`}
 			pageDefinition={pageDefinition}
-			children={definition.children}
+			renderableChildren={definition.children}
 			context={{ ...context, disableSelection: !enableChildrenSelection }}
 			locationHistory={locationHistory}
 		/>
@@ -92,42 +92,50 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 22 19">
-					<g
-						id="Group_108"
-						data-name="Group 108"
-						transform="translate(-1468.055 -277.818)"
-					>
-						<rect
-							id="Rectangle_35"
-							data-name="Rectangle 35"
-							width="13"
-							height="9"
-							rx="2"
-							transform="translate(1468.055 277.818)"
-							opacity="0.5"
-							fill="currentColor"
-						/>
-						<rect
-							id="Rectangle_37"
-							data-name="Rectangle 37"
-							width="22"
-							height="8"
-							rx="2"
-							transform="translate(1468.055 288.818)"
-							fill="currentColor"
-						/>
-						<rect
-							id="Rectangle_36"
-							data-name="Rectangle 36"
-							width="7"
-							height="9"
-							rx="2"
-							transform="translate(1483.055 277.818)"
-							opacity="0.5"
-							fill="currentColor"
-						/>
-					</g>
+				<IconHelper viewBox="0 0 30 30">
+					<rect
+						x="0"
+						y="0"
+						rx={1}
+						ry={1}
+						width="14"
+						height="14"
+						className="_SectionGridBlock1"
+						fill="#FF557E"
+					/>
+
+					<rect
+						x="16"
+						y="0"
+						rx={1}
+						ry={1}
+						width="14"
+						height="14"
+						className="_SectionGridBlock2"
+						fill="#FF557E"
+					/>
+
+					<rect
+						x="0"
+						y="16"
+						rx={1}
+						ry={1}
+						width="14"
+						height="14"
+						className="_SectionGridBlock3"
+						fill="#FF557E"
+					/>
+
+					<rect
+						x="16"
+						y="16"
+						rx={1}
+						ry={1}
+						width="14"
+						height="14"
+						className="_SectionGridBlock4"
+						fill="#FF557E"
+					/>
 				</IconHelper>
 			),
 		},

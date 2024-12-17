@@ -150,7 +150,7 @@ export default function Legends({
 					e.preventDefault();
 					e.stopPropagation();
 					onShowOnlyDataSet(index);
-			  };
+				};
 	}
 
 	function onMouseEntering(index: number) {
@@ -366,8 +366,8 @@ function arrangeInRowsOrColumns(
 		let size = horizontal
 			? element.labelDimension.width + SPACE + element.rectDimension.width
 			: element.labelDimension.height > element.rectDimension.height
-			? element.labelDimension.height
-			: element.rectDimension.height;
+				? element.labelDimension.height
+				: element.rectDimension.height;
 
 		if (rowColumnSize + size >= AVAILABLE_SIZE) {
 			rowsColumns.push({

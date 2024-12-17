@@ -29,7 +29,7 @@ interface mapType {
 	[key: string]: any;
 }
 
-function TextBox(props: ComponentProps) {
+function TextBox(props: Readonly<ComponentProps>) {
 	const [focus, setFocus] = React.useState(false);
 	const [validationMessages, setValidationMessages] = React.useState<Array<string>>([]);
 	const mapValue: mapType = {
@@ -342,7 +342,6 @@ function TextBox(props: ComponentProps) {
 		} else {
 			tempNumber = numberType === 'DECIMAL' ? parseFloat(temp) : parseInt(temp);
 			temp = !isNaN(tempNumber) ? tempNumber : temp;
-
 			if (updateStoreImmediately && bindingPathPath) {
 				setData(bindingPathPath, temp, context?.pageName);
 				callChangeEvent();
@@ -478,6 +477,7 @@ function TextBox(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 5,
 	name: 'TextBox',
 	displayName: 'Text Box',
 	description: 'TextBox component',
@@ -507,26 +507,16 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
-					<rect width="24" height="24" fill="#D9D9D9" fillOpacity="0.1" />
+				<IconHelper viewBox="0 0 30 30">
+					<rect width="30" height="30" rx="3" fill="#EC255A" />
 					<path
-						d="M15.832 7.73047V10.2393H15.5859C15.4401 9.66048 15.2783 9.24577 15.1006 8.99512C14.9229 8.73991 14.679 8.53711 14.3691 8.38672C14.196 8.30469 13.8929 8.26367 13.46 8.26367H12.7695V15.4141C12.7695 15.888 12.7946 16.1842 12.8447 16.3027C12.8994 16.4212 13.002 16.526 13.1523 16.6172C13.3073 16.7038 13.5169 16.7471 13.7812 16.7471H14.0889V17H9.23535V16.7471H9.54297C9.81185 16.7471 10.0283 16.6992 10.1924 16.6035C10.3109 16.5397 10.4043 16.4303 10.4727 16.2754C10.5228 16.166 10.5479 15.8789 10.5479 15.4141V8.26367H9.87793C9.25358 8.26367 8.80013 8.39583 8.51758 8.66016C8.12109 9.0293 7.87044 9.55566 7.76562 10.2393H7.50586V7.73047H15.832Z"
-						fill="currentColor"
+						id="_text_box_text"
+						d="M22.0608 7.52344V11.4658H21.6741C21.4449 10.5563 21.1907 9.90462 20.9114 9.51074C20.6321 9.1097 20.2489 8.79102 19.762 8.55469C19.4898 8.42578 19.0136 8.36133 18.3333 8.36133H17.2483V19.5977C17.2483 20.3424 17.2877 20.8079 17.3665 20.9941C17.4524 21.1803 17.6135 21.3451 17.8499 21.4883C18.0933 21.6243 18.4228 21.6924 18.8381 21.6924H19.3215V22.0898H11.6946V21.6924H12.178C12.6005 21.6924 12.9407 21.6172 13.1985 21.4668C13.3847 21.3665 13.5315 21.1947 13.6389 20.9512C13.7177 20.7793 13.7571 20.3281 13.7571 19.5977V8.36133H12.7043C11.7232 8.36133 11.0107 8.56901 10.5667 8.98438C9.9436 9.56445 9.54972 10.3916 9.38501 11.4658H8.97681V7.52344H22.0608Z"
+						fill="white"
 					/>
-					<mask id="path-3-inside-1_433_993" fill="white">
-						<rect x="1" y="1" width="22" height="22" rx="1" />
-					</mask>
-					<rect
-						x="1"
-						y="1"
-						width="22"
-						height="22"
-						rx="1"
-						stroke="currentColor"
-						strokeWidth="3"
-						mask="url(#path-3-inside-1_433_993)"
-						fill="transparent"
-					/>
+					<g id="_text_box_caret" opacity={0}>
+						<rect width="2" height="18" transform="translate(5 6)" fill="white" />
+					</g>
 				</IconHelper>
 			),
 		},

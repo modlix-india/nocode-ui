@@ -3,7 +3,9 @@ import { processStyleDefinition } from '../../util/styleProcessor';
 import { styleDefaults, styleProperties } from './RadioButtonStyleProperties';
 
 const PREFIX = '.comp.compRadioButton';
-export default function RadioButtonStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function RadioButtonStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const css =
 		`
     ${PREFIX}{

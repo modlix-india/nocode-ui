@@ -16,8 +16,9 @@ import { useLocation } from 'react-router-dom';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { styleDefaults } from './imageStyleProperties';
 import getSrcUrl from '../util/getSrcUrl';
+import { IconHelper } from '../util/IconHelper';
 
-function ImageComponent(props: ComponentProps) {
+function ImageComponent(props: Readonly<ComponentProps>) {
 	const { definition, locationHistory, context } = props;
 	const [hover, setHover] = useState(false);
 	const [src, setSrc] = useState('');
@@ -93,7 +94,7 @@ function ImageComponent(props: ComponentProps) {
 		stylePropertiesWithPseudoStates,
 	);
 
-	const actualSrc = getSrcUrl(getHref(src ?? defaultSrc, location));
+	const actualSrc = getSrcUrl(getHref(src ?? defaultSrc, location)!);
 
 	let imageTag = undefined;
 
@@ -142,6 +143,7 @@ function ImageComponent(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 3,
 	name: 'Image',
 	displayName: 'Image',
 	description: 'Image Component',
@@ -167,7 +169,23 @@ const component: Component = {
 			displayName: 'Component',
 			description: 'Component',
 			mainComponent: true,
-			icon: 'fa-solid fa-image',
+			icon: (
+				<IconHelper viewBox="0 0 30 30">
+					<path
+						d="M0 3.75C0 1.68164 1.68164 0 3.75 0H26.25C28.3184 0 30 1.68164 30 3.75V22.5C30 24.5684 28.3184 26.25 26.25 26.25H3.75C1.68164 26.25 0 24.5684 0 22.5V3.75ZM18.9727 9.99023C18.709 9.60352 18.2754 9.375 17.8125 9.375C17.3496 9.375 16.9102 9.60352 16.6523 9.99023L11.5547 17.4668L10.002 15.5273C9.73242 15.1934 9.32812 15 8.90625 15C8.48438 15 8.07422 15.1934 7.81055 15.5273L4.06055 20.2148C3.7207 20.6367 3.65625 21.2168 3.89062 21.7031C4.125 22.1895 4.61719 22.5 5.15625 22.5H10.7812H12.6562H24.8438C25.3652 22.5 25.8457 22.2129 26.0859 21.75C26.3262 21.2871 26.2969 20.7305 26.0039 20.3027L18.9727 9.99023ZM6.5625 9.375C7.30842 9.375 8.02379 9.07868 8.55124 8.55124C9.07868 8.02379 9.375 7.30842 9.375 6.5625C9.375 5.81658 9.07868 5.10121 8.55124 4.57376C8.02379 4.04632 7.30842 3.75 6.5625 3.75C5.81658 3.75 5.10121 4.04632 4.57376 4.57376C4.04632 5.10121 3.75 5.81658 3.75 6.5625C3.75 7.30842 4.04632 8.02379 4.57376 8.55124C5.10121 9.07868 5.81658 9.375 6.5625 9.375Z"
+						fill="#EDEAEA"
+					/>
+					<path
+						d="M6.5625 9.375C7.30842 9.375 8.02379 9.07868 8.55124 8.55124C9.07868 8.02379 9.375 7.30842 9.375 6.5625C9.375 5.81658 9.07868 5.10121 8.55124 4.57376C8.02379 4.04632 7.30842 3.75 6.5625 3.75C5.81658 3.75 5.10121 4.04632 4.57376 4.57376C4.04632 5.10121 3.75 5.81658 3.75 6.5625C3.75 7.30842 4.04632 8.02379 4.57376 8.55124C5.10121 9.07868 5.81658 9.375 6.5625 9.375Z"
+						fill="#EDEAEA"
+					/>
+					<path
+						d="M18.9727 9.99023C18.709 9.60352 18.2754 9.375 17.8125 9.375C17.3496 9.375 16.9102 9.60352 16.6524 9.99023L11.5547 17.4668L10.002 15.5273C9.73245 15.1934 9.32816 15 8.90628 15C8.48441 15 8.07425 15.1934 7.81058 15.5273L4.06058 20.2148C3.72074 20.6367 3.65628 21.2168 3.89066 21.7031C4.12503 22.1895 4.61722 22.5 5.15628 22.5H10.7813H12.6563H24.8438C25.3653 22.5 25.8457 22.2129 26.086 21.75C26.3262 21.2871 26.2969 20.7305 26.0039 20.3027L18.9727 9.99023Z"
+						fill="#3F83EA"
+					/>
+					<circle className="_imageCircle" cx="7" cy="7" r="3" fill="#FFB534" />
+				</IconHelper>
+			),
 		},
 		{
 			name: 'image',

@@ -17,6 +17,7 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { getRoman, getAlphaNumeral } from '../util/numberConverter';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { styleDefaults } from './StepperStyleProperties';
+import { IconHelper } from '../util/IconHelper';
 
 const COUNT_FUNCTIONS: Record<string, (num: number) => string> = {
 	NUMBER: (num: number) => num.toString(),
@@ -27,7 +28,7 @@ const COUNT_FUNCTIONS: Record<string, (num: number) => string> = {
 	NONE: () => '',
 };
 
-function Stepper(props: ComponentProps) {
+function Stepper(props: Readonly<ComponentProps>) {
 	const {
 		pageDefinition: { translations },
 		definition: { bindingPath },
@@ -114,8 +115,8 @@ function Stepper(props: ComponentProps) {
 		await handleOnClick?.();
 	};
 
-	const effectiveTitles = titles ? titles : [];
-	const iconList = icons ? icons : [];
+	const effectiveTitles = titles ?? [];
+	const iconList = icons ?? [];
 
 	const getPositionStyle = () => {
 		let textStyle;
@@ -268,6 +269,7 @@ function Stepper(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 11,
 	name: 'Stepper',
 	displayName: 'Stepper',
 	description: 'Stepper component',
@@ -311,7 +313,24 @@ const component: Component = {
 			displayName: 'Component',
 			description: 'Component',
 			mainComponent: true,
-			icon: 'fa-solid fa-arrow-down-1-9',
+			icon: (
+				<IconHelper viewBox="0 0 30 12">
+					<path
+						d="M18 6L10 6"
+						stroke="black"
+						stroke-opacity="0.1"
+						stroke-linecap="square"
+						stroke-dasharray="1 1"
+					/>
+					<circle className="_greenStepperInitialIcon" cx="6" cy="6" r="6" fill="white" />
+					<path
+						d="M6 12C7.5913 12 9.11742 11.3679 10.2426 10.2426C11.3679 9.11742 12 7.5913 12 6C12 4.4087 11.3679 2.88258 10.2426 1.75736C9.11742 0.632141 7.5913 0 6 0C4.4087 0 2.88258 0.632141 1.75736 1.75736C0.632141 2.88258 0 4.4087 0 6C0 7.5913 0.632141 9.11742 1.75736 10.2426C2.88258 11.3679 4.4087 12 6 12ZM8.64844 4.89844L5.64844 7.89844C5.42813 8.11875 5.07188 8.11875 4.85391 7.89844L3.35391 6.39844C3.13359 6.17813 3.13359 5.82188 3.35391 5.60391C3.57422 5.38594 3.93047 5.38359 4.14844 5.60391L5.25 6.70547L7.85156 4.10156C8.07187 3.88125 8.42812 3.88125 8.64609 4.10156C8.86406 4.32187 8.86641 4.67812 8.64609 4.89609L8.64844 4.89844Z"
+						fill="#1CBA79"
+						className="_greenStepperIcon"
+					/>
+					<circle className="_greenFinalStepIcon" cx="24" cy="6" r="6" fill="#E0E0E7" />
+				</IconHelper>
+			),
 		},
 		{
 			name: 'listItem',

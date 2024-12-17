@@ -1,0 +1,72 @@
+name: Cloudflare R2 - Dev
+
+on:
+  #To trigger manually
+  workflow_dispatch:
+  push:
+    branches: [cf-development]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: cf-development
+      - name: Setting up node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 21.7.3
+      - name: Install Dependencies
+        working-directory: ./ui-app/client
+        run: npm i
+      - uses: cloudposse/github-action-jq@main
+        name: Installing jq
+        with:
+          compact: true
+          input: '["test", "test2", "test3"]'
+          script: |-
+            map(select(. == "test"))
+      - name: Building to JS Dev
+        working-directory: ./ui-app/client
+        run: npm run cf-dev
+      - name: Pushing Dev to Cloudflare
+        working-directory: ./ui-app/client
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          find dist -name "*.js" -type f -exec npx wrangler r2 object put dev-static/js/{} --file={} --content-type text/javascript --cache-control="public,max-age=3600" \;
+          find dist -name "*.map" -type f -exec npx wrangler r2 object put dev-static/js/{} --file={} --content-type application/json --cache-control="public,max-age=3600" \;
+          find dist -name "*.css" -type f -exec npx wrangler r2 object put dev-static/js/{} --file={} --content-type text/css --cache-control="public,max-age=3600" \;
+          find dist -name "*.html" -type f -exec npx wrangler r2 object put dev-static/js/{} --file={} --content-type text/html --cache-control="public,max-age=3600" \;
+          find dist -name "*.json" -type f -exec npx wrangler r2 object put dev-static/js/{} --file={} --content-type application/json --cache-control="public,max-age=3600" \;
+
+          echo "\n"
+          echo "JSON prepared :"
+          find dist -type f | xargs -d '\n' -n 25 | while IFS= read -r batch; do echo "$batch" | tr ' ' '\n' | jq -R -s '{"files": split("\n")[:-1] | map("https://cdn-dev.modlix.com/js/" + .)}'; done
+          echo "Calling purge for cdn-dev.modlix.com :"
+          find dist -type f | xargs -d '\n' -n 25 | while IFS= read -r batch; do echo "$batch" | tr ' ' '\n' | jq -R -s '{"files": split("\n")[:-1] | map("https://cdn-dev.modlix.com/js/" + .)}' | curl -s https://api.cloudflare.com/client/v4/zones/f8fe46c016fcfdc188401768a0ac7d01/purge_cache --request POST --header "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" --header "Content-Type: application/json"  --data @- ; echo ""; done
+      - name: Invalidating Application Server cache
+        run: |
+          curl -s --header "Authorization: ${{ secrets.NOCODE_TOKEN }}" https://apps.dev.modlix.com/api/ui/newdeployment
+      - name: Building to JS Local
+        working-directory: ./ui-app/client
+        run: npm run cf-local
+      - name: Pushing Local to Cloudflare
+        working-directory: ./ui-app/client
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          find dist -name "*.js" -type f -exec npx wrangler r2 object put local-static/js/{} --file={} --content-type text/javascript --cache-control="public,max-age=3600" \;
+          find dist -name "*.map" -type f -exec npx wrangler r2 object put local-static/js/{} --file={} --content-type application/json --cache-control="public,max-age=3600" \;
+          find dist -name "*.css" -type f -exec npx wrangler r2 object put local-static/js/{} --file={} --content-type text/css --cache-control="public,max-age=3600" \;
+          find dist -name "*.html" -type f -exec npx wrangler r2 object put local-static/js/{} --file={} --content-type text/html --cache-control="public,max-age=3600" \;
+          find dist -name "*.json" -type f -exec npx wrangler r2 object put local-static/js/{} --file={} --content-type application/json --cache-control="public,max-age=3600" \;
+
+          echo "\n"
+          echo "JSON prepared :"
+          find dist -type f | xargs -d '\n' -n 25 | while IFS= read -r batch; do echo "$batch" | tr ' ' '\n' | jq -R -s '{"files": split("\n")[:-1] | map("https://cdn-local.modlix.com/js/" + .)}'; done
+          echo "Calling purge for cdn-local.modlix.com :"
+          find dist -type f | xargs -d '\n' -n 25 | while IFS= read -r batch; do echo "$batch" | tr ' ' '\n' | jq -R -s '{"files": split("\n")[:-1] | map("https://cdn-local.modlix.com/js/" + .)}' | curl -s https://api.cloudflare.com/client/v4/zones/f8fe46c016fcfdc188401768a0ac7d01/purge_cache --request POST --header "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" --header "Content-Type: application/json"  --data @- ; echo ""; done

@@ -17,7 +17,7 @@ import { runEvent } from '../util/runEvent';
 import { styleDefaults } from './tableGridStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
-function TableGridComponent(props: ComponentProps) {
+function TableGridComponent(props: Readonly<ComponentProps>) {
 	const [value, setValue] = useState([]);
 	const {
 		definition: { children },
@@ -82,7 +82,7 @@ function TableGridComponent(props: ComponentProps) {
 		if (selectionType === 'NONE' || !selectionBindingPath) return false;
 
 		const selected =
-			(multiSelect ? selection ?? [] : [selection]).filter((e: any) =>
+			(multiSelect ? (selection ?? []) : [selection]).filter((e: any) =>
 				selectionType === 'OBJECT'
 					? deepEqual(e, data[index])
 					: e === `(${dataBindingPath})[${index}]`,
@@ -182,7 +182,7 @@ function TableGridComponent(props: ComponentProps) {
 						{checkBox}
 						<Children
 							pageDefinition={pageDefinition}
-							children={firstchild}
+							renderableChildren={firstchild}
 							context={context}
 							locationHistory={[
 								...locationHistory,

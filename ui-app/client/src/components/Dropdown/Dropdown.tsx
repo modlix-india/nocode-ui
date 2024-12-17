@@ -21,7 +21,7 @@ import { propertiesDefinition, stylePropertiesDefinition } from './dropdownPrope
 import { styleDefaults } from './dropdownStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
-function DropdownComponent(props: ComponentProps) {
+function DropdownComponent(props: Readonly<ComponentProps>) {
 	const [showDropdown, setShowDropdown] = useState(false);
 	const [searchDropdownData, setSearchDropdownData] = useState<
 		Array<
@@ -322,8 +322,8 @@ function DropdownComponent(props: ComponentProps) {
 			translations={translations}
 			rightIcon={
 				showDropdown
-					? rightIconOpen ?? 'fa-solid fa-angle-up'
-					: rightIcon ?? 'fa-solid fa-angle-down'
+					? (rightIconOpen ?? 'fa-solid fa-angle-up')
+					: (rightIcon ?? 'fa-solid fa-angle-down')
 			}
 			valueType="text"
 			isPassword={false}
@@ -457,6 +457,7 @@ function DropdownComponent(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 7,
 	name: 'Dropdown',
 	displayName: 'Dropdown',
 	description: 'Dropdown component',
@@ -486,31 +487,28 @@ const component: Component = {
 			displayName: 'Component',
 			description: 'Component',
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
+				<IconHelper viewBox="0 0 30 20">
 					<path
-						d="M19.5289 1H4.49556C2.56444 1 1 2.56444 1 4.49556V19.5289C1 21.4356 2.56444 23 4.49556 23H19.5289C21.4356 23 23 21.4356 23 19.5289V4.49556C23 2.56444 21.4356 1 19.5289 1ZM18.4044 9.77556L11.2667 16.9133C11.0222 17.1578 10.7044 17.28 10.4111 17.28C10.1178 17.28 9.77556 17.1578 9.55556 16.9133L5.59556 12.9533C5.10667 12.4644 5.10667 17.2067 5.59556 16.7178C6.08444 16.2289 6.84222 16.2289 7.33111 16.7178L10.4356 19.8222L20.25 8.5625C20.7389 8.07361 17.9644 7.55111 18.4533 8.04C18.8933 8.52889 18.8933 9.31111 18.4044 9.77556Z"
-						fill="currentColor"
-						fillOpacity="0.2"
+						className="_dropdownlines"
+						d="M26 14L26 12C26 11.4477 25.5523 11 25 11L1 11C0.447716 11 -1.95702e-08 11.4477 -4.37114e-08 12L-1.31134e-07 14C-1.55275e-07 14.5523 0.447716 15 1 15L25 15C25.5523 15 26 14.5523 26 14Z"
+						fill="#EC255A40"
 					/>
 					<path
-						d="M15.9746 6.13324C16.3155 6.13324 16.5002 6.53232 16.2795 6.79215L12.1219 11.6882C11.9633 11.8751 11.6754 11.8766 11.5148 11.6914L7.2681 6.79534C7.04346 6.53634 7.22743 6.13324 7.57027 6.13324L15.9746 6.13324Z"
-						fill="currentColor"
+						className="_dropdownlines"
+						d="M19 20L19 18C19 17.4477 18.5523 17 18 17L1 17C0.447716 17 -1.95702e-08 17.4477 -4.37114e-08 18L-1.31134e-07 20C-1.55275e-07 20.5523 0.447716 21 1 21L18 21C18.5523 21 19 20.5523 19 20Z"
+						fill="#EC255A40"
 					/>
-					<rect
-						x="7.10938"
-						y="15.5444"
-						width="9.77778"
-						height="1.22222"
-						rx="0.611111"
-						fill="currentColor"
+					<path
+						d="M30 8L30 1C30 0.447715 29.5523 -1.95703e-08 29 -4.37114e-08L1 -1.26763e-06C0.447716 -1.29177e-06 1.88778e-06 0.447714 1.86364e-06 0.999999L1.55766e-06 8C1.53352e-06 8.55228 0.447717 9 1 9L29 9C29.5523 9 30 8.55229 30 8Z"
+						fill="#EC255A"
 					/>
-					<rect
-						x="4.66797"
-						y="18.1113"
-						width="14.6667"
-						height="1.22222"
-						rx="0.611111"
-						fill="currentColor"
+					<path
+						d="M24.433 5.75C24.2406 6.08333 23.7594 6.08333 23.567 5.75L22.701 4.25C22.5085 3.91667 22.7491 3.5 23.134 3.5L24.866 3.5C25.2509 3.5 25.4915 3.91667 25.299 4.25L24.433 5.75Z"
+						fill="white"
+					/>
+					<path
+						d="M25.0657 3.5H22.9343C22.5349 3.5 22.2967 3.94507 22.5182 4.27735L23.584 5.87596C23.7819 6.17283 24.2181 6.17283 24.416 5.87596L25.4818 4.27735C25.7033 3.94507 25.4651 3.5 25.0657 3.5Z"
+						fill="white"
 					/>
 				</IconHelper>
 			),

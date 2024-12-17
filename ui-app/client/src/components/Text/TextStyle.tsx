@@ -3,7 +3,9 @@ import { processStyleDefinition } from '../../util/styleProcessor';
 import { styleProperties, styleDefaults } from './TextStyleProperties';
 
 const PREFIX = '.comp.compText';
-export default function LabelStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function LabelStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const css =
 		`
 	${PREFIX} ._textContainer {

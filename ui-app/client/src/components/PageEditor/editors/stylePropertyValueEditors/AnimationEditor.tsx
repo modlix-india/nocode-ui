@@ -734,7 +734,7 @@ export function AnimationEditor({
 								e.displayName
 									.toLowerCase()
 									.includes(searchFilter.toLowerCase().trim()),
-						  )
+							)
 						: ANIMATIONS_LIST
 					)
 						.filter(e => e.name !== '_waitOpacity')
@@ -760,7 +760,7 @@ export function AnimationEditor({
 													value: props.animationDuration.length
 														? [...props.animationDuration, '1s'].join(
 																',',
-														  )
+															)
 														: '1s',
 												},
 												{
@@ -769,7 +769,7 @@ export function AnimationEditor({
 														? [
 																...props.animationIterationCount,
 																'1',
-														  ].join(',')
+															].join(',')
 														: '1',
 												},
 											],

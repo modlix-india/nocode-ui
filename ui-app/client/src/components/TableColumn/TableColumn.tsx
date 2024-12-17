@@ -10,7 +10,7 @@ import { propertiesDefinition, stylePropertiesDefinition } from './tableCloumnPr
 import TableColumnStyle from './TableColumnStyle';
 import { styleDefaults } from './tableColumnStyleProperties';
 
-function TableColumnComponent(props: ComponentProps) {
+function TableColumnComponent(props: Readonly<ComponentProps>) {
 	const {
 		definition: { children },
 		pageDefinition,
@@ -51,7 +51,7 @@ function TableColumnComponent(props: ComponentProps) {
 			<HelperComponent context={props.context} definition={definition} />
 			<Children
 				pageDefinition={pageDefinition}
-				children={firstchild}
+				renderableChildren={firstchild}
 				context={context}
 				locationHistory={locationHistory}
 			/>

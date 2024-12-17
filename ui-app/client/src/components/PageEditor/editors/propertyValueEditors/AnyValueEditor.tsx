@@ -1,7 +1,5 @@
 import Editor from '@monaco-editor/react';
-import React, { ReactNode, useEffect } from 'react';
-
-import Portal from '../../../Portal';
+import React, { useEffect } from 'react';
 
 interface AnyValueEditorProps {
 	value?: any;
@@ -23,7 +21,7 @@ export function AnyValueEditor({
 	onChange,
 	isIconButton = false,
 	buttonLabel = 'Edit',
-}: AnyValueEditorProps) {
+}: Readonly<AnyValueEditorProps>) {
 	const [localValue, setLocalValue] = React.useState(getTextualValue(value ?? defaultValue));
 	const [showEditor, setShowEditor] = React.useState(false);
 	const [editorValue, setEditorValue] = React.useState(getTextualValue(value ?? defaultValue));
@@ -84,10 +82,8 @@ export function AnyValueEditor({
 	}
 
 	const trigger = isIconButton ? (
-		<i
-			className="fa fa-solid fa-arrow-up-right-from-square"
-			tabIndex={0}
-			role="button"
+		<button
+			className="_iconOnly fa fa-solid fa-arrow-up-right-from-square"
 			onClick={() => {
 				setShowEditor(true);
 				setEditorValue(localValue);
