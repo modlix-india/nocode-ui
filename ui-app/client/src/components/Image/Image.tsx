@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { PageStoreExtractor, addListenerAndCallImmediately } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
@@ -92,19 +92,7 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 
 	const actualSrc = getSrcUrl(getHref(src ?? defaultSrc, location)!);
 
-	const [firstTime, setFirstTime] = useState(true);
-	useEffect(() => {
-		setFirstTime(true);
-	}, [actualSrc]);
-
 	let imageTag = undefined;
-	const styleObject =
-		(resolvedStyles.image && firstTime ? { ...resolvedStyles.image } : resolvedStyles.image) ??
-		{};
-
-	if (firstTime) {
-		styleObject.opacity = 0;
-	}
 
 	if (actualSrc) {
 		imageTag = (
@@ -126,16 +114,14 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 							: undefined
 					}
 					className={onClickEvent ? '_onclicktrue' : ''}
-					tabIndex={onClickEvent ? 0 : undefined}
-					style={styleObject}
+					style={resolvedStyles.image ?? {}}
 					src={actualSrc}
 					alt={alt}
 					onError={fallBackImg ? handleError : undefined}
 					loading={imgLazyLoading ? 'lazy' : 'eager'}
-					onLoad={() => setFirstTime(false)}
 				/>
 				<SubHelperComponent
-					style={styleObject}
+					style={resolvedStyles.image ?? {}}
 					className={onClickEvent ? '_onclicktrue' : ''}
 					definition={definition}
 					subComponentName="image"
