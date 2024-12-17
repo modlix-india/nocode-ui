@@ -416,16 +416,16 @@ function TableComponent(props: Readonly<ComponentProps>) {
 					)}
 				></i>
 			) : (
-				<svg
-					width="19"
-					height="18"
-					viewBox="0 0 19 18"
-					fill="none"
-					xmlns="http://www.w3.org/2000/svg"
-				>
-					<path d="M0 2C0 0.89543 0.895431 0 2 0H5V18H2C0.89543 18 0 17.1046 0 16V2Z" />
-					<path d="M7 0H12V18H7V0Z" />
-					<path d="M14 0H17C18.1046 0 19 0.895431 19 2V16C19 17.1046 18.1046 18 17 18H14V0Z" />
+				<svg width="19" height="18" viewBox="0 0 19 18" fill="none">
+					<path
+						d="M0 2C0 0.89543 0.895431 0 2 0H5V18H2C0.89543 18 0 17.1046 0 16V2Z"
+						fill="currentColor"
+					/>
+					<path d="M7 0H12V18H7V0Z" fill="currentColor" />
+					<path
+						d="M14 0H17C18.1046 0 19 0.895431 19 2V16C19 17.1046 18.1046 18 17 18H14V0Z"
+						fill="currentColor"
+					/>
 				</svg>
 			);
 
@@ -446,17 +446,11 @@ function TableComponent(props: Readonly<ComponentProps>) {
 					)}
 				></i>
 			) : (
-				<svg
-					width="18"
-					height="18"
-					viewBox="0 0 18 18"
-					fill="none"
-					xmlns="http://www.w3.org/2000/svg"
-				>
-					<rect width="8" height="8" rx="1" />
-					<rect y="10" width="8" height="8" rx="1" />
-					<rect x="10" width="8" height="8" rx="1" />
-					<rect x="10" y="10" width="8" height="8" rx="1" />
+				<svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+					<rect width="8" height="8" rx="1" fill="currentColor" />
+					<rect y="10" width="8" height="8" rx="1" fill="currentColor" />
+					<rect x="10" width="8" height="8" rx="1" fill="currentColor" />
+					<rect x="10" y="10" width="8" height="8" rx="1" fill="currentColor" />
 				</svg>
 			);
 
@@ -532,13 +526,7 @@ function TableComponent(props: Readonly<ComponentProps>) {
 							</div>
 						</div>
 						{showSeperators && (
-							<svg
-								width="2"
-								height="28"
-								viewBox="0 0 2 28"
-								fill="none"
-								xmlns="http://www.w3.org/2000/svg"
-							>
+							<svg width="2" height="28" viewBox="0 0 2 28" fill="none">
 								<path
 									d="M1 1L0.999999 27"
 									stroke="#DDDDDD"
@@ -556,13 +544,7 @@ function TableComponent(props: Readonly<ComponentProps>) {
 				perPage = (
 					<>
 						{showSeperators && (
-							<svg
-								width="2"
-								height="28"
-								viewBox="0 0 2 28"
-								fill="none"
-								xmlns="http://www.w3.org/2000/svg"
-							>
+							<svg width="2" height="28" viewBox="0 0 2 28" fill="none">
 								<path
 									d="M1 1L0.999999 27"
 									stroke="#DDDDDD"
