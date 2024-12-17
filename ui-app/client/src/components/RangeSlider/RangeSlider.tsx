@@ -29,7 +29,8 @@ const component: Component = {
 	sections: [{ name: 'rangeSlider', pageName: 'rangeSlider' }],
 	stylePseudoStates: ['hover', 'readOnly'],
 	bindingPaths: {
-		bindingPath: { name: 'Binding' },
+		bindingPath: { name: 'Slider 1 Binding' },
+		bindingPath2: {name: 'Slider 2 Binding'}
 	},
 	defaultTemplate: {
 		key: '',

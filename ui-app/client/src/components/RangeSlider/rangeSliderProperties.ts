@@ -26,6 +26,18 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		],
 	},
 	{
+		name: 'numberOfSliders',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Number of Sliders',
+		defaultValue: '1',
+		group: ComponentPropertyGroup.BASIC,
+		editor: ComponentPropertyEditor.ENUM,
+		enumValues: [
+			{ name: '1', displayName: '1 Slider' },
+			{ name: '2', displayName: '2 Sliders' },
+		],
+	},
+	{
 		name: 'trackColor',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Track Color',
@@ -90,6 +102,31 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{ name: '_largeRoundedTT', displayName: 'Large Rounded' },
 			{ name: '_labelTT', displayName: 'Label' },
 			{ name: '_fixedLabelTT', displayName: 'Fixed Label' },
+		],
+	},
+
+	{
+		name: 'fillType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Track Filling Mode',
+		defaultValue: 'fromStart',
+		group: ComponentPropertyGroup.BASIC,
+		editor: ComponentPropertyEditor.ENUM,
+		enumValues: [
+			{ name: 'fromStart', displayName: 'Fill from Start' },
+			{ name: 'betweenSliders', displayName: 'Fill between Sliders' },
+		],
+	},
+	{
+		name: 'sliderCrossing',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Slider Crossing',
+		defaultValue: 'true',
+		group: ComponentPropertyGroup.BASIC,
+		editor: ComponentPropertyEditor.ENUM,
+		enumValues: [
+			{ name: 'false', displayName: 'Sliders Cannot Cross' },
+			{ name: 'true', displayName: 'Sliders Can Cross' },
 		],
 	},
 	COMMON_COMPONENT_PROPERTIES.colorScheme,
@@ -215,6 +252,31 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: 1,
 		group: ComponentPropertyGroup.DATA,
 	},
+	// {
+	// 	name: 'slider2Min',
+	// 	schema: SCHEMA_NUM_COMP_PROP,
+	// 	displayName: 'Slider 2 Minimum Value',
+	// 	description: 'Minimum value for the second slider',
+	// 	defaultValue: 50,
+	// 	group: ComponentPropertyGroup.DATA,
+	// },
+	// {
+	// 	name: 'slider2Max',
+	// 	schema: SCHEMA_NUM_COMP_PROP,
+	// 	displayName: 'Slider 2 Maximum Value',
+	// 	description: 'Maximum value for the second slider',
+	// 	defaultValue: 100,
+	// 	group: ComponentPropertyGroup.DATA,
+
+	// },
+	// {
+	// 	name: 'slider2Step',
+	// 	schema: SCHEMA_NUM_COMP_PROP,
+	// 	displayName: 'Slider 2 Step Value',
+	// 	description: 'Step attribute value for the second slider',
+	// 	defaultValue: 1,
+	// 	group: ComponentPropertyGroup.DATA,
+	// },
 	{
 		name: 'toolTipDisplayType',
 		schema: SCHEMA_STRING_COMP_PROP,

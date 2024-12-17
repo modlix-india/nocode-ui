@@ -12,13 +12,17 @@ export default function PageEditorStyle({
 	const [used, setUsed] = useState(false);
 
 	useEffect(() => {
-		const fn = () => setUsed(true);
+		const fn = () => {
+			if (!used) {
+				setUsed(true);
+			}
+		};
 
 		if (usedComponents.used(NAME)) fn();
 		usedComponents.register(NAME, fn);
 
 		return () => usedComponents.deRegister(NAME);
-	}, [setUsed]);
+	}, [used]);
 	const css =
 		`
 	.comp.compPageEditor ._iframe.MOBILE_POTRAIT_SCREEN iframe{
