@@ -55,6 +55,7 @@
 		"@babel/preset-env": "^7.26.0",
 		"@babel/preset-react": "^7.26.3",
 		"@babel/preset-typescript": "^7.26.0",
+		"@pmmmwh/react-refresh-webpack-plugin": "^0.5.15",
 		"@tsconfig/recommended": "^1.0.8",
 		"@types/d3": "^7.4.3",
 		"@types/jest": "^29.5.14",
@@ -76,6 +77,7 @@
 		"prettier": "^3.4.2",
 		"prettier-plugin-organize-imports": "^4.1.0",
 		"process": "^0.11.10",
+		"react-refresh-typescript": "^2.0.9",
 		"source-map-loader": "^5.0.0",
 		"style-loader": "^4.0.0",
 		"ts-jest": "^29.2.5",
@@ -87,7 +89,7 @@
 		"webpack-dev-server": "^5.2.0"
 	},
 	"dependencies": {
-		"@fincity/kirun-js": "^2.8.5",
+		"@fincity/kirun-js": "^2.8.6",
 		"@fincity/path-reactive-state-management": "^1.7.3",
 		"@monaco-editor/react": "^4.6.0",
 		"axios": "^1.7.9",

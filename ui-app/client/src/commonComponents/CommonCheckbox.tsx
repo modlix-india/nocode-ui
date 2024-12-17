@@ -36,24 +36,31 @@ function CommonCheckbox({
 	) : undefined;
 
 	return (
-		<>
-			<span
-				className={`commonCheckbox ${showAsRadio ? 'radio' : ''} ${
-					isChecked ? '_checked' : ''
-				} ${isReadOnly ? '_disabled' : ''}`}
-				role="checkbox"
-				id={id}
-				onClick={isReadOnly ? undefined : e => onChange?.(!isChecked)}
-				style={styles ?? {}}
-				onFocus={focusHandler}
-				onBlur={blurHandler}
-			>
-				{sh}
-				<span className="_thumb" style={thumbStyles ?? {}}>
-					{sh2}
-				</span>
+		<span
+			className={`commonCheckbox ${showAsRadio ? 'radio' : ''} ${
+				isChecked ? '_checked' : ''
+			} ${isReadOnly ? '_disabled' : ''}`}
+			role="checkbox"
+			id={id}
+			onClick={isReadOnly ? undefined : e => onChange?.(!isChecked)}
+			style={styles ?? {}}
+			onFocus={focusHandler}
+			onBlur={blurHandler}
+			tabIndex={0}
+			onKeyUp={
+				isReadOnly
+					? undefined
+					: e => {
+							if (e.key !== 'Enter' && e.key !== ' ') return;
+							onChange?.(!isChecked);
+						}
+			}
+		>
+			{sh}
+			<span className="_thumb" style={thumbStyles ?? {}}>
+				{sh2}
 			</span>
-		</>
+		</span>
 	);
 }
 
