@@ -24,10 +24,6 @@ const SIGNATURE = new FunctionSignature('Login')
 			Parameter.ofEntry('otp', Schema.ofString('otp').setDefaultValue(null)),
 			Parameter.ofEntry('pin', Schema.ofString('pin').setDefaultValue(null)),
 			Parameter.ofEntry(
-				'socialRegisterState',
-				Schema.ofString('socialRegisterState').setDefaultValue(null),
-			),
-			Parameter.ofEntry(
 				'identifierType',
 				Schema.ofString('identifierType').setDefaultValue(''),
 			),
