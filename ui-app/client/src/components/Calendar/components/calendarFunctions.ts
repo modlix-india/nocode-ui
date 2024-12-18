@@ -1,7 +1,7 @@
 import { isNullValue } from '@fincity/kirun-js';
-import { setData } from '../../../context/StoreContext';
 import { Dispatch, SetStateAction } from 'react';
-import { CalendarAllProps, CalendarMapProps, CalendarValidationProps } from './calendarTypes';
+import { setData } from '../../../context/StoreContext';
+import { CalendarMapProps, CalendarValidationProps } from './calendarTypes';
 
 // Will support more formats after the kirun functions are integrated where all the time and date api is implemented.
 
