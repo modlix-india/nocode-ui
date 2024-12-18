@@ -32,7 +32,8 @@ class _UIFunctionRepository implements Repository<Function> {
 	}
 }
 
-export const UIFunctionRepository = new HybridRepository<Function>(
-	new KIRunFunctionRepository(),
-	new _UIFunctionRepository(),
-);
+export class UIFunctionRepository extends HybridRepository<Function> {
+	constructor() {
+		super(new KIRunFunctionRepository(), new _UIFunctionRepository());
+	}
+}
