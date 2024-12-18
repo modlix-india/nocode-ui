@@ -1,0 +1,111 @@
+.comp.compTable {
+    display: flex;
+    flex-direction: row;
+
+}
+
+.comp.compTable.FIXED .comp.compTableColumns { table-layout : fixed}
+
+.comp.compTable ._tableWithPagination {
+    flex: 1;
+    display: flex;
+    flex-wrap:wrap;
+    align-items:flex-start;
+}
+
+.comp.compTable ._tablePagination {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    width:100%;
+
+}
+
+.comp.compTable ._tablePagination ._selected {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color:#427EE4;
+
+}
+
+.comp.compTable ._tablePagination._RIGHT {
+    justify-content: right;
+}
+
+.comp.compTable ._tablePagination._CENTER {
+    justify-content: center;
+}
+
+.comp.compTable.RIGHT {
+    flex-direction:row-reverse;
+}
+
+.comp.compTable.LEFT {
+    flex-direction:row;
+}
+
+.comp.compTable.TOP {
+    flex-direction:column;
+}
+
+.comp.compTable.BOTTOM {
+    flex-direction:column-reverse;
+}
+
+.comp.compTable ._tablePagination ._pageNumber{
+    min-width:26px;
+    height:26px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 0px 6px;
+}
+
+.comp.compTable ._tablePagination ._next{
+    padding:5px;
+}
+
+.comp.compTable ._tablePagination ._prev{
+    padding:5px;
+}
+
+.comp.compTable ._modesContainer{
+    display:flex;
+    border:1px solid #DDDDDD;
+    border-radius:6px;
+    margin-right:15px;
+    height:36px;
+
+}
+
+.comp.compTable ._grid {
+    padding:8px;
+    border-top-right-radius:6px;
+    border-bottom-right-radius:6px;
+}
+
+.comp.compTable ._columns{
+    padding:8px;
+    border-top-left-radius:6px;
+    border-bottom-left-radius:6px;
+}
+
+.comp.compTable ._tablePagination select{
+    border: 1px solid #DDDDDD;
+    border-radius:6px;
+    height:36px;
+    font-size: 14px;
+    font-weight: 500;
+    color:#333333;
+    padding-left: 8px;
+}
+
+.comp.compTable ._leftArrow{
+    padding-left:10px;
+}
+
+
+.comp.compTable ._rightArrow{
+    padding-right:10px;
+}
