@@ -20,8 +20,8 @@ export default function CheckBoxStyle({
         margin: 0;
         min-width: 16px;
         min-height: 16px;
-        border: 0.15em solid;
-        border-radius: 0.15em;
+        border: 2px solid;
+        border-radius: 2px;
         display: grid;
         place-content: center;
         cursor: pointer;
@@ -51,7 +51,10 @@ export default function CheckBoxStyle({
         top: 0px;        
     }
     
-    span.commonTriStateCheckbox._true,
+    span.commonTriStateCheckbox._true {
+        border: 2px transpernt;
+    }
+
     span.commonCheckbox._checked {
         border: 0px;
     }
