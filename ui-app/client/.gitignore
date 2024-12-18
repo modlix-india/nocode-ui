@@ -8,3 +8,4 @@ dist/*.json
 report/**
 reports/**
 stats.json
+dist/*.txt
