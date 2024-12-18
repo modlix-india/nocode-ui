@@ -14,7 +14,11 @@ import { UISchemaRepository } from '../../schemas/common';
 import { isNullValue } from '@fincity/kirun-js';
 import { ComponentProps } from '../../types/common';
 
+let UI_SCHEMA_REPO: UISchemaRepository;
+
 export default function SchemaBuilder(props: Readonly<ComponentProps>) {
+	if (!UI_SCHEMA_REPO) UI_SCHEMA_REPO = new UISchemaRepository();
+
 	const {
 		definition,
 		definition: { bindingPath },
@@ -22,17 +26,14 @@ export default function SchemaBuilder(props: Readonly<ComponentProps>) {
 		context,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
-	const {
-		key,
-		properties: { readOnly, rootSchemaType } = {},
-		stylePropertiesWithPseudoStates,
-	} = useDefinition(
-		definition,
-		propertiesDefinition,
-		stylePropertiesDefinition,
-		locationHistory,
-		pageExtractor,
-	);
+	const { properties: { readOnly, rootSchemaType } = {}, stylePropertiesWithPseudoStates } =
+		useDefinition(
+			definition,
+			propertiesDefinition,
+			stylePropertiesDefinition,
+			locationHistory,
+			pageExtractor,
+		);
 
 	const bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
@@ -68,7 +69,7 @@ export default function SchemaBuilder(props: Readonly<ComponentProps>) {
 					}
 					setData(bindingPathPath!, v, pageExtractor.getPageName());
 				}}
-				schemaRepository={UISchemaRepository}
+				schemaRepository={UI_SCHEMA_REPO}
 				shouldShowNameNamespace={true}
 			/>
 		</div>

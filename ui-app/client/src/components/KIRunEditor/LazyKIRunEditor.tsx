@@ -129,6 +129,9 @@ function makeUpdates(
 	})();
 }
 
+let UI_FUN_REPO: Repository<Function>;
+let UI_SCHEMA_REPO: Repository<Schema>;
+
 export default function LazyKIRunEditor(
 	props: ComponentProps & {
 		functionRepository?: Repository<Function>;
@@ -184,12 +187,15 @@ export default function LazyKIRunEditor(
 	const [error, setError] = useState<any>();
 	const [funDef, setFunDef] = useState<FunctionDefinition | undefined>();
 
+	if (!UI_FUN_REPO) UI_FUN_REPO = new UIFunctionRepository();
+	if (!UI_SCHEMA_REPO) UI_SCHEMA_REPO = new UISchemaRepository();
+
 	const functionRepository: Repository<Function> = useMemo(() => {
 		if (actualFunctionRepository) return actualFunctionRepository;
 
 		if (editorType === 'ui') {
 			return new HybridRepository<Function>(
-				UIFunctionRepository,
+				UI_FUN_REPO,
 				RemoteRepository.getRemoteFunctionRepository(
 					appCode,
 					clientCode,
@@ -212,7 +218,7 @@ export default function LazyKIRunEditor(
 			);
 		}
 
-		return UIFunctionRepository;
+		return UI_FUN_REPO;
 	}, [actualFunctionRepository, appCode, clientCode, editorType]);
 
 	const schemaRepository: Repository<Schema> = useMemo(() => {
@@ -220,7 +226,7 @@ export default function LazyKIRunEditor(
 
 		if (editorType === 'ui') {
 			return new HybridRepository<Schema>(
-				UISchemaRepository,
+				UI_SCHEMA_REPO,
 				RemoteRepository.getRemoteSchemaRepository(
 					appCode,
 					clientCode,
@@ -242,7 +248,7 @@ export default function LazyKIRunEditor(
 				REPO_SERVER.CORE,
 			);
 		}
-		return UISchemaRepository;
+		return UI_SCHEMA_REPO;
 	}, [actualSchemaRepository, appCode, clientCode, editorType]);
 
 	useEffect(() => usedComponents.using('PageEditor'), []);

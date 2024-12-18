@@ -16,6 +16,8 @@ import useDefinition from '../util/useDefinition';
 import SingleSchema from './components/SingleSchemaForm';
 import { propertiesDefinition, stylePropertiesDefinition } from './schemaFormProperties';
 
+let UI_SCHEMA_REPO: UISchemaRepository;
+
 export default function SchemaForm(
 	props: ComponentProps & {
 		schema?: Schema;
@@ -24,6 +26,8 @@ export default function SchemaForm(
 		value?: any;
 	},
 ) {
+	if (!UI_SCHEMA_REPO) UI_SCHEMA_REPO = new UISchemaRepository();
+
 	const {
 		definition,
 		definition: { bindingPath },
@@ -64,7 +68,7 @@ export default function SchemaForm(
 		{},
 		stylePropertiesWithPseudoStates,
 	);
-	const schemaRepository = props.schemaRepository ?? UISchemaRepository;
+	const schemaRepository = props.schemaRepository ?? UI_SCHEMA_REPO;
 
 	return (
 		<div className="comp compSchemaForm" style={resolvedStyles.comp ?? {}}>
