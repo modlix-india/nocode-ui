@@ -52,13 +52,16 @@ function BOOLEAN_CONDITION(validation: any, value: any): Array<string> {
 	return [validation.message];
 }
 
+let UI_SCHEMA_REPO: UISchemaRepository;
+
 function SCHEMA_TYPE(validation: any, value: any): Array<string> {
+	if (!UI_SCHEMA_REPO) UI_SCHEMA_REPO = new UISchemaRepository();
 	const sch = Schema.from(validation.schema);
 	if (!sch) return [];
 	let err;
 	(async () => {
 		try {
-			await SchemaValidator.validate(undefined, sch, UISchemaRepository, value);
+			await SchemaValidator.validate(undefined, sch, UI_SCHEMA_REPO, value);
 		} catch (er) {
 			err = er;
 			console.error('Error while validating a schema.', er);
